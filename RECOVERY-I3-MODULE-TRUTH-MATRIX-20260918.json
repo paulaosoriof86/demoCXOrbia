@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.recovery.module-truth-matrix.v5",
-  "observedAt": "2026-09-20T03:35:00Z",
+  "observedAt": "2026-09-20T04:42:00Z",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
@@ -4092,7 +4092,7 @@
   },
   "continuityCheckpoint": {
     "iteration": "I3",
-    "status": "HOLD_RUN272_RELEASE_COMPOSITION_MULTI_HR_REVISION_PENDING_SINGLE_RECERTIFICATION",
+    "status": "HOLD_RUN273_HARNESS_RESULT_SCOPE_ERROR_PENDING_SINGLE_RERUN",
     "exactProductSourceSha": "815eecb2b5b01001bd1f6455bae622159f0ca3e5",
     "exactProductSourceTree": "32e04ac5e9631d94b42e421b083b6264df2964a9",
     "noReprocess": [
@@ -4135,17 +4135,17 @@
       "acceptance imports provider function instead of reimplementing credentials",
       "stale v1 tests updated to the explicitly approved v2 contract"
     ],
-    "nextExactAction": "Keep product source 815eecb2b5b01001bd1f6455bae622159f0ca3e5 / tree 32e04ac5e9631d94b42e421b083b6264df2964a9 unchanged. Pin exactly one authoritative HR revision at Step17; human acceptance, live fixtures, manifest and Gate21 consume and seal the same hr-fresh.json. Require 10/10 + cleanup then Gate21.",
+    "nextExactAction": "Keep product source 815eecb2b5b01001bd1f6455bae622159f0ca3e5 / tree 32e04ac5e9631d94b42e421b083b6264df2964a9 and pinned-HR control unchanged. Fix only V4 hrRevision scope so final result/evidence can be written, then run once and require 10/10 + cleanup + Gate21.",
     "production": "DO_NOT_TOUCH",
     "rootCauseRun233": "Static/unit gates exposed stale v1 browser credential implementations and stale expectations before DEV deploy.",
     "lastRun": {
-      "runNumber": 272,
-      "runId": "35485676769",
-      "result": "HOLD_CERTIFY_PASS_LIVE_FIXTURES_8_OF_10",
-      "code": "RELEASE_COMPOSITION_FAILURE:MULTIPLE_HR_REVISIONS_WITHIN_SINGLE_CERTIFICATION_RUN",
+      "runNumber": 273,
+      "runId": "35488583593",
+      "result": "HOLD_CERTIFY_PASS_LIVE_FIXTURE_RESULT_NOT_MATERIALIZED",
+      "code": "RELEASE_COMPOSITION_FAILURE:LIVE_FIXTURE_RESULT_SCOPE_ERROR",
       "classification": "RELEASE_COMPOSITION_FAILURE",
       "certify": "PASS_STEPS_1_27",
-      "liveFixtures": "8_OF_10_PASS_CLEANUP_TRUE_BUILD0_DEPLOY0",
+      "liveFixtures": "NODE_FINALIZATION_REFERENCE_ERROR_AFTER_EXECUTION",
       "gate21": "SKIPPED"
     },
     "rootCauseRun235": "Cloud Run revision could not start because cxorbia-shopper-command-provider-v1.mjs imports ../../app/core/shopper-credential-rule.js but the runtime Dockerfile did not COPY that shared owner into the image.",
@@ -4364,6 +4364,21 @@
       "manifestSealsRevisionAndHash": true,
       "gate21VerifiesSameRevision": true
     },
+    "productChange": false,
+    "production": "DO_NOT_TOUCH"
+  },
+  "run273HarnessResultScope": {
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "code": "LIVE_FIXTURE_RESULT_SCOPE_ERROR",
+    "runId": "35488583593",
+    "runNumber": 273,
+    "productSourceSha": "815eecb2b5b01001bd1f6455bae622159f0ca3e5",
+    "productSourceTree": "32e04ac5e9631d94b42e421b083b6264df2964a9",
+    "pinnedHrRevision": "9534505d9b0d6cf422a4a11990633a7b2231d31fda6281bf79e57adce78777fe",
+    "certify": "PASS_STEPS_1_27",
+    "failure": "ReferenceError: hrRevision is not defined at V4 final result construction",
+    "rootCause": "hrRevision was declared with const inside the try block but referenced in finally while writing i3-live-fixtures-result.json; cleanup ran, but the evidence result could not be materialized or uploaded.",
+    "correction": "Declare hrRevision in outer harness scope and assign the pinned revision inside try. No product/workflow/HR/Auth change.",
     "productChange": false,
     "production": "DO_NOT_TOUCH"
   }

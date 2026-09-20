@@ -244,6 +244,7 @@ const db = getFirestore();
 const tenant = db.collection('tenants').doc(TENANT);
 const project = tenant.collection('projects').doc(PROJECT_ID);
 const shopperModule = await import(pathToFileURL(path.join(SOURCE_DIR, 'backend/runtime/cxorbia-shopper-command-provider-v1.mjs')).href);
+let hrRevision = '';
 
 try {
   const manifest = readPrior('i3-certification-manifest.json');
@@ -269,7 +270,7 @@ try {
 
   const hrPayload = readPrior('hr-fresh.json');
   const hr = hrPayload.snapshot || hrPayload.data || hrPayload;
-  const hrRevision = str(hr?._runtime?.revision || hr?.sourceRevision || hrPayload?._runtime?.revision);
+  hrRevision = str(hr?._runtime?.revision || hr?.sourceRevision || hrPayload?._runtime?.revision);
   if (!/^[a-f0-9]{64}$/.test(hrRevision)) throw new Error('SOURCE_FAILURE:PINNED_HR_REVISION_INVALID');
   if (str(manifest.hrRevision) !== hrRevision) throw new Error('RELEASE_COMPOSITION_FAILURE:PINNED_HR_MANIFEST_MISMATCH');
   if (str(human.sourceRevision) !== hrRevision) throw new Error('RELEASE_COMPOSITION_FAILURE:PINNED_HR_HUMAN_MISMATCH');

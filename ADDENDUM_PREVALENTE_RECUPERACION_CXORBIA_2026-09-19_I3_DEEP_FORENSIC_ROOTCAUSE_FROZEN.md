@@ -145,3 +145,15 @@ La evidencia física demostró múltiples revisiones externas HR dentro del mism
 **Código:** `MULTIPLE_HR_REVISIONS_WITHIN_SINGLE_CERTIFICATION_RUN`
 
 Step17 queda como única autoridad `fresh=1`. Human acceptance y live fixtures consumen su `hr-fresh.json` sin refresh. El manifest sella `hrRevision` y `hrEvidenceSha256`; Gate21 verifica la misma revisión/hash en certification, human acceptance y live fixtures. No cambia producto, no reimporta y no toca producción.
+
+
+## 13. Run 273 — live fixture result scope error
+
+Run 273 (`35488583593`) mantuvo product source `815eecb2b5b01001bd1f6455bae622159f0ca3e5` / tree `32e04ac5e9631d94b42e421b083b6264df2964a9`. Certify completo, Step23, Gate20 y artifact cerraron PASS. La revisión HR pinneada fue `9534505d9b0d6cf422a4a11990633a7b2231d31fda6281bf79e57adce78777fe` y el binding same-run pasó.
+
+El job live-fixtures terminó la ejecución y cleanup, pero no pudo materializar `i3-live-fixtures-result.json`: `ReferenceError: hrRevision is not defined` en la construcción final del resultado. `hrRevision` estaba declarada dentro del bloque `try` y se referenciaba desde `finally`.
+
+**Clasificación:** `RELEASE_COMPOSITION_FAILURE`  
+**Código:** `LIVE_FIXTURE_RESULT_SCOPE_ERROR`
+
+Corrección congelada: mover únicamente `hrRevision` al scope exterior del harness V4 y asignarla dentro del `try`. No cambia producto, workflow, HR, Auth, datos ni producción. El siguiente run debe demostrar físicamente 10/10, cleanup, artifact de live fixtures y Gate21.
