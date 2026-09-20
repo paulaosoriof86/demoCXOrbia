@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.recovery.module-truth-matrix.v5",
-  "observedAt": "2026-09-20T06:40:00Z",
+  "observedAt": "2026-09-20T06:49:00Z",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
@@ -4092,7 +4092,7 @@
   },
   "continuityCheckpoint": {
     "iteration": "I3",
-    "status": "HOLD_RUN279_ADMIN_SELECTED_EMPTY_PENDING_REFRESH_VS_RECOMPOSE_PROBE",
+    "status": "HOLD_RUN280_CONTROL_HARNESS_SYNTAX_FIXED_PENDING_RECERTIFICATION",
     "exactProductSourceSha": "16d1bc8649f358f72d9576d6e4c20bfa6b833272",
     "exactProductSourceTree": "74bec1dbb83681e94b17320ea3756fa926bbb912",
     "noReprocess": [
@@ -4135,21 +4135,17 @@
       "acceptance imports provider function instead of reimplementing credentials",
       "stale v1 tests updated to the explicitly approved v2 contract"
     ],
-    "nextExactAction": "Re-run the canonical I3 workflow with unchanged product source. Probe Admin automatic convergence for 10s, then perform one read-only CX.backend.refresh diagnostic if needed and compare raw Firestore readback versus post-authority composition. Patch product only after the probe proves the exact owner.",
+    "nextExactAction": "Recertify unchanged product source 16d1bc8649f358f72d9576d6e4c20bfa6b833272 / tree 74bec1dbb83681e94b17320ea3756fa926bbb912. Run Admin convergence probe in live fixtures; classify only first physical subcausal. No product change unless probe proves P0.",
     "production": "DO_NOT_TOUCH",
     "rootCauseRun233": "Static/unit gates exposed stale v1 browser credential implementations and stale expectations before DEV deploy.",
     "lastRun": {
-      "runNumber": 279,
-      "runId": "35494022784",
-      "result": "HOLD_LIVE_FIXTURES_7_OF_10_ADMIN_ROWS_AND_READ_MODEL_EMPTY",
-      "code": "FUNCTIONAL_DEFECT:ADMIN_FIXTURE_ROWS_NOT_VISIBLE",
-      "classification": "FUNCTIONAL_DEFECT",
-      "certify": "PASS_STEP23_GATE20_ARTIFACT",
-      "liveFixtures": "7/10",
-      "cleanup": true,
-      "buildCountThisRun": 0,
-      "deployCountThisRun": 0,
-      "production": false,
+      "runNumber": 280,
+      "runId": "35494786055",
+      "result": "HOLD_LIVE_FIXTURE_SETUP_HARNESS_SYNTAX",
+      "code": "ENVIRONMENT_FAILURE:LIVE_FIXTURE_HARNESS_DUPLICATE_IDENTIFIER_PROBE",
+      "classification": "ENVIRONMENT_FAILURE",
+      "certify": "PASS",
+      "liveFixtures": "NOT_EXECUTED",
       "gate21": "SKIPPED"
     },
     "rootCauseRun235": "Cloud Run revision could not start because cxorbia-shopper-command-provider-v1.mjs imports ../../app/core/shopper-credential-rule.js but the runtime Dockerfile did not COPY that shared owner into the image.",
@@ -4585,5 +4581,17 @@
       "sourceMode_sourceRef"
     ],
     "productChange": false
+  },
+  "run280HarnessSyntax": {
+    "classification": "ENVIRONMENT_FAILURE",
+    "code": "LIVE_FIXTURE_HARNESS_DUPLICATE_IDENTIFIER_PROBE",
+    "runId": "35494786055",
+    "runNumber": 280,
+    "productSourceUnchanged": "16d1bc8649f358f72d9576d6e4c20bfa6b833272",
+    "productTreeUnchanged": "74bec1dbb83681e94b17320ea3756fa926bbb912",
+    "evidence": "Node syntax check failed before live suite: Identifier 'probe' has already been declared",
+    "owner": ".github/control/RECOVERY-I3-LIVE-FIXTURES-20260920-V4.mjs",
+    "fix": "Rename Admin convergence local variable from probe to adminProbe; no product changes",
+    "production": "DO_NOT_TOUCH"
   }
 }

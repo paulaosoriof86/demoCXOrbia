@@ -429,23 +429,23 @@ try {
   fs.writeFileSync(path.join(OUT, 'admin-fixture-diagnostic.json'), JSON.stringify(adminDiagnostic, null, 2) + '\n');
   const adminOk = rowsVisible && selectedProfilesOk && hnDetailPhoneOk && hnDetailEmailOk && crossProjectBlocked;
   record('5_PERFIL_ADMIN', 'Authorized Admin sees identity/country/phone/email/status; cross-project command blocked', adminDiagnostic, { role: admin.ctx.role, tenantId: admin.ctx.tenantId, projectIds: admin.ctx.projectIds }, 'Shared synthetic cleanup pending', 'Shared absence readback pending', adminOk, { diagnosticVersion: 'v1' });
-  const probe = admin.probe || {};
-  const refreshSelected = Array.isArray(probe.refreshReadback?.selected) ? probe.refreshReadback.selected.length : 0;
-  const postRefreshSelected = Array.isArray(probe.postRefreshAuthority?.selected) ? probe.postRefreshAuthority.selected.length : 0;
-  const postProtectedProfiles = Number(probe.postRefreshAuthority?.authority?.protectedProfiles || 0);
+  const adminProbe = admin.probe || {};
+  const refreshSelected = Array.isArray(adminProbe.refreshReadback?.selected) ? adminProbe.refreshReadback.selected.length : 0;
+  const postRefreshSelected = Array.isArray(adminProbe.postRefreshAuthority?.selected) ? adminProbe.postRefreshAuthority.selected.length : 0;
+  const postProtectedProfiles = Number(adminProbe.postRefreshAuthority?.authority?.protectedProfiles || 0);
   if (!rowsVisible || !selectedProfilesOk) {
-    if (probe.spontaneous === true) {
+    if (adminProbe.spontaneous === true) {
       if (!selectedProfilesOk) throw new Error('FUNCTIONAL_DEFECT:ADMIN_FIXTURE_READ_MODEL_MISMATCH_AFTER_AUTOMATIC_SYNC');
       throw new Error('VISUAL_DEFECT:ADMIN_FIXTURE_ROWS_NOT_VISIBLE_AFTER_AUTOMATIC_SYNC');
     }
-    if (probe.refreshInvoked === true && refreshSelected === fixtureDefs.length && postRefreshSelected === fixtureDefs.length) {
+    if (adminProbe.refreshInvoked === true && refreshSelected === fixtureDefs.length && postRefreshSelected === fixtureDefs.length) {
       throw new Error('FUNCTIONAL_DEFECT:ADMIN_FIXTURE_REQUIRES_EXPLICIT_BACKEND_REFRESH');
     }
-    if (probe.refreshInvoked === true && refreshSelected === fixtureDefs.length && postRefreshSelected < fixtureDefs.length) {
+    if (adminProbe.refreshInvoked === true && refreshSelected === fixtureDefs.length && postRefreshSelected < fixtureDefs.length) {
       if (postProtectedProfiles >= fixtureDefs.length) throw new Error('RELEASE_COMPOSITION_FAILURE:ADMIN_PLATFORM_PROFILES_LOST_AFTER_AUTHORITY_RECOMPOSE');
       throw new Error('FUNCTIONAL_DEFECT:ADMIN_AUTHORITY_CAPTURE_DROPS_REFRESHED_PROFILES');
     }
-    if (probe.refreshInvoked === true && refreshSelected < fixtureDefs.length) {
+    if (adminProbe.refreshInvoked === true && refreshSelected < fixtureDefs.length) {
       throw new Error('AUTH_FAILURE:ADMIN_FIRESTORE_REFRESH_SCOPE_EXCLUDES_CREATED_PROFILES');
     }
     throw new Error('FUNCTIONAL_DEFECT:ADMIN_FIXTURE_ROWS_NOT_VISIBLE');
