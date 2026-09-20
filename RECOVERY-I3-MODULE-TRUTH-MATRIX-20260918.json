@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.recovery.module-truth-matrix.v5",
-  "observedAt": "2026-09-20T06:49:00Z",
+  "observedAt": "2026-09-20T07:05:00Z",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
@@ -103,9 +103,9 @@
     }
   },
   "productSource": {
-    "sha": "16d1bc8649f358f72d9576d6e4c20bfa6b833272",
-    "treeSha": "74bec1dbb83681e94b17320ea3756fa926bbb912",
-    "message": "fix(i3): make runtime sole HR refresh authority"
+    "sha": "23a2b3b076a585cad7da3a4c50dfe9d4e3192995",
+    "treeSha": "f02852474cd5dd2c7b9f77f8495918bc622c7a7f",
+    "message": "fix(i3): converge Admin read model after Firestore ready"
   },
   "controlHeadAtConstruction": "751d01397bcd85903456e5cb78e3e5ce41161b17",
   "phaseAComplete": true,
@@ -186,8 +186,8 @@
         "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
         "backend/contracts/tya-hr-column-map-r20-v1.json"
       ],
-      "lastApprovedAuthority": "P0_PROVEN_RUN277_BROWSER_WATCHER_REFRESH_CHURN_ROOT_FIX",
-      "sourceCommit": "16d1bc8649f358f72d9576d6e4c20bfa6b833272",
+      "lastApprovedAuthority": "P0_PROVEN_RUN281_ADMIN_READMODEL_CONVERGENCE_ROOT_FIX",
+      "sourceCommit": "23a2b3b076a585cad7da3a4c50dfe9d4e3192995",
       "loadOrderEntrypoint": "app/index-backend-dev.html",
       "roles": [
         "Admin",
@@ -1591,21 +1591,21 @@
       "historicalApprovedBlob": "4ff03ce4a4ab3cc680be32cc71f32d406cdb9307",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "4ff03ce4a4ab3cc680be32cc71f32d406cdb9307",
-      "latestApprovedSource": "f5d7113547df0c69d5d49bad3951dbd793684788",
-      "latestApprovedBlob": "d2ef7fa3c7a527c42f8cd13d50ec5ca7a80c0b6c",
-      "currentBlob": "d2ef7fa3c7a527c42f8cd13d50ec5ca7a80c0b6c",
+      "latestApprovedSource": "23a2b3b076a585cad7da3a4c50dfe9d4e3192995",
+      "latestApprovedBlob": "7f4a7181c0d01238e1cbbe63606ba5df8db506c2",
+      "currentBlob": "7f4a7181c0d01238e1cbbe63606ba5df8db506c2",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "090d01dc4913112a68d39f6c1547e6556458384d",
-      "latestApprovedAuthority": "P0_PROVEN_RUN276_PROTECTED_BOOT_NO_FORCED_REFRESH",
+      "latestApprovedAuthority": "P0_PROVEN_RUN281_ADMIN_READMODEL_CONVERGENCE_ROOT_FIX",
       "loadOrder": 57,
       "atomicDisposition": "FOCAL_FIX",
-      "approvedSourceCommit": "f5d7113547df0c69d5d49bad3951dbd793684788",
-      "approvedBlob": "d2ef7fa3c7a527c42f8cd13d50ec5ca7a80c0b6c",
-      "approvalAuthority": "P0_PROVEN_RUN276_PROTECTED_BOOT_NO_FORCED_REFRESH",
-      "composedAtSource": "f5d7113547df0c69d5d49bad3951dbd793684788",
+      "approvedSourceCommit": "23a2b3b076a585cad7da3a4c50dfe9d4e3192995",
+      "approvedBlob": "7f4a7181c0d01238e1cbbe63606ba5df8db506c2",
+      "approvalAuthority": "P0_PROVEN_RUN281_ADMIN_READMODEL_CONVERGENCE_ROOT_FIX",
+      "composedAtSource": "23a2b3b076a585cad7da3a4c50dfe9d4e3192995",
       "provenanceIndependent": true,
       "approvalDisposition": "FOCAL_FIX"
     },
@@ -3930,7 +3930,7 @@
     "gate21AfterFullHuman": true,
     "cacheRuntimeFailClosed": true
   },
-  "nextExactAction": "Re-run the canonical I3 workflow with unchanged product source. Probe Admin automatic convergence for 10s, then perform one read-only CX.backend.refresh diagnostic if needed and compare raw Firestore readback versus post-authority composition. Patch product only after the probe proves the exact owner.",
+  "nextExactAction": "Recertify exactly product source 23a2b3b076a585cad7da3a4c50dfe9d4e3192995 / tree f02852474cd5dd2c7b9f77f8495918bc622c7a7f. Require Step21/23 same HR revision, Gate20 PASS, one artifact, live fixtures 10/10 cleanup=true build=0 deploy=0 production=false, then Gate21 same artifact/manifest/HR revision. No further product change unless first physical causal proves another P0.",
   "moduleTruthCorrection": {
     "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
     "run179": {
@@ -4092,9 +4092,9 @@
   },
   "continuityCheckpoint": {
     "iteration": "I3",
-    "status": "HOLD_RUN280_CONTROL_HARNESS_SYNTAX_FIXED_PENDING_RECERTIFICATION",
-    "exactProductSourceSha": "16d1bc8649f358f72d9576d6e4c20bfa6b833272",
-    "exactProductSourceTree": "74bec1dbb83681e94b17320ea3756fa926bbb912",
+    "status": "HOLD_RUN281_P0_PROVEN_ADMIN_READMODEL_CONVERGENCE_FIXED_PENDING_RECERTIFICATION",
+    "exactProductSourceSha": "23a2b3b076a585cad7da3a4c50dfe9d4e3192995",
+    "exactProductSourceTree": "f02852474cd5dd2c7b9f77f8495918bc622c7a7f",
     "noReprocess": [
       "I0",
       "I1",
@@ -4135,17 +4135,17 @@
       "acceptance imports provider function instead of reimplementing credentials",
       "stale v1 tests updated to the explicitly approved v2 contract"
     ],
-    "nextExactAction": "Recertify unchanged product source 16d1bc8649f358f72d9576d6e4c20bfa6b833272 / tree 74bec1dbb83681e94b17320ea3756fa926bbb912. Run Admin convergence probe in live fixtures; classify only first physical subcausal. No product change unless probe proves P0.",
+    "nextExactAction": "Recertify exactly product source 23a2b3b076a585cad7da3a4c50dfe9d4e3192995 / tree f02852474cd5dd2c7b9f77f8495918bc622c7a7f. Require Step21/23 same HR revision, Gate20 PASS, one artifact, live fixtures 10/10 cleanup=true build=0 deploy=0 production=false, then Gate21 same artifact/manifest/HR revision. No further product change unless first physical causal proves another P0.",
     "production": "DO_NOT_TOUCH",
     "rootCauseRun233": "Static/unit gates exposed stale v1 browser credential implementations and stale expectations before DEV deploy.",
     "lastRun": {
-      "runNumber": 280,
-      "runId": "35494786055",
-      "result": "HOLD_LIVE_FIXTURE_SETUP_HARNESS_SYNTAX",
-      "code": "ENVIRONMENT_FAILURE:LIVE_FIXTURE_HARNESS_DUPLICATE_IDENTIFIER_PROBE",
-      "classification": "ENVIRONMENT_FAILURE",
+      "runNumber": 281,
+      "runId": "35495187331",
+      "result": "HOLD_LIVE_FIXTURE_ADMIN_REQUIRES_EXPLICIT_BACKEND_REFRESH",
+      "code": "FUNCTIONAL_DEFECT:ADMIN_FIXTURE_REQUIRES_EXPLICIT_BACKEND_REFRESH",
+      "classification": "FUNCTIONAL_DEFECT",
       "certify": "PASS",
-      "liveFixtures": "NOT_EXECUTED",
+      "liveFixtures": "7/10",
       "gate21": "SKIPPED"
     },
     "rootCauseRun235": "Cloud Run revision could not start because cxorbia-shopper-command-provider-v1.mjs imports ../../app/core/shopper-credential-rule.js but the runtime Dockerfile did not COPY that shared owner into the image.",
@@ -4164,7 +4164,7 @@
     "fixRun236": "For a Shopper, pre-HR readiness now requires authenticated Firebase principal rather than pre-existing exact Firestore profile. Auth+tenant+project authorization remains required by reconcile() and is reverified server-side. After composition, __sessionShopperProfile falls back to the exact canonical shopper from result.shoppers/identityMap.",
     "rootCauseRun237": "app.js intercepted the Shopper role button in DEV with pickShopperDev(), an explicitly non-auth legacy validation picker, before backend-browser-auth could select the protected Firebase shopper namespace. This produced selectedRole='', no Firebase user, no context, and no credential error.",
     "fixRun237": "When protected Firebase DEV auth is enabled, Shopper role now always follows selectRole('shopper') -> backend-browser-auth -> Firebase. Legacy pickShopperDev remains only for non-protected DEV access.",
-    "p0Owner": "app/adapters/tya-live-source-refresh-watch-v2.js::check + tools/qa/cxorbia-p0-shopper-hr-authority-source-gate.mjs"
+    "p0Owner": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js::reconcile + backend-ready binding"
   },
   "liveFixtureForensic": {
     "auditId": "CXORBIA-I3-LIVE-FIXTURE-FORENSIC-20260919",
@@ -4592,6 +4592,38 @@
     "evidence": "Node syntax check failed before live suite: Identifier 'probe' has already been declared",
     "owner": ".github/control/RECOVERY-I3-LIVE-FIXTURES-20260920-V4.mjs",
     "fix": "Rename Admin convergence local variable from probe to adminProbe; no product changes",
+    "production": "DO_NOT_TOUCH"
+  },
+  "run281AdminReadModelConvergenceP0": {
+    "classification": "FUNCTIONAL_DEFECT",
+    "code": "ADMIN_FIXTURE_REQUIRES_EXPLICIT_BACKEND_REFRESH",
+    "runId": "35495187331",
+    "runNumber": 281,
+    "beforeProductSourceSha": "16d1bc8649f358f72d9576d6e4c20bfa6b833272",
+    "correctedProductSourceSha": "23a2b3b076a585cad7da3a4c50dfe9d4e3192995",
+    "correctedProductSourceTree": "f02852474cd5dd2c7b9f77f8495918bc622c7a7f",
+    "evidence": {
+      "liveFixturesPassed": 7,
+      "cleanup": true,
+      "buildCountThisRun": 0,
+      "deployCountThisRun": 0,
+      "production": false,
+      "createdShopperProfilesPersisted": true,
+      "shopperLoginsPassed": true,
+      "adminSelectedProfilesAfterRefresh": 4,
+      "adminSelectedProfilesCorrect": true,
+      "crossProjectBlocked": true,
+      "rowsVisibleBeforeConvergence": false,
+      "explicitBackendRefreshMakesProfilesVisibleInReadModel": true,
+      "profilesSurviveHrRecomposition": true
+    },
+    "rootCause": "backend-ready Firestore state could arrive while HR reconcile was already running; the forced reconciliation could be consumed while busy and lastProtectedState could remain stale",
+    "owner": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+    "fix": [
+      "capture newest Firestore state immediately on backend-ready before HR recomposition",
+      "preserve bootForce and retry when reconcile is already in progress",
+      "static regression gate in cxorbia-p0-shopper-hr-authority-source-gate.mjs"
+    ],
     "production": "DO_NOT_TOUCH"
   }
 }
