@@ -356,24 +356,28 @@ jobs:
           export CXORBIA_HR_TAB_REGISTRY="$REGISTRY_TMP"
           export CXORBIA_EXPECTED_CURRENT_PERIOD="2026-09"
           node "$SOURCE_DIR/tools/hr-source/tya-live-provider-registry-identity-dev.mjs" > "$OUT/identity-registry-safe-console.json"
-          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" OUT="$OUT" IDENTITY_TMP="$IDENTITY_TMP" \
+          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" OUT="$OUT" IDENTITY_TMP="$IDENTITY_TMP" SOURCE_DIR="$SOURCE_DIR" \
           CROSSWALK="$SOURCE_DIR/app/docs/evidence/VISIT-IDENTITY-CROSSWALK-READONLY-LATEST.json" node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import crypto from 'node:crypto';
+          import path from 'node:path';
+          import { pathToFileURL } from 'node:url';
           import { applicationDefault, initializeApp, getApps } from 'firebase-admin/app';
           import { FieldValue, getFirestore } from 'firebase-admin/firestore';
 
-          const PROJECT=process.env.PROJECT,TENANT=process.env.TENANT_ID,PROJECT_ID=process.env.PROJECT_ID,OUT=process.env.OUT;
+          const PROJECT=process.env.PROJECT,TENANT=process.env.TENANT_ID,PROJECT_ID=process.env.PROJECT_ID,OUT=process.env.OUT,SOURCE_DIR=process.env.SOURCE_DIR;
           const IDENTITY_TMP=process.env.IDENTITY_TMP,CROSSWALK=process.env.CROSSWALK;
           const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[];
           const sha=v=>crypto.createHash('sha256').update(String(v),'utf8').digest('hex');
           const active=new Set(['active','confirmed','approved','materialized']);
           const trusted=new Set(['provider_exact','tenant_adjudication','platform_created','migrated_exact']);
-          const strip=v=>str(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-          const part=v=>strip(v).toLowerCase().replace(/[^a-z0-9]+/g,'');
-          const credentialLogin=name=>{
-            const tokens=str(name).split(/\s+/).filter(Boolean),first=tokens[0]||'',last=tokens.slice(1).join(' ');
-            const a=part(first),b=part(last);return a&&b?a+'.'+b:'';
+          if(!SOURCE_DIR)throw new Error('SOURCE_FAILURE:CERTIFIED_SOURCE_DIR_MISSING');
+          const credentialMod=await import(pathToFileURL(path.join(SOURCE_DIR,'backend/runtime/cxorbia-shopper-command-provider-v1.mjs')).href);
+          const credentialLogin=row=>{
+            const credential=credentialMod.shopperCredentialRule({
+              nombre:str(row?.displayName),firstName:str(row?.firstName),lastName:str(row?.lastName)
+            });
+            return credential?.ok?str(credential.login).toLowerCase():'';
           };
           const flatten=v=>{
             if(v==null)return[];
@@ -404,7 +408,7 @@ jobs:
           if(overlay?.schemaVersion!=='cxorbia.tya-operational-shopper-identity.v2'||overlay?.displayIdentityOnly!==false||overlay?.containsContactData!==true||overlay?.contactDataOptional!==true||overlay?.containsCredentials!==false)throw new Error('SOURCE_FAILURE:IDENTITY_OVERLAY_CONTRACT');
           const groups=new Map();
           for(const row of arr(overlay.identities)){
-            const id=str(row?.shopperId),login=credentialLogin(row?.displayName);
+            const id=str(row?.shopperId),login=credentialLogin(row);
             if(!id||!login)continue;
             if(!groups.has(login))groups.set(login,[]);
             groups.get(login).push(id);
@@ -512,8 +516,12 @@ jobs:
             };
             walk(value);return out;
           };
-          const profileSnap=await tenant.collection('shoppers').get();
+          const [profileSnap,userSnap]=await Promise.all([
+            tenant.collection('shoppers').get(),
+            tenant.collection('users').get()
+          ]);
           const profiles=profileSnap.docs.map(d=>({id:d.id,...(d.data()||{})}));
+          const members=userSnap.docs.map(d=>({id:d.id,...(d.data()||{})}));
           const profileCanonical=p=>str(p?.canonicalShopperId||p?.shopperId||p?.id);
           const profileAliases=p=>[...new Set([
             ...flattenProfileToken(p?.exactAliases),...flattenProfileToken(p?.identityAliases),...flattenProfileToken(p?.aliases),
@@ -528,7 +536,54 @@ jobs:
             return value&& !value.endsWith('@auth.cxorbia.invalid') ? value : '';
           };
           const stableLegacyId=p=>str(p?.legacyShopperId||p?.legacyId);
+          const activeCanonicalByLogin=new Map();
+          for(const member of members){
+            const projects=arr(member?.projectIds).map(str),login=str(member?.visibleLogin).toLowerCase(),target=str(member?.shopperId);
+            if(member?.active!==true||str(member?.authNamespace)!=='shopper'||str(member?.role)!=='shopper'||!login||!target)continue;
+            if(projects.length&&!projects.includes(PROJECT_ID))continue;
+            if(!activeCanonicalByLogin.has(login))activeCanonicalByLogin.set(login,new Set());
+            activeCanonicalByLogin.get(login).add(target);
+          }
+          const singletonAccountCollisions=[...groups.entries()].map(([login,ids])=>{
+            const uniqueIds=[...new Set(ids)].sort();
+            const accountTargets=[...(activeCanonicalByLogin.get(login)||new Set())].filter(target=>!uniqueIds.includes(target)).sort();
+            return {login,ids:uniqueIds,accountTargets};
+          }).filter(x=>x.ids.length===1&&x.accountTargets.length>0);
+
           let protectedExactAliasEvidence=0,protectedDistinctIdentityEvidence=0;
+          const protectedProfilePairResolution=(sourceId,target)=>{
+            sourceId=str(sourceId);target=str(target);
+            const authorizedTargetAliases=profiles.filter(p=>profileCanonical(p)===target&&profileAliases(p).includes(sourceId));
+            if(authorizedTargetAliases.length===1){
+              protectedExactAliasEvidence++;
+              return {ok:true,target,evidenceType:'protected_profile_authorized_alias',evidenceRef:'profile-alias:'+sha([sourceId,target].join('\0')).slice(0,32)};
+            }
+            if(authorizedTargetAliases.length>1)return {ok:false,reason:'PROTECTED_TARGET_PROFILE_AMBIGUOUS',identityDisposition:'INSUFFICIENT_EXACT_EVIDENCE'};
+            const sourceProfiles=profileForCanonical(sourceId),targetProfiles=profileForCanonical(target);
+            if(sourceProfiles.length!==1)return {ok:false,reason:sourceProfiles.length?'PROTECTED_SOURCE_PROFILE_AMBIGUOUS':'EXACT_IDENTITY_EVIDENCE_MISSING',identityDisposition:'INSUFFICIENT_EXACT_EVIDENCE'};
+            if(targetProfiles.length!==1)return {ok:false,reason:targetProfiles.length?'PROTECTED_TARGET_PROFILE_AMBIGUOUS':'PROTECTED_TARGET_PROFILE_MISSING',identityDisposition:'INSUFFICIENT_EXACT_EVIDENCE'};
+            const sourceProfile=sourceProfiles[0],targetProfile=targetProfiles[0];
+            const sourceDoc=normalizedDocument(sourceProfile),targetDoc=normalizedDocument(targetProfile);
+            const sourceEmail=normalizedProtectedEmail(sourceProfile),targetEmail=normalizedProtectedEmail(targetProfile);
+            const sourceLegacy=stableLegacyId(sourceProfile),targetLegacy=stableLegacyId(targetProfile);
+            if(sourceDoc&&targetDoc){
+              if(sourceDoc===targetDoc){
+                protectedExactAliasEvidence++;
+                return {ok:true,target,evidenceType:'protected_profile_document_match',evidenceRef:'profile-document:'+sha([sourceId,target,sourceDoc].join('\0')).slice(0,32)};
+              }
+              protectedDistinctIdentityEvidence++;
+              return {ok:false,reason:'PROTECTED_DOCUMENT_DIVERGENCE',identityDisposition:'PROVEN_DISTINCT_IDENTITY'};
+            }
+            if(sourceLegacy&&targetLegacy&&sourceLegacy===targetLegacy){
+              protectedExactAliasEvidence++;
+              return {ok:true,target,evidenceType:'protected_profile_stable_legacy_id_match',evidenceRef:'profile-legacy:'+sha([sourceId,target,sourceLegacy].join('\0')).slice(0,32)};
+            }
+            if(sourceEmail&&targetEmail&&sourceEmail===targetEmail){
+              protectedExactAliasEvidence++;
+              return {ok:true,target,evidenceType:'protected_profile_email_match',evidenceRef:'profile-email:'+sha([sourceId,target,sourceEmail].join('\0')).slice(0,32)};
+            }
+            return {ok:false,reason:'EXACT_IDENTITY_EVIDENCE_MISSING',identityDisposition:'INSUFFICIENT_EXACT_EVIDENCE'};
+          };
           const protectedProfileResolution=(sourceId,groupIds)=>{
             const explicit=profiles.filter(p=>profileCanonical(p)!==sourceId&&profileAliases(p).includes(sourceId));
             const explicitTargets=[...new Set(explicit.map(profileCanonical).filter(Boolean))];
@@ -606,11 +661,46 @@ jobs:
             }
           }
 
+          for(const group of singletonAccountCollisions){
+            const sourceId=group.ids[0],accountTargets=group.accountTargets;
+            if(accountTargets.length!==1){
+              blockers.push({credentialFingerprint:sha(group.login).slice(0,24),technicalIds:group.ids,reasons:[{sourceId,reason:'ACTIVE_CANONICAL_LOGIN_TARGET_AMBIGUOUS',identityDisposition:'INSUFFICIENT_EXACT_EVIDENCE'}]});
+              continue;
+            }
+            const target=resolveTrusted(accountTargets[0]);
+            const direct=[...(tokenTargets.get(sourceId)||new Set())];
+            if(direct.length>1){
+              blockers.push({credentialFingerprint:sha(group.login).slice(0,24),technicalIds:group.ids,reasons:[{sourceId,reason:'DIRECT_TRUSTED_LINK_CONFLICT',identityDisposition:'INSUFFICIENT_EXACT_EVIDENCE'}]});
+              continue;
+            }
+            if(direct.length===1){
+              if(resolveTrusted(sourceId)!==target)blockers.push({credentialFingerprint:sha(group.login).slice(0,24),technicalIds:group.ids,reasons:[{sourceId,reason:'ACTIVE_CANONICAL_TARGET_DIVERGENCE',identityDisposition:'INSUFFICIENT_EXACT_EVIDENCE'}]});
+              continue;
+            }
+            const exactVisitTarget=exactBySource.get(sourceId);
+            if(exactVisitTarget){
+              const resolvedExact=resolveTrusted(exactVisitTarget);
+              if(resolvedExact!==target){
+                blockers.push({credentialFingerprint:sha(group.login).slice(0,24),technicalIds:group.ids,reasons:[{sourceId,reason:'EXACT_VISIT_TARGET_DIVERGENCE',identityDisposition:'INSUFFICIENT_EXACT_EVIDENCE'}]});
+                continue;
+              }
+              planned.push({sourceId,canonicalShopperId:target,exactVisitCanonicalShopperId:exactVisitTarget,evidenceType:'exact_visit_identity_crosswalk',evidenceRef:'exact-visit-crosswalk:'+mappingHash,credentialFingerprint:sha(group.login).slice(0,24)});
+              continue;
+            }
+            const protectedResolution=protectedProfilePairResolution(sourceId,target);
+            if(!protectedResolution.ok){
+              blockers.push({credentialFingerprint:sha(group.login).slice(0,24),technicalIds:group.ids,reasons:[{sourceId,reason:protectedResolution.reason,identityDisposition:protectedResolution.identityDisposition||'INSUFFICIENT_EXACT_EVIDENCE'}]});
+              continue;
+            }
+            planned.push({sourceId,canonicalShopperId:target,exactVisitCanonicalShopperId:null,evidenceType:protectedResolution.evidenceType,evidenceRef:protectedResolution.evidenceRef,credentialFingerprint:sha(group.login).slice(0,24)});
+          }
+
           const base={
             schemaVersion:'cxorbia.i3.exact-credential-collision-adjudication.v1',
             generatedAt:new Date().toISOString(),tenantId:TENANT,projectId:PROJECT_ID,
             identityCount:arr(overlay.identities).length,collisionGroupCount:collisions.length,
             collisionTechnicalIdCount:collisions.reduce((n,x)=>n+x.ids.length,0),
+            singletonAccountCollisionGroupCount:singletonAccountCollisions.length,
             exactVisitCrosswalkSha256:mappingHash,existingTrustedIdentityLinks:links.length,
             durableExactAliasEvidence,protectedProfileReads:profiles.length,protectedExactAliasEvidence,protectedDistinctIdentityEvidence,
             rawNamesPersisted:false,rawLoginsPersisted:false,rawProtectedAnchorsPersisted:false,hrWrites:0,authWrites:0,production:false
@@ -676,7 +766,8 @@ jobs:
             identityReviewRequired:blockers.length>0,
             identityReviewGroupCount:blockers.length,
             providerWrites:uniquePlan.length,plannedWrites:uniquePlan.length,readback,blockers,
-            collisionGroups:collisions.map(g=>({credentialFingerprint:sha(g.login).slice(0,24),technicalIds:g.ids}))
+            collisionGroups:collisions.map(g=>({credentialFingerprint:sha(g.login).slice(0,24),technicalIds:g.ids})),
+            singletonAccountCollisionGroups:singletonAccountCollisions.map(g=>({credentialFingerprint:sha(g.login).slice(0,24),technicalIds:g.ids,targetFingerprints:g.accountTargets.map(x=>sha(x).slice(0,24))}))
           };
           fs.writeFileSync(OUT+'/identity-link-adjudication.json',JSON.stringify(report,null,2)+'\n');
           console.log(JSON.stringify(report));
