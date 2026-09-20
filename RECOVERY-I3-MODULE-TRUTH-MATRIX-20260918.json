@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.recovery.module-truth-matrix.v5",
-  "observedAt": "2026-09-20T07:24:00Z",
+  "observedAt": "2026-09-20T07:42:00Z",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
@@ -103,9 +103,9 @@
     }
   },
   "productSource": {
-    "sha": "2ca71bac1fe66b7cdc28ea99b106e7e99010f048",
-    "treeSha": "8425d3c07bc78fad23eaf75dc30f93835cf53c8f",
-    "message": "fix(i3): bind Admin composition to authorized Firestore snapshot"
+    "sha": "47c1aad1baf2d229ccb2e6753b6491a8f342c111",
+    "treeSha": "f802966cb2e64d0ac6cac932463f1b34dde872c8",
+    "message": "fix(i3): preserve Admin view across HR authority release"
   },
   "controlHeadAtConstruction": "751d01397bcd85903456e5cb78e3e5ce41161b17",
   "phaseAComplete": true,
@@ -334,8 +334,8 @@
         "app/adapters/tya-c6-unified-human-runtime-v1.js",
         "app/adapters/tya-c6-domain-consistency-bridge.js"
       ],
-      "lastApprovedAuthority": "USER_DECISION_20260919_SINGLE_CANONICAL_SHOPPER_CREDENTIAL_OWNER",
-      "sourceCommit": "144c58e2125aba6e49deefe0ce23fa9d94259cdb",
+      "lastApprovedAuthority": "P0_PROVEN_RUN283_ADMIN_VIEW_PRESERVATION_FIX",
+      "sourceCommit": "47c1aad1baf2d229ccb2e6753b6491a8f342c111",
       "loadOrderEntrypoint": "app/index-backend-dev.html",
       "roles": [
         "Admin",
@@ -3086,21 +3086,21 @@
       "historicalApprovedBlob": "7c00752d9a34209366f3c328ea3e5f5fddb4e1db",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "3acc508ac242407ea688b6a4ba964409af1125ba",
-      "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
-      "latestApprovedBlob": "be7331eda76b750e2454e096b9cc3cb705a4c50a",
-      "currentBlob": "be7331eda76b750e2454e096b9cc3cb705a4c50a",
+      "latestApprovedSource": "47c1aad1baf2d229ccb2e6753b6491a8f342c111",
+      "latestApprovedBlob": "b4edc8b4b92b6d4cd1f0f598f5847cfc97109bbc",
+      "currentBlob": "b4edc8b4b92b6d4cd1f0f598f5847cfc97109bbc",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "3acc508ac242407ea688b6a4ba964409af1125ba",
-      "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): gate human runtime on live HR authority; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "P0_PROVEN_RUN283_ADMIN_VIEW_PRESERVATION_FIX",
       "loadOrder": 124,
       "atomicDisposition": "KEEP",
-      "approvedSourceCommit": "57ffe11bc4a209bed1d73b9487bad55a4f653a1d",
-      "approvedBlob": "be7331eda76b750e2454e096b9cc3cb705a4c50a",
-      "approvalAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): gate human runtime on live HR authority; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
-      "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
+      "approvedSourceCommit": "47c1aad1baf2d229ccb2e6753b6491a8f342c111",
+      "approvedBlob": "b4edc8b4b92b6d4cd1f0f598f5847cfc97109bbc",
+      "approvalAuthority": "P0_PROVEN_RUN283_ADMIN_VIEW_PRESERVATION_FIX",
+      "composedAtSource": "47c1aad1baf2d229ccb2e6753b6491a8f342c111",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -3930,7 +3930,7 @@
     "gate21AfterFullHuman": true,
     "cacheRuntimeFailClosed": true
   },
-  "nextExactAction": "Recertify exactly product source 2ca71bac1fe66b7cdc28ea99b106e7e99010f048 / tree 8425d3c07bc78fad23eaf75dc30f93835cf53c8f. Require Step21/23 same HR revision, Gate20 PASS, one artifact, live fixtures 10/10 cleanup=true build=0 deploy=0 production=false, Gate21 same artifact/manifest/revision. If Admin still fails, use admin.probe + finalPresentation evidence; no new broad audit.",
+  "nextExactAction": "Recertify exactly product source 47c1aad1baf2d229ccb2e6753b6491a8f342c111 / tree f802966cb2e64d0ac6cac932463f1b34dde872c8. Require Step21/23 same HR revision, Gate20 PASS, one artifact, live fixtures 10/10 cleanup=true build=0 deploy=0 production=false, then Gate21 PASS.",
   "moduleTruthCorrection": {
     "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
     "run179": {
@@ -4092,9 +4092,9 @@
   },
   "continuityCheckpoint": {
     "iteration": "I3",
-    "status": "HOLD_RUN282_P0_PROVEN_AUTHORIZED_FIRESTORE_SNAPSHOT_HANDOFF_FIXED_PENDING_RECERTIFICATION",
-    "exactProductSourceSha": "2ca71bac1fe66b7cdc28ea99b106e7e99010f048",
-    "exactProductSourceTree": "8425d3c07bc78fad23eaf75dc30f93835cf53c8f",
+    "status": "HOLD_RUN283_VISUAL_DEFECT_FIXED_PENDING_RECERTIFICATION",
+    "exactProductSourceSha": "47c1aad1baf2d229ccb2e6753b6491a8f342c111",
+    "exactProductSourceTree": "f802966cb2e64d0ac6cac932463f1b34dde872c8",
     "noReprocess": [
       "I0",
       "I1",
@@ -4135,15 +4135,15 @@
       "acceptance imports provider function instead of reimplementing credentials",
       "stale v1 tests updated to the explicitly approved v2 contract"
     ],
-    "nextExactAction": "Recertify exactly product source 2ca71bac1fe66b7cdc28ea99b106e7e99010f048 / tree 8425d3c07bc78fad23eaf75dc30f93835cf53c8f. Require Step21/23 same HR revision, Gate20 PASS, one artifact, live fixtures 10/10 cleanup=true build=0 deploy=0 production=false, Gate21 same artifact/manifest/revision. If Admin still fails, use admin.probe + finalPresentation evidence; no new broad audit.",
+    "nextExactAction": "Recertify exactly product source 47c1aad1baf2d229ccb2e6753b6491a8f342c111 / tree f802966cb2e64d0ac6cac932463f1b34dde872c8. Require Step21/23 same HR revision, Gate20 PASS, one artifact, live fixtures 10/10 cleanup=true build=0 deploy=0 production=false, then Gate21 PASS.",
     "production": "DO_NOT_TOUCH",
     "rootCauseRun233": "Static/unit gates exposed stale v1 browser credential implementations and stale expectations before DEV deploy.",
     "lastRun": {
-      "runNumber": 282,
-      "runId": "35495945752",
-      "result": "HOLD_LIVE_FIXTURE_ADMIN_REQUIRES_EXPLICIT_BACKEND_REFRESH",
-      "code": "FUNCTIONAL_DEFECT:ADMIN_FIXTURE_REQUIRES_EXPLICIT_BACKEND_REFRESH",
-      "classification": "FUNCTIONAL_DEFECT",
+      "runNumber": 283,
+      "runId": "35497011065",
+      "result": "HOLD_LIVE_FIXTURE_ADMIN_ROWS_NOT_RERENDERED_AFTER_COMPOSITION",
+      "code": "VISUAL_DEFECT:ADMIN_ROWS_NOT_RERENDERED_AFTER_COMPOSITION",
+      "classification": "VISUAL_DEFECT",
       "certify": "PASS",
       "liveFixtures": "7/10",
       "gate21": "SKIPPED"
@@ -4164,7 +4164,7 @@
     "fixRun236": "For a Shopper, pre-HR readiness now requires authenticated Firebase principal rather than pre-existing exact Firestore profile. Auth+tenant+project authorization remains required by reconcile() and is reverified server-side. After composition, __sessionShopperProfile falls back to the exact canonical shopper from result.shoppers/identityMap.",
     "rootCauseRun237": "app.js intercepted the Shopper role button in DEV with pickShopperDev(), an explicitly non-auth legacy validation picker, before backend-browser-auth could select the protected Firebase shopper namespace. This produced selectedRole='', no Firebase user, no context, and no credential error.",
     "fixRun237": "When protected Firebase DEV auth is enabled, Shopper role now always follows selectRole('shopper') -> backend-browser-auth -> Firebase. Legacy pickShopperDev remains only for non-protected DEV access.",
-    "p0Owner": "app/core/backend-firebase.js::publishAuthorizedState + app/adapters/tya-protected-auth-hr-authority-bridge-v2.js::captureAuthorizedBackend/applyComposition"
+    "p0Owner": "app/adapters/tya-c6-unified-human-runtime-v1.js::installHumanAuthorityGate.release"
   },
   "liveFixtureForensic": {
     "auditId": "CXORBIA-I3-LIVE-FIXTURE-FORENSIC-20260919",
@@ -4656,6 +4656,31 @@
       "final composition emits explicit shoppers rerender plus visit-flow",
       "live harness freezes probe/presentation evidence if any residual failure remains"
     ],
+    "production": "DO_NOT_TOUCH"
+  },
+  "run283AdminViewPreservation": {
+    "classification": "VISUAL_DEFECT",
+    "code": "ADMIN_ROWS_NOT_RERENDERED_AFTER_COMPOSITION",
+    "runId": "35497011065",
+    "runNumber": 283,
+    "evidence": {
+      "selectedProfilesOk": true,
+      "shoppersForPresentedAllFixtures": true,
+      "rowsVisible": false,
+      "finalView": "midia",
+      "expectedView": "shoppers",
+      "authorityReason": "c6_nav_waiting_hr_authority",
+      "crossProjectBlocked": true,
+      "cleanup": true,
+      "buildCountThisRun": 0,
+      "deployCountThisRun": 0,
+      "production": false
+    },
+    "rootCause": "C6 authority release could fall back through originalMount when local pendingView was empty, allowing current authorized shoppers view to be replaced by first rail view midia.",
+    "owner": "app/adapters/tya-c6-unified-human-runtime-v1.js",
+    "fix": "release now restores pendingView || CX.session.view before allowing fallback mount result",
+    "correctedProductSourceSha": "47c1aad1baf2d229ccb2e6753b6491a8f342c111",
+    "correctedProductSourceTree": "f802966cb2e64d0ac6cac932463f1b34dde872c8",
     "production": "DO_NOT_TOUCH"
   }
 }
