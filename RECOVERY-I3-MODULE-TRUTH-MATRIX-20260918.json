@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.recovery.module-truth-matrix.v5",
-  "observedAt": "2026-09-20T08:05:00Z",
+  "observedAt": "2026-09-20T09:10:00Z",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
@@ -103,9 +103,9 @@
     }
   },
   "productSource": {
-    "sha": "6e5c8c2af101c25c418ceeb6dbd83c7779af383d",
-    "treeSha": "ff7c5b5b6cab06478e3efa19dff33532644e4db1",
-    "message": "fix(i3): preserve Admin view on staff authority handoff"
+    "sha": "77bf74f807d254637f0b2cde4b1d1668017a0c8a",
+    "treeSha": "6bdd13dbc1ae5d2e0e9d2f3dd592aa222ee36679",
+    "message": "fix(i3): keep protected authority as sole human HR writer"
   },
   "controlHeadAtConstruction": "751d01397bcd85903456e5cb78e3e5ce41161b17",
   "phaseAComplete": true,
@@ -3930,7 +3930,7 @@
     "gate21AfterFullHuman": true,
     "cacheRuntimeFailClosed": true
   },
-  "nextExactAction": "Recertify exactly product source 6e5c8c2af101c25c418ceeb6dbd83c7779af383d / tree ff7c5b5b6cab06478e3efa19dff33532644e4db1. Require Step21/23 same HR revision, Gate20 PASS, one artifact, live fixtures 10/10 cleanup=true build=0 deploy=0 production=false, then Gate21 PASS.",
+  "nextExactAction": "Recertify same single candidate; require Paula focal shopper proof + Step23/Gate20 + live fixtures 10/10 + Gate21.",
   "moduleTruthCorrection": {
     "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
     "run179": {
@@ -4092,9 +4092,9 @@
   },
   "continuityCheckpoint": {
     "iteration": "I3",
-    "status": "HOLD_RUN284_VISUAL_DEFECT_ROOT_FIXED_PENDING_RECERTIFICATION",
-    "exactProductSourceSha": "6e5c8c2af101c25c418ceeb6dbd83c7779af383d",
-    "exactProductSourceTree": "ff7c5b5b6cab06478e3efa19dff33532644e4db1",
+    "status": "HOLD_RUN285_RAW_HR_OVERWRITE_FIXED_PENDING_RECERTIFICATION",
+    "exactProductSourceSha": "77bf74f807d254637f0b2cde4b1d1668017a0c8a",
+    "exactProductSourceTree": "6bdd13dbc1ae5d2e0e9d2f3dd592aa222ee36679",
     "noReprocess": [
       "I0",
       "I1",
@@ -4135,15 +4135,14 @@
       "acceptance imports provider function instead of reimplementing credentials",
       "stale v1 tests updated to the explicitly approved v2 contract"
     ],
-    "nextExactAction": "Recertify exactly product source 6e5c8c2af101c25c418ceeb6dbd83c7779af383d / tree ff7c5b5b6cab06478e3efa19dff33532644e4db1. Require Step21/23 same HR revision, Gate20 PASS, one artifact, live fixtures 10/10 cleanup=true build=0 deploy=0 production=false, then Gate21 PASS.",
+    "nextExactAction": "Recertify same single candidate; require Paula focal shopper proof + Step23/Gate20 + live fixtures 10/10 + Gate21.",
     "production": "DO_NOT_TOUCH",
     "rootCauseRun233": "Static/unit gates exposed stale v1 browser credential implementations and stale expectations before DEV deploy.",
     "lastRun": {
-      "runNumber": 284,
-      "runId": "35497810660",
-      "result": "HOLD_LIVE_FIXTURE_ADMIN_ROWS_NOT_RERENDERED_AFTER_COMPOSITION",
-      "code": "VISUAL_DEFECT:ADMIN_ROWS_NOT_RERENDERED_AFTER_COMPOSITION",
-      "classification": "VISUAL_DEFECT",
+      "runNumber": 285,
+      "runId": "35500732657",
+      "classification": "FUNCTIONAL_DEFECT",
+      "code": "ADMIN_FIXTURE_READ_MODEL_MISMATCH_AFTER_AUTOMATIC_SYNC",
       "certify": "PASS",
       "liveFixtures": "7/10",
       "gate21": "SKIPPED"
@@ -4164,7 +4163,7 @@
     "fixRun236": "For a Shopper, pre-HR readiness now requires authenticated Firebase principal rather than pre-existing exact Firestore profile. Auth+tenant+project authorization remains required by reconcile() and is reverified server-side. After composition, __sessionShopperProfile falls back to the exact canonical shopper from result.shoppers/identityMap.",
     "rootCauseRun237": "app.js intercepted the Shopper role button in DEV with pickShopperDev(), an explicitly non-auth legacy validation picker, before backend-browser-auth could select the protected Firebase shopper namespace. This produced selectedRole='', no Firebase user, no context, and no credential error.",
     "fixRun237": "When protected Firebase DEV auth is enabled, Shopper role now always follows selectRole('shopper') -> backend-browser-auth -> Firebase. Legacy pickShopperDev remains only for non-protected DEV access.",
-    "p0Owner": "app/adapters/tya-c6-live-user-admin-membership-wiring-v1.js::finalizeStaffFrontend"
+    "p0Owner": "app/adapters/tya-live-source-refresh-watch-v2.js::check"
   },
   "liveFixtureForensic": {
     "auditId": "CXORBIA-I3-LIVE-FIXTURE-FORENSIC-20260919",
