@@ -133,3 +133,15 @@ La suite corregida:
 7. cualquier otra divergencia HR↔durable falla como `PERSISTENCE_FAILURE`.
 
 El P0 de reconciliación HR→durable de Run 269 fue un gap real y permanece corregido y probado; Run 270 demuestra que no era la causa suficiente del bloqueo repetido 8/10.
+
+
+## 12. Run 272 — single pinned HR revision per certification
+
+Run 272 (`35485676769`) mantuvo product source `815eecb2b5b01001bd1f6455bae622159f0ca3e5` / tree `32e04ac5e9631d94b42e421b083b6264df2964a9` y cerró certify completo, Step23, Gate20 y artifact en PASS. Live fixtures llegó a 8/10 y falló con `PERSISTENCE_FAILURE:HR_DURABLE_REVISION_DIVERGENCE`.
+
+La evidencia física demostró múltiples revisiones externas HR dentro del mismo run: Step17 `fd2dfae9cc8255d20c40e66e4e0d3caa07cb43f2fa2f22b3a39123c9d2fdd9bb`; aceptación humana `12647741564672d789f62ed74f9f02aa7c394193958f4d0b49c02b2fa5a7f773`; y live fixtures hacía otro refresh.
+
+**Clasificación:** `RELEASE_COMPOSITION_FAILURE`  
+**Código:** `MULTIPLE_HR_REVISIONS_WITHIN_SINGLE_CERTIFICATION_RUN`
+
+Step17 queda como única autoridad `fresh=1`. Human acceptance y live fixtures consumen su `hr-fresh.json` sin refresh. El manifest sella `hrRevision` y `hrEvidenceSha256`; Gate21 verifica la misma revisión/hash en certification, human acceptance y live fixtures. No cambia producto, no reimporta y no toca producción.

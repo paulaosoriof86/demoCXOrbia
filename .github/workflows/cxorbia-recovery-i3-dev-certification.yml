@@ -11,7 +11,7 @@ on:
       - RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json
       - RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
       - ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-19_I3_ADMIN_PLATFORM_PROFILE_P0_FROZEN.md
-      - .github/control/RECOVERY-I3-LIVE-FIXTURES-20260919-V3.mjs.gz
+      - .github/control/RECOVERY-I3-LIVE-FIXTURES-20260920-V4.mjs
       - .github/control/RECOVERY-I3-BROWSER-AUTH-LIFECYCLE-20260919.mjs
       - ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-19_I3_DEEP_FORENSIC_ROOTCAUSE_FROZEN.md
       - CXORBIA_CANONICAL_ROUTE_INVENTORY_2026-09-18.json
@@ -674,6 +674,10 @@ jobs:
           fi
           node -e 'const fs=require("fs"),p=JSON.parse(fs.readFileSync(process.env.OUT+"/hr-fresh.json","utf8")),s=p?.snapshot||p?.data||p,rt=p?._runtime||s?._runtime||{};if(s?.sourceSafe!==true||rt.refreshError)throw new Error("SOURCE_FAILURE:HR_FRESH_INVALID");fs.writeFileSync(process.env.OUT+"/hr-readback.json",JSON.stringify({decision:"PASS_I3_HR_EXACT_RUNTIME",sourceSafe:true,production:false},null,2)+"\n")'
 
+          PINNED_HR_REVISION="$(jq -r '._runtime.revision // .sourceRevision // empty' "$OUT/hr-fresh.json")"
+          [[ "$PINNED_HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
+          echo "PINNED_HR_REVISION=$PINNED_HR_REVISION" >> "$GITHUB_ENV"
+
       - name: Normalize durable active shopper credentials on frozen rule
         run: |
           set -Eeuo pipefail
@@ -914,8 +918,9 @@ jobs:
           set -Eeuo pipefail
           rm -rf "$OUT/full-human-acceptance"
           mkdir -p "$OUT/full-human-acceptance" "$OUT/gate20"
-          PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" I3_CERTIFICATION_SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA" SOURCE_DIR="$SOURCE_DIR" ACCEPTANCE_OUT="$OUT/full-human-acceptance" node RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
+          PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" I3_CERTIFICATION_SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA" SOURCE_DIR="$SOURCE_DIR" CX_I3_PINNED_HR_FILE="$OUT/hr-fresh.json" ACCEPTANCE_OUT="$OUT/full-human-acceptance" node RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
           test "$(jq -r '.decision' "$OUT/full-human-acceptance/human-live-acceptance.json")" = "PASS_I3_HUMAN_LIVE_ACCEPTANCE"
+          test "$(jq -r '.sourceRevision' "$OUT/full-human-acceptance/human-live-acceptance.json")" = "$PINNED_HR_REVISION"
           test "$(jq -r '.decision' "$OUT/full-human-acceptance/i3-functional-probes.json")" = "PASS_I3_ATOMIC_FUNCTIONAL_PROBES"
           test "$(jq -r '.routeInventory.expectedRoleRouteEntries' "$OUT/full-human-acceptance/human-live-acceptance.json")" = "56"
           test "$(jq -r '.routeInventory.sha256' "$OUT/full-human-acceptance/human-live-acceptance.json")" = "ad262dd0165a7159e62076f67a6339b375ce0760dd6b650abc4ee438b04950af"
@@ -962,14 +967,19 @@ jobs:
           FULL_HUMAN_SHA256="$(sha256sum "$OUT/full-human-acceptance/human-live-acceptance.json" | awk '{print $1}')"
           FUNCTIONAL_PROBES_SHA256="$(sha256sum "$OUT/full-human-acceptance/i3-functional-probes.json" | awk '{print $1}')"
           ROUTE_INVENTORY_SHA256="$(sha256sum "$OUT/canonical-route-inventory.json" | awk '{print $1}')"
+          HR_EVIDENCE_SHA256="$(sha256sum "$OUT/hr-fresh.json" | awk '{print $1}')"
+          HR_REVISION="$(jq -r '._runtime.revision // .sourceRevision // empty' "$OUT/hr-fresh.json")"
+          [[ "$HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
+          test "$HR_REVISION" = "$PINNED_HR_REVISION"
+          test "$(jq -r '.sourceRevision' "$OUT/full-human-acceptance/human-live-acceptance.json")" = "$HR_REVISION"
           echo "$ARTIFACT_SHA256  cxorbia-i3-certified-source.tar" > "$OUT/cxorbia-i3-certified-source.tar.sha256"
           jq -n -S \
             --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg tree "$I3_CERTIFICATION_SOURCE_TREE" --arg control "$GITHUB_SHA" \
             --arg revision "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg image "$SOURCE_IMMUTABLE_IMAGE" \
-            --arg artifact "$ARTIFACT_SHA256" --arg gate20Sha "$GATE20_SHA256" --arg humanLaneSha "$HUMAN_LANE_SHA256" --arg credentialRuleSha "$CREDENTIAL_RULE_SHA256" --arg credentialRuleVersion "$CREDENTIAL_RULE_VERSION" --arg semanticGate20Sha "$SEMANTIC_GATE20_SHA256" --arg atomicP0Sha "$ATOMIC_P0_SHA256" --arg clientMembershipSha "$CLIENT_MEMBERSHIP_SHA256" --arg fullHumanSha "$FULL_HUMAN_SHA256" --arg probesSha "$FUNCTIONAL_PROBES_SHA256" --arg routeInventorySha "$ROUTE_INVENTORY_SHA256" \
+            --arg artifact "$ARTIFACT_SHA256" --arg gate20Sha "$GATE20_SHA256" --arg humanLaneSha "$HUMAN_LANE_SHA256" --arg credentialRuleSha "$CREDENTIAL_RULE_SHA256" --arg credentialRuleVersion "$CREDENTIAL_RULE_VERSION" --arg semanticGate20Sha "$SEMANTIC_GATE20_SHA256" --arg atomicP0Sha "$ATOMIC_P0_SHA256" --arg clientMembershipSha "$CLIENT_MEMBERSHIP_SHA256" --arg fullHumanSha "$FULL_HUMAN_SHA256" --arg probesSha "$FUNCTIONAL_PROBES_SHA256" --arg routeInventorySha "$ROUTE_INVENTORY_SHA256" --arg hrRevision "$HR_REVISION" --arg hrEvidenceSha "$HR_EVIDENCE_SHA256" \
             --arg hostingRelease "$HOSTING_RELEASE_NAME" --arg hostingVersion "$HOSTING_VERSION_NAME" --arg hostingReleaseTime "$HOSTING_RELEASE_TIME" \
             --arg moduleTruthSha "$MODULE_TRUTH_MATRIX_SHA256" --slurpfile moduleTruth "$OUT/module-truth-matrix.json" \
-            '{decision:"PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21",i3CertificationSourceSha:$source,i3CertificationSourceTree:$tree,controlHeadSha:$control,buildCount:1,devRuntimeRevision:$revision,runtimeImageDigest:$digest,immutableRuntimeImage:$image,hostingReleaseName:$hostingRelease,hostingVersionName:$hostingVersion,hostingReleaseTime:$hostingReleaseTime,humanLane:{decision:"PASS_I3_HUMAN_LANE_AUTHORITY_RELEASE",evidenceSha256:$humanLaneSha,technicalMode:false},credentialRule:{decision:"PASS_I3_OWNER_SHOPPER_CREDENTIAL_RULE",version:$credentialRuleVersion,evidenceSha256:$credentialRuleSha,passwordLoginPassed:true},atomicP0:{decision:"PASS_I3_ATOMIC_P0_SOURCE_CONTRACT",evidenceSha256:$atomicP0Sha},clientMembership:{decision:"PASS_C6_CLIENT_AUTH_MEMBERSHIP_READBACK",evidenceSha256:$clientMembershipSha,authUserCreates:0,passwordChanges:0},fullHumanAcceptance:{decision:"PASS_I3_HUMAN_LIVE_ACCEPTANCE",evidenceSha256:$fullHumanSha,functionalProbesSha256:$probesSha,routeInventorySha256:$routeInventorySha,expectedRoleRouteEntries:56,beforeArtifact:true},gate20:{decision:"PASS_GATE20_FOCAL_VISUAL_DRIFT",sourceSha:$source,evidenceSha256:$gate20Sha},gate20Semantic:{decision:"PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY",sourceSha:$source,evidenceSha256:$semanticGate20Sha},moduleTruthEvidenceSha256:$moduleTruthSha,moduleTruth:$moduleTruth[0],artifactFile:"cxorbia-i3-certified-source.tar",artifactSha256:$artifact,rebuildAfterCertification:false,production:false}' \
+            '{decision:"PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21",i3CertificationSourceSha:$source,i3CertificationSourceTree:$tree,controlHeadSha:$control,buildCount:1,devRuntimeRevision:$revision,runtimeImageDigest:$digest,immutableRuntimeImage:$image,hostingReleaseName:$hostingRelease,hostingVersionName:$hostingVersion,hostingReleaseTime:$hostingReleaseTime,humanLane:{decision:"PASS_I3_HUMAN_LANE_AUTHORITY_RELEASE",evidenceSha256:$humanLaneSha,technicalMode:false},credentialRule:{decision:"PASS_I3_OWNER_SHOPPER_CREDENTIAL_RULE",version:$credentialRuleVersion,evidenceSha256:$credentialRuleSha,passwordLoginPassed:true},atomicP0:{decision:"PASS_I3_ATOMIC_P0_SOURCE_CONTRACT",evidenceSha256:$atomicP0Sha},clientMembership:{decision:"PASS_C6_CLIENT_AUTH_MEMBERSHIP_READBACK",evidenceSha256:$clientMembershipSha,authUserCreates:0,passwordChanges:0},fullHumanAcceptance:{decision:"PASS_I3_HUMAN_LIVE_ACCEPTANCE",evidenceSha256:$fullHumanSha,functionalProbesSha256:$probesSha,routeInventorySha256:$routeInventorySha,expectedRoleRouteEntries:56,beforeArtifact:true},gate20:{decision:"PASS_GATE20_FOCAL_VISUAL_DRIFT",sourceSha:$source,evidenceSha256:$gate20Sha},gate20Semantic:{decision:"PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY",sourceSha:$source,evidenceSha256:$semanticGate20Sha},moduleTruthEvidenceSha256:$moduleTruthSha,moduleTruth:$moduleTruth[0],artifactFile:"cxorbia-i3-certified-source.tar",artifactSha256:$artifact,hrRevision:$hrRevision,hrEvidenceSha256:$hrEvidenceSha,rebuildAfterCertification:false,production:false}' \
             > "$OUT/i3-certification-manifest.json"
           cp "$OUT/i3-certification-manifest.json" "$OUT/result.json"
 
@@ -1012,12 +1022,10 @@ jobs:
           git merge-base --is-ancestor "$I3_CERTIFICATION_SOURCE_SHA" HEAD
           git diff --quiet "$I3_CERTIFICATION_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
           test -f .github/control/RECOVERY-I3-BROWSER-AUTH-LIFECYCLE-20260919.mjs
-          test -f .github/control/RECOVERY-I3-LIVE-FIXTURES-20260919-V3.mjs.gz
+          test -f .github/control/RECOVERY-I3-LIVE-FIXTURES-20260920-V4.mjs
           mkdir -p "$OUT" "$GITHUB_WORKSPACE/.github/control"
-          gzip -dc .github/control/RECOVERY-I3-LIVE-FIXTURES-20260919-V3.mjs.gz > .github/control/.RECOVERY-I3-LIVE-FIXTURES-20260919-V3.runtime.mjs
-          test "$(sha256sum .github/control/.RECOVERY-I3-LIVE-FIXTURES-20260919-V3.runtime.mjs | awk '{print $1}')" = "665da6b23bc0ca2b996c4333d05f6a401f6247c0cae2f3c77faaccb39b219a33"
           node --check .github/control/RECOVERY-I3-BROWSER-AUTH-LIFECYCLE-20260919.mjs
-          node --check .github/control/.RECOVERY-I3-LIVE-FIXTURES-20260919-V3.runtime.mjs
+          node --check .github/control/RECOVERY-I3-LIVE-FIXTURES-20260920-V4.mjs
 
       - name: Setup Node 24
         uses: actions/setup-node@v4
@@ -1054,18 +1062,23 @@ jobs:
           test "$(jq -r '.rebuildAfterCertification' "$MANIFEST")" = 'false'
           test "$(jq -r '.production' "$MANIFEST")" = 'false'
           CERTIFIED_ARTIFACT_SHA256="$(jq -r '.artifactSha256 // empty' "$MANIFEST")"
+          PINNED_HR_REVISION="$(jq -r '.hrRevision // empty' "$MANIFEST")"
           [[ "$CERTIFIED_ARTIFACT_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$PINNED_HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
+          test "$(jq -r '._runtime.revision // .sourceRevision // empty' "$PRIOR_DIR/hr-fresh.json")" = "$PINNED_HR_REVISION"
+          test "$(jq -r '.sourceRevision' "$PRIOR_DIR/full-human-acceptance/human-live-acceptance.json")" = "$PINNED_HR_REVISION"
           echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
           echo "PRIOR_DIR=$PRIOR_DIR" >> "$GITHUB_ENV"
           echo "PRIOR_RUN_ID=$GITHUB_RUN_ID" >> "$GITHUB_ENV"
           echo "CERTIFIED_ARTIFACT_SHA256=$CERTIFIED_ARTIFACT_SHA256" >> "$GITHUB_ENV"
+          echo "PINNED_HR_REVISION=$PINNED_HR_REVISION" >> "$GITHUB_ENV"
 
       - name: Execute revised reversible 10-case live suite
         id: livev2
         continue-on-error: true
         run: |
           set -Eeuo pipefail
-          PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" PERIOD_ID="$PERIOD_ID" I3_CERTIFICATION_SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA" I3_CERTIFICATION_SOURCE_TREE="$I3_CERTIFICATION_SOURCE_TREE" SOURCE_DIR="$SOURCE_DIR" PRIOR_DIR="$PRIOR_DIR" PRIOR_RUN_ID="$PRIOR_RUN_ID" CERTIFIED_ARTIFACT_SHA256="$CERTIFIED_ARTIFACT_SHA256" OUT="$OUT" node "$GITHUB_WORKSPACE/.github/control/.RECOVERY-I3-LIVE-FIXTURES-20260919-V3.runtime.mjs"
+          PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" PERIOD_ID="$PERIOD_ID" I3_CERTIFICATION_SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA" I3_CERTIFICATION_SOURCE_TREE="$I3_CERTIFICATION_SOURCE_TREE" SOURCE_DIR="$SOURCE_DIR" PRIOR_DIR="$PRIOR_DIR" PRIOR_RUN_ID="$PRIOR_RUN_ID" CERTIFIED_ARTIFACT_SHA256="$CERTIFIED_ARTIFACT_SHA256" OUT="$OUT" node "$GITHUB_WORKSPACE/.github/control/RECOVERY-I3-LIVE-FIXTURES-20260920-V4.mjs"
 
       - name: Upload sanitized revised live fixture evidence
         uses: actions/upload-artifact@v4
@@ -1084,6 +1097,7 @@ jobs:
           test "$(jq -r '.buildCountThisRun' "$OUT/i3-live-fixtures-result.json")" = '0'
           test "$(jq -r '.deployCountThisRun' "$OUT/i3-live-fixtures-result.json")" = '0'
           test "$(jq -r '.production' "$OUT/i3-live-fixtures-result.json")" = 'false'
+          test "$(jq -r '.hrRevision' "$OUT/i3-live-fixtures-result.json")" = "$PINNED_HR_REVISION"
           test "$(jq -r '.decision' "$OUT/i3-live-fixtures-result.json")" = 'PASS_I3_LIVE_FIXTURES_V2'
           test "$(jq '[.tests[] | select(.ok==true)] | length' "$OUT/i3-live-fixtures-result.json")" = '10'
 

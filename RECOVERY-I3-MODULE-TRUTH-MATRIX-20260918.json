@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.recovery.module-truth-matrix.v5",
-  "observedAt": "2026-09-20T03:00:00Z",
+  "observedAt": "2026-09-20T03:35:00Z",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
@@ -4092,7 +4092,7 @@
   },
   "continuityCheckpoint": {
     "iteration": "I3",
-    "status": "HOLD_RUN270_MAPPING_FAILURE_PENDING_CONTROL_ONLY_RECERTIFICATION",
+    "status": "HOLD_RUN272_RELEASE_COMPOSITION_MULTI_HR_REVISION_PENDING_SINGLE_RECERTIFICATION",
     "exactProductSourceSha": "815eecb2b5b01001bd1f6455bae622159f0ca3e5",
     "exactProductSourceTree": "32e04ac5e9631d94b42e421b083b6264df2964a9",
     "noReprocess": [
@@ -4135,15 +4135,15 @@
       "acceptance imports provider function instead of reimplementing credentials",
       "stale v1 tests updated to the explicitly approved v2 contract"
     ],
-    "nextExactAction": "Keep product source 815eecb2b5b01001bd1f6455bae622159f0ca3e5 / tree 32e04ac5e9631d94b42e421b083b6264df2964a9 unchanged. Recertify once with control-only live-fixture availability mapping fixed to active period + canonical durable availability; require 10/10 + cleanup then Gate21 same-run.",
+    "nextExactAction": "Keep product source 815eecb2b5b01001bd1f6455bae622159f0ca3e5 / tree 32e04ac5e9631d94b42e421b083b6264df2964a9 unchanged. Pin exactly one authoritative HR revision at Step17; human acceptance, live fixtures, manifest and Gate21 consume and seal the same hr-fresh.json. Require 10/10 + cleanup then Gate21.",
     "production": "DO_NOT_TOUCH",
     "rootCauseRun233": "Static/unit gates exposed stale v1 browser credential implementations and stale expectations before DEV deploy.",
     "lastRun": {
-      "runNumber": 270,
-      "runId": "35484041170",
+      "runNumber": 272,
+      "runId": "35485676769",
       "result": "HOLD_CERTIFY_PASS_LIVE_FIXTURES_8_OF_10",
-      "code": "MAPPING_FAILURE:LIVE_FIXTURE_UNSCOPED_RAW_HR_AVAILABILITY",
-      "classification": "MAPPING_FAILURE",
+      "code": "RELEASE_COMPOSITION_FAILURE:MULTIPLE_HR_REVISIONS_WITHIN_SINGLE_CERTIFICATION_RUN",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
       "certify": "PASS_STEPS_1_27",
       "liveFixtures": "8_OF_10_PASS_CLEANUP_TRUE_BUILD0_DEPLOY0",
       "gate21": "SKIPPED"
@@ -4278,7 +4278,8 @@
     "run269ReleaseCompositionSynchronized": true,
     "run269RuntimeDataP0": "PERSISTENCE_FAILURE:HR_VISIT_STATE_NOT_RECONCILED_TO_DURABLE_READBACK",
     "run270ReleaseCompositionSynchronized": true,
-    "run270PersistentBlocker": "MAPPING_FAILURE:LIVE_FIXTURE_UNSCOPED_RAW_HR_AVAILABILITY"
+    "run270PersistentBlocker": "MAPPING_FAILURE:LIVE_FIXTURE_UNSCOPED_RAW_HR_AVAILABILITY",
+    "run272ReleaseCompositionRoot": "RELEASE_COMPOSITION_FAILURE:MULTIPLE_HR_REVISIONS_WITHIN_SINGLE_CERTIFICATION_RUN"
   },
   "run269VisitReconciliationP0": {
     "classification": "PERSISTENCE_FAILURE",
@@ -4339,5 +4340,31 @@
       "plaintextSha256": "665da6b23bc0ca2b996c4333d05f6a401f6247c0cae2f3c77faaccb39b219a33",
       "gzipSha256": "1c360186f162029a6a0be74929e36148539902013e71097d92b0c3f6edce5e95"
     }
+  },
+  "run272PinnedHrRootCause": {
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "code": "MULTIPLE_HR_REVISIONS_WITHIN_SINGLE_CERTIFICATION_RUN",
+    "runId": "35485676769",
+    "runNumber": 272,
+    "productSourceSha": "815eecb2b5b01001bd1f6455bae622159f0ca3e5",
+    "productSourceTree": "32e04ac5e9631d94b42e421b083b6264df2964a9",
+    "certify": "PASS_STEPS_1_27",
+    "liveFixturesPassed": 8,
+    "liveFixturesTotal": 10,
+    "observedFailure": "PERSISTENCE_FAILURE:HR_DURABLE_REVISION_DIVERGENCE",
+    "evidence": {
+      "step17HrRevision": "fd2dfae9cc8255d20c40e66e4e0d3caa07cb43f2fa2f22b3a39123c9d2fdd9bb",
+      "humanAcceptanceHrRevision": "12647741564672d789f62ed74f9f02aa7c394193958f4d0b49c02b2fa5a7f773"
+    },
+    "rootCause": "Step17, exhaustive human acceptance and live fixtures independently refreshed the external HR provider, so one certification run did not use one exact external HR revision.",
+    "correction": {
+      "singleFreshAuthority": "Step17 hr-fresh.json",
+      "humanConsumesPinned": true,
+      "liveFixturesConsumePinned": true,
+      "manifestSealsRevisionAndHash": true,
+      "gate21VerifiesSameRevision": true
+    },
+    "productChange": false,
+    "production": "DO_NOT_TOUCH"
   }
 }
