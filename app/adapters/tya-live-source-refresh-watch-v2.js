@@ -87,6 +87,17 @@
     if(checking)return {ok:true,skipped:true,reason:'check_in_progress'};checking=true;markUpdating();
     try{
       const meta=await getJson('meta');if(meta.sourceSafe!==true||meta.runtimeRead!==true||!meta.revision)throw new Error('Respuesta live inválida');
+      if(authenticatedHumanRuntime&&canonicalProtectedAuthorityReady()){
+        const protectedRevision=String(CX.data?.previewMeta?.sourceRevision||'').trim();
+        if(protectedRevision)currentRevision=protectedRevision;
+        if(meta.revision!==currentRevision){
+          window.CX_SCHEDULE_PROTECTED_AUTH_HR_RECONCILE?.('live_watcher_revision_change',true);
+          failures=0;
+          return {ok:true,changed:true,delegated:true,revision:meta.revision,authority:'protected_auth_hr_reconcile'};
+        }
+        failures=0;
+        return {ok:true,changed:false,revision:meta.revision,authority:'protected_auth_hr_reconcile'};
+      }
       const changed=!currentRevision||meta.revision!==currentRevision;
       if(!changed){markLive(meta);if(fullVisual&&!window.CX_TYA_FULL_VISUAL_READY)recompose('same_revision_before_full_visual_ready');flush();failures=0;return {ok:true,changed:false,revision:meta.revision};}
       const snapshot=await getJson('json'),runtime=snapshot?._runtime?Object.assign({},meta,snapshot._runtime):meta;if(snapshot?._runtime)delete snapshot._runtime;
