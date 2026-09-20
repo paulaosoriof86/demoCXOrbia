@@ -674,7 +674,7 @@ jobs:
             const selectedExactEvidence=sourceId?[...(exactEvidenceBySource.get(sourceId)||new Set())].sort():[];
             const historicalRow=sourceId?arr(cross?.crosswalk).find(row=>str(row?.plannedShopperId)===sourceId&&row?.action==='REUSE_EXISTING_CANONICAL_SHOPPER'&&str(row?.canonicalShopperId)):null;
             const historicalExactTarget=str(historicalRow?.canonicalShopperId);
-            let protectedPairEvidence=null,historicalToActiveEvidence=null;
+            let protectedPairEvidence=null,historicalToActiveEvidence=null,operationalEmailEvidence=null;
             if(sourceId&&activeTargets.length===1){
               const activeTarget=resolveTrusted(activeTargets[0]);
               const e=protectedProfilePairResolution(sourceId,activeTarget);
@@ -687,6 +687,22 @@ jobs:
                   ?{ok:true,target:str(h.target),evidenceType:str(h.evidenceType)}
                   :{ok:false,reason:str(h?.reason),identityDisposition:str(h?.identityDisposition)};
               }
+              const sourceOperational=arr(overlay?.identities).find(row=>str(row?.shopperId)===sourceId)||null;
+              const activeProfiles=profileForCanonical(activeTarget);
+              const activeProfile=activeProfiles.length===1?activeProfiles[0]:null;
+              const sourceEmail=str(sourceOperational?.email).toLowerCase();
+              const targetEmail=normalizedProtectedEmail(activeProfile);
+              const historicalProfiles=historicalExactTarget?profileForCanonical(historicalExactTarget):[];
+              const historicalProfile=historicalProfiles.length===1?historicalProfiles[0]:null;
+              const historicalEmail=normalizedProtectedEmail(historicalProfile);
+              operationalEmailEvidence={
+                sourceEmailPresent:!!sourceEmail,
+                activeEmailPresent:!!targetEmail,
+                historicalEmailPresent:!!historicalEmail,
+                sourceMatchesActive:!!sourceEmail&&!!targetEmail&&sourceEmail===targetEmail,
+                sourceMatchesHistorical:!!sourceEmail&&!!historicalEmail&&sourceEmail===historicalEmail,
+                historicalMatchesActive:!!historicalEmail&&!!targetEmail&&historicalEmail===targetEmail
+              };
             }
             console.log('I3_PAULA_MAPPING_DIAGNOSTIC='+JSON.stringify({
               login:'paula.osorio',
@@ -699,6 +715,7 @@ jobs:
               exactTargetMatchesActive:activeTargets.length===1&&selectedExactTarget===resolveTrusted(activeTargets[0]),
               protectedPairEvidence,
               historicalToActiveEvidence,
+              operationalEmailEvidence,
               fuzzyMatching:false,
               production:false
             }));
