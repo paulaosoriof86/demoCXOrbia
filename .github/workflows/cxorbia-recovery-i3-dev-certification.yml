@@ -1015,7 +1015,7 @@ jobs:
           test -f .github/control/RECOVERY-I3-LIVE-FIXTURES-20260919-V3.mjs.gz
           mkdir -p "$OUT" "$GITHUB_WORKSPACE/.github/control"
           gzip -dc .github/control/RECOVERY-I3-LIVE-FIXTURES-20260919-V3.mjs.gz > .github/control/.RECOVERY-I3-LIVE-FIXTURES-20260919-V3.runtime.mjs
-          test "$(sha256sum .github/control/.RECOVERY-I3-LIVE-FIXTURES-20260919-V3.runtime.mjs | awk '{print $1}')" = "63de853f706a0a43341fb2f7cd5e28805beda365cd8dd16f105bb238ead0fa6c"
+          test "$(sha256sum .github/control/.RECOVERY-I3-LIVE-FIXTURES-20260919-V3.runtime.mjs | awk '{print $1}')" = "665da6b23bc0ca2b996c4333d05f6a401f6247c0cae2f3c77faaccb39b219a33"
           node --check .github/control/RECOVERY-I3-BROWSER-AUTH-LIFECYCLE-20260919.mjs
           node --check .github/control/.RECOVERY-I3-LIVE-FIXTURES-20260919-V3.runtime.mjs
 

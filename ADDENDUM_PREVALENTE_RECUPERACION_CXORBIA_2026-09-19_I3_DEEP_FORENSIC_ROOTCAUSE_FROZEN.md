@@ -102,3 +102,34 @@ La corrección:
 Regresión exacta: `backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs` = 9/9 PASS, incluyendo transición HR entre revisiones, reparación stale same-revision, preservación pending_hr y rechazo de asignación stale.
 
 No hubo reimport, reconstrucción de módulo, nueva rama, nuevo Firebase ni cambio de producción.
+
+
+## 11. Run 270 — fixture availability mapping root cause
+
+Run 270 (`35484041170`) certificó correctamente product source `815eecb2b5b01001bd1f6455bae622159f0ca3e5`, tree `32e04ac5e9631d94b42e421b083b6264df2964a9`: MODULE_TRUTH_MATRIX exhaustiva PASS, contratos P0 PASS, build único PASS, DEV runtime/Hosting exactos PASS, HR fresca PASS, persistencia focal PASS, aceptación exhaustiva Step 23 PASS, Gate20 PASS y artifact único PASS. No existe evidencia de release/candidate/cache desynchronization en este run.
+
+La suite viva volvió a 8/10 con cleanup=true, build=0, deploy=0, production=false y el mismo texto `ASSIGNMENT_VISIT_NOT_AVAILABLE_AT_READBACK`. La inspección del fixture exacto demostró la causa persistente:
+
+**Clasificación:** `MAPPING_FAILURE`  
+**Código:** `LIVE_FIXTURE_UNSCOPED_RAW_HR_AVAILABILITY`  
+**Owner:** `.github/control/RECOVERY-I3-LIVE-FIXTURES-20260919-V3.mjs.gz`
+
+El fixture seleccionaba `available[0]` y `available[1]` desde todas las visitas HR crudas, sin filtrar por `PERIOD_ID`. La evidencia HR del artifact contenía como primer disponible una visita de `2026-08`, mientras Run 270 certificaba `cinepolis-2026-09`. Además, el harness equiparaba disponibilidad HR cruda con disponibilidad canónica, ignorando la semántica aprobada donde una asignación durable `platform/pending_hr` vuelve la visita canónicamente no disponible aunque HR todavía no la refleje.
+
+### Corrección control-only congelada
+- product source permanece `815eecb2b5b01001bd1f6455bae622159f0ca3e5`;
+- product tree permanece `32e04ac5e9631d94b42e421b083b6264df2964a9`;
+- no se cambia app/backend/Firebase ni se abre otra candidata de producto;
+- fixture plaintext SHA-256: `665da6b23bc0ca2b996c4333d05f6a401f6247c0cae2f3c77faaccb39b219a33`;
+- fixture gzip SHA-256: `1c360186f162029a6a0be74929e36148539902013e71097d92b0c3f6edce5e95`.
+
+La suite corregida:
+1. resuelve el período HR exacto correspondiente a `PERIOD_ID`;
+2. selecciona sólo visitas HR elegibles/no asignadas de ese período;
+3. exige materialización durable;
+4. exige revisión HR compatible;
+5. usa disponibilidad durable canónica;
+6. excluye únicamente overlays `platform/pending_hr` válidos;
+7. cualquier otra divergencia HR↔durable falla como `PERSISTENCE_FAILURE`.
+
+El P0 de reconciliación HR→durable de Run 269 fue un gap real y permanece corregido y probado; Run 270 demuestra que no era la causa suficiente del bloqueo repetido 8/10.

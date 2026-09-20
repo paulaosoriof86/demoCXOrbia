@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.recovery.module-truth-matrix.v5",
-  "observedAt": "2026-09-20T02:23:43Z",
+  "observedAt": "2026-09-20T03:00:00Z",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
@@ -4092,7 +4092,7 @@
   },
   "continuityCheckpoint": {
     "iteration": "I3",
-    "status": "HOLD_P0_PROVEN_HR_VISIT_DURABLE_RECONCILIATION_PENDING_SINGLE_RECERTIFICATION",
+    "status": "HOLD_RUN270_MAPPING_FAILURE_PENDING_CONTROL_ONLY_RECERTIFICATION",
     "exactProductSourceSha": "815eecb2b5b01001bd1f6455bae622159f0ca3e5",
     "exactProductSourceTree": "32e04ac5e9631d94b42e421b083b6264df2964a9",
     "noReprocess": [
@@ -4135,17 +4135,17 @@
       "acceptance imports provider function instead of reimplementing credentials",
       "stale v1 tests updated to the explicitly approved v2 contract"
     ],
-    "nextExactAction": "Certify source 815eecb2b5b01001bd1f6455bae622159f0ca3e5 / tree 32e04ac5e9631d94b42e421b083b6264df2964a9 once; require full acceptance, Gate20, one artifact, live fixtures 10/10 + cleanup, then Gate21 same-run. No product change unless a new reproducible P0 is proven.",
+    "nextExactAction": "Keep product source 815eecb2b5b01001bd1f6455bae622159f0ca3e5 / tree 32e04ac5e9631d94b42e421b083b6264df2964a9 unchanged. Recertify once with control-only live-fixture availability mapping fixed to active period + canonical durable availability; require 10/10 + cleanup then Gate21 same-run.",
     "production": "DO_NOT_TOUCH",
     "rootCauseRun233": "Static/unit gates exposed stale v1 browser credential implementations and stale expectations before DEV deploy.",
     "lastRun": {
-      "runNumber": 269,
-      "runId": "35482104368",
+      "runNumber": 270,
+      "runId": "35484041170",
       "result": "HOLD_CERTIFY_PASS_LIVE_FIXTURES_8_OF_10",
-      "code": "PERSISTENCE_FAILURE:HR_VISIT_STATE_NOT_RECONCILED_TO_DURABLE_READBACK",
-      "classification": "PERSISTENCE_FAILURE",
+      "code": "MAPPING_FAILURE:LIVE_FIXTURE_UNSCOPED_RAW_HR_AVAILABILITY",
+      "classification": "MAPPING_FAILURE",
       "certify": "PASS_STEPS_1_27",
-      "liveFixtures": "8_OF_10_PASS_CLEANUP_TRUE",
+      "liveFixtures": "8_OF_10_PASS_CLEANUP_TRUE_BUILD0_DEPLOY0",
       "gate21": "SKIPPED"
     },
     "rootCauseRun235": "Cloud Run revision could not start because cxorbia-shopper-command-provider-v1.mjs imports ../../app/core/shopper-credential-rule.js but the runtime Dockerfile did not COPY that shared owner into the image.",
@@ -4164,7 +4164,7 @@
     "fixRun236": "For a Shopper, pre-HR readiness now requires authenticated Firebase principal rather than pre-existing exact Firestore profile. Auth+tenant+project authorization remains required by reconcile() and is reverified server-side. After composition, __sessionShopperProfile falls back to the exact canonical shopper from result.shoppers/identityMap.",
     "rootCauseRun237": "app.js intercepted the Shopper role button in DEV with pickShopperDev(), an explicitly non-auth legacy validation picker, before backend-browser-auth could select the protected Firebase shopper namespace. This produced selectedRole='', no Firebase user, no context, and no credential error.",
     "fixRun237": "When protected Firebase DEV auth is enabled, Shopper role now always follows selectRole('shopper') -> backend-browser-auth -> Firebase. Legacy pickShopperDev remains only for non-protected DEV access.",
-    "p0Owner": "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+    "p0Owner": null
   },
   "liveFixtureForensic": {
     "auditId": "CXORBIA-I3-LIVE-FIXTURE-FORENSIC-20260919",
@@ -4276,7 +4276,9 @@
     ],
     "production": "DO_NOT_TOUCH",
     "run269ReleaseCompositionSynchronized": true,
-    "run269RuntimeDataP0": "PERSISTENCE_FAILURE:HR_VISIT_STATE_NOT_RECONCILED_TO_DURABLE_READBACK"
+    "run269RuntimeDataP0": "PERSISTENCE_FAILURE:HR_VISIT_STATE_NOT_RECONCILED_TO_DURABLE_READBACK",
+    "run270ReleaseCompositionSynchronized": true,
+    "run270PersistentBlocker": "MAPPING_FAILURE:LIVE_FIXTURE_UNSCOPED_RAW_HR_AVAILABILITY"
   },
   "run269VisitReconciliationP0": {
     "classification": "PERSISTENCE_FAILURE",
@@ -4302,6 +4304,40 @@
       "platform pending assignment is preserved until HR reflects or conflicts",
       "visit assignment paths reject non-available durable visits fail-closed"
     ],
-    "production": "DO_NOT_TOUCH"
+    "production": "DO_NOT_TOUCH",
+    "causalForRun270RepeatedFixtureFailure": false,
+    "note": "The product persistence gap was real and remains fixed/tested, but Run270 proved it was not the repeated 8/10 blocker; the persistent blocker was the live-fixture mapping described in run270LiveFixtureMapping."
+  },
+  "run270LiveFixtureMapping": {
+    "classification": "MAPPING_FAILURE",
+    "code": "LIVE_FIXTURE_UNSCOPED_RAW_HR_AVAILABILITY",
+    "runId": "35484041170",
+    "runNumber": 270,
+    "productSourceSha": "815eecb2b5b01001bd1f6455bae622159f0ca3e5",
+    "productSourceTree": "32e04ac5e9631d94b42e421b083b6264df2964a9",
+    "certify": "PASS_STEPS_1_27",
+    "exhaustiveAcceptance": true,
+    "gate20": true,
+    "liveFixturesPassed": 8,
+    "liveFixturesTotal": 10,
+    "cleanup": true,
+    "buildCountThisRun": 0,
+    "deployCountThisRun": 0,
+    "production": false,
+    "observedFailure": "ENVIRONMENT_FAILURE:ASSIGNMENT_VISIT_NOT_AVAILABLE_AT_READBACK",
+    "releaseDesynchronization": false,
+    "productRegressionProven": false,
+    "exactHarnessOwner": ".github/control/RECOVERY-I3-LIVE-FIXTURES-20260919-V3.mjs.gz",
+    "rootCause": "Fixture selected available[0]/available[1] from raw HR across all periods. In certified HR evidence available[0] belonged to 2026-08 while PERIOD_ID was cinepolis-2026-09. It also treated raw HR availability as canonical availability and ignored valid platform/pending_hr overlays.",
+    "correction": {
+      "activePeriodOnly": true,
+      "requiresDurableMaterialization": true,
+      "requiresMatchingHrRevision": true,
+      "canonicalDurableAvailability": true,
+      "pendingPlatformAssignmentsExcluded": true,
+      "unexpectedHrDurableDivergenceFailsClosed": true,
+      "plaintextSha256": "665da6b23bc0ca2b996c4333d05f6a401f6247c0cae2f3c77faaccb39b219a33",
+      "gzipSha256": "1c360186f162029a6a0be74929e36148539902013e71097d92b0c3f6edce5e95"
+    }
   }
 }
