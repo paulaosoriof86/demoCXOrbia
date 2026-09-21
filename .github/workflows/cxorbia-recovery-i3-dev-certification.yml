@@ -820,7 +820,11 @@ jobs:
             if(exactVisitTarget){
               const resolvedExact=resolveTrusted(exactVisitTarget);
               if(resolvedExact!==target){
-                const historicalRow=arr(cross?.crosswalk).find(row=>str(row?.plannedShopperId)===sourceId&&row?.action==='REUSE_EXISTING_CANONICAL_SHOPPER'&&str(row?.canonicalShopperId)===str(exactVisitTarget))||null;
+                const historicalRow=arr(cross?.crosswalk).find(row=>
+                  str(row?.plannedShopperId)===sourceId&&row?.action==='REUSE_EXISTING_CANONICAL_SHOPPER'&&
+                  !!str(row?.canonicalShopperId)&&str(row?.canonicalShopperId)!==sourceId
+                )||null;
+                const historicalTarget=str(historicalRow?.canonicalShopperId);
                 const selfCross=durableCrossSnap.docs.map(d=>({id:d.id,...(d.data()||{})})).find(row=>
                   str(row?.id)===sourceId&&str(row?.sourceStableKey||sourceId)===sourceId&&str(row?.shopperId)===sourceId&&
                   str(row?.sourceType).toLowerCase()==='hr_external'&&['stable_hr_shopper_id','exact_technical_keys_only'].includes(str(row?.identityMode).toLowerCase())
@@ -829,9 +833,9 @@ jobs:
                   m?.active===true&&str(m?.role)==='shopper'&&str(m?.authNamespace)==='shopper'&&
                   str(m?.shopperId)===target&&str(m?.visibleLogin).toLowerCase()==='paula.osorio'&&arr(m?.projectIds).map(str).includes(PROJECT_ID)
                 );
-                const historicalMembers=members.filter(m=>str(m?.shopperId)===str(exactVisitTarget));
+                const historicalMembers=members.filter(m=>str(m?.shopperId)===historicalTarget);
                 const sourceMembers=members.filter(m=>str(m?.shopperId)===sourceId);
-                const lineageTokens=new Set([sourceId,str(exactVisitTarget),target]);
+                const lineageTokens=new Set([sourceId,historicalTarget,target]);
                 const lineageTrustedLinks=links.filter(link=>lineageTokens.has(canonicalFor(link))||linkTokens(link).some(t=>lineageTokens.has(str(t))));
                 const targetFp=str(targetMembers[0]?.providerUidFingerprint);
                 const otherFps=[...historicalMembers,...sourceMembers].map(m=>str(m?.providerUidFingerprint)).filter(Boolean);
@@ -861,13 +865,13 @@ jobs:
                 if(frozenTenantAdjudication){
                   const evidenceRef='frozen-paula-resolution:'+frozenPaulaEvidenceSha256+':visit-crosswalk:'+mappingHash;
                   planned.push({
-                    sourceId,canonicalShopperId:target,exactVisitCanonicalShopperId:exactVisitTarget,
+                    sourceId,canonicalShopperId:target,exactVisitCanonicalShopperId:historicalTarget,
                     evidenceType:'frozen_paula_active_vs_historical_tenant_adjudication',evidenceRef,
                     credentialFingerprint:sha(group.login).slice(0,24),crosswalkMigration:true,
                     targetProviderUidFingerprint:targetFp,historicalHrVisitCount:Number(historicalRow.hrVisitCount||0)
                   });
                   console.log('I3_PAULA_TENANT_ADJUDICATION_PLAN='+JSON.stringify({
-                    sourceShopperId:sourceId,canonicalShopperId:target,historicalCanonicalShopperId:str(exactVisitTarget),
+                    sourceShopperId:sourceId,canonicalShopperId:target,historicalCanonicalShopperId:historicalTarget,
                     frozenResolution:paulaResolution.resolution,historicalHrVisitCount:Number(historicalRow.hrVisitCount||0),
                     targetMembershipExact:true,selfCrosswalkMigrationRequired:true,identityLinkAuthority:'tenant_adjudication',
                     rawPiiPersisted:false,fuzzyMatching:false,authWrites:0,hrWrites:0,production:false
