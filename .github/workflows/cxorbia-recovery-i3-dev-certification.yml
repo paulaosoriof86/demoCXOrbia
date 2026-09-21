@@ -479,9 +479,9 @@ jobs:
           if(!/^[a-f0-9]{64}$/.test(mappingHash))throw new Error('SOURCE_FAILURE:EXACT_VISIT_CROSSWALK_HASH_INVALID');
 
           if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
-          const db=getFirestore(),tenant=db.collection('tenants').doc(TENANT),linksRef=tenant.collection('shopperIdentityLinks');
+          const db=getFirestore(),tenant=db.collection('tenants').doc(TENANT),linksRef=tenant.collection('shopperIdentityLinks'),durableCrossRef=tenant.collection('shopperIdentityCrosswalk');
 
-          const durableCrossSnap=await tenant.collection('shopperIdentityCrosswalk').get();
+          const durableCrossSnap=await durableCrossRef.get();
           const exactCrossModes=new Set(['provider_exact_identity_link','stable_hr_shopper_id','exact_technical_keys_only']);
           let durableExactAliasEvidence=0;
           for(const doc of durableCrossSnap.docs){
