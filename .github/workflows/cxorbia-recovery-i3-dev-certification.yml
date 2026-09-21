@@ -835,12 +835,29 @@ jobs:
                 const lineageTrustedLinks=links.filter(link=>lineageTokens.has(canonicalFor(link))||linkTokens(link).some(t=>lineageTokens.has(str(t))));
                 const targetFp=str(targetMembers[0]?.providerUidFingerprint);
                 const otherFps=[...historicalMembers,...sourceMembers].map(m=>str(m?.providerUidFingerprint)).filter(Boolean);
-                const frozenTenantAdjudication=
-                  group.login==='paula.osorio'&&group.ids.length===1&&frozenPaulaResolutionOk&&
-                  Number(historicalRow?.hrVisitCount)===6&&!!selfCross&&targetMembers.length===1&&!!targetFp&&
-                  historicalMembers.length===1&&sourceMembers.length===1&&
-                  str(historicalMembers[0]?.visibleLogin).toLowerCase()!=='paula.osorio'&&str(sourceMembers[0]?.visibleLogin).toLowerCase()!=='paula.osorio'&&
-                  otherFps.every(fp=>fp!==targetFp)&&lineageTrustedLinks.length===0;
+                const frozenTenantChecks={
+                  loginExact:group.login==='paula.osorio',
+                  singletonHrIdentity:group.ids.length===1,
+                  frozenResolution:frozenPaulaResolutionOk===true,
+                  historicalVisitCount:Number(historicalRow?.hrVisitCount)===6,
+                  selfCrosswalkPresent:!!selfCross,
+                  oneActiveCanonicalTarget:targetMembers.length===1,
+                  targetUidFingerprintPresent:!!targetFp,
+                  oneHistoricalMember:historicalMembers.length===1,
+                  oneSourceMember:sourceMembers.length===1,
+                  historicalVisibleLoginNotPaula:str(historicalMembers[0]?.visibleLogin).toLowerCase()!=='paula.osorio',
+                  sourceVisibleLoginNotPaula:str(sourceMembers[0]?.visibleLogin).toLowerCase()!=='paula.osorio',
+                  providerUidFingerprintsDistinct:otherFps.every(fp=>fp!==targetFp),
+                  noExistingTrustedLineageLink:lineageTrustedLinks.length===0
+                };
+                const frozenTenantAdjudication=Object.values(frozenTenantChecks).every(Boolean);
+                if(group.login==='paula.osorio')console.log('I3_PAULA_TENANT_ADJUDICATION_CHECKS='+JSON.stringify({
+                  ...frozenTenantChecks,
+                  historicalMemberCount:historicalMembers.length,sourceMemberCount:sourceMembers.length,
+                  targetMemberCount:targetMembers.length,lineageTrustedLinkCount:lineageTrustedLinks.length,
+                  historicalRowFound:!!historicalRow,selfCrosswalkMode:str(selfCross?.identityMode)||null,
+                  production:false
+                }));
                 if(frozenTenantAdjudication){
                   const evidenceRef='frozen-paula-resolution:'+frozenPaulaEvidenceSha256+':visit-crosswalk:'+mappingHash;
                   planned.push({
