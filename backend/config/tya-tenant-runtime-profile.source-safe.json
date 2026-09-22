@@ -14,10 +14,7 @@
     "theme": "corporate_light",
     "localStorageTruth": false
   },
-  "countries": [
-    "GT",
-    "HN"
-  ],
+  "countries": ["GT", "HN"],
   "countryFlags": {
     "mode": "tenant_countries_or_active_project_countries",
     "show": true,
@@ -27,9 +24,7 @@
   },
   "projects": {
     "selectionMode": "explicit",
-    "activeProjectIds": [
-      "cinepolis"
-    ],
+    "activeProjectIds": ["cinepolis"],
     "inactiveProjectIds": [],
     "defaultProjectId": "cinepolis",
     "projectAndPeriodSeparated": true,
@@ -37,14 +32,7 @@
   },
   "login": {
     "mode": "validation_all_roles_visible",
-    "visibleRoles": [
-      "admin",
-      "client_portal",
-      "shopper",
-      "ops",
-      "coordinator",
-      "partner"
-    ],
+    "visibleRoles": ["admin", "client_portal", "shopper", "ops", "coordinator", "partner"],
     "hiddenRoles": [],
     "showRoleTestArea": true,
     "roleTestAreaLabel": "Accesos de validación",
@@ -52,37 +40,15 @@
     "clientPortalVisible": true,
     "invitationOnlyRoles": [],
     "productionConfigurationPending": true,
-    "productionDefaultVisibleRoles": [
-      "admin",
-      "ops",
-      "shopper"
-    ]
+    "productionDefaultVisibleRoles": ["admin", "ops", "shopper"]
   },
   "roleScope": {
-    "admin": {
-      "projects": "all_active",
-      "countries": "all_tenant"
-    },
-    "ops": {
-      "projects": "assigned_or_all_active",
-      "countries": "assigned"
-    },
-    "shopper": {
-      "projects": "eligible_active_only",
-      "countries": "assigned_profile_country"
-    },
-    "client_portal": {
-      "projects": "assigned_client_projects_only",
-      "countries": "assigned"
-    },
-    "coordinator": {
-      "projects": "assigned_or_all_active",
-      "countries": "assigned"
-    },
-    "partner": {
-      "projects": "assigned_only",
-      "countries": "assigned"
-    }
+    "admin": {"projects": "all_active", "countries": "all_tenant"},
+    "ops": {"projects": "assigned_or_all_active", "countries": "assigned"},
+    "shopper": {"projects": "eligible_active_only", "countries": "assigned_profile_country"},
+    "client_portal": {"projects": "assigned_client_projects_only", "countries": "assigned"},
+    "coordinator": {"projects": "assigned_or_all_active", "countries": "assigned"},
+    "partner": {"projects": "assigned_only", "countries": "assigned"}
   },
   "academy": {
     "admin": true,

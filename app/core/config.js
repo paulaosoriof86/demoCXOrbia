@@ -25,7 +25,7 @@ CX.BRAND = {
 };
 
 /* Recovery PRE-I4: authoritative tenant runtime configuration wins over browser-local brand state.
-   Tenant-specific values live in config/tenants/<tenant>.runtime.js; module code stays generic. */
+   Tenant-specific values live in deployment config/runtime.js; module code stays generic. */
 CX.applyTenantRuntimeConfig = function(){
   const cfg = window.CX_TENANT_RUNTIME_CONFIG;
   if(!cfg || !cfg.tenantId) return false;
