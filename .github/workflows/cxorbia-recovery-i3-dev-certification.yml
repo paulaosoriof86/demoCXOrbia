@@ -59,7 +59,7 @@ env:
 
 jobs:
   certify:
-    if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, '[pre-i4-dev-only]') }}
+    if: ${{ github.event_name != 'push' || (!contains(github.event.head_commit.message, '[pre-i4-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-readback-only]')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 70
     steps:
@@ -1407,7 +1407,7 @@ jobs:
   live-fixtures:
     name: I3 full live fixture suite v2 — same certified source/artifact
     needs: certify
-    if: ${{ (github.event_name != 'push' || !contains(github.event.head_commit.message, '[pre-i4-dev-only]')) && needs.certify.result == 'success' }}
+    if: ${{ (github.event_name != 'push' || (!contains(github.event.head_commit.message, '[pre-i4-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-readback-only]'))) && needs.certify.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 55
     permissions:
@@ -1513,7 +1513,7 @@ jobs:
         run: rm -rf node_modules
 
   gate21:
-    if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, '[pre-i4-dev-only]') }}
+    if: ${{ github.event_name != 'push' || (!contains(github.event.head_commit.message, '[pre-i4-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-readback-only]')) }}
     name: Gate 21 integrity of same certification artifact
     needs: [certify, live-fixtures]
     uses: ./.github/workflows/cxorbia-recovery-i3-gate21-artifact-fingerprint.yml
@@ -1670,3 +1670,143 @@ jobs:
           test "$(jq -r '.decision' "$PREI4_OUT/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
           test "$(jq -r '.decision' "$PREI4_OUT/hr-contrast.json")" = "PASS_PRE_I4_HR_FRESH_CONTRAST"
           test "$(jq -r '.decision' "$PREI4_OUT/remote-parity.json")" = "PASS_PRE_I4_HOSTING_REMOTE_BYTE_PARITY"
+
+  pre-i4-postdeploy-readback:
+    name: PRE-I4 postdeploy read-only focal verification
+    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[pre-i4-readback-only]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      REQUEST: backend/config/pre-i4-human-entrypoint-dev-deploy-request.json
+      PREI4_OUT: .tmp/pre-i4-postdeploy-readback
+      PREI4_SOURCE_DIR: .tmp/pre-i4-readback-source
+      PREI4_PRIOR: .tmp/pre-i4-prior-deploy
+    steps:
+      - name: Checkout readback control successor
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate consumed deploy and read-only scope
+        id: gate
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$PREI4_OUT"
+          node <<'NODE'
+          const fs=require('fs'),{execFileSync}=require('child_process');
+          const p=process.env.REQUEST,r=JSON.parse(fs.readFileSync(p,'utf8')),head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          if(r.schemaVersion!=='cxorbia.pre-i4.human-entrypoint-dev-deploy.request.v1'||r.requestId!=='pre-i4-human-entrypoint-dev-20260921-01')throw new Error('RELEASE_COMPOSITION_FAILURE:READBACK_REQUEST_ID');
+          if(r.sourceSha!=='83429d21ee9f6d9dc5cd46fcbb9a3b598e07dcc4'||r.sourceTree!=='4f7bf2c6cd7d79bc8aaab119f7970fd6f29220f9')throw new Error('RELEASE_COMPOSITION_FAILURE:READBACK_SOURCE_DRIFT');
+          if(r.status!=='deployed_verify_pending'||r.enabled!==false||r.consumed!==true||Number(r.hostingDeploys)!==1||Number(r.deployedRunId)!==35673312222)throw new Error('RELEASE_COMPOSITION_FAILURE:DEPLOY_CONSUMPTION_STATE');
+          if(r.production!==false||r.noFurtherDeployBeforeReadback!==true)throw new Error('RELEASE_COMPOSITION_FAILURE:READBACK_SCOPE_UNSAFE');
+          for(const k of ['cloudRunDeploys','runtimeDeploys','firestoreWrites','authWrites','hrWrites','rulesDeploys','storageWrites','imports','legacyWrites'])if(Number(r[k]||0)!==0)throw new Error('RELEASE_COMPOSITION_FAILURE:UNSAFE_SCOPE_'+k);
+          execFileSync('git',['merge-base','--is-ancestor',r.sourceSha,head]);
+          const changed=execFileSync('git',['diff','--name-only',r.sourceSha,head],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean).sort();
+          const allowed=[p,'.github/workflows/cxorbia-recovery-i3-dev-certification.yml','tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs'].sort();
+          if(JSON.stringify(changed)!==JSON.stringify(allowed))throw new Error('RELEASE_COMPOSITION_FAILURE:READBACK_CONTROL_PRODUCT_DRIFT:'+changed.join(','));
+          fs.writeFileSync(process.env.PREI4_OUT+'/readback-authorization.json',JSON.stringify({decision:'PASS_PRE_I4_READBACK_ONLY_AUTHORIZATION',sourceSha:r.sourceSha,sourceTree:r.sourceTree,deployedRunId:r.deployedRunId,hostingDeploysPrior:1,hostingDeploysThisRun:0,production:false},null,2)+'\n');
+          NODE
+
+      - name: Authenticate existing Firebase DEV read-only
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+
+      - name: Install read-only browser tooling
+        run: |
+          set -Eeuo pipefail
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null 2>&1
+
+      - name: Bind prior frozen deploy artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -Eeuo pipefail
+          rm -rf "$PREI4_PRIOR"
+          mkdir -p "$PREI4_PRIOR"
+          gh run download 35673312222 --repo "$GITHUB_REPOSITORY" --name "cxorbia-pre-i4-human-entrypoint-35673312222" --dir "$PREI4_PRIOR"
+          test "$(jq -r '.sourceSha' "$PREI4_PRIOR/artifact-manifest.json")" = "83429d21ee9f6d9dc5cd46fcbb9a3b598e07dcc4"
+          test "$(jq -r '.decision' "$PREI4_PRIOR/artifact-manifest.json")" = "PASS_PRE_I4_ONE_STATIC_ARTIFACT_FROZEN"
+          test "$(jq -r '.decision' "$PREI4_PRIOR/remote-parity.json")" = "PASS_PRE_I4_HOSTING_REMOTE_BYTE_PARITY"
+          test "$(cat "$PREI4_PRIOR/hosting-deploy-count.txt")" = "1"
+          cp "$PREI4_PRIOR/app-artifact.sha256" "$PREI4_OUT/app-artifact.sha256"
+
+      - name: Recreate exact source artifact without build or deploy
+        run: |
+          set -Eeuo pipefail
+          rm -rf "$PREI4_SOURCE_DIR"
+          mkdir -p "$PREI4_SOURCE_DIR"
+          git archive "83429d21ee9f6d9dc5cd46fcbb9a3b598e07dcc4" | tar -x -C "$PREI4_SOURCE_DIR"
+          cd "$PREI4_SOURCE_DIR"
+          node tools/qa/cxorbia-pre-i4-human-entrypoint-contract-gate.mjs > "$GITHUB_WORKSPACE/$PREI4_OUT/source-gate.json"
+          tar --sort=name --mtime='UTC 1970-01-01' --owner=0 --group=0 --numeric-owner -cf "$GITHUB_WORKSPACE/$PREI4_OUT/app-readback.tar" app
+          NOW="$(sha256sum "$GITHUB_WORKSPACE/$PREI4_OUT/app-readback.tar" | awk '{print $1}')"
+          PRIOR="$(cat "$GITHUB_WORKSPACE/$PREI4_OUT/app-artifact.sha256")"
+          test "$NOW" = "$PRIOR"
+
+      - name: Re-prove remote byte parity without deployment
+        run: |
+          set -Eeuo pipefail
+          root="https://cxorbia-backend-dev.web.app"
+          mkdir -p "$PREI4_OUT/remote"
+          for rel in index-backend-dev.html index.html app.js core/config.js core/data-source.js config/runtime.js; do
+            remote="$PREI4_OUT/remote/$(echo "$rel" | tr '/' '_')"
+            curl -fsSL --retry 5 --retry-delay 1 -H 'Cache-Control: no-cache' "$root/$rel?readback=${GITHUB_RUN_ID}-$(date +%s%N)" -o "$remote"
+            cmp "$PREI4_SOURCE_DIR/app/$rel" "$remote"
+          done
+          curl -fsSL -H 'Cache-Control: no-cache' "$root/__pre_i4_readback__/shopper/miperfil?readback=${GITHUB_RUN_ID}" -o "$PREI4_OUT/remote/deep.html"
+          cmp "$PREI4_SOURCE_DIR/app/index-backend-dev.html" "$PREI4_OUT/remote/deep.html"
+          jq -n -S '{decision:"PASS_PRE_I4_POSTDEPLOY_REMOTE_BYTE_PARITY",hostingDeploysThisRun:0,production:false}' > "$PREI4_OUT/remote-readback.json"
+
+      - name: Read fresh HR authority for same served candidate
+        run: |
+          set -Eeuo pipefail
+          curl -fsSL --retry 8 --retry-delay 2 -H 'Cache-Control: no-cache' "https://cxorbia-backend-dev.web.app/api/tenants/tya/projects/cinepolis/hr-live?view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV&readback=${GITHUB_RUN_ID}" -o "$PREI4_OUT/hr-fresh.json"
+          node <<'NODE'
+          const fs=require('fs'),p=JSON.parse(fs.readFileSync(process.env.PREI4_OUT+'/hr-fresh.json','utf8'));
+          const key=p?.source?.currentCalendarPeriodKey,period=(p.periods||[]).find(x=>x.key===key),visits=(p.visits||[]).filter(v=>v.periodKey===key);
+          const country=code=>{const a=visits.filter(v=>(v.country||v.pais)===code),assigned=a.filter(v=>v?.canonicalFacets?.assigned===true||v.assignmentState==='assigned');return{total:a.length,availableUnassigned:a.filter(v=>v?.canonicalFacets?.available===true&&!v?.canonicalFacets?.assigned).length,assigned:assigned.length,scheduled:a.filter(v=>v?.canonicalFacets?.scheduled===true||v.schedulingState==='scheduled').length,realized:a.filter(v=>v?.canonicalFacets?.realized===true||v.executionState==='realized').length,submitted:a.filter(v=>v?.canonicalFacets?.submitted===true||v.submissionState==='confirmed_hr').length,outOfRange:a.filter(v=>v?.canonicalFacets?.outOfRange===true||v.outOfRange===true).length,reviewRequired:a.filter(v=>v.reviewRequired===true).length,uniqueAssignedShoppers:new Set(assigned.map(v=>String(v.shopperId||'')).filter(Boolean)).size};};
+          const revision=String(p?._runtime?.revision||'');
+          if(!/^[a-f0-9]{64}$/.test(revision))throw new Error('SOURCE_FAILURE:HR_REVISION_MISSING');
+          if(!period||period.total!==44||period.byCountry?.GT!==34||period.byCountry?.HN!==10)throw new Error('SOURCE_FAILURE:CURRENT_PERIOD_COUNTS_DRIFT');
+          fs.writeFileSync(process.env.PREI4_OUT+'/hr-contrast.json',JSON.stringify({decision:'PASS_PRE_I4_HR_FRESH_CONTRAST',generatedAt:p.generatedAt,sourceRevision:revision,currentPeriodKey:key,currentPeriodId:period.id,projectId:p.projectId,projectName:p.projectName,tabs:period.tabs,GT:country('GT'),HN:country('HN'),production:false,hrWrites:0},null,2)+'\n');
+          NODE
+
+      - name: Execute focal browser readback only
+        env:
+          CXORBIA_PREI4_ROOT: https://cxorbia-backend-dev.web.app
+          CXORBIA_PREI4_SOURCE_SHA: 83429d21ee9f6d9dc5cd46fcbb9a3b598e07dcc4
+        run: |
+          set -Eeuo pipefail
+          node tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs
+          test "$(jq -r '.decision' "$PREI4_OUT/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
+
+      - name: Freeze readback PASS
+        run: |
+          set -Eeuo pipefail
+          ART="$(cat "$PREI4_OUT/app-artifact.sha256")"
+          HR="$(jq -r '.sourceRevision' "$PREI4_OUT/hr-contrast.json")"
+          jq -n -S --arg source "83429d21ee9f6d9dc5cd46fcbb9a3b598e07dcc4" --arg artifact "$ART" --arg hr "$HR" --argjson priorRun 35673312222 '{decision:"PASS_PRE_I4_POSTDEPLOY_READBACK",sourceSha:$source,artifactSha256:$artifact,hrRevision:$hr,priorDeployRunId:$priorRun,priorHostingDeployCount:1,hostingDeploysThisRun:0,remoteByteParity:true,focalBrowser:true,production:false}' > "$PREI4_OUT/final.json"
+
+      - name: Upload sanitized postdeploy readback
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-pre-i4-postdeploy-readback-${{ github.run_id }}
+          path: ${{ env.PREI4_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
+      - name: Enforce postdeploy readback
+        run: |
+          set -Eeuo pipefail
+          test "$(jq -r '.decision' "$PREI4_OUT/final.json")" = "PASS_PRE_I4_POSTDEPLOY_READBACK"
+          test "$(jq -r '.decision' "$PREI4_OUT/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
+          test "$(jq -r '.decision' "$PREI4_OUT/remote-readback.json")" = "PASS_PRE_I4_POSTDEPLOY_REMOTE_BYTE_PARITY"

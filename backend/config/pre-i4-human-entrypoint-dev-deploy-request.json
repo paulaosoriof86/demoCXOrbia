@@ -1,9 +1,9 @@
 {
   "schemaVersion": "cxorbia.pre-i4.human-entrypoint-dev-deploy.request.v1",
   "requestId": "pre-i4-human-entrypoint-dev-20260921-01",
-  "status": "authorized_execute_once",
-  "enabled": true,
-  "consumed": false,
+  "status": "deployed_verify_pending",
+  "enabled": false,
+  "consumed": true,
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_2026-09-21_procede_pre_i4_focal_visual_repair",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -27,5 +27,12 @@
   "legacyWrites": 0,
   "production": false,
   "noAutomaticRetry": true,
-  "scope": "focal_pre_i4_human_entrypoint_composition_only"
+  "scope": "focal_pre_i4_human_entrypoint_composition_only",
+  "hostingDeploys": 1,
+  "deployedRunId": 35673312222,
+  "deployedControlHead": "67801101a54a3d1c9ce4958e499c31d171f47303",
+  "deployedArtifactId": 10672072559,
+  "deployedArtifactDigest": "sha256:7523ff268f9172080a358c42a0126678da96cb312c4a1a7fc9965d8d7d593388",
+  "noFurtherDeployBeforeReadback": true,
+  "deployResult": "HOSTING_DEV_DEPLOY_AND_REMOTE_PARITY_PASS_BROWSER_HARNESS_ENVIRONMENT_FAILURE"
 }

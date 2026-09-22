@@ -53,10 +53,24 @@ async function signInMember(member,kind,route){
   const ctx=await browser.newContext({viewport:{width:1440,height:980}});
   const page=await ctx.newPage(),pageErrors=[];
   page.on('pageerror',e=>pageErrors.push(str(e?.message||e)));
-  await page.goto(URL,{waitUntil:'domcontentloaded',timeout:90000});
-  await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
-  const token=await auth.createCustomToken(member.id);
-  await page.evaluate(async t=>{const a=window.firebase.auth();await a.setPersistence(window.firebase.auth.Auth.Persistence.SESSION);await a.signInWithCustomToken(t);},token);
+  let authSettled=false,lastAuthError=null;
+  for(let attempt=1;attempt<=5&&!authSettled;attempt++){
+    await page.goto(URL,{waitUntil:'domcontentloaded',timeout:90000});
+    await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
+    const token=await auth.createCustomToken(member.id);
+    try{
+      await page.evaluate(async t=>{const fb=window.firebase;if(!fb?.auth)throw new Error('FIREBASE_SDK_NOT_READY');await fb.auth().setPersistence(fb.auth.Auth.Persistence.LOCAL);await fb.auth().signInWithCustomToken(t);},token);
+    }catch(error){
+      const msg=String(error&&error.message||error||'');
+      if(!/Execution context was destroyed|navigation|FIREBASE_SDK_NOT_READY|No Firebase App|auth\/network-request-failed|network|timeout|interrupted/i.test(msg))throw error;
+      lastAuthError=error;
+    }
+    await page.waitForLoadState('domcontentloaded',{timeout:90000}).catch(()=>{});
+    const uid=await page.evaluate(()=>String(window.firebase?.auth?.().currentUser?.uid||'')).catch(()=> '');
+    if(uid===String(member.id)){authSettled=true;break;}
+    if(attempt<5)await page.waitForTimeout(1200*attempt);
+  }
+  if(!authSettled)throw new Error('ENVIRONMENT_FAILURE:FIREBASE_AUTH_SESSION_NOT_PERSISTED:'+String(lastAuthError&&lastAuthError.message||lastAuthError||'no-current-user'));
   await page.goto('about:blank');
   await page.goto(URL,{waitUntil:'domcontentloaded',timeout:90000});
   await page.waitForFunction(uid=>String(window.firebase?.auth?.().currentUser?.uid||'')===uid,String(member.id),{timeout:90000});
@@ -100,6 +114,11 @@ try{
 
   evidence.decision='PASS_PRE_I4_FOCAL_HUMAN_BROWSER';
   fs.writeFileSync(OUT+'/browser-focal.json',JSON.stringify(evidence,null,2)+'\n');
+} catch(error) {
+  evidence.decision='FAIL_PRE_I4_FOCAL_HUMAN_BROWSER';
+  evidence.error=String(error&&error.message||error||'unknown').slice(0,1200);
+  fs.writeFileSync(OUT+'/browser-focal.json',JSON.stringify(evidence,null,2)+'\n');
+  throw error;
 } finally {
   await browser.close();
 }
