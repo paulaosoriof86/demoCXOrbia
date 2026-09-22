@@ -37,7 +37,15 @@ window.CX = window.CX || {};
     legacyNote:'',
 
     _load(){
-      try{ const m=localStorage.getItem(LS); if(m && MODES.includes(m)) this.mode=m; }catch(e){}
+      /* PRE-I4: the canonical authenticated human lane owns source selection.
+         A stale browser-local cx_data_mode must never force demo/blocked state. */
+      try{
+        if(window.CX_DEV_ENTRY_CANONICAL && window.CX_DEV_ENTRY_CANONICAL.lane==='authenticated-human-canonical'){
+          this.mode='connected';
+          return;
+        }
+        const m=localStorage.getItem(LS); if(m && MODES.includes(m)) this.mode=m;
+      }catch(e){}
     },
     _save(){ try{ localStorage.setItem(LS, this.mode); }catch(e){} },
 
@@ -67,9 +75,16 @@ window.CX = window.CX || {};
         this.sourceRef='';
         this.blockers.push('No hay una fuente source-safe conectada todavía — el bridge genérico de CX.data está pendiente de implementación backend.');
       } else if(this.mode==='connected'){
-        this.status='blocked';
-        this.sourceRef='';
-        this.blockers.push('No hay un adapter backend autorizado conectado — "connected" no se activa desde este paquete.');
+        const canonicalHuman = !!(window.CX_DEV_ENTRY_CANONICAL && window.CX_DEV_ENTRY_CANONICAL.lane==='authenticated-human-canonical');
+        if(canonicalHuman){
+          this.status='loading';
+          this.sourceRef='authenticated-human-canonical:awaiting-provider';
+          this.warnings.push('Entrada humana canónica: esperando Auth + autoridad HR viva; no se habilitan seeds ni fallback demo.');
+        }else{
+          this.status='blocked';
+          this.sourceRef='';
+          this.blockers.push('No hay un adapter backend autorizado conectado — "connected" no se activa desde este paquete.');
+        }
       }
       const legacy=this._legacyFlags();
       this.legacyNote = legacy.length ? legacy.join(' · ') : '';

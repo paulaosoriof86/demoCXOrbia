@@ -132,7 +132,7 @@ CX.app = {
     const cxLogo = `<svg width="16" height="16" viewBox="0 0 64 64" style="vertical-align:middle"><rect width="64" height="64" rx="14" fill="#0d2740"/><circle cx="32" cy="32" r="15" fill="none" stroke="#4ab4e6" stroke-width="6" stroke-dasharray="58 26"/><circle cx="44" cy="22" r="4.5" fill="#fff"/></svg>`;
     const devForFooter = `<div class="login-poweredby">${cxLogo} <span>Desarrollado por <b>CXOrbia</b></span></div>`;
     /* CLOUD V7 — pantalla de login canónica estilo Emergent: dos columnas.
-       Izq: panel orbit de marca (producto Gravicentra CX). Der: acceso corporativo.
+       Izq: panel orbit de marca (producto CXOrbia). Der: acceso corporativo.
        Se elimina de ESTA pantalla el copy de demo/validación; los accesos alternos y el
        área de test se conservan en la lógica pero fuera del login canónico (via _isDevAccess). */
     const NODES_V7=[['CLIENTES',0],['TECNOLOGÍA',60],['PERSONAS',120],['OPERACIÓN',180],['PROCESOS',240],['INFORMACIÓN',300]];
@@ -149,7 +149,7 @@ CX.app = {
         <circle class="lo-core" cx="50" cy="58" r="0"/>
       </svg>
       ${NODES_V7.map(([label,a])=>{const[lx,ly]=pol(a,45);return `<span class="lo-node" style="left:${lx.toFixed(1)}%;top:${ly.toFixed(1)}%">${label}</span>`;}).join('')}
-      <div class="lo-corelabel"><span class="lo-brand">Gravicentra<em>CX</em></span><span class="lo-core-lbl"><i></i>CORE</span></div>`;
+      <div class="lo-corelabel"><span class="lo-brand">CXOrbia</span><span class="lo-core-lbl"><i></i>CORE</span></div>`;
     const flagsV7 = paises.length
       ? `<div class="lg2-flags" role="list">${paises.map(c=>`<span role="listitem" class="lg2-flag" title="${CX.paisName?CX.paisName(c):c}"><img src="https://flagcdn.com/24x18/${c.toLowerCase()}.png" alt="" onerror="this.replaceWith(Object.assign(document.createElement('b'),{textContent:'${c}'}))"><span>${CX.paisName?CX.paisName(c):c}</span></span>`).join('')}</div>`
       : '';
@@ -165,7 +165,7 @@ CX.app = {
         <div class="lg2-body">
         <aside class="lg2-aside">
           <div class="lg2-stage">${orbitSVG}</div>
-          <div class="lg2-intel"><p class="lg2-intel__t">FIELD OPERATIONS INTELLIGENCE</p><p class="lg2-intel__p">Donde <strong>cada visita, cada dato y cada decisión</strong> orbitan alrededor de lo que <strong>realmente importa hoy.</strong></p><p class="lg2-intel__foot">v1.0 · ${new Date().getFullYear()} · Powered by Gravicentra CX</p></div>
+          <div class="lg2-intel"><p class="lg2-intel__t">FIELD OPERATIONS INTELLIGENCE</p><p class="lg2-intel__p">Donde <strong>cada visita, cada dato y cada decisión</strong> orbitan alrededor de lo que <strong>realmente importa hoy.</strong></p><p class="lg2-intel__foot">v1.0 · ${new Date().getFullYear()} · Powered by CXOrbia</p></div>
         </aside>
         <main class="lg2-main">
           <form class="lg2-card" id="loginForm" novalidate>

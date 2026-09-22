@@ -52,6 +52,7 @@
 
 <!-- CORE -->
 <script src="core/build-lock.js"></script>
+<script src="config/tenants/tya.runtime.js"></script>
 <script src="core/config.js"></script>
 <script src="core/geo.js"></script>
 <script src="core/store.js"></script>
@@ -68,7 +69,17 @@
 <script src="core/manuales-data.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script src="core/frontend-export-helpers.js"></script>
-<script src="core/dev-scenario-lab.js"></script>
+<script>
+(function(){
+  const p=new URLSearchParams(location.search||'');
+  if(p.get('cxDevLab')!=='1')return;
+  const s=document.createElement('script');
+  s.src='core/dev-scenario-lab.js';
+  s.async=false;
+  s.dataset.cxExplicitDevLab='1';
+  document.head.appendChild(s);
+})();
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <script src="vendor/pptxgenjs.min.js"></script>
 <script src="core/importador.js"></script>

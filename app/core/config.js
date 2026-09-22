@@ -24,6 +24,34 @@ CX.BRAND = {
   colors: {},
 };
 
+/* Recovery PRE-I4: authoritative tenant runtime configuration wins over browser-local brand state.
+   Tenant-specific values live in config/tenants/<tenant>.runtime.js; module code stays generic. */
+CX.applyTenantRuntimeConfig = function(){
+  const cfg = window.CX_TENANT_RUNTIME_CONFIG;
+  if(!cfg || !cfg.tenantId) return false;
+  const b = cfg.branding || {};
+  const logo = b.logoUrl || b.logo || '';
+  Object.assign(CX.BRAND, {
+    id: String(cfg.tenantId),
+    name: b.displayName || cfg.tenantName || CX.BRAND.name,
+    clientName: b.displayName || cfg.tenantName || CX.BRAND.clientName,
+    clientTag: b.clientTag || CX.BRAND.clientTag || '',
+    logo: logo,
+    logoUrl: logo,
+    theme: b.theme || CX.BRAND.theme,
+    demoMode: false,
+    countries: Array.isArray(cfg.countries) ? cfg.countries.slice() : CX.BRAND.countries
+  });
+  CX.tenantProfile = Object.assign({}, CX.tenantProfile || {}, {
+    tenantId: String(cfg.tenantId),
+    countries: Array.isArray(cfg.countries) ? cfg.countries.slice() : [],
+    activeProjectIds: Array.isArray(cfg.activeProjectIds) ? cfg.activeProjectIds.slice() : [],
+    defaultProjectId: cfg.defaultProjectId || null,
+    brandingSource: cfg.sourceAuthority || 'tenant_runtime_config'
+  });
+  return true;
+};
+
 /* ---------- Temas (plantillas de marca seleccionables) ----------
    Cada cliente puede partir de una plantilla y ajustarla. "Corporativo claro"
    reproduce un estilo corporativo clásico (Segoe UI, azul/rojo, sidebar claro). */
@@ -100,6 +128,13 @@ CX.applyBrand = function(){
   try{ const b = JSON.parse(localStorage.getItem('cx_brand_identity')||'null');
     if(b){ Object.assign(CX.BRAND, b);
       if(b.theme) CX.applyTheme(b.theme);
+    }
+  }catch(e){}
+  /* PRE-I4: localStorage is never branding truth on a canonical tenant runtime. */
+  try{
+    if(CX.applyTenantRuntimeConfig()){
+      const t = window.CX_TENANT_RUNTIME_CONFIG && window.CX_TENANT_RUNTIME_CONFIG.branding && window.CX_TENANT_RUNTIME_CONFIG.branding.theme;
+      if(t && CX.THEMES[t]) CX.applyTheme(t);
     }
   }catch(e){}
   /* Manifest PWA dinámico: name/short_name/theme_color/background_color/icons según marca (Fase 4) */
