@@ -20,6 +20,8 @@ on:
       - tools/qa/cxorbia-gate20-browser-visual-dev.mjs
       - ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-17_I3_MICRO_ITERATIONS_FROZEN.md
       - CXORBIA_I3_MICRO_ITERATION_PLAN_LOCK_2026-09-17.json
+      - backend/config/pre-i4-human-entrypoint-dev-deploy-request.json
+      - tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs
   workflow_dispatch:
 
 permissions:
@@ -57,6 +59,7 @@ env:
 
 jobs:
   certify:
+    if: github.event_name != 'push' || !contains(github.event.head_commit.message, '[pre-i4-dev-only]')
     runs-on: ubuntu-latest
     timeout-minutes: 70
     steps:
@@ -1402,6 +1405,7 @@ jobs:
         run: rm -rf node_modules
 
   live-fixtures:
+    if: github.event_name != 'push' || !contains(github.event.head_commit.message, '[pre-i4-dev-only]')
     name: I3 full live fixture suite v2 — same certified source/artifact
     needs: certify
     if: ${{ needs.certify.result == 'success' }}
@@ -1510,8 +1514,160 @@ jobs:
         run: rm -rf node_modules
 
   gate21:
+    if: github.event_name != 'push' || !contains(github.event.head_commit.message, '[pre-i4-dev-only]')
     name: Gate 21 integrity of same certification artifact
     needs: [certify, live-fixtures]
     uses: ./.github/workflows/cxorbia-recovery-i3-gate21-artifact-fingerprint.yml
     secrets: inherit
 
+  pre-i4-human-entrypoint-dev:
+    name: PRE-I4 focal human entrypoint DEV materialization
+    if: github.event_name == 'push' && contains(github.event.head_commit.message, '[pre-i4-dev-only]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      REQUEST: backend/config/pre-i4-human-entrypoint-dev-deploy-request.json
+      PREI4_OUT: .tmp/pre-i4-human-entrypoint
+      PREI4_SOURCE_DIR: ${{ runner.temp }}/cxorbia-pre-i4-human-source
+    steps:
+      - name: Checkout control successor
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate focal authorization and exact source
+        id: gate
+        run: |
+          set -Eeuo pipefail
+          test "$GITHUB_RUN_ATTEMPT" = "1"
+          mkdir -p "$PREI4_OUT"
+          node <<'NODE'
+          const fs=require('fs'),{execFileSync}=require('child_process');
+          const p=process.env.REQUEST,r=JSON.parse(fs.readFileSync(p,'utf8')),head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          const exact={schemaVersion:'cxorbia.pre-i4.human-entrypoint-dev-deploy.request.v1',requestId:'pre-i4-human-entrypoint-dev-20260921-01',branch:'recovery/cxorbia-phase-a-20260831',sourceSha:'83429d21ee9f6d9dc5cd46fcbb9a3b598e07dcc4',sourceTree:'4f7bf2c6cd7d79bc8aaab119f7970fd6f29220f9',targetProject:'cxorbia-backend-dev',hostingSite:'cxorbia-backend-dev',hostingTarget:'cxorbia-dev',devRootUrl:'https://cxorbia-backend-dev.web.app'};
+          for(const [k,v] of Object.entries(exact))if(r[k]!==v)throw new Error('RELEASE_COMPOSITION_FAILURE:REQUEST_'+k.toUpperCase()+'_MISMATCH');
+          if(r.enabled!==true||r.consumed!==false||r.status!=='authorized_execute_once'||r.authorizedBy!=='Paula')throw new Error('RELEASE_COMPOSITION_FAILURE:AUTHORIZATION_STATE_INVALID');
+          if(r.production!==false||r.maxHostingDeploys!==1||r.noAutomaticRetry!==true)throw new Error('RELEASE_COMPOSITION_FAILURE:UNSAFE_DEPLOY_SCOPE');
+          for(const k of ['cloudRunDeploys','runtimeDeploys','firestoreWrites','authWrites','hrWrites','rulesDeploys','storageWrites','imports','legacyWrites'])if(Number(r[k]||0)!==0)throw new Error('RELEASE_COMPOSITION_FAILURE:UNSAFE_SCOPE_'+k);
+          execFileSync('git',['cat-file','-e',r.sourceSha+'^{commit}']);
+          if(execFileSync('git',['rev-parse',r.sourceSha+'^{tree}'],{encoding:'utf8'}).trim()!==r.sourceTree)throw new Error('RELEASE_COMPOSITION_FAILURE:SOURCE_TREE_MISMATCH');
+          execFileSync('git',['merge-base','--is-ancestor',r.sourceSha,head]);
+          const changed=execFileSync('git',['diff','--name-only',r.sourceSha,head],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean).sort();
+          const allowed=[p,'.github/workflows/cxorbia-recovery-i3-dev-certification.yml','tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs'].sort();
+          if(JSON.stringify(changed)!==JSON.stringify(allowed))throw new Error('RELEASE_COMPOSITION_FAILURE:CONTROL_SUCCESSOR_PRODUCT_DRIFT:'+changed.join(','));
+          fs.writeFileSync(process.env.PREI4_OUT+'/authorization.json',JSON.stringify({decision:'PASS_PRE_I4_FOCAL_AUTHORIZATION',requestId:r.requestId,sourceSha:r.sourceSha,sourceTree:r.sourceTree,controlHeadSha:head,changedAfterSource:changed,hostingDeployMax:1,production:false},null,2)+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'source_sha='+r.sourceSha+'\nsource_tree='+r.sourceTree+'\n');
+          NODE
+
+      - name: Prepare exact focal successor and source gate
+        run: |
+          set -Eeuo pipefail
+          rm -rf "$PREI4_SOURCE_DIR"
+          mkdir -p "$PREI4_SOURCE_DIR"
+          git archive "${{ steps.gate.outputs.source_sha }}" | tar -x -C "$PREI4_SOURCE_DIR"
+          cd "$PREI4_SOURCE_DIR"
+          node tools/qa/cxorbia-pre-i4-human-entrypoint-contract-gate.mjs > "$GITHUB_WORKSPACE/$PREI4_OUT/source-gate.json"
+          test "$(jq -r '.decision' "$GITHUB_WORKSPACE/$PREI4_OUT/source-gate.json")" = "PASS_PRE_I4_HUMAN_ENTRYPOINT_CONTRACT"
+
+      - name: Freeze exact static app artifact before deploy
+        run: |
+          set -Eeuo pipefail
+          cd "$PREI4_SOURCE_DIR"
+          tar --sort=name --mtime='UTC 1970-01-01' --owner=0 --group=0 --numeric-owner -cf "$GITHUB_WORKSPACE/$PREI4_OUT/cxorbia-pre-i4-human-app.tar" app
+          sha256sum "$GITHUB_WORKSPACE/$PREI4_OUT/cxorbia-pre-i4-human-app.tar" | awk '{print $1}' > "$GITHUB_WORKSPACE/$PREI4_OUT/app-artifact.sha256"
+          jq -n -S --arg source "${{ steps.gate.outputs.source_sha }}" --arg tree "${{ steps.gate.outputs.source_tree }}" --arg artifact "$(cat "$GITHUB_WORKSPACE/$PREI4_OUT/app-artifact.sha256")" '{decision:"PASS_PRE_I4_ONE_STATIC_ARTIFACT_FROZEN",sourceSha:$source,sourceTree:$tree,artifactSha256:$artifact,buildCount:0,hostingDeployMax:1,production:false}' > "$GITHUB_WORKSPACE/$PREI4_OUT/artifact-manifest.json"
+
+      - name: Authenticate existing Firebase DEV only
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+
+      - name: Install transient focal tooling
+        run: |
+          set -Eeuo pipefail
+          npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null 2>&1
+
+      - name: Deploy exact frozen successor to existing Hosting DEV once
+        run: |
+          set -Eeuo pipefail
+          test "$GITHUB_RUN_ATTEMPT" = "1"
+          cd "$PREI4_SOURCE_DIR"
+          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:cxorbia-dev" --project "cxorbia-backend-dev" --non-interactive | tee "$GITHUB_WORKSPACE/$PREI4_OUT/hosting-deploy.log"
+          echo 1 > "$GITHUB_WORKSPACE/$PREI4_OUT/hosting-deploy-count.txt"
+
+      - name: Prove served byte parity and canonical wildcard
+        run: |
+          set -Eeuo pipefail
+          root="https://cxorbia-backend-dev.web.app"
+          mkdir -p "$PREI4_OUT/remote"
+          for rel in index-backend-dev.html index.html app.js core/config.js core/data-source.js config/runtime.js; do
+            local="$PREI4_SOURCE_DIR/app/$rel"
+            remote="$PREI4_OUT/remote/$(echo "$rel" | tr '/' '_')"
+            ok=0
+            for attempt in $(seq 1 30); do
+              if curl -fsSL --retry 2 --retry-delay 1 -H 'Cache-Control: no-cache' "$root/$rel?prei4=${GITHUB_RUN_ID}-${attempt}-$(date +%s%N)" -o "$remote" && cmp "$local" "$remote"; then ok=1; break; fi
+              sleep 2
+            done
+            test "$ok" = 1
+          done
+          curl -fsSL -H 'Cache-Control: no-cache' "$root/__pre_i4_deep_route__/admin/dashboard?prei4=${GITHUB_RUN_ID}" -o "$PREI4_OUT/remote/deep.html"
+          cmp "$PREI4_SOURCE_DIR/app/index-backend-dev.html" "$PREI4_OUT/remote/deep.html"
+          jq -n -S --arg source "${{ steps.gate.outputs.source_sha }}" '{decision:"PASS_PRE_I4_HOSTING_REMOTE_BYTE_PARITY",sourceSha:$source,criticalFiles:6,deepRouteCanonicalEntrypoint:true,production:false}' > "$PREI4_OUT/remote-parity.json"
+
+      - name: Read fresh HR authority after deploy
+        run: |
+          set -Eeuo pipefail
+          curl -fsSL --retry 8 --retry-delay 2 -H 'Cache-Control: no-cache' "https://cxorbia-backend-dev.web.app/api/tenants/tya/projects/cinepolis/hr-live?view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV&prei4=${GITHUB_RUN_ID}" -o "$PREI4_OUT/hr-fresh.json"
+          node <<'NODE'
+          const fs=require('fs'),p=JSON.parse(fs.readFileSync(process.env.PREI4_OUT+'/hr-fresh.json','utf8'));
+          const key=p?.source?.currentCalendarPeriodKey,period=(p.periods||[]).find(x=>x.key===key),visits=(p.visits||[]).filter(v=>v.periodKey===key);
+          const country=code=>{const a=visits.filter(v=>(v.country||v.pais)===code),assigned=a.filter(v=>v?.canonicalFacets?.assigned===true||v.assignmentState==='assigned');return{total:a.length,availableUnassigned:a.filter(v=>v?.canonicalFacets?.available===true&&!v?.canonicalFacets?.assigned).length,assigned:assigned.length,scheduled:a.filter(v=>v?.canonicalFacets?.scheduled===true||v.schedulingState==='scheduled').length,realized:a.filter(v=>v?.canonicalFacets?.realized===true||v.executionState==='realized').length,submitted:a.filter(v=>v?.canonicalFacets?.submitted===true||v.submissionState==='confirmed_hr').length,outOfRange:a.filter(v=>v?.canonicalFacets?.outOfRange===true||v.outOfRange===true).length,reviewRequired:a.filter(v=>v.reviewRequired===true).length,uniqueAssignedShoppers:new Set(assigned.map(v=>String(v.shopperId||'')).filter(Boolean)).size};};
+          const revision=String(p?._runtime?.revision||'');
+          if(!/^[a-f0-9]{64}$/.test(revision))throw new Error('SOURCE_FAILURE:HR_REVISION_MISSING');
+          if(!period||period.total!==44||period.byCountry?.GT!==34||period.byCountry?.HN!==10)throw new Error('SOURCE_FAILURE:CURRENT_PERIOD_COUNTS_DRIFT');
+          fs.writeFileSync(process.env.PREI4_OUT+'/hr-contrast.json',JSON.stringify({decision:'PASS_PRE_I4_HR_FRESH_CONTRAST',generatedAt:p.generatedAt,sourceRevision:revision,currentPeriodKey:key,currentPeriodId:period.id,projectId:p.projectId,projectName:p.projectName,tabs:period.tabs,GT:country('GT'),HN:country('HN'),production:false,hrWrites:0},null,2)+'\n');
+          NODE
+
+      - name: Focal browser proof pre-auth Admin Shopper refresh mobile
+        env:
+          CXORBIA_PREI4_ROOT: https://cxorbia-backend-dev.web.app
+          CXORBIA_PREI4_SOURCE_SHA: ${{ steps.gate.outputs.source_sha }}
+        run: |
+          set -Eeuo pipefail
+          node tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs
+          test "$(jq -r '.decision' "$PREI4_OUT/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
+
+      - name: Prove deployed artifact equals frozen source
+        run: |
+          set -Eeuo pipefail
+          test "$(cat "$PREI4_OUT/hosting-deploy-count.txt")" = "1"
+          cd "$PREI4_SOURCE_DIR"
+          tar --sort=name --mtime='UTC 1970-01-01' --owner=0 --group=0 --numeric-owner -cf "$GITHUB_WORKSPACE/$PREI4_OUT/cxorbia-pre-i4-human-app-postcheck.tar" app
+          POST="$(sha256sum "$GITHUB_WORKSPACE/$PREI4_OUT/cxorbia-pre-i4-human-app-postcheck.tar" | awk '{print $1}')"
+          PRE="$(cat "$GITHUB_WORKSPACE/$PREI4_OUT/app-artifact.sha256")"
+          test "$POST" = "$PRE"
+          jq -n -S --arg source "${{ steps.gate.outputs.source_sha }}" --arg artifact "$PRE" --arg hr "$(jq -r '.sourceRevision' "$GITHUB_WORKSPACE/$PREI4_OUT/hr-contrast.json")" '{decision:"PASS_PRE_I4_SAME_ARTIFACT_DEV",sourceSha:$source,artifactSha256:$artifact,hrRevision:$hr,buildCount:0,hostingDeployCount:1,remoteByteParity:true,focalBrowser:true,production:false}' > "$GITHUB_WORKSPACE/$PREI4_OUT/final.json"
+
+      - name: Upload focal PRE-I4 evidence and frozen app artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-pre-i4-human-entrypoint-${{ github.run_id }}
+          path: ${{ env.PREI4_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
+      - name: Enforce focal result
+        run: |
+          set -Eeuo pipefail
+          test "$(jq -r '.decision' "$PREI4_OUT/final.json")" = "PASS_PRE_I4_SAME_ARTIFACT_DEV"
+          test "$(jq -r '.decision' "$PREI4_OUT/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
+          test "$(jq -r '.decision' "$PREI4_OUT/hr-contrast.json")" = "PASS_PRE_I4_HR_FRESH_CONTRAST"
+          test "$(jq -r '.decision' "$PREI4_OUT/remote-parity.json")" = "PASS_PRE_I4_HOSTING_REMOTE_BYTE_PARITY"
