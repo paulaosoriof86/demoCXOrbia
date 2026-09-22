@@ -1527,7 +1527,7 @@ jobs:
     env:
       REQUEST: backend/config/pre-i4-human-entrypoint-dev-deploy-request.json
       PREI4_OUT: .tmp/pre-i4-human-entrypoint
-      PREI4_SOURCE_DIR: ${{ runner.temp }}/cxorbia-pre-i4-human-source
+      PREI4_SOURCE_DIR: .tmp/pre-i4-human-source
     steps:
       - name: Checkout control successor
         uses: actions/checkout@v4
