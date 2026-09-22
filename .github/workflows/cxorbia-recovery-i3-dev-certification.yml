@@ -59,7 +59,7 @@ env:
 
 jobs:
   certify:
-    if: github.event_name != 'push' || !contains(github.event.head_commit.message, '[pre-i4-dev-only]')
+    if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, '[pre-i4-dev-only]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 70
     steps:
@@ -1513,7 +1513,7 @@ jobs:
         run: rm -rf node_modules
 
   gate21:
-    if: github.event_name != 'push' || !contains(github.event.head_commit.message, '[pre-i4-dev-only]')
+    if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, '[pre-i4-dev-only]') }}
     name: Gate 21 integrity of same certification artifact
     needs: [certify, live-fixtures]
     uses: ./.github/workflows/cxorbia-recovery-i3-gate21-artifact-fingerprint.yml
@@ -1521,7 +1521,7 @@ jobs:
 
   pre-i4-human-entrypoint-dev:
     name: PRE-I4 focal human entrypoint DEV materialization
-    if: github.event_name == 'push' && contains(github.event.head_commit.message, '[pre-i4-dev-only]')
+    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[pre-i4-dev-only]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     env:
