@@ -1,0 +1,135 @@
+{
+  "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v1",
+  "generatedAt": "2026-09-22T19:34:00-06:00",
+  "iteration": "I3_PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
+  "microblockId": "CXORBIA-PRE-I4-VISUAL-REMEDIATION-MICROBLOCK-20260922",
+  "status": "HOLD_MICROBLOCK_ACTIVE",
+  "production": "DO_NOT_TOUCH",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "head": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
+  "lastFunctionalWrite": {
+    "commit": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
+    "parent": "fda5262a82e19e214c327bc1015bfc8e547f5974",
+    "files": [
+      "app/core/data.js",
+      "app/core/router.js",
+      "app/core/permissions.js",
+      "backend/runtime/hr-live-service/test/cxorbia-i3-project-period-contract.test.mjs"
+    ],
+    "purpose": "CONTEXT_CONTRACT_FIX",
+    "productionDeploys": 0
+  },
+  "automaticPushWorkflowObservation": {
+    "runId": 35806627590,
+    "workflow": "CXOrbia Recovery I3 DEV Certification",
+    "conclusion": "failure",
+    "classification": "SOURCE_FAILURE",
+    "reason": "historical Run299 source guard intentionally rejects any product drift from certified source 77bf74f8; this workflow is not the PRE-I4 microblock focal gate",
+    "productRegressionProven": false,
+    "deployOccurred": false
+  },
+  "findings": {
+    "VRM-001": {
+      "state": "FIXED_NOT_PROVEN",
+      "evidenceRef": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
+      "owner": [
+        "app/core/data.js",
+        "app/core/router.js",
+        "app/core/permissions.js"
+      ]
+    },
+    "VRM-002": {
+      "state": "FIXED_NOT_PROVEN",
+      "evidenceRef": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
+      "owner": [
+        "app/core/data.js",
+        "app/core/router.js",
+        "app/core/permissions.js"
+      ]
+    },
+    "VRM-003": {
+      "state": "ALREADY_PROVEN_NO_DRIFT",
+      "evidenceRef": "Run299 identity repair + PRE-I4 review; no identity owner touched in db9cda1"
+    },
+    "VRM-004": {
+      "state": "PARTIAL_FIXED_NOT_PROVEN",
+      "evidenceRef": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
+      "note": "project/period context root fixed; full cross-surface consistency remains to prove"
+    },
+    "VRM-005": {
+      "state": "OPEN_UNTIL_EVIDENCE"
+    },
+    "VRM-006": {
+      "state": "FIXED_NOT_PROVEN",
+      "evidenceRef": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
+      "owner": [
+        "app/core/data.js",
+        "app/core/router.js",
+        "app/core/permissions.js"
+      ]
+    },
+    "VRM-007": {
+      "state": "OPEN_UNTIL_EVIDENCE"
+    },
+    "VRM-008": {
+      "state": "OPEN_UNTIL_EVIDENCE"
+    },
+    "VRM-009": {
+      "state": "OPEN_UNTIL_EVIDENCE"
+    },
+    "VRM-010": {
+      "state": "OPEN_UNTIL_EVIDENCE"
+    },
+    "VRM-011": {
+      "state": "OPEN_UNTIL_EVIDENCE"
+    },
+    "VRM-012": {
+      "state": "OPEN_UNTIL_EVIDENCE"
+    },
+    "VRM-013": {
+      "state": "OPEN_UNTIL_EVIDENCE"
+    },
+    "VRM-014": {
+      "state": "OPEN_UNTIL_EVIDENCE"
+    },
+    "VRM-015": {
+      "state": "OPEN_UNTIL_EVIDENCE"
+    },
+    "VRM-016": {
+      "state": "OPEN_UNTIL_EVIDENCE"
+    },
+    "VRM-017": {
+      "state": "OPEN_UNTIL_EVIDENCE"
+    },
+    "VRM-018": {
+      "state": "OPEN_UNTIL_EVIDENCE"
+    },
+    "VRM-019": {
+      "state": "OPEN_UNTIL_EVIDENCE"
+    },
+    "VRM-020": {
+      "state": "OPEN_UNTIL_EVIDENCE"
+    },
+    "VRM-021": {
+      "state": "FIXED_NOT_PROVEN",
+      "evidenceRef": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
+      "owner": [
+        "app/core/data.js",
+        "app/core/router.js",
+        "app/core/permissions.js"
+      ]
+    },
+    "VRM-022": {
+      "state": "OPEN_UNTIL_EVIDENCE"
+    },
+    "VRM-023": {
+      "state": "ALREADY_PROVEN_NO_DRIFT",
+      "evidenceRef": "Run304 + human screenshots: official T&A logo visible"
+    },
+    "VRM-024": {
+      "state": "ALREADY_PROVEN_NO_DRIFT",
+      "evidenceRef": "Run304 + human screenshots: scenario/debug laboratory no longer visible in current human lane"
+    }
+  },
+  "nextExactAction": "Continue same microblock with READ_MODEL_RECONCILIATION owners: shopper KPI canonical facets, pending postulation visibility, Admin shopper stats/top-shopper source behavior, finance obligation-vs-confirmation semantics. Do not deploy DEV until cumulative source package is complete and focal gates are ready."
+}
