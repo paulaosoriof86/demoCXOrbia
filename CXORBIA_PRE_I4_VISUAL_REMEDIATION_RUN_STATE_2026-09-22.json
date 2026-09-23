@@ -1,12 +1,12 @@
 {
-  "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v4",
-  "generatedAt": "2026-09-23T14:22:00-06:00",
+  "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v5",
+  "generatedAt": "2026-09-23T14:31:00-06:00",
   "iteration": "I3_PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "microblockId": "CXORBIA-PRE-I4-VISUAL-REMEDIATION-MICROBLOCK-20260922",
-  "status": "HOLD_FOCAL_PROOF_RETRY_READY",
+  "status": "HOLD_FOCAL_PROOF_PROVIDER_CONTINUATION_READY",
   "production": "DO_NOT_TOUCH",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "head": "61cf7120603aeff110e97632bb6c69f5c4809d62",
+  "head": "9856287871196817e3d43b9bd6f3243a5dd9929e",
   "lastFunctionalWrite": {
     "commit": "50b6a25d79713b0f165cffc4355c7b7ffd1d9e84",
     "parent": "61cf7120603aeff110e97632bb6c69f5c4809d62",
@@ -244,7 +244,7 @@
       "note": "Prior no-debug state preserved and human data/source diagnostics are hidden unless technical access; browser no-drift proof pending."
     }
   },
-  "nextExactAction": "Execute PRE-I4 focal proof once on source 50b6a25d79713b0f165cffc4355c7b7ffd1d9e84 after false-positive source-gate correction. No production.",
+  "nextExactAction": "Execute provider continuation only: verify exact existing runtime from Run307; deploy exact Firestore rules through proven direct Rules API lane; deploy frozen Hosting DEV; prove byte parity; read fresh HR revision and operational metrics; execute Admin/Shopper desktop/mobile focal browser; no production.",
   "functionalLineage": [
     {
       "commit": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
@@ -308,12 +308,38 @@
     ]
   },
   "focalProof": {
-    "state": "READY_TO_EXECUTE_SINGLE_DEV_MATERIALIZATION",
+    "state": "PROVIDER_CONTINUATION_READY",
     "sourceSha": "50b6a25d79713b0f165cffc4355c7b7ffd1d9e84",
     "sourceTree": "495266b89b932976569f57070b27b7e4f06d6cdd",
-    "requestId": "pre-i4-visual-remediation-20260923-02",
+    "requestId": "pre-i4-visual-remediation-20260923-03",
     "production": false,
-    "previousRunId": 35913050696,
-    "previousResult": "SOURCE_GATE_FAIL_BEFORE_DEPLOY_FALSE_POSITIVE"
+    "priorRunId": 35915126071,
+    "priorRunResult": "PROVIDER_FAILURE_FIREBASE_CLI_RULES_TEST_403",
+    "runtimeAlreadyMaterialized": {
+      "revision": "cxorbia-live-hr-dev-00214-drz",
+      "imageTag": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:prei4-50b6a25d7971-35915126071",
+      "buildCount": 1,
+      "deployCount": 1
+    },
+    "continuation": {
+      "runtimeBuilds": 0,
+      "runtimeDeploys": 0,
+      "rulesDeploys": 1,
+      "hostingDeploys": 1,
+      "directRulesApi": true
+    }
+  },
+  "providerFailure": {
+    "classification": "PROVIDER_FAILURE",
+    "runId": 35915126071,
+    "cause": "Firebase CLI invokes firebaserules.projects.test, but the canonical DEV service account lacks firebaserules.rulesets.test. Historical evidence proves the same credential has direct Rules API create/get/release update permissions.",
+    "deploysBeforeFailure": {
+      "runtimeBuilds": 1,
+      "runtimeDeploys": 1,
+      "rulesWrites": 0,
+      "hostingDeploys": 0,
+      "productionDeploys": 0
+    },
+    "resolution": "Use existing proven direct Rules API deploy tool; do not rebuild/redeploy runtime."
   }
 }

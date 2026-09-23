@@ -1548,11 +1548,11 @@ jobs:
           node <<'NODE'
           const fs=require('fs'),{execFileSync}=require('child_process');
           const p=process.env.REQUEST,r=JSON.parse(fs.readFileSync(p,'utf8')),head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
-          const exact={schemaVersion:'cxorbia.pre-i4.human-entrypoint-dev-deploy.request.v1',requestId:'pre-i4-visual-remediation-20260923-02',branch:'recovery/cxorbia-phase-a-20260831',sourceSha:'50b6a25d79713b0f165cffc4355c7b7ffd1d9e84',sourceTree:'495266b89b932976569f57070b27b7e4f06d6cdd',targetProject:'cxorbia-backend-dev',hostingSite:'cxorbia-backend-dev',hostingTarget:'cxorbia-dev',devRootUrl:'https://cxorbia-backend-dev.web.app'};
+          const exact={schemaVersion:'cxorbia.pre-i4.human-entrypoint-dev-deploy.request.v1',requestId:'pre-i4-visual-remediation-20260923-03',branch:'recovery/cxorbia-phase-a-20260831',sourceSha:'50b6a25d79713b0f165cffc4355c7b7ffd1d9e84',sourceTree:'495266b89b932976569f57070b27b7e4f06d6cdd',targetProject:'cxorbia-backend-dev',hostingSite:'cxorbia-backend-dev',hostingTarget:'cxorbia-dev',devRootUrl:'https://cxorbia-backend-dev.web.app'};
           for(const [k,v] of Object.entries(exact))if(r[k]!==v)throw new Error('RELEASE_COMPOSITION_FAILURE:REQUEST_'+k.toUpperCase()+'_MISMATCH');
           if(r.enabled!==true||r.consumed!==false||r.status!=='authorized_execute_once'||r.authorizedBy!=='Paula')throw new Error('RELEASE_COMPOSITION_FAILURE:AUTHORIZATION_STATE_INVALID');
           if(r.production!==false||r.maxHostingDeploys!==1||r.noAutomaticRetry!==true)throw new Error('RELEASE_COMPOSITION_FAILURE:UNSAFE_DEPLOY_SCOPE');
-          if(Number(r.cloudRunDeploys)!==1||Number(r.runtimeDeploys)!==1||Number(r.rulesDeploys)!==1||Number(r.runtimeBuilds)!==1)throw new Error('RELEASE_COMPOSITION_FAILURE:FOCAL_DEV_SCOPE_MISMATCH');
+          if(Number(r.cloudRunDeploys)!==0||Number(r.runtimeDeploys)!==0||Number(r.rulesDeploys)!==1||Number(r.runtimeBuilds)!==0)throw new Error('RELEASE_COMPOSITION_FAILURE:FOCAL_DEV_CONTINUATION_SCOPE_MISMATCH');
           for(const k of ['firestoreWrites','authWrites','hrWrites','storageWrites','imports','legacyWrites'])if(Number(r[k]||0)!==0)throw new Error('RELEASE_COMPOSITION_FAILURE:UNSAFE_SCOPE_'+k);
           execFileSync('git',['cat-file','-e',r.sourceSha+'^{commit}']);
           if(execFileSync('git',['rev-parse',r.sourceSha+'^{tree}'],{encoding:'utf8'}).trim()!==r.sourceTree)throw new Error('RELEASE_COMPOSITION_FAILURE:SOURCE_TREE_MISMATCH');
@@ -1560,7 +1560,7 @@ jobs:
           const changed=execFileSync('git',['diff','--name-only',r.sourceSha,head],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean).sort();
           const allowed=[p,'.github/workflows/cxorbia-recovery-i3-dev-certification.yml','tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs','CXORBIA_PRE_I4_VISUAL_REMEDIATION_RUN_STATE_2026-09-22.json'].sort();
           if(JSON.stringify(changed)!==JSON.stringify(allowed))throw new Error('RELEASE_COMPOSITION_FAILURE:CONTROL_SUCCESSOR_PRODUCT_DRIFT:'+changed.join(','));
-          fs.writeFileSync(process.env.PREI4_OUT+'/authorization.json',JSON.stringify({decision:'PASS_PRE_I4_FOCAL_AUTHORIZATION',requestId:r.requestId,sourceSha:r.sourceSha,sourceTree:r.sourceTree,controlHeadSha:head,changedAfterSource:changed,runtimeBuildMax:1,runtimeDeployMax:1,rulesDeployMax:1,hostingDeployMax:1,production:false},null,2)+'\n');
+          fs.writeFileSync(process.env.PREI4_OUT+'/authorization.json',JSON.stringify({decision:'PASS_PRE_I4_FOCAL_AUTHORIZATION',requestId:r.requestId,sourceSha:r.sourceSha,sourceTree:r.sourceTree,controlHeadSha:head,changedAfterSource:changed,runtimeBuildMax:0,runtimeDeployMax:0,rulesDeployMax:1,hostingDeployMax:1,production:false},null,2)+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'source_sha='+r.sourceSha+'\nsource_tree='+r.sourceTree+'\n');
           NODE
 
@@ -1590,7 +1590,7 @@ jobs:
           cd "$PREI4_SOURCE_DIR"
           tar --sort=name --mtime='UTC 1970-01-01' --owner=0 --group=0 --numeric-owner -cf "$GITHUB_WORKSPACE/$PREI4_OUT/cxorbia-pre-i4-human-app.tar" app
           sha256sum "$GITHUB_WORKSPACE/$PREI4_OUT/cxorbia-pre-i4-human-app.tar" | awk '{print $1}' > "$GITHUB_WORKSPACE/$PREI4_OUT/app-artifact.sha256"
-          jq -n -S --arg source "${{ steps.gate.outputs.source_sha }}" --arg tree "${{ steps.gate.outputs.source_tree }}" --arg artifact "$(cat "$GITHUB_WORKSPACE/$PREI4_OUT/app-artifact.sha256")" '{decision:"PASS_PRE_I4_ONE_STATIC_ARTIFACT_FROZEN",sourceSha:$source,sourceTree:$tree,artifactSha256:$artifact,staticBuildCount:0,runtimeBuildMax:1,runtimeDeployMax:1,rulesDeployMax:1,hostingDeployMax:1,production:false}' > "$GITHUB_WORKSPACE/$PREI4_OUT/artifact-manifest.json"
+          jq -n -S --arg source "${{ steps.gate.outputs.source_sha }}" --arg tree "${{ steps.gate.outputs.source_tree }}" --arg artifact "$(cat "$GITHUB_WORKSPACE/$PREI4_OUT/app-artifact.sha256")" '{decision:"PASS_PRE_I4_ONE_STATIC_ARTIFACT_FROZEN",sourceSha:$source,sourceTree:$tree,artifactSha256:$artifact,staticBuildCount:0,runtimeBuildMax:0,runtimeDeployMax:0,rulesDeployMax:1,hostingDeployMax:1,production:false}' > "$GITHUB_WORKSPACE/$PREI4_OUT/artifact-manifest.json"
 
       - name: Authenticate existing Firebase DEV only
         uses: google-github-actions/auth@v2
@@ -1608,42 +1608,40 @@ jobs:
           npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1
           npx playwright install --with-deps chromium >/dev/null 2>&1
 
-      - name: Build exact PRE-I4 runtime source once
+      - name: Verify existing PRE-I4 runtime from Run 307 without rebuild or redeploy
         run: |
           set -Eeuo pipefail
-          IMAGE_URI="gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:prei4-50b6a25d7971-$GITHUB_RUN_ID"
-          gcloud builds submit "$PREI4_SOURCE_DIR" --project "cxorbia-backend-dev"             --config "$PREI4_SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml"             --substitutions "_IMAGE=$IMAGE_URI" --quiet
-          echo "$IMAGE_URI" > "$PREI4_OUT/runtime-image-uri.txt"
-          echo 1 > "$PREI4_OUT/runtime-build-count.txt"
-
-      - name: Deploy exact PRE-I4 runtime image to existing Recovery DEV once
-        run: |
-          set -Eeuo pipefail
-          test "$GITHUB_RUN_ATTEMPT" = "1"
-          IMAGE_URI="$(cat "$PREI4_OUT/runtime-image-uri.txt")"
-          gcloud run services update "cxorbia-live-hr-dev" --project "cxorbia-backend-dev" --region "us-central1" --image "$IMAGE_URI" --quiet
+          EXPECTED_TAG="gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:prei4-50b6a25d7971-35915126071"
           gcloud run services describe "cxorbia-live-hr-dev" --project "cxorbia-backend-dev" --region "us-central1" --format=json > "$PREI4_OUT/runtime-service.json"
           REVISION="$(jq -r '.status.latestReadyRevisionName // empty' "$PREI4_OUT/runtime-service.json")"
-          test -n "$REVISION"
+          test "$REVISION" = "cxorbia-live-hr-dev-00214-drz"
           gcloud run revisions describe "$REVISION" --project "cxorbia-backend-dev" --region "us-central1" --format=json > "$PREI4_OUT/runtime-revision.json"
-          DIGEST_RAW="$(jq -r '.status.imageDigest // empty' "$PREI4_OUT/runtime-revision.json")"
           IMAGE_SPEC="$(jq -r '.spec.containers[0].image // empty' "$PREI4_OUT/runtime-revision.json")"
+          DIGEST_RAW="$(jq -r '.status.imageDigest // empty' "$PREI4_OUT/runtime-revision.json")"
+          [[ "$IMAGE_SPEC" == "$EXPECTED_TAG" || "$IMAGE_SPEC" == "$EXPECTED_TAG"@sha256:* ]]
           if [[ "$DIGEST_RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$DIGEST_RAW"; elif [[ "$DIGEST_RAW" == *@sha256:* ]]; then DIGEST="sha256:${DIGEST_RAW##*@sha256:}"; elif [[ "$IMAGE_SPEC" == *@sha256:* ]]; then DIGEST="sha256:${IMAGE_SPEC##*@sha256:}"; else echo "Runtime digest unresolved" >&2; exit 1; fi
           RUNTIME_URL="$(jq -r '.status.url // empty' "$PREI4_OUT/runtime-service.json")"
-          test -n "$RUNTIME_URL"
-          curl -fsS --retry 10 --retry-delay 3 "$RUNTIME_URL/health" > "$PREI4_OUT/runtime-health.json"
+          curl -fsS --retry 10 --retry-delay 2 "$RUNTIME_URL/health" > "$PREI4_OUT/runtime-health.json"
           jq -e '.ok==true and .production==false and .hrWrites==false and .shopperReconciliationReady==true and .visitReconciliationReady==true' "$PREI4_OUT/runtime-health.json" >/dev/null
           printf '%s\n' "$REVISION" > "$PREI4_OUT/runtime-revision-name.txt"
           printf '%s\n' "$DIGEST" > "$PREI4_OUT/runtime-digest.txt"
-          echo 1 > "$PREI4_OUT/runtime-deploy-count.txt"
+          echo 0 > "$PREI4_OUT/runtime-build-count.txt"
+          echo 0 > "$PREI4_OUT/runtime-deploy-count.txt"
+          jq -n -S --arg revision "$REVISION" --arg digest "$DIGEST" --arg image "$IMAGE_SPEC" '{decision:"PASS_PRE_I4_EXISTING_RUNTIME_EXACT_SOURCE",runtimeRevision:$revision,runtimeDigest:$digest,image:$image,priorRunId:35915126071,priorBuildCount:1,priorDeployCount:1,continuationBuildCount:0,continuationDeployCount:0,production:false}' > "$PREI4_OUT/runtime-continuation.json"
 
-      - name: Deploy exact PRE-I4 Firestore rules to existing Recovery DEV once
+      - name: Deploy exact PRE-I4 Firestore rules through proven direct Rules API lane
+        env:
+          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
+          CXORBIA_RULES_SOURCE: ${{ env.PREI4_SOURCE_DIR }}/firestore.rules
+          CXORBIA_RULES_DEPLOY_REPORT: ${{ env.PREI4_OUT }}/direct-rules-deploy.json
+          CXORBIA_EXECUTE_FIRESTORE_RULES: 'true'
         run: |
           set -Eeuo pipefail
           test "$GITHUB_RUN_ATTEMPT" = "1"
-          cd "$PREI4_SOURCE_DIR"
-          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only firestore:rules --project "cxorbia-backend-dev" --non-interactive | tee "$GITHUB_WORKSPACE/$PREI4_OUT/rules-deploy.log"
-          cd "$GITHUB_WORKSPACE"
+          node tools/release/cxorbia-corte6-firestore-rules-deploy.mjs
+          test "$(jq -r '.verified' "$PREI4_OUT/direct-rules-deploy.json")" = "true"
+          test "$(jq -r '.safety.production' "$PREI4_OUT/direct-rules-deploy.json")" = "false"
+          test "$(jq -r '.safety.firestoreDataWrites' "$PREI4_OUT/direct-rules-deploy.json")" = "0"
           echo 1 > "$PREI4_OUT/rules-deploy-count.txt"
           TOKEN="$(gcloud auth print-access-token)"
           curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/cxorbia-backend-dev/releases/cloud.firestore" > "$PREI4_OUT/firestore-rules-release.json"
@@ -1660,7 +1658,7 @@ jobs:
           const remote=String(f.content||'').replace(/\r\n/g,'\n').trimEnd();
           const sha=x=>crypto.createHash('sha256').update(x).digest('hex');
           if(local!==remote)throw new Error('RELEASE_COMPOSITION_FAILURE:FIRESTORE_RULES_BYTE_MISMATCH');
-          fs.writeFileSync(process.env.PREI4_OUT+'/rules-parity.json',JSON.stringify({decision:'PASS_PRE_I4_FIRESTORE_RULES_PARITY',sha256:sha(local),production:false},null,2)+'\n');
+          fs.writeFileSync(process.env.PREI4_OUT+'/rules-parity.json',JSON.stringify({decision:'PASS_PRE_I4_FIRESTORE_RULES_PARITY',sha256:sha(local),directApi:true,production:false},null,2)+'\n');
           NODE
 
       - name: Deploy exact frozen successor to existing Hosting DEV once
@@ -1716,8 +1714,8 @@ jobs:
       - name: Prove deployed artifact equals frozen source
         run: |
           set -Eeuo pipefail
-          test "$(cat "$PREI4_OUT/runtime-build-count.txt")" = "1"
-          test "$(cat "$PREI4_OUT/runtime-deploy-count.txt")" = "1"
+          test "$(cat "$PREI4_OUT/runtime-build-count.txt")" = "0"
+          test "$(cat "$PREI4_OUT/runtime-deploy-count.txt")" = "0"
           test "$(cat "$PREI4_OUT/rules-deploy-count.txt")" = "1"
           test "$(cat "$PREI4_OUT/hosting-deploy-count.txt")" = "1"
           test "$(jq -r '.decision' "$PREI4_OUT/rules-parity.json")" = "PASS_PRE_I4_FIRESTORE_RULES_PARITY"
@@ -1726,7 +1724,7 @@ jobs:
           POST="$(sha256sum "$GITHUB_WORKSPACE/$PREI4_OUT/cxorbia-pre-i4-human-app-postcheck.tar" | awk '{print $1}')"
           PRE="$(cat "$GITHUB_WORKSPACE/$PREI4_OUT/app-artifact.sha256")"
           test "$POST" = "$PRE"
-          jq -n -S             --arg source "${{ steps.gate.outputs.source_sha }}"             --arg artifact "$PRE"             --arg hr "$(jq -r '.sourceRevision' "$GITHUB_WORKSPACE/$PREI4_OUT/hr-contrast.json")"             --arg runtimeRevision "$(cat "$GITHUB_WORKSPACE/$PREI4_OUT/runtime-revision-name.txt")"             --arg runtimeDigest "$(cat "$GITHUB_WORKSPACE/$PREI4_OUT/runtime-digest.txt")"             '{decision:"PASS_PRE_I4_SAME_ARTIFACT_DEV",sourceSha:$source,artifactSha256:$artifact,hrRevision:$hr,runtimeRevision:$runtimeRevision,runtimeDigest:$runtimeDigest,staticBuildCount:0,runtimeBuildCount:1,runtimeDeployCount:1,rulesDeployCount:1,hostingDeployCount:1,remoteByteParity:true,rulesParity:true,focalBrowser:true,production:false}'             > "$GITHUB_WORKSPACE/$PREI4_OUT/final.json"
+          jq -n -S             --arg source "${{ steps.gate.outputs.source_sha }}"             --arg artifact "$PRE"             --arg hr "$(jq -r '.sourceRevision' "$GITHUB_WORKSPACE/$PREI4_OUT/hr-contrast.json")"             --arg runtimeRevision "$(cat "$GITHUB_WORKSPACE/$PREI4_OUT/runtime-revision-name.txt")"             --arg runtimeDigest "$(cat "$GITHUB_WORKSPACE/$PREI4_OUT/runtime-digest.txt")"             '{decision:"PASS_PRE_I4_SAME_ARTIFACT_DEV",sourceSha:$source,artifactSha256:$artifact,hrRevision:$hr,runtimeRevision:$runtimeRevision,runtimeDigest:$runtimeDigest,staticBuildCount:0,continuationRuntimeBuildCount:0,continuationRuntimeDeployCount:0,cumulativeRuntimeBuildCount:1,cumulativeRuntimeDeployCount:1,rulesDeployCount:1,hostingDeployCount:1,remoteByteParity:true,rulesParity:true,focalBrowser:true,production:false}'             > "$GITHUB_WORKSPACE/$PREI4_OUT/final.json"
 
       - name: Upload focal PRE-I4 evidence and frozen app artifact
         if: always()
