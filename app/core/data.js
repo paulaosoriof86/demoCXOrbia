@@ -431,20 +431,41 @@ CX.data = {
     try{ return JSON.parse(localStorage.getItem(this._CUSTOM_KEY)||'[]'); }catch(e){ return []; }
   },
 
+  /* PRE-I4 VRM-001/002/006/021: scopeProjectId es identidad de PROYECTO raíz,
+     mientras this.projects contiene PERIODOS. Nunca comparar ambos IDs como si fueran la misma
+     entidad. Este helper acepta además el id de periodo legado solo para compatibilidad y resuelve
+     siempre contra rootProjectId/projectId/program/programKey sin hardcodear tenant/proyecto. */
+  periodMatchesProjectScope(p, scopeProjectId){
+    if(!p || !scopeProjectId) return false;
+    const sid=String(scopeProjectId);
+    if(String(p.id||'')===sid) return true; /* compat: scope histórico periodizado */
+    if(String(p.rootProjectId||'')===sid) return true;
+    if(String(p.projectId||'')===sid) return true;
+    if(String(p.program||'')===sid) return true;
+    try{ if(String(this.programKey(p)||'')===sid) return true; }catch(e){}
+    return false;
+  },
+  periodsForScope(scopeProjectId){
+    if(!scopeProjectId) return [];
+    return this.projects.filter(p=>this.periodMatchesProjectScope(p,scopeProjectId));
+  },
+
   /* proyectos visibles por rol: el shopper solo ve los de su país; coordinador/aliado con
-     scopePaises solo ven proyectos que tengan al menos un país dentro de su alcance;
-     con scopeProjectId (projectCoordinator/operationsCoordinator) solo ven ESE proyecto */
+     scopePaises solo ven periodos de proyectos que tengan al menos un país dentro de su alcance;
+     con scopeProjectId se devuelven todos los PERIODOS del proyecto raíz autorizado. */
   projectsFor(role){
     const spid=(CX.session&&CX.session.user&&CX.session.user.scopeProjectId)||null;
     if(role!=='shopper') {
-      if(spid) return this.projects.filter(p=>p.id===spid);
+      if(spid) return this.periodsForScope(spid);
       const sc=this.scopePaises();
       if(sc) return this.projects.filter(p=>(p.countries||[]).some(c=>sc.includes(c)));
       return this.projects;
     }
     const u=CX.session&&CX.session.user; const sh=u&&this.shoppers.find(s=>s.id===u.shopperId);
     const pais=sh?sh.pais:null;
-    return pais ? this.projects.filter(p=>p.countries.includes(pais)) : this.projects;
+    let base = pais ? this.projects.filter(p=>(p.countries||[]).includes(pais)) : this.projects;
+    if(spid) base=base.filter(p=>this.periodMatchesProjectScope(p,spid));
+    return base;
   },
   /* atajo usado por selectores de proyecto en Proyectos/Dashboard/Visitas — respeta el alcance por país */
   scopedProjects(){ return this.projectsFor(CX.session&&CX.session.role); },
@@ -494,7 +515,7 @@ CX.data = {
   scopedProyectos(){    const spid=(CX.session&&CX.session.user&&CX.session.user.scopeProjectId)||null;
     if(spid){
       const seen={}, out=[];
-      this.projects.filter(p=>p.id===spid).forEach(p=>{const k=this.programKey(p);if(!seen[k]){seen[k]={key:k,name:this.programBase(p),sample:p,periods:[]};out.push(seen[k]);}seen[k].periods.push(p);});
+      this.periodsForScope(spid).forEach(p=>{const k=this.programKey(p);if(!seen[k]){seen[k]={key:k,name:this.programBase(p),sample:p,periods:[]};out.push(seen[k]);}seen[k].periods.push(p);});
       return out;
     }
     const sc=this.scopePaises();

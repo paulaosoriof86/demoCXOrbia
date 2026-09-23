@@ -108,8 +108,13 @@ window.CX = window.CX || {};
       try{
         const u=(CX.session&&CX.session.user)||{};
         const p=CX.data&&CX.data.period&&CX.data.period();
-        out.tenantId = u.tenantId || undefined;
-        out.projectId = p&&p.id || undefined;
+        const dctx=CX.data&&CX.data.ctx&&CX.data.ctx();
+        out.tenantId = (dctx&&dctx.tenantId) || u.tenantId || undefined;
+        /* PRE-I4 VRM-001/002/021: projectId es SIEMPRE proyecto raíz; periodId viaja separado.
+           Antes se asignaba p.id, que en HR live es cinepolis-YYYY-MM y hacía fallar scopes
+           válidos contra scopeProjectId=cinepolis. */
+        out.projectId = (dctx&&dctx.projectId) || (CX.data&&CX.data.currentProjectId) || (p&&(p.rootProjectId||p.projectId||p.program)) || undefined;
+        out.periodId = (dctx&&dctx.periodId) || (CX.data&&CX.data.currentPeriodId) || (p&&p.id) || undefined;
         const countries = (p&&p.countries)||[];
         out.pais = countries.length===1 ? countries[0] : undefined; // multipaís: nunca asumir countries[0]
         out.entityType = undefined;
@@ -148,8 +153,19 @@ window.CX = window.CX || {};
       const u=(CX.session&&CX.session.user)||{};
       /* tenant: si el llamador especifica un tenant y el usuario tiene uno propio, deben coincidir */
       if(ctx.tenantId && u.tenantId && ctx.tenantId!==u.tenantId) return {ok:false, why:'de otro tenant'};
-      /* proyecto: scopeProjectId (projectCoordinator/operationsCoordinator con proyecto único) */
-      if(ctx.projectId && u.scopeProjectId && ctx.projectId!==u.scopeProjectId) return {ok:false, why:'fuera de tu proyecto asignado'};
+      /* proyecto: scopeProjectId identifica el PROYECTO raíz. Para compatibilidad con
+         callers históricos que todavía envían periodId en ctx.projectId, normalizar el periodo
+         contra su rootProjectId/program antes de decidir que está fuera de alcance. */
+      if(ctx.projectId && u.scopeProjectId){
+        let same=String(ctx.projectId)===String(u.scopeProjectId);
+        if(!same && CX.data){
+          try{
+            const period=(CX.data.projects||[]).find(p=>String(p.id||'')===String(ctx.projectId));
+            if(period && CX.data.periodMatchesProjectScope) same=CX.data.periodMatchesProjectScope(period,u.scopeProjectId);
+          }catch(e){}
+        }
+        if(!same) return {ok:false, why:'fuera de tu proyecto asignado'};
+      }
       /* país: scopePaises (coordinador/aliado con alcance regional) */
       if(ctx.pais && u.scopePaises && u.scopePaises.length && !u.scopePaises.includes(ctx.pais)) return {ok:false, why:'fuera de tu alcance de país'};
       if(!ctx.pais && u.scopePaises && u.scopePaises.length && actionId && this.GEO_SENSITIVE.includes(actionId)){

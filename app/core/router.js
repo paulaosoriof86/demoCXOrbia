@@ -35,7 +35,10 @@ CX.router = {
       /* P0 (V95 reauditoría): clientBrandAdmin/clientBrandViewer con scopeCliente/scopeProjectId
          deben aterrizar en SU proyecto, no en el que haya quedado activo de otra sesión. */
       const u=CX.session.user||{};
-      if(u.scopeProjectId && CX.data.projects.some(p=>p.id===u.scopeProjectId)) CX.data.setProject(u.scopeProjectId);
+      if(u.scopeProjectId){
+        const scoped=(CX.data.periodsForScope?CX.data.periodsForScope(u.scopeProjectId):CX.data.projects.filter(p=>p.id===u.scopeProjectId));
+        if(scoped.length && !scoped.some(p=>p.id===CX.data.currentPeriodId)) CX.data.setProject(scoped[scoped.length-1].id);
+      }
       else if(u.scopeCliente){
         /* P1 (V96 reauditoría): con varios proyectos para el mismo cliente, conserva el ya activo
            si sigue siendo del cliente; si no, aterriza en el primero — el portal ofrece selector. */
@@ -45,9 +48,11 @@ CX.router = {
     }
     else if(CX.data.scopePaises()||((CX.session.user||{}).scopeProjectId)){
       const u=CX.session.user||{};
-      if(u.scopeProjectId && CX.data.projects.some(p=>p.id===u.scopeProjectId)){
-        /* projectCoordinator/operationsCoordinator con proyecto único asignado */
-        if(CX.data.currentPeriodId!==u.scopeProjectId) CX.data.setProject(u.scopeProjectId);
+      if(u.scopeProjectId){
+        /* PRE-I4: scopeProjectId identifica proyecto raíz; seleccionar un periodo autorizado
+           únicamente si el periodo actual quedó fuera de ese proyecto. */
+        const scoped=(CX.data.periodsForScope?CX.data.periodsForScope(u.scopeProjectId):CX.data.projects.filter(p=>p.id===u.scopeProjectId));
+        if(scoped.length && !scoped.some(p=>p.id===CX.data.currentPeriodId)) CX.data.setProject(scoped[scoped.length-1].id);
       } else {
         const ok=CX.data.scopedProjects(); if(ok.length && !ok.some(p=>p.id===CX.data.currentPeriodId)) CX.data.setProject(ok[0].id);
       }
@@ -72,7 +77,7 @@ CX.router = {
   resolveVisibleProjects(role){
     const d=CX.data, u=CX.session.user||{};
     if(role==='cliente'){
-      if(u.scopeProjectId) return d.projects.filter(p=>p.id===u.scopeProjectId);
+      if(u.scopeProjectId) return d.periodsForScope?d.periodsForScope(u.scopeProjectId):d.projects.filter(p=>p.id===u.scopeProjectId);
       if(u.scopeCliente) return d.clientProjects(u.scopeCliente);
       return d.projectsFor(role);
     }

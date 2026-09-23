@@ -194,3 +194,19 @@ test('I3 shopper credential contract has one shared implementation across provid
   assert.doesNotMatch(portal,/const credentialPart=/);
   assert.doesNotMatch(provider,/randomBytes\(24\).*!aA1/);
 });
+
+
+test('PRE-I4 context contract keeps root project scope independent from period id',()=>{
+  const core=read('app/core/data.js');
+  const router=read('app/core/router.js');
+  const permissions=read('app/core/permissions.js');
+  assert.match(core,/periodMatchesProjectScope\(p, scopeProjectId\)/);
+  assert.match(core,/periodsForScope\(scopeProjectId\)/);
+  assert.match(core,/if\(spid\) return this\.periodsForScope\(spid\)/);
+  assert.match(router,/periodsForScope\?CX\.data\.periodsForScope\(u\.scopeProjectId\)/);
+  assert.match(router,/d\.periodsForScope\?d\.periodsForScope\(u\.scopeProjectId\)/);
+  assert.match(permissions,/out\.projectId = \(dctx&&dctx\.projectId\)/);
+  assert.match(permissions,/out\.periodId = \(dctx&&dctx\.periodId\)/);
+  assert.doesNotMatch(permissions,/out\.projectId = p&&p\.id/);
+  assert.match(permissions,/periodMatchesProjectScope\(period,u\.scopeProjectId\)/);
+});
