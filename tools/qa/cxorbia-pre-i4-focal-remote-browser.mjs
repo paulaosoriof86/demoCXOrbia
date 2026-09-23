@@ -100,12 +100,13 @@ async function signInMember(member,kind,route,options={}){
     const info=await page.evaluate(({kind,r})=>{
       const d=window.CX?.data||{},c=window.CX?.backendAuth?.context?.()||{},body=String(document.body?.innerText||'');
       const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
+      const list=v=>Array.isArray(v)?v:[];
       const phase=code=>typeof d.phaseFlow==='function'?d.phaseFlow(code):null;
       const ranking=typeof d.shopperRankingRows==='function'?d.shopperRankingRows():[];
       const population=typeof d.shoppersFor==='function'?d.shoppersFor().filter(s=>typeof d.shopperDataLevel!=='function'||d.shopperDataLevel(s)!=='protected_reference'):[];
       const stats=s=>s&&typeof d.shopperStats==='function'?d.shopperStats(s.id||s.shopperId):null;
-      const identityRows=arr(identityCases).map(ref=>{
-        const row=(d.shoppers||[]).find(s=>String(s.id||s.shopperId||'')===String(ref.sourceShopperId||'')||arr(s.legacyLiveShopperIds).map(String).includes(String(ref.sourceShopperId||'')))||null;
+      const identityRows=list(identityCases).map(ref=>{
+        const row=(d.shoppers||[]).find(s=>String(s.id||s.shopperId||'')===String(ref.sourceShopperId||'')||list(s.legacyLiveShopperIds).map(String).includes(String(ref.sourceShopperId||'')))||null;
         return {sourceShopperId:String(ref.sourceShopperId||''),expectedName:String(ref.name||''),expectedTotal:Number(ref.total||0),expectedRealized:Number(ref.realized||0),row:row?{id:String(row.id||row.shopperId||''),name:String(row.nombre||row.name||''),legacyLiveShopperIds:arr(row.legacyLiveShopperIds).map(String),stats:stats(row)}:null};
       });
       const finance=r==='financiero'&&window.CX?.fin?.porPais?window.CX.fin.porPais(d):null;

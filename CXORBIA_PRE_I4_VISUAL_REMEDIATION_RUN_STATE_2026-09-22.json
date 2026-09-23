@@ -1,12 +1,12 @@
 {
-  "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v8",
-  "generatedAt": "2026-09-23T16:51:00-06:00",
+  "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v9",
+  "generatedAt": "2026-09-23T16:58:00-06:00",
   "iteration": "I3_PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "microblockId": "CXORBIA-PRE-I4-VISUAL-REMEDIATION-MICROBLOCK-20260922",
-  "status": "HOLD_EXACT_IDENTITY_READBACK_READY",
+  "status": "HOLD_BROWSER_HARNESS_SCOPE_FIX_READY",
   "production": "DO_NOT_TOUCH",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "head": "dad1bcb4032f7887e38900dd3466f0e6aaa7cf22",
+  "head": "81b4d38a224d6f2fbb84993db311f16f59361a5b",
   "lastFunctionalWrite": {
     "commit": "50b6a25d79713b0f165cffc4355c7b7ffd1d9e84",
     "parent": "61cf7120603aeff110e97632bb6c69f5c4809d62",
@@ -244,7 +244,7 @@
       "note": "Prior no-debug state preserved and human data/source diagnostics are hidden unless technical access; browser no-drift proof pending."
     }
   },
-  "nextExactAction": "Run no-deploy focal verification again using exact HR shopper IDs/crosswalks rather than display names. Continue through Finance/Liquidations to determine whether live incomplete reimbursement rows are correctly marked partial. No production.",
+  "nextExactAction": "Re-run the no-deploy readback with browser-scope helper corrected; prove exact HR IDs/crosswalks, then continue to Finance/Liquidations and remaining Admin/Shopper desktop/mobile gates. Production remains untouched.",
   "functionalLineage": [
     {
       "commit": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
@@ -308,18 +308,11 @@
     ]
   },
   "focalProof": {
-    "state": "POSTDEPLOY_DYNAMIC_HR_READBACK_READY",
+    "state": "EXACT_ID_BROWSER_RETRY_READY",
     "sourceSha": "50b6a25d79713b0f165cffc4355c7b7ffd1d9e84",
     "sourceTree": "495266b89b932976569f57070b27b7e4f06d6cdd",
-    "deployedRunId": 35929165160,
-    "liveHrRevision": "ce5534c142a2bdadf38a85a6d5b5b8fb2f0820ae8f4ff9f0a3ef2d12f85f63a9",
-    "priorPasses": [
-      "runtime_exact_source",
-      "direct_rules_api",
-      "firestore_rules_parity",
-      "hosting_remote_byte_parity",
-      "fresh_hr_authority"
-    ],
+    "lastFreshHrRevision": "39c317037bff92b1a0c5e5971f138634d3e2900f556c0876cb1f690b312f5a8a",
+    "previousReadbackRunId": 35930704532,
     "nextRunDeploys": {
       "runtime": 0,
       "rules": 0,
@@ -341,11 +334,11 @@
     "resolution": "Use existing proven direct Rules API deploy tool; do not rebuild/redeploy runtime."
   },
   "lastControlFailure": {
-    "classification": "MAPPING_FAILURE",
-    "runId": 35930173836,
-    "cause": "QA resolved identity by display name. That violates exact-identity/no-name-merge Recovery contract. Fresh HR revision 46402dc5 contains distinct technical IDs for Julissa Flores and Julissa Illescas; next gate follows exact source IDs and legacyLiveShopperIds/canonical IDs.",
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "runId": 35930704532,
+    "cause": "Exact-ID browser diagnostic referenced Node helper arr inside page.evaluate and raised ReferenceError before any product adjudication.",
     "productDefectProven": false,
-    "hrRevision": "46402dc5cb8b01403fd100e4d859d687deafa8562500d0f97ff991199babd7be",
+    "hrRevision": "39c317037bff92b1a0c5e5971f138634d3e2900f556c0876cb1f690b312f5a8a",
     "deploymentsThisRun": {
       "runtime": 0,
       "rules": 0,
