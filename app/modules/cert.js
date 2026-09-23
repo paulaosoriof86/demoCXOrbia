@@ -1,10 +1,31 @@
-/* CXOrbia · Certificación (admin + shopper) */
-/* Banco de preguntas persistente por proyecto — el banco que publica el admin es el que toma el shopper */
+/* CXOrbia · Certificación (admin + shopper) — durable connected authority */
 CX.certStore = CX.certStore || {
-  key(pid){ return 'cx_certbank_'+pid; },
-  bank(pid){ try{ return JSON.parse(localStorage.getItem(this.key(pid))||'null'); }catch(e){ return null; } },
-  save(pid, data){ try{ localStorage.setItem(this.key(pid), JSON.stringify(data)); }catch(e){} CX.bus&&CX.bus.emit('cert'); },
-  clear(pid){ try{ localStorage.removeItem(this.key(pid)); }catch(e){} },
+  _demo:{},
+  connected(){return CX.BACKEND?.enabled===true;},
+  resourceId(pid){const projectId=String(CX.data?.currentProjectId||'project');return ('certbank-'+projectId+'-'+String(pid||'period')).replace(/[^a-zA-Z0-9_-]+/g,'-');},
+  bank(pid){
+    if(this.connected()){
+      const rows=CX.backendResources?.list?.({projectId:CX.data.currentProjectId,periodId:pid,resourceType:'certification_bank'})||[];
+      const row=rows.find(x=>x.id===this.resourceId(pid))||rows[0];
+      return row?.bank||null;
+    }
+    return this._demo[pid]||null;
+  },
+  async save(pid,data){
+    if(!this.connected()){this._demo[pid]=data;CX.bus&&CX.bus.emit('cert');return {ok:true,status:'committed',providerAck:true,successUiAllowed:true,demo:true};}
+    if(!CX.backendResources?.saveMetadata)return {ok:false,status:'blocked',providerAck:false,successUiAllowed:false,code:'CERT_DURABLE_BACKEND_UNAVAILABLE'};
+    const id=this.resourceId(pid),result=await CX.backendResources.saveMetadata({
+      id,resourceType:'certification_bank',projectId:CX.data.currentProjectId,periodId:pid,
+      n:'Banco de certificación',tipo:'certification_bank',bank:data,
+      visibleRoles:['super','admin','ops','coordinador','shopper'],targetAll:false
+    },{projectId:CX.data.currentProjectId,periodId:pid,idempotencyKey:'certbank.save:'+id+':'+Date.now()});
+    if(result?.providerAck===true)CX.bus&&CX.bus.emit('cert');
+    return result;
+  },
+  async clear(pid){
+    if(!this.connected()){delete this._demo[pid];return {ok:true,status:'committed',providerAck:true,successUiAllowed:true,demo:true};}
+    return CX.backendResources?.deleteMetadata?.(this.resourceId(pid),{projectId:CX.data.currentProjectId,periodId:pid,idempotencyKey:'certbank.delete:'+this.resourceId(pid)});
+  },
   /* parsea el texto/JSON de la IA a preguntas estructuradas [{q,ops:[],correcta,exp}] */
   parse(raw){
     try{ const j=JSON.parse(raw.replace(/```json|```/g,'').trim()); if(Array.isArray(j))return j; if(j.preguntas)return j.preguntas; }catch(e){}
@@ -18,6 +39,7 @@ CX.certStore = CX.certStore || {
     });
     return out.length?out:null;
   },
+
 };
 CX.module('cert', ({role,data,ui})=>{
   const p=data.period();
@@ -191,14 +213,15 @@ CX.module('cert', ({role,data,ui})=>{
           <select class="sel" id="pubRevisor" style="margin-bottom:6px">${rosterOpts.length?('<option value="">Selecciona…</option>'+rosterOpts.map(n=>`<option>${n}</option>`).join('')):'<option value="">Sin otro rol disponible en este proyecto</option>'}</select>
           <div style="font-size:10px;color:var(--t3);margin-bottom:10px">Simulación de segundo actor dentro del prototipo (sin sesiones concurrentes reales) — la verificación de identidad real la hace el sistema central (verificación de identidad) en producción.</div>
           <div style="text-align:right;margin-top:2px"><button class="btn btn-pr btn-sm" id="pubBank" ${preguntas.length?'':'disabled'}>Confirmar revisión · publicar banco</button></div>`,
-          {onMount:(o2,c2)=>o2.querySelector('#pubBank').addEventListener('click',()=>{
+          {onMount:(o2,c2)=>o2.querySelector('#pubBank').addEventListener('click',async()=>{
         if(!CX.permissions.gate('certification.publish',CX.permissions.ctx({entityType:'certification_bank',entityId:p.id}),ui)) return;
             const revisor=(o2.querySelector('#pubRevisor').value||'').trim();
             if(!revisor){ ui.toast('Selecciona quién revisa (segundo actor obligatorio)','warn',3200); return; }
             if(revisor.toLowerCase()===creador.toLowerCase()){ ui.toast('El revisor debe ser una persona distinta a quien generó el banco (segundo actor obligatorio)','warn',4500); return; }
             const auditRef='aud_'+Math.random().toString(36).slice(2,8)+Date.now().toString(36).slice(-4);
-            CX.certStore.save(p.id,{preguntas,gate:g,fecha:new Date().toISOString().slice(0,10),generadoPor:creador,revisadoPor:revisor,auditRef,estado:'approved_preview'});
-            c2();draw();ui.toast('✅ Banco aprobado (preview) · '+preguntas.length+' preguntas · revisado por '+revisor+' · disponible en ESTE prototipo — publicación real en producción pendiente de activación','ok',5200);
+            const result=await CX.certStore.save(p.id,{preguntas,gate:g,fecha:new Date().toISOString().slice(0,10),generadoPor:creador,revisadoPor:revisor,auditRef,estado:'approved_preview'});
+            if(!(result?.ok===true&&result?.status==='committed'&&result?.providerAck===true)){ui.toast('Banco no guardado: no hubo ACK durable.','warn',4400);return;}
+            c2();draw();ui.toast(CX.certStore.connected()?'✅ Banco guardado y confirmado por backend':'✅ Banco aprobado en modo demo','ok',5200);
           })});
       });
     });}}));

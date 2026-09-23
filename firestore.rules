@@ -220,7 +220,15 @@ service cloud.firestore {
       }
 
       match /resources/{resourceId} {
-        allow read: if tenantAllowed(tenantId) && isOperator();
+        allow read: if tenantAllowed(tenantId) && (
+          isOperator() ||
+          isShopperRole() &&
+          resource.data.status == 'active' &&
+          resource.data.projectId is string &&
+          projectAssigned(resource.data.projectId) &&
+          resource.data.visibleRoles is list &&
+          role() in resource.data.visibleRoles
+        );
         allow create, update, delete: if tenantAllowed(tenantId) && isOperator();
       }
 

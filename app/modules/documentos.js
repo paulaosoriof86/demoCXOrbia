@@ -1,22 +1,35 @@
 /* CXOrbia · Documentos (admin + shopper) — lectura DENTRO de la plataforma + subir */
 CX.docStore = CX.docStore || {
-  _d:{},
-  seed(pid){ return [
-    {id:'d1',ic:'📄',n:'Instructivo general',meta:'PDF · 2.1 MB',tipo:'pdf',
-      body:'# Instructivo general del programa\n\nEste documento describe el objetivo de la evaluación, el perfil del evaluador y las reglas generales.\n\n## Antes de la visita\n- Lee el escenario asignado y memorízalo (no lleves notas visibles).\n- Verifica que estás certificado para este proyecto.\n- Confirma fecha y franja en Mis Visitas.\n\n## Durante la visita\n- Mantén el anonimato en todo momento.\n- Cronometra los tiempos desde que ingresas.\n- Toma la evidencia requerida según el escenario.\n\n## Después\n- Completa el cuestionario el mismo día.\n- Adjunta la evidencia y los comprobantes para tu reembolso.'},
-    {id:'d2',ic:'🎯',n:'Escenario de evaluación',meta:'PDF · 1.4 MB',tipo:'pdf',
-      body:'# Escenario: Compra estándar\n\nActúa como un cliente habitual. Realiza una compra del producto definido y evalúa la atención, los tiempos y la limpieza.\n\n## Puntos clave a observar\n1. Saludo y bienvenida (¿te saludaron en los primeros 30s?).\n2. Conocimiento del asesor sobre el producto.\n3. Tiempo total en caja.\n4. Estado de limpieza y orden del local.\n5. Despedida e invitación a volver.'},
-    {id:'d3',ic:'🎬',n:'Video de inducción',meta:'YouTube · 5 min',tipo:'video',url:'https://www.youtube.com/embed/aqz-KE-bpKQ'},
-    {id:'d4',ic:'📋',n:'Checklist de visita',meta:'Lista · 8 ítems',tipo:'check',
-      items:['Certificación vigente','Escenario memorizado','Fecha confirmada','Evidencia lista (cámara)','Efectivo/medios de pago','Cronómetro a mano','Comprobantes guardados','Cuestionario completado el mismo día']},
+  _demo:{},
+  connected(){return CX.BACKEND?.enabled===true;},
+  seed(pid){return [
+    {id:'demo-d1',ic:'📄',n:'Instructivo general (demo)',meta:'Contenido de ejemplo',tipo:'text',body:'# Recurso demostrativo\n\nNo corresponde a un recurso conectado del proyecto.'}
   ];},
-  list(pid){ pid=pid||CX.data.currentPeriodId; if(!this._d[pid]) this._d[pid]=this.seed(pid); return this._d[pid]; },
-  add(pid,d){ this.list(pid).unshift(Object.assign({id:'d'+Date.now().toString(36),ic:'📎',meta:'subido ahora'},d)); CX.bus&&CX.bus.emit('docs'); },
+  list(pid){
+    pid=pid||CX.data.currentPeriodId;
+    if(this.connected())return CX.backendResources?.list?.({projectId:CX.data.currentProjectId,periodId:pid,resourceType:'project_resource'})||[];
+    if(!this._demo[pid])this._demo[pid]=this.seed(pid);
+    return this._demo[pid];
+  },
+  add(pid,d){
+    if(this.connected())throw new Error('RESOURCE_DURABLE_WRITE_REQUIRED');
+    this.list(pid).unshift(Object.assign({id:'demo-'+Date.now().toString(36),ic:'📎',meta:'demo'},d));
+    CX.bus&&CX.bus.emit('docs');
+  }
 };
 
 CX.module('documentos', ({data,role,ui})=>{
   const p=data.period(), pid=p.id;
   const host=ui.el('div');
+  const connected=()=>CX.docStore.connected();
+  const scope=()=>({projectId:data.currentProjectId,periodId:pid});
+  const committed=r=>r?.ok===true&&r?.status==='committed'&&r?.providerAck===true&&r?.successUiAllowed===true;
+  const resourceDefaults=rec=>Object.assign({resourceType:'project_resource',projectId:data.currentProjectId,periodId:pid,visibleRoles:['super','admin','ops','coordinador','shopper'],targetAll:false},rec||{});
+  const saveDurable=async(rec,options={})=>{
+    if(!connected()){CX.docStore.add(pid,rec);return {ok:true,status:'committed',providerAck:true,successUiAllowed:true,demo:true};}
+    if(!CX.backendResources?.saveMetadata)return {ok:false,status:'blocked',providerAck:false,successUiAllowed:false,code:'RESOURCE_BACKEND_UNAVAILABLE'};
+    return CX.backendResources.saveMetadata(resourceDefaults(rec),Object.assign(scope(),options));
+  };
 
   /* visor a PANTALLA COMPLETA en el área del módulo (no modal) */
   const viewer=(d)=>{
@@ -69,6 +82,7 @@ CX.module('documentos', ({data,role,ui})=>{
     host.innerHTML=`
       ${ui.ph('Recursos del proyecto', p.name+' · documentos, videos, imágenes y checklists · se abren a pantalla completa')}
       <div class="between" style="margin-bottom:14px">${ui.bdg(docs.length+' recursos','n')}${role==='admin'?'<div class="flex" style="gap:8px"><button class="btn btn-soft btn-sm" id="docIA">📝 Generar borrador (heurística local)</button><button class="btn btn-pr btn-sm" id="docUp">＋ Subir recurso</button></div>':''}</div>
+      ${connected()&&!docs.length?'<div class="card card-p" style="margin-bottom:14px">'+ui.degraded('No hay recursos reales publicados para este proyecto/periodo. Los recursos de ejemplo no se muestran en la operación conectada.',{title:'Recursos · pendiente de fuente/publicación'})+'</div>':''}
       <div class="grid g2">
         ${docs.map(d=>`<div class="card hov card-p flex" style="gap:13px">
           <div style="flex:1;display:flex;gap:13px;cursor:pointer" data-doc="${d.id}"><div style="font-size:26px">${d.ic}</div>
@@ -104,31 +118,37 @@ CX.module('documentos', ({data,role,ui})=>{
             ov.querySelector('#edBody').value=res;c2();ui.toast('Borrador local generado · revisa, itera o guarda','ok',3500);
           })});
         });
-        ov.querySelector('#edSave').addEventListener('click',()=>{
-        const before={n:d.n,body:d.body,url:d.url};
-        d.n=ov.querySelector('#edN').value.trim()||d.n;d.ic=ov.querySelector('#edIc').value||d.ic;
-        const u=ov.querySelector('#edUrl').value.trim();if(u){d.url=CX.learnStore?CX.learnStore.embedUrl(u):u.replace('youtube.com/watch?v=','youtube-nocookie.com/embed/');d.tipo='video';d.ic=d.ic||'🎬';}
-        d.body=ov.querySelector('#edBody').value;
-        /* Gap 3 (matriz V123): carpeta externa por referencia OPACA — nunca un nombre de
-           proveedor ni una URL real, solo el identificador que el equipo usa para ubicarla
-           externamente. Gap 4: vínculo opcional a una visita individual del proyecto (antes
-           un documento solo existía a nivel de proyecto, sin poder asociarse a una visita). */
-        d.externalFolderRef=ov.querySelector('#edFolderRef').value.trim()||null;
-        d.visitaId=ov.querySelector('#edVisita').value||null;
-        /* P1 (paquete V114→V125): historial real de documentos — antes editar/reemplazar no dejaba
-           rastro de quién/cuándo/qué cambió. Reusa CX.automations.logAction (ya incluye ctx completo
-           desde V123) como única bitácora — no se duplica una segunda tabla de auditoría. */
-        CX.automations&&CX.automations.logAction('Documento editado', d.id, d.n+(before.n!==d.n?' (antes: '+before.n+')':''));
-        const nf=ov.querySelector('#edFile').files[0];
-        if(nf){const rd=new FileReader();rd.onload=()=>{d.url=rd.result;d.meta=nf.name;if(nf.type==='application/pdf')d.tipo='pdf';else if(/^image\//.test(nf.type)){d.tipo='image';}else if(/^video\//.test(nf.type)){d.tipo='video';}close();draw();ui.toast('Documento actualizado','ok');};rd.readAsDataURL(nf);}
-        else{close();draw();ui.toast('Documento actualizado','ok');}
-      });}});
+        ov.querySelector('#edSave').addEventListener('click',async()=>{
+          const btn=ov.querySelector('#edSave');btn.disabled=true;btn.textContent='Guardando…';
+          const patch={
+            id:d.id,n:ov.querySelector('#edN').value.trim()||d.n,ic:ov.querySelector('#edIc').value||d.ic,
+            body:ov.querySelector('#edBody').value,
+            externalFolderRef:ov.querySelector('#edFolderRef').value.trim()||null,
+            visitaId:ov.querySelector('#edVisita').value||null,
+            tipo:d.tipo||'text',meta:d.meta||null,url:d.url||null
+          };
+          const u=ov.querySelector('#edUrl').value.trim();if(u){patch.url=CX.learnStore?CX.learnStore.embedUrl(u):u.replace('youtube.com/watch?v=','youtube-nocookie.com/embed/');patch.tipo='video';}
+          const nf=ov.querySelector('#edFile').files[0];
+          if(nf){
+            if(!connected()){ui.toast('Los archivos binarios no se persisten en modo demo.','warn',4200);btn.disabled=false;btn.textContent='Guardar';return;}
+            const up=await CX.backendResources.uploadBinary(nf,Object.assign(scope(),{resourceId:d.id}));
+            if(!committed(up)){ui.toast('Archivo no guardado: Storage no está autorizado/configurado. No se modificó el recurso.','warn',4600);btn.disabled=false;btn.textContent='Guardar';return;}
+            patch.url=up.item.url;patch.storagePath=up.item.storagePath;patch.meta=nf.name;
+            if(nf.type==='application/pdf')patch.tipo='pdf';else if(/^image\//.test(nf.type)){patch.tipo='image';patch.ic='🖼️';}else if(/^video\//.test(nf.type)){patch.tipo='video';patch.ic='🎬';}
+          }
+          const result=await saveDurable(patch,{expectedVersion:d.version,idempotencyKey:'resource.edit:'+d.id+':'+Date.now()});
+          if(!committed(result)){ui.toast('Documento no actualizado: no hubo ACK durable.','warn',4200);btn.disabled=false;btn.textContent='Guardar';return;}
+          close();draw();ui.toast('Documento actualizado y confirmado por backend','ok');
+        });}});
     }));
-    host.querySelectorAll('[data-deld]').forEach(b=>b.addEventListener('click',()=>{
+    host.querySelectorAll('[data-deld]').forEach(b=>b.addEventListener('click',async()=>{
       if(!CX.permissions.gate('documento.delete',CX.permissions.ctx({entityType:'documento',entityId:b.dataset.deld}),ui))return;
-      const d=(CX.docStore._d[pid]||[]).find(x=>x.id===b.dataset.deld);
-      CX.automations&&CX.automations.logAction('Documento eliminado', b.dataset.deld, d?d.n:'');
-      CX.docStore._d[pid]=(CX.docStore._d[pid]||[]).filter(x=>x.id!==b.dataset.deld);draw();ui.toast('Documento eliminado','');}));
+      const d=docs.find(x=>x.id===b.dataset.deld);
+      if(!connected()){CX.docStore._demo[pid]=(CX.docStore._demo[pid]||[]).filter(x=>x.id!==b.dataset.deld);draw();return;}
+      const result=await CX.backendResources.deleteMetadata(b.dataset.deld,Object.assign(scope(),{idempotencyKey:'resource.delete:'+b.dataset.deld}));
+      if(!committed(result)){ui.toast('Documento no eliminado: no hubo ACK durable.','warn',4200);return;}
+      CX.automations&&CX.automations.logAction('Documento eliminado',b.dataset.deld,d?d.n:'');draw();ui.toast('Documento eliminado y confirmado por backend','ok');
+    }));
     const up=host.querySelector('#docUp');
     host.querySelector('#docIA')?.addEventListener('click',()=>ui.modal('📝 Generar recurso (heurística local)',`
       <label class="lbl">Tipo de recurso a generar</label>
@@ -158,7 +178,7 @@ CX.module('documentos', ({data,role,ui})=>{
         const rec={n:nombres[tipo]+' (borrador local)',ic:ics[tipo],meta:'heurística local · sin IA real',tipo:tipo==='checklist'?'check':'text'};
         if(tipo==='checklist')rec.items=res.split('\n').filter(l=>/^[-•\d]/.test(l.trim())).map(l=>l.replace(/^[-•\d.\s]+/,'').trim()).filter(Boolean);
         else rec.body=res;
-        CX.docStore.add(pid,rec);close();draw();ui.toast('Borrador local generado · revísalo, edítalo o itera','ok',4000);
+        (async()=>{const result=await saveDurable(rec,{idempotencyKey:'resource.generated:'+Date.now()});if(!committed(result)){ui.toast('Borrador no guardado: no hubo ACK durable.','warn',4200);return;}close();draw();ui.toast(connected()?'Borrador guardado y confirmado por backend':'Borrador demo generado','ok',4000);})();
       });
     }}));
     if(up)up.addEventListener('click',()=>ui.modal('Subir recurso',`
@@ -182,14 +202,22 @@ CX.module('documentos', ({data,role,ui})=>{
         const visitaId=ov.querySelector('#duVisita').value; if(visitaId)rec.visitaId=visitaId;
         if(t==='video'&&url)rec.url=CX.learnStore?CX.learnStore.embedUrl(url):url;
         if(body)rec.body=body;
-        const finish=()=>{CX.docStore.add(pid,rec);close();draw();ui.toast('Documento subido · disponible para el proyecto','ok');};
-        if(f){const rd=new FileReader();rd.onload=()=>{rec.url=rd.result;if(f.type==='application/pdf')rec.tipo='pdf';else if(/^image\//.test(f.type)){rec.tipo='image';rec.ic='🖼️';}else if(/^video\//.test(f.type)){rec.tipo='video';rec.ic='🎬';}finish();};rd.readAsDataURL(f);}
-        else finish();
+        const finish=async()=>{const result=await saveDurable(rec,{idempotencyKey:'resource.upload:'+Date.now()});if(!committed(result)){ui.toast('Recurso no guardado: no hubo ACK durable.','warn',4200);return;}close();draw();ui.toast(connected()?'Recurso guardado y confirmado por backend':'Recurso demo guardado','ok');};
+        if(f){
+          if(!connected()){ui.toast('Los archivos binarios no se persisten en modo demo.','warn',4200);return;}
+          const upResult=await CX.backendResources.uploadBinary(f,Object.assign(scope(),{resourceId:'pending-'+Date.now().toString(36)}));
+          if(!committed(upResult)){ui.toast('Archivo no guardado: Storage no está autorizado/configurado. No se creó un recurso ficticio.','warn',4800);return;}
+          rec.url=upResult.item.url;rec.storagePath=upResult.item.storagePath;rec.meta=f.name;
+          if(f.type==='application/pdf')rec.tipo='pdf';else if(/^image\//.test(f.type)){rec.tipo='image';rec.ic='🖼️';}else if(/^video\//.test(f.type)){rec.tipo='video';rec.ic='🎬';}
+          await finish();
+        }else await finish();
       });
     }}));
   };
   draw();
   CX.bus.on('docs',()=>draw());
+  CX.bus.on('resources',()=>draw());
+  if(connected()&&CX.backendResources?.load)CX.backendResources.load(scope()).then(()=>draw()).catch(()=>draw());
   return host;
 });
 
