@@ -1,22 +1,19 @@
 {
-  "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v1",
-  "generatedAt": "2026-09-22T19:34:00-06:00",
+  "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v2",
+  "generatedAt": "2026-09-23T13:08:00-06:00",
   "iteration": "I3_PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "microblockId": "CXORBIA-PRE-I4-VISUAL-REMEDIATION-MICROBLOCK-20260922",
   "status": "HOLD_MICROBLOCK_ACTIVE",
   "production": "DO_NOT_TOUCH",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "head": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
+  "head": "bf859809d831e24665fede339a2ee872bc0e0d0c",
   "lastFunctionalWrite": {
-    "commit": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
-    "parent": "fda5262a82e19e214c327bc1015bfc8e547f5974",
+    "commit": "bf859809d831e24665fede339a2ee872bc0e0d0c",
+    "parent": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
     "files": [
-      "app/core/data.js",
-      "app/core/router.js",
-      "app/core/permissions.js",
-      "backend/runtime/hr-live-service/test/cxorbia-i3-project-period-contract.test.mjs"
+      "app/modules/postulaciones.js"
     ],
-    "purpose": "CONTEXT_CONTRACT_FIX",
+    "purpose": "READ_MODEL_RECONCILIATION_APPLICATION_STATUS_ACK",
     "productionDeploys": 0
   },
   "automaticPushWorkflowObservation": {
@@ -57,7 +54,13 @@
       "note": "project/period context root fixed; full cross-surface consistency remains to prove"
     },
     "VRM-005": {
-      "state": "OPEN_UNTIL_EVIDENCE"
+      "state": "FIXED_NOT_PROVEN",
+      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+      "owner": [
+        "app/core/data.js",
+        "app/modules/misvisitas.js"
+      ],
+      "note": "Canonical shopper visits/facets and pending applications now share shopperId/project/period read model; browser proof pending."
     },
     "VRM-006": {
       "state": "FIXED_NOT_PROVEN",
@@ -78,31 +81,82 @@
       "state": "OPEN_UNTIL_EVIDENCE"
     },
     "VRM-010": {
-      "state": "OPEN_UNTIL_EVIDENCE"
+      "state": "FIXED_NOT_PROVEN",
+      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+      "owner": [
+        "app/core/data.js",
+        "app/modules/dashboard.js"
+      ],
+      "note": "Operational phase flow now derives from canonicalFacets; exact HR drilldown proof pending."
     },
     "VRM-011": {
-      "state": "OPEN_UNTIL_EVIDENCE"
+      "state": "FIXED_NOT_PROVEN",
+      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+      "owner": [
+        "app/core/data.js",
+        "app/modules/dashboard.js"
+      ],
+      "note": "Ranking rows preserve shoppers without ratings instead of silently filtering them; human/source proof pending."
     },
     "VRM-012": {
-      "state": "OPEN_UNTIL_EVIDENCE"
+      "state": "FIXED_NOT_PROVEN",
+      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+      "owner": [
+        "app/core/data.js",
+        "app/modules/shoppers.js"
+      ],
+      "note": "Admin shopper stats now use canonical visit facets and active root project; identity-specific proof pending."
     },
     "VRM-013": {
-      "state": "OPEN_UNTIL_EVIDENCE"
+      "state": "PARTIAL_FIXED_NOT_PROVEN",
+      "evidenceRef": "bf859809d831e24665fede339a2ee872bc0e0d0c",
+      "owner": [
+        "app/modules/postulaciones.js",
+        "app/adapters/cxorbia-cxdata-command-boundary-v1.js"
+      ],
+      "note": "Approve was already durable; Standby/Reject now require provider ACK. Edit/reassign/cancel/reprogram local-first remnants remain and must be converted before terminal closure."
     },
     "VRM-014": {
-      "state": "OPEN_UNTIL_EVIDENCE"
+      "state": "FIXED_NOT_PROVEN",
+      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+      "owner": [
+        "app/core/finanzas-core.js",
+        "app/core/liquidacion.js",
+        "app/modules/finanzas.js"
+      ],
+      "note": "Operational obligations are no longer removed merely because reconciliation is pending; browser proof pending."
     },
     "VRM-015": {
-      "state": "OPEN_UNTIL_EVIDENCE"
+      "state": "FIXED_NOT_PROVEN",
+      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+      "owner": [
+        "app/core/finanzas-core.js",
+        "app/core/liquidacion.js",
+        "app/modules/finanzas.js"
+      ],
+      "note": "Known reimbursement obligations and partial reimbursement semantics preserved in canonical finance rows; GT/HN exact proof pending."
     },
     "VRM-016": {
-      "state": "OPEN_UNTIL_EVIDENCE"
+      "state": "FIXED_NOT_PROVEN",
+      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+      "owner": [
+        "app/core/finanzas-core.js",
+        "app/modules/finanzas.js"
+      ],
+      "note": "Unknown income/margin represented as null/source-pending rather than inferred zero; UI proof pending."
     },
     "VRM-017": {
       "state": "OPEN_UNTIL_EVIDENCE"
     },
     "VRM-018": {
-      "state": "OPEN_UNTIL_EVIDENCE"
+      "state": "FIXED_NOT_PROVEN",
+      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+      "owner": [
+        "app/core/finanzas-core.js",
+        "app/core/liquidacion.js",
+        "app/modules/finanzas.js"
+      ],
+      "note": "Review queue and operational obligation rows are separated; cause-specific UI proof pending."
     },
     "VRM-019": {
       "state": "OPEN_UNTIL_EVIDENCE"
@@ -120,7 +174,13 @@
       ]
     },
     "VRM-022": {
-      "state": "OPEN_UNTIL_EVIDENCE"
+      "state": "PARTIAL_FIXED_NOT_PROVEN",
+      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+      "owner": [
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+        "backend/runtime/hr-live-service/server.mjs"
+      ],
+      "note": "Protected certification carryover is now composed when present, but MODULE_TRUTH adjudication and durable certification source proof remain open."
     },
     "VRM-023": {
       "state": "ALREADY_PROVEN_NO_DRIFT",
@@ -131,5 +191,40 @@
       "evidenceRef": "Run304 + human screenshots: scenario/debug laboratory no longer visible in current human lane"
     }
   },
-  "nextExactAction": "Continue same microblock with READ_MODEL_RECONCILIATION owners: shopper KPI canonical facets, pending postulation visibility, Admin shopper stats/top-shopper source behavior, finance obligation-vs-confirmation semantics. Do not deploy DEV until cumulative source package is complete and focal gates are ready."
+  "nextExactAction": "Continue same microblock with READ_MODEL_RECONCILIATION remainder: convert VRM-013 edit/reassign/cancel/reprogram flows to existing ACK-aware command boundary, adjudicate VRM-022 certification MODULE_TRUTH, then proceed to DURABILITY_AND_RESOURCES. Do not deploy DEV or production.",
+  "functionalLineage": [
+    {
+      "commit": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
+      "purpose": "CONTEXT_CONTRACT_FIX"
+    },
+    {
+      "commit": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+      "purpose": "READ_MODEL_RECONCILIATION_CANONICAL_FACETS_FINANCE_CERT_CARRYOVER"
+    },
+    {
+      "commit": "bf859809d831e24665fede339a2ee872bc0e0d0c",
+      "purpose": "READ_MODEL_RECONCILIATION_APPLICATION_STATUS_ACK"
+    }
+  ],
+  "readModelReconciliation": {
+    "state": "IN_PROGRESS_MATERIAL_SUCCESSOR",
+    "canonicalReadModelCommit": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+    "applicationStatusAckCommit": "bf859809d831e24665fede339a2ee872bc0e0d0c",
+    "sourceAssertions": {
+      "shopperCanonicalFacets": true,
+      "pendingApplicationVisibility": true,
+      "adminShopperCanonicalStats": true,
+      "rankingDoesNotSilentlyExcludeMissingRating": true,
+      "financeObligationVsConfirmationSeparated": true,
+      "unknownIncomeMarginNotForcedToZero": true,
+      "applicationApproveAck": true,
+      "applicationStandbyAck": true,
+      "applicationRejectAck": true
+    },
+    "remaining": [
+      "VRM-013 edit/reassign/cancel/reprogram durable conversion",
+      "VRM-022 MODULE_TRUTH certification adjudication",
+      "focal browser/runtime proof for all FIXED_NOT_PROVEN findings"
+    ]
+  }
 }
