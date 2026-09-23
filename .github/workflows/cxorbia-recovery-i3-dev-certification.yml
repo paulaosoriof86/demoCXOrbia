@@ -1779,7 +1779,7 @@ jobs:
           node <<'NODE'
           const fs=require('fs'),{execFileSync}=require('child_process');
           const p=process.env.REQUEST,r=JSON.parse(fs.readFileSync(p,'utf8')),head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
-          if(r.schemaVersion!=='cxorbia.pre-i4.human-entrypoint-dev-deploy.request.v1'||r.requestId!=='pre-i4-visual-remediation-20260923-05')throw new Error('RELEASE_COMPOSITION_FAILURE:READBACK_REQUEST_ID');
+          if(r.schemaVersion!=='cxorbia.pre-i4.human-entrypoint-dev-deploy.request.v1'||r.requestId!=='pre-i4-visual-remediation-20260923-06')throw new Error('RELEASE_COMPOSITION_FAILURE:READBACK_REQUEST_ID');
           if(r.sourceSha!=='50b6a25d79713b0f165cffc4355c7b7ffd1d9e84'||r.sourceTree!=='495266b89b932976569f57070b27b7e4f06d6cdd')throw new Error('RELEASE_COMPOSITION_FAILURE:READBACK_SOURCE_DRIFT');
           if(r.status!=='deployed_verify_pending'||r.enabled!==false||r.consumed!==true||Number(r.deployedRunId)!==35929165160||r.noFurtherDeployBeforeReadback!==true)throw new Error('RELEASE_COMPOSITION_FAILURE:READBACK_CONSUMPTION_STATE');
           if(r.production!==false||r.readbackOnly!==true)throw new Error('RELEASE_COMPOSITION_FAILURE:READBACK_SCOPE_UNSAFE');
@@ -1873,10 +1873,21 @@ jobs:
             };
           };
           const GT=country('GT'),HN=country('HN');
+          const normName=x=>String(x||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
+          const identityNames=['Julissa Flores','Julissa Illescas'];
+          const identityCases=identityNames.map(name=>{
+            const rows=(p.shoppers||[]).filter(s=>normName(s.nombre||s.name)===normName(name));
+            if(rows.length!==1)throw new Error('SOURCE_FAILURE:EXACT_IDENTITY_REFERENCE_'+name.replace(/\s+/g,'_').toUpperCase());
+            const sourceShopperId=String(rows[0].shopperId||rows[0].id||'');
+            const linked=(p.visits||[]).filter(v=>String(v.shopperId||'')===sourceShopperId);
+            return {name,sourceShopperId,total:linked.length,realized:linked.filter(v=>facet(v,'realized')||v.executionState==='realized').length};
+          });
+          if(new Set(identityCases.map(x=>x.sourceShopperId)).size!==identityCases.length)throw new Error('SOURCE_FAILURE:EXACT_IDENTITY_REFERENCE_COLLISION');
           const reference={
             countries:{GT,HN},
             finance:{GT:GT.finance,HN:HN.finance},
-            liquidations:{total:GT.realized+HN.realized,GT:GT.realized,HN:HN.realized,paymentsConfirmed:GT.paymentConfirmed+HN.paymentConfirmed,liquidationsConfirmed:GT.liquidationConfirmed+HN.liquidationConfirmed}
+            liquidations:{total:GT.realized+HN.realized,GT:GT.realized,HN:HN.realized,paymentsConfirmed:GT.paymentConfirmed+HN.paymentConfirmed,liquidationsConfirmed:GT.liquidationConfirmed+HN.liquidationConfirmed},
+            identityCases
           };
           fs.writeFileSync(process.env.PREI4_OUT+'/hr-contrast.json',JSON.stringify({decision:'PASS_PRE_I4_HR_FRESH_CONTRAST',generatedAt:p.generatedAt,sourceRevision:revision,currentPeriodKey:key,currentPeriodId:period.id,projectId:p.projectId,projectName:p.projectName,tabs:period.tabs,GT,HN,reference,runtime:{cacheOrigin:p?._runtime?.cacheOrigin||null,sourceReadAt:p?._runtime?.sourceReadAt||null,refreshFinishedAt:p?._runtime?.refreshFinishedAt||null,shopperProviderWrites:Number(p?._runtime?.shopperReconciliation?.providerWrites||0),visitProviderWrites:Number(p?._runtime?.visitReconciliation?.providerWrites||0)},production:false,hrWrites:0},null,2)+'\n');
           NODE

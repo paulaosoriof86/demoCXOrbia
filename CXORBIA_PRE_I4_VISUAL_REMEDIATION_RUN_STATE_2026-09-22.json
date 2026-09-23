@@ -1,12 +1,12 @@
 {
-  "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v7",
-  "generatedAt": "2026-09-23T16:42:00-06:00",
+  "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v8",
+  "generatedAt": "2026-09-23T16:51:00-06:00",
   "iteration": "I3_PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "microblockId": "CXORBIA-PRE-I4-VISUAL-REMEDIATION-MICROBLOCK-20260922",
-  "status": "HOLD_LIVE_HR_PROVEN_DYNAMIC_FOCAL_READBACK_READY",
+  "status": "HOLD_EXACT_IDENTITY_READBACK_READY",
   "production": "DO_NOT_TOUCH",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "head": "d66b8904c24a9e26ba174ac869f2eb41212ee863",
+  "head": "dad1bcb4032f7887e38900dd3466f0e6aaa7cf22",
   "lastFunctionalWrite": {
     "commit": "50b6a25d79713b0f165cffc4355c7b7ffd1d9e84",
     "parent": "61cf7120603aeff110e97632bb6c69f5c4809d62",
@@ -127,12 +127,12 @@
     },
     "VRM-012": {
       "state": "FIXED_NOT_PROVEN",
-      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd + Run310/35930173836 HR revision 46402dc5",
       "owner": [
         "app/core/data.js",
         "app/modules/shoppers.js"
       ],
-      "note": "Admin shopper stats now use canonical visit facets and active root project; identity-specific proof pending."
+      "note": "Exact-id Admin shopper validation now required from same fresh HR revision; display-name identity tests are prohibited. Run310 exposed a QA name-based check, not yet a product identity defect."
     },
     "VRM-013": {
       "state": "FIXED_NOT_PROVEN",
@@ -244,7 +244,7 @@
       "note": "Prior no-debug state preserved and human data/source diagnostics are hidden unless technical access; browser no-drift proof pending."
     }
   },
-  "nextExactAction": "Execute one no-deploy postdeploy readback from exact source 50b6a25d: force fresh HR provider read, derive independent same-revision references dynamically, verify Dashboard/Finance/Liquidations plus Admin/Shopper desktop/mobile, and classify any remaining mismatch by exact owner. Production remains untouched.",
+  "nextExactAction": "Run no-deploy focal verification again using exact HR shopper IDs/crosswalks rather than display names. Continue through Finance/Liquidations to determine whether live incomplete reimbursement rows are correctly marked partial. No production.",
   "functionalLineage": [
     {
       "commit": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
@@ -342,30 +342,35 @@
   },
   "lastControlFailure": {
     "classification": "MAPPING_FAILURE",
-    "runId": 35929165160,
-    "cause": "Browser QA expected historical aggregate snapshot while Dashboard correctly reflected the new same-revision HR values. Control benchmark was stale; product Dashboard live mapping proven.",
+    "runId": 35930173836,
+    "cause": "QA resolved identity by display name. That violates exact-identity/no-name-merge Recovery contract. Fresh HR revision 46402dc5 contains distinct technical IDs for Julissa Flores and Julissa Illescas; next gate follows exact source IDs and legacyLiveShopperIds/canonical IDs.",
     "productDefectProven": false,
-    "hrRevision": "ce5534c142a2bdadf38a85a6d5b5b8fb2f0820ae8f4ff9f0a3ef2d12f85f63a9",
-    "runtimeBuildsThisRun": 0,
-    "runtimeDeploysThisRun": 0,
-    "rulesDeploysThisRun": 1,
-    "hostingDeploysThisRun": 1,
-    "productionDeploys": 0
+    "hrRevision": "46402dc5cb8b01403fd100e4d859d687deafa8562500d0f97ff991199babd7be",
+    "deploymentsThisRun": {
+      "runtime": 0,
+      "rules": 0,
+      "hosting": 0,
+      "production": 0
+    }
   },
   "liveHrProof": {
-    "runId": 35929165160,
+    "runId": 35930173836,
     "decision": "PASS_PRE_I4_HR_FRESH_CONTRAST",
-    "sourceRevision": "ce5534c142a2bdadf38a85a6d5b5b8fb2f0820ae8f4ff9f0a3ef2d12f85f63a9",
-    "generatedAt": "2026-09-23T22:36:55.475Z",
+    "sourceRevision": "46402dc5cb8b01403fd100e4d859d687deafa8562500d0f97ff991199babd7be",
+    "generatedAt": "2026-09-23T22:47:29.910Z",
     "GT": {
       "total": 34,
       "availableUnassigned": 1,
       "assigned": 33,
       "scheduled": 28,
       "realized": 20,
+      "questionnaire": 17,
       "submitted": 9,
+      "liquidationCandidate": 9,
       "outOfRange": 3,
-      "reviewRequired": 0
+      "reviewRequired": 0,
+      "knownReimbursements": 2710,
+      "reimbursementPartial": true
     },
     "HN": {
       "total": 10,
@@ -373,40 +378,19 @@
       "assigned": 9,
       "scheduled": 7,
       "realized": 6,
+      "questionnaire": 6,
       "submitted": 6,
+      "liquidationCandidate": 6,
       "outOfRange": 1,
-      "reviewRequired": 1
+      "reviewRequired": 1,
+      "knownReimbursements": 1778,
+      "reimbursementPartial": true
     },
-    "comparedWithPrior": {
-      "GT": {
-        "availableUnassigned": [
-          6,
-          1
-        ],
-        "assigned": [
-          28,
-          33
-        ],
-        "scheduled": [
-          21,
-          28
-        ],
-        "realized": [
-          16,
-          20
-        ]
-      },
-      "HN": {
-        "availableUnassigned": [
-          3,
-          1
-        ],
-        "assigned": [
-          7,
-          9
-        ]
-      }
+    "providerReconciliation": {
+      "shopperWrites": 258,
+      "visitWrites": 704,
+      "hrWrites": 0
     },
-    "conclusion": "LIVE_EXTERNAL_HR_CHANGE_DETECTED_WITHOUT_REIMPORT"
+    "conclusion": "SECOND_FORCED_LIVE_REVISION_PROVEN_WITHOUT_REIMPORT"
   }
 }
