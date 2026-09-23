@@ -1,23 +1,19 @@
 {
-  "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v3",
-  "generatedAt": "2026-09-23T14:05:00-06:00",
+  "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v4",
+  "generatedAt": "2026-09-23T14:22:00-06:00",
   "iteration": "I3_PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "microblockId": "CXORBIA-PRE-I4-VISUAL-REMEDIATION-MICROBLOCK-20260922",
-  "status": "HOLD_FOCAL_PROOF_READY",
+  "status": "HOLD_FOCAL_PROOF_RETRY_READY",
   "production": "DO_NOT_TOUCH",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "head": "61cf7120603aeff110e97632bb6c69f5c4809d62",
   "lastFunctionalWrite": {
-    "commit": "61cf7120603aeff110e97632bb6c69f5c4809d62",
-    "parent": "4aeb41ca6dffb6e5b8324ca50531587539f5058e",
+    "commit": "50b6a25d79713b0f165cffc4355c7b7ffd1d9e84",
+    "parent": "61cf7120603aeff110e97632bb6c69f5c4809d62",
     "files": [
-      "app/modules/shoppers.js",
-      "app/modules/postulaciones.js",
-      "app/modules/documentos.js",
-      "app/modules/cert.js",
-      "backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-ui-cleanup.test.mjs"
+      "app/modules/documentos.js"
     ],
-    "purpose": "HUMAN_UI_CLEANUP_FINAL_SOURCE_SUCCESSOR",
+    "purpose": "VRM_020_DEMO_STORE_DISAMBIGUATION_SOURCE_FIX",
     "productionDeploys": 0
   },
   "automaticPushWorkflowObservation": {
@@ -207,13 +203,13 @@
     },
     "VRM-020": {
       "state": "FIXED_NOT_PROVEN",
-      "evidenceRef": "e0bed18b62174544615dc55aa70dd4a1509692d7 + 3a14ca612988637521c3c6b39325f4d220771875",
+      "evidenceRef": "e0bed18b62174544615dc55aa70dd4a1509692d7 + 3a14ca612988637521c3c6b39325f4d220771875 + 50b6a25d79713b0f165cffc4355c7b7ffd1d9e84",
       "owner": [
         "app/modules/documentos.js",
         "app/core/backend-resources.js",
         "firestore.rules"
       ],
-      "note": "Resource metadata is transaction/ACK/idempotency backed; DataURL forbidden; binary upload fails closed unless Storage is explicitly authorized; live rules/browser proof pending."
+      "note": "Durable resource contract remains intact; demo-only store renamed to avoid legacy _d scanner prefix collision. Previous focal run failed before deploy on false-positive scanner; retry source is 50b6a25d79713b0f165cffc4355c7b7ffd1d9e84."
     },
     "VRM-021": {
       "state": "FIXED_NOT_PROVEN",
@@ -248,7 +244,7 @@
       "note": "Prior no-debug state preserved and human data/source diagnostics are hidden unless technical access; browser no-drift proof pending."
     }
   },
-  "nextExactAction": "Execute the existing canonical PRE-I4 focal job once with [pre-i4-dev-only] control successor: source tests -> exact runtime build/deploy DEV -> exact Firestore rules DEV -> exact Hosting DEV -> byte/rules/runtime parity -> fresh HR -> expanded Admin/Shopper desktop/mobile focal browser proof. No production.",
+  "nextExactAction": "Execute PRE-I4 focal proof once on source 50b6a25d79713b0f165cffc4355c7b7ffd1d9e84 after false-positive source-gate correction. No production.",
   "functionalLineage": [
     {
       "commit": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
@@ -292,8 +288,8 @@
     ]
   },
   "functionalSource": {
-    "sha": "61cf7120603aeff110e97632bb6c69f5c4809d62",
-    "tree": "4691c59bc85cc1b628e1b86bbfbcadb63c91d9d0",
+    "sha": "50b6a25d79713b0f165cffc4355c7b7ffd1d9e84",
+    "tree": "495266b89b932976569f57070b27b7e4f06d6cdd",
     "state": "CUMULATIVE_SOURCE_PACKAGE_COMPLETE_AWAITING_FOCAL_PROOF"
   },
   "durabilityAndResources": {
@@ -313,9 +309,11 @@
   },
   "focalProof": {
     "state": "READY_TO_EXECUTE_SINGLE_DEV_MATERIALIZATION",
-    "sourceSha": "61cf7120603aeff110e97632bb6c69f5c4809d62",
-    "sourceTree": "4691c59bc85cc1b628e1b86bbfbcadb63c91d9d0",
-    "requestId": "pre-i4-visual-remediation-20260923-01",
-    "production": false
+    "sourceSha": "50b6a25d79713b0f165cffc4355c7b7ffd1d9e84",
+    "sourceTree": "495266b89b932976569f57070b27b7e4f06d6cdd",
+    "requestId": "pre-i4-visual-remediation-20260923-02",
+    "production": false,
+    "previousRunId": 35913050696,
+    "previousResult": "SOURCE_GATE_FAIL_BEFORE_DEPLOY_FALSE_POSITIVE"
   }
 }

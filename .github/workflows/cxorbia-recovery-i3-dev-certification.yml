@@ -1548,7 +1548,7 @@ jobs:
           node <<'NODE'
           const fs=require('fs'),{execFileSync}=require('child_process');
           const p=process.env.REQUEST,r=JSON.parse(fs.readFileSync(p,'utf8')),head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
-          const exact={schemaVersion:'cxorbia.pre-i4.human-entrypoint-dev-deploy.request.v1',requestId:'pre-i4-visual-remediation-20260923-01',branch:'recovery/cxorbia-phase-a-20260831',sourceSha:'61cf7120603aeff110e97632bb6c69f5c4809d62',sourceTree:'4691c59bc85cc1b628e1b86bbfbcadb63c91d9d0',targetProject:'cxorbia-backend-dev',hostingSite:'cxorbia-backend-dev',hostingTarget:'cxorbia-dev',devRootUrl:'https://cxorbia-backend-dev.web.app'};
+          const exact={schemaVersion:'cxorbia.pre-i4.human-entrypoint-dev-deploy.request.v1',requestId:'pre-i4-visual-remediation-20260923-02',branch:'recovery/cxorbia-phase-a-20260831',sourceSha:'50b6a25d79713b0f165cffc4355c7b7ffd1d9e84',sourceTree:'495266b89b932976569f57070b27b7e4f06d6cdd',targetProject:'cxorbia-backend-dev',hostingSite:'cxorbia-backend-dev',hostingTarget:'cxorbia-dev',devRootUrl:'https://cxorbia-backend-dev.web.app'};
           for(const [k,v] of Object.entries(exact))if(r[k]!==v)throw new Error('RELEASE_COMPOSITION_FAILURE:REQUEST_'+k.toUpperCase()+'_MISMATCH');
           if(r.enabled!==true||r.consumed!==false||r.status!=='authorized_execute_once'||r.authorizedBy!=='Paula')throw new Error('RELEASE_COMPOSITION_FAILURE:AUTHORIZATION_STATE_INVALID');
           if(r.production!==false||r.maxHostingDeploys!==1||r.noAutomaticRetry!==true)throw new Error('RELEASE_COMPOSITION_FAILURE:UNSAFE_DEPLOY_SCOPE');
@@ -1611,7 +1611,7 @@ jobs:
       - name: Build exact PRE-I4 runtime source once
         run: |
           set -Eeuo pipefail
-          IMAGE_URI="gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:prei4-61cf7120603a-$GITHUB_RUN_ID"
+          IMAGE_URI="gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:prei4-50b6a25d7971-$GITHUB_RUN_ID"
           gcloud builds submit "$PREI4_SOURCE_DIR" --project "cxorbia-backend-dev"             --config "$PREI4_SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml"             --substitutions "_IMAGE=$IMAGE_URI" --quiet
           echo "$IMAGE_URI" > "$PREI4_OUT/runtime-image-uri.txt"
           echo 1 > "$PREI4_OUT/runtime-build-count.txt"
