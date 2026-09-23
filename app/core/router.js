@@ -21,8 +21,10 @@ CX.router = {
     try{
       const db=document.getElementById('tbDataBadge');
       if(db && CX.dataSource){
+        const tech=CX.session?.hasTechAccess?.()===true;
         const b=CX.dataSource.badge();
         db.innerHTML='<span class="d" style="background:'+b.c+'"></span> '+b.t;
+        db.style.display=tech?'flex':'none';
       }
     }catch(e){}
     /* GAP1 (paquete V113→V114): ninguna de estas ramas escribe currentPeriodId/currentProjectId
@@ -66,7 +68,7 @@ CX.router = {
     const savedOk = CX.session.view && CX.MODULES[CX.session.view] && CX.MODULES[CX.session.view].roles.includes(role)
       && CX.moduleEnabled(CX.session.view) && CX.roleCanAccess(gRole,CX.session.view) && CX.moduleVisibleForProfile(CX.session.view,role);
     const start = savedOk ? CX.session.view : first;
-    this.nav(start);
+    this.nav(start,{history:'replace'});
   },
 
   /* P0-3 / P0-2A: proyectos visibles para el selector del rail — siempre data-driven, nunca
@@ -185,7 +187,7 @@ CX.router = {
        CX.BRAND/scopePaises() por separado en este archivo — mismo dato, una sola fuente. */
     const _ctx = CX.data.ctx ? CX.data.ctx() : null;
     const _ctxTip = _ctx ? ` · tenant: ${_ctx.tenantId||'—'}${_ctx.countryScope?(' · alcance: '+_ctx.countryScope.join('/')):''}` : '';
-    projBlock += `<div class="rail-src" title="Fuente de datos del prototipo${_src.mode?(' · modo: '+_src.mode):''}${_ctxTip}" style="display:flex;align-items:center;gap:6px;margin-top:8px;font-size:10px;color:var(--t3)"><span style="width:7px;height:7px;border-radius:50%;background:${_src.c}"></span>Datos: ${_src.t}</div>`;
+    if(CX.session?.hasTechAccess?.()===true) projBlock += `<div class="rail-src" title="Trazabilidad de fuente${_src.mode?(' · '+_src.mode):''}${_ctxTip}" style="display:flex;align-items:center;gap:6px;margin-top:8px;font-size:10px;color:var(--t3)"><span style="width:7px;height:7px;border-radius:50%;background:${_src.c}"></span>Fuente: ${_src.t}</div>`;
 
     const collapsed = (()=>{try{return JSON.parse(localStorage.getItem('cx_rail_col')||'{}')}catch(e){return {};}})();
     const nav=this.navGroups(role).map(group=>{
@@ -219,6 +221,11 @@ CX.router = {
        (verdadero alcance multipaís asignado) conservan su indicador multipaís sin cambios. */
     const _shopperPais = role==='shopper' ? (()=>{ const sh=u.shopperId && CX.data.getShopper && CX.data.getShopper(u.shopperId); return sh&&sh.pais ? (CX.paisFlag(sh.pais)+' '+CX.paisName(sh.pais)) : 'sin país asignado'; })() : null;
     const _roleLineLbl = role==='admin'?'Administración':role==='cliente'?'Portal del cliente':('Shopper · '+(_shopperPais||'—'));
+    const roleIdentity=document.getElementById('tbRoleIdentity');
+    if(roleIdentity){
+      const roleName=role==='admin'?'Administración':role==='cliente'?'Cliente':role==='shopper'?'Shopper':role;
+      roleIdentity.innerHTML='<b>'+String(u.name||'Usuario')+'</b><span>'+roleName+'</span>';
+    }
     rail.innerHTML=`
       <div class="rail-brand">
         ${logoHTML}
@@ -283,7 +290,7 @@ CX.router = {
     document.getElementById('logoutBtn').addEventListener('click',()=>CX.app.logout());
   },
 
-  nav(id){
+  nav(id,opts={}){
     const role=CX.session.role, m=CX.MODULES[id];
     if(!m||!m.roles.includes(role)||!CX.moduleEnabled(id)||!CX.roleCanAccess(CX.session.testRole||role,id)||!CX.moduleVisibleForProfile(id,role)) return;
     /* P0-2 (paquete V149 fix, 20260716): detalle técnico (Diagnóstico & Readiness) solo para
@@ -298,6 +305,11 @@ CX.router = {
     const crumbLbl = typeof m.label==='function' ? m.label(role) : m.label;
     document.getElementById('crumb').innerHTML=`${group?group.sec:''} <span class="sep">/</span> <b>${crumbLbl}</b>`;
     this.render(id);
+    try{
+      const state={cxorbia:true,cxView:id};
+      if(opts.history==='replace') history.replaceState(state,'',location.href);
+      else if(opts.history!==false && history.state?.cxView!==id) history.pushState(state,'',location.href);
+    }catch(_){}
     const c=document.querySelector('.content'); if(c)c.scrollTo({top:0});
   },
 
@@ -316,11 +328,16 @@ CX.router = {
   },
 };
 
+window.addEventListener('popstate',e=>{
+  const id=e.state&&e.state.cxView;
+  if(id&&CX.session?.role)CX.router.nav(id,{history:false});
+});
+
 /* re-render current view + rail badges when project changes */
 CX.bus.on('project',()=>{
   if(!CX.session.role)return;
   CX.router.buildRail(CX.session.role);
-  CX.router.nav(CX.session.view);
+  CX.router.nav(CX.session.view,{history:false});
 });
 
 /* ============================================================

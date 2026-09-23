@@ -173,6 +173,7 @@
   padding:11px 28px;display:flex;align-items:center;gap:14px;min-height:56px}
 .tb-crumb{font-size:13px;color:var(--t2);font-weight:600;display:flex;align-items:center;gap:8px}
 .tb-crumb .sep{color:var(--t3)}.tb-crumb b{color:var(--t1)}
+.tb-role-id{display:none;min-width:0;line-height:1.15}.tb-role-id b{font-size:11.5px;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px}.tb-role-id span{font-size:9.5px;color:var(--t3)}
 .tb-demo{font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;background:var(--amber-bg);color:var(--amber);display:flex;align-items:center;gap:6px}
 .tb-demo .d{width:6px;height:6px;border-radius:50%;background:var(--amber)}
 /* Campanita + soporte */
@@ -207,6 +208,8 @@
   body.nav-open .scrim{display:block;position:fixed;inset:0;background:rgba(13,39,64,.45);z-index:35}
   .canvas{margin-left:0}
   .menu-btn{display:flex}
+  .tb-role-id{display:flex;flex-direction:column}
+  .tb-crumb{display:none}
   .content{padding:20px 16px 80px}
   .topbar{padding:10px 16px}
   /* responsive: grids de KPIs apilan, tablas con scroll, modales casi full */

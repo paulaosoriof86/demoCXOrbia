@@ -106,14 +106,15 @@ CX.module('financiero', ({data,ui})=>{
       const financialSourceStatus = l.financialSourceStatus || (faltan.length?'incomplete_fields':(contractHit?'pending_or_review':'complete'));
       const motivo = l.reviewRequired?'Revisión requerida por fuente':(l.liquidationState==='pending_financial_source'?'Liquidación pendiente de fuente financiera':(l.paymentState==='pending_source_confirmation'?'Pago pendiente de confirmación de fuente':(faltan.length?'Fuente financiera incompleta':'Pendiente de revisión')));
       return {l,faltan,financialSourceStatus,motivo,include:(contractHit||faltan.length>0)}; }).filter(r=>r.include);
-    if(!revs.length) return `<div class="card card-p" style="margin-bottom:16px"><div class="card-h"><div class="card-t">🔐 Revisiones financieras (fuente incompleta)</div><span class="bdg bdg-g">0 en revisión</span></div><div style="font-size:12px;color:var(--t3)">Sin revisiones fail-closed en este periodo y alcance.</div></div>`;
+    const sourceLabel=s=>s==='incomplete_fields'?'Datos incompletos':s==='complete'?'Información completa':'Pendiente de conciliación';
+    if(!revs.length) return `<div class="card card-p" style="margin-bottom:16px"><div class="card-h"><div class="card-t">🔐 Revisiones financieras</div><span class="bdg bdg-g">0 pendientes</span></div><div style="font-size:12px;color:var(--t3)">No hay registros pendientes de revisión financiera en este periodo.</div></div>`;
     return `<div class="card card-p" style="margin-bottom:16px;border-color:#f3d9d9">
-      <div class="card-h"><div class="card-t">🔐 Revisiones financieras (fuente incompleta)</div><span class="bdg bdg-r">${revs.length} en revisión · fail-closed</span></div>
-      <div style="font-size:11.5px;color:var(--t2);margin-bottom:10px">Mientras la fuente esté incompleta no se permite pago, lote ni confirmación. Cada fila conserva su país y moneda. Contratos de revisión: reviewRequired, financialSourceStatus (pending_or_review) y liquidationState (pending_financial_source). paymentState se muestra como estado de pago y no abre revisión de fuente por sí solo.</div>
-      <div class="scroll-hint" aria-label="Desliza para ver más" style="overflow-x:auto"><table class="tbl"><thead><tr><th>País</th><th>Moneda</th><th>Sucursal / visita</th><th>Shopper</th><th>visitId</th><th>hrRowId</th><th>financialSourceStatus</th><th>Motivo</th><th>Campos faltantes</th><th>Revisión</th></tr></thead><tbody>
-      ${revs.map(r=>`<tr><td><b>${r.l.pais?CX.paisLabel(r.l.pais):'<span class="muted">—</span>'}</b></td><td>${r.l.moneda||'<span class="muted">—</span>'}</td><td style="font-size:12px">${r.l.sucursal||r.l.visitaId||'—'}</td><td style="font-size:12px">${r.l.shopper||'—'}</td><td style="font-size:11px;color:var(--t3)">${r.l.visitaId||'—'}</td><td style="font-size:11px;color:var(--t3)">${r.l.hrRowId||'—'}</td><td>${ui.bdg(r.financialSourceStatus,'r')}</td><td style="font-size:11.5px">${r.motivo}</td><td style="font-size:11.5px">${r.faltan.length?r.faltan.join(', '):'—'}</td><td>${ui.bdg('Pendiente de revisión · sin pago/lote','a')}</td></tr>`).join('')}
+      <div class="card-h"><div class="card-t">🔐 Revisiones financieras</div><span class="bdg bdg-r">${revs.length} pendientes</span></div>
+      <div style="font-size:11.5px;color:var(--t2);margin-bottom:10px">Estos registros necesitan completar o conciliar su información antes de incluirlos en un lote o confirmar un pago.</div>
+      <div class="scroll-hint" aria-label="Desliza para ver más" style="overflow-x:auto"><table class="tbl"><thead><tr><th>País</th><th>Moneda</th><th>Sucursal / visita</th><th>Shopper</th><th>Estado de información</th><th>Motivo</th><th>Campos faltantes</th><th>Revisión</th><th>Trazabilidad</th></tr></thead><tbody>
+      ${revs.map(r=>`<tr><td><b>${r.l.pais?CX.paisLabel(r.l.pais):'<span class="muted">—</span>'}</b></td><td>${r.l.moneda||'<span class="muted">—</span>'}</td><td style="font-size:12px">${r.l.sucursal||'—'}</td><td style="font-size:12px">${r.l.shopper||'—'}</td><td>${ui.bdg(sourceLabel(r.financialSourceStatus),'a')}</td><td style="font-size:11.5px">${r.motivo}</td><td style="font-size:11.5px">${r.faltan.length?r.faltan.join(', '):'—'}</td><td>${ui.bdg('Pendiente · sin pago/lote','a')}</td><td><details><summary style="cursor:pointer;font-size:11px">Ver detalle</summary><div style="font-size:10px;color:var(--t3);margin-top:5px">Visita: ${r.l.visitaId||'—'}<br>Fila de origen: ${r.l.hrRowId||'—'}<br>Estado técnico: ${r.financialSourceStatus}</div></details></td></tr>`).join('')}
       </tbody></table></div>
-      <div style="margin-top:10px;font-size:11px;color:var(--t3)">🔒 Pago y lote bloqueados para estas filas hasta completar la fuente (monto, moneda, fecha y referencia).</div>
+      <div style="margin-top:10px;font-size:11px;color:var(--t3)">🔒 Pago y lote permanecen bloqueados hasta completar la información requerida.</div>
     </div>`;
   })()}
 
@@ -293,7 +294,7 @@ CX.module('movimientos', ({data,ui})=>{
 
     host.innerHTML=`
     <div class="between" style="margin-bottom:12px"><div>${ui.ph('Movimientos & Tesorería', 'Ingresos, egresos, CxC/CxP, financiamientos y remesas · por proyecto o globales')}</div>
-      <div class="flex"><span class="bdg bdg-a">◐ Preview operativo</span><button class="btn btn-ghost btn-sm" id="movExport">⤓ Exportar</button></div></div>
+      <div class="flex"><span class="bdg bdg-a">Operación financiera</span><button class="btn btn-ghost btn-sm" id="movExport">⤓ Exportar</button></div></div>
 
     <div class="between" style="margin-bottom:14px;flex-wrap:wrap;gap:10px">
       <div class="flex" style="gap:0;border:1px solid var(--border);border-radius:9px;overflow:hidden;width:max-content">
@@ -636,7 +637,7 @@ CX.module('liquidaciones', ({data,ui})=>{
     }).join('');
 
     const lrow=(l,i)=>{const lb=CX.liq.label(l.estado); const inD=draft.includes(l.visitaId);
-      return `<tr data-li="${i}" style="${inD?'background:var(--brand-light)':''}"><td style="position:sticky;left:0;background:${inD?'#eaf4fc':'var(--panel)'};z-index:1">${l.estado==='validada'?(inD?`<button class="btn btn-soft btn-sm" data-rm="${l.visitaId}" style="padding:3px 9px;color:var(--red)">✕ Retirar</button>`:`<button class="btn btn-pr btn-sm" data-add="${l.visitaId}" style="padding:3px 10px">▶ Mover a lote</button>`):l.estado==='pendiente_cuestionario'?ui.bdg('espera shopper','n'):l.estado==='pagada'?ui.bdg('✓ pagada','g'):l.estado==='pagada_preview'?ui.bdg('◐ pagada (preview)','a'):ui.bdg('—','n')}</td>
+      return `<tr data-li="${i}" style="${inD?'background:var(--brand-light)':''}"><td style="position:sticky;left:0;background:${inD?'#eaf4fc':'var(--panel)'};z-index:1">${l.estado==='validada'?(inD?`<button class="btn btn-soft btn-sm" data-rm="${l.visitaId}" style="padding:3px 9px;color:var(--red)">✕ Retirar</button>`:`<button class="btn btn-pr btn-sm" data-add="${l.visitaId}" style="padding:3px 10px">▶ Mover a lote</button>`):l.estado==='pendiente_cuestionario'?ui.bdg('espera shopper','n'):l.estado==='pagada'?ui.bdg('✓ pagada','g'):l.estado==='pagada_preview'?ui.bdg('◐ pago pendiente de confirmación','a'):ui.bdg('—','n')}</td>
         <td style="position:sticky;left:96px;background:${inD?'#eaf4fc':'var(--panel)'};z-index:1"><b>${l.shopper||'—'}</b><div style="font-size:10px;color:var(--t3)">${l.shopperCode||''}</div></td>
         <td style="font-size:12px">${l.sucursal}</td><td style="font-size:12px">${l.freal||'—'}</td>
         <td>${inD?ui.bdg('● en lote','p'):ui.bdg(lb[0],lb[1])}</td><td>${l.submit?'✅':'—'}</td>
