@@ -1,12 +1,12 @@
 {
-  "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v5",
-  "generatedAt": "2026-09-23T14:31:00-06:00",
+  "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v6",
+  "generatedAt": "2026-09-23T16:33:00-06:00",
   "iteration": "I3_PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "microblockId": "CXORBIA-PRE-I4-VISUAL-REMEDIATION-MICROBLOCK-20260922",
-  "status": "HOLD_FOCAL_PROOF_PROVIDER_CONTINUATION_READY",
+  "status": "HOLD_FOCAL_PROOF_RUNTIME_IDENTITY_READBACK_FIX_READY",
   "production": "DO_NOT_TOUCH",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "head": "9856287871196817e3d43b9bd6f3243a5dd9929e",
+  "head": "22c43ce401fe26d1c5cb99b3e37203c86a4088af",
   "lastFunctionalWrite": {
     "commit": "50b6a25d79713b0f165cffc4355c7b7ffd1d9e84",
     "parent": "61cf7120603aeff110e97632bb6c69f5c4809d62",
@@ -244,7 +244,7 @@
       "note": "Prior no-debug state preserved and human data/source diagnostics are hidden unless technical access; browser no-drift proof pending."
     }
   },
-  "nextExactAction": "Execute provider continuation only: verify exact existing runtime from Run307; deploy exact Firestore rules through proven direct Rules API lane; deploy frozen Hosting DEV; prove byte parity; read fresh HR revision and operational metrics; execute Admin/Shopper desktop/mobile focal browser; no production.",
+  "nextExactAction": "Execute control-only retry: prove service tag resolves to revision digest, then direct Rules API, Hosting DEV, byte parity, fresh HR revision/metrics, Admin+Shopper desktop/mobile focal browser, artifact parity. No runtime rebuild/redeploy; no production.",
   "functionalLineage": [
     {
       "commit": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
@@ -308,25 +308,32 @@
     ]
   },
   "focalProof": {
-    "state": "PROVIDER_CONTINUATION_READY",
+    "state": "RUNTIME_IDENTITY_GATE_FALSE_NEGATIVE_CORRECTED_READY",
     "sourceSha": "50b6a25d79713b0f165cffc4355c7b7ffd1d9e84",
     "sourceTree": "495266b89b932976569f57070b27b7e4f06d6cdd",
-    "requestId": "pre-i4-visual-remediation-20260923-03",
+    "requestId": "pre-i4-visual-remediation-20260923-04",
     "production": false,
-    "priorRunId": 35915126071,
-    "priorRunResult": "PROVIDER_FAILURE_FIREBASE_CLI_RULES_TEST_403",
-    "runtimeAlreadyMaterialized": {
+    "priorRuns": [
+      {
+        "runId": 35915126071,
+        "result": "PROVIDER_FAILURE_FIREBASE_CLI_RULES_TEST_403",
+        "runtimeMaterialized": true,
+        "rules": false,
+        "hosting": false
+      },
+      {
+        "runId": 35920936726,
+        "result": "CONTROL_GATE_FALSE_NEGATIVE_RUNTIME_REVISION_USES_DIGEST_NOT_TAG",
+        "runtimeMaterialized": false,
+        "rules": false,
+        "hosting": false
+      }
+    ],
+    "runtimeEvidence": {
       "revision": "cxorbia-live-hr-dev-00214-drz",
-      "imageTag": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:prei4-50b6a25d7971-35915126071",
-      "buildCount": 1,
-      "deployCount": 1
-    },
-    "continuation": {
-      "runtimeBuilds": 0,
-      "runtimeDeploys": 0,
-      "rulesDeploys": 1,
-      "hostingDeploys": 1,
-      "directRulesApi": true
+      "serviceTag": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:prei4-50b6a25d7971-35915126071",
+      "revisionDigest": "sha256:1d1acc0be840ba1f11f41639c9a71b1fcf0fd0aa1ac6e9cb08b8bcc27e68c303",
+      "trafficPercent": 100
     }
   },
   "providerFailure": {
@@ -341,5 +348,16 @@
       "productionDeploys": 0
     },
     "resolution": "Use existing proven direct Rules API deploy tool; do not rebuild/redeploy runtime."
+  },
+  "lastControlFailure": {
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "runId": 35920936726,
+    "cause": "Verification compared immutable Cloud Run revision digest form against mutable service tag string. Artifact readback proves service tag is exact and revision is exact; no runtime drift.",
+    "providerWrites": 0,
+    "runtimeBuilds": 0,
+    "runtimeDeploys": 0,
+    "rulesWrites": 0,
+    "hostingDeploys": 0,
+    "productionDeploys": 0
   }
 }

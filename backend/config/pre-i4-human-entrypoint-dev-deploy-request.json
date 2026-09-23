@@ -1,11 +1,11 @@
 {
   "schemaVersion": "cxorbia.pre-i4.human-entrypoint-dev-deploy.request.v1",
-  "requestId": "pre-i4-visual-remediation-20260923-03",
+  "requestId": "pre-i4-visual-remediation-20260923-04",
   "status": "authorized_execute_once",
   "enabled": true,
   "consumed": false,
   "authorizedBy": "Paula",
-  "authorizationSource": "current_conversation_2026-09-23_continue_after_rules_cli_provider_failure",
+  "authorizationSource": "current_conversation_2026-09-23_continue_after_runtime_identity_gate_false_negative",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "sourceSha": "50b6a25d79713b0f165cffc4355c7b7ffd1d9e84",
   "sourceTree": "495266b89b932976569f57070b27b7e4f06d6cdd",

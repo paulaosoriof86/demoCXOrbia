@@ -1548,7 +1548,7 @@ jobs:
           node <<'NODE'
           const fs=require('fs'),{execFileSync}=require('child_process');
           const p=process.env.REQUEST,r=JSON.parse(fs.readFileSync(p,'utf8')),head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
-          const exact={schemaVersion:'cxorbia.pre-i4.human-entrypoint-dev-deploy.request.v1',requestId:'pre-i4-visual-remediation-20260923-03',branch:'recovery/cxorbia-phase-a-20260831',sourceSha:'50b6a25d79713b0f165cffc4355c7b7ffd1d9e84',sourceTree:'495266b89b932976569f57070b27b7e4f06d6cdd',targetProject:'cxorbia-backend-dev',hostingSite:'cxorbia-backend-dev',hostingTarget:'cxorbia-dev',devRootUrl:'https://cxorbia-backend-dev.web.app'};
+          const exact={schemaVersion:'cxorbia.pre-i4.human-entrypoint-dev-deploy.request.v1',requestId:'pre-i4-visual-remediation-20260923-04',branch:'recovery/cxorbia-phase-a-20260831',sourceSha:'50b6a25d79713b0f165cffc4355c7b7ffd1d9e84',sourceTree:'495266b89b932976569f57070b27b7e4f06d6cdd',targetProject:'cxorbia-backend-dev',hostingSite:'cxorbia-backend-dev',hostingTarget:'cxorbia-dev',devRootUrl:'https://cxorbia-backend-dev.web.app'};
           for(const [k,v] of Object.entries(exact))if(r[k]!==v)throw new Error('RELEASE_COMPOSITION_FAILURE:REQUEST_'+k.toUpperCase()+'_MISMATCH');
           if(r.enabled!==true||r.consumed!==false||r.status!=='authorized_execute_once'||r.authorizedBy!=='Paula')throw new Error('RELEASE_COMPOSITION_FAILURE:AUTHORIZATION_STATE_INVALID');
           if(r.production!==false||r.maxHostingDeploys!==1||r.noAutomaticRetry!==true)throw new Error('RELEASE_COMPOSITION_FAILURE:UNSAFE_DEPLOY_SCOPE');
@@ -1616,10 +1616,15 @@ jobs:
           REVISION="$(jq -r '.status.latestReadyRevisionName // empty' "$PREI4_OUT/runtime-service.json")"
           test "$REVISION" = "cxorbia-live-hr-dev-00214-drz"
           gcloud run revisions describe "$REVISION" --project "cxorbia-backend-dev" --region "us-central1" --format=json > "$PREI4_OUT/runtime-revision.json"
-          IMAGE_SPEC="$(jq -r '.spec.containers[0].image // empty' "$PREI4_OUT/runtime-revision.json")"
+          SERVICE_IMAGE="$(jq -r '.spec.template.spec.containers[0].image // empty' "$PREI4_OUT/runtime-service.json")"
+          REVISION_IMAGE="$(jq -r '.spec.containers[0].image // empty' "$PREI4_OUT/runtime-revision.json")"
           DIGEST_RAW="$(jq -r '.status.imageDigest // empty' "$PREI4_OUT/runtime-revision.json")"
-          [[ "$IMAGE_SPEC" == "$EXPECTED_TAG" || "$IMAGE_SPEC" == "$EXPECTED_TAG"@sha256:* ]]
-          if [[ "$DIGEST_RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$DIGEST_RAW"; elif [[ "$DIGEST_RAW" == *@sha256:* ]]; then DIGEST="sha256:${DIGEST_RAW##*@sha256:}"; elif [[ "$IMAGE_SPEC" == *@sha256:* ]]; then DIGEST="sha256:${IMAGE_SPEC##*@sha256:}"; else echo "Runtime digest unresolved" >&2; exit 1; fi
+          test "$SERVICE_IMAGE" = "$EXPECTED_TAG"
+          TAG_DIGEST="$(gcloud container images describe "$EXPECTED_TAG" --format='value(image_summary.digest)')"
+          [[ "$TAG_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
+          if [[ "$DIGEST_RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$DIGEST_RAW"; elif [[ "$DIGEST_RAW" == *@sha256:* ]]; then DIGEST="sha256:${DIGEST_RAW##*@sha256:}"; elif [[ "$REVISION_IMAGE" == *@sha256:* ]]; then DIGEST="sha256:${REVISION_IMAGE##*@sha256:}"; else echo "Runtime digest unresolved" >&2; exit 1; fi
+          test "$DIGEST" = "$TAG_DIGEST"
+          [[ "$REVISION_IMAGE" == *@"$DIGEST" ]]
           RUNTIME_URL="$(jq -r '.status.url // empty' "$PREI4_OUT/runtime-service.json")"
           curl -fsS --retry 10 --retry-delay 2 "$RUNTIME_URL/health" > "$PREI4_OUT/runtime-health.json"
           jq -e '.ok==true and .production==false and .hrWrites==false and .shopperReconciliationReady==true and .visitReconciliationReady==true' "$PREI4_OUT/runtime-health.json" >/dev/null
@@ -1627,7 +1632,7 @@ jobs:
           printf '%s\n' "$DIGEST" > "$PREI4_OUT/runtime-digest.txt"
           echo 0 > "$PREI4_OUT/runtime-build-count.txt"
           echo 0 > "$PREI4_OUT/runtime-deploy-count.txt"
-          jq -n -S --arg revision "$REVISION" --arg digest "$DIGEST" --arg image "$IMAGE_SPEC" '{decision:"PASS_PRE_I4_EXISTING_RUNTIME_EXACT_SOURCE",runtimeRevision:$revision,runtimeDigest:$digest,image:$image,priorRunId:35915126071,priorBuildCount:1,priorDeployCount:1,continuationBuildCount:0,continuationDeployCount:0,production:false}' > "$PREI4_OUT/runtime-continuation.json"
+          jq -n -S --arg revision "$REVISION" --arg digest "$DIGEST" --arg serviceImage "$SERVICE_IMAGE" --arg revisionImage "$REVISION_IMAGE" '{decision:"PASS_PRE_I4_EXISTING_RUNTIME_EXACT_SOURCE",runtimeRevision:$revision,runtimeDigest:$digest,serviceImage:$serviceImage,revisionImage:$revisionImage,tagDigestMatchesRevision:true,priorRunId:35915126071,priorBuildCount:1,priorDeployCount:1,continuationBuildCount:0,continuationDeployCount:0,production:false}' > "$PREI4_OUT/runtime-continuation.json"
 
       - name: Deploy exact PRE-I4 Firestore rules through proven direct Rules API lane
         env:
