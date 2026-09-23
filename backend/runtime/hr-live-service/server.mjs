@@ -194,16 +194,24 @@ async function protectedPlatformState(current,principal,scope,operational){
     const live=String(visit.shopperId||'').trim(),canonical=cross.get(live);
     if(canonical){visit.canonicalShopperId=canonical;visit.identityAuthority='hr_exact_crosswalk';mappedVisits++;}
   }
-  const reservationsRef=principal.db.collection('tenants').doc(scope.tenantId).collection('projects').doc(scope.projectId).collection('reservations');
-  let reservationSnap;
+  const projectRef=principal.db.collection('tenants').doc(scope.tenantId).collection('projects').doc(scope.projectId);
+  const reservationsRef=projectRef.collection('reservations');
+  const certificationsRef=projectRef.collection('certifications');
+  let reservationSnap,certificationSnap;
   if(principal.role==='shopper'){
     if(!principal.shopperId)throw new Error('AUTH_FAILURE:PROTECTED_RUNTIME_SHOPPER_ID_REQUIRED');
-    reservationSnap=await reservationsRef.where('shopperId','==',principal.shopperId).get();
+    [reservationSnap,certificationSnap]=await Promise.all([
+      reservationsRef.where('shopperId','==',principal.shopperId).get(),
+      certificationsRef.where('shopperId','==',principal.shopperId).get()
+    ]);
   }else if(['super','admin','ops','coordinador'].includes(principal.role)){
-    reservationSnap=await reservationsRef.get();
-  }else reservationSnap={docs:[]};
+    [reservationSnap,certificationSnap]=await Promise.all([reservationsRef.get(),certificationsRef.get()]);
+  }else{
+    reservationSnap={docs:[]};certificationSnap={docs:[]};
+  }
   const reservations=reservationSnap.docs.map(doc=>({id:doc.id,...(doc.data()||{})}));
-  return {snapshot,protectedState:{reservations,identityAuthority:'hr_exact_crosswalk',crosswalkTokenCount:cross.size,mappedShoppers,mappedVisits,sourceRevision:current.revision}};
+  const certifications=certificationSnap.docs.map(doc=>({id:doc.id,...(doc.data()||{}),projectId:doc.data()?.projectId||scope.projectId}));
+  return {snapshot,protectedState:{reservations,certifications,certificationAuthority:'firestore_project_certifications_exact_identity',identityAuthority:'hr_exact_crosswalk',crosswalkTokenCount:cross.size,mappedShoppers,mappedVisits,sourceRevision:current.revision}};
 }
 
 function shopperPolicy(snapshot){

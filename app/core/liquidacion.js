@@ -75,13 +75,25 @@ CX.liq = {
     const total=v.honorario+reembolso;
     const baseISO = (v.submit&&v.cuestFecha) || v.cuestFecha || v.realizada || v.agendada || '';
     return {
-      visitaId:v.id, projectId:p.id, shopper:v.shopper, shopperCode:v.shopperCode,
+      visitaId:v.id, visitId:v.visitId||v.id, hrRowId:v.hrRowId||null, projectId:p.id, periodId:v.periodId||p.id,
+      shopperId:v.shopperId||null, shopper:v.shopper, shopperCode:v.shopperCode,
       sucursal:v.sucursal, pais:v.pais, moneda:v.currency, loteId:v.loteId||null,
       honorario:v.honorario, boleto:v.boleto||0, combo:v.comboAmt||0, reembolso, total,
       estado, freal:v.realizada||'', cuest:v.cuestFecha||'', submit:v.submit?(v.cuestFecha||''):'',
       fechaEstimadaPago: (estado==='pagada'||estado==='pagada_preview') ? (v.fechaPago||'') : this.fechaEstimadaPago(p, baseISO),
       pagada: estado==='pagada',
       pagadaPreview: estado==='pagada_preview',
+      canonicalFacets:v.canonicalFacets||null,
+      sourceRevision:v.sourceRevision||v.hrRevision||null,
+      reviewRequired:v.reviewRequired===true,
+      reviewReasons:Array.isArray(v.reviewReasons)?v.reviewReasons.slice():[],
+      financialSourceStatus:v.financialSourceStatus||null,
+      liquidationState:v.liquidationState||null,
+      paymentState:v.paymentState||null,
+      paymentConfirmed:v.paymentConfirmed===true,
+      paymentSourceRef:v.paymentSourceRef||v.paymentRef||null,
+      reimbursementSourceStatus:v.reimbursementSourceStatus||v.reimbursementStatus||null,
+      reimbursementPartial:v.reimbursementPartial===true||v.reembolsoPartial===true||v.reimbursementSourceComplete===false,
     };
   },
 

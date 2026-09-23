@@ -31,11 +31,12 @@ CX.module('dashboard', ({data,ui})=>{
     fueraRango:phaseCount(BF.fueraRango),
     postPend:data._posts.filter(pp=>pp.estado==='pendiente'&&data.inScope(pp.pais)&&!pp._archived).length,
   };
-  const phaseFlow=(c)=>{const arr=pool().filter(x=>x.pais===c);const t=arr.length||1;const n=fn=>arr.filter(fn).length;const pc=x=>Math.round(x/t*100);
-    const real=n(x=>['realizada','cuestionario','liquidada'].includes(x.estado));const agen=n(x=>['agendada','realizada','cuestionario','liquidada'].includes(x.estado));
-    return {total:arr.length,asign:[n(x=>x.shopperId),pc(n(x=>x.shopperId))],agend:[agen,pc(agen)],
-      sinAgend:[n(x=>x.estado==='asignada'),pc(n(x=>x.estado==='asignada'))],sinAsign:[n(x=>!x.shopperId&&x.estado!=='fuera_rango'),pc(n(x=>!x.shopperId&&x.estado!=='fuera_rango'))],
-      real:[real,pc(real)],cuest:[n(x=>x.estado==='realizada'),pc(n(x=>x.estado==='realizada'))],submit:[n(x=>x.estado==='cuestionario'),pc(n(x=>x.estado==='cuestionario'))],liq:[n(x=>x.estado==='liquidada'),pc(n(x=>x.estado==='liquidada'))]};};
+  const phaseFlow=(c)=>{const arr=pool().filter(x=>x.pais===c);const t=arr.length||1;const n=fn=>arr.filter(fn).length;const pc=x=>Math.round(x/t*100);const f=x=>data.visitFacets(x);
+    const assigned=n(x=>f(x).assigned&&!f(x).cancelled),scheduled=n(x=>f(x).scheduled&&!f(x).cancelled),real=n(x=>f(x).realized&&!f(x).cancelled);
+    const questionnaire=n(x=>f(x).questionnaire&&!f(x).cancelled),submitted=n(x=>f(x).submitted&&!f(x).cancelled),liquidated=n(x=>f(x).liquidationConfirmed&&!f(x).cancelled);
+    const sinAgend=n(x=>f(x).assigned&&!f(x).scheduled&&!f(x).realized&&!f(x).cancelled),sinAsign=n(x=>!f(x).assigned&&!f(x).realized&&!f(x).cancelled);
+    return {total:arr.length,asign:[assigned,pc(assigned)],agend:[scheduled,pc(scheduled)],sinAgend:[sinAgend,pc(sinAgend)],sinAsign:[sinAsign,pc(sinAsign)],
+      real:[real,pc(real)],cuest:[questionnaire,pc(questionnaire)],submit:[submitted,pc(submitted)],liq:[liquidated,pc(liquidated)]};};
   const shoppersPool=ALL?data.shoppers.filter(s=>data.inScope(s.pais)):data.shoppersFor();
   const split=(o)=>cs.map(c=>c+':'+(o[c]||0)).join(' · ');
   const months=['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
@@ -109,7 +110,11 @@ CX.module('dashboard', ({data,ui})=>{
      — sin rating numérico, la comparación produce NaN/orden arbitrario y una referencia protegida
      puede colarse en el ranking. Ahora usa data.rankableShoppers() (nivel≠protected_reference Y
      rating numérico real) como única fuente de quién es rankeable. */
-  const top=data.rankableShoppers(shoppersPool).sort((a,b)=>b.rating-a.rating).slice(0,5);
+  const rankingRows=(typeof data.shopperRankingRows==='function'?data.shopperRankingRows(shoppersPool):shoppersPool.map(s=>({shopper:s,rating:Number.isFinite(s.rating)?s.rating:null,ratingAvailable:Number.isFinite(s.rating)})));
+  const rankingReady=rankingRows.length>0&&rankingRows.every(r=>r.ratingAvailable);
+  const rankingPendingCount=rankingRows.filter(r=>!r.ratingAvailable).length;
+  const rankingOrdered=rankingReady?rankingRows.slice().sort((a,b)=>b.rating-a.rating):rankingRows.slice().sort((a,b)=>String(a.shopper.nombre||'').localeCompare(String(b.shopper.nombre||''),'es'));
+  const top=rankingOrdered.slice(0,5).map(r=>r.shopper);
 
   const alerts=[];
   if(k.sinAsignar.t) alerts.push(['r','sinasign',`${k.sinAsignar.t} sin asignar (${split(k.sinAsignar)})`]);
@@ -127,7 +132,7 @@ CX.module('dashboard', ({data,ui})=>{
      solo aplica en demo; fuera de demo sin fuente financiera real, margenNow es null y el KPI
      de "Margen neto" se muestra como pending_source en vez de un 38% inventado. */
   const _showFixturesDashEarly = CX.dataSource ? CX.dataSource.showFixtures() : true;
-  const margenNow=(()=>{const fp=CX.fin?CX.fin.porPais(data):null;if(!fp)return _showFixturesDashEarly?38:null;const cs=Object.keys(fp);const m=cs.reduce((a,c)=>a+(fp[c].margenPct||0),0)/(cs.length||1);return Math.round(m);})();
+  const margenNow=(()=>{const fp=CX.fin?CX.fin.porPais(data):null;if(!fp)return _showFixturesDashEarly?38:null;const keys=Object.keys(fp),vals=keys.map(c=>fp[c].margenPct);if(!keys.length||vals.some(v=>!Number.isFinite(v)))return null;return Math.round(vals.reduce((a,v)=>a+v,0)/vals.length);})();
   /* Bloque A (auditoría V101 — 20260711): el comparativo trimestral fabricaba SIEMPRE valores
      históricos (Días Real→Submit fijo [3.1,2.8,2.6]; visitas previas como 62%/82% del mes actual)
      sin ningún guard de modo — presentándolos como si fueran periodos reales. Fuera de demo se
@@ -219,11 +224,12 @@ CX.module('dashboard', ({data,ui})=>{
 
   <div class="grid" style="grid-template-columns:1fr 1fr;margin-bottom:18px">
     <div class="card card-p">
-      <div class="card-h"><div class="card-t">🏅 Top shoppers</div><button class="btn btn-ghost btn-sm" id="rankFull">Ver ranking completo →</button></div>
+      <div class="card-h"><div class="card-t">🏅 Top shoppers</div><button class="btn btn-ghost btn-sm" id="rankFull">Ver población →</button></div>
+      ${!rankingReady?`<div style="font-size:11.5px;color:var(--t2);background:var(--amber-bg);border-radius:9px;padding:8px 10px;margin-bottom:8px"><b>Pendiente de fuente:</b> faltan scores para ${rankingPendingCount} shopper(s). No se oculta esa población ni se publica un ranking incompleto.</div>`:''}
       ${top.map((s,i)=>`<div class="between hov" data-sh="${s.id}" style="padding:7px 6px;border-bottom:1px solid var(--border-2);cursor:pointer;border-radius:8px">
-        <div class="flex"><b style="width:16px;color:var(--t3);font-family:var(--disp)">${i+1}</b><div class="rail-av" style="width:26px;height:26px;font-size:10px;background:linear-gradient(135deg,var(--brand),var(--brand-dark))">${s.code.slice(-2)}</div>
+        <div class="flex"><b style="width:16px;color:var(--t3);font-family:var(--disp)">${rankingReady?i+1:'—'}</b><div class="rail-av" style="width:26px;height:26px;font-size:10px;background:linear-gradient(135deg,var(--brand),var(--brand-dark))">${String(s.code||s.nombre||'').slice(-2)}</div>
         <span style="font-size:12px;font-weight:600;color:var(--t1)">${s.nombre} <span class="muted">${CX.paisFlag(s.pais)}</span></span></div>
-        <span style="font-size:12px;font-weight:800;color:var(--amber)">★ ${s.rating||'—'} ›</span></div>`).join('')}
+        <span style="font-size:12px;font-weight:800;color:var(--amber)">${Number.isFinite(s.rating)?'★ '+s.rating:'Pendiente de fuente'} ›</span></div>`).join('')}
     </div>
     <div class="card card-p">
       <div class="card-t" style="margin-bottom:12px">Alertas operativas · <span class="muted" style="font-weight:500">clic para gestionar</span></div>
@@ -369,9 +375,9 @@ CX.module('dashboard', ({data,ui})=>{
     };
     host.querySelectorAll('[data-sh]').forEach(el=>el.addEventListener('click',()=>{const s=data.getShopper?data.getShopper(el.dataset.sh):data.shoppers.find(x=>x.id===el.dataset.sh);if(s)profileModal(s);}));
     const rf=host.querySelector('#rankFull');
-    if(rf)rf.addEventListener('click',()=>{const rank=data.rankableShoppers(data.shoppersFor()).sort((a,b)=>b.rating-a.rating);
-      ui.modal('Ranking completo de shoppers ('+rank.length+')',`<table class="tbl"><thead><tr><th>#</th><th>Shopper</th><th>Ciudad</th><th>Visitas</th><th>Rating</th></tr></thead><tbody>
-        ${rank.map((s,i)=>`<tr class="hov" data-rk="${s.id}" style="cursor:pointer"><td style="font-family:var(--disp);color:var(--t3)">${i+1}</td><td><b>${s.nombre}</b><div style="font-size:10px;color:var(--t3)">${s.code}</div></td><td style="font-size:12px">${s.ciudad||CX.paisName(s.pais)}</td><td style="font-size:12px">${s.visitas||0}</td><td style="font-weight:800;color:var(--amber)">★ ${s.rating||'—'}</td></tr>`).join('')}
+    if(rf)rf.addEventListener('click',()=>{const rows=(typeof data.shopperRankingRows==='function'?data.shopperRankingRows(data.shoppersFor()):data.shoppersFor().map(s=>({shopper:s,rating:Number.isFinite(s.rating)?s.rating:null,ratingAvailable:Number.isFinite(s.rating)})));const complete=rows.length>0&&rows.every(r=>r.ratingAvailable);const ordered=complete?rows.slice().sort((a,b)=>b.rating-a.rating):rows.slice().sort((a,b)=>String(a.shopper.nombre||'').localeCompare(String(b.shopper.nombre||''),'es'));
+      ui.modal((complete?'Ranking completo':'Población de shoppers · score pendiente')+' ('+ordered.length+')',`${complete?'':`<div style="background:var(--amber-bg);border-radius:9px;padding:9px 11px;margin-bottom:10px;font-size:11.5px;color:var(--t2)">No existe score suficiente para ordenar a toda la población. Los shoppers sin score permanecen visibles como <b>Pendiente de fuente</b>.</div>`}<table class="tbl"><thead><tr><th>#</th><th>Shopper</th><th>Ciudad</th><th>Visitas</th><th>Score</th></tr></thead><tbody>
+        ${ordered.map((r,i)=>{const s=r.shopper;return`<tr class="hov" data-rk="${s.id}" style="cursor:pointer"><td style="font-family:var(--disp);color:var(--t3)">${complete?i+1:'—'}</td><td><b>${s.nombre}</b><div style="font-size:10px;color:var(--t3)">${s.code||''}</div></td><td style="font-size:12px">${s.ciudad||CX.paisName(s.pais)}</td><td style="font-size:12px">${s.visitas||0}</td><td style="font-weight:800;color:var(--amber)">${r.ratingAvailable?'★ '+r.rating:'Pendiente de fuente'}</td></tr>`;}).join('')}
       </tbody></table>`,{onMount:(ov,close)=>ov.querySelectorAll('[data-rk]').forEach(tr=>tr.addEventListener('click',()=>{close();const s=data.getShopper(tr.dataset.rk);if(s)profileModal(s);}))});
     });
 

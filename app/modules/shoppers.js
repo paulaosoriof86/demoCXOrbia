@@ -49,12 +49,12 @@ CX.module('shoppers', ({data,ui})=>{
   };
   const scopedStats=(shopperId)=>{
     const vs=kpiVisitsForActiveProject(shopperId);
-    const state=v=>String(v&&v.estado||'').toLowerCase();
+    const facets=v=>typeof data.visitFacets==='function'?data.visitFacets(v):(v&&v.canonicalFacets)||{};
     return {
       total:vs.length,
-      realizadas:vs.filter(v=>['realizada','cuestionario','liquidada'].includes(state(v))).length,
-      liquidadas:vs.filter(v=>state(v)==='liquidada'||v.liquidada===true).length,
-      enCurso:vs.filter(v=>['asignada','agendada','postulada'].includes(state(v))).length
+      realizadas:vs.filter(v=>{const f=facets(v);return f.realized&&!f.cancelled;}).length,
+      liquidadas:vs.filter(v=>{const f=facets(v);return f.liquidationConfirmed&&!f.cancelled;}).length,
+      enCurso:vs.filter(v=>{const f=facets(v);return f.assigned&&!f.realized&&!f.cancelled;}).length
     };
   };
   const showCredential=(result,title='Acceso del shopper')=>{
@@ -250,8 +250,8 @@ CX.module('shoppers', ({data,ui})=>{
       <div id="shFormHost"></div>
     `;
     ui.modal(s.nombre, body, {onMount:(ov,close)=>{
-      const drills={all:[null,'Todas las visitas'],done:[v=>['realizada','cuestionario','liquidada'].includes(v.estado),'Visitas realizadas'],
-        liq:[v=>v.estado==='liquidada','Visitas liquidadas'],curso:[v=>['asignada','agendada','postulada'].includes(v.estado),'Visitas en curso']};
+      const drills={all:[null,'Todas las visitas'],done:[v=>{const f=data.visitFacets(v);return f.realized&&!f.cancelled;},'Visitas realizadas'],
+        liq:[v=>{const f=data.visitFacets(v);return f.liquidationConfirmed&&!f.cancelled;},'Visitas liquidadas'],curso:[v=>{const f=data.visitFacets(v);return f.assigned&&!f.realized&&!f.cancelled;},'Visitas en curso']};
       ov.querySelectorAll('#shKpis [data-k]').forEach(el=>el.addEventListener('click',()=>{const d=drills[el.dataset.k];drillVisits(s,d[0],d[1]);}));
       const host=ov.querySelector('#shFormHost');
       const readView=()=>{

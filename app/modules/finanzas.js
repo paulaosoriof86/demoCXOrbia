@@ -40,13 +40,14 @@ CX.module('financiero', ({data,ui})=>{
   const finCurPeriod=()=>{const cur=CX.fin.canonPeriods().find(x=>x.id===CX.fin.canonCurrentId());return cur?cur.label:'';};
   const modelLbl = p.modelo==='delegado' ? 'Delegado (franquicia)' : 'Facturado directamente';
 
+  const moneyOrPending=(d,n,label='Pendiente de fuente/configuración')=>Number.isFinite(n)?(d.cur+' '+n.toLocaleString()):label;
   const tile=(c)=>{const d=fp[c];return `<div class="card card-p">
-    <div class="between" style="margin-bottom:10px"><div class="card-t finDrill" data-c="${c}" style="cursor:pointer">${CX.paisLabel(c)} <span class="muted" style="font-weight:500">(${d.cur})</span> <span style="font-size:11px;color:var(--brand)">ver visitas →</span></div>${ui.bdg(d.margenPct+'% margen',d.margenPct>=30?'g':'a')}</div>
+    <div class="between" style="margin-bottom:10px"><div class="card-t finDrill" data-c="${c}" style="cursor:pointer">${CX.paisLabel(c)} <span class="muted" style="font-weight:500">(${d.cur})</span> <span style="font-size:11px;color:var(--brand)">ver visitas →</span></div>${Number.isFinite(d.margenPct)?ui.bdg(d.margenPct+'% margen',d.margenPct>=30?'g':'a'):ui.bdg('Margen · pendiente de fuente','n')}</div>
     <div class="grid g2" style="gap:8px" class="finTileK" data-c="${c}" style="cursor:pointer">
-      <div class="finDrill" data-c="${c}" style="cursor:pointer">${ui.kpi('Ingresos',d.cur+' '+d.ingreso.toLocaleString(),'g')}</div>
+      <div class="finDrill" data-c="${c}" style="cursor:pointer">${ui.kpi('Ingresos',moneyOrPending(d,d.ingreso),'g',d.incomeSourceKnown?'Fuente configurada':'Pendiente de fuente/configuración')}</div>
       <div class="finDrill" data-c="${c}" style="cursor:pointer">${ui.kpi('Honorarios devengados',d.cur+' '+d.honorarioDevengado.toLocaleString(),'r','obligación · no implica pago')}</div>
-      <div class="finDrill" data-c="${c}" style="cursor:pointer">${p.modelo==='directo'?ui.kpi('ISR ('+(p.isr||0)+'%)',d.cur+' '+d.isr.toLocaleString(),'a'):ui.kpi('Reembolsos',d.cur+' '+d.reemb.toLocaleString(),'n')}</div>
-      <div class="finDrill" data-c="${c}" style="cursor:pointer">${p.modelo==='directo'?ui.kpi('Regalías ('+(p.regalias||0)+'%)',d.cur+' '+d.regal.toLocaleString(),'p'):ui.kpi('Por pagar (CxP)',d.cur+' '+d.cxp.toLocaleString(),'a')}</div>
+      <div class="finDrill" data-c="${c}" style="cursor:pointer">${p.modelo==='directo'?ui.kpi('ISR ('+(p.isr||0)+'%)',moneyOrPending(d,d.isr),'a'):ui.kpi('Reembolsos',d.cur+' '+d.reemb.toLocaleString(),'n',d.reimbursementPartial?'Total conocido · parcial / pendiente de fuente':'Obligación operacional conocida')}</div>
+      <div class="finDrill" data-c="${c}" style="cursor:pointer">${p.modelo==='directo'?ui.kpi('Regalías ('+(p.regalias||0)+'%)',moneyOrPending(d,d.regal),'p'):ui.kpi('Por pagar (CxP)',d.cur+' '+d.cxp.toLocaleString(),'a')}</div>
     </div>
     <div class="grid g2" style="gap:8px;margin-top:8px">
       <div>${ui.kpi('Honorario por pagar',d.cur+' '+d.honorarioPorPagar.toLocaleString(),'a')}</div>
@@ -54,9 +55,9 @@ CX.module('financiero', ({data,ui})=>{
     </div>
     <div class="between" style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border-2)">
       <span style="font-size:12px;color:var(--t2)">Margen neto</span>
-      <b style="font-family:var(--disp);font-size:18px;color:${d.margen>=0?'var(--green)':'var(--red)'}">${d.cur} ${d.margen.toLocaleString()}</b></div>
+      <b style="font-family:var(--disp);font-size:18px;color:${Number.isFinite(d.margen)?(d.margen>=0?'var(--green)':'var(--red)'):'var(--t3)'}">${moneyOrPending(d,d.margen)}</b></div>
     <div class="flex" style="gap:14px;margin-top:8px;font-size:11px;color:var(--t3)">
-      <span>CxC: <b style="color:var(--t2)">${d.cur} ${d.cxc.toLocaleString()}</b></span>
+      <span>CxC: <b style="color:var(--t2)">${moneyOrPending(d,d.cxc)}</b></span>
       <span>CxP: <b style="color:var(--t2)">${d.cur} ${d.cxp.toLocaleString()}</b></span>
       <span>Gastos fijos: <b style="color:var(--t2)" title="Presupuesto sin distribución por país/moneda confirmada — ver tarjeta de presupuesto pendiente">Pendiente de asignación</b></span></div>
   </div>`;};
@@ -66,10 +67,11 @@ CX.module('financiero', ({data,ui})=>{
     const H=[]; const M=(cur,n)=>`${cur} ${Number(Math.round(n)).toLocaleString('es-GT')}`;
     p.countries.forEach(c=>{
       const d=fp[c], cur=d.cur;
-      if(d.margenPct<20) H.push({tono:'r',icon:'⚠',titulo:`Margen crítico en ${CX.paisLabel(c)} (${d.margenPct}%)`,txt:`Por debajo del 20% objetivo. Revisa honorarios devengados (${M(cur,d.honorarioDevengado)}) o renegocia la tarifa del programa.`,accion:'Revisar estructura de costos'});
+      if(!Number.isFinite(d.margenPct)) H.push({tono:'a',icon:'⏳',titulo:`Margen pendiente de fuente en ${CX.paisLabel(c)}`,txt:`La obligación operacional sí está disponible (honorarios devengados ${M(cur,d.honorarioDevengado)}), pero falta una fuente/configuración autorizada de ingreso o comisión para calcular margen.`,accion:'Completar fuente de ingreso'});
+      else if(d.margenPct<20) H.push({tono:'r',icon:'⚠',titulo:`Margen crítico en ${CX.paisLabel(c)} (${d.margenPct}%)`,txt:`Por debajo del 20% objetivo. Revisa honorarios devengados (${M(cur,d.honorarioDevengado)}) o renegocia la tarifa del programa.`,accion:'Revisar estructura de costos'});
       else if(d.margenPct<30) H.push({tono:'a',icon:'⚑',titulo:`Margen ajustado en ${CX.paisLabel(c)} (${d.margenPct}%)`,txt:`Cerca del mínimo saludable (30%). Vigila los gastos fijos (${M(cur,d.fijos)}).`,accion:'Optimizar gastos fijos'});
       else H.push({tono:'g',icon:'✓',titulo:`Margen sano en ${CX.paisLabel(c)} (${d.margenPct}%)`,txt:`Rentabilidad sobre el objetivo. Hay espacio para incentivos a shoppers o inversión comercial.`,accion:'Considerar incentivos'});
-      if(d.cxc>d.ingreso*0.4) H.push({tono:'a',icon:'⏳',titulo:`Cobranza alta en ${CX.paisLabel(c)}`,txt:`Por cobrar (${M(cur,d.cxc)}) supera el 40% del ingreso. Riesgo de liquidez; prioriza conciliación de reembolsos.`,accion:'Gestionar cobranza'});
+      if(Number.isFinite(d.cxc)&&Number.isFinite(d.ingreso)&&d.cxc>d.ingreso*0.4) H.push({tono:'a',icon:'⏳',titulo:`Cobranza alta en ${CX.paisLabel(c)}`,txt:`Por cobrar (${M(cur,d.cxc)}) supera el 40% del ingreso. Riesgo de liquidez; prioriza conciliación de reembolsos.`,accion:'Gestionar cobranza'});
     });
     /* R29 — financiamientos por MONEDA real (no defCur0 sobre suma multipaís). */
     const finByCur={}; CX.finStore.cxp(p.id).filter(r=>/financ/i.test(r.concepto)).forEach(r=>{const cu=(r.pais&&p.currency[r.pais])||'pending_currency';finByCur[cu]=(finByCur[cu]||0)+(r.saldo||0);});
@@ -151,7 +153,7 @@ CX.module('financiero', ({data,ui})=>{
   <div class="card card-p" style="margin-bottom:16px">
     <div class="card-h"><div class="card-t">🎟️ Reembolsos mensuales · conciliación</div><span class="muted" style="font-size:11px">¿el cliente / casa matriz reembolsó bien?</span></div>
     <div class="scroll-hint" style="overflow-x:auto"><table class="tbl"><thead><tr><th>País</th><th>Moneda</th><th>Reembolso del periodo (flujo)</th><th>Reembolsado por cliente</th><th>Conciliación</th></tr></thead><tbody>
-    ${p.countries.map(c=>{const d=fp[c];return `<tr class="hov" data-reembc="${c}" style="cursor:pointer"><td><b>${CX.paisLabel(c)}</b></td><td>${d.cur}</td><td>${d.cur} ${d.reemb.toLocaleString()}</td><td><span class="muted">Pendiente de fuente</span></td><td>${ui.bdg('Pendiente de fuente','n')}</td></tr>`;}).join('')}
+    ${p.countries.map(c=>{const d=fp[c];return `<tr class="hov" data-reembc="${c}" style="cursor:pointer"><td><b>${CX.paisLabel(c)}</b></td><td>${d.cur}</td><td>${d.cur} ${d.reemb.toLocaleString()}${d.reimbursementPartial?' <span class="bdg bdg-a">Total conocido · parcial</span>':''}</td><td><span class="muted">Pendiente de fuente</span></td><td>${ui.bdg(d.reimbursementPartial?'Pendiente de fuente · parcial':'Pendiente de conciliación','n')}</td></tr>`;}).join('')}
     </tbody></table></div>
     <div style="margin-top:10px">${ui.aiBox('Los reembolsos son flujo (no utilidad): el programa cubre consumos/boletos y el cliente o casa matriz los reintegra. La conciliación real requiere una fuente confirmada de reintegro (monto, moneda, fecha y referencia); mientras no exista, se muestra Pendiente de fuente y no se calcula faltante ni diferencia.','Conciliación de reembolsos · sin inferencias')}</div>
   </div>`;

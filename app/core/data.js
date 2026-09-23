@@ -596,6 +596,13 @@ CX.data = {
     const arr = pool || this.shoppersFor();
     return arr.filter(s => this.shopperDataLevel(s)!=='protected_reference' && Number.isFinite(s.rating));
   },
+  shopperRankingRows(pool){
+    const arr=pool||this.shoppersFor();
+    return arr.filter(s=>this.shopperDataLevel(s)!=='protected_reference').map(s=>{
+      const ratingAvailable=typeof s.rating==='number'&&Number.isFinite(s.rating);
+      return {shopper:s,rating:ratingAvailable?s.rating:null,ratingAvailable};
+    });
+  },
   /* R19 Gate 6 (20260715): definición confirmada de "shopper activo" — cuenta activa (no
      protected_reference) CON al menos una visita realizada en los 6 meses anteriores a la
      FECHA DE REFERENCIA del periodo activo (no new Date() del navegador cuando el periodo está
@@ -648,15 +655,19 @@ CX.data = {
      sinAgendar/pendRealizar (no se fuerza exclusividad artificial), tal como exige el Gate 1
      (fixture caso F: sin shopper + fuera de rango → sinAsignar + pendRealizar + fueraRango). */
   visitFacets(v){
-    if(!v) return {assigned:false,scheduled:false,realized:false,questionnaire:false,submitted:false,outOfRange:false,cancelled:false};
+    if(!v) return {available:false,eligibilityBlocked:true,assigned:false,scheduled:false,realized:false,questionnaire:false,submitted:false,liquidationCandidate:false,liquidationConfirmed:false,paymentConfirmed:false,outOfRange:false,cancelled:false};
     const assigned=!!v.shopperId;
     const scheduled=assigned&&!!v.agendada;
     const realized=!!v.realizada||['realizada','cuestionario','liquidada'].includes(v.estado);
     const questionnaire=!!v.cuestFecha||['cuestionario','liquidada'].includes(v.estado);
-    const submitted=!!v.submit||v.estado==='liquidada';
+    const submitted=!!v.submit||!!v.submittedAt||['submitida','liquidada','pagada'].includes(v.estado);
+    const liquidationCandidate=submitted||v.liquidationCandidate===true;
+    const liquidationConfirmed=v.liquidationConfirmed===true||['confirmed','liquidated','liquidada'].includes(String(v.liquidationState||'').toLowerCase())||['liquidada','pagada'].includes(v.estado);
+    const paymentConfirmed=v.paymentConfirmed===true||['confirmed','paid','pagada'].includes(String(v.paymentState||'').toLowerCase())||v.estado==='pagada';
     const outOfRange=v.estado==='fuera_rango';
-    const cancelled=!!v._archived;
-    const legacy={assigned,scheduled,realized,questionnaire,submitted,outOfRange,cancelled};
+    const cancelled=!!v._archived||['cancelada','cancelled','archivada'].includes(String(v.estado||'').toLowerCase());
+    const available=v.estado==='disponible'&&!assigned&&!cancelled;
+    const legacy={available,eligibilityBlocked:!available,assigned,scheduled,realized,questionnaire,submitted,liquidationCandidate,liquidationConfirmed,paymentConfirmed,outOfRange,cancelled};
     const canonical=v.canonicalFacets;
     if(!canonical||typeof canonical.available!=='boolean') return legacy;
     const facet=(name,fallback)=>typeof canonical[name]==='boolean'?canonical[name]:fallback;
@@ -669,6 +680,9 @@ CX.data = {
       realized:facet('realized',realized),
       questionnaire:facet('questionnaire',questionnaire),
       submitted:facet('submitted',submitted),
+      liquidationCandidate:facet('liquidationCandidate',liquidationCandidate),
+      liquidationConfirmed:facet('liquidationConfirmed',liquidationConfirmed),
+      paymentConfirmed:facet('paymentConfirmed',paymentConfirmed),
       outOfRange:facet('outOfRange',outOfRange),
       cancelled:facet('cancelled',cancelled)
     };
@@ -682,7 +696,7 @@ CX.data = {
     pendRealizar:v=>{const f=CX.data.visitFacets(v);return !f.realized&&!f.cancelled;},
     cuestPend:v=>{const f=CX.data.visitFacets(v);return f.realized&&!f.questionnaire&&!f.cancelled;},
     sinSubmitir:v=>{const f=CX.data.visitFacets(v);return f.questionnaire&&!f.submitted&&!f.cancelled;},
-    liquidadas:v=>v.estado==='liquidada'&&!v._archived,
+    liquidadas:v=>{const f=CX.data.visitFacets(v);return f.liquidationConfirmed&&!f.cancelled;},
     fueraRango:v=>{const f=CX.data.visitFacets(v);return f.outOfRange&&!f.cancelled;},
   },
 
@@ -818,21 +832,22 @@ CX.data = {
   /* flujo por fases para un país */
   phaseFlow(c){
     const v=this.visitas().filter(x=>x.pais===c); const t=v.length||1;
-    const n=(fn)=>v.filter(fn).length; const pc=(x)=>Math.round(x/t*100);
-    const real=n(x=>['realizada','cuestionario','liquidada'].includes(x.estado));
-    const agen=n(x=>['agendada','realizada','cuestionario','liquidada'].includes(x.estado));
+    const n=(fn)=>v.filter(fn).length; const pc=(x)=>Math.round(x/t*100); const f=x=>this.visitFacets(x);
+    const assigned=n(x=>f(x).assigned&&!f(x).cancelled),scheduled=n(x=>f(x).scheduled&&!f(x).cancelled),real=n(x=>f(x).realized&&!f(x).cancelled);
+    const questionnaire=n(x=>f(x).questionnaire&&!f(x).cancelled),submitted=n(x=>f(x).submitted&&!f(x).cancelled),liquidated=n(x=>f(x).liquidationConfirmed&&!f(x).cancelled);
+    const sinAgend=n(x=>f(x).assigned&&!f(x).scheduled&&!f(x).realized&&!f(x).cancelled),sinAsign=n(x=>!f(x).assigned&&!f(x).realized&&!f(x).cancelled);
     return {
       total:v.length,
-      asign:[n(x=>x.shopperId),pc(n(x=>x.shopperId))],
-      agend:[agen,pc(agen)],
-      sinAgend:[n(x=>x.estado==='asignada'),pc(n(x=>x.estado==='asignada'))],
-      sinAsign:[n(x=>!x.shopperId&&x.estado!=='fuera_rango'),pc(n(x=>!x.shopperId&&x.estado!=='fuera_rango'))],
+      asign:[assigned,pc(assigned)],
+      agend:[scheduled,pc(scheduled)],
+      sinAgend:[sinAgend,pc(sinAgend)],
+      sinAsign:[sinAsign,pc(sinAsign)],
       real:[real,pc(real)],
-      cuest:[n(x=>['cuestionario','liquidada'].includes(x.estado)),pc(n(x=>['cuestionario','liquidada'].includes(x.estado)))],
-      submit:[n(x=>x.estado==='liquidada'),pc(n(x=>x.estado==='liquidada'))],
-      liq:[n(x=>x.estado==='liquidada'),pc(n(x=>x.estado==='liquidada'))],
+      cuest:[questionnaire,pc(questionnaire)],
+      submit:[submitted,pc(submitted)],
+      liq:[liquidated,pc(liquidated)],
     };
-  },
+  }
 };
 /* GAP1-v2 (V112→V113): bootstrap de currentProjectId — ahora que es almacenamiento real (no
    un getter derivado), necesita un valor inicial calculado UNA vez, justo después de que el

@@ -91,8 +91,10 @@ CX.fin = {
   canonCurrentId(){ return CX.data.currentPeriodId; },
   setCanonPeriod(id){ return CX.data.setCurrentPeriod?CX.data.setCurrentPeriod(id):CX.data.setProject(id); },
 
-  /* honorario que se RECIBE por país (config del proyecto; fallback = lo que se paga) */
-  honRecibe(p,c){ return (p.honRecibe&&p.honRecibe[c]!=null)?p.honRecibe[c]:(p.honorario&&p.honorario[c])||0; },
+  /* ingreso/comisión por país: solo existe cuando la configuración lo declara de forma explícita.
+     El honorario pagado al shopper NO es un fallback válido para ingreso ni margen. */
+  honRecibe(p,c){ return (p.honRecibe&&Number.isFinite(p.honRecibe[c]))?p.honRecibe[c]:null; },
+  honRecibeInfo(p,c){ const value=this.honRecibe(p,c); return {known:Number.isFinite(value),value:Number.isFinite(value)?value:null,source:Number.isFinite(value)?'project_config':null}; },
 
   /* R19 crítico 3.B (20260716): porPais() usa data.project() — combinado con el adapter local de
      serieMensual() que YA conserva project:()=>p Y period:()=>p simultáneamente (hotfix V132),
@@ -111,7 +113,10 @@ CX.fin = {
       || l.liquidationState==='pending_financial_source'
       || !l.pais || !(l.moneda||(p.currency&&p.currency[l.pais]));
     const allLiq=CX.liq.forProject(data);
-    const liq=allLiq.filter(l=>!isReview(l));
+    /* PRE-I4 VRM-014/015/016/018 — una revisión de fuente impide conciliación/pago, no borra
+       obligaciones operacionales ya conocidas. Solo exigimos país, moneda y montos utilizables
+       para reconocer honorario/reembolso/CxP; la fila permanece simultáneamente en reviewQueue. */
+    const operationalRows=allLiq.filter(l=>l&&l.pais&&l.moneda&&Number.isFinite(l.honorario)&&Number.isFinite(l.reembolso)&&Number.isFinite(l.total));
     const reviewQueue=allLiq.filter(isReview);
     /* CORTE 3 V177 P0-4/P0-5 — presupuesto con llave CANÓNICA única (tenantId+projectId+periodId)
        y periodo EXPLÍCITO. El presupuesto sin distribución por país/moneda NO se imputa a ningún
@@ -125,9 +130,10 @@ CX.fin = {
     const unassignedBudgetTotal=Object.values(presStore).reduce((a,b)=>a+(+b||0),0);
     p.countries.forEach(c=>{
       const cur=p.currency[c];
-      const ls=liq.filter(l=>l.pais===c&&(l.moneda||cur)===cur); /* liq ya excluye revisiones/moneda no resuelta */
-      const visRe=ls.length;                                   // visitas con liquidación
-      const ingreso=ls.reduce((a)=>a+this.honRecibe(p,c),0);   // lo facturado al cliente
+      const ls=operationalRows.filter(l=>l.pais===c&&l.moneda===cur);
+      const visRe=ls.length;                                   // obligaciones operacionales conocidas
+      const incomeInfo=this.honRecibeInfo(p,c);
+      const ingreso=incomeInfo.known?ls.reduce((a)=>a+incomeInfo.value,0):null;
       /* CORTE 3 P0-2 — honorarios como estados SEPARADOS, nunca "pagado" por inferencia.
          devengado: honorario ganado por la liquidación (obligación), exista o no pago.
          pagado: SOLO filas con paymentConfirmed===true Y paymentSourceRef (fuente de pago).
@@ -137,19 +143,22 @@ CX.fin = {
       const honorarioPagado=ls.filter(isPaid).reduce((a,l)=>a+(l.honorario||0),0);
       const honorarioPorPagar=honorarioDevengado-honorarioPagado;
       const pagosConfirmados=ls.filter(isPaid).length;
-      const reemb=ls.reduce((a,l)=>a+l.reembolso,0);           // flujo (no utilidad)
-      const isr=p.modelo==='directo'?Math.round(ingreso*((p.isr||0)/100)):0;
-      const regal=p.modelo==='directo'?Math.round(ingreso*((p.regalias||0)/100)):0;
+      const reemb=ls.reduce((a,l)=>a+l.reembolso,0);           // obligación/flujo operacional conocido
+      const reimbursementPartial=ls.some(l=>l.reimbursementPartial===true
+        || ['partial','incomplete','pending_source'].includes(String(l.reimbursementSourceStatus||'').toLowerCase())
+        || (Array.isArray(l.reviewReasons)&&l.reviewReasons.some(r=>/reemb|reimbursement|boleto|combo/i.test(String(r)))));
+      const isr=incomeInfo.known&&p.modelo==='directo'?Math.round(ingreso*((p.isr||0)/100)):(p.modelo==='directo'?null:0);
+      const regal=incomeInfo.known&&p.modelo==='directo'?Math.round(ingreso*((p.regalias||0)/100)):(p.modelo==='directo'?null:0);
       /* CORTE 3 V177 P0-5 — el presupuesto sin distribución confirmada NO se imputa a este país
          ni al margen, y NO se replica en cada out[c]. Se expone una sola vez fuera del mapa. */
       const fijos=0;
-      const margen=ingreso-honorarioDevengado-isr-regal; // fijos no imputados sin distribución
-      const cxp=ls.filter(l=>!isPaid(l)).reduce((a,l)=>a+l.total,0); // por pagar a shoppers: todo lo no confirmado como pago
-      const cxc=ls.filter(l=>['validada','pagada','pagada_preview'].includes(l.estado)).reduce((a)=>a+this.honRecibe(p,c),0); // facturable
-      out[c]={cur,visRe,ingreso,
+      const margen=incomeInfo.known?(ingreso-honorarioDevengado-isr-regal):null;
+      const cxp=ls.filter(l=>!isPaid(l)).reduce((a,l)=>a+l.total,0); // obligación conocida; conciliación puede seguir pendiente
+      const cxc=incomeInfo.known?ls.filter(l=>['validada','pagada','pagada_preview'].includes(l.estado)).reduce((a)=>a+incomeInfo.value,0):null;
+      out[c]={cur,visRe,ingreso,incomeSourceKnown:incomeInfo.known,incomeSource:incomeInfo.source,
         honorarioDevengado,honorarioPorPagar,honorarioPagado,pagosConfirmados,
-        reemb,isr,regal,fijos,margen,cxp,cxc,
-        margenPct: ingreso?Math.round(margen/ingreso*100):0};
+        reemb,reimbursementPartial,isr,regal,fijos,margen,cxp,cxc,
+        margenPct: incomeInfo.known&&ingreso?Math.round(margen/ingreso*100):null};
     });
     /* presupuesto sin asignación: entidad ÚNICA fuera del mapa por país (no imputado al margen) */
     Object.defineProperty(out,'__unassignedBudget',{enumerable:false,value:{budgetKey,tenantId,projectId:p.id,periodId:canonicalPeriodId,total:unassignedBudgetTotal,assigned:false}});
