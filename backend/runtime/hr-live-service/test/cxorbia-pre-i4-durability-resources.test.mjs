@@ -57,3 +57,11 @@ test('PRE-I4 rules allow only targeted active project resources to shopper while
   assert.match(src,/role\(\) in resource\.data\.visibleRoles/);
   assert.match(src,/allow create, update, delete: if tenantAllowed\(tenantId\) && isOperator\(\)/);
 });
+
+test('PRE-I4 resource writes use async ACK handlers and content-derived idempotency',()=>{
+  const docs=read('app/modules/documentos.js'),core=read('app/core/backend-resources.js'),cert=read('app/modules/cert.js');
+  assert.match(docs,/#duS'\)\.addEventListener\('click',async\(\)=>/);
+  assert.doesNotMatch(docs,/resource\.upload:'\+Date\.now/);
+  assert.doesNotMatch(cert,/certbank\.save:'\+id\+'\+'\+Date\.now/);
+  assert.match(core,/hash\(\[scope\.tenantId,scope\.projectId,scope\.periodId,clean\(item\)\]\)/);
+});

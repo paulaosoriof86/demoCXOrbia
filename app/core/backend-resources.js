@@ -60,7 +60,7 @@ window.CX=window.CX||{};
     if(!isOperator())return blocked('RESOURCE_WRITE_ROLE_DENIED');
     const c=resourcesCol(),scope=currentScope({projectId:item.projectId||options.projectId,periodId:item.periodId||options.periodId});
     if(!c||!scope.projectId)return blocked('RESOURCE_SCOPE_UNAVAILABLE');
-    const idem=str(options.idempotencyKey||item.idempotencyKey||('resource:'+hash([scope.tenantId,scope.projectId,scope.periodId,item.id||'',item.n||item.name||'',item.body||'',item.url||''])));
+    const idem=str(options.idempotencyKey||item.idempotencyKey||('resource:'+hash([scope.tenantId,scope.projectId,scope.periodId,clean(item)])));
     const rid=str(item.id)||('res-'+hash(idem));
     if(/^data:/i.test(str(item.url)))return blocked('RESOURCE_DATA_URL_FORBIDDEN');
     let output=null,replay=false;
