@@ -9,7 +9,8 @@ import crypto from 'node:crypto';
 
 export const VERSION='cxorbia-operational-command-provider-v1';
 export const COMMAND_TYPES=Object.freeze([
-  'application.create','application.status.update','application.delete','reservation.create','reservation.status.update','reservation.delete','visit.assign','visit.sync.confirm'
+  'application.create','application.status.update','application.delete','reservation.create','reservation.status.update','reservation.delete',
+  'visit.assign','visit.reassign','visit.state.update','visit.reschedule','visit.cancel','visit.questionnaire.submit','visit.sync.confirm'
 ]);
 export const OPERATOR_ROLES=Object.freeze(['super','admin','ops','coordinador']);
 export const APPLICATION_STATES=Object.freeze(['pendiente','aprobada','rechazada','standby','cancelada']);
@@ -301,6 +302,78 @@ async function transactionExecute(db,command,actor){
       const source=str(payload.assignmentSource||'platform');if(!['platform','hr'].includes(source))throw new Error('OPS_ASSIGNMENT_SOURCE_INVALID');
       tx.set(vRef,{shopperId,estado:'asignada',status:'asignada',assignmentSource:source,assignmentSyncStatus:source==='platform'?'pending_hr':'pending_platform',hrRowId:payload.hrRowId||v.hrRowId||null,periodId:command.periodId,lastSyncedAt:null,updatedAt:now(),version:Number(v.version||0)+1},{merge:true});providerWrites++;
       auditEntityType='visit';
+    }
+    else if(command.commandType==='visit.reassign'){
+      if(!OPERATOR_ROLES.includes(actor.role))throw new Error('OPS_VISIT_REASSIGN_OPERATOR_ONLY');
+      const visitId=str(payload.visitId||entityId),shopperId=str(payload.shopperId);if(!visitId||!shopperId)throw new Error('OPS_VISIT_REASSIGN_KEYS_REQUIRED');entityId=visitId;
+      const vRef=r.visits.doc(visitId),vSnap=await tx.get(vRef);if(!vSnap.exists)throw new Error('OPS_VISIT_MISSING');const v=vSnap.data()||{};assertPeriod(command,v);assertVersion(command,v);
+      const priorShopperId=str(v.shopperId);if(!priorShopperId)throw new Error('OPS_VISIT_REASSIGN_REQUIRES_ASSIGNED_VISIT');
+      const state=str(v.estado||v.status).toLowerCase();if(!['asignada','agendada'].includes(state))throw new Error('OPS_VISIT_REASSIGN_STATE_DENIED');
+      const scheduleDecision=str(payload.scheduleDecision||'keep').toLowerCase();if(!['keep','change','pending'].includes(scheduleDecision))throw new Error('OPS_VISIT_REASSIGN_SCHEDULE_DECISION_INVALID');
+      const patch={shopperId,assignmentSource:'platform',assignmentSyncStatus:'pending_hr',lastSyncedAt:null,reassignedFromShopperId:priorShopperId,reassignedBy:actor.uid,reassignedAt:now(),updatedAt:now(),version:Number(v.version||0)+1};
+      if(scheduleDecision==='change'){
+        const scheduledDate=str(payload.scheduledDate);if(!scheduledDate)throw new Error('OPS_VISIT_REASSIGN_DATE_REQUIRED');
+        patch.agendada=scheduledDate;patch.estado='agendada';patch.status='agendada';if(str(payload.franjaCode))patch.franjaCode=str(payload.franjaCode);
+      }else if(scheduleDecision==='pending'){
+        patch.agendada=null;patch.estado='asignada';patch.status='asignada';patch.pendienteAgendamiento=true;
+      }
+      patch.canonicalFacets={...(v.canonicalFacets||{}),available:false,assigned:true,scheduled:scheduleDecision==='change'||(scheduleDecision==='keep'&&!!v.agendada),realized:false,cancelled:false};
+      tx.set(vRef,patch,{merge:true});providerWrites++;auditEntityType='visit';
+    }
+    else if(command.commandType==='visit.state.update'){
+      const visitId=str(payload.visitId||entityId);if(!visitId)throw new Error('OPS_VISIT_ID_REQUIRED');entityId=visitId;
+      const vRef=r.visits.doc(visitId),vSnap=await tx.get(vRef);if(!vSnap.exists)throw new Error('OPS_VISIT_MISSING');const v=vSnap.data()||{};assertPeriod(command,v);assertVersion(command,v);
+      if(actor.role==='shopper'&&str(v.shopperId)!==actor.shopperId)throw new Error('OPS_VISIT_SHOPPER_SCOPE_DENIED');
+      const current=str(v.estado||v.status).toLowerCase(),next=str(payload.patch?.estado||payload.patch?.status).toLowerCase();if(!next)throw new Error('OPS_VISIT_STATE_REQUIRED');
+      if(['cancelada','liquidada','pagada'].includes(current))throw new Error('OPS_VISIT_TERMINAL_STATE');
+      if(actor.role==='shopper'){
+        const allowed={asignada:['agendada'],agendada:['realizada'],realizada:['cuestionario']};
+        if(!(allowed[current]||[]).includes(next))throw new Error('OPS_VISIT_TRANSITION_DENIED');
+      }
+      const patch={estado:next,status:next,updatedAt:now(),version:Number(v.version||0)+1};
+      for(const k of ['agendada','realizada','cuestFecha'])if(payload.patch?.[k])patch[k]=payload.patch[k];
+      tx.set(vRef,patch,{merge:true});providerWrites++;auditEntityType='visit';
+    }
+    else if(command.commandType==='visit.reschedule'){
+      const visitId=str(payload.visitId||entityId);if(!visitId)throw new Error('OPS_VISIT_ID_REQUIRED');entityId=visitId;
+      const vRef=r.visits.doc(visitId),vSnap=await tx.get(vRef);if(!vSnap.exists)throw new Error('OPS_VISIT_MISSING');const v=vSnap.data()||{};assertPeriod(command,v);assertVersion(command,v);
+      if(actor.role==='shopper'&&str(v.shopperId)!==actor.shopperId)throw new Error('OPS_VISIT_SHOPPER_SCOPE_DENIED');
+      const newDate=str(payload.newDate),shopperRequest=actor.role==='shopper'||payload.requestedByShopper===true;
+      if(shopperRequest){
+        if(!newDate)throw new Error('OPS_RESCHEDULE_DATE_REQUIRED');
+        tx.set(vRef,{rescheduleRequest:{status:'pending_review',newDate,reason:payload.reason||null,requestedByShopperId:actor.shopperId,requestedAt:now()},updatedAt:now(),version:Number(v.version||0)+1},{merge:true});
+      }else{
+        if(!OPERATOR_ROLES.includes(actor.role))throw new Error('OPS_RESCHEDULE_OPERATOR_ONLY');
+        const decision=str(payload.decision||'approved').toLowerCase();if(!['approved','rejected'].includes(decision))throw new Error('OPS_RESCHEDULE_DECISION_INVALID');
+        if(decision==='approved'&&!newDate)throw new Error('OPS_RESCHEDULE_DATE_REQUIRED');
+        const patch={rescheduleRequest:{status:decision,newDate:newDate||null,reason:payload.reason||null,decidedBy:actor.uid,decidedAt:now()},updatedAt:now(),version:Number(v.version||0)+1};
+        if(decision==='approved'){patch.agendada=newDate;patch.estado='agendada';patch.status='agendada';patch.pendienteAgendamiento=false;if(str(payload.franjaCode))patch.franjaCode=str(payload.franjaCode);}
+        tx.set(vRef,patch,{merge:true});
+      }
+      providerWrites++;auditEntityType='visit';
+    }
+    else if(command.commandType==='visit.cancel'){
+      const visitId=str(payload.visitId||entityId);if(!visitId)throw new Error('OPS_VISIT_ID_REQUIRED');entityId=visitId;
+      const vRef=r.visits.doc(visitId),vSnap=await tx.get(vRef);if(!vSnap.exists)throw new Error('OPS_VISIT_MISSING');const v=vSnap.data()||{};assertPeriod(command,v);assertVersion(command,v);
+      if(actor.role==='shopper'&&str(v.shopperId)!==actor.shopperId)throw new Error('OPS_VISIT_SHOPPER_SCOPE_DENIED');
+      if(actor.role==='shopper'||payload.requestOnly===true){
+        tx.set(vRef,{cancelRequest:{status:'pending_review',reason:payload.reason||null,requestedByShopperId:actor.shopperId,requestedAt:now()},updatedAt:now(),version:Number(v.version||0)+1},{merge:true});
+      }else{
+        if(!OPERATOR_ROLES.includes(actor.role))throw new Error('OPS_CANCEL_OPERATOR_ONLY');
+        const release=payload.releaseToAvailable===true;
+        const patch=release
+          ? {estado:'disponible',status:'disponible',cancelled:false,cancelReason:payload.reason||null,shopperId:null,shopper:null,agendada:null,assignmentSource:'platform',assignmentSyncStatus:'pending_hr',lastSyncedAt:null,canonicalFacets:{...(v.canonicalFacets||{}),available:true,assigned:false,scheduled:false,cancelled:false},updatedAt:now(),version:Number(v.version||0)+1}
+          : {estado:'cancelada',status:'cancelada',cancelled:true,cancelReason:payload.reason||null,canonicalFacets:{...(v.canonicalFacets||{}),available:false,cancelled:true},updatedAt:now(),version:Number(v.version||0)+1};
+        tx.set(vRef,patch,{merge:true});
+      }
+      providerWrites++;auditEntityType='visit';
+    }
+    else if(command.commandType==='visit.questionnaire.submit'){
+      const visitId=str(payload.visitId||entityId);if(!visitId)throw new Error('OPS_VISIT_ID_REQUIRED');entityId=visitId;
+      const vRef=r.visits.doc(visitId),vSnap=await tx.get(vRef);if(!vSnap.exists)throw new Error('OPS_VISIT_MISSING');const v=vSnap.data()||{};assertPeriod(command,v);assertVersion(command,v);
+      if(actor.role==='shopper'&&str(v.shopperId)!==actor.shopperId)throw new Error('OPS_VISIT_SHOPPER_SCOPE_DENIED');
+      tx.set(vRef,{questionnaireResult:payload.result||{},cuestFecha:payload.completedAt||now().slice(0,10),estado:'cuestionario',status:'cuestionario',questionnaireSubmittedBy:actor.uid,questionnaireSubmittedAt:now(),updatedAt:now(),version:Number(v.version||0)+1},{merge:true});
+      providerWrites++;auditEntityType='visit';
     }
     else if(command.commandType==='visit.sync.confirm'){
       if(!OPERATOR_ROLES.includes(actor.role))throw new Error('OPS_SYNC_CONFIRM_OPERATOR_ONLY');

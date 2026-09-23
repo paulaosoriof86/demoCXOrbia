@@ -154,7 +154,10 @@
       return execute(cmd,meta);
     };
     D.assignVisit=function(visitId,shopperId,meta){
-      meta=commandMeta(meta);const v=visit(visitId);const cmd=buildBase('visit.assign','visit',visitId,{visitId,hrRowId:v?.hrRowId||null,shopperId,assignmentSource:meta.assignmentSource||'platform',assignmentSyncStatus:'pending'},versionOf(v),Object.assign({permission:'visit.assign'},meta));
+      meta=commandMeta(meta);const v=visit(visitId),reassign=meta.reassign===true;
+      const payload={visitId,hrRowId:v?.hrRowId||null,shopperId,assignmentSource:meta.assignmentSource||'platform',assignmentSyncStatus:'pending'};
+      if(reassign){payload.scheduleDecision=meta.scheduleDecision||'keep';payload.scheduledDate=meta.scheduledDate||null;payload.franjaCode=meta.franjaCode||null;}
+      const cmd=buildBase(reassign?'visit.reassign':'visit.assign','visit',visitId,payload,versionOf(v),Object.assign({permission:reassign?'visit.reassign':'visit.assign'},meta));
       return execute(cmd,meta);
     };
     D.payVisits=function(ids,fechaPago,referencia,meta){
@@ -192,11 +195,11 @@
       return execute(cmd,meta);
     };
     D.requestVisitReschedule=function(visitId,newDate,meta){
-      meta=commandMeta(meta);const v=visit(visitId);const cmd=buildBase('visit.reschedule','visit',visitId,{visitId,hrRowId:v?.hrRowId||null,newDate:newDate||null,reason:meta.reason||null,requestedByShopper:meta.requestedByShopper===true,decision:meta.decision||null},versionOf(v),Object.assign({permission:'visit.reschedule'},meta));
+      meta=commandMeta(meta);const v=visit(visitId);const cmd=buildBase('visit.reschedule','visit',visitId,{visitId,hrRowId:v?.hrRowId||null,shopperId:v?.shopperId||ctx().shopperId||null,newDate:newDate||null,reason:meta.reason||null,requestedByShopper:meta.requestedByShopper===true,decision:meta.decision||null,franjaCode:meta.franjaCode||null},versionOf(v),Object.assign({permission:'visit.reschedule'},meta));
       return execute(cmd,meta);
     };
     D.requestVisitCancel=function(visitId,meta){
-      meta=commandMeta(meta);const v=visit(visitId);const cmd=buildBase('visit.cancel','visit',visitId,{visitId,hrRowId:v?.hrRowId||null,reason:meta.reason||null,requestOnly:meta.requestOnly===true},versionOf(v),Object.assign({permission:'visit.cancel'},meta));
+      meta=commandMeta(meta);const v=visit(visitId);const cmd=buildBase('visit.cancel','visit',visitId,{visitId,hrRowId:v?.hrRowId||null,shopperId:v?.shopperId||ctx().shopperId||null,reason:meta.reason||null,requestOnly:meta.requestOnly===true,releaseToAvailable:meta.releaseToAvailable===true},versionOf(v),Object.assign({permission:'visit.cancel'},meta));
       return execute(cmd,meta);
     };
     D.submitQuestionnaire=function(visitId,result,meta){

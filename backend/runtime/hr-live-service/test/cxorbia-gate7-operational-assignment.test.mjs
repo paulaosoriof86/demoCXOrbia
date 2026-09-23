@@ -259,3 +259,42 @@ test('Gate 7 / composer presents only project-scoped platform-only shopper profi
   assert.equal(result.identityReviewQueue.filter(x=>x.reason==='no_exact_hr_crosswalk').length,2);
 });
 
+
+
+test('PRE-I4 VRM-013 / canonical provider supports atomic reassignment with ACK and schedule decision',async()=>{
+  const db=new FakeFirestore();
+  db.seed('tenants/tenant-a/users/admin-1',{active:true,tenantId:'tenant-a',role:'admin',authNamespace:'staff',projectIds:['project-a']});
+  db.seed(visitPath('visit-r'),{id:'visit-r',visitId:'visit-r',tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',hrRowId:'HR!8',estado:'agendada',status:'agendada',shopperId:'shopper-old',agendada:'2026-09-24',version:4,canonicalFacets:{available:false,assigned:true,scheduled:true}});
+  const command={version:'cxorbia-command-adapter-v1',commandType:'visit.reassign',entityType:'visit',entityId:'visit-r',tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',expectedVersion:4,idempotencyKey:'prei4-reassign-1',payload:{visitId:'visit-r',shopperId:'shopper-new',assignmentSource:'platform',scheduleDecision:'change',scheduledDate:'2026-09-25',franjaCode:'PM 14–18h'},authorization:{providerEnforcementRequired:true}};
+  const result=await provider(db).execute('token',command);
+  assert.equal(result.ok,true);assert.equal(result.providerAck,true);
+  const row=db.get(visitPath('visit-r'));assert.equal(row.shopperId,'shopper-new');assert.equal(row.reassignedFromShopperId,'shopper-old');assert.equal(row.agendada,'2026-09-25');assert.equal(row.franjaCode,'PM 14–18h');assert.equal(row.assignmentSyncStatus,'pending_hr');
+});
+
+test('PRE-I4 VRM-013 / canonical provider reschedule decision is durable and idempotent',async()=>{
+  const db=new FakeFirestore();
+  db.seed('tenants/tenant-a/users/admin-1',{active:true,tenantId:'tenant-a',role:'admin',authNamespace:'staff',projectIds:['project-a']});
+  db.seed(visitPath('visit-s'),{id:'visit-s',visitId:'visit-s',tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',estado:'asignada',status:'asignada',shopperId:'shopper-a',version:2});
+  const command={version:'cxorbia-command-adapter-v1',commandType:'visit.reschedule',entityType:'visit',entityId:'visit-s',tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',expectedVersion:2,idempotencyKey:'prei4-reschedule-1',payload:{visitId:'visit-s',newDate:'2026-09-26',decision:'approved',franjaCode:'AM 8–12h'},authorization:{providerEnforcementRequired:true}};
+  const first=await provider(db).execute('token',command);assert.equal(first.providerAck,true);assert.equal(db.get(visitPath('visit-s')).agendada,'2026-09-26');
+  const replay=await provider(db).execute('token',command);assert.equal(replay.idempotentReplay,true);assert.equal(replay.providerWrites,0);
+});
+
+test('PRE-I4 VRM-013 / canonical provider cancel releases visit to availability only after ACK',async()=>{
+  const db=new FakeFirestore();
+  db.seed('tenants/tenant-a/users/admin-1',{active:true,tenantId:'tenant-a',role:'admin',authNamespace:'staff',projectIds:['project-a']});
+  db.seed(visitPath('visit-c'),{id:'visit-c',visitId:'visit-c',tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',estado:'agendada',status:'agendada',shopperId:'shopper-a',shopper:'Shopper A',agendada:'2026-09-26',version:3,canonicalFacets:{available:false,assigned:true,scheduled:true}});
+  const command={version:'cxorbia-command-adapter-v1',commandType:'visit.cancel',entityType:'visit',entityId:'visit-c',tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',expectedVersion:3,idempotencyKey:'prei4-cancel-1',payload:{visitId:'visit-c',releaseToAvailable:true,reason:'admin_cancel_release'},authorization:{providerEnforcementRequired:true}};
+  const result=await provider(db).execute('token',command);assert.equal(result.providerAck,true);
+  const row=db.get(visitPath('visit-c'));assert.equal(row.estado,'disponible');assert.equal(row.shopperId,null);assert.equal(row.agendada,null);assert.equal(row.canonicalFacets.available,true);assert.equal(row.assignmentSyncStatus,'pending_hr');
+});
+
+test('PRE-I4 VRM-013 / Postulaciones has no local-first edit reassign cancel or reprogram success paths',()=>{
+  const source=fs.readFileSync(path.join(repoRoot,'app/modules/postulaciones.js'),'utf8');
+  assert.match(source,/requestVisitReschedule\(x\.visitaId/);
+  assert.match(source,/assignVisit\(x\.visitaId,sel,\{ackAware:true,reassign:true/);
+  assert.match(source,/requestVisitCancel\(x\.visitaId,\{ackAware:true,releaseToAvailable:true/);
+  assert.doesNotMatch(source,/Asignación actualizada en memoria/);
+  assert.doesNotMatch(source,/data\.assignVisit&&data\.assignVisit\(x\.visitaId,sel\)/);
+  assert.doesNotMatch(source,/v\.estado='disponible';v\.shopperId=null/);
+});
