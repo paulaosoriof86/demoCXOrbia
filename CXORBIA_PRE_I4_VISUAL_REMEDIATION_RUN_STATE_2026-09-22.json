@@ -1,19 +1,23 @@
 {
-  "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v2",
-  "generatedAt": "2026-09-23T13:08:00-06:00",
+  "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v3",
+  "generatedAt": "2026-09-23T14:05:00-06:00",
   "iteration": "I3_PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "microblockId": "CXORBIA-PRE-I4-VISUAL-REMEDIATION-MICROBLOCK-20260922",
-  "status": "HOLD_MICROBLOCK_ACTIVE",
+  "status": "HOLD_FOCAL_PROOF_READY",
   "production": "DO_NOT_TOUCH",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "head": "bf859809d831e24665fede339a2ee872bc0e0d0c",
+  "head": "61cf7120603aeff110e97632bb6c69f5c4809d62",
   "lastFunctionalWrite": {
-    "commit": "bf859809d831e24665fede339a2ee872bc0e0d0c",
-    "parent": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+    "commit": "61cf7120603aeff110e97632bb6c69f5c4809d62",
+    "parent": "4aeb41ca6dffb6e5b8324ca50531587539f5058e",
     "files": [
-      "app/modules/postulaciones.js"
+      "app/modules/shoppers.js",
+      "app/modules/postulaciones.js",
+      "app/modules/documentos.js",
+      "app/modules/cert.js",
+      "backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-ui-cleanup.test.mjs"
     ],
-    "purpose": "READ_MODEL_RECONCILIATION_APPLICATION_STATUS_ACK",
+    "purpose": "HUMAN_UI_CLEANUP_FINAL_SOURCE_SUCCESSOR",
     "productionDeploys": 0
   },
   "automaticPushWorkflowObservation": {
@@ -49,9 +53,14 @@
       "evidenceRef": "Run299 identity repair + PRE-I4 review; no identity owner touched in db9cda1"
     },
     "VRM-004": {
-      "state": "PARTIAL_FIXED_NOT_PROVEN",
-      "evidenceRef": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
-      "note": "project/period context root fixed; full cross-surface consistency remains to prove"
+      "state": "FIXED_NOT_PROVEN",
+      "evidenceRef": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2 + feea6ae6b00d36349ae66e43e034bc0b25516cfd + 4aeb41ca6dffb6e5b8324ca50531587539f5058e",
+      "note": "Project/period root and cross-surface source context are reconciled in source; runtime/browser proof pending.",
+      "owner": [
+        "app/core/data.js",
+        "app/core/router.js",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+      ]
     },
     "VRM-005": {
       "state": "FIXED_NOT_PROVEN",
@@ -72,13 +81,35 @@
       ]
     },
     "VRM-007": {
-      "state": "OPEN_UNTIL_EVIDENCE"
+      "state": "FIXED_NOT_PROVEN",
+      "evidenceRef": "4aeb41ca6dffb6e5b8324ca50531587539f5058e + 61cf7120603aeff110e97632bb6c69f5c4809d62",
+      "owner": [
+        "app/modules/misvisitas.js",
+        "app/modules/shoppers.js",
+        "app/modules/postulaciones.js",
+        "app/modules/documentos.js",
+        "app/modules/cert.js"
+      ],
+      "note": "Human copy no longer exposes ACK/Storage/shopperId/gate implementation terms in targeted surfaces; browser proof pending."
     },
     "VRM-008": {
-      "state": "OPEN_UNTIL_EVIDENCE"
+      "state": "FIXED_NOT_PROVEN",
+      "evidenceRef": "4aeb41ca6dffb6e5b8324ca50531587539f5058e",
+      "owner": [
+        "app/core/router.js",
+        "app/index-backend-dev.html",
+        "app/styles/layout.css"
+      ],
+      "note": "Browser history/popstate and mobile role identity implemented; browser proof pending."
     },
     "VRM-009": {
-      "state": "OPEN_UNTIL_EVIDENCE"
+      "state": "FIXED_NOT_PROVEN",
+      "evidenceRef": "e0bed18b62174544615dc55aa70dd4a1509692d7 + 3a14ca612988637521c3c6b39325f4d220771875",
+      "owner": [
+        "app/modules/cert.js",
+        "app/core/backend-resources.js"
+      ],
+      "note": "Connected certification bank no longer uses localStorage; durable metadata ACK authority implemented; runtime proof pending."
     },
     "VRM-010": {
       "state": "FIXED_NOT_PROVEN",
@@ -108,13 +139,15 @@
       "note": "Admin shopper stats now use canonical visit facets and active root project; identity-specific proof pending."
     },
     "VRM-013": {
-      "state": "PARTIAL_FIXED_NOT_PROVEN",
-      "evidenceRef": "bf859809d831e24665fede339a2ee872bc0e0d0c",
+      "state": "FIXED_NOT_PROVEN",
+      "evidenceRef": "672e7f624b1d0328ed1bb25b778ce4b44d52489c + bf859809d831e24665fede339a2ee872bc0e0d0c",
       "owner": [
         "app/modules/postulaciones.js",
-        "app/adapters/cxorbia-cxdata-command-boundary-v1.js"
+        "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+        "app/adapters/cxorbia-command-adapter-v1.js",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
       ],
-      "note": "Approve was already durable; Standby/Reject now require provider ACK. Edit/reassign/cancel/reprogram local-first remnants remain and must be converted before terminal closure."
+      "note": "Approve/standby/reject/edit/reassign/cancel/reprogram all use ACK-aware command provider in source; provider/runtime proof pending."
     },
     "VRM-014": {
       "state": "FIXED_NOT_PROVEN",
@@ -146,7 +179,12 @@
       "note": "Unknown income/margin represented as null/source-pending rather than inferred zero; UI proof pending."
     },
     "VRM-017": {
-      "state": "OPEN_UNTIL_EVIDENCE"
+      "state": "FIXED_NOT_PROVEN",
+      "evidenceRef": "4aeb41ca6dffb6e5b8324ca50531587539f5058e",
+      "owner": [
+        "app/modules/finanzas.js"
+      ],
+      "note": "Raw visit/hr/financial enums removed from normal finance table and retained only under expandable trace; browser proof pending."
     },
     "VRM-018": {
       "state": "FIXED_NOT_PROVEN",
@@ -159,10 +197,23 @@
       "note": "Review queue and operational obligation rows are separated; cause-specific UI proof pending."
     },
     "VRM-019": {
-      "state": "OPEN_UNTIL_EVIDENCE"
+      "state": "FIXED_NOT_PROVEN",
+      "evidenceRef": "e0bed18b62174544615dc55aa70dd4a1509692d7 + 3a14ca612988637521c3c6b39325f4d220771875",
+      "owner": [
+        "app/modules/documentos.js",
+        "app/core/backend-resources.js"
+      ],
+      "note": "Connected lane no longer seeds static resources; Firestore metadata is authority or explicit empty/pending state; live proof pending."
     },
     "VRM-020": {
-      "state": "OPEN_UNTIL_EVIDENCE"
+      "state": "FIXED_NOT_PROVEN",
+      "evidenceRef": "e0bed18b62174544615dc55aa70dd4a1509692d7 + 3a14ca612988637521c3c6b39325f4d220771875",
+      "owner": [
+        "app/modules/documentos.js",
+        "app/core/backend-resources.js",
+        "firestore.rules"
+      ],
+      "note": "Resource metadata is transaction/ACK/idempotency backed; DataURL forbidden; binary upload fails closed unless Storage is explicitly authorized; live rules/browser proof pending."
     },
     "VRM-021": {
       "state": "FIXED_NOT_PROVEN",
@@ -174,24 +225,30 @@
       ]
     },
     "VRM-022": {
-      "state": "PARTIAL_FIXED_NOT_PROVEN",
-      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+      "state": "FIXED_NOT_PROVEN",
+      "evidenceRef": "e0bed18b62174544615dc55aa70dd4a1509692d7",
       "owner": [
+        "app/data/tya-certification-carryover-source-safe.js",
         "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
-        "backend/runtime/hr-live-service/server.mjs"
+        "app/modules/cert.js"
       ],
-      "note": "Protected certification carryover is now composed when present, but MODULE_TRUTH adjudication and durable certification source proof remain open."
+      "note": "MODULE_TRUTH=APPROVED_NOT_COMPOSED. 42 Cinépolis records map deterministically to 16 canonical shoppers but lack reviewedBy/reviewedAt/auditRef, therefore remain pending_review evidence only; certifications=[], carryoverConfirmed=0, eligibilityGranted=0, fuzzyMatching=false."
     },
     "VRM-023": {
       "state": "ALREADY_PROVEN_NO_DRIFT",
       "evidenceRef": "Run304 + human screenshots: official T&A logo visible"
     },
     "VRM-024": {
-      "state": "ALREADY_PROVEN_NO_DRIFT",
-      "evidenceRef": "Run304 + human screenshots: scenario/debug laboratory no longer visible in current human lane"
+      "state": "FIXED_NOT_PROVEN",
+      "evidenceRef": "4aeb41ca6dffb6e5b8324ca50531587539f5058e + prior Run304",
+      "owner": [
+        "app/core/router.js",
+        "app/index-backend-dev.html"
+      ],
+      "note": "Prior no-debug state preserved and human data/source diagnostics are hidden unless technical access; browser no-drift proof pending."
     }
   },
-  "nextExactAction": "Continue same microblock with READ_MODEL_RECONCILIATION remainder: convert VRM-013 edit/reassign/cancel/reprogram flows to existing ACK-aware command boundary, adjudicate VRM-022 certification MODULE_TRUTH, then proceed to DURABILITY_AND_RESOURCES. Do not deploy DEV or production.",
+  "nextExactAction": "Execute the existing canonical PRE-I4 focal job once with [pre-i4-dev-only] control successor: source tests -> exact runtime build/deploy DEV -> exact Firestore rules DEV -> exact Hosting DEV -> byte/rules/runtime parity -> fresh HR -> expanded Admin/Shopper desktop/mobile focal browser proof. No production.",
   "functionalLineage": [
     {
       "commit": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
@@ -203,28 +260,62 @@
     },
     {
       "commit": "bf859809d831e24665fede339a2ee872bc0e0d0c",
-      "purpose": "READ_MODEL_RECONCILIATION_APPLICATION_STATUS_ACK"
+      "purpose": "APPLICATION_STATUS_ACK"
+    },
+    {
+      "commit": "672e7f624b1d0328ed1bb25b778ce4b44d52489c",
+      "purpose": "DURABLE_POSTULATION_VISIT_LIFECYCLE"
+    },
+    {
+      "commit": "e0bed18b62174544615dc55aa70dd4a1509692d7",
+      "purpose": "DURABILITY_RESOURCES_CERTIFICATION_SOURCE"
+    },
+    {
+      "commit": "3a14ca612988637521c3c6b39325f4d220771875",
+      "purpose": "DURABILITY_READBACK_HARDENING"
+    },
+    {
+      "commit": "4aeb41ca6dffb6e5b8324ca50531587539f5058e",
+      "purpose": "HUMAN_UI_SHELL_SHOPPER_FINANCE_CLEANUP"
+    },
+    {
+      "commit": "61cf7120603aeff110e97632bb6c69f5c4809d62",
+      "purpose": "HUMAN_UI_CLEANUP_FINAL_SOURCE_SUCCESSOR"
     }
   ],
   "readModelReconciliation": {
-    "state": "IN_PROGRESS_MATERIAL_SUCCESSOR",
-    "canonicalReadModelCommit": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
-    "applicationStatusAckCommit": "bf859809d831e24665fede339a2ee872bc0e0d0c",
-    "sourceAssertions": {
-      "shopperCanonicalFacets": true,
-      "pendingApplicationVisibility": true,
-      "adminShopperCanonicalStats": true,
-      "rankingDoesNotSilentlyExcludeMissingRating": true,
-      "financeObligationVsConfirmationSeparated": true,
-      "unknownIncomeMarginNotForcedToZero": true,
-      "applicationApproveAck": true,
-      "applicationStandbyAck": true,
-      "applicationRejectAck": true
-    },
-    "remaining": [
-      "VRM-013 edit/reassign/cancel/reprogram durable conversion",
-      "VRM-022 MODULE_TRUTH certification adjudication",
-      "focal browser/runtime proof for all FIXED_NOT_PROVEN findings"
+    "state": "SOURCE_COMPLETE_AWAITING_FOCAL_PROOF",
+    "evidenceRefs": [
+      "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+      "bf859809d831e24665fede339a2ee872bc0e0d0c",
+      "672e7f624b1d0328ed1bb25b778ce4b44d52489c"
     ]
+  },
+  "functionalSource": {
+    "sha": "61cf7120603aeff110e97632bb6c69f5c4809d62",
+    "tree": "4691c59bc85cc1b628e1b86bbfbcadb63c91d9d0",
+    "state": "CUMULATIVE_SOURCE_PACKAGE_COMPLETE_AWAITING_FOCAL_PROOF"
+  },
+  "durabilityAndResources": {
+    "state": "SOURCE_COMPLETE_AWAITING_FOCAL_PROOF",
+    "evidenceRefs": [
+      "e0bed18b62174544615dc55aa70dd4a1509692d7",
+      "3a14ca612988637521c3c6b39325f4d220771875"
+    ],
+    "certificationModuleTruth": "APPROVED_NOT_COMPOSED"
+  },
+  "humanUiCleanup": {
+    "state": "SOURCE_COMPLETE_AWAITING_FOCAL_PROOF",
+    "evidenceRefs": [
+      "4aeb41ca6dffb6e5b8324ca50531587539f5058e",
+      "61cf7120603aeff110e97632bb6c69f5c4809d62"
+    ]
+  },
+  "focalProof": {
+    "state": "READY_TO_EXECUTE_SINGLE_DEV_MATERIALIZATION",
+    "sourceSha": "61cf7120603aeff110e97632bb6c69f5c4809d62",
+    "sourceTree": "4691c59bc85cc1b628e1b86bbfbcadb63c91d9d0",
+    "requestId": "pre-i4-visual-remediation-20260923-01",
+    "production": false
   }
 }
