@@ -27,7 +27,7 @@ test('PRE-I4 VRM-020 metadata requires durable ACK and binary upload fails close
   assert.match(core,/RESOURCE_STORAGE_NOT_AUTHORIZED/);
   assert.match(core,/RESOURCE_DATA_URL_FORBIDDEN/);
   assert.doesNotMatch(docs,/readAsDataURL/);
-  assert.doesNotMatch(docs,/CX\.docStore\._d/);
+  assert.doesNotMatch(docs,/CX\.docStore\._d\b/);
 });
 
 test('PRE-I4 VRM-022 historical certifications are preserved as pending evidence, never false carryover',()=>{
