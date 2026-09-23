@@ -65,10 +65,10 @@ CX.module('shoppers', ({data,ui})=>{
     }
     ui.modal(title,`
       <div style="background:var(--brand-light);border-radius:10px;padding:14px;color:var(--brand-dark);line-height:1.7">
-        <div style="font-weight:800;margin-bottom:6px">Credencial emitida y confirmada por el proveedor</div>
+        <div style="font-weight:800;margin-bottom:6px">Credencial emitida correctamente</div>
         <div>Usuario: <b style="font-family:var(--disp)">${esc(credential.login)}</b></div>
         <div>Contraseña: <b style="font-family:var(--disp)">${esc(credential.password)}</b></div>
-        <div style="font-size:11px;margin-top:8px">Regla TyA: usuario nombre.apellido y contraseña Nombre123*. No se guarda la contraseña en Firestore, HR ni localStorage.</div>
+        <div style="font-size:11px;margin-top:8px">Regla TyA: usuario nombre.apellido y contraseña temporal Nombre123*. La contraseña no queda visible ni almacenada para consulta posterior.</div>
       </div>`);
   };
   const resetCredential=async(shopperId,title)=>{
@@ -330,7 +330,7 @@ CX.module('shoppers', ({data,ui})=>{
           <div><label class="lbl">Sexo</label><select class="sel" id="al_sexo"><option value="">Selecciona…</option><option>Femenino</option><option>Masculino</option><option>Otro</option><option>Prefiero no decir</option></select></div>
         </div>
       </details>
-      <div id="al_creds" style="background:var(--brand-light);border-radius:10px;padding:10px 13px;font-size:12px;color:var(--brand-dark);margin:6px 0 14px">La plataforma creará una identidad durable y emitirá una credencial temporal después del ACK remoto.</div>
+      <div id="al_creds" style="background:var(--brand-light);border-radius:10px;padding:10px 13px;font-size:12px;color:var(--brand-dark);margin:6px 0 14px">La plataforma creará el acceso y mostrará una credencial temporal cuando el registro quede confirmado.</div>
       <div style="text-align:right"><button class="btn btn-green" id="al_save">Crear shopper</button></div>
     `, {onMount:(ov,close)=>{
       CX.geo.wire(ov, ids);

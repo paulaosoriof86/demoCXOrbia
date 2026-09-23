@@ -37,7 +37,7 @@ CX.module('postulaciones', ({data,ui})=>{
           <div style="font-size:12px;color:var(--t2);margin-top:3px">📍 ${x.sucursal} · ${x.ciudad}</div>
           <div style="font-size:11.5px;color:var(--t3);margin-top:4px">📅 ${safe(x.fechaProp)} · ⏱️ ${safe(x.franjaCode)} · 📞 ${safePhone(x)} · desde ${safe(x.disponibleDesde)}</div>
           <div style="font-size:12px;color:var(--green);font-weight:600;margin-top:4px">💲 ${hon}</div>
-          ${x.estado==='aprobada'?`<div style="font-size:11px;color:var(--t3);margin-top:5px">✅ ${x.quincena} · WA fallback/manual preparado · pendiente confirmación · Aprobada por <b style="color:var(--t2)">${x.aprobadaPor}</b></div>`:''}
+          ${x.estado==='aprobada'?`<div style="font-size:11px;color:var(--t3);margin-top:5px">✅ ${x.quincena} · WhatsApp preparado · pendiente de envío · Aprobada por <b style="color:var(--t2)">${x.aprobadaPor}</b></div>`:''}
         </div>
         <div style="display:flex;flex-direction:column;gap:7px;align-items:flex-end">
           ${x.estado==='pendiente'
@@ -67,7 +67,7 @@ CX.module('postulaciones', ({data,ui})=>{
   const html=`
   <div class="between" style="margin-bottom:6px">
     <div>${ui.ph('Gestión de Postulaciones', `${c('pendiente')} pendientes · ${c('aprobada')} aprobadas · ${reprog.length} reprogramación(es) · ${agendadas.length} agendamientos`)}</div>
-    <div class="flex"><span class="bdg bdg-b">● Preview operativo</span><span class="bdg bdg-b">${p.name}</span></div>
+    <div class="flex"><span class="bdg bdg-b">Gestión activa</span><span class="bdg bdg-b">${p.name}</span></div>
   </div>
 
   <div class="flex wrap" style="gap:8px;margin-bottom:12px">
@@ -177,11 +177,11 @@ CX.module('postulaciones', ({data,ui})=>{
       const committed=result&&result.ok===true&&result.status==='committed'&&result.providerAck===true&&result.successUiAllowed===true;
       if(!committed){
         if(button){button.disabled=false;button.textContent=previousText||'✅ Aprobar';}
-        ui.toast('Aprobación no ejecutada: no hubo ACK remoto. No se modificó la postulación.','warn',4200);
+        ui.toast('Aprobación no ejecutada: no fue posible confirmar el cambio. La postulación permanece sin cambios.','warn',4200);
         return;
       }
       if(CX.automations)CX.automations.fire('aprobacion',{shopper:x.shopper,sucursal:x.sucursal});
-      act(x.id,'✅ Aprobada','green','Aprobada · confirmada por persistencia remota');
+      act(x.id,'✅ Aprobada','green','Aprobada · guardada correctamente');
       if(typeof close==='function')close();
     };
 
@@ -245,9 +245,9 @@ CX.module('postulaciones', ({data,ui})=>{
       const prev=button&&button.textContent;if(button){button.disabled=true;button.textContent='Confirmando…';}
       let result=null;try{result=await data.setApplicationStatus(x.id,status,{ackAware:true,reason:'admin_'+status});}catch(error){result={ok:false,status:'blocked',providerAck:false,successUiAllowed:false};}
       const ok=result&&result.ok===true&&result.status==='committed'&&result.providerAck===true&&result.successUiAllowed===true;
-      if(!ok){if(button){button.disabled=false;button.textContent=prev||label;}ui.toast('Acción no ejecutada: no hubo ACK remoto. No se modificó la postulación.','warn',4200);return false;}
+      if(!ok){if(button){button.disabled=false;button.textContent=prev||label;}ui.toast('Acción no ejecutada: no fue posible confirmar el cambio. La postulación permanece sin cambios.','warn',4200);return false;}
       try{await CX.backend?.refresh?.();}catch(_){}
-      act(x.id,label,tone,message+' · confirmada por persistencia remota');return true;
+      act(x.id,label,tone,message+' · guardada correctamente');return true;
     };
     document.querySelectorAll('[data-sb]').forEach(b=>b.addEventListener('click',async()=>{const x=posts.find(z=>z.id===b.dataset.sb);await applicationStatusDurable(x,'standby',b,'⏸ Standby','amber','Postulación en standby');}));
     document.querySelectorAll('[data-rj]').forEach(b=>b.addEventListener('click',async()=>{const x=posts.find(z=>z.id===b.dataset.rj);await applicationStatusDurable(x,'rechazada',b,'✕ Rechazada','red','Postulación rechazada');}));
@@ -265,8 +265,8 @@ CX.module('postulaciones', ({data,ui})=>{
     search();
     /* botones de reprogramación (revisar / autorizar nueva fecha / conservar anterior) */
     document.querySelectorAll('[data-revpost]').forEach(b=>b.addEventListener('click',()=>{const x=posts.find(z=>z.id===b.dataset.revpost);ui.modal('Revisar solicitud de reprogramación · '+(x&&x.shopper||''),`<p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Fecha actual: <b>${x&&x.fechaActual||'—'}</b> · Fecha propuesta: <b>${x&&x.fechaProp||'—'}</b></p><div style="background:var(--amber-bg);border-radius:9px;padding:9px 12px;font-size:12px;color:#8a5b00">Usa "Autorizar nueva fecha" para aprobar la reprogramación o "Conservar anterior" para mantener la fecha actual.</div>`);}));
-    document.querySelectorAll('[data-authfecha]').forEach(b=>b.addEventListener('click',async()=>{const x=posts.find(z=>z.id===b.dataset.authfecha);if(!x||!x.fechaProp)return;if(!CX.permissions.gate('visit.reassign',{projectId:x.rootProjectId||x.projectId,pais:x.pais},ui))return;const prev=b.textContent;b.disabled=true;b.textContent='Confirmando…';let r=null;try{r=await data.requestVisitReschedule(x.visitaId,x.fechaProp,{ackAware:true,decision:'approved',reason:'admin_reprogram_approve'});}catch(_){r=null;}const ok=r&&r.ok===true&&r.status==='committed'&&r.providerAck===true&&r.successUiAllowed===true;if(!ok){b.disabled=false;b.textContent=prev;ui.toast('Reprogramación no ejecutada: no hubo ACK remoto.','warn',4200);return;}try{await CX.backend?.refresh?.();}catch(_){}CX.notif&&CX.notif.push({to:'shopper',tipo:'reprog_aprobada',icon:'✅',tono:'g',titulo:'Reprogramación aprobada',txt:'Tu visita en '+(x.sucursal||'')+' fue reprogramada a '+x.fechaProp,nav:'misvisitas'});ui.toast('Nueva fecha confirmada por backend','ok',3600);}));
-    document.querySelectorAll('[data-keepfecha]').forEach(b=>b.addEventListener('click',async()=>{const x=posts.find(z=>z.id===b.dataset.keepfecha);if(!x)return;const prev=b.textContent;b.disabled=true;b.textContent='Confirmando…';let r=null;try{r=await data.requestVisitReschedule(x.visitaId,null,{ackAware:true,decision:'rejected',reason:'admin_reprogram_reject'});}catch(_){r=null;}const ok=r&&r.ok===true&&r.status==='committed'&&r.providerAck===true&&r.successUiAllowed===true;if(!ok){b.disabled=false;b.textContent=prev;ui.toast('Decisión no ejecutada: no hubo ACK remoto.','warn',4200);return;}try{await CX.backend?.refresh?.();}catch(_){}CX.notif&&CX.notif.push({to:'shopper',tipo:'reprog_rechazada',icon:'⚠️',tono:'a',titulo:'Reprogramación no autorizada',txt:'La visita en '+(x.sucursal||'')+' conserva la fecha original',nav:'misvisitas'});ui.toast('Fecha original conservada · decisión confirmada por backend','ok');}));
+    document.querySelectorAll('[data-authfecha]').forEach(b=>b.addEventListener('click',async()=>{const x=posts.find(z=>z.id===b.dataset.authfecha);if(!x||!x.fechaProp)return;if(!CX.permissions.gate('visit.reassign',{projectId:x.rootProjectId||x.projectId,pais:x.pais},ui))return;const prev=b.textContent;b.disabled=true;b.textContent='Confirmando…';let r=null;try{r=await data.requestVisitReschedule(x.visitaId,x.fechaProp,{ackAware:true,decision:'approved',reason:'admin_reprogram_approve'});}catch(_){r=null;}const ok=r&&r.ok===true&&r.status==='committed'&&r.providerAck===true&&r.successUiAllowed===true;if(!ok){b.disabled=false;b.textContent=prev;ui.toast('Reprogramación no ejecutada: no fue posible confirmar el cambio.','warn',4200);return;}try{await CX.backend?.refresh?.();}catch(_){}CX.notif&&CX.notif.push({to:'shopper',tipo:'reprog_aprobada',icon:'✅',tono:'g',titulo:'Reprogramación aprobada',txt:'Tu visita en '+(x.sucursal||'')+' fue reprogramada a '+x.fechaProp,nav:'misvisitas'});ui.toast('Nueva fecha guardada correctamente','ok',3600);}));
+    document.querySelectorAll('[data-keepfecha]').forEach(b=>b.addEventListener('click',async()=>{const x=posts.find(z=>z.id===b.dataset.keepfecha);if(!x)return;const prev=b.textContent;b.disabled=true;b.textContent='Confirmando…';let r=null;try{r=await data.requestVisitReschedule(x.visitaId,null,{ackAware:true,decision:'rejected',reason:'admin_reprogram_reject'});}catch(_){r=null;}const ok=r&&r.ok===true&&r.status==='committed'&&r.providerAck===true&&r.successUiAllowed===true;if(!ok){b.disabled=false;b.textContent=prev;ui.toast('Decisión no ejecutada: no fue posible confirmar el cambio.','warn',4200);return;}try{await CX.backend?.refresh?.();}catch(_){}CX.notif&&CX.notif.push({to:'shopper',tipo:'reprog_rechazada',icon:'⚠️',tono:'a',titulo:'Reprogramación no autorizada',txt:'La visita en '+(x.sucursal||'')+' conserva la fecha original',nav:'misvisitas'});ui.toast('Fecha original conservada · decisión guardada correctamente','ok');}));
 
     /* editar fecha/franja de la visita de una postulación */
     document.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>{ const x=posts.find(z=>z.id===b.dataset.edit); if(!x)return;
@@ -275,7 +275,7 @@ CX.module('postulaciones', ({data,ui})=>{
         <label class="lbl">Fecha</label><input class="inp" id="edF" type="date" value="${x.fechaProp||''}" style="margin-bottom:10px">
         <label class="lbl">Franja</label><select class="sel" id="edFr" style="margin-bottom:14px">${['AM 8–12h','PM 14–18h','WK fin de semana'].map(o=>`<option ${o.startsWith(x.franjaCode||'')?'selected':''}>${o}</option>`).join('')}</select>
         <div style="text-align:right"><button class="btn btn-pr btn-sm" id="edOk">Guardar</button></div>
-      `,{onMount:(ov,close)=>{ov.querySelector('#edOk').addEventListener('click',async()=>{const f=ov.querySelector('#edF').value,fr=ov.querySelector('#edFr').value;if(!f){ui.toast('Elige la fecha','warn');return;}const btn=ov.querySelector('#edOk');btn.disabled=true;btn.textContent='Confirmando…';let r=null;try{r=await data.requestVisitReschedule(x.visitaId,f,{ackAware:true,decision:'approved',franjaCode:fr,reason:'admin_assignment_edit'});}catch(_){r=null;}const ok=r&&r.ok===true&&r.status==='committed'&&r.providerAck===true&&r.successUiAllowed===true;if(!ok){btn.disabled=false;btn.textContent='Guardar';ui.toast('Cambio no ejecutado: no hubo ACK remoto.','warn',4200);return;}try{await CX.backend?.refresh?.();}catch(_){}close();ui.toast('Asignación actualizada y confirmada por backend','ok',3600);});}});
+      `,{onMount:(ov,close)=>{ov.querySelector('#edOk').addEventListener('click',async()=>{const f=ov.querySelector('#edF').value,fr=ov.querySelector('#edFr').value;if(!f){ui.toast('Elige la fecha','warn');return;}const btn=ov.querySelector('#edOk');btn.disabled=true;btn.textContent='Confirmando…';let r=null;try{r=await data.requestVisitReschedule(x.visitaId,f,{ackAware:true,decision:'approved',franjaCode:fr,reason:'admin_assignment_edit'});}catch(_){r=null;}const ok=r&&r.ok===true&&r.status==='committed'&&r.providerAck===true&&r.successUiAllowed===true;if(!ok){btn.disabled=false;btn.textContent='Guardar';ui.toast('Cambio no ejecutado: no fue posible confirmar el cambio.','warn',4200);return;}try{await CX.backend?.refresh?.();}catch(_){}close();ui.toast('Asignación actualizada y guardada correctamente','ok',3600);});}});
     }));
 
     /* reasignar a otro shopper */
@@ -318,10 +318,10 @@ CX.module('postulaciones', ({data,ui})=>{
           btn.disabled=true;btn.textContent='Confirmando…';let r=null;
           try{r=await data.assignVisit(x.visitaId,sel,{ackAware:true,reassign:true,scheduleDecision:mode,scheduledDate,franjaCode,assignmentSource:'platform',reason:'admin_visit_reassign'});}catch(_){r=null;}
           const ok=r&&r.ok===true&&r.status==='committed'&&r.providerAck===true&&r.successUiAllowed===true;
-          if(!ok){btn.disabled=false;btn.textContent='Reasignar';ui.toast('Reasignación no ejecutada: no hubo ACK remoto.','warn',4200);return;}
+          if(!ok){btn.disabled=false;btn.textContent='Reasignar';ui.toast('Reasignación no ejecutada: no fue posible confirmar el cambio.','warn',4200);return;}
           const ns=data.getShopper&&data.getShopper(sel);try{await CX.backend?.refresh?.();}catch(_){}close();
           CX.notif&&CX.notif.push({to:'admin',tipo:'reasig',icon:'🔁',tono:'a',titulo:'Visita reasignada',txt:x.sucursal+' → '+(ns?.nombre||'shopper')+' · '+fechaMsg,nav:'postulaciones'});
-          ui.toast('Reasignación confirmada por backend · '+fechaMsg,'ok',4200);
+          ui.toast('Reasignación guardada correctamente · '+fechaMsg,'ok',4200);
         }); }});
     }));
 
@@ -331,7 +331,7 @@ CX.module('postulaciones', ({data,ui})=>{
         <p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">La visita de <b>${x.shopper}</b> volverá a <b>disponible</b> y el shopper será notificado.</p>
         <label class="lbl">Motivo</label><textarea class="inp" id="cnM" rows="2" placeholder="Motivo de la cancelación…" style="margin-bottom:14px"></textarea>
         <div style="text-align:right"><button class="btn btn-sm" style="background:var(--red-bg);color:var(--red)" id="cnOk">Confirmar cancelación</button></div>
-      `,{onMount:(ov,close)=>{ov.querySelector('#cnOk').addEventListener('click',async()=>{if(!CX.permissions.gate('visit.cancel',{projectId:x.rootProjectId||x.projectId,pais:x.pais},ui))return;const btn=ov.querySelector('#cnOk'),reason=(ov.querySelector('#cnM').value||'').trim();btn.disabled=true;btn.textContent='Confirmando…';let r=null;try{r=await data.requestVisitCancel(x.visitaId,{ackAware:true,releaseToAvailable:true,reason:reason||'admin_cancel_release'});}catch(_){r=null;}const ok=r&&r.ok===true&&r.status==='committed'&&r.providerAck===true&&r.successUiAllowed===true;if(!ok){btn.disabled=false;btn.textContent='Confirmar cancelación';ui.toast('Cancelación no ejecutada: no hubo ACK remoto.','warn',4200);return;}try{await CX.backend?.refresh?.();}catch(_){}CX.notif&&CX.notif.push({to:'shopper',tipo:'cancel',icon:'❌',tono:'r',titulo:'Visita cancelada',txt:x.sucursal+' · puedes postularte a otras',nav:'misvisitas'});close();ui.toast('Visita liberada y confirmada por backend','ok',3600);});}});
+      `,{onMount:(ov,close)=>{ov.querySelector('#cnOk').addEventListener('click',async()=>{if(!CX.permissions.gate('visit.cancel',{projectId:x.rootProjectId||x.projectId,pais:x.pais},ui))return;const btn=ov.querySelector('#cnOk'),reason=(ov.querySelector('#cnM').value||'').trim();btn.disabled=true;btn.textContent='Confirmando…';let r=null;try{r=await data.requestVisitCancel(x.visitaId,{ackAware:true,releaseToAvailable:true,reason:reason||'admin_cancel_release'});}catch(_){r=null;}const ok=r&&r.ok===true&&r.status==='committed'&&r.providerAck===true&&r.successUiAllowed===true;if(!ok){btn.disabled=false;btn.textContent='Confirmar cancelación';ui.toast('Cancelación no ejecutada: no fue posible confirmar el cambio.','warn',4200);return;}try{await CX.backend?.refresh?.();}catch(_){}CX.notif&&CX.notif.push({to:'shopper',tipo:'cancel',icon:'❌',tono:'r',titulo:'Visita cancelada',txt:x.sucursal+' · puedes postularte a otras',nav:'misvisitas'});close();ui.toast('Visita liberada y guardada correctamente','ok',3600);});}});
     }));
 
     /* asignar visita manual — con búsqueda y opción de crear shopper en el momento */

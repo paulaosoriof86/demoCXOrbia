@@ -132,13 +132,13 @@ CX.module('documentos', ({data,role,ui})=>{
           if(nf){
             if(!connected()){ui.toast('Los archivos binarios no se persisten en modo demo.','warn',4200);btn.disabled=false;btn.textContent='Guardar';return;}
             const up=await CX.backendResources.uploadBinary(nf,Object.assign(scope(),{resourceId:d.id}));
-            if(!committed(up)){ui.toast('Archivo no guardado: Storage no está autorizado/configurado. No se modificó el recurso.','warn',4600);btn.disabled=false;btn.textContent='Guardar';return;}
+            if(!committed(up)){ui.toast('Archivo no guardado: la carga de archivos aún no está habilitada. No se modificó el recurso.','warn',4600);btn.disabled=false;btn.textContent='Guardar';return;}
             patch.url=up.item.url;patch.storagePath=up.item.storagePath;patch.meta=nf.name;
             if(nf.type==='application/pdf')patch.tipo='pdf';else if(/^image\//.test(nf.type)){patch.tipo='image';patch.ic='🖼️';}else if(/^video\//.test(nf.type)){patch.tipo='video';patch.ic='🎬';}
           }
           const result=await saveDurable(patch,{expectedVersion:d.version});
-          if(!committed(result)){ui.toast('Documento no actualizado: no hubo ACK durable.','warn',4200);btn.disabled=false;btn.textContent='Guardar';return;}
-          close();draw();ui.toast('Documento actualizado y confirmado por backend','ok');
+          if(!committed(result)){ui.toast('Documento no actualizado: el cambio no pudo confirmarse.','warn',4200);btn.disabled=false;btn.textContent='Guardar';return;}
+          close();draw();ui.toast('Documento actualizado y guardado correctamente','ok');
         });}});
     }));
     host.querySelectorAll('[data-deld]').forEach(b=>b.addEventListener('click',async()=>{
@@ -146,8 +146,8 @@ CX.module('documentos', ({data,role,ui})=>{
       const d=docs.find(x=>x.id===b.dataset.deld);
       if(!connected()){CX.docStore._demo[pid]=(CX.docStore._demo[pid]||[]).filter(x=>x.id!==b.dataset.deld);draw();return;}
       const result=await CX.backendResources.deleteMetadata(b.dataset.deld,Object.assign(scope(),{idempotencyKey:'resource.delete:'+b.dataset.deld}));
-      if(!committed(result)){ui.toast('Documento no eliminado: no hubo ACK durable.','warn',4200);return;}
-      CX.automations&&CX.automations.logAction('Documento eliminado',b.dataset.deld,d?d.n:'');draw();ui.toast('Documento eliminado y confirmado por backend','ok');
+      if(!committed(result)){ui.toast('Documento no eliminado: el cambio no pudo confirmarse.','warn',4200);return;}
+      CX.automations&&CX.automations.logAction('Documento eliminado',b.dataset.deld,d?d.n:'');draw();ui.toast('Documento eliminado y guardado correctamente','ok');
     }));
     const up=host.querySelector('#docUp');
     host.querySelector('#docIA')?.addEventListener('click',()=>ui.modal('📝 Generar recurso (heurística local)',`
@@ -178,7 +178,7 @@ CX.module('documentos', ({data,role,ui})=>{
         const rec={n:nombres[tipo]+' (borrador local)',ic:ics[tipo],meta:'heurística local · sin IA real',tipo:tipo==='checklist'?'check':'text'};
         if(tipo==='checklist')rec.items=res.split('\n').filter(l=>/^[-•\d]/.test(l.trim())).map(l=>l.replace(/^[-•\d.\s]+/,'').trim()).filter(Boolean);
         else rec.body=res;
-        (async()=>{const result=await saveDurable(rec);if(!committed(result)){ui.toast('Borrador no guardado: no hubo ACK durable.','warn',4200);return;}close();draw();ui.toast(connected()?'Borrador guardado y confirmado por backend':'Borrador demo generado','ok',4000);})();
+        (async()=>{const result=await saveDurable(rec);if(!committed(result)){ui.toast('Borrador no guardado: el cambio no pudo confirmarse.','warn',4200);return;}close();draw();ui.toast(connected()?'Borrador guardado y guardado correctamente':'Borrador demo generado','ok',4000);})();
       });
     }}));
     if(up)up.addEventListener('click',()=>ui.modal('Subir recurso',`
@@ -202,11 +202,11 @@ CX.module('documentos', ({data,role,ui})=>{
         const visitaId=ov.querySelector('#duVisita').value; if(visitaId)rec.visitaId=visitaId;
         if(t==='video'&&url)rec.url=CX.learnStore?CX.learnStore.embedUrl(url):url;
         if(body)rec.body=body;
-        const finish=async()=>{const result=await saveDurable(rec);if(!committed(result)){ui.toast('Recurso no guardado: no hubo ACK durable.','warn',4200);return;}close();draw();ui.toast(connected()?'Recurso guardado y confirmado por backend':'Recurso demo guardado','ok');};
+        const finish=async()=>{const result=await saveDurable(rec);if(!committed(result)){ui.toast('Recurso no guardado: el cambio no pudo confirmarse.','warn',4200);return;}close();draw();ui.toast(connected()?'Recurso guardado y guardado correctamente':'Recurso demo guardado','ok');};
         if(f){
           if(!connected()){ui.toast('Los archivos binarios no se persisten en modo demo.','warn',4200);return;}
           const upResult=await CX.backendResources.uploadBinary(f,scope());
-          if(!committed(upResult)){ui.toast('Archivo no guardado: Storage no está autorizado/configurado. No se creó un recurso ficticio.','warn',4800);return;}
+          if(!committed(upResult)){ui.toast('Archivo no guardado: la carga de archivos aún no está habilitada. No se creó el recurso.','warn',4800);return;}
           rec.url=upResult.item.url;rec.storagePath=upResult.item.storagePath;rec.meta=f.name;
           if(f.type==='application/pdf')rec.tipo='pdf';else if(/^image\//.test(f.type)){rec.tipo='image';rec.ic='🖼️';}else if(/^video\//.test(f.type)){rec.tipo='video';rec.ic='🎬';}
           await finish();

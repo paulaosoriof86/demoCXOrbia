@@ -84,11 +84,11 @@ CX.module('cert', ({role,data,ui})=>{
           const score=Math.round(ok/bank.preguntas.length*100); const pass=score>=(bank.gate||80);
           const isPreviewOnly = bank.estado==='approved_preview';
           const box=host.querySelector('#examBox');
-          box.insertAdjacentHTML('afterbegin',`<div class="flex" style="gap:14px;background:var(--${pass?'green':'amber'}-bg);border-radius:11px;padding:13px 16px;margin-bottom:12px"><div style="font-family:var(--disp);font-size:30px;font-weight:800;color:var(--${pass?'green':'amber'})">${score}%</div><div><b style="color:var(--t1)">${pass?'Aprobado':'No alcanzado'}</b> · ${ok}/${bank.preguntas.length} correctas · requisito ${bank.gate||80}%<div style="font-size:12px;color:var(--t3)">${pass?(isPreviewOnly?'Práctica en vista previa aprobada — la habilitación real para ejecutar visitas queda pendiente de activación.':'Ya puedes ejecutar tus visitas de este proyecto.'):'Repasa el feedback y vuelve a intentarlo.'}</div></div></div>`);
+          box.insertAdjacentHTML('afterbegin',`<div class="flex" style="gap:14px;background:var(--${pass?'green':'amber'}-bg);border-radius:11px;padding:13px 16px;margin-bottom:12px"><div style="font-family:var(--disp);font-size:30px;font-weight:800;color:var(--${pass?'green':'amber'})">${score}%</div><div><b style="color:var(--t1)">${pass?'Aprobado':'No alcanzado'}</b> · ${ok}/${bank.preguntas.length} correctas · requisito ${bank.gate||80}%<div style="font-size:12px;color:var(--t3)">${pass?(isPreviewOnly?'Práctica aprobada — la certificación oficial todavía no está publicada.':'Ya puedes ejecutar tus visitas de este proyecto.'):'Repasa el feedback y vuelve a intentarlo.'}</div></div></div>`);
           /* P0-7: una práctica en preview NO es un evento operativo real — solo se registra el
              evento de automatización cuando el banco ya está confirmed/published (no approved_preview). */
           if(!isPreviewOnly) CX.automations&&CX.automations.fire&&CX.automations.fire('certificacion',{shopper:(CX.session.user&&CX.session.user.name)||'',score,pass});
-          ui.toast(pass?(isPreviewOnly?'✓ Práctica aprobada ('+score+'%, vista previa)':'✓ Certificación aprobada ('+score+'%)'):'Puntaje '+score+'% · no alcanzó el requisito mínimo','ok',4000);
+          ui.toast(pass?(isPreviewOnly?'✓ Práctica aprobada ('+score+'%)':'✓ Certificación aprobada ('+score+'%)'):'Puntaje '+score+'% · no alcanzó el requisito mínimo','ok',4000);
         });
       };
       draw(); return host;
@@ -161,7 +161,7 @@ CX.module('cert', ({role,data,ui})=>{
       <div data-ck="gate" style="cursor:pointer">${ui.kpi('Requisito activo',bank&&bank.gate?'Sí':'No','p')}</div>
     </div>
     <div class="card card-p">
-      ${bank&&bank.estado==='approved_preview'?ui.degraded('Banco aprobado en vista previa (revisado por '+(bank.revisadoPor||'—')+') — disponible para practicar en este prototipo, pero la publicación real hacia producción queda pendiente de activación.',{title:'Certificación · aprobado (vista previa) · pendiente de activación'}):ui.degraded('Sin una fuente de intentos/resultados de certificación conectada todavía, no se muestran KPIs de certificación fuera de modo demo — evita presentar aprobación/progreso ficticios como reales.', {title:'Certificación · pendiente de fuente'})}
+      ${bank&&bank.estado==='approved_preview'?ui.degraded('Banco revisado por '+(bank.revisadoPor||'—')+' y disponible para práctica. La publicación oficial sigue pendiente.',{title:'Certificación · práctica disponible · publicación pendiente'}):ui.degraded('Sin una fuente de intentos/resultados de certificación conectada todavía, no se muestran KPIs de certificación fuera de modo demo — evita presentar aprobación/progreso ficticios como reales.', {title:'Certificación · pendiente de fuente'})}
     </div>`}`;
   setTimeout(()=>{
     const ckData={
@@ -220,8 +220,8 @@ CX.module('cert', ({role,data,ui})=>{
             if(revisor.toLowerCase()===creador.toLowerCase()){ ui.toast('El revisor debe ser una persona distinta a quien generó el banco (segundo actor obligatorio)','warn',4500); return; }
             const auditRef='aud_'+Math.random().toString(36).slice(2,8)+Date.now().toString(36).slice(-4);
             const result=await CX.certStore.save(p.id,{preguntas,gate:g,fecha:new Date().toISOString().slice(0,10),generadoPor:creador,revisadoPor:revisor,auditRef,estado:'approved_preview'});
-            if(!(result?.ok===true&&result?.status==='committed'&&result?.providerAck===true)){ui.toast('Banco no guardado: no hubo ACK durable.','warn',4400);return;}
-            c2();draw();ui.toast(CX.certStore.connected()?'✅ Banco guardado y confirmado por backend':'✅ Banco aprobado en modo demo','ok',5200);
+            if(!(result?.ok===true&&result?.status==='committed'&&result?.providerAck===true)){ui.toast('Banco no guardado: el cambio no pudo confirmarse.','warn',4400);return;}
+            c2();draw();ui.toast(CX.certStore.connected()?'✅ Banco guardado correctamente':'✅ Banco aprobado en modo demo','ok',5200);
           })});
       });
     });}}));
