@@ -10,7 +10,7 @@ const ROOT=String(process.env.CXORBIA_PREI4_ROOT||'').replace(/\/$/,'');
 const sourceSha=String(process.env.CXORBIA_PREI4_SOURCE_SHA||'');
 if(!OUT||!ROOT||!sourceSha)throw new Error('ENVIRONMENT_FAILURE:PREI4_BROWSER_ENV_MISSING');
 const hr=JSON.parse(fs.readFileSync(OUT+'/hr-contrast.json','utf8'));
-const tenantId='tya',projectId='cinepolis',periodId=String(hr.currentPeriodId||''),hrRevision=String(hr.sourceRevision||'');
+const tenantId='tya',projectId='cinepolis',periodId=String(hr.currentPeriodId||''),hrRevision=String(hr.sourceRevision||''),reference=hr.reference||{};
 const PREVIEW='YES_PAULA_20260628_PREVIEW_DEV',PROTECTED='YES_PAULA_20260730_PROTECTED_DEV',FULL='YES_PAULA_20260731_FULL_PROFILE_DEV';
 const URL=ROOT+'/index-backend-dev.html?cxBackendPreview='+PREVIEW+'&cxProjectId='+encodeURIComponent(projectId)+'&cxProtectedRuntime='+PROTECTED+'&cxHumanFullVisual='+FULL;
 const str=v=>String(v??'').trim(), arr=v=>Array.isArray(v)?v:[], fp=v=>crypto.createHash('sha256').update(String(v)).digest('hex').slice(0,16);
@@ -134,9 +134,10 @@ async function signInMember(member,kind,route,options={}){
     if(pageErrors.length||info.debug||info.lab||info.blocked||info.technicalVisible||info.projectId!==projectId||info.periodId!==periodId||info.sourceRevision!==hrRevision||info.route!==r)throw new Error('FUNCTIONAL_DEFECT:'+kind+'_ROUTE_'+r+':'+JSON.stringify({pageErrors,info}));
     if(options.isMobile===true&&(info.scrollWidth>info.innerWidth+2||!info.mobileIdentity?.visible))throw new Error('VISUAL_DEFECT:'+kind+'_MOBILE_'+r+':'+JSON.stringify(info));
     if(r==='dashboard'){
-      const expected={GT:{total:34,asign:28,agend:21,real:16,cuest:16,submit:9,liq:0},HN:{total:10,asign:7,agend:7,real:6,cuest:6,submit:6,liq:0}};
       for(const [code,p] of [['GT',info.phaseGT],['HN',info.phaseHN]]){
-        if(!p||p.total!==expected[code].total||p.asign?.[0]!==expected[code].asign||p.agend?.[0]!==expected[code].agend||p.real?.[0]!==expected[code].real||p.cuest?.[0]!==expected[code].cuest||p.submit?.[0]!==expected[code].submit||p.liq?.[0]!==0)throw new Error('MAPPING_FAILURE:DASHBOARD_'+code+':'+JSON.stringify(p));
+        const e=reference?.countries?.[code];
+        if(!e)throw new Error('SOURCE_FAILURE:DASHBOARD_REFERENCE_MISSING_'+code);
+        if(!p||p.total!==e.total||p.asign?.[0]!==e.assigned||p.agend?.[0]!==e.scheduled||p.real?.[0]!==e.realized||p.cuest?.[0]!==e.questionnaire||p.submit?.[0]!==e.submitted||p.liq?.[0]!==e.liquidationConfirmed)throw new Error('MAPPING_FAILURE:DASHBOARD_'+code+':'+JSON.stringify({observed:p,expected:e,hrRevision}));
       }
       if(info.ranking.rows!==info.ranking.population)throw new Error('MAPPING_FAILURE:TOP_SHOPPER_SILENT_EXCLUSION:'+JSON.stringify(info.ranking));
     }
@@ -145,10 +146,15 @@ async function signInMember(member,kind,route,options={}){
       if(Number(info.julissa.flores.stats?.total)!==6||Number(info.julissa.flores.stats?.realizadas)!==6)throw new Error('MAPPING_FAILURE:JULISSA_FLORES_STATS:'+JSON.stringify(info.julissa.flores));
     }
     if(r==='financiero'){
-      const g=info.finance?.GT,h=info.finance?.HN;
-      if(!g||!h||Number(g.honorarioDevengado)!==960||Number(g.reemb)!==2390||Number(h.honorarioDevengado)!==1200||Number(h.reemb)!==1778||h.reimbursementPartial!==true||g.margenPct!==null||h.margenPct!==null)throw new Error('MAPPING_FAILURE:FINANCE_REFERENCE:'+JSON.stringify(info.finance));
+      for(const [code,o] of [['GT',info.finance?.GT],['HN',info.finance?.HN]]){
+        const e=reference?.finance?.[code];
+        if(!o||!e||Number(o.visRe)!==e.realizedCount||Number(o.honorarioDevengado)!==e.honorarioDevengado||Number(o.reemb)!==e.knownReimbursements||o.reimbursementPartial!==e.reimbursementPartial||o.margenPct!==null)throw new Error('MAPPING_FAILURE:FINANCE_'+code+':'+JSON.stringify({observed:o,expected:e,hrRevision}));
+      }
     }
-    if(r==='liquidaciones'&&(!info.liquidations||info.liquidations.count!==22||info.liquidations.GT!==16||info.liquidations.HN!==6||info.liquidations.paymentsConfirmed!==0||info.liquidations.liquidationsConfirmed!==0))throw new Error('MAPPING_FAILURE:LIQUIDATION_REFERENCE:'+JSON.stringify(info.liquidations));
+    if(r==='liquidaciones'){
+      const e=reference?.liquidations;
+      if(!e||!info.liquidations||info.liquidations.count!==e.total||info.liquidations.GT!==e.GT||info.liquidations.HN!==e.HN||info.liquidations.paymentsConfirmed!==e.paymentsConfirmed||info.liquidations.liquidationsConfirmed!==e.liquidationsConfirmed)throw new Error('MAPPING_FAILURE:LIQUIDATION_REFERENCE:'+JSON.stringify({observed:info.liquidations,expected:e,hrRevision}));
+    }
     if(r==='documentos'){
       if(info.bodyHasStaticSeed)throw new Error('PERSISTENCE_FAILURE:STATIC_RESOURCE_SEED_VISIBLE');
       if(kind==='shopper'&&info.resources?.status?.status!=='ready')throw new Error('AUTH_FAILURE:SHOPPER_RESOURCE_READ_NOT_READY:'+JSON.stringify(info.resources));

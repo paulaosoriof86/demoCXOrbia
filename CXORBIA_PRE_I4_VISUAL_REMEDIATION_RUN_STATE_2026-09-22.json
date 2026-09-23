@@ -1,12 +1,12 @@
 {
-  "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v6",
-  "generatedAt": "2026-09-23T16:33:00-06:00",
+  "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v7",
+  "generatedAt": "2026-09-23T16:42:00-06:00",
   "iteration": "I3_PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "microblockId": "CXORBIA-PRE-I4-VISUAL-REMEDIATION-MICROBLOCK-20260922",
-  "status": "HOLD_FOCAL_PROOF_RUNTIME_IDENTITY_READBACK_FIX_READY",
+  "status": "HOLD_LIVE_HR_PROVEN_DYNAMIC_FOCAL_READBACK_READY",
   "production": "DO_NOT_TOUCH",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "head": "22c43ce401fe26d1c5cb99b3e37203c86a4088af",
+  "head": "d66b8904c24a9e26ba174ac869f2eb41212ee863",
   "lastFunctionalWrite": {
     "commit": "50b6a25d79713b0f165cffc4355c7b7ffd1d9e84",
     "parent": "61cf7120603aeff110e97632bb6c69f5c4809d62",
@@ -109,12 +109,12 @@
     },
     "VRM-010": {
       "state": "FIXED_NOT_PROVEN",
-      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd + Run309/35929165160 live HR ce5534c1",
       "owner": [
         "app/core/data.js",
         "app/modules/dashboard.js"
       ],
-      "note": "Operational phase flow now derives from canonicalFacets; exact HR drilldown proof pending."
+      "note": "Dashboard canonical phase flow reflected live HR revision ce5534c1 with GT 33 assigned/28 scheduled/20 realized and HN 9 assigned; prior browser FAIL was stale QA expectation, not product mapping."
     },
     "VRM-011": {
       "state": "FIXED_NOT_PROVEN",
@@ -163,7 +163,7 @@
         "app/core/liquidacion.js",
         "app/modules/finanzas.js"
       ],
-      "note": "Known reimbursement obligations and partial reimbursement semantics preserved in canonical finance rows; GT/HN exact proof pending."
+      "note": "Dynamic same-revision finance readback now required because new live HR contains incomplete reimbursement amounts on realized rows (GT known Q2710 with 2 incomplete rows; HN known L1778 with 1 incomplete row). No total may be presented as closed unless partial semantics match."
     },
     "VRM-016": {
       "state": "FIXED_NOT_PROVEN",
@@ -244,7 +244,7 @@
       "note": "Prior no-debug state preserved and human data/source diagnostics are hidden unless technical access; browser no-drift proof pending."
     }
   },
-  "nextExactAction": "Execute control-only retry: prove service tag resolves to revision digest, then direct Rules API, Hosting DEV, byte parity, fresh HR revision/metrics, Admin+Shopper desktop/mobile focal browser, artifact parity. No runtime rebuild/redeploy; no production.",
+  "nextExactAction": "Execute one no-deploy postdeploy readback from exact source 50b6a25d: force fresh HR provider read, derive independent same-revision references dynamically, verify Dashboard/Finance/Liquidations plus Admin/Shopper desktop/mobile, and classify any remaining mismatch by exact owner. Production remains untouched.",
   "functionalLineage": [
     {
       "commit": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
@@ -308,32 +308,23 @@
     ]
   },
   "focalProof": {
-    "state": "RUNTIME_IDENTITY_GATE_FALSE_NEGATIVE_CORRECTED_READY",
+    "state": "POSTDEPLOY_DYNAMIC_HR_READBACK_READY",
     "sourceSha": "50b6a25d79713b0f165cffc4355c7b7ffd1d9e84",
     "sourceTree": "495266b89b932976569f57070b27b7e4f06d6cdd",
-    "requestId": "pre-i4-visual-remediation-20260923-04",
-    "production": false,
-    "priorRuns": [
-      {
-        "runId": 35915126071,
-        "result": "PROVIDER_FAILURE_FIREBASE_CLI_RULES_TEST_403",
-        "runtimeMaterialized": true,
-        "rules": false,
-        "hosting": false
-      },
-      {
-        "runId": 35920936726,
-        "result": "CONTROL_GATE_FALSE_NEGATIVE_RUNTIME_REVISION_USES_DIGEST_NOT_TAG",
-        "runtimeMaterialized": false,
-        "rules": false,
-        "hosting": false
-      }
+    "deployedRunId": 35929165160,
+    "liveHrRevision": "ce5534c142a2bdadf38a85a6d5b5b8fb2f0820ae8f4ff9f0a3ef2d12f85f63a9",
+    "priorPasses": [
+      "runtime_exact_source",
+      "direct_rules_api",
+      "firestore_rules_parity",
+      "hosting_remote_byte_parity",
+      "fresh_hr_authority"
     ],
-    "runtimeEvidence": {
-      "revision": "cxorbia-live-hr-dev-00214-drz",
-      "serviceTag": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:prei4-50b6a25d7971-35915126071",
-      "revisionDigest": "sha256:1d1acc0be840ba1f11f41639c9a71b1fcf0fd0aa1ac6e9cb08b8bcc27e68c303",
-      "trafficPercent": 100
+    "nextRunDeploys": {
+      "runtime": 0,
+      "rules": 0,
+      "hosting": 0,
+      "production": 0
     }
   },
   "providerFailure": {
@@ -350,14 +341,72 @@
     "resolution": "Use existing proven direct Rules API deploy tool; do not rebuild/redeploy runtime."
   },
   "lastControlFailure": {
-    "classification": "RELEASE_COMPOSITION_FAILURE",
-    "runId": 35920936726,
-    "cause": "Verification compared immutable Cloud Run revision digest form against mutable service tag string. Artifact readback proves service tag is exact and revision is exact; no runtime drift.",
-    "providerWrites": 0,
-    "runtimeBuilds": 0,
-    "runtimeDeploys": 0,
-    "rulesWrites": 0,
-    "hostingDeploys": 0,
+    "classification": "MAPPING_FAILURE",
+    "runId": 35929165160,
+    "cause": "Browser QA expected historical aggregate snapshot while Dashboard correctly reflected the new same-revision HR values. Control benchmark was stale; product Dashboard live mapping proven.",
+    "productDefectProven": false,
+    "hrRevision": "ce5534c142a2bdadf38a85a6d5b5b8fb2f0820ae8f4ff9f0a3ef2d12f85f63a9",
+    "runtimeBuildsThisRun": 0,
+    "runtimeDeploysThisRun": 0,
+    "rulesDeploysThisRun": 1,
+    "hostingDeploysThisRun": 1,
     "productionDeploys": 0
+  },
+  "liveHrProof": {
+    "runId": 35929165160,
+    "decision": "PASS_PRE_I4_HR_FRESH_CONTRAST",
+    "sourceRevision": "ce5534c142a2bdadf38a85a6d5b5b8fb2f0820ae8f4ff9f0a3ef2d12f85f63a9",
+    "generatedAt": "2026-09-23T22:36:55.475Z",
+    "GT": {
+      "total": 34,
+      "availableUnassigned": 1,
+      "assigned": 33,
+      "scheduled": 28,
+      "realized": 20,
+      "submitted": 9,
+      "outOfRange": 3,
+      "reviewRequired": 0
+    },
+    "HN": {
+      "total": 10,
+      "availableUnassigned": 1,
+      "assigned": 9,
+      "scheduled": 7,
+      "realized": 6,
+      "submitted": 6,
+      "outOfRange": 1,
+      "reviewRequired": 1
+    },
+    "comparedWithPrior": {
+      "GT": {
+        "availableUnassigned": [
+          6,
+          1
+        ],
+        "assigned": [
+          28,
+          33
+        ],
+        "scheduled": [
+          21,
+          28
+        ],
+        "realized": [
+          16,
+          20
+        ]
+      },
+      "HN": {
+        "availableUnassigned": [
+          3,
+          1
+        ],
+        "assigned": [
+          7,
+          9
+        ]
+      }
+    },
+    "conclusion": "LIVE_EXTERNAL_HR_CHANGE_DETECTED_WITHOUT_REIMPORT"
   }
 }
