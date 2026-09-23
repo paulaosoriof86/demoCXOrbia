@@ -1,6 +1,6 @@
 /* CXOrbia · Documentos (admin + shopper) — lectura DENTRO de la plataforma + subir */
 CX.docStore = CX.docStore || {
-  _demo:{},
+  demoRecords:{},
   connected(){return CX.BACKEND?.enabled===true;},
   seed(pid){return [
     {id:'demo-d1',ic:'📄',n:'Instructivo general (demo)',meta:'Contenido de ejemplo',tipo:'text',body:'# Recurso demostrativo\n\nNo corresponde a un recurso conectado del proyecto.'}
@@ -8,8 +8,8 @@ CX.docStore = CX.docStore || {
   list(pid){
     pid=pid||CX.data.currentPeriodId;
     if(this.connected())return CX.backendResources?.list?.({projectId:CX.data.currentProjectId,periodId:pid,resourceType:'project_resource'})||[];
-    if(!this._demo[pid])this._demo[pid]=this.seed(pid);
-    return this._demo[pid];
+    if(!this.demoRecords[pid])this.demoRecords[pid]=this.seed(pid);
+    return this.demoRecords[pid];
   },
   add(pid,d){
     if(this.connected())throw new Error('RESOURCE_DURABLE_WRITE_REQUIRED');
@@ -144,7 +144,7 @@ CX.module('documentos', ({data,role,ui})=>{
     host.querySelectorAll('[data-deld]').forEach(b=>b.addEventListener('click',async()=>{
       if(!CX.permissions.gate('documento.delete',CX.permissions.ctx({entityType:'documento',entityId:b.dataset.deld}),ui))return;
       const d=docs.find(x=>x.id===b.dataset.deld);
-      if(!connected()){CX.docStore._demo[pid]=(CX.docStore._demo[pid]||[]).filter(x=>x.id!==b.dataset.deld);draw();return;}
+      if(!connected()){CX.docStore.demoRecords[pid]=(CX.docStore.demoRecords[pid]||[]).filter(x=>x.id!==b.dataset.deld);draw();return;}
       const result=await CX.backendResources.deleteMetadata(b.dataset.deld,Object.assign(scope(),{idempotencyKey:'resource.delete:'+b.dataset.deld}));
       if(!committed(result)){ui.toast('Documento no eliminado: el cambio no pudo confirmarse.','warn',4200);return;}
       CX.automations&&CX.automations.logAction('Documento eliminado',b.dataset.deld,d?d.n:'');draw();ui.toast('Documento eliminado y guardado correctamente','ok');
