@@ -231,15 +231,26 @@ CX.module('postulaciones', ({data,ui})=>{
         ov.querySelector('#pdPerfil')&&ov.querySelector('#pdPerfil').addEventListener('click',()=>{close();profileModal(x.shopperId);});
         ov.querySelector('#pdWa')&&ov.querySelector('#pdWa').addEventListener('click',()=>{const msg=encodeURIComponent('Hola '+(x.shopper||'')+', sobre tu visita en '+x.sucursal);window.open('https://wa.me/'+(x.phone||'').replace(/[^0-9]/g,'')+'?text='+msg,'_blank');});
         ov.querySelector('#pdAp')&&ov.querySelector('#pdAp').addEventListener('click',async()=>{await approveDurable(x,ov.querySelector('#pdAp'),close);});
-        ov.querySelector('#pdRj')&&ov.querySelector('#pdRj').addEventListener('click',()=>{if(!CX.permissions.gate('postulacion.reject',{projectId:x.projectId,pais:x.pais},ui))return;act(x.id,'✕ Rechazada','red','Rechazada · notificación preparada · pendiente confirmación');close();});
+        ov.querySelector('#pdRj')&&ov.querySelector('#pdRj').addEventListener('click',async()=>{if(await applicationStatusDurable(x,'rechazada',ov.querySelector('#pdRj'),'✕ Rechazada','red','Postulación rechazada'))close();});
       }});
     };
     document.querySelectorAll('#pGroups [data-pid]').forEach(el=>el.addEventListener('click',(e)=>{
       if(e.target.closest('button'))return; /* no interferir con los botones de acción */
       const x=posts.find(z=>z.id===el.dataset.pid); if(x)postDetalle(x);
     }));
-    document.querySelectorAll('[data-sb]').forEach(b=>b.addEventListener('click',()=>act(b.dataset.sb,'⏸ Standby','amber','Postulación en standby')));
-    document.querySelectorAll('[data-rj]').forEach(b=>b.addEventListener('click',()=>{const x=posts.find(z=>z.id===b.dataset.rj);if(!CX.permissions.gate('postulacion.reject',{projectId:x&&x.projectId,pais:x&&x.pais},ui))return;act(b.dataset.rj,'✕ Rechazada','red','Postulación rechazada · notificación preparada · pendiente confirmación');}));
+    const applicationStatusDurable=async(x,status,button,label,tone,message)=>{
+      if(!x||typeof data.setApplicationStatus!=='function'){ui.toast('Acción no ejecutada: persistencia remota no disponible.','warn',4200);return false;}
+      const permission=status==='rechazada'?'postulacion.reject':'postulacion.approve';
+      if(!CX.permissions.gate(permission,{projectId:x.rootProjectId||x.projectId,pais:x.pais},ui))return false;
+      const prev=button&&button.textContent;if(button){button.disabled=true;button.textContent='Confirmando…';}
+      let result=null;try{result=await data.setApplicationStatus(x.id,status,{ackAware:true,reason:'admin_'+status});}catch(error){result={ok:false,status:'blocked',providerAck:false,successUiAllowed:false};}
+      const ok=result&&result.ok===true&&result.status==='committed'&&result.providerAck===true&&result.successUiAllowed===true;
+      if(!ok){if(button){button.disabled=false;button.textContent=prev||label;}ui.toast('Acción no ejecutada: no hubo ACK remoto. No se modificó la postulación.','warn',4200);return false;}
+      try{await CX.backend?.refresh?.();}catch(_){}
+      act(x.id,label,tone,message+' · confirmada por persistencia remota');return true;
+    };
+    document.querySelectorAll('[data-sb]').forEach(b=>b.addEventListener('click',async()=>{const x=posts.find(z=>z.id===b.dataset.sb);await applicationStatusDurable(x,'standby',b,'⏸ Standby','amber','Postulación en standby');}));
+    document.querySelectorAll('[data-rj]').forEach(b=>b.addEventListener('click',async()=>{const x=posts.find(z=>z.id===b.dataset.rj);await applicationStatusDurable(x,'rechazada',b,'✕ Rechazada','red','Postulación rechazada');}));
     const search=()=>{const q=(document.getElementById('pSearch').value||'').toLowerCase(),fpr=document.getElementById('pProj').value,fp=document.getElementById('pPais').value,fe=document.getElementById('pEst').value,hist=document.getElementById('pHist').checked;
       document.querySelectorAll('#pGroups [data-pid]').forEach(el=>{const x=posts.find(z=>z.id===el.dataset.pid);
         const ok=(hist||periodIdOf(x)===data.currentPeriodId)&&(!q||(x.shopper+x.shopperCode+x.sucursal).toLowerCase().includes(q))&&(!fpr||x.projectId===fpr)&&(!fp||x.pais===fp)&&(!fe||x.estado===fe);el.style.display=ok?'':'none';});
