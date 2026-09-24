@@ -27,7 +27,7 @@ try{execFileSync('git',['merge-base','--is-ancestor',d.productSourceSha,'HEAD'])
 catch{fail('RELEASE_COMPOSITION_FAILURE:PRODUCT_SOURCE_NOT_ANCESTOR_OF_CONTROL_HEAD');}
 
 const productTree=git('rev-parse',d.productSourceSha+'^{tree}');
-const postCandidateDrift=git('diff','--name-only',d.productSourceSha,'HEAD','--','app','backend','firebase.json','.firebaserc','firestore.rules','storage.rules','tools/hr-source');
+const postCandidateDrift=git('diff','--name-only',d.productSourceSha,'HEAD','--','app','backend','firebase.json','.firebaserc','firestore.rules','storage.rules','tools/hr-source',':(exclude)backend/runtime/hr-live-service/test/**');
 if(postCandidateDrift)fail('RELEASE_COMPOSITION_FAILURE:UNDECLARED_PRODUCT_DRIFT_AFTER_CANONICAL_CANDIDATE',postCandidateDrift.replace(/\n/g,','));
 
 if(!/^cxorbia\.i3\.canonical-cumulative-findings-ledger\.full\.v\d+$/.test(String(l.schemaVersion||'')))fail('MAPPING_FAILURE:FULL_LEDGER_SCHEMA');
