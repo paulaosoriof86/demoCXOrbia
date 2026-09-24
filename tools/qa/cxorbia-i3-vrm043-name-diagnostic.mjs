@@ -30,6 +30,14 @@ const revision=String(hp?._runtime?.revision||hr?._runtime?.revision||hr?.source
 const hrShoppers=Array.isArray(hr?.shoppers)?hr.shoppers:[];
 const hrVisits=Array.isArray(hr?.visits)?hr.visits:[];
 if(!/^[a-f0-9]{64}$/.test(revision)||!hrShoppers.length)throw new Error('SOURCE_FAILURE:VRM043_HR_INVALID');
+const opResp=await fetch(HOST+'/api/tya/'+encodeURIComponent(PROJ)+'/hr-live?format=json&view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV&vrm043op='+Date.now(),{headers:{'cache-control':'no-cache'}});
+if(!opResp.ok)throw new Error('SOURCE_FAILURE:VRM043_OPERATIONAL_HR_HTTP_'+opResp.status);
+const opPayload=await opResp.json(),opHr=opPayload?.snapshot||opPayload?.data||opPayload;
+const opRevision=String(opPayload?._runtime?.revision||opHr?._runtime?.revision||opHr?.sourceRevision||'');
+const opShoppers=Array.isArray(opHr?.shoppers)?opHr.shoppers:[];
+if(opRevision!==revision)throw new Error('RELEASE_COMPOSITION_FAILURE:VRM043_OPERATIONAL_VIEW_REVISION_DESYNC:'+opRevision+':'+revision);
+if(opHr?.operationalIdentityPreview!==true||String(opHr?.operationalIdentityScope||'')!=='display_name_only')throw new Error('SOURCE_FAILURE:VRM043_OPERATIONAL_IDENTITY_VIEW_NOT_ACTIVE');
+const opById=new Map(opShoppers.map(x=>[String(x?.shopperId||x?.id||'').trim(),x]).filter(([k])=>k));
 if(EXPECTED_REV&&revision!==EXPECTED_REV)throw new Error('RELEASE_COMPOSITION_FAILURE:VRM043_EXPECTED_HR_REVISION_MISMATCH:'+revision+':'+EXPECTED_REV);
 
 const browser=await chromium.launch({headless:true});
@@ -66,7 +74,9 @@ try{
   }
   for(const h of hrShoppers){
     const id=String(h?.shopperId||h?.id||'').trim();
-    const hrName=String(h?.nombre||h?.name||h?.displayName||h?.fullName||'').trim();
+    const safeName=String(h?.nombre||h?.name||h?.displayName||h?.fullName||'').trim();
+    const op=opById.get(id)||{};
+    const hrName=String(op?.nombre||op?.name||op?.displayName||op?.fullName||'').trim();
     if(!id||!hrName)continue;
     let row=byId.get(id)||null,matchMode='id';
     if(row)matchedById++;
@@ -74,12 +84,12 @@ try{
       row=obs.find(x=>x.legacyLiveShopperIds.includes(id)||x.exactAliases.includes(id))||null;
       if(row){matchedByLegacy++;matchMode='alias';}
     }
-    if(!row){missing++;if(details.length<20)details.push({id,hrName,visitName:visitNamesByShopper.get(id)||'',matchMode:'missing'});continue;}
+    if(!row){missing++;if(details.length<20)details.push({id,safeName,hrName,visitName:visitNamesByShopper.get(id)||'',matchMode:'missing'});continue;}
     const observedName=String(row.nombre||row.name||row.displayName||row.fullName||'').trim();
     const equal=norm(observedName)===norm(hrName);
     if(equal)nameEqual++; else nameMismatch++;
     if((!equal||details.length<8)&&details.length<30)details.push({
-      id,hrName,visitName:visitNamesByShopper.get(id)||'',observedId:row.id,observedShopperId:row.shopperId,
+      id,safeName,hrName,visitName:visitNamesByShopper.get(id)||'',observedId:row.id,observedShopperId:row.shopperId,
       observedName,observedRaw:{nombre:row.nombre,name:row.name,displayName:row.displayName,fullName:row.fullName},
       legacyLiveShopperIds:row.legacyLiveShopperIds,exactAliases:row.exactAliases,
       identityAuthority:row.identityAuthority,canonicalIdentityOverlay:row.canonicalIdentityOverlay,matchMode,equal
@@ -88,7 +98,9 @@ try{
   const report={
     decision:'PASS_VRM043_NAME_DIAGNOSTIC',
     generatedAt:new Date().toISOString(),production:false,writes:0,deploys:0,
-    sourceRevision:revision,hrShopperCount:hrShoppers.length,observedShopperCount:obs.length,
+    sourceRevision:revision,hrShopperCount:hrShoppers.length,operationalHrShopperCount:opShoppers.length,observedShopperCount:obs.length,
+    sourceSafeProtectedNameCount:hrShoppers.filter(x=>String(x?.nombre||x?.name||'').trim()==='Shopper protegido').length,
+    operationalHumanNameCount:opShoppers.filter(x=>{const n=String(x?.nombre||x?.name||x?.displayName||'').trim();return n&&n!=='Shopper protegido';}).length,
     matchedById,matchedByLegacy,missing,nameEqual,nameMismatch,
     mismatchRatio:nameMismatch/Math.max(1,nameEqual+nameMismatch),
     sample:details
