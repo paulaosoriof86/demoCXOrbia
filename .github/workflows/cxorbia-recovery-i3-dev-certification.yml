@@ -2049,9 +2049,17 @@ jobs:
           const host=String(process.env.FIRESTORE_EMULATOR_HOST||'127.0.0.1:8080');
           const [hostname,portText]=host.split(':');const port=Number(portText||8080);
           const base=fs.readFileSync('firestore.rules','utf8');
-          const needle='role() in resource.data.visibleRoles';
-          if(!base.includes(needle))throw new Error('SOURCE_FAILURE:RESOURCE_RULE_MEMBERSHIP_NOT_FOUND');
-          const candidate=base.replace(needle,"'shopper' in resource.data.visibleRoles");
+          const withoutTypes=base
+            .replace("          resource.data.projectId is string &&\\n","")
+            .replace("          resource.data.visibleRoles is list &&\\n","");
+          const variants={
+            current:base,
+            withoutTypes:withoutTypes,
+            withoutTypesLiteralRole:withoutTypes.replace('role() in resource.data.visibleRoles',"'shopper' in resource.data.visibleRoles"),
+            withoutTypesConstantProject:withoutTypes.replace('projectAssigned(resource.data.projectId)',"projectAssigned('cinepolis')"),
+            withoutTypesNoProjectPredicate:withoutTypes.replace("          projectAssigned(resource.data.projectId) &&\\n",""),
+            withoutTypesNoVisibilityPredicate:withoutTypes.replace("          role() in resource.data.visibleRoles\\n","          true\\n")
+          };
           const claims={role:'shopper',tenantId:'tya',projectIds:['cinepolis'],shopperId:'s3',authNamespace:'shopper'};
           async function run(label,rules){
             const env=await initializeTestEnvironment({projectId:'cxorbia-rules-proof',firestore:{rules,host:hostname,port}});
@@ -2072,10 +2080,15 @@ jobs:
               return {label,queryAllowed,queryError,ids,adminOnlyDirectDenied};
             } finally {await env.cleanup();}
           }
-          const current=await run('current',base);
-          const proposed=await run('literal-shopper-membership',candidate);
+          const results={};
+          for(const [label,rules] of Object.entries(variants))results[label]=await run(label,rules);
           fs.writeFileSync(process.env.PREI4_OUT+'/resource-rules-query-proof.json',JSON.stringify({
-            decision:'PROOF_CAPTURED',claims,current,proposed,candidateChange:needle+" -> 'shopper' in resource.data.visibleRoles"
+            decision:'PROOF_CAPTURED',claims,results,
+            interpretationKeys:{
+              typeChecks:'withoutTypes removes only projectId is string and visibleRoles is list',
+              projectPredicate:'withoutTypesNoProjectPredicate is diagnostic only',
+              visibilityPredicate:'withoutTypesNoVisibilityPredicate is diagnostic only'
+            }
           },null,2)+'\n');
           NODE
           npx firebase emulators:exec --only firestore --project cxorbia-rules-proof "node '$PREI4_OUT/resource-rules-query-proof.mjs'"
