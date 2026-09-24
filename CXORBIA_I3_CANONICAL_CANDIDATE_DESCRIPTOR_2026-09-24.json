@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_C3_TERMINAL_REPROOF",
+  "status": "READY_FOR_TERMINAL_CERTIFICATION",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "04b288f7eee315fcb865ed86a8fb41786809edf9",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "d02dd90ac9ee361bfdfb0474a05e63f2fa684f07",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V11_2026-09-24.json",
-  "findingsLedgerExpectedGitBlob": "2d177abd0730b3409d468a34eac82ef861693d12",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V12_2026-09-24.json",
+  "findingsLedgerExpectedGitBlob": "44a7b2748b056b8907093c0dd9da07dabe5f90bf",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
-  "terminalCertificationAllowed": false,
-  "activeBlocker": "C3 PRETERMINAL MODULE TRUTH REPROOF: pending terminal VRM-033/034/035/038/040/041",
+  "terminalCertificationAllowed": true,
+  "activeBlocker": "C3 TERMINAL CERTIFICATION RUN PENDING",
   "nextFindingId": "VRM-043",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "REPEAT_C3_PRETERMINAL_MODULE_TRUTH_THEN_ENABLE_ONE_TERMINAL_CERTIFICATION_RUN",
+  "exactNextAction": "RUN_SINGLE_C3_TERMINAL_CERTIFICATION",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -59,5 +59,26 @@
     "writes": 0,
     "deploys": 0,
     "parser": "static+dynamic-entrypoint-sources"
+  },
+  "c3PreterminalProof": {
+    "runId": 36051988384,
+    "runNumber": 371,
+    "artifactId": 10830114571,
+    "artifactDigest": "sha256:47ada9b96fd08b06b81700caeeeebb61cc71fb2520b4afa892482819761c931a",
+    "decision": "PASS_C3_PRETERMINAL_MODULE_TRUTH",
+    "moduleCount": 20,
+    "unauthorizedFiles": 0,
+    "selfApproval": false
+  },
+  "terminalRequest": {
+    "mode": "ONE_BUILD_ONE_ARTIFACT_ONE_GATE21",
+    "productSourceSha": "04b288f7eee315fcb865ed86a8fb41786809edf9",
+    "sourceTree": "f6b917c474f32137951a477afecbeccdc20cfd59",
+    "requireQaCleanupZero": true,
+    "requireHardenedFocal": true,
+    "requireFullHumanAcceptance": true,
+    "requireTerminalModuleTruth20of20": true,
+    "requirePendingOwnerByteParity": true,
+    "production": false
   }
 }
