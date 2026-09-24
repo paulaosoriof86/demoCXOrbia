@@ -1,20 +1,21 @@
 {
   "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v11",
-  "generatedAt": "2026-09-23T21:07:00-06:00",
+  "generatedAt": "2026-09-23T21:40:00-06:00",
   "iteration": "I3_PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "microblockId": "CXORBIA-PRE-I4-VISUAL-REMEDIATION-MICROBLOCK-20260922",
-  "status": "HOLD_VRM_029_SHOPPER_AUTH_ROUTE_DIAGNOSTIC_READY",
+  "status": "HOLD_VRM_029_RULES_ONLY_DEV_FIX_READY",
   "production": "DO_NOT_TOUCH",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "head": "fa8ff3b54bcaf5eac53f3725f5cf9f6025958cbb",
+  "head": "2f924e6e2057adef9c0c6be8259d564e15c43573",
   "lastFunctionalWrite": {
-    "commit": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
-    "parent": "ec1c3fc96ce0fe00cb72f7293c5994a19f90c9a2",
+    "commit": "2f924e6e2057adef9c0c6be8259d564e15c43573",
+    "parent": "e74fdd8f9fd8cb32facfd693ece36d434084627c",
     "files": [
-      "app/adapters/tya-c6-domain-consistency-bridge.js"
+      "firestore.rules",
+      "backend/runtime/hr-live-service/test/cxorbia-pre-i4-durability-resources.test.mjs"
     ],
-    "test": "backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-ui-cleanup.test.mjs",
-    "purpose": "VRM_028_STOP_POST_LOAD_MISVISITAS_OVERRIDE",
+    "purpose": "VRM_029_FIRESTORE_RESOURCE_QUERY_RULES_COMPATIBILITY",
+    "firestoreWrites": 0,
     "productionDeploys": 0
   },
   "automaticPushWorkflowObservation": {
@@ -281,18 +282,26 @@
       "note": "Run322 passed source regression, one Hosting DEV materialization and byte parity including tya-c6-domain-consistency-bridge.js; Admin postulation conflict projection also passed. Terminal proof remains blocked only because the shopper route hit a Firestore permission denial before Mis Visitas could be reached."
     },
     "VRM-029": {
-      "state": "DIAGNOSIS_PENDING",
-      "evidenceRef": "Run322 35949258270 / artifact 10788575182",
+      "state": "FIXED_NOT_PROVEN",
+      "evidenceRef": "Run323 35949772693 + Run327 35951540961 + Run328 35951863929 + Run329 35952074434 + source 2f924e6e2057adef9c0c6be8259d564e15c43573",
       "classification": "AUTH_FAILURE",
       "owner": [
-        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs",
-        "app/core/backend-resources.js",
-        "firestore.rules"
+        "firestore.rules",
+        "backend/runtime/hr-live-service/test/cxorbia-pre-i4-durability-resources.test.mjs"
       ],
-      "note": "Run322 completed all Admin focal routes, then shopper traversal failed with FirebaseError Missing or insufficient permissions inside the per-route page.evaluate. A zero-deploy diagnostic will identify the exact shopper route and read back only non-sensitive custom-claim scope fields before any product/rules change."
+      "note": "Shopper claims and direct authorized resource reads are correct. Firestore list/query denial is caused by the prior resources read expression combining query-unprovable field type checks and projectAssigned(resource.data.projectId). Emulator proof shows the generic query-compatible form tenantAllowed + shopper + active + resource.data.projectId in request.auth.token.projectIds + role() in resource.data.visibleRoles allows the exact visible-list query while still denying admin-only and other-project documents. Source 2f924e6e contains only the minimal Rules fix plus anti-regression test; DEV Rules deployment still pending."
+    },
+    "VRM-030": {
+      "state": "NOT_APPLICABLE_WITH_EVIDENCE",
+      "evidenceRef": "Run324 35950371737 + Run325 35950590942",
+      "classification": "ENVIRONMENT_FAILURE",
+      "owner": [
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+      ],
+      "note": "Run324 Firestore emulator proof was blocked solely because firebase-tools required Java 21. Run325 added Java 21 and the emulator proof executed successfully. No product, Rules or data defect resulted from this control-environment failure."
     }
   },
-  "nextExactAction": "Run zero-deploy readback against Run322 artifact/source f5b96e85; capture safe shopper custom claims and exact failing route. If resources/documents is the denied route, prove whether backendResources query or firestore.rules is causal before any Rules change.",
+  "nextExactAction": "Deploy exactly source 2f924e6e Firestore Rules to cxorbia-backend-dev once after prior-live hash lock; no Hosting/runtime/data writes. Read back exact live rules, then immediately run zero-deploy fresh-HR Admin/Shopper desktop/mobile focal against the unchanged Hosting artifact.",
   "functionalLineage": [
     {
       "commit": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
@@ -333,6 +342,14 @@
     {
       "commit": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
       "purpose": "VRM_028_RELEASE_COMPOSITION_MISVISITAS_OWNER_FIX"
+    },
+    {
+      "commit": "e74fdd8f9fd8cb32facfd693ece36d434084627c",
+      "purpose": "VRM_029_RESOURCE_QUERY_RULES_FIX"
+    },
+    {
+      "commit": "2f924e6e2057adef9c0c6be8259d564e15c43573",
+      "purpose": "VRM_029_RULES_TEST_ALIGNMENT"
     }
   ],
   "readModelReconciliation": {
@@ -344,9 +361,9 @@
     ]
   },
   "functionalSource": {
-    "sha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
-    "tree": "755e448b0c19701a1598ed0727edeae64ef766b0",
-    "state": "CUMULATIVE_SOURCE_PACKAGE_VRM_027_PLUS_VRM_028_AWAITING_FOCAL_PROOF"
+    "sha": "2f924e6e2057adef9c0c6be8259d564e15c43573",
+    "tree": "c9ccafef4aaaef6adbb3e797a0ff40067c03aebb",
+    "state": "CUMULATIVE_SOURCE_PACKAGE_VRM_027_VRM_028_VRM_029_AWAITING_RULES_DEV_PROOF"
   },
   "durabilityAndResources": {
     "state": "SOURCE_COMPLETE_AWAITING_FOCAL_PROOF",
@@ -364,17 +381,16 @@
     ]
   },
   "focalProof": {
-    "state": "RUN322_MATERIALIZED_ZERO_DEPLOY_AUTH_DIAGNOSTIC_READY",
-    "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
-    "sourceTree": "755e448b0c19701a1598ed0727edeae64ef766b0",
-    "deployedRunId": 35949258270,
-    "artifactId": 10788575182,
-    "artifactZipDigest": "sha256:10af30f948bdd1195f0c11847de2395173b701b18132fca87e7fa203695f6b81",
+    "state": "VRM_029_RULES_ONLY_DEV_READY",
+    "sourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573",
+    "sourceTree": "c9ccafef4aaaef6adbb3e797a0ff40067c03aebb",
+    "currentHostingRunId": 35949258270,
     "nextRunDeploys": {
       "runtime": 0,
-      "rules": 0,
+      "rules": 1,
       "hosting": 0
     },
+    "firestoreWrites": 0,
     "production": false
   },
   "providerFailure": {
@@ -392,22 +408,25 @@
   },
   "lastControlFailure": {
     "classification": "AUTH_FAILURE",
-    "runId": 35949258270,
-    "productDefectProven": false,
+    "runId": 35951093755,
+    "productDefectProven": true,
     "affectedFindings": [
       "VRM-029"
     ],
-    "cause": "Shopper focal encountered a Firestore permission denial after Admin passed all routes. Exact denied shopper route and claim/rule mismatch not yet proven.",
+    "cause": "Firestore resources list rule was secure for direct document reads but not query-provable for the exact shopper collection query. Emulator isolation proved a minimal generic equivalent expression that preserves tenant/project/role scope.",
     "observed": {
-      "adminFocal": "PASS_THROUGH_CERT",
-      "adminPostulationConflictsVisible": 6,
-      "adminResourcesFirestoreReady": true,
-      "shopperFocal": "NOT_COMPLETED",
-      "error": "FirebaseError: Missing or insufficient permissions."
+      "liveRulesParity": true,
+      "liveRulesSha256": "555913c6341b03325c369eccd50330fd183d0a938fcf89c23ff38ed5a567622a",
+      "currentDirectAuthorizedResource": true,
+      "currentDirectAdminOnlyDenied": true,
+      "currentDirectOtherProjectDenied": true,
+      "currentVisibleListQueryAllowed": false,
+      "provenCandidateVisibleListQueryAllowed": true,
+      "provenCandidateAdminOnlyDenied": true,
+      "provenCandidateOtherProjectDenied": true
     },
-    "resolutionOwner": "READBACK_ONLY_FIRST",
+    "resolutionCommit": "2f924e6e2057adef9c0c6be8259d564e15c43573",
     "firestoreWrites": 0,
-    "rulesDeploys": 0,
     "productionDeploys": 0
   },
   "liveHrProof": {

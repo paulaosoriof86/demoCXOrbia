@@ -59,7 +59,7 @@ env:
 
 jobs:
   certify:
-    if: ${{ github.event_name != 'push' || (!contains(github.event.head_commit.message, '[pre-i4-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-readback-only]') && !contains(github.event.head_commit.message, '[pre-i4-finance-fix-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-focal-fix-dev-only]')) }}
+    if: ${{ github.event_name != 'push' || (!contains(github.event.head_commit.message, '[pre-i4-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-readback-only]') && !contains(github.event.head_commit.message, '[pre-i4-finance-fix-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-focal-fix-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-rules-fix-dev-only]')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 70
     steps:
@@ -2237,4 +2237,119 @@ jobs:
           test "$(jq -r '.decision' "$PREI4_OUT/final.json")" = "PASS_PRE_I4_POSTDEPLOY_READBACK"
           test "$(jq -r '.decision' "$PREI4_OUT/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
           test "$(jq -r '.decision' "$PREI4_OUT/remote-readback.json")" = "PASS_PRE_I4_POSTDEPLOY_REMOTE_BYTE_PARITY"
+  pre-i4-resource-rules-fix:
+    name: PRE-I4 shopper resources Rules-only DEV materialization
+    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[pre-i4-rules-fix-dev-only]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      REQUEST: backend/config/pre-i4-human-entrypoint-dev-deploy-request.json
+      RULES_OUT: .tmp/pre-i4-resource-rules-fix
+    steps:
+      - name: Checkout exact rules-fix control successor
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate exact VRM-029 source and rules-only scope
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$RULES_OUT"
+          node <<'NODE'
+          const fs=require('fs'),{execFileSync}=require('child_process');
+          const r=JSON.parse(fs.readFileSync(process.env.REQUEST,'utf8'));
+          const source='2f924e6e2057adef9c0c6be8259d564e15c43573',tree='c9ccafef4aaaef6adbb3e797a0ff40067c03aebb',previous='f5b96e853698f9cf96e0752fd641e7e21e9e5ed0';
+          if(r.requestId!=='pre-i4-visual-remediation-20260923-14'||r.sourceSha!==source||r.sourceTree!==tree)throw new Error('RELEASE_COMPOSITION_FAILURE:VRM029_RULES_REQUEST_SOURCE');
+          if(r.status!=='authorized_execute_once'||r.enabled!==true||r.consumed!==false||Number(r.maxRulesDeploys)!==1||Number(r.rulesDeploys)!==0||Number(r.maxHostingDeploys)!==0||r.production!==false)throw new Error('RELEASE_COMPOSITION_FAILURE:VRM029_RULES_AUTHORIZATION');
+          const productDiff=execFileSync('git',['diff','--name-only',previous,source,'--','app','backend','firestore.rules','firebase.json','.firebaserc','storage.rules'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean).sort();
+          const expected=['backend/runtime/hr-live-service/test/cxorbia-pre-i4-durability-resources.test.mjs','firestore.rules'].sort();
+          if(JSON.stringify(productDiff)!==JSON.stringify(expected))throw new Error('RELEASE_COMPOSITION_FAILURE:VRM029_RULES_SCOPE:'+JSON.stringify(productDiff));
+          if(execFileSync('git',['rev-parse',source+'^{tree}'],{encoding:'utf8'}).trim()!==tree)throw new Error('SOURCE_FAILURE:VRM029_RULES_TREE');
+          fs.writeFileSync(process.env.RULES_OUT+'/authorization.json',JSON.stringify({decision:'PASS_PRE_I4_VRM029_RULES_AUTHORIZATION',sourceSha:source,sourceTree:tree,previousSourceSha:previous,productDiff,runtimeBuilds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeployMax:1,firestoreWrites:0,production:false},null,2)+'\n');
+          NODE
+
+      - name: Run cumulative PRE-I4 source regression suite
+        run: |
+          set -Eeuo pipefail
+          node --test backend/runtime/hr-live-service/test/cxorbia-pre-i4-*.test.mjs | tee "$RULES_OUT/source-tests.txt"
+
+      - name: Authenticate Firebase DEV for Rules-only deployment
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: cxorbia-backend-dev
+
+      - name: Install Firebase CLI
+        run: |
+          set -Eeuo pipefail
+          npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest >/dev/null 2>&1
+
+      - name: Prove prior live Rules exact and freeze predeploy evidence
+        run: |
+          set -Eeuo pipefail
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/cxorbia-backend-dev/releases/cloud.firestore" -o "$RULES_OUT/firestore-release-before.json"
+          RULESET="$(jq -r '.rulesetName // empty' "$RULES_OUT/firestore-release-before.json")"
+          test -n "$RULESET"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/$RULESET" -o "$RULES_OUT/firestore-ruleset-before.json"
+          node <<'NODE'
+          const fs=require('fs'),crypto=require('crypto');
+          const r=JSON.parse(fs.readFileSync(process.env.RULES_OUT+'/firestore-ruleset-before.json','utf8'));
+          const files=r?.source?.files||[],live=(files.find(x=>x.name==='firestore.rules')||files.find(x=>String(x.name||'').endsWith('/firestore.rules'))||files[0]);
+          if(!live||typeof live.content!=='string')throw new Error('ENVIRONMENT_FAILURE:LIVE_RULES_BEFORE_UNAVAILABLE');
+          const sha=x=>crypto.createHash('sha256').update(x).digest('hex'),before=sha(live.content),next=sha(fs.readFileSync('firestore.rules','utf8'));
+          if(before!=='555913c6341b03325c369eccd50330fd183d0a938fcf89c23ff38ed5a567622a')throw new Error('SOURCE_FAILURE:LIVE_RULES_CONCURRENT_DRIFT:'+before);
+          if(before===next)throw new Error('RELEASE_COMPOSITION_FAILURE:VRM029_RULES_NO_DELTA');
+          fs.writeFileSync(process.env.RULES_OUT+'/predeploy-rules.json',JSON.stringify({decision:'PASS_PRE_I4_VRM029_PRIOR_RULES_LOCK',priorRulesetName:r.name||null,priorSha256:before,nextSha256:next,production:false},null,2)+'\n');
+          NODE
+
+      - name: Deploy exact Firestore Rules to DEV once
+        run: |
+          set -Eeuo pipefail
+          npx firebase deploy --only firestore:rules --project cxorbia-backend-dev --non-interactive | tee "$RULES_OUT/firebase-rules-deploy.txt"
+          printf '1\n' > "$RULES_OUT/rules-deploy-count.txt"
+
+      - name: Read back exact live Rules after deployment
+        run: |
+          set -Eeuo pipefail
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/cxorbia-backend-dev/releases/cloud.firestore" -o "$RULES_OUT/firestore-release-after.json"
+          RULESET="$(jq -r '.rulesetName // empty' "$RULES_OUT/firestore-release-after.json")"
+          test -n "$RULESET"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/$RULESET" -o "$RULES_OUT/firestore-ruleset-after.json"
+          node <<'NODE'
+          const fs=require('fs'),crypto=require('crypto');
+          const r=JSON.parse(fs.readFileSync(process.env.RULES_OUT+'/firestore-ruleset-after.json','utf8')),files=r?.source?.files||[];
+          const live=files.find(x=>x.name==='firestore.rules')||files.find(x=>String(x.name||'').endsWith('/firestore.rules'))||files[0];
+          if(!live||typeof live.content!=='string')throw new Error('ENVIRONMENT_FAILURE:LIVE_RULES_AFTER_UNAVAILABLE');
+          const src=fs.readFileSync('firestore.rules','utf8'),sha=x=>crypto.createHash('sha256').update(x).digest('hex');
+          if(live.content!==src)throw new Error('SOURCE_FAILURE:VRM029_RULES_POSTDEPLOY_MISMATCH');
+          fs.writeFileSync(process.env.RULES_OUT+'/final.json',JSON.stringify({decision:'PASS_PRE_I4_VRM029_RULES_DEV_EXACT',sourceSha:'2f924e6e2057adef9c0c6be8259d564e15c43573',sourceTree:'c9ccafef4aaaef6adbb3e797a0ff40067c03aebb',liveRulesetName:r.name||null,liveSha256:sha(live.content),runtimeBuildsThisRun:0,runtimeDeploysThisRun:0,hostingDeploysThisRun:0,rulesDeploysThisRun:1,firestoreWrites:0,production:false},null,2)+'\n');
+          NODE
+
+      - name: Upload VRM-029 Rules-only evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-pre-i4-vrm029-rules-${{ github.run_id }}
+          path: ${{ env.RULES_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
+      - name: Enforce VRM-029 Rules-only result
+        run: |
+          set -Eeuo pipefail
+          test "$(cat "$RULES_OUT/rules-deploy-count.txt")" = "1"
+          test "$(jq -r '.decision' "$RULES_OUT/final.json")" = "PASS_PRE_I4_VRM029_RULES_DEV_EXACT"
+          test "$(jq -r '.production' "$RULES_OUT/final.json")" = "false"
 
