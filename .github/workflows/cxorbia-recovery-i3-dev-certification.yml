@@ -2266,7 +2266,7 @@ jobs:
           const source='2f924e6e2057adef9c0c6be8259d564e15c43573',tree='c9ccafef4aaaef6adbb3e797a0ff40067c03aebb',previous='f5b96e853698f9cf96e0752fd641e7e21e9e5ed0';
           if(r.requestId!=='pre-i4-visual-remediation-20260923-14'||r.sourceSha!==source||r.sourceTree!==tree)throw new Error('RELEASE_COMPOSITION_FAILURE:VRM029_RULES_REQUEST_SOURCE');
           if(r.status!=='authorized_execute_once'||r.enabled!==true||r.consumed!==false||Number(r.maxRulesDeploys)!==1||Number(r.rulesDeploys)!==0||Number(r.maxHostingDeploys)!==0||r.production!==false)throw new Error('RELEASE_COMPOSITION_FAILURE:VRM029_RULES_AUTHORIZATION');
-          const productDiff=execFileSync('git',['diff','--name-only',previous,source,'--','app','backend','firestore.rules','firebase.json','.firebaserc','storage.rules'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean).sort();
+          const productDiff=execFileSync('git',['diff','--name-only',previous,source,'--','app','backend','firestore.rules','firebase.json','.firebaserc','storage.rules'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean).filter(x=>x!=='backend/config/pre-i4-human-entrypoint-dev-deploy-request.json').sort();
           const expected=['backend/runtime/hr-live-service/test/cxorbia-pre-i4-durability-resources.test.mjs','firestore.rules'].sort();
           if(JSON.stringify(productDiff)!==JSON.stringify(expected))throw new Error('RELEASE_COMPOSITION_FAILURE:VRM029_RULES_SCOPE:'+JSON.stringify(productDiff));
           if(execFileSync('git',['rev-parse',source+'^{tree}'],{encoding:'utf8'}).trim()!==tree)throw new Error('SOURCE_FAILURE:VRM029_RULES_TREE');

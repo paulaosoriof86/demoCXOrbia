@@ -1,9 +1,9 @@
 {
   "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v11",
-  "generatedAt": "2026-09-23T21:40:00-06:00",
+  "generatedAt": "2026-09-23T21:45:00-06:00",
   "iteration": "I3_PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "microblockId": "CXORBIA-PRE-I4-VISUAL-REMEDIATION-MICROBLOCK-20260922",
-  "status": "HOLD_VRM_029_RULES_ONLY_DEV_FIX_READY",
+  "status": "HOLD_VRM_029_RULES_ONLY_CONTROL_SCOPE_FIXED_READY",
   "production": "DO_NOT_TOUCH",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "head": "2f924e6e2057adef9c0c6be8259d564e15c43573",
@@ -299,9 +299,18 @@
         ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
       ],
       "note": "Run324 Firestore emulator proof was blocked solely because firebase-tools required Java 21. Run325 added Java 21 and the emulator proof executed successfully. No product, Rules or data defect resulted from this control-environment failure."
+    },
+    "VRM-031": {
+      "state": "FIXED_NOT_PROVEN",
+      "evidenceRef": "Run330 35952589290",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "owner": [
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+      ],
+      "note": "Run330 stopped before authentication or deployment because the rules-only scope validator counted backend/config/pre-i4-human-entrypoint-dev-deploy-request.json, a control authorization file, as product drift between f5b96e85 and functional source 2f924e6e. The validator now excludes only that exact control path while preserving exact checks for firestore.rules and the VRM-029 regression test. Run330 performed zero Rules/Hosting/runtime/data/production deploys."
     }
   },
-  "nextExactAction": "Deploy exactly source 2f924e6e Firestore Rules to cxorbia-backend-dev once after prior-live hash lock; no Hosting/runtime/data writes. Read back exact live rules, then immediately run zero-deploy fresh-HR Admin/Shopper desktop/mobile focal against the unchanged Hosting artifact.",
+  "nextExactAction": "Re-run the same VRM-029 Rules-only DEV lane with unchanged functional source 2f924e6e and unchanged request; exclude only the exact deploy-request control path from productDiff. Require prior live Rules hash lock, one DEV Rules deploy, exact live Rules readback, zero Hosting/runtime/data/production writes.",
   "functionalLineage": [
     {
       "commit": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
@@ -407,26 +416,28 @@
     "resolution": "Use existing proven direct Rules API deploy tool; do not rebuild/redeploy runtime."
   },
   "lastControlFailure": {
-    "classification": "AUTH_FAILURE",
-    "runId": 35951093755,
-    "productDefectProven": true,
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "runId": 35952589290,
+    "productDefectProven": false,
     "affectedFindings": [
-      "VRM-029"
+      "VRM-031"
     ],
-    "cause": "Firestore resources list rule was secure for direct document reads but not query-provable for the exact shopper collection query. Emulator isolation proved a minimal generic equivalent expression that preserves tenant/project/role scope.",
+    "cause": "Rules-only scope validator included the canonical deploy request control file because it resides under backend/config; this was a control-plane false positive, not product drift.",
     "observed": {
-      "liveRulesParity": true,
-      "liveRulesSha256": "555913c6341b03325c369eccd50330fd183d0a938fcf89c23ff38ed5a567622a",
-      "currentDirectAuthorizedResource": true,
-      "currentDirectAdminOnlyDenied": true,
-      "currentDirectOtherProjectDenied": true,
-      "currentVisibleListQueryAllowed": false,
-      "provenCandidateVisibleListQueryAllowed": true,
-      "provenCandidateAdminOnlyDenied": true,
-      "provenCandidateOtherProjectDenied": true
+      "unexpectedDiff": [
+        "backend/config/pre-i4-human-entrypoint-dev-deploy-request.json"
+      ],
+      "expectedProductDiff": [
+        "backend/runtime/hr-live-service/test/cxorbia-pre-i4-durability-resources.test.mjs",
+        "firestore.rules"
+      ],
+      "authReached": false,
+      "rulesDeploys": 0,
+      "hostingDeploys": 0,
+      "runtimeDeploys": 0,
+      "firestoreWrites": 0
     },
-    "resolutionCommit": "2f924e6e2057adef9c0c6be8259d564e15c43573",
-    "firestoreWrites": 0,
+    "resolutionOwner": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
     "productionDeploys": 0
   },
   "liveHrProof": {
