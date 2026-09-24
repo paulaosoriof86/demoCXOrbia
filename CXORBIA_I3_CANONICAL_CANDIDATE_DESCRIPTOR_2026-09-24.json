@@ -4,11 +4,11 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "8d764168727832d579d20ceb26580d88c41df24d",
+  "productSourceSha": "d02dd90ac9ee361bfdfb0474a05e63f2fa684f07",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
-  "predecessorProductSourceSha": "150283fe3a78af4ccdfb0643159ece27d78f0dce",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V7_2026-09-24.json",
-  "findingsLedgerExpectedGitBlob": "cd8e946a8ade1cdf57bea60f27eda95b98366ca0",
+  "predecessorProductSourceSha": "8d764168727832d579d20ceb26580d88c41df24d",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V8_2026-09-24.json",
+  "findingsLedgerExpectedGitBlob": "7e9cba65e0681afedb1b2ea95765693f9fbc9d41",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "VRM039_RESOURCE_CRUD_ACK_ROLE_CLEANUP_AND_FINANCE_SAME_REVISION_PROOF",
+  "exactNextAction": "READ_INDEPENDENT_PROJECT_CONFIG_THEN_VRM039_RESOURCE_FINANCE_PROOF",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -41,19 +41,12 @@
   },
   "lastSourceFix": {
     "findingIds": [
-      "VRM-036"
+      "VRM-039"
     ],
-    "sourceSha": "8d764168727832d579d20ceb26580d88c41df24d",
-    "predecessorSha": "150283fe3a78af4ccdfb0643159ece27d78f0dce",
-    "productFiles": 3,
+    "sourceSha": "d02dd90ac9ee361bfdfb0474a05e63f2fa684f07",
+    "predecessorSha": "8d764168727832d579d20ceb26580d88c41df24d",
+    "productFiles": 2,
     "deploys": 0,
-    "contract": "historical evidence projects to protected exact profile without adding platform-only profile to HR operational population",
-    "proof": {
-      "runId": 36041811875,
-      "artifactId": 10826689418,
-      "decision": "PASS_PRE_I4_VRM036_EXACT_HISTORICAL_EVIDENCE_PROJECTION",
-      "eligibilityGranted": 0,
-      "deploys": 0
-    }
+    "contract": "explicit HR honorarium > independent project-country config > pending_source; never fabricated zero"
   }
 }
