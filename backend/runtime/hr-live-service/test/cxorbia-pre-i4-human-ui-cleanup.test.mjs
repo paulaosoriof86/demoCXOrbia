@@ -51,3 +51,22 @@ test('PRE-I4 normal admin copy avoids ACK Storage Firestore and localStorage imp
     assert.doesNotMatch(s,/no hubo ACK remoto|después del ACK remoto|Storage no está autorizado\/configurado|No se guarda la contraseña en Firestore, HR ni localStorage/);
   }
 });
+
+test('PRE-I4 VRM-027 shopper surfaces approved assignment conflicts without inventing a confirmed visit',()=>{
+  const s=read('app/modules/misvisitas.js');
+  assert.match(s,/conflict_review_required/);
+  assert.match(s,/data-app-state/);
+  assert.match(s,/Aprobación en revisión/);
+  assert.match(s,/asignación vigente en Hoja de Ruta no coincide/);
+  assert.doesNotMatch(s,/otro shopper asignado/i);
+});
+
+test('PRE-I4 VRM-027 admin keeps approval state but marks unresolved HR assignment conflict',()=>{
+  const s=read('app/modules/postulaciones.js');
+  assert.match(s,/data-post-sync/);
+  assert.match(s,/conflict_review_required/);
+  assert.match(s,/REQUIERE REVISIÓN/);
+  assert.match(s,/asignación vigente en Hoja de Ruta no coincide/);
+  assert.match(s,/Aprobada · asignación en revisión/);
+});
+

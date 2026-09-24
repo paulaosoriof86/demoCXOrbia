@@ -16,6 +16,24 @@ CX.module('postulaciones', ({data,ui})=>{
   const c=(s)=>activePosts.filter(x=>x.estado===s).length;
   const reprog=activePosts.filter(x=>x.reprog);
   const agendadas=data.visitas().filter(v=>v.agendada&&v.shopperId);
+  const visitForPost=x=>(data._visitas||[]).find(v=>String(v.id||v.visitId||'')===String(x?.visitaId||x?.visitId||''))||null;
+  const postSyncState=x=>{
+    const state=String(x?.estado||x?.status||'').toLowerCase(),v=visitForPost(x),appShopper=String(x?.shopperId||''),visitShopper=String(v?.shopperId||'');
+    if(state==='pendiente')return'pending_review';
+    if(state!=='aprobada')return state||'unknown';
+    if(v?.assignmentReviewRequired===true||v?.assignmentReviewReason==='hr_platform_assignment_conflict')return'conflict_review_required';
+    if(v?.assignmentSource==='platform'&&v?.assignmentSyncStatus==='pending_hr')return'platform_pending_hr_sync';
+    if(v&&appShopper&&visitShopper===appShopper)return'assigned_confirmed';
+    return'approved_assignment_review';
+  };
+  const syncPresentation=x=>{
+    const sync=postSyncState(x);
+    if(sync==='conflict_review_required')return{sync,badge:ui.bdg('REQUIERE REVISIÓN','a'),copy:'La postulación está aprobada, pero la asignación vigente en Hoja de Ruta no coincide. Debe revisarse antes de considerarla confirmada.'};
+    if(sync==='platform_pending_hr_sync')return{sync,badge:ui.bdg('PENDIENTE HR','a'),copy:'Aprobada en plataforma · pendiente de confirmación en Hoja de Ruta.'};
+    if(sync==='approved_assignment_review')return{sync,badge:ui.bdg('VALIDANDO ASIGNACIÓN','a'),copy:'La aprobación está registrada y la asignación todavía se está validando.'};
+    if(sync==='assigned_confirmed')return{sync,badge:ui.bdg('ASIGNACIÓN CONFIRMADA','g'),copy:'La aprobación y la asignación vigente coinciden.'};
+    return{sync,badge:'',copy:''};
+  };
 
   /* agrupar por sucursal */
   const groups={};
@@ -25,7 +43,8 @@ CX.module('postulaciones', ({data,ui})=>{
 
   const card=(x)=>{
     const hon=`${x.currency} ${x.honorario}`+(x.boleto?' + boleto':'')+(x.comboAmt?' + reembolso':'');
-    return `<div data-pid="${x.id}" style="background:#fff;border:1px solid var(--border);border-radius:11px;padding:13px 15px;margin-bottom:10px">
+    const sync=syncPresentation(x);
+    return `<div data-pid="${x.id}" data-post-sync="${sync.sync}" style="background:#fff;border:1px solid var(--border);border-radius:11px;padding:13px 15px;margin-bottom:10px">
       <div class="between" style="margin-bottom:8px">
         <div class="flex" style="gap:8px">${estTag(x.estado)}<span style="font-size:11px;color:var(--t3)">${x.fechaProp}</span>${x.reprog?ui.bdg('Reprog.','a'):''}</div>
         <span style="font-size:11px;color:var(--t3)">${x.quincena}</span>
@@ -38,12 +57,13 @@ CX.module('postulaciones', ({data,ui})=>{
           <div style="font-size:11.5px;color:var(--t3);margin-top:4px">📅 ${safe(x.fechaProp)} · ⏱️ ${safe(x.franjaCode)} · 📞 ${safePhone(x)} · desde ${safe(x.disponibleDesde)}</div>
           <div style="font-size:12px;color:var(--green);font-weight:600;margin-top:4px">💲 ${hon}</div>
           ${x.estado==='aprobada'?`<div style="font-size:11px;color:var(--t3);margin-top:5px">✅ ${x.quincena} · WhatsApp preparado · pendiente de envío · Aprobada por <b style="color:var(--t2)">${x.aprobadaPor}</b></div>`:''}
+          ${sync.copy?`<div style="font-size:11.5px;color:var(--t2);margin-top:7px;padding:7px 9px;background:var(--amber-bg);border-radius:8px">${sync.badge} <span style="margin-left:5px">${sync.copy}</span></div>`:''}
         </div>
         <div style="display:flex;flex-direction:column;gap:7px;align-items:flex-end">
           ${x.estado==='pendiente'
             ? `<button class="btn btn-green btn-sm" data-ap="${x.id}">✅ Aprobar</button>
                <div class="flex"><button class="btn btn-ghost btn-sm" data-sb="${x.id}">Standby</button><button class="btn bt-x btn-sm" data-rj="${x.id}" style="background:var(--red-bg);color:var(--red)">Rechazar</button></div>`
-            : `<div style="background:var(--green-bg);border-radius:9px;padding:8px 14px;text-align:center"><div style="font-size:12px;font-weight:700;color:var(--green)">✅ Aprobada</div><div style="font-size:10px;color:var(--t3)">${x.quincena}</div></div>
+            : `<div style="background:${sync.sync==='assigned_confirmed'?'var(--green-bg)':'var(--amber-bg)'};border-radius:9px;padding:8px 14px;text-align:center"><div style="font-size:12px;font-weight:700;color:${sync.sync==='assigned_confirmed'?'var(--green)':'#8a5b00'}">${sync.sync==='conflict_review_required'?'⚠ Aprobada · asignación en revisión':sync.sync==='platform_pending_hr_sync'?'⏳ Aprobada · pendiente HR':sync.sync==='assigned_confirmed'?'✅ Aprobada · asignación confirmada':'⏳ Aprobada · validando asignación'}</div><div style="font-size:10px;color:var(--t3)">${x.quincena}</div></div>
                <div class="flex" style="flex-wrap:wrap;justify-content:flex-end"><button class="btn btn-ghost btn-sm" data-perfil="${x.shopperId}">👤 Perfil</button><button class="btn btn-ghost btn-sm" data-edit="${x.id}">✏️ Editar</button><button class="btn btn-ghost btn-sm" data-reasig="${x.id}">🔁 Reasig.</button><button class="btn btn-ghost btn-sm" data-cancel="${x.id}" style="color:var(--red)">✕ Cancelar</button></div>`}
         </div>
       </div>
