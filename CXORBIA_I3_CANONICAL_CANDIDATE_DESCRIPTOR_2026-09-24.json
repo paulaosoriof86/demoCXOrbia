@@ -7,13 +7,13 @@
   "productSourceSha": "8d764168727832d579d20ceb26580d88c41df24d",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "150283fe3a78af4ccdfb0643159ece27d78f0dce",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V6_2026-09-24.json",
-  "findingsLedgerExpectedGitBlob": "22078929c4f33c3faae98e6514b7d85739a0cdcb",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V7_2026-09-24.json",
+  "findingsLedgerExpectedGitBlob": "cd8e946a8ade1cdf57bea60f27eda95b98366ca0",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-036 reproof + VRM-039",
+  "activeBlocker": "VRM-039",
   "nextFindingId": "VRM-043",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "REPROVE_VRM036_SOURCE_NO_DEPLOY_THEN_VRM039_RESOURCE_FINANCE_LIVE_PROOF",
+  "exactNextAction": "VRM039_RESOURCE_CRUD_ACK_ROLE_CLEANUP_AND_FINANCE_SAME_REVISION_PROOF",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -47,6 +47,13 @@
     "predecessorSha": "150283fe3a78af4ccdfb0643159ece27d78f0dce",
     "productFiles": 3,
     "deploys": 0,
-    "contract": "historical evidence projects to protected exact profile without adding platform-only profile to HR operational population"
+    "contract": "historical evidence projects to protected exact profile without adding platform-only profile to HR operational population",
+    "proof": {
+      "runId": 36041811875,
+      "artifactId": 10826689418,
+      "decision": "PASS_PRE_I4_VRM036_EXACT_HISTORICAL_EVIDENCE_PROJECTION",
+      "eligibilityGranted": 0,
+      "deploys": 0
+    }
   }
 }
