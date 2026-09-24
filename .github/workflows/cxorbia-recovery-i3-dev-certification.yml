@@ -59,7 +59,7 @@ env:
 
 jobs:
   certify:
-    if: ${{ github.event_name != 'push' || (!contains(github.event.head_commit.message, '[pre-i4-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-readback-only]') && !contains(github.event.head_commit.message, '[pre-i4-finance-fix-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-focal-fix-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-rules-fix-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-matrix-closure]') && !contains(github.event.head_commit.message, '[pre-i4-lock-only]') && !contains(github.event.head_commit.message, '[pre-i4-hold-only]') && !contains(github.event.head_commit.message, '[pre-i4-human-semantic-dev-only]')) }}
+    if: ${{ github.event_name != 'push' || (!contains(github.event.head_commit.message, '[pre-i4-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-readback-only]') && !contains(github.event.head_commit.message, '[pre-i4-finance-fix-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-focal-fix-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-rules-fix-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-matrix-closure]') && !contains(github.event.head_commit.message, '[pre-i4-lock-only]') && !contains(github.event.head_commit.message, '[pre-i4-hold-only]') && !contains(github.event.head_commit.message, '[pre-i4-human-semantic-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-vrm040-hosting-only]')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 70
     steps:
@@ -2778,3 +2778,163 @@ jobs:
           set -Eeuo pipefail
           test "$(jq -r '.decision' "$FOCAL_OUT/final.json")" = "PASS_PRE_I4_HARDENED_SEMANTIC_FOCAL_ONLY"
           test "$(jq -r '.decision' "$FOCAL_OUT/prior/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
+
+
+  pre-i4-vrm040-hosting-fix:
+    name: PRE-I4 VRM-040 HR out-of-range semantic fix — Hosting only
+    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[pre-i4-vrm040-hosting-only]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    env:
+      VRM_OUT: .tmp/pre-i4-vrm040
+      BASE_FUNCTIONAL: dad7cdda3758d9e86d76513acba6f7ca7edca4ba
+      HOSTING_ROOT: https://cxorbia-backend-dev.web.app
+      PROJECT: cxorbia-backend-dev
+      REGION: us-central1
+      SERVICE: cxorbia-live-hr-dev
+    steps:
+      - name: Checkout exact cumulative successor
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Prove VRM-040 focal scope and no runtime drift
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$VRM_OUT"
+          PRODUCT_DIFF="$(git diff --name-only "$BASE_FUNCTIONAL" "$GITHUB_SHA" -- app backend/runtime/hr-live-service/test | sort)"
+          EXPECTED="$(printf '%s\n' 'app/adapters/tya-canonical-state-semantics-v2.js' 'backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-semantic-regression.test.mjs' | sort)"
+          test "$PRODUCT_DIFF" = "$EXPECTED"
+          RUNTIME_DIFF="$(git diff --name-only "$BASE_FUNCTIONAL" "$GITHUB_SHA" -- backend/runtime/hr-live-service | grep -v '^backend/runtime/hr-live-service/test/' || true)"
+          test -z "$RUNTIME_DIFF"
+          jq -n -S --arg source "$GITHUB_SHA" --arg tree "$(git rev-parse "$GITHUB_SHA^{tree}")" '{decision:"PASS_PRE_I4_VRM040_SCOPE",sourceSha:$source,sourceTree:$tree,productDiff:["app/adapters/tya-canonical-state-semantics-v2.js","backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-semantic-regression.test.mjs"],runtimeBuildsThisRun:0,runtimeDeploysThisRun:0,rulesDeploysThisRun:0,hostingDeployMax:1,production:false}' > "$VRM_OUT/authorization.json"
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Run exact VRM-040 regression
+        run: |
+          set -Eeuo pipefail
+          node --check app/adapters/tya-canonical-state-semantics-v2.js
+          node --test backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-semantic-regression.test.mjs | tee "$VRM_OUT/regression.log"
+
+      - name: Authenticate existing DEV only
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: cxorbia-backend-dev
+
+      - name: Install transient Hosting and focal tooling
+        run: |
+          set -Eeuo pipefail
+          npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null 2>&1
+
+      - name: Bind unchanged exact Run339 runtime and Run340 cleanup
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$VRM_OUT/prior"
+          gh run download 35970916539 --repo "$GITHUB_REPOSITORY" --name "cxorbia-pre-i4-human-semantic-35970916539" --dir "$VRM_OUT/prior"
+          test "$(jq -r '.after' "$VRM_OUT/prior/qa-reservation-cleanup.json")" = "0"
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$VRM_OUT/runtime-service.json"
+          REV="$(jq -r '.status.latestReadyRevisionName // empty' "$VRM_OUT/runtime-service.json")"
+          test "$REV" = "cxorbia-live-hr-dev-00215-dfw"
+          TRAFFIC="$(jq -r --arg rev "$REV" '[.status.traffic[]? | select(.revisionName==$rev) | .percent] | add // 0' "$VRM_OUT/runtime-service.json")"
+          test "$TRAFFIC" = "100"
+          gcloud run revisions describe "$REV" --project "$PROJECT" --region "$REGION" --format=json > "$VRM_OUT/runtime-revision.json"
+          IMAGE_URI="$(jq -r '.status.imageDigest // empty' "$VRM_OUT/runtime-revision.json")"
+          test "$IMAGE_URI" = "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev@sha256:b2339ca79c01470f601a13d2c2e2f8bca16f5eaceb5285e0885bfecc4027e322"
+          URL="$(jq -r '.status.url // empty' "$VRM_OUT/runtime-service.json")"
+          curl -fsS --retry 10 --retry-delay 2 "$URL/health" > "$VRM_OUT/runtime-health.json"
+          jq -e '.ok==true and .production==false and .hrWrites==false and .shopperReconciliationReady==true and .visitReconciliationReady==true' "$VRM_OUT/runtime-health.json" >/dev/null
+          jq -n -S --arg revision "$REV" --arg image "$IMAGE_URI" --argjson traffic "$TRAFFIC" '{decision:"PASS_PRE_I4_VRM040_RUNTIME_UNCHANGED",revision:$revision,imageUri:$image,trafficPercent:$traffic,runtimeBuildsThisRun:0,runtimeDeploysThisRun:0,production:false}' > "$VRM_OUT/runtime.json"
+
+      - name: Deploy exact VRM-040 static successor to Hosting DEV once
+        run: |
+          set -Eeuo pipefail
+          test "$GITHUB_RUN_ATTEMPT" = "1"
+          ./node_modules/.bin/firebase deploy --config firebase.json --only "hosting:cxorbia-dev" --project "$PROJECT" --non-interactive | tee "$VRM_OUT/hosting-deploy.log"
+          echo 1 > "$VRM_OUT/hosting-deploy-count.txt"
+
+      - name: Prove exact served VRM-040 owner bytes
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$VRM_OUT/remote"
+          for rel in index-backend-dev.html adapters/tya-canonical-state-semantics-v2.js adapters/tya-cumulative-read-model-v2.js adapters/tya-protected-auth-hr-authority-bridge-v2.js modules/dashboard.js; do
+            remote="$VRM_OUT/remote/$(echo "$rel" | tr '/' '_')"
+            ok=0
+            for attempt in $(seq 1 30); do
+              if curl -fsSL --retry 2 --retry-delay 1 -H 'Cache-Control: no-cache' "$HOSTING_ROOT/$rel?vrm040=$GITHUB_RUN_ID-$attempt-$(date +%s%N)" -o "$remote" && cmp "app/$rel" "$remote"; then ok=1; break; fi
+              sleep 2
+            done
+            test "$ok" = 1
+          done
+          jq -n -S '{decision:"PASS_PRE_I4_VRM040_HOSTING_BYTE_PARITY",hostingDeploysThisRun:1,production:false}' > "$VRM_OUT/hosting-parity.json"
+
+      - name: Force fresh HR and build same-revision independent oracle
+        run: |
+          set -Eeuo pipefail
+          curl -fsSL --retry 10 --retry-delay 3 -H 'Cache-Control: no-cache' "$HOSTING_ROOT/api/tenants/tya/projects/cinepolis/hr-live?view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV&fresh=1&vrm040=$GITHUB_RUN_ID" -o "$VRM_OUT/hr-fresh.json"
+          node <<'NODE'
+          const fs=require('fs'),p=JSON.parse(fs.readFileSync(process.env.VRM_OUT+'/hr-fresh.json','utf8'));
+          const key=p?.source?.currentCalendarPeriodKey,period=(p.periods||[]).find(x=>x.key===key),visits=(p.visits||[]).filter(v=>v.periodKey===key),revision=String(p?._runtime?.revision||'');
+          if(!/^[a-f0-9]{64}$/.test(revision))throw new Error('SOURCE_FAILURE:VRM040_HR_REVISION');
+          if(!period||period.total!==44||period.byCountry?.GT!==34||period.byCountry?.HN!==10)throw new Error('SOURCE_FAILURE:VRM040_CURRENT_PERIOD_UNIVERSE');
+          const facet=(v,k)=>v?.canonicalFacets?.[k]===true;
+          const country=code=>{const a=visits.filter(v=>(v.country||v.pais)===code);return {total:a.length,outOfRange:a.filter(v=>facet(v,'outOfRange')||v.outOfRange===true).length};};
+          const GT=country('GT'),HN=country('HN');
+          if(GT.outOfRange!==3||HN.outOfRange!==1)throw new Error('SOURCE_FAILURE:VRM040_EXPECTED_FRESH_COUNTS:'+JSON.stringify({GT,HN}));
+          fs.writeFileSync(process.env.VRM_OUT+'/hr-contrast.json',JSON.stringify({decision:'PASS_PRE_I4_VRM040_HR_ORACLE',sourceRevision:revision,currentPeriodKey:key,currentPeriodId:period.id,projectId:p.projectId,GT,HN,totalOutOfRange:GT.outOfRange+HN.outOfRange,production:false,hrWrites:0},null,2)+'\n');
+          NODE
+
+      - name: Execute hardened semantic focal from VRM-040 onward
+        env:
+          PREI4_OUT: .tmp/pre-i4-vrm040
+          CXORBIA_PREI4_ROOT: https://cxorbia-backend-dev.web.app
+          CXORBIA_PREI4_SOURCE_SHA: ${{ github.sha }}
+        run: |
+          set -Eeuo pipefail
+          cp "$VRM_OUT/hr-contrast.json" "$VRM_OUT/hr-contrast-vrm040.json"
+          cp "$VRM_OUT/prior/hr-contrast.json" "$VRM_OUT/hr-contrast-run340.json"
+          node <<'NODE'
+          const fs=require('fs');
+          const fresh=JSON.parse(fs.readFileSync(process.env.VRM_OUT+'/hr-fresh.json','utf8'));
+          const old=JSON.parse(fs.readFileSync(process.env.VRM_OUT+'/prior/hr-contrast.json','utf8'));
+          const key=fresh?.source?.currentCalendarPeriodKey,period=(fresh.periods||[]).find(x=>x.key===key),visits=(fresh.visits||[]).filter(v=>v.periodKey===key),revision=String(fresh?._runtime?.revision||'');
+          const facet=(v,k)=>v?.canonicalFacets?.[k]===true,known=x=>x!==null&&x!==undefined&&x!==''&&Number.isFinite(Number(x));
+          const honorarium={GT:60,HN:200};
+          const country=code=>{const a=visits.filter(v=>(v.country||v.pais)===code),assigned=a.filter(v=>facet(v,'assigned')||v.assignmentState==='assigned'),realized=a.filter(v=>facet(v,'realized')||v.executionState==='realized');const knownReimbursements=realized.reduce((n,v)=>n+(known(v.boleto)?Number(v.boleto):0)+(known(v.comboAmt)?Number(v.comboAmt):0),0),reimbursementPartial=realized.some(v=>!known(v.boleto)||!known(v.comboAmt));return {total:a.length,availableUnassigned:a.filter(v=>facet(v,'available')&&!facet(v,'assigned')).length,assigned:assigned.length,scheduled:a.filter(v=>facet(v,'scheduled')||v.schedulingState==='scheduled').length,realized:realized.length,questionnaire:a.filter(v=>facet(v,'questionnaire')).length,submitted:a.filter(v=>facet(v,'submitted')||v.submissionState==='confirmed_hr').length,liquidationCandidate:a.filter(v=>facet(v,'liquidationCandidate')).length,liquidationConfirmed:a.filter(v=>facet(v,'liquidationConfirmed')).length,paymentConfirmed:a.filter(v=>facet(v,'paymentConfirmed')).length,outOfRange:a.filter(v=>facet(v,'outOfRange')||v.outOfRange===true).length,reviewRequired:a.filter(v=>v.reviewRequired===true).length,uniqueAssignedShoppers:new Set(assigned.map(v=>String(v.shopperId||'')).filter(Boolean)).size,finance:{realizedCount:realized.length,honorarioDevengado:realized.length*honorarium[code],knownReimbursements,reimbursementPartial,configuredHonorarium:honorarium[code]}};};
+          const GT=country('GT'),HN=country('HN');
+          const sourceShoppers=(fresh.shoppers||[]).map(s=>({sourceShopperId:String(s.shopperId||s.id||''),name:String(s.nombre||s.name||'')})).filter(x=>x.sourceShopperId);
+          const identityCases=sourceShoppers.map(x=>{const linked=(fresh.visits||[]).filter(v=>String(v.shopperId||'')===x.sourceShopperId);return {...x,total:linked.length,realized:linked.filter(v=>facet(v,'realized')||v.executionState==='realized').length};});
+          const reference={countries:{GT,HN},finance:{GT:GT.finance,HN:HN.finance},liquidations:{total:GT.realized+HN.realized,GT:GT.realized,HN:HN.realized,paymentsConfirmed:GT.paymentConfirmed+HN.paymentConfirmed,liquidationsConfirmed:GT.liquidationConfirmed+HN.liquidationConfirmed},identityCases,shopperPopulation:sourceShoppers.length};
+          fs.writeFileSync(process.env.VRM_OUT+'/hr-contrast.json',JSON.stringify({decision:'PASS_PRE_I4_HR_SEMANTIC_ORACLE',generatedAt:fresh.generatedAt,sourceRevision:revision,currentPeriodKey:key,currentPeriodId:period.id,projectId:fresh.projectId,GT,HN,reference,runtime:{cacheOrigin:fresh?._runtime?.cacheOrigin||null,sourceReadAt:fresh?._runtime?.sourceReadAt||null,refreshFinishedAt:fresh?._runtime?.refreshFinishedAt||null,shopperProviderWrites:Number(fresh?._runtime?.shopperReconciliation?.providerWrites||0),visitProviderWrites:Number(fresh?._runtime?.visitReconciliation?.providerWrites||0)},production:false,hrWrites:0},null,2)+'\n');
+          NODE
+          node tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs
+          test "$(jq -r '.decision' "$VRM_OUT/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
+
+      - name: Freeze VRM-040 result
+        if: success()
+        run: |
+          set -Eeuo pipefail
+          test "$(cat "$VRM_OUT/hosting-deploy-count.txt")" = "1"
+          HR="$(jq -r '.sourceRevision' "$VRM_OUT/hr-contrast.json")"
+          jq -n -S --arg source "$GITHUB_SHA" --arg tree "$(git rev-parse "$GITHUB_SHA^{tree}")" --arg hr "$HR" '{decision:"PASS_PRE_I4_VRM040_AND_HARDENED_FOCAL",sourceSha:$source,sourceTree:$tree,hrRevision:$hr,runtimeBuildsThisRun:0,runtimeDeploysThisRun:0,hostingDeploysThisRun:1,rulesDeploysThisRun:0,qaResidueAfter:0,production:false}' > "$VRM_OUT/final.json"
+
+      - name: Upload VRM-040 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-pre-i4-vrm040-${{ github.run_id }}
+          path: ${{ env.VRM_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0

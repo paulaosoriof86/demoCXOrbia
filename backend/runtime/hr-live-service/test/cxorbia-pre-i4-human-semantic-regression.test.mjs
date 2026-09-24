@@ -5,9 +5,10 @@ import vm from 'node:vm';
 import {fileURLToPath} from 'node:url';
 
 const root=fileURLToPath(new URL('../../../../',import.meta.url));
-function readModel(){
+function readModel({stateSemantics=false}={}){
   const context={console};context.globalThis=context;
   vm.runInNewContext(fs.readFileSync(root+'app/adapters/tya-cumulative-read-model-v2.js','utf8'),context,{filename:'tya-cumulative-read-model-v2.js'});
+  if(stateSemantics)vm.runInNewContext(fs.readFileSync(root+'app/adapters/tya-canonical-state-semantics-v2.js','utf8'),context,{filename:'tya-canonical-state-semantics-v2.js'});
   return context.CX_TYA_CUMULATIVE_READ_MODEL;
 }
 
@@ -41,4 +42,24 @@ test('PRE-I4 VRM-033 HR human name wins over technical durable profile and platf
 test('PRE-I4 VRM-040 top-level live outOfRange remains true even when estado is another operational stage',()=>{
   const api=readModel();
   assert.equal(api.facets({estado:'agendada',outOfRange:true}).outOfRange,true);
+});
+
+
+test('PRE-I4 VRM-040 canonical state semantics preserves HR outOfRange after operational advancement and separates actionable subset',()=>{
+  const api=readModel({stateSemantics:true});
+  const rows=[
+    {periodKey:'2026-09',pais:'GT',estado:'cuestionario',outOfRange:true,canonicalFacets:{realized:true,questionnaire:true,outOfRange:true}},
+    {periodKey:'2026-09',pais:'GT',estado:'submitida',outOfRange:true,canonicalFacets:{realized:true,questionnaire:true,submitted:true,outOfRange:true}},
+    {periodKey:'2026-09',pais:'HN',estado:'fuera_rango',outOfRange:true,canonicalFacets:{realized:false,outOfRange:true}}
+  ];
+  assert.equal(api.facets(rows[0]).outOfRange,true);
+  assert.equal(api.facets(rows[0]).actionableOutOfRange,false);
+  assert.equal(api.facets(rows[1]).outOfRange,true);
+  assert.equal(api.facets(rows[1]).actionableOutOfRange,false);
+  assert.equal(api.facets(rows[2]).outOfRange,true);
+  assert.equal(api.facets(rows[2]).actionableOutOfRange,true);
+  const summary=api.periodSummary(rows)[0];
+  assert.equal(summary.outOfRange,3);
+  assert.equal(summary.outOfRangeEvidence,3);
+  assert.equal(summary.actionableOutOfRange,1);
 });
