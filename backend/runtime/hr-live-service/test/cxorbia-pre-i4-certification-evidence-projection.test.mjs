@@ -67,3 +67,31 @@ test('VRM-036 runtime wiring exposes historical evidence separately from current
   assert.match(c6,/eligibilityGranted:!!s\.certified/);
   assert.match(cert,/no habilita la certificación vigente ni la elegibilidad para ejecutar visitas/);
 });
+
+
+test('VRM-036 protected authenticated profile is an exact evidence owner without entering the HR operational population',()=>{
+  const api=projector();
+  const operational=api.project({
+    shoppers:[{id:'shopper_gt_other',shopperId:'shopper_gt_other'}],
+    identityMap:{},
+    evidenceCandidates:[{candidateId:'paula-cert',shopperId:'s3',sourceLegacyStatus:'approved',sourceScore:93}]
+  });
+  const protectedProfiles=api.project({
+    shoppers:[{id:'s3',shopperId:'s3',nombre:'Perfil protegido'}],
+    identityMap:{},
+    evidenceCandidates:[{candidateId:'paula-cert',shopperId:'s3',sourceLegacyStatus:'approved',sourceScore:93}]
+  });
+  assert.equal(operational.matchedRecords,0);
+  assert.equal(protectedProfiles.matchedRecords,1);
+  assert.equal(protectedProfiles.shoppers[0].certificationEvidenceCount,1);
+  assert.equal(protectedProfiles.shoppers[0].certificationEvidenceRecords[0].eligibilityGranted,false);
+  assert.equal(operational.shoppers.some(s=>s.id==='s3'),false);
+});
+
+test('VRM-036 certification module prefers exact protected session profile for historical evidence',()=>{
+  const cert=fs.readFileSync(root+'app/modules/cert.js','utf8');
+  const bridge=fs.readFileSync(root+'app/adapters/tya-protected-auth-hr-authority-bridge-v2.js','utf8');
+  assert.match(cert,/const protectedProfile=data\.__sessionShopperProfile/);
+  assert.match(bridge,/protectedCertProjection=certProjector\.project/);
+  assert.match(bridge,/profile=sessionProfile\(projectedState,c,result\)/);
+});

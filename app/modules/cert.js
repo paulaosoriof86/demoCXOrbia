@@ -46,6 +46,8 @@ CX.module('cert', ({role,data,ui})=>{
   const historicalEvidenceFor=s=>Array.isArray(s?.certificationEvidenceRecords)?s.certificationEvidenceRecords:[];
   const currentShopper=()=>{
     const sid=String(CX.session?.user?.shopperId||'');
+    const protectedProfile=data.__sessionShopperProfile;
+    if(protectedProfile&&String(protectedProfile.id||protectedProfile.shopperId)===sid)return protectedProfile;
     return (data.getShopper&&data.getShopper(sid))||(data.shoppers||[]).find(x=>String(x.id||x.shopperId)===sid)||null;
   };
   if(role==='shopper'){
