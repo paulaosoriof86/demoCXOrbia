@@ -43,6 +43,11 @@ CX.certStore = CX.certStore || {
 };
 CX.module('cert', ({role,data,ui})=>{
   const p=data.period();
+  const historicalEvidenceFor=s=>Array.isArray(s?.certificationEvidenceRecords)?s.certificationEvidenceRecords:[];
+  const currentShopper=()=>{
+    const sid=String(CX.session?.user?.shopperId||'');
+    return (data.getShopper&&data.getShopper(sid))||(data.shoppers||[]).find(x=>String(x.id||x.shopperId)===sid)||null;
+  };
   if(role==='shopper'){
     /* Bloque A (auditoría V101 — 20260711): un banco en estado draft/pending_review NO habilita
        certificación para el shopper — solo approved_preview (práctica, en este prototipo) o un
@@ -99,8 +104,10 @@ CX.module('cert', ({role,data,ui})=>{
        explícitamente demo; fuera de demo se rotula "pendiente de fuente", sin inventar aprobación. */
     const _showFixturesShopper = CX.dataSource ? CX.dataSource.showFixtures() : true;
     if(!_showFixturesShopper){
+      const ev=historicalEvidenceFor(currentShopper()),approved=ev.filter(x=>String(x.sourceLegacyStatus||'').toLowerCase()==='approved').length,failed=ev.filter(x=>String(x.sourceLegacyStatus||'').toLowerCase()==='failed').length;
       return `${ui.ph('Certificación', p.name+' · aprueba el escenario antes de ejecutar')}
-        <div class="card card-p">${ui.degraded('Todavía no hay un banco de certificación publicado para este proyecto ni un resultado de certificación real registrado — no se muestra un score ni una aprobación fabricados.',{title:'Certificación · pendiente de fuente'})}</div>`;
+        ${ev.length?`<div class="card card-p" style="margin-bottom:12px;border-left:4px solid var(--amber)"><div class="card-t" style="font-size:13px">Evidencia histórica de certificación</div><div style="font-size:12px;color:var(--t2);line-height:1.6;margin-top:6px">${ev.length} registro(s) vinculados por identidad técnica exacta · ${approved} aprobado(s) históricamente${failed?' · '+failed+' no aprobado(s)':''}. Esta evidencia está pendiente de validación y <b>no habilita la certificación vigente ni la elegibilidad para ejecutar visitas</b>.</div></div>`:''}
+        <div class="card card-p">${ui.degraded('Todavía no hay un banco de certificación publicado ni una certificación vigente validada para este proyecto. No se muestra una aprobación fabricada.',{title:'Certificación vigente · pendiente de validación/publicación'})}</div>`;
     }
     const fb=[
       {ok:true, q:'¿Puedes revelar que eres evaluador?', tu:'No', correcta:'No', exp:'El anonimato es la base del mystery shopping: si te identificas, el comportamiento del personal se altera y la medición pierde validez. Nunca reveles tu rol, ni siquiera al salir.'},
@@ -154,15 +161,17 @@ CX.module('cert', ({role,data,ui})=>{
       ${ui.bar(9,'Registro incidencia','9%')}
       <div style="margin-top:12px">${ui.aiBox('El 40% falla la misma pregunta sobre tiempos de espera — conviene reforzar ese material. Genero el reporte de vacíos automáticamente. (datos de ejemplo)','Mejora continua')}</div>
     </div>` : `
+    ${(()=>{const all=(data.shoppers||[]).flatMap(s=>historicalEvidenceFor(s)),approved=all.filter(x=>String(x.sourceLegacyStatus||'').toLowerCase()==='approved').length,failed=all.filter(x=>String(x.sourceLegacyStatus||'').toLowerCase()==='failed').length,shopperCount=(data.shoppers||[]).filter(s=>historicalEvidenceFor(s).length).length;return `
     <div class="grid g4" style="margin-bottom:16px" id="certKpis">
-      <div>${ui.kpi('Certificados',ui.statusBdg('pending_source'),'n')}</div>
-      <div>${ui.kpi('En progreso',ui.statusBdg('pending_source'),'n')}</div>
-      <div>${ui.kpi('Aprob. promedio',ui.statusBdg('pending_source'),'n')}</div>
+      <div>${ui.kpi('Evidencias históricas',all.length,'a')}</div>
+      <div>${ui.kpi('Shoppers vinculados',shopperCount,'b')}</div>
+      <div>${ui.kpi('Aprobadas legacy',approved,'g')}</div>
       <div data-ck="gate" style="cursor:pointer">${ui.kpi('Requisito activo',bank&&bank.gate?'Sí':'No','p')}</div>
     </div>
     <div class="card card-p">
-      ${bank&&bank.estado==='approved_preview'?ui.degraded('Banco revisado por '+(bank.revisadoPor||'—')+' y disponible para práctica. La publicación oficial sigue pendiente.',{title:'Certificación · práctica disponible · publicación pendiente'}):ui.degraded('Sin una fuente de intentos/resultados de certificación conectada todavía, no se muestran KPIs de certificación fuera de modo demo — evita presentar aprobación/progreso ficticios como reales.', {title:'Certificación · pendiente de fuente'})}
-    </div>`}`;
+      <div style="font-size:12px;color:var(--t2);line-height:1.65;margin-bottom:10px"><b>Evidencia histórica exacta:</b> ${all.length} registro(s), ${approved} aprobado(s) legacy${failed?' y '+failed+' no aprobado(s)':''}. Se muestran como evidencia de historial, no como certificación vigente ni como permiso de ejecución.</div>
+      ${bank&&bank.estado==='approved_preview'?ui.degraded('Banco revisado por '+(bank.revisadoPor||'—')+' y disponible para práctica. La publicación oficial sigue pendiente.',{title:'Certificación · práctica disponible · publicación pendiente'}):ui.degraded('La certificación vigente continúa pendiente de una fuente/revisión autorizada. El historial legacy no se promueve automáticamente a elegibilidad actual.', {title:'Certificación vigente · pendiente de validación'})}
+    </div>`;})()}`}`;
   setTimeout(()=>{
     const ckData={
       cert:['Shoppers certificados (18)','<table class="tbl"><thead><tr><th>Shopper</th><th>Score</th><th>Fecha</th></tr></thead><tbody>'+['Evaluador 01|92|2026-05-12','Evaluador 03|88|2026-05-14','Evaluador 05|85|2026-05-20','Evaluador 07|90|2026-06-02'].map(r=>{const[n,s,f]=r.split('|');return `<tr><td><b>${n}</b></td><td>${CX.ui.bdg(s+'%','g')}</td><td style="font-size:12px">${f}</td></tr>`;}).join('')+'<tr><td colspan="3" style="font-size:11px;color:var(--t3);text-align:center">+ 14 más</td></tr></tbody></table>'],

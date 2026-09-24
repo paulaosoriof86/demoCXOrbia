@@ -12,6 +12,7 @@
   const facets=v=>CX.data?.visitFacets?CX.data.visitFacets(v):(window.CX_TYA_CUMULATIVE_READ_MODEL?.facets?.(v)||v?.canonicalFacets||{});
   const stage=v=>{const f=facets(v);if(f.paymentConfirmed)return ['Pagada','g'];if(f.liquidationConfirmed)return ['Liquidada','g'];if(f.submitted)return ['Submitida','t'];if(f.questionnaire)return ['Cuestionario completo · pendiente de submitir','p'];if(f.realized)return ['Realizada · pendiente de cuestionario','a'];if(f.outOfRange)return ['Fuera de rango','r'];if(f.scheduled)return ['Agendada','t'];if(f.assigned)return ['Asignada · pendiente de agendar','b'];if(f.available)return ['Disponible','b'];return ['Pendiente','n'];};
   const cert=s=>s?.certificationStatus||((s?.certified)?'certificada':s?.certificationPresented?'presentada':'sin_registro');
+  const certEvidence=s=>arr(s?.certificationEvidenceRecords);
   const flatten=v=>{const out=[];const walk=x=>{if(x==null)return;if(Array.isArray(x)){x.forEach(walk);return;}if(typeof x==='object'){Object.values(x).forEach(walk);return;}const s=str(x);if(s)out.push(s);};walk(v);return out;};
   function technicalAliases(row){
     if(!row||typeof row!=='object')return [];
@@ -101,7 +102,7 @@
     const username=rule.ok?rule.login:str(s.username||s.user||credential.username),firstName=rule.ok?rule.firstName:str(s.firstName||s.nombre),lastName=rule.ok?rule.lastName:str(s.lastName||s.apellido),passwordValue=rule.ok?rule.password:str(credential.password);
     const historySource=typeof data.shopperHistoryVisits==='function'?data.shopperHistoryVisits(shopperKey,false):data.visitsForShopper(shopperKey,false).filter(v=>v&&v.__pendingPlatformAssignmentOverlay!==true);
     const visits=historySource.slice().sort((a,b)=>str(b.realizada||b.cuestFecha||b.submittedAt||b.agendada).localeCompare(str(a.realizada||a.cuestFecha||a.submittedAt||a.agendada)));
-    const st=data.shopperStats(shopperKey),cs=cert(s);
+    const st=data.shopperStats(shopperKey),cs=cert(s),historicalEvidence=certEvidence(s);
     const active=visits.filter(v=>{const f=facets(v);return f.assigned&&!f.liquidationConfirmed&&!f.paymentConfirmed&&!f.cancelled;});
     const done=visits.filter(v=>facets(v).realized),submitted=visits.filter(v=>facets(v).submitted),paid=visits.filter(v=>facets(v).paymentConfirmed);
     let tab='all';
@@ -113,7 +114,7 @@
         : `<b data-credential-unavailable style="font-size:11px">Disponible al ingresar con usuario y contraseña</b>`;
       host.innerHTML=`${ui.ph('Mi Perfil','Identidad, acceso e histórico canónico')}
       <div class="card card-p" style="margin-bottom:14px">
-        <div class="between" style="gap:12px;align-items:flex-start"><div><div class="card-t" style="font-size:18px">${esc(s.nombre)}</div><div style="font-size:11px;color:var(--t3);margin-top:3px">${esc(shopperKey)} · ${esc(s.ciudad)} · ${esc(s.pais)}</div></div><div class="flex wrap" style="gap:6px"><span class="bdg bdg-g">Identidad vinculada</span><span class="bdg bdg-${cs==='certificada'?'g':cs==='presentada'?'b':'n'}">${cs==='certificada'?'Certificada':cs==='presentada'?'Certificación presentada':'Sin certificación'}</span></div></div>
+        <div class="between" style="gap:12px;align-items:flex-start"><div><div class="card-t" style="font-size:18px">${esc(s.nombre)}</div><div style="font-size:11px;color:var(--t3);margin-top:3px">${esc(shopperKey)} · ${esc(s.ciudad)} · ${esc(s.pais)}</div></div><div class="flex wrap" style="gap:6px"><span class="bdg bdg-g">Identidad vinculada</span><span class="bdg bdg-${cs==='certificada'?'g':cs==='presentada'?'b':historicalEvidence.length?'a':'n'}">${cs==='certificada'?'Certificada':cs==='presentada'?'Certificación presentada':historicalEvidence.length?'Histórico en revisión':'Sin certificación'}</span></div></div>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:14px">
           <div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">NOMBRE</div><b>${esc(firstName||'— sin dato')}</b></div>
           <div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">APELLIDO</div><b>${esc(lastName||'— sin dato')}</b></div>
