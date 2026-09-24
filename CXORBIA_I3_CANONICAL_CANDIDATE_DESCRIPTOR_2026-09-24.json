@@ -7,14 +7,14 @@
   "productSourceSha": "d8aad982ae4b47e66bf949d906b6c7ede8866f84",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_2026-09-24.json",
-  "findingsLedgerExpectedGitBlob": "817eca9fc20bd03febfa56ac202fd87b484b12fb",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V2_2026-09-24.json",
+  "findingsLedgerExpectedGitBlob": "4fe256267c1505e2845768937b958d34c1f2a20b",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-037",
-  "nextFindingId": "VRM-042",
+  "activeBlocker": "VRM-037 + VRM-042",
+  "nextFindingId": "VRM-043",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,5 +26,17 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "VRM037_EXACT_OWNERSHIP_DIAGNOSTIC_THEN_FOCAL_FIX"
+  "exactNextAction": "VRM037_VRM042_EXACT_MAPPED_VISIT_OWNERSHIP_DIAGNOSTIC",
+  "lastDiagnosticRequest": {
+    "findingIds": [
+      "VRM-037",
+      "VRM-042"
+    ],
+    "mode": "READ_ONLY_EXACT_MAPPED_VISIT_OWNERSHIP",
+    "targetSourceSha": "d8aad982ae4b47e66bf949d906b6c7ede8866f84",
+    "expectedPrimaryCase": "shopper_gt_0b19085086",
+    "expectedControlCase": "shopper_gt_a55e5b3e9b",
+    "productWrites": 0,
+    "production": false
+  }
 }
