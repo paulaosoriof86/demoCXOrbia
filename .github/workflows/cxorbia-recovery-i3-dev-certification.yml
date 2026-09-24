@@ -2332,9 +2332,9 @@ jobs:
           const fs=require('fs'),{execFileSync}=require('child_process');
           const r=JSON.parse(fs.readFileSync(process.env.REQUEST,'utf8'));
           const source=process.env.SEM_SOURCE,tree=process.env.SEM_TREE;
-          if(r.requestId!=='pre-i4-human-semantic-remediation-20260924-01'||r.sourceSha!==source||r.sourceTree!==tree)throw new Error('RELEASE_COMPOSITION_FAILURE:SEMANTIC_REQUEST_SOURCE');
+          if(r.requestId!=='pre-i4-human-semantic-remediation-20260924-02-resume-run339'||r.sourceSha!==source||r.sourceTree!==tree)throw new Error('RELEASE_COMPOSITION_FAILURE:SEMANTIC_REQUEST_SOURCE');
           if(r.status!=='authorized_execute_once'||r.enabled!==true||r.consumed!==false||r.production!==false)throw new Error('RELEASE_COMPOSITION_FAILURE:SEMANTIC_REQUEST_STATE');
-          if(Number(r.nextRun?.runtimeBuilds)!==1||Number(r.nextRun?.runtimeDeploys)!==1||Number(r.nextRun?.hostingDeploys)!==1||Number(r.nextRun?.rulesDeploys)!==0)throw new Error('RELEASE_COMPOSITION_FAILURE:SEMANTIC_DEPLOY_SCOPE');
+          if(Number(r.nextRun?.runtimeBuilds)!==0||Number(r.nextRun?.runtimeDeploys)!==0||Number(r.nextRun?.hostingDeploys)!==1||Number(r.nextRun?.rulesDeploys)!==0)throw new Error('RELEASE_COMPOSITION_FAILURE:SEMANTIC_DEPLOY_SCOPE');
           if(execFileSync('git',['rev-parse',source+'^{tree}'],{encoding:'utf8'}).trim()!==tree)throw new Error('SOURCE_FAILURE:SEMANTIC_TREE');
           execFileSync('git',['merge-base','--is-ancestor',process.env.SEM_PREVIOUS,source]);
           const rules=execFileSync('git',['rev-parse',source+':firestore.rules'],{encoding:'utf8'}).trim();
@@ -2349,7 +2349,7 @@ jobs:
             const changed=execFileSync('git',['diff','--name-only',process.env.SEM_PREVIOUS,source,'--',p],{encoding:'utf8'}).trim();
             if(changed!==p)throw new Error('SOURCE_FAILURE:SEMANTIC_REQUIRED_DELTA_'+p);
           }
-          fs.writeFileSync(process.env.SEM_OUT+'/authorization.json',JSON.stringify({decision:'PASS_PRE_I4_HUMAN_SEMANTIC_AUTHORIZATION',sourceSha:source,sourceTree:tree,runtimeBuildsMax:1,runtimeDeploysMax:1,hostingDeploysMax:1,rulesDeploysMax:0,qaCleanupOnly:true,production:false},null,2)+'\n');
+          fs.writeFileSync(process.env.SEM_OUT+'/authorization.json',JSON.stringify({decision:'PASS_PRE_I4_HUMAN_SEMANTIC_AUTHORIZATION',sourceSha:source,sourceTree:tree,runtimeBuildsMax:0,runtimeDeploysMax:0,hostingDeploysMax:1,rulesDeploysMax:0,qaCleanupOnly:true,resumeFromRunId:35968285178,production:false},null,2)+'\n');
           NODE
 
       - name: Setup Node 24
@@ -2394,31 +2394,44 @@ jobs:
           npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1
           npx playwright install --with-deps chromium >/dev/null 2>&1
 
-      - name: Build exact runtime source once
+      - name: Bind exact Run339 runtime evidence without rebuild
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -Eeuo pipefail
-          SHORT="$(printf '%s' "$SEM_SOURCE" | cut -c1-12)"
-          IMAGE="gcr.io/$PROJECT/$SERVICE:prei4-semantic-$SHORT-$GITHUB_RUN_ID"
-          gcloud builds submit "$SEM_SRC" --project "$PROJECT" --config "$SEM_SRC/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE" --quiet
-          printf '%s\n' "$IMAGE" > "$SEM_OUT/runtime-image.txt"
-          echo 1 > "$SEM_OUT/runtime-build-count.txt"
+          PRIOR="$RUNNER_TEMP/cxorbia-run339-runtime"
+          rm -rf "$PRIOR"; mkdir -p "$PRIOR"
+          gh run download 35968285178 --repo "$GITHUB_REPOSITORY" --name "cxorbia-pre-i4-human-semantic-35968285178" --dir "$PRIOR"
+          test "$(jq -r '.status.latestReadyRevisionName // empty' "$PRIOR/runtime-service.json")" = "cxorbia-live-hr-dev-00215-dfw"
+          test "$(jq -r '.status.traffic[] | select(.revisionName=="cxorbia-live-hr-dev-00215-dfw") | .percent' "$PRIOR/runtime-service.json")" = "100"
+          PRIOR_IMAGE_URI="$(jq -r '.status.imageDigest // empty' "$PRIOR/runtime-revision.json")"
+          test "$PRIOR_IMAGE_URI" = "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev@sha256:b2339ca79c01470f601a13d2c2e2f8bca16f5eaceb5285e0885bfecc4027e322"
+          cp "$PRIOR/runtime-image.txt" "$SEM_OUT/runtime-image.txt"
+          cp "$PRIOR/runtime-service.json" "$SEM_OUT/runtime-service-run339.json"
+          cp "$PRIOR/runtime-revision.json" "$SEM_OUT/runtime-revision-run339.json"
+          echo 0 > "$SEM_OUT/runtime-build-count.txt"
+          echo 0 > "$SEM_OUT/runtime-deploy-count.txt"
 
-      - name: Deploy exact runtime image to existing DEV once
+      - name: Read back existing DEV runtime and execute health without redeploy
         run: |
           set -Eeuo pipefail
-          IMAGE="$(cat "$SEM_OUT/runtime-image.txt")"
-          gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$IMAGE" --quiet
           gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$SEM_OUT/runtime-service.json"
           REV="$(jq -r '.status.latestReadyRevisionName // empty' "$SEM_OUT/runtime-service.json")"
-          test -n "$REV"
+          test "$REV" = "cxorbia-live-hr-dev-00215-dfw"
+          TRAFFIC="$(jq -r --arg rev "$REV" '[.status.traffic[]? | select(.revisionName==$rev) | .percent] | add // 0' "$SEM_OUT/runtime-service.json")"
+          test "$TRAFFIC" = "100"
           gcloud run revisions describe "$REV" --project "$PROJECT" --region "$REGION" --format=json > "$SEM_OUT/runtime-revision.json"
-          DIGEST="$(jq -r '.status.imageDigest // empty' "$SEM_OUT/runtime-revision.json")"
+          IMAGE_URI="$(jq -r '.status.imageDigest // empty' "$SEM_OUT/runtime-revision.json")"
+          test "$IMAGE_URI" = "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev@sha256:b2339ca79c01470f601a13d2c2e2f8bca16f5eaceb5285e0885bfecc4027e322"
+          DIGEST="${IMAGE_URI##*@}"
           [[ "$DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
+          test "$DIGEST" = "sha256:b2339ca79c01470f601a13d2c2e2f8bca16f5eaceb5285e0885bfecc4027e322"
           URL="$(jq -r '.status.url // empty' "$SEM_OUT/runtime-service.json")"
+          test -n "$URL"
           curl -fsS --retry 10 --retry-delay 3 "$URL/health" > "$SEM_OUT/runtime-health.json"
           jq -e '.ok==true and .production==false and .hrWrites==false and .shopperReconciliationReady==true and .visitReconciliationReady==true' "$SEM_OUT/runtime-health.json" >/dev/null
-          echo 1 > "$SEM_OUT/runtime-deploy-count.txt"
-          jq -n -S --arg revision "$REV" --arg digest "$DIGEST" --arg image "$IMAGE" '{decision:"PASS_PRE_I4_SEMANTIC_RUNTIME_EXACT",revision:$revision,digest:$digest,image:$image,buildsThisRun:1,deploysThisRun:1,production:false}' > "$SEM_OUT/runtime.json"
+          TAG_IMAGE="$(cat "$SEM_OUT/runtime-image.txt")"
+          jq -n -S --arg revision "$REV" --arg digest "$DIGEST" --arg imageUri "$IMAGE_URI" --arg taggedImage "$TAG_IMAGE" --argjson traffic "$TRAFFIC" '{decision:"PASS_PRE_I4_SEMANTIC_RUNTIME_REUSED_RUN339_EXACT",revision:$revision,digest:$digest,imageUri:$imageUri,taggedImage:$taggedImage,trafficPercent:$traffic,resumeFromRunId:35968285178,buildsThisRun:0,deploysThisRun:0,production:false}' > "$SEM_OUT/runtime.json"
 
       - name: Remove only proven I3 QA reservation residue
         run: |
@@ -2514,7 +2527,7 @@ jobs:
           NODE
           HR="$(jq -r '.sourceRevision' "$SEM_OUT/hr-contrast.json")"
           ART="$(cat "$SEM_OUT/app-artifact.sha256")"
-          jq -n -S --arg source "$SEM_SOURCE" --arg tree "$SEM_TREE" --arg hr "$HR" --arg artifact "$ART" '{decision:"PASS_PRE_I4_VRM033_041_SEMANTIC_BLOCK",sourceSha:$source,sourceTree:$tree,hrRevision:$hr,artifactSha256:$artifact,runtimeBuildsThisRun:1,runtimeDeploysThisRun:1,hostingDeploysThisRun:1,rulesDeploysThisRun:0,qaResidueAfter:0,production:false}' > "$SEM_OUT/final.json"
+          jq -n -S --arg source "$SEM_SOURCE" --arg tree "$SEM_TREE" --arg hr "$HR" --arg artifact "$ART" '{decision:"PASS_PRE_I4_VRM033_041_SEMANTIC_BLOCK",sourceSha:$source,sourceTree:$tree,hrRevision:$hr,artifactSha256:$artifact,runtimeBuildsThisRun:0,runtimeDeploysThisRun:0,hostingDeploysThisRun:1,rulesDeploysThisRun:0,qaResidueAfter:0,resumeFromRunId:35968285178,production:false}' > "$SEM_OUT/final.json"
 
       - name: Upload human semantic remediation evidence
         if: always()
@@ -2530,8 +2543,8 @@ jobs:
         run: |
           set -Eeuo pipefail
           test "$(jq -r '.decision' "$SEM_OUT/final.json")" = "PASS_PRE_I4_VRM033_041_SEMANTIC_BLOCK"
-          test "$(cat "$SEM_OUT/runtime-build-count.txt")" = "1"
-          test "$(cat "$SEM_OUT/runtime-deploy-count.txt")" = "1"
+          test "$(cat "$SEM_OUT/runtime-build-count.txt")" = "0"
+          test "$(cat "$SEM_OUT/runtime-deploy-count.txt")" = "0"
           test "$(cat "$SEM_OUT/hosting-deploy-count.txt")" = "1"
           test "$(jq -r '.after' "$SEM_OUT/qa-reservation-cleanup.json")" = "0"
 

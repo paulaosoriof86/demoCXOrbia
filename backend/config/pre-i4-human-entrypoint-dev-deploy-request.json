@@ -1,11 +1,11 @@
 {
   "schemaVersion": "cxorbia.pre-i4.human-entrypoint-dev-deploy.request.v1",
-  "requestId": "pre-i4-human-semantic-remediation-20260924-01",
+  "requestId": "pre-i4-human-semantic-remediation-20260924-02-resume-run339",
   "status": "authorized_execute_once",
   "enabled": true,
   "consumed": false,
   "authorizedBy": "Paula",
-  "authorizationSource": "human_visual_rejection_vrm033_041_same_i3_microblock",
+  "authorizationSource": "run339_runtime_materialized_resume_same_i3_microblock",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "sourceSha": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba",
   "sourceTree": "bfa4135ef9e611aef70eca2ca8d412ee588a18f4",
@@ -29,7 +29,7 @@
   "legacyWrites": 0,
   "production": false,
   "noAutomaticRetry": true,
-  "scope": "pre_i4_human_semantic_remediation_runtime_hosting_exact_qa_cleanup",
+  "scope": "pre_i4_human_semantic_remediation_resume_run339_health_cleanup_hosting",
   "requiredEvidence": [
     "exact-human-shopper-names-vs-fresh-hr",
     "shopper-population-vs-fresh-hr",
@@ -41,17 +41,19 @@
     "Paula-benefits-visible-when-obligations-exist",
     "runtime-image-digest",
     "hosting-byte-parity",
-    "rules-unchanged"
+    "rules-unchanged",
+    "run339-live-revision-traffic-digest-readback",
+    "runtime-health-readback-no-redeploy"
   ],
   "deployedRunId": 35949258270,
-  "runtimeMaterializedRunId": 35915126071,
+  "runtimeMaterializedRunId": 35968285178,
   "hostingDeploys": 1,
   "readbackOnly": true,
   "noFurtherDeployBeforeReadback": true,
   "nextRun": {
-    "runtimeBuilds": 1,
-    "cloudRunDeploys": 1,
-    "runtimeDeploys": 1,
+    "runtimeBuilds": 0,
+    "cloudRunDeploys": 0,
+    "runtimeDeploys": 0,
     "rulesDeploys": 0,
     "hostingDeploys": 1
   },
@@ -63,6 +65,6 @@
   "deployedRulesRunId": 35953009969,
   "noFurtherDeployBeforeHumanAcceptance": true,
   "i4Authorized": false,
-  "maxRuntimeBuilds": 1,
-  "maxRuntimeDeploys": 1
+  "maxRuntimeBuilds": 0,
+  "maxRuntimeDeploys": 0
 }
