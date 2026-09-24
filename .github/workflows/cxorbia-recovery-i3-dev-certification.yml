@@ -183,6 +183,161 @@ jobs:
         if: always()
         run: rm -rf node_modules
 
+  vrm043-control-proof:
+    name: VRM-043 terminal control reproving — existing DEV, no deploy
+    needs: canonical-candidate-authority
+    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-043-control-proof]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PROJECT: cxorbia-backend-dev
+      REGION: us-central1
+      SERVICE: cxorbia-live-hr-dev
+      HOSTING_URL: https://cxorbia-backend-dev.web.app
+      TENANT_ID: tya
+      PROJECT_ID: cinepolis
+      SOURCE_SHA: 04b288f7eee315fcb865ed86a8fb41786809edf9
+      SOURCE_TREE: f6b917c474f32137951a477afecbeccdc20cfd59
+      EXPECTED_RUNTIME_DIGEST: sha256:5c76c2ca643d95d49fa9f016ebce312d1dcc62621342ca7bf00bf33bd114ceba
+      PROOF_OUT: .tmp/vrm043-control-proof
+    steps:
+      - name: Checkout Recovery control head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Authenticate DEV read only
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
+
+      - name: Install transient proof dependencies
+        run: |
+          set -Eeuo pipefail
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+
+      - name: Prepare exact candidate source without build
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$PROOF_OUT" "$RUNNER_TEMP/vrm043-source"
+          test "$(git rev-parse "$SOURCE_SHA^{tree}")" = "$SOURCE_TREE"
+          git archive "$SOURCE_SHA" | tar -x -C "$RUNNER_TEMP/vrm043-source"
+          echo "SOURCE_DIR=$RUNNER_TEMP/vrm043-source" >> "$GITHUB_ENV"
+
+      - name: Prove existing DEV still serves Run375 candidate
+        run: |
+          set -Eeuo pipefail
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$PROOF_OUT/runtime-current.json"
+          REVISION="$(jq -r '.status.latestReadyRevisionName // empty' "$PROOF_OUT/runtime-current.json")"
+          test -n "$REVISION"
+          gcloud run revisions describe "$REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$PROOF_OUT/runtime-revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$PROOF_OUT/runtime-revision.json")"
+          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else exit 1; fi
+          test "$DIGEST" = "$EXPECTED_RUNTIME_DIGEST"
+          LEDGER="$(jq -r '.findingsLedgerPath' "$CANDIDATE_DESCRIPTOR")"
+          TEMPLATE="RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json" \
+          LEDGER="$LEDGER" SOURCE="$SOURCE_SHA" TREE="$SOURCE_TREE" \
+          LAST_SERVED="d8aad982ae4b47e66bf949d906b6c7ede8866f84" \
+          OUT_FILE="$PROOF_OUT/module-truth-preterminal.json" \
+          node tools/qa/cxorbia-i3-c3-preterminal-module-truth.mjs >/dev/null
+          mkdir -p "$PROOF_OUT/remote"
+          : > "$PROOF_OUT/hosting-parity.tsv"
+          mismatch=0
+          while IFS= read -r p; do
+            [[ "$p" == app/* ]] || continue
+            rel="${p#app/}"
+            expected="$(sha256sum "$SOURCE_DIR/$p" | awk '{print $1}')"
+            remote="$PROOF_OUT/remote/$(echo "$rel"|tr '/' '_')"
+            curl -fsSL --retry 4 --retry-delay 1 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/$rel?vrm043=${GITHUB_RUN_ID}-$(date +%s%N)" -o "$remote"
+            actual="$(sha256sum "$remote"|awk '{print $1}')"
+            [[ "$actual" = "$expected" ]] || mismatch=$((mismatch+1))
+            printf '%s\t%s\t%s\n' "$p" "$expected" "$actual" >> "$PROOF_OUT/hosting-parity.tsv"
+          done < <(jq -r '.sourceFiles[] | select(.classification=="COMPOSED_NOT_DEPLOYED") | .path' "$PROOF_OUT/module-truth-preterminal.json")
+          test "$mismatch" = 0
+          jq -n -S --arg revision "$REVISION" --arg digest "$DIGEST" --arg source "$SOURCE_SHA" --argjson mismatch "$mismatch" \
+            '{decision:"PASS_VRM043_EXISTING_DEV_EXACT_CANDIDATE",runtimeRevision:$revision,runtimeDigest:$digest,sourceSha:$source,hostingMismatches:$mismatch,builds:0,deploys:0,production:false}' > "$PROOF_OUT/dev-identity.json"
+
+      - name: Pin one current HR revision without forced refresh
+        run: |
+          set -Eeuo pipefail
+          curl -fsS --retry 5 --retry-delay 2 -H 'Cache-Control: no-cache' "$HOSTING_URL/api/tya/$PROJECT_ID/hr-live?format=json&vrm043proof=${GITHUB_RUN_ID}" > "$PROOF_OUT/hr-current.json"
+          PINNED_HR_REVISION="$(jq -r '._runtime.revision // .sourceRevision // empty' "$PROOF_OUT/hr-current.json")"
+          [[ "$PINNED_HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
+          echo "PINNED_HR_REVISION=$PINNED_HR_REVISION" >> "$GITHUB_ENV"
+          curl -fsS --retry 3 --retry-delay 1 "$HOSTING_URL/api/tya/$PROJECT_ID/hr-live?format=meta&vrm043pin=${GITHUB_RUN_ID}" > "$PROOF_OUT/hr-meta.json"
+          test "$(jq -r '.revision' "$PROOF_OUT/hr-meta.json")" = "$PINNED_HR_REVISION"
+
+      - name: Run corrected exhaustive human acceptance on existing DEV
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$PROOF_OUT/full-human"
+          PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" \
+          I3_CERTIFICATION_SOURCE_SHA="$SOURCE_SHA" SOURCE_DIR="$SOURCE_DIR" \
+          CX_I3_PINNED_HR_FILE="$PROOF_OUT/hr-current.json" CX_I3_PINNED_HR_REVISION="$PINNED_HR_REVISION" \
+          ACCEPTANCE_OUT="$PROOF_OUT/full-human" \
+          node RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
+          test "$(jq -r '.decision' "$PROOF_OUT/full-human/human-live-acceptance.json")" = "PASS_I3_HUMAN_LIVE_ACCEPTANCE"
+          test "$(jq -r '.sourceRevision' "$PROOF_OUT/full-human/human-live-acceptance.json")" = "$PINNED_HR_REVISION"
+          test "$(jq -r '.paulaOsorioProof.ok' "$PROOF_OUT/full-human/human-live-acceptance.json")" = "true"
+
+      - name: Run corrected same-revision semantic oracle
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$PROOF_OUT/semantic"
+          C3_SEM_OUT="$PROOF_OUT/semantic" C3_HR_FILE="$PROOF_OUT/hr-current.json" \
+          C3_FIREBASE_PROJECT="$PROJECT" C3_TENANT_ID="$TENANT_ID" C3_PROJECT_ID="$PROJECT_ID" \
+          C3_HR_REVISION="$PINNED_HR_REVISION" C3_HOSTING_URL="$HOSTING_URL" \
+          node tools/qa/cxorbia-i3-c3-terminal-semantic-oracle.mjs
+          test "$(jq -r '.decision' "$PROOF_OUT/semantic/hr-contrast.json")" = "PASS_C3_TERMINAL_HR_SEMANTIC_ORACLE"
+          test "$(jq -r '.sourceRevision' "$PROOF_OUT/semantic/hr-contrast.json")" = "$PINNED_HR_REVISION"
+          test "$(jq '.reference.humanIdentityCount + .reference.unresolvedIdentityCount' "$PROOF_OUT/semantic/hr-contrast.json")" = "$(jq '.reference.shopperPopulation' "$PROOF_OUT/semantic/hr-contrast.json")"
+
+      - name: Run corrected hardened semantic focal on existing DEV
+        run: |
+          set -Eeuo pipefail
+          PREI4_OUT="$PROOF_OUT/semantic" CXORBIA_PREI4_ROOT="$HOSTING_URL" CXORBIA_PREI4_SOURCE_SHA="$SOURCE_SHA" \
+          node tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs
+          test "$(jq -r '.decision' "$PROOF_OUT/semantic/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
+          test "$(jq -r '.hrRevision' "$PROOF_OUT/semantic/browser-focal.json")" = "$PINNED_HR_REVISION"
+
+      - name: Seal VRM043 control proof
+        run: |
+          set -Eeuo pipefail
+          jq -n -S \
+            --arg source "$SOURCE_SHA" --arg revision "$PINNED_HR_REVISION" \
+            --arg human "$(jq -r '.decision' "$PROOF_OUT/full-human/human-live-acceptance.json")" \
+            --arg oracle "$(jq -r '.decision' "$PROOF_OUT/semantic/hr-contrast.json")" \
+            --arg focal "$(jq -r '.decision' "$PROOF_OUT/semantic/browser-focal.json")" \
+            --argjson humanNames "$(jq '.reference.humanIdentityCount' "$PROOF_OUT/semantic/hr-contrast.json")" \
+            --argjson unresolved "$(jq '.reference.unresolvedIdentityCount' "$PROOF_OUT/semantic/hr-contrast.json")" \
+            '{decision:"PASS_VRM043_CONTROL_FIX_NO_DEPLOY",sourceSha:$source,hrRevision:$revision,humanAcceptance:$human,semanticOracle:$oracle,hardenedFocal:$focal,humanIdentityCount:$humanNames,unresolvedReviewOnlyCount:$unresolved,builds:0,deploys:0,production:false}' \
+            > "$PROOF_OUT/final.json"
+
+      - name: Upload VRM043 control proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-vrm043-control-proof-${{ github.run_id }}
+          path: ${{ env.PROOF_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
+      - name: Cleanup transient dependencies
+        if: always()
+        run: rm -rf node_modules "$RUNNER_TEMP/vrm043-source"
+
   certify:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'READY_FOR_TERMINAL_CERTIFICATION' }}
