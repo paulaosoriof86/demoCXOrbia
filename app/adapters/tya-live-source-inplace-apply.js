@@ -53,7 +53,12 @@ window.CX = window.CX || {};
     }
     return rows.map((v,idx)=>{
       const scope=str(v?.periodKey)+'::'+str(v?.pais||v?.country),expected=reimbursementScopes.get(scope)||{boleto:false,comboAmt:false};
-      const boletoKnown=knownAmount(v?.boleto),comboKnown=knownAmount(v?.comboAmt);
+      const country=str(v?.pais||v?.country);
+      const boletoKnown=knownAmount(v?.boleto),comboKnown=knownAmount(v?.comboAmt),honorarioKnown=knownAmount(v?.honorario);
+      const configuredHonorario=identity.projectConfig?.honorario&&identity.projectConfig.honorario[country];
+      const configuredHonorarioKnown=knownAmount(configuredHonorario);
+      const honorario=honorarioKnown?Number(v.honorario):(configuredHonorarioKnown?Number(configuredHonorario):null);
+      const honorarioSource=honorarioKnown?'hr_explicit':(configuredHonorarioKnown?'project_country_config':'pending_source');
       const reimbursementExpected=expected.boleto||expected.comboAmt;
       const reimbursementPartial=v.reimbursementPartial===true||v.reembolsoPartial===true||v.reimbursementSourceComplete===false
         || (reimbursementExpected&&((expected.boleto&&!boletoKnown)||(expected.comboAmt&&!comboKnown)));
@@ -63,7 +68,7 @@ window.CX = window.CX || {};
       num:idx+1,sucursal:v.sucursal||'Sucursal HR',ciudad:v.ciudad||'',pais:v.pais||v.country,
       country:v.country||v.pais,currency:v.currency||identity.currency[v.pais||v.country]||'',quincena:v.quincena||'',
       escenario:v.escenario||v.tipoCompra||'',franja:v.franja||'',franjaCode:v.franjaCode||null,canal:'Visita presencial',
-      formato:v.formato||'Mystery shopping cine',honorario:Number(v.honorario||0),boleto:boletoKnown?Number(v.boleto):0,
+      formato:v.formato||'Mystery shopping cine',honorario,honorarioSource,honorarioSourceKnown:honorario!==null,boleto:boletoKnown?Number(v.boleto):0,
       combo:v.tipoCombo||'Configurable por HR',comboAmt:comboKnown?Number(v.comboAmt):0,estado:v.estado||'disponible',
       reimbursementBoletoSourceKnown:boletoKnown,reimbursementComboSourceKnown:comboKnown,
       reimbursementSourceComplete:reimbursementExpected?!reimbursementPartial:(v.reimbursementSourceComplete!==false),
