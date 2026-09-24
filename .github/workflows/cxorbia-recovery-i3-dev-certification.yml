@@ -59,7 +59,7 @@ env:
 
 jobs:
   certify:
-    if: ${{ github.event_name != 'push' || (!contains(github.event.head_commit.message, '[pre-i4-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-readback-only]') && !contains(github.event.head_commit.message, '[pre-i4-finance-fix-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-focal-fix-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-rules-fix-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-matrix-closure]') && !contains(github.event.head_commit.message, '[pre-i4-lock-only]') && !contains(github.event.head_commit.message, '[pre-i4-hold-only]')) }}
+    if: ${{ github.event_name != 'push' || (!contains(github.event.head_commit.message, '[pre-i4-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-readback-only]') && !contains(github.event.head_commit.message, '[pre-i4-finance-fix-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-focal-fix-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-rules-fix-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-matrix-closure]') && !contains(github.event.head_commit.message, '[pre-i4-lock-only]') && !contains(github.event.head_commit.message, '[pre-i4-hold-only]') && !contains(github.event.head_commit.message, '[pre-i4-human-semantic-dev-only]')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 70
     steps:
@@ -1513,7 +1513,7 @@ jobs:
         run: rm -rf node_modules
 
   gate21:
-    if: ${{ github.event_name != 'push' || (!contains(github.event.head_commit.message, '[pre-i4-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-readback-only]')) }}
+    if: ${{ github.event_name != 'push' || (!contains(github.event.head_commit.message, '[pre-i4-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-readback-only]') && !contains(github.event.head_commit.message, '[pre-i4-human-semantic-dev-only]')) }}
     name: Gate 21 integrity of same certification artifact
     needs: [certify, live-fixtures]
     uses: ./.github/workflows/cxorbia-recovery-i3-gate21-artifact-fingerprint.yml
@@ -2303,6 +2303,238 @@ jobs:
           test "$(jq -r '.decision' "$PREI4_OUT/final.json")" = "PASS_PRE_I4_POSTDEPLOY_READBACK"
           test "$(jq -r '.decision' "$PREI4_OUT/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
           test "$(jq -r '.decision' "$PREI4_OUT/remote-readback.json")" = "PASS_PRE_I4_POSTDEPLOY_REMOTE_BYTE_PARITY"
+  pre-i4-human-semantic-remediation:
+    name: PRE-I4 human semantic remediation — exact DEV candidate
+    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[pre-i4-human-semantic-dev-only]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    env:
+      SEM_SOURCE: dad7cdda3758d9e86d76513acba6f7ca7edca4ba
+      SEM_TREE: bfa4135ef9e611aef70eca2ca8d412ee588a18f4
+      SEM_PREVIOUS: f5b96e853698f9cf96e0752fd641e7e21e9e5ed0
+      SEM_OUT: .tmp/pre-i4-human-semantic
+      PROJECT: cxorbia-backend-dev
+      REGION: us-central1
+      SERVICE: cxorbia-live-hr-dev
+      HOSTING_ROOT: https://cxorbia-backend-dev.web.app
+      REQUEST: backend/config/pre-i4-human-entrypoint-dev-deploy-request.json
+    steps:
+      - name: Checkout control successor
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Prove exact source and authorized scope
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$SEM_OUT"
+          node <<'NODE'
+          const fs=require('fs'),{execFileSync}=require('child_process');
+          const r=JSON.parse(fs.readFileSync(process.env.REQUEST,'utf8'));
+          const source=process.env.SEM_SOURCE,tree=process.env.SEM_TREE;
+          if(r.requestId!=='pre-i4-human-semantic-remediation-20260924-01'||r.sourceSha!==source||r.sourceTree!==tree)throw new Error('RELEASE_COMPOSITION_FAILURE:SEMANTIC_REQUEST_SOURCE');
+          if(r.status!=='authorized_execute_once'||r.enabled!==true||r.consumed!==false||r.production!==false)throw new Error('RELEASE_COMPOSITION_FAILURE:SEMANTIC_REQUEST_STATE');
+          if(Number(r.nextRun?.runtimeBuilds)!==1||Number(r.nextRun?.runtimeDeploys)!==1||Number(r.nextRun?.hostingDeploys)!==1||Number(r.nextRun?.rulesDeploys)!==0)throw new Error('RELEASE_COMPOSITION_FAILURE:SEMANTIC_DEPLOY_SCOPE');
+          if(execFileSync('git',['rev-parse',source+'^{tree}'],{encoding:'utf8'}).trim()!==tree)throw new Error('SOURCE_FAILURE:SEMANTIC_TREE');
+          execFileSync('git',['merge-base','--is-ancestor',process.env.SEM_PREVIOUS,source]);
+          const rules=execFileSync('git',['rev-parse',source+':firestore.rules'],{encoding:'utf8'}).trim();
+          if(rules!=='3e5a786ccffb3bea3c2e90d9e259c5e8735209df')throw new Error('RELEASE_COMPOSITION_FAILURE:RULES_DRIFT_IN_SEMANTIC_LANE:'+rules);
+          const required=[
+            'app/adapters/tya-cumulative-read-model-v2.js','app/core/data.js','app/adapters/tya-c6-domain-consistency-bridge.js',
+            'app/modules/dashboard.js','app/modules/visitas.js','app/modules/postulaciones.js',
+            'backend/runtime/cxorbia-shopper-command-provider-v1.mjs','tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs',
+            'RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs'
+          ];
+          for(const p of required){
+            const changed=execFileSync('git',['diff','--name-only',process.env.SEM_PREVIOUS,source,'--',p],{encoding:'utf8'}).trim();
+            if(changed!==p)throw new Error('SOURCE_FAILURE:SEMANTIC_REQUIRED_DELTA_'+p);
+          }
+          fs.writeFileSync(process.env.SEM_OUT+'/authorization.json',JSON.stringify({decision:'PASS_PRE_I4_HUMAN_SEMANTIC_AUTHORIZATION',sourceSha:source,sourceTree:tree,runtimeBuildsMax:1,runtimeDeploysMax:1,hostingDeploysMax:1,rulesDeploysMax:0,qaCleanupOnly:true,production:false},null,2)+'\n');
+          NODE
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Prepare exact source and run semantic regression suite
+        run: |
+          set -Eeuo pipefail
+          SRC="$RUNNER_TEMP/cxorbia-pre-i4-semantic-source"
+          rm -rf "$SRC"; mkdir -p "$SRC"
+          git archive "$SEM_SOURCE" | tar -x -C "$SRC"
+          echo "SEM_SRC=$SRC" >> "$GITHUB_ENV"
+          cd "$SRC"
+          node --check app/adapters/tya-cumulative-read-model-v2.js
+          node --check app/core/data.js
+          node --check app/adapters/tya-c6-domain-consistency-bridge.js
+          node --check app/modules/dashboard.js
+          node --check app/modules/visitas.js
+          node --check app/modules/postulaciones.js
+          node --check backend/runtime/cxorbia-shopper-command-provider-v1.mjs
+          node --check tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs
+          node --test backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs backend/runtime/hr-live-service/test/cxorbia-pre-i4-*.test.mjs | tee "$GITHUB_WORKSPACE/$SEM_OUT/source-tests.log"
+          tar --sort=name --mtime='UTC 1970-01-01' --owner=0 --group=0 --numeric-owner -cf "$GITHUB_WORKSPACE/$SEM_OUT/app-artifact.tar" app
+          sha256sum "$GITHUB_WORKSPACE/$SEM_OUT/app-artifact.tar" | awk '{print $1}' > "$GITHUB_WORKSPACE/$SEM_OUT/app-artifact.sha256"
+          jq -n -S --arg source "$SEM_SOURCE" --arg tree "$SEM_TREE" --arg artifact "$(cat "$GITHUB_WORKSPACE/$SEM_OUT/app-artifact.sha256")" '{decision:"PASS_PRE_I4_SEMANTIC_SOURCE_AND_ARTIFACT",sourceSha:$source,sourceTree:$tree,artifactSha256:$artifact,production:false}' > "$GITHUB_WORKSPACE/$SEM_OUT/source-proof.json"
+
+      - name: Authenticate existing Recovery DEV
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: cxorbia-backend-dev
+
+      - name: Install exact transient verification tooling
+        run: |
+          set -Eeuo pipefail
+          npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null 2>&1
+
+      - name: Build exact runtime source once
+        run: |
+          set -Eeuo pipefail
+          SHORT="$(printf '%s' "$SEM_SOURCE" | cut -c1-12)"
+          IMAGE="gcr.io/$PROJECT/$SERVICE:prei4-semantic-$SHORT-$GITHUB_RUN_ID"
+          gcloud builds submit "$SEM_SRC" --project "$PROJECT" --config "$SEM_SRC/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE" --quiet
+          printf '%s\n' "$IMAGE" > "$SEM_OUT/runtime-image.txt"
+          echo 1 > "$SEM_OUT/runtime-build-count.txt"
+
+      - name: Deploy exact runtime image to existing DEV once
+        run: |
+          set -Eeuo pipefail
+          IMAGE="$(cat "$SEM_OUT/runtime-image.txt")"
+          gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$IMAGE" --quiet
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$SEM_OUT/runtime-service.json"
+          REV="$(jq -r '.status.latestReadyRevisionName // empty' "$SEM_OUT/runtime-service.json")"
+          test -n "$REV"
+          gcloud run revisions describe "$REV" --project "$PROJECT" --region "$REGION" --format=json > "$SEM_OUT/runtime-revision.json"
+          DIGEST="$(jq -r '.status.imageDigest // empty' "$SEM_OUT/runtime-revision.json")"
+          [[ "$DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
+          URL="$(jq -r '.status.url // empty' "$SEM_OUT/runtime-service.json")"
+          curl -fsS --retry 10 --retry-delay 3 "$URL/health" > "$SEM_OUT/runtime-health.json"
+          jq -e '.ok==true and .production==false and .hrWrites==false and .shopperReconciliationReady==true and .visitReconciliationReady==true' "$SEM_OUT/runtime-health.json" >/dev/null
+          echo 1 > "$SEM_OUT/runtime-deploy-count.txt"
+          jq -n -S --arg revision "$REV" --arg digest "$DIGEST" --arg image "$IMAGE" '{decision:"PASS_PRE_I4_SEMANTIC_RUNTIME_EXACT",revision:$revision,digest:$digest,image:$image,buildsThisRun:1,deploysThisRun:1,production:false}' > "$SEM_OUT/runtime.json"
+
+      - name: Remove only proven I3 QA reservation residue
+        run: |
+          set -Eeuo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';
+          import {getFirestore} from 'firebase-admin/firestore';
+          if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:'cxorbia-backend-dev'});
+          const db=getFirestore(),coll=db.collection('tenants').doc('tya').collection('projects').doc('cinepolis').collection('reservations');
+          const snap=await coll.get(),rows=snap.docs.map(d=>({id:d.id,...(d.data()||{})}));
+          const signal=x=>String(x.sucursal||'')==='I3 QA TEMP'||String(x.ciudad||'')==='QA'||String(x.sucursalId||x.branchId||'').startsWith('i3-qa-');
+          const exact=x=>String(x.sucursal||'')==='I3 QA TEMP'&&String(x.ciudad||'')==='QA'&&String(x.sucursalId||x.branchId||'').startsWith('i3-qa-');
+          const signaled=rows.filter(signal),ambiguous=signaled.filter(x=>!exact(x)),targets=signaled.filter(exact);
+          if(ambiguous.length)throw new Error('PERSISTENCE_FAILURE:AMBIGUOUS_QA_RESERVATION:'+JSON.stringify(ambiguous.map(x=>x.id)));
+          if(targets.length>20)throw new Error('PERSISTENCE_FAILURE:QA_RESERVATION_DELETE_BOUND_EXCEEDED:'+targets.length);
+          for(const x of targets)await coll.doc(x.id).delete();
+          const after=(await coll.get()).docs.map(d=>({id:d.id,...(d.data()||{})})).filter(signal);
+          if(after.length)throw new Error('PERSISTENCE_FAILURE:QA_RESERVATION_CLEANUP_READBACK:'+JSON.stringify(after.map(x=>x.id)));
+          fs.writeFileSync(process.env.SEM_OUT+'/qa-reservation-cleanup.json',JSON.stringify({decision:'PASS_PRE_I4_QA_RESERVATION_CLEANUP',before:targets.length,deletedIds:targets.map(x=>x.id).sort(),after:0,hrWrites:0,production:false},null,2)+'\n');
+          NODE
+
+      - name: Deploy exact frozen app to existing Hosting DEV once
+        run: |
+          set -Eeuo pipefail
+          cd "$SEM_SRC"
+          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:cxorbia-dev" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$SEM_OUT/hosting-deploy.log"
+          cd "$GITHUB_WORKSPACE"
+          echo 1 > "$SEM_OUT/hosting-deploy-count.txt"
+
+      - name: Prove served bytes for every changed human owner
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$SEM_OUT/remote"
+          for rel in index-backend-dev.html adapters/tya-cumulative-read-model-v2.js adapters/tya-c6-domain-consistency-bridge.js core/data.js modules/dashboard.js modules/visitas.js modules/postulaciones.js modules/shoppers.js modules/misvisitas.js modules/beneficios.js core/liquidacion.js modules/documentos.js modules/cert.js; do
+            remote="$SEM_OUT/remote/$(echo "$rel" | tr '/' '_')"
+            ok=0
+            for attempt in $(seq 1 30); do
+              if curl -fsSL --retry 2 --retry-delay 1 -H 'Cache-Control: no-cache' "$HOSTING_ROOT/$rel?semantic=$GITHUB_RUN_ID-$attempt-$(date +%s%N)" -o "$remote" && cmp "$SEM_SRC/app/$rel" "$remote"; then ok=1; break; fi
+              sleep 2
+            done
+            test "$ok" = 1
+          done
+          jq -n -S '{decision:"PASS_PRE_I4_SEMANTIC_HOSTING_BYTE_PARITY",hostingDeploysThisRun:1,production:false}' > "$SEM_OUT/hosting-parity.json"
+
+      - name: Force fresh HR and build independent semantic oracle
+        run: |
+          set -Eeuo pipefail
+          curl -fsSL --retry 10 --retry-delay 3 -H 'Cache-Control: no-cache' "$HOSTING_ROOT/api/tenants/tya/projects/cinepolis/hr-live?view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV&fresh=1&semantic=$GITHUB_RUN_ID" -o "$SEM_OUT/hr-fresh.json"
+          SEM_SRC="$SEM_SRC" node <<'NODE'
+          const fs=require('fs'),p=JSON.parse(fs.readFileSync(process.env.SEM_OUT+'/hr-fresh.json','utf8'));
+          const key=p?.source?.currentCalendarPeriodKey,period=(p.periods||[]).find(x=>x.key===key),visits=(p.visits||[]).filter(v=>v.periodKey===key),revision=String(p?._runtime?.revision||'');
+          if(!/^[a-f0-9]{64}$/.test(revision))throw new Error('SOURCE_FAILURE:SEMANTIC_HR_REVISION');
+          if(!period||period.total!==44||period.byCountry?.GT!==34||period.byCountry?.HN!==10)throw new Error('SOURCE_FAILURE:SEMANTIC_CURRENT_PERIOD_UNIVERSE');
+          const cfg=fs.readFileSync(process.env.SEM_SRC+'/app/adapters/tya-project-financial-model-contract-v1.js','utf8');
+          const hm=cfg.match(/tenantId:'tya',projectId:'cinepolis'[\s\S]{0,1400}?honorarium:\{GT:(\d+),HN:(\d+)\}/);
+          if(!hm)throw new Error('SOURCE_FAILURE:SEMANTIC_HONORARIUM_CONFIG');
+          const honorarium={GT:Number(hm[1]),HN:Number(hm[2])},known=x=>x!==null&&x!==undefined&&x!==''&&Number.isFinite(Number(x)),facet=(v,k)=>v?.canonicalFacets?.[k]===true;
+          const country=code=>{
+            const a=visits.filter(v=>(v.country||v.pais)===code),assigned=a.filter(v=>facet(v,'assigned')||v.assignmentState==='assigned'),realized=a.filter(v=>facet(v,'realized')||v.executionState==='realized');
+            const knownReimbursements=realized.reduce((n,v)=>n+(known(v.boleto)?Number(v.boleto):0)+(known(v.comboAmt)?Number(v.comboAmt):0),0),reimbursementPartial=realized.some(v=>!known(v.boleto)||!known(v.comboAmt));
+            return {total:a.length,availableUnassigned:a.filter(v=>facet(v,'available')&&!facet(v,'assigned')).length,assigned:assigned.length,scheduled:a.filter(v=>facet(v,'scheduled')||v.schedulingState==='scheduled').length,realized:realized.length,questionnaire:a.filter(v=>facet(v,'questionnaire')).length,submitted:a.filter(v=>facet(v,'submitted')||v.submissionState==='confirmed_hr').length,liquidationCandidate:a.filter(v=>facet(v,'liquidationCandidate')).length,liquidationConfirmed:a.filter(v=>facet(v,'liquidationConfirmed')).length,paymentConfirmed:a.filter(v=>facet(v,'paymentConfirmed')).length,outOfRange:a.filter(v=>facet(v,'outOfRange')||v.outOfRange===true).length,reviewRequired:a.filter(v=>v.reviewRequired===true).length,uniqueAssignedShoppers:new Set(assigned.map(v=>String(v.shopperId||'')).filter(Boolean)).size,finance:{realizedCount:realized.length,honorarioDevengado:realized.length*honorarium[code],knownReimbursements,reimbursementPartial,configuredHonorarium:honorarium[code]}};
+          };
+          const GT=country('GT'),HN=country('HN'),norm=x=>String(x||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim(),technical=x=>/^shopper_(?:gt|hn|sv|ni)_[a-z0-9]+$/i.test(String(x||''))||/^shp[-_][a-z0-9]+$/i.test(String(x||''));
+          const sourceShoppers=(p.shoppers||[]).map(s=>({sourceShopperId:String(s.shopperId||s.id||''),name:String(s.nombre||s.name||'')})).filter(x=>x.sourceShopperId);
+          const badSourceNames=sourceShoppers.filter(x=>!x.name||technical(x.name));
+          if(badSourceNames.length)throw new Error('SOURCE_FAILURE:HR_HUMAN_NAMES_UNAVAILABLE:'+JSON.stringify(badSourceNames.slice(0,20)));
+          const identityCases=sourceShoppers.map(x=>{const linked=(p.visits||[]).filter(v=>String(v.shopperId||'')===x.sourceShopperId);return {...x,total:linked.length,realized:linked.filter(v=>facet(v,'realized')||v.executionState==='realized').length};});
+          const reference={countries:{GT,HN},finance:{GT:GT.finance,HN:HN.finance},liquidations:{total:GT.realized+HN.realized,GT:GT.realized,HN:HN.realized,paymentsConfirmed:GT.paymentConfirmed+HN.paymentConfirmed,liquidationsConfirmed:GT.liquidationConfirmed+HN.liquidationConfirmed},identityCases,shopperPopulation:sourceShoppers.length};
+          fs.writeFileSync(process.env.SEM_OUT+'/hr-contrast.json',JSON.stringify({decision:'PASS_PRE_I4_HR_SEMANTIC_ORACLE',generatedAt:p.generatedAt,sourceRevision:revision,currentPeriodKey:key,currentPeriodId:period.id,projectId:p.projectId,GT,HN,reference,runtime:{cacheOrigin:p?._runtime?.cacheOrigin||null,sourceReadAt:p?._runtime?.sourceReadAt||null,refreshFinishedAt:p?._runtime?.refreshFinishedAt||null,shopperProviderWrites:Number(p?._runtime?.shopperReconciliation?.providerWrites||0),visitProviderWrites:Number(p?._runtime?.visitReconciliation?.providerWrites||0)},production:false,hrWrites:0},null,2)+'\n');
+          NODE
+
+      - name: Execute hardened semantic Admin Shopper desktop mobile focal
+        env:
+          PREI4_OUT: .tmp/pre-i4-human-semantic
+          CXORBIA_PREI4_ROOT: https://cxorbia-backend-dev.web.app
+          CXORBIA_PREI4_SOURCE_SHA: dad7cdda3758d9e86d76513acba6f7ca7edca4ba
+        run: |
+          set -Eeuo pipefail
+          node "$SEM_SRC/tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+          test "$(jq -r '.decision' "$SEM_OUT/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
+
+      - name: Prove Rules untouched and freeze block result
+        run: |
+          set -Eeuo pipefail
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/cxorbia-backend-dev/releases/cloud.firestore" -o "$SEM_OUT/rules-release.json"
+          RULESET="$(jq -r '.rulesetName // empty' "$SEM_OUT/rules-release.json")"; test -n "$RULESET"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/$RULESET" -o "$SEM_OUT/ruleset.json"
+          SEM_SRC="$SEM_SRC" node <<'NODE'
+          const fs=require('fs'),r=JSON.parse(fs.readFileSync(process.env.SEM_OUT+'/ruleset.json','utf8')),f=(r.source?.files||[]).find(x=>String(x.name||'').endsWith('firestore.rules'))||(r.source?.files||[])[0],local=fs.readFileSync(process.env.SEM_SRC+'/firestore.rules','utf8');
+          if(!f||String(f.content)!==local)throw new Error('RELEASE_COMPOSITION_FAILURE:SEMANTIC_RULES_CHANGED');
+          NODE
+          HR="$(jq -r '.sourceRevision' "$SEM_OUT/hr-contrast.json")"
+          ART="$(cat "$SEM_OUT/app-artifact.sha256")"
+          jq -n -S --arg source "$SEM_SOURCE" --arg tree "$SEM_TREE" --arg hr "$HR" --arg artifact "$ART" '{decision:"PASS_PRE_I4_VRM033_041_SEMANTIC_BLOCK",sourceSha:$source,sourceTree:$tree,hrRevision:$hr,artifactSha256:$artifact,runtimeBuildsThisRun:1,runtimeDeploysThisRun:1,hostingDeploysThisRun:1,rulesDeploysThisRun:0,qaResidueAfter:0,production:false}' > "$SEM_OUT/final.json"
+
+      - name: Upload human semantic remediation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-pre-i4-human-semantic-${{ github.run_id }}
+          path: ${{ env.SEM_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
+      - name: Enforce semantic block
+        run: |
+          set -Eeuo pipefail
+          test "$(jq -r '.decision' "$SEM_OUT/final.json")" = "PASS_PRE_I4_VRM033_041_SEMANTIC_BLOCK"
+          test "$(cat "$SEM_OUT/runtime-build-count.txt")" = "1"
+          test "$(cat "$SEM_OUT/runtime-deploy-count.txt")" = "1"
+          test "$(cat "$SEM_OUT/hosting-deploy-count.txt")" = "1"
+          test "$(jq -r '.after' "$SEM_OUT/qa-reservation-cleanup.json")" = "0"
+
   pre-i4-resource-rules-fix:
     name: PRE-I4 shopper resources Rules-only DEV materialization
     if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[pre-i4-rules-fix-dev-only]') }}

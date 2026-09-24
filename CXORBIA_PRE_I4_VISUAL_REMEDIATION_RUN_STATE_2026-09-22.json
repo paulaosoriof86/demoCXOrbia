@@ -1,21 +1,16 @@
 {
   "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v11",
-  "generatedAt": "2026-09-24T06:33:37Z",
+  "generatedAt": "2026-09-24T07:10:00Z",
   "iteration": "I3_PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "microblockId": "CXORBIA-PRE-I4-VISUAL-REMEDIATION-MICROBLOCK-20260922",
-  "status": "HOLD_HUMAN_VISUAL_REJECTION_ROOT_CAUSE_FROZEN",
+  "status": "HOLD_VRM033_041_FIX_READY_FOR_SEMANTIC_DEV_PROOF",
   "production": "DO_NOT_TOUCH",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "head": "9de392b08863069e5ac8a3d68ffd17ad40bcf2d4",
+  "head": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba",
   "lastFunctionalWrite": {
-    "commit": "2f924e6e2057adef9c0c6be8259d564e15c43573",
-    "parent": "e74fdd8f9fd8cb32facfd693ece36d434084627c",
-    "files": [
-      "firestore.rules",
-      "backend/runtime/hr-live-service/test/cxorbia-pre-i4-durability-resources.test.mjs"
-    ],
-    "purpose": "VRM_029_FIRESTORE_RESOURCE_QUERY_RULES_COMPATIBILITY",
-    "firestoreWrites": 0,
+    "commit": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba",
+    "parent": "ac43279636674542a0ed50ba454f3a8291dc4647",
+    "purpose": "VRM_033_034_035_038_040_041_HUMAN_SEMANTIC_REMEDIATION",
     "productionDeploys": 0
   },
   "automaticPushWorkflowObservation": {
@@ -535,7 +530,7 @@
       "note": "Firebase CLI :test returned 403 for the DEV principal, but the same authorized principal created the exact Ruleset and updated cloud.firestore through the official Rules API. Run332 succeeded with one exact Rules deploy; no manual IAM change was required."
     },
     "VRM-033": {
-      "state": "P0_PROVEN_ROOT_CAUSE",
+      "state": "FIXED_NOT_PROVEN",
       "classification": "MAPPING_FAILURE",
       "title": "Admin shopper identities regress to technical IDs despite live HR display names",
       "evidence": [
@@ -552,7 +547,7 @@
       "expected": "Authorized Admin sees resolved operational display names and exact history/KPIs. Unresolved technical identities stay in review and never render as human shopper rows. No fuzzy matching."
     },
     "VRM-034": {
-      "state": "P0_PROVEN_ROOT_CAUSE",
+      "state": "FIXED_NOT_PROVEN",
       "classification": "PERSISTENCE_FAILURE",
       "title": "Durable DEV QA reservation residue is visible in human lane",
       "evidence": [
@@ -569,7 +564,7 @@
       "expected": "Zero QA/test reservations in the human candidate; fixture writes use deterministic isolated IDs and exact cleanup/readback, with Admin reservas asserted before PASS."
     },
     "VRM-035": {
-      "state": "P0_PROVEN_ROOT_CAUSE",
+      "state": "FIXED_NOT_PROVEN",
       "classification": "RELEASE_COMPOSITION_FAILURE",
       "title": "Terminal browser proof was structurally green but semantically under-specified",
       "evidence": [
@@ -623,7 +618,7 @@
       "expected": "Paula and representative GT/HN shoppers render exact identity, real historical visits/KPIs and benefit obligations from the same canonical identity; no technical ID fallback."
     },
     "VRM-038": {
-      "state": "P0_PROVEN_ROOT_CAUSE",
+      "state": "FIXED_NOT_PROVEN",
       "classification": "FUNCTIONAL_DEFECT",
       "title": "Human Admin surfaces leak technical vocabulary and incomplete operational states",
       "evidence": [
@@ -658,21 +653,21 @@
       "expected": "Preserve truthful fail-closed behavior, but do not call the module complete until the last approved resource/financial authority is composed or explicitly adjudicated as intentionally unavailable."
     },
     "VRM-040": {
-      "state": "P0_PROVEN_ROOT_CAUSE",
+      "state": "FIXED_NOT_PROVEN",
       "classification": "MAPPING_FAILURE",
       "title": "Out-of-range visible count does not match fresh HR canonical facet",
       "evidenceRef": "Run333 attempt2 / artifact 10793657700 + human screenshots",
       "note": "Fresh HR has GT=3 + HN=1 = 4 out-of-range while the human Visitas/Dashboard capture exposes 1. Existing focal did not assert outOfRange."
     },
     "VRM-041": {
-      "state": "P0_PROVEN_ROOT_CAUSE",
+      "state": "FIXED_NOT_PROVEN",
       "classification": "VISUAL_DEFECT",
       "title": "Postulation human card exposes undefined approval actor",
       "evidenceRef": "Human screenshots / app/modules/postulaciones.js",
       "note": "Approved cards render `Aprobada por ${x.aprobadaPor}` without safe fallback, producing visible 'undefined'."
     }
   },
-  "nextExactAction": "Fix VRM-033/034/035/040/041 first: human-name precedence and technical-ID quarantine; exact QA reservation cleanup; semantic browser assertions including Admin reservas, exact names and out-of-range; safe postulation approval actor. Then re-prove Shopper profile/history/benefits, certifications/resources/finance. No I4.",
+  "nextExactAction": "Build/deploy exact source once to existing DEV runtime and Hosting; delete only proven I3 QA reservation residue; force fresh HR; execute hardened semantic Admin/Shopper desktop/mobile gate. If PASS, continue in same microblock to VRM-036/037/039 before any new human visualization.",
   "functionalLineage": [
     {
       "commit": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
