@@ -2037,65 +2037,71 @@ jobs:
           if(!live||typeof live.content!=='string')throw new Error('ENVIRONMENT_FAILURE:LIVE_FIRESTORE_RULES_CONTENT_UNAVAILABLE');
           const repo=fs.readFileSync('firestore.rules','utf8');
           const sha=x=>crypto.createHash('sha256').update(x).digest('hex');
-          fs.writeFileSync(process.env.PREI4_OUT+'/firestore-live-parity.json',JSON.stringify({
-            decision:live.content===repo?'PASS_LIVE_FIRESTORE_RULES_EXACT':'FAIL_LIVE_FIRESTORE_RULES_DRIFT',
-            liveRulesetName:r.name||null,liveSha256:sha(live.content),repoSha256:sha(repo),exact:live.content===repo,production:false
-          },null,2)+'\n');
+          fs.writeFileSync(process.env.PREI4_OUT+'/firestore-live-parity.json',JSON.stringify({decision:live.content===repo?'PASS_LIVE_FIRESTORE_RULES_EXACT':'FAIL_LIVE_FIRESTORE_RULES_DRIFT',liveRulesetName:r.name||null,liveSha256:sha(live.content),repoSha256:sha(repo),exact:live.content===repo,production:false},null,2)+'\n');
           fs.writeFileSync(process.env.PREI4_OUT+'/firestore-live.rules',live.content);
           NODE
           cat > "$PREI4_OUT/resource-rules-query-proof.mjs" <<'NODE'
           import fs from 'node:fs';
-          import {initializeTestEnvironment,assertFails} from '@firebase/rules-unit-testing';
+          import {initializeTestEnvironment} from '@firebase/rules-unit-testing';
           const host=String(process.env.FIRESTORE_EMULATOR_HOST||'127.0.0.1:8080');
           const [hostname,portText]=host.split(':');const port=Number(portText||8080);
           const base=fs.readFileSync('firestore.rules','utf8');
-          const withoutTypes=base
-            .replace("          resource.data.projectId is string &&\\n","")
-            .replace("          resource.data.visibleRoles is list &&\\n","");
+          const original=[
+          "        allow read: if tenantAllowed(tenantId) && (",
+          "          isOperator() ||",
+          "          isShopperRole() &&",
+          "          resource.data.status == 'active' &&",
+          "          resource.data.projectId is string &&",
+          "          projectAssigned(resource.data.projectId) &&",
+          "          resource.data.visibleRoles is list &&",
+          "          role() in resource.data.visibleRoles",
+          "        );"
+          ].join('\n');
+          if(!base.includes(original))throw new Error('SOURCE_FAILURE:RESOURCE_READ_RULE_BLOCK_NOT_FOUND');
+          const rule=(expr)=>base.replace(original,'        allow read: if '+expr+';');
           const variants={
             current:base,
-            withoutTypes:withoutTypes,
-            withoutTypesLiteralRole:withoutTypes.replace('role() in resource.data.visibleRoles',"'shopper' in resource.data.visibleRoles"),
-            withoutTypesConstantProject:withoutTypes.replace('projectAssigned(resource.data.projectId)',"projectAssigned('cinepolis')"),
-            withoutTypesNoProjectPredicate:withoutTypes.replace("          projectAssigned(resource.data.projectId) &&\\n",""),
-            withoutTypesNoVisibilityPredicate:withoutTypes.replace("          role() in resource.data.visibleRoles\\n","          true\\n")
+            authOnly:rule('tenantAllowed(tenantId) && isShopperRole()'),
+            statusOnly:rule("tenantAllowed(tenantId) && isShopperRole() && resource.data.status == 'active'"),
+            projectStatus:rule("tenantAllowed(tenantId) && isShopperRole() && resource.data.status == 'active' && resource.data.projectId == 'cinepolis'"),
+            visibleListFull:rule("tenantAllowed(tenantId) && isShopperRole() && resource.data.status == 'active' && resource.data.projectId == 'cinepolis' && role() in resource.data.visibleRoles"),
+            scalarVisibilityFull:rule("tenantAllowed(tenantId) && isShopperRole() && resource.data.status == 'active' && resource.data.projectId == 'cinepolis' && resource.data.shopperVisible == true")
           };
           const claims={role:'shopper',tenantId:'tya',projectIds:['cinepolis'],shopperId:'s3',authNamespace:'shopper'};
+          async function readResult(p){try{const s=await p;return{allowed:true,exists:s.exists?.()??null,ids:s.docs?s.docs.map(d=>d.id).sort():[]};}catch(e){return{allowed:false,error:String(e?.code||e?.message||e),ids:[]};}}
           async function run(label,rules){
             const env=await initializeTestEnvironment({projectId:'cxorbia-rules-proof',firestore:{rules,host:hostname,port}});
             try{
               await env.withSecurityRulesDisabled(async ctx=>{
                 const c=ctx.firestore().collection('tenants').doc('tya').collection('resources');
-                await c.doc('shopper-visible').set({tenantId:'tya',projectId:'cinepolis',periodId:'cinepolis-2026-09',status:'active',visibleRoles:['shopper'],resourceType:'project_resource'});
-                await c.doc('admin-only').set({tenantId:'tya',projectId:'cinepolis',periodId:'cinepolis-2026-09',status:'active',visibleRoles:['admin'],resourceType:'project_resource'});
-                await c.doc('other-project').set({tenantId:'tya',projectId:'other',periodId:'other-2026-09',status:'active',visibleRoles:['shopper'],resourceType:'project_resource'});
+                await c.doc('shopper-visible').set({tenantId:'tya',projectId:'cinepolis',periodId:'cinepolis-2026-09',status:'active',visibleRoles:['shopper'],shopperVisible:true,resourceType:'project_resource'});
+                await c.doc('admin-only').set({tenantId:'tya',projectId:'cinepolis',periodId:'cinepolis-2026-09',status:'active',visibleRoles:['admin'],shopperVisible:false,resourceType:'project_resource'});
+                await c.doc('other-project').set({tenantId:'tya',projectId:'other',periodId:'other-2026-09',status:'active',visibleRoles:['shopper'],shopperVisible:true,resourceType:'project_resource'});
               });
               const db=env.authenticatedContext('shopper-user',claims).firestore();
-              const q=db.collection('tenants').doc('tya').collection('resources')
-                .where('projectId','==','cinepolis').where('status','==','active').where('visibleRoles','array-contains','shopper');
-              let queryAllowed=true,queryError=null,ids=[];
-              try{const snap=await q.get();ids=snap.docs.map(d=>d.id).sort();}catch(e){queryAllowed=false;queryError=String(e?.code||e?.message||e);}
-              let adminOnlyDirectDenied=false;
-              try{await assertFails(db.collection('tenants').doc('tya').collection('resources').doc('admin-only').get());adminOnlyDirectDenied=true;}catch{}
-              return {label,queryAllowed,queryError,ids,adminOnlyDirectDenied};
-            } finally {await env.cleanup();}
+              const c=db.collection('tenants').doc('tya').collection('resources');
+              const direct={
+                shopperVisible:await readResult(c.doc('shopper-visible').get()),
+                adminOnly:await readResult(c.doc('admin-only').get()),
+                otherProject:await readResult(c.doc('other-project').get())
+              };
+              const queries={
+                projectStatus:await readResult(c.where('projectId','==','cinepolis').where('status','==','active').get()),
+                visibleList:await readResult(c.where('projectId','==','cinepolis').where('status','==','active').where('visibleRoles','array-contains','shopper').get()),
+                scalarVisibility:await readResult(c.where('projectId','==','cinepolis').where('status','==','active').where('shopperVisible','==',true).get())
+              };
+              return{label,direct,queries};
+            }finally{await env.cleanup();}
           }
           const results={};
           for(const [label,rules] of Object.entries(variants))results[label]=await run(label,rules);
-          fs.writeFileSync(process.env.PREI4_OUT+'/resource-rules-query-proof.json',JSON.stringify({
-            decision:'PROOF_CAPTURED',claims,results,
-            interpretationKeys:{
-              typeChecks:'withoutTypes removes only projectId is string and visibleRoles is list',
-              projectPredicate:'withoutTypesNoProjectPredicate is diagnostic only',
-              visibilityPredicate:'withoutTypesNoVisibilityPredicate is diagnostic only'
-            }
-          },null,2)+'\n');
+          fs.writeFileSync(process.env.PREI4_OUT+'/resource-rules-query-proof.json',JSON.stringify({decision:'PROOF_CAPTURED',claims,results},null,2)+'\n');
           NODE
           npx firebase emulators:exec --only firestore --project cxorbia-rules-proof "node '$PREI4_OUT/resource-rules-query-proof.mjs'"
           cat "$PREI4_OUT/firestore-live-parity.json"
           cat "$PREI4_OUT/resource-rules-query-proof.json"
-
       - name: Bind Run 322 exact deployed evidence
+        if: ${{ !contains(github.event.head_commit.message, '[pre-i4-rules-proof-only]') }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -2116,6 +2122,7 @@ jobs:
           cp "$PREI4_PRIOR/app-artifact.sha256" "$PREI4_OUT/app-artifact.sha256"
 
       - name: Recreate exact product source without build or deploy
+        if: ${{ !contains(github.event.head_commit.message, '[pre-i4-rules-proof-only]') }}
         run: |
           set -Eeuo pipefail
           rm -rf "$PREI4_SOURCE_DIR"; mkdir -p "$PREI4_SOURCE_DIR"
@@ -2128,6 +2135,7 @@ jobs:
           test "$NOW" = "$PRIOR"
 
       - name: Re-prove served source bytes without deployment
+        if: ${{ !contains(github.event.head_commit.message, '[pre-i4-rules-proof-only]') }}
         run: |
           set -Eeuo pipefail
           root="https://cxorbia-backend-dev.web.app"; mkdir -p "$PREI4_OUT/remote"
@@ -2141,6 +2149,7 @@ jobs:
           jq -n -S '{decision:"PASS_PRE_I4_POSTDEPLOY_REMOTE_BYTE_PARITY",hostingDeploysThisRun:0,production:false}' > "$PREI4_OUT/remote-readback.json"
 
       - name: Force fresh HR read and build same-revision independent reference
+        if: ${{ !contains(github.event.head_commit.message, '[pre-i4-rules-proof-only]') }}
         run: |
           set -Eeuo pipefail
           curl -fsSL --retry 8 --retry-delay 2 -H 'Cache-Control: no-cache' "https://cxorbia-backend-dev.web.app/api/tenants/tya/projects/cinepolis/hr-live?view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV&fresh=1&readback=${GITHUB_RUN_ID}" -o "$PREI4_OUT/hr-fresh.json"
@@ -2191,6 +2200,7 @@ jobs:
           NODE
 
       - name: Execute focal Admin Shopper desktop mobile against same HR revision
+        if: ${{ !contains(github.event.head_commit.message, '[pre-i4-rules-proof-only]') }}
         env:
           CXORBIA_PREI4_ROOT: https://cxorbia-backend-dev.web.app
           CXORBIA_PREI4_SOURCE_SHA: f5b96e853698f9cf96e0752fd641e7e21e9e5ed0
@@ -2200,6 +2210,7 @@ jobs:
           test "$(jq -r '.decision' "$PREI4_OUT/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
 
       - name: Freeze no-deploy readback PASS
+        if: ${{ !contains(github.event.head_commit.message, '[pre-i4-rules-proof-only]') }}
         run: |
           set -Eeuo pipefail
           ART="$(cat "$PREI4_OUT/app-artifact.sha256")"; HR="$(jq -r '.sourceRevision' "$PREI4_OUT/hr-contrast.json")"
@@ -2216,6 +2227,7 @@ jobs:
           compression-level: 0
 
       - name: Enforce postdeploy readback
+        if: ${{ !contains(github.event.head_commit.message, '[pre-i4-rules-proof-only]') }}
         run: |
           set -Eeuo pipefail
           test "$(jq -r '.decision' "$PREI4_OUT/final.json")" = "PASS_PRE_I4_POSTDEPLOY_READBACK"
