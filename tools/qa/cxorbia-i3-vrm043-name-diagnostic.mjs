@@ -12,6 +12,7 @@ const HOST=String(process.env.HOSTING_URL||'https://cxorbia-backend-dev.web.app'
 const TENANT=String(process.env.TENANT_ID||'tya');
 const PROJ=String(process.env.PROJECT_ID||'cinepolis');
 const OUT=String(process.env.VRM043_OUT||'.tmp/vrm043-name-diagnostic');
+const EXPECTED_REV=String(process.env.VRM043_EXPECTED_HR_REVISION||'').trim();
 const PRE='YES_PAULA_20260628_PREVIEW_DEV',PROT='YES_PAULA_20260730_PROTECTED_DEV',FULL='YES_PAULA_20260731_FULL_PROFILE_DEV';
 const norm=v=>String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
 fs.mkdirSync(OUT,{recursive:true});
@@ -29,6 +30,7 @@ const revision=String(hp?._runtime?.revision||hr?._runtime?.revision||hr?.source
 const hrShoppers=Array.isArray(hr?.shoppers)?hr.shoppers:[];
 const hrVisits=Array.isArray(hr?.visits)?hr.visits:[];
 if(!/^[a-f0-9]{64}$/.test(revision)||!hrShoppers.length)throw new Error('SOURCE_FAILURE:VRM043_HR_INVALID');
+if(EXPECTED_REV&&revision!==EXPECTED_REV)throw new Error('RELEASE_COMPOSITION_FAILURE:VRM043_EXPECTED_HR_REVISION_MISMATCH:'+revision+':'+EXPECTED_REV);
 
 const browser=await chromium.launch({headless:true});
 try{
