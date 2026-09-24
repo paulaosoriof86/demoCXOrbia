@@ -4,16 +4,16 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "d8aad982ae4b47e66bf949d906b6c7ede8866f84",
+  "productSourceSha": "8913a30e3bd1bd3e851d9736ff87e1bae51c30ff",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
-  "predecessorProductSourceSha": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V2_2026-09-24.json",
-  "findingsLedgerExpectedGitBlob": "4fe256267c1505e2845768937b958d34c1f2a20b",
+  "predecessorProductSourceSha": "d8aad982ae4b47e66bf949d906b6c7ede8866f84",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V3_2026-09-24.json",
+  "findingsLedgerExpectedGitBlob": "649ece4f6d4415895ad210cdca7d4ab5a120ea91",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-037 + VRM-042",
+  "activeBlocker": "VRM-036 + VRM-039; VRM-037/042 source proof in progress",
   "nextFindingId": "VRM-043",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "VRM037_VRM042_EXACT_MAPPED_VISIT_OWNERSHIP_DIAGNOSTIC",
+  "exactNextAction": "PROVE_VRM037_042_SOURCE_NO_DEPLOY_THEN_CLOSE_VRM036",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -38,5 +38,16 @@
     "expectedControlCase": "shopper_gt_a55e5b3e9b",
     "productWrites": 0,
     "production": false
+  },
+  "lastSourceFix": {
+    "findingIds": [
+      "VRM-037",
+      "VRM-042"
+    ],
+    "sourceSha": "8913a30e3bd1bd3e851d9736ff87e1bae51c30ff",
+    "predecessorSha": "d8aad982ae4b47e66bf949d906b6c7ede8866f84",
+    "productFiles": 5,
+    "deploys": 0,
+    "contract": "pending assignment remains operational but is excluded from confirmed history/KPI"
   }
 }
