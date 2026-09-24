@@ -53,7 +53,7 @@ test('PRE-I4 canonical DEV entrypoint loads certification evidence and durable r
 test('PRE-I4 rules allow only targeted active project resources to shopper while writes remain operator-only',()=>{
   const src=read('firestore.rules');
   assert.match(src,/match \/resources\/\{resourceId\}/);
-  assert.match(src,/projectAssigned\(resource\.data\.projectId\)/);
+  assert.match(src,/resource\.data\.projectId in request\.auth\.token\.projectIds/);
   assert.match(src,/role\(\) in resource\.data\.visibleRoles/);
   assert.match(src,/allow create, update, delete: if tenantAllowed\(tenantId\) && isOperator\(\)/);
 });
@@ -68,7 +68,7 @@ test('PRE-I4 resource writes use async ACK handlers and content-derived idempote
 
 test('PRE-I4 VRM-029 resource list rule is query-compatible without widening tenant project or role scope',()=>{
   const src=read('firestore.rules');
-  const m=src.match(/match \/resources\/\{resourceId\}\/ \{([\s\S]*?)allow create, update, delete:/);
+  const m=src.match(/match \/resources\/\{resourceId\} \{([\s\S]*?)allow create, update, delete:/);
   assert.ok(m,'resources rule block missing');
   const block=m[1];
   assert.match(block,/tenantAllowed\(tenantId\)/);
