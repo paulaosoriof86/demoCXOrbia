@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN_SINGLE_C3_TERMINAL_CERTIFICATION",
+  "exactNextAction": "RETRY_SAME_C3_TERMINAL_AFTER_CONTROL_TEST_ALIGNMENT",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -79,6 +79,19 @@
     "requireFullHumanAcceptance": true,
     "requireTerminalModuleTruth20of20": true,
     "requirePendingOwnerByteParity": true,
+    "production": false,
+    "attempt": 2
+  },
+  "lastTerminalAttempt": {
+    "runId": 36052744761,
+    "runNumber": 373,
+    "status": "FAIL_PRE_BUILD",
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "cause": "stale Gate7 control test expected unmatched platform-only profiles in operational population; VRM-033 requires review-only until exact HR crosswalk",
+    "controlFixCommit": "4d5af6ffd49188f4f2d1269328052300f6f5b39b",
+    "buildCount": 0,
+    "runtimeDeployCount": 0,
+    "hostingDeployCount": 0,
     "production": false
   }
 }
