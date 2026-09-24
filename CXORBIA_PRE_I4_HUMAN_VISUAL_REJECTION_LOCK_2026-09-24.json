@@ -139,7 +139,30 @@
         "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json"
       ],
       "expected": "Preserve truthful fail-closed behavior, but do not call the module complete until the last approved resource/financial authority is composed or explicitly adjudicated as intentionally unavailable."
+    },
+    "VRM-040": {
+      "state": "P0_PROVEN_ROOT_CAUSE",
+      "classification": "MAPPING_FAILURE",
+      "title": "Out-of-range visible count does not match fresh HR canonical facet",
+      "evidenceRef": "Run333 attempt2 / artifact 10793657700 + human screenshots",
+      "note": "Fresh HR has GT=3 + HN=1 = 4 out-of-range while the human Visitas/Dashboard capture exposes 1. Existing focal did not assert outOfRange."
+    },
+    "VRM-041": {
+      "state": "P0_PROVEN_ROOT_CAUSE",
+      "classification": "VISUAL_DEFECT",
+      "title": "Postulation human card exposes undefined approval actor",
+      "evidenceRef": "Human screenshots / app/modules/postulaciones.js",
+      "note": "Approved cards render `Aprobada por ${x.aprobadaPor}` without safe fallback, producing visible 'undefined'."
     }
   },
-  "nextExactAction": "Fix VRM-033/034/035 first in same PRE-I4 microblock, then focal module owners and semantic re-certification. No I4."
+  "nextExactAction": "Fix VRM-033/034/035/040/041 first: human-name precedence and technical-ID quarantine; exact QA reservation cleanup; semantic browser assertions including Admin reservas, exact names and out-of-range; safe postulation approval actor. Then re-prove Shopper profile/history/benefits, certifications/resources/finance. No I4.",
+  "freshHrEvidence": {
+    "file": "CXORBIA_PRE_I4_HUMAN_VISUAL_FRESH_HR_EVIDENCE_2026-09-24.json",
+    "runId": 35953230892,
+    "attempt": 2,
+    "artifactId": 10793657700,
+    "artifactDigest": "sha256:6a76bfcf8e0cf57ce3e56b023870fdd9d71a9d5568712d2fdef940814f6aa681",
+    "sourceRevision": "dbfdabc06b97452bc5bc8ae6aa3bd719ec56040effc54e0dc74b1bca2cea01f7",
+    "decision": "HOLD_CONFIRMED_BY_FRESH_HR"
+  }
 }

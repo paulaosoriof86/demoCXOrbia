@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v11",
-  "generatedAt": "2026-09-24T06:07:00-06:00",
+  "generatedAt": "2026-09-24T06:33:37Z",
   "iteration": "I3_PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "microblockId": "CXORBIA-PRE-I4-VISUAL-REMEDIATION-MICROBLOCK-20260922",
   "status": "HOLD_HUMAN_VISUAL_REJECTION_ROOT_CAUSE_FROZEN",
@@ -656,9 +656,23 @@
         "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json"
       ],
       "expected": "Preserve truthful fail-closed behavior, but do not call the module complete until the last approved resource/financial authority is composed or explicitly adjudicated as intentionally unavailable."
+    },
+    "VRM-040": {
+      "state": "P0_PROVEN_ROOT_CAUSE",
+      "classification": "MAPPING_FAILURE",
+      "title": "Out-of-range visible count does not match fresh HR canonical facet",
+      "evidenceRef": "Run333 attempt2 / artifact 10793657700 + human screenshots",
+      "note": "Fresh HR has GT=3 + HN=1 = 4 out-of-range while the human Visitas/Dashboard capture exposes 1. Existing focal did not assert outOfRange."
+    },
+    "VRM-041": {
+      "state": "P0_PROVEN_ROOT_CAUSE",
+      "classification": "VISUAL_DEFECT",
+      "title": "Postulation human card exposes undefined approval actor",
+      "evidenceRef": "Human screenshots / app/modules/postulaciones.js",
+      "note": "Approved cards render `Aprobada por ${x.aprobadaPor}` without safe fallback, producing visible 'undefined'."
     }
   },
-  "nextExactAction": "Fix VRM-033/034/035 first on exact owners without reimport/rebuild/general overlay; then re-run focal semantics for shopper/postulations/resources/certification/finance and MODULE_TRUTH. Production remains blocked.",
+  "nextExactAction": "Fix VRM-033/034/035/040/041 first: human-name precedence and technical-ID quarantine; exact QA reservation cleanup; semantic browser assertions including Admin reservas, exact names and out-of-range; safe postulation approval actor. Then re-prove Shopper profile/history/benefits, certifications/resources/finance. No I4.",
   "functionalLineage": [
     {
       "commit": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
@@ -834,7 +848,9 @@
       "VRM-036",
       "VRM-037",
       "VRM-038",
-      "VRM-039"
+      "VRM-039",
+      "VRM-040",
+      "VRM-041"
     ],
     "terminal": false
   },
@@ -878,5 +894,13 @@
   "supersedesPromotionAuthority": {
     "file": "CXORBIA_PRE_I4_TECHNICAL_ACCEPTANCE_LOCK_2026-09-24.json",
     "reason": "Human visual evidence exposed semantic regressions and test-oracle gaps not covered by Runs333/334."
+  },
+  "freshHrRejectionEvidence": {
+    "file": "CXORBIA_PRE_I4_HUMAN_VISUAL_FRESH_HR_EVIDENCE_2026-09-24.json",
+    "runId": 35953230892,
+    "attempt": 2,
+    "artifactId": 10793657700,
+    "sourceRevision": "dbfdabc06b97452bc5bc8ae6aa3bd719ec56040effc54e0dc74b1bca2cea01f7",
+    "decision": "HOLD_CONFIRMED_BY_FRESH_HR"
   }
 }
