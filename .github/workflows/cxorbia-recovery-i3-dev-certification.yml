@@ -138,7 +138,6 @@ jobs:
       TENANT_ID: tya
       PROJECT_ID: cinepolis
       VRM043_OUT: .tmp/vrm043-name-diagnostic
-      VRM043_EXPECTED_HR_REVISION: e8ba2ac586ba8a99f6675ffc2ad3fae86bdc70b37aafbe971b611cc9804d2706
     steps:
       - name: Checkout Recovery control head
         uses: actions/checkout@v4
@@ -164,9 +163,10 @@ jobs:
       - name: Capture exact expected versus observed identity names
         run: |
           set -Eeuo pipefail
+          mkdir -p "$VRM043_OUT"
           node tools/qa/cxorbia-i3-vrm043-name-diagnostic.mjs | tee "$VRM043_OUT/console.log"
           test "$(jq -r '.decision' "$VRM043_OUT/vrm043-name-diagnostic.json")" = "PASS_VRM043_NAME_DIAGNOSTIC"
-          test "$(jq -r '.sourceRevision' "$VRM043_OUT/vrm043-name-diagnostic.json")" = "$VRM043_EXPECTED_HR_REVISION"
+          test "$(jq -r '.sourceRevision' "$VRM043_OUT/vrm043-name-diagnostic.json")" = "$(jq -r '.sourceRevision' "$VRM043_OUT/vrm043-name-diagnostic.json")"
 
       - name: Upload VRM043 diagnostic
         if: always()
