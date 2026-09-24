@@ -126,6 +126,62 @@ jobs:
           retention-days: 30
           compression-level: 0
 
+  vrm043-name-diagnostic:
+    name: VRM-043 exact HR/Admin identity-name diagnostic — read only
+    needs: canonical-candidate-authority
+    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-043-name-diagnostic]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      PROJECT: cxorbia-backend-dev
+      HOSTING_URL: https://cxorbia-backend-dev.web.app
+      TENANT_ID: tya
+      PROJECT_ID: cinepolis
+      VRM043_OUT: .tmp/vrm043-name-diagnostic
+      VRM043_EXPECTED_HR_REVISION: e8ba2ac586ba8a99f6675ffc2ad3fae86bdc70b37aafbe971b611cc9804d2706
+    steps:
+      - name: Checkout Recovery control head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Authenticate DEV read only
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+
+      - name: Install transient diagnostic dependencies
+        run: |
+          set -Eeuo pipefail
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+
+      - name: Capture exact expected versus observed identity names
+        run: |
+          set -Eeuo pipefail
+          node tools/qa/cxorbia-i3-vrm043-name-diagnostic.mjs | tee "$VRM043_OUT/console.log"
+          test "$(jq -r '.decision' "$VRM043_OUT/vrm043-name-diagnostic.json")" = "PASS_VRM043_NAME_DIAGNOSTIC"
+          test "$(jq -r '.sourceRevision' "$VRM043_OUT/vrm043-name-diagnostic.json")" = "$VRM043_EXPECTED_HR_REVISION"
+
+      - name: Upload VRM043 diagnostic
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-vrm043-name-diagnostic-${{ github.run_id }}
+          path: ${{ env.VRM043_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
+      - name: Cleanup transient dependencies
+        if: always()
+        run: rm -rf node_modules
+
   certify:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'READY_FOR_TERMINAL_CERTIFICATION' }}
