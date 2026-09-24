@@ -224,9 +224,7 @@ service cloud.firestore {
           isOperator() ||
           isShopperRole() &&
           resource.data.status == 'active' &&
-          resource.data.projectId is string &&
-          projectAssigned(resource.data.projectId) &&
-          resource.data.visibleRoles is list &&
+          resource.data.projectId in request.auth.token.projectIds &&
           role() in resource.data.visibleRoles
         );
         allow create, update, delete: if tenantAllowed(tenantId) && isOperator();

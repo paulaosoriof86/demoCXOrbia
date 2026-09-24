@@ -65,3 +65,24 @@ test('PRE-I4 resource writes use async ACK handlers and content-derived idempote
   assert.doesNotMatch(cert,/certbank\.save:'\+id\+'\+'\+Date\.now/);
   assert.match(core,/hash\(\[scope\.tenantId,scope\.projectId,scope\.periodId,clean\(item\)\]\)/);
 });
+
+test('PRE-I4 VRM-029 resource list rule is query-compatible without widening tenant project or role scope',()=>{
+  const src=read('firestore.rules');
+  const m=src.match(/match \/resources\/\{resourceId\}\/ \{([\s\S]*?)allow create, update, delete:/);
+  assert.ok(m,'resources rule block missing');
+  const block=m[1];
+  assert.match(block,/tenantAllowed\(tenantId\)/);
+  assert.match(block,/isShopperRole\(\)/);
+  assert.match(block,/resource\.data\.status == 'active'/);
+  assert.match(block,/resource\.data\.projectId in request\.auth\.token\.projectIds/);
+  assert.match(block,/role\(\) in resource\.data\.visibleRoles/);
+  assert.doesNotMatch(block,/resource\.data\.projectId is string/);
+  assert.doesNotMatch(block,/projectAssigned\(resource\.data\.projectId\)/);
+  assert.doesNotMatch(block,/resource\.data\.visibleRoles is list/);
+});
+
+test('PRE-I4 VRM-029 browser resource query proves the same project status and role constraints required by Rules',()=>{
+  const core=read('app/core/backend-resources.js');
+  assert.match(core,/where\('projectId','==',scope\.projectId\)\.where\('status','==','active'\)/);
+  assert.match(core,/where\('visibleRoles','array-contains',role\(\)\)/);
+});
