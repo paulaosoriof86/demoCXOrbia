@@ -2976,6 +2976,120 @@ jobs:
           compression-level: 0
 
 
+  pre-i4-vrm037-042-source-proof:
+    name: PRE-I4 VRM-037/042 canonical source proof — no deploy
+    needs: canonical-candidate-authority
+    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[pre-i4-vrm037-042-source-proof]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PROOF_OUT: .tmp/pre-i4-vrm037-042-source-proof
+      CANONICAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+    steps:
+      - name: Checkout control successor
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Prove exact monotonic functional diff
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$PROOF_OUT"
+          PREDECESSOR="$(jq -r '.predecessorProductSourceSha' "$CANDIDATE_DESCRIPTOR")"
+          test -n "$PREDECESSOR"
+          test "$(git rev-parse "$CANONICAL_SOURCE")" = "$CANONICAL_SOURCE"
+          git merge-base --is-ancestor "$PREDECESSOR" "$CANONICAL_SOURCE"
+          ACTUAL="$(git diff --name-only "$PREDECESSOR" "$CANONICAL_SOURCE" -- app backend/runtime/hr-live-service/test | sort)"
+          EXPECTED="$(printf '%s\n'             'app/adapters/tya-c6-domain-consistency-bridge.js'             'app/adapters/tya-canonical-shopper-portal-v2.js'             'app/adapters/tya-cumulative-read-model-v2.js'             'app/modules/shoppers.js'             'backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-semantic-regression.test.mjs' | sort)"
+          test "$ACTUAL" = "$EXPECTED"
+          jq -n -S --arg source "$CANONICAL_SOURCE" --arg predecessor "$PREDECESSOR"             '{decision:"PASS_PRE_I4_VRM037_042_SOURCE_SCOPE",sourceSha:$source,predecessorSha:$predecessor,productFiles:5,runtimeBuilds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0,dataWrites:0,production:false}' > "$PROOF_OUT/authorization.json"
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Run exact source regressions
+        run: |
+          set -Eeuo pipefail
+          node --check app/adapters/tya-cumulative-read-model-v2.js
+          node --check app/adapters/tya-c6-domain-consistency-bridge.js
+          node --check app/adapters/tya-canonical-shopper-portal-v2.js
+          node --check app/modules/shoppers.js
+          node --test backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-semantic-regression.test.mjs | tee "$PROOF_OUT/regression.log"
+
+      - name: Authenticate DEV read only
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+
+      - name: Install transient read-only dependency
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
+
+      - name: Bind Run349 exact HR evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$PROOF_OUT/prior"
+          gh run download 36037538874 --repo "$GITHUB_REPOSITORY" --name "cxorbia-pre-i4-vrm037-diagnostic-36037538874" --dir "$PROOF_OUT/prior"
+          test "$(jq -r '.hrRevision' "$PROOF_OUT/prior/identity-history-diagnostic.json")" = "834f3c9f36d0f8144507bea234efaa4c7d5ddf461f023d61239525b21de2a8d9"
+          test "$(jq -r '.cases[] | select(.sourceShopperId=="shopper_gt_0b19085086") | .composedVisitCount' "$PROOF_OUT/prior/identity-history-diagnostic.json")" = "6"
+
+      - name: Prove fixed source against same live durable inputs
+        run: |
+          set -Eeuo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import vm from 'node:vm';
+          import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';
+          import {getFirestore} from 'firebase-admin/firestore';
+          const OUT=process.env.PROOF_OUT;
+          const oldDiag=JSON.parse(fs.readFileSync(OUT+'/prior/identity-history-diagnostic.json','utf8'));
+          const hrRaw=JSON.parse(fs.readFileSync(OUT+'/prior/prior/hr-fresh.json','utf8'));
+          const contrast=JSON.parse(fs.readFileSync(OUT+'/prior/prior/hr-contrast.json','utf8'));
+          const ctx={console};ctx.globalThis=ctx;ctx.window=ctx;
+          vm.runInNewContext(fs.readFileSync('app/adapters/cxorbia-exact-identity-contract-v1.js','utf8'),ctx);
+          vm.runInNewContext(fs.readFileSync('app/adapters/tya-cumulative-read-model-v2.js','utf8'),ctx);
+          const composer=ctx.CX_TYA_CUMULATIVE_READ_MODEL;
+          if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:'cxorbia-backend-dev'});
+          const db=getFirestore(),tenant=db.collection('tenants').doc('tya'),project=tenant.collection('projects').doc('cinepolis');
+          const rows=async ref=>(await ref.get()).docs.map(d=>({__docId:d.id,id:d.id,...(d.data()||{})}));
+          const [profiles,visits,postulations,certifications,liquidations]=await Promise.all([
+            rows(tenant.collection('shoppers')),rows(project.collection('visits')),rows(project.collection('postulations')),rows(project.collection('certifications')),rows(project.collection('liquidations'))
+          ]);
+          const periods=Array.isArray(hrRaw.periods)?hrRaw.periods:[],currentKey=String(hrRaw?.source?.currentCalendarPeriodKey||contrast.currentPeriodKey||''),current=periods.find(x=>String(x.key||'')===currentKey)||{};
+          const hr={projects:periods.map(p=>({id:p.id||('cinepolis-'+p.key),projectId:'cinepolis',periodKey:p.key})),visits:hrRaw.visits||[],shoppers:hrRaw.shoppers||[],posts:[],currentProjectId:'cinepolis',currentPeriodId:String(current.id||contrast.currentPeriodId||'')};
+          const out=composer.compose({hr,protectedPayload:{visits,shoppers:profiles,postulations,applications:postulations,posts:postulations,certifications,liquidations}});
+          const ids=['shopper_gt_0b19085086','shopper_gt_a55e5b3e9b'];
+          const result={};
+          for(const id of ids){
+            const op=out.visits.filter(v=>String(v.shopperId||'')===id);
+            const hist=composer.confirmedHistoryVisits(op);
+            const row=out.shoppers.find(s=>String(s.id||s.shopperId||'')===id);
+            result[id]={operationalCount:op.length,confirmedHistoryCount:hist.length,pendingOperationalCount:op.filter(v=>v.__pendingPlatformAssignmentOverlay===true).length,shopperVisits:Number(row?.visitas||0),shopperRealized:Number(row?.realizadas||0),sourceHistoricalVisitCount:Number(row?.sourceHistoricalVisitCount||0),pendingOperationalAssignmentCount:Number(row?.pendingOperationalAssignmentCount||0)};
+          }
+          const primary=result['shopper_gt_0b19085086'],control=result['shopper_gt_a55e5b3e9b'];
+          if(primary.operationalCount!==6||primary.confirmedHistoryCount!==5||primary.pendingOperationalCount!==1||primary.shopperVisits!==5||primary.shopperRealized!==5||primary.sourceHistoricalVisitCount!==5||primary.pendingOperationalAssignmentCount!==1)throw new Error('FUNCTIONAL_DEFECT:VRM037_042_PRIMARY_SOURCE_PROOF:'+JSON.stringify(primary));
+          if(control.operationalCount!==1||control.confirmedHistoryCount!==1||control.pendingOperationalCount!==0||control.shopperVisits!==1||control.shopperRealized!==1)throw new Error('FUNCTIONAL_DEFECT:VRM037_042_CONTROL_SOURCE_PROOF:'+JSON.stringify(control));
+          fs.writeFileSync(OUT+'/live-source-proof.json',JSON.stringify({decision:'PASS_PRE_I4_VRM037_042_LIVE_SOURCE_PROOF',sourceSha:process.env.CANONICAL_SOURCE,hrRevision:oldDiag.hrRevision,result,pendingAssignmentPreservedOperationally:true,pendingAssignmentExcludedFromConfirmedHistory:true,production:false,writes:0},null,2)+'\n');
+          NODE
+
+      - name: Upload source proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-pre-i4-vrm037-042-source-proof-${{ github.run_id }}
+          path: ${{ env.PROOF_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
+      - name: Enforce proof
+        run: |
+          set -Eeuo pipefail
+          test "$(jq -r '.decision' "$PROOF_OUT/live-source-proof.json")" = "PASS_PRE_I4_VRM037_042_LIVE_SOURCE_PROOF"
+
   pre-i4-vrm037-diagnostic:
     needs: canonical-candidate-authority
     name: PRE-I4 VRM-037 exact shopper history diagnostic — read only
