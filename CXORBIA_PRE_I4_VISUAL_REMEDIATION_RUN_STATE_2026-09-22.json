@@ -1,9 +1,9 @@
 {
   "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v11",
-  "generatedAt": "2026-09-23T21:45:00-06:00",
+  "generatedAt": "2026-09-23T21:49:00-06:00",
   "iteration": "I3_PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "microblockId": "CXORBIA-PRE-I4-VISUAL-REMEDIATION-MICROBLOCK-20260922",
-  "status": "HOLD_VRM_029_RULES_ONLY_CONTROL_SCOPE_FIXED_READY",
+  "status": "HOLD_VRM_029_RULES_API_DEPLOY_READY",
   "production": "DO_NOT_TOUCH",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "head": "2f924e6e2057adef9c0c6be8259d564e15c43573",
@@ -301,16 +301,26 @@
       "note": "Run324 Firestore emulator proof was blocked solely because firebase-tools required Java 21. Run325 added Java 21 and the emulator proof executed successfully. No product, Rules or data defect resulted from this control-environment failure."
     },
     "VRM-031": {
-      "state": "FIXED_NOT_PROVEN",
-      "evidenceRef": "Run330 35952589290",
+      "state": "NOT_APPLICABLE_WITH_EVIDENCE",
+      "evidenceRef": "Run330 35952589290 + Run331 35952807023",
       "classification": "RELEASE_COMPOSITION_FAILURE",
       "owner": [
         ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
       ],
-      "note": "Run330 stopped before authentication or deployment because the rules-only scope validator counted backend/config/pre-i4-human-entrypoint-dev-deploy-request.json, a control authorization file, as product drift between f5b96e85 and functional source 2f924e6e. The validator now excludes only that exact control path while preserving exact checks for firestore.rules and the VRM-029 regression test. Run330 performed zero Rules/Hosting/runtime/data/production deploys."
+      "note": "Run330 stopped before authentication or deployment because the rules-only scope validator counted backend/config/pre-i4-human-entrypoint-dev-deploy-request.json, a control authorization file, as product drift between f5b96e85 and functional source 2f924e6e. The validator now excludes only that exact control path while preserving exact checks for firestore.rules and the VRM-029 regression test. Run330 performed zero Rules/Hosting/runtime/data/production deploys. Run331 passed the corrected product-scope validator and cumulative source tests, proving the Run330 scope failure was control-only."
+    },
+    "VRM-032": {
+      "state": "FIXED_NOT_PROVEN",
+      "evidenceRef": "Run331 35952807023",
+      "classification": "AUTH_FAILURE",
+      "owner": [
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+        "DEV service-account IAM capability"
+      ],
+      "note": "Run331 passed exact scope, cumulative tests, Firebase authentication and prior-live Rules hash lock, then Firebase CLI failed at firebaserules.googleapis.com:v1/projects/cxorbia-backend-dev:test with HTTP 403 before any Rules release. The control deploy method is changed to the official Rules API: create immutable Ruleset from exact firestore.rules (which validates source) then PATCH only release cloud.firestore. If rulesets.create or releases.update is also denied, IAM is materially blocking the authorized DEV Rules deployment."
     }
   },
-  "nextExactAction": "Re-run the same VRM-029 Rules-only DEV lane with unchanged functional source 2f924e6e and unchanged request; exclude only the exact deploy-request control path from productDiff. Require prior live Rules hash lock, one DEV Rules deploy, exact live Rules readback, zero Hosting/runtime/data/production writes.",
+  "nextExactAction": "Use the same authorized Rules-only DEV lane and unchanged functional source 2f924e6e, but deploy through the official Firebase Rules REST API: create the exact Ruleset and PATCH only release cloud.firestore. If either rulesets.create or releases.update returns 403, stop as a proven IAM blocker; otherwise read back exact live Rules and continue to zero-deploy focal browser proof.",
   "functionalLineage": [
     {
       "commit": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
@@ -416,23 +426,20 @@
     "resolution": "Use existing proven direct Rules API deploy tool; do not rebuild/redeploy runtime."
   },
   "lastControlFailure": {
-    "classification": "RELEASE_COMPOSITION_FAILURE",
-    "runId": 35952589290,
+    "classification": "AUTH_FAILURE",
+    "runId": 35952807023,
     "productDefectProven": false,
     "affectedFindings": [
-      "VRM-031"
+      "VRM-032"
     ],
-    "cause": "Rules-only scope validator included the canonical deploy request control file because it resides under backend/config; this was a control-plane false positive, not product drift.",
+    "cause": "Firebase CLI requires firebaserules test permission before deploy; the connected DEV credential can read Rules but its TestRuleset call returned HTTP 403. No Rules release was changed.",
     "observed": {
-      "unexpectedDiff": [
-        "backend/config/pre-i4-human-entrypoint-dev-deploy-request.json"
-      ],
-      "expectedProductDiff": [
-        "backend/runtime/hr-live-service/test/cxorbia-pre-i4-durability-resources.test.mjs",
-        "firestore.rules"
-      ],
-      "authReached": false,
-      "rulesDeploys": 0,
+      "scopeValidation": true,
+      "cumulativeSourceTests": true,
+      "priorLiveRulesHashLocked": true,
+      "failedEndpoint": "firebaserules.googleapis.com/v1/projects/cxorbia-backend-dev:test",
+      "httpStatus": 403,
+      "rulesReleaseChanged": false,
       "hostingDeploys": 0,
       "runtimeDeploys": 0,
       "firestoreWrites": 0

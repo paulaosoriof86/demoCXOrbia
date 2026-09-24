@@ -2288,11 +2288,6 @@ jobs:
         with:
           project_id: cxorbia-backend-dev
 
-      - name: Install Firebase CLI
-        run: |
-          set -Eeuo pipefail
-          npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest >/dev/null 2>&1
-
       - name: Prove prior live Rules exact and freeze predeploy evidence
         run: |
           set -Eeuo pipefail
@@ -2312,10 +2307,34 @@ jobs:
           fs.writeFileSync(process.env.RULES_OUT+'/predeploy-rules.json',JSON.stringify({decision:'PASS_PRE_I4_VRM029_PRIOR_RULES_LOCK',priorRulesetName:r.name||null,priorSha256:before,nextSha256:next,production:false},null,2)+'\n');
           NODE
 
-      - name: Deploy exact Firestore Rules to DEV once
+      - name: Deploy exact Firestore Rules to DEV once via Rules API
         run: |
           set -Eeuo pipefail
-          npx firebase deploy --only firestore:rules --project cxorbia-backend-dev --non-interactive | tee "$RULES_OUT/firebase-rules-deploy.txt"
+          TOKEN="$(gcloud auth print-access-token)"
+          jq -Rs '{source:{files:[{name:"firestore.rules",content:.}]}}' firestore.rules > "$RULES_OUT/ruleset-create-request.json"
+          HTTP_CREATE="$(curl -sS -o "$RULES_OUT/ruleset-create-response.json" -w '%{http_code}' -X POST \
+            -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+            --data-binary @"$RULES_OUT/ruleset-create-request.json" \
+            "https://firebaserules.googleapis.com/v1/projects/cxorbia-backend-dev/rulesets")"
+          if [ "$HTTP_CREATE" != "200" ]; then
+            echo "AUTH_FAILURE:VRM029_RULESET_CREATE_HTTP_$HTTP_CREATE"
+            cat "$RULES_OUT/ruleset-create-response.json"
+            exit 71
+          fi
+          NEW_RULESET="$(jq -r '.name // empty' "$RULES_OUT/ruleset-create-response.json")"
+          test -n "$NEW_RULESET"
+          jq -n --arg release "projects/cxorbia-backend-dev/releases/cloud.firestore" --arg ruleset "$NEW_RULESET" \
+            '{release:{name:$release,rulesetName:$ruleset},updateMask:"rulesetName"}' > "$RULES_OUT/release-patch-request.json"
+          HTTP_PATCH="$(curl -sS -o "$RULES_OUT/release-patch-response.json" -w '%{http_code}' -X PATCH \
+            -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+            --data-binary @"$RULES_OUT/release-patch-request.json" \
+            "https://firebaserules.googleapis.com/v1/projects/cxorbia-backend-dev/releases/cloud.firestore")"
+          if [ "$HTTP_PATCH" != "200" ]; then
+            echo "AUTH_FAILURE:VRM029_RELEASE_UPDATE_HTTP_$HTTP_PATCH"
+            cat "$RULES_OUT/release-patch-response.json"
+            exit 72
+          fi
+          test "$(jq -r '.rulesetName // empty' "$RULES_OUT/release-patch-response.json")" = "$NEW_RULESET"
           printf '1\n' > "$RULES_OUT/rules-deploy-count.txt"
 
       - name: Read back exact live Rules after deployment
