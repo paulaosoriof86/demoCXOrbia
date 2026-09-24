@@ -3019,8 +3019,15 @@ jobs:
           if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:'cxorbia-backend-dev'});
           const db=getFirestore();
           const ref=db.collection('tenants').doc('tya').collection('projects').doc('cinepolis');
-          const snap=await ref.get();
+          const [snap,periodSnap]=await Promise.all([ref.get(),ref.collection('periods').get()]);
           const raw=snap.exists?(snap.data()||{}):{};
+          const financeKeys=['countries','currency','currencies','honorario','honorarioRecibe','honRecibe','boleto','comboAmt','modelo'];
+          const safePeriods=periodSnap.docs.map(d=>{const x=d.data()||{};return {
+            id:d.id,key:x.key||x.periodKey||null,label:x.label||x.name||null,
+            honorario:x.honorario||{},honorarioRecibe:x.honorarioRecibe||x.honRecibe||{},
+            currency:x.currency||x.currencies||{},countries:Array.isArray(x.countries)?x.countries:[],
+            sourceKeys:Object.keys(x).filter(k=>financeKeys.includes(k)).sort()
+          };});
           const safe={
             decision:'PASS_PRE_I4_VRM039_PROJECT_CONFIG_READBACK',
             exists:snap.exists,
@@ -3032,7 +3039,8 @@ jobs:
             boleto:raw.boleto||{},
             comboAmt:raw.comboAmt||{},
             modelo:raw.modelo||null,
-            sourceKeys:Object.keys(raw).filter(k=>['countries','currency','currencies','honorario','honorarioRecibe','honRecibe','boleto','comboAmt','modelo'].includes(k)).sort(),
+            sourceKeys:Object.keys(raw).filter(k=>financeKeys.includes(k)).sort(),
+            periods:safePeriods,
             writes:0,production:false
           };
           fs.writeFileSync('.tmp/vrm039-config/project-config.json',JSON.stringify(safe,null,2)+'\n');
