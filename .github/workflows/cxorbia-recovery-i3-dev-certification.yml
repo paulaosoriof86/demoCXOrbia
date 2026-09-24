@@ -1984,9 +1984,9 @@ jobs:
           node <<'NODE'
           const fs=require('fs'),{execFileSync}=require('child_process');
           const p=process.env.REQUEST,r=JSON.parse(fs.readFileSync(p,'utf8')),head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
-          if(r.schemaVersion!=='cxorbia.pre-i4.human-entrypoint-dev-deploy.request.v1'||r.requestId!=='pre-i4-visual-remediation-20260923-06')throw new Error('RELEASE_COMPOSITION_FAILURE:READBACK_REQUEST_ID');
-          if(r.sourceSha!=='50b6a25d79713b0f165cffc4355c7b7ffd1d9e84'||r.sourceTree!=='495266b89b932976569f57070b27b7e4f06d6cdd')throw new Error('RELEASE_COMPOSITION_FAILURE:READBACK_SOURCE_DRIFT');
-          if(r.status!=='deployed_verify_pending'||r.enabled!==false||r.consumed!==true||Number(r.deployedRunId)!==35929165160||r.noFurtherDeployBeforeReadback!==true)throw new Error('RELEASE_COMPOSITION_FAILURE:READBACK_CONSUMPTION_STATE');
+          if(r.schemaVersion!=='cxorbia.pre-i4.human-entrypoint-dev-deploy.request.v1'||r.requestId!=='pre-i4-visual-remediation-20260923-09')throw new Error('RELEASE_COMPOSITION_FAILURE:READBACK_REQUEST_ID');
+          if(r.sourceSha!=='6653ba83b7c95ff413169e48ceb38e95151a2736'||r.sourceTree!=='dd234f8b9cb0fb0864e97ddfff7d18a285e57bf3')throw new Error('RELEASE_COMPOSITION_FAILURE:READBACK_SOURCE_DRIFT');
+          if(r.status!=='deployed_verify_pending'||r.enabled!==false||r.consumed!==true||Number(r.deployedRunId)!==35941768293||r.noFurtherDeployBeforeReadback!==true)throw new Error('RELEASE_COMPOSITION_FAILURE:READBACK_CONSUMPTION_STATE');
           if(r.production!==false||r.readbackOnly!==true)throw new Error('RELEASE_COMPOSITION_FAILURE:READBACK_SCOPE_UNSAFE');
           for(const k of ['runtimeBuilds','cloudRunDeploys','runtimeDeploys','rulesDeploys','hostingDeploys'])if(Number(r.nextRun?.[k]||0)!==0)throw new Error('RELEASE_COMPOSITION_FAILURE:READBACK_DEPLOY_NOT_ZERO_'+k);
           execFileSync('git',['merge-base','--is-ancestor',r.sourceSha,head]);
@@ -2007,26 +2007,31 @@ jobs:
           npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1
           npx playwright install --with-deps chromium >/dev/null 2>&1
 
-      - name: Bind Run 309 exact deployed evidence
+      - name: Bind Run 316 exact deployed evidence
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -Eeuo pipefail
           rm -rf "$PREI4_PRIOR"; mkdir -p "$PREI4_PRIOR"
-          gh run download 35929165160 --repo "$GITHUB_REPOSITORY" --name "cxorbia-pre-i4-human-entrypoint-35929165160" --dir "$PREI4_PRIOR"
-          test "$(jq -r '.sourceSha' "$PREI4_PRIOR/artifact-manifest.json")" = "50b6a25d79713b0f165cffc4355c7b7ffd1d9e84"
-          test "$(jq -r '.decision' "$PREI4_PRIOR/artifact-manifest.json")" = "PASS_PRE_I4_ONE_STATIC_ARTIFACT_FROZEN"
-          test "$(jq -r '.decision' "$PREI4_PRIOR/runtime-continuation.json")" = "PASS_PRE_I4_EXISTING_RUNTIME_EXACT_SOURCE"
-          test "$(jq -r '.decision' "$PREI4_PRIOR/rules-parity.json")" = "PASS_PRE_I4_FIRESTORE_RULES_PARITY"
-          test "$(jq -r '.decision' "$PREI4_PRIOR/remote-parity.json")" = "PASS_PRE_I4_HOSTING_REMOTE_BYTE_PARITY"
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/35941768293/artifacts" > "$PREI4_OUT/run316-artifacts.json"
+          test "$(jq -r '.artifacts[] | select(.id==10785028396) | .name' "$PREI4_OUT/run316-artifacts.json")" = "cxorbia-pre-i4-finance-p0-35941768293"
+          test "$(jq -r '.artifacts[] | select(.id==10785028396) | .digest' "$PREI4_OUT/run316-artifacts.json")" = "sha256:ad713f9f2f0a54022603921e5685b113f6e236e09def7bb74950bfcf08b2d70a"
+          gh run download 35941768293 --repo "$GITHUB_REPOSITORY" --name "cxorbia-pre-i4-finance-p0-35941768293" --dir "$PREI4_PRIOR"
+          test "$(jq -r '.sourceSha' "$PREI4_PRIOR/authorization.json")" = "6653ba83b7c95ff413169e48ceb38e95151a2736"
+          test "$(jq -r '.decision' "$PREI4_PRIOR/authorization.json")" = "PASS_PRE_I4_FINANCE_P0_AUTHORIZATION"
+          test "$(jq -r '.decision' "$PREI4_PRIOR/runtime-rules-unchanged.json")" = "PASS_PRE_I4_RUNTIME_RULES_UNCHANGED_FOR_BROWSER_ONLY_FIX"
+          test "$(jq -r '.decision' "$PREI4_PRIOR/remote-readback.json")" = "PASS_PRE_I4_FINANCE_P0_HOSTING_BYTE_PARITY"
+          test "$(jq -r '.decision' "$PREI4_PRIOR/source-gate.json")" = "PASS_PRE_I4_HUMAN_ENTRYPOINT_CONTRACT"
           test "$(cat "$PREI4_PRIOR/hosting-deploy-count.txt")" = "1"
+          test "$(jq -r '.decision' "$PREI4_PRIOR/browser-focal.json")" = "FAIL_PRE_I4_FOCAL_HUMAN_BROWSER"
+          test "$(jq -r '.error' "$PREI4_PRIOR/browser-focal.json")" = "PERSISTENCE_FAILURE:STATIC_RESOURCE_SEED_VISIBLE"
           cp "$PREI4_PRIOR/app-artifact.sha256" "$PREI4_OUT/app-artifact.sha256"
 
       - name: Recreate exact product source without build or deploy
         run: |
           set -Eeuo pipefail
           rm -rf "$PREI4_SOURCE_DIR"; mkdir -p "$PREI4_SOURCE_DIR"
-          git archive "50b6a25d79713b0f165cffc4355c7b7ffd1d9e84" | tar -x -C "$PREI4_SOURCE_DIR"
+          git archive "6653ba83b7c95ff413169e48ceb38e95151a2736" | tar -x -C "$PREI4_SOURCE_DIR"
           cd "$PREI4_SOURCE_DIR"
           node tools/qa/cxorbia-pre-i4-human-entrypoint-contract-gate.mjs > "$GITHUB_WORKSPACE/$PREI4_OUT/source-gate.json"
           tar --sort=name --mtime='UTC 1970-01-01' --owner=0 --group=0 --numeric-owner -cf "$GITHUB_WORKSPACE/$PREI4_OUT/app-readback.tar" app
@@ -2038,7 +2043,7 @@ jobs:
         run: |
           set -Eeuo pipefail
           root="https://cxorbia-backend-dev.web.app"; mkdir -p "$PREI4_OUT/remote"
-          for rel in index-backend-dev.html index.html app.js config/runtime.js core/config.js core/data-source.js core/data.js core/router.js core/finanzas-core.js core/liquidacion.js adapters/cxorbia-command-adapter-v1.js adapters/cxorbia-cxdata-command-boundary-v1.js adapters/tya-protected-auth-hr-authority-bridge-v2.js data/tya-certification-carryover-source-safe.js modules/dashboard.js modules/misvisitas.js modules/shoppers.js modules/postulaciones.js modules/finanzas.js modules/documentos.js modules/cert.js styles/layout.css; do
+          for rel in index-backend-dev.html index.html app.js config/runtime.js core/config.js core/data-source.js core/data.js core/router.js core/finanzas-core.js core/liquidacion.js adapters/tya-live-source-inplace-apply.js adapters/tya-delegated-coordination-finance-guard-v1.js adapters/tya-canonical-finance-read-model-v2.js adapters/cxorbia-command-adapter-v1.js adapters/cxorbia-cxdata-command-boundary-v1.js adapters/tya-protected-auth-hr-authority-bridge-v2.js modules/dashboard.js modules/misvisitas.js modules/shoppers.js modules/postulaciones.js modules/finanzas.js modules/documentos.js modules/cert.js styles/layout.css; do
             remote="$PREI4_OUT/remote/$(echo "$rel" | tr '/' '_')"
             curl -fsSL --retry 5 --retry-delay 1 -H 'Cache-Control: no-cache' "$root/$rel?readback=${GITHUB_RUN_ID}-$(date +%s%N)" -o "$remote"
             cmp "$PREI4_SOURCE_DIR/app/$rel" "$remote"
@@ -2100,7 +2105,7 @@ jobs:
       - name: Execute focal Admin Shopper desktop mobile against same HR revision
         env:
           CXORBIA_PREI4_ROOT: https://cxorbia-backend-dev.web.app
-          CXORBIA_PREI4_SOURCE_SHA: 50b6a25d79713b0f165cffc4355c7b7ffd1d9e84
+          CXORBIA_PREI4_SOURCE_SHA: 6653ba83b7c95ff413169e48ceb38e95151a2736
         run: |
           set -Eeuo pipefail
           node tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs
@@ -2110,7 +2115,7 @@ jobs:
         run: |
           set -Eeuo pipefail
           ART="$(cat "$PREI4_OUT/app-artifact.sha256")"; HR="$(jq -r '.sourceRevision' "$PREI4_OUT/hr-contrast.json")"
-          jq -n -S --arg source "50b6a25d79713b0f165cffc4355c7b7ffd1d9e84" --arg artifact "$ART" --arg hr "$HR" --argjson priorRun 35929165160 '{decision:"PASS_PRE_I4_POSTDEPLOY_READBACK",sourceSha:$source,artifactSha256:$artifact,hrRevision:$hr,priorDeployRunId:$priorRun,runtimeDeploysThisRun:0,rulesDeploysThisRun:0,hostingDeploysThisRun:0,remoteByteParity:true,focalBrowser:true,production:false}' > "$PREI4_OUT/final.json"
+          jq -n -S --arg source "6653ba83b7c95ff413169e48ceb38e95151a2736" --arg artifact "$ART" --arg hr "$HR" --argjson priorRun 35941768293 '{decision:"PASS_PRE_I4_POSTDEPLOY_READBACK",sourceSha:$source,artifactSha256:$artifact,hrRevision:$hr,priorDeployRunId:$priorRun,runtimeBuildsThisRun:0,runtimeDeploysThisRun:0,rulesDeploysThisRun:0,hostingDeploysThisRun:0,remoteByteParity:true,focalBrowser:true,resourceRowsStructured:true,production:false}' > "$PREI4_OUT/final.json"
 
       - name: Upload sanitized postdeploy readback
         if: always()

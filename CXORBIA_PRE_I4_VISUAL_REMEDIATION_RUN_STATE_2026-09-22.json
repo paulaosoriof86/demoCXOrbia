@@ -1,12 +1,12 @@
 {
   "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v11",
-  "generatedAt": "2026-09-23T19:52:00-06:00",
+  "generatedAt": "2026-09-23T20:05:00-06:00",
   "iteration": "I3_PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "microblockId": "CXORBIA-PRE-I4-VISUAL-REMEDIATION-MICROBLOCK-20260922",
-  "status": "HOLD_RESOURCE_HARNESS_FALSE_POSITIVE_FIX_READY_FOR_FOCAL_PROOF",
+  "status": "HOLD_RUN316_ZERO_DEPLOY_READBACK_READY",
   "production": "DO_NOT_TOUCH",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "head": "5ec343872a9f0693f82d734c385e353790a0b02b",
+  "head": "850c6a3defa3e697bc46b84cae4d6f4091083dfa",
   "lastFunctionalWrite": {
     "commit": "6653ba83b7c95ff413169e48ceb38e95151a2736",
     "parent": "ab05415eb965404e1a6594df8533b8e0190aa0f7",
@@ -251,9 +251,18 @@
         "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
       ],
       "note": "Run316 falsely classified STATIC_RESOURCE_SEED_VISIBLE because the harness scanned document.body.innerText for generic terms including Checklist; the legitimate Recursos UI always contains checklists. Control fix now validates only connected project_resource rows by id/demo/source markers and requires Firestore-ready status. No product/Firestore cleanup authorized or performed."
+    },
+    "VRM-026": {
+      "state": "FIXED_NOT_PROVEN",
+      "evidenceRef": "Run317 35945195477",
+      "owner": [
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+        "backend/config/pre-i4-human-entrypoint-dev-deploy-request.json"
+      ],
+      "note": "Run317 was a control-lane routing failure: an untagged control-only push selected the historical certify job still anchored to 77bf and failed its source guard before any build/auth/deploy. The existing [pre-i4-readback-only] exclusion is now used with the postdeploy readback lane bound to Run316/source 6653; no new workflow or product candidate is created."
     }
   },
-  "nextExactAction": "Run the same PRE-I4 focal workflow on unchanged functional source 6653ba83 with the control-only structured resource detector; require Firestore-ready project_resource evidence, then continue automatically through Admin/Shopper desktop/mobile and subsequent I3 gates if green.",
+  "nextExactAction": "Execute existing [pre-i4-readback-only] lane against Run316 artifact/source 6653 with zero deploys; prove structured Firestore resource rows, fresh same-revision HR, Admin/Shopper desktop/mobile, Finance/Liquidations and artifact byte parity.",
   "functionalLineage": [
     {
       "commit": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
@@ -317,16 +326,18 @@
     ]
   },
   "focalProof": {
-    "state": "FINANCE_PARTIAL_HOSTING_ONLY_READY",
+    "state": "RUN316_MATERIALIZED_ZERO_DEPLOY_READBACK_READY",
     "sourceSha": "6653ba83b7c95ff413169e48ceb38e95151a2736",
     "sourceTree": "dd234f8b9cb0fb0864e97ddfff7d18a285e57bf3",
     "previousDeployedRunId": 35940783964,
     "nextRunDeploys": {
       "runtime": 0,
       "rules": 0,
-      "hosting": 1,
-      "production": 0
-    }
+      "hosting": 0
+    },
+    "deployedRunId": 35941768293,
+    "artifactId": 10785028396,
+    "artifactZipDigest": "sha256:ad713f9f2f0a54022603921e5685b113f6e236e09def7bb74950bfcf08b2d70a"
   },
   "providerFailure": {
     "classification": "PROVIDER_FAILURE",
@@ -343,22 +354,20 @@
   },
   "lastControlFailure": {
     "classification": "RELEASE_COMPOSITION_FAILURE",
-    "runId": 35941768293,
-    "reportedClassification": "PERSISTENCE_FAILURE",
-    "reportedCode": "STATIC_RESOURCE_SEED_VISIBLE",
+    "runId": 35945195477,
     "productDefectProven": false,
     "affectedFindings": [
-      "VRM-019",
-      "VRM-025"
+      "VRM-026"
     ],
-    "cause": "Focal browser harness used a generic body-text regex (/Escenario de evaluación|Video de inducción|Checklist/i). The Recursos page itself contains the legitimate word 'checklists', so the detector was guaranteed to false-positive before proving any persisted demo row.",
+    "cause": "Untagged control-only harness commit selected historical certify job; its I3_CERTIFICATION_SOURCE remains 77bf and correctly rejected later functional drift before deploy.",
     "observed": {
-      "moduleConnectedLane": "CX.docStore.list() delegates to CX.backendResources.list() when CX.BACKEND.enabled===true",
-      "genericUiText": "documentos, videos, imágenes y checklists",
-      "run316BrowserError": "PERSISTENCE_FAILURE:STATIC_RESOURCE_SEED_VISIBLE"
+      "failedStep": "Prove single certification source and control-only successor",
+      "deploysThisRun": 0
     },
-    "resolutionOwner": "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs",
-    "firestoreWrites": 0,
+    "resolutionOwner": [
+      ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+      "backend/config/pre-i4-human-entrypoint-dev-deploy-request.json"
+    ],
     "productionDeploys": 0
   },
   "liveHrProof": {
