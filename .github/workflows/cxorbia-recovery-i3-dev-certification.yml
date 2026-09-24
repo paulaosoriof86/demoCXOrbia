@@ -3058,12 +3058,12 @@ jobs:
   pre-i4-vrm039-source-proof:
     name: PRE-I4 VRM-039 Resources + Finance final proof — no deploy
     needs: canonical-candidate-authority
-    if: \${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[pre-i4-vrm039-source-proof]') }}
+    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[pre-i4-vrm039-source-proof]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
       PROOF_OUT: .tmp/pre-i4-vrm039-source-proof
-      CANONICAL_SOURCE: \${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      CANONICAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
     steps:
       - name: Checkout control successor
         uses: actions/checkout@v4
@@ -3106,14 +3106,14 @@ jobs:
       - name: Authenticate DEV
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: '\${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
 
       - name: Install transient proof dependency
         run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
 
       - name: Bind independent config and same HR revision
         env:
-          GH_TOKEN: \${{ github.token }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -Eeuo pipefail
           mkdir -p "$PROOF_OUT/config" "$PROOF_OUT/hr"
@@ -3304,8 +3304,8 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-pre-i4-vrm039-source-proof-\${{ github.run_id }}
-          path: \${{ env.PROOF_OUT }}
+          name: cxorbia-pre-i4-vrm039-source-proof-${{ github.run_id }}
+          path: ${{ env.PROOF_OUT }}
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
