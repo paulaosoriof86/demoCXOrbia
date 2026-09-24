@@ -2683,3 +2683,98 @@ jobs:
           test "$(jq -r '.decision' "$RULES_OUT/final.json")" = "PASS_PRE_I4_VRM029_RULES_DEV_EXACT"
           test "$(jq -r '.production' "$RULES_OUT/final.json")" = "false"
 
+
+  pre-i4-human-semantic-focal-only:
+    name: PRE-I4 hardened semantic focal only — no deploy
+    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[pre-i4-human-semantic-focal-only]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      FOCAL_OUT: .tmp/pre-i4-human-semantic-focal-only
+      PRODUCT_SOURCE: dad7cdda3758d9e86d76513acba6f7ca7edca4ba
+      PRODUCT_TREE: bfa4135ef9e611aef70eca2ca8d412ee588a18f4
+      DEV_ROOT: https://cxorbia-backend-dev.web.app
+    steps:
+      - name: Checkout control successor
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Prove focal-only scope and exact product source
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$FOCAL_OUT"
+          test "$(git rev-parse "$PRODUCT_SOURCE^{tree}")" = "$PRODUCT_TREE"
+          git merge-base --is-ancestor "$PRODUCT_SOURCE" HEAD
+          jq -n -S --arg source "$PRODUCT_SOURCE" --arg tree "$PRODUCT_TREE" '{decision:"PASS_PRE_I4_FOCAL_ONLY_SCOPE",sourceSha:$source,sourceTree:$tree,runtimeBuildsThisRun:0,runtimeDeploysThisRun:0,hostingDeploysThisRun:0,rulesDeploysThisRun:0,cleanupWritesThisRun:0,production:false}' > "$FOCAL_OUT/authorization.json"
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Authenticate existing Recovery DEV read-only focal
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+
+      - name: Install transient focal dependencies
+        run: |
+          set -Eeuo pipefail
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null 2>&1
+
+      - name: Bind Run340 materialization evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$FOCAL_OUT/prior"
+          gh run download 35970916539 --repo "$GITHUB_REPOSITORY" --name "cxorbia-pre-i4-human-semantic-35970916539" --dir "$FOCAL_OUT/prior"
+          test "$(jq -r '.decision' "$FOCAL_OUT/prior/runtime.json")" = "PASS_PRE_I4_SEMANTIC_RUNTIME_REUSED_RUN339_EXACT"
+          test "$(jq -r '.buildsThisRun' "$FOCAL_OUT/prior/runtime.json")" = "0"
+          test "$(jq -r '.deploysThisRun' "$FOCAL_OUT/prior/runtime.json")" = "0"
+          test "$(jq -r '.after' "$FOCAL_OUT/prior/qa-reservation-cleanup.json")" = "0"
+          test "$(jq -r '.decision' "$FOCAL_OUT/prior/hosting-parity.json")" = "PASS_PRE_I4_SEMANTIC_HOSTING_BYTE_PARITY"
+          test "$(jq -r '.decision' "$FOCAL_OUT/prior/hr-contrast.json")" = "PASS_PRE_I4_HR_SEMANTIC_ORACLE"
+          test "$(jq -r '.sourceSha' "$FOCAL_OUT/prior/source-proof.json")" = "$PRODUCT_SOURCE"
+          test "$(jq -r '.sourceTree' "$FOCAL_OUT/prior/source-proof.json")" = "$PRODUCT_TREE"
+          jq -n -S --arg priorRun "35970916539" --arg hr "$(jq -r '.sourceRevision' "$FOCAL_OUT/prior/hr-contrast.json")" '{decision:"PASS_PRE_I4_RUN340_PREREQUISITES_BOUND",priorRunId:($priorRun|tonumber),hrRevision:$hr,runtimeDeploysThisRun:0,hostingDeploysThisRun:0,production:false}' > "$FOCAL_OUT/prerequisites.json"
+
+      - name: Materialize exact focal script in workspace dependency scope
+        run: |
+          set -Eeuo pipefail
+          git show "$PRODUCT_SOURCE:tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs" > "$FOCAL_OUT/cxorbia-pre-i4-focal-remote-browser.mjs"
+          test "$(git hash-object "$FOCAL_OUT/cxorbia-pre-i4-focal-remote-browser.mjs")" = "$(git rev-parse "$PRODUCT_SOURCE:tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs")"
+
+      - name: Execute hardened semantic Admin Shopper desktop mobile focal only
+        env:
+          PREI4_OUT: .tmp/pre-i4-human-semantic-focal-only/prior
+          CXORBIA_PREI4_ROOT: https://cxorbia-backend-dev.web.app
+          CXORBIA_PREI4_SOURCE_SHA: dad7cdda3758d9e86d76513acba6f7ca7edca4ba
+        run: |
+          set -Eeuo pipefail
+          node "$FOCAL_OUT/cxorbia-pre-i4-focal-remote-browser.mjs"
+          test "$(jq -r '.decision' "$FOCAL_OUT/prior/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
+
+      - name: Freeze focal-only result
+        run: |
+          set -Eeuo pipefail
+          HR="$(jq -r '.sourceRevision' "$FOCAL_OUT/prior/hr-contrast.json")"
+          jq -n -S --arg source "$PRODUCT_SOURCE" --arg tree "$PRODUCT_TREE" --arg hr "$HR" '{decision:"PASS_PRE_I4_HARDENED_SEMANTIC_FOCAL_ONLY",sourceSha:$source,sourceTree:$tree,hrRevision:$hr,boundRun340:35970916539,runtimeBuildsThisRun:0,runtimeDeploysThisRun:0,hostingDeploysThisRun:0,rulesDeploysThisRun:0,cleanupWritesThisRun:0,production:false}' > "$FOCAL_OUT/final.json"
+
+      - name: Upload focal-only evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-pre-i4-human-semantic-focal-only-${{ github.run_id }}
+          path: ${{ env.FOCAL_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
+      - name: Enforce focal-only PASS
+        run: |
+          set -Eeuo pipefail
+          test "$(jq -r '.decision' "$FOCAL_OUT/final.json")" = "PASS_PRE_I4_HARDENED_SEMANTIC_FOCAL_ONLY"
+          test "$(jq -r '.decision' "$FOCAL_OUT/prior/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
