@@ -217,7 +217,7 @@ test('Gate 7 / visitas UI does not declare assignment success before ACK',()=>{
   assert.doesNotMatch(source,/data\.assignVisit\(v\.id,s\.id\);\s*close\(\);\s*ui\.toast\('Shopper creado y visita asignada/);
 });
 
-test('Gate 7 / composer presents only project-scoped platform-only shopper profiles to authorized staff without claiming HR authority',()=>{
+test('Gate 7 / unmatched platform-only shopper profiles stay review-only until exact HR crosswalk exists',()=>{
   const result=composer.compose({
     hr:{
       projects:[{id:'period-a',projectId:'project-a',countries:['GT','HN']}],
@@ -233,30 +233,19 @@ test('Gate 7 / composer presents only project-scoped platform-only shopper profi
       posts:[],postulations:[],applications:[],certifications:[],liquidations:[]
     }
   });
-  assert.equal(result.shoppers.length,1);
-  const shopper=result.shoppers[0];
-  assert.equal(shopper.id,'shopper-platform-a');
-  assert.equal(shopper.shopperId,'shopper-platform-a');
-  assert.equal(shopper.nombre,'Nora Plataforma');
-  assert.equal(shopper.pais,'GT');
-  assert.equal(shopper.whatsapp,'+50255550001');
-  assert.equal(shopper.email,'nora@example.invalid');
-  assert.equal(shopper.estado,'Activo');
-  assert.equal(shopper.__platformOnlyProfile,true);
-  assert.equal(shopper.__hrIdentityPresent,false);
-  assert.equal(shopper.__hrOwnedOperational,false);
-  assert.equal(shopper.identityAuthority,'platform_created_project_scoped');
-  assert.equal(shopper.visitas,0);
-  assert.equal(shopper.realizadas,0);
-  assert.equal(shopper.submitidas,0);
-  assert.equal(result.shoppers.some(s=>s.id==='shopper-platform-b'),false);
-  assert.equal(result.diagnostics.platformOnlyProfiles,2);
-  assert.equal(result.diagnostics.platformOnlyProfilesPresented,1);
-  assert.equal(result.diagnostics.platformOnlyProfilesCrossProjectExcluded,1);
-  assert.equal(result.diagnostics.platformOnlyPresentationProjectScoped,true);
-  assert.equal(result.diagnostics.unmatchedProfilesExcludedFromOperationalList,false);
-  assert.equal(result.diagnostics.duplicateShopperIds,0);
-  assert.equal(result.identityReviewQueue.filter(x=>x.reason==='no_exact_hr_crosswalk').length,2);
+  // PRE-I4 VRM-033: without an exact HR crosswalk neither profile may be promoted
+  // into the normal operational shopper population. They remain review-only.
+  assert.equal(result.shoppers.length,0);
+  assert.equal(result.platformOnlyProfiles.length,2);
+  assert.equal(result.diagnostics.platformOnlyProfilesPresented,0);
+  assert.equal(result.diagnostics.unmatchedProfilesExcludedFromOperationalList,true);
+  for(const id of ['shopper-platform-a','shopper-platform-b']){
+    const review=result.platformOnlyProfiles.find(x=>x.id===id);
+    assert.ok(review);
+    assert.equal(review.presentedToAuthorizedStaff,false);
+    assert.equal(review.reason,'no_exact_hr_crosswalk');
+    assert.ok(result.identityReviewQueue.some(x=>x.id===id&&x.reason==='no_exact_hr_crosswalk'));
+  }
 });
 
 
