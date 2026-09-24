@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "cxorbia.i3.canonical-monotonic-master-freeze.v1",
+  "frozenAt": "2026-09-24",
+  "status": "FROZEN_PREVALENT",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "production": "DO_NOT_TOUCH",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
+  "planVersion": "V2",
+  "canonicalFunctionalSource": "d8aad982ae4b47e66bf949d906b6c7ede8866f84",
+  "findingCoverage": "VRM-001..VRM-042",
+  "nextFindingId": "VRM-043",
+  "c0": "CLOSED",
+  "c1": "CLOSED",
+  "c2": "ACTIVE_VRM037_VRM042",
+  "frozenBlobs": {
+    "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-24_CANONICAL_MONOTONIC_COMPOSITION_ROOT_CAUSE_FROZEN.md": "d404ef9604a4e50438a7fa7546cb2920945362c0",
+    "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-24_SEMANTIC_OWNER_SHADOWING_FROZEN.md": "7915df0775958cba5b81da1c04dcfd56caeb7b93",
+    "PLAN_COMPLEMENTARIO_CXORBIA_I3_CANONICAL_MONOTONIC_CLOSURE_V2_2026-09-24_FROZEN.md": "c732bd98dc9c83fbfe2cc7af0bc8296e81a63071",
+    "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V2_2026-09-24.json": "4fe256267c1505e2845768937b958d34c1f2a20b",
+    "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json": "ff5bece2580fd92a2c6bbe70967706fa6521808f",
+    "CXORBIA_I3_SINGLE_AUTHORITY_ENFORCEMENT_LOCK_2026-09-24.json": "9801ae6b900ee7f4d46a635c8cbca11cba6cb0e3",
+    ".github/workflows/cxorbia-recovery-i3-dev-certification.yml": "db97829172c576efa1c33bd257eadb02d7f49beb",
+    "tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs": "a3c305bf635d8e408fc12c0b5f8e88f935f4bb5f"
+  },
+  "run347AuthorityProof": {
+    "runId": 36006594469,
+    "jobId": 107656220415,
+    "conclusion": "success"
+  },
+  "exactNextAction": "VRM037_VRM042_DYNAMIC_ROW_PROOF_THEN_SINGLE_SEMANTIC_OWNER_FIX",
+  "authorizationRequired": false
+}
