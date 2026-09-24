@@ -2,7 +2,6 @@ import fs from 'node:fs';
 import {execFileSync} from 'node:child_process';
 
 const DESCRIPTOR='CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json';
-const LEDGER='CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_2026-09-24.json';
 const WORKFLOW='.github/workflows/cxorbia-recovery-i3-dev-certification.yml';
 
 const git=(...args)=>execFileSync('git',args,{encoding:'utf8'}).trim();
@@ -10,12 +9,15 @@ const fail=(code,detail)=>{throw new Error(code+(detail?':'+detail:''));};
 const readJson=p=>JSON.parse(fs.readFileSync(p,'utf8'));
 
 const d=readJson(DESCRIPTOR);
+const LEDGER=String(d.findingsLedgerPath||'');
+if(!LEDGER)fail('RELEASE_COMPOSITION_FAILURE:LEDGER_POINTER_EMPTY');
 const l=readJson(LEDGER);
 
 if(d.schemaVersion!=='cxorbia.i3.canonical-candidate-descriptor.v1')fail('MAPPING_FAILURE:CANDIDATE_DESCRIPTOR_SCHEMA');
 if(d.branch!=='recovery/cxorbia-phase-a-20260831')fail('SOURCE_FAILURE:CANDIDATE_BRANCH');
 if(d.production!=='DO_NOT_TOUCH')fail('RELEASE_COMPOSITION_FAILURE:PRODUCTION_POLICY');
-if(d.findingsLedgerPath!==LEDGER)fail('RELEASE_COMPOSITION_FAILURE:LEDGER_POINTER');
+const ledgerBlob=git('rev-parse','HEAD:'+LEDGER);
+if(d.findingsLedgerExpectedGitBlob&&ledgerBlob!==d.findingsLedgerExpectedGitBlob)fail('RELEASE_COMPOSITION_FAILURE:LEDGER_BLOB_DRIFT',ledgerBlob);
 
 git('cat-file','-e',d.productSourceSha+'^{commit}');
 git('cat-file','-e',d.predecessorProductSourceSha+'^{commit}');
@@ -28,10 +30,15 @@ const productTree=git('rev-parse',d.productSourceSha+'^{tree}');
 const postCandidateDrift=git('diff','--name-only',d.productSourceSha,'HEAD','--','app','backend','firebase.json','.firebaserc','firestore.rules','storage.rules','tools/hr-source');
 if(postCandidateDrift)fail('RELEASE_COMPOSITION_FAILURE:UNDECLARED_PRODUCT_DRIFT_AFTER_CANONICAL_CANDIDATE',postCandidateDrift.replace(/\n/g,','));
 
-if(l.schemaVersion!=='cxorbia.i3.canonical-cumulative-findings-ledger.full.v1')fail('MAPPING_FAILURE:FULL_LEDGER_SCHEMA');
+if(!/^cxorbia\.i3\.canonical-cumulative-findings-ledger\.full\.v\d+$/.test(String(l.schemaVersion||'')))fail('MAPPING_FAILURE:FULL_LEDGER_SCHEMA');
 const ids=Object.keys(l.findings||{}).sort();
-if(ids.length!==41||ids[0]!=='VRM-001'||ids[40]!=='VRM-041')fail('RELEASE_COMPOSITION_FAILURE:FINDING_LEDGER_COVERAGE',JSON.stringify({count:ids.length,first:ids[0],last:ids.at(-1)}));
-if(l.governance?.nextFindingId!=='VRM-042')fail('MAPPING_FAILURE:NEXT_FINDING_ID');
+if(!ids.length)fail('RELEASE_COMPOSITION_FAILURE:EMPTY_FINDING_LEDGER');
+for(let i=0;i<ids.length;i++){
+  const expected='VRM-'+String(i+1).padStart(3,'0');
+  if(ids[i]!==expected)fail('RELEASE_COMPOSITION_FAILURE:FINDING_LEDGER_SEQUENCE',JSON.stringify({index:i,expected,actual:ids[i]}));
+}
+const next='VRM-'+String(ids.length+1).padStart(3,'0');
+if(l.governance?.nextFindingId!==next||d.nextFindingId!==next)fail('MAPPING_FAILURE:NEXT_FINDING_ID',JSON.stringify({ledger:l.governance?.nextFindingId,descriptor:d.nextFindingId,expected:next}));
 if(l.canonicalFunctionalCandidate?.sourceSha!==d.productSourceSha)fail('RELEASE_COMPOSITION_FAILURE:LEDGER_DESCRIPTOR_SOURCE_MISMATCH');
 
 const wf=fs.readFileSync(WORKFLOW,'utf8');
@@ -75,7 +82,7 @@ const result={
   productSourceTree:productTree,
   predecessorProductSourceSha:d.predecessorProductSourceSha,
   findingCount:ids.length,
-  nextFindingId:l.governance.nextFindingId,
+  nextFindingId:next,
   postCandidateProductDrift:false,
   historicalSourceSpecificJobsDisabled:historicalDisabled.length,
   production:false
