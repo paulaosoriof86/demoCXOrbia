@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "READY_FOR_TERMINAL_CERTIFICATION",
+  "status": "HOLD_VRM043_IDENTITY_NAME_DIAGNOSTIC",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -12,8 +12,8 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
-  "terminalCertificationAllowed": true,
-  "activeBlocker": "C3 TERMINAL CERTIFICATION RUN PENDING",
+  "terminalCertificationAllowed": false,
+  "activeBlocker": "VRM-043 ADMIN_REAL_SHOPPER_IDENTITY_NOT_RENDERABLE",
   "nextFindingId": "VRM-043",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RETRY_SAME_C3_TERMINAL_AFTER_CONTROL_TEST_ALIGNMENT",
+  "exactNextAction": "VRM043_READ_ONLY_EXPECTED_VS_OBSERVED_NAME_DIAGNOSTIC",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -83,15 +83,21 @@
     "attempt": 2
   },
   "lastTerminalAttempt": {
-    "runId": 36052744761,
-    "runNumber": 373,
-    "status": "FAIL_PRE_BUILD",
-    "classification": "RELEASE_COMPOSITION_FAILURE",
-    "cause": "stale Gate7 control test expected unmatched platform-only profiles in operational population; VRM-033 requires review-only until exact HR crosswalk",
-    "controlFixCommit": "4d5af6ffd49188f4f2d1269328052300f6f5b39b",
-    "buildCount": 0,
-    "runtimeDeployCount": 0,
-    "hostingDeployCount": 0,
+    "runId": 36053280653,
+    "runNumber": 375,
+    "status": "FAIL_AFTER_DEV_MATERIALIZATION_BEFORE_ARTIFACT",
+    "classification": "MAPPING_FAILURE",
+    "code": "ADMIN_REAL_SHOPPER_IDENTITY_NOT_RENDERABLE",
+    "productSourceSha": "04b288f7eee315fcb865ed86a8fb41786809edf9",
+    "runtimeRevision": "cxorbia-live-hr-dev-00217-v6z",
+    "runtimeDigest": "sha256:5c76c2ca643d95d49fa9f016ebce312d1dcc62621342ca7bf00bf33bd114ceba",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/7d787355f662e453",
+    "hrRevision": "e8ba2ac586ba8a99f6675ffc2ad3fae86bdc70b37aafbe971b611cc9804d2706",
+    "buildCount": 1,
+    "runtimeDeployCount": 1,
+    "hostingDeployCount": 1,
+    "artifactCreated": false,
+    "gate21Run": false,
     "production": false
   }
 }
