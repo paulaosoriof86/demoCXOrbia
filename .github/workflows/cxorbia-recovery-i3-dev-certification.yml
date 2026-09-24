@@ -2009,6 +2009,12 @@ jobs:
         with:
           project_id: cxorbia-backend-dev
 
+      - name: Setup Java 21 for Firestore emulator
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
       - name: Install focal browser and rules proof tooling
         run: |
           set -Eeuo pipefail
