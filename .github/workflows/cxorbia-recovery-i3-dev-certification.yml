@@ -3055,6 +3055,261 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
+  pre-i4-vrm039-source-proof:
+    name: PRE-I4 VRM-039 Resources + Finance final proof — no deploy
+    needs: canonical-candidate-authority
+    if: \${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[pre-i4-vrm039-source-proof]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PROOF_OUT: .tmp/pre-i4-vrm039-source-proof
+      CANONICAL_SOURCE: \${{ needs.canonical-candidate-authority.outputs.source_sha }}
+    steps:
+      - name: Checkout control successor
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Prove exact monotonic VRM039 product diff
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$PROOF_OUT"
+          PREDECESSOR="$(jq -r '.predecessorProductSourceSha' "$CANDIDATE_DESCRIPTOR")"
+          test "$CANONICAL_SOURCE" = "04b288f7eee315fcb865ed86a8fb41786809edf9"
+          test "$PREDECESSOR" = "d02dd90ac9ee361bfdfb0474a05e63f2fa684f07"
+          git merge-base --is-ancestor "$PREDECESSOR" "$CANONICAL_SOURCE"
+          ACTUAL="$(git diff --name-only "$PREDECESSOR" "$CANONICAL_SOURCE" -- app backend/runtime/hr-live-service/test | sort)"
+          EXPECTED="$(printf '%s\n' \
+            'app/adapters/tya-canonical-finance-read-model-v2.js' \
+            'app/core/finanzas-core.js' \
+            'app/modules/finanzas.js' \
+            'backend/runtime/hr-live-service/test/cxorbia-pre-i4-finance-live-source-honorarium.test.mjs' | sort)"
+          test "$ACTUAL" = "$EXPECTED"
+          jq -n -S --arg source "$CANONICAL_SOURCE" --arg predecessor "$PREDECESSOR" \
+            '{decision:"PASS_PRE_I4_VRM039_SOURCE_SCOPE",sourceSha:$source,predecessorSha:$predecessor,productFiles:4,production:false}' \
+            > "$PROOF_OUT/authorization.json"
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Run VRM039 source regressions
+        run: |
+          set -Eeuo pipefail
+          node --check app/adapters/tya-live-source-inplace-apply.js
+          node --check app/adapters/tya-canonical-finance-read-model-v2.js
+          node --check app/core/finanzas-core.js
+          node --check app/modules/finanzas.js
+          node --test backend/runtime/hr-live-service/test/cxorbia-pre-i4-finance-live-source-honorarium.test.mjs | tee "$PROOF_OUT/regression.log"
+
+      - name: Authenticate DEV
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '\${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+
+      - name: Install transient proof dependency
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
+
+      - name: Bind independent config and same HR revision
+        env:
+          GH_TOKEN: \${{ github.token }}
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$PROOF_OUT/config" "$PROOF_OUT/hr"
+          gh run download 36043242781 --repo "$GITHUB_REPOSITORY" --name "cxorbia-pre-i4-vrm039-config-36043242781" --dir "$PROOF_OUT/config"
+          gh run download 36037538874 --repo "$GITHUB_REPOSITORY" --name "cxorbia-pre-i4-vrm037-diagnostic-36037538874" --dir "$PROOF_OUT/hr"
+          test "$(jq -r '.decision' "$PROOF_OUT/config/project-config.json")" = "PASS_PRE_I4_VRM039_PROJECT_CONFIG_READBACK"
+          test "$(jq -r '._runtime.revision' "$PROOF_OUT/hr/prior/hr-fresh.json")" = "834f3c9f36d0f8144507bea234efaa4c7d5ddf461f023d61239525b21de2a8d9"
+
+      - name: Prove Finance against independent config and same HR
+        run: |
+          set -Eeuo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import vm from 'node:vm';
+
+          const OUT=process.env.PROOF_OUT;
+          const config=JSON.parse(fs.readFileSync(OUT+'/config/project-config.json','utf8'));
+          const hr=JSON.parse(fs.readFileSync(OUT+'/hr/prior/hr-fresh.json','utf8'));
+          const visits=Array.isArray(hr.visits)?hr.visits:[];
+          const explicitHon=visits.filter(v=>v.honorario!==null&&v.honorario!==undefined&&v.honorario!==''&&Number.isFinite(Number(v.honorario)));
+          if(visits.length!==704)throw new Error('SOURCE_FAILURE:VRM039_HR_VISIT_COUNT:'+visits.length);
+          if(explicitHon.length!==0)throw new Error('SOURCE_FAILURE:VRM039_EXPECTED_NO_EXPLICIT_HONORARIA:'+explicitHon.length);
+          if(Object.keys(config.honorario||{}).length!==0)throw new Error('SOURCE_FAILURE:VRM039_PROJECT_HONORARIO_NOT_EMPTY');
+          if((config.periods||[]).some(p=>Object.keys(p.honorario||{}).length))throw new Error('SOURCE_FAILURE:VRM039_PERIOD_HONORARIO_NOT_EMPTY');
+
+          const snapshot={
+            sourceSafe:true,imported:false,production:false,
+            tenantId:'tya',projectId:'cinepolis',projectName:'Cinépolis',tenantName:'TyA',
+            projectConfig:{
+              projectId:'cinepolis',projectName:'Cinépolis',
+              countries:Array.isArray(config.countries)&&config.countries.length?config.countries:['GT','HN'],
+              currency:config.currency||{},
+              honorario:config.honorario||{},
+              honorarioRecibe:config.honorarioRecibe||{},
+              boleto:config.boleto||{},comboAmt:config.comboAmt||{}
+            },
+            periods:hr.periods||[],visits,shoppers:hr.shoppers||[],periodOperationalSummary:hr.periodOperationalSummary||[],counts:hr.counts||{}
+          };
+          const data={
+            projects:[],shoppers:[],_visitas:[],_posts:[],currentProjectId:null,currentPeriodId:null,previewMeta:{},
+            period(){return this.projects.find(p=>p.id===this.currentPeriodId)||null;},
+            visitas(){return this._visitas.filter(v=>v.periodId===this.currentPeriodId);}
+          };
+          const context={
+            console,URLSearchParams,location:{search:'?cxTyaPhaseA=1'},
+            CX:{data,dataSource:{badge:()=>({c:'#000',t:'proof'})},BRAND:{},bus:{emit(){}},clienteData:{invalidate(){}}},
+            document:{getElementById(){return null;},documentElement:{setAttribute(){}}},
+            localStorage:{setItem(){}},CustomEvent:class{constructor(type,options){this.type=type;this.detail=options?.detail;}}
+          };
+          context.window=context;context.globalThis=context;context.window.CX=context.CX;context.window.dispatchEvent=()=>{};
+          vm.runInNewContext(fs.readFileSync('app/adapters/tya-live-source-inplace-apply.js','utf8'),context,{filename:'tya-live-source-inplace-apply.js'});
+          context.CX_TYA_APPLY_LIVE_SNAPSHOT(snapshot,{revision:hr._runtime?.revision||'',latestPeriodKey:hr.source?.currentCalendarPeriodKey||''},{reason:'vrm039-proof'});
+          const mapped=context.CX.data._visitas;
+          if(mapped.some(v=>v.honorario===0&&v.honorarioSource==='pending_source'))throw new Error('FUNCTIONAL_DEFECT:VRM039_MAPPED_PENDING_ZERO');
+          const pending=mapped.filter(v=>v.honorarioSource==='pending_source');
+          if(pending.length!==mapped.length)throw new Error('MAPPING_FAILURE:VRM039_EXPECTED_ALL_HONORARIA_PENDING:'+pending.length+'/'+mapped.length);
+
+          const finContext={
+            console,URLSearchParams,location:{search:'?cxTyaPhaseA=1'},
+            CX_DEV_ENTRY_CANONICAL:{canonical:true,protectedRuntime:true,projectId:'cinepolis'},
+            CX_TYA_CUMULATIVE_READ_MODEL:{facets:v=>v.canonicalFacets||{
+              assigned:!!v.shopperId,
+              realized:!!v.realizada||['realizada','cuestionario','submitida','liquidada','pagada'].includes(String(v.estado||'').toLowerCase()),
+              questionnaire:!!v.cuestFecha||['cuestionario','submitida','liquidada','pagada'].includes(String(v.estado||'').toLowerCase()),
+              submitted:!!v.submit||!!v.submittedAt||['submitida','liquidada','pagada'].includes(String(v.estado||'').toLowerCase()),
+              liquidationConfirmed:false,paymentConfirmed:false,cancelled:false
+            }},
+            CX:{
+              data:{financialMatchForVisit(){return null;}},
+              liq:{forProject(){return [];},label:s=>[s,'n'],resumen(){return {};}}
+            }
+          };
+          finContext.window=finContext;finContext.globalThis=finContext;finContext.window.CX=finContext.CX;
+          vm.runInNewContext(fs.readFileSync('app/adapters/tya-canonical-finance-read-model-v2.js','utf8'),finContext,{filename:'tya-canonical-finance-read-model-v2.js'});
+          const currentPeriod=String(hr.source?.currentCalendarPeriodKey||'2026-09');
+          const currentId='cinepolis-'+currentPeriod;
+          const realized=mapped.filter(v=>v.periodKey===currentPeriod && (v.realizada||v.cuestFecha||v.submit||v.submittedAt||['realizada','cuestionario','submitida','liquidada','pagada'].includes(String(v.estado||'').toLowerCase())));
+          const rows=finContext.CX.liq.forProject({period(){return {id:currentId,periodKey:currentPeriod};},visitas(){return realized;}});
+          if(!rows.length)throw new Error('SOURCE_FAILURE:VRM039_NO_REALIZED_FINANCE_ROWS');
+          if(rows.some(r=>r.honorario!==null||r.total!==null||r.honorarioSource!=='pending_source'||r.honorarioSourceKnown!==false))throw new Error('FUNCTIONAL_DEFECT:VRM039_FINANCE_RECOERCED_AMOUNT');
+          if(rows.some(r=>r.reviewRequired!==true||r.amountSource!=='honorarium_pending_source'))throw new Error('FUNCTIONAL_DEFECT:VRM039_FINANCE_NOT_FAIL_CLOSED');
+          const knownReimbursement=rows.filter(r=>Number.isFinite(r.reembolso)&&r.reembolso>0).length;
+
+          const uiSource=fs.readFileSync('app/modules/finanzas.js','utf8');
+          if(/honorarioDevengado\.toLocaleString\(\)/.test(uiSource))throw new Error('VISUAL_DEFECT:VRM039_UI_ZERO_PATH_REMAINS');
+          if(!/Pendiente de fuente/.test(uiSource))throw new Error('VISUAL_DEFECT:VRM039_PENDING_SOURCE_COPY_MISSING');
+
+          fs.writeFileSync(OUT+'/finance-proof.json',JSON.stringify({
+            decision:'PASS_PRE_I4_VRM039_FINANCE_PROOF',
+            sourceSha:process.env.CANONICAL_SOURCE,
+            hrRevision:String(hr._runtime?.revision||''),
+            hrVisits:visits.length,
+            explicitHrHonoraria:explicitHon.length,
+            projectHonorariumKeys:Object.keys(config.honorario||{}),
+            mappedPendingHonoraria:pending.length,
+            currentFinanceRows:rows.length,
+            financeRowsPendingHonorarium:rows.filter(r=>r.honorario===null).length,
+            financeRowsNullTotal:rows.filter(r=>r.total===null).length,
+            knownReimbursementRows:knownReimbursement,
+            fabricatedHonorariumZeros:0,
+            production:false,writes:0,deploys:0
+          },null,2)+'\n');
+          NODE
+
+      - name: Prove Resources metadata persistence, ACK-equivalent readback, update and cleanup
+        run: |
+          set -Eeuo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';
+          import {getFirestore,FieldValue} from 'firebase-admin/firestore';
+
+          const OUT=process.env.PROOF_OUT;
+          if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:'cxorbia-backend-dev'});
+          const db=getFirestore();
+          const id='vrm039-resource-proof-'+process.env.GITHUB_RUN_ID;
+          const ref=db.collection('tenants').doc('tya').collection('resources').doc(id);
+          const scope={tenantId:'tya',projectId:'cinepolis',periodId:'cinepolis-2026-09'};
+          let writes=0;
+          const prior=await ref.get();
+          if(prior.exists)throw new Error('PERSISTENCE_FAILURE:VRM039_FIXTURE_PREEXISTS:'+id);
+          try{
+            const create={
+              id,...scope,resourceType:'project_resource',status:'active',
+              n:'VRM039 Resource Proof',tipo:'text',body:'Proof fixture only',
+              visibleRoles:['admin','shopper'],targetAll:false,
+              version:1,lastIdempotencyKey:'vrm039.create:'+process.env.GITHUB_RUN_ID,
+              proofFixture:true,production:false,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()
+            };
+            await ref.set(create,{merge:false});writes++;
+            let snap=await ref.get();
+            if(!snap.exists||snap.data().status!=='active'||snap.data().version!==1||snap.data().projectId!=='cinepolis')throw new Error('PERSISTENCE_FAILURE:VRM039_RESOURCE_CREATE_READBACK');
+
+            await db.runTransaction(async tx=>{
+              const cur=await tx.get(ref);
+              if(!cur.exists)throw new Error('PERSISTENCE_FAILURE:VRM039_RESOURCE_UPDATE_MISSING');
+              const d=cur.data()||{};
+              tx.set(ref,{...d,n:'VRM039 Resource Proof Updated',version:Number(d.version||0)+1,lastIdempotencyKey:'vrm039.update:'+process.env.GITHUB_RUN_ID,updatedAt:new Date().toISOString()},{merge:false});
+            });writes++;
+            snap=await ref.get();
+            if(snap.data()?.n!=='VRM039 Resource Proof Updated'||snap.data()?.version!==2)throw new Error('PERSISTENCE_FAILURE:VRM039_RESOURCE_UPDATE_READBACK');
+
+            await db.runTransaction(async tx=>{
+              const cur=await tx.get(ref);if(!cur.exists)throw new Error('PERSISTENCE_FAILURE:VRM039_RESOURCE_DELETE_MISSING');
+              const d=cur.data()||{};
+              tx.set(ref,{...d,status:'deleted',version:Number(d.version||0)+1,lastIdempotencyKey:'vrm039.delete:'+process.env.GITHUB_RUN_ID,deletedAt:new Date().toISOString(),updatedAt:new Date().toISOString()},{merge:false});
+            });writes++;
+            snap=await ref.get();
+            if(snap.data()?.status!=='deleted'||snap.data()?.version!==3)throw new Error('PERSISTENCE_FAILURE:VRM039_RESOURCE_SOFT_DELETE_READBACK');
+          } finally {
+            const cur=await ref.get();
+            if(cur.exists){await ref.delete();writes++;}
+          }
+          const after=await ref.get();
+          if(after.exists)throw new Error('PERSISTENCE_FAILURE:VRM039_RESOURCE_CLEANUP_NOT_ZERO');
+
+          const source=fs.readFileSync('app/core/backend-resources.js','utf8');
+          for(const required of [
+            "item.targetAll===true||arr(item.visibleRoles).map(str).includes(role())",
+            "providerAck:true",
+            "RESOURCE_STORAGE_NOT_AUTHORIZED",
+            "lastIdempotencyKey"
+          ]) if(!source.includes(required))throw new Error('SOURCE_FAILURE:VRM039_RESOURCE_CONTRACT_MISSING:'+required);
+
+          fs.writeFileSync(OUT+'/resources-proof.json',JSON.stringify({
+            decision:'PASS_PRE_I4_VRM039_RESOURCES_PROOF',
+            fixtureId:id,projectId:'cinepolis',periodId:'cinepolis-2026-09',
+            createReadback:true,updateReadback:true,softDeleteReadback:true,cleanupZero:true,
+            roleVisibilityContract:true,idempotencyContract:true,storageFailClosedContract:true,
+            writes,realResourcesMutated:0,production:false,deploys:0
+          },null,2)+'\n');
+          NODE
+
+      - name: Seal VRM039 proof
+        run: |
+          set -Eeuo pipefail
+          test "$(jq -r '.decision' "$PROOF_OUT/finance-proof.json")" = "PASS_PRE_I4_VRM039_FINANCE_PROOF"
+          test "$(jq -r '.fabricatedHonorariumZeros' "$PROOF_OUT/finance-proof.json")" = "0"
+          test "$(jq -r '.decision' "$PROOF_OUT/resources-proof.json")" = "PASS_PRE_I4_VRM039_RESOURCES_PROOF"
+          test "$(jq -r '.cleanupZero' "$PROOF_OUT/resources-proof.json")" = "true"
+          jq -n -S \
+            --arg source "$CANONICAL_SOURCE" \
+            --arg hr "$(jq -r '.hrRevision' "$PROOF_OUT/finance-proof.json")" \
+            '{decision:"PASS_PRE_I4_VRM039_RESOURCE_FINANCE_PROOF",sourceSha:$source,hrRevision:$hr,finance:"PASS",resources:"PASS",resourceFixtureCleanupZero:true,runtimeBuilds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0,production:false}' \
+            > "$PROOF_OUT/final.json"
+
+      - name: Upload VRM039 proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-pre-i4-vrm039-source-proof-\${{ github.run_id }}
+          path: \${{ env.PROOF_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
   pre-i4-vrm036-source-proof:
     name: PRE-I4 VRM-036 certification evidence proof — no deploy
     needs: canonical-candidate-authority

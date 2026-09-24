@@ -4,16 +4,16 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "d02dd90ac9ee361bfdfb0474a05e63f2fa684f07",
+  "productSourceSha": "04b288f7eee315fcb865ed86a8fb41786809edf9",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
-  "predecessorProductSourceSha": "8d764168727832d579d20ceb26580d88c41df24d",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V8_2026-09-24.json",
-  "findingsLedgerExpectedGitBlob": "7e9cba65e0681afedb1b2ea95765693f9fbc9d41",
+  "predecessorProductSourceSha": "d02dd90ac9ee361bfdfb0474a05e63f2fa684f07",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V9_2026-09-24.json",
+  "findingsLedgerExpectedGitBlob": "dd19b4054aca158acb58d502d2496b155b849df0",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-039",
+  "activeBlocker": "VRM-039 FINAL RESOURCE+FINANCE PROOF",
   "nextFindingId": "VRM-043",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "READ_INDEPENDENT_PROJECT_CONFIG_THEN_VRM039_RESOURCE_FINANCE_PROOF",
+  "exactNextAction": "RUN_VRM039_RESOURCE_FINANCE_FINAL_PROOF_NO_DEPLOY",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -43,10 +43,10 @@
     "findingIds": [
       "VRM-039"
     ],
-    "sourceSha": "d02dd90ac9ee361bfdfb0474a05e63f2fa684f07",
-    "predecessorSha": "8d764168727832d579d20ceb26580d88c41df24d",
-    "productFiles": 2,
+    "sourceSha": "04b288f7eee315fcb865ed86a8fb41786809edf9",
+    "predecessorSha": "d02dd90ac9ee361bfdfb0474a05e63f2fa684f07",
+    "productFiles": 4,
     "deploys": 0,
-    "contract": "explicit HR honorarium > independent project-country config > pending_source; never fabricated zero"
+    "contract": "unknown honorarium/total/margin/CxP remain pending_source/null; never fabricated zero; known reimbursement preserved"
   }
 }
