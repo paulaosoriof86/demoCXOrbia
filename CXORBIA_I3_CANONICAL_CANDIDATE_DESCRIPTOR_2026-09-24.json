@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_P0_CLOSURE",
+  "status": "HOLD_C3_TERMINAL_REPROOF",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "04b288f7eee315fcb865ed86a8fb41786809edf9",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "d02dd90ac9ee361bfdfb0474a05e63f2fa684f07",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V9_2026-09-24.json",
-  "findingsLedgerExpectedGitBlob": "dd19b4054aca158acb58d502d2496b155b849df0",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V10_2026-09-24.json",
+  "findingsLedgerExpectedGitBlob": "81ccb97085e3c92eca624f8fc48d2faa14c19a8c",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-039 FINAL RESOURCE+FINANCE PROOF",
+  "activeBlocker": "C3 TERMINAL CUMULATIVE REPROOF: VRM-033/034/035/038/040/041 + MODULE_TRUTH_20_20",
   "nextFindingId": "VRM-043",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN_VRM039_RESOURCE_FINANCE_FINAL_PROOF_NO_DEPLOY",
+  "exactNextAction": "BUILD_NEW_INDEPENDENT_MODULE_TRUTH_THEN_ENABLE_ONE_TERMINAL_CERTIFICATION_RUN",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
