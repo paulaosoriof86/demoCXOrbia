@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM043_CONTROL_FIX_NO_DEPLOY_PROOF",
+  "status": "HOLD_C3_TERMINAL_RESUME_ARTIFACT_WIRING",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-043 CONTROL ORACLE REPROOF ON EXISTING DEV",
+  "activeBlocker": "C3 TERMINAL RESUME PACKAGING — EXISTING RUN375 MATERIALIZATION",
   "nextFindingId": "VRM-044",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN_VRM043_CONTROL_ONLY_NO_DEPLOY_FULL_ACCEPTANCE_SEMANTIC_FOCAL_ON_EXISTING_DEV",
+  "exactNextAction": "WIRE_SAME_CERTIFY_JOB_TO_PACKAGE_EXISTING_DEV_WITHOUT_REBUILD_THEN_ENABLE_ONCE",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -107,7 +107,13 @@
     "humanNamesExact": 218,
     "humanNameMismatches": 0,
     "unresolvedReviewOnly": 1,
-    "productSourceChanged": false
+    "productSourceChanged": false,
+    "state": "PROVEN_CLOSED_CONTROL_FALSE_POSITIVE_NO_PRODUCT_CHANGE",
+    "terminalReceipt": "CXORBIA_I3_VRM043_TERMINAL_RECEIPT_2026-09-24.json",
+    "terminalControlRunId": 36072848792,
+    "terminalControlArtifactId": 10839078428,
+    "terminalControlArtifactDigest": "sha256:046c863eadf25ad632f511b66579a650ccd309a7c6f9e38a950c77fbf22587aa",
+    "hrRevision": "2b0114c39d64a0e3697667572de0dfdcffe476c5cd8112449fcab1da24e1085d"
   },
   "lastControlAttempt": {
     "runId": 36072685742,
@@ -118,6 +124,22 @@
     "productChanged": false,
     "builds": 0,
     "deploys": 0,
+    "production": false
+  },
+  "findingReceipts": {
+    "VRM043": "CXORBIA_I3_VRM043_TERMINAL_RECEIPT_2026-09-24.json"
+  },
+  "terminalResume": {
+    "mode": "EXISTING_DEV_NO_REBUILD",
+    "buildProvenanceRunId": 36053280653,
+    "buildProvenanceRunNumber": 375,
+    "runtimeRevision": "cxorbia-live-hr-dev-00217-v6z",
+    "runtimeDigest": "sha256:5c76c2ca643d95d49fa9f016ebce312d1dcc62621342ca7bf00bf33bd114ceba",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/7d787355f662e453",
+    "controlProofRunId": 36072848792,
+    "controlProofArtifactId": 10839078428,
+    "rebuildAllowed": false,
+    "redeployAllowed": false,
     "production": false
   }
 }
