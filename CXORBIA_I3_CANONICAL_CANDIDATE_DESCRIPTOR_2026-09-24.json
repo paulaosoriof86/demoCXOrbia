@@ -48,5 +48,15 @@
     "productFiles": 4,
     "deploys": 0,
     "contract": "unknown honorarium/total/margin/CxP remain pending_source/null; never fabricated zero; known reimbursement preserved"
+  },
+  "preterminalRequest": {
+    "revision": 2,
+    "mode": "READ_ONLY_PATH_BOUND_MODULE_TRUTH",
+    "expectedDecision": "PASS_C3_PRETERMINAL_MODULE_TRUTH",
+    "productSourceSha": "04b288f7eee315fcb865ed86a8fb41786809edf9",
+    "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V11_2026-09-24.json",
+    "production": false,
+    "writes": 0,
+    "deploys": 0
   }
 }
