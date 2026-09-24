@@ -21,9 +21,10 @@ if(TREE&&git('rev-parse',SOURCE+'^{tree}')!==TREE)throw new Error('RELEASE_COMPO
 const findings=ledger.findings||{};
 const moduleMap=new Map((m.modules||[]).map(x=>[x.domain,x]));
 const pathFindingEntries=(path)=>Object.entries(findings).filter(([,v])=>{
-  const owners=[...(v?.owners||[]),...(v?.sourceFixFiles||[])].map(String);
+  const owners=[...(v?.owners||[]),...(v?.sourceFixFiles||[]),...(v?.productFiles||[])].map(String);
   return owners.includes(path);
 });
+const isProvenState=state=>{const x=String(state||'');return !/NOT_PROVEN|PENDING|REQUIRED|HOLD/.test(x)&&/PROVEN|CLOSED|ALREADY_PROVEN/.test(x);};
 const collectRefs=(obj,out=new Set(),key='')=>{
   if(obj==null)return out;
   if(Array.isArray(obj)){for(const v of obj)collectRefs(v,out,key);return out;}
@@ -45,7 +46,7 @@ const sourceFiles=(m.sourceFiles||[]).map(orig=>{
   ].filter(Boolean));
   const findingEntries=pathFindingEntries(f.path);
   for(const [,finding] of findingEntries){
-    if(/PROVEN/.test(String(finding?.state||'')))collectRefs(finding,fileRefs);
+    if(isProvenState(finding?.state))collectRefs(finding,fileRefs);
   }
   let matched=null;
   for(const ref of fileRefs){
@@ -69,7 +70,7 @@ const sourceFiles=(m.sourceFiles||[]).map(orig=>{
     authorityRows.push({path:f.path,domain:f.domain,matchedSource:matched,classification:f.classification});
   }else if(findingEntries.length){
     const states=findingEntries.map(([id,v])=>({id,state:String(v?.state||'')}));
-    const allProven=states.every(x=>/PROVEN/.test(x.state));
+    const allProven=states.every(x=>isProvenState(x.state));
     if(allProven)unauthorized.push({path:f.path,domain:f.domain,actual,reason:'PROVEN_FINDING_WITHOUT_PATH_BOUND_BLOB_AUTHORITY',states});
     else{
       f.approvedSourceCommit=null;f.approvedBlob=null;f.provenanceIndependent=false;
