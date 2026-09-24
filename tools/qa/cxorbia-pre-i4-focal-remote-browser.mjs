@@ -91,7 +91,7 @@ async function signInMember(member,kind,route,options={}){
   if(kind==='shopper'&&Number(one.stats?.total||0)!==7)throw new Error('MAPPING_FAILURE:PAULA_HISTORY_REGRESSION:'+JSON.stringify(one.stats));
 
   const routes=options.routes||(kind==='admin'
-    ? ['midia','dashboard','visitas','postulaciones','shoppers','financiero','liquidaciones','documentos','cert']
+    ? ['midia','dashboard','visitas','postulaciones','reservas','shoppers','financiero','liquidaciones','documentos','cert']
     : ['midia','miperfil','visitas','reservas','misvisitas','beneficios','mireportes','documentos','cert','tablon']);
   const routeEvidence={};
   for(const r of routes){
@@ -112,6 +112,7 @@ async function signInMember(member,kind,route,options={}){
       const phase=code=>typeof d.phaseFlow==='function'?d.phaseFlow(code):null;
       const ranking=typeof d.shopperRankingRows==='function'?d.shopperRankingRows():[];
       const population=typeof d.shoppersFor==='function'?d.shoppersFor().filter(s=>typeof d.shopperDataLevel!=='function'||d.shopperDataLevel(s)!=='protected_reference'):[];
+      const outOfRangeCount=(r==='dashboard'||r==='visitas')&&typeof d.visitFacets==='function'?(typeof d.visitas==='function'?d.visitas():[]).filter(v=>d.visitFacets(v)?.outOfRange===true).length:null;
       const stats=s=>s&&typeof d.shopperStats==='function'?d.shopperStats(s.id||s.shopperId):null;
       const identityRows=list(identityCases).map(ref=>{
         const row=(d.shoppers||[]).find(s=>String(s.id||s.shopperId||'')===String(ref.sourceShopperId||'')||list(s.legacyLiveShopperIds).map(String).includes(String(ref.sourceShopperId||'')))||null;
@@ -121,6 +122,13 @@ async function signInMember(member,kind,route,options={}){
       const liqs=r==='liquidaciones'&&window.CX?.liq?.forProject?window.CX.liq.forProject(d):null;
       const sid=String(c.shopperId||'');
       const own=kind==='shopper'&&sid&&typeof d.visitsForShopper==='function'?d.visitsForShopper(sid):[];
+      const sessionProfile=kind==='shopper'?(d.__sessionShopperProfile||((d.shoppers||[]).find(x=>String(x.id||x.shopperId||'')===sid))||null):null;
+      const sessionProfileName=String(sessionProfile?.nombre||sessionProfile?.name||'');
+      const profileVisible=kind==='shopper'&&r==='miperfil'&&!!sessionProfileName&&norm(body).includes(norm(sessionProfileName));
+      const ownIds=new Set(own.map(v=>String(v.id||v.visitId||'')));
+      const ownBenefits=kind==='shopper'&&sid&&window.CX?.liq?.forProject?window.CX.liq.forProject(d).filter(l=>ownIds.has(String(l.visitaId||l.visitId||''))):[];
+      const benefitBranchVisibleCount=r==='beneficios'?ownBenefits.filter(l=>norm(body).includes(norm(l.sucursal||''))).length:null;
+      const qaReservationVisible=r==='reservas'&&/I3 QA TEMP|\bGT QA\b/i.test(body);
       const periodPosts=(d._posts||[]).filter(x=>String(d.recordPeriodId?d.recordPeriodId(x):(x.periodId||x.projectId)||'')===String(d.currentPeriodId||''));
       const posts=kind==='shopper'&&sid?periodPosts.filter(x=>String(x.shopperId||'')===sid):[];
       const visitForPost=x=>(d._visitas||[]).find(v=>String(v.id||v.visitId||'')===String(x?.visitId||x?.visitaId||''))||null;
@@ -181,15 +189,18 @@ async function signInMember(member,kind,route,options={}){
       return {
         route:String(window.CX?.session?.view||''),projectId:String(d.currentProjectId||''),periodId:String(d.currentPeriodId||''),sourceRevision:String(d.previewMeta?.sourceRevision||''),
         debug:!!document.getElementById('cxBackendPreviewStatus'),lab:!!document.getElementById('cx-dev-lab'),blocked:body.includes('Fuente de datos no disponible'),
-        technicalVisible:/AUTH_READY|CLAIMS_READY|VISITID|HRROWID|FINANCIALSOURCESTATUS|pending_or_review|pending_source_confirmation|CXORBIA DEV\s*·\s*LABORATORIO/i.test(body),
+        technicalVisible:/AUTH_READY|CLAIMS_READY|VISITID|HRROWID|FINANCIALSOURCESTATUS|pending_or_review|pending_source_confirmation|CXORBIA DEV\s*·\s*LABORATORIO|máquina canónica HR|Estado canónico|tenant\s+\S+\s*·\s*rol\s+\S+\s*·\s*modo|Aprobada por\s+undefined/i.test(body),
         bodyHasDemoApproval:/Aprobado \(demo\)|Certificados \(demo\)|En progreso \(demo\)/i.test(body),
         bodyHasStaticSeed:staticResourceSeedIds.length>0,
         phaseGT:r==='dashboard'?phase('GT'):null,phaseHN:r==='dashboard'?phase('HN'):null,
         ranking:r==='dashboard'?{rows:ranking.length,population:population.length,missingRating:ranking.filter(x=>x.ratingAvailable===false).length}:null,
+        shopperPopulation:r==='shoppers'?population.length:null,
+        outOfRangeCount,
+        qaReservationVisible,
         identityCases:r==='shoppers'?identityRows:null,
         finance:finance?{GT:finance.GT||null,HN:finance.HN||null}:null,
         liquidations:Array.isArray(liqs)?{count:liqs.length,GT:liqs.filter(x=>x.pais==='GT').length,HN:liqs.filter(x=>x.pais==='HN').length,paymentsConfirmed:liqs.filter(x=>x.paymentConfirmed===true).length,liquidationsConfirmed:liqs.filter(x=>x.liquidationConfirmed===true).length}:null,
-        shopper:kind==='shopper'?{stats:typeof d.shopperStats==='function'?d.shopperStats(sid):null,ownCount:own.length,duplicateVisits:own.length-new Set(own.map(v=>String(v.id||v.visitId))).size,postCount:postRows.length,paseoCayala:postRows.some(x=>/paseo cayal/i.test(norm(x.sucursal))),postRows,visibleAppStates:shopperVisibleAppStates,misvisitasDiagnostics}:null,
+        shopper:kind==='shopper'?{stats:typeof d.shopperStats==='function'?d.shopperStats(sid):null,ownCount:own.length,duplicateVisits:own.length-new Set(own.map(v=>String(v.id||v.visitId))).size,postCount:postRows.length,paseoCayala:postRows.some(x=>/paseo cayal/i.test(norm(x.sucursal))),postRows,visibleAppStates:shopperVisibleAppStates,misvisitasDiagnostics,profileName:sessionProfileName,profileVisible,benefitExpectedCount:ownBenefits.length,benefitBranchVisibleCount}:null,
         postulationSync:r==='postulaciones'?{expectedStates:periodPostRows.map(x=>x.syncState).sort(),visibleStates:adminVisiblePostSyncStates.slice().sort(),expectedConflicts:periodPostRows.filter(x=>x.syncState==='conflict_review_required').length,visibleConflicts:adminVisiblePostSyncStates.filter(x=>x==='conflict_review_required').length}:null,
         resources:r==='documentos'?{count:resourceRows.length,names:resourceRows.map(x=>x.name),rows:resourceRows,staticResourceSeedIds,status:window.CX_BACKEND_RESOURCES_STATUS||null,storage:window.CX?.backendResources?.storageStatus?.()||null}:null,
         certification:r==='cert'?{sourceStatus:String(certEvidence.sourceStatus||''),evidenceCandidateCount:Number(certEvidence.evidenceCandidateCount||0),carryoverConfirmed:Number(certEvidence.carryoverConfirmed||0),eligibilityGranted:Number(certEvidence.eligibilityGranted||0),bank:window.CX?.certStore?.bank?.(d.currentPeriodId)||null}:null,
@@ -206,16 +217,26 @@ async function signInMember(member,kind,route,options={}){
         if(!p||p.total!==e.total||p.asign?.[0]!==e.assigned||p.agend?.[0]!==e.scheduled||p.real?.[0]!==e.realized||p.cuest?.[0]!==e.questionnaire||p.submit?.[0]!==e.submitted||p.liq?.[0]!==e.liquidationConfirmed)throw new Error('MAPPING_FAILURE:DASHBOARD_'+code+':'+JSON.stringify({observed:p,expected:e,hrRevision}));
       }
       if(info.ranking.rows!==info.ranking.population)throw new Error('MAPPING_FAILURE:TOP_SHOPPER_SILENT_EXCLUSION:'+JSON.stringify(info.ranking));
+      const expectedOutOfRange=Number(reference?.countries?.GT?.outOfRange||0)+Number(reference?.countries?.HN?.outOfRange||0);
+      if(Number(info.outOfRangeCount)!==expectedOutOfRange)throw new Error('MAPPING_FAILURE:DASHBOARD_OUT_OF_RANGE:'+JSON.stringify({observed:info.outOfRangeCount,expected:expectedOutOfRange,hrRevision}));
     }
     if(r==='shoppers'){
       const cases=arr(info.identityCases);
       if(cases.length!==(reference?.identityCases||[]).length||cases.some(x=>!x.row))throw new Error('MAPPING_FAILURE:EXACT_HR_IDENTITY_MISSING:'+JSON.stringify(cases));
+      if(Number.isFinite(Number(reference?.shopperPopulation))&&Number(info.shopperPopulation)!==Number(reference.shopperPopulation))throw new Error('MAPPING_FAILURE:SHOPPER_POPULATION:'+JSON.stringify({observed:info.shopperPopulation,expected:reference.shopperPopulation}));
       if(new Set(cases.map(x=>x.row.id)).size!==cases.length)throw new Error('MAPPING_FAILURE:EXACT_HR_IDENTITY_COLLISION:'+JSON.stringify(cases));
       for(const x of cases){
         if(!x.row.legacyLiveShopperIds.includes(x.sourceShopperId)&&x.row.id!==x.sourceShopperId)throw new Error('MAPPING_FAILURE:EXACT_HR_CROSSWALK_MISSING:'+JSON.stringify(x));
+        const nn=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
+        if(nn(x.row.name)!==nn(x.expectedName))throw new Error('MAPPING_FAILURE:EXACT_HR_HUMAN_NAME_'+x.sourceShopperId+':'+JSON.stringify(x));
         if(Number(x.row.stats?.total)!==x.expectedTotal||Number(x.row.stats?.realizadas)!==x.expectedRealized)throw new Error('MAPPING_FAILURE:EXACT_HR_HISTORY_'+x.sourceShopperId+':'+JSON.stringify(x));
       }
     }
+    if(r==='visitas'){
+      const expectedOutOfRange=Number(reference?.countries?.GT?.outOfRange||0)+Number(reference?.countries?.HN?.outOfRange||0);
+      if(Number(info.outOfRangeCount)!==expectedOutOfRange)throw new Error('MAPPING_FAILURE:VISITAS_OUT_OF_RANGE:'+JSON.stringify({observed:info.outOfRangeCount,expected:expectedOutOfRange,hrRevision}));
+    }
+    if(r==='reservas'&&kind==='admin'&&info.qaReservationVisible)throw new Error('PERSISTENCE_FAILURE:QA_RESERVATION_VISIBLE');
     if(r==='financiero'){
       for(const [code,o] of [['GT',info.finance?.GT],['HN',info.finance?.HN]]){
         const e=reference?.finance?.[code];
@@ -240,6 +261,9 @@ async function signInMember(member,kind,route,options={}){
     }
     if(kind==='shopper'){
       if(Number(info.shopper?.stats?.total)!==7||info.shopper?.ownCount!==7||info.shopper?.duplicateVisits!==0)throw new Error('MAPPING_FAILURE:SHOPPER_UNIVERSE:'+JSON.stringify(info.shopper));
+      if(/^shopper_(?:gt|hn|sv|ni)_|^shp[-_]/i.test(String(info.shopper?.profileName||'')))throw new Error('MAPPING_FAILURE:SHOPPER_PROFILE_TECHNICAL_NAME:'+JSON.stringify(info.shopper));
+      if(r==='miperfil'&&info.shopper?.profileVisible!==true)throw new Error('MAPPING_FAILURE:SHOPPER_PROFILE_NOT_VISIBLE:'+JSON.stringify(info.shopper));
+      if(r==='beneficios'&&Number(info.shopper?.benefitExpectedCount||0)>0&&Number(info.shopper?.benefitBranchVisibleCount||0)<1)throw new Error('MAPPING_FAILURE:SHOPPER_BENEFITS_NOT_VISIBLE:'+JSON.stringify(info.shopper));
       if(r==='misvisitas'){
         const expected=arr(info.shopper?.postRows).map(x=>String(x.syncState||'')).sort(),visible=arr(info.shopper?.visibleAppStates).map(String).sort();
         if(Number(info.shopper?.stats?.postulaciones||0)!==Number(info.shopper?.postCount||0)||JSON.stringify(expected)!==JSON.stringify(visible)||info.shopper?.paseoCayala!==true)throw new Error('MAPPING_FAILURE:SHOPPER_POSTULATION_STATE_VISIBILITY:'+JSON.stringify(info.shopper));

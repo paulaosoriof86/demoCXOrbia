@@ -152,24 +152,16 @@ try{
    if(originalPeriod){if(typeof d.setCurrentPeriod==='function')d.setCurrentPeriod(originalPeriod);else d.setProject(originalPeriod);window.CX.router.nav('dashboard');await sleep(250);}
    const finance={modelReady:window.CX_PROJECT_FINANCIAL_MODEL_CONTRACT?.ready===true,configurationReady:window.CX_PROJECT_FINANCIAL_CONFIGURATION_MATERIALIZATION?.ready===true,readBridge:d.__financeReadBridge===true,canonicalPeriod:String(window.CX?.fin?.canonCurrentId?.()||'')===String(d.currentPeriodId||'')};
    finance.ok=finance.modelReady&&finance.configurationReady&&finance.readBridge&&finance.canonicalPeriod;
-   let reservations={ok:false,created:false,statusAck:false,deleted:false,source:String(window.CX_TYA_CANONICAL_RESERVATIONS?.source||''),mutationsEnabled:window.CX_TYA_CANONICAL_RESERVATIONS?.mutationsEnabled===true,error:null};
-   let createdId='';
-   try{
-     const shopper=(Array.isArray(d.shoppers)?d.shoppers:[]).find(x=>String(x?.canonicalShopperId||x?.id||x?.shopperId||'').trim());
-     if(!shopper)throw new Error('QA_SHOPPER_MISSING');
-     const sid=String(shopper.canonicalShopperId||shopper.id||shopper.shopperId),period=window.CX?.reservas?.periodoActual?.(),branch='i3-qa-'+Date.now();
-     const created=await window.CX.reservas.reservar(null,{sucursalId:branch,sucursal:'I3 QA TEMP',ciudad:'QA',pais:String(shopper.pais||shopper.country||'GT'),periodo:period,shopperId:sid,shopper:String(shopper.nombre||shopper.name||'QA')});
-     if(created?.dup)throw new Error('QA_RESERVATION_UNEXPECTED_DUPLICATE');
-     createdId=String(created?.r?.id||'');reservations.created=Boolean(created?.providerAck&&createdId);
-     const updated=await window.CX.reservas.setEstado(null,createdId,'asignada',{shopperId:sid,shopper:String(shopper.nombre||shopper.name||'QA')});
-     reservations.statusAck=String(updated?.estado||updated?.status)==='asignada';
-     await window.CX.reservas.remove(null,createdId);
-     reservations.deleted=!window.CX.reservas.list().some(x=>String(x?.id||x?.reservationId)===createdId);
-     reservations.ok=reservations.created&&reservations.statusAck&&reservations.deleted&&reservations.source==='durable_provider'&&reservations.mutationsEnabled;
-   }catch(e){
-     reservations.error=String(e?.message||e).slice(0,240);
-     if(createdId){try{await window.CX.reservas.remove(null,createdId)}catch{}}
-   }
+   const qaRows=window.CX?.reservas?.list?window.CX.reservas.list().filter(x=>String(x?.sucursal||'')==='I3 QA TEMP'||String(x?.ciudad||'')==='QA'||String(x?.sucursalId||x?.branchId||'').startsWith('i3-qa-')):[];
+   const reservations={
+     ok:qaRows.length===0&&String(window.CX_TYA_CANONICAL_RESERVATIONS?.source||'')==='durable_provider'&&window.CX_TYA_CANONICAL_RESERVATIONS?.mutationsEnabled===true,
+     created:false,statusAck:false,deleted:false,
+     source:String(window.CX_TYA_CANONICAL_RESERVATIONS?.source||''),
+     mutationsEnabled:window.CX_TYA_CANONICAL_RESERVATIONS?.mutationsEnabled===true,
+     readOnlyHumanAcceptance:true,
+     qaResidueIds:qaRows.map(x=>String(x?.id||x?.reservationId||'')),
+     error:qaRows.length?'QA_RESERVATION_RESIDUE_VISIBLE':null
+   };
    return {postulations,periods,dashboardPeriodsOk:periods.length>=2&&periods.every(x=>x.ok),finance,reservations};
  },durablePosts.length);
  write('i3-functional-probes.json',{decision:probe.postulations.ok&&probe.dashboardPeriodsOk&&probe.finance.ok&&probe.reservations.ok?'PASS_I3_ATOMIC_FUNCTIONAL_PROBES':'HOLD_I3_ATOMIC_FUNCTIONAL_PROBES',sourceSha:SOURCE,sourceRevision:revision,production:false,probe});

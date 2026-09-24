@@ -96,3 +96,10 @@ test('PRE-I4 VRM-041 approved postulation never renders an undefined approval ac
   assert.match(s,/Aprobación registrada/);
 });
 
+test('PRE-I4 VRM-034 human acceptance is read-only for reservations',()=>{
+  const s=read('RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs');
+  assert.doesNotMatch(s,/CX\.reservas\.reservar\(/);
+  assert.match(s,/readOnlyHumanAcceptance:true/);
+  assert.match(s,/QA_RESERVATION_RESIDUE_VISIBLE/);
+});
+
