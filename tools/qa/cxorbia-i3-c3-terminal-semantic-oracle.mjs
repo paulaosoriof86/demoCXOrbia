@@ -8,7 +8,8 @@ const PROJECT=String(process.env.C3_FIREBASE_PROJECT||'cxorbia-backend-dev').tri
 const TENANT=String(process.env.C3_TENANT_ID||'tya').trim();
 const PROJECT_ID=String(process.env.C3_PROJECT_ID||'cinepolis').trim();
 const EXPECTED_REV=String(process.env.C3_HR_REVISION||'').trim();
-if(!OUT||!HR_FILE||!EXPECTED_REV)throw new Error('ENVIRONMENT_FAILURE:C3_SEMANTIC_ORACLE_ENV');
+const HOST=String(process.env.C3_HOSTING_URL||'').replace(/\/$/,'');
+if(!OUT||!HR_FILE||!EXPECTED_REV||!HOST)throw new Error('ENVIRONMENT_FAILURE:C3_SEMANTIC_ORACLE_ENV');
 const raw=JSON.parse(fs.readFileSync(HR_FILE,'utf8'));
 const hr=raw?.snapshot||raw?.data||raw;
 const revision=String(raw?._runtime?.revision||hr?._runtime?.revision||hr?.sourceRevision||'');
@@ -66,13 +67,25 @@ const country=code=>{
 };
 const GT=country('GT'),HN=country('HN');
 const technical=x=>/^shopper_(?:gt|hn|sv|ni)_[a-z0-9]+$/i.test(String(x||''))||/^shp[-_][a-z0-9]+$/i.test(String(x||''));
-const sourceShoppers=shoppers.map(s=>({sourceShopperId:String(s?.shopperId||s?.id||''),name:String(s?.nombre||s?.name||'')})).filter(x=>x.sourceShopperId);
-const badNames=sourceShoppers.filter(x=>!x.name||technical(x.name));
-if(badNames.length)throw new Error('SOURCE_FAILURE:C3_HR_HUMAN_NAMES_UNAVAILABLE:'+JSON.stringify(badNames.slice(0,10)));
-const identityCases=sourceShoppers.map(x=>{
+const humanName=x=>{const n=String(x||'').trim();return !!n&&n!=='Shopper protegido'&&!technical(n);};
+const identityResp=await fetch(HOST+'/api/tya/'+encodeURIComponent(PROJECT_ID)+'/hr-live?format=json&view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV&c3identity='+Date.now(),{headers:{'cache-control':'no-cache'}});
+if(!identityResp.ok)throw new Error('SOURCE_FAILURE:C3_OPERATIONAL_IDENTITY_HTTP_'+identityResp.status);
+const identityPayload=await identityResp.json(),identityHr=identityPayload?.snapshot||identityPayload?.data||identityPayload;
+const identityRevision=String(identityPayload?._runtime?.revision||identityHr?._runtime?.revision||identityHr?.sourceRevision||'');
+const operationalShoppers=Array.isArray(identityHr?.shoppers)?identityHr.shoppers:[];
+if(identityRevision!==revision||identityHr?.operationalIdentityPreview!==true||String(identityHr?.operationalIdentityScope||'')!=='display_name_only'||operationalShoppers.length!==shoppers.length)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OPERATIONAL_IDENTITY_AUTHORITY_DESYNC');
+const sourceShoppers=operationalShoppers.map(s=>({sourceShopperId:String(s?.shopperId||s?.id||''),name:String(s?.nombre||s?.name||s?.displayName||s?.fullName||'')})).filter(x=>x.sourceShopperId);
+const humanIdentityRows=sourceShoppers.filter(x=>humanName(x.name));
+const unresolvedIdentityRows=sourceShoppers.filter(x=>!humanName(x.name));
+const identityCases=humanIdentityRows.map(x=>{
   const linked=visits.filter(v=>String(v?.shopperId||'')===x.sourceShopperId);
   return {...x,total:linked.length,realized:linked.filter(realized).length};
 });
+const unresolvedIdentityCases=unresolvedIdentityRows.map(x=>({
+  sourceShopperId:x.sourceShopperId,
+  expectedReviewReason:'human_display_name_unresolved',
+  expectedVisibleName:'Identidad pendiente de revisión'
+}));
 const reference={
   countries:{GT,HN},
   finance:{GT:GT.finance,HN:HN.finance},
@@ -81,7 +94,8 @@ const reference={
     paymentsConfirmed:GT.paymentConfirmed+HN.paymentConfirmed,
     liquidationsConfirmed:GT.liquidationConfirmed+HN.liquidationConfirmed
   },
-  identityCases,shopperPopulation:sourceShoppers.length
+  identityCases,unresolvedIdentityCases,shopperPopulation:sourceShoppers.length,
+  humanIdentityCount:humanIdentityRows.length,unresolvedIdentityCount:unresolvedIdentityRows.length
 };
 const configEvidence={
   projectExists:projectSnap.exists,
@@ -94,7 +108,7 @@ const out={
   decision:'PASS_C3_TERMINAL_HR_SEMANTIC_ORACLE',
   generatedAt:new Date().toISOString(),sourceRevision:revision,currentPeriodKey:currentKey,currentPeriodId:String(period?.id||periodCfgDoc?.id||''),
   projectId:PROJECT_ID,GT,HN,reference,configEvidence,
-  authority:{hr:'same_fresh_runtime_revision',finance:'explicit_hr_then_live_project_period_config_else_null',identity:'exact_hr_id_only',fuzzyMatching:false},
+  authority:{hr:'same_fresh_runtime_revision',finance:'explicit_hr_then_live_project_period_config_else_null',identity:'same_revision_operational_display_name_exact_id_with_review_only_unresolved',identityRevision,fuzzyMatching:false},
   production:false,hrWrites:0,firestoreWrites:0
 };
 fs.mkdirSync(OUT,{recursive:true});
