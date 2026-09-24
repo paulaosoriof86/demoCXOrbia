@@ -2976,6 +2976,150 @@ jobs:
           compression-level: 0
 
 
+  pre-i4-vrm036-source-proof:
+    name: PRE-I4 VRM-036 certification evidence proof — no deploy
+    needs: canonical-candidate-authority
+    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[pre-i4-vrm036-source-proof]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PROOF_OUT: .tmp/pre-i4-vrm036-source-proof
+      CANONICAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+    steps:
+      - name: Checkout control successor
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Prove exact monotonic functional diff
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$PROOF_OUT"
+          PREDECESSOR="$(jq -r '.predecessorProductSourceSha' "$CANDIDATE_DESCRIPTOR")"
+          git merge-base --is-ancestor "$PREDECESSOR" "$CANONICAL_SOURCE"
+          ACTUAL="$(git diff --name-only "$PREDECESSOR" "$CANONICAL_SOURCE" -- app backend/runtime/hr-live-service/test | sort)"
+          EXPECTED="$(printf '%s\n'             'app/adapters/tya-c6-domain-consistency-bridge.js'             'app/adapters/tya-canonical-shopper-portal-v2.js'             'app/adapters/tya-certification-evidence-projection-v1.js'             'app/adapters/tya-protected-auth-hr-authority-bridge-v2.js'             'app/index-backend-dev.html'             'app/modules/cert.js'             'backend/runtime/hr-live-service/test/cxorbia-pre-i4-certification-evidence-projection.test.mjs' | sort)"
+          test "$ACTUAL" = "$EXPECTED"
+          jq -n -S --arg source "$CANONICAL_SOURCE" --arg predecessor "$PREDECESSOR"             '{decision:"PASS_PRE_I4_VRM036_SOURCE_SCOPE",sourceSha:$source,predecessorSha:$predecessor,productFiles:7,runtimeBuilds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0,dataWrites:0,production:false}' > "$PROOF_OUT/authorization.json"
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Run certification projection regressions
+        run: |
+          set -Eeuo pipefail
+          node --check app/adapters/tya-certification-evidence-projection-v1.js
+          node --check app/adapters/tya-protected-auth-hr-authority-bridge-v2.js
+          node --check app/adapters/tya-c6-domain-consistency-bridge.js
+          node --check app/adapters/tya-canonical-shopper-portal-v2.js
+          node --check app/modules/cert.js
+          node --test backend/runtime/hr-live-service/test/cxorbia-pre-i4-certification-evidence-projection.test.mjs | tee "$PROOF_OUT/regression.log"
+
+      - name: Authenticate DEV read only
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+
+      - name: Install transient read-only dependency
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
+
+      - name: Bind exact fresh HR evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$PROOF_OUT/prior"
+          gh run download 36037538874 --repo "$GITHUB_REPOSITORY" --name "cxorbia-pre-i4-vrm037-diagnostic-36037538874" --dir "$PROOF_OUT/prior"
+          test -f "$PROOF_OUT/prior/prior/hr-fresh.json"
+          test "$(jq -r '._runtime.revision' "$PROOF_OUT/prior/prior/hr-fresh.json")" = "834f3c9f36d0f8144507bea234efaa4c7d5ddf461f023d61239525b21de2a8d9"
+
+      - name: Prove exact historical evidence projection on live identities
+        run: |
+          set -Eeuo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import vm from 'node:vm';
+          import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';
+          import {getFirestore} from 'firebase-admin/firestore';
+
+          const OUT=process.env.PROOF_OUT;
+          const hrRaw=JSON.parse(fs.readFileSync(OUT+'/prior/prior/hr-fresh.json','utf8'));
+          const contrast=JSON.parse(fs.readFileSync(OUT+'/prior/prior/hr-contrast.json','utf8'));
+          const context={console};context.globalThis=context;context.window=context;
+          for(const file of [
+            'app/adapters/cxorbia-exact-identity-contract-v1.js',
+            'app/adapters/tya-cumulative-read-model-v2.js',
+            'app/adapters/tya-certification-evidence-projection-v1.js',
+            'app/data/tya-certification-carryover-source-safe.js'
+          ]) vm.runInNewContext(fs.readFileSync(file,'utf8'),context,{filename:file});
+          const composer=context.CX_TYA_CUMULATIVE_READ_MODEL,projector=context.CX_TYA_CERTIFICATION_EVIDENCE_PROJECTION,carry=context.CX_TYA_CERTIFICATION_CARRYOVER_SOURCE_SAFE;
+          if(!composer?.compose||!projector?.project||!carry)throw new Error('SOURCE_FAILURE:VRM036_PROJECTION_DEPENDENCIES');
+
+          if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:'cxorbia-backend-dev'});
+          const db=getFirestore(),tenant=db.collection('tenants').doc('tya'),project=tenant.collection('projects').doc('cinepolis');
+          const rows=async ref=>(await ref.get()).docs.map(d=>({__docId:d.id,id:d.id,...(d.data()||{})}));
+          const [profiles,visits,postulations,certifications,liquidations]=await Promise.all([
+            rows(tenant.collection('shoppers')),rows(project.collection('visits')),rows(project.collection('postulations')),rows(project.collection('certifications')),rows(project.collection('liquidations'))
+          ]);
+          const periods=Array.isArray(hrRaw.periods)?hrRaw.periods:[],currentKey=String(hrRaw?.source?.currentCalendarPeriodKey||contrast.currentPeriodKey||''),current=periods.find(x=>String(x.key||'')===currentKey)||{};
+          const hr={projects:periods.map(p=>({id:p.id||('cinepolis-'+p.key),projectId:'cinepolis',periodKey:p.key})),visits:hrRaw.visits||[],shoppers:hrRaw.shoppers||[],posts:[],currentProjectId:'cinepolis',currentPeriodId:String(current.id||contrast.currentPeriodId||'')};
+          const composed=composer.compose({hr,protectedPayload:{visits,shoppers:profiles,postulations,applications:postulations,posts:postulations,certifications,liquidations}});
+          const before=new Map((composed.shoppers||[]).map(s=>[String(s.id||s.shopperId),{certified:s.certified,certificationPresented:s.certificationPresented,certificationStatus:s.certificationStatus}]));
+          const projection=projector.project({shoppers:composed.shoppers,identityMap:composed.identityMap,evidenceCandidates:carry.evidenceCandidates||[]});
+
+          const allProjected=(projection.shoppers||[]).flatMap(s=>s.certificationEvidenceRecords||[]);
+          const totalCandidates=(carry.evidenceCandidates||[]).length;
+          if(totalCandidates!==42)throw new Error('SOURCE_FAILURE:VRM036_EXPECTED_42_EVIDENCE_CANDIDATES:'+totalCandidates);
+          if(Number(carry.sourceStatusCounts?.approved||0)!==40||Number(carry.sourceStatusCounts?.failed||0)!==2)throw new Error('SOURCE_FAILURE:VRM036_LEGACY_STATUS_COUNTS');
+          if(projection.matchedRecords+projection.reviewRequiredRecords!==totalCandidates)throw new Error('MAPPING_FAILURE:VRM036_EVIDENCE_ACCOUNTING');
+          if(projection.eligibilityGranted!==0)throw new Error('FUNCTIONAL_DEFECT:VRM036_ELIGIBILITY_GRANTED');
+          if(allProjected.some(x=>x.eligibilityGranted!==false||x.carryoverConfirmed!==false||x.currentCertification!==false))throw new Error('FUNCTIONAL_DEFECT:VRM036_HISTORICAL_EVIDENCE_PROMOTED');
+          for(const s of projection.shoppers||[]){
+            const prior=before.get(String(s.id||s.shopperId))||{};
+            if(s.certified!==prior.certified||s.certificationPresented!==prior.certificationPresented||s.certificationStatus!==prior.certificationStatus)throw new Error('FUNCTIONAL_DEFECT:VRM036_CURRENT_CERT_MUTATION:'+String(s.id||s.shopperId));
+          }
+          const paulaCandidate=(carry.evidenceCandidates||[]).find(x=>String(x.shopperId)==='s3');
+          if(!paulaCandidate)throw new Error('SOURCE_FAILURE:VRM036_PAULA_S3_EVIDENCE_MISSING');
+          const paulaOwners=(projection.shoppers||[]).filter(s=>(s.certificationEvidenceRecords||[]).some(x=>x.candidateId===paulaCandidate.candidateId));
+          if(paulaOwners.length!==1)throw new Error('MAPPING_FAILURE:VRM036_PAULA_S3_EXACT_OWNER:'+paulaOwners.length);
+
+          const result={
+            decision:'PASS_PRE_I4_VRM036_EXACT_HISTORICAL_EVIDENCE_PROJECTION',
+            sourceSha:process.env.CANONICAL_SOURCE,
+            hrRevision:String(hrRaw?._runtime?.revision||''),
+            candidates:totalCandidates,
+            legacyApproved:40,
+            legacyFailed:2,
+            matchedRecords:projection.matchedRecords,
+            matchedShoppers:projection.matchedShoppers,
+            reviewRequiredRecords:projection.reviewRequiredRecords,
+            paulaS3Owner:String(paulaOwners[0].id||paulaOwners[0].shopperId),
+            currentCertificationMutations:0,
+            eligibilityGranted:0,
+            writes:0,runtimeBuilds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0,production:false
+          };
+          fs.writeFileSync(OUT+'/live-certification-evidence-proof.json',JSON.stringify(result,null,2)+'\n');
+          NODE
+
+      - name: Upload certification evidence proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-pre-i4-vrm036-source-proof-${{ github.run_id }}
+          path: ${{ env.PROOF_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
+      - name: Enforce proof
+        run: |
+          set -Eeuo pipefail
+          test "$(jq -r '.decision' "$PROOF_OUT/live-certification-evidence-proof.json")" = "PASS_PRE_I4_VRM036_EXACT_HISTORICAL_EVIDENCE_PROJECTION"
+          test "$(jq -r '.eligibilityGranted' "$PROOF_OUT/live-certification-evidence-proof.json")" = "0"
+          test "$(jq -r '.currentCertificationMutations' "$PROOF_OUT/live-certification-evidence-proof.json")" = "0"
+
   pre-i4-vrm037-042-source-proof:
     name: PRE-I4 VRM-037/042 canonical source proof — no deploy
     needs: canonical-candidate-authority
