@@ -59,6 +59,8 @@ try{
       legacyLiveShopperIds:Array.isArray(x?.legacyLiveShopperIds)?x.legacyLiveShopperIds.map(String):[],
       exactAliases:Array.isArray(x?.exactAliases)?x.exactAliases.map(String):[],
       identityAuthority:String(x?.identityAuthority||''),
+      identityReviewRequired:x?.identityReviewRequired===true,
+      identityReviewReason:String(x?.identityReviewReason||''),
       canonicalIdentityOverlay:x?.__canonicalIdentityOverlay===true
     }))
   }));
@@ -86,13 +88,14 @@ try{
     }
     if(!row){missing++;if(details.length<20)details.push({id,safeName,hrName,visitName:visitNamesByShopper.get(id)||'',matchMode:'missing'});continue;}
     const observedName=String(row.nombre||row.name||row.displayName||row.fullName||'').trim();
-    const equal=norm(observedName)===norm(hrName);
-    if(equal)nameEqual++; else nameMismatch++;
+    const authorityHuman=hrName&&hrName!=='Shopper protegido'&&!/^shopper_(?:gt|hn|sv|ni)_[a-z0-9]+$/i.test(hrName);
+    const equal=authorityHuman?norm(observedName)===norm(hrName):null;
+    if(authorityHuman){if(equal)nameEqual++;else nameMismatch++;}
     if((!equal||details.length<8)&&details.length<30)details.push({
       id,safeName,hrName,visitName:visitNamesByShopper.get(id)||'',observedId:row.id,observedShopperId:row.shopperId,
       observedName,observedRaw:{nombre:row.nombre,name:row.name,displayName:row.displayName,fullName:row.fullName},
       legacyLiveShopperIds:row.legacyLiveShopperIds,exactAliases:row.exactAliases,
-      identityAuthority:row.identityAuthority,canonicalIdentityOverlay:row.canonicalIdentityOverlay,matchMode,equal
+      identityAuthority:row.identityAuthority,identityReviewRequired:row.identityReviewRequired,identityReviewReason:row.identityReviewReason,canonicalIdentityOverlay:row.canonicalIdentityOverlay,authorityHuman,matchMode,equal
     });
   }
   const report={
@@ -103,6 +106,8 @@ try{
     operationalHumanNameCount:opShoppers.filter(x=>{const n=String(x?.nombre||x?.name||x?.displayName||'').trim();return n&&n!=='Shopper protegido';}).length,
     matchedById,matchedByLegacy,missing,nameEqual,nameMismatch,
     mismatchRatio:nameMismatch/Math.max(1,nameEqual+nameMismatch),
+    unresolvedAuthorityCount:details.filter(x=>x.authorityHuman===false).length,
+    unresolvedProperlyReviewOnly:details.filter(x=>x.authorityHuman===false&&x.identityReviewRequired===true&&x.identityReviewReason==='human_display_name_unresolved'&&x.observedName==='Identidad pendiente de revisión').length,
     sample:details
   };
   fs.writeFileSync(path.join(OUT,'vrm043-name-diagnostic.json'),JSON.stringify(report,null,2)+'\n');
