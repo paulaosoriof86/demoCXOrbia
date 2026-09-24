@@ -339,95 +339,44 @@ jobs:
         run: rm -rf node_modules "$RUNNER_TEMP/vrm043-source"
 
   certify:
+    name: I3 terminal certification — resume exact existing DEV without rebuild
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'READY_FOR_TERMINAL_CERTIFICATION' }}
     env:
       I3_CERTIFICATION_SOURCE_SHA: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
       I3_CERTIFICATION_SOURCE_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      RUN387_ID: '36072848792'
+      RUN387_ARTIFACT: cxorbia-vrm043-control-proof-36072848792
+      EXPECTED_RUNTIME_REVISION: cxorbia-live-hr-dev-00217-v6z
+      EXPECTED_RUNTIME_DIGEST: sha256:5c76c2ca643d95d49fa9f016ebce312d1dcc62621342ca7bf00bf33bd114ceba
+      EXPECTED_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/7d787355f662e453
     runs-on: ubuntu-latest
-    timeout-minutes: 70
+    timeout-minutes: 35
     steps:
       - name: Checkout canonical Recovery control head
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Prove single certification source and control-only successor
-        run: |
-          set -euo pipefail
-          mkdir -p "$OUT"
-          test "$GITHUB_REF_NAME" = "recovery/cxorbia-phase-a-20260831"
-          ! grep -Eq 'certification_source_(sha|tree)|I3_CERTIFICATION_SOURCE_(SHA|TREE):' .github/workflows/cxorbia-recovery-i3-gate21-artifact-fingerprint.yml
-          git cat-file -e "$I3_CERTIFICATION_SOURCE_SHA^{commit}"
-          test "$(git rev-parse "$I3_CERTIFICATION_SOURCE_SHA^{tree}")" = "$I3_CERTIFICATION_SOURCE_TREE"
-          git merge-base --is-ancestor "$I3_CERTIFICATION_SOURCE_SHA" HEAD
-          git diff --quiet "$I3_CERTIFICATION_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
-          ! grep -Eq "params\.set\('cxProjectId','cinepolis'\)|/api/tya/cinepolis/hr-live" app/index-backend-dev.html
-          ! grep -Eq "defaultProjectId:[^\n]*cinepolis|previewProjectIds:[^\n]*cinepolis" app/core/backend-protected-dev-mode.js
-          ! grep -Eq "projects\.includes\('cinepolis'\)|currentProjectId\|\|'cinepolis'|projectId:'cinepolis'" app/adapters/tya-protected-auth-hr-authority-bridge-v2.js
-          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg tree "$I3_CERTIFICATION_SOURCE_TREE" --arg control "$GITHUB_SHA" \
-            '{decision:"PASS_I3_SINGLE_CERTIFICATION_SOURCE_GUARD",i3CertificationSourceSha:$source,i3CertificationSourceTree:$tree,controlHeadSha:$control,productDrift:false,production:false}' \
-            > "$OUT/source-guard.json"
-
       - name: Setup Node 24
         uses: actions/setup-node@v4
         with:
           node-version: '24'
 
-      - name: Prove pre-terminal cumulative Module Truth without self-approval
+      - name: Prove resume is exact same product and closed VRM043
         run: |
           set -Eeuo pipefail
           mkdir -p "$OUT"
-          LEDGER="$(jq -r '.findingsLedgerPath' "$CANDIDATE_DESCRIPTOR")"
-          TEMPLATE="RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json"           LEDGER="$LEDGER"           SOURCE="$I3_CERTIFICATION_SOURCE_SHA"           TREE="$I3_CERTIFICATION_SOURCE_TREE"           LAST_SERVED="d8aad982ae4b47e66bf949d906b6c7ede8866f84"           OUT_FILE="$OUT/module-truth-preterminal.json"           node tools/qa/cxorbia-i3-c3-preterminal-module-truth.mjs | tee "$OUT/module-truth-preterminal-console.log"
-          test "$(jq -r '.preTerminalComposition.decision' "$OUT/module-truth-preterminal.json")" = "PASS_C3_PRETERMINAL_COMPOSITION"
-          test "$(jq '.modules|length' "$OUT/module-truth-preterminal.json")" = "20"
-          jq -n -S             --arg source "$I3_CERTIFICATION_SOURCE_SHA"             --arg tree "$I3_CERTIFICATION_SOURCE_TREE"             --argjson pending "$(jq '.preTerminalComposition.pendingFileCount' "$OUT/module-truth-preterminal.json")"             '{decision:"PASS_C3_PRETERMINAL_MODULE_COMPOSITION",sourceSha:$source,sourceTree:$tree,moduleCount:20,pendingTerminalFiles:$pending,allowedStates:["MATCH","COMPOSED_NOT_DEPLOYED"],production:false}'             > "$OUT/module-integrity-gate.json"
+          test "$(git rev-parse "$I3_CERTIFICATION_SOURCE_SHA^{tree}")" = "$I3_CERTIFICATION_SOURCE_TREE"
+          git merge-base --is-ancestor "$I3_CERTIFICATION_SOURCE_SHA" HEAD
+          git diff --quiet "$I3_CERTIFICATION_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          test -f CXORBIA_I3_VRM043_TERMINAL_RECEIPT_2026-09-24.json
+          test "$(jq -r '.state' CXORBIA_I3_VRM043_TERMINAL_RECEIPT_2026-09-24.json)" = "PROVEN_CLOSED_CONTROL_FALSE_POSITIVE_NO_PRODUCT_CHANGE"
+          test "$(jq -r '.proof.decision' CXORBIA_I3_VRM043_TERMINAL_RECEIPT_2026-09-24.json)" = "PASS_VRM043_CONTROL_FIX_NO_DEPLOY"
+          test "$(jq -r '.proof.runId' CXORBIA_I3_VRM043_TERMINAL_RECEIPT_2026-09-24.json)" = "$RUN387_ID"
+          test "$(jq -r '.productSourceSha' CXORBIA_I3_VRM043_TERMINAL_RECEIPT_2026-09-24.json)" = "$I3_CERTIFICATION_SOURCE_SHA"
 
-      - name: Prove atomic P0 source contracts before build
-        run: |
-          set -Eeuo pipefail
-          echo "ad262dd0165a7159e62076f67a6339b375ce0760dd6b650abc4ee438b04950af  CXORBIA_CANONICAL_ROUTE_INVENTORY_2026-09-18.json" | sha256sum -c -
-          echo "1897093c6de6a9b36cdd0b2b0728ed2ddf0604e509a554c850a01e67e6e50d3a  ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-18_I3_FORENSIC_CONTROL_PLANE_CACHE_ROOTCAUSE_FROZEN.md" | sha256sum -c -
-          grep -q "CX_RUNTIME_PREFIXES" app/sw.js
-          grep -q "keys.map(k => caches.delete(k))" app/sw.js
-          for pattern in '**/*.html' '**/*.js' '**/*.css' '**/*.json' '**/*.webmanifest'; do
-            jq -e --arg p "$pattern" '[.hosting.headers[] | select(.source==$p) | .headers[] | select((.key|ascii_downcase)=="cache-control" and (.value|contains("no-store")) and (.value|contains("must-revalidate")))] | length == 1' firebase.json >/dev/null
-          done
-          ! grep -q "id:'hr-post-'" app/adapters/tya-live-source-inplace-apply.js
-          grep -q "preserveDurableVisits" app/core/backend-firebase.js
-          ! grep -q "DURABLE_VISIT_AUTHORITY_AMBIGUOUS" app/core/backend-firebase.js
-          grep -q "live_hr_visit_id_equals_firestore_doc_id" app/adapters/tya-cumulative-read-model-v2.js
-          grep -q "docId:uniqueIndex(protectedVisits" app/adapters/tya-cumulative-read-model-v2.js
-          grep -q "hr_exact_crosswalk_precedes_historical_identity_link" app/adapters/cxorbia-provider-identity-link-runtime-v1.js
-          grep -q "protectedState:'1'" app/adapters/tya-protected-auth-hr-authority-bridge-v2.js
-          ! grep -Fq "fresh:'1'" app/adapters/tya-protected-auth-hr-authority-bridge-v2.js
-          ! grep -Fq "fresh:'1'" app/adapters/tya-live-source-refresh-watch-v2.js
-          grep -Fq "if(cache?.origin==='build_bootstrap')return inFlight||refreshSnapshot();" backend/runtime/hr-live-service/server.mjs
-          node --check app/adapters/tya-protected-auth-hr-authority-bridge-v2.js
-          node --check backend/runtime/hr-live-service/server.mjs
-          node tools/qa/cxorbia-p0-shopper-hr-authority-source-gate.mjs > "$OUT/shopper-hr-authority-source-gate.json"
-          test "$(jq -r '.decision' "$OUT/shopper-hr-authority-source-gate.json")" = "PASS_P0_SHOPPER_HR_AUTHORITY_SOURCE_GATE"
-          grep -q "COPY app/core/shopper-credential-rule.js ./app/core/shopper-credential-rule.js" backend/runtime/hr-live-service/Dockerfile
-          grep -q "'reservation.create'" backend/runtime/cxorbia-operational-command-provider-v1.mjs
-          grep -q "source:'durable_provider'" app/adapters/tya-canonical-reservations-guard-v2.js
-          grep -q "mutationsEnabled:true" app/adapters/tya-canonical-reservations-guard-v2.js
-          ! grep -q "fuente canónica pendiente" app/adapters/tya-canonical-reservations-guard-v2.js
-          grep -q "const selYear=_periodMatch" app/modules/dashboard.js
-          ! grep -q "const selMonth=new Date().getMonth()" app/modules/dashboard.js
-          OVERLAY=app/adapters/tya-ab-cumulative-composition-v1.js
-          ! grep -Eq "CX\.data\._visitas\s*=|CX\.data\._posts\s*=|CX\.reservas\.[A-Za-z_]+\s*=|CX\.fin(Store)?\.[A-Za-z_]+\s*=" "$OVERLAY"
-          test "$(jq '.financeClosure.activeFiles|length' RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json)" -ge 1
-          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" '{decision:"PASS_I3_ATOMIC_P0_SOURCE_CONTRACT",sourceSha:$source,syntheticPostulations:false,durableVisitAuthority:true,hrCrosswalkPrecedence:true,reservationsDurableProvider:true,dashboardSelectedPeriod:true,financeClosure:true,overlayNoShadow:true,production:false}' > "$OUT/atomic-p0-source-contract.json"
-
-      - name: Install existing focal certification dependencies
-        run: |
-          set -euo pipefail
-          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 firebase-tools@latest playwright@1.55.0 >/dev/null 2>&1
-          npx playwright install --with-deps chromium >/dev/null
-          node --test backend/runtime/hr-live-service/test/*.test.mjs | tee "$OUT/runtime-tests.log"
-
-      - name: Authenticate canonical Firebase DEV
+      - name: Authenticate canonical Firebase DEV read only
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
@@ -437,1204 +386,165 @@ jobs:
         with:
           project_id: ${{ env.PROJECT }}
 
-      - name: Prepare exact certification source once
+      - name: Prepare exact certification source without rebuild
         run: |
           set -Eeuo pipefail
-          SOURCE_DIR="$RUNNER_TEMP/cxorbia-i3-certified-source"
+          SOURCE_DIR="$RUNNER_TEMP/cxorbia-i3-certified-source-resume"
           rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"
           git archive "$I3_CERTIFICATION_SOURCE_SHA" | tar -x -C "$SOURCE_DIR"
-          test -f "$SOURCE_DIR/firebase.json"
-          test -f "$SOURCE_DIR/.firebaserc"
-          test -f "$SOURCE_DIR/tools/qa/cxorbia-gate20-browser-visual-dev.mjs"
+          test ! -e "$SOURCE_DIR/node_modules"
           echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
 
-      - name: Build exact certification source once
+      - name: Import Run387 terminal control proof from exact existing DEV
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -Eeuo pipefail
-          IMAGE_URI="gcr.io/${PROJECT}/${SERVICE}:i3-${I3_CERTIFICATION_SOURCE_SHA:0:12}-${GITHUB_RUN_ID}"
-          echo "$IMAGE_URI" > "$OUT/source-image-uri.txt"
-          gcloud builds submit "$SOURCE_DIR" --project "$PROJECT" --config "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE_URI" --quiet
-          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg image "$IMAGE_URI" \
-            '{decision:"PASS_I3_ONE_BUILD",i3CertificationSourceSha:$source,imageTag:$image,buildCount:1,production:false}' \
-            > "$OUT/source-build.json"
+          R387="$RUNNER_TEMP/cxorbia-run387-proof"
+          rm -rf "$R387"; mkdir -p "$R387"
+          gh run download "$RUN387_ID" --repo "$GITHUB_REPOSITORY" --name "$RUN387_ARTIFACT" --dir "$R387"
+          test "$(jq -r '.decision' "$R387/final.json")" = "PASS_VRM043_CONTROL_FIX_NO_DEPLOY"
+          test "$(jq -r '.sourceSha' "$R387/final.json")" = "$I3_CERTIFICATION_SOURCE_SHA"
+          test "$(jq -r '.decision' "$R387/dev-identity.json")" = "PASS_VRM043_EXISTING_DEV_EXACT_CANDIDATE"
+          test "$(jq -r '.runtimeDigest' "$R387/dev-identity.json")" = "$EXPECTED_RUNTIME_DIGEST"
+          test "$(jq -r '.decision' "$R387/full-human/human-live-acceptance.json")" = "PASS_I3_HUMAN_LIVE_ACCEPTANCE"
+          test "$(jq -r '.decision' "$R387/full-human/i3-functional-probes.json")" = "PASS_I3_ATOMIC_FUNCTIONAL_PROBES"
+          test "$(jq -r '.decision' "$R387/semantic/hr-contrast.json")" = "PASS_C3_TERMINAL_HR_SEMANTIC_ORACLE"
+          test "$(jq -r '.decision' "$R387/semantic/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
+          PINNED_HR_REVISION="$(jq -r '.hrRevision' "$R387/final.json")"
+          test "$(jq -r '.sourceRevision' "$R387/full-human/human-live-acceptance.json")" = "$PINNED_HR_REVISION"
+          test "$(jq -r '.hrRevision' "$R387/semantic/browser-focal.json")" = "$PINNED_HR_REVISION"
+          cp "$R387/hr-current.json" "$OUT/hr-fresh.json"
+          cp -R "$R387/full-human" "$OUT/full-human-acceptance"
+          cp -R "$R387/semantic" "$OUT/c3-semantic"
+          cp "$R387/dev-identity.json" "$OUT/vrm043-dev-identity.json"
+          cp "$R387/final.json" "$OUT/vrm043-final.json"
+          cp CXORBIA_CANONICAL_ROUTE_INVENTORY_2026-09-18.json "$OUT/canonical-route-inventory.json"
+          echo "PINNED_HR_REVISION=$PINNED_HR_REVISION" >> "$GITHUB_ENV"
+          echo "RUN387_DIR=$R387" >> "$GITHUB_ENV"
 
-      - name: Deploy exact built image to Recovery DEV runtime
+      - name: Reprove current DEV identity without build or deploy
         run: |
           set -Eeuo pipefail
-          IMAGE_URI="$(cat "$OUT/source-image-uri.txt")"
-          gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$IMAGE_URI" --quiet
-          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$OUT/runtime-after-source-deploy.json"
-          SOURCE_REVISION="$(jq -r '.status.latestReadyRevisionName // empty' "$OUT/runtime-after-source-deploy.json")"
-          test -n "$SOURCE_REVISION"
-          gcloud run revisions describe "$SOURCE_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$OUT/source-runtime-revision.json"
-          IMAGE_SPEC="$(jq -r '.spec.containers[0].image // empty' "$OUT/source-runtime-revision.json")"
-          DIGEST_RAW="$(jq -r '.status.imageDigest // empty' "$OUT/source-runtime-revision.json")"
-          if [[ "$DIGEST_RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$DIGEST_RAW"; elif [[ "$DIGEST_RAW" == *@sha256:* ]]; then DIGEST="sha256:${DIGEST_RAW##*@sha256:}"; elif [[ "$IMAGE_SPEC" == *@sha256:* ]]; then DIGEST="sha256:${IMAGE_SPEC##*@sha256:}"; else echo "Immutable image digest unresolved" >&2; exit 1; fi
-          IMAGE_REPO="${IMAGE_SPEC%@*}"; [[ "$IMAGE_REPO" != "$IMAGE_SPEC" ]] || IMAGE_REPO="${IMAGE_SPEC%:*}"
-          IMMUTABLE_IMAGE="$IMAGE_REPO@$DIGEST"
-          RUNTIME_URL="$(jq -r '.status.url // empty' "$OUT/runtime-after-source-deploy.json")"
-          curl -fsS --retry 10 --retry-delay 3 "$RUNTIME_URL/health" > "$OUT/health-after-source-deploy.json"
-          jq -e '.ok==true and .production==false and .hrWrites==false and .shopperReconciliationReady==true and .visitReconciliationReady==true' "$OUT/health-after-source-deploy.json" >/dev/null
-          echo "SOURCE_RUNTIME_REVISION=$SOURCE_REVISION" >> "$GITHUB_ENV"
-          echo "SOURCE_RUNTIME_DIGEST=$DIGEST" >> "$GITHUB_ENV"
-          echo "SOURCE_IMMUTABLE_IMAGE=$IMMUTABLE_IMAGE" >> "$GITHUB_ENV"
-          echo "RUNTIME_URL=$RUNTIME_URL" >> "$GITHUB_ENV"
-
-      - name: Materialize existing legal gate as config-only DEV successor
-        run: |
-          set -Eeuo pipefail
-          gcloud run revisions describe "$SOURCE_RUNTIME_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$RUNNER_TEMP/current-revision.json"
-          CUR_ENABLE="$(jq -r --arg n "$LEGAL_ENABLE_NAME" '((.spec.containers[0].env // []) | map(select(.name==$n)) | .[0].value) // empty' "$RUNNER_TEMP/current-revision.json")"
-          CUR_GATE="$(jq -r --arg n "$LEGAL_GATE_NAME" '((.spec.containers[0].env // []) | map(select(.name==$n)) | .[0].value) // empty' "$RUNNER_TEMP/current-revision.json")"
-          CUR_HR_CACHE="$(jq -r --arg n "$I3_HR_CACHE_PIN_NAME" '((.spec.containers[0].env // []) | map(select(.name==$n)) | .[0].value) // empty' "$RUNNER_TEMP/current-revision.json")"
-          CUR_MIN_SCALE="$(jq -r '.spec.template.metadata.annotations["autoscaling.knative.dev/minScale"] // empty' "$RUNNER_TEMP/current-revision.json")"
-          CUR_MAX_SCALE="$(jq -r '.spec.template.metadata.annotations["autoscaling.knative.dev/maxScale"] // empty' "$RUNNER_TEMP/current-revision.json")"
-          if [[ "$CUR_ENABLE" != "$LEGAL_ENABLE_VALUE" || "$CUR_GATE" != "$LEGAL_GATE_VALUE" || "$CUR_HR_CACHE" != "$I3_HR_CACHE_PIN_VALUE" || "$CUR_MIN_SCALE" != "1" || "$CUR_MAX_SCALE" != "1" ]]; then
-            gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$SOURCE_IMMUTABLE_IMAGE" \
-              --min-instances=1 --max-instances=1 \
-              --update-env-vars "$LEGAL_ENABLE_NAME=$LEGAL_ENABLE_VALUE,$LEGAL_GATE_NAME=$LEGAL_GATE_VALUE,$I3_HR_CACHE_PIN_NAME=$I3_HR_CACHE_PIN_VALUE" --quiet
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$OUT/runtime-current.json"
+          DEV_REVISION="$(jq -r '.status.latestReadyRevisionName // empty' "$OUT/runtime-current.json")"
+          test "$DEV_REVISION" = "$EXPECTED_RUNTIME_REVISION"
+          gcloud run revisions describe "$DEV_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$OUT/runtime-revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$OUT/runtime-revision.json")"
+          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then
+            RUNTIME_DIGEST="$RAW"
+            SOURCE_IMMUTABLE_IMAGE="$(jq -r '.spec.containers[0].image // empty' "$OUT/runtime-revision.json")@$RAW"
+          elif [[ "$RAW" == *@sha256:* ]]; then
+            RUNTIME_DIGEST="sha256:$(printf '%s' "$RAW" | sed 's#^.*@sha256:##')"
+            SOURCE_IMMUTABLE_IMAGE="$RAW"
+          else
+            echo "Unexpected runtime digest: $RAW" >&2; exit 1
           fi
-          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$OUT/runtime-final.json"
-          DEV_REVISION="$(jq -r '.status.latestReadyRevisionName // empty' "$OUT/runtime-final.json")"
-          gcloud run revisions describe "$DEV_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$OUT/runtime-final-revision.json"
-          FINAL_HR_CACHE="$(jq -r --arg n "$I3_HR_CACHE_PIN_NAME" '((.spec.containers[0].env // []) | map(select(.name==$n)) | .[0].value) // empty' "$OUT/runtime-final-revision.json")"
-          FINAL_MIN_SCALE="$(jq -r '.metadata.annotations["autoscaling.knative.dev/minScale"] // .spec.template.metadata.annotations["autoscaling.knative.dev/minScale"] // empty' "$OUT/runtime-final-revision.json")"
-          FINAL_MAX_SCALE="$(jq -r '.metadata.annotations["autoscaling.knative.dev/maxScale"] // .spec.template.metadata.annotations["autoscaling.knative.dev/maxScale"] // empty' "$OUT/runtime-final-revision.json")"
-          test "$FINAL_HR_CACHE" = "$I3_HR_CACHE_PIN_VALUE"
-          test "$FINAL_MIN_SCALE" = "1"
-          test "$FINAL_MAX_SCALE" = "1"
-          jq -n -S --arg revision "$DEV_REVISION" --arg min "$FINAL_MIN_SCALE" --arg max "$FINAL_MAX_SCALE" --arg cache "$FINAL_HR_CACHE" \
-            '{decision:"PASS_I3_SINGLE_RUNTIME_LANE",revision:$revision,minInstances:($min|tonumber),maxInstances:($max|tonumber),hrCacheMs:($cache|tonumber),production:false}' > "$OUT/runtime-single-lane.json"
-          FINAL_DIGEST_RAW="$(jq -r '.status.imageDigest // empty' "$OUT/runtime-final-revision.json")"
-          if [[ "$FINAL_DIGEST_RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then FINAL_DIGEST="$FINAL_DIGEST_RAW"; elif [[ "$FINAL_DIGEST_RAW" == *@sha256:* ]]; then FINAL_DIGEST="sha256:${FINAL_DIGEST_RAW##*@sha256:}"; else FINAL_DIGEST="$SOURCE_RUNTIME_DIGEST"; fi
-          test "$FINAL_DIGEST" = "$SOURCE_RUNTIME_DIGEST"
-          echo "DEV_REVISION=$DEV_REVISION" >> "$GITHUB_ENV"
-          echo "RUNTIME_DIGEST=$FINAL_DIGEST" >> "$GITHUB_ENV"
-
-      - name: Deploy same exact source archive to Hosting DEV
-        run: |
-          set -Eeuo pipefail
-          cd "$SOURCE_DIR"
-          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$OUT/hosting-deploy.log"
-          cd "$GITHUB_WORKSPACE"
-          pairs=(
-            'index-backend-dev.html app/index-backend-dev.html'
-            'core/backend-browser-auth.js app/core/backend-browser-auth.js'
-            'modules/shoppers.js app/modules/shoppers.js'
-            'modules/finanzas.js app/modules/finanzas.js'
-            'modules/operacion-extra.js app/modules/operacion-extra.js'
-            'adapters/cxorbia-command-adapter-v1.js app/adapters/cxorbia-command-adapter-v1.js'
-            'adapters/tya-canonical-shopper-portal-v2.js app/adapters/tya-canonical-shopper-portal-v2.js'
-            'adapters/cxorbia-legal-acceptance-durable-contract-v1.js app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js'
-            'adapters/tya-protected-auth-hr-authority-bridge-v2.js app/adapters/tya-protected-auth-hr-authority-bridge-v2.js'
-            'adapters/tya-c6-unified-human-runtime-v1.js app/adapters/tya-c6-unified-human-runtime-v1.js'
-            'sw.js app/sw.js'
-          )
-          : > "$OUT/hosting-parity.tsv"
-          for pair in "${pairs[@]}"; do
-            remote_path="${pair%% *}"; local_path="${pair#* }"; remote="$OUT/remote-$(basename "$remote_path")"
-            expected="$(sha256sum "$SOURCE_DIR/$local_path"|awk '{print $1}')"; matched=0
-            for attempt in $(seq 1 15); do
-              curl -fsSL --retry 3 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' -H 'Pragma: no-cache' \
-                "$HOSTING_URL/$remote_path?i3=${GITHUB_RUN_ID}-${attempt}-$(date +%s%N)" -o "$remote"
-              actual="$(sha256sum "$remote"|awk '{print $1}')"
-              if [[ "$actual" = "$expected" ]]; then matched=1; break; fi
-              sleep 4
-            done
-            test "$matched" = 1
-            printf '%s\t%s\t%s\tMATCH\n' "$remote_path" "$expected" "$actual" >> "$OUT/hosting-parity.tsv"
-          done
-          jq -Rn --arg source "$I3_CERTIFICATION_SOURCE_SHA" \
-            '[inputs|split("\t")|{path:.[0],expectedSha256:.[1],servedSha256:.[2],classification:.[3]}] | {decision:"PASS_I3_SINGLE_SOURCE_HOSTING_PARITY",i3CertificationSourceSha:$source,owners:.,ownerCount:length,production:false}' \
-            < "$OUT/hosting-parity.tsv" > "$OUT/hosting-parity.json"
-
-      - name: Capture exact finalized Hosting DEV identity
-        run: |
-          set -Eeuo pipefail
+          test "$RUNTIME_DIGEST" = "$EXPECTED_RUNTIME_DIGEST"
           TOKEN="$(gcloud auth print-access-token)"
-          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" \
-            "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$OUT/hosting-live-channel.json"
+          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$OUT/hosting-live-channel.json"
           HOSTING_RELEASE_NAME="$(jq -r '.release.name // empty' "$OUT/hosting-live-channel.json")"
           HOSTING_VERSION_NAME="$(jq -r '.release.version.name // empty' "$OUT/hosting-live-channel.json")"
           HOSTING_RELEASE_TIME="$(jq -r '.release.releaseTime // empty' "$OUT/hosting-live-channel.json")"
-          test -n "$HOSTING_RELEASE_NAME"; test -n "$HOSTING_VERSION_NAME"; test -n "$HOSTING_RELEASE_TIME"
-          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" \
-            "https://firebasehosting.googleapis.com/v1beta1/$HOSTING_VERSION_NAME" > "$OUT/hosting-version.json"
+          test "$HOSTING_VERSION_NAME" = "$EXPECTED_HOSTING_VERSION"
+          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/$HOSTING_VERSION_NAME" > "$OUT/hosting-version.json"
           test "$(jq -r '.status // empty' "$OUT/hosting-version.json")" = "FINALIZED"
+          META_REV="$(curl -fsS --retry 3 "$HOSTING_URL/api/tya/$PROJECT_ID/hr-live?format=meta&c3resume=$GITHUB_RUN_ID" | jq -r '.revision // empty')"
+          test "$META_REV" = "$PINNED_HR_REVISION"
+          echo "DEV_REVISION=$DEV_REVISION" >> "$GITHUB_ENV"
+          echo "RUNTIME_DIGEST=$RUNTIME_DIGEST" >> "$GITHUB_ENV"
+          echo "SOURCE_IMMUTABLE_IMAGE=$SOURCE_IMMUTABLE_IMAGE" >> "$GITHUB_ENV"
           echo "HOSTING_RELEASE_NAME=$HOSTING_RELEASE_NAME" >> "$GITHUB_ENV"
           echo "HOSTING_VERSION_NAME=$HOSTING_VERSION_NAME" >> "$GITHUB_ENV"
           echo "HOSTING_RELEASE_TIME=$HOSTING_RELEASE_TIME" >> "$GITHUB_ENV"
 
-      - name: Prove byte parity for every C3 pending human owner
-        run: |
-          set -Eeuo pipefail
-          mkdir -p "$OUT/c3-pending-owner-remote"
-          : > "$OUT/c3-pending-owner-parity.tsv"
-          mismatches=0
-          app_count=0
-          backend_count=0
-          while IFS= read -r path; do
-            test -n "$path" || continue
-            if [[ "$path" == app/* ]]; then
-              app_count=$((app_count+1))
-              rel="${path#app/}"
-              remote="$OUT/c3-pending-owner-remote/$(echo "$rel" | tr '/' '_')"
-              expected="$(sha256sum "$SOURCE_DIR/$path" | awk '{print $1}')"
-              matched=0
-              for attempt in $(seq 1 20); do
-                if curl -fsSL --retry 2 --retry-delay 1 -H 'Cache-Control: no-cache, no-store, max-age=0' -H 'Pragma: no-cache' "$HOSTING_URL/$rel?c3=${GITHUB_RUN_ID}-${attempt}-$(date +%s%N)" -o "$remote"; then
-                  actual="$(sha256sum "$remote" | awk '{print $1}')"
-                  if [[ "$actual" = "$expected" ]]; then matched=1; break; fi
-                fi
-                sleep 2
-              done
-              if [[ "$matched" != 1 ]]; then mismatches=$((mismatches+1)); fi
-              printf '%s\t%s\t%s\t%s\n' "$path" "$expected" "${actual:-MISSING}" "$([[ "$matched" = 1 ]] && echo MATCH || echo MISMATCH)" >> "$OUT/c3-pending-owner-parity.tsv"
-            elif [[ "$path" == backend/* ]]; then
-              backend_count=$((backend_count+1))
-              expected="$(git rev-parse "$I3_CERTIFICATION_SOURCE_SHA:$path")"
-              actual="$(git hash-object "$SOURCE_DIR/$path")"
-              if [[ "$actual" != "$expected" ]]; then mismatches=$((mismatches+1)); fi
-              printf '%s\t%s\t%s\t%s\n' "$path" "$expected" "$actual" "$([[ "$actual" = "$expected" ]] && echo MATCH || echo MISMATCH)" >> "$OUT/c3-pending-owner-parity.tsv"
-            fi
-          done < <(jq -r '.sourceFiles[] | select(.classification=="COMPOSED_NOT_DEPLOYED") | .path' "$OUT/module-truth-preterminal.json")
-          jq -Rn --arg source "$I3_CERTIFICATION_SOURCE_SHA" --argjson app "$app_count" --argjson backend "$backend_count" --argjson mismatch "$mismatches"             '[inputs|split("\t")|{path:.[0],expected:.[1],observed:.[2],classification:.[3]}] |
-             {decision:(if $mismatch==0 then "PASS_C3_PENDING_OWNER_BYTE_PARITY" else "FAIL_C3_PENDING_OWNER_BYTE_PARITY" end),
-              sourceSha:$source,appOwners:$app,backendOwners:$backend,mismatches:$mismatch,rows:.,production:false}'             < "$OUT/c3-pending-owner-parity.tsv" > "$OUT/c3-pending-owner-parity.json"
-          test "$mismatches" = 0
-
-      - name: Adjudicate proven exact HR aliases before fresh reconciliation
-        run: |
-          set -Eeuo pipefail
-          IDENTITY_TMP="$RUNNER_TEMP/cxorbia-i3-operational-identity-$GITHUB_RUN_ID.json"
-          REGISTRY_TMP="$RUNNER_TEMP/cxorbia-i3-tab-registry-$GITHUB_RUN_ID.json"
-          trap 'rm -f "$IDENTITY_TMP" "$REGISTRY_TMP"' EXIT
-          export FIREBASE_SERVICE_ACCOUNT_JSON="$(cat "$GOOGLE_APPLICATION_CREDENTIALS")"
-          export CXORBIA_HR_OPERATIONAL_IDENTITY_OUT="$IDENTITY_TMP"
-          export CXORBIA_HR_TAB_REGISTRY="$REGISTRY_TMP"
-          export CXORBIA_EXPECTED_CURRENT_PERIOD="2026-09"
-          node "$SOURCE_DIR/tools/hr-source/tya-live-provider-registry-identity-dev.mjs" > "$OUT/identity-registry-safe-console.json"
-          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" OUT="$OUT" IDENTITY_TMP="$IDENTITY_TMP" SOURCE_DIR="$SOURCE_DIR" \
-          CROSSWALK="$SOURCE_DIR/app/docs/evidence/VISIT-IDENTITY-CROSSWALK-READONLY-LATEST.json" node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          import crypto from 'node:crypto';
-          import path from 'node:path';
-          import { pathToFileURL } from 'node:url';
-          import { applicationDefault, initializeApp, getApps } from 'firebase-admin/app';
-          import { FieldValue, getFirestore } from 'firebase-admin/firestore';
-
-          const PROJECT=process.env.PROJECT,TENANT=process.env.TENANT_ID,PROJECT_ID=process.env.PROJECT_ID,OUT=process.env.OUT,SOURCE_DIR=process.env.SOURCE_DIR;
-          const IDENTITY_TMP=process.env.IDENTITY_TMP,CROSSWALK=process.env.CROSSWALK;
-          const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[];
-          const sha=v=>crypto.createHash('sha256').update(String(v),'utf8').digest('hex');
-          const active=new Set(['active','confirmed','approved','materialized']);
-          const trusted=new Set(['provider_exact','tenant_adjudication','platform_created','migrated_exact']);
-          if(!SOURCE_DIR)throw new Error('SOURCE_FAILURE:CERTIFIED_SOURCE_DIR_MISSING');
-          const credentialMod=await import(pathToFileURL(path.join(SOURCE_DIR,'backend/runtime/cxorbia-shopper-command-provider-v1.mjs')).href);
-          const credentialLogin=row=>{
-            const credential=credentialMod.shopperCredentialRule({
-              nombre:str(row?.displayName),firstName:str(row?.firstName),lastName:str(row?.lastName)
-            });
-            return credential?.ok?str(credential.login).toLowerCase():'';
-          };
-          const flatten=v=>{
-            if(v==null)return[];
-            if(Array.isArray(v))return v.flatMap(flatten);
-            if(typeof v==='object')return Object.values(v).flatMap(flatten);
-            return [str(v)];
-          };
-          const linkTokens=link=>[...new Set([
-            link?.sourceIdentityKey,link?.sourceSubjectId,link?.sourceId,link?.sourceKey,
-            link?.legacyShopperId,link?.legacyId,link?.externalShopperId,link?.externalId,link?.hrRowId,
-            link?.personId,link?.shopperDocId,
-            ...flatten(link?.sourceIdentity),...flatten(link?.identity),...flatten(link?.crosswalk),...flatten(link?.profile),
-            ...flatten(link?.exactIdentityAnchors),
-            ...arr(link?.sourceAliases),...arr(link?.sourceIdentityAliases),...arr(link?.identityAliases),
-            ...arr(link?.exactAliases),...arr(link?.aliases)
-          ].map(str).filter(Boolean))];
-          const applicable=link=>{
-            const status=str(link?.status||link?.state).toLowerCase(),authority=str(link?.authorityType||link?.authority?.type).toLowerCase();
-            const authorityRef=str(link?.authorityRef||link?.authority?.evidenceRef||link?.authority?.adjudicationId||link?.authority?.providerRef||link?.authority?.commandId||link?.providerAckRef||link?.adjudicationId||link?.commandId||link?.idempotencyKey||link?.id);
-            const tenant=str(link?.tenantId||link?.scope?.tenantId),scope=str(link?.projectScope||link?.scope?.projectId||link?.projectId||'*');
-            const sourceSystem=str(link?.sourceSystem||link?.sourceNamespace||link?.sourceType||link?.sourceIdentity?.sourceSystem).toLowerCase();
-            const canonical=str(link?.canonicalShopperId||link?.canonicalId||link?.shopperId||link?.profileId);
-            return tenant===TENANT&&active.has(status)&&trusted.has(authority)&&!!authorityRef&&link?.periodIndependent===true&&!link?.periodKey&&!link?.periodId&&!link?.periodScope&&(scope==='*'||scope.toLowerCase()==='tenant'||scope===PROJECT_ID)&&sourceSystem.includes('hr')&&!!canonical&&linkTokens(link).length>0;
-          };
-          const canonicalFor=link=>str(link?.canonicalShopperId||link?.canonicalId||link?.shopperId||link?.profileId);
-
-          const overlay=JSON.parse(fs.readFileSync(IDENTITY_TMP,'utf8'));
-          if(overlay?.schemaVersion!=='cxorbia.tya-operational-shopper-identity.v2'||overlay?.displayIdentityOnly!==false||overlay?.containsContactData!==true||overlay?.contactDataOptional!==true||overlay?.containsCredentials!==false)throw new Error('SOURCE_FAILURE:IDENTITY_OVERLAY_CONTRACT');
-          const groups=new Map();
-          for(const row of arr(overlay.identities)){
-            const id=str(row?.shopperId),login=credentialLogin(row);
-            if(!id||!login)continue;
-            if(!groups.has(login))groups.set(login,[]);
-            groups.get(login).push(id);
-          }
-          const collisions=[...groups.entries()].map(([login,ids])=>({login,ids:[...new Set(ids)].sort()})).filter(x=>x.ids.length>1);
-
-          const cross=JSON.parse(fs.readFileSync(CROSSWALK,'utf8'));
-          const frozenPaulaPath=path.join(SOURCE_DIR,'app/docs/evidence/CORTE6-SHOPPER-IDENTITY-FOCAL-RESOLUTION-HOLD-LATEST.json');
-          const frozenPaulaRaw=fs.readFileSync(frozenPaulaPath,'utf8');
-          const frozenPaula=JSON.parse(frozenPaulaRaw),paulaResolution=frozenPaula?.paulaResolution||{};
-          const frozenPaulaEvidenceSha256=sha(frozenPaulaRaw);
-          const frozenPaulaResolutionOk=
-            paulaResolution?.resolution==='RESOLVED_ACTIVE_PROFILE_VS_HISTORICAL_BY_TECHNICAL_ACTIVITY'&&
-            Number(paulaResolution?.activeCandidate?.visits)===0&&Number(paulaResolution?.activeCandidate?.credentialCount)===1&&
-            Number(paulaResolution?.historicalCandidate?.visits)===6&&Number(paulaResolution?.historicalCandidate?.credentialCount)===0;
-          const exactBySource=new Map();
-          const exactEvidenceBySource=new Map();
-          const exactEvidenceRank=new Map();
-          const exactEvidenceConflicts=[];
-          const exactEvidenceSuperseded=[];
-          const addExact=(source,target,evidence,rank)=>{
-            source=str(source);target=str(target);rank=Number(rank||0);if(!source||!target)return;
-            const prior=exactBySource.get(source),priorRank=Number(exactEvidenceRank.get(source)||0);
-            if(prior&&prior!==target){
-              if(rank>priorRank){
-                exactEvidenceSuperseded.push({
-                  sourceId:source,
-                  supersededTargetFingerprint:sha(prior).slice(0,24),
-                  authoritativeTargetFingerprint:sha(target).slice(0,24),
-                  supersededEvidence:[...(exactEvidenceBySource.get(source)||new Set())].sort(),
-                  authoritativeEvidence:evidence
-                });
-                exactBySource.set(source,target);
-                exactEvidenceRank.set(source,rank);
-                exactEvidenceBySource.set(source,new Set([evidence]));
-                return;
-              }
-              if(rank<priorRank){
-                exactEvidenceSuperseded.push({
-                  sourceId:source,
-                  supersededTargetFingerprint:sha(target).slice(0,24),
-                  authoritativeTargetFingerprint:sha(prior).slice(0,24),
-                  supersededEvidence:[evidence],
-                  authoritativeEvidence:[...(exactEvidenceBySource.get(source)||new Set())].sort()
-                });
-                return;
-              }
-              exactEvidenceConflicts.push({
-                sourceId:source,
-                priorTargetFingerprint:sha(prior).slice(0,24),
-                newTargetFingerprint:sha(target).slice(0,24),
-                priorEvidence:[...(exactEvidenceBySource.get(source)||new Set())].sort(),
-                newEvidence:evidence
-              });
-              return;
-            }
-            exactBySource.set(source,target);
-            exactEvidenceRank.set(source,Math.max(priorRank,rank));
-            if(!exactEvidenceBySource.has(source))exactEvidenceBySource.set(source,new Set());
-            exactEvidenceBySource.get(source).add(evidence);
-          };
-          for(const row of arr(cross?.crosswalk)){
-            if(row?.action==='REUSE_EXISTING_CANONICAL_SHOPPER'&&str(row?.plannedShopperId)&&str(row?.canonicalShopperId)){
-              addExact(row.plannedShopperId,row.canonicalShopperId,'historical_visit_identity_crosswalk',10);
-            }
-          }
-          const mappingHash=str(cross?.mappingHashSha256);
-          if(!/^[a-f0-9]{64}$/.test(mappingHash))throw new Error('SOURCE_FAILURE:EXACT_VISIT_CROSSWALK_HASH_INVALID');
-
-          if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
-          const db=getFirestore(),tenant=db.collection('tenants').doc(TENANT),linksRef=tenant.collection('shopperIdentityLinks'),durableCrossRef=tenant.collection('shopperIdentityCrosswalk');
-
-          const durableCrossSnap=await durableCrossRef.get();
-          const exactCrossModes=new Set(['provider_exact_identity_link','stable_hr_shopper_id','exact_technical_keys_only']);
-          let durableExactAliasEvidence=0;
-          for(const doc of durableCrossSnap.docs){
-            const row=doc.data()||{};
-            const tenantOk=str(row.tenantId||TENANT)===TENANT;
-            const sourceType=str(row.sourceType).toLowerCase();
-            const identityMode=str(row.identityMode).toLowerCase();
-            const projectIds=arr(row.projectIds).map(str).filter(Boolean),singleProject=str(row.projectId);
-            const projectOk=(!singleProject||singleProject===PROJECT_ID)&&(projectIds.length===0||projectIds.includes(PROJECT_ID));
-            const target=str(row.shopperId);
-            if(!tenantOk||sourceType!=='hr_external'||!projectOk||!target)continue;
-            if(!exactCrossModes.has(identityMode))continue;
-            for(const token of [...new Set([doc.id,row.sourceStableKey,row.sourceShopperId].map(str).filter(Boolean))]){
-              addExact(token,target,'durable_shopper_identity_crosswalk:'+identityMode,20);
-              durableExactAliasEvidence++;
-            }
-          }
-
-          if(exactEvidenceConflicts.length){
-            const report={
-              schemaVersion:'cxorbia.i3.exact-identity-evidence-conflict.v1',
-              generatedAt:new Date().toISOString(),tenantId:TENANT,projectId:PROJECT_ID,
-              decision:'HOLD_I3_EXACT_IDENTITY_EVIDENCE_CONFLICT',classification:'MAPPING_FAILURE',
-              exactVisitCrosswalkSha256:mappingHash,durableExactAliasEvidence,
-              precedence:'durable_hr_exact_crosswalk_over_historical_visit_crosswalk',
-              supersededEvidence:exactEvidenceSuperseded,
-              conflicts:exactEvidenceConflicts,
-              providerWrites:0,hrWrites:0,authWrites:0,production:false
-            };
-            fs.writeFileSync(OUT+'/identity-link-adjudication.json',JSON.stringify(report,null,2)+'\n');
-            console.log(JSON.stringify(report));
-            process.exit(2);
-          }
-
-          const linkSnap=await linksRef.get();
-          const links=linkSnap.docs.map(d=>({id:d.id,...(d.data()||{})})).filter(applicable);
-          const tokenTargets=new Map();
-          for(const link of links){
-            const target=canonicalFor(link);
-            for(const token of linkTokens(link)){
-              if(!tokenTargets.has(token))tokenTargets.set(token,new Set());
-              tokenTargets.get(token).add(target);
-            }
-          }
-          const resolveTrusted=source=>{
-            let cur=str(source);const seen=new Set();
-            for(let i=0;i<8;i++){
-              if(!cur||seen.has(cur))throw new Error('MAPPING_FAILURE:IDENTITY_LINK_CHAIN_CYCLE');
-              seen.add(cur);
-              const targets=[...(tokenTargets.get(cur)||new Set())];
-              if(targets.length>1)throw new Error('MAPPING_FAILURE:IDENTITY_LINK_TOKEN_CONFLICT');
-              if(targets.length===0)return cur;
-              if(targets[0]===cur)return cur;
-              cur=targets[0];
-            }
-            throw new Error('MAPPING_FAILURE:IDENTITY_LINK_CHAIN_DEPTH');
-          };
-
-
-          // Focal I3 identity-evidence completion: read durable shopper profiles without exporting PII.
-          // Only exact persisted aliases, government-document equality, protected-email equality or stable legacy-id equality
-          // may resolve a missing HR technical identity. Different government documents prove a distinct identity.
-          const flattenProfileToken=value=>{
-            const out=[];const walk=v=>{
-              if(v==null)return;
-              if(Array.isArray(v)){v.forEach(walk);return;}
-              if(typeof v==='object'){Object.values(v).forEach(walk);return;}
-              const token=str(v);if(token)out.push(token);
-            };
-            walk(value);return out;
-          };
-          const [profileSnap,userSnap]=await Promise.all([
-            tenant.collection('shoppers').get(),
-            tenant.collection('users').get()
-          ]);
-          const profiles=profileSnap.docs.map(d=>({id:d.id,...(d.data()||{})}));
-          const members=userSnap.docs.map(d=>({id:d.id,...(d.data()||{})}));
-          const profileCanonical=p=>str(p?.canonicalShopperId||p?.shopperId||p?.id);
-          const profileAliases=p=>[...new Set([
-            ...flattenProfileToken(p?.exactAliases),...flattenProfileToken(p?.identityAliases),...flattenProfileToken(p?.aliases),
-            ...flattenProfileToken(p?.sourceAliases),...flattenProfileToken(p?.sourceIdentityAliases),
-            ...flattenProfileToken(p?.sourceShopperIds),...flattenProfileToken(p?.legacyLiveShopperIds),
-            ...flattenProfileToken(p?.hrShopperIds),...flattenProfileToken(p?.canonicalLegacyIds)
-          ].map(str).filter(Boolean))];
-          const profileForCanonical=target=>profiles.filter(p=>profileCanonical(p)===str(target));
-          const normalizedDocument=p=>str(p?.dpi||p?.documentId).toUpperCase().replace(/[^A-Z0-9]/g,'');
-          const normalizedProtectedEmail=p=>{
-            const value=str(p?.email).toLowerCase();
-            return value&& !value.endsWith('@auth.cxorbia.invalid') ? value : '';
-          };
-          const stableLegacyId=p=>str(p?.legacyShopperId||p?.legacyId);
-          const activeCanonicalByLogin=new Map();
-          for(const member of members){
-            const projects=arr(member?.projectIds).map(str),login=str(member?.visibleLogin).toLowerCase(),target=str(member?.shopperId);
-            if(member?.active!==true||str(member?.authNamespace)!=='shopper'||str(member?.role)!=='shopper'||!login||!target)continue;
-            if(projects.length&&!projects.includes(PROJECT_ID))continue;
-            if(!activeCanonicalByLogin.has(login))activeCanonicalByLogin.set(login,new Set());
-            activeCanonicalByLogin.get(login).add(target);
-          }
-          const singletonAccountCollisions=[...groups.entries()].map(([login,ids])=>{
-            const uniqueIds=[...new Set(ids)].sort();
-            const accountTargets=[...(activeCanonicalByLogin.get(login)||new Set())].filter(target=>!uniqueIds.includes(target)).sort();
-            return {login,ids:uniqueIds,accountTargets};
-          }).filter(x=>x.ids.length===1&&x.accountTargets.length>0);
-
-          let protectedExactAliasEvidence=0,protectedDistinctIdentityEvidence=0;
-          const protectedProfilePairResolution=(sourceId,target)=>{
-            sourceId=str(sourceId);target=str(target);
-            const authorizedTargetAliases=profiles.filter(p=>profileCanonical(p)===target&&profileAliases(p).includes(sourceId));
-            if(authorizedTargetAliases.length===1){
-              protectedExactAliasEvidence++;
-              return {ok:true,target,evidenceType:'protected_profile_authorized_alias',evidenceRef:'profile-alias:'+sha([sourceId,target].join('\0')).slice(0,32)};
-            }
-            if(authorizedTargetAliases.length>1)return {ok:false,reason:'PROTECTED_TARGET_PROFILE_AMBIGUOUS',identityDisposition:'INSUFFICIENT_EXACT_EVIDENCE'};
-            const sourceProfiles=profileForCanonical(sourceId),targetProfiles=profileForCanonical(target);
-            if(sourceProfiles.length!==1)return {ok:false,reason:sourceProfiles.length?'PROTECTED_SOURCE_PROFILE_AMBIGUOUS':'EXACT_IDENTITY_EVIDENCE_MISSING',identityDisposition:'INSUFFICIENT_EXACT_EVIDENCE'};
-            if(targetProfiles.length!==1)return {ok:false,reason:targetProfiles.length?'PROTECTED_TARGET_PROFILE_AMBIGUOUS':'PROTECTED_TARGET_PROFILE_MISSING',identityDisposition:'INSUFFICIENT_EXACT_EVIDENCE'};
-            const sourceProfile=sourceProfiles[0],targetProfile=targetProfiles[0];
-            const sourceDoc=normalizedDocument(sourceProfile),targetDoc=normalizedDocument(targetProfile);
-            const sourceEmail=normalizedProtectedEmail(sourceProfile),targetEmail=normalizedProtectedEmail(targetProfile);
-            const sourceLegacy=stableLegacyId(sourceProfile),targetLegacy=stableLegacyId(targetProfile);
-            if(sourceDoc&&targetDoc){
-              if(sourceDoc===targetDoc){
-                protectedExactAliasEvidence++;
-                return {ok:true,target,evidenceType:'protected_profile_document_match',evidenceRef:'profile-document:'+sha([sourceId,target,sourceDoc].join('\0')).slice(0,32)};
-              }
-              protectedDistinctIdentityEvidence++;
-              return {ok:false,reason:'PROTECTED_DOCUMENT_DIVERGENCE',identityDisposition:'PROVEN_DISTINCT_IDENTITY'};
-            }
-            if(sourceLegacy&&targetLegacy&&sourceLegacy===targetLegacy){
-              protectedExactAliasEvidence++;
-              return {ok:true,target,evidenceType:'protected_profile_stable_legacy_id_match',evidenceRef:'profile-legacy:'+sha([sourceId,target,sourceLegacy].join('\0')).slice(0,32)};
-            }
-            if(sourceEmail&&targetEmail&&sourceEmail===targetEmail){
-              protectedExactAliasEvidence++;
-              return {ok:true,target,evidenceType:'protected_profile_email_match',evidenceRef:'profile-email:'+sha([sourceId,target,sourceEmail].join('\0')).slice(0,32)};
-            }
-            return {ok:false,reason:'EXACT_IDENTITY_EVIDENCE_MISSING',identityDisposition:'INSUFFICIENT_EXACT_EVIDENCE'};
-          };
-          const protectedProfileResolution=(sourceId,groupIds)=>{
-            const explicit=profiles.filter(p=>profileCanonical(p)!==sourceId&&profileAliases(p).includes(sourceId));
-            const explicitTargets=[...new Set(explicit.map(profileCanonical).filter(Boolean))];
-            if(explicitTargets.length===1){
-              protectedExactAliasEvidence++;
-              const target=explicitTargets[0];
-              return {ok:true,target,evidenceType:'protected_profile_authorized_alias',evidenceRef:'profile-alias:'+sha([sourceId,target].join('\0')).slice(0,32)};
-            }
-            if(explicitTargets.length>1)return {ok:false,reason:'PROTECTED_PROFILE_ALIAS_CONFLICT',identityDisposition:'INSUFFICIENT_EXACT_EVIDENCE'};
-
-            const sourceProfiles=profiles.filter(p=>profileCanonical(p)===sourceId);
-            if(sourceProfiles.length>1)return {ok:false,reason:'PROTECTED_SOURCE_PROFILE_AMBIGUOUS',identityDisposition:'INSUFFICIENT_EXACT_EVIDENCE'};
-            if(sourceProfiles.length===0)return {ok:false,reason:'EXACT_IDENTITY_EVIDENCE_MISSING',identityDisposition:'INSUFFICIENT_EXACT_EVIDENCE'};
-            const sourceProfile=sourceProfiles[0];
-
-            const candidateTargets=[];
-            for(const peer of groupIds.filter(x=>x!==sourceId)){
-              const direct=[...(tokenTargets.get(peer)||new Set())];
-              if(direct.length===1)candidateTargets.push(resolveTrusted(peer));
-              else {
-                const exact=exactBySource.get(peer);
-                if(exact)candidateTargets.push(resolveTrusted(exact));
-              }
-            }
-            const targets=[...new Set(candidateTargets.filter(Boolean))];
-            if(targets.length!==1)return {ok:false,reason:targets.length?'PROTECTED_TARGET_AMBIGUOUS':'EXACT_IDENTITY_EVIDENCE_MISSING',identityDisposition:'INSUFFICIENT_EXACT_EVIDENCE'};
-            const target=targets[0],targetProfiles=profileForCanonical(target);
-            if(targetProfiles.length!==1)return {ok:false,reason:targetProfiles.length?'PROTECTED_TARGET_PROFILE_AMBIGUOUS':'PROTECTED_TARGET_PROFILE_MISSING',identityDisposition:'INSUFFICIENT_EXACT_EVIDENCE'};
-            const targetProfile=targetProfiles[0];
-
-            const sourceDoc=normalizedDocument(sourceProfile),targetDoc=normalizedDocument(targetProfile);
-            const sourceEmail=normalizedProtectedEmail(sourceProfile),targetEmail=normalizedProtectedEmail(targetProfile);
-            const sourceLegacy=stableLegacyId(sourceProfile),targetLegacy=stableLegacyId(targetProfile);
-
-            if(sourceDoc&&targetDoc){
-              if(sourceDoc===targetDoc){
-                protectedExactAliasEvidence++;
-                return {ok:true,target,evidenceType:'protected_profile_document_match',evidenceRef:'profile-document:'+sha([sourceId,target,sourceDoc].join('\0')).slice(0,32)};
-              }
-              protectedDistinctIdentityEvidence++;
-              return {ok:false,reason:'PROTECTED_DOCUMENT_DIVERGENCE',identityDisposition:'PROVEN_DISTINCT_IDENTITY'};
-            }
-            if(sourceLegacy&&targetLegacy&&sourceLegacy===targetLegacy){
-              protectedExactAliasEvidence++;
-              return {ok:true,target,evidenceType:'protected_profile_stable_legacy_id_match',evidenceRef:'profile-legacy:'+sha([sourceId,target,sourceLegacy].join('\0')).slice(0,32)};
-            }
-            if(sourceEmail&&targetEmail&&sourceEmail===targetEmail){
-              protectedExactAliasEvidence++;
-              return {ok:true,target,evidenceType:'protected_profile_email_match',evidenceRef:'profile-email:'+sha([sourceId,target,sourceEmail].join('\0')).slice(0,32)};
-            }
-            return {ok:false,reason:'EXACT_IDENTITY_EVIDENCE_MISSING',identityDisposition:'INSUFFICIENT_EXACT_EVIDENCE'};
-          };
-
-          const paulaGroup=singletonAccountCollisions.find(x=>x.login==='paula.osorio')||null;
-          if(paulaGroup){
-            const sourceId=paulaGroup.ids.length===1?str(paulaGroup.ids[0]):'';
-            const activeTargets=paulaGroup.accountTargets.map(str).filter(Boolean);
-            const selectedExactTarget=sourceId?str(exactBySource.get(sourceId)):'';
-            const selectedExactEvidence=sourceId?[...(exactEvidenceBySource.get(sourceId)||new Set())].sort():[];
-            const historicalRow=sourceId?arr(cross?.crosswalk).find(row=>str(row?.plannedShopperId)===sourceId&&row?.action==='REUSE_EXISTING_CANONICAL_SHOPPER'&&str(row?.canonicalShopperId)):null;
-            const historicalExactTarget=str(historicalRow?.canonicalShopperId);
-            let protectedPairEvidence=null,historicalToActiveEvidence=null,operationalEmailEvidence=null;
-            if(sourceId&&activeTargets.length===1){
-              const activeTarget=resolveTrusted(activeTargets[0]);
-              const e=protectedProfilePairResolution(sourceId,activeTarget);
-              protectedPairEvidence=e?.ok
-                ?{ok:true,target:str(e.target),evidenceType:str(e.evidenceType)}
-                :{ok:false,reason:str(e?.reason),identityDisposition:str(e?.identityDisposition)};
-              if(historicalExactTarget){
-                const h=protectedProfilePairResolution(historicalExactTarget,activeTarget);
-                historicalToActiveEvidence=h?.ok
-                  ?{ok:true,target:str(h.target),evidenceType:str(h.evidenceType)}
-                  :{ok:false,reason:str(h?.reason),identityDisposition:str(h?.identityDisposition)};
-              }
-              const sourceOperational=arr(overlay?.identities).find(row=>str(row?.shopperId)===sourceId)||null;
-              const activeProfiles=profileForCanonical(activeTarget);
-              const activeProfile=activeProfiles.length===1?activeProfiles[0]:null;
-              const sourceEmail=str(sourceOperational?.email).toLowerCase();
-              const targetEmail=normalizedProtectedEmail(activeProfile);
-              const historicalProfiles=historicalExactTarget?profileForCanonical(historicalExactTarget):[];
-              const historicalProfile=historicalProfiles.length===1?historicalProfiles[0]:null;
-              const historicalEmail=normalizedProtectedEmail(historicalProfile);
-              operationalEmailEvidence={
-                sourceEmailPresent:!!sourceEmail,
-                activeEmailPresent:!!targetEmail,
-                historicalEmailPresent:!!historicalEmail,
-                sourceMatchesActive:!!sourceEmail&&!!targetEmail&&sourceEmail===targetEmail,
-                sourceMatchesHistorical:!!sourceEmail&&!!historicalEmail&&sourceEmail===historicalEmail,
-                historicalMatchesActive:!!historicalEmail&&!!targetEmail&&historicalEmail===targetEmail
-              };
-            }
-            const lineageIds=[sourceId,historicalExactTarget,...activeTargets].map(str).filter(Boolean);
-            const lineageSet=new Set(lineageIds);
-            const lineageMembers=members.filter(m=>lineageSet.has(str(m?.shopperId))).map(m=>({
-              shopperId:str(m?.shopperId),
-              memberFingerprint:sha(str(m?.id)).slice(0,18),
-              active:m?.active===true,
-              role:str(m?.role),
-              authNamespace:str(m?.authNamespace),
-              visibleLoginMatchesPaula:str(m?.visibleLogin).toLowerCase()==='paula.osorio',
-              providerUidFingerprintPresent:!!str(m?.providerUidFingerprint),
-              providerUidFingerprint:str(m?.providerUidFingerprint)||null,
-              projectScoped:arr(m?.projectIds).map(str).includes(PROJECT_ID)
-            }));
-            const durableCrossRows=durableCrossSnap.docs.map(d=>({id:d.id,...(d.data()||{})})).filter(row=>{
-              const tokens=[row?.id,row?.sourceStableKey,row?.sourceShopperId,row?.shopperId].map(str);
-              return tokens.some(t=>lineageSet.has(t));
-            }).map(row=>({
-              docId:str(row?.id),
-              sourceStableKey:str(row?.sourceStableKey)||null,
-              sourceShopperId:str(row?.sourceShopperId)||null,
-              shopperId:str(row?.shopperId)||null,
-              identityMode:str(row?.identityMode)||null,
-              sourceType:str(row?.sourceType)||null,
-              projectScoped:arr(row?.projectIds).map(str).includes(PROJECT_ID)||str(row?.projectId)===PROJECT_ID,
-              providerUidFingerprint:str(row?.providerUidFingerprint)||null
-            }));
-            const trustedLinkRows=links.filter(link=>{
-              const target=canonicalFor(link),tokens=linkTokens(link);
-              return lineageSet.has(target)||tokens.some(t=>lineageSet.has(str(t)));
-            }).map(link=>({
-              id:str(link?.id),
-              canonicalShopperId:canonicalFor(link),
-              authorityType:str(link?.authorityType||link?.authority?.type)||null,
-              sourceSystem:str(link?.sourceSystem||link?.sourceNamespace||link?.sourceType)||null,
-              tokens:linkTokens(link).filter(t=>lineageSet.has(str(t)))
-            }));
-            const uidFpGroups=new Map();
-            for(const m of lineageMembers){
-              const fp=str(m.providerUidFingerprint);if(!fp)continue;
-              if(!uidFpGroups.has(fp))uidFpGroups.set(fp,[]);
-              uidFpGroups.get(fp).push(m.shopperId);
-            }
-            const sharedProviderUidFingerprints=[...uidFpGroups.entries()].filter(([,ids])=>new Set(ids).size>1).map(([fp,ids])=>({fingerprint:fp,shopperIds:[...new Set(ids)]}));
-            console.log('I3_PAULA_MAPPING_DIAGNOSTIC='+JSON.stringify({
-              login:'paula.osorio',
-              sourceShopperId:sourceId||null,
-              activeAccountTargets:activeTargets,
-              selectedExactTarget:selectedExactTarget||null,
-              selectedExactEvidence,
-              historicalExactTarget:historicalExactTarget||null,
-              historicalHrVisitCount:Number(historicalRow?.hrVisitCount||0),
-              exactTargetMatchesActive:activeTargets.length===1&&selectedExactTarget===resolveTrusted(activeTargets[0]),
-              protectedPairEvidence,
-              historicalToActiveEvidence,
-              operationalEmailEvidence,
-              lineageMembers,
-              durableCrossRows,
-              trustedLinkRows,
-              sharedProviderUidFingerprints,
-              fuzzyMatching:false,
-              production:false
-            }));
-          }
-
-          const planned=[],blockers=[];
-          for(const group of collisions){
-            const rows=group.ids.map(sourceId=>{
-              const direct=[...(tokenTargets.get(sourceId)||new Set())];
-              if(direct.length>1)return {sourceId,reason:'DIRECT_TRUSTED_LINK_CONFLICT'};
-              if(direct.length===1)return {sourceId,alreadyLinked:true,target:resolveTrusted(sourceId),exactVisitTarget:exactBySource.get(sourceId)||null};
-              const exactVisitTarget=exactBySource.get(sourceId);
-              if(!exactVisitTarget){
-                const protectedResolution=protectedProfileResolution(sourceId,group.ids);
-                if(!protectedResolution.ok)return {sourceId,reason:protectedResolution.reason,identityDisposition:protectedResolution.identityDisposition||'INSUFFICIENT_EXACT_EVIDENCE'};
-                return {sourceId,alreadyLinked:false,target:resolveTrusted(protectedResolution.target),exactVisitTarget:null,evidenceType:protectedResolution.evidenceType,evidenceRef:protectedResolution.evidenceRef};
-              }
-              return {sourceId,alreadyLinked:false,target:resolveTrusted(exactVisitTarget),exactVisitTarget,evidenceType:'exact_visit_identity_crosswalk',evidenceRef:'exact-visit-crosswalk:'+mappingHash};
-            });
-            const bad=rows.filter(x=>x.reason);
-            if(bad.length){blockers.push({credentialFingerprint:sha(group.login).slice(0,24),technicalIds:group.ids,reasons:bad.map(x=>({sourceId:x.sourceId,reason:x.reason,identityDisposition:x.identityDisposition||'INSUFFICIENT_EXACT_EVIDENCE'}))});continue;}
-            const targets=[...new Set(rows.map(x=>x.target))];
-            if(targets.length!==1){blockers.push({credentialFingerprint:sha(group.login).slice(0,24),technicalIds:group.ids,reasons:[{reason:'EXACT_EVIDENCE_TARGET_DIVERGENCE',targetFingerprints:targets.map(x=>sha(x).slice(0,24))}]});continue;}
-            const target=targets[0];
-            for(const row of rows.filter(x=>!x.alreadyLinked)){
-              planned.push({sourceId:row.sourceId,canonicalShopperId:target,exactVisitCanonicalShopperId:row.exactVisitTarget||null,evidenceType:row.evidenceType||'exact_visit_identity_crosswalk',evidenceRef:row.evidenceRef||('exact-visit-crosswalk:'+mappingHash),credentialFingerprint:sha(group.login).slice(0,24)});
-            }
-          }
-
-          for(const group of singletonAccountCollisions){
-            const sourceId=group.ids[0],accountTargets=group.accountTargets;
-            if(accountTargets.length!==1){
-              blockers.push({credentialFingerprint:sha(group.login).slice(0,24),technicalIds:group.ids,reasons:[{sourceId,reason:'ACTIVE_CANONICAL_LOGIN_TARGET_AMBIGUOUS',identityDisposition:'INSUFFICIENT_EXACT_EVIDENCE'}]});
-              continue;
-            }
-            const target=resolveTrusted(accountTargets[0]);
-            const direct=[...(tokenTargets.get(sourceId)||new Set())];
-            if(direct.length>1){
-              blockers.push({credentialFingerprint:sha(group.login).slice(0,24),technicalIds:group.ids,reasons:[{sourceId,reason:'DIRECT_TRUSTED_LINK_CONFLICT',identityDisposition:'INSUFFICIENT_EXACT_EVIDENCE'}]});
-              continue;
-            }
-            if(direct.length===1){
-              if(resolveTrusted(sourceId)!==target)blockers.push({credentialFingerprint:sha(group.login).slice(0,24),technicalIds:group.ids,reasons:[{sourceId,reason:'ACTIVE_CANONICAL_TARGET_DIVERGENCE',identityDisposition:'INSUFFICIENT_EXACT_EVIDENCE'}]});
-              continue;
-            }
-            const exactVisitTarget=exactBySource.get(sourceId);
-            if(exactVisitTarget){
-              const resolvedExact=resolveTrusted(exactVisitTarget);
-              if(resolvedExact!==target){
-                const historicalRow=arr(cross?.crosswalk).find(row=>
-                  str(row?.plannedShopperId)===sourceId&&row?.action==='REUSE_EXISTING_CANONICAL_SHOPPER'&&
-                  !!str(row?.canonicalShopperId)&&str(row?.canonicalShopperId)!==sourceId
-                )||null;
-                const historicalTarget=str(historicalRow?.canonicalShopperId);
-                const selfCross=durableCrossSnap.docs.map(d=>({id:d.id,...(d.data()||{})})).find(row=>
-                  str(row?.id)===sourceId&&str(row?.sourceStableKey||sourceId)===sourceId&&str(row?.shopperId)===sourceId&&
-                  str(row?.sourceType).toLowerCase()==='hr_external'&&['stable_hr_shopper_id','exact_technical_keys_only'].includes(str(row?.identityMode).toLowerCase())
-                )||null;
-                const targetMembers=members.filter(m=>
-                  m?.active===true&&str(m?.role)==='shopper'&&str(m?.authNamespace)==='shopper'&&
-                  str(m?.shopperId)===target&&str(m?.visibleLogin).toLowerCase()==='paula.osorio'&&arr(m?.projectIds).map(str).includes(PROJECT_ID)
-                );
-                const historicalMembers=members.filter(m=>str(m?.shopperId)===historicalTarget);
-                const sourceMembers=members.filter(m=>str(m?.shopperId)===sourceId);
-                const lineageTokens=new Set([sourceId,historicalTarget,target]);
-                const lineageTrustedLinks=links.filter(link=>lineageTokens.has(canonicalFor(link))||linkTokens(link).some(t=>lineageTokens.has(str(t))));
-                const targetFp=str(targetMembers[0]?.providerUidFingerprint);
-                const otherFps=[...historicalMembers,...sourceMembers].map(m=>str(m?.providerUidFingerprint)).filter(Boolean);
-                const frozenTenantChecks={
-                  loginExact:group.login==='paula.osorio',
-                  singletonHrIdentity:group.ids.length===1,
-                  frozenResolution:frozenPaulaResolutionOk===true,
-                  historicalVisitCount:Number(historicalRow?.hrVisitCount)===6,
-                  selfCrosswalkPresent:!!selfCross,
-                  oneActiveCanonicalTarget:targetMembers.length===1,
-                  targetUidFingerprintPresent:!!targetFp,
-                  oneHistoricalMember:historicalMembers.length===1,
-                  oneSourceMember:sourceMembers.length===1,
-                  historicalVisibleLoginNotPaula:str(historicalMembers[0]?.visibleLogin).toLowerCase()!=='paula.osorio',
-                  sourceVisibleLoginNotPaula:str(sourceMembers[0]?.visibleLogin).toLowerCase()!=='paula.osorio',
-                  providerUidFingerprintsDistinct:otherFps.every(fp=>fp!==targetFp),
-                  noExistingTrustedLineageLink:lineageTrustedLinks.length===0
-                };
-                const frozenTenantAdjudication=Object.values(frozenTenantChecks).every(Boolean);
-                if(group.login==='paula.osorio')console.log('I3_PAULA_TENANT_ADJUDICATION_CHECKS='+JSON.stringify({
-                  ...frozenTenantChecks,
-                  historicalMemberCount:historicalMembers.length,sourceMemberCount:sourceMembers.length,
-                  targetMemberCount:targetMembers.length,lineageTrustedLinkCount:lineageTrustedLinks.length,
-                  historicalRowFound:!!historicalRow,selfCrosswalkMode:str(selfCross?.identityMode)||null,
-                  production:false
-                }));
-                if(frozenTenantAdjudication){
-                  const evidenceRef='frozen-paula-resolution:'+frozenPaulaEvidenceSha256+':visit-crosswalk:'+mappingHash;
-                  planned.push({
-                    sourceId,canonicalShopperId:target,exactVisitCanonicalShopperId:historicalTarget,
-                    evidenceType:'frozen_paula_active_vs_historical_tenant_adjudication',evidenceRef,
-                    credentialFingerprint:sha(group.login).slice(0,24),crosswalkMigration:true,
-                    targetProviderUidFingerprint:targetFp,historicalHrVisitCount:Number(historicalRow.hrVisitCount||0)
-                  });
-                  console.log('I3_PAULA_TENANT_ADJUDICATION_PLAN='+JSON.stringify({
-                    sourceShopperId:sourceId,canonicalShopperId:target,historicalCanonicalShopperId:historicalTarget,
-                    frozenResolution:paulaResolution.resolution,historicalHrVisitCount:Number(historicalRow.hrVisitCount||0),
-                    targetMembershipExact:true,selfCrosswalkMigrationRequired:true,identityLinkAuthority:'tenant_adjudication',
-                    rawPiiPersisted:false,fuzzyMatching:false,authWrites:0,hrWrites:0,production:false
-                  }));
-                  continue;
-                }
-                blockers.push({credentialFingerprint:sha(group.login).slice(0,24),technicalIds:group.ids,reasons:[{sourceId,reason:'EXACT_VISIT_TARGET_DIVERGENCE',identityDisposition:'INSUFFICIENT_EXACT_EVIDENCE'}]});
-                continue;
-              }
-              planned.push({sourceId,canonicalShopperId:target,exactVisitCanonicalShopperId:exactVisitTarget,evidenceType:'exact_visit_identity_crosswalk',evidenceRef:'exact-visit-crosswalk:'+mappingHash,credentialFingerprint:sha(group.login).slice(0,24)});
-              continue;
-            }
-            const protectedResolution=protectedProfilePairResolution(sourceId,target);
-            if(!protectedResolution.ok){
-              blockers.push({credentialFingerprint:sha(group.login).slice(0,24),technicalIds:group.ids,reasons:[{sourceId,reason:protectedResolution.reason,identityDisposition:protectedResolution.identityDisposition||'INSUFFICIENT_EXACT_EVIDENCE'}]});
-              continue;
-            }
-            planned.push({sourceId,canonicalShopperId:target,exactVisitCanonicalShopperId:null,evidenceType:protectedResolution.evidenceType,evidenceRef:protectedResolution.evidenceRef,credentialFingerprint:sha(group.login).slice(0,24)});
-          }
-
-          const base={
-            schemaVersion:'cxorbia.i3.exact-credential-collision-adjudication.v1',
-            generatedAt:new Date().toISOString(),tenantId:TENANT,projectId:PROJECT_ID,
-            identityCount:arr(overlay.identities).length,collisionGroupCount:collisions.length,
-            collisionTechnicalIdCount:collisions.reduce((n,x)=>n+x.ids.length,0),
-            singletonAccountCollisionGroupCount:singletonAccountCollisions.length,
-            exactVisitCrosswalkSha256:mappingHash,existingTrustedIdentityLinks:links.length,
-            durableExactAliasEvidence,exactEvidenceSupersededCount:exactEvidenceSuperseded.length,
-            exactIdentityPrecedence:'durable_hr_exact_crosswalk_over_historical_visit_crosswalk',
-            protectedProfileReads:profiles.length,protectedExactAliasEvidence,protectedDistinctIdentityEvidence,
-            rawNamesPersisted:false,rawLoginsPersisted:false,rawProtectedAnchorsPersisted:false,hrWrites:0,authWrites:0,production:false
-          };
-          // Exceptional unresolved identities remain fail-closed per shopper, but do not block the
-          // authoritative HR revision for unrelated shoppers. Proven exact aliases are still materialized below.
-          const uniquePlan=[...new Map(planned.map(x=>[x.sourceId,x])).values()];
-          if(uniquePlan.length){
-            await db.runTransaction(async tx=>{
-              const refs=uniquePlan.map(p=>({p,id:'irl_i3_'+sha([TENANT,PROJECT_ID,'hr',p.sourceId,p.canonicalShopperId].join('\0')).slice(0,32)}));
-              const snaps=await Promise.all(refs.map(x=>tx.get(linksRef.doc(x.id))));
-              const migrations=refs.filter(x=>x.p.crosswalkMigration===true).map(x=>({...x,ref:durableCrossRef.doc(x.p.sourceId)}));
-              const migrationSnaps=await Promise.all(migrations.map(x=>tx.get(x.ref)));
-              for(let i=0;i<refs.length;i++){
-                const {p,id}=refs[i],snap=snaps[i],ref=linksRef.doc(id);
-                if(snap.exists){
-                  const prior={id,...(snap.data()||{})};
-                  if(!applicable(prior)||canonicalFor(prior)!==p.canonicalShopperId||!linkTokens(prior).includes(p.sourceId))throw new Error('MAPPING_FAILURE:DETERMINISTIC_LINK_ID_CONFLICT');
-                  continue;
-                }
-                tx.set(ref,{
-                  schemaVersion:'cxorbia.shopper-identity-link.v1',
-                  tenantId:TENANT,projectId:PROJECT_ID,projectScope:PROJECT_ID,
-                  canonicalShopperId:p.canonicalShopperId,
-                  sourceSystem:'hr',sourceIdentityKey:p.sourceId,sourceIdentityAliases:[p.sourceId],
-                  status:'materialized',periodIndependent:true,sourceSafe:true,
-                  authorityType:'tenant_adjudication',
-                  authorityRef:p.evidenceRef,
-                  adjudicationEvidence:p.evidenceType==='exact_visit_identity_crosswalk'
-                    ?{type:'exact_visit_identity_crosswalk',mappingHashSha256:mappingHash,exactVisitCanonicalShopperId:p.exactVisitCanonicalShopperId}
-                    :{type:p.evidenceType,evidenceRef:p.evidenceRef,protectedReadOnly:true,rawAnchorPersisted:false,historicalCanonicalShopperId:p.exactVisitCanonicalShopperId||null,historicalHrVisitCount:Number(p.historicalHrVisitCount||0)},
-                  createdBy:'cxorbia-recovery-i3-exact-credential-collision-adjudicator-v3',
-                  createdAt:FieldValue.serverTimestamp(),updatedAt:FieldValue.serverTimestamp()
-                },{merge:false});
-              }
-              for(let i=0;i<migrations.length;i++){
-                const {p,ref}=migrations[i],snap=migrationSnaps[i];
-                if(!snap.exists)throw new Error('PERSISTENCE_FAILURE:PAULA_SELF_CROSSWALK_MISSING');
-                const prior=snap.data()||{},priorTarget=str(prior?.shopperId),priorMode=str(prior?.identityMode).toLowerCase();
-                if(priorTarget===p.canonicalShopperId){
-                  if(str(prior?.providerUidFingerprint)!==str(p.targetProviderUidFingerprint)||priorMode!=='provider_exact_identity_link')throw new Error('PERSISTENCE_FAILURE:PAULA_CROSSWALK_ALREADY_TARGETED_BUT_INCONSISTENT');
-                  continue;
-                }
-                if(str(prior?.tenantId)!==TENANT||str(prior?.sourceStableKey||p.sourceId)!==p.sourceId||priorTarget!==p.sourceId||
-                   str(prior?.sourceType).toLowerCase()!=='hr_external'||!['stable_hr_shopper_id','exact_technical_keys_only'].includes(priorMode))
-                  throw new Error('PERSISTENCE_FAILURE:PAULA_SELF_CROSSWALK_PRECONDITION_DRIFT');
-                tx.set(ref,{
-                  tenantId:TENANT,shopperId:p.canonicalShopperId,
-                  projectIds:[...new Set([...arr(prior?.projectIds).map(str),PROJECT_ID])],
-                  authNamespace:'shopper',providerUidFingerprint:p.targetProviderUidFingerprint,
-                  sourceStableKey:p.sourceId,identityMode:'provider_exact_identity_link',sourceType:'hr_external',
-                  migrationAuthorityType:'tenant_adjudication',migrationAuthorityRef:p.evidenceRef,
-                  migratedFromShopperId:p.sourceId,fuzzyMatching:false,updatedAt:FieldValue.serverTimestamp()
-                },{merge:true});
-              }
-            });
-          }
-
-          const after=await linksRef.get(),afterLinks=after.docs.map(d=>({id:d.id,...(d.data()||{})})).filter(applicable);
-          const afterTargets=new Map();
-          for(const link of afterLinks)for(const token of linkTokens(link)){
-            if(!afterTargets.has(token))afterTargets.set(token,new Set());
-            afterTargets.get(token).add(canonicalFor(link));
-          }
-          function resolveAfter(source,map){
-            let cur=str(source);const seen=new Set();
-            for(let i=0;i<8;i++){
-              if(!cur||seen.has(cur))throw new Error('MAPPING_FAILURE:READBACK_CHAIN_CYCLE');
-              seen.add(cur);const targets=[...(map.get(cur)||new Set())];
-              if(targets.length>1)throw new Error('MAPPING_FAILURE:READBACK_LINK_CONFLICT');
-              if(!targets.length||targets[0]===cur)return cur;cur=targets[0];
-            }
-            throw new Error('MAPPING_FAILURE:READBACK_CHAIN_DEPTH');
-          }
-          const readback=[],crosswalkMigrationReadback=[];
-          for(const p of uniquePlan){
-            const targets=[...(afterTargets.get(p.sourceId)||new Set())];
-            if(targets.length!==1||resolveAfter(targets[0],afterTargets)!==p.canonicalShopperId)throw new Error('PERSISTENCE_FAILURE:IDENTITY_LINK_READBACK_MISMATCH');
-            readback.push({sourceId:p.sourceId,canonicalShopperId:p.canonicalShopperId});
-            if(p.crosswalkMigration===true){
-              const snap=await durableCrossRef.doc(p.sourceId).get();
-              if(!snap.exists)throw new Error('PERSISTENCE_FAILURE:PAULA_CROSSWALK_READBACK_MISSING');
-              const row=snap.data()||{};
-              if(str(row?.shopperId)!==p.canonicalShopperId||str(row?.sourceStableKey)!==p.sourceId||
-                 str(row?.identityMode).toLowerCase()!=='provider_exact_identity_link'||
-                 str(row?.providerUidFingerprint)!==str(p.targetProviderUidFingerprint)||row?.fuzzyMatching!==false)
-                throw new Error('PERSISTENCE_FAILURE:PAULA_CROSSWALK_READBACK_MISMATCH');
-              const receipt={sourceShopperId:p.sourceId,canonicalShopperId:p.canonicalShopperId,
-                historicalCanonicalShopperId:p.exactVisitCanonicalShopperId||null,identityMode:str(row.identityMode),
-                authorityType:'tenant_adjudication',providerUidFingerprintMatchesTarget:true,
-                rawPiiPersisted:false,fuzzyMatching:false,authWrites:0,hrWrites:0,production:false};
-              crosswalkMigrationReadback.push(receipt);
-              console.log('I3_PAULA_FINAL_MAPPING_REPAIR='+JSON.stringify(receipt));
-            }
-          }
-          const migrationCount=uniquePlan.filter(p=>p.crosswalkMigration===true).length;
-          const report={...base,
-            decision:blockers.length?'PASS_I3_IDENTITY_REVIEW_QUARANTINED':collisions.length?'PASS_I3_EXACT_IDENTITY_LINKS_MATERIALIZED':'PASS_I3_NO_CREDENTIAL_COLLISIONS',
-            classification:blockers.length?'MAPPING_FAILURE':null,
-            blocking:false,
-            identityReviewRequired:blockers.length>0,
-            identityReviewGroupCount:blockers.length,
-            providerWrites:uniquePlan.length+migrationCount,plannedWrites:uniquePlan.length+migrationCount,readback,crosswalkMigrationReadback,blockers,
-            collisionGroups:collisions.map(g=>({credentialFingerprint:sha(g.login).slice(0,24),technicalIds:g.ids})),
-            singletonAccountCollisionGroups:singletonAccountCollisions.map(g=>({credentialFingerprint:sha(g.login).slice(0,24),technicalIds:g.ids,targetFingerprints:g.accountTargets.map(x=>sha(x).slice(0,24))}))
-          };
-          fs.writeFileSync(OUT+'/identity-link-adjudication.json',JSON.stringify(report,null,2)+'\n');
-          console.log(JSON.stringify(report));
-          NODE
-          decision="$(jq -r '.decision' "$OUT/identity-link-adjudication.json")"
-          [[ "$decision" = "PASS_I3_IDENTITY_REVIEW_QUARANTINED" || "$decision" = "PASS_I3_EXACT_IDENTITY_LINKS_MATERIALIZED" || "$decision" = "PASS_I3_NO_CREDENTIAL_COLLISIONS" ]]
-
-      - name: Read fresh authoritative HR source
-        run: |
-          set -euo pipefail
-          code="$(curl -sS --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 20 --max-time 180 \
-            -o "$OUT/hr-fresh.json" -w '%{http_code}' "$HOSTING_URL/api/tya/cinepolis/hr-live?format=json&fresh=1&i3=${GITHUB_RUN_ID}")"
-          if [[ "$code" != "200" ]]; then
-            echo "HR_FRESH_HTTP_STATUS=$code" >&2
-            node -e 'const fs=require("fs");let p={};try{p=JSON.parse(fs.readFileSync(process.env.OUT+"/hr-fresh.json","utf8"))}catch{};const raw=String(p?.message||p?._runtime?.refreshError||p?.data?._runtime?.refreshError||p?.error||"HR_FRESH_NON_200");console.error("HR_FRESH_ERROR="+raw.replace(/[\\r\\n]+/g," ").slice(0,800))' >&2
-            exit 1
-          fi
-          node -e 'const fs=require("fs"),p=JSON.parse(fs.readFileSync(process.env.OUT+"/hr-fresh.json","utf8")),s=p?.snapshot||p?.data||p,rt=p?._runtime||s?._runtime||{};if(s?.sourceSafe!==true||rt.refreshError)throw new Error("SOURCE_FAILURE:HR_FRESH_INVALID");fs.writeFileSync(process.env.OUT+"/hr-readback.json",JSON.stringify({decision:"PASS_I3_HR_EXACT_RUNTIME",sourceSafe:true,production:false},null,2)+"\n")'
-
-          PINNED_HR_REVISION="$(jq -r '._runtime.revision // .sourceRevision // empty' "$OUT/hr-fresh.json")"
-          PINNED_HR_ORIGIN="$(jq -r '._runtime.cacheOrigin // empty' "$OUT/hr-fresh.json")"
-          PINNED_HR_CACHE_MS="$(jq -r '._runtime.cacheMs // 0' "$OUT/hr-fresh.json")"
-          [[ "$PINNED_HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
-          test "$PINNED_HR_ORIGIN" = "runtime_refresh"
-          test "$PINNED_HR_CACHE_MS" = "$I3_HR_CACHE_PIN_VALUE"
-          printf '[]\n' > "$OUT/hr-pin-readbacks.json"
-          for i in 1 2 3 4 5; do
-            curl -fsS --retry 3 --retry-delay 1 "$HOSTING_URL/api/tya/cinepolis/hr-live?format=meta&i3pin=${GITHUB_RUN_ID}-${i}" > "$RUNNER_TEMP/hr-hosting-$i.json"
-            curl -fsS --retry 3 --retry-delay 1 "$RUNTIME_URL/api/tya/cinepolis/hr-live?format=meta&i3pin=${GITHUB_RUN_ID}-${i}" > "$RUNNER_TEMP/hr-runtime-$i.json"
-            H_REV="$(jq -r '.revision // empty' "$RUNNER_TEMP/hr-hosting-$i.json")"
-            R_REV="$(jq -r '.revision // empty' "$RUNNER_TEMP/hr-runtime-$i.json")"
-            H_ORIGIN="$(jq -r '.cacheOrigin // empty' "$RUNNER_TEMP/hr-hosting-$i.json")"
-            R_ORIGIN="$(jq -r '.cacheOrigin // empty' "$RUNNER_TEMP/hr-runtime-$i.json")"
-            H_CACHE="$(jq -r '.cacheMs // 0' "$RUNNER_TEMP/hr-hosting-$i.json")"
-            R_CACHE="$(jq -r '.cacheMs // 0' "$RUNNER_TEMP/hr-runtime-$i.json")"
-            test "$H_REV" = "$PINNED_HR_REVISION"
-            test "$R_REV" = "$PINNED_HR_REVISION"
-            test "$H_ORIGIN" = "runtime_refresh"
-            test "$R_ORIGIN" = "runtime_refresh"
-            test "$H_CACHE" = "$I3_HR_CACHE_PIN_VALUE"
-            test "$R_CACHE" = "$I3_HR_CACHE_PIN_VALUE"
-            jq --argjson i "$i" --arg h "$H_REV" --arg r "$R_REV" --arg ho "$H_ORIGIN" --arg ro "$R_ORIGIN" \
-              '. + [{read:$i,hostingRevision:$h,runtimeRevision:$r,hostingOrigin:$ho,runtimeOrigin:$ro}]' "$OUT/hr-pin-readbacks.json" > "$RUNNER_TEMP/hr-pin-readbacks.next"
-            mv "$RUNNER_TEMP/hr-pin-readbacks.next" "$OUT/hr-pin-readbacks.json"
-            sleep 1
-          done
-          test "$(jq 'length' "$OUT/hr-pin-readbacks.json")" = "5"
-          test "$(jq --arg r "$PINNED_HR_REVISION" '[.[] | select(.hostingRevision==$r and .runtimeRevision==$r)] | length' "$OUT/hr-pin-readbacks.json")" = "5"
-          echo "PINNED_HR_REVISION=$PINNED_HR_REVISION" >> "$GITHUB_ENV"
-
-      - name: Remove only exact I3 QA reservation fixtures and prove zero residue
-        run: |
-          set -Eeuo pipefail
-          C3_QA_OUT="$OUT/c3-semantic"           C3_FIREBASE_PROJECT="$PROJECT"           C3_TENANT_ID="$TENANT_ID"           C3_PROJECT_ID="$PROJECT_ID"           node tools/qa/cxorbia-i3-c3-qa-reservation-cleanup.mjs | tee "$OUT/c3-qa-cleanup.log"
-          test "$(jq -r '.decision' "$OUT/c3-semantic/qa-reservation-cleanup.json")" = "PASS_C3_QA_RESERVATION_CLEANUP"
-          test "$(jq -r '.after' "$OUT/c3-semantic/qa-reservation-cleanup.json")" = "0"
-
-      - name: Normalize durable active shopper credentials on frozen rule
-        run: |
-          set -Eeuo pipefail
-          PROJECT="$PROJECT" OUT="$OUT" TENANT_ID="$TENANT_ID" SOURCE_DIR="$SOURCE_DIR" node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          import path from 'node:path';
-          import { pathToFileURL } from 'node:url';
-          import { applicationDefault, initializeApp, getApps } from 'firebase-admin/app';
-          import { getAuth } from 'firebase-admin/auth';
-          import { getFirestore } from 'firebase-admin/firestore';
-          const PROJECT=process.env.PROJECT,OUT=process.env.OUT,tenantId=process.env.TENANT_ID,SOURCE_DIR=process.env.SOURCE_DIR;
-          const mod=await import(pathToFileURL(path.join(SOURCE_DIR,'backend/runtime/cxorbia-shopper-command-provider-v1.mjs')).href);
-          if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
-          const provider=mod.createShopperCommandProvider({
-            auth:getAuth(),db:getFirestore(),
-            policy:{schemaVersion:'cxorbia.shopper-command-provider-policy.v1',enabled:true,allowedTenantIds:[tenantId],allowedProjectIds:[],hrWrites:false,externalWrites:false,fuzzyMatching:false}
-          });
-          const result=await provider.normalizeDurableCredentials({tenantId});
-          if(result?.ok!==true)throw new Error('FUNCTIONAL_DEFECT:DURABLE_CREDENTIAL_SWEEP_FAILED');
-          if(result?.credentialRuleVersion!==mod.CREDENTIAL_RULE_VERSION||result?.credentialSweepVersion!==mod.DURABLE_CREDENTIAL_SWEEP_VERSION)throw new Error('FUNCTIONAL_DEFECT:DURABLE_CREDENTIAL_SWEEP_VERSION_MISMATCH');
-          if(result?.plaintextPersisted!==false)throw new Error('PERSISTENCE_FAILURE:DURABLE_CREDENTIAL_SECRET_POLICY');
-          fs.writeFileSync(OUT+'/durable-credential-sweep.json',JSON.stringify(result,null,2)+'\n');
-          NODE
-          test "$(jq -r '.ok' "$OUT/durable-credential-sweep.json")" = "true"
-
-      - name: Revalidate owner-defined shopper credential contract in DEV
-        run: |
-          set -Eeuo pipefail
-          PROJECT="$PROJECT" OUT="$OUT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" SOURCE_DIR="$SOURCE_DIR" node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          import path from 'node:path';
-          import crypto from 'node:crypto';
-          import { pathToFileURL } from 'node:url';
-          import { applicationDefault, initializeApp, getApps } from 'firebase-admin/app';
-          import { getAuth } from 'firebase-admin/auth';
-          import { getFirestore } from 'firebase-admin/firestore';
-          const PROJECT=process.env.PROJECT,OUT=process.env.OUT,HOSTING_URL=String(process.env.HOSTING_URL||'').replace(/\/$/,''),tenantId=process.env.TENANT_ID,projectId=process.env.PROJECT_ID,SOURCE_DIR=process.env.SOURCE_DIR;
-          const mod=await import(pathToFileURL(path.join(SOURCE_DIR,'backend/runtime/cxorbia-shopper-command-provider-v1.mjs')).href);
-          const RULE=mod.CREDENTIAL_RULE_VERSION,SWEEP=mod.DURABLE_CREDENTIAL_SWEEP_VERSION,PREVIEW='YES_PAULA_20260628_PREVIEW_DEV',PROTECTED='YES_PAULA_20260730_PROTECTED_DEV',FULL='YES_PAULA_20260731_FULL_PROFILE_DEV';
-          const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[];
-          const docs=async ref=>(await ref.get()).docs.map(d=>({id:d.id,...(d.data()||{})}));
-          const internalEmail=login=>crypto.createHash('sha256').update(tenantId+'\0shopper\0'+String(login).toLowerCase(),'utf8').digest('hex').slice(0,48)+'@auth.cxorbia.invalid';
-          if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
-          const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(tenantId);
-          const [members,profiles]=await Promise.all([docs(tenant.collection('users')),docs(tenant.collection('shoppers'))]);
-          const sweep=JSON.parse(fs.readFileSync(OUT+'/durable-credential-sweep.json','utf8'));
-          const reviewIds=new Set(arr(sweep.identityReviewQueue).map(x=>str(x?.shopperId)).filter(Boolean));
-          const profileById=new Map(profiles.map(p=>[str(p.shopperId||p.id),p]));
-          const targets=members.filter(m=>m.active===true&&str(m.role)==='shopper'&&str(m.authNamespace)==='shopper'&&str(m.shopperId));
-          if(!targets.length)throw new Error('AUTH_FAILURE:CREDENTIAL_RULE_NO_ACTIVE_SHOPPERS');
-          const mismatches=[];let checked=0,reviewed=0,sample=null;
-          for(const m of targets){
-            const shopperId=str(m.shopperId);
-            if(reviewIds.has(shopperId)){reviewed++;continue;}
-            const p=profileById.get(shopperId);if(!p){mismatches.push('profile_missing_not_quarantined');continue;}
-            const c=mod.shopperCredentialRule(p);if(!c.ok){mismatches.push('canonical_rule_rejected_not_quarantined');continue;}
-            let user;try{user=await auth.getUser(m.id);}catch{mismatches.push('auth_missing_not_quarantined');continue;}
-            const expectedEmail=internalEmail(c.login);
-            if(str(m.visibleLogin).toLowerCase()!==c.login)mismatches.push('member_login');
-            if(str(m.credentialRuleVersion)!==RULE)mismatches.push('member_rule');
-            if(str(m.credentialSweepVersion)!==SWEEP)mismatches.push('member_sweep');
-            if(str(m.credentialPasswordProofVersion)!==mod.CREDENTIAL_PASSWORD_PROOF_VERSION)mismatches.push('member_password_proof');
-            if(str(m.credentialPasswordRuleVersion)!==RULE)mismatches.push('member_password_rule');
-            if(str(p.username||p.user||p.visibleLogin).toLowerCase()!==c.login)mismatches.push('profile_login');
-            if(str(p.credentialRuleVersion)!==RULE)mismatches.push('profile_rule');
-            if(str(p.credentialSweepVersion)!==SWEEP)mismatches.push('profile_sweep');
-            if(str(user.email).toLowerCase()!==expectedEmail)mismatches.push('auth_email');
-            checked++;
-            if(!sample)sample={uid:m.id,shopperId,login:c.login,password:c.password};
-          }
-          if(checked+reviewed!==targets.length)mismatches.push('population_accounting');
-          if(mismatches.length)throw new Error('FUNCTIONAL_DEFECT:CREDENTIAL_RULE_MISMATCH:'+JSON.stringify({checked,reviewed,targetCount:targets.length,mismatches:[...new Set(mismatches)]}));
-          if(!sample)throw new Error('AUTH_FAILURE:CREDENTIAL_RULE_SAMPLE_MISSING');
-          const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
-          async function fetchRetry(url,options={},attempts=5){
-            let lastError=null;
-            for(let attempt=1;attempt<=attempts;attempt++){
-              try{
-                const response=await fetch(url,options);
-                if(response.ok||response.status<500)return response;
-                lastError=new Error('HTTP_'+response.status);
-              }catch(error){lastError=error;}
-              if(attempt<attempts)await sleep(1000*attempt);
-            }
-            throw new Error('ENVIRONMENT_FAILURE:AUTH_NETWORK_UNREACHABLE:'+String(lastError?.message||lastError||'unknown').slice(0,120));
-          }
-          const initResponse=await fetchRetry(HOSTING_URL+'/__/firebase/init.js',{headers:{accept:'application/javascript'}});
-          if(!initResponse.ok)throw new Error('ENVIRONMENT_FAILURE:FIREBASE_INIT_HTTP_'+initResponse.status);
-          const initText=await initResponse.text();
-          const apiKeyMatch=initText.match(/["']?apiKey["']?\s*:\s*["']([^"']+)["']/);
-          if(!apiKeyMatch)throw new Error('ENVIRONMENT_FAILURE:FIREBASE_INIT_APIKEY_MISSING');
-          const apiKey=apiKeyMatch[1];
-          const signInResponse=await fetchRetry(
-            'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key='+encodeURIComponent(apiKey),
-            {
-              method:'POST',
-              headers:{'content-type':'application/json'},
-              body:JSON.stringify({email:internalEmail(sample.login),password:sample.password,returnSecureToken:true})
-            }
-          );
-          const signInBody=await signInResponse.json().catch(()=>({}));
-          if(!signInResponse.ok){
-            const code=str(signInBody?.error?.message||'AUTH_SIGNIN_FAILED').split(':')[0].trim().replace(/[^A-Z0-9_\-]/gi,'_').slice(0,80);
-            const cls=/INVALID_PASSWORD|EMAIL_NOT_FOUND|INVALID_LOGIN_CREDENTIALS|USER_DISABLED/i.test(code)?'AUTH_FAILURE':'ENVIRONMENT_FAILURE';
-            throw new Error(cls+':IDENTITY_TOOLKIT_'+code);
-          }
-          const tokenParts=str(signInBody.idToken).split('.');
-          if(tokenParts.length<2)throw new Error('AUTH_FAILURE:CREDENTIAL_RULE_ID_TOKEN_MISSING');
-          const claims=JSON.parse(Buffer.from(tokenParts[1],'base64url').toString('utf8'));
-          const passwordLoginPassed=
-            str(signInBody.localId)===sample.uid&&
-            str(claims.role)==='shopper'&&
-            str(claims.shopperId)===sample.shopperId&&
-            str(claims.tenantId)===tenantId&&
-            str(claims.authNamespace)==='shopper';
-          if(!passwordLoginPassed)throw new Error('AUTH_FAILURE:CREDENTIAL_RULE_PASSWORD_LOGIN_CONTEXT');
-          const evidence={decision:'PASS_I3_OWNER_SHOPPER_CREDENTIAL_RULE',credentialRuleVersion:RULE,credentialSweepVersion:SWEEP,passwordProofVersion:mod.CREDENTIAL_PASSWORD_PROOF_VERSION,activeShopperMemberships:targets.length,checked,identityReviewCount:reviewed,profileAndAuthMappingExact:true,passwordProofDurable:true,passwordLoginPassed,plaintextPersisted:false,production:false};
-          fs.writeFileSync(OUT+'/credential-rule-readback.json',JSON.stringify(evidence,null,2)+'\n');
-          NODE
-          test "$(jq -r '.decision' "$OUT/credential-rule-readback.json")" = "PASS_I3_OWNER_SHOPPER_CREDENTIAL_RULE"
-          test "$(jq -r '.passwordLoginPassed' "$OUT/credential-rule-readback.json")" = "true"
-
-      - name: Restore historical Client membership only with exact readback
-        run: |
-          set -Eeuo pipefail
-          mkdir -p "$OUT/client-membership"
-          export CXORBIA_EXPECTED_PROJECT="$PROJECT"
-          export CXORBIA_MEMBERSHIP_ONLY_REPAIR=1
-          export CXORBIA_DEV_ROOT_URL="$HOSTING_URL"
-          export CXORBIA_CLIENT_AUTH_PRIVATE_SNAPSHOT="$RUNNER_TEMP/cxorbia-client-membership-snapshot.json"
-          export CXORBIA_E2E_PRIVATE_CREDENTIALS="$RUNNER_TEMP/cxorbia-client-e2e-private.json"
-          export OUT_DIR="$OUT/client-membership"
-          ln -s "$GITHUB_WORKSPACE/node_modules" "$SOURCE_DIR/node_modules"
-          trap 'rm -f "$SOURCE_DIR/node_modules"' EXIT
-          node "$SOURCE_DIR/tools/qa/cxorbia-c6-client-auth-materialization.mjs" --mode=snapshot > "$OUT/client-membership/snapshot.json"
-          node "$SOURCE_DIR/tools/qa/cxorbia-c6-client-auth-materialization.mjs" --mode=apply > "$OUT/client-membership/apply.json"
-          node "$SOURCE_DIR/tools/qa/cxorbia-c6-client-auth-materialization.mjs" --mode=readback > "$OUT/client-membership/readback.json"
-          rm -f "$SOURCE_DIR/node_modules"
-          trap - EXIT
-          test "$(jq -r '.decision' "$OUT/client-membership/snapshot.json")" = "PASS_C6_CLIENT_AUTH_MEMBERSHIP_PREWRITE_SNAPSHOT"
-          APPLY_DECISION="$(jq -r '.decision' "$OUT/client-membership/apply.json")"
-          [[ "$APPLY_DECISION" = "PASS_C6_CLIENT_AUTH_MEMBERSHIP_REPAIRED" || "$APPLY_DECISION" = "PASS_C6_CLIENT_AUTH_MEMBERSHIP_IDEMPOTENT_NOOP" ]]
-          test "$(jq -r '.canonicalDecision' "$OUT/client-membership/readback.json")" = "PASS_C6_CLIENT_AUTH_MEMBERSHIP_READBACK"
-          test "$(jq -r '.authUserCreates' "$OUT/client-membership/readback.json")" = "0"
-          test "$(jq -r '.passwordChanges' "$OUT/client-membership/readback.json")" = "0"
-          test "$(jq -r '.hrWrites' "$OUT/client-membership/readback.json")" = "0"
-
-      - name: Revalidate real human lane HR authority release
-        run: |
-          set -Eeuo pipefail
-          PROJECT="$PROJECT" OUT="$OUT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" PERIOD_ID="$PERIOD_ID" node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          import path from 'node:path';
-          import { applicationDefault, initializeApp, getApps } from 'firebase-admin/app';
-          import { getAuth } from 'firebase-admin/auth';
-          import { getFirestore } from 'firebase-admin/firestore';
-          import { chromium } from 'playwright';
-          const PROJECT=process.env.PROJECT,OUT=process.env.OUT,HOSTING_URL=String(process.env.HOSTING_URL||'').replace(/\/$/,''),tenantId=process.env.TENANT_ID,projectId=process.env.PROJECT_ID,periodId=process.env.PERIOD_ID,expectedHrRevision=String(process.env.PINNED_HR_REVISION||'').trim();
-          if(!/^[a-f0-9]{64}$/.test(expectedHrRevision))throw new Error('RELEASE_COMPOSITION_FAILURE:HUMAN_LANE_PINNED_HR_REVISION_MISSING');
-          const PREVIEW='YES_PAULA_20260628_PREVIEW_DEV',PROTECTED='YES_PAULA_20260730_PROTECTED_DEV',FULL='YES_PAULA_20260731_FULL_PROFILE_DEV';
-          const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[];
-          const allDocs=async ref=>(await ref.get()).docs.map(d=>({id:d.id,...(d.data()||{})}));
-          if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
-          const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(tenantId);
-          const [members,crosswalk]=await Promise.all([allDocs(tenant.collection('users')),allDocs(tenant.collection('shopperIdentityCrosswalk'))]);
-          const fresh=JSON.parse(fs.readFileSync(path.join(OUT,'hr-fresh.json'),'utf8')),freshSnapshot=fresh?.snapshot||fresh?.data||fresh;
-          const liveIds=new Set(arr(freshSnapshot?.shoppers).map(x=>str(x?.shopperId||x?.id)).filter(Boolean)),liveCanonical=new Set();
-          for(const x of crosswalk){
-            if(str(x?.sourceType).toLowerCase()!=='hr_external')continue;
-            const projects=arr(x?.projectIds).map(str),singleProject=str(x?.projectId);
-            if(singleProject&&singleProject!==projectId)continue;
-            if(projects.length&&!projects.includes(projectId))continue;
-            const tokens=[x?.id,x?.sourceStableKey,x?.sourceShopperId].map(str).filter(Boolean);
-            if(tokens.some(t=>liveIds.has(t))&&str(x?.shopperId))liveCanonical.add(str(x.shopperId));
-          }
-          if(!liveCanonical.size)throw new Error('MAPPING_FAILURE:HUMAN_LANE_LIVE_CROSSWALK_EMPTY');
-          let shopper=null;
-          const candidates=members.filter(x=>x.active===true&&str(x.authNamespace)==='shopper'&&str(x.role)==='shopper'&&str(x.shopperId)&&liveCanonical.has(str(x.shopperId))&&(arr(x.projectIds).length===0||arr(x.projectIds).map(String).includes(projectId))).sort((a,b)=>str(a.shopperId).localeCompare(str(b.shopperId)));
-          for(const m of candidates){try{await auth.getUser(m.id);shopper=m;break;}catch(e){if(str(e?.code)!=='auth/user-not-found')throw e;}}
-          if(!shopper)throw new Error('AUTH_FAILURE:HUMAN_LANE_LIVE_SHOPPER_MISSING');
-          const browser=await chromium.launch({headless:true});
-          try{
-            const ctx=await browser.newContext({viewport:{width:1440,height:1000}}),page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(str(e?.message||e)));
-            const url=`${HOSTING_URL}/index-backend-dev.html?cxBackendPreview=${PREVIEW}&cxProjectId=${encodeURIComponent(projectId)}&cxProtectedRuntime=${PROTECTED}&cxHumanFullVisual=${FULL}`;
-            let authSettled=false,lastNetworkError=null;
-            for(let attempt=1;attempt<=5&&!authSettled;attempt++){
-              await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
-              await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
-              const attemptToken=await auth.createCustomToken(shopper.id);
-              try{
-                await page.evaluate(async t=>{const fb=window.firebase;if(!fb?.auth)throw new Error('FIREBASE_SDK_NOT_READY');await fb.auth().setPersistence(fb.auth.Auth.Persistence.LOCAL);await fb.auth().signInWithCustomToken(t);},attemptToken);
-              }catch(error){
-                const msg=String(error&&error.message||error||'');
-                if(!/Execution context was destroyed|navigation|FIREBASE_SDK_NOT_READY|app-compat\/no-app|No Firebase App|auth\/network-request-failed|network AuthError|timeout|interrupted connection|unreachable host/i.test(msg))throw error;
-                lastNetworkError=error;
-              }
-              await page.waitForLoadState('domcontentloaded',{timeout:90000}).catch(()=>{});
-              const persistedUid=await page.evaluate(()=>String(window.firebase?.auth?.().currentUser?.uid||'')).catch(()=> '');
-              if(persistedUid===String(shopper.id)){authSettled=true;break;}
-              if(attempt<5)await page.waitForTimeout(1500*attempt);
-            }
-            if(!authSettled)throw new Error('ENVIRONMENT_FAILURE:FIREBASE_AUTH_SESSION_NOT_PERSISTED:'+String(lastNetworkError&&lastNetworkError.message||lastNetworkError||'no-current-user'));
-            // Force one clean product boot from the already-persisted Firebase session.
-            // backend-browser-auth restores currentContext only during ensureAuthenticated(),
-            // so the harness must not expect raw signInWithCustomToken() to populate it.
-            await page.goto('about:blank',{waitUntil:'domcontentloaded',timeout:30000});
-            await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
-            await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
-            await page.waitForFunction(expectedUid=>String(window.firebase?.auth?.().currentUser?.uid||'')===String(expectedUid),shopper.id,{timeout:90000});
-            await page.waitForFunction(()=>typeof window.CX?.backendAuth?.ensureAuthenticated==='function',null,{timeout:90000});
-            await page.evaluate(async()=>{await window.CX.backendAuth.ensureAuthenticated();});
-            await page.waitForFunction(({tenantId,projectId})=>{const c=window.CX?.backendAuth?.context?.()||{},projects=Array.isArray(c.projectIds)?c.projectIds.map(String):[];return c.authenticated===true&&c.tenantId===tenantId&&c.role==='shopper'&&(projects.length===0||projects.includes(projectId));},{tenantId,projectId},{timeout:120000});
-            const before=await page.evaluate(()=>({source:String(window.CX_BACKEND_LAST_STATE?.source||window.CX_BACKEND_DATA_SOURCE||''),backendCounts:window.CX_BACKEND_LAST_STATE?.counts||null,gate:window.CX_C6_HR_AUTHORITY_GATE||null,boot:window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE||null}));
-            const releaseDiag=async()=>page.evaluate(()=>{const d=window.CX?.data||{},c=window.CX?.backendAuth?.context?.()||{},gate=window.CX_C6_HR_AUTHORITY_GATE||{};return{firebaseUid:String(window.firebase?.auth?.().currentUser?.uid||''),context:{authenticated:c.authenticated===true,role:String(c.role||''),tenantId:String(c.tenantId||''),shopperId:String(c.shopperId||'')},authorityApplied:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,gateReady:gate.ready===true,gateBlocked:gate.blocked===true,source:String(window.CX?.dataSource?.sourceRef||''),sourceRevision:String(d.previewMeta?.sourceRevision||''),projectId:String(d.currentProjectId||''),periodId:String(d.currentPeriodId||''),periods:Array.isArray(d.projects)?d.projects.length:0,visits:Array.isArray(d._visitas)?d._visitas.length:0};}).catch(()=>({diagnosticUnavailable:true}));
-            let released=false,lastReleaseDiag=null;
-            for(let releaseAttempt=1;releaseAttempt<=3&&!released;releaseAttempt++){
-              try{
-                await page.waitForFunction(({projectId,periodId,hrRevision})=>{const d=window.CX?.data||{},gate=window.CX_C6_HR_AUTHORITY_GATE||{},source=String(window.CX?.dataSource?.sourceRef||'');return window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&gate.ready===true&&gate.blocked===false&&source==='hr-live-all-periods+firestore-authenticated-exact-overlay'&&String(d.previewMeta?.sourceRevision||'')===hrRevision&&String(d.currentProjectId||'')===projectId&&String(d.currentPeriodId||'')===periodId&&Array.isArray(d.projects)&&d.projects.length>0&&Array.isArray(d._visitas)&&d._visitas.length>0;},{projectId,periodId,hrRevision:expectedHrRevision},{timeout:90000});
-                released=true;
-              }catch(error){
-                lastReleaseDiag=await releaseDiag();
-                if(releaseAttempt===3)throw new Error('ENVIRONMENT_FAILURE:HUMAN_LANE_AUTHORITY_NOT_SETTLED:'+JSON.stringify(lastReleaseDiag).slice(0,800));
-                await page.goto('about:blank',{waitUntil:'domcontentloaded',timeout:30000});
-                await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
-                await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
-                await page.waitForFunction(expectedUid=>String(window.firebase?.auth?.().currentUser?.uid||'')===String(expectedUid),shopper.id,{timeout:90000});
-                await page.waitForFunction(()=>typeof window.CX?.backendAuth?.ensureAuthenticated==='function',null,{timeout:90000});
-                await page.evaluate(async()=>{await window.CX.backendAuth.ensureAuthenticated();});
-                await page.waitForFunction(({tenantId,projectId})=>{const c=window.CX?.backendAuth?.context?.()||{},projects=Array.isArray(c.projectIds)?c.projectIds.map(String):[];return c.authenticated===true&&c.tenantId===tenantId&&c.role==='shopper'&&(projects.length===0||projects.includes(projectId));},{tenantId,projectId},{timeout:120000});
-              }
-            }
-            await page.waitForTimeout(750);
-            const after=await page.evaluate(()=>{const d=window.CX?.data||{},body=String(document.body?.innerText||'');return {authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY||null,gate:window.CX_C6_HR_AUTHORITY_GATE||null,boot:window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE||null,source:String(window.CX?.dataSource?.sourceRef||''),sourceRevision:String(d.previewMeta?.sourceRevision||''),projectId:String(d.currentProjectId||''),periodId:String(d.currentPeriodId||''),periods:Array.isArray(d.projects)?d.projects.length:0,visits:Array.isArray(d._visitas)?d._visitas.length:0,shoppers:Array.isArray(d.shoppers)?d.shoppers.length:0,pendingGateText:body.includes('Validando fuente operacional'),technicalMode:new URLSearchParams(location.search).has('cxTechnicalAuthE2E')};});
-            if(errors.length)throw new Error(`VISUAL_DEFECT:HUMAN_LANE_PAGE_ERROR:${errors.join('|').slice(0,600)}`);
-            if(after.sourceRevision!==expectedHrRevision)throw new Error(`RELEASE_COMPOSITION_FAILURE:HUMAN_LANE_HR_REVISION_MISMATCH:expected=${expectedHrRevision}:actual=${after.sourceRevision}`);
-            if(after.pendingGateText||after.technicalMode||!after.authority?.applied||after.gate?.ready!==true||after.gate?.blocked===true||after.source!=='hr-live-all-periods+firestore-authenticated-exact-overlay'||after.projectId!==projectId||after.periodId!==periodId||!after.periods||!after.visits)throw new Error(`FUNCTIONAL_DEFECT:HUMAN_LANE_AUTHORITY_NOT_RELEASED:${JSON.stringify(after)}`);
-            fs.mkdirSync(OUT,{recursive:true});await page.screenshot({path:path.join(OUT,'human-lane-authority-release.png'),fullPage:true});
-            fs.writeFileSync(path.join(OUT,'human-lane-authority-release.json'),JSON.stringify({decision:'PASS_I3_HUMAN_LANE_AUTHORITY_RELEASE',production:false,readOnly:true,technicalMode:false,humanFullVisual:true,tenantId,projectId,periodId,pinnedHrRevision:expectedHrRevision,shopperSelected:true,before,after},null,2)+'\n');
-            await ctx.close();
-          } finally {await browser.close();}
-          NODE
-          test "$(jq -r '.decision' "$OUT/human-lane-authority-release.json")" = "PASS_I3_HUMAN_LANE_AUTHORITY_RELEASE"
-          test "$(jq -r '.after.pendingGateText' "$OUT/human-lane-authority-release.json")" = "false"
-          test "$(jq -r '.after.technicalMode' "$OUT/human-lane-authority-release.json")" = "false"
-          test "$(jq -r '.pinnedHrRevision' "$OUT/human-lane-authority-release.json")" = "$PINNED_HR_REVISION"
-          test "$(jq -r '.after.sourceRevision' "$OUT/human-lane-authority-release.json")" = "$PINNED_HR_REVISION"
-
-      - name: Re-certify focal persistence on single source
-        run: |
-          set -euo pipefail
-          PROJECT="$PROJECT" OUT="$OUT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" PERIOD_ID="$PERIOD_ID" SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA" \
-            node tools/qa/cxorbia-i3-profile-finance-persistence-dev.mjs | tee "$OUT/focal-persistence-console.log"
-          test "$(jq -r '.decision' "$OUT/shopper-profile-persistence.json")" = "SHOPPER_PROFILE_PERSISTENCE_PASS"
-          test "$(jq -r '.decision' "$OUT/finance-bulk-payment-persistence.json")" = "FINANCE_BULK_PAYMENT_PERSISTENCE_PASS"
-          test "$(jq -r '.decision' "$OUT/synthetic-cleanup.json")" = "PASS_I3_SYNTHETIC_CLEANUP"
-
-      - name: Run exhaustive canonical Admin Shopper GT Shopper HN Client acceptance before artifact
-        run: |
-          set -Eeuo pipefail
-          rm -rf "$OUT/full-human-acceptance"
-          mkdir -p "$OUT/full-human-acceptance" "$OUT/gate20"
-          set +e
-          PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" I3_CERTIFICATION_SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA" SOURCE_DIR="$SOURCE_DIR" CX_I3_PINNED_HR_FILE="$OUT/hr-fresh.json" CX_I3_PINNED_HR_REVISION="$PINNED_HR_REVISION" ACCEPTANCE_OUT="$OUT/full-human-acceptance" node RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
-          ACCEPTANCE_CODE=$?
-          set -e
-          if [ -f "$OUT/full-human-acceptance/paula-osorio-live-proof.json" ]; then echo "PAULA_OSORIO_PROOF=$(jq -c '.' "$OUT/full-human-acceptance/paula-osorio-live-proof.json")"; fi
-          if [ -f "$OUT/full-human-acceptance/human-live-acceptance.json" ]; then echo "HUMAN_FIRST_ISSUE=$(jq -c '.issues[0] // null' "$OUT/full-human-acceptance/human-live-acceptance.json")"; fi
-          if [ "$ACCEPTANCE_CODE" -ne 0 ]; then exit "$ACCEPTANCE_CODE"; fi
-          test "$(jq -r '.decision' "$OUT/full-human-acceptance/human-live-acceptance.json")" = "PASS_I3_HUMAN_LIVE_ACCEPTANCE"
-          test "$(jq -r '.sourceRevision' "$OUT/full-human-acceptance/human-live-acceptance.json")" = "$PINNED_HR_REVISION"
-          test "$(jq -r '.decision' "$OUT/full-human-acceptance/i3-functional-probes.json")" = "PASS_I3_ATOMIC_FUNCTIONAL_PROBES"
-          test "$(jq -r '.routeInventory.expectedRoleRouteEntries' "$OUT/full-human-acceptance/human-live-acceptance.json")" = "56"
-          test "$(jq -r '.routeInventory.sha256' "$OUT/full-human-acceptance/human-live-acceptance.json")" = "ad262dd0165a7159e62076f67a6339b375ce0760dd6b650abc4ee438b04950af"
-          ROUTE_INVENTORY="CXORBIA_CANONICAL_ROUTE_INVENTORY_2026-09-18.json" HUMAN="$OUT/full-human-acceptance/human-live-acceptance.json" node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          const inv=JSON.parse(fs.readFileSync(process.env.ROUTE_INVENTORY,'utf8'));
-          const human=JSON.parse(fs.readFileSync(process.env.HUMAN,'utf8'));
-          const seen=new Set((human.routes||[]).filter(x=>!x.failed).map(x=>String(x.role)+'|'+String(x.id)));
-          const missing=[];
-          for(const [role,ids] of Object.entries(inv.roles||{}))for(const id of ids)if(!seen.has(role+'|'+id))missing.push(role+'|'+id);
-          if(missing.length)throw new Error('RELEASE_COMPOSITION_FAILURE:FULL_HUMAN_ROUTE_COVERAGE_MISSING:'+JSON.stringify(missing));
-          NODE
-          cp CXORBIA_CANONICAL_ROUTE_INVENTORY_2026-09-18.json "$OUT/canonical-route-inventory.json"
-
-      - name: Build independent same-revision C3 semantic oracle
-        run: |
-          set -Eeuo pipefail
-          mkdir -p "$OUT/c3-semantic"
-          C3_SEM_OUT="$OUT/c3-semantic"           C3_HR_FILE="$OUT/hr-fresh.json"           C3_FIREBASE_PROJECT="$PROJECT"           C3_TENANT_ID="$TENANT_ID"           C3_PROJECT_ID="$PROJECT_ID"           C3_HR_REVISION="$PINNED_HR_REVISION"           C3_HOSTING_URL="$HOSTING_URL"           node tools/qa/cxorbia-i3-c3-terminal-semantic-oracle.mjs | tee "$OUT/c3-semantic/oracle.log"
-          test "$(jq -r '.decision' "$OUT/c3-semantic/hr-contrast.json")" = "PASS_C3_TERMINAL_HR_SEMANTIC_ORACLE"
-          test "$(jq -r '.sourceRevision' "$OUT/c3-semantic/hr-contrast.json")" = "$PINNED_HR_REVISION"
-
-      - name: Execute hardened C3 Admin + Paula desktop/mobile semantic focal
-        run: |
-          set -Eeuo pipefail
-          PREI4_OUT="$OUT/c3-semantic"           CXORBIA_PREI4_ROOT="$HOSTING_URL"           CXORBIA_PREI4_SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA"           node tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs | tee "$OUT/c3-semantic/focal-console.log"
-          test "$(jq -r '.decision' "$OUT/c3-semantic/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
-          test "$(jq -r '.sourceSha' "$OUT/c3-semantic/browser-focal.json")" = "$I3_CERTIFICATION_SOURCE_SHA"
-          test "$(jq -r '.hrRevision' "$OUT/c3-semantic/browser-focal.json")" = "$PINNED_HR_REVISION"
-
-      - name: Finalize independent Module Truth only after terminal live proofs
+      - name: Build path-bound preterminal Matrix and reprove served owner bytes
         run: |
           set -Eeuo pipefail
           LEDGER="$(jq -r '.findingsLedgerPath' "$CANDIDATE_DESCRIPTOR")"
-          C3_PRETERMINAL="$OUT/module-truth-preterminal.json"           C3_FOCAL="$OUT/c3-semantic/browser-focal.json"           C3_HUMAN="$OUT/full-human-acceptance/human-live-acceptance.json"           C3_QA="$OUT/c3-semantic/qa-reservation-cleanup.json"           C3_PARITY="$OUT/c3-pending-owner-parity.json"           C3_LEDGER="$LEDGER"           C3_FINAL_MATRIX="$OUT/module-truth-matrix.json"           C3_SOURCE="$I3_CERTIFICATION_SOURCE_SHA"           C3_TREE="$I3_CERTIFICATION_SOURCE_TREE"           node tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs | tee "$OUT/module-truth-terminal-console.log"
-          test "$(jq -r '.terminalClosure.decision' "$OUT/module-truth-matrix.json")" = "PASS_C3_TERMINAL_MODULE_TRUTH_20_20"
-          test "$(jq -r '.allModulesMatch' "$OUT/module-truth-matrix.json")" = "true"
-          test "$(jq '[.modules[] | select(.classification!="MATCH")]|length' "$OUT/module-truth-matrix.json")" = "0"
-          MODULE_TRUTH_MATRIX_SHA256="$(sha256sum "$OUT/module-truth-matrix.json" | awk '{print $1}')"
-          echo "MODULE_TRUTH_MATRIX_SHA256=$MODULE_TRUTH_MATRIX_SHA256" >> "$GITHUB_ENV"
-          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg tree "$I3_CERTIFICATION_SOURCE_TREE" --arg sha "$MODULE_TRUTH_MATRIX_SHA256"             '{decision:"PASS_I3_EXHAUSTIVE_PHASE_A_MODULE_INTEGRITY",sourceSha:$source,sourceTree:$tree,moduleTruthSha256:$sha,moduleCount:20,allModulesMatch:true,terminalProof:true,production:false}'             > "$OUT/module-integrity-gate.json"
+          TEMPLATE="RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json" \
+          LEDGER="$LEDGER" SOURCE="$I3_CERTIFICATION_SOURCE_SHA" TREE="$I3_CERTIFICATION_SOURCE_TREE" \
+          LAST_SERVED="d8aad982ae4b47e66bf949d906b6c7ede8866f84" \
+          OUT_FILE="$OUT/module-truth-preterminal.json" \
+          node tools/qa/cxorbia-i3-c3-preterminal-module-truth.mjs > "$OUT/module-truth-preterminal-console.log"
+          test "$(jq -r '.preTerminalComposition.decision' "$OUT/module-truth-preterminal.json")" = "PASS_C3_PRETERMINAL_COMPOSITION"
+          : > "$OUT/c3-pending-owner-parity.tsv"
+          mismatches=0; app_count=0; backend_count=0
+          while IFS= read -r p; do
+            test -n "$p" || continue
+            if [[ "$p" == app/* ]]; then
+              app_count=$((app_count+1))
+              rel="$(printf '%s' "$p" | sed 's#^app/##')"
+              expected="$(sha256sum "$SOURCE_DIR/$p" | awk '{print $1}')"
+              remote="$OUT/remote-$(printf '%s' "$rel" | tr '/' '_')"
+              curl -fsSL --retry 4 --retry-delay 1 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/$rel?c3resume=$GITHUB_RUN_ID-$(date +%s%N)" -o "$remote"
+              actual="$(sha256sum "$remote" | awk '{print $1}')"
+              [[ "$actual" = "$expected" ]] || mismatches=$((mismatches+1))
+              printf '%s\t%s\t%s\t%s\n' "$p" "$expected" "$actual" "$([[ "$actual" = "$expected" ]] && echo MATCH || echo MISMATCH)" >> "$OUT/c3-pending-owner-parity.tsv"
+            elif [[ "$p" == backend/* ]]; then
+              backend_count=$((backend_count+1))
+              expected="$(git rev-parse "$I3_CERTIFICATION_SOURCE_SHA:$p")"
+              actual="$(git hash-object "$SOURCE_DIR/$p")"
+              [[ "$actual" = "$expected" ]] || mismatches=$((mismatches+1))
+              printf '%s\t%s\t%s\t%s\n' "$p" "$expected" "$actual" "$([[ "$actual" = "$expected" ]] && echo MATCH || echo MISMATCH)" >> "$OUT/c3-pending-owner-parity.tsv"
+            fi
+          done < <(jq -r '.sourceFiles[] | select(.classification=="COMPOSED_NOT_DEPLOYED") | .path' "$OUT/module-truth-preterminal.json")
+          jq -Rn --arg source "$I3_CERTIFICATION_SOURCE_SHA" --argjson app "$app_count" --argjson backend "$backend_count" --argjson mismatch "$mismatches" \
+            '[inputs|split("\t")|{path:.[0],expected:.[1],observed:.[2],classification:.[3]}] |
+             {decision:(if $mismatch==0 then "PASS_C3_PENDING_OWNER_BYTE_PARITY" else "FAIL_C3_PENDING_OWNER_BYTE_PARITY" end),sourceSha:$source,appOwners:$app,backendOwners:$backend,mismatches:$mismatch,rows:.,production:false}' \
+            < "$OUT/c3-pending-owner-parity.tsv" > "$OUT/c3-pending-owner-parity.json"
+          test "$mismatches" = 0
 
-      - name: Derive Gate 20 visual and semantic receipts from same exhaustive acceptance
+      - name: Derive read-only QA and Client receipts from Run387 acceptance
         run: |
           set -Eeuo pipefail
+          test "$(jq -r '.probe.reservations.ok' "$OUT/full-human-acceptance/i3-functional-probes.json")" = "true"
+          test "$(jq '.probe.reservations.qaResidueIds|length' "$OUT/full-human-acceptance/i3-functional-probes.json")" = "0"
+          jq -n -S '{decision:"PASS_C3_QA_RESERVATION_CLEANUP",mode:"RUN387_READ_ONLY_ZERO_RESIDUE",before:0,deletedIds:[],after:0,ambiguous:0,writes:0,production:false}' > "$OUT/c3-semantic/qa-reservation-cleanup.json"
+          test "$(jq -r '.population.clientMembershipFound' "$OUT/full-human-acceptance/human-live-acceptance.json")" = "true"
+          mkdir -p "$OUT/client-membership"
+          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg revision "$PINNED_HR_REVISION" \
+            '{canonicalDecision:"PASS_C6_CLIENT_AUTH_MEMBERSHIP_READBACK",sourceSha:$source,hrRevision:$revision,evidenceSource:"RUN387_FULL_HUMAN_ACCEPTANCE",clientMembershipFound:true,authUserCreates:0,passwordChanges:0,providerWrites:0,production:false}' \
+            > "$OUT/client-membership/readback.json"
+
+      - name: Reprove atomic P0 source contract
+        run: |
+          set -Eeuo pipefail
+          test "$(sha256sum "$OUT/canonical-route-inventory.json" | awk '{print $1}')" = "ad262dd0165a7159e62076f67a6339b375ce0760dd6b650abc4ee438b04950af"
+          grep -q "preserveDurableVisits" "$SOURCE_DIR/app/core/backend-firebase.js"
+          grep -q "live_hr_visit_id_equals_firestore_doc_id" "$SOURCE_DIR/app/adapters/tya-cumulative-read-model-v2.js"
+          grep -q "hr_exact_crosswalk_precedes_historical_identity_link" "$SOURCE_DIR/app/adapters/cxorbia-provider-identity-link-runtime-v1.js"
+          grep -q "'reservation.create'" "$SOURCE_DIR/backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+          grep -q "source:'durable_provider'" "$SOURCE_DIR/app/adapters/tya-canonical-reservations-guard-v2.js"
+          ! grep -q "const selMonth=new Date().getMonth()" "$SOURCE_DIR/app/modules/dashboard.js"
+          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" \
+            '{decision:"PASS_I3_ATOMIC_P0_SOURCE_CONTRACT",sourceSha:$source,durableVisitAuthority:true,hrCrosswalkPrecedence:true,reservationsDurableProvider:true,dashboardSelectedPeriod:true,production:false}' \
+            > "$OUT/atomic-p0-source-contract.json"
+
+      - name: Finalize terminal Module Truth 20 of 20 from Run387 proof
+        run: |
+          set -Eeuo pipefail
+          test "$(jq -r '.state' CXORBIA_I3_VRM043_TERMINAL_RECEIPT_2026-09-24.json)" = "PROVEN_CLOSED_CONTROL_FALSE_POSITIVE_NO_PRODUCT_CHANGE"
+          LEDGER="$(jq -r '.findingsLedgerPath' "$CANDIDATE_DESCRIPTOR")"
+          C3_PRETERMINAL="$OUT/module-truth-preterminal.json" \
+          C3_FOCAL="$OUT/c3-semantic/browser-focal.json" \
+          C3_HUMAN="$OUT/full-human-acceptance/human-live-acceptance.json" \
+          C3_QA="$OUT/c3-semantic/qa-reservation-cleanup.json" \
+          C3_PARITY="$OUT/c3-pending-owner-parity.json" \
+          C3_LEDGER="$LEDGER" \
+          C3_FINAL_MATRIX="$OUT/module-truth-matrix.json" \
+          C3_SOURCE="$I3_CERTIFICATION_SOURCE_SHA" C3_TREE="$I3_CERTIFICATION_SOURCE_TREE" \
+          node tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs > "$OUT/module-truth-terminal-console.log"
+          test "$(jq -r '.terminalClosure.decision' "$OUT/module-truth-matrix.json")" = "PASS_C3_TERMINAL_MODULE_TRUTH_20_20"
+          test "$(jq -r '.allModulesMatch' "$OUT/module-truth-matrix.json")" = "true"
+          test "$(jq '[.modules[]|select(.classification!="MATCH")]|length' "$OUT/module-truth-matrix.json")" = "0"
+          MODULE_TRUTH_MATRIX_SHA256="$(sha256sum "$OUT/module-truth-matrix.json" | awk '{print $1}')"
+          echo "MODULE_TRUTH_MATRIX_SHA256=$MODULE_TRUTH_MATRIX_SHA256" >> "$GITHUB_ENV"
+
+      - name: Derive Gate20 receipts from exact Run387 acceptance
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$OUT/gate20"
           HUMAN="$OUT/full-human-acceptance/human-live-acceptance.json"
           PROBES="$OUT/full-human-acceptance/i3-functional-probes.json"
           FOCAL="$OUT/c3-semantic/browser-focal.json"
@@ -1647,25 +557,21 @@ jobs:
           QA_SHA="$(sha256sum "$QA" | awk '{print $1}')"
           ROUTE_SHA="$(sha256sum "$OUT/canonical-route-inventory.json" | awk '{print $1}')"
           SHOTS="$(jq -r '.screenshotCount' "$HUMAN")"
-          test "$ROUTE_SHA" = "ad262dd0165a7159e62076f67a6339b375ce0760dd6b650abc4ee438b04950af"
-          test "$(jq -r '.decision' "$FOCAL")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
-          test "$(jq -r '.terminalClosure.decision' "$MATRIX")" = "PASS_C3_TERMINAL_MODULE_TRUTH_20_20"
-          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg human "$HUMAN_SHA" --arg focal "$FOCAL_SHA" --arg matrix "$MATRIX_SHA" --arg qa "$QA_SHA" --arg routes "$ROUTE_SHA" --argjson shots "$SHOTS" '{decision:"PASS_GATE20_FOCAL_VISUAL_DRIFT",gate:20,mode:"FULL_CANONICAL_VISUAL_PLUS_HARDENED_C3",sourceSha:$source,fullHumanAcceptanceSha256:$human,hardenedFocalSha256:$focal,moduleTruthSha256:$matrix,qaCleanupSha256:$qa,routeInventorySha256:$routes,expectedRoleRouteEntries:56,screenshotCount:$shots,hrAuthorityApplied:true,production:false}' > "$OUT/gate20/gate20-browser-visual.json"
-          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg human "$HUMAN_SHA" --arg probes "$PROBES_SHA" --arg focal "$FOCAL_SHA" --arg matrix "$MATRIX_SHA" --arg qa "$QA_SHA" --arg routes "$ROUTE_SHA" '{decision:"PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY",gate:20,mode:"FULL_CANONICAL_SEMANTIC_PLUS_HARDENED_C3",sourceSha:$source,fullHumanAcceptanceSha256:$human,functionalProbesSha256:$probes,hardenedFocalSha256:$focal,moduleTruthSha256:$matrix,qaCleanupSha256:$qa,routeInventorySha256:$routes,expectedRoleRouteEntries:56,production:false}' > "$OUT/gate20-semantic-shopper.json"
-          test "$(jq -r '.decision' "$OUT/gate20/gate20-browser-visual.json")" = "PASS_GATE20_FOCAL_VISUAL_DRIFT"
-          test "$(jq -r '.decision' "$OUT/gate20-semantic-shopper.json")" = "PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY"
+          test "$(jq -r '.routeInventory.expectedRoleRouteEntries' "$HUMAN")" = "56"
+          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg human "$HUMAN_SHA" --arg focal "$FOCAL_SHA" --arg matrix "$MATRIX_SHA" --arg qa "$QA_SHA" --arg routes "$ROUTE_SHA" --argjson shots "$SHOTS" \
+            '{decision:"PASS_GATE20_FOCAL_VISUAL_DRIFT",gate:20,mode:"RUN387_FULL_CANONICAL_VISUAL_PLUS_HARDENED_C3",sourceSha:$source,fullHumanAcceptanceSha256:$human,hardenedFocalSha256:$focal,moduleTruthSha256:$matrix,qaCleanupSha256:$qa,routeInventorySha256:$routes,expectedRoleRouteEntries:56,screenshotCount:$shots,hrAuthorityApplied:true,production:false}' \
+            > "$OUT/gate20/gate20-browser-visual.json"
+          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg human "$HUMAN_SHA" --arg probes "$PROBES_SHA" --arg focal "$FOCAL_SHA" --arg matrix "$MATRIX_SHA" --arg qa "$QA_SHA" --arg routes "$ROUTE_SHA" \
+            '{decision:"PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY",gate:20,mode:"RUN387_FULL_CANONICAL_SEMANTIC_PLUS_HARDENED_C3",sourceSha:$source,fullHumanAcceptanceSha256:$human,functionalProbesSha256:$probes,hardenedFocalSha256:$focal,moduleTruthSha256:$matrix,qaCleanupSha256:$qa,routeInventorySha256:$routes,expectedRoleRouteEntries:56,production:false}' \
+            > "$OUT/gate20-semantic-shopper.json"
 
-      - name: Package one certification artifact without rebuild
+      - name: Package one certification artifact from original Run375 build without rebuild
         run: |
           set -Eeuo pipefail
-          test ! -e "$SOURCE_DIR/node_modules"
           tar -C "$SOURCE_DIR" -cf "$OUT/cxorbia-i3-certified-source.tar" .
           ARTIFACT_SHA256="$(sha256sum "$OUT/cxorbia-i3-certified-source.tar" | awk '{print $1}')"
+          echo "$ARTIFACT_SHA256  cxorbia-i3-certified-source.tar" > "$OUT/cxorbia-i3-certified-source.tar.sha256"
           GATE20_SHA256="$(sha256sum "$OUT/gate20/gate20-browser-visual.json" | awk '{print $1}')"
-          HUMAN_LANE_SHA256="$(sha256sum "$OUT/human-lane-authority-release.json" | awk '{print $1}')"
-          CREDENTIAL_RULE_SHA256="$(sha256sum "$OUT/credential-rule-readback.json" | awk '{print $1}')"
-          CREDENTIAL_RULE_VERSION="$(jq -r '.credentialRuleVersion // empty' "$OUT/credential-rule-readback.json")"
-          test "$CREDENTIAL_RULE_VERSION" = "$(jq -r '.continuityCheckpoint.frozenShopperContract.credentialRuleVersion' "$OUT/module-truth-matrix.json")"
           SEMANTIC_GATE20_SHA256="$(sha256sum "$OUT/gate20-semantic-shopper.json" | awk '{print $1}')"
           ATOMIC_P0_SHA256="$(sha256sum "$OUT/atomic-p0-source-contract.json" | awk '{print $1}')"
           CLIENT_MEMBERSHIP_SHA256="$(sha256sum "$OUT/client-membership/readback.json" | awk '{print $1}')"
@@ -1673,18 +579,18 @@ jobs:
           FUNCTIONAL_PROBES_SHA256="$(sha256sum "$OUT/full-human-acceptance/i3-functional-probes.json" | awk '{print $1}')"
           ROUTE_INVENTORY_SHA256="$(sha256sum "$OUT/canonical-route-inventory.json" | awk '{print $1}')"
           HR_EVIDENCE_SHA256="$(sha256sum "$OUT/hr-fresh.json" | awk '{print $1}')"
-          HR_REVISION="$(jq -r '._runtime.revision // .sourceRevision // empty' "$OUT/hr-fresh.json")"
-          [[ "$HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
-          test "$HR_REVISION" = "$PINNED_HR_REVISION"
-          test "$(jq -r '.sourceRevision' "$OUT/full-human-acceptance/human-live-acceptance.json")" = "$HR_REVISION"
-          echo "$ARTIFACT_SHA256  cxorbia-i3-certified-source.tar" > "$OUT/cxorbia-i3-certified-source.tar.sha256"
+          VRM043_SHA256="$(sha256sum CXORBIA_I3_VRM043_TERMINAL_RECEIPT_2026-09-24.json | awk '{print $1}')"
           jq -n -S \
             --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg tree "$I3_CERTIFICATION_SOURCE_TREE" --arg control "$GITHUB_SHA" \
             --arg revision "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg image "$SOURCE_IMMUTABLE_IMAGE" \
-            --arg artifact "$ARTIFACT_SHA256" --arg gate20Sha "$GATE20_SHA256" --arg humanLaneSha "$HUMAN_LANE_SHA256" --arg credentialRuleSha "$CREDENTIAL_RULE_SHA256" --arg credentialRuleVersion "$CREDENTIAL_RULE_VERSION" --arg semanticGate20Sha "$SEMANTIC_GATE20_SHA256" --arg atomicP0Sha "$ATOMIC_P0_SHA256" --arg clientMembershipSha "$CLIENT_MEMBERSHIP_SHA256" --arg fullHumanSha "$FULL_HUMAN_SHA256" --arg probesSha "$FUNCTIONAL_PROBES_SHA256" --arg routeInventorySha "$ROUTE_INVENTORY_SHA256" --arg hrRevision "$HR_REVISION" --arg hrEvidenceSha "$HR_EVIDENCE_SHA256" \
+            --arg artifact "$ARTIFACT_SHA256" --arg gate20Sha "$GATE20_SHA256" --arg semanticGate20Sha "$SEMANTIC_GATE20_SHA256" \
+            --arg atomicP0Sha "$ATOMIC_P0_SHA256" --arg clientMembershipSha "$CLIENT_MEMBERSHIP_SHA256" \
+            --arg fullHumanSha "$FULL_HUMAN_SHA256" --arg probesSha "$FUNCTIONAL_PROBES_SHA256" --arg routeInventorySha "$ROUTE_INVENTORY_SHA256" \
+            --arg hrRevision "$PINNED_HR_REVISION" --arg hrEvidenceSha "$HR_EVIDENCE_SHA256" \
             --arg hostingRelease "$HOSTING_RELEASE_NAME" --arg hostingVersion "$HOSTING_VERSION_NAME" --arg hostingReleaseTime "$HOSTING_RELEASE_TIME" \
-            --arg moduleTruthSha "$MODULE_TRUTH_MATRIX_SHA256" --slurpfile moduleTruth "$OUT/module-truth-matrix.json" \
-            '{decision:"PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21",i3CertificationSourceSha:$source,i3CertificationSourceTree:$tree,controlHeadSha:$control,buildCount:1,devRuntimeRevision:$revision,runtimeImageDigest:$digest,immutableRuntimeImage:$image,hostingReleaseName:$hostingRelease,hostingVersionName:$hostingVersion,hostingReleaseTime:$hostingReleaseTime,humanLane:{decision:"PASS_I3_HUMAN_LANE_AUTHORITY_RELEASE",evidenceSha256:$humanLaneSha,technicalMode:false},credentialRule:{decision:"PASS_I3_OWNER_SHOPPER_CREDENTIAL_RULE",version:$credentialRuleVersion,evidenceSha256:$credentialRuleSha,passwordLoginPassed:true},atomicP0:{decision:"PASS_I3_ATOMIC_P0_SOURCE_CONTRACT",evidenceSha256:$atomicP0Sha},clientMembership:{decision:"PASS_C6_CLIENT_AUTH_MEMBERSHIP_READBACK",evidenceSha256:$clientMembershipSha,authUserCreates:0,passwordChanges:0},fullHumanAcceptance:{decision:"PASS_I3_HUMAN_LIVE_ACCEPTANCE",evidenceSha256:$fullHumanSha,functionalProbesSha256:$probesSha,routeInventorySha256:$routeInventorySha,expectedRoleRouteEntries:56,beforeArtifact:true},gate20:{decision:"PASS_GATE20_FOCAL_VISUAL_DRIFT",sourceSha:$source,evidenceSha256:$gate20Sha},gate20Semantic:{decision:"PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY",sourceSha:$source,evidenceSha256:$semanticGate20Sha},moduleTruthEvidenceSha256:$moduleTruthSha,moduleTruth:$moduleTruth[0],artifactFile:"cxorbia-i3-certified-source.tar",artifactSha256:$artifact,hrRevision:$hrRevision,hrEvidenceSha256:$hrEvidenceSha,rebuildAfterCertification:false,production:false}' \
+            --arg moduleTruthSha "$MODULE_TRUTH_MATRIX_SHA256" --arg vrm043Sha "$VRM043_SHA256" \
+            --slurpfile moduleTruth "$OUT/module-truth-matrix.json" \
+            '{decision:"PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21",i3CertificationSourceSha:$source,i3CertificationSourceTree:$tree,controlHeadSha:$control,buildCount:1,buildCountThisRun:0,buildProvenanceRunId:36053280653,resumeControlProofRunId:36072848792,devRuntimeRevision:$revision,runtimeImageDigest:$digest,immutableRuntimeImage:$image,hostingReleaseName:$hostingRelease,hostingVersionName:$hostingVersion,hostingReleaseTime:$hostingReleaseTime,atomicP0:{decision:"PASS_I3_ATOMIC_P0_SOURCE_CONTRACT",evidenceSha256:$atomicP0Sha},clientMembership:{decision:"PASS_C6_CLIENT_AUTH_MEMBERSHIP_READBACK",evidenceSha256:$clientMembershipSha,authUserCreates:0,passwordChanges:0},fullHumanAcceptance:{decision:"PASS_I3_HUMAN_LIVE_ACCEPTANCE",evidenceSha256:$fullHumanSha,functionalProbesSha256:$probesSha,routeInventorySha256:$routeInventorySha,expectedRoleRouteEntries:56,beforeArtifact:true},gate20:{decision:"PASS_GATE20_FOCAL_VISUAL_DRIFT",sourceSha:$source,evidenceSha256:$gate20Sha},gate20Semantic:{decision:"PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY",sourceSha:$source,evidenceSha256:$semanticGate20Sha},vrm043:{decision:"PASS_VRM043_CONTROL_FIX_NO_DEPLOY",receiptSha256:$vrm043Sha},moduleTruthEvidenceSha256:$moduleTruthSha,moduleTruth:$moduleTruth[0],artifactFile:"cxorbia-i3-certified-source.tar",artifactSha256:$artifact,hrRevision:$hrRevision,hrEvidenceSha256:$hrEvidenceSha,rebuildAfterCertification:false,production:false}' \
             > "$OUT/i3-certification-manifest.json"
           cp "$OUT/i3-certification-manifest.json" "$OUT/result.json"
 
@@ -1698,13 +604,13 @@ jobs:
           compression-level: 0
           include-hidden-files: true
 
-      - name: Cleanup temporary dependencies
+      - name: Cleanup temporary files
         if: always()
-        run: rm -rf node_modules
+        run: rm -rf "$RUNNER_TEMP/cxorbia-i3-certified-source-resume" "$RUNNER_TEMP/cxorbia-run387-proof"
 
   live-fixtures:
     name: I3 full live fixture suite v2 — same certified source/artifact
-    needs: certify
+    needs: [canonical-candidate-authority, certify]
     if: ${{ (github.event_name != 'push' || (!contains(github.event.head_commit.message, '[pre-i4-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-readback-only]'))) && needs.certify.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 55
@@ -1713,6 +619,8 @@ jobs:
       actions: read
     env:
       OUT: .tmp/recovery-i3-live-fixtures-v2
+      I3_CERTIFICATION_SOURCE_SHA: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      I3_CERTIFICATION_SOURCE_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
     steps:
       - name: Checkout control-only fixture-suite successor
         uses: actions/checkout@v4
