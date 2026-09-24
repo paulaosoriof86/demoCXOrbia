@@ -138,6 +138,7 @@ jobs:
       TENANT_ID: tya
       PROJECT_ID: cinepolis
       VRM043_OUT: .tmp/vrm043-name-diagnostic
+      VRM043_ORACLE: operational-names-v1
     steps:
       - name: Checkout Recovery control head
         uses: actions/checkout@v4
