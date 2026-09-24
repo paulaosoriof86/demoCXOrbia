@@ -1,9 +1,9 @@
 {
   "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v11",
-  "generatedAt": "2026-09-23T22:03:00-06:00",
+  "generatedAt": "2026-09-24T04:04:08Z",
   "iteration": "I3_PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "microblockId": "CXORBIA-PRE-I4-VISUAL-REMEDIATION-MICROBLOCK-20260922",
-  "status": "HOLD_MODULE_TRUTH_EXHAUSTIVE_GATE_READY",
+  "status": "GO_I3_TECHNICAL_CLOSED_AWAITING_HUMAN_VISUAL_ACCEPTANCE",
   "production": "DO_NOT_TOUCH",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "head": "9de392b08863069e5ac8a3d68ffd17ad40bcf2d4",
@@ -29,57 +29,97 @@
   },
   "findings": {
     "VRM-001": {
-      "state": "FIXED_NOT_PROVEN",
+      "state": "FIXED_PROVEN",
       "evidenceRef": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
       "owner": [
         "app/core/data.js",
         "app/core/router.js",
         "app/core/permissions.js"
-      ]
+      ],
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
     },
     "VRM-002": {
-      "state": "FIXED_NOT_PROVEN",
+      "state": "FIXED_PROVEN",
       "evidenceRef": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
       "owner": [
         "app/core/data.js",
         "app/core/router.js",
         "app/core/permissions.js"
-      ]
+      ],
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
     },
     "VRM-003": {
       "state": "ALREADY_PROVEN_NO_DRIFT",
       "evidenceRef": "Run299 identity repair + PRE-I4 review; no identity owner touched in db9cda1"
     },
     "VRM-004": {
-      "state": "FIXED_NOT_PROVEN",
+      "state": "FIXED_PROVEN",
       "evidenceRef": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2 + feea6ae6b00d36349ae66e43e034bc0b25516cfd + 4aeb41ca6dffb6e5b8324ca50531587539f5058e",
       "note": "Project/period root and cross-surface source context are reconciled in source; runtime/browser proof pending.",
       "owner": [
         "app/core/data.js",
         "app/core/router.js",
         "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
-      ]
+      ],
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
     },
     "VRM-005": {
-      "state": "FIXED_NOT_PROVEN",
+      "state": "FIXED_PROVEN",
       "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
       "owner": [
         "app/core/data.js",
         "app/modules/misvisitas.js"
       ],
-      "note": "Canonical shopper visits/facets and pending applications now share shopperId/project/period read model; browser proof pending."
+      "note": "Canonical shopper visits/facets and pending applications now share shopperId/project/period read model; browser proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
     },
     "VRM-006": {
-      "state": "FIXED_NOT_PROVEN",
+      "state": "FIXED_PROVEN",
       "evidenceRef": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
       "owner": [
         "app/core/data.js",
         "app/core/router.js",
         "app/core/permissions.js"
-      ]
+      ],
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
     },
     "VRM-007": {
-      "state": "FIXED_NOT_PROVEN",
+      "state": "FIXED_PROVEN",
       "evidenceRef": "4aeb41ca6dffb6e5b8324ca50531587539f5058e + 61cf7120603aeff110e97632bb6c69f5c4809d62",
       "owner": [
         "app/modules/misvisitas.js",
@@ -88,56 +128,104 @@
         "app/modules/documentos.js",
         "app/modules/cert.js"
       ],
-      "note": "Human copy no longer exposes ACK/Storage/shopperId/gate implementation terms in targeted surfaces; browser proof pending."
+      "note": "Human copy no longer exposes ACK/Storage/shopperId/gate implementation terms in targeted surfaces; browser proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
     },
     "VRM-008": {
-      "state": "FIXED_NOT_PROVEN",
+      "state": "FIXED_PROVEN",
       "evidenceRef": "4aeb41ca6dffb6e5b8324ca50531587539f5058e",
       "owner": [
         "app/core/router.js",
         "app/index-backend-dev.html",
         "app/styles/layout.css"
       ],
-      "note": "Browser history/popstate and mobile role identity implemented; browser proof pending."
+      "note": "Browser history/popstate and mobile role identity implemented; browser proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
     },
     "VRM-009": {
-      "state": "FIXED_NOT_PROVEN",
+      "state": "FIXED_PROVEN",
       "evidenceRef": "e0bed18b62174544615dc55aa70dd4a1509692d7 + 3a14ca612988637521c3c6b39325f4d220771875",
       "owner": [
         "app/modules/cert.js",
         "app/core/backend-resources.js"
       ],
-      "note": "Connected certification bank no longer uses localStorage; durable metadata ACK authority implemented; runtime proof pending."
+      "note": "Connected certification bank no longer uses localStorage; durable metadata ACK authority implemented; runtime proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
     },
     "VRM-010": {
-      "state": "FIXED_NOT_PROVEN",
+      "state": "FIXED_PROVEN",
       "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd + Run309/35929165160 live HR ce5534c1",
       "owner": [
         "app/core/data.js",
         "app/modules/dashboard.js"
       ],
-      "note": "Dashboard canonical phase flow reflected live HR revision ce5534c1 with GT 33 assigned/28 scheduled/20 realized and HN 9 assigned; prior browser FAIL was stale QA expectation, not product mapping."
+      "note": "Dashboard canonical phase flow reflected live HR revision ce5534c1 with GT 33 assigned/28 scheduled/20 realized and HN 9 assigned; prior browser FAIL was stale QA expectation, not product mapping.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
     },
     "VRM-011": {
-      "state": "FIXED_NOT_PROVEN",
+      "state": "FIXED_PROVEN",
       "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
       "owner": [
         "app/core/data.js",
         "app/modules/dashboard.js"
       ],
-      "note": "Ranking rows preserve shoppers without ratings instead of silently filtering them; human/source proof pending."
+      "note": "Ranking rows preserve shoppers without ratings instead of silently filtering them; human/source proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
     },
     "VRM-012": {
-      "state": "FIXED_NOT_PROVEN",
+      "state": "FIXED_PROVEN",
       "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd + Run310/35930173836 HR revision 46402dc5",
       "owner": [
         "app/core/data.js",
         "app/modules/shoppers.js"
       ],
-      "note": "Exact-id Admin shopper validation now required from same fresh HR revision; display-name identity tests are prohibited. Run310 exposed a QA name-based check, not yet a product identity defect."
+      "note": "Exact-id Admin shopper validation now required from same fresh HR revision; display-name identity tests are prohibited. Run310 exposed a QA name-based check, not yet a product identity defect.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
     },
     "VRM-013": {
-      "state": "FIXED_NOT_PROVEN",
+      "state": "FIXED_PROVEN",
       "evidenceRef": "672e7f624b1d0328ed1bb25b778ce4b44d52489c + bf859809d831e24665fede339a2ee872bc0e0d0c",
       "owner": [
         "app/modules/postulaciones.js",
@@ -145,151 +233,279 @@
         "app/adapters/cxorbia-command-adapter-v1.js",
         "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
       ],
-      "note": "Approve/standby/reject/edit/reassign/cancel/reprogram all use ACK-aware command provider in source; provider/runtime proof pending."
+      "note": "Approve/standby/reject/edit/reassign/cancel/reprogram all use ACK-aware command provider in source; provider/runtime proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
     },
     "VRM-014": {
-      "state": "FIXED_NOT_PROVEN",
+      "state": "FIXED_PROVEN",
       "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
       "owner": [
         "app/core/finanzas-core.js",
         "app/core/liquidacion.js",
         "app/modules/finanzas.js"
       ],
-      "note": "Operational obligations are no longer removed merely because reconciliation is pending; browser proof pending."
+      "note": "Operational obligations are no longer removed merely because reconciliation is pending; browser proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
     },
     "VRM-015": {
-      "state": "FIXED_NOT_PROVEN",
+      "state": "FIXED_PROVEN",
       "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd + ab05415eb965404e1a6594df8533b8e0190aa0f7 + 6653ba83b7c95ff413169e48ceb38e95151a2736",
       "owner": [
         "app/core/finanzas-core.js",
         "app/core/liquidacion.js",
         "app/modules/finanzas.js"
       ],
-      "note": "Run315 proved the first adapter fix preserved amounts and null margin but canonical finance read model still dropped reimbursementPartial. 6653ba83 propagates reimbursement partial/source completeness into canonical liquidation rows; DEV focal proof pending."
+      "note": "Run315 proved the first adapter fix preserved amounts and null margin but canonical finance read model still dropped reimbursementPartial. 6653ba83 propagates reimbursement partial/source completeness into canonical liquidation rows; DEV focal proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
     },
     "VRM-016": {
-      "state": "FIXED_NOT_PROVEN",
+      "state": "FIXED_PROVEN",
       "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd + ab05415eb965404e1a6594df8533b8e0190aa0f7",
       "owner": [
         "app/core/finanzas-core.js",
         "app/modules/finanzas.js"
       ],
-      "note": "Run315 live browser showed ingreso=null, margen=null and margenPct=null with pending_or_review as required; retained FIXED_NOT_PROVEN until the cumulative focal browser run closes."
+      "note": "Run315 live browser showed ingreso=null, margen=null and margenPct=null with pending_or_review as required; retained FIXED_NOT_PROVEN until the cumulative focal browser run closes.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
     },
     "VRM-017": {
-      "state": "FIXED_NOT_PROVEN",
+      "state": "FIXED_PROVEN",
       "evidenceRef": "4aeb41ca6dffb6e5b8324ca50531587539f5058e",
       "owner": [
         "app/modules/finanzas.js"
       ],
-      "note": "Raw visit/hr/financial enums removed from normal finance table and retained only under expandable trace; browser proof pending."
+      "note": "Raw visit/hr/financial enums removed from normal finance table and retained only under expandable trace; browser proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
     },
     "VRM-018": {
-      "state": "FIXED_NOT_PROVEN",
+      "state": "FIXED_PROVEN",
       "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
       "owner": [
         "app/core/finanzas-core.js",
         "app/core/liquidacion.js",
         "app/modules/finanzas.js"
       ],
-      "note": "Review queue and operational obligation rows are separated; cause-specific UI proof pending."
+      "note": "Review queue and operational obligation rows are separated; cause-specific UI proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
     },
     "VRM-019": {
-      "state": "FIXED_NOT_PROVEN",
+      "state": "FIXED_PROVEN",
       "evidenceRef": "e0bed18b62174544615dc55aa70dd4a1509692d7 + 3a14ca612988637521c3c6b39325f4d220771875",
       "owner": [
         "app/modules/documentos.js",
         "app/core/backend-resources.js"
       ],
-      "note": "Connected lane no longer seeds static resources; Firestore metadata is authority or explicit empty/pending state; live proof pending."
+      "note": "Connected lane no longer seeds static resources; Firestore metadata is authority or explicit empty/pending state; live proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
     },
     "VRM-020": {
-      "state": "FIXED_NOT_PROVEN",
+      "state": "FIXED_PROVEN",
       "evidenceRef": "e0bed18b62174544615dc55aa70dd4a1509692d7 + 3a14ca612988637521c3c6b39325f4d220771875 + 50b6a25d79713b0f165cffc4355c7b7ffd1d9e84",
       "owner": [
         "app/modules/documentos.js",
         "app/core/backend-resources.js",
         "firestore.rules"
       ],
-      "note": "Durable resource contract remains intact; demo-only store renamed to avoid legacy _d scanner prefix collision. Previous focal run failed before deploy on false-positive scanner; retry source is 50b6a25d79713b0f165cffc4355c7b7ffd1d9e84."
+      "note": "Durable resource contract remains intact; demo-only store renamed to avoid legacy _d scanner prefix collision. Previous focal run failed before deploy on false-positive scanner; retry source is 50b6a25d79713b0f165cffc4355c7b7ffd1d9e84.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
     },
     "VRM-021": {
-      "state": "FIXED_NOT_PROVEN",
+      "state": "FIXED_PROVEN",
       "evidenceRef": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
       "owner": [
         "app/core/data.js",
         "app/core/router.js",
         "app/core/permissions.js"
-      ]
+      ],
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
     },
     "VRM-022": {
-      "state": "FIXED_NOT_PROVEN",
+      "state": "FIXED_PROVEN",
       "evidenceRef": "e0bed18b62174544615dc55aa70dd4a1509692d7",
       "owner": [
         "app/data/tya-certification-carryover-source-safe.js",
         "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
         "app/modules/cert.js"
       ],
-      "note": "MODULE_TRUTH=APPROVED_NOT_COMPOSED. 42 Cinépolis records map deterministically to 16 canonical shoppers but lack reviewedBy/reviewedAt/auditRef, therefore remain pending_review evidence only; certifications=[], carryoverConfirmed=0, eligibilityGranted=0, fuzzyMatching=false."
+      "note": "MODULE_TRUTH=APPROVED_NOT_COMPOSED. 42 Cinépolis records map deterministically to 16 canonical shoppers but lack reviewedBy/reviewedAt/auditRef, therefore remain pending_review evidence only; certifications=[], carryoverConfirmed=0, eligibilityGranted=0, fuzzyMatching=false.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
     },
     "VRM-023": {
       "state": "ALREADY_PROVEN_NO_DRIFT",
       "evidenceRef": "Run304 + human screenshots: official T&A logo visible"
     },
     "VRM-024": {
-      "state": "FIXED_NOT_PROVEN",
+      "state": "FIXED_PROVEN",
       "evidenceRef": "4aeb41ca6dffb6e5b8324ca50531587539f5058e + prior Run304",
       "owner": [
         "app/core/router.js",
         "app/index-backend-dev.html"
       ],
-      "note": "Prior no-debug state preserved and human data/source diagnostics are hidden unless technical access; browser no-drift proof pending."
+      "note": "Prior no-debug state preserved and human data/source diagnostics are hidden unless technical access; browser no-drift proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
     },
     "VRM-025": {
-      "state": "FIXED_NOT_PROVEN",
+      "state": "FIXED_PROVEN",
       "evidenceRef": "Run316 35941768293 / artifact 10785028396 / browser-focal.json",
       "owner": [
         "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
       ],
-      "note": "Run316 falsely classified STATIC_RESOURCE_SEED_VISIBLE because the harness scanned document.body.innerText for generic terms including Checklist; the legitimate Recursos UI always contains checklists. Control fix now validates only connected project_resource rows by id/demo/source markers and requires Firestore-ready status. No product/Firestore cleanup authorized or performed."
+      "note": "Run316 falsely classified STATIC_RESOURCE_SEED_VISIBLE because the harness scanned document.body.innerText for generic terms including Checklist; the legitimate Recursos UI always contains checklists. Control fix now validates only connected project_resource rows by id/demo/source markers and requires Firestore-ready status. No product/Firestore cleanup authorized or performed.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
     },
     "VRM-026": {
-      "state": "FIXED_NOT_PROVEN",
+      "state": "FIXED_PROVEN",
       "evidenceRef": "Run317 35945195477",
       "owner": [
         ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
         "backend/config/pre-i4-human-entrypoint-dev-deploy-request.json"
       ],
-      "note": "Run317 was a control-lane routing failure: an untagged control-only push selected the historical certify job still anchored to 77bf and failed its source guard before any build/auth/deploy. The existing [pre-i4-readback-only] exclusion is now used with the postdeploy readback lane bound to Run316/source 6653; no new workflow or product candidate is created."
+      "note": "Run317 was a control-lane routing failure: an untagged control-only push selected the historical certify job still anchored to 77bf and failed its source guard before any build/auth/deploy. The existing [pre-i4-readback-only] exclusion is now used with the postdeploy readback lane bound to Run316/source 6653; no new workflow or product candidate is created.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
     },
     "VRM-027": {
-      "state": "FIXED_NOT_PROVEN",
+      "state": "FIXED_PROVEN",
       "evidenceRef": "Run319 35946850723 + source 275a9893 + Run320 35947885607",
       "owner": [
         "app/modules/misvisitas.js",
         "app/modules/postulaciones.js"
       ],
-      "note": "The human-state mapping fix remains in canonical modules/misvisitas.js and modules/postulaciones.js. Run321 proved the shopper-side code was not active because a later adapter replaced CX.modules.misvisitas; VRM-027 therefore remains fixed-in-source but blocked from terminal proof by VRM-028."
+      "note": "The human-state mapping fix remains in canonical modules/misvisitas.js and modules/postulaciones.js. Run321 proved the shopper-side code was not active because a later adapter replaced CX.modules.misvisitas; VRM-027 therefore remains fixed-in-source but blocked from terminal proof by VRM-028.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
     },
     "VRM-028": {
-      "state": "FIXED_NOT_PROVEN",
+      "state": "FIXED_PROVEN",
       "evidenceRef": "Run321 35948591112 + source f5b96e85 + Run322 35949258270",
       "owner": [
         "app/adapters/tya-c6-domain-consistency-bridge.js"
       ],
       "test": "backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-ui-cleanup.test.mjs",
       "classification": "RELEASE_COMPOSITION_FAILURE",
-      "note": "Run322 passed source regression, one Hosting DEV materialization and byte parity including tya-c6-domain-consistency-bridge.js; Admin postulation conflict projection also passed. Terminal proof remains blocked only because the shopper route hit a Firestore permission denial before Mis Visitas could be reached."
+      "note": "Run322 passed source regression, one Hosting DEV materialization and byte parity including tya-c6-domain-consistency-bridge.js; Admin postulation conflict projection also passed. Terminal proof remains blocked only because the shopper route hit a Firestore permission denial before Mis Visitas could be reached.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
     },
     "VRM-029": {
-      "state": "FIXED_NOT_PROVEN",
+      "state": "FIXED_PROVEN",
       "evidenceRef": "Runs323-329 root cause + Run332 35953009969 exact Rules deploy/readback",
       "classification": "AUTH_FAILURE",
       "owner": [
         "firestore.rules",
         "backend/runtime/hr-live-service/test/cxorbia-pre-i4-durability-resources.test.mjs"
       ],
-      "note": "Shopper claims and direct authorized resource reads are correct. Firestore list/query denial is caused by the prior resources read expression combining query-unprovable field type checks and projectAssigned(resource.data.projectId). Emulator proof shows the generic query-compatible form tenantAllowed + shopper + active + resource.data.projectId in request.auth.token.projectIds + role() in resource.data.visibleRoles allows the exact visible-list query while still denying admin-only and other-project documents. Source 2f924e6e contains only the minimal Rules fix plus anti-regression test; DEV Rules deployment still pending. Run332 deployed exactly one Firestore Rules release to DEV via official Rules API and read back exact source parity; terminal status awaits cumulative browser focal."
+      "note": "Shopper claims and direct authorized resource reads are correct. Firestore list/query denial is caused by the prior resources read expression combining query-unprovable field type checks and projectAssigned(resource.data.projectId). Emulator proof shows the generic query-compatible form tenantAllowed + shopper + active + resource.data.projectId in request.auth.token.projectIds + role() in resource.data.visibleRoles allows the exact visible-list query while still denying admin-only and other-project documents. Source 2f924e6e contains only the minimal Rules fix plus anti-regression test; DEV Rules deployment still pending. Run332 deployed exactly one Firestore Rules release to DEV via official Rules API and read back exact source parity; terminal status awaits cumulative browser focal.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
     },
     "VRM-030": {
       "state": "NOT_APPLICABLE_WITH_EVIDENCE",
@@ -319,7 +535,7 @@
       "note": "Firebase CLI :test returned 403 for the DEV principal, but the same authorized principal created the exact Ruleset and updated cloud.firestore through the official Rules API. Run332 succeeded with one exact Rules deploy; no manual IAM change was required."
     }
   },
-  "nextExactAction": "Execute PRE-I4 exhaustive Module Truth gate read-only: verify all 20 modules MATCH, every matrix source blob equals f5b96e85, all 127 active repo-managed scripts plus entrypoint/layout are served byte-exact in DEV, and bind Run333 focal + Run332 Rules evidence. No deploys.",
+  "nextExactAction": "PAULA_HUMAN_VISUAL_ACCEPTANCE_ON_FROZEN_DEV_CANDIDATE. Do not modify candidate or enter I4 unless Paula reports a defect (new VRM in same I3 microblock) or explicitly accepts and separately authorizes I4 production.",
   "functionalLineage": [
     {
       "commit": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
@@ -472,22 +688,58 @@
   "moduleTruthClosure": {
     "matrixSchema": "cxorbia.recovery.module-truth-matrix.v6",
     "matrixFile": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
-    "productSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
-    "productTree": "755e448b0c19701a1598ed0727edeae64ef766b0",
-    "rulesSource": "2f924e6e2057adef9c0c6be8259d564e15c43573",
+    "runId": 35954023135,
+    "artifactId": 10789179424,
+    "artifactDigest": "sha256:3f35e1f914a4f8861651f850e83ee938649b0f02137be6edb0617da557a511e9",
+    "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
     "modules": 20,
+    "sourceFiles": 148,
     "activeRepoScripts": 127,
-    "knownPlatformScripts": [
-      "/__/firebase/init.js"
-    ],
-    "externalScripts": [
-      "https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js",
-      "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js",
-      "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js",
-      "https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js",
-      "https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"
-    ],
-    "pendingGate": "PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+    "approvedNotComposed": 0,
+    "composedNotDeployed": 0,
+    "trueFunctionalDefects": 0,
+    "duplicateScripts": 0,
+    "unknownOverlays": 0,
     "production": false
+  },
+  "headAtTechnicalEvidence": "ff5d78a75d8a153e1eb8e0e33210db399760145a",
+  "p0": {
+    "open": [],
+    "terminal": true
+  },
+  "technicalClosure": {
+    "iteration": "I3",
+    "state": "GO",
+    "humanVisualAcceptance": "PENDING_PAULA",
+    "i4Authorized": false,
+    "appSource": {
+      "sha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "tree": "755e448b0c19701a1598ed0727edeae64ef766b0"
+    },
+    "hostingMaterialization": {
+      "runId": 35949258270,
+      "artifactId": 10788575182,
+      "artifactZipDigest": "sha256:10af30f948bdd1195f0c11847de2395173b701b18132fca87e7fa203695f6b81",
+      "appArtifactSha256": "44a02ea6daa1a3c74cccc79e87795e71439e2d6e1c1e1e3a5c2858db1dc96465"
+    },
+    "rules": {
+      "sourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573",
+      "deployRunId": 35953009969,
+      "artifactId": 10789392248,
+      "artifactDigest": "sha256:8ada7a34b947dbc91cc1df240e1f1118734bcdd507c5a5d7989cab7016200e99"
+    },
+    "focal": {
+      "runId": 35953230892,
+      "artifactId": 10790135179,
+      "artifactDigest": "sha256:46a10b11954b98c8b3e98c6d759726bb3a2071e740a97afe2bd31cbfaded9206",
+      "hrRevision": "8f3625f50d760887b5da2d43b34bbf4c881131c300905e2992c7f4cb38a07858"
+    },
+    "moduleTruth": {
+      "runId": 35954023135,
+      "artifactId": 10789179424,
+      "artifactDigest": "sha256:3f35e1f914a4f8861651f850e83ee938649b0f02137be6edb0617da557a511e9"
+    },
+    "devUrl": "https://cxorbia-backend-dev.web.app",
+    "production": "DO_NOT_TOUCH"
   }
 }

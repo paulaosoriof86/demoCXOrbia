@@ -1,11 +1,11 @@
 {
   "schemaVersion": "cxorbia.pre-i4.human-entrypoint-dev-deploy.request.v1",
-  "requestId": "pre-i4-visual-remediation-20260923-15",
-  "status": "deployed_verify_pending",
+  "requestId": "pre-i4-visual-remediation-20260924-technical-lock",
+  "status": "technical_go_human_visual_pending",
   "enabled": false,
   "consumed": true,
   "authorizedBy": "Paula",
-  "authorizationSource": "run332_vrm029_rules_exact_postdeploy_focal_readback",
+  "authorizationSource": "run333_cumulative_focal_plus_run334_exhaustive_module_truth",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
   "sourceTree": "755e448b0c19701a1598ed0727edeae64ef766b0",
@@ -29,16 +29,10 @@
   "legacyWrites": 0,
   "production": false,
   "noAutomaticRetry": true,
-  "scope": "pre_i4_vrm029_post_rules_zero_deploy_cumulative_focal",
+  "scope": "pre_i4_technical_go_frozen_waiting_human_visual_acceptance",
   "requiredEvidence": [
-    "run332-rules-artifact-10789392248",
-    "live-rules-exact-source-2f924e6e",
-    "final-shopper-resource-query-emulator-proof",
-    "same-hosting-artifact-run322-f5b96e85",
-    "fresh-hr-same-revision-reference",
-    "admin-shopper-desktop-mobile-full-focal",
-    "finance-liquidations-resources-certifications-no-drift",
-    "zero-runtime-rules-hosting-deploys"
+    "human-visual-acceptance-paula",
+    "fresh-explicit-i4-production-authorization-after-acceptance"
   ],
   "deployedRunId": 35949258270,
   "runtimeMaterializedRunId": 35915126071,
@@ -57,5 +51,6 @@
   "maxRulesDeploys": 0,
   "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573",
   "rulesBlobSha": "3e5a786ccffb3bea3c2e90d9e259c5e8735209df",
-  "deployedRulesRunId": 35953009969
+  "deployedRulesRunId": 35953009969,
+  "noFurtherDeployBeforeHumanAcceptance": true
 }

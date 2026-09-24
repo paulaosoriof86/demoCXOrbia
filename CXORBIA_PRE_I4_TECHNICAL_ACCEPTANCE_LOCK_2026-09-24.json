@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "cxorbia.pre-i4.technical-acceptance-lock.v1",
+  "lockedAt": "2026-09-24T04:04:08Z",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "iteration": "I3",
+  "microblock": "CXORBIA-PRE-I4-VISUAL-REMEDIATION-MICROBLOCK-20260922",
+  "technicalState": "GO",
+  "readyForHumanVisualAcceptance": true,
+  "humanVisualAcceptance": "PENDING_PAULA",
+  "i4Authorized": false,
+  "production": "DO_NOT_TOUCH",
+  "devUrl": "https://cxorbia-backend-dev.web.app",
+  "appSource": {
+    "sha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+    "tree": "755e448b0c19701a1598ed0727edeae64ef766b0"
+  },
+  "hostingArtifact": {
+    "materializationRunId": 35949258270,
+    "artifactId": 10788575182,
+    "zipDigest": "sha256:10af30f948bdd1195f0c11847de2395173b701b18132fca87e7fa203695f6b81",
+    "appArtifactSha256": "44a02ea6daa1a3c74cccc79e87795e71439e2d6e1c1e1e3a5c2858db1dc96465"
+  },
+  "rules": {
+    "sourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573",
+    "deployRunId": 35953009969,
+    "artifactId": 10789392248,
+    "digest": "sha256:8ada7a34b947dbc91cc1df240e1f1118734bcdd507c5a5d7989cab7016200e99"
+  },
+  "cumulativeFocal": {
+    "runId": 35953230892,
+    "artifactId": 10790135179,
+    "digest": "sha256:46a10b11954b98c8b3e98c6d759726bb3a2071e740a97afe2bd31cbfaded9206",
+    "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+    "hrRevision": "8f3625f50d760887b5da2d43b34bbf4c881131c300905e2992c7f4cb38a07858"
+  },
+  "moduleTruth": {
+    "runId": 35954023135,
+    "artifactId": 10789179424,
+    "digest": "sha256:3f35e1f914a4f8861651f850e83ee938649b0f02137be6edb0617da557a511e9",
+    "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+    "moduleCount": 20,
+    "sourceFiles": 148,
+    "activeRepoScripts": 127,
+    "approvedNotComposed": 0,
+    "composedNotDeployed": 0,
+    "trueFunctionalDefects": 0,
+    "duplicateScripts": 0,
+    "unknownOverlays": 0
+  },
+  "vrmLedger": {
+    "count": 32,
+    "nonTerminal": 0,
+    "terminalStates": [
+      "FIXED_PROVEN",
+      "ALREADY_PROVEN_NO_DRIFT",
+      "NOT_APPLICABLE_WITH_EVIDENCE"
+    ]
+  },
+  "prohibitions": [
+    "NO_PRODUCTION",
+    "NO_REBUILD",
+    "NO_REIMPORT",
+    "NO_NEW_CANDIDATE",
+    "NO_I4_WITHOUT_PAULA_VISUAL_ACCEPTANCE_AND_FRESH_EXPLICIT_PRODUCTION_AUTHORIZATION"
+  ],
+  "nextExactAction": "PAULA_HUMAN_VISUAL_ACCEPTANCE"
+}

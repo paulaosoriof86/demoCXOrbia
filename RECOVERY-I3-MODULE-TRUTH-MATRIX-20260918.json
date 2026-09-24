@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.recovery.module-truth-matrix.v6",
-  "observedAt": "2026-09-24T03:56:08Z",
+  "observedAt": "2026-09-24T04:04:08Z",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
@@ -134,9 +134,9 @@
       "preI4SuccessorCommits": [],
       "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
       "preI4ProvenBy": {
-        "runId": 35953230892,
-        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
-        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+        "runId": 35954023135,
+        "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "cumulativeFocalRunId": 35953230892
       }
     },
     {
@@ -167,9 +167,9 @@
       ],
       "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
       "preI4ProvenBy": {
-        "runId": 35953230892,
-        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
-        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+        "runId": 35954023135,
+        "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "cumulativeFocalRunId": 35953230892
       }
     },
     {
@@ -190,9 +190,9 @@
       "preI4SuccessorCommits": [],
       "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
       "preI4ProvenBy": {
-        "runId": 35953230892,
-        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
-        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+        "runId": 35954023135,
+        "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "cumulativeFocalRunId": 35953230892
       }
     },
     {
@@ -228,9 +228,9 @@
       ],
       "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
       "preI4ProvenBy": {
-        "runId": 35953230892,
-        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
-        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+        "runId": 35954023135,
+        "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "cumulativeFocalRunId": 35953230892
       }
     },
     {
@@ -255,9 +255,9 @@
       ],
       "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
       "preI4ProvenBy": {
-        "runId": 35953230892,
-        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
-        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+        "runId": 35954023135,
+        "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "cumulativeFocalRunId": 35953230892
       }
     },
     {
@@ -280,9 +280,9 @@
       "preI4SuccessorCommits": [],
       "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
       "preI4ProvenBy": {
-        "runId": 35953230892,
-        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
-        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+        "runId": 35954023135,
+        "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "cumulativeFocalRunId": 35953230892
       }
     },
     {
@@ -315,9 +315,9 @@
       ],
       "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
       "preI4ProvenBy": {
-        "runId": 35953230892,
-        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
-        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+        "runId": 35954023135,
+        "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "cumulativeFocalRunId": 35953230892
       }
     },
     {
@@ -342,9 +342,9 @@
       ],
       "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
       "preI4ProvenBy": {
-        "runId": 35953230892,
-        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
-        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+        "runId": 35954023135,
+        "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "cumulativeFocalRunId": 35953230892
       }
     },
     {
@@ -371,9 +371,9 @@
       ],
       "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
       "preI4ProvenBy": {
-        "runId": 35953230892,
-        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
-        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+        "runId": 35954023135,
+        "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "cumulativeFocalRunId": 35953230892
       }
     },
     {
@@ -401,9 +401,9 @@
       ],
       "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
       "preI4ProvenBy": {
-        "runId": 35953230892,
-        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
-        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+        "runId": 35954023135,
+        "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "cumulativeFocalRunId": 35953230892
       }
     },
     {
@@ -425,9 +425,9 @@
       "preI4SuccessorCommits": [],
       "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
       "preI4ProvenBy": {
-        "runId": 35953230892,
-        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
-        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+        "runId": 35954023135,
+        "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "cumulativeFocalRunId": 35953230892
       }
     },
     {
@@ -452,9 +452,9 @@
       ],
       "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
       "preI4ProvenBy": {
-        "runId": 35953230892,
-        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
-        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+        "runId": 35954023135,
+        "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "cumulativeFocalRunId": 35953230892
       }
     },
     {
@@ -479,9 +479,9 @@
       "preI4SuccessorCommits": [],
       "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
       "preI4ProvenBy": {
-        "runId": 35953230892,
-        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
-        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+        "runId": 35954023135,
+        "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "cumulativeFocalRunId": 35953230892
       }
     },
     {
@@ -517,9 +517,9 @@
       ],
       "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
       "preI4ProvenBy": {
-        "runId": 35953230892,
-        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
-        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+        "runId": 35954023135,
+        "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "cumulativeFocalRunId": 35953230892
       }
     },
     {
@@ -548,9 +548,9 @@
       ],
       "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
       "preI4ProvenBy": {
-        "runId": 35953230892,
-        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
-        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+        "runId": 35954023135,
+        "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "cumulativeFocalRunId": 35953230892
       }
     },
     {
@@ -577,9 +577,9 @@
       "preI4SuccessorCommits": [],
       "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
       "preI4ProvenBy": {
-        "runId": 35953230892,
-        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
-        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+        "runId": 35954023135,
+        "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "cumulativeFocalRunId": 35953230892
       }
     },
     {
@@ -600,9 +600,9 @@
       "preI4SuccessorCommits": [],
       "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
       "preI4ProvenBy": {
-        "runId": 35953230892,
-        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
-        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+        "runId": 35954023135,
+        "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "cumulativeFocalRunId": 35953230892
       }
     },
     {
@@ -624,9 +624,9 @@
       "preI4SuccessorCommits": [],
       "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
       "preI4ProvenBy": {
-        "runId": 35953230892,
-        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
-        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+        "runId": 35954023135,
+        "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "cumulativeFocalRunId": 35953230892
       }
     },
     {
@@ -653,9 +653,9 @@
       ],
       "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
       "preI4ProvenBy": {
-        "runId": 35953230892,
-        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
-        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+        "runId": 35954023135,
+        "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "cumulativeFocalRunId": 35953230892
       }
     },
     {
@@ -684,9 +684,9 @@
       ],
       "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
       "preI4ProvenBy": {
-        "runId": 35953230892,
-        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
-        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+        "runId": 35954023135,
+        "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "cumulativeFocalRunId": 35953230892
       }
     }
   ],
@@ -4801,7 +4801,7 @@
     "gate21AfterFullHuman": true,
     "cacheRuntimeFailClosed": true
   },
-  "nextExactAction": "Execute PRE-I4 exhaustive Module Truth Matrix gate: verify all matrix blobs against f5b96e85, all 127 repo-managed active scripts served byte-exact from DEV, no duplicate/unknown overlay, Run333 cumulative focal PASS and Run332 exact Rules PASS.",
+  "nextExactAction": "HUMAN_VISUAL_ACCEPTANCE_ONLY. If accepted, wait for fresh explicit I4 production authorization; if a defect is found, create the next VRM inside the same I3 microblock and repeat only the affected gate.",
   "moduleTruthCorrection": {
     "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
     "run179": {
@@ -5608,7 +5608,7 @@
     "decision": "PASS_PRE_I4_VRM029_RULES_DEV_EXACT"
   },
   "preI4TechnicalClosure": {
-    "state": "READY_FOR_EXHAUSTIVE_MATRIX_GATE",
+    "state": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
     "appSource": {
       "sha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
       "treeSha": "755e448b0c19701a1598ed0727edeae64ef766b0"
@@ -5636,6 +5636,19 @@
       "TRUE_FUNCTIONAL_DEFECT"
     ],
     "observedNonMatch": [],
-    "production": false
+    "production": false,
+    "runId": 35954023135,
+    "artifactId": 10789179424,
+    "artifactDigest": "sha256:3f35e1f914a4f8861651f850e83ee938649b0f02137be6edb0617da557a511e9",
+    "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+    "sourceFileCount": 148,
+    "activeRepoScripts": 127,
+    "approvedNotComposed": 0,
+    "composedNotDeployed": 0,
+    "trueFunctionalDefects": 0,
+    "duplicateScripts": 0,
+    "unknownOverlays": 0,
+    "readyForHumanVisual": true,
+    "i4Authorized": false
   }
 }
