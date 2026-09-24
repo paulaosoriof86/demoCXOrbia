@@ -2062,13 +2062,15 @@ jobs:
           const variants={
             current:base,
             authOnly:rule('tenantAllowed(tenantId) && isShopperRole()'),
-            statusOnly:rule("tenantAllowed(tenantId) && isShopperRole() && resource.data.status == 'active'"),
             projectStatus:rule("tenantAllowed(tenantId) && isShopperRole() && resource.data.status == 'active' && resource.data.projectId == 'cinepolis'"),
             visibleListFull:rule("tenantAllowed(tenantId) && isShopperRole() && resource.data.status == 'active' && resource.data.projectId == 'cinepolis' && role() in resource.data.visibleRoles"),
+            inlineProjectMembership:rule("tenantAllowed(tenantId) && isShopperRole() && resource.data.status == 'active' && resource.data.projectId in request.auth.token.projectIds && role() in resource.data.visibleRoles"),
+            inlineProjectHasAny:rule("tenantAllowed(tenantId) && isShopperRole() && resource.data.status == 'active' && request.auth.token.projectIds.hasAny([resource.data.projectId]) && role() in resource.data.visibleRoles"),
+            helperLiteralProject:rule("tenantAllowed(tenantId) && isShopperRole() && resource.data.status == 'active' && projectAssigned('cinepolis') && role() in resource.data.visibleRoles"),
             scalarVisibilityFull:rule("tenantAllowed(tenantId) && isShopperRole() && resource.data.status == 'active' && resource.data.projectId == 'cinepolis' && resource.data.shopperVisible == true")
           };
           const claims={role:'shopper',tenantId:'tya',projectIds:['cinepolis'],shopperId:'s3',authNamespace:'shopper'};
-          async function readResult(p){try{const s=await p;return{allowed:true,exists:s.exists?.()??null,ids:s.docs?s.docs.map(d=>d.id).sort():[]};}catch(e){return{allowed:false,error:String(e?.code||e?.message||e),ids:[]};}}
+          async function readResult(p){try{const s=await p;const exists=typeof s.exists==='function'?s.exists():Boolean(s.exists);return{allowed:true,exists:s.docs?null:exists,ids:s.docs?s.docs.map(d=>d.id).sort():[]};}catch(e){return{allowed:false,error:String(e?.code||e?.message||e),ids:[]};}}
           async function run(label,rules){
             const env=await initializeTestEnvironment({projectId:'cxorbia-rules-proof',firestore:{rules,host:hostname,port}});
             try{
