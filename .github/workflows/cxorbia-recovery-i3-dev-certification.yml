@@ -3026,31 +3026,80 @@ jobs:
           jq -e '.reference.identityCases[] | select(.sourceShopperId=="shopper_gt_0b19085086" and .total==5 and .realized==5)' "$DIAG_OUT/prior/hr-contrast.json" >/dev/null
           jq -e '.reference.identityCases[] | select(.sourceShopperId=="shopper_gt_a55e5b3e9b" and .total==1 and .realized==1)' "$DIAG_OUT/prior/hr-contrast.json" >/dev/null
 
-      - name: Reuse hardened focal auth and dump exact history ownership
+      - name: Read exact pending assignment ownership against Run342 HR
         run: |
           set -Eeuo pipefail
-          git show "${CANONICAL_SOURCE}:tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs" > "$DIAG_OUT/diag-focal.mjs"
-          node <<'NODE'
-          const fs=require('fs'),p=process.env.DIAG_OUT+'/diag-focal.mjs';
-          let s=fs.readFileSync(p,'utf8');
-          const oldRow="return {sourceShopperId:String(ref.sourceShopperId||''),expectedName:String(ref.name||''),expectedTotal:Number(ref.total||0),expectedRealized:Number(ref.realized||0),row:row?{id:String(row.id||row.shopperId||''),name:String(row.nombre||row.name||''),legacyLiveShopperIds:list(row.legacyLiveShopperIds).map(String),stats:stats(row)}:null};";
-          const newRow="const map=d.__identityMap||{},canon=x=>String(map[String(x||'')]||x||''),target=row?canon(row.id||row.shopperId):'';const mappedVisits=row?list(d._visitas).filter(v=>canon(v.shopperId)===target).map(v=>({id:String(v.id||v.visitId||''),hrRowId:String(v.hrRowId||''),rawShopperId:String(v.shopperId||''),canonicalShopperId:canon(v.shopperId),shopper:String(v.shopper||''),periodKey:String(v.periodKey||''),periodId:String(v.periodId||''),projectId:String(v.rootProjectId||v.projectId||''),pendingOverlay:v.__pendingPlatformAssignmentOverlay===true,protectedOverlay:v.__exactProtectedVisitOverlay===true,hrOwned:v.__hrOwnedOperational===true,assignmentSource:String(v.assignmentSource||''),assignmentSyncStatus:String(v.assignmentSyncStatus||'')})):[];return {sourceShopperId:String(ref.sourceShopperId||''),expectedName:String(ref.name||''),expectedTotal:Number(ref.total||0),expectedRealized:Number(ref.realized||0),identityMapValue:String(map[String(ref.sourceShopperId||'')]||''),canonicalSourceId:canon(ref.sourceShopperId),row:row?{id:String(row.id||row.shopperId||''),name:String(row.nombre||row.name||''),legacyLiveShopperIds:list(row.legacyLiveShopperIds).map(String),stats:stats(row),mappedVisits}:null};";
-          if(!s.includes(oldRow))throw new Error('SOURCE_FAILURE:VRM037_ROW_DIAGNOSTIC_ANCHOR');
-          s=s.replace(oldRow,newRow);
-          const oldAssert="if(Number(x.row.stats?.total)!==x.expectedTotal||Number(x.row.stats?.realizadas)!==x.expectedRealized)throw new Error('MAPPING_FAILURE:EXACT_HR_HISTORY_'+x.sourceShopperId+':'+JSON.stringify(x));";
-          const newAssert="if(Number(x.row.stats?.total)!==x.expectedTotal||Number(x.row.stats?.realizadas)!==x.expectedRealized){fs.writeFileSync(OUT+'/identity-history-diagnostic.json',JSON.stringify({decision:'HOLD_PRE_I4_VRM037_EXACT_HISTORY',hrRevision,case:x,allCases:cases,production:false,writes:0},null,2)+'\\n');throw new Error('MAPPING_FAILURE:EXACT_HR_HISTORY_'+x.sourceShopperId+':'+JSON.stringify(x));}";
-          if(!s.includes(oldAssert))throw new Error('SOURCE_FAILURE:VRM037_ASSERT_DIAGNOSTIC_ANCHOR');
-          s=s.replace(oldAssert,newAssert);
-          fs.writeFileSync(p,s);
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';
+          import {getFirestore} from 'firebase-admin/firestore';
+
+          const OUT=process.env.DIAG_OUT;
+          const hr=JSON.parse(fs.readFileSync(OUT+'/prior/hr-fresh.json','utf8'));
+          const contrast=JSON.parse(fs.readFileSync(OUT+'/prior/hr-contrast.json','utf8'));
+          const periodKey=String(hr?.source?.currentCalendarPeriodKey||contrast.currentPeriodKey||'');
+          const hrRevision=String(hr?._runtime?.revision||contrast.sourceRevision||'');
+          if(!periodKey||!/^[a-f0-9]{64}$/.test(hrRevision))throw new Error('SOURCE_FAILURE:VRM037_DIRECT_HR_AUTHORITY');
+          const hrVisits=(hr.visits||[]).filter(v=>String(v.periodKey||'')===periodKey);
+          const expectedById=new Map((contrast.reference?.identityCases||[]).map(x=>[String(x.sourceShopperId||''),x]));
+          const ids=['shopper_gt_0b19085086','shopper_gt_a55e5b3e9b'];
+
+          if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:'cxorbia-backend-dev'});
+          const db=getFirestore();
+          const coll=db.collection('tenants').doc('tya').collection('projects').doc('cinepolis').collection('visits');
+          const snap=await coll.get();
+          const durable=snap.docs.map(d=>({docId:d.id,...(d.data()||{})}));
+
+          const str=v=>String(v??'');
+          const keys=v=>new Set([str(v?.id),str(v?.visitId),str(v?.hrRowId),str(v?.docId)].filter(Boolean));
+          const exactHrFor=d=>{
+            const dk=keys(d);
+            const found=hrVisits.filter(v=>[...keys(v)].some(k=>dk.has(k)));
+            if(found.length>1)throw new Error('MAPPING_FAILURE:VRM037_AMBIGUOUS_DURABLE_TO_HR:'+str(d.docId));
+            return found[0]||null;
+          };
+          const cases=ids.map(id=>{
+            const expected=expectedById.get(id);
+            if(!expected)throw new Error('SOURCE_FAILURE:VRM037_REFERENCE_CASE_MISSING:'+id);
+            const hrOwned=hrVisits.filter(v=>str(v.shopperId)===id);
+            const pending=durable.filter(v=>str(v.shopperId)===id&&str(v.assignmentSource)==='platform'&&str(v.assignmentSyncStatus)==='pending_hr');
+            const pendingRows=pending.map(v=>{
+              const h=exactHrFor(v);
+              return {
+                docId:str(v.docId),visitId:str(v.visitId||v.id),hrRowId:str(v.hrRowId),
+                durableShopperId:str(v.shopperId),assignmentSource:str(v.assignmentSource),assignmentSyncStatus:str(v.assignmentSyncStatus),
+                hrMatch:h?{id:str(h.id||h.visitId),visitId:str(h.visitId||h.id),hrRowId:str(h.hrRowId),shopperId:str(h.shopperId),estado:str(h.estado||h.status),sucursal:str(h.sucursal)}:null,
+                inflatesConfirmedHistory:!!h&&str(h.shopperId)!==id
+              };
+            });
+            const inflation=pendingRows.filter(x=>x.inflatesConfirmedHistory);
+            return {
+              sourceShopperId:id,
+              expectedName:str(expected.name),
+              expectedTotal:Number(expected.total||0),
+              expectedRealized:Number(expected.realized||0),
+              hrOwnedCount:hrOwned.length,
+              pendingPlatformAssignments:pendingRows,
+              inflationCount:inflation.length,
+              inflation
+            };
+          });
+          const primary=cases.find(x=>x.sourceShopperId==='shopper_gt_0b19085086');
+          const control=cases.find(x=>x.sourceShopperId==='shopper_gt_a55e5b3e9b');
+          let decision='HOLD_PRE_I4_VRM037_042_DIRECT_OWNER_PROOF';
+          if(primary?.hrOwnedCount===5&&primary?.expectedTotal===5&&primary?.inflationCount===1&&control?.hrOwnedCount===1&&control?.expectedTotal===1){
+            decision='PASS_PRE_I4_VRM037_042_PENDING_OVERLAY_OWNER_PROOF';
+          }
+          const result={
+            decision,hrRevision,periodKey,firestoreVisitCount:durable.length,cases,
+            conclusion:decision.startsWith('PASS_')
+              ? 'One exact durable platform pending_hr assignment maps to an HR visit not yet owned by José in the same HR revision; the global shopperStats/history facade therefore inflates confirmed HR history by one.'
+              : 'Exact pending-overlay ownership root cause not proven; do not mutate product.',
+            production:false,writes:0,runtimeBuilds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0
+          };
+          fs.writeFileSync(OUT+'/identity-history-diagnostic.json',JSON.stringify(result,null,2)+'\n');
+          if(!decision.startsWith('PASS_'))throw new Error('MAPPING_FAILURE:VRM037_042_OWNER_PROOF_NOT_EXACT:'+JSON.stringify(cases));
           NODE
-          set +e
-          PREI4_OUT="$DIAG_OUT/prior" CXORBIA_PREI4_ROOT="$HOSTING_ROOT" CXORBIA_PREI4_SOURCE_SHA="$CANONICAL_SOURCE" node "$DIAG_OUT/diag-focal.mjs"
-          status=$?
-          set -e
-          test "$status" -ne 0
-          test -s "$DIAG_OUT/prior/identity-history-diagnostic.json"
-          cp "$DIAG_OUT/prior/identity-history-diagnostic.json" "$DIAG_OUT/identity-history-diagnostic.json"
-          jq -e '.decision=="HOLD_PRE_I4_VRM037_EXACT_HISTORY" and .case.sourceShopperId=="shopper_gt_0b19085086"' "$DIAG_OUT/identity-history-diagnostic.json" >/dev/null
 
       - name: Upload diagnostic evidence
         if: always()
