@@ -2976,6 +2976,77 @@ jobs:
           compression-level: 0
 
 
+  pre-i4-vrm039-config-diagnostic:
+    name: PRE-I4 VRM-039 project config authority diagnostic — read only
+    needs: canonical-candidate-authority
+    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[pre-i4-vrm039-config-diagnostic]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout control successor
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Prove diagnostic-only product scope
+        run: |
+          set -Eeuo pipefail
+          git diff --quiet "${{ needs.canonical-candidate-authority.outputs.source_sha }}" "$GITHUB_SHA" -- app backend || {
+            echo "Product drift exists after descriptor source; diagnostic remains read-only but does not promote it." >&2
+          }
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Authenticate DEV read only
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+
+      - name: Install transient Firestore reader
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
+
+      - name: Read independent project configuration
+        run: |
+          set -Eeuo pipefail
+          mkdir -p .tmp/vrm039-config
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';
+          import {getFirestore} from 'firebase-admin/firestore';
+          if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:'cxorbia-backend-dev'});
+          const db=getFirestore();
+          const ref=db.collection('tenants').doc('tya').collection('projects').doc('cinepolis');
+          const snap=await ref.get();
+          const raw=snap.exists?(snap.data()||{}):{};
+          const safe={
+            decision:'PASS_PRE_I4_VRM039_PROJECT_CONFIG_READBACK',
+            exists:snap.exists,
+            projectId:'cinepolis',
+            countries:Array.isArray(raw.countries)?raw.countries:[],
+            currency:raw.currency||raw.currencies||{},
+            honorario:raw.honorario||{},
+            honorarioRecibe:raw.honorarioRecibe||raw.honRecibe||{},
+            boleto:raw.boleto||{},
+            comboAmt:raw.comboAmt||{},
+            modelo:raw.modelo||null,
+            sourceKeys:Object.keys(raw).filter(k=>['countries','currency','currencies','honorario','honorarioRecibe','honRecibe','boleto','comboAmt','modelo'].includes(k)).sort(),
+            writes:0,production:false
+          };
+          fs.writeFileSync('.tmp/vrm039-config/project-config.json',JSON.stringify(safe,null,2)+'\n');
+          console.log(JSON.stringify(safe));
+          NODE
+
+      - name: Upload config diagnostic
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-pre-i4-vrm039-config-${{ github.run_id }}
+          path: .tmp/vrm039-config
+          if-no-files-found: error
+          retention-days: 30
+
   pre-i4-vrm036-source-proof:
     name: PRE-I4 VRM-036 certification evidence proof — no deploy
     needs: canonical-candidate-authority
