@@ -104,9 +104,11 @@ const modules=(m.modules||[]).map(mod=>{
 if(modules.some(x=>!['MATCH','COMPOSED_NOT_DEPLOYED'].includes(x.classification)))throw new Error('RELEASE_COMPOSITION_FAILURE:INVALID_PRETERMINAL_MODULE_STATE');
 
 const html=git('show',SOURCE+':app/index-backend-dev.html');
-const scripts=[...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/gi)].map(x=>x[1].replace(/^\.\//,''));
+const staticScripts=[...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/gi)].map(x=>x[1].replace(/^\.\//,''));
+const dynamicScripts=[...html.matchAll(/\b(?:[A-Za-z_$][\w$]*\.)?src\s*=\s*["']([^"']+\.js(?:\?[^"']*)?)["']/gi)].map(x=>x[1].replace(/^\.\//,'').replace(/\?.*$/,''));
+const scripts=[...new Set([...staticScripts,...dynamicScripts])];
 const styles=[...html.matchAll(/<link\b[^>]*\bhref=["']([^"']+\.css(?:\?[^"']*)?)["']/gi)].map(x=>x[1].replace(/^\.\//,'').replace(/\?.*$/,''));
-const duplicateSrc=scripts.filter((x,i,a)=>a.indexOf(x)!==i);
+const duplicateSrc=staticScripts.filter((x,i,a)=>a.indexOf(x)!==i);
 if(duplicateSrc.length)throw new Error('RELEASE_COMPOSITION_FAILURE:DUPLICATE_SCRIPT:'+JSON.stringify([...new Set(duplicateSrc)]));
 const missing=[];
 for(const f of sourceFiles.filter(x=>x.phaseAAuthority===true)){
