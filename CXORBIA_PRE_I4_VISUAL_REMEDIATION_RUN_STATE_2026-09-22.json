@@ -1,12 +1,12 @@
 {
   "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v11",
-  "generatedAt": "2026-09-23T21:49:00-06:00",
+  "generatedAt": "2026-09-23T21:51:00-06:00",
   "iteration": "I3_PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "microblockId": "CXORBIA-PRE-I4-VISUAL-REMEDIATION-MICROBLOCK-20260922",
-  "status": "HOLD_VRM_029_RULES_API_DEPLOY_READY",
+  "status": "HOLD_VRM_029_RULES_DEPLOYED_CUMULATIVE_FOCAL_READY",
   "production": "DO_NOT_TOUCH",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "head": "2f924e6e2057adef9c0c6be8259d564e15c43573",
+  "head": "5a20e1cfd1f77d421f0441deca49bb884b417e64",
   "lastFunctionalWrite": {
     "commit": "2f924e6e2057adef9c0c6be8259d564e15c43573",
     "parent": "e74fdd8f9fd8cb32facfd693ece36d434084627c",
@@ -283,13 +283,13 @@
     },
     "VRM-029": {
       "state": "FIXED_NOT_PROVEN",
-      "evidenceRef": "Run323 35949772693 + Run327 35951540961 + Run328 35951863929 + Run329 35952074434 + source 2f924e6e2057adef9c0c6be8259d564e15c43573",
+      "evidenceRef": "Runs323-329 root cause + Run332 35953009969 exact Rules deploy/readback",
       "classification": "AUTH_FAILURE",
       "owner": [
         "firestore.rules",
         "backend/runtime/hr-live-service/test/cxorbia-pre-i4-durability-resources.test.mjs"
       ],
-      "note": "Shopper claims and direct authorized resource reads are correct. Firestore list/query denial is caused by the prior resources read expression combining query-unprovable field type checks and projectAssigned(resource.data.projectId). Emulator proof shows the generic query-compatible form tenantAllowed + shopper + active + resource.data.projectId in request.auth.token.projectIds + role() in resource.data.visibleRoles allows the exact visible-list query while still denying admin-only and other-project documents. Source 2f924e6e contains only the minimal Rules fix plus anti-regression test; DEV Rules deployment still pending."
+      "note": "Shopper claims and direct authorized resource reads are correct. Firestore list/query denial is caused by the prior resources read expression combining query-unprovable field type checks and projectAssigned(resource.data.projectId). Emulator proof shows the generic query-compatible form tenantAllowed + shopper + active + resource.data.projectId in request.auth.token.projectIds + role() in resource.data.visibleRoles allows the exact visible-list query while still denying admin-only and other-project documents. Source 2f924e6e contains only the minimal Rules fix plus anti-regression test; DEV Rules deployment still pending. Run332 deployed exactly one Firestore Rules release to DEV via official Rules API and read back exact source parity; terminal status awaits cumulative browser focal."
     },
     "VRM-030": {
       "state": "NOT_APPLICABLE_WITH_EVIDENCE",
@@ -310,17 +310,16 @@
       "note": "Run330 stopped before authentication or deployment because the rules-only scope validator counted backend/config/pre-i4-human-entrypoint-dev-deploy-request.json, a control authorization file, as product drift between f5b96e85 and functional source 2f924e6e. The validator now excludes only that exact control path while preserving exact checks for firestore.rules and the VRM-029 regression test. Run330 performed zero Rules/Hosting/runtime/data/production deploys. Run331 passed the corrected product-scope validator and cumulative source tests, proving the Run330 scope failure was control-only."
     },
     "VRM-032": {
-      "state": "FIXED_NOT_PROVEN",
-      "evidenceRef": "Run331 35952807023",
+      "state": "NOT_APPLICABLE_WITH_EVIDENCE",
+      "evidenceRef": "Run331 35952807023 + Run332 35953009969",
       "classification": "AUTH_FAILURE",
       "owner": [
-        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
-        "DEV service-account IAM capability"
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
       ],
-      "note": "Run331 passed exact scope, cumulative tests, Firebase authentication and prior-live Rules hash lock, then Firebase CLI failed at firebaserules.googleapis.com:v1/projects/cxorbia-backend-dev:test with HTTP 403 before any Rules release. The control deploy method is changed to the official Rules API: create immutable Ruleset from exact firestore.rules (which validates source) then PATCH only release cloud.firestore. If rulesets.create or releases.update is also denied, IAM is materially blocking the authorized DEV Rules deployment."
+      "note": "Firebase CLI :test returned 403 for the DEV principal, but the same authorized principal created the exact Ruleset and updated cloud.firestore through the official Rules API. Run332 succeeded with one exact Rules deploy; no manual IAM change was required."
     }
   },
-  "nextExactAction": "Use the same authorized Rules-only DEV lane and unchanged functional source 2f924e6e, but deploy through the official Firebase Rules REST API: create the exact Ruleset and PATCH only release cloud.firestore. If either rulesets.create or releases.update returns 403, stop as a proven IAM blocker; otherwise read back exact live Rules and continue to zero-deploy focal browser proof.",
+  "nextExactAction": "Run zero-deploy cumulative focal against unchanged Hosting artifact f5b96e85 and exact live Rules from 2f924e6e; require fresh HR same revision, full Admin and Shopper desktop/mobile including Documentos, postulation conflict visibility, finance/liquidations/certifications and byte parity. If green, proceed directly to exhaustive Module Truth Matrix closure.",
   "functionalLineage": [
     {
       "commit": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
@@ -400,16 +399,19 @@
     ]
   },
   "focalProof": {
-    "state": "VRM_029_RULES_ONLY_DEV_READY",
-    "sourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573",
-    "sourceTree": "c9ccafef4aaaef6adbb3e797a0ff40067c03aebb",
-    "currentHostingRunId": 35949258270,
+    "state": "RUN332_RULES_EXACT_ZERO_DEPLOY_CUMULATIVE_FOCAL_READY",
+    "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+    "sourceTree": "755e448b0c19701a1598ed0727edeae64ef766b0",
+    "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573",
+    "rulesDeployRunId": 35953009969,
+    "rulesArtifactId": 10789392248,
+    "rulesArtifactDigest": "sha256:8ada7a34b947dbc91cc1df240e1f1118734bcdd507c5a5d7989cab7016200e99",
+    "hostingArtifactRunId": 35949258270,
     "nextRunDeploys": {
       "runtime": 0,
-      "rules": 1,
+      "rules": 0,
       "hosting": 0
     },
-    "firestoreWrites": 0,
     "production": false
   },
   "providerFailure": {
@@ -425,28 +427,7 @@
     },
     "resolution": "Use existing proven direct Rules API deploy tool; do not rebuild/redeploy runtime."
   },
-  "lastControlFailure": {
-    "classification": "AUTH_FAILURE",
-    "runId": 35952807023,
-    "productDefectProven": false,
-    "affectedFindings": [
-      "VRM-032"
-    ],
-    "cause": "Firebase CLI requires firebaserules test permission before deploy; the connected DEV credential can read Rules but its TestRuleset call returned HTTP 403. No Rules release was changed.",
-    "observed": {
-      "scopeValidation": true,
-      "cumulativeSourceTests": true,
-      "priorLiveRulesHashLocked": true,
-      "failedEndpoint": "firebaserules.googleapis.com/v1/projects/cxorbia-backend-dev:test",
-      "httpStatus": 403,
-      "rulesReleaseChanged": false,
-      "hostingDeploys": 0,
-      "runtimeDeploys": 0,
-      "firestoreWrites": 0
-    },
-    "resolutionOwner": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
-    "productionDeploys": 0
-  },
+  "lastControlFailure": null,
   "liveHrProof": {
     "runId": 35930173836,
     "decision": "PASS_PRE_I4_HR_FRESH_CONTRAST",
