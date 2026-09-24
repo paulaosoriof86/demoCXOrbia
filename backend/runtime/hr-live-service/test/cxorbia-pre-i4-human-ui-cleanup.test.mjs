@@ -70,3 +70,14 @@ test('PRE-I4 VRM-027 admin keeps approval state but marks unresolved HR assignme
   assert.match(s,/Aprobada · asignación en revisión/);
 });
 
+test('PRE-I4 VRM-027 adapters cannot replace the canonical Mis Visitas module after load',()=>{
+  const dir=root+'app/adapters';
+  const files=fs.readdirSync(dir).filter(x=>x.endsWith('.js'));
+  for(const name of files){
+    const s=fs.readFileSync(dir+'/'+name,'utf8');
+    assert.doesNotMatch(s,/CX\.modules\.misvisitas\s*=/,name+' must not own Mis Visitas rendering');
+  }
+  const bridge=read('app/adapters/tya-c6-domain-consistency-bridge.js');
+  assert.doesNotMatch(bridge,/function\s+correctedMisVisitas\b/);
+});
+
