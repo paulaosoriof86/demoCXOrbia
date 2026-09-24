@@ -1751,6 +1751,211 @@ jobs:
           test "$(jq -r '.decision' "$PREI4_OUT/hr-contrast.json")" = "PASS_PRE_I4_HR_FRESH_CONTRAST"
           test "$(jq -r '.decision' "$PREI4_OUT/remote-parity.json")" = "PASS_PRE_I4_HOSTING_REMOTE_BYTE_PARITY"
 
+  pre-i4-finance-p0-hosting-fix:
+    name: PRE-I4 finance P0 Hosting-only materialization
+    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[pre-i4-finance-fix-dev-only]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      REQUEST: backend/config/pre-i4-human-entrypoint-dev-deploy-request.json
+      PREI4_OUT: .tmp/pre-i4-finance-p0
+      PREI4_SOURCE_DIR: .tmp/pre-i4-finance-source
+      PREI4_PRIOR: .tmp/pre-i4-prior-deploy
+    steps:
+      - name: Checkout cumulative control successor
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate exact finance P0 functional successor and one-shot scope
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$PREI4_OUT"
+          node <<'NODE'
+          const fs=require('fs'),{execFileSync}=require('child_process');
+          const p=process.env.REQUEST,r=JSON.parse(fs.readFileSync(p,'utf8')),head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          const source='ab05415eb965404e1a6594df8533b8e0190aa0f7',previous='50b6a25d79713b0f165cffc4355c7b7ffd1d9e84';
+          if(r.requestId!=='pre-i4-visual-remediation-20260923-07'||r.sourceSha!==source||r.sourceTree!=='d12b358749530ba674990702931dc00a5d7a2097')throw new Error('RELEASE_COMPOSITION_FAILURE:FINANCE_FIX_REQUEST_SOURCE');
+          if(r.status!=='authorized_execute_once'||r.enabled!==true||r.consumed!==false||r.production!==false||r.noAutomaticRetry!==true)throw new Error('RELEASE_COMPOSITION_FAILURE:FINANCE_FIX_AUTHORIZATION');
+          if(Number(r.nextRun?.runtimeBuilds)!==0||Number(r.nextRun?.runtimeDeploys)!==0||Number(r.nextRun?.rulesDeploys)!==0||Number(r.nextRun?.hostingDeploys)!==1)throw new Error('RELEASE_COMPOSITION_FAILURE:FINANCE_FIX_SCOPE');
+          execFileSync('git',['merge-base','--is-ancestor',source,head]);
+          const productDiff=execFileSync('git',['diff','--name-only',previous,source],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean).sort();
+          const expected=[
+            'app/adapters/tya-delegated-coordination-finance-guard-v1.js',
+            'app/adapters/tya-live-source-inplace-apply.js',
+            'backend/runtime/hr-live-service/test/cxorbia-pre-i4-finance-source-semantics.test.mjs'
+          ].sort();
+          if(JSON.stringify(productDiff)!==JSON.stringify(expected))throw new Error('RELEASE_COMPOSITION_FAILURE:FINANCE_FIX_PRODUCT_DIFF:'+productDiff.join(','));
+          const unsafe=productDiff.filter(x=>x==='firestore.rules'||x.startsWith('backend/runtime/hr-live-service/')&&!x.endsWith('cxorbia-pre-i4-finance-source-semantics.test.mjs'));
+          if(unsafe.length)throw new Error('RELEASE_COMPOSITION_FAILURE:FINANCE_FIX_RUNTIME_RULES_DRIFT:'+unsafe.join(','));
+          fs.writeFileSync(process.env.PREI4_OUT+'/authorization.json',JSON.stringify({decision:'PASS_PRE_I4_FINANCE_P0_AUTHORIZATION',sourceSha:source,sourceTree:r.sourceTree,productDiff,runtimeBuilds:0,runtimeDeploys:0,rulesDeploys:0,hostingDeployMax:1,production:false},null,2)+'\n');
+          NODE
+
+      - name: Recreate exact functional source and run regression gates
+        run: |
+          set -Eeuo pipefail
+          rm -rf "$PREI4_SOURCE_DIR"; mkdir -p "$PREI4_SOURCE_DIR"
+          git archive "ab05415eb965404e1a6594df8533b8e0190aa0f7" | tar -x -C "$PREI4_SOURCE_DIR"
+          cd "$PREI4_SOURCE_DIR"
+          node --check app/adapters/tya-live-source-inplace-apply.js
+          node --check app/adapters/tya-delegated-coordination-finance-guard-v1.js
+          node --test             backend/runtime/hr-live-service/test/cxorbia-pre-i4-finance-source-semantics.test.mjs             backend/runtime/hr-live-service/test/cxorbia-i3-project-period-contract.test.mjs             backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs             backend/runtime/hr-live-service/test/cxorbia-pre-i4-durability-resources.test.mjs             backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-ui-cleanup.test.mjs             | tee "$GITHUB_WORKSPACE/$PREI4_OUT/source-tests.log"
+          node tools/qa/cxorbia-pre-i4-human-entrypoint-contract-gate.mjs > "$GITHUB_WORKSPACE/$PREI4_OUT/source-gate.json"
+          test "$(jq -r '.decision' "$GITHUB_WORKSPACE/$PREI4_OUT/source-gate.json")" = "PASS_PRE_I4_HUMAN_ENTRYPOINT_CONTRACT"
+          tar --sort=name --mtime='UTC 1970-01-01' --owner=0 --group=0 --numeric-owner -cf "$GITHUB_WORKSPACE/$PREI4_OUT/app-artifact.tar" app
+          sha256sum "$GITHUB_WORKSPACE/$PREI4_OUT/app-artifact.tar" | awk '{print $1}' > "$GITHUB_WORKSPACE/$PREI4_OUT/app-artifact.sha256"
+
+      - name: Authenticate existing Firebase DEV only
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: cxorbia-backend-dev
+
+      - name: Install transient Hosting and browser tooling
+        run: |
+          set -Eeuo pipefail
+          npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null 2>&1
+
+      - name: Bind unchanged runtime and Rules evidence from prior materialization
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -Eeuo pipefail
+          rm -rf "$PREI4_PRIOR"; mkdir -p "$PREI4_PRIOR"
+          gh run download 35929165160 --repo "$GITHUB_REPOSITORY" --name "cxorbia-pre-i4-human-entrypoint-35929165160" --dir "$PREI4_PRIOR"
+          test "$(jq -r '.decision' "$PREI4_PRIOR/runtime-continuation.json")" = "PASS_PRE_I4_EXISTING_RUNTIME_EXACT_SOURCE"
+          test "$(jq -r '.decision' "$PREI4_PRIOR/rules-parity.json")" = "PASS_PRE_I4_FIRESTORE_RULES_PARITY"
+          gcloud run services describe "cxorbia-live-hr-dev" --project "cxorbia-backend-dev" --region "us-central1" --format=json > "$PREI4_OUT/runtime-live.json"
+          RUNTIME_REV="$(jq -r '.status.latestReadyRevisionName // empty' "$PREI4_OUT/runtime-live.json")"
+          test -n "$RUNTIME_REV"
+          curl -fsS --retry 8 --retry-delay 2 "$(jq -r '.status.url' "$PREI4_OUT/runtime-live.json")/health" > "$PREI4_OUT/runtime-health.json"
+          jq -e '.ok==true and .production==false and .hrWrites==false' "$PREI4_OUT/runtime-health.json" >/dev/null
+          jq -n -S --arg revision "$RUNTIME_REV" '{decision:"PASS_PRE_I4_RUNTIME_RULES_UNCHANGED_FOR_BROWSER_ONLY_FIX",runtimeRevision:$revision,runtimeDeploysThisRun:0,rulesDeploysThisRun:0,production:false}' > "$PREI4_OUT/runtime-rules-unchanged.json"
+
+      - name: Deploy exact finance P0 static successor to Hosting DEV once
+        run: |
+          set -Eeuo pipefail
+          test "$GITHUB_RUN_ATTEMPT" = "1"
+          cd "$PREI4_SOURCE_DIR"
+          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:cxorbia-dev" --project "cxorbia-backend-dev" --non-interactive | tee "$GITHUB_WORKSPACE/$PREI4_OUT/hosting-deploy.log"
+          cd "$GITHUB_WORKSPACE"
+          echo 1 > "$PREI4_OUT/hosting-deploy-count.txt"
+
+      - name: Prove exact served static bytes after finance P0 deploy
+        run: |
+          set -Eeuo pipefail
+          root="https://cxorbia-backend-dev.web.app"; mkdir -p "$PREI4_OUT/remote"
+          for rel in             index-backend-dev.html index.html app.js config/runtime.js             core/config.js core/data-source.js core/data.js core/router.js core/finanzas-core.js core/liquidacion.js             adapters/tya-live-source-inplace-apply.js adapters/tya-delegated-coordination-finance-guard-v1.js             adapters/cxorbia-command-adapter-v1.js adapters/cxorbia-cxdata-command-boundary-v1.js adapters/tya-protected-auth-hr-authority-bridge-v2.js             modules/dashboard.js modules/misvisitas.js modules/shoppers.js modules/postulaciones.js modules/finanzas.js modules/documentos.js modules/cert.js styles/layout.css; do
+            remote="$PREI4_OUT/remote/$(echo "$rel" | tr '/' '_')"
+            ok=0
+            for attempt in $(seq 1 30); do
+              if curl -fsSL --retry 2 --retry-delay 1 -H 'Cache-Control: no-cache' "$root/$rel?financep0=${GITHUB_RUN_ID}-${attempt}-$(date +%s%N)" -o "$remote" && cmp "$PREI4_SOURCE_DIR/app/$rel" "$remote"; then ok=1; break; fi
+              sleep 2
+            done
+            test "$ok" = 1
+          done
+          curl -fsSL -H 'Cache-Control: no-cache' "$root/__pre_i4_finance_p0__/admin/financiero?financep0=${GITHUB_RUN_ID}" -o "$PREI4_OUT/remote/deep.html"
+          cmp "$PREI4_SOURCE_DIR/app/index-backend-dev.html" "$PREI4_OUT/remote/deep.html"
+          jq -n -S '{decision:"PASS_PRE_I4_FINANCE_P0_HOSTING_BYTE_PARITY",hostingDeploysThisRun:1,production:false}' > "$PREI4_OUT/remote-readback.json"
+
+      - name: Force fresh HR read and build same-revision independent reference
+        run: |
+          set -Eeuo pipefail
+          curl -fsSL --retry 8 --retry-delay 2 -H 'Cache-Control: no-cache' "https://cxorbia-backend-dev.web.app/api/tenants/tya/projects/cinepolis/hr-live?view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV&fresh=1&readback=${GITHUB_RUN_ID}" -o "$PREI4_OUT/hr-fresh.json"
+          PREI4_SOURCE_DIR="$PREI4_SOURCE_DIR" node <<'NODE'
+          const fs=require('fs'),p=JSON.parse(fs.readFileSync(process.env.PREI4_OUT+'/hr-fresh.json','utf8'));
+          const key=p?.source?.currentCalendarPeriodKey,period=(p.periods||[]).find(x=>x.key===key),visits=(p.visits||[]).filter(v=>v.periodKey===key);
+          const revision=String(p?._runtime?.revision||'');
+          if(!/^[a-f0-9]{64}$/.test(revision))throw new Error('SOURCE_FAILURE:HR_REVISION_MISSING');
+          if(!period||period.total!==44||period.byCountry?.GT!==34||period.byCountry?.HN!==10)throw new Error('SOURCE_FAILURE:CURRENT_PERIOD_UNIVERSE_DRIFT');
+          const cfg=fs.readFileSync(process.env.PREI4_SOURCE_DIR+'/app/adapters/tya-project-financial-model-contract-v1.js','utf8');
+          const hm=cfg.match(/tenantId:'tya',projectId:'cinepolis'[\s\S]{0,1400}?honorarium:\{GT:(\d+),HN:(\d+)\}/);
+          if(!hm)throw new Error('SOURCE_FAILURE:PROJECT_HONORARIUM_CONFIG_UNRESOLVED');
+          const honorarium={GT:Number(hm[1]),HN:Number(hm[2])};
+          const known=x=>x!==null&&x!==undefined&&x!==''&&Number.isFinite(Number(x));
+          const facet=(v,k)=>v?.canonicalFacets?.[k]===true;
+          const country=code=>{
+            const a=visits.filter(v=>(v.country||v.pais)===code),assigned=a.filter(v=>facet(v,'assigned')||v.assignmentState==='assigned'),realized=a.filter(v=>facet(v,'realized')||v.executionState==='realized');
+            const knownReimbursements=realized.reduce((n,v)=>n+(known(v.boleto)?Number(v.boleto):0)+(known(v.comboAmt)?Number(v.comboAmt):0),0);
+            const reimbursementPartial=realized.some(v=>!known(v.boleto)||!known(v.comboAmt));
+            return {
+              total:a.length,availableUnassigned:a.filter(v=>facet(v,'available')&&!facet(v,'assigned')).length,assigned:assigned.length,
+              scheduled:a.filter(v=>facet(v,'scheduled')||v.schedulingState==='scheduled').length,
+              realized:realized.length,questionnaire:a.filter(v=>facet(v,'questionnaire')).length,submitted:a.filter(v=>facet(v,'submitted')||v.submissionState==='confirmed_hr').length,
+              liquidationCandidate:a.filter(v=>facet(v,'liquidationCandidate')).length,liquidationConfirmed:a.filter(v=>facet(v,'liquidationConfirmed')).length,paymentConfirmed:a.filter(v=>facet(v,'paymentConfirmed')).length,
+              outOfRange:a.filter(v=>facet(v,'outOfRange')||v.outOfRange===true).length,reviewRequired:a.filter(v=>v.reviewRequired===true).length,
+              uniqueAssignedShoppers:new Set(assigned.map(v=>String(v.shopperId||'')).filter(Boolean)).size,
+              finance:{realizedCount:realized.length,honorarioDevengado:realized.length*honorarium[code],knownReimbursements,reimbursementPartial,configuredHonorarium:honorarium[code]}
+            };
+          };
+          const GT=country('GT'),HN=country('HN');
+          const normName=x=>String(x||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
+          const identityNames=['Julissa Flores','Julissa Illescas'];
+          const identityCases=identityNames.map(name=>{
+            const rows=(p.shoppers||[]).filter(s=>normName(s.nombre||s.name)===normName(name));
+            if(rows.length!==1)throw new Error('SOURCE_FAILURE:EXACT_IDENTITY_REFERENCE_'+name.replace(/\s+/g,'_').toUpperCase());
+            const sourceShopperId=String(rows[0].shopperId||rows[0].id||'');
+            const linked=(p.visits||[]).filter(v=>String(v.shopperId||'')===sourceShopperId);
+            return {name,sourceShopperId,total:linked.length,realized:linked.filter(v=>facet(v,'realized')||v.executionState==='realized').length};
+          });
+          if(new Set(identityCases.map(x=>x.sourceShopperId)).size!==identityCases.length)throw new Error('SOURCE_FAILURE:EXACT_IDENTITY_REFERENCE_COLLISION');
+          const reference={
+            countries:{GT,HN},
+            finance:{GT:GT.finance,HN:HN.finance},
+            liquidations:{total:GT.realized+HN.realized,GT:GT.realized,HN:HN.realized,paymentsConfirmed:GT.paymentConfirmed+HN.paymentConfirmed,liquidationsConfirmed:GT.liquidationConfirmed+HN.liquidationConfirmed},
+            identityCases
+          };
+          fs.writeFileSync(process.env.PREI4_OUT+'/hr-contrast.json',JSON.stringify({decision:'PASS_PRE_I4_HR_FRESH_CONTRAST',generatedAt:p.generatedAt,sourceRevision:revision,currentPeriodKey:key,currentPeriodId:period.id,projectId:p.projectId,projectName:p.projectName,tabs:period.tabs,GT,HN,reference,runtime:{cacheOrigin:p?._runtime?.cacheOrigin||null,sourceReadAt:p?._runtime?.sourceReadAt||null,refreshFinishedAt:p?._runtime?.refreshFinishedAt||null,shopperProviderWrites:Number(p?._runtime?.shopperReconciliation?.providerWrites||0),visitProviderWrites:Number(p?._runtime?.visitReconciliation?.providerWrites||0)},production:false,hrWrites:0},null,2)+'\n');
+          NODE
+
+      - name: Execute focal Admin Shopper desktop mobile against same HR revision
+        env:
+          CXORBIA_PREI4_ROOT: https://cxorbia-backend-dev.web.app
+          CXORBIA_PREI4_SOURCE_SHA: ab05415eb965404e1a6594df8533b8e0190aa0f7
+        run: |
+          set -Eeuo pipefail
+          node tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs
+          test "$(jq -r '.decision' "$PREI4_OUT/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
+
+      - name: Freeze finance P0 focal PASS
+        run: |
+          set -Eeuo pipefail
+          test "$(jq -r '.decision' "$PREI4_OUT/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
+          test "$(jq -r '.decision' "$PREI4_OUT/hr-contrast.json")" = "PASS_PRE_I4_HR_FRESH_CONTRAST"
+          test "$(jq -r '.decision' "$PREI4_OUT/remote-readback.json")" = "PASS_PRE_I4_FINANCE_P0_HOSTING_BYTE_PARITY"
+          test "$(cat "$PREI4_OUT/hosting-deploy-count.txt")" = "1"
+          cd "$PREI4_SOURCE_DIR"
+          tar --sort=name --mtime='UTC 1970-01-01' --owner=0 --group=0 --numeric-owner -cf "$GITHUB_WORKSPACE/$PREI4_OUT/app-postcheck.tar" app
+          POST="$(sha256sum "$GITHUB_WORKSPACE/$PREI4_OUT/app-postcheck.tar" | awk '{print $1}')"
+          PRE="$(cat "$GITHUB_WORKSPACE/$PREI4_OUT/app-artifact.sha256")"
+          test "$POST" = "$PRE"
+          jq -n -S --arg source "ab05415eb965404e1a6594df8533b8e0190aa0f7" --arg artifact "$PRE" --arg hr "$(jq -r '.sourceRevision' "$GITHUB_WORKSPACE/$PREI4_OUT/hr-contrast.json")" '{decision:"PASS_PRE_I4_FINANCE_P0_SAME_ARTIFACT_DEV",sourceSha:$source,artifactSha256:$artifact,hrRevision:$hr,runtimeBuildsThisRun:0,runtimeDeploysThisRun:0,rulesDeploysThisRun:0,hostingDeploysThisRun:1,browserFocal:true,production:false}' > "$GITHUB_WORKSPACE/$PREI4_OUT/final.json"
+
+      - name: Upload finance P0 focal evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-pre-i4-finance-p0-${{ github.run_id }}
+          path: ${{ env.PREI4_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
+      - name: Enforce finance P0 result
+        run: |
+          set -Eeuo pipefail
+          test "$(jq -r '.decision' "$PREI4_OUT/final.json")" = "PASS_PRE_I4_FINANCE_P0_SAME_ARTIFACT_DEV"
+
   pre-i4-postdeploy-readback:
     name: PRE-I4 postdeploy no-deploy focal verification
     if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[pre-i4-readback-only]') }}

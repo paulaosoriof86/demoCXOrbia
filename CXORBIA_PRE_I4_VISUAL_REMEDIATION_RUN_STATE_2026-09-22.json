@@ -1,19 +1,21 @@
 {
-  "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v9",
-  "generatedAt": "2026-09-23T16:58:00-06:00",
+  "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v10",
+  "generatedAt": "2026-09-23T18:57:00-06:00",
   "iteration": "I3_PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "microblockId": "CXORBIA-PRE-I4-VISUAL-REMEDIATION-MICROBLOCK-20260922",
-  "status": "HOLD_BROWSER_HARNESS_SCOPE_FIX_READY",
+  "status": "HOLD_FINANCE_P0_FIX_READY_FOR_DEV_PROOF",
   "production": "DO_NOT_TOUCH",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "head": "81b4d38a224d6f2fbb84993db311f16f59361a5b",
+  "head": "f5f93a51dfc0ae0b262a97673499d1c7e5973eca",
   "lastFunctionalWrite": {
-    "commit": "50b6a25d79713b0f165cffc4355c7b7ffd1d9e84",
-    "parent": "61cf7120603aeff110e97632bb6c69f5c4809d62",
+    "commit": "ab05415eb965404e1a6594df8533b8e0190aa0f7",
+    "parent": "50b6a25d79713b0f165cffc4355c7b7ffd1d9e84",
     "files": [
-      "app/modules/documentos.js"
+      "app/adapters/tya-live-source-inplace-apply.js",
+      "app/adapters/tya-delegated-coordination-finance-guard-v1.js"
     ],
-    "purpose": "VRM_020_DEMO_STORE_DISAMBIGUATION_SOURCE_FIX",
+    "test": "backend/runtime/hr-live-service/test/cxorbia-pre-i4-finance-source-semantics.test.mjs",
+    "purpose": "VRM_015_016_FINANCE_SOURCE_SEMANTICS_FIX",
     "productionDeploys": 0
   },
   "automaticPushWorkflowObservation": {
@@ -157,22 +159,22 @@
     },
     "VRM-015": {
       "state": "FIXED_NOT_PROVEN",
-      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd + ab05415eb965404e1a6594df8533b8e0190aa0f7",
       "owner": [
         "app/core/finanzas-core.js",
         "app/core/liquidacion.js",
         "app/modules/finanzas.js"
       ],
-      "note": "Dynamic same-revision finance readback now required because new live HR contains incomplete reimbursement amounts on realized rows (GT known Q2710 with 2 incomplete rows; HN known L1778 with 1 incomplete row). No total may be presented as closed unless partial semantics match."
+      "note": "Run313 proved GT reimbursementPartial drift: live HR revision 1d36270d has two realized rows with missing boleto/combo but browser finance collapsed missing source to zero. ab054 preserves source-knownness and partial semantics by period/country; DEV proof pending."
     },
     "VRM-016": {
       "state": "FIXED_NOT_PROVEN",
-      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd + ab05415eb965404e1a6594df8533b8e0190aa0f7",
       "owner": [
         "app/core/finanzas-core.js",
         "app/modules/finanzas.js"
       ],
-      "note": "Unknown income/margin represented as null/source-pending rather than inferred zero; UI proof pending."
+      "note": "Run313 proved delegated finance emitted ingreso/margen/margenPct=0 with missing commission/distribution source. ab054 now fails closed to null/pending and never uses shopper honorarium as income fallback; DEV proof pending."
     },
     "VRM-017": {
       "state": "FIXED_NOT_PROVEN",
@@ -244,7 +246,7 @@
       "note": "Prior no-debug state preserved and human data/source diagnostics are hidden unless technical access; browser no-drift proof pending."
     }
   },
-  "nextExactAction": "Re-run the no-deploy readback with browser-scope helper corrected; prove exact HR IDs/crosswalks, then continue to Finance/Liquidations and remaining Admin/Shopper desktop/mobile gates. Production remains untouched.",
+  "nextExactAction": "Materialize ab054 static app to existing Hosting DEV only; prove exact byte parity; force fresh HR; run same-revision Admin/Shopper desktop/mobile including Finance and Liquidations; freeze result. Runtime and Rules remain unchanged because functional diff does not touch their owners.",
   "functionalLineage": [
     {
       "commit": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
@@ -288,9 +290,9 @@
     ]
   },
   "functionalSource": {
-    "sha": "50b6a25d79713b0f165cffc4355c7b7ffd1d9e84",
-    "tree": "495266b89b932976569f57070b27b7e4f06d6cdd",
-    "state": "CUMULATIVE_SOURCE_PACKAGE_COMPLETE_AWAITING_FOCAL_PROOF"
+    "sha": "ab05415eb965404e1a6594df8533b8e0190aa0f7",
+    "tree": "d12b358749530ba674990702931dc00a5d7a2097",
+    "state": "CUMULATIVE_SOURCE_PACKAGE_FINANCE_P0_FIX_AWAITING_FOCAL_PROOF"
   },
   "durabilityAndResources": {
     "state": "SOURCE_COMPLETE_AWAITING_FOCAL_PROOF",
@@ -308,15 +310,14 @@
     ]
   },
   "focalProof": {
-    "state": "EXACT_ID_BROWSER_RETRY_READY",
-    "sourceSha": "50b6a25d79713b0f165cffc4355c7b7ffd1d9e84",
-    "sourceTree": "495266b89b932976569f57070b27b7e4f06d6cdd",
-    "lastFreshHrRevision": "39c317037bff92b1a0c5e5971f138634d3e2900f556c0876cb1f690b312f5a8a",
-    "previousReadbackRunId": 35930704532,
+    "state": "FINANCE_P0_HOSTING_ONLY_READY",
+    "sourceSha": "ab05415eb965404e1a6594df8533b8e0190aa0f7",
+    "sourceTree": "d12b358749530ba674990702931dc00a5d7a2097",
+    "previousDeployedRunId": 35929165160,
     "nextRunDeploys": {
       "runtime": 0,
       "rules": 0,
-      "hosting": 0,
+      "hosting": 1,
       "production": 0
     }
   },
@@ -334,22 +335,32 @@
     "resolution": "Use existing proven direct Rules API deploy tool; do not rebuild/redeploy runtime."
   },
   "lastControlFailure": {
-    "classification": "RELEASE_COMPOSITION_FAILURE",
-    "runId": 35930704532,
-    "cause": "Exact-ID browser diagnostic referenced Node helper arr inside page.evaluate and raised ReferenceError before any product adjudication.",
-    "productDefectProven": false,
-    "hrRevision": "39c317037bff92b1a0c5e5971f138634d3e2900f556c0876cb1f690b312f5a8a",
-    "deploymentsThisRun": {
-      "runtime": 0,
-      "rules": 0,
-      "hosting": 0,
-      "production": 0
-    }
+    "classification": "MAPPING_FAILURE",
+    "runId": 35934463473,
+    "hrRevision": "1d36270df07ba79d8d596ed80bf85ee307daf4fe37095115f9b7b9b38af20c83",
+    "productDefectProven": true,
+    "affectedFindings": [
+      "VRM-015",
+      "VRM-016"
+    ],
+    "cause": "HR adapter collapsed missing boleto/combo source values to numeric zero and delegated finance guard converted unknown commission/distribution into zero income/margin.",
+    "observed": {
+      "GT": {
+        "realized": 20,
+        "knownReimbursements": 2710,
+        "reimbursementPartialObserved": false,
+        "reimbursementPartialExpected": true,
+        "incomeObserved": 0,
+        "marginObserved": 0,
+        "marginPctObserved": 0
+      }
+    },
+    "resolutionCommit": "ab05415eb965404e1a6594df8533b8e0190aa0f7"
   },
   "liveHrProof": {
     "runId": 35930173836,
     "decision": "PASS_PRE_I4_HR_FRESH_CONTRAST",
-    "sourceRevision": "46402dc5cb8b01403fd100e4d859d687deafa8562500d0f97ff991199babd7be",
+    "sourceRevision": "1d36270df07ba79d8d596ed80bf85ee307daf4fe37095115f9b7b9b38af20c83",
     "generatedAt": "2026-09-23T22:47:29.910Z",
     "GT": {
       "total": 34,
@@ -384,6 +395,7 @@
       "visitWrites": 704,
       "hrWrites": 0
     },
-    "conclusion": "SECOND_FORCED_LIVE_REVISION_PROVEN_WITHOUT_REIMPORT"
+    "conclusion": "THIRD_FORCED_LIVE_REVISION_PROVEN_WITHOUT_REIMPORT_BEFORE_FINANCE_P0_FIX",
+    "latestObservedRunId": 35934463473
   }
 }
