@@ -105,7 +105,7 @@ async function signInMember(member,kind,route,options={}){
       throw new Error((/Missing or insufficient permissions|permission-denied/i.test(msg)?'AUTH_FAILURE':'FUNCTIONAL_DEFECT')+':'+kind+'_ROUTE_'+r+':'+msg);
     }
     await page.waitForTimeout(550);
-    const info=await page.evaluate(({kind,r,identityCases})=>{
+    const info=await page.evaluate(({kind,r,identityCases,unresolvedIdentityCases})=>{
       const d=window.CX?.data||{},c=window.CX?.backendAuth?.context?.()||{},body=String(document.body?.innerText||'');
       const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
       const list=v=>Array.isArray(v)?v:[];
@@ -115,9 +115,14 @@ async function signInMember(member,kind,route,options={}){
       const outOfRangeCount=(r==='dashboard'||r==='visitas')&&typeof d.visitFacets==='function'?(typeof d.visitas==='function'?d.visitas():[]).filter(v=>d.visitFacets(v)?.outOfRange===true).length:null;
       const technicalPrimaryCount=r==='shoppers'?population.filter(s=>{const name=String(s?.nombre||s?.name||'').trim(),id=String(s?.id||s?.shopperId||'').trim();return /^shopper_(?:gt|hn|sv|ni)_[a-z0-9]+$/i.test(name)||/^shp[-_][a-z0-9]+$/i.test(name)||(id&&name===id);}).length:null;
       const stats=s=>s&&typeof d.shopperStats==='function'?d.shopperStats(s.id||s.shopperId):null;
+      const rowForSource=id=>(d.shoppers||[]).find(s=>String(s.id||s.shopperId||'')===String(id||'')||list(s.legacyLiveShopperIds).map(String).includes(String(id||'')))||null;
       const identityRows=list(identityCases).map(ref=>{
-        const row=(d.shoppers||[]).find(s=>String(s.id||s.shopperId||'')===String(ref.sourceShopperId||'')||list(s.legacyLiveShopperIds).map(String).includes(String(ref.sourceShopperId||'')))||null;
+        const row=rowForSource(ref.sourceShopperId);
         return {sourceShopperId:String(ref.sourceShopperId||''),expectedName:String(ref.name||''),expectedTotal:Number(ref.total||0),expectedRealized:Number(ref.realized||0),row:row?{id:String(row.id||row.shopperId||''),name:String(row.nombre||row.name||''),legacyLiveShopperIds:list(row.legacyLiveShopperIds).map(String),stats:stats(row)}:null};
+      });
+      const unresolvedIdentityRows=list(unresolvedIdentityCases).map(ref=>{
+        const row=rowForSource(ref.sourceShopperId);
+        return {sourceShopperId:String(ref.sourceShopperId||''),expectedReviewReason:String(ref.expectedReviewReason||''),expectedVisibleName:String(ref.expectedVisibleName||''),row:row?{id:String(row.id||row.shopperId||''),name:String(row.nombre||row.name||''),legacyLiveShopperIds:list(row.legacyLiveShopperIds).map(String),identityReviewRequired:row.identityReviewRequired===true,identityReviewReason:String(row.identityReviewReason||'')}:null};
       });
       const finance=r==='financiero'&&window.CX?.fin?.porPais?window.CX.fin.porPais(d):null;
       const liqs=r==='liquidaciones'&&window.CX?.liq?.forProject?window.CX.liq.forProject(d):null;
@@ -200,6 +205,7 @@ async function signInMember(member,kind,route,options={}){
         outOfRangeCount,
         qaReservationVisible,
         identityCases:r==='shoppers'?identityRows:null,
+        unresolvedIdentityCases:r==='shoppers'?unresolvedIdentityRows:null,
         finance:finance?{GT:finance.GT||null,HN:finance.HN||null}:null,
         liquidations:Array.isArray(liqs)?{count:liqs.length,GT:liqs.filter(x=>x.pais==='GT').length,HN:liqs.filter(x=>x.pais==='HN').length,paymentsConfirmed:liqs.filter(x=>x.paymentConfirmed===true).length,liquidationsConfirmed:liqs.filter(x=>x.liquidationConfirmed===true).length}:null,
         shopper:kind==='shopper'?{stats:typeof d.shopperStats==='function'?d.shopperStats(sid):null,ownCount:own.length,duplicateVisits:own.length-new Set(own.map(v=>String(v.id||v.visitId))).size,postCount:postRows.length,paseoCayala:postRows.some(x=>/paseo cayal/i.test(norm(x.sucursal))),postRows,visibleAppStates:shopperVisibleAppStates,misvisitasDiagnostics,profileName:sessionProfileName,profileVisible,benefitExpectedCount:ownBenefits.length,benefitBranchVisibleCount}:null,
@@ -209,7 +215,7 @@ async function signInMember(member,kind,route,options={}){
         mobileIdentity:(()=>{const el=document.getElementById('tbRoleIdentity');return el?{text:String(el.innerText||''),visible:getComputedStyle(el).display!=='none'}:null;})(),
         scrollWidth:document.documentElement.scrollWidth,innerWidth:window.innerWidth
       };
-    },{kind,r,identityCases:reference?.identityCases||[]});
+    },{kind,r,identityCases:reference?.identityCases||[],unresolvedIdentityCases:reference?.unresolvedIdentityCases||[]});
     if(pageErrors.length||info.debug||info.lab||info.blocked||info.technicalVisible||info.projectId!==projectId||info.periodId!==periodId||info.sourceRevision!==hrRevision||info.route!==r)throw new Error('FUNCTIONAL_DEFECT:'+kind+'_ROUTE_'+r+':'+JSON.stringify({pageErrors,info}));
     if(options.isMobile===true&&(info.scrollWidth>info.innerWidth+2||!info.mobileIdentity?.visible))throw new Error('VISUAL_DEFECT:'+kind+'_MOBILE_'+r+':'+JSON.stringify(info));
     if(r==='dashboard'){
@@ -223,16 +229,21 @@ async function signInMember(member,kind,route,options={}){
       if(Number(info.outOfRangeCount)!==expectedOutOfRange)throw new Error('MAPPING_FAILURE:DASHBOARD_OUT_OF_RANGE:'+JSON.stringify({observed:info.outOfRangeCount,expected:expectedOutOfRange,hrRevision}));
     }
     if(r==='shoppers'){
-      const cases=arr(info.identityCases);
+      const cases=arr(info.identityCases),unresolved=arr(info.unresolvedIdentityCases);
       if(cases.length!==(reference?.identityCases||[]).length||cases.some(x=>!x.row))throw new Error('MAPPING_FAILURE:EXACT_HR_IDENTITY_MISSING:'+JSON.stringify(cases));
+      if(unresolved.length!==(reference?.unresolvedIdentityCases||[]).length||unresolved.some(x=>!x.row))throw new Error('MAPPING_FAILURE:UNRESOLVED_HR_IDENTITY_MISSING:'+JSON.stringify(unresolved));
       if(Number.isFinite(Number(reference?.shopperPopulation))&&Number(info.shopperPopulation)!==Number(reference.shopperPopulation))throw new Error('MAPPING_FAILURE:SHOPPER_POPULATION:'+JSON.stringify({observed:info.shopperPopulation,expected:reference.shopperPopulation}));
       if(Number(info.technicalPrimaryCount)!==0)throw new Error('MAPPING_FAILURE:TECHNICAL_SHOPPER_PRIMARY_NAMES:'+JSON.stringify({count:info.technicalPrimaryCount}));
-      if(new Set(cases.map(x=>x.row.id)).size!==cases.length)throw new Error('MAPPING_FAILURE:EXACT_HR_IDENTITY_COLLISION:'+JSON.stringify(cases));
+      if(new Set([...cases,...unresolved].map(x=>x.row.id)).size!==cases.length+unresolved.length)throw new Error('MAPPING_FAILURE:EXACT_HR_IDENTITY_COLLISION:'+JSON.stringify({cases,unresolved}));
       for(const x of cases){
         if(!x.row.legacyLiveShopperIds.includes(x.sourceShopperId)&&x.row.id!==x.sourceShopperId)throw new Error('MAPPING_FAILURE:EXACT_HR_CROSSWALK_MISSING:'+JSON.stringify(x));
         const nn=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
         if(nn(x.row.name)!==nn(x.expectedName))throw new Error('MAPPING_FAILURE:EXACT_HR_HUMAN_NAME_'+x.sourceShopperId+':'+JSON.stringify(x));
         if(Number(x.row.stats?.total)!==x.expectedTotal||Number(x.row.stats?.realizadas)!==x.expectedRealized)throw new Error('MAPPING_FAILURE:EXACT_HR_HISTORY_'+x.sourceShopperId+':'+JSON.stringify(x));
+      }
+      for(const x of unresolved){
+        if(!x.row.legacyLiveShopperIds.includes(x.sourceShopperId)&&x.row.id!==x.sourceShopperId)throw new Error('MAPPING_FAILURE:UNRESOLVED_HR_CROSSWALK_MISSING:'+JSON.stringify(x));
+        if(x.row.identityReviewRequired!==true||x.row.identityReviewReason!==x.expectedReviewReason||x.row.name!==x.expectedVisibleName)throw new Error('MAPPING_FAILURE:UNRESOLVED_HR_IDENTITY_NOT_FAIL_CLOSED_'+x.sourceShopperId+':'+JSON.stringify(x));
       }
     }
     if(r==='visitas'){
