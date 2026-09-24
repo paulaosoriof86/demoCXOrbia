@@ -90,6 +90,42 @@ jobs:
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
 
+  c3-preterminal-module-truth:
+    name: C3 preterminal Module Truth — read only
+    needs: canonical-candidate-authority
+    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[c3-preterminal-module-truth]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      C3_OUT: .tmp/c3-preterminal-module-truth
+      C3_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      C3_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+    steps:
+      - name: Checkout canonical Recovery control head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Prove path-bound independent Module Truth
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$C3_OUT"
+          LEDGER="$(jq -r '.findingsLedgerPath' "$CANDIDATE_DESCRIPTOR")"
+          TEMPLATE="RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json"           LEDGER="$LEDGER"           SOURCE="$C3_SOURCE"           TREE="$C3_TREE"           LAST_SERVED="d8aad982ae4b47e66bf949d906b6c7ede8866f84"           OUT_FILE="$C3_OUT/module-truth-preterminal.json"           node tools/qa/cxorbia-i3-c3-preterminal-module-truth.mjs | tee "$C3_OUT/console.log"
+          test "$(jq -r '.preTerminalComposition.decision' "$C3_OUT/module-truth-preterminal.json")" = "PASS_C3_PRETERMINAL_COMPOSITION"
+          test "$(jq '.modules|length' "$C3_OUT/module-truth-preterminal.json")" = "20"
+          jq -n -S             --arg source "$C3_SOURCE"             --arg tree "$C3_TREE"             --argjson matches "$(jq '.preTerminalComposition.matchModules|length' "$C3_OUT/module-truth-preterminal.json")"             --argjson composed "$(jq '.preTerminalComposition.composedNotDeployedModules|length' "$C3_OUT/module-truth-preterminal.json")"             --argjson pending "$(jq '.preTerminalComposition.pendingFileCount' "$C3_OUT/module-truth-preterminal.json")"             '{decision:"PASS_C3_PRETERMINAL_MODULE_TRUTH",sourceSha:$source,sourceTree:$tree,moduleCount:20,matchModules:$matches,composedNotDeployedModules:$composed,pendingFiles:$pending,selfApproval:false,production:false,writes:0,deploys:0}'             > "$C3_OUT/result.json"
+
+      - name: Upload C3 preterminal evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-c3-preterminal-module-truth-${{ github.run_id }}
+          path: ${{ env.C3_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
   certify:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'READY_FOR_TERMINAL_CERTIFICATION' }}
@@ -130,100 +166,11 @@ jobs:
         run: |
           set -Eeuo pipefail
           mkdir -p "$OUT"
-          TEMPLATE="RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json"
           LEDGER="$(jq -r '.findingsLedgerPath' "$CANDIDATE_DESCRIPTOR")"
-          test -f "$TEMPLATE"
-          test -f "$LEDGER"
-          TEMPLATE="$TEMPLATE" LEDGER="$LEDGER" SOURCE="$I3_CERTIFICATION_SOURCE_SHA" TREE="$I3_CERTIFICATION_SOURCE_TREE" OUT_FILE="$OUT/module-truth-preterminal.json" node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          import {execFileSync} from 'node:child_process';
-          const m=JSON.parse(fs.readFileSync(process.env.TEMPLATE,'utf8'));
-          const ledger=JSON.parse(fs.readFileSync(process.env.LEDGER,'utf8'));
-          const source=process.env.SOURCE,tree=process.env.TREE;
-          const git=(...args)=>execFileSync('git',args,{encoding:'utf8'}).trim();
-          if((m.modules||[]).length!==20)throw new Error('RELEASE_COMPOSITION_FAILURE:MODULE_COUNT_NOT_20');
-          if(ledger?.canonicalFunctionalCandidate?.sourceSha!==source)throw new Error('RELEASE_COMPOSITION_FAILURE:LEDGER_SOURCE_MISMATCH');
-          const findings=ledger.findings||{};
-          const provenRefs=new Set();
-          const walk=(v,k='')=>{
-            if(v==null)return;
-            if(Array.isArray(v)){for(const x of v)walk(x,k);return;}
-            if(typeof v==='object'){for(const [kk,x] of Object.entries(v))walk(x,kk);return;}
-            if(typeof v==='string'&&/^(?:[a-f0-9]{40})$/.test(v)&&/(?:sourceSha|functionalSource|sourceCommit|source)$/i.test(k))provenRefs.add(v);
-          };
-          for(const f of Object.values(findings))if(/PROVEN/.test(String(f?.state||'')))walk(f);
-          const modules=new Map((m.modules||[]).map(x=>[x.domain,x]));
-          const ownerFindingIds=path=>Object.entries(findings).filter(([,v])=>(v?.owners||[]).includes(path)).map(([id])=>id);
-          const safeBlob=(ref,path)=>{try{return git('rev-parse',ref+':'+path)}catch{return null}};
-          const unauthorized=[];
-          const sourceFiles=(m.sourceFiles||[]).map(orig=>{
-            const f={...orig},actual=safeBlob(source,f.path);
-            if(!actual){unauthorized.push({path:f.path,reason:'MISSING_AT_CANDIDATE'});return f;}
-            const mod=modules.get(f.domain)||{};
-            const refs=[f.approvedSourceCommit,f.latestApprovedSource,f.f9ApprovedSource,f.terminalCertifiedSource,mod.sourceCommit,...(mod.preI4SuccessorCommits||[]),...provenRefs].filter(Boolean);
-            let matched=null;
-            for(const ref of [...new Set(refs)]){if(safeBlob(ref,f.path)===actual){matched=ref;break;}}
-            const findingIds=ownerFindingIds(f.path);
-            f.preTerminalHistoricalApprovedSource=f.approvedSourceCommit||null;
-            f.preTerminalHistoricalApprovedBlob=f.approvedBlob||null;
-            f.currentBlob=actual;
-            f.currentCumulativeSource=source;
-            if(matched){
-              f.approvedSourceCommit=matched;f.approvedBlob=actual;f.provenanceIndependent=true;
-              f.approvalStatus='INDEPENDENT_PROVEN';
-              f.classification='MATCH';
-            }else if(findingIds.length){
-              f.approvedSourceCommit=null;f.approvedBlob=null;f.provenanceIndependent=false;
-              f.approvalStatus='PENDING_SAME_RUN_TERMINAL_LIVE_PROOF';
-              f.pendingFindingIds=findingIds;
-              f.classification='COMPOSED_NOT_DEPLOYED';
-            }else{
-              unauthorized.push({path:f.path,domain:f.domain,actual,reason:'CURRENT_BLOB_HAS_NO_APPROVED_AUTHORITY_OR_FINDING_OWNER'});
-            }
-            return f;
-          });
-          if(unauthorized.length)throw new Error('RELEASE_COMPOSITION_FAILURE:UNAUTHORIZED_MODULE_DRIFT:'+JSON.stringify(unauthorized));
-          const byDomain=new Map();
-          for(const f of sourceFiles.filter(x=>x.phaseAAuthority===true)){
-            if(!byDomain.has(f.domain))byDomain.set(f.domain,[]);
-            byDomain.get(f.domain).push(f);
-          }
-          const modulesOut=(m.modules||[]).map(mod=>{
-            const files=byDomain.get(mod.domain)||[];
-            const pending=files.some(x=>x.classification==='COMPOSED_NOT_DEPLOYED');
-            return {...mod,classification:pending?'COMPOSED_NOT_DEPLOYED':'MATCH',currentCandidateSource:source,pendingTerminalFiles:files.filter(x=>x.classification==='COMPOSED_NOT_DEPLOYED').map(x=>x.path)};
-          });
-          if(modulesOut.some(x=>!['MATCH','COMPOSED_NOT_DEPLOYED'].includes(x.classification)))throw new Error('RELEASE_COMPOSITION_FAILURE:INVALID_PRETERMINAL_MODULE_STATE');
-          const html=git('show',source+':app/index-backend-dev.html');
-          const scripts=[...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/gi)].map(x=>x[1].replace(/^\.\//,''));
-          const dup=scripts.filter((x,i,a)=>a.indexOf(x)!==i);
-          if(dup.length)throw new Error('RELEASE_COMPOSITION_FAILURE:DUPLICATE_SCRIPT:'+JSON.stringify([...new Set(dup)]));
-          for(const [before,after] of m.loadOrder?.checks||[]){
-            const a=scripts.indexOf(before),b=scripts.indexOf(after);
-            if(a<0||b<0||a>=b)throw new Error('RELEASE_COMPOSITION_FAILURE:LOAD_ORDER:'+before+'->'+after);
-          }
-          const changed=sourceFiles.filter(x=>x.classification==='COMPOSED_NOT_DEPLOYED');
-          const out={...m,
-            schemaVersion:'cxorbia.recovery.module-truth-matrix.v6-preterminal',
-            generatedAt:new Date().toISOString(),
-            productSource:{sha:source,treeSha:tree},
-            sourceFiles,modules:modulesOut,
-            phaseAComplete:false,allModulesMatch:false,
-            preTerminalComposition:{
-              decision:'PASS_C3_PRETERMINAL_COMPOSITION',
-              pendingFiles:changed.map(x=>({path:x.path,domain:x.domain,findingIds:x.pendingFindingIds||[]})),
-              pendingFileCount:changed.length,
-              moduleCount:modulesOut.length,
-              invalidStates:0,
-              selfApproval:false,
-              production:false
-            }
-          };
-          fs.writeFileSync(process.env.OUT_FILE,JSON.stringify(out,null,2)+'\n');
-          NODE
+          TEMPLATE="RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json"           LEDGER="$LEDGER"           SOURCE="$I3_CERTIFICATION_SOURCE_SHA"           TREE="$I3_CERTIFICATION_SOURCE_TREE"           LAST_SERVED="d8aad982ae4b47e66bf949d906b6c7ede8866f84"           OUT_FILE="$OUT/module-truth-preterminal.json"           node tools/qa/cxorbia-i3-c3-preterminal-module-truth.mjs | tee "$OUT/module-truth-preterminal-console.log"
           test "$(jq -r '.preTerminalComposition.decision' "$OUT/module-truth-preterminal.json")" = "PASS_C3_PRETERMINAL_COMPOSITION"
           test "$(jq '.modules|length' "$OUT/module-truth-preterminal.json")" = "20"
-          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg tree "$I3_CERTIFICATION_SOURCE_TREE"             --argjson pending "$(jq '.preTerminalComposition.pendingFileCount' "$OUT/module-truth-preterminal.json")"             '{decision:"PASS_C3_PRETERMINAL_MODULE_COMPOSITION",sourceSha:$source,sourceTree:$tree,moduleCount:20,pendingTerminalFiles:$pending,allowedStates:["MATCH","COMPOSED_NOT_DEPLOYED"],production:false}'             > "$OUT/module-integrity-gate.json"
+          jq -n -S             --arg source "$I3_CERTIFICATION_SOURCE_SHA"             --arg tree "$I3_CERTIFICATION_SOURCE_TREE"             --argjson pending "$(jq '.preTerminalComposition.pendingFileCount' "$OUT/module-truth-preterminal.json")"             '{decision:"PASS_C3_PRETERMINAL_MODULE_COMPOSITION",sourceSha:$source,sourceTree:$tree,moduleCount:20,pendingTerminalFiles:$pending,allowedStates:["MATCH","COMPOSED_NOT_DEPLOYED"],production:false}'             > "$OUT/module-integrity-gate.json"
 
       - name: Prove atomic P0 source contracts before build
         run: |
