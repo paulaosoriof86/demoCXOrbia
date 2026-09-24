@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_C3_TERMINAL_RESUME_ARTIFACT_WIRING",
+  "status": "READY_FOR_TERMINAL_CERTIFICATION",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "C3 TERMINAL RESUME PACKAGING — EXISTING RUN375 MATERIALIZATION",
+  "activeBlocker": "C3 TERMINAL NO-REBUILD CERTIFICATION RUN PENDING",
   "nextFindingId": "VRM-044",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "WIRE_SAME_CERTIFY_JOB_TO_PACKAGE_EXISTING_DEV_WITHOUT_REBUILD_THEN_ENABLE_ONCE",
+  "exactNextAction": "RUN_ONE_NO_REBUILD_CERTIFY_THEN_LIVE_FIXTURES_THEN_GATE21",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
