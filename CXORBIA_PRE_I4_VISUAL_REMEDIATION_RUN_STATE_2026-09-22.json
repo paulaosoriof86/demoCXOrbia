@@ -1,15 +1,15 @@
 {
   "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v11",
-  "generatedAt": "2026-09-23T20:32:00-06:00",
+  "generatedAt": "2026-09-23T20:45:00-06:00",
   "iteration": "I3_PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "microblockId": "CXORBIA-PRE-I4-VISUAL-REMEDIATION-MICROBLOCK-20260922",
-  "status": "HOLD_VRM_027_FIXED_SOURCE_READY_FOR_DEV_PROOF",
+  "status": "HOLD_VRM_027_RUN320_RENDER_DIAGNOSTIC_READY",
   "production": "DO_NOT_TOUCH",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "head": "275a9893532e9fa11efcbafccd34bb93919d7d64",
+  "head": "a7389b2943eb50133adf1fa2249759110e7f0cd0",
   "lastFunctionalWrite": {
     "commit": "275a9893532e9fa11efcbafccd34bb93919d7d64",
-    "parent": "275a9893532e9fa11efcbafccd34bb93919d7d64",
+    "parent": "73fb9554f9c27b51825cba96f132fcdba11dd06c",
     "files": [
       "app/modules/misvisitas.js",
       "app/modules/postulaciones.js"
@@ -264,15 +264,15 @@
     },
     "VRM-027": {
       "state": "FIXED_NOT_PROVEN",
-      "evidenceRef": "Run319 35946850723 + functional successor 275a9893532e9fa11efcbafccd34bb93919d7d64",
+      "evidenceRef": "Run319 35946850723 + source 275a9893 + Run320 35947885607",
       "owner": [
         "app/modules/misvisitas.js",
         "app/modules/postulaciones.js"
       ],
-      "note": "Run319 proved the focal application is durable estado/status=aprobada, while the composed live HR visit is assigned to a different shopper and the canonical read model already marks hr_platform_assignment_conflict. Product defect was the human projection: Mis Visitas hid all non-pending applications and Admin rendered every approved application as confirmed. The minimal generic fix surfaces conflict_review_required / pending HR / confirmed states without changing HR, Firestore, application status or visit assignment."
+      "note": "Run320 proved source/tests, Hosting byte parity, fresh HR and Admin conflict projection, but shopper Mis Visitas had derived conflict_review_required in data while rendered data-app-state markers were empty. Before any second product fix, a zero-deploy diagnostic compares backend context shopperId, session shopperId, session profile, matching post counts and the active CX.modules.misvisitas function to distinguish identity drift from load-order/module override."
     }
   },
-  "nextExactAction": "Materialize exact 275a9893 static app to existing Hosting DEV only; keep runtime/rules unchanged; force fresh HR; run cumulative Admin/Shopper desktop/mobile focal with derived application sync-state visibility plus Finance/Liquidations/Resources/Certifications; freeze same-artifact proof.",
+  "nextExactAction": "Run the existing [pre-i4-readback-only] lane against Run320 with zero deploys and capture sessionShopperId, backend context shopperId, session profile identity, matched application counts and active misvisitas module markers. Fix product only after the mismatch owner is proven.",
   "functionalLineage": [
     {
       "commit": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
@@ -340,14 +340,16 @@
     ]
   },
   "focalProof": {
-    "state": "VRM_027_HOSTING_ONLY_READY",
+    "state": "RUN320_MATERIALIZED_ZERO_DEPLOY_DIAGNOSTIC_READY",
     "sourceSha": "275a9893532e9fa11efcbafccd34bb93919d7d64",
     "sourceTree": "f1691f1da1e4cc44081f034a951ad6c6409521be",
-    "previousDeployedRunId": 35941768293,
+    "deployedRunId": 35947885607,
+    "artifactId": 10787507946,
+    "artifactZipDigest": "sha256:c52bd1be50017e68da6330916499658cd72de40f3de6c86f6840adeaab98bfaa",
     "nextRunDeploys": {
       "runtime": 0,
       "rules": 0,
-      "hosting": 1
+      "hosting": 0
     },
     "production": false
   },
@@ -366,23 +368,19 @@
   },
   "lastControlFailure": {
     "classification": "MAPPING_FAILURE",
-    "runId": 35946850723,
-    "productDefectProven": true,
+    "runId": 35947885607,
+    "productDefectProven": false,
     "affectedFindings": [
-      "VRM-013",
       "VRM-027"
     ],
-    "cause": "Canonical assignment conflict existed in the read model but was not projected to shopper/admin human UI. Approved application remained durable and HR remained authoritative; no data cleanup is required.",
+    "cause": "Run320 data layer derives the shopper application as conflict_review_required, but Mis Visitas rendered no data-app-state marker. Root cause between session identity and active module/render composition is not yet proven.",
     "observed": {
-      "applicationState": "aprobada",
-      "applicationSource": "platform",
-      "applicationVersion": 2,
-      "visitAssignmentAuthority": "HR",
-      "canonicalConflict": "hr_platform_assignment_conflict"
+      "shopperPostulationsKpi": 1,
+      "postCount": 1,
+      "derivedSyncState": "conflict_review_required",
+      "visibleAppStates": []
     },
-    "resolutionCommit": "275a9893532e9fa11efcbafccd34bb93919d7d64",
-    "firestoreWrites": 0,
-    "hrWrites": 0,
+    "resolutionOwner": "READBACK_ONLY_FIRST",
     "productionDeploys": 0
   },
   "liveHrProof": {

@@ -26,7 +26,7 @@ if(!admin)throw new Error('AUTH_FAILURE:FOCAL_ADMIN_PRINCIPAL_MISSING');
 if(!shopper)throw new Error('AUTH_FAILURE:FOCAL_PAULA_SHOPPER_PRINCIPAL_MISSING');
 
 const browser=await chromium.launch({headless:true});
-const evidence={schemaVersion:'cxorbia.pre-i4.focal-human-browser.v5',decision:'HOLD',sourceSha,hrRevision,periodId,preAuth:null,admin:null,shopper:null,mobile:null,adminMobile:null,shopperMobile:null,production:false,authWrites:0,hrWrites:0,providerWrites:0};
+const evidence={schemaVersion:'cxorbia.pre-i4.focal-human-browser.v6',decision:'HOLD',sourceSha,hrRevision,periodId,preAuth:null,admin:null,shopper:null,mobile:null,adminMobile:null,shopperMobile:null,production:false,authWrites:0,hrWrites:0,providerWrites:0};
 
 async function assertClean(page,label){
   await page.waitForTimeout(1200);
@@ -142,8 +142,25 @@ async function signInMember(member,kind,route,options={}){
       });
       const postRows=posts.map(rowOf);
       const periodPostRows=periodPosts.map(rowOf);
+      const sessionShopperId=String(window.CX?.session?.user?.shopperId||'');
+      const sessionPosts=kind==='shopper'&&sessionShopperId?periodPosts.filter(x=>String(x.shopperId||'')===sessionShopperId):[];
       const shopperVisibleAppStates=r==='misvisitas'?[...document.querySelectorAll('[data-app-state]')].map(el=>String(el.getAttribute('data-app-state')||'')):[];
       const adminVisiblePostSyncStates=r==='postulaciones'?[...document.querySelectorAll('[data-post-sync]')].filter(el=>getComputedStyle(el).display!=='none').map(el=>String(el.getAttribute('data-post-sync')||'')) : [];
+      const activeMisvisitasSource=r==='misvisitas'?String(window.CX?.modules?.misvisitas||''):'';
+      const misvisitasDiagnostics=r==='misvisitas'?{
+        contextShopperId:sid,sessionShopperId,
+        sessionRole:String(window.CX?.session?.role||''),contextRole:String(c.role||''),
+        profileShopperId:String(d.__sessionShopperProfile?.id||d.__sessionShopperProfile?.shopperId||''),
+        periodPosts:periodPosts.length,contextMatchedPosts:posts.length,sessionMatchedPosts:sessionPosts.length,
+        identityBlocked:body.includes('Identidad de evaluador no verificable'),
+        hasApplicationSection:body.includes('Estado de tus postulaciones'),
+        hasReviewCopy:body.includes('Aprobación en revisión'),
+        moduleReady:window.CX_MISVISITAS_CANONICAL_V2||null,
+        activeModuleHasAppState:activeMisvisitasSource.includes('data-app-state'),
+        activeModuleHasCurrentApps:activeMisvisitasSource.includes('currentApps'),
+        activeModuleLength:activeMisvisitasSource.length,
+        viewChildCount:Number(document.getElementById('view')?.children?.length||0)
+      }:null;
       const resources=window.CX?.backendResources?.list?.({projectId:d.currentProjectId,periodId:d.currentPeriodId,resourceType:'project_resource'})||[];
       const resourceRows=resources.map(x=>({
         id:String(x?.id||''),name:String(x?.n||x?.name||''),meta:String(x?.meta||''),resourceType:String(x?.resourceType||''),
@@ -164,7 +181,7 @@ async function signInMember(member,kind,route,options={}){
         identityCases:r==='shoppers'?identityRows:null,
         finance:finance?{GT:finance.GT||null,HN:finance.HN||null}:null,
         liquidations:Array.isArray(liqs)?{count:liqs.length,GT:liqs.filter(x=>x.pais==='GT').length,HN:liqs.filter(x=>x.pais==='HN').length,paymentsConfirmed:liqs.filter(x=>x.paymentConfirmed===true).length,liquidationsConfirmed:liqs.filter(x=>x.liquidationConfirmed===true).length}:null,
-        shopper:kind==='shopper'?{stats:typeof d.shopperStats==='function'?d.shopperStats(sid):null,ownCount:own.length,duplicateVisits:own.length-new Set(own.map(v=>String(v.id||v.visitId))).size,postCount:postRows.length,paseoCayala:postRows.some(x=>/paseo cayal/i.test(norm(x.sucursal))),postRows,visibleAppStates:shopperVisibleAppStates}:null,
+        shopper:kind==='shopper'?{stats:typeof d.shopperStats==='function'?d.shopperStats(sid):null,ownCount:own.length,duplicateVisits:own.length-new Set(own.map(v=>String(v.id||v.visitId))).size,postCount:postRows.length,paseoCayala:postRows.some(x=>/paseo cayal/i.test(norm(x.sucursal))),postRows,visibleAppStates:shopperVisibleAppStates,misvisitasDiagnostics}:null,
         postulationSync:r==='postulaciones'?{expectedStates:periodPostRows.map(x=>x.syncState).sort(),visibleStates:adminVisiblePostSyncStates.slice().sort(),expectedConflicts:periodPostRows.filter(x=>x.syncState==='conflict_review_required').length,visibleConflicts:adminVisiblePostSyncStates.filter(x=>x==='conflict_review_required').length}:null,
         resources:r==='documentos'?{count:resourceRows.length,names:resourceRows.map(x=>x.name),rows:resourceRows,staticResourceSeedIds,status:window.CX_BACKEND_RESOURCES_STATUS||null,storage:window.CX?.backendResources?.storageStatus?.()||null}:null,
         certification:r==='cert'?{sourceStatus:String(certEvidence.sourceStatus||''),evidenceCandidateCount:Number(certEvidence.evidenceCandidateCount||0),carryoverConfirmed:Number(certEvidence.carryoverConfirmed||0),eligibilityGranted:Number(certEvidence.eligibilityGranted||0),bank:window.CX?.certStore?.bank?.(d.currentPeriodId)||null}:null,
