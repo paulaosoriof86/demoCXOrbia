@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "cxorbia.recovery.module-truth-matrix.v5",
-  "observedAt": "2026-09-20T09:26:00Z",
+  "schemaVersion": "cxorbia.recovery.module-truth-matrix.v6",
+  "observedAt": "2026-09-24T03:56:08Z",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
@@ -103,11 +103,11 @@
     }
   },
   "productSource": {
-    "sha": "77bf74f807d254637f0b2cde4b1d1668017a0c8a",
-    "treeSha": "6bdd13dbc1ae5d2e0e9d2f3dd592aa222ee36679",
-    "message": "fix(i3): keep protected authority as sole human HR writer"
+    "sha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+    "treeSha": "755e448b0c19701a1598ed0727edeae64ef766b0",
+    "message": "fix(pre-i4): stop bridge overriding Mis Visitas [vrm-027]"
   },
-  "controlHeadAtConstruction": "751d01397bcd85903456e5cb78e3e5ce41161b17",
+  "controlHeadAtConstruction": "9de392b08863069e5ac8a3d68ffd17ad40bcf2d4",
   "phaseAComplete": true,
   "allModulesMatch": true,
   "modules": [
@@ -130,7 +130,14 @@
       ],
       "contractFunctional": "Auth/Identidad/Seguridad/Contexto",
       "classification": "MATCH",
-      "actionRequired": null
+      "actionRequired": null,
+      "preI4SuccessorCommits": [],
+      "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+      }
     },
     {
       "domain": "base-router-shell-cache",
@@ -153,7 +160,17 @@
       ],
       "contractFunctional": "Release/Visual/Security",
       "classification": "MATCH",
-      "actionRequired": null
+      "actionRequired": null,
+      "preI4SuccessorCommits": [
+        "4a0d1bd977a1b50586b0d94e17583123f8ba3b76",
+        "4aeb41ca6dffb6e5b8324ca50531587539f5058e"
+      ],
+      "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+      }
     },
     {
       "domain": "benefits",
@@ -169,7 +186,14 @@
       ],
       "contractFunctional": "Identidad/Visual",
       "classification": "MATCH",
-      "actionRequired": null
+      "actionRequired": null,
+      "preI4SuccessorCommits": [],
+      "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+      }
     },
     {
       "domain": "canonical-hr-state-adapters",
@@ -196,13 +220,25 @@
       ],
       "contractFunctional": "HR/Disponibles/Sync/KPIs",
       "classification": "MATCH",
-      "actionRequired": null
+      "actionRequired": null,
+      "preI4SuccessorCommits": [
+        "e0bed18b62174544615dc55aa70dd4a1509692d7",
+        "ab05415eb965404e1a6594df8533b8e0190aa0f7",
+        "feea6ae6b00d36349ae66e43e034bc0b25516cfd"
+      ],
+      "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+      }
     },
     {
       "domain": "certifications",
       "owners": [
         "app/modules/academia.js",
-        "app/modules/cert.js"
+        "app/modules/cert.js",
+        "app/data/tya-certification-carryover-source-safe.js"
       ],
       "lastApprovedAuthority": "F9 accepted release lineage preserved through terminal b949 and f836",
       "sourceCommit": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
@@ -213,7 +249,16 @@
       ],
       "contractFunctional": "Shopper/Identidad/Visual",
       "classification": "MATCH",
-      "actionRequired": null
+      "actionRequired": null,
+      "preI4SuccessorCommits": [
+        "61cf7120603aeff110e97632bb6c69f5c4809d62"
+      ],
+      "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+      }
     },
     {
       "domain": "client-portal-reportkit",
@@ -231,7 +276,14 @@
       ],
       "contractFunctional": "Identidad/KPIs/ReportKit",
       "classification": "MATCH",
-      "actionRequired": null
+      "actionRequired": null,
+      "preI4SuccessorCommits": [],
+      "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+      }
     },
     {
       "domain": "core-config-data-router-permissions",
@@ -240,7 +292,8 @@
         "app/core/router.js",
         "app/core/permissions.js",
         "app/core/data.js",
-        "app/core/data-source.js"
+        "app/core/data-source.js",
+        "app/config/runtime.js"
       ],
       "lastApprovedAuthority": "RECOVERY_SUCCESSOR_CHAIN: F9 accepted -> terminal b949 certified predecessor -> canonical-convergence fixes -> f836 multiproject source",
       "sourceCommit": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
@@ -252,7 +305,20 @@
       ],
       "contractFunctional": "Contexto/Seguridad/Release",
       "classification": "MATCH",
-      "actionRequired": null
+      "actionRequired": null,
+      "preI4SuccessorCommits": [
+        "83429d21ee9f6d9dc5cd46fcbb9a3b598e07dcc4",
+        "4aeb41ca6dffb6e5b8324ca50531587539f5058e",
+        "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
+        "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+        "4a0d1bd977a1b50586b0d94e17583123f8ba3b76"
+      ],
+      "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+      }
     },
     {
       "domain": "dashboard-operation",
@@ -270,14 +336,24 @@
       ],
       "contractFunctional": "Operación/HR/Visual",
       "classification": "MATCH",
-      "actionRequired": null
+      "actionRequired": null,
+      "preI4SuccessorCommits": [
+        "feea6ae6b00d36349ae66e43e034bc0b25516cfd"
+      ],
+      "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+      }
     },
     {
       "domain": "documents-resources",
       "owners": [
         "app/modules/novedades.js",
         "app/modules/tablon.js",
-        "app/modules/documentos.js"
+        "app/modules/documentos.js",
+        "app/core/backend-resources.js"
       ],
       "lastApprovedAuthority": "F9 accepted release lineage preserved through terminal b949 and f836",
       "sourceCommit": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
@@ -289,7 +365,16 @@
       ],
       "contractFunctional": "Proyecto/Contexto/Visual",
       "classification": "MATCH",
-      "actionRequired": null
+      "actionRequired": null,
+      "preI4SuccessorCommits": [
+        "50b6a25d79713b0f165cffc4355c7b7ffd1d9e84"
+      ],
+      "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+      }
     },
     {
       "domain": "finance-core-liquidation-costs",
@@ -309,7 +394,17 @@
       ],
       "contractFunctional": "País/moneda/Persistencia/ACK",
       "classification": "MATCH",
-      "actionRequired": null
+      "actionRequired": null,
+      "preI4SuccessorCommits": [
+        "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+        "4aeb41ca6dffb6e5b8324ca50531587539f5058e"
+      ],
+      "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+      }
     },
     {
       "domain": "historical",
@@ -326,7 +421,14 @@
       ],
       "contractFunctional": "Histórico",
       "classification": "MATCH",
-      "actionRequired": null
+      "actionRequired": null,
+      "preI4SuccessorCommits": [],
+      "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+      }
     },
     {
       "domain": "human-runtime-domain-consistency",
@@ -344,7 +446,16 @@
       ],
       "contractFunctional": "HR/Auth/Identidad/Visual",
       "classification": "MATCH",
-      "actionRequired": null
+      "actionRequired": null,
+      "preI4SuccessorCommits": [
+        "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0"
+      ],
+      "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+      }
     },
     {
       "domain": "identity-membership-roll-forward",
@@ -364,7 +475,14 @@
       ],
       "contractFunctional": "Shopper/Auth/Identidad",
       "classification": "MATCH",
-      "actionRequired": null
+      "actionRequired": null,
+      "preI4SuccessorCommits": [],
+      "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+      }
     },
     {
       "domain": "persistence-command-ack-boundary",
@@ -393,7 +511,16 @@
       ],
       "contractFunctional": "Persistencia/Writes HR/ACK/idempotencia",
       "classification": "MATCH",
-      "actionRequired": null
+      "actionRequired": null,
+      "preI4SuccessorCommits": [
+        "672e7f624b1d0328ed1bb25b778ce4b44d52489c"
+      ],
+      "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+      }
     },
     {
       "domain": "phase-a-supporting-core",
@@ -414,7 +541,17 @@
       ],
       "contractFunctional": "Release/Security",
       "classification": "MATCH",
-      "actionRequired": null
+      "actionRequired": null,
+      "preI4SuccessorCommits": [
+        "6653ba83b7c95ff413169e48ceb38e95151a2736",
+        "ab05415eb965404e1a6594df8533b8e0190aa0f7"
+      ],
+      "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+      }
     },
     {
       "domain": "projects-periods-hr-source-wizard-multiproject",
@@ -436,7 +573,14 @@
       ],
       "contractFunctional": "Proyecto/Fuente/Contexto/País/second-project readiness",
       "classification": "MATCH",
-      "actionRequired": null
+      "actionRequired": null,
+      "preI4SuccessorCommits": [],
+      "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+      }
     },
     {
       "domain": "questionnaire-shopper",
@@ -452,7 +596,14 @@
       ],
       "contractFunctional": "Proyecto/Fuente/Contexto",
       "classification": "MATCH",
-      "actionRequired": null
+      "actionRequired": null,
+      "preI4SuccessorCommits": [],
+      "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+      }
     },
     {
       "domain": "reports-admin-shopper",
@@ -469,7 +620,14 @@
       ],
       "contractFunctional": "KPIs/Identidad/ReportKit",
       "classification": "MATCH",
-      "actionRequired": null
+      "actionRequired": null,
+      "preI4SuccessorCommits": [],
+      "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+      }
     },
     {
       "domain": "shoppers-mi-visitas-profile",
@@ -488,7 +646,17 @@
       ],
       "contractFunctional": "Shopper/Auth/Identidad/Histórico",
       "classification": "MATCH",
-      "actionRequired": null
+      "actionRequired": null,
+      "preI4SuccessorCommits": [
+        "61cf7120603aeff110e97632bb6c69f5c4809d62",
+        "275a9893532e9fa11efcbafccd34bb93919d7d64"
+      ],
+      "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+      }
     },
     {
       "domain": "visits-review-postulations-reservations",
@@ -510,7 +678,16 @@
       ],
       "contractFunctional": "Disponibles/Asignación/Postulación/Eliminación/Decisión/Persistencia",
       "classification": "MATCH",
-      "actionRequired": null
+      "actionRequired": null,
+      "preI4SuccessorCommits": [
+        "275a9893532e9fa11efcbafccd34bb93919d7d64"
+      ],
+      "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "matrixGate": "PENDING_EXHAUSTIVE_BYTE_PROOF"
+      }
     }
   ],
   "sourceFiles": [
@@ -537,7 +714,9 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 1
     },
     {
       "path": "app/core/config.js",
@@ -546,15 +725,15 @@
       "historicalApprovedBlob": "0bf7b6c1daded062806d90e03ba2c5d67ac1fe63",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "0bf7b6c1daded062806d90e03ba2c5d67ac1fe63",
-      "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
-      "latestApprovedBlob": "0bf7b6c1daded062806d90e03ba2c5d67ac1fe63",
-      "currentBlob": "0bf7b6c1daded062806d90e03ba2c5d67ac1fe63",
+      "latestApprovedSource": "83429d21ee9f6d9dc5cd46fcbb9a3b598e07dcc4",
+      "latestApprovedBlob": "3ccaddd89cd2d638587d269d896a312ceb1eb5ec",
+      "currentBlob": "3ccaddd89cd2d638587d269d896a312ceb1eb5ec",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "0bf7b6c1daded062806d90e03ba2c5d67ac1fe63",
-      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
+      "latestApprovedAuthority": "PRE_I4_PROVEN_SUCCESSOR__RUN333",
       "loadOrder": 6,
       "atomicDisposition": "KEEP",
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
@@ -562,7 +741,16 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "preI4PriorMatrixBlob": "0bf7b6c1daded062806d90e03ba2c5d67ac1fe63",
+      "preI4SuccessorMessage": "refactor(pre-i4): keep tenant branding in deployment config",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "artifactId": 10790135179
+      },
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 3
     },
     {
       "path": "app/core/geo.js",
@@ -581,7 +769,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 4
     },
     {
       "path": "app/core/store.js",
@@ -600,7 +790,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 5
     },
     {
       "path": "app/core/data.js",
@@ -609,15 +801,15 @@
       "historicalApprovedBlob": "3a679020205617e44126ec586e0022edc70b0512",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "3a679020205617e44126ec586e0022edc70b0512",
-      "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
-      "latestApprovedBlob": "703472f0659ed8581e2ec2c34522c90385f3a0ac",
-      "currentBlob": "703472f0659ed8581e2ec2c34522c90385f3a0ac",
+      "latestApprovedSource": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+      "latestApprovedBlob": "57e9c96a64a1d7bb8c6161854d7c67a81301c82c",
+      "currentBlob": "57e9c96a64a1d7bb8c6161854d7c67a81301c82c",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "a885af50b4b3e98679fa372c8765c38242d0a4c0",
-      "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): separate canonical project and period scope; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "PRE_I4_PROVEN_SUCCESSOR__RUN333",
       "loadOrder": 9,
       "atomicDisposition": "KEEP",
       "approvedSourceCommit": "3d36b46c53e970899d16e24a7061bd33c5ba812f",
@@ -625,7 +817,16 @@
       "approvalAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): separate canonical project and period scope; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "preI4PriorMatrixBlob": "703472f0659ed8581e2ec2c34522c90385f3a0ac",
+      "preI4SuccessorMessage": "fix(pre-i4): reconcile canonical read models and finance semantics",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "artifactId": 10790135179
+      },
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 6
     },
     {
       "path": "app/adapters/tya-project-financial-model-contract-v1.js",
@@ -644,7 +845,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 8
     },
     {
       "path": "app/core/data-source.js",
@@ -653,15 +856,15 @@
       "historicalApprovedBlob": "6149dff1d91b83af007badbaafdef63f00c34d1f",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "6149dff1d91b83af007badbaafdef63f00c34d1f",
-      "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
-      "latestApprovedBlob": "6149dff1d91b83af007badbaafdef63f00c34d1f",
-      "currentBlob": "6149dff1d91b83af007badbaafdef63f00c34d1f",
+      "latestApprovedSource": "4a0d1bd977a1b50586b0d94e17583123f8ba3b76",
+      "latestApprovedBlob": "cea2af688a7d60d58eec6b4a5d89cac9b3965db3",
+      "currentBlob": "cea2af688a7d60d58eec6b4a5d89cac9b3965db3",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "6149dff1d91b83af007badbaafdef63f00c34d1f",
-      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
+      "latestApprovedAuthority": "PRE_I4_PROVEN_SUCCESSOR__RUN333",
       "loadOrder": 11,
       "atomicDisposition": "KEEP",
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
@@ -669,7 +872,16 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "preI4PriorMatrixBlob": "6149dff1d91b83af007badbaafdef63f00c34d1f",
+      "preI4SuccessorMessage": "fix(pre-i4): make human DEV entrypoint canonical and fail-closed",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "artifactId": 10790135179
+      },
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 9
     },
     {
       "path": "app/core/dedupe.js",
@@ -688,7 +900,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 10
     },
     {
       "path": "app/core/shoppers-store.js",
@@ -707,7 +921,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 11
     },
     {
       "path": "app/core/programa.js",
@@ -726,7 +942,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 12
     },
     {
       "path": "app/core/cliente-data.js",
@@ -751,7 +969,9 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 13
     },
     {
       "path": "app/core/hr.js",
@@ -770,7 +990,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 14
     },
     {
       "path": "app/core/costos.js",
@@ -795,7 +1017,9 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 15
     },
     {
       "path": "app/core/automations.js",
@@ -814,7 +1038,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 16
     },
     {
       "path": "app/core/permissions.js",
@@ -823,15 +1049,15 @@
       "historicalApprovedBlob": "bedc4f8bbc80dba9f03e34ec6bbcf9cfeeb2a1d5",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "bedc4f8bbc80dba9f03e34ec6bbcf9cfeeb2a1d5",
-      "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
-      "latestApprovedBlob": "bedc4f8bbc80dba9f03e34ec6bbcf9cfeeb2a1d5",
-      "currentBlob": "bedc4f8bbc80dba9f03e34ec6bbcf9cfeeb2a1d5",
+      "latestApprovedSource": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
+      "latestApprovedBlob": "070dfd2a7dbdaf0268d568dc7622e974a18fd383",
+      "currentBlob": "070dfd2a7dbdaf0268d568dc7622e974a18fd383",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "bedc4f8bbc80dba9f03e34ec6bbcf9cfeeb2a1d5",
-      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
+      "latestApprovedAuthority": "PRE_I4_PROVEN_SUCCESSOR__RUN333",
       "loadOrder": 19,
       "atomicDisposition": "KEEP",
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
@@ -839,7 +1065,16 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "preI4PriorMatrixBlob": "bedc4f8bbc80dba9f03e34ec6bbcf9cfeeb2a1d5",
+      "preI4SuccessorMessage": "fix(pre-i4): unify root project and period scope contract",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "artifactId": 10790135179
+      },
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 17
     },
     {
       "path": "app/core/manuales-data.js",
@@ -858,7 +1093,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 18
     },
     {
       "path": "app/vendor/pptxgenjs.min.js",
@@ -877,7 +1114,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 19
     },
     {
       "path": "app/core/importador.js",
@@ -896,7 +1135,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 20
     },
     {
       "path": "app/core/ui.js",
@@ -915,7 +1156,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 21
     },
     {
       "path": "app/data/tya-financial-canonical-source-safe.js",
@@ -934,7 +1177,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 22
     },
     {
       "path": "app/data/tya-financial-canonical-source-safe-liq-01.js",
@@ -953,7 +1198,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 23
     },
     {
       "path": "app/data/tya-financial-canonical-source-safe-liq-02.js",
@@ -972,7 +1219,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 24
     },
     {
       "path": "app/data/tya-financial-canonical-source-safe-liq-03.js",
@@ -991,7 +1240,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 25
     },
     {
       "path": "app/data/tya-financial-canonical-source-safe-review-01.js",
@@ -1010,7 +1261,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 26
     },
     {
       "path": "app/data/tya-financial-canonical-source-safe-review-02.js",
@@ -1029,7 +1282,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 27
     },
     {
       "path": "app/data/tya-financial-canonical-source-safe-evidence.js",
@@ -1048,7 +1303,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 28
     },
     {
       "path": "app/data/tya-financial-canonical-source-safe-final.js",
@@ -1067,7 +1324,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 29
     },
     {
       "path": "app/data/tya-payment-history-source-safe.js",
@@ -1086,7 +1345,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 30
     },
     {
       "path": "app/core/liquidacion.js",
@@ -1095,15 +1356,15 @@
       "historicalApprovedBlob": "dde322890eb8821b822215905b82a22102d73d2c",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "dde322890eb8821b822215905b82a22102d73d2c",
-      "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
-      "latestApprovedBlob": "dde322890eb8821b822215905b82a22102d73d2c",
-      "currentBlob": "dde322890eb8821b822215905b82a22102d73d2c",
+      "latestApprovedSource": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+      "latestApprovedBlob": "786f669ca1887f0d11a05778bcf7730d26b486a0",
+      "currentBlob": "786f669ca1887f0d11a05778bcf7730d26b486a0",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "dde322890eb8821b822215905b82a22102d73d2c",
-      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
+      "latestApprovedAuthority": "PRE_I4_PROVEN_SUCCESSOR__RUN333",
       "loadOrder": 35,
       "atomicDisposition": "KEEP",
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
@@ -1111,7 +1372,16 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "preI4PriorMatrixBlob": "dde322890eb8821b822215905b82a22102d73d2c",
+      "preI4SuccessorMessage": "fix(pre-i4): reconcile canonical read models and finance semantics",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "artifactId": 10790135179
+      },
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 32
     },
     {
       "path": "app/core/finanzas-core.js",
@@ -1120,15 +1390,15 @@
       "historicalApprovedBlob": "6d3f46f003f3319f96cfd759b8b5ed52afc6a125",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "6d3f46f003f3319f96cfd759b8b5ed52afc6a125",
-      "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
-      "latestApprovedBlob": "6d3f46f003f3319f96cfd759b8b5ed52afc6a125",
-      "currentBlob": "6d3f46f003f3319f96cfd759b8b5ed52afc6a125",
+      "latestApprovedSource": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+      "latestApprovedBlob": "0dc6e034b2265482e0fb968687f64d5e541cbf51",
+      "currentBlob": "0dc6e034b2265482e0fb968687f64d5e541cbf51",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "6d3f46f003f3319f96cfd759b8b5ed52afc6a125",
-      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
+      "latestApprovedAuthority": "PRE_I4_PROVEN_SUCCESSOR__RUN333",
       "loadOrder": 36,
       "atomicDisposition": "KEEP",
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
@@ -1136,7 +1406,16 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "preI4PriorMatrixBlob": "6d3f46f003f3319f96cfd759b8b5ed52afc6a125",
+      "preI4SuccessorMessage": "fix(pre-i4): reconcile canonical read models and finance semantics",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "artifactId": 10790135179
+      },
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 33
     },
     {
       "path": "app/core/notif.js",
@@ -1155,7 +1434,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 34
     },
     {
       "path": "app/adapters/tya-live-source-inplace-apply.js",
@@ -1164,21 +1445,30 @@
       "historicalApprovedBlob": null,
       "f9ApprovedSource": null,
       "f9ApprovedBlob": null,
-      "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
-      "latestApprovedBlob": "66deef501caa885ca42fc9e3c6971510deda69bb",
-      "currentBlob": "66deef501caa885ca42fc9e3c6971510deda69bb",
+      "latestApprovedSource": "ab05415eb965404e1a6594df8533b8e0190aa0f7",
+      "latestApprovedBlob": "463d507d3503ebd9f56d857ee11dca27fa021463",
+      "currentBlob": "463d507d3503ebd9f56d857ee11dca27fa021463",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "loadOrder": 38,
       "atomicDisposition": "FOCAL_FIX",
-      "latestApprovedAuthority": "P0_PROVEN_ATOMIC_RECOVERY_COMPOSITION_SOURCE__CERTIFICATION_REQUIRED",
+      "latestApprovedAuthority": "PRE_I4_PROVEN_SUCCESSOR__RUN333",
       "approvedSourceCommit": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
       "approvedBlob": "66deef501caa885ca42fc9e3c6971510deda69bb",
       "approvalAuthority": "P0_PROVEN_ATOMIC_RECOVERY_COMPOSITION",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "FOCAL_FIX"
+      "approvalDisposition": "FOCAL_FIX",
+      "preI4PriorMatrixBlob": "66deef501caa885ca42fc9e3c6971510deda69bb",
+      "preI4SuccessorMessage": "fix(pre-i4): preserve partial reimbursements and unknown margin",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "artifactId": 10790135179
+      },
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 35
     },
     {
       "path": "app/adapters/tya-live-source-refresh-watch-v2.js",
@@ -1203,7 +1493,9 @@
       "approvalAuthority": "P0_PROVEN_RUN285_SOLE_HUMAN_HR_WRITER_FIX",
       "composedAtSource": "77bf74f807d254637f0b2cde4b1d1668017a0c8a",
       "provenanceIndependent": true,
-      "approvalDisposition": "FOCAL_FIX"
+      "approvalDisposition": "FOCAL_FIX",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 36
     },
     {
       "path": "app/adapters/cxorbia-exact-identity-contract-v1.js",
@@ -1226,7 +1518,9 @@
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 37
     },
     {
       "path": "app/adapters/tya-cumulative-read-model-v2.js",
@@ -1251,7 +1545,9 @@
       "approvalAuthority": "P0_PROVEN_RUN264_ADMIN_PLATFORM_ONLY_VISIBILITY_OWNER_FIX",
       "composedAtSource": "6bcbc1df70c29c2ad3ad57ecfa906917e6372ace",
       "provenanceIndependent": true,
-      "approvalDisposition": "FOCAL_FIX"
+      "approvalDisposition": "FOCAL_FIX",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 38
     },
     {
       "path": "app/adapters/cxorbia-identity-roll-forward-v1.js",
@@ -1274,7 +1570,9 @@
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 39
     },
     {
       "path": "app/adapters/tya-canonical-state-semantics-v2.js",
@@ -1299,7 +1597,9 @@
       "approvalAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): separate canonical project and period scope; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 40
     },
     {
       "path": "app/core/backend-config.js",
@@ -1318,7 +1618,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 41
     },
     {
       "path": "app/core/backend-config-preview-dev.js",
@@ -1337,7 +1639,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 42
     },
     {
       "path": "app/core/backend-protected-dev-mode.js",
@@ -1360,7 +1664,9 @@
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 43
     },
     {
       "path": "app/core/backend-protected-dev-session-continuity.js",
@@ -1385,7 +1691,9 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 44
     },
     {
       "path": "app/core/backend-v57-extra-config.js",
@@ -1404,7 +1712,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 45
     },
     {
       "path": "app/core/backend-dev-auth.local.js",
@@ -1423,7 +1733,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 46
     },
     {
       "path": "app/core/backend-browser-auth.js",
@@ -1448,7 +1760,9 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 47
     },
     {
       "path": "app/adapters/tya-c6-live-user-admin-membership-wiring-v1.js",
@@ -1471,7 +1785,9 @@
       "approvalAuthority": "P0_PROVEN_RUN284_STAFF_REENTRY_VIEW_RESET_FIX",
       "composedAtSource": "6e5c8c2af101c25c418ceeb6dbd83c7779af383d",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 48
     },
     {
       "path": "app/adapters/cxorbia-shopper-membership-wiring-v1.js",
@@ -1494,7 +1810,9 @@
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 49
     },
     {
       "path": "app/adapters/cxorbia-provider-identity-link-runtime-v1.js",
@@ -1517,7 +1835,9 @@
       "approvalAuthority": "P0_PROVEN_HR_CROSSWALK_PRECEDENCE",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "FOCAL_FIX"
+      "approvalDisposition": "FOCAL_FIX",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 50
     },
     {
       "path": "app/adapters/tya-phase-a-authority-compat-v1.js",
@@ -1540,7 +1860,9 @@
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 51
     },
     {
       "path": "app/adapters/tya-dev-technical-auth-e2e-v1.js",
@@ -1559,7 +1881,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 52
     },
     {
       "path": "app/core/backend-firebase.js",
@@ -1582,7 +1906,9 @@
       "approvalAuthority": "P0_PROVEN_RUN282_AUTHORIZED_FIRESTORE_SNAPSHOT_HANDOFF",
       "composedAtSource": "2ca71bac1fe66b7cdc28ea99b106e7e99010f048",
       "provenanceIndependent": true,
-      "approvalDisposition": "FOCAL_FIX"
+      "approvalDisposition": "FOCAL_FIX",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 53
     },
     {
       "path": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
@@ -1591,15 +1917,15 @@
       "historicalApprovedBlob": "4ff03ce4a4ab3cc680be32cc71f32d406cdb9307",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "4ff03ce4a4ab3cc680be32cc71f32d406cdb9307",
-      "latestApprovedSource": "2ca71bac1fe66b7cdc28ea99b106e7e99010f048",
-      "latestApprovedBlob": "e1a2a2a561985d6d0f62a3a6c9c11476ebf78709",
-      "currentBlob": "e1a2a2a561985d6d0f62a3a6c9c11476ebf78709",
+      "latestApprovedSource": "e0bed18b62174544615dc55aa70dd4a1509692d7",
+      "latestApprovedBlob": "6fb423f37839263b292aa13ae703e7b73bdb1ea9",
+      "currentBlob": "6fb423f37839263b292aa13ae703e7b73bdb1ea9",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "090d01dc4913112a68d39f6c1547e6556458384d",
-      "latestApprovedAuthority": "P0_PROVEN_RUN282_AUTHORIZED_FIRESTORE_SNAPSHOT_HANDOFF",
+      "latestApprovedAuthority": "PRE_I4_PROVEN_SUCCESSOR__RUN333",
       "loadOrder": 57,
       "atomicDisposition": "FOCAL_FIX",
       "approvedSourceCommit": "2ca71bac1fe66b7cdc28ea99b106e7e99010f048",
@@ -1607,7 +1933,16 @@
       "approvalAuthority": "P0_PROVEN_RUN282_AUTHORIZED_FIRESTORE_SNAPSHOT_HANDOFF",
       "composedAtSource": "2ca71bac1fe66b7cdc28ea99b106e7e99010f048",
       "provenanceIndependent": true,
-      "approvalDisposition": "FOCAL_FIX"
+      "approvalDisposition": "FOCAL_FIX",
+      "preI4PriorMatrixBlob": "e1a2a2a561985d6d0f62a3a6c9c11476ebf78709",
+      "preI4SuccessorMessage": "fix(pre-i4): make resources and certification source durable",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "artifactId": 10790135179
+      },
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 55
     },
     {
       "path": "app/core/backend-cxdata-read-guard.js",
@@ -1630,7 +1965,9 @@
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 56
     },
     {
       "path": "app/core/backend-finance-benefits.js",
@@ -1649,7 +1986,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 57
     },
     {
       "path": "app/core/backend-cxdata-finance-read.js",
@@ -1668,7 +2007,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 58
     },
     {
       "path": "app/core/backend-operational-actions.js",
@@ -1687,7 +2028,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 59
     },
     {
       "path": "app/adapters/cxorbia-command-adapter-v1.js",
@@ -1696,21 +2039,30 @@
       "historicalApprovedBlob": null,
       "f9ApprovedSource": null,
       "f9ApprovedBlob": null,
-      "latestApprovedSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
-      "latestApprovedBlob": "12c06b7569c0be9ee6dc96555b541e0e6345afac",
-      "currentBlob": "12c06b7569c0be9ee6dc96555b541e0e6345afac",
+      "latestApprovedSource": "672e7f624b1d0328ed1bb25b778ce4b44d52489c",
+      "latestApprovedBlob": "dcbdf7eab899161dba854ba85149daf0dacce420",
+      "currentBlob": "dcbdf7eab899161dba854ba85149daf0dacce420",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "loadOrder": 62,
       "atomicDisposition": "FOCAL_FIX",
-      "latestApprovedAuthority": "RUN223_RERUN_P0_ACK_ENTITY_ID_PRESERVATION",
+      "latestApprovedAuthority": "PRE_I4_PROVEN_SUCCESSOR__RUN333",
       "approvedSourceCommit": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
       "approvedBlob": "12c06b7569c0be9ee6dc96555b541e0e6345afac",
       "approvalAuthority": "P0_PROVEN_RESERVATION_ACK_ENTITY_ID_OWNER_FIX",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "FOCAL_FIX"
+      "approvalDisposition": "FOCAL_FIX",
+      "preI4PriorMatrixBlob": "12c06b7569c0be9ee6dc96555b541e0e6345afac",
+      "preI4SuccessorMessage": "fix(pre-i4): close durable postulation lifecycle gap",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "artifactId": 10790135179
+      },
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 60
     },
     {
       "path": "app/adapters/cxorbia-command-http-transport-v1.js",
@@ -1733,7 +2085,9 @@
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 61
     },
     {
       "path": "app/adapters/cxorbia-shopper-admin-command-contract-v1.js",
@@ -1756,7 +2110,9 @@
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 62
     },
     {
       "path": "app/adapters/cxorbia-hr-write-adapter-contract-v1.js",
@@ -1779,7 +2135,9 @@
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 63
     },
     {
       "path": "app/core/backend-cxdata-readonly-corte4.js",
@@ -1798,7 +2156,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 64
     },
     {
       "path": "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
@@ -1807,21 +2167,30 @@
       "historicalApprovedBlob": null,
       "f9ApprovedSource": null,
       "f9ApprovedBlob": null,
-      "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
-      "latestApprovedBlob": "f0c6359061bc2030c834a2a5b53c5e6c6717b33d",
-      "currentBlob": "f0c6359061bc2030c834a2a5b53c5e6c6717b33d",
+      "latestApprovedSource": "672e7f624b1d0328ed1bb25b778ce4b44d52489c",
+      "latestApprovedBlob": "4dfac24a860c94275532955342b0faaaa8504b36",
+      "currentBlob": "4dfac24a860c94275532955342b0faaaa8504b36",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "loadOrder": 67,
       "atomicDisposition": "FOCAL_FIX",
-      "latestApprovedAuthority": "P0_PROVEN_ATOMIC_RECOVERY_COMPOSITION_SOURCE__CERTIFICATION_REQUIRED",
+      "latestApprovedAuthority": "PRE_I4_PROVEN_SUCCESSOR__RUN333",
       "approvedSourceCommit": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
       "approvedBlob": "f0c6359061bc2030c834a2a5b53c5e6c6717b33d",
       "approvalAuthority": "P0_PROVEN_DURABLE_COMMAND_BOUNDARY",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "FOCAL_FIX"
+      "approvalDisposition": "FOCAL_FIX",
+      "preI4PriorMatrixBlob": "f0c6359061bc2030c834a2a5b53c5e6c6717b33d",
+      "preI4SuccessorMessage": "fix(pre-i4): close durable postulation lifecycle gap",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "artifactId": 10790135179
+      },
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 65
     },
     {
       "path": "app/core/backend-ui-action-bridge.js",
@@ -1840,7 +2209,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 66
     },
     {
       "path": "app/core/backend-bulletins.js",
@@ -1859,7 +2230,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 67
     },
     {
       "path": "app/core/backend-automations.js",
@@ -1878,7 +2251,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 68
     },
     {
       "path": "app/core/backend-preview-status.js",
@@ -1897,7 +2272,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": null
     },
     {
       "path": "app/core/backend-hr-source-bridge.js",
@@ -1916,7 +2293,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 69
     },
     {
       "path": "app/adapters/tya-financial-canonical-source-safe-adapter.js",
@@ -1939,7 +2318,9 @@
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 70
     },
     {
       "path": "app/adapters/tya-canonical-finance-read-model-v2.js",
@@ -1948,15 +2329,15 @@
       "historicalApprovedBlob": "9b5f5991a05474b3155e7182186c2fe23bb97556",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "6a527c3813ad4318bc921bf3c997bc4c70726db5",
-      "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
-      "latestApprovedBlob": "6a527c3813ad4318bc921bf3c997bc4c70726db5",
-      "currentBlob": "6a527c3813ad4318bc921bf3c997bc4c70726db5",
+      "latestApprovedSource": "6653ba83b7c95ff413169e48ceb38e95151a2736",
+      "latestApprovedBlob": "f5146d167dd28a12de729504a61618d33fc42f6c",
+      "currentBlob": "f5146d167dd28a12de729504a61618d33fc42f6c",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "6a527c3813ad4318bc921bf3c997bc4c70726db5",
-      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
+      "latestApprovedAuthority": "PRE_I4_PROVEN_SUCCESSOR__RUN333",
       "loadOrder": 74,
       "atomicDisposition": "KEEP",
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
@@ -1964,7 +2345,16 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "preI4PriorMatrixBlob": "6a527c3813ad4318bc921bf3c997bc4c70726db5",
+      "preI4SuccessorMessage": "fix(pre-i4): preserve reimbursement partial in canonical finance",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "artifactId": 10790135179
+      },
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 71
     },
     {
       "path": "app/adapters/tya-delegated-coordination-finance-guard-v1.js",
@@ -1973,21 +2363,30 @@
       "historicalApprovedBlob": null,
       "f9ApprovedSource": null,
       "f9ApprovedBlob": null,
-      "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
-      "latestApprovedBlob": "18c5dc95129b434c6362a313d4c8b317bea7a965",
-      "currentBlob": "18c5dc95129b434c6362a313d4c8b317bea7a965",
+      "latestApprovedSource": "ab05415eb965404e1a6594df8533b8e0190aa0f7",
+      "latestApprovedBlob": "f4c64bc7314df32fad8cf8c4aaa77a046bb86a8c",
+      "currentBlob": "f4c64bc7314df32fad8cf8c4aaa77a046bb86a8c",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "loadOrder": 75,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "latestApprovedAuthority": "PRE_I4_PROVEN_SUCCESSOR__RUN333",
       "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "approvedBlob": "18c5dc95129b434c6362a313d4c8b317bea7a965",
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "preI4PriorMatrixBlob": "18c5dc95129b434c6362a313d4c8b317bea7a965",
+      "preI4SuccessorMessage": "fix(pre-i4): preserve partial reimbursements and unknown margin",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "artifactId": 10790135179
+      },
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 72
     },
     {
       "path": "app/adapters/cxorbia-canonical-write-firewall-v1.js",
@@ -2010,7 +2409,9 @@
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 73
     },
     {
       "path": "app/core/topbar.js",
@@ -2029,7 +2430,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 74
     },
     {
       "path": "app/core/pwa.js",
@@ -2048,7 +2451,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 75
     },
     {
       "path": "app/core/router.js",
@@ -2057,15 +2462,15 @@
       "historicalApprovedBlob": "fdd3c91c1428d49413fb305ed464dffdc6ea3e13",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "fdd3c91c1428d49413fb305ed464dffdc6ea3e13",
-      "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
-      "latestApprovedBlob": "fdd3c91c1428d49413fb305ed464dffdc6ea3e13",
-      "currentBlob": "fdd3c91c1428d49413fb305ed464dffdc6ea3e13",
+      "latestApprovedSource": "4aeb41ca6dffb6e5b8324ca50531587539f5058e",
+      "latestApprovedBlob": "64f130c722f14261dde52d6d7384b35e35a263ac",
+      "currentBlob": "64f130c722f14261dde52d6d7384b35e35a263ac",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "fdd3c91c1428d49413fb305ed464dffdc6ea3e13",
-      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
+      "latestApprovedAuthority": "PRE_I4_PROVEN_SUCCESSOR__RUN333",
       "loadOrder": 79,
       "atomicDisposition": "KEEP",
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
@@ -2073,7 +2478,16 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "preI4PriorMatrixBlob": "fdd3c91c1428d49413fb305ed464dffdc6ea3e13",
+      "preI4SuccessorMessage": "fix(pre-i4): clean shopper finance shell human lane",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "artifactId": 10790135179
+      },
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 76
     },
     {
       "path": "app/modules/midia.js",
@@ -2098,7 +2512,9 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 77
     },
     {
       "path": "app/modules/dashboard.js",
@@ -2107,15 +2523,15 @@
       "historicalApprovedBlob": "e879fc3f1dd5a7486762b197346cadd086e1d99d",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "e879fc3f1dd5a7486762b197346cadd086e1d99d",
-      "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
-      "latestApprovedBlob": "a42fe7119661aeba3754a5119479e65040cfa02a",
-      "currentBlob": "a42fe7119661aeba3754a5119479e65040cfa02a",
+      "latestApprovedSource": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+      "latestApprovedBlob": "0b411b4de9c23dd2b944302f302d2a6b3e503b67",
+      "currentBlob": "0b411b4de9c23dd2b944302f302d2a6b3e503b67",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "e879fc3f1dd5a7486762b197346cadd086e1d99d",
-      "latestApprovedAuthority": "P0_PROVEN_ATOMIC_RECOVERY_COMPOSITION_SOURCE__CERTIFICATION_REQUIRED",
+      "latestApprovedAuthority": "PRE_I4_PROVEN_SUCCESSOR__RUN333",
       "loadOrder": 81,
       "atomicDisposition": "FOCAL_FIX",
       "approvedSourceCommit": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
@@ -2123,7 +2539,16 @@
       "approvalAuthority": "P0_PROVEN_SELECTED_PERIOD_SEMANTICS",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "FOCAL_FIX"
+      "approvalDisposition": "FOCAL_FIX",
+      "preI4PriorMatrixBlob": "a42fe7119661aeba3754a5119479e65040cfa02a",
+      "preI4SuccessorMessage": "fix(pre-i4): reconcile canonical read models and finance semantics",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "artifactId": 10790135179
+      },
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 78
     },
     {
       "path": "app/modules/proyectos.js",
@@ -2148,7 +2573,9 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 79
     },
     {
       "path": "app/modules/periodos.js",
@@ -2173,7 +2600,9 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 80
     },
     {
       "path": "app/modules/historico.js",
@@ -2198,7 +2627,9 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 81
     },
     {
       "path": "app/modules/hr-source.js",
@@ -2223,7 +2654,9 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 82
     },
     {
       "path": "app/modules/proyecto-wizard.js",
@@ -2248,7 +2681,9 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 83
     },
     {
       "path": "app/modules/visitas.js",
@@ -2273,7 +2708,9 @@
       "approvalAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): separate canonical project and period scope; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 84
     },
     {
       "path": "app/modules/visita-detalle.js",
@@ -2298,7 +2735,9 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 85
     },
     {
       "path": "app/modules/revision-admin.js",
@@ -2323,7 +2762,9 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 86
     },
     {
       "path": "app/modules/cuestionario-shopper.js",
@@ -2348,7 +2789,9 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 87
     },
     {
       "path": "app/modules/postulaciones.js",
@@ -2357,15 +2800,15 @@
       "historicalApprovedBlob": "f38593885c245841710934971dd335ee5eddf1da",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "f38593885c245841710934971dd335ee5eddf1da",
-      "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
-      "latestApprovedBlob": "a6d11eb76a834182e76b981e4d954a1d3aa7f357",
-      "currentBlob": "a6d11eb76a834182e76b981e4d954a1d3aa7f357",
+      "latestApprovedSource": "275a9893532e9fa11efcbafccd34bb93919d7d64",
+      "latestApprovedBlob": "8850888042126f1efb51494db4de61066ee68ca3",
+      "currentBlob": "8850888042126f1efb51494db4de61066ee68ca3",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "fc1bf4e962b04fe8bd06f599cf7404aac5f34f72",
-      "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): separate canonical project and period scope; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "PRE_I4_PROVEN_SUCCESSOR__RUN333",
       "loadOrder": 91,
       "atomicDisposition": "KEEP",
       "approvedSourceCommit": "3d36b46c53e970899d16e24a7061bd33c5ba812f",
@@ -2373,7 +2816,16 @@
       "approvalAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): separate canonical project and period scope; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "preI4PriorMatrixBlob": "a6d11eb76a834182e76b981e4d954a1d3aa7f357",
+      "preI4SuccessorMessage": "fix(pre-i4): surface approved postulation assignment conflicts [vrm-027]",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "artifactId": 10790135179
+      },
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 88
     },
     {
       "path": "app/modules/shoppers.js",
@@ -2382,15 +2834,15 @@
       "historicalApprovedBlob": "df8dbfadabbc7f9a808da83d2a78225b7c5e6055",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "92f834bb2b7fcf5d8674acb717ce6b4e920c5766",
-      "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
-      "latestApprovedBlob": "bc767591653f0f5a49214de60a4886c6b40c2330",
-      "currentBlob": "bc767591653f0f5a49214de60a4886c6b40c2330",
+      "latestApprovedSource": "61cf7120603aeff110e97632bb6c69f5c4809d62",
+      "latestApprovedBlob": "f9fb2b4787a0cdba727ed72caf3113e35e397d3c",
+      "currentBlob": "f9fb2b4787a0cdba727ed72caf3113e35e397d3c",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "5fba01c9b96de9bb6b97bccc3fa5c83d82d7214b",
-      "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): enforce owner shopper credential rule; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "PRE_I4_PROVEN_SUCCESSOR__RUN333",
       "loadOrder": 92,
       "atomicDisposition": "KEEP",
       "approvedSourceCommit": "dcba411b1e6f88d3e500fd5e2df53d664af7771e",
@@ -2398,7 +2850,16 @@
       "approvalAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): enforce owner shopper credential rule; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "preI4PriorMatrixBlob": "bc767591653f0f5a49214de60a4886c6b40c2330",
+      "preI4SuccessorMessage": "fix(pre-i4): finish human copy cleanup",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "artifactId": 10790135179
+      },
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 89
     },
     {
       "path": "app/modules/misvisitas.js",
@@ -2407,15 +2868,15 @@
       "historicalApprovedBlob": "418da18fa2c6c30780719e2fc1d9c72e84fd5d20",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "19feb19b96c7d2f69c3cfed785fdbfcaabd96e2d",
-      "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
-      "latestApprovedBlob": "19feb19b96c7d2f69c3cfed785fdbfcaabd96e2d",
-      "currentBlob": "19feb19b96c7d2f69c3cfed785fdbfcaabd96e2d",
+      "latestApprovedSource": "275a9893532e9fa11efcbafccd34bb93919d7d64",
+      "latestApprovedBlob": "c9bcf3c1d22376109b56e9b377ed13552ca7d0ee",
+      "currentBlob": "c9bcf3c1d22376109b56e9b377ed13552ca7d0ee",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "19feb19b96c7d2f69c3cfed785fdbfcaabd96e2d",
-      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
+      "latestApprovedAuthority": "PRE_I4_PROVEN_SUCCESSOR__RUN333",
       "loadOrder": 93,
       "atomicDisposition": "KEEP",
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
@@ -2423,7 +2884,16 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "preI4PriorMatrixBlob": "19feb19b96c7d2f69c3cfed785fdbfcaabd96e2d",
+      "preI4SuccessorMessage": "fix(pre-i4): surface approved postulation assignment conflicts [vrm-027]",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "artifactId": 10790135179
+      },
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 90
     },
     {
       "path": "app/modules/beneficios.js",
@@ -2448,7 +2918,9 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 91
     },
     {
       "path": "app/modules/tablon.js",
@@ -2473,7 +2945,9 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 92
     },
     {
       "path": "app/modules/cert.js",
@@ -2482,15 +2956,15 @@
       "historicalApprovedBlob": "5532109dec5c942c2fa6d520ad0a7e0b7b104034",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "5532109dec5c942c2fa6d520ad0a7e0b7b104034",
-      "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
-      "latestApprovedBlob": "5532109dec5c942c2fa6d520ad0a7e0b7b104034",
-      "currentBlob": "5532109dec5c942c2fa6d520ad0a7e0b7b104034",
+      "latestApprovedSource": "61cf7120603aeff110e97632bb6c69f5c4809d62",
+      "latestApprovedBlob": "a0bd7a3f0989712eece0dbb95bfa47a79e4dfe35",
+      "currentBlob": "a0bd7a3f0989712eece0dbb95bfa47a79e4dfe35",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "5532109dec5c942c2fa6d520ad0a7e0b7b104034",
-      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
+      "latestApprovedAuthority": "PRE_I4_PROVEN_SUCCESSOR__RUN333",
       "loadOrder": 96,
       "atomicDisposition": "KEEP",
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
@@ -2498,7 +2972,16 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "preI4PriorMatrixBlob": "5532109dec5c942c2fa6d520ad0a7e0b7b104034",
+      "preI4SuccessorMessage": "fix(pre-i4): finish human copy cleanup",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "artifactId": 10790135179
+      },
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 93
     },
     {
       "path": "app/modules/documentos.js",
@@ -2507,15 +2990,15 @@
       "historicalApprovedBlob": "28c302761f22807ed5ebcb1f04cd1d12827652dd",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "28c302761f22807ed5ebcb1f04cd1d12827652dd",
-      "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
-      "latestApprovedBlob": "28c302761f22807ed5ebcb1f04cd1d12827652dd",
-      "currentBlob": "28c302761f22807ed5ebcb1f04cd1d12827652dd",
+      "latestApprovedSource": "50b6a25d79713b0f165cffc4355c7b7ffd1d9e84",
+      "latestApprovedBlob": "64b001e57bf421ad3ed24764a28c5b53fc852760",
+      "currentBlob": "64b001e57bf421ad3ed24764a28c5b53fc852760",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "28c302761f22807ed5ebcb1f04cd1d12827652dd",
-      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
+      "latestApprovedAuthority": "PRE_I4_PROVEN_SUCCESSOR__RUN333",
       "loadOrder": 97,
       "atomicDisposition": "KEEP",
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
@@ -2523,7 +3006,16 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "preI4PriorMatrixBlob": "28c302761f22807ed5ebcb1f04cd1d12827652dd",
+      "preI4SuccessorMessage": "fix(pre-i4): disambiguate demo resource store",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "artifactId": 10790135179
+      },
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 94
     },
     {
       "path": "app/modules/academia.js",
@@ -2548,7 +3040,9 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 95
     },
     {
       "path": "app/modules/soporte.js",
@@ -2567,7 +3061,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 96
     },
     {
       "path": "app/modules/operacion-extra.js",
@@ -2592,7 +3088,9 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 97
     },
     {
       "path": "app/modules/finanzas.js",
@@ -2601,15 +3099,15 @@
       "historicalApprovedBlob": "623fab9ba1e06c39f83beda610bb771e23910a07",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "623fab9ba1e06c39f83beda610bb771e23910a07",
-      "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
-      "latestApprovedBlob": "5af9e5d28833524cabba132834738e8acce55e0b",
-      "currentBlob": "5af9e5d28833524cabba132834738e8acce55e0b",
+      "latestApprovedSource": "4aeb41ca6dffb6e5b8324ca50531587539f5058e",
+      "latestApprovedBlob": "130540d548f09aec0a6596cc616328036d677269",
+      "currentBlob": "130540d548f09aec0a6596cc616328036d677269",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "5af9e5d28833524cabba132834738e8acce55e0b",
-      "latestApprovedAuthority": "TERMINAL_CERTIFIED_PREDECESSOR: run 35247813214 Gate21 PASS",
+      "latestApprovedAuthority": "PRE_I4_PROVEN_SUCCESSOR__RUN333",
       "loadOrder": 101,
       "atomicDisposition": "KEEP",
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
@@ -2617,7 +3115,16 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "preI4PriorMatrixBlob": "5af9e5d28833524cabba132834738e8acce55e0b",
+      "preI4SuccessorMessage": "fix(pre-i4): clean shopper finance shell human lane",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "artifactId": 10790135179
+      },
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 98
     },
     {
       "path": "app/modules/configuracion.js",
@@ -2636,7 +3143,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 99
     },
     {
       "path": "app/modules/saas-console.js",
@@ -2655,7 +3164,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 100
     },
     {
       "path": "app/modules/cliente.js",
@@ -2680,7 +3191,9 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 101
     },
     {
       "path": "app/modules/cliente-extra.js",
@@ -2705,7 +3218,9 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 102
     },
     {
       "path": "app/modules/cliente-insights.js",
@@ -2724,7 +3239,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 103
     },
     {
       "path": "app/modules/novedades.js",
@@ -2749,7 +3266,9 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 104
     },
     {
       "path": "app/modules/clientes.js",
@@ -2768,7 +3287,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 105
     },
     {
       "path": "app/modules/importador.js",
@@ -2787,7 +3308,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 106
     },
     {
       "path": "app/modules/comercial.js",
@@ -2806,7 +3329,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 107
     },
     {
       "path": "app/modules/crm.js",
@@ -2825,7 +3350,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 108
     },
     {
       "path": "app/modules/marketing.js",
@@ -2844,7 +3371,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 109
     },
     {
       "path": "app/modules/reservas.js",
@@ -2869,7 +3398,9 @@
       "approvalAuthority": "P0_PROVEN_DURABLE_RESERVATIONS",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "FOCAL_FIX"
+      "approvalDisposition": "FOCAL_FIX",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 110
     },
     {
       "path": "app/modules/integraciones.js",
@@ -2888,7 +3419,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 111
     },
     {
       "path": "app/modules/automatizaciones.js",
@@ -2907,7 +3440,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 112
     },
     {
       "path": "app/modules/correo.js",
@@ -2926,7 +3461,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 113
     },
     {
       "path": "app/modules/marca.js",
@@ -2945,7 +3482,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 114
     },
     {
       "path": "app/modules/diagnostico.js",
@@ -2964,7 +3503,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 115
     },
     {
       "path": "app/modules/administrabilidad.js",
@@ -2983,7 +3524,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 116
     },
     {
       "path": "app/adapters/tya-ab-cumulative-composition-v1.js",
@@ -3002,7 +3545,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 117
     },
     {
       "path": "app/adapters/tya-c6-domain-consistency-bridge.js",
@@ -3011,15 +3556,15 @@
       "historicalApprovedBlob": "81f1e5807dfe18e0f53a348813b98fe353eeb7a1",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "81f1e5807dfe18e0f53a348813b98fe353eeb7a1",
-      "latestApprovedSource": "144c58e2125aba6e49deefe0ce23fa9d94259cdb",
-      "latestApprovedBlob": "718bd7a7f9131a68b39541c8708051c17c10b787",
-      "currentBlob": "718bd7a7f9131a68b39541c8708051c17c10b787",
+      "latestApprovedSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "latestApprovedBlob": "edcba88585583596f1098372261976fb60b56f1c",
+      "currentBlob": "edcba88585583596f1098372261976fb60b56f1c",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "81f1e5807dfe18e0f53a348813b98fe353eeb7a1",
-      "latestApprovedAuthority": "USER_DECISION_20260919_SINGLE_CANONICAL_SHOPPER_CREDENTIAL_OWNER",
+      "latestApprovedAuthority": "PRE_I4_PROVEN_SUCCESSOR__RUN333",
       "loadOrder": 121,
       "atomicDisposition": "FOCAL_FIX",
       "approvedSourceCommit": "144c58e2125aba6e49deefe0ce23fa9d94259cdb",
@@ -3027,7 +3572,16 @@
       "approvalAuthority": "USER_DECISION_20260919_SINGLE_CANONICAL_SHOPPER_CREDENTIAL_OWNER",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "FOCAL_FIX"
+      "approvalDisposition": "FOCAL_FIX",
+      "preI4PriorMatrixBlob": "718bd7a7f9131a68b39541c8708051c17c10b787",
+      "preI4SuccessorMessage": "fix(pre-i4): stop bridge overriding Mis Visitas [vrm-027]",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "artifactId": 10790135179
+      },
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 118
     },
     {
       "path": "app/adapters/tya-canonical-shopper-portal-v2.js",
@@ -3052,7 +3606,9 @@
       "approvalAuthority": "USER_DECISION_20260919_SINGLE_CANONICAL_SHOPPER_CREDENTIAL_OWNER",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "FOCAL_FIX"
+      "approvalDisposition": "FOCAL_FIX",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 119
     },
     {
       "path": "app/adapters/tya-canonical-reservations-guard-v2.js",
@@ -3077,7 +3633,9 @@
       "approvalAuthority": "P0_PROVEN_RUN222_RESERVATION_DURABLE_ACK_READBACK_OWNER_FIX",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "FOCAL_FIX"
+      "approvalDisposition": "FOCAL_FIX",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 120
     },
     {
       "path": "app/adapters/tya-c6-unified-human-runtime-v1.js",
@@ -3102,7 +3660,9 @@
       "approvalAuthority": "P0_PROVEN_RUN283_ADMIN_VIEW_PRESERVATION_FIX",
       "composedAtSource": "47c1aad1baf2d229ccb2e6753b6491a8f342c111",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 121
     },
     {
       "path": "app/adapters/tya-c6-shopper-auth-click-guard-v1.js",
@@ -3121,7 +3681,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 122
     },
     {
       "path": "app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js",
@@ -3144,7 +3706,9 @@
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 123
     },
     {
       "path": "app/adapters/cxorbia-legal-acceptance-provider-bridge-v1.js",
@@ -3167,7 +3731,9 @@
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 124
     },
     {
       "path": "app/adapters/cxorbia-legal-runtime-http-v1.js",
@@ -3190,7 +3756,9 @@
       "approvalAuthority": "P0_PROVEN_RECOVERY_SUCCESSOR: observable non-blocking legal runtime",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 125
     },
     {
       "path": "app/core/backend-corte4-empty-shell-guard.js",
@@ -3209,7 +3777,9 @@
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 126
     },
     {
       "path": "app/app.js",
@@ -3218,15 +3788,15 @@
       "historicalApprovedBlob": "d509d08bd20dd2e44fa414e0b4d2819dd18f7c36",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "2043d33dee611adacebc947c8423ed1739c1a8da",
-      "latestApprovedSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
-      "latestApprovedBlob": "e5e8f03d516c8e962baec122d7cc5ba37189e2e4",
-      "currentBlob": "e5e8f03d516c8e962baec122d7cc5ba37189e2e4",
+      "latestApprovedSource": "4a0d1bd977a1b50586b0d94e17583123f8ba3b76",
+      "latestApprovedBlob": "1e1848e1cedf11ef7dfc329f85871b20a6f9e13d",
+      "currentBlob": "1e1848e1cedf11ef7dfc329f85871b20a6f9e13d",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "2043d33dee611adacebc947c8423ed1739c1a8da",
-      "latestApprovedAuthority": "RUN237_PROTECTED_SHOPPER_FIREBASE_LOGIN_ROUTE_FIX",
+      "latestApprovedAuthority": "PRE_I4_PROVEN_SUCCESSOR__RUN333",
       "loadOrder": 130,
       "atomicDisposition": "FOCAL_FIX",
       "approvedSourceCommit": "751d01397bcd85903456e5cb78e3e5ce41161b17",
@@ -3234,7 +3804,16 @@
       "approvalAuthority": "RUN237_PROTECTED_SHOPPER_FIREBASE_LOGIN_ROUTE_FIX",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "FOCAL_FIX"
+      "approvalDisposition": "FOCAL_FIX",
+      "preI4PriorMatrixBlob": "e5e8f03d516c8e962baec122d7cc5ba37189e2e4",
+      "preI4SuccessorMessage": "fix(pre-i4): make human DEV entrypoint canonical and fail-closed",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "artifactId": 10790135179
+      },
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 127
     },
     {
       "path": "app/adapters/cxorbia-project-operational-source-v1.js",
@@ -3255,7 +3834,9 @@
       "approvalAuthority": "I2_CLEAN_CANDIDATE_CONTRACT_SEAL",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": null
     },
     {
       "path": "app/adapters/tya-phase-a-operational-sync-v1.js",
@@ -3276,7 +3857,9 @@
       "approvalAuthority": "I2_CLEAN_CANDIDATE_CONTRACT_SEAL",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": null
     },
     {
       "path": "app/index-backend-dev.html",
@@ -3285,22 +3868,31 @@
       "historicalApprovedBlob": "b9a4aaf063d97305c3f4f53eba8f02b526d61761",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "7a5f169dd0e239d46fa4af09cf67f2eb4329a477",
-      "latestApprovedSource": "144c58e2125aba6e49deefe0ce23fa9d94259cdb",
-      "latestApprovedBlob": "74d241ba34b6a5c38b365cb3df04894b0bdef8b8",
-      "currentBlob": "74d241ba34b6a5c38b365cb3df04894b0bdef8b8",
+      "latestApprovedSource": "4aeb41ca6dffb6e5b8324ca50531587539f5058e",
+      "latestApprovedBlob": "bbef4a610ba66fac3039d6cca100b17e6266afbd",
+      "currentBlob": "bbef4a610ba66fac3039d6cca100b17e6266afbd",
       "loadTarget": "artifact-file",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "6f084ab81264b937cda661dddb4b071ef956d35f",
-      "latestApprovedAuthority": "USER_DECISION_20260919_SINGLE_CANONICAL_SHOPPER_CREDENTIAL_OWNER",
+      "latestApprovedAuthority": "PRE_I4_PROVEN_SUCCESSOR__RUN333",
       "approvedSourceCommit": "144c58e2125aba6e49deefe0ce23fa9d94259cdb",
       "approvedBlob": "74d241ba34b6a5c38b365cb3df04894b0bdef8b8",
       "approvalAuthority": "USER_DECISION_20260919_SINGLE_CANONICAL_SHOPPER_CREDENTIAL_OWNER",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
       "approvalDisposition": "FOCAL_FIX",
-      "atomicDisposition": "FOCAL_FIX"
+      "atomicDisposition": "FOCAL_FIX",
+      "preI4PriorMatrixBlob": "74d241ba34b6a5c38b365cb3df04894b0bdef8b8",
+      "preI4SuccessorMessage": "fix(pre-i4): clean shopper finance shell human lane",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "artifactId": 10790135179
+      },
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": null
     },
     {
       "path": "app/manifest.webmanifest",
@@ -3323,7 +3915,9 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": null
     },
     {
       "path": "app/styles/layout.css",
@@ -3332,21 +3926,30 @@
       "historicalApprovedBlob": "2cea8372cad099cb4610b93744824e4596b04adc",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "91b3d308e1a51be7a470f0f12b32382c1043058f",
-      "latestApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
-      "latestApprovedBlob": "91b3d308e1a51be7a470f0f12b32382c1043058f",
-      "currentBlob": "91b3d308e1a51be7a470f0f12b32382c1043058f",
+      "latestApprovedSource": "4aeb41ca6dffb6e5b8324ca50531587539f5058e",
+      "latestApprovedBlob": "808121cbe6b059e9b3cf3e15560ddc11e8000b94",
+      "currentBlob": "808121cbe6b059e9b3cf3e15560ddc11e8000b94",
       "loadTarget": "browser-style",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "91b3d308e1a51be7a470f0f12b32382c1043058f",
-      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
+      "latestApprovedAuthority": "PRE_I4_PROVEN_SUCCESSOR__RUN333",
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "91b3d308e1a51be7a470f0f12b32382c1043058f",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "preI4PriorMatrixBlob": "91b3d308e1a51be7a470f0f12b32382c1043058f",
+      "preI4SuccessorMessage": "fix(pre-i4): clean shopper finance shell human lane",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "artifactId": 10790135179
+      },
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": null
     },
     {
       "path": "app/styles/theme.css",
@@ -3369,7 +3972,9 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": null
     },
     {
       "path": "app/sw.js",
@@ -3392,7 +3997,9 @@
       "approvalAuthority": "P0_PROVEN_RELEASE_CACHE_DESYNC_FIX",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "FOCAL_FIX"
+      "approvalDisposition": "FOCAL_FIX",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": null
     },
     {
       "path": "backend/contracts/cxorbia-project-source-contract-v1.json",
@@ -3412,7 +4019,9 @@
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": null
     },
     {
       "path": "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
@@ -3432,7 +4041,9 @@
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": null
     },
     {
       "path": "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
@@ -3441,20 +4052,29 @@
       "historicalApprovedBlob": null,
       "f9ApprovedSource": null,
       "f9ApprovedBlob": null,
-      "latestApprovedSource": "815eecb2b5b01001bd1f6455bae622159f0ca3e5",
-      "latestApprovedBlob": "3c8f0e91a64c9b981d920de69316335ee21dc98c",
-      "currentBlob": "3c8f0e91a64c9b981d920de69316335ee21dc98c",
+      "latestApprovedSource": "672e7f624b1d0328ed1bb25b778ce4b44d52489c",
+      "latestApprovedBlob": "93634ee52f17103a878d52f345443fe4bbd9850f",
+      "currentBlob": "93634ee52f17103a878d52f345443fe4bbd9850f",
       "loadTarget": "runtime-service",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "atomicDisposition": "FOCAL_FIX",
-      "latestApprovedAuthority": "P0_PROVEN_RUN269_HR_VISIT_DURABLE_RECONCILIATION",
+      "latestApprovedAuthority": "PRE_I4_PROVEN_SUCCESSOR__RUN333",
       "approvedSourceCommit": "815eecb2b5b01001bd1f6455bae622159f0ca3e5",
       "approvedBlob": "3c8f0e91a64c9b981d920de69316335ee21dc98c",
       "approvalAuthority": "P0_PROVEN_RUN269_HR_VISIT_DURABLE_RECONCILIATION",
       "composedAtSource": "815eecb2b5b01001bd1f6455bae622159f0ca3e5",
       "provenanceIndependent": true,
-      "approvalDisposition": "FOCAL_FIX"
+      "approvalDisposition": "FOCAL_FIX",
+      "preI4PriorMatrixBlob": "3c8f0e91a64c9b981d920de69316335ee21dc98c",
+      "preI4SuccessorMessage": "fix(pre-i4): close durable postulation lifecycle gap",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "artifactId": 10790135179
+      },
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": null
     },
     {
       "path": "backend/runtime/cxorbia-project-command-provider-v1.mjs",
@@ -3474,7 +4094,9 @@
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": null
     },
     {
       "path": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
@@ -3496,7 +4118,9 @@
       "provenanceIndependent": true,
       "approvalDisposition": "FOCAL_FIX",
       "latestApprovedAuthority": "USER_DECISION_20260919_SINGLE_CANONICAL_SHOPPER_CREDENTIAL_OWNER",
-      "atomicDisposition": "FOCAL_FIX"
+      "atomicDisposition": "FOCAL_FIX",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": null
     },
     {
       "path": "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
@@ -3516,7 +4140,9 @@
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": null
     },
     {
       "path": "backend/runtime/hr-live-service/Dockerfile",
@@ -3538,7 +4164,9 @@
       "provenanceIndependent": true,
       "approvalDisposition": "FOCAL_FIX",
       "latestApprovedAuthority": "RUN235_RELEASE_COMPOSITION_SHARED_RULE_RUNTIME_PACKAGE",
-      "atomicDisposition": "FOCAL_FIX"
+      "atomicDisposition": "FOCAL_FIX",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": null
     },
     {
       "path": "backend/runtime/hr-live-service/server.mjs",
@@ -3547,20 +4175,29 @@
       "historicalApprovedBlob": null,
       "f9ApprovedSource": null,
       "f9ApprovedBlob": null,
-      "latestApprovedSource": "f5d7113547df0c69d5d49bad3951dbd793684788",
-      "latestApprovedBlob": "f81e02b66c06d45e1ff3ad21d0e614ef5f57f616",
-      "currentBlob": "f81e02b66c06d45e1ff3ad21d0e614ef5f57f616",
+      "latestApprovedSource": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+      "latestApprovedBlob": "245157d6812321bec99d1d3d2d4e03261b4f21fa",
+      "currentBlob": "245157d6812321bec99d1d3d2d4e03261b4f21fa",
       "loadTarget": "runtime-service",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "atomicDisposition": "FOCAL_FIX",
-      "latestApprovedAuthority": "P0_PROVEN_RUN276_BOOTSTRAP_FAIL_CLOSED_LIVE_REFRESH",
+      "latestApprovedAuthority": "PRE_I4_PROVEN_SUCCESSOR__RUN333",
       "approvedSourceCommit": "f5d7113547df0c69d5d49bad3951dbd793684788",
       "approvedBlob": "f81e02b66c06d45e1ff3ad21d0e614ef5f57f616",
       "approvalAuthority": "P0_PROVEN_RUN276_BOOTSTRAP_FAIL_CLOSED_LIVE_REFRESH",
       "composedAtSource": "f5d7113547df0c69d5d49bad3951dbd793684788",
       "provenanceIndependent": true,
-      "approvalDisposition": "FOCAL_FIX"
+      "approvalDisposition": "FOCAL_FIX",
+      "preI4PriorMatrixBlob": "f81e02b66c06d45e1ff3ad21d0e614ef5f57f616",
+      "preI4SuccessorMessage": "fix(pre-i4): reconcile canonical read models and finance semantics",
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "artifactId": 10790135179
+      },
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": null
     },
     {
       "path": "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
@@ -3580,7 +4217,9 @@
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": null
     },
     {
       "path": "tools/hr-source/tya-canonical-visit-state-r20.mjs",
@@ -3600,7 +4239,9 @@
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": null
     },
     {
       "path": "tools/hr-source/tya-reapply-canonical-state-r20.mjs",
@@ -3620,7 +4261,9 @@
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": null
     },
     {
       "path": "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
@@ -3642,7 +4285,9 @@
       "approvalAuthority": "USER_CLARIFICATION_20260918_SHOPPER_HR_CONTACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "FOCAL_FIX"
+      "approvalDisposition": "FOCAL_FIX",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": null
     },
     {
       "path": "backend/contracts/tya-hr-column-map-r20-v1.json",
@@ -3664,7 +4309,9 @@
       "approvalAuthority": "USER_CLARIFICATION_20260918_SHOPPER_HR_CONTACT",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "FOCAL_FIX"
+      "approvalDisposition": "FOCAL_FIX",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": null
     },
     {
       "path": "app/core/shopper-credential-rule.js",
@@ -3686,7 +4333,84 @@
       "approvalAuthority": "USER_DECISION_20260919_SINGLE_CANONICAL_SHOPPER_CREDENTIAL_OWNER",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "FOCAL_FIX"
+      "approvalDisposition": "FOCAL_FIX",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 7
+    },
+    {
+      "path": "app/config/runtime.js",
+      "domain": "core-config-data-router-permissions",
+      "latestApprovedSource": "83429d21ee9f6d9dc5cd46fcbb9a3b598e07dcc4",
+      "latestApprovedBlob": "48ef2eac898bc2ee8df1649830f12851d8836229",
+      "currentBlob": "48ef2eac898bc2ee8df1649830f12851d8836229",
+      "loadTarget": "browser-script",
+      "phaseAAuthority": true,
+      "classification": "MATCH",
+      "latestApprovedAuthority": "PRE_I4_TENANT_RUNTIME_BRANDING_CONFIG",
+      "approvedSourceCommit": "83429d21ee9f6d9dc5cd46fcbb9a3b598e07dcc4",
+      "approvedBlob": "48ef2eac898bc2ee8df1649830f12851d8836229",
+      "approvalAuthority": "PRE_I4_TENANT_RUNTIME_BRANDING_CONFIG",
+      "composedAtSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP",
+      "atomicDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 2,
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "artifactId": 10790135179
+      }
+    },
+    {
+      "path": "app/data/tya-certification-carryover-source-safe.js",
+      "domain": "certifications",
+      "latestApprovedSource": "e0bed18b62174544615dc55aa70dd4a1509692d7",
+      "latestApprovedBlob": "8f987530e24ebe433e7f1c73a6036a37e563f074",
+      "currentBlob": "8f987530e24ebe433e7f1c73a6036a37e563f074",
+      "loadTarget": "browser-script",
+      "phaseAAuthority": true,
+      "classification": "MATCH",
+      "latestApprovedAuthority": "PRE_I4_CERTIFICATION_SOURCE_SAFE_DURABILITY",
+      "approvedSourceCommit": "e0bed18b62174544615dc55aa70dd4a1509692d7",
+      "approvedBlob": "8f987530e24ebe433e7f1c73a6036a37e563f074",
+      "approvalAuthority": "PRE_I4_CERTIFICATION_SOURCE_SAFE_DURABILITY",
+      "composedAtSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP",
+      "atomicDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 31,
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "artifactId": 10790135179
+      }
+    },
+    {
+      "path": "app/core/backend-resources.js",
+      "domain": "documents-resources",
+      "latestApprovedSource": "3a14ca612988637521c3c6b39325f4d220771875",
+      "latestApprovedBlob": "05c3b4b9eb4936c45894ad942a89a7e1725dd6a0",
+      "currentBlob": "05c3b4b9eb4936c45894ad942a89a7e1725dd6a0",
+      "loadTarget": "browser-script",
+      "phaseAAuthority": true,
+      "classification": "MATCH",
+      "latestApprovedAuthority": "PRE_I4_DURABLE_RESOURCE_READBACK",
+      "approvedSourceCommit": "3a14ca612988637521c3c6b39325f4d220771875",
+      "approvedBlob": "05c3b4b9eb4936c45894ad942a89a7e1725dd6a0",
+      "approvalAuthority": "PRE_I4_DURABLE_RESOURCE_READBACK",
+      "composedAtSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP",
+      "atomicDisposition": "KEEP",
+      "currentCumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "currentLoadOrder": 54,
+      "preI4ProvenBy": {
+        "runId": 35953230892,
+        "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "artifactId": 10790135179
+      }
     }
   ],
   "loadOrder": {
@@ -3869,7 +4593,154 @@
       "app/app.js"
     ],
     "duplicateSrc": [],
-    "unknownActiveOverlays": []
+    "unknownActiveOverlays": [],
+    "loadedScriptSrcCount": 133,
+    "activeRepoManagedScriptCount": 127,
+    "activeRepoManagedScripts": [
+      "app/core/build-lock.js",
+      "app/config/runtime.js",
+      "app/core/config.js",
+      "app/core/geo.js",
+      "app/core/store.js",
+      "app/core/data.js",
+      "app/core/shopper-credential-rule.js",
+      "app/adapters/tya-project-financial-model-contract-v1.js",
+      "app/core/data-source.js",
+      "app/core/dedupe.js",
+      "app/core/shoppers-store.js",
+      "app/core/programa.js",
+      "app/core/cliente-data.js",
+      "app/core/hr.js",
+      "app/core/costos.js",
+      "app/core/automations.js",
+      "app/core/permissions.js",
+      "app/core/manuales-data.js",
+      "app/vendor/pptxgenjs.min.js",
+      "app/core/importador.js",
+      "app/core/ui.js",
+      "app/data/tya-financial-canonical-source-safe.js",
+      "app/data/tya-financial-canonical-source-safe-liq-01.js",
+      "app/data/tya-financial-canonical-source-safe-liq-02.js",
+      "app/data/tya-financial-canonical-source-safe-liq-03.js",
+      "app/data/tya-financial-canonical-source-safe-review-01.js",
+      "app/data/tya-financial-canonical-source-safe-review-02.js",
+      "app/data/tya-financial-canonical-source-safe-evidence.js",
+      "app/data/tya-financial-canonical-source-safe-final.js",
+      "app/data/tya-payment-history-source-safe.js",
+      "app/data/tya-certification-carryover-source-safe.js",
+      "app/core/liquidacion.js",
+      "app/core/finanzas-core.js",
+      "app/core/notif.js",
+      "app/adapters/tya-live-source-inplace-apply.js",
+      "app/adapters/tya-live-source-refresh-watch-v2.js",
+      "app/adapters/cxorbia-exact-identity-contract-v1.js",
+      "app/adapters/tya-cumulative-read-model-v2.js",
+      "app/adapters/cxorbia-identity-roll-forward-v1.js",
+      "app/adapters/tya-canonical-state-semantics-v2.js",
+      "app/core/backend-config.js",
+      "app/core/backend-config-preview-dev.js",
+      "app/core/backend-protected-dev-mode.js",
+      "app/core/backend-protected-dev-session-continuity.js",
+      "app/core/backend-v57-extra-config.js",
+      "app/core/backend-dev-auth.local.js",
+      "app/core/backend-browser-auth.js",
+      "app/adapters/tya-c6-live-user-admin-membership-wiring-v1.js",
+      "app/adapters/cxorbia-shopper-membership-wiring-v1.js",
+      "app/adapters/cxorbia-provider-identity-link-runtime-v1.js",
+      "app/adapters/tya-phase-a-authority-compat-v1.js",
+      "app/adapters/tya-dev-technical-auth-e2e-v1.js",
+      "app/core/backend-firebase.js",
+      "app/core/backend-resources.js",
+      "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+      "app/core/backend-cxdata-read-guard.js",
+      "app/core/backend-finance-benefits.js",
+      "app/core/backend-cxdata-finance-read.js",
+      "app/core/backend-operational-actions.js",
+      "app/adapters/cxorbia-command-adapter-v1.js",
+      "app/adapters/cxorbia-command-http-transport-v1.js",
+      "app/adapters/cxorbia-shopper-admin-command-contract-v1.js",
+      "app/adapters/cxorbia-hr-write-adapter-contract-v1.js",
+      "app/core/backend-cxdata-readonly-corte4.js",
+      "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+      "app/core/backend-ui-action-bridge.js",
+      "app/core/backend-bulletins.js",
+      "app/core/backend-automations.js",
+      "app/core/backend-hr-source-bridge.js",
+      "app/adapters/tya-financial-canonical-source-safe-adapter.js",
+      "app/adapters/tya-canonical-finance-read-model-v2.js",
+      "app/adapters/tya-delegated-coordination-finance-guard-v1.js",
+      "app/adapters/cxorbia-canonical-write-firewall-v1.js",
+      "app/core/topbar.js",
+      "app/core/pwa.js",
+      "app/core/router.js",
+      "app/modules/midia.js",
+      "app/modules/dashboard.js",
+      "app/modules/proyectos.js",
+      "app/modules/periodos.js",
+      "app/modules/historico.js",
+      "app/modules/hr-source.js",
+      "app/modules/proyecto-wizard.js",
+      "app/modules/visitas.js",
+      "app/modules/visita-detalle.js",
+      "app/modules/revision-admin.js",
+      "app/modules/cuestionario-shopper.js",
+      "app/modules/postulaciones.js",
+      "app/modules/shoppers.js",
+      "app/modules/misvisitas.js",
+      "app/modules/beneficios.js",
+      "app/modules/tablon.js",
+      "app/modules/cert.js",
+      "app/modules/documentos.js",
+      "app/modules/academia.js",
+      "app/modules/soporte.js",
+      "app/modules/operacion-extra.js",
+      "app/modules/finanzas.js",
+      "app/modules/configuracion.js",
+      "app/modules/saas-console.js",
+      "app/modules/cliente.js",
+      "app/modules/cliente-extra.js",
+      "app/modules/cliente-insights.js",
+      "app/modules/novedades.js",
+      "app/modules/clientes.js",
+      "app/modules/importador.js",
+      "app/modules/comercial.js",
+      "app/modules/crm.js",
+      "app/modules/marketing.js",
+      "app/modules/reservas.js",
+      "app/modules/integraciones.js",
+      "app/modules/automatizaciones.js",
+      "app/modules/correo.js",
+      "app/modules/marca.js",
+      "app/modules/diagnostico.js",
+      "app/modules/administrabilidad.js",
+      "app/adapters/tya-ab-cumulative-composition-v1.js",
+      "app/adapters/tya-c6-domain-consistency-bridge.js",
+      "app/adapters/tya-canonical-shopper-portal-v2.js",
+      "app/adapters/tya-canonical-reservations-guard-v2.js",
+      "app/adapters/tya-c6-unified-human-runtime-v1.js",
+      "app/adapters/tya-c6-shopper-auth-click-guard-v1.js",
+      "app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js",
+      "app/adapters/cxorbia-legal-acceptance-provider-bridge-v1.js",
+      "app/adapters/cxorbia-legal-runtime-http-v1.js",
+      "app/core/backend-corte4-empty-shell-guard.js",
+      "app/app.js"
+    ],
+    "platformManagedScripts": [
+      "/__/firebase/init.js"
+    ],
+    "externalScripts": [
+      "https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js",
+      "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js",
+      "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js",
+      "https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js",
+      "https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"
+    ],
+    "misvisitasOwnershipInvariant": {
+      "canonicalOwner": "app/modules/misvisitas.js",
+      "forbiddenLateOverride": "CX.modules.misvisitas=",
+      "bridge": "app/adapters/tya-c6-domain-consistency-bridge.js",
+      "state": "PROVEN_NO_OVERRIDE_RUN333"
+    }
   },
   "preservedNonAuthoritySource": [
     {
@@ -3930,7 +4801,7 @@
     "gate21AfterFullHuman": true,
     "cacheRuntimeFailClosed": true
   },
-  "nextExactAction": "Recertify unchanged product source 77bf74f807d254637f0b2cde4b1d1668017a0c8a. Persist and print Paula.osorio live proof plus first exact Step23 blocker before any throw. No product change until exact route owner is proven.",
+  "nextExactAction": "Execute PRE-I4 exhaustive Module Truth Matrix gate: verify all matrix blobs against f5b96e85, all 127 repo-managed active scripts served byte-exact from DEV, no duplicate/unknown overlay, Run333 cumulative focal PASS and Run332 exact Rules PASS.",
   "moduleTruthCorrection": {
     "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
     "run179": {
@@ -3960,16 +4831,15 @@
   },
   "entrypointClosure": {
     "entrypoint": "app/index-backend-dev.html",
-    "loadedScriptsTotal": 131,
-    "activeInternalScriptCount": 125,
-    "matrixCoveredActiveInternal": 125,
-    "activeInternalOutsideMatrix": [],
+    "loadedScriptsTotal": 133,
+    "activeRepoManagedScriptCount": 127,
+    "platformManagedScriptCount": 1,
+    "externalScriptCount": 5,
+    "matrixCoveredActiveRepoManaged": 127,
+    "activeRepoManagedOutsideMatrix": [],
     "duplicateSrc": [],
-    "knownOverlayLike": [
-      "app/adapters/tya-ab-cumulative-composition-v1.js"
-    ],
     "unknownActiveOverlays": [],
-    "allActiveInternalCovered": true
+    "allActiveRepoManagedCovered": true
   },
   "financeClosure": {
     "classification": "MATCH",
@@ -4729,5 +5599,43 @@
     "changeScope": "control-only",
     "paulaTarget": "paula.osorio",
     "production": "DO_NOT_TOUCH"
+  },
+  "rulesSource": {
+    "sha": "2f924e6e2057adef9c0c6be8259d564e15c43573",
+    "treeSha": "c9ccafef4aaaef6adbb3e797a0ff40067c03aebb",
+    "blobSha": "3e5a786ccffb3bea3c2e90d9e259c5e8735209df",
+    "deployRunId": 35953009969,
+    "decision": "PASS_PRE_I4_VRM029_RULES_DEV_EXACT"
+  },
+  "preI4TechnicalClosure": {
+    "state": "READY_FOR_EXHAUSTIVE_MATRIX_GATE",
+    "appSource": {
+      "sha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "treeSha": "755e448b0c19701a1598ed0727edeae64ef766b0"
+    },
+    "hostingMaterialization": {
+      "runId": 35949258270,
+      "artifactSha256": "44a02ea6daa1a3c74cccc79e87795e71439e2d6e1c1e1e3a5c2858db1dc96465"
+    },
+    "rules": {
+      "sourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573",
+      "deployRunId": 35953009969
+    },
+    "cumulativeFocal": {
+      "runId": 35953230892,
+      "artifactId": 10790135179,
+      "artifactDigest": "sha256:46a10b11954b98c8b3e98c6d759726bb3a2071e740a97afe2bd31cbfaded9206",
+      "decision": "PASS_PRE_I4_POSTDEPLOY_READBACK",
+      "browserDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+      "hrRevision": "8f3625f50d760887b5da2d43b34bbf4c881131c300905e2992c7f4cb38a07858"
+    },
+    "classificationsAllowed": [
+      "MATCH",
+      "APPROVED_NOT_COMPOSED",
+      "COMPOSED_NOT_DEPLOYED",
+      "TRUE_FUNCTIONAL_DEFECT"
+    ],
+    "observedNonMatch": [],
+    "production": false
   }
 }

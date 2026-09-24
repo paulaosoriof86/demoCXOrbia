@@ -1,12 +1,12 @@
 {
   "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v11",
-  "generatedAt": "2026-09-23T21:51:00-06:00",
+  "generatedAt": "2026-09-23T22:03:00-06:00",
   "iteration": "I3_PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "microblockId": "CXORBIA-PRE-I4-VISUAL-REMEDIATION-MICROBLOCK-20260922",
-  "status": "HOLD_VRM_029_RULES_DEPLOYED_CUMULATIVE_FOCAL_READY",
+  "status": "HOLD_MODULE_TRUTH_EXHAUSTIVE_GATE_READY",
   "production": "DO_NOT_TOUCH",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "head": "5a20e1cfd1f77d421f0441deca49bb884b417e64",
+  "head": "9de392b08863069e5ac8a3d68ffd17ad40bcf2d4",
   "lastFunctionalWrite": {
     "commit": "2f924e6e2057adef9c0c6be8259d564e15c43573",
     "parent": "e74fdd8f9fd8cb32facfd693ece36d434084627c",
@@ -319,7 +319,7 @@
       "note": "Firebase CLI :test returned 403 for the DEV principal, but the same authorized principal created the exact Ruleset and updated cloud.firestore through the official Rules API. Run332 succeeded with one exact Rules deploy; no manual IAM change was required."
     }
   },
-  "nextExactAction": "Run zero-deploy cumulative focal against unchanged Hosting artifact f5b96e85 and exact live Rules from 2f924e6e; require fresh HR same revision, full Admin and Shopper desktop/mobile including Documentos, postulation conflict visibility, finance/liquidations/certifications and byte parity. If green, proceed directly to exhaustive Module Truth Matrix closure.",
+  "nextExactAction": "Execute PRE-I4 exhaustive Module Truth gate read-only: verify all 20 modules MATCH, every matrix source blob equals f5b96e85, all 127 active repo-managed scripts plus entrypoint/layout are served byte-exact in DEV, and bind Run333 focal + Run332 Rules evidence. No deploys.",
   "functionalLineage": [
     {
       "commit": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
@@ -468,5 +468,26 @@
     },
     "conclusion": "THIRD_FORCED_LIVE_REVISION_PROVEN_WITHOUT_REIMPORT_BEFORE_FINANCE_P0_FIX",
     "latestObservedRunId": 35934463473
+  },
+  "moduleTruthClosure": {
+    "matrixSchema": "cxorbia.recovery.module-truth-matrix.v6",
+    "matrixFile": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
+    "productSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+    "productTree": "755e448b0c19701a1598ed0727edeae64ef766b0",
+    "rulesSource": "2f924e6e2057adef9c0c6be8259d564e15c43573",
+    "modules": 20,
+    "activeRepoScripts": 127,
+    "knownPlatformScripts": [
+      "/__/firebase/init.js"
+    ],
+    "externalScripts": [
+      "https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js",
+      "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js",
+      "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js",
+      "https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js",
+      "https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"
+    ],
+    "pendingGate": "PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+    "production": false
   }
 }

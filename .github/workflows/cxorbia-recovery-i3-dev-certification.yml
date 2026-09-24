@@ -59,7 +59,7 @@ env:
 
 jobs:
   certify:
-    if: ${{ github.event_name != 'push' || (!contains(github.event.head_commit.message, '[pre-i4-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-readback-only]') && !contains(github.event.head_commit.message, '[pre-i4-finance-fix-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-focal-fix-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-rules-fix-dev-only]')) }}
+    if: ${{ github.event_name != 'push' || (!contains(github.event.head_commit.message, '[pre-i4-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-readback-only]') && !contains(github.event.head_commit.message, '[pre-i4-finance-fix-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-focal-fix-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-rules-fix-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-matrix-closure]')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 70
     steps:
@@ -1958,6 +1958,116 @@ jobs:
         run: |
           set -Eeuo pipefail
           test "$(jq -r '.decision' "$PREI4_OUT/final.json")" = "PASS_PRE_I4_FOCAL_FIX_SAME_ARTIFACT_DEV"
+
+  pre-i4-module-truth-closure:
+    name: PRE-I4 exhaustive Module Truth Matrix closure
+    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[pre-i4-matrix-closure]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      MATRIX_OUT: .tmp/pre-i4-module-truth
+      MATRIX: RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json
+      PRODUCT_SOURCE: f5b96e853698f9cf96e0752fd641e7e21e9e5ed0
+      PRODUCT_TREE: 755e448b0c19701a1598ed0727edeae64ef766b0
+    steps:
+      - name: Checkout matrix closure control head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate exhaustive matrix against exact cumulative source
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$MATRIX_OUT"
+          node <<'NODE'
+          const fs=require('fs'),{execFileSync}=require('child_process');
+          const m=JSON.parse(fs.readFileSync(process.env.MATRIX,'utf8'));
+          if(m.schemaVersion!=='cxorbia.recovery.module-truth-matrix.v6')throw new Error('MAPPING_FAILURE:MATRIX_SCHEMA');
+          if(m.productSource?.sha!==process.env.PRODUCT_SOURCE||m.productSource?.treeSha!==process.env.PRODUCT_TREE)throw new Error('RELEASE_COMPOSITION_FAILURE:MATRIX_PRODUCT_SOURCE');
+          if(m.rulesSource?.sha!=='2f924e6e2057adef9c0c6be8259d564e15c43573'||m.rulesSource?.blobSha!=='3e5a786ccffb3bea3c2e90d9e259c5e8735209df')throw new Error('RELEASE_COMPOSITION_FAILURE:MATRIX_RULES_SOURCE');
+          const badModules=(m.modules||[]).filter(x=>x.classification!=='MATCH'||x.actionRequired!=null);
+          if(badModules.length)throw new Error('RELEASE_COMPOSITION_FAILURE:MATRIX_NONMATCH_MODULES:'+badModules.map(x=>x.domain).join(','));
+          if((m.modules||[]).length!==20)throw new Error('MAPPING_FAILURE:MATRIX_MODULE_COUNT_'+(m.modules||[]).length);
+          const badFiles=[];
+          for(const x of m.sourceFiles||[]){
+            let blob=null;try{blob=execFileSync('git',['rev-parse',process.env.PRODUCT_SOURCE+':'+x.path],{encoding:'utf8'}).trim();}catch{}
+            if(!blob||blob!==x.currentBlob||x.classification!=='MATCH')badFiles.push({path:x.path,expected:x.currentBlob,actual:blob,classification:x.classification});
+          }
+          if(badFiles.length)throw new Error('RELEASE_COMPOSITION_FAILURE:MATRIX_SOURCE_FILE_MISMATCH:'+JSON.stringify(badFiles.slice(0,20)));
+          const nonMatch=(m.sourceFiles||[]).filter(x=>['APPROVED_NOT_COMPOSED','COMPOSED_NOT_DEPLOYED','TRUE_FUNCTIONAL_DEFECT'].includes(x.classification));
+          if(nonMatch.length)throw new Error('RELEASE_COMPOSITION_FAILURE:MATRIX_PENDING_CLASSIFICATIONS:'+nonMatch.map(x=>x.path).join(','));
+          if(m.entrypointClosure?.allActiveRepoManagedCovered!==true||m.entrypointClosure?.activeRepoManagedOutsideMatrix?.length||m.entrypointClosure?.duplicateSrc?.length||m.entrypointClosure?.unknownActiveOverlays?.length)throw new Error('RELEASE_COMPOSITION_FAILURE:MATRIX_ENTRYPOINT_COVERAGE');
+          fs.writeFileSync(process.env.MATRIX_OUT+'/matrix-source-proof.json',JSON.stringify({decision:'PASS_PRE_I4_MATRIX_SOURCE_EXHAUSTIVE',moduleCount:m.modules.length,sourceFileCount:m.sourceFiles.length,activeRepoManaged:m.entrypointClosure.activeRepoManagedScriptCount,nonMatchCount:0,production:false},null,2)+'\n');
+          NODE
+
+      - name: Prove current entrypoint load order and all active repo scripts served byte-exact
+        run: |
+          set -Eeuo pipefail
+          rm -rf "$MATRIX_OUT/source"; mkdir -p "$MATRIX_OUT/source" "$MATRIX_OUT/remote"
+          git archive "$PRODUCT_SOURCE" | tar -x -C "$MATRIX_OUT/source"
+          node <<'NODE' > "$MATRIX_OUT/active-repo-scripts.txt"
+          const fs=require('fs');
+          const h=fs.readFileSync(process.env.MATRIX_OUT+'/source/app/index-backend-dev.html','utf8');
+          const s=[...h.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/gi)].map(x=>x[1].replace(/^\.\//,'').replace(/\?.*$/,''));
+          const repo=s.filter(x=>!/^https?:/.test(x)&&!x.startsWith('/__/')).map(x=>x.startsWith('app/')?x:'app/'+x);
+          if(s.length!==133||repo.length!==127||new Set(repo).size!==127)throw new Error('RELEASE_COMPOSITION_FAILURE:LIVE_ENTRYPOINT_SCRIPT_SET');
+          process.stdout.write(repo.join('\n')+'\n');
+          NODE
+          root="https://cxorbia-backend-dev.web.app"
+          n=0
+          while IFS= read -r path; do
+            [ -n "$path" ] || continue
+            rel="${path#app/}"
+            remote="$MATRIX_OUT/remote/$(printf '%s' "$rel" | tr '/' '_')"
+            curl -fsSL --retry 5 --retry-delay 1 -H 'Cache-Control: no-cache' "$root/$rel?matrix=${GITHUB_RUN_ID}-${n}" -o "$remote"
+            cmp "$MATRIX_OUT/source/$path" "$remote"
+            n=$((n+1))
+          done < "$MATRIX_OUT/active-repo-scripts.txt"
+          test "$n" = "127"
+          curl -fsSL --retry 5 -H 'Cache-Control: no-cache' "$root/index-backend-dev.html?matrix=${GITHUB_RUN_ID}" -o "$MATRIX_OUT/remote/index-backend-dev.html"
+          cmp "$MATRIX_OUT/source/app/index-backend-dev.html" "$MATRIX_OUT/remote/index-backend-dev.html"
+          curl -fsSL --retry 5 -H 'Cache-Control: no-cache' "$root/styles/layout.css?matrix=${GITHUB_RUN_ID}" -o "$MATRIX_OUT/remote/layout.css"
+          cmp "$MATRIX_OUT/source/app/styles/layout.css" "$MATRIX_OUT/remote/layout.css"
+          jq -n -S --argjson scripts "$n" '{decision:"PASS_PRE_I4_ALL_ACTIVE_REPO_SERVED_BYTE_EXACT",activeRepoScripts:$scripts,entrypoint:true,layoutCss:true,production:false}' > "$MATRIX_OUT/live-byte-proof.json"
+
+      - name: Bind exact Run333 cumulative focal and Run332 Rules evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$MATRIX_OUT/run333" "$MATRIX_OUT/run332"
+          gh run download 35953230892 --repo "$GITHUB_REPOSITORY" --name "cxorbia-pre-i4-postdeploy-readback-35953230892" --dir "$MATRIX_OUT/run333"
+          test "$(jq -r '.decision' "$MATRIX_OUT/run333/final.json")" = "PASS_PRE_I4_POSTDEPLOY_READBACK"
+          test "$(jq -r '.sourceSha' "$MATRIX_OUT/run333/final.json")" = "$PRODUCT_SOURCE"
+          test "$(jq -r '.decision' "$MATRIX_OUT/run333/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
+          test "$(jq -r '.decision' "$MATRIX_OUT/run333/remote-readback.json")" = "PASS_PRE_I4_POSTDEPLOY_REMOTE_BYTE_PARITY"
+          test "$(jq -r '.sourceRevision' "$MATRIX_OUT/run333/hr-contrast.json")" = "8f3625f50d760887b5da2d43b34bbf4c881131c300905e2992c7f4cb38a07858"
+          test "$(jq -r '.decision' "$MATRIX_OUT/run333/firestore-live-parity.json")" = "PASS_LIVE_FIRESTORE_RULES_EXACT"
+          test "$(jq -r '.decision' "$MATRIX_OUT/run333/resource-rules-query-proof.json")" = "PASS_VRM029_FINAL_QUERY_PROOF"
+          gh run download 35953009969 --repo "$GITHUB_REPOSITORY" --name "cxorbia-pre-i4-vrm029-rules-35953009969" --dir "$MATRIX_OUT/run332"
+          test "$(jq -r '.decision' "$MATRIX_OUT/run332/final.json")" = "PASS_PRE_I4_VRM029_RULES_DEV_EXACT"
+          jq -n -S '{decision:"PASS_PRE_I4_BOUND_CUMULATIVE_EVIDENCE",run333:35953230892,run332:35953009969,production:false}' > "$MATRIX_OUT/bound-evidence.json"
+
+      - name: Freeze exhaustive Module Truth PASS
+        run: |
+          set -Eeuo pipefail
+          jq -n -S             --arg source "$PRODUCT_SOURCE"             --arg tree "$PRODUCT_TREE"             --arg rules "2f924e6e2057adef9c0c6be8259d564e15c43573"             --arg hr "8f3625f50d760887b5da2d43b34bbf4c881131c300905e2992c7f4cb38a07858"             '{decision:"PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",sourceSha:$source,sourceTree:$tree,rulesSourceSha:$rules,hrRevision:$hr,moduleCount:20,activeRepoScripts:127,approvedNotComposed:0,composedNotDeployed:0,trueFunctionalDefects:0,duplicateScripts:0,unknownOverlays:0,runtimeDeploysThisRun:0,rulesDeploysThisRun:0,hostingDeploysThisRun:0,production:false}' > "$MATRIX_OUT/final.json"
+
+      - name: Upload exhaustive Module Truth evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-pre-i4-module-truth-${{ github.run_id }}
+          path: ${{ env.MATRIX_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
+      - name: Enforce exhaustive Module Truth result
+        run: |
+          set -Eeuo pipefail
+          test "$(jq -r '.decision' "$MATRIX_OUT/final.json")" = "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE"
+          test "$(jq -r '.decision' "$MATRIX_OUT/live-byte-proof.json")" = "PASS_PRE_I4_ALL_ACTIVE_REPO_SERVED_BYTE_EXACT"
+          test "$(jq -r '.decision' "$MATRIX_OUT/matrix-source-proof.json")" = "PASS_PRE_I4_MATRIX_SOURCE_EXHAUSTIVE"
 
   pre-i4-postdeploy-readback:
     name: PRE-I4 postdeploy no-deploy focal verification
