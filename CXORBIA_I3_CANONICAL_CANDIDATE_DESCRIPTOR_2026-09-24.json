@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM043_IDENTITY_NAME_DIAGNOSTIC",
+  "status": "HOLD_VRM043_CONTROL_FIX_NO_DEPLOY_PROOF",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "04b288f7eee315fcb865ed86a8fb41786809edf9",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "d02dd90ac9ee361bfdfb0474a05e63f2fa684f07",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V12_2026-09-24.json",
-  "findingsLedgerExpectedGitBlob": "44a7b2748b056b8907093c0dd9da07dabe5f90bf",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V13_2026-09-24.json",
+  "findingsLedgerExpectedGitBlob": "a67b798819801c7a467fc9ae20e8267d8855c2c3",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-043 ADMIN_REAL_SHOPPER_IDENTITY_NOT_RENDERABLE",
+  "activeBlocker": "VRM-043 CONTROL ORACLE REPROOF ON EXISTING DEV",
   "nextFindingId": "VRM-043",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "VRM043_READ_ONLY_EXPECTED_VS_OBSERVED_NAME_DIAGNOSTIC",
+  "exactNextAction": "RUN_VRM043_CONTROL_ONLY_NO_DEPLOY_FULL_ACCEPTANCE_SEMANTIC_FOCAL_ON_EXISTING_DEV",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -99,5 +99,14 @@
     "artifactCreated": false,
     "gate21Run": false,
     "production": false
+  },
+  "vrm043": {
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "productDefect": false,
+    "diagnosticRunId": 36071879859,
+    "humanNamesExact": 218,
+    "humanNameMismatches": 0,
+    "unresolvedReviewOnly": 1,
+    "productSourceChanged": false
   }
 }
