@@ -353,6 +353,44 @@ jobs:
           echo "HOSTING_VERSION_NAME=$HOSTING_VERSION_NAME" >> "$GITHUB_ENV"
           echo "HOSTING_RELEASE_TIME=$HOSTING_RELEASE_TIME" >> "$GITHUB_ENV"
 
+      - name: Prove byte parity for every C3 pending human owner
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$OUT/c3-pending-owner-remote"
+          : > "$OUT/c3-pending-owner-parity.tsv"
+          mismatches=0
+          app_count=0
+          backend_count=0
+          while IFS= read -r path; do
+            test -n "$path" || continue
+            if [[ "$path" == app/* ]]; then
+              app_count=$((app_count+1))
+              rel="${path#app/}"
+              remote="$OUT/c3-pending-owner-remote/$(echo "$rel" | tr '/' '_')"
+              expected="$(sha256sum "$SOURCE_DIR/$path" | awk '{print $1}')"
+              matched=0
+              for attempt in $(seq 1 20); do
+                if curl -fsSL --retry 2 --retry-delay 1 -H 'Cache-Control: no-cache, no-store, max-age=0' -H 'Pragma: no-cache' "$HOSTING_URL/$rel?c3=${GITHUB_RUN_ID}-${attempt}-$(date +%s%N)" -o "$remote"; then
+                  actual="$(sha256sum "$remote" | awk '{print $1}')"
+                  if [[ "$actual" = "$expected" ]]; then matched=1; break; fi
+                fi
+                sleep 2
+              done
+              if [[ "$matched" != 1 ]]; then mismatches=$((mismatches+1)); fi
+              printf '%s\t%s\t%s\t%s\n' "$path" "$expected" "${actual:-MISSING}" "$([[ "$matched" = 1 ]] && echo MATCH || echo MISMATCH)" >> "$OUT/c3-pending-owner-parity.tsv"
+            elif [[ "$path" == backend/* ]]; then
+              backend_count=$((backend_count+1))
+              expected="$(git rev-parse "$I3_CERTIFICATION_SOURCE_SHA:$path")"
+              actual="$(git hash-object "$SOURCE_DIR/$path")"
+              if [[ "$actual" != "$expected" ]]; then mismatches=$((mismatches+1)); fi
+              printf '%s\t%s\t%s\t%s\n' "$path" "$expected" "$actual" "$([[ "$actual" = "$expected" ]] && echo MATCH || echo MISMATCH)" >> "$OUT/c3-pending-owner-parity.tsv"
+            fi
+          done < <(jq -r '.sourceFiles[] | select(.classification=="COMPOSED_NOT_DEPLOYED") | .path' "$OUT/module-truth-preterminal.json")
+          jq -Rn --arg source "$I3_CERTIFICATION_SOURCE_SHA" --argjson app "$app_count" --argjson backend "$backend_count" --argjson mismatch "$mismatches"             '[inputs|split("\t")|{path:.[0],expected:.[1],observed:.[2],classification:.[3]}] |
+             {decision:(if $mismatch==0 then "PASS_C3_PENDING_OWNER_BYTE_PARITY" else "FAIL_C3_PENDING_OWNER_BYTE_PARITY" end),
+              sourceSha:$source,appOwners:$app,backendOwners:$backend,mismatches:$mismatch,rows:.,production:false}'             < "$OUT/c3-pending-owner-parity.tsv" > "$OUT/c3-pending-owner-parity.json"
+          test "$mismatches" = 0
+
       - name: Adjudicate proven exact HR aliases before fresh reconciliation
         run: |
           set -Eeuo pipefail
@@ -1063,6 +1101,13 @@ jobs:
           test "$(jq --arg r "$PINNED_HR_REVISION" '[.[] | select(.hostingRevision==$r and .runtimeRevision==$r)] | length' "$OUT/hr-pin-readbacks.json")" = "5"
           echo "PINNED_HR_REVISION=$PINNED_HR_REVISION" >> "$GITHUB_ENV"
 
+      - name: Remove only exact I3 QA reservation fixtures and prove zero residue
+        run: |
+          set -Eeuo pipefail
+          C3_QA_OUT="$OUT/c3-semantic"           C3_FIREBASE_PROJECT="$PROJECT"           C3_TENANT_ID="$TENANT_ID"           C3_PROJECT_ID="$PROJECT_ID"           node tools/qa/cxorbia-i3-c3-qa-reservation-cleanup.mjs | tee "$OUT/c3-qa-cleanup.log"
+          test "$(jq -r '.decision' "$OUT/c3-semantic/qa-reservation-cleanup.json")" = "PASS_C3_QA_RESERVATION_CLEANUP"
+          test "$(jq -r '.after' "$OUT/c3-semantic/qa-reservation-cleanup.json")" = "0"
+
       - name: Normalize durable active shopper credentials on frozen rule
         run: |
           set -Eeuo pipefail
@@ -1347,18 +1392,54 @@ jobs:
           NODE
           cp CXORBIA_CANONICAL_ROUTE_INVENTORY_2026-09-18.json "$OUT/canonical-route-inventory.json"
 
+      - name: Build independent same-revision C3 semantic oracle
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$OUT/c3-semantic"
+          C3_SEM_OUT="$OUT/c3-semantic"           C3_HR_FILE="$OUT/hr-fresh.json"           C3_FIREBASE_PROJECT="$PROJECT"           C3_TENANT_ID="$TENANT_ID"           C3_PROJECT_ID="$PROJECT_ID"           C3_HR_REVISION="$PINNED_HR_REVISION"           node tools/qa/cxorbia-i3-c3-terminal-semantic-oracle.mjs | tee "$OUT/c3-semantic/oracle.log"
+          test "$(jq -r '.decision' "$OUT/c3-semantic/hr-contrast.json")" = "PASS_C3_TERMINAL_HR_SEMANTIC_ORACLE"
+          test "$(jq -r '.sourceRevision' "$OUT/c3-semantic/hr-contrast.json")" = "$PINNED_HR_REVISION"
+
+      - name: Execute hardened C3 Admin + Paula desktop/mobile semantic focal
+        run: |
+          set -Eeuo pipefail
+          PREI4_OUT="$OUT/c3-semantic"           CXORBIA_PREI4_ROOT="$HOSTING_URL"           CXORBIA_PREI4_SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA"           node tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs | tee "$OUT/c3-semantic/focal-console.log"
+          test "$(jq -r '.decision' "$OUT/c3-semantic/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
+          test "$(jq -r '.sourceSha' "$OUT/c3-semantic/browser-focal.json")" = "$I3_CERTIFICATION_SOURCE_SHA"
+          test "$(jq -r '.hrRevision' "$OUT/c3-semantic/browser-focal.json")" = "$PINNED_HR_REVISION"
+
+      - name: Finalize independent Module Truth only after terminal live proofs
+        run: |
+          set -Eeuo pipefail
+          LEDGER="$(jq -r '.findingsLedgerPath' "$CANDIDATE_DESCRIPTOR")"
+          C3_PRETERMINAL="$OUT/module-truth-preterminal.json"           C3_FOCAL="$OUT/c3-semantic/browser-focal.json"           C3_HUMAN="$OUT/full-human-acceptance/human-live-acceptance.json"           C3_QA="$OUT/c3-semantic/qa-reservation-cleanup.json"           C3_PARITY="$OUT/c3-pending-owner-parity.json"           C3_LEDGER="$LEDGER"           C3_FINAL_MATRIX="$OUT/module-truth-matrix.json"           C3_SOURCE="$I3_CERTIFICATION_SOURCE_SHA"           C3_TREE="$I3_CERTIFICATION_SOURCE_TREE"           node tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs | tee "$OUT/module-truth-terminal-console.log"
+          test "$(jq -r '.terminalClosure.decision' "$OUT/module-truth-matrix.json")" = "PASS_C3_TERMINAL_MODULE_TRUTH_20_20"
+          test "$(jq -r '.allModulesMatch' "$OUT/module-truth-matrix.json")" = "true"
+          test "$(jq '[.modules[] | select(.classification!="MATCH")]|length' "$OUT/module-truth-matrix.json")" = "0"
+          MODULE_TRUTH_MATRIX_SHA256="$(sha256sum "$OUT/module-truth-matrix.json" | awk '{print $1}')"
+          echo "MODULE_TRUTH_MATRIX_SHA256=$MODULE_TRUTH_MATRIX_SHA256" >> "$GITHUB_ENV"
+          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg tree "$I3_CERTIFICATION_SOURCE_TREE" --arg sha "$MODULE_TRUTH_MATRIX_SHA256"             '{decision:"PASS_I3_EXHAUSTIVE_PHASE_A_MODULE_INTEGRITY",sourceSha:$source,sourceTree:$tree,moduleTruthSha256:$sha,moduleCount:20,allModulesMatch:true,terminalProof:true,production:false}'             > "$OUT/module-integrity-gate.json"
+
       - name: Derive Gate 20 visual and semantic receipts from same exhaustive acceptance
         run: |
           set -Eeuo pipefail
           HUMAN="$OUT/full-human-acceptance/human-live-acceptance.json"
           PROBES="$OUT/full-human-acceptance/i3-functional-probes.json"
+          FOCAL="$OUT/c3-semantic/browser-focal.json"
+          MATRIX="$OUT/module-truth-matrix.json"
+          QA="$OUT/c3-semantic/qa-reservation-cleanup.json"
           HUMAN_SHA="$(sha256sum "$HUMAN" | awk '{print $1}')"
           PROBES_SHA="$(sha256sum "$PROBES" | awk '{print $1}')"
+          FOCAL_SHA="$(sha256sum "$FOCAL" | awk '{print $1}')"
+          MATRIX_SHA="$(sha256sum "$MATRIX" | awk '{print $1}')"
+          QA_SHA="$(sha256sum "$QA" | awk '{print $1}')"
           ROUTE_SHA="$(sha256sum "$OUT/canonical-route-inventory.json" | awk '{print $1}')"
           SHOTS="$(jq -r '.screenshotCount' "$HUMAN")"
           test "$ROUTE_SHA" = "ad262dd0165a7159e62076f67a6339b375ce0760dd6b650abc4ee438b04950af"
-          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg human "$HUMAN_SHA" --arg routes "$ROUTE_SHA" --argjson shots "$SHOTS" '{decision:"PASS_GATE20_FOCAL_VISUAL_DRIFT",gate:20,mode:"FULL_CANONICAL_VISUAL_ACCEPTANCE_DERIVED",sourceSha:$source,fullHumanAcceptanceSha256:$human,routeInventorySha256:$routes,expectedRoleRouteEntries:56,screenshotCount:$shots,hrAuthorityApplied:true,production:false}' > "$OUT/gate20/gate20-browser-visual.json"
-          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg human "$HUMAN_SHA" --arg probes "$PROBES_SHA" --arg routes "$ROUTE_SHA" '{decision:"PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY",gate:20,mode:"FULL_CANONICAL_SEMANTIC_ACCEPTANCE_DERIVED",sourceSha:$source,fullHumanAcceptanceSha256:$human,functionalProbesSha256:$probes,routeInventorySha256:$routes,expectedRoleRouteEntries:56,production:false}' > "$OUT/gate20-semantic-shopper.json"
+          test "$(jq -r '.decision' "$FOCAL")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
+          test "$(jq -r '.terminalClosure.decision' "$MATRIX")" = "PASS_C3_TERMINAL_MODULE_TRUTH_20_20"
+          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg human "$HUMAN_SHA" --arg focal "$FOCAL_SHA" --arg matrix "$MATRIX_SHA" --arg qa "$QA_SHA" --arg routes "$ROUTE_SHA" --argjson shots "$SHOTS" '{decision:"PASS_GATE20_FOCAL_VISUAL_DRIFT",gate:20,mode:"FULL_CANONICAL_VISUAL_PLUS_HARDENED_C3",sourceSha:$source,fullHumanAcceptanceSha256:$human,hardenedFocalSha256:$focal,moduleTruthSha256:$matrix,qaCleanupSha256:$qa,routeInventorySha256:$routes,expectedRoleRouteEntries:56,screenshotCount:$shots,hrAuthorityApplied:true,production:false}' > "$OUT/gate20/gate20-browser-visual.json"
+          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg human "$HUMAN_SHA" --arg probes "$PROBES_SHA" --arg focal "$FOCAL_SHA" --arg matrix "$MATRIX_SHA" --arg qa "$QA_SHA" --arg routes "$ROUTE_SHA" '{decision:"PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY",gate:20,mode:"FULL_CANONICAL_SEMANTIC_PLUS_HARDENED_C3",sourceSha:$source,fullHumanAcceptanceSha256:$human,functionalProbesSha256:$probes,hardenedFocalSha256:$focal,moduleTruthSha256:$matrix,qaCleanupSha256:$qa,routeInventorySha256:$routes,expectedRoleRouteEntries:56,production:false}' > "$OUT/gate20-semantic-shopper.json"
           test "$(jq -r '.decision' "$OUT/gate20/gate20-browser-visual.json")" = "PASS_GATE20_FOCAL_VISUAL_DRIFT"
           test "$(jq -r '.decision' "$OUT/gate20-semantic-shopper.json")" = "PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY"
 
