@@ -45,26 +45,26 @@ CX.module('financiero', ({data,ui})=>{
     <div class="between" style="margin-bottom:10px"><div class="card-t finDrill" data-c="${c}" style="cursor:pointer">${CX.paisLabel(c)} <span class="muted" style="font-weight:500">(${d.cur})</span> <span style="font-size:11px;color:var(--brand)">ver visitas →</span></div>${Number.isFinite(d.margenPct)?ui.bdg(d.margenPct+'% margen',d.margenPct>=30?'g':'a'):ui.bdg('Margen · pendiente de fuente','n')}</div>
     <div class="grid g2" style="gap:8px" class="finTileK" data-c="${c}" style="cursor:pointer">
       <div class="finDrill" data-c="${c}" style="cursor:pointer">${ui.kpi('Ingresos',moneyOrPending(d,d.ingreso),'g',d.incomeSourceKnown?'Fuente configurada':'Pendiente de fuente/configuración')}</div>
-      <div class="finDrill" data-c="${c}" style="cursor:pointer">${ui.kpi('Honorarios devengados',d.cur+' '+d.honorarioDevengado.toLocaleString(),'r','obligación · no implica pago')}</div>
+      <div class="finDrill" data-c="${c}" style="cursor:pointer">${ui.kpi('Honorarios devengados',moneyOrPending(d,d.honorarioDevengado,'Pendiente de fuente'),'r',Number.isFinite(d.honorarioDevengado)?'obligación · no implica pago':'Tarifa/honorario no disponible en HR ni configuración')}</div>
       <div class="finDrill" data-c="${c}" style="cursor:pointer">${p.modelo==='directo'?ui.kpi('ISR ('+(p.isr||0)+'%)',moneyOrPending(d,d.isr),'a'):ui.kpi('Reembolsos',d.cur+' '+d.reemb.toLocaleString(),'n',d.reimbursementPartial?'Total conocido · parcial / pendiente de fuente':'Obligación operacional conocida')}</div>
-      <div class="finDrill" data-c="${c}" style="cursor:pointer">${p.modelo==='directo'?ui.kpi('Regalías ('+(p.regalias||0)+'%)',moneyOrPending(d,d.regal),'p'):ui.kpi('Por pagar (CxP)',d.cur+' '+d.cxp.toLocaleString(),'a')}</div>
+      <div class="finDrill" data-c="${c}" style="cursor:pointer">${p.modelo==='directo'?ui.kpi('Regalías ('+(p.regalias||0)+'%)',moneyOrPending(d,d.regal),'p'):ui.kpi('Por pagar (CxP)',moneyOrPending(d,d.cxp,'Pendiente de fuente'),'a')}</div>
     </div>
     <div class="grid g2" style="gap:8px;margin-top:8px">
-      <div>${ui.kpi('Honorario por pagar',d.cur+' '+d.honorarioPorPagar.toLocaleString(),'a')}</div>
-      <div>${ui.kpi('Honorario pagado',d.pagosConfirmados?(d.cur+' '+d.honorarioPagado.toLocaleString()):(d.cur+' 0'),d.pagosConfirmados?'g':'n',d.pagosConfirmados?(d.pagosConfirmados+' pago(s) confirmado(s)'):'0 pagos confirmados en la fuente')}</div>
+      <div>${ui.kpi('Honorario por pagar',moneyOrPending(d,d.honorarioPorPagar,'Pendiente de fuente'),'a')}</div>
+      <div>${ui.kpi('Honorario pagado',Number.isFinite(d.honorarioPagado)?(d.cur+' '+d.honorarioPagado.toLocaleString()):'Pendiente de fuente',d.pagosConfirmados?'g':'n',d.pagosConfirmados?(d.pagosConfirmados+' pago(s) confirmado(s)'):'Sin pagos confirmados en la fuente')}</div>
     </div>
     <div class="between" style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border-2)">
       <span style="font-size:12px;color:var(--t2)">Margen neto</span>
       <b style="font-family:var(--disp);font-size:18px;color:${Number.isFinite(d.margen)?(d.margen>=0?'var(--green)':'var(--red)'):'var(--t3)'}">${moneyOrPending(d,d.margen)}</b></div>
     <div class="flex" style="gap:14px;margin-top:8px;font-size:11px;color:var(--t3)">
       <span>CxC: <b style="color:var(--t2)">${moneyOrPending(d,d.cxc)}</b></span>
-      <span>CxP: <b style="color:var(--t2)">${d.cur} ${d.cxp.toLocaleString()}</b></span>
+      <span>CxP: <b style="color:var(--t2)">${moneyOrPending(d,d.cxp,'Pendiente de fuente')}</b></span>
       <span>Gastos fijos: <b style="color:var(--t2)" title="Presupuesto sin distribución por país/moneda confirmada — ver tarjeta de presupuesto pendiente">Pendiente de asignación</b></span></div>
   </div>`;};
 
   /* motor de análisis crítico inteligente: deriva hallazgos/estrategias de los datos */
   const analizar=()=>{
-    const H=[]; const M=(cur,n)=>`${cur} ${Number(Math.round(n)).toLocaleString('es-GT')}`;
+    const H=[]; const M=(cur,n)=>Number.isFinite(n)?`${cur} ${Number(Math.round(n)).toLocaleString('es-GT')}`:'Pendiente de fuente';
     p.countries.forEach(c=>{
       const d=fp[c], cur=d.cur;
       if(!Number.isFinite(d.margenPct)) H.push({tono:'a',icon:'⏳',titulo:`Margen pendiente de fuente en ${CX.paisLabel(c)}`,txt:`La obligación operacional sí está disponible (honorarios devengados ${M(cur,d.honorarioDevengado)}), pero falta una fuente/configuración autorizada de ingreso o comisión para calcular margen.`,accion:'Completar fuente de ingreso'});
@@ -167,7 +167,7 @@ CX.module('financiero', ({data,ui})=>{
       const finSpec=(ext)=>({ title:'Dashboard Financiero',
         meta:{title:'Dashboard Financiero',project:projectLabel,period:finCurPeriod(),scope:p.countries.join(' · '),sourceLabel:'Finanzas · '+modelLbl,generatedAt:new Date().toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'})},
         columns:[{key:'pais',label:'País'},{key:'moneda',label:'Moneda'},{key:'ingreso',label:'Ingresos'},{key:'devengado',label:'Honorario devengado'},{key:'porPagar',label:'Honorario por pagar'},{key:'pagado',label:'Honorario pagado'},{key:'fijos',label:'Gastos fijos'},{key:'margen',label:'Margen'},{key:'margenPct',label:'Margen %'},{key:'cxc',label:'CxC'}],
-        rows:p.countries.map(c=>{const d=fp[c];return {pais:CX.paisLabel(c),moneda:d.cur,ingreso:Math.round(d.ingreso),devengado:Math.round(d.honorarioDevengado),porPagar:Math.round(d.honorarioPorPagar),pagado:Math.round(d.honorarioPagado),fijos:Math.round(d.fijos),margen:Math.round(d.margen),margenPct:d.margenPct+'%',cxc:Math.round(d.cxc)};}),
+        rows:p.countries.map(c=>{const d=fp[c],safe=n=>Number.isFinite(n)?Math.round(n):null;return {pais:CX.paisLabel(c),moneda:d.cur,ingreso:safe(d.ingreso),devengado:safe(d.honorarioDevengado),porPagar:safe(d.honorarioPorPagar),pagado:safe(d.honorarioPagado),fijos:safe(d.fijos),margen:safe(d.margen),margenPct:Number.isFinite(d.margenPct)?d.margenPct+'%':null,cxc:safe(d.cxc)};}),
         notes:'Honorario pagado solo suma filas con pago confirmado y referencia de fuente. Cada fila conserva su moneda; no se suman monedas distintas.',
         summary:['Países: '+p.countries.length,'Modelo: '+modelLbl,'Pagos confirmados: '+p.countries.reduce((a,c)=>a+fp[c].pagosConfirmados,0)],
         chart:{title:'Margen % por país',data:p.countries.map(c=>({label:CX.paisLabel(c),value:fp[c].margenPct,display:fp[c].margenPct+'%'}))},
@@ -180,13 +180,13 @@ CX.module('financiero', ({data,ui})=>{
       const d=fp[c];
       ui.modal('Detalle financiero · '+CX.paisLabel(c),`
         <div class="grid g2" style="gap:12px;margin-bottom:14px">
-          <div class="card card-p"><div class="card-t" style="font-size:12px;margin-bottom:6px">💰 Ingresos operativos</div><div style="font-size:20px;font-weight:800;color:var(--green);font-family:var(--disp)">${d.cur} ${d.ingreso.toLocaleString()}</div><div style="font-size:11px;color:var(--t3);margin-top:4px">Facturado al cliente (sin financiamientos)</div></div>
-          <div class="card card-p"><div class="card-t" style="font-size:12px;margin-bottom:6px">💸 Honorario devengado</div><div style="font-size:20px;font-weight:800;color:var(--red);font-family:var(--disp)">${d.cur} ${d.honorarioDevengado.toLocaleString()}</div><div style="font-size:11px;color:var(--t3);margin-top:4px">${liqs.length} liquidaciones · por pagar ${d.cur} ${d.honorarioPorPagar.toLocaleString()} · pagado ${d.cur} ${d.honorarioPagado.toLocaleString()} (${d.pagosConfirmados} confirmado/s)</div></div>
-          <div class="card card-p"><div class="card-t" style="font-size:12px;margin-bottom:6px">🟢 Margen neto</div><div style="font-size:20px;font-weight:800;color:${d.margen>=0?'var(--green)':'var(--red)'};font-family:var(--disp)">${d.cur} ${d.margen.toLocaleString()} <span style="font-size:13px;font-weight:600">(${d.margenPct}%)</span></div><div style="font-size:11px;color:var(--t3);margin-top:4px">${d.margenPct>=30?'✓ Sobre objetivo (30%)':'⚠ Bajo objetivo (30%)'}</div></div>
-          <div class="card card-p"><div class="card-t" style="font-size:12px;margin-bottom:6px">⏳ Cuentas por cobrar (CxC)</div><div style="font-size:20px;font-weight:800;color:var(--amber);font-family:var(--disp)">${d.cur} ${d.cxc.toLocaleString()}</div></div>
+          <div class="card card-p"><div class="card-t" style="font-size:12px;margin-bottom:6px">💰 Ingresos operativos</div><div style="font-size:20px;font-weight:800;color:var(--green);font-family:var(--disp)">${moneyOrPending(d,d.ingreso)}</div><div style="font-size:11px;color:var(--t3);margin-top:4px">${Number.isFinite(d.ingreso)?'Facturado al cliente (sin financiamientos)':'Pendiente de fuente/configuración autorizada'}</div></div>
+          <div class="card card-p"><div class="card-t" style="font-size:12px;margin-bottom:6px">💸 Honorario devengado</div><div style="font-size:20px;font-weight:800;color:var(--red);font-family:var(--disp)">${moneyOrPending(d,d.honorarioDevengado,'Pendiente de fuente')}</div><div style="font-size:11px;color:var(--t3);margin-top:4px">${liqs.length} liquidaciones · por pagar ${moneyOrPending(d,d.honorarioPorPagar,'Pendiente de fuente')} · pagado ${moneyOrPending(d,d.honorarioPagado,'Pendiente de fuente')} (${d.pagosConfirmados} confirmado/s)</div></div>
+          <div class="card card-p"><div class="card-t" style="font-size:12px;margin-bottom:6px">🟢 Margen neto</div><div style="font-size:20px;font-weight:800;color:${Number.isFinite(d.margen)?(d.margen>=0?'var(--green)':'var(--red)'):'var(--t3)'};font-family:var(--disp)">${moneyOrPending(d,d.margen)}</div><div style="font-size:11px;color:var(--t3);margin-top:4px">${Number.isFinite(d.margenPct)?(d.margenPct>=30?'✓ Sobre objetivo (30%)':'⚠ Bajo objetivo (30%)'):'Pendiente de fuente/configuración autorizada'}</div></div>
+          <div class="card card-p"><div class="card-t" style="font-size:12px;margin-bottom:6px">⏳ Cuentas por cobrar (CxC)</div><div style="font-size:20px;font-weight:800;color:var(--amber);font-family:var(--disp)">${moneyOrPending(d,d.cxc)}</div></div>
         </div>
         <b style="font-size:13px">Liquidaciones del periodo (${liqs.length})</b>
-        <div style="overflow-x:auto;margin-top:10px;max-height:260px;overflow-y:auto">${liqs.length?`<table class="tbl"><thead><tr><th>Visita</th><th>Shopper</th><th>Total</th><th>Estado</th><th>Pago</th></tr></thead><tbody>${liqs.map(l=>`<tr><td style="font-size:12px"><b>${l.sucursal||l.visitaId}</b></td><td style="font-size:12px">${l.shopper||'—'}</td><td>${d.cur} ${(l.total||0).toLocaleString()}</td><td>${ui.estadoBadge?ui.estadoBadge(l.estado):l.estado}</td><td>${(()=>{const v=data._visitas.find(x=>x.id===l.visitaId);const vc=v&&data.visitContract?data.visitContract(v):null;return vc&&vc.paymentState!=='no_aplica'?ui.bdg(vc.paymentState,vc.paymentState==='confirmado'?'g':'n'):'—';})()}</td></tr>`).join('')}</tbody></table>`:ui.empty('💸','Sin liquidaciones en este periodo.')}</div>`);
+        <div style="overflow-x:auto;margin-top:10px;max-height:260px;overflow-y:auto">${liqs.length?`<table class="tbl"><thead><tr><th>Visita</th><th>Shopper</th><th>Total</th><th>Estado</th><th>Pago</th></tr></thead><tbody>${liqs.map(l=>`<tr><td style="font-size:12px"><b>${l.sucursal||l.visitaId}</b></td><td style="font-size:12px">${l.shopper||'—'}</td><td>${Number.isFinite(l.total)?(d.cur+' '+l.total.toLocaleString()):'<span class="bdg bdg-a">Pendiente de fuente</span>'}</td><td>${ui.estadoBadge?ui.estadoBadge(l.estado):l.estado}</td><td>${(()=>{const v=data._visitas.find(x=>x.id===l.visitaId);const vc=v&&data.visitContract?data.visitContract(v):null;return vc&&vc.paymentState!=='no_aplica'?ui.bdg(vc.paymentState,vc.paymentState==='confirmado'?'g':'n'):'—';})()}</td></tr>`).join('')}</tbody></table>`:ui.empty('💸','Sin liquidaciones en este periodo.')}</div>`);
     }));
     /* KPIs adicionales dentro del tile — sólo responde si no es ya un finDrill */
     document.querySelectorAll('[data-c]').forEach(el=>{ if(!el.classList.contains('finDrill')) return; });
@@ -631,9 +631,11 @@ CX.module('liquidaciones', ({data,ui})=>{
     CX.finStore._draft[p.id]=draft; // limpia ids ya no validados
     const oblig=p.countries.map(c=>{
       const ls=all.filter(l=>l.pais===c);
-      const hon=ls.reduce((a,l)=>a+l.honorario,0), reemb=ls.reduce((a,l)=>a+l.reembolso,0), tot=ls.reduce((a,l)=>a+l.total,0);
-      const listo=ls.filter(l=>l.estado==='validada').reduce((a,l)=>a+l.total,0);
-      return `<tr><td><b>${c}</b></td><td>${p.currency[c]}</td><td>${ls.length}</td><td>${ui.money(p.currency[c],hon)}</td><td>${ui.money(p.currency[c],reemb)}</td><td><b>${ui.money(p.currency[c],tot)}</b></td><td>${ui.money(p.currency[c],listo)}</td></tr>`;
+      const honKnown=ls.length>0&&ls.every(l=>Number.isFinite(l.honorario)),totalKnown=ls.length>0&&ls.every(l=>Number.isFinite(l.total));
+      const hon=honKnown?ls.reduce((a,l)=>a+l.honorario,0):null, reemb=ls.filter(l=>Number.isFinite(l.reembolso)).reduce((a,l)=>a+l.reembolso,0), tot=totalKnown?ls.reduce((a,l)=>a+l.total,0):null;
+      const listoRows=ls.filter(l=>l.estado==='validada'),listo=listoRows.length&&listoRows.every(l=>Number.isFinite(l.total))?listoRows.reduce((a,l)=>a+l.total,0):null;
+      const pending='<span class="bdg bdg-a">Pendiente de fuente</span>';
+      return `<tr><td><b>${c}</b></td><td>${p.currency[c]||'—'}</td><td>${ls.length}</td><td>${honKnown?ui.money(p.currency[c],hon):pending}</td><td>${ui.money(p.currency[c],reemb)}</td><td><b>${totalKnown?ui.money(p.currency[c],tot):pending}</b></td><td>${Number.isFinite(listo)?ui.money(p.currency[c],listo):pending}</td></tr>`;
     }).join('');
 
     const lrow=(l,i)=>{const lb=CX.liq.label(l.estado); const inD=draft.includes(l.visitaId);

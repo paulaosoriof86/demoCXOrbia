@@ -74,3 +74,42 @@ test('VRM-039 source no longer coerces missing HR honorarium to zero',()=>{
   assert.match(src,/configuredHonorario=identity\.projectConfig\?\.honorario/);
   assert.match(src,/honorarioSourceKnown:honorario!==null/);
 });
+
+
+function financeReadModel(visits){
+  const context={
+    console,URLSearchParams,location:{search:'?cxTyaPhaseA=1'},
+    CX_DEV_ENTRY_CANONICAL:{canonical:true,protectedRuntime:true,projectId:'cinepolis'},
+    CX_TYA_CUMULATIVE_READ_MODEL:{facets:v=>v.canonicalFacets||{}},
+    CX:{data:{financialMatchForVisit(){return null;}},liq:{forProject(){return [];},label:s=>[s,'n'],resumen(){return {};}}}
+  };
+  context.window=context;context.globalThis=context;context.window.CX=context.CX;
+  vm.runInNewContext(fs.readFileSync(root+'app/adapters/tya-canonical-finance-read-model-v2.js','utf8'),context,{filename:'tya-canonical-finance-read-model-v2.js'});
+  return context.CX.liq.forProject({period(){return {id:'cinepolis-2026-09',periodKey:'2026-09'};},visitas(){return visits;}});
+}
+
+test('VRM-039 canonical finance read model preserves missing honorarium as pending source instead of zero',()=>{
+  const [row]=financeReadModel([{id:'missing-finance',periodKey:'2026-09',pais:'GT',currency:'Q',honorario:null,honorarioSource:'pending_source',honorarioSourceKnown:false,boleto:55,comboAmt:60,canonicalFacets:{assigned:true,realized:true,questionnaire:true,submitted:true}}]);
+  assert.equal(row.honorario,null);
+  assert.equal(row.honorarioSource,'pending_source');
+  assert.equal(row.honorarioSourceKnown,false);
+  assert.equal(row.reembolso,115);
+  assert.equal(row.total,null);
+  assert.equal(row.reviewRequired,true);
+  assert.equal(row.amountSource,'honorarium_pending_source');
+});
+
+test('VRM-039 canonical finance read model preserves explicit zero honorarium as authoritative zero',()=>{
+  const [row]=financeReadModel([{id:'zero-finance',periodKey:'2026-09',pais:'GT',currency:'Q',honorario:0,honorarioSource:'hr_explicit',honorarioSourceKnown:true,boleto:0,comboAmt:0,canonicalFacets:{assigned:true,realized:true}}]);
+  assert.equal(row.honorario,0);
+  assert.equal(row.honorarioSourceKnown,true);
+  assert.equal(row.total,0);
+});
+
+test('VRM-039 finance human surfaces render missing monetary authority as pending source, never fabricated zero',()=>{
+  const src=fs.readFileSync(root+'app/modules/finanzas.js','utf8');
+  assert.match(src,/Honorarios devengados',moneyOrPending\(d,d\.honorarioDevengado,'Pendiente de fuente'\)/);
+  assert.match(src,/honKnown\?ui\.money\(p\.currency\[c\],hon\):pending/);
+  assert.doesNotMatch(src,/honorarioDevengado\.toLocaleString\(\)/);
+  assert.doesNotMatch(src,/Math\.round\(d\.honorarioDevengado\)/);
+});

@@ -130,8 +130,9 @@ CX.fin = {
     const unassignedBudgetTotal=Object.values(presStore).reduce((a,b)=>a+(+b||0),0);
     p.countries.forEach(c=>{
       const cur=p.currency[c];
+      const countryRows=allLiq.filter(l=>l&&l.pais===c&&((l.moneda||cur)===cur));
       const ls=operationalRows.filter(l=>l.pais===c&&l.moneda===cur);
-      const visRe=ls.length;                                   // obligaciones operacionales conocidas
+      const visRe=countryRows.length;                           // incluye filas que esperan fuente monetaria
       const incomeInfo=this.honRecibeInfo(p,c);
       const ingreso=incomeInfo.known?ls.reduce((a)=>a+incomeInfo.value,0):null;
       /* CORTE 3 P0-2 — honorarios como estados SEPARADOS, nunca "pagado" por inferencia.
@@ -139,12 +140,15 @@ CX.fin = {
          pagado: SOLO filas con paymentConfirmed===true Y paymentSourceRef (fuente de pago).
          porPagar: devengado − pagado. Una liquidación/realizada/cuestionario/submitido NO es pago. */
       const isPaid=(l)=>l.paymentConfirmed===true && !!(l.paymentSourceRef||l.paymentRef);
-      const honorarioDevengado=ls.reduce((a,l)=>a+(l.honorario||0),0);
-      const honorarioPagado=ls.filter(isPaid).reduce((a,l)=>a+(l.honorario||0),0);
-      const honorarioPorPagar=honorarioDevengado-honorarioPagado;
-      const pagosConfirmados=ls.filter(isPaid).length;
-      const reemb=ls.reduce((a,l)=>a+l.reembolso,0);           // obligación/flujo operacional conocido
-      const reimbursementPartial=ls.some(l=>l.reimbursementPartial===true
+      const honorariumComplete=countryRows.length>0&&countryRows.every(l=>Number.isFinite(l.honorario));
+      const totalComplete=countryRows.length>0&&countryRows.every(l=>Number.isFinite(l.total));
+      const honorarioDevengado=honorariumComplete?countryRows.reduce((a,l)=>a+l.honorario,0):null;
+      const honorarioPagado=honorariumComplete?countryRows.filter(isPaid).reduce((a,l)=>a+l.honorario,0):null;
+      const honorarioPorPagar=Number.isFinite(honorarioDevengado)&&Number.isFinite(honorarioPagado)?honorarioDevengado-honorarioPagado:null;
+      const pagosConfirmados=countryRows.filter(isPaid).length;
+      const reembRows=countryRows.filter(l=>Number.isFinite(l.reembolso));
+      const reemb=reembRows.reduce((a,l)=>a+l.reembolso,0);    // total conocido; puede ser parcial
+      const reimbursementPartial=reembRows.length!==countryRows.length||countryRows.some(l=>l.reimbursementPartial===true
         || ['partial','incomplete','pending_source'].includes(String(l.reimbursementSourceStatus||'').toLowerCase())
         || (Array.isArray(l.reviewReasons)&&l.reviewReasons.some(r=>/reemb|reimbursement|boleto|combo/i.test(String(r)))));
       const isr=incomeInfo.known&&p.modelo==='directo'?Math.round(ingreso*((p.isr||0)/100)):(p.modelo==='directo'?null:0);
@@ -152,11 +156,11 @@ CX.fin = {
       /* CORTE 3 V177 P0-5 — el presupuesto sin distribución confirmada NO se imputa a este país
          ni al margen, y NO se replica en cada out[c]. Se expone una sola vez fuera del mapa. */
       const fijos=0;
-      const margen=incomeInfo.known?(ingreso-honorarioDevengado-isr-regal):null;
-      const cxp=ls.filter(l=>!isPaid(l)).reduce((a,l)=>a+l.total,0); // obligación conocida; conciliación puede seguir pendiente
+      const margen=incomeInfo.known&&Number.isFinite(honorarioDevengado)?(ingreso-honorarioDevengado-isr-regal):null;
+      const cxp=totalComplete?countryRows.filter(l=>!isPaid(l)).reduce((a,l)=>a+l.total,0):null; // sin monto autorizado no se fabrica CxP cero
       const cxc=incomeInfo.known?ls.filter(l=>['validada','pagada','pagada_preview'].includes(l.estado)).reduce((a)=>a+incomeInfo.value,0):null;
       out[c]={cur,visRe,ingreso,incomeSourceKnown:incomeInfo.known,incomeSource:incomeInfo.source,
-        honorarioDevengado,honorarioPorPagar,honorarioPagado,pagosConfirmados,
+        honorarioDevengado,honorarioPorPagar,honorarioPagado,pagosConfirmados,honorariumSourceComplete:honorariumComplete,totalSourceComplete:totalComplete,
         reemb,reimbursementPartial,isr,regal,fijos,margen,cxp,cxc,
         margenPct: incomeInfo.known&&ingreso?Math.round(margen/ingreso*100):null};
     });

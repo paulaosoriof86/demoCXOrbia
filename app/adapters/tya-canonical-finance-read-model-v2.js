@@ -15,7 +15,8 @@
   const facets=v=>engine?.facets?engine.facets(v):(v?.canonicalFacets||{});
   const arr=v=>Array.isArray(v)?v:[];
   const str=v=>String(v==null?'':v).trim();
-  const num=v=>Number.isFinite(Number(v))?Number(v):0;
+  const knownAmount=v=>v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v));
+  const num=v=>knownAmount(v)?Number(v):0;
   const previousForProject=typeof CX.liq.forProject==='function'?CX.liq.forProject.bind(CX.liq):()=>[];
   const previousLabel=typeof CX.liq.label==='function'?CX.liq.label.bind(CX.liq):s=>[s,'n'];
   function visitKey(v){return str(v?.id||v?.visitId)||str(v?.hrRowId);}
@@ -33,7 +34,10 @@
   }
   function derive(project,v){
     const f=facets(v),estado=operationalState(f);if(!estado)return null;
-    const honorario=num(v.honorario),boleto=num(v.boleto),combo=num(v.comboAmt||v.combo),reembolso=boleto+combo,total=honorario+reembolso;
+    const honorarioKnown=v.honorarioSourceKnown===true||(v.honorarioSourceKnown!==false&&knownAmount(v.honorario));
+    const honorario=honorarioKnown?Number(v.honorario):null;
+    const honorarioSource=honorarioKnown?str(v.honorarioSource||'operational_source'):'pending_source';
+    const boleto=num(v.boleto),combo=num(v.comboAmt||v.combo),reembolso=boleto+combo,total=honorario===null?null:honorario+reembolso;
     const submittedAt=v.submittedAt||((v.submit===true||f.submitted)?v.cuestFecha:null)||null;
     const visitReimbursementPartial=v.reimbursementPartial===true||v.reembolsoPartial===true||v.reimbursementSourceComplete===false
       || ['partial','incomplete','pending_source'].includes(str(v.reimbursementSourceStatus||v.reimbursementStatus).toLowerCase());
@@ -56,10 +60,10 @@
     return {
       visitaId:v.id||v.visitId,visitId:v.id||v.visitId,hrRowId:v.hrRowId||null,projectId:project.id,rootProjectId:rootProjectId(project),periodKey:v.periodKey||project.periodKey||null,
       shopperId:v.shopperId||null,shopper:v.shopper||null,shopperCode:v.shopperCode||null,sucursal:v.sucursal||'Visita HR',pais:v.pais||v.country||null,moneda:v.currency||v.moneda||null,loteId:null,
-      honorario,boleto,combo,reembolso,total,estado,operationalVisitStage:f.submitted?'submitida':f.questionnaire?'cuestionario':f.realized?'realizada':'pendiente',
+      honorario,honorarioSource,honorarioSourceKnown:honorarioKnown,boleto,combo,reembolso,total,estado,operationalVisitStage:f.submitted?'submitida':f.questionnaire?'cuestionario':f.realized?'realizada':'pendiente',
       liquidationState:'pending_financial_source',paymentState:'pending_source_confirmation',paymentConfirmed:false,paymentSourceRef:null,
       freal:v.realizada||'',cuest:v.cuestFecha||'',submit:submittedAt||'',fechaEstimadaPago:'',pagada:false,pagadaPreview:false,
-      financialSourceStatus:'pending_or_review',amountSource:'hr_operational_amount_pending_financial_reconciliation',reviewRequired:true,
+      financialSourceStatus:'pending_or_review',amountSource:honorarioKnown?'hr_operational_amount_pending_financial_reconciliation':'honorarium_pending_source',reviewRequired:true,
       reimbursementSourceStatus:visitReimbursementSourceStatus,reimbursementPartial:visitReimbursementPartial,
       reimbursementSourceComplete:v.reimbursementSourceComplete===false?false:(visitReimbursementPartial?false:v.reimbursementSourceComplete),
       canonicalFacets:Object.assign({},f),readModelVersion:'canonical-finance-v2',sourceSafe:true,imported:false,production:false
