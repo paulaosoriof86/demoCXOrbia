@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.pre-i4.human-entrypoint-dev-deploy.request.v1",
-  "requestId": "pre-i4-visual-remediation-20260923-07",
+  "requestId": "pre-i4-visual-remediation-20260923-08",
   "status": "authorized_execute_once",
   "enabled": true,
   "consumed": false,
   "authorizedBy": "Paula",
-  "authorizationSource": "current_conversation_2026-09-23_continue_after_run313_finance_mapping_failure",
+  "authorizationSource": "current_conversation_2026-09-23_continue_after_run315_canonical_finance_partial_mapping_failure",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "sourceSha": "ab05415eb965404e1a6594df8533b8e0190aa0f7",
-  "sourceTree": "d12b358749530ba674990702931dc00a5d7a2097",
+  "sourceSha": "6653ba83b7c95ff413169e48ceb38e95151a2736",
+  "sourceTree": "dd234f8b9cb0fb0864e97ddfff7d18a285e57bf3",
   "baseCertifiedProductSource": "77bf74f807d254637f0b2cde4b1d1668017a0c8a",
   "targetProject": "cxorbia-backend-dev",
   "hostingSite": "cxorbia-backend-dev",
@@ -31,7 +31,7 @@
   "noAutomaticRetry": true,
   "scope": "pre_i4_finance_p0_hosting_only_same_runtime_rules",
   "requiredEvidence": [
-    "functional-diff-exact-two-browser-owners-plus-regression-test",
+    "functional-diff-canonical-finance-partial-plus-regression-test",
     "finance-source-semantics-test",
     "same-runtime-rules-proven-unchanged",
     "hosting-byte-parity",
@@ -52,6 +52,6 @@
     "rulesDeploys": 0,
     "hostingDeploys": 1
   },
-  "previousSourceSha": "50b6a25d79713b0f165cffc4355c7b7ffd1d9e84",
-  "previousDeployedRunId": 35929165160
+  "previousSourceSha": "ab05415eb965404e1a6594df8533b8e0190aa0f7",
+  "previousDeployedRunId": 35940783964
 }

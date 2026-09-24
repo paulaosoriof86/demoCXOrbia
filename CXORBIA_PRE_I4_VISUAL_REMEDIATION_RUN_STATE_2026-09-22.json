@@ -1,21 +1,20 @@
 {
-  "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v10",
-  "generatedAt": "2026-09-23T18:57:00-06:00",
+  "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v11",
+  "generatedAt": "2026-09-23T19:12:00-06:00",
   "iteration": "I3_PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "microblockId": "CXORBIA-PRE-I4-VISUAL-REMEDIATION-MICROBLOCK-20260922",
-  "status": "HOLD_FINANCE_P0_FIX_READY_FOR_DEV_PROOF",
+  "status": "HOLD_FINANCE_PARTIAL_CANONICAL_FIX_READY_FOR_DEV_PROOF",
   "production": "DO_NOT_TOUCH",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "head": "f5f93a51dfc0ae0b262a97673499d1c7e5973eca",
+  "head": "dc63a9822aa9559f31caa38d10b917d4e964720e",
   "lastFunctionalWrite": {
-    "commit": "ab05415eb965404e1a6594df8533b8e0190aa0f7",
-    "parent": "50b6a25d79713b0f165cffc4355c7b7ffd1d9e84",
+    "commit": "6653ba83b7c95ff413169e48ceb38e95151a2736",
+    "parent": "ab05415eb965404e1a6594df8533b8e0190aa0f7",
     "files": [
-      "app/adapters/tya-live-source-inplace-apply.js",
-      "app/adapters/tya-delegated-coordination-finance-guard-v1.js"
+      "app/adapters/tya-canonical-finance-read-model-v2.js"
     ],
     "test": "backend/runtime/hr-live-service/test/cxorbia-pre-i4-finance-source-semantics.test.mjs",
-    "purpose": "VRM_015_016_FINANCE_SOURCE_SEMANTICS_FIX",
+    "purpose": "VRM_015_CANONICAL_FINANCE_REIMBURSEMENT_PARTIAL_PROPAGATION",
     "productionDeploys": 0
   },
   "automaticPushWorkflowObservation": {
@@ -159,13 +158,13 @@
     },
     "VRM-015": {
       "state": "FIXED_NOT_PROVEN",
-      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd + ab05415eb965404e1a6594df8533b8e0190aa0f7",
+      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd + ab05415eb965404e1a6594df8533b8e0190aa0f7 + 6653ba83b7c95ff413169e48ceb38e95151a2736",
       "owner": [
         "app/core/finanzas-core.js",
         "app/core/liquidacion.js",
         "app/modules/finanzas.js"
       ],
-      "note": "Run313 proved GT reimbursementPartial drift: live HR revision 1d36270d has two realized rows with missing boleto/combo but browser finance collapsed missing source to zero. ab054 preserves source-knownness and partial semantics by period/country; DEV proof pending."
+      "note": "Run315 proved the first adapter fix preserved amounts and null margin but canonical finance read model still dropped reimbursementPartial. 6653ba83 propagates reimbursement partial/source completeness into canonical liquidation rows; DEV focal proof pending."
     },
     "VRM-016": {
       "state": "FIXED_NOT_PROVEN",
@@ -174,7 +173,7 @@
         "app/core/finanzas-core.js",
         "app/modules/finanzas.js"
       ],
-      "note": "Run313 proved delegated finance emitted ingreso/margen/margenPct=0 with missing commission/distribution source. ab054 now fails closed to null/pending and never uses shopper honorarium as income fallback; DEV proof pending."
+      "note": "Run315 live browser showed ingreso=null, margen=null and margenPct=null with pending_or_review as required; retained FIXED_NOT_PROVEN until the cumulative focal browser run closes."
     },
     "VRM-017": {
       "state": "FIXED_NOT_PROVEN",
@@ -246,7 +245,7 @@
       "note": "Prior no-debug state preserved and human data/source diagnostics are hidden unless technical access; browser no-drift proof pending."
     }
   },
-  "nextExactAction": "Materialize ab054 static app to existing Hosting DEV only; prove exact byte parity; force fresh HR; run same-revision Admin/Shopper desktop/mobile including Finance and Liquidations; freeze result. Runtime and Rules remain unchanged because functional diff does not touch their owners.",
+  "nextExactAction": "Materialize 6653ba83 static app to existing Hosting DEV only; prove exact bytes; force fresh HR; run same-revision Admin/Shopper desktop/mobile including Finance/Liquidations. Runtime and Rules unchanged; no production.",
   "functionalLineage": [
     {
       "commit": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
@@ -290,9 +289,9 @@
     ]
   },
   "functionalSource": {
-    "sha": "ab05415eb965404e1a6594df8533b8e0190aa0f7",
-    "tree": "d12b358749530ba674990702931dc00a5d7a2097",
-    "state": "CUMULATIVE_SOURCE_PACKAGE_FINANCE_P0_FIX_AWAITING_FOCAL_PROOF"
+    "sha": "6653ba83b7c95ff413169e48ceb38e95151a2736",
+    "tree": "dd234f8b9cb0fb0864e97ddfff7d18a285e57bf3",
+    "state": "CUMULATIVE_SOURCE_PACKAGE_FINANCE_PARTIAL_FIX_AWAITING_FOCAL_PROOF"
   },
   "durabilityAndResources": {
     "state": "SOURCE_COMPLETE_AWAITING_FOCAL_PROOF",
@@ -310,10 +309,10 @@
     ]
   },
   "focalProof": {
-    "state": "FINANCE_P0_HOSTING_ONLY_READY",
-    "sourceSha": "ab05415eb965404e1a6594df8533b8e0190aa0f7",
-    "sourceTree": "d12b358749530ba674990702931dc00a5d7a2097",
-    "previousDeployedRunId": 35929165160,
+    "state": "FINANCE_PARTIAL_HOSTING_ONLY_READY",
+    "sourceSha": "6653ba83b7c95ff413169e48ceb38e95151a2736",
+    "sourceTree": "dd234f8b9cb0fb0864e97ddfff7d18a285e57bf3",
+    "previousDeployedRunId": 35940783964,
     "nextRunDeploys": {
       "runtime": 0,
       "rules": 0,
@@ -336,26 +335,25 @@
   },
   "lastControlFailure": {
     "classification": "MAPPING_FAILURE",
-    "runId": 35934463473,
-    "hrRevision": "1d36270df07ba79d8d596ed80bf85ee307daf4fe37095115f9b7b9b38af20c83",
+    "runId": 35940783964,
+    "hrRevision": "443ef7706441969ba57ef7ecf56efdc68970c5dce93fdddec7bcceae026abdd8",
     "productDefectProven": true,
     "affectedFindings": [
-      "VRM-015",
-      "VRM-016"
+      "VRM-015"
     ],
-    "cause": "HR adapter collapsed missing boleto/combo source values to numeric zero and delegated finance guard converted unknown commission/distribution into zero income/margin.",
+    "cause": "Canonical finance read model rebuilt realized visit liquidation rows without carrying reimbursementPartial/reimbursementSourceStatus from the HR-authoritative visit.",
     "observed": {
       "GT": {
         "realized": 20,
         "knownReimbursements": 2710,
         "reimbursementPartialObserved": false,
         "reimbursementPartialExpected": true,
-        "incomeObserved": 0,
-        "marginObserved": 0,
-        "marginPctObserved": 0
+        "incomeObserved": null,
+        "marginObserved": null,
+        "marginPctObserved": null
       }
     },
-    "resolutionCommit": "ab05415eb965404e1a6594df8533b8e0190aa0f7"
+    "resolutionCommit": "6653ba83b7c95ff413169e48ceb38e95151a2736"
   },
   "liveHrProof": {
     "runId": 35930173836,

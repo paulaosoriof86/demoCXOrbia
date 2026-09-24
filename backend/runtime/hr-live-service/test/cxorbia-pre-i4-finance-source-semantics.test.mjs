@@ -66,3 +66,29 @@ test('PRE-I4 delegated finance fails closed with null income and margin when sou
   assert.equal(out.financialReviewRequired,true);
   assert.equal(out.reimbursementPartial,true);
 });
+
+
+test('PRE-I4 canonical finance read model preserves HR reimbursement partial semantics',()=>{
+  const ctx={console,Date,Number,String,Boolean,Array,Object,Math,JSON,URLSearchParams,location:{search:''}};
+  ctx.window={CX_DEV_ENTRY_CANONICAL:{canonical:true,protectedRuntime:true,projectId:'project-x'}};
+  ctx.window.CX_TYA_CUMULATIVE_READ_MODEL={facets:v=>v.canonicalFacets||{}};
+  ctx.window.CX={
+    data:{financialMatchForVisit:()=>null},
+    liq:{forProject:()=>[],label:s=>[s,'n'],resumen:()=>({})}
+  };
+  ctx.CX=ctx.window.CX;
+  vm.createContext(ctx);
+  vm.runInContext(read('app/adapters/tya-canonical-finance-read-model-v2.js'),ctx);
+  const data={
+    period:()=>({id:'project-x-2026-09',periodKey:'2026-09',countries:['GT']}),
+    visitas:()=>[
+      {id:'gt-partial',periodKey:'2026-09',pais:'GT',country:'GT',currency:'Q',estado:'realizada',honorario:60,boleto:0,comboAmt:0,reimbursementPartial:true,reimbursementSourceComplete:false,reimbursementSourceStatus:'partial',canonicalFacets:{realized:true}}
+    ]
+  };
+  const rows=ctx.CX.liq.forProject(data);
+  assert.equal(rows.length,1);
+  assert.equal(rows[0].reimbursementPartial,true);
+  assert.equal(rows[0].reimbursementSourceComplete,false);
+  assert.equal(rows[0].reimbursementSourceStatus,'partial');
+  assert.equal(rows[0].financialSourceStatus,'pending_or_review');
+});
