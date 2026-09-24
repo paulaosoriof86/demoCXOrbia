@@ -2061,6 +2061,8 @@ jobs:
           const rule=(expr)=>base.replace(original,'        allow read: if '+expr+';');
           const variants={
             current:base,
+            oneLineCandidate:base.replace('projectAssigned(resource.data.projectId)','resource.data.projectId in request.auth.token.projectIds'),
+            helperLiteralCurrentTypes:base.replace('projectAssigned(resource.data.projectId)',"projectAssigned('cinepolis')"),
             authOnly:rule('tenantAllowed(tenantId) && isShopperRole()'),
             projectStatus:rule("tenantAllowed(tenantId) && isShopperRole() && resource.data.status == 'active' && resource.data.projectId == 'cinepolis'"),
             visibleListFull:rule("tenantAllowed(tenantId) && isShopperRole() && resource.data.status == 'active' && resource.data.projectId == 'cinepolis' && role() in resource.data.visibleRoles"),
