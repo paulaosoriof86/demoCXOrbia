@@ -22,6 +22,9 @@ on:
       - CXORBIA_I3_MICRO_ITERATION_PLAN_LOCK_2026-09-17.json
       - backend/config/pre-i4-human-entrypoint-dev-deploy-request.json
       - tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs
+      - tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs
+      - CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_2026-09-24.json
   workflow_dispatch:
 
 permissions:
@@ -38,8 +41,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  I3_CERTIFICATION_SOURCE_SHA: 77bf74f807d254637f0b2cde4b1d1668017a0c8a
-  I3_CERTIFICATION_SOURCE_TREE: 6bdd13dbc1ae5d2e0e9d2f3dd592aa222ee36679
+  CANDIDATE_DESCRIPTOR: CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
+  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_2026-09-24.json
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
@@ -58,8 +61,41 @@ env:
   OUT: .tmp/recovery-i3-dev-certification
 
 jobs:
+  canonical-candidate-authority:
+    name: I3 single canonical candidate authority guard
+    runs-on: ubuntu-latest
+    outputs:
+      source_sha: ${{ steps.authority.outputs.source_sha }}
+      source_tree: ${{ steps.authority.outputs.source_tree }}
+      status: ${{ steps.authority.outputs.status }}
+    steps:
+      - name: Checkout canonical Recovery control head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve and prove sole executable candidate
+        id: authority
+        run: |
+          set -Eeuo pipefail
+          mkdir -p .tmp/canonical-candidate-authority
+          node tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs | tee .tmp/canonical-candidate-authority/result.json
+          SOURCE="$(jq -r '.productSourceSha' .tmp/canonical-candidate-authority/result.json)"
+          TREE="$(jq -r '.productSourceTree' .tmp/canonical-candidate-authority/result.json)"
+          STATUS="$(jq -r '.status // empty' "$CANDIDATE_DESCRIPTOR")"
+          test -n "$SOURCE"
+          test -n "$TREE"
+          test -n "$STATUS"
+          echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
+          echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
+          echo "status=$STATUS" >> "$GITHUB_OUTPUT"
+
   certify:
-    if: ${{ github.event_name != 'push' || (!contains(github.event.head_commit.message, '[pre-i4-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-readback-only]') && !contains(github.event.head_commit.message, '[pre-i4-finance-fix-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-focal-fix-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-rules-fix-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-matrix-closure]') && !contains(github.event.head_commit.message, '[pre-i4-lock-only]') && !contains(github.event.head_commit.message, '[pre-i4-hold-only]') && !contains(github.event.head_commit.message, '[pre-i4-human-semantic-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-vrm040-hosting-only]') && !contains(github.event.head_commit.message, '[pre-i4-vrm037-diagnostic]')) }}
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'READY_FOR_TERMINAL_CERTIFICATION' }}
+    env:
+      I3_CERTIFICATION_SOURCE_SHA: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      I3_CERTIFICATION_SOURCE_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
     runs-on: ubuntu-latest
     timeout-minutes: 70
     steps:
@@ -1521,7 +1557,7 @@ jobs:
 
   pre-i4-human-entrypoint-dev:
     name: PRE-I4 focal human entrypoint DEV materialization
-    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[pre-i4-dev-only]') }}
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
@@ -1753,7 +1789,7 @@ jobs:
 
   pre-i4-finance-p0-hosting-fix:
     name: PRE-I4 focal static P0 Hosting-only materialization
-    if: ${{ github.event_name == 'push' && (contains(github.event.head_commit.message, '[pre-i4-finance-fix-dev-only]') || contains(github.event.head_commit.message, '[pre-i4-focal-fix-dev-only]')) }}
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
@@ -1961,7 +1997,7 @@ jobs:
 
   pre-i4-module-truth-closure:
     name: PRE-I4 exhaustive Module Truth Matrix closure
-    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[pre-i4-matrix-closure]') }}
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
@@ -2071,7 +2107,7 @@ jobs:
 
   pre-i4-postdeploy-readback:
     name: PRE-I4 postdeploy no-deploy focal verification
-    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[pre-i4-readback-only]') }}
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 40
     env:
@@ -2305,7 +2341,7 @@ jobs:
           test "$(jq -r '.decision' "$PREI4_OUT/remote-readback.json")" = "PASS_PRE_I4_POSTDEPLOY_REMOTE_BYTE_PARITY"
   pre-i4-human-semantic-remediation:
     name: PRE-I4 human semantic remediation — exact DEV candidate
-    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[pre-i4-human-semantic-dev-only]') }}
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 70
     env:
@@ -2550,7 +2586,7 @@ jobs:
 
   pre-i4-resource-rules-fix:
     name: PRE-I4 shopper resources Rules-only DEV materialization
-    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[pre-i4-rules-fix-dev-only]') }}
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
@@ -2686,7 +2722,7 @@ jobs:
 
   pre-i4-human-semantic-focal-only:
     name: PRE-I4 hardened semantic focal only — no deploy
-    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[pre-i4-human-semantic-focal-only]') }}
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 40
     env:
@@ -2782,7 +2818,7 @@ jobs:
 
   pre-i4-vrm040-hosting-fix:
     name: PRE-I4 VRM-040 HR out-of-range semantic fix — Hosting only
-    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[pre-i4-vrm040-hosting-only]') }}
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 50
     env:
@@ -2941,11 +2977,13 @@ jobs:
 
 
   pre-i4-vrm037-diagnostic:
+    needs: canonical-candidate-authority
     name: PRE-I4 VRM-037 exact shopper history diagnostic — read only
     if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[pre-i4-vrm037-diagnostic]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
+      CANONICAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
       DIAG_OUT: .tmp/pre-i4-vrm037-diagnostic
       HOSTING_ROOT: https://cxorbia-backend-dev.web.app
     steps:
@@ -2958,8 +2996,8 @@ jobs:
         run: |
           set -Eeuo pipefail
           mkdir -p "$DIAG_OUT"
-          git diff --quiet d8aad982ae4b47e66bf949d906b6c7ede8866f84 "$GITHUB_SHA" -- app backend || { echo "product drift in diagnostic"; exit 1; }
-          jq -n -S --arg source "d8aad982ae4b47e66bf949d906b6c7ede8866f84" '{decision:"PASS_PRE_I4_VRM037_DIAGNOSTIC_SCOPE",servedFunctionalSource:$source,runtimeBuildsThisRun:0,runtimeDeploysThisRun:0,hostingDeploysThisRun:0,rulesDeploysThisRun:0,dataWritesThisRun:0,production:false}' > "$DIAG_OUT/authorization.json"
+          git diff --quiet "$CANONICAL_SOURCE" "$GITHUB_SHA" -- app backend || { echo "product drift in diagnostic"; exit 1; }
+          jq -n -S --arg source "$CANONICAL_SOURCE" '{decision:"PASS_PRE_I4_VRM037_DIAGNOSTIC_SCOPE",servedFunctionalSource:$source,runtimeBuildsThisRun:0,runtimeDeploysThisRun:0,hostingDeploysThisRun:0,rulesDeploysThisRun:0,dataWritesThisRun:0,production:false}' > "$DIAG_OUT/authorization.json"
 
       - name: Setup Node 24
         uses: actions/setup-node@v4
@@ -2991,7 +3029,7 @@ jobs:
       - name: Reuse hardened focal auth and dump exact history ownership
         run: |
           set -Eeuo pipefail
-          git show d8aad982ae4b47e66bf949d906b6c7ede8866f84:tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs > "$DIAG_OUT/diag-focal.mjs"
+          git show "${CANONICAL_SOURCE}:tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs" > "$DIAG_OUT/diag-focal.mjs"
           node <<'NODE'
           const fs=require('fs'),p=process.env.DIAG_OUT+'/diag-focal.mjs';
           let s=fs.readFileSync(p,'utf8');
@@ -3006,7 +3044,7 @@ jobs:
           fs.writeFileSync(p,s);
           NODE
           set +e
-          PREI4_OUT="$DIAG_OUT/prior" CXORBIA_PREI4_ROOT="$HOSTING_ROOT" CXORBIA_PREI4_SOURCE_SHA="d8aad982ae4b47e66bf949d906b6c7ede8866f84" node "$DIAG_OUT/diag-focal.mjs"
+          PREI4_OUT="$DIAG_OUT/prior" CXORBIA_PREI4_ROOT="$HOSTING_ROOT" CXORBIA_PREI4_SOURCE_SHA="$CANONICAL_SOURCE" node "$DIAG_OUT/diag-focal.mjs"
           status=$?
           set -e
           test "$status" -ne 0
