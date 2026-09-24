@@ -166,16 +166,22 @@ function stableShopperId(command){
   }
   return '';
 }
+function technicalIdentityLabel(value,shopperId=''){
+  const s=str(value),sid=str(shopperId);
+  if(!s)return false;
+  return /^shopper protegido$/i.test(s)||/^shopper_(?:gt|hn|sv|ni)_[a-z0-9]+$/i.test(s)||/^shp[-_][a-z0-9]+$/i.test(s)||(sid&&s===sid);
+}
 function credentialIdentityName(identityByShopperId,shopperId){
   const source=identityByShopperId instanceof Map?identityByShopperId.get(shopperId):identityByShopperId?.[shopperId];
   const name=str(source?.displayName||source?.nombre||source);
-  return /^shopper protegido$/i.test(name)?'':name;
+  return technicalIdentityLabel(name,shopperId)?'':name;
 }
 function sourceCandidate(row,scope,identityByShopperId){
   const shopperId=str(row?.shopperId||row?.id);
   if(!shopperId)return null;
   const source=identityByShopperId instanceof Map?identityByShopperId.get(shopperId):identityByShopperId?.[shopperId]||{};
-  const protectedName=/^shopper protegido$/i.test(str(row?.nombre||row?.shopper));
+  const rowName=str(row?.nombre||row?.shopper);
+  const protectedName=technicalIdentityLabel(rowName,shopperId);
   const credentialName=protectedName?credentialIdentityName(identityByShopperId,shopperId):'';
   const phone=str(row?.whatsapp||row?.phone||row?.telefono||source?.whatsapp||source?.phone||source?.telefono);
   const email=str(row?.email||row?.mail||row?.correo||source?.email||source?.mail).toLowerCase();
@@ -188,7 +194,7 @@ function sourceCandidate(row,scope,identityByShopperId){
     country:str(row?.country||row?.pais||source?.country),
     sourceSafe:row?.sourceSafe===true,
     piiProtected:row?.piiProtected===true,
-    nombre:credentialName||str(row?.nombre||row?.shopper||source?.displayName),
+    nombre:credentialName||(protectedName?'':rowName)||(!technicalIdentityLabel(source?.displayName,shopperId)?str(source?.displayName):''),
     firstName:str(row?.firstName),
     lastName:str(row?.lastName||row?.apellido),
     whatsapp:phone,
@@ -214,7 +220,7 @@ export function shoppersFromSnapshot(snapshot={},options={}){
 }
 
 function hrProfilePatch(candidate,projectIds,sourceRevision){
-  const protectedName=/^shopper protegido$/i.test(str(candidate.nombre));
+  const protectedName=technicalIdentityLabel(candidate.nombre,candidate.shopperId);
   const hrManaged=clean({
     shopperCode:candidate.shopperCode||null,
     pais:candidate.pais||candidate.country||null,
@@ -304,7 +310,7 @@ async function durableUpsert({auth,db,policy,candidate,sourceRevision,authUsers}
   const existingMember=existingMemberDoc?.data?.()||{};
   const existingCross=crossBefore.exists?crossBefore.data()||{}:{};
   const existingProfile=profileBefore.exists?profileBefore.data()||{}:{};
-  const candidateName=/^shopper protegido$/i.test(str(candidate.nombre))?'':str(candidate.nombre);
+  const candidateName=technicalIdentityLabel(candidate.nombre,candidate.shopperId)?'':str(candidate.nombre);
   const credential=shopperCredentialRule({
     ...existingProfile,...candidate,
     nombre:candidateName||str(existingProfile.nombre),

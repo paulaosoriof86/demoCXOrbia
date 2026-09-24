@@ -81,3 +81,18 @@ test('PRE-I4 VRM-027 adapters cannot replace the canonical Mis Visitas module af
   assert.doesNotMatch(bridge,/function\s+correctedMisVisitas\b/);
 });
 
+test('PRE-I4 VRM-038 human lane contains no canonical-machine diagnostics',()=>{
+  const bridge=read('app/adapters/tya-c6-domain-consistency-bridge.js');
+  const dash=read('app/modules/dashboard.js');
+  const visits=read('app/modules/visitas.js');
+  assert.doesNotMatch(bridge,/máquina canónica HR|Estado canónico|identidad .*canónica/i);
+  assert.doesNotMatch(dash,/title="Contrato de contexto único \(CX\.data\.ctx\(\)\)"/);
+  assert.doesNotMatch(visits,/Visitas por estado \(canónico\)/i);
+});
+
+test('PRE-I4 VRM-041 approved postulation never renders an undefined approval actor',()=>{
+  const s=read('app/modules/postulaciones.js');
+  assert.doesNotMatch(s,/Aprobada por <b[^>]*>\$\{x\.aprobadaPor\}<\/b>/);
+  assert.match(s,/Aprobación registrada/);
+});
+

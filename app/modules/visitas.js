@@ -260,7 +260,7 @@ CX.module('visitas', ({data,role,ui})=>{
           rows:all.map(v=>({sucursal:v.sucursal||'—',pais:v.pais||'—',escenario:v.escenario||'—',shopper:v.shopper||'—',estado:estadoCanon(v).label,agendada:v.agendada||'—',honorario:(v.honorario!=null?v.honorario:'Pendiente de fuente')})),
           notes:'',
           summary:['Visitas: '+all.length,'Revisión de fuente: '+sourceRevision, Object.entries(byEst).map(([k2,v2])=>k2+': '+v2).join(' · ')],
-          chart:{title:'Visitas por estado (canónico)',data:Object.entries(byEst).map(([k2,v2])=>({label:k2,value:v2}))},
+          chart:{title:'Visitas por estado',data:Object.entries(byEst).map(([k2,v2])=>({label:k2,value:v2}))},
           filename:[san('visitas'),san(projectLabel),san(periodLabel),new Date().toISOString().slice(0,10)].join('_')+'.'+ext };
       };
       vx.addEventListener('click',()=>CX.ui.modal('⤓ Exportar visitas',`<p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Genera el reporte de visitas del alcance actual con el diseño del tenant.</p><div class="flex" style="gap:8px;justify-content:flex-end"><button class="btn btn-ghost btn-sm" id="vxPdf">⤓ PDF</button><button class="btn btn-soft btn-sm" id="vxXls">⤓ Excel</button><button class="btn btn-pr btn-sm" id="vxPpt">⤓ PPT</button></div>`,{onMount:(ov)=>{ov.querySelector('#vxPdf').addEventListener('click',()=>CX.reportKit.exportPDF(vSpec('pdf')));ov.querySelector('#vxXls').addEventListener('click',()=>{if(CX.reportKit.exportExcel(vSpec('xlsx')))CX.ui.toast('Excel .xlsx generado','ok');});ov.querySelector('#vxPpt').addEventListener('click',()=>{if(CX.reportKit.exportPPT(vSpec('pptx')))CX.ui.toast('PowerPoint generado','ok');});}}));

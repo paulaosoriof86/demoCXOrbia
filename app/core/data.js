@@ -664,7 +664,7 @@ CX.data = {
     const liquidationCandidate=submitted||v.liquidationCandidate===true;
     const liquidationConfirmed=v.liquidationConfirmed===true||['confirmed','liquidated','liquidada'].includes(String(v.liquidationState||'').toLowerCase())||['liquidada','pagada'].includes(v.estado);
     const paymentConfirmed=v.paymentConfirmed===true||['confirmed','paid','pagada'].includes(String(v.paymentState||'').toLowerCase())||v.estado==='pagada';
-    const outOfRange=v.estado==='fuera_rango';
+    const outOfRange=v.estado==='fuera_rango'||v.outOfRange===true;
     const cancelled=!!v._archived||['cancelada','cancelled','archivada'].includes(String(v.estado||'').toLowerCase());
     const available=v.estado==='disponible'&&!assigned&&!cancelled;
     const legacy={available,eligibilityBlocked:!available,assigned,scheduled,realized,questionnaire,submitted,liquidationCandidate,liquidationConfirmed,paymentConfirmed,outOfRange,cancelled};

@@ -56,7 +56,7 @@ CX.module('postulaciones', ({data,ui})=>{
           <div style="font-size:12px;color:var(--t2);margin-top:3px">📍 ${x.sucursal} · ${x.ciudad}</div>
           <div style="font-size:11.5px;color:var(--t3);margin-top:4px">📅 ${safe(x.fechaProp)} · ⏱️ ${safe(x.franjaCode)} · 📞 ${safePhone(x)} · desde ${safe(x.disponibleDesde)}</div>
           <div style="font-size:12px;color:var(--green);font-weight:600;margin-top:4px">💲 ${hon}</div>
-          ${x.estado==='aprobada'?`<div style="font-size:11px;color:var(--t3);margin-top:5px">✅ ${x.quincena} · WhatsApp preparado · pendiente de envío · Aprobada por <b style="color:var(--t2)">${x.aprobadaPor}</b></div>`:''}
+          ${x.estado==='aprobada'?`<div style="font-size:11px;color:var(--t3);margin-top:5px">✅ ${x.quincena} · WhatsApp preparado · pendiente de envío · Aprobación registrada</div>`:''}
           ${sync.copy?`<div style="font-size:11.5px;color:var(--t2);margin-top:7px;padding:7px 9px;background:var(--amber-bg);border-radius:8px">${sync.badge} <span style="margin-left:5px">${sync.copy}</span></div>`:''}
         </div>
         <div style="display:flex;flex-direction:column;gap:7px;align-items:flex-end">

@@ -366,3 +366,25 @@ test('Gate 6 / optional HR contact fields materialize from the private exact ide
   assert.equal(db.get(pp.profile).email,'paula@example.com');
 });
 
+test('PRE-I4 VRM-033 technical shopper IDs never become durable human names and exact HR identity restores the name',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db),id='shopper_gt_deadbeef01',uid=stableShopperUid('tenant-a',id),pp=paths(id);
+  const snap=snapshot({shopperId:id,shopperCode:'TYA_GT_TECH'});
+  snap.visits[0].shopper=id;
+  snap.visits[0].nombre=id;
+  const unresolved=await p.reconcileSnapshot(snap,{sourceRevision:'rev-tech-unresolved'});
+  assert.equal(unresolved.ok,true);
+  assert.equal(unresolved.status,'committed_with_identity_review');
+  assert.equal(unresolved.identityReviewCount,1);
+  assert.equal(unresolved.identityReviewQueue[0].sourceShopperId,id);
+  assert.equal(unresolved.identityReviewQueue[0].reason,'SHOPPER_CREDENTIAL_NAME_INCOMPLETE');
+  assert.equal(db.get(pp.profile),undefined);
+  assert.equal(auth.users.size,0);
+  const exact=new Map([[id,{displayName:'Julissa Flores',country:'GT'}]]);
+  const resolved=await p.reconcileSnapshot(snap,{sourceRevision:'rev-tech-resolved',identityByShopperId:exact});
+  assert.equal(resolved.ok,true);
+  assert.equal(resolved.identityReviewCount,0);
+  assert.equal(db.get(pp.profile).nombre,'Julissa Flores');
+  assert.notEqual(db.get(pp.profile).nombre,id);
+  assert.equal((await auth.getUser(uid)).customClaims.shopperId,id);
+});
+
