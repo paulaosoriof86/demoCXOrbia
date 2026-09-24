@@ -43,7 +43,7 @@
   }
 
   function resolveCommission(project,data,country,visitCount){
-    if(modelOf(project)==='unconfigured')return {exact:false,amount:0,source:'project_model_configuration_required'};
+    if(modelOf(project)==='unconfigured')return {exact:false,amount:null,source:'project_model_configuration_required'};
     const cfg=project?.coordinationCommission||{};
     const ctx=context(data,project);
     let value=nestedValue(cfg.amountByPeriodCountry,ctx.periodId,country);
@@ -69,11 +69,11 @@
       return {exact:true,amount:configuredPerVisit*Number(visitCount||0),source:'project.honRecibe.explicit_per_visit'};
     }
 
-    return {exact:false,amount:0,source:'project_configuration_required'};
+    return {exact:false,amount:null,source:'project_configuration_required'};
   }
 
   function resolveDistributedAmount(project,data,country){
-    if(modelOf(project)==='unconfigured')return {exact:false,amount:0,source:'project_model_configuration_required'};
+    if(modelOf(project)==='unconfigured')return {exact:false,amount:null,source:'project_model_configuration_required'};
     const cfg=project?.coordinationCommission||{};
     const ctx=context(data,project);
     let value=nestedValue(cfg.distributedAmountByPeriodCountry,ctx.periodId,country);
@@ -88,7 +88,7 @@
       if(value!=null)return {exact:true,amount:value,source:'coordinationCommission.distributedAmount'};
     }
 
-    return {exact:false,amount:0,source:'project_configuration_required'};
+    return {exact:false,amount:null,source:'project_configuration_required'};
   }
 
   function resolveOtherCosts(project,data,country){
@@ -103,10 +103,10 @@
   const previousHonRecibe=typeof CX.fin.honRecibe==='function'?CX.fin.honRecibe.bind(CX.fin):()=>0;
   CX.fin.honRecibe=function(project,country){
     if(!isFailClosedModel(project))return previousHonRecibe(project,country);
-    if(modelOf(project)==='unconfigured')return 0;
+    if(modelOf(project)==='unconfigured')return null;
     const explicit=project?.honRecibe&&own(project.honRecibe,country)
       ?numOrNull(project.honRecibe[country]):null;
-    return explicit==null?0:explicit;
+    return explicit==null?null:explicit;
   };
 
   const previousPorPais=typeof CX.fin.porPais==='function'?CX.fin.porPais.bind(CX.fin):null;
@@ -127,22 +127,24 @@
       const includeShopperCosts=project.coordinationCommission?.includeShopperCosts===true;
       const shopperCosts=includeShopperCosts?Number(row.honorarioDevengado||0):0;
       const ready=modelOf(project)!=='unconfigured'&&commission.exact&&distribution.exact;
-      const margin=ready?commission.amount-distribution.amount-otherCosts-shopperCosts:0;
+      const margin=ready?commission.amount-distribution.amount-otherCosts-shopperCosts:null;
 
-      row.ingreso=commission.amount;
+      row.ingreso=commission.exact?commission.amount:null;
+      row.incomeSourceKnown=commission.exact;
+      row.incomeSource=commission.exact?commission.source:null;
       row.isr=0;
       row.regal=0;
       row.fijos=otherCosts;
       row.margen=margin;
-      row.margenPct=ready&&commission.amount?Math.round(margin/commission.amount*100):0;
-      row.cxc=ready&&project.coordinationCommission?.receivableConfirmed===true?commission.amount:0;
+      row.margenPct=ready&&commission.amount?Math.round(margin/commission.amount*100):null;
+      row.cxc=ready?(project.coordinationCommission?.receivableConfirmed===true?commission.amount:0):null;
       row.financialModel=modelOf(project);
       row.localBilling=modelOf(project)==='unconfigured'?null:false;
       row.royaltyApplicable=false;
-      row.commissionAmount=commission.amount;
+      row.commissionAmount=commission.exact?commission.amount:null;
       row.commissionSource=commission.source;
       row.commissionSourceStatus=commission.exact?'confirmed_project_configuration':commission.source;
-      row.distributedAmount=distribution.amount;
+      row.distributedAmount=distribution.exact?distribution.amount:null;
       row.distributionSource=distribution.source;
       row.distributionSourceStatus=distribution.exact?'confirmed_project_configuration':distribution.source;
       row.marginSourceStatus=ready?'confirmed_project_configuration':'pending_or_review';
