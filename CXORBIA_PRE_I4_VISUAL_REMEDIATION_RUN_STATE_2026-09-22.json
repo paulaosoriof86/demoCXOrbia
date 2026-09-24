@@ -1,20 +1,21 @@
 {
   "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v11",
-  "generatedAt": "2026-09-23T20:14:00-06:00",
+  "generatedAt": "2026-09-23T20:32:00-06:00",
   "iteration": "I3_PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "microblockId": "CXORBIA-PRE-I4-VISUAL-REMEDIATION-MICROBLOCK-20260922",
-  "status": "HOLD_VRM_027_POSTULATION_STATE_DIAGNOSTIC_READBACK_READY",
+  "status": "HOLD_VRM_027_FIXED_SOURCE_READY_FOR_DEV_PROOF",
   "production": "DO_NOT_TOUCH",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "head": "b3069f07eb0bde127ce302dd8ad8136704a6c7b8",
+  "head": "275a9893532e9fa11efcbafccd34bb93919d7d64",
   "lastFunctionalWrite": {
-    "commit": "6653ba83b7c95ff413169e48ceb38e95151a2736",
-    "parent": "ab05415eb965404e1a6594df8533b8e0190aa0f7",
+    "commit": "275a9893532e9fa11efcbafccd34bb93919d7d64",
+    "parent": "275a9893532e9fa11efcbafccd34bb93919d7d64",
     "files": [
-      "app/adapters/tya-canonical-finance-read-model-v2.js"
+      "app/modules/misvisitas.js",
+      "app/modules/postulaciones.js"
     ],
-    "test": "backend/runtime/hr-live-service/test/cxorbia-pre-i4-finance-source-semantics.test.mjs",
-    "purpose": "VRM_015_CANONICAL_FINANCE_REIMBURSEMENT_PARTIAL_PROPAGATION",
+    "test": "backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-ui-cleanup.test.mjs",
+    "purpose": "VRM_027_APPROVED_POSTULATION_ASSIGNMENT_CONFLICT_HUMAN_VISIBILITY",
     "productionDeploys": 0
   },
   "automaticPushWorkflowObservation": {
@@ -262,18 +263,16 @@
       "note": "Run317 was a control-lane routing failure: an untagged control-only push selected the historical certify job still anchored to 77bf and failed its source guard before any build/auth/deploy. The existing [pre-i4-readback-only] exclusion is now used with the postdeploy readback lane bound to Run316/source 6653; no new workflow or product candidate is created."
     },
     "VRM-027": {
-      "state": "DIAGNOSIS_PENDING",
-      "evidenceRef": "Run318 35945557491 / artifact 10786164590",
+      "state": "FIXED_NOT_PROVEN",
+      "evidenceRef": "Run319 35946850723 + functional successor 275a9893532e9fa11efcbafccd34bb93919d7d64",
       "owner": [
-        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs",
         "app/modules/misvisitas.js",
-        "app/adapters/tya-cumulative-read-model-v2.js",
-        "app/core/backend-firebase.js"
+        "app/modules/postulaciones.js"
       ],
-      "note": "Run318 proved shopper focal has exactly one period-scoped postulation and Paseo Cayala is present, while the literal pending detector returned zero. Before any product write, next readback captures the exact durable/composed postulation state fields to distinguish canonical-equivalent state from a true mapping defect."
+      "note": "Run319 proved the focal application is durable estado/status=aprobada, while the composed live HR visit is assigned to a different shopper and the canonical read model already marks hr_platform_assignment_conflict. Product defect was the human projection: Mis Visitas hid all non-pending applications and Admin rendered every approved application as confirmed. The minimal generic fix surfaces conflict_review_required / pending HR / confirmed states without changing HR, Firestore, application status or visit assignment."
     }
   },
-  "nextExactAction": "Run zero-deploy focal readback v4 on the same Run316 candidate to capture exact focal shopper postulation state/status/scope/deletion fields; then classify false-positive versus true postulation mapping defect and fix only the proven owner.",
+  "nextExactAction": "Materialize exact 275a9893 static app to existing Hosting DEV only; keep runtime/rules unchanged; force fresh HR; run cumulative Admin/Shopper desktop/mobile focal with derived application sync-state visibility plus Finance/Liquidations/Resources/Certifications; freeze same-artifact proof.",
   "functionalLineage": [
     {
       "commit": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
@@ -306,6 +305,10 @@
     {
       "commit": "61cf7120603aeff110e97632bb6c69f5c4809d62",
       "purpose": "HUMAN_UI_CLEANUP_FINAL_SOURCE_SUCCESSOR"
+    },
+    {
+      "commit": "275a9893532e9fa11efcbafccd34bb93919d7d64",
+      "purpose": "VRM_027_POSTULATION_ASSIGNMENT_CONFLICT_VISIBILITY"
     }
   ],
   "readModelReconciliation": {
@@ -317,9 +320,9 @@
     ]
   },
   "functionalSource": {
-    "sha": "6653ba83b7c95ff413169e48ceb38e95151a2736",
-    "tree": "dd234f8b9cb0fb0864e97ddfff7d18a285e57bf3",
-    "state": "CUMULATIVE_SOURCE_PACKAGE_FINANCE_PARTIAL_FIX_AWAITING_FOCAL_PROOF"
+    "sha": "275a9893532e9fa11efcbafccd34bb93919d7d64",
+    "tree": "f1691f1da1e4cc44081f034a951ad6c6409521be",
+    "state": "CUMULATIVE_SOURCE_PACKAGE_VRM_027_FIX_AWAITING_FOCAL_PROOF"
   },
   "durabilityAndResources": {
     "state": "SOURCE_COMPLETE_AWAITING_FOCAL_PROOF",
@@ -337,18 +340,16 @@
     ]
   },
   "focalProof": {
-    "state": "RUN316_MATERIALIZED_ZERO_DEPLOY_READBACK_READY",
-    "sourceSha": "6653ba83b7c95ff413169e48ceb38e95151a2736",
-    "sourceTree": "dd234f8b9cb0fb0864e97ddfff7d18a285e57bf3",
-    "previousDeployedRunId": 35940783964,
+    "state": "VRM_027_HOSTING_ONLY_READY",
+    "sourceSha": "275a9893532e9fa11efcbafccd34bb93919d7d64",
+    "sourceTree": "f1691f1da1e4cc44081f034a951ad6c6409521be",
+    "previousDeployedRunId": 35941768293,
     "nextRunDeploys": {
       "runtime": 0,
       "rules": 0,
-      "hosting": 0
+      "hosting": 1
     },
-    "deployedRunId": 35941768293,
-    "artifactId": 10785028396,
-    "artifactZipDigest": "sha256:ad713f9f2f0a54022603921e5685b113f6e236e09def7bb74950bfcf08b2d70a"
+    "production": false
   },
   "providerFailure": {
     "classification": "PROVIDER_FAILURE",
@@ -365,20 +366,23 @@
   },
   "lastControlFailure": {
     "classification": "MAPPING_FAILURE",
-    "runId": 35945557491,
-    "productDefectProven": false,
+    "runId": 35946850723,
+    "productDefectProven": true,
     "affectedFindings": [
       "VRM-013",
       "VRM-027"
     ],
-    "cause": "Pending postulation visibility gate observed shopperStats.postulaciones=1 and Paseo Cayala present but literal estado/status='pendiente' count=0. Exact record state not yet captured; product change is blocked until readback.",
+    "cause": "Canonical assignment conflict existed in the read model but was not projected to shopper/admin human UI. Approved application remained durable and HR remained authoritative; no data cleanup is required.",
     "observed": {
-      "shopperTotalVisits": 7,
-      "shopperPostulationsKpi": 1,
-      "pendingPostsLiteral": 0,
-      "paseoCayala": true
+      "applicationState": "aprobada",
+      "applicationSource": "platform",
+      "applicationVersion": 2,
+      "visitAssignmentAuthority": "HR",
+      "canonicalConflict": "hr_platform_assignment_conflict"
     },
-    "resolutionOwner": "READBACK_ONLY_FIRST",
+    "resolutionCommit": "275a9893532e9fa11efcbafccd34bb93919d7d64",
+    "firestoreWrites": 0,
+    "hrWrites": 0,
     "productionDeploys": 0
   },
   "liveHrProof": {

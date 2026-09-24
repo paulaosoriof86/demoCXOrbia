@@ -26,7 +26,7 @@ if(!admin)throw new Error('AUTH_FAILURE:FOCAL_ADMIN_PRINCIPAL_MISSING');
 if(!shopper)throw new Error('AUTH_FAILURE:FOCAL_PAULA_SHOPPER_PRINCIPAL_MISSING');
 
 const browser=await chromium.launch({headless:true});
-const evidence={schemaVersion:'cxorbia.pre-i4.focal-human-browser.v4',decision:'HOLD',sourceSha,hrRevision,periodId,preAuth:null,admin:null,shopper:null,mobile:null,adminMobile:null,shopperMobile:null,production:false,authWrites:0,hrWrites:0,providerWrites:0};
+const evidence={schemaVersion:'cxorbia.pre-i4.focal-human-browser.v5',decision:'HOLD',sourceSha,hrRevision,periodId,preAuth:null,admin:null,shopper:null,mobile:null,adminMobile:null,shopperMobile:null,production:false,authWrites:0,hrWrites:0,providerWrites:0};
 
 async function assertClean(page,label){
   await page.waitForTimeout(1200);
@@ -113,15 +113,25 @@ async function signInMember(member,kind,route,options={}){
       const liqs=r==='liquidaciones'&&window.CX?.liq?.forProject?window.CX.liq.forProject(d):null;
       const sid=String(c.shopperId||'');
       const own=kind==='shopper'&&sid&&typeof d.visitsForShopper==='function'?d.visitsForShopper(sid):[];
-      const posts=kind==='shopper'&&sid?(d._posts||[]).filter(x=>String(x.shopperId||'')===sid&&String(d.recordPeriodId?d.recordPeriodId(x):(x.periodId||x.projectId)||'')===String(d.currentPeriodId||'')):[];
-      const postRows=posts.map(x=>({
+      const periodPosts=(d._posts||[]).filter(x=>String(d.recordPeriodId?d.recordPeriodId(x):(x.periodId||x.projectId)||'')===String(d.currentPeriodId||''));
+      const posts=kind==='shopper'&&sid?periodPosts.filter(x=>String(x.shopperId||'')===sid):[];
+      const visitForPost=x=>(d._visitas||[]).find(v=>String(v.id||v.visitId||'')===String(x?.visitId||x?.visitaId||''))||null;
+      const syncStateFor=x=>{
+        const state=String(x?.estado||x?.status||'').toLowerCase(),v=visitForPost(x),appShopper=String(x?.shopperId||''),visitShopper=String(v?.shopperId||'');
+        if(state==='pendiente')return'pending_review';
+        if(state!=='aprobada')return state||'unknown';
+        if(v?.assignmentReviewRequired===true||v?.assignmentReviewReason==='hr_platform_assignment_conflict')return'conflict_review_required';
+        if(v?.assignmentSource==='platform'&&v?.assignmentSyncStatus==='pending_hr')return'platform_pending_hr_sync';
+        if(v&&appShopper&&visitShopper===appShopper)return'assigned_confirmed';
+        return'approved_assignment_review';
+      };
+      const rowOf=x=>({
         id:String(x.id||x.applicationId||x.postulationId||''),
         visitId:String(x.visitId||x.visitaId||''),
+        sucursal:String(x.sucursal||x.branch||''),
         estado:x.estado==null?null:String(x.estado),
         status:x.status==null?null:String(x.status),
-        decisionState:x.decisionState==null?null:String(x.decisionState),
-        applicationState:x.applicationState==null?null:String(x.applicationState),
-        workflowState:x.workflowState==null?null:String(x.workflowState),
+        syncState:syncStateFor(x),
         projectId:String(x.rootProjectId||x.projectId||''),
         periodId:String(d.recordPeriodId?d.recordPeriodId(x):(x.periodId||'')||''),
         archived:x._archived===true||x.archived===true,
@@ -129,7 +139,11 @@ async function signInMember(member,kind,route,options={}){
         active:x.active===false?false:true,
         version:x.version??x._version??null,
         source:String(x.source||x.origin||x.writeSource||'')
-      }));
+      });
+      const postRows=posts.map(rowOf);
+      const periodPostRows=periodPosts.map(rowOf);
+      const shopperVisibleAppStates=r==='misvisitas'?[...document.querySelectorAll('[data-app-state]')].map(el=>String(el.getAttribute('data-app-state')||'')):[];
+      const adminVisiblePostSyncStates=r==='postulaciones'?[...document.querySelectorAll('[data-post-sync]')].filter(el=>getComputedStyle(el).display!=='none').map(el=>String(el.getAttribute('data-post-sync')||'')) : [];
       const resources=window.CX?.backendResources?.list?.({projectId:d.currentProjectId,periodId:d.currentPeriodId,resourceType:'project_resource'})||[];
       const resourceRows=resources.map(x=>({
         id:String(x?.id||''),name:String(x?.n||x?.name||''),meta:String(x?.meta||''),resourceType:String(x?.resourceType||''),
@@ -150,7 +164,8 @@ async function signInMember(member,kind,route,options={}){
         identityCases:r==='shoppers'?identityRows:null,
         finance:finance?{GT:finance.GT||null,HN:finance.HN||null}:null,
         liquidations:Array.isArray(liqs)?{count:liqs.length,GT:liqs.filter(x=>x.pais==='GT').length,HN:liqs.filter(x=>x.pais==='HN').length,paymentsConfirmed:liqs.filter(x=>x.paymentConfirmed===true).length,liquidationsConfirmed:liqs.filter(x=>x.liquidationConfirmed===true).length}:null,
-        shopper:kind==='shopper'?{stats:typeof d.shopperStats==='function'?d.shopperStats(sid):null,ownCount:own.length,duplicateVisits:own.length-new Set(own.map(v=>String(v.id||v.visitId))).size,pendingPosts:posts.filter(x=>String(x.estado||x.status).toLowerCase()==='pendiente').length,paseoCayala:posts.some(x=>/paseo cayal/i.test(norm(x.sucursal||x.branch||''))),postRows}:null,
+        shopper:kind==='shopper'?{stats:typeof d.shopperStats==='function'?d.shopperStats(sid):null,ownCount:own.length,duplicateVisits:own.length-new Set(own.map(v=>String(v.id||v.visitId))).size,postCount:postRows.length,paseoCayala:postRows.some(x=>/paseo cayal/i.test(norm(x.sucursal))),postRows,visibleAppStates:shopperVisibleAppStates}:null,
+        postulationSync:r==='postulaciones'?{expectedStates:periodPostRows.map(x=>x.syncState).sort(),visibleStates:adminVisiblePostSyncStates.slice().sort(),expectedConflicts:periodPostRows.filter(x=>x.syncState==='conflict_review_required').length,visibleConflicts:adminVisiblePostSyncStates.filter(x=>x==='conflict_review_required').length}:null,
         resources:r==='documentos'?{count:resourceRows.length,names:resourceRows.map(x=>x.name),rows:resourceRows,staticResourceSeedIds,status:window.CX_BACKEND_RESOURCES_STATUS||null,storage:window.CX?.backendResources?.storageStatus?.()||null}:null,
         certification:r==='cert'?{sourceStatus:String(certEvidence.sourceStatus||''),evidenceCandidateCount:Number(certEvidence.evidenceCandidateCount||0),carryoverConfirmed:Number(certEvidence.carryoverConfirmed||0),eligibilityGranted:Number(certEvidence.eligibilityGranted||0),bank:window.CX?.certStore?.bank?.(d.currentPeriodId)||null}:null,
         mobileIdentity:(()=>{const el=document.getElementById('tbRoleIdentity');return el?{text:String(el.innerText||''),visible:getComputedStyle(el).display!=='none'}:null;})(),
@@ -186,6 +201,10 @@ async function signInMember(member,kind,route,options={}){
       const e=reference?.liquidations;
       if(!e||!info.liquidations||info.liquidations.count!==e.total||info.liquidations.GT!==e.GT||info.liquidations.HN!==e.HN||info.liquidations.paymentsConfirmed!==e.paymentsConfirmed||info.liquidations.liquidationsConfirmed!==e.liquidationsConfirmed)throw new Error('MAPPING_FAILURE:LIQUIDATION_REFERENCE:'+JSON.stringify({observed:info.liquidations,expected:e,hrRevision}));
     }
+    if(r==='postulaciones'){
+      const x=info.postulationSync;
+      if(!x||JSON.stringify(x.visibleStates)!==JSON.stringify(x.expectedStates)||x.visibleConflicts!==x.expectedConflicts)throw new Error('MAPPING_FAILURE:ADMIN_POSTULATION_SYNC_VISIBILITY:'+JSON.stringify(x));
+    }
     if(r==='documentos'){
       if(info.bodyHasStaticSeed)throw new Error('PERSISTENCE_FAILURE:STATIC_RESOURCE_SEED_VISIBLE:'+JSON.stringify(info.resources));
       if(info.resources?.status?.status!=='ready'||info.resources?.status?.source!=='firestore')throw new Error('PERSISTENCE_FAILURE:RESOURCE_CONNECTED_READ_NOT_READY:'+JSON.stringify(info.resources));
@@ -196,7 +215,10 @@ async function signInMember(member,kind,route,options={}){
     }
     if(kind==='shopper'){
       if(Number(info.shopper?.stats?.total)!==7||info.shopper?.ownCount!==7||info.shopper?.duplicateVisits!==0)throw new Error('MAPPING_FAILURE:SHOPPER_UNIVERSE:'+JSON.stringify(info.shopper));
-      if(r==='misvisitas'&&(info.shopper.pendingPosts<1||info.shopper.paseoCayala!==true))throw new Error('MAPPING_FAILURE:PENDING_POSTULATION_VISIBILITY:'+JSON.stringify(info.shopper));
+      if(r==='misvisitas'){
+        const expected=arr(info.shopper?.postRows).map(x=>String(x.syncState||'')).sort(),visible=arr(info.shopper?.visibleAppStates).map(String).sort();
+        if(Number(info.shopper?.stats?.postulaciones||0)!==Number(info.shopper?.postCount||0)||JSON.stringify(expected)!==JSON.stringify(visible)||info.shopper?.paseoCayala!==true)throw new Error('MAPPING_FAILURE:SHOPPER_POSTULATION_STATE_VISIBILITY:'+JSON.stringify(info.shopper));
+      }
     }
     routeEvidence[r]=info;
   }

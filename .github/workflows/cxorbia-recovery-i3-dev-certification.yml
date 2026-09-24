@@ -59,7 +59,7 @@ env:
 
 jobs:
   certify:
-    if: ${{ github.event_name != 'push' || (!contains(github.event.head_commit.message, '[pre-i4-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-readback-only]') && !contains(github.event.head_commit.message, '[pre-i4-finance-fix-dev-only]')) }}
+    if: ${{ github.event_name != 'push' || (!contains(github.event.head_commit.message, '[pre-i4-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-readback-only]') && !contains(github.event.head_commit.message, '[pre-i4-finance-fix-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-focal-fix-dev-only]')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 70
     steps:
@@ -1752,14 +1752,14 @@ jobs:
           test "$(jq -r '.decision' "$PREI4_OUT/remote-parity.json")" = "PASS_PRE_I4_HOSTING_REMOTE_BYTE_PARITY"
 
   pre-i4-finance-p0-hosting-fix:
-    name: PRE-I4 finance P0 Hosting-only materialization
-    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[pre-i4-finance-fix-dev-only]') }}
+    name: PRE-I4 focal static P0 Hosting-only materialization
+    if: ${{ github.event_name == 'push' && (contains(github.event.head_commit.message, '[pre-i4-finance-fix-dev-only]') || contains(github.event.head_commit.message, '[pre-i4-focal-fix-dev-only]')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
       REQUEST: backend/config/pre-i4-human-entrypoint-dev-deploy-request.json
-      PREI4_OUT: .tmp/pre-i4-finance-p0
-      PREI4_SOURCE_DIR: .tmp/pre-i4-finance-source
+      PREI4_OUT: .tmp/pre-i4-focal-fix
+      PREI4_SOURCE_DIR: .tmp/pre-i4-focal-source
       PREI4_PRIOR: .tmp/pre-i4-prior-deploy
     steps:
       - name: Checkout cumulative control successor
@@ -1772,38 +1772,41 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Validate exact finance P0 functional successor and one-shot scope
+      - name: Validate exact focal functional successor and one-shot scope
         run: |
           set -Eeuo pipefail
           mkdir -p "$PREI4_OUT"
           node <<'NODE'
           const fs=require('fs'),{execFileSync}=require('child_process');
           const p=process.env.REQUEST,r=JSON.parse(fs.readFileSync(p,'utf8')),head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
-          const source='6653ba83b7c95ff413169e48ceb38e95151a2736',previous='ab05415eb965404e1a6594df8533b8e0190aa0f7';
-          if(r.requestId!=='pre-i4-visual-remediation-20260923-08'||r.sourceSha!==source||r.sourceTree!=='dd234f8b9cb0fb0864e97ddfff7d18a285e57bf3')throw new Error('RELEASE_COMPOSITION_FAILURE:FINANCE_FIX_REQUEST_SOURCE');
-          if(r.status!=='authorized_execute_once'||r.enabled!==true||r.consumed!==false||r.production!==false||r.noAutomaticRetry!==true)throw new Error('RELEASE_COMPOSITION_FAILURE:FINANCE_FIX_AUTHORIZATION');
-          if(Number(r.nextRun?.runtimeBuilds)!==0||Number(r.nextRun?.runtimeDeploys)!==0||Number(r.nextRun?.rulesDeploys)!==0||Number(r.nextRun?.hostingDeploys)!==1)throw new Error('RELEASE_COMPOSITION_FAILURE:FINANCE_FIX_SCOPE');
+          const source='275a9893532e9fa11efcbafccd34bb93919d7d64',previous='6653ba83b7c95ff413169e48ceb38e95151a2736';
+          if(r.requestId!=='pre-i4-visual-remediation-20260923-10'||r.sourceSha!==source||r.sourceTree!=='f1691f1da1e4cc44081f034a951ad6c6409521be')throw new Error('RELEASE_COMPOSITION_FAILURE:FOCAL_FIX_REQUEST_SOURCE');
+          if(r.status!=='authorized_execute_once'||r.enabled!==true||r.consumed!==false||r.production!==false||r.noAutomaticRetry!==true)throw new Error('RELEASE_COMPOSITION_FAILURE:FOCAL_FIX_AUTHORIZATION');
+          if(Number(r.nextRun?.runtimeBuilds)!==0||Number(r.nextRun?.runtimeDeploys)!==0||Number(r.nextRun?.rulesDeploys)!==0||Number(r.nextRun?.hostingDeploys)!==1)throw new Error('RELEASE_COMPOSITION_FAILURE:FOCAL_FIX_SCOPE');
           execFileSync('git',['merge-base','--is-ancestor',source,head]);
-          const productDiff=execFileSync('git',['diff','--name-only',previous,source],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean).sort();
+          const productDiff=execFileSync('git',['diff','--name-only',previous,source,'--','app','backend/runtime/hr-live-service/test'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean).sort();
           const expected=[
-            'app/adapters/tya-canonical-finance-read-model-v2.js',
-            'backend/runtime/hr-live-service/test/cxorbia-pre-i4-finance-source-semantics.test.mjs'
+            'app/modules/misvisitas.js',
+            'app/modules/postulaciones.js',
+            'backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-ui-cleanup.test.mjs'
           ].sort();
-          if(JSON.stringify(productDiff)!==JSON.stringify(expected))throw new Error('RELEASE_COMPOSITION_FAILURE:FINANCE_FIX_PRODUCT_DIFF:'+productDiff.join(','));
-          const unsafe=productDiff.filter(x=>x==='firestore.rules'||x.startsWith('backend/runtime/hr-live-service/')&&!x.endsWith('cxorbia-pre-i4-finance-source-semantics.test.mjs'));
-          if(unsafe.length)throw new Error('RELEASE_COMPOSITION_FAILURE:FINANCE_FIX_RUNTIME_RULES_DRIFT:'+unsafe.join(','));
-          fs.writeFileSync(process.env.PREI4_OUT+'/authorization.json',JSON.stringify({decision:'PASS_PRE_I4_FINANCE_P0_AUTHORIZATION',sourceSha:source,sourceTree:r.sourceTree,productDiff,runtimeBuilds:0,runtimeDeploys:0,rulesDeploys:0,hostingDeployMax:1,production:false},null,2)+'\n');
+          if(JSON.stringify(productDiff)!==JSON.stringify(expected))throw new Error('RELEASE_COMPOSITION_FAILURE:FOCAL_FIX_PRODUCT_DIFF:'+productDiff.join(','));
+          const unsafe=productDiff.filter(x=>x==='firestore.rules'||x.startsWith('backend/runtime/hr-live-service/')&&!x.endsWith('cxorbia-pre-i4-human-ui-cleanup.test.mjs'));
+          if(unsafe.length)throw new Error('RELEASE_COMPOSITION_FAILURE:FOCAL_FIX_RUNTIME_RULES_DRIFT:'+unsafe.join(','));
+          fs.writeFileSync(process.env.PREI4_OUT+'/authorization.json',JSON.stringify({decision:'PASS_PRE_I4_FOCAL_FIX_AUTHORIZATION',sourceSha:source,sourceTree:r.sourceTree,productDiff,runtimeBuilds:0,runtimeDeploys:0,rulesDeploys:0,hostingDeployMax:1,production:false},null,2)+'\n');
           NODE
 
       - name: Recreate exact functional source and run regression gates
         run: |
           set -Eeuo pipefail
           rm -rf "$PREI4_SOURCE_DIR"; mkdir -p "$PREI4_SOURCE_DIR"
-          git archive "6653ba83b7c95ff413169e48ceb38e95151a2736" | tar -x -C "$PREI4_SOURCE_DIR"
+          git archive "275a9893532e9fa11efcbafccd34bb93919d7d64" | tar -x -C "$PREI4_SOURCE_DIR"
           cd "$PREI4_SOURCE_DIR"
           node --check app/adapters/tya-live-source-inplace-apply.js
           node --check app/adapters/tya-delegated-coordination-finance-guard-v1.js
           node --check app/adapters/tya-canonical-finance-read-model-v2.js
+          node --check app/modules/misvisitas.js
+          node --check app/modules/postulaciones.js
           node --test             backend/runtime/hr-live-service/test/cxorbia-pre-i4-finance-source-semantics.test.mjs             backend/runtime/hr-live-service/test/cxorbia-i3-project-period-contract.test.mjs             backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs             backend/runtime/hr-live-service/test/cxorbia-pre-i4-durability-resources.test.mjs             backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-ui-cleanup.test.mjs             | tee "$GITHUB_WORKSPACE/$PREI4_OUT/source-tests.log"
           node tools/qa/cxorbia-pre-i4-human-entrypoint-contract-gate.mjs > "$GITHUB_WORKSPACE/$PREI4_OUT/source-gate.json"
           test "$(jq -r '.decision' "$GITHUB_WORKSPACE/$PREI4_OUT/source-gate.json")" = "PASS_PRE_I4_HUMAN_ENTRYPOINT_CONTRACT"
@@ -1842,7 +1845,7 @@ jobs:
           jq -e '.ok==true and .production==false and .hrWrites==false' "$PREI4_OUT/runtime-health.json" >/dev/null
           jq -n -S --arg revision "$RUNTIME_REV" '{decision:"PASS_PRE_I4_RUNTIME_RULES_UNCHANGED_FOR_BROWSER_ONLY_FIX",runtimeRevision:$revision,runtimeDeploysThisRun:0,rulesDeploysThisRun:0,production:false}' > "$PREI4_OUT/runtime-rules-unchanged.json"
 
-      - name: Deploy exact finance P0 static successor to Hosting DEV once
+      - name: Deploy exact focal static successor to Hosting DEV once
         run: |
           set -Eeuo pipefail
           test "$GITHUB_RUN_ATTEMPT" = "1"
@@ -1851,7 +1854,7 @@ jobs:
           cd "$GITHUB_WORKSPACE"
           echo 1 > "$PREI4_OUT/hosting-deploy-count.txt"
 
-      - name: Prove exact served static bytes after finance P0 deploy
+      - name: Prove exact served static bytes after focal deploy
         run: |
           set -Eeuo pipefail
           root="https://cxorbia-backend-dev.web.app"; mkdir -p "$PREI4_OUT/remote"
@@ -1866,7 +1869,7 @@ jobs:
           done
           curl -fsSL -H 'Cache-Control: no-cache' "$root/__pre_i4_finance_p0__/admin/financiero?financep0=${GITHUB_RUN_ID}" -o "$PREI4_OUT/remote/deep.html"
           cmp "$PREI4_SOURCE_DIR/app/index-backend-dev.html" "$PREI4_OUT/remote/deep.html"
-          jq -n -S '{decision:"PASS_PRE_I4_FINANCE_P0_HOSTING_BYTE_PARITY",hostingDeploysThisRun:1,production:false}' > "$PREI4_OUT/remote-readback.json"
+          jq -n -S '{decision:"PASS_PRE_I4_FOCAL_FIX_HOSTING_BYTE_PARITY",hostingDeploysThisRun:1,production:false}' > "$PREI4_OUT/remote-readback.json"
 
       - name: Force fresh HR read and build same-revision independent reference
         run: |
@@ -1921,40 +1924,40 @@ jobs:
       - name: Execute focal Admin Shopper desktop mobile against same HR revision
         env:
           CXORBIA_PREI4_ROOT: https://cxorbia-backend-dev.web.app
-          CXORBIA_PREI4_SOURCE_SHA: 6653ba83b7c95ff413169e48ceb38e95151a2736
+          CXORBIA_PREI4_SOURCE_SHA: 275a9893532e9fa11efcbafccd34bb93919d7d64
         run: |
           set -Eeuo pipefail
           node tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs
           test "$(jq -r '.decision' "$PREI4_OUT/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
 
-      - name: Freeze finance P0 focal PASS
+      - name: Freeze focal static fix PASS
         run: |
           set -Eeuo pipefail
           test "$(jq -r '.decision' "$PREI4_OUT/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
           test "$(jq -r '.decision' "$PREI4_OUT/hr-contrast.json")" = "PASS_PRE_I4_HR_FRESH_CONTRAST"
-          test "$(jq -r '.decision' "$PREI4_OUT/remote-readback.json")" = "PASS_PRE_I4_FINANCE_P0_HOSTING_BYTE_PARITY"
+          test "$(jq -r '.decision' "$PREI4_OUT/remote-readback.json")" = "PASS_PRE_I4_FOCAL_FIX_HOSTING_BYTE_PARITY"
           test "$(cat "$PREI4_OUT/hosting-deploy-count.txt")" = "1"
           cd "$PREI4_SOURCE_DIR"
           tar --sort=name --mtime='UTC 1970-01-01' --owner=0 --group=0 --numeric-owner -cf "$GITHUB_WORKSPACE/$PREI4_OUT/app-postcheck.tar" app
           POST="$(sha256sum "$GITHUB_WORKSPACE/$PREI4_OUT/app-postcheck.tar" | awk '{print $1}')"
           PRE="$(cat "$GITHUB_WORKSPACE/$PREI4_OUT/app-artifact.sha256")"
           test "$POST" = "$PRE"
-          jq -n -S --arg source "6653ba83b7c95ff413169e48ceb38e95151a2736" --arg artifact "$PRE" --arg hr "$(jq -r '.sourceRevision' "$GITHUB_WORKSPACE/$PREI4_OUT/hr-contrast.json")" '{decision:"PASS_PRE_I4_FINANCE_P0_SAME_ARTIFACT_DEV",sourceSha:$source,artifactSha256:$artifact,hrRevision:$hr,runtimeBuildsThisRun:0,runtimeDeploysThisRun:0,rulesDeploysThisRun:0,hostingDeploysThisRun:1,browserFocal:true,production:false}' > "$GITHUB_WORKSPACE/$PREI4_OUT/final.json"
+          jq -n -S --arg source "275a9893532e9fa11efcbafccd34bb93919d7d64" --arg artifact "$PRE" --arg hr "$(jq -r '.sourceRevision' "$GITHUB_WORKSPACE/$PREI4_OUT/hr-contrast.json")" '{decision:"PASS_PRE_I4_FOCAL_FIX_SAME_ARTIFACT_DEV",sourceSha:$source,artifactSha256:$artifact,hrRevision:$hr,runtimeBuildsThisRun:0,runtimeDeploysThisRun:0,rulesDeploysThisRun:0,hostingDeploysThisRun:1,browserFocal:true,postulationConflictVisibility:true,production:false}' > "$GITHUB_WORKSPACE/$PREI4_OUT/final.json"
 
-      - name: Upload finance P0 focal evidence
+      - name: Upload focal static fix evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-pre-i4-finance-p0-${{ github.run_id }}
+          name: cxorbia-pre-i4-focal-fix-${{ github.run_id }}
           path: ${{ env.PREI4_OUT }}
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
 
-      - name: Enforce finance P0 result
+      - name: Enforce focal static fix result
         run: |
           set -Eeuo pipefail
-          test "$(jq -r '.decision' "$PREI4_OUT/final.json")" = "PASS_PRE_I4_FINANCE_P0_SAME_ARTIFACT_DEV"
+          test "$(jq -r '.decision' "$PREI4_OUT/final.json")" = "PASS_PRE_I4_FOCAL_FIX_SAME_ARTIFACT_DEV"
 
   pre-i4-postdeploy-readback:
     name: PRE-I4 postdeploy no-deploy focal verification
