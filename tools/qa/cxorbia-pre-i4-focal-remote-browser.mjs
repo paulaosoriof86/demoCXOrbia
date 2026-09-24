@@ -243,7 +243,8 @@ async function signInMember(member,kind,route,options={}){
     if(r==='financiero'){
       for(const [code,o] of [['GT',info.finance?.GT],['HN',info.finance?.HN]]){
         const e=reference?.finance?.[code];
-        if(!o||!e||Number(o.visRe)!==e.realizedCount||Number(o.honorarioDevengado)!==e.honorarioDevengado||Number(o.reemb)!==e.knownReimbursements||o.reimbursementPartial!==e.reimbursementPartial||o.margenPct!==null)throw new Error('MAPPING_FAILURE:FINANCE_'+code+':'+JSON.stringify({observed:o,expected:e,hrRevision}));
+        const amountEq=(observed,expected)=>expected===null?observed===null:Number(observed)===Number(expected);
+        if(!o||!e||Number(o.visRe)!==Number(e.realizedCount)||!amountEq(o.honorarioDevengado,e.honorarioDevengado)||Number(o.reemb)!==Number(e.knownReimbursements)||Boolean(o.reimbursementPartial)!==Boolean(e.reimbursementPartial)||o.margenPct!==null)throw new Error('MAPPING_FAILURE:FINANCE_'+code+':'+JSON.stringify({observed:o,expected:e,hrRevision}));
       }
     }
     if(r==='liquidaciones'){
