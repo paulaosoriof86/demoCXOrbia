@@ -2004,11 +2004,77 @@ jobs:
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
 
-      - name: Install focal browser tooling
+      - name: Setup gcloud for rules readback
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: cxorbia-backend-dev
+
+      - name: Install focal browser and rules proof tooling
         run: |
           set -Eeuo pipefail
-          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.55.0 firebase-tools@latest firebase@11.10.0 @firebase/rules-unit-testing@4.0.1 >/dev/null 2>&1
           npx playwright install --with-deps chromium >/dev/null 2>&1
+
+      - name: Read back live Firestore Rules and prove resource query semantics locally
+        run: |
+          set -Eeuo pipefail
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/cxorbia-backend-dev/releases/cloud.firestore" -o "$PREI4_OUT/firestore-release-live.json"
+          RULESET="$(jq -r '.rulesetName // empty' "$PREI4_OUT/firestore-release-live.json")"
+          test -n "$RULESET"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/$RULESET" -o "$PREI4_OUT/firestore-ruleset-live.json"
+          node <<'NODE'
+          const fs=require('fs'),crypto=require('crypto');
+          const r=JSON.parse(fs.readFileSync(process.env.PREI4_OUT+'/firestore-ruleset-live.json','utf8'));
+          const files=r?.source?.files||[];
+          const live=files.find(x=>x.name==='firestore.rules')||files.find(x=>String(x.name||'').endsWith('/firestore.rules'))||files[0];
+          if(!live||typeof live.content!=='string')throw new Error('ENVIRONMENT_FAILURE:LIVE_FIRESTORE_RULES_CONTENT_UNAVAILABLE');
+          const repo=fs.readFileSync('firestore.rules','utf8');
+          const sha=x=>crypto.createHash('sha256').update(x).digest('hex');
+          fs.writeFileSync(process.env.PREI4_OUT+'/firestore-live-parity.json',JSON.stringify({
+            decision:live.content===repo?'PASS_LIVE_FIRESTORE_RULES_EXACT':'FAIL_LIVE_FIRESTORE_RULES_DRIFT',
+            liveRulesetName:r.name||null,liveSha256:sha(live.content),repoSha256:sha(repo),exact:live.content===repo,production:false
+          },null,2)+'\n');
+          fs.writeFileSync(process.env.PREI4_OUT+'/firestore-live.rules',live.content);
+          NODE
+          cat > "$PREI4_OUT/resource-rules-query-proof.mjs" <<'NODE'
+          import fs from 'node:fs';
+          import {initializeTestEnvironment,assertFails} from '@firebase/rules-unit-testing';
+          const host=String(process.env.FIRESTORE_EMULATOR_HOST||'127.0.0.1:8080');
+          const [hostname,portText]=host.split(':');const port=Number(portText||8080);
+          const base=fs.readFileSync('firestore.rules','utf8');
+          const needle='role() in resource.data.visibleRoles';
+          if(!base.includes(needle))throw new Error('SOURCE_FAILURE:RESOURCE_RULE_MEMBERSHIP_NOT_FOUND');
+          const candidate=base.replace(needle,"'shopper' in resource.data.visibleRoles");
+          const claims={role:'shopper',tenantId:'tya',projectIds:['cinepolis'],shopperId:'s3',authNamespace:'shopper'};
+          async function run(label,rules){
+            const env=await initializeTestEnvironment({projectId:'cxorbia-rules-proof',firestore:{rules,host:hostname,port}});
+            try{
+              await env.withSecurityRulesDisabled(async ctx=>{
+                const c=ctx.firestore().collection('tenants').doc('tya').collection('resources');
+                await c.doc('shopper-visible').set({tenantId:'tya',projectId:'cinepolis',periodId:'cinepolis-2026-09',status:'active',visibleRoles:['shopper'],resourceType:'project_resource'});
+                await c.doc('admin-only').set({tenantId:'tya',projectId:'cinepolis',periodId:'cinepolis-2026-09',status:'active',visibleRoles:['admin'],resourceType:'project_resource'});
+                await c.doc('other-project').set({tenantId:'tya',projectId:'other',periodId:'other-2026-09',status:'active',visibleRoles:['shopper'],resourceType:'project_resource'});
+              });
+              const db=env.authenticatedContext('shopper-user',claims).firestore();
+              const q=db.collection('tenants').doc('tya').collection('resources')
+                .where('projectId','==','cinepolis').where('status','==','active').where('visibleRoles','array-contains','shopper');
+              let queryAllowed=true,queryError=null,ids=[];
+              try{const snap=await q.get();ids=snap.docs.map(d=>d.id).sort();}catch(e){queryAllowed=false;queryError=String(e?.code||e?.message||e);}
+              let adminOnlyDirectDenied=false;
+              try{await assertFails(db.collection('tenants').doc('tya').collection('resources').doc('admin-only').get());adminOnlyDirectDenied=true;}catch{}
+              return {label,queryAllowed,queryError,ids,adminOnlyDirectDenied};
+            } finally {await env.cleanup();}
+          }
+          const current=await run('current',base);
+          const proposed=await run('literal-shopper-membership',candidate);
+          fs.writeFileSync(process.env.PREI4_OUT+'/resource-rules-query-proof.json',JSON.stringify({
+            decision:'PROOF_CAPTURED',claims,current,proposed,candidateChange:needle+" -> 'shopper' in resource.data.visibleRoles"
+          },null,2)+'\n');
+          NODE
+          npx firebase emulators:exec --only firestore --project cxorbia-rules-proof "node '$PREI4_OUT/resource-rules-query-proof.mjs'"
+          cat "$PREI4_OUT/firestore-live-parity.json"
+          cat "$PREI4_OUT/resource-rules-query-proof.json"
 
       - name: Bind Run 322 exact deployed evidence
         env:
