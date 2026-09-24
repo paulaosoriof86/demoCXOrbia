@@ -26,7 +26,7 @@ if(!admin)throw new Error('AUTH_FAILURE:FOCAL_ADMIN_PRINCIPAL_MISSING');
 if(!shopper)throw new Error('AUTH_FAILURE:FOCAL_PAULA_SHOPPER_PRINCIPAL_MISSING');
 
 const browser=await chromium.launch({headless:true});
-const evidence={schemaVersion:'cxorbia.pre-i4.focal-human-browser.v3',decision:'HOLD',sourceSha,hrRevision,periodId,preAuth:null,admin:null,shopper:null,mobile:null,adminMobile:null,shopperMobile:null,production:false,authWrites:0,hrWrites:0,providerWrites:0};
+const evidence={schemaVersion:'cxorbia.pre-i4.focal-human-browser.v4',decision:'HOLD',sourceSha,hrRevision,periodId,preAuth:null,admin:null,shopper:null,mobile:null,adminMobile:null,shopperMobile:null,production:false,authWrites:0,hrWrites:0,providerWrites:0};
 
 async function assertClean(page,label){
   await page.waitForTimeout(1200);
@@ -114,6 +114,22 @@ async function signInMember(member,kind,route,options={}){
       const sid=String(c.shopperId||'');
       const own=kind==='shopper'&&sid&&typeof d.visitsForShopper==='function'?d.visitsForShopper(sid):[];
       const posts=kind==='shopper'&&sid?(d._posts||[]).filter(x=>String(x.shopperId||'')===sid&&String(d.recordPeriodId?d.recordPeriodId(x):(x.periodId||x.projectId)||'')===String(d.currentPeriodId||'')):[];
+      const postRows=posts.map(x=>({
+        id:String(x.id||x.applicationId||x.postulationId||''),
+        visitId:String(x.visitId||x.visitaId||''),
+        estado:x.estado==null?null:String(x.estado),
+        status:x.status==null?null:String(x.status),
+        decisionState:x.decisionState==null?null:String(x.decisionState),
+        applicationState:x.applicationState==null?null:String(x.applicationState),
+        workflowState:x.workflowState==null?null:String(x.workflowState),
+        projectId:String(x.rootProjectId||x.projectId||''),
+        periodId:String(d.recordPeriodId?d.recordPeriodId(x):(x.periodId||'')||''),
+        archived:x._archived===true||x.archived===true,
+        deleted:x.deleted===true||x.isDeleted===true,
+        active:x.active===false?false:true,
+        version:x.version??x._version??null,
+        source:String(x.source||x.origin||x.writeSource||'')
+      }));
       const resources=window.CX?.backendResources?.list?.({projectId:d.currentProjectId,periodId:d.currentPeriodId,resourceType:'project_resource'})||[];
       const resourceRows=resources.map(x=>({
         id:String(x?.id||''),name:String(x?.n||x?.name||''),meta:String(x?.meta||''),resourceType:String(x?.resourceType||''),
@@ -134,7 +150,7 @@ async function signInMember(member,kind,route,options={}){
         identityCases:r==='shoppers'?identityRows:null,
         finance:finance?{GT:finance.GT||null,HN:finance.HN||null}:null,
         liquidations:Array.isArray(liqs)?{count:liqs.length,GT:liqs.filter(x=>x.pais==='GT').length,HN:liqs.filter(x=>x.pais==='HN').length,paymentsConfirmed:liqs.filter(x=>x.paymentConfirmed===true).length,liquidationsConfirmed:liqs.filter(x=>x.liquidationConfirmed===true).length}:null,
-        shopper:kind==='shopper'?{stats:typeof d.shopperStats==='function'?d.shopperStats(sid):null,ownCount:own.length,duplicateVisits:own.length-new Set(own.map(v=>String(v.id||v.visitId))).size,pendingPosts:posts.filter(x=>String(x.estado||x.status).toLowerCase()==='pendiente').length,paseoCayala:posts.some(x=>/paseo cayal/i.test(norm(x.sucursal||x.branch||'')))}:null,
+        shopper:kind==='shopper'?{stats:typeof d.shopperStats==='function'?d.shopperStats(sid):null,ownCount:own.length,duplicateVisits:own.length-new Set(own.map(v=>String(v.id||v.visitId))).size,pendingPosts:posts.filter(x=>String(x.estado||x.status).toLowerCase()==='pendiente').length,paseoCayala:posts.some(x=>/paseo cayal/i.test(norm(x.sucursal||x.branch||''))),postRows}:null,
         resources:r==='documentos'?{count:resourceRows.length,names:resourceRows.map(x=>x.name),rows:resourceRows,staticResourceSeedIds,status:window.CX_BACKEND_RESOURCES_STATUS||null,storage:window.CX?.backendResources?.storageStatus?.()||null}:null,
         certification:r==='cert'?{sourceStatus:String(certEvidence.sourceStatus||''),evidenceCandidateCount:Number(certEvidence.evidenceCandidateCount||0),carryoverConfirmed:Number(certEvidence.carryoverConfirmed||0),eligibilityGranted:Number(certEvidence.eligibilityGranted||0),bank:window.CX?.certStore?.bank?.(d.currentPeriodId)||null}:null,
         mobileIdentity:(()=>{const el=document.getElementById('tbRoleIdentity');return el?{text:String(el.innerText||''),visible:getComputedStyle(el).display!=='none'}:null;})(),

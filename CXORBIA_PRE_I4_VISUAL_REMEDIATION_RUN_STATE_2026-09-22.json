@@ -1,12 +1,12 @@
 {
   "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v11",
-  "generatedAt": "2026-09-23T20:05:00-06:00",
+  "generatedAt": "2026-09-23T20:14:00-06:00",
   "iteration": "I3_PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "microblockId": "CXORBIA-PRE-I4-VISUAL-REMEDIATION-MICROBLOCK-20260922",
-  "status": "HOLD_RUN316_ZERO_DEPLOY_READBACK_READY",
+  "status": "HOLD_VRM_027_POSTULATION_STATE_DIAGNOSTIC_READBACK_READY",
   "production": "DO_NOT_TOUCH",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "head": "850c6a3defa3e697bc46b84cae4d6f4091083dfa",
+  "head": "b3069f07eb0bde127ce302dd8ad8136704a6c7b8",
   "lastFunctionalWrite": {
     "commit": "6653ba83b7c95ff413169e48ceb38e95151a2736",
     "parent": "ab05415eb965404e1a6594df8533b8e0190aa0f7",
@@ -260,9 +260,20 @@
         "backend/config/pre-i4-human-entrypoint-dev-deploy-request.json"
       ],
       "note": "Run317 was a control-lane routing failure: an untagged control-only push selected the historical certify job still anchored to 77bf and failed its source guard before any build/auth/deploy. The existing [pre-i4-readback-only] exclusion is now used with the postdeploy readback lane bound to Run316/source 6653; no new workflow or product candidate is created."
+    },
+    "VRM-027": {
+      "state": "DIAGNOSIS_PENDING",
+      "evidenceRef": "Run318 35945557491 / artifact 10786164590",
+      "owner": [
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs",
+        "app/modules/misvisitas.js",
+        "app/adapters/tya-cumulative-read-model-v2.js",
+        "app/core/backend-firebase.js"
+      ],
+      "note": "Run318 proved shopper focal has exactly one period-scoped postulation and Paseo Cayala is present, while the literal pending detector returned zero. Before any product write, next readback captures the exact durable/composed postulation state fields to distinguish canonical-equivalent state from a true mapping defect."
     }
   },
-  "nextExactAction": "Execute existing [pre-i4-readback-only] lane against Run316 artifact/source 6653 with zero deploys; prove structured Firestore resource rows, fresh same-revision HR, Admin/Shopper desktop/mobile, Finance/Liquidations and artifact byte parity.",
+  "nextExactAction": "Run zero-deploy focal readback v4 on the same Run316 candidate to capture exact focal shopper postulation state/status/scope/deletion fields; then classify false-positive versus true postulation mapping defect and fix only the proven owner.",
   "functionalLineage": [
     {
       "commit": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
@@ -353,21 +364,21 @@
     "resolution": "Use existing proven direct Rules API deploy tool; do not rebuild/redeploy runtime."
   },
   "lastControlFailure": {
-    "classification": "RELEASE_COMPOSITION_FAILURE",
-    "runId": 35945195477,
+    "classification": "MAPPING_FAILURE",
+    "runId": 35945557491,
     "productDefectProven": false,
     "affectedFindings": [
-      "VRM-026"
+      "VRM-013",
+      "VRM-027"
     ],
-    "cause": "Untagged control-only harness commit selected historical certify job; its I3_CERTIFICATION_SOURCE remains 77bf and correctly rejected later functional drift before deploy.",
+    "cause": "Pending postulation visibility gate observed shopperStats.postulaciones=1 and Paseo Cayala present but literal estado/status='pendiente' count=0. Exact record state not yet captured; product change is blocked until readback.",
     "observed": {
-      "failedStep": "Prove single certification source and control-only successor",
-      "deploysThisRun": 0
+      "shopperTotalVisits": 7,
+      "shopperPostulationsKpi": 1,
+      "pendingPostsLiteral": 0,
+      "paseoCayala": true
     },
-    "resolutionOwner": [
-      ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
-      "backend/config/pre-i4-human-entrypoint-dev-deploy-request.json"
-    ],
+    "resolutionOwner": "READBACK_ONLY_FIRST",
     "productionDeploys": 0
   },
   "liveHrProof": {
