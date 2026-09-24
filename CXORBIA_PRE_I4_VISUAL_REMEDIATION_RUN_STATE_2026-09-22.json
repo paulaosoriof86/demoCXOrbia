@@ -1,12 +1,12 @@
 {
   "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v11",
-  "generatedAt": "2026-09-23T20:58:00-06:00",
+  "generatedAt": "2026-09-23T21:07:00-06:00",
   "iteration": "I3_PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "microblockId": "CXORBIA-PRE-I4-VISUAL-REMEDIATION-MICROBLOCK-20260922",
-  "status": "HOLD_VRM_028_RELEASE_COMPOSITION_FIX_READY_FOR_DEV_PROOF",
+  "status": "HOLD_VRM_029_SHOPPER_AUTH_ROUTE_DIAGNOSTIC_READY",
   "production": "DO_NOT_TOUCH",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "head": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+  "head": "fa8ff3b54bcaf5eac53f3725f5cf9f6025958cbb",
   "lastFunctionalWrite": {
     "commit": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "parent": "ec1c3fc96ce0fe00cb72f7293c5994a19f90c9a2",
@@ -272,16 +272,27 @@
     },
     "VRM-028": {
       "state": "FIXED_NOT_PROVEN",
-      "evidenceRef": "Run321 35948591112 + functional successor f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "evidenceRef": "Run321 35948591112 + source f5b96e85 + Run322 35949258270",
       "owner": [
         "app/adapters/tya-c6-domain-consistency-bridge.js"
       ],
       "test": "backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-ui-cleanup.test.mjs",
       "classification": "RELEASE_COMPOSITION_FAILURE",
-      "note": "Run321 proved source/served modules/misvisitas.js had the approved VRM-027 code, but the active runtime module did not: tya-c6-domain-consistency-bridge.js loaded later and assigned CX.modules.misvisitas=correctedMisVisitas. The functional successor removes that secondary renderer while preserving canonical data/finance facades and adds an adapter-wide anti-regression assertion forbidding Mis Visitas ownership outside its canonical module."
+      "note": "Run322 passed source regression, one Hosting DEV materialization and byte parity including tya-c6-domain-consistency-bridge.js; Admin postulation conflict projection also passed. Terminal proof remains blocked only because the shopper route hit a Firestore permission denial before Mis Visitas could be reached."
+    },
+    "VRM-029": {
+      "state": "DIAGNOSIS_PENDING",
+      "evidenceRef": "Run322 35949258270 / artifact 10788575182",
+      "classification": "AUTH_FAILURE",
+      "owner": [
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs",
+        "app/core/backend-resources.js",
+        "firestore.rules"
+      ],
+      "note": "Run322 completed all Admin focal routes, then shopper traversal failed with FirebaseError Missing or insufficient permissions inside the per-route page.evaluate. A zero-deploy diagnostic will identify the exact shopper route and read back only non-sensitive custom-claim scope fields before any product/rules change."
     }
   },
-  "nextExactAction": "Materialize exact f5b96e85 static app to existing Hosting DEV only; prove domain-consistency bridge served byte, adapter anti-override regression test, fresh HR, canonical Mis Visitas active ownership, Admin/Shopper desktop/mobile, Finance/Liquidations/Resources/Certifications, navigation/refresh and same-artifact parity.",
+  "nextExactAction": "Run zero-deploy readback against Run322 artifact/source f5b96e85; capture safe shopper custom claims and exact failing route. If resources/documents is the denied route, prove whether backendResources query or firestore.rules is causal before any Rules change.",
   "functionalLineage": [
     {
       "commit": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
@@ -353,14 +364,16 @@
     ]
   },
   "focalProof": {
-    "state": "VRM_028_HOSTING_ONLY_READY",
+    "state": "RUN322_MATERIALIZED_ZERO_DEPLOY_AUTH_DIAGNOSTIC_READY",
     "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "sourceTree": "755e448b0c19701a1598ed0727edeae64ef766b0",
-    "previousDeployedRunId": 35947885607,
+    "deployedRunId": 35949258270,
+    "artifactId": 10788575182,
+    "artifactZipDigest": "sha256:10af30f948bdd1195f0c11847de2395173b701b18132fca87e7fa203695f6b81",
     "nextRunDeploys": {
       "runtime": 0,
       "rules": 0,
-      "hosting": 1
+      "hosting": 0
     },
     "production": false
   },
@@ -378,28 +391,23 @@
     "resolution": "Use existing proven direct Rules API deploy tool; do not rebuild/redeploy runtime."
   },
   "lastControlFailure": {
-    "classification": "RELEASE_COMPOSITION_FAILURE",
-    "runId": 35948591112,
-    "productDefectProven": true,
+    "classification": "AUTH_FAILURE",
+    "runId": 35949258270,
+    "productDefectProven": false,
     "affectedFindings": [
-      "VRM-027",
-      "VRM-028"
+      "VRM-029"
     ],
-    "cause": "Post-load adapter tya-c6-domain-consistency-bridge.js replaced the approved canonical Mis Visitas module in memory after the served file loaded.",
+    "cause": "Shopper focal encountered a Firestore permission denial after Admin passed all routes. Exact denied shopper route and claim/rule mismatch not yet proven.",
     "observed": {
-      "contextShopperId": "s3",
-      "sessionShopperId": "s3",
-      "profileShopperId": "s3",
-      "contextMatchedPosts": 1,
-      "sessionMatchedPosts": 1,
-      "derivedSyncState": "conflict_review_required",
-      "activeModuleHasAppState": false,
-      "activeModuleHasCurrentApps": false,
-      "moduleReady": null
+      "adminFocal": "PASS_THROUGH_CERT",
+      "adminPostulationConflictsVisible": 6,
+      "adminResourcesFirestoreReady": true,
+      "shopperFocal": "NOT_COMPLETED",
+      "error": "FirebaseError: Missing or insufficient permissions."
     },
-    "resolutionCommit": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+    "resolutionOwner": "READBACK_ONLY_FIRST",
     "firestoreWrites": 0,
-    "hrWrites": 0,
+    "rulesDeploys": 0,
     "productionDeploys": 0
   },
   "liveHrProof": {

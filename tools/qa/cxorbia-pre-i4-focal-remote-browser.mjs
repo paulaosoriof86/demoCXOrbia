@@ -26,7 +26,10 @@ if(!admin)throw new Error('AUTH_FAILURE:FOCAL_ADMIN_PRINCIPAL_MISSING');
 if(!shopper)throw new Error('AUTH_FAILURE:FOCAL_PAULA_SHOPPER_PRINCIPAL_MISSING');
 
 const browser=await chromium.launch({headless:true});
-const evidence={schemaVersion:'cxorbia.pre-i4.focal-human-browser.v6',decision:'HOLD',sourceSha,hrRevision,periodId,preAuth:null,admin:null,shopper:null,mobile:null,adminMobile:null,shopperMobile:null,production:false,authWrites:0,hrWrites:0,providerWrites:0};
+const evidence={schemaVersion:'cxorbia.pre-i4.focal-human-browser.v7',decision:'HOLD',sourceSha,hrRevision,periodId,preAuth:null,admin:null,shopper:null,mobile:null,adminMobile:null,shopperMobile:null,principalClaims:null,production:false,authWrites:0,hrWrites:0,providerWrites:0};
+const adminAuthUser=await auth.getUser(admin.id),shopperAuthUser=await auth.getUser(shopper.id);
+const safeClaims=u=>{const c=u?.customClaims||{};return{role:str(c.role),tenantId:str(c.tenantId),projectIds:arr(c.projectIds).map(str),shopperId:str(c.shopperId),authNamespace:str(c.authNamespace),country:str(c.country)};};
+evidence.principalClaims={admin:safeClaims(adminAuthUser),shopper:safeClaims(shopperAuthUser)};
 
 async function assertClean(page,label){
   await page.waitForTimeout(1200);
@@ -92,10 +95,15 @@ async function signInMember(member,kind,route,options={}){
     : ['midia','miperfil','visitas','reservas','misvisitas','beneficios','mireportes','documentos','cert','tablon']);
   const routeEvidence={};
   for(const r of routes){
-    await page.evaluate(async r=>{
-      window.CX.router.nav(r,{history:false});
-      if(r==='documentos'&&window.CX?.backendResources?.load)await window.CX.backendResources.load({projectId:window.CX.data.currentProjectId,periodId:window.CX.data.currentPeriodId});
-    },r);
+    try{
+      await page.evaluate(async r=>{
+        window.CX.router.nav(r,{history:false});
+        if(r==='documentos'&&window.CX?.backendResources?.load)await window.CX.backendResources.load({projectId:window.CX.data.currentProjectId,periodId:window.CX.data.currentPeriodId});
+      },r);
+    }catch(error){
+      const msg=String(error&&error.message||error||'unknown').slice(0,700);
+      throw new Error((/Missing or insufficient permissions|permission-denied/i.test(msg)?'AUTH_FAILURE':'FUNCTIONAL_DEFECT')+':'+kind+'_ROUTE_'+r+':'+msg);
+    }
     await page.waitForTimeout(550);
     const info=await page.evaluate(({kind,r,identityCases})=>{
       const d=window.CX?.data||{},c=window.CX?.backendAuth?.context?.()||{},body=String(document.body?.innerText||'');
