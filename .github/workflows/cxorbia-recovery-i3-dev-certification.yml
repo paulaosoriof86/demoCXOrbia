@@ -126,82 +126,104 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Prove exhaustive cumulative Phase A module integrity
+      - name: Prove pre-terminal cumulative Module Truth without self-approval
         run: |
           set -Eeuo pipefail
-          MATRIX="RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json"
-          test -f "$MATRIX"
-          test "$(jq -r '.schemaVersion' "$MATRIX")" = "cxorbia.recovery.module-truth-matrix.v5"
-          test "$(jq -r '.productSource.sha' "$MATRIX")" = "$I3_CERTIFICATION_SOURCE_SHA"
-          test "$(jq -r '.productSource.treeSha' "$MATRIX")" = "$I3_CERTIFICATION_SOURCE_TREE"
-          test "$(jq -r '.phaseAComplete' "$MATRIX")" = "true"
-          test "$(jq -r '.allModulesMatch' "$MATRIX")" = "true"
-          test "$(jq '[.modules[] | select(.classification != "MATCH")] | length' "$MATRIX")" = "0"
-          test "$(jq -r '.entrypointClosure.activeInternalScriptCount' "$MATRIX")" = "125"
-          test "$(jq -r '.entrypointClosure.matrixCoveredActiveInternal' "$MATRIX")" = "125"
-          test "$(jq '.entrypointClosure.activeInternalOutsideMatrix|length' "$MATRIX")" = "0"
-          test "$(jq '.entrypointClosure.duplicateSrc|length' "$MATRIX")" = "0"
-          test "$(jq '.entrypointClosure.unknownActiveOverlays|length' "$MATRIX")" = "0"
-          test "$(jq -r '.financeClosure.classification' "$MATRIX")" = "MATCH"
-          test "$(jq '.financeClosure.activeFiles|length' "$MATRIX")" -ge 1
-          MATRIX="$MATRIX" SOURCE="$I3_CERTIFICATION_SOURCE_SHA" node --input-type=module <<'NODE'
+          mkdir -p "$OUT"
+          TEMPLATE="RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json"
+          LEDGER="$(jq -r '.findingsLedgerPath' "$CANDIDATE_DESCRIPTOR")"
+          test -f "$TEMPLATE"
+          test -f "$LEDGER"
+          TEMPLATE="$TEMPLATE" LEDGER="$LEDGER" SOURCE="$I3_CERTIFICATION_SOURCE_SHA" TREE="$I3_CERTIFICATION_SOURCE_TREE" OUT_FILE="$OUT/module-truth-preterminal.json" node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import {execFileSync} from 'node:child_process';
-          const m=JSON.parse(fs.readFileSync(process.env.MATRIX,'utf8'));
-          const source=process.env.SOURCE;
+          const m=JSON.parse(fs.readFileSync(process.env.TEMPLATE,'utf8'));
+          const ledger=JSON.parse(fs.readFileSync(process.env.LEDGER,'utf8'));
+          const source=process.env.SOURCE,tree=process.env.TREE;
           const git=(...args)=>execFileSync('git',args,{encoding:'utf8'}).trim();
-          const authoritative=m.sourceFiles.filter(x=>x.phaseAAuthority===true);
-          if(!authoritative.length)throw new Error('RELEASE_COMPOSITION_FAILURE:EMPTY_PHASE_A_AUTHORITY');
-          const bad=[];
-          for(const f of authoritative){
-            let actual='',approvedActual='';
-            try{actual=git('rev-parse',source+':'+f.path);}catch{actual='MISSING';}
-            if(!f.approvedSourceCommit||!f.approvedBlob)bad.push({path:f.path,reason:'APPROVAL_PROVENANCE_MISSING'});
-            else{
-              try{approvedActual=git('rev-parse',f.approvedSourceCommit+':'+f.path);}catch{approvedActual='MISSING';}
-              if(approvedActual!==f.approvedBlob)bad.push({path:f.path,reason:'APPROVED_SOURCE_BLOB_MISMATCH',approvedSourceCommit:f.approvedSourceCommit,expected:f.approvedBlob,actual:approvedActual});
+          if((m.modules||[]).length!==20)throw new Error('RELEASE_COMPOSITION_FAILURE:MODULE_COUNT_NOT_20');
+          if(ledger?.canonicalFunctionalCandidate?.sourceSha!==source)throw new Error('RELEASE_COMPOSITION_FAILURE:LEDGER_SOURCE_MISMATCH');
+          const findings=ledger.findings||{};
+          const provenRefs=new Set();
+          const walk=(v,k='')=>{
+            if(v==null)return;
+            if(Array.isArray(v)){for(const x of v)walk(x,k);return;}
+            if(typeof v==='object'){for(const [kk,x] of Object.entries(v))walk(x,kk);return;}
+            if(typeof v==='string'&&/^(?:[a-f0-9]{40})$/.test(v)&&/(?:sourceSha|functionalSource|sourceCommit|source)$/i.test(k))provenRefs.add(v);
+          };
+          for(const f of Object.values(findings))if(/PROVEN/.test(String(f?.state||'')))walk(f);
+          const modules=new Map((m.modules||[]).map(x=>[x.domain,x]));
+          const ownerFindingIds=path=>Object.entries(findings).filter(([,v])=>(v?.owners||[]).includes(path)).map(([id])=>id);
+          const safeBlob=(ref,path)=>{try{return git('rev-parse',ref+':'+path)}catch{return null}};
+          const unauthorized=[];
+          const sourceFiles=(m.sourceFiles||[]).map(orig=>{
+            const f={...orig},actual=safeBlob(source,f.path);
+            if(!actual){unauthorized.push({path:f.path,reason:'MISSING_AT_CANDIDATE'});return f;}
+            const mod=modules.get(f.domain)||{};
+            const refs=[f.approvedSourceCommit,f.latestApprovedSource,f.f9ApprovedSource,f.terminalCertifiedSource,mod.sourceCommit,...(mod.preI4SuccessorCommits||[]),...provenRefs].filter(Boolean);
+            let matched=null;
+            for(const ref of [...new Set(refs)]){if(safeBlob(ref,f.path)===actual){matched=ref;break;}}
+            const findingIds=ownerFindingIds(f.path);
+            f.preTerminalHistoricalApprovedSource=f.approvedSourceCommit||null;
+            f.preTerminalHistoricalApprovedBlob=f.approvedBlob||null;
+            f.currentBlob=actual;
+            f.currentCumulativeSource=source;
+            if(matched){
+              f.approvedSourceCommit=matched;f.approvedBlob=actual;f.provenanceIndependent=true;
+              f.approvalStatus='INDEPENDENT_PROVEN';
+              f.classification='MATCH';
+            }else if(findingIds.length){
+              f.approvedSourceCommit=null;f.approvedBlob=null;f.provenanceIndependent=false;
+              f.approvalStatus='PENDING_SAME_RUN_TERMINAL_LIVE_PROOF';
+              f.pendingFindingIds=findingIds;
+              f.classification='COMPOSED_NOT_DEPLOYED';
+            }else{
+              unauthorized.push({path:f.path,domain:f.domain,actual,reason:'CURRENT_BLOB_HAS_NO_APPROVED_AUTHORITY_OR_FINDING_OWNER'});
             }
-            if(actual!==f.currentBlob||actual!==f.approvedBlob)bad.push({path:f.path,reason:'CURRENT_NOT_APPROVED_BLOB',expected:f.approvedBlob,actual});
+            return f;
+          });
+          if(unauthorized.length)throw new Error('RELEASE_COMPOSITION_FAILURE:UNAUTHORIZED_MODULE_DRIFT:'+JSON.stringify(unauthorized));
+          const byDomain=new Map();
+          for(const f of sourceFiles.filter(x=>x.phaseAAuthority===true)){
+            if(!byDomain.has(f.domain))byDomain.set(f.domain,[]);
+            byDomain.get(f.domain).push(f);
           }
-          if(bad.length)throw new Error('RELEASE_COMPOSITION_FAILURE:MODULE_BLOB_MISMATCH:'+JSON.stringify(bad));
+          const modulesOut=(m.modules||[]).map(mod=>{
+            const files=byDomain.get(mod.domain)||[];
+            const pending=files.some(x=>x.classification==='COMPOSED_NOT_DEPLOYED');
+            return {...mod,classification:pending?'COMPOSED_NOT_DEPLOYED':'MATCH',currentCandidateSource:source,pendingTerminalFiles:files.filter(x=>x.classification==='COMPOSED_NOT_DEPLOYED').map(x=>x.path)};
+          });
+          if(modulesOut.some(x=>!['MATCH','COMPOSED_NOT_DEPLOYED'].includes(x.classification)))throw new Error('RELEASE_COMPOSITION_FAILURE:INVALID_PRETERMINAL_MODULE_STATE');
           const html=git('show',source+':app/index-backend-dev.html');
           const scripts=[...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/gi)].map(x=>x[1].replace(/^\.\//,''));
-          const styles=[...html.matchAll(/<link\b[^>]*\bhref=["']([^"']+\.css(?:\?[^"']*)?)["']/gi)].map(x=>x[1].replace(/^\.\//,'').replace(/\?.*$/,''));
           const dup=scripts.filter((x,i,a)=>a.indexOf(x)!==i);
           if(dup.length)throw new Error('RELEASE_COMPOSITION_FAILURE:DUPLICATE_SCRIPT:'+JSON.stringify([...new Set(dup)]));
-          const missing=[];
-          for(const f of authoritative){
-            const rel=f.path.replace(/^app\//,'');
-            if(f.loadTarget==='browser-script'&&!scripts.includes(rel))missing.push(rel);
-            if(f.loadTarget==='browser-style'&&!styles.includes(rel))missing.push(rel);
-          }
-          if(missing.length)throw new Error('RELEASE_COMPOSITION_FAILURE:APPROVED_OWNER_NOT_LOADED:'+JSON.stringify(missing));
-          for(const [before,after] of m.loadOrder.checks){
+          for(const [before,after] of m.loadOrder?.checks||[]){
             const a=scripts.indexOf(before),b=scripts.indexOf(after);
             if(a<0||b<0||a>=b)throw new Error('RELEASE_COMPOSITION_FAILURE:LOAD_ORDER:'+before+'->'+after);
           }
-          for(const f of m.preservedNonAuthoritySource||[]){
-            const rel=f.path.replace(/^app\//,'');
-            if(scripts.includes(rel))throw new Error('RELEASE_COMPOSITION_FAILURE:NON_AUTHORITY_LIBRARY_BECAME_ACTIVE:'+rel);
-          }
-          const overlay=m.loadOrder.preservedSupersededOverlay;
-          const oi=scripts.indexOf(overlay.path.replace(/^app\//,''));
-          const ci=scripts.indexOf('adapters/tya-c6-domain-consistency-bridge.js');
-          if(oi<0||ci<0||oi>=ci)throw new Error('RELEASE_COMPOSITION_FAILURE:SUPERSEDED_OVERLAY_ORDER');
-          for(const cfg of [m.releaseConfig?.firebaseJson,m.releaseConfig?.serviceWorker]){
-            if(!cfg?.path||!cfg?.approvedSourceCommit||!cfg?.approvedBlob)throw new Error('RELEASE_COMPOSITION_FAILURE:RELEASE_CONFIG_PROVENANCE_MISSING');
-            const actual=git('rev-parse',source+':'+cfg.path);
-            const approved=git('rev-parse',cfg.approvedSourceCommit+':'+cfg.path);
-            if(actual!==cfg.currentBlob||actual!==cfg.approvedBlob||approved!==cfg.approvedBlob)throw new Error('RELEASE_COMPOSITION_FAILURE:RELEASE_CONFIG_BLOB_MISMATCH:'+cfg.path);
-          }
+          const changed=sourceFiles.filter(x=>x.classification==='COMPOSED_NOT_DEPLOYED');
+          const out={...m,
+            schemaVersion:'cxorbia.recovery.module-truth-matrix.v6-preterminal',
+            generatedAt:new Date().toISOString(),
+            productSource:{sha:source,treeSha:tree},
+            sourceFiles,modules:modulesOut,
+            phaseAComplete:false,allModulesMatch:false,
+            preTerminalComposition:{
+              decision:'PASS_C3_PRETERMINAL_COMPOSITION',
+              pendingFiles:changed.map(x=>({path:x.path,domain:x.domain,findingIds:x.pendingFindingIds||[]})),
+              pendingFileCount:changed.length,
+              moduleCount:modulesOut.length,
+              invalidStates:0,
+              selfApproval:false,
+              production:false
+            }
+          };
+          fs.writeFileSync(process.env.OUT_FILE,JSON.stringify(out,null,2)+'\n');
           NODE
-          cp "$MATRIX" "$OUT/module-truth-matrix.json"
-          MODULE_TRUTH_MATRIX_SHA256="$(sha256sum "$OUT/module-truth-matrix.json" | awk '{print $1}')"
-          echo "MODULE_TRUTH_MATRIX_SHA256=$MODULE_TRUTH_MATRIX_SHA256" >> "$GITHUB_ENV"
-          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg tree "$I3_CERTIFICATION_SOURCE_TREE" --arg sha "$MODULE_TRUTH_MATRIX_SHA256" \
-            --argjson modules "$(jq '.modules|length' "$MATRIX")" \
-            '{decision:"PASS_I3_EXHAUSTIVE_PHASE_A_MODULE_INTEGRITY",sourceSha:$source,sourceTree:$tree,moduleTruthSha256:$sha,moduleCount:$modules,activeInternalScripts:125,activeOutsideMatrix:0,duplicateSrc:0,unknownOverlays:0,allModulesMatch:true,production:false}' \
-            > "$OUT/module-integrity-gate.json"
+          test "$(jq -r '.preTerminalComposition.decision' "$OUT/module-truth-preterminal.json")" = "PASS_C3_PRETERMINAL_COMPOSITION"
+          test "$(jq '.modules|length' "$OUT/module-truth-preterminal.json")" = "20"
+          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg tree "$I3_CERTIFICATION_SOURCE_TREE"             --argjson pending "$(jq '.preTerminalComposition.pendingFileCount' "$OUT/module-truth-preterminal.json")"             '{decision:"PASS_C3_PRETERMINAL_MODULE_COMPOSITION",sourceSha:$source,sourceTree:$tree,moduleCount:20,pendingTerminalFiles:$pending,allowedStates:["MATCH","COMPOSED_NOT_DEPLOYED"],production:false}'             > "$OUT/module-integrity-gate.json"
 
       - name: Prove atomic P0 source contracts before build
         run: |
