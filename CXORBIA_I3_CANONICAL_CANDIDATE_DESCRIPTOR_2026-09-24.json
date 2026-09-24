@@ -14,7 +14,7 @@
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
   "activeBlocker": "VRM-043 CONTROL ORACLE REPROOF ON EXISTING DEV",
-  "nextFindingId": "VRM-043",
+  "nextFindingId": "VRM-044",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -108,5 +108,16 @@
     "humanNameMismatches": 0,
     "unresolvedReviewOnly": 1,
     "productSourceChanged": false
+  },
+  "lastControlAttempt": {
+    "runId": 36072685742,
+    "runNumber": 385,
+    "classification": "MAPPING_FAILURE",
+    "code": "NEXT_FINDING_ID",
+    "cause": "descriptor nextFindingId lagged ledger V13",
+    "productChanged": false,
+    "builds": 0,
+    "deploys": 0,
+    "production": false
   }
 }
