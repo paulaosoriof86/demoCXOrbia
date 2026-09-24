@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.recovery.module-truth-matrix.v6",
-  "observedAt": "2026-09-24T04:04:08Z",
+  "observedAt": "2026-09-24T06:07:00-06:00",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
@@ -108,8 +108,8 @@
     "message": "fix(pre-i4): stop bridge overriding Mis Visitas [vrm-027]"
   },
   "controlHeadAtConstruction": "9de392b08863069e5ac8a3d68ffd17ad40bcf2d4",
-  "phaseAComplete": true,
-  "allModulesMatch": true,
+  "phaseAComplete": false,
+  "allModulesMatch": false,
   "modules": [
     {
       "domain": "auth-protected-data-runtime",
@@ -219,8 +219,8 @@
         "Cliente"
       ],
       "contractFunctional": "HR/Disponibles/Sync/KPIs",
-      "classification": "MATCH",
-      "actionRequired": null,
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "actionRequired": "HUMAN_VISUAL_REJECTION_20260924__SEE_VRM_033_039",
       "preI4SuccessorCommits": [
         "e0bed18b62174544615dc55aa70dd4a1509692d7",
         "ab05415eb965404e1a6594df8533b8e0190aa0f7",
@@ -248,8 +248,8 @@
         "Shopper"
       ],
       "contractFunctional": "Shopper/Identidad/Visual",
-      "classification": "MATCH",
-      "actionRequired": null,
+      "classification": "APPROVED_NOT_COMPOSED",
+      "actionRequired": "HUMAN_VISUAL_REJECTION_20260924__SEE_VRM_033_039",
       "preI4SuccessorCommits": [
         "61cf7120603aeff110e97632bb6c69f5c4809d62"
       ],
@@ -335,8 +335,8 @@
         "Cliente"
       ],
       "contractFunctional": "Operación/HR/Visual",
-      "classification": "MATCH",
-      "actionRequired": null,
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "actionRequired": "HUMAN_VISUAL_REJECTION_20260924__SEE_VRM_033_039",
       "preI4SuccessorCommits": [
         "feea6ae6b00d36349ae66e43e034bc0b25516cfd"
       ],
@@ -364,8 +364,8 @@
         "Cliente"
       ],
       "contractFunctional": "Proyecto/Contexto/Visual",
-      "classification": "MATCH",
-      "actionRequired": null,
+      "classification": "APPROVED_NOT_COMPOSED",
+      "actionRequired": "HUMAN_VISUAL_REJECTION_20260924__SEE_VRM_033_039",
       "preI4SuccessorCommits": [
         "50b6a25d79713b0f165cffc4355c7b7ffd1d9e84"
       ],
@@ -393,8 +393,8 @@
         "Cliente"
       ],
       "contractFunctional": "País/moneda/Persistencia/ACK",
-      "classification": "MATCH",
-      "actionRequired": null,
+      "classification": "APPROVED_NOT_COMPOSED",
+      "actionRequired": "HUMAN_VISUAL_REJECTION_20260924__SEE_VRM_033_039",
       "preI4SuccessorCommits": [
         "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
         "4aeb41ca6dffb6e5b8324ca50531587539f5058e"
@@ -445,8 +445,8 @@
         "Cliente"
       ],
       "contractFunctional": "HR/Auth/Identidad/Visual",
-      "classification": "MATCH",
-      "actionRequired": null,
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "actionRequired": "HUMAN_VISUAL_REJECTION_20260924__SEE_VRM_033_039",
       "preI4SuccessorCommits": [
         "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0"
       ],
@@ -645,8 +645,8 @@
         "Shopper"
       ],
       "contractFunctional": "Shopper/Auth/Identidad/Histórico",
-      "classification": "MATCH",
-      "actionRequired": null,
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "actionRequired": "HUMAN_VISUAL_REJECTION_20260924__SEE_VRM_033_039",
       "preI4SuccessorCommits": [
         "61cf7120603aeff110e97632bb6c69f5c4809d62",
         "275a9893532e9fa11efcbafccd34bb93919d7d64"
@@ -677,8 +677,8 @@
         "Cliente"
       ],
       "contractFunctional": "Disponibles/Asignación/Postulación/Eliminación/Decisión/Persistencia",
-      "classification": "MATCH",
-      "actionRequired": null,
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "actionRequired": "HUMAN_VISUAL_REJECTION_20260924__SEE_VRM_033_039",
       "preI4SuccessorCommits": [
         "275a9893532e9fa11efcbafccd34bb93919d7d64"
       ],
@@ -4370,7 +4370,7 @@
       "currentBlob": "8f987530e24ebe433e7f1c73a6036a37e563f074",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH",
+      "classification": "APPROVED_NOT_COMPOSED",
       "latestApprovedAuthority": "PRE_I4_CERTIFICATION_SOURCE_SAFE_DURABILITY",
       "approvedSourceCommit": "e0bed18b62174544615dc55aa70dd4a1509692d7",
       "approvedBlob": "8f987530e24ebe433e7f1c73a6036a37e563f074",
@@ -4385,7 +4385,8 @@
         "runId": 35953230892,
         "decision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
         "artifactId": 10790135179
-      }
+      },
+      "actionRequired": "ADJUDICATE_CERTIFICATION_CARRYOVER_EXACT_IDENTITY"
     },
     {
       "path": "app/core/backend-resources.js",
@@ -4801,7 +4802,7 @@
     "gate21AfterFullHuman": true,
     "cacheRuntimeFailClosed": true
   },
-  "nextExactAction": "HUMAN_VISUAL_ACCEPTANCE_ONLY. If accepted, wait for fresh explicit I4 production authorization; if a defect is found, create the next VRM inside the same I3 microblock and repeat only the affected gate.",
+  "nextExactAction": "Correct only proven owners for VRM-033..039, then rebuild MODULE_TRUTH from independent approved authorities; do not mechanically promote current blobs to MATCH.",
   "moduleTruthCorrection": {
     "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
     "run179": {
@@ -5650,5 +5651,27 @@
     "unknownOverlays": 0,
     "readyForHumanVisual": true,
     "i4Authorized": false
+  },
+  "humanVisualRejection20260924": {
+    "status": "HOLD",
+    "source": "user_supplied_live_DEV_screenshots_plus_Run333_artifact_forensics",
+    "findings": [
+      "VRM-033",
+      "VRM-034",
+      "VRM-035",
+      "VRM-036",
+      "VRM-037",
+      "VRM-038",
+      "VRM-039"
+    ],
+    "falsePassRoot": "semantic_oracle_under_specified",
+    "run333IdentityCounterexample": {
+      "sourceShopperId": "shopper_gt_0c198c1055",
+      "expectedName": "Julissa Flores",
+      "observedName": "shopper_gt_0c198c1055"
+    },
+    "qaResidue": "I3 QA TEMP visible in Admin Reservas",
+    "certificationSourceDeclared": "APPROVED_NOT_COMPOSED",
+    "production": false
   }
 }

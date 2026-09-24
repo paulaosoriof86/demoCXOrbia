@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.pre-i4.human-entrypoint-dev-deploy.request.v1",
-  "requestId": "pre-i4-visual-remediation-20260924-technical-lock",
-  "status": "technical_go_human_visual_pending",
+  "requestId": "pre-i4-human-visual-rejection-20260924-01",
+  "status": "hold_human_visual_rejected",
   "enabled": false,
   "consumed": true,
   "authorizedBy": "Paula",
@@ -29,10 +29,15 @@
   "legacyWrites": 0,
   "production": false,
   "noAutomaticRetry": true,
-  "scope": "pre_i4_technical_go_frozen_waiting_human_visual_acceptance",
+  "scope": "pre_i4_human_visual_rejection_root_cause_hold",
   "requiredEvidence": [
-    "human-visual-acceptance-paula",
-    "fresh-explicit-i4-production-authorization-after-acceptance"
+    "VRM-033 exact identity human-name proof",
+    "VRM-034 zero QA residue readback",
+    "VRM-035 semantic browser oracle proof",
+    "Shopper Paula profile/history/benefits proof",
+    "Admin postulations/reservations against live HR and durable records",
+    "Resources/certifications/finance authority adjudication",
+    "fresh human visual acceptance"
   ],
   "deployedRunId": 35949258270,
   "runtimeMaterializedRunId": 35915126071,
@@ -52,5 +57,6 @@
   "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573",
   "rulesBlobSha": "3e5a786ccffb3bea3c2e90d9e259c5e8735209df",
   "deployedRulesRunId": 35953009969,
-  "noFurtherDeployBeforeHumanAcceptance": true
+  "noFurtherDeployBeforeHumanAcceptance": true,
+  "i4Authorized": false
 }

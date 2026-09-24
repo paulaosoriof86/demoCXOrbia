@@ -59,7 +59,7 @@ env:
 
 jobs:
   certify:
-    if: ${{ github.event_name != 'push' || (!contains(github.event.head_commit.message, '[pre-i4-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-readback-only]') && !contains(github.event.head_commit.message, '[pre-i4-finance-fix-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-focal-fix-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-rules-fix-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-matrix-closure]') && !contains(github.event.head_commit.message, '[pre-i4-lock-only]')) }}
+    if: ${{ github.event_name != 'push' || (!contains(github.event.head_commit.message, '[pre-i4-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-readback-only]') && !contains(github.event.head_commit.message, '[pre-i4-finance-fix-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-focal-fix-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-rules-fix-dev-only]') && !contains(github.event.head_commit.message, '[pre-i4-matrix-closure]') && !contains(github.event.head_commit.message, '[pre-i4-lock-only]') && !contains(github.event.head_commit.message, '[pre-i4-hold-only]')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 70
     steps:

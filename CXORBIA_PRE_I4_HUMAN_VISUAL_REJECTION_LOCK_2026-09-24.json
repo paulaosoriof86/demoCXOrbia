@@ -1,0 +1,145 @@
+{
+  "schemaVersion": "cxorbia.pre-i4.human-visual-rejection-lock.v1",
+  "lockedAt": "2026-09-24T06:07:00-06:00",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "iteration": "I3",
+  "priorTechnicalLock": "CXORBIA_PRE_I4_TECHNICAL_ACCEPTANCE_LOCK_2026-09-24.json",
+  "priorTechnicalLockStatus": "SUPERSEDED_FOR_PROMOTION_BY_HUMAN_REJECTION",
+  "status": "HOLD",
+  "humanVisualAcceptance": "REJECTED",
+  "i4Authorized": false,
+  "production": "DO_NOT_TOUCH",
+  "rejectedAppSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+  "evidenceRuns": {
+    "focal": 35953230892,
+    "moduleTruth": 35954023135,
+    "rules": 35953009969
+  },
+  "rootFindings": {
+    "VRM-033": {
+      "state": "P0_PROVEN_ROOT_CAUSE",
+      "classification": "MAPPING_FAILURE",
+      "title": "Admin shopper identities regress to technical IDs despite live HR display names",
+      "evidence": [
+        "Run333 browser-focal recorded expectedName=Julissa Flores for shopper_gt_0c198c1055 but observed name=shopper_gt_0c198c1055 and still passed.",
+        "Commit 6bcbc1df changed unmatched profiles from excluded to presentedToAuthorizedStaff.",
+        "Current composer lets protected/profile name override live HR display name; durable sourceCandidate only treats literal 'Shopper protegido' as placeholder, not shopper_gt_*."
+      ],
+      "owners": [
+        "app/adapters/tya-cumulative-read-model-v2.js",
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+        "app/core/data.js",
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+      ],
+      "expected": "Authorized Admin sees resolved operational display names and exact history/KPIs. Unresolved technical identities stay in review and never render as human shopper rows. No fuzzy matching."
+    },
+    "VRM-034": {
+      "state": "P0_PROVEN_ROOT_CAUSE",
+      "classification": "PERSISTENCE_FAILURE",
+      "title": "Durable DEV QA reservation residue is visible in human lane",
+      "evidence": [
+        "Human screenshot shows five I3 QA TEMP reservations.",
+        "RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs creates durable reservations with sucursal='I3 QA TEMP'.",
+        "Run333 Admin route set did not include reservas, so residue was invisible to the terminal focal."
+      ],
+      "owners": [
+        "RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs",
+        "app/adapters/tya-canonical-reservations-guard-v2.js",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+      ],
+      "expected": "Zero QA/test reservations in the human candidate; fixture writes use deterministic isolated IDs and exact cleanup/readback, with Admin reservas asserted before PASS."
+    },
+    "VRM-035": {
+      "state": "P0_PROVEN_ROOT_CAUSE",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "title": "Terminal browser proof was structurally green but semantically under-specified",
+      "evidence": [
+        "Shoppers assertion checked row existence/crosswalk/history counts but never asserted row.name===expectedName.",
+        "Dashboard assertion omitted outOfRange.",
+        "Admin focal omitted reservas.",
+        "Benefits/Mi Perfil routes were accepted mainly by generic route/source/count checks rather than their required visible business content.",
+        "Resources count=0 with Storage unauthorized was accepted as PASS.",
+        "Certification pending_authenticated_review with carryoverConfirmed=0 was accepted as PASS."
+      ],
+      "owners": [
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs",
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+        "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json"
+      ],
+      "expected": "PASS requires semantic assertions for names, profile fields/history, benefit rows, reservations cleanliness, out-of-range, resource usability or explicit approved empty-state, certification carryover, and no technical-language leakage."
+    },
+    "VRM-036": {
+      "state": "P0_PROVEN_ROOT_CAUSE",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "title": "Certification historical authority remains explicitly APPROVED_NOT_COMPOSED but matrix was forced to MATCH",
+      "evidence": [
+        "app/data/tya-certification-carryover-source-safe.js self-declares moduleTruthClassification=APPROVED_NOT_COMPOSED.",
+        "Same source records usefulRecords=78 and deterministicTechnicalIdMatches=22, but active certifications=[] and sourceStatus=pending_authenticated_review.",
+        "Historical DEV inventory contains 77 durable certifications.",
+        "Matrix v6 incorrectly marked this source/module MATCH during mechanical closure."
+      ],
+      "owners": [
+        "app/data/tya-certification-carryover-source-safe.js",
+        "app/modules/cert.js",
+        "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json"
+      ],
+      "expected": "Adjudicate approved historical certification records by exact identity into the durable/read model without granting unsupported eligibility; ambiguous records stay review-only."
+    },
+    "VRM-037": {
+      "state": "P0_PROVEN_ROOT_CAUSE",
+      "classification": "FUNCTIONAL_DEFECT",
+      "title": "Shopper benefits/profile/history contract was not semantically proven by the final focal",
+      "evidence": [
+        "Run299 froze Paula exact identity s3 with history=7, KPI total=7 and Mi Perfil/Mis Visitas/Beneficios/Mis Reportes PASS.",
+        "Run333 shopper generic assertions fixed total=7 but did not assert visible profile identity/contact fields or benefit/liquidation row content.",
+        "Benefits depends on canonical shopper identity plus liquidation feed, so identity/composition regressions can render it empty while route-level PASS remains green."
+      ],
+      "owners": [
+        "app/adapters/tya-canonical-shopper-portal-v2.js",
+        "app/modules/misvisitas.js",
+        "app/modules/beneficios.js",
+        "app/core/liquidacion.js",
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+      ],
+      "expected": "Paula and representative GT/HN shoppers render exact identity, real historical visits/KPIs and benefit obligations from the same canonical identity; no technical ID fallback."
+    },
+    "VRM-038": {
+      "state": "P0_PROVEN_ROOT_CAUSE",
+      "classification": "FUNCTIONAL_DEFECT",
+      "title": "Human Admin surfaces leak technical vocabulary and incomplete operational states",
+      "evidence": [
+        "Screenshots expose 'ESTADO CANÓNICO' and 'máquina canónica HR'.",
+        "Run333 technicalVisible regex did not include canonical/canónico language.",
+        "Current finance UI surfaces internal source/configuration states as primary business UX."
+      ],
+      "owners": [
+        "app/modules/dashboard.js",
+        "app/modules/visitas.js",
+        "app/modules/finanzas.js",
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+      ],
+      "expected": "Human labels only; technical state/source terminology is hidden from normal Admin/Shopper UI and retained only in optional traceability."
+    },
+    "VRM-039": {
+      "state": "P0_PROVEN_ROOT_CAUSE",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "title": "Resources and finance were fail-closed safely but incorrectly promoted as complete production-ready modules",
+      "evidence": [
+        "Run333 resources: count=0, firestore ready, Storage authorized=false/configured=false/available=false.",
+        "Run333 finance obligations match current HR reference, but income/margin/CxC remain null because project income/commission source is not configured.",
+        "The PRE-I4 gate treated both incomplete states as terminal PASS rather than module-level HOLD/APPROVED_NOT_COMPOSED."
+      ],
+      "owners": [
+        "app/core/backend-resources.js",
+        "app/modules/documentos.js",
+        "app/core/finanzas-core.js",
+        "app/modules/finanzas.js",
+        "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json"
+      ],
+      "expected": "Preserve truthful fail-closed behavior, but do not call the module complete until the last approved resource/financial authority is composed or explicitly adjudicated as intentionally unavailable."
+    }
+  },
+  "nextExactAction": "Fix VRM-033/034/035 first in same PRE-I4 microblock, then focal module owners and semantic re-certification. No I4."
+}
