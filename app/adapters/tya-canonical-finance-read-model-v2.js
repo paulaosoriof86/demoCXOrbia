@@ -35,6 +35,9 @@
     const f=facets(v),estado=operationalState(f);if(!estado)return null;
     const honorario=num(v.honorario),boleto=num(v.boleto),combo=num(v.comboAmt||v.combo),reembolso=boleto+combo,total=honorario+reembolso;
     const submittedAt=v.submittedAt||((v.submit===true||f.submitted)?v.cuestFecha:null)||null;
+    const visitReimbursementPartial=v.reimbursementPartial===true||v.reembolsoPartial===true||v.reimbursementSourceComplete===false
+      || ['partial','incomplete','pending_source'].includes(str(v.reimbursementSourceStatus||v.reimbursementStatus).toLowerCase());
+    const visitReimbursementSourceStatus=visitReimbursementPartial?'partial':(v.reimbursementSourceStatus||v.reimbursementStatus||null);
     const exact=typeof CX.data.financialMatchForVisit==='function'?CX.data.financialMatchForVisit(v):null;
     if(exact){
       const merged=Object.assign({},exact,{
@@ -43,6 +46,9 @@
         sucursal:v.sucursal||exact.sucursal||null,pais:v.pais||v.country||exact.pais||null,moneda:exact.moneda||v.currency||v.moneda||null,
         freal:v.realizada||exact.freal||'',cuest:v.cuestFecha||exact.cuest||'',submit:submittedAt||exact.submit||'',
         operationalVisitStage:f.paymentConfirmed?'pagada':f.liquidationConfirmed?'liquidada':f.submitted?'submitida':f.questionnaire?'cuestionario':f.realized?'realizada':'pendiente',
+        reimbursementSourceStatus:exact.reimbursementSourceStatus||exact.reimbursementStatus||visitReimbursementSourceStatus,
+        reimbursementPartial:(exact.reimbursementPartial===true||exact.reembolsoPartial===true||exact.reimbursementSourceComplete===false)
+          || (!(exact.reimbursementPartial===false||exact.reimbursementSourceComplete===true) && visitReimbursementPartial),
         canonicalFacets:Object.assign({},f),readModelVersion:'canonical-finance-v2'
       });
       return merged;
@@ -54,6 +60,8 @@
       liquidationState:'pending_financial_source',paymentState:'pending_source_confirmation',paymentConfirmed:false,paymentSourceRef:null,
       freal:v.realizada||'',cuest:v.cuestFecha||'',submit:submittedAt||'',fechaEstimadaPago:'',pagada:false,pagadaPreview:false,
       financialSourceStatus:'pending_or_review',amountSource:'hr_operational_amount_pending_financial_reconciliation',reviewRequired:true,
+      reimbursementSourceStatus:visitReimbursementSourceStatus,reimbursementPartial:visitReimbursementPartial,
+      reimbursementSourceComplete:v.reimbursementSourceComplete===false?false:(visitReimbursementPartial?false:v.reimbursementSourceComplete),
       canonicalFacets:Object.assign({},f),readModelVersion:'canonical-finance-v2',sourceSafe:true,imported:false,production:false
     };
   }
