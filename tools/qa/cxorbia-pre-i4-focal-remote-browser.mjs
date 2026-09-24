@@ -113,6 +113,7 @@ async function signInMember(member,kind,route,options={}){
       const ranking=typeof d.shopperRankingRows==='function'?d.shopperRankingRows():[];
       const population=typeof d.shoppersFor==='function'?d.shoppersFor().filter(s=>typeof d.shopperDataLevel!=='function'||d.shopperDataLevel(s)!=='protected_reference'):[];
       const outOfRangeCount=(r==='dashboard'||r==='visitas')&&typeof d.visitFacets==='function'?(typeof d.visitas==='function'?d.visitas():[]).filter(v=>d.visitFacets(v)?.outOfRange===true).length:null;
+      const technicalPrimaryCount=r==='shoppers'?population.filter(s=>{const name=String(s?.nombre||s?.name||'').trim(),id=String(s?.id||s?.shopperId||'').trim();return /^shopper_(?:gt|hn|sv|ni)_[a-z0-9]+$/i.test(name)||/^shp[-_][a-z0-9]+$/i.test(name)||(id&&name===id);}).length:null;
       const stats=s=>s&&typeof d.shopperStats==='function'?d.shopperStats(s.id||s.shopperId):null;
       const identityRows=list(identityCases).map(ref=>{
         const row=(d.shoppers||[]).find(s=>String(s.id||s.shopperId||'')===String(ref.sourceShopperId||'')||list(s.legacyLiveShopperIds).map(String).includes(String(ref.sourceShopperId||'')))||null;
@@ -195,6 +196,7 @@ async function signInMember(member,kind,route,options={}){
         phaseGT:r==='dashboard'?phase('GT'):null,phaseHN:r==='dashboard'?phase('HN'):null,
         ranking:r==='dashboard'?{rows:ranking.length,population:population.length,missingRating:ranking.filter(x=>x.ratingAvailable===false).length}:null,
         shopperPopulation:r==='shoppers'?population.length:null,
+        technicalPrimaryCount,
         outOfRangeCount,
         qaReservationVisible,
         identityCases:r==='shoppers'?identityRows:null,
@@ -224,6 +226,7 @@ async function signInMember(member,kind,route,options={}){
       const cases=arr(info.identityCases);
       if(cases.length!==(reference?.identityCases||[]).length||cases.some(x=>!x.row))throw new Error('MAPPING_FAILURE:EXACT_HR_IDENTITY_MISSING:'+JSON.stringify(cases));
       if(Number.isFinite(Number(reference?.shopperPopulation))&&Number(info.shopperPopulation)!==Number(reference.shopperPopulation))throw new Error('MAPPING_FAILURE:SHOPPER_POPULATION:'+JSON.stringify({observed:info.shopperPopulation,expected:reference.shopperPopulation}));
+      if(Number(info.technicalPrimaryCount)!==0)throw new Error('MAPPING_FAILURE:TECHNICAL_SHOPPER_PRIMARY_NAMES:'+JSON.stringify({count:info.technicalPrimaryCount}));
       if(new Set(cases.map(x=>x.row.id)).size!==cases.length)throw new Error('MAPPING_FAILURE:EXACT_HR_IDENTITY_COLLISION:'+JSON.stringify(cases));
       for(const x of cases){
         if(!x.row.legacyLiveShopperIds.includes(x.sourceShopperId)&&x.row.id!==x.sourceShopperId)throw new Error('MAPPING_FAILURE:EXACT_HR_CROSSWALK_MISSING:'+JSON.stringify(x));
