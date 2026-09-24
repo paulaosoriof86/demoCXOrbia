@@ -1,21 +1,20 @@
 {
   "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v11",
-  "generatedAt": "2026-09-23T20:45:00-06:00",
+  "generatedAt": "2026-09-23T20:58:00-06:00",
   "iteration": "I3_PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "microblockId": "CXORBIA-PRE-I4-VISUAL-REMEDIATION-MICROBLOCK-20260922",
-  "status": "HOLD_VRM_027_RUN320_RENDER_DIAGNOSTIC_READY",
+  "status": "HOLD_VRM_028_RELEASE_COMPOSITION_FIX_READY_FOR_DEV_PROOF",
   "production": "DO_NOT_TOUCH",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "head": "a7389b2943eb50133adf1fa2249759110e7f0cd0",
+  "head": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
   "lastFunctionalWrite": {
-    "commit": "275a9893532e9fa11efcbafccd34bb93919d7d64",
-    "parent": "73fb9554f9c27b51825cba96f132fcdba11dd06c",
+    "commit": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+    "parent": "ec1c3fc96ce0fe00cb72f7293c5994a19f90c9a2",
     "files": [
-      "app/modules/misvisitas.js",
-      "app/modules/postulaciones.js"
+      "app/adapters/tya-c6-domain-consistency-bridge.js"
     ],
     "test": "backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-ui-cleanup.test.mjs",
-    "purpose": "VRM_027_APPROVED_POSTULATION_ASSIGNMENT_CONFLICT_HUMAN_VISIBILITY",
+    "purpose": "VRM_028_STOP_POST_LOAD_MISVISITAS_OVERRIDE",
     "productionDeploys": 0
   },
   "automaticPushWorkflowObservation": {
@@ -269,10 +268,20 @@
         "app/modules/misvisitas.js",
         "app/modules/postulaciones.js"
       ],
-      "note": "Run320 proved source/tests, Hosting byte parity, fresh HR and Admin conflict projection, but shopper Mis Visitas had derived conflict_review_required in data while rendered data-app-state markers were empty. Before any second product fix, a zero-deploy diagnostic compares backend context shopperId, session shopperId, session profile, matching post counts and the active CX.modules.misvisitas function to distinguish identity drift from load-order/module override."
+      "note": "The human-state mapping fix remains in canonical modules/misvisitas.js and modules/postulaciones.js. Run321 proved the shopper-side code was not active because a later adapter replaced CX.modules.misvisitas; VRM-027 therefore remains fixed-in-source but blocked from terminal proof by VRM-028."
+    },
+    "VRM-028": {
+      "state": "FIXED_NOT_PROVEN",
+      "evidenceRef": "Run321 35948591112 + functional successor f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "owner": [
+        "app/adapters/tya-c6-domain-consistency-bridge.js"
+      ],
+      "test": "backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-ui-cleanup.test.mjs",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "note": "Run321 proved source/served modules/misvisitas.js had the approved VRM-027 code, but the active runtime module did not: tya-c6-domain-consistency-bridge.js loaded later and assigned CX.modules.misvisitas=correctedMisVisitas. The functional successor removes that secondary renderer while preserving canonical data/finance facades and adds an adapter-wide anti-regression assertion forbidding Mis Visitas ownership outside its canonical module."
     }
   },
-  "nextExactAction": "Run the existing [pre-i4-readback-only] lane against Run320 with zero deploys and capture sessionShopperId, backend context shopperId, session profile identity, matched application counts and active misvisitas module markers. Fix product only after the mismatch owner is proven.",
+  "nextExactAction": "Materialize exact f5b96e85 static app to existing Hosting DEV only; prove domain-consistency bridge served byte, adapter anti-override regression test, fresh HR, canonical Mis Visitas active ownership, Admin/Shopper desktop/mobile, Finance/Liquidations/Resources/Certifications, navigation/refresh and same-artifact parity.",
   "functionalLineage": [
     {
       "commit": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
@@ -309,6 +318,10 @@
     {
       "commit": "275a9893532e9fa11efcbafccd34bb93919d7d64",
       "purpose": "VRM_027_POSTULATION_ASSIGNMENT_CONFLICT_VISIBILITY"
+    },
+    {
+      "commit": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "purpose": "VRM_028_RELEASE_COMPOSITION_MISVISITAS_OWNER_FIX"
     }
   ],
   "readModelReconciliation": {
@@ -320,9 +333,9 @@
     ]
   },
   "functionalSource": {
-    "sha": "275a9893532e9fa11efcbafccd34bb93919d7d64",
-    "tree": "f1691f1da1e4cc44081f034a951ad6c6409521be",
-    "state": "CUMULATIVE_SOURCE_PACKAGE_VRM_027_FIX_AWAITING_FOCAL_PROOF"
+    "sha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+    "tree": "755e448b0c19701a1598ed0727edeae64ef766b0",
+    "state": "CUMULATIVE_SOURCE_PACKAGE_VRM_027_PLUS_VRM_028_AWAITING_FOCAL_PROOF"
   },
   "durabilityAndResources": {
     "state": "SOURCE_COMPLETE_AWAITING_FOCAL_PROOF",
@@ -340,16 +353,14 @@
     ]
   },
   "focalProof": {
-    "state": "RUN320_MATERIALIZED_ZERO_DEPLOY_DIAGNOSTIC_READY",
-    "sourceSha": "275a9893532e9fa11efcbafccd34bb93919d7d64",
-    "sourceTree": "f1691f1da1e4cc44081f034a951ad6c6409521be",
-    "deployedRunId": 35947885607,
-    "artifactId": 10787507946,
-    "artifactZipDigest": "sha256:c52bd1be50017e68da6330916499658cd72de40f3de6c86f6840adeaab98bfaa",
+    "state": "VRM_028_HOSTING_ONLY_READY",
+    "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+    "sourceTree": "755e448b0c19701a1598ed0727edeae64ef766b0",
+    "previousDeployedRunId": 35947885607,
     "nextRunDeploys": {
       "runtime": 0,
       "rules": 0,
-      "hosting": 0
+      "hosting": 1
     },
     "production": false
   },
@@ -367,20 +378,28 @@
     "resolution": "Use existing proven direct Rules API deploy tool; do not rebuild/redeploy runtime."
   },
   "lastControlFailure": {
-    "classification": "MAPPING_FAILURE",
-    "runId": 35947885607,
-    "productDefectProven": false,
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "runId": 35948591112,
+    "productDefectProven": true,
     "affectedFindings": [
-      "VRM-027"
+      "VRM-027",
+      "VRM-028"
     ],
-    "cause": "Run320 data layer derives the shopper application as conflict_review_required, but Mis Visitas rendered no data-app-state marker. Root cause between session identity and active module/render composition is not yet proven.",
+    "cause": "Post-load adapter tya-c6-domain-consistency-bridge.js replaced the approved canonical Mis Visitas module in memory after the served file loaded.",
     "observed": {
-      "shopperPostulationsKpi": 1,
-      "postCount": 1,
+      "contextShopperId": "s3",
+      "sessionShopperId": "s3",
+      "profileShopperId": "s3",
+      "contextMatchedPosts": 1,
+      "sessionMatchedPosts": 1,
       "derivedSyncState": "conflict_review_required",
-      "visibleAppStates": []
+      "activeModuleHasAppState": false,
+      "activeModuleHasCurrentApps": false,
+      "moduleReady": null
     },
-    "resolutionOwner": "READBACK_ONLY_FIRST",
+    "resolutionCommit": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+    "firestoreWrites": 0,
+    "hrWrites": 0,
     "productionDeploys": 0
   },
   "liveHrProof": {

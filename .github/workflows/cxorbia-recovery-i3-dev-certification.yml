@@ -1779,15 +1779,14 @@ jobs:
           node <<'NODE'
           const fs=require('fs'),{execFileSync}=require('child_process');
           const p=process.env.REQUEST,r=JSON.parse(fs.readFileSync(p,'utf8')),head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
-          const source='275a9893532e9fa11efcbafccd34bb93919d7d64',previous='6653ba83b7c95ff413169e48ceb38e95151a2736';
-          if(r.requestId!=='pre-i4-visual-remediation-20260923-10'||r.sourceSha!==source||r.sourceTree!=='f1691f1da1e4cc44081f034a951ad6c6409521be')throw new Error('RELEASE_COMPOSITION_FAILURE:FOCAL_FIX_REQUEST_SOURCE');
+          const source='f5b96e853698f9cf96e0752fd641e7e21e9e5ed0',previous='275a9893532e9fa11efcbafccd34bb93919d7d64';
+          if(r.requestId!=='pre-i4-visual-remediation-20260923-12'||r.sourceSha!==source||r.sourceTree!=='755e448b0c19701a1598ed0727edeae64ef766b0')throw new Error('RELEASE_COMPOSITION_FAILURE:FOCAL_FIX_REQUEST_SOURCE');
           if(r.status!=='authorized_execute_once'||r.enabled!==true||r.consumed!==false||r.production!==false||r.noAutomaticRetry!==true)throw new Error('RELEASE_COMPOSITION_FAILURE:FOCAL_FIX_AUTHORIZATION');
           if(Number(r.nextRun?.runtimeBuilds)!==0||Number(r.nextRun?.runtimeDeploys)!==0||Number(r.nextRun?.rulesDeploys)!==0||Number(r.nextRun?.hostingDeploys)!==1)throw new Error('RELEASE_COMPOSITION_FAILURE:FOCAL_FIX_SCOPE');
           execFileSync('git',['merge-base','--is-ancestor',source,head]);
           const productDiff=execFileSync('git',['diff','--name-only',previous,source,'--','app','backend/runtime/hr-live-service/test'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean).sort();
           const expected=[
-            'app/modules/misvisitas.js',
-            'app/modules/postulaciones.js',
+            'app/adapters/tya-c6-domain-consistency-bridge.js',
             'backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-ui-cleanup.test.mjs'
           ].sort();
           if(JSON.stringify(productDiff)!==JSON.stringify(expected))throw new Error('RELEASE_COMPOSITION_FAILURE:FOCAL_FIX_PRODUCT_DIFF:'+productDiff.join(','));
@@ -1800,11 +1799,12 @@ jobs:
         run: |
           set -Eeuo pipefail
           rm -rf "$PREI4_SOURCE_DIR"; mkdir -p "$PREI4_SOURCE_DIR"
-          git archive "275a9893532e9fa11efcbafccd34bb93919d7d64" | tar -x -C "$PREI4_SOURCE_DIR"
+          git archive "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0" | tar -x -C "$PREI4_SOURCE_DIR"
           cd "$PREI4_SOURCE_DIR"
           node --check app/adapters/tya-live-source-inplace-apply.js
           node --check app/adapters/tya-delegated-coordination-finance-guard-v1.js
           node --check app/adapters/tya-canonical-finance-read-model-v2.js
+          node --check app/adapters/tya-c6-domain-consistency-bridge.js
           node --check app/modules/misvisitas.js
           node --check app/modules/postulaciones.js
           node --test             backend/runtime/hr-live-service/test/cxorbia-pre-i4-finance-source-semantics.test.mjs             backend/runtime/hr-live-service/test/cxorbia-i3-project-period-contract.test.mjs             backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs             backend/runtime/hr-live-service/test/cxorbia-pre-i4-durability-resources.test.mjs             backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-ui-cleanup.test.mjs             | tee "$GITHUB_WORKSPACE/$PREI4_OUT/source-tests.log"
@@ -1858,7 +1858,7 @@ jobs:
         run: |
           set -Eeuo pipefail
           root="https://cxorbia-backend-dev.web.app"; mkdir -p "$PREI4_OUT/remote"
-          for rel in             index-backend-dev.html index.html app.js config/runtime.js             core/config.js core/data-source.js core/data.js core/router.js core/finanzas-core.js core/liquidacion.js             adapters/tya-live-source-inplace-apply.js adapters/tya-delegated-coordination-finance-guard-v1.js adapters/tya-canonical-finance-read-model-v2.js             adapters/cxorbia-command-adapter-v1.js adapters/cxorbia-cxdata-command-boundary-v1.js adapters/tya-protected-auth-hr-authority-bridge-v2.js             modules/dashboard.js modules/misvisitas.js modules/shoppers.js modules/postulaciones.js modules/finanzas.js modules/documentos.js modules/cert.js styles/layout.css; do
+          for rel in             index-backend-dev.html index.html app.js config/runtime.js             core/config.js core/data-source.js core/data.js core/router.js core/finanzas-core.js core/liquidacion.js             adapters/tya-live-source-inplace-apply.js adapters/tya-delegated-coordination-finance-guard-v1.js adapters/tya-canonical-finance-read-model-v2.js adapters/tya-c6-domain-consistency-bridge.js             adapters/cxorbia-command-adapter-v1.js adapters/cxorbia-cxdata-command-boundary-v1.js adapters/tya-protected-auth-hr-authority-bridge-v2.js             modules/dashboard.js modules/misvisitas.js modules/shoppers.js modules/postulaciones.js modules/finanzas.js modules/documentos.js modules/cert.js styles/layout.css; do
             remote="$PREI4_OUT/remote/$(echo "$rel" | tr '/' '_')"
             ok=0
             for attempt in $(seq 1 30); do
@@ -1924,7 +1924,7 @@ jobs:
       - name: Execute focal Admin Shopper desktop mobile against same HR revision
         env:
           CXORBIA_PREI4_ROOT: https://cxorbia-backend-dev.web.app
-          CXORBIA_PREI4_SOURCE_SHA: 275a9893532e9fa11efcbafccd34bb93919d7d64
+          CXORBIA_PREI4_SOURCE_SHA: f5b96e853698f9cf96e0752fd641e7e21e9e5ed0
         run: |
           set -Eeuo pipefail
           node tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs
@@ -1942,7 +1942,7 @@ jobs:
           POST="$(sha256sum "$GITHUB_WORKSPACE/$PREI4_OUT/app-postcheck.tar" | awk '{print $1}')"
           PRE="$(cat "$GITHUB_WORKSPACE/$PREI4_OUT/app-artifact.sha256")"
           test "$POST" = "$PRE"
-          jq -n -S --arg source "275a9893532e9fa11efcbafccd34bb93919d7d64" --arg artifact "$PRE" --arg hr "$(jq -r '.sourceRevision' "$GITHUB_WORKSPACE/$PREI4_OUT/hr-contrast.json")" '{decision:"PASS_PRE_I4_FOCAL_FIX_SAME_ARTIFACT_DEV",sourceSha:$source,artifactSha256:$artifact,hrRevision:$hr,runtimeBuildsThisRun:0,runtimeDeploysThisRun:0,rulesDeploysThisRun:0,hostingDeploysThisRun:1,browserFocal:true,postulationConflictVisibility:true,production:false}' > "$GITHUB_WORKSPACE/$PREI4_OUT/final.json"
+          jq -n -S --arg source "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0" --arg artifact "$PRE" --arg hr "$(jq -r '.sourceRevision' "$GITHUB_WORKSPACE/$PREI4_OUT/hr-contrast.json")" '{decision:"PASS_PRE_I4_FOCAL_FIX_SAME_ARTIFACT_DEV",sourceSha:$source,artifactSha256:$artifact,hrRevision:$hr,runtimeBuildsThisRun:0,runtimeDeploysThisRun:0,rulesDeploysThisRun:0,hostingDeploysThisRun:1,browserFocal:true,postulationConflictVisibility:true,misvisitasCanonicalOwner:true,production:false}' > "$GITHUB_WORKSPACE/$PREI4_OUT/final.json"
 
       - name: Upload focal static fix evidence
         if: always()
