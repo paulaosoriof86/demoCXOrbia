@@ -26,7 +26,7 @@ if(!admin)throw new Error('AUTH_FAILURE:FOCAL_ADMIN_PRINCIPAL_MISSING');
 if(!shopper)throw new Error('AUTH_FAILURE:FOCAL_PAULA_SHOPPER_PRINCIPAL_MISSING');
 
 const browser=await chromium.launch({headless:true});
-const evidence={schemaVersion:'cxorbia.pre-i4.focal-human-browser.v2',decision:'HOLD',sourceSha,hrRevision,periodId,preAuth:null,admin:null,shopper:null,mobile:null,adminMobile:null,shopperMobile:null,production:false,authWrites:0,hrWrites:0,providerWrites:0};
+const evidence={schemaVersion:'cxorbia.pre-i4.focal-human-browser.v3',decision:'HOLD',sourceSha,hrRevision,periodId,preAuth:null,admin:null,shopper:null,mobile:null,adminMobile:null,shopperMobile:null,production:false,authWrites:0,hrWrites:0,providerWrites:0};
 
 async function assertClean(page,label){
   await page.waitForTimeout(1200);
@@ -114,21 +114,28 @@ async function signInMember(member,kind,route,options={}){
       const sid=String(c.shopperId||'');
       const own=kind==='shopper'&&sid&&typeof d.visitsForShopper==='function'?d.visitsForShopper(sid):[];
       const posts=kind==='shopper'&&sid?(d._posts||[]).filter(x=>String(x.shopperId||'')===sid&&String(d.recordPeriodId?d.recordPeriodId(x):(x.periodId||x.projectId)||'')===String(d.currentPeriodId||'')):[];
-      const resources=window.CX?.backendResources?.list?.({projectId:d.currentProjectId,periodId:d.currentPeriodId})||[];
+      const resources=window.CX?.backendResources?.list?.({projectId:d.currentProjectId,periodId:d.currentPeriodId,resourceType:'project_resource'})||[];
+      const resourceRows=resources.map(x=>({
+        id:String(x?.id||''),name:String(x?.n||x?.name||''),meta:String(x?.meta||''),resourceType:String(x?.resourceType||''),
+        source:String(x?.source||x?.origin||''),demo:x?.demo===true,status:String(x?.status||'')
+      }));
+      const isStaticResourceSeed=x=>/^demo(?:-|$)/i.test(String(x?.id||''))||x?.demo===true||['demo','static_seed','seed','local_demo'].includes(String(x?.source||'').toLowerCase());
+      if(isStaticResourceSeed({id:'res-real-1',name:'Checklist de visita',source:'firestore'})||!isStaticResourceSeed({id:'demo-d1',name:'Instructivo general (demo)',source:'demo'}))throw new Error('RELEASE_COMPOSITION_FAILURE:RESOURCE_SEED_DETECTOR_SELFTEST');
+      const staticResourceSeedIds=resourceRows.filter(isStaticResourceSeed).map(x=>x.id);
       const certEvidence=window.CX_TYA_CERTIFICATION_CARRYOVER_SOURCE_SAFE||{};
       return {
         route:String(window.CX?.session?.view||''),projectId:String(d.currentProjectId||''),periodId:String(d.currentPeriodId||''),sourceRevision:String(d.previewMeta?.sourceRevision||''),
         debug:!!document.getElementById('cxBackendPreviewStatus'),lab:!!document.getElementById('cx-dev-lab'),blocked:body.includes('Fuente de datos no disponible'),
         technicalVisible:/AUTH_READY|CLAIMS_READY|VISITID|HRROWID|FINANCIALSOURCESTATUS|pending_or_review|pending_source_confirmation|CXORBIA DEV\s*·\s*LABORATORIO/i.test(body),
         bodyHasDemoApproval:/Aprobado \(demo\)|Certificados \(demo\)|En progreso \(demo\)/i.test(body),
-        bodyHasStaticSeed:/Escenario de evaluación|Video de inducción|Checklist/i.test(body),
+        bodyHasStaticSeed:staticResourceSeedIds.length>0,
         phaseGT:r==='dashboard'?phase('GT'):null,phaseHN:r==='dashboard'?phase('HN'):null,
         ranking:r==='dashboard'?{rows:ranking.length,population:population.length,missingRating:ranking.filter(x=>x.ratingAvailable===false).length}:null,
         identityCases:r==='shoppers'?identityRows:null,
         finance:finance?{GT:finance.GT||null,HN:finance.HN||null}:null,
         liquidations:Array.isArray(liqs)?{count:liqs.length,GT:liqs.filter(x=>x.pais==='GT').length,HN:liqs.filter(x=>x.pais==='HN').length,paymentsConfirmed:liqs.filter(x=>x.paymentConfirmed===true).length,liquidationsConfirmed:liqs.filter(x=>x.liquidationConfirmed===true).length}:null,
         shopper:kind==='shopper'?{stats:typeof d.shopperStats==='function'?d.shopperStats(sid):null,ownCount:own.length,duplicateVisits:own.length-new Set(own.map(v=>String(v.id||v.visitId))).size,pendingPosts:posts.filter(x=>String(x.estado||x.status).toLowerCase()==='pendiente').length,paseoCayala:posts.some(x=>/paseo cayal/i.test(norm(x.sucursal||x.branch||'')))}:null,
-        resources:r==='documentos'?{count:resources.length,names:resources.map(x=>String(x.n||x.name||'')),status:window.CX_BACKEND_RESOURCES_STATUS||null,storage:window.CX?.backendResources?.storageStatus?.()||null}:null,
+        resources:r==='documentos'?{count:resourceRows.length,names:resourceRows.map(x=>x.name),rows:resourceRows,staticResourceSeedIds,status:window.CX_BACKEND_RESOURCES_STATUS||null,storage:window.CX?.backendResources?.storageStatus?.()||null}:null,
         certification:r==='cert'?{sourceStatus:String(certEvidence.sourceStatus||''),evidenceCandidateCount:Number(certEvidence.evidenceCandidateCount||0),carryoverConfirmed:Number(certEvidence.carryoverConfirmed||0),eligibilityGranted:Number(certEvidence.eligibilityGranted||0),bank:window.CX?.certStore?.bank?.(d.currentPeriodId)||null}:null,
         mobileIdentity:(()=>{const el=document.getElementById('tbRoleIdentity');return el?{text:String(el.innerText||''),visible:getComputedStyle(el).display!=='none'}:null;})(),
         scrollWidth:document.documentElement.scrollWidth,innerWidth:window.innerWidth
@@ -164,7 +171,8 @@ async function signInMember(member,kind,route,options={}){
       if(!e||!info.liquidations||info.liquidations.count!==e.total||info.liquidations.GT!==e.GT||info.liquidations.HN!==e.HN||info.liquidations.paymentsConfirmed!==e.paymentsConfirmed||info.liquidations.liquidationsConfirmed!==e.liquidationsConfirmed)throw new Error('MAPPING_FAILURE:LIQUIDATION_REFERENCE:'+JSON.stringify({observed:info.liquidations,expected:e,hrRevision}));
     }
     if(r==='documentos'){
-      if(info.bodyHasStaticSeed)throw new Error('PERSISTENCE_FAILURE:STATIC_RESOURCE_SEED_VISIBLE');
+      if(info.bodyHasStaticSeed)throw new Error('PERSISTENCE_FAILURE:STATIC_RESOURCE_SEED_VISIBLE:'+JSON.stringify(info.resources));
+      if(info.resources?.status?.status!=='ready'||info.resources?.status?.source!=='firestore')throw new Error('PERSISTENCE_FAILURE:RESOURCE_CONNECTED_READ_NOT_READY:'+JSON.stringify(info.resources));
       if(kind==='shopper'&&info.resources?.status?.status!=='ready')throw new Error('AUTH_FAILURE:SHOPPER_RESOURCE_READ_NOT_READY:'+JSON.stringify(info.resources));
     }
     if(r==='cert'){
