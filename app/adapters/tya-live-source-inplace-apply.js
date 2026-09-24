@@ -41,14 +41,34 @@ window.CX = window.CX || {};
   }
 
   function mapVisits(snapshot,identity){
-    return safeArray(snapshot.visits).map((v,idx)=>Object.assign({},v,{
+    const rows=safeArray(snapshot.visits);
+    const knownAmount=v=>v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v));
+    const reimbursementScopes=new Map();
+    for(const row of rows){
+      const scope=str(row?.periodKey)+'::'+str(row?.pais||row?.country);
+      const current=reimbursementScopes.get(scope)||{boleto:false,comboAmt:false};
+      if(knownAmount(row?.boleto))current.boleto=true;
+      if(knownAmount(row?.comboAmt))current.comboAmt=true;
+      reimbursementScopes.set(scope,current);
+    }
+    return rows.map((v,idx)=>{
+      const scope=str(v?.periodKey)+'::'+str(v?.pais||v?.country),expected=reimbursementScopes.get(scope)||{boleto:false,comboAmt:false};
+      const boletoKnown=knownAmount(v?.boleto),comboKnown=knownAmount(v?.comboAmt);
+      const reimbursementExpected=expected.boleto||expected.comboAmt;
+      const reimbursementPartial=v.reimbursementPartial===true||v.reembolsoPartial===true||v.reimbursementSourceComplete===false
+        || (reimbursementExpected&&((expected.boleto&&!boletoKnown)||(expected.comboAmt&&!comboKnown)));
+      return Object.assign({},v,{
       id:v.id||('hr-live-'+(idx+1)),tenantId:identity.tenantId,rootProjectId:identity.projectId,projectId:identity.projectId,projectName:identity.projectName,
       periodId:periodId(identity.projectId,v.periodKey),periodKey:v.periodKey,periodLabel:v.periodLabel,hrRowId:v.hrRowId,sourceTab:v.sourceTab,sourceRow:v.sourceRow,
       num:idx+1,sucursal:v.sucursal||'Sucursal HR',ciudad:v.ciudad||'',pais:v.pais||v.country,
       country:v.country||v.pais,currency:v.currency||identity.currency[v.pais||v.country]||'',quincena:v.quincena||'',
       escenario:v.escenario||v.tipoCompra||'',franja:v.franja||'',franjaCode:v.franjaCode||null,canal:'Visita presencial',
-      formato:v.formato||'Mystery shopping cine',honorario:Number(v.honorario||0),boleto:Number(v.boleto||0),
-      combo:v.tipoCombo||'Configurable por HR',comboAmt:Number(v.comboAmt||0),estado:v.estado||'disponible',
+      formato:v.formato||'Mystery shopping cine',honorario:Number(v.honorario||0),boleto:boletoKnown?Number(v.boleto):0,
+      combo:v.tipoCombo||'Configurable por HR',comboAmt:comboKnown?Number(v.comboAmt):0,estado:v.estado||'disponible',
+      reimbursementBoletoSourceKnown:boletoKnown,reimbursementComboSourceKnown:comboKnown,
+      reimbursementSourceComplete:reimbursementExpected?!reimbursementPartial:(v.reimbursementSourceComplete!==false),
+      reimbursementSourceStatus:reimbursementPartial?'partial':(v.reimbursementSourceStatus||v.reimbursementStatus||null),
+      reimbursementPartial,
       shopperId:v.shopperId||null,shopper:v.shopper||null,shopperCode:v.shopperCode||null,rango:v.quincena||'',
       disponibleDesde:v.disponibleDesde||null,agendada:v.agendada||null,realizada:v.realizada||null,
       cuestFecha:v.cuestFecha||null,submit:Boolean(v.submit||v.submittedAt||v.submissionState==='confirmed_hr'),submittedAt:v.submittedAt||null,
@@ -56,7 +76,8 @@ window.CX = window.CX || {};
       lastSyncedAt:v.lastSyncedAt||null,reviewRequired:v.reviewRequired===true,reviewReasons:safeArray(v.reviewReasons),
       operationalDisplayName:v.operationalDisplayName===true,
       sourceSafe:true,piiProtected:true
-    }));
+    });
+    });
   }
 
   function mapShoppers(snapshot){
