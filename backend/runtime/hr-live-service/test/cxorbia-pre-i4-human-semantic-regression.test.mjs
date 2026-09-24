@@ -63,3 +63,49 @@ test('PRE-I4 VRM-040 canonical state semantics preserves HR outOfRange after ope
   assert.equal(summary.outOfRangeEvidence,3);
   assert.equal(summary.actionableOutOfRange,1);
 });
+
+
+test('PRE-I4 VRM-037/042 pending platform assignment stays operational but does not inflate confirmed shopper history',()=>{
+  const api=readModel();
+  const shopper='shopper_gt_history';
+  const hr={
+    currentProjectId:'cinepolis',currentPeriodId:'cinepolis-2026-09',
+    projects:[
+      {id:'cinepolis-2026-08',projectId:'cinepolis',periodKey:'2026-08'},
+      {id:'cinepolis-2026-09',projectId:'cinepolis',periodKey:'2026-09'}
+    ],
+    shoppers:[{shopperId:shopper,nombre:'Shopper Histórico',pais:'GT',projectIds:['cinepolis']}],
+    visits:[
+      {id:'hr-confirmed-1',visitId:'hr-confirmed-1',hrRowId:'AGO!1',projectId:'cinepolis',periodId:'cinepolis-2026-08',periodKey:'2026-08',shopperId:shopper,shopper:'Shopper Histórico',estado:'submitida',canonicalFacets:{assigned:true,realized:true,questionnaire:true,submitted:true}},
+      {id:'hr-pending-1',visitId:'hr-pending-1',hrRowId:'SEP!2',projectId:'cinepolis',periodId:'cinepolis-2026-09',periodKey:'2026-09',shopperId:'',estado:'disponible',canonicalFacets:{available:true,assigned:false}}
+    ],
+    posts:[]
+  };
+  const protectedPayload={
+    shoppers:[{id:shopper,shopperId:shopper,nombre:'Shopper Histórico'}],
+    visits:[{id:'hr-pending-1',visitId:'hr-pending-1',hrRowId:'SEP!2',projectId:'cinepolis',periodId:'cinepolis-2026-09',shopperId:shopper,assignmentSource:'platform',assignmentSyncStatus:'pending_hr'}],
+    certifications:[],liquidations:[],postulations:[],applications:[]
+  };
+  const out=api.compose({hr,protectedPayload});
+  const operational=out.visits.filter(v=>v.shopperId===shopper);
+  assert.equal(operational.length,2);
+  assert.equal(operational.some(v=>v.__pendingPlatformAssignmentOverlay===true),true);
+  const confirmed=api.confirmedHistoryVisits(operational);
+  assert.equal(confirmed.length,1);
+  const row=out.shoppers.find(s=>s.id===shopper);
+  assert.equal(row.visitas,1);
+  assert.equal(row.realizadas,1);
+  assert.equal(row.sourceHistoricalVisitCount,1);
+  assert.equal(row.pendingOperationalAssignmentCount,1);
+  assert.equal(out.diagnostics.confirmedHistoryExcludesPendingPlatformAssignment,true);
+});
+
+test('PRE-I4 VRM-042 late facade and profile delegate to one confirmed-history owner',()=>{
+  const bridge=fs.readFileSync(root+'app/adapters/tya-c6-domain-consistency-bridge.js','utf8');
+  const portal=fs.readFileSync(root+'app/adapters/tya-canonical-shopper-portal-v2.js','utf8');
+  const shoppers=fs.readFileSync(root+'app/modules/shoppers.js','utf8');
+  assert.match(bridge,/d\.shopperHistoryVisits=function\(id,onlyCurrentProject\)/);
+  assert.match(bridge,/d\.shopperStats=function\(id\)\{const vs=this\.shopperHistoryVisits\(id,false\)/);
+  assert.match(portal,/typeof data\.shopperHistoryVisits==='function'/);
+  assert.match(shoppers,/const vs=kpiVisitsForActiveProject\(s\.id\)\.filter/);
+});

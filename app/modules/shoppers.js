@@ -145,7 +145,7 @@ CX.module('shoppers', ({data,ui})=>{
 
   /* ---------- drill: histórico de visitas ---------- */
   const drillVisits=(s, fn, title)=>{
-    const vs=visitsForActiveProject(s.id).filter(fn||(()=>true));
+    const vs=kpiVisitsForActiveProject(s.id).filter(fn||(()=>true));
     const body = vs.length ? `<table class="tbl"><thead><tr><th>Sucursal</th><th>Proyecto</th><th>Periodo</th><th>Escenario</th><th>Estado</th><th>Evaluación</th><th>Fecha</th></tr></thead><tbody>
       ${vs.map(v=>`<tr><td><b>${v.sucursal}</b><div style="font-size:11px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad}</div></td>
         <td style="font-size:12px">${projectLabelForVisit(v)}</td>
