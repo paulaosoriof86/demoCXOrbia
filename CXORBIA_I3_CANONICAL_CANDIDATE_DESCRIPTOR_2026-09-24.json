@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_REMEDIATION_SOURCE_CREATED_PENDING_DEV_REPROOF",
+  "status": "HOLD_V21_DEV_MATERIALIZED_PENDING_STABLE_READBACK",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "da17406f8e03ef1071fe8ca384503853f51e6638",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "34068805168e85cf15c9359c1dc4c4226c3062a6",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V21_2026-09-25.json",
-  "findingsLedgerExpectedGitBlob": "18bbfba689ed5df55ed7bcd594239feee5decd53",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V22_2026-09-25.json",
+  "findingsLedgerExpectedGitBlob": "7f939264bdcd0e004478199eba5c7320a2073277",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-045/046/047/048/049/051/052/053 FIXED_IN_SOURCE_PENDING_DEV_REPROOF + VRM-050 POST-REFRESH REPROOF STILL OPEN",
+  "activeBlocker": "V21 exact DEV materialized; live focal blocked only by transient HR readback 504 / VRM-050 stable post-refresh reproof.",
   "nextFindingId": "VRM-054",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "FOCAL_DEV_REPROOF_AND_REQUIRED_DEV_MATERIALIZATION_FOR_DA17406; THEN_STABLE_POST_REFRESH_VRM050_REPROOF; ONLY_AFTER_ALL_PASS_REPEAT_I3_TERMINAL_CLOSURE",
+  "exactNextAction": "RUN_V21_READBACK_RESUME_ONLY_ON_EXISTING_DEV_WITH_ZERO_BUILD_ZERO_DEPLOY; THEN_FREEZE_LIVE_FOCAL_RESULT",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -373,5 +373,20 @@
     "production": false,
     "requestedBy": "Paula via CXOrbia Recovery Project",
     "trigger": "DESCRIPTOR_PUSH_CANONICAL_WORKFLOW"
+  },
+  "currentMaterialization": {
+    "sourceSha": "da17406f8e03ef1071fe8ca384503853f51e6638",
+    "sourceTree": "f733f99293dca5437a6e33ab81434d844a1d5f5c",
+    "runId": 36197719442,
+    "runtimeRevision": "cxorbia-live-hr-dev-00219-p6j",
+    "runtimeDigest": "sha256:f3cec6e52771ec29af46f0d22c6921bdc0327ce599c82a556ac46432b2e3c946",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/f8dce3d817c000dc",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790376120337000",
+    "buildCount": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "rulesDeploys": 0,
+    "readbackOnlyResume": true,
+    "production": false
   }
 }

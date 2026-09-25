@@ -3335,6 +3335,121 @@ jobs:
       - name: Cleanup
         if: always()
         run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-v21-source"
+  v21-paula-remediation-readback:
+    name: I3 V21 Paula remediation — existing DEV stable readback only
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_V21_DEV_MATERIALIZED_PENDING_STABLE_READBACK' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v21-readback-resume]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      V21_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      V21_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      V21_OUT: .tmp/i3-v21-readback-resume
+      V21_ROOT: https://cxorbia-backend-dev.web.app
+      EXPECTED_RUNTIME_REVISION: cxorbia-live-hr-dev-00219-p6j
+      EXPECTED_RUNTIME_DIGEST: sha256:f3cec6e52771ec29af46f0d22c6921bdc0327ce599c82a556ac46432b2e3c946
+      EXPECTED_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/f8dce3d817c000dc
+    steps:
+      - name: Checkout Recovery control head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Prove readback-only scope
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$V21_OUT"
+          test "$V21_SOURCE" = "da17406f8e03ef1071fe8ca384503853f51e6638"
+          test "$V21_TREE" = "f733f99293dca5437a6e33ab81434d844a1d5f5c"
+          test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_V21_DEV_MATERIALIZED_PENDING_STABLE_READBACK"
+          test "$(jq -r '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")" = "$EXPECTED_RUNTIME_REVISION"
+          test "$(jq -r '.currentMaterialization.hostingVersion' "$CANDIDATE_DESCRIPTOR")" = "$EXPECTED_HOSTING_VERSION"
+          git diff --quiet "$V21_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          jq -n -S '{decision:"PASS_V21_READBACK_ONLY_SCOPE",builds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0,production:false}' > "$V21_OUT/scope.json"
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install read-only proof dependencies
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+
+      - name: Authenticate canonical Firebase DEV read only
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
+
+      - name: Prove existing DEV identity without rebuild or redeploy
+        run: |
+          set -Eeuo pipefail
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$V21_OUT/runtime.json"
+          REV="$(jq -r '.status.latestReadyRevisionName // empty' "$V21_OUT/runtime.json")"
+          test "$REV" = "$EXPECTED_RUNTIME_REVISION"
+          gcloud run revisions describe "$REV" --project "$PROJECT" --region "$REGION" --format=json > "$V21_OUT/runtime-revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$V21_OUT/runtime-revision.json")"
+          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else exit 1; fi
+          test "$DIGEST" = "$EXPECTED_RUNTIME_DIGEST"
+          TOKEN="$(gcloud auth print-access-token)"
+          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$V21_OUT/hosting-live-channel.json"
+          HOSTING_VERSION="$(jq -r '.release.version.name // empty' "$V21_OUT/hosting-live-channel.json")"
+          test "$HOSTING_VERSION" = "$EXPECTED_HOSTING_VERSION"
+
+      - name: Wait fail-closed through transient provider 504 until stable HR
+        run: |
+          set -Eeuo pipefail
+          ok=0
+          : > "$V21_OUT/hr-readback-attempts.log"
+          for i in $(seq 1 30); do
+            if curl --max-time 25 -fsS -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&v21resume=$GITHUB_RUN_ID-$i" -o "$V21_OUT/hr-meta.json"; then
+              REV="$(jq -r '.revision // empty' "$V21_OUT/hr-meta.json")"
+              START="$(jq -r '.refreshStartedAt // empty' "$V21_OUT/hr-meta.json")"
+              FIN="$(jq -r '.refreshFinishedAt // empty' "$V21_OUT/hr-meta.json")"
+              echo "$i ok revision=$REV start=$START finish=$FIN" >> "$V21_OUT/hr-readback-attempts.log"
+              if jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .refreshError==null and .shopperReconciliation.providerAck==true and .visitReconciliation.providerAck==true and .hrWrites==false and .production==false and ((.refreshStartedAt==null) or (.refreshFinishedAt!=null and .refreshFinishedAt>=.refreshStartedAt))' "$V21_OUT/hr-meta.json" >/dev/null; then ok=1; break; fi
+            else
+              echo "$i transient_http_failure" >> "$V21_OUT/hr-readback-attempts.log"
+            fi
+            sleep 15
+          done
+          test "$ok" = 1
+          HR_REVISION="$(jq -r '.revision // empty' "$V21_OUT/hr-meta.json")"
+          [[ "$HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
+          echo "HR_REVISION=$HR_REVISION" >> "$GITHUB_ENV"
+
+      - name: Run exact Paula and Admin focal on existing DEV
+        run: |
+          set -Eeuo pipefail
+          V21_OUT="$V21_OUT" V21_ROOT="$HOSTING_URL" V21_SOURCE="$V21_SOURCE" node tools/qa/cxorbia-i3-v21-paula-remediation-live.mjs | tee "$V21_OUT/browser.log"
+          test "$(jq -r '.decision' "$V21_OUT/v21-paula-remediation-live.json")" = "PASS_I3_V21_PAULA_REMEDIATION_LIVE"
+          test "$(jq -r '.shopper.sourceRevision' "$V21_OUT/v21-paula-remediation-live.json")" = "$HR_REVISION"
+          test "$(jq -r '.admin.sourceRevision' "$V21_OUT/v21-paula-remediation-live.json")" = "$HR_REVISION"
+
+      - name: Seal readback-only receipt
+        run: |
+          jq -n -S --arg source "$V21_SOURCE" --arg tree "$V21_TREE" --arg runtime "$EXPECTED_RUNTIME_REVISION" --arg digest "$EXPECTED_RUNTIME_DIGEST" --arg hosting "$EXPECTED_HOSTING_VERSION" --arg hr "$HR_REVISION" '{decision:"PASS_I3_V21_STABLE_READBACK_AND_LIVE_FOCAL",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,builds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0,production:false}' > "$V21_OUT/result.json"
+
+      - name: Upload V21 readback evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-v21-readback-${{ github.run_id }}
+          path: ${{ env.V21_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
+      - name: Cleanup
+        if: always()
+        run: rm -rf node_modules
+
   c3-terminal-dev-identity-readback:
     name: C3 terminal DEV identity readback — no deploy
     needs: canonical-candidate-authority
