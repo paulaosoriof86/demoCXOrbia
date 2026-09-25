@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_C3_TERMINAL_CONTROL_FIX",
+  "status": "READY_FOR_TERMINAL_CERTIFICATION",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -12,8 +12,8 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
-  "terminalCertificationAllowed": false,
-  "activeBlocker": "RUN419 RELEASE_COMPOSITION_FAILURE — HARDENED FOCAL STILL EXPECTS HR-ONLY SHOPPER POPULATION",
+  "terminalCertificationAllowed": true,
+  "activeBlocker": "C3 TERMINAL FRESH REPROOF ON EXISTING VRM044 DEV — RUN419 FOCAL POPULATION CONTROL FIXED",
   "nextFindingId": "VRM-045",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "ALIGN_HARDENED_FOCAL_HR_PLUS_AUTHORIZED_PLATFORM_POPULATION_THEN_RESUME_SAME_TERMINAL_CERTIFY_NO_REBUILD",
+  "exactNextAction": "RUN_ONE_FRESH_TERMINAL_CERTIFY_THEN_SAME_ARTIFACT_LIVE_FIXTURES_THEN_GATE21",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -195,18 +195,21 @@
     "production": false
   },
   "lastTerminalControlFix": {
-    "run416": {
-      "classification": "ENVIRONMENT_FAILURE",
-      "code": "C3_SEMANTIC_ORACLE_ENV",
-      "rootCause": "workflow omitted required C3_HOSTING_URL when invoking existing semantic oracle",
+    "run419": {
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "observedHarnessClassification": "MAPPING_FAILURE",
+      "code": "SHOPPER_POPULATION",
+      "rootCause": "hardened focal compared HR-only reference count directly to composed operational shopper count after VRM-044 added trusted platform_created identities",
       "provenFreshHumanAcceptancePass": true,
+      "provenSemanticOraclePass": true,
       "productDefect": false,
       "productSourceChanged": false
     },
-    "correctionCommit": "601d63edf65ed92c80d8ec4d58ff52aa9b63acdf",
-    "holdGuardRunId": 36164562922,
-    "holdGuardRunNumber": 418,
+    "correctionCommit": "2f062eda42bb3a22f79c0e6758b32fb9f6c08e2f",
+    "holdGuardRunId": 36165977312,
+    "holdGuardRunNumber": 421,
     "holdGuardDecision": "PASS_CANONICAL_CANDIDATE_AUTHORITY",
+    "correctedContract": "focal validates external HR population separately, allows only exact trusted project-scoped platform_created operational additions, and rejects untrusted platform-only rows",
     "rebuilds": 0,
     "deploys": 0,
     "production": false
