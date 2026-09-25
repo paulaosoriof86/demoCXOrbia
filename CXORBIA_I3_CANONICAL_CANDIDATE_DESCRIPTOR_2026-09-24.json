@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_C3_LIVE_FIXTURE_BIND_CONTROL",
+  "status": "READY_FOR_TERMINAL_CERTIFICATION",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -12,8 +12,8 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
-  "terminalCertificationAllowed": false,
-  "activeBlocker": "RUN426 RELEASE_COMPOSITION_FAILURE — LIVE-FIXTURE BINDER USED HISTORICAL PROOF HR FOR FRESH HUMAN ACCEPTANCE",
+  "terminalCertificationAllowed": true,
+  "activeBlocker": "C3 TERMINAL RESUME — RUN426 LIVE-FIXTURE BINDER FIXED",
   "nextFindingId": "VRM-045",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "FIX_LIVE_FIXTURE_BIND_TO_CERTIFICATION_LIVE_HR_THEN_RESUME_SAME_TERMINAL_NO_REBUILD",
+  "exactNextAction": "RUN_ONE_FRESH_TERMINAL_CERTIFY_THEN_SAME_ARTIFACT_LIVE_FIXTURES_THEN_GATE21",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -228,7 +228,9 @@
       "productDefect": false,
       "rebuilds": 0,
       "deploys": 0,
-      "production": false
+      "production": false,
+      "resolved": true,
+      "resolvedByCommit": "b8b00ca2bf4a259c1542343625d126e19667a0eb"
     }
   },
   "lastTerminalRun": {
