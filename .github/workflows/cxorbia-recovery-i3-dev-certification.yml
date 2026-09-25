@@ -2922,3 +2922,57 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
+
+
+  vrm044-focal-reproof:
+    name: VRM-044 focal source reproof — no deploy
+    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm044-focal]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      VRM044_BASE: 04b288f7eee315fcb865ed86a8fb41786809edf9
+      VRM044_SOURCE: 34068805168e85cf15c9359c1dc4c4226c3062a6
+      VRM044_TREE: 91855599924b94ca7fbb025a570d8e1d77b30d3b
+      VRM044_OUT: .tmp/vrm044-focal-reproof
+    steps:
+      - name: Checkout Recovery control head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Prove exact focal product delta
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$VRM044_OUT"
+          test "$(git rev-parse "$VRM044_SOURCE^{tree}")" = "$VRM044_TREE"
+          git merge-base --is-ancestor "$VRM044_BASE" "$VRM044_SOURCE"
+          ACTUAL="$(git diff --name-only "$VRM044_BASE" "$VRM044_SOURCE" --             app/adapters/tya-cumulative-read-model-v2.js             backend/runtime/cxorbia-shopper-command-provider-v1.mjs             backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs             backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-semantic-regression.test.mjs | sort)"
+          EXPECTED="$(printf '%s\n'             'app/adapters/tya-cumulative-read-model-v2.js'             'backend/runtime/cxorbia-shopper-command-provider-v1.mjs'             'backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-semantic-regression.test.mjs'             'backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs' | sort)"
+          test "$ACTUAL" = "$EXPECTED"
+          jq -n -S --arg source "$VRM044_SOURCE" --arg tree "$VRM044_TREE"             '{decision:"PASS_VRM044_EXACT_FOCAL_SCOPE",sourceSha:$source,sourceTree:$tree,productFiles:4,runtimeDeploys:0,hostingDeploys:0,production:false}'             > "$VRM044_OUT/scope.json"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Run VRM-044 focal regressions on exact source
+        run: |
+          set -Eeuo pipefail
+          SRC="$RUNNER_TEMP/cxorbia-vrm044-source"
+          rm -rf "$SRC"; mkdir -p "$SRC"
+          git archive "$VRM044_SOURCE" | tar -x -C "$SRC"
+          cd "$SRC"
+          node --check backend/runtime/cxorbia-shopper-command-provider-v1.mjs
+          node --check app/adapters/tya-cumulative-read-model-v2.js
+          node --test             backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs             backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-semantic-regression.test.mjs             | tee "$GITHUB_WORKSPACE/$VRM044_OUT/tests.log"
+          cd "$GITHUB_WORKSPACE"
+          jq -n -S --arg source "$VRM044_SOURCE" --arg tree "$VRM044_TREE"             '{decision:"PASS_VRM044_FOCAL_SOURCE_REPROOF",sourceSha:$source,sourceTree:$tree,tests:"provider+semantic",builds:0,deploys:0,production:false}'             > "$VRM044_OUT/result.json"
+
+      - name: Upload VRM-044 focal receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-vrm044-focal-reproof
+          path: .tmp/vrm044-focal-reproof
+          if-no-files-found: error
+          retention-days: 30
