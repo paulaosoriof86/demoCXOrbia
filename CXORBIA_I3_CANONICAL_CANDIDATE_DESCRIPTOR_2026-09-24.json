@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "READY_FOR_TERMINAL_CERTIFICATION",
+  "status": "HOLD_C3_TERMINAL_CONTROL_FIX",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "C3 TERMINAL NO-REBUILD CERTIFICATION RUN PENDING",
+  "activeBlocker": "RUN390 RELEASE_COMPOSITION_FAILURE — HISTORICAL PROOF HR REVISION MUST NOT EQUAL CURRENT LIVE HR REVISION",
   "nextFindingId": "VRM-044",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN_ONE_NO_REBUILD_CERTIFY_THEN_LIVE_FIXTURES_THEN_GATE21",
+  "exactNextAction": "FIX_SAME_CERTIFY_HISTORICAL_VS_LIVE_HR_SEMANTICS_THEN_RESUME_NO_REBUILD",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -140,6 +140,35 @@
     "controlProofArtifactId": 10839078428,
     "rebuildAllowed": false,
     "redeployAllowed": false,
+    "production": false
+  },
+  "lastTerminalResumeAttempt": {
+    "runId": 36074451115,
+    "runNumber": 390,
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "failedStep": "Reprove current DEV identity without build or deploy",
+    "cause": "current live HR revision was incorrectly required to equal Run387 certified proof HR revision",
+    "certifiedProofHrRevision": "2b0114c39d64a0e3697667572de0dfdcffe476c5cd8112449fcab1da24e1085d",
+    "currentLiveHrRevision": "f8181679418200dbda2dac0fd54f0c543afc75653b155a596c2dd11e9566c217",
+    "runtimeRevisionReadback": "cxorbia-live-hr-dev-00217-v6z",
+    "runtimeDigestReadback": "sha256:5c76c2ca643d95d49fa9f016ebce312d1dcc62621342ca7bf00bf33bd114ceba",
+    "hostingVersionReadback": "sites/cxorbia-backend-dev/versions/7d787355f662e453",
+    "liveHrHealth": {
+      "revisionStable": true,
+      "sourceSafe": true,
+      "operationalDisplayIdentityReady": true,
+      "operationalDisplayIdentityCount": 220,
+      "shopperProviderAck": true,
+      "visitProviderAck": true,
+      "hrWrites": false,
+      "production": false,
+      "visits": 704,
+      "periods": 16,
+      "latestPeriodKey": "2026-09"
+    },
+    "productChanged": false,
+    "builds": 0,
+    "deploys": 0,
     "production": false
   }
 }
