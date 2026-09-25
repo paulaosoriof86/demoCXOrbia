@@ -1,0 +1,171 @@
+{
+  "schemaVersion": "cxorbia.i3.paula-visual-review.v1",
+  "reviewedAt": "2026-09-25T19:35:00Z",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "state": "HOLD_VISUAL_REVIEW_DEFECTS_FOUND",
+  "visualAcceptance": "NOT_ACCEPTED",
+  "production": "DO_NOT_TOUCH",
+  "canonicalProductSourceSha": "34068805168e85cf15c9359c1dc4c4226c3062a6",
+  "canonicalProductTree": "91855599924b94ca7fbb025a570d8e1d77b30d3b",
+  "terminalTechnicalRun": {
+    "id": 36170757882,
+    "number": 429,
+    "conclusion": "success"
+  },
+  "liveHrReadback": {
+    "revision": "80ad0b717010eafccbbc4dd33afb380e56ca7e46c03b05f1924c27aa49b52ae8",
+    "generatedAt": "2026-09-25T18:57:36.723Z",
+    "sourceReadAt": "2026-09-25T18:59:18.676Z",
+    "latestPeriodKey": "2026-09",
+    "periods": 16,
+    "visits": 704,
+    "octoberTabsRecognized": false,
+    "phantomTabsRejected": [
+      "OCTUBRE 26",
+      "OCTUBRE 26 HN"
+    ],
+    "production": false
+  },
+  "verifiedFacts": {
+    "paulaHistorical": {
+      "canonicalHrShopperId": "shopper_gt_1440137b73",
+      "exactVisitCount": 7,
+      "exactRows": [
+        [
+          "2026-08",
+          "AGOSTO 26!23",
+          "C. Paseo Cayalá",
+          "pending_questionnaire"
+        ],
+        [
+          "2026-07",
+          "JULIO 26!4",
+          "C. Oakland Mall VIP",
+          "submitted_complete"
+        ],
+        [
+          "2026-06",
+          "JUNIO 26!12",
+          "C. Sankris Mall",
+          "submitted_complete"
+        ],
+        [
+          "2026-04",
+          "ABRIL 26!6",
+          "C. Paseo Cayalá",
+          "submitted_complete"
+        ],
+        [
+          "2025-12",
+          "DICIEMBRE 25!20",
+          "C. Oakland Mall",
+          "pending_submission"
+        ],
+        [
+          "2025-10",
+          "OCTUBRE 25!3",
+          "C. Oakland Mall",
+          "submitted_complete"
+        ],
+        [
+          "2025-06",
+          "JUNIO 25!23",
+          "C. Paseo Cayalá",
+          "pending_submission"
+        ]
+      ],
+      "screenshotHistoryMatchesHr": true
+    },
+    "currentZacapa": {
+      "q1": {
+        "hrRowId": "SEPTIEMBRE 26!18",
+        "assignmentState": "assigned",
+        "canonicalState": "submitted_complete",
+        "available": false
+      },
+      "q2": {
+        "hrRowId": "SEPTIEMBRE 26!35",
+        "assignmentState": "assigned",
+        "shopperId": "shopper_gt_02f3b83229",
+        "scheduled": "2026-09-26",
+        "canonicalState": "pending_realization",
+        "available": false
+      },
+      "screenshotDisplayedQ2AsAvailable": true,
+      "temporalNote": "visual capture occurred during live provider refresh window; current stable HR no longer marks Q2 Zacapa available"
+    },
+    "currentAltaraQ2": {
+      "hrRowId": "SEPTIEMBRE 26 HN!9",
+      "assignmentState": "unassigned",
+      "canonicalState": "available",
+      "available": true
+    }
+  },
+  "findings": {
+    "VRM-045": {
+      "classification": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "code": "SHOPPER_ACTIVE_VISITS_INCLUDE_HISTORICAL_ROWS",
+      "evidence": "app/modules/misvisitas.js derives assigned/scheduled/realized from all-period visitsForShopper without current-period/actionability boundary; historical realized non-submitted visits remain in Activas and expose questionnaire actions.",
+      "observed": "Paula shows Activas 3 while those rows are historical Aug-2026/Dec-2025/Jun-2025 unfinished records.",
+      "expected": "Mis Visitas active section contains only currently actionable visits; historical prior-period rows remain read-only in history."
+    },
+    "VRM-046": {
+      "classification": "PERSISTENCE_FAILURE",
+      "severity": "P0",
+      "code": "RESERVATIONS_MODULE_LOCALSTORAGE_AS_AUTHORITY",
+      "evidence": "app/modules/reservas.js list/_persist/reservar/setEstado/remove use localStorage and local in-memory state; cruzar mutates CX.data._visitas directly.",
+      "observed": "Admin Reservas & Asignación shows 0/0/0/0 independently of authoritative HR assignments and claims confirmations without provider-backed durable ACK.",
+      "expected": "Reservations and manual/direct assignments use provider-backed durable project/period scope, remote ACK/idempotency, and cannot treat localStorage/local mutation as truth."
+    },
+    "VRM-047": {
+      "classification": "FUNCTIONAL_DEFECT",
+      "severity": "BLOCKING_VISUAL_ACCEPTANCE",
+      "code": "SHOPPER_SELF_PROFILE_EDIT_MISSING",
+      "evidence": "canonical shopper portal renders personal fields read-only and has no self-edit action, while admin shopper module explicitly states shopper completes city/document/payment account after login.",
+      "observed": "Paula Mi Perfil has no edit action and email remains 'sin dato'.",
+      "expected": "Authenticated shopper can complete/edit permitted self-managed personal fields durably without overriding HR-managed identity fields."
+    },
+    "VRM-048": {
+      "classification": "VISUAL_DEFECT",
+      "severity": "BLOCKING_VISUAL_ACCEPTANCE",
+      "code": "AUTH_REFRESH_LOGIN_FLICKER",
+      "evidence": "browser auth restoration is asynchronous; user visually sees login/logout transition before local-persisted Firebase session is reapplied.",
+      "observed": "refresh temporarily exits session and then re-enters.",
+      "expected": "refresh preserves continuous authenticated shell or a neutral loading state; it must not visually present a false logout."
+    },
+    "VRM-049": {
+      "classification": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "code": "LIQUIDATION_ROW_FABRICATES_ZERO_FOR_UNKNOWN_HONORARIUM",
+      "evidence": "Liquidaciones summary correctly says honorarium/total pending source, but row formatter _liqMoney renders null unknown values as currency zero; screenshot shows Q0 honorario/total while reimbursement exists.",
+      "observed": "row-level Q0 conflicts with source-unknown contract and with the module summary.",
+      "expected": "unknown honorarium/total stays null/pending-source at row level; zero is shown only when zero is an authoritative value."
+    },
+    "VRM-050": {
+      "classification": "PROVIDER_FAILURE",
+      "severity": "P0_DIAGNOSTIC_REQUIRED",
+      "code": "DISPLAYED_AVAILABILITY_STALE_DURING_HR_REFRESH",
+      "evidence": "visual capture displayed Sep Q2 Pradera Zacapa as available while current stable HR revision 80ad0b... marks same HR row SEPTIEMBRE 26!35 assigned/scheduled and available=false.",
+      "observed": "capture occurred during long provider refresh; exact post-refresh browser convergence still must be reproved before attributing to watcher code.",
+      "expected": "available list converges to same stable HR revision and assigned visit disappears; during refresh UI must not present stale availability as current without an updating/staleness indicator."
+    },
+    "VRM-051": {
+      "classification": "VISUAL_DEFECT",
+      "severity": "BLOCKING_VISUAL_ACCEPTANCE",
+      "code": "SHOPPER_BENEFITS_DISCOVERABILITY_COLLAPSED",
+      "evidence": "beneficios module exists and is ready, but shopper navigation persists collapsed rail state; screenshot shows only collapsed MIS BENEFICIOS section and no visible item.",
+      "observed": "user reasonably concludes Mis Beneficios is absent.",
+      "expected": "core shopper benefit route is discoverable without hidden persisted-collapse ambiguity."
+    }
+  },
+  "nonDefectsOrSourceBlockers": {
+    "postulationReview": "Current shopper and admin screenshots are consistent: platform approval exists but HR assignment does not match; fail-closed 'En revisión' is correct.",
+    "paulaHistory": "Seven displayed historical visits match seven exact HR rows for the same HR shopper identity.",
+    "currentCertification": "UI correctly refuses to fabricate active certification; current certification source/publication remains pending.",
+    "currentResources": "UI correctly refuses to fabricate resources; current project/period has zero published real resources.",
+    "october": "Current external provider does not yet recognize OCTUBRE 26 / OCTUBRE 26 HN; October must not be fabricated from local reservation state."
+  },
+  "exactNextAction": "FREEZE_FINDINGS_THEN_ROOT_CAUSE_AND_FIX_ONLY_PROVEN_OWNERS_VRM045_VRM046_VRM047_VRM048_VRM049; REPROVE_VRM050_AFTER_STABLE_HR; KEEP_PRODUCTION_UNTOUCHED",
+  "authorizationRequired": false
+}
