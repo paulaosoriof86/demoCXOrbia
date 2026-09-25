@@ -26,6 +26,8 @@ const sha=value=>crypto.createHash('sha256').update(typeof value==='string'?valu
 const clean=value=>Array.isArray(value)?value.map(clean):(value&&typeof value==='object'?Object.fromEntries(Object.entries(value).filter(([,v])=>v!==undefined&&typeof v!=='function').map(([k,v])=>[k,clean(v)])):value);
 const sameArray=(a,b)=>JSON.stringify(uniq(a))===JSON.stringify(uniq(b));
 const receiptId=command=>sha(`${command.tenantId}\0${command.projectId}\0${command.periodId||''}\0${command.idempotencyKey}`).slice(0,40);
+const platformIdentitySourceKey=(tenantId,shopperId)=>`platform:${str(tenantId)}:${str(shopperId)}`;
+const platformIdentityLinkId=(tenantId,sourceIdentityKey,shopperId)=>`irl_${sha(`${str(tenantId)}\0platform\0*\0${str(sourceIdentityKey)}\0${str(shopperId)}`).slice(0,32)}`;
 const RAW_SECRET_KEY=/^(?:password|pass|newpassword|temporarypassword|credential|credentialvalue|secret|token|resettoken)$/i;
 const PUBLIC_PROFILE_FIELDS=Object.freeze(['firstName','lastName','nombre','email','whatsapp','phone','pais','country','depto','ciudad','sexo','edad','estado','sourceRef','sourceType','perfilCompleto','honorarioPref','createdVia']);
 const PROTECTED_PROFILE_FIELDS=Object.freeze(['dpi','documentId','banco','ctaTipo','ctaNum','ctaTitular','ctaMoneda','cuentaPago','ndaStatus']);
@@ -406,23 +408,44 @@ async function durableUpsert({auth,db,policy,candidate,sourceRevision,authUsers}
 async function persistManualProfile({db,command,shopperId,uid,projectIds}){
   const tenantId=str(command.tenantId),projectId=str(command.projectId),tenant=db.collection('tenants').doc(tenantId);
   const profileRef=tenant.collection('shoppers').doc(shopperId),crossRef=tenant.collection('shopperIdentityCrosswalk').doc(shopperId);
+  const sourceIdentityKey=platformIdentitySourceKey(tenantId,shopperId);
+  const identityLinkId=platformIdentityLinkId(tenantId,sourceIdentityKey,shopperId);
+  const linkRef=tenant.collection('shopperIdentityLinks').doc(identityLinkId);
   const raw=command.payload?.profile||{};
   const pub=publicProfile(raw),prot=protectedProfile(command.payload?.protectedProfile||raw);
   const nombre=str(pub.nombre||[pub.firstName,pub.lastName].filter(Boolean).join(' '));
   const credential=shopperCredentialRule({...pub,nombre});
-  const patch=clean({...pub,...prot,id:shopperId,shopperId,tenantId,projectIds:uniq(projectIds),sourceType:'platform',createdVia:str(pub.createdVia||raw.via||'manual')||'manual',code:str(raw.code||shopperId),hrSourceRevision:null,lastHrSyncedAt:null,updatedAt:now()});
+  const patch=clean({...pub,...prot,id:shopperId,shopperId,tenantId,projectIds:uniq(projectIds),sourceType:'platform',sourceIdentityKey,createdVia:str(pub.createdVia||raw.via||'manual')||'manual',code:str(raw.code||shopperId),hrSourceRevision:null,lastHrSyncedAt:null,updatedAt:now()});
   if(nombre)patch.nombre=nombre;
   if(credential.ok){patch.firstName=credential.firstName;patch.lastName=credential.lastName;patch.visibleLogin=credential.login;patch.username=credential.login;patch.user=credential.login;patch.credentialRuleVersion=CREDENTIAL_RULE_VERSION;}
+  const authorityRef=receiptId(command),uidFingerprint=providerUidFingerprint(uid),stamp=now();
+  const identityLink={
+    identityLinkId,tenantId,canonicalShopperId:shopperId,sourceSystem:'platform',projectScope:'*',
+    sourceIdentityKey,sourceAliases:[sourceIdentityKey,shopperId],status:'active',
+    authorityType:'platform_created',authorityRef,periodIndependent:true,providerAck:true,
+    providerUidFingerprint:uidFingerprint,sourceSafe:true,createdBy:'shopper.create',updatedAt:stamp
+  };
   await db.runTransaction(async tx=>{
-    const [profileSnap,crossSnap]=await Promise.all([tx.get(profileRef),tx.get(crossRef)]);
+    const [profileSnap,crossSnap,linkSnap]=await Promise.all([tx.get(profileRef),tx.get(crossRef),tx.get(linkRef)]);
     if(!profileSnap.exists||!crossSnap.exists)throw new Error('SHOPPER_MANUAL_DURABLE_IDENTITY_INCOMPLETE');
-    const profile=profileSnap.data()||{},cross=crossSnap.data()||{};
+    const profile=profileSnap.data()||{},cross=crossSnap.data()||{},link=linkSnap.exists?(linkSnap.data()||{}):null;
     if(str(profile.tenantId||tenantId)!==tenantId||str(profile.shopperId||shopperId)!==shopperId)throw new Error('SHOPPER_PROFILE_SCOPE_CONFLICT');
-    if(str(cross.tenantId)!==tenantId||str(cross.shopperId)!==shopperId||str(cross.providerUidFingerprint)!==providerUidFingerprint(uid))throw new Error('SHOPPER_CROSSWALK_CONFLICT');
+    if(str(cross.tenantId)!==tenantId||str(cross.shopperId)!==shopperId||str(cross.providerUidFingerprint)!==uidFingerprint)throw new Error('SHOPPER_CROSSWALK_CONFLICT');
+    if(link&&(
+      str(link.tenantId)!==tenantId||
+      str(link.canonicalShopperId)!==shopperId||
+      str(link.sourceSystem).toLowerCase()!=='platform'||
+      str(link.sourceIdentityKey)!==sourceIdentityKey||
+      str(link.authorityType).toLowerCase()!=='platform_created'||
+      str(link.authorityRef)!==authorityRef||
+      link.periodIndependent!==true||
+      str(link.providerUidFingerprint)!==uidFingerprint
+    ))throw new Error('SHOPPER_PLATFORM_IDENTITY_LINK_CONFLICT');
     tx.set(profileRef,patch,{merge:true});
-    tx.set(crossRef,{sourceType:'platform',identityMode:'stable_platform_shopper_id',updatedAt:now()},{merge:true});
+    tx.set(crossRef,{sourceType:'platform',identityMode:'stable_platform_shopper_id',updatedAt:stamp},{merge:true});
+    tx.set(linkRef,link?{...identityLink,createdAt:link.createdAt||stamp}: {...identityLink,createdAt:stamp},{merge:true});
   });
-  return {providerWrites:2};
+  return {providerWrites:3,identityLinkId,sourceIdentityKey,platformCreatedAuthority:true};
 }
 
 function changedHrManagedFields(existing,patch){
@@ -714,7 +737,7 @@ export function createShopperCommandProvider({auth,db,policy}={}){
         const result=await durableUpsert({auth,db,policy,candidate,sourceRevision});
         const manual=await persistManualProfile({db,command,shopperId,uid:result.uid,projectIds:result.projectIds||[command.projectId]});
         await receipt.set({status:'committed',commandDigest:digest,shopperId,commandType:command.commandType,providerAck:true,actorUid:actor.uid,updatedAt:now()},{merge:false});
-        return ack(command,shopperId,{uidFingerprint:providerUidFingerprint(result.uid),idempotentReplay:result.idempotentReplay,providerWrites:Number(result.providerWrites||0)+Number(manual.providerWrites||0)+1,profileUpdated:true});
+        return ack(command,shopperId,{uidFingerprint:providerUidFingerprint(result.uid),idempotentReplay:result.idempotentReplay,providerWrites:Number(result.providerWrites||0)+Number(manual.providerWrites||0)+1,profileUpdated:true,identityLinkId:manual.identityLinkId,sourceIdentityKey:manual.sourceIdentityKey,platformCreatedAuthority:manual.platformCreatedAuthority===true});
       }catch(error){return blocked(command,str(error?.message||error));}
     },
     status(){return {version:VERSION,enabled:true,allowedTenantIds:uniq(policy.allowedTenantIds),allowedProjectIds:uniq(policy.allowedProjectIds),hrWrites:false,externalWrites:false,fuzzyMatching:false,stableIdentity:true,profileMutation:true,credentialEnrollment:true,credentialRepair:true,credentialRuleVersion:CREDENTIAL_RULE_VERSION,shopperSelfProfileUpdate:true};}
