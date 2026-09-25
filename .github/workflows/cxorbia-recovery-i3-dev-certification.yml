@@ -411,16 +411,16 @@ jobs:
           test "$(jq -r '.decision' "$R387/full-human/i3-functional-probes.json")" = "PASS_I3_ATOMIC_FUNCTIONAL_PROBES"
           test "$(jq -r '.decision' "$R387/semantic/hr-contrast.json")" = "PASS_C3_TERMINAL_HR_SEMANTIC_ORACLE"
           test "$(jq -r '.decision' "$R387/semantic/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
-          PINNED_HR_REVISION="$(jq -r '.hrRevision' "$R387/final.json")"
-          test "$(jq -r '.sourceRevision' "$R387/full-human/human-live-acceptance.json")" = "$PINNED_HR_REVISION"
-          test "$(jq -r '.hrRevision' "$R387/semantic/browser-focal.json")" = "$PINNED_HR_REVISION"
-          cp "$R387/hr-current.json" "$OUT/hr-fresh.json"
+          CERTIFIED_PROOF_HR_REVISION="$(jq -r '.hrRevision' "$R387/final.json")"
+          test "$(jq -r '.sourceRevision' "$R387/full-human/human-live-acceptance.json")" = "$CERTIFIED_PROOF_HR_REVISION"
+          test "$(jq -r '.hrRevision' "$R387/semantic/browser-focal.json")" = "$CERTIFIED_PROOF_HR_REVISION"
+          cp "$R387/hr-current.json" "$OUT/hr-proof-run387.json"
           cp -R "$R387/full-human" "$OUT/full-human-acceptance"
           cp -R "$R387/semantic" "$OUT/c3-semantic"
           cp "$R387/dev-identity.json" "$OUT/vrm043-dev-identity.json"
           cp "$R387/final.json" "$OUT/vrm043-final.json"
           cp CXORBIA_CANONICAL_ROUTE_INVENTORY_2026-09-18.json "$OUT/canonical-route-inventory.json"
-          echo "PINNED_HR_REVISION=$PINNED_HR_REVISION" >> "$GITHUB_ENV"
+          echo "CERTIFIED_PROOF_HR_REVISION=$CERTIFIED_PROOF_HR_REVISION" >> "$GITHUB_ENV"
           echo "RUN387_DIR=$R387" >> "$GITHUB_ENV"
 
       - name: Reprove current DEV identity without build or deploy
@@ -449,8 +449,25 @@ jobs:
           test "$HOSTING_VERSION_NAME" = "$EXPECTED_HOSTING_VERSION"
           curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/$HOSTING_VERSION_NAME" > "$OUT/hosting-version.json"
           test "$(jq -r '.status // empty' "$OUT/hosting-version.json")" = "FINALIZED"
-          META_REV="$(curl -fsS --retry 3 "$HOSTING_URL/api/tya/$PROJECT_ID/hr-live?format=meta&c3resume=$GITHUB_RUN_ID" | jq -r '.revision // empty')"
-          test "$META_REV" = "$PINNED_HR_REVISION"
+          curl -fsS --retry 3 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/tya/$PROJECT_ID/hr-live?format=meta&c3resume=$GITHUB_RUN_ID" > "$OUT/hr-current-live-meta.json"
+          CURRENT_LIVE_HR_REVISION="$(jq -r '.revision // empty' "$OUT/hr-current-live-meta.json")"
+          [[ "$CURRENT_LIVE_HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
+          test "$(jq -r '.ok' "$OUT/hr-current-live-meta.json")" = "true"
+          test "$(jq -r '.revisionStable' "$OUT/hr-current-live-meta.json")" = "true"
+          test "$(jq -r '.sourceSafe' "$OUT/hr-current-live-meta.json")" = "true"
+          test "$(jq -r '.operationalDisplayIdentityReady' "$OUT/hr-current-live-meta.json")" = "true"
+          test "$(jq -r '.shopperReconciliation.providerAck' "$OUT/hr-current-live-meta.json")" = "true"
+          test "$(jq -r '.visitReconciliation.providerAck' "$OUT/hr-current-live-meta.json")" = "true"
+          test "$(jq -r '.shopperReconciliation.sourceRevision' "$OUT/hr-current-live-meta.json")" = "$CURRENT_LIVE_HR_REVISION"
+          test "$(jq -r '.visitReconciliation.sourceRevision' "$OUT/hr-current-live-meta.json")" = "$CURRENT_LIVE_HR_REVISION"
+          test "$(jq -r '.writes' "$OUT/hr-current-live-meta.json")" = "false"
+          test "$(jq -r '.hrWrites' "$OUT/hr-current-live-meta.json")" = "false"
+          test "$(jq -r '.production' "$OUT/hr-current-live-meta.json")" = "false"
+          test "$(jq -r '.refreshError == null' "$OUT/hr-current-live-meta.json")" = "true"
+          curl -fsS --retry 3 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/tya/$PROJECT_ID/hr-live?format=json&c3resume=$GITHUB_RUN_ID" > "$OUT/hr-current-live.json"
+          test "$(jq -r '._runtime.revision // .sourceRevision // empty' "$OUT/hr-current-live.json")" = "$CURRENT_LIVE_HR_REVISION"
+          jq -n -S --arg proof "$CERTIFIED_PROOF_HR_REVISION" --arg live "$CURRENT_LIVE_HR_REVISION"             '{decision:"PASS_I3_HR_PROOF_LIVE_REVISION_SEPARATION",certifiedProofHrRevision:$proof,currentLiveHrRevision:$live,crossRunRevisionEqualityRequired:false,sameRevisionWithinEachProof:true,production:false}'             > "$OUT/hr-revision-separation.json"
+          echo "CURRENT_LIVE_HR_REVISION=$CURRENT_LIVE_HR_REVISION" >> "$GITHUB_ENV"
           echo "DEV_REVISION=$DEV_REVISION" >> "$GITHUB_ENV"
           echo "RUNTIME_DIGEST=$RUNTIME_DIGEST" >> "$GITHUB_ENV"
           echo "SOURCE_IMMUTABLE_IMAGE=$SOURCE_IMMUTABLE_IMAGE" >> "$GITHUB_ENV"
@@ -578,7 +595,10 @@ jobs:
           FULL_HUMAN_SHA256="$(sha256sum "$OUT/full-human-acceptance/human-live-acceptance.json" | awk '{print $1}')"
           FUNCTIONAL_PROBES_SHA256="$(sha256sum "$OUT/full-human-acceptance/i3-functional-probes.json" | awk '{print $1}')"
           ROUTE_INVENTORY_SHA256="$(sha256sum "$OUT/canonical-route-inventory.json" | awk '{print $1}')"
-          HR_EVIDENCE_SHA256="$(sha256sum "$OUT/hr-fresh.json" | awk '{print $1}')"
+          PROOF_HR_EVIDENCE_SHA256="$(sha256sum "$OUT/hr-proof-run387.json" | awk '{print $1}')"
+          CURRENT_LIVE_HR_EVIDENCE_SHA256="$(sha256sum "$OUT/hr-current-live.json" | awk '{print $1}')"
+          CURRENT_LIVE_HR_META_SHA256="$(sha256sum "$OUT/hr-current-live-meta.json" | awk '{print $1}')"
+          HR_SEPARATION_SHA256="$(sha256sum "$OUT/hr-revision-separation.json" | awk '{print $1}')"
           VRM043_SHA256="$(sha256sum CXORBIA_I3_VRM043_TERMINAL_RECEIPT_2026-09-24.json | awk '{print $1}')"
           jq -n -S \
             --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg tree "$I3_CERTIFICATION_SOURCE_TREE" --arg control "$GITHUB_SHA" \
@@ -586,11 +606,12 @@ jobs:
             --arg artifact "$ARTIFACT_SHA256" --arg gate20Sha "$GATE20_SHA256" --arg semanticGate20Sha "$SEMANTIC_GATE20_SHA256" \
             --arg atomicP0Sha "$ATOMIC_P0_SHA256" --arg clientMembershipSha "$CLIENT_MEMBERSHIP_SHA256" \
             --arg fullHumanSha "$FULL_HUMAN_SHA256" --arg probesSha "$FUNCTIONAL_PROBES_SHA256" --arg routeInventorySha "$ROUTE_INVENTORY_SHA256" \
-            --arg hrRevision "$PINNED_HR_REVISION" --arg hrEvidenceSha "$HR_EVIDENCE_SHA256" \
+            --arg certifiedProofHrRevision "$CERTIFIED_PROOF_HR_REVISION" --arg certifiedProofHrEvidenceSha "$PROOF_HR_EVIDENCE_SHA256" \
+            --arg currentLiveHrRevision "$CURRENT_LIVE_HR_REVISION" --arg currentLiveHrEvidenceSha "$CURRENT_LIVE_HR_EVIDENCE_SHA256" --arg currentLiveHrMetaSha "$CURRENT_LIVE_HR_META_SHA256" --arg hrSeparationSha "$HR_SEPARATION_SHA256" \
             --arg hostingRelease "$HOSTING_RELEASE_NAME" --arg hostingVersion "$HOSTING_VERSION_NAME" --arg hostingReleaseTime "$HOSTING_RELEASE_TIME" \
             --arg moduleTruthSha "$MODULE_TRUTH_MATRIX_SHA256" --arg vrm043Sha "$VRM043_SHA256" \
             --slurpfile moduleTruth "$OUT/module-truth-matrix.json" \
-            '{decision:"PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21",i3CertificationSourceSha:$source,i3CertificationSourceTree:$tree,controlHeadSha:$control,buildCount:1,buildCountThisRun:0,buildProvenanceRunId:36053280653,resumeControlProofRunId:36072848792,devRuntimeRevision:$revision,runtimeImageDigest:$digest,immutableRuntimeImage:$image,hostingReleaseName:$hostingRelease,hostingVersionName:$hostingVersion,hostingReleaseTime:$hostingReleaseTime,atomicP0:{decision:"PASS_I3_ATOMIC_P0_SOURCE_CONTRACT",evidenceSha256:$atomicP0Sha},clientMembership:{decision:"PASS_C6_CLIENT_AUTH_MEMBERSHIP_READBACK",evidenceSha256:$clientMembershipSha,authUserCreates:0,passwordChanges:0},fullHumanAcceptance:{decision:"PASS_I3_HUMAN_LIVE_ACCEPTANCE",evidenceSha256:$fullHumanSha,functionalProbesSha256:$probesSha,routeInventorySha256:$routeInventorySha,expectedRoleRouteEntries:56,beforeArtifact:true},gate20:{decision:"PASS_GATE20_FOCAL_VISUAL_DRIFT",sourceSha:$source,evidenceSha256:$gate20Sha},gate20Semantic:{decision:"PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY",sourceSha:$source,evidenceSha256:$semanticGate20Sha},vrm043:{decision:"PASS_VRM043_CONTROL_FIX_NO_DEPLOY",receiptSha256:$vrm043Sha},moduleTruthEvidenceSha256:$moduleTruthSha,moduleTruth:$moduleTruth[0],artifactFile:"cxorbia-i3-certified-source.tar",artifactSha256:$artifact,hrRevision:$hrRevision,hrEvidenceSha256:$hrEvidenceSha,rebuildAfterCertification:false,production:false}' \
+            '{decision:"PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21",i3CertificationSourceSha:$source,i3CertificationSourceTree:$tree,controlHeadSha:$control,buildCount:1,buildCountThisRun:0,buildProvenanceRunId:36053280653,resumeControlProofRunId:36072848792,devRuntimeRevision:$revision,runtimeImageDigest:$digest,immutableRuntimeImage:$image,hostingReleaseName:$hostingRelease,hostingVersionName:$hostingVersion,hostingReleaseTime:$hostingReleaseTime,atomicP0:{decision:"PASS_I3_ATOMIC_P0_SOURCE_CONTRACT",evidenceSha256:$atomicP0Sha},clientMembership:{decision:"PASS_C6_CLIENT_AUTH_MEMBERSHIP_READBACK",evidenceSha256:$clientMembershipSha,authUserCreates:0,passwordChanges:0},fullHumanAcceptance:{decision:"PASS_I3_HUMAN_LIVE_ACCEPTANCE",evidenceSha256:$fullHumanSha,functionalProbesSha256:$probesSha,routeInventorySha256:$routeInventorySha,expectedRoleRouteEntries:56,beforeArtifact:true},gate20:{decision:"PASS_GATE20_FOCAL_VISUAL_DRIFT",sourceSha:$source,evidenceSha256:$gate20Sha},gate20Semantic:{decision:"PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY",sourceSha:$source,evidenceSha256:$semanticGate20Sha},vrm043:{decision:"PASS_VRM043_CONTROL_FIX_NO_DEPLOY",receiptSha256:$vrm043Sha},moduleTruthEvidenceSha256:$moduleTruthSha,moduleTruth:$moduleTruth[0],artifactFile:"cxorbia-i3-certified-source.tar",artifactSha256:$artifact,certifiedProofHrRevision:$certifiedProofHrRevision,certifiedProofHrEvidenceSha256:$certifiedProofHrEvidenceSha,currentLiveHrRevisionAtCertification:$currentLiveHrRevision,currentLiveHrEvidenceSha256:$currentLiveHrEvidenceSha,currentLiveHrMetaSha256:$currentLiveHrMetaSha,hrRevisionSeparationEvidenceSha256:$hrSeparationSha,crossRunHrRevisionEqualityRequired:false,sameRevisionWithinEachProof:true,rebuildAfterCertification:false,production:false}' \
             > "$OUT/i3-certification-manifest.json"
           cp "$OUT/i3-certification-manifest.json" "$OUT/result.json"
 
@@ -675,16 +696,20 @@ jobs:
           test "$(jq -r '.rebuildAfterCertification' "$MANIFEST")" = 'false'
           test "$(jq -r '.production' "$MANIFEST")" = 'false'
           CERTIFIED_ARTIFACT_SHA256="$(jq -r '.artifactSha256 // empty' "$MANIFEST")"
-          PINNED_HR_REVISION="$(jq -r '.hrRevision // empty' "$MANIFEST")"
+          CERTIFIED_PROOF_HR_REVISION="$(jq -r '.certifiedProofHrRevision // empty' "$MANIFEST")"
+          CERTIFICATION_LIVE_HR_REVISION="$(jq -r '.currentLiveHrRevisionAtCertification // empty' "$MANIFEST")"
           [[ "$CERTIFIED_ARTIFACT_SHA256" =~ ^[0-9a-f]{64}$ ]]
-          [[ "$PINNED_HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
-          test "$(jq -r '._runtime.revision // .sourceRevision // empty' "$PRIOR_DIR/hr-fresh.json")" = "$PINNED_HR_REVISION"
-          test "$(jq -r '.sourceRevision' "$PRIOR_DIR/full-human-acceptance/human-live-acceptance.json")" = "$PINNED_HR_REVISION"
+          [[ "$CERTIFIED_PROOF_HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$CERTIFICATION_LIVE_HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
+          test "$(jq -r '._runtime.revision // .sourceRevision // empty' "$PRIOR_DIR/hr-proof-run387.json")" = "$CERTIFIED_PROOF_HR_REVISION"
+          test "$(jq -r '.sourceRevision' "$PRIOR_DIR/full-human-acceptance/human-live-acceptance.json")" = "$CERTIFIED_PROOF_HR_REVISION"
+          test "$(jq -r '._runtime.revision // .sourceRevision // empty' "$PRIOR_DIR/hr-current-live.json")" = "$CERTIFICATION_LIVE_HR_REVISION"
+          test "$(jq -r '.revision // empty' "$PRIOR_DIR/hr-current-live-meta.json")" = "$CERTIFICATION_LIVE_HR_REVISION"
+          test "$(jq -r '.crossRunHrRevisionEqualityRequired' "$MANIFEST")" = "false"
           echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
           echo "PRIOR_DIR=$PRIOR_DIR" >> "$GITHUB_ENV"
           echo "PRIOR_RUN_ID=$GITHUB_RUN_ID" >> "$GITHUB_ENV"
           echo "CERTIFIED_ARTIFACT_SHA256=$CERTIFIED_ARTIFACT_SHA256" >> "$GITHUB_ENV"
-          echo "PINNED_HR_REVISION=$PINNED_HR_REVISION" >> "$GITHUB_ENV"
 
       - name: Execute revised reversible 10-case live suite
         id: livev2
@@ -710,7 +735,9 @@ jobs:
           test "$(jq -r '.buildCountThisRun' "$OUT/i3-live-fixtures-result.json")" = '0'
           test "$(jq -r '.deployCountThisRun' "$OUT/i3-live-fixtures-result.json")" = '0'
           test "$(jq -r '.production' "$OUT/i3-live-fixtures-result.json")" = 'false'
-          test "$(jq -r '.hrRevision' "$OUT/i3-live-fixtures-result.json")" = "$PINNED_HR_REVISION"
+          [[ "$(jq -r '.liveFixtureHrRevision // .hrRevision // empty' "$OUT/i3-live-fixtures-result.json")" =~ ^[0-9a-f]{64}$ ]]
+          test "$(jq -r '.crossRunHrRevisionEqualityRequired' "$OUT/i3-live-fixtures-result.json")" = 'false'
+          test "$(jq -r '.sameRevisionWithinThisLiveFixtureRun' "$OUT/i3-live-fixtures-result.json")" = 'true'
           test "$(jq -r '.decision' "$OUT/i3-live-fixtures-result.json")" = 'PASS_I3_LIVE_FIXTURES_V2'
           test "$(jq '[.tests[] | select(.ok==true)] | length' "$OUT/i3-live-fixtures-result.json")" = '10'
 
