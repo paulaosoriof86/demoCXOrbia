@@ -37,10 +37,24 @@ async function signedPage(member,kind){
       };requestAnimationFrame(tick);
     },{once:true});
   });
-  await page.goto(URL,{waitUntil:'domcontentloaded',timeout:90000});
-  await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
-  const token=await auth.createCustomToken(member.id);
-  await page.evaluate(async t=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);await firebase.auth().signInWithCustomToken(t);},token);
+  let authSettled=false,lastAuthError=null;
+  for(let attempt=1;attempt<=5&&!authSettled;attempt++){
+    await page.goto(URL,{waitUntil:'domcontentloaded',timeout:90000});
+    await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
+    const token=await auth.createCustomToken(member.id);
+    try{
+      await page.evaluate(async t=>{const fb=window.firebase;if(!fb?.auth)throw new Error('FIREBASE_SDK_NOT_READY');await fb.auth().setPersistence(fb.auth.Auth.Persistence.LOCAL);await fb.auth().signInWithCustomToken(t);},token);
+    }catch(error){
+      const msg=String(error&&error.message||error||'');
+      if(!/Execution context was destroyed|navigation|FIREBASE_SDK_NOT_READY|No Firebase App|auth\/network-request-failed|network|timeout|interrupted/i.test(msg))throw error;
+      lastAuthError=error;
+    }
+    await page.waitForLoadState('domcontentloaded',{timeout:90000}).catch(()=>{});
+    const uid=await page.evaluate(()=>String(window.firebase?.auth?.().currentUser?.uid||'')).catch(()=> '');
+    if(uid===String(member.id)){authSettled=true;break;}
+    if(attempt<5)await page.waitForTimeout(1200*attempt);
+  }
+  if(!authSettled)throw new Error('ENVIRONMENT_FAILURE:V21_FIREBASE_AUTH_SESSION_NOT_PERSISTED:'+String(lastAuthError&&lastAuthError.message||lastAuthError||'no-current-user'));
   await page.goto('about:blank');
   await page.goto(URL,{waitUntil:'domcontentloaded',timeout:90000});
   await page.waitForFunction(uid=>String(window.firebase?.auth?.().currentUser?.uid||'')===uid,String(member.id),{timeout:90000});

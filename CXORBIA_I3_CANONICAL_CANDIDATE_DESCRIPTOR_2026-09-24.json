@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_V21_LIVE_FOCAL_HARNESS_ENVIRONMENT_FAILURE",
+  "status": "HOLD_V21_DEV_MATERIALIZED_PENDING_STABLE_READBACK",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "Run438 stable HR/DEV identity PASS; focal browser did not execute assertions because Playwright navigation destroyed evaluation context.",
+  "activeBlocker": "Run438 harness ENV failure frozen in V23; retrying same existing DEV with navigation-safe focal harness, zero build/deploy.",
   "nextFindingId": "VRM-054",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "PATCH_QA_BROWSER_NAVIGATION_RETRY_ONLY_AND_RERUN_V21_EXISTING_DEV_FOCAL_ZERO_REBUILD_ZERO_REDEPLOY",
+  "exactNextAction": "RERUN_V21_EXISTING_DEV_READBACK_AND_PAULA_ADMIN_FOCAL_ZERO_REBUILD_ZERO_REDEPLOY",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -401,6 +401,15 @@
     "builds": 0,
     "runtimeDeploys": 0,
     "hostingDeploys": 0,
+    "production": false
+  },
+  "controlQaPatch": {
+    "owner": "tools/qa/cxorbia-i3-v21-paula-remediation-live.mjs",
+    "reason": "Retry Firebase custom-token sign-in across expected browser navigation race.",
+    "productSourceChanged": false,
+    "buildsAllowed": 0,
+    "runtimeDeploysAllowed": 0,
+    "hostingDeploysAllowed": 0,
     "production": false
   }
 }
