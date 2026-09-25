@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "READY_FOR_TERMINAL_CERTIFICATION",
+  "status": "HOLD_C3_TERMINAL_CONTROL_FIX",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "C3 TERMINAL NO-REBUILD CERTIFICATION RESUME — HR REVISION SEMANTICS FIXED",
+  "activeBlocker": "RUN396 RELEASE_COMPOSITION_FAILURE — STALE PINNED_HR_REVISION VARIABLE IN RUN387-DERIVED CLIENT RECEIPT",
   "nextFindingId": "VRM-044",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN_ONE_NO_REBUILD_CERTIFY_THEN_LIVE_FIXTURES_THEN_GATE21",
+  "exactNextAction": "RENAME_STALE_RUN387_PROOF_VARIABLE_THEN_RESUME_SAME_CERTIFY_NO_REBUILD",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -193,6 +193,21 @@
     "productSourceChanged": false,
     "rebuildAllowed": false,
     "redeployAllowed": false,
-    "production": false
+    "production": false,
+    "followup": {
+      "runId": 36076746697,
+      "runNumber": 396,
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "provenPassed": [
+        "STEP9_CURRENT_DEV_IDENTITY_REVISION_AWARE",
+        "STEP10_PRETERMINAL_BYTE_PARITY"
+      ],
+      "failedStep": "Derive read-only QA and Client receipts from Run387 acceptance",
+      "cause": "receipt builder still referenced removed legacy variable PINNED_HR_REVISION; correct authority is CERTIFIED_PROOF_HR_REVISION",
+      "productChanged": false,
+      "builds": 0,
+      "deploys": 0,
+      "production": false
+    }
   }
 }
