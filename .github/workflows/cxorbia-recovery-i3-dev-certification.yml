@@ -3183,6 +3183,158 @@ jobs:
         run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-vrm044-source"
 
 
+  v21-paula-remediation-dev:
+    name: I3 V21 Paula remediation — exact DEV materialization + focal live proof
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_REMEDIATION_SOURCE_CREATED_PENDING_DEV_REPROOF' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v21-remediation-dev]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    env:
+      V21_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      V21_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      V21_OUT: .tmp/i3-v21-paula-remediation
+      V21_ROOT: https://cxorbia-backend-dev.web.app
+    steps:
+      - name: Checkout Recovery control head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Prove exact V21 candidate and deployment scope
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$V21_OUT"
+          test "$V21_SOURCE" = "da17406f8e03ef1071fe8ca384503853f51e6638"
+          test "$V21_TREE" = "f733f99293dca5437a6e33ab81434d844a1d5f5c"
+          test "$(git rev-parse "$V21_SOURCE^{tree}")" = "$V21_TREE"
+          git merge-base --is-ancestor 34068805168e85cf15c9359c1dc4c4226c3062a6 "$V21_SOURCE"
+          git diff --quiet "$V21_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$V21_SOURCE"
+          test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_REMEDIATION_SOURCE_CREATED_PENDING_DEV_REPROOF"
+          test "$(jq -r '.currentRemediationCandidate.changedRuntime' "$CANDIDATE_DESCRIPTOR")" = "true"
+          test "$(jq -r '.currentRemediationCandidate.changedHosting' "$CANDIDATE_DESCRIPTOR")" = "true"
+          test "$(jq -r '.currentRemediationCandidate.changedRules' "$CANDIDATE_DESCRIPTOR")" = "false"
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Prepare exact source and run focal source gates
+        run: |
+          set -Eeuo pipefail
+          SOURCE_DIR="$RUNNER_TEMP/cxorbia-v21-source"
+          rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"
+          git archive "$V21_SOURCE" | tar -x -C "$SOURCE_DIR"
+          echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
+          for p in app/modules/misvisitas.js app/modules/reservas.js app/adapters/tya-canonical-shopper-portal-v2.js app/core/backend-browser-auth.js app/core/liquidacion.js app/modules/finanzas.js app/core/data.js app/core/config.js app/core/router.js app/modules/novedades.js backend/runtime/cxorbia-shopper-command-provider-v1.mjs; do node --check "$SOURCE_DIR/$p"; done
+          ! grep -q 'cx_reservas_' "$SOURCE_DIR/app/modules/reservas.js"
+          grep -q 'CX.data.createReservation' "$SOURCE_DIR/app/modules/reservas.js"
+          grep -q 'SELF_MANAGED_PUBLIC_FIELDS' "$SOURCE_DIR/backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
+          grep -q 'Cargando tu sesión' "$SOURCE_DIR/app/core/backend-browser-auth.js"
+          grep -q 'alwaysExpanded:true' "$SOURCE_DIR/app/core/config.js"
+          grep -q 'Pendiente de fuente' "$SOURCE_DIR/app/modules/finanzas.js"
+          ! grep -q 'localStorage, Firestore ni HR' "$SOURCE_DIR/app/adapters/tya-canonical-shopper-portal-v2.js"
+          jq -n -S --arg source "$V21_SOURCE" --arg tree "$V21_TREE" '{decision:"PASS_I3_V21_SOURCE_GATES",sourceSha:$source,sourceTree:$tree,production:false}' > "$V21_OUT/source-gates.json"
+
+      - name: Install DEV tooling
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+
+      - name: Authenticate canonical Firebase DEV
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
+
+      - name: Build exact V21 runtime once
+        run: |
+          set -Eeuo pipefail
+          IMAGE_URI="gcr.io/${PROJECT}/${SERVICE}:i3-v21-${V21_SOURCE:0:12}-${GITHUB_RUN_ID}"
+          echo "$IMAGE_URI" > "$V21_OUT/image-uri.txt"
+          gcloud builds submit "$SOURCE_DIR" --project "$PROJECT" --config "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE_URI" --quiet
+
+      - name: Deploy exact V21 runtime once to Recovery DEV
+        run: |
+          set -Eeuo pipefail
+          IMAGE_URI="$(cat "$V21_OUT/image-uri.txt")"
+          gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$IMAGE_URI" --min-instances=1 --max-instances=1 --update-env-vars "$LEGAL_ENABLE_NAME=$LEGAL_ENABLE_VALUE,$LEGAL_GATE_NAME=$LEGAL_GATE_VALUE,$I3_HR_CACHE_PIN_NAME=$I3_HR_CACHE_PIN_VALUE" --quiet
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$V21_OUT/runtime.json"
+          DEV_REVISION="$(jq -r '.status.latestReadyRevisionName // empty' "$V21_OUT/runtime.json")"
+          test -n "$DEV_REVISION"
+          gcloud run revisions describe "$DEV_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$V21_OUT/runtime-revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$V21_OUT/runtime-revision.json")"
+          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else exit 1; fi
+          echo "DEV_REVISION=$DEV_REVISION" >> "$GITHUB_ENV"
+          echo "RUNTIME_DIGEST=$DIGEST" >> "$GITHUB_ENV"
+
+      - name: Deploy same exact V21 source once to Hosting DEV
+        run: |
+          set -Eeuo pipefail
+          cd "$SOURCE_DIR"
+          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$V21_OUT/hosting-deploy.log"
+          cd "$GITHUB_WORKSPACE"
+          TOKEN="$(gcloud auth print-access-token)"
+          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$V21_OUT/hosting-live-channel.json"
+          HOSTING_VERSION_NAME="$(jq -r '.release.version.name // empty' "$V21_OUT/hosting-live-channel.json")"
+          HOSTING_RELEASE_NAME="$(jq -r '.release.name // empty' "$V21_OUT/hosting-live-channel.json")"
+          test -n "$HOSTING_VERSION_NAME"
+          echo "HOSTING_VERSION_NAME=$HOSTING_VERSION_NAME" >> "$GITHUB_ENV"
+          echo "HOSTING_RELEASE_NAME=$HOSTING_RELEASE_NAME" >> "$GITHUB_ENV"
+
+      - name: Prove remote byte parity for changed static owners
+        run: |
+          set -Eeuo pipefail
+          for p in app/modules/misvisitas.js app/modules/reservas.js app/adapters/tya-canonical-shopper-portal-v2.js app/core/backend-browser-auth.js app/core/liquidacion.js app/modules/finanzas.js app/core/data.js app/core/config.js app/core/router.js app/modules/novedades.js; do
+            rel="${p#app/}"; remote="$V21_OUT/$(echo "$rel"|tr '/' '_').remote"
+            curl -fsSL --retry 8 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/$rel?v21=$GITHUB_RUN_ID-$(date +%s%N)" -o "$remote"
+            test "$(sha256sum "$remote"|awk '{print $1}')" = "$(sha256sum "$SOURCE_DIR/$p"|awk '{print $1}')"
+          done
+
+      - name: Wait fail-closed for one stable HR revision
+        run: |
+          set -Eeuo pipefail
+          ok=0
+          for i in $(seq 1 15); do
+            curl -fsS -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&v21=$GITHUB_RUN_ID-$i" > "$V21_OUT/hr-meta.json"
+            if jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .refreshError==null and .shopperReconciliation.providerAck==true and .visitReconciliation.providerAck==true and .hrWrites==false and .production==false and ((.refreshStartedAt==null) or (.refreshFinishedAt!=null and .refreshFinishedAt>=.refreshStartedAt))' "$V21_OUT/hr-meta.json" >/dev/null; then ok=1; break; fi
+            sleep 20
+          done
+          test "$ok" = 1
+          HR_REVISION="$(jq -r '.revision // empty' "$V21_OUT/hr-meta.json")"
+          [[ "$HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
+          echo "HR_REVISION=$HR_REVISION" >> "$GITHUB_ENV"
+
+      - name: Run exact Paula + Admin live focal proof
+        run: |
+          set -Eeuo pipefail
+          V21_OUT="$V21_OUT" V21_ROOT="$HOSTING_URL" V21_SOURCE="$V21_SOURCE" node tools/qa/cxorbia-i3-v21-paula-remediation-live.mjs | tee "$V21_OUT/browser.log"
+          test "$(jq -r '.decision' "$V21_OUT/v21-paula-remediation-live.json")" = "PASS_I3_V21_PAULA_REMEDIATION_LIVE"
+          test "$(jq -r '.shopper.sourceRevision' "$V21_OUT/v21-paula-remediation-live.json")" = "$HR_REVISION"
+          test "$(jq -r '.admin.sourceRevision' "$V21_OUT/v21-paula-remediation-live.json")" = "$HR_REVISION"
+
+      - name: Seal V21 DEV receipt
+        run: |
+          jq -n -S --arg source "$V21_SOURCE" --arg tree "$V21_TREE" --arg revision "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg hostingVersion "$HOSTING_VERSION_NAME" --arg hostingRelease "$HOSTING_RELEASE_NAME" --arg hrRevision "$HR_REVISION" '{decision:"PASS_I3_V21_DEV_MATERIALIZATION_AND_FOCAL",sourceSha:$source,sourceTree:$tree,runtimeRevision:$revision,runtimeDigest:$digest,hostingVersion:$hostingVersion,hostingRelease:$hostingRelease,hrRevision:$hrRevision,builds:1,runtimeDeploys:1,hostingDeploys:1,rulesDeploys:0,production:false}' > "$V21_OUT/result.json"
+
+      - name: Upload V21 remediation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-v21-paula-remediation-${{ github.run_id }}
+          path: ${{ env.V21_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
+      - name: Cleanup
+        if: always()
+        run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-v21-source"
   c3-terminal-dev-identity-readback:
     name: C3 terminal DEV identity readback — no deploy
     needs: canonical-candidate-authority
