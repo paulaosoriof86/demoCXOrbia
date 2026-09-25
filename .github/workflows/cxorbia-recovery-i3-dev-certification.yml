@@ -476,21 +476,18 @@ jobs:
           test "$HOSTING_VERSION_NAME" = "$EXPECTED_HOSTING_VERSION"
           curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/$HOSTING_VERSION_NAME" > "$OUT/hosting-version.json"
           test "$(jq -r '.status // empty' "$OUT/hosting-version.json")" = "FINALIZED"
-          curl -fsS --retry 3 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/tya/$PROJECT_ID/hr-live?format=meta&c3resume=$GITHUB_RUN_ID" > "$OUT/hr-current-live-meta.json"
-          CURRENT_LIVE_HR_REVISION="$(jq -r '.revision // empty' "$OUT/hr-current-live-meta.json")"
-          [[ "$CURRENT_LIVE_HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
-          test "$(jq -r '.ok' "$OUT/hr-current-live-meta.json")" = "true"
-          test "$(jq -r '.revisionStable' "$OUT/hr-current-live-meta.json")" = "true"
-          test "$(jq -r '.sourceSafe' "$OUT/hr-current-live-meta.json")" = "true"
-          test "$(jq -r '.operationalDisplayIdentityReady' "$OUT/hr-current-live-meta.json")" = "true"
-          test "$(jq -r '.shopperReconciliation.providerAck' "$OUT/hr-current-live-meta.json")" = "true"
-          test "$(jq -r '.visitReconciliation.providerAck' "$OUT/hr-current-live-meta.json")" = "true"
-          test "$(jq -r '.shopperReconciliation.sourceRevision' "$OUT/hr-current-live-meta.json")" = "$CURRENT_LIVE_HR_REVISION"
-          test "$(jq -r '.visitReconciliation.sourceRevision' "$OUT/hr-current-live-meta.json")" = "$CURRENT_LIVE_HR_REVISION"
-          test "$(jq -r '.writes' "$OUT/hr-current-live-meta.json")" = "false"
-          test "$(jq -r '.hrWrites' "$OUT/hr-current-live-meta.json")" = "false"
-          test "$(jq -r '.production' "$OUT/hr-current-live-meta.json")" = "false"
-          test "$(jq -r '.refreshError == null' "$OUT/hr-current-live-meta.json")" = "true"
+          HR_META_OK=0
+          for attempt in $(seq 1 12); do
+            curl -fsS --retry 3 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/tya/$PROJECT_ID/hr-live?format=meta&c3resume=$GITHUB_RUN_ID&attempt=$attempt" > "$OUT/hr-current-live-meta.json"
+            CURRENT_LIVE_HR_REVISION="$(jq -r '.revision // empty' "$OUT/hr-current-live-meta.json")"
+            if [[ "$CURRENT_LIVE_HR_REVISION" =~ ^[0-9a-f]{64}$ ]] &&                [[ "$(jq -r '.ok' "$OUT/hr-current-live-meta.json")" == "true" ]] &&                [[ "$(jq -r '.revisionStable' "$OUT/hr-current-live-meta.json")" == "true" ]] &&                [[ "$(jq -r '.sourceSafe' "$OUT/hr-current-live-meta.json")" == "true" ]] &&                [[ "$(jq -r '.operationalDisplayIdentityReady' "$OUT/hr-current-live-meta.json")" == "true" ]] &&                [[ "$(jq -r '.shopperReconciliation.providerAck' "$OUT/hr-current-live-meta.json")" == "true" ]] &&                [[ "$(jq -r '.visitReconciliation.providerAck' "$OUT/hr-current-live-meta.json")" == "true" ]] &&                [[ "$(jq -r '.shopperReconciliation.sourceRevision' "$OUT/hr-current-live-meta.json")" == "$CURRENT_LIVE_HR_REVISION" ]] &&                [[ "$(jq -r '.visitReconciliation.sourceRevision' "$OUT/hr-current-live-meta.json")" == "$CURRENT_LIVE_HR_REVISION" ]] &&                [[ "$(jq -r '.writes' "$OUT/hr-current-live-meta.json")" == "false" ]] &&                [[ "$(jq -r '.hrWrites' "$OUT/hr-current-live-meta.json")" == "false" ]] &&                [[ "$(jq -r '.production' "$OUT/hr-current-live-meta.json")" == "false" ]] &&                [[ "$(jq -r '.refreshError == null' "$OUT/hr-current-live-meta.json")" == "true" ]]; then
+              HR_META_OK=1
+              break
+            fi
+            echo "HR refresh/readback not yet stable on attempt $attempt; waiting without build/deploy"
+            sleep 15
+          done
+          test "$HR_META_OK" = "1"
           curl -fsS --retry 3 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/tya/$PROJECT_ID/hr-live?format=json&c3resume=$GITHUB_RUN_ID" > "$OUT/hr-current-live.json"
           test "$(jq -r '._runtime.revision // .sourceRevision // empty' "$OUT/hr-current-live.json")" = "$CURRENT_LIVE_HR_REVISION"
           jq -n -S --arg proof "$CERTIFIED_PROOF_HR_REVISION" --arg live "$CURRENT_LIVE_HR_REVISION"             '{decision:"PASS_I3_HR_PROOF_LIVE_REVISION_SEPARATION",certifiedProofHrRevision:$proof,currentLiveHrRevision:$live,crossRunRevisionEqualityRequired:false,sameRevisionWithinEachProof:true,production:false}'             > "$OUT/hr-revision-separation.json"
