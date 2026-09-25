@@ -3183,3 +3183,75 @@ jobs:
       - name: Cleanup transient dependencies
         if: always()
         run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-vrm044-source"
+
+
+  c3-terminal-dev-identity-readback:
+    name: C3 terminal DEV identity readback — no deploy
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_C3_TERMINAL_IDENTITY_READBACK' && github.event_name == 'push' && contains(github.event.head_commit.message, '[c3-dev-readback]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      READBACK_OUT: .tmp/c3-terminal-dev-identity-readback
+      EXPECTED_RUNTIME_REVISION: cxorbia-live-hr-dev-00218-vgg
+      EXPECTED_RUNTIME_DIGEST: sha256:21886c59ecbb7e18c4870a6c06f9423bd1b0c87f85e96ee892fffdcffbadb620
+      EXPECTED_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/64c788ea0371e97a
+    steps:
+      - name: Checkout Recovery control head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Authenticate canonical Firebase DEV read only
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
+
+      - name: Capture exact runtime digest Hosting and HR readback
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$READBACK_OUT"
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$READBACK_OUT/runtime-current.json"
+          DEV_REVISION="$(jq -r '.status.latestReadyRevisionName // empty' "$READBACK_OUT/runtime-current.json")"
+          gcloud run revisions describe "$DEV_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$READBACK_OUT/runtime-revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$READBACK_OUT/runtime-revision.json")"
+          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then
+            RUNTIME_DIGEST="$RAW"
+          elif [[ "$RAW" == *@sha256:* ]]; then
+            RUNTIME_DIGEST="sha256:${RAW##*@sha256:}"
+          else
+            RUNTIME_DIGEST="$RAW"
+          fi
+          TOKEN="$(gcloud auth print-access-token)"
+          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN"             "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$READBACK_OUT/hosting-live-channel.json"
+          HOSTING_VERSION_NAME="$(jq -r '.release.version.name // empty' "$READBACK_OUT/hosting-live-channel.json")"
+          HOSTING_RELEASE_NAME="$(jq -r '.release.name // empty' "$READBACK_OUT/hosting-live-channel.json")"
+          HOSTING_RELEASE_TIME="$(jq -r '.release.releaseTime // empty' "$READBACK_OUT/hosting-live-channel.json")"
+          curl -fsS --retry 5 -H 'Cache-Control: no-cache, no-store, max-age=0'             "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&c3readback=$GITHUB_RUN_ID" > "$READBACK_OUT/hr-meta.json"
+          HR_REVISION="$(jq -r '.revision // empty' "$READBACK_OUT/hr-meta.json")"
+          jq -n -S             --arg runtimeRevision "$DEV_REVISION"             --arg runtimeDigest "$RUNTIME_DIGEST"             --arg hostingVersion "$HOSTING_VERSION_NAME"             --arg hostingRelease "$HOSTING_RELEASE_NAME"             --arg hostingReleaseTime "$HOSTING_RELEASE_TIME"             --arg hrRevision "$HR_REVISION"             --arg expectedRuntimeRevision "$EXPECTED_RUNTIME_REVISION"             --arg expectedRuntimeDigest "$EXPECTED_RUNTIME_DIGEST"             --arg expectedHostingVersion "$EXPECTED_HOSTING_VERSION"             '{decision:"C3_TERMINAL_DEV_IDENTITY_READBACK",runtimeRevision:$runtimeRevision,runtimeDigest:$runtimeDigest,hostingVersion:$hostingVersion,hostingRelease:$hostingRelease,hostingReleaseTime:$hostingReleaseTime,hrRevision:$hrRevision,expected:{runtimeRevision:$expectedRuntimeRevision,runtimeDigest:$expectedRuntimeDigest,hostingVersion:$expectedHostingVersion},matches:{runtimeRevision:($runtimeRevision==$expectedRuntimeRevision),runtimeDigest:($runtimeDigest==$expectedRuntimeDigest),hostingVersion:($hostingVersion==$expectedHostingVersion)},hrHealth:{ok:(input_filename|not)},builds:0,deploys:0,production:false}'             > "$READBACK_OUT/result.json"
+          jq '.hrHealth = {
+            ok: (input.ok // false),
+            revisionStable: (input.revisionStable // false)
+          }' "$READBACK_OUT/result.json" "$READBACK_OUT/hr-meta.json" >/dev/null 2>&1 || true
+          echo "OBSERVED_RUNTIME_REVISION=$DEV_REVISION"
+          echo "OBSERVED_RUNTIME_DIGEST=$RUNTIME_DIGEST"
+          echo "OBSERVED_HOSTING_VERSION=$HOSTING_VERSION_NAME"
+          echo "OBSERVED_HR_REVISION=$HR_REVISION"
+          jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .shopperReconciliation.providerAck==true and .visitReconciliation.providerAck==true and .hrWrites==false and .production==false and .refreshError==null' "$READBACK_OUT/hr-meta.json" >/dev/null
+          jq -e '.matches.runtimeRevision==true and .matches.runtimeDigest==true and .matches.hostingVersion==true' "$READBACK_OUT/result.json" >/dev/null
+
+      - name: Upload C3 DEV identity readback
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-c3-terminal-dev-identity-readback-${{ github.run_id }}
+          path: .tmp/c3-terminal-dev-identity-readback
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
