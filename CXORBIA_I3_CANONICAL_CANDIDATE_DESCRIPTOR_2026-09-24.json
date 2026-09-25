@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM044_PROVEN",
+  "status": "READY_FOR_VRM044_DEV_MATERIALIZATION",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "04b288f7eee315fcb865ed86a8fb41786809edf9",
+  "productSourceSha": "34068805168e85cf15c9359c1dc4c4226c3062a6",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
-  "predecessorProductSourceSha": "d02dd90ac9ee361bfdfb0474a05e63f2fa684f07",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V14_2026-09-24.json",
-  "findingsLedgerExpectedGitBlob": "07f546e7f711315b5c34d82f6ee59bc234fd3f69",
+  "predecessorProductSourceSha": "04b288f7eee315fcb865ed86a8fb41786809edf9",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V15_2026-09-25.json",
+  "findingsLedgerExpectedGitBlob": "1fbad41a839e4bf96bdb0aae3906ef03dea88fbb",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-044 PLATFORM_CREATED_SHOPPER_IDENTITY_AUTHORITY_NOT_COMPOSED",
-  "nextFindingId": "VRM-044",
+  "activeBlocker": "VRM-044 SOURCE FIXED — DEV MATERIALIZATION REQUIRED BEFORE TERMINAL REPROOF",
+  "nextFindingId": "VRM-045",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RECOVER_APPROVED_PLATFORM_CREATED_IDENTITY_AUTHORITY_DELTA_IN_EXACT_OWNER_THEN_FOCAL_REPROOF",
+  "exactNextAction": "MATERIALIZE_EXACT_VRM044_SOURCE_ON_EXISTING_DEV_ONCE_THEN_SET_READY_FOR_TERMINAL_CERTIFICATION",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -41,13 +41,20 @@
   },
   "lastSourceFix": {
     "findingIds": [
-      "VRM-039"
+      "VRM-044"
     ],
-    "sourceSha": "04b288f7eee315fcb865ed86a8fb41786809edf9",
-    "predecessorSha": "d02dd90ac9ee361bfdfb0474a05e63f2fa684f07",
-    "productFiles": 4,
+    "sourceSha": "34068805168e85cf15c9359c1dc4c4226c3062a6",
+    "sourceTree": "91855599924b94ca7fbb025a570d8e1d77b30d3b",
+    "predecessorSha": "04b288f7eee315fcb865ed86a8fb41786809edf9",
+    "productFiles": 2,
+    "testFiles": 2,
+    "focalRunId": 36155194727,
+    "focalRunNumber": 403,
+    "focalArtifactId": 10872772798,
+    "focalArtifactDigest": "sha256:0567094d7b7cfe7f6b4fa277617466e385191a3ddf04c315f7a37c8e3ee3dbfd",
     "deploys": 0,
-    "contract": "unknown honorarium/total/margin/CxP remain pending_source/null; never fabricated zero; known reimbursement preserved"
+    "production": false,
+    "contract": "platform-created shoppers persist trusted platform_created identity authority; only exact trusted scoped platform profiles are presented"
   },
   "preterminalRequest": {
     "revision": 3,
@@ -71,16 +78,16 @@
     "selfApproval": false
   },
   "terminalRequest": {
-    "mode": "ONE_BUILD_ONE_ARTIFACT_ONE_GATE21",
-    "productSourceSha": "04b288f7eee315fcb865ed86a8fb41786809edf9",
-    "sourceTree": "f6b917c474f32137951a477afecbeccdc20cfd59",
+    "mode": "ONE_BUILD_FOR_PROVEN_VRM044_THEN_ONE_ARTIFACT_ONE_GATE21",
+    "productSourceSha": "34068805168e85cf15c9359c1dc4c4226c3062a6",
+    "sourceTree": "91855599924b94ca7fbb025a570d8e1d77b30d3b",
     "requireQaCleanupZero": true,
     "requireHardenedFocal": true,
     "requireFullHumanAcceptance": true,
     "requireTerminalModuleTruth20of20": true,
     "requirePendingOwnerByteParity": true,
     "production": false,
-    "attempt": 2
+    "attempt": 3
   },
   "lastTerminalAttempt": {
     "runId": 36053280653,
@@ -130,16 +137,15 @@
     "VRM043": "CXORBIA_I3_VRM043_TERMINAL_RECEIPT_2026-09-24.json"
   },
   "terminalResume": {
-    "mode": "EXISTING_DEV_NO_REBUILD",
-    "buildProvenanceRunId": 36053280653,
-    "buildProvenanceRunNumber": 375,
-    "runtimeRevision": "cxorbia-live-hr-dev-00217-v6z",
-    "runtimeDigest": "sha256:5c76c2ca643d95d49fa9f016ebce312d1dcc62621342ca7bf00bf33bd114ceba",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/7d787355f662e453",
-    "controlProofRunId": 36072848792,
-    "controlProofArtifactId": 10839078428,
-    "rebuildAllowed": false,
-    "redeployAllowed": false,
+    "mode": "PROVEN_VRM044_ONE_DEV_MATERIALIZATION_THEN_NO_REBUILD",
+    "sourceSha": "34068805168e85cf15c9359c1dc4c4226c3062a6",
+    "sourceTree": "91855599924b94ca7fbb025a570d8e1d77b30d3b",
+    "rebuildAllowed": true,
+    "redeployAllowed": true,
+    "justification": "VRM-044 FUNCTIONAL_DEFECT changed backend runtime provider and Hosting read-model; current DEV Run375 no longer corresponds to canonical candidate.",
+    "maxBuilds": 1,
+    "maxRuntimeDeploys": 1,
+    "maxHostingDeploys": 1,
     "production": false
   },
   "lastTerminalResumeAttempt": {
@@ -240,7 +246,7 @@
     "production": false
   },
   "vrm044": {
-    "state": "PROVEN_P0_FOCAL",
+    "state": "SOURCE_FIXED_FOCAL_REPROOF_PASS_PENDING_DEV_MATERIALIZATION",
     "classification": "FUNCTIONAL_DEFECT",
     "title": "PLATFORM_CREATED_SHOPPER_IDENTITY_AUTHORITY_NOT_COMPOSED",
     "expected": "Platform-created shopper closes with Auth + claims + membership + profile + durable identityLink authority platform_created and remains visible to authorized Admin within project scope.",
@@ -258,6 +264,13 @@
     ],
     "productSourceBefore": "04b288f7eee315fcb865ed86a8fb41786809edf9",
     "productSourceChangeAuthorizedOnlyForExactApprovedDelta": true,
-    "production": false
+    "production": false,
+    "sourceFix": {
+      "sourceSha": "34068805168e85cf15c9359c1dc4c4226c3062a6",
+      "sourceTree": "91855599924b94ca7fbb025a570d8e1d77b30d3b",
+      "focalRunId": 36155194727,
+      "focalArtifactId": 10872772798,
+      "focalArtifactDigest": "sha256:0567094d7b7cfe7f6b4fa277617466e385191a3ddf04c315f7a37c8e3ee3dbfd"
+    }
   }
 }
