@@ -201,10 +201,11 @@ CX.router = {
           <span class="n-ic" aria-hidden="true">${m.icon}</span><span>${lbl}</span>${badge||soon}</div>`;
       }).join('');
       if(!items) return '';
-      const isc = collapsed[group.sec] || false;
-      return `<div class="nav-sec-wrap${isc?' nav-sec-col':''}" data-grp="${group.sec}">
-        <div class="nav-sec" data-sec="${group.sec}" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none">
-          <span>${group.sec}</span><span style="font-size:9px;opacity:.6;margin-left:6px">${isc?'›':'⌄'}</span></div>
+      const alwaysOpen=group.alwaysExpanded===true;
+      const isc = alwaysOpen ? false : (collapsed[group.sec] || false);
+      return `<div class="nav-sec-wrap${isc?' nav-sec-col':''}" data-grp="${group.sec}" data-always-open="${alwaysOpen?'1':'0'}">
+        <div class="nav-sec" data-sec="${group.sec}" style="cursor:${alwaysOpen?'default':'pointer'};display:flex;justify-content:space-between;align-items:center;user-select:none">
+          <span>${group.sec}</span><span style="font-size:9px;opacity:.6;margin-left:6px">${alwaysOpen?'':(isc?'›':'⌄')}</span></div>
         <div class="nav-sec-items">${items}</div>
       </div>`;
     }).join('');
@@ -249,6 +250,7 @@ CX.router = {
       e.stopPropagation();
       const wrap=sec.closest('.nav-sec-wrap'); if(!wrap)return;
       const items=wrap.querySelector('.nav-sec-items'); if(!items)return;
+      if(wrap.dataset.alwaysOpen==='1')return;
       const key=sec.dataset.sec;
       const isNowCollapsed = items.style.display!=='none';
       items.style.display = isNowCollapsed ? 'none' : '';
@@ -258,6 +260,7 @@ CX.router = {
     /* restore collapsed state */
     rail.querySelectorAll('.nav-sec-wrap').forEach(wrap=>{
       const key=wrap.dataset.grp;
+      if(wrap.dataset.alwaysOpen==='1'){const items=wrap.querySelector('.nav-sec-items');if(items)items.style.display='';return;}
       if(collapsed[key]){
         const items=wrap.querySelector('.nav-sec-items');
         const arrow=wrap.querySelector('.nav-sec span:last-child');

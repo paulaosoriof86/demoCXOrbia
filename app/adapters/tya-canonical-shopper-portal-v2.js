@@ -1,6 +1,6 @@
 /* CXOrbia TyA — canonical Shopper portal v2 (DEV human visual).
    One exact identity powers Mi Perfil, KPI drills, visit history, credentials, contact and
-   certification. Read-only validation adapter; no profile/Auth/HR writes. */
+   certification. Shopper-managed profile fields persist only through the provider/ACK boundary; identity authority remains external and fail-closed. */
 (function(){
   'use strict';
   window.CX=window.CX||{};
@@ -72,6 +72,8 @@
     const ctx=authContext();
     return !!(ctx?.authenticated&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied!==true);
   }
+  const commandOk=r=>!!(r&&r.ok===true&&r.status==='committed'&&r.providerAck===true&&r.successUiAllowed===true);
+  const periodOf=(data,v)=>data?.recordPeriodId?data.recordPeriodId(v):(v&&(v.periodId||v.projectId));
   function rows(vs,ui){return vs.length?`<div style="overflow:auto"><table class="tbl"><thead><tr><th>Periodo</th><th>Visita</th><th>Estado</th><th>Fecha</th><th>País</th></tr></thead><tbody>${vs.map(v=>{const st=stage(v);return `<tr><td>${esc(v.periodLabel||v.periodKey)}</td><td><b>${esc(v.sucursal)}</b><div style="font-size:10px;color:var(--t3)">${esc(v.escenario)} · ${esc(v.ciudad)}</div></td><td><span class="bdg bdg-${st[1]}">${esc(st[0])}</span></td><td>${esc(v.realizada||v.cuestFecha||v.submittedAt||v.agendada||v.disponibleDesde||'—')}</td><td>${esc(v.pais||v.country||'—')}</td></tr>`;}).join('')}</tbody></table></div>`:ui.empty('🗒️','Sin visitas en esta categoría.');}
   function render({data,ui}){
     const host=ui.el('div');
@@ -89,13 +91,13 @@
           redraw();
         }
       },0);
-      host.innerHTML=`${ui.ph('Mi Perfil','Identidad Shopper')}<div class="card card-p">${ui.empty('⏳','Validando tu identidad e histórico contra la HR viva…')}</div>`;
+      host.innerHTML=`${ui.ph('Mi Perfil','Tu información y tus visitas')}<div class="card card-p">${ui.empty('⏳','Validando tu perfil e historial…')}</div>`;
       return host;
     }
     const identity=resolveSessionShopper(data);
     if(!identity.ok){
-      const reason=identity.reason==='ambiguous_exact_identity'?'Se encontraron varias relaciones técnicas exactas y se requiere revisión; no se unieron identidades por nombre.':'La identidad de esta sesión no está vinculada al read model canónico.';
-      host.innerHTML=`${ui.ph('Mi Perfil','Identidad Shopper')}<div class="card card-p">${ui.empty('🔒',reason)}</div>`;
+      const reason=identity.reason==='ambiguous_exact_identity'?'No fue posible vincular esta sesión con un único perfil. Solicita revisión al equipo TyA.':'No fue posible vincular esta sesión con tu perfil. Solicita revisión al equipo TyA.';
+      host.innerHTML=`${ui.ph('Mi Perfil','Tu información y tus visitas')}<div class="card card-p">${ui.empty('🔒',reason)}</div>`;
       return host;
     }
     const s=identity.row,shopperKey=str(s.id||s.shopperId||identity.canonical),profileEmail=str(s.email||s.correo||s.mail),email=profileEmail||authenticatedEmail(),credential=currentSessionCredential(),rule=shopperCredentialRule(s);
@@ -103,7 +105,7 @@
     const historySource=typeof data.shopperHistoryVisits==='function'?data.shopperHistoryVisits(shopperKey,false):data.visitsForShopper(shopperKey,false).filter(v=>v&&v.__pendingPlatformAssignmentOverlay!==true);
     const visits=historySource.slice().sort((a,b)=>str(b.realizada||b.cuestFecha||b.submittedAt||b.agendada).localeCompare(str(a.realizada||a.cuestFecha||a.submittedAt||a.agendada)));
     const st=data.shopperStats(shopperKey),cs=cert(s),historicalEvidence=certEvidence(s);
-    const active=visits.filter(v=>{const f=facets(v);return f.assigned&&!f.liquidationConfirmed&&!f.paymentConfirmed&&!f.cancelled;});
+    const active=visits.filter(v=>{const f=facets(v);return String(periodOf(data,v)||'')===String(data.currentPeriodId||'')&&f.assigned&&!f.liquidationConfirmed&&!f.paymentConfirmed&&!f.cancelled;});
     const done=visits.filter(v=>facets(v).realized),submitted=visits.filter(v=>facets(v).submitted),paid=visits.filter(v=>facets(v).paymentConfirmed);
     let tab='all';
     const draw=()=>{
@@ -112,9 +114,9 @@
       const credentialBody=credentialAvailable
         ? `<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap"><b data-credential-value>••••••••</b><button class="btn btn-sm btn-ghost" type="button" data-credential-reveal aria-pressed="false">Mostrar</button><button class="btn btn-sm btn-ghost" type="button" data-credential-copy>Copiar</button></div>`
         : `<b data-credential-unavailable style="font-size:11px">Disponible al ingresar con usuario y contraseña</b>`;
-      host.innerHTML=`${ui.ph('Mi Perfil','Identidad, acceso e histórico canónico')}
+      host.innerHTML=`${ui.ph('Mi Perfil','Tu información, acceso e historial')}
       <div class="card card-p" style="margin-bottom:14px">
-        <div class="between" style="gap:12px;align-items:flex-start"><div><div class="card-t" style="font-size:18px">${esc(s.nombre)}</div><div style="font-size:11px;color:var(--t3);margin-top:3px">${esc(shopperKey)} · ${esc(s.ciudad)} · ${esc(s.pais)}</div></div><div class="flex wrap" style="gap:6px"><span class="bdg bdg-g">Identidad vinculada</span><span class="bdg bdg-${cs==='certificada'?'g':cs==='presentada'?'b':historicalEvidence.length?'a':'n'}">${cs==='certificada'?'Certificada':cs==='presentada'?'Certificación presentada':historicalEvidence.length?'Histórico en revisión':'Sin certificación'}</span></div></div>
+        <div class="between" style="gap:12px;align-items:flex-start"><div><div class="card-t" style="font-size:18px">${esc(s.nombre)}</div><div style="font-size:11px;color:var(--t3);margin-top:3px">${[s.ciudad,s.pais].map(esc).filter(Boolean).join(' · ')||'Perfil de shopper'}</div></div><div class="flex wrap" style="gap:6px"><button class="btn btn-sm btn-soft" type="button" data-profile-edit>Editar mis datos</button><span class="bdg bdg-g">Perfil verificado</span><span class="bdg bdg-${cs==='certificada'?'g':cs==='presentada'?'b':historicalEvidence.length?'a':'n'}">${cs==='certificada'?'Certificada':cs==='presentada'?'Certificación presentada':historicalEvidence.length?'Histórico en revisión':'Sin certificación'}</span></div></div>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:14px">
           <div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">NOMBRE</div><b>${esc(firstName||'— sin dato')}</b></div>
           <div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">APELLIDO</div><b>${esc(lastName||'— sin dato')}</b></div>
@@ -123,11 +125,54 @@
           <div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">WHATSAPP</div><b>${esc(s.whatsapp||s.phone||'— sin dato')}</b></div>
           <div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">CORREO</div><b>${esc(email||'— sin dato')}</b></div>
         </div>
-        <div style="font-size:11px;color:var(--t3);margin-top:9px">Regla TyA: usuario = primer nombre.primer apellido y contraseña = Nombre123*; usuario y contraseña se derivan sin tildes. La contraseña se deriva para autenticación y visualización del propio shopper; no se guarda en localStorage, Firestore ni HR.</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:9px">Tu usuario se forma con tu primer nombre y primer apellido, sin tildes. Desde “Editar mis datos” puedes actualizar la información personal, de contacto y de pago permitida.</div>
       </div>
       <div class="grid g4" style="margin-bottom:12px">${ui.kpi('Visitas',st.total,'b')}${ui.kpi('Realizadas',st.realizadas,'g')}${ui.kpi('Submitidas',st.submitted,'p')}${ui.kpi('Pagadas confirmadas',st.paymentConfirmed,'g')}</div>
       <div class="card card-p"><div class="between" style="gap:8px;flex-wrap:wrap;margin-bottom:10px"><div class="card-t">Histórico de visitas · ${visits.length}</div><div class="flex wrap" style="gap:6px"><button class="btn btn-sm ${tab==='all'?'btn-pr':'btn-ghost'}" data-tab="all">Todas ${visits.length}</button><button class="btn btn-sm ${tab==='active'?'btn-pr':'btn-ghost'}" data-tab="active">Activas ${active.length}</button><button class="btn btn-sm ${tab==='done'?'btn-pr':'btn-ghost'}" data-tab="done">Realizadas ${done.length}</button><button class="btn btn-sm ${tab==='submitted'?'btn-pr':'btn-ghost'}" data-tab="submitted">Submitidas ${submitted.length}</button><button class="btn btn-sm ${tab==='paid'?'btn-pr':'btn-ghost'}" data-tab="paid">Pagadas ${paid.length}</button></div></div>${rows(list,ui)}</div>`;
       host.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{tab=b.dataset.tab;draw();}));
+      const editProfile=host.querySelector('[data-profile-edit]');
+      editProfile?.addEventListener('click',()=>ui.modal('Editar mis datos',`
+        <div style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Los datos de identidad y país vinculados al proyecto se mantienen protegidos. Aquí puedes actualizar tus datos personales, de contacto y de pago.</div>
+        <div class="grid g2" style="gap:10px 12px">
+          <div><label class="lbl">WhatsApp</label><input class="inp" id="sp_wa" value="${esc(s.whatsapp||s.phone||'')}"></div>
+          <div><label class="lbl">Correo</label><input class="inp" id="sp_mail" value="${esc(email||'')}"></div>
+          <div><label class="lbl">Departamento / Región</label><input class="inp" id="sp_depto" value="${esc(s.depto||'')}"></div>
+          <div><label class="lbl">Ciudad</label><input class="inp" id="sp_ciudad" value="${esc(s.ciudad||'')}"></div>
+          <div><label class="lbl">Edad</label><input class="inp" id="sp_edad" type="number" min="16" max="99" value="${esc(s.edad||'')}"></div>
+          <div><label class="lbl">Sexo</label><select class="sel" id="sp_sexo">${['','Femenino','Masculino','Otro','Prefiero no decir'].map(o=>`<option ${o===String(s.sexo||'')?'selected':''}>${o||'Selecciona…'}</option>`).join('')}</select></div>
+          <div><label class="lbl">Documento (DPI / ID)</label><input class="inp" id="sp_dpi" value="${esc(s.dpi||s.documentId||'')}"></div>
+          <div><label class="lbl">Banco</label><input class="inp" id="sp_banco" value="${esc(s.banco||'')}"></div>
+          <div><label class="lbl">Tipo de cuenta</label><select class="sel" id="sp_ctatipo">${['','Monetaria/Corriente','Ahorro','Otra'].map(o=>`<option ${o===String(s.ctaTipo||'')?'selected':''}>${o||'Selecciona…'}</option>`).join('')}</select></div>
+          <div><label class="lbl">Número de cuenta</label><input class="inp" id="sp_ctanum" value="${esc(s.ctaNum||'')}"></div>
+          <div><label class="lbl">Titular</label><input class="inp" id="sp_ctatit" value="${esc(s.ctaTitular||'')}"></div>
+          <div><label class="lbl">Moneda</label><input class="inp" id="sp_ctamon" value="${esc(s.ctaMoneda||'')}"></div>
+        </div>
+        <div style="text-align:right;margin-top:14px"><button class="btn btn-pr btn-sm" id="sp_save">Guardar cambios</button></div>
+      `,{onMount:(ov,close)=>{
+        const btn=ov.querySelector('#sp_save');
+        btn.addEventListener('click',async()=>{
+          const val=id=>String(ov.querySelector(id)?.value||'').trim();
+          const patch={
+            whatsapp:val('#sp_wa'),phone:val('#sp_wa'),email:val('#sp_mail').toLowerCase(),
+            depto:val('#sp_depto'),ciudad:val('#sp_ciudad'),edad:val('#sp_edad'),sexo:val('#sp_sexo'),
+            dpi:val('#sp_dpi'),documentId:val('#sp_dpi'),banco:val('#sp_banco'),ctaTipo:val('#sp_ctatipo'),
+            ctaNum:val('#sp_ctanum'),ctaTitular:val('#sp_ctatit'),ctaMoneda:val('#sp_ctamon')
+          };
+          patch.cuentaPago=[patch.banco,patch.ctaNum,patch.ctaTitular].filter(Boolean).join(' · ');
+          patch.__commandMeta={ackAware:true,reason:'shopper-self-profile-update'};
+          btn.disabled=true;btn.textContent='Guardando…';
+          try{
+            if(typeof data.updateShopper!=='function')throw new Error('PROFILE_PROVIDER_COMMAND_UNAVAILABLE');
+            const result=await data.updateShopper(shopperKey,patch);
+            if(!commandOk(result))throw new Error(String(result&&result.code||'PROFILE_NOT_COMMITTED'));
+            close();if(CX.ui?.toast)CX.ui.toast('Tus datos se guardaron correctamente.','ok',2600);
+            setTimeout(()=>location.reload(),180);
+          }catch(error){
+            btn.disabled=false;btn.textContent='Guardar cambios';
+            if(CX.ui?.toast)CX.ui.toast('No fue posible guardar tus datos. Intenta de nuevo o solicita revisión.','warn',3800);
+          }
+        });
+      }}));
       if(credentialAvailable){
         const value=host.querySelector('[data-credential-value]'),reveal=host.querySelector('[data-credential-reveal]'),copy=host.querySelector('[data-credential-copy]');
         reveal?.addEventListener('click',()=>{

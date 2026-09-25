@@ -9,69 +9,90 @@
 window.CX = window.CX || {};
 
 CX.reservas = {
-  _r:{},                 // reservas: { pid: [ {id, sucursalId, sucursal, ciudad, pais, periodo, shopperId, shopper, estado, fecha} ] }
-  _seeded:{},
   _key(pid){ return pid || CX.data.currentPeriodId; },
+  _source(){ return Array.isArray(CX.data&&CX.data.__protectedReservations)?CX.data.__protectedReservations:[]; },
+  _periodKey(){
+    const p=CX.data&&typeof CX.data.period==='function'?CX.data.period():null;
+    return p&&(p.periodKey||p.measurementPeriodId||p.measurementWindowId||p.periodo||p.ronda)||null;
+  },
+  _committed(result){ return !!(result&&result.ok===true&&result.status==='committed'&&result.providerAck===true&&result.successUiAllowed===true); },
+  _normalize(r){ return Object.assign({},r,{id:r.id||r.reservationId,reservationId:r.reservationId||r.id,estado:r.estado||r.status,status:r.status||r.estado}); },
 
-  /* sucursales del proyecto disponibles para reservar en un periodo (derivadas de las visitas) */
+  list(pid){
+    const periodId=String(this._key(pid)||''),projectId=String(CX.data.currentProjectId||'');
+    return this._source().filter(r=>String(r.periodId||'')===periodId&&(!r.projectId||String(r.projectId)===projectId)).map(r=>this._normalize(r));
+  },
+
   sucursales(pid){
-    pid=this._key(pid);
-    const map={};
-    (CX.data._visitas||[]).filter(v=>v.projectId===pid).forEach(v=>{
+    const periodId=String(this._key(pid)||''),map={};
+    const role=CX.session&&CX.session.role;
+    (CX.data._visitas||[]).filter(v=>{
+      const rowPeriod=String(CX.data.recordPeriodId?CX.data.recordPeriodId(v):(v.periodId||v.projectId)||'');
+      if(rowPeriod!==periodId)return false;
+      if(role==='shopper'&&CX.data.inScope&&!CX.data.inScope(v.pais))return false;
+      const f=CX.data.visitFacets?CX.data.visitFacets(v):(v.canonicalFacets||{});
+      return f.available===true&&f.assigned!==true&&f.cancelled!==true;
+    }).forEach(v=>{
       const id=(v.sucursal+'|'+v.ciudad).toLowerCase().replace(/\s+/g,'-');
-      if(!map[id]) map[id]={id, sucursal:v.sucursal, ciudad:v.ciudad, pais:v.pais};
+      if(!map[id])map[id]={id,sucursal:v.sucursal,ciudad:v.ciudad,pais:v.pais};
     });
     return Object.values(map);
   },
 
-  list(pid){ pid=this._key(pid); if(!this._r[pid]){ try{ this._r[pid]=JSON.parse(localStorage.getItem('cx_reservas_'+pid)||'null')||this._seed(pid); }catch(e){ this._r[pid]=this._seed(pid); } } return this._r[pid]; },
-  _persist(pid){ try{ localStorage.setItem('cx_reservas_'+pid, JSON.stringify(this._r[pid]||[])); }catch(e){} },
+  periodoActual(){ return this._periodKey(); },
 
-  /* Frontend gen\u00e9rico (correcci\u00f3n 20260711): bug real \u2014 se sembraban 2 reservas "demo"
-     (Evaluador 01/02) SIN gate de modo, visibles tambi\u00e9n fuera de demo. Ahora solo se siembran en
-     demo; fuera de demo, sin reservas reales todav\u00eda, la lista empieza vac\u00eda (honesto). */
-  _seed(pid){
-    const allowSynthetic = CX.dataSource ? CX.dataSource.showFixtures() : true;
-    if(!allowSynthetic) return [];
-    const sucs=this.sucursales(pid).slice(0,4);
-    const per=this.periodoActual();
-    return sucs.slice(0,2).map((s,i)=>({id:'rsv'+i+Date.now().toString(36).slice(-3), sucursalId:s.id, sucursal:s.sucursal, ciudad:s.ciudad, pais:s.pais, periodo:per, shopperId:'sh'+(i+1), shopper:'Evaluador 0'+(i+1), estado:'solicitada', fecha:new Date().toISOString().slice(0,10)}));
+  async reservar(pid,rec){
+    pid=this._key(pid);rec=rec||{};
+    const current=this.periodoActual();
+    if(!current||String(rec.periodo||'')!==String(current))throw new Error('RESERVATION_PERIOD_NOT_PUBLISHED');
+    const existing=this.list(pid).find(r=>r.sucursalId===rec.sucursalId&&String(r.periodo||'')===String(rec.periodo||'')&&String(r.shopperId||'')===String(rec.shopperId||''));
+    if(existing)return {dup:true,r:existing};
+    if(!CX.data||typeof CX.data.createReservation!=='function')throw new Error('RESERVATION_PROVIDER_COMMAND_UNAVAILABLE');
+    const payload=Object.assign({estado:rec.estado||'solicitada',status:rec.status||rec.estado||'solicitada'},rec);
+    const result=await CX.data.createReservation(payload,{ackAware:true,reason:'reservation-create-provider-backed'});
+    if(!this._committed(result)){
+      if(String(result&&result.code||'').includes('ALREADY_EXISTS'))return {dup:true};
+      throw new Error(String(result&&result.code||'RESERVATION_NOT_COMMITTED'));
+    }
+    CX.bus&&CX.bus.emit('reservas');
+    return {ok:true,providerAck:true,entityId:result.entityId||null,r:Object.assign({},payload,{id:result.entityId||null})};
   },
 
-  periodoActual(){ const d=new Date(); return d.toISOString().slice(0,7); },
-
-  /* shopper solicita/reserva una sucursal para un periodo */
-  reservar(pid, rec){
-    pid=this._key(pid); const L=this.list(pid);
-    // anti-duplicado: misma sucursal+periodo+shopper
-    if(L.some(r=>r.sucursalId===rec.sucursalId && r.periodo===rec.periodo && r.shopperId===rec.shopperId)) return {dup:true};
-    const r=Object.assign({id:'rsv'+Date.now().toString(36), estado:'solicitada', fecha:new Date().toISOString().slice(0,10)}, rec);
-    L.unshift(r); this._persist(pid); CX.bus&&CX.bus.emit('reservas');
-    CX.notif&&CX.notif.push({to:'admin',tipo:'reserva',icon:'🙋',tono:'b',titulo:'Nueva solicitud de visita',txt:(r.shopper||'Shopper')+' · '+r.sucursal+' · '+r.periodo,nav:'reservas'});
-    return {ok:true, r};
+  async setEstado(pid,id,estado,extra){
+    pid=this._key(pid);extra=extra||{};
+    if(!CX.data||typeof CX.data.setReservationStatus!=='function')throw new Error('RESERVATION_PROVIDER_COMMAND_UNAVAILABLE');
+    const result=await CX.data.setReservationStatus(id,estado,extra,{ackAware:true,reason:'reservation-status-provider-backed'});
+    if(!this._committed(result))throw new Error(String(result&&result.code||'RESERVATION_STATUS_NOT_COMMITTED'));
+    CX.bus&&CX.bus.emit('reservas');
+    return Object.assign({},result,{estado,status:estado});
   },
 
-  setEstado(pid, id, estado, extra){ pid=this._key(pid); const r=this.list(pid).find(x=>x.id===id); if(r){ r.estado=estado; if(extra)Object.assign(r,extra); this._persist(pid); CX.bus&&CX.bus.emit('reservas'); } return r; },
-  remove(pid, id){ pid=this._key(pid); this._r[pid]=this.list(pid).filter(x=>x.id!==id); this._persist(pid); CX.bus&&CX.bus.emit('reservas'); },
-
-  /* CRUCE: al publicar visitas para un periodo, busca reservas/asignaciones que coincidan
-     y deja la visita ya asignada al shopper que la reservó (estado 'asignada'). */
-  cruzar(pid, periodo){
+  async remove(pid,id){
     pid=this._key(pid);
-    const reservas=this.list(pid).filter(r=>r.periodo===periodo && ['asignada','aprobada'].includes(r.estado));
+    if(!CX.data||typeof CX.data.deleteReservation!=='function')throw new Error('RESERVATION_PROVIDER_COMMAND_UNAVAILABLE');
+    const result=await CX.data.deleteReservation(id,{ackAware:true,reason:'reservation-delete-provider-backed'});
+    if(!this._committed(result))throw new Error(String(result&&result.code||'RESERVATION_DELETE_NOT_COMMITTED'));
+    CX.bus&&CX.bus.emit('reservas');
+    return result;
+  },
+
+  async cruzar(pid,periodo){
+    pid=this._key(pid);
+    const current=this.periodoActual();
+    if(!current||String(periodo||'')!==String(current))throw new Error('RESERVATION_PERIOD_NOT_PUBLISHED');
+    const reservas=this.list(pid).filter(r=>String(r.periodo||'')===String(periodo)&&['asignada','aprobada'].includes(r.estado));
     let cruzadas=0;
-    reservas.forEach(r=>{
-      // busca una visita disponible de esa sucursal sin shopper
-      const v=(CX.data._visitas||[]).find(v=>v.projectId===pid && (v.sucursal+'|'+v.ciudad).toLowerCase().replace(/\s+/g,'-')===r.sucursalId && (!v.shopperId || v.estado==='disponible'));
-      if(v && r.shopperId){
-        const s=CX.data.getShopper && CX.data.getShopper(r.shopperId);
-        v.shopperId=r.shopperId; v.shopper=r.shopper||(s&&s.nombre); v.shopperCode=s&&s.code; v.estado='asignada';
-        r.estado='cruzada'; r.visitaId=v.id; cruzadas++;
-        CX.hr&&CX.hr.writeBack&&CX.hr.writeBack(CX.data.period(), v);
-      }
-    });
-    this._persist(pid); CX.bus&&CX.bus.emit('visit-flow'); CX.bus&&CX.bus.emit('reservas');
-    return {cruzadas};
+    for(const r of reservas){
+      const v=(CX.data._visitas||[]).find(v=>{
+        const rowPeriod=String(CX.data.recordPeriodId?CX.data.recordPeriodId(v):(v.periodId||v.projectId)||'');
+        const f=CX.data.visitFacets?CX.data.visitFacets(v):(v.canonicalFacets||{});
+        return rowPeriod===String(pid)&&(v.sucursal+'|'+v.ciudad).toLowerCase().replace(/\s+/g,'-')===r.sucursalId&&f.available===true&&f.assigned!==true;
+      });
+      if(!v||!r.shopperId)continue;
+      const result=await this.setEstado(pid,r.id,'aprobada',{visitId:v.id||v.visitId,shopperId:r.shopperId,shopper:r.shopper});
+      if(this._committed(result))cruzadas++;
+    }
+    return {cruzadas,providerAck:true};
   },
 
   resumen(pid){ const L=this.list(pid); return {
@@ -92,7 +113,7 @@ CX.module('reservas', ({data,role,ui})=>{
   const sid=()=> (CX.session.user&&CX.session.user.shopperId)||null;
   const shopperIdentityOk=()=>!!sid();
 
-  const periodos=()=>{ const s=new Set([CX.reservas.periodoActual()]); CX.reservas.list(pid).forEach(r=>s.add(r.periodo)); return [...s].sort().reverse(); };
+  const periodos=()=>{ const s=new Set(); const current=CX.reservas.periodoActual(); if(current)s.add(current); CX.reservas.list(pid).forEach(r=>{if(r.periodo)s.add(r.periodo);}); return [...s].sort().reverse(); };
   let per=CX.reservas.periodoActual();
 
   const draw=()=>{
@@ -139,13 +160,14 @@ CX.module('reservas', ({data,role,ui})=>{
             const result=await CX.reservas.reservar(pid,{sucursalId:branch.id,sucursal:branch.sucursal,ciudad:branch.ciudad,pais:branch.pais,periodo:ov.querySelector('#rsPer').value,shopperId:sid(),shopper:u.name||'Shopper'});
             close();
             if(result.dup){ui.toast('Ya solicitaste esa sucursal para ese periodo','warn');return;}
-            draw();ui.toast('Solicitud guardada y confirmada','ok');
+            ui.toast('Solicitud guardada y confirmada','ok');
+            setTimeout(()=>location.reload(),180);
           }catch(_){ui.toast('No hubo ACK remoto; la solicitud no se declaró guardada','warn');}
         })});
       });
       host.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',async()=>{
-        try{await CX.reservas.remove(pid,b.dataset.del);draw();ui.toast('Solicitud cancelada y confirmada','ok');}
-        catch(_){ui.toast('No hubo ACK remoto; la cancelación no se declaró aplicada','warn');}
+        try{await CX.reservas.remove(pid,b.dataset.del);ui.toast('Solicitud cancelada y confirmada','ok');setTimeout(()=>location.reload(),180);}
+        catch(_){ui.toast('No hubo confirmación del proveedor; la cancelación no se declaró aplicada','warn');}
       }));
       host.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>CX.router.nav('misvisitas')));
       return;
@@ -188,11 +210,11 @@ CX.module('reservas', ({data,role,ui})=>{
           if(visit)extra={visitId:visit.id||visit.visitId,shopperId:reservation.shopperId,shopper:reservation.shopper};
         }
         const saved=await CX.reservas.setEstado(pid,sel.dataset.id,newEst,extra);
-        draw();
-        if(['aprobada','cruzada'].includes(String(saved?.estado||saved?.status||newEst))){
+        if(['aprobada','cruzada'].includes(String(newEst))){
           CX.notif&&CX.notif.push({to:'shopper',tipo:'reserva_aprobada',icon:'✅',tono:'g',titulo:'¡Tu reserva fue aprobada!',txt:'Sucursal: '+(reservation?.sucursal||'')+' · '+(reservation?.periodo||per)+'. Revisa tu visita en la plataforma.',nav:'misvisitas'});
         }
         ui.toast('Estado confirmado por el proveedor','ok');
+        setTimeout(()=>location.reload(),180);
       }catch(_){draw();ui.toast('No hubo ACK remoto; no se declaró el cambio','warn');}
     }));
     host.querySelectorAll('[data-rsh]').forEach(b=>b.addEventListener('click',()=>{
@@ -201,8 +223,8 @@ CX.module('reservas', ({data,role,ui})=>{
         <div style="text-align:right"><button class="btn btn-pr btn-sm" id="rshOk">Asignar</button></div>`,
       {onMount:(ov,close)=>ov.querySelector('#rshOk').addEventListener('click',async()=>{
         const shopper=data.getShopper(ov.querySelector('#rshSel').value);
-        try{await CX.reservas.setEstado(pid,reservation.id,'asignada',{shopperId:shopper.id,shopper:shopper.nombre});close();draw();ui.toast('Shopper asignado y confirmado','ok');}
-        catch(_){ui.toast('No hubo ACK remoto; la asignación no se declaró aplicada','warn');}
+        try{await CX.reservas.setEstado(pid,reservation.id,'asignada',{shopperId:shopper.id,shopper:shopper.nombre});close();ui.toast('Shopper asignado y confirmado','ok');setTimeout(()=>location.reload(),180);}
+        catch(_){ui.toast('No hubo confirmación del proveedor; la asignación no se declaró aplicada','warn');}
       })});
     }));
     host.querySelector('#aAsignar').addEventListener('click',()=>{
@@ -216,7 +238,7 @@ CX.module('reservas', ({data,role,ui})=>{
         const branch=sucs.find(x=>x.id===ov.querySelector('#asSuc').value),shopper=data.getShopper(ov.querySelector('#asSh').value);
         try{
           const result=await CX.reservas.reservar(pid,{sucursalId:branch.id,sucursal:branch.sucursal,ciudad:branch.ciudad,pais:branch.pais,periodo:ov.querySelector('#asPer').value,shopperId:shopper.id,shopper:shopper.nombre,estado:'asignada'});
-          close();draw();ui.toast(result.dup?'Ya existía esa asignación':'Sucursal asignada y confirmada a '+shopper.nombre,result.dup?'warn':'ok');
+          close();ui.toast(result.dup?'Ya existía esa asignación':'Sucursal asignada y confirmada a '+shopper.nombre,result.dup?'warn':'ok');if(!result.dup)setTimeout(()=>location.reload(),180);
         }catch(_){ui.toast('No hubo ACK remoto; la asignación no se declaró aplicada','warn');}
       })});
     });
@@ -224,7 +246,7 @@ CX.module('reservas', ({data,role,ui})=>{
     host.querySelector('#aCruzar').addEventListener('click',async()=>{
       try{
         const result=await CX.reservas.cruzar(pid,per);
-        draw();ui.toast(result.cruzadas?(result.cruzadas+' visita(s) cruzada(s) con ACK remoto'):'No hay reservas asignadas para cruzar este periodo',result.cruzadas?'ok':'warn',4000);
+        ui.toast(result.cruzadas?(result.cruzadas+' visita(s) cruzada(s) y confirmada(s)'):'No hay reservas asignadas para cruzar este periodo',result.cruzadas?'ok':'warn',4000);if(result.cruzadas)setTimeout(()=>location.reload(),180);
       }catch(_){ui.toast('No se completó el cruce; no se declaró ninguna asignación sin ACK','warn');}
     });
     const km={all:['Todas',()=>true],solicitada:['Por revisar',r=>r.estado==='solicitada'],asignada:['Asignadas',r=>['asignada','aprobada'].includes(r.estado)],cruzada:['Cruzadas',r=>r.estado==='cruzada']};

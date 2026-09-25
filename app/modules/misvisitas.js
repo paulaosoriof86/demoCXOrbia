@@ -10,10 +10,13 @@ CX.module('misvisitas',({data,ui})=>{
   const facets=v=>engine?.facets?engine.facets(v):(data.visitFacets?data.visitFacets(v):(v?.canonicalFacets||{}));
   const contract=v=>data.visitContract?data.visitContract(v):{};
   const isCancelled=(v,f)=>f.cancelled===true||v.estado==='cancelada'||v.cancelled===true;
-  const assigned=mine.filter(v=>{const f=facets(v);return f.assigned&&!f.scheduled&&!f.realized&&!isCancelled(v,f);});
-  const scheduled=mine.filter(v=>{const f=facets(v);return f.scheduled&&!f.realized&&!isCancelled(v,f);});
-  const realized=mine.filter(v=>{const f=facets(v);return f.realized&&!f.submitted&&!isCancelled(v,f);});
-  const history=mine.filter(v=>{const f=facets(v),c=contract(v);return f.submitted||isCancelled(v,f)||c.liquidationState==='confirmado'||c.paymentState==='confirmado'||v.estado==='liquidada';});
+  const periodIdOf=v=>data.recordPeriodId?data.recordPeriodId(v):(v&&(v.periodId||v.projectId));
+  const currentPeriodId=String(data.currentPeriodId||'');
+  const isCurrentPeriod=v=>String(periodIdOf(v)||'')===currentPeriodId;
+  const assigned=mine.filter(v=>{const f=facets(v);return isCurrentPeriod(v)&&f.assigned&&!f.scheduled&&!f.realized&&!isCancelled(v,f);});
+  const scheduled=mine.filter(v=>{const f=facets(v);return isCurrentPeriod(v)&&f.scheduled&&!f.realized&&!isCancelled(v,f);});
+  const realized=mine.filter(v=>{const f=facets(v);return isCurrentPeriod(v)&&f.realized&&!f.submitted&&!isCancelled(v,f);});
+  const history=mine.filter(v=>{const f=facets(v),c=contract(v);return !isCurrentPeriod(v)||f.submitted||isCancelled(v,f)||c.liquidationState==='confirmado'||c.paymentState==='confirmado'||v.estado==='liquidada';});
   const activeCount=assigned.length+scheduled.length+realized.length;
   const postState=x=>String(x&&(x.estado||x.status)||'').toLowerCase();
   const postPeriod=x=>String((data.recordPeriodId?data.recordPeriodId(x):(x.periodId||x.projectId))||'');

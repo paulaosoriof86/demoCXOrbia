@@ -71,14 +71,17 @@ CX.liq = {
   fromVisita(p, v){
     const estado=this.estadoFromVisita(v);
     if(!estado) return null;
-    const reembolso=(v.boleto||0)+(v.comboAmt||0);
-    const total=v.honorario+reembolso;
+    const boleto=Number.isFinite(v.boleto)?v.boleto:0;
+    const combo=Number.isFinite(v.comboAmt)?v.comboAmt:0;
+    const reembolso=boleto+combo;
+    const honorario=Number.isFinite(v.honorario)?v.honorario:null;
+    const total=Number.isFinite(honorario)?honorario+reembolso:null;
     const baseISO = (v.submit&&v.cuestFecha) || v.cuestFecha || v.realizada || v.agendada || '';
     return {
       visitaId:v.id, visitId:v.visitId||v.id, hrRowId:v.hrRowId||null, projectId:p.id, periodId:v.periodId||p.id,
       shopperId:v.shopperId||null, shopper:v.shopper, shopperCode:v.shopperCode,
       sucursal:v.sucursal, pais:v.pais, moneda:v.currency, loteId:v.loteId||null,
-      honorario:v.honorario, boleto:v.boleto||0, combo:v.comboAmt||0, reembolso, total,
+      honorario, boleto, combo, reembolso, total,
       estado, freal:v.realizada||'', cuest:v.cuestFecha||'', submit:v.submit?(v.cuestFecha||''):'',
       fechaEstimadaPago: (estado==='pagada'||estado==='pagada_preview') ? (v.fechaPago||'') : this.fechaEstimadaPago(p, baseISO),
       pagada: estado==='pagada',
@@ -107,7 +110,7 @@ CX.liq = {
   resumen(list){
     const r={pendiente_cuestionario:0,pendiente_submitir:0,validada:0,pagada:0,totalPorMoneda:{}};
     list.forEach(l=>{ r[l.estado]=(r[l.estado]||0)+1;
-      r.totalPorMoneda[l.moneda]=(r.totalPorMoneda[l.moneda]||0)+l.total; });
+      if(Number.isFinite(l.total))r.totalPorMoneda[l.moneda]=(r.totalPorMoneda[l.moneda]||0)+l.total; });
     return r;
   },
 };

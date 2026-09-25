@@ -610,7 +610,7 @@ CX.module('liquidaciones', ({data,ui})=>{
   const PENDING_CURRENCY='pending_currency';
   const currencyOf=(row)=>{ if(row&&row.pais&&p.currency&&p.currency[row.pais])return p.currency[row.pais]; if(row&&row.moneda)return row.moneda; return PENDING_CURRENCY; };
   const _liqCur=(l)=>l.moneda||(l.pais&&p.currency&&p.currency[l.pais])||null;
-  const _liqMoney=(l,v)=>{const cu=_liqCur(l);return cu?ui.money(cu,v):'<span class="bdg bdg-a" style="font-size:9px">Pendiente de moneda</span>';};
+  const _liqMoney=(l,v)=>{const cu=_liqCur(l);if(!Number.isFinite(v))return '<span class="bdg bdg-a" style="font-size:9px">Pendiente de fuente</span>';return cu?ui.money(cu,v):'<span class="bdg bdg-a" style="font-size:9px">Pendiente de moneda</span>';};
   const isFinancialReview=(l)=>{
     const cur=l&&(l.moneda||(l.pais&&p.currency&&p.currency[l.pais]));
     return !l||l.reviewRequired===true||l.financialSourceStatus==='pending_or_review'||l.liquidationState==='pending_financial_source'||!l.pais||!cur;

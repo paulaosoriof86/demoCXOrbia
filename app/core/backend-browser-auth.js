@@ -25,6 +25,7 @@ window.CX = window.CX || {};
   let rejectInteractive = null;
   let selectedRole = '';
   let sessionCredential = null;
+  let restorePending = true;
 
   function list(value){
     if(Array.isArray(value)) return value.map(String).map(function(x){return x.trim();}).filter(Boolean);
@@ -240,6 +241,21 @@ window.CX = window.CX || {};
     return form && login && password && submit ? {form, login, password, submit} : null;
   }
 
+  function showAuthRestoring(){
+    if(!protectedLoginEnabled())return;
+    const login=document.getElementById('login'),app=document.getElementById('app');
+    if(login)login.classList.add('hidden');
+    if(app)app.classList.remove('on');
+    let box=document.getElementById('cxAuthRestoring');
+    if(!box){
+      box=document.createElement('div');box.id='cxAuthRestoring';
+      box.style.cssText='position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:#f7f9fc;color:#334155;font-family:Segoe UI,Tahoma,system-ui,sans-serif';
+      box.innerHTML='<div style="background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:18px 22px;box-shadow:0 12px 35px rgba(15,23,42,.10);font-size:13px;font-weight:600">Cargando tu sesión…</div>';
+      document.body.appendChild(box);
+    }
+  }
+  function hideAuthRestoring(){const box=document.getElementById('cxAuthRestoring');if(box)box.remove();}
+
   function ensureCredentialError(){
     const visible = visibleLoginForm();
     if(!visible) return null;
@@ -282,6 +298,8 @@ window.CX = window.CX || {};
       const ctx = await contextFromUser(cred.user, ns);
       if(requestedRole && !roleMatchesSelection(ctx, requestedRole)) throw new Error('ROLE_SELECTION_MISMATCH');
       currentContext = ctx;
+      restorePending = false;
+      hideAuthRestoring();
       captureSessionCredential(login, password, ctx);
       applyCxSession(ctx);
       if(resolveInteractive){
@@ -316,6 +334,8 @@ window.CX = window.CX || {};
       if(restored){
         try{
           currentContext = await contextFromUser(restored);
+          restorePending = false;
+          hideAuthRestoring();
           applyCxSession(currentContext);
           return currentContext;
         }catch(_){
@@ -324,6 +344,9 @@ window.CX = window.CX || {};
           clearSessionCredential();
         }
       }
+      restorePending = false;
+      hideAuthRestoring();
+      setTimeout(function(){if(!currentContext&&CX.app&&typeof CX.app.showLogin==='function')CX.app.showLogin();},0);
       return waitForInteractive();
     })();
     return readyPromise;
@@ -433,6 +456,7 @@ window.CX = window.CX || {};
     const originalEnter = typeof CX.app.enter === 'function' ? CX.app.enter.bind(CX.app) : null;
 
     CX.app.showLogin = function(){
+      if(protectedLoginEnabled()&&restorePending){showAuthRestoring();return;}
       clearSessionCredential();
       removeLegacyCredentialOverlay();
       const result = originalShowLogin ? originalShowLogin() : undefined;
@@ -451,10 +475,12 @@ window.CX = window.CX || {};
     CX.app.enter = function(){
       if(protectedLoginEnabled()){
         if(!currentContext){
+          if(restorePending){showAuthRestoring();return;}
           if(originalShowLogin) originalShowLogin();
           resetVisibleLoginState();
           return;
         }
+        hideAuthRestoring();
         applyCxSession(currentContext);
       }
       if(originalEnter) return originalEnter();
@@ -468,6 +494,8 @@ window.CX = window.CX || {};
         resolveInteractive = null;
         rejectInteractive = null;
         selectedRole = '';
+        restorePending = false;
+        hideAuthRestoring();
         clearSessionCredential();
         removeLegacyCredentialOverlay();
         if(CX.session) CX.session.clear();
@@ -502,6 +530,13 @@ window.CX = window.CX || {};
   function bootLoginBridge(){
     wrapAppLoginAndLogout();
     setTimeout(installFinalSingleFormRoleGuard, 0);
+    if(protectedLoginEnabled()){
+      showAuthRestoring();
+      ensureAuthenticated().then(function(ctx){if(ctx)enterAfterBackendReady();}).catch(function(){
+        restorePending=false;hideAuthRestoring();
+        if(CX.app&&typeof CX.app.showLogin==='function')CX.app.showLogin();
+      });
+    }
   }
 
   CX.backendAuth = {
@@ -533,6 +568,7 @@ window.CX = window.CX || {};
     });
   }
 
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bootLoginBridge);
+  if(CX.app) bootLoginBridge();
+  else if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bootLoginBridge,{once:true});
   else bootLoginBridge();
 })();

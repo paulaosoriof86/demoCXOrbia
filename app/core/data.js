@@ -461,9 +461,8 @@ CX.data = {
       if(sc) return this.projects.filter(p=>(p.countries||[]).some(c=>sc.includes(c)));
       return this.projects;
     }
-    const u=CX.session&&CX.session.user; const sh=u&&this.shoppers.find(s=>s.id===u.shopperId);
-    const pais=sh?sh.pais:null;
-    let base = pais ? this.projects.filter(p=>(p.countries||[]).includes(pais)) : this.projects;
+    const sc=this.scopePaises();
+    let base = sc ? this.projects.filter(p=>(p.countries||[]).some(c=>sc.includes(c))) : [];
     if(spid) base=base.filter(p=>this.periodMatchesProjectScope(p,spid));
     return base;
   },
@@ -705,10 +704,17 @@ CX.data = {
      Sin asignación → sin restricción (super/admin ven todo, como hoy). */
   scopePaises(){
     const u=CX.session&&CX.session.user;
-    if(!u||!u.scopePaises||!u.scopePaises.length) return null;
-    return u.scopePaises;
+    if(!u)return null;
+    if(Array.isArray(u.scopePaises)&&u.scopePaises.length)return [...new Set(u.scopePaises.map(String).filter(Boolean))];
+    const role=(CX.session&&CX.session.role)||u.role;
+    if(role==='shopper'){
+      const sh=u.shopperId&&(this.getShopper?this.getShopper(u.shopperId):this.shoppers.find(s=>s.id===u.shopperId));
+      const pais=sh&&(sh.pais||sh.country);
+      return pais?[String(pais)]:[];
+    }
+    return null;
   },
-  inScope(pais){ const sc=this.scopePaises(); return !sc||!pais||sc.includes(pais); },
+  inScope(pais){ const sc=this.scopePaises(); return !sc||(!pais?false:sc.includes(pais)); },
 
   /* cambio de estado de una visita (flujo del shopper) + sincronía */
   setVisitState(id, estado, dateField, dateVal){

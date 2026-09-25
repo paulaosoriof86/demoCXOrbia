@@ -7,18 +7,18 @@ CX.novedades = CX.novedades || {
   seed(){ return [
     {id:'r_070',ver:'v7.0',fecha:'2026-07-22',tipo:'Mejora',titulo:'Operación canónica, Excel enriquecido y Efectividad con fórmula',
      cuerpo:'Visitas y Postulaciones muestran el estado con la misma lógica canónica del Dashboard (sin colapsar etapas), con exportación por revisión de fuente y reasignación segura con 3 caminos de fecha. El Excel de todos los reportes incluye ahora anchos automáticos, autofiltro y una hoja de Catálogo de columnas; la Efectividad muestra su fórmula (realizadas ÷ asignadas) y queda Pendiente de fuente si no hay asignadas, sin ceros aparentes.',roles:['admin']},
-    {id:'r_069',ver:'v6.9',fecha:'2026-07-21',tipo:'Nuevo',titulo:'Add-ons funcionales por rol + Check-in geolocalizado',
-     cuerpo:'Nuevos add-ons que se activan y se asignan por rol desde Integraciones & Add-ons. El primero: Check-in con foto geolocalizada, ahora como sección y botón propio en Mis Visitas del shopper (GPS + hora reales), independiente del cuestionario.',roles:['admin','shopper']},
-    {id:'r_068',ver:'v6.8',fecha:'2026-07-21',tipo:'Nuevo',titulo:'Reportes personalizables en todos los roles',
-     cuerpo:'Crea y personaliza reportes eligiendo, ocultando, ordenando y renombrando columnas + notas, con exportación multiformato (PDF, Excel .xlsx y PPT) y el diseño de tu marca con gráficas. Disponible en Cliente, Admin/Operativo, Comercial, Finanzas y en el nuevo módulo Mis Reportes del shopper.',roles:['admin','cliente','shopper']},
+    {id:'r_069',ver:'v6.9',fecha:'2026-07-21',tipo:'Nuevo',titulo:'Nuevo check-in para tus visitas',
+     cuerpo:'Ahora puedes registrar una foto con ubicación, fecha y hora desde Mis Visitas cuando el proyecto lo requiera. El check-in se realiza de forma separada al cuestionario.',roles:['admin','shopper']},
+    {id:'r_068',ver:'v6.8',fecha:'2026-07-21',tipo:'Nuevo',titulo:'Reportes más fáciles de personalizar',
+     cuerpo:'Ahora puedes preparar reportes con las columnas y notas que necesites y exportarlos en PDF, Excel o PowerPoint. En tu portal encontrarás “Mis Reportes” para consultar y generar tus propios reportes.',roles:['admin','cliente','shopper']},
     {id:'r_067',ver:'v6.7',fecha:'2026-07-21',tipo:'Mejora',titulo:'Panorama por periodo y exportables honestos',
      cuerpo:'El Panorama separa la Operación del periodo de los Resultados de evaluación y cambia sus indicadores por periodo; sin fuente de score se muestra un único Pendiente de fuente (sin ceros aparentes). Los exportables de Reportes, Histórico, Planes de Acción, Visitas, Dashboard, CRM y Finanzas ya son multiformato con gráficas.',roles:['admin','cliente']},
     {id:'r_066',ver:'v6.6',fecha:'2026-07-02',tipo:'Nuevo',titulo:'Insights & Benchmark en el portal del cliente',
      cuerpo:'El cliente ahora ve su score vs. el promedio de su industria, califica el programa (NPS), deja anotaciones colaborativas y agenda reuniones de revisión.',roles:['cliente','admin']},
     {id:'r_065',ver:'v6.5',fecha:'2026-07-01',tipo:'Nuevo',titulo:'Periodos del proyecto + detección de periodo en HR',
      cuerpo:'Gestiona cada ronda como un periodo independiente (crear/cerrar/archivar/duplicar/comparar). El importador de HR detecta el periodo automáticamente.',roles:['admin']},
-    {id:'r_064',ver:'v6.4',fecha:'2026-06-30',tipo:'Mejora',titulo:'Foto geolocalizada real en la visita',
-     cuerpo:'La evidencia geolocalizada captura GPS + fecha/hora reales dentro del cuestionario del shopper.',roles:['shopper','admin']},
+    {id:'r_064',ver:'v6.4',fecha:'2026-06-30',tipo:'Mejora',titulo:'Evidencia de ubicación en la visita',
+     cuerpo:'Durante una visita puedes registrar una foto con ubicación, fecha y hora como evidencia, cuando el proyecto lo requiera.',roles:['shopper','admin']},
   ];},
   list(){ try{const s=JSON.parse(localStorage.getItem(this._k)||'null'); if(!s)return this.seed();
     /* Merge: conserva lo guardado (estado/ediciones) y suma novedades nuevas del seed que aún no existan. */
@@ -43,18 +43,18 @@ CX.module('novedades', ({role,ui})=>{
     const isAdmin=(role==='admin'||role==='super');
     const items=CX.novedades.forRole(role);
     host.innerHTML=`
-      ${ui.ph('Novedades & Actualizaciones', isAdmin?'Publica releases y sigue su lectura por rol':'Lo nuevo en tu plataforma · confirma que lo leíste')}
+      ${ui.ph('Novedades', isAdmin?'Publica novedades y consulta su lectura':'Actualizaciones y avisos para tu operación')}
       ${isAdmin?`<div class="between" style="margin-bottom:14px"><span class="bdg bdg-n">${items.length} publicaciones</span><button class="btn btn-pr btn-sm" id="novNew">＋ Publicar novedad</button></div>`:''}
       <div style="display:flex;flex-direction:column;gap:12px">
         ${items.map(n=>{const leido=CX.novedades.isRead(n.id);return `
           <div class="card card-p" style="border-left:3px solid var(--${tipoTone[n.tipo]||'b'})">
             <div class="between" style="margin-bottom:6px">
               <div class="flex" style="gap:8px;align-items:center">${ui.bdg(n.tipo,tipoTone[n.tipo]||'b')}<b style="font-size:14px">${n.titulo}</b></div>
-              <span style="font-size:11px;color:var(--t3)">${n.ver||''} · ${n.fecha}</span>
+              <span style="font-size:11px;color:var(--t3)">${isAdmin&&n.ver?(n.ver+' · '):''}${n.fecha}</span>
             </div>
             <div style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:8px">${n.cuerpo}</div>
             <div class="between">
-              <span style="font-size:11px;color:var(--t3)">${(n.roles||['todos']).join(' · ')}</span>
+              <span style="font-size:11px;color:var(--t3)">${isAdmin?(n.roles||['todos']).join(' · '):'Publicado para ti'}</span>
               ${leido?'<span class="bdg bdg-g">✓ Leído</span>':`<button class="btn btn-soft btn-sm novRead" data-id="${n.id}">Marcar como leído</button>`}
             </div>
             ${isAdmin?`<div style="margin-top:8px;border-top:1px solid var(--border-2);padding-top:6px" class="between"><span style="font-size:11px;color:var(--t3)">📊 Lecturas: ${Object.values(CX.novedades.readMap()).filter(u=>u[n.id]).length} · estado: ${n.estado||'publicado'} · ${n.modulo||'general'}</span><button class="btn btn-ghost btn-sm novArch" data-id="${n.id}" style="font-size:10.5px">${n.estado==='archivado'?'Republicar':'Archivar'}</button></div>`:''}

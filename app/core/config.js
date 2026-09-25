@@ -307,7 +307,7 @@ CX.NAV = {
   shopper: [
     { sec:'Operación', items:['midia','miperfil','visitas','reservas','misvisitas'] },
     { sec:'Capacitación & IA', items:['aprendizaje','cert','documentos','soporte','novedades'] },
-    { sec:'Mis Beneficios', items:['beneficios','mireportes'] },
+    { sec:'Mis Beneficios', items:['beneficios','mireportes'], alwaysExpanded:true },
   ],
   cliente: [
     { sec:'Estrategia',  items:['cli_dashboard','cli_sucursales','cli_acciones','cli_insights'] },
