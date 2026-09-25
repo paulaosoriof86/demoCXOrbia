@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_C3_TERMINAL_CONTROL_FIX",
+  "status": "READY_FOR_TERMINAL_CERTIFICATION",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -12,8 +12,8 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
-  "terminalCertificationAllowed": false,
-  "activeBlocker": "RUN416 ENVIRONMENT_FAILURE — C3 SEMANTIC ORACLE HOST ENV NOT PASSED",
+  "terminalCertificationAllowed": true,
+  "activeBlocker": "C3 TERMINAL FRESH REPROOF ON EXISTING VRM044 DEV — RUN416 ENV FIXED",
   "nextFindingId": "VRM-045",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "PASS_C3_HOSTING_URL_TO_EXISTING_SEMANTIC_ORACLE_THEN_RESUME_SAME_TERMINAL_CERTIFY_NO_REBUILD",
+  "exactNextAction": "RUN_ONE_FRESH_TERMINAL_CERTIFY_THEN_SAME_ARTIFACT_LIVE_FIXTURES_THEN_GATE21",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -197,19 +197,18 @@
     "production": false
   },
   "lastTerminalControlFix": {
-    "run413": {
-      "classification": "RELEASE_COMPOSITION_FAILURE",
-      "observedHarnessClassification": "MAPPING_FAILURE",
-      "code": "ADMIN_COMPOSED_SHOPPER_CONTRACT_MISMATCH",
-      "rootCause": "human acceptance classified trusted platform_created shopper only via legacy __platformOnlyProfile flag and therefore counted the authorized platform shopper as HR",
+    "run416": {
+      "classification": "ENVIRONMENT_FAILURE",
+      "code": "C3_SEMANTIC_ORACLE_ENV",
+      "rootCause": "workflow omitted required C3_HOSTING_URL when invoking existing semantic oracle",
+      "provenFreshHumanAcceptancePass": true,
       "productDefect": false,
       "productSourceChanged": false
     },
-    "correctionCommit": "88a3d7e52a9b3c4d8bfa404f4412a7d00f95324c",
-    "holdGuardRunId": 36163511906,
-    "holdGuardRunNumber": 415,
+    "correctionCommit": "601d63edf65ed92c80d8ec4d58ff52aa9b63acdf",
+    "holdGuardRunId": 36164562922,
+    "holdGuardRunNumber": 418,
     "holdGuardDecision": "PASS_CANONICAL_CANDIDATE_AUTHORITY",
-    "correctedContract": "HR shopper count excludes exact trusted project-scoped platform_created rows; those rows are counted separately as authoritative platform shoppers. Untrusted platform-only profiles remain excluded/review-only.",
     "rebuilds": 0,
     "deploys": 0,
     "production": false
