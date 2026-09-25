@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PAULA_VISUAL_REVIEW_DEFECTS_FOUND",
+  "status": "HOLD_REMEDIATION_SOURCE_CREATED_PENDING_DEV_REPROOF",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "34068805168e85cf15c9359c1dc4c4226c3062a6",
+  "productSourceSha": "da17406f8e03ef1071fe8ca384503853f51e6638",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
-  "predecessorProductSourceSha": "04b288f7eee315fcb865ed86a8fb41786809edf9",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V19_2026-09-25.json",
-  "findingsLedgerExpectedGitBlob": "e14f2fe2a85aacd54c6456dd107d0f43c2a141ad",
+  "predecessorProductSourceSha": "34068805168e85cf15c9359c1dc4c4226c3062a6",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V21_2026-09-25.json",
+  "findingsLedgerExpectedGitBlob": "18bbfba689ed5df55ed7bcd594239feee5decd53",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-045/046/047/048/049/051/052/053 PROVEN + VRM-050 EXACT POST-REFRESH REPROOF REQUIRED",
+  "activeBlocker": "VRM-045/046/047/048/049/051/052/053 FIXED_IN_SOURCE_PENDING_DEV_REPROOF + VRM-050 POST-REFRESH REPROOF STILL OPEN",
   "nextFindingId": "VRM-054",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "DIAGNOSE_AND_FIX_ONLY_EXACT_OWNERS_FOR_VRM045_046_047_048_049_051_052_053_AND_REPROVE_VRM050_ON_STABLE_HR; THEN_REPEAT_I3_TERMINAL_CLOSURE",
+  "exactNextAction": "FOCAL_DEV_REPROOF_AND_REQUIRED_DEV_MATERIALIZATION_FOR_DA17406; THEN_STABLE_POST_REFRESH_VRM050_REPROOF; ONLY_AFTER_ALL_PASS_REPEAT_I3_TERMINAL_CLOSURE",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -335,5 +335,23 @@
       "VRM-052",
       "VRM-053"
     ]
+  },
+  "currentRemediationCandidate": {
+    "sourceSha": "da17406f8e03ef1071fe8ca384503853f51e6638",
+    "sourceTree": "f733f99293dca5437a6e33ab81434d844a1d5f5c",
+    "findings": [
+      "VRM-045",
+      "VRM-046",
+      "VRM-047",
+      "VRM-048",
+      "VRM-049",
+      "VRM-051",
+      "VRM-052",
+      "VRM-053"
+    ],
+    "changedRuntime": true,
+    "changedHosting": true,
+    "changedRules": false,
+    "production": false
   }
 }
