@@ -770,7 +770,7 @@ jobs:
           [[ "$CERTIFIED_PROOF_HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
           [[ "$CERTIFICATION_LIVE_HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
           test "$(jq -r '._runtime.revision // .sourceRevision // empty' "$PRIOR_DIR/hr-proof-run387.json")" = "$CERTIFIED_PROOF_HR_REVISION"
-          test "$(jq -r '.sourceRevision' "$PRIOR_DIR/full-human-acceptance/human-live-acceptance.json")" = "$CERTIFIED_PROOF_HR_REVISION"
+          test "$(jq -r '.sourceRevision' "$PRIOR_DIR/full-human-acceptance/human-live-acceptance.json")" = "$CERTIFICATION_LIVE_HR_REVISION"
           test "$(jq -r '._runtime.revision // .sourceRevision // empty' "$PRIOR_DIR/hr-current-live.json")" = "$CERTIFICATION_LIVE_HR_REVISION"
           test "$(jq -r '.revision // empty' "$PRIOR_DIR/hr-current-live-meta.json")" = "$CERTIFICATION_LIVE_HR_REVISION"
           test "$(jq -r '.crossRunHrRevisionEqualityRequired' "$MANIFEST")" = "false"
