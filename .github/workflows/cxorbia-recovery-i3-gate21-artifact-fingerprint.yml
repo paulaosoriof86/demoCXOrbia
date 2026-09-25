@@ -118,7 +118,7 @@ jobs:
           [[ "$CURRENT_LIVE_HR_META_SHA" =~ ^[0-9a-f]{64}$ ]]
           [[ "$HR_SEPARATION_SHA" =~ ^[0-9a-f]{64}$ ]]
           test "$(jq -r '._runtime.revision // .sourceRevision // empty' "$CERT/hr-proof-run387.json")" = "$CERTIFIED_PROOF_HR_REVISION"
-          test "$(jq -r '.sourceRevision' "$CERT/full-human-acceptance/human-live-acceptance.json")" = "$CERTIFIED_PROOF_HR_REVISION"
+          test "$(jq -r '.sourceRevision' "$CERT/full-human-acceptance/human-live-acceptance.json")" = "$CERTIFICATION_LIVE_HR_REVISION"
           test "$(jq -r '._runtime.revision // .sourceRevision // empty' "$CERT/hr-current-live.json")" = "$CERTIFICATION_LIVE_HR_REVISION"
           test "$(jq -r '.revision // empty' "$CERT/hr-current-live-meta.json")" = "$CERTIFICATION_LIVE_HR_REVISION"
           test "$(jq -r '.crossRunHrRevisionEqualityRequired' "$CERT/result.json")" = "false"
