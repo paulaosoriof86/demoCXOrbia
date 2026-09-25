@@ -520,8 +520,8 @@ jobs:
           jq -n -S '{decision:"PASS_C3_QA_RESERVATION_CLEANUP",mode:"RUN387_READ_ONLY_ZERO_RESIDUE",before:0,deletedIds:[],after:0,ambiguous:0,writes:0,production:false}' > "$OUT/c3-semantic/qa-reservation-cleanup.json"
           test "$(jq -r '.population.clientMembershipFound' "$OUT/full-human-acceptance/human-live-acceptance.json")" = "true"
           mkdir -p "$OUT/client-membership"
-          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg revision "$PINNED_HR_REVISION" \
-            '{canonicalDecision:"PASS_C6_CLIENT_AUTH_MEMBERSHIP_READBACK",sourceSha:$source,hrRevision:$revision,evidenceSource:"RUN387_FULL_HUMAN_ACCEPTANCE",clientMembershipFound:true,authUserCreates:0,passwordChanges:0,providerWrites:0,production:false}' \
+          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg revision "$CERTIFIED_PROOF_HR_REVISION" \
+            '{canonicalDecision:"PASS_C6_CLIENT_AUTH_MEMBERSHIP_READBACK",sourceSha:$source,certifiedProofHrRevision:$revision,evidenceSource:"RUN387_FULL_HUMAN_ACCEPTANCE",clientMembershipFound:true,authUserCreates:0,passwordChanges:0,providerWrites:0,production:false}' \
             > "$OUT/client-membership/readback.json"
 
       - name: Reprove atomic P0 source contract
