@@ -55,7 +55,7 @@ test('PRE-I4 VRM-044 exact platform_created authority presents only the scoped p
     visits:[],certifications:[],liquidations:[],postulations:[],applications:[]
   };
   const out=api.compose({hr,protectedPayload});
-  assert.deepEqual(out.shoppers.map(x=>x.id),['platform-authorized']);
+  assert.equal(JSON.stringify(out.shoppers.map(x=>x.id)),JSON.stringify(['platform-authorized']));
   assert.equal(out.shoppers[0].__authorizedExactPlatformIdentity,true);
   assert.equal(out.platformOnlyProfiles.find(x=>x.id==='platform-authorized').presentedToAuthorizedStaff,true);
   assert.equal(out.platformOnlyProfiles.find(x=>x.id==='platform-untrusted').presentedToAuthorizedStaff,false);
