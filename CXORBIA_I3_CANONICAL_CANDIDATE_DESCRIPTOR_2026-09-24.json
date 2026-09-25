@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_C3_TERMINAL_IDENTITY_READBACK",
+  "status": "READY_FOR_TERMINAL_CERTIFICATION",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -12,8 +12,8 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
-  "terminalCertificationAllowed": false,
-  "activeBlocker": "RUN422 RELEASE_COMPOSITION_FAILURE — CURRENT DEV IDENTITY ASSERTION FAILED BEFORE FRESH ACCEPTANCE",
+  "terminalCertificationAllowed": true,
+  "activeBlocker": "C3 TERMINAL FRESH REPROOF — RUN422 PROVIDER REFRESH WINDOW CONTROL FIXED",
   "nextFindingId": "VRM-045",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "LOG_EXACT_RUNTIME_DIGEST_HOSTING_HR_READBACK_THEN_RESUME_SAME_CERTIFY_NO_REBUILD",
+  "exactNextAction": "RUN_ONE_FRESH_TERMINAL_CERTIFY_THEN_SAME_ARTIFACT_LIVE_FIXTURES_THEN_GATE21",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -92,20 +92,38 @@
   "lastTerminalAttempt": {
     "runId": 36166043214,
     "runNumber": 422,
-    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "classification": "PROVIDER_FAILURE",
+    "observedHarnessClassification": "RELEASE_COMPOSITION_FAILURE",
     "failedStep": "Reprove current DEV identity without build or deploy",
-    "provenPassed": [
-      "CANONICAL_CANDIDATE_AUTHORITY",
-      "EXACT_VRM044_CANDIDATE_GUARD",
-      "RUN387_RUN403_RUN405_RECEIPT_BINDING"
-    ],
+    "cause": "single-shot HR health assertion executed while the live provider refresh was still in progress; exact runtime/digest/Hosting identity did not drift",
+    "refreshWindow": {
+      "startedAt": "2026-09-25T16:54:42.982Z",
+      "finishedAt": "2026-09-25T17:32:05.677Z",
+      "run422ReadbackAtApprox": "2026-09-25T17:17:33Z"
+    },
+    "currentReadbackProof": {
+      "runId": 36169068729,
+      "runNumber": 424,
+      "artifactId": 10879921616,
+      "artifactDigest": "sha256:92ad508d540d61e101d64097c4227cef5a117b2fccf2c4261df16a504d10b5b0",
+      "runtimeRevision": "cxorbia-live-hr-dev-00218-vgg",
+      "runtimeDigest": "sha256:21886c59ecbb7e18c4870a6c06f9423bd1b0c87f85e96ee892fffdcffbadb620",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/64c788ea0371e97a",
+      "hrRevision": "1d2d58088ba8162e9f872ed2ff5a33ebbe026d468659b1cde74762e7ec3c870f",
+      "identityMatches": true,
+      "hrHealthStable": true,
+      "builds": 0,
+      "deploys": 0,
+      "production": false
+    },
+    "productDefect": false,
+    "productSourceChanged": false,
     "builds": 0,
     "runtimeDeploys": 0,
     "hostingDeploys": 0,
     "artifactCreated": false,
     "gate21Run": false,
-    "production": false,
-    "readbackRequired": true
+    "production": false
   },
   "vrm043": {
     "classification": "RELEASE_COMPOSITION_FAILURE",
@@ -200,7 +218,19 @@
     "correctedContract": "focal validates external HR population separately, allows only exact trusted project-scoped platform_created operational additions, and rejects untrusted platform-only rows",
     "rebuilds": 0,
     "deploys": 0,
-    "production": false
+    "production": false,
+    "run422": {
+      "classification": "PROVIDER_FAILURE",
+      "productDefect": false,
+      "productSourceChanged": false,
+      "controlCorrectionCommit": "7190c341567ae72b9df135155be0cad443843d27",
+      "correction": "terminal readback now waits fail-closed for a coherent stable live HR revision instead of failing during an in-progress provider refresh",
+      "currentReadbackRunId": 36169068729,
+      "currentReadbackArtifactId": 10879921616,
+      "rebuilds": 0,
+      "deploys": 0,
+      "production": false
+    }
   },
   "lastTerminalRun": {
     "runId": 36076895117,
