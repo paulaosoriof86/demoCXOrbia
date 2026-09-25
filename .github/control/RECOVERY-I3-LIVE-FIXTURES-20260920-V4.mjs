@@ -319,6 +319,8 @@ const tenant = db.collection('tenants').doc(TENANT);
 const project = tenant.collection('projects').doc(PROJECT_ID);
 const shopperModule = await import(pathToFileURL(path.join(SOURCE_DIR, 'backend/runtime/cxorbia-shopper-command-provider-v1.mjs')).href);
 let hrRevision = '';
+let certifiedProofHrRevision = '';
+let certificationLiveReadbackRevision = '';
 
 try {
   const manifest = readPrior('i3-certification-manifest.json');
@@ -344,8 +346,8 @@ try {
 
   const proofPayload = readPrior('hr-proof-run387.json');
   const proofHr = proofPayload.snapshot || proofPayload.data || proofPayload;
-  const certifiedProofHrRevision = str(proofHr?._runtime?.revision || proofHr?.sourceRevision || proofPayload?._runtime?.revision);
-  const certificationLiveReadbackRevision = str(manifest.currentLiveHrRevisionAtCertification);
+  certifiedProofHrRevision = str(proofHr?._runtime?.revision || proofHr?.sourceRevision || proofPayload?._runtime?.revision);
+  certificationLiveReadbackRevision = str(manifest.currentLiveHrRevisionAtCertification);
   if (!/^[a-f0-9]{64}$/.test(certifiedProofHrRevision)) throw new Error('SOURCE_FAILURE:CERTIFIED_PROOF_HR_REVISION_INVALID');
   if (!/^[a-f0-9]{64}$/.test(certificationLiveReadbackRevision)) throw new Error('SOURCE_FAILURE:CERTIFICATION_LIVE_HR_REVISION_INVALID');
   if (str(manifest.certifiedProofHrRevision) !== certifiedProofHrRevision) throw new Error('RELEASE_COMPOSITION_FAILURE:CERTIFIED_PROOF_HR_MANIFEST_MISMATCH');
@@ -570,8 +572,8 @@ try {
     certificationSourceSha: SOURCE_SHA, certificationSourceTree: SOURCE_TREE, certifiedArtifactSha256: CERTIFIED_ARTIFACT_SHA256,
     buildCountThisRun: 0, deployCountThisRun: 0, rebuildAfterCertification: false, productSourceChanged: false,
     production: false, hrWrites: 0, fuzzyMatching: false, hrRevision, liveFixtureHrRevision: hrRevision,
-    certifiedProofHrRevision: typeof certifiedProofHrRevision === 'string' ? certifiedProofHrRevision : '',
-    certificationLiveReadbackRevision: typeof certificationLiveReadbackRevision === 'string' ? certificationLiveReadbackRevision : '',
+    certifiedProofHrRevision,
+    certificationLiveReadbackRevision,
     crossRunHrRevisionEqualityRequired: false, sameRevisionWithinThisLiveFixtureRun: true, tests, cleanup: absence,
     classification: failure ? classify(failure) : null, code: failure ? str(failure.message).slice(0, 900) : null,
     cleanupError: cleanupFailure ? str(cleanupFailure.message).slice(0, 400) : null
