@@ -400,9 +400,16 @@ try {
     cleanupTargets.docs.add('tenants/' + TENANT + '/users/' + f.uid);
     cleanupTargets.docs.add('tenants/' + TENANT + '/shoppers/' + f.id);
     cleanupTargets.docs.add('tenants/' + TENANT + '/shopperIdentityCrosswalk/' + f.id);
-    const [ps, ms] = await Promise.all([tenant.collection('shoppers').doc(f.id).get(), tenant.collection('users').doc(f.uid).get()]);
-    const p = ps.data() || {}, m = ms.data() || {};
-    const readbackOk = ps.exists && ms.exists && str(p.visibleLogin) === f.credential.login && str(p.pais || p.country) === f.profile.pais && str(p.whatsapp || p.phone) === f.profile.whatsapp && str(p.email) === str(f.profile.email) && str(m.role) === 'shopper' && str(m.authNamespace) === 'shopper';
+    if (!str(ack.identityLinkId) || ack.platformCreatedAuthority !== true) throw new Error('PERSISTENCE_FAILURE:SHOPPER_PLATFORM_IDENTITY_AUTHORITY_ACK:' + f.testId);
+    cleanupTargets.docs.add('tenants/' + TENANT + '/shopperIdentityLinks/' + str(ack.identityLinkId));
+    const [ps, ms, ls] = await Promise.all([
+      tenant.collection('shoppers').doc(f.id).get(),
+      tenant.collection('users').doc(f.uid).get(),
+      tenant.collection('shopperIdentityLinks').doc(str(ack.identityLinkId)).get()
+    ]);
+    const p = ps.data() || {}, m = ms.data() || {}, l = ls.data() || {};
+    const linkOk = ls.exists && str(l.canonicalShopperId) === f.id && str(l.sourceSystem) === 'platform' && str(l.authorityType) === 'platform_created' && l.periodIndependent === true && l.providerAck === true;
+    const readbackOk = ps.exists && ms.exists && linkOk && str(p.visibleLogin) === f.credential.login && str(p.pais || p.country) === f.profile.pais && str(p.whatsapp || p.phone) === f.profile.whatsapp && str(p.email) === str(f.profile.email) && str(m.role) === 'shopper' && str(m.authNamespace) === 'shopper';
     if (!readbackOk) throw new Error('PERSISTENCE_FAILURE:SHOPPER_READBACK:' + f.testId);
   }
 
