@@ -1,5 +1,6 @@
 name: CXOrbia Recovery I3 DEV Certification
 # Control successor: Gate20 explicit canonical HR reconciliation.
+# V21 direct reproof trigger: no logic change; canonical workflow only.
 
 on:
   push:
