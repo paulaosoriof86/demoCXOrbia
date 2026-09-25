@@ -3185,7 +3185,7 @@ jobs:
   c3-terminal-dev-identity-readback:
     name: C3 terminal DEV identity readback — no deploy
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_C3_TERMINAL_IDENTITY_READBACK' && github.event_name == 'push' && contains(github.event.head_commit.message, '[c3-dev-readback]') }}
+    if: ${{ github.event_name == 'push' && ((needs.canonical-candidate-authority.outputs.status == 'HOLD_C3_TERMINAL_IDENTITY_READBACK' && contains(github.event.head_commit.message, '[c3-dev-readback]')) || (needs.canonical-candidate-authority.outputs.status == 'HOLD_PENDING_PAULA_VISUAL_ACCEPTANCE' && contains(github.event.head_commit.message, '[visual-current-readback]'))) }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -3230,7 +3230,38 @@ jobs:
           HOSTING_RELEASE_NAME="$(jq -r '.release.name // empty' "$READBACK_OUT/hosting-live-channel.json")"
           HOSTING_RELEASE_TIME="$(jq -r '.release.releaseTime // empty' "$READBACK_OUT/hosting-live-channel.json")"
           curl -fsS --retry 5 -H 'Cache-Control: no-cache, no-store, max-age=0'             "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&c3readback=$GITHUB_RUN_ID" > "$READBACK_OUT/hr-meta.json"
+          curl -fsS --retry 5 -H 'Cache-Control: no-cache, no-store, max-age=0'             "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=json&visualreadback=$GITHUB_RUN_ID" > "$READBACK_OUT/hr-live.json"
           HR_REVISION="$(jq -r '.revision // empty' "$READBACK_OUT/hr-meta.json")"
+          LIVE_REVISION="$(jq -r '._runtime.revision // .sourceRevision // empty' "$READBACK_OUT/hr-live.json")"
+          test "$LIVE_REVISION" = "$HR_REVISION"
+          jq -n --slurpfile hr "$READBACK_OUT/hr-live.json" '
+            def arr($x): if ($x|type)=="array" then $x else [] end;
+            ($hr[0]) as $h |
+            {
+              revision: ($h._runtime.revision // $h.sourceRevision // null),
+              currentProjectId: ($h.currentProjectId // null),
+              currentPeriodId: ($h.currentPeriodId // null),
+              periods: arr($h.projects) | map({id,projectId,periodKey,periodo,name}),
+              visits: arr($h.visits) | map(select(
+                ((.id|tostring)=="694") or ((.id|tostring)=="702") or
+                ((.sucursal // "" | ascii_downcase | contains("zacapa"))) or
+                ((.shopper // "" | ascii_downcase | contains("paula"))) or
+                ((.shopperId // "" | ascii_downcase | contains("paula")))
+              ) | {id,sucursal,ciudad,pais,estado,shopperId,shopper,agendada,realizada,submit,cuestFecha,periodId,projectId,periodKey,quincena,escenario,disponibleDesde,outOfRange,assignmentSource,assignmentSyncStatus}),
+              shoppers: arr($h.shoppers) | map(select(
+                ((.nombre // "" | ascii_downcase | contains("paula"))) or
+                ((.user // "" | ascii_downcase | contains("paula"))) or
+                ((.id // "" | ascii_downcase | contains("paula")))
+              ) | {id,nombre,user,pais,ciudad,estado,visitas,perfilCompleto,projectIds}),
+              postulations: (arr($h.posts)+arr($h.postulations)+arr($h.applications)) | map(select(
+                ((.shopper // "" | ascii_downcase | contains("paula"))) or
+                ((.shopperId // "" | ascii_downcase | contains("paula"))) or
+                ((.sucursal // "" | ascii_downcase | contains("zacapa")))
+              ) | {id,shopperId,shopper,sucursal,estado,status,fechaProp,periodId,projectId,visitId})
+            }' > "$READBACK_OUT/visual-current-summary.json"
+          echo "CURRENT_VISUAL_SUMMARY_BEGIN"
+          cat "$READBACK_OUT/visual-current-summary.json"
+          echo "CURRENT_VISUAL_SUMMARY_END"
           jq -n -S             --arg runtimeRevision "$DEV_REVISION"             --arg runtimeDigest "$RUNTIME_DIGEST"             --arg hostingVersion "$HOSTING_VERSION_NAME"             --arg hostingRelease "$HOSTING_RELEASE_NAME"             --arg hostingReleaseTime "$HOSTING_RELEASE_TIME"             --arg hrRevision "$HR_REVISION"             --arg expectedRuntimeRevision "$EXPECTED_RUNTIME_REVISION"             --arg expectedRuntimeDigest "$EXPECTED_RUNTIME_DIGEST"             --arg expectedHostingVersion "$EXPECTED_HOSTING_VERSION"             '{decision:"C3_TERMINAL_DEV_IDENTITY_READBACK",runtimeRevision:$runtimeRevision,runtimeDigest:$runtimeDigest,hostingVersion:$hostingVersion,hostingRelease:$hostingRelease,hostingReleaseTime:$hostingReleaseTime,hrRevision:$hrRevision,expected:{runtimeRevision:$expectedRuntimeRevision,runtimeDigest:$expectedRuntimeDigest,hostingVersion:$expectedHostingVersion},matches:{runtimeRevision:($runtimeRevision==$expectedRuntimeRevision),runtimeDigest:($runtimeDigest==$expectedRuntimeDigest),hostingVersion:($hostingVersion==$expectedHostingVersion)},hrHealth:{ok:(input_filename|not)},builds:0,deploys:0,production:false}'             > "$READBACK_OUT/result.json"
           jq '.hrHealth = {
             ok: (input.ok // false),
