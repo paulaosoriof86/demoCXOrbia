@@ -376,7 +376,7 @@ jobs:
           git diff --quiet "$I3_CERTIFICATION_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
           test "$I3_CERTIFICATION_SOURCE_SHA" = "34068805168e85cf15c9359c1dc4c4226c3062a6"
           test "$I3_CERTIFICATION_SOURCE_TREE" = "91855599924b94ca7fbb025a570d8e1d77b30d3b"
-          test "$(jq -r '.vrm044.state' "$CANDIDATE_DESCRIPTOR")" = "DEV_MATERIALIZED_PASS_PENDING_TERMINAL_FRESH_REPROOF"
+          test "$(jq -r '.vrm044.state' "$CANDIDATE_DESCRIPTOR")" = "DEV_MATERIALIZED_PASS_TERMINAL_REPROOF_AUTHORIZED"
           test "$(jq -r '.terminalResume.buildProvenanceRunId' "$CANDIDATE_DESCRIPTOR")" = "$RUN405_ID"
           test "$(jq -r '.terminalResume.rebuildAllowed' "$CANDIDATE_DESCRIPTOR")" = "false"
           test "$(jq -r '.terminalResume.redeployAllowed' "$CANDIDATE_DESCRIPTOR")" = "false"
