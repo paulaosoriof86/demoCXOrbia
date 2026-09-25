@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PENDING_PAULA_VISUAL_ACCEPTANCE",
+  "status": "HOLD_PAULA_VISUAL_REVIEW_DEFECTS_FOUND",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "34068805168e85cf15c9359c1dc4c4226c3062a6",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "04b288f7eee315fcb865ed86a8fb41786809edf9",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V17_2026-09-25.json",
-  "findingsLedgerExpectedGitBlob": "296ad7a048cf1036bc5aef01028b37c1c7c2394b",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V18_2026-09-25.json",
+  "findingsLedgerExpectedGitBlob": "86e42fc40b43424477082d04a20d4046a5ba391b",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "NO_TECHNICAL_BLOCKER — HUMAN_VISUAL_ACCEPTANCE_PENDING",
-  "nextFindingId": "VRM-045",
+  "activeBlocker": "VRM-045/046/047/048/049/051 PROVEN + VRM-050 EXACT POST-REFRESH REPROOF REQUIRED",
+  "nextFindingId": "VRM-052",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "PAULA_VISUAL_ACCEPTANCE_ON_SINGLE_DEV_URL_THEN_I3_GO_IF_ACCEPTED",
+  "exactNextAction": "DIAGNOSE_AND_FIX_ONLY_EXACT_OWNERS_FOR_VRM045_046_047_048_049_051_AND_REPROVE_VRM050_ON_STABLE_HR; THEN_REPEAT_I3_TERMINAL_CLOSURE",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -308,5 +308,28 @@
   "i4": {
     "status": "BLOCKED_UNTIL_I3_GO_AND_FRESH_PAULA_AUTHORIZATION",
     "productionAuthorization": false
+  },
+  "lastHumanVisualReview": {
+    "reviewedAt": "2026-09-25T19:35:00Z",
+    "status": "NOT_ACCEPTED",
+    "receipt": "CXORBIA_I3_PAULA_VISUAL_REVIEW_2026-09-25.json",
+    "liveHrRevision": "80ad0b717010eafccbbc4dd33afb380e56ca7e46c03b05f1924c27aa49b52ae8",
+    "provenP0": [
+      "VRM-045",
+      "VRM-046",
+      "VRM-049"
+    ],
+    "provenBlocking": [
+      "VRM-047",
+      "VRM-048",
+      "VRM-051"
+    ],
+    "diagnosticRequired": [
+      "VRM-050"
+    ],
+    "paulaHistoricalExactMatch": true,
+    "postulationReviewStateConsistent": true,
+    "shoppersNoNewDefectProven": true,
+    "production": false
   }
 }
