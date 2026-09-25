@@ -2949,7 +2949,7 @@ jobs:
           ACTUAL="$(git diff --name-only "$VRM044_BASE" "$VRM044_SOURCE" --             app/adapters/tya-cumulative-read-model-v2.js             backend/runtime/cxorbia-shopper-command-provider-v1.mjs             backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs             backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-semantic-regression.test.mjs | sort)"
           EXPECTED="$(printf '%s\n'             'app/adapters/tya-cumulative-read-model-v2.js'             'backend/runtime/cxorbia-shopper-command-provider-v1.mjs'             'backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-semantic-regression.test.mjs'             'backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs' | sort)"
           test "$ACTUAL" = "$EXPECTED"
-          jq -n -S --arg source "$VRM044_SOURCE" --arg tree "$VRM044_TREE"             '{decision:"PASS_VRM044_EXACT_FOCAL_SCOPE",sourceSha:$source,sourceTree:$tree,productFiles:4,runtimeDeploys:0,hostingDeploys:0,production:false}'             > "$VRM044_OUT/scope.json"
+          jq -n -S --arg source "$VRM044_SOURCE" --arg tree "$VRM044_TREE"             '{decision:"PASS_VRM044_EXACT_FOCAL_SCOPE",sourceSha:$source,sourceTree:$tree,productFiles:2,testFiles:2,runtimeDeploys:0,hostingDeploys:0,production:false}'             > "$VRM044_OUT/scope.json"
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -2962,6 +2962,8 @@ jobs:
           SRC="$RUNNER_TEMP/cxorbia-vrm044-source"
           rm -rf "$SRC"; mkdir -p "$SRC"
           git archive "$VRM044_SOURCE" | tar -x -C "$SRC"
+          cp "$GITHUB_WORKSPACE/backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs" "$SRC/backend/runtime/hr-live-service/test/"
+          cp "$GITHUB_WORKSPACE/backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-semantic-regression.test.mjs" "$SRC/backend/runtime/hr-live-service/test/"
           cd "$SRC"
           node --check backend/runtime/cxorbia-shopper-command-provider-v1.mjs
           node --check app/adapters/tya-cumulative-read-model-v2.js
