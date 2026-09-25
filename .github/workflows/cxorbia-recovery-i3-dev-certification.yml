@@ -2978,3 +2978,137 @@ jobs:
           path: .tmp/vrm044-focal-reproof
           if-no-files-found: error
           retention-days: 30
+
+
+  vrm044-dev-materialization:
+    name: VRM-044 exact DEV materialization — one justified build
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'READY_FOR_VRM044_DEV_MATERIALIZATION' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm044-materialize]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      VRM044_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      VRM044_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      VRM044_OUT: .tmp/vrm044-dev-materialization
+    steps:
+      - name: Checkout Recovery control head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Prove exact promoted source and no later product drift
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$VRM044_OUT"
+          test "$VRM044_SOURCE" = "34068805168e85cf15c9359c1dc4c4226c3062a6"
+          test "$VRM044_TREE" = "91855599924b94ca7fbb025a570d8e1d77b30d3b"
+          test "$(git rev-parse "$VRM044_SOURCE^{tree}")" = "$VRM044_TREE"
+          git merge-base --is-ancestor "$VRM044_SOURCE" HEAD
+          git diff --quiet "$VRM044_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "READY_FOR_VRM044_DEV_MATERIALIZATION"
+          test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$VRM044_SOURCE"
+          test "$(jq -r '.terminalResume.maxBuilds' "$CANDIDATE_DESCRIPTOR")" = "1"
+          test "$(jq -r '.terminalResume.maxRuntimeDeploys' "$CANDIDATE_DESCRIPTOR")" = "1"
+          test "$(jq -r '.terminalResume.maxHostingDeploys' "$CANDIDATE_DESCRIPTOR")" = "1"
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install existing DEV deploy dependency
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest >/dev/null 2>&1
+
+      - name: Authenticate canonical Firebase DEV
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
+
+      - name: Prepare exact source archive
+        run: |
+          set -Eeuo pipefail
+          SOURCE_DIR="$RUNNER_TEMP/cxorbia-vrm044-source"
+          rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"
+          git archive "$VRM044_SOURCE" | tar -x -C "$SOURCE_DIR"
+          test -f "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml"
+          test -f "$SOURCE_DIR/firebase.json"
+          echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
+
+      - name: Build exact VRM-044 source once
+        run: |
+          set -Eeuo pipefail
+          IMAGE_URI="gcr.io/${PROJECT}/${SERVICE}:i3-vrm044-${VRM044_SOURCE:0:12}-${GITHUB_RUN_ID}"
+          echo "$IMAGE_URI" > "$VRM044_OUT/image-uri.txt"
+          gcloud builds submit "$SOURCE_DIR" --project "$PROJECT" --config "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE_URI" --quiet
+          jq -n -S --arg source "$VRM044_SOURCE" --arg tree "$VRM044_TREE" --arg image "$IMAGE_URI"             '{decision:"PASS_VRM044_ONE_BUILD",sourceSha:$source,sourceTree:$tree,imageTag:$image,buildCount:1,production:false}'             > "$VRM044_OUT/build.json"
+
+      - name: Deploy exact built image once to existing Recovery DEV
+        run: |
+          set -Eeuo pipefail
+          IMAGE_URI="$(cat "$VRM044_OUT/image-uri.txt")"
+          gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$IMAGE_URI"             --min-instances=1 --max-instances=1             --update-env-vars "$LEGAL_ENABLE_NAME=$LEGAL_ENABLE_VALUE,$LEGAL_GATE_NAME=$LEGAL_GATE_VALUE,$I3_HR_CACHE_PIN_NAME=$I3_HR_CACHE_PIN_VALUE" --quiet
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$VRM044_OUT/runtime.json"
+          DEV_REVISION="$(jq -r '.status.latestReadyRevisionName // empty' "$VRM044_OUT/runtime.json")"
+          test -n "$DEV_REVISION"
+          gcloud run revisions describe "$DEV_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$VRM044_OUT/runtime-revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$VRM044_OUT/runtime-revision.json")"
+          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else echo "runtime digest unresolved" >&2; exit 1; fi
+          RUNTIME_URL="$(jq -r '.status.url // empty' "$VRM044_OUT/runtime.json")"
+          curl -fsS --retry 10 --retry-delay 3 "$RUNTIME_URL/health" > "$VRM044_OUT/health.json"
+          jq -e '.ok==true and .production==false and .hrWrites==false and .shopperReconciliationReady==true and .visitReconciliationReady==true' "$VRM044_OUT/health.json" >/dev/null
+          echo "DEV_REVISION=$DEV_REVISION" >> "$GITHUB_ENV"
+          echo "RUNTIME_DIGEST=$DIGEST" >> "$GITHUB_ENV"
+
+      - name: Deploy same exact source once to Hosting DEV
+        run: |
+          set -Eeuo pipefail
+          cd "$SOURCE_DIR"
+          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$VRM044_OUT/hosting-deploy.log"
+          cd "$GITHUB_WORKSPACE"
+          TOKEN="$(gcloud auth print-access-token)"
+          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN"             "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$VRM044_OUT/hosting-live-channel.json"
+          HOSTING_RELEASE_NAME="$(jq -r '.release.name // empty' "$VRM044_OUT/hosting-live-channel.json")"
+          HOSTING_VERSION_NAME="$(jq -r '.release.version.name // empty' "$VRM044_OUT/hosting-live-channel.json")"
+          HOSTING_RELEASE_TIME="$(jq -r '.release.releaseTime // empty' "$VRM044_OUT/hosting-live-channel.json")"
+          test -n "$HOSTING_VERSION_NAME"
+          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN"             "https://firebasehosting.googleapis.com/v1beta1/$HOSTING_VERSION_NAME" > "$VRM044_OUT/hosting-version.json"
+          test "$(jq -r '.status // empty' "$VRM044_OUT/hosting-version.json")" = "FINALIZED"
+          REMOTE="$VRM044_OUT/read-model-v2.remote.js"
+          curl -fsSL --retry 8 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0'             "$HOSTING_URL/adapters/tya-cumulative-read-model-v2.js?vrm044=${GITHUB_RUN_ID}-$(date +%s%N)" -o "$REMOTE"
+          test "$(sha256sum "$REMOTE" | awk '{print $1}')" = "$(sha256sum "$SOURCE_DIR/app/adapters/tya-cumulative-read-model-v2.js" | awk '{print $1}')"
+          echo "HOSTING_RELEASE_NAME=$HOSTING_RELEASE_NAME" >> "$GITHUB_ENV"
+          echo "HOSTING_VERSION_NAME=$HOSTING_VERSION_NAME" >> "$GITHUB_ENV"
+          echo "HOSTING_RELEASE_TIME=$HOSTING_RELEASE_TIME" >> "$GITHUB_ENV"
+
+      - name: Read fresh DEV HR health after exact materialization
+        run: |
+          set -Eeuo pipefail
+          curl -fsS --retry 5 -H 'Cache-Control: no-cache, no-store, max-age=0'             "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm044materialize=$GITHUB_RUN_ID" > "$VRM044_OUT/hr-meta.json"
+          HR_REVISION="$(jq -r '.revision // empty' "$VRM044_OUT/hr-meta.json")"
+          [[ "$HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
+          jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .shopperReconciliation.providerAck==true and .visitReconciliation.providerAck==true and .hrWrites==false and .production==false and .refreshError==null' "$VRM044_OUT/hr-meta.json" >/dev/null
+          echo "HR_REVISION=$HR_REVISION" >> "$GITHUB_ENV"
+
+      - name: Seal one DEV materialization receipt
+        run: |
+          set -Eeuo pipefail
+          jq -n -S             --arg source "$VRM044_SOURCE" --arg tree "$VRM044_TREE"             --arg revision "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST"             --arg hostingRelease "$HOSTING_RELEASE_NAME" --arg hostingVersion "$HOSTING_VERSION_NAME" --arg hostingReleaseTime "$HOSTING_RELEASE_TIME"             --arg hrRevision "$HR_REVISION"             '{decision:"PASS_VRM044_EXACT_DEV_MATERIALIZATION",sourceSha:$source,sourceTree:$tree,runtimeRevision:$revision,runtimeDigest:$digest,hostingReleaseName:$hostingRelease,hostingVersionName:$hostingVersion,hostingReleaseTime:$hostingReleaseTime,hrRevision:$hrRevision,builds:1,runtimeDeploys:1,hostingDeploys:1,production:false}'             > "$VRM044_OUT/result.json"
+
+      - name: Upload VRM-044 DEV materialization receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-vrm044-dev-materialization-${{ github.run_id }}
+          path: .tmp/vrm044-dev-materialization
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
+      - name: Cleanup transient dependencies
+        if: always()
+        run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-vrm044-source"
