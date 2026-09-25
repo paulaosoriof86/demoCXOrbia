@@ -353,5 +353,25 @@
     "changedHosting": true,
     "changedRules": false,
     "production": false
+  },
+  "reproofDispatch": {
+    "requestedAt": "2026-09-25T22:31:00Z",
+    "mode": "CANONICAL_I3_DEV_CERTIFICATION_V21",
+    "productSourceSha": "da17406f8e03ef1071fe8ca384503853f51e6638",
+    "productSourceTree": "f733f99293dca5437a6e33ab81434d844a1d5f5c",
+    "findings": [
+      "VRM-045",
+      "VRM-046",
+      "VRM-047",
+      "VRM-048",
+      "VRM-049",
+      "VRM-051",
+      "VRM-052",
+      "VRM-053"
+    ],
+    "vrm050": "REPROOF_AFTER_STABLE_REFRESH_ONLY",
+    "production": false,
+    "requestedBy": "Paula via CXOrbia Recovery Project",
+    "trigger": "DESCRIPTOR_PUSH_CANONICAL_WORKFLOW"
   }
 }
