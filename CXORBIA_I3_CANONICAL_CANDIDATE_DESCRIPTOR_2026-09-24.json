@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_V21_DEV_MATERIALIZED_PENDING_STABLE_READBACK",
+  "status": "GO_V21_LIVE_FOCAL_PROVEN_PENDING_PAULA_VISUAL_REVIEW",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "da17406f8e03ef1071fe8ca384503853f51e6638",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "34068805168e85cf15c9359c1dc4c4226c3062a6",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V23_2026-09-25.json",
-  "findingsLedgerExpectedGitBlob": "d1ee02b688c5084dba2f8b251ff253141380ff87",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V24_2026-09-25.json",
+  "findingsLedgerExpectedGitBlob": "2c8e3f302c7bd37ec7f46f25d2bf8b03bc6ba8a3",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "Run438 harness ENV failure frozen in V23; retrying same existing DEV with navigation-safe focal harness, zero build/deploy.",
+  "activeBlocker": "NONE_TECHNICAL_FOR_V21_FOCAL; HUMAN_VISUAL_REVIEW_REQUIRED_BEFORE_I3_TERMINAL_CERTIFICATION",
   "nextFindingId": "VRM-054",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RERUN_V21_EXISTING_DEV_READBACK_AND_PAULA_ADMIN_FOCAL_ZERO_REBUILD_ZERO_REDEPLOY",
+  "exactNextAction": "PAULA_VISUAL_REVIEW_EXISTING_RECOVERY_DEV; NO_CODE_OR_DEPLOY_UNLESS_NEW_REPRODUCIBLE_DEFECT",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -410,6 +410,25 @@
     "buildsAllowed": 0,
     "runtimeDeploysAllowed": 0,
     "hostingDeploysAllowed": 0,
+    "production": false
+  },
+  "lastLiveProof": {
+    "runId": 36198587563,
+    "runNumber": 440,
+    "decision": "PASS_I3_V21_STABLE_READBACK_AND_LIVE_FOCAL",
+    "focalDecision": "PASS_I3_V21_PAULA_REMEDIATION_LIVE",
+    "sourceSha": "da17406f8e03ef1071fe8ca384503853f51e6638",
+    "sourceTree": "f733f99293dca5437a6e33ab81434d844a1d5f5c",
+    "hrRevision": "caf26f5f49820e444936aff23540b70461a4778352c1aeecc3fee5cc51180a18",
+    "runtimeRevision": "cxorbia-live-hr-dev-00219-p6j",
+    "runtimeDigest": "sha256:f3cec6e52771ec29af46f0d22c6921bdc0327ce599c82a556ac46432b2e3c946",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/f8dce3d817c000dc",
+    "artifactId": 10891031799,
+    "artifactDigest": "sha256:019fdc0a7a70ffc1a91e6a556bc7896c85201b1494b48655ae5f7c0e1389408c",
+    "builds": 0,
+    "runtimeDeploys": 0,
+    "hostingDeploys": 0,
+    "rulesDeploys": 0,
     "production": false
   }
 }
