@@ -342,12 +342,32 @@ try {
   await auth.getUser(staff.id);
   const staffToken = await customTokenToIdToken(await auth.createCustomToken(staff.id), apiKey);
 
-  const hrPayload = readPrior('hr-fresh.json');
+  const proofPayload = readPrior('hr-proof-run387.json');
+  const proofHr = proofPayload.snapshot || proofPayload.data || proofPayload;
+  const certifiedProofHrRevision = str(proofHr?._runtime?.revision || proofHr?.sourceRevision || proofPayload?._runtime?.revision);
+  const certificationLiveReadbackRevision = str(manifest.currentLiveHrRevisionAtCertification);
+  if (!/^[a-f0-9]{64}$/.test(certifiedProofHrRevision)) throw new Error('SOURCE_FAILURE:CERTIFIED_PROOF_HR_REVISION_INVALID');
+  if (!/^[a-f0-9]{64}$/.test(certificationLiveReadbackRevision)) throw new Error('SOURCE_FAILURE:CERTIFICATION_LIVE_HR_REVISION_INVALID');
+  if (str(manifest.certifiedProofHrRevision) !== certifiedProofHrRevision) throw new Error('RELEASE_COMPOSITION_FAILURE:CERTIFIED_PROOF_HR_MANIFEST_MISMATCH');
+  if (str(human.sourceRevision) !== certifiedProofHrRevision) throw new Error('RELEASE_COMPOSITION_FAILURE:CERTIFIED_PROOF_HR_HUMAN_MISMATCH');
+
+  const liveUrl = HOST + '/api/' + encodeURIComponent(TENANT) + '/' + encodeURIComponent(PROJECT_ID) + '/hr-live?format=json&livefixture=' + encodeURIComponent(RUN_ID) + '&ts=' + Date.now();
+  const liveResp = await fetch(liveUrl, { cache: 'no-store', headers: { 'cache-control': 'no-cache, no-store, max-age=0' } });
+  if (!liveResp.ok) throw new Error('PROVIDER_FAILURE:LIVE_FIXTURE_HR_HTTP_' + liveResp.status);
+  const hrPayload = await liveResp.json();
   const hr = hrPayload.snapshot || hrPayload.data || hrPayload;
   hrRevision = str(hr?._runtime?.revision || hr?.sourceRevision || hrPayload?._runtime?.revision);
-  if (!/^[a-f0-9]{64}$/.test(hrRevision)) throw new Error('SOURCE_FAILURE:PINNED_HR_REVISION_INVALID');
-  if (str(manifest.hrRevision) !== hrRevision) throw new Error('RELEASE_COMPOSITION_FAILURE:PINNED_HR_MANIFEST_MISMATCH');
-  if (str(human.sourceRevision) !== hrRevision) throw new Error('RELEASE_COMPOSITION_FAILURE:PINNED_HR_HUMAN_MISMATCH');
+  if (!/^[a-f0-9]{64}$/.test(hrRevision)) throw new Error('SOURCE_FAILURE:LIVE_FIXTURE_HR_REVISION_INVALID');
+  fs.writeFileSync(path.join(OUT, 'hr-live-fixture.json'), JSON.stringify(hrPayload, null, 2) + '\n');
+
+  const metaResp = await fetch(HOST + '/api/' + encodeURIComponent(TENANT) + '/' + encodeURIComponent(PROJECT_ID) + '/hr-live?format=meta&livefixture=' + encodeURIComponent(RUN_ID) + '&ts=' + Date.now(), { cache: 'no-store', headers: { 'cache-control': 'no-cache, no-store, max-age=0' } });
+  if (!metaResp.ok) throw new Error('PROVIDER_FAILURE:LIVE_FIXTURE_HR_META_HTTP_' + metaResp.status);
+  const hrMeta = await metaResp.json();
+  if (str(hrMeta.revision) !== hrRevision) throw new Error('PROVIDER_FAILURE:LIVE_FIXTURE_HR_META_REVISION_MISMATCH');
+  if (!(hrMeta.ok === true && hrMeta.revisionStable === true && hrMeta.sourceSafe === true && hrMeta.shopperReconciliation?.providerAck === true && hrMeta.visitReconciliation?.providerAck === true && hrMeta.hrWrites === false && hrMeta.production === false && hrMeta.refreshError == null)) {
+    throw new Error('PROVIDER_FAILURE:LIVE_FIXTURE_HR_HEALTH_INVALID');
+  }
+  fs.writeFileSync(path.join(OUT, 'hr-live-fixture-meta.json'), JSON.stringify(hrMeta, null, 2) + '\n');
 
   const suffix = RUN_ID.slice(-6);
   const fixtureDefs = [
@@ -549,7 +569,10 @@ try {
     generatedAt: new Date().toISOString(), priorRunId: PRIOR_RUN_ID,
     certificationSourceSha: SOURCE_SHA, certificationSourceTree: SOURCE_TREE, certifiedArtifactSha256: CERTIFIED_ARTIFACT_SHA256,
     buildCountThisRun: 0, deployCountThisRun: 0, rebuildAfterCertification: false, productSourceChanged: false,
-    production: false, hrWrites: 0, fuzzyMatching: false, hrRevision, tests, cleanup: absence,
+    production: false, hrWrites: 0, fuzzyMatching: false, hrRevision, liveFixtureHrRevision: hrRevision,
+    certifiedProofHrRevision: typeof certifiedProofHrRevision === 'string' ? certifiedProofHrRevision : '',
+    certificationLiveReadbackRevision: typeof certificationLiveReadbackRevision === 'string' ? certificationLiveReadbackRevision : '',
+    crossRunHrRevisionEqualityRequired: false, sameRevisionWithinThisLiveFixtureRun: true, tests, cleanup: absence,
     classification: failure ? classify(failure) : null, code: failure ? str(failure.message).slice(0, 900) : null,
     cleanupError: cleanupFailure ? str(cleanupFailure.message).slice(0, 400) : null
   };
