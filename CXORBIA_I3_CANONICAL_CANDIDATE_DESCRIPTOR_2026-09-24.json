@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_TERMINAL_FRESH_REPROOF_PREP",
+  "status": "READY_FOR_TERMINAL_CERTIFICATION",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -12,8 +12,8 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
-  "terminalCertificationAllowed": false,
-  "activeBlocker": "CONTROL_PREP_ONLY — replace historical Run387 acceptance reuse with fresh evidence on VRM-044 candidate",
+  "terminalCertificationAllowed": true,
+  "activeBlocker": "C3 TERMINAL FRESH REPROOF ON EXISTING VRM044 DEV — NO REBUILD NO REDEPLOY",
   "nextFindingId": "VRM-045",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "PATCH_SAME_CERTIFY_FOR_FRESH_NEW_SOURCE_ACCEPTANCE_NO_REBUILD_THEN_READY",
+  "exactNextAction": "RUN_ONE_FRESH_TERMINAL_CERTIFY_THEN_SAME_ARTIFACT_LIVE_FIXTURES_THEN_GATE21",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -137,7 +137,7 @@
     "VRM043": "CXORBIA_I3_VRM043_TERMINAL_RECEIPT_2026-09-24.json"
   },
   "terminalResume": {
-    "mode": "EXISTING_VRM044_DEV_NO_REBUILD",
+    "mode": "EXISTING_VRM044_DEV_FRESH_TERMINAL_REPROOF_NO_REBUILD",
     "sourceSha": "34068805168e85cf15c9359c1dc4c4226c3062a6",
     "sourceTree": "91855599924b94ca7fbb025a570d8e1d77b30d3b",
     "buildProvenanceRunId": 36155675804,
@@ -251,7 +251,7 @@
     "production": false
   },
   "vrm044": {
-    "state": "DEV_MATERIALIZED_PASS_PENDING_TERMINAL_FRESH_REPROOF",
+    "state": "DEV_MATERIALIZED_PASS_TERMINAL_REPROOF_AUTHORIZED",
     "classification": "FUNCTIONAL_DEFECT",
     "title": "PLATFORM_CREATED_SHOPPER_IDENTITY_AUTHORITY_NOT_COMPOSED",
     "expected": "Platform-created shopper closes with Auth + claims + membership + profile + durable identityLink authority platform_created and remains visible to authorized Admin within project scope.",
