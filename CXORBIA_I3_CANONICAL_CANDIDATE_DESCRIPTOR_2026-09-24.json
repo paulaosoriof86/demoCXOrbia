@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "READY_FOR_TERMINAL_CERTIFICATION",
+  "status": "HOLD_C3_TERMINAL_CONTROL_FIX",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -12,8 +12,8 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
-  "terminalCertificationAllowed": true,
-  "activeBlocker": "C3 TERMINAL FRESH REPROOF ON EXISTING VRM044 DEV — RUN416 ENV FIXED",
+  "terminalCertificationAllowed": false,
+  "activeBlocker": "RUN419 RELEASE_COMPOSITION_FAILURE — HARDENED FOCAL STILL EXPECTS HR-ONLY SHOPPER POPULATION",
   "nextFindingId": "VRM-045",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN_ONE_FRESH_TERMINAL_CERTIFY_THEN_SAME_ARTIFACT_LIVE_FIXTURES_THEN_GATE21",
+  "exactNextAction": "ALIGN_HARDENED_FOCAL_HR_PLUS_AUTHORIZED_PLATFORM_POPULATION_THEN_RESUME_SAME_TERMINAL_CERTIFY_NO_REBUILD",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -90,27 +90,25 @@
     "attempt": 3
   },
   "lastTerminalAttempt": {
-    "runId": 36163602383,
-    "runNumber": 416,
-    "classification": "ENVIRONMENT_FAILURE",
-    "failedStep": "Build fresh same-revision C3 semantic oracle",
-    "code": "C3_SEMANTIC_ORACLE_ENV",
-    "cause": "workflow invocation omitted C3_HOSTING_URL although the existing semantic oracle contract requires C3_SEM_OUT, C3_HR_FILE, C3_HR_REVISION and C3_HOSTING_URL",
+    "runId": 36164635070,
+    "runNumber": 419,
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "observedHarnessClassification": "MAPPING_FAILURE",
+    "failedStep": "Execute fresh hardened C3 Admin and Paula desktop mobile focal",
+    "code": "SHOPPER_POPULATION",
+    "cause": "Fresh semantic oracle correctly reports external HR shopperPopulation=219. Hardened browser compared that HR-only count directly to the composed authorized operational population=220, which now legitimately includes one trusted project-scoped platform_created shopper after VRM-044.",
     "provenPassed": [
       "EXACT_VRM044_CANDIDATE_GUARD",
-      "VRM043_HISTORICAL_CLOSURE_BIND",
-      "RUN403_VRM044_FOCAL_BIND",
-      "RUN405_VRM044_MATERIALIZATION_BIND",
       "CURRENT_DEV_IDENTITY_NO_BUILD_NO_DEPLOY",
       "FRESH_I3_HUMAN_LIVE_ACCEPTANCE",
-      "FULL_HUMAN_ROUTE_COVERAGE_56"
+      "FULL_HUMAN_ROUTE_COVERAGE_56",
+      "PASS_C3_TERMINAL_HR_SEMANTIC_ORACLE"
     ],
-    "humanAcceptance": {
-      "decision": "PASS_I3_HUMAN_LIVE_ACCEPTANCE",
-      "hrRevision": "151c31f0a5fa3c848945c17cca42e8b08dce933e08ffabff281cd0373e25225e",
-      "firstIssue": null,
-      "paulaOsorioProof": true
+    "observed": {
+      "operationalShopperPopulation": 220,
+      "externalHrShopperPopulation": 219
     },
+    "expectedContract": "operational shoppers = external HR shoppers + exact trusted project-scoped platform_created shoppers; untrusted platform-only profiles remain excluded/review-only",
     "productSourceSha": "34068805168e85cf15c9359c1dc4c4226c3062a6",
     "productSourceChanged": false,
     "runtimeRevision": "cxorbia-live-hr-dev-00218-vgg",
