@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "READY_FOR_TERMINAL_CERTIFICATION",
+  "status": "HOLD_TERMINAL_CONTROL_FIX",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -12,8 +12,8 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
-  "terminalCertificationAllowed": true,
-  "activeBlocker": "C3 TERMINAL FRESH REPROOF ON EXISTING VRM044 DEV — NO REBUILD NO REDEPLOY",
+  "terminalCertificationAllowed": false,
+  "activeBlocker": "RUN410 RELEASE_COMPOSITION_FAILURE — terminal guard expected pre-authorization VRM044 state",
   "nextFindingId": "VRM-045",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN_ONE_FRESH_TERMINAL_CERTIFY_THEN_SAME_ARTIFACT_LIVE_FIXTURES_THEN_GATE21",
+  "exactNextAction": "FIX_TERMINAL_GUARD_FOR_AUTHORIZED_STATE_THEN_RESUME_NO_REBUILD",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -90,21 +90,14 @@
     "attempt": 3
   },
   "lastTerminalAttempt": {
-    "runId": 36053280653,
-    "runNumber": 375,
-    "status": "FAIL_AFTER_DEV_MATERIALIZATION_BEFORE_ARTIFACT",
-    "classification": "MAPPING_FAILURE",
-    "code": "ADMIN_REAL_SHOPPER_IDENTITY_NOT_RENDERABLE",
-    "productSourceSha": "04b288f7eee315fcb865ed86a8fb41786809edf9",
-    "runtimeRevision": "cxorbia-live-hr-dev-00217-v6z",
-    "runtimeDigest": "sha256:5c76c2ca643d95d49fa9f016ebce312d1dcc62621342ca7bf00bf33bd114ceba",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/7d787355f662e453",
-    "hrRevision": "e8ba2ac586ba8a99f6675ffc2ad3fae86bdc70b37aafbe971b611cc9804d2706",
-    "buildCount": 1,
-    "runtimeDeployCount": 1,
-    "hostingDeployCount": 1,
+    "runId": 36156837756,
+    "runNumber": 410,
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "failedStep": "Prove exact VRM-044 candidate and preserve historical VRM043 closure",
+    "cause": "workflow guard expected DEV_MATERIALIZED_PASS_PENDING_TERMINAL_FRESH_REPROOF after descriptor had correctly transitioned to DEV_MATERIALIZED_PASS_TERMINAL_REPROOF_AUTHORIZED",
+    "builds": 0,
+    "deploys": 0,
     "artifactCreated": false,
-    "gate21Run": false,
     "production": false
   },
   "vrm043": {
