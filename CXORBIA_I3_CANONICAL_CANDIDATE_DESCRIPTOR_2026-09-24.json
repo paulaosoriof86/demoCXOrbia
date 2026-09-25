@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_C3_TERMINAL_CONTROL_FIX",
+  "status": "READY_FOR_TERMINAL_CERTIFICATION",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "RUN390 RELEASE_COMPOSITION_FAILURE — HISTORICAL PROOF HR REVISION MUST NOT EQUAL CURRENT LIVE HR REVISION",
+  "activeBlocker": "C3 TERMINAL NO-REBUILD CERTIFICATION RESUME — HR REVISION SEMANTICS FIXED",
   "nextFindingId": "VRM-044",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "FIX_SAME_CERTIFY_HISTORICAL_VS_LIVE_HR_SEMANTICS_THEN_RESUME_NO_REBUILD",
+  "exactNextAction": "RUN_ONE_NO_REBUILD_CERTIFY_THEN_LIVE_FIXTURES_THEN_GATE21",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -169,6 +169,30 @@
     "productChanged": false,
     "builds": 0,
     "deploys": 0,
+    "production": false
+  },
+  "lastTerminalControlFix": {
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "rootCause": "historical Run387 proof HR revision was incorrectly coupled to later live HR revisions across terminal stages",
+    "certifiedProofHrRevision": "2b0114c39d64a0e3697667572de0dfdcffe476c5cd8112449fcab1da24e1085d",
+    "observedLiveHrRevisionAtFix": "f8181679418200dbda2dac0fd54f0c543afc75653b155a596c2dd11e9566c217",
+    "semantics": {
+      "certifiedProofHrRevision": "immutable evidence receipt from Run387",
+      "currentLiveHrRevisionAtCertification": "live provider health/readback at certify time",
+      "liveFixtureHrRevision": "fresh revision pinned within live-fixture run",
+      "crossRunRevisionEqualityRequired": false,
+      "sameRevisionWithinEachProof": true
+    },
+    "controlCommits": [
+      "a143894b41184334304f1186d72a22f5619ab869",
+      "deb1f65b8e0ac300c2b9f3d3fab79b810c77d10b",
+      "db241c63358eeb96667d93384026d9fb2eabbefa",
+      "0191e91c34f08c557ddee22e09abae46fd0fcde0"
+    ],
+    "productSourceSha": "04b288f7eee315fcb865ed86a8fb41786809edf9",
+    "productSourceChanged": false,
+    "rebuildAllowed": false,
+    "redeployAllowed": false,
     "production": false
   }
 }
