@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "cxorbia.i3.terminal-technical-ready.v1",
+  "generatedAt": "2026-09-25T18:13:24Z",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "state": "HOLD_PENDING_PAULA_VISUAL_ACCEPTANCE",
+  "decision": "PASS_I3_TERMINAL_TECHNICAL_READY_PENDING_HUMAN_VISUAL",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadSha": "84f21a89bd9b88a18be4f1d146f1ce390a2df79f",
+  "productSourceSha": "34068805168e85cf15c9359c1dc4c4226c3062a6",
+  "productSourceTree": "91855599924b94ca7fbb025a570d8e1d77b30d3b",
+  "run": {
+    "id": 36170757882,
+    "number": 429,
+    "conclusion": "success"
+  },
+  "certification": {
+    "artifactId": 10880415587,
+    "artifactUploadDigest": "sha256:358ac2dff84f5d690890de19b3167a3f1e30a484d62b03ed1067e5833f262286",
+    "certifiedArtifactSha256": "f63c5c70a2ff7d479b834ffbad0f3f40bfcb1f40e9c02807aaaf1df4f1ca95c6",
+    "fullHumanAcceptance": "PASS_I3_HUMAN_LIVE_ACCEPTANCE",
+    "expectedRoleRouteEntries": 56,
+    "moduleTruth": "PASS_C3_TERMINAL_MODULE_TRUTH_20_20",
+    "moduleCount": 20,
+    "gate20": "PASS",
+    "rebuildAfterCertification": false,
+    "buildCountThisRun": 0
+  },
+  "liveFixtures": {
+    "artifactId": 10880971280,
+    "artifactUploadDigest": "sha256:614a463214243c5602b2b50366a81edaa6fcf479619d1903352fcba4df175447",
+    "decision": "PASS_I3_LIVE_FIXTURES_V2",
+    "passed": 10,
+    "cleanup": true,
+    "builds": 0,
+    "deploys": 0,
+    "hrRevision": "1d2d58088ba8162e9f872ed2ff5a33ebbe026d468659b1cde74762e7ec3c870f"
+  },
+  "gate21": {
+    "artifactId": 10881041375,
+    "artifactUploadDigest": "sha256:ffed6d809e505dc02a6b76735e75f95d542c2c3d78e4827b817da42a5a5d11ab",
+    "verdict": "PASS_GATE21_ARTIFACT_FINGERPRINT",
+    "certificationArtifactSha256": "f63c5c70a2ff7d479b834ffbad0f3f40bfcb1f40e9c02807aaaf1df4f1ca95c6",
+    "sameRunId": 36170757882,
+    "noRebuild": true,
+    "noRecomposition": true
+  },
+  "runtime": {
+    "revision": "cxorbia-live-hr-dev-00218-vgg",
+    "digest": "sha256:21886c59ecbb7e18c4870a6c06f9423bd1b0c87f85e96ee892fffdcffbadb620",
+    "immutableImage": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev@sha256:21886c59ecbb7e18c4870a6c06f9423bd1b0c87f85e96ee892fffdcffbadb620"
+  },
+  "hosting": {
+    "site": "cxorbia-backend-dev",
+    "version": "sites/cxorbia-backend-dev/versions/64c788ea0371e97a",
+    "release": "sites/cxorbia-backend-dev/channels/live/releases/1790350946424000",
+    "url": "https://cxorbia-backend-dev.web.app"
+  },
+  "hrAuthority": {
+    "certifiedHistoricalProofRevision": "2b0114c39d64a0e3697667572de0dfdcffe476c5cd8112449fcab1da24e1085d",
+    "certificationLiveRevision": "1d2d58088ba8162e9f872ed2ff5a33ebbe026d468659b1cde74762e7ec3c870f",
+    "liveFixtureRevision": "1d2d58088ba8162e9f872ed2ff5a33ebbe026d468659b1cde74762e7ec3c870f",
+    "crossRunEqualityRequired": false,
+    "sameRevisionWithinEachProof": true
+  },
+  "vrm044": {
+    "state": "CLOSED_PROVEN",
+    "focalRunId": 36155194727,
+    "materializationRunId": 36155675804,
+    "terminalRunId": 36170757882
+  },
+  "production": "DO_NOT_TOUCH",
+  "i4Authorized": false,
+  "exactNextAction": "PAULA_VISUAL_ACCEPTANCE_ON_SINGLE_DEV_URL_THEN_I3_GO_IF_ACCEPTED",
+  "authorizationRequiredNow": false,
+  "authorizationRequiredForI4": true
+}
