@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_V21_DEV_MATERIALIZED_PENDING_STABLE_READBACK",
+  "status": "HOLD_V21_LIVE_FOCAL_HARNESS_ENVIRONMENT_FAILURE",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "da17406f8e03ef1071fe8ca384503853f51e6638",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "34068805168e85cf15c9359c1dc4c4226c3062a6",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V22_2026-09-25.json",
-  "findingsLedgerExpectedGitBlob": "7f939264bdcd0e004478199eba5c7320a2073277",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V23_2026-09-25.json",
+  "findingsLedgerExpectedGitBlob": "d1ee02b688c5084dba2f8b251ff253141380ff87",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "V21 exact DEV materialized; live focal blocked only by transient HR readback 504 / VRM-050 stable post-refresh reproof.",
+  "activeBlocker": "Run438 stable HR/DEV identity PASS; focal browser did not execute assertions because Playwright navigation destroyed evaluation context.",
   "nextFindingId": "VRM-054",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN_V21_READBACK_RESUME_ONLY_ON_EXISTING_DEV_WITH_ZERO_BUILD_ZERO_DEPLOY; THEN_FREEZE_LIVE_FOCAL_RESULT",
+  "exactNextAction": "PATCH_QA_BROWSER_NAVIGATION_RETRY_ONLY_AND_RERUN_V21_EXISTING_DEV_FOCAL_ZERO_REBUILD_ZERO_REDEPLOY",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -387,6 +387,20 @@
     "hostingDeploys": 1,
     "rulesDeploys": 0,
     "readbackOnlyResume": true,
+    "production": false
+  },
+  "lastFocalAttempt": {
+    "runId": 36198284266,
+    "runNumber": 438,
+    "classification": "ENVIRONMENT_FAILURE",
+    "stableHrRevision": "caf26f5f49820e444936aff23540b70461a4778352c1aeecc3fee5cc51180a18",
+    "stableHrPass": true,
+    "devIdentityPass": true,
+    "productDefect": false,
+    "failedBeforeAssertions": true,
+    "builds": 0,
+    "runtimeDeploys": 0,
+    "hostingDeploys": 0,
     "production": false
   }
 }
