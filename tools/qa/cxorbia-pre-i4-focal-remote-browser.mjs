@@ -112,6 +112,10 @@ async function signInMember(member,kind,route,options={}){
       const phase=code=>typeof d.phaseFlow==='function'?d.phaseFlow(code):null;
       const ranking=typeof d.shopperRankingRows==='function'?d.shopperRankingRows():[];
       const population=typeof d.shoppersFor==='function'?d.shoppersFor().filter(s=>typeof d.shopperDataLevel!=='function'||d.shopperDataLevel(s)!=='protected_reference'):[];
+      const trustedPlatformAuthorities=new Set(['provider_exact','tenant_adjudication','platform_created','migrated_exact']);
+      const authorizedPlatformPopulation=population.filter(s=>s?.__fullProfilePlatformOnly===true&&s?.__authorizedExactPlatformIdentity===true&&s?.__providerExactIdentityLink===true&&trustedPlatformAuthorities.has(String(s?.__providerIdentityAuthorityType||'').toLowerCase())&&Array.isArray(s?.projectIds)&&s.projectIds.map(String).includes(String(d.currentProjectId||'')));
+      const untrustedPlatformPopulation=population.filter(s=>(s?.__fullProfilePlatformOnly===true||s?.__platformOnlyProfile===true)&&!authorizedPlatformPopulation.includes(s));
+      const hrPopulation=population.filter(s=>!authorizedPlatformPopulation.includes(s)&&!untrustedPlatformPopulation.includes(s));
       const outOfRangeCount=(r==='dashboard'||r==='visitas')&&typeof d.visitFacets==='function'?(typeof d.visitas==='function'?d.visitas():[]).filter(v=>d.visitFacets(v)?.outOfRange===true).length:null;
       const technicalPrimaryCount=r==='shoppers'?population.filter(s=>{const name=String(s?.nombre||s?.name||'').trim(),id=String(s?.id||s?.shopperId||'').trim();return /^shopper_(?:gt|hn|sv|ni)_[a-z0-9]+$/i.test(name)||/^shp[-_][a-z0-9]+$/i.test(name)||(id&&name===id);}).length:null;
       const stats=s=>s&&typeof d.shopperStats==='function'?d.shopperStats(s.id||s.shopperId):null;
@@ -201,6 +205,9 @@ async function signInMember(member,kind,route,options={}){
         phaseGT:r==='dashboard'?phase('GT'):null,phaseHN:r==='dashboard'?phase('HN'):null,
         ranking:r==='dashboard'?{rows:ranking.length,population:population.length,missingRating:ranking.filter(x=>x.ratingAvailable===false).length}:null,
         shopperPopulation:r==='shoppers'?population.length:null,
+        hrShopperPopulation:r==='shoppers'?hrPopulation.length:null,
+        authorizedPlatformShopperPopulation:r==='shoppers'?authorizedPlatformPopulation.length:null,
+        untrustedPlatformShopperPopulation:r==='shoppers'?untrustedPlatformPopulation.length:null,
         technicalPrimaryCount,
         outOfRangeCount,
         qaReservationVisible,
@@ -232,7 +239,9 @@ async function signInMember(member,kind,route,options={}){
       const cases=arr(info.identityCases),unresolved=arr(info.unresolvedIdentityCases);
       if(cases.length!==(reference?.identityCases||[]).length||cases.some(x=>!x.row))throw new Error('MAPPING_FAILURE:EXACT_HR_IDENTITY_MISSING:'+JSON.stringify(cases));
       if(unresolved.length!==(reference?.unresolvedIdentityCases||[]).length||unresolved.some(x=>!x.row))throw new Error('MAPPING_FAILURE:UNRESOLVED_HR_IDENTITY_MISSING:'+JSON.stringify(unresolved));
-      if(Number.isFinite(Number(reference?.shopperPopulation))&&Number(info.shopperPopulation)!==Number(reference.shopperPopulation))throw new Error('MAPPING_FAILURE:SHOPPER_POPULATION:'+JSON.stringify({observed:info.shopperPopulation,expected:reference.shopperPopulation}));
+      if(Number.isFinite(Number(reference?.shopperPopulation))&&Number(info.hrShopperPopulation)!==Number(reference.shopperPopulation))throw new Error('MAPPING_FAILURE:HR_SHOPPER_POPULATION:'+JSON.stringify({observed:info.hrShopperPopulation,expected:reference.shopperPopulation,totalOperational:info.shopperPopulation,authorizedPlatform:info.authorizedPlatformShopperPopulation}));
+      if(Number(info.untrustedPlatformShopperPopulation)!==0)throw new Error('MAPPING_FAILURE:UNTRUSTED_PLATFORM_SHOPPER_PRESENT:'+JSON.stringify({count:info.untrustedPlatformShopperPopulation,totalOperational:info.shopperPopulation}));
+      if(Number(info.shopperPopulation)!==Number(reference.shopperPopulation)+Number(info.authorizedPlatformShopperPopulation||0))throw new Error('MAPPING_FAILURE:COMPOSED_SHOPPER_POPULATION:'+JSON.stringify({observed:info.shopperPopulation,hrExpected:reference.shopperPopulation,authorizedPlatform:info.authorizedPlatformShopperPopulation}));
       if(Number(info.technicalPrimaryCount)!==0)throw new Error('MAPPING_FAILURE:TECHNICAL_SHOPPER_PRIMARY_NAMES:'+JSON.stringify({count:info.technicalPrimaryCount}));
       if(new Set([...cases,...unresolved].map(x=>x.row.id)).size!==cases.length+unresolved.length)throw new Error('MAPPING_FAILURE:EXACT_HR_IDENTITY_COLLISION:'+JSON.stringify({cases,unresolved}));
       for(const x of cases){
