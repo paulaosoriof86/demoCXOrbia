@@ -351,7 +351,7 @@ try {
   if (!/^[a-f0-9]{64}$/.test(certifiedProofHrRevision)) throw new Error('SOURCE_FAILURE:CERTIFIED_PROOF_HR_REVISION_INVALID');
   if (!/^[a-f0-9]{64}$/.test(certificationLiveReadbackRevision)) throw new Error('SOURCE_FAILURE:CERTIFICATION_LIVE_HR_REVISION_INVALID');
   if (str(manifest.certifiedProofHrRevision) !== certifiedProofHrRevision) throw new Error('RELEASE_COMPOSITION_FAILURE:CERTIFIED_PROOF_HR_MANIFEST_MISMATCH');
-  if (str(human.sourceRevision) !== certifiedProofHrRevision) throw new Error('RELEASE_COMPOSITION_FAILURE:CERTIFIED_PROOF_HR_HUMAN_MISMATCH');
+  if (str(human.sourceRevision) !== certificationLiveReadbackRevision) throw new Error('RELEASE_COMPOSITION_FAILURE:CERTIFICATION_LIVE_HR_HUMAN_MISMATCH');
 
   const liveUrl = HOST + '/api/' + encodeURIComponent(TENANT) + '/' + encodeURIComponent(PROJECT_ID) + '/hr-live?format=json&livefixture=' + encodeURIComponent(RUN_ID) + '&ts=' + Date.now();
   const liveResp = await fetch(liveUrl, { cache: 'no-store', headers: { 'cache-control': 'no-cache, no-store, max-age=0' } });
