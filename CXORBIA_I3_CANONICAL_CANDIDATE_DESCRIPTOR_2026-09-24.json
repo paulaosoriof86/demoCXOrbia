@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "READY_FOR_TERMINAL_CERTIFICATION",
+  "status": "HOLD_VRM044_PROVEN",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "C3 TERMINAL NO-REBUILD CERTIFICATION RESUME — RUN396 STALE PROOF VARIABLE FIXED",
+  "activeBlocker": "VRM-044 PLATFORM_CREATED_SHOPPER_IDENTITY_AUTHORITY_NOT_COMPOSED",
   "nextFindingId": "VRM-044",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN_ONE_NO_REBUILD_CERTIFY_THEN_LIVE_FIXTURES_THEN_GATE21",
+  "exactNextAction": "RECOVER_APPROVED_PLATFORM_CREATED_IDENTITY_AUTHORITY_DELTA_IN_EXACT_OWNER_THEN_FOCAL_REPROOF",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -211,5 +211,53 @@
       "resolvedByCommit": "8f52612e80ed9550513d39be44ad94a2907ab534",
       "resolved": true
     }
+  },
+  "lastTerminalRun": {
+    "runId": 36076895117,
+    "runNumber": 399,
+    "certificationArtifactId": 10840770658,
+    "certificationArtifactUploadDigest": "sha256:08dc913251046f8c4905c29c90732ac067fbaeee1e7f5e8c5a2676aced4ee3c6",
+    "certifiedArtifactSha256": "7b455bc33e54b02cfcf9970368cd611d591938c6268f02c51fcf85689d98cb85",
+    "certification": "PASS",
+    "moduleTruth": "PASS_20_20_MATCH",
+    "gate20Receipts": "PASS",
+    "buildCountThisRun": 0,
+    "deployCountThisRun": 0,
+    "liveFixtures": {
+      "artifactId": 10839499530,
+      "artifactUploadDigest": "sha256:c936ea4de28c32965f1165584281058fa101d5292f757c033ece9b423bd13c02",
+      "decision": "HOLD_I3_LIVE_FIXTURES_V2",
+      "testsPassed": 7,
+      "testsRequired": 10,
+      "cleanup": true,
+      "classification": "FUNCTIONAL_DEFECT",
+      "observedHarnessCode": "RELEASE_COMPOSITION_FAILURE:ADMIN_PLATFORM_PROFILES_LOST_AFTER_AUTHORITY_RECOMPOSE",
+      "liveFixtureHrRevision": "f8181679418200dbda2dac0fd54f0c543afc75653b155a596c2dd11e9566c217",
+      "hrWrites": 0,
+      "production": false
+    },
+    "gate21": "NOT_RUN_DUE_TO_LIVE_FIXTURES_HOLD",
+    "production": false
+  },
+  "vrm044": {
+    "state": "PROVEN_P0_FOCAL",
+    "classification": "FUNCTIONAL_DEFECT",
+    "title": "PLATFORM_CREATED_SHOPPER_IDENTITY_AUTHORITY_NOT_COMPOSED",
+    "expected": "Platform-created shopper closes with Auth + claims + membership + profile + durable identityLink authority platform_created and remains visible to authorized Admin within project scope.",
+    "observed": "shopper.create durably created/authenticated profile and crosswalk; backend refresh read it; cumulative authority recomposition excluded it as no_exact_hr_crosswalk because no trusted shopperIdentityLink was materialized.",
+    "historicalAuthority": {
+      "evidence": "ITERATION3-I3-8-NEW-SHOPPER-PROVIDER-BACKED-LATEST.json",
+      "requiredShopperIdentityLinkWrites": 1,
+      "platformCreatedAuthority": true,
+      "designStatement": "Alta desde plataforma debe cerrar con Auth, claims, membership, profile e identity link platform_created."
+    },
+    "provenOwners": [
+      "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+      "app/adapters/cxorbia-provider-identity-link-runtime-v1.js",
+      "app/adapters/tya-cumulative-read-model-v2.js"
+    ],
+    "productSourceBefore": "04b288f7eee315fcb865ed86a8fb41786809edf9",
+    "productSourceChangeAuthorizedOnlyForExactApprovedDelta": true,
+    "production": false
   }
 }
