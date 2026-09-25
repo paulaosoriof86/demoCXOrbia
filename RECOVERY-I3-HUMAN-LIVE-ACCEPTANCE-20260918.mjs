@@ -143,8 +143,17 @@ const expectedOutOfRange=visits.filter(v=>str(v?.periodKey)===currentPeriodKey&&
 const hrNameRows=identityShoppers.map(x=>({id:str(x?.shopperId||x?.id),name:str(x?.nombre||x?.name||x?.displayName||x?.fullName)})).filter(x=>x.id&&humanAuthorityName(x.name));
 const unresolvedIdentityIds=identityShoppers.map(x=>({id:str(x?.shopperId||x?.id),name:str(x?.nombre||x?.name||x?.displayName||x?.fullName)})).filter(x=>x.id&&!humanAuthorityName(x.name)).map(x=>x.id);
 const summary=await p.evaluate(({projectId,hrNameRows,unresolvedIdentityIds,expectedOutOfRange})=>{
- const d=window.CX?.data||{},list=Array.isArray(d.shoppers)?d.shoppers:[],platform=list.filter(x=>x?.__platformOnlyProfile===true),nonPlatform=list.filter(x=>x?.__platformOnlyProfile!==true),ids=list.map(x=>String(x?.id||x?.shopperId||'')).filter(Boolean);
- const badFlags=platform.filter(x=>x?.__hrIdentityPresent!==false||x?.__hrOwnedOperational!==false||String(x?.identityAuthority||'')!=='platform_created_project_scoped'||x?.identityReviewRequired!==true||String(x?.identityReviewReason||'')!=='no_exact_hr_crosswalk').length;
+ const d=window.CX?.data||{},list=Array.isArray(d.shoppers)?d.shoppers:[],trustedPlatformAuthorities=new Set(['provider_exact','tenant_adjudication','platform_created','migrated_exact']);
+ const isAuthorizedPlatform=x=>x?.__fullProfilePlatformOnly===true&&x?.__authorizedExactPlatformIdentity===true;
+ const isLegacyPlatformReview=x=>x?.__platformOnlyProfile===true;
+ const platform=list.filter(x=>isAuthorizedPlatform(x)||isLegacyPlatformReview(x)),nonPlatform=list.filter(x=>!isAuthorizedPlatform(x)&&!isLegacyPlatformReview(x)),ids=list.map(x=>String(x?.id||x?.shopperId||'')).filter(Boolean);
+ const badFlags=platform.filter(x=>{
+   if(isAuthorizedPlatform(x)){
+     const authority=String(x?.__providerIdentityAuthorityType||'').toLowerCase();
+     return x?.__providerExactIdentityLink!==true||!trustedPlatformAuthorities.has(authority)||x?.identityReviewRequired===true;
+   }
+   return x?.__hrIdentityPresent!==false||x?.__hrOwnedOperational!==false||String(x?.identityAuthority||'')!=='platform_created_project_scoped'||x?.identityReviewRequired!==true||String(x?.identityReviewReason||'')!=='no_exact_hr_crosswalk';
+ }).length;
  const crossProject=platform.filter(x=>!Array.isArray(x?.projectIds)||!x.projectIds.map(String).includes(String(projectId))).length;
  const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
  const rowFor=id=>list.find(x=>String(x?.id||x?.shopperId||'')===id||(Array.isArray(x?.legacyLiveShopperIds)&&x.legacyLiveShopperIds.map(String).includes(id)));
