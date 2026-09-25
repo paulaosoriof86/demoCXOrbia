@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "READY_FOR_VRM044_DEV_MATERIALIZATION",
+  "status": "HOLD_TERMINAL_FRESH_REPROOF_PREP",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "34068805168e85cf15c9359c1dc4c4226c3062a6",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "04b288f7eee315fcb865ed86a8fb41786809edf9",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V15_2026-09-25.json",
-  "findingsLedgerExpectedGitBlob": "1fbad41a839e4bf96bdb0aae3906ef03dea88fbb",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V16_2026-09-25.json",
+  "findingsLedgerExpectedGitBlob": "71dcec16e6ecf4239c52f890b2eec3be662d2dcc",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-044 SOURCE FIXED — DEV MATERIALIZATION REQUIRED BEFORE TERMINAL REPROOF",
+  "activeBlocker": "CONTROL_PREP_ONLY — replace historical Run387 acceptance reuse with fresh evidence on VRM-044 candidate",
   "nextFindingId": "VRM-045",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "MATERIALIZE_EXACT_VRM044_SOURCE_ON_EXISTING_DEV_ONCE_THEN_SET_READY_FOR_TERMINAL_CERTIFICATION",
+  "exactNextAction": "PATCH_SAME_CERTIFY_FOR_FRESH_NEW_SOURCE_ACCEPTANCE_NO_REBUILD_THEN_READY",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -137,15 +137,20 @@
     "VRM043": "CXORBIA_I3_VRM043_TERMINAL_RECEIPT_2026-09-24.json"
   },
   "terminalResume": {
-    "mode": "PROVEN_VRM044_ONE_DEV_MATERIALIZATION_THEN_NO_REBUILD",
+    "mode": "EXISTING_VRM044_DEV_NO_REBUILD",
     "sourceSha": "34068805168e85cf15c9359c1dc4c4226c3062a6",
     "sourceTree": "91855599924b94ca7fbb025a570d8e1d77b30d3b",
-    "rebuildAllowed": true,
-    "redeployAllowed": true,
-    "justification": "VRM-044 FUNCTIONAL_DEFECT changed backend runtime provider and Hosting read-model; current DEV Run375 no longer corresponds to canonical candidate.",
-    "maxBuilds": 1,
-    "maxRuntimeDeploys": 1,
-    "maxHostingDeploys": 1,
+    "buildProvenanceRunId": 36155675804,
+    "runtimeRevision": "cxorbia-live-hr-dev-00218-vgg",
+    "runtimeDigest": "sha256:21886c59ecbb7e18c4870a6c06f9423bd1b0c87f85e96ee892fffdcffbadb620",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/64c788ea0371e97a",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790350946424000",
+    "hrRevisionAtMaterialization": "151c31f0a5fa3c848945c17cca42e8b08dce933e08ffabff281cd0373e25225e",
+    "rebuildAllowed": false,
+    "redeployAllowed": false,
+    "maxBuilds": 0,
+    "maxRuntimeDeploys": 0,
+    "maxHostingDeploys": 0,
     "production": false
   },
   "lastTerminalResumeAttempt": {
@@ -246,7 +251,7 @@
     "production": false
   },
   "vrm044": {
-    "state": "SOURCE_FIXED_FOCAL_REPROOF_PASS_PENDING_DEV_MATERIALIZATION",
+    "state": "DEV_MATERIALIZED_PASS_PENDING_TERMINAL_FRESH_REPROOF",
     "classification": "FUNCTIONAL_DEFECT",
     "title": "PLATFORM_CREATED_SHOPPER_IDENTITY_AUTHORITY_NOT_COMPOSED",
     "expected": "Platform-created shopper closes with Auth + claims + membership + profile + durable identityLink authority platform_created and remains visible to authorized Admin within project scope.",
@@ -271,6 +276,8 @@
       "focalRunId": 36155194727,
       "focalArtifactId": 10872772798,
       "focalArtifactDigest": "sha256:0567094d7b7cfe7f6b4fa277617466e385191a3ddf04c315f7a37c8e3ee3dbfd"
-    }
+    },
+    "materializationRunId": 36155675804,
+    "materializationArtifactId": 10873577340
   }
 }
