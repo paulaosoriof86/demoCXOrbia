@@ -532,7 +532,7 @@ jobs:
       - name: Build fresh same-revision C3 semantic oracle
         run: |
           set -Eeuo pipefail
-          C3_SEM_OUT="$OUT/c3-semantic" C3_HR_FILE="$OUT/hr-current-live.json" C3_FIREBASE_PROJECT="$PROJECT" C3_TENANT_ID="$TENANT_ID" C3_PROJECT_ID="$PROJECT_ID" C3_HR_REVISION="$CURRENT_LIVE_HR_REVISION" node tools/qa/cxorbia-i3-c3-terminal-semantic-oracle.mjs | tee "$OUT/c3-semantic/oracle.log"
+          C3_SEM_OUT="$OUT/c3-semantic" C3_HR_FILE="$OUT/hr-current-live.json" C3_FIREBASE_PROJECT="$PROJECT" C3_TENANT_ID="$TENANT_ID" C3_PROJECT_ID="$PROJECT_ID" C3_HR_REVISION="$CURRENT_LIVE_HR_REVISION" C3_HOSTING_URL="$HOSTING_URL" node tools/qa/cxorbia-i3-c3-terminal-semantic-oracle.mjs | tee "$OUT/c3-semantic/oracle.log"
           test "$(jq -r '.decision' "$OUT/c3-semantic/hr-contrast.json")" = "PASS_C3_TERMINAL_HR_SEMANTIC_ORACLE"
           test "$(jq -r '.sourceRevision' "$OUT/c3-semantic/hr-contrast.json")" = "$CURRENT_LIVE_HR_REVISION"
 
