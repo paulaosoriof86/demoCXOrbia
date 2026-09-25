@@ -388,3 +388,51 @@ test('PRE-I4 VRM-033 technical shopper IDs never become durable human names and 
   assert.equal((await auth.getUser(uid)).customClaims.shopperId,id);
 });
 
+
+
+test('VRM-044 shopper.create closes Auth membership profile crosswalk and platform_created identity link idempotently',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db),shopperId='platform-manual-1';
+  db.seed('tenants/tenant-a/users/admin-1',{active:true,tenantId:'tenant-a',role:'super',authNamespace:'staff',projectIds:['project-a']});
+  const command={
+    version:'cxorbia-command-adapter-v1',
+    commandType:'shopper.create',
+    tenantId:'tenant-a',
+    projectId:'project-a',
+    periodId:'project-a-2026-09',
+    entityId:shopperId,
+    idempotencyKey:'vrm044-platform-create-1',
+    authorization:{providerEnforcementRequired:true,permission:'shopper.create'},
+    payload:{profile:{firstName:'Ana',lastName:'Pérez',nombre:'Ana Pérez',pais:'GT',whatsapp:'50255550000',estado:'Activo',createdVia:'manual'}}
+  };
+  const first=await p.execute('staff-token',command);
+  assert.equal(first.ok,true);
+  assert.equal(first.providerAck,true);
+  assert.equal(first.entityId,shopperId);
+  assert.equal(first.platformCreatedAuthority,true);
+  assert.ok(first.identityLinkId);
+  const uid=stableShopperUid('tenant-a',shopperId);
+  const user=await auth.getUser(uid);
+  assert.equal(user.customClaims.shopperId,shopperId);
+  assert.equal(db.get(`tenants/tenant-a/users/${uid}`).shopperId,shopperId);
+  assert.equal(db.get(`tenants/tenant-a/shoppers/${shopperId}`).sourceType,'platform');
+  assert.equal(db.get(`tenants/tenant-a/shopperIdentityCrosswalk/${shopperId}`).identityMode,'stable_platform_shopper_id');
+  const linkPath=`tenants/tenant-a/shopperIdentityLinks/${first.identityLinkId}`;
+  const link=db.get(linkPath);
+  assert.equal(link.canonicalShopperId,shopperId);
+  assert.equal(link.sourceSystem,'platform');
+  assert.equal(link.sourceIdentityKey,`platform:tenant-a:${shopperId}`);
+  assert.deepEqual(link.sourceAliases,[`platform:tenant-a:${shopperId}`,shopperId]);
+  assert.equal(link.authorityType,'platform_created');
+  assert.equal(link.periodIndependent,true);
+  assert.equal(link.providerAck,true);
+  assert.equal(link.projectScope,'*');
+  assert.ok(link.authorityRef);
+  const pathsBefore=db.paths(),createdBefore=auth.created;
+  const second=await p.execute('staff-token',command);
+  assert.equal(second.ok,true);
+  assert.equal(second.idempotentReplay,true);
+  assert.equal(second.providerWrites,0);
+  assert.deepEqual(db.paths(),pathsBefore);
+  assert.equal(auth.created,createdBefore);
+  assert.equal(db.paths().filter(x=>x.includes('/shopperIdentityLinks/')).length,1);
+});
