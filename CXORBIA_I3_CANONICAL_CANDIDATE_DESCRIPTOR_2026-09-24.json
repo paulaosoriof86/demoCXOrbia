@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "READY_FOR_TERMINAL_CERTIFICATION",
+  "status": "HOLD_C3_TERMINAL_IDENTITY_READBACK",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -12,8 +12,8 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
-  "terminalCertificationAllowed": true,
-  "activeBlocker": "C3 TERMINAL FRESH REPROOF ON EXISTING VRM044 DEV — RUN419 FOCAL POPULATION CONTROL FIXED",
+  "terminalCertificationAllowed": false,
+  "activeBlocker": "RUN422 RELEASE_COMPOSITION_FAILURE — CURRENT DEV IDENTITY ASSERTION FAILED BEFORE FRESH ACCEPTANCE",
   "nextFindingId": "VRM-045",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN_ONE_FRESH_TERMINAL_CERTIFY_THEN_SAME_ARTIFACT_LIVE_FIXTURES_THEN_GATE21",
+  "exactNextAction": "LOG_EXACT_RUNTIME_DIGEST_HOSTING_HR_READBACK_THEN_RESUME_SAME_CERTIFY_NO_REBUILD",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -90,34 +90,22 @@
     "attempt": 3
   },
   "lastTerminalAttempt": {
-    "runId": 36164635070,
-    "runNumber": 419,
+    "runId": 36166043214,
+    "runNumber": 422,
     "classification": "RELEASE_COMPOSITION_FAILURE",
-    "observedHarnessClassification": "MAPPING_FAILURE",
-    "failedStep": "Execute fresh hardened C3 Admin and Paula desktop mobile focal",
-    "code": "SHOPPER_POPULATION",
-    "cause": "Fresh semantic oracle correctly reports external HR shopperPopulation=219. Hardened browser compared that HR-only count directly to the composed authorized operational population=220, which now legitimately includes one trusted project-scoped platform_created shopper after VRM-044.",
+    "failedStep": "Reprove current DEV identity without build or deploy",
     "provenPassed": [
+      "CANONICAL_CANDIDATE_AUTHORITY",
       "EXACT_VRM044_CANDIDATE_GUARD",
-      "CURRENT_DEV_IDENTITY_NO_BUILD_NO_DEPLOY",
-      "FRESH_I3_HUMAN_LIVE_ACCEPTANCE",
-      "FULL_HUMAN_ROUTE_COVERAGE_56",
-      "PASS_C3_TERMINAL_HR_SEMANTIC_ORACLE"
+      "RUN387_RUN403_RUN405_RECEIPT_BINDING"
     ],
-    "observed": {
-      "operationalShopperPopulation": 220,
-      "externalHrShopperPopulation": 219
-    },
-    "expectedContract": "operational shoppers = external HR shoppers + exact trusted project-scoped platform_created shoppers; untrusted platform-only profiles remain excluded/review-only",
-    "productSourceSha": "34068805168e85cf15c9359c1dc4c4226c3062a6",
-    "productSourceChanged": false,
-    "runtimeRevision": "cxorbia-live-hr-dev-00218-vgg",
-    "runtimeDigest": "sha256:21886c59ecbb7e18c4870a6c06f9423bd1b0c87f85e96ee892fffdcffbadb620",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/64c788ea0371e97a",
     "builds": 0,
-    "deploys": 0,
+    "runtimeDeploys": 0,
+    "hostingDeploys": 0,
     "artifactCreated": false,
-    "production": false
+    "gate21Run": false,
+    "production": false,
+    "readbackRequired": true
   },
   "vrm043": {
     "classification": "RELEASE_COMPOSITION_FAILURE",
