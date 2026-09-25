@@ -39,6 +39,33 @@ test('PRE-I4 VRM-033 HR human name wins over technical durable profile and platf
   assert.equal(out.visits[0].canonicalFacets.outOfRange,true);
 });
 
+test('PRE-I4 VRM-044 exact platform_created authority presents only the scoped platform shopper',()=>{
+  const api=readModel();
+  const hr={
+    currentProjectId:'cinepolis',currentPeriodId:'cinepolis-2026-09',sourceRevision:'rev-vrm044',
+    projects:[{id:'cinepolis-2026-09',projectId:'cinepolis',periodKey:'2026-09'}],
+    shoppers:[],visits:[],posts:[]
+  };
+  const protectedPayload={
+    shoppers:[
+      {id:'platform-authorized',shopperId:'platform-authorized',nombre:'Shopper Plataforma Autorizado',username:'shopper.autorizado',projectIds:['cinepolis'],__providerExactIdentityLink:true,__providerIdentityAuthorityType:'platform_created'},
+      {id:'platform-untrusted',shopperId:'platform-untrusted',nombre:'Shopper Plataforma Sin Autoridad',username:'shopper.sin.autoridad',projectIds:['cinepolis']},
+      {id:'platform-other-project',shopperId:'platform-other-project',nombre:'Shopper Otro Proyecto',username:'shopper.otro',projectIds:['otro-proyecto'],__providerExactIdentityLink:true,__providerIdentityAuthorityType:'platform_created'}
+    ],
+    visits:[],certifications:[],liquidations:[],postulations:[],applications:[]
+  };
+  const out=api.compose({hr,protectedPayload});
+  assert.deepEqual(out.shoppers.map(x=>x.id),['platform-authorized']);
+  assert.equal(out.shoppers[0].__authorizedExactPlatformIdentity,true);
+  assert.equal(out.platformOnlyProfiles.find(x=>x.id==='platform-authorized').presentedToAuthorizedStaff,true);
+  assert.equal(out.platformOnlyProfiles.find(x=>x.id==='platform-untrusted').presentedToAuthorizedStaff,false);
+  assert.equal(out.platformOnlyProfiles.find(x=>x.id==='platform-other-project').presentedToAuthorizedStaff,false);
+  assert.equal(out.identityReviewQueue.some(x=>x.id==='platform-authorized'),false);
+  assert.equal(out.identityReviewQueue.some(x=>x.id==='platform-untrusted'&&x.reason==='no_exact_hr_crosswalk'),true);
+  assert.equal(out.diagnostics.platformOnlyProfilesPresented,1);
+  assert.equal(out.diagnostics.platformOnlyPresentationProjectScoped,true);
+});
+
 test('PRE-I4 VRM-040 top-level live outOfRange remains true even when estado is another operational stage',()=>{
   const api=readModel();
   assert.equal(api.facets({estado:'agendada',outOfRange:true}).outOfRange,true);
