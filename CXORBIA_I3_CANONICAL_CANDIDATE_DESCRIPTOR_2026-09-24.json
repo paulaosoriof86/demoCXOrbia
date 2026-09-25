@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_C3_TERMINAL_CONTROL_FIX",
+  "status": "READY_FOR_TERMINAL_CERTIFICATION",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -12,8 +12,8 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
-  "terminalCertificationAllowed": false,
-  "activeBlocker": "RUN413 RELEASE_COMPOSITION_FAILURE — HUMAN ACCEPTANCE STILL CLASSIFIES AUTHORIZED PLATFORM_CREATED SHOPPER AS HR",
+  "terminalCertificationAllowed": true,
+  "activeBlocker": "C3 TERMINAL FRESH REPROOF ON EXISTING VRM044 DEV — RUN413 HARNESS CLASSIFICATION FIXED",
   "nextFindingId": "VRM-045",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "ALIGN_HUMAN_ACCEPTANCE_PLATFORM_CREATED_CLASSIFICATION_THEN_RESUME_SAME_TERMINAL_CERTIFY_NO_REBUILD",
+  "exactNextAction": "RUN_ONE_FRESH_TERMINAL_CERTIFY_THEN_SAME_ARTIFACT_LIVE_FIXTURES_THEN_GATE21",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -199,45 +199,22 @@
     "production": false
   },
   "lastTerminalControlFix": {
-    "classification": "RELEASE_COMPOSITION_FAILURE",
-    "rootCause": "historical Run387 proof HR revision was incorrectly coupled to later live HR revisions across terminal stages",
-    "certifiedProofHrRevision": "2b0114c39d64a0e3697667572de0dfdcffe476c5cd8112449fcab1da24e1085d",
-    "observedLiveHrRevisionAtFix": "f8181679418200dbda2dac0fd54f0c543afc75653b155a596c2dd11e9566c217",
-    "semantics": {
-      "certifiedProofHrRevision": "immutable evidence receipt from Run387",
-      "currentLiveHrRevisionAtCertification": "live provider health/readback at certify time",
-      "liveFixtureHrRevision": "fresh revision pinned within live-fixture run",
-      "crossRunRevisionEqualityRequired": false,
-      "sameRevisionWithinEachProof": true
-    },
-    "controlCommits": [
-      "a143894b41184334304f1186d72a22f5619ab869",
-      "deb1f65b8e0ac300c2b9f3d3fab79b810c77d10b",
-      "db241c63358eeb96667d93384026d9fb2eabbefa",
-      "0191e91c34f08c557ddee22e09abae46fd0fcde0"
-    ],
-    "productSourceSha": "04b288f7eee315fcb865ed86a8fb41786809edf9",
-    "productSourceChanged": false,
-    "rebuildAllowed": false,
-    "redeployAllowed": false,
-    "production": false,
-    "followup": {
-      "runId": 36076746697,
-      "runNumber": 396,
+    "run413": {
       "classification": "RELEASE_COMPOSITION_FAILURE",
-      "provenPassed": [
-        "STEP9_CURRENT_DEV_IDENTITY_REVISION_AWARE",
-        "STEP10_PRETERMINAL_BYTE_PARITY"
-      ],
-      "failedStep": "Derive read-only QA and Client receipts from Run387 acceptance",
-      "cause": "receipt builder still referenced removed legacy variable PINNED_HR_REVISION; correct authority is CERTIFIED_PROOF_HR_REVISION",
-      "productChanged": false,
-      "builds": 0,
-      "deploys": 0,
-      "production": false,
-      "resolvedByCommit": "8f52612e80ed9550513d39be44ad94a2907ab534",
-      "resolved": true
-    }
+      "observedHarnessClassification": "MAPPING_FAILURE",
+      "code": "ADMIN_COMPOSED_SHOPPER_CONTRACT_MISMATCH",
+      "rootCause": "human acceptance classified trusted platform_created shopper only via legacy __platformOnlyProfile flag and therefore counted the authorized platform shopper as HR",
+      "productDefect": false,
+      "productSourceChanged": false
+    },
+    "correctionCommit": "88a3d7e52a9b3c4d8bfa404f4412a7d00f95324c",
+    "holdGuardRunId": 36163511906,
+    "holdGuardRunNumber": 415,
+    "holdGuardDecision": "PASS_CANONICAL_CANDIDATE_AUTHORITY",
+    "correctedContract": "HR shopper count excludes exact trusted project-scoped platform_created rows; those rows are counted separately as authoritative platform shoppers. Untrusted platform-only profiles remain excluded/review-only.",
+    "rebuilds": 0,
+    "deploys": 0,
+    "production": false
   },
   "lastTerminalRun": {
     "runId": 36076895117,
