@@ -53,9 +53,10 @@ jobs:
           test "$(jq -r '.deployCountThisRun' "$LIVE")" = "0"
           test "$(jq -r '.production' "$LIVE")" = "false"
           test "$(jq '[.tests[] | select(.ok==true)] | length' "$LIVE")" = "10"
-          CERT_HR_REVISION="$(jq -r '.hrRevision // empty' "$OUT_DIR/certification/result.json")"
-          [[ "$CERT_HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
-          test "$(jq -r '.hrRevision // empty' "$LIVE")" = "$CERT_HR_REVISION"
+          LIVE_FIXTURE_HR_REVISION="$(jq -r '.liveFixtureHrRevision // .hrRevision // empty' "$LIVE")"
+          [[ "$LIVE_FIXTURE_HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
+          test "$(jq -r '.crossRunHrRevisionEqualityRequired' "$LIVE")" = "false"
+          test "$(jq -r '.sameRevisionWithinThisLiveFixtureRun' "$LIVE")" = "true"
           sha256sum "$LIVE" | awk '{print $1}' > "$OUT_DIR/live-fixtures.sha256"
 
       - name: Resolve release identity only from same-run certification manifest
@@ -100,14 +101,34 @@ jobs:
           test -f "$CERT/full-human-acceptance/human-live-acceptance.json"
           test -f "$CERT/full-human-acceptance/i3-functional-probes.json"
           test -f "$CERT/canonical-route-inventory.json"
-          test -f "$CERT/hr-fresh.json"
-          HR_REVISION="$(jq -r '.hrRevision // empty' "$CERT/result.json")"
-          HR_EVIDENCE_SHA="$(jq -r '.hrEvidenceSha256 // empty' "$CERT/result.json")"
-          [[ "$HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
-          [[ "$HR_EVIDENCE_SHA" =~ ^[0-9a-f]{64}$ ]]
-          test "$(jq -r '._runtime.revision // .sourceRevision // empty' "$CERT/hr-fresh.json")" = "$HR_REVISION"
-          test "$(jq -r '.sourceRevision' "$CERT/full-human-acceptance/human-live-acceptance.json")" = "$HR_REVISION"
-          test "$(sha256sum "$CERT/hr-fresh.json" | awk '{print $1}')" = "$HR_EVIDENCE_SHA"
+          test -f "$CERT/hr-proof-run387.json"
+          test -f "$CERT/hr-current-live.json"
+          test -f "$CERT/hr-current-live-meta.json"
+          test -f "$CERT/hr-revision-separation.json"
+          CERTIFIED_PROOF_HR_REVISION="$(jq -r '.certifiedProofHrRevision // empty' "$CERT/result.json")"
+          CERTIFICATION_LIVE_HR_REVISION="$(jq -r '.currentLiveHrRevisionAtCertification // empty' "$CERT/result.json")"
+          PROOF_HR_EVIDENCE_SHA="$(jq -r '.certifiedProofHrEvidenceSha256 // empty' "$CERT/result.json")"
+          CURRENT_LIVE_HR_EVIDENCE_SHA="$(jq -r '.currentLiveHrEvidenceSha256 // empty' "$CERT/result.json")"
+          CURRENT_LIVE_HR_META_SHA="$(jq -r '.currentLiveHrMetaSha256 // empty' "$CERT/result.json")"
+          HR_SEPARATION_SHA="$(jq -r '.hrRevisionSeparationEvidenceSha256 // empty' "$CERT/result.json")"
+          [[ "$CERTIFIED_PROOF_HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$CERTIFICATION_LIVE_HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$PROOF_HR_EVIDENCE_SHA" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$CURRENT_LIVE_HR_EVIDENCE_SHA" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$CURRENT_LIVE_HR_META_SHA" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$HR_SEPARATION_SHA" =~ ^[0-9a-f]{64}$ ]]
+          test "$(jq -r '._runtime.revision // .sourceRevision // empty' "$CERT/hr-proof-run387.json")" = "$CERTIFIED_PROOF_HR_REVISION"
+          test "$(jq -r '.sourceRevision' "$CERT/full-human-acceptance/human-live-acceptance.json")" = "$CERTIFIED_PROOF_HR_REVISION"
+          test "$(jq -r '._runtime.revision // .sourceRevision // empty' "$CERT/hr-current-live.json")" = "$CERTIFICATION_LIVE_HR_REVISION"
+          test "$(jq -r '.revision // empty' "$CERT/hr-current-live-meta.json")" = "$CERTIFICATION_LIVE_HR_REVISION"
+          test "$(jq -r '.crossRunHrRevisionEqualityRequired' "$CERT/result.json")" = "false"
+          test "$(jq -r '.decision' "$CERT/hr-revision-separation.json")" = "PASS_I3_HR_PROOF_LIVE_REVISION_SEPARATION"
+          test "$(jq -r '.certifiedProofHrRevision' "$CERT/hr-revision-separation.json")" = "$CERTIFIED_PROOF_HR_REVISION"
+          test "$(jq -r '.currentLiveHrRevision' "$CERT/hr-revision-separation.json")" = "$CERTIFICATION_LIVE_HR_REVISION"
+          test "$(sha256sum "$CERT/hr-proof-run387.json" | awk '{print $1}')" = "$PROOF_HR_EVIDENCE_SHA"
+          test "$(sha256sum "$CERT/hr-current-live.json" | awk '{print $1}')" = "$CURRENT_LIVE_HR_EVIDENCE_SHA"
+          test "$(sha256sum "$CERT/hr-current-live-meta.json" | awk '{print $1}')" = "$CURRENT_LIVE_HR_META_SHA"
+          test "$(sha256sum "$CERT/hr-revision-separation.json" | awk '{print $1}')" = "$HR_SEPARATION_SHA"
 
           cmp --silent "$CERT/i3-certification-manifest.json" "$CERT/result.json"
           test "$(jq -r '.decision' "$CERT/result.json")" = "PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21"
@@ -198,8 +219,11 @@ jobs:
           HOSTING_RELEASE_TIME="$(jq -r '.hostingReleaseTime' "$CERT/result.json")"
           CONTROL_HEAD="$(jq -r '.controlHeadSha' "$CERT/result.json")"
           LIVE_FIXTURE_SHA="$(cat "$OUT_DIR/live-fixtures.sha256")"
-          HR_REVISION="$(jq -r '.hrRevision' "$CERT/result.json")"
-          HR_EVIDENCE_SHA="$(jq -r '.hrEvidenceSha256' "$CERT/result.json")"
+          CERTIFIED_PROOF_HR_REVISION="$(jq -r '.certifiedProofHrRevision' "$CERT/result.json")"
+          CERTIFICATION_LIVE_HR_REVISION="$(jq -r '.currentLiveHrRevisionAtCertification' "$CERT/result.json")"
+          LIVE_FIXTURE_HR_REVISION="$(jq -r '.liveFixtureHrRevision // .hrRevision' "$OUT_DIR/live-fixtures/i3-live-fixtures-result.json")"
+          PROOF_HR_EVIDENCE_SHA="$(jq -r '.certifiedProofHrEvidenceSha256' "$CERT/result.json")"
+          CURRENT_LIVE_HR_EVIDENCE_SHA="$(jq -r '.currentLiveHrEvidenceSha256' "$CERT/result.json")"
           MODULE_TRUTH_SHA="$(jq -r '.moduleTruthEvidenceSha256' "$CERT/result.json")"
           MODULE_COUNT="$(jq -r '.moduleTruth.modules|length' "$CERT/result.json")"
 
@@ -212,7 +236,9 @@ jobs:
             --arg artifactSha "$ARTIFACT_SHA" \
             --arg liveFixtureArtifactName "$LIVE_FIXTURE_ARTIFACT_NAME" \
             --arg liveFixtureSha "$LIVE_FIXTURE_SHA" \
-            --arg hrRevision "$HR_REVISION" --arg hrEvidenceSha "$HR_EVIDENCE_SHA" \
+            --arg certifiedProofHrRevision "$CERTIFIED_PROOF_HR_REVISION" --arg proofHrEvidenceSha "$PROOF_HR_EVIDENCE_SHA" \
+            --arg certificationLiveHrRevision "$CERTIFICATION_LIVE_HR_REVISION" --arg certificationLiveHrEvidenceSha "$CURRENT_LIVE_HR_EVIDENCE_SHA" \
+            --arg liveFixtureHrRevision "$LIVE_FIXTURE_HR_REVISION" \
             --arg gate20Sha "$GATE20_SHA" \
             --arg fullHumanSha "$FULL_HUMAN_SHA" \
             --arg routeInventorySha "$ROUTE_INVENTORY_SHA" \
@@ -223,7 +249,7 @@ jobs:
             --arg hostingRelease "$HOSTING_RELEASE" \
             --arg hostingVersion "$HOSTING_VERSION" \
             --arg hostingReleaseTime "$HOSTING_RELEASE_TIME" \
-            '{schemaVersion:"cxorbia.recovery.i3.gate21.same-artifact.v1",gate:21,verdict:"PASS_GATE21_ARTIFACT_FINGERPRINT",production:false,source:{sha:$source,treeSha:$tree,controlHeadSha:$control},certification:{runId:$run,artifactName:$artifactName,artifactSha256:$artifactSha,buildCount:1,rebuildAfterCertification:false},liveFixtures:{artifactName:$liveFixtureArtifactName,evidenceSha256:$liveFixtureSha,decision:"PASS_I3_LIVE_FIXTURES_V2",passed:10,cleanup:true,builds:0,deploys:0,production:false,hrRevision:$hrRevision},hrAuthority:{revision:$hrRevision,evidenceSha256:$hrEvidenceSha,singleRevisionPerRun:true},gate20:{sourceSha:$source,evidenceSha256:$gate20Sha},fullHumanAcceptance:{decision:"PASS_I3_HUMAN_LIVE_ACCEPTANCE",evidenceSha256:$fullHumanSha,routeInventorySha256:$routeInventorySha,expectedRoleRouteEntries:56,beforeArtifact:true},moduleTruth:{evidenceSha256:$moduleTruthSha,moduleCount:$moduleCount,allModulesMatch:true},hostingCertifiedArtifact:{releaseName:$hostingRelease,versionName:$hostingVersion,releaseTime:$hostingReleaseTime},runtimeCertifiedArtifact:{revision:$runtimeRevision,imageDigest:$runtimeDigest,immutableImage:$immutableImage},promotion:{noRebuild:true,noRecomposition:true,exactCertifiedArtifactRequired:true,productionAuthorizationRequired:true},writes:{builds:0,hostingDeploys:0,runtimeDeploys:0,providerWrites:0,hrWrites:0,production:false}}' \
+            '{schemaVersion:"cxorbia.recovery.i3.gate21.same-artifact.v1",gate:21,verdict:"PASS_GATE21_ARTIFACT_FINGERPRINT",production:false,source:{sha:$source,treeSha:$tree,controlHeadSha:$control},certification:{runId:$run,artifactName:$artifactName,artifactSha256:$artifactSha,buildCount:1,rebuildAfterCertification:false},liveFixtures:{artifactName:$liveFixtureArtifactName,evidenceSha256:$liveFixtureSha,decision:"PASS_I3_LIVE_FIXTURES_V2",passed:10,cleanup:true,builds:0,deploys:0,production:false,hrRevision:$liveFixtureHrRevision},hrAuthority:{certifiedProofRevision:$certifiedProofHrRevision,certifiedProofEvidenceSha256:$proofHrEvidenceSha,certificationLiveReadbackRevision:$certificationLiveHrRevision,certificationLiveReadbackEvidenceSha256:$certificationLiveHrEvidenceSha,liveFixtureRevision:$liveFixtureHrRevision,crossRunRevisionEqualityRequired:false,sameRevisionWithinEachProof:true},gate20:{sourceSha:$source,evidenceSha256:$gate20Sha},fullHumanAcceptance:{decision:"PASS_I3_HUMAN_LIVE_ACCEPTANCE",evidenceSha256:$fullHumanSha,routeInventorySha256:$routeInventorySha,expectedRoleRouteEntries:56,beforeArtifact:true},moduleTruth:{evidenceSha256:$moduleTruthSha,moduleCount:$moduleCount,allModulesMatch:true},hostingCertifiedArtifact:{releaseName:$hostingRelease,versionName:$hostingVersion,releaseTime:$hostingReleaseTime},runtimeCertifiedArtifact:{revision:$runtimeRevision,imageDigest:$runtimeDigest,immutableImage:$immutableImage},promotion:{noRebuild:true,noRecomposition:true,exactCertifiedArtifactRequired:true,productionAuthorizationRequired:true},writes:{builds:0,hostingDeploys:0,runtimeDeploys:0,providerWrites:0,hrWrites:0,production:false}}' \
             > "$OUT_DIR/GATE21_RELEASE_MANIFEST.json"
           sha256sum "$OUT_DIR/GATE21_RELEASE_MANIFEST.json" > "$OUT_DIR/GATE21_RELEASE_MANIFEST.sha256"
 
