@@ -7,8 +7,8 @@
   "productSourceSha": "da17406f8e03ef1071fe8ca384503853f51e6638",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "34068805168e85cf15c9359c1dc4c4226c3062a6",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V25_2026-09-25.json",
-  "findingsLedgerExpectedGitBlob": "1d5ba25196861da68f0e7962f282d31d741ebb37",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V26_2026-09-26.json",
+  "findingsLedgerExpectedGitBlob": "c575510e61ee8f4c2d86dc64636311431851d8c4",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN_V25_READ_ONLY_FORENSIC_DIAGNOSTIC; NO PRODUCT CHANGE UNTIL EXACT OWNERS AND SOURCE TRUTH ARE PROVEN",
+  "exactNextAction": "RUN_V25_READ_ONLY_FORENSIC_DIAGNOSTIC_AFTER_V26_GOVERNANCE_POINTER_FIX; NO_PRODUCT_CHANGE",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
