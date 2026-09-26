@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_V28_SOURCE_READY_FOR_DEV_REMEDIATION",
+  "status": "HOLD_V28_DEV_MATERIALIZED_REPAIR_RESUME_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "e8635de1fa5e086a7fd0ca92ba1a393466cf63e4",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "34068805168e85cf15c9359c1dc4c4226c3062a6",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V28_2026-09-26.json",
-  "findingsLedgerExpectedGitBlob": "d990e1ae0b5cf48cefda2ec62a94d69d7009692f",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V29_2026-09-26.json",
+  "findingsLedgerExpectedGitBlob": "541b00d6c1f88bd0b4375fe36e73b19f2c55dc4c",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "V28 source fixes ready; DEV durable repair + live reproof required. VRM-060 measured in same run.",
+  "activeBlocker": "V28 exact DEV materialization complete; durable repair stopped only by transient HR HTTP 503. Resume same DEV with zero rebuild/redeploy.",
   "nextFindingId": "VRM-063",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "MATERIALIZE V28 ON DEV ONCE; ARCHIVE/REPAIR DURABLE DATA; RUN ADMIN+SHOPPER LIVE PROOFS; NO PRODUCTION.",
+  "exactNextAction": "RUN V28 RESUME ON EXISTING DEV: durable repair + live reproof only; ZERO BUILD/DEPLOY; NO PRODUCTION.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -365,18 +365,17 @@
     "trigger": "DESCRIPTOR_PUSH_CANONICAL_WORKFLOW"
   },
   "currentMaterialization": {
-    "sourceSha": "da17406f8e03ef1071fe8ca384503853f51e6638",
-    "sourceTree": "f733f99293dca5437a6e33ab81434d844a1d5f5c",
-    "runId": 36197719442,
-    "runtimeRevision": "cxorbia-live-hr-dev-00219-p6j",
-    "runtimeDigest": "sha256:f3cec6e52771ec29af46f0d22c6921bdc0327ce599c82a556ac46432b2e3c946",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/f8dce3d817c000dc",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790376120337000",
+    "sourceSha": "e8635de1fa5e086a7fd0ca92ba1a393466cf63e4",
+    "sourceTree": "7c0ecdf11ed69bff770bd269ab9d1b948d4a160e",
+    "runId": 36207577949,
+    "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+    "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/b69bde3f2c2f5182",
     "buildCount": 1,
     "runtimeDeploys": 1,
     "hostingDeploys": 1,
     "rulesDeploys": 0,
-    "readbackOnlyResume": true,
+    "repairResumeOnly": true,
     "production": false
   },
   "lastFocalAttempt": {

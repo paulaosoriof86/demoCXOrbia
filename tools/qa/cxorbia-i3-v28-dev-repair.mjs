@@ -72,8 +72,17 @@ for(const d of await queryEq(reservations,'shopperId',INVALID)){
 }
 
 // 3) Trigger the new provider against the live source. The trusted identity link prevents phantom recreation.
-const response=await fetch(HR_URL,{headers:{'cache-control':'no-cache,no-store,max-age=0'}});
-if(!response.ok)throw new Error('ENVIRONMENT_FAILURE:V28_HR_HTTP_'+response.status);
+let response=null,lastHttpStatus=0,lastHttpError=null;
+for(let attempt=1;attempt<=20;attempt++){
+  try{
+    response=await fetch(HR_URL+'&attempt='+attempt,{headers:{'cache-control':'no-cache,no-store,max-age=0'}});
+    lastHttpStatus=Number(response.status||0);
+    if(response.ok)break;
+    if(![429,500,502,503,504].includes(lastHttpStatus))throw new Error('ENVIRONMENT_FAILURE:V28_HR_HTTP_'+lastHttpStatus);
+  }catch(error){lastHttpError=error;}
+  if(attempt<20)await new Promise(r=>setTimeout(r,Math.min(15000,1200*attempt)));
+}
+if(!response||!response.ok)throw new Error('ENVIRONMENT_FAILURE:V28_HR_RETRY_EXHAUSTED_'+lastHttpStatus+':'+str(lastHttpError?.message||lastHttpError||''));
 const payload=await response.json(),snapshot=payload.snapshot||payload.data||payload;
 if(snapshot?.sourceSafe!==true||snapshot?.imported===true||snapshot?.production===true)throw new Error('PROVIDER_FAILURE:V28_HR_UNSAFE');
 const liveVisits=arr(snapshot.visits),current=liveVisits.filter(v=>str(v.periodKey)==='2026-09');

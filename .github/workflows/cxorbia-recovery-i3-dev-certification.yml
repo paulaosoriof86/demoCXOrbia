@@ -3712,6 +3712,105 @@ jobs:
         if: always()
         run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-v28-source"
 
+  v28-second-review-resume:
+    name: I3 V28 — existing DEV repair resume + live reproof
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_V28_DEV_MATERIALIZED_REPAIR_RESUME_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v28-repair-resume]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      V28_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      V28_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      V28_OUT: .tmp/i3-v28-resume
+      V28_ROOT: https://cxorbia-backend-dev.web.app
+      EXPECTED_RUNTIME_REVISION: cxorbia-live-hr-dev-00220-94r
+      EXPECTED_RUNTIME_DIGEST: sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff
+      EXPECTED_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/b69bde3f2c2f5182
+    steps:
+      - name: Checkout Recovery control head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Prove exact V28 resume-only scope
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$V28_OUT"
+          test "$V28_SOURCE" = "e8635de1fa5e086a7fd0ca92ba1a393466cf63e4"
+          test "$V28_TREE" = "7c0ecdf11ed69bff770bd269ab9d1b948d4a160e"
+          test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_V28_DEV_MATERIALIZED_REPAIR_RESUME_REQUIRED"
+          test "$(jq -r '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")" = "$EXPECTED_RUNTIME_REVISION"
+          test "$(jq -r '.currentMaterialization.hostingVersion' "$CANDIDATE_DESCRIPTOR")" = "$EXPECTED_HOSTING_VERSION"
+          git diff --quiet "$V28_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          jq -n -S '{decision:"PASS_I3_V28_RESUME_SCOPE",builds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0,production:false}' > "$V28_OUT/scope.json"
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install proof dependencies
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+      - name: Authenticate canonical Firebase DEV
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
+      - name: Prove existing V28 runtime and Hosting identity
+        run: |
+          set -Eeuo pipefail
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$V28_OUT/runtime.json"
+          REV="$(jq -r '.status.latestReadyRevisionName // empty' "$V28_OUT/runtime.json")"
+          test "$REV" = "$EXPECTED_RUNTIME_REVISION"
+          gcloud run revisions describe "$REV" --project "$PROJECT" --region "$REGION" --format=json > "$V28_OUT/runtime-revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$V28_OUT/runtime-revision.json")"
+          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; else DIGEST="sha256:${RAW##*@sha256:}"; fi
+          test "$DIGEST" = "$EXPECTED_RUNTIME_DIGEST"
+          TOKEN="$(gcloud auth print-access-token)"
+          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$V28_OUT/hosting-live-channel.json"
+          test "$(jq -r '.release.version.name // empty' "$V28_OUT/hosting-live-channel.json")" = "$EXPECTED_HOSTING_VERSION"
+      - name: Resume archive-first durable DEV repair with transient retry
+        env:
+          V28_HR_URL: https://cxorbia-backend-dev.web.app/api/tya/cinepolis/hr-live?format=json&v28=resume-${{ github.run_id }}
+        run: |
+          set -Eeuo pipefail
+          V28_OUT="$V28_OUT" V28_HR_URL="$V28_HR_URL" node tools/qa/cxorbia-i3-v28-dev-repair.mjs | tee "$V28_OUT/repair.log"
+          test "$(jq -r '.decision' "$V28_OUT/repair-result.json")" = "PASS_I3_V28_DEV_DURABLE_REPAIR"
+          test "$(jq -r '.hrCurrentCount' "$V28_OUT/repair-result.json")" = "44"
+          test "$(jq -r '.durableCurrentCount' "$V28_OUT/repair-result.json")" = "44"
+          test "$(jq -r '.uniqueCurrentHrRows' "$V28_OUT/repair-result.json")" = "44"
+          test "$(jq -r '.invalidIdentityActiveMembers' "$V28_OUT/repair-result.json")" = "0"
+          test "$(jq -r '.remainingInvalidPostulations' "$V28_OUT/repair-result.json")" = "0"
+          test "$(jq -r '.remainingInvalidReservations' "$V28_OUT/repair-result.json")" = "0"
+          test "$(jq -r '.hrWrites' "$V28_OUT/repair-result.json")" = "0"
+          test "$(jq -r '.production' "$V28_OUT/repair-result.json")" = "false"
+      - name: Run V28 Admin + Shopper live reproof
+        run: |
+          set -Eeuo pipefail
+          V28_OUT="$V28_OUT" V28_ROOT="$V28_ROOT" node tools/qa/cxorbia-i3-v28-live-reproof.mjs | tee "$V28_OUT/live.log"
+          test "$(jq -r '.decision' "$V28_OUT/live-reproof.json")" = "PASS_I3_V28_LIVE_REPROOF"
+          test "$(jq -r '.shopper.profileResult.providerAck' "$V28_OUT/live-reproof.json")" = "true"
+          test "$(jq -r '.admin.currentCount' "$V28_OUT/live-reproof.json")" = "44"
+          test "$(jq -r '.admin.invalidShopperVisible' "$V28_OUT/live-reproof.json")" = "false"
+          test "$(jq -r '.admin.knownHonorariumCount' "$V28_OUT/live-reproof.json")" = "0"
+      - name: Seal V28 resume receipt
+        run: |
+          jq -n -S --arg source "$V28_SOURCE" --arg tree "$V28_TREE" --arg runtime "$EXPECTED_RUNTIME_REVISION" --arg digest "$EXPECTED_RUNTIME_DIGEST" --arg hosting "$EXPECTED_HOSTING_VERSION" --arg hr "$(jq -r '.hrRevision' "$V28_OUT/repair-result.json")" --argjson shopperReadyMs "$(jq -r '.shopper.readyMs' "$V28_OUT/live-reproof.json")" --argjson adminReadyMs "$(jq -r '.admin.readyMs' "$V28_OUT/live-reproof.json")" '{decision:"PASS_I3_V28_CUMULATIVE_REMEDIATION_RESUME",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,shopperReadyMs:$shopperReadyMs,adminReadyMs:$adminReadyMs,builds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0,production:false}' > "$V28_OUT/result.json"
+      - name: Upload V28 resume evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-v28-resume-${{ github.run_id }}
+          path: ${{ env.V28_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+      - name: Cleanup
+        if: always()
+        run: rm -rf node_modules
+
   c3-terminal-dev-identity-readback:
     name: C3 terminal DEV identity readback — no deploy
     needs: canonical-candidate-authority
