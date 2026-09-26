@@ -3814,7 +3814,7 @@ jobs:
   v33-profile-boundary-hosting-reproof:
     name: I3 V33 — Hosting-only profile boundary fix + cumulative live reproof
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_V33_PROFILE_BOUNDARY_FIX_READY_FOR_HOSTING_REPROOF' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v33-hosting-reproof]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_V33_HOSTING_MATERIALIZED_ENV_AUTH_RETRY_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v33-readback-retry]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
@@ -3835,7 +3835,7 @@ jobs:
           test "$V33_SOURCE" = "fe72c0ef4f141aff8c9c8e27d2c1998dcbc4cee6"
           test "$V33_TREE" = "8d2bd24f2a26c5963c698bb57af6276699754dcd"
           test "$(git rev-parse "$V33_SOURCE^{tree}")" = "$V33_TREE"
-          test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_V33_PROFILE_BOUNDARY_FIX_READY_FOR_HOSTING_REPROOF"
+          test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_V33_HOSTING_MATERIALIZED_ENV_AUTH_RETRY_REQUIRED"
           git diff --quiet e8635de1fa5e086a7fd0ca92ba1a393466cf63e4 "$V33_SOURCE" -- backend firestore.rules storage.rules
           test "$(git diff --name-only e8635de1fa5e086a7fd0ca92ba1a393466cf63e4 "$V33_SOURCE" -- app | wc -l | tr -d ' ')" = "1"
           git diff --name-only e8635de1fa5e086a7fd0ca92ba1a393466cf63e4 "$V33_SOURCE" -- app | grep -qx 'app/adapters/cxorbia-cxdata-command-boundary-v1.js'
@@ -3862,17 +3862,14 @@ jobs:
           RAW="$(jq -r '.status.imageDigest // empty' "$V33_OUT/runtime-revision.json")"
           if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; else DIGEST="sha256:${RAW##*@sha256:}"; fi
           test "$DIGEST" = "$EXPECTED_RUNTIME_DIGEST"
-      - name: Deploy exact V33 Hosting only
+      - name: Prove existing V33 Hosting identity without redeploy
         run: |
           set -Eeuo pipefail
-          SOURCE_DIR="$RUNNER_TEMP/cxorbia-v33-source"; rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"
-          git archive "$V33_SOURCE" | tar -x -C "$SOURCE_DIR"
-          cd "$SOURCE_DIR"
-          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$V33_OUT/hosting-deploy.log"
-          cd "$GITHUB_WORKSPACE"
           TOKEN="$(gcloud auth print-access-token)"
           curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$V33_OUT/hosting-live-channel.json"
-          echo "HOSTING_VERSION=$(jq -r '.release.version.name // empty' "$V33_OUT/hosting-live-channel.json")" >> "$GITHUB_ENV"
+          HOSTING_VERSION="$(jq -r '.release.version.name // empty' "$V33_OUT/hosting-live-channel.json")"
+          test "$HOSTING_VERSION" = "sites/cxorbia-backend-dev/versions/a986ff8a53ee1060"
+          echo "HOSTING_VERSION=$HOSTING_VERSION" >> "$GITHUB_ENV"
       - name: Prove changed static byte
         run: |
           set -Eeuo pipefail
@@ -3890,7 +3887,7 @@ jobs:
           test "$(jq -r '.admin.knownHonorariumCount' "$V33_OUT/live-reproof.json")" = "0"
       - name: Seal V33 receipt
         run: |
-          jq -n -S --arg source "$V33_SOURCE" --arg tree "$V33_TREE" --arg runtime "$EXPECTED_RUNTIME_REVISION" --arg digest "$EXPECTED_RUNTIME_DIGEST" --arg hosting "$HOSTING_VERSION" --argjson shopperReadyMs "$(jq -r '.shopper.readyMs' "$V33_OUT/live-reproof.json")" --argjson adminReadyMs "$(jq -r '.admin.readyMs' "$V33_OUT/live-reproof.json")" '{decision:"PASS_I3_V33_CUMULATIVE_LIVE_REPROOF",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,shopperReadyMs:$shopperReadyMs,adminReadyMs:$adminReadyMs,builds:0,runtimeDeploys:0,hostingDeploys:1,rulesDeploys:0,production:false}' > "$V33_OUT/result.json"
+          jq -n -S --arg source "$V33_SOURCE" --arg tree "$V33_TREE" --arg runtime "$EXPECTED_RUNTIME_REVISION" --arg digest "$EXPECTED_RUNTIME_DIGEST" --arg hosting "$HOSTING_VERSION" --argjson shopperReadyMs "$(jq -r '.shopper.readyMs' "$V33_OUT/live-reproof.json")" --argjson adminReadyMs "$(jq -r '.admin.readyMs' "$V33_OUT/live-reproof.json")" '{decision:"PASS_I3_V33_CUMULATIVE_LIVE_REPROOF",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,shopperReadyMs:$shopperReadyMs,adminReadyMs:$adminReadyMs,builds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0,production:false}' > "$V33_OUT/result.json"
       - if: always()
         uses: actions/upload-artifact@v4
         with:
