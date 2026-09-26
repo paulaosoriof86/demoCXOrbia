@@ -7,13 +7,13 @@
   "productSourceSha": "f885fb7ab49d8597d992fc02051ffdd584380a85",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "62ee2903fdced52c525d5a028c8c4c725940e4cd",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V63_2026-09-26.json",
-  "findingsLedgerExpectedGitBlob": "a873e29a0923f33da90772da593dc79e03853372",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V64_2026-09-26.json",
+  "findingsLedgerExpectedGitBlob": "a45725c843b3acf7876892b5c88be1829397cf7d",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-065 is live-proven closed by Run488. Remaining preterminal blocker is exhaustive Module Truth reproof against successor source/runtime.",
+  "activeBlocker": "Run489 Module Truth was 19/20 solely because VRM-065's ledger state contained the word PENDING despite exact live proof Run488. Owner blob already equals served blob. Reproof required with no product/DEV change.",
   "nextFindingId": "VRM-066",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN C3 MODULE TRUTH 20/20 ON f885fb7a / RUNTIME 00222-hj9 / HOSTING 8ff3b75d; ZERO DEPLOY. IF PASS, RE-ARM TERMINAL CERTIFICATION.",
+  "exactNextAction": "RERUN C3 20/20 ON SAME f885fb7a / 00222-hj9 / 8ff3b75d; NO PRODUCT OR DEV CHANGE.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -322,8 +322,8 @@
     "production": false
   },
   "reproofDispatch": {
-    "requestedAt": "2026-09-26T16:36:00Z",
-    "mode": "EXHAUSTIVE_MODULE_TRUTH_V63_POST_VRM065",
+    "requestedAt": "2026-09-26T16:41:00Z",
+    "mode": "EXHAUSTIVE_MODULE_TRUTH_V64_CONTROL_STATE_REPROOF",
     "trigger": "[c3-preterminal-module-truth]",
     "deploys": 0,
     "builds": 0,
@@ -473,14 +473,17 @@
     "findingId": "VRM-055"
   },
   "lastControlFailure": {
-    "runId": 36255296000,
-    "runNumber": 487,
-    "jobId": 108440810646,
+    "runId": 36255697270,
+    "runNumber": 489,
+    "jobId": 108441973834,
+    "artifactId": 10910831347,
     "classification": "RELEASE_COMPOSITION_FAILURE",
-    "code": "LEDGER_DESCRIPTOR_SOURCE_MISMATCH",
     "productDefect": false,
-    "builds": 0,
-    "deploys": 0,
+    "solePendingFile": "backend/runtime/hr-live-service/server.mjs",
+    "currentBlob": "822e098ab08c870c8d4de6b404ef8d42a4f978b4",
+    "lastServedBlob": "822e098ab08c870c8d4de6b404ef8d42a4f978b4",
+    "changedVsLastServed": false,
+    "cause": "circular finding-state token PENDING_MODULE_TRUTH",
     "production": false
   },
   "lastSecondReviewProof": {
