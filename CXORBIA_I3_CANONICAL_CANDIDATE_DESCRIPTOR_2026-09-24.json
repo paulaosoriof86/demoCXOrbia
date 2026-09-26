@@ -7,14 +7,14 @@
   "productSourceSha": "a552e1fbb41d5cacc8ab3157f3d91492b82b8f00",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "f885fb7ab49d8597d992fc02051ffdd584380a85",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V72_2026-09-26.json",
-  "findingsLedgerExpectedGitBlob": "c2d5ccb40a0a57db6cc1e2fb2d69d162c192cd60",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V73_2026-09-26.json",
+  "findingsLedgerExpectedGitBlob": "fb98e62519808ee8537853ced86ec829f8e74b0a",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": true,
-  "activeBlocker": "No preterminal product P0 remains. Run497 proved Module Truth 20/20 on exact source/runtime/Hosting. VRM-073 corrected the last stale terminal atomic visit-key assertion. The only remaining I3 gate is the one terminal certification chain with live fixtures 10/10 and same-artifact Gate21.",
-  "nextFindingId": "VRM-074",
+  "activeBlocker": "Run498 passed terminal certification and live fixtures 10/10 with cleanup. Only Gate21 failed because it retained historical runtime literal 00222-hj9 while the same certified artifact declares current runtime 00223-tlg. VRM-074 removes that second authority and binds Gate21 runtime revision/digest to the same-run manifest + runtime-revision receipt.",
+  "nextFindingId": "VRM-075",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "EXECUTE TERMINAL CERTIFICATION -> LIVE FIXTURES 10/10 -> SAME-ARTIFACT GATE21 ON a552e1fb / 00223-tlg / 8ff3b75d; NO DEPLOY. IF PASS, FREEZE I3 GO AND STOP BEFORE I4.",
+  "exactNextAction": "RERUN TERMINAL -> LIVE FIXTURES 10/10 -> SAME-ARTIFACT GATE21 ON a552e1fb / 00223-tlg / 8ff3b75d; NO DEPLOY. IF PASS, FREEZE I3 GO AND STOP BEFORE I4.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -476,10 +476,17 @@
     "findingId": "VRM-055"
   },
   "lastControlFailure": {
+    "runId": 36261092241,
+    "runNumber": 498,
+    "jobId": 108459018023,
     "classification": "RELEASE_COMPOSITION_FAILURE",
-    "code": "TERMINAL_ATOMIC_VISIT_AUTHORITY_STALE",
+    "code": "GATE21_STALE_RUNTIME_LITERAL",
     "productDefect": false,
-    "caughtBeforeTerminal": true,
+    "terminalCertificationPass": true,
+    "liveFixturesPass": "10/10",
+    "cleanup": true,
+    "staleExpectedRuntime": "cxorbia-live-hr-dev-00222-hj9",
+    "certifiedRuntime": "cxorbia-live-hr-dev-00223-tlg",
     "builds": 0,
     "deploys": 0,
     "writes": 0,

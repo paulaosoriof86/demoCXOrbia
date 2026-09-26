@@ -84,7 +84,8 @@ jobs:
           test "$(sha256sum "$CERT/runtime-revision.json"|awk '{print $1}')" = "$(jq -r '.runtimeEvidenceSha256' "$MAN")"
           test "$(sha256sum "$CERT/hosting-live-channel.json"|awk '{print $1}')" = "$(jq -r '.hostingEvidenceSha256' "$MAN")"
           test "$(jq -r '.decision' "$CERT/firestore-live-parity.json")" = "PASS_TERMINAL_FIRESTORE_RULES_EXACT"
-          test "$(jq -r '.devRuntimeRevision' "$MAN")" = "cxorbia-live-hr-dev-00222-hj9"
+          test "$(jq -r '.revision' "$CERT/runtime-revision.json")" = "$(jq -r '.devRuntimeRevision' "$MAN")"
+          test "$(jq -r '.digest' "$CERT/runtime-revision.json")" = "$(jq -r '.runtimeImageDigest' "$MAN")"
           test "$(jq -r '.hostingVersionName' "$MAN")" = "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c"
 
       - name: Verify same-run live fixtures
