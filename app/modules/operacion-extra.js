@@ -433,7 +433,8 @@ CX.module('mireportes', ({data,ui})=>{
     return host;
   }
   const s=(data.getShopper&&data.getShopper(sid))||{nombre:'Shopper'};
-  const vis=(data.visitsForShopper?data.visitsForShopper(sid):[]);
+  const periodIdOf=v=>data.recordPeriodId?data.recordPeriodId(v):(v&&((v.periodId||v.projectId)));
+  const vis=(data.visitsForShopper?data.visitsForShopper(sid):[]).filter(v=>String(periodIdOf(v)||'')===String(data.currentPeriodId||''));
   const projectLabel=data.programBase?data.programBase(p):(p.name||'Proyecto');
   const periodLabel=p.periodo||p.ronda||p.name||'Periodo';
   const isReal=v=>data.visitBucketFns.realizadas(v);
@@ -446,7 +447,7 @@ CX.module('mireportes', ({data,ui})=>{
       chart:()=>{const by={};vis.forEach(v=>{by[v.estado]=(by[v.estado]||0)+1;});return {title:'Mis visitas por estado',data:Object.entries(by).map(([k,n])=>({label:k,value:n}))};}},
     misPagos:{icon:'💰',label:'Mis liquidaciones',desc:'Honorarios y reembolsos derivados de tus visitas',
       columns:[{key:'sucursal',label:'Sucursal'},{key:'estado',label:'Estado'},{key:'honorario',label:'Honorario'},{key:'reembolso',label:'Reembolso'},{key:'total',label:'Total'},{key:'pago',label:'Pago est.'}],
-      rows:()=>myLiq.map(l=>({sucursal:l.sucursal||'—',estado:l.estado,honorario:Math.round(l.honorario||0),reembolso:Math.round(l.reembolso||0),total:Math.round(l.total||0),pago:l.fechaEstimadaPago||'—'})),
+      rows:()=>myLiq.map(l=>({sucursal:l.sucursal||'—',estado:l.estado,honorario:Number.isFinite(l.honorario)?Math.round(l.honorario):'Pendiente de fuente',reembolso:Number.isFinite(l.reembolso)?Math.round(l.reembolso):'Pendiente de fuente',total:Number.isFinite(l.total)?Math.round(l.total):'Pendiente de fuente',pago:l.fechaEstimadaPago||'—'})),
       chart:()=>{const by={};myLiq.forEach(l=>{by[l.estado]=(by[l.estado]||0)+1;});return {title:'Mis liquidaciones por estado',data:Object.entries(by).map(([k,n])=>({label:k,value:n}))};}},
   };
 

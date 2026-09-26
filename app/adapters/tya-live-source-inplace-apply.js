@@ -55,10 +55,8 @@ window.CX = window.CX || {};
       const scope=str(v?.periodKey)+'::'+str(v?.pais||v?.country),expected=reimbursementScopes.get(scope)||{boleto:false,comboAmt:false};
       const country=str(v?.pais||v?.country);
       const boletoKnown=knownAmount(v?.boleto),comboKnown=knownAmount(v?.comboAmt),honorarioKnown=knownAmount(v?.honorario);
-      const configuredHonorario=identity.projectConfig?.honorario&&identity.projectConfig.honorario[country];
-      const configuredHonorarioKnown=knownAmount(configuredHonorario);
-      const honorario=honorarioKnown?Number(v.honorario):(configuredHonorarioKnown?Number(configuredHonorario):null);
-      const honorarioSource=honorarioKnown?'hr_explicit':(configuredHonorarioKnown?'project_country_config':'pending_source');
+      const honorario=honorarioKnown?Number(v.honorario):null;
+      const honorarioSource=honorarioKnown?'hr_explicit':'pending_source';
       const reimbursementExpected=expected.boleto||expected.comboAmt;
       const reimbursementPartial=v.reimbursementPartial===true||v.reembolsoPartial===true||v.reimbursementSourceComplete===false
         || (reimbursementExpected&&((expected.boleto&&!boletoKnown)||(expected.comboAmt&&!comboKnown)));

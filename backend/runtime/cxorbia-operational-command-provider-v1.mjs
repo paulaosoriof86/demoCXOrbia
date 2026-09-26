@@ -95,7 +95,7 @@ function projectScope(snapshot){
   };
 }
 function sourceCoord(v){const t=str(v?.sourceTab),r=str(v?.sourceRow);return t&&r?`${t}::${r}`:'';}
-function stableVisitId(v){return str(v?.visitId||v?.id)||str(v?.hrRowId)||sourceCoord(v);}
+function stableVisitId(v){return str(v?.hrRowId)||sourceCoord(v)||str(v?.visitId||v?.id);}
 function visitPeriodId(v,snapshot){
   const explicit=str(v?.periodId||v?.measurementPeriodId||v?.measurementWindowProjectId);
   if(explicit)return explicit;
@@ -182,19 +182,13 @@ async function reconcileVisitDoc({db,policy,candidate,sourceRevision}){
         const ts=now();
         tx.set(reviewRef,{tenantId,projectId,periodId:str(existing.periodId||candidate.periodId)||null,entityType:'visit',entityId:visitId,reviewType:'hr_platform_assignment_conflict',status:'open',reason:'hr_shopper_differs_from_platform_pending_assignment',platformShopperId:durableShopper,observedHrShopperId:hrShopper,automaticOverwrite:false,sourceRevision,createdAt:prior?.createdAt||ts,updatedAt:ts},{merge:false});
       }
-      return {providerWrites:sameOpenReview?0:1,created:false,idempotentReplay:sameOpenReview,reviewRequired:true,conflict:true};
+      // External HR remains authoritative for HR-managed assignment/state.
+      // The conflict stays auditable in reviewQueue but must not overwrite the live HR read model.
     }
     const basePatch=clean({
       periodId:candidate.periodId,rootProjectId:projectId,hrRowId:candidate.hrRowId,sourceTab:candidate.sourceTab,sourceRow:candidate.sourceRow,sourceCoord:candidate.sourceCoord,hrSourceRevision:sourceRevision
     });
-    let desired;
-    if(platformPending&&!hrShopper){
-      desired=basePatch;
-    }else if(platformPending&&hrShopper===durableShopper){
-      desired=clean({...basePatch,estado:candidate.estado,status:candidate.status,shopperId:durableShopper,assignmentSource:'platform',assignmentSyncStatus:'synced',canonicalFacets:candidate.canonicalFacets});
-    }else{
-      desired=clean({...basePatch,estado:candidate.estado,status:candidate.status,shopperId:candidate.shopperId||null,assignmentSource:candidate.assignmentSource||null,assignmentSyncStatus:candidate.assignmentSyncStatus||null,canonicalFacets:candidate.canonicalFacets});
-    }
+    const desired=clean({...basePatch,estado:candidate.estado,status:candidate.status,shopperId:candidate.shopperId||null,assignmentSource:candidate.assignmentSource||null,assignmentSyncStatus:candidate.assignmentSyncStatus||null,canonicalFacets:candidate.canonicalFacets});
     const same=Object.entries(desired).every(([key,value])=>JSON.stringify(stable(existing[key]))===JSON.stringify(stable(value)));
     if(same)return {providerWrites:0,created:false,idempotentReplay:true};
     tx.set(visitRef,{...desired,updatedAt:now(),version:Number(existing.version||0)+1},{merge:true});

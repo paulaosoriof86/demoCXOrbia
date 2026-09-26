@@ -177,7 +177,7 @@ window.CX = window.CX || {};
       realizada: v.realizada || v.completedDate || '',
       cuestFecha: v.cuestFecha || v.questionnaireDate || v.submittedAt || '',
       submit: v.submit === true || v.submitted === true || !!v.submittedAt,
-      honorario: v.honorario || fee.amount || v.honorariumAmount || 0,
+      honorario: v.honorario!=null ? v.honorario : (fee.amount!=null ? fee.amount : (v.honorariumAmount!=null ? v.honorariumAmount : null)),
       currency: v.currency || fee.currency || v.moneda || '',
       boleto: v.boleto || v.ticketReimbursementAmount || 0,
       comboAmt: v.comboAmt || v.comboReimbursementAmount || 0,
@@ -195,7 +195,7 @@ window.CX = window.CX || {};
   // snapshot is present in the cumulative composer. At this layer we preserve
   // every durable row, including historical duplicates, together with __docId.
   function preserveDurableVisits(rows){
-    return Array.isArray(rows)?rows.slice():[];
+    return Array.isArray(rows)?rows.filter(function(v){return v&&v.excludedFromCanonicalReadModel!==true&&v.reconciliationState!=='superseded_duplicate';}):[];
   }
 
   function normalizeApplication(a, projectId, periodId, visitsById, shoppersById){
@@ -218,14 +218,14 @@ window.CX = window.CX || {};
       fechaProp: a.fechaProp || a.proposedDate || '',
       proposedDate: a.proposedDate || a.fechaProp || '',
       franjaCode: a.franjaCode || visit.franjaCode || a.proposedTimeBand || '',
-      shopper: a.shopper || shopper.nombre || shopper.name || shopperId || '',
-      shopperCode: a.shopperCode || shopper.code || shopperId || '',
+      shopper: (shopper.nombre || shopper.name || ((a.shopper&&!/^shopper_/i.test(String(a.shopper)))?a.shopper:'') || 'Identidad pendiente de resolver'),
+      shopperCode: (a.shopperCode&&!/^shopper_/i.test(String(a.shopperCode))) ? a.shopperCode : (shopper.code||''),
       sucursal: a.sucursal || visit.sucursal || '',
       ciudad: a.ciudad || visit.ciudad || '',
       pais: a.pais || visit.pais || visit.country || '',
       quincena: a.quincena || visit.quincena || '',
       disponibleDesde: a.disponibleDesde || visit.disponibleDesde || visit.availableFrom || '',
-      honorario: a.honorario || visit.honorario || 0,
+      honorario: a.honorario!=null ? a.honorario : (visit.honorario!=null ? visit.honorario : null),
       boleto: a.boleto || visit.boleto || 0,
       comboAmt: a.comboAmt || visit.comboAmt || 0,
       currency: a.currency || visit.currency || '',
@@ -393,7 +393,7 @@ window.CX = window.CX || {};
     const allProjects = result[0].map(normalizeProject);
     const activeProjects = resolveActiveProjects(allProjects);
     const periods = await loadCanonicalPeriods(activeProjects);
-    const shoppers = result[1].map(normalizeShopper);
+    const shoppers = result[1].filter(function(s){return s&&s.identityQuarantined!==true&&s.excludedFromCanonicalReadModel!==true;}).map(normalizeShopper);
     const shoppersById = {};
     shoppers.forEach(function(s){ shoppersById[s.id] = s; shoppersById[s.shopperId] = s; });
     const perProject = await Promise.all(activeProjects.map(function(p){ return loadProjectData(p, shoppersById, ctx); }));

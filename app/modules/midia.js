@@ -16,7 +16,19 @@ CX.module('midia', ({data,role,ui})=>{
   if(_cgLastPeriod!==data.currentPeriodId){ _cgMonth=data.periodMonth(data.currentPeriodId); _cgLastPeriod=data.currentPeriodId; }
   /* bloque de notificaciones (común a ambos roles) */
   const notifBlock=()=>{
-    const fe=CX.notif.for(role).slice(0,4), un=CX.notif.unread(role);
+    const sid=(CX.session.user&&CX.session.user.shopperId)||null;
+    const currentApproval=n=>{
+      if(role!=='shopper'||n.tipo!=='aprobada')return true;
+      if(!sid)return false;
+      return (data._posts||[]).some(p=>{
+        if(String(p.shopperId||'')!==String(sid)||String(p.estado||p.status||'').toLowerCase()!=='aprobada')return false;
+        if(p.sucursal&&n.txt&&!String(n.txt).includes(String(p.sucursal)))return false;
+        const v=(data._visitas||[]).find(x=>String(x.id||x.visitId||'')===String(p.visitaId||p.visitId||''));
+        return !!(v&&String(v.shopperId||'')===String(sid)&&v.assignmentReviewRequired!==true&&v.assignmentSyncStatus!=='pending_hr');
+      });
+    };
+    const visible=CX.notif.for(role).filter(currentApproval);
+    const fe=visible.slice(0,4), un=visible.filter(n=>!n.leida).length;
     return `<div class="card card-p" style="margin-bottom:16px">
       <div class="card-h"><div class="card-t">🔔 Notificaciones ${un?`<span class="bdg bdg-r">${un} sin leer</span>`:''}</div><button class="btn btn-ghost btn-sm" data-nav="tablon">Ver todas →</button></div>
       ${fe.length?fe.map(n=>`<div class="between" data-ngo="${n.id}" style="cursor:pointer;padding:9px 11px;border-radius:9px;${n.leida?'':'background:var(--'+CX.notif.toneVar(n.tono)+'-bg)'};margin-bottom:6px">

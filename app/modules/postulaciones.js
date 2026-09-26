@@ -40,9 +40,11 @@ CX.module('postulaciones', ({data,ui})=>{
   posts.forEach(x=>{(groups[x.sucursal]=groups[x.sucursal]||[]).push(x);});
 
   const estTag=(e)=>e==='pendiente'?ui.bdg('PENDIENTE','a'):e==='standby'?ui.bdg('STANDBY','n'):ui.bdg('APROBADA','g');
+  const displayShopper=x=>{const s=data.getShopper&&data.getShopper(x&&x.shopperId);const raw=String(x&&x.shopper||'').trim();return (s&&s.nombre)||(raw&&!/^shopper_/i.test(raw)?raw:'Identidad pendiente de resolver');};
+  const displayCode=x=>{const s=data.getShopper&&data.getShopper(x&&x.shopperId);const raw=String(x&&x.shopperCode||'').trim();return (s&&s.code)||(raw&&!/^shopper_/i.test(raw)?raw:'');};
 
   const card=(x)=>{
-    const hon=`${x.currency} ${x.honorario}`+(x.boleto?' + boleto':'')+(x.comboAmt?' + reembolso':'');
+    const hon=x.honorario!=null?`${x.currency||''} ${x.honorario}`.trim():'Pendiente de fuente';
     const sync=syncPresentation(x);
     return `<div data-pid="${x.id}" data-post-sync="${sync.sync}" style="background:#fff;border:1px solid var(--border);border-radius:11px;padding:13px 15px;margin-bottom:10px">
       <div class="between" style="margin-bottom:8px">
@@ -51,7 +53,7 @@ CX.module('postulaciones', ({data,ui})=>{
       </div>
       <div class="between" style="align-items:flex-start;gap:14px;flex-wrap:wrap">
         <div style="flex:1;min-width:220px">
-          <div style="font-size:14px;font-weight:700;color:var(--t1)">${x.shopper} <span class="muted" style="font-weight:500;font-size:12px">· ${x.shopperCode}</span></div>
+          <div style="font-size:14px;font-weight:700;color:var(--t1)">${displayShopper(x)}${displayCode(x)?` <span class="muted" style="font-weight:500;font-size:12px">· ${displayCode(x)}</span>`:''}</div>
           <div style="font-size:10px;font-weight:700;color:var(--brand);background:var(--brand-light);display:inline-block;padding:1px 7px;border-radius:6px;margin-top:3px">🗂️ ${projName(x.projectId)}</div>
           <div style="font-size:12px;color:var(--t2);margin-top:3px">📍 ${x.sucursal} · ${x.ciudad}</div>
           <div style="font-size:11.5px;color:var(--t3);margin-top:4px">📅 ${safe(x.fechaProp)} · ⏱️ ${safe(x.franjaCode)} · 📞 ${safePhone(x)} · desde ${safe(x.disponibleDesde)}</div>
@@ -273,7 +275,7 @@ CX.module('postulaciones', ({data,ui})=>{
     document.querySelectorAll('[data-rj]').forEach(b=>b.addEventListener('click',async()=>{const x=posts.find(z=>z.id===b.dataset.rj);await applicationStatusDurable(x,'rechazada',b,'✕ Rechazada','red','Postulación rechazada');}));
     const search=()=>{const q=(document.getElementById('pSearch').value||'').toLowerCase(),fpr=document.getElementById('pProj').value,fp=document.getElementById('pPais').value,fe=document.getElementById('pEst').value,hist=document.getElementById('pHist').checked;
       document.querySelectorAll('#pGroups [data-pid]').forEach(el=>{const x=posts.find(z=>z.id===el.dataset.pid);
-        const ok=(hist||periodIdOf(x)===data.currentPeriodId)&&(!q||(x.shopper+x.shopperCode+x.sucursal).toLowerCase().includes(q))&&(!fpr||x.projectId===fpr)&&(!fp||x.pais===fp)&&(!fe||x.estado===fe);el.style.display=ok?'':'none';});
+        const ok=(hist||periodIdOf(x)===data.currentPeriodId)&&(!q||(displayShopper(x)+' '+displayCode(x)+' '+x.sucursal).toLowerCase().includes(q))&&(!fpr||x.projectId===fpr)&&(!fp||x.pais===fp)&&(!fe||x.estado===fe);el.style.display=ok?'':'none';});
       // ocultar grupos sin tarjetas visibles
       document.querySelectorAll('#pGroups .card').forEach(g=>{const any=[...g.querySelectorAll('[data-pid]')].some(el=>el.style.display!=='none');g.style.display=any?'':'none';});};
     ['pSearch','pProj','pPais','pEst','pHist'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',search);});

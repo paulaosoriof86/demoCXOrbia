@@ -142,9 +142,17 @@ async function exactActor(auth,db,token,command){
   const shopperSelfUpdate=command.commandType==='shopper.update'&&role==='shopper'&&namespace==='shopper';
   const staffOperator=OPERATOR_ROLES.includes(role)&&namespace==='staff';
   if(!staffOperator&&!shopperSelfUpdate)throw new Error('SHOPPER_ACTOR_SCOPE_DENIED');
+  let canonicalSelfTarget=targetShopper;
   if(shopperSelfUpdate){
     if(str(command.authorization?.permission)!=='shopper.self.update')throw new Error('SHOPPER_SELF_UPDATE_PERMISSION_REQUIRED');
-    if(!targetShopper||str(decoded.shopperId)!==targetShopper)throw new Error('SHOPPER_SELF_UPDATE_SCOPE_DENIED');
+    const decodedShopper=str(decoded.shopperId);
+    if(!targetShopper||!decodedShopper)throw new Error('SHOPPER_SELF_UPDATE_SCOPE_DENIED');
+    if(decodedShopper!==targetShopper){
+      const crossSnap=await db.collection('tenants').doc(command.tenantId).collection('shopperIdentityCrosswalk').doc(decodedShopper).get();
+      const cross=crossSnap.exists?(crossSnap.data()||{}):{};
+      canonicalSelfTarget=str(cross.shopperId||cross.canonicalShopperId);
+      if(canonicalSelfTarget!==targetShopper)throw new Error('SHOPPER_SELF_UPDATE_SCOPE_DENIED');
+    }
   }else if(str(command.authorization?.permission)==='shopper.self.update'){
     throw new Error('SHOPPER_SELF_UPDATE_STAFF_PERMISSION_INVALID');
   }
@@ -153,12 +161,13 @@ async function exactActor(auth,db,token,command){
   if(!member.exists)throw new Error('SHOPPER_ACTOR_MEMBERSHIP_MISSING');
   const m=member.data()||{};
   if(shopperSelfUpdate){
-    if(m.active!==true||str(m.tenantId)!==str(command.tenantId)||str(m.role)!=='shopper'||str(m.authNamespace)!=='shopper'||str(m.shopperId)!==targetShopper)throw new Error('SHOPPER_SELF_UPDATE_MEMBERSHIP_INVALID');
+    const memberShopper=str(m.shopperId);
+    if(m.active!==true||str(m.tenantId)!==str(command.tenantId)||str(m.role)!=='shopper'||str(m.authNamespace)!=='shopper'||memberShopper!==str(decoded.shopperId))throw new Error('SHOPPER_SELF_UPDATE_MEMBERSHIP_INVALID');
   }else if(m.active!==true||str(m.tenantId)!==str(command.tenantId)||str(m.role)!==role||str(m.authNamespace)!=='staff'){
     throw new Error('SHOPPER_ACTOR_MEMBERSHIP_INVALID');
   }
   if(role!=='super'&&!uniq(m.projectIds).includes(str(command.projectId)))throw new Error('SHOPPER_ACTOR_MEMBERSHIP_PROJECT_DENIED');
-  return {uid:decoded.uid,role,shopperId:shopperSelfUpdate?targetShopper:null,selfScoped:shopperSelfUpdate};
+  return {uid:decoded.uid,role,shopperId:shopperSelfUpdate?str(decoded.shopperId):null,canonicalShopperId:shopperSelfUpdate?canonicalSelfTarget:null,selfScoped:shopperSelfUpdate};
 }
 
 function stableShopperId(command){
@@ -456,23 +465,29 @@ function changedHrManagedFields(existing,patch){
   if(str(existing?.sourceType)!=='hr_external')return [];
   return HR_MANAGED_PROFILE_FIELDS.filter(key=>patch[key]!==undefined&&str(patch[key])!==str(existing?.[key]));
 }
-async function durableProfileUpdate({auth,db,command,shopperId}){
+async function durableProfileUpdate({auth,db,command,shopperId,actor}){
   const tenantId=str(command.tenantId),projectId=str(command.projectId),tenant=db.collection('tenants').doc(tenantId),users=tenant.collection('users');
-  const memberDoc=await membershipMatches(users,shopperId);
-  if(!memberDoc)throw new Error('SHOPPER_UPDATE_MEMBERSHIP_MISSING');
+  const selfScoped=actor?.selfScoped===true;
+  const memberDoc=selfScoped?await users.doc(actor.uid).get():await membershipMatches(users,shopperId);
+  if(!memberDoc||memberDoc.exists===false)throw new Error('SHOPPER_UPDATE_MEMBERSHIP_MISSING');
   const uid=memberDoc.id,member=memberDoc.data()||{};
-  if(member.active!==true||str(member.tenantId)!==tenantId||str(member.shopperId)!==shopperId||str(member.role)!=='shopper'||str(member.authNamespace)!=='shopper')throw new Error('SHOPPER_UPDATE_MEMBERSHIP_INVALID');
+  if(member.active!==true||str(member.tenantId)!==tenantId||str(member.role)!=='shopper'||str(member.authNamespace)!=='shopper')throw new Error('SHOPPER_UPDATE_MEMBERSHIP_INVALID');
+  if(selfScoped&&str(actor.canonicalShopperId)!==shopperId)throw new Error('SHOPPER_SELF_UPDATE_CANONICAL_TARGET_INVALID');
+  if(!selfScoped&&str(member.shopperId)!==shopperId)throw new Error('SHOPPER_UPDATE_MEMBERSHIP_INVALID');
   if(!uniq(member.projectIds).includes(projectId))throw new Error('SHOPPER_UPDATE_PROJECT_SCOPE_DENIED');
   const profileRef=tenant.collection('shoppers').doc(shopperId),crossRef=tenant.collection('shopperIdentityCrosswalk').doc(shopperId);
-  const [profileSnap,crossSnap,user]=await Promise.all([profileRef.get(),crossRef.get(),safeAuthByUid(auth,uid)]);
+  const actorCrossRef=selfScoped?tenant.collection('shopperIdentityCrosswalk').doc(str(member.shopperId)):crossRef;
+  const [profileSnap,crossSnap,actorCrossSnap,user]=await Promise.all([profileRef.get(),crossRef.get(),actorCrossRef.get(),safeAuthByUid(auth,uid)]);
   if(!profileSnap.exists)throw new Error('SHOPPER_UPDATE_PROFILE_MISSING');
-  if(!crossSnap.exists)throw new Error('SHOPPER_UPDATE_CROSSWALK_MISSING');
+  if(!crossSnap.exists&&!actorCrossSnap.exists)throw new Error('SHOPPER_UPDATE_CROSSWALK_MISSING');
   if(!user)throw new Error('SHOPPER_UPDATE_AUTH_MISSING');
-  const profile=profileSnap.data()||{},cross=crossSnap.data()||{};
+  const profile=profileSnap.data()||{},cross=crossSnap.exists?(crossSnap.data()||{}):{},actorCross=actorCrossSnap.exists?(actorCrossSnap.data()||{}):{};
   if(str(profile.tenantId||tenantId)!==tenantId||str(profile.shopperId||shopperId)!==shopperId||!uniq(profile.projectIds).includes(projectId))throw new Error('SHOPPER_UPDATE_PROFILE_SCOPE_CONFLICT');
-  if(str(cross.tenantId)!==tenantId||str(cross.shopperId)!==shopperId||str(cross.providerUidFingerprint)!==providerUidFingerprint(uid)||!uniq(cross.projectIds).includes(projectId))throw new Error('SHOPPER_UPDATE_CROSSWALK_CONFLICT');
+  if(selfScoped){
+    const linked=str(actorCross.shopperId||actorCross.canonicalShopperId);
+    if(linked!==shopperId||str(actorCross.tenantId)!==tenantId||str(actorCross.providerUidFingerprint)!==providerUidFingerprint(uid)||!uniq(actorCross.projectIds).includes(projectId))throw new Error('SHOPPER_UPDATE_CROSSWALK_CONFLICT');
+  }else if(str(cross.tenantId)!==tenantId||str(cross.shopperId)!==shopperId||str(cross.providerUidFingerprint)!==providerUidFingerprint(uid)||!uniq(cross.projectIds).includes(projectId))throw new Error('SHOPPER_UPDATE_CROSSWALK_CONFLICT');
   assertAuthIdentity(user,tenantId,shopperId);
-  const selfScoped=str(command.authorization?.permission)==='shopper.self.update';
   const rawPub=publicProfile(command.payload?.patch||{}),rawProt=protectedProfile(command.payload?.protectedPatch||{});
   if(selfScoped){
     const denied=[...Object.keys(rawPub).filter(key=>!SELF_MANAGED_PUBLIC_FIELDS.includes(key)),...Object.keys(rawProt).filter(key=>!SELF_MANAGED_PROTECTED_FIELDS.includes(key))];
@@ -740,8 +755,8 @@ export function createShopperCommandProvider({auth,db,policy}={}){
           return ack(command,shopperId,{uidFingerprint,idempotentReplay:false,providerWrites:2,credentialState:'enrolled',credentialIssued:true,authCreated:identity.authCreated===true,credential:{login:identity.credential.login,password,namespace:'shopper',oneTimeDisclosure:false,deterministicRule:true,ruleVersion:CREDENTIAL_RULE_VERSION,persist:false}});
         }
         if(command.commandType==='shopper.update'){
-          if(actor.selfScoped===true&&shopperId!==actor.shopperId)throw new Error('SHOPPER_SELF_UPDATE_SCOPE_DENIED');
-          const result=await durableProfileUpdate({auth,db,command,shopperId});
+          if(actor.selfScoped===true&&shopperId!==actor.canonicalShopperId)throw new Error('SHOPPER_SELF_UPDATE_SCOPE_DENIED');
+          const result=await durableProfileUpdate({auth,db,command,shopperId,actor});
           await receipt.set({status:'committed',commandDigest:digest,shopperId,commandType:command.commandType,providerAck:true,actorUid:actor.uid,profileUpdated:true,selfScoped:actor.selfScoped===true,updatedAt:now()},{merge:false});
           return ack(command,shopperId,{uidFingerprint:providerUidFingerprint(result.uid),idempotentReplay:false,providerWrites:Number(result.providerWrites||0)+1,profileUpdated:true,selfScoped:actor.selfScoped===true});
         }
