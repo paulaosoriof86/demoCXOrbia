@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_V27_ROOT_CAUSES_FROZEN_CUMULATIVE_REMEDIATION_AUTHORIZED",
+  "status": "HOLD_V28_SOURCE_READY_FOR_DEV_REMEDIATION",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "da17406f8e03ef1071fe8ca384503853f51e6638",
+  "productSourceSha": "e8635de1fa5e086a7fd0ca92ba1a393466cf63e4",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "34068805168e85cf15c9359c1dc4c4226c3062a6",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V27_2026-09-26.json",
-  "findingsLedgerExpectedGitBlob": "970e8e34420c7a1232815462c5d3f700f6e36f6f",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V28_2026-09-26.json",
+  "findingsLedgerExpectedGitBlob": "d990e1ae0b5cf48cefda2ec62a94d69d7009692f",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-054/055/056/057/058/059/061/062 P0_PROVEN + VRM-060 latency diagnostic",
+  "activeBlocker": "V28 source fixes ready; DEV durable repair + live reproof required. VRM-060 measured in same run.",
   "nextFindingId": "VRM-063",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "ONE_CUMULATIVE_I3_REMEDIATION: HR authority + duplicate archive cleanup + exact Mishael->Milton adjudication + Paula profile-save target + honorarium source + postulation identity + report period + notification state; then one DEV materialization and live Admin/Shopper reproof.",
+  "exactNextAction": "MATERIALIZE V28 ON DEV ONCE; ARCHIVE/REPAIR DURABLE DATA; RUN ADMIN+SHOPPER LIVE PROOFS; NO PRODUCTION.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -326,21 +326,22 @@
     "production": false
   },
   "currentRemediationCandidate": {
-    "sourceSha": "da17406f8e03ef1071fe8ca384503853f51e6638",
-    "sourceTree": "f733f99293dca5437a6e33ab81434d844a1d5f5c",
+    "sourceSha": "e8635de1fa5e086a7fd0ca92ba1a393466cf63e4",
+    "sourceTree": "7c0ecdf11ed69bff770bd269ab9d1b948d4a160e",
     "findings": [
-      "VRM-045",
-      "VRM-046",
-      "VRM-047",
-      "VRM-048",
-      "VRM-049",
-      "VRM-051",
-      "VRM-052",
-      "VRM-053"
+      "VRM-054",
+      "VRM-055",
+      "VRM-056",
+      "VRM-057",
+      "VRM-058",
+      "VRM-059",
+      "VRM-061",
+      "VRM-062"
     ],
     "changedRuntime": true,
     "changedHosting": true,
     "changedRules": false,
+    "durableRepairRequired": true,
     "production": false
   },
   "reproofDispatch": {
@@ -425,5 +426,6 @@
     "canonicalShopperId": "shopper_gt_bd74ace936",
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
-  }
+  },
+  "productSourceTree": "7c0ecdf11ed69bff770bd269ab9d1b948d4a160e"
 }
