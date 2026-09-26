@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM050_RUNTIME_REPROOF_REQUIRED",
+  "status": "HOLD_MODULE_TRUTH_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "62ee2903fdced52c525d5a028c8c4c725940e4cd",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V53_2026-09-26.json",
-  "findingsLedgerExpectedGitBlob": "87685a005dc24629950890852910c31722837883",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V54_2026-09-26.json",
+  "findingsLedgerExpectedGitBlob": "020e03c80724608a738388805f275f5c64d0bfc1",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-050 runtime successor is already materialized as cxorbia-live-hr-dev-00221-65m. Run478 proof failed only because its health URL hit Hosting SPA and fresh refresh exceeded Hosting proxy timeout; exact direct runtime readback is required with zero deploy.",
+  "activeBlocker": "VRM-050 is closed by Run479. Remaining preterminal blocker is re-proving exhaustive Module Truth against successor source/runtime identity.",
   "nextFindingId": "VRM-065",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN V53 DIRECT CLOUD RUN + HOSTING CACHED HR READBACK ONLY; NO BUILD/DEPLOY. ON PASS CLOSE VRM-050 AND REPROVE MODULE TRUTH 20/20 AGAINST SOURCE 62ee2903 / RUNTIME 00221-65m.",
+  "exactNextAction": "RUN C3 MODULE TRUTH 20/20 ON SOURCE 62ee2903 / RUNTIME 00221-65m / HOSTING 8ff3b75d; ZERO DEPLOY. IF PASS, RE-ARM TERMINAL CERTIFICATION ON THIS EXACT IDENTITY.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -322,11 +322,11 @@
     "production": false
   },
   "reproofDispatch": {
-    "requestedAt": "2026-09-26T14:28:00Z",
-    "mode": "VRM050_RUNTIME_DIRECT_READBACK_V53",
-    "trigger": "[v53-vrm050-readback]",
-    "builds": 0,
+    "requestedAt": "2026-09-26T14:44:00Z",
+    "mode": "EXHAUSTIVE_MODULE_TRUTH_SUCCESSOR_V54",
+    "trigger": "[c3-preterminal-module-truth]",
     "deploys": 0,
+    "builds": 0,
     "writes": 0,
     "production": false
   },
@@ -336,8 +336,9 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
     "runtimeRevision": "cxorbia-live-hr-dev-00221-65m",
     "runtimeDigest": "sha256:7b48e7a539a987f03b96c97a32ccb38a9cf32bd95d3e432434bc808ec9685dce",
-    "buildCount": 1,
-    "runtimeDeploys": 1,
+    "firestoreRulesSha256": "bce839595cf0ca6000a2c3ae6fc0b81e90cf341fbecfaaa2f3282e75e9681367",
+    "buildCountSinceV52": 1,
+    "runtimeDeploysSinceV52": 1,
     "hostingDeploys": 0,
     "rulesDeploys": 0,
     "production": false
@@ -564,5 +565,17 @@
     "gate21Authority": "SAME_RUN_CERTIFICATION_MANIFEST_ONLY",
     "devDeployAllowed": false,
     "productionAllowed": false
+  },
+  "lastVrm050Proof": {
+    "runId": 36249224545,
+    "runNumber": 479,
+    "decision": "PASS_I3_V53_VRM050_RUNTIME_READBACK",
+    "artifactId": 10908278990,
+    "artifactDigest": "sha256:c856391592827034957ecf895522f3209e6491eeb2e75341d42d547c6c317da5",
+    "hrRevision": "5d4acfec98bc52f836dac2e382c906bc54534253717c9239b5d0f20d5f4f3cc7",
+    "refreshError": null,
+    "sourceSafe": true,
+    "providerAck": true,
+    "production": false
   }
 }

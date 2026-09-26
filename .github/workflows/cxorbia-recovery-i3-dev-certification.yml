@@ -287,11 +287,11 @@ jobs:
       C3_OUT: .tmp/c3-preterminal-module-truth
       C3_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
       C3_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
-      EXPECTED_SOURCE: 04432faa32bef0427223fa2c51cb5b809f53e178
-      EXPECTED_TREE: e06905ac9cc9cfad09d9383716bada1988cae90f
+      EXPECTED_SOURCE: 62ee2903fdced52c525d5a028c8c4c725940e4cd
+      EXPECTED_TREE: e0649d447257745af89efc9845dfb2fb50600cf6
       EXPECTED_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c
-      EXPECTED_RUNTIME_REVISION: cxorbia-live-hr-dev-00220-94r
-      EXPECTED_RUNTIME_DIGEST: sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff
+      EXPECTED_RUNTIME_REVISION: cxorbia-live-hr-dev-00221-65m
+      EXPECTED_RUNTIME_DIGEST: sha256:7b48e7a539a987f03b96c97a32ccb38a9cf32bd95d3e432434bc808ec9685dce
       BACKEND_LINEAGE_SOURCE: e8635de1fa5e086a7fd0ca92ba1a393466cf63e4
     steps:
       - name: Checkout canonical Recovery control head
