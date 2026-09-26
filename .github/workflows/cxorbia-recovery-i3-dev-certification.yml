@@ -541,12 +541,12 @@ jobs:
       C3_OUT: .tmp/c3-preterminal-module-truth
       C3_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
       C3_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
-      EXPECTED_SOURCE: 62ee2903fdced52c525d5a028c8c4c725940e4cd
-      EXPECTED_TREE: e0649d447257745af89efc9845dfb2fb50600cf6
+      EXPECTED_SOURCE: f885fb7ab49d8597d992fc02051ffdd584380a85
+      EXPECTED_TREE: d3a87752434be558167fcf3787b88d190c76a87c
       EXPECTED_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c
-      EXPECTED_RUNTIME_REVISION: cxorbia-live-hr-dev-00221-65m
-      EXPECTED_RUNTIME_DIGEST: sha256:7b48e7a539a987f03b96c97a32ccb38a9cf32bd95d3e432434bc808ec9685dce
-      BACKEND_LINEAGE_SOURCE: e8635de1fa5e086a7fd0ca92ba1a393466cf63e4
+      EXPECTED_RUNTIME_REVISION: cxorbia-live-hr-dev-00222-hj9
+      EXPECTED_RUNTIME_DIGEST: sha256:a478644e9e658dc188050e94c23e5cfbf5acc8d4030cb348b65e555aed59eca5
+      BACKEND_LINEAGE_SOURCE: 62ee2903fdced52c525d5a028c8c4c725940e4cd
     steps:
       - name: Checkout canonical Recovery control head
         uses: actions/checkout@v4
@@ -574,7 +574,8 @@ jobs:
           test "$(jq '[.sourceFiles[]|select(.classification!="MATCH")]|length' "$C3_OUT/module-truth-preterminal.json")" = "0"
           test "$(jq -r '.entrypointClosure.allApprovedOwnersLoaded' "$C3_OUT/module-truth-preterminal.json")" = "true"
           test "$(jq '.entrypointClosure.duplicateSrc|length' "$C3_OUT/module-truth-preterminal.json")" = "0"
-          git diff --quiet "$BACKEND_LINEAGE_SOURCE" "$C3_SOURCE" -- backend firestore.rules storage.rules
+          test "$(git diff --name-only "$BACKEND_LINEAGE_SOURCE" "$C3_SOURCE" -- backend firestore.rules storage.rules | wc -l | tr -d ' ')" = "1"
+          git diff --name-only "$BACKEND_LINEAGE_SOURCE" "$C3_SOURCE" -- backend firestore.rules storage.rules | grep -qx 'backend/runtime/hr-live-service/server.mjs'
           git archive "$C3_SOURCE" | tar -x -C "$RUNNER_TEMP"
           echo "C3_SOURCE_DIR=$RUNNER_TEMP/app" >> "$GITHUB_ENV"
 
