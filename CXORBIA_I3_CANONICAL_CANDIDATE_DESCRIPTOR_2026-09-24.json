@@ -7,14 +7,14 @@
   "productSourceSha": "f885fb7ab49d8597d992fc02051ffdd584380a85",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "62ee2903fdced52c525d5a028c8c4c725940e4cd",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V67_2026-09-26.json",
-  "findingsLedgerExpectedGitBlob": "76d7d40f1aec1e5fc2c262618e5c34966e3f8f3c",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V68_2026-09-26.json",
+  "findingsLedgerExpectedGitBlob": "07745dee84fc0e75312f87543624fb89bb632c9b",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": true,
-  "activeBlocker": "Run492 proved a control-only MAPPING_FAILURE: the postulation document omits sucursal, while the exact canonical visit and the rendered Mis Visitas UI both show C. Paseo Cayalá. The focal QA gate must resolve the canonical visit branch generically before terminal reproof.",
-  "nextFindingId": "VRM-067",
+  "activeBlocker": "V67 mandatory readback caught a control-source escaped-newline serialization defect before terminal acceptance. V68 corrects only that executable QA formatting while preserving the proven Run492 canonical-visit branch mapping fix.",
+  "nextFindingId": "VRM-068",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RERUN CERTIFY -> LIVE-FIXTURES -> SAME-ARTIFACT GATE21 ON THE SAME f885fb7a / 00222-hj9 / 8ff3b75d AFTER THE CONTROL-ONLY CANONICAL-VISIT BRANCH FIX; NO DEPLOY. IF ALL TERMINAL GATES PASS, FREEZE I3 GO AND STOP BEFORE I4.",
+  "exactNextAction": "RERUN CERTIFY -> LIVE-FIXTURES -> SAME-ARTIFACT GATE21 ON THE SAME f885fb7a / 00222-hj9 / 8ff3b75d AFTER V68 READBACK; NO DEPLOY. IF ALL TERMINAL GATES PASS, FREEZE I3 GO AND STOP BEFORE I4.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -473,21 +473,11 @@
     "findingId": "VRM-055"
   },
   "lastControlFailure": {
-    "runId": 36256836729,
-    "runNumber": 492,
-    "artifactId": 10911022185,
-    "artifactDigest": "sha256:bba97e4bb76e5caa715ce2b0460ca7fb1274231d38ebcb1cd7bc8d7cd5329f1d",
-    "classification": "MAPPING_FAILURE",
-    "code": "SHOPPER_POSTULATION_STATE_VISIBILITY",
+    "classification": "SOURCE_FAILURE",
+    "code": "V67_ESCAPED_NEWLINE_IN_QA_SOURCE",
+    "predecessorControlCommit": "0f29ee7b26a0699e1b620fe6091d69d6086919f0",
     "productDefect": false,
-    "observed": {
-      "applicationSucursal": "",
-      "canonicalVisitSucursal": "C. Paseo Cayalá",
-      "renderedMisVisitasSucursal": "C. Paseo Cayalá",
-      "syncState": "approved_assignment_review",
-      "visibleAppState": "approved_assignment_review"
-    },
-    "cause": "Focal QA expected branch denormalized on the postulation row instead of resolving the related canonical visit used by the product UI.",
+    "cause": "literal backslash-n inserted into executable QA source and caught by mandatory readback",
     "builds": 0,
     "deploys": 0,
     "writes": 0,

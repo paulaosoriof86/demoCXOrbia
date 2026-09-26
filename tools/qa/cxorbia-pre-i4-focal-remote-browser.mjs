@@ -172,7 +172,8 @@ async function signInMember(member,kind,route,options={}){
       const periodPostRows=periodPosts.map(rowOf);
       const sessionShopperId=String(window.CX?.session?.user?.shopperId||'');
       const sessionPosts=kind==='shopper'&&sessionShopperId?periodPosts.filter(x=>String(x.shopperId||'')===sessionShopperId):[];
-      const shopperVisibleAppRows=r==='misvisitas'?[...document.querySelectorAll('[data-app-state]')].map(el=>({state:String(el.getAttribute('data-app-state')||''),text:norm(el.textContent||'')})):[];\n      const shopperVisibleAppStates=shopperVisibleAppRows.map(x=>x.state);
+      const shopperVisibleAppRows=r==='misvisitas'?[...document.querySelectorAll('[data-app-state]')].map(el=>({state:String(el.getAttribute('data-app-state')||''),text:norm(el.textContent||'')})):[];
+      const shopperVisibleAppStates=shopperVisibleAppRows.map(x=>x.state);
       const adminVisiblePostSyncStates=r==='postulaciones'?[...document.querySelectorAll('[data-post-sync]')].filter(el=>getComputedStyle(el).display!=='none').map(el=>String(el.getAttribute('data-post-sync')||'')) : [];
       const activeMisvisitasSource=r==='misvisitas'?String(window.CX?.modules?.misvisitas||''):'';
       const misvisitasDiagnostics=r==='misvisitas'?{
