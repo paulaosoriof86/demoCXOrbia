@@ -7,14 +7,14 @@
   "productSourceSha": "e8635de1fa5e086a7fd0ca92ba1a393466cf63e4",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "34068805168e85cf15c9359c1dc4c4226c3062a6",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V30_2026-09-26.json",
-  "findingsLedgerExpectedGitBlob": "374a02f96a1c0d72f10df937d4df87d7a58c45b5",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V31_2026-09-26.json",
+  "findingsLedgerExpectedGitBlob": "cb111bd421aacaf4c5d253ff1d6f608934c4352f",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-063 crosswalk UID fingerprint mapping fixed in repair control; rerun existing V28 DEV only.",
-  "nextFindingId": "VRM-064",
+  "activeBlocker": "VRM-064 crosswalk projectIds serialization fixed in repair control; rerun same V28 DEV.",
+  "nextFindingId": "VRM-065",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RERUN V28 REPAIR RESUME ON EXISTING RUNTIME/HOSTING; ZERO BUILD/DEPLOY; THEN LIVE REPROOF.",
+  "exactNextAction": "RERUN V28 REPAIR RESUME EXISTING DEV ONLY; ZERO BUILD/DEPLOY; THEN LIVE REPROOF.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
