@@ -3813,9 +3813,9 @@ jobs:
         run: rm -rf node_modules
 
   v33-profile-boundary-hosting-reproof:
-    name: I3 V33 — Hosting-only profile boundary fix + cumulative live reproof
+    name: I3 V40 — VRM-057 HR honorarium authority Hosting-only + cumulative live reproof
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM057_SOURCE_FIX_READY_FOR_HOSTING_REPROOF' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v38-hosting-reproof]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM057_SOURCE_FIX_READY_FOR_HOSTING_REPROOF' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v40-hosting-reproof]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
@@ -3833,17 +3833,25 @@ jobs:
         run: |
           set -Eeuo pipefail
           mkdir -p "$V33_OUT"
-          test "$V33_SOURCE" = "37d6985588cec0d335736c17b974841b92c52e83"
-          test "$V33_TREE" = "a2f2913baa09cf633149ba2440fa655eebb0fa44"
+          test "$V33_SOURCE" = "04432faa32bef0427223fa2c51cb5b809f53e178"
+          test "$V33_TREE" = "e06905ac9cc9cfad09d9383716bada1988cae90f"
           test "$(git rev-parse "$V33_SOURCE^{tree}")" = "$V33_TREE"
           test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_VRM057_SOURCE_FIX_READY_FOR_HOSTING_REPROOF"
           git diff --quiet e8635de1fa5e086a7fd0ca92ba1a393466cf63e4 "$V33_SOURCE" -- backend firestore.rules storage.rules
-          test "$(git diff --name-only e8635de1fa5e086a7fd0ca92ba1a393466cf63e4 "$V33_SOURCE" -- app | wc -l | tr -d ' ')" = "2"
+          test "$(git diff --name-only e8635de1fa5e086a7fd0ca92ba1a393466cf63e4 "$V33_SOURCE" -- app | wc -l | tr -d ' ')" = "3"
           git diff --name-only e8635de1fa5e086a7fd0ca92ba1a393466cf63e4 "$V33_SOURCE" -- app | grep -qx 'app/adapters/cxorbia-cxdata-command-boundary-v1.js'
           git diff --name-only e8635de1fa5e086a7fd0ca92ba1a393466cf63e4 "$V33_SOURCE" -- app | grep -qx 'app/adapters/tya-protected-auth-hr-authority-bridge-v2.js'
+          git diff --name-only e8635de1fa5e086a7fd0ca92ba1a393466cf63e4 "$V33_SOURCE" -- app | grep -qx 'app/adapters/tya-c6-unified-human-runtime-v1.js'
+          test "$(git diff --name-only 37d6985588cec0d335736c17b974841b92c52e83 "$V33_SOURCE" -- app | wc -l | tr -d ' ')" = "1"
+          git diff --name-only 37d6985588cec0d335736c17b974841b92c52e83 "$V33_SOURCE" -- app | grep -qx 'app/adapters/tya-c6-unified-human-runtime-v1.js'
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
+      - name: Run VRM-057 honorarium authority source gate
+        run: |
+          set -Eeuo pipefail
+          node tools/qa/cxorbia-i3-v40-vrm057-honorarium-authority-source-gate.mjs "$V33_SOURCE" | tee "$V33_OUT/vrm057-source-gate.json"
+          test "$(jq -r '.decision' "$V33_OUT/vrm057-source-gate.json")" = "PASS_VRM057_HONORARIUM_AUTHORITY_SOURCE_GATE"
       - name: Install DEV tooling
         run: |
           npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
@@ -3864,10 +3872,10 @@ jobs:
           RAW="$(jq -r '.status.imageDigest // empty' "$V33_OUT/runtime-revision.json")"
           if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; else DIGEST="sha256:${RAW##*@sha256:}"; fi
           test "$DIGEST" = "$EXPECTED_RUNTIME_DIGEST"
-      - name: Deploy exact V38 Hosting only
+      - name: Deploy exact V40 Hosting only
         run: |
           set -Eeuo pipefail
-          SOURCE_DIR="$RUNNER_TEMP/cxorbia-v38-source"; rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"
+          SOURCE_DIR="$RUNNER_TEMP/cxorbia-v40-source"; rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"
           git archive "$V33_SOURCE" | tar -x -C "$SOURCE_DIR"
           cd "$SOURCE_DIR"
           "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$V33_OUT/hosting-deploy.log"
@@ -3879,9 +3887,9 @@ jobs:
       - name: Prove changed static bytes
         run: |
           set -Eeuo pipefail
-          for rel in adapters/cxorbia-cxdata-command-boundary-v1.js adapters/tya-protected-auth-hr-authority-bridge-v2.js; do
+          for rel in adapters/cxorbia-cxdata-command-boundary-v1.js adapters/tya-protected-auth-hr-authority-bridge-v2.js adapters/tya-c6-unified-human-runtime-v1.js; do
             remote="$V33_OUT/$(echo "$rel"|tr '/' '_').remote"
-            curl -fsSL --retry 8 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/$rel?v38=$GITHUB_RUN_ID" -o "$remote"
+            curl -fsSL --retry 8 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/$rel?v40=$GITHUB_RUN_ID" -o "$remote"
             test "$(sha256sum "$remote"|awk '{print $1}')" = "$(git show "$V33_SOURCE:app/$rel" | sha256sum | awk '{print $1}')"
           done
       - name: Run cumulative Admin + Shopper live reproof
@@ -3896,17 +3904,17 @@ jobs:
           test "$(jq -r '.admin.knownHonorariumCount' "$V33_OUT/live-reproof.json")" = "0"
       - name: Seal V33 receipt
         run: |
-          jq -n -S --arg source "$V33_SOURCE" --arg tree "$V33_TREE" --arg runtime "$EXPECTED_RUNTIME_REVISION" --arg digest "$EXPECTED_RUNTIME_DIGEST" --arg hosting "$HOSTING_VERSION" --argjson shopperReadyMs "$(jq -r '.shopper.readyMs' "$V33_OUT/live-reproof.json")" --argjson adminReadyMs "$(jq -r '.admin.readyMs' "$V33_OUT/live-reproof.json")" '{decision:"PASS_I3_V33_CUMULATIVE_LIVE_REPROOF",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,shopperReadyMs:$shopperReadyMs,adminReadyMs:$adminReadyMs,builds:0,runtimeDeploys:0,hostingDeploys:1,rulesDeploys:0,production:false}' > "$V33_OUT/result.json"
+          jq -n -S --arg source "$V33_SOURCE" --arg tree "$V33_TREE" --arg runtime "$EXPECTED_RUNTIME_REVISION" --arg digest "$EXPECTED_RUNTIME_DIGEST" --arg hosting "$HOSTING_VERSION" --argjson shopperReadyMs "$(jq -r '.shopper.readyMs' "$V33_OUT/live-reproof.json")" --argjson adminReadyMs "$(jq -r '.admin.readyMs' "$V33_OUT/live-reproof.json")" '{decision:"PASS_I3_V40_CUMULATIVE_LIVE_REPROOF",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,shopperReadyMs:$shopperReadyMs,adminReadyMs:$adminReadyMs,builds:0,runtimeDeploys:0,hostingDeploys:1,rulesDeploys:0,production:false}' > "$V33_OUT/result.json"
       - if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-i3-v33-hosting-reproof-${{ github.run_id }}
+          name: cxorbia-i3-v40-hosting-reproof-${{ github.run_id }}
           path: ${{ env.V33_OUT }}
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
       - if: always()
-        run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-v38-source"
+        run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-v40-source"
 
   c3-terminal-dev-identity-readback:
     name: C3 terminal DEV identity readback — no deploy
