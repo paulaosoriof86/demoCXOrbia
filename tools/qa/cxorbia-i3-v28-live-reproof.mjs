@@ -22,12 +22,24 @@ async function signed(member,kind){
   await page.goto(URL,{waitUntil:'domcontentloaded',timeout:90000});
   await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
   const token=await auth.createCustomToken(member.id);
-  for(let i=0;i<5;i++){
-    try{await page.evaluate(async t=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);await firebase.auth().signInWithCustomToken(t);},token);}catch(e){if(!/Execution context was destroyed|navigation/i.test(str(e?.message)))throw e;}
-    await page.waitForTimeout(800);
-    const uid=await page.evaluate(()=>String(firebase.auth().currentUser?.uid||'')).catch(()=> '');
-    if(uid===member.id)break;
+  let signedIn=false,lastSignInError=null;
+  for(let i=0;i<8&&!signedIn;i++){
+    try{
+      await page.evaluate(async t=>{
+        await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+        await firebase.auth().signInWithCustomToken(t);
+      },token);
+    }catch(e){
+      const msg=str(e?.message||e);
+      if(!/Execution context was destroyed|navigation|auth\/network-request-failed|network|timeout|interrupted|unreachable/i.test(msg))throw e;
+      lastSignInError=e;
+    }
+    await page.waitForLoadState('domcontentloaded',{timeout:30000}).catch(()=>{});
+    await page.waitForTimeout(900*(i+1));
+    const uid=await page.evaluate(()=>String(window.firebase?.auth?.().currentUser?.uid||'')).catch(()=> '');
+    if(uid===member.id)signedIn=true;
   }
+  if(!signedIn)throw new Error('ENVIRONMENT_FAILURE:V28_CUSTOM_TOKEN_AUTH_RETRY_EXHAUSTED:'+str(lastSignInError?.message||lastSignInError||''));
   await page.goto('about:blank');const t0=Date.now();await page.goto(URL,{waitUntil:'domcontentloaded',timeout:90000});
   await page.waitForFunction(uid=>String(window.firebase?.auth?.().currentUser?.uid||'')===uid,member.id,{timeout:90000});
   await page.waitForFunction(()=>typeof window.CX?.backendAuth?.ensureAuthenticated==='function',null,{timeout:90000});
