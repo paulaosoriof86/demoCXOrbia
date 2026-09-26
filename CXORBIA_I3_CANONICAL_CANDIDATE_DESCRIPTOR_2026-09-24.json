@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_MODULE_TRUTH_MATRIX_REQUIRED",
+  "status": "HOLD_MODULE_TRUTH_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "37d6985588cec0d335736c17b974841b92c52e83",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V46_2026-09-26.json",
-  "findingsLedgerExpectedGitBlob": "9ef1b3a794f8fa7d644df7bdb19f2ce352d89f57",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V47_2026-09-26.json",
+  "findingsLedgerExpectedGitBlob": "3b8f3bbf83144caafa3fac46b8d2446e40dea9de",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "Functional second-review block is closed by Run472. Remaining preterminal blocker is exhaustive MODULE_TRUTH_MATRIX + live source/composition parity for the exact current candidate.",
+  "activeBlocker": "Run473 found 3 stale path-authority proof states, not product drift. Evidence has been reconciled to Run387/Run472 and exact current blobs; exhaustive Module Truth must rerun 20/20.",
   "nextFindingId": "VRM-065",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN C3 PRETERMINAL EXHAUSTIVE MODULE TRUTH ON EXACT CURRENT SOURCE/DEV; REQUIRE 20/20 MATCH, ALL APPROVED OWNERS LOADED, LIVE HOSTING BYTE PARITY, RUNTIME IDENTITY AND LIVE FIRESTORE RULES PARITY; ZERO DEPLOY.",
+  "exactNextAction": "RERUN C3 PRETERMINAL MODULE TRUTH ON SAME SOURCE/DEV; REQUIRE 20/20 MATCH, THEN LIVE BYTE/RUNTIME/RULES PARITY. NO PRODUCT CHANGE.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -336,13 +336,10 @@
     "production": false
   },
   "reproofDispatch": {
-    "requestedAt": "2026-09-26T13:20:00Z",
-    "mode": "EXHAUSTIVE_MODULE_TRUTH_V46",
+    "requestedAt": "2026-09-26T13:42:00Z",
+    "mode": "EXHAUSTIVE_MODULE_TRUTH_V47_REPROOF",
     "productSourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
     "productSourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
-    "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
-    "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
     "trigger": "[c3-preterminal-module-truth]",
     "deploys": 0,
     "builds": 0,
@@ -535,5 +532,17 @@
     "durableUniqueHrRows": 44,
     "profileReloadReadback": true,
     "invalidApprovalCount": 0
+  },
+  "lastModuleTruthAttempt": {
+    "runId": 36245701170,
+    "runNumber": 473,
+    "artifactId": 10906649513,
+    "artifactDigest": "sha256:c5c5125f4752b7943a9a95916a69f6b0b69913245d3e8312c9a59b3c40295977",
+    "matchModules": 17,
+    "nonMatchModules": 3,
+    "pendingFiles": 3,
+    "unauthorizedFiles": 0,
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "productDriftDemonstrated": false
   }
 }
