@@ -3574,6 +3574,144 @@ jobs:
       - if: always()
         run: rm -rf node_modules
 
+  v28-second-review-remediation:
+    name: I3 V28 — cumulative DEV remediation + live reproof
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_V28_SOURCE_READY_FOR_DEV_REMEDIATION' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v28-remediation-dev]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      V28_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      V28_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      V28_OUT: .tmp/i3-v28
+      V28_ROOT: https://cxorbia-backend-dev.web.app
+    steps:
+      - name: Checkout Recovery control head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Prove exact V28 source and scope
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$V28_OUT"
+          test "$V28_SOURCE" = "e8635de1fa5e086a7fd0ca92ba1a393466cf63e4"
+          test "$V28_TREE" = "7c0ecdf11ed69bff770bd269ab9d1b948d4a160e"
+          test "$(git rev-parse "$V28_SOURCE^{tree}")" = "$V28_TREE"
+          test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$V28_SOURCE"
+          test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_V28_SOURCE_READY_FOR_DEV_REMEDIATION"
+          git diff --quiet "$V28_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules
+          jq -n -S --arg source "$V28_SOURCE" --arg tree "$V28_TREE" '{decision:"PASS_I3_V28_SOURCE_SCOPE",sourceSha:$source,sourceTree:$tree,production:false}' > "$V28_OUT/source-scope.json"
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Prepare exact source and focal syntax gates
+        run: |
+          set -Eeuo pipefail
+          SOURCE_DIR="$RUNNER_TEMP/cxorbia-v28-source"
+          rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"
+          git archive "$V28_SOURCE" | tar -x -C "$SOURCE_DIR"
+          echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
+          for f in             app/adapters/tya-live-source-inplace-apply.js             app/modules/operacion-extra.js             app/core/backend-firebase.js             app/modules/postulaciones.js             app/modules/midia.js             backend/runtime/cxorbia-operational-command-provider-v1.mjs             backend/runtime/cxorbia-shopper-command-provider-v1.mjs; do
+            node --check "$SOURCE_DIR/$f"
+          done
+          ! grep -q "project_country_config" "$SOURCE_DIR/app/adapters/tya-live-source-inplace-apply.js"
+          grep -q "stableVisitId(v){return str(v?.hrRowId)" "$SOURCE_DIR/backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+          grep -q "canonicalSelfTarget" "$SOURCE_DIR/backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
+          grep -q "Identidad pendiente de resolver" "$SOURCE_DIR/app/core/backend-firebase.js"
+
+      - name: Install DEV tooling
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+
+      - name: Authenticate canonical Firebase DEV
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
+
+      - name: Build exact V28 runtime once
+        run: |
+          set -Eeuo pipefail
+          IMAGE_URI="gcr.io/${PROJECT}/${SERVICE}:i3-v28-${V28_SOURCE:0:12}-${GITHUB_RUN_ID}"
+          echo "$IMAGE_URI" > "$V28_OUT/image-uri.txt"
+          gcloud builds submit "$SOURCE_DIR" --project "$PROJECT" --config "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE_URI" --quiet
+
+      - name: Deploy exact V28 runtime once to Recovery DEV
+        run: |
+          set -Eeuo pipefail
+          IMAGE_URI="$(cat "$V28_OUT/image-uri.txt")"
+          gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$IMAGE_URI" --min-instances=1 --max-instances=1 --update-env-vars "$LEGAL_ENABLE_NAME=$LEGAL_ENABLE_VALUE,$LEGAL_GATE_NAME=$LEGAL_GATE_VALUE,$I3_HR_CACHE_PIN_NAME=$I3_HR_CACHE_PIN_VALUE" --quiet
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$V28_OUT/runtime.json"
+          REV="$(jq -r '.status.latestReadyRevisionName // empty' "$V28_OUT/runtime.json")"
+          test -n "$REV"
+          gcloud run revisions describe "$REV" --project "$PROJECT" --region "$REGION" --format=json > "$V28_OUT/runtime-revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$V28_OUT/runtime-revision.json")"
+          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; else DIGEST="sha256:${RAW##*@sha256:}"; fi
+          echo "V28_RUNTIME_REVISION=$REV" >> "$GITHUB_ENV"
+          echo "V28_RUNTIME_DIGEST=$DIGEST" >> "$GITHUB_ENV"
+
+      - name: Deploy same exact V28 source once to Hosting DEV
+        run: |
+          set -Eeuo pipefail
+          cd "$SOURCE_DIR"
+          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$V28_OUT/hosting-deploy.log"
+          cd "$GITHUB_WORKSPACE"
+          TOKEN="$(gcloud auth print-access-token)"
+          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$V28_OUT/hosting-live-channel.json"
+          HOSTING_VERSION="$(jq -r '.release.version.name // empty' "$V28_OUT/hosting-live-channel.json")"
+          test -n "$HOSTING_VERSION"
+          echo "V28_HOSTING_VERSION=$HOSTING_VERSION" >> "$GITHUB_ENV"
+
+      - name: Run archive-first durable DEV repair
+        env:
+          V28_HR_URL: https://cxorbia-backend-dev.web.app/api/tya/cinepolis/hr-live?format=json&v28=repair-${{ github.run_id }}
+        run: |
+          set -Eeuo pipefail
+          V28_OUT="$V28_OUT" V28_HR_URL="$V28_HR_URL" node tools/qa/cxorbia-i3-v28-dev-repair.mjs | tee "$V28_OUT/repair.log"
+          test "$(jq -r '.decision' "$V28_OUT/repair-result.json")" = "PASS_I3_V28_DEV_DURABLE_REPAIR"
+          test "$(jq -r '.hrCurrentCount' "$V28_OUT/repair-result.json")" = "44"
+          test "$(jq -r '.durableCurrentCount' "$V28_OUT/repair-result.json")" = "44"
+          test "$(jq -r '.uniqueCurrentHrRows' "$V28_OUT/repair-result.json")" = "44"
+          test "$(jq -r '.hrWrites' "$V28_OUT/repair-result.json")" = "0"
+          test "$(jq -r '.production' "$V28_OUT/repair-result.json")" = "false"
+
+      - name: Run Admin + Shopper V28 live reproof
+        run: |
+          set -Eeuo pipefail
+          V28_OUT="$V28_OUT" V28_ROOT="$V28_ROOT" node tools/qa/cxorbia-i3-v28-live-reproof.mjs | tee "$V28_OUT/live.log"
+          test "$(jq -r '.decision' "$V28_OUT/live-reproof.json")" = "PASS_I3_V28_LIVE_REPROOF"
+          test "$(jq -r '.shopper.profileResult.providerAck' "$V28_OUT/live-reproof.json")" = "true"
+          test "$(jq -r '.admin.currentCount' "$V28_OUT/live-reproof.json")" = "44"
+          test "$(jq -r '.admin.invalidShopperVisible' "$V28_OUT/live-reproof.json")" = "false"
+          test "$(jq -r '.admin.knownHonorariumCount' "$V28_OUT/live-reproof.json")" = "0"
+
+      - name: Seal V28 remediation receipt
+        run: |
+          jq -n -S             --arg source "$V28_SOURCE" --arg tree "$V28_TREE"             --arg runtime "$V28_RUNTIME_REVISION" --arg digest "$V28_RUNTIME_DIGEST"             --arg hosting "$V28_HOSTING_VERSION"             --arg hr "$(jq -r '.hrRevision' "$V28_OUT/repair-result.json")"             --argjson shopperReadyMs "$(jq -r '.shopper.readyMs' "$V28_OUT/live-reproof.json")"             --argjson adminReadyMs "$(jq -r '.admin.readyMs' "$V28_OUT/live-reproof.json")"             '{decision:"PASS_I3_V28_CUMULATIVE_REMEDIATION",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,shopperReadyMs:$shopperReadyMs,adminReadyMs:$adminReadyMs,builds:1,runtimeDeploys:1,hostingDeploys:1,rulesDeploys:0,production:false}' > "$V28_OUT/result.json"
+
+      - name: Upload V28 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-v28-remediation-${{ github.run_id }}
+          path: ${{ env.V28_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
+      - name: Cleanup
+        if: always()
+        run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-v28-source"
+
   c3-terminal-dev-identity-readback:
     name: C3 terminal DEV identity readback — no deploy
     needs: canonical-candidate-authority
