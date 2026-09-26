@@ -249,12 +249,23 @@ async function signInMember(member,kind,route,options={}){
       if(Number(info.technicalPrimaryCount)!==0)throw new Error('MAPPING_FAILURE:TECHNICAL_SHOPPER_PRIMARY_NAMES:'+JSON.stringify({count:info.technicalPrimaryCount}));
       const expectedCanonicalIds=new Set([...cases,...unresolved].map(x=>String(x.canonicalId||x.sourceShopperId||'')).filter(Boolean));
       if(new Set([...cases,...unresolved].map(x=>x.row.id)).size!==expectedCanonicalIds.size)throw new Error('MAPPING_FAILURE:EXACT_HR_IDENTITY_COLLISION:'+JSON.stringify({cases,unresolved,expectedCanonicalIds:[...expectedCanonicalIds]}));
+      const validatedCanonicalHistory=new Set();
       for(const x of cases){
         if(!x.row.legacyLiveShopperIds.includes(x.sourceShopperId)&&x.row.id!==x.sourceShopperId)throw new Error('MAPPING_FAILURE:EXACT_HR_CROSSWALK_MISSING:'+JSON.stringify(x));
         const nn=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
+        const canonicalGroup=cases.filter(y=>String(y.canonicalId||y.sourceShopperId||'')===String(x.canonicalId||x.sourceShopperId||''));
+        const groupHasTenantAdjudication=canonicalGroup.some(y=>y.row?.providerExactIdentityLink===true&&y.row?.providerIdentityAuthorityType==='tenant_adjudication'&&String(y.row?.id||'')===String(y.canonicalId||'')&&String(y.canonicalId||'')!==String(y.sourceShopperId||''));
         const exactTenantAdjudication=x.row.providerExactIdentityLink===true&&x.row.providerIdentityAuthorityType==='tenant_adjudication'&&x.row.id===x.canonicalId&&x.canonicalId!==x.sourceShopperId;
         if(!exactTenantAdjudication&&nn(x.row.name)!==nn(x.expectedName))throw new Error('MAPPING_FAILURE:EXACT_HR_HUMAN_NAME_'+x.sourceShopperId+':'+JSON.stringify(x));
-        if(Number(x.row.stats?.total)!==x.expectedTotal||Number(x.row.stats?.realizadas)!==x.expectedRealized)throw new Error('MAPPING_FAILURE:EXACT_HR_HISTORY_'+x.sourceShopperId+':'+JSON.stringify(x));
+        if(groupHasTenantAdjudication){
+          const canonicalId=String(x.canonicalId||x.sourceShopperId||'');
+          if(!validatedCanonicalHistory.has(canonicalId)){
+            const expectedTotal=canonicalGroup.reduce((n,y)=>n+Number(y.expectedTotal||0),0);
+            const expectedRealized=canonicalGroup.reduce((n,y)=>n+Number(y.expectedRealized||0),0);
+            if(Number(x.row.stats?.total)!==expectedTotal||Number(x.row.stats?.realizadas)!==expectedRealized)throw new Error('MAPPING_FAILURE:CANONICAL_ADJUDICATED_HISTORY_'+canonicalId+':'+JSON.stringify({canonicalId,sourceIds:canonicalGroup.map(y=>y.sourceShopperId),expectedTotal,expectedRealized,observed:x.row.stats}));
+            validatedCanonicalHistory.add(canonicalId);
+          }
+        }else if(Number(x.row.stats?.total)!==x.expectedTotal||Number(x.row.stats?.realizadas)!==x.expectedRealized)throw new Error('MAPPING_FAILURE:EXACT_HR_HISTORY_'+x.sourceShopperId+':'+JSON.stringify(x));
       }
       for(const x of unresolved){
         if(!x.row.legacyLiveShopperIds.includes(x.sourceShopperId)&&x.row.id!==x.sourceShopperId)throw new Error('MAPPING_FAILURE:UNRESOLVED_HR_CROSSWALK_MISSING:'+JSON.stringify(x));
