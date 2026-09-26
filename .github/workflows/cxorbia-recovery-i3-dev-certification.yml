@@ -121,7 +121,7 @@ jobs:
           test "$C3_SOURCE" = "$EXPECTED_SOURCE"
           test "$C3_TREE" = "$EXPECTED_TREE"
           test "$(git rev-parse "$C3_SOURCE^{tree}")" = "$C3_TREE"
-          test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_MODULE_TRUTH_MATRIX_REQUIRED"
+          test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_MODULE_TRUTH_REPROOF_REQUIRED"
           LEDGER="$(jq -r '.findingsLedgerPath' "$CANDIDATE_DESCRIPTOR")"
           TEMPLATE="RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json" \
           LEDGER="$LEDGER" SOURCE="$C3_SOURCE" TREE="$C3_TREE" LAST_SERVED="$C3_SOURCE" \
