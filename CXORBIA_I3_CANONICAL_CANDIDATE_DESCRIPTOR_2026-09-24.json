@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_V28_DURABLE_REPAIR_PASS_PROFILE_SAVE_DIAGNOSTIC_REQUIRED",
+  "status": "HOLD_V33_PROFILE_BOUNDARY_FIX_READY_FOR_HOSTING_REPROOF",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "e8635de1fa5e086a7fd0ca92ba1a393466cf63e4",
+  "productSourceSha": "23cb3ab48cc8111094a2a29c9e4b6d1a2588b563",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "34068805168e85cf15c9359c1dc4c4226c3062a6",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V33_2026-09-26.json",
-  "findingsLedgerExpectedGitBlob": "f758d0665a1ae1c842e78dedd879a5bcc9ff84e5",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V34_2026-09-26.json",
+  "findingsLedgerExpectedGitBlob": "ee907169da0bef80ad77ae065e36290865a77b3c",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-054 exact command block code still unknown; Run453 was harness ENV auth/network failure before command.",
+  "activeBlocker": "VRM-054 fixed in source pending live provider-ACK reproof; VRM-055..064 pending cumulative UI reproof after durable repair PASS.",
   "nextFindingId": "VRM-065",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RERUN V32 PROFILE DIAGNOSTIC ONLY WITH NETWORK-SAFE AUTH RETRY; NO BUILD/DEPLOY.",
+  "exactNextAction": "DEPLOY V33 HOSTING ONLY; ZERO RUNTIME REBUILD/DEPLOY; RUN CUMULATIVE V28 LIVE REPROOF; FREEZE RESULTS.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -326,22 +326,11 @@
     "production": false
   },
   "currentRemediationCandidate": {
-    "sourceSha": "e8635de1fa5e086a7fd0ca92ba1a393466cf63e4",
-    "sourceTree": "7c0ecdf11ed69bff770bd269ab9d1b948d4a160e",
-    "findings": [
-      "VRM-054",
-      "VRM-055",
-      "VRM-056",
-      "VRM-057",
-      "VRM-058",
-      "VRM-059",
-      "VRM-061",
-      "VRM-062"
-    ],
-    "changedRuntime": true,
+    "sourceSha": "23cb3ab48cc8111094a2a29c9e4b6d1a2588b563",
+    "sourceTree": "63c0b69ee63b156d6295e8ef2e3c3add2cb6a514",
     "changedHosting": true,
+    "changedRuntime": false,
     "changedRules": false,
-    "durableRepairRequired": true,
     "production": false
   },
   "reproofDispatch": {
