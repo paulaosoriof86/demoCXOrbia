@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_SECOND_REVIEW_CUMULATIVE_REPROOF_REQUIRED",
+  "status": "HOLD_MODULE_TRUTH_MATRIX_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "37d6985588cec0d335736c17b974841b92c52e83",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V45_2026-09-26.json",
-  "findingsLedgerExpectedGitBlob": "ad1d0f9d7992fbb2d656d245d3d01d01bb7d0df9",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V46_2026-09-26.json",
+  "findingsLedgerExpectedGitBlob": "9ef1b3a794f8fa7d644df7bdb19f2ce352d89f57",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "Control-only ENVIRONMENT_FAILURE in V41 Playwright custom-token authentication. Product/DEV unchanged; harden test harness and rerun.",
+  "activeBlocker": "Functional second-review block is closed by Run472. Remaining preterminal blocker is exhaustive MODULE_TRUTH_MATRIX + live source/composition parity for the exact current candidate.",
   "nextFindingId": "VRM-065",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RERUN V41 ON SAME DEV AFTER CONTROL-ONLY AUTH HARNESS HARDENING; NO PRODUCT CHANGE/DEPLOY.",
+  "exactNextAction": "RUN C3 PRETERMINAL EXHAUSTIVE MODULE TRUTH ON EXACT CURRENT SOURCE/DEV; REQUIRE 20/20 MATCH, ALL APPROVED OWNERS LOADED, LIVE HOSTING BYTE PARITY, RUNTIME IDENTITY AND LIVE FIRESTORE RULES PARITY; ZERO DEPLOY.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -336,15 +336,17 @@
     "production": false
   },
   "reproofDispatch": {
-    "requestedAt": "2026-09-26T05:19:00Z",
-    "mode": "SECOND_REVIEW_CUMULATIVE_V41_AUTH_HARNESS_RETRY_V45",
+    "requestedAt": "2026-09-26T13:20:00Z",
+    "mode": "EXHAUSTIVE_MODULE_TRUTH_V46",
     "productSourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
     "productSourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
     "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
     "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
-    "trigger": "[v41-second-review-reproof]",
+    "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+    "trigger": "[c3-preterminal-module-truth]",
     "deploys": 0,
     "builds": 0,
+    "writes": 0,
     "production": false
   },
   "currentMaterialization": {
@@ -355,9 +357,10 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
     "buildCount": 0,
     "runtimeDeploys": 0,
-    "hostingDeploys": 1,
+    "hostingDeploys": 0,
     "rulesDeploys": 0,
-    "production": false
+    "production": false,
+    "note": "Identity readback only for this control step; materialization inherited from Run467 and revalidated Run472."
   },
   "lastFocalAttempt": {
     "runId": 36198284266,
@@ -507,5 +510,30 @@
     "owner": "tools/qa/cxorbia-i3-v41-second-review-live-reproof.mjs",
     "productDefect": false,
     "nextFindingOpened": false
+  },
+  "lastSecondReviewProof": {
+    "runId": 36220426137,
+    "runNumber": 472,
+    "jobId": 108344543616,
+    "artifactId": 10898611925,
+    "artifactDigest": "sha256:ea14f6fb6869fe0f4f76ebfda811622dd8ce3395fca4a5139b8ca650e449c5a8",
+    "decision": "PASS_I3_V41_SECOND_REVIEW_CUMULATIVE_REPROOF",
+    "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+    "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+    "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+    "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+    "hrRevision": "0c65c20e1aefad54ea2c71fcdbc3b79a435f074fd9855f23a5d7dc7f3c0cb335",
+    "builds": 0,
+    "deploys": 0,
+    "production": false,
+    "shopperHistoryCount": 7,
+    "shopperCurrentCount": 0,
+    "miltonName": "Milton De Paz",
+    "assignmentParityMismatches": 0,
+    "durableCurrentCount": 44,
+    "durableUniqueHrRows": 44,
+    "profileReloadReadback": true,
+    "invalidApprovalCount": 0
   }
 }

@@ -93,30 +93,126 @@ jobs:
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
 
   c3-preterminal-module-truth:
-    name: C3 preterminal Module Truth — read only
+    name: C3 preterminal Module Truth — exact current DEV — no deploy
     needs: canonical-candidate-authority
     if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[c3-preterminal-module-truth]') }}
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 35
     env:
       C3_OUT: .tmp/c3-preterminal-module-truth
       C3_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
       C3_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      EXPECTED_SOURCE: 04432faa32bef0427223fa2c51cb5b809f53e178
+      EXPECTED_TREE: e06905ac9cc9cfad09d9383716bada1988cae90f
+      EXPECTED_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c
+      EXPECTED_RUNTIME_REVISION: cxorbia-live-hr-dev-00220-94r
+      EXPECTED_RUNTIME_DIGEST: sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff
+      BACKEND_LINEAGE_SOURCE: e8635de1fa5e086a7fd0ca92ba1a393466cf63e4
     steps:
       - name: Checkout canonical Recovery control head
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Prove path-bound independent Module Truth
+      - name: Prove exact candidate and path-bound independent Module Truth
         run: |
           set -Eeuo pipefail
           mkdir -p "$C3_OUT"
+          test "$C3_SOURCE" = "$EXPECTED_SOURCE"
+          test "$C3_TREE" = "$EXPECTED_TREE"
+          test "$(git rev-parse "$C3_SOURCE^{tree}")" = "$C3_TREE"
+          test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_MODULE_TRUTH_MATRIX_REQUIRED"
           LEDGER="$(jq -r '.findingsLedgerPath' "$CANDIDATE_DESCRIPTOR")"
-          TEMPLATE="RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json"           LEDGER="$LEDGER"           SOURCE="$C3_SOURCE"           TREE="$C3_TREE"           LAST_SERVED="d8aad982ae4b47e66bf949d906b6c7ede8866f84"           OUT_FILE="$C3_OUT/module-truth-preterminal.json"           node tools/qa/cxorbia-i3-c3-preterminal-module-truth.mjs | tee "$C3_OUT/console.log"
+          TEMPLATE="RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json" \
+          LEDGER="$LEDGER" SOURCE="$C3_SOURCE" TREE="$C3_TREE" LAST_SERVED="$C3_SOURCE" \
+          OUT_FILE="$C3_OUT/module-truth-preterminal.json" \
+          node tools/qa/cxorbia-i3-c3-preterminal-module-truth.mjs | tee "$C3_OUT/console.log"
           test "$(jq -r '.preTerminalComposition.decision' "$C3_OUT/module-truth-preterminal.json")" = "PASS_C3_PRETERMINAL_COMPOSITION"
           test "$(jq '.modules|length' "$C3_OUT/module-truth-preterminal.json")" = "20"
-          jq -n -S             --arg source "$C3_SOURCE"             --arg tree "$C3_TREE"             --argjson matches "$(jq '.preTerminalComposition.matchModules|length' "$C3_OUT/module-truth-preterminal.json")"             --argjson composed "$(jq '.preTerminalComposition.composedNotDeployedModules|length' "$C3_OUT/module-truth-preterminal.json")"             --argjson pending "$(jq '.preTerminalComposition.pendingFileCount' "$C3_OUT/module-truth-preterminal.json")"             '{decision:"PASS_C3_PRETERMINAL_MODULE_TRUTH",sourceSha:$source,sourceTree:$tree,moduleCount:20,matchModules:$matches,composedNotDeployedModules:$composed,pendingFiles:$pending,selfApproval:false,production:false,writes:0,deploys:0}'             > "$C3_OUT/result.json"
+          test "$(jq '.preTerminalComposition.matchModules|length' "$C3_OUT/module-truth-preterminal.json")" = "20"
+          test "$(jq '.preTerminalComposition.composedNotDeployedModules|length' "$C3_OUT/module-truth-preterminal.json")" = "0"
+          test "$(jq '.preTerminalComposition.pendingFileCount' "$C3_OUT/module-truth-preterminal.json")" = "0"
+          test "$(jq '[.sourceFiles[]|select(.classification!="MATCH")]|length' "$C3_OUT/module-truth-preterminal.json")" = "0"
+          test "$(jq -r '.entrypointClosure.allApprovedOwnersLoaded' "$C3_OUT/module-truth-preterminal.json")" = "true"
+          test "$(jq '.entrypointClosure.duplicateSrc|length' "$C3_OUT/module-truth-preterminal.json")" = "0"
+          git diff --quiet "$BACKEND_LINEAGE_SOURCE" "$C3_SOURCE" -- backend firestore.rules storage.rules
+          git archive "$C3_SOURCE" | tar -x -C "$RUNNER_TEMP"
+          echo "C3_SOURCE_DIR=$RUNNER_TEMP/app" >> "$GITHUB_ENV"
+
+      - name: Authenticate DEV read only
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: cxorbia-backend-dev
+
+      - name: Prove exact runtime Hosting and Firestore Rules identity
+        run: |
+          set -Eeuo pipefail
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$C3_OUT/runtime.json"
+          REV="$(jq -r '.status.latestReadyRevisionName // empty' "$C3_OUT/runtime.json")"
+          test "$REV" = "$EXPECTED_RUNTIME_REVISION"
+          gcloud run revisions describe "$REV" --project "$PROJECT" --region "$REGION" --format=json > "$C3_OUT/runtime-revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$C3_OUT/runtime-revision.json")"
+          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else exit 1; fi
+          test "$DIGEST" = "$EXPECTED_RUNTIME_DIGEST"
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$C3_OUT/hosting-live-channel.json"
+          test "$(jq -r '.release.version.name // empty' "$C3_OUT/hosting-live-channel.json")" = "$EXPECTED_HOSTING_VERSION"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/cxorbia-backend-dev/releases/cloud.firestore" > "$C3_OUT/firestore-release-live.json"
+          RULESET="$(jq -r '.rulesetName // empty' "$C3_OUT/firestore-release-live.json")"; test -n "$RULESET"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/$RULESET" > "$C3_OUT/firestore-ruleset-live.json"
+          C3_OUT="$C3_OUT" node <<'NODE'
+          const fs=require('fs'),crypto=require('crypto');
+          const r=JSON.parse(fs.readFileSync(process.env.C3_OUT+'/firestore-ruleset-live.json','utf8'));
+          const files=r?.source?.files||[],live=files.find(x=>x.name==='firestore.rules')||files.find(x=>String(x.name||'').endsWith('/firestore.rules'))||files[0];
+          const local=fs.readFileSync('firestore.rules','utf8');
+          if(!live||String(live.content)!==local)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_LIVE_FIRESTORE_RULES_DRIFT');
+          const sha=x=>crypto.createHash('sha256').update(x).digest('hex');
+          fs.writeFileSync(process.env.C3_OUT+'/firestore-live-parity.json',JSON.stringify({decision:'PASS_C3_LIVE_FIRESTORE_RULES_EXACT',liveRulesetName:r.name||null,sha256:sha(local),production:false},null,2)+'\n');
+          NODE
+
+      - name: Prove every active Phase A browser owner served byte exact
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$C3_OUT/remote"
+          jq -r '.sourceFiles[] | select(.phaseAAuthority==true and (.loadTarget=="browser-script" or .loadTarget=="browser-style")) | .path' "$C3_OUT/module-truth-preterminal.json" | sort -u > "$C3_OUT/active-browser-owners.txt"
+          : > "$C3_OUT/hosting-parity.tsv"
+          n=0
+          while IFS= read -r p; do
+            [ -n "$p" ] || continue
+            [[ "$p" == app/* ]] || { echo "Unexpected browser owner: $p" >&2; exit 1; }
+            rel="${p#app/}"
+            local="$RUNNER_TEMP/$p"
+            remote="$C3_OUT/remote/$(echo "$rel"|tr '/' '_')"
+            curl -fsSL --retry 8 --retry-delay 1 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/$rel?c3truth=${GITHUB_RUN_ID}-${n}-$(date +%s%N)" -o "$remote"
+            expected="$(sha256sum "$local"|awk '{print $1}')"
+            actual="$(sha256sum "$remote"|awk '{print $1}')"
+            test "$actual" = "$expected"
+            printf '%s\t%s\t%s\n' "$p" "$expected" "$actual" >> "$C3_OUT/hosting-parity.tsv"
+            n=$((n+1))
+          done < "$C3_OUT/active-browser-owners.txt"
+          test "$n" -gt 0
+          curl -fsSL --retry 5 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/index-backend-dev.html?c3truth=${GITHUB_RUN_ID}" -o "$C3_OUT/remote/index-backend-dev.html"
+          cmp "$RUNNER_TEMP/app/index-backend-dev.html" "$C3_OUT/remote/index-backend-dev.html"
+          curl -fsSL --retry 5 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/__c3_truth__/admin/dashboard?c3truth=${GITHUB_RUN_ID}" -o "$C3_OUT/remote/deep.html"
+          cmp "$RUNNER_TEMP/app/index-backend-dev.html" "$C3_OUT/remote/deep.html"
+          printf '%s\n' "$n" > "$C3_OUT/active-browser-owner-count.txt"
+
+      - name: Seal exhaustive preterminal Module Truth result
+        run: |
+          set -Eeuo pipefail
+          MATRIX_SHA="$(sha256sum "$C3_OUT/module-truth-preterminal.json"|awk '{print $1}')"
+          jq -n -S \
+            --arg source "$C3_SOURCE" --arg tree "$C3_TREE" --arg matrix "$MATRIX_SHA" \
+            --arg hosting "$EXPECTED_HOSTING_VERSION" --arg runtime "$EXPECTED_RUNTIME_REVISION" --arg digest "$EXPECTED_RUNTIME_DIGEST" \
+            --arg rules "$(jq -r '.sha256' "$C3_OUT/firestore-live-parity.json")" \
+            --argjson owners "$(cat "$C3_OUT/active-browser-owner-count.txt")" \
+            '{decision:"PASS_C3_PRETERMINAL_MODULE_TRUTH_20_20_EXACT_DEV",sourceSha:$source,sourceTree:$tree,moduleTruthSha256:$matrix,moduleCount:20,matchModules:20,nonMatchModules:0,pendingFiles:0,activeBrowserOwners:$owners,hostingVersion:$hosting,runtimeRevision:$runtime,runtimeDigest:$digest,firestoreRulesSha256:$rules,allApprovedOwnersLoaded:true,duplicateScripts:0,builds:0,deploys:0,writes:0,production:false}' \
+            > "$C3_OUT/result.json"
 
       - name: Upload C3 preterminal evidence
         if: always()

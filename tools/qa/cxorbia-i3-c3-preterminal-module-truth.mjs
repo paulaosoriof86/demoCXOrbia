@@ -21,10 +21,10 @@ if(TREE&&git('rev-parse',SOURCE+'^{tree}')!==TREE)throw new Error('RELEASE_COMPO
 const findings=ledger.findings||{};
 const moduleMap=new Map((m.modules||[]).map(x=>[x.domain,x]));
 const pathFindingEntries=(path)=>Object.entries(findings).filter(([,v])=>{
-  const owners=[...(v?.owners||[]),...(v?.sourceFixFiles||[]),...(v?.productFiles||[])].map(String);
+  const owners=[...(Array.isArray(v?.owner)?v.owner:(v?.owner?[v.owner]:[])),...(v?.owners||[]),...(v?.sourceFixFiles||[]),...(v?.productFiles||[])].map(String);
   return owners.includes(path);
 });
-const isProvenState=state=>{const x=String(state||'');return !/NOT_PROVEN|PENDING|REQUIRED|HOLD/.test(x)&&/PROVEN|CLOSED|ALREADY_PROVEN/.test(x);};
+const isProvenState=state=>{const x=String(state||'');return !/NOT_PROVEN|PENDING|REQUIRED|HOLD|FAIL/.test(x)&&(/PROVEN|CLOSED|ALREADY_PROVEN/.test(x)||/^PASS_/.test(x));};
 const collectRefs=(obj,out=new Set(),key='')=>{
   if(obj==null)return out;
   if(Array.isArray(obj)){for(const v of obj)collectRefs(v,out,key);return out;}
