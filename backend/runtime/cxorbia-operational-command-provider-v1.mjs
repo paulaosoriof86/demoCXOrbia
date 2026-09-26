@@ -85,7 +85,22 @@ function refs(db,command){
 }
 function ack(command,entityId,extra={}){return {ok:true,status:'committed',committed:true,providerAck:true,successUiAllowed:true,localMutation:false,localStorageWrite:false,tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,commandType:command.commandType,entityType:command.entityType,entityId:entityId||command.entityId||null,idempotencyKey:command.idempotencyKey,...extra};}
 function blocked(command,code,extra={}){return {ok:false,status:'blocked',committed:false,providerAck:false,successUiAllowed:false,localMutation:false,localStorageWrite:false,providerWrites:0,tenantId:command?.tenantId||null,projectId:command?.projectId||null,periodId:command?.periodId||null,commandType:command?.commandType||null,entityId:command?.entityId||null,code,...extra};}
-function assertVersion(command,data){if(command.expectedVersion==='absent')return;if(str(command.expectedVersion)!==str(versionOf(data)))throw new Error('OPS_EXPECTED_VERSION_CONFLICT');}
+function assertVersion(command,data){
+  if(command.expectedVersion==='absent'||command.expectedVersion==='source-current')return;
+  if(str(command.expectedVersion)!==str(versionOf(data)))throw new Error('OPS_EXPECTED_VERSION_CONFLICT');
+}
+async function resolveVisitDocument(tx,visits,visitId,hrRowId){
+  const logical=str(visitId),row=str(hrRowId),keys=[...new Set([row,logical].filter(Boolean))];
+  if(!keys.length)throw new Error('OPS_VISIT_ID_REQUIRED');
+  for(const key of keys){
+    const ref=visits.doc(key),snap=await tx.get(ref);
+    if(!snap.exists)continue;
+    const data=snap.data()||{},durableHrRow=str(data.hrRowId);
+    if(row&&durableHrRow&&durableHrRow!==row)throw new Error('OPS_VISIT_HR_ROW_MISMATCH');
+    return {ref,snap,data,durableVisitId:key,logicalVisitId:logical||key};
+  }
+  throw new Error('OPS_VISIT_MISSING');
+}
 function assertPeriod(command,data){if(str(data?.periodId)!==str(command.periodId))throw new Error('OPS_PERIOD_SCOPE_MISMATCH');}
 function isAvailable(v){const state=str(v?.estado||v?.status).toLowerCase();return ['disponible','available'].includes(state)&&!str(v?.shopperId);}
 function projectScope(snapshot){
@@ -211,7 +226,7 @@ async function transactionExecute(db,command,actor){
     if(command.commandType==='application.create'){
       if(actor.role!=='shopper')throw new Error('OPS_APPLICATION_CREATE_SHOPPER_ONLY');
       const visitId=str(payload.visitId);if(!visitId)throw new Error('OPS_VISIT_ID_REQUIRED');
-      const vRef=r.visits.doc(visitId),vSnap=await tx.get(vRef);if(!vSnap.exists)throw new Error('OPS_VISIT_MISSING');const v=vSnap.data()||{};assertPeriod(command,v);
+      const resolved=await resolveVisitDocument(tx,r.visits,visitId,payload.hrRowId),vRef=resolved.ref,vSnap=resolved.snap,v=resolved.data;assertPeriod(command,v);
       if(!isAvailable(v))throw new Error('OPS_VISIT_NOT_AVAILABLE');
       const shopperId=str(payload.shopperId||actor.shopperId);if(shopperId!==actor.shopperId)throw new Error('OPS_APPLICATION_SHOPPER_SCOPE_DENIED');
       entityId=entityId||('app-'+sha(`${command.tenantId}\0${command.projectId}\0${visitId}\0${shopperId}\0${command.idempotencyKey}`).slice(0,24));
@@ -226,7 +241,7 @@ async function transactionExecute(db,command,actor){
       let vRef=null,v=null;
       if(status==='aprobada'){
         const visitId=str(a.visitId||a.visitaId||payload.visitId);if(!visitId)throw new Error('OPS_VISIT_ID_REQUIRED');
-        vRef=r.visits.doc(visitId);const vSnap=await tx.get(vRef);if(!vSnap.exists)throw new Error('OPS_VISIT_MISSING');v=vSnap.data()||{};assertPeriod(command,v);
+        const resolved=await resolveVisitDocument(tx,r.visits,visitId,payload.hrRowId||a.hrRowId);vRef=resolved.ref;v=resolved.data;assertPeriod(command,v);
         const assigned=str(v.shopperId);if(assigned&&assigned!==str(a.shopperId)){
           tx.set(r.review,{tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,entityType:'visit',entityId:visitId,reviewType:'assignment_conflict',status:'open',reason:'shopper_mismatch',platformShopperId:str(a.shopperId),observedShopperId:assigned,automaticOverwrite:false,createdAt:now()});providerWrites++;
           throw new Error('OPS_VISIT_ALREADY_ASSIGNED_OTHER_SHOPPER');
@@ -268,8 +283,7 @@ async function transactionExecute(db,command,actor){
       const shopperId=str(payload.shopperId||reservation.shopperId),visitId=str(payload.visitId||payload.visitaId);
       if(!shopperId)throw new Error('OPS_RESERVATION_SHOPPER_REQUIRED');
       if(visitId){
-        const vRef=r.visits.doc(visitId),vSnap=await tx.get(vRef);if(!vSnap.exists)throw new Error('OPS_VISIT_MISSING');
-        const v=vSnap.data()||{};assertPeriod(command,v);
+        const resolved=await resolveVisitDocument(tx,r.visits,visitId,payload.hrRowId||reservation.hrRowId),vRef=resolved.ref,v=resolved.data;assertPeriod(command,v);
         const assigned=str(v.shopperId);if(assigned&&assigned!==shopperId)throw new Error('OPS_VISIT_ALREADY_ASSIGNED_OTHER_SHOPPER');
         if(!assigned&&!isAvailable(v))throw new Error('OPS_VISIT_NOT_AVAILABLE');
         tx.set(vRef,{shopperId,estado:'asignada',status:'asignada',assignmentSource:'platform',assignmentSyncStatus:'pending_hr',lastSyncedAt:null,updatedAt:now(),version:Number(v.version||0)+1},{merge:true});providerWrites++;
@@ -290,7 +304,7 @@ async function transactionExecute(db,command,actor){
     else if(command.commandType==='visit.assign'){
       if(!OPERATOR_ROLES.includes(actor.role))throw new Error('OPS_VISIT_ASSIGN_OPERATOR_ONLY');
       const visitId=str(payload.visitId||entityId),shopperId=str(payload.shopperId);if(!visitId||!shopperId)throw new Error('OPS_VISIT_ASSIGN_KEYS_REQUIRED');entityId=visitId;
-      const vRef=r.visits.doc(visitId),vSnap=await tx.get(vRef);if(!vSnap.exists)throw new Error('OPS_VISIT_MISSING');const v=vSnap.data()||{};assertPeriod(command,v);assertVersion(command,v);
+      const resolved=await resolveVisitDocument(tx,r.visits,visitId,payload.hrRowId),vRef=resolved.ref,vSnap=resolved.snap,v=resolved.data;assertPeriod(command,v);assertVersion(command,v);
       const assigned=str(v.shopperId);if(assigned&&assigned!==shopperId)throw new Error('OPS_VISIT_ALREADY_ASSIGNED_OTHER_SHOPPER');
       if(!isAvailable(v))throw new Error('OPS_VISIT_NOT_AVAILABLE');
       const source=str(payload.assignmentSource||'platform');if(!['platform','hr'].includes(source))throw new Error('OPS_ASSIGNMENT_SOURCE_INVALID');
@@ -300,7 +314,7 @@ async function transactionExecute(db,command,actor){
     else if(command.commandType==='visit.reassign'){
       if(!OPERATOR_ROLES.includes(actor.role))throw new Error('OPS_VISIT_REASSIGN_OPERATOR_ONLY');
       const visitId=str(payload.visitId||entityId),shopperId=str(payload.shopperId);if(!visitId||!shopperId)throw new Error('OPS_VISIT_REASSIGN_KEYS_REQUIRED');entityId=visitId;
-      const vRef=r.visits.doc(visitId),vSnap=await tx.get(vRef);if(!vSnap.exists)throw new Error('OPS_VISIT_MISSING');const v=vSnap.data()||{};assertPeriod(command,v);assertVersion(command,v);
+      const resolved=await resolveVisitDocument(tx,r.visits,visitId,payload.hrRowId),vRef=resolved.ref,vSnap=resolved.snap,v=resolved.data;assertPeriod(command,v);assertVersion(command,v);
       const priorShopperId=str(v.shopperId);if(!priorShopperId)throw new Error('OPS_VISIT_REASSIGN_REQUIRES_ASSIGNED_VISIT');
       const state=str(v.estado||v.status).toLowerCase();if(!['asignada','agendada'].includes(state))throw new Error('OPS_VISIT_REASSIGN_STATE_DENIED');
       const scheduleDecision=str(payload.scheduleDecision||'keep').toLowerCase();if(!['keep','change','pending'].includes(scheduleDecision))throw new Error('OPS_VISIT_REASSIGN_SCHEDULE_DECISION_INVALID');
@@ -316,7 +330,7 @@ async function transactionExecute(db,command,actor){
     }
     else if(command.commandType==='visit.state.update'){
       const visitId=str(payload.visitId||entityId);if(!visitId)throw new Error('OPS_VISIT_ID_REQUIRED');entityId=visitId;
-      const vRef=r.visits.doc(visitId),vSnap=await tx.get(vRef);if(!vSnap.exists)throw new Error('OPS_VISIT_MISSING');const v=vSnap.data()||{};assertPeriod(command,v);assertVersion(command,v);
+      const resolved=await resolveVisitDocument(tx,r.visits,visitId,payload.hrRowId),vRef=resolved.ref,vSnap=resolved.snap,v=resolved.data;assertPeriod(command,v);assertVersion(command,v);
       if(actor.role==='shopper'&&str(v.shopperId)!==actor.shopperId)throw new Error('OPS_VISIT_SHOPPER_SCOPE_DENIED');
       const current=str(v.estado||v.status).toLowerCase(),next=str(payload.patch?.estado||payload.patch?.status).toLowerCase();if(!next)throw new Error('OPS_VISIT_STATE_REQUIRED');
       if(['cancelada','liquidada','pagada'].includes(current))throw new Error('OPS_VISIT_TERMINAL_STATE');
@@ -330,7 +344,7 @@ async function transactionExecute(db,command,actor){
     }
     else if(command.commandType==='visit.reschedule'){
       const visitId=str(payload.visitId||entityId);if(!visitId)throw new Error('OPS_VISIT_ID_REQUIRED');entityId=visitId;
-      const vRef=r.visits.doc(visitId),vSnap=await tx.get(vRef);if(!vSnap.exists)throw new Error('OPS_VISIT_MISSING');const v=vSnap.data()||{};assertPeriod(command,v);assertVersion(command,v);
+      const resolved=await resolveVisitDocument(tx,r.visits,visitId,payload.hrRowId),vRef=resolved.ref,vSnap=resolved.snap,v=resolved.data;assertPeriod(command,v);assertVersion(command,v);
       if(actor.role==='shopper'&&str(v.shopperId)!==actor.shopperId)throw new Error('OPS_VISIT_SHOPPER_SCOPE_DENIED');
       const newDate=str(payload.newDate),shopperRequest=actor.role==='shopper'||payload.requestedByShopper===true;
       if(shopperRequest){
@@ -348,7 +362,7 @@ async function transactionExecute(db,command,actor){
     }
     else if(command.commandType==='visit.cancel'){
       const visitId=str(payload.visitId||entityId);if(!visitId)throw new Error('OPS_VISIT_ID_REQUIRED');entityId=visitId;
-      const vRef=r.visits.doc(visitId),vSnap=await tx.get(vRef);if(!vSnap.exists)throw new Error('OPS_VISIT_MISSING');const v=vSnap.data()||{};assertPeriod(command,v);assertVersion(command,v);
+      const resolved=await resolveVisitDocument(tx,r.visits,visitId,payload.hrRowId),vRef=resolved.ref,vSnap=resolved.snap,v=resolved.data;assertPeriod(command,v);assertVersion(command,v);
       if(actor.role==='shopper'&&str(v.shopperId)!==actor.shopperId)throw new Error('OPS_VISIT_SHOPPER_SCOPE_DENIED');
       if(actor.role==='shopper'||payload.requestOnly===true){
         tx.set(vRef,{cancelRequest:{status:'pending_review',reason:payload.reason||null,requestedByShopperId:actor.shopperId,requestedAt:now()},updatedAt:now(),version:Number(v.version||0)+1},{merge:true});
@@ -364,7 +378,7 @@ async function transactionExecute(db,command,actor){
     }
     else if(command.commandType==='visit.questionnaire.submit'){
       const visitId=str(payload.visitId||entityId);if(!visitId)throw new Error('OPS_VISIT_ID_REQUIRED');entityId=visitId;
-      const vRef=r.visits.doc(visitId),vSnap=await tx.get(vRef);if(!vSnap.exists)throw new Error('OPS_VISIT_MISSING');const v=vSnap.data()||{};assertPeriod(command,v);assertVersion(command,v);
+      const resolved=await resolveVisitDocument(tx,r.visits,visitId,payload.hrRowId),vRef=resolved.ref,vSnap=resolved.snap,v=resolved.data;assertPeriod(command,v);assertVersion(command,v);
       if(actor.role==='shopper'&&str(v.shopperId)!==actor.shopperId)throw new Error('OPS_VISIT_SHOPPER_SCOPE_DENIED');
       tx.set(vRef,{questionnaireResult:payload.result||{},cuestFecha:payload.completedAt||now().slice(0,10),estado:'cuestionario',status:'cuestionario',questionnaireSubmittedBy:actor.uid,questionnaireSubmittedAt:now(),updatedAt:now(),version:Number(v.version||0)+1},{merge:true});
       providerWrites++;auditEntityType='visit';
@@ -372,7 +386,7 @@ async function transactionExecute(db,command,actor){
     else if(command.commandType==='visit.sync.confirm'){
       if(!OPERATOR_ROLES.includes(actor.role))throw new Error('OPS_SYNC_CONFIRM_OPERATOR_ONLY');
       const visitId=str(payload.visitId||entityId);if(!visitId)throw new Error('OPS_VISIT_ID_REQUIRED');entityId=visitId;
-      const vRef=r.visits.doc(visitId),vSnap=await tx.get(vRef);if(!vSnap.exists)throw new Error('OPS_VISIT_MISSING');const v=vSnap.data()||{};assertPeriod(command,v);assertVersion(command,v);
+      const resolved=await resolveVisitDocument(tx,r.visits,visitId,payload.hrRowId),vRef=resolved.ref,vSnap=resolved.snap,v=resolved.data;assertPeriod(command,v);assertVersion(command,v);
       const expectedShopper=str(v.shopperId),observedShopper=str(payload.hrShopperId||payload.shopperId),expectedHr=str(v.hrRowId),observedHr=str(payload.hrRowId);
       if(!expectedShopper||!observedShopper||expectedShopper!==observedShopper||!expectedHr||!observedHr||expectedHr!==observedHr){
         tx.set(r.review,{tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,entityType:'visit',entityId:visitId,reviewType:'assignment_sync_conflict',status:'open',reason:'stable_identity_or_shopper_mismatch',expectedShopperId:expectedShopper,observedShopperId:observedShopper,expectedHrRowId:expectedHr,observedHrRowId:observedHr,automaticOverwrite:false,createdAt:now()});providerWrites++;
