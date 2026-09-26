@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM057_EXACT_OWNER_EXPANSION_FROZEN",
+  "status": "HOLD_VRM057_SOURCE_FIX_READY_FOR_HOSTING_REPROOF",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "fe72c0ef4f141aff8c9c8e27d2c1998dcbc4cee6",
+  "productSourceSha": "37d6985588cec0d335736c17b974841b92c52e83",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "34068805168e85cf15c9359c1dc4c4226c3062a6",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V37_2026-09-26.json",
-  "findingsLedgerExpectedGitBlob": "a83d6571ec095eb2dbad90db110c310a13695cd5",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V38_2026-09-26.json",
+  "findingsLedgerExpectedGitBlob": "05eb2d314a00485b0f223b42b9c2615c2c203cdc",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-057 exact owner expansion frozen: protected-auth HR authority bridge must preserve raw HR null honorarium before composition.",
+  "activeBlocker": "VRM-057 raw HR honorarium authority fixed in source pending live reproof; other second-review findings stay on cumulative lane.",
   "nextFindingId": "VRM-065",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "PATCH EXACT VRM-057 OWNER ONLY; HOSTING-ONLY MATERIALIZATION; CUMULATIVE LIVE REPROOF.",
+  "exactNextAction": "DEPLOY EXACT 37d6985 HOSTING ONLY; ZERO RUNTIME REBUILD/DEPLOY; RUN CUMULATIVE LIVE REPROOF.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -326,8 +326,8 @@
     "production": false
   },
   "currentRemediationCandidate": {
-    "sourceSha": "fe72c0ef4f141aff8c9c8e27d2c1998dcbc4cee6",
-    "sourceTree": "8d2bd24f2a26c5963c698bb57af6276699754dcd",
+    "sourceSha": "37d6985588cec0d335736c17b974841b92c52e83",
+    "sourceTree": "a2f2913baa09cf633149ba2440fa655eebb0fa44",
     "changedHosting": true,
     "changedRuntime": false,
     "changedRules": false,
