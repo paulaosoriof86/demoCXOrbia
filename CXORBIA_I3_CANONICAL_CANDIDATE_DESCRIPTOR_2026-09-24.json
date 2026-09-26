@@ -4,16 +4,16 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "23cb3ab48cc8111094a2a29c9e4b6d1a2588b563",
+  "productSourceSha": "fe72c0ef4f141aff8c9c8e27d2c1998dcbc4cee6",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "34068805168e85cf15c9359c1dc4c4226c3062a6",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V34_2026-09-26.json",
-  "findingsLedgerExpectedGitBlob": "ee907169da0bef80ad77ae065e36290865a77b3c",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V35_2026-09-26.json",
+  "findingsLedgerExpectedGitBlob": "6c2d1b33020336fbff133f02dac8d956f73568a8",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-054 fixed in source pending live provider-ACK reproof; VRM-055..064 pending cumulative UI reproof after durable repair PASS.",
+  "activeBlocker": "VRM-054 second static successor ready; live provider-ACK reproof required. VRM-055..064 remain pending cumulative UI reproof.",
   "nextFindingId": "VRM-065",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "DEPLOY V33 HOSTING ONLY; ZERO RUNTIME REBUILD/DEPLOY; RUN CUMULATIVE V28 LIVE REPROOF; FREEZE RESULTS.",
+  "exactNextAction": "DEPLOY fe72c0e HOSTING ONLY; ZERO RUNTIME REBUILD/DEPLOY; RERUN CUMULATIVE V28 LIVE REPROOF.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -326,8 +326,8 @@
     "production": false
   },
   "currentRemediationCandidate": {
-    "sourceSha": "23cb3ab48cc8111094a2a29c9e4b6d1a2588b563",
-    "sourceTree": "63c0b69ee63b156d6295e8ef2e3c3add2cb6a514",
+    "sourceSha": "fe72c0ef4f141aff8c9c8e27d2c1998dcbc4cee6",
+    "sourceTree": "8d2bd24f2a26c5963c698bb57af6276699754dcd",
     "changedHosting": true,
     "changedRuntime": false,
     "changedRules": false,
