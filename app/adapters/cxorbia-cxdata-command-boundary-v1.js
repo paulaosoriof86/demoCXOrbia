@@ -218,11 +218,15 @@
   }
 
   function bindAfterLegacyGuards(){
-    if(!canonicalMode())return;
-    install('dom-ready');
+    const tryInstall=reason=>{if(canonicalMode())install(reason);};
+    /* Canonical mode can become true after this script loads. Bind first; decide on each event.
+       Returning early here leaves shoppers-store.updateShopper permanently fail-closed. */
+    tryInstall('dom-ready');
     if(CX.bus?.on){
-      ['backend-loaded','backend-ready','backend-error','backend-source-safe-ready','cx:protected-auth-hr-authority-ready','cx:live-source-updated'].forEach(evt=>CX.bus.on(evt,()=>queueMicrotask(()=>install(evt))));
+      ['backend-loaded','backend-ready','backend-error','backend-source-safe-ready','cx:protected-auth-hr-authority-ready','cx:live-source-updated'].forEach(evt=>CX.bus.on(evt,()=>queueMicrotask(()=>tryInstall(evt))));
     }
+    root.addEventListener?.('cx:full-visual-ready',()=>queueMicrotask(()=>tryInstall('full-visual-ready')));
+    [0,250,1000,2500].forEach(ms=>setTimeout(()=>tryInstall('deferred-'+ms),ms));
   }
 
   root.addEventListener?.('error',event=>{
