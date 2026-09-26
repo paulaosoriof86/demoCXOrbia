@@ -3811,6 +3811,57 @@ jobs:
         if: always()
         run: rm -rf node_modules
 
+  v32-profile-command-diagnostic:
+    name: I3 V32 — shopper profile command exact diagnostic
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_V28_DURABLE_REPAIR_PASS_PROFILE_SAVE_DIAGNOSTIC_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v32-profile-diagnostic]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      V32_OUT: .tmp/i3-v32-profile-command-diagnostic
+      V32_ROOT: https://cxorbia-backend-dev.web.app
+    steps:
+      - name: Checkout Recovery control head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Prove diagnostic-only scope
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$V32_OUT"
+          test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_V28_DURABLE_REPAIR_PASS_PROFILE_SAVE_DIAGNOSTIC_REQUIRED"
+          test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "e8635de1fa5e086a7fd0ca92ba1a393466cf63e4"
+          git diff --quiet e8635de1fa5e086a7fd0ca92ba1a393466cf63e4 HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install diagnostic dependencies
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+      - name: Authenticate DEV read/write diagnostic principal
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Run exact profile command diagnostic
+        run: |
+          set -Eeuo pipefail
+          V32_OUT="$V32_OUT" V32_ROOT="$V32_ROOT" node tools/qa/cxorbia-i3-v32-profile-command-diagnostic.mjs | tee "$V32_OUT/run.log"
+          test "$(jq -r '.decision' "$V32_OUT/profile-command-diagnostic.json")" = "PASS_DIAGNOSTIC_CAPTURED"
+      - name: Upload V32 diagnostic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-v32-profile-diagnostic-${{ github.run_id }}
+          path: ${{ env.V32_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+      - name: Cleanup
+        if: always()
+        run: rm -rf node_modules
+
   c3-terminal-dev-identity-readback:
     name: C3 terminal DEV identity readback — no deploy
     needs: canonical-candidate-authority

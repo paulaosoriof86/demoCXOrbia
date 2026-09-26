@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_V28_DEV_MATERIALIZED_REPAIR_RESUME_REQUIRED",
+  "status": "HOLD_V28_DURABLE_REPAIR_PASS_PROFILE_SAVE_DIAGNOSTIC_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "e8635de1fa5e086a7fd0ca92ba1a393466cf63e4",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "34068805168e85cf15c9359c1dc4c4226c3062a6",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V31_2026-09-26.json",
-  "findingsLedgerExpectedGitBlob": "cb111bd421aacaf4c5d253ff1d6f608934c4352f",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V32_2026-09-26.json",
+  "findingsLedgerExpectedGitBlob": "46f03f0b68b100e6c289a306d140c2ab487a0a81",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-064 crosswalk projectIds serialization fixed in repair control; rerun same V28 DEV.",
+  "activeBlocker": "VRM-054 profile self-save did not commit in Run452 after V28 durable repair PASS. Exact returned command code not yet captured.",
   "nextFindingId": "VRM-065",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RERUN V28 REPAIR RESUME EXISTING DEV ONLY; ZERO BUILD/DEPLOY; THEN LIVE REPROOF.",
+  "exactNextAction": "TARGETED PROFILE COMMAND DIAGNOSTIC ON EXISTING V28 DEV ONLY; NO BUILD/DEPLOY/REPAIR; CAPTURE EXACT BLOCK CODE.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
