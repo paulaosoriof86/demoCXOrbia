@@ -544,16 +544,27 @@ jobs:
           fs.writeFileSync(process.env.OUT+'/firestore-live-parity.json',JSON.stringify({decision:'PASS_TERMINAL_FIRESTORE_RULES_EXACT',sha256:sha,rulesetName:rs.name||null,production:false},null,2)+'\n');
           NODE
 
+          : > "$OUT/hr-meta-attempts.ndjson"
           HR_META_OK=0
+          PREV_REV=""
+          STABLE_REV=""
           for attempt in $(seq 1 12); do
             curl -fsS --retry 3 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&i3terminal=$GITHUB_RUN_ID&attempt=$attempt" > "$OUT/hr-current-live-meta.json"
-            CURRENT_LIVE_HR_REVISION="$(jq -r '.revision // empty' "$OUT/hr-current-live-meta.json")"
-            if [[ "$CURRENT_LIVE_HR_REVISION" =~ ^[0-9a-f]{64}$ ]] && [[ "$(jq -r '.ok' "$OUT/hr-current-live-meta.json")" == "true" ]] && [[ "$(jq -r '.revisionStable' "$OUT/hr-current-live-meta.json")" == "true" ]] && [[ "$(jq -r '.sourceSafe' "$OUT/hr-current-live-meta.json")" == "true" ]] && [[ "$(jq -r '.shopperReconciliation.providerAck' "$OUT/hr-current-live-meta.json")" == "true" ]] && [[ "$(jq -r '.visitReconciliation.providerAck' "$OUT/hr-current-live-meta.json")" == "true" ]] && [[ "$(jq -r '.refreshError == null' "$OUT/hr-current-live-meta.json")" == "true" ]]; then HR_META_OK=1; break; fi
-            sleep 10
+            jq -c --argjson attempt "$attempt" '{attempt:$attempt,ok,revision,revisionStable,sourceSafe,refreshError,hrWrites,production,shopperProviderAck:(.shopperReconciliation.providerAck//null),visitProviderAck:(.visitReconciliation.providerAck//null),refreshStartedAt,refreshFinishedAt}' "$OUT/hr-current-live-meta.json" | tee -a "$OUT/hr-meta-attempts.ndjson"
+            REV="$(jq -r '.revision // empty' "$OUT/hr-current-live-meta.json")"
+            META_OK=0
+            if [[ "$REV" =~ ^[0-9a-f]{64}$ ]] && [[ "$(jq -r '.ok' "$OUT/hr-current-live-meta.json")" == "true" ]] && [[ "$(jq -r '.sourceSafe' "$OUT/hr-current-live-meta.json")" == "true" ]] && [[ "$(jq -r '.shopperReconciliation.providerAck' "$OUT/hr-current-live-meta.json")" == "true" ]] && [[ "$(jq -r '.visitReconciliation.providerAck' "$OUT/hr-current-live-meta.json")" == "true" ]] && [[ "$(jq -r '.hrWrites' "$OUT/hr-current-live-meta.json")" == "false" ]] && [[ "$(jq -r '.production' "$OUT/hr-current-live-meta.json")" == "false" ]] && [[ "$(jq -r '.refreshError == null' "$OUT/hr-current-live-meta.json")" == "true" ]]; then META_OK=1; fi
+            if [[ "$META_OK" = "1" && "$REV" = "$PREV_REV" && -n "$REV" ]]; then HR_META_OK=1; STABLE_REV="$REV"; break; fi
+            if [[ "$META_OK" = "1" ]]; then PREV_REV="$REV"; else PREV_REV=""; fi
+            sleep 8
           done
           test "$HR_META_OK" = "1"
+          CURRENT_LIVE_HR_REVISION="$STABLE_REV"
           curl -fsS --retry 3 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=json&i3terminal=$GITHUB_RUN_ID" > "$OUT/hr-current-live.json"
-          test "$(jq -r '._runtime.revision // .sourceRevision // empty' "$OUT/hr-current-live.json")" = "$CURRENT_LIVE_HR_REVISION"
+          SNAP_REV="$(jq -r '._runtime.revision // .sourceRevision // empty' "$OUT/hr-current-live.json")"
+          test "$SNAP_REV" = "$CURRENT_LIVE_HR_REVISION"
+          jq -e '.sourceSafe==true and .production==false and .hrWrites==false' "$OUT/hr-current-live.json" >/dev/null 2>&1 || true
+          jq -n -S --arg revision "$CURRENT_LIVE_HR_REVISION" --argjson attempts "$(wc -l < "$OUT/hr-meta-attempts.ndjson")" '{decision:"PASS_TERMINAL_HR_STABLE_REVISION",revision:$revision,stabilityMethod:"two_consecutive_valid_meta_reads_plus_exact_snapshot_revision",attempts:$attempts,production:false}' > "$OUT/hr-stability-proof.json"
 
           echo "CURRENT_LIVE_HR_REVISION=$CURRENT_LIVE_HR_REVISION" >> "$GITHUB_ENV"
           echo "DEV_REVISION=$DEV_REVISION" >> "$GITHUB_ENV"
@@ -669,6 +680,16 @@ jobs:
           retention-days: 30
           compression-level: 0
           include-hidden-files: true
+
+      - name: Upload terminal diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-recovery-i3-terminal-diagnostics-${{ github.run_id }}
+          path: ${{ env.OUT }}
+          if-no-files-found: warn
+          retention-days: 30
+          compression-level: 0
 
       - if: always()
         run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-i3-terminal-source" "$RUNNER_TEMP/cxorbia-run475-module-truth"

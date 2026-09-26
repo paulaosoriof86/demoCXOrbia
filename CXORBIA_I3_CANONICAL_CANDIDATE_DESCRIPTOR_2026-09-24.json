@@ -7,13 +7,13 @@
   "productSourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "37d6985588cec0d335736c17b974841b92c52e83",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V49_2026-09-26.json",
-  "findingsLedgerExpectedGitBlob": "4f27425a1e28659fa749cb9224068e087136d8b6",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V50_2026-09-26.json",
+  "findingsLedgerExpectedGitBlob": "56647ac4bfb2119b33146d5adb7382822e08bce5",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": true,
-  "activeBlocker": "No product P0 remains preterminal. Terminal same-run certification must close VRM-034/035/041/043 and produce one artifact + Gate21 from that artifact.",
+  "activeBlocker": "Run476 terminal certification stopped in HR meta stability harness after exact source/runtime/Hosting/Rules prechecks passed. Control-only stability proof is being hardened; candidate and DEV unchanged.",
   "nextFindingId": "VRM-065",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "EXECUTE CERTIFY -> LIVE-FIXTURES -> GATE21 IN ONE CANONICAL WORKFLOW RUN; NO DEPLOY; IF PASS, FREEZE I3 GO TERMINAL LOCK AND STOP BEFORE I4 VISUAL/AUTHORIZATION.",
+  "exactNextAction": "RERUN TERMINAL CERTIFICATION WITH TWO-CONSECUTIVE-REVISION HR STABILITY PROOF + ALWAYS-UPLOADED DIAGNOSTICS; SAME SOURCE/DEV; ZERO DEPLOY.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -485,15 +485,20 @@
     "findingId": "VRM-055"
   },
   "lastControlFailure": {
-    "runId": 36246000462,
-    "runNumber": 474,
-    "jobId": 108415237586,
-    "classification": "RELEASE_COMPOSITION_FAILURE",
-    "cause": "stale descriptor status literal in C3 workflow",
+    "runId": 36246826615,
+    "runNumber": 476,
+    "jobId": 108417478587,
+    "classification": "ENVIRONMENT_FAILURE",
     "productDefect": false,
-    "deploys": 0,
+    "stage": "HR meta stability precheck",
+    "artifactCreated": false,
+    "runtimeExact": true,
+    "hostingExact": true,
+    "firestoreRulesExact": true,
     "builds": 0,
-    "writes": 0
+    "deploys": 0,
+    "writes": 0,
+    "production": false
   },
   "lastSecondReviewProof": {
     "runId": 36220426137,
