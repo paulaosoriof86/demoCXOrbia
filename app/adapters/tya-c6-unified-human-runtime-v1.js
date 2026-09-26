@@ -6,7 +6,7 @@
    - HR live is the only operational authority for every detected period;
    - protected Firestore enriches exact identity/profile/certification only;
    - canonical domain/Shopper/finance adapters remain active in the same runtime;
-   - project financial configuration fills operational honoraria when HR has no amount;
+   - project financial configuration never overrides HR-authoritative operational honoraria; unknown external HR amounts remain pending;
    - delegated projects never receive local-invoicing royalties;
    - no provider writes, deploys, merge or production.
 */
@@ -122,17 +122,43 @@
     return n!=null&&n>0?n:null;
   }
 
+  function honorariumAuthority(v){
+    const source=str(v&&v.honorarioSource).toLowerCase();
+    const hrOwned=!!(CX.data?.previewMeta?.hrAuthority===true
+      || v?.__hrOwnedOperational===true
+      || source==='hr_explicit'
+      || source==='pending_source');
+    if(!hrOwned)return 'project_fallback_allowed';
+    const raw=v&&v.honorario;
+    if(source==='hr_explicit'&&raw!==null&&raw!==undefined&&raw!==''&&Number.isFinite(Number(raw)))return 'hr_explicit_known';
+    return 'hr_unknown';
+  }
+
   function applyProjectFinancialConfiguration(reason){
     if(!CX.data)return {applied:false,reason:'data_not_ready'};
     try{CX.projectFinancialModel?.normalizeAll?.('unified_runtime_financial_configuration');}catch(_){}
     let visits=0,posts=0;
     for(const v of arr(CX.data._visitas)){
       const country=str(v.pais||v.country),p=projectForVisit(v),configured=configuredHonorarium(p,country);
+      const authority=honorariumAuthority(v);
+      if(authority==='hr_unknown'){
+        v.honorario=null;
+        if(configured!=null)v.contractHonorarium=configured;
+        v.honorarioSource='pending_source';
+        v.honorarioSourceKnown=false;
+        continue;
+      }
+      if(authority==='hr_explicit_known'){
+        v.honorarioSource='hr_explicit';
+        v.honorarioSourceKnown=true;
+        continue;
+      }
       const current=num(v.honorario);
       if(configured!=null&&(current==null||current<=0)){
         v.honorario=configured;
         v.contractHonorarium=configured;
         v.honorarioSource='project_configuration';
+        v.honorarioSourceKnown=true;
         visits++;
       }
     }
