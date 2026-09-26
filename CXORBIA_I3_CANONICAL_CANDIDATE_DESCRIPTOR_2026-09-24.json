@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM055_DURABLE_MILTON_DIAGNOSTIC_REQUIRED",
+  "status": "HOLD_VRM055_DURABLE_REPAIR_READY",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "37d6985588cec0d335736c17b974841b92c52e83",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V42_2026-09-26.json",
-  "findingsLedgerExpectedGitBlob": "e2a8b4a7095bda0ed4d81893b55f9666df433c95",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V43_2026-09-26.json",
+  "findingsLedgerExpectedGitBlob": "8476446440adf77ce7ef798a9684ae139df14cc5",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-055 only: Run468 zero-deploy V41 proof failed before browser at durable canonical Milton assertion. Exact Firestore/HR identity readback required; VRM-056/057 remain PASS Run467.",
+  "activeBlocker": "VRM-055 proven durable denormalized identity defect: canonical Milton profile nombre is stale Mishael while exact firstName/lastName/Auth/crosswalk identify Milton. V43 archive-first DEV repair is authorized within I3.",
   "nextFindingId": "VRM-065",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN V42 VRM-055 DURABLE IDENTITY READBACK ONLY; CLASSIFY EXACTLY WHETHER CANONICAL MILTON DOC IS MISSING OR TEST ASSUMPTION IS WRONG; NO PRODUCT CHANGE UNTIL OWNER IS PROVEN.",
+  "exactNextAction": "RUN V43 VRM-055 ARCHIVE-FIRST DURABLE REPAIR; READ BACK EXACT CANONICAL PROFILE/PLATFORM RECORDS; ZERO DEPLOY; THEN RERUN CUMULATIVE SECOND-REVIEW PROOF.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -336,15 +336,16 @@
     "production": false
   },
   "reproofDispatch": {
-    "requestedAt": "2026-09-26T05:07:00Z",
-    "mode": "VRM055_DURABLE_MILTON_READONLY_DIAGNOSTIC_V42",
+    "requestedAt": "2026-09-26T05:12:00Z",
+    "mode": "VRM055_CANONICAL_MILTON_DURABLE_REPAIR_V43",
     "productSourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
     "productSourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
-    "trigger": "[v42-milton-diagnostic]",
-    "deploys": 0,
-    "builds": 0,
-    "writes": 0,
+    "trigger": "[v43-milton-repair]",
+    "hostingDeploys": 0,
+    "runtimeDeploys": 0,
+    "rulesDeploys": 0,
+    "hrWrites": 0,
+    "authWrites": 0,
     "production": false
   },
   "currentMaterialization": {
@@ -444,6 +445,25 @@
     "production": false,
     "classification": "MAPPING_FAILURE",
     "findingId": "VRM-055",
+    "nextFindingOpened": false
+  },
+  "lastDiagnostic": {
+    "runId": 36219999288,
+    "runNumber": 469,
+    "jobId": 108343354988,
+    "artifactId": 10898264026,
+    "artifactDigest": "sha256:8b8e696bc1a175b980e193951ac46d62a2afa736992b61a408ef731cf94516f7",
+    "productSourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+    "productSourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+    "decision": "PASS_V42_DURABLE_MILTON_DIAGNOSTIC",
+    "writes": 0,
+    "deploys": 0,
+    "builds": 0,
+    "production": false,
+    "findingId": "VRM-055",
+    "canonicalDocExists": true,
+    "observedNombre": "Mishael De Paz",
+    "expectedNombre": "Milton De Paz",
     "nextFindingOpened": false
   }
 }

@@ -36,7 +36,7 @@ await archive.set({
 // 1) Freeze exact tenant adjudication before any HR reconciliation can recreate the phantom identity.
 const profileRef=tenant.collection('shoppers').doc(INVALID),canonRef=tenant.collection('shoppers').doc(CANON);
 const canonSnap=await canonRef.get();if(!canonSnap.exists)throw new Error('MAPPING_FAILURE:CANONICAL_MILTON_PROFILE_MISSING');
-const canon=canonSnap.data()||{},canonName=str(canon.nombre||[canon.firstName,canon.lastName].filter(Boolean).join(' '))||'Milton De Paz';
+const canon=canonSnap.data()||{},canonName=str([canon.firstName,canon.lastName].filter(Boolean).join(' ')||canon.nombre)||'Milton De Paz';
 const canonMembers=(await queryEq(tenant.collection('users'),'shopperId',CANON)).filter(d=>{const x=d.data()||{};return x.active===true&&str(x.role)==='shopper'&&str(x.authNamespace)==='shopper';});
 if(canonMembers.length!==1)throw new Error('MAPPING_FAILURE:CANONICAL_MILTON_MEMBERSHIP_COUNT_'+canonMembers.length);
 const canonMember=canonMembers[0].data()||{};

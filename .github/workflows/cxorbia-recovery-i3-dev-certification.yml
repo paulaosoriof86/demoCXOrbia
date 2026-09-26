@@ -4042,6 +4042,59 @@ jobs:
       - if: always()
         run: rm -rf node_modules
 
+  v43-milton-durable-repair:
+    name: I3 V43 — VRM-055 canonical Milton durable repair — DEV only
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM055_DURABLE_REPAIR_READY' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v43-milton-repair]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      V43_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      V43_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      V43_OUT: .tmp/i3-v43-milton-repair
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Prove exact product authority and focal scope
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$V43_OUT"
+          test "$V43_SOURCE" = "04432faa32bef0427223fa2c51cb5b809f53e178"
+          test "$V43_TREE" = "e06905ac9cc9cfad09d9383716bada1988cae90f"
+          test "$(git rev-parse "$V43_SOURCE^{tree}")" = "$V43_TREE"
+          test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_VRM055_DURABLE_REPAIR_READY"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install durable repair tooling
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
+      - name: Authenticate Firebase DEV
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Execute archive-first exact Milton durable repair
+        run: |
+          set -Eeuo pipefail
+          V43_OUT="$V43_OUT" node tools/qa/cxorbia-i3-v43-milton-durable-repair.mjs | tee "$V43_OUT/repair.log"
+          test "$(jq -r '.decision' "$V43_OUT/milton-durable-repair.json")" = "PASS_I3_V43_MILTON_DURABLE_REPAIR"
+          test "$(jq -r '.canonicalName' "$V43_OUT/milton-durable-repair.json")" = "Milton De Paz"
+          test "$(jq -r '.invalidProfileQuarantined' "$V43_OUT/milton-durable-repair.json")" = "true"
+          test "$(jq -r '.currentDurableCount' "$V43_OUT/milton-durable-repair.json")" = "44"
+          test "$(jq -r '.uniqueCurrentHrRows' "$V43_OUT/milton-durable-repair.json")" = "44"
+          test "$(jq -r '.hrWrites' "$V43_OUT/milton-durable-repair.json")" = "0"
+          test "$(jq -r '.authWrites' "$V43_OUT/milton-durable-repair.json")" = "0"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-v43-milton-repair-${{ github.run_id }}
+          path: ${{ env.V43_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+      - if: always()
+        run: rm -rf node_modules
+
   c3-terminal-dev-identity-readback:
     name: C3 terminal DEV identity readback — no deploy
     needs: canonical-candidate-authority
