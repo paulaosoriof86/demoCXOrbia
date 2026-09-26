@@ -3450,6 +3450,51 @@ jobs:
         if: always()
         run: rm -rf node_modules
 
+  v25-second-visual-forensic:
+    name: I3 V25 second visual review — read-only forensic
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PAULA_SECOND_VISUAL_REVIEW_DEFECTS_FOUND' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v25-visual-forensic]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      V25_OUT: .tmp/i3-v25-visual-forensic
+    steps:
+      - name: Checkout Recovery control head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install diagnostic dependency
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
+      - name: Authenticate canonical Firebase DEV read only
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Run V25 exact read-only forensic
+        run: |
+          set -Eeuo pipefail
+          V25_OUT="$V25_OUT" node tools/qa/cxorbia-i3-v25-visual-forensic.mjs | tee "$V25_OUT.log"
+          test "$(jq -r '.decision' "$V25_OUT/v25-visual-forensic.json")" = "PASS_READ_ONLY_DIAGNOSTIC"
+          test "$(jq -r '.writes' "$V25_OUT/v25-visual-forensic.json")" = "0"
+          test "$(jq -r '.production' "$V25_OUT/v25-visual-forensic.json")" = "false"
+      - name: Upload V25 forensic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-v25-visual-forensic-${{ github.run_id }}
+          path: |
+            ${{ env.V25_OUT }}
+            ${{ env.V25_OUT }}.log
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+      - name: Cleanup
+        if: always()
+        run: rm -rf node_modules
+
   c3-terminal-dev-identity-readback:
     name: C3 terminal DEV identity readback — no deploy
     needs: canonical-candidate-authority
