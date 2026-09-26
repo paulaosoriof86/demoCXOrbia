@@ -25,10 +25,13 @@ try{
     await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
     const token=await auth.createCustomToken(shopper.id);
     try{await page.evaluate(async t=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);await firebase.auth().signInWithCustomToken(t);},token);}
-    catch(e){lastAuthError=str(e?.message||e);if(!/Execution context was destroyed|navigation/i.test(lastAuthError))throw e;}
+    catch(e){
+      lastAuthError=str(e?.message||e);
+      if(!/Execution context was destroyed|navigation|auth\/network-request-failed|network|timeout|interrupted|unreachable|FIREBASE_SDK_NOT_READY/i.test(lastAuthError))throw e;
+    }
     await page.waitForLoadState('domcontentloaded',{timeout:90000}).catch(()=>{});
     const uid=await page.evaluate(()=>String(window.firebase?.auth?.().currentUser?.uid||'')).catch(()=> '');
-    if(uid===shopper.id)settled=true; else await page.waitForTimeout(1000*attempt);
+    if(uid===shopper.id)settled=true; else await page.waitForTimeout(1500*attempt);
   }
   if(!settled)throw new Error('ENVIRONMENT_FAILURE:V32_AUTH_NOT_SETTLED:'+lastAuthError);
   await page.goto('about:blank');await page.goto(URL,{waitUntil:'domcontentloaded',timeout:90000});
