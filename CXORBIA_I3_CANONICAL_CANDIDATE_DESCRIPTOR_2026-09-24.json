@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "READY_FOR_TERMINAL_CERTIFICATION",
+  "status": "HOLD_VRM069_RUNTIME_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "f885fb7ab49d8597d992fc02051ffdd584380a85",
+  "productSourceSha": "a552e1fbb41d5cacc8ab3157f3d91492b82b8f00",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
-  "predecessorProductSourceSha": "62ee2903fdced52c525d5a028c8c4c725940e4cd",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V69_2026-09-26.json",
-  "findingsLedgerExpectedGitBlob": "3b76a5f7d77bbd151cf74a817e0316629c7b97b8",
+  "predecessorProductSourceSha": "f885fb7ab49d8597d992fc02051ffdd584380a85",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V70_2026-09-26.json",
+  "findingsLedgerExpectedGitBlob": "2a1178991c84fef0c6fba5874f29bd6331efebea",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": true,
-  "activeBlocker": "Run494 terminal certification, human acceptance, semantic focal, Module Truth 20/20 and Gate20 all passed. Live fixtures failed only because the control still required historical hr-proof-run387.json and obsolete manifest HR keys. VRM-068 replaces that second authority with same-artifact hr-current-live.json bound by certificationHrEvidenceSha256 + certificationHrRevision.",
-  "nextFindingId": "VRM-069",
+  "activeBlocker": "Run495 exposed P0 exact visit-key mapping: canonical HR visit id hr_2026-09_hn_9_716fc0df6f maps to durable hrRowId SEPTIEMBRE 26 HN!9, while operational provider opened Firestore by logical visitId. The same provider also rejected the source-current sentinel emitted by composed HR UI. Exact one-file runtime successor is ready for one DEV materialization.",
+  "nextFindingId": "VRM-072",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RERUN CERTIFY -> LIVE-FIXTURES 10/10 -> SAME-ARTIFACT GATE21 ON THE SAME f885fb7a / 00222-hj9 / 8ff3b75d AFTER VRM-068 CONTROL FIX; NO DEPLOY. IF PASS, FREEZE I3 GO AND STOP BEFORE I4.",
+  "exactNextAction": "RUN V70 RUNTIME-ONLY DEV MATERIALIZATION ON EXACT SUCCESSOR; HOSTING/RULES/PRODUCTION UNCHANGED. IF PASS, REPROVE MODULE TRUTH 20/20 THEN TERMINAL + LIVE FIXTURES 10/10 + GATE21.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -312,10 +312,13 @@
     "production": false
   },
   "currentRemediationCandidate": {
-    "sourceSha": "62ee2903fdced52c525d5a028c8c4c725940e4cd",
-    "sourceTree": "e0649d447257745af89efc9845dfb2fb50600cf6",
-    "predecessorSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
-    "findingId": "VRM-050",
+    "sourceSha": "a552e1fbb41d5cacc8ab3157f3d91492b82b8f00",
+    "sourceTree": "c44872eb2dc1529de8387957ec720024944a5e62",
+    "predecessorSha": "f885fb7ab49d8597d992fc02051ffdd584380a85",
+    "findingIds": [
+      "VRM-069",
+      "VRM-070"
+    ],
     "changedRuntime": true,
     "changedHosting": false,
     "changedRules": false,
@@ -395,7 +398,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "d3a87752434be558167fcf3787b88d190c76a87c",
+  "productSourceTree": "c44872eb2dc1529de8387957ec720024944a5e62",
   "lastLiveReproof": {
     "runId": 36217529367,
     "runNumber": 465,
@@ -473,21 +476,20 @@
     "findingId": "VRM-055"
   },
   "lastControlFailure": {
-    "runId": 36257835141,
-    "runNumber": 494,
-    "jobId": 108449836415,
-    "classification": "SOURCE_FAILURE",
-    "code": "PRIOR_EVIDENCE_MISSING:hr-proof-run387.json",
-    "productDefect": false,
-    "cause": "live fixtures referenced historical HR proof and obsolete manifest keys instead of same-artifact terminal HR evidence",
-    "terminalCertificationPass": true,
-    "liveFixturesPassedBeforeStop": 3,
-    "liveFixturesRequired": 10,
+    "runId": 36258934236,
+    "runNumber": 495,
+    "jobId": 108452295815,
+    "classification": "MAPPING_FAILURE",
+    "code": "CANONICAL_VISIT_ID_DURABLE_KEY_SPLIT",
+    "productDefect": true,
+    "currentAvailableCount": 1,
+    "sourceVisitId": "hr_2026-09_hn_9_716fc0df6f",
+    "durableHrRowId": "SEPTIEMBRE 26 HN!9",
+    "liveFixturesPassedBeforeStop": 8,
     "cleanup": true,
     "gate21": "skipped",
     "builds": 0,
     "deploys": 0,
-    "writes": 0,
     "production": false
   },
   "lastSecondReviewProof": {
@@ -599,10 +601,10 @@
     "production": false
   },
   "pendingMaterialization": {
-    "sourceSha": "f885fb7ab49d8597d992fc02051ffdd584380a85",
-    "sourceTree": "d3a87752434be558167fcf3787b88d190c76a87c",
+    "sourceSha": "a552e1fbb41d5cacc8ab3157f3d91492b82b8f00",
+    "sourceTree": "c44872eb2dc1529de8387957ec720024944a5e62",
     "productDiff": [
-      "backend/runtime/hr-live-service/server.mjs"
+      "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
     ],
     "mode": "runtime_only_dev_once",
     "hostingDeploys": 0,

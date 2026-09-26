@@ -430,6 +430,120 @@ jobs:
           retention-days: 30
           compression-level: 0
 
+  v70-vrm069-operational-visit-key-runtime:
+    name: I3 V70 — VRM-069/070 exact visit-key runtime-only DEV materialization
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM069_RUNTIME_MATERIALIZATION_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v70-vrm069-runtime]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      V70_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      V70_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      V70_OUT: .tmp/i3-v70-vrm069-runtime
+      V70_PREDECESSOR: f885fb7ab49d8597d992fc02051ffdd584380a85
+      V70_OWNER: backend/runtime/cxorbia-operational-command-provider-v1.mjs
+      EXPECTED_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Prove exact P0 successor before any build
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$V70_OUT"
+          test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_VRM069_RUNTIME_MATERIALIZATION_REQUIRED"
+          test "$(git rev-parse "$V70_SOURCE^{tree}")" = "$V70_TREE"
+          test "$(git diff --name-only "$V70_PREDECESSOR" "$V70_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source | wc -l | tr -d ' ')" = "1"
+          git diff --name-only "$V70_PREDECESSOR" "$V70_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source | grep -qx "$V70_OWNER"
+          test "$(git rev-parse "$V70_SOURCE:$V70_OWNER")" = "$(git rev-parse "HEAD:$V70_OWNER")"
+          node --check "$V70_OWNER"
+          grep -q 'resolveVisitDocument' "$V70_OWNER"
+          grep -q "command.expectedVersion==='source-current'" "$V70_OWNER"
+          SOURCE_DIR="$RUNNER_TEMP/cxorbia-v70-source"
+          rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"
+          git archive "$V70_SOURCE" | tar -x -C "$SOURCE_DIR"
+          echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
+
+      - name: Authenticate Recovery DEV
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
+
+      - name: Prove Hosting unchanged before runtime materialization
+        run: |
+          set -Eeuo pipefail
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$V70_OUT/hosting-before.json"
+          test "$(jq -r '.release.version.name // empty' "$V70_OUT/hosting-before.json")" = "$EXPECTED_HOSTING_VERSION"
+
+      - name: Build exact P0 successor runtime once
+        run: |
+          set -Eeuo pipefail
+          IMAGE_URI="gcr.io/${PROJECT}/${SERVICE}:i3-v70-${V70_SOURCE:0:12}-${GITHUB_RUN_ID}"
+          echo "$IMAGE_URI" > "$V70_OUT/image-uri.txt"
+          gcloud builds submit "$SOURCE_DIR" --project "$PROJECT" --config "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE_URI" --quiet
+
+      - name: Deploy exact P0 successor runtime once to Recovery DEV
+        run: |
+          set -Eeuo pipefail
+          IMAGE_URI="$(cat "$V70_OUT/image-uri.txt")"
+          gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$IMAGE_URI" --min-instances=1 --max-instances=1 --quiet
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$V70_OUT/runtime.json"
+          REV="$(jq -r '.status.latestReadyRevisionName // empty' "$V70_OUT/runtime.json")"; test -n "$REV"
+          SERVICE_URL="$(jq -r '.status.url // empty' "$V70_OUT/runtime.json")"; test -n "$SERVICE_URL"
+          gcloud run revisions describe "$REV" --project "$PROJECT" --region "$REGION" --format=json > "$V70_OUT/runtime-revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$V70_OUT/runtime-revision.json")"
+          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else exit 1; fi
+          CACHE_MS="$(jq -r '[.spec.containers[0].env[]? | select(.name=="CXORBIA_LIVE_HR_CACHE_MS")][0].value // empty' "$V70_OUT/runtime-revision.json")"
+          test "$CACHE_MS" = "3600000"
+          echo "V70_RUNTIME_REVISION=$REV" >> "$GITHUB_ENV"
+          echo "V70_RUNTIME_DIGEST=$DIGEST" >> "$GITHUB_ENV"
+          echo "V70_SERVICE_URL=$SERVICE_URL" >> "$GITHUB_ENV"
+
+      - name: Force fresh HR and prove exact runtime health
+        run: |
+          set -Eeuo pipefail
+          ID_TOKEN="$(gcloud auth print-identity-token --audiences="$V70_SERVICE_URL")"
+          URL="$V70_SERVICE_URL/api/tenants/$TENANT_ID/projects/$PROJECT_ID/hr-live?format=meta&fresh=1&v70=$GITHUB_RUN_ID"
+          ok=0
+          for attempt in $(seq 1 8); do
+            if curl -fsS --max-time 240 --retry 1 -H "Authorization: Bearer $ID_TOKEN" -H 'Cache-Control: no-cache, no-store, max-age=0' "$URL&attempt=$attempt" > "$V70_OUT/hr-meta.json"; then
+              if jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .shopperReconciliation.providerAck==true and .visitReconciliation.providerAck==true and .visitReconciliation.visitCount==704 and .refreshError==null and .hrWrites==false and .production==false' "$V70_OUT/hr-meta.json" >/dev/null; then ok=1; break; fi
+            fi
+            sleep 8
+          done
+          test "$ok" = "1"
+          HR_REV="$(jq -r '.revision' "$V70_OUT/hr-meta.json")"; [[ "$HR_REV" =~ ^[0-9a-f]{64}$ ]]
+          curl -fsS --retry 3 -H "Authorization: Bearer $ID_TOKEN" "$V70_SERVICE_URL/health?v70=$GITHUB_RUN_ID" > "$V70_OUT/health.json"
+          jq -e '.ok==true and .lastRefreshError==null and .writes==false and .hrWrites==false and .production==false' "$V70_OUT/health.json" >/dev/null
+          echo "V70_HR_REVISION=$HR_REV" >> "$GITHUB_ENV"
+
+      - name: Prove Hosting still unchanged and seal V70
+        run: |
+          set -Eeuo pipefail
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$V70_OUT/hosting-after.json"
+          test "$(jq -r '.release.version.name // empty' "$V70_OUT/hosting-after.json")" = "$EXPECTED_HOSTING_VERSION"
+          jq -n -S --arg source "$V70_SOURCE" --arg tree "$V70_TREE" --arg runtime "$V70_RUNTIME_REVISION" --arg digest "$V70_RUNTIME_DIGEST" --arg hosting "$EXPECTED_HOSTING_VERSION" --arg hr "$V70_HR_REVISION" '{decision:"PASS_I3_V70_VRM069_070_OPERATIONAL_VISIT_KEY_RUNTIME",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,cacheMs:3600000,sourceSafe:true,shopperProviderAck:true,visitProviderAck:true,visitCount:704,builds:1,runtimeDeploys:1,hostingDeploys:0,rulesDeploys:0,hrWrites:0,production:false}' > "$V70_OUT/result.json"
+
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-v70-vrm069-runtime-${{ github.run_id }}
+          path: ${{ env.V70_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
   v61-vrm065-runtime:
     name: I3 V61 — VRM-065 stable HR revision runtime-only DEV materialization
     needs: canonical-candidate-authority
