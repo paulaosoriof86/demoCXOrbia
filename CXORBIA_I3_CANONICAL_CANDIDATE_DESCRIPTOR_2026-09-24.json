@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "READY_FOR_TERMINAL_CERTIFICATION",
+  "status": "I3_GO_FROZEN_AWAITING_I4_AUTHORIZATION",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "a552e1fbb41d5cacc8ab3157f3d91492b82b8f00",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "f885fb7ab49d8597d992fc02051ffdd584380a85",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V74_2026-09-26.json",
-  "findingsLedgerExpectedGitBlob": "8c0089c7ae959dab93f2885603a18b76022fa3ee",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V75_2026-09-26.json",
+  "findingsLedgerExpectedGitBlob": "0072e4ea39fb3e4c848e34739272dba5fbc4156a",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
-  "terminalCertificationAllowed": true,
-  "activeBlocker": "Run499 passed terminal certification and live fixtures 10/10. Gate21 failed because the first runtime-binding repair used nonexistent runtime receipt fields and Hosting remained a literal. VRM-075 binds actual Cloud Run metadata.name/status.imageDigest and Hosting release.version.name to the same certification manifest.",
+  "terminalCertificationAllowed": false,
+  "activeBlocker": null,
   "nextFindingId": "VRM-076",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RERUN TERMINAL -> LIVE FIXTURES 10/10 -> SAME-ARTIFACT GATE21 ON a552e1fb / 00223-tlg; NO DEPLOY. IF PASS, FREEZE I3 GO AND STOP BEFORE I4.",
+  "exactNextAction": "WAIT FOR EXPLICIT PAULA AUTHORIZATION. AFTER AUTHORIZATION ONLY: I4 IMMUTABLE PRODUCTION REPLACEMENT WITH EXACT RUN500 CERTIFIED ARTIFACT; NO REBUILD/RECOMPOSITION.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -651,6 +651,67 @@
     "runtimeDigest": "sha256:b34be533f545c6dda7dc9f6c4a1cb0af517aad2aff1d79005412b4a2433d7ecd",
     "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
     "hrRevision": "d9bbb352738196d71602a3adb080e4f8bf37e7211a3bc2ffea13711454c71f95",
+    "production": false
+  },
+  "i3State": "GO",
+  "i3Closed": true,
+  "i4Authorized": false,
+  "terminalClosure": {
+    "runId": 36263099013,
+    "runNumber": 500,
+    "conclusion": "success",
+    "controlHeadSha": "9b1b6aa9367b2bbe591980bce746981c82450603",
+    "productSourceSha": "a552e1fbb41d5cacc8ab3157f3d91492b82b8f00",
+    "productSourceTree": "c44872eb2dc1529de8387957ec720024944a5e62",
+    "certifiedArtifact": {
+      "id": 10912064863,
+      "name": "cxorbia-recovery-i3-single-source-certification-36263099013",
+      "githubDigest": "sha256:8a9016b33ec2dac9f72350de08274a2b67facb76894a1af106aded1e5bc37e6f",
+      "sourceTarSha256": "4b3c3a8a64459bc55b52b9848cc0c3b0b51ad6015ba1709e3d099f8f3cf5fb5c"
+    },
+    "liveFixtures": {
+      "id": 10913138593,
+      "name": "cxorbia-recovery-i3-live-fixtures-v2-36263099013",
+      "githubDigest": "sha256:b80d3eb27693cc3c985595463496f359efe440f90e1dbe512563f2478ee40ceb",
+      "decision": "PASS_I3_LIVE_FIXTURES_V2",
+      "passed": 10,
+      "cleanup": true,
+      "evidenceSha256": "cbfc3e66b2fe165b031aa000a2f820f9512918d4dee3bff9f403871a5328c570"
+    },
+    "gate21": {
+      "id": 10912149533,
+      "name": "cxorbia-recovery-i3-gate21-36263099013",
+      "githubDigest": "sha256:d0b7bbe7605b6ebad2749c17dff9439d42da0e1522604e2d6310ee1e54605591",
+      "verdict": "PASS_GATE21_ARTIFACT_FINGERPRINT",
+      "manifestSha256": "f35319dda985e10b11f9a3f096e415c944c4971dee4bae889ffee83d1e738b64"
+    },
+    "moduleTruth": {
+      "decision": "PASS_C3_TERMINAL_MODULE_TRUTH_20_20",
+      "moduleCount": 20,
+      "allModulesMatch": true,
+      "evidenceSha256": "d7ba84f64f7a5aadca48e095a0694bf471462bc6760812069ec25ff29dbd12bf"
+    },
+    "gate20": {
+      "visual": {
+        "decision": "PASS_GATE20_FOCAL_VISUAL_DRIFT",
+        "evidenceSha256": "c516c6898d142b4ee4f00a5c90233304c2bc0d94d1ba7be2d4d7cf307f67eac3"
+      },
+      "semantic": {
+        "decision": "PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY",
+        "evidenceSha256": "df27d4ae2ad3bc3b1741b9333c829883cfcf541fa4215ce0155312ad0c607246"
+      }
+    },
+    "hrRevision": "d9bbb352738196d71602a3adb080e4f8bf37e7211a3bc2ffea13711454c71f95",
+    "runtime": {
+      "revision": "cxorbia-live-hr-dev-00223-tlg",
+      "digest": "sha256:b34be533f545c6dda7dc9f6c4a1cb0af517aad2aff1d79005412b4a2433d7ecd",
+      "immutableImage": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev@sha256:b34be533f545c6dda7dc9f6c4a1cb0af517aad2aff1d79005412b4a2433d7ecd"
+    },
+    "hosting": {
+      "release": "sites/cxorbia-backend-dev/channels/live/releases/1790398702977000",
+      "version": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+      "releaseTime": "2026-09-26T04:58:22.977Z"
+    },
     "production": false
   }
 }

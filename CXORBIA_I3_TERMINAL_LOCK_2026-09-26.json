@@ -1,0 +1,121 @@
+{
+  "lockId": "CXORBIA-I3-TERMINAL-LOCK-2026-09-26-RUN500",
+  "schemaVersion": "cxorbia.recovery.i3.terminal-lock.v3",
+  "status": "GO",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "sealedAt": "2026-09-26T18:50:00Z",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "precedence": "CURRENT_STATE_AUTHORITY_UNTIL_CONCRETE_REPRODUCIBLE_DRIFT_OR_I4_PRODUCTION_LOCK",
+  "productSource": {
+    "sha": "a552e1fbb41d5cacc8ab3157f3d91492b82b8f00",
+    "treeSha": "c44872eb2dc1529de8387957ec720024944a5e62",
+    "predecessor": "f885fb7ab49d8597d992fc02051ffdd584380a85"
+  },
+  "certificationControlPlane": {
+    "runControlHeadSha": "9b1b6aa9367b2bbe591980bce746981c82450603"
+  },
+  "terminalRun": {
+    "runNumber": 500,
+    "runId": 36263099013,
+    "conclusion": "success",
+    "event": "push"
+  },
+  "moduleTruth": {
+    "decision": "PASS_C3_TERMINAL_MODULE_TRUTH_20_20",
+    "moduleCount": 20,
+    "allModulesMatch": true,
+    "evidenceSha256": "d7ba84f64f7a5aadca48e095a0694bf471462bc6760812069ec25ff29dbd12bf"
+  },
+  "humanAcceptance": {
+    "decision": "PASS_I3_HUMAN_LIVE_ACCEPTANCE",
+    "evidenceSha256": "a5d9ecbe26c46313be550dcc8eaba5618927832d359d9fb131315f00e01e17fd",
+    "functionalProbesSha256": "88e502c4b074fd246ed3638b20a01132893bcb01ae378df8998ec925dc6f5d92",
+    "expectedRoleRouteEntries": 56
+  },
+  "atomicP0": {
+    "decision": "PASS_I3_ATOMIC_P0_SOURCE_CONTRACT",
+    "evidenceSha256": "46916d64f86e668d71123c68f5c947ad62b46403235db7bdb75ce2e6c4f2d8fd"
+  },
+  "gate20": {
+    "visual": {
+      "decision": "PASS_GATE20_FOCAL_VISUAL_DRIFT",
+      "evidenceSha256": "c516c6898d142b4ee4f00a5c90233304c2bc0d94d1ba7be2d4d7cf307f67eac3"
+    },
+    "semantic": {
+      "decision": "PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY",
+      "evidenceSha256": "df27d4ae2ad3bc3b1741b9333c829883cfcf541fa4215ce0155312ad0c607246"
+    }
+  },
+  "certifiedArtifact": {
+    "artifactId": 10912064863,
+    "name": "cxorbia-recovery-i3-single-source-certification-36263099013",
+    "githubDigest": "sha256:8a9016b33ec2dac9f72350de08274a2b67facb76894a1af106aded1e5bc37e6f",
+    "sourceTarSha256": "4b3c3a8a64459bc55b52b9848cc0c3b0b51ad6015ba1709e3d099f8f3cf5fb5c",
+    "buildCount": 1,
+    "rebuildAfterCertification": false
+  },
+  "liveFixtures": {
+    "artifactId": 10913138593,
+    "name": "cxorbia-recovery-i3-live-fixtures-v2-36263099013",
+    "githubDigest": "sha256:b80d3eb27693cc3c985595463496f359efe440f90e1dbe512563f2478ee40ceb",
+    "decision": "PASS_I3_LIVE_FIXTURES_V2",
+    "passed": 10,
+    "cleanup": true,
+    "builds": 0,
+    "deploys": 0,
+    "evidenceSha256": "cbfc3e66b2fe165b031aa000a2f820f9512918d4dee3bff9f403871a5328c570"
+  },
+  "gate21": {
+    "verdict": "PASS_GATE21_ARTIFACT_FINGERPRINT",
+    "artifactId": 10912149533,
+    "artifactName": "cxorbia-recovery-i3-gate21-36263099013",
+    "githubDigest": "sha256:d0b7bbe7605b6ebad2749c17dff9439d42da0e1522604e2d6310ee1e54605591",
+    "manifestSha256": "f35319dda985e10b11f9a3f096e415c944c4971dee4bae889ffee83d1e738b64",
+    "sameRunManifestAuthority": true,
+    "independentSourceAuthority": false
+  },
+  "devCertified": {
+    "hostingReleaseName": "sites/cxorbia-backend-dev/channels/live/releases/1790398702977000",
+    "hostingVersionName": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+    "hostingReleaseTime": "2026-09-26T04:58:22.977Z",
+    "runtimeRevision": "cxorbia-live-hr-dev-00223-tlg",
+    "runtimeImageDigest": "sha256:b34be533f545c6dda7dc9f6c4a1cb0af517aad2aff1d79005412b4a2433d7ecd",
+    "immutableRuntimeImage": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev@sha256:b34be533f545c6dda7dc9f6c4a1cb0af517aad2aff1d79005412b4a2433d7ecd",
+    "hrRevision": "d9bbb352738196d71602a3adb080e4f8bf37e7211a3bc2ffea13711454c71f95",
+    "firestoreParityEvidenceSha256": "0399347864b8fb55118a2a890856c543662a52c632863186668b148c63cb1f60",
+    "runtimeEvidenceSha256": "facf8cd9acd7498f1bedcebbfe09b0a6780cee83a43a3deba066cfcf9b6d867e",
+    "hostingEvidenceSha256": "c36890e5ca61ade466786229971c8d93394affd61c4dc2f02326ab49084a7e9d"
+  },
+  "continuity": {
+    "i0Closed": true,
+    "i1Closed": true,
+    "i2Closed": true,
+    "i3Closed": true,
+    "i3State": "GO",
+    "reopenOnlyOnConcreteReproducibleDrift": true,
+    "chatIsNotAuthority": true,
+    "findingsLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V75_2026-09-26.json",
+    "nextFindingId": "VRM-076"
+  },
+  "promotionContract": {
+    "nextIteration": "I4",
+    "target": "https://tya-plataforma.web.app/",
+    "exactCertifiedArtifactRequired": true,
+    "exactImmutableRuntimeImageRequired": true,
+    "noRebuild": true,
+    "noRecomposition": true,
+    "noNewCandidate": true,
+    "productionAuthorizationRequired": true
+  },
+  "writesDuringRun500Gate21": {
+    "terminalRuntimeDeploys": 0,
+    "terminalHostingDeploys": 0,
+    "terminalRulesDeploys": 0,
+    "liveFixtureBuilds": 0,
+    "liveFixtureDeploys": 0,
+    "production": false
+  },
+  "productionTouched": false,
+  "i4Authorized": false
+}
