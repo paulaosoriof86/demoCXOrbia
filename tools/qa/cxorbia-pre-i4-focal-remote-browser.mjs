@@ -156,7 +156,7 @@ async function signInMember(member,kind,route,options={}){
       const rowOf=x=>({
         id:String(x.id||x.applicationId||x.postulationId||''),
         visitId:String(x.visitId||x.visitaId||''),
-        sucursal:String(x.sucursal||x.branch||''),
+        sucursal:String(visitForPost(x)?.sucursal||x.sucursal||x.branch||''),
         estado:x.estado==null?null:String(x.estado),
         status:x.status==null?null:String(x.status),
         syncState:syncStateFor(x),
@@ -172,7 +172,7 @@ async function signInMember(member,kind,route,options={}){
       const periodPostRows=periodPosts.map(rowOf);
       const sessionShopperId=String(window.CX?.session?.user?.shopperId||'');
       const sessionPosts=kind==='shopper'&&sessionShopperId?periodPosts.filter(x=>String(x.shopperId||'')===sessionShopperId):[];
-      const shopperVisibleAppStates=r==='misvisitas'?[...document.querySelectorAll('[data-app-state]')].map(el=>String(el.getAttribute('data-app-state')||'')):[];
+      const shopperVisibleAppRows=r==='misvisitas'?[...document.querySelectorAll('[data-app-state]')].map(el=>({state:String(el.getAttribute('data-app-state')||''),text:norm(el.textContent||'')})):[];\n      const shopperVisibleAppStates=shopperVisibleAppRows.map(x=>x.state);
       const adminVisiblePostSyncStates=r==='postulaciones'?[...document.querySelectorAll('[data-post-sync]')].filter(el=>getComputedStyle(el).display!=='none').map(el=>String(el.getAttribute('data-post-sync')||'')) : [];
       const activeMisvisitasSource=r==='misvisitas'?String(window.CX?.modules?.misvisitas||''):'';
       const misvisitasDiagnostics=r==='misvisitas'?{
@@ -219,7 +219,7 @@ async function signInMember(member,kind,route,options={}){
         unresolvedIdentityCases:r==='shoppers'?unresolvedIdentityRows:null,
         finance:finance?{GT:finance.GT||null,HN:finance.HN||null}:null,
         liquidations:Array.isArray(liqs)?{count:liqs.length,GT:liqs.filter(x=>x.pais==='GT').length,HN:liqs.filter(x=>x.pais==='HN').length,paymentsConfirmed:liqs.filter(x=>x.paymentConfirmed===true).length,liquidationsConfirmed:liqs.filter(x=>x.liquidationConfirmed===true).length}:null,
-        shopper:kind==='shopper'?{stats:typeof d.shopperStats==='function'?d.shopperStats(sid):null,ownCount:own.length,duplicateVisits:own.length-new Set(own.map(v=>String(v.id||v.visitId))).size,postCount:postRows.length,paseoCayala:postRows.some(x=>/paseo cayal/i.test(norm(x.sucursal))),postRows,visibleAppStates:shopperVisibleAppStates,misvisitasDiagnostics,profileName:sessionProfileName,profileVisible,benefitExpectedCount:ownBenefits.length,benefitBranchVisibleCount}:null,
+        shopper:kind==='shopper'?{stats:typeof d.shopperStats==='function'?d.shopperStats(sid):null,ownCount:own.length,duplicateVisits:own.length-new Set(own.map(v=>String(v.id||v.visitId))).size,postCount:postRows.length,postBranchRowsVisible:postRows.length===shopperVisibleAppRows.length&&postRows.every(x=>!!x.sucursal&&shopperVisibleAppRows.some(y=>y.state===String(x.syncState||'')&&y.text.includes(norm(x.sucursal)))),postRows,visibleAppStates:shopperVisibleAppStates,misvisitasDiagnostics,profileName:sessionProfileName,profileVisible,benefitExpectedCount:ownBenefits.length,benefitBranchVisibleCount}:null,
         postulationSync:r==='postulaciones'?{expectedStates:periodPostRows.map(x=>x.syncState).sort(),visibleStates:adminVisiblePostSyncStates.slice().sort(),expectedConflicts:periodPostRows.filter(x=>x.syncState==='conflict_review_required').length,visibleConflicts:adminVisiblePostSyncStates.filter(x=>x==='conflict_review_required').length}:null,
         resources:r==='documentos'?{count:resourceRows.length,names:resourceRows.map(x=>x.name),rows:resourceRows,staticResourceSeedIds,status:window.CX_BACKEND_RESOURCES_STATUS||null,storage:window.CX?.backendResources?.storageStatus?.()||null}:null,
         certification:r==='cert'?{sourceStatus:String(certEvidence.sourceStatus||''),evidenceCandidateCount:Number(certEvidence.evidenceCandidateCount||0),carryoverConfirmed:Number(certEvidence.carryoverConfirmed||0),eligibilityGranted:Number(certEvidence.eligibilityGranted||0),bank:window.CX?.certStore?.bank?.(d.currentPeriodId)||null}:null,
@@ -307,7 +307,7 @@ async function signInMember(member,kind,route,options={}){
       if(r==='beneficios'&&Number(info.shopper?.benefitExpectedCount||0)>0&&Number(info.shopper?.benefitBranchVisibleCount||0)<1)throw new Error('MAPPING_FAILURE:SHOPPER_BENEFITS_NOT_VISIBLE:'+JSON.stringify(info.shopper));
       if(r==='misvisitas'){
         const expected=arr(info.shopper?.postRows).map(x=>String(x.syncState||'')).sort(),visible=arr(info.shopper?.visibleAppStates).map(String).sort();
-        if(Number(info.shopper?.stats?.postulaciones||0)!==Number(info.shopper?.postCount||0)||JSON.stringify(expected)!==JSON.stringify(visible)||info.shopper?.paseoCayala!==true)throw new Error('MAPPING_FAILURE:SHOPPER_POSTULATION_STATE_VISIBILITY:'+JSON.stringify(info.shopper));
+        if(Number(info.shopper?.stats?.postulaciones||0)!==Number(info.shopper?.postCount||0)||JSON.stringify(expected)!==JSON.stringify(visible)||info.shopper?.postBranchRowsVisible!==true)throw new Error('MAPPING_FAILURE:SHOPPER_POSTULATION_STATE_VISIBILITY:'+JSON.stringify(info.shopper));
       }
     }
     routeEvidence[r]=info;
