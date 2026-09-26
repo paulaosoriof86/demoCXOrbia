@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM057_SOURCE_FIX_READY_FOR_HOSTING_REPROOF",
+  "status": "HOLD_VRM057_LIVE_REPROOF_FAILED_OWNER_EXPANDED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "37d6985588cec0d335736c17b974841b92c52e83",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "34068805168e85cf15c9359c1dc4c4226c3062a6",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V38_2026-09-26.json",
-  "findingsLedgerExpectedGitBlob": "05eb2d314a00485b0f223b42b9c2615c2c203cdc",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V39_2026-09-26.json",
+  "findingsLedgerExpectedGitBlob": "2add2d82a2402a515dc1828ce6417e69a76a70a7",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-057 raw HR honorarium authority fixed in source pending live reproof; other second-review findings stay on cumulative lane.",
+  "activeBlocker": "VRM-057 Run465 live reproof failed: 44/44 honoraria fabricated from project_configuration after HR authority restored null. Proven first null→numeric owner: app/adapters/tya-c6-unified-human-runtime-v1.js.",
   "nextFindingId": "VRM-065",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "DEPLOY EXACT 37d6985 HOSTING ONLY; ZERO RUNTIME REBUILD/DEPLOY; RUN CUMULATIVE LIVE REPROOF.",
+  "exactNextAction": "FIX ONLY PROVEN VRM-057 OWNER app/adapters/tya-c6-unified-human-runtime-v1.js; KEEP EXTERNAL HR UNKNOWN HONORARIUM NULL; FOCAL STATIC TEST; HOSTING DEV ONLY; CUMULATIVE LIVE REPROOF; NO VRM-065.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -328,6 +328,7 @@
   "currentRemediationCandidate": {
     "sourceSha": "37d6985588cec0d335736c17b974841b92c52e83",
     "sourceTree": "a2f2913baa09cf633149ba2440fa655eebb0fa44",
+    "state": "INSUFFICIENT_RUN465_FAILED_OWNER_EXPANDED",
     "changedHosting": true,
     "changedRuntime": false,
     "changedRules": false,
@@ -354,12 +355,11 @@
     "trigger": "DESCRIPTOR_PUSH_CANONICAL_WORKFLOW"
   },
   "currentMaterialization": {
-    "sourceSha": "fe72c0ef4f141aff8c9c8e27d2c1998dcbc4cee6",
-    "sourceTree": "8d2bd24f2a26c5963c698bb57af6276699754dcd",
+    "sourceSha": "37d6985588cec0d335736c17b974841b92c52e83",
+    "sourceTree": "a2f2913baa09cf633149ba2440fa655eebb0fa44",
     "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
     "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/a986ff8a53ee1060",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790395302069000",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/515cc0b59dfd723b",
     "buildCount": 0,
     "runtimeDeploys": 0,
     "hostingDeploys": 1,
@@ -414,5 +414,20 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "7c0ecdf11ed69bff770bd269ab9d1b948d4a160e"
+  "productSourceTree": "a2f2913baa09cf633149ba2440fa655eebb0fa44",
+  "lastLiveReproof": {
+    "runId": 36217529367,
+    "runNumber": 465,
+    "jobId": 108336405473,
+    "decision": "FAIL_I3_V28_LIVE_REPROOF",
+    "classification": "MAPPING_FAILURE",
+    "code": "MAPPING_FAILURE:V28_HONORARIUM_FABRICATED",
+    "artifactId": 10898008091,
+    "artifactDigest": "sha256:a380db7ccdedd7dafaad2729d85ac7238e9edc70d0490abb9754d13c241cdf2d",
+    "hrRevision": "67f3af8d616fa611f349b7e707e2b7cd21435d27bca7b2f2097264c8a929726e",
+    "expectedKnownHonorariumCount": 0,
+    "observedKnownHonorariumCount": 44,
+    "firstNullToNumericOwner": "app/adapters/tya-c6-unified-human-runtime-v1.js",
+    "production": false
+  }
 }
