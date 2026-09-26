@@ -92,6 +92,117 @@ jobs:
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
 
+  v52-vrm050-runtime:
+    name: I3 V52 — VRM-050 HR refresh timeout runtime-only DEV fix
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM050_RUNTIME_MATERIALIZATION_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v52-vrm050-runtime]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      V52_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      V52_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      V52_OUT: .tmp/i3-v52-vrm050-runtime
+      EXPECTED_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Prove exact focal successor before any build
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$V52_OUT"
+          test "$V52_SOURCE" = "62ee2903fdced52c525d5a028c8c4c725940e4cd"
+          test "$V52_TREE" = "e0649d447257745af89efc9845dfb2fb50600cf6"
+          test "$(git rev-parse "$V52_SOURCE^{tree}")" = "$V52_TREE"
+          test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_VRM050_RUNTIME_MATERIALIZATION_REQUIRED"
+          test "$(git diff --name-only 04432faa32bef0427223fa2c51cb5b809f53e178 "$V52_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source | wc -l | tr -d ' ')" = "1"
+          git diff --name-only 04432faa32bef0427223fa2c51cb5b809f53e178 "$V52_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source | grep -qx 'tools/hr-source/tya-reapply-canonical-state-r20.mjs'
+          node --check tools/hr-source/tya-reapply-canonical-state-r20.mjs
+          grep -q 'CXORBIA_HR_PAYLOAD_VM_TIMEOUT_MS' tools/hr-source/tya-reapply-canonical-state-r20.mjs
+          grep -q 'Math.min(60000' tools/hr-source/tya-reapply-canonical-state-r20.mjs
+          ! grep -q 'timeout:5000' tools/hr-source/tya-reapply-canonical-state-r20.mjs
+          SOURCE_DIR="$RUNNER_TEMP/cxorbia-v52-source"
+          rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"
+          git archive "$V52_SOURCE" | tar -x -C "$SOURCE_DIR"
+          echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
+          CXORBIA_HR_PAYLOAD_VM_TIMEOUT_MS=30000 node "$SOURCE_DIR/tools/hr-source/tya-reapply-canonical-state-r20.mjs" --input "$SOURCE_DIR/app/data/tya-hr-source-safe-periods.js" --out "$V52_OUT/source-gate-payload.js" --report-dir "$V52_OUT/source-gate-report"
+          test -s "$V52_OUT/source-gate-payload.js"
+
+      - name: Authenticate Recovery DEV
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
+
+      - name: Prove Hosting unchanged before runtime materialization
+        run: |
+          set -Eeuo pipefail
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$V52_OUT/hosting-before.json"
+          test "$(jq -r '.release.version.name // empty' "$V52_OUT/hosting-before.json")" = "$EXPECTED_HOSTING_VERSION"
+
+      - name: Build exact successor runtime once
+        run: |
+          set -Eeuo pipefail
+          IMAGE_URI="gcr.io/${PROJECT}/${SERVICE}:i3-v52-${V52_SOURCE:0:12}-${GITHUB_RUN_ID}"
+          echo "$IMAGE_URI" > "$V52_OUT/image-uri.txt"
+          gcloud builds submit "$SOURCE_DIR" --project "$PROJECT" --config "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE_URI" --quiet
+
+      - name: Deploy exact successor runtime once to Recovery DEV
+        run: |
+          set -Eeuo pipefail
+          IMAGE_URI="$(cat "$V52_OUT/image-uri.txt")"
+          gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$IMAGE_URI" --min-instances=1 --max-instances=1 --quiet
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$V52_OUT/runtime.json"
+          REV="$(jq -r '.status.latestReadyRevisionName // empty' "$V52_OUT/runtime.json")"; test -n "$REV"
+          gcloud run revisions describe "$REV" --project "$PROJECT" --region "$REGION" --format=json > "$V52_OUT/runtime-revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$V52_OUT/runtime-revision.json")"
+          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else exit 1; fi
+          echo "V52_RUNTIME_REVISION=$REV" >> "$GITHUB_ENV"
+          echo "V52_RUNTIME_DIGEST=$DIGEST" >> "$GITHUB_ENV"
+
+      - name: Force fresh HR and prove VRM-050 closed
+        run: |
+          set -Eeuo pipefail
+          URL="$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&fresh=1&v52=$GITHUB_RUN_ID"
+          ok=0
+          for attempt in $(seq 1 8); do
+            if curl -fsS --retry 2 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$URL&attempt=$attempt" > "$V52_OUT/hr-meta.json"; then
+              if jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .shopperReconciliation.providerAck==true and .visitReconciliation.providerAck==true and .hrWrites==false and .production==false and .refreshError==null' "$V52_OUT/hr-meta.json" >/dev/null; then ok=1; break; fi
+            fi
+            sleep 8
+          done
+          test "$ok" = "1"
+          REVISION="$(jq -r '.revision' "$V52_OUT/hr-meta.json")"; [[ "$REVISION" =~ ^[0-9a-f]{64}$ ]]
+          curl -fsS --retry 3 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=json&v52=$GITHUB_RUN_ID" > "$V52_OUT/hr.json"
+          test "$(jq -r '._runtime.revision // .sourceRevision // empty' "$V52_OUT/hr.json")" = "$REVISION"
+          curl -fsS "$HOSTING_URL/health?v52=$GITHUB_RUN_ID" > "$V52_OUT/health.json"
+          test "$(jq -r '.lastRefreshError == null' "$V52_OUT/health.json")" = "true"
+
+      - name: Prove Hosting still unchanged and seal receipt
+        run: |
+          set -Eeuo pipefail
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$V52_OUT/hosting-after.json"
+          test "$(jq -r '.release.version.name // empty' "$V52_OUT/hosting-after.json")" = "$EXPECTED_HOSTING_VERSION"
+          jq -n -S --arg source "$V52_SOURCE" --arg tree "$V52_TREE" --arg runtime "$V52_RUNTIME_REVISION" --arg digest "$V52_RUNTIME_DIGEST" --arg hosting "$EXPECTED_HOSTING_VERSION" --arg hr "$(jq -r '.revision' "$V52_OUT/hr-meta.json")" '{decision:"PASS_I3_V52_VRM050_RUNTIME_REFRESH_REPROOF",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,refreshError:null,sourceSafe:true,shopperProviderAck:true,visitProviderAck:true,builds:1,runtimeDeploys:1,hostingDeploys:0,rulesDeploys:0,hrWrites:0,production:false}' > "$V52_OUT/result.json"
+
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-v52-vrm050-runtime-${{ github.run_id }}
+          path: ${{ env.V52_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
   c3-preterminal-module-truth:
     name: C3 preterminal Module Truth — exact current DEV — no deploy
     needs: canonical-candidate-authority

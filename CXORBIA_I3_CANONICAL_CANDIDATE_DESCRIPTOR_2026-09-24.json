@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM050_REFRESH_TIMEOUT_SOURCE_FIX_REQUIRED",
+  "status": "HOLD_VRM050_RUNTIME_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+  "productSourceSha": "62ee2903fdced52c525d5a028c8c4c725940e4cd",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
-  "predecessorProductSourceSha": "37d6985588cec0d335736c17b974841b92c52e83",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V51_2026-09-26.json",
-  "findingsLedgerExpectedGitBlob": "8abf960348a900c7e8b16ad04568272a3c69b6f3",
+  "predecessorProductSourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V52_2026-09-26.json",
+  "findingsLedgerExpectedGitBlob": "71e6d119f9f87c5a2eb6a1347cedec9c475881b4",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-050 P0 proven in Run477: fresh HR refresh fails in tya-reapply-canonical-state-r20.mjs because vm.runInContext hardcodes timeout=5000ms. Stable cached/source-safe data does not waive refreshError.",
+  "activeBlocker": "VRM-050 source fix is ready; exact successor runtime must be built/deployed to Recovery DEV and force-fresh HR must clear refreshError before terminal certification.",
   "nextFindingId": "VRM-065",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "FIX ONLY VRM-050 TIMEOUT OWNER; ONE SUCCESSOR; DEV RUNTIME-ONLY MATERIALIZATION; FRESH HR READBACK; NO HOSTING/PRODUCTION.",
+  "exactNextAction": "RUN V52 RUNTIME-ONLY DEV MATERIALIZATION + FORCE-FRESH HR READBACK; NO HOSTING/PRODUCTION.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -312,22 +312,25 @@
     "production": false
   },
   "currentRemediationCandidate": {
-    "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
-    "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
-    "predecessorSha": "37d6985588cec0d335736c17b974841b92c52e83",
-    "findingId": "VRM-057",
-    "changedHosting": true,
-    "changedRuntime": false,
+    "sourceSha": "62ee2903fdced52c525d5a028c8c4c725940e4cd",
+    "sourceTree": "e0649d447257745af89efc9845dfb2fb50600cf6",
+    "predecessorSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+    "findingId": "VRM-050",
+    "changedRuntime": true,
+    "changedHosting": false,
     "changedRules": false,
     "production": false
   },
   "reproofDispatch": {
-    "requestedAt": "2026-09-26T13:45:00Z",
-    "mode": "EXHAUSTIVE_MODULE_TRUTH_V48_STATUS_GUARD_FIX",
-    "trigger": "[c3-preterminal-module-truth]",
-    "deploys": 0,
-    "builds": 0,
-    "writes": 0,
+    "requestedAt": "2026-09-26T14:18:00Z",
+    "mode": "VRM050_RUNTIME_ONLY_DEV_MATERIALIZATION_V52",
+    "sourceSha": "62ee2903fdced52c525d5a028c8c4c725940e4cd",
+    "sourceTree": "e0649d447257745af89efc9845dfb2fb50600cf6",
+    "trigger": "[v52-vrm050-runtime]",
+    "runtimeBuildMax": 1,
+    "runtimeDeployMax": 1,
+    "hostingDeploys": 0,
+    "rulesDeploys": 0,
     "production": false
   },
   "currentMaterialization": {
@@ -393,7 +396,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+  "productSourceTree": "e0649d447257745af89efc9845dfb2fb50600cf6",
   "lastLiveReproof": {
     "runId": 36217529367,
     "runNumber": 465,
