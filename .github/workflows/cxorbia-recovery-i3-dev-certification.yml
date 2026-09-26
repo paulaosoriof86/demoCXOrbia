@@ -3539,6 +3539,41 @@ jobs:
         if: always()
         run: rm -rf node_modules
 
+  v27-duplicate-visit-owner-proof:
+    name: I3 V27 duplicate visit owner proof — read only
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PAULA_SECOND_VISUAL_REVIEW_DEFECTS_FOUND' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v27-dup-proof]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      V27_OUT: .tmp/i3-v27-duplicate-owner
+      V27_HR_URL: https://cxorbia-backend-dev.web.app/api/tya/cinepolis/hr-live?format=json&v27=dup-${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Run exact duplicate/read-model owner proof
+        run: |
+          set -Eeuo pipefail
+          V27_OUT="$V27_OUT" V27_HR_URL="$V27_HR_URL" node tools/qa/cxorbia-i3-v27-duplicate-visit-owner-proof.mjs | tee "$V27_OUT.log"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-v27-duplicate-owner-${{ github.run_id }}
+          path: |
+            ${{ env.V27_OUT }}
+            ${{ env.V27_OUT }}.log
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+      - if: always()
+        run: rm -rf node_modules
+
   c3-terminal-dev-identity-readback:
     name: C3 terminal DEV identity readback — no deploy
     needs: canonical-candidate-authority
