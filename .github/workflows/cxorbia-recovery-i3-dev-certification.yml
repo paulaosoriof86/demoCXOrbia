@@ -655,12 +655,6 @@ jobs:
       C3_OUT: .tmp/c3-preterminal-module-truth
       C3_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
       C3_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
-      EXPECTED_SOURCE: f885fb7ab49d8597d992fc02051ffdd584380a85
-      EXPECTED_TREE: d3a87752434be558167fcf3787b88d190c76a87c
-      EXPECTED_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c
-      EXPECTED_RUNTIME_REVISION: cxorbia-live-hr-dev-00222-hj9
-      EXPECTED_RUNTIME_DIGEST: sha256:a478644e9e658dc188050e94c23e5cfbf5acc8d4030cb348b65e555aed59eca5
-      BACKEND_LINEAGE_SOURCE: 62ee2903fdced52c525d5a028c8c4c725940e4cd
     steps:
       - name: Checkout canonical Recovery control head
         uses: actions/checkout@v4
@@ -671,11 +665,23 @@ jobs:
         run: |
           set -Eeuo pipefail
           mkdir -p "$C3_OUT"
-          test "$C3_SOURCE" = "$EXPECTED_SOURCE"
-          test "$C3_TREE" = "$EXPECTED_TREE"
-          test "$(git rev-parse "$C3_SOURCE^{tree}")" = "$C3_TREE"
           test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_MODULE_TRUTH_REPROOF_REQUIRED"
+          test "$C3_SOURCE" = "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")"
+          test "$C3_TREE" = "$(jq -r '.productSourceTree' "$CANDIDATE_DESCRIPTOR")"
+          test "$(git rev-parse "$C3_SOURCE^{tree}")" = "$C3_TREE"
           LEDGER="$(jq -r '.findingsLedgerPath' "$CANDIDATE_DESCRIPTOR")"
+          PREDECESSOR_SOURCE="$(jq -r '.predecessorProductSourceSha' "$CANDIDATE_DESCRIPTOR")"
+          EXPECTED_OWNER="$(jq -r '.findings["VRM-069"].owner[0]' "$LEDGER")"
+          EXPECTED_RUNTIME_REVISION="$(jq -r '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")"
+          EXPECTED_RUNTIME_DIGEST="$(jq -r '.currentMaterialization.runtimeDigest' "$CANDIDATE_DESCRIPTOR")"
+          EXPECTED_HOSTING_VERSION="$(jq -r '.currentMaterialization.hostingVersion' "$CANDIDATE_DESCRIPTOR")"
+          test -n "$PREDECESSOR_SOURCE"; test -n "$EXPECTED_OWNER"
+          [[ "$EXPECTED_RUNTIME_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
+          test "$(git diff --name-only "$PREDECESSOR_SOURCE" "$C3_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source | wc -l | tr -d ' ')" = "1"
+          git diff --name-only "$PREDECESSOR_SOURCE" "$C3_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source | grep -qx "$EXPECTED_OWNER"
+          echo "EXPECTED_RUNTIME_REVISION=$EXPECTED_RUNTIME_REVISION" >> "$GITHUB_ENV"
+          echo "EXPECTED_RUNTIME_DIGEST=$EXPECTED_RUNTIME_DIGEST" >> "$GITHUB_ENV"
+          echo "EXPECTED_HOSTING_VERSION=$EXPECTED_HOSTING_VERSION" >> "$GITHUB_ENV"
           TEMPLATE="RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json" \
           LEDGER="$LEDGER" SOURCE="$C3_SOURCE" TREE="$C3_TREE" LAST_SERVED="$C3_SOURCE" \
           OUT_FILE="$C3_OUT/module-truth-preterminal.json" \
@@ -688,8 +694,6 @@ jobs:
           test "$(jq '[.sourceFiles[]|select(.classification!="MATCH")]|length' "$C3_OUT/module-truth-preterminal.json")" = "0"
           test "$(jq -r '.entrypointClosure.allApprovedOwnersLoaded' "$C3_OUT/module-truth-preterminal.json")" = "true"
           test "$(jq '.entrypointClosure.duplicateSrc|length' "$C3_OUT/module-truth-preterminal.json")" = "0"
-          test "$(git diff --name-only "$BACKEND_LINEAGE_SOURCE" "$C3_SOURCE" -- backend firestore.rules storage.rules | wc -l | tr -d ' ')" = "1"
-          git diff --name-only "$BACKEND_LINEAGE_SOURCE" "$C3_SOURCE" -- backend firestore.rules storage.rules | grep -qx 'backend/runtime/hr-live-service/server.mjs'
           git archive "$C3_SOURCE" | tar -x -C "$RUNNER_TEMP"
           echo "C3_SOURCE_DIR=$RUNNER_TEMP/app" >> "$GITHUB_ENV"
 
@@ -999,11 +1003,6 @@ jobs:
     env:
       I3_CERTIFICATION_SOURCE_SHA: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
       I3_CERTIFICATION_SOURCE_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
-      EXPECTED_RUNTIME_REVISION: cxorbia-live-hr-dev-00222-hj9
-      EXPECTED_RUNTIME_DIGEST: sha256:a478644e9e658dc188050e94c23e5cfbf5acc8d4030cb348b65e555aed59eca5
-      EXPECTED_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c
-      RUN480_ID: '36255907762'
-      RUN480_ARTIFACT: cxorbia-c3-preterminal-module-truth-36255907762
     steps:
       - name: Checkout canonical Recovery control head
         uses: actions/checkout@v4
@@ -1029,15 +1028,28 @@ jobs:
           for id in VRM-034 VRM-035 VRM-041 VRM-043; do
             test "$(jq -r --arg id "$id" '.findings[$id].state' "$LEDGER")" = "TERMINAL_REPROOF_PENDING_CURRENT_SOURCE"
           done
-          PRIOR="$RUNNER_TEMP/cxorbia-run490-module-truth"
+          EXPECTED_RUNTIME_REVISION="$(jq -r '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")"
+          EXPECTED_RUNTIME_DIGEST="$(jq -r '.currentMaterialization.runtimeDigest' "$CANDIDATE_DESCRIPTOR")"
+          EXPECTED_HOSTING_VERSION="$(jq -r '.currentMaterialization.hostingVersion' "$CANDIDATE_DESCRIPTOR")"
+          PRETERM_RUN_ID="$(jq -r '.lastModuleTruthProof.runId // empty' "$CANDIDATE_DESCRIPTOR")"
+          PRETERM_ARTIFACT="$(jq -r '.lastModuleTruthProof.artifactName // empty' "$CANDIDATE_DESCRIPTOR")"
+          test -n "$EXPECTED_RUNTIME_REVISION"; [[ "$EXPECTED_RUNTIME_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]; test -n "$EXPECTED_HOSTING_VERSION"
+          [[ "$PRETERM_RUN_ID" =~ ^[0-9]+$ ]]; test -n "$PRETERM_ARTIFACT"
+          echo "EXPECTED_RUNTIME_REVISION=$EXPECTED_RUNTIME_REVISION" >> "$GITHUB_ENV"
+          echo "EXPECTED_RUNTIME_DIGEST=$EXPECTED_RUNTIME_DIGEST" >> "$GITHUB_ENV"
+          echo "EXPECTED_HOSTING_VERSION=$EXPECTED_HOSTING_VERSION" >> "$GITHUB_ENV"
+          PRIOR="$RUNNER_TEMP/cxorbia-current-module-truth"
           rm -rf "$PRIOR"; mkdir -p "$PRIOR"
-          gh run download "$RUN480_ID" --repo "$GITHUB_REPOSITORY" --name "$RUN480_ARTIFACT" --dir "$PRIOR"
+          gh run download "$PRETERM_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "$PRETERM_ARTIFACT" --dir "$PRIOR"
           test "$(jq -r '.decision' "$PRIOR/result.json")" = "PASS_C3_PRETERMINAL_MODULE_TRUTH_20_20_EXACT_DEV"
           test "$(jq -r '.sourceSha' "$PRIOR/result.json")" = "$I3_CERTIFICATION_SOURCE_SHA"
           test "$(jq -r '.sourceTree' "$PRIOR/result.json")" = "$I3_CERTIFICATION_SOURCE_TREE"
+          test "$(jq -r '.runtimeRevision' "$PRIOR/result.json")" = "$EXPECTED_RUNTIME_REVISION"
+          test "$(jq -r '.runtimeDigest' "$PRIOR/result.json")" = "$EXPECTED_RUNTIME_DIGEST"
+          test "$(jq -r '.hostingVersion' "$PRIOR/result.json")" = "$EXPECTED_HOSTING_VERSION"
           test "$(jq -r '.matchModules' "$PRIOR/result.json")" = "20"
           test "$(jq -r '.pendingFiles' "$PRIOR/result.json")" = "0"
-          cp "$PRIOR/result.json" "$OUT/run490-preterminal-result.json"
+          cp "$PRIOR/result.json" "$OUT/current-preterminal-result.json"
 
       - name: Install terminal proof dependencies
         run: |
@@ -1045,6 +1057,7 @@ jobs:
           npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
           npx playwright install chromium >/dev/null 2>&1
           node --test backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-semantic-regression.test.mjs | tee "$OUT/source-regressions.log"
+          node --test --test-name-pattern="exact HR durable key" backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs | tee "$OUT/operational-visit-key-regression.log"
 
       - name: Authenticate canonical Firebase DEV read only
         uses: google-github-actions/auth@v2
@@ -1246,7 +1259,7 @@ jobs:
           compression-level: 0
 
       - if: always()
-        run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-i3-terminal-source" "$RUNNER_TEMP/cxorbia-run490-module-truth"
+        run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-i3-terminal-source" "$RUNNER_TEMP/cxorbia-current-module-truth"
 
   live-fixtures:
     name: I3 full live fixture suite v2 — exact same certified artifact

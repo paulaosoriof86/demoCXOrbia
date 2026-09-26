@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM069_RUNTIME_MATERIALIZATION_REQUIRED",
+  "status": "HOLD_MODULE_TRUTH_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "a552e1fbb41d5cacc8ab3157f3d91492b82b8f00",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "f885fb7ab49d8597d992fc02051ffdd584380a85",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V70_2026-09-26.json",
-  "findingsLedgerExpectedGitBlob": "2a1178991c84fef0c6fba5874f29bd6331efebea",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V71_2026-09-26.json",
+  "findingsLedgerExpectedGitBlob": "90cf28ac025d8d6208ea719d20b9149a057b2f15",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": true,
-  "activeBlocker": "Run495 exposed P0 exact visit-key mapping: canonical HR visit id hr_2026-09_hn_9_716fc0df6f maps to durable hrRowId SEPTIEMBRE 26 HN!9, while operational provider opened Firestore by logical visitId. The same provider also rejected the source-current sentinel emitted by composed HR UI. Exact one-file runtime successor is ready for one DEV materialization.",
-  "nextFindingId": "VRM-072",
+  "activeBlocker": "Run496 V70 materialized and proved VRM-069/070 on exact successor. Mandatory readback found stale predecessor authority in active C3/terminal control; V71 removes that second authority. Only fresh C3 Module Truth 20/20 remains before terminal certification.",
+  "nextFindingId": "VRM-073",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN V70 RUNTIME-ONLY DEV MATERIALIZATION ON EXACT SUCCESSOR; HOSTING/RULES/PRODUCTION UNCHANGED. IF PASS, REPROVE MODULE TRUTH 20/20 THEN TERMINAL + LIVE FIXTURES 10/10 + GATE21.",
+  "exactNextAction": "EXECUTE C3 PRETERMINAL MODULE TRUTH ON CURRENT DESCRIPTOR AUTHORITY; NO BUILD/DEPLOY. IF PASS, FREEZE ITS RUN/ARTIFACT IN lastModuleTruthProof AND ADVANCE TO READY_FOR_TERMINAL_CERTIFICATION.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -334,18 +334,18 @@
     "production": false
   },
   "currentMaterialization": {
-    "sourceSha": "f885fb7ab49d8597d992fc02051ffdd584380a85",
-    "sourceTree": "d3a87752434be558167fcf3787b88d190c76a87c",
+    "sourceSha": "a552e1fbb41d5cacc8ab3157f3d91492b82b8f00",
+    "sourceTree": "c44872eb2dc1529de8387957ec720024944a5e62",
     "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
-    "runtimeRevision": "cxorbia-live-hr-dev-00222-hj9",
-    "runtimeDigest": "sha256:a478644e9e658dc188050e94c23e5cfbf5acc8d4030cb348b65e555aed59eca5",
-    "firestoreRulesSha256": "bce839595cf0ca6000a2c3ae6fc0b81e90cf341fbecfaaa2f3282e75e9681367",
+    "runtimeRevision": "cxorbia-live-hr-dev-00223-tlg",
+    "runtimeDigest": "sha256:b34be533f545c6dda7dc9f6c4a1cb0af517aad2aff1d79005412b4a2433d7ecd",
     "hrRevision": "d9bbb352738196d71602a3adb080e4f8bf37e7211a3bc2ffea13711454c71f95",
     "cacheMs": 3600000,
-    "buildCountSinceV61": 1,
-    "runtimeDeploysSinceV61": 1,
+    "buildCountThisMaterialization": 1,
+    "runtimeDeploysThisMaterialization": 1,
     "hostingDeploys": 0,
     "rulesDeploys": 0,
+    "hrWrites": 0,
     "production": false
   },
   "lastFocalAttempt": {
@@ -476,20 +476,13 @@
     "findingId": "VRM-055"
   },
   "lastControlFailure": {
-    "runId": 36258934236,
-    "runNumber": 495,
-    "jobId": 108452295815,
-    "classification": "MAPPING_FAILURE",
-    "code": "CANONICAL_VISIT_ID_DURABLE_KEY_SPLIT",
-    "productDefect": true,
-    "currentAvailableCount": 1,
-    "sourceVisitId": "hr_2026-09_hn_9_716fc0df6f",
-    "durableHrRowId": "SEPTIEMBRE 26 HN!9",
-    "liveFixturesPassedBeforeStop": 8,
-    "cleanup": true,
-    "gate21": "skipped",
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "code": "STALE_PREDECESSOR_AUTHORITY_IN_ACTIVE_C3_TERMINAL",
+    "productDefect": false,
+    "caughtBeforeExecution": true,
     "builds": 0,
     "deploys": 0,
+    "writes": 0,
     "production": false
   },
   "lastSecondReviewProof": {
@@ -634,6 +627,22 @@
     "runtimeDeploys": 1,
     "hostingDeploys": 0,
     "rulesDeploys": 0,
+    "production": false
+  },
+  "lastV70Proof": {
+    "runId": 36260348972,
+    "runNumber": 496,
+    "jobId": 108454880692,
+    "artifactId": 10911848886,
+    "artifactName": "cxorbia-i3-v70-vrm069-runtime-36260348972",
+    "artifactDigest": "sha256:86649ed3f36401bbb319467d5c71fb79d17fd54801b54f96621a8eb7415517f0",
+    "decision": "PASS_I3_V70_VRM069_070_OPERATIONAL_VISIT_KEY_RUNTIME",
+    "sourceSha": "a552e1fbb41d5cacc8ab3157f3d91492b82b8f00",
+    "sourceTree": "c44872eb2dc1529de8387957ec720024944a5e62",
+    "runtimeRevision": "cxorbia-live-hr-dev-00223-tlg",
+    "runtimeDigest": "sha256:b34be533f545c6dda7dc9f6c4a1cb0af517aad2aff1d79005412b4a2433d7ecd",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+    "hrRevision": "d9bbb352738196d71602a3adb080e4f8bf37e7211a3bc2ffea13711454c71f95",
     "production": false
   }
 }

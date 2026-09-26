@@ -196,6 +196,19 @@ test('Gate 7 / visit.assign requires provider ACK and replays idempotently',asyn
   assert.equal(auditPaths(db).length,1);
 });
 
+test('Gate 7 / visit.assign resolves exact HR durable key when logical visitId differs and accepts source-current',async()=>{
+  const db=new FakeFirestore();
+  db.seed('tenants/tenant-a/users/admin-1',{active:true,tenantId:'tenant-a',role:'admin',authNamespace:'staff',projectIds:['project-a']});
+  db.seed(visitPath('HR!2'),{id:'visit-a',visitId:'visit-a',tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',hrRowId:'HR!2',estado:'disponible',status:'disponible',version:7});
+  const command={version:'cxorbia-command-adapter-v1',commandType:'visit.assign',entityType:'visit',entityId:'visit-a',tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',expectedVersion:'source-current',idempotencyKey:'gate7-exact-hr-key',payload:{visitId:'visit-a',hrRowId:'HR!2',shopperId:'shopper-a',assignmentSource:'platform'},authorization:{providerEnforcementRequired:true}};
+  const result=await provider(db).execute('token',command);
+  assert.equal(result.ok,true);
+  assert.equal(result.providerAck,true);
+  assert.equal(db.get(visitPath('HR!2')).shopperId,'shopper-a');
+  assert.equal(db.get(visitPath('HR!2')).assignmentSyncStatus,'pending_hr');
+  assert.equal(db.get(visitPath('visit-a')),undefined);
+});
+
 test('Gate 7 / visit.assign rejects a durable visit that is no longer HR-available',async()=>{
   const db=new FakeFirestore();
   db.seed('tenants/tenant-a/users/admin-1',{active:true,tenantId:'tenant-a',role:'admin',authNamespace:'staff',projectIds:['project-a']});
