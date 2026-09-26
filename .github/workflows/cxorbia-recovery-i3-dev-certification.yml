@@ -203,6 +203,80 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
+  v53-vrm050-runtime-readback:
+    name: I3 V53 — VRM-050 exact runtime readback — no deploy
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM050_RUNTIME_REPROOF_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v53-vrm050-readback]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      V53_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      V53_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      V53_OUT: .tmp/i3-v53-vrm050-readback
+      EXPECTED_RUNTIME_REVISION: cxorbia-live-hr-dev-00221-65m
+      EXPECTED_RUNTIME_DIGEST: sha256:7b48e7a539a987f03b96c97a32ccb38a9cf32bd95d3e432434bc808ec9685dce
+      EXPECTED_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Prove exact successor authority
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$V53_OUT"
+          test "$V53_SOURCE" = "62ee2903fdced52c525d5a028c8c4c725940e4cd"
+          test "$V53_TREE" = "e0649d447257745af89efc9845dfb2fb50600cf6"
+          test "$(git rev-parse "$V53_SOURCE^{tree}")" = "$V53_TREE"
+          test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_VRM050_RUNTIME_REPROOF_REQUIRED"
+          grep -q 'CXORBIA_HR_PAYLOAD_VM_TIMEOUT_MS' tools/hr-source/tya-reapply-canonical-state-r20.mjs
+          ! grep -q 'timeout:5000' tools/hr-source/tya-reapply-canonical-state-r20.mjs
+      - name: Authenticate Recovery DEV read only
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
+      - name: Read exact runtime Hosting health and HR without refresh
+        run: |
+          set -Eeuo pipefail
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$V53_OUT/runtime.json"
+          REV="$(jq -r '.status.latestReadyRevisionName // empty' "$V53_OUT/runtime.json")"; test "$REV" = "$EXPECTED_RUNTIME_REVISION"
+          SERVICE_URL="$(jq -r '.status.url // empty' "$V53_OUT/runtime.json")"; test -n "$SERVICE_URL"
+          gcloud run revisions describe "$REV" --project "$PROJECT" --region "$REGION" --format=json > "$V53_OUT/runtime-revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$V53_OUT/runtime-revision.json")"
+          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else exit 1; fi
+          test "$DIGEST" = "$EXPECTED_RUNTIME_DIGEST"
+
+          ACCESS_TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS -H "Authorization: Bearer $ACCESS_TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$V53_OUT/hosting-live.json"
+          test "$(jq -r '.release.version.name // empty' "$V53_OUT/hosting-live.json")" = "$EXPECTED_HOSTING_VERSION"
+
+          ID_TOKEN="$(gcloud auth print-identity-token --audiences="$SERVICE_URL")"
+          curl -fsS --retry 4 --retry-delay 2 -H "Authorization: Bearer $ID_TOKEN" "$SERVICE_URL/health?v53=$GITHUB_RUN_ID" > "$V53_OUT/health-direct.json"
+          jq -e '.ok==true and .bootstrapReady==true and .lastRefreshError==null and .writes==false and .hrWrites==false and .production==false' "$V53_OUT/health-direct.json" >/dev/null
+
+          curl -fsS --retry 4 --retry-delay 2 -H "Authorization: Bearer $ID_TOKEN" -H 'Cache-Control: no-cache, no-store, max-age=0' "$SERVICE_URL/api/tenants/$TENANT_ID/projects/$PROJECT_ID/hr-live?format=meta&v53=$GITHUB_RUN_ID" > "$V53_OUT/hr-meta-direct.json"
+          jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .shopperReconciliation.providerAck==true and .visitReconciliation.providerAck==true and .hrWrites==false and .production==false and .refreshError==null' "$V53_OUT/hr-meta-direct.json" >/dev/null
+          REVISION="$(jq -r '.revision // empty' "$V53_OUT/hr-meta-direct.json")"; [[ "$REVISION" =~ ^[0-9a-f]{64}$ ]]
+
+          curl -fsS --retry 4 --retry-delay 2 -H "Authorization: Bearer $ID_TOKEN" -H 'Cache-Control: no-cache, no-store, max-age=0' "$SERVICE_URL/api/tenants/$TENANT_ID/projects/$PROJECT_ID/hr-live?format=json&v53=$GITHUB_RUN_ID" > "$V53_OUT/hr-direct.json"
+          test "$(jq -r '._runtime.revision // .sourceRevision // empty' "$V53_OUT/hr-direct.json")" = "$REVISION"
+
+          curl -fsS --retry 4 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&v53=$GITHUB_RUN_ID" > "$V53_OUT/hr-meta-hosting.json"
+          jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .refreshError==null' "$V53_OUT/hr-meta-hosting.json" >/dev/null
+          test "$(jq -r '.revision // empty' "$V53_OUT/hr-meta-hosting.json")" = "$REVISION"
+
+          jq -n -S --arg source "$V53_SOURCE" --arg tree "$V53_TREE" --arg runtime "$REV" --arg digest "$DIGEST" --arg hosting "$EXPECTED_HOSTING_VERSION" --arg hr "$REVISION" --argjson refreshMs "$(jq -r '.refreshDurationMs // 0' "$V53_OUT/hr-meta-direct.json")" '{decision:"PASS_I3_V53_VRM050_RUNTIME_READBACK",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,refreshDurationMs:$refreshMs,refreshError:null,sourceSafe:true,shopperProviderAck:true,visitProviderAck:true,builds:0,deploys:0,writes:0,production:false}' > "$V53_OUT/result.json"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-v53-vrm050-readback-${{ github.run_id }}
+          path: ${{ env.V53_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
   c3-preterminal-module-truth:
     name: C3 preterminal Module Truth — exact current DEV — no deploy
     needs: canonical-candidate-authority
