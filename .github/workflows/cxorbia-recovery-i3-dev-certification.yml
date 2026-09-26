@@ -3836,7 +3836,7 @@ jobs:
           test "$V33_SOURCE" = "37d6985588cec0d335736c17b974841b92c52e83"
           test "$V33_TREE" = "a2f2913baa09cf633149ba2440fa655eebb0fa44"
           test "$(git rev-parse "$V33_SOURCE^{tree}")" = "$V33_TREE"
-          test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_V33_HOSTING_MATERIALIZED_ENV_AUTH_RETRY_REQUIRED"
+          test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_VRM057_SOURCE_FIX_READY_FOR_HOSTING_REPROOF"
           git diff --quiet e8635de1fa5e086a7fd0ca92ba1a393466cf63e4 "$V33_SOURCE" -- backend firestore.rules storage.rules
           test "$(git diff --name-only e8635de1fa5e086a7fd0ca92ba1a393466cf63e4 "$V33_SOURCE" -- app | wc -l | tr -d ' ')" = "2"
           git diff --name-only e8635de1fa5e086a7fd0ca92ba1a393466cf63e4 "$V33_SOURCE" -- app | grep -qx 'app/adapters/cxorbia-cxdata-command-boundary-v1.js'
