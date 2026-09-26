@@ -6,14 +6,14 @@
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "f885fb7ab49d8597d992fc02051ffdd584380a85",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
-  "predecessorProductSourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V61_2026-09-26.json",
-  "findingsLedgerExpectedGitBlob": "ed97eb5ceaae47cede4eded3d8b127862d982243",
+  "predecessorProductSourceSha": "62ee2903fdced52c525d5a028c8c4c725940e4cd",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V62_2026-09-26.json",
+  "findingsLedgerExpectedGitBlob": "0ce8ae38720c9fb312f6f3e642fa8704722b464b",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-065 root cause proven by Run486: sourceRevision drift is metadata-only, caused solely by tabRegistryObservedAt being hashed as stable data. Exact one-file runtime successor is ready for DEV materialization.",
+  "activeBlocker": "VRM-065 runtime successor remains ready. Run487 was blocked only because ledger canonicalFunctionalCandidate had not yet advanced to the already-declared successor; no DEV mutation occurred.",
   "nextFindingId": "VRM-066",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN V61 EXACT RUNTIME-ONLY DEV MATERIALIZATION; THEN READBACK AND RE-RUN MODULE TRUTH BEFORE TERMINAL.",
+  "exactNextAction": "RERUN V61 EXACT RUNTIME-ONLY DEV MATERIALIZATION FOR f885fb7a; HOSTING/RULES/DATA DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -472,14 +472,14 @@
     "findingId": "VRM-055"
   },
   "lastControlFailure": {
-    "runId": 36254992073,
-    "runNumber": 485,
-    "jobId": 108439963590,
+    "runId": 36255296000,
+    "runNumber": 487,
+    "jobId": 108440810646,
     "classification": "RELEASE_COMPOSITION_FAILURE",
-    "code": "NEXT_FINDING_ID",
+    "code": "LEDGER_DESCRIPTOR_SOURCE_MISMATCH",
     "productDefect": false,
-    "descriptorObserved": "VRM-065",
-    "ledgerExpected": "VRM-066",
+    "builds": 0,
+    "deploys": 0,
     "production": false
   },
   "lastSecondReviewProof": {
