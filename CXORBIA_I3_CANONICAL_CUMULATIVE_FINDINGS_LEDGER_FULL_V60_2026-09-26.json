@@ -1,0 +1,3021 @@
+{
+  "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v38",
+  "frozenAt": "2026-09-26T16:22:00Z",
+  "status": "HOLD_VRM065_REVISION_DRIFT_DIAGNOSTIC_REQUIRED",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
+  "microblockId": "I3-V60-VRM065-DIAGNOSTIC-CONTROL-GUARD-FIX",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "production": "DO_NOT_TOUCH",
+  "sourceRunState": {
+    "path": "CXORBIA_PRE_I4_VISUAL_REMEDIATION_RUN_STATE_2026-09-22.json",
+    "gitBlob": "a2ffbc7ac322a34e925b21f80a1671403a7a84c1",
+    "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v11",
+    "generatedAt": "2026-09-24T07:10:00Z"
+  },
+  "canonicalFunctionalCandidate": {
+    "sourceSha": "62ee2903fdced52c525d5a028c8c4c725940e4cd",
+    "sourceTree": "e0649d447257745af89efc9845dfb2fb50600cf6",
+    "predecessorSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+    "production": false
+  },
+  "rootCauseIds": [
+    "RC-MONO-01_MULTIPLE_EXECUTABLE_PRODUCT_SOURCE_AUTHORITIES",
+    "RC-MONO-02_SELF_REFERENTIAL_MODULE_TRUTH_CLOSURE",
+    "RC-MONO-03_STALE_PASS_NOT_MECHANICALLY_REVOKED",
+    "RC-MONO-04_SPLIT_FINDING_MODULE_SOURCE_READINESS_STATE",
+    "RC-MONO-05_UNDERSPECIFIED_TERMINAL_SEMANTIC_ORACLE"
+  ],
+  "findings": {
+    "VRM-001": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
+      "owner": [
+        "app/core/data.js",
+        "app/core/router.js",
+        "app/core/permissions.js"
+      ],
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-002": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
+      "owner": [
+        "app/core/data.js",
+        "app/core/router.js",
+        "app/core/permissions.js"
+      ],
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-003": {
+      "state": "ALREADY_PROVEN_NO_DRIFT",
+      "evidenceRef": "Run299 identity repair + PRE-I4 review; no identity owner touched in db9cda1"
+    },
+    "VRM-004": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2 + feea6ae6b00d36349ae66e43e034bc0b25516cfd + 4aeb41ca6dffb6e5b8324ca50531587539f5058e",
+      "note": "Project/period root and cross-surface source context are reconciled in source; runtime/browser proof pending.",
+      "owner": [
+        "app/core/data.js",
+        "app/core/router.js",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+      ],
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-005": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+      "owner": [
+        "app/core/data.js",
+        "app/modules/misvisitas.js"
+      ],
+      "note": "Canonical shopper visits/facets and pending applications now share shopperId/project/period read model; browser proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-006": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
+      "owner": [
+        "app/core/data.js",
+        "app/core/router.js",
+        "app/core/permissions.js"
+      ],
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-007": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "4aeb41ca6dffb6e5b8324ca50531587539f5058e + 61cf7120603aeff110e97632bb6c69f5c4809d62",
+      "owner": [
+        "app/modules/misvisitas.js",
+        "app/modules/shoppers.js",
+        "app/modules/postulaciones.js",
+        "app/modules/documentos.js",
+        "app/modules/cert.js"
+      ],
+      "note": "Human copy no longer exposes ACK/Storage/shopperId/gate implementation terms in targeted surfaces; browser proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-008": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "4aeb41ca6dffb6e5b8324ca50531587539f5058e",
+      "owner": [
+        "app/core/router.js",
+        "app/index-backend-dev.html",
+        "app/styles/layout.css"
+      ],
+      "note": "Browser history/popstate and mobile role identity implemented; browser proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-009": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "e0bed18b62174544615dc55aa70dd4a1509692d7 + 3a14ca612988637521c3c6b39325f4d220771875",
+      "owner": [
+        "app/modules/cert.js",
+        "app/core/backend-resources.js"
+      ],
+      "note": "Connected certification bank no longer uses localStorage; durable metadata ACK authority implemented; runtime proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-010": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd + Run309/35929165160 live HR ce5534c1",
+      "owner": [
+        "app/core/data.js",
+        "app/modules/dashboard.js"
+      ],
+      "note": "Dashboard canonical phase flow reflected live HR revision ce5534c1 with GT 33 assigned/28 scheduled/20 realized and HN 9 assigned; prior browser FAIL was stale QA expectation, not product mapping.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-011": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+      "owner": [
+        "app/core/data.js",
+        "app/modules/dashboard.js"
+      ],
+      "note": "Ranking rows preserve shoppers without ratings instead of silently filtering them; human/source proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-012": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd + Run310/35930173836 HR revision 46402dc5",
+      "owner": [
+        "app/core/data.js",
+        "app/modules/shoppers.js"
+      ],
+      "note": "Exact-id Admin shopper validation now required from same fresh HR revision; display-name identity tests are prohibited. Run310 exposed a QA name-based check, not yet a product identity defect.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-013": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "672e7f624b1d0328ed1bb25b778ce4b44d52489c + bf859809d831e24665fede339a2ee872bc0e0d0c",
+      "owner": [
+        "app/modules/postulaciones.js",
+        "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+        "app/adapters/cxorbia-command-adapter-v1.js",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+      ],
+      "note": "Approve/standby/reject/edit/reassign/cancel/reprogram all use ACK-aware command provider in source; provider/runtime proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-014": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+      "owner": [
+        "app/core/finanzas-core.js",
+        "app/core/liquidacion.js",
+        "app/modules/finanzas.js"
+      ],
+      "note": "Operational obligations are no longer removed merely because reconciliation is pending; browser proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-015": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd + ab05415eb965404e1a6594df8533b8e0190aa0f7 + 6653ba83b7c95ff413169e48ceb38e95151a2736",
+      "owner": [
+        "app/core/finanzas-core.js",
+        "app/core/liquidacion.js",
+        "app/modules/finanzas.js"
+      ],
+      "note": "Run315 proved the first adapter fix preserved amounts and null margin but canonical finance read model still dropped reimbursementPartial. 6653ba83 propagates reimbursement partial/source completeness into canonical liquidation rows; DEV focal proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-016": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd + ab05415eb965404e1a6594df8533b8e0190aa0f7",
+      "owner": [
+        "app/core/finanzas-core.js",
+        "app/modules/finanzas.js"
+      ],
+      "note": "Run315 live browser showed ingreso=null, margen=null and margenPct=null with pending_or_review as required; retained FIXED_NOT_PROVEN until the cumulative focal browser run closes.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-017": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "4aeb41ca6dffb6e5b8324ca50531587539f5058e",
+      "owner": [
+        "app/modules/finanzas.js"
+      ],
+      "note": "Raw visit/hr/financial enums removed from normal finance table and retained only under expandable trace; browser proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-018": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+      "owner": [
+        "app/core/finanzas-core.js",
+        "app/core/liquidacion.js",
+        "app/modules/finanzas.js"
+      ],
+      "note": "Review queue and operational obligation rows are separated; cause-specific UI proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-019": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "e0bed18b62174544615dc55aa70dd4a1509692d7 + 3a14ca612988637521c3c6b39325f4d220771875",
+      "owner": [
+        "app/modules/documentos.js",
+        "app/core/backend-resources.js"
+      ],
+      "note": "Connected lane no longer seeds static resources; Firestore metadata is authority or explicit empty/pending state; live proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-020": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "e0bed18b62174544615dc55aa70dd4a1509692d7 + 3a14ca612988637521c3c6b39325f4d220771875 + 50b6a25d79713b0f165cffc4355c7b7ffd1d9e84",
+      "owner": [
+        "app/modules/documentos.js",
+        "app/core/backend-resources.js",
+        "firestore.rules"
+      ],
+      "note": "Durable resource contract remains intact; demo-only store renamed to avoid legacy _d scanner prefix collision. Previous focal run failed before deploy on false-positive scanner; retry source is 50b6a25d79713b0f165cffc4355c7b7ffd1d9e84.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-021": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
+      "owner": [
+        "app/core/data.js",
+        "app/core/router.js",
+        "app/core/permissions.js"
+      ],
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-022": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "e0bed18b62174544615dc55aa70dd4a1509692d7",
+      "owner": [
+        "app/data/tya-certification-carryover-source-safe.js",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+        "app/modules/cert.js"
+      ],
+      "note": "MODULE_TRUTH=APPROVED_NOT_COMPOSED. 42 Cinépolis records map deterministically to 16 canonical shoppers but lack reviewedBy/reviewedAt/auditRef, therefore remain pending_review evidence only; certifications=[], carryoverConfirmed=0, eligibilityGranted=0, fuzzyMatching=false.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-023": {
+      "state": "ALREADY_PROVEN_NO_DRIFT",
+      "evidenceRef": "Run304 + human screenshots: official T&A logo visible"
+    },
+    "VRM-024": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "4aeb41ca6dffb6e5b8324ca50531587539f5058e + prior Run304",
+      "owner": [
+        "app/core/router.js",
+        "app/index-backend-dev.html"
+      ],
+      "note": "Prior no-debug state preserved and human data/source diagnostics are hidden unless technical access; browser no-drift proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-025": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "Run316 35941768293 / artifact 10785028396 / browser-focal.json",
+      "owner": [
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+      ],
+      "note": "Run316 falsely classified STATIC_RESOURCE_SEED_VISIBLE because the harness scanned document.body.innerText for generic terms including Checklist; the legitimate Recursos UI always contains checklists. Control fix now validates only connected project_resource rows by id/demo/source markers and requires Firestore-ready status. No product/Firestore cleanup authorized or performed.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-026": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "Run317 35945195477",
+      "owner": [
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+        "backend/config/pre-i4-human-entrypoint-dev-deploy-request.json"
+      ],
+      "note": "Run317 was a control-lane routing failure: an untagged control-only push selected the historical certify job still anchored to 77bf and failed its source guard before any build/auth/deploy. The existing [pre-i4-readback-only] exclusion is now used with the postdeploy readback lane bound to Run316/source 6653; no new workflow or product candidate is created.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-027": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "Run319 35946850723 + source 275a9893 + Run320 35947885607",
+      "owner": [
+        "app/modules/misvisitas.js",
+        "app/modules/postulaciones.js"
+      ],
+      "note": "The human-state mapping fix remains in canonical modules/misvisitas.js and modules/postulaciones.js. Run321 proved the shopper-side code was not active because a later adapter replaced CX.modules.misvisitas; VRM-027 therefore remains fixed-in-source but blocked from terminal proof by VRM-028.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-028": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "Run321 35948591112 + source f5b96e85 + Run322 35949258270",
+      "owner": [
+        "app/adapters/tya-c6-domain-consistency-bridge.js"
+      ],
+      "test": "backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-ui-cleanup.test.mjs",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "note": "Run322 passed source regression, one Hosting DEV materialization and byte parity including tya-c6-domain-consistency-bridge.js; Admin postulation conflict projection also passed. Terminal proof remains blocked only because the shopper route hit a Firestore permission denial before Mis Visitas could be reached.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-029": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "Runs323-329 root cause + Run332 35953009969 exact Rules deploy/readback",
+      "classification": "AUTH_FAILURE",
+      "owner": [
+        "firestore.rules",
+        "backend/runtime/hr-live-service/test/cxorbia-pre-i4-durability-resources.test.mjs"
+      ],
+      "note": "Shopper claims and direct authorized resource reads are correct. Firestore list/query denial is caused by the prior resources read expression combining query-unprovable field type checks and projectAssigned(resource.data.projectId). Emulator proof shows the generic query-compatible form tenantAllowed + shopper + active + resource.data.projectId in request.auth.token.projectIds + role() in resource.data.visibleRoles allows the exact visible-list query while still denying admin-only and other-project documents. Source 2f924e6e contains only the minimal Rules fix plus anti-regression test; DEV Rules deployment still pending. Run332 deployed exactly one Firestore Rules release to DEV via official Rules API and read back exact source parity; terminal status awaits cumulative browser focal.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-030": {
+      "state": "NOT_APPLICABLE_WITH_EVIDENCE",
+      "evidenceRef": "Run324 35950371737 + Run325 35950590942",
+      "classification": "ENVIRONMENT_FAILURE",
+      "owner": [
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+      ],
+      "note": "Run324 Firestore emulator proof was blocked solely because firebase-tools required Java 21. Run325 added Java 21 and the emulator proof executed successfully. No product, Rules or data defect resulted from this control-environment failure."
+    },
+    "VRM-031": {
+      "state": "NOT_APPLICABLE_WITH_EVIDENCE",
+      "evidenceRef": "Run330 35952589290 + Run331 35952807023",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "owner": [
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+      ],
+      "note": "Run330 stopped before authentication or deployment because the rules-only scope validator counted backend/config/pre-i4-human-entrypoint-dev-deploy-request.json, a control authorization file, as product drift between f5b96e85 and functional source 2f924e6e. The validator now excludes only that exact control path while preserving exact checks for firestore.rules and the VRM-029 regression test. Run330 performed zero Rules/Hosting/runtime/data/production deploys. Run331 passed the corrected product-scope validator and cumulative source tests, proving the Run330 scope failure was control-only."
+    },
+    "VRM-032": {
+      "state": "NOT_APPLICABLE_WITH_EVIDENCE",
+      "evidenceRef": "Run331 35952807023 + Run332 35953009969",
+      "classification": "AUTH_FAILURE",
+      "owner": [
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+      ],
+      "note": "Firebase CLI :test returned 403 for the DEV principal, but the same authorized principal created the exact Ruleset and updated cloud.firestore through the official Rules API. Run332 succeeded with one exact Rules deploy; no manual IAM change was required."
+    },
+    "VRM-033": {
+      "state": "PASS_CUMULATIVE_IDENTITY_PROVEN_RUN387_PLUS_RUN472",
+      "classification": "MAPPING_FAILURE",
+      "title": "Admin shopper identities regress to technical IDs despite live HR display names",
+      "evidence": [
+        "Run333 browser-focal recorded expectedName=Julissa Flores for shopper_gt_0c198c1055 but observed name=shopper_gt_0c198c1055 and still passed.",
+        "Commit 6bcbc1df changed unmatched profiles from excluded to presentedToAuthorizedStaff.",
+        "Current composer lets protected/profile name override live HR display name; durable sourceCandidate only treats literal 'Shopper protegido' as placeholder, not shopper_gt_*."
+      ],
+      "owners": [
+        "app/adapters/tya-cumulative-read-model-v2.js",
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+        "app/core/data.js",
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+      ],
+      "expected": "Authorized Admin sees resolved operational display names and exact history/KPIs. Unresolved technical identities stay in review and never render as human shopper rows. No fuzzy matching.",
+      "sourceAuthority": {
+        "sourceSha": "8426370b748443073f6a65355a2fe7af02a9a61c",
+        "message": "fix(pre-i4): restore human shopper truth and semantic safeguards [vrm-033-041]",
+        "proofState": "PENDING_TERMINAL_REPROOF"
+      },
+      "sourceFixFiles": [
+        "app/adapters/tya-cumulative-read-model-v2.js",
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+        "app/core/data.js"
+      ],
+      "closureEvidence": {
+        "historicalExhaustiveProof": {
+          "runId": 36072848792,
+          "runNumber": 387,
+          "artifactId": 10839078428,
+          "proofSourceSha": "04b288f7eee315fcb865ed86a8fb41786809edf9",
+          "proofHrRevision": "2b0114c39d64a0e3697667572de0dfdcffe476c5cd8112449fcab1da24e1085d",
+          "identityCases": 218,
+          "technicalPrimaryCount": 0,
+          "julissaExpected": "Julissa Flores",
+          "julissaObserved": "Julissa Flores",
+          "humanAcceptance": "PASS_I3_HUMAN_LIVE_ACCEPTANCE",
+          "semanticOracle": "PASS_C3_TERMINAL_HR_SEMANTIC_ORACLE",
+          "focal": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
+        },
+        "currentCumulativeProof": {
+          "runId": 36220426137,
+          "runNumber": 472,
+          "artifactId": 10898611925,
+          "artifactDigest": "sha256:ea14f6fb6869fe0f4f76ebfda811622dd8ce3395fca4a5139b8ca650e449c5a8",
+          "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+          "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+          "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+          "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+          "invalidIdentityVisible": false,
+          "rawShopperIdsVisible": false,
+          "miltonName": "Milton De Paz",
+          "providerAck": true,
+          "production": false
+        },
+        "interpretation": "Later cumulative/data/provider deltas are independently approved by subsequent findings; current identity behavior is re-proven cumulatively and the stale technical-ID defect is not present."
+      }
+    },
+    "VRM-034": {
+      "state": "TERMINAL_REPROOF_PENDING_CURRENT_SOURCE",
+      "classification": "PERSISTENCE_FAILURE",
+      "title": "Durable DEV QA reservation residue is visible in human lane",
+      "evidence": [
+        "Human screenshot shows five I3 QA TEMP reservations.",
+        "RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs creates durable reservations with sucursal='I3 QA TEMP'.",
+        "Run333 Admin route set did not include reservas, so residue was invisible to the terminal focal."
+      ],
+      "owners": [
+        "RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs",
+        "app/adapters/tya-canonical-reservations-guard-v2.js",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+      ],
+      "expected": "Zero QA/test reservations in the human candidate; fixture writes use deterministic isolated IDs and exact cleanup/readback, with Admin reservas asserted before PASS.",
+      "terminalReproofContract": "Fresh terminal human acceptance must show Admin/Shopper reservas with qaReservationVisible=false and functional probe cleanup/readback zero residue."
+    },
+    "VRM-035": {
+      "state": "TERMINAL_REPROOF_PENDING_CURRENT_SOURCE",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "title": "Terminal browser proof was structurally green but semantically under-specified",
+      "evidence": [
+        "Shoppers assertion checked row existence/crosswalk/history counts but never asserted row.name===expectedName.",
+        "Dashboard assertion omitted outOfRange.",
+        "Admin focal omitted reservas.",
+        "Benefits/Mi Perfil routes were accepted mainly by generic route/source/count checks rather than their required visible business content.",
+        "Resources count=0 with Storage unauthorized was accepted as PASS.",
+        "Certification pending_authenticated_review with carryoverConfirmed=0 was accepted as PASS."
+      ],
+      "owners": [
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs",
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+        "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json"
+      ],
+      "expected": "PASS requires semantic assertions for names, profile fields/history, benefit rows, reservations cleanliness, out-of-range, resource usability or explicit approved empty-state, certification carryover, and no technical-language leakage.",
+      "terminalReproofContract": "Fresh terminal run must execute strengthened semantic browser assertions, full route inventory, semantic oracle, Module Truth 20/20, Gate20 visual+semantic and same-artifact Gate21."
+    },
+    "VRM-036": {
+      "state": "FIXED_SOURCE_PROVEN_NO_DEPLOY",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "title": "Certification historical authority remains explicitly APPROVED_NOT_COMPOSED but matrix was forced to MATCH",
+      "evidence": [
+        "app/data/tya-certification-carryover-source-safe.js self-declares moduleTruthClassification=APPROVED_NOT_COMPOSED.",
+        "Same source records usefulRecords=78 and deterministicTechnicalIdMatches=22, but active certifications=[] and sourceStatus=pending_authenticated_review.",
+        "Historical DEV inventory contains 77 durable certifications.",
+        "Matrix v6 incorrectly marked this source/module MATCH during mechanical closure."
+      ],
+      "owners": [
+        "app/data/tya-certification-carryover-source-safe.js",
+        "app/modules/cert.js",
+        "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json"
+      ],
+      "expected": "Adjudicate approved historical certification records by exact identity into the durable/read model without granting unsupported eligibility; ambiguous records stay review-only.",
+      "sourceAdjudication": {
+        "approvedSuccessor": "61cf7120603aeff110e97632bb6c69f5c4809d62",
+        "ownerBlobParity": true,
+        "owners": [
+          "app/modules/academia.js",
+          "app/modules/cert.js",
+          "app/data/tya-certification-carryover-source-safe.js"
+        ],
+        "carryoverSourceStatus": "pending_authenticated_review",
+        "evidenceCandidateCount": 42,
+        "deterministicTechnicalIdMatches": 22,
+        "certificationsCommitted": 0,
+        "requiredReviewFieldsMissing": [
+          "reviewedBy",
+          "reviewedAt",
+          "auditRef"
+        ],
+        "conclusion": "No code recovery required. Historical evidence is preserved but intentionally not promoted to certified/eligible. Close by exact adjudication/projection without inventing eligibility."
+      },
+      "functionalSource": "8d764168727832d579d20ceb26580d88c41df24d",
+      "fixContract": "Project evidence to both operational shoppers and protected exact profiles. A protected-only profile remains outside HR operational population. Historical evidence never grants current certification or eligibility.",
+      "productFiles": [
+        "app/adapters/tya-certification-evidence-projection-v1.js",
+        "app/index-backend-dev.html",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+        "app/adapters/tya-c6-domain-consistency-bridge.js",
+        "app/adapters/tya-canonical-shopper-portal-v2.js",
+        "app/modules/cert.js",
+        "backend/runtime/hr-live-service/test/cxorbia-pre-i4-certification-evidence-projection.test.mjs"
+      ],
+      "latestFailure": {
+        "runId": 36041217046,
+        "artifactId": 10826783578,
+        "classification": "MAPPING_FAILURE",
+        "code": "VRM036_PAULA_S3_EXACT_OWNER:0",
+        "rootCause": "historical evidence projector only targeted HR operational shoppers; s3 is an exact protected authenticated profile and must not be forced into HR population"
+      },
+      "crosswalkAuthority": {
+        "source": "app/docs/evidence/LEGACY-SHOPPERS-CERTIFICATIONS-REFRESH-LATEST.json",
+        "legacyShopperId": "S3",
+        "canonicalDocId": "s3",
+        "basis": "deterministic_technical_id_normalization"
+      },
+      "proof": {
+        "runId": 36041811875,
+        "artifactId": 10826689418,
+        "artifactDigest": "sha256:953d01306acb015c16ab31cd9dd6cdcc040fba2b19ea4e98ddc6a09568428441",
+        "sourceSha": "8d764168727832d579d20ceb26580d88c41df24d",
+        "hrRevision": "834f3c9f36d0f8144507bea234efaa4c7d5ddf461f023d61239525b21de2a8d9",
+        "candidates": 42,
+        "matchedUniqueRecords": 42,
+        "matchedProtectedRecords": 42,
+        "reviewRequiredRecords": 0,
+        "paulaS3Owner": "s3",
+        "paulaS3Crosswalk": "S3->s3 deterministic_technical_id_normalization",
+        "currentCertificationMutations": 0,
+        "eligibilityGranted": 0,
+        "writes": 0,
+        "deploys": 0
+      }
+    },
+    "VRM-037": {
+      "state": "FIXED_SOURCE_PROVEN_NO_DEPLOY",
+      "classification": "FUNCTIONAL_DEFECT",
+      "title": "Shopper benefits/profile/history contract was not semantically proven by the final focal",
+      "evidence": [
+        "Run299 froze Paula exact identity s3 with history=7, KPI total=7 and Mi Perfil/Mis Visitas/Beneficios/Mis Reportes PASS.",
+        "Run333 shopper generic assertions fixed total=7 but did not assert visible profile identity/contact fields or benefit/liquidation row content.",
+        "Benefits depends on canonical shopper identity plus liquidation feed, so identity/composition regressions can render it empty while route-level PASS remains green."
+      ],
+      "owners": [
+        "app/adapters/tya-canonical-shopper-portal-v2.js",
+        "app/modules/misvisitas.js",
+        "app/modules/beneficios.js",
+        "app/core/liquidacion.js",
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+      ],
+      "expected": "Paula and representative GT/HN shoppers render exact identity, real historical visits/KPIs and benefit obligations from the same canonical identity; no technical ID fallback.",
+      "functionalSource": "8913a30e3bd1bd3e851d9736ff87e1bae51c30ff",
+      "rootCause": "A platform pending_hr assignment overlay remained operationally visible, correctly, but the late global shopperStats/history facade counted it as HR-confirmed historical ownership.",
+      "proof": {
+        "runId": 36038277262,
+        "artifactId": 10825625581,
+        "artifactDigest": "sha256:229e235b9a3918194b5a656b235305acf89ec199635ac35eaee8d6104ca9b2d0",
+        "sourceSha": "8913a30e3bd1bd3e851d9736ff87e1bae51c30ff",
+        "decision": "PASS_PRE_I4_VRM037_042_LIVE_SOURCE_PROOF",
+        "deploys": 0
+      }
+    },
+    "VRM-038": {
+      "state": "PASS_LIVE_PROVEN_RUN387_CURRENT_OWNER_BLOBS_IDENTICAL",
+      "classification": "FUNCTIONAL_DEFECT",
+      "title": "Human Admin surfaces leak technical vocabulary and incomplete operational states",
+      "evidence": [
+        "Screenshots expose 'ESTADO CANÓNICO' and 'máquina canónica HR'.",
+        "Run333 technicalVisible regex did not include canonical/canónico language.",
+        "Current finance UI surfaces internal source/configuration states as primary business UX."
+      ],
+      "owners": [
+        "app/modules/dashboard.js",
+        "app/modules/visitas.js",
+        "app/modules/finanzas.js",
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+      ],
+      "expected": "Human labels only; technical state/source terminology is hidden from normal Admin/Shopper UI and retained only in optional traceability.",
+      "sourceAuthority": {
+        "sourceSha": "8426370b748443073f6a65355a2fe7af02a9a61c",
+        "message": "fix(pre-i4): restore human shopper truth and semantic safeguards [vrm-033-041]",
+        "proofState": "PENDING_TERMINAL_REPROOF"
+      },
+      "sourceFixFiles": [
+        "app/modules/dashboard.js",
+        "app/modules/visitas.js"
+      ],
+      "closureEvidence": {
+        "runId": 36072848792,
+        "runNumber": 387,
+        "artifactId": 10839078428,
+        "artifactDigest": "sha256:046c863eadf25ad632f511b66579a650ccd309a7c6f9e38a950c77fbf22587aa",
+        "proofSourceSha": "04b288f7eee315fcb865ed86a8fb41786809edf9",
+        "proofHrRevision": "2b0114c39d64a0e3697667572de0dfdcffe476c5cd8112449fcab1da24e1085d",
+        "decision": "PASS_VRM043_CONTROL_FIX_NO_DEPLOY",
+        "fullHumanDecision": "PASS_I3_HUMAN_LIVE_ACCEPTANCE",
+        "focalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "allHumanRoutesTechnicalVisibleFalse": true,
+        "dashboardBlobAtProof": "1f0dabf370b9bf27f06ad3d2ab78301372954c32",
+        "dashboardBlobCurrent": "1f0dabf370b9bf27f06ad3d2ab78301372954c32",
+        "visitasBlobAtProof": "637406672d70e795f0f5b093bccba216b9c6413f",
+        "visitasBlobCurrent": "637406672d70e795f0f5b093bccba216b9c6413f",
+        "currentSourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+        "currentSourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+        "production": false
+      }
+    },
+    "VRM-039": {
+      "state": "FIXED_SOURCE_PROVEN_NO_DEPLOY",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "title": "Resources and finance were fail-closed safely but incorrectly promoted as complete production-ready modules",
+      "evidence": [
+        "Run333 resources: count=0, firestore ready, Storage authorized=false/configured=false/available=false.",
+        "Run333 finance obligations match current HR reference, but income/margin/CxC remain null because project income/commission source is not configured.",
+        "The PRE-I4 gate treated both incomplete states as terminal PASS rather than module-level HOLD/APPROVED_NOT_COMPOSED."
+      ],
+      "owners": [
+        "app/core/backend-resources.js",
+        "app/modules/documentos.js",
+        "app/core/finanzas-core.js",
+        "app/modules/finanzas.js",
+        "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json"
+      ],
+      "expected": "Preserve truthful fail-closed behavior, but do not call the module complete until the last approved resource/financial authority is composed or explicitly adjudicated as intentionally unavailable.",
+      "sourceAdjudication": {
+        "resources": {
+          "approvedSuccessor": "50b6a25d79713b0f165cffc4355c7b7ffd1d9e84",
+          "ownerBlobParity": true,
+          "authority": "Firestore metadata; binary Storage fail-closed unless explicitly authorized/validated"
+        },
+        "finance": {
+          "approvedSuccessor": "4aeb41ca6dffb6e5b8324ca50531587539f5058e",
+          "ownerBlobParity": true,
+          "authority": "canonical finance read model; exact financial source for income/margin/payment, HR for obligations only"
+        },
+        "conclusion": "No owner rollback/recovery required. Close through live CRUD/readback/role proof for Resources and same-revision financial semantic proof; fail-closed must not be mislabeled complete."
+      },
+      "functionalSource": "04b288f7eee315fcb865ed86a8fb41786809edf9",
+      "latestRootCause": {
+        "classification": "FUNCTIONAL_DEFECT",
+        "owners": [
+          "app/adapters/tya-live-source-inplace-apply.js",
+          "app/adapters/tya-canonical-finance-read-model-v2.js",
+          "app/core/finanzas-core.js",
+          "app/modules/finanzas.js"
+        ],
+        "defect": "Missing HR/project-config honorarium was preserved as null by live-source mapping, but canonical finance read model and downstream aggregates/UI re-coerced the unknown amount to zero.",
+        "independentConfigEvidence": {
+          "runId": 36043242781,
+          "artifactId": 10827072320,
+          "artifactDigest": "sha256:ed240f713fe014152ac86b9a894140309fe46c12e0a15d7921283fcfee467f95",
+          "projectHonorarioEmpty": true,
+          "periodHonorarioEmpty": true,
+          "projectCountries": [
+            "GT",
+            "HN"
+          ]
+        },
+        "sameHrEvidence": {
+          "sourceRevision": "834f3c9f36d0f8144507bea234efaa4c7d5ddf461f023d61239525b21de2a8d9",
+          "totalVisits": 704,
+          "explicitHonorariumCount": 0
+        },
+        "expectedContract": "Explicit HR amount wins; otherwise independent project-country configuration wins; if neither exists, honorarium/total/margin/CxP remain pending_source/null and human UI says Pendiente de fuente. Known reimbursement facets remain visible without fabricating honorarium."
+      },
+      "sourceFixFiles": [
+        "app/adapters/tya-live-source-inplace-apply.js",
+        "app/adapters/tya-canonical-finance-read-model-v2.js",
+        "app/core/finanzas-core.js",
+        "app/modules/finanzas.js",
+        "backend/runtime/hr-live-service/test/cxorbia-pre-i4-finance-live-source-honorarium.test.mjs"
+      ],
+      "proof": {
+        "runId": 36045307475,
+        "artifactId": 10828465394,
+        "artifactDigest": "sha256:9f92d111d0d7580ee251bac3c71d639065223628b029b14a51d5a742827fc24e",
+        "sourceSha": "04b288f7eee315fcb865ed86a8fb41786809edf9",
+        "hrRevision": "834f3c9f36d0f8144507bea234efaa4c7d5ddf461f023d61239525b21de2a8d9",
+        "finance": {
+          "hrVisits": 704,
+          "explicitHrHonoraria": 0,
+          "mappedPendingHonoraria": 704,
+          "currentFinanceRows": 26,
+          "financeRowsPendingHonorarium": 26,
+          "financeRowsNullTotal": 26,
+          "knownReimbursementRows": 23,
+          "fabricatedHonorariumZeros": 0
+        },
+        "resources": {
+          "fixtureId": "vrm039-resource-proof-36045307475",
+          "createReadback": true,
+          "updateReadback": true,
+          "softDeleteReadback": true,
+          "cleanupZero": true,
+          "realResourcesMutated": 0,
+          "roleVisibilityContract": true,
+          "idempotencyContract": true,
+          "storageFailClosedContract": true,
+          "writes": 4
+        },
+        "deploys": 0,
+        "production": false
+      }
+    },
+    "VRM-040": {
+      "state": "PASS_LIVE_PROVEN_RUN387_CURRENT_OWNER_BLOB_IDENTICAL",
+      "classification": "MAPPING_FAILURE",
+      "title": "Out-of-range visible count does not match fresh HR canonical facet",
+      "evidenceRef": "Run333 attempt2 / artifact 10793657700 + human screenshots",
+      "note": "Fresh HR has GT=3 + HN=1 = 4 out-of-range while the human Visitas/Dashboard capture exposes 1. Existing focal did not assert outOfRange.",
+      "owners": [
+        "app/adapters/tya-canonical-state-semantics-v2.js",
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+      ],
+      "sourceAuthority": {
+        "sourceSha": "d8aad982ae4b47e66bf949d906b6c7ede8866f84",
+        "message": "fix(pre-i4): preserve HR out-of-range truth [vrm-040]",
+        "proofRunId": 35972426097,
+        "sameFreshHR": {
+          "GT": 3,
+          "HN": 1,
+          "total": 4
+        },
+        "proofState": "SOURCE_FIX_MATERIALIZED_TERMINAL_REPROOF_REQUIRED"
+      },
+      "sourceFixFiles": [
+        "app/adapters/tya-canonical-state-semantics-v2.js"
+      ],
+      "closureEvidence": {
+        "runId": 36072848792,
+        "runNumber": 387,
+        "artifactId": 10839078428,
+        "artifactDigest": "sha256:046c863eadf25ad632f511b66579a650ccd309a7c6f9e38a950c77fbf22587aa",
+        "proofSourceSha": "04b288f7eee315fcb865ed86a8fb41786809edf9",
+        "proofHrRevision": "2b0114c39d64a0e3697667572de0dfdcffe476c5cd8112449fcab1da24e1085d",
+        "semanticOracleDecision": "PASS_C3_TERMINAL_HR_SEMANTIC_ORACLE",
+        "focalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "expectedOutOfRange": {
+          "GT": 3,
+          "HN": 1,
+          "total": 4
+        },
+        "observedDashboardOutOfRange": 4,
+        "observedVisitasOutOfRange": 4,
+        "ownerBlobAtProof": "a0104aa043ebdb7c9ee55cde5766ada8ed5e28fb",
+        "ownerBlobCurrent": "a0104aa043ebdb7c9ee55cde5766ada8ed5e28fb",
+        "currentSourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+        "currentSourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+        "production": false
+      }
+    },
+    "VRM-041": {
+      "state": "TERMINAL_REPROOF_PENDING_CURRENT_SOURCE",
+      "classification": "VISUAL_DEFECT",
+      "title": "Postulation human card exposes undefined approval actor",
+      "evidenceRef": "Human screenshots / app/modules/postulaciones.js",
+      "note": "Approved cards render `Aprobada por ${x.aprobadaPor}` without safe fallback, producing visible 'undefined'.",
+      "owners": [
+        "app/modules/postulaciones.js",
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+      ],
+      "sourceAuthority": {
+        "sourceSha": "8426370b748443073f6a65355a2fe7af02a9a61c",
+        "message": "fix(pre-i4): restore human shopper truth and semantic safeguards [vrm-033-041]",
+        "proofState": "PENDING_TERMINAL_REPROOF"
+      },
+      "sourceFixFiles": [
+        "app/modules/postulaciones.js"
+      ],
+      "terminalReproofContract": "Fresh terminal postulations route must have undefinedVisible=false and no technical leakage on exact current source."
+    },
+    "VRM-042": {
+      "state": "FIXED_SOURCE_PROVEN_NO_DEPLOY",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "title": "Shopper KPI/history semantic owner shadowing inflates canonical history",
+      "evidence": [
+        "app/modules/shoppers.js excludes __pendingPlatformAssignmentOverlay===true in kpiVisitsForActiveProject before scoped KPI calculation.",
+        "app/adapters/tya-c6-domain-consistency-bridge.js installs global visitsForShopper/shopperStats and counts all mapped visits without that exclusion.",
+        "app/adapters/tya-canonical-shopper-portal-v2.js consumes data.shopperStats().",
+        "Run342 failed exact HR history for José Sarat: expected 5 total/5 realized; observed 6 total/5 realized with one postulation."
+      ],
+      "owners": [
+        "app/adapters/tya-c6-domain-consistency-bridge.js",
+        "app/modules/shoppers.js",
+        "app/adapters/tya-canonical-shopper-portal-v2.js",
+        "app/modules/misvisitas.js",
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+      ],
+      "expected": "One effective semantic owner for shopper history/KPIs. HR-confirmed historical counts exclude pending platform assignment overlays; pending applications remain visible in their own lane. General fix only; no shopper-specific exception.",
+      "dynamicProofRequired": "Identify the sixth mapped visit flags/visitId for shopper_gt_0b19085086 before product write.",
+      "functionalSource": "8913a30e3bd1bd3e851d9736ff87e1bae51c30ff",
+      "dynamicProof": {
+        "runId": 36037538874,
+        "artifactId": 10825033617,
+        "primaryShopper": "shopper_gt_0b19085086",
+        "expectedHrHistory": 5,
+        "composedOperationalVisits": 6,
+        "extraVisit": {
+          "id": "hr_2026-08_hn_5_0fae44594f",
+          "hrRowId": "AGOSTO 26 HN!5",
+          "pendingOverlay": true,
+          "assignmentSource": "platform",
+          "assignmentSyncStatus": "pending_hr"
+        },
+        "controlShopper": "shopper_gt_a55e5b3e9b",
+        "controlHistory": 1
+      },
+      "fixContract": "Keep pending platform assignment in operational visits/Mis Visitas; exclude it from confirmed HR history/KPI/profile history through one canonical confirmed-history semantic owner.",
+      "proof": {
+        "runId": 36038277262,
+        "artifactId": 10825625581,
+        "artifactDigest": "sha256:229e235b9a3918194b5a656b235305acf89ec199635ac35eaee8d6104ca9b2d0",
+        "sourceSha": "8913a30e3bd1bd3e851d9736ff87e1bae51c30ff",
+        "decision": "PASS_PRE_I4_VRM037_042_LIVE_SOURCE_PROOF",
+        "deploys": 0
+      }
+    },
+    "VRM-043": {
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "observedFailureClassification": "MAPPING_FAILURE",
+      "code": "ADMIN_REAL_SHOPPER_IDENTITY_NOT_RENDERABLE",
+      "state": "TERMINAL_REPROOF_PENDING_CURRENT_SOURCE",
+      "rootCause": "Terminal human-acceptance and semantic oracles compared Admin human display names against source-safe HR names, which are intentionally redacted as 'Shopper protegido'. Human identity authority is the same-revision operational-names display-name-only view. Unresolved external identities must remain review-only rather than receive an invented name.",
+      "productDefect": false,
+      "productSource": "04b288f7eee315fcb865ed86a8fb41786809edf9",
+      "productSourceChanged": false,
+      "originalTerminalFailure": {
+        "runId": 36053280653,
+        "runNumber": 375,
+        "hrRevision": "e8ba2ac586ba8a99f6675ffc2ad3fae86bdc70b37aafbe971b611cc9804d2706",
+        "runtimeRevision": "cxorbia-live-hr-dev-00217-v6z",
+        "runtimeDigest": "sha256:5c76c2ca643d95d49fa9f016ebce312d1dcc62621342ca7bf00bf33bd114ceba",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/7d787355f662e453",
+        "artifactCreated": false,
+        "gate21Run": false,
+        "production": false
+      },
+      "diagnosticProof": {
+        "runId": 36071879859,
+        "runNumber": 380,
+        "artifactId": 10838462383,
+        "artifactDigest": "sha256:cdd085e48b35a376ffc9b57bec6b344241df55e9a78eb06ee6c8457b5b5dc5d2",
+        "sourceRevision": "2b0114c39d64a0e3697667572de0dfdcffe476c5cd8112449fcab1da24e1085d",
+        "hrShopperCount": 219,
+        "operationalHrShopperCount": 219,
+        "observedShopperCount": 219,
+        "sourceSafeProtectedNameCount": 219,
+        "operationalHumanNameCount": 218,
+        "matchedById": 218,
+        "matchedByLegacy": 1,
+        "missing": 0,
+        "nameEqual": 218,
+        "nameMismatch": 0,
+        "unresolvedAuthorityCount": 1,
+        "unresolvedProperlyReviewOnly": 1,
+        "writes": 0,
+        "deploys": 0,
+        "production": false
+      },
+      "unresolvedAuthorityCase": {
+        "sourceShopperId": "shopper_hn_9a6963fdf6",
+        "externalHumanNameAvailable": false,
+        "expectedVisibleName": "Identidad pendiente de revisión",
+        "expectedReviewReason": "human_display_name_unresolved",
+        "rule": "DO_NOT_INVENT_HUMAN_IDENTITY"
+      },
+      "controlOwners": [
+        "RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs",
+        "tools/qa/cxorbia-i3-c3-terminal-semantic-oracle.mjs",
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+      ],
+      "closureContract": "All external identities with a human operational display name must match Admin exactly by exact HR id/crosswalk; identities whose external authority has no human name remain explicit review-only; source-safe redaction is never a human-name oracle.",
+      "terminalReproofContract": "Fresh current-source terminal human acceptance + same-revision operational-name semantic oracle must pass; unresolved identity remains explicit review-only; no invented human identity.",
+      "latestTerminalControlFailure": {
+        "runId": 36249618949,
+        "runNumber": 481,
+        "classification": "MAPPING_FAILURE",
+        "code": "ADMIN_COMPOSED_SHOPPER_CONTRACT_MISMATCH",
+        "productDefect": false,
+        "cause": "Gate did not account for exact tenant-adjudication canonical collapse.",
+        "production": false
+      },
+      "latestFocalControlFailure": {
+        "runId": 36251503079,
+        "runNumber": 483,
+        "classification": "MAPPING_FAILURE",
+        "code": "EXACT_HR_HISTORY_shopper_gt_018ca3e794",
+        "productDefect": false,
+        "production": false
+      }
+    },
+    "VRM-044": {
+      "classification": "FUNCTIONAL_DEFECT",
+      "code": "PLATFORM_CREATED_SHOPPER_IDENTITY_AUTHORITY_NOT_COMPOSED",
+      "state": "CLOSED_PROVEN",
+      "rootCause": "shopper.create materialized Auth, claims, membership, profile and crosswalk but omitted the approved durable shopperIdentityLink with authorityType=platform_created; cumulative read-model v2 correctly excluded unmatched platform-only profiles after authority recomposition.",
+      "expected": "A platform-created shopper closes with Auth + claims + membership + profile + durable identityLink authority platform_created and remains visible to authorized Admin within project scope without weakening review-only behavior for untrusted profiles.",
+      "observedRun399": {
+        "runId": 36076895117,
+        "runNumber": 399,
+        "certificationArtifactId": 10840770658,
+        "liveFixturesArtifactId": 10839499530,
+        "testsPassed": 7,
+        "testsRequired": 10,
+        "cleanup": true,
+        "liveFixtureHrRevision": "f8181679418200dbda2dac0fd54f0c543afc75653b155a596c2dd11e9566c217",
+        "gate21Run": false,
+        "production": false
+      },
+      "approvedRecovery": {
+        "sourceSha": "34068805168e85cf15c9359c1dc4c4226c3062a6",
+        "sourceTree": "91855599924b94ca7fbb025a570d8e1d77b30d3b",
+        "owners": [
+          "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+          "app/adapters/tya-cumulative-read-model-v2.js"
+        ],
+        "tests": [
+          "backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs",
+          "backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-semantic-regression.test.mjs"
+        ],
+        "contract": [
+          "platform-created shopper writes durable identityLink authority platform_created",
+          "untrusted platform-only profile remains review-only",
+          "trusted exact platform_created profile is presented only in project scope",
+          "idempotent replay creates no duplicate authority"
+        ]
+      },
+      "focalProof": {
+        "runId": 36155194727,
+        "runNumber": 403,
+        "focalJob": "VRM-044 focal source reproof — no deploy",
+        "decision": "PASS_VRM044_FOCAL_SOURCE_REPROOF",
+        "artifactId": 10872772798,
+        "artifactDigest": "sha256:0567094d7b7cfe7f6b4fa277617466e385191a3ddf04c315f7a37c8e3ee3dbfd",
+        "testsPassed": 22,
+        "testsFailed": 0,
+        "builds": 0,
+        "deploys": 0,
+        "production": false,
+        "note": "Run-level conclusion remained failure only because canonical descriptor still pointed to predecessor by design during focal proof."
+      },
+      "production": false,
+      "materialization": {
+        "runId": 36155675804,
+        "runNumber": 405,
+        "decision": "PASS_VRM044_EXACT_DEV_MATERIALIZATION",
+        "artifactId": 10873577340,
+        "artifactDigest": "sha256:33fa96e509eb4e9d68eeb23a1fbb95ff988916682ff295553274343398b066b6",
+        "sourceSha": "34068805168e85cf15c9359c1dc4c4226c3062a6",
+        "sourceTree": "91855599924b94ca7fbb025a570d8e1d77b30d3b",
+        "runtimeRevision": "cxorbia-live-hr-dev-00218-vgg",
+        "runtimeDigest": "sha256:21886c59ecbb7e18c4870a6c06f9423bd1b0c87f85e96ee892fffdcffbadb620",
+        "hostingReleaseName": "sites/cxorbia-backend-dev/channels/live/releases/1790350946424000",
+        "hostingVersionName": "sites/cxorbia-backend-dev/versions/64c788ea0371e97a",
+        "hostingReleaseTime": "2026-09-25T15:42:26.424Z",
+        "hrRevision": "151c31f0a5fa3c848945c17cca42e8b08dce933e08ffabff281cd0373e25225e",
+        "builds": 1,
+        "runtimeDeploys": 1,
+        "hostingDeploys": 1,
+        "production": false
+      },
+      "terminalProof": {
+        "runId": 36170757882,
+        "runNumber": 429,
+        "decision": "PASS_I3_TERMINAL_TECHNICAL_READY_PENDING_HUMAN_VISUAL",
+        "certificationArtifactId": 10880415587,
+        "certificationArtifactUploadDigest": "sha256:358ac2dff84f5d690890de19b3167a3f1e30a484d62b03ed1067e5833f262286",
+        "certifiedArtifactSha256": "f63c5c70a2ff7d479b834ffbad0f3f40bfcb1f40e9c02807aaaf1df4f1ca95c6",
+        "liveFixturesArtifactId": 10880971280,
+        "liveFixturesDecision": "PASS_I3_LIVE_FIXTURES_V2",
+        "liveFixturesPassed": 10,
+        "cleanup": true,
+        "gate21ArtifactId": 10881041375,
+        "gate21Verdict": "PASS_GATE21_ARTIFACT_FINGERPRINT",
+        "moduleTruth20of20": true,
+        "fullHumanAcceptance": true,
+        "gate20": true,
+        "rebuildAfterCertification": false,
+        "production": false
+      }
+    },
+    "VRM-045": {
+      "classification": "FUNCTIONAL_DEFECT",
+      "state": "PASS_LIVE_PROVEN_RUN440",
+      "code": "SHOPPER_ACTIVE_VISITS_INCLUDE_HISTORICAL_ROWS",
+      "owner": [
+        "app/modules/misvisitas.js"
+      ],
+      "evidenceRef": "CXORBIA_I3_PAULA_VISUAL_REVIEW_2026-09-25.json",
+      "production": false,
+      "sourceFix": {
+        "sourceSha": "da17406f8e03ef1071fe8ca384503853f51e6638",
+        "sourceTree": "f733f99293dca5437a6e33ab81434d844a1d5f5c",
+        "production": false
+      }
+    },
+    "VRM-046": {
+      "classification": "PERSISTENCE_FAILURE",
+      "state": "PASS_LIVE_PROVEN_RUN440",
+      "code": "RESERVATIONS_MODULE_LOCALSTORAGE_AS_AUTHORITY",
+      "owner": [
+        "app/modules/reservas.js"
+      ],
+      "evidenceRef": "CXORBIA_I3_PAULA_VISUAL_REVIEW_2026-09-25.json",
+      "production": false,
+      "sourceFix": {
+        "sourceSha": "da17406f8e03ef1071fe8ca384503853f51e6638",
+        "sourceTree": "f733f99293dca5437a6e33ab81434d844a1d5f5c",
+        "production": false
+      }
+    },
+    "VRM-047": {
+      "classification": "FUNCTIONAL_DEFECT",
+      "state": "PASS_LIVE_PROVEN_RUN440",
+      "code": "SHOPPER_SELF_PROFILE_EDIT_MISSING",
+      "owner": [
+        "app/adapters/tya-canonical-shopper-portal-v2.js",
+        "app/modules/shoppers.js",
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
+      ],
+      "evidenceRef": "CXORBIA_I3_PAULA_VISUAL_REVIEW_2026-09-25.json",
+      "production": false,
+      "ownerExpansionEvidence": "V20 exact provider readback; additional owner frozen before product mutation.",
+      "sourceFix": {
+        "sourceSha": "da17406f8e03ef1071fe8ca384503853f51e6638",
+        "sourceTree": "f733f99293dca5437a6e33ab81434d844a1d5f5c",
+        "production": false
+      }
+    },
+    "VRM-048": {
+      "classification": "VISUAL_DEFECT",
+      "state": "PASS_LIVE_PROVEN_RUN440",
+      "code": "AUTH_REFRESH_LOGIN_FLICKER",
+      "owner": [
+        "app/core/backend-browser-auth.js",
+        "app/core/backend-protected-dev-session-continuity.js"
+      ],
+      "evidenceRef": "CXORBIA_I3_PAULA_VISUAL_REVIEW_2026-09-25.json",
+      "production": false,
+      "sourceFix": {
+        "sourceSha": "da17406f8e03ef1071fe8ca384503853f51e6638",
+        "sourceTree": "f733f99293dca5437a6e33ab81434d844a1d5f5c",
+        "production": false
+      }
+    },
+    "VRM-049": {
+      "classification": "FUNCTIONAL_DEFECT",
+      "state": "PASS_LIVE_PROVEN_RUN440",
+      "code": "LIQUIDATION_ROW_FABRICATES_ZERO_FOR_UNKNOWN_HONORARIUM",
+      "owner": [
+        "app/modules/finanzas.js",
+        "app/core/liquidacion.js"
+      ],
+      "evidenceRef": "CXORBIA_I3_PAULA_VISUAL_REVIEW_2026-09-25.json",
+      "production": false,
+      "sourceFix": {
+        "sourceSha": "da17406f8e03ef1071fe8ca384503853f51e6638",
+        "sourceTree": "f733f99293dca5437a6e33ab81434d844a1d5f5c",
+        "production": false
+      }
+    },
+    "VRM-050": {
+      "classification": "PROVIDER_FAILURE",
+      "state": "PASS_LIVE_PROVEN_RUN479",
+      "code": "DISPLAYED_AVAILABILITY_STALE_DURING_HR_REFRESH",
+      "owner": [
+        "backend/runtime/hr-live-service/server.mjs",
+        "tools/hr-source/tya-reapply-canonical-state-r20.mjs"
+      ],
+      "evidenceRef": "CXORBIA_I3_PAULA_VISUAL_REVIEW_2026-09-25.json",
+      "production": false,
+      "postRefreshReproof": {
+        "observedStableRevision": "17cf78b9434d53d6ecff272c7c68da84a65ef3932bf81e9219b022869aca6975",
+        "revisionStable": true,
+        "sourceSafe": true,
+        "refreshStartedAt": "2026-09-25T21:05:05.789Z",
+        "priorRefreshFinishedAt": "2026-09-25T20:41:00.477Z",
+        "decision": "HOLD_REFRESH_IN_PROGRESS_REPROOF_NOT_CLOSED",
+        "watcherServerChanged": false
+      },
+      "rootCause": "Run477 repeated 12 fresh HR meta attempts on exact current DEV. All exposed the same valid 64-hex revision fd5abfc2..., revisionStable=true, sourceSafe=true, shopper/visit providerAck=true, hrWrites=false and production=false, but refreshError remained non-null because tools/hr-source/tya-reapply-canonical-state-r20.mjs executes the generated source-safe payload inside vm.runInContext with a hard-coded timeout:5000. The child process exits code 1 after 5000ms and server.mjs correctly propagates lastRefreshError. Terminal contract therefore fails closed.",
+      "ownerExpansionEvidence": {
+        "frozen": true,
+        "runId": 36247157545,
+        "runNumber": 477,
+        "jobId": 108418391633,
+        "artifactId": 10907986589,
+        "artifactDigest": "sha256:d213b0d4d58c3aec73ecaf4e12c09cd8ed5e3c8d660b1e773dd2a5a4b655f34f",
+        "repeatedAttempts": 12,
+        "stableRevision": "fd5abfc2e95a827f35af967e7cc707623321d9a8d8d2f9c3486e58ff31863ea2",
+        "revisionStable": true,
+        "sourceSafe": true,
+        "shopperProviderAck": true,
+        "visitProviderAck": true,
+        "hrWrites": false,
+        "production": false,
+        "refreshError": "Command failed (1): node tools/hr-source/tya-reapply-canonical-state-r20.mjs ... Script execution timed out after 5000ms",
+        "exactOwner": "tools/hr-source/tya-reapply-canonical-state-r20.mjs::readPayload -> vm.runInContext(... timeout:5000)",
+        "serverPropagation": "backend/runtime/hr-live-service/server.mjs::refreshSnapshot catches child failure into lastRefreshError",
+        "nextFindingOpened": false
+      },
+      "remediationContract": "Keep VM execution bounded and fail-closed, but make payload evaluation timeout explicitly configurable with a safe higher default for current live payload size; build/deploy exact DEV runtime once from the single successor; force a fresh HR refresh and require refreshError=null, sourceSafe=true, provider ACKs=true, hrWrites=false, production=false. Do not change Hosting or production.",
+      "sourceFix": {
+        "sourceSha": "62ee2903fdced52c525d5a028c8c4c725940e4cd",
+        "sourceTree": "e0649d447257745af89efc9845dfb2fb50600cf6",
+        "predecessorSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+        "owner": "tools/hr-source/tya-reapply-canonical-state-r20.mjs",
+        "ownerBlob": "921b43f98846d0ad431fb5667cecdb5b8b101409",
+        "change": "Replace hard-coded vm timeout 5000ms with bounded configurable CXORBIA_HR_PAYLOAD_VM_TIMEOUT_MS; default 30000ms, floor 5000ms, ceiling 60000ms.",
+        "failClosed": true,
+        "timeoutRemoved": false,
+        "hostingChanged": false,
+        "runtimeChanged": true,
+        "rulesChanged": false,
+        "production": false
+      },
+      "materializationEvidence": {
+        "runId": 36247641329,
+        "runNumber": 478,
+        "jobId": 108419730396,
+        "artifactId": 10908281984,
+        "artifactDigest": "sha256:21eb24d254aad86c6c9b196c09e682c6ddcd2a41dff3c9e1e3d23e9785c68962",
+        "buildId": "60fd06ce-063a-45fa-875c-2644deb230d4",
+        "sourceSha": "62ee2903fdced52c525d5a028c8c4c725940e4cd",
+        "sourceTree": "e0649d447257745af89efc9845dfb2fb50600cf6",
+        "runtimeRevision": "cxorbia-live-hr-dev-00221-65m",
+        "runtimeDigest": "sha256:7b48e7a539a987f03b96c97a32ccb38a9cf32bd95d3e432434bc808ec9685dce",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+        "observedFreshHrRevision": "5d4acfec98bc52f836dac2e382c906bc54534253717c9239b5d0f20d5f4f3cc7",
+        "observedRefreshDurationMs": 125955,
+        "observedRefreshError": null,
+        "observedRevisionStable": true,
+        "observedSourceSafe": true,
+        "shopperProviderAck": true,
+        "visitProviderAck": true,
+        "hrWrites": false,
+        "production": false,
+        "builds": 1,
+        "runtimeDeploys": 1,
+        "hostingDeploys": 0,
+        "rulesDeploys": 0
+      },
+      "run478ControlFailure": {
+        "classification": "ENVIRONMENT_FAILURE",
+        "productDefect": false,
+        "cause": "The focal proof called /health through Firebase Hosting, which routes to the SPA and returned HTML; additionally fresh=1 exceeded the Hosting proxy request window while the Cloud Run refresh continued and completed successfully in the background.",
+        "proof": "Run478 artifact contains valid final hr-meta with refreshFinishedAt=2026-09-26T14:15:23.924Z, refreshError=null and provider ACKs true, while health.json is the DEV HTML shell, not runtime health JSON.",
+        "nextFindingOpened": false
+      },
+      "closureEvidence": {
+        "runId": 36249224545,
+        "runNumber": 479,
+        "jobId": 108424028448,
+        "artifactId": 10908278990,
+        "artifactDigest": "sha256:c856391592827034957ecf895522f3209e6491eeb2e75341d42d547c6c317da5",
+        "decision": "PASS_I3_V53_VRM050_RUNTIME_READBACK",
+        "sourceSha": "62ee2903fdced52c525d5a028c8c4c725940e4cd",
+        "sourceTree": "e0649d447257745af89efc9845dfb2fb50600cf6",
+        "runtimeRevision": "cxorbia-live-hr-dev-00221-65m",
+        "runtimeDigest": "sha256:7b48e7a539a987f03b96c97a32ccb38a9cf32bd95d3e432434bc808ec9685dce",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+        "hrRevision": "5d4acfec98bc52f836dac2e382c906bc54534253717c9239b5d0f20d5f4f3cc7",
+        "refreshDurationMs": 125955,
+        "refreshError": null,
+        "revisionStable": true,
+        "sourceSafe": true,
+        "shopperProviderAck": true,
+        "visitProviderAck": true,
+        "builds": 0,
+        "deploys": 0,
+        "writes": 0,
+        "production": false
+      }
+    },
+    "VRM-051": {
+      "classification": "VISUAL_DEFECT",
+      "state": "PASS_LIVE_PROVEN_RUN440",
+      "code": "SHOPPER_BENEFITS_DISCOVERABILITY_COLLAPSED",
+      "owner": [
+        "app/core/router.js",
+        "app/core/config.js"
+      ],
+      "evidenceRef": "CXORBIA_I3_PAULA_VISUAL_REVIEW_2026-09-25.json",
+      "production": false,
+      "sourceFix": {
+        "sourceSha": "da17406f8e03ef1071fe8ca384503853f51e6638",
+        "sourceTree": "f733f99293dca5437a6e33ab81434d844a1d5f5c",
+        "production": false
+      }
+    },
+    "VRM-052": {
+      "classification": "MAPPING_FAILURE",
+      "state": "PASS_LIVE_PROVEN_RUN440",
+      "severity": "P0",
+      "code": "SHOPPER_MARKETPLACE_COUNTRY_ELIGIBILITY_NOT_ENFORCED",
+      "owner": [
+        "app/modules/visitas.js",
+        "app/core/data.js",
+        "app/core/router.js"
+      ],
+      "evidence": [
+        "Paula shopper rail identifies country as GT Guatemala while Visitas Disponibles renders C. Altara, San Pedro Sula, Honduras.",
+        "app/modules/visitas.js marketplace filters by data.inScope(v.pais); app/core/data.js inScope is unrestricted when session user has no scopePaises, rather than deriving shopper country eligibility from the authenticated shopper profile."
+      ],
+      "expected": "Available visits must be both unassigned/available in current HR and eligible for the authenticated shopper. Default country eligibility follows the shopper's authorized country unless an explicit cross-country entitlement exists.",
+      "production": false,
+      "sourceFix": {
+        "sourceSha": "da17406f8e03ef1071fe8ca384503853f51e6638",
+        "sourceTree": "f733f99293dca5437a6e33ab81434d844a1d5f5c",
+        "production": false
+      }
+    },
+    "VRM-053": {
+      "classification": "VISUAL_DEFECT",
+      "state": "PASS_LIVE_PROVEN_RUN440",
+      "severity": "BLOCKING_VISUAL_ACCEPTANCE",
+      "code": "SHOPPER_UI_EXPOSES_INTERNAL_TECHNICAL_LANGUAGE",
+      "owner": [
+        "app/adapters/tya-canonical-shopper-portal-v2.js",
+        "app/modules/novedades.js"
+      ],
+      "evidence": [
+        "Shopper Mi Perfil visibly says 'Identidad, acceso e histórico canónico' and exposes implementation terms 'localStorage, Firestore ni HR'.",
+        "Shopper Novedades exposes internal version labels and role tags such as 'admin · shopper' plus 'Add-ons funcionales por rol'.",
+        "Source app/adapters/tya-canonical-shopper-portal-v2.js contains the exact localStorage/Firestore/HR copy."
+      ],
+      "expected": "Shopper-facing UI uses natural operational language and never exposes storage, implementation, internal role tags, canonical/technical terminology, or engineering release labels as user guidance.",
+      "production": false,
+      "sourceFix": {
+        "sourceSha": "da17406f8e03ef1071fe8ca384503853f51e6638",
+        "sourceTree": "f733f99293dca5437a6e33ab81434d844a1d5f5c",
+        "production": false
+      }
+    },
+    "VRM-054": {
+      "state": "PASS_LIVE_AND_SOURCE_PROVEN_RUN472",
+      "classification": "FUNCTIONAL_DEFECT",
+      "title": "SHOPPER_SELF_PROFILE_SAVE_NOT_COMMITTED",
+      "evidence": "Paula visual review: Editar mis datos opens, but Guardar cambios returns user-visible failure toast and does not persist.",
+      "ownerDiagnostic": [
+        "app/adapters/tya-canonical-shopper-portal-v2.js",
+        "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+        "app/adapters/cxorbia-shopper-admin-command-contract-v1.js",
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
+      ],
+      "expected": "Authenticated shopper may persist allowed self-managed fields with provider ACK/readback; HR-managed identity remains immutable.",
+      "production": false,
+      "rootCause": "Run454 captured CANONICAL_SHOPPER_LOCAL_PERSISTENCE_DISABLED. The canonical provider command boundary was not reliably owning updateShopper at live execution time. V33 successor now self-tags updateShopper ownership, reinstalls if overwritten, and retries canonical binding through late runtime readiness.",
+      "owner": [
+        "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
+      ],
+      "sourceFix": {
+        "sourceSha": "fe72c0ef4f141aff8c9c8e27d2c1998dcbc4cee6",
+        "sourceTree": "8d2bd24f2a26c5963c698bb57af6276699754dcd",
+        "production": false
+      },
+      "latestEvidence": {
+        "runId": 36219336660,
+        "runNumber": 467,
+        "artifactId": 10899135346,
+        "artifactDigest": "sha256:fb314f3dcb120073d86de26b19c72093745bf2bdb422a42503bb0d6ae8816cc7",
+        "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+        "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+        "hrRevision": "0c65c20e1aefad54ea2c71fcdbc3b79a435f074fd9855f23a5d7dc7f3c0cb335",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+        "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+        "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+        "shopperReadyMs": 2772,
+        "adminReadyMs": 7097,
+        "production": false,
+        "providerAck": true,
+        "status": "committed",
+        "successUiAllowed": true
+      },
+      "closureEvidence": {
+        "runId": 36220426137,
+        "runNumber": 472,
+        "jobId": 108344543616,
+        "artifactId": 10898611925,
+        "artifactDigest": "sha256:ea14f6fb6869fe0f4f76ebfda811622dd8ce3395fca4a5139b8ca650e449c5a8",
+        "decision": "PASS_I3_V41_SECOND_REVIEW_CUMULATIVE_REPROOF",
+        "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+        "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+        "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+        "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+        "hrRevision": "0c65c20e1aefad54ea2c71fcdbc3b79a435f074fd9855f23a5d7dc7f3c0cb335",
+        "builds": 0,
+        "deploys": 0,
+        "production": false,
+        "profileUpdate": {
+          "providerAck": true,
+          "status": "committed",
+          "successUiAllowed": true,
+          "reloadReadback": true
+        },
+        "hrManagedSelfEdit": "SOURCE_FAIL_CLOSED_ALLOWLIST_PROVEN"
+      },
+      "ownerAuthorityEvidence": {
+        "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+        "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+        "providerBlob": "5bdde6e3350f1309586bd3655ffe85870ffbd30b",
+        "backendLineageSource": "e8635de1fa5e086a7fd0ca92ba1a393466cf63e4",
+        "backendLineageBlob": "5bdde6e3350f1309586bd3655ffe85870ffbd30b",
+        "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+        "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+        "liveProofRunId": 36220426137,
+        "liveProofDecision": "PASS_I3_V41_SECOND_REVIEW_CUMULATIVE_REPROOF",
+        "providerAck": true,
+        "reloadReadback": true,
+        "production": false
+      }
+    },
+    "VRM-055": {
+      "state": "PASS_LIVE_PROVEN_RUN472_TENANT_ADJUDICATION_PRESERVED",
+      "classification": "MAPPING_FAILURE",
+      "title": "SHOPPER_IDENTITY_DISPLAY_MISHAEL_VS_MILTON_DE_PAZ",
+      "evidence": "Paula reports real shopper is Milton De Paz while Admin UI repeatedly displays Mishael De Paz, including shopper population/top shopper/postulations.",
+      "ownerDiagnostic": [
+        "app/adapters/tya-cumulative-read-model-v2.js",
+        "app/modules/shoppers.js",
+        "app/modules/postulaciones.js",
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
+      ],
+      "expected": "Exact identity displayed from authoritative protected profile/crosswalk; no name substitution or fuzzy aliasing.",
+      "production": false,
+      "rootCause": "The canonical durable profile shopper_gt_bd74ace936 exists with correct firstName='Milton', lastName='De Paz', visibleLogin='milton.depaz' and one active canonical Auth membership, but its denormalized nombre field still equals 'Mishael De Paz'. The prior V28 repair selected canon.nombre before firstName+lastName, so stale denormalized identity could propagate into exact-canonical platform-owned records. Invalid Mishael profile remains correctly quarantined/excluded and its membership/Auth is disabled.",
+      "owner": [
+        "tools/qa/cxorbia-i3-v28-dev-repair.mjs",
+        "tenants/tya/shoppers/shopper_gt_bd74ace936",
+        "exact canonical-ID platform-owned display-name fields in cinepolis postulations/reservations/visits"
+      ],
+      "remediationContract": "Archive-before-write DEV durable canonical profile; set exact canonical human name Milton De Paz from frozen tenant adjudication + existing firstName/lastName; normalize only exact records whose shopperId is canonical Milton and whose denormalized display-name field is stale; preserve invalid profile quarantine/audit; zero HR/Auth/production writes; harden V28 repair to prefer canonical firstName+lastName over stale nombre.",
+      "businessAdjudication": {
+        "authority": "Paula / tenant owner",
+        "decision": "Mishael De Paz does not exist; canonical person is Milton De Paz.",
+        "invalidShopperId": "shopper_gt_018ca3e794",
+        "canonicalShopperId": "shopper_gt_bd74ace936",
+        "rule": "Exact tenant adjudication; preserve archive/audit; zero HR writes."
+      },
+      "latestEvidence": {
+        "runId": 36219336660,
+        "runNumber": 467,
+        "artifactId": 10899135346,
+        "artifactDigest": "sha256:fb314f3dcb120073d86de26b19c72093745bf2bdb422a42503bb0d6ae8816cc7",
+        "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+        "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+        "hrRevision": "0c65c20e1aefad54ea2c71fcdbc3b79a435f074fd9855f23a5d7dc7f3c0cb335",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+        "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+        "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+        "shopperReadyMs": 2772,
+        "adminReadyMs": 7097,
+        "production": false,
+        "invalidVisitCount": 0,
+        "invalidShopperVisible": false,
+        "invalidPostulationVisible": false
+      },
+      "latestFailure": {
+        "runId": 36219728855,
+        "runNumber": 468,
+        "jobId": 108342606258,
+        "artifactId": 10899156379,
+        "artifactDigest": "sha256:8be75cbffe77f9b5923f3046500296d4ae00b1badb2620dc6dd9759a3a14cddc",
+        "controlHeadSha": "0d6fb587d3aef70ee67d92c41aaeaabae53f53a4",
+        "productSourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+        "productSourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+        "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+        "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+        "decision": "FAIL_I3_V41_SECOND_REVIEW_CUMULATIVE_REPROOF",
+        "error": "MAPPING_FAILURE:V41_CANONICAL_MILTON_MISSING",
+        "deploys": 0,
+        "builds": 0,
+        "production": false,
+        "failedAssertion": "tenant/shoppers/shopper_gt_bd74ace936 must exist and resolve to Milton De Paz",
+        "firstFailure": true,
+        "beforeBrowser": true,
+        "noDevDriftProof": true,
+        "nextFindingOpened": false
+      },
+      "diagnosticEvidence": {
+        "runId": 36219999288,
+        "runNumber": 469,
+        "jobId": 108343354988,
+        "artifactId": 10898264026,
+        "artifactDigest": "sha256:8b8e696bc1a175b980e193951ac46d62a2afa736992b61a408ef731cf94516f7",
+        "productSourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+        "productSourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+        "decision": "PASS_V42_DURABLE_MILTON_DIAGNOSTIC",
+        "writes": 0,
+        "deploys": 0,
+        "builds": 0,
+        "production": false,
+        "canonicalDocExists": true,
+        "canonicalDocId": "shopper_gt_bd74ace936",
+        "observedNombre": "Mishael De Paz",
+        "observedFirstName": "Milton",
+        "observedLastName": "De Paz",
+        "observedVisibleLogin": "milton.depaz",
+        "canonicalActiveMemberships": 1,
+        "invalidActiveMemberships": 0,
+        "invalidProfileQuarantined": true,
+        "invalidProfileExcluded": true,
+        "currentDurableVisits": 44,
+        "uniqueCurrentHrRows": 44,
+        "currentInvalidShopperRows": 0,
+        "tenantAdjudicationCrosswalkPreserved": true,
+        "tenantAdjudicationLinkPreserved": true,
+        "hrWrites": 0
+      },
+      "latestRepair": {
+        "runId": 36220176376,
+        "runNumber": 470,
+        "jobId": 108343849750,
+        "artifactId": 10898726545,
+        "artifactDigest": "sha256:d4d7c04fc128bff77e8c1932d10f3ec35bdf50f2798cb5cb508e575146813dab",
+        "decision": "PASS_I3_V43_MILTON_DURABLE_REPAIR",
+        "canonicalName": "Milton De Paz",
+        "visibleLogin": "milton.depaz",
+        "canonicalMemberships": 1,
+        "invalidActiveMemberships": 0,
+        "currentDurableCount": 44,
+        "uniqueCurrentHrRows": 44,
+        "touchedHistoricalVisitNames": 18,
+        "archives": 19,
+        "writes": 40,
+        "hrWrites": 0,
+        "authWrites": 0,
+        "production": false,
+        "repair": "Canonical Milton profile nombre normalized from Mishael De Paz to Milton De Paz; 18 historical visit denormalized shopper labels for exact canonical shopperId normalized archive-first; V28 repair hardened to prefer firstName+lastName over stale nombre."
+      },
+      "closureEvidence": {
+        "runId": 36220426137,
+        "runNumber": 472,
+        "jobId": 108344543616,
+        "artifactId": 10898611925,
+        "artifactDigest": "sha256:ea14f6fb6869fe0f4f76ebfda811622dd8ce3395fca4a5139b8ca650e449c5a8",
+        "decision": "PASS_I3_V41_SECOND_REVIEW_CUMULATIVE_REPROOF",
+        "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+        "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+        "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+        "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+        "hrRevision": "0c65c20e1aefad54ea2c71fcdbc3b79a435f074fd9855f23a5d7dc7f3c0cb335",
+        "builds": 0,
+        "deploys": 0,
+        "production": false,
+        "miltonName": "Milton De Paz",
+        "invalidMishaelVisible": false,
+        "invalidPosts": 0,
+        "invalidReservations": 0,
+        "invalidActiveMembers": 0
+      },
+      "terminalObservation": {
+        "runId": 36249618949,
+        "canonicalShopperId": "shopper_gt_bd74ace936",
+        "invalidHistoricalSourceId": "shopper_gt_018ca3e794",
+        "interpretation": "Run481 mismatch is terminal-control oracle drift; no evidence reopens repaired Milton product identity.",
+        "production": false
+      },
+      "terminalHistoryObservation": {
+        "runId": 36251503079,
+        "canonicalShopperId": "shopper_gt_bd74ace936",
+        "canonicalStats": {
+          "total": 10,
+          "realizadas": 10
+        },
+        "historicalSourceId": "shopper_gt_018ca3e794",
+        "sourceStats": {
+          "total": 1,
+          "realizadas": 1
+        },
+        "interpretation": "Canonical aggregate is expected under exact tenant adjudication; no product regression.",
+        "production": false
+      }
+    },
+    "VRM-056": {
+      "state": "PASS_LIVE_PROVEN_RUN472",
+      "classification": "MAPPING_FAILURE",
+      "title": "ADMIN_POSTULATIONS_SHOW_RAW_SHOPPER_IDS_AS_NAMES",
+      "evidence": "Admin Postulaciones visually shows shopper_gt_* as primary human name in several cards.",
+      "ownerDiagnostic": [
+        "app/modules/postulaciones.js",
+        "app/adapters/tya-cumulative-read-model-v2.js"
+      ],
+      "expected": "Authorized Admin sees resolved shopper identity; technical IDs may not replace human identity.",
+      "production": false,
+      "rootCause": "Postulation UI renders x.shopper/x.shopperCode directly; missing protected display names fall back to technical shopper IDs.",
+      "owner": [
+        "app/modules/postulaciones.js",
+        "app/core/backend-firebase.js",
+        "app/adapters/tya-cumulative-read-model-v2.js"
+      ],
+      "closureEvidence": {
+        "runId": 36220426137,
+        "runNumber": 472,
+        "artifactId": 10898611925,
+        "artifactDigest": "sha256:ea14f6fb6869fe0f4f76ebfda811622dd8ce3395fca4a5139b8ca650e449c5a8",
+        "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+        "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+        "hrRevision": "0c65c20e1aefad54ea2c71fcdbc3b79a435f074fd9855f23a5d7dc7f3c0cb335",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+        "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+        "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+        "shopperReadyMs": 2772,
+        "adminReadyMs": 7097,
+        "production": false,
+        "proof": "Admin Postulaciones body contains no shopper_gt_* technical identity and no invalid Mishael identity.",
+        "jobId": 108344543616,
+        "decision": "PASS_I3_V41_SECOND_REVIEW_CUMULATIVE_REPROOF",
+        "builds": 0,
+        "deploys": 0,
+        "rawShopperIdsVisible": false
+      }
+    },
+    "VRM-057": {
+      "state": "PASS_LIVE_PROVEN_RUN467_AND_STABLE_RUN472",
+      "classification": "MAPPING_FAILURE",
+      "title": "VISITS_HONORARIUM_CONTRADICTS_LIVE_HR_FINANCIAL_AUTHORITY",
+      "evidence": "Run465 / artifact 10898008091 proves 44/44 current visits render honorario=60 with uiHonorarioSource=project_configuration while the same live HR sourceRevision 67f3af8d... has hrHonorario=null. The V38 bridge nulling executes, but a later runtime adapter re-injects configured honorarium.",
+      "ownerDiagnostic": [
+        "app/core/data.js",
+        "app/modules/visitas.js",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+      ],
+      "expected": "Same live HR revision must not show configured/default honorarium where authoritative HR financial field is unknown.",
+      "production": false,
+      "rootCause": "FIRST NULL→NUMERIC MUTATION AFTER V38 FIX is app/adapters/tya-c6-unified-human-runtime-v1.js::applyProjectFinancialConfiguration(). The adapter subscribes to cx:protected-auth-hr-authority-ready and calls refreshCurrentView(), which calls applyProjectFinancialConfiguration(); when honorario is null it assigns configured GT=60/HN=200 and honorarioSource='project_configuration'. This runs after tya-protected-auth-hr-authority-bridge-v2.js has restored authoritative HR null.",
+      "owner": [
+        "app/adapters/tya-live-source-inplace-apply.js",
+        "app/modules/visitas.js",
+        "app/core/backend-firebase.js",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+        "app/adapters/tya-c6-unified-human-runtime-v1.js"
+      ],
+      "ownerExpansionFreeze": {
+        "frozen": true,
+        "evidenceRunId": 36217529367,
+        "evidenceRunNumber": 465,
+        "evidenceJobId": 108336405473,
+        "evidenceArtifactId": 10898008091,
+        "artifactDigest": "sha256:a380db7ccdedd7dafaad2729d85ac7238e9edc70d0490abb9754d13c241cdf2d",
+        "sourceRevision": "67f3af8d616fa611f349b7e707e2b7cd21435d27bca7b2f2097264c8a929726e",
+        "currentCount": 44,
+        "uniqueHrRows": 44,
+        "knownHonorariumCount": 44,
+        "rawHrHonorarium": null,
+        "uiHonorarium": 60,
+        "uiSource": "project_configuration",
+        "exactProtectedVisitOverlay": true,
+        "additionalOwner": "app/adapters/tya-c6-unified-human-runtime-v1.js",
+        "additionalOwnerBlobAtSource": "b4edc8b4b92b6d4cd1f0f598f5847cfc97109bbc",
+        "causalFunction": "applyProjectFinancialConfiguration",
+        "causalTrigger": "cx:protected-auth-hr-authority-ready -> refreshCurrentView -> applyProjectFinancialConfiguration",
+        "production": false
+      },
+      "sourceFix": {
+        "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+        "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+        "predecessorSha": "37d6985588cec0d335736c17b974841b92c52e83",
+        "owner": "app/adapters/tya-c6-unified-human-runtime-v1.js",
+        "ownerBlob": "61f5ad0323dfe7afe98c4dd81b7ff367ffd20e6d",
+        "behavior": "For HR-authoritative visits, unknown honorarium remains null/pending_source; explicit HR honorarium is preserved; project configuration fallback is allowed only outside HR authority.",
+        "runtimeChanged": false,
+        "rulesChanged": false,
+        "hostingChanged": true,
+        "production": false
+      },
+      "closureEvidence": {
+        "runId": 36220426137,
+        "runNumber": 472,
+        "artifactId": 10898611925,
+        "artifactDigest": "sha256:ea14f6fb6869fe0f4f76ebfda811622dd8ce3395fca4a5139b8ca650e449c5a8",
+        "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+        "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+        "hrRevision": "0c65c20e1aefad54ea2c71fcdbc3b79a435f074fd9855f23a5d7dc7f3c0cb335",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+        "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+        "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+        "shopperReadyMs": 2772,
+        "adminReadyMs": 7097,
+        "production": false,
+        "currentCount": 44,
+        "uniqueHrRows": 44,
+        "knownHonorariumCount": 0,
+        "q60Visible": false,
+        "sourceGate": "PASS_VRM057_HONORARIUM_AUTHORITY_SOURCE_GATE",
+        "jobId": 108344543616,
+        "decision": "PASS_I3_V41_SECOND_REVIEW_CUMULATIVE_REPROOF",
+        "builds": 0,
+        "deploys": 0
+      }
+    },
+    "VRM-058": {
+      "state": "PASS_LIVE_PROVEN_RUN472",
+      "classification": "FUNCTIONAL_DEFECT",
+      "title": "SHOPPER_REPORTS_PERIOD_SCOPE_MIXES_HISTORY_AS_CURRENT",
+      "evidence": "With SEP 2026 selected, Mis Reportes labels 'Mis visitas del periodo' as 7 filas although Paula's seven visits are historical across JUN 2025–AGO 2026 and active/current visits are 0.",
+      "ownerDiagnostic": [
+        "app/modules/reportes.js",
+        "app/adapters/tya-canonical-shopper-portal-v2.js",
+        "app/core/data.js"
+      ],
+      "expected": "Period-scoped reports must use selected period; historical report must be explicitly labeled and scoped.",
+      "production": false,
+      "rootCause": "Shopper report entry labels cumulative seven-visit history as selected-period data instead of enforcing current period scope.",
+      "owner": [
+        "app/modules/operacion-extra.js",
+        "app/adapters/tya-canonical-shopper-portal-v2.js",
+        "app/adapters/tya-corte1-report-projection-live.js"
+      ],
+      "latestEvidence": {
+        "runId": 36219336660,
+        "runNumber": 467,
+        "artifactId": 10899135346,
+        "artifactDigest": "sha256:fb314f3dcb120073d86de26b19c72093745bf2bdb422a42503bb0d6ae8816cc7",
+        "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+        "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+        "hrRevision": "0c65c20e1aefad54ea2c71fcdbc3b79a435f074fd9855f23a5d7dc7f3c0cb335",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+        "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+        "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+        "shopperReadyMs": 2772,
+        "adminReadyMs": 7097,
+        "production": false,
+        "paulaCurrentVisitCount": 0,
+        "reportsCurrentCount": 0
+      },
+      "closureEvidence": {
+        "runId": 36220426137,
+        "runNumber": 472,
+        "jobId": 108344543616,
+        "artifactId": 10898611925,
+        "artifactDigest": "sha256:ea14f6fb6869fe0f4f76ebfda811622dd8ce3395fca4a5139b8ca650e449c5a8",
+        "decision": "PASS_I3_V41_SECOND_REVIEW_CUMULATIVE_REPROOF",
+        "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+        "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+        "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+        "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+        "hrRevision": "0c65c20e1aefad54ea2c71fcdbc3b79a435f074fd9855f23a5d7dc7f3c0cb335",
+        "builds": 0,
+        "deploys": 0,
+        "production": false,
+        "paulaHistoryCount": 7,
+        "paulaCurrentCount": 0,
+        "reportDoesNotRenderHistoryAsCurrent": true
+      }
+    },
+    "VRM-059": {
+      "state": "PASS_LIVE_PROVEN_RUN472",
+      "classification": "MAPPING_FAILURE",
+      "title": "SHOPPER_HOME_APPROVAL_NOTIFICATIONS_CONTRADICT_CURRENT_POSTULATION_STATE",
+      "evidence": "Mi Día shows 'Postulación aprobada' notifications while Mis Visitas shows the current C. Paseo Cayalá application as 'Aprobación en revisión' due HR assignment mismatch.",
+      "ownerDiagnostic": [
+        "app/modules/midia.js",
+        "app/modules/notificaciones.js",
+        "app/modules/misvisitas.js",
+        "app/adapters/tya-cumulative-read-model-v2.js"
+      ],
+      "expected": "Notifications must reflect current authoritative application/assignment state or be explicitly historical; no stale approval claim.",
+      "production": false,
+      "rootCause": "Historical approval notifications are rendered without reconciling current application/HR assignment status.",
+      "owner": [
+        "app/modules/midia.js",
+        "app/modules/notificaciones.js",
+        "app/modules/misvisitas.js",
+        "app/adapters/tya-cumulative-read-model-v2.js"
+      ],
+      "latestEvidence": {
+        "runId": 36219336660,
+        "runNumber": 467,
+        "artifactId": 10899135346,
+        "artifactDigest": "sha256:fb314f3dcb120073d86de26b19c72093745bf2bdb422a42503bb0d6ae8816cc7",
+        "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+        "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+        "hrRevision": "0c65c20e1aefad54ea2c71fcdbc3b79a435f074fd9855f23a5d7dc7f3c0cb335",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+        "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+        "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+        "shopperReadyMs": 2772,
+        "adminReadyMs": 7097,
+        "production": false,
+        "approvalCount": 0,
+        "invalidApprovalCount": 0
+      },
+      "closureEvidence": {
+        "runId": 36220426137,
+        "runNumber": 472,
+        "jobId": 108344543616,
+        "artifactId": 10898611925,
+        "artifactDigest": "sha256:ea14f6fb6869fe0f4f76ebfda811622dd8ce3395fca4a5139b8ca650e449c5a8",
+        "decision": "PASS_I3_V41_SECOND_REVIEW_CUMULATIVE_REPROOF",
+        "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+        "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+        "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+        "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+        "hrRevision": "0c65c20e1aefad54ea2c71fcdbc3b79a435f074fd9855f23a5d7dc7f3c0cb335",
+        "builds": 0,
+        "deploys": 0,
+        "production": false,
+        "approvalCount": 0,
+        "invalidApprovalCount": 0
+      }
+    },
+    "VRM-060": {
+      "state": "PASS_LIVE_MEASURED_NO_AUTH_TIMEOUT_RUN472",
+      "classification": "ENVIRONMENT_FAILURE",
+      "title": "SHOPPER_LOGIN_LATENCY_OBSERVED_BY_PAULA",
+      "evidence": "Paula reports materially slow login during second visual review.",
+      "ownerDiagnostic": [
+        "app/core/backend-browser-auth.js",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+      ],
+      "expected": "Authenticated shell should restore promptly; heavy HR reconciliation must not block basic session restoration longer than necessary.",
+      "production": false,
+      "latestEvidence": {
+        "runId": 36219336660,
+        "runNumber": 467,
+        "artifactId": 10899135346,
+        "artifactDigest": "sha256:fb314f3dcb120073d86de26b19c72093745bf2bdb422a42503bb0d6ae8816cc7",
+        "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+        "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+        "hrRevision": "0c65c20e1aefad54ea2c71fcdbc3b79a435f074fd9855f23a5d7dc7f3c0cb335",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+        "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+        "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+        "shopperReadyMs": 2772,
+        "adminReadyMs": 7097,
+        "production": false
+      },
+      "closureEvidence": {
+        "runId": 36220426137,
+        "runNumber": 472,
+        "jobId": 108344543616,
+        "artifactId": 10898611925,
+        "artifactDigest": "sha256:ea14f6fb6869fe0f4f76ebfda811622dd8ce3395fca4a5139b8ca650e449c5a8",
+        "decision": "PASS_I3_V41_SECOND_REVIEW_CUMULATIVE_REPROOF",
+        "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+        "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+        "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+        "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+        "hrRevision": "0c65c20e1aefad54ea2c71fcdbc3b79a435f074fd9855f23a5d7dc7f3c0cb335",
+        "builds": 0,
+        "deploys": 0,
+        "production": false,
+        "shopperReadyMs": 2937,
+        "adminReadyMs": 7359,
+        "note": "Measured live readiness; no functional timeout or auth failure in cumulative run."
+      }
+    },
+    "VRM-061": {
+      "state": "PASS_LIVE_PROVEN_RUN472",
+      "classification": "MAPPING_FAILURE",
+      "title": "ADMIN_ASSIGNMENT_MANAGEMENT_STATE_REQUIRES_FRESH_HR_REPROOF",
+      "evidence": "Paula reports apparent regression in assignment management. Dashboard shows 43 assigned/1 unassigned and rows labeled pending scheduling alongside populated dates; exact current HR semantics require row-level reproof.",
+      "ownerDiagnostic": [
+        "app/modules/dashboard.js",
+        "app/core/data.js",
+        "app/adapters/tya-cumulative-read-model-v2.js"
+      ],
+      "expected": "Assignment/scheduling sections, dates and counts must match the same stable HR revision row by row.",
+      "production": false,
+      "rootCause": "reconcileVisitDoc preserves platform pending assignments when HR differs or is unassigned, while cumulative read-model overlays pending platform shopper into HR live state. V27: HR 44 current visits; Firestore 46 docs / 44 unique hrRowIds; 43 row-level mismatches.",
+      "owner": [
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+        "app/core/backend-firebase.js",
+        "app/adapters/tya-cumulative-read-model-v2.js"
+      ],
+      "remediationContract": "External HR wins all HR-managed operational fields. Platform pending assignment stays separate review/application metadata. Archive-before-delete stale duplicate durable docs.",
+      "latestEvidence": {
+        "runId": 36219336660,
+        "runNumber": 467,
+        "artifactId": 10899135346,
+        "artifactDigest": "sha256:fb314f3dcb120073d86de26b19c72093745bf2bdb422a42503bb0d6ae8816cc7",
+        "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+        "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+        "hrRevision": "0c65c20e1aefad54ea2c71fcdbc3b79a435f074fd9855f23a5d7dc7f3c0cb335",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+        "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+        "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+        "shopperReadyMs": 2772,
+        "adminReadyMs": 7097,
+        "production": false,
+        "hn5SourceShopper": "shopper_hn_0b28347863",
+        "hn5UiShopper": "shopper_hn_0b28347863"
+      },
+      "closureEvidence": {
+        "runId": 36220426137,
+        "runNumber": 472,
+        "jobId": 108344543616,
+        "artifactId": 10898611925,
+        "artifactDigest": "sha256:ea14f6fb6869fe0f4f76ebfda811622dd8ce3395fca4a5139b8ca650e449c5a8",
+        "decision": "PASS_I3_V41_SECOND_REVIEW_CUMULATIVE_REPROOF",
+        "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+        "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+        "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+        "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+        "hrRevision": "0c65c20e1aefad54ea2c71fcdbc3b79a435f074fd9855f23a5d7dc7f3c0cb335",
+        "builds": 0,
+        "deploys": 0,
+        "production": false,
+        "uiCount": 44,
+        "rawCount": 44,
+        "assignmentParityMismatches": 0
+      }
+    },
+    "VRM-062": {
+      "state": "PASS_DURABLE_PROVEN_RUN472",
+      "classification": "PERSISTENCE_FAILURE",
+      "title": "CURRENT_HR_VISIT_DUPLICATES_PERSIST_IN_DURABLE_STORE",
+      "evidence": "V27: SEP 2026 HR=44; Firestore current docs=46; unique hrRowIds=44; duplicate groups SEPTIEMBRE 26!25 and SEPTIEMBRE 26!8.",
+      "owner": [
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+        "app/core/backend-firebase.js"
+      ],
+      "expected": "Exactly one current durable visit per stable HR visit key. Archive stale duplicate before deletion; preserve audit/history.",
+      "production": false,
+      "latestEvidence": {
+        "runId": 36219336660,
+        "runNumber": 467,
+        "artifactId": 10899135346,
+        "artifactDigest": "sha256:fb314f3dcb120073d86de26b19c72093745bf2bdb422a42503bb0d6ae8816cc7",
+        "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+        "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+        "hrRevision": "0c65c20e1aefad54ea2c71fcdbc3b79a435f074fd9855f23a5d7dc7f3c0cb335",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+        "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+        "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+        "shopperReadyMs": 2772,
+        "adminReadyMs": 7097,
+        "production": false,
+        "currentCount": 44,
+        "uniqueHrRows": 44
+      },
+      "closureEvidence": {
+        "runId": 36220426137,
+        "runNumber": 472,
+        "jobId": 108344543616,
+        "artifactId": 10898611925,
+        "artifactDigest": "sha256:ea14f6fb6869fe0f4f76ebfda811622dd8ce3395fca4a5139b8ca650e449c5a8",
+        "decision": "PASS_I3_V41_SECOND_REVIEW_CUMULATIVE_REPROOF",
+        "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+        "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+        "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+        "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+        "hrRevision": "0c65c20e1aefad54ea2c71fcdbc3b79a435f074fd9855f23a5d7dc7f3c0cb335",
+        "builds": 0,
+        "deploys": 0,
+        "production": false,
+        "currentDurableCount": 44,
+        "uniqueCurrentHrRows": 44,
+        "duplicateKeys": []
+      }
+    },
+    "VRM-063": {
+      "state": "PASS_DEV_DURABLE_REPAIR_RUN452",
+      "classification": "MAPPING_FAILURE",
+      "title": "TENANT_ADJUDICATION_CROSSWALK_UID_FINGERPRINT_NOT_CANONICALIZED",
+      "evidence": "Run450 exhausted 20 HR retries with persistent 503; direct Cloud Run /health reported lastRefreshError=SHOPPER_CROSSWALK_UID_CONFLICT.",
+      "rootCause": "V28 partial repair remapped the invalid Mishael crosswalk to canonical Milton shopperId but retained/omitted the provider UID fingerprint required for Milton's exact Auth membership, so shopper reconciliation failed closed.",
+      "owner": [
+        "tools/qa/cxorbia-i3-v28-dev-repair.mjs"
+      ],
+      "remediationContract": "Resolve exactly one active Milton shopper membership/Auth, compute providerUidFingerprint with the provider's canonical algorithm, write that fingerprint plus sourceStableKey=invalid alias before HR reconciliation; zero HR writes; archive-first.",
+      "production": false
+    },
+    "VRM-064": {
+      "state": "PASS_DEV_DURABLE_REPAIR_RUN452",
+      "classification": "MAPPING_FAILURE",
+      "title": "TENANT_ADJUDICATION_CROSSWALK_PROJECT_IDS_NOT_ARRAY",
+      "evidence": "After VRM-063 fingerprint correction, direct V28 Cloud Run /health changed lastRefreshError to '(existingCross.projectIds || []) is not iterable'; Run451 remained 503 until retry exhaustion.",
+      "rootCause": "V28 repair passed Firestore FieldValue.arrayUnion through a generic clean() serializer, materializing a non-array sentinel/plain object at shopperIdentityCrosswalk.projectIds. Shopper reconciliation requires iterable projectIds.",
+      "owner": [
+        "tools/qa/cxorbia-i3-v28-dev-repair.mjs"
+      ],
+      "remediationContract": "Write an explicit canonical projectIds array derived from Milton profile/member/canonical crosswalk plus cinepolis; never serialize Firestore FieldValue through generic clean(); zero HR writes.",
+      "production": false
+    },
+    "VRM-065": {
+      "id": "VRM-065",
+      "classification": "PROVIDER_FAILURE",
+      "title": "Terminal HR sourceRevision changed inside one same-source certification run",
+      "state": "DIAGNOSTIC_REQUIRED",
+      "firstObservedRun": {
+        "runId": 36252097220,
+        "runNumber": 484,
+        "jobId": 108431943738,
+        "artifactId": 10909422038,
+        "artifactDigest": "sha256:c4f7785a0e0a9dc7bd5d26569df61e58d782761e185578a4f7cb5a77d2e5f005"
+      },
+      "expected": {
+        "certificationSourceSha": "62ee2903fdced52c525d5a028c8c4c725940e4cd",
+        "certificationSourceTree": "e0649d447257745af89efc9845dfb2fb50600cf6",
+        "runtimeRevision": "cxorbia-live-hr-dev-00221-65m",
+        "runtimeDigest": "sha256:7b48e7a539a987f03b96c97a32ccb38a9cf32bd95d3e432434bc808ec9685dce",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+        "singleHrRevisionWithinTerminalProof": true
+      },
+      "observed": {
+        "pinnedHrRevision": "5d4acfec98bc52f836dac2e382c906bc54534253717c9239b5d0f20d5f4f3cc7",
+        "laterBrowserHrRevision": "385f9582e74ad545e75baa31099f1d9db6f6d0d3e4135dfc0f352abda9ecd7cf",
+        "humanAcceptancePass": true,
+        "semanticOraclePass": true,
+        "focalFailureRoute": "midia",
+        "productSourceDrift": false,
+        "runtimeDrift": false,
+        "hostingDrift": false,
+        "deploys": 0,
+        "production": false
+      },
+      "ownerStatus": "UNPROVEN_PENDING_READONLY_SNAPSHOT_DIFF",
+      "diagnosticContract": "Download Run484 HR evidence, read current Cloud Run/Hosting HR without fresh/write, capture actual cache configuration, compare operational snapshots after broad volatile-key normalization and list remaining changed paths. No product/data/runtime/Hosting mutation.",
+      "noRegressionGuard": "Do not change source 62ee2903, runtime 00221-65m, Hosting 8ff3b75d, Rules or durable data until diagnostic proves exact causal owner."
+    }
+  },
+  "latestEvidenceOverrides": {
+    "VRM-037": {
+      "state": "P0_PROVEN_ROOT_CAUSE_ACTIVE_BLOCKER",
+      "runId": 35972426097,
+      "code": "MAPPING_FAILURE:EXACT_HR_HISTORY_shopper_gt_0b19085086",
+      "expected": {
+        "name": "José Sarat",
+        "total": 5,
+        "realized": 5
+      },
+      "observed": {
+        "total": 6,
+        "realized": 5,
+        "postulations": 1,
+        "submitted": 4
+      },
+      "diagnosticControlHead": "537f3bb1d32500fa7e200f552cfacd906a3cc4d2"
+    },
+    "VRM-040": {
+      "state": "FUNCTIONAL_FIX_MATERIALIZED_REPROOF_REQUIRED",
+      "functionalSource": "d8aad982ae4b47e66bf949d906b6c7ede8866f84",
+      "runId": 35972426097,
+      "sameFreshHR": {
+        "GT": 3,
+        "HN": 1,
+        "total": 4
+      }
+    },
+    "VRM-044": {
+      "state": "CLOSED_PROVEN",
+      "sourceSha": "34068805168e85cf15c9359c1dc4c4226c3062a6",
+      "terminalRunId": 36170757882,
+      "certificationArtifactId": 10880415587,
+      "liveFixturesArtifactId": 10880971280,
+      "gate21ArtifactId": 10881041375,
+      "gate21Verdict": "PASS_GATE21_ARTIFACT_FINGERPRINT",
+      "production": false
+    },
+    "VRM-057": {
+      "state": "PASS_LIVE_PROVEN_RUN467_AND_STABLE_RUN472",
+      "runId": 36220426137,
+      "runNumber": 472,
+      "jobId": 108344543616,
+      "artifactId": 10898611925,
+      "artifactDigest": "sha256:ea14f6fb6869fe0f4f76ebfda811622dd8ce3395fca4a5139b8ca650e449c5a8",
+      "decision": "PASS_I3_V41_SECOND_REVIEW_CUMULATIVE_REPROOF",
+      "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+      "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+      "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+      "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+      "hrRevision": "0c65c20e1aefad54ea2c71fcdbc3b79a435f074fd9855f23a5d7dc7f3c0cb335",
+      "builds": 0,
+      "deploys": 0,
+      "production": false
+    },
+    "VRM-056": {
+      "state": "PASS_LIVE_PROVEN_RUN472",
+      "runId": 36220426137,
+      "runNumber": 472,
+      "jobId": 108344543616,
+      "artifactId": 10898611925,
+      "artifactDigest": "sha256:ea14f6fb6869fe0f4f76ebfda811622dd8ce3395fca4a5139b8ca650e449c5a8",
+      "decision": "PASS_I3_V41_SECOND_REVIEW_CUMULATIVE_REPROOF",
+      "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+      "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+      "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+      "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+      "hrRevision": "0c65c20e1aefad54ea2c71fcdbc3b79a435f074fd9855f23a5d7dc7f3c0cb335",
+      "builds": 0,
+      "deploys": 0,
+      "production": false
+    },
+    "VRM-055": {
+      "state": "PASS_LIVE_PROVEN_RUN472",
+      "runId": 36220426137,
+      "runNumber": 472,
+      "jobId": 108344543616,
+      "artifactId": 10898611925,
+      "artifactDigest": "sha256:ea14f6fb6869fe0f4f76ebfda811622dd8ce3395fca4a5139b8ca650e449c5a8",
+      "decision": "PASS_I3_V41_SECOND_REVIEW_CUMULATIVE_REPROOF",
+      "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+      "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+      "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+      "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+      "hrRevision": "0c65c20e1aefad54ea2c71fcdbc3b79a435f074fd9855f23a5d7dc7f3c0cb335",
+      "builds": 0,
+      "deploys": 0,
+      "production": false
+    },
+    "VRM-054": {
+      "state": "PASS_LIVE_AND_SOURCE_PROVEN_RUN472",
+      "runId": 36220426137,
+      "runNumber": 472,
+      "jobId": 108344543616,
+      "artifactId": 10898611925,
+      "artifactDigest": "sha256:ea14f6fb6869fe0f4f76ebfda811622dd8ce3395fca4a5139b8ca650e449c5a8",
+      "decision": "PASS_I3_V41_SECOND_REVIEW_CUMULATIVE_REPROOF",
+      "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+      "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+      "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+      "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+      "hrRevision": "0c65c20e1aefad54ea2c71fcdbc3b79a435f074fd9855f23a5d7dc7f3c0cb335",
+      "builds": 0,
+      "deploys": 0,
+      "production": false
+    },
+    "VRM-058": {
+      "state": "PASS_LIVE_PROVEN_RUN472",
+      "runId": 36220426137,
+      "runNumber": 472,
+      "jobId": 108344543616,
+      "artifactId": 10898611925,
+      "artifactDigest": "sha256:ea14f6fb6869fe0f4f76ebfda811622dd8ce3395fca4a5139b8ca650e449c5a8",
+      "decision": "PASS_I3_V41_SECOND_REVIEW_CUMULATIVE_REPROOF",
+      "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+      "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+      "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+      "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+      "hrRevision": "0c65c20e1aefad54ea2c71fcdbc3b79a435f074fd9855f23a5d7dc7f3c0cb335",
+      "builds": 0,
+      "deploys": 0,
+      "production": false
+    },
+    "VRM-059": {
+      "state": "PASS_LIVE_PROVEN_RUN472",
+      "runId": 36220426137,
+      "runNumber": 472,
+      "jobId": 108344543616,
+      "artifactId": 10898611925,
+      "artifactDigest": "sha256:ea14f6fb6869fe0f4f76ebfda811622dd8ce3395fca4a5139b8ca650e449c5a8",
+      "decision": "PASS_I3_V41_SECOND_REVIEW_CUMULATIVE_REPROOF",
+      "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+      "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+      "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+      "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+      "hrRevision": "0c65c20e1aefad54ea2c71fcdbc3b79a435f074fd9855f23a5d7dc7f3c0cb335",
+      "builds": 0,
+      "deploys": 0,
+      "production": false
+    },
+    "VRM-060": {
+      "state": "PASS_LIVE_MEASURED_NO_AUTH_TIMEOUT_RUN472",
+      "runId": 36220426137,
+      "runNumber": 472,
+      "jobId": 108344543616,
+      "artifactId": 10898611925,
+      "artifactDigest": "sha256:ea14f6fb6869fe0f4f76ebfda811622dd8ce3395fca4a5139b8ca650e449c5a8",
+      "decision": "PASS_I3_V41_SECOND_REVIEW_CUMULATIVE_REPROOF",
+      "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+      "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+      "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+      "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+      "hrRevision": "0c65c20e1aefad54ea2c71fcdbc3b79a435f074fd9855f23a5d7dc7f3c0cb335",
+      "builds": 0,
+      "deploys": 0,
+      "production": false
+    },
+    "VRM-061": {
+      "state": "PASS_LIVE_PROVEN_RUN472",
+      "runId": 36220426137,
+      "runNumber": 472,
+      "jobId": 108344543616,
+      "artifactId": 10898611925,
+      "artifactDigest": "sha256:ea14f6fb6869fe0f4f76ebfda811622dd8ce3395fca4a5139b8ca650e449c5a8",
+      "decision": "PASS_I3_V41_SECOND_REVIEW_CUMULATIVE_REPROOF",
+      "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+      "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+      "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+      "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+      "hrRevision": "0c65c20e1aefad54ea2c71fcdbc3b79a435f074fd9855f23a5d7dc7f3c0cb335",
+      "builds": 0,
+      "deploys": 0,
+      "production": false
+    },
+    "VRM-062": {
+      "state": "PASS_DURABLE_PROVEN_RUN472",
+      "runId": 36220426137,
+      "runNumber": 472,
+      "jobId": 108344543616,
+      "artifactId": 10898611925,
+      "artifactDigest": "sha256:ea14f6fb6869fe0f4f76ebfda811622dd8ce3395fca4a5139b8ca650e449c5a8",
+      "decision": "PASS_I3_V41_SECOND_REVIEW_CUMULATIVE_REPROOF",
+      "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+      "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+      "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+      "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+      "hrRevision": "0c65c20e1aefad54ea2c71fcdbc3b79a435f074fd9855f23a5d7dc7f3c0cb335",
+      "builds": 0,
+      "deploys": 0,
+      "production": false
+    },
+    "VRM-050": {
+      "state": "PASS_LIVE_PROVEN_RUN479",
+      "runId": 36249224545,
+      "runNumber": 479,
+      "artifactId": 10908278990,
+      "sourceSha": "62ee2903fdced52c525d5a028c8c4c725940e4cd",
+      "sourceTree": "e0649d447257745af89efc9845dfb2fb50600cf6",
+      "runtimeRevision": "cxorbia-live-hr-dev-00221-65m",
+      "runtimeDigest": "sha256:7b48e7a539a987f03b96c97a32ccb38a9cf32bd95d3e432434bc808ec9685dce",
+      "hrRevision": "5d4acfec98bc52f836dac2e382c906bc54534253717c9239b5d0f20d5f4f3cc7",
+      "refreshError": null,
+      "production": false
+    }
+  },
+  "governance": {
+    "findingIdsPresent": [
+      "VRM-001",
+      "VRM-002",
+      "VRM-003",
+      "VRM-004",
+      "VRM-005",
+      "VRM-006",
+      "VRM-007",
+      "VRM-008",
+      "VRM-009",
+      "VRM-010",
+      "VRM-011",
+      "VRM-012",
+      "VRM-013",
+      "VRM-014",
+      "VRM-015",
+      "VRM-016",
+      "VRM-017",
+      "VRM-018",
+      "VRM-019",
+      "VRM-020",
+      "VRM-021",
+      "VRM-022",
+      "VRM-023",
+      "VRM-024",
+      "VRM-025",
+      "VRM-026",
+      "VRM-027",
+      "VRM-028",
+      "VRM-029",
+      "VRM-030",
+      "VRM-031",
+      "VRM-032",
+      "VRM-033",
+      "VRM-034",
+      "VRM-035",
+      "VRM-036",
+      "VRM-037",
+      "VRM-038",
+      "VRM-039",
+      "VRM-040",
+      "VRM-041",
+      "VRM-042",
+      "VRM-043",
+      "VRM-044",
+      "VRM-045",
+      "VRM-046",
+      "VRM-047",
+      "VRM-048",
+      "VRM-049",
+      "VRM-050",
+      "VRM-051",
+      "VRM-052",
+      "VRM-053",
+      "VRM-054",
+      "VRM-055",
+      "VRM-056",
+      "VRM-057",
+      "VRM-058",
+      "VRM-059",
+      "VRM-060",
+      "VRM-061",
+      "VRM-062",
+      "VRM-063",
+      "VRM-064"
+    ],
+    "findingCount": 64,
+    "expectedCurrentRange": "VRM-001..VRM-064",
+    "nextFindingId": "VRM-066",
+    "appendOnly": true,
+    "omissionNeverCloses": true,
+    "terminalState": "HOLD_VRM065_REVISION_DRIFT_DIAGNOSTIC_REQUIRED",
+    "newReproducibleEvidenceRevokesRelatedReadiness": true,
+    "historicalPassEvidenceOnly": true
+  },
+  "workPlan": [
+    "C0_FREEZE",
+    "C1_SINGLE_AUTHORITY_ENFORCEMENT",
+    "C2_P0_CLOSURE",
+    "C3_TERMINAL_CUMULATIVE_PROOF",
+    "C4_ONE_HUMAN_VISUAL_ACCEPTANCE"
+  ],
+  "exactNextAction": "RERUN V59 READ-ONLY HR REVISION DRIFT DIAGNOSTIC AFTER CONTROL-ONLY nextFindingId ALIGNMENT; ZERO PRODUCT/DEV CHANGE.",
+  "supersedesGitBlob": "faef06337fc46cf492e5085672106b6a12a45ae9",
+  "preterminalAuthorityCorrection": {
+    "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
+    "runId": 36051302838,
+    "artifactId": 10831170890,
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "productWrites": 0,
+    "production": false
+  },
+  "c3PreterminalProof": {
+    "decision": "PASS_C3_PRETERMINAL_MODULE_TRUTH",
+    "runId": 36051988384,
+    "runNumber": 371,
+    "artifactId": 10830114571,
+    "artifactDigest": "sha256:47ada9b96fd08b06b81700caeeeebb61cc71fb2520b4afa892482819761c931a",
+    "sourceSha": "04b288f7eee315fcb865ed86a8fb41786809edf9",
+    "sourceTree": "f6b917c474f32137951a477afecbeccdc20cfd59",
+    "moduleCount": 20,
+    "matchModules": 9,
+    "composedNotDeployedModules": 11,
+    "pendingFiles": 17,
+    "unauthorizedFiles": 0,
+    "selfApproval": false,
+    "loadOrderPass": true,
+    "writes": 0,
+    "deploys": 0,
+    "production": false
+  },
+  "nextFindingId": "VRM-065",
+  "lastControlFailure": {
+    "runId": 36072745895,
+    "runNumber": 386,
+    "classification": "MAPPING_FAILURE",
+    "code": "NEXT_FINDING_ID",
+    "cause": "V13 governance metadata still ended at VRM-042 although VRM-043 finding was already materialized",
+    "productChanged": false,
+    "builds": 0,
+    "deploys": 0,
+    "production": false
+  },
+  "vrm044FocalProof": {
+    "runId": 36155194727,
+    "runNumber": 403,
+    "focalJob": "VRM-044 focal source reproof — no deploy",
+    "decision": "PASS_VRM044_FOCAL_SOURCE_REPROOF",
+    "artifactId": 10872772798,
+    "artifactDigest": "sha256:0567094d7b7cfe7f6b4fa277617466e385191a3ddf04c315f7a37c8e3ee3dbfd",
+    "testsPassed": 22,
+    "testsFailed": 0,
+    "builds": 0,
+    "deploys": 0,
+    "production": false,
+    "note": "Run-level conclusion remained failure only because canonical descriptor still pointed to predecessor by design during focal proof."
+  },
+  "terminalTechnicalClosure": {
+    "decision": "PASS_I3_TERMINAL_TECHNICAL_READY_PENDING_HUMAN_VISUAL",
+    "receiptPath": "CXORBIA_I3_TERMINAL_TECHNICAL_READY_2026-09-25.json",
+    "runId": 36170757882,
+    "runNumber": 429,
+    "sourceSha": "34068805168e85cf15c9359c1dc4c4226c3062a6",
+    "sourceTree": "91855599924b94ca7fbb025a570d8e1d77b30d3b",
+    "moduleTruth": "20/20 MATCH",
+    "gate20": "PASS",
+    "liveFixtures": "10/10 PASS",
+    "gate21": "PASS_GATE21_ARTIFACT_FINGERPRINT",
+    "humanVisualAcceptance": "PENDING_PAULA",
+    "production": false
+  },
+  "visualAcceptance": {
+    "status": "REJECTED_WITH_FINDINGS",
+    "receipt": "CXORBIA_I3_PAULA_VISUAL_REVIEW_2026-09-25.json"
+  },
+  "supersedesLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V59_2026-09-26.json",
+  "ownerExpansionFreeze": {
+    "findingId": "VRM-047",
+    "classification": "FUNCTIONAL_DEFECT",
+    "reason": "Exact provider readback proves shopper.update exists and is ACK-backed, but backend/runtime/cxorbia-shopper-command-provider-v1.mjs currently marks email/whatsapp as HR-managed while self-update needs permitted shopper-managed contact fields; the same provider also needs a self-managed allowlist so HR-managed identity cannot be changed by a shopper.",
+    "additionalOwner": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+    "evidence": {
+      "publicProfileFieldsLineage": "PUBLIC_PROFILE_FIELDS + PROTECTED_PROFILE_FIELDS",
+      "currentHrManagedFields": [
+        "nombre",
+        "pais",
+        "country",
+        "shopperCode",
+        "whatsapp",
+        "phone",
+        "email"
+      ],
+      "serverSelfUpdatePermission": "shopper.self.update",
+      "hrOverwritePath": "hrProfilePatch currently promotes whatsapp/phone/email to top-level profile on HR reconciliation"
+    },
+    "mutationAuthorized": "FOCAL_ONLY_VRM-047",
+    "production": false
+  },
+  "remediationV21": {
+    "productSourceSha": "da17406f8e03ef1071fe8ca384503853f51e6638",
+    "productSourceTree": "f733f99293dca5437a6e33ab81434d844a1d5f5c",
+    "changedOwners": [
+      "app/modules/misvisitas.js",
+      "app/modules/reservas.js",
+      "app/adapters/tya-canonical-shopper-portal-v2.js",
+      "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+      "app/core/backend-browser-auth.js",
+      "app/core/liquidacion.js",
+      "app/modules/finanzas.js",
+      "app/core/data.js",
+      "app/core/config.js",
+      "app/core/router.js",
+      "app/modules/novedades.js"
+    ],
+    "findingsInSource": [
+      "VRM-045",
+      "VRM-046",
+      "VRM-047",
+      "VRM-048",
+      "VRM-049",
+      "VRM-051",
+      "VRM-052",
+      "VRM-053"
+    ],
+    "vrm050CodeChange": false,
+    "production": false,
+    "deploysAtFreeze": 0,
+    "status": "SOURCE_READY_FOR_FOCAL_DEV_REPROOF"
+  },
+  "lastControlAttempt": {
+    "runId": 36216965766,
+    "runNumber": 461,
+    "classification": "MAPPING_FAILURE",
+    "code": "V28_HONORARIUM_FABRICATED",
+    "profileSaveProviderAck": true,
+    "shopperReportsCurrentCount": 0,
+    "invalidApprovalNotifications": 0,
+    "adminCurrentCount": 44,
+    "adminUniqueHrRows": 44,
+    "invalidShopperVisible": false,
+    "knownHonorariumCount": 44,
+    "sourceRevision": "67f3af8d616fa611f349b7e707e2b7cd21435d27bca7b2f2097264c8a929726e",
+    "production": false
+  },
+  "humanAdjudications": [
+    {
+      "id": "HADJ-20260926-MISHAEL-NONEXISTENT-MILTON-CANONICAL",
+      "receivedFrom": "business_owner",
+      "statement": "Mishael De Paz no existe; la identidad correcta es Milton De Paz.",
+      "sourceShopperId": "shopper_gt_018ca3e794",
+      "canonicalShopperId": "shopper_gt_bd74ace936",
+      "authorityType": "tenant_adjudication",
+      "fuzzyMatching": false,
+      "periodIndependent": true,
+      "production": false,
+      "allowedEffect": "Exact identity repair/quarantine in DEV only; preserve audit/history; no HR write."
+    }
+  ],
+  "lastForensicEvidence": {
+    "run445": {
+      "runId": 36204311032,
+      "decision": "PASS_READ_ONLY_RECONCILIATION",
+      "workflowConclusion": "ENVIRONMENT_FAILURE_LOG_PATH",
+      "writes": 0
+    },
+    "run446": {
+      "runId": 36204602911,
+      "decision": "PASS_READ_ONLY_OWNER_PROOF",
+      "workflowConclusion": "ENVIRONMENT_FAILURE_LOG_PATH",
+      "artifactId": 10893671420,
+      "artifactDigest": "sha256:e1e7acb27d2ff8a17c77d51679177aff0f6f95a313a9be59aec477f6c5de54a8",
+      "writes": 0
+    },
+    "currentPeriod": {
+      "hrVisits": 44,
+      "firestoreDocs": 46,
+      "uniqueHrRowIds": 44,
+      "duplicateHrRowIds": [
+        "SEPTIEMBRE 26!25",
+        "SEPTIEMBRE 26!8"
+      ]
+    },
+    "phantomIdentity": {
+      "sourceShopperId": "shopper_gt_018ca3e794",
+      "name": "Mishael De Paz",
+      "currentHrRows": 0,
+      "platformPostulationCount": 6
+    },
+    "canonicalIdentity": {
+      "shopperId": "shopper_gt_bd74ace936",
+      "name": "Milton De Paz"
+    },
+    "run465": {
+      "runId": 36217529367,
+      "runNumber": 465,
+      "decision": "FAIL_I3_V28_LIVE_REPROOF",
+      "error": "MAPPING_FAILURE:V28_HONORARIUM_FABRICATED",
+      "artifactId": 10898008091,
+      "artifactDigest": "sha256:a380db7ccdedd7dafaad2729d85ac7238e9edc70d0490abb9754d13c241cdf2d",
+      "sourceRevision": "67f3af8d616fa611f349b7e707e2b7cd21435d27bca7b2f2097264c8a929726e",
+      "production": false
+    },
+    "run467": {
+      "decision": "PASS_I3_V40_CUMULATIVE_LIVE_REPROOF",
+      "runId": 36219336660,
+      "runNumber": 467,
+      "artifactId": 10899135346,
+      "artifactDigest": "sha256:fb314f3dcb120073d86de26b19c72093745bf2bdb422a42503bb0d6ae8816cc7",
+      "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+      "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+      "hrRevision": "0c65c20e1aefad54ea2c71fcdbc3b79a435f074fd9855f23a5d7dc7f3c0cb335",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+      "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+      "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+      "shopperReadyMs": 2772,
+      "adminReadyMs": 7097,
+      "production": false,
+      "profileProviderAck": true,
+      "invalidShopperVisible": false,
+      "rawShopperIdVisible": false,
+      "currentCount": 44,
+      "uniqueHrRows": 44,
+      "knownHonorariumCount": 0
+    },
+    "run468": {
+      "runId": 36219728855,
+      "runNumber": 468,
+      "jobId": 108342606258,
+      "artifactId": 10899156379,
+      "artifactDigest": "sha256:8be75cbffe77f9b5923f3046500296d4ae00b1badb2620dc6dd9759a3a14cddc",
+      "controlHeadSha": "0d6fb587d3aef70ee67d92c41aaeaabae53f53a4",
+      "productSourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+      "productSourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+      "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+      "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+      "decision": "FAIL_I3_V41_SECOND_REVIEW_CUMULATIVE_REPROOF",
+      "error": "MAPPING_FAILURE:V41_CANONICAL_MILTON_MISSING",
+      "deploys": 0,
+      "builds": 0,
+      "production": false,
+      "classification": "MAPPING_FAILURE",
+      "belongsTo": "VRM-055",
+      "nextFindingOpened": false
+    },
+    "run469": {
+      "runId": 36219999288,
+      "runNumber": 469,
+      "jobId": 108343354988,
+      "artifactId": 10898264026,
+      "artifactDigest": "sha256:8b8e696bc1a175b980e193951ac46d62a2afa736992b61a408ef731cf94516f7",
+      "productSourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+      "productSourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+      "decision": "PASS_V42_DURABLE_MILTON_DIAGNOSTIC",
+      "writes": 0,
+      "deploys": 0,
+      "builds": 0,
+      "production": false,
+      "classification": "MAPPING_FAILURE",
+      "findingId": "VRM-055",
+      "firstBadField": "tenants/tya/shoppers/shopper_gt_bd74ace936.nombre",
+      "observed": "Mishael De Paz",
+      "expected": "Milton De Paz",
+      "nextFindingOpened": false
+    },
+    "run470": {
+      "runId": 36220176376,
+      "runNumber": 470,
+      "jobId": 108343849750,
+      "artifactId": 10898726545,
+      "artifactDigest": "sha256:d4d7c04fc128bff77e8c1932d10f3ec35bdf50f2798cb5cb508e575146813dab",
+      "decision": "PASS_I3_V43_MILTON_DURABLE_REPAIR",
+      "canonicalName": "Milton De Paz",
+      "visibleLogin": "milton.depaz",
+      "canonicalMemberships": 1,
+      "invalidActiveMemberships": 0,
+      "currentDurableCount": 44,
+      "uniqueCurrentHrRows": 44,
+      "touchedHistoricalVisitNames": 18,
+      "archives": 19,
+      "writes": 40,
+      "hrWrites": 0,
+      "authWrites": 0,
+      "production": false,
+      "classification": "MAPPING_FAILURE",
+      "findingId": "VRM-055",
+      "nextFindingOpened": false
+    },
+    "run471": {
+      "runId": 36220302684,
+      "runNumber": 471,
+      "jobId": 108344198017,
+      "artifactId": 10899271972,
+      "artifactDigest": "sha256:8791d97715bb594148840721b240eec598d2dc36f8a09ac48bdbc30a2c4ad532",
+      "decision": "FAIL_I3_V41_SECOND_REVIEW_CUMULATIVE_REPROOF",
+      "classification": "ENVIRONMENT_FAILURE",
+      "error": "Playwright custom-token sign-in race: page.evaluate ReferenceError firebase is not defined",
+      "productSourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+      "productSourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+      "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+      "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+      "noDevDriftProof": true,
+      "deploys": 0,
+      "builds": 0,
+      "production": false,
+      "productDefect": false,
+      "nextFindingOpened": false
+    },
+    "run472": {
+      "runId": 36220426137,
+      "runNumber": 472,
+      "jobId": 108344543616,
+      "artifactId": 10898611925,
+      "artifactDigest": "sha256:ea14f6fb6869fe0f4f76ebfda811622dd8ce3395fca4a5139b8ca650e449c5a8",
+      "decision": "PASS_I3_V41_SECOND_REVIEW_CUMULATIVE_REPROOF",
+      "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+      "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+      "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+      "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+      "hrRevision": "0c65c20e1aefad54ea2c71fcdbc3b79a435f074fd9855f23a5d7dc7f3c0cb335",
+      "builds": 0,
+      "deploys": 0,
+      "production": false,
+      "durable": {
+        "currentCount": 44,
+        "uniqueHrRows": 44,
+        "duplicateKeys": [],
+        "miltonName": "Milton De Paz",
+        "invalidPosts": 0,
+        "invalidReservations": 0,
+        "invalidActiveMembers": 0
+      },
+      "shopper": {
+        "historyCount": 7,
+        "currentCount": 0,
+        "profileProviderAck": true,
+        "profileReloadReadback": true,
+        "invalidApprovalCount": 0,
+        "readyMs": 2937
+      },
+      "admin": {
+        "uiCount": 44,
+        "rawCount": 44,
+        "assignmentParityMismatches": 0,
+        "invalidIdentityVisible": false,
+        "miltonName": "Milton De Paz",
+        "readyMs": 7359
+      },
+      "nextFindingOpened": false
+    },
+    "run473": {
+      "runId": 36245701170,
+      "runNumber": 473,
+      "artifactId": 10906649513,
+      "artifactDigest": "sha256:c5c5125f4752b7943a9a95916a69f6b0b69913245d3e8312c9a59b3c40295977",
+      "decision": "FAIL_C3_PRETERMINAL_EXPECTED_20_20",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "moduleTruthDecision": "PASS_C3_PRETERMINAL_COMPOSITION",
+      "matchModules": 17,
+      "composedNotDeployedModules": 3,
+      "pendingFiles": 3,
+      "unauthorizedFiles": 0,
+      "pending": [
+        {
+          "path": "app/adapters/tya-canonical-state-semantics-v2.js",
+          "findingIds": [
+            "VRM-040"
+          ],
+          "changedVsLastServed": false
+        },
+        {
+          "path": "app/modules/dashboard.js",
+          "findingIds": [
+            "VRM-010",
+            "VRM-011",
+            "VRM-038"
+          ],
+          "changedVsLastServed": false
+        },
+        {
+          "path": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+          "findingIds": [
+            "VRM-033",
+            "VRM-047"
+          ],
+          "changedVsLastServed": false
+        }
+      ],
+      "cause": "Evidence authority states were stale/incomplete; no live deployment drift was demonstrated.",
+      "nextFindingOpened": false,
+      "production": false
+    },
+    "run475": {
+      "runId": 36246087997,
+      "runNumber": 475,
+      "jobId": 108415465160,
+      "artifactId": 10906994732,
+      "artifactDigest": "sha256:e6cc92c0cab634ccd5238e511066c52ec5fb8d67cc581fbe73567e62cbe0b86d",
+      "decision": "PASS_C3_PRETERMINAL_MODULE_TRUTH_20_20_EXACT_DEV",
+      "moduleTruthSha256": "505e9cb5888d7ed54af9b43da2b41498c18cf06c4f64c906af362c77b9fbf26d",
+      "moduleCount": 20,
+      "matchModules": 20,
+      "nonMatchModules": 0,
+      "pendingFiles": 0,
+      "activeBrowserOwners": 130,
+      "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+      "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+      "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+      "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+      "firestoreRulesSha256": "bce839595cf0ca6000a2c3ae6fc0b81e90cf341fbecfaaa2f3282e75e9681367",
+      "builds": 0,
+      "deploys": 0,
+      "writes": 0,
+      "production": false,
+      "classification": "RELEASE_COMPOSITION_FAILURE_CLOSED_PRETERMINAL",
+      "nextFindingOpened": false
+    },
+    "run477": {
+      "runId": 36247157545,
+      "runNumber": 477,
+      "jobId": 108418391633,
+      "artifactId": 10907986589,
+      "artifactDigest": "sha256:d213b0d4d58c3aec73ecaf4e12c09cd8ed5e3c8d660b1e773dd2a5a4b655f34f",
+      "decision": "FAIL_TERMINAL_HR_REFRESH_ERROR",
+      "classification": "PROVIDER_FAILURE",
+      "belongsTo": "VRM-050",
+      "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+      "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+      "stableRevision": "fd5abfc2e95a827f35af967e7cc707623321d9a8d8d2f9c3486e58ff31863ea2",
+      "refreshErrorCause": "vm.runInContext hard-coded 5000ms timeout",
+      "productDefect": true,
+      "artifactCreated": false,
+      "builds": 0,
+      "deploys": 0,
+      "writes": 0,
+      "production": false,
+      "nextFindingOpened": false
+    },
+    "run478": {
+      "runId": 36247641329,
+      "runNumber": 478,
+      "artifactId": 10908281984,
+      "artifactDigest": "sha256:21eb24d254aad86c6c9b196c09e682c6ddcd2a41dff3c9e1e3d23e9785c68962",
+      "classification": "ENVIRONMENT_FAILURE",
+      "productFixMaterialized": true,
+      "runtimeRevision": "cxorbia-live-hr-dev-00221-65m",
+      "runtimeDigest": "sha256:7b48e7a539a987f03b96c97a32ccb38a9cf32bd95d3e432434bc808ec9685dce",
+      "hrRevision": "5d4acfec98bc52f836dac2e382c906bc54534253717c9239b5d0f20d5f4f3cc7",
+      "refreshError": null,
+      "refreshDurationMs": 125955,
+      "nextFindingOpened": false,
+      "production": false
+    },
+    "run480": {
+      "runId": 36249414576,
+      "runNumber": 480,
+      "jobId": 108424546934,
+      "artifactId": 10908452870,
+      "artifactDigest": "sha256:70baf50b073f3f5423cec2451e5ece599785363cdf05b6ef7ba4faf74a038d60",
+      "decision": "PASS_C3_PRETERMINAL_MODULE_TRUTH_20_20_EXACT_DEV",
+      "sourceSha": "62ee2903fdced52c525d5a028c8c4c725940e4cd",
+      "sourceTree": "e0649d447257745af89efc9845dfb2fb50600cf6",
+      "moduleTruthSha256": "547e269049bb8b719cc0ebb66dd02f90e304cd5828cdd572e8a331720fce00fd",
+      "moduleCount": 20,
+      "matchModules": 20,
+      "nonMatchModules": 0,
+      "pendingFiles": 0,
+      "activeBrowserOwners": 130,
+      "runtimeRevision": "cxorbia-live-hr-dev-00221-65m",
+      "runtimeDigest": "sha256:7b48e7a539a987f03b96c97a32ccb38a9cf32bd95d3e432434bc808ec9685dce",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+      "firestoreRulesSha256": "bce839595cf0ca6000a2c3ae6fc0b81e90cf341fbecfaaa2f3282e75e9681367",
+      "builds": 0,
+      "deploys": 0,
+      "writes": 0,
+      "production": false
+    }
+  },
+  "controlFailures": [
+    {
+      "id": "V41_AUTH_HARNESS_RACE_RUN471",
+      "runId": 36220302684,
+      "runNumber": 471,
+      "jobId": 108344198017,
+      "artifactId": 10899271972,
+      "artifactDigest": "sha256:8791d97715bb594148840721b240eec598d2dc36f8a09ac48bdbc30a2c4ad532",
+      "decision": "FAIL_I3_V41_SECOND_REVIEW_CUMULATIVE_REPROOF",
+      "classification": "ENVIRONMENT_FAILURE",
+      "error": "Playwright custom-token sign-in race: page.evaluate ReferenceError firebase is not defined",
+      "productSourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+      "productSourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+      "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
+      "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
+      "noDevDriftProof": true,
+      "deploys": 0,
+      "builds": 0,
+      "production": false,
+      "owner": "tools/qa/cxorbia-i3-v41-second-review-live-reproof.mjs",
+      "remediation": "Use window.firebase plus bounded retry/load-state/uid readback pattern already proven by V28/Run467; do not change product or DEV."
+    },
+    {
+      "id": "C3_STATUS_GUARD_RUN474",
+      "runId": 36246000462,
+      "runNumber": 474,
+      "jobId": 108415237586,
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "productDefect": false,
+      "cause": "C3 job still required descriptor status HOLD_MODULE_TRUTH_MATRIX_REQUIRED after evidence reconciliation legitimately advanced descriptor to HOLD_MODULE_TRUTH_REPROOF_REQUIRED.",
+      "effect": "Job exited before matrix generation/live checks; no product/build/deploy/data mutation.",
+      "remediation": "Update same canonical workflow status guard only and rerun.",
+      "nextFindingOpened": false,
+      "production": false
+    },
+    {
+      "id": "RUN476_TERMINAL_HR_META_STABILITY_HARNESS",
+      "runId": 36246826615,
+      "runNumber": 476,
+      "jobId": 108417478587,
+      "classification": "ENVIRONMENT_FAILURE",
+      "productDefect": false,
+      "stage": "terminal certification pre-HR proof",
+      "evidence": "Exact source/tree, Run475 preterminal proof, source tests, runtime revision/digest, Hosting version and Firestore Rules parity all passed before the failure. Failure occurred only after repeated HR meta polling; no artifact was created, no deploy/build/write occurred.",
+      "rootCause": "Terminal harness relied on provider boolean revisionStable as the sole stability signal and did not persist attempt-by-attempt diagnostics. The live contract only requires a stable exact external revision for the proof. Two consecutive identical valid revisions plus sourceSafe/provider ACK/no refreshError is a direct fail-closed stability proof and preserves the same authority contract.",
+      "remediation": "Control-only: log every HR meta attempt, require two consecutive identical 64-hex revisions with ok/sourceSafe/providerAck/no error/no writes/production false, then require format=json to match that stable revision. Upload diagnostics always.",
+      "nextFindingOpened": false,
+      "production": false
+    },
+    {
+      "id": "RUN481_TENANT_ADJUDICATION_CANONICAL_COUNT_GATE",
+      "runId": 36249618949,
+      "runNumber": 481,
+      "jobId": 108425110583,
+      "artifactId": 10908950548,
+      "artifactDigest": "sha256:2848ee20884872d2a4cf1c0952d709c3168087a58a80dd9eb7902807fb1b56df",
+      "classification": "MAPPING_FAILURE",
+      "productDefect": false,
+      "belongsTo": [
+        "VRM-043",
+        "VRM-055"
+      ],
+      "observed": {
+        "rawHrShoppers": 221,
+        "composedCanonicalHrShoppers": 220,
+        "authorizedPlatformOnly": 1,
+        "composedTotal": 221,
+        "duplicateShopperIds": 0,
+        "nameMismatches": [
+          "shopper_gt_018ca3e794"
+        ],
+        "unresolvedAuthorityCount": 1,
+        "unresolvedReviewMismatches": [],
+        "paulaHistory": 7
+      },
+      "rootCause": "Terminal human-acceptance compared canonical composed HR identities against raw HR shopper-reference count. Exact tenant adjudication maps historical source shopper_gt_018ca3e794 to canonical Milton shopper_gt_bd74ace936, so raw references legitimately collapse at canonical identity level. The same gate compared the adjudicated source display name against the canonical tenant-adjudicated name instead of honoring exact tenant adjudication precedence.",
+      "remediation": "Control-only: derive expected HR identity count after CX.data.__identityMap canonicalization and waive source-name equality only when a confirmed tenant_adjudication maps that exact source ID to that exact canonical row; all other identity/technical/review checks remain fail-closed.",
+      "nextFindingOpened": false,
+      "production": false
+    },
+    {
+      "id": "RUN482_FOCAL_CANONICAL_POPULATION_GATE",
+      "runId": 36250866877,
+      "runNumber": 482,
+      "jobId": 108428543229,
+      "artifactId": 10908669946,
+      "artifactDigest": "sha256:a3037bd2b00e8283ddfd97d85cbd75344f3920500e04a115150c2fb42f9ea2e1",
+      "classification": "MAPPING_FAILURE",
+      "productDefect": false,
+      "belongsTo": [
+        "VRM-043",
+        "VRM-055"
+      ],
+      "stage": "pre-i4 focal remote browser",
+      "observed": {
+        "hrShopperPopulation": 220,
+        "rawHrShopperPopulation": 221,
+        "totalOperational": 221,
+        "authorizedPlatform": 1
+      },
+      "rootCause": "Focal gate repeated the raw-reference population assumption already fixed in full human acceptance. It compared canonical HR operational identities to raw HR shopper references and required one rendered row per raw source ID, invalid under exact canonical crosswalk/tenant adjudication.",
+      "remediation": "Control-only: calculate expected canonical HR population from all semantic source IDs through CX.data.__identityMap; compare composed totals against canonical population; treat repeated source IDs mapping to the same canonical row as valid only through exact mapping. Human-name override remains allowed only when the row carries exact tenant_adjudication authority.",
+      "nextFindingOpened": false,
+      "production": false
+    },
+    {
+      "id": "RUN483_FOCAL_ADJUDICATED_HISTORY_GATE",
+      "runId": 36251503079,
+      "runNumber": 483,
+      "artifactId": 10909955767,
+      "artifactDigest": "sha256:5ece4679134cce1d88b8ff6c28cfb5fe77b9467c590e9d676885bb4173dc40ca",
+      "classification": "MAPPING_FAILURE",
+      "productDefect": false,
+      "belongsTo": [
+        "VRM-043",
+        "VRM-055"
+      ],
+      "stage": "pre-i4 focal remote browser",
+      "observed": {
+        "sourceShopperId": "shopper_gt_018ca3e794",
+        "canonicalShopperId": "shopper_gt_bd74ace936",
+        "rawSourceExpectedTotal": 1,
+        "rawSourceExpectedRealized": 1,
+        "canonicalObservedTotal": 10,
+        "canonicalObservedRealized": 10,
+        "canonicalName": "Milton De Paz",
+        "authorityType": "tenant_adjudication"
+      },
+      "rootCause": "Focal gate correctly canonicalized population/name after V57 but still compared the canonical Milton row's aggregated history against each individual raw source identity history. Under exact tenant adjudication, all source references that map to one canonical ID must be aggregated before validating canonical shopper stats.",
+      "remediation": "Control-only: for any canonical group containing an exact tenant_adjudication source mapping, sum expected total/realized across all human identity cases resolving to that canonicalId and compare the composed canonical row once against the aggregate. Non-adjudicated identities retain strict per-source history equality.",
+      "nextFindingOpened": false,
+      "production": false
+    },
+    {
+      "id": "RUN485_CANONICAL_GUARD_NEXT_FINDING_ID",
+      "runId": 36254992073,
+      "runNumber": 485,
+      "jobId": 108439963590,
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "productDefect": false,
+      "cause": "Descriptor nextFindingId remained VRM-065 after ledger opened VRM-065 and correctly advanced governance nextFindingId to VRM-066.",
+      "effect": "Canonical authority guard failed before V59 diagnostic; no DEV reads beyond repository control, no build/deploy/write.",
+      "remediation": "Align descriptor nextFindingId to VRM-066 and rerun same read-only V59 diagnostic.",
+      "production": false
+    }
+  ]
+}

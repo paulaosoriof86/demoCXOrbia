@@ -7,14 +7,14 @@
   "productSourceSha": "62ee2903fdced52c525d5a028c8c4c725940e4cd",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V59_2026-09-26.json",
-  "findingsLedgerExpectedGitBlob": "faef06337fc46cf492e5085672106b6a12a45ae9",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V60_2026-09-26.json",
+  "findingsLedgerExpectedGitBlob": "77b374cda038bdea2ffe86f8b849d0d52ef78f39",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-065: Run484 observed two HR sourceRevision values inside one terminal run after human+semantic PASS. Exact read-only comparison is required before any product/runtime change.",
-  "nextFindingId": "VRM-065",
+  "activeBlocker": "VRM-065 diagnostic remains pending. Run485 was blocked only by descriptor/ledger nextFindingId mismatch before diagnostic execution; product and DEV unchanged.",
+  "nextFindingId": "VRM-066",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN V59 READ-ONLY DIAGNOSTIC AGAINST RUN484 SNAPSHOT + CURRENT DIRECT/HOSTING HR; NO SOURCE/RUNTIME/HOSTING/DATA CHANGE.",
+  "exactNextAction": "RERUN SAME V59 READ-ONLY REVISION-DRIFT DIAGNOSTIC; NO SOURCE/RUNTIME/HOSTING/DATA CHANGE.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -471,21 +471,14 @@
     "findingId": "VRM-055"
   },
   "lastControlFailure": {
-    "runId": 36251503079,
-    "runNumber": 483,
-    "classification": "MAPPING_FAILURE",
-    "code": "EXACT_HR_HISTORY_shopper_gt_018ca3e794",
+    "runId": 36254992073,
+    "runNumber": 485,
+    "jobId": 108439963590,
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "code": "NEXT_FINDING_ID",
     "productDefect": false,
-    "sourceShopperId": "shopper_gt_018ca3e794",
-    "canonicalShopperId": "shopper_gt_bd74ace936",
-    "rawExpected": {
-      "total": 1,
-      "realizadas": 1
-    },
-    "canonicalObserved": {
-      "total": 10,
-      "realizadas": 10
-    },
+    "descriptorObserved": "VRM-065",
+    "ledgerExpected": "VRM-066",
     "production": false
   },
   "lastSecondReviewProof": {
