@@ -3832,8 +3832,8 @@ jobs:
         run: |
           set -Eeuo pipefail
           mkdir -p "$V33_OUT"
-          test "$V33_SOURCE" = "23cb3ab48cc8111094a2a29c9e4b6d1a2588b563"
-          test "$V33_TREE" = "63c0b69ee63b156d6295e8ef2e3c3add2cb6a514"
+          test "$V33_SOURCE" = "fe72c0ef4f141aff8c9c8e27d2c1998dcbc4cee6"
+          test "$V33_TREE" = "8d2bd24f2a26c5963c698bb57af6276699754dcd"
           test "$(git rev-parse "$V33_SOURCE^{tree}")" = "$V33_TREE"
           test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_V33_PROFILE_BOUNDARY_FIX_READY_FOR_HOSTING_REPROOF"
           git diff --quiet e8635de1fa5e086a7fd0ca92ba1a393466cf63e4 "$V33_SOURCE" -- backend firestore.rules storage.rules
