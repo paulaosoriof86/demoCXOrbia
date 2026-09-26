@@ -630,11 +630,11 @@ jobs:
     env:
       I3_CERTIFICATION_SOURCE_SHA: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
       I3_CERTIFICATION_SOURCE_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
-      EXPECTED_RUNTIME_REVISION: cxorbia-live-hr-dev-00220-94r
-      EXPECTED_RUNTIME_DIGEST: sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff
+      EXPECTED_RUNTIME_REVISION: cxorbia-live-hr-dev-00221-65m
+      EXPECTED_RUNTIME_DIGEST: sha256:7b48e7a539a987f03b96c97a32ccb38a9cf32bd95d3e432434bc808ec9685dce
       EXPECTED_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c
-      RUN475_ID: '36246087997'
-      RUN475_ARTIFACT: cxorbia-c3-preterminal-module-truth-36246087997
+      RUN480_ID: '36249414576'
+      RUN480_ARTIFACT: cxorbia-c3-preterminal-module-truth-36249414576
     steps:
       - name: Checkout canonical Recovery control head
         uses: actions/checkout@v4
@@ -660,15 +660,15 @@ jobs:
           for id in VRM-034 VRM-035 VRM-041 VRM-043; do
             test "$(jq -r --arg id "$id" '.findings[$id].state' "$LEDGER")" = "TERMINAL_REPROOF_PENDING_CURRENT_SOURCE"
           done
-          PRIOR="$RUNNER_TEMP/cxorbia-run475-module-truth"
+          PRIOR="$RUNNER_TEMP/cxorbia-run480-module-truth"
           rm -rf "$PRIOR"; mkdir -p "$PRIOR"
-          gh run download "$RUN475_ID" --repo "$GITHUB_REPOSITORY" --name "$RUN475_ARTIFACT" --dir "$PRIOR"
+          gh run download "$RUN480_ID" --repo "$GITHUB_REPOSITORY" --name "$RUN480_ARTIFACT" --dir "$PRIOR"
           test "$(jq -r '.decision' "$PRIOR/result.json")" = "PASS_C3_PRETERMINAL_MODULE_TRUTH_20_20_EXACT_DEV"
           test "$(jq -r '.sourceSha' "$PRIOR/result.json")" = "$I3_CERTIFICATION_SOURCE_SHA"
           test "$(jq -r '.sourceTree' "$PRIOR/result.json")" = "$I3_CERTIFICATION_SOURCE_TREE"
           test "$(jq -r '.matchModules' "$PRIOR/result.json")" = "20"
           test "$(jq -r '.pendingFiles' "$PRIOR/result.json")" = "0"
-          cp "$PRIOR/result.json" "$OUT/run475-preterminal-result.json"
+          cp "$PRIOR/result.json" "$OUT/run480-preterminal-result.json"
 
       - name: Install terminal proof dependencies
         run: |
@@ -877,7 +877,7 @@ jobs:
           compression-level: 0
 
       - if: always()
-        run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-i3-terminal-source" "$RUNNER_TEMP/cxorbia-run475-module-truth"
+        run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-i3-terminal-source" "$RUNNER_TEMP/cxorbia-run480-module-truth"
 
   live-fixtures:
     name: I3 full live fixture suite v2 — exact same certified artifact
