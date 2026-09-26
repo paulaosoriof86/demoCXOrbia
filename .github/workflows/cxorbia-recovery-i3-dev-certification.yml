@@ -3811,56 +3811,96 @@ jobs:
         if: always()
         run: rm -rf node_modules
 
-  v32-profile-command-diagnostic:
-    name: I3 V32 — shopper profile command exact diagnostic
+  v33-profile-boundary-hosting-reproof:
+    name: I3 V33 — Hosting-only profile boundary fix + cumulative live reproof
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_V28_DURABLE_REPAIR_PASS_PROFILE_SAVE_DIAGNOSTIC_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v32-profile-diagnostic]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_V33_PROFILE_BOUNDARY_FIX_READY_FOR_HOSTING_REPROOF' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v33-hosting-reproof]') }}
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 45
     env:
-      V32_OUT: .tmp/i3-v32-profile-command-diagnostic
-      V32_ROOT: https://cxorbia-backend-dev.web.app
+      V33_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      V33_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      V33_OUT: .tmp/i3-v33-profile-boundary
+      V33_ROOT: https://cxorbia-backend-dev.web.app
+      EXPECTED_RUNTIME_REVISION: cxorbia-live-hr-dev-00220-94r
+      EXPECTED_RUNTIME_DIGEST: sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff
     steps:
-      - name: Checkout Recovery control head
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Prove diagnostic-only scope
+      - name: Prove exact source and Hosting-only scope
         run: |
           set -Eeuo pipefail
-          mkdir -p "$V32_OUT"
-          test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_V28_DURABLE_REPAIR_PASS_PROFILE_SAVE_DIAGNOSTIC_REQUIRED"
-          test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "e8635de1fa5e086a7fd0ca92ba1a393466cf63e4"
-          git diff --quiet e8635de1fa5e086a7fd0ca92ba1a393466cf63e4 HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
-      - name: Setup Node 24
-        uses: actions/setup-node@v4
+          mkdir -p "$V33_OUT"
+          test "$V33_SOURCE" = "23cb3ab48cc8111094a2a29c9e4b6d1a2588b563"
+          test "$V33_TREE" = "63c0b69ee63b156d6295e8ef2e3c3add2cb6a514"
+          test "$(git rev-parse "$V33_SOURCE^{tree}")" = "$V33_TREE"
+          test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_V33_PROFILE_BOUNDARY_FIX_READY_FOR_HOSTING_REPROOF"
+          git diff --quiet e8635de1fa5e086a7fd0ca92ba1a393466cf63e4 "$V33_SOURCE" -- backend firestore.rules storage.rules
+          test "$(git diff --name-only e8635de1fa5e086a7fd0ca92ba1a393466cf63e4 "$V33_SOURCE" -- app | wc -l | tr -d ' ')" = "1"
+          git diff --name-only e8635de1fa5e086a7fd0ca92ba1a393466cf63e4 "$V33_SOURCE" -- app | grep -qx 'app/adapters/cxorbia-cxdata-command-boundary-v1.js'
+      - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Install diagnostic dependencies
+      - name: Install DEV tooling
         run: |
-          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
           npx playwright install chromium >/dev/null 2>&1
-      - name: Authenticate DEV read/write diagnostic principal
+      - name: Authenticate Firebase DEV
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-      - name: Run exact profile command diagnostic
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
+      - name: Prove runtime unchanged
         run: |
           set -Eeuo pipefail
-          V32_OUT="$V32_OUT" V32_ROOT="$V32_ROOT" node tools/qa/cxorbia-i3-v32-profile-command-diagnostic.mjs | tee "$V32_OUT/run.log"
-          test "$(jq -r '.decision' "$V32_OUT/profile-command-diagnostic.json")" = "PASS_DIAGNOSTIC_CAPTURED"
-      - name: Upload V32 diagnostic evidence
-        if: always()
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$V33_OUT/runtime.json"
+          test "$(jq -r '.status.latestReadyRevisionName // empty' "$V33_OUT/runtime.json")" = "$EXPECTED_RUNTIME_REVISION"
+          gcloud run revisions describe "$EXPECTED_RUNTIME_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$V33_OUT/runtime-revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$V33_OUT/runtime-revision.json")"
+          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; else DIGEST="sha256:${RAW##*@sha256:}"; fi
+          test "$DIGEST" = "$EXPECTED_RUNTIME_DIGEST"
+      - name: Deploy exact V33 Hosting only
+        run: |
+          set -Eeuo pipefail
+          SOURCE_DIR="$RUNNER_TEMP/cxorbia-v33-source"; rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"
+          git archive "$V33_SOURCE" | tar -x -C "$SOURCE_DIR"
+          cd "$SOURCE_DIR"
+          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$V33_OUT/hosting-deploy.log"
+          cd "$GITHUB_WORKSPACE"
+          TOKEN="$(gcloud auth print-access-token)"
+          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$V33_OUT/hosting-live-channel.json"
+          echo "HOSTING_VERSION=$(jq -r '.release.version.name // empty' "$V33_OUT/hosting-live-channel.json")" >> "$GITHUB_ENV"
+      - name: Prove changed static byte
+        run: |
+          set -Eeuo pipefail
+          curl -fsSL --retry 8 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/adapters/cxorbia-cxdata-command-boundary-v1.js?v33=$GITHUB_RUN_ID" -o "$V33_OUT/remote.js"
+          test "$(sha256sum "$V33_OUT/remote.js"|awk '{print $1}')" = "$(git show "$V33_SOURCE:app/adapters/cxorbia-cxdata-command-boundary-v1.js" | sha256sum | awk '{print $1}')"
+      - name: Run cumulative Admin + Shopper live reproof
+        run: |
+          set -Eeuo pipefail
+          V28_OUT="$V33_OUT" V28_ROOT="$V33_ROOT" node tools/qa/cxorbia-i3-v28-live-reproof.mjs | tee "$V33_OUT/live.log"
+          test "$(jq -r '.decision' "$V33_OUT/live-reproof.json")" = "PASS_I3_V28_LIVE_REPROOF"
+          test "$(jq -r '.shopper.profileResult.providerAck' "$V33_OUT/live-reproof.json")" = "true"
+          test "$(jq -r '.admin.currentCount' "$V33_OUT/live-reproof.json")" = "44"
+          test "$(jq -r '.admin.uniqueHrRows' "$V33_OUT/live-reproof.json")" = "44"
+          test "$(jq -r '.admin.invalidShopperVisible' "$V33_OUT/live-reproof.json")" = "false"
+          test "$(jq -r '.admin.knownHonorariumCount' "$V33_OUT/live-reproof.json")" = "0"
+      - name: Seal V33 receipt
+        run: |
+          jq -n -S --arg source "$V33_SOURCE" --arg tree "$V33_TREE" --arg runtime "$EXPECTED_RUNTIME_REVISION" --arg digest "$EXPECTED_RUNTIME_DIGEST" --arg hosting "$HOSTING_VERSION" --argjson shopperReadyMs "$(jq -r '.shopper.readyMs' "$V33_OUT/live-reproof.json")" --argjson adminReadyMs "$(jq -r '.admin.readyMs' "$V33_OUT/live-reproof.json")" '{decision:"PASS_I3_V33_CUMULATIVE_LIVE_REPROOF",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,shopperReadyMs:$shopperReadyMs,adminReadyMs:$adminReadyMs,builds:0,runtimeDeploys:0,hostingDeploys:1,rulesDeploys:0,production:false}' > "$V33_OUT/result.json"
+      - if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-i3-v32-profile-diagnostic-${{ github.run_id }}
-          path: ${{ env.V32_OUT }}
+          name: cxorbia-i3-v33-hosting-reproof-${{ github.run_id }}
+          path: ${{ env.V33_OUT }}
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-      - name: Cleanup
-        if: always()
-        run: rm -rf node_modules
+      - if: always()
+        run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-v33-source"
 
   c3-terminal-dev-identity-readback:
     name: C3 terminal DEV identity readback — no deploy
