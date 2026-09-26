@@ -319,23 +319,23 @@ const tenant = db.collection('tenants').doc(TENANT);
 const project = tenant.collection('projects').doc(PROJECT_ID);
 const shopperModule = await import(pathToFileURL(path.join(SOURCE_DIR, 'backend/runtime/cxorbia-shopper-command-provider-v1.mjs')).href);
 let hrRevision = '';
-let certifiedProofHrRevision = '';
-let certificationLiveReadbackRevision = '';
+let certificationHrEvidenceRevision = '';
+let certificationManifestHrRevision = '';
 
 try {
   const manifest = readPrior('i3-certification-manifest.json');
   const human = readPrior('human-live-acceptance.json');
   const probes = readPrior('i3-functional-probes.json');
   const probe = probes.probe || {};
-  if (!(manifest.decision === 'PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21' && manifest.i3CertificationSourceSha === SOURCE_SHA && manifest.i3CertificationSourceTree === SOURCE_TREE && manifest.artifactSha256 === CERTIFIED_ARTIFACT_SHA256 && manifest.buildCount === 1 && manifest.rebuildAfterCertification === false && manifest.production === false && human.decision === 'PASS_I3_HUMAN_LIVE_ACCEPTANCE' && probes.decision === 'PASS_I3_ATOMIC_FUNCTIONAL_PROBES' && human.routeInventory?.expectedRoleRouteEntries === 56)) throw new Error('RELEASE_COMPOSITION_FAILURE:RUN238_BINDING_MISMATCH');
+  if (!(manifest.decision === 'PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21' && manifest.i3CertificationSourceSha === SOURCE_SHA && manifest.i3CertificationSourceTree === SOURCE_TREE && manifest.artifactSha256 === CERTIFIED_ARTIFACT_SHA256 && manifest.buildCount === 1 && manifest.rebuildAfterCertification === false && manifest.production === false && human.decision === 'PASS_I3_HUMAN_LIVE_ACCEPTANCE' && probes.decision === 'PASS_I3_ATOMIC_FUNCTIONAL_PROBES' && human.routeInventory?.expectedRoleRouteEntries === 56)) throw new Error('RELEASE_COMPOSITION_FAILURE:CURRENT_CERTIFICATION_BINDING_MISMATCH');
 
   const shopperRoutes = arr(human.routes).filter((x) => x.role === 'shopper' && !x.failed);
   const clientRoutes = arr(human.routes).filter((x) => x.role === 'cliente' && !x.failed);
   const historyOk = arr(human.historyCandidates).length > 0 && shopperRoutes.some((x) => x.id === 'miperfil') && shopperRoutes.some((x) => x.id === 'misvisitas') && probe.dashboardPeriodsOk === true;
-  record('6_HISTORICO_KPIS', 'Same live HR revision drives profile/history/multiple periods/KPIs', { historyCandidates: human.historyCandidates, dashboardPeriodsOk: probe.dashboardPeriodsOk }, { priorRunId: PRIOR_RUN_ID, sourceSha: SOURCE_SHA }, 'No HR fixture written', 'No HR cleanup required', historyOk, { inheritedFromRun238: true });
+  record('6_HISTORICO_KPIS', 'Same live HR revision drives profile/history/multiple periods/KPIs', { historyCandidates: human.historyCandidates, dashboardPeriodsOk: probe.dashboardPeriodsOk }, { priorRunId: PRIOR_RUN_ID, sourceSha: SOURCE_SHA }, 'No HR fixture written', 'No HR cleanup required', historyOk, { fromCurrentCertificationArtifact: true });
   const reservationOk = probe.reservations?.ok === true && probe.reservations?.source === 'durable_provider';
-  record('9_RESERVA', 'create/status/delete with provider ACK and durable readback', probe.reservations || null, { priorRunId: PRIOR_RUN_ID, sourceSha: SOURCE_SHA }, 'Run 238 reservation cleanup already executed', 'Run 238 evidence reports deleted=true', reservationOk, { inheritedFromRun238: true });
-  record('10_CLIENTE', 'Client login/scope/authorized modules; no cross-role access', { clientRouteCount: clientRoutes.length, decision: human.decision }, { priorRunId: PRIOR_RUN_ID, sourceSha: SOURCE_SHA }, 'No client mutation', 'No cleanup required', clientRoutes.length > 0, { inheritedFromRun238: true });
+  record('9_RESERVA', 'create/status/delete with provider ACK and durable readback', probe.reservations || null, { priorRunId: PRIOR_RUN_ID, sourceSha: SOURCE_SHA }, 'Current certification reservation cleanup already executed', 'Current certification evidence reports deleted=true', reservationOk, { fromCurrentCertificationArtifact: true });
+  record('10_CLIENTE', 'Client login/scope/authorized modules; no cross-role access', { clientRouteCount: clientRoutes.length, decision: human.decision }, { priorRunId: PRIOR_RUN_ID, sourceSha: SOURCE_SHA }, 'No client mutation', 'No cleanup required', clientRoutes.length > 0, { fromCurrentCertificationArtifact: true });
 
   const apiKey = await firebaseApiKey();
   const members = (await tenant.collection('users').get()).docs.map((d) => ({ id: d.id, ...(d.data() || {}) }));
@@ -344,14 +344,18 @@ try {
   await auth.getUser(staff.id);
   const staffToken = await customTokenToIdToken(await auth.createCustomToken(staff.id), apiKey);
 
-  const proofPayload = readPrior('hr-proof-run387.json');
+  const certificationHrPath = findFile(PRIOR_DIR, 'hr-current-live.json');
+  if (!certificationHrPath) throw new Error('SOURCE_FAILURE:CERTIFICATION_HR_EVIDENCE_MISSING:hr-current-live.json');
+  const certificationHrRaw = fs.readFileSync(certificationHrPath, 'utf8');
+  const proofPayload = JSON.parse(certificationHrRaw);
   const proofHr = proofPayload.snapshot || proofPayload.data || proofPayload;
-  certifiedProofHrRevision = str(proofHr?._runtime?.revision || proofHr?.sourceRevision || proofPayload?._runtime?.revision);
-  certificationLiveReadbackRevision = str(manifest.currentLiveHrRevisionAtCertification);
-  if (!/^[a-f0-9]{64}$/.test(certifiedProofHrRevision)) throw new Error('SOURCE_FAILURE:CERTIFIED_PROOF_HR_REVISION_INVALID');
-  if (!/^[a-f0-9]{64}$/.test(certificationLiveReadbackRevision)) throw new Error('SOURCE_FAILURE:CERTIFICATION_LIVE_HR_REVISION_INVALID');
-  if (str(manifest.certifiedProofHrRevision) !== certifiedProofHrRevision) throw new Error('RELEASE_COMPOSITION_FAILURE:CERTIFIED_PROOF_HR_MANIFEST_MISMATCH');
-  if (str(human.sourceRevision) !== certificationLiveReadbackRevision) throw new Error('RELEASE_COMPOSITION_FAILURE:CERTIFICATION_LIVE_HR_HUMAN_MISMATCH');
+  certificationHrEvidenceRevision = str(proofHr?._runtime?.revision || proofHr?.sourceRevision || proofPayload?._runtime?.revision);
+  certificationManifestHrRevision = str(manifest.certificationHrRevision);
+  if (!/^[a-f0-9]{64}$/.test(certificationHrEvidenceRevision)) throw new Error('SOURCE_FAILURE:CERTIFICATION_HR_EVIDENCE_REVISION_INVALID');
+  if (!/^[a-f0-9]{64}$/.test(certificationManifestHrRevision)) throw new Error('SOURCE_FAILURE:CERTIFICATION_HR_MANIFEST_REVISION_INVALID');
+  if (sha(certificationHrRaw) !== str(manifest.certificationHrEvidenceSha256)) throw new Error('RELEASE_COMPOSITION_FAILURE:CERTIFICATION_HR_EVIDENCE_HASH_MISMATCH');
+  if (certificationHrEvidenceRevision !== certificationManifestHrRevision) throw new Error('RELEASE_COMPOSITION_FAILURE:CERTIFICATION_HR_EVIDENCE_REVISION_MISMATCH');
+  if (str(human.sourceRevision) !== certificationManifestHrRevision) throw new Error('RELEASE_COMPOSITION_FAILURE:CERTIFICATION_HR_HUMAN_MISMATCH');
 
   const liveUrl = HOST + '/api/' + encodeURIComponent(TENANT) + '/' + encodeURIComponent(PROJECT_ID) + '/hr-live?format=json&livefixture=' + encodeURIComponent(RUN_ID) + '&ts=' + Date.now();
   const liveResp = await fetch(liveUrl, { cache: 'no-store', headers: { 'cache-control': 'no-cache, no-store, max-age=0' } });
@@ -579,8 +583,8 @@ try {
     certificationSourceSha: SOURCE_SHA, certificationSourceTree: SOURCE_TREE, certifiedArtifactSha256: CERTIFIED_ARTIFACT_SHA256,
     buildCountThisRun: 0, deployCountThisRun: 0, rebuildAfterCertification: false, productSourceChanged: false,
     production: false, hrWrites: 0, fuzzyMatching: false, hrRevision, liveFixtureHrRevision: hrRevision,
-    certifiedProofHrRevision,
-    certificationLiveReadbackRevision,
+    certificationHrEvidenceRevision,
+    certificationManifestHrRevision,
     crossRunHrRevisionEqualityRequired: false, sameRevisionWithinThisLiveFixtureRun: true, tests, cleanup: absence,
     classification: failure ? classify(failure) : null, code: failure ? str(failure.message).slice(0, 900) : null,
     cleanupError: cleanupFailure ? str(cleanupFailure.message).slice(0, 400) : null
