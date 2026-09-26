@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "READY_FOR_TERMINAL_CERTIFICATION",
+  "status": "HOLD_VRM050_REFRESH_TIMEOUT_SOURCE_FIX_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "37d6985588cec0d335736c17b974841b92c52e83",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V50_2026-09-26.json",
-  "findingsLedgerExpectedGitBlob": "56647ac4bfb2119b33146d5adb7382822e08bce5",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V51_2026-09-26.json",
+  "findingsLedgerExpectedGitBlob": "8abf960348a900c7e8b16ad04568272a3c69b6f3",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
-  "terminalCertificationAllowed": true,
-  "activeBlocker": "Run476 terminal certification stopped in HR meta stability harness after exact source/runtime/Hosting/Rules prechecks passed. Control-only stability proof is being hardened; candidate and DEV unchanged.",
+  "terminalCertificationAllowed": false,
+  "activeBlocker": "VRM-050 P0 proven in Run477: fresh HR refresh fails in tya-reapply-canonical-state-r20.mjs because vm.runInContext hardcodes timeout=5000ms. Stable cached/source-safe data does not waive refreshError.",
   "nextFindingId": "VRM-065",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RERUN TERMINAL CERTIFICATION WITH TWO-CONSECUTIVE-REVISION HR STABILITY PROOF + ALWAYS-UPLOADED DIAGNOSTICS; SAME SOURCE/DEV; ZERO DEPLOY.",
+  "exactNextAction": "FIX ONLY VRM-050 TIMEOUT OWNER; ONE SUCCESSOR; DEV RUNTIME-ONLY MATERIALIZATION; FRESH HR READBACK; NO HOSTING/PRODUCTION.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -90,29 +90,15 @@
     "attempt": 3
   },
   "lastTerminalAttempt": {
-    "runId": 36169275362,
-    "runNumber": 426,
-    "classification": "RELEASE_COMPOSITION_FAILURE",
-    "failedJob": "I3 full live fixture suite v2 — same certified source/artifact",
-    "failedStep": "Bind to same-run certification artifact and exact source without rebuild",
-    "cause": "binder asserted fresh full-human acceptance sourceRevision equals historical Run387 certifiedProofHrRevision; fresh acceptance correctly belongs to currentLiveHrRevisionAtCertification",
-    "certification": {
-      "decision": "PASS",
-      "artifactId": 10879613823,
-      "artifactDigest": "sha256:e2d84873f8d149ddff972854658d1e97616f8baab8743b2fbedad98509ca6d86",
-      "humanAcceptance": true,
-      "semanticOracle": true,
-      "hardenedAdminPaulaFocal": true,
-      "moduleTruth20of20": true,
-      "gate20": true
-    },
-    "liveFixturesExecuted": false,
-    "gate21Run": false,
-    "productDefect": false,
-    "productSourceChanged": false,
-    "builds": 0,
-    "runtimeDeploys": 0,
-    "hostingDeploys": 0,
+    "runId": 36247157545,
+    "runNumber": 477,
+    "jobId": 108418391633,
+    "artifactId": 10907986589,
+    "artifactDigest": "sha256:d213b0d4d58c3aec73ecaf4e12c09cd8ed5e3c8d660b1e773dd2a5a4b655f34f",
+    "result": "FAIL_PROVIDER_REFRESH_TIMEOUT",
+    "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
+    "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
+    "productArtifactCreated": false,
     "production": false
   },
   "vrm043": {
