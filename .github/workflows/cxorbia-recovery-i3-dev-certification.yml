@@ -3992,6 +3992,56 @@ jobs:
       - if: always()
         run: rm -rf node_modules
 
+  v42-milton-durable-diagnostic:
+    name: I3 V42 — VRM-055 durable Milton exact readback — no deploy
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM055_DURABLE_MILTON_DIAGNOSTIC_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v42-milton-diagnostic]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      V42_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      V42_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      V42_OUT: .tmp/i3-v42-milton-diagnostic
+      V42_ROOT: https://cxorbia-backend-dev.web.app
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Prove product authority unchanged
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$V42_OUT"
+          test "$V42_SOURCE" = "04432faa32bef0427223fa2c51cb5b809f53e178"
+          test "$V42_TREE" = "e06905ac9cc9cfad09d9383716bada1988cae90f"
+          test "$(git rev-parse "$V42_SOURCE^{tree}")" = "$V42_TREE"
+          test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_VRM055_DURABLE_MILTON_DIAGNOSTIC_REQUIRED"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install read-only diagnostic tooling
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
+      - name: Authenticate Firebase DEV
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Read exact durable identity and HR evidence
+        run: |
+          set -Eeuo pipefail
+          V42_OUT="$V42_OUT" V42_ROOT="$V42_ROOT" node tools/qa/cxorbia-i3-v42-milton-durable-diagnostic.mjs | tee "$V42_OUT/diagnostic.log"
+          test "$(jq -r '.decision' "$V42_OUT/milton-durable-diagnostic.json")" = "PASS_V42_DURABLE_MILTON_DIAGNOSTIC"
+          test "$(jq -r '.writes' "$V42_OUT/milton-durable-diagnostic.json")" = "0"
+          test "$(jq -r '.deploys' "$V42_OUT/milton-durable-diagnostic.json")" = "0"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-v42-milton-diagnostic-${{ github.run_id }}
+          path: ${{ env.V42_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+      - if: always()
+        run: rm -rf node_modules
+
   c3-terminal-dev-identity-readback:
     name: C3 terminal DEV identity readback — no deploy
     needs: canonical-candidate-authority
