@@ -92,7 +92,7 @@
   function install(reason){
     if(!canonicalMode()||!CX.data)return false;
     const D=CX.data;
-    if(D.__cxCommandBoundaryVersion===VERSION)return true;
+    if(D.__cxCommandBoundaryVersion===VERSION&&D.updateShopper?.__cxCommandBoundaryVersion===VERSION)return true;
     if(!D.__prototypeMutationMethods){
       D.__prototypeMutationMethods={};
       ['addProject','setVisitState','assignVisit','payVisits','addShopper','updateShopper','resetShopperCredential'].forEach(name=>{
@@ -136,6 +136,7 @@
       built.command.authorization={providerEnforcementRequired:true,permission:c.role==='shopper'?'shopper.self.update':'shopper.update'};
       return execute(built.command,meta);
     };
+    D.updateShopper.__cxCommandBoundaryVersion=VERSION;
     D.resetShopperCredential=function(id,meta){
       meta=commandMeta(meta);const c=ctx();const current=typeof D.getShopper==='function'?D.getShopper(id):null;
       const expected=versionOf(current);
@@ -226,7 +227,7 @@
       ['backend-loaded','backend-ready','backend-error','backend-source-safe-ready','cx:protected-auth-hr-authority-ready','cx:live-source-updated'].forEach(evt=>CX.bus.on(evt,()=>queueMicrotask(()=>tryInstall(evt))));
     }
     root.addEventListener?.('cx:full-visual-ready',()=>queueMicrotask(()=>tryInstall('full-visual-ready')));
-    [0,250,1000,2500].forEach(ms=>setTimeout(()=>tryInstall('deferred-'+ms),ms));
+    [0,250,1000,2500,5000,10000,20000,30000].forEach(ms=>setTimeout(()=>tryInstall('deferred-'+ms),ms));
   }
 
   root.addEventListener?.('error',event=>{
