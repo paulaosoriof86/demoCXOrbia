@@ -3916,6 +3916,82 @@ jobs:
       - if: always()
         run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-v40-source"
 
+  v41-second-review-cumulative-live-reproof:
+    name: I3 V41 — second-review cumulative live reproof on existing DEV
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_SECOND_REVIEW_CUMULATIVE_REPROOF_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v41-second-review-reproof]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      V41_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      V41_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      V41_OUT: .tmp/i3-v41-second-review
+      V41_ROOT: https://cxorbia-backend-dev.web.app
+      EXPECTED_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c
+      EXPECTED_RUNTIME_REVISION: cxorbia-live-hr-dev-00220-94r
+      EXPECTED_RUNTIME_DIGEST: sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Prove exact existing DEV authority
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$V41_OUT"
+          test "$V41_SOURCE" = "04432faa32bef0427223fa2c51cb5b809f53e178"
+          test "$V41_TREE" = "e06905ac9cc9cfad09d9383716bada1988cae90f"
+          test "$(git rev-parse "$V41_SOURCE^{tree}")" = "$V41_TREE"
+          test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_SECOND_REVIEW_CUMULATIVE_REPROOF_REQUIRED"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install live proof tooling
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+      - name: Authenticate Firebase DEV
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
+      - name: Prove no DEV drift and zero deploy
+        run: |
+          set -Eeuo pipefail
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$V41_OUT/runtime.json"
+          test "$(jq -r '.status.latestReadyRevisionName // empty' "$V41_OUT/runtime.json")" = "$EXPECTED_RUNTIME_REVISION"
+          gcloud run revisions describe "$EXPECTED_RUNTIME_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$V41_OUT/runtime-revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$V41_OUT/runtime-revision.json")"
+          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; else DIGEST="sha256:${RAW##*@sha256:}"; fi
+          test "$DIGEST" = "$EXPECTED_RUNTIME_DIGEST"
+          TOKEN="$(gcloud auth print-access-token)"
+          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$V41_OUT/hosting-live-channel.json"
+          test "$(jq -r '.release.version.name // empty' "$V41_OUT/hosting-live-channel.json")" = "$EXPECTED_HOSTING_VERSION"
+      - name: Run second-review cumulative live reproof
+        run: |
+          set -Eeuo pipefail
+          V41_OUT="$V41_OUT" V41_ROOT="$V41_ROOT" node tools/qa/cxorbia-i3-v41-second-review-live-reproof.mjs | tee "$V41_OUT/live.log"
+          test "$(jq -r '.decision' "$V41_OUT/second-review-live-reproof.json")" = "PASS_I3_V41_SECOND_REVIEW_CUMULATIVE_REPROOF"
+          test "$(jq -r '.durable.currentCount' "$V41_OUT/second-review-live-reproof.json")" = "44"
+          test "$(jq -r '.durable.uniqueHrRows' "$V41_OUT/second-review-live-reproof.json")" = "44"
+          test "$(jq -r '.shopper.after.historyCount' "$V41_OUT/second-review-live-reproof.json")" = "7"
+          test "$(jq -r '.shopper.after.currentCount' "$V41_OUT/second-review-live-reproof.json")" = "0"
+          test "$(jq -r '.admin.parity.mismatches | length' "$V41_OUT/second-review-live-reproof.json")" = "0"
+      - name: Seal V41 receipt
+        run: |
+          jq -n -S --arg source "$V41_SOURCE" --arg tree "$V41_TREE" --arg hosting "$EXPECTED_HOSTING_VERSION" --arg runtime "$EXPECTED_RUNTIME_REVISION" --arg digest "$EXPECTED_RUNTIME_DIGEST" --arg hr "$(jq -r '.hrRevision' "$V41_OUT/second-review-live-reproof.json")" '{decision:"PASS_I3_V41_SECOND_REVIEW_CUMULATIVE_REPROOF",sourceSha:$source,sourceTree:$tree,hostingVersion:$hosting,runtimeRevision:$runtime,runtimeDigest:$digest,hrRevision:$hr,builds:0,deploys:0,production:false}' > "$V41_OUT/result.json"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-v41-second-review-${{ github.run_id }}
+          path: ${{ env.V41_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+      - if: always()
+        run: rm -rf node_modules
+
   c3-terminal-dev-identity-readback:
     name: C3 terminal DEV identity readback — no deploy
     needs: canonical-candidate-authority
