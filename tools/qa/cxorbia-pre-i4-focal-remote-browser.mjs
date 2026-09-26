@@ -120,14 +120,16 @@ async function signInMember(member,kind,route,options={}){
       const technicalPrimaryCount=r==='shoppers'?population.filter(s=>{const name=String(s?.nombre||s?.name||'').trim(),id=String(s?.id||s?.shopperId||'').trim();return /^shopper_(?:gt|hn|sv|ni)_[a-z0-9]+$/i.test(name)||/^shp[-_][a-z0-9]+$/i.test(name)||(id&&name===id);}).length:null;
       const stats=s=>s&&typeof d.shopperStats==='function'?d.shopperStats(s.id||s.shopperId):null;
       const rowForSource=id=>(d.shoppers||[]).find(s=>String(s.id||s.shopperId||'')===String(id||'')||list(s.legacyLiveShopperIds).map(String).includes(String(id||'')))||null;
+      const identityMap=d.__identityMap&&typeof d.__identityMap==='object'?d.__identityMap:{};
       const identityRows=list(identityCases).map(ref=>{
-        const row=rowForSource(ref.sourceShopperId);
-        return {sourceShopperId:String(ref.sourceShopperId||''),expectedName:String(ref.name||''),expectedTotal:Number(ref.total||0),expectedRealized:Number(ref.realized||0),row:row?{id:String(row.id||row.shopperId||''),name:String(row.nombre||row.name||''),legacyLiveShopperIds:list(row.legacyLiveShopperIds).map(String),stats:stats(row)}:null};
+        const sourceShopperId=String(ref.sourceShopperId||''),row=rowForSource(sourceShopperId),canonicalId=String(identityMap[sourceShopperId]||sourceShopperId);
+        return {sourceShopperId,canonicalId,expectedName:String(ref.name||''),expectedTotal:Number(ref.total||0),expectedRealized:Number(ref.realized||0),row:row?{id:String(row.id||row.shopperId||''),name:String(row.nombre||row.name||''),legacyLiveShopperIds:list(row.legacyLiveShopperIds).map(String),stats:stats(row),providerExactIdentityLink:row.__providerExactIdentityLink===true,providerIdentityAuthorityType:String(row.__providerIdentityAuthorityType||'').toLowerCase()}:null};
       });
       const unresolvedIdentityRows=list(unresolvedIdentityCases).map(ref=>{
-        const row=rowForSource(ref.sourceShopperId);
-        return {sourceShopperId:String(ref.sourceShopperId||''),expectedReviewReason:String(ref.expectedReviewReason||''),expectedVisibleName:String(ref.expectedVisibleName||''),row:row?{id:String(row.id||row.shopperId||''),name:String(row.nombre||row.name||''),legacyLiveShopperIds:list(row.legacyLiveShopperIds).map(String),identityReviewRequired:row.identityReviewRequired===true,identityReviewReason:String(row.identityReviewReason||'')}:null};
+        const sourceShopperId=String(ref.sourceShopperId||''),row=rowForSource(sourceShopperId),canonicalId=String(identityMap[sourceShopperId]||sourceShopperId);
+        return {sourceShopperId,canonicalId,expectedReviewReason:String(ref.expectedReviewReason||''),expectedVisibleName:String(ref.expectedVisibleName||''),row:row?{id:String(row.id||row.shopperId||''),name:String(row.nombre||row.name||''),legacyLiveShopperIds:list(row.legacyLiveShopperIds).map(String),identityReviewRequired:row.identityReviewRequired===true,identityReviewReason:String(row.identityReviewReason||''),providerExactIdentityLink:row.__providerExactIdentityLink===true,providerIdentityAuthorityType:String(row.__providerIdentityAuthorityType||'').toLowerCase()}:null};
       });
+      const expectedCanonicalHrShopperPopulation=new Set([...identityRows,...unresolvedIdentityRows].map(x=>String(x.canonicalId||x.sourceShopperId||'')).filter(Boolean)).size;
       const finance=r==='financiero'&&window.CX?.fin?.porPais?window.CX.fin.porPais(d):null;
       const liqs=r==='liquidaciones'&&window.CX?.liq?.forProject?window.CX.liq.forProject(d):null;
       const sid=String(c.shopperId||'');
@@ -206,6 +208,8 @@ async function signInMember(member,kind,route,options={}){
         ranking:r==='dashboard'?{rows:ranking.length,population:population.length,missingRating:ranking.filter(x=>x.ratingAvailable===false).length}:null,
         shopperPopulation:r==='shoppers'?population.length:null,
         hrShopperPopulation:r==='shoppers'?hrPopulation.length:null,
+        expectedCanonicalHrShopperPopulation:r==='shoppers'?expectedCanonicalHrShopperPopulation:null,
+        rawSemanticShopperReferences:r==='shoppers'?identityRows.length+unresolvedIdentityRows.length:null,
         authorizedPlatformShopperPopulation:r==='shoppers'?authorizedPlatformPopulation.length:null,
         untrustedPlatformShopperPopulation:r==='shoppers'?untrustedPlatformPopulation.length:null,
         technicalPrimaryCount,
@@ -239,15 +243,17 @@ async function signInMember(member,kind,route,options={}){
       const cases=arr(info.identityCases),unresolved=arr(info.unresolvedIdentityCases);
       if(cases.length!==(reference?.identityCases||[]).length||cases.some(x=>!x.row))throw new Error('MAPPING_FAILURE:EXACT_HR_IDENTITY_MISSING:'+JSON.stringify(cases));
       if(unresolved.length!==(reference?.unresolvedIdentityCases||[]).length||unresolved.some(x=>!x.row))throw new Error('MAPPING_FAILURE:UNRESOLVED_HR_IDENTITY_MISSING:'+JSON.stringify(unresolved));
-      if(Number.isFinite(Number(reference?.shopperPopulation))&&Number(info.hrShopperPopulation)!==Number(reference.shopperPopulation))throw new Error('MAPPING_FAILURE:HR_SHOPPER_POPULATION:'+JSON.stringify({observed:info.hrShopperPopulation,expected:reference.shopperPopulation,totalOperational:info.shopperPopulation,authorizedPlatform:info.authorizedPlatformShopperPopulation}));
+      if(Number(info.hrShopperPopulation)!==Number(info.expectedCanonicalHrShopperPopulation))throw new Error('MAPPING_FAILURE:HR_SHOPPER_POPULATION:'+JSON.stringify({observed:info.hrShopperPopulation,expectedCanonical:info.expectedCanonicalHrShopperPopulation,rawReferences:info.rawSemanticShopperReferences,totalOperational:info.shopperPopulation,authorizedPlatform:info.authorizedPlatformShopperPopulation}));
       if(Number(info.untrustedPlatformShopperPopulation)!==0)throw new Error('MAPPING_FAILURE:UNTRUSTED_PLATFORM_SHOPPER_PRESENT:'+JSON.stringify({count:info.untrustedPlatformShopperPopulation,totalOperational:info.shopperPopulation}));
-      if(Number(info.shopperPopulation)!==Number(reference.shopperPopulation)+Number(info.authorizedPlatformShopperPopulation||0))throw new Error('MAPPING_FAILURE:COMPOSED_SHOPPER_POPULATION:'+JSON.stringify({observed:info.shopperPopulation,hrExpected:reference.shopperPopulation,authorizedPlatform:info.authorizedPlatformShopperPopulation}));
+      if(Number(info.shopperPopulation)!==Number(info.expectedCanonicalHrShopperPopulation)+Number(info.authorizedPlatformShopperPopulation||0))throw new Error('MAPPING_FAILURE:COMPOSED_SHOPPER_POPULATION:'+JSON.stringify({observed:info.shopperPopulation,canonicalHrExpected:info.expectedCanonicalHrShopperPopulation,rawReferences:info.rawSemanticShopperReferences,authorizedPlatform:info.authorizedPlatformShopperPopulation}));
       if(Number(info.technicalPrimaryCount)!==0)throw new Error('MAPPING_FAILURE:TECHNICAL_SHOPPER_PRIMARY_NAMES:'+JSON.stringify({count:info.technicalPrimaryCount}));
-      if(new Set([...cases,...unresolved].map(x=>x.row.id)).size!==cases.length+unresolved.length)throw new Error('MAPPING_FAILURE:EXACT_HR_IDENTITY_COLLISION:'+JSON.stringify({cases,unresolved}));
+      const expectedCanonicalIds=new Set([...cases,...unresolved].map(x=>String(x.canonicalId||x.sourceShopperId||'')).filter(Boolean));
+      if(new Set([...cases,...unresolved].map(x=>x.row.id)).size!==expectedCanonicalIds.size)throw new Error('MAPPING_FAILURE:EXACT_HR_IDENTITY_COLLISION:'+JSON.stringify({cases,unresolved,expectedCanonicalIds:[...expectedCanonicalIds]}));
       for(const x of cases){
         if(!x.row.legacyLiveShopperIds.includes(x.sourceShopperId)&&x.row.id!==x.sourceShopperId)throw new Error('MAPPING_FAILURE:EXACT_HR_CROSSWALK_MISSING:'+JSON.stringify(x));
         const nn=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
-        if(nn(x.row.name)!==nn(x.expectedName))throw new Error('MAPPING_FAILURE:EXACT_HR_HUMAN_NAME_'+x.sourceShopperId+':'+JSON.stringify(x));
+        const exactTenantAdjudication=x.row.providerExactIdentityLink===true&&x.row.providerIdentityAuthorityType==='tenant_adjudication'&&x.row.id===x.canonicalId&&x.canonicalId!==x.sourceShopperId;
+        if(!exactTenantAdjudication&&nn(x.row.name)!==nn(x.expectedName))throw new Error('MAPPING_FAILURE:EXACT_HR_HUMAN_NAME_'+x.sourceShopperId+':'+JSON.stringify(x));
         if(Number(x.row.stats?.total)!==x.expectedTotal||Number(x.row.stats?.realizadas)!==x.expectedRealized)throw new Error('MAPPING_FAILURE:EXACT_HR_HISTORY_'+x.sourceShopperId+':'+JSON.stringify(x));
       }
       for(const x of unresolved){

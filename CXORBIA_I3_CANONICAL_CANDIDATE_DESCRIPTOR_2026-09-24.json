@@ -7,13 +7,13 @@
   "productSourceSha": "62ee2903fdced52c525d5a028c8c4c725940e4cd",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V56_2026-09-26.json",
-  "findingsLedgerExpectedGitBlob": "94732faa5e33f1b219927a08d0eabdf32ec18f6d",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V57_2026-09-26.json",
+  "findingsLedgerExpectedGitBlob": "d2ce1dfd827393e4ccad59d496d56fe01bda4bd3",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": true,
-  "activeBlocker": "Run481 stopped on a control-only tenant-adjudication identity assertion; product source/runtime/Hosting/Rules and functional probes remained exact.",
+  "activeBlocker": "Run482 passed full human acceptance and terminal semantic HR oracle; only the older focal browser gate still used raw HR shopper population instead of exact canonical identity population.",
   "nextFindingId": "VRM-065",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RERUN CERTIFY -> LIVE-FIXTURES -> GATE21 AFTER CONTROL-ONLY TENANT-ADJUDICATION GATE FIX; SAME PRODUCT SOURCE/RUNTIME/HOSTING; NO DEPLOY.",
+  "exactNextAction": "RERUN CERTIFY -> LIVE-FIXTURES -> GATE21 AFTER FOCAL CANONICAL-IDENTITY CONTROL FIX; SAME PRODUCT SOURCE/RUNTIME/HOSTING; NO DEPLOY.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -471,19 +471,15 @@
     "findingId": "VRM-055"
   },
   "lastControlFailure": {
-    "runId": 36249618949,
-    "runNumber": 481,
+    "runId": 36250866877,
+    "runNumber": 482,
     "classification": "MAPPING_FAILURE",
-    "code": "ADMIN_COMPOSED_SHOPPER_CONTRACT_MISMATCH",
+    "code": "HR_SHOPPER_POPULATION",
     "productDefect": false,
-    "rawHrShoppers": 221,
-    "canonicalHrShoppers": 220,
-    "platformOnly": 1,
-    "composedTotal": 221,
-    "tenantAdjudication": {
-      "sourceShopperId": "shopper_gt_018ca3e794",
-      "canonicalShopperId": "shopper_gt_bd74ace936"
-    },
+    "observed": 220,
+    "rawExpected": 221,
+    "totalOperational": 221,
+    "authorizedPlatform": 1,
     "production": false
   },
   "lastSecondReviewProof": {
