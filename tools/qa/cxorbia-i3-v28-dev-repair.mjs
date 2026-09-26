@@ -37,12 +37,18 @@ await archive.set({
 const profileRef=tenant.collection('shoppers').doc(INVALID),canonRef=tenant.collection('shoppers').doc(CANON);
 const canonSnap=await canonRef.get();if(!canonSnap.exists)throw new Error('MAPPING_FAILURE:CANONICAL_MILTON_PROFILE_MISSING');
 const canon=canonSnap.data()||{},canonName=str(canon.nombre||[canon.firstName,canon.lastName].filter(Boolean).join(' '))||'Milton De Paz';
+const canonMembers=(await queryEq(tenant.collection('users'),'shopperId',CANON)).filter(d=>{const x=d.data()||{};return x.active===true&&str(x.role)==='shopper'&&str(x.authNamespace)==='shopper';});
+if(canonMembers.length!==1)throw new Error('MAPPING_FAILURE:CANONICAL_MILTON_MEMBERSHIP_COUNT_'+canonMembers.length);
+const canonUid=canonMembers[0].id;
+const canonAuth=await auth.getUser(canonUid).catch(()=>null);
+if(!canonAuth||canonAuth.disabled===true)throw new Error('AUTH_FAILURE:CANONICAL_MILTON_AUTH_INVALID');
+const canonUidFingerprint=crypto.createHash('sha256').update('cxorbia-provider-uid-v1\0'+canonUid,'utf8').digest('hex');
 await archiveDoc(profileRef,'invalid_identity_profile_before_quarantine');
 await setMerge(profileRef,{identityQuarantined:true,excludedFromCanonicalReadModel:true,identityAdjudicationState:'tenant_invalid_identity',canonicalShopperId:CANON,quarantineReason:'tenant_owner_confirms_identity_does_not_exist',quarantinedAt:new Date().toISOString(),updatedAt:new Date().toISOString()});
 
 const crossRef=tenant.collection('shopperIdentityCrosswalk').doc(INVALID);
 await archiveDoc(crossRef,'invalid_identity_crosswalk_before_adjudication');
-await setMerge(crossRef,{tenantId:TENANT,shopperId:CANON,canonicalShopperId:CANON,sourceShopperId:INVALID,identityAdjudicationState:'tenant_adjudicated_invalid_alias',authorityType:'tenant_adjudication',authorityRef:'paula-2026-09-25-mishael-does-not-exist',projectIds:FieldValue.arrayUnion(PROJECT),updatedAt:new Date().toISOString()});
+await setMerge(crossRef,{tenantId:TENANT,shopperId:CANON,canonicalShopperId:CANON,sourceShopperId:INVALID,sourceStableKey:INVALID,providerUidFingerprint:canonUidFingerprint,identityAdjudicationState:'tenant_adjudicated_invalid_alias',authorityType:'tenant_adjudication',authorityRef:'paula-2026-09-25-mishael-does-not-exist',projectIds:FieldValue.arrayUnion(PROJECT),updatedAt:new Date().toISOString()});
 
 const linkRef=tenant.collection('shopperIdentityLinks').doc('tenant-adj-mishael-depaz-20260926');
 await archiveDoc(linkRef,'identity_link_prior_state');
@@ -51,7 +57,7 @@ await linkRef.set({
   sourceIdentity:{shopperId:INVALID,sourceShopperId:INVALID},sourceShopperId:INVALID,
   canonicalShopperId:CANON,shopperId:CANON,status:'confirmed',state:'confirmed',
   authorityType:'tenant_adjudication',authorityRef:'paula-2026-09-25-mishael-does-not-exist',
-  periodIndependent:true,exactAliases:[INVALID],createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()
+  providerUidFingerprint:canonUidFingerprint,periodIndependent:true,exactAliases:[INVALID],createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()
 },{merge:false});writes++;
 
 const members=await queryEq(tenant.collection('users'),'shopperId',INVALID);
