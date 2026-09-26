@@ -7,13 +7,13 @@
   "productSourceSha": "f885fb7ab49d8597d992fc02051ffdd584380a85",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "62ee2903fdced52c525d5a028c8c4c725940e4cd",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V65_2026-09-26.json",
-  "findingsLedgerExpectedGitBlob": "bec8683230338a7214cfd233acdcd484f5e42cf4",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V66_2026-09-26.json",
+  "findingsLedgerExpectedGitBlob": "06432f3311ffd618bdaaa1e8adeb3818a791369c",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": true,
-  "activeBlocker": "No preterminal product P0 remains. Run490 re-proved Module Truth 20/20 on successor source/runtime. Terminal same-run certification is the only remaining I3 gate.",
+  "activeBlocker": "Run491 passed exact authority, runtime/Rules/Hosting, HR stability, full human acceptance and semantic oracle. Only the focal control mis-scoped tenant-global out-of-range count onto shopper Paula's visits route.",
   "nextFindingId": "VRM-066",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "EXECUTE CERTIFY -> LIVE-FIXTURES -> GATE21 IN ONE CANONICAL WORKFLOW RUN ON SOURCE f885fb7a / RUNTIME 00222-hj9; NO DEPLOY; IF PASS FREEZE I3 GO AND STOP BEFORE I4.",
+  "exactNextAction": "RERUN CERTIFY -> LIVE-FIXTURES -> GATE21 AFTER CONTROL-ONLY ROLE-SCOPE FIX; SAME SOURCE/RUNTIME/HOSTING; NO DEPLOY.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -473,17 +473,18 @@
     "findingId": "VRM-055"
   },
   "lastControlFailure": {
-    "runId": 36255697270,
-    "runNumber": 489,
-    "jobId": 108441973834,
-    "artifactId": 10910831347,
-    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "runId": 36256100839,
+    "runNumber": 491,
+    "jobId": 108443104198,
+    "classification": "MAPPING_FAILURE",
     "productDefect": false,
-    "solePendingFile": "backend/runtime/hr-live-service/server.mjs",
-    "currentBlob": "822e098ab08c870c8d4de6b404ef8d42a4f978b4",
-    "lastServedBlob": "822e098ab08c870c8d4de6b404ef8d42a4f978b4",
-    "changedVsLastServed": false,
-    "cause": "circular finding-state token PENDING_MODULE_TRUTH",
+    "code": "VISITAS_OUT_OF_RANGE",
+    "observed": {
+      "adminDashboard": 4,
+      "adminVisitas": 4,
+      "shopperPaulaVisitas": 3,
+      "expectedTenantGlobal": 4
+    },
     "production": false
   },
   "lastSecondReviewProof": {

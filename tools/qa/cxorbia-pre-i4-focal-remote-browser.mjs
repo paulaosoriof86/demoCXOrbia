@@ -272,7 +272,7 @@ async function signInMember(member,kind,route,options={}){
         if(x.row.identityReviewRequired!==true||x.row.identityReviewReason!==x.expectedReviewReason||x.row.name!==x.expectedVisibleName)throw new Error('MAPPING_FAILURE:UNRESOLVED_HR_IDENTITY_NOT_FAIL_CLOSED_'+x.sourceShopperId+':'+JSON.stringify(x));
       }
     }
-    if(r==='visitas'){
+    if(r==='visitas'&&kind==='admin'){
       const expectedOutOfRange=Number(reference?.countries?.GT?.outOfRange||0)+Number(reference?.countries?.HN?.outOfRange||0);
       if(Number(info.outOfRangeCount)!==expectedOutOfRange)throw new Error('MAPPING_FAILURE:VISITAS_OUT_OF_RANGE:'+JSON.stringify({observed:info.outOfRangeCount,expected:expectedOutOfRange,hrRevision}));
     }
