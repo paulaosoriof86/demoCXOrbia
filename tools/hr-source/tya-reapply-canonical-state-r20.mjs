@@ -29,11 +29,15 @@ const input=path.resolve(valueOf('--input','app/data/tya-hr-source-safe-periods.
 const output=path.resolve(valueOf('--out',valueOf('--input','app/data/tya-hr-source-safe-periods.js')));
 const reportDir=path.resolve(valueOf('--report-dir','.tmp/r20-final-canonical-pass'));
 const globalName=valueOf('--global','CX_TYA_HR_SOURCE_SAFE');
+const payloadVmTimeoutMs=Math.max(
+  5000,
+  Math.min(60000,Number(process.env.CXORBIA_HR_PAYLOAD_VM_TIMEOUT_MS||30000)||30000)
+);
 
 function readPayload(file){
   const sandbox={window:{}};
   vm.createContext(sandbox);
-  vm.runInContext(fs.readFileSync(file,'utf8'),sandbox,{filename:file,timeout:5000});
+  vm.runInContext(fs.readFileSync(file,'utf8'),sandbox,{filename:file,timeout:payloadVmTimeoutMs});
   const payload=sandbox.window[globalName];
   if(!payload)throw new Error(`Missing window.${globalName}`);
   return JSON.parse(JSON.stringify(payload));
