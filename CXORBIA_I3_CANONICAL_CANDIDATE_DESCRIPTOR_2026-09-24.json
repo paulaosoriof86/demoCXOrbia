@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_V33_PROFILE_BOUNDARY_FIX_READY_FOR_HOSTING_REPROOF",
+  "status": "HOLD_V33_HOSTING_MATERIALIZED_ENV_AUTH_RETRY_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "fe72c0ef4f141aff8c9c8e27d2c1998dcbc4cee6",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "34068805168e85cf15c9359c1dc4c4226c3062a6",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V35_2026-09-26.json",
-  "findingsLedgerExpectedGitBlob": "6c2d1b33020336fbff133f02dac8d956f73568a8",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V36_2026-09-26.json",
+  "findingsLedgerExpectedGitBlob": "d812b031c63525a66e12fa1394defcd051a51a5d",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-054 second static successor ready; live provider-ACK reproof required. VRM-055..064 remain pending cumulative UI reproof.",
+  "activeBlocker": "Run458 ENV auth/network failure before V33 product assertions. Exact V33 Hosting is already materialized; retry is readback-only.",
   "nextFindingId": "VRM-065",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "DEPLOY fe72c0e HOSTING ONLY; ZERO RUNTIME REBUILD/DEPLOY; RERUN CUMULATIVE V28 LIVE REPROOF.",
+  "exactNextAction": "RUN READBACK-ONLY CUMULATIVE ADMIN+SHOPPER V33 REPROOF AFTER NETWORK-SAFE HARNESS PATCH; ZERO DEPLOY.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -354,17 +354,16 @@
     "trigger": "DESCRIPTOR_PUSH_CANONICAL_WORKFLOW"
   },
   "currentMaterialization": {
-    "sourceSha": "e8635de1fa5e086a7fd0ca92ba1a393466cf63e4",
-    "sourceTree": "7c0ecdf11ed69bff770bd269ab9d1b948d4a160e",
-    "runId": 36207577949,
+    "sourceSha": "fe72c0ef4f141aff8c9c8e27d2c1998dcbc4cee6",
+    "sourceTree": "8d2bd24f2a26c5963c698bb57af6276699754dcd",
     "runtimeRevision": "cxorbia-live-hr-dev-00220-94r",
     "runtimeDigest": "sha256:7ac2da96caca0553b251ac5e0eba35ab60c8075d5dcb5e3f2f88da2959d758ff",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/b69bde3f2c2f5182",
-    "buildCount": 1,
-    "runtimeDeploys": 1,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/a986ff8a53ee1060",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790395302069000",
+    "buildCount": 0,
+    "runtimeDeploys": 0,
     "hostingDeploys": 1,
     "rulesDeploys": 0,
-    "repairResumeOnly": true,
     "production": false
   },
   "lastFocalAttempt": {
