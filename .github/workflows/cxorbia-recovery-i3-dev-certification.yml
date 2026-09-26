@@ -3495,6 +3495,50 @@ jobs:
         if: always()
         run: rm -rf node_modules
 
+  v26-identity-assignment-reconcile:
+    name: I3 V26 identity + assignment reconciliation — read only
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PAULA_SECOND_VISUAL_REVIEW_DEFECTS_FOUND' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v26-reconcile]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      V26_OUT: .tmp/i3-v26-identity-assignment-reconcile
+      V26_HR_URL: https://cxorbia-backend-dev.web.app/api/tya/cinepolis/hr-live?format=json&v26=reconcile-${{ github.run_id }}
+    steps:
+      - name: Checkout Recovery control head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install read-only diagnostic dependency
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
+      - name: Authenticate canonical Firebase DEV read only
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Run exact V26 reconciliation
+        run: |
+          set -Eeuo pipefail
+          V26_OUT="$V26_OUT" V26_HR_URL="$V26_HR_URL" node tools/qa/cxorbia-i3-v26-identity-assignment-reconcile.mjs | tee "$V26_OUT.log"
+          jq -e '.decision=="PASS_READ_ONLY_RECONCILIATION" and .writes==0 and .production==false' "$V26_OUT/v26-identity-assignment-reconcile.json" >/dev/null
+      - name: Upload V26 reconciliation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-v26-identity-assignment-reconcile-${{ github.run_id }}
+          path: |
+            ${{ env.V26_OUT }}
+            ${{ env.V26_OUT }}.log
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+      - name: Cleanup
+        if: always()
+        run: rm -rf node_modules
+
   c3-terminal-dev-identity-readback:
     name: C3 terminal DEV identity readback — no deploy
     needs: canonical-candidate-authority
