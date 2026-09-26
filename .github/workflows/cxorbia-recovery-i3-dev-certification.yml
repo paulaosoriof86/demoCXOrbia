@@ -430,6 +430,107 @@ jobs:
           retention-days: 30
           compression-level: 0
 
+  v61-vrm065-runtime:
+    name: I3 V61 — VRM-065 stable HR revision runtime-only DEV materialization
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM065_RUNTIME_MATERIALIZATION_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v61-vrm065-runtime]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      V61_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      V61_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      V61_OUT: .tmp/i3-v61-vrm065-runtime
+      EXPECTED_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Prove exact one-owner successor before build
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$V61_OUT"
+          test "$V61_SOURCE" = "f885fb7ab49d8597d992fc02051ffdd584380a85"
+          test "$V61_TREE" = "d3a87752434be558167fcf3787b88d190c76a87c"
+          test "$(git rev-parse "$V61_SOURCE^{tree}")" = "$V61_TREE"
+          test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_VRM065_RUNTIME_MATERIALIZATION_REQUIRED"
+          test "$(git diff --name-only 62ee2903fdced52c525d5a028c8c4c725940e4cd "$V61_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source | wc -l | tr -d ' ')" = "1"
+          git diff --name-only 62ee2903fdced52c525d5a028c8c4c725940e4cd "$V61_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source | grep -qx 'backend/runtime/hr-live-service/server.mjs'
+          node --check backend/runtime/hr-live-service/server.mjs
+          grep -q "sourceSnapshotAt','tabRegistryObservedAt" backend/runtime/hr-live-service/server.mjs
+          SOURCE_DIR="$RUNNER_TEMP/cxorbia-v61-source"
+          rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"
+          git archive "$V61_SOURCE" | tar -x -C "$SOURCE_DIR"
+          echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
+      - name: Authenticate Recovery DEV
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
+      - name: Prove Hosting unchanged before runtime materialization
+        run: |
+          set -Eeuo pipefail
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$V61_OUT/hosting-before.json"
+          test "$(jq -r '.release.version.name // empty' "$V61_OUT/hosting-before.json")" = "$EXPECTED_HOSTING_VERSION"
+      - name: Build exact VRM-065 successor runtime once
+        run: |
+          set -Eeuo pipefail
+          IMAGE_URI="gcr.io/${PROJECT}/${SERVICE}:i3-v61-${V61_SOURCE:0:12}-${GITHUB_RUN_ID}"
+          echo "$IMAGE_URI" > "$V61_OUT/image-uri.txt"
+          gcloud builds submit "$SOURCE_DIR" --project "$PROJECT" --config "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE_URI" --quiet
+      - name: Deploy exact successor runtime once to Recovery DEV
+        run: |
+          set -Eeuo pipefail
+          IMAGE_URI="$(cat "$V61_OUT/image-uri.txt")"
+          gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$IMAGE_URI" --min-instances=1 --max-instances=1 --quiet
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$V61_OUT/runtime.json"
+          REV="$(jq -r '.status.latestReadyRevisionName // empty' "$V61_OUT/runtime.json")"; test -n "$REV"
+          SERVICE_URL="$(jq -r '.status.url // empty' "$V61_OUT/runtime.json")"; test -n "$SERVICE_URL"
+          gcloud run revisions describe "$REV" --project "$PROJECT" --region "$REGION" --format=json > "$V61_OUT/runtime-revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$V61_OUT/runtime-revision.json")"
+          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else exit 1; fi
+          CACHE_MS="$(jq -r '[.spec.containers[0].env[]? | select(.name=="CXORBIA_LIVE_HR_CACHE_MS")][0].value // empty' "$V61_OUT/runtime-revision.json")"
+          test "$CACHE_MS" = "3600000"
+          echo "V61_RUNTIME_REVISION=$REV" >> "$GITHUB_ENV"
+          echo "V61_RUNTIME_DIGEST=$DIGEST" >> "$GITHUB_ENV"
+          echo "V61_SERVICE_URL=$SERVICE_URL" >> "$GITHUB_ENV"
+      - name: Prove fresh HR then stable same revision on new runtime
+        run: |
+          set -Eeuo pipefail
+          ID_TOKEN="$(gcloud auth print-identity-token --audiences="$V61_SERVICE_URL")"
+          curl -fsS --max-time 240 --retry 1 -H "Authorization: Bearer $ID_TOKEN" -H 'Cache-Control: no-cache, no-store, max-age=0' "$V61_SERVICE_URL/api/tenants/$TENANT_ID/projects/$PROJECT_ID/hr-live?format=meta&fresh=1&v61=$GITHUB_RUN_ID" > "$V61_OUT/hr-fresh-meta.json"
+          jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .shopperReconciliation.providerAck==true and .visitReconciliation.providerAck==true and .refreshError==null and .hrWrites==false and .production==false' "$V61_OUT/hr-fresh-meta.json" >/dev/null
+          REV1="$(jq -r '.revision' "$V61_OUT/hr-fresh-meta.json")"; [[ "$REV1" =~ ^[0-9a-f]{64}$ ]]
+          curl -fsS --retry 3 -H "Authorization: Bearer $ID_TOKEN" -H 'Cache-Control: no-cache, no-store, max-age=0' "$V61_SERVICE_URL/api/tenants/$TENANT_ID/projects/$PROJECT_ID/hr-live?format=json&v61=$GITHUB_RUN_ID&a=1" > "$V61_OUT/hr-1.json"
+          sleep 20
+          curl -fsS --retry 3 -H "Authorization: Bearer $ID_TOKEN" -H 'Cache-Control: no-cache, no-store, max-age=0' "$V61_SERVICE_URL/api/tenants/$TENANT_ID/projects/$PROJECT_ID/hr-live?format=meta&v61=$GITHUB_RUN_ID&a=2" > "$V61_OUT/hr-meta-2.json"
+          REV2="$(jq -r '.revision' "$V61_OUT/hr-meta-2.json")"
+          test "$REV2" = "$REV1"
+          test "$(jq -r '.refreshError == null' "$V61_OUT/hr-meta-2.json")" = "true"
+          curl -fsS --retry 3 -H "Authorization: Bearer $ID_TOKEN" "$V61_SERVICE_URL/health?v61=$GITHUB_RUN_ID" > "$V61_OUT/health.json"
+          jq -e '.ok==true and .lastRefreshError==null and .writes==false and .hrWrites==false and .production==false' "$V61_OUT/health.json" >/dev/null
+          echo "V61_HR_REVISION=$REV1" >> "$GITHUB_ENV"
+      - name: Prove Hosting still unchanged and seal
+        run: |
+          set -Eeuo pipefail
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$V61_OUT/hosting-after.json"
+          test "$(jq -r '.release.version.name // empty' "$V61_OUT/hosting-after.json")" = "$EXPECTED_HOSTING_VERSION"
+          jq -n -S --arg source "$V61_SOURCE" --arg tree "$V61_TREE" --arg runtime "$V61_RUNTIME_REVISION" --arg digest "$V61_RUNTIME_DIGEST" --arg hosting "$EXPECTED_HOSTING_VERSION" --arg hr "$V61_HR_REVISION" '{decision:"PASS_I3_V61_VRM065_STABLE_REVISION_RUNTIME",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,cacheMs:3600000,refreshError:null,revisionStable:true,sourceSafe:true,shopperProviderAck:true,visitProviderAck:true,builds:1,runtimeDeploys:1,hostingDeploys:0,rulesDeploys:0,production:false}' > "$V61_OUT/result.json"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-v61-vrm065-runtime-${{ github.run_id }}
+          path: ${{ env.V61_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
   c3-preterminal-module-truth:
     name: C3 preterminal Module Truth — exact current DEV — no deploy
     needs: canonical-candidate-authority

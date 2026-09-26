@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM065_REVISION_DRIFT_DIAGNOSTIC_REQUIRED",
+  "status": "HOLD_VRM065_RUNTIME_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "62ee2903fdced52c525d5a028c8c4c725940e4cd",
+  "productSourceSha": "f885fb7ab49d8597d992fc02051ffdd584380a85",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V60_2026-09-26.json",
-  "findingsLedgerExpectedGitBlob": "77b374cda038bdea2ffe86f8b849d0d52ef78f39",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V61_2026-09-26.json",
+  "findingsLedgerExpectedGitBlob": "ed97eb5ceaae47cede4eded3d8b127862d982243",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-065 diagnostic remains pending. Run485 was blocked only by descriptor/ledger nextFindingId mismatch before diagnostic execution; product and DEV unchanged.",
+  "activeBlocker": "VRM-065 root cause proven by Run486: sourceRevision drift is metadata-only, caused solely by tabRegistryObservedAt being hashed as stable data. Exact one-file runtime successor is ready for DEV materialization.",
   "nextFindingId": "VRM-066",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RERUN SAME V59 READ-ONLY REVISION-DRIFT DIAGNOSTIC; NO SOURCE/RUNTIME/HOSTING/DATA CHANGE.",
+  "exactNextAction": "RUN V61 EXACT RUNTIME-ONLY DEV MATERIALIZATION; THEN READBACK AND RE-RUN MODULE TRUTH BEFORE TERMINAL.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -322,12 +322,13 @@
     "production": false
   },
   "reproofDispatch": {
-    "requestedAt": "2026-09-26T16:12:00Z",
-    "mode": "VRM065_HR_REVISION_DRIFT_READONLY_V59",
-    "trigger": "[v59-vrm065-revision-diagnostic]",
-    "builds": 0,
-    "deploys": 0,
-    "writes": 0,
+    "requestedAt": "2026-09-26T16:28:00Z",
+    "mode": "VRM065_STABLE_REVISION_RUNTIME_V61",
+    "trigger": "[v61-vrm065-runtime]",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 0,
+    "rulesDeploys": 0,
     "production": false
   },
   "currentMaterialization": {
@@ -393,7 +394,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "e0649d447257745af89efc9845dfb2fb50600cf6",
+  "productSourceTree": "d3a87752434be558167fcf3787b88d190c76a87c",
   "lastLiveReproof": {
     "runId": 36217529367,
     "runNumber": 465,
@@ -583,6 +584,17 @@
     "semanticOraclePass": true,
     "productDefectUnproven": true,
     "deploys": 0,
+    "production": false
+  },
+  "pendingMaterialization": {
+    "sourceSha": "f885fb7ab49d8597d992fc02051ffdd584380a85",
+    "sourceTree": "d3a87752434be558167fcf3787b88d190c76a87c",
+    "productDiff": [
+      "backend/runtime/hr-live-service/server.mjs"
+    ],
+    "mode": "runtime_only_dev_once",
+    "hostingDeploys": 0,
+    "rulesDeploys": 0,
     "production": false
   }
 }
