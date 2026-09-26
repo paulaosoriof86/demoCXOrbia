@@ -41,7 +41,7 @@ const ALLOWED_ORIGINS=new Set([
   'http://127.0.0.1:4173',
   'http://localhost:4173'
 ]);
-const VOLATILE_REVISION_KEYS=new Set(['generatedAt','lastSnapshotAt','sourceSnapshotAt']);
+const VOLATILE_REVISION_KEYS=new Set(['generatedAt','lastSnapshotAt','sourceSnapshotAt','tabRegistryObservedAt']);
 
 let cache=null;
 let inFlight=null;
