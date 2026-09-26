@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "READY_FOR_TERMINAL_CERTIFICATION",
+  "status": "HOLD_VRM065_REVISION_DRIFT_DIAGNOSTIC_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "62ee2903fdced52c525d5a028c8c4c725940e4cd",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V58_2026-09-26.json",
-  "findingsLedgerExpectedGitBlob": "57afe4f5323a41dacbdd4640f8aefc821f3716b4",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V59_2026-09-26.json",
+  "findingsLedgerExpectedGitBlob": "faef06337fc46cf492e5085672106b6a12a45ae9",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
-  "terminalCertificationAllowed": true,
-  "activeBlocker": "Run483 passed full human acceptance and HR semantic oracle, then focal gate failed only because it compared canonical adjudicated Milton history (10) to one raw historical source record (1). Product/runtime/Hosting unchanged.",
+  "terminalCertificationAllowed": false,
+  "activeBlocker": "VRM-065: Run484 observed two HR sourceRevision values inside one terminal run after human+semantic PASS. Exact read-only comparison is required before any product/runtime change.",
   "nextFindingId": "VRM-065",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RERUN CERTIFY -> LIVE-FIXTURES -> GATE21 AFTER CONTROL-ONLY CANONICAL HISTORY AGGREGATION FIX; SAME SOURCE/RUNTIME/HOSTING; NO DEPLOY.",
+  "exactNextAction": "RUN V59 READ-ONLY DIAGNOSTIC AGAINST RUN484 SNAPSHOT + CURRENT DIRECT/HOSTING HR; NO SOURCE/RUNTIME/HOSTING/DATA CHANGE.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -322,11 +322,11 @@
     "production": false
   },
   "reproofDispatch": {
-    "requestedAt": "2026-09-26T14:44:00Z",
-    "mode": "EXHAUSTIVE_MODULE_TRUTH_SUCCESSOR_V54",
-    "trigger": "[c3-preterminal-module-truth]",
-    "deploys": 0,
+    "requestedAt": "2026-09-26T16:12:00Z",
+    "mode": "VRM065_HR_REVISION_DRIFT_READONLY_V59",
+    "trigger": "[v59-vrm065-revision-diagnostic]",
     "builds": 0,
+    "deploys": 0,
     "writes": 0,
     "production": false
   },
@@ -573,6 +573,23 @@
     "refreshError": null,
     "sourceSafe": true,
     "providerAck": true,
+    "production": false
+  },
+  "lastTerminalFailure": {
+    "runId": 36252097220,
+    "runNumber": 484,
+    "jobId": 108431943738,
+    "classification": "PROVIDER_FAILURE",
+    "code": "TERMINAL_HR_REVISION_CHANGED_DURING_RUN",
+    "pinnedHrRevision": "5d4acfec98bc52f836dac2e382c906bc54534253717c9239b5d0f20d5f4f3cc7",
+    "laterBrowserHrRevision": "385f9582e74ad545e75baa31099f1d9db6f6d0d3e4135dfc0f352abda9ecd7cf",
+    "sourceSha": "62ee2903fdced52c525d5a028c8c4c725940e4cd",
+    "runtimeRevision": "cxorbia-live-hr-dev-00221-65m",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+    "humanAcceptancePass": true,
+    "semanticOraclePass": true,
+    "productDefectUnproven": true,
+    "deploys": 0,
     "production": false
   }
 }

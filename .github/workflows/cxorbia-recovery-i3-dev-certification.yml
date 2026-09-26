@@ -277,6 +277,159 @@ jobs:
           retention-days: 30
           compression-level: 0
 
+  v59-vrm065-revision-diagnostic:
+    name: I3 V59 — VRM-065 HR revision drift forensic readback — no deploy
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM065_REVISION_DRIFT_DIAGNOSTIC_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v59-vrm065-revision-diagnostic]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      V59_OUT: .tmp/i3-v59-vrm065-revision-diagnostic
+      V59_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      V59_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      EXPECTED_RUNTIME_REVISION: cxorbia-live-hr-dev-00221-65m
+      EXPECTED_RUNTIME_DIGEST: sha256:7b48e7a539a987f03b96c97a32ccb38a9cf32bd95d3e432434bc808ec9685dce
+      EXPECTED_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c
+      RUN484_ID: '36252097220'
+      RUN484_ARTIFACT: cxorbia-recovery-i3-terminal-diagnostics-36252097220
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Prove no candidate regression
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$V59_OUT"
+          test "$V59_SOURCE" = "62ee2903fdced52c525d5a028c8c4c725940e4cd"
+          test "$V59_TREE" = "e0649d447257745af89efc9845dfb2fb50600cf6"
+          test "$(git rev-parse "$V59_SOURCE^{tree}")" = "$V59_TREE"
+          git diff --quiet "$V59_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+      - name: Authenticate Recovery DEV read only
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
+      - name: Download exact Run484 terminal evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -Eeuo pipefail
+          PRIOR="$RUNNER_TEMP/run484"
+          rm -rf "$PRIOR"; mkdir -p "$PRIOR"
+          gh run download "$RUN484_ID" --repo "$GITHUB_REPOSITORY" --name "$RUN484_ARTIFACT" --dir "$PRIOR"
+          test -f "$PRIOR/hr-current-live.json"
+          cp "$PRIOR/hr-current-live.json" "$V59_OUT/hr-run484.json"
+          test "$(jq -r '._runtime.revision // .sourceRevision // empty' "$V59_OUT/hr-run484.json")" = "5d4acfec98bc52f836dac2e382c906bc54534253717c9239b5d0f20d5f4f3cc7"
+      - name: Read exact runtime config and current HR without refresh
+        run: |
+          set -Eeuo pipefail
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$V59_OUT/runtime-service.json"
+          REV="$(jq -r '.status.latestReadyRevisionName // empty' "$V59_OUT/runtime-service.json")"; test "$REV" = "$EXPECTED_RUNTIME_REVISION"
+          SERVICE_URL="$(jq -r '.status.url // empty' "$V59_OUT/runtime-service.json")"; test -n "$SERVICE_URL"
+          gcloud run revisions describe "$REV" --project "$PROJECT" --region "$REGION" --format=json > "$V59_OUT/runtime-revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$V59_OUT/runtime-revision.json")"
+          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else exit 1; fi
+          test "$DIGEST" = "$EXPECTED_RUNTIME_DIGEST"
+          jq '[.spec.containers[0].env[]? | select(.name=="CXORBIA_LIVE_HR_CACHE_MS" or .name=="CXORBIA_HR_PAYLOAD_VM_TIMEOUT_MS" or .name=="CXORBIA_I3_LEGAL_ACCEPTANCE_WRITE_ENABLED")]' "$V59_OUT/runtime-revision.json" > "$V59_OUT/runtime-env.json"
+
+          ACCESS_TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS -H "Authorization: Bearer $ACCESS_TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$V59_OUT/hosting-live.json"
+          test "$(jq -r '.release.version.name // empty' "$V59_OUT/hosting-live.json")" = "$EXPECTED_HOSTING_VERSION"
+
+          ID_TOKEN="$(gcloud auth print-identity-token --audiences="$SERVICE_URL")"
+          for n in 1 2 3; do
+            curl -fsS --retry 3 -H "Authorization: Bearer $ID_TOKEN" -H 'Cache-Control: no-cache, no-store, max-age=0' "$SERVICE_URL/api/tenants/$TENANT_ID/projects/$PROJECT_ID/hr-live?format=meta&v59=$GITHUB_RUN_ID&n=$n" > "$V59_OUT/direct-meta-$n.json"
+            sleep 8
+          done
+          curl -fsS --retry 3 -H "Authorization: Bearer $ID_TOKEN" -H 'Cache-Control: no-cache, no-store, max-age=0' "$SERVICE_URL/api/tenants/$TENANT_ID/projects/$PROJECT_ID/hr-live?format=json&v59=$GITHUB_RUN_ID" > "$V59_OUT/hr-current-direct.json"
+          curl -fsS --retry 3 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&v59=$GITHUB_RUN_ID" > "$V59_OUT/hosting-meta.json"
+          curl -fsS --retry 3 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=json&v59=$GITHUB_RUN_ID" > "$V59_OUT/hr-current-hosting.json"
+      - name: Compare Run484 and current operational content
+        run: |
+          set -Eeuo pipefail
+          V59_OUT="$V59_OUT" node <<'NODE'
+          const fs=require('fs'),crypto=require('crypto');
+          const dir=process.env.V59_OUT;
+          const old=JSON.parse(fs.readFileSync(dir+'/hr-run484.json','utf8'));
+          const cur=JSON.parse(fs.readFileSync(dir+'/hr-current-direct.json','utf8'));
+          const host=JSON.parse(fs.readFileSync(dir+'/hr-current-hosting.json','utf8'));
+          const metas=[1,2,3].map(n=>JSON.parse(fs.readFileSync(dir+'/direct-meta-'+n+'.json','utf8')));
+          const env=JSON.parse(fs.readFileSync(dir+'/runtime-env.json','utf8'));
+          const broad=new Set(['generatedAt','sourceReadAt','sourceSnapshotAt','lastSnapshotAt','tabRegistryObservedAt','observedAt','refreshedAt','loadedAt','updatedAt','cacheAgeMs','refreshStartedAt','refreshFinishedAt','refreshDurationMs']);
+          const server=new Set(['generatedAt','lastSnapshotAt','sourceSnapshotAt']);
+          const stable=(v,omit)=>{
+            if(Array.isArray(v))return v.map(x=>stable(x,omit));
+            if(v&&typeof v==='object'){
+              const o={};
+              for(const k of Object.keys(v).sort()){
+                if(k==='_runtime'||omit.has(k))continue;
+                o[k]=stable(v[k],omit);
+              }
+              return o;
+            }
+            return v;
+          };
+          const functional=x=>stable({
+            tenantId:x.tenantId,projectId:x.projectId,currentProjectId:x.currentProjectId,currentPeriodId:x.currentPeriodId,
+            periods:x.periods||[],visits:x.visits||[],shoppers:x.shoppers||[],posts:x.posts||[],
+            periodOperationalSummary:x.periodOperationalSummary||[],projectConfig:x.projectConfig||null,tenantConfig:x.tenantConfig||null,source:x.source||null
+          },broad);
+          const sha=x=>crypto.createHash('sha256').update(JSON.stringify(x)).digest('hex');
+          const rev=x=>String(x?._runtime?.revision||x?.sourceRevision||'');
+          const diffPaths=(a,b,path='',out=[])=>{
+            if(out.length>=200)return out;
+            if(JSON.stringify(a)===JSON.stringify(b))return out;
+            if(a===null||b===null||typeof a!=='object'||typeof b!=='object'){out.push(path||'$');return out;}
+            const keys=[...new Set([...Object.keys(a||{}),...Object.keys(b||{})])].sort();
+            for(const k of keys)diffPaths(a?.[k],b?.[k],path?path+'.'+k:k,out);
+            return out;
+          };
+          const oldBroad=stable(old,broad),curBroad=stable(cur,broad);
+          const oldServer=stable(old,server),curServer=stable(cur,server);
+          const directRevs=metas.map(x=>String(x.revision||''));
+          const cacheEnv=(env.find(x=>x.name==='CXORBIA_LIVE_HR_CACHE_MS')||{}).value||null;
+          const result={
+            schemaVersion:'cxorbia.i3.v59.vrm065.revision-drift-diagnostic.v1',
+            decision:'PASS_V59_REVISION_DRIFT_DIAGNOSTIC',
+            run484Revision:rev(old),
+            currentDirectRevision:rev(cur),
+            currentHostingRevision:rev(host),
+            directMetaRevisions:directRevs,
+            directMetaStable:new Set(directRevs).size===1,
+            runtimeCacheMsEnv:cacheEnv,
+            broadOperationalDigestRun484:sha(functional(old)),
+            broadOperationalDigestCurrent:sha(functional(cur)),
+            broadOperationalEqual:sha(functional(old))===sha(functional(cur)),
+            broadSnapshotEqual:sha(oldBroad)===sha(curBroad),
+            serverNormalizedEqual:sha(oldServer)===sha(curServer),
+            broadRemainingDiffPaths:diffPaths(oldBroad,curBroad),
+            serverRemainingDiffPaths:diffPaths(oldServer,curServer),
+            directHostingFunctionalEqual:sha(functional(cur))===sha(functional(host)),
+            counts:{
+              run484:{periods:(old.periods||[]).length,visits:(old.visits||[]).length,shoppers:(old.shoppers||[]).length,posts:(old.posts||[]).length},
+              current:{periods:(cur.periods||[]).length,visits:(cur.visits||[]).length,shoppers:(cur.shoppers||[]).length,posts:(cur.posts||[]).length}
+            },
+            builds:0,deploys:0,writes:0,production:false
+          };
+          result.classification=result.run484Revision!==result.currentDirectRevision
+            ?(result.broadOperationalEqual?'METADATA_OR_NON_OPERATIONAL_REVISION_DRIFT':'OPERATIONAL_SOURCE_CHANGE')
+            :'NO_CURRENT_REVISION_DRIFT';
+          fs.writeFileSync(dir+'/result.json',JSON.stringify(result,null,2)+'\n');
+          console.log(JSON.stringify(result,null,2));
+          if(!result.directMetaStable)throw new Error('PROVIDER_FAILURE:V59_DIRECT_REVISION_UNSTABLE_DURING_DIAGNOSTIC');
+          if(!result.directHostingFunctionalEqual)throw new Error('RELEASE_COMPOSITION_FAILURE:V59_DIRECT_HOSTING_FUNCTIONAL_MISMATCH');
+          NODE
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-v59-vrm065-revision-diagnostic-${{ github.run_id }}
+          path: ${{ env.V59_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
   c3-preterminal-module-truth:
     name: C3 preterminal Module Truth — exact current DEV — no deploy
     needs: canonical-candidate-authority
