@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PAULA_SECOND_VISUAL_REVIEW_DEFECTS_FOUND",
+  "status": "HOLD_V27_ROOT_CAUSES_FROZEN_CUMULATIVE_REMEDIATION_AUTHORIZED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "da17406f8e03ef1071fe8ca384503853f51e6638",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "34068805168e85cf15c9359c1dc4c4226c3062a6",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V26_2026-09-26.json",
-  "findingsLedgerExpectedGitBlob": "c575510e61ee8f4c2d86dc64636311431851d8c4",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V27_2026-09-26.json",
+  "findingsLedgerExpectedGitBlob": "970e8e34420c7a1232815462c5d3f700f6e36f6f",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-054/056/057/058 PROVEN + VRM-055/059/061 P0 DIAGNOSTIC + VRM-060 LATENCY DIAGNOSTIC",
-  "nextFindingId": "VRM-062",
+  "activeBlocker": "VRM-054/055/056/057/058/059/061/062 P0_PROVEN + VRM-060 latency diagnostic",
+  "nextFindingId": "VRM-063",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN_V25_READ_ONLY_FORENSIC_DIAGNOSTIC_AFTER_V26_GOVERNANCE_POINTER_FIX; NO_PRODUCT_CHANGE",
+  "exactNextAction": "ONE_CUMULATIVE_I3_REMEDIATION: HR authority + duplicate archive cleanup + exact Mishael->Milton adjudication + Paula profile-save target + honorarium source + postulation identity + report period + notification state; then one DEV materialization and live Admin/Shopper reproof.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -419,5 +419,11 @@
     "hostingDeploys": 0,
     "rulesDeploys": 0,
     "production": false
+  },
+  "humanAdjudication": {
+    "sourceShopperId": "shopper_gt_018ca3e794",
+    "canonicalShopperId": "shopper_gt_bd74ace936",
+    "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
+    "authorityType": "tenant_adjudication"
   }
 }
