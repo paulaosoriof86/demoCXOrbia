@@ -6,6 +6,11 @@ window.CX = window.CX || {};
 
 /* qMode: normaliza el modo de cuestionario legacy → canónico */
 function qMode(m){ if(m==='externa')return 'externo_general'; if(m==='link')return 'externo_visita'; return m||'interna'; }
+function opaqueSourceRef(v){
+  const s=String(v||'').trim();
+  if(!s||s.length>180||/\s/.test(s)||/[?#]/.test(s)||/^[a-z][a-z0-9+.-]*:\/\//i.test(s))return '';
+  return s;
+}
 
 CX.projectWizard = function(data, ui){
   const st = {
@@ -16,6 +21,7 @@ CX.projectWizard = function(data, ui){
     frecuencia:'mensual', periodoMedicion:'igual', ventanas:'',
     cuestModo:'interna', cuestUrl:'',
     hrFuente:'Hoja creada en plataforma',
+    providerBindingId:'', mappingRef:'',
     revision:{consultora:true, cliente:false},
     submitido:{quien:'plataforma', rol:'hr'},
     contactos:{evidencias:'', soporte:'', coordinacion:''},
@@ -90,6 +96,14 @@ CX.projectWizard = function(data, ui){
         <option ${st.hrFuente==='Google Sheets (online)'?'selected':''}>Google Sheets (online)</option>
         <option ${st.hrFuente==='Excel importado'?'selected':''}>Excel importado</option>
       </select>
+      <div id="f_hrRefs" style="${st.hrFuente==='Hoja creada en plataforma'?'display:none;':''}margin:-2px 0 14px;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--panel-2)">
+        <div style="font-size:11.5px;color:var(--t2);margin-bottom:9px"><b>Vínculo seguro de la fuente</b> · usa referencias opacas ya autorizadas. No pegues URL, Sheet ID, credenciales ni tokens.</div>
+        <div class="grid g2" style="gap:10px">
+          <div><label class="lbl">Referencia de conexión</label><input class="inp" id="f_hrBinding" value="${st.providerBindingId}" placeholder="Ej. binding:cliente-hr-prod" autocomplete="off"></div>
+          <div><label class="lbl">Referencia de mapeo</label><input class="inp" id="f_hrMapping" value="${st.mappingRef}" placeholder="Ej. mapping:visitas-v1" autocomplete="off"></div>
+        </div>
+        <div style="font-size:10.5px;color:var(--t3);margin-top:7px">Estas referencias quedan guardadas dentro del proyecto y se validan por el provider al crear. La fuente externa sigue siendo autoridad; CXOrbia no guarda el secreto ni la URL privada.</div>
+      </div>
       <div style="margin-bottom:6px"><label class="lbl">Escenarios (separados por coma)</label><input class="inp" id="f_scn" value="${st.scenarios}" placeholder="Compra estándar, Fin de semana, Incógnito"></div>
       <div class="flex" style="gap:8px;margin:8px 0"><button class="btn btn-soft btn-sm" id="f_import" type="button">📥 Importar instructivo / HR (IA)</button></div>
       <div style="font-size:11.5px;color:var(--t3);margin-bottom:14px">Los cuestionarios pueden tener versiones por escenario, marca o tipo de establecimiento (editables luego en el módulo Cuestionarios).</div>
@@ -132,7 +146,7 @@ CX.projectWizard = function(data, ui){
     if(st.step===3){ const r=wrap.querySelector('input[name="wmod"]:checked'); if(r)st.modelo=r.value;
       if(g('f_isr')!=null)st.isr=+g('f_isr')||0; if(g('f_reg')!=null)st.regalias=+g('f_reg')||0; }
     if(st.step===4){ if(g('f_cmodo')!=null)st.cuestModo=g('f_cmodo'); if(g('f_curl')!=null)st.cuestUrl=g('f_curl');
-      if(g('f_hr')!=null)st.hrFuente=g('f_hr'); if(g('f_scn')!=null)st.scenarios=g('f_scn');
+      if(g('f_hr')!=null)st.hrFuente=g('f_hr'); if(g('f_hrBinding')!=null)st.providerBindingId=g('f_hrBinding'); if(g('f_hrMapping')!=null)st.mappingRef=g('f_hrMapping'); if(g('f_scn')!=null)st.scenarios=g('f_scn');
       if(g('f_freq')!=null)st.frecuencia=g('f_freq'); if(g('f_medi')!=null)st.periodoMedicion=g('f_medi'); if(g('f_vent')!=null)st.ventanas=g('f_vent'); }
     if(st.step===5){ if(g('f_res')!=null)st.restriccion=g('f_res'); if(g('f_dias')!=null)st.diasPago=+g('f_dias')||30; if(g('f_con')!=null)st.conocimiento=g('f_con'); }
   };
@@ -149,7 +163,10 @@ CX.projectWizard = function(data, ui){
       visitLinkField:'questionnaireLink',
       label:st.hrFuente
     };
-    if(!external)source.mappingRef='internal-native-mapping';
+    if(external){
+      source.providerBindingId=opaqueSourceRef(st.providerBindingId);
+      source.mappingRef=opaqueSourceRef(st.mappingRef);
+    }else source.mappingRef='internal-native-mapping';
     return source;
   };
 
@@ -160,8 +177,8 @@ CX.projectWizard = function(data, ui){
     const windows=(st.ventanas||'').split(',').map(s=>s.trim()).filter(Boolean);
     const operationalSource=sourceConfig();
     if(operationalSource.mode==='external'&&(!operationalSource.providerBindingId||!operationalSource.mappingRef)){
-      ui.toast('Proyecto no creado: la fuente externa requiere vínculo seguro y mapeo configurados antes del alta.','warn',4600);
-      return;
+      ui.toast('Proyecto no creado: seleccionaste una fuente externa y faltan referencias seguras de conexión o mapeo. No pegues URLs ni credenciales.','warn',5200);
+      st.step=4;render();return;
     }
     const cfg={
       name:st.name, client:st.name, industry:st.industry||'Proyecto', countries:st.countries,
@@ -198,6 +215,7 @@ CX.projectWizard = function(data, ui){
     wrap.querySelector('#wNext').addEventListener('click',()=>{persist();if(st.step===st.total){create();}else{st.step++;render();}});
     const modR=wrap.querySelectorAll('input[name="wmod"]'); modR.forEach(r=>r.addEventListener('change',()=>{st.modelo=r.value;const d=wrap.querySelector('#directoCosts');if(d)d.style.display=st.modelo==='directo'?'':'none';}));
     const cm=wrap.querySelector('#f_cmodo'); if(cm)cm.addEventListener('change',()=>{const w=wrap.querySelector('#cUrlWrap');if(w){const m=qMode(cm.value);w.style.display=(m==='interna'||m==='externo_visita')?'none':'';}});
+    const hr=wrap.querySelector('#f_hr'); if(hr)hr.addEventListener('change',()=>{st.hrFuente=hr.value;const refs=wrap.querySelector('#f_hrRefs');if(refs)refs.style.display=st.hrFuente==='Hoja creada en plataforma'?'none':'';});
     const ps=wrap.querySelector('#f_paisSearch'); if(ps)ps.addEventListener('input',()=>{const q=ps.value.toLowerCase();wrap.querySelectorAll('.wPaisRow').forEach(l=>{l.style.display=l.dataset.n.includes(q)?'':'none';});});
     const imp=wrap.querySelector('#f_import'); if(imp)imp.addEventListener('click',()=>importWizard());
   };
