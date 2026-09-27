@@ -4,10 +4,10 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_REOPENED_POST_RUN500_DRIFT",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "b841266de9e6156eb7feda7b09e39f09d8721766",
+  "productSourceSha": "77b29e303c825be586a97e159d4d65bfae7e66c8",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
-  "predecessorProductSourceSha": "6877b38171a3b1ef8caf88734d0884a31ebef639",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V84_2026-09-27.json",
+  "predecessorProductSourceSha": "b841266de9e6156eb7feda7b09e39f09d8721766",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V85_2026-09-27.json",
   "findingsLedgerExpectedGitBlob": "dfd319c1dfc126e1aeb61e62483cf79be3b0dfd1",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "VRM-080 LIVE REPROOF ONLY: prove connected security UI uses live provider and exposes no local role/permission authority; update a synthetic staff user's profile/role/scope/state through provider ACK/readback; update a synthetic project's countries through project.update ACK/readback; prove unsupported tenant config is locked; cleanup all QA residue; no production.",
+  "exactNextAction": "RUN ONE VRM-080 LIVE REPROOF ON SOURCE 77b29e3: prove connected user-admin durable update/claims/audit; create synthetic project with provider ACK preserving projectId; update countries through provider ACK/readback; prove unsupported tenant config locked; cleanup all QA residue; no production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -312,9 +312,9 @@
     "production": false
   },
   "currentRemediationCandidate": {
-    "sourceSha": "b841266de9e6156eb7feda7b09e39f09d8721766",
-    "sourceTree": "60c59909eb5f9b6b96139f4f58fb34dde71b7dfa",
-    "predecessorSha": "6877b38171a3b1ef8caf88734d0884a31ebef639",
+    "sourceSha": "77b29e303c825be586a97e159d4d65bfae7e66c8",
+    "sourceTree": "279f33d6ad734ac7da9e5764dd05c91cab8882aa",
+    "predecessorSha": "b841266de9e6156eb7feda7b09e39f09d8721766",
     "findingIds": [
       "VRM-080"
     ],
@@ -397,7 +397,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "60c59909eb5f9b6b96139f4f58fb34dde71b7dfa",
+  "productSourceTree": "279f33d6ad734ac7da9e5764dd05c91cab8882aa",
   "lastLiveReproof": {
     "runId": 36217529367,
     "runNumber": 465,
@@ -704,7 +704,7 @@
   },
   "postRun500Recovery": {
     "lock": "CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json",
-    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V84_2026-09-27.json",
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V85_2026-09-27.json",
     "vrm076": "FIXED_PROVEN_RUN502",
     "vrm077": "FIXED_PROVEN_RUN507",
     "remainingOpenP0": [
@@ -791,12 +791,13 @@
     "production": false
   },
   "pendingMaterialization": {
-    "sourceSha": "b841266de9e6156eb7feda7b09e39f09d8721766",
-    "sourceTree": "60c59909eb5f9b6b96139f4f58fb34dde71b7dfa",
+    "sourceSha": "77b29e303c825be586a97e159d4d65bfae7e66c8",
+    "sourceTree": "279f33d6ad734ac7da9e5764dd05c91cab8882aa",
     "productDiff": [
       "app/modules/configuracion.js",
       "app/core/config.js",
-      "app/adapters/cxorbia-cxdata-command-boundary-v1.js"
+      "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+      "app/adapters/cxorbia-command-adapter-v1.js"
     ],
     "mode": "hosting_only_dev_if_needed",
     "runtimeDeploys": 0,
