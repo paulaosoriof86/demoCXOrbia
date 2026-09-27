@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM081_DEV_MATERIALIZATION_REQUIRED",
+  "status": "HOLD_VRM081_RUNTIME_DIAGNOSTIC_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_REOPENED_POST_RUN500_DRIFT",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "0c3ce84d567a674ec18f90eedba1b2380c45d55b",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "5ab4c206ff9397eef6e06ee7cf9a22c3c728721a",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V88_2026-09-27.json",
-  "findingsLedgerExpectedGitBlob": "820baecde53b94bdbf44460699ada0fa3ea80b20",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V89_2026-09-27.json",
+  "findingsLedgerExpectedGitBlob": "57ee2d04d0e9ad9d251da2b1d23a3b44bb51aacb",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "MATERIALIZE exact VRM-081 source 0c3ce84d567a674ec18f90eedba1b2380c45d55b to existing Recovery DEV runtime once after provider+semantic source tests; then run pinned-revision population credential reproof. No Hosting, Rules, HR/external writes, or production.",
+  "exactNextAction": "READ existing Recovery DEV runtime revision/digest + direct health/HR response + Cloud Run logs; classify HR 503. No second build/deploy.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -813,9 +813,14 @@
     "findingIds": [
       "VRM-081"
     ],
-    "mode": "runtime_only_dev_once",
-    "maxBuilds": 1,
-    "maxRuntimeDeploys": 1,
+    "mode": "NO_SECOND_BUILD_DIAGNOSE_EXISTING_DEV_RUNTIME",
+    "materializationRunId": 36355126389,
+    "sourcePrebuildTests": "PASS",
+    "buildExactSource": "PASS",
+    "runtimeDeployExactSource": "PASS",
+    "observedHrHttpStatus": 503,
+    "maxAdditionalBuilds": 0,
+    "maxAdditionalRuntimeDeploys": 0,
     "hostingDeploys": 0,
     "rulesDeploys": 0,
     "production": false
