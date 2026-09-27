@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM081_DIAGNOSTIC_REQUIRED",
+  "status": "HOLD_VRM081_CODEX_FOCAL_EXECUTION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_REOPENED_POST_RUN500_DRIFT",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -815,5 +815,33 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/657dc30197e38cb4",
     "hostingDeploys": 0,
     "production": false
+  },
+  "lastVrm081Diagnostic": {
+    "runId": 36352872025,
+    "runNumber": 532,
+    "conclusion": "success",
+    "jobId": 108714816483,
+    "artifactId": 10943305504,
+    "artifactDigest": "sha256:a37db670a4785218ce5333a31ab5df910cd93cc25993e7b592b545d95fabcd5e",
+    "decision": "PASS_I3_VRM081_POPULATION_CREDENTIAL_DIAGNOSTIC",
+    "hrRevision": "7509374c11643838f40f61434e2d076126f466e9c0953cbc2300febaf91919c8",
+    "sourceShopperCount": 221,
+    "identityLinkConflicts": 0,
+    "production": false
+  },
+  "vrm081CodexHandoff": {
+    "state": "FROZEN_READY",
+    "classification": "AUTH_FAILURE",
+    "taskPath": "app/docs/CODEX-EXECUTION-TASK-I3-VRM081-20260927.md",
+    "taskCommit": "db236d491710e26b1eca845b6e51683039b207d8",
+    "lockPath": "CXORBIA_I3_VRM081_CODEX_HANDOFF_LOCK_2026-09-27.json",
+    "lockCommit": "58b32ab04d30556ada5af4ddb15369fdd569c034",
+    "allowedProductFiles": [
+      "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+      "backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs"
+    ],
+    "nextAction": "CODEX_EXECUTE_FOCAL_VRM081_ON_EXISTING_RECOVERY_BRANCH",
+    "authorizationRequired": false,
+    "productionAuthorized": false
   }
 }
