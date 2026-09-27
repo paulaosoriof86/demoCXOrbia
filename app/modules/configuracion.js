@@ -195,11 +195,102 @@ CX.module('cuestionarios', ({data,ui})=>{
   return host;
 });
 
+/* ---------- Recovery I3 VRM-080: administración conectada durable ---------- */
+const _cfgConnectedAuthority=()=>!!(CX.canonicalTenantAuthority&&CX.canonicalTenantAuthority()&&window.CX_PROTECTED_DEV_RUNTIME===true&&CX.BACKEND?.enableCommandWrites===true);
+const _cfgEsc=v=>String(v==null?'':v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+const _cfgOpId=pfx=>(pfx||'cfg')+'-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10);
+async function _cfgUserAdminRequest(suffix,method,body){
+  const tenant=String(window.CX_TENANT_RUNTIME_CONFIG?.tenantId||CX.BRAND?.id||'').trim();
+  const user=window.firebase?.auth?.().currentUser;if(!tenant||!user)throw new Error('AUTHORITY_USER_ADMIN_AUTH_REQUIRED');
+  const token=await user.getIdToken(true);const m=method||'GET';
+  const headers={'Authorization':'Bearer '+token,'Accept':'application/json'};
+  if(m!=='GET'){headers['Content-Type']='application/json';headers['Idempotency-Key']=_cfgOpId('user-admin');}
+  const res=await fetch('/api/tenants/'+encodeURIComponent(tenant)+'/users'+String(suffix||''),{method:m,headers,body:body==null?undefined:JSON.stringify(body),cache:'no-store'});
+  let json={};try{json=await res.json();}catch(e){}
+  if(!res.ok||json.ok!==true)throw new Error(String(json.error||('USER_ADMIN_HTTP_'+res.status)));
+  return json;
+}
+CX.liveUserAdmin=Object.freeze({
+  list:()=>_cfgUserAdminRequest('','GET'),
+  create:p=>_cfgUserAdminRequest('','POST',p),
+  profile:(id,p)=>_cfgUserAdminRequest('/'+encodeURIComponent(id)+'/profile','PATCH',p),
+  scope:(id,p)=>_cfgUserAdminRequest('/'+encodeURIComponent(id)+'/scope','PATCH',p),
+  setActive:(id,on)=>_cfgUserAdminRequest('/'+encodeURIComponent(id)+(on?':reactivate':':disable'),'POST',{})
+});
+CX.connectedAdminConfig=Object.freeze({
+  enabled:_cfgConnectedAuthority,
+  async updateProjectCountries(projectId,countries,currency,periodId){
+    if(!_cfgConnectedAuthority())throw new Error('PROJECT_CONFIG_CONNECTED_AUTHORITY_REQUIRED');
+    const id=String(projectId||'').trim(),all=CX.data?.__backendAllProjectRecords||[];
+    const current=all.find(x=>String(x.id||x.projectId||'')===id);if(!current)throw new Error('PROJECT_CONFIG_REGISTRY_RECORD_REQUIRED');
+    const nextCountries=[...new Set((countries||[]).map(String).map(x=>x.trim().toUpperCase()).filter(Boolean))];if(!nextCountries.length)throw new Error('PROJECT_COUNTRIES_REQUIRED');
+    const nextCurrency=Object.assign({},current.currency||{},currency||{});
+    const patch={name:current.name,countries:nextCountries,currency:nextCurrency,operationalSource:current.operationalSource||current.routeSource,version:current.version,periodId:String(periodId||CX.data?.currentPeriodId||current.periodId||'setup-config'),status:current.status||'draft'};
+    const ack=await CX.data.updateProject(id,patch,{ackAware:true,reason:'connected-config-project-countries'});
+    if(!(ack&&ack.ok===true&&ack.committed===true&&ack.providerAck===true&&ack.successUiAllowed===true))throw new Error(String(ack?.code||'PROJECT_CONFIG_PROVIDER_ACK_REQUIRED'));
+    if(CX.backend&&typeof CX.backend.refresh==='function')await CX.backend.refresh();
+    const rb=(CX.data?.__backendAllProjectRecords||[]).find(x=>String(x.id||x.projectId||'')===id);
+    const got=[...new Set((rb?.countries||[]).map(String))].sort(),want=nextCountries.slice().sort();
+    if(JSON.stringify(got)!==JSON.stringify(want))throw new Error('PROJECT_CONFIG_READBACK_MISMATCH');
+    return {ok:true,providerAck:true,projectId:id,countries:got,version:rb?.version,localStorageWrite:false};
+  }
+});
+
+function _connectedUsersModule(ui){
+  const host=ui.el('div');host.dataset.connectedUserAuthority='durable';
+  const role=String(CX.backendAuth?.context?.()?.role||CX.session?.role||'').toLowerCase();
+  const roles=[['super','Super Admin'],['admin','Equipo administrativo'],['ops','Equipo operativo'],['coordinador','Coordinador / Representante'],['cliente','Cliente']];
+  if(role!=='super'){
+    host.innerHTML=ui.ph('Usuarios & Permisos','Administración conectada')+'<div class="card card-p" data-connected-users="restricted"><div class="card-t">Seguridad administrada por el proveedor</div><p style="font-size:12.5px;color:var(--t2);margin-top:8px">La edición durable de usuarios, roles y alcance requiere una sesión Super Admin. Esta vista no carga ni guarda usuarios, permisos o roles en el navegador.</p></div>';
+    return host;
+  }
+  let state={users:[],currentProjectIds:[]};
+  const projectChecks=(selected)=>state.currentProjectIds.map(id=>'<label class="flex" style="gap:6px;font-size:12px"><input type="checkbox" data-prj="'+_cfgEsc(id)+'" '+((selected||[]).includes(id)?'checked':'')+'> '+_cfgEsc(id)+'</label>').join('');
+  const refresh=async()=>{state=await CX.liveUserAdmin.list();render();return state;};
+  const render=()=>{
+    host.innerHTML=ui.ph('Usuarios & Permisos','Autoridad conectada · Auth + membresía + alcance durable')+
+      '<div class="card card-p" data-connected-security="provider" style="margin-bottom:14px;background:var(--brand-light);border-color:#cfe6f7"><div style="font-size:12.5px;color:var(--brand-dark)"><b>Seguridad canónica activa.</b> Usuarios y alcance se guardan en el proveedor con ACK y readback. Los roles personalizados y matrices locales están bloqueados porque no son autoridad del backend.</div></div>'+
+      '<div class="between" style="margin-bottom:12px"><div>'+ui.bdg(state.users.length+' usuarios','n')+'</div><button class="btn btn-pr btn-sm" id="addU">＋ Crear usuario</button></div>'+
+      '<div class="card card-p"><table class="tbl"><thead><tr><th>Usuario</th><th>Login</th><th>Rol</th><th>Alcance</th><th>Estado</th><th></th></tr></thead><tbody>'+
+      state.users.map(u=>'<tr data-uid="'+_cfgEsc(u.id)+'"><td><b>'+_cfgEsc(u.displayName||u.visibleLogin)+'</b><div style="font-size:10.5px;color:var(--t3)">'+_cfgEsc(u.contactEmail||'')+'</div></td><td>'+_cfgEsc(u.visibleLogin)+'</td><td>'+_cfgEsc(u.role)+'</td><td style="font-size:11px">'+_cfgEsc(u.entitlementMode)+' · '+_cfgEsc((u.projectIds||[]).join(', '))+(u.scopeReviewRequired?' · REVISAR':'')+'</td><td>'+(u.active?'Activo':'Inactivo')+'</td><td><button class="btn btn-ghost btn-sm" data-edit="'+_cfgEsc(u.id)+'">Editar</button></td></tr>').join('')+
+      '</tbody></table></div>'+
+      '<div class="card card-p" style="margin-top:14px"><div class="card-t">Roles y matrices</div><div style="font-size:12px;color:var(--t2);margin-top:7px">En modo conectado, la autorización se deriva de claims, membresía y alcance del proveedor. No existe edición local de roles personalizados, matriz de módulos ni acciones sensibles.</div></div>';
+    host.querySelector('#addU')?.addEventListener('click',()=>{
+      ui.modal('Crear usuario conectado','<div class="grid g2" style="gap:10px"><div><label class="lbl">Nombre</label><input class="inp" id="cuName"></div><div><label class="lbl">Login visible</label><input class="inp" id="cuLogin" autocomplete="off"></div><div><label class="lbl">Correo de contacto</label><input class="inp" id="cuMail"></div><div><label class="lbl">Contraseña inicial</label><input class="inp" id="cuPass" type="password" autocomplete="new-password"></div><div><label class="lbl">Rol</label><select class="sel" id="cuRole">'+roles.map(r=>'<option value="'+r[0]+'">'+r[1]+'</option>').join('')+'</select></div><div><label class="lbl">Alcance</label><select class="sel" id="cuMode"><option value="SPECIFIC_PROJECTS">Proyectos específicos</option><option value="TYA_COMPLETE">Toda la operación T&A</option></select></div><div style="grid-column:1/3"><label class="lbl">Proyectos</label><div id="cuProjects" class="flex wrap" style="gap:10px">'+projectChecks([])+'</div></div><div><label class="lbl">Países (coma)</label><input class="inp" id="cuCountries" placeholder="GT, HN"></div><div><label class="lbl">Persona / etiqueta</label><input class="inp" id="cuPerson"></div></div><div style="text-align:right;margin-top:14px"><button class="btn btn-pr btn-sm" id="cuSave">Crear con proveedor</button></div>',{onMount:(ov,close)=>{
+        ov.querySelector('#cuSave').addEventListener('click',async()=>{const btn=ov.querySelector('#cuSave');btn.disabled=true;try{
+          const mode=ov.querySelector('#cuMode').value,ids=[...ov.querySelectorAll('[data-prj]:checked')].map(x=>x.dataset.prj);
+          const payload={displayName:(ov.querySelector('#cuName').value||'').trim(),visibleLogin:(ov.querySelector('#cuLogin').value||'').trim().toLowerCase(),contactEmail:(ov.querySelector('#cuMail').value||'').trim(),password:ov.querySelector('#cuPass').value||'',role:ov.querySelector('#cuRole').value,entitlementMode:mode,projectIds:mode==='TYA_COMPLETE'?state.currentProjectIds:ids,countries:(ov.querySelector('#cuCountries').value||'').split(',').map(x=>x.trim().toUpperCase()).filter(Boolean),personLabel:(ov.querySelector('#cuPerson').value||'').trim()||null};
+          if(!payload.displayName||!payload.visibleLogin||payload.password.length<8)throw new Error('Completa nombre, login y contraseña de al menos 8 caracteres.');if(mode==='SPECIFIC_PROJECTS'&&!payload.projectIds.length)throw new Error('Selecciona al menos un proyecto.');
+          const ack=await CX.liveUserAdmin.create(payload);if(!ack?.id)throw new Error('USER_CREATE_ACK_INVALID');
+          const rb=await refresh();if(!rb.users.some(x=>x.id===ack.id&&x.visibleLogin===payload.visibleLogin))throw new Error('USER_CREATE_READBACK_MISMATCH');close();ui.toast('Usuario creado y confirmado por el proveedor','ok',4200);
+        }catch(e){ui.toast('Usuario no creado: '+String(e.message||e),'warn',5200);}finally{btn.disabled=false;}});
+      }});
+    });
+    host.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>{const u=state.users.find(x=>x.id===b.dataset.edit);if(!u)return;
+      ui.modal('Editar usuario conectado','<div class="grid g2" style="gap:10px"><div><label class="lbl">Nombre</label><input class="inp" id="euName" value="'+_cfgEsc(u.displayName||'')+'"></div><div><label class="lbl">Login</label><input class="inp" value="'+_cfgEsc(u.visibleLogin)+'" disabled></div><div><label class="lbl">Correo</label><input class="inp" id="euMail" value="'+_cfgEsc(u.contactEmail||'')+'"></div><div><label class="lbl">Rol</label><select class="sel" id="euRole">'+roles.map(r=>'<option value="'+r[0]+'" '+(u.role===r[0]?'selected':'')+'>'+r[1]+'</option>').join('')+'</select></div><div><label class="lbl">Alcance</label><select class="sel" id="euMode"><option value="SPECIFIC_PROJECTS" '+(u.entitlementMode==='SPECIFIC_PROJECTS'?'selected':'')+'>Proyectos específicos</option><option value="TYA_COMPLETE" '+(u.entitlementMode==='TYA_COMPLETE'?'selected':'')+'>Toda la operación T&A</option></select></div><div><label class="lbl">Países</label><input class="inp" id="euCountries" value="'+_cfgEsc((u.countries||[]).join(', '))+'"></div><div style="grid-column:1/3"><label class="lbl">Proyectos</label><div class="flex wrap" style="gap:10px">'+projectChecks(u.projectIds||[])+'</div></div><div style="grid-column:1/3"><label class="flex" style="gap:8px"><input type="checkbox" id="euActive" '+(u.active?'checked':'')+'> Usuario activo</label></div></div><div style="text-align:right;margin-top:14px"><button class="btn btn-pr btn-sm" id="euSave">Guardar con proveedor</button></div>',{onMount:(ov,close)=>{
+        ov.querySelector('#euSave').addEventListener('click',async()=>{const btn=ov.querySelector('#euSave');btn.disabled=true;try{
+          const mode=ov.querySelector('#euMode').value,ids=[...ov.querySelectorAll('[data-prj]:checked')].map(x=>x.dataset.prj),projectIds=mode==='TYA_COMPLETE'?state.currentProjectIds:ids;
+          if(mode==='SPECIFIC_PROJECTS'&&!projectIds.length)throw new Error('Selecciona al menos un proyecto.');
+          await CX.liveUserAdmin.profile(u.id,{displayName:(ov.querySelector('#euName').value||'').trim(),contactEmail:(ov.querySelector('#euMail').value||'').trim(),countries:(ov.querySelector('#euCountries').value||'').split(',').map(x=>x.trim().toUpperCase()).filter(Boolean)});
+          await CX.liveUserAdmin.scope(u.id,{role:ov.querySelector('#euRole').value,entitlementMode:mode,projectIds});
+          const active=ov.querySelector('#euActive').checked;if(active!==u.active)await CX.liveUserAdmin.setActive(u.id,active);
+          const rb=await refresh(),got=rb.users.find(x=>x.id===u.id);if(!got||got.role!==ov.querySelector('#euRole').value||got.active!==active)throw new Error('USER_UPDATE_READBACK_MISMATCH');
+          close();ui.toast('Usuario actualizado y confirmado por el proveedor','ok',4200);
+        }catch(e){ui.toast('Cambios no confirmados: '+String(e.message||e),'warn',5200);}finally{btn.disabled=false;}});
+      }});
+    }));
+  };
+  host.innerHTML=ui.ph('Usuarios & Permisos','Cargando autoridad conectada…')+'<div class="card card-p">Consultando usuarios y alcance en el proveedor…</div>';
+  refresh().catch(e=>{host.innerHTML=ui.ph('Usuarios & Permisos','Administración conectada')+'<div class="card card-p" data-connected-users="blocked"><b>No se habilitó edición.</b><div style="font-size:12px;color:var(--t2);margin-top:6px">'+_cfgEsc(e.message||e)+'</div></div>';});
+  return host;
+}
+
 /* ---------- Usuarios & Permisos (matriz editable) ---------- */
 let _uState=null;
 const _U_KEY='cx_users', _UR_KEY='cx_custom_roles';
 function _uSave(st){ try{ localStorage.setItem(_U_KEY, JSON.stringify(st.users)); localStorage.setItem(_UR_KEY, JSON.stringify(st.customRoles||[])); }catch(e){} }
 CX.module('usuarios', ({ui})=>{
+  if(_cfgConnectedAuthority()) return _connectedUsersModule(ui);
   if(!_uState){
     let savedUsers=null, savedRoles=null;
     try{ savedUsers=JSON.parse(localStorage.getItem(_U_KEY)||'null'); }catch(e){}
@@ -383,10 +474,11 @@ let _cfgTab='centro', _cfgMode='proveedor';
 CX.module('config', ({data,ui})=>{
   const p=data.period();
   const host=ui.el('div');
+  const connected=_cfgConnectedAuthority();
   const plan=CX.session.plan||p.plan||'estandar';
 
   const draw=()=>{
-    host.innerHTML=`${ui.ph('Configuración', 'Centro de autoadministración · personaliza TODA la plataforma sin tocar código')}
+    host.innerHTML=`${ui.ph('Configuración', connected?'Administración conectada · solo cambios con autoridad durable':'Centro de autoadministración · personaliza TODA la plataforma sin tocar código')}
     <div class="flex wrap" style="gap:6px;margin-bottom:14px">
       ${['centro','marca','plan','paises','listas','nda'].map(t=>`<button class="btn btn-sm ${_cfgTab===t?'btn-pr':'btn-ghost'}" data-tab="${t}">${{centro:'🎛️ Centro',marca:'🎨 Marca',plan:'📦 Plan',paises:'🌍 Países',listas:'📋 Listas',nda:'📜 NDA'}[t]}</button>`).join('')}
     </div>
@@ -407,6 +499,7 @@ CX.module('config', ({data,ui})=>{
 
   /* #175 — Listas/catálogos administrables (alimentan dropdowns de toda la plataforma) */
   const drawListas=(body)=>{
+    if(connected){body.innerHTML='<div class="card card-p" data-config-locked="listas"><div class="card-t">Listas y catálogos</div><p style="font-size:12.5px;color:var(--t2);margin-top:8px">La edición local está deshabilitada en modo conectado. Estas listas solo podrán cambiarse cuando exista persistencia durable con ACK; el navegador no es autoridad.</p></div>';return;}
     const K='cx_listas';
     const defs={rubros:['Retail','Banca','Restaurantes','Salud','Telecom','Automotriz','Seguros','Combustibles'],tiposVisita:['Mystery presencial','Mystery Calling','Auditoría de imagen','Experiencia digital'],canales:['Tienda física','App móvil','Teléfono','Web','Delivery'],conceptosFin:['Anticipo','Honorario shopper','Comisión','Facturación','Remesa','Reembolso','Financiamiento'],estadosAccion:['Abierto','En curso','Cerrado']};
     const get=()=>{try{return Object.assign({},defs,JSON.parse(localStorage.getItem(K)||'{}'));}catch(e){return defs;}};
@@ -428,7 +521,7 @@ CX.module('config', ({data,ui})=>{
   /* Centro de autoadministración: mapa completo de TODO lo editable */
   const drawCentro=(body)=>{
     const areas=[
-      {ic:'🎨',t:'Identidad de Marca',d:'Logo, colores, tipografía, tema visual. Se aplica a toda la plataforma, documentos y correos.',nav:'marca',tag:'Branding'},
+      {ic:'🎨',t:'Identidad de Marca',d:'Logo, colores, tipografía, tema visual. Se aplica a toda la plataforma, documentos y correos.',...(connected?{tab:'marca'}:{nav:'marca'}),tag:'Branding'},
       {ic:'📦',t:'Plan y Módulos',d:'Activa/desactiva módulos por plan. Personaliza qué ve cada tenant.',tab:'plan',tag:'Acceso'},
       {ic:'🌍',t:'Países y Monedas',d:'Agrega países de operación con su moneda. Las finanzas se separan automáticamente.',tab:'paises',tag:'Operación'},
       {ic:'🔐',t:'Usuarios y Permisos',d:'Invita usuarios, asigna roles y define la matriz de acceso por módulo. Crea roles personalizados.',nav:'usuarios',tag:'Seguridad'},
@@ -443,7 +536,7 @@ CX.module('config', ({data,ui})=>{
     ];
     body.innerHTML=`
     <div class="card card-p" style="margin-bottom:14px;background:var(--brand-light);border-color:#cfe6f7">
-      <div style="font-size:13px;color:var(--brand-dark)"><b>✅ Toda la plataforma es autoadministrable.</b> Cada área de abajo se edita desde la interfaz, sin tocar código. Haz clic para abrir cada gestor.</div>
+      <div style="font-size:13px;color:var(--brand-dark)">${connected?'<b>Administración conectada.</b> Usuarios y alcance de proyecto usan persistencia durable con ACK. Las configuraciones sin provider permanecen en solo lectura y nunca se guardan como verdad del navegador.':'<b>✅ Toda la plataforma es autoadministrable.</b> Cada área de abajo se edita desde la interfaz, sin tocar código. Haz clic para abrir cada gestor.'}</div>
     </div>
     ${(()=>{const sc=CX.dataSource&&CX.dataSource.sourceContract?CX.dataSource.sourceContract():null;if(!sc)return'';const modeLbl={demo:'Demo',source_safe_preview:'Vista previa',connected:'Conectado'}[sc.sourceReadMode]||'No disponible';return `<div class="card card-p" style="margin-bottom:14px"><div class="card-t" style="margin-bottom:6px">Estado de tu fuente de datos</div><div class="flex wrap" style="gap:6px">${ui.bdg('modo: '+modeLbl,'n')}${ui.bdg('sincronización activa: '+(sc.runtimeSyncActive?'sí':'no'),sc.runtimeSyncActive?'g':'n')}${sc.warnings.length?ui.bdg(sc.warnings.length+' advertencias','a'):''}${sc.blockers.length?ui.bdg(sc.blockers.length+' bloqueos','r'):''}</div></div>`;})()}
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">
@@ -461,6 +554,7 @@ CX.module('config', ({data,ui})=>{
   };
 
   const drawMarca=(body)=>{
+    if(connected){const rt=window.CX_TENANT_RUNTIME_CONFIG||{};body.innerHTML='<div class="card card-p" data-config-locked="tenant-brand"><div class="card-t">Identidad y configuración del tenant</div><div style="font-size:12.5px;color:var(--t2);margin-top:8px">Fuente durable: <b>'+_cfgEsc(rt.sourceAuthority||'tenant runtime')+'</b>. Tenant: <b>'+_cfgEsc(rt.tenantName||rt.tenantId||'')+'</b> · Países: '+_cfgEsc((rt.countries||[]).join(', '))+'. La identidad, países del tenant, modo comercial y branding no se escriben en localStorage en esta vía.</div></div>';return;}
     const brandStored=(()=>{try{return JSON.parse(localStorage.getItem('cx_brand_identity')||'null');}catch(e){return null;}})();
     const logoUrl=brandStored&&brandStored.logo||CX.BRAND.logoUrl||'';
     const nombre=brandStored&&brandStored.name||CX.BRAND.name||'CXOrbia';
@@ -553,6 +647,7 @@ CX.module('config', ({data,ui})=>{
   };
 
   const drawPlan=(body)=>{
+    if(connected){body.innerHTML='<div class="card card-p" data-config-locked="plan"><div class="card-t">Plan y módulos</div><p style="font-size:12.5px;color:var(--t2);margin-top:8px">La selección de plan y módulos es configuración del tenant. En modo conectado no se permite guardarla en el navegador; permanece en solo lectura hasta contar con un provider durable.</p></div>';return;}
     const curPlan=CX.BRAND.plan||(localStorage.getItem('cx_plan'))||plan;
     body.innerHTML=`<div class="card card-p">
       <div class="card-h" style="margin-bottom:4px"><div class="card-t">Plan contratado</div><span class="muted">activa módulos automáticamente</span></div>
@@ -590,6 +685,16 @@ CX.module('config', ({data,ui})=>{
   };
 
   const drawPaises=(body)=>{
+    if(connected){
+      const rootId=String(data.currentProjectId||p.projectId||'').trim();
+      const record=(data.__backendAllProjectRecords||[]).find(x=>String(x.id||x.projectId||'')===rootId)||p;
+      const currentCountries=[...(record.countries||p.countries||[])];
+      body.innerHTML='<div class="card card-p" data-project-config-authority="provider"><div class="card-h"><div class="card-t">Países del proyecto · persistencia durable</div><button class="btn btn-soft btn-sm" id="addPais">＋ Agregar país</button></div><div class="flex wrap" id="durableCountries" style="gap:8px">'+currentCountries.map(code=>'<div class="flex" style="gap:6px;padding:6px 11px;border:1px solid var(--border);border-radius:9px"><span>'+_cfgEsc(CX.paisFlag(code)+' '+CX.paisName(code)+' ('+(record.currency?.[code]||p.currency?.[code]||'—')+')')+'</span><button class="btn btn-ghost btn-sm" data-rmc="'+_cfgEsc(code)+'" style="color:var(--red);padding:1px 7px">✕</button></div>').join('')+'</div><div style="font-size:11px;color:var(--t3);margin-top:10px">Cada cambio se confirma por el command provider y se relee del registro durable antes de mostrar éxito.</div></div>';
+      const persist=async next=>{try{await CX.connectedAdminConfig.updateProjectCountries(rootId,next,record.currency||p.currency||{},data.currentPeriodId);ui.toast('Países del proyecto guardados y confirmados por el proveedor','ok',4200);drawPaises(body);}catch(e){ui.toast('Cambio no guardado: '+String(e.message||e),'warn',5200);}};
+      body.querySelector('#addPais')?.addEventListener('click',()=>{const opts=CX.COUNTRIES.filter(co=>!currentCountries.includes(co.c));ui.modal('Agregar país','<div>'+opts.map(co=>'<button class="btn btn-ghost" data-c="'+_cfgEsc(co.c)+'" style="display:block;width:100%;text-align:left">'+_cfgEsc(CX.paisFlag(co.c)+' '+co.n+' ('+co.cur+')')+'</button>').join('')+'</div>',{onMount:(ov,close)=>ov.querySelectorAll('[data-c]').forEach(b=>b.addEventListener('click',async()=>{close();await persist([...currentCountries,b.dataset.c]);}))});});
+      body.querySelectorAll('[data-rmc]').forEach(b=>b.addEventListener('click',async()=>{const next=currentCountries.filter(x=>x!==b.dataset.rmc);if(!next.length){ui.toast('El proyecto debe conservar al menos un país','warn');return;}await persist(next);}));
+      return;
+    }
     body.innerHTML=`<div class="card card-p">
       <div class="card-h"><div class="card-t">Países del proyecto</div><button class="btn btn-soft btn-sm" id="addPais">＋ Agregar país</button></div>
       <div class="flex wrap" style="gap:8px">${p.countries.map(c=>`<div class="flex" style="gap:6px;padding:6px 11px;border:1px solid var(--border);border-radius:9px">
@@ -613,6 +718,7 @@ CX.module('config', ({data,ui})=>{
   };
 
   const drawNDA=(body)=>{
+    if(connected){body.innerHTML='<div class="card card-p" data-config-locked="nda"><div class="card-t">NDA / Confidencialidad</div><p style="font-size:12.5px;color:var(--t2);margin-top:8px">El texto legal no se guarda en memoria ni localStorage en modo conectado. La edición permanece deshabilitada hasta existir un provider legal/config durable con ACK y readback.</p></div>';return;}
     const nda=CX.BRAND&&CX.BRAND.nda||'Al acceder a esta plataforma, confirmas que has leído y aceptas los términos de confidencialidad y uso de datos.';
     body.innerHTML=`<div class="card card-p">
       <div class="card-t" style="margin-bottom:10px">NDA / Acuerdo de confidencialidad</div>
