@@ -24,6 +24,9 @@ on:
       - CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V77_2026-09-26.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V78_2026-09-27.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V79_2026-09-27.json
+      - app/modules/proyecto-wizard.js
+      - tools/qa/cxorbia-i3-vrm078-external-project-live.mjs
       - ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-17_I3_MICRO_ITERATIONS_FROZEN.md
       - CXORBIA_I3_MICRO_ITERATION_PLAN_LOCK_2026-09-17.json
       - backend/config/pre-i4-human-entrypoint-dev-deploy-request.json
@@ -67,7 +70,7 @@ env:
   I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V78_2026-09-27.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V79_2026-09-27.json
 
 jobs:
   canonical-candidate-authority:
@@ -101,10 +104,11 @@ jobs:
           test "$(jq -r '.canonicalFunctionalCandidate.sourceTree' "$POST_RUN500_LEDGER")" = "$TREE"
           test "$(jq -r '.findings["VRM-076"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN502"
           test "$(jq -r '.findings["VRM-077"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN507"
-          for id in VRM-078 VRM-079 VRM-080 VRM-081; do
+          test "$(jq -r '.findings["VRM-078"].state' "$POST_RUN500_LEDGER")" = "FIXED_SOURCE_NOT_PROVEN"
+          for id in VRM-079 VRM-080 VRM-081; do
             test "$(jq -r --arg id "$id" '.findings[$id].state' "$POST_RUN500_LEDGER")" = "P0_PROVEN_POST_RUN500_FORENSIC"
           done
-          STATUS="HOLD_VRM078_SOURCE_FIX_REQUIRED"
+          STATUS="HOLD_VRM078_LIVE_REPROOF_REQUIRED"
           echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
@@ -302,6 +306,141 @@ jobs:
         with:
           name: cxorbia-i3-vrm077-${{ github.run_id }}
           path: ${{ env.VRM077_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+          include-hidden-files: true
+
+
+  vrm078-external-project-live:
+    name: I3 VRM-078 — external source second-project live proof
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM078_LIVE_REPROOF_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-078-live]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    env:
+      VRM078_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      VRM078_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      VRM078_OUT: .tmp/i3-vrm078
+      VRM078_ROOT: https://cxorbia-backend-dev.web.app
+      EXPECTED_RUNTIME_REVISION: cxorbia-live-hr-dev-00223-tlg
+      EXPECTED_RUNTIME_DIGEST: sha256:b34be533f545c6dda7dc9f6c4a1cb0af517aad2aff1d79005412b4a2433d7ecd
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Prove exact VRM-078 focal source
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$VRM078_OUT"
+          test "$VRM078_SOURCE" = "d003085adf36675ab22c4c172ff9e78715cc9a48"
+          test "$VRM078_TREE" = "e28f40a54c173cf036c44fdc1b141c6c25c9ddae"
+          test "$(git rev-parse "$VRM078_SOURCE^{tree}")" = "$VRM078_TREE"
+          git diff --name-only ae6016a03e1943250d91f636132178802f4cb114 "$VRM078_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**' | tee "$VRM078_OUT/product-diff.txt"
+          test "$(wc -l < "$VRM078_OUT/product-diff.txt" | tr -d ' ')" = "1"
+          grep -Fxq 'app/modules/proyecto-wizard.js' "$VRM078_OUT/product-diff.txt"
+          git show "$VRM078_SOURCE:app/modules/proyecto-wizard.js" > "$VRM078_OUT/proyecto-wizard.js"
+          git show "$VRM078_SOURCE:tools/qa/cxorbia-i3-vrm078-external-project-live.mjs" > "$VRM078_OUT/live-proof.mjs"
+          node --check "$VRM078_OUT/proyecto-wizard.js"
+          node --check "$VRM078_OUT/live-proof.mjs"
+          grep -Fq "providerBindingId=opaqueSourceRef(st.providerBindingId)" "$VRM078_OUT/proyecto-wizard.js"
+          grep -Fq "source.mappingRef=opaqueSourceRef(st.mappingRef)" "$VRM078_OUT/proyecto-wizard.js"
+          grep -Fq 'No pegues URL, Sheet ID, credenciales ni tokens' "$VRM078_OUT/proyecto-wizard.js"
+          jq -n -S --arg source "$VRM078_SOURCE" --arg tree "$VRM078_TREE" '{decision:"PASS_I3_VRM078_SOURCE_GATE",sourceSha:$source,sourceTree:$tree,ownerPaths:["app/modules/proyecto-wizard.js"],production:false}' > "$VRM078_OUT/source-gate.json"
+      - name: Install DEV proof tooling
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+      - name: Authenticate canonical Firebase DEV
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
+      - name: Prove runtime unchanged
+        run: |
+          set -Eeuo pipefail
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$VRM078_OUT/runtime.json"
+          test "$(jq -r '.status.latestReadyRevisionName // empty' "$VRM078_OUT/runtime.json")" = "$EXPECTED_RUNTIME_REVISION"
+          gcloud run revisions describe "$EXPECTED_RUNTIME_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$VRM078_OUT/runtime-revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$VRM078_OUT/runtime-revision.json")"
+          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; else DIGEST="sha256:${RAW##*@sha256:}"; fi
+          test "$DIGEST" = "$EXPECTED_RUNTIME_DIGEST"
+      - name: Ensure exact VRM-078 source is served; deploy Hosting DEV only if needed
+        run: |
+          set -Eeuo pipefail
+          REL="modules/proyecto-wizard.js"
+          REMOTE="$VRM078_OUT/precheck.remote"
+          MATCH=1
+          if ! curl -fsSL --retry 4 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$VRM078_ROOT/$REL?vrm078pre=$GITHUB_RUN_ID-$(date +%s%N)" -o "$REMOTE"; then MATCH=0
+          elif [[ "$(sha256sum "$REMOTE"|awk '{print $1}')" != "$(git show "$VRM078_SOURCE:app/$REL" | sha256sum | awk '{print $1}')" ]]; then MATCH=0
+          fi
+          DEPLOYED=0
+          if [[ "$MATCH" != "1" ]]; then
+            SOURCE_DIR="$RUNNER_TEMP/cxorbia-vrm078-source"; rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"
+            git archive "$VRM078_SOURCE" | tar -x -C "$SOURCE_DIR"
+            cd "$SOURCE_DIR"
+            "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$VRM078_OUT/hosting-deploy.log"
+            cd "$GITHUB_WORKSPACE"
+            DEPLOYED=1
+          else
+            printf '%s\n' 'Exact VRM-078 bytes already served; no Hosting redeploy.' | tee "$VRM078_OUT/hosting-deploy.log"
+          fi
+          TOKEN="$(gcloud auth print-access-token)"
+          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$VRM078_OUT/hosting-live-channel.json"
+          HOSTING_VERSION="$(jq -r '.release.version.name // empty' "$VRM078_OUT/hosting-live-channel.json")"; test -n "$HOSTING_VERSION"
+          echo "VRM078_HOSTING_VERSION=$HOSTING_VERSION" >> "$GITHUB_ENV"
+          echo "VRM078_HOSTING_DEPLOYED=$DEPLOYED" >> "$GITHUB_ENV"
+      - name: Prove exact wizard bytes served
+        run: |
+          set -Eeuo pipefail
+          curl -fsSL --retry 8 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$VRM078_ROOT/modules/proyecto-wizard.js?vrm078=$GITHUB_RUN_ID-$(date +%s%N)" -o "$VRM078_OUT/proyecto-wizard.remote"
+          test "$(sha256sum "$VRM078_OUT/proyecto-wizard.remote"|awk '{print $1}')" = "$(git show "$VRM078_SOURCE:app/modules/proyecto-wizard.js" | sha256sum | awk '{print $1}')"
+      - name: Run real wizard second-project create + ACK + readback + cleanup
+        run: |
+          set -Eeuo pipefail
+          VRM078_OUT="$VRM078_OUT" VRM078_ROOT="$VRM078_ROOT" VRM078_SOURCE="$VRM078_SOURCE" timeout --signal=TERM --kill-after=20s 12m node "$VRM078_OUT/live-proof.mjs" | tee "$VRM078_OUT/live.log"
+          test "$(jq -r '.decision' "$VRM078_OUT/result.json")" = "PASS_I3_VRM078_EXTERNAL_PROJECT_CREATE_READBACK"
+          test "$(jq -r '.providerAck' "$VRM078_OUT/result.json")" = "true"
+          test "$(jq -r '.durableReadback' "$VRM078_OUT/result.json")" = "true"
+          test "$(jq -r '.browserWizard' "$VRM078_OUT/result.json")" = "true"
+          test "$(jq -r '.browserState.present' "$VRM078_OUT/result.json")" = "true"
+          test "$(jq -r '.noDuplicateRegression' "$VRM078_OUT/result.json")" = "true"
+          test "$(jq -r '.cleanup.projectDeleted' "$VRM078_OUT/result.json")" = "true"
+          test "$(jq -r '.cleanup.receiptsAfter' "$VRM078_OUT/result.json")" = "0"
+          test "$(jq -r '.cleanup.auditsAfter' "$VRM078_OUT/result.json")" = "0"
+      - name: Emergency QA residue cleanup
+        if: always()
+        run: |
+          node --input-type=module <<'NODE' | tee "$VRM078_OUT/emergency-cleanup.json"
+          import crypto from 'node:crypto';
+          import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';
+          import {getFirestore} from 'firebase-admin/firestore';
+          if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:'cxorbia-backend-dev'});
+          const db=getFirestore(),tenant=db.collection('tenants').doc('tya'),run=String(process.env.GITHUB_RUN_ID);
+          const name='QA External Source '+run;
+          const normalized=name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ');
+          const id='prj-'+crypto.createHash('sha256').update('tya\0'+normalized).digest('hex').slice(0,20);
+          const p=tenant.collection('projects').doc(id),r=await tenant.collection('commandReceipts').where('projectId','==',id).get(),a=await tenant.collection('entityAuditTrail').where('projectId','==',id).get();
+          const b=db.batch();let writes=0;r.docs.forEach(d=>{b.delete(d.ref);writes++;});a.docs.forEach(d=>{b.delete(d.ref);writes++;});if((await p.get()).exists){b.delete(p);writes++;}if(writes)await b.commit();
+          const check=await p.get(),r2=await tenant.collection('commandReceipts').where('projectId','==',id).get(),a2=await tenant.collection('entityAuditTrail').where('projectId','==',id).get();
+          const out={decision:!check.exists&&r2.empty&&a2.empty?'PASS_VRM078_QA_CLEANUP':'FAIL_VRM078_QA_CLEANUP',projectId:id,writes,projectDeleted:!check.exists,receiptsAfter:r2.size,auditsAfter:a2.size,production:false};
+          console.log(JSON.stringify(out));
+          if(out.decision!=='PASS_VRM078_QA_CLEANUP')process.exit(1);
+          NODE
+      - name: Seal owner-specific receipt
+        run: |
+          set -Eeuo pipefail
+          jq -n -S --arg source "$VRM078_SOURCE" --arg tree "$VRM078_TREE" --arg runtime "$EXPECTED_RUNTIME_REVISION" --arg digest "$EXPECTED_RUNTIME_DIGEST" --arg hosting "$VRM078_HOSTING_VERSION" --argjson hostingDeploys "$VRM078_HOSTING_DEPLOYED" '{decision:"PASS_I3_VRM078_OWNER_SPECIFIC_RECEIPT",moduleDomain:"projects-periods-hr-source-wizard-multiproject",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:null,ownerPaths:["app/modules/proyecto-wizard.js"],actionReal:true,providerAck:true,durableReadback:true,reloadProof:true,noDuplicateRegression:true,qaCleanup:true,production:false,builds:0,runtimeDeploys:0,hostingDeploys:$hostingDeploys,hrWrites:0,externalWrites:0}' > "$VRM078_OUT/owner-receipt.json"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-vrm078-${{ github.run_id }}
+          path: ${{ env.VRM078_OUT }}
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
