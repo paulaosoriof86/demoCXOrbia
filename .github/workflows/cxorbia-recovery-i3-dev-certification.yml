@@ -23,6 +23,7 @@ on:
       - tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs
       - CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V77_2026-09-26.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V78_2026-09-27.json
       - ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-17_I3_MICRO_ITERATIONS_FROZEN.md
       - CXORBIA_I3_MICRO_ITERATION_PLAN_LOCK_2026-09-17.json
       - backend/config/pre-i4-human-entrypoint-dev-deploy-request.json
@@ -66,7 +67,7 @@ env:
   I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V77_2026-09-26.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V78_2026-09-27.json
 
 jobs:
   canonical-candidate-authority:
@@ -99,11 +100,11 @@ jobs:
           test "$(jq -r '.canonicalFunctionalCandidate.sourceSha' "$POST_RUN500_LEDGER")" = "$SOURCE"
           test "$(jq -r '.canonicalFunctionalCandidate.sourceTree' "$POST_RUN500_LEDGER")" = "$TREE"
           test "$(jq -r '.findings["VRM-076"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN502"
-          test "$(jq -r '.findings["VRM-077"].state' "$POST_RUN500_LEDGER")" = "FIXED_SOURCE_NOT_PROVEN"
+          test "$(jq -r '.findings["VRM-077"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN507"
           for id in VRM-078 VRM-079 VRM-080 VRM-081; do
             test "$(jq -r --arg id "$id" '.findings[$id].state' "$POST_RUN500_LEDGER")" = "P0_PROVEN_POST_RUN500_FORENSIC"
           done
-          STATUS="HOLD_VRM077_HOSTING_REPROOF_REQUIRED"
+          STATUS="HOLD_VRM078_SOURCE_FIX_REQUIRED"
           echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"

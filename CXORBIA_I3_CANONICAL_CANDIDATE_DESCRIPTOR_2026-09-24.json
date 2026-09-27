@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM077_HOSTING_REPROOF_REQUIRED",
+  "status": "HOLD_VRM078_SOURCE_FIX_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_REOPENED_POST_RUN500_DRIFT",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "ae6016a03e1943250d91f636132178802f4cb114",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "a552e1fbb41d5cacc8ab3157f3d91492b82b8f00",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V77_2026-09-26.json",
-  "findingsLedgerExpectedGitBlob": "84f75462595e3e352d81e4bd85b457d00287cc58",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V78_2026-09-27.json",
+  "findingsLedgerExpectedGitBlob": "024e18b520af9805b300182bd0e0af4f9e8b12e9",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-077",
+  "activeBlocker": "VRM-078",
   "nextFindingId": "VRM-082",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN VRM-077 HOSTING-ONLY DEV MATERIALIZATION + SAME-HR ADMIN/SHOPPER CONFLICT REPROOF; NO PRODUCTION; THEN CONTINUE VRM-078..081.",
+  "exactNextAction": "CORRECT VRM-078 ONLY: COMPLETE DURABLE PROJECT-SCOPED EXTERNAL SOURCE BINDING/MAPPING IN PROJECT WIZARD AND PROVE SECOND-PROJECT CREATE + ACK + READBACK; NO PRODUCTION.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -716,16 +716,31 @@
   },
   "postRun500Recovery": {
     "lock": "CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json",
-    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V77_2026-09-26.json",
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V78_2026-09-27.json",
     "vrm076": "FIXED_PROVEN_RUN502",
-    "vrm077": "FIXED_SOURCE_NOT_PROVEN",
+    "vrm077": "FIXED_PROVEN_RUN507",
     "remainingOpenP0": [
-      "VRM-077",
       "VRM-078",
       "VRM-079",
       "VRM-080",
       "VRM-081"
     ],
+    "production": false
+  },
+  "lastVrm077Proof": {
+    "runId": 36319627577,
+    "runNumber": 507,
+    "jobId": 108620861467,
+    "artifactId": 10932316052,
+    "artifactDigest": "sha256:7107015d0e2c10d40278cd7411e00428a0268920691bbe683e52311bc5feba79",
+    "decision": "PASS_I3_VRM077_POSTULATION_HR_CONFLICT_LIVE",
+    "sourceSha": "ae6016a03e1943250d91f636132178802f4cb114",
+    "sourceTree": "fdc20bedcf3b6de8eefecaf9343975f07620c687",
+    "hrRevision": "3dc48ba56ad135a64dbd0728c189a5db70fedf52675af337d65d6f788b273929",
+    "runtimeRevision": "cxorbia-live-hr-dev-00223-tlg",
+    "runtimeDigest": "sha256:b34be533f545c6dda7dc9f6c4a1cb0af517aad2aff1d79005412b4a2433d7ecd",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/b00750b137d4d3a6",
+    "hostingDeploys": 0,
     "production": false
   }
 }
