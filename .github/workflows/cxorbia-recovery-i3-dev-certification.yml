@@ -30,6 +30,8 @@ on:
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V82_2026-09-27.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V83_2026-09-27.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V85_2026-09-27.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V86_2026-09-27.json
+      - tools/qa/cxorbia-i3-vrm081-population-credential-diagnostic.mjs
       - app/modules/configuracion.js
       - app/core/config.js
       - app/adapters/cxorbia-cxdata-command-boundary-v1.js
@@ -81,7 +83,7 @@ env:
   I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V85_2026-09-27.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V86_2026-09-27.json
 
 jobs:
   canonical-candidate-authority:
@@ -117,9 +119,9 @@ jobs:
           test "$(jq -r '.findings["VRM-077"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN507"
           test "$(jq -r '.findings["VRM-078"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN515"
           test "$(jq -r '.findings["VRM-079"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN518"
-          test "$(jq -r '.findings["VRM-080"].state' "$POST_RUN500_LEDGER")" = "FIXED_SOURCE_NOT_PROVEN"
+          test "$(jq -r '.findings["VRM-080"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN525"
           test "$(jq -r '.findings["VRM-081"].state' "$POST_RUN500_LEDGER")" = "P0_PROVEN_POST_RUN500_FORENSIC"
-          STATUS="HOLD_VRM080_LIVE_REPROOF_REQUIRED"
+          STATUS="HOLD_VRM081_DIAGNOSTIC_REQUIRED"
           echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
@@ -725,6 +727,62 @@ jobs:
         with:
           name: cxorbia-i3-vrm080-${{ github.run_id }}
           path: ${{ env.VRM080_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+          include-hidden-files: true
+
+
+  vrm081-population-credential-diagnostic:
+    name: I3 VRM-081 — population credential diagnostic read-only
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM081_DIAGNOSTIC_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-081-diagnostic]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      VRM081_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      VRM081_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      VRM081_OUT: .tmp/i3-vrm081
+      VRM081_ROOT: https://cxorbia-backend-dev.web.app
+      VRM081_TENANT: tya
+      VRM081_PROJECT: cinepolis
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Prove read-only diagnostic scope
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$VRM081_OUT"
+          test "$VRM081_SOURCE" = "77b29e303c825be586a97e159d4d65bfae7e66c8"
+          test "$VRM081_TREE" = "279f33d6ad734ac7da9e5764dd05c91cab8882aa"
+          test "$(git rev-parse "$VRM081_SOURCE^{tree}")" = "$VRM081_TREE"
+          test "$(git diff --name-only "$VRM081_SOURCE" "$GITHUB_SHA" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**' | wc -l | tr -d ' ')" = "0"
+          node --check tools/qa/cxorbia-i3-vrm081-population-credential-diagnostic.mjs
+          ! grep -Eq '\.(set|create|update|delete)\(' tools/qa/cxorbia-i3-vrm081-population-credential-diagnostic.mjs
+          ! grep -Eq 'auth\.(createUser|updateUser|deleteUser|setCustomUserClaims)\(' tools/qa/cxorbia-i3-vrm081-population-credential-diagnostic.mjs
+      - name: Install read-only diagnostic dependency
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
+      - name: Authenticate canonical Firebase DEV read-only
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Run population-wide credential diagnostic
+        run: |
+          set -Eeuo pipefail
+          VRM081_OUT="$VRM081_OUT" VRM081_ROOT="$VRM081_ROOT" VRM081_SOURCE="$VRM081_SOURCE" VRM081_TENANT="$VRM081_TENANT" VRM081_PROJECT="$VRM081_PROJECT" node tools/qa/cxorbia-i3-vrm081-population-credential-diagnostic.mjs | tee "$VRM081_OUT/console.log"
+          test "$(jq -r '.decision' "$VRM081_OUT/result.json")" = "PASS_I3_VRM081_POPULATION_CREDENTIAL_DIAGNOSTIC"
+          test "$(jq -r '.safety.firestoreWrites' "$VRM081_OUT/result.json")" = "0"
+          test "$(jq -r '.safety.authWrites' "$VRM081_OUT/result.json")" = "0"
+          test "$(jq -r '.safety.hrWrites' "$VRM081_OUT/result.json")" = "0"
+          test "$(jq -r '.safety.production' "$VRM081_OUT/result.json")" = "false"
+          jq '{decision,hrRevision,population,blockers,providerReconciliationGap,activeCredentialUniverseResolved,safety}' "$VRM081_OUT/result.json"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-vrm081-diagnostic-${{ github.run_id }}
+          path: ${{ env.VRM081_OUT }}
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
