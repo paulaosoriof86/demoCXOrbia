@@ -28,6 +28,7 @@ on:
       - backend/config/pre-i4-human-entrypoint-dev-deploy-request.json
       - tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs
       - tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs
+      - tools/qa/cxorbia-i3-vrm077-postulation-hr-conflict-live.mjs
       - CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_2026-09-24.json
   workflow_dispatch:
