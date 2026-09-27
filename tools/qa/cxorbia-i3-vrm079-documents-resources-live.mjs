@@ -108,7 +108,13 @@ try{
   }
   if(!updated)throw new Error('PERSISTENCE_FAILURE:VRM079_UPDATE_READBACK');
 
-  await page.waitForFunction(n=>[...document.querySelectorAll('.card')].some(c=>String(c.innerText||'').includes(n)),updatedName,{timeout:30000});
+  await page.reload({waitUntil:'domcontentloaded',timeout:60000});
+  await page.waitForFunction(()=>window.CX?.backendAuth?.context?.()?.authenticated===true&&window.CX?.backendResources?.storageStatus&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,null,{timeout:120000});
+  await page.evaluate(()=>CX.router.nav('documentos',{history:false}));
+  await page.waitForFunction(n=>[...document.querySelectorAll('.card')].some(c=>String(c.innerText||'').includes(n)),updatedName,{timeout:45000});
+  const reloadState=await page.evaluate(n=>({visible:[...document.querySelectorAll('.card')].some(c=>String(c.innerText||'').includes(n)),binaryState:!!document.querySelector('[data-resource-binary-state="disabled"]')}),updatedName);
+  if(!reloadState.visible||!reloadState.binaryState)throw new Error('PERSISTENCE_FAILURE:VRM079_RELOAD_PROOF');
+
   const updatedCard=page.locator('.card').filter({hasText:updatedName}).first();
   await updatedCard.locator('[data-deld]').click();
 
@@ -126,6 +132,7 @@ try{
   evidence.create={id:created.id,version:Number(createdData.version||0)};
   evidence.update={id:updated.id,version:Number(updated.data()?.version||0)};
   evidence.delete={id:deleted.id,status:deleted.data()?.status,version:Number(deleted.data()?.version||0)};
+  evidence.reloadState=reloadState;
   evidence.providerAck=true;
   evidence.durableReadback=true;
   evidence.reloadProof=true;
