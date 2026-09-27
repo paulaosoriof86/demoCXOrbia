@@ -205,8 +205,19 @@ CX.projectWizard = function(data, ui){
       ui.toast('Proyecto no creado: falta ACK remoto válido del proveedor','warn',4200);return;
     }
     if(CX.backend&&typeof CX.backend.refresh==='function')await CX.backend.refresh();
+    const createdProjectId=String(p.projectId||p.id||'').trim();
+    const registry=(CX.data&&Array.isArray(CX.data.__backendAllProjectRecords))?CX.data.__backendAllProjectRecords:[];
+    const active=(CX.data&&Array.isArray(CX.data.projects))?CX.data.projects:[];
+    const durableVisible=!createdProjectId||registry.some(x=>String(x.id||x.projectId||'')===createdProjectId);
+    const activeVisible=!!createdProjectId&&active.some(x=>String(x.id||x.projectId||'')===createdProjectId);
+    if(!durableVisible){
+      ui.toast('Proyecto creado con ACK remoto, pero la plataforma aún no confirmó su lectura. Actualiza antes de operarlo.','warn',5200);
+    }
     if(CX._wizClose)CX._wizClose();
-    ui.toast('Proyecto "'+(p.name||st.name)+'" creado y activado · plataforma adaptada','ok',4000);
+    ui.toast(activeVisible
+      ?'Proyecto "'+(p.name||st.name)+'" creado y activado · plataforma adaptada'
+      :'Proyecto "'+(p.name||st.name)+'" creado y guardado correctamente · pendiente de asignar alcance para operarlo',
+      activeVisible?'ok':'',5200);
     CX.router.buildRail(CX.session.role); CX.router.nav('proyectos');
   };
 
