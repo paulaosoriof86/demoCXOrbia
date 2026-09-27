@@ -20,6 +20,9 @@ on:
       - ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-18_I3_FORENSIC_CONTROL_PLANE_CACHE_ROOTCAUSE_FROZEN.md
       - backend/runtime/hr-live-service/test/cxorbia-i3-project-period-contract.test.mjs
       - tools/qa/cxorbia-gate20-browser-visual-dev.mjs
+      - tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs
+      - CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V76_2026-09-26.json
       - ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-17_I3_MICRO_ITERATIONS_FROZEN.md
       - CXORBIA_I3_MICRO_ITERATION_PLAN_LOCK_2026-09-17.json
       - backend/config/pre-i4-human-entrypoint-dev-deploy-request.json
@@ -61,6 +64,8 @@ env:
   I3_HR_CACHE_PIN_NAME: CXORBIA_LIVE_HR_CACHE_MS
   I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
+  POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V76_2026-09-26.json
 
 jobs:
   canonical-candidate-authority:
@@ -88,9 +93,79 @@ jobs:
           test -n "$SOURCE"
           test -n "$TREE"
           test -n "$STATUS"
+          test "$(jq -r '.status' "$POST_RUN500_LOCK")" = "HOLD"
+          test "$(jq -r '.currentState.i3' "$POST_RUN500_LOCK")" = "HOLD"
+          test "$(jq -r '.canonicalFunctionalCandidate.sourceSha' "$POST_RUN500_LEDGER")" = "$SOURCE"
+          test "$(jq -r '.canonicalFunctionalCandidate.sourceTree' "$POST_RUN500_LEDGER")" = "$TREE"
+          for id in VRM-076 VRM-077 VRM-078 VRM-079 VRM-080 VRM-081; do
+            test "$(jq -r --arg id "$id" '.findings[$id].state' "$POST_RUN500_LEDGER")" = "P0_PROVEN_POST_RUN500_FORENSIC"
+          done
+          STATUS="HOLD_POST_RUN500_FORENSIC_DRIFT"
           echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
+
+  vrm076-terminal-module-truth-finalizer:
+    name: I3 VRM-076 — terminal Module Truth fail-closed selftest
+    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-076-finalizer]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Prove open P0 and missing receipt cannot become MATCH
+        run: |
+          set -Eeuo pipefail
+          T="$RUNNER_TEMP/vrm076"; rm -rf "$T"; mkdir -p "$T"
+          SOURCE="1111111111111111111111111111111111111111"
+          TREE="2222222222222222222222222222222222222222"
+          RUNTIME="runtime-test-1"
+          DIGEST="sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          HOSTING="sites/test/versions/1"
+          HR="bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          node <<'NODE'
+          const fs=require('fs'),p=process.env.RUNNER_TEMP+'/vrm076';
+          const modules=Array.from({length:20},(_,i)=>({domain:'m'+i,owners:i===0?['app/modules/x.js']:[],classification:i===0?'COMPOSED_NOT_DEPLOYED':'MATCH',pendingTerminalFiles:i===0?['app/modules/x.js']:[]}));
+          const pre={preTerminalComposition:{decision:'PASS_C3_PRETERMINAL_COMPOSITION'},productSource:{sha:'1111111111111111111111111111111111111111',treeSha:'2222222222222222222222222222222222222222'},sourceFiles:[{path:'app/modules/x.js',domain:'m0',classification:'COMPOSED_NOT_DEPLOYED'}],modules};
+          fs.writeFileSync(p+'/pre.json',JSON.stringify(pre));
+          fs.writeFileSync(p+'/focal.json',JSON.stringify({decision:'PASS_PRE_I4_FOCAL_HUMAN_BROWSER',sourceSha:pre.productSource.sha,hrRevision:'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'}));
+          fs.writeFileSync(p+'/human.json',JSON.stringify({decision:'PASS_I3_HUMAN_LIVE_ACCEPTANCE',sourceSha:pre.productSource.sha,sourceRevision:'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'}));
+          fs.writeFileSync(p+'/qa.json',JSON.stringify({decision:'PASS_C3_QA_RESERVATION_CLEANUP',after:0}));
+          fs.writeFileSync(p+'/parity.json',JSON.stringify({decision:'PASS_C3_PENDING_OWNER_BYTE_PARITY',mismatches:0}));
+          const findings={};
+          for(const id of ['VRM-033','VRM-034','VRM-035','VRM-036','VRM-037','VRM-038','VRM-039','VRM-040','VRM-041','VRM-042'])findings[id]={state:id==='VRM-036'||id==='VRM-037'||id==='VRM-039'||id==='VRM-042'?'FIXED_SOURCE_PROVEN_NO_DEPLOY':'PASS_TEST_PROVEN'};
+          findings['VRM-076']={severity:'P0',state:'P0_PROVEN_POST_RUN500_FORENSIC',owner:['tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs']};
+          fs.writeFileSync(p+'/ledger-open.json',JSON.stringify({findings}));
+          findings['VRM-076'].state='FIXED_PROVEN';
+          fs.writeFileSync(p+'/ledger-no-receipt.json',JSON.stringify({findings}));
+          findings['VRM-082']={severity:'P0',state:'FIXED_PROVEN',owner:['app/modules/x.js'],terminalEvidence:{ownerSpecificReceipt:{decision:'PASS_TEST_OWNER_ACTION',moduleDomain:'m0',sourceSha:pre.productSource.sha,sourceTree:pre.productSource.treeSha,runtimeRevision:'runtime-test-1',runtimeDigest:'sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',hostingVersion:'sites/test/versions/1',hrRevision:'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',ownerPaths:['app/modules/x.js'],actionReal:true,providerAck:true,durableReadback:true,reloadProof:true,noDuplicateRegression:true,production:false}}};
+          fs.writeFileSync(p+'/ledger-pass.json',JSON.stringify({findings}));
+          NODE
+          run_finalizer() {
+            C3_PRETERMINAL="$T/pre.json" C3_FOCAL="$T/focal.json" C3_HUMAN="$T/human.json" C3_QA="$T/qa.json" C3_PARITY="$T/parity.json" C3_LEDGER="$1" C3_FINAL_MATRIX="$T/out.json" C3_SOURCE="$SOURCE" C3_TREE="$TREE" C3_RUNTIME_REVISION="$RUNTIME" C3_RUNTIME_DIGEST="$DIGEST" C3_HOSTING_VERSION="$HOSTING" node tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs
+          }
+          if run_finalizer "$T/ledger-open.json" >"$T/open.log" 2>&1; then echo "open P0 incorrectly passed"; exit 1; fi
+          grep -q 'C3_OPEN_P0_FINDINGS:VRM-076' "$T/open.log"
+          if run_finalizer "$T/ledger-no-receipt.json" >"$T/no-receipt.log" 2>&1; then echo "missing receipt incorrectly passed"; exit 1; fi
+          grep -q 'C3_OWNER_RECEIPT_MISSING:m0' "$T/no-receipt.log"
+          run_finalizer "$T/ledger-pass.json" >"$T/pass.log"
+          test "$(jq -r '.terminalClosure.decision' "$T/out.json")" = "PASS_C3_TERMINAL_MODULE_TRUTH_20_20"
+          test "$(jq -r '.modules[]|select(.domain=="m0")|.preTerminalClassification' "$T/out.json")" = "COMPOSED_NOT_DEPLOYED"
+          test "$(jq -r '.modules[]|select(.domain=="m0")|.ownerSpecificReceiptFindingIds[0]' "$T/out.json")" = "VRM-082"
+          test "$(jq '[.modules[]|select(.classification!="MATCH")]|length' "$T/out.json")" = "0"
+          jq -n -S --arg source "$GITHUB_SHA" '{decision:"PASS_I3_VRM076_FINALIZER_FAIL_CLOSED_SELFTEST",controlSourceSha:$source,openP0Rejected:true,missingReceiptRejected:true,wrongPromotionPrevented:true,ownerReceiptPromotionProven:true,builds:0,deploys:0,writes:0,production:false}' > "$T/result.json"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-vrm076-finalizer-${{ github.run_id }}
+          path: ${{ runner.temp }}/vrm076
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
 
   v52-vrm050-runtime:
     name: I3 V52 — VRM-050 HR refresh timeout runtime-only DEV fix
@@ -1170,7 +1245,7 @@ jobs:
       - name: Rebuild terminal Module Truth from fresh same-source proof and served bytes
         run: |
           set -Eeuo pipefail
-          LEDGER="$(jq -r '.findingsLedgerPath' "$CANDIDATE_DESCRIPTOR")"
+          LEDGER="$POST_RUN500_LEDGER"
           TEMPLATE="RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json" LEDGER="$LEDGER" SOURCE="$I3_CERTIFICATION_SOURCE_SHA" TREE="$I3_CERTIFICATION_SOURCE_TREE" LAST_SERVED="$I3_CERTIFICATION_SOURCE_SHA" OUT_FILE="$OUT/module-truth-preterminal.json" node tools/qa/cxorbia-i3-c3-preterminal-module-truth.mjs > "$OUT/module-truth-preterminal-console.log"
           test "$(jq -r '.preTerminalComposition.decision' "$OUT/module-truth-preterminal.json")" = "PASS_C3_PRETERMINAL_COMPOSITION"
           test "$(jq '.preTerminalComposition.matchModules|length' "$OUT/module-truth-preterminal.json")" = "20"
@@ -1193,7 +1268,7 @@ jobs:
           jq -n -S '{decision:"PASS_C3_PENDING_OWNER_BYTE_PARITY",mismatches:0,rows:[],production:false}' > "$OUT/pending-owner-parity.json"
           jq -n -S '{decision:"PASS_C3_QA_RESERVATION_CLEANUP",mode:"CURRENT_TERMINAL_ACCEPTANCE_ZERO_RESIDUE",before:0,deletedIds:[],after:0,ambiguous:0,writes:0,production:false}' > "$OUT/qa-reservation-cleanup.json"
 
-          C3_PRETERMINAL="$OUT/module-truth-preterminal.json" C3_FOCAL="$OUT/semantic/browser-focal.json" C3_HUMAN="$OUT/full-human-acceptance/human-live-acceptance.json" C3_QA="$OUT/qa-reservation-cleanup.json" C3_PARITY="$OUT/pending-owner-parity.json" C3_LEDGER="$LEDGER" C3_FINAL_MATRIX="$OUT/module-truth-matrix.json" C3_SOURCE="$I3_CERTIFICATION_SOURCE_SHA" C3_TREE="$I3_CERTIFICATION_SOURCE_TREE" node tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs > "$OUT/module-truth-terminal-console.log"
+          C3_PRETERMINAL="$OUT/module-truth-preterminal.json" C3_FOCAL="$OUT/semantic/browser-focal.json" C3_HUMAN="$OUT/full-human-acceptance/human-live-acceptance.json" C3_QA="$OUT/qa-reservation-cleanup.json" C3_PARITY="$OUT/pending-owner-parity.json" C3_LEDGER="$LEDGER" C3_FINAL_MATRIX="$OUT/module-truth-matrix.json" C3_SOURCE="$I3_CERTIFICATION_SOURCE_SHA" C3_TREE="$I3_CERTIFICATION_SOURCE_TREE" C3_RUNTIME_REVISION="$DEV_REVISION" C3_RUNTIME_DIGEST="$RUNTIME_DIGEST" C3_HOSTING_VERSION="$HOSTING_VERSION_NAME" node tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs > "$OUT/module-truth-terminal-console.log"
           test "$(jq -r '.terminalClosure.decision' "$OUT/module-truth-matrix.json")" = "PASS_C3_TERMINAL_MODULE_TRUTH_20_20"
           test "$(jq -r '.phaseAComplete' "$OUT/module-truth-matrix.json")" = "true"
           test "$(jq -r '.allModulesMatch' "$OUT/module-truth-matrix.json")" = "true"
