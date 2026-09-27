@@ -132,8 +132,8 @@ jobs:
           HR="bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
           node <<'NODE'
           const fs=require('fs'),p=process.env.RUNNER_TEMP+'/vrm076';
-          const modules=Array.from({length:20},(_,i)=>({domain:'m'+i,owners:i===0?['app/modules/x.js']:[],classification:i===0?'COMPOSED_NOT_DEPLOYED':'MATCH',pendingTerminalFiles:i===0?['app/modules/x.js']:[]}));
-          const pre={preTerminalComposition:{decision:'PASS_C3_PRETERMINAL_COMPOSITION'},productSource:{sha:'1111111111111111111111111111111111111111',treeSha:'2222222222222222222222222222222222222222'},sourceFiles:[{path:'app/modules/x.js',domain:'m0',classification:'COMPOSED_NOT_DEPLOYED'}],modules};
+          const modules=Array.from({length:20},(_,i)=>({domain:'m'+i,owners:i===0?['app/modules/x.js']:i===1?['app/modules/y.js']:[],classification:i<2?'COMPOSED_NOT_DEPLOYED':'MATCH',pendingTerminalFiles:i===0?['app/modules/x.js']:i===1?['app/modules/y.js']:[]}));
+          const pre={preTerminalComposition:{decision:'PASS_C3_PRETERMINAL_COMPOSITION'},productSource:{sha:'1111111111111111111111111111111111111111',treeSha:'2222222222222222222222222222222222222222'},sourceFiles:[{path:'app/modules/x.js',domain:'m0',classification:'COMPOSED_NOT_DEPLOYED'},{path:'app/modules/y.js',domain:'m1',classification:'COMPOSED_NOT_DEPLOYED'}],modules};
           fs.writeFileSync(p+'/pre.json',JSON.stringify(pre));
           fs.writeFileSync(p+'/focal.json',JSON.stringify({decision:'PASS_PRE_I4_FOCAL_HUMAN_BROWSER',sourceSha:pre.productSource.sha,hrRevision:'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'}));
           fs.writeFileSync(p+'/human.json',JSON.stringify({decision:'PASS_I3_HUMAN_LIVE_ACCEPTANCE',sourceSha:pre.productSource.sha,sourceRevision:'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'}));
@@ -145,7 +145,10 @@ jobs:
           fs.writeFileSync(p+'/ledger-open.json',JSON.stringify({findings}));
           findings['VRM-076'].state='FIXED_PROVEN';
           fs.writeFileSync(p+'/ledger-no-receipt.json',JSON.stringify({findings}));
-          findings['VRM-082']={severity:'P0',state:'FIXED_PROVEN',owner:['app/modules/x.js'],terminalEvidence:{ownerSpecificReceipt:{decision:'PASS_TEST_OWNER_ACTION',moduleDomain:'m0',sourceSha:pre.productSource.sha,sourceTree:pre.productSource.treeSha,runtimeRevision:'runtime-test-1',runtimeDigest:'sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',hostingVersion:'sites/test/versions/1',hrRevision:'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',ownerPaths:['app/modules/x.js'],actionReal:true,providerAck:true,durableReadback:true,reloadProof:true,noDuplicateRegression:true,production:false}}};
+          const receipt=(moduleDomain,ownerPath)=>({decision:'PASS_TEST_OWNER_ACTION',moduleDomain,sourceSha:pre.productSource.sha,sourceTree:pre.productSource.treeSha,runtimeRevision:'runtime-test-1',runtimeDigest:'sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',hostingVersion:'sites/test/versions/1',hrRevision:'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',ownerPaths:[ownerPath],actionReal:true,providerAck:true,durableReadback:true,reloadProof:true,noDuplicateRegression:true,production:false});
+          findings['VRM-082']={severity:'P0',state:'FIXED_PROVEN',owner:['app/modules/x.js','app/modules/y.js'],terminalEvidence:{ownerSpecificReceipts:[receipt('m0','app/modules/x.js')]}};
+          fs.writeFileSync(p+'/ledger-one-domain.json',JSON.stringify({findings}));
+          findings['VRM-082'].terminalEvidence.ownerSpecificReceipts.push(receipt('m1','app/modules/y.js'));
           fs.writeFileSync(p+'/ledger-pass.json',JSON.stringify({findings}));
           NODE
           run_finalizer() {
@@ -155,12 +158,16 @@ jobs:
           grep -q 'C3_OPEN_P0_FINDINGS:VRM-076' "$T/open.log"
           if run_finalizer "$T/ledger-no-receipt.json" >"$T/no-receipt.log" 2>&1; then echo "missing receipt incorrectly passed"; exit 1; fi
           grep -q 'C3_OWNER_RECEIPT_MISSING:m0' "$T/no-receipt.log"
+          if run_finalizer "$T/ledger-one-domain.json" >"$T/one-domain.log" 2>&1; then echo "one-domain receipt incorrectly promoted a second domain"; exit 1; fi
+          grep -q 'C3_OWNER_RECEIPT_MISSING:m1' "$T/one-domain.log"
           run_finalizer "$T/ledger-pass.json" >"$T/pass.log"
           test "$(jq -r '.terminalClosure.decision' "$T/out.json")" = "PASS_C3_TERMINAL_MODULE_TRUTH_20_20"
           test "$(jq -r '.modules[]|select(.domain=="m0")|.preTerminalClassification' "$T/out.json")" = "COMPOSED_NOT_DEPLOYED"
+          test "$(jq -r '.modules[]|select(.domain=="m1")|.preTerminalClassification' "$T/out.json")" = "COMPOSED_NOT_DEPLOYED"
           test "$(jq -r '.modules[]|select(.domain=="m0")|.ownerSpecificReceiptFindingIds[0]' "$T/out.json")" = "VRM-082"
+          test "$(jq -r '.modules[]|select(.domain=="m1")|.ownerSpecificReceiptFindingIds[0]' "$T/out.json")" = "VRM-082"
           test "$(jq '[.modules[]|select(.classification!="MATCH")]|length' "$T/out.json")" = "0"
-          jq -n -S --arg source "$GITHUB_SHA" '{decision:"PASS_I3_VRM076_FINALIZER_FAIL_CLOSED_SELFTEST",controlSourceSha:$source,openP0Rejected:true,missingReceiptRejected:true,wrongPromotionPrevented:true,ownerReceiptPromotionProven:true,builds:0,deploys:0,writes:0,production:false}' > "$T/result.json"
+          jq -n -S --arg source "$GITHUB_SHA" '{decision:"PASS_I3_VRM076_FINALIZER_FAIL_CLOSED_SELFTEST",controlSourceSha:$source,openP0Rejected:true,missingReceiptRejected:true,multiDomainReceiptRequired:true,wrongPromotionPrevented:true,ownerReceiptPromotionProven:true,builds:0,deploys:0,writes:0,production:false}' > "$T/result.json"
       - if: always()
         uses: actions/upload-artifact@v4
         with:

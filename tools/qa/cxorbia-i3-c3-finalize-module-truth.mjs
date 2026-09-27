@@ -51,24 +51,32 @@ if(modules.length!==20)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_TERMINAL_
 const receiptsByDomain=new Map();
 for(const [id,v] of Object.entries(f)){
   if(!resolvedState(v?.state))continue;
-  const r=v?.terminalEvidence?.ownerSpecificReceipt;
-  if(!r)continue;
-  const domain=String(r.moduleDomain||'');
-  if(!domain)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_DOMAIN_MISSING:'+id);
-  if(String(r.decision||'').startsWith('PASS_')!==true)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_DECISION:'+id);
-  if(r.sourceSha!==SOURCE||r.sourceTree!==TREE)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_SOURCE:'+id);
-  if(r.runtimeRevision!==RUNTIME||r.runtimeDigest!==DIGEST||r.hostingVersion!==HOSTING)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_RUNTIME:'+id);
-  if(String(r.hrRevision||'')!==String(human.sourceRevision||''))throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_HR_REVISION:'+id);
-  if(r.production!==false)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_PRODUCTION:'+id);
-  for(const k of ['actionReal','providerAck','durableReadback','reloadProof','noDuplicateRegression']){
-    if(r[k]!==true)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_INCOMPLETE:'+id+':'+k);
+  const te=v?.terminalEvidence||{};
+  const receipts=Array.isArray(te.ownerSpecificReceipts)
+    ?te.ownerSpecificReceipts
+    :(te.ownerSpecificReceipt?[te.ownerSpecificReceipt]:[]);
+  if(!receipts.length)continue;
+  const seenDomains=new Set();
+  for(const r of receipts){
+    const domain=String(r?.moduleDomain||'');
+    if(!domain)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_DOMAIN_MISSING:'+id);
+    if(seenDomains.has(domain))throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_DUPLICATE_DOMAIN:'+id+':'+domain);
+    seenDomains.add(domain);
+    if(String(r.decision||'').startsWith('PASS_')!==true)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_DECISION:'+id+':'+domain);
+    if(r.sourceSha!==SOURCE||r.sourceTree!==TREE)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_SOURCE:'+id+':'+domain);
+    if(r.runtimeRevision!==RUNTIME||r.runtimeDigest!==DIGEST||r.hostingVersion!==HOSTING)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_RUNTIME:'+id+':'+domain);
+    if(String(r.hrRevision||'')!==String(human.sourceRevision||''))throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_HR_REVISION:'+id+':'+domain);
+    if(r.production!==false)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_PRODUCTION:'+id+':'+domain);
+    for(const k of ['actionReal','providerAck','durableReadback','reloadProof','noDuplicateRegression']){
+      if(r[k]!==true)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_INCOMPLETE:'+id+':'+domain+':'+k);
+    }
+    const paths=[...(r.ownerPaths||[])].map(String);
+    if(!paths.length)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_PATHS:'+id+':'+domain);
+    const findingOwners=new Set(ownerPaths(v));
+    if(paths.some(p=>!findingOwners.has(p)))throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_OWNER_MISMATCH:'+id+':'+domain);
+    if(!receiptsByDomain.has(domain))receiptsByDomain.set(domain,[]);
+    receiptsByDomain.get(domain).push({findingId:id,receipt:r});
   }
-  const paths=[...(r.ownerPaths||[])].map(String);
-  if(!paths.length)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_PATHS:'+id);
-  const findingOwners=new Set(ownerPaths(v));
-  if(paths.some(p=>!findingOwners.has(p)))throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_OWNER_MISMATCH:'+id);
-  if(!receiptsByDomain.has(domain))receiptsByDomain.set(domain,[]);
-  receiptsByDomain.get(domain).push({findingId:id,receipt:r});
 }
 
 const promotionByDomain=new Map();
