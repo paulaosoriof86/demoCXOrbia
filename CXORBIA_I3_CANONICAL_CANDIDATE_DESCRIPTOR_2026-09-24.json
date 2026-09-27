@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM079_SOURCE_FIX_REQUIRED",
+  "status": "HOLD_VRM079_LIVE_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_REOPENED_POST_RUN500_DRIFT",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "17ffd1cbac4aeee7f6a422b2c27b8d5c6111358f",
+  "productSourceSha": "6877b38171a3b1ef8caf88734d0884a31ebef639",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
-  "predecessorProductSourceSha": "d003085adf36675ab22c4c172ff9e78715cc9a48",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V81_2026-09-27.json",
-  "findingsLedgerExpectedGitBlob": "f57d7f181231cd801e594d6ede14404da610a484",
+  "predecessorProductSourceSha": "17ffd1cbac4aeee7f6a422b2c27b8d5c6111358f",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V82_2026-09-27.json",
+  "findingsLedgerExpectedGitBlob": "e3b11e2503c217d23f8681d287175f05822646da",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "VRM-079 ONLY: reconcile Documents/Resources binary Storage authority with connected UI. Prove exact provider capability and either durable upload/readback/delete or business-readable disabled state; no visible false upload action; no production.",
+  "exactNextAction": "VRM-079 LIVE REPROOF ONLY: materialize exact documentos.js on Hosting DEV if needed; prove binary controls disabled with business-readable state while authorized resource metadata create-update-reload-delete persists durably and QA leaves zero residue; no Storage rules change; no production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -312,11 +312,11 @@
     "production": false
   },
   "currentRemediationCandidate": {
-    "sourceSha": "17ffd1cbac4aeee7f6a422b2c27b8d5c6111358f",
-    "sourceTree": "b389cec06c8e7c1de1988f76105ddebe42ef303d",
-    "predecessorSha": "d003085adf36675ab22c4c172ff9e78715cc9a48",
+    "sourceSha": "6877b38171a3b1ef8caf88734d0884a31ebef639",
+    "sourceTree": "67a8f88c606332fc3be2251afaf8f1ba40da0047",
+    "predecessorSha": "17ffd1cbac4aeee7f6a422b2c27b8d5c6111358f",
     "findingIds": [
-      "VRM-078"
+      "VRM-079"
     ],
     "changedRuntime": false,
     "changedHosting": true,
@@ -397,7 +397,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "b389cec06c8e7c1de1988f76105ddebe42ef303d",
+  "productSourceTree": "67a8f88c606332fc3be2251afaf8f1ba40da0047",
   "lastLiveReproof": {
     "runId": 36217529367,
     "runNumber": 465,
@@ -704,7 +704,7 @@
   },
   "postRun500Recovery": {
     "lock": "CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json",
-    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V81_2026-09-27.json",
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V82_2026-09-27.json",
     "vrm076": "FIXED_PROVEN_RUN502",
     "vrm077": "FIXED_PROVEN_RUN507",
     "remainingOpenP0": [
@@ -713,7 +713,8 @@
       "VRM-081"
     ],
     "production": false,
-    "vrm078": "FIXED_PROVEN_RUN515"
+    "vrm078": "FIXED_PROVEN_RUN515",
+    "vrm079": "FIXED_SOURCE_NOT_PROVEN"
   },
   "lastVrm077Proof": {
     "runId": 36319627577,
@@ -757,6 +758,17 @@
     },
     "hrWrites": 0,
     "externalWrites": 0,
+    "production": false
+  },
+  "pendingMaterialization": {
+    "sourceSha": "6877b38171a3b1ef8caf88734d0884a31ebef639",
+    "sourceTree": "67a8f88c606332fc3be2251afaf8f1ba40da0047",
+    "productDiff": [
+      "app/modules/documentos.js"
+    ],
+    "mode": "hosting_only_dev_if_needed",
+    "runtimeDeploys": 0,
+    "rulesDeploys": 0,
     "production": false
   }
 }
