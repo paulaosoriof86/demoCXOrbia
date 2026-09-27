@@ -20,12 +20,13 @@ CX.module('misvisitas',({data,ui})=>{
   const activeCount=assigned.length+scheduled.length+realized.length;
   const postState=x=>String(x&&(x.estado||x.status)||'').toLowerCase();
   const postPeriod=x=>String((data.recordPeriodId?data.recordPeriodId(x):(x.periodId||x.projectId))||'');
-  const visitForApp=a=>(data._visitas||[]).find(v=>String(v.id||v.visitId||'')===String(a?.visitaId||a?.visitId||''))||null;
+  const visitForApp=a=>{const visitKey=String(a?.visitaId||a?.visitId||''),hrRowKey=String(a?.hrRowId||'');return(data._visitas||[]).find(v=>(visitKey&&[v?.id,v?.visitId].some(k=>String(k||'')===visitKey))||(hrRowKey&&String(v?.hrRowId||'')===hrRowKey))||null;};
   const postSyncState=a=>{
     const state=postState(a),v=visitForApp(a),appShopper=String(a?.shopperId||''),visitShopper=String(v?.shopperId||'');
     if(state==='pendiente')return'pending_review';
     if(state!=='aprobada')return state||'unknown';
     if(v?.assignmentReviewRequired===true||v?.assignmentReviewReason==='hr_platform_assignment_conflict')return'conflict_review_required';
+    if(v&&appShopper&&visitShopper&&visitShopper!==appShopper)return'conflict_review_required';
     if(v?.assignmentSource==='platform'&&v?.assignmentSyncStatus==='pending_hr')return'platform_pending_hr_sync';
     if(v&&appShopper&&visitShopper===appShopper)return'assigned_confirmed';
     return'approved_assignment_review';

@@ -16,12 +16,13 @@ CX.module('postulaciones', ({data,ui})=>{
   const c=(s)=>activePosts.filter(x=>x.estado===s).length;
   const reprog=activePosts.filter(x=>x.reprog);
   const agendadas=data.visitas().filter(v=>v.agendada&&v.shopperId);
-  const visitForPost=x=>(data._visitas||[]).find(v=>String(v.id||v.visitId||'')===String(x?.visitaId||x?.visitId||''))||null;
+  const visitForPost=x=>{const visitKey=String(x?.visitaId||x?.visitId||''),hrRowKey=String(x?.hrRowId||'');return(data._visitas||[]).find(v=>(visitKey&&[v?.id,v?.visitId].some(k=>String(k||'')===visitKey))||(hrRowKey&&String(v?.hrRowId||'')===hrRowKey))||null;};
   const postSyncState=x=>{
     const state=String(x?.estado||x?.status||'').toLowerCase(),v=visitForPost(x),appShopper=String(x?.shopperId||''),visitShopper=String(v?.shopperId||'');
     if(state==='pendiente')return'pending_review';
     if(state!=='aprobada')return state||'unknown';
     if(v?.assignmentReviewRequired===true||v?.assignmentReviewReason==='hr_platform_assignment_conflict')return'conflict_review_required';
+    if(v&&appShopper&&visitShopper&&visitShopper!==appShopper)return'conflict_review_required';
     if(v?.assignmentSource==='platform'&&v?.assignmentSyncStatus==='pending_hr')return'platform_pending_hr_sync';
     if(v&&appShopper&&visitShopper===appShopper)return'assigned_confirmed';
     return'approved_assignment_review';
