@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import crypto from 'node:crypto';
 import {
   createShopperCommandProvider,
   providerUidFingerprint,
@@ -10,6 +11,9 @@ import {
 } from '../../cxorbia-shopper-command-provider-v1.mjs';
 
 const clone=value=>value===undefined?undefined:structuredClone(value);
+const shaTest=value=>crypto.createHash('sha256').update(String(value),'utf8').digest('hex');
+const internalEmailTest=(tenantId,visibleLogin)=>`${shaTest(`${tenantId}\0shopper\0${String(visibleLogin).toLowerCase()}`).slice(0,48)}@auth.cxorbia.invalid`;
+const suffixLoginTest=(baseLogin,tenantId,shopperId,length=4)=>`${baseLogin}.${shaTest(`${tenantId}\0${shopperId}`).slice(0,length)}`;
 class Snapshot{
   constructor(id,value){this.id=id;this._value=value;this.exists=value!==undefined;}
   data(){return clone(this._value);}
@@ -234,70 +238,132 @@ test('Gate 6 / trusted exact identity link reuses one canonical Auth for an HR t
 });
 
 
-test('Gate 6 / visible-login collision quarantines only the affected shopper and preserves fresh reconciliation for the rest',async()=>{
+test('VRM-081 / exact existing Auth + membership survives incomplete HR name without fabricated credential',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db),id='shopper_gt_incomplete_exact',uid='legacy-exact-uid',pp=paths(id);
+  auth.seed({uid,email:'legacy-exact@auth.cxorbia.invalid',password:'KEEP-ME',disabled:false,customClaims:{tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:id,projectIds:['project-a']}});
+  db.seed(`${pp.users}/${uid}`,{active:true,tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:id,projectIds:['project-a'],providerUidFingerprint:providerUidFingerprint(uid)});
+  db.seed(pp.cross,{tenantId:'tenant-a',shopperId:id,projectIds:['project-a'],providerUidFingerprint:providerUidFingerprint(uid),sourceStableKey:id,identityMode:'stable_hr_shopper_id',sourceType:'hr_external',fuzzyMatching:false});
+  db.seed(pp.profile,{id,shopperId:id,tenantId:'tenant-a',projectIds:['project-a'],sourceType:'hr_external'});
+  const snap=snapshot({shopperId:id,shopperCode:'TYA_GT_INCOMPLETE'});
+  snap.visits[0].shopper='Shopper protegido';
+  const result=await p.reconcileSnapshot(snap,{sourceRevision:'rev-incomplete-exact'});
+  assert.equal(result.ok,true);
+  assert.equal(result.identityReviewCount,0);
+  assert.equal(result.credentialRuleMissing,1);
+  assert.equal(auth.created,0);
+  assert.equal(auth.updated,0);
+  assert.equal((await auth.getUser(uid)).password,'KEEP-ME');
+  assert.equal((await auth.getUser(uid)).email,'legacy-exact@auth.cxorbia.invalid');
+  assert.equal(db.get(`${pp.users}/${uid}`).shopperId,id);
+  assert.equal(db.get(pp.profile).hrSourceRevision,'rev-incomplete-exact');
+  assert.equal(db.get(pp.profile).nombre,undefined);
+});
+
+test('VRM-081 / distinct current shoppers keep unique base holder and receive deterministic suffixes idempotently',async()=>{
   const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);
-  const base=snapshot({shopperId:'shopper_gt_alpha',shopperCode:'TYA_GT_ALPHA'});
+  const alpha='shopper_gt_alpha',beta='shopper_gt_beta',gamma='shopper_gt_gamma';
+  const first=snapshot({shopperId:alpha,shopperCode:'TYA_GT_ALPHA'});first.visits[0].shopper='Patricia Ordoñez';
+  await p.reconcileSnapshot(first,{sourceRevision:'rev-visible-holder'});
+  const base=snapshot({shopperId:alpha,shopperCode:'TYA_GT_ALPHA'});
   base.visits=[
-    {...base.visits[0],id:'visit-alpha',shopperId:'shopper_gt_alpha',shopperCode:'TYA_GT_ALPHA',shopper:'Patricia Ordoñez'},
-    {...base.visits[0],id:'visit-beta',shopperId:'shopper_gt_beta',shopperCode:'TYA_GT_BETA',shopper:'Patricia Ordoñez'},
-    {...base.visits[0],id:'visit-gamma',shopperId:'shopper_gt_gamma',shopperCode:'TYA_GT_GAMMA',shopper:'Lucia Rivera'}
+    {...base.visits[0],id:'visit-alpha',shopperId:alpha,shopperCode:'TYA_GT_ALPHA',shopper:'Patricia Ordoñez'},
+    {...base.visits[0],id:'visit-beta',shopperId:beta,shopperCode:'TYA_GT_BETA',shopper:'Patricia Ordoñez'},
+    {...base.visits[0],id:'visit-gamma',shopperId:gamma,shopperCode:'TYA_GT_GAMMA',shopper:'Lucia Rivera'}
   ];
   const result=await p.reconcileSnapshot(base,{sourceRevision:'rev-visible-collision'});
   assert.equal(result.ok,true);
-  assert.equal(result.status,'committed_with_identity_review');
-  assert.equal(result.shopperCount,3);
-  assert.equal(result.reconciledShopperCount,2);
-  assert.equal(result.identityReviewRequired,true);
-  assert.equal(result.identityReviewCount,1);
-  assert.equal(result.identityReviewQueue.length,1);
-  assert.equal(result.identityReviewQueue[0].sourceShopperId,'shopper_gt_beta');
-  assert.equal(result.identityReviewQueue[0].canonicalShopperId,'shopper_gt_beta');
-  assert.match(result.identityReviewQueue[0].reason,/SHOPPER_(VISIBLE_LOGIN_COLLISION|AUTH_EMAIL_CONFLICT)/);
-  assert.equal(result.identityReviewQueue[0].requiresHumanAdjudication,true);
-  assert.ok(result.identityReviewQueue[0].credentialFingerprint);
-  assert.ok(db.get('tenants/tenant-a/shoppers/shopper_gt_alpha'));
-  assert.equal(db.get('tenants/tenant-a/shoppers/shopper_gt_beta'),undefined);
-  assert.ok(db.get('tenants/tenant-a/shoppers/shopper_gt_gamma'));
-  assert.equal(auth.users.size,2);
-  assert.equal(JSON.stringify(result).includes('Patricia Ordoñez'),false);
-  assert.equal(JSON.stringify(result).includes('Patricia123*'),false);
+  assert.equal(result.status,'committed');
+  assert.equal(result.identityReviewCount,0);
+  assert.equal(result.reconciledShopperCount,3);
+  const alphaUid=stableShopperUid('tenant-a',alpha),betaUid=stableShopperUid('tenant-a',beta);
+  assert.equal(db.get(`tenants/tenant-a/users/${alphaUid}`).visibleLogin,'patricia.ordonez');
+  const expectedBeta=suffixLoginTest('patricia.ordonez','tenant-a',beta,4);
+  assert.equal(db.get(`tenants/tenant-a/users/${betaUid}`).visibleLogin,expectedBeta);
+  assert.equal(db.get(`tenants/tenant-a/shoppers/${beta}`).credentialDisambiguationPolicy,'deterministic_technical_suffix');
+  assert.equal((await auth.getUser(betaUid)).email,internalEmailTest('tenant-a',expectedBeta));
+  assert.equal((await auth.getUser(betaUid)).password,'Patricia123*');
+  const created=auth.created,pathsBefore=db.paths();
+  const replay=await p.reconcileSnapshot(base,{sourceRevision:'rev-visible-collision'});
+  assert.equal(replay.identityReviewCount,0);
+  assert.equal(auth.created,created);
+  assert.deepEqual(db.paths(),pathsBefore);
+  assert.equal(db.get(`tenants/tenant-a/users/${betaUid}`).visibleLogin,expectedBeta);
 });
 
+test('VRM-081 / collision group with no unique unsuffixed holder suffixes every member instead of choosing by name',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);
+  const a='shopper_gt_same_a',b='shopper_gt_same_b';
+  const snap=snapshot({shopperId:a,shopperCode:'TYA_GT_SAME_A'});
+  snap.visits=[
+    {...snap.visits[0],id:'visit-a',shopperId:a,shopperCode:'TYA_GT_SAME_A',shopper:'Ana Pérez'},
+    {...snap.visits[0],id:'visit-b',shopperId:b,shopperCode:'TYA_GT_SAME_B',shopper:'Ana Pérez'}
+  ];
+  const result=await p.reconcileSnapshot(snap,{sourceRevision:'rev-all-suffixed'});
+  assert.equal(result.identityReviewCount,0);
+  const aLogin=db.get(`tenants/tenant-a/users/${stableShopperUid('tenant-a',a)}`).visibleLogin;
+  const bLogin=db.get(`tenants/tenant-a/users/${stableShopperUid('tenant-a',b)}`).visibleLogin;
+  assert.equal(aLogin,suffixLoginTest('ana.perez','tenant-a',a,4));
+  assert.equal(bLogin,suffixLoginTest('ana.perez','tenant-a',b,4));
+  assert.notEqual(aLogin,bLogin);
+});
 
-test('Gate 6 / proven exact alias with legacy self-mapped crosswalk is quarantined as migration debt without blocking fresh HR',async()=>{
+test('VRM-081 / deterministic suffix escalates 4 to 6 to 8 without overwriting existing holders',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db),target='shopper_gt_suffix_target';
+  const base='ana.perez',l4=suffixLoginTest(base,'tenant-a',target,4),l6=suffixLoginTest(base,'tenant-a',target,6),l8=suffixLoginTest(base,'tenant-a',target,8);
+  const holders=[
+    ['holder-base',base,'historical_base'],
+    ['holder-4',l4,'historical_4'],
+    ['holder-6',l6,'historical_6']
+  ];
+  for(const [uid,login,shopperId] of holders){
+    auth.seed({uid,email:internalEmailTest('tenant-a',login),disabled:false,customClaims:{tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId,projectIds:['legacy-project']}});
+  }
+  const snap=snapshot({shopperId:target,shopperCode:'TYA_GT_SUFFIX'});snap.visits[0].shopper='Ana Pérez';
+  const result=await p.reconcileSnapshot(snap,{sourceRevision:'rev-suffix-8'});
+  assert.equal(result.identityReviewCount,0);
+  const uid=stableShopperUid('tenant-a',target);
+  assert.equal(db.get(`tenants/tenant-a/users/${uid}`).visibleLogin,l8);
+  assert.equal((await auth.getUser(uid)).email,internalEmailTest('tenant-a',l8));
+  assert.equal((await auth.getUser('holder-4')).email,internalEmailTest('tenant-a',l4));
+  assert.equal((await auth.getUser('holder-6')).email,internalEmailTest('tenant-a',l6));
+});
+
+test('VRM-081 / proven exact alias self-crosswalk migrates the same principal to canonical idempotently',async()=>{
   const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);
   const alias='shopper_gt_legacy_alias',canonical='shp-canonical-existing';
-  const first=snapshot({shopperId:alias,shopperCode:'TYA_GT_ALIAS'});
-  first.visits[0].shopper='Cesar Castillo';
+  const first=snapshot({shopperId:alias,shopperCode:'TYA_GT_ALIAS'});first.visits[0].shopper='Cesar Castillo';
   await p.reconcileSnapshot(first,{sourceRevision:'rev-alias-self'});
-  const aliasCross=`tenants/tenant-a/shopperIdentityCrosswalk/${alias}`;
-  assert.equal(db.get(aliasCross).shopperId,alias);
-  assert.equal(db.get(aliasCross).identityMode,'stable_hr_shopper_id');
-
-  db.seed(`tenants/tenant-a/shoppers/${canonical}`,{
-    id:canonical,shopperId:canonical,tenantId:'tenant-a',projectIds:['project-a'],
-    nombre:'Cesar Castillo',firstName:'Cesar',lastName:'Castillo',sourceType:'hr_external'
-  });
-  db.seed('tenants/tenant-a/shopperIdentityLinks/link-existing-canonical',{
-    tenantId:'tenant-a',canonicalShopperId:canonical,sourceSystem:'hr',
-    sourceIdentity:{legacyId:alias},projectScope:'project-a',status:'active',
-    authorityType:'provider_exact',authorityRef:'provider-ack-existing-canonical'
-  });
-
+  const aliasUid=stableShopperUid('tenant-a',alias),aliasCross=`tenants/tenant-a/shopperIdentityCrosswalk/${alias}`;
+  db.seed(`tenants/tenant-a/shoppers/${canonical}`,{id:canonical,shopperId:canonical,tenantId:'tenant-a',projectIds:['project-a'],nombre:'Cesar Castillo',firstName:'Cesar',lastName:'Castillo',sourceType:'hr_external'});
+  db.seed('tenants/tenant-a/shopperIdentityLinks/link-existing-canonical',{tenantId:'tenant-a',canonicalShopperId:canonical,sourceSystem:'hr',sourceIdentity:{legacyId:alias},projectScope:'project-a',status:'active',authorityType:'provider_exact',authorityRef:'provider-ack-existing-canonical'});
   const result=await p.reconcileSnapshot(first,{sourceRevision:'rev-alias-after-exact-link'});
   assert.equal(result.ok,true);
-  assert.equal(result.providerAck,true);
-  assert.equal(result.identityMigrationRequired,true);
-  assert.equal(result.identityMigrationCount,1);
-  assert.equal(result.identityMigrationQueue[0].sourceShopperId,alias);
-  assert.equal(result.identityMigrationQueue[0].canonicalShopperId,canonical);
-  assert.equal(result.identityMigrationQueue[0].reason,'SHOPPER_EXACT_ALIAS_SELF_CROSSWALK_MIGRATION_REQUIRED');
-  assert.equal(result.identityMigrationQueue[0].exactIdentityAlreadyProven,true);
-  assert.equal(result.identityMigrationQueue[0].requiresHumanAdjudication,false);
-  assert.equal(db.get(aliasCross).shopperId,alias);
-  assert.equal(db.get(`tenants/tenant-a/shoppers/${canonical}`).shopperId,canonical);
+  assert.equal(result.identityMigrationRequired,false);
+  assert.equal(result.identityMigrationCount,0);
+  assert.equal(result.aliasMigrated,1);
+  assert.equal(auth.created,1);
+  assert.equal(auth.users.size,1);
+  assert.equal((await auth.getUser(aliasUid)).customClaims.shopperId,canonical);
+  assert.equal(db.get(`tenants/tenant-a/users/${aliasUid}`).shopperId,canonical);
+  assert.equal(db.get(aliasCross).shopperId,canonical);
+  assert.equal(db.get(aliasCross).identityMode,'provider_exact_identity_link');
+  assert.deepEqual(db.get(`tenants/tenant-a/shoppers/${canonical}`).sourceShopperIds,[alias]);
+  const created=auth.created;
+  const replay=await p.reconcileSnapshot(first,{sourceRevision:'rev-alias-after-exact-link'});
+  assert.equal(replay.identityMigrationCount,0);
+  assert.equal(auth.created,created);
+  assert.equal(auth.users.size,1);
 });
 
+test('VRM-081 / conflicting exact identity links fail closed and never merge by name',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db),alias='shopper_gt_conflicting_alias';
+  db.seed('tenants/tenant-a/shopperIdentityLinks/link-a',{tenantId:'tenant-a',canonicalShopperId:'canonical-a',sourceSystem:'hr',sourceIdentity:{legacyId:alias},projectScope:'project-a',status:'active',authorityType:'provider_exact',authorityRef:'a'});
+  db.seed('tenants/tenant-a/shopperIdentityLinks/link-b',{tenantId:'tenant-a',canonicalShopperId:'canonical-b',sourceSystem:'hr',sourceIdentity:{legacyId:alias},projectScope:'project-a',status:'active',authorityType:'provider_exact',authorityRef:'b'});
+  const snap=snapshot({shopperId:alias,shopperCode:'TYA_GT_CONFLICT_LINK'});snap.visits[0].shopper='Cesar Castillo';
+  await assert.rejects(()=>p.reconcileSnapshot(snap,{sourceRevision:'rev-link-conflict'}),/SHOPPER_IDENTITY_LINK_CONFLICT/);
+  assert.equal(auth.created,0);
+  assert.equal(db.paths().filter(path=>path.includes('/users/')).length,0);
+});
 
 test('Gate 8 / durable legacy shoppers converge to the frozen credential rule outside the current HR snapshot',async()=>{
   const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);
