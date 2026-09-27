@@ -32,6 +32,7 @@ on:
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V85_2026-09-27.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V86_2026-09-27.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V87_2026-09-27.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V88_2026-09-27.json
       - tools/qa/cxorbia-i3-vrm081-population-credential-diagnostic.mjs
       - app/modules/configuracion.js
       - app/core/config.js
@@ -84,7 +85,7 @@ env:
   I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V87_2026-09-27.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V88_2026-09-27.json
 
 jobs:
   canonical-candidate-authority:
@@ -121,7 +122,7 @@ jobs:
           test "$(jq -r '.findings["VRM-078"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN515"
           test "$(jq -r '.findings["VRM-079"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN518"
           test "$(jq -r '.findings["VRM-080"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN525"
-          test "$(jq -r '.findings["VRM-081"].state' "$POST_RUN500_LEDGER")" = "SOURCE_FIXED_ISOLATED_PASS_DEV_PROOF_REQUIRED"
+          test "$(jq -r '.findings["VRM-081"].state' "$POST_RUN500_LEDGER")" = "SOURCE_FIXED_FOCAL_PASS_DEV_MATERIALIZATION_REQUIRED"
           test "$STATUS" = "HOLD_VRM081_DEV_MATERIALIZATION_REQUIRED"
           echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
@@ -790,16 +791,16 @@ jobs:
           include-hidden-files: true
 
   v52-vrm050-runtime:
-    name: I3 V52 — VRM-050 HR refresh timeout runtime-only DEV fix
+    name: I3 V88 — VRM-081 exact runtime-only DEV materialization
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM050_RUNTIME_MATERIALIZATION_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v52-vrm050-runtime]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM081_DEV_MATERIALIZATION_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-081-runtime]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
-      V52_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
-      V52_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
-      V52_OUT: .tmp/i3-v52-vrm050-runtime
-      EXPECTED_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c
+      VRM081_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      VRM081_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      VRM081_OUT: .tmp/i3-vrm081-runtime
+      VRM081_ROOT: https://cxorbia-backend-dev.web.app
     steps:
       - uses: actions/checkout@v4
         with:
@@ -809,26 +810,28 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Prove exact focal successor before any build
+      - name: Prove exact VRM-081 source and run focal regressions before build
         run: |
           set -Eeuo pipefail
-          mkdir -p "$V52_OUT"
-          test "$V52_SOURCE" = "62ee2903fdced52c525d5a028c8c4c725940e4cd"
-          test "$V52_TREE" = "e0649d447257745af89efc9845dfb2fb50600cf6"
-          test "$(git rev-parse "$V52_SOURCE^{tree}")" = "$V52_TREE"
-          test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_VRM050_RUNTIME_MATERIALIZATION_REQUIRED"
-          test "$(git diff --name-only 04432faa32bef0427223fa2c51cb5b809f53e178 "$V52_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source | wc -l | tr -d ' ')" = "1"
-          git diff --name-only 04432faa32bef0427223fa2c51cb5b809f53e178 "$V52_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source | grep -qx 'tools/hr-source/tya-reapply-canonical-state-r20.mjs'
-          node --check tools/hr-source/tya-reapply-canonical-state-r20.mjs
-          grep -q 'CXORBIA_HR_PAYLOAD_VM_TIMEOUT_MS' tools/hr-source/tya-reapply-canonical-state-r20.mjs
-          grep -q 'Math.min(60000' tools/hr-source/tya-reapply-canonical-state-r20.mjs
-          ! grep -q 'timeout:5000' tools/hr-source/tya-reapply-canonical-state-r20.mjs
-          SOURCE_DIR="$RUNNER_TEMP/cxorbia-v52-source"
+          mkdir -p "$VRM081_OUT"
+          test "$VRM081_SOURCE" = "0c3ce84d567a674ec18f90eedba1b2380c45d55b"
+          test "$VRM081_TREE" = "5fee581f4c09dd6b9bd5728dd857b9abda8cf697"
+          test "$(git rev-parse "$VRM081_SOURCE^{tree}")" = "$VRM081_TREE"
+          test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_VRM081_DEV_MATERIALIZATION_REQUIRED"
+          PRODUCT_DIFF="$(git diff --name-only 5ab4c206ff9397eef6e06ee7cf9a22c3c728721a "$VRM081_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**' | sort)"
+          test "$PRODUCT_DIFF" = "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
+          git diff --quiet "$VRM081_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          SOURCE_DIR="$RUNNER_TEMP/cxorbia-vrm081-source"
           rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"
-          git archive "$V52_SOURCE" | tar -x -C "$SOURCE_DIR"
+          git archive "$VRM081_SOURCE" | tar -x -C "$SOURCE_DIR"
+          cp "$GITHUB_WORKSPACE/backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs" "$SOURCE_DIR/backend/runtime/hr-live-service/test/"
+          node --check "$SOURCE_DIR/backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
+          node --check "$SOURCE_DIR/backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs"
+          cd "$SOURCE_DIR"
+          node --test backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-semantic-regression.test.mjs | tee "$GITHUB_WORKSPACE/$VRM081_OUT/source-tests.log"
+          cd "$GITHUB_WORKSPACE"
           echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
-          CXORBIA_HR_PAYLOAD_VM_TIMEOUT_MS=30000 node "$SOURCE_DIR/tools/hr-source/tya-reapply-canonical-state-r20.mjs" --input "$SOURCE_DIR/app/data/tya-hr-source-safe-periods.js" --out "$V52_OUT/source-gate-payload.js" --report-dir "$V52_OUT/source-gate-report"
-          test -s "$V52_OUT/source-gate-payload.js"
+          jq -n -S --arg source "$VRM081_SOURCE" --arg tree "$VRM081_TREE" '{decision:"PASS_I3_VRM081_SOURCE_FIX",sourceSha:$source,sourceTree:$tree,ownerPaths:["backend/runtime/cxorbia-shopper-command-provider-v1.mjs"],testPaths:["backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs"],builds:0,deploys:0,production:false}' > "$VRM081_OUT/source-proof.json"
 
       - name: Authenticate Recovery DEV
         uses: google-github-actions/auth@v2
@@ -839,67 +842,95 @@ jobs:
         with:
           project_id: ${{ env.PROJECT }}
 
-      - name: Prove Hosting unchanged before runtime materialization
+      - name: Capture immutable DEV state before runtime materialization
         run: |
           set -Eeuo pipefail
           TOKEN="$(gcloud auth print-access-token)"
-          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$V52_OUT/hosting-before.json"
-          test "$(jq -r '.release.version.name // empty' "$V52_OUT/hosting-before.json")" = "$EXPECTED_HOSTING_VERSION"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$VRM081_OUT/hosting-before.json"
+          HOSTING_VERSION="$(jq -r '.release.version.name // empty' "$VRM081_OUT/hosting-before.json")"; test -n "$HOSTING_VERSION"
+          echo "VRM081_HOSTING_VERSION=$HOSTING_VERSION" >> "$GITHUB_ENV"
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$VRM081_OUT/runtime-before.json"
 
-      - name: Build exact successor runtime once
+      - name: Build exact VRM-081 runtime once
         run: |
           set -Eeuo pipefail
-          IMAGE_URI="gcr.io/${PROJECT}/${SERVICE}:i3-v52-${V52_SOURCE:0:12}-${GITHUB_RUN_ID}"
-          echo "$IMAGE_URI" > "$V52_OUT/image-uri.txt"
+          IMAGE_URI="gcr.io/${PROJECT}/${SERVICE}:i3-vrm081-${VRM081_SOURCE:0:12}-${GITHUB_RUN_ID}"
+          echo "$IMAGE_URI" > "$VRM081_OUT/image-uri.txt"
           gcloud builds submit "$SOURCE_DIR" --project "$PROJECT" --config "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE_URI" --quiet
 
-      - name: Deploy exact successor runtime once to Recovery DEV
+      - name: Deploy exact VRM-081 runtime once to Recovery DEV
         run: |
           set -Eeuo pipefail
-          IMAGE_URI="$(cat "$V52_OUT/image-uri.txt")"
+          IMAGE_URI="$(cat "$VRM081_OUT/image-uri.txt")"
           gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$IMAGE_URI" --min-instances=1 --max-instances=1 --quiet
-          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$V52_OUT/runtime.json"
-          REV="$(jq -r '.status.latestReadyRevisionName // empty' "$V52_OUT/runtime.json")"; test -n "$REV"
-          gcloud run revisions describe "$REV" --project "$PROJECT" --region "$REGION" --format=json > "$V52_OUT/runtime-revision.json"
-          RAW="$(jq -r '.status.imageDigest // empty' "$V52_OUT/runtime-revision.json")"
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$VRM081_OUT/runtime-after.json"
+          REV="$(jq -r '.status.latestReadyRevisionName // empty' "$VRM081_OUT/runtime-after.json")"; test -n "$REV"
+          gcloud run revisions describe "$REV" --project "$PROJECT" --region "$REGION" --format=json > "$VRM081_OUT/runtime-revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$VRM081_OUT/runtime-revision.json")"
           if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else exit 1; fi
-          echo "V52_RUNTIME_REVISION=$REV" >> "$GITHUB_ENV"
-          echo "V52_RUNTIME_DIGEST=$DIGEST" >> "$GITHUB_ENV"
+          echo "VRM081_RUNTIME_REVISION=$REV" >> "$GITHUB_ENV"
+          echo "VRM081_RUNTIME_DIGEST=$DIGEST" >> "$GITHUB_ENV"
 
-      - name: Force fresh HR and prove VRM-050 closed
+      - name: Force fresh HR and run population credential reproof
         run: |
           set -Eeuo pipefail
-          URL="$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&fresh=1&v52=$GITHUB_RUN_ID"
+          URL="$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&fresh=1&vrm081runtime=$GITHUB_RUN_ID"
           ok=0
           for attempt in $(seq 1 8); do
-            if curl -fsS --retry 2 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$URL&attempt=$attempt" > "$V52_OUT/hr-meta.json"; then
-              if jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .shopperReconciliation.providerAck==true and .visitReconciliation.providerAck==true and .hrWrites==false and .production==false and .refreshError==null' "$V52_OUT/hr-meta.json" >/dev/null; then ok=1; break; fi
+            if curl -fsS --retry 2 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$URL&attempt=$attempt" > "$VRM081_OUT/hr-meta.json"; then
+              if jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .shopperReconciliation.providerAck==true and .visitReconciliation.providerAck==true and .hrWrites==false and .production==false and .refreshError==null' "$VRM081_OUT/hr-meta.json" >/dev/null; then ok=1; break; fi
             fi
             sleep 8
           done
           test "$ok" = "1"
-          REVISION="$(jq -r '.revision' "$V52_OUT/hr-meta.json")"; [[ "$REVISION" =~ ^[0-9a-f]{64}$ ]]
-          curl -fsS --retry 3 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=json&v52=$GITHUB_RUN_ID" > "$V52_OUT/hr.json"
-          test "$(jq -r '._runtime.revision // .sourceRevision // empty' "$V52_OUT/hr.json")" = "$REVISION"
-          curl -fsS "$HOSTING_URL/health?v52=$GITHUB_RUN_ID" > "$V52_OUT/health.json"
-          test "$(jq -r '.lastRefreshError == null' "$V52_OUT/health.json")" = "true"
+          HR="$(jq -r '.revision' "$VRM081_OUT/hr-meta.json")"; [[ "$HR" =~ ^[0-9a-f]{64}$ ]]
+          VRM081_OUT="$VRM081_OUT/population" VRM081_ROOT="$VRM081_ROOT" VRM081_SOURCE="$VRM081_SOURCE" VRM081_TENANT="$TENANT_ID" VRM081_PROJECT="$PROJECT_ID" node tools/qa/cxorbia-i3-vrm081-population-credential-diagnostic.mjs | tee "$VRM081_OUT/population.log"
+          test "$(jq -r '.decision' "$VRM081_OUT/population/result.json")" = "PASS_I3_VRM081_POPULATION_CREDENTIAL_DIAGNOSTIC"
+          test "$(jq -r '.hrRevision' "$VRM081_OUT/population/result.json")" = "$HR"
+          test "$(jq -r '.humanDecisionRequired.required' "$VRM081_OUT/population/result.json")" = "false"
+          test "$(jq -r '.activeCredentialUniverseResolved' "$VRM081_OUT/population/result.json")" = "true"
+          test "$(jq -r '.providerQueues.migrationCount' "$VRM081_OUT/population/result.json")" = "0"
+          test "$(jq -r '.remediationBuckets.CURRENT_CURRENT_VISIBLE_LOGIN_COLLISION_POLICY_REQUIRED // 0' "$VRM081_OUT/population/result.json")" = "0"
+          test "$(jq -r '.remediationBuckets.HISTORICAL_AUTH_EMAIL_OCCUPANT_MECHANICAL_REVIEW // 0' "$VRM081_OUT/population/result.json")" = "0"
+          test "$(jq -r '.remediationBuckets.SOURCE_NAME_INCOMPLETE_REQUIRES_ADJUDICATION // 0' "$VRM081_OUT/population/result.json")" = "0"
+          test "$(jq -r '.safety.hrWrites' "$VRM081_OUT/population/result.json")" = "0"
+          test "$(jq -r '.safety.production' "$VRM081_OUT/population/result.json")" = "false"
 
-      - name: Prove Hosting still unchanged and seal receipt
+      - name: Prove no duplicate canonical Auth principals
+        run: |
+          set -Eeuo pipefail
+          node --input-type=module <<'NODE' > "$VRM081_OUT/auth-population.json"
+          import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';
+          import {getAuth} from 'firebase-admin/auth';
+          if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:'cxorbia-backend-dev'});
+          const auth=getAuth();const users=[];let token;
+          do{const page=await auth.listUsers(1000,token);users.push(...page.users);token=page.pageToken;}while(token);
+          const active=users.filter(u=>u.disabled!==true&&u.customClaims?.tenantId==='tya'&&u.customClaims?.role==='shopper'&&String(u.customClaims?.authNamespace||'shopper')==='shopper'&&(u.customClaims?.projectIds||[]).includes('cinepolis'));
+          const by=new Map();for(const u of active){const id=String(u.customClaims?.shopperId||'');if(!id)continue;if(!by.has(id))by.set(id,[]);by.get(id).push(u.uid);}
+          const duplicates=[...by.entries()].filter(([,uids])=>uids.length>1).map(([shopperId,uids])=>({shopperId,count:uids.length}));
+          process.stdout.write(JSON.stringify({decision:duplicates.length?'FAIL_DUPLICATE_CANONICAL_AUTH':'PASS_NO_DUPLICATE_CANONICAL_AUTH',activePrincipals:active.length,canonicalShopperIds:by.size,duplicateCanonicalShopperIds:duplicates.length,duplicates,production:false},null,2));
+          if(duplicates.length)process.exitCode=1;
+          NODE
+          test "$(jq -r '.decision' "$VRM081_OUT/auth-population.json")" = "PASS_NO_DUPLICATE_CANONICAL_AUTH"
+
+      - name: Prove Hosting unchanged and seal VRM-081 receipt
         run: |
           set -Eeuo pipefail
           TOKEN="$(gcloud auth print-access-token)"
-          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$V52_OUT/hosting-after.json"
-          test "$(jq -r '.release.version.name // empty' "$V52_OUT/hosting-after.json")" = "$EXPECTED_HOSTING_VERSION"
-          jq -n -S --arg source "$V52_SOURCE" --arg tree "$V52_TREE" --arg runtime "$V52_RUNTIME_REVISION" --arg digest "$V52_RUNTIME_DIGEST" --arg hosting "$EXPECTED_HOSTING_VERSION" --arg hr "$(jq -r '.revision' "$V52_OUT/hr-meta.json")" '{decision:"PASS_I3_V52_VRM050_RUNTIME_REFRESH_REPROOF",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,refreshError:null,sourceSafe:true,shopperProviderAck:true,visitProviderAck:true,builds:1,runtimeDeploys:1,hostingDeploys:0,rulesDeploys:0,hrWrites:0,production:false}' > "$V52_OUT/result.json"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$VRM081_OUT/hosting-after.json"
+          test "$(jq -r '.release.version.name // empty' "$VRM081_OUT/hosting-after.json")" = "$VRM081_HOSTING_VERSION"
+          HR="$(jq -r '.hrRevision' "$VRM081_OUT/population/result.json")"
+          jq -n -S --arg source "$VRM081_SOURCE" --arg tree "$VRM081_TREE" --arg runtime "$VRM081_RUNTIME_REVISION" --arg digest "$VRM081_RUNTIME_DIGEST" --arg hosting "$VRM081_HOSTING_VERSION" --arg hr "$HR" --argjson reviewCount "$(jq -r '.providerQueues.reviewCount' "$VRM081_OUT/population/result.json")" --argjson authPrincipals "$(jq -r '.activePrincipals' "$VRM081_OUT/auth-population.json")" '{decision:"PASS_I3_VRM081_RUNTIME_POPULATION_REPROOF",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,reviewCount:$reviewCount,migrationCount:0,activeCredentialUniverseResolved:true,humanDecisionRequired:false,noDuplicateCanonicalAuth:true,activeAuthPrincipals:$authPrincipals,providerAck:true,durableReadback:true,noDuplicateRegression:true,builds:1,runtimeDeploys:1,hostingDeploys:0,rulesDeploys:0,hrWrites:0,externalWrites:0,production:false}' > "$VRM081_OUT/result.json"
 
       - if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-i3-v52-vrm050-runtime-${{ github.run_id }}
-          path: ${{ env.V52_OUT }}
+          name: cxorbia-i3-vrm081-runtime-${{ github.run_id }}
+          path: ${{ env.VRM081_OUT }}
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
+
   v53-vrm050-runtime-readback:
     name: I3 V53 — VRM-050 exact runtime readback — no deploy
     needs: canonical-candidate-authority
