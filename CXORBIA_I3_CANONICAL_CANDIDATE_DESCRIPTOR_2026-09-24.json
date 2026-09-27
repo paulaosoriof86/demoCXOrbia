@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM080_LIVE_REPROOF_REQUIRED",
+  "status": "HOLD_VRM081_DIAGNOSTIC_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_REOPENED_POST_RUN500_DRIFT",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "77b29e303c825be586a97e159d4d65bfae7e66c8",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "b841266de9e6156eb7feda7b09e39f09d8721766",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V85_2026-09-27.json",
-  "findingsLedgerExpectedGitBlob": "7ccb82ea63a26e8903c8c8ea67d452809da58602",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V86_2026-09-27.json",
+  "findingsLedgerExpectedGitBlob": "b35de53208eab33edbf7f156c0efc651ce7a7285",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-080",
+  "activeBlocker": "VRM-081",
   "nextFindingId": "VRM-082",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN ONE VRM-080 LIVE REPROOF ON SOURCE 77b29e3: prove connected user-admin durable update/claims/audit; create synthetic project with provider ACK preserving projectId; update countries through provider ACK/readback; prove unsupported tenant config locked; cleanup all QA residue; no production.",
+  "exactNextAction": "RUN VRM-081 READ-ONLY POPULATION CREDENTIAL DIAGNOSTIC: classify every active shopper identity/login collision and incomplete credential against exact HR crosswalk + Auth + active membership; separate login-bearing active principals from historical/non-login aliases; no product writes, no Auth writes, no HR writes, no production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -704,17 +704,16 @@
   },
   "postRun500Recovery": {
     "lock": "CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json",
-    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V85_2026-09-27.json",
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V86_2026-09-27.json",
     "vrm076": "FIXED_PROVEN_RUN502",
     "vrm077": "FIXED_PROVEN_RUN507",
     "remainingOpenP0": [
-      "VRM-080",
       "VRM-081"
     ],
     "production": false,
     "vrm078": "FIXED_PROVEN_RUN515",
     "vrm079": "FIXED_PROVEN_RUN518",
-    "vrm080": "FIXED_SOURCE_NOT_PROVEN"
+    "vrm080": "FIXED_PROVEN_RUN525"
   },
   "lastVrm077Proof": {
     "runId": 36319627577,
@@ -802,6 +801,19 @@
     "mode": "hosting_only_dev_if_needed",
     "runtimeDeploys": 0,
     "rulesDeploys": 0,
+    "production": false
+  },
+  "lastVrm080Proof": {
+    "runId": 36333245670,
+    "runNumber": 525,
+    "jobId": 108659140363,
+    "artifactId": 10936871191,
+    "artifactDigest": "sha256:b2a2b6df7be928ff077b72eceac28f3fff8d8792a8ab8909f0ca7bb81324df25",
+    "decision": "PASS_I3_VRM080_CONNECTED_ADMIN_CONFIG_DURABLE",
+    "sourceSha": "77b29e303c825be586a97e159d4d65bfae7e66c8",
+    "sourceTree": "279f33d6ad734ac7da9e5764dd05c91cab8882aa",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/657dc30197e38cb4",
+    "hostingDeploys": 0,
     "production": false
   }
 }
