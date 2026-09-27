@@ -110,7 +110,8 @@
     };
     D.updateProject=function(id,patch,meta){
       patch=patch||{};meta=commandMeta(meta||patch.__commandMeta);const cleanPatch=Object.assign({},patch);delete cleanPatch.__commandMeta;const c=ctx();
-      const current=(D.projects||[]).find(p=>str(p.id||p.projectId)===str(id))||{};
+      const current=(D.__backendAllProjectRecords||[]).find(p=>str(p.id||p.projectId)===str(id))
+        ||(D.projects||[]).find(p=>str(p.id||p.projectId)===str(id))||{};
       const periodId=str(cleanPatch.periodId||current.periodId||c.periodId||('setup-'+hash([c.tenantId,id,cleanPatch.name||current.name])));
       const cmd=buildBase('project.update','project',id,Object.assign({projectId:id,periodId},cleanPatch),versionOf(current),Object.assign({permission:'project.update'},meta));
       cmd.projectId=str(id);cmd.periodId=periodId;
