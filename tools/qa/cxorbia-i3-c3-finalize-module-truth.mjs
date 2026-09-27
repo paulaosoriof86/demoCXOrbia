@@ -65,7 +65,10 @@ for(const [id,v] of Object.entries(f)){
     if(String(r.decision||'').startsWith('PASS_')!==true)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_DECISION:'+id+':'+domain);
     if(r.sourceSha!==SOURCE||r.sourceTree!==TREE)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_SOURCE:'+id+':'+domain);
     if(r.runtimeRevision!==RUNTIME||r.runtimeDigest!==DIGEST||r.hostingVersion!==HOSTING)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_RUNTIME:'+id+':'+domain);
-    if(String(r.hrRevision||'')!==String(human.sourceRevision||''))throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_HR_REVISION:'+id+':'+domain);
+    const receiptHr=String(r.hrRevision??''),humanHr=String(human.sourceRevision||'');
+    if(r.hrIndependent===true){
+      if(receiptHr&&receiptHr!==humanHr)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_HR_REVISION:'+id+':'+domain);
+    }else if(receiptHr!==humanHr)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_HR_REVISION:'+id+':'+domain);
     if(r.production!==false)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_PRODUCTION:'+id+':'+domain);
     for(const k of ['actionReal','providerAck','durableReadback','reloadProof','noDuplicateRegression']){
       if(r[k]!==true)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_INCOMPLETE:'+id+':'+domain+':'+k);

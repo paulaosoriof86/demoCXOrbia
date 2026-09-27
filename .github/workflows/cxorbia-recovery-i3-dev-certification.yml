@@ -28,6 +28,7 @@ on:
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V80_2026-09-27.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V81_2026-09-27.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V82_2026-09-27.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V83_2026-09-27.json
       - app/modules/documentos.js
       - tools/qa/cxorbia-i3-vrm079-documents-resources-live.mjs
       - app/modules/proyecto-wizard.js
@@ -75,7 +76,7 @@ env:
   I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V82_2026-09-27.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V83_2026-09-27.json
 
 jobs:
   canonical-candidate-authority:
@@ -110,11 +111,11 @@ jobs:
           test "$(jq -r '.findings["VRM-076"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN502"
           test "$(jq -r '.findings["VRM-077"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN507"
           test "$(jq -r '.findings["VRM-078"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN515"
-          test "$(jq -r '.findings["VRM-079"].state' "$POST_RUN500_LEDGER")" = "FIXED_SOURCE_NOT_PROVEN"
+          test "$(jq -r '.findings["VRM-079"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN518"
           for id in VRM-080 VRM-081; do
             test "$(jq -r --arg id "$id" '.findings[$id].state' "$POST_RUN500_LEDGER")" = "P0_PROVEN_POST_RUN500_FORENSIC"
           done
-          STATUS="HOLD_VRM079_LIVE_REPROOF_REQUIRED"
+          STATUS="HOLD_VRM080_SOURCE_FIX_REQUIRED"
           echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
@@ -160,7 +161,12 @@ jobs:
           findings['VRM-082']={severity:'P0',state:'FIXED_PROVEN',owner:['app/modules/x.js','app/modules/y.js'],terminalEvidence:{ownerSpecificReceipts:[receipt('m0','app/modules/x.js')]}};
           fs.writeFileSync(p+'/ledger-one-domain.json',JSON.stringify({findings}));
           findings['VRM-082'].terminalEvidence.ownerSpecificReceipts.push(receipt('m1','app/modules/y.js'));
-          fs.writeFileSync(p+'/ledger-pass.json',JSON.stringify({findings}));
+          const noHrFlag=JSON.parse(JSON.stringify(findings));
+          noHrFlag['VRM-082'].terminalEvidence.ownerSpecificReceipts[1].hrRevision=null;
+          fs.writeFileSync(p+'/ledger-null-hr-no-flag.json',JSON.stringify({findings:noHrFlag}));
+          const hrIndependent=JSON.parse(JSON.stringify(noHrFlag));
+          hrIndependent['VRM-082'].terminalEvidence.ownerSpecificReceipts[1].hrIndependent=true;
+          fs.writeFileSync(p+'/ledger-pass.json',JSON.stringify({findings:hrIndependent}));
           NODE
           run_finalizer() {
             C3_PRETERMINAL="$T/pre.json" C3_FOCAL="$T/focal.json" C3_HUMAN="$T/human.json" C3_QA="$T/qa.json" C3_PARITY="$T/parity.json" C3_LEDGER="$1" C3_FINAL_MATRIX="$T/out.json" C3_SOURCE="$SOURCE" C3_TREE="$TREE" C3_RUNTIME_REVISION="$RUNTIME" C3_RUNTIME_DIGEST="$DIGEST" C3_HOSTING_VERSION="$HOSTING" node tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs
@@ -171,6 +177,8 @@ jobs:
           grep -q 'C3_OWNER_RECEIPT_MISSING:m0' "$T/no-receipt.log"
           if run_finalizer "$T/ledger-one-domain.json" >"$T/one-domain.log" 2>&1; then echo "one-domain receipt incorrectly promoted a second domain"; exit 1; fi
           grep -q 'C3_OWNER_RECEIPT_MISSING:m1' "$T/one-domain.log"
+          if run_finalizer "$T/ledger-null-hr-no-flag.json" >"$T/null-hr-no-flag.log" 2>&1; then echo "null HR without independence flag incorrectly passed"; exit 1; fi
+          grep -q 'C3_OWNER_RECEIPT_HR_REVISION:VRM-082:m1' "$T/null-hr-no-flag.log"
           run_finalizer "$T/ledger-pass.json" >"$T/pass.log"
           test "$(jq -r '.terminalClosure.decision' "$T/out.json")" = "PASS_C3_TERMINAL_MODULE_TRUTH_20_20"
           test "$(jq -r '.modules[]|select(.domain=="m0")|.preTerminalClassification' "$T/out.json")" = "COMPOSED_NOT_DEPLOYED"
@@ -178,7 +186,7 @@ jobs:
           test "$(jq -r '.modules[]|select(.domain=="m0")|.ownerSpecificReceiptFindingIds[0]' "$T/out.json")" = "VRM-082"
           test "$(jq -r '.modules[]|select(.domain=="m1")|.ownerSpecificReceiptFindingIds[0]' "$T/out.json")" = "VRM-082"
           test "$(jq '[.modules[]|select(.classification!="MATCH")]|length' "$T/out.json")" = "0"
-          jq -n -S --arg source "$GITHUB_SHA" '{decision:"PASS_I3_VRM076_FINALIZER_FAIL_CLOSED_SELFTEST",controlSourceSha:$source,openP0Rejected:true,missingReceiptRejected:true,multiDomainReceiptRequired:true,wrongPromotionPrevented:true,ownerReceiptPromotionProven:true,builds:0,deploys:0,writes:0,production:false}' > "$T/result.json"
+          jq -n -S --arg source "$GITHUB_SHA" '{decision:"PASS_I3_VRM076_FINALIZER_FAIL_CLOSED_SELFTEST",controlSourceSha:$source,openP0Rejected:true,missingReceiptRejected:true,multiDomainReceiptRequired:true,hrIndependentNullAccepted:true,nullHrWithoutIndependenceRejected:true,wrongPromotionPrevented:true,ownerReceiptPromotionProven:true,builds:0,deploys:0,writes:0,production:false}' > "$T/result.json"
       - if: always()
         uses: actions/upload-artifact@v4
         with:
