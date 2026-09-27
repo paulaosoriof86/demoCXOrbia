@@ -375,17 +375,32 @@ async function durableUpsert({auth,db,policy,candidate,sourceRevision,authUsers,
   if(!scopeAllowed(policy,tenantId,projectId))throw new Error('SHOPPER_PROVIDER_SCOPE_DENIED');
   const tenant=db.collection('tenants').doc(tenantId),users=tenant.collection('users');
   const profileRef=tenant.collection('shoppers').doc(shopperId),crossRef=tenant.collection('shopperIdentityCrosswalk').doc(sourceShopperId);
-  const existingMemberDoc=await membershipMatches(users,shopperId);
+  const canonicalMemberDoc=await membershipMatches(users,shopperId);
   const [crossBefore,profileBefore]=await Promise.all([crossRef.get(),profileRef.get()]);
-  const existingMember=existingMemberDoc?.data?.()||{};
   const existingCross=crossBefore.exists?crossBefore.data()||{}:{};
   const existingProfile=profileBefore.exists?profileBefore.data()||{}:{};
-  const recoveredPrincipal=existingMemberDoc?null:await existingShopperAuthPrincipal(auth,tenantId,shopperId,projectId,authUsers);
-  const uid=existingMemberDoc?.id||recoveredPrincipal?.uid||stableShopperUid(tenantId,shopperId);
+  let exactAliasSelfMap=false;
+  if(crossBefore.exists){
+    const crossTenantOk=str(existingCross.tenantId)===tenantId;
+    const crossSourceOk=str(existingCross.sourceStableKey||sourceShopperId)===sourceShopperId;
+    const crossIdentityMode=str(existingCross.identityMode).toLowerCase();
+    exactAliasSelfMap=
+      sourceShopperId!==shopperId&&profileBefore.exists&&crossTenantOk&&crossSourceOk&&
+      str(existingCross.shopperId)===sourceShopperId&&str(existingCross.sourceType).toLowerCase()==='hr_external'&&
+      ['stable_hr_shopper_id','exact_technical_keys_only'].includes(crossIdentityMode);
+  }
+  const aliasMemberDoc=exactAliasSelfMap?await membershipMatches(users,sourceShopperId):null;
+  if(canonicalMemberDoc&&aliasMemberDoc&&canonicalMemberDoc.id!==aliasMemberDoc.id)throw new Error('SHOPPER_EXACT_ALIAS_DUAL_PRINCIPAL_CONFLICT');
+  const recoveredPrincipal=canonicalMemberDoc?null:await existingShopperAuthPrincipal(auth,tenantId,shopperId,projectId,authUsers);
+  const aliasUser=aliasMemberDoc?await safeAuthByUid(auth,aliasMemberDoc.id):null;
+  const aliasPrincipalMigration=!canonicalMemberDoc&&!recoveredPrincipal&&!!aliasMemberDoc&&!!aliasUser&&authPrincipalMatches(aliasUser,tenantId,sourceShopperId,projectId);
+  const existingMemberDoc=canonicalMemberDoc||(aliasPrincipalMigration?aliasMemberDoc:null);
+  const existingMember=existingMemberDoc?.data?.()||{};
+  const uid=canonicalMemberDoc?.id||recoveredPrincipal?.uid||(aliasPrincipalMigration?aliasMemberDoc.id:null)||stableShopperUid(tenantId,shopperId);
   const memberRef=users.doc(uid);
-  let user=await safeAuthByUid(auth,uid),authCreated=false,credentialNormalized=false;
-  const exactExistingMember=!!existingMemberDoc&&existingMember.active===true&&str(existingMember.tenantId)===tenantId&&str(existingMember.shopperId)===shopperId&&str(existingMember.role)==='shopper'&&str(existingMember.authNamespace)==='shopper'&&uniq(existingMember.projectIds).includes(projectId);
-  const exactExistingPrincipal=exactExistingMember&&!!user&&authPrincipalMatches(user,tenantId,shopperId,projectId);
+  let user=aliasPrincipalMigration?aliasUser:await safeAuthByUid(auth,uid),authCreated=false,credentialNormalized=false;
+  const exactExistingMember=!!existingMemberDoc&&existingMember.active===true&&str(existingMember.tenantId)===tenantId&&str(existingMember.shopperId)===(aliasPrincipalMigration?sourceShopperId:shopperId)&&str(existingMember.role)==='shopper'&&str(existingMember.authNamespace)==='shopper'&&uniq(existingMember.projectIds).includes(projectId);
+  const exactExistingPrincipal=exactExistingMember&&!!user&&authPrincipalMatches(user,tenantId,aliasPrincipalMigration?sourceShopperId:shopperId,projectId);
 
   const candidateName=technicalIdentityLabel(candidate.nombre,candidate.shopperId)?'':str(candidate.nombre);
   const credential=shopperCredentialRule({
@@ -396,15 +411,9 @@ async function durableUpsert({auth,db,policy,candidate,sourceRevision,authUsers,
   });
   if(!credential.ok&&!exactExistingPrincipal)throw new Error(credential.reason);
 
-  let exactAliasSelfMap=false;
   if(crossBefore.exists){
     const crossTenantOk=str(existingCross.tenantId)===tenantId;
     const crossSourceOk=str(existingCross.sourceStableKey||sourceShopperId)===sourceShopperId;
-    const crossIdentityMode=str(existingCross.identityMode).toLowerCase();
-    exactAliasSelfMap=
-      sourceShopperId!==shopperId&&profileBefore.exists&&crossTenantOk&&crossSourceOk&&
-      str(existingCross.shopperId)===sourceShopperId&&str(existingCross.sourceType).toLowerCase()==='hr_external'&&
-      ['stable_hr_shopper_id','exact_technical_keys_only'].includes(crossIdentityMode);
     if(!exactAliasSelfMap&&(!crossTenantOk||str(existingCross.shopperId)!==shopperId||!crossSourceOk))throw new Error('SHOPPER_CROSSWALK_SCOPE_CONFLICT');
     if(!exactAliasSelfMap&&str(existingCross.providerUidFingerprint)&&str(existingCross.providerUidFingerprint)!==providerUidFingerprint(uid))throw new Error('SHOPPER_CROSSWALK_UID_CONFLICT');
   }
@@ -433,7 +442,7 @@ async function durableUpsert({auth,db,policy,candidate,sourceRevision,authUsers,
       credentialNormalized=true;
     }
   }
-  assertAuthIdentity(user,tenantId,shopperId);
+  assertAuthIdentity(user,tenantId,aliasPrincipalMigration?sourceShopperId:shopperId);
 
   if(credential.ok){
     const currentRule=str(existingMember.credentialRuleVersion||existingProfile.credentialRuleVersion);
@@ -456,7 +465,7 @@ async function durableUpsert({auth,db,policy,candidate,sourceRevision,authUsers,
     const member=memberSnap.exists?memberSnap.data()||{}:{};
     const cross=crossSnap.exists?crossSnap.data()||{}:{};
     if(profileSnap.exists&&(str(profile.tenantId||tenantId)!==tenantId||str(profile.shopperId||shopperId)!==shopperId))throw new Error('SHOPPER_PROFILE_SCOPE_CONFLICT');
-    if(memberSnap.exists&&(str(member.tenantId)!==tenantId||str(member.shopperId)!==shopperId||str(member.role)!=='shopper'||str(member.authNamespace)!=='shopper'))throw new Error('SHOPPER_MEMBERSHIP_CONFLICT');
+    if(memberSnap.exists&&(str(member.tenantId)!==tenantId||![shopperId,...(aliasPrincipalMigration?[sourceShopperId]:[])].includes(str(member.shopperId))||str(member.role)!=='shopper'||str(member.authNamespace)!=='shopper'))throw new Error('SHOPPER_MEMBERSHIP_CONFLICT');
     const txCrossTenantOk=str(cross.tenantId)===tenantId;
     const txCrossSourceOk=str(cross.sourceStableKey||sourceShopperId)===sourceShopperId;
     const txCrossMode=str(cross.identityMode).toLowerCase();
@@ -488,7 +497,7 @@ async function durableUpsert({auth,db,policy,candidate,sourceRevision,authUsers,
     tx.set(crossRef,crosswalk,{merge:true});
     return {providerWrites:3+(credentialNormalized?1:0),idempotentReplay:false,projectIds:unionProjects,credentialNormalized,credentialRuleApplied:credential.ok,aliasMigrated:txExactAliasSelfMap};
   });
-  return {shopperId,sourceShopperId,uid,authCreated,visibleLogin:visibleLogin||null,...outcome};
+  return {shopperId,sourceShopperId,uid,authCreated,visibleLogin:visibleLogin||null,aliasPrincipalMigrated:aliasPrincipalMigration,...outcome};
 }
 
 async function persistManualProfile({db,command,shopperId,uid,projectIds}){
