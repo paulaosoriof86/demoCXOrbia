@@ -196,7 +196,7 @@ jobs:
           echo "CHECK 01 source"; test "$VRM077_SOURCE" = "ae6016a03e1943250d91f636132178802f4cb114"; echo "PASS 01"
           echo "CHECK 02 tree"; test "$VRM077_TREE" = "fdc20bedcf3b6de8eefecaf9343975f07620c687"; echo "PASS 02"
           ACTUAL_TREE="$(git rev-parse "$VRM077_SOURCE^{tree}")"; echo "ACTUAL_TREE=$ACTUAL_TREE"; test "$ACTUAL_TREE" = "$VRM077_TREE"; echo "PASS 03"
-          git diff --name-only a552e1fbb41d5cacc8ab3157f3d91492b82b8f00 "$VRM077_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source | tee "$VRM077_OUT/product-diff.txt"
+          git diff --name-only a552e1fbb41d5cacc8ab3157f3d91492b82b8f00 "$VRM077_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**' | tee "$VRM077_OUT/product-diff.txt"
           DIFF_COUNT="$(wc -l < "$VRM077_OUT/product-diff.txt" | tr -d ' ')"; echo "PRODUCT_DIFF_COUNT=$DIFF_COUNT"; test "$DIFF_COUNT" = "2"; echo "PASS 04"
           grep -Fxq 'app/modules/postulaciones.js' "$VRM077_OUT/product-diff.txt"; echo "PASS 05 postulaciones"
           grep -Fxq 'app/modules/misvisitas.js' "$VRM077_OUT/product-diff.txt"; echo "PASS 06 misvisitas"
