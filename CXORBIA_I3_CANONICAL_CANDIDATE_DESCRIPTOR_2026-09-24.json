@@ -4,11 +4,11 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_REOPENED_POST_RUN500_DRIFT",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "5ab4c206ff9397eef6e06ee7cf9a22c3c728721a",
+  "productSourceSha": "0c3ce84d567a674ec18f90eedba1b2380c45d55b",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
-  "predecessorProductSourceSha": "77b29e303c825be586a97e159d4d65bfae7e66c8",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V87_2026-09-27.json",
-  "findingsLedgerExpectedGitBlob": "4e055df459d766c13849d17df0cfef8c4dc00d30",
+  "predecessorProductSourceSha": "5ab4c206ff9397eef6e06ee7cf9a22c3c728721a",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V88_2026-09-27.json",
+  "findingsLedgerExpectedGitBlob": "820baecde53b94bdbf44460699ada0fa3ea80b20",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "MATERIALIZE exact VRM-081 source 5ab4c206ff9397eef6e06ee7cf9a22c3c728721a to existing Recovery DEV runtime once; then run pinned-revision population credential reproof. No Hosting, Rules, HR/external writes, or production.",
+  "exactNextAction": "MATERIALIZE exact VRM-081 source 0c3ce84d567a674ec18f90eedba1b2380c45d55b to existing Recovery DEV runtime once after provider+semantic source tests; then run pinned-revision population credential reproof. No Hosting, Rules, HR/external writes, or production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -43,14 +43,24 @@
     "findingIds": [
       "VRM-081"
     ],
-    "sourceSha": "5ab4c206ff9397eef6e06ee7cf9a22c3c728721a",
-    "sourceTree": "8abdb0a697058c167483af35679ef0de0f6969ad",
-    "predecessorSha": "77b29e303c825be586a97e159d4d65bfae7e66c8",
+    "sourceSha": "0c3ce84d567a674ec18f90eedba1b2380c45d55b",
+    "sourceTree": "5fee581f4c09dd6b9bd5728dd857b9abda8cf697",
+    "predecessorSha": "5ab4c206ff9397eef6e06ee7cf9a22c3c728721a",
     "productFiles": 1,
     "testFiles": 1,
-    "testControlHeadSha": "97ed0ccdb18f8a4e5c7844b508a9771c77dcc29e",
-    "sourceProof": "PASS_VRM081_ISOLATED_RUNTIME_HARNESS",
-    "sourceProofTestsPassed": 8,
+    "testControlHeadSha": "48f8c0ff56c69e5b529ab2e527960ff69c192bcb",
+    "sourceProofs": [
+      {
+        "decision": "PASS_VRM081_ISOLATED_RUNTIME_HARNESS",
+        "testsPassed": 8,
+        "sourceSha": "5ab4c206ff9397eef6e06ee7cf9a22c3c728721a"
+      },
+      {
+        "decision": "PASS_VRM081_ALIAS_MIGRATION_FOCAL_HARNESS",
+        "testsPassed": 3,
+        "sourceSha": "0c3ce84d567a674ec18f90eedba1b2380c45d55b"
+      }
+    ],
     "directWriterAuthority": "CR-20260910-02",
     "deploys": 0,
     "production": false
@@ -313,9 +323,9 @@
     "production": false
   },
   "currentRemediationCandidate": {
-    "sourceSha": "5ab4c206ff9397eef6e06ee7cf9a22c3c728721a",
-    "sourceTree": "8abdb0a697058c167483af35679ef0de0f6969ad",
-    "predecessorSha": "77b29e303c825be586a97e159d4d65bfae7e66c8",
+    "sourceSha": "0c3ce84d567a674ec18f90eedba1b2380c45d55b",
+    "sourceTree": "5fee581f4c09dd6b9bd5728dd857b9abda8cf697",
+    "predecessorSha": "5ab4c206ff9397eef6e06ee7cf9a22c3c728721a",
     "findingIds": [
       "VRM-081"
     ],
@@ -328,6 +338,7 @@
     "testFiles": [
       "backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs"
     ],
+    "testControlHeadSha": "48f8c0ff56c69e5b529ab2e527960ff69c192bcb",
     "production": false
   },
   "reproofDispatch": {
@@ -404,7 +415,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "8abdb0a697058c167483af35679ef0de0f6969ad",
+  "productSourceTree": "5fee581f4c09dd6b9bd5728dd857b9abda8cf697",
   "lastLiveReproof": {
     "runId": 36217529367,
     "runNumber": 465,
@@ -797,8 +808,8 @@
     "production": false
   },
   "pendingMaterialization": {
-    "sourceSha": "5ab4c206ff9397eef6e06ee7cf9a22c3c728721a",
-    "sourceTree": "8abdb0a697058c167483af35679ef0de0f6969ad",
+    "sourceSha": "0c3ce84d567a674ec18f90eedba1b2380c45d55b",
+    "sourceTree": "5fee581f4c09dd6b9bd5728dd857b9abda8cf697",
     "findingIds": [
       "VRM-081"
     ],
