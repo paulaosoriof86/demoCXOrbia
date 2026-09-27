@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.v87",
+  "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v87",
   "frozenAt": "2026-09-27T22:10:00Z",
   "status": "HOLD",
   "iteration": "I3_FUNCTIONAL_CLOSURE_REOPENED_POST_RUN500_DRIFT",
