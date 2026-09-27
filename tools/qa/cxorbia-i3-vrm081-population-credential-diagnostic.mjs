@@ -133,12 +133,14 @@ try{
     operationalById[id]={...(operationalById[id]||{}),...row};
   }
   const sourceById={};
-  for(const row of [...arr(safeSnapshot.shoppers),...arr(safeSnapshot.visits)]){
-    const id=str(row?.shopperId||row?.id);if(!id)continue;
+  const ingestSourceRow=row=>{
+    const id=str(row?.shopperId||row?.id);if(!id)return;
     const c=sourceCandidate({...row,...(operationalById[id]||{})});
     const prior=sourceById[c.shopperId]||{};
     sourceById[c.shopperId]={...prior,...Object.fromEntries(Object.entries(c).filter(([,v])=>v!==''&&v!==false))};
-  }
+  };
+  for(const shopper of arr(safeSnapshot.shoppers))ingestSourceRow(shopper);
+  for(const visit of arr(safeSnapshot.visits))if(str(visit?.shopperId))ingestSourceRow(visit);
   const sourceRows=Object.values(sourceById);
   if(sourceRows.length!==Number(sr.shopperCount))throw new Error('MAPPING_FAILURE:VRM081_SOURCE_UNIVERSE_'+sourceRows.length+'_EXPECTED_'+Number(sr.shopperCount));
   const canonicalForSource=Object.fromEntries(sourceRows.map(s=>[s.shopperId,exactIdentity[s.shopperId]||s.shopperId]));
