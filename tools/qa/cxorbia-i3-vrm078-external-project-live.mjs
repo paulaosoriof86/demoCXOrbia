@@ -99,6 +99,9 @@ try{
   }),projectId);
   if(!browserState.present)throw new Error('PERSISTENCE_FAILURE:VRM078_BROWSER_REGISTRY_READBACK_MISSING');
   if(browserState.activeSetPresent&&!browserState.activeProjectIds.includes(projectId))throw new Error('MAPPING_FAILURE:VRM078_ACTIVE_SET_SCOPE_DESYNC');
+  const toastText=browserState.toast.join(' | ');
+  if(!browserState.activeSetPresent&&!/creado y guardado correctamente/i.test(toastText))throw new Error('VISUAL_DEFECT:VRM078_SCOPE_COPY_NOT_HONEST');
+  if(!browserState.activeSetPresent&&/creado y activado/i.test(toastText))throw new Error('VISUAL_DEFECT:VRM078_FALSE_ACTIVATED_COPY');
 
   evidence.decision='PASS_I3_VRM078_EXTERNAL_PROJECT_CREATE_READBACK';
   evidence.providerAck=true;evidence.durableReadback=true;evidence.browserWizard=true;evidence.refsVisible=true;evidence.noDuplicateRegression=true;evidence.browserRegistryReadback=true;evidence.noSilentEntitlementInheritance=true;
