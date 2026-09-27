@@ -22,7 +22,7 @@ on:
       - tools/qa/cxorbia-gate20-browser-visual-dev.mjs
       - tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs
       - CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V76_2026-09-26.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V77_2026-09-26.json
       - ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-17_I3_MICRO_ITERATIONS_FROZEN.md
       - CXORBIA_I3_MICRO_ITERATION_PLAN_LOCK_2026-09-17.json
       - backend/config/pre-i4-human-entrypoint-dev-deploy-request.json
@@ -65,7 +65,7 @@ env:
   I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V76_2026-09-26.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V77_2026-09-26.json
 
 jobs:
   canonical-candidate-authority:
@@ -97,10 +97,12 @@ jobs:
           test "$(jq -r '.currentState.i3' "$POST_RUN500_LOCK")" = "HOLD"
           test "$(jq -r '.canonicalFunctionalCandidate.sourceSha' "$POST_RUN500_LEDGER")" = "$SOURCE"
           test "$(jq -r '.canonicalFunctionalCandidate.sourceTree' "$POST_RUN500_LEDGER")" = "$TREE"
-          for id in VRM-076 VRM-077 VRM-078 VRM-079 VRM-080 VRM-081; do
+          test "$(jq -r '.findings["VRM-076"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN502"
+          test "$(jq -r '.findings["VRM-077"].state' "$POST_RUN500_LEDGER")" = "FIXED_SOURCE_NOT_PROVEN"
+          for id in VRM-078 VRM-079 VRM-080 VRM-081; do
             test "$(jq -r --arg id "$id" '.findings[$id].state' "$POST_RUN500_LEDGER")" = "P0_PROVEN_POST_RUN500_FORENSIC"
           done
-          STATUS="HOLD_POST_RUN500_FORENSIC_DRIFT"
+          STATUS="HOLD_VRM077_HOSTING_REPROOF_REQUIRED"
           echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
@@ -163,6 +165,111 @@ jobs:
         with:
           name: cxorbia-i3-vrm076-finalizer-${{ github.run_id }}
           path: ${{ runner.temp }}/vrm076
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
+  vrm077-postulation-hr-conflict-live:
+    name: I3 VRM-077 — exact HR conflict Hosting-only DEV reproof
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM077_HOSTING_REPROOF_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-077-hosting]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      VRM077_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      VRM077_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      VRM077_OUT: .tmp/i3-vrm077
+      VRM077_ROOT: https://cxorbia-backend-dev.web.app
+      EXPECTED_RUNTIME_REVISION: cxorbia-live-hr-dev-00223-tlg
+      EXPECTED_RUNTIME_DIGEST: sha256:b34be533f545c6dda7dc9f6c4a1cb0af517aad2aff1d79005412b4a2433d7ecd
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Prove exact VRM-077 focal source
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$VRM077_OUT"
+          test "$VRM077_SOURCE" = "ae6016a03e1943250d91f636132178802f4cb114"
+          test "$VRM077_TREE" = "fdc20bedcf3b6de8eefecaf9343975f07620c687"
+          test "$(git rev-parse "$VRM077_SOURCE^{tree}")" = "$VRM077_TREE"
+          test "$(git diff --name-only a552e1fbb41d5cacc8ab3157f3d91492b82b8f00 "$VRM077_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source | wc -l | tr -d ' ')" = "2"
+          git diff --name-only a552e1fbb41d5cacc8ab3157f3d91492b82b8f00 "$VRM077_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source | grep -qx 'app/modules/postulaciones.js'
+          git diff --name-only a552e1fbb41d5cacc8ab3157f3d91492b82b8f00 "$VRM077_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source | grep -qx 'app/modules/misvisitas.js'
+          node --check "$(mktemp -d)/noop" 2>/dev/null || true
+          git show "$VRM077_SOURCE:app/modules/postulaciones.js" > "$VRM077_OUT/postulaciones.js"
+          git show "$VRM077_SOURCE:app/modules/misvisitas.js" > "$VRM077_OUT/misvisitas.js"
+          git show "$VRM077_SOURCE:tools/qa/cxorbia-i3-vrm077-postulation-hr-conflict-live.mjs" > "$VRM077_OUT/live-proof.mjs"
+          node --check "$VRM077_OUT/postulaciones.js"
+          node --check "$VRM077_OUT/misvisitas.js"
+          node --check "$VRM077_OUT/live-proof.mjs"
+          grep -q "visitShopper!==appShopper)return'conflict_review_required'" "$VRM077_OUT/postulaciones.js"
+          grep -q "visitShopper!==appShopper)return'conflict_review_required'" "$VRM077_OUT/misvisitas.js"
+      - name: Install DEV proof tooling
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+      - name: Authenticate canonical Firebase DEV
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
+      - name: Prove runtime unchanged
+        run: |
+          set -Eeuo pipefail
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$VRM077_OUT/runtime.json"
+          test "$(jq -r '.status.latestReadyRevisionName // empty' "$VRM077_OUT/runtime.json")" = "$EXPECTED_RUNTIME_REVISION"
+          gcloud run revisions describe "$EXPECTED_RUNTIME_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$VRM077_OUT/runtime-revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$VRM077_OUT/runtime-revision.json")"
+          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; else DIGEST="sha256:${RAW##*@sha256:}"; fi
+          test "$DIGEST" = "$EXPECTED_RUNTIME_DIGEST"
+      - name: Deploy exact VRM-077 source to Hosting DEV once
+        run: |
+          set -Eeuo pipefail
+          SOURCE_DIR="$RUNNER_TEMP/cxorbia-vrm077-source"; rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"
+          git archive "$VRM077_SOURCE" | tar -x -C "$SOURCE_DIR"
+          cd "$SOURCE_DIR"
+          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$VRM077_OUT/hosting-deploy.log"
+          cd "$GITHUB_WORKSPACE"
+          TOKEN="$(gcloud auth print-access-token)"
+          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$VRM077_OUT/hosting-live-channel.json"
+          HOSTING_VERSION="$(jq -r '.release.version.name // empty' "$VRM077_OUT/hosting-live-channel.json")"; test -n "$HOSTING_VERSION"
+          echo "VRM077_HOSTING_VERSION=$HOSTING_VERSION" >> "$GITHUB_ENV"
+      - name: Prove exact changed bytes served
+        run: |
+          set -Eeuo pipefail
+          for rel in modules/postulaciones.js modules/misvisitas.js; do
+            remote="$VRM077_OUT/$(echo "$rel"|tr '/' '_').remote"
+            curl -fsSL --retry 8 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$VRM077_ROOT/$rel?vrm077=$GITHUB_RUN_ID-$(date +%s%N)" -o "$remote"
+            test "$(sha256sum "$remote"|awk '{print $1}')" = "$(git show "$VRM077_SOURCE:app/$rel" | sha256sum | awk '{print $1}')"
+          done
+      - name: Run same-HR Paula Cayala conflict proof
+        run: |
+          set -Eeuo pipefail
+          VRM077_OUT="$VRM077_OUT" VRM077_ROOT="$VRM077_ROOT" VRM077_SOURCE="$VRM077_SOURCE" node tools/qa/cxorbia-i3-vrm077-postulation-hr-conflict-live.mjs | tee "$VRM077_OUT/live.log"
+          test "$(jq -r '.decision' "$VRM077_OUT/result.json")" = "PASS_I3_VRM077_POSTULATION_HR_CONFLICT_LIVE"
+          test "$(jq -r '.providerAck' "$VRM077_OUT/result.json")" = "true"
+          test "$(jq -r '.shopper.before.conflictVisible' "$VRM077_OUT/result.json")" = "true"
+          test "$(jq -r '.shopper.before.validatingVisible' "$VRM077_OUT/result.json")" = "false"
+          test "$(jq -r '.shopper.before.activeTargetCount' "$VRM077_OUT/result.json")" = "0"
+          test "$(jq -r '.shopper.reloadProof' "$VRM077_OUT/result.json")" = "true"
+          test "$(jq -r '.admin.reviewVisible' "$VRM077_OUT/result.json")" = "true"
+          test "$(jq -r '.admin.validatingVisible' "$VRM077_OUT/result.json")" = "false"
+      - name: Seal owner-specific receipt
+        run: |
+          set -Eeuo pipefail
+          HR="$(jq -r '.hrRevision' "$VRM077_OUT/result.json")"
+          jq -n -S --arg source "$VRM077_SOURCE" --arg tree "$VRM077_TREE" --arg runtime "$EXPECTED_RUNTIME_REVISION" --arg digest "$EXPECTED_RUNTIME_DIGEST" --arg hosting "$VRM077_HOSTING_VERSION" --arg hr "$HR" '{decision:"PASS_I3_VRM077_OWNER_SPECIFIC_RECEIPT",moduleDomain:"postulations-visits-reservations",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,ownerPaths:["app/modules/postulaciones.js","app/modules/misvisitas.js"],actionReal:true,providerAck:true,durableReadback:true,reloadProof:true,noDuplicateRegression:true,production:false,builds:0,runtimeDeploys:0,hostingDeploys:1,hrWrites:0}' > "$VRM077_OUT/owner-receipt.json"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-vrm077-${{ github.run_id }}
+          path: ${{ env.VRM077_OUT }}
           if-no-files-found: error
           retention-days: 30
           compression-level: 0

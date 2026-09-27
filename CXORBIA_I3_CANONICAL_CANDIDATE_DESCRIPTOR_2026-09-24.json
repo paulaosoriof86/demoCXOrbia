@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "I3_GO_FROZEN_AWAITING_I4_AUTHORIZATION",
-  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
+  "status": "HOLD_VRM077_HOSTING_REPROOF_REQUIRED",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_REOPENED_POST_RUN500_DRIFT",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "a552e1fbb41d5cacc8ab3157f3d91492b82b8f00",
+  "productSourceSha": "ae6016a03e1943250d91f636132178802f4cb114",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
-  "predecessorProductSourceSha": "f885fb7ab49d8597d992fc02051ffdd584380a85",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V75_2026-09-26.json",
-  "findingsLedgerExpectedGitBlob": "0072e4ea39fb3e4c848e34739272dba5fbc4156a",
+  "predecessorProductSourceSha": "a552e1fbb41d5cacc8ab3157f3d91492b82b8f00",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V77_2026-09-26.json",
+  "findingsLedgerExpectedGitBlob": "84f75462595e3e352d81e4bd85b457d00287cc58",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": null,
-  "nextFindingId": "VRM-076",
+  "activeBlocker": "VRM-077",
+  "nextFindingId": "VRM-082",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "WAIT FOR EXPLICIT PAULA AUTHORIZATION. AFTER AUTHORIZATION ONLY: I4 IMMUTABLE PRODUCTION REPLACEMENT WITH EXACT RUN500 CERTIFIED ARTIFACT; NO REBUILD/RECOMPOSITION.",
+  "exactNextAction": "RUN VRM-077 HOSTING-ONLY DEV MATERIALIZATION + SAME-HR ADMIN/SHOPPER CONFLICT REPROOF; NO PRODUCTION; THEN CONTINUE VRM-078..081.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -312,15 +312,14 @@
     "production": false
   },
   "currentRemediationCandidate": {
-    "sourceSha": "a552e1fbb41d5cacc8ab3157f3d91492b82b8f00",
-    "sourceTree": "c44872eb2dc1529de8387957ec720024944a5e62",
-    "predecessorSha": "f885fb7ab49d8597d992fc02051ffdd584380a85",
+    "sourceSha": "ae6016a03e1943250d91f636132178802f4cb114",
+    "sourceTree": "fdc20bedcf3b6de8eefecaf9343975f07620c687",
+    "predecessorSha": "a552e1fbb41d5cacc8ab3157f3d91492b82b8f00",
     "findingIds": [
-      "VRM-069",
-      "VRM-070"
+      "VRM-077"
     ],
-    "changedRuntime": true,
-    "changedHosting": false,
+    "changedRuntime": false,
+    "changedHosting": true,
     "changedRules": false,
     "production": false
   },
@@ -398,7 +397,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "c44872eb2dc1529de8387957ec720024944a5e62",
+  "productSourceTree": "fdc20bedcf3b6de8eefecaf9343975f07620c687",
   "lastLiveReproof": {
     "runId": 36217529367,
     "runNumber": 465,
@@ -602,13 +601,14 @@
     "production": false
   },
   "pendingMaterialization": {
-    "sourceSha": "a552e1fbb41d5cacc8ab3157f3d91492b82b8f00",
-    "sourceTree": "c44872eb2dc1529de8387957ec720024944a5e62",
+    "sourceSha": "ae6016a03e1943250d91f636132178802f4cb114",
+    "sourceTree": "fdc20bedcf3b6de8eefecaf9343975f07620c687",
     "productDiff": [
-      "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+      "app/modules/postulaciones.js",
+      "app/modules/misvisitas.js"
     ],
-    "mode": "runtime_only_dev_once",
-    "hostingDeploys": 0,
+    "mode": "hosting_only_dev_once",
+    "runtimeDeploys": 0,
     "rulesDeploys": 0,
     "production": false
   },
@@ -653,8 +653,8 @@
     "hrRevision": "d9bbb352738196d71602a3adb080e4f8bf37e7211a3bc2ffea13711454c71f95",
     "production": false
   },
-  "i3State": "GO",
-  "i3Closed": true,
+  "i3State": "HOLD",
+  "i3Closed": false,
   "i4Authorized": false,
   "terminalClosure": {
     "runId": 36263099013,
@@ -712,6 +712,20 @@
       "version": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
       "releaseTime": "2026-09-26T04:58:22.977Z"
     },
+    "production": false
+  },
+  "postRun500Recovery": {
+    "lock": "CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json",
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V77_2026-09-26.json",
+    "vrm076": "FIXED_PROVEN_RUN502",
+    "vrm077": "FIXED_SOURCE_NOT_PROVEN",
+    "remainingOpenP0": [
+      "VRM-077",
+      "VRM-078",
+      "VRM-079",
+      "VRM-080",
+      "VRM-081"
+    ],
     "production": false
   }
 }
