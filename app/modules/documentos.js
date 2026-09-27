@@ -22,6 +22,9 @@ CX.module('documentos', ({data,role,ui})=>{
   const p=data.period(), pid=p.id;
   const host=ui.el('div');
   const connected=()=>CX.docStore.connected();
+  const storageState=()=>CX.backendResources?.storageStatus?.()||{authorized:false,configured:false,available:false,reason:'RESOURCE_STORAGE_NOT_AUTHORIZED'};
+  const binaryReady=()=>storageState().authorized===true;
+  const binaryHelp='La carga y sustitución de archivos todavía no está habilitada en este entorno. Puedes crear y editar recursos de texto, enlaces de video y referencias externas; los cambios autorizados se guardan en el proyecto.';
   const scope=()=>({projectId:data.currentProjectId,periodId:pid});
   const committed=r=>r?.ok===true&&r?.status==='committed'&&r?.providerAck===true&&r?.successUiAllowed===true;
   const resourceDefaults=rec=>Object.assign({resourceType:'project_resource',projectId:data.currentProjectId,periodId:pid,visibleRoles:['super','admin','ops','coordinador','shopper'],targetAll:false},rec||{});
@@ -81,7 +84,7 @@ CX.module('documentos', ({data,role,ui})=>{
     const docs=CX.docStore.list(pid);
     host.innerHTML=`
       ${ui.ph('Recursos del proyecto', p.name+' · documentos, videos, imágenes y checklists · se abren a pantalla completa')}
-      <div class="between" style="margin-bottom:14px">${ui.bdg(docs.length+' recursos','n')}${role==='admin'?'<div class="flex" style="gap:8px"><button class="btn btn-soft btn-sm" id="docIA">📝 Generar borrador (heurística local)</button><button class="btn btn-pr btn-sm" id="docUp">＋ Subir recurso</button></div>':''}</div>
+      <div class="between" style="margin-bottom:14px">${ui.bdg(docs.length+' recursos','n')}${role==='admin'?'<div class="flex" style="gap:8px"><button class="btn btn-soft btn-sm" id="docIA">📝 Generar borrador (heurística local)</button><button class="btn btn-pr btn-sm" id="docUp">＋ Agregar recurso</button></div>':''}</div>
       ${connected()&&!docs.length?'<div class="card card-p" style="margin-bottom:14px">'+ui.degraded('No hay recursos reales publicados para este proyecto/periodo. Los recursos de ejemplo no se muestran en la operación conectada.',{title:'Recursos · pendiente de fuente/publicación'})+'</div>':''}
       <div class="grid g2">
         ${docs.map(d=>`<div class="card hov card-p flex" style="gap:13px">
@@ -94,6 +97,10 @@ CX.module('documentos', ({data,role,ui})=>{
           </div></div>`).join('')}
       </div>
       <div class="card card-p" style="margin-top:16px">${ui.aiBox('Cada recurso se abre y se lee dentro de la plataforma (PDF, video embebido, checklist) — sin descargar ni buscar en chats. Entrego el correcto según la visita.','Lectura contextual en plataforma')}</div>`;
+    if(connected()&&!binaryReady()){
+      const state=document.createElement('div');state.className='card card-p';state.dataset.resourceBinaryState='disabled';state.style.marginBottom='14px';state.innerHTML=ui.degraded(binaryHelp,{title:'Archivos binarios no disponibles en este entorno'});
+      host.querySelector('.between')?.insertAdjacentElement('afterend',state);
+    }
     host.querySelectorAll('[data-doc]').forEach(b=>b.addEventListener('click',()=>{const d=docs.find(x=>x.id===b.dataset.doc);if(d)viewer(d);}));
     host.querySelectorAll('[data-editd]').forEach(b=>b.addEventListener('click',()=>{const d=docs.find(x=>x.id===b.dataset.editd);if(!d)return;
       if(!CX.permissions.gate('documento.edit',CX.permissions.ctx({entityType:'documento',entityId:d.id}),ui))return;
@@ -107,6 +114,7 @@ CX.module('documentos', ({data,role,ui})=>{
         <div><label class="lbl">Vincular a visita (opcional)</label><select class="sel" id="edVisita"><option value="">— sin vincular —</option>${data._visitas.filter(v=>v.projectId===pid).map(v=>`<option value="${v.id}" ${d.visitaId===v.id?'selected':''}>${v.sucursal} · ${v.fecha||v.agendada||'—'}</option>`).join('')}</select></div></div>
         <div class="between" style="margin-top:12px"><button class="btn btn-soft btn-sm" id="edIA">📝 Mejorar/generar (heurística local)</button><button class="btn btn-pr btn-sm" id="edSave">Guardar</button></div>
       `,{onMount:(ov,close)=>{
+        const editFile=ov.querySelector('#edFile');if(editFile&&connected()&&!binaryReady()){editFile.disabled=true;editFile.setAttribute('aria-disabled','true');const h=document.createElement('div');h.dataset.binaryHelp='';h.style.cssText='font-size:11px;color:var(--t3);margin-top:5px';h.textContent=binaryHelp;editFile.insertAdjacentElement('afterend',h);}
         ov.querySelector('#edIA').addEventListener('click',()=>{
           const base=ov.querySelector('#edBody').value.trim();
           /* P0.1 (V98): nunca se llama CX.ai.ask() (available() siempre false en el navegador) —
@@ -131,6 +139,7 @@ CX.module('documentos', ({data,role,ui})=>{
           const nf=ov.querySelector('#edFile').files[0];
           if(nf){
             if(!connected()){ui.toast('Los archivos binarios no se persisten en modo demo.','warn',4200);btn.disabled=false;btn.textContent='Guardar';return;}
+            if(!binaryReady()){ui.toast(binaryHelp,'warn',5200);btn.disabled=false;btn.textContent='Guardar';return;}
             const up=await CX.backendResources.uploadBinary(nf,Object.assign(scope(),{resourceId:d.id}));
             if(!committed(up)){ui.toast('Archivo no guardado: la carga de archivos aún no está habilitada. No se modificó el recurso.','warn',4600);btn.disabled=false;btn.textContent='Guardar';return;}
             patch.url=up.item.url;patch.storagePath=up.item.storagePath;patch.meta=nf.name;
@@ -181,7 +190,7 @@ CX.module('documentos', ({data,role,ui})=>{
         (async()=>{const result=await saveDurable(rec);if(!committed(result)){ui.toast('Borrador no guardado: el cambio no pudo confirmarse.','warn',4200);return;}close();draw();ui.toast(connected()?'Borrador guardado y guardado correctamente':'Borrador demo generado','ok',4000);})();
       });
     }}));
-    if(up)up.addEventListener('click',()=>ui.modal('Subir recurso',`
+    if(up)up.addEventListener('click',()=>ui.modal('Agregar recurso',`
       <div style="margin-bottom:10px"><label class="lbl">Nombre</label><input class="inp" id="duN" placeholder="Ej. Protocolo de servicio 2026"></div>
       <div style="margin-bottom:10px"><label class="lbl">Tipo</label><select class="sel" id="duT"><option value="pdf">📄 Documento (PDF/imagen)</option><option value="video">🎬 Video (YouTube/Vimeo)</option><option value="text">📝 Texto/Markdown</option></select></div>
       <div style="margin-bottom:10px"><label class="lbl">Archivo (PDF/imagen/video)</label><input type="file" class="inp" id="duF" accept="application/pdf,image/*,video/*" style="padding:7px"></div>
@@ -191,8 +200,9 @@ CX.module('documentos', ({data,role,ui})=>{
         <div><label class="lbl">Carpeta externa (referencia opaca, opcional)</label><input class="inp" id="duFolderRef" placeholder="ej. FLD-7f2a91"></div>
         <div><label class="lbl">Vincular a visita (opcional)</label><select class="sel" id="duVisita"><option value="">— sin vincular —</option>${data._visitas.filter(v=>v.projectId===pid).map(v=>`<option value="${v.id}">${v.sucursal} · ${v.fecha||v.agendada||'—'}</option>`).join('')}</select></div>
       </div>
-      <div style="text-align:right"><button class="btn btn-pr btn-sm" id="duS">Subir</button></div>
+      <div style="text-align:right"><button class="btn btn-pr btn-sm" id="duS">Guardar recurso</button></div>
     `,{onMount:(ov,close)=>{
+      const createFile=ov.querySelector('#duF');if(createFile&&connected()&&!binaryReady()){createFile.disabled=true;createFile.setAttribute('aria-disabled','true');const h=document.createElement('div');h.dataset.binaryHelp='';h.style.cssText='font-size:11px;color:var(--t3);margin-top:5px';h.textContent=binaryHelp;createFile.insertAdjacentElement('afterend',h);}
       ov.querySelector('#duF').addEventListener('change',e=>{const f=e.target.files[0];if(f&&!ov.querySelector('#duN').value)ov.querySelector('#duN').value=f.name;});
       ov.querySelector('#duS').addEventListener('click',async()=>{
         const n=(ov.querySelector('#duN').value||'').trim(); if(!n){ui.toast('Pon un nombre','warn');return;}
@@ -205,6 +215,7 @@ CX.module('documentos', ({data,role,ui})=>{
         const finish=async()=>{const result=await saveDurable(rec);if(!committed(result)){ui.toast('Recurso no guardado: el cambio no pudo confirmarse.','warn',4200);return;}close();draw();ui.toast(connected()?'Recurso guardado y guardado correctamente':'Recurso demo guardado','ok');};
         if(f){
           if(!connected()){ui.toast('Los archivos binarios no se persisten en modo demo.','warn',4200);return;}
+          if(!binaryReady()){ui.toast(binaryHelp,'warn',5200);return;}
           const upResult=await CX.backendResources.uploadBinary(f,scope());
           if(!committed(upResult)){ui.toast('Archivo no guardado: la carga de archivos aún no está habilitada. No se creó el recurso.','warn',4800);return;}
           rec.url=upResult.item.url;rec.storagePath=upResult.item.storagePath;rec.meta=f.name;
