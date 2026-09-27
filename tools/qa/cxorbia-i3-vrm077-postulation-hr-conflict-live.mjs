@@ -82,12 +82,15 @@ async function signed(member,kind){
     }
     await page.waitForFunction(uid=>String(window.firebase?.auth?.().currentUser?.uid||'')===uid,member.id,{timeout:60000});
     mark(kind+'.firebase-current-user.pass');
-    await page.evaluate(async timeoutMs=>{
-      const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error('AUTH_ENSURE_TIMEOUT')),timeoutMs));
-      await Promise.race([CX.backendAuth.ensureAuthenticated(),timeout]);
-    },45000);
-    mark(kind+'.ensure-authenticated.pass');
-    await page.waitForFunction(k=>{const c=CX.backendAuth.context()||{},r=String(c.role||'').toLowerCase();return c.authenticated===true&&(k==='shopper'?r==='shopper':r!=='shopper'&&r!=='cliente')&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&window.CX_C6_HR_AUTHORITY_GATE?.ready===true;},kind,{timeout:90000});
+    /* The app boot starts ensureAuthenticated before the QA custom-token injection.
+       If boot observed no user, its readyPromise legitimately waits for interactive login forever.
+       Reload after successful provider sign-in so firstAuthState observes the persisted user and
+       the canonical browser auth path derives claims/context itself. This is QA sequencing only. */
+    mark(kind+'.canonical-auth-reload.begin');
+    await page.reload({waitUntil:'domcontentloaded',timeout:60000});
+    await page.waitForFunction(uid=>String(window.firebase?.auth?.().currentUser?.uid||'')===uid,member.id,{timeout:90000});
+    mark(kind+'.canonical-auth-reload-user.pass');
+    await page.waitForFunction(k=>{const c=window.CX?.backendAuth?.context?.()||{},r=String(c.role||'').toLowerCase();return c.authenticated===true&&(k==='shopper'?r==='shopper':r!=='shopper'&&r!=='cliente')&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&window.CX_C6_HR_AUTHORITY_GATE?.ready===true;},kind,{timeout:120000});
     mark(kind+'.authority-ready.pass');
     return {ctx,page};
   }catch(error){
