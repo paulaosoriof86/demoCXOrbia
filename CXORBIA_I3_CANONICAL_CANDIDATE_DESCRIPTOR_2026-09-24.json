@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM080_SOURCE_FIX_REQUIRED",
+  "status": "HOLD_VRM080_LIVE_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_REOPENED_POST_RUN500_DRIFT",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "6877b38171a3b1ef8caf88734d0884a31ebef639",
+  "productSourceSha": "b841266de9e6156eb7feda7b09e39f09d8721766",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
-  "predecessorProductSourceSha": "17ffd1cbac4aeee7f6a422b2c27b8d5c6111358f",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V83_2026-09-27.json",
-  "findingsLedgerExpectedGitBlob": "f6a5cf09c33237323ec08c46b78b9eaa03c592f4",
+  "predecessorProductSourceSha": "6877b38171a3b1ef8caf88734d0884a31ebef639",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V84_2026-09-27.json",
+  "findingsLedgerExpectedGitBlob": "dfd319c1dfc126e1aeb61e62483cf79be3b0dfd1",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "VRM-080 ONLY: replace connected admin authoritative configuration persistence that still relies on localStorage/memory with provider-backed durable ACK/readback for the exact P0 owner scope; preserve localStorage only for non-authoritative preferences; no production.",
+  "exactNextAction": "VRM-080 LIVE REPROOF ONLY: prove connected security UI uses live provider and exposes no local role/permission authority; update a synthetic staff user's profile/role/scope/state through provider ACK/readback; update a synthetic project's countries through project.update ACK/readback; prove unsupported tenant config is locked; cleanup all QA residue; no production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -311,7 +311,18 @@
     ],
     "production": false
   },
-  "currentRemediationCandidate": null,
+  "currentRemediationCandidate": {
+    "sourceSha": "b841266de9e6156eb7feda7b09e39f09d8721766",
+    "sourceTree": "60c59909eb5f9b6b96139f4f58fb34dde71b7dfa",
+    "predecessorSha": "6877b38171a3b1ef8caf88734d0884a31ebef639",
+    "findingIds": [
+      "VRM-080"
+    ],
+    "changedRuntime": false,
+    "changedHosting": true,
+    "changedRules": false,
+    "production": false
+  },
   "reproofDispatch": {
     "requestedAt": "2026-09-26T16:41:00Z",
     "mode": "EXHAUSTIVE_MODULE_TRUTH_V64_CONTROL_STATE_REPROOF",
@@ -386,7 +397,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "67a8f88c606332fc3be2251afaf8f1ba40da0047",
+  "productSourceTree": "60c59909eb5f9b6b96139f4f58fb34dde71b7dfa",
   "lastLiveReproof": {
     "runId": 36217529367,
     "runNumber": 465,
@@ -693,7 +704,7 @@
   },
   "postRun500Recovery": {
     "lock": "CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json",
-    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V83_2026-09-27.json",
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V84_2026-09-27.json",
     "vrm076": "FIXED_PROVEN_RUN502",
     "vrm077": "FIXED_PROVEN_RUN507",
     "remainingOpenP0": [
@@ -702,7 +713,8 @@
     ],
     "production": false,
     "vrm078": "FIXED_PROVEN_RUN515",
-    "vrm079": "FIXED_PROVEN_RUN518"
+    "vrm079": "FIXED_PROVEN_RUN518",
+    "vrm080": "FIXED_SOURCE_NOT_PROVEN"
   },
   "lastVrm077Proof": {
     "runId": 36319627577,
@@ -776,6 +788,19 @@
     "cleanupAfter": 0,
     "storageRuleDeploys": 0,
     "hrWrites": 0,
+    "production": false
+  },
+  "pendingMaterialization": {
+    "sourceSha": "b841266de9e6156eb7feda7b09e39f09d8721766",
+    "sourceTree": "60c59909eb5f9b6b96139f4f58fb34dde71b7dfa",
+    "productDiff": [
+      "app/modules/configuracion.js",
+      "app/core/config.js",
+      "app/adapters/cxorbia-cxdata-command-boundary-v1.js"
+    ],
+    "mode": "hosting_only_dev_if_needed",
+    "runtimeDeploys": 0,
+    "rulesDeploys": 0,
     "production": false
   }
 }

@@ -29,6 +29,11 @@ on:
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V81_2026-09-27.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V82_2026-09-27.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V83_2026-09-27.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V84_2026-09-27.json
+      - app/modules/configuracion.js
+      - app/core/config.js
+      - app/adapters/cxorbia-cxdata-command-boundary-v1.js
+      - tools/qa/cxorbia-i3-vrm080-connected-admin-config-live.mjs
       - app/modules/documentos.js
       - tools/qa/cxorbia-i3-vrm079-documents-resources-live.mjs
       - app/modules/proyecto-wizard.js
@@ -76,7 +81,7 @@ env:
   I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V83_2026-09-27.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V84_2026-09-27.json
 
 jobs:
   canonical-candidate-authority:
@@ -112,10 +117,9 @@ jobs:
           test "$(jq -r '.findings["VRM-077"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN507"
           test "$(jq -r '.findings["VRM-078"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN515"
           test "$(jq -r '.findings["VRM-079"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN518"
-          for id in VRM-080 VRM-081; do
-            test "$(jq -r --arg id "$id" '.findings[$id].state' "$POST_RUN500_LEDGER")" = "P0_PROVEN_POST_RUN500_FORENSIC"
-          done
-          STATUS="HOLD_VRM080_SOURCE_FIX_REQUIRED"
+          test "$(jq -r '.findings["VRM-080"].state' "$POST_RUN500_LEDGER")" = "FIXED_SOURCE_NOT_PROVEN"
+          test "$(jq -r '.findings["VRM-081"].state' "$POST_RUN500_LEDGER")" = "P0_PROVEN_POST_RUN500_FORENSIC"
+          STATUS="HOLD_VRM080_LIVE_REPROOF_REQUIRED"
           echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
@@ -595,6 +599,131 @@ jobs:
         with:
           name: cxorbia-i3-vrm079-${{ github.run_id }}
           path: ${{ env.VRM079_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+          include-hidden-files: true
+
+
+  vrm080-connected-admin-config-live:
+    name: I3 VRM-080 — connected admin configuration durable proof
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM080_LIVE_REPROOF_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-080-live]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    env:
+      VRM080_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      VRM080_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      VRM080_OUT: .tmp/i3-vrm080
+      VRM080_ROOT: https://cxorbia-backend-dev.web.app
+      EXPECTED_RUNTIME_REVISION: cxorbia-live-hr-dev-00223-tlg
+      EXPECTED_RUNTIME_DIGEST: sha256:b34be533f545c6dda7dc9f6c4a1cb0af517aad2aff1d79005412b4a2433d7ecd
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Prove exact VRM-080 source
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$VRM080_OUT"
+          test "$VRM080_SOURCE" = "b841266de9e6156eb7feda7b09e39f09d8721766"
+          test "$VRM080_TREE" = "60c59909eb5f9b6b96139f4f58fb34dde71b7dfa"
+          test "$(git rev-parse "$VRM080_SOURCE^{tree}")" = "$VRM080_TREE"
+          git diff --name-only 6877b38171a3b1ef8caf88734d0884a31ebef639 "$VRM080_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**' | tee "$VRM080_OUT/product-diff.txt"
+          test "$(wc -l < "$VRM080_OUT/product-diff.txt" | tr -d ' ')" = "3"
+          for p in app/modules/configuracion.js app/core/config.js app/adapters/cxorbia-cxdata-command-boundary-v1.js; do grep -Fxq "$p" "$VRM080_OUT/product-diff.txt"; done
+          for spec in "app/modules/configuracion.js:configuracion.js" "app/core/config.js:config.js" "app/adapters/cxorbia-cxdata-command-boundary-v1.js:command-boundary.js"; do src="${spec%%:*}"; out="${spec##*:}"; git show "$VRM080_SOURCE:$src" > "$VRM080_OUT/$out"; node --check "$VRM080_OUT/$out"; done
+          cp tools/qa/cxorbia-i3-vrm080-connected-admin-config-live.mjs "$VRM080_OUT/live-proof.mjs"
+          node --check "$VRM080_OUT/live-proof.mjs"
+          test "$(git diff --name-only "$VRM080_SOURCE" "$GITHUB_SHA" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**' | wc -l | tr -d ' ')" = "0"
+          grep -Fq "CX.liveUserAdmin=Object.freeze" "$VRM080_OUT/configuracion.js"
+          grep -Fq "data-connected-security" "$VRM080_OUT/configuracion.js"
+          grep -Fq "TENANT_PLAN_PROVIDER_REQUIRED" "$VRM080_OUT/config.js"
+          grep -Fq "__backendAllProjectRecords" "$VRM080_OUT/command-boundary.js"
+      - name: Install DEV proof tooling
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+      - name: Authenticate canonical Firebase DEV
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
+      - name: Prove runtime unchanged
+        run: |
+          set -Eeuo pipefail
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$VRM080_OUT/runtime.json"
+          test "$(jq -r '.status.latestReadyRevisionName // empty' "$VRM080_OUT/runtime.json")" = "$EXPECTED_RUNTIME_REVISION"
+          gcloud run revisions describe "$EXPECTED_RUNTIME_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$VRM080_OUT/runtime-revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$VRM080_OUT/runtime-revision.json")"
+          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; else DIGEST="sha256:${RAW##*@sha256:}"; fi
+          test "$DIGEST" = "$EXPECTED_RUNTIME_DIGEST"
+      - name: Ensure exact VRM-080 source is served
+        run: |
+          set -Eeuo pipefail
+          MATCH=1
+          for rel in modules/configuracion.js core/config.js adapters/cxorbia-cxdata-command-boundary-v1.js; do
+            remote="$VRM080_OUT/$(echo "$rel"|tr '/' '_').pre"
+            curl -fsSL --retry 4 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$VRM080_ROOT/$rel?vrm080pre=$GITHUB_RUN_ID-$(date +%s%N)" -o "$remote" || { MATCH=0; break; }
+            [[ "$(sha256sum "$remote"|awk '{print $1}')" = "$(git show "$VRM080_SOURCE:app/$rel" | sha256sum | awk '{print $1}')" ]] || { MATCH=0; break; }
+          done
+          DEPLOYED=0
+          if [[ "$MATCH" != "1" ]]; then
+            SD="$RUNNER_TEMP/cxorbia-vrm080-source";rm -rf "$SD";mkdir -p "$SD";git archive "$VRM080_SOURCE"|tar -x -C "$SD";cd "$SD"
+            "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$VRM080_OUT/hosting-deploy.log"
+            cd "$GITHUB_WORKSPACE";DEPLOYED=1
+          fi
+          TOKEN="$(gcloud auth print-access-token)"
+          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$VRM080_OUT/hosting-live-channel.json"
+          HV="$(jq -r '.release.version.name // empty' "$VRM080_OUT/hosting-live-channel.json")";test -n "$HV"
+          echo "VRM080_HOSTING_VERSION=$HV" >> "$GITHUB_ENV";echo "VRM080_HOSTING_DEPLOYED=$DEPLOYED" >> "$GITHUB_ENV"
+      - name: Prove exact changed bytes served
+        run: |
+          set -Eeuo pipefail
+          for rel in modules/configuracion.js core/config.js adapters/cxorbia-cxdata-command-boundary-v1.js; do
+            remote="$VRM080_OUT/$(echo "$rel"|tr '/' '_').remote"
+            curl -fsSL --retry 8 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$VRM080_ROOT/$rel?vrm080=$GITHUB_RUN_ID-$(date +%s%N)" -o "$remote"
+            test "$(sha256sum "$remote"|awk '{print $1}')" = "$(git show "$VRM080_SOURCE:app/$rel" | sha256sum | awk '{print $1}')"
+          done
+      - name: Run connected admin configuration live proof
+        run: |
+          set -Eeuo pipefail
+          VRM080_OUT="$VRM080_OUT" VRM080_ROOT="$VRM080_ROOT" VRM080_SOURCE="$VRM080_SOURCE" timeout --signal=TERM --kill-after=20s 14m node "$VRM080_OUT/live-proof.mjs" | tee "$VRM080_OUT/live.log"
+          test "$(jq -r '.decision' "$VRM080_OUT/result.json")" = "PASS_I3_VRM080_CONNECTED_ADMIN_CONFIG_DURABLE"
+          test "$(jq -r '.providerAck' "$VRM080_OUT/result.json")" = "true"
+          test "$(jq -r '.durableReadback' "$VRM080_OUT/result.json")" = "true"
+          test "$(jq -r '.localStorage.authoritativeWrites' "$VRM080_OUT/result.json")" = "0"
+          test "$(jq -r '.cleanup.userResidue' "$VRM080_OUT/result.json")" = "0"
+          test "$(jq -r '.cleanup.projectResidue' "$VRM080_OUT/result.json")" = "0"
+      - name: Emergency VRM-080 QA cleanup
+        if: always()
+        run: |
+          node --input-type=module <<'NODE' | tee "$VRM080_OUT/emergency-cleanup.json"
+          import crypto from 'node:crypto';import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';import {getAuth} from 'firebase-admin/auth';import {getFirestore} from 'firebase-admin/firestore';
+          if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:'cxorbia-backend-dev'});
+          const db=getFirestore(),auth=getAuth(),t=db.collection('tenants').doc('tya'),run=String(process.env.GITHUB_RUN_ID),uid=('vrm080-'+run).slice(0,120);
+          try{await auth.deleteUser(uid);}catch{}await t.collection('users').doc(uid).delete().catch(()=>{});
+          const ua=await t.collection('auditLogs').where('targetUid','==',uid).get();if(!ua.empty){const b=db.batch();ua.docs.forEach(d=>b.delete(d.ref));await b.commit();}
+          const name='QA Config Project '+run,norm=name.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' '),pid='prj-'+crypto.createHash('sha256').update('tya\0'+norm).digest('hex').slice(0,20);
+          await t.collection('projects').doc(pid).delete().catch(()=>{});
+          for(const col of ['commandReceipts','entityAuditTrail']){const s=await t.collection(col).where('projectId','==',pid).get();if(!s.empty){const b=db.batch();s.docs.forEach(d=>b.delete(d.ref));await b.commit();}}
+          const ur=await t.collection('users').doc(uid).get(),pr=await t.collection('projects').doc(pid).get();const out={decision:!ur.exists&&!pr.exists?'PASS_VRM080_QA_CLEANUP':'FAIL_VRM080_QA_CLEANUP',userResidue:ur.exists?1:0,projectResidue:pr.exists?1:0,production:false};console.log(JSON.stringify(out));if(out.decision!=='PASS_VRM080_QA_CLEANUP')process.exit(1);
+          NODE
+      - name: Seal owner-specific receipts
+        run: |
+          set -Eeuo pipefail
+          jq -n -S --arg source "$VRM080_SOURCE" --arg tree "$VRM080_TREE" --arg runtime "$EXPECTED_RUNTIME_REVISION" --arg digest "$EXPECTED_RUNTIME_DIGEST" --arg hosting "$VRM080_HOSTING_VERSION" --argjson hostingDeploys "$VRM080_HOSTING_DEPLOYED" '[
+            {decision:"PASS_I3_VRM080_OWNER_SPECIFIC_RECEIPT",moduleDomain:"core-config-data-router-permissions",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:null,hrIndependent:true,ownerPaths:["app/core/config.js","app/modules/configuracion.js"],actionReal:true,providerAck:true,durableReadback:true,reloadProof:true,noDuplicateRegression:true,qaCleanup:true,localStorageAuthoritativeWrites:0,production:false,builds:0,runtimeDeploys:0,hostingDeploys:$hostingDeploys,hrWrites:0},
+            {decision:"PASS_I3_VRM080_OWNER_SPECIFIC_RECEIPT",moduleDomain:"persistence-command-ack-boundary",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:null,hrIndependent:true,ownerPaths:["app/adapters/cxorbia-cxdata-command-boundary-v1.js"],actionReal:true,providerAck:true,durableReadback:true,reloadProof:true,noDuplicateRegression:true,qaCleanup:true,production:false,builds:0,runtimeDeploys:0,hostingDeploys:$hostingDeploys,hrWrites:0}
+          ]' > "$VRM080_OUT/owner-receipts.json"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-vrm080-${{ github.run_id }}
+          path: ${{ env.VRM080_OUT }}
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
