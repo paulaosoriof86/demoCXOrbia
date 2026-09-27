@@ -172,9 +172,9 @@ jobs:
   vrm077-postulation-hr-conflict-live:
     name: I3 VRM-077 — exact HR conflict Hosting-only DEV reproof
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM077_HOSTING_REPROOF_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-077-hosting]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM077_HOSTING_REPROOF_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-077-reproof]') }}
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 20
     env:
       VRM077_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
       VRM077_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
@@ -229,18 +229,32 @@ jobs:
           RAW="$(jq -r '.status.imageDigest // empty' "$VRM077_OUT/runtime-revision.json")"
           if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; else DIGEST="sha256:${RAW##*@sha256:}"; fi
           test "$DIGEST" = "$EXPECTED_RUNTIME_DIGEST"
-      - name: Deploy exact VRM-077 source to Hosting DEV once
+      - name: Ensure exact VRM-077 source is served; deploy only if needed
         run: |
           set -Eeuo pipefail
-          SOURCE_DIR="$RUNNER_TEMP/cxorbia-vrm077-source"; rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"
-          git archive "$VRM077_SOURCE" | tar -x -C "$SOURCE_DIR"
-          cd "$SOURCE_DIR"
-          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$VRM077_OUT/hosting-deploy.log"
-          cd "$GITHUB_WORKSPACE"
+          MATCH=1
+          for rel in modules/postulaciones.js modules/misvisitas.js; do
+            remote="$VRM077_OUT/precheck_$(echo "$rel"|tr '/' '_').remote"
+            if ! curl -fsSL --retry 4 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$VRM077_ROOT/$rel?vrm077pre=$GITHUB_RUN_ID-$(date +%s%N)" -o "$remote"; then MATCH=0; break; fi
+            if [[ "$(sha256sum "$remote"|awk '{print $1}')" != "$(git show "$VRM077_SOURCE:app/$rel" | sha256sum | awk '{print $1}')" ]]; then MATCH=0; break; fi
+          done
+          DEPLOYED=0
+          if [[ "$MATCH" != "1" ]]; then
+            SOURCE_DIR="$RUNNER_TEMP/cxorbia-vrm077-source"; rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"
+            git archive "$VRM077_SOURCE" | tar -x -C "$SOURCE_DIR"
+            cd "$SOURCE_DIR"
+            "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$VRM077_OUT/hosting-deploy.log"
+            cd "$GITHUB_WORKSPACE"
+            DEPLOYED=1
+          else
+            printf '%s\n' 'Exact VRM-077 bytes already served; no Hosting redeploy.' | tee "$VRM077_OUT/hosting-deploy.log"
+          fi
           TOKEN="$(gcloud auth print-access-token)"
           curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$VRM077_OUT/hosting-live-channel.json"
           HOSTING_VERSION="$(jq -r '.release.version.name // empty' "$VRM077_OUT/hosting-live-channel.json")"; test -n "$HOSTING_VERSION"
           echo "VRM077_HOSTING_VERSION=$HOSTING_VERSION" >> "$GITHUB_ENV"
+          echo "VRM077_HOSTING_DEPLOYED=$DEPLOYED" >> "$GITHUB_ENV"
+          echo "VRM077_HOSTING_PREEXISTING_MATCH=$MATCH" >> "$GITHUB_ENV"
       - name: Prove exact changed bytes served
         run: |
           set -Eeuo pipefail
@@ -252,7 +266,15 @@ jobs:
       - name: Run same-HR Paula Cayala conflict proof
         run: |
           set -Eeuo pipefail
-          VRM077_OUT="$VRM077_OUT" VRM077_ROOT="$VRM077_ROOT" VRM077_SOURCE="$VRM077_SOURCE" node tools/qa/cxorbia-i3-vrm077-postulation-hr-conflict-live.mjs | tee "$VRM077_OUT/live.log"
+          set +e
+          VRM077_OUT="$VRM077_OUT" VRM077_ROOT="$VRM077_ROOT" VRM077_SOURCE="$VRM077_SOURCE" timeout --signal=TERM --kill-after=20s 12m node tools/qa/cxorbia-i3-vrm077-postulation-hr-conflict-live.mjs | tee "$VRM077_OUT/live.log"
+          CODE=${PIPESTATUS[0]}
+          set -e
+          if [[ "$CODE" = "124" || "$CODE" = "137" || "$CODE" = "143" ]]; then
+            if [[ ! -s "$VRM077_OUT/result.json" ]]; then jq -n -S --arg code "$CODE" '{decision:"FAIL_I3_VRM077_POSTULATION_HR_CONFLICT_LIVE",classification:"ENVIRONMENT_FAILURE",failedStage:"PROCESS_TIMEOUT",processExitCode:$code,production:false}' > "$VRM077_OUT/result.json"; fi
+            exit "$CODE"
+          fi
+          test "$CODE" = "0"
           test "$(jq -r '.decision' "$VRM077_OUT/result.json")" = "PASS_I3_VRM077_POSTULATION_HR_CONFLICT_LIVE"
           test "$(jq -r '.providerAck' "$VRM077_OUT/result.json")" = "true"
           test "$(jq -r '.shopper.before.conflictVisible' "$VRM077_OUT/result.json")" = "true"
@@ -265,7 +287,7 @@ jobs:
         run: |
           set -Eeuo pipefail
           HR="$(jq -r '.hrRevision' "$VRM077_OUT/result.json")"
-          jq -n -S --arg source "$VRM077_SOURCE" --arg tree "$VRM077_TREE" --arg runtime "$EXPECTED_RUNTIME_REVISION" --arg digest "$EXPECTED_RUNTIME_DIGEST" --arg hosting "$VRM077_HOSTING_VERSION" --arg hr "$HR" '{decision:"PASS_I3_VRM077_OWNER_SPECIFIC_RECEIPT",moduleDomain:"postulations-visits-reservations",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,ownerPaths:["app/modules/postulaciones.js","app/modules/misvisitas.js"],actionReal:true,providerAck:true,durableReadback:true,reloadProof:true,noDuplicateRegression:true,production:false,builds:0,runtimeDeploys:0,hostingDeploys:1,hrWrites:0}' > "$VRM077_OUT/owner-receipt.json"
+          jq -n -S --arg source "$VRM077_SOURCE" --arg tree "$VRM077_TREE" --arg runtime "$EXPECTED_RUNTIME_REVISION" --arg digest "$EXPECTED_RUNTIME_DIGEST" --arg hosting "$VRM077_HOSTING_VERSION" --arg hr "$HR" --arg hostingDeploys "$VRM077_HOSTING_DEPLOYED" '{decision:"PASS_I3_VRM077_OWNER_SPECIFIC_RECEIPT",moduleDomain:"postulations-visits-reservations",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,ownerPaths:["app/modules/postulaciones.js","app/modules/misvisitas.js"],actionReal:true,providerAck:true,durableReadback:true,reloadProof:true,noDuplicateRegression:true,production:false,builds:0,runtimeDeploys:0,hostingDeploys:($hostingDeploys|tonumber),hrWrites:0}' > "$VRM077_OUT/owner-receipt.json"
       - if: always()
         uses: actions/upload-artifact@v4
         with:
