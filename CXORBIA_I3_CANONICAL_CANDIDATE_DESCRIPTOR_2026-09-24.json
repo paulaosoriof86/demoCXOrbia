@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM078_LIVE_REPROOF_REQUIRED",
+  "status": "HOLD_VRM078_FINAL_UI_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_REOPENED_POST_RUN500_DRIFT",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "d003085adf36675ab22c4c172ff9e78715cc9a48",
+  "productSourceSha": "17ffd1cbac4aeee7f6a422b2c27b8d5c6111358f",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
-  "predecessorProductSourceSha": "ae6016a03e1943250d91f636132178802f4cb114",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V79_2026-09-27.json",
-  "findingsLedgerExpectedGitBlob": "12f1f2ac10f1477f5023c8ff8df8c364ecb1e31b",
+  "predecessorProductSourceSha": "d003085adf36675ab22c4c172ff9e78715cc9a48",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V80_2026-09-27.json",
+  "findingsLedgerExpectedGitBlob": "56039c9d2903696500a86c0d56d5c06a6447ed87",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "MATERIALIZE VRM-078 HOSTING-ONLY DEV; CREATE A SYNTHETIC SECOND EXTERNAL-SOURCE PROJECT THROUGH THE REAL WIZARD/PROJECT COMMAND PROVIDER; REQUIRE ACK + FIRESTORE/BROWSER READBACK + NO DUPLICATE; CLEAN ALL QA RESIDUE; NO PRODUCTION.",
+  "exactNextAction": "VRM-078 FINAL REPROOF ONLY: serve exact source 17ffd1cb..., create one synthetic second external-source project through the real wizard/provider, require ACK + durable/browser registry readback + truthful non-activated copy when scope is absent + no duplicate + complete QA cleanup. No production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -312,9 +312,9 @@
     "production": false
   },
   "currentRemediationCandidate": {
-    "sourceSha": "d003085adf36675ab22c4c172ff9e78715cc9a48",
-    "sourceTree": "e28f40a54c173cf036c44fdc1b141c6c25c9ddae",
-    "predecessorSha": "ae6016a03e1943250d91f636132178802f4cb114",
+    "sourceSha": "17ffd1cbac4aeee7f6a422b2c27b8d5c6111358f",
+    "sourceTree": "b389cec06c8e7c1de1988f76105ddebe42ef303d",
+    "predecessorSha": "d003085adf36675ab22c4c172ff9e78715cc9a48",
     "findingIds": [
       "VRM-078"
     ],
@@ -397,7 +397,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "fdc20bedcf3b6de8eefecaf9343975f07620c687",
+  "productSourceTree": "b389cec06c8e7c1de1988f76105ddebe42ef303d",
   "lastLiveReproof": {
     "runId": 36217529367,
     "runNumber": 465,
@@ -601,12 +601,12 @@
     "production": false
   },
   "pendingMaterialization": {
-    "sourceSha": "d003085adf36675ab22c4c172ff9e78715cc9a48",
-    "sourceTree": "e28f40a54c173cf036c44fdc1b141c6c25c9ddae",
+    "sourceSha": "17ffd1cbac4aeee7f6a422b2c27b8d5c6111358f",
+    "sourceTree": "b389cec06c8e7c1de1988f76105ddebe42ef303d",
     "productDiff": [
       "app/modules/proyecto-wizard.js"
     ],
-    "mode": "hosting_only_dev_once",
+    "mode": "hosting_only_dev_if_needed",
     "runtimeDeploys": 0,
     "rulesDeploys": 0,
     "production": false
@@ -715,7 +715,7 @@
   },
   "postRun500Recovery": {
     "lock": "CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json",
-    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V79_2026-09-27.json",
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V80_2026-09-27.json",
     "vrm076": "FIXED_PROVEN_RUN502",
     "vrm077": "FIXED_PROVEN_RUN507",
     "remainingOpenP0": [

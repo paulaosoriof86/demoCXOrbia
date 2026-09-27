@@ -25,6 +25,7 @@ on:
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V77_2026-09-26.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V78_2026-09-27.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V79_2026-09-27.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V80_2026-09-27.json
       - app/modules/proyecto-wizard.js
       - tools/qa/cxorbia-i3-vrm078-external-project-live.mjs
       - ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-17_I3_MICRO_ITERATIONS_FROZEN.md
@@ -70,7 +71,7 @@ env:
   I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V79_2026-09-27.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V80_2026-09-27.json
 
 jobs:
   canonical-candidate-authority:
@@ -108,7 +109,7 @@ jobs:
           for id in VRM-079 VRM-080 VRM-081; do
             test "$(jq -r --arg id "$id" '.findings[$id].state' "$POST_RUN500_LEDGER")" = "P0_PROVEN_POST_RUN500_FORENSIC"
           done
-          STATUS="HOLD_VRM078_LIVE_REPROOF_REQUIRED"
+          STATUS="HOLD_VRM078_FINAL_UI_REPROOF_REQUIRED"
           echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
@@ -315,7 +316,7 @@ jobs:
   vrm078-external-project-live:
     name: I3 VRM-078 — external source second-project live proof
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM078_LIVE_REPROOF_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-078-live]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM078_FINAL_UI_REPROOF_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-078-live]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 22
     env:
@@ -336,8 +337,8 @@ jobs:
         run: |
           set -Eeuo pipefail
           mkdir -p "$VRM078_OUT"
-          test "$VRM078_SOURCE" = "d003085adf36675ab22c4c172ff9e78715cc9a48"
-          test "$VRM078_TREE" = "e28f40a54c173cf036c44fdc1b141c6c25c9ddae"
+          test "$VRM078_SOURCE" = "17ffd1cbac4aeee7f6a422b2c27b8d5c6111358f"
+          test "$VRM078_TREE" = "b389cec06c8e7c1de1988f76105ddebe42ef303d"
           test "$(git rev-parse "$VRM078_SOURCE^{tree}")" = "$VRM078_TREE"
           git diff --name-only ae6016a03e1943250d91f636132178802f4cb114 "$VRM078_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**' | tee "$VRM078_OUT/product-diff.txt"
           test "$(wc -l < "$VRM078_OUT/product-diff.txt" | tr -d ' ')" = "1"
@@ -350,6 +351,7 @@ jobs:
           grep -Fq "providerBindingId=opaqueSourceRef(st.providerBindingId)" "$VRM078_OUT/proyecto-wizard.js"
           grep -Fq "source.mappingRef=opaqueSourceRef(st.mappingRef)" "$VRM078_OUT/proyecto-wizard.js"
           grep -Fq 'No pegues URL, Sheet ID, credenciales ni tokens' "$VRM078_OUT/proyecto-wizard.js"
+          grep -Fq 'pendiente de asignar alcance para operarlo' "$VRM078_OUT/proyecto-wizard.js"
           jq -n -S --arg source "$VRM078_SOURCE" --arg tree "$VRM078_TREE" '{decision:"PASS_I3_VRM078_SOURCE_GATE",sourceSha:$source,sourceTree:$tree,ownerPaths:["app/modules/proyecto-wizard.js"],production:false}' > "$VRM078_OUT/source-gate.json"
       - name: Install DEV proof tooling
         run: |
@@ -411,6 +413,8 @@ jobs:
           test "$(jq -r '.browserWizard' "$VRM078_OUT/result.json")" = "true"
           test "$(jq -r '.browserState.present' "$VRM078_OUT/result.json")" = "true"
           test "$(jq -r '.noDuplicateRegression' "$VRM078_OUT/result.json")" = "true"
+          test "$(jq -r '.browserRegistryReadback' "$VRM078_OUT/result.json")" = "true"
+          test "$(jq -r '.noSilentEntitlementInheritance' "$VRM078_OUT/result.json")" = "true"
           test "$(jq -r '.cleanup.projectDeleted' "$VRM078_OUT/result.json")" = "true"
           test "$(jq -r '.cleanup.receiptsAfter' "$VRM078_OUT/result.json")" = "0"
           test "$(jq -r '.cleanup.auditsAfter' "$VRM078_OUT/result.json")" = "0"
