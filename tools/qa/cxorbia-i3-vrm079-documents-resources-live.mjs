@@ -38,11 +38,20 @@ async function signedAdmin(){
   const page=await ctx.newPage();
   const URL=ROOT+'/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV';
   for(let attempt=0;attempt<5;attempt++){
-    await page.goto(URL,{waitUntil:'domcontentloaded',timeout:60000});
-    await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:60000});
-    const token=await auth.createCustomToken(admin.id);
-    await page.evaluate(async t=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);await firebase.auth().signInWithCustomToken(t);},token);
-    await page.waitForTimeout(800*(attempt+1));
+    try{
+      await page.goto(URL,{waitUntil:'domcontentloaded',timeout:60000});
+      await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:60000});
+      const token=await auth.createCustomToken(admin.id);
+      await page.evaluate(async ({token,timeoutMs})=>{
+        const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error('AUTH_SIGNIN_TIMEOUT')),timeoutMs));
+        await Promise.race([(async()=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);await firebase.auth().signInWithCustomToken(token);})(),timeout]);
+      },{token,timeoutMs:30000});
+    }catch(e){
+      const msg=String(e?.message||e);
+      if(!/network|timeout|interrupted|AUTH_SIGNIN_TIMEOUT|Execution context was destroyed|navigation/i.test(msg))throw e;
+      console.log(JSON.stringify({vrm079AuthRetry:attempt+1,error:msg.slice(0,240)}));
+    }
+    await page.waitForTimeout(1000*(attempt+1));
     if(await page.evaluate(uid=>String(firebase.auth().currentUser?.uid||'')===uid,admin.id).catch(()=>false))break;
   }
   await page.waitForFunction(uid=>String(window.firebase?.auth?.().currentUser?.uid||'')===uid,admin.id,{timeout:60000});
