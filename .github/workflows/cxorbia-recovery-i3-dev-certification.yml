@@ -29,7 +29,7 @@ on:
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V81_2026-09-27.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V82_2026-09-27.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V83_2026-09-27.json
-      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V84_2026-09-27.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V85_2026-09-27.json
       - app/modules/configuracion.js
       - app/core/config.js
       - app/adapters/cxorbia-cxdata-command-boundary-v1.js
@@ -81,7 +81,7 @@ env:
   I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V84_2026-09-27.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V85_2026-09-27.json
 
 jobs:
   canonical-candidate-authority:
@@ -627,13 +627,13 @@ jobs:
         run: |
           set -Eeuo pipefail
           mkdir -p "$VRM080_OUT"
-          test "$VRM080_SOURCE" = "b841266de9e6156eb7feda7b09e39f09d8721766"
-          test "$VRM080_TREE" = "60c59909eb5f9b6b96139f4f58fb34dde71b7dfa"
+          test "$VRM080_SOURCE" = "77b29e303c825be586a97e159d4d65bfae7e66c8"
+          test "$VRM080_TREE" = "279f33d6ad734ac7da9e5764dd05c91cab8882aa"
           test "$(git rev-parse "$VRM080_SOURCE^{tree}")" = "$VRM080_TREE"
           git diff --name-only 6877b38171a3b1ef8caf88734d0884a31ebef639 "$VRM080_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**' | tee "$VRM080_OUT/product-diff.txt"
-          test "$(wc -l < "$VRM080_OUT/product-diff.txt" | tr -d ' ')" = "3"
-          for p in app/modules/configuracion.js app/core/config.js app/adapters/cxorbia-cxdata-command-boundary-v1.js; do grep -Fxq "$p" "$VRM080_OUT/product-diff.txt"; done
-          for spec in "app/modules/configuracion.js:configuracion.js" "app/core/config.js:config.js" "app/adapters/cxorbia-cxdata-command-boundary-v1.js:command-boundary.js"; do src="${spec%%:*}"; out="${spec##*:}"; git show "$VRM080_SOURCE:$src" > "$VRM080_OUT/$out"; node --check "$VRM080_OUT/$out"; done
+          test "$(wc -l < "$VRM080_OUT/product-diff.txt" | tr -d ' ')" = "4"
+          for p in app/modules/configuracion.js app/core/config.js app/adapters/cxorbia-cxdata-command-boundary-v1.js app/adapters/cxorbia-command-adapter-v1.js; do grep -Fxq "$p" "$VRM080_OUT/product-diff.txt"; done
+          for spec in "app/modules/configuracion.js:configuracion.js" "app/core/config.js:config.js" "app/adapters/cxorbia-cxdata-command-boundary-v1.js:command-boundary.js" "app/adapters/cxorbia-command-adapter-v1.js:command-adapter.js"; do src="${spec%%:*}"; out="${spec##*:}"; git show "$VRM080_SOURCE:$src" > "$VRM080_OUT/$out"; node --check "$VRM080_OUT/$out"; done
           cp tools/qa/cxorbia-i3-vrm080-connected-admin-config-live.mjs "$VRM080_OUT/live-proof.mjs"
           node --check "$VRM080_OUT/live-proof.mjs"
           test "$(git diff --name-only "$VRM080_SOURCE" "$GITHUB_SHA" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**' | wc -l | tr -d ' ')" = "0"
@@ -641,6 +641,7 @@ jobs:
           grep -Fq "data-connected-security" "$VRM080_OUT/configuracion.js"
           grep -Fq "TENANT_PLAN_PROVIDER_REQUIRED" "$VRM080_OUT/config.js"
           grep -Fq "__backendAllProjectRecords" "$VRM080_OUT/command-boundary.js"
+          grep -Fq "projectId:result?.projectId||command.projectId||null" "$VRM080_OUT/command-adapter.js"
       - name: Install DEV proof tooling
         run: |
           npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
@@ -665,7 +666,7 @@ jobs:
         run: |
           set -Eeuo pipefail
           MATCH=1
-          for rel in modules/configuracion.js core/config.js adapters/cxorbia-cxdata-command-boundary-v1.js; do
+          for rel in modules/configuracion.js core/config.js adapters/cxorbia-cxdata-command-boundary-v1.js adapters/cxorbia-command-adapter-v1.js; do
             remote="$VRM080_OUT/$(echo "$rel"|tr '/' '_').pre"
             curl -fsSL --retry 4 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$VRM080_ROOT/$rel?vrm080pre=$GITHUB_RUN_ID-$(date +%s%N)" -o "$remote" || { MATCH=0; break; }
             [[ "$(sha256sum "$remote"|awk '{print $1}')" = "$(git show "$VRM080_SOURCE:app/$rel" | sha256sum | awk '{print $1}')" ]] || { MATCH=0; break; }
@@ -717,7 +718,7 @@ jobs:
           set -Eeuo pipefail
           jq -n -S --arg source "$VRM080_SOURCE" --arg tree "$VRM080_TREE" --arg runtime "$EXPECTED_RUNTIME_REVISION" --arg digest "$EXPECTED_RUNTIME_DIGEST" --arg hosting "$VRM080_HOSTING_VERSION" --argjson hostingDeploys "$VRM080_HOSTING_DEPLOYED" '[
             {decision:"PASS_I3_VRM080_OWNER_SPECIFIC_RECEIPT",moduleDomain:"core-config-data-router-permissions",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:null,hrIndependent:true,ownerPaths:["app/core/config.js","app/modules/configuracion.js"],actionReal:true,providerAck:true,durableReadback:true,reloadProof:true,noDuplicateRegression:true,qaCleanup:true,localStorageAuthoritativeWrites:0,production:false,builds:0,runtimeDeploys:0,hostingDeploys:$hostingDeploys,hrWrites:0},
-            {decision:"PASS_I3_VRM080_OWNER_SPECIFIC_RECEIPT",moduleDomain:"persistence-command-ack-boundary",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:null,hrIndependent:true,ownerPaths:["app/adapters/cxorbia-cxdata-command-boundary-v1.js"],actionReal:true,providerAck:true,durableReadback:true,reloadProof:true,noDuplicateRegression:true,qaCleanup:true,production:false,builds:0,runtimeDeploys:0,hostingDeploys:$hostingDeploys,hrWrites:0}
+            {decision:"PASS_I3_VRM080_OWNER_SPECIFIC_RECEIPT",moduleDomain:"persistence-command-ack-boundary",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:null,hrIndependent:true,ownerPaths:["app/adapters/cxorbia-cxdata-command-boundary-v1.js","app/adapters/cxorbia-command-adapter-v1.js"],actionReal:true,providerAck:true,durableReadback:true,reloadProof:true,noDuplicateRegression:true,qaCleanup:true,production:false,builds:0,runtimeDeploys:0,hostingDeploys:$hostingDeploys,hrWrites:0}
           ]' > "$VRM080_OUT/owner-receipts.json"
       - if: always()
         uses: actions/upload-artifact@v4
