@@ -88,15 +88,20 @@ const evidence={
 
 try{
   const nonce=Date.now();
-  const [meta,operational]=await Promise.all([
+  const [meta,sourceSafe,operational]=await Promise.all([
     fetch(ROOT+'/api/'+TENANT+'/'+PROJECT+'/hr-live?format=meta&vrm081v2='+nonce,{headers:{'Cache-Control':'no-cache, no-store, max-age=0'},signal:AbortSignal.timeout(60000)}).then(async r=>{if(!r.ok)throw new Error('PROVIDER_FAILURE:VRM081_HR_META_HTTP_'+r.status);return r.json();}),
+    fetch(ROOT+'/api/'+TENANT+'/'+PROJECT+'/hr-live?format=json&vrm081safe='+nonce,{headers:{'Cache-Control':'no-cache, no-store, max-age=0'},signal:AbortSignal.timeout(60000)}).then(async r=>{if(!r.ok)throw new Error('PROVIDER_FAILURE:VRM081_HR_SOURCE_SAFE_HTTP_'+r.status);return r.json();}),
     fetch(ROOT+'/api/'+TENANT+'/'+PROJECT+'/hr-live?format=json&view=operational-names&cxOperationalPreview='+OPERATIONAL_TOKEN+'&vrm081v2='+nonce,{headers:{'Cache-Control':'no-cache, no-store, max-age=0'},signal:AbortSignal.timeout(60000)}).then(async r=>{if(!r.ok)throw new Error('PROVIDER_FAILURE:VRM081_HR_OPERATIONAL_HTTP_'+r.status);return r.json();})
   ]);
   if(meta?.ok!==true||meta?.revisionStable!==true)throw new Error('PROVIDER_FAILURE:VRM081_HR_META_INVALID');
-  const hrRevision=str(meta.revision),snapshot=operational?.snapshot||operational?.data||operational;
-  const operationalRevision=str(operational?._runtime?.revision||snapshot?._runtime?.revision||snapshot?.sourceRevision||'');
-  if(!/^[a-f0-9]{64}$/.test(hrRevision)||operationalRevision!==hrRevision)throw new Error('RELEASE_COMPOSITION_FAILURE:VRM081_HR_REVISION_MISMATCH');
-  if(snapshot?.operationalIdentityPreview!==true)throw new Error('SOURCE_FAILURE:VRM081_OPERATIONAL_IDENTITY_NOT_READY');
+  const hrRevision=str(meta.revision);
+  const safeSnapshot=sourceSafe?.snapshot||sourceSafe?.data||sourceSafe;
+  const operationalSnapshot=operational?.snapshot||operational?.data||operational;
+  const sourceSafeRevision=str(sourceSafe?._runtime?.revision||safeSnapshot?._runtime?.revision||safeSnapshot?.sourceRevision||'');
+  const operationalRevision=str(operational?._runtime?.revision||operationalSnapshot?._runtime?.revision||operationalSnapshot?.sourceRevision||'');
+  if(!/^[a-f0-9]{64}$/.test(hrRevision)||sourceSafeRevision!==hrRevision||operationalRevision!==hrRevision)throw new Error('RELEASE_COMPOSITION_FAILURE:VRM081_HR_REVISION_MISMATCH');
+  if(sourceSafe?.sourceSafe!==true&&safeSnapshot?.sourceSafe!==true)throw new Error('SOURCE_FAILURE:VRM081_SOURCE_SAFE_NOT_READY');
+  if(operationalSnapshot?.operationalIdentityPreview!==true)throw new Error('SOURCE_FAILURE:VRM081_OPERATIONAL_IDENTITY_NOT_READY');
   const sr=meta.shopperReconciliation||{};
   if(Number(sr.shopperCount||0)<=0)throw new Error('SOURCE_FAILURE:VRM081_SHOPPER_RECONCILIATION_MISSING');
 
@@ -122,9 +127,15 @@ try{
     }
   }
 
+  const operationalById={};
+  for(const row of [...arr(operationalSnapshot.shoppers),...arr(operationalSnapshot.visits)]){
+    const id=str(row?.shopperId||row?.id);if(!id)continue;
+    operationalById[id]={...(operationalById[id]||{}),...row};
+  }
   const sourceById={};
-  for(const row of [...arr(snapshot.shoppers),...arr(snapshot.visits)]){
-    const c=sourceCandidate(row);if(!c.shopperId)continue;
+  for(const row of [...arr(safeSnapshot.shoppers),...arr(safeSnapshot.visits)]){
+    const id=str(row?.shopperId||row?.id);if(!id)continue;
+    const c=sourceCandidate({...row,...(operationalById[id]||{})});
     const prior=sourceById[c.shopperId]||{};
     sourceById[c.shopperId]={...prior,...Object.fromEntries(Object.entries(c).filter(([,v])=>v!==''&&v!==false))};
   }
