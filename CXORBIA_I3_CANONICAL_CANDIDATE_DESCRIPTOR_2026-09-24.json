@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM078_FINAL_UI_REPROOF_REQUIRED",
+  "status": "HOLD_VRM079_SOURCE_FIX_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_REOPENED_POST_RUN500_DRIFT",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "17ffd1cbac4aeee7f6a422b2c27b8d5c6111358f",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "d003085adf36675ab22c4c172ff9e78715cc9a48",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V80_2026-09-27.json",
-  "findingsLedgerExpectedGitBlob": "56039c9d2903696500a86c0d56d5c06a6447ed87",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V81_2026-09-27.json",
+  "findingsLedgerExpectedGitBlob": "f57d7f181231cd801e594d6ede14404da610a484",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-078",
+  "activeBlocker": "VRM-079",
   "nextFindingId": "VRM-082",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "VRM-078 FINAL REPROOF ONLY: serve exact source 17ffd1cb..., create one synthetic second external-source project through the real wizard/provider, require ACK + durable/browser registry readback + truthful non-activated copy when scope is absent + no duplicate + complete QA cleanup. No production.",
+  "exactNextAction": "VRM-079 ONLY: reconcile Documents/Resources binary Storage authority with connected UI. Prove exact provider capability and either durable upload/readback/delete or business-readable disabled state; no visible false upload action; no production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -600,17 +600,6 @@
     "deploys": 0,
     "production": false
   },
-  "pendingMaterialization": {
-    "sourceSha": "17ffd1cbac4aeee7f6a422b2c27b8d5c6111358f",
-    "sourceTree": "b389cec06c8e7c1de1988f76105ddebe42ef303d",
-    "productDiff": [
-      "app/modules/proyecto-wizard.js"
-    ],
-    "mode": "hosting_only_dev_if_needed",
-    "runtimeDeploys": 0,
-    "rulesDeploys": 0,
-    "production": false
-  },
   "lastVrm065Proof": {
     "runId": 36255382892,
     "runNumber": 488,
@@ -715,17 +704,16 @@
   },
   "postRun500Recovery": {
     "lock": "CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json",
-    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V80_2026-09-27.json",
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V81_2026-09-27.json",
     "vrm076": "FIXED_PROVEN_RUN502",
     "vrm077": "FIXED_PROVEN_RUN507",
     "remainingOpenP0": [
-      "VRM-078",
       "VRM-079",
       "VRM-080",
       "VRM-081"
     ],
     "production": false,
-    "vrm078": "FIXED_SOURCE_NOT_PROVEN"
+    "vrm078": "FIXED_PROVEN_RUN515"
   },
   "lastVrm077Proof": {
     "runId": 36319627577,
@@ -741,6 +729,34 @@
     "runtimeDigest": "sha256:b34be533f545c6dda7dc9f6c4a1cb0af517aad2aff1d79005412b4a2433d7ecd",
     "hostingVersion": "sites/cxorbia-backend-dev/versions/b00750b137d4d3a6",
     "hostingDeploys": 0,
+    "production": false
+  },
+  "lastVrm078Proof": {
+    "workflowRunId": 36325108619,
+    "workflowRunNumber": 515,
+    "jobId": 108636297237,
+    "artifactId": 10933738309,
+    "artifactDigest": "sha256:fb044c00ca457487e90c2ffbc11d5b6b96f3258e4ca9c5b52d9f540ea83a64f4",
+    "decision": "PASS_I3_VRM078_EXTERNAL_PROJECT_CREATE_READBACK",
+    "sourceSha": "17ffd1cbac4aeee7f6a422b2c27b8d5c6111358f",
+    "sourceTree": "b389cec06c8e7c1de1988f76105ddebe42ef303d",
+    "runtimeRevision": "cxorbia-live-hr-dev-00223-tlg",
+    "runtimeDigest": "sha256:b34be533f545c6dda7dc9f6c4a1cb0af517aad2aff1d79005412b4a2433d7ecd",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/061d80eb3cd7085a",
+    "hostingDeploys": 1,
+    "providerAck": true,
+    "durableReadback": true,
+    "browserRegistryReadback": true,
+    "noSilentEntitlementInheritance": true,
+    "truthfulScopeCopy": true,
+    "noDuplicateRegression": true,
+    "cleanup": {
+      "projectDeleted": true,
+      "receiptsAfter": 0,
+      "auditsAfter": 0
+    },
+    "hrWrites": 0,
+    "externalWrites": 0,
     "production": false
   }
 }
