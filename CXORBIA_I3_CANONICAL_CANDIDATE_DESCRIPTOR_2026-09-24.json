@@ -11,7 +11,7 @@
   "findingsLedgerExpectedGitBlob": "00984423d9be58e441e1d1b283d2658a644269fe",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
-  "production": false,
+  "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
   "activeBlocker": "VRM-081",
   "nextFindingId": "VRM-082",
@@ -292,7 +292,9 @@
   "technicalClosureReceipt": "CXORBIA_I3_TERMINAL_TECHNICAL_READY_2026-09-25.json",
   "i4": {
     "status": "BLOCKED_UNTIL_I3_GO_AND_FRESH_PAULA_AUTHORIZATION",
-    "productionAuthorization": false
+    "productionAuthorization": false,
+    "authorized": false,
+    "production": "DO_NOT_TOUCH"
   },
   "lastHumanVisualReview": {
     "reviewedAt": "2026-09-25T23:59:00Z",
