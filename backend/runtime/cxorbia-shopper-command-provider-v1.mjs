@@ -431,7 +431,7 @@ async function durableUpsert({auth,db,policy,candidate,sourceRevision,authUsers,
   }
 
   if(!user){
-    if(existingMemberDoc||crossBefore.exists||recoveredPrincipal)throw new Error('SHOPPER_DURABLE_IDENTITY_AUTH_MISSING');
+    if(existingMemberDoc||(!exactAliasSelfMap&&crossBefore.exists)||recoveredPrincipal)throw new Error('SHOPPER_DURABLE_IDENTITY_AUTH_MISSING');
     if(!credential.ok)throw new Error(credential.reason);
     const byEmail=await safeAuthByEmail(auth,email);
     if(byEmail&&byEmail.uid!==uid)throw new Error('SHOPPER_AUTH_EMAIL_CONFLICT');
