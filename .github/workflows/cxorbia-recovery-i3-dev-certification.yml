@@ -193,21 +193,22 @@ jobs:
         run: |
           set -Eeuo pipefail
           mkdir -p "$VRM077_OUT"
-          test "$VRM077_SOURCE" = "ae6016a03e1943250d91f636132178802f4cb114"
-          test "$VRM077_TREE" = "fdc20bedcf3b6de8eefecaf9343975f07620c687"
-          test "$(git rev-parse "$VRM077_SOURCE^{tree}")" = "$VRM077_TREE"
-          test "$(git diff --name-only a552e1fbb41d5cacc8ab3157f3d91492b82b8f00 "$VRM077_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source | wc -l | tr -d ' ')" = "2"
-          git diff --name-only a552e1fbb41d5cacc8ab3157f3d91492b82b8f00 "$VRM077_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source | grep -qx 'app/modules/postulaciones.js'
-          git diff --name-only a552e1fbb41d5cacc8ab3157f3d91492b82b8f00 "$VRM077_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source | grep -qx 'app/modules/misvisitas.js'
-          node --check "$(mktemp -d)/noop" 2>/dev/null || true
-          git show "$VRM077_SOURCE:app/modules/postulaciones.js" > "$VRM077_OUT/postulaciones.js"
-          git show "$VRM077_SOURCE:app/modules/misvisitas.js" > "$VRM077_OUT/misvisitas.js"
-          git show "$VRM077_SOURCE:tools/qa/cxorbia-i3-vrm077-postulation-hr-conflict-live.mjs" > "$VRM077_OUT/live-proof.mjs"
-          node --check "$VRM077_OUT/postulaciones.js"
-          node --check "$VRM077_OUT/misvisitas.js"
-          node --check "$VRM077_OUT/live-proof.mjs"
-          grep -q "visitShopper!==appShopper)return'conflict_review_required'" "$VRM077_OUT/postulaciones.js"
-          grep -q "visitShopper!==appShopper)return'conflict_review_required'" "$VRM077_OUT/misvisitas.js"
+          echo "CHECK 01 source"; test "$VRM077_SOURCE" = "ae6016a03e1943250d91f636132178802f4cb114"; echo "PASS 01"
+          echo "CHECK 02 tree"; test "$VRM077_TREE" = "fdc20bedcf3b6de8eefecaf9343975f07620c687"; echo "PASS 02"
+          ACTUAL_TREE="$(git rev-parse "$VRM077_SOURCE^{tree}")"; echo "ACTUAL_TREE=$ACTUAL_TREE"; test "$ACTUAL_TREE" = "$VRM077_TREE"; echo "PASS 03"
+          git diff --name-only a552e1fbb41d5cacc8ab3157f3d91492b82b8f00 "$VRM077_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source | tee "$VRM077_OUT/product-diff.txt"
+          DIFF_COUNT="$(wc -l < "$VRM077_OUT/product-diff.txt" | tr -d ' ')"; echo "PRODUCT_DIFF_COUNT=$DIFF_COUNT"; test "$DIFF_COUNT" = "2"; echo "PASS 04"
+          grep -Fxq 'app/modules/postulaciones.js' "$VRM077_OUT/product-diff.txt"; echo "PASS 05 postulaciones"
+          grep -Fxq 'app/modules/misvisitas.js' "$VRM077_OUT/product-diff.txt"; echo "PASS 06 misvisitas"
+          git show "$VRM077_SOURCE:app/modules/postulaciones.js" > "$VRM077_OUT/postulaciones.js"; echo "PASS 07 extract postulaciones"
+          git show "$VRM077_SOURCE:app/modules/misvisitas.js" > "$VRM077_OUT/misvisitas.js"; echo "PASS 08 extract misvisitas"
+          git show "$VRM077_SOURCE:tools/qa/cxorbia-i3-vrm077-postulation-hr-conflict-live.mjs" > "$VRM077_OUT/live-proof.mjs"; echo "PASS 09 extract proof"
+          node --check "$VRM077_OUT/postulaciones.js"; echo "PASS 10 syntax postulaciones"
+          node --check "$VRM077_OUT/misvisitas.js"; echo "PASS 11 syntax misvisitas"
+          node --check "$VRM077_OUT/live-proof.mjs"; echo "PASS 12 syntax proof"
+          grep -Fq "visitShopper!==appShopper)return'conflict_review_required'" "$VRM077_OUT/postulaciones.js"; echo "PASS 13 conflict admin"
+          grep -Fq "visitShopper!==appShopper)return'conflict_review_required'" "$VRM077_OUT/misvisitas.js"; echo "PASS 14 conflict shopper"
+          jq -n -S --arg source "$VRM077_SOURCE" --arg tree "$VRM077_TREE" --argjson productFiles "$DIFF_COUNT" '{decision:"PASS_I3_VRM077_SOURCE_GATE",sourceSha:$source,sourceTree:$tree,productFiles:$productFiles,owners:["app/modules/postulaciones.js","app/modules/misvisitas.js"],production:false}' > "$VRM077_OUT/source-gate.json"
       - name: Install DEV proof tooling
         run: |
           npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
@@ -273,6 +274,7 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
+          include-hidden-files: true
 
   v52-vrm050-runtime:
     name: I3 V52 — VRM-050 HR refresh timeout runtime-only DEV fix
