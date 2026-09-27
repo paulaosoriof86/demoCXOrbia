@@ -5,6 +5,7 @@ import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';
 import {getAuth} from 'firebase-admin/auth';
 import {getFirestore} from 'firebase-admin/firestore';
 import ShopperCredentialRule from '../../app/core/shopper-credential-rule.js';
+import {decryptCredentialBundle} from './cxorbia-c6-shopper-identity-canonical-plan.mjs';
 
 const OUT=process.env.VRM081_OUT||'.tmp/i3-vrm081';
 const ROOT=String(process.env.VRM081_ROOT||'https://cxorbia-backend-dev.web.app').replace(/\/$/,'');
@@ -123,11 +124,39 @@ try{
   const [usersSnap,shoppersSnap,crossSnap,linksSnap,authUsers]=await Promise.all([
     tenant.collection('users').get(),tenant.collection('shoppers').get(),tenant.collection('shopperIdentityCrosswalk').get(),tenant.collection('shopperIdentityLinks').get(),listAllAuth()
   ]);
+  const serviceAccountPath=str(process.env.GOOGLE_APPLICATION_CREDENTIALS);
+  if(!serviceAccountPath||!fs.existsSync(serviceAccountPath))throw new Error('ENVIRONMENT_FAILURE:VRM081_SERVICE_ACCOUNT_MISSING');
+  const serviceAccount=JSON.parse(fs.readFileSync(serviceAccountPath,'utf8'));
+  if(!str(serviceAccount.private_key))throw new Error('ENVIRONMENT_FAILURE:VRM081_SERVICE_ACCOUNT_PRIVATE_KEY_MISSING');
+  const credentialBundle=decryptCredentialBundle({serviceAccount});
+  const credentialRecords=arr(credentialBundle.records).filter(record=>record?.kind==='shopper');
+  const credentialLoginByAuthUid={};
+  const credentialLoginByExactId={};
+  const addUnique=(obj,key,value)=>{
+    const k=str(key),v=str(value).toLowerCase();if(!k||!v)return;
+    if(!obj[k])obj[k]=new Set();obj[k].add(v);
+  };
   const memberships=usersSnap.docs.map(d=>({uid:d.id,...(d.data()||{})}));
   const profiles=Object.fromEntries(shoppersSnap.docs.map(d=>[d.id,{id:d.id,...(d.data()||{})}]));
   const crosswalks=Object.fromEntries(crossSnap.docs.map(d=>[d.id,{id:d.id,...(d.data()||{})}]));
   const authByUid=Object.fromEntries(authUsers.map(u=>[u.uid,u]));
   const authByEmail=Object.fromEntries(authUsers.filter(u=>str(u.email)).map(u=>[str(u.email).toLowerCase(),u]));
+  for(const record of credentialRecords){
+    const login=str(record?.normalizedLogin||record?.loginIdentifier).toLowerCase();
+    if(!login)continue;
+    const user=authByEmail[internalEmail(login).toLowerCase()];
+    if(user)addUnique(credentialLoginByAuthUid,user.uid,login);
+    for(const key of ['legacyId','legacyShopperId','externalShopperId','externalId','sourceId','sourceKey','shopperId','profileId']){
+      const value=record?.[key];
+      for(const item of (Array.isArray(value)?value:[value]))addUnique(credentialLoginByExactId,item,login);
+    }
+  }
+  const uniqueCredentialLogin=(sourceId,canonical,currentUser)=>{
+    const values=new Set();
+    for(const v of (currentUser?credentialLoginByAuthUid[currentUser.uid]||[]:[]))values.add(v);
+    for(const key of [sourceId,canonical])for(const v of (credentialLoginByExactId[str(key)]||[]))values.add(v);
+    return values.size===1?[...values][0]:'';
+  };
   const membershipByUid=Object.fromEntries(memberships.map(m=>[m.uid,m]));
   const membershipByShopper={};for(const m of memberships){const sid=str(m.shopperId);if(sid)addObjArray(membershipByShopper,sid,m);}
 
@@ -194,7 +223,9 @@ try{
     const selectedMember=activeMembers.length===1?activeMembers[0]:(members.length===1?members[0]:null);
     const selectedUid=selectedMember?str(selectedMember.uid):(matchingAuth.length===1?str(matchingAuth[0].uid):stableUid(canonical));
     const currentUser=authByUid[selectedUid]||null;
-    const currentLogin=str(selectedMember?.visibleLogin||profiles[canonical]?.visibleLogin||profiles[canonical]?.username||profiles[canonical]?.user).toLowerCase();
+    const durableLogin=str(selectedMember?.visibleLogin||profiles[canonical]?.visibleLogin||profiles[canonical]?.username||profiles[canonical]?.user).toLowerCase();
+    const technicalLogin=uniqueCredentialLogin(sourceId,canonical,currentUser);
+    const currentLogin=durableLogin||technicalLogin;
     const currentClaimsExact=!!currentUser&&exactClaims(currentUser,canonical);
     const currentEmailMatches=!!currentUser&&!!currentLogin&&str(currentUser.email).toLowerCase()===internalEmail(currentLogin).toLowerCase();
     const exactCurrentCredential=activeMembers.length===1&&matchingAuth.length===1&&currentClaimsExact&&currentEmailMatches;
@@ -210,7 +241,9 @@ try{
     const loginFp=credential.ok?fp('login',credential.login):null;
     let bucket='UNCLASSIFIED_REVIEW';
     if(str(q.reason)==='SHOPPER_CREDENTIAL_NAME_INCOMPLETE'||!credential.ok){
-      if(exactCurrentCredential)bucket='EXACT_CURRENT_CREDENTIAL_PRESERVE_SOURCE_NAME_INCOMPLETE';
+      if(exactCurrentCredential&&technicalLogin)bucket='EXACT_CURRENT_CREDENTIAL_FROM_BUNDLE_PRESERVE';
+      else if(!currentUser&&technicalLogin&&activity.latestActionRequired>0)bucket='CURRENT_SOURCE_TECHNICAL_CREDENTIAL_MATERIALIZATION_REQUIRED';
+      else if(exactCurrentCredential)bucket='EXACT_CURRENT_CREDENTIAL_PRESERVE_SOURCE_NAME_INCOMPLETE';
       else if(!loginBearing)bucket='NON_LOGIN_BEARING_SOURCE_INCOMPLETE';
       else bucket='SOURCE_NAME_INCOMPLETE_REQUIRES_ADJUDICATION';
     }else if((str(q.reason)==='SHOPPER_VISIBLE_LOGIN_COLLISION'||str(q.reason)==='SHOPPER_AUTH_EMAIL_CONFLICT')&&occupant&&occupantUid!==selectedUid){
@@ -226,6 +259,8 @@ try{
       occupantCanonicalFingerprint:occupantCanonical?fp('canonical-shopper',occupantCanonical):null,occupantLegitimateCurrent:occupantLegitimate,occupantSameCanonical,
       activeMembershipCount:activeMembers.length,totalMembershipCount:members.length,matchingEnabledAuthPrincipals:matchingAuth.length,
       currentMembershipAuthPresent:!!currentUser,currentMembershipClaimsExact:currentClaimsExact,currentAuthEmailMatchesVisibleLogin:currentEmailMatches,
+      durableVisibleLoginPresent:!!durableLogin,technicalCredentialBundleMatch:!!technicalLogin,
+      technicalLoginFingerprint:technicalLogin?fp('technical-login',technicalLogin):null,
       visibleLoginState:loginState,loginBearing,latestPeriod,latestPeriodVisits:activity.latestPeriodVisits,latestActionRequired:activity.latestActionRequired
     });
   }
@@ -247,18 +282,20 @@ try{
   const migrationUnsafe=migrationClassifications.length-migrationSafe;
   const legitimateCurrentCollisionRows=reviewClassifications.filter(x=>x.bucket==='CURRENT_CURRENT_VISIBLE_LOGIN_COLLISION_POLICY_REQUIRED').length;
   const nameIncompleteRows=reviewClassifications.filter(x=>x.bucket==='SOURCE_NAME_INCOMPLETE_REQUIRES_ADJUDICATION').length;
-  const preservedExactRows=reviewClassifications.filter(x=>['EXACT_CURRENT_CREDENTIAL_PRESERVE_SOURCE_NAME_INCOMPLETE','APPROVED_SUFFIX_ALREADY_MATERIALIZED_CURRENT_COLLISION','EXACT_CURRENT_SUFFIX_PRESERVE_HISTORICAL_OCCUPANT'].includes(x.bucket)).length;
+  const preservedExactRows=reviewClassifications.filter(x=>['EXACT_CURRENT_CREDENTIAL_FROM_BUNDLE_PRESERVE','EXACT_CURRENT_CREDENTIAL_PRESERVE_SOURCE_NAME_INCOMPLETE','APPROVED_SUFFIX_ALREADY_MATERIALIZED_CURRENT_COLLISION','EXACT_CURRENT_SUFFIX_PRESERVE_HISTORICAL_OCCUPANT'].includes(x.bucket)).length;
   const nonLoginBearingRows=reviewClassifications.filter(x=>x.bucket==='NON_LOGIN_BEARING_SOURCE_INCOMPLETE').length;
+  const currentSourceTechnicalCredentialRows=reviewClassifications.filter(x=>x.bucket==='CURRENT_SOURCE_TECHNICAL_CREDENTIAL_MATERIALIZATION_REQUIRED').length;
 
   evidence.hrRevision=hrRevision;
   evidence.runtimeReconciliation={shopperCount:Number(sr.shopperCount||0),reconciledShopperCount:Number(sr.reconciledShopperCount||0),identityReviewCount:Number(sr.identityReviewCount||0),identityMigrationCount:Number(sr.identityMigrationCount||0),providerWrites:Number(sr.providerWrites||0),hrWrites:Number(sr.hrWrites||0),externalWrites:Number(sr.externalWrites||0)};
-  evidence.population={sourceShopperCount:sourceRows.length,canonicalHrTargetCount:new Set(Object.values(canonicalForSource)).size,trustedPlatformCanonicalCount:trustedPlatformCanonicals.size,tenantMembershipDocs:memberships.length,authUsersTotal:authUsers.length,shopperProfiles:shoppersSnap.size,identityLinks:linksSnap.size,identityLinkConflicts:identityConflicts.length,currentStructuralVisibleLoginCollisionGroups:structuralLoginGroups.length};
+  evidence.population={sourceShopperCount:sourceRows.length,canonicalHrTargetCount:new Set(Object.values(canonicalForSource)).size,trustedPlatformCanonicalCount:trustedPlatformCanonicals.size,tenantMembershipDocs:memberships.length,authUsersTotal:authUsers.length,shopperProfiles:shoppersSnap.size,identityLinks:linksSnap.size,identityLinkConflicts:identityConflicts.length,currentStructuralVisibleLoginCollisionGroups:structuralLoginGroups.length,credentialBundleShopperRecords:credentialRecords.length};
   evidence.providerQueues={reviewCount:reviews.length,migrationCount:migrations.length,providerReasonCounts};
   evidence.remediationBuckets={...bucketCounts,SAFE_EXACT_ALIAS_MIGRATION:migrationSafe,UNSAFE_EXACT_ALIAS_MIGRATION:migrationUnsafe};
   evidence.classification={reviewRows:reviewClassifications,migrationRows:migrationClassifications,structuralLoginGroups,identityConflictFingerprints:identityConflicts.sort()};
   evidence.humanDecisionRequired={required:nameIncompleteRows>0||migrationUnsafe>0||identityConflicts.length>0,currentCurrentCollisionRowsCoveredByApprovedPolicy:legitimateCurrentCollisionRows,nameIncompleteRows,unsafeMigrationRows:migrationUnsafe,identityConflictTokens:identityConflicts.length};
   evidence.approvedPolicyRemediation={policy:'DETERMINISTIC_TECHNICAL_SUFFIX',rows:legitimateCurrentCollisionRows,humanDecisionRequired:false};
   evidence.alreadyResolvedWithoutWrite={preservedExactRows,nonLoginBearingRows};
+  evidence.currentSourceTechnicalCredentialMaterialization={rows:currentSourceTechnicalCredentialRows,humanDecisionRequired:false};
   evidence.mechanicalRemediation={eligible:(bucketCounts.HISTORICAL_AUTH_EMAIL_OCCUPANT_MECHANICAL_REVIEW||0)+(bucketCounts.DUPLICATE_PRINCIPAL_SAME_CANONICAL_MECHANICAL||0)+(bucketCounts.PROVIDER_QUEUE_STALE_COLLISION_REPROOF||0)+migrationSafe,staleAuthOccupantRows:bucketCounts.HISTORICAL_AUTH_EMAIL_OCCUPANT_MECHANICAL_REVIEW||0,duplicateSameCanonicalRows:bucketCounts.DUPLICATE_PRINCIPAL_SAME_CANONICAL_MECHANICAL||0,staleQueueRows:bucketCounts.PROVIDER_QUEUE_STALE_COLLISION_REPROOF||0,safeExactAliasMigrationRows:migrationSafe};
   evidence.activeCredentialUniverseResolved=nameIncompleteRows===0&&migrationUnsafe===0&&identityConflicts.length===0&&legitimateCurrentCollisionRows===0&&(bucketCounts.HISTORICAL_AUTH_EMAIL_OCCUPANT_MECHANICAL_REVIEW||0)===0&&migrations.length===0;
   evidence.decision='PASS_I3_VRM081_POPULATION_CREDENTIAL_DIAGNOSTIC';
