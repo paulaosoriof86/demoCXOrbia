@@ -355,6 +355,45 @@ test('VRM-081 / proven exact alias self-crosswalk migrates the same principal to
   assert.equal(auth.users.size,1);
 });
 
+test('VRM-081 / exact alias with no prior membership or Auth materializes one canonical principal only',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);
+  const alias='shopper_gt_alias_no_principal',canonical='canonical-no-principal';
+  db.seed(`tenants/tenant-a/shoppers/${alias}`,{
+    id:alias,shopperId:alias,tenantId:'tenant-a',projectIds:['project-a'],
+    nombre:'Cesar Castillo',firstName:'Cesar',lastName:'Castillo',sourceType:'hr_external'
+  });
+  db.seed(`tenants/tenant-a/shopperIdentityCrosswalk/${alias}`,{
+    tenantId:'tenant-a',shopperId:alias,projectIds:['project-a'],
+    providerUidFingerprint:providerUidFingerprint('legacy-missing-uid'),
+    sourceStableKey:alias,identityMode:'stable_hr_shopper_id',sourceType:'hr_external',fuzzyMatching:false
+  });
+  db.seed(`tenants/tenant-a/shoppers/${canonical}`,{
+    id:canonical,shopperId:canonical,tenantId:'tenant-a',projectIds:['project-a'],
+    nombre:'Cesar Castillo',firstName:'Cesar',lastName:'Castillo',sourceType:'hr_external'
+  });
+  db.seed('tenants/tenant-a/shopperIdentityLinks/link-no-principal',{
+    tenantId:'tenant-a',canonicalShopperId:canonical,sourceSystem:'hr',
+    sourceIdentity:{legacyId:alias},projectScope:'project-a',status:'active',
+    authorityType:'provider_exact',authorityRef:'provider-ack-no-principal'
+  });
+  const snap=snapshot({shopperId:alias,shopperCode:'TYA_GT_ALIAS_NOPRINCIPAL'});
+  snap.visits[0].shopper='Cesar Castillo';
+  const result=await p.reconcileSnapshot(snap,{sourceRevision:'rev-alias-no-principal'});
+  const uid=stableShopperUid('tenant-a',canonical);
+  assert.equal(result.identityMigrationCount,0);
+  assert.equal(result.aliasMigrated,1);
+  assert.equal(auth.created,1);
+  assert.equal(auth.users.size,1);
+  assert.equal((await auth.getUser(uid)).customClaims.shopperId,canonical);
+  assert.equal(db.get(`tenants/tenant-a/users/${uid}`).shopperId,canonical);
+  assert.equal(db.get(`tenants/tenant-a/shopperIdentityCrosswalk/${alias}`).shopperId,canonical);
+  assert.equal(db.get(`tenants/tenant-a/shopperIdentityCrosswalk/${alias}`).identityMode,'provider_exact_identity_link');
+  const replay=await p.reconcileSnapshot(snap,{sourceRevision:'rev-alias-no-principal'});
+  assert.equal(replay.identityMigrationCount,0);
+  assert.equal(auth.created,1);
+  assert.equal(auth.users.size,1);
+});
+
 test('VRM-081 / conflicting exact identity links fail closed and never merge by name',async()=>{
   const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db),alias='shopper_gt_conflicting_alias';
   db.seed('tenants/tenant-a/shopperIdentityLinks/link-a',{tenantId:'tenant-a',canonicalShopperId:'canonical-a',sourceSystem:'hr',sourceIdentity:{legacyId:alias},projectScope:'project-a',status:'active',authorityType:'provider_exact',authorityRef:'a'});
