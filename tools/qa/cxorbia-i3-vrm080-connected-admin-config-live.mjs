@@ -67,7 +67,7 @@ async function signedSuper(){
       await page.goto(URL,{waitUntil:'domcontentloaded',timeout:60000});
       await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:60000});
       const token=await auth.createCustomToken(actor.id);
-      await page.evaluate(async t=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);await firebase.auth().signInWithCustomToken(t);},token);
+      await page.evaluate(async t=>{const fb=window.firebase;if(!fb||!fb.auth)throw new Error('FIREBASE_AUTH_GLOBAL_MISSING');await fb.auth().setPersistence(fb.auth.Auth.Persistence.LOCAL);await fb.auth().signInWithCustomToken(t);},token);
     }catch(e){if(!/network|timeout|interrupted|navigation|Execution context/i.test(String(e?.message||e)))throw e;}
     await page.waitForTimeout(900*(attempt+1));
     if(await page.evaluate(uid=>String(firebase.auth().currentUser?.uid||'')===uid,actor.id).catch(()=>false))break;
