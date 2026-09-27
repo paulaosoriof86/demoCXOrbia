@@ -87,10 +87,14 @@ try{
   if(str(project.operationalSource?.providerBindingId)!==bindingRef||str(project.operationalSource?.mappingRef)!==mappingRef)throw new Error('PERSISTENCE_FAILURE:VRM078_BINDING_MAPPING_READBACK');
   const receipts=await tenant.collection('commandReceipts').where('projectId','==',projectId).get();
   if(receipts.empty||!receipts.docs.some(d=>(d.data()||{}).providerAck===true))throw new Error('PERSISTENCE_FAILURE:VRM078_PROVIDER_ACK_RECEIPT');
-  const browserState=await page.evaluate(pid=>({present:(CX.data?.projects||[]).some(p=>String(p.id||p.projectId)===pid),toast:[...document.querySelectorAll('.toast')].map(x=>String(x.innerText||'')).slice(-5)}),projectId).catch(()=>({present:false,toast:[]}));
+  const duplicates=await tenant.collection('projects').where('normalizedName','==',normalizedName(projectName)).get();
+  if(duplicates.size!==1||duplicates.docs[0].id!==projectId)throw new Error('PERSISTENCE_FAILURE:VRM078_DUPLICATE_PROJECT_REGRESSION:'+duplicates.size);
+  await page.waitForFunction(pid=>(window.CX?.data?.projects||[]).some(p=>String(p.id||p.projectId)===pid),projectId,{timeout:45000});
+  const browserState=await page.evaluate(pid=>({present:(CX.data?.projects||[]).some(p=>String(p.id||p.projectId)===pid),toast:[...document.querySelectorAll('.toast')].map(x=>String(x.innerText||'')).slice(-5)}),projectId);
+  if(!browserState.present)throw new Error('PERSISTENCE_FAILURE:VRM078_BROWSER_READBACK_MISSING');
 
   evidence.decision='PASS_I3_VRM078_EXTERNAL_PROJECT_CREATE_READBACK';
-  evidence.providerAck=true;evidence.durableReadback=true;evidence.browserWizard=true;evidence.refsVisible=true;
+  evidence.providerAck=true;evidence.durableReadback=true;evidence.browserWizard=true;evidence.refsVisible=true;evidence.noDuplicateRegression=true;
   evidence.projectReadback={tenantId:project.tenantId,projectId:project.projectId,name:project.name,countries:project.countries,operationalSource:project.operationalSource,version:project.version};
   evidence.browserState=browserState;
 } catch(error){
