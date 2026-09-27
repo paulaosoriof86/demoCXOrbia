@@ -1,17 +1,17 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM081_CODEX_FOCAL_EXECUTION_REQUIRED",
+  "status": "HOLD_VRM081_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_REOPENED_POST_RUN500_DRIFT",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "77b29e303c825be586a97e159d4d65bfae7e66c8",
+  "productSourceSha": "5ab4c206ff9397eef6e06ee7cf9a22c3c728721a",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
-  "predecessorProductSourceSha": "b841266de9e6156eb7feda7b09e39f09d8721766",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V86_2026-09-27.json",
-  "findingsLedgerExpectedGitBlob": "b35de53208eab33edbf7f156c0efc651ce7a7285",
+  "predecessorProductSourceSha": "77b29e303c825be586a97e159d4d65bfae7e66c8",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V87_2026-09-27.json",
+  "findingsLedgerExpectedGitBlob": "00984423d9be58e441e1d1b283d2658a644269fe",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
-  "production": "DO_NOT_TOUCH",
+  "production": false,
   "terminalCertificationAllowed": false,
   "activeBlocker": "VRM-081",
   "nextFindingId": "VRM-082",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN VRM-081 READ-ONLY POPULATION CREDENTIAL DIAGNOSTIC: classify every active shopper identity/login collision and incomplete credential against exact HR crosswalk + Auth + active membership; separate login-bearing active principals from historical/non-login aliases; no product writes, no Auth writes, no HR writes, no production.",
+  "exactNextAction": "MATERIALIZE exact VRM-081 source 5ab4c206ff9397eef6e06ee7cf9a22c3c728721a to existing Recovery DEV runtime once; then run pinned-revision population credential reproof. No Hosting, Rules, HR/external writes, or production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -41,20 +41,19 @@
   },
   "lastSourceFix": {
     "findingIds": [
-      "VRM-044"
+      "VRM-081"
     ],
-    "sourceSha": "34068805168e85cf15c9359c1dc4c4226c3062a6",
-    "sourceTree": "91855599924b94ca7fbb025a570d8e1d77b30d3b",
-    "predecessorSha": "04b288f7eee315fcb865ed86a8fb41786809edf9",
-    "productFiles": 2,
-    "testFiles": 2,
-    "focalRunId": 36155194727,
-    "focalRunNumber": 403,
-    "focalArtifactId": 10872772798,
-    "focalArtifactDigest": "sha256:0567094d7b7cfe7f6b4fa277617466e385191a3ddf04c315f7a37c8e3ee3dbfd",
+    "sourceSha": "5ab4c206ff9397eef6e06ee7cf9a22c3c728721a",
+    "sourceTree": "8abdb0a697058c167483af35679ef0de0f6969ad",
+    "predecessorSha": "77b29e303c825be586a97e159d4d65bfae7e66c8",
+    "productFiles": 1,
+    "testFiles": 1,
+    "testControlHeadSha": "97ed0ccdb18f8a4e5c7844b508a9771c77dcc29e",
+    "sourceProof": "PASS_VRM081_ISOLATED_RUNTIME_HARNESS",
+    "sourceProofTestsPassed": 8,
+    "directWriterAuthority": "CR-20260910-02",
     "deploys": 0,
-    "production": false,
-    "contract": "platform-created shoppers persist trusted platform_created identity authority; only exact trusted scoped platform profiles are presented"
+    "production": false
   },
   "preterminalRequest": {
     "revision": 3,
@@ -312,15 +311,21 @@
     "production": false
   },
   "currentRemediationCandidate": {
-    "sourceSha": "77b29e303c825be586a97e159d4d65bfae7e66c8",
-    "sourceTree": "279f33d6ad734ac7da9e5764dd05c91cab8882aa",
-    "predecessorSha": "b841266de9e6156eb7feda7b09e39f09d8721766",
+    "sourceSha": "5ab4c206ff9397eef6e06ee7cf9a22c3c728721a",
+    "sourceTree": "8abdb0a697058c167483af35679ef0de0f6969ad",
+    "predecessorSha": "77b29e303c825be586a97e159d4d65bfae7e66c8",
     "findingIds": [
-      "VRM-080"
+      "VRM-081"
     ],
-    "changedRuntime": false,
-    "changedHosting": true,
+    "changedRuntime": true,
+    "changedHosting": false,
     "changedRules": false,
+    "productFiles": [
+      "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
+    ],
+    "testFiles": [
+      "backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs"
+    ],
     "production": false
   },
   "reproofDispatch": {
@@ -397,7 +402,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "279f33d6ad734ac7da9e5764dd05c91cab8882aa",
+  "productSourceTree": "8abdb0a697058c167483af35679ef0de0f6969ad",
   "lastLiveReproof": {
     "runId": 36217529367,
     "runNumber": 465,
@@ -790,16 +795,15 @@
     "production": false
   },
   "pendingMaterialization": {
-    "sourceSha": "77b29e303c825be586a97e159d4d65bfae7e66c8",
-    "sourceTree": "279f33d6ad734ac7da9e5764dd05c91cab8882aa",
-    "productDiff": [
-      "app/modules/configuracion.js",
-      "app/core/config.js",
-      "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
-      "app/adapters/cxorbia-command-adapter-v1.js"
+    "sourceSha": "5ab4c206ff9397eef6e06ee7cf9a22c3c728721a",
+    "sourceTree": "8abdb0a697058c167483af35679ef0de0f6969ad",
+    "findingIds": [
+      "VRM-081"
     ],
-    "mode": "hosting_only_dev_if_needed",
-    "runtimeDeploys": 0,
+    "mode": "runtime_only_dev_once",
+    "maxBuilds": 1,
+    "maxRuntimeDeploys": 1,
+    "hostingDeploys": 0,
     "rulesDeploys": 0,
     "production": false
   },
@@ -830,7 +834,7 @@
     "production": false
   },
   "vrm081CodexHandoff": {
-    "state": "FROZEN_READY",
+    "state": "SUPERSEDED_BY_CR_20260910_02_DIRECT_WRITER",
     "classification": "AUTH_FAILURE",
     "taskPath": "app/docs/CODEX-EXECUTION-TASK-I3-VRM081-20260927.md",
     "taskCommit": "db236d491710e26b1eca845b6e51683039b207d8",
@@ -842,6 +846,8 @@
     ],
     "nextAction": "CODEX_EXECUTE_FOCAL_VRM081_ON_EXISTING_RECOVERY_BRANCH",
     "authorizationRequired": false,
-    "productionAuthorized": false
+    "productionAuthorized": false,
+    "supersededBy": "ChatGPT direct writer authority CR-20260910-02",
+    "executedByPrimaryWriter": true
   }
 }
