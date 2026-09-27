@@ -8,7 +8,7 @@ window.CX = window.CX || {};
 /* ---------- Brand / white-label ---------- */
 CX.BRAND = {
   // id único del tenant (consultora/instancia). Persistente; no se regenera si ya existe.
-  id: (function(){ try{ let v=localStorage.getItem('cx_tenant_id'); if(!v){ v='tenant-'+Date.now().toString(36); localStorage.setItem('cx_tenant_id', v); } return v; }catch(e){ return 'tenant-demo'; } })(),
+  id: (function(){ const rt=window.CX_TENANT_RUNTIME_CONFIG; if(rt&&rt.tenantId)return String(rt.tenantId); try{ let v=localStorage.getItem('cx_tenant_id'); if(!v){ v='tenant-'+Date.now().toString(36); localStorage.setItem('cx_tenant_id', v); } return v; }catch(e){ return 'tenant-demo'; } })(),
   name: 'CXOrbia',
   tagline: 'Field Operations Platform',
   // "Plataforma desarrollada para <client>" en el login. Vacío = marca propia.
@@ -23,6 +23,11 @@ CX.BRAND = {
   // colors se sincroniza desde el tema activo (no editar a mano)
   colors: {},
 };
+CX.canonicalTenantAuthority = function(){
+  const rt=window.CX_TENANT_RUNTIME_CONFIG;
+  return !!(rt&&rt.tenantId&&rt.localStorageTruth===false);
+};
+
 
 /* Recovery PRE-I4: authoritative tenant runtime configuration wins over browser-local brand state.
    Tenant-specific values live in deployment config/runtime.js; module code stays generic. */
@@ -166,8 +171,9 @@ CX.applyManifest = function(){
   themeMeta.content = theme;
 };
 CX.tenantModules = function(){
+  if(CX.canonicalTenantAuthority&&CX.canonicalTenantAuthority()) return null;
   try{ const s = JSON.parse(localStorage.getItem('cx_modules')||'null'); if(s) return s; }catch(e){}
-  return null; // null = todos activos
+  return null;
 };
 CX.moduleEnabled = function(id){
   /* módulos de administración/configuración: SIEMPRE activos para admin, ignorando el mapa de plan guardado */
@@ -196,17 +202,21 @@ CX.MOD_CAT = {
    acceso total — se trata como categoría 'cfg' (la más restringida), nunca como `true` abierto. */
 CX.roleCanAccess = function(role, id){
   if(role==='super'||role==='admin'||role==='shopper'||role==='cliente') return true;
-  let perm=null; try{ perm=JSON.parse(localStorage.getItem('cx_perm')||'null'); }catch(e){}
-  const cat=CX.MOD_CAT[id] || 'cfg'; /* módulo desconocido → categoría más restringida, no acceso abierto */
-  if(!perm||!perm[role]){
-    /* sin matriz definida para este rol → set mínimo seguro, no acceso total */
-    return cat==='cap';
+  const cat=CX.MOD_CAT[id] || 'cfg';
+  if(CX.canonicalTenantAuthority&&CX.canonicalTenantAuthority()){
+    const canonical={ops:['op','prj','cap'],coordinador:['op','prj','cap'],aliado:['op','prj','cap']};
+    const allowed=canonical[role]||[];
+    return allowed.includes(cat);
   }
+  let perm=null; try{ perm=JSON.parse(localStorage.getItem('cx_perm')||'null'); }catch(e){}
+  if(!perm||!perm[role]) return cat==='cap';
   return perm[role].includes(cat);
 };
 CX.setModuleEnabled = function(id, on){
+  if(CX.canonicalTenantAuthority&&CX.canonicalTenantAuthority()) return {ok:false,authoritative:false,reason:'TENANT_MODULE_PROVIDER_REQUIRED'};
   const s = CX.tenantModules() || {}; s[id] = on;
   try{ localStorage.setItem('cx_modules', JSON.stringify(s)); }catch(e){}
+  return {ok:true,authoritative:false,preferenceOnly:true};
 };
 
 /* R21: helper único y genérico para módulos cuya visibilidad depende del perfil del tenant
@@ -367,8 +377,8 @@ CX.applyFont = function(id){
 CX.CREDS = {
   userPattern: '{nombre}.{apellido}',
   passPattern: '{Nombre}123*',
-  load(){ try{ const s=JSON.parse(localStorage.getItem('cx_creds')||'null'); if(s){ this.userPattern=s.userPattern||this.userPattern; this.passPattern=s.passPattern||this.passPattern; } }catch(e){} },
-  save(){ try{ localStorage.setItem('cx_creds',JSON.stringify({userPattern:this.userPattern,passPattern:this.passPattern})); }catch(e){} },
+  load(){ if(CX.canonicalTenantAuthority&&CX.canonicalTenantAuthority())return; try{ const s=JSON.parse(localStorage.getItem('cx_creds')||'null'); if(s){ this.userPattern=s.userPattern||this.userPattern; this.passPattern=s.passPattern||this.passPattern; } }catch(e){} },
+  save(){ if(CX.canonicalTenantAuthority&&CX.canonicalTenantAuthority())return {ok:false,reason:'CREDENTIAL_POLICY_PROVIDER_REQUIRED'}; try{ localStorage.setItem('cx_creds',JSON.stringify({userPattern:this.userPattern,passPattern:this.passPattern})); return {ok:true,preferenceOnly:true}; }catch(e){return {ok:false};} },
   _slug(s){ return (s||'').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,''); },
   _cap(s){ const t=this._slug(s); return t.charAt(0).toUpperCase()+t.slice(1); },
   _fill(pattern, nombre, apellido){
@@ -409,12 +419,14 @@ CX.planModules = function(planId){
   return [...set];
 };
 CX.applyPlan = function(planId){
+  if(CX.canonicalTenantAuthority&&CX.canonicalTenantAuthority()) return {ok:false,authoritative:false,reason:'TENANT_PLAN_PROVIDER_REQUIRED'};
   const mods=CX.planModules(planId), all=Object.keys(CX.MODULES), map={};
   /* Módulos de administración/configuración: SIEMPRE disponibles para admin, independiente del plan */
   const adminAlways=['cuestionarios','usuarios','config','automatizaciones','integraciones','correo','marca','clientes','proyectos','financiero','movimientos','liquidaciones','lotes','costos','crm','marketing','informes','soporte','tablon','documentos','aprendizaje','cert'];
   all.forEach(id=>map[id]=mods.includes(id)||adminAlways.includes(id));
   try{localStorage.setItem('cx_modules',JSON.stringify(map));localStorage.setItem('cx_plan',planId);}catch(e){}
   CX.BRAND.plan=planId;
+  return {ok:true,authoritative:false,preferenceOnly:true};
 };
 
 /* ---------- Roles (for Usuarios module) ---------- */
@@ -436,6 +448,7 @@ CX.ROLES = [
    — nunca se sobre-escribe una personalización ya hecha por el admin en super/admin/ops/shopper. */
 (function _seedDefaultPerm(){
   try{
+    if(CX.canonicalTenantAuthority&&CX.canonicalTenantAuthority()) return;
     const DEFAULTS = {
       super:['op','fin','prj','cap','cfg','sh','com'], admin:['op','fin','prj','cap','com'],
       ops:['op','prj','cap'], coordinador:['op','prj','cap'], aliado:['op','prj','cap'], shopper:['sh','cap'],
