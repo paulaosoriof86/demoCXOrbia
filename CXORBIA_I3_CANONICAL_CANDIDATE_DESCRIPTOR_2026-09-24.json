@@ -1,18 +1,18 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_MODULE_TRUTH_REPROOF_REQUIRED",
+  "status": "READY_FOR_TERMINAL_CERTIFICATION",
   "iteration": "I3_FUNCTIONAL_CLOSURE_REOPENED_POST_RUN500_DRIFT",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "09b4e56be96dedbeb89d14f1d190bfc5b8b4f990",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "87888d3792b011b10a87611dde3efc69e3f4eb40",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V104_2026-09-28.json",
-  "findingsLedgerExpectedGitBlob": "a3f19c12ebbd330ab171c66f949b550c10403bc6",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V105_2026-09-28.json",
+  "findingsLedgerExpectedGitBlob": "c92d56aa6ea9359de76d2e5afc8ef783fbd115e8",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
-  "terminalCertificationAllowed": false,
+  "terminalCertificationAllowed": true,
   "activeBlocker": null,
   "nextFindingId": "VRM-085",
   "monotonicity": {
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run one no-deploy C3 preterminal Module Truth on source 09b4e56be96dedbeb89d14f1d190bfc5b8b4f990/tree f6899a631b7b277b16614f1b6534103e7615f11e against runtime cxorbia-live-hr-dev-00226-wj2, exact digest, Hosting sites/cxorbia-backend-dev/versions/74e0f30a90df1676 and live Firestore Rules. Require 20/20 MATCH, 0 pending and 0 unauthorized.",
+  "exactNextAction": "Run one fresh I3 terminal certification on exact source 09b4e56be96dedbeb89d14f1d190bfc5b8b4f990/tree f6899a631b7b277b16614f1b6534103e7615f11e with already-materialized runtime cxorbia-live-hr-dev-00226-wj2/digest and Hosting 74e0f30a90df1676. No build/deploy. Require fresh HR, exhaustive Admin/Shopper acceptance, semantic focal, terminal Module Truth 20/20, Gate20, one deterministic artifact, live fixtures and Gate21 same artifact.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -548,22 +548,22 @@
     "productDriftDemonstrated": false
   },
   "lastModuleTruthProof": {
-    "runId": 36436026445,
-    "runNumber": 565,
-    "jobId": 108974171370,
-    "artifactId": 10975658221,
-    "artifactName": "cxorbia-c3-preterminal-module-truth-36436026445",
-    "artifactDigest": "sha256:a3b1913f1b3ac6f7282a53a954970fb690512782b2544830b5cae794e0d94e5e",
+    "runId": 36451085968,
+    "runNumber": 573,
+    "jobId": 109025810504,
+    "artifactId": 10984001835,
+    "artifactName": "cxorbia-c3-preterminal-module-truth-36451085968",
+    "artifactDigest": "sha256:00105a2db160e4ddfd45160d269d4a5b66f8aa96135dea214a8d9ccf0de9987f",
     "decision": "PASS_C3_PRETERMINAL_MODULE_TRUTH_20_20_EXACT_DEV",
-    "sourceSha": "87888d3792b011b10a87611dde3efc69e3f4eb40",
-    "sourceTree": "813ac15086da026089fedfb257700b4abe643371",
+    "sourceSha": "09b4e56be96dedbeb89d14f1d190bfc5b8b4f990",
+    "sourceTree": "f6899a631b7b277b16614f1b6534103e7615f11e",
     "moduleCount": 20,
     "matchModules": 20,
     "nonMatchModules": 0,
     "pendingFiles": 0,
     "runtimeRevision": "cxorbia-live-hr-dev-00226-wj2",
     "runtimeDigest": "sha256:d5093cdd92515bad11353c7dfb42e2d192c7f3dec264eea3d24dfcad8c6219bd",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/657dc30197e38cb4",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
   "terminalCertification": {
