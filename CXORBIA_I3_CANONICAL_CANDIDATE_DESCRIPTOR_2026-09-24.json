@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_MODULE_TRUTH_REPROOF_REQUIRED",
+  "status": "READY_FOR_TERMINAL_CERTIFICATION",
   "iteration": "I3_FUNCTIONAL_CLOSURE_REOPENED_POST_RUN500_DRIFT",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -12,8 +12,8 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
-  "terminalCertificationAllowed": false,
-  "activeBlocker": "TERMINAL_RECERTIFICATION",
+  "terminalCertificationAllowed": true,
+  "activeBlocker": null,
   "nextFindingId": "VRM-082",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN existing C3 preterminal Module Truth 20/20 against exact V92 source/runtime/Hosting; use VRM-081 proven product owner as sole delta from predecessor; zero build/deploy/writes/production.",
+  "exactNextAction": "RUN existing I3 terminal certification on exact current V92 source/runtime/Hosting using Run 549 preterminal Module Truth receipt; zero build/deploy/product/data writes; then require same-run Gate20/live fixtures/Gate21 and stop before I4.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -68,13 +68,15 @@
   "preterminalRequest": {
     "revision": 3,
     "mode": "READ_ONLY_PATH_BOUND_MODULE_TRUTH",
-    "expectedDecision": "PASS_C3_PRETERMINAL_MODULE_TRUTH",
-    "productSourceSha": "04b288f7eee315fcb865ed86a8fb41786809edf9",
-    "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V11_2026-09-24.json",
+    "expectedDecision": "PASS_C3_PRETERMINAL_MODULE_TRUTH_20_20_EXACT_DEV",
+    "productSourceSha": "b168955f405cd82630a8caad04de0b1766b26fc8",
+    "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V92_2026-09-28.json",
     "production": false,
     "writes": 0,
     "deploys": 0,
-    "parser": "static+dynamic-entrypoint-sources"
+    "parser": "static+dynamic-entrypoint-sources",
+    "provenRunId": 36364242128,
+    "provenArtifactId": 10947101486
   },
   "c3PreterminalProof": {
     "runId": 36051988384,
@@ -544,9 +546,22 @@
     "productDriftDemonstrated": false
   },
   "lastModuleTruthProof": {
-    "state": "PENDING_CURRENT_V92",
+    "runId": 36364242128,
+    "runNumber": 549,
+    "jobId": 108747504005,
+    "artifactId": 10947101486,
+    "artifactName": "cxorbia-c3-preterminal-module-truth-36364242128",
+    "artifactDigest": "sha256:b907074f4ebc16c165477b016ecb1159035c5da88e2b91d8a416342b950127f6",
+    "decision": "PASS_C3_PRETERMINAL_MODULE_TRUTH_20_20_EXACT_DEV",
     "sourceSha": "b168955f405cd82630a8caad04de0b1766b26fc8",
     "sourceTree": "7ee35f25dd6a1c1b6f6a562ed770e9ba80cceeeb",
+    "moduleCount": 20,
+    "matchModules": 20,
+    "nonMatchModules": 0,
+    "pendingFiles": 0,
+    "runtimeRevision": "cxorbia-live-hr-dev-00225-vkw",
+    "runtimeDigest": "sha256:d20d50b0090cf3b4bd0030c601174a6dc451a02241d947c4ed5e0c982df5a7e7",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/657dc30197e38cb4",
     "production": false
   },
   "terminalCertification": {
