@@ -35,10 +35,16 @@ if(!credential?.ok)throw new Error('AUTH_FAILURE:VRM083_TARGET_CREDENTIAL_NOT_DE
 const direct=async url=>{
  const r=await fetch(url,{headers:{'Cache-Control':'no-cache, no-store','Pragma':'no-cache'}});
  const j=await r.json().catch(()=>null);
- return {url,status:r.status,headerRevision:r.headers.get('x-cxorbia-source-revision'),bodyRevision:str(j?._runtime?.revision||j?.revision||j?.sourceRevision),cacheOrigin:r.headers.get('x-cxorbia-cache-origin'),ok:r.ok};
+ return {url,status:r.status,headerRevision:r.headers.get('x-cxorbia-source-revision'),bodyRevision:str(j?._runtime?.revision||j?.revision||j?.sourceRevision),cacheOrigin:r.headers.get('x-cxorbia-cache-origin'),ok:r.ok,error:str(j?.error),message:str(j?.message),refreshError:j?.refreshError??j?._runtime?.refreshError??null,refreshStartedAt:j?.refreshStartedAt??j?._runtime?.refreshStartedAt??null,refreshFinishedAt:j?.refreshFinishedAt??j?._runtime?.refreshFinishedAt??null,cacheAgeMs:j?.cacheAgeMs??j?._runtime?.cacheAgeMs??null,cacheMs:j?.cacheMs??j?._runtime?.cacheMs??null};
 };
 const legacyMeta=await direct(ROOT+'/api/'+TENANT+'/'+PROJ+'/hr-live?format=meta&vrm083='+Date.now());
 const genericMeta=await direct(ROOT+'/api/tenants/'+TENANT+'/projects/'+PROJ+'/hr-live?format=meta&vrm083='+Date.now());
+const metaSeries=[];
+for(let i=0;i<12;i++){
+  const route=i%2===0?'/api/'+TENANT+'/'+PROJ+'/hr-live':'/api/tenants/'+TENANT+'/projects/'+PROJ+'/hr-live';
+  metaSeries.push(await direct(ROOT+route+'?format=meta&vrm083series='+Date.now()+'&i='+i));
+  await sleep(250);
+}
 
 const base=ROOT+'/index-backend-dev.html?'+new URLSearchParams({cxBackendPreview:PRE,cxProjectId:PROJ,cxProtectedRuntime:PROT,cxHumanFullVisual:FULL});
 const browser=await chromium.launch({headless:true});
@@ -50,7 +56,7 @@ page.on('response',async r=>{
  if(!u.includes('/hr-live'))return;
  let bodyRevision='';
  try{const j=await r.json();bodyRevision=str(j?._runtime?.revision||j?.revision||j?.sourceRevision);}catch{}
- responses.push({at:new Date().toISOString(),url:u,status:r.status(),headerRevision:r.headers()['x-cxorbia-source-revision']||'',cacheOrigin:r.headers()['x-cxorbia-cache-origin']||'',bodyRevision});
+ let bodyError='',bodyMessage='';try{const j=await r.json();bodyRevision=str(j?._runtime?.revision||j?.revision||j?.sourceRevision);bodyError=str(j?.error);bodyMessage=str(j?.message);}catch{} responses.push({at:new Date().toISOString(),url:u,status:r.status(),headerRevision:r.headers()['x-cxorbia-source-revision']||'',cacheOrigin:r.headers()['x-cxorbia-cache-origin']||'',bodyRevision,bodyError,bodyMessage});
 });
 await page.goto(base,{waitUntil:'domcontentloaded',timeout:90000});
 await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
@@ -84,7 +90,7 @@ if(token){
   const u='/api/tenants/'+encodeURIComponent(TENANT)+'/projects/'+encodeURIComponent(PROJ)+'/hr-live?format=json&view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV&protectedState=1&vrm083='+Date.now();
   const r=await fetch(u,{cache:'no-store',headers:{'Cache-Control':'no-cache, no-store','Pragma':'no-cache','Authorization':'Bearer '+token}});
   const j=await r.json().catch(()=>null);
-  return {status:r.status,headerRevision:r.headers.get('x-cxorbia-source-revision'),cacheOrigin:r.headers.get('x-cxorbia-cache-origin'),bodyRevision:String(j?._runtime?.revision||j?.revision||j?.sourceRevision||''),visits:Number(j?.snapshot?.visits?.length||0),shoppers:Number(j?.snapshot?.shoppers?.length||0),ok:r.ok};
+  return {status:r.status,headerRevision:r.headers.get('x-cxorbia-source-revision'),cacheOrigin:r.headers.get('x-cxorbia-cache-origin'),bodyRevision:String(j?._runtime?.revision||j?.revision||j?.sourceRevision||''),visits:Number(j?.snapshot?.visits?.length||0),shoppers:Number(j?.snapshot?.shoppers?.length||0),ok:r.ok,error:String(j?.error||''),message:String(j?.message||''),lastRefreshError:j?.lastRefreshError??j?._runtime?.lastRefreshError??null};
  },{TENANT,PROJ,token});
 }
 await page.screenshot({path:path.join(OUT,'shopper-boot.png'),fullPage:true});
@@ -94,8 +100,8 @@ const providerCoherent=providerRevisions.length>=2&&new Set(providerRevisions).s
 const browserCoherent=!!final.liveMetaRevision&&!!final.previewRevision&&final.liveMetaRevision===final.previewRevision;
 const browserMatchesProvider=providerRevisions.length>0&&final.liveMetaRevision===providerRevisions[0]&&final.previewRevision===providerRevisions[0];
 const decision=providerCoherent&&browserCoherent&&browserMatchesProvider&&final.authorityApplied?'PASS_VRM083_HR_BROWSER_REVISION_COHERENCE':'HOLD_VRM083_HR_BROWSER_REVISION_COHERENCE';
-const result={decision,generatedAt:new Date().toISOString(),target:{uid:TARGET_UID,shopperId,login:credential.login},legacyMeta,genericMeta,protectedFetch,responses,samples,final,analysis:{providerCoherent,browserCoherent,browserMatchesProvider},safety:{firestoreWrites:0,authWrites:0,hrWrites:0,deploys:0,production:false}};
+const result={decision,generatedAt:new Date().toISOString(),target:{uid:TARGET_UID,shopperId,login:credential.login},legacyMeta,genericMeta,metaSeries,protectedFetch,responses,samples,final,analysis:{providerCoherent,browserCoherent,browserMatchesProvider,metaSeriesRevisions:[...new Set(metaSeries.map(x=>x.bodyRevision).filter(Boolean))],metaSeriesStatuses:[...new Set(metaSeries.map(x=>x.status))]},safety:{firestoreWrites:0,authWrites:0,hrWrites:0,deploys:0,production:false}};
 fs.writeFileSync(path.join(OUT,'result.json'),JSON.stringify(result,null,2)+'\n');
-console.log(JSON.stringify({decision,legacyMeta,genericMeta,protectedFetch,final,analysis:result.analysis,safety:result.safety},null,2));
+console.log(JSON.stringify({decision,legacyMeta,genericMeta,metaSeries:metaSeries.map(x=>({status:x.status,bodyRevision:x.bodyRevision,cacheOrigin:x.cacheOrigin,refreshError:x.refreshError,refreshStartedAt:x.refreshStartedAt,refreshFinishedAt:x.refreshFinishedAt,cacheAgeMs:x.cacheAgeMs})),protectedFetch,final,analysis:result.analysis,safety:result.safety},null,2));
 await ctx.close();await browser.close();
 if(decision!=='PASS_VRM083_HR_BROWSER_REVISION_COHERENCE')process.exitCode=2;
