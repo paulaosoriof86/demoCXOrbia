@@ -34,6 +34,7 @@ on:
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V87_2026-09-27.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V88_2026-09-27.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V89_2026-09-27.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V90_2026-09-28.json
       - tools/qa/cxorbia-i3-vrm081-population-credential-diagnostic.mjs
       - app/modules/configuracion.js
       - app/core/config.js
@@ -86,7 +87,7 @@ env:
   I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V89_2026-09-27.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V90_2026-09-28.json
 
 jobs:
   canonical-candidate-authority:
@@ -123,8 +124,8 @@ jobs:
           test "$(jq -r '.findings["VRM-078"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN515"
           test "$(jq -r '.findings["VRM-079"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN518"
           test "$(jq -r '.findings["VRM-080"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN525"
-          test "$(jq -r '.findings["VRM-081"].state' "$POST_RUN500_LEDGER")" = "DEV_RUNTIME_MATERIALIZED_REPROOF_503_DIAGNOSTIC_REQUIRED"
-          test "$STATUS" = "HOLD_VRM081_RUNTIME_DIAGNOSTIC_REQUIRED"
+          test "$(jq -r '.findings["VRM-081"].state' "$POST_RUN500_LEDGER")" = "SOURCE_FIXED_DUAL_ALIAS_PROVEN_DEV_MATERIALIZATION_REQUIRED"
+          test "$STATUS" = "HOLD_VRM081_V90_DEV_MATERIALIZATION_REQUIRED"
           echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
@@ -792,9 +793,9 @@ jobs:
           include-hidden-files: true
 
   v52-vrm050-runtime:
-    name: I3 V88 — VRM-081 exact runtime-only DEV materialization
+    name: I3 V90 — VRM-081 dual-alias runtime-only DEV materialization
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM081_DEV_MATERIALIZATION_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-081-runtime]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM081_V90_DEV_MATERIALIZATION_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-081-runtime]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
@@ -815,11 +816,11 @@ jobs:
         run: |
           set -Eeuo pipefail
           mkdir -p "$VRM081_OUT"
-          test "$VRM081_SOURCE" = "0c3ce84d567a674ec18f90eedba1b2380c45d55b"
-          test "$VRM081_TREE" = "5fee581f4c09dd6b9bd5728dd857b9abda8cf697"
+          test "$VRM081_SOURCE" = "b168955f405cd82630a8caad04de0b1766b26fc8"
+          test "$VRM081_TREE" = "7ee35f25dd6a1c1b6f6a562ed770e9ba80cceeeb"
           test "$(git rev-parse "$VRM081_SOURCE^{tree}")" = "$VRM081_TREE"
-          test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_VRM081_DEV_MATERIALIZATION_REQUIRED"
-          PRODUCT_DIFF="$(git diff --name-only 5ab4c206ff9397eef6e06ee7cf9a22c3c728721a "$VRM081_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**' | sort)"
+          test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_VRM081_V90_DEV_MATERIALIZATION_REQUIRED"
+          PRODUCT_DIFF="$(git diff --name-only 0c3ce84d567a674ec18f90eedba1b2380c45d55b "$VRM081_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**' | sort)"
           test "$PRODUCT_DIFF" = "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
           git diff --quiet "$VRM081_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
           SOURCE_DIR="$RUNNER_TEMP/cxorbia-vrm081-source"
