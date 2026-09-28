@@ -28,10 +28,18 @@ CX.module('beneficios', ({data,ui})=>{
   const curList=[...new Set(resolved.map(curOfL))].filter(Boolean);
   const multiCur=curList.length>1;
 
+  const paymentHumanLabel=(state)=>{
+    const key=String(state||'').trim().toLowerCase();
+    if(!key||key==='no_aplica')return null;
+    if(['confirmado','confirmed','paid','pagada'].includes(key))return ['Pago confirmado','g'];
+    if(['pending_source_confirmation','preview','pending','pendiente','pending_payment'].includes(key))return ['Pendiente de confirmación','a'];
+    return ['Pendiente de validación','a'];
+  };
   const row=(l)=>{
     const lb=CX.liq.label(l.estado);
     const v=data._visitas.find(x=>x.id===l.visitaId);
     const vc=v&&data.visitContract?data.visitContract(v):null;
+    const payLabel=paymentHumanLabel(vc&&vc.paymentState);
     return `<tr><td><b>${l.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(l.pais)} ${l.shopper||''}</div></td>
       <td style="font-size:12px">${l.freal||'—'}</td>
       <td style="color:var(--green);font-weight:700">${_bmoney(l,l.honorario)}</td>
@@ -39,7 +47,7 @@ CX.module('beneficios', ({data,ui})=>{
       <td style="font-weight:700;color:var(--t1)">${_bmoney(l,l.total)}</td>
       <td>${ui.bdg(lb[0],lb[1])}</td>
       <td style="font-size:12px;${isPaid(l)?'color:var(--green);font-weight:700':''}">${isPaid(l)?'✓ '+(l.fechaEstimadaPago||''):(l.fechaEstimadaPago||'—')}</td>
-      <td>${vc&&vc.paymentState!=='no_aplica'?ui.bdg(vc.paymentState,vc.paymentState==='confirmado'?'g':'n'):'—'}</td></tr>`;
+      <td>${payLabel?ui.bdg(payLabel[0],payLabel[1]):'—'}</td></tr>`;
   };
 
   /* conceptos de reembolso GENÉRICOS por moneda (sin moneda primaria). */
