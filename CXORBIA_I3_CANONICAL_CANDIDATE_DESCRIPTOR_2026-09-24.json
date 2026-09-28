@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "READY_FOR_TERMINAL_CERTIFICATION",
+  "status": "HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_REOPENED_POST_RUN500_DRIFT",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "09b4e56be96dedbeb89d14f1d190bfc5b8b4f990",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "87888d3792b011b10a87611dde3efc69e3f4eb40",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V105_2026-09-28.json",
-  "findingsLedgerExpectedGitBlob": "c92d56aa6ea9359de76d2e5afc8ef783fbd115e8",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V106_2026-09-28.json",
+  "findingsLedgerExpectedGitBlob": "56021f7d5b8b1d98cd147255a31d3ca4203267a6",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
-  "terminalCertificationAllowed": true,
-  "activeBlocker": null,
-  "nextFindingId": "VRM-085",
+  "terminalCertificationAllowed": false,
+  "activeBlocker": "VRM-085",
+  "nextFindingId": "VRM-086",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run one fresh I3 terminal certification on exact source 09b4e56be96dedbeb89d14f1d190bfc5b8b4f990/tree f6899a631b7b277b16614f1b6534103e7615f11e with already-materialized runtime cxorbia-live-hr-dev-00226-wj2/digest and Hosting 74e0f30a90df1676. No build/deploy. Require fresh HR, exhaustive Admin/Shopper acceptance, semantic focal, terminal Module Truth 20/20, Gate20, one deterministic artifact, live fixtures and Gate21 same artifact.",
+  "exactNextAction": "Run one read-only same-revision forensic diagnostic for VRM-085 on HR revision d068b00c62a940f0ad828436ffcf22fbf1dbb43e763ab4e14854102bf5f84a51. Identify the exact six approved postulations/visits, compare canonical data flags and HR assignment authority with DOM data-post-sync, and determine control false-negative versus real mapping defect. Do not rerun terminal, rebuild, deploy, rewrite data, recreate postulations or touch production until owner is proven.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -102,16 +102,16 @@
     "attempt": 3
   },
   "lastTerminalAttempt": {
-    "runId": 36417401723,
-    "runNumber": 556,
-    "attempt": 2,
-    "jobId": 108922854341,
-    "classification": "RELEASE_COMPOSITION_FAILURE",
-    "code": "AUTHENTICATED_BROWSER_HR_REVISION_DESYNC_AND_PROTECTED_BOOT_NOT_SETTLED",
-    "pinnedHrRevision": "8c12bbcae91bcfdfee89c44f42777aeb19ec4ac85c7824450f6deb8202d7131b",
-    "staleBrowserRevision": "7509374c11643838f40f61434e2d076126f466e9c0953cbc2300febaf91919c8",
+    "runId": 36451412310,
+    "runNumber": 574,
+    "jobId": 109026899082,
+    "sourceSha": "09b4e56be96dedbeb89d14f1d190bfc5b8b4f990",
+    "sourceTree": "f6899a631b7b277b16614f1b6534103e7615f11e",
+    "hrRevision": "d068b00c62a940f0ad828436ffcf22fbf1dbb43e763ab4e14854102bf5f84a51",
+    "humanAcceptance": "PASS_I3_HUMAN_LIVE_ACCEPTANCE",
+    "semanticOracle": "PASS_C3_TERMINAL_HR_SEMANTIC_ORACLE",
+    "failure": "MAPPING_FAILURE:ADMIN_POSTULATION_SYNC_VISIBILITY",
     "terminalArtifactCreated": false,
-    "productChanged": false,
     "production": false
   },
   "vrm043": {
@@ -921,6 +921,13 @@
     "runtimeRevision": "cxorbia-live-hr-dev-00226-wj2",
     "runtimeDigest": "sha256:d5093cdd92515bad11353c7dfb42e2d192c7f3dec264eea3d24dfcad8c6219bd",
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
+    "terminalRerunAllowed": false,
+    "production": false
+  },
+  "vrm085": {
+    "state": "OPEN_PROVEN_RUN574_DIAGNOSTIC_REQUIRED",
+    "classification": "MAPPING_FAILURE",
+    "productDefect": "UNDETERMINED_CONTROL_VS_PRODUCT_PENDING_SAME_REVISION_ROW_PROOF",
     "terminalRerunAllowed": false,
     "production": false
   }
