@@ -89,16 +89,18 @@
   "currentProviderExpectedCanonical": {
     "august": {
       "total": 44,
-      "assigned": 44,
-      "unassigned": 0,
-      "pendingSchedule": 1,
+      "assigned": 43,
+      "unassigned": 1,
+      "available": 1,
+      "pendingSchedule": 0,
       "pendingRealization": 0,
       "realized": 43,
       "pendingQuestionnaire": 3,
       "questionnaireCompleted": 40,
       "pendingSubmission": 8,
       "submitted": 32,
-      "outOfRange": 12
+      "outOfRange": 12,
+      "reviewRequired": 1
     },
     "september": {
       "total": 44,
@@ -114,11 +116,25 @@
       "outOfRange": 2,
       "reviewRequired": 11,
       "reviewReason": "submitted_without_questionnaire_date"
+    },
+    "augustUnassignedVisit": {
+      "country": "HN",
+      "cinemaId": "2052004",
+      "branch": "C. Mall Premier",
+      "measurementWindow": "QUINCENA 1",
+      "availableFrom": "2026-08-08",
+      "scheduled": null,
+      "shopperCellRaw": "FALLIDA",
+      "canonicalShopperIdentity": false
     }
   },
   "invalidatedAssertions": [
     "PREI4-ADMIN-001 PASS_CURRENT_SEPTEMBER_HR_EXACT",
     "Any claim that runtime revision d068b00... represents current September HR after 2026-09-28T23:18Z"
   ],
-  "exactNextAction": "Repair only the source mapping contract with explicit project-scoped cinema ID authority, reprove a fresh runtime revision from both SEPTIEMBRE 26 tabs, then recalculate August/September KPIs from that new revision before continuing the Admin remediation package. No product UI fix, rebuild, production deploy or Paula screenshot repeat before fresh HR is restored."
+  "exactNextAction": "Repair only the source mapping contract with explicit project-scoped cinema ID authority, reprove a fresh runtime revision from both SEPTIEMBRE 26 tabs, then recalculate August/September KPIs from that new revision before continuing the Admin remediation package. No product UI fix, rebuild, production deploy or Paula screenshot repeat before fresh HR is restored.",
+  "notes": [
+    "FALLIDA is explicitly a non-identity status under SHOPPER_NON_IDENTITY_STATUS; it must not be counted as an assigned shopper.",
+    "September direct provider rows contain real shopper names on all 44 visits; September assigned=44/unassigned=0 remains valid."
+  ]
 }

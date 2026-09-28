@@ -60,9 +60,27 @@
       "availableVisit": {
         "country": "HN",
         "branch": "C. Mall Premier",
-        "hrRowId": "AGOSTO 26 HN!5"
+        "cinemaId": "2052004",
+        "hrRowId": "AGOSTO 26 HN!5",
+        "shopperCellRaw": "FALLIDA",
+        "canonicalMeaning": "UNASSIGNED_NON_IDENTITY_STATUS"
       },
-      "status": "STALE_BASELINE_SUPERSEDED_BY_DIRECT_PROVIDER_READ"
+      "status": "CONFIRMED_CURRENT_PROVIDER_CANONICAL",
+      "currentProviderExpectedCanonical": {
+        "total": 44,
+        "assigned": 43,
+        "unassigned": 1,
+        "available": 1,
+        "pendingSchedule": 0,
+        "pendingRealization": 0,
+        "realized": 43,
+        "pendingQuestionnaire": 3,
+        "questionnaireCompleted": 40,
+        "pendingSubmission": 8,
+        "submitted": 32,
+        "outOfRange": 12,
+        "reviewRequired": 1
+      }
     },
     "2026-09": {
       "total": 44,
