@@ -71,6 +71,7 @@ on:
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V106_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V107_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V108_2026-09-28.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V109_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_2026-09-24.json
   workflow_dispatch:
 
@@ -107,7 +108,7 @@ env:
   I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V108_2026-09-28.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V109_2026-09-28.json
 
 jobs:
   canonical-candidate-authority:
@@ -312,6 +313,8 @@ jobs:
           node --check tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs
           grep -Fq "exactAliases" tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs
           grep -Fq "identityMap[sourceId]" tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs
+          grep -Fq "x.row.exactAliases.includes(x.sourceShopperId)" tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs
+          grep -Fq "groupIsExactCanonicalMerge" tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs
       - name: Download immutable Run579 same-revision terminal evidence
         env:
           GH_TOKEN: ${{ github.token }}
