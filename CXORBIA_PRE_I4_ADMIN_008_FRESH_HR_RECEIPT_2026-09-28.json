@@ -1,0 +1,105 @@
+{
+  "receiptId": "CXORBIA-PRE-I4-ADMIN-008-FRESH-HR-20260928-RUN594",
+  "status": "FROZEN_PASS",
+  "iteration": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
+  "findingId": "PREI4-ADMIN-008",
+  "classification": "MAPPING_FAILURE",
+  "decision": "PASS_PREI4_ADMIN_008_RUNTIME_FRESH_HR",
+  "sourceSha": "5c472e089e6d8492b184a7cb24e78816d347c2de",
+  "sourceTree": "8abf63499d3df6ef2a9a8dfa22ca1a080ed67c83",
+  "sourceProof": {
+    "runId": 36499124903,
+    "runNumber": 592,
+    "jobId": 109185594563,
+    "artifactId": 11004707196,
+    "decision": "PASS_R20_PROJECT_SCOPED_CINEMA_IDENTITY"
+  },
+  "runtimeProof": {
+    "runId": 36499660008,
+    "runNumber": 594,
+    "jobId": 109187296387,
+    "artifactId": 11004409561,
+    "artifactZipSha256": "5e5e48aba40b195abc3a7fb244eab5d70b0c23361260a711f22fdd887d082faa",
+    "runtimeRevision": "cxorbia-live-hr-dev-00227-nwl",
+    "runtimeDigest": "sha256:5d4f0504b18be23d1f9f1ef20ff717389d7db3a01f82d898f70873aa3503e31e",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 0,
+    "rulesDeploys": 0,
+    "hrWrites": 0,
+    "production": false
+  },
+  "hr": {
+    "revision": "c16c18a89675d5c6daff9421604f978a558bc3bf78cf8e6a2da550820ff95e6a",
+    "staleRevisionRevoked": "d068b00c62a940f0ad828436ffcf22fbf1dbb43e763ab4e14854102bf5f84a51",
+    "generatedAt": "2026-09-28T23:47:30.865Z",
+    "sourceReadAt": "2026-09-28T23:47:32.821Z",
+    "refreshFinishedAt": "2026-09-28T23:48:43.302Z",
+    "refreshError": null,
+    "sourceSafe": true,
+    "accessMode": "public_gviz_csv_cache_busted",
+    "septemberSubmittedWithoutQuestionnaire": 11
+  },
+  "authority": {
+    "august2026": {
+      "total": 44,
+      "available": 1,
+      "assigned": 43,
+      "unassigned": 1,
+      "pendingRealization": 0,
+      "pendingSchedule": 0,
+      "realized": 43,
+      "pendingQuestionnaire": 3,
+      "questionnaireCompleted": 40,
+      "pendingSubmission": 8,
+      "submitted": 32,
+      "liquidationConfirmed": 0,
+      "outOfRange": 12,
+      "byCountry": {
+        "GT": 34,
+        "HN": 10
+      }
+    },
+    "september2026": {
+      "total": 44,
+      "available": 0,
+      "assigned": 44,
+      "unassigned": 0,
+      "pendingRealization": 4,
+      "pendingSchedule": 0,
+      "realized": 40,
+      "pendingQuestionnaire": 6,
+      "questionnaireCompleted": 34,
+      "pendingSubmission": 7,
+      "submitted": 27,
+      "liquidationConfirmed": 0,
+      "outOfRange": 2,
+      "reviewRequired": 11,
+      "byCountry": {
+        "GT": 34,
+        "HN": 10
+      }
+    }
+  },
+  "reconciliationObservation": {
+    "shopperCount": 222,
+    "reconciledShopperCount": 221,
+    "identityReviewCount": 1,
+    "identityReviewReason": "SHOPPER_CREDENTIAL_NAME_INCOMPLETE",
+    "identityMigrationCount": 0,
+    "hrWrites": 0,
+    "externalWrites": 0,
+    "fuzzyMatching": false,
+    "note": "Known fail-closed review state; does not reopen PREI4-ADMIN-008 and remains subject to open PREI4-ADMIN-003 shopper identity recovery."
+  },
+  "production": false,
+  "nextOpenFindings": [
+    "PREI4-ADMIN-002",
+    "PREI4-ADMIN-003",
+    "PREI4-ADMIN-004",
+    "PREI4-ADMIN-005",
+    "PREI4-ADMIN-006",
+    "PREI4-ADMIN-007"
+  ]
+}
