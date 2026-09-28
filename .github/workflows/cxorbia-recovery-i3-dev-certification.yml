@@ -35,6 +35,7 @@ on:
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V88_2026-09-27.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V89_2026-09-27.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V90_2026-09-28.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V91_2026-09-28.json
       - tools/qa/cxorbia-i3-vrm081-population-credential-diagnostic.mjs
       - app/modules/configuracion.js
       - app/core/config.js
@@ -87,7 +88,7 @@ env:
   I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V90_2026-09-28.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V91_2026-09-28.json
 
 jobs:
   canonical-candidate-authority:
@@ -124,8 +125,8 @@ jobs:
           test "$(jq -r '.findings["VRM-078"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN515"
           test "$(jq -r '.findings["VRM-079"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN518"
           test "$(jq -r '.findings["VRM-080"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN525"
-          test "$(jq -r '.findings["VRM-081"].state' "$POST_RUN500_LEDGER")" = "SOURCE_FIXED_DUAL_ALIAS_PROVEN_DEV_MATERIALIZATION_REQUIRED"
-          test "$STATUS" = "HOLD_VRM081_V90_DEV_MATERIALIZATION_REQUIRED"
+          test "$(jq -r '.findings["VRM-081"].state' "$POST_RUN500_LEDGER")" = "DEV_RUNTIME_MATERIALIZED_FINAL_READONLY_REPROOF_REQUIRED"
+          test "$STATUS" = "HOLD_VRM081_V90_FINAL_REPROOF_REQUIRED"
           echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
@@ -934,32 +935,43 @@ jobs:
           compression-level: 0
 
   v53-vrm050-runtime-readback:
-    name: I3 V89 — VRM-081 existing runtime 503 diagnostic — no deploy
+    name: I3 V91 — VRM-081 final population/Auth reproof — no deploy
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM081_RUNTIME_DIAGNOSTIC_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-081-runtime-diagnostic]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM081_V90_FINAL_REPROOF_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-081-final-reproof]') }}
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     env:
       VRM081_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
       VRM081_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
-      VRM081_OUT: .tmp/i3-vrm081-runtime-diagnostic
+      VRM081_OUT: .tmp/i3-vrm081-final-reproof
+      VRM081_ROOT: https://cxorbia-backend-dev.web.app
+      EXPECTED_RUNTIME_REVISION: cxorbia-live-hr-dev-00225-vkw
+      EXPECTED_RUNTIME_DIGEST: sha256:d20d50b0090cf3b4bd0030c601174a6dc451a02241d947c4ed5e0c982df5a7e7
+      EXPECTED_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/657dc30197e38cb4
+      EXPECTED_HR_REVISION: 7509374c11643838f40f61434e2d076126f466e9c0953cbc2300febaf91919c8
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Prove exact authority and no second materialization
+
+      - name: Prove exact V91 authority and zero additional materialization
         run: |
           set -Eeuo pipefail
           mkdir -p "$VRM081_OUT"
-          test "$VRM081_SOURCE" = "0c3ce84d567a674ec18f90eedba1b2380c45d55b"
-          test "$VRM081_TREE" = "5fee581f4c09dd6b9bd5728dd857b9abda8cf697"
+          test "$VRM081_SOURCE" = "b168955f405cd82630a8caad04de0b1766b26fc8"
+          test "$VRM081_TREE" = "7ee35f25dd6a1c1b6f6a562ed770e9ba80cceeeb"
           test "$(git rev-parse "$VRM081_SOURCE^{tree}")" = "$VRM081_TREE"
-          test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_VRM081_RUNTIME_DIAGNOSTIC_REQUIRED"
+          test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_VRM081_V90_FINAL_REPROOF_REQUIRED"
           test "$(jq -r '.pendingMaterialization.maxAdditionalBuilds' "$CANDIDATE_DESCRIPTOR")" = "0"
           test "$(jq -r '.pendingMaterialization.maxAdditionalRuntimeDeploys' "$CANDIDATE_DESCRIPTOR")" = "0"
+          git diff --quiet "$VRM081_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+
+      - name: Install read-only proof dependency
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
 
       - name: Authenticate Recovery DEV read only
         uses: google-github-actions/auth@v2
@@ -970,142 +982,77 @@ jobs:
         with:
           project_id: ${{ env.PROJECT }}
 
-      - name: Capture current runtime digest Hosting and direct HTTP evidence
+      - name: Prove exact existing DEV runtime Hosting and pinned HR — zero deploy
         run: |
           set -Eeuo pipefail
           gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$VRM081_OUT/runtime.json"
-          REV="$(jq -r '.status.latestReadyRevisionName // empty' "$VRM081_OUT/runtime.json")"; test -n "$REV"
-          SERVICE_URL="$(jq -r '.status.url // empty' "$VRM081_OUT/runtime.json")"; test -n "$SERVICE_URL"
+          REV="$(jq -r '.status.latestReadyRevisionName // empty' "$VRM081_OUT/runtime.json")"
+          test "$REV" = "$EXPECTED_RUNTIME_REVISION"
           gcloud run revisions describe "$REV" --project "$PROJECT" --region "$REGION" --format=json > "$VRM081_OUT/runtime-revision.json"
           RAW="$(jq -r '.status.imageDigest // empty' "$VRM081_OUT/runtime-revision.json")"
-          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else DIGEST="$RAW"; fi
+          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else exit 1; fi
+          test "$DIGEST" = "$EXPECTED_RUNTIME_DIGEST"
           TOKEN="$(gcloud auth print-access-token)"
           curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$VRM081_OUT/hosting.json"
-          HOSTING="$(jq -r '.release.version.name // empty' "$VRM081_OUT/hosting.json")"; test -n "$HOSTING"
-          ID_TOKEN="$(gcloud auth print-identity-token --audiences="$SERVICE_URL")"
-          HEALTH_CODE="$(curl -sS --max-time 45 -o "$VRM081_OUT/health-body.txt" -w '%{http_code}' -H "Authorization: Bearer $ID_TOKEN" "$SERVICE_URL/health?vrm081diag=$GITHUB_RUN_ID" || true)"
-          META_CODE="$(curl -sS --max-time 60 -o "$VRM081_OUT/hr-meta-body.txt" -w '%{http_code}' -H "Authorization: Bearer $ID_TOKEN" -H 'Cache-Control: no-cache, no-store, max-age=0' "$SERVICE_URL/api/tenants/$TENANT_ID/projects/$PROJECT_ID/hr-live?format=meta&vrm081diag=$GITHUB_RUN_ID" || true)"
-          printf '%s' "$HEALTH_CODE" > "$VRM081_OUT/health-code.txt"
-          printf '%s' "$META_CODE" > "$VRM081_OUT/hr-meta-code.txt"
-          echo "VRM081_RUNTIME_REVISION=$REV" >> "$GITHUB_ENV"
-          echo "VRM081_RUNTIME_DIGEST=$DIGEST" >> "$GITHUB_ENV"
-          echo "VRM081_HOSTING_VERSION=$HOSTING" >> "$GITHUB_ENV"
-          echo "VRM081_HEALTH_CODE=$HEALTH_CODE" >> "$GITHUB_ENV"
-          echo "VRM081_META_CODE=$META_CODE" >> "$GITHUB_ENV"
+          test "$(jq -r '.release.version.name // empty' "$VRM081_OUT/hosting.json")" = "$EXPECTED_HOSTING_VERSION"
+          curl -fsS --retry 4 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$VRM081_ROOT/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm081final=$GITHUB_RUN_ID" > "$VRM081_OUT/hr-meta.json"
+          jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .shopperReconciliation.providerAck==true and .visitReconciliation.providerAck==true and .hrWrites==false and .production==false and .refreshError==null' "$VRM081_OUT/hr-meta.json" >/dev/null
+          test "$(jq -r '.revision' "$VRM081_OUT/hr-meta.json")" = "$EXPECTED_HR_REVISION"
+          test "$(jq -r '.shopperReconciliation.identityMigrationCount' "$VRM081_OUT/hr-meta.json")" = "0"
+          test "$(jq -r '.shopperReconciliation.aliasMigrated' "$VRM081_OUT/hr-meta.json")" = "30"
+          test "$(jq -r '.shopperReconciliation.aliasPrincipalsRetired' "$VRM081_OUT/hr-meta.json")" = "26"
+          test "$(jq -r '.visitReconciliation.conflicts' "$VRM081_OUT/hr-meta.json")" = "0"
 
-      - name: Capture exact Cloud Run error logs read only
+      - name: Run population-wide credential identity diagnostic read only
         run: |
           set -Eeuo pipefail
-          FILTER="resource.type=cloud_run_revision AND resource.labels.service_name=$SERVICE AND resource.labels.revision_name=$VRM081_RUNTIME_REVISION"
-          gcloud logging read "$FILTER" --project "$PROJECT" --freshness=30m --limit=200 --order=desc --format=json > "$VRM081_OUT/cloud-run-logs.json" || printf '[]\n' > "$VRM081_OUT/cloud-run-logs.json"
-          jq '[.[] | {timestamp,severity,textPayload,jsonPayload,httpRequest,labels}]' "$VRM081_OUT/cloud-run-logs.json" > "$VRM081_OUT/cloud-run-logs-compact.json" || cp "$VRM081_OUT/cloud-run-logs.json" "$VRM081_OUT/cloud-run-logs-compact.json"
+          mkdir -p "$VRM081_OUT/population"
+          VRM081_OUT="$VRM081_OUT/population" VRM081_ROOT="$VRM081_ROOT" VRM081_SOURCE="$VRM081_SOURCE" VRM081_TENANT="$TENANT_ID" VRM081_PROJECT="$PROJECT_ID" node tools/qa/cxorbia-i3-vrm081-population-credential-diagnostic.mjs | tee "$VRM081_OUT/population.log"
+          test "$(jq -r '.decision' "$VRM081_OUT/population/result.json")" = "PASS_I3_VRM081_POPULATION_CREDENTIAL_DIAGNOSTIC"
+          test "$(jq -r '.hrRevision' "$VRM081_OUT/population/result.json")" = "$EXPECTED_HR_REVISION"
+          test "$(jq -r '.humanDecisionRequired.required' "$VRM081_OUT/population/result.json")" = "false"
+          test "$(jq -r '.activeCredentialUniverseResolved' "$VRM081_OUT/population/result.json")" = "true"
+          test "$(jq -r '.providerQueues.migrationCount' "$VRM081_OUT/population/result.json")" = "0"
+          test "$(jq -r '.remediationBuckets.CURRENT_CURRENT_VISIBLE_LOGIN_COLLISION_POLICY_REQUIRED // 0' "$VRM081_OUT/population/result.json")" = "0"
+          test "$(jq -r '.remediationBuckets.HISTORICAL_AUTH_EMAIL_OCCUPANT_MECHANICAL_REVIEW // 0' "$VRM081_OUT/population/result.json")" = "0"
+          test "$(jq -r '.remediationBuckets.SOURCE_NAME_INCOMPLETE_REQUIRES_ADJUDICATION // 0' "$VRM081_OUT/population/result.json")" = "0"
+          test "$(jq -r '.safety.firestoreWrites' "$VRM081_OUT/population/result.json")" = "0"
+          test "$(jq -r '.safety.authWrites' "$VRM081_OUT/population/result.json")" = "0"
+          test "$(jq -r '.safety.hrWrites' "$VRM081_OUT/population/result.json")" = "0"
+          test "$(jq -r '.safety.deploys' "$VRM081_OUT/population/result.json")" = "0"
 
-      - name: Capture exact alias canonical principal topology read only
+      - name: Prove no duplicate active canonical Auth or membership principals
         run: |
           set -Eeuo pipefail
-          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
-          node --input-type=module <<'NODE' > "$VRM081_OUT/principal-topology.json"
+          node --input-type=module <<'NODE' > "$VRM081_OUT/principal-uniqueness.json"
           import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';
           import {getAuth} from 'firebase-admin/auth';
           import {getFirestore} from 'firebase-admin/firestore';
           if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:'cxorbia-backend-dev'});
-          const TENANT='tya',PROJECT='cinepolis',db=getFirestore(),auth=getAuth(),tenant=db.collection('tenants').doc(TENANT);
-          const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[],uniq=v=>[...new Set(arr(v).map(str).filter(Boolean))].sort();
-          const activeMember=m=>m?.active===true&&str(m?.status||'active').toLowerCase()!=='inactive'&&str(m?.role).toLowerCase()==='shopper'&&str(m?.authNamespace).toLowerCase()==='shopper'&&(uniq(m?.projectIds).includes(PROJECT)||str(m?.scopeProjectId)===PROJECT);
-          const exactAuth=(u,id)=>{const c=u?.customClaims||{},role=str(c.role).toLowerCase(),ns=str(c.authNamespace||(role==='shopper'?'shopper':'')).toLowerCase(),projects=uniq([...(arr(c.projectIds)),c.projectId]);return u?.disabled!==true&&(str(c.tenantId)===TENANT||uniq(c.tenants).includes(TENANT))&&str(c.shopperId)===id&&role==='shopper'&&ns==='shopper'&&projects.includes(PROJECT);};
-          const KEYS=['shopperId','legacyShopperId','legacyId','externalShopperId','externalId','sourceId','sourceKey','hrRowId','personId','profileId','shopperDocId','sourceIdentityKey','sourceSubjectId'];
-          const ALIAS=['exactAliases','identityAliases','aliases','sourceAliases','sourceIdentityAliases'];
-          const walk=(v,out=[])=>{if(v==null)return out;if(Array.isArray(v)){v.forEach(x=>walk(x,out));return out;}if(typeof v==='object'){Object.values(v).forEach(x=>walk(x,out));return out;}const s=str(v);if(s)out.push(s);return out;};
-          const tokens=link=>uniq([link,link?.sourceIdentity,link?.identity,link?.crosswalk,link?.profile,link?.exactIdentityAnchors].filter(Boolean).flatMap(x=>[...KEYS.flatMap(k=>walk(x[k])),...ALIAS.flatMap(k=>walk(x[k]))]));
-          const [usersSnap,crossSnap,linksSnap]=await Promise.all([tenant.collection('users').get(),tenant.collection('shopperIdentityCrosswalk').get(),tenant.collection('shopperIdentityLinks').get()]);
-          const users=usersSnap.docs.map(d=>({uid:d.id,...(d.data()||{})})),cross=Object.fromEntries(crossSnap.docs.map(d=>[d.id,{id:d.id,...(d.data()||{})}]));
-          const authUsers=[];let pageToken;do{const page=await auth.listUsers(1000,pageToken);authUsers.push(...page.users);pageToken=page.pageToken;}while(pageToken);
-          const exact={},conflicts=[];
-          for(const doc of linksSnap.docs){
-            const l={id:doc.id,...(doc.data()||{})},status=str(l.status||l.state).toLowerCase(),authority=str(l.authorityType||l.authority?.type).toLowerCase(),scope=str(l.projectScope||l.scope?.projectId||l.projectId||'*'),canonical=str(l.canonicalShopperId||l.canonicalId||l.shopperId||l.profileId),sourceSystem=str(l.sourceSystem||l.sourceNamespace||l.sourceType||l.sourceIdentity?.sourceSystem).toLowerCase();
-            const authorityRef=str(l.authorityRef||l.authority?.evidenceRef||l.authority?.adjudicationId||l.authority?.providerRef||l.authority?.commandId||l.providerAckRef||l.adjudicationId||l.commandId||l.idempotencyKey||doc.id);
-            const eligible=(str(l.tenantId||l.scope?.tenantId)===TENANT)&&['active','confirmed','approved','materialized'].includes(status)&&['provider_exact','tenant_adjudication','platform_created','migrated_exact'].includes(authority)&&!!authorityRef&&!(l.periodKey||l.periodId||l.periodScope)&&(scope==='*'||scope.toLowerCase()==='tenant'||scope===PROJECT)&&!!canonical&&sourceSystem.includes('hr');
-            if(!eligible)continue;
-            for(const token of tokens(l)){if(exact[token]&&exact[token]!==canonical)conflicts.push(token);else exact[token]=canonical;}
-          }
-          const membershipsBy={};for(const m of users){const id=str(m.shopperId);if(id)(membershipsBy[id]??=[]).push(m);}
-          const state=id=>{
-            const memberships=arr(membershipsBy[id]),active=memberships.filter(activeMember),authExact=authUsers.filter(u=>exactAuth(u,id));
-            const paired=active.filter(m=>authExact.some(u=>u.uid===m.uid));
-            return {membershipCount:memberships.length,activeMembershipCount:active.length,enabledExactAuthCount:authExact.length,exactPairedPrincipalCount:paired.length,membershipUids:memberships.map(m=>m.uid).sort(),enabledExactAuthUids:authExact.map(u=>u.uid).sort()};
-          };
-          const rows=[];
-          for(const [sourceId,cw] of Object.entries(cross)){
-            const mode=str(cw.identityMode).toLowerCase(),self=str(cw.shopperId)===sourceId&&str(cw.sourceType).toLowerCase()==='hr_external'&&['stable_hr_shopper_id','exact_technical_keys_only'].includes(mode);
-            const canonical=exact[sourceId];
-            if(!self||!canonical||canonical===sourceId)continue;
-            const alias=state(sourceId),canon=state(canonical);
-            const aliasLive=alias.activeMembershipCount>0||alias.enabledExactAuthCount>0,canonLive=canon.activeMembershipCount>0||canon.enabledExactAuthCount>0;
-            const topology=aliasLive&&canonLive?'DUAL':aliasLive?'ALIAS_ONLY':canonLive?'CANONICAL_ONLY':'NONE';
-            rows.push({sourceShopperId:sourceId,canonicalShopperId:canonical,country:str(cw.country||cw.pais),topology,alias,canonical:canon});
-          }
-          const counts={};for(const r of rows)counts[r.topology]=(counts[r.topology]||0)+1;
-          process.stdout.write(JSON.stringify({decision:'PASS_I3_VRM081_PRINCIPAL_TOPOLOGY_READ_ONLY',rows:rows.length,counts,identityLinkConflicts:conflicts.length,details:rows,writes:0,deploys:0,production:false},null,2));
-          NODE
-
-      - name: Capture alias-only keeper evidence read only
-        run: |
-          set -Eeuo pipefail
-          node --input-type=module <<'NODE' > "$VRM081_OUT/alias-keeper-evidence.json"
-          import crypto from 'node:crypto';
-          import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';
-          import {getAuth} from 'firebase-admin/auth';
-          import {getFirestore} from 'firebase-admin/firestore';
-          if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:'cxorbia-backend-dev'});
-          const TENANT='tya',PROJECT='cinepolis',db=getFirestore(),auth=getAuth(),tenant=db.collection('tenants').doc(TENANT);
-          const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[],uniq=v=>[...new Set(arr(v).map(str).filter(Boolean))].sort();
-          const sha=v=>crypto.createHash('sha256').update(String(v),'utf8').digest('hex');
-          const internalEmail=login=>`${sha(`${TENANT}\0shopper\0${str(login).toLowerCase()}`).slice(0,48)}@auth.cxorbia.invalid`;
-          const topology=JSON.parse((await import('node:fs')).readFileSync(process.env.VRM081_OUT+'/principal-topology.json','utf8'));
-          const groups={};for(const row of topology.details||[]){if(row.topology!=='ALIAS_ONLY')continue;(groups[row.canonicalShopperId]??=[]).push(row.sourceShopperId);}
+          const TENANT='tya',PROJECT='cinepolis',auth=getAuth(),db=getFirestore(),str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[];
           const authUsers=[];let token;do{const page=await auth.listUsers(1000,token);authUsers.push(...page.users);token=page.pageToken;}while(token);
-          const authByUid=Object.fromEntries(authUsers.map(u=>[u.uid,u]));
-          const rows=[];
-          for(const [canonicalShopperId,aliases] of Object.entries(groups)){
-            const profileSnap=await tenant.collection('shoppers').doc(canonicalShopperId).get();
-            const profile=profileSnap.exists?profileSnap.data()||{}:{};
-            const canonicalVisibleLogin=str(profile.visibleLogin||profile.username||profile.user).toLowerCase();
-            const expectedEmail=canonicalVisibleLogin?internalEmail(canonicalVisibleLogin).toLowerCase():'';
-            const principals=[];
-            for(const alias of aliases){
-              const ms=await tenant.collection('users').where('shopperId','==',alias).limit(2).get();
-              for(const doc of ms.docs){
-                const m=doc.data()||{},u=authByUid[doc.id]||null;
-                principals.push({
-                  sourceShopperId:alias,uid:doc.id,active:m.active===true,visibleLogin:str(m.visibleLogin).toLowerCase(),
-                  credentialRuleVersion:str(m.credentialRuleVersion),membershipUpdatedAt:str(m.updatedAt),
-                  authEnabled:!!u&&u.disabled!==true,authEmail:str(u?.email).toLowerCase(),
-                  matchesCanonicalProfileLogin:!!expectedEmail&&str(u?.email).toLowerCase()===expectedEmail,
-                  membershipLoginEmailMatch:!!str(m.visibleLogin)&&str(u?.email).toLowerCase()===internalEmail(str(m.visibleLogin)).toLowerCase()
-                });
-              }
-            }
-            const profileMatches=principals.filter(p=>p.matchesCanonicalProfileLogin&&p.active&&p.authEnabled);
-            rows.push({canonicalShopperId,aliases,canonicalVisibleLogin,canonicalCredentialRuleVersion:str(profile.credentialRuleVersion),canonicalProfileUpdatedAt:str(profile.updatedAt),profileMatchingPrincipalCount:profileMatches.length,profileMatchingUid:profileMatches.length===1?profileMatches[0].uid:null,principals});
-          }
-          process.stdout.write(JSON.stringify({decision:'PASS_I3_VRM081_ALIAS_KEEPER_EVIDENCE_READ_ONLY',groups:rows.length,uniqueProfileMatcherGroups:rows.filter(r=>r.profileMatchingPrincipalCount===1).length,ambiguousGroups:rows.filter(r=>r.profileMatchingPrincipalCount!==1).length,details:rows,writes:0,deploys:0,production:false},null,2));
+          const activeAuth=authUsers.filter(u=>u.disabled!==true&&u.customClaims?.tenantId===TENANT&&u.customClaims?.role==='shopper'&&String(u.customClaims?.authNamespace||'shopper')==='shopper'&&arr(u.customClaims?.projectIds).includes(PROJECT));
+          const authBy=new Map();for(const u of activeAuth){const id=str(u.customClaims?.shopperId);if(!id)continue;if(!authBy.has(id))authBy.set(id,[]);authBy.get(id).push(u.uid);}
+          const authDup=[...authBy.entries()].filter(([,uids])=>uids.length>1).map(([shopperId,uids])=>({shopperId,count:uids.length}));
+          const snap=await db.collection('tenants').doc(TENANT).collection('users').get();
+          const activeMembers=snap.docs.map(d=>({uid:d.id,...(d.data()||{})})).filter(m=>m.active===true&&m.role==='shopper'&&m.authNamespace==='shopper'&&arr(m.projectIds).includes(PROJECT));
+          const memBy=new Map();for(const m of activeMembers){const id=str(m.shopperId);if(!id)continue;if(!memBy.has(id))memBy.set(id,[]);memBy.get(id).push(m.uid);}
+          const memDup=[...memBy.entries()].filter(([,uids])=>uids.length>1).map(([shopperId,uids])=>({shopperId,count:uids.length}));
+          const decision=!authDup.length&&!memDup.length?'PASS_NO_DUPLICATE_CANONICAL_PRINCIPALS':'FAIL_DUPLICATE_CANONICAL_PRINCIPALS';
+          process.stdout.write(JSON.stringify({decision,activeAuthPrincipals:activeAuth.length,activeAuthCanonicalShopperIds:authBy.size,activeMemberships:activeMembers.length,activeMembershipCanonicalShopperIds:memBy.size,duplicateAuthCanonicalShopperIds:authDup.length,duplicateMembershipCanonicalShopperIds:memDup.length,production:false},null,2));
+          if(decision!=='PASS_NO_DUPLICATE_CANONICAL_PRINCIPALS')process.exitCode=1;
           NODE
+          test "$(jq -r '.decision' "$VRM081_OUT/principal-uniqueness.json")" = "PASS_NO_DUPLICATE_CANONICAL_PRINCIPALS"
 
-      - name: Seal diagnostic receipt
+      - name: Seal final VRM-081 owner receipt
         run: |
           set -Eeuo pipefail
-          HR_ERROR=""
-          if jq -e . "$VRM081_OUT/hr-meta-body.txt" >/dev/null 2>&1; then
-            HR_ERROR="$(jq -r '.refreshError // .error // .message // empty' "$VRM081_OUT/hr-meta-body.txt")"
-          fi
-          LOG_ERRORS="$(jq '[.[] | select((.severity=="ERROR") or (.severity=="CRITICAL") or (.severity=="ALERT") or (.severity=="EMERGENCY"))] | length' "$VRM081_OUT/cloud-run-logs-compact.json" 2>/dev/null || echo 0)"
-          jq -n -S --arg source "$VRM081_SOURCE" --arg tree "$VRM081_TREE" --arg runtime "$VRM081_RUNTIME_REVISION" --arg digest "$VRM081_RUNTIME_DIGEST" --arg hosting "$VRM081_HOSTING_VERSION" --arg healthCode "$VRM081_HEALTH_CODE" --arg metaCode "$VRM081_META_CODE" --arg hrError "$HR_ERROR" --argjson logErrors "$LOG_ERRORS" '{decision:"PASS_I3_VRM081_RUNTIME_503_DIAGNOSTIC_CAPTURED",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,healthHttpStatus:($healthCode|tonumber? // 0),hrMetaHttpStatus:($metaCode|tonumber? // 0),hrError:$hrError,cloudRunErrorEntries:$logErrors,builds:0,runtimeDeploys:0,hostingDeploys:0,writes:0,production:false}' > "$VRM081_OUT/result.json"
-          cat "$VRM081_OUT/result.json"
+          jq -n -S             --arg source "$VRM081_SOURCE"             --arg tree "$VRM081_TREE"             --arg runtime "$EXPECTED_RUNTIME_REVISION"             --arg digest "$EXPECTED_RUNTIME_DIGEST"             --arg hosting "$EXPECTED_HOSTING_VERSION"             --arg hr "$EXPECTED_HR_REVISION"             --argjson reviewCount "$(jq -r '.providerQueues.reviewCount' "$VRM081_OUT/population/result.json")"             --argjson nonLoginBearing "$(jq -r '.alreadyResolvedWithoutWrite.nonLoginBearingRows // 0' "$VRM081_OUT/population/result.json")"             --argjson activeAuth "$(jq -r '.activeAuthPrincipals' "$VRM081_OUT/principal-uniqueness.json")"             --argjson activeMemberships "$(jq -r '.activeMemberships' "$VRM081_OUT/principal-uniqueness.json")"             '{decision:"PASS_I3_VRM081_FINAL_POPULATION_AUTH_REPROOF",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,providerReviewQueueCount:$reviewCount,nonLoginBearingSourceRows:$nonLoginBearing,identityMigrationCount:0,aliasMigrated:30,aliasPrincipalsRetired:26,activeCredentialUniverseResolved:true,humanDecisionRequired:false,noDuplicateCanonicalAuth:true,noDuplicateCanonicalMembership:true,activeAuthPrincipals:$activeAuth,activeMemberships:$activeMemberships,providerAck:true,durableReadback:true,builds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0,firestoreWrites:0,authWrites:0,hrWrites:0,externalWrites:0,production:false}' > "$VRM081_OUT/result.json"
 
       - if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-i3-vrm081-runtime-diagnostic-${{ github.run_id }}
+          name: cxorbia-i3-vrm081-final-reproof-${{ github.run_id }}
           path: ${{ env.VRM081_OUT }}
           if-no-files-found: error
           retention-days: 30
