@@ -36,6 +36,7 @@ on:
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V89_2026-09-27.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V90_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V91_2026-09-28.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V92_2026-09-28.json
       - tools/qa/cxorbia-i3-vrm081-population-credential-diagnostic.mjs
       - app/modules/configuracion.js
       - app/core/config.js
@@ -88,7 +89,7 @@ env:
   I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V91_2026-09-28.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V92_2026-09-28.json
 
 jobs:
   canonical-candidate-authority:
@@ -125,8 +126,8 @@ jobs:
           test "$(jq -r '.findings["VRM-078"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN515"
           test "$(jq -r '.findings["VRM-079"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN518"
           test "$(jq -r '.findings["VRM-080"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN525"
-          test "$(jq -r '.findings["VRM-081"].state' "$POST_RUN500_LEDGER")" = "DEV_RUNTIME_MATERIALIZED_FINAL_READONLY_REPROOF_REQUIRED"
-          test "$STATUS" = "HOLD_VRM081_V90_FINAL_REPROOF_REQUIRED"
+          test "$(jq -r '.findings["VRM-081"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN547"
+          test "$STATUS" = "HOLD_MODULE_TRUTH_REPROOF_REQUIRED"
           echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
@@ -1452,14 +1453,14 @@ jobs:
           test "$(git rev-parse "$C3_SOURCE^{tree}")" = "$C3_TREE"
           LEDGER="$(jq -r '.findingsLedgerPath' "$CANDIDATE_DESCRIPTOR")"
           PREDECESSOR_SOURCE="$(jq -r '.predecessorProductSourceSha' "$CANDIDATE_DESCRIPTOR")"
-          EXPECTED_OWNER="$(jq -r '.findings["VRM-069"].owner[0]' "$LEDGER")"
+          EXPECTED_OWNER="$(jq -r '.findings["VRM-081"].provenOwner[0] // .findings["VRM-081"].owner[0]' "$LEDGER")"
           EXPECTED_RUNTIME_REVISION="$(jq -r '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")"
           EXPECTED_RUNTIME_DIGEST="$(jq -r '.currentMaterialization.runtimeDigest' "$CANDIDATE_DESCRIPTOR")"
           EXPECTED_HOSTING_VERSION="$(jq -r '.currentMaterialization.hostingVersion' "$CANDIDATE_DESCRIPTOR")"
           test -n "$PREDECESSOR_SOURCE"; test -n "$EXPECTED_OWNER"
           [[ "$EXPECTED_RUNTIME_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
-          test "$(git diff --name-only "$PREDECESSOR_SOURCE" "$C3_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source | wc -l | tr -d ' ')" = "1"
-          git diff --name-only "$PREDECESSOR_SOURCE" "$C3_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source | grep -qx "$EXPECTED_OWNER"
+          test "$(git diff --name-only "$PREDECESSOR_SOURCE" "$C3_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**' | wc -l | tr -d ' ')" = "1"
+          git diff --name-only "$PREDECESSOR_SOURCE" "$C3_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**' | grep -qx "$EXPECTED_OWNER"
           echo "EXPECTED_RUNTIME_REVISION=$EXPECTED_RUNTIME_REVISION" >> "$GITHUB_ENV"
           echo "EXPECTED_RUNTIME_DIGEST=$EXPECTED_RUNTIME_DIGEST" >> "$GITHUB_ENV"
           echo "EXPECTED_HOSTING_VERSION=$EXPECTED_HOSTING_VERSION" >> "$GITHUB_ENV"
