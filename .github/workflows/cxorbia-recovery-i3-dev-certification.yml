@@ -70,6 +70,7 @@ on:
       - CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V106_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V107_2026-09-28.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V108_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_2026-09-24.json
   workflow_dispatch:
 
@@ -106,7 +107,7 @@ env:
   I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V107_2026-09-28.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V108_2026-09-28.json
 
 jobs:
   canonical-candidate-authority:
@@ -144,7 +145,7 @@ jobs:
           test "$(jq -r '.findings["VRM-079"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN518"
           test "$(jq -r '.findings["VRM-080"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN525"
           test "$(jq -r '.findings["VRM-081"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN547"
-          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED" || "$STATUS" == "HOLD_MODULE_TRUTH_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED" ]]
+          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED" || "$STATUS" == "HOLD_MODULE_TRUTH_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED" ]]
           echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
@@ -277,6 +278,74 @@ jobs:
         with:
           name: cxorbia-i3-vrm085-reproof-${{ github.run_id }}
           path: ${{ env.VRM085_REPROOF_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+          include-hidden-files: true
+
+
+  vrm086-exact-alias-control-reproof:
+    name: I3 VRM-086 — exact alias focal reproof no deploy
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-086-reproof]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      VRM086_OUT: .tmp/i3-vrm086-reproof
+      VRM086_ROOT: https://cxorbia-backend-dev.web.app
+      VRM086_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      VRM086_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      VRM086_TARGET_HR_REVISION: d068b00c62a940f0ad828436ffcf22fbf1dbb43e763ab4e14854102bf5f84a51
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Prove control-only exact alias fix and immutable product
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$VRM086_OUT/semantic"
+          test "$VRM086_SOURCE" = "09b4e56be96dedbeb89d14f1d190bfc5b8b4f990"
+          test "$VRM086_TREE" = "f6899a631b7b277b16614f1b6534103e7615f11e"
+          test "$(git rev-parse "$VRM086_SOURCE^{tree}")" = "$VRM086_TREE"
+          test "$(git diff --name-only "$VRM086_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**' | wc -l | tr -d ' ')" = "0"
+          node --check tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs
+          grep -Fq "exactAliases" tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs
+          grep -Fq "identityMap[sourceId]" tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs
+      - name: Download immutable Run579 same-revision terminal evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$VRM086_OUT/run579"
+          gh run download 36460739231 --repo "$GITHUB_REPOSITORY" --name cxorbia-recovery-i3-terminal-diagnostics-36460739231 --dir "$VRM086_OUT/run579"
+          cp "$VRM086_OUT/run579/semantic/hr-contrast.json" "$VRM086_OUT/semantic/hr-contrast.json"
+          test "$(jq -r '.sourceRevision' "$VRM086_OUT/semantic/hr-contrast.json")" = "$VRM086_TARGET_HR_REVISION"
+      - name: Install read-only browser dependencies
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+      - name: Authenticate canonical Firebase DEV read only
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Reprove exact alias identity focal
+        run: |
+          set -Eeuo pipefail
+          PREI4_OUT="$VRM086_OUT/semantic" CXORBIA_PREI4_ROOT="$VRM086_ROOT" CXORBIA_PREI4_SOURCE_SHA="$VRM086_SOURCE" CXORBIA_PREI4_SCOPE="vrm086_identity_alias" node tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs | tee "$VRM086_OUT/focal-console.log"
+          B="$VRM086_OUT/semantic/browser-focal.json"
+          test "$(jq -r '.decision' "$B")" = "PASS_PRE_I4_VRM086_EXACT_ALIAS_REPROOF"
+          test "$(jq -r '.sourceSha' "$B")" = "$VRM086_SOURCE"
+          test "$(jq -r '.hrRevision' "$B")" = "$VRM086_TARGET_HR_REVISION"
+          test "$(jq -r '.admin.routes.shoppers.identityCases[] | select(.sourceShopperId=="shopper_gt_0e5eac2a4a") | .row.id' "$B")" = "shp-08d2865bd6f8"
+          test "$(jq -r '.admin.routes.shoppers.identityCases[] | select(.sourceShopperId=="shopper_gt_1f90bb8a75") | .row.id' "$B")" = "shp-58a449f10a07"
+          test "$(jq '[.admin.routes.shoppers.identityCases[] | select(.row==null)] | length' "$B")" = "0"
+          jq -n -S --arg source "$VRM086_SOURCE" --arg tree "$VRM086_TREE" --arg hr "$VRM086_TARGET_HR_REVISION" --arg control "$GITHUB_SHA" '{decision:"PASS_VRM086_CONTROL_ONLY_EXACT_ALIAS_REPROOF",sourceSha:$source,sourceTree:$tree,hrRevision:$hr,controlHeadSha:$control,provenOwner:"tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs",productChanged:false,builds:0,deploys:0,writes:0,production:false}' > "$VRM086_OUT/result.json"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-vrm086-reproof-${{ github.run_id }}
+          path: ${{ env.VRM086_OUT }}
           if-no-files-found: error
           retention-days: 30
           compression-level: 0

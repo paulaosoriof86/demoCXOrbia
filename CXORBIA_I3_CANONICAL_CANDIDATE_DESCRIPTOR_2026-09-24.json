@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "READY_FOR_TERMINAL_CERTIFICATION",
+  "status": "HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_REOPENED_POST_RUN500_DRIFT",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "09b4e56be96dedbeb89d14f1d190bfc5b8b4f990",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "87888d3792b011b10a87611dde3efc69e3f4eb40",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V107_2026-09-28.json",
-  "findingsLedgerExpectedGitBlob": "0ea3005307dc0f1bdfbdae34381dcfc35401f7ef",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V108_2026-09-28.json",
+  "findingsLedgerExpectedGitBlob": "d83c96de1b155eec8aa070dc24e4f9e64ade93d3",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
-  "terminalCertificationAllowed": true,
-  "activeBlocker": null,
-  "nextFindingId": "VRM-086",
+  "terminalCertificationAllowed": false,
+  "activeBlocker": "VRM-086",
+  "nextFindingId": "VRM-087",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Execute one canonical terminal certification on unchanged product source 09b4e56be96dedbeb89d14f1d190bfc5b8b4f990. Require fresh stable HR, exhaustive Admin/Shopper human acceptance, corrected semantic focal, terminal Module Truth 20/20, Gate20, one deterministic artifact, live fixtures and Gate21 on that same artifact. Do not touch production; I4 remains blocked until I3=GO and explicit Paula authorization.",
+  "exactNextAction": "Apply the already-proven exact identity resolver to tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs only, then run one scoped read-only shoppers focal reproof on product source 09b4e56be96dedbeb89d14f1d190bfc5b8b4f990 and HR revision d068b00c62a940f0ad828436ffcf22fbf1dbb43e763ab4e14854102bf5f84a51. Require Guillermo Mendizábal and Herbert Ríos exact aliases to resolve to canonical rows. No product/data/runtime/Hosting/Rules writes or deploys; do not rerun terminal until PASS.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -102,16 +102,17 @@
     "attempt": 3
   },
   "lastTerminalAttempt": {
-    "runId": 36451412310,
-    "runNumber": 574,
-    "jobId": 109026899082,
+    "runId": 36460739231,
+    "runNumber": 579,
+    "jobId": 109058414220,
     "sourceSha": "09b4e56be96dedbeb89d14f1d190bfc5b8b4f990",
     "sourceTree": "f6899a631b7b277b16614f1b6534103e7615f11e",
     "hrRevision": "d068b00c62a940f0ad828436ffcf22fbf1dbb43e763ab4e14854102bf5f84a51",
     "humanAcceptance": "PASS_I3_HUMAN_LIVE_ACCEPTANCE",
     "semanticOracle": "PASS_C3_TERMINAL_HR_SEMANTIC_ORACLE",
-    "failure": "MAPPING_FAILURE:ADMIN_POSTULATION_SYNC_VISIBILITY",
+    "failure": "MAPPING_FAILURE:EXACT_HR_IDENTITY_MISSING",
     "terminalArtifactCreated": false,
+    "productChanged": false,
     "production": false
   },
   "vrm043": {
@@ -944,6 +945,22 @@
     "reproofArtifactId": 10987086305,
     "hrRevision": "d068b00c62a940f0ad828436ffcf22fbf1dbb43e763ab4e14854102bf5f84a51",
     "productSourceChanged": false,
+    "production": false
+  },
+  "vrm086": {
+    "state": "OPEN_PROVEN_RUN579_CONTROL_FIX_REPROOF_REQUIRED",
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "observedFailureClassification": "MAPPING_FAILURE",
+    "productDefect": false,
+    "provenOwner": "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs",
+    "runId": 36460739231,
+    "diagnosticsArtifactId": 10987632453,
+    "hrRevision": "d068b00c62a940f0ad828436ffcf22fbf1dbb43e763ab4e14854102bf5f84a51",
+    "missingExactAliasSourceIds": [
+      "shopper_gt_0e5eac2a4a",
+      "shopper_gt_1f90bb8a75"
+    ],
+    "terminalRerunAllowed": false,
     "production": false
   }
 }

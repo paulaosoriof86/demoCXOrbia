@@ -120,15 +120,25 @@ async function signInMember(member,kind,route,options={}){
       const outOfRangeCount=(r==='dashboard'||r==='visitas')&&typeof d.visitFacets==='function'?(typeof d.visitas==='function'?d.visitas():[]).filter(v=>d.visitFacets(v)?.outOfRange===true).length:null;
       const technicalPrimaryCount=r==='shoppers'?population.filter(s=>{const name=String(s?.nombre||s?.name||'').trim(),id=String(s?.id||s?.shopperId||'').trim();return /^shopper_(?:gt|hn|sv|ni)_[a-z0-9]+$/i.test(name)||/^shp[-_][a-z0-9]+$/i.test(name)||(id&&name===id);}).length:null;
       const stats=s=>s&&typeof d.shopperStats==='function'?d.shopperStats(s.id||s.shopperId):null;
-      const rowForSource=id=>(d.shoppers||[]).find(s=>String(s.id||s.shopperId||'')===String(id||'')||list(s.legacyLiveShopperIds).map(String).includes(String(id||'')))||null;
       const identityMap=d.__identityMap&&typeof d.__identityMap==='object'?d.__identityMap:{};
+      const rowForSource=id=>{
+        const sourceId=String(id||''),mapped=String(identityMap[sourceId]||sourceId),rows=list(d.shoppers),rowId=x=>String(x?.id||x?.shopperId||'');
+        const direct=rows.filter(x=>rowId(x)===mapped||(!identityMap[sourceId]&&rowId(x)===sourceId));
+        if(direct.length===1)return direct[0];if(direct.length>1)return null;
+        const aliases=rows.filter(x=>{
+          const exact=list(x?.exactAliases).map(String).includes(sourceId);
+          const legacy=list(x?.legacyLiveShopperIds).map(String).includes(sourceId);
+          return (exact||legacy)&&rowId(x)===mapped;
+        });
+        return aliases.length===1?aliases[0]:null;
+      };
       const identityRows=list(identityCases).map(ref=>{
         const sourceShopperId=String(ref.sourceShopperId||''),row=rowForSource(sourceShopperId),canonicalId=String(identityMap[sourceShopperId]||sourceShopperId);
-        return {sourceShopperId,canonicalId,expectedName:String(ref.name||''),expectedTotal:Number(ref.total||0),expectedRealized:Number(ref.realized||0),row:row?{id:String(row.id||row.shopperId||''),name:String(row.nombre||row.name||''),legacyLiveShopperIds:list(row.legacyLiveShopperIds).map(String),stats:stats(row),providerExactIdentityLink:row.__providerExactIdentityLink===true,providerIdentityAuthorityType:String(row.__providerIdentityAuthorityType||'').toLowerCase()}:null};
+        return {sourceShopperId,canonicalId,expectedName:String(ref.name||''),expectedTotal:Number(ref.total||0),expectedRealized:Number(ref.realized||0),row:row?{id:String(row.id||row.shopperId||''),name:String(row.nombre||row.name||''),legacyLiveShopperIds:list(row.legacyLiveShopperIds).map(String),exactAliases:list(row.exactAliases).map(String),stats:stats(row),providerExactIdentityLink:row.__providerExactIdentityLink===true,providerIdentityAuthorityType:String(row.__providerIdentityAuthorityType||'').toLowerCase()}:null};
       });
       const unresolvedIdentityRows=list(unresolvedIdentityCases).map(ref=>{
         const sourceShopperId=String(ref.sourceShopperId||''),row=rowForSource(sourceShopperId),canonicalId=String(identityMap[sourceShopperId]||sourceShopperId);
-        return {sourceShopperId,canonicalId,expectedReviewReason:String(ref.expectedReviewReason||''),expectedVisibleName:String(ref.expectedVisibleName||''),row:row?{id:String(row.id||row.shopperId||''),name:String(row.nombre||row.name||''),legacyLiveShopperIds:list(row.legacyLiveShopperIds).map(String),identityReviewRequired:row.identityReviewRequired===true,identityReviewReason:String(row.identityReviewReason||''),providerExactIdentityLink:row.__providerExactIdentityLink===true,providerIdentityAuthorityType:String(row.__providerIdentityAuthorityType||'').toLowerCase()}:null};
+        return {sourceShopperId,canonicalId,expectedReviewReason:String(ref.expectedReviewReason||''),expectedVisibleName:String(ref.expectedVisibleName||''),row:row?{id:String(row.id||row.shopperId||''),name:String(row.nombre||row.name||''),legacyLiveShopperIds:list(row.legacyLiveShopperIds).map(String),exactAliases:list(row.exactAliases).map(String),identityReviewRequired:row.identityReviewRequired===true,identityReviewReason:String(row.identityReviewReason||''),providerExactIdentityLink:row.__providerExactIdentityLink===true,providerIdentityAuthorityType:String(row.__providerIdentityAuthorityType||'').toLowerCase()}:null};
       });
       const expectedCanonicalHrShopperPopulation=new Set([...identityRows,...unresolvedIdentityRows].map(x=>String(x.canonicalId||x.sourceShopperId||'')).filter(Boolean)).size;
       const finance=r==='financiero'&&window.CX?.fin?.porPais?window.CX.fin.porPais(d):null;
@@ -344,6 +354,9 @@ try{
   if(scope==='vrm085_postulation_sync'){
     evidence.admin=await signInMember(admin,'admin','postulaciones',{routes:['postulaciones']});
     evidence.decision='PASS_PRE_I4_VRM085_POSTULATION_SYNC_REPROOF';
+  }else if(scope==='vrm086_identity_alias'){
+    evidence.admin=await signInMember(admin,'admin','shoppers',{routes:['shoppers']});
+    evidence.decision='PASS_PRE_I4_VRM086_EXACT_ALIAS_REPROOF';
   }else{
     evidence.admin=await signInMember(admin,'admin','dashboard');
     evidence.shopper=await signInMember(shopper,'shopper','miperfil');
