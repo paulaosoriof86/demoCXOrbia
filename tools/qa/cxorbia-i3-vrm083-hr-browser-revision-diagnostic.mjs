@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { applicationDefault, getApps, initializeApp } from 'firebase-admin/app';
+import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 import { chromium } from 'playwright';
 
@@ -18,11 +19,18 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const str=v=>String(v??'').trim();
 fs.mkdirSync(OUT,{recursive:true});
 if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
-const db=getFirestore();
+const db=getFirestore(),auth=getAuth();
 const tenant=db.collection('tenants').doc(TENANT);
 const memberSnap=await tenant.collection('users').doc(TARGET_UID).get();
 if(!memberSnap.exists)throw new Error('AUTH_FAILURE:VRM083_TARGET_MEMBERSHIP_MISSING');
 const member=memberSnap.data()||{};
+const authUser=await auth.getUser(TARGET_UID);
+const claims=authUser.customClaims||{};
+const identityState={
+  auth:{role:str(claims.role),authNamespace:str(claims.authNamespace),tenantId:str(claims.tenantId),shopperId:str(claims.shopperId),projectIds:Array.isArray(claims.projectIds)?claims.projectIds.map(String):[],disabled:authUser.disabled===true},
+  membership:{role:str(member.role),authNamespace:str(member.authNamespace),tenantId:str(member.tenantId),shopperId:str(member.shopperId),projectIds:Array.isArray(member.projectIds)?member.projectIds.map(String):[],active:member.active===true,status:str(member.status||'active')},
+  mismatches:{role:str(member.role)!==str(claims.role),authNamespace:str(member.authNamespace)!==str(claims.authNamespace),tenantId:str(member.tenantId)!==str(claims.tenantId),shopperId:str(member.shopperId)!==str(claims.shopperId)}
+};
 const shopperId=str(member.shopperId);
 if(!shopperId)throw new Error('AUTH_FAILURE:VRM083_TARGET_SHOPPER_ID_MISSING');
 const profileSnap=await tenant.collection('shoppers').doc(shopperId).get();
@@ -67,7 +75,7 @@ await page.locator('#lgPass').fill(credential.password);
 await page.locator('#lgSubmit').click();
 
 const samples=[];
-for(let i=0;i<90;i++){
+for(let i=0;i<15;i++){
  const s=await page.evaluate(()=>{const c=window.CX?.backendAuth?.context?.()||{},a=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{},b=window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE||{};return{
   at:new Date().toISOString(),
   uid:String(window.firebase?.auth?.().currentUser?.uid||''),
@@ -100,8 +108,8 @@ const providerCoherent=providerRevisions.length>=2&&new Set(providerRevisions).s
 const browserCoherent=!!final.liveMetaRevision&&!!final.previewRevision&&final.liveMetaRevision===final.previewRevision;
 const browserMatchesProvider=providerRevisions.length>0&&final.liveMetaRevision===providerRevisions[0]&&final.previewRevision===providerRevisions[0];
 const decision=providerCoherent&&browserCoherent&&browserMatchesProvider&&final.authorityApplied?'PASS_VRM083_HR_BROWSER_REVISION_COHERENCE':'HOLD_VRM083_HR_BROWSER_REVISION_COHERENCE';
-const result={decision,generatedAt:new Date().toISOString(),target:{uid:TARGET_UID,shopperId,login:credential.login},legacyMeta,genericMeta,metaSeries,protectedFetch,responses,samples,final,analysis:{providerCoherent,browserCoherent,browserMatchesProvider,metaSeriesRevisions:[...new Set(metaSeries.map(x=>x.bodyRevision).filter(Boolean))],metaSeriesStatuses:[...new Set(metaSeries.map(x=>x.status))]},safety:{firestoreWrites:0,authWrites:0,hrWrites:0,deploys:0,production:false}};
+const result={decision,generatedAt:new Date().toISOString(),target:{uid:TARGET_UID,shopperId,login:credential.login},identityState,legacyMeta,genericMeta,metaSeries,protectedFetch,responses,samples,final,analysis:{providerCoherent,browserCoherent,browserMatchesProvider,metaSeriesRevisions:[...new Set(metaSeries.map(x=>x.bodyRevision).filter(Boolean))],metaSeriesStatuses:[...new Set(metaSeries.map(x=>x.status))]},safety:{firestoreWrites:0,authWrites:0,hrWrites:0,deploys:0,production:false}};
 fs.writeFileSync(path.join(OUT,'result.json'),JSON.stringify(result,null,2)+'\n');
-console.log(JSON.stringify({decision,legacyMeta,genericMeta,metaSeries:metaSeries.map(x=>({status:x.status,bodyRevision:x.bodyRevision,cacheOrigin:x.cacheOrigin,refreshError:x.refreshError,refreshStartedAt:x.refreshStartedAt,refreshFinishedAt:x.refreshFinishedAt,cacheAgeMs:x.cacheAgeMs})),protectedFetch,final,analysis:result.analysis,safety:result.safety},null,2));
+console.log(JSON.stringify({decision,identityState,legacyMeta,genericMeta,metaSeries:metaSeries.map(x=>({status:x.status,bodyRevision:x.bodyRevision,cacheOrigin:x.cacheOrigin,refreshError:x.refreshError,refreshStartedAt:x.refreshStartedAt,refreshFinishedAt:x.refreshFinishedAt,cacheAgeMs:x.cacheAgeMs})),protectedFetch,final,analysis:result.analysis,safety:result.safety},null,2));
 await ctx.close();await browser.close();
 if(decision!=='PASS_VRM083_HR_BROWSER_REVISION_COHERENCE')process.exitCode=2;
