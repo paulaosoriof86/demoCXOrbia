@@ -300,28 +300,28 @@ jobs:
             URL="$PREI4_008_ROOT/api/$TENANT_ID/$PROJECT_ID/hr-live?fresh=1&prei4admin008=$GITHUB_RUN_ID-$i"
             if curl -fsS --retry 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$URL" > "$PREI4_008_OUT/hr-fresh.json"; then
               if node - "$PREI4_008_OUT/hr-fresh.json" "$PREI4_008_STALE_REVISION" <<'NODE'
-const fs=require('fs');
-const [file,stale]=process.argv.slice(2);
-const d=JSON.parse(fs.readFileSync(file,'utf8'));
-const runtime=d._runtime||{};
-const revision=String(runtime.revision||d.revision||d.sourceRevision||'');
-const refreshError=runtime.refreshError??runtime.lastRefreshError??d.refreshError??d.lastRefreshError??null;
-const summary=Array.isArray(d.periodOperationalSummary)?d.periodOperationalSummary:[];
-const aug=summary.find(x=>String(x.periodKey)==='2026-08');
-const sep=summary.find(x=>String(x.periodKey)==='2026-09');
-const expected={
-  aug:{total:44,available:1,assigned:43,unassigned:1,scheduled:0,pendingSchedule:0,realized:43,pendingQuestionnaire:3,questionnaireCompleted:40,pendingSubmission:8,submitted:32,liquidationConfirmed:0,outOfRange:12},
-  sep:{total:44,assigned:44,unassigned:0,scheduled:4,pendingSchedule:0,realized:40,pendingQuestionnaire:6,questionnaireCompleted:34,pendingSubmission:7,submitted:27,liquidationConfirmed:0,outOfRange:2,reviewRequired:11}
-};
-function exact(row,want){return row&&Object.entries(want).every(([k,v])=>Number(row[k])===v);}
-const reasons=(d.visits||[]).filter(v=>v.periodKey==='2026-09'&&v.reviewRequired===true).flatMap(v=>v.reviewReasons||[]);
-const septemberSubmittedWithoutQuestionnaire=reasons.filter(x=>x==='submitted_without_questionnaire_date').length;
-const pass=/^[0-9a-f]{64}$/.test(revision)&&revision!==stale&&refreshError==null&&exact(aug,expected.aug)&&exact(sep,expected.sep)&&Number(sep?.byCountry?.GT)===34&&Number(sep?.byCountry?.HN)===10&&Number(sep?.total)===44&&septemberSubmittedWithoutQuestionnaire===11&&d.sourceSafe===true&&d.production===false;
-const receipt={decision:pass?'PASS_PREI4_ADMIN_008_FRESH_HR':'HOLD_PREI4_ADMIN_008_FRESH_HR',revision,staleRevision:stale,refreshError,august:aug||null,september:sep||null,septemberSubmittedWithoutQuestionnaire,sourceSafe:d.sourceSafe===true,production:d.production===true,safeState:d.safeState||null};
-fs.writeFileSync(process.env.PREI4_008_OUT+'/fresh-authority.json',JSON.stringify(receipt,null,2)+'\n');
-console.log(JSON.stringify(receipt,null,2));
-if(!pass)process.exit(1);
-NODE
+          const fs=require('fs');
+          const [file,stale]=process.argv.slice(2);
+          const d=JSON.parse(fs.readFileSync(file,'utf8'));
+          const runtime=d._runtime||{};
+          const revision=String(runtime.revision||d.revision||d.sourceRevision||'');
+          const refreshError=runtime.refreshError??runtime.lastRefreshError??d.refreshError??d.lastRefreshError??null;
+          const summary=Array.isArray(d.periodOperationalSummary)?d.periodOperationalSummary:[];
+          const aug=summary.find(x=>String(x.periodKey)==='2026-08');
+          const sep=summary.find(x=>String(x.periodKey)==='2026-09');
+          const expected={
+            aug:{total:44,available:1,assigned:43,unassigned:1,scheduled:0,pendingSchedule:0,realized:43,pendingQuestionnaire:3,questionnaireCompleted:40,pendingSubmission:8,submitted:32,liquidationConfirmed:0,outOfRange:12},
+            sep:{total:44,assigned:44,unassigned:0,scheduled:4,pendingSchedule:0,realized:40,pendingQuestionnaire:6,questionnaireCompleted:34,pendingSubmission:7,submitted:27,liquidationConfirmed:0,outOfRange:2,reviewRequired:11}
+          };
+          function exact(row,want){return row&&Object.entries(want).every(([k,v])=>Number(row[k])===v);}
+          const reasons=(d.visits||[]).filter(v=>v.periodKey==='2026-09'&&v.reviewRequired===true).flatMap(v=>v.reviewReasons||[]);
+          const septemberSubmittedWithoutQuestionnaire=reasons.filter(x=>x==='submitted_without_questionnaire_date').length;
+          const pass=/^[0-9a-f]{64}$/.test(revision)&&revision!==stale&&refreshError==null&&exact(aug,expected.aug)&&exact(sep,expected.sep)&&Number(sep?.byCountry?.GT)===34&&Number(sep?.byCountry?.HN)===10&&Number(sep?.total)===44&&septemberSubmittedWithoutQuestionnaire===11&&d.sourceSafe===true&&d.production===false;
+          const receipt={decision:pass?'PASS_PREI4_ADMIN_008_FRESH_HR':'HOLD_PREI4_ADMIN_008_FRESH_HR',revision,staleRevision:stale,refreshError,august:aug||null,september:sep||null,septemberSubmittedWithoutQuestionnaire,sourceSafe:d.sourceSafe===true,production:d.production===true,safeState:d.safeState||null};
+          fs.writeFileSync(process.env.PREI4_008_OUT+'/fresh-authority.json',JSON.stringify(receipt,null,2)+'\n');
+          console.log(JSON.stringify(receipt,null,2));
+          if(!pass)process.exit(1);
+          NODE
               then ok=1; break; fi
             fi
             sleep 10
