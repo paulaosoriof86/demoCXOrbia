@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM083_DIAGNOSTIC_REQUIRED",
+  "status": "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_REOPENED_POST_RUN500_DRIFT",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "b168955f405cd82630a8caad04de0b1766b26fc8",
+  "productSourceSha": "87888d3792b011b10a87611dde3efc69e3f4eb40",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
-  "predecessorProductSourceSha": "0c3ce84d567a674ec18f90eedba1b2380c45d55b",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V97_2026-09-28.json",
-  "findingsLedgerExpectedGitBlob": "b169bcb0350cb2c6576c4cc298f9c91bcff6b41c",
+  "predecessorProductSourceSha": "b168955f405cd82630a8caad04de0b1766b26fc8",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V98_2026-09-28.json",
+  "findingsLedgerExpectedGitBlob": "f21714da1ca00c65b187535a4eebfb187f034ef3",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run one read-only VRM-083 HR browser revision-coherence diagnostic. Compare legacy/generic/protected provider revisions with CX_TYA_HR_LIVE_META and CX.data.previewMeta in the authenticated GT shopper session. Prove provider vs browser composition owner before any product change. No build/deploy/data writes/production; no terminal rerun while VRM-083 is open.",
+  "exactNextAction": "Build exact VRM-083 source once, deploy runtime-only to Recovery DEV, then run source regression plus protected historical shopper HR/browser reproof. Hosting and production remain unchanged.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -325,22 +325,21 @@
     "production": false
   },
   "currentRemediationCandidate": {
-    "sourceSha": "b168955f405cd82630a8caad04de0b1766b26fc8",
-    "sourceTree": "7ee35f25dd6a1c1b6f6a562ed770e9ba80cceeeb",
-    "predecessorSha": "0c3ce84d567a674ec18f90eedba1b2380c45d55b",
+    "sourceSha": "87888d3792b011b10a87611dde3efc69e3f4eb40",
+    "sourceTree": "813ac15086da026089fedfb257700b4abe643371",
+    "predecessorSha": "b168955f405cd82630a8caad04de0b1766b26fc8",
     "findingIds": [
-      "VRM-081"
+      "VRM-083"
     ],
     "changedRuntime": true,
     "changedHosting": false,
     "changedRules": false,
     "productFiles": [
-      "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
+      "backend/runtime/hr-live-service/server.mjs"
     ],
     "testFiles": [
-      "backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs"
+      "backend/runtime/hr-live-service/test/cxorbia-vrm083-protected-auth-namespace.test.mjs"
     ],
-    "testControlHeadSha": "6acea9c595541435084ae333a1f4dd21e73eebd3",
     "production": false
   },
   "reproofDispatch": {
@@ -889,11 +888,14 @@
     "production": false
   },
   "vrm083": {
-    "state": "P0_PROVEN_DIAGNOSTIC_REQUIRED_RUN556_ATTEMPT2",
-    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "state": "FIXED_SOURCE_PROVEN_PENDING_DEV_MATERIALIZATION",
+    "classification": "AUTH_FAILURE",
     "diagnostic": "READ_ONLY_HR_BROWSER_REVISION_COHERENCE",
     "terminalRerunAllowed": false,
     "productChangeAllowed": false,
-    "production": false
+    "production": false,
+    "sourceSha": "87888d3792b011b10a87611dde3efc69e3f4eb40",
+    "sourceTree": "813ac15086da026089fedfb257700b4abe643371",
+    "runtimeOnly": true
   }
 }

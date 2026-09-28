@@ -42,6 +42,7 @@ on:
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V95_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V96_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V97_2026-09-28.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V98_2026-09-28.json
       - tools/qa/cxorbia-i3-vrm081-population-credential-diagnostic.mjs
       - tools/qa/cxorbia-i3-vrm083-hr-browser-revision-diagnostic.mjs
       - app/modules/configuracion.js
@@ -95,7 +96,7 @@ env:
   I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V97_2026-09-28.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V98_2026-09-28.json
 
 jobs:
   canonical-candidate-authority:
@@ -133,7 +134,7 @@ jobs:
           test "$(jq -r '.findings["VRM-079"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN518"
           test "$(jq -r '.findings["VRM-080"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN525"
           test "$(jq -r '.findings["VRM-081"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN547"
-          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" ]]
+          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" ]]
           echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
@@ -191,6 +192,115 @@ jobs:
           retention-days: 30
           compression-level: 0
           include-hidden-files: true
+
+
+  vrm083-runtime-materialization:
+    name: I3 VRM-083 — protected shopper namespace runtime-only DEV materialization
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-083-runtime]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    env:
+      VRM083_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      VRM083_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      VRM083_OUT: .tmp/i3-vrm083-runtime
+      VRM083_ROOT: https://cxorbia-backend-dev.web.app
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Prove exact isolated VRM-083 source and regression
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$VRM083_OUT"
+          test "$VRM083_SOURCE" = "87888d3792b011b10a87611dde3efc69e3f4eb40"
+          test "$VRM083_TREE" = "813ac15086da026089fedfb257700b4abe643371"
+          test "$(git rev-parse "$VRM083_SOURCE^{tree}")" = "$VRM083_TREE"
+          PRODUCT_DIFF="$(git diff --name-only b168955f405cd82630a8caad04de0b1766b26fc8 "$VRM083_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**' | sort)"
+          test "$PRODUCT_DIFF" = "backend/runtime/hr-live-service/server.mjs"
+          git diff --quiet "$VRM083_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          SOURCE_DIR="$RUNNER_TEMP/cxorbia-vrm083-source"
+          rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"
+          git archive "$VRM083_SOURCE" | tar -x -C "$SOURCE_DIR"
+          node --check "$SOURCE_DIR/backend/runtime/hr-live-service/server.mjs"
+          node --check "$SOURCE_DIR/backend/runtime/hr-live-service/test/cxorbia-vrm083-protected-auth-namespace.test.mjs"
+          cd "$SOURCE_DIR"
+          node --test backend/runtime/hr-live-service/test/cxorbia-vrm083-protected-auth-namespace.test.mjs backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-semantic-regression.test.mjs | tee "$GITHUB_WORKSPACE/$VRM083_OUT/source-tests.log"
+          cd "$GITHUB_WORKSPACE"
+          echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
+      - name: Authenticate Recovery DEV
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
+      - name: Capture pre-materialization identity
+        run: |
+          set -Eeuo pipefail
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$VRM083_OUT/hosting-before.json"
+          HOSTING_VERSION="$(jq -r '.release.version.name // empty' "$VRM083_OUT/hosting-before.json")"; test -n "$HOSTING_VERSION"
+          echo "VRM083_HOSTING_VERSION=$HOSTING_VERSION" >> "$GITHUB_ENV"
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$VRM083_OUT/runtime-before.json"
+      - name: Build exact VRM-083 runtime once
+        run: |
+          set -Eeuo pipefail
+          IMAGE_URI="gcr.io/${PROJECT}/${SERVICE}:i3-vrm083-${VRM083_SOURCE:0:12}-${GITHUB_RUN_ID}"
+          echo "$IMAGE_URI" > "$VRM083_OUT/image-uri.txt"
+          gcloud builds submit "$SOURCE_DIR" --project "$PROJECT" --config "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE_URI" --quiet
+      - name: Deploy exact VRM-083 runtime once to Recovery DEV
+        run: |
+          set -Eeuo pipefail
+          IMAGE_URI="$(cat "$VRM083_OUT/image-uri.txt")"
+          gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$IMAGE_URI" --min-instances=1 --max-instances=1 --update-env-vars "$LEGAL_ENABLE_NAME=$LEGAL_ENABLE_VALUE,$LEGAL_GATE_NAME=$LEGAL_GATE_VALUE,$I3_HR_CACHE_PIN_NAME=$I3_HR_CACHE_PIN_VALUE" --quiet
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$VRM083_OUT/runtime-after.json"
+          REV="$(jq -r '.status.latestReadyRevisionName // empty' "$VRM083_OUT/runtime-after.json")"; test -n "$REV"
+          gcloud run revisions describe "$REV" --project "$PROJECT" --region "$REGION" --format=json > "$VRM083_OUT/runtime-revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$VRM083_OUT/runtime-revision.json")"
+          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else exit 1; fi
+          echo "VRM083_RUNTIME_REVISION=$REV" >> "$GITHUB_ENV"
+          echo "VRM083_RUNTIME_DIGEST=$DIGEST" >> "$GITHUB_ENV"
+      - name: Wait for coherent fresh HR
+        run: |
+          set -Eeuo pipefail
+          ok=0
+          for i in $(seq 1 12); do
+            curl -fsS --retry 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$VRM083_ROOT/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&fresh=1&vrm083runtime=$GITHUB_RUN_ID-$i" > "$VRM083_OUT/hr-meta.json" || true
+            if jq -e '.ok==true and .sourceSafe==true and .refreshError==null and .shopperReconciliation.providerAck==true and .visitReconciliation.providerAck==true and .hrWrites==false and .production==false' "$VRM083_OUT/hr-meta.json" >/dev/null 2>&1; then ok=1; break; fi
+            sleep 10
+          done
+          test "$ok" = 1
+          HR_REVISION="$(jq -r '.revision // empty' "$VRM083_OUT/hr-meta.json")"; [[ "$HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
+          echo "VRM083_HR_REVISION=$HR_REVISION" >> "$GITHUB_ENV"
+      - name: Run protected historical shopper reproof
+        run: |
+          set -Eeuo pipefail
+          VRM083_OUT="$VRM083_OUT/reproof" VRM083_ROOT="$VRM083_ROOT" VRM083_SOURCE_DIR="$SOURCE_DIR" node tools/qa/cxorbia-i3-vrm083-hr-browser-revision-diagnostic.mjs | tee "$VRM083_OUT/reproof.log"
+          test "$(jq -r '.decision' "$VRM083_OUT/reproof/result.json")" = "PASS_VRM083_HR_BROWSER_REVISION_COHERENCE"
+          test "$(jq -r '.identityState.mismatches.authNamespace' "$VRM083_OUT/reproof/result.json")" = "true"
+          test "$(jq -r '.final.authorityApplied' "$VRM083_OUT/reproof/result.json")" = "true"
+          test "$(jq -r '.protectedFetch.status' "$VRM083_OUT/reproof/result.json")" = "200"
+      - name: Verify Hosting unchanged and seal focal receipt
+        run: |
+          set -Eeuo pipefail
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$VRM083_OUT/hosting-after.json"
+          AFTER="$(jq -r '.release.version.name // empty' "$VRM083_OUT/hosting-after.json")"
+          test "$AFTER" = "$VRM083_HOSTING_VERSION"
+          jq -n -S --arg source "$VRM083_SOURCE" --arg tree "$VRM083_TREE" --arg runtime "$VRM083_RUNTIME_REVISION" --arg digest "$VRM083_RUNTIME_DIGEST" --arg hosting "$AFTER" --arg hr "$VRM083_HR_REVISION" '{decision:"PASS_I3_VRM083_RUNTIME_MATERIALIZATION_AND_PROTECTED_SHOPPER_REPROOF",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,authWrites:0,firestoreWrites:0,hrWrites:0,builds:1,runtimeDeploys:1,hostingDeploys:0,production:false}' > "$VRM083_OUT/result.json"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-vrm083-runtime-${{ github.run_id }}
+          path: ${{ env.VRM083_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+          include-hidden-files: true
+      - if: always()
+        run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-vrm083-source"
 
   vrm076-terminal-module-truth-finalizer:
     name: I3 VRM-076 — terminal Module Truth fail-closed selftest
