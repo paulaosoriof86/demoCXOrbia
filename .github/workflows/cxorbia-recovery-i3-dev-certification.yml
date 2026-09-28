@@ -75,6 +75,7 @@ on:
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V110_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V111_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V112_2026-09-28.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V113_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_2026-09-24.json
   workflow_dispatch:
 
@@ -111,7 +112,7 @@ env:
   I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V112_2026-09-28.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V113_2026-09-28.json
 
 jobs:
   canonical-candidate-authority:
@@ -149,7 +150,7 @@ jobs:
           test "$(jq -r '.findings["VRM-079"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN518"
           test "$(jq -r '.findings["VRM-080"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN525"
           test "$(jq -r '.findings["VRM-081"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN547"
-          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED" || "$STATUS" == "HOLD_MODULE_TRUTH_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM087_FINALIZER_RECEIPT_SCOPE_REPROOF_REQUIRED" ]]
+          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED" || "$STATUS" == "HOLD_MODULE_TRUTH_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM087_FINALIZER_RECEIPT_SCOPE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM088_LIVE_FIXTURE_AVAILABILITY_REPROOF_REQUIRED" ]]
           echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
@@ -356,6 +357,99 @@ jobs:
           retention-days: 30
           compression-level: 0
           include-hidden-files: true
+
+
+  vrm088-live-fixture-availability-reproof:
+    name: I3 VRM-088 — availability-aware live fixtures on Run584 certified artifact
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM088_LIVE_FIXTURE_AVAILABILITY_REPROOF_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-088-reproof]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    env:
+      VRM088_OUT: .tmp/i3-vrm088-reproof
+      VRM088_CERT_RUN_ID: '36469199842'
+      VRM088_CERT_ARTIFACT: cxorbia-recovery-i3-single-source-certification-36469199842
+      VRM088_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      VRM088_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      VRM088_ARTIFACT_SHA256: d36beacdbb9d3dfcc4d034ffaa154c329e8f2184987450c59c9075ec5274fe9a
+      VRM088_CERT_CONTROL_HEAD: ef7798a607b55ef34e72b6628cdcabfd7a7c59ad
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Prove VRM-088 is control-only and product remains immutable
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$VRM088_OUT"
+          test "$VRM088_SOURCE" = "09b4e56be96dedbeb89d14f1d190bfc5b8b4f990"
+          test "$VRM088_TREE" = "f6899a631b7b277b16614f1b6534103e7615f11e"
+          test "$(git rev-parse "$VRM088_SOURCE^{tree}")" = "$VRM088_TREE"
+          test "$(git diff --name-only "$VRM088_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**' | wc -l | tr -d ' ')" = "0"
+          node --check .github/control/RECOVERY-I3-LIVE-FIXTURES-20260920-V4.mjs
+          grep -Fq "activeUiAvailability" .github/control/RECOVERY-I3-LIVE-FIXTURES-20260920-V4.mjs
+          grep -Fq "fallbackUsed" .github/control/RECOVERY-I3-LIVE-FIXTURES-20260920-V4.mjs
+          grep -Fq "NO_CANONICAL_AVAILABLE_VISIT_ANY_HR_PERIOD" .github/control/RECOVERY-I3-LIVE-FIXTURES-20260920-V4.mjs
+      - name: Install live fixture reproof dependencies
+        run: |
+          set -Eeuo pipefail
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+      - name: Authenticate canonical Firebase DEV
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Bind reproof to immutable Run584 certified artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -Eeuo pipefail
+          CERT="$RUNNER_TEMP/vrm088-cert"; SOURCE_DIR="$RUNNER_TEMP/vrm088-source"
+          rm -rf "$CERT" "$SOURCE_DIR"; mkdir -p "$CERT" "$SOURCE_DIR"
+          gh run download "$VRM088_CERT_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "$VRM088_CERT_ARTIFACT" --dir "$CERT"
+          test "$(jq -r '.decision' "$CERT/result.json")" = "PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21"
+          test "$(jq -r '.i3CertificationSourceSha' "$CERT/result.json")" = "$VRM088_SOURCE"
+          test "$(jq -r '.i3CertificationSourceTree' "$CERT/result.json")" = "$VRM088_TREE"
+          test "$(jq -r '.controlHeadSha' "$CERT/result.json")" = "$VRM088_CERT_CONTROL_HEAD"
+          test "$(jq -r '.artifactSha256' "$CERT/result.json")" = "$VRM088_ARTIFACT_SHA256"
+          test "$(sha256sum "$CERT/cxorbia-i3-certified-source.tar"|awk '{print $1}')" = "$VRM088_ARTIFACT_SHA256"
+          tar -xf "$CERT/cxorbia-i3-certified-source.tar" -C "$SOURCE_DIR"
+          echo "VRM088_CERT_DIR=$CERT" >> "$GITHUB_ENV"
+          echo "VRM088_SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
+      - name: Execute corrected reversible 10-case suite on exact Run584 artifact
+        run: |
+          set -Eeuo pipefail
+          PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" PERIOD_ID="$PERIOD_ID" I3_CERTIFICATION_SOURCE_SHA="$VRM088_SOURCE" I3_CERTIFICATION_SOURCE_TREE="$VRM088_TREE" SOURCE_DIR="$VRM088_SOURCE_DIR" PRIOR_DIR="$VRM088_CERT_DIR" PRIOR_RUN_ID="$VRM088_CERT_RUN_ID" CERTIFIED_ARTIFACT_SHA256="$VRM088_ARTIFACT_SHA256" OUT="$VRM088_OUT" node .github/control/RECOVERY-I3-LIVE-FIXTURES-20260920-V4.mjs
+          R="$VRM088_OUT/i3-live-fixtures-result.json"
+          test "$(jq -r '.decision' "$R")" = "PASS_I3_LIVE_FIXTURES_V2"
+          test "$(jq -r '.cleanup.ok' "$R")" = "true"
+          test "$(jq '[.tests[]|select(.ok==true)]|length' "$R")" = "10"
+          test "$(jq -r '.buildCountThisRun' "$R")" = "0"
+          test "$(jq -r '.deployCountThisRun' "$R")" = "0"
+          test "$(jq -r '.hrWrites' "$R")" = "0"
+          test "$(jq -r '.production' "$R")" = "false"
+          test "$(jq -r '.certifiedArtifactSha256' "$R")" = "$VRM088_ARTIFACT_SHA256"
+          test "$(jq -r '.tests[]|select(.id=="7_DISPONIBILIDAD_ASIGNACION")|.observed.activeHrAvailable' "$R")" = "0"
+          test "$(jq -r '.tests[]|select(.id=="7_DISPONIBILIDAD_ASIGNACION")|.observed.activeUiAvailability.available' "$R")" = "0"
+          test "$(jq -r '.tests[]|select(.id=="7_DISPONIBILIDAD_ASIGNACION")|.observed.fallbackUsed' "$R")" = "true"
+          test "$(jq -r '.tests[]|select(.id=="7_DISPONIBILIDAD_ASIGNACION")|.observed.fixturePeriodId' "$R")" = "cinepolis-2026-08"
+          test "$(jq -r '.tests[]|select(.id=="8_POSTULACION")|.observed.fixturePeriodId' "$R")" = "cinepolis-2026-08"
+          jq -n -S --arg source "$VRM088_SOURCE" --arg tree "$VRM088_TREE" --arg artifact "$VRM088_ARTIFACT_SHA256" --arg run "$VRM088_CERT_RUN_ID" --arg control "$GITHUB_SHA" '{decision:"PASS_VRM088_AVAILABILITY_AWARE_LIVE_FIXTURE_REPROOF",sourceSha:$source,sourceTree:$tree,certifiedArtifactSha256:$artifact,certificationRunId:$run,controlHeadSha:$control,activePeriodAvailable:0,fallbackPeriodId:"cinepolis-2026-08",testsPassed:10,cleanup:true,hrWrites:0,builds:0,deploys:0,production:false}' > "$VRM088_OUT/vrm088-result.json"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-vrm088-reproof-${{ github.run_id }}
+          path: ${{ env.VRM088_OUT }}
+          if-no-files-found: warn
+          retention-days: 30
+          compression-level: 0
+          include-hidden-files: true
+      - if: always()
+        run: rm -rf node_modules "$RUNNER_TEMP/vrm088-cert" "$RUNNER_TEMP/vrm088-source"
 
 
   vrm083-hr-browser-revision-diagnostic:

@@ -68,10 +68,10 @@ function commandReceiptId(command) {
 function commandAuditId(command) {
   return sha(command.idempotencyKey + '\0' + command.commandType + '\0' + str(command.entityId)).slice(0, 40);
 }
-function command(type, entityType, entityId, idempotencyKey, payload, expectedVersion = 'absent') {
+function command(type, entityType, entityId, idempotencyKey, payload, expectedVersion = 'absent', periodId = PERIOD_ID) {
   return {
     version: 'cxorbia-command-adapter-v1', commandType: type, entityType, entityId: entityId || null,
-    tenantId: TENANT, projectId: PROJECT_ID, periodId: PERIOD_ID, expectedVersion, idempotencyKey,
+    tenantId: TENANT, projectId: PROJECT_ID, periodId, expectedVersion, idempotencyKey,
     payload: payload || {}, source: 'i3-live-fixture', authorization: { providerEnforcementRequired: true, permission: type },
     audit: { reason: 'I3 live fixture run ' + RUN_ID }
   };
@@ -150,7 +150,7 @@ async function visibleShopperLogin(f) {
   } finally { await context.close(); }
 }
 
-async function shopperVisitReadback(f, visitId) {
+async function shopperVisitReadback(f, visitId, periodId = PERIOD_ID) {
   const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
   const page = await context.newPage();
   try {
@@ -175,6 +175,13 @@ async function shopperVisitReadback(f, visitId) {
       const d=await page.evaluate(()=>({authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY||null,boot:window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE||null,gate:window.CX_C6_HR_AUTHORITY_GATE||null,source:String(window.CX?.dataSource?.sourceRef||'')}));
       throw new Error('FUNCTIONAL_DEFECT:SHOPPER_VISIT_HR_AUTHORITY_NOT_RELEASED:' + f.testId + ':' + JSON.stringify(d).slice(0,1600));
     }
+    await page.evaluate((pid) => {
+      const d=window.CX?.data||{};
+      if(String(d.currentPeriodId||'')!==String(pid)){
+        if(typeof d.setCurrentPeriod!=='function'||d.setCurrentPeriod(pid)===false)throw new Error('PERIOD_SWITCH_REJECTED');
+      }
+    }, periodId);
+    await page.waitForFunction((pid)=>String(window.CX?.data?.currentPeriodId||'')===String(pid),periodId,{timeout:30000});
     await page.evaluate(() => window.CX.router.nav('misvisitas')); await page.waitForFunction(() => window.CX?.session?.view === 'misvisitas', null, { timeout:30000 }); await sleep(700);
     return await page.evaluate((id) => { const d=window.CX?.data||{}, mine=typeof d.visitsForShopper==='function'?d.visitsForShopper(window.CX?.backendAuth?.context?.().shopperId,false):[]; const hits=mine.filter(v=>String(v.id||v.visitId||'')===id); const all=(Array.isArray(d._visitas)?d._visitas:[]).filter(v=>String(v.id||v.visitId||'')===id); const v=all[0]||hits[0]||null; const facets=v&&typeof d.visitFacets==='function'?d.visitFacets(v):{}; return {mineCount:hits.length,allCount:all.length,available:facets.available===true,assigned:facets.assigned===true,bodyHasVisit:String(document.body?.innerText||'').includes(id)}; }, visitId);
   } finally { await context.close(); }
@@ -282,9 +289,16 @@ async function adminShopperReadback(staffUid, fixtures) {
     return base;
   } finally { await context.close(); }
 }
-async function adminPostulationReadback(staffUid, applicationId, expectedPresent) {
+async function adminPostulationReadback(staffUid, applicationId, expectedPresent, periodId = PERIOD_ID) {
   const { context, page } = await adminPage(staffUid);
   try {
+    await page.evaluate((pid) => {
+      const d=window.CX?.data||{};
+      if(String(d.currentPeriodId||'')!==String(pid)){
+        if(typeof d.setCurrentPeriod!=='function'||d.setCurrentPeriod(pid)===false)throw new Error('PERIOD_SWITCH_REJECTED');
+      }
+    }, periodId);
+    await page.waitForFunction((pid)=>String(window.CX?.data?.currentPeriodId||'')===String(pid),periodId,{timeout:30000});
     await page.evaluate(() => window.CX.router.nav('postulaciones'));
     await page.waitForFunction(() => window.CX?.session?.view === 'postulaciones', null, { timeout: 30000 });
     await sleep(800);
@@ -293,6 +307,26 @@ async function adminPostulationReadback(staffUid, applicationId, expectedPresent
       const count = posts.filter((x) => String(x.id || x.applicationId || x.postulationId || '') === id).length;
       return { count, expectedPresent: present, ok: present ? count === 1 : count === 0 };
     }, { id: applicationId, present: expectedPresent });
+  } finally { await context.close(); }
+}
+async function adminAvailableVisitReadback(staffUid, periodId) {
+  const { context, page } = await adminPage(staffUid);
+  try {
+    await page.evaluate((pid) => {
+      const d=window.CX?.data||{};
+      if(String(d.currentPeriodId||'')!==String(pid)){
+        if(typeof d.setCurrentPeriod!=='function'||d.setCurrentPeriod(pid)===false)throw new Error('PERIOD_SWITCH_REJECTED');
+      }
+    }, periodId);
+    await page.waitForFunction((pid)=>String(window.CX?.data?.currentPeriodId||'')===String(pid),periodId,{timeout:30000});
+    await page.evaluate(() => window.CX.router.nav('visitas'));
+    await page.waitForFunction(() => window.CX?.session?.view === 'visitas', null, { timeout:30000 });
+    await sleep(700);
+    return await page.evaluate(() => {
+      const d=window.CX?.data||{}, visits=typeof d.visitas==='function'?d.visitas():[];
+      const available=visits.filter(v=>typeof d.visitFacets==='function'?d.visitFacets(v)?.available===true:['disponible','available'].includes(String(v?.estado||v?.status||'').toLowerCase())&&!String(v?.shopperId||''));
+      return {periodId:String(d.currentPeriodId||''),total:visits.length,available:available.length,availableIds:available.map(v=>String(v?.id||v?.visitId||'')).filter(Boolean).sort()};
+    });
   } finally { await context.close(); }
 }
 async function cleanupAll() {
@@ -501,15 +535,21 @@ try {
   const activePeriod = arr(hr.periods).find((p) => str(p.id || p.periodId) === PERIOD_ID) || null;
   const activePeriodKey = str(activePeriod?.key || activePeriod?.periodKey);
   if (!activePeriodKey) throw new Error('MAPPING_FAILURE:ACTIVE_PERIOD_NOT_FOUND_IN_HR');
-  const rawAvailable = arr(hr.visits).filter((v) =>
-    str(v.periodKey) === activePeriodKey &&
+  const periodByKey = new Map(arr(hr.periods).map((p)=>[str(p.key||p.periodKey),p]).filter(([k])=>k));
+  const rawAvailableAll = arr(hr.visits).filter((v) =>
     ['disponible','available'].includes(str(v.estado || v.status).toLowerCase()) &&
     !str(v.shopperId)
   );
+  const rawAvailableActive = rawAvailableAll.filter((v)=>str(v.periodKey)===activePeriodKey);
+  const activeUiAvailability = await adminAvailableVisitReadback(staff.id, PERIOD_ID);
+  if (activeUiAvailability.periodId !== PERIOD_ID || Number(activeUiAvailability.available) !== rawAvailableActive.length) {
+    throw new Error('MAPPING_FAILURE:ACTIVE_PERIOD_AVAILABLE_HR_UI_MISMATCH:' + JSON.stringify({hr:rawAvailableActive.length,ui:activeUiAvailability}));
+  }
   const availability = [];
-  for (const visit of rawAvailable) {
-    const id = sourceVisitId(visit), durableId = durableVisitId(visit);
-    if (!id || !durableId) throw new Error('MAPPING_FAILURE:AVAILABLE_HR_VISIT_KEY_MISSING');
+  for (const visit of rawAvailableAll) {
+    const id = sourceVisitId(visit), durableId = durableVisitId(visit), periodKey=str(visit.periodKey);
+    const period=periodByKey.get(periodKey)||null, fixturePeriodId=str(period?.id||period?.periodId);
+    if (!id || !durableId || !fixturePeriodId) throw new Error('MAPPING_FAILURE:AVAILABLE_HR_VISIT_KEY_MISSING');
     const ref = project.collection('visits').doc(durableId);
     const snap = await ref.get();
     if (!snap.exists) throw new Error('PERSISTENCE_FAILURE:AVAILABLE_HR_VISIT_NOT_MATERIALIZED:' + sha(id + '\0' + durableId).slice(0, 18));
@@ -517,16 +557,24 @@ try {
     if (hrRevision && str(durable.hrSourceRevision) && str(durable.hrSourceRevision) !== hrRevision) {
       throw new Error('PERSISTENCE_FAILURE:HR_DURABLE_REVISION_DIVERGENCE:' + sha(id).slice(0, 18));
     }
+    if (str(durable.periodId) && str(durable.periodId) !== fixturePeriodId) {
+      throw new Error('PERSISTENCE_FAILURE:HR_DURABLE_PERIOD_DIVERGENCE:' + sha(id).slice(0,18));
+    }
     const durableAvailable = !str(durable.shopperId) && ['disponible','available'].includes(str(durable.estado || durable.status).toLowerCase());
     const pendingPlatform = !!(str(durable.shopperId) && str(durable.assignmentSource) === 'platform' && str(durable.assignmentSyncStatus) === 'pending_hr');
     if (!durableAvailable && !pendingPlatform) {
       throw new Error('PERSISTENCE_FAILURE:HR_DURABLE_AVAILABILITY_DIVERGENCE:' + sha(id).slice(0, 18));
     }
-    availability.push({ visit, id, durableId, ref, durable, durableAvailable, pendingPlatform });
+    availability.push({ visit, id, durableId, ref, durable, durableAvailable, pendingPlatform, periodKey, periodId:fixturePeriodId });
   }
-  const available = availability.filter((x) => x.durableAvailable);
-  if (available.length < 1) throw new Error('ENVIRONMENT_FAILURE:NO_CANONICAL_AVAILABLE_VISIT_ACTIVE_PERIOD');
+  const canonicalAvailable = availability.filter((x) => x.durableAvailable).sort((a,b)=>b.periodKey.localeCompare(a.periodKey)||a.id.localeCompare(b.id));
+  const activeAvailable = canonicalAvailable.filter((x)=>x.periodKey===activePeriodKey);
+  const available = activeAvailable.length ? activeAvailable : canonicalAvailable;
+  if (available.length < 1) throw new Error('ENVIRONMENT_FAILURE:NO_CANONICAL_AVAILABLE_VISIT_ANY_HR_PERIOD');
   const assignCandidate = available[0], postCandidate = available[1] || available[0];
+  const fixturePeriodId=assignCandidate.periodId, fixturePeriodKey=assignCandidate.periodKey;
+  if(postCandidate.periodId!==fixturePeriodId) throw new Error('ENVIRONMENT_FAILURE:AVAILABLE_VISITS_SPAN_PERIODS_WITHOUT_SHARED_FIXTURE_PERIOD');
+  const fallbackUsed=fixturePeriodId!==PERIOD_ID;
   const assignVisit = assignCandidate.visit, postVisit = postCandidate.visit;
   const assignId = assignCandidate.id, postId = postCandidate.id;
   const assignDurableId = assignCandidate.durableId, postDurableId = postCandidate.durableId;
@@ -534,35 +582,35 @@ try {
   const assignBefore = assignCandidate.durable, postBefore = postCandidate.durable;
 
   const gt = fixtureDefs.find((x) => x.testId === '1_SHOPPER_GT');
-  const assignCommand = command('visit.assign', 'visit', assignId, 'i3-assign-' + RUN_ID, { visitId: assignId, hrRowId: assignBefore.hrRowId || assignVisit.hrRowId || null, shopperId: gt.id, assignmentSource: 'platform' }, 'source-current');
+  const assignCommand = command('visit.assign', 'visit', assignId, 'i3-assign-' + RUN_ID, { visitId: assignId, hrRowId: assignBefore.hrRowId || assignVisit.hrRowId || null, shopperId: gt.id, assignmentSource: 'platform' }, 'source-current', fixturePeriodId);
   trackCommand(assignCommand);
   const assignAck = await executeHttp(staffToken, assignCommand);
   const assignAfter = (await assignRef.get()).data() || {};
   const owned = await project.collection('visits').where('shopperId', '==', gt.id).get();
   const exactOwned = owned.docs.filter((d) => d.id === assignDurableId).length;
-  const shopperVisit = await shopperVisitReadback(gt, assignId);
+  const shopperVisit = await shopperVisitReadback(gt, assignId, fixturePeriodId);
   const assignedOk = assignAck.ok === true && assignAck.providerAck === true && str(assignAfter.shopperId) === gt.id && !['disponible','available'].includes(str(assignAfter.estado || assignAfter.status).toLowerCase()) && exactOwned === 1 && shopperVisit.mineCount === 1 && shopperVisit.assigned === true && shopperVisit.available === false;
   if (!assignedOk) throw new Error('PROVIDER_FAILURE:ASSIGNMENT_ACK_OR_READBACK');
   await assignRef.set(assignBefore, { merge: false });
   cleanupTargets.receipts.add(commandReceiptId(assignCommand)); cleanupTargets.audits.add(commandAuditId(assignCommand));
   const restored = (await assignRef.get()).data() || {};
-  record('7_DISPONIBILIDAD_ASIGNACION', 'Active-period HR-eligible + durable-available visit → provider ACK assignment → removed from available state → appears exactly once to shopper', { providerAck: assignAck.providerAck, shopperId: assignAfter.shopperId, state: assignAfter.estado || assignAfter.status, exactOwned, shopperVisible: shopperVisit, activePeriodKey, rawHrAvailable: rawAvailable.length, canonicalAvailable: available.length, pendingPlatformExcluded: availability.filter((x) => x.pendingPlatform).length, sourceVisitId: assignId, durableVisitId: assignDurableId }, { assignmentSource: assignAfter.assignmentSource, assignmentSyncStatus: assignAfter.assignmentSyncStatus, hrRowId: assignAfter.hrRowId || null, hrSourceRevision: assignBefore.hrSourceRevision || null }, 'Original DEV Firestore visit snapshot restored; HR untouched', { shopperId: restored.shopperId || null, state: restored.estado || restored.status }, !str(restored.shopperId) && ['disponible','available'].includes(str(restored.estado || restored.status).toLowerCase()));
+  record('7_DISPONIBILIDAD_ASIGNACION', 'Active-period HR/UI availability parity + canonical HR-eligible durable visit (active preferred; latest-period fallback only when active is exhausted) → provider ACK assignment → removed from available state → appears exactly once to shopper', { providerAck: assignAck.providerAck, shopperId: assignAfter.shopperId, state: assignAfter.estado || assignAfter.status, exactOwned, shopperVisible: shopperVisit, activePeriodKey, activePeriodId:PERIOD_ID, activeHrAvailable:rawAvailableActive.length, activeUiAvailability, fixturePeriodId, fixturePeriodKey, fallbackUsed, rawHrAvailableAll:rawAvailableAll.length, canonicalAvailableAll:canonicalAvailable.length, canonicalAvailableSelectedPeriod:available.filter(x=>x.periodId===fixturePeriodId).length, pendingPlatformExcluded: availability.filter((x) => x.pendingPlatform).length, sourceVisitId: assignId, durableVisitId: assignDurableId }, { assignmentSource: assignAfter.assignmentSource, assignmentSyncStatus: assignAfter.assignmentSyncStatus, hrRowId: assignAfter.hrRowId || null, hrSourceRevision: assignBefore.hrSourceRevision || null }, 'Original DEV Firestore visit snapshot restored; HR untouched', { shopperId: restored.shopperId || null, state: restored.estado || restored.status }, !str(restored.shopperId) && ['disponible','available'].includes(str(restored.estado || restored.status).toLowerCase()));
 
   const shopperToken = await passwordToIdToken(gt.internalEmail, gt.credential.password, apiKey);
-  const createPost = command('application.create', 'application', null, 'i3-post-create-' + RUN_ID, { visitId: postId, hrRowId: postBefore.hrRowId || postVisit.hrRowId || null, shopperId: gt.id, proposedDate: '2026-09-30', note: 'I3 live fixture' });
+  const createPost = command('application.create', 'application', null, 'i3-post-create-' + RUN_ID, { visitId: postId, hrRowId: postBefore.hrRowId || postVisit.hrRowId || null, shopperId: gt.id, proposedDate: str(postVisit.disponibleDesde||postVisit.measurementWindowStart||postVisit.availableFromRaw)||null, note: 'I3 live fixture' }, 'absent', fixturePeriodId);
   trackCommand(createPost);
   const postAck = await executeHttp(shopperToken, createPost);
   if (!(postAck.ok === true && postAck.providerAck === true && postAck.entityId)) throw new Error('PROVIDER_FAILURE:POSTULATION_CREATE:' + str(postAck.code));
   const postulationRef = project.collection('postulations').doc(postAck.entityId); cleanupTargets.docs.add(postulationRef.path);
   const postData = (await postulationRef.get()).data() || {};
-  const adminPresent = await adminPostulationReadback(staff.id, postAck.entityId, true);
-  const deletePost = command('application.delete', 'application', postAck.entityId, 'i3-post-delete-' + RUN_ID, { applicationId: postAck.entityId, visitId: postId }, postData.version ?? postData.updatedAt ?? 'source-current');
+  const adminPresent = await adminPostulationReadback(staff.id, postAck.entityId, true, fixturePeriodId);
+  const deletePost = command('application.delete', 'application', postAck.entityId, 'i3-post-delete-' + RUN_ID, { applicationId: postAck.entityId, visitId: postId }, postData.version ?? postData.updatedAt ?? 'source-current', fixturePeriodId);
   trackCommand(deletePost);
   const deleteAck = await executeHttp(shopperToken, deletePost);
   const absentPost = !(await postulationRef.get()).exists;
-  const adminAbsent = await adminPostulationReadback(staff.id, postAck.entityId, false);
+  const adminAbsent = await adminPostulationReadback(staff.id, postAck.entityId, false, fixturePeriodId);
   if (!(adminPresent.ok && deleteAck.ok === true && deleteAck.providerAck === true && absentPost && adminAbsent.ok)) throw new Error('PERSISTENCE_FAILURE:POSTULATION_DELETE_OR_REAPPEAR');
-  record('8_POSTULACION', 'Create application ACK → visible in Gestión de Postulaciones → delete ACK → absent and does not reappear', { createAck: postAck.providerAck, adminVisible: adminPresent, deleteAck: deleteAck.providerAck, adminAbsent, sourceVisitId: postId, durableVisitId: postDurableId, reusedSingleAvailableVisit: available.length === 1 }, { applicationFingerprint: sha(postAck.entityId).slice(0, 18), source: postData.source || null }, 'Postulation deleted through provider; receipts/audits cleaned after test', { firestoreAbsent: absentPost, adminReadModelAbsent: adminAbsent.ok }, true);
+  record('8_POSTULACION', 'Canonical HR-available visit in explicit fixture period → create application ACK → visible in Gestión de Postulaciones in same period → delete ACK → absent and does not reappear', { createAck: postAck.providerAck, adminVisible: adminPresent, deleteAck: deleteAck.providerAck, adminAbsent, fixturePeriodId, fixturePeriodKey, fallbackUsed, sourceVisitId: postId, durableVisitId: postDurableId, reusedSingleAvailableVisit: available.length === 1 }, { applicationFingerprint: sha(postAck.entityId).slice(0, 18), source: postData.source || null }, 'Postulation deleted through provider; receipts/audits cleaned after test', { firestoreAbsent: absentPost, adminReadModelAbsent: adminAbsent.ok }, true);
 } catch (e) {
   failure = e;
 } finally {

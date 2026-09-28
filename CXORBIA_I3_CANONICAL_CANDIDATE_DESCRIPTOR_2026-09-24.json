@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "READY_FOR_TERMINAL_CERTIFICATION",
+  "status": "HOLD_VRM088_LIVE_FIXTURE_AVAILABILITY_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_REOPENED_POST_RUN500_DRIFT",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "09b4e56be96dedbeb89d14f1d190bfc5b8b4f990",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "87888d3792b011b10a87611dde3efc69e3f4eb40",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V112_2026-09-28.json",
-  "findingsLedgerExpectedGitBlob": "be69a2722f0ad0431bf008bc945b5965e6c96dcc",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V113_2026-09-28.json",
+  "findingsLedgerExpectedGitBlob": "093f9664e952f61ca2d1feb11e0053d8d18389b6",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
-  "terminalCertificationAllowed": true,
-  "activeBlocker": null,
-  "nextFindingId": "VRM-088",
+  "terminalCertificationAllowed": false,
+  "activeBlocker": "VRM-088",
+  "nextFindingId": "VRM-089",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Execute one canonical terminal certification on unchanged product source 09b4e56be96dedbeb89d14f1d190bfc5b8b4f990 with the VRM-087 finalizer control fix. Require fresh HR, exhaustive human acceptance, hardened semantic focal, terminal Module Truth 20/20, Gate20, one deterministic artifact, live fixtures 10/10 and Gate21 on that same artifact. Do not touch production; I4 remains blocked pending I3 GO and explicit Paula authorization.",
+  "exactNextAction": "Run only the VRM-088 live-fixture control reproof against the already certified Run584 artifact SHA d36beacdbb9d3dfcc4d034ffaa154c329e8f2184987450c59c9075ec5274fe9a. Require September HR/UI availability parity at zero, tests 7/8 executed on an exact canonical HR-available visit with explicit period context, 10/10 PASS, cleanup=true, zero HR writes, zero builds/deploys, production=false. Do not rerun terminal or Gate21 until this control proof passes.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -102,20 +102,22 @@
     "attempt": 3
   },
   "lastTerminalAttempt": {
-    "runId": 36467325790,
-    "runNumber": 582,
-    "jobId": 109080637202,
+    "runId": 36469199842,
+    "runNumber": 584,
+    "terminalJobId": 109086949915,
+    "liveFixtureJobId": 109091370497,
     "sourceSha": "09b4e56be96dedbeb89d14f1d190bfc5b8b4f990",
     "sourceTree": "f6899a631b7b277b16614f1b6534103e7615f11e",
-    "hrRevision": "d068b00c62a940f0ad828436ffcf22fbf1dbb43e763ab4e14854102bf5f84a51",
+    "certifiedArtifactSha256": "d36beacdbb9d3dfcc4d034ffaa154c329e8f2184987450c59c9075ec5274fe9a",
+    "terminalCertification": "PASS",
+    "moduleTruth": "20/20 MATCH",
+    "gate20": "PASS",
     "fullHumanAcceptance": "PASS",
     "semanticOracleAndHardenedFocal": "PASS",
-    "preTerminalModuleTruth": "20/20 MATCH",
-    "preTerminalPendingFiles": 0,
-    "failure": "RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_SOURCE:VRM-077:visits-review-postulations-reservations",
-    "certificationArtifactCreated": false,
-    "diagnosticsArtifactId": 10990916546,
-    "diagnosticsArtifactDigest": "sha256:dd6ccda19b91624a46abde5317a5c5081e45ef18ea8af7c2aed6ada0296c5859",
+    "liveFixtures": "HOLD_I3_LIVE_FIXTURES_V2_8_OF_10",
+    "failure": "ENVIRONMENT_FAILURE:NO_CANONICAL_AVAILABLE_VISIT_ACTIVE_PERIOD",
+    "cleanup": true,
+    "gate21": "NOT_RUN",
     "productChanged": false,
     "production": false
   },
@@ -976,6 +978,22 @@
     "artifactDigest": "sha256:aefc17e2d53bdf9f200e0d27b60d6e990c3d67e1e681478bc1e26b8e3f685346",
     "productSourceChanged": false,
     "terminalRerunAllowed": true,
+    "production": false
+  },
+  "vrm088": {
+    "state": "OPEN_PROVEN_RUN584_CONTROL_REPROOF_REQUIRED",
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "observedFailureClassification": "ENVIRONMENT_FAILURE",
+    "productDefect": false,
+    "provenOwner": [
+      ".github/control/RECOVERY-I3-LIVE-FIXTURES-20260920-V4.mjs",
+      ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+    ],
+    "runId": 36469199842,
+    "certifiedArtifactSha256": "d36beacdbb9d3dfcc4d034ffaa154c329e8f2184987450c59c9075ec5274fe9a",
+    "activePeriodAvailable": 0,
+    "fallbackCanonicalAvailablePeriod": "cinepolis-2026-08",
+    "terminalRerunAllowed": false,
     "production": false
   }
 }
