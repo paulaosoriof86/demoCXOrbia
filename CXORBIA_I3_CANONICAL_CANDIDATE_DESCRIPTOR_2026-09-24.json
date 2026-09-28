@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_ADMIN_008_HR_MAPPING_REPROOF_REQUIRED",
+  "status": "HOLD_PREI4_ADMIN_008_DEV_RUNTIME_MATERIALIZATION_REQUIRED",
   "iteration": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "5c472e089e6d8492b184a7cb24e78816d347c2de",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "09b4e56be96dedbeb89d14f1d190bfc5b8b4f990",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V120_2026-09-28.json",
-  "findingsLedgerExpectedGitBlob": "d056adaea3bf738cbd12e1923b74f6f071f18504",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V121_2026-09-28.json",
+  "findingsLedgerExpectedGitBlob": "3bf152e84e5a5396884e28d630b7195202ed7b6f",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run the canonical focal mapping reproof on product source 5c472e089e6d8492b184a7cb24e78816d347c2de. Only if syntax + project-scoped cinema mapping + assignment classification pass, deploy only the DEV HR runtime necessary to obtain a fresh HR revision, require refreshError=null and September GT=34/HN=10/total=44, then recalculate August/September KPIs before continuing PREI4-ADMIN-002..007.",
+  "exactNextAction": "Build product source 5c472e089e6d8492b184a7cb24e78816d347c2de exactly once and update only cxorbia-live-hr-dev. Require a fresh non-d068b00 HR revision, refreshError=null, September GT=34/HN=10/total=44, canonical August/September KPIs equal the direct-provider authority, and Hosting unchanged. Production remains DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1049,12 +1049,14 @@
     "liveHrDriftLock": "CXORBIA_PRE_I4_LIVE_HR_DRIFT_LOCK_2026-09-28.json"
   },
   "preI4Admin008": {
-    "state": "SOURCE_FIXED_REPROOF_REQUIRED",
+    "state": "SOURCE_PROVEN_DEV_RUNTIME_MATERIALIZATION_REQUIRED",
     "classification": "MAPPING_FAILURE",
     "sourceSha": "5c472e089e6d8492b184a7cb24e78816d347c2de",
     "sourceTree": "8abf63499d3df6ef2a9a8dfa22ca1a080ed67c83",
     "predecessorSha": "09b4e56be96dedbeb89d14f1d190bfc5b8b4f990",
     "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V120_2026-09-28.json",
-    "production": false
+    "production": false,
+    "sourceProofRunId": 36499124903,
+    "sourceProofArtifactId": 11004707196
   }
 }
