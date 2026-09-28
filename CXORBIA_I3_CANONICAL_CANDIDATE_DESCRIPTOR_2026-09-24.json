@@ -4,11 +4,11 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_REOPENED_POST_RUN500_DRIFT",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "4b0c02cba9237721cc2e9352f95fd26afce0e037",
+  "productSourceSha": "09b4e56be96dedbeb89d14f1d190bfc5b8b4f990",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "b168955f405cd82630a8caad04de0b1766b26fc8",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V102_2026-09-28.json",
-  "findingsLedgerExpectedGitBlob": "aa047b8f13083306acba47f1c0ac983093cfb8af",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V103_2026-09-28.json",
+  "findingsLedgerExpectedGitBlob": "9c214c0dbfe8412afa607f7fae2b3f013c5bd39b",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Deploy exact source 4b0c02cba9237721cc2e9352f95fd26afce0e037 to Recovery DEV Hosting only if served beneficios.js is not already exact. Prove runtime cxorbia-live-hr-dev-00226-wj2/digest unchanged, exact served bytes, and shopper Benefits renders human payment labels with no pending_source_confirmation token. Then freeze receipt and re-run Module Truth before terminal.",
+  "exactNextAction": "Re-run VRM-084 Hosting-only DEV proof on exact source 09b4e56be96dedbeb89d14f1d190bfc5b8b4f990/tree f6899a631b7b277b16614f1b6534103e7615f11e. Require source regression PASS, unchanged runtime 00226-wj2/digest, exact beneficios.js served, shopper Benefits shows 'Pendiente de confirmación' and 'Estado de pago', and no internal technical token. No runtime build/deploy or data/Auth/HR writes.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -414,7 +414,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "b6744c464835fb66c3c0e3b2db824e1d43cc4da6",
+  "productSourceTree": "f6899a631b7b277b16614f1b6534103e7615f11e",
   "lastLiveReproof": {
     "runId": 36217529367,
     "runNumber": 465,
@@ -807,8 +807,8 @@
   },
   "pendingMaterialization": {
     "findingId": "VRM-084",
-    "sourceSha": "4b0c02cba9237721cc2e9352f95fd26afce0e037",
-    "sourceTree": "b6744c464835fb66c3c0e3b2db824e1d43cc4da6",
+    "sourceSha": "09b4e56be96dedbeb89d14f1d190bfc5b8b4f990",
+    "sourceTree": "f6899a631b7b277b16614f1b6534103e7615f11e",
     "mode": "HOSTING_ONLY",
     "runtimeRevision": "cxorbia-live-hr-dev-00226-wj2",
     "runtimeDigest": "sha256:d5093cdd92515bad11353c7dfb42e2d192c7f3dec264eea3d24dfcad8c6219bd",

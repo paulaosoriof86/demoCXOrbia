@@ -47,6 +47,7 @@ on:
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V100_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V101_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V102_2026-09-28.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V103_2026-09-28.json
       - tools/qa/cxorbia-i3-vrm084-benefits-human-label-live.mjs
       - tools/qa/cxorbia-i3-vrm081-population-credential-diagnostic.mjs
       - tools/qa/cxorbia-i3-vrm083-hr-browser-revision-diagnostic.mjs
@@ -101,7 +102,7 @@ env:
   I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V102_2026-09-28.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V103_2026-09-28.json
 
 jobs:
   canonical-candidate-authority:
@@ -413,8 +414,8 @@ jobs:
         run: |
           set -Eeuo pipefail
           mkdir -p "$VRM084_OUT"
-          test "$VRM084_SOURCE" = "4b0c02cba9237721cc2e9352f95fd26afce0e037"
-          test "$VRM084_TREE" = "b6744c464835fb66c3c0e3b2db824e1d43cc4da6"
+          test "$VRM084_SOURCE" = "09b4e56be96dedbeb89d14f1d190bfc5b8b4f990"
+          test "$VRM084_TREE" = "f6899a631b7b277b16614f1b6534103e7615f11e"
           test "$(git rev-parse "$VRM084_SOURCE^{tree}")" = "$VRM084_TREE"
           test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED"
           git diff --name-only "87888d3792b011b10a87611dde3efc69e3f4eb40" "$VRM084_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**' | tee "$VRM084_OUT/product-diff.txt"
