@@ -355,6 +355,86 @@ test('VRM-081 / proven exact alias self-crosswalk migrates the same principal to
   assert.equal(auth.users.size,1);
 });
 
+test('VRM-081 / dual exact principals preserve canonical and retire historical alias idempotently',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);
+  const alias='shopper_gt_dual_alias',canonical='shp-dual-canonical';
+  const first=snapshot({shopperId:alias,shopperCode:'TYA_GT_DUAL'});first.visits[0].shopper='Cesar Castillo';
+  await p.reconcileSnapshot(first,{sourceRevision:'rev-dual-alias'});
+  const aliasUid=stableShopperUid('tenant-a',alias),canonicalUid='canonical-existing-uid';
+  db.seed(`tenants/tenant-a/shoppers/${canonical}`,{id:canonical,shopperId:canonical,tenantId:'tenant-a',projectIds:['project-a'],nombre:'Cesar Castillo',firstName:'Cesar',lastName:'Castillo',sourceType:'hr_external'});
+  db.seed(`tenants/tenant-a/users/${canonicalUid}`,{active:true,tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:canonical,projectIds:['project-a'],providerUidFingerprint:providerUidFingerprint(canonicalUid)});
+  auth.seed({uid:canonicalUid,email:'canonical-existing@example.invalid',password:'KEEP-CANONICAL',disabled:false,customClaims:{tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:canonical,projectIds:['project-a']}});
+  db.seed('tenants/tenant-a/shopperIdentityLinks/link-dual',{tenantId:'tenant-a',canonicalShopperId:canonical,sourceSystem:'hr',sourceIdentity:{legacyId:alias},projectScope:'project-a',status:'active',authorityType:'provider_exact',authorityRef:'provider-ack-dual'});
+  const result=await p.reconcileSnapshot(first,{sourceRevision:'rev-dual-canonical'});
+  assert.equal(result.identityMigrationCount,0);
+  assert.equal(result.aliasMigrated,1);
+  assert.equal(result.aliasPrincipalsRetired,1);
+  assert.equal((await auth.getUser(canonicalUid)).disabled,false);
+  assert.equal((await auth.getUser(canonicalUid)).customClaims.shopperId,canonical);
+  assert.equal((await auth.getUser(aliasUid)).disabled,true);
+  assert.equal(db.get(`tenants/tenant-a/users/${canonicalUid}`).active,true);
+  assert.equal(db.get(`tenants/tenant-a/users/${canonicalUid}`).shopperId,canonical);
+  assert.equal(db.get(`tenants/tenant-a/users/${aliasUid}`).active,false);
+  assert.equal(db.get(`tenants/tenant-a/users/${aliasUid}`).status,'superseded');
+  assert.equal(db.get(`tenants/tenant-a/users/${aliasUid}`).supersededByShopperId,canonical);
+  assert.equal(db.get(`tenants/tenant-a/shopperIdentityCrosswalk/${alias}`).shopperId,canonical);
+  const replay=await p.reconcileSnapshot(first,{sourceRevision:'rev-dual-canonical'});
+  assert.equal(replay.aliasPrincipalsRetired,0);
+  assert.equal((await auth.getUser(aliasUid)).disabled,true);
+  assert.equal((await auth.getUser(canonicalUid)).disabled,false);
+});
+
+test('VRM-081 / two alias-only exact principals choose deterministic non-credential keeper and retire the other',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);
+  const a='shopper_gt_alias_a',b='shopper_gt_alias_z',canonical='shp-alias-pair';
+  db.seed(`tenants/tenant-a/shoppers/${canonical}`,{id:canonical,shopperId:canonical,tenantId:'tenant-a',projectIds:['project-a'],nombre:'Cesar Castillo',firstName:'Cesar',lastName:'Castillo',sourceType:'hr_external'});
+  for(const [alias,uid] of [[a,'alias-a-uid'],[b,'alias-z-uid']]){
+    db.seed(`tenants/tenant-a/shoppers/${alias}`,{id:alias,shopperId:alias,tenantId:'tenant-a',projectIds:['project-a'],nombre:'Cesar Castillo',sourceType:'hr_external'});
+    db.seed(`tenants/tenant-a/shopperIdentityCrosswalk/${alias}`,{tenantId:'tenant-a',shopperId:alias,projectIds:['project-a'],providerUidFingerprint:providerUidFingerprint(uid),sourceStableKey:alias,identityMode:'stable_hr_shopper_id',sourceType:'hr_external',fuzzyMatching:false});
+    db.seed(`tenants/tenant-a/users/${uid}`,{active:true,tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:alias,projectIds:['project-a'],providerUidFingerprint:providerUidFingerprint(uid)});
+    auth.seed({uid,email:`${uid}@example.invalid`,password:'LEGACY',disabled:false,customClaims:{tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:alias,projectIds:['project-a']}});
+    db.seed(`tenants/tenant-a/shopperIdentityLinks/link-${alias}`,{tenantId:'tenant-a',canonicalShopperId:canonical,sourceSystem:'hr',sourceIdentity:{legacyId:alias},projectScope:'project-a',status:'active',authorityType:'provider_exact',authorityRef:`ack-${alias}`});
+  }
+  const snap=snapshot({shopperId:b,shopperCode:'TYA_GT_ALIAS_Z'});
+  snap.visits=[
+    {...snap.visits[0],id:'visit-z',shopperId:b,shopperCode:'TYA_GT_ALIAS_Z',shopper:'Cesar Castillo'},
+    {...snap.visits[0],id:'visit-a',shopperId:a,shopperCode:'TYA_GT_ALIAS_A',shopper:'Cesar Castillo'}
+  ];
+  const result=await p.reconcileSnapshot(snap,{sourceRevision:'rev-alias-pair'});
+  assert.equal(result.identityReviewCount,0);
+  assert.equal(result.identityMigrationCount,0);
+  assert.equal(result.aliasMigrated,2);
+  assert.equal(result.aliasPrincipalsRetired,1);
+  assert.equal(db.get('tenants/tenant-a/users/alias-a-uid').shopperId,canonical);
+  assert.equal(db.get('tenants/tenant-a/users/alias-a-uid').active,true);
+  assert.equal((await auth.getUser('alias-a-uid')).disabled,false);
+  assert.equal((await auth.getUser('alias-a-uid')).customClaims.shopperId,canonical);
+  assert.equal(db.get('tenants/tenant-a/users/alias-z-uid').active,false);
+  assert.equal((await auth.getUser('alias-z-uid')).disabled,true);
+  assert.equal(db.get(`tenants/tenant-a/shopperIdentityCrosswalk/${a}`).shopperId,canonical);
+  assert.equal(db.get(`tenants/tenant-a/shopperIdentityCrosswalk/${b}`).shopperId,canonical);
+});
+
+test('VRM-081 / multiple credential-bearing alias principals remain fail closed',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);
+  const a='shopper_gt_credential_alias_a',b='shopper_gt_credential_alias_b',canonical='shp-credential-pair';
+  db.seed(`tenants/tenant-a/shoppers/${canonical}`,{id:canonical,shopperId:canonical,tenantId:'tenant-a',projectIds:['project-a'],nombre:'Cesar Castillo',sourceType:'hr_external'});
+  for(const [alias,uid,login] of [[a,'cred-a','cesar.a'],[b,'cred-b','cesar.b']]){
+    db.seed(`tenants/tenant-a/shopperIdentityCrosswalk/${alias}`,{tenantId:'tenant-a',shopperId:alias,projectIds:['project-a'],providerUidFingerprint:providerUidFingerprint(uid),sourceStableKey:alias,identityMode:'stable_hr_shopper_id',sourceType:'hr_external',fuzzyMatching:false});
+    db.seed(`tenants/tenant-a/users/${uid}`,{active:true,tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:alias,projectIds:['project-a'],providerUidFingerprint:providerUidFingerprint(uid),visibleLogin:login,credentialRuleVersion:CREDENTIAL_RULE_VERSION,credentialState:'enrolled'});
+    auth.seed({uid,email:internalEmailTest('tenant-a',login),disabled:false,customClaims:{tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:alias,projectIds:['project-a']}});
+    db.seed(`tenants/tenant-a/shopperIdentityLinks/link-${alias}`,{tenantId:'tenant-a',canonicalShopperId:canonical,sourceSystem:'hr',sourceIdentity:{legacyId:alias},projectScope:'project-a',status:'active',authorityType:'provider_exact',authorityRef:`ack-${alias}`});
+  }
+  const snap=snapshot({shopperId:a,shopperCode:'TYA_GT_CRED_A'});
+  snap.visits=[
+    {...snap.visits[0],id:'cred-a',shopperId:a,shopper:'Cesar Castillo'},
+    {...snap.visits[0],id:'cred-b',shopperId:b,shopper:'Cesar Castillo'}
+  ];
+  await assert.rejects(()=>p.reconcileSnapshot(snap,{sourceRevision:'rev-credential-pair'}),/SHOPPER_EXACT_ALIAS_MULTIPLE_CREDENTIAL_BEARING_PRINCIPALS/);
+  assert.equal((await auth.getUser('cred-a')).disabled,false);
+  assert.equal((await auth.getUser('cred-b')).disabled,false);
+});
+
 test('VRM-081 / exact alias with no prior membership or Auth materializes one canonical principal only',async()=>{
   const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);
   const alias='shopper_gt_alias_no_principal',canonical='canonical-no-principal';
