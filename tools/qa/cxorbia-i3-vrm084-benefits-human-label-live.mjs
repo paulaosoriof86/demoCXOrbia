@@ -48,10 +48,12 @@ await page.waitForTimeout(3000);
 if(!/beneficios/i.test(await page.locator('body').innerText())){const link=page.locator('[data-route="beneficios"],a[href="#beneficios"]').first();if(await link.count())await link.click();await page.waitForTimeout(3000);}
 const body=await page.locator('body').innerText();
 const technical=/pending_source_confirmation|pending_financial_source|pending_or_review|honorarium_pending_source|hr_operational_amount_pending_financial_reconciliation/i.test(body);
-const human=/Pendiente de confirmación/i.test(body);
+const human=/Pendiente de confirmación|Pago confirmado|Pendiente de validación/i.test(body);
 const heading=/Mis Beneficios/i.test(body);
+const humanHeader=/Estado de pago/i.test(body);
+const authorityApplied=await page.evaluate(()=>window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true);
 await page.screenshot({path:path.join(OUT,'vrm084-beneficios.png'),fullPage:true});
-const result={decision:heading&&human&&!technical?'PASS_I3_VRM084_BENEFITS_HUMAN_LABEL':'FAIL_I3_VRM084_BENEFITS_HUMAN_LABEL',sourceSha:SOURCE,target:{shopperId,name:profile.nombre||profile.name,uid:member.id},heading,humanLabelVisible:human,technicalTokenVisible:technical,authorityApplied:await page.evaluate(()=>window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true),revision:await page.evaluate(()=>String(window.CX?.data?.previewMeta?.sourceRevision||window.CX_TYA_HR_LIVE_META?.revision||'')),safety:{writes:0,hrWrites:0,authWrites:0,production:false}};
+const result={decision:heading&&humanHeader&&!technical&&authorityApplied?'PASS_I3_VRM084_BENEFITS_HUMAN_LABEL':'FAIL_I3_VRM084_BENEFITS_HUMAN_LABEL',sourceSha:SOURCE,target:{shopperId,name:profile.nombre||profile.name,uid:member.id},heading,humanHeaderVisible:humanHeader,humanLabelVisible:human,technicalTokenVisible:technical,authorityApplied,revision:await page.evaluate(()=>String(window.CX?.data?.previewMeta?.sourceRevision||window.CX_TYA_HR_LIVE_META?.revision||'')),safety:{writes:0,hrWrites:0,authWrites:0,production:false}};
 fs.writeFileSync(path.join(OUT,'result.json'),JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result,null,2));
 await ctx.close();await browser.close();
 if(result.decision!=='PASS_I3_VRM084_BENEFITS_HUMAN_LABEL')process.exitCode=1;
