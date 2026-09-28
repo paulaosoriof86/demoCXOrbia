@@ -66,5 +66,11 @@
     "noLegacyDatabaseCopy": true,
     "productionRequiresExplicitPaulaAuthorization": true
   },
-  "exactNextAction": "Await explicit Paula authorization for I4. On authorization, deploy exactly certified artifact SHA d36beacdbb9d3dfcc4d034ffaa154c329e8f2184987450c59c9075ec5274fe9a through the single production lane and then verify Hosting/version, runtime/revision/digest, HR live, Admin E2E, Shopper E2E, postulation, assignment, KPIs, DOM/visual markers and no duplicates before creating PRODUCTION_LOCK."
+  "exactNextAction": "Complete PRE-I4 Human Visual Acceptance in DEV for Admin and Shopper and close every screenshot finding. Only after PASS request explicit Paula authorization for I4; do not touch production.",
+  "humanVisualAcceptance": {
+    "state": "PENDING",
+    "lockPath": "CXORBIA_PRE_I4_HUMAN_VISUAL_ACCEPTANCE_LOCK_2026-09-28.json",
+    "requiredBeforeI4": true,
+    "production": "DO_NOT_TOUCH"
+  }
 }

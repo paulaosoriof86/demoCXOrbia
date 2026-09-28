@@ -7,8 +7,8 @@
   "productSourceSha": "09b4e56be96dedbeb89d14f1d190bfc5b8b4f990",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "87888d3792b011b10a87611dde3efc69e3f4eb40",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V115_2026-09-28.json",
-  "findingsLedgerExpectedGitBlob": "cd690c0a696544ee968e8c3048ff2ad3f055fb6f",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V116_2026-09-28.json",
+  "findingsLedgerExpectedGitBlob": "b0b9ad3c936f0bbd6da5022be3adad323e0d8075",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 is closed GO. Preserve certified artifact SHA d36beacdbb9d3dfcc4d034ffaa154c329e8f2184987450c59c9075ec5274fe9a exactly. Do not rebuild, recompose or touch tya-plataforma.web.app. Await explicit Paula authorization before I4 immutable production replacement.",
+  "exactNextAction": "Complete PRE-I4 Human Visual Acceptance in DEV for Admin and Shopper, critically review screenshot evidence against fresh live HR and frozen contracts, close every finding, then request explicit Paula authorization for I4. Production remains DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1033,5 +1033,15 @@
     "liveFixtures": "10/10 PASS",
     "production": "DO_NOT_TOUCH",
     "i4AuthorizationRequired": true
+  },
+  "humanVisualAcceptance": {
+    "state": "PENDING",
+    "lockPath": "CXORBIA_PRE_I4_HUMAN_VISUAL_ACCEPTANCE_LOCK_2026-09-28.json",
+    "requiredBeforeI4": true,
+    "reviewUrl": "https://cxorbia-backend-dev.web.app",
+    "adminExpectedRoutes": 34,
+    "shopperExpectedRoutes": 12,
+    "freshHrAtCaptureTimeRequired": true,
+    "production": "DO_NOT_TOUCH"
   }
 }
