@@ -42,6 +42,7 @@ on:
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V95_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V96_2026-09-28.json
       - tools/qa/cxorbia-i3-vrm081-population-credential-diagnostic.mjs
+      - tools/qa/cxorbia-i3-vrm083-hr-browser-revision-diagnostic.mjs
       - app/modules/configuracion.js
       - app/core/config.js
       - app/adapters/cxorbia-cxdata-command-boundary-v1.js
@@ -135,6 +136,59 @@ jobs:
           echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
+
+
+  vrm083-hr-browser-revision-diagnostic:
+    name: I3 VRM-083 — HR browser revision coherence read-only
+    needs: canonical-candidate-authority
+    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-083-hr-browser-revision-diagnostic]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      VRM083_OUT: .tmp/i3-vrm083
+      VRM083_TARGET_UID: cxorbia-dev-shopper-eval01
+      VRM083_SOURCE_DIR: ${{ runner.temp }}/vrm083-source
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Prove read-only exact candidate
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$VRM083_OUT" "$VRM083_SOURCE_DIR"
+          SOURCE="${{ needs.canonical-candidate-authority.outputs.source_sha }}"
+          TREE="${{ needs.canonical-candidate-authority.outputs.source_tree }}"
+          test "$SOURCE" = "b168955f405cd82630a8caad04de0b1766b26fc8"
+          test "$TREE" = "7ee35f25dd6a1c1b6f6a562ed770e9ba80cceeeb"
+          test "$(git rev-parse "$SOURCE^{tree}")" = "$TREE"
+          git diff --quiet "$SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          git archive "$SOURCE" | tar -x -C "$VRM083_SOURCE_DIR"
+          node --check tools/qa/cxorbia-i3-vrm083-hr-browser-revision-diagnostic.mjs
+      - name: Install read-only browser dependencies
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+      - name: Authenticate canonical Firebase DEV read-only
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Run focal revision coherence diagnostic
+        run: |
+          set +e
+          node tools/qa/cxorbia-i3-vrm083-hr-browser-revision-diagnostic.mjs | tee "$VRM083_OUT/console.log"
+          RC=${PIPESTATUS[0]}
+          echo "$RC" > "$VRM083_OUT/exit-code.txt"
+          exit 0
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-vrm083-hr-browser-revision-${{ github.run_id }}
+          path: ${{ env.VRM083_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+          include-hidden-files: true
 
   vrm076-terminal-module-truth-finalizer:
     name: I3 VRM-076 — terminal Module Truth fail-closed selftest
