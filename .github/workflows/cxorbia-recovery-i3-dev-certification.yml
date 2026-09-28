@@ -43,6 +43,7 @@ on:
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V96_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V97_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V98_2026-09-28.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V99_2026-09-28.json
       - tools/qa/cxorbia-i3-vrm081-population-credential-diagnostic.mjs
       - tools/qa/cxorbia-i3-vrm083-hr-browser-revision-diagnostic.mjs
       - app/modules/configuracion.js
@@ -96,7 +97,7 @@ env:
   I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V98_2026-09-28.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V99_2026-09-28.json
 
 jobs:
   canonical-candidate-authority:
@@ -134,7 +135,7 @@ jobs:
           test "$(jq -r '.findings["VRM-079"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN518"
           test "$(jq -r '.findings["VRM-080"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN525"
           test "$(jq -r '.findings["VRM-081"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN547"
-          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" ]]
+          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED" ]]
           echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
@@ -301,6 +302,89 @@ jobs:
           include-hidden-files: true
       - if: always()
         run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-vrm083-source"
+
+
+  vrm083-runtime-readback:
+    name: I3 VRM-083 — exact materialized runtime protected shopper readback
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-083-readback-resume]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      VRM083_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      VRM083_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      VRM083_OUT: .tmp/i3-vrm083-readback
+      VRM083_ROOT: https://cxorbia-backend-dev.web.app
+      VRM083_EXPECTED_RUNTIME: cxorbia-live-hr-dev-00226-wj2
+      VRM083_EXPECTED_DIGEST: sha256:d5093cdd92515bad11353c7dfb42e2d192c7f3dec264eea3d24dfcad8c6219bd
+      VRM083_EXPECTED_HOSTING: sites/cxorbia-backend-dev/versions/657dc30197e38cb4
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Prove no product change after exact materialized source
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$VRM083_OUT"
+          test "$VRM083_SOURCE" = "87888d3792b011b10a87611dde3efc69e3f4eb40"
+          test "$VRM083_TREE" = "813ac15086da026089fedfb257700b4abe643371"
+          test "$(git rev-parse "$VRM083_SOURCE^{tree}")" = "$VRM083_TREE"
+          git diff --quiet "$VRM083_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          SOURCE_DIR="$RUNNER_TEMP/cxorbia-vrm083-readback-source"
+          rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"
+          git archive "$VRM083_SOURCE" | tar -x -C "$SOURCE_DIR"
+          echo "VRM083_SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
+      - name: Install read-only proof dependencies
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+      - name: Authenticate canonical Firebase DEV read-only
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
+      - name: Prove exact existing runtime and unchanged Hosting
+        run: |
+          set -Eeuo pipefail
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$VRM083_OUT/runtime.json"
+          test "$(jq -r '.status.latestReadyRevisionName // empty' "$VRM083_OUT/runtime.json")" = "$VRM083_EXPECTED_RUNTIME"
+          gcloud run revisions describe "$VRM083_EXPECTED_RUNTIME" --project "$PROJECT" --region "$REGION" --format=json > "$VRM083_OUT/runtime-revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$VRM083_OUT/runtime-revision.json")"
+          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; else DIGEST="sha256:${RAW##*@sha256:}"; fi
+          test "$DIGEST" = "$VRM083_EXPECTED_DIGEST"
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$VRM083_OUT/hosting.json"
+          test "$(jq -r '.release.version.name // empty' "$VRM083_OUT/hosting.json")" = "$VRM083_EXPECTED_HOSTING"
+      - name: Run hardened protected shopper reproof on existing runtime
+        run: |
+          set -Eeuo pipefail
+          VRM083_OUT="$VRM083_OUT/reproof" VRM083_ROOT="$VRM083_ROOT" VRM083_SOURCE_DIR="$VRM083_SOURCE_DIR" node tools/qa/cxorbia-i3-vrm083-hr-browser-revision-diagnostic.mjs | tee "$VRM083_OUT/reproof.log"
+          test "$(jq -r '.decision' "$VRM083_OUT/reproof/result.json")" = "PASS_VRM083_HR_BROWSER_REVISION_COHERENCE"
+          test "$(jq -r '.identityState.mismatches.authNamespace' "$VRM083_OUT/reproof/result.json")" = "true"
+          test "$(jq -r '.final.authorityApplied' "$VRM083_OUT/reproof/result.json")" = "true"
+          test "$(jq -r '.protectedFetch.status' "$VRM083_OUT/reproof/result.json")" = "200"
+          test "$(jq -r '.safety.firestoreWrites' "$VRM083_OUT/reproof/result.json")" = "0"
+          test "$(jq -r '.safety.authWrites' "$VRM083_OUT/reproof/result.json")" = "0"
+          test "$(jq -r '.safety.hrWrites' "$VRM083_OUT/reproof/result.json")" = "0"
+      - name: Seal readback receipt
+        run: |
+          set -Eeuo pipefail
+          HR="$(jq -r '.protectedFetch.bodyRevision' "$VRM083_OUT/reproof/result.json")"; [[ "$HR" =~ ^[0-9a-f]{64}$ ]]
+          jq -n -S --arg source "$VRM083_SOURCE" --arg tree "$VRM083_TREE" --arg runtime "$VRM083_EXPECTED_RUNTIME" --arg digest "$VRM083_EXPECTED_DIGEST" --arg hosting "$VRM083_EXPECTED_HOSTING" --arg hr "$HR" '{decision:"PASS_I3_VRM083_EXISTING_RUNTIME_PROTECTED_SHOPPER_READBACK",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,builds:0,runtimeDeploys:0,hostingDeploys:0,authWrites:0,firestoreWrites:0,hrWrites:0,production:false}' > "$VRM083_OUT/result.json"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-vrm083-readback-${{ github.run_id }}
+          path: ${{ env.VRM083_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+          include-hidden-files: true
+      - if: always()
+        run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-vrm083-readback-source"
 
   vrm076-terminal-module-truth-finalizer:
     name: I3 VRM-076 — terminal Module Truth fail-closed selftest
