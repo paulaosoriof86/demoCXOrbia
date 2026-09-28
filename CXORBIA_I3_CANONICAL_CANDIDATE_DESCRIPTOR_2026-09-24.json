@@ -8,7 +8,7 @@
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "0c3ce84d567a674ec18f90eedba1b2380c45d55b",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V93_2026-09-28.json",
-  "findingsLedgerExpectedGitBlob": "65d7d2b25ab54128ad3e73864b63d7425da0d0c9",
+  "findingsLedgerExpectedGitBlob": "9d6d177eedc4006579f1261ee8fc3bc68373f77e",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -128,14 +128,13 @@
     "hrRevision": "2b0114c39d64a0e3697667572de0dfdcffe476c5cd8112449fcab1da24e1085d"
   },
   "lastControlAttempt": {
-    "runId": 36072685742,
-    "runNumber": 385,
-    "classification": "MAPPING_FAILURE",
+    "runId": 36414877530,
+    "runNumber": 552,
+    "jobId": 108903503719,
+    "classification": "RELEASE_COMPOSITION_FAILURE",
     "code": "NEXT_FINDING_ID",
-    "cause": "descriptor nextFindingId lagged ledger V13",
-    "productChanged": false,
-    "builds": 0,
-    "deploys": 0,
+    "productDefect": false,
+    "remediation": "Align V93 governance.nextFindingId to VRM-083; rerun same read-only diagnostic.",
     "production": false
   },
   "findingReceipts": {

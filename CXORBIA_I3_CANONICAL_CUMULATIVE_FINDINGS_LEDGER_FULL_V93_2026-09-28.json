@@ -4063,7 +4063,7 @@
     ],
     "findingCount": 81,
     "expectedCurrentRange": "VRM-001..VRM-081",
-    "nextFindingId": "VRM-082",
+    "nextFindingId": "VRM-083",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_VRM077_HOSTING_REPROOF_REQUIRED",
@@ -5043,6 +5043,20 @@
       "owner": ".github/workflows/cxorbia-recovery-i3-gate21-artifact-fingerprint.yml",
       "remediation": "Control-only: use actual same-run runtime/Hosting receipt schema and eliminate literals.",
       "nextFindingOpened": true
+    },
+    {
+      "id": "RUN552_VRM082_DIAGNOSTIC_NEXT_FINDING_ID_DESYNC",
+      "runId": 36414877530,
+      "runNumber": 552,
+      "jobId": 108903503719,
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "productDefect": false,
+      "cause": "V93 opened VRM-082 but governance.nextFindingId remained VRM-082 while descriptor advanced to VRM-083.",
+      "remediation": "Align governance.nextFindingId to VRM-083 and rerun same read-only VRM-082 name diagnostic.",
+      "builds": 0,
+      "deploys": 0,
+      "writes": 0,
+      "production": false
     }
   ],
   "currentMaterialization": {
