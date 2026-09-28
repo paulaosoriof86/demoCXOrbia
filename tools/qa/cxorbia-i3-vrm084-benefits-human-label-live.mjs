@@ -25,8 +25,18 @@ for(const profileCandidate of candidates){
   const candidateMembers=(await tenant.collection('users').where('shopperId','==',candidateShopperId).get()).docs.map(d=>({id:d.id,...(d.data()||{})})).filter(m=>m.active!==false&&String(m.role)==='shopper');
   if(candidateMembers.length===1)resolved.push({profile:profileCandidate,shopperId:candidateShopperId,member:candidateMembers[0]});
 }
-if(resolved.length!==1)throw new Error('VRM084_TARGET_ACTIVE_IDENTITY_NOT_UNIQUE:'+resolved.length);
-const {profile,shopperId,member}=resolved[0];
+if(!resolved.length)throw new Error('VRM084_TARGET_ACTIVE_IDENTITY_MISSING');
+const hrResponse=await fetch(ROOT+'/api/'+TENANT+'/'+PROJECT+'/hr-live?format=json&vrm084='+Date.now(),{headers:{'Cache-Control':'no-cache, no-store','Pragma':'no-cache'}});
+if(!hrResponse.ok)throw new Error('VRM084_HR_READ_FAILED:'+hrResponse.status);
+const hr=await hrResponse.json(),hrVisits=Array.isArray(hr.visits)?hr.visits:[];
+for(const item of resolved){
+  const ids=new Set([item.shopperId,...(Array.isArray(item.profile.legacyLiveShopperIds)?item.profile.legacyLiveShopperIds:[]),...(Array.isArray(item.profile.exactAliases)?item.profile.exactAliases:[])].map(String));
+  item.hrVisitCount=hrVisits.filter(v=>ids.has(String(v.shopperId||v.shopperID||''))).length;
+}
+const maxVisits=Math.max(...resolved.map(x=>x.hrVisitCount));
+const operational=resolved.filter(x=>x.hrVisitCount===maxVisits&&x.hrVisitCount>0);
+if(operational.length!==1)throw new Error('VRM084_TARGET_OPERATIONAL_IDENTITY_NOT_UNIQUE:'+operational.length+':maxVisits='+maxVisits);
+const {profile,shopperId,member}=operational[0];
 const credMod=await import(pathToFileURL(path.join(SOURCE_DIR,'backend/runtime/cxorbia-shopper-command-provider-v1.mjs')).href);
 const credential=credMod.shopperCredentialRule(profile);
 if(!credential?.ok)throw new Error('VRM084_TARGET_CREDENTIAL_NOT_DERIVABLE:'+String(credential?.reason||''));
