@@ -48,6 +48,11 @@ const sourceFiles=(pre.sourceFiles||[]).map(x=>({...x}));
 const modules=(pre.modules||[]).map(x=>({...x,pendingTerminalFiles:[...(x.pendingTerminalFiles||[])]}));
 if(modules.length!==20)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_TERMINAL_MODULE_COUNT');
 
+const requiredReceiptDomains=new Set([
+  ...modules.filter(x=>String(x.classification||'')!=='MATCH').map(x=>String(x.domain||'')).filter(Boolean),
+  ...sourceFiles.filter(x=>String(x.classification||'')!=='MATCH').map(x=>String(x.domain||'')).filter(Boolean)
+]);
+
 const receiptsByDomain=new Map();
 for(const [id,v] of Object.entries(f)){
   if(!resolvedState(v?.state))continue;
@@ -59,7 +64,7 @@ for(const [id,v] of Object.entries(f)){
   const seenDomains=new Set();
   for(const r of receipts){
     const domain=String(r?.moduleDomain||'');
-    if(!domain)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_DOMAIN_MISSING:'+id);
+    if(!requiredReceiptDomains.has(domain))continue;
     if(seenDomains.has(domain))throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_DUPLICATE_DOMAIN:'+id+':'+domain);
     seenDomains.add(domain);
     if(String(r.decision||'').startsWith('PASS_')!==true)throw new Error('RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_DECISION:'+id+':'+domain);

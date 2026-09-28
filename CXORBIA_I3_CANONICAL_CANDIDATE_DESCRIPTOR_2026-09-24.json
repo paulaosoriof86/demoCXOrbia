@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "READY_FOR_TERMINAL_CERTIFICATION",
+  "status": "HOLD_VRM087_FINALIZER_RECEIPT_SCOPE_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_REOPENED_POST_RUN500_DRIFT",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "09b4e56be96dedbeb89d14f1d190bfc5b8b4f990",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "87888d3792b011b10a87611dde3efc69e3f4eb40",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V110_2026-09-28.json",
-  "findingsLedgerExpectedGitBlob": "7331b4d6457c0cb294cb28d2157ba38ac1fa501e",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V111_2026-09-28.json",
+  "findingsLedgerExpectedGitBlob": "65ce3ba803fac317a85715222397ae2f9ab0a7e8",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
-  "terminalCertificationAllowed": true,
-  "activeBlocker": null,
-  "nextFindingId": "VRM-087",
+  "terminalCertificationAllowed": false,
+  "activeBlocker": "VRM-087",
+  "nextFindingId": "VRM-088",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Execute one canonical terminal certification on unchanged product source 09b4e56be96dedbeb89d14f1d190bfc5b8b4f990. Require fresh stable HR, exhaustive Admin/Shopper human acceptance, corrected semantic focal including VRM-085 and VRM-086 semantics, terminal Module Truth 20/20, Gate20, one deterministic artifact, live fixtures and Gate21 on that same artifact. Do not touch production; I4 remains blocked until I3=GO and explicit Paula authorization.",
+  "exactNextAction": "Run only the VRM-087 finalizer fail-closed selftest on the control-only change. Require stale historical receipts to be ignored when preterminal modules/files are already MATCH, while stale receipts remain rejected when needed to promote a non-MATCH domain. Do not rerun terminal, rebuild, deploy, alter data, or touch production until that selftest passes.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -102,16 +102,20 @@
     "attempt": 3
   },
   "lastTerminalAttempt": {
-    "runId": 36460739231,
-    "runNumber": 579,
-    "jobId": 109058414220,
+    "runId": 36467325790,
+    "runNumber": 582,
+    "jobId": 109080637202,
     "sourceSha": "09b4e56be96dedbeb89d14f1d190bfc5b8b4f990",
     "sourceTree": "f6899a631b7b277b16614f1b6534103e7615f11e",
     "hrRevision": "d068b00c62a940f0ad828436ffcf22fbf1dbb43e763ab4e14854102bf5f84a51",
-    "humanAcceptance": "PASS_I3_HUMAN_LIVE_ACCEPTANCE",
-    "semanticOracle": "PASS_C3_TERMINAL_HR_SEMANTIC_ORACLE",
-    "failure": "MAPPING_FAILURE:EXACT_HR_IDENTITY_MISSING",
-    "terminalArtifactCreated": false,
+    "fullHumanAcceptance": "PASS",
+    "semanticOracleAndHardenedFocal": "PASS",
+    "preTerminalModuleTruth": "20/20 MATCH",
+    "preTerminalPendingFiles": 0,
+    "failure": "RELEASE_COMPOSITION_FAILURE:C3_OWNER_RECEIPT_SOURCE:VRM-077:visits-review-postulations-reservations",
+    "certificationArtifactCreated": false,
+    "diagnosticsArtifactId": 10990916546,
+    "diagnosticsArtifactDigest": "sha256:dd6ccda19b91624a46abde5317a5c5081e45ef18ea8af7c2aed6ada0296c5859",
     "productChanged": false,
     "production": false
   },
@@ -959,6 +963,20 @@
     "hrRevision": "d068b00c62a940f0ad828436ffcf22fbf1dbb43e763ab4e14854102bf5f84a51",
     "productSourceChanged": false,
     "terminalRerunAllowed": true,
+    "production": false
+  },
+  "vrm087": {
+    "state": "OPEN_PROVEN_RUN582_CONTROL_FIX_REPROOF_REQUIRED",
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "productDefect": false,
+    "provenOwner": [
+      "tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs",
+      ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+    ],
+    "runId": 36467325790,
+    "diagnosticsArtifactId": 10990916546,
+    "productSourceChanged": false,
+    "terminalRerunAllowed": false,
     "production": false
   }
 }

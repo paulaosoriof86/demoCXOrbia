@@ -73,6 +73,7 @@ on:
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V108_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V109_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V110_2026-09-28.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V111_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_2026-09-24.json
   workflow_dispatch:
 
@@ -109,7 +110,7 @@ env:
   I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V110_2026-09-28.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V111_2026-09-28.json
 
 jobs:
   canonical-candidate-authority:
@@ -147,7 +148,7 @@ jobs:
           test "$(jq -r '.findings["VRM-079"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN518"
           test "$(jq -r '.findings["VRM-080"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN525"
           test "$(jq -r '.findings["VRM-081"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN547"
-          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED" || "$STATUS" == "HOLD_MODULE_TRUTH_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED" ]]
+          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED" || "$STATUS" == "HOLD_MODULE_TRUTH_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM087_FINALIZER_RECEIPT_SCOPE_REPROOF_REQUIRED" ]]
           echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
@@ -702,7 +703,7 @@ jobs:
 
   vrm076-terminal-module-truth-finalizer:
     name: I3 VRM-076 — terminal Module Truth fail-closed selftest
-    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-076-finalizer]') }}
+    if: ${{ github.event_name == 'push' && (contains(github.event.head_commit.message, '[vrm-076-finalizer]') || contains(github.event.head_commit.message, '[vrm-087-finalizer]')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -747,9 +748,20 @@ jobs:
           const hrIndependent=JSON.parse(JSON.stringify(noHrFlag));
           hrIndependent['VRM-082'].terminalEvidence.ownerSpecificReceipts[1].hrIndependent=true;
           fs.writeFileSync(p+'/ledger-pass.json',JSON.stringify({findings:hrIndependent}));
+          const allMatch=JSON.parse(JSON.stringify(pre));
+          allMatch.modules=allMatch.modules.map(m=>({...m,classification:'MATCH',pendingTerminalFiles:[]}));
+          allMatch.sourceFiles=allMatch.sourceFiles.map(f=>({...f,classification:'MATCH'}));
+          fs.writeFileSync(p+'/pre-all-match.json',JSON.stringify(allMatch));
+          const staleHistorical=JSON.parse(JSON.stringify(hrIndependent));
+          for(const r of staleHistorical['VRM-082'].terminalEvidence.ownerSpecificReceipts)r.sourceSha='3333333333333333333333333333333333333333';
+          fs.writeFileSync(p+'/ledger-stale-historical.json',JSON.stringify({findings:staleHistorical}));
+          const staleNeeded=JSON.parse(JSON.stringify(hrIndependent));
+          staleNeeded['VRM-082'].terminalEvidence.ownerSpecificReceipts[0].sourceSha='3333333333333333333333333333333333333333';
+          fs.writeFileSync(p+'/ledger-stale-needed.json',JSON.stringify({findings:staleNeeded}));
           NODE
           run_finalizer() {
-            C3_PRETERMINAL="$T/pre.json" C3_FOCAL="$T/focal.json" C3_HUMAN="$T/human.json" C3_QA="$T/qa.json" C3_PARITY="$T/parity.json" C3_LEDGER="$1" C3_FINAL_MATRIX="$T/out.json" C3_SOURCE="$SOURCE" C3_TREE="$TREE" C3_RUNTIME_REVISION="$RUNTIME" C3_RUNTIME_DIGEST="$DIGEST" C3_HOSTING_VERSION="$HOSTING" node tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs
+            PRE_FILE="${2:-$T/pre.json}"
+            C3_PRETERMINAL="$PRE_FILE" C3_FOCAL="$T/focal.json" C3_HUMAN="$T/human.json" C3_QA="$T/qa.json" C3_PARITY="$T/parity.json" C3_LEDGER="$1" C3_FINAL_MATRIX="$T/out.json" C3_SOURCE="$SOURCE" C3_TREE="$TREE" C3_RUNTIME_REVISION="$RUNTIME" C3_RUNTIME_DIGEST="$DIGEST" C3_HOSTING_VERSION="$HOSTING" node tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs
           }
           if run_finalizer "$T/ledger-open.json" >"$T/open.log" 2>&1; then echo "open P0 incorrectly passed"; exit 1; fi
           grep -q 'C3_OPEN_P0_FINDINGS:VRM-076' "$T/open.log"
@@ -759,6 +771,11 @@ jobs:
           grep -q 'C3_OWNER_RECEIPT_MISSING:m1' "$T/one-domain.log"
           if run_finalizer "$T/ledger-null-hr-no-flag.json" >"$T/null-hr-no-flag.log" 2>&1; then echo "null HR without independence flag incorrectly passed"; exit 1; fi
           grep -q 'C3_OWNER_RECEIPT_HR_REVISION:VRM-082:m1' "$T/null-hr-no-flag.log"
+          if run_finalizer "$T/ledger-stale-needed.json" >"$T/stale-needed.log" 2>&1; then echo "stale required receipt incorrectly passed"; exit 1; fi
+          grep -q 'C3_OWNER_RECEIPT_SOURCE:VRM-082:m0' "$T/stale-needed.log"
+          run_finalizer "$T/ledger-stale-historical.json" "$T/pre-all-match.json" >"$T/stale-historical.log"
+          test "$(jq -r '.terminalClosure.decision' "$T/out.json")" = "PASS_C3_TERMINAL_MODULE_TRUTH_20_20"
+          test "$(jq '.terminalClosure.ownerSpecificReceipts|length' "$T/out.json")" = "0"
           run_finalizer "$T/ledger-pass.json" >"$T/pass.log"
           test "$(jq -r '.terminalClosure.decision' "$T/out.json")" = "PASS_C3_TERMINAL_MODULE_TRUTH_20_20"
           test "$(jq -r '.modules[]|select(.domain=="m0")|.preTerminalClassification' "$T/out.json")" = "COMPOSED_NOT_DEPLOYED"
@@ -766,7 +783,7 @@ jobs:
           test "$(jq -r '.modules[]|select(.domain=="m0")|.ownerSpecificReceiptFindingIds[0]' "$T/out.json")" = "VRM-082"
           test "$(jq -r '.modules[]|select(.domain=="m1")|.ownerSpecificReceiptFindingIds[0]' "$T/out.json")" = "VRM-082"
           test "$(jq '[.modules[]|select(.classification!="MATCH")]|length' "$T/out.json")" = "0"
-          jq -n -S --arg source "$GITHUB_SHA" '{decision:"PASS_I3_VRM076_FINALIZER_FAIL_CLOSED_SELFTEST",controlSourceSha:$source,openP0Rejected:true,missingReceiptRejected:true,multiDomainReceiptRequired:true,hrIndependentNullAccepted:true,nullHrWithoutIndependenceRejected:true,wrongPromotionPrevented:true,ownerReceiptPromotionProven:true,builds:0,deploys:0,writes:0,production:false}' > "$T/result.json"
+          jq -n -S --arg source "$GITHUB_SHA" '{decision:"PASS_I3_VRM087_FINALIZER_RECEIPT_SCOPE_SELFTEST",controlSourceSha:$source,openP0Rejected:true,missingReceiptRejected:true,multiDomainReceiptRequired:true,hrIndependentNullAccepted:true,nullHrWithoutIndependenceRejected:true,staleRequiredReceiptRejected:true,staleHistoricalReceiptIgnoredWhenNoPromotionNeeded:true,wrongPromotionPrevented:true,ownerReceiptPromotionProven:true,builds:0,deploys:0,writes:0,production:false}' > "$T/result.json"
       - if: always()
         uses: actions/upload-artifact@v4
         with:
