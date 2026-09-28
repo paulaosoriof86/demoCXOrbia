@@ -83,7 +83,7 @@ CX.module('beneficios', ({data,ui})=>{
 
     <div class="card card-p">
       <div class="card-h"><div class="card-t">Detalle por visita</div><button class="btn btn-ghost btn-sm">⤓ Descargar comprobante</button></div>
-      <div class="scroll-hint" aria-label="Desliza para ver más" style="overflow-x:auto"><table class="tbl"><thead><tr><th>Visita</th><th>Realizada</th><th>💵 Honorario</th><th>🎁 Reembolso</th><th>Total</th><th>Estado</th><th>Pago estimado</th><th>Pago (contrato)</th></tr></thead>
+      <div class="scroll-hint" aria-label="Desliza para ver más" style="overflow-x:auto"><table class="tbl"><thead><tr><th>Visita</th><th>Realizada</th><th>💵 Honorario</th><th>🎁 Reembolso</th><th>Total</th><th>Estado</th><th>Pago estimado</th><th>Estado de pago</th></tr></thead>
       <tbody>${all.length?all.map(row).join(''):'<tr><td colspan="8">'+ui.empty('💰','Sin liquidaciones aún')+'</td></tr>'}</tbody></table></div>
     </div>`;
 });
