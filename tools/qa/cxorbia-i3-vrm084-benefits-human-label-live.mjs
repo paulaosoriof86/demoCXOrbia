@@ -18,11 +18,15 @@ const db=getFirestore(),tenant=db.collection('tenants').doc(TENANT);
 const profiles=(await tenant.collection('shoppers').get()).docs.map(d=>({id:d.id,...(d.data()||{})}));
 const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase().replace(/\s+/g,' ');
 const candidates=profiles.filter(p=>norm(p.nombre||p.name)===TARGET_NAME);
-if(candidates.length!==1)throw new Error('VRM084_TARGET_PROFILE_NOT_UNIQUE:'+candidates.length);
-const profile=candidates[0],shopperId=String(profile.shopperId||profile.id);
-const members=(await tenant.collection('users').where('shopperId','==',shopperId).get()).docs.map(d=>({id:d.id,...(d.data()||{})})).filter(m=>m.active!==false&&String(m.role)==='shopper');
-if(members.length!==1)throw new Error('VRM084_TARGET_MEMBERSHIP_NOT_UNIQUE:'+members.length);
-const member=members[0];
+if(!candidates.length)throw new Error('VRM084_TARGET_PROFILE_MISSING');
+const resolved=[];
+for(const profileCandidate of candidates){
+  const candidateShopperId=String(profileCandidate.shopperId||profileCandidate.id);
+  const candidateMembers=(await tenant.collection('users').where('shopperId','==',candidateShopperId).get()).docs.map(d=>({id:d.id,...(d.data()||{})})).filter(m=>m.active!==false&&String(m.role)==='shopper');
+  if(candidateMembers.length===1)resolved.push({profile:profileCandidate,shopperId:candidateShopperId,member:candidateMembers[0]});
+}
+if(resolved.length!==1)throw new Error('VRM084_TARGET_ACTIVE_IDENTITY_NOT_UNIQUE:'+resolved.length);
+const {profile,shopperId,member}=resolved[0];
 const credMod=await import(pathToFileURL(path.join(SOURCE_DIR,'backend/runtime/cxorbia-shopper-command-provider-v1.mjs')).href);
 const credential=credMod.shopperCredentialRule(profile);
 if(!credential?.ok)throw new Error('VRM084_TARGET_CREDENTIAL_NOT_DERIVABLE:'+String(credential?.reason||''));
