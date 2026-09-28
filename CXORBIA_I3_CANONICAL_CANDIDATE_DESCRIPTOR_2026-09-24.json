@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED",
+  "status": "READY_FOR_TERMINAL_CERTIFICATION",
   "iteration": "I3_FUNCTIONAL_CLOSURE_REOPENED_POST_RUN500_DRIFT",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "09b4e56be96dedbeb89d14f1d190bfc5b8b4f990",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "87888d3792b011b10a87611dde3efc69e3f4eb40",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V106_2026-09-28.json",
-  "findingsLedgerExpectedGitBlob": "56021f7d5b8b1d98cd147255a31d3ca4203267a6",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V107_2026-09-28.json",
+  "findingsLedgerExpectedGitBlob": "0ea3005307dc0f1bdfbdae34381dcfc35401f7ef",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
-  "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-085",
+  "terminalCertificationAllowed": true,
+  "activeBlocker": null,
   "nextFindingId": "VRM-086",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run one read-only same-revision forensic diagnostic for VRM-085 on HR revision d068b00c62a940f0ad828436ffcf22fbf1dbb43e763ab4e14854102bf5f84a51. Identify the exact six approved postulations/visits, compare canonical data flags and HR assignment authority with DOM data-post-sync, and determine control false-negative versus real mapping defect. Do not rerun terminal, rebuild, deploy, rewrite data, recreate postulations or touch production until owner is proven.",
+  "exactNextAction": "Execute one canonical terminal certification on unchanged product source 09b4e56be96dedbeb89d14f1d190bfc5b8b4f990. Require fresh stable HR, exhaustive Admin/Shopper human acceptance, corrected semantic focal, terminal Module Truth 20/20, Gate20, one deterministic artifact, live fixtures and Gate21 on that same artifact. Do not touch production; I4 remains blocked until I3=GO and explicit Paula authorization.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -130,13 +130,21 @@
     "hrRevision": "2b0114c39d64a0e3697667572de0dfdcffe476c5cd8112449fcab1da24e1085d"
   },
   "lastControlAttempt": {
-    "runId": 36414877530,
-    "runNumber": 552,
-    "jobId": 108903503719,
+    "runId": 36460287450,
+    "runNumber": 578,
+    "jobId": 109056908408,
     "classification": "RELEASE_COMPOSITION_FAILURE",
-    "code": "NEXT_FINDING_ID",
+    "code": "VRM-085_CONTROL_FALSE_NEGATIVE",
+    "decision": "PASS_VRM085_CONTROL_ONLY_FOCAL_REPROOF",
     "productDefect": false,
-    "remediation": "Align V93 governance.nextFindingId to VRM-083; rerun same read-only diagnostic.",
+    "productSourceChanged": false,
+    "controlHeadSha": "30fde46b3ad49f347ee89746b0548e4c321bb979",
+    "hrRevision": "d068b00c62a940f0ad828436ffcf22fbf1dbb43e763ab4e14854102bf5f84a51",
+    "expectedConflicts": 6,
+    "visibleConflicts": 6,
+    "builds": 0,
+    "deploys": 0,
+    "writes": 0,
     "production": false
   },
   "findingReceipts": {
@@ -925,10 +933,17 @@
     "production": false
   },
   "vrm085": {
-    "state": "OPEN_PROVEN_RUN574_DIAGNOSTIC_REQUIRED",
-    "classification": "MAPPING_FAILURE",
-    "productDefect": "UNDETERMINED_CONTROL_VS_PRODUCT_PENDING_SAME_REVISION_ROW_PROOF",
-    "terminalRerunAllowed": false,
+    "state": "FIXED_PROVEN_CONTROL_FALSE_NEGATIVE_RUN578",
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "observedFailureClassification": "MAPPING_FAILURE",
+    "productDefect": false,
+    "provenOwner": "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs",
+    "diagnosticRunId": 36459187367,
+    "diagnosticArtifactId": 10986383888,
+    "reproofRunId": 36460287450,
+    "reproofArtifactId": 10987086305,
+    "hrRevision": "d068b00c62a940f0ad828436ffcf22fbf1dbb43e763ab4e14854102bf5f84a51",
+    "productSourceChanged": false,
     "production": false
   }
 }
