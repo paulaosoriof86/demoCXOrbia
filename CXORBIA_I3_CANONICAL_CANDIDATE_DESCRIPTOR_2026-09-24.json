@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED",
+  "status": "HOLD_MODULE_TRUTH_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_REOPENED_POST_RUN500_DRIFT",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "87888d3792b011b10a87611dde3efc69e3f4eb40",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "b168955f405cd82630a8caad04de0b1766b26fc8",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V99_2026-09-28.json",
-  "findingsLedgerExpectedGitBlob": "5202f8038c4f54e4dc3318833afaa977b59bd172",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V100_2026-09-28.json",
+  "findingsLedgerExpectedGitBlob": "3b32eb1577025c907aaa7b103e73b084f9359ba1",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-083",
+  "activeBlocker": null,
   "nextFindingId": "VRM-084",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Read back exact runtime cxorbia-live-hr-dev-00226-wj2/digest and unchanged Hosting, install proof dependencies, and run hardened visible-shopper protected-HR proof. No build, deploy, Auth writes, Firestore writes, HR writes or production.",
+  "exactNextAction": "Run one no-deploy C3 preterminal Module Truth on source 87888d3792b011b10a87611dde3efc69e3f4eb40/tree 813ac15086da026089fedfb257700b4abe643371 against runtime cxorbia-live-hr-dev-00226-wj2, exact digest, unchanged Hosting and live Firestore Rules. Require 20/20 MATCH, 0 pending and 0 unauthorized.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -340,6 +340,7 @@
     "testFiles": [
       "backend/runtime/hr-live-service/test/cxorbia-vrm083-protected-auth-namespace.test.mjs"
     ],
+    "state": "FIXED_PROVEN_RUN564",
     "production": false
   },
   "reproofDispatch": {
@@ -359,6 +360,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/657dc30197e38cb4",
     "hrRevision": "7509374c11643838f40f61434e2d076126f466e9c0953cbc2300febaf91919c8",
     "materializationRunId": 36434000658,
+    "finalVrm083ProofRunId": 36435106304,
     "production": false
   },
   "lastFocalAttempt": {
@@ -411,7 +413,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "7ee35f25dd6a1c1b6f6a562ed770e9ba80cceeeb",
+  "productSourceTree": "813ac15086da026089fedfb257700b4abe643371",
   "lastLiveReproof": {
     "runId": 36217529367,
     "runNumber": 465,
@@ -887,7 +889,7 @@
     "production": false
   },
   "vrm083": {
-    "state": "DEV_MATERIALIZED_PENDING_READBACK",
+    "state": "FIXED_PROVEN_RUN564",
     "classification": "AUTH_FAILURE",
     "diagnostic": "READ_ONLY_HR_BROWSER_REVISION_COHERENCE",
     "terminalRerunAllowed": false,
