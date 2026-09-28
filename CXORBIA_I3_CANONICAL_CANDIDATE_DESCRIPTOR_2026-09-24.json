@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM088_LIVE_FIXTURE_AVAILABILITY_REPROOF_REQUIRED",
+  "status": "READY_FOR_GATE21_SAME_CERTIFIED_ARTIFACT",
   "iteration": "I3_FUNCTIONAL_CLOSURE_REOPENED_POST_RUN500_DRIFT",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "09b4e56be96dedbeb89d14f1d190bfc5b8b4f990",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "87888d3792b011b10a87611dde3efc69e3f4eb40",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V113_2026-09-28.json",
-  "findingsLedgerExpectedGitBlob": "093f9664e952f61ca2d1feb11e0053d8d18389b6",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V114_2026-09-28.json",
+  "findingsLedgerExpectedGitBlob": "82383708b36c36ffc31df5a7702ba1846018dc45",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-088",
+  "activeBlocker": null,
   "nextFindingId": "VRM-089",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run only the VRM-088 live-fixture control reproof against the already certified Run584 artifact SHA d36beacdbb9d3dfcc4d034ffaa154c329e8f2184987450c59c9075ec5274fe9a. Require September HR/UI availability parity at zero, tests 7/8 executed on an exact canonical HR-available visit with explicit period context, 10/10 PASS, cleanup=true, zero HR writes, zero builds/deploys, production=false. Do not rerun terminal or Gate21 until this control proof passes.",
+  "exactNextAction": "Run Gate21 only against immutable Run584 certification artifact SHA d36beacdbb9d3dfcc4d034ffaa154c329e8f2184987450c59c9075ec5274fe9a plus Run585 PASS fixtures. Do not rebuild, recertify, deploy or touch production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -981,7 +981,7 @@
     "production": false
   },
   "vrm088": {
-    "state": "OPEN_PROVEN_RUN584_CONTROL_REPROOF_REQUIRED",
+    "state": "FIXED_PROVEN_CONTROL_FALSE_NEGATIVE_RUN585",
     "classification": "RELEASE_COMPOSITION_FAILURE",
     "observedFailureClassification": "ENVIRONMENT_FAILURE",
     "productDefect": false,
@@ -994,6 +994,29 @@
     "activePeriodAvailable": 0,
     "fallbackCanonicalAvailablePeriod": "cinepolis-2026-08",
     "terminalRerunAllowed": false,
+    "production": false,
+    "reproofRunId": 36472054015,
+    "reproofArtifactId": 10991423579,
+    "reproofArtifactDigest": "sha256:964358bdc8cedf84bf460f289e81cf15fd7f7d438396bdad34b948ee470b7bc3",
+    "reproofDecision": "PASS_VRM088_AVAILABILITY_AWARE_LIVE_FIXTURE_REPROOF",
+    "liveFixtureDecision": "PASS_I3_LIVE_FIXTURES_V2",
+    "testsPassed": 10,
+    "cleanup": true,
+    "hrWrites": 0,
+    "builds": 0,
+    "deploys": 0,
+    "terminalArtifactStillValid": true
+  },
+  "gate21Pending": {
+    "certificationRunId": 36469199842,
+    "certificationArtifactName": "cxorbia-recovery-i3-single-source-certification-36469199842",
+    "certificationArtifactId": 10990649849,
+    "certificationArtifactSha256": "d36beacdbb9d3dfcc4d034ffaa154c329e8f2184987450c59c9075ec5274fe9a",
+    "certificationControlHead": "ef7798a607b55ef34e72b6628cdcabfd7a7c59ad",
+    "liveFixtureRunId": 36472054015,
+    "liveFixtureArtifactName": "cxorbia-i3-vrm088-reproof-36472054015",
+    "liveFixtureArtifactId": 10991423579,
+    "liveFixtureArtifactDigest": "sha256:964358bdc8cedf84bf460f289e81cf15fd7f7d438396bdad34b948ee470b7bc3",
     "production": false
   }
 }

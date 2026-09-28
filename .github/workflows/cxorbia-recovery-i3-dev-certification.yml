@@ -76,6 +76,7 @@ on:
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V111_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V112_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V113_2026-09-28.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V114_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_2026-09-24.json
   workflow_dispatch:
 
@@ -112,7 +113,7 @@ env:
   I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V113_2026-09-28.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V114_2026-09-28.json
 
 jobs:
   canonical-candidate-authority:
@@ -150,7 +151,7 @@ jobs:
           test "$(jq -r '.findings["VRM-079"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN518"
           test "$(jq -r '.findings["VRM-080"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN525"
           test "$(jq -r '.findings["VRM-081"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN547"
-          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED" || "$STATUS" == "HOLD_MODULE_TRUTH_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM087_FINALIZER_RECEIPT_SCOPE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM088_LIVE_FIXTURE_AVAILABILITY_REPROOF_REQUIRED" ]]
+          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED" || "$STATUS" == "HOLD_MODULE_TRUTH_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM087_FINALIZER_RECEIPT_SCOPE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM088_LIVE_FIXTURE_AVAILABILITY_REPROOF_REQUIRED" || "$STATUS" == "READY_FOR_GATE21_SAME_CERTIFIED_ARTIFACT" ]]
           echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
@@ -450,6 +451,127 @@ jobs:
           include-hidden-files: true
       - if: always()
         run: rm -rf node_modules "$RUNNER_TEMP/vrm088-cert" "$RUNNER_TEMP/vrm088-source"
+
+
+  gate21-same-certified-artifact-after-vrm088:
+    name: I3 Gate21 — Run584 certified artifact + Run585 fixtures — no rebuild
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'READY_FOR_GATE21_SAME_CERTIFIED_ARTIFACT' && github.event_name == 'push' && contains(github.event.head_commit.message, '[gate21-only]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      actions: read
+    env:
+      G21_OUT: .tmp/i3-gate21-final
+      G21_CERT_RUN: '36469199842'
+      G21_CERT_NAME: cxorbia-recovery-i3-single-source-certification-36469199842
+      G21_FIX_RUN: '36472054015'
+      G21_FIX_NAME: cxorbia-i3-vrm088-reproof-36472054015
+      G21_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      G21_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      G21_ARTIFACT_SHA256: d36beacdbb9d3dfcc4d034ffaa154c329e8f2184987450c59c9075ec5274fe9a
+      G21_CERT_CONTROL: ef7798a607b55ef34e72b6628cdcabfd7a7c59ad
+      G21_FIX_CONTROL: 26e669000c1ac15d067e00c64a51085da7bde0bd
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - name: Prove exact control lineage and zero product drift
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$G21_OUT/certification" "$G21_OUT/live-fixtures"
+          test "$G21_SOURCE" = "09b4e56be96dedbeb89d14f1d190bfc5b8b4f990"
+          test "$G21_TREE" = "f6899a631b7b277b16614f1b6534103e7615f11e"
+          test "$(git rev-parse "$G21_SOURCE^{tree}")" = "$G21_TREE"
+          git merge-base --is-ancestor "$G21_SOURCE" HEAD
+          git merge-base --is-ancestor "$G21_CERT_CONTROL" HEAD
+          git merge-base --is-ancestor "$G21_FIX_CONTROL" HEAD
+          git diff --quiet "$G21_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          git diff --quiet "$G21_CERT_CONTROL" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          git diff --quiet "$G21_FIX_CONTROL" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+      - name: Download immutable certification and fixture proofs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -Eeuo pipefail
+          gh run download "$G21_CERT_RUN" --repo "$GITHUB_REPOSITORY" --name "$G21_CERT_NAME" --dir "$G21_OUT/certification"
+          gh run download "$G21_FIX_RUN" --repo "$GITHUB_REPOSITORY" --name "$G21_FIX_NAME" --dir "$G21_OUT/live-fixtures"
+      - name: Verify immutable Run584 certification artifact
+        run: |
+          set -Eeuo pipefail
+          C="$G21_OUT/certification"; M="$C/result.json"
+          test -f "$M"; test -f "$C/i3-certification-manifest.json"; cmp "$M" "$C/i3-certification-manifest.json"
+          test "$(jq -r '.decision' "$M")" = "PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21"
+          test "$(jq -r '.i3CertificationSourceSha' "$M")" = "$G21_SOURCE"
+          test "$(jq -r '.i3CertificationSourceTree' "$M")" = "$G21_TREE"
+          test "$(jq -r '.controlHeadSha' "$M")" = "$G21_CERT_CONTROL"
+          test "$(jq -r '.artifactSha256' "$M")" = "$G21_ARTIFACT_SHA256"
+          test "$(sha256sum "$C/cxorbia-i3-certified-source.tar"|awk '{print $1}')" = "$G21_ARTIFACT_SHA256"
+          test "$(awk '{print $1}' "$C/cxorbia-i3-certified-source.tar.sha256")" = "$G21_ARTIFACT_SHA256"
+          test "$(jq -r '.buildCount' "$M")" = "1"
+          test "$(jq -r '.runtimeBuilds' "$M")" = "0"
+          test "$(jq -r '.runtimeDeploys' "$M")" = "0"
+          test "$(jq -r '.hostingDeploys' "$M")" = "0"
+          test "$(jq -r '.rulesDeploys' "$M")" = "0"
+          test "$(jq -r '.rebuildAfterCertification' "$M")" = "false"
+          test "$(jq -r '.production' "$M")" = "false"
+          test "$(jq -r '.terminalClosure.decision' "$C/module-truth-matrix.json")" = "PASS_C3_TERMINAL_MODULE_TRUTH_20_20"
+          test "$(jq -r '.phaseAComplete' "$C/module-truth-matrix.json")" = "true"
+          test "$(jq -r '.allModulesMatch' "$C/module-truth-matrix.json")" = "true"
+          test "$(jq '.modules|length' "$C/module-truth-matrix.json")" = "20"
+          test "$(jq '[.modules[]|select(.classification!="MATCH")]|length' "$C/module-truth-matrix.json")" = "0"
+          test "$(sha256sum "$C/module-truth-matrix.json"|awk '{print $1}')" = "$(jq -r '.moduleTruthEvidenceSha256' "$M")"
+          test "$(jq -r '.decision' "$C/gate20/gate20-browser-visual.json")" = "PASS_GATE20_FOCAL_VISUAL_DRIFT"
+          test "$(jq -r '.decision' "$C/gate20-semantic-shopper.json")" = "PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY"
+          test "$(jq -r '.decision' "$C/full-human-acceptance/human-live-acceptance.json")" = "PASS_I3_HUMAN_LIVE_ACCEPTANCE"
+          test "$(jq -r '.decision' "$C/full-human-acceptance/i3-functional-probes.json")" = "PASS_I3_ATOMIC_FUNCTIONAL_PROBES"
+          test "$(jq -r '.decision' "$C/firestore-live-parity.json")" = "PASS_TERMINAL_FIRESTORE_RULES_EXACT"
+          test "$(jq -r '.metadata.name' "$C/runtime-revision.json")" = "$(jq -r '.devRuntimeRevision' "$M")"
+          test "$(jq -r '.release.version.name' "$C/hosting-live-channel.json")" = "$(jq -r '.hostingVersionName' "$M")"
+      - name: Verify Run585 fixtures are bound to that exact artifact
+        run: |
+          set -Eeuo pipefail
+          F="$G21_OUT/live-fixtures/i3-live-fixtures-result.json"
+          V="$G21_OUT/live-fixtures/vrm088-result.json"
+          test -f "$F"; test -f "$V"
+          test "$(jq -r '.decision' "$F")" = "PASS_I3_LIVE_FIXTURES_V2"
+          test "$(jq -r '.cleanup.ok' "$F")" = "true"
+          test "$(jq '[.tests[]|select(.ok==true)]|length' "$F")" = "10"
+          test "$(jq -r '.buildCountThisRun' "$F")" = "0"
+          test "$(jq -r '.deployCountThisRun' "$F")" = "0"
+          test "$(jq -r '.hrWrites' "$F")" = "0"
+          test "$(jq -r '.production' "$F")" = "false"
+          test "$(jq -r '.certifiedArtifactSha256' "$F")" = "$G21_ARTIFACT_SHA256"
+          test "$(jq -r '.decision' "$V")" = "PASS_VRM088_AVAILABILITY_AWARE_LIVE_FIXTURE_REPROOF"
+          test "$(jq -r '.certifiedArtifactSha256' "$V")" = "$G21_ARTIFACT_SHA256"
+          test "$(jq -r '.controlHeadSha' "$V")" = "$G21_FIX_CONTROL"
+          test "$(jq -r '.testsPassed' "$V")" = "10"
+          test "$(jq -r '.cleanup' "$V")" = "true"
+          test "$(jq -r '.hrWrites' "$V")" = "0"
+          test "$(jq -r '.builds' "$V")" = "0"
+          test "$(jq -r '.deploys' "$V")" = "0"
+          test "$(jq -r '.tests[]|select(.id=="7_DISPONIBILIDAD_ASIGNACION")|.observed.activeHrAvailable' "$F")" = "0"
+          test "$(jq -r '.tests[]|select(.id=="7_DISPONIBILIDAD_ASIGNACION")|.observed.activeUiAvailability.available' "$F")" = "0"
+          test "$(jq -r '.tests[]|select(.id=="7_DISPONIBILIDAD_ASIGNACION")|.observed.fixturePeriodId' "$F")" = "cinepolis-2026-08"
+          test "$(jq -r '.tests[]|select(.id=="8_POSTULACION")|.observed.fixturePeriodId' "$F")" = "cinepolis-2026-08"
+          sha256sum "$F" > "$G21_OUT/live-fixtures.sha256"
+      - name: Seal Gate21 from the exact certified artifact
+        run: |
+          set -Eeuo pipefail
+          C="$G21_OUT/certification"; M="$C/result.json"; F="$G21_OUT/live-fixtures/i3-live-fixtures-result.json"
+          LIVE_SHA="$(awk '{print $1}' "$G21_OUT/live-fixtures.sha256")"
+          jq -n -S --arg source "$G21_SOURCE" --arg tree "$G21_TREE" --arg certControl "$G21_CERT_CONTROL" --arg fixtureControl "$G21_FIX_CONTROL" --arg gate21Control "$GITHUB_SHA" --arg certRun "$G21_CERT_RUN" --arg fixtureRun "$G21_FIX_RUN" --arg gate21Run "$GITHUB_RUN_ID" --arg artifact "$G21_ARTIFACT_SHA256" --arg liveSha "$LIVE_SHA" --arg gate20 "$(jq -r '.gate20.evidenceSha256' "$M")" --arg semantic20 "$(jq -r '.gate20Semantic.evidenceSha256' "$M")" --arg module "$(jq -r '.moduleTruthEvidenceSha256' "$M")" --arg hr "$(jq -r '.certificationHrRevision' "$M")" --arg fixtureHr "$(jq -r '.liveFixtureHrRevision // .hrRevision // empty' "$F")" --arg runtime "$(jq -r '.devRuntimeRevision' "$M")" --arg digest "$(jq -r '.runtimeImageDigest' "$M")" --arg hosting "$(jq -r '.hostingVersionName' "$M")" '{schemaVersion:"cxorbia.recovery.i3.gate21.same-certified-artifact.v3",gate:21,verdict:"PASS_GATE21_ARTIFACT_FINGERPRINT",production:false,source:{sha:$source,treeSha:$tree},controlLineage:{certificationHead:$certControl,fixtureReproofHead:$fixtureControl,gate21Head:$gate21Control,productDrift:false},certification:{runId:$certRun,artifactSha256:$artifact,buildCount:1,rebuildAfterCertification:false},gate20:{visualEvidenceSha256:$gate20,semanticEvidenceSha256:$semantic20},moduleTruth:{evidenceSha256:$module,moduleCount:20,allModulesMatch:true},liveFixtures:{runId:$fixtureRun,decision:"PASS_I3_LIVE_FIXTURES_V2",evidenceSha256:$liveSha,passed:10,cleanup:true,builds:0,deploys:0,hrWrites:0,hrRevision:$fixtureHr},hrAuthority:{certificationRevision:$hr,fixtureRevision:$fixtureHr,sameRevisionWithinEachProof:true},runtime:{revision:$runtime,digest:$digest},hosting:{version:$hosting},gate21RunId:$gate21Run,promotion:{exactCertifiedArtifactRequired:true,noRebuild:true,noRecomposition:true,productionAuthorizationRequired:true},writes:{hostingDeploys:0,runtimeDeploys:0,rulesDeploys:0,production:false}}' > "$G21_OUT/GATE21_RELEASE_MANIFEST.json"
+          test "$(jq -r '.verdict' "$G21_OUT/GATE21_RELEASE_MANIFEST.json")" = "PASS_GATE21_ARTIFACT_FINGERPRINT"
+          sha256sum "$G21_OUT/GATE21_RELEASE_MANIFEST.json" > "$G21_OUT/GATE21_RELEASE_MANIFEST.sha256"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-recovery-i3-gate21-final-${{ github.run_id }}
+          path: ${{ env.G21_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+          include-hidden-files: true
+
 
 
   vrm083-hr-browser-revision-diagnostic:
