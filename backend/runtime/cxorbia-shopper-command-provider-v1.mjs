@@ -441,7 +441,7 @@ async function durableUpsert({auth,db,policy,candidate,sourceRevision,authUsers,
   const aliasMemberDoc=exactAliasSelfMap?await membershipMatches(users,sourceShopperId):null;
   const recoveredPrincipal=canonicalMemberDoc?null:await existingShopperAuthPrincipal(auth,tenantId,shopperId,projectId,authUsers);
   const aliasUser=aliasMemberDoc?await safeAuthByUid(auth,aliasMemberDoc.id):null;
-  const canonicalUser=canonicalMemberDoc?(arr(authUsers).find(item=>item?.uid===canonicalMemberDoc.id)||await safeAuthByUid(auth,canonicalMemberDoc.id)):recoveredPrincipal;
+  const canonicalUser=canonicalMemberDoc?await safeAuthByUid(auth,canonicalMemberDoc.id):recoveredPrincipal;
   const dualPrincipalRetirement=!!(exactAliasSelfMap&&canonicalMemberDoc&&aliasMemberDoc&&canonicalMemberDoc.id!==aliasMemberDoc.id);
   if(dualPrincipalRetirement){
     const canonicalMember=canonicalMemberDoc.data()||{},aliasMember=aliasMemberDoc.data()||{};
