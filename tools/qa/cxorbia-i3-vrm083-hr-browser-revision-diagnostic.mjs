@@ -6,6 +6,7 @@ import { applicationDefault, getApps, initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 import { chromium } from 'playwright';
+import { settleVisibleShopperAuth } from '../../.github/control/RECOVERY-I3-BROWSER-AUTH-LIFECYCLE-20260919.mjs';
 
 const PROJECT=process.env.PROJECT||'cxorbia-backend-dev';
 const TENANT=process.env.TENANT_ID||'tya';
@@ -66,13 +67,16 @@ page.on('response',async r=>{
  try{const j=await r.json();bodyRevision=str(j?._runtime?.revision||j?.revision||j?.sourceRevision);}catch{}
  let bodyError='',bodyMessage='';try{const j=await r.json();bodyRevision=str(j?._runtime?.revision||j?.revision||j?.sourceRevision);bodyError=str(j?.error);bodyMessage=str(j?.message);}catch{} responses.push({at:new Date().toISOString(),url:u,status:r.status(),headerRevision:r.headers()['x-cxorbia-source-revision']||'',cacheOrigin:r.headers()['x-cxorbia-cache-origin']||'',bodyRevision,bodyError,bodyMessage});
 });
-await page.goto(base,{waitUntil:'domcontentloaded',timeout:90000});
-await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
-await page.waitForFunction(()=>typeof window.CX?.backendAuth?.selectedRole==='function'&&!!document.querySelector('.role-btn[data-role="shopper"]'),null,{timeout:90000});
-await page.locator('.role-btn[data-role="shopper"]').click();
-await page.locator('#lgUser').fill(credential.login);
-await page.locator('#lgPass').fill(credential.password);
-await page.locator('#lgSubmit').click();
+const settledAuth=await settleVisibleShopperAuth({
+  page,
+  rawShopperId:shopperId,
+  canonicalShopperId:shopperId,
+  tenantId:TENANT,
+  projectId:PROJ,
+  baseUrl:base,
+  login:credential.login,
+  password:credential.password
+});
 
 const samples=[];
 for(let i=0;i<15;i++){
@@ -108,7 +112,7 @@ const providerCoherent=providerRevisions.length>=2&&new Set(providerRevisions).s
 const browserCoherent=!!final.liveMetaRevision&&!!final.previewRevision&&final.liveMetaRevision===final.previewRevision;
 const browserMatchesProvider=providerRevisions.length>0&&final.liveMetaRevision===providerRevisions[0]&&final.previewRevision===providerRevisions[0];
 const decision=providerCoherent&&browserCoherent&&browserMatchesProvider&&final.authorityApplied?'PASS_VRM083_HR_BROWSER_REVISION_COHERENCE':'HOLD_VRM083_HR_BROWSER_REVISION_COHERENCE';
-const result={decision,generatedAt:new Date().toISOString(),target:{uid:TARGET_UID,shopperId,login:credential.login},identityState,legacyMeta,genericMeta,metaSeries,protectedFetch,responses,samples,final,analysis:{providerCoherent,browserCoherent,browserMatchesProvider,metaSeriesRevisions:[...new Set(metaSeries.map(x=>x.bodyRevision).filter(Boolean))],metaSeriesStatuses:[...new Set(metaSeries.map(x=>x.status))]},safety:{firestoreWrites:0,authWrites:0,hrWrites:0,deploys:0,production:false}};
+const result={decision,generatedAt:new Date().toISOString(),target:{uid:TARGET_UID,shopperId,login:credential.login},settledAuth,identityState,legacyMeta,genericMeta,metaSeries,protectedFetch,responses,samples,final,analysis:{providerCoherent,browserCoherent,browserMatchesProvider,metaSeriesRevisions:[...new Set(metaSeries.map(x=>x.bodyRevision).filter(Boolean))],metaSeriesStatuses:[...new Set(metaSeries.map(x=>x.status))]},safety:{firestoreWrites:0,authWrites:0,hrWrites:0,deploys:0,production:false}};
 fs.writeFileSync(path.join(OUT,'result.json'),JSON.stringify(result,null,2)+'\n');
 console.log(JSON.stringify({decision,identityState,legacyMeta,genericMeta,metaSeries:metaSeries.map(x=>({status:x.status,bodyRevision:x.bodyRevision,cacheOrigin:x.cacheOrigin,refreshError:x.refreshError,refreshStartedAt:x.refreshStartedAt,refreshFinishedAt:x.refreshFinishedAt,cacheAgeMs:x.cacheAgeMs})),protectedFetch,final,analysis:result.analysis,safety:result.safety},null,2));
 await ctx.close();await browser.close();
