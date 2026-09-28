@@ -41,6 +41,7 @@ on:
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V94_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V95_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V96_2026-09-28.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V97_2026-09-28.json
       - tools/qa/cxorbia-i3-vrm081-population-credential-diagnostic.mjs
       - tools/qa/cxorbia-i3-vrm083-hr-browser-revision-diagnostic.mjs
       - app/modules/configuracion.js
@@ -94,7 +95,7 @@ env:
   I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V96_2026-09-28.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V97_2026-09-28.json
 
 jobs:
   canonical-candidate-authority:
@@ -132,7 +133,7 @@ jobs:
           test "$(jq -r '.findings["VRM-079"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN518"
           test "$(jq -r '.findings["VRM-080"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN525"
           test "$(jq -r '.findings["VRM-081"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN547"
-          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" ]]
+          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" ]]
           echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
@@ -155,7 +156,9 @@ jobs:
       - name: Prove read-only exact candidate
         run: |
           set -Eeuo pipefail
-          SOURCE_DIR="$RUNNER_TEMP/vrm083-source"\n          rm -rf "$SOURCE_DIR"; mkdir -p "$VRM083_OUT" "$SOURCE_DIR"\n          echo "VRM083_SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
+          SOURCE_DIR="$RUNNER_TEMP/vrm083-source"
+          rm -rf "$SOURCE_DIR"; mkdir -p "$VRM083_OUT" "$SOURCE_DIR"
+          echo "VRM083_SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
           SOURCE="${{ needs.canonical-candidate-authority.outputs.source_sha }}"
           TREE="${{ needs.canonical-candidate-authority.outputs.source_tree }}"
           test "$SOURCE" = "b168955f405cd82630a8caad04de0b1766b26fc8"

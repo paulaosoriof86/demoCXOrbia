@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "READY_FOR_TERMINAL_CERTIFICATION",
+  "status": "HOLD_VRM083_DIAGNOSTIC_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_REOPENED_POST_RUN500_DRIFT",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "b168955f405cd82630a8caad04de0b1766b26fc8",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "0c3ce84d567a674ec18f90eedba1b2380c45d55b",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V96_2026-09-28.json",
-  "findingsLedgerExpectedGitBlob": "bfa233fcc5f83ba3d7bd2171f42fb3c0d0e3a635",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V97_2026-09-28.json",
+  "findingsLedgerExpectedGitBlob": "b169bcb0350cb2c6576c4cc298f9c91bcff6b41c",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
-  "terminalCertificationAllowed": true,
-  "activeBlocker": null,
-  "nextFindingId": "VRM-083",
+  "terminalCertificationAllowed": false,
+  "activeBlocker": "VRM-083",
+  "nextFindingId": "VRM-084",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN one fresh I3 terminal certification on exact V92 product source/runtime/Hosting using V96 ledger and exact-alias-aware human gate; zero build/deploy/product/data writes; require human acceptance, semantic oracle, terminal Module Truth 20/20, Gate20, deterministic artifact, live fixtures and Gate21.",
+  "exactNextAction": "Run one read-only VRM-083 HR browser revision-coherence diagnostic. Compare legacy/generic/protected provider revisions with CX_TYA_HR_LIVE_META and CX.data.previewMeta in the authenticated GT shopper session. Prove provider vs browser composition owner before any product change. No build/deploy/data writes/production; no terminal rerun while VRM-083 is open.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -101,15 +101,16 @@
     "attempt": 3
   },
   "lastTerminalAttempt": {
-    "runId": 36415439390,
-    "runNumber": 554,
-    "jobId": 108905429487,
-    "classification": "MAPPING_FAILURE",
-    "code": "ADMIN_REAL_SHOPPER_IDENTITY_NOT_RENDERABLE",
-    "hrRevision": "8c12bbcae91bcfdfee89c44f42777aeb19ec4ac85c7824450f6deb8202d7131b",
-    "mismatchCount": 12,
-    "productDefect": "UNDETERMINED_PENDING_EXACT_ALIAS_PROVENANCE",
+    "runId": 36417401723,
+    "runNumber": 556,
+    "attempt": 2,
+    "jobId": 108922854341,
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "code": "AUTHENTICATED_BROWSER_HR_REVISION_DESYNC_AND_PROTECTED_BOOT_NOT_SETTLED",
+    "pinnedHrRevision": "8c12bbcae91bcfdfee89c44f42777aeb19ec4ac85c7824450f6deb8202d7131b",
+    "staleBrowserRevision": "7509374c11643838f40f61434e2d076126f466e9c0953cbc2300febaf91919c8",
     "terminalArtifactCreated": false,
+    "productChanged": false,
     "production": false
   },
   "vrm043": {
@@ -885,6 +886,14 @@
     "exactAliasOnlyCount": 12,
     "ambiguousCount": 0,
     "productSourceChanged": false,
+    "production": false
+  },
+  "vrm083": {
+    "state": "P0_PROVEN_DIAGNOSTIC_REQUIRED_RUN556_ATTEMPT2",
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "diagnostic": "READ_ONLY_HR_BROWSER_REVISION_COHERENCE",
+    "terminalRerunAllowed": false,
+    "productChangeAllowed": false,
     "production": false
   }
 }
