@@ -7,8 +7,8 @@
   "productSourceSha": "09b4e56be96dedbeb89d14f1d190bfc5b8b4f990",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "87888d3792b011b10a87611dde3efc69e3f4eb40",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V117_2026-09-28.json",
-  "findingsLedgerExpectedGitBlob": "3ac479de219f8d485792b1d9ac6c4558fc2becb8",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V118_2026-09-28.json",
+  "findingsLedgerExpectedGitBlob": "c20bed718bf1606812ab122376edc7621be8eae7",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Recover exact approved deltas for the proven Admin blockers in PRE-I4 forensic audit; do not ask Paula to repeat Admin screenshots. Apply one cumulative focal remediation package only after owner/source truth is complete; reprove Admin automatically. Production remains DO_NOT_TOUCH.",
+  "exactNextAction": "Repair only the HR source mapping contract with explicit project-scoped cinema ID authority, reprove a fresh runtime revision from both SEPTIEMBRE 26 tabs, then recalculate August/September KPIs from that new revision before continuing the frozen Admin remediation package. No product UI fix, rebuild, production deploy or Paula screenshot repeat before fresh HR is restored.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1044,6 +1044,8 @@
     "freshHrAtCaptureTimeRequired": true,
     "production": "DO_NOT_TOUCH",
     "adminForensicAuditPath": "CXORBIA_PRE_I4_ADMIN_FORENSIC_AUDIT_2026-09-28.json",
-    "adminReviewRepeatRequired": false
+    "adminReviewRepeatRequired": false,
+    "liveHrState": "HOLD_MAPPING_FAILURE_STALE_RUNTIME_SNAPSHOT",
+    "liveHrDriftLock": "CXORBIA_PRE_I4_LIVE_HR_DRIFT_LOCK_2026-09-28.json"
   }
 }

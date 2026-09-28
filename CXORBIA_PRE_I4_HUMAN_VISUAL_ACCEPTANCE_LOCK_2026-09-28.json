@@ -15,7 +15,7 @@
   "freshHrAtCaptureTimeRequired": true,
   "reviewBeyondUserComments": true,
   "preserveEveryFindingUntilClosed": true,
-  "passCondition": "Admin forensic blockers must first be closed and automatically re-proven. Paula is not required to repeat the lost Admin screenshot journey. Shopper review remains deferred until Admin is repaired.",
+  "passCondition": "Fresh HR runtime truth must first be restored and August/September KPIs revalidated; then all frozen Admin findings must be closed automatically. Paula is not required to repeat the lost Admin screenshot journey.",
   "state": "HOLD",
   "adminForensicAuditPath": "CXORBIA_PRE_I4_ADMIN_FORENSIC_AUDIT_2026-09-28.json",
   "openAdminFindings": [
@@ -24,6 +24,9 @@
     "PREI4-ADMIN-004",
     "PREI4-ADMIN-005",
     "PREI4-ADMIN-006",
-    "PREI4-ADMIN-007"
-  ]
+    "PREI4-ADMIN-007",
+    "PREI4-ADMIN-008"
+  ],
+  "liveHrState": "HOLD_MAPPING_FAILURE_STALE_RUNTIME_SNAPSHOT",
+  "liveHrDriftLock": "CXORBIA_PRE_I4_LIVE_HR_DRIFT_LOCK_2026-09-28.json"
 }
