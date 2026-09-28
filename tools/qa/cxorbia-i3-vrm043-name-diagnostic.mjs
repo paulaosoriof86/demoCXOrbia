@@ -126,6 +126,8 @@ try{
   const exactAliasOnlyCount=targetProvenance.filter(x=>x.exactAliasOnly).length;
   const targetNameEqualCount=targetProvenance.filter(x=>x.nameEqual).length;
   const targetAmbiguousCount=targetProvenance.filter(x=>x.ambiguous).length;
+  const focusIds=['shopper_gt_0e5eac2a4a','shopper_gt_1f90bb8a75','shopper_gt_350d7b017d','shopper_gt_3528b0fb90','shopper_gt_3c14073969','shopper_gt_61501eaff4','shopper_gt_64265e8115','shopper_gt_7f23f9a093','shopper_hn_2d5d71b664','shopper_hn_59bbac6a32','shopper_hn_83460e68ba','shopper_hn_b5aabb7d48'];
+  const focus=focusIds.map(id=>{const op=opById.get(id)||{},hrName=String(op?.nombre||op?.name||op?.displayName||op?.fullName||'').trim();let row=byId.get(id)||obs.find(x=>x.legacyLiveShopperIds.includes(id)||x.exactAliases.includes(id))||null;return{id,hrName,observedId:row?.id||null,observedName:String(row?.nombre||row?.name||row?.displayName||row?.fullName||'').trim()||null,identityAuthority:row?.identityAuthority||null,identityReviewRequired:row?.identityReviewRequired===true,identityReviewReason:row?.identityReviewReason||null,matched:!!row,nameEqual:row&&hrName?norm(String(row?.nombre||row?.name||row?.displayName||row?.fullName||''))===norm(hrName):null};});
   const report={
     decision:'PASS_VRM043_NAME_DIAGNOSTIC',
     generatedAt:new Date().toISOString(),production:false,writes:0,deploys:0,
