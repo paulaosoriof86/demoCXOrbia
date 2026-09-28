@@ -141,13 +141,18 @@ function snapshotScope(snapshot){
   if(!tenantId||!projectId)throw new Error('SHOPPER_RUNTIME_SOURCE_SCOPE_MISSING');
   return {tenantId,projectId};
 }
+function canonicalProtectedAuthNamespace(role,value){
+  const namespace=String(value||'').trim().toLowerCase();
+  if(namespace)return namespace;
+  return String(role||'').trim().toLowerCase()==='shopper'?'shopper':'';
+}
 async function verifiedProtectedPrincipal(req,scope){
   const token=String(req.headers.authorization||'').trim().replace(/^Bearer\s+/i,'');
   if(!token)throw new Error('AUTH_FAILURE:PROTECTED_RUNTIME_BEARER_REQUIRED');
   const {auth,db}=ensureAdmin();
   const decoded=await auth.verifyIdToken(token,true);
   const role=String(decoded.role||'').trim().toLowerCase();
-  const namespace=String(decoded.authNamespace||'').trim().toLowerCase();
+  const namespace=canonicalProtectedAuthNamespace(role,decoded.authNamespace);
   if(String(decoded.tenantId||'').trim()!==scope.tenantId)throw new Error('AUTH_FAILURE:PROTECTED_RUNTIME_TENANT_DENIED');
   const memberSnap=await db.collection('tenants').doc(scope.tenantId).collection('users').doc(decoded.uid).get();
   if(!memberSnap.exists)throw new Error('AUTH_FAILURE:PROTECTED_RUNTIME_MEMBERSHIP_MISSING');
