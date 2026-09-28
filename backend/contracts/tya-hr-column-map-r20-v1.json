@@ -1,6 +1,6 @@
 {
   "contractId": "tya-hr-column-map-r20-v1",
-  "schemaVersion": "1.2.0",
+  "schemaVersion": "1.3.0",
   "tenantId": "tya",
   "projectId": "cinepolis",
   "historyScope": "all_detected_hr_periods",
@@ -46,7 +46,10 @@
         "Shopping"
       ],
       "critical": true,
-      "domain": "identity"
+      "domain": "identity",
+      "contextualMissingAllowedIn": [
+        "project_scoped_cinema_identity"
+      ]
     },
     "franja": {
       "aliases": [
@@ -57,28 +60,32 @@
     },
     "formato": {
       "aliases": [
-        "Formato de Cine"
+        "Formato de Cine",
+        "Formato"
       ],
       "critical": true,
       "domain": "scenario"
     },
     "tipoCombo": {
       "aliases": [
-        "Tipo de Combo"
+        "Tipo de Combo",
+        "Tipo Combo"
       ],
       "critical": false,
       "domain": "reimbursement"
     },
     "tipoCompra": {
       "aliases": [
-        "Tipo de Compra"
+        "Tipo de Compra",
+        "Tipo Compra"
       ],
       "critical": true,
       "domain": "scenario"
     },
     "metodoPago": {
       "aliases": [
-        "Método de Pago"
+        "Método de Pago",
+        "Método Pago"
       ],
       "critical": false,
       "domain": "finance"
@@ -198,7 +205,9 @@
     "missing ID CINEMA in a declared compact tab never invents a cinema identifier; hrRowId/sourceTab/sourceRow remain the identity evidence",
     "duplicate Fecha submitido columns coalesce only when one is populated or all populated values are equal",
     "shopper phone/email are optional HR-managed profile data when present",
-    "missing optional shopper phone/email never blocks shopper identity or login"
+    "missing optional shopper phone/email never blocks shopper identity or login",
+    "declared project_scoped_cinema_identity header may resolve missing Shopping only from the exact tenant/project cinema registry",
+    "project_scoped cinema identity accepts only exact known ID CINEMA values; unknown, empty or ambiguous IDs hold the build"
   ],
   "prohibitions": [
     "first_partial_match_wins",
@@ -208,7 +217,9 @@
     "accept_ambiguous_header",
     "infer_historical_available_from_missing_column",
     "silent compact-header acceptance outside declared headerVariants",
-    "coalesce conflicting duplicate evidence"
+    "coalesce conflicting duplicate evidence",
+    "derive missing Shopping from row position, city, fuzzy text, or a global cinema hardcode",
+    "accept unknown ID CINEMA when Shopping is absent"
   ],
   "safeState": {
     "sourceSafe": true,
@@ -244,6 +255,27 @@
       ],
       "countrySource": "tab_name",
       "cinemaIdSource": "absent_use_hr_row_identity"
+    },
+    {
+      "id": "project_scoped_cinema_identity",
+      "required": [
+        "País",
+        "ID CINEMA",
+        "CIUDAD",
+        "DIRECCIÓN",
+        "Franja Horaria",
+        "Quincena",
+        "Shopper Asignado"
+      ],
+      "requiresAbsent": [
+        "Shopping"
+      ],
+      "allowedCountries": [
+        "HN"
+      ],
+      "countrySource": "column",
+      "cinemaIdSource": "column",
+      "shoppingSource": "project_scoped_cinema_registry"
     }
   ]
 }
