@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "READY_FOR_TERMINAL_CERTIFICATION",
+  "status": "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_REOPENED_POST_RUN500_DRIFT",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "b168955f405cd82630a8caad04de0b1766b26fc8",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "0c3ce84d567a674ec18f90eedba1b2380c45d55b",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V92_2026-09-28.json",
-  "findingsLedgerExpectedGitBlob": "30577f3a969f3f6605f9ebb33f8a9be3af325551",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V93_2026-09-28.json",
+  "findingsLedgerExpectedGitBlob": "65d7d2b25ab54128ad3e73864b63d7425da0d0c9",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
-  "terminalCertificationAllowed": true,
-  "activeBlocker": null,
-  "nextFindingId": "VRM-082",
+  "terminalCertificationAllowed": false,
+  "activeBlocker": "VRM-082",
+  "nextFindingId": "VRM-083",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN existing I3 terminal certification on exact current V92 source/runtime/Hosting using Run 549 preterminal Module Truth receipt; zero build/deploy/product/data writes; then require same-run Gate20/live fixtures/Gate21 and stop before I4.",
+  "exactNextAction": "RUN existing read-only exact HR/Admin identity-name diagnostic against current V92 DEV and HR revision; capture expected versus observed for VRM-082; zero build/deploy/writes/production. Then classify owner as product mapping vs control false negative before any fix.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -101,15 +101,15 @@
     "attempt": 3
   },
   "lastTerminalAttempt": {
-    "runId": 36247157545,
-    "runNumber": 477,
-    "jobId": 108418391633,
-    "artifactId": 10907986589,
-    "artifactDigest": "sha256:d213b0d4d58c3aec73ecaf4e12c09cd8ed5e3c8d660b1e773dd2a5a4b655f34f",
-    "result": "FAIL_PROVIDER_REFRESH_TIMEOUT",
-    "sourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
-    "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
-    "productArtifactCreated": false,
+    "runId": 36412281251,
+    "runNumber": 551,
+    "jobId": 108895108389,
+    "classification": "MAPPING_FAILURE",
+    "code": "ADMIN_REAL_SHOPPER_IDENTITY_NOT_RENDERABLE",
+    "mismatchCount": 12,
+    "unresolvedAuthorityCount": 1,
+    "productDefect": "UNDETERMINED_PENDING_EXACT_NAME_DIAGNOSTIC",
+    "terminalArtifactCreated": false,
     "production": false
   },
   "vrm043": {
