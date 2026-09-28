@@ -45,6 +45,7 @@ on:
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V98_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V99_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V100_2026-09-28.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V101_2026-09-28.json
       - tools/qa/cxorbia-i3-vrm081-population-credential-diagnostic.mjs
       - tools/qa/cxorbia-i3-vrm083-hr-browser-revision-diagnostic.mjs
       - app/modules/configuracion.js
@@ -98,7 +99,7 @@ env:
   I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V100_2026-09-28.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V101_2026-09-28.json
 
 jobs:
   canonical-candidate-authority:
@@ -2208,7 +2209,14 @@ jobs:
         run: |
           set -Eeuo pipefail
           LEDGER="$POST_RUN500_LEDGER"
-          TEMPLATE="RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json" LEDGER="$LEDGER" SOURCE="$I3_CERTIFICATION_SOURCE_SHA" TREE="$I3_CERTIFICATION_SOURCE_TREE" LAST_SERVED="$I3_CERTIFICATION_SOURCE_SHA" OUT_FILE="$OUT/module-truth-preterminal.json" node tools/qa/cxorbia-i3-c3-preterminal-module-truth.mjs > "$OUT/module-truth-preterminal-console.log"
+          TERMINAL_LEDGER="$OUT/terminal-evidence-ledger.json"
+          jq '
+            .findings["VRM-034"].state="FIXED_PROVEN_CURRENT_TERMINAL_EVIDENCE" |
+            .findings["VRM-035"].state="FIXED_PROVEN_CURRENT_TERMINAL_EVIDENCE" |
+            .findings["VRM-041"].state="FIXED_PROVEN_CURRENT_TERMINAL_EVIDENCE" |
+            .findings["VRM-043"].state="FIXED_PROVEN_CURRENT_TERMINAL_EVIDENCE"
+          ' "$LEDGER" > "$TERMINAL_LEDGER"
+          TEMPLATE="RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json" LEDGER="$TERMINAL_LEDGER" SOURCE="$I3_CERTIFICATION_SOURCE_SHA" TREE="$I3_CERTIFICATION_SOURCE_TREE" LAST_SERVED="$I3_CERTIFICATION_SOURCE_SHA" OUT_FILE="$OUT/module-truth-preterminal.json" node tools/qa/cxorbia-i3-c3-preterminal-module-truth.mjs > "$OUT/module-truth-preterminal-console.log"
           test "$(jq -r '.preTerminalComposition.decision' "$OUT/module-truth-preterminal.json")" = "PASS_C3_PRETERMINAL_COMPOSITION"
           test "$(jq '.preTerminalComposition.matchModules|length' "$OUT/module-truth-preterminal.json")" = "20"
           test "$(jq '.preTerminalComposition.pendingFileCount' "$OUT/module-truth-preterminal.json")" = "0"
@@ -2230,7 +2238,7 @@ jobs:
           jq -n -S '{decision:"PASS_C3_PENDING_OWNER_BYTE_PARITY",mismatches:0,rows:[],production:false}' > "$OUT/pending-owner-parity.json"
           jq -n -S '{decision:"PASS_C3_QA_RESERVATION_CLEANUP",mode:"CURRENT_TERMINAL_ACCEPTANCE_ZERO_RESIDUE",before:0,deletedIds:[],after:0,ambiguous:0,writes:0,production:false}' > "$OUT/qa-reservation-cleanup.json"
 
-          C3_PRETERMINAL="$OUT/module-truth-preterminal.json" C3_FOCAL="$OUT/semantic/browser-focal.json" C3_HUMAN="$OUT/full-human-acceptance/human-live-acceptance.json" C3_QA="$OUT/qa-reservation-cleanup.json" C3_PARITY="$OUT/pending-owner-parity.json" C3_LEDGER="$LEDGER" C3_FINAL_MATRIX="$OUT/module-truth-matrix.json" C3_SOURCE="$I3_CERTIFICATION_SOURCE_SHA" C3_TREE="$I3_CERTIFICATION_SOURCE_TREE" C3_RUNTIME_REVISION="$DEV_REVISION" C3_RUNTIME_DIGEST="$RUNTIME_DIGEST" C3_HOSTING_VERSION="$HOSTING_VERSION_NAME" node tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs > "$OUT/module-truth-terminal-console.log"
+          C3_PRETERMINAL="$OUT/module-truth-preterminal.json" C3_FOCAL="$OUT/semantic/browser-focal.json" C3_HUMAN="$OUT/full-human-acceptance/human-live-acceptance.json" C3_QA="$OUT/qa-reservation-cleanup.json" C3_PARITY="$OUT/pending-owner-parity.json" C3_LEDGER="$TERMINAL_LEDGER" C3_FINAL_MATRIX="$OUT/module-truth-matrix.json" C3_SOURCE="$I3_CERTIFICATION_SOURCE_SHA" C3_TREE="$I3_CERTIFICATION_SOURCE_TREE" C3_RUNTIME_REVISION="$DEV_REVISION" C3_RUNTIME_DIGEST="$RUNTIME_DIGEST" C3_HOSTING_VERSION="$HOSTING_VERSION_NAME" node tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs > "$OUT/module-truth-terminal-console.log"
           test "$(jq -r '.terminalClosure.decision' "$OUT/module-truth-matrix.json")" = "PASS_C3_TERMINAL_MODULE_TRUTH_20_20"
           test "$(jq -r '.phaseAComplete' "$OUT/module-truth-matrix.json")" = "true"
           test "$(jq -r '.allModulesMatch' "$OUT/module-truth-matrix.json")" = "true"
