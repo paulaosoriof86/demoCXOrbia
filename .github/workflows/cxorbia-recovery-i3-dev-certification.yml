@@ -82,6 +82,10 @@ on:
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V117_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V118_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V119_2026-09-28.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V120_2026-09-28.json
+      - backend/contracts/tya-hr-column-map-r20-v1.json
+      - backend/contracts/tya-cinepolis-cinema-identity-r20-v1.json
+      - tools/hr-source/tya-build-live-hr-source-safe-r20.mjs
       - CXORBIA_PRE_I4_LIVE_HR_DRIFT_LOCK_2026-09-28.json
       - CXORBIA_PRE_I4_ADMIN_FORENSIC_AUDIT_2026-09-28.json
       - CXORBIA_PRE_I4_HUMAN_VISUAL_ACCEPTANCE_LOCK_2026-09-28.json
@@ -122,7 +126,7 @@ env:
   I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V119_2026-09-28.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V120_2026-09-28.json
 
 jobs:
   canonical-candidate-authority:
@@ -160,11 +164,53 @@ jobs:
           test "$(jq -r '.findings["VRM-079"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN518"
           test "$(jq -r '.findings["VRM-080"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN525"
           test "$(jq -r '.findings["VRM-081"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN547"
-          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED" || "$STATUS" == "HOLD_MODULE_TRUTH_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM087_FINALIZER_RECEIPT_SCOPE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM088_LIVE_FIXTURE_AVAILABILITY_REPROOF_REQUIRED" || "$STATUS" == "READY_FOR_GATE21_SAME_CERTIFIED_ARTIFACT" || "$STATUS" == "GO" ]]
+          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED" || "$STATUS" == "HOLD_MODULE_TRUTH_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM087_FINALIZER_RECEIPT_SCOPE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM088_LIVE_FIXTURE_AVAILABILITY_REPROOF_REQUIRED" || "$STATUS" == "READY_FOR_GATE21_SAME_CERTIFIED_ARTIFACT" || "$STATUS" == "HOLD_PREI4_ADMIN_008_HR_MAPPING_REPROOF_REQUIRED" || "$STATUS" == "GO" ]]
           echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
 
+
+  prei4-admin-008-mapping-reproof:
+    name: PRE-I4 ADMIN-008 — HN HR mapping focal reproof
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_008_HR_MAPPING_REPROOF_REQUIRED' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout canonical Recovery control head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Prove exact product source and control-only successor
+        env:
+          SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+          TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+        run: |
+          set -Eeuo pipefail
+          test "$SOURCE" = "5c472e089e6d8492b184a7cb24e78816d347c2de"
+          test "$TREE" = "8abf63499d3df6ef2a9a8dfa22ca1a080ed67c83"
+          test "$(git rev-parse "$SOURCE^{tree}")" = "$TREE"
+          test "$(git diff --name-only "$SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source | wc -l | tr -d ' ')" = "0"
+      - name: Execute PREI4-ADMIN-008 source-safe self-tests
+        run: |
+          set -Eeuo pipefail
+          mkdir -p .tmp/prei4-admin-008
+          node --check tools/hr-source/tya-build-live-hr-source-safe-r20.mjs
+          node tools/hr-source/tya-build-live-hr-source-safe-r20.mjs --mapping-self-test | tee .tmp/prei4-admin-008/mapping-self-test.json
+          node tools/hr-source/tya-build-live-hr-source-safe-r20.mjs --assignment-self-test | tee .tmp/prei4-admin-008/assignment-self-test.json
+          test "$(jq -r '.decision' .tmp/prei4-admin-008/mapping-self-test.json)" = "PASS_R20_PROJECT_SCOPED_CINEMA_IDENTITY"
+          test "$(jq -r '.decision' .tmp/prei4-admin-008/assignment-self-test.json)" = "PASS_R20_SHOPPER_ASSIGNMENT_CLASSIFICATION"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-prei4-admin-008-mapping-reproof-${{ github.run_id }}
+          path: .tmp/prei4-admin-008
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
 
   vrm085-postulation-sync-diagnostic:
     name: I3 VRM-085 — same-revision postulation sync forensic read-only
