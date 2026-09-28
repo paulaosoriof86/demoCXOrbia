@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED",
+  "status": "READY_FOR_TERMINAL_CERTIFICATION",
   "iteration": "I3_FUNCTIONAL_CLOSURE_REOPENED_POST_RUN500_DRIFT",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "b168955f405cd82630a8caad04de0b1766b26fc8",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "0c3ce84d567a674ec18f90eedba1b2380c45d55b",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V95_2026-09-28.json",
-  "findingsLedgerExpectedGitBlob": "db9ac43274b18895902f0872e9850cd955dd764b",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V96_2026-09-28.json",
+  "findingsLedgerExpectedGitBlob": "bfa233fcc5f83ba3d7bd2171f42fb3c0d0e3a635",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
-  "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-082",
+  "terminalCertificationAllowed": true,
+  "activeBlocker": null,
   "nextFindingId": "VRM-083",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN read-only exact match-provenance diagnostic for the 12 Run551/Run554 Admin identity mismatches on pinned HR revision 8c12bbca...; prove direct/legacy/exactAliases/identityMap resolution. Zero product/build/deploy/writes/production. Only then decide control fix versus product fix.",
+  "exactNextAction": "RUN one fresh I3 terminal certification on exact V92 product source/runtime/Hosting using V96 ledger and exact-alias-aware human gate; zero build/deploy/product/data writes; require human acceptance, semantic oracle, terminal Module Truth 20/20, Gate20, deterministic artifact, live fixtures and Gate21.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -877,6 +877,14 @@
     "knownTenantAdjudicationMismatchCount": 1,
     "unresolvedProperlyReviewOnly": 1,
     "productChanged": false,
+    "production": false
+  },
+  "vrm082": {
+    "state": "FIXED_PROVEN_CONTROL_FALSE_NEGATIVE_RUN555",
+    "controlProofRunId": 36416972904,
+    "exactAliasOnlyCount": 12,
+    "ambiguousCount": 0,
+    "productSourceChanged": false,
     "production": false
   }
 }

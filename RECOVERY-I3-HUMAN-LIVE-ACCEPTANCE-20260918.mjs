@@ -162,8 +162,18 @@ const summary=await p.evaluate(({projectId,hrNameRows,unresolvedIdentityIds,expe
  }).length;
  const crossProject=platform.filter(x=>!Array.isArray(x?.projectIds)||!x.projectIds.map(String).includes(String(projectId))).length;
  const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
- const rowFor=id=>list.find(x=>String(x?.id||x?.shopperId||'')===id||(Array.isArray(x?.legacyLiveShopperIds)&&x.legacyLiveShopperIds.map(String).includes(id)));
  const identityMap=d.__identityMap&&typeof d.__identityMap==='object'?d.__identityMap:{};
+ const rowFor=id=>{
+   id=String(id||'');const mapped=String(identityMap[id]||id),rowId=x=>String(x?.id||x?.shopperId||'');
+   const direct=list.filter(x=>rowId(x)===mapped||(!identityMap[id]&&rowId(x)===id));
+   if(direct.length===1)return direct[0];if(direct.length>1)return null;
+   const aliases=list.filter(x=>{
+     const exact=Array.isArray(x?.exactAliases)&&x.exactAliases.map(String).includes(id);
+     const legacy=Array.isArray(x?.legacyLiveShopperIds)&&x.legacyLiveShopperIds.map(String).includes(id);
+     return (exact||legacy)&&rowId(x)===mapped;
+   });
+   return aliases.length===1?aliases[0]:null;
+ };
  const allHrIds=[...hrNameRows.map(x=>String(x.id)),...unresolvedIdentityIds.map(String)].filter(Boolean);
  const expectedCanonicalHrIds=new Set(allHrIds.map(id=>String(identityMap[id]||id)));
  const technicalPrimaryNames=list.filter(x=>{const n=String(x?.nombre||x?.name||'').trim(),id=String(x?.id||x?.shopperId||'').trim();return /^shopper_(?:gt|hn|sv|ni)_[a-z0-9]+$/i.test(n)||/^shp[-_][a-z0-9]+$/i.test(n)||(id&&n===id)}).length;
