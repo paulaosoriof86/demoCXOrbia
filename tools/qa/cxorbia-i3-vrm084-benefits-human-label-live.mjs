@@ -43,14 +43,15 @@ if(!credential?.ok)throw new Error('VRM084_TARGET_CREDENTIAL_NOT_DERIVABLE:'+Str
 const base=ROOT+'/index-backend-dev.html?'+new URLSearchParams({cxBackendPreview:'YES_PAULA_20260628_PREVIEW_DEV',cxProjectId:PROJECT,cxProtectedRuntime:'YES_PAULA_20260730_PROTECTED_DEV',cxHumanFullVisual:'YES_PAULA_20260731_FULL_PROFILE_DEV'});
 const browser=await chromium.launch({headless:true});const ctx=await browser.newContext({viewport:{width:1440,height:1000}});const page=await ctx.newPage();
 await settleVisibleShopperAuth({page,rawShopperId:shopperId,canonicalShopperId:shopperId,tenantId:TENANT,projectId:PROJECT,baseUrl:base,login:credential.login,password:credential.password});
-await page.goto(base+'#beneficios',{waitUntil:'domcontentloaded',timeout:90000});
-await page.waitForTimeout(3000);
-if(!/beneficios/i.test(await page.locator('body').innerText())){const link=page.locator('[data-route="beneficios"],a[href="#beneficios"]').first();if(await link.count())await link.click();await page.waitForTimeout(3000);}
-const body=await page.locator('body').innerText();
-const technical=/pending_source_confirmation|pending_financial_source|pending_or_review|honorarium_pending_source|hr_operational_amount_pending_financial_reconciliation/i.test(body);
-const human=/Pendiente de confirmación|Pago confirmado|Pendiente de validación/i.test(body);
-const heading=/Mis Beneficios/i.test(body);
-const humanHeader=/Estado de pago/i.test(body);
+await page.waitForFunction(()=>window.CX?.session?.role==='shopper'&&document.querySelector('#nav-beneficios'),null,{timeout:90000});
+await page.locator('#nav-beneficios').click();
+await page.waitForFunction(()=>window.CX?.session?.view==='beneficios'&&/Mis Beneficios/i.test(document.querySelector('#view')?.innerText||'')&&/Detalle por visita/i.test(document.querySelector('#view')?.innerText||''),null,{timeout:90000});
+await page.waitForTimeout(1500);
+const viewText=await page.locator('#view').innerText();
+const technical=/pending_source_confirmation|pending_financial_source|pending_or_review|honorarium_pending_source|hr_operational_amount_pending_financial_reconciliation/i.test(viewText);
+const human=/Pendiente de confirmación|Pago confirmado|Pendiente de validación/i.test(viewText);
+const heading=/Mis Beneficios/i.test(viewText);
+const humanHeader=/Estado de pago/i.test(viewText);
 const authorityApplied=await page.evaluate(()=>window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true);
 await page.screenshot({path:path.join(OUT,'vrm084-beneficios.png'),fullPage:true});
 const result={decision:heading&&humanHeader&&!technical&&authorityApplied?'PASS_I3_VRM084_BENEFITS_HUMAN_LABEL':'FAIL_I3_VRM084_BENEFITS_HUMAN_LABEL',sourceSha:SOURCE,target:{shopperId,name:profile.nombre||profile.name,uid:member.id},heading,humanHeaderVisible:humanHeader,humanLabelVisible:human,technicalTokenVisible:technical,authorityApplied,revision:await page.evaluate(()=>String(window.CX?.data?.previewMeta?.sourceRevision||window.CX_TYA_HR_LIVE_META?.revision||'')),safety:{writes:0,hrWrites:0,authWrites:0,production:false}};
