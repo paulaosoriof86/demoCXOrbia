@@ -36,7 +36,7 @@ const hrById=new Map(),hrByRow=new Map();
 for(const v of hrVisits){const id=str(v.id||v.visitId),row=str(v.hrRowId);if(id)hrById.set(id,v);if(row)hrByRow.set(row,v);}
 const members=await docs(tenant.collection('users'));
 let admin=null;
-for(const m of members.filter(x=>x.active===true&&['admin','super'].includes(str(x.role).toLowerCase())&&str(x.authNamespace).toLowerCase()!=='shopper')){
+for(const m of members.filter(x=>x.active===true&&['super','admin','ops','coordinador'].includes(str(x.role).toLowerCase())&&str(x.authNamespace||'staff').toLowerCase()==='staff')){
   try{await auth.getUser(m.id);admin=m;break;}catch{}
 }
 if(!admin)throw new Error('AUTH_FAILURE:PREI4_002_ADMIN_MISSING');
