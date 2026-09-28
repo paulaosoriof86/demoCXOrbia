@@ -15,5 +15,15 @@
   "freshHrAtCaptureTimeRequired": true,
   "reviewBeyondUserComments": true,
   "preserveEveryFindingUntilClosed": true,
-  "passCondition": "Admin + Shopper human visual review complete, all screenshot findings closed, production untouched, then request explicit I4 authorization separately."
+  "passCondition": "Admin forensic blockers must first be closed and automatically re-proven. Paula is not required to repeat the lost Admin screenshot journey. Shopper review remains deferred until Admin is repaired.",
+  "state": "HOLD",
+  "adminForensicAuditPath": "CXORBIA_PRE_I4_ADMIN_FORENSIC_AUDIT_2026-09-28.json",
+  "openAdminFindings": [
+    "PREI4-ADMIN-002",
+    "PREI4-ADMIN-003",
+    "PREI4-ADMIN-004",
+    "PREI4-ADMIN-005",
+    "PREI4-ADMIN-006",
+    "PREI4-ADMIN-007"
+  ]
 }

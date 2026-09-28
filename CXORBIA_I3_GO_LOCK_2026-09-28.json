@@ -66,11 +66,13 @@
     "noLegacyDatabaseCopy": true,
     "productionRequiresExplicitPaulaAuthorization": true
   },
-  "exactNextAction": "Complete PRE-I4 Human Visual Acceptance in DEV for Admin and Shopper and close every screenshot finding. Only after PASS request explicit Paula authorization for I4; do not touch production.",
+  "exactNextAction": "Close PRE-I4 Admin forensic blockers from the frozen audit and reprove automatically; do not ask Paula to repeat screenshots. Production DO_NOT_TOUCH.",
   "humanVisualAcceptance": {
-    "state": "PENDING",
+    "state": "HOLD",
     "lockPath": "CXORBIA_PRE_I4_HUMAN_VISUAL_ACCEPTANCE_LOCK_2026-09-28.json",
     "requiredBeforeI4": true,
-    "production": "DO_NOT_TOUCH"
+    "production": "DO_NOT_TOUCH",
+    "adminForensicAuditPath": "CXORBIA_PRE_I4_ADMIN_FORENSIC_AUDIT_2026-09-28.json",
+    "adminReviewRepeatRequired": false
   }
 }

@@ -7,8 +7,8 @@
   "productSourceSha": "09b4e56be96dedbeb89d14f1d190bfc5b8b4f990",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "87888d3792b011b10a87611dde3efc69e3f4eb40",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V116_2026-09-28.json",
-  "findingsLedgerExpectedGitBlob": "b0b9ad3c936f0bbd6da5022be3adad323e0d8075",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V117_2026-09-28.json",
+  "findingsLedgerExpectedGitBlob": "3ac479de219f8d485792b1d9ac6c4558fc2becb8",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Complete PRE-I4 Human Visual Acceptance in DEV for Admin and Shopper, critically review screenshot evidence against fresh live HR and frozen contracts, close every finding, then request explicit Paula authorization for I4. Production remains DO_NOT_TOUCH.",
+  "exactNextAction": "Recover exact approved deltas for the proven Admin blockers in PRE-I4 forensic audit; do not ask Paula to repeat Admin screenshots. Apply one cumulative focal remediation package only after owner/source truth is complete; reprove Admin automatically. Production remains DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1035,13 +1035,15 @@
     "i4AuthorizationRequired": true
   },
   "humanVisualAcceptance": {
-    "state": "PENDING",
+    "state": "HOLD",
     "lockPath": "CXORBIA_PRE_I4_HUMAN_VISUAL_ACCEPTANCE_LOCK_2026-09-28.json",
     "requiredBeforeI4": true,
     "reviewUrl": "https://cxorbia-backend-dev.web.app",
     "adminExpectedRoutes": 34,
     "shopperExpectedRoutes": 12,
     "freshHrAtCaptureTimeRequired": true,
-    "production": "DO_NOT_TOUCH"
+    "production": "DO_NOT_TOUCH",
+    "adminForensicAuditPath": "CXORBIA_PRE_I4_ADMIN_FORENSIC_AUDIT_2026-09-28.json",
+    "adminReviewRepeatRequired": false
   }
 }
