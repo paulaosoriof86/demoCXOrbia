@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED",
+  "status": "READY_FOR_TERMINAL_CERTIFICATION",
   "iteration": "I3_FUNCTIONAL_CLOSURE_REOPENED_POST_RUN500_DRIFT",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "09b4e56be96dedbeb89d14f1d190bfc5b8b4f990",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "87888d3792b011b10a87611dde3efc69e3f4eb40",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V109_2026-09-28.json",
-  "findingsLedgerExpectedGitBlob": "3e9c908acb2e322783e09430aecf758c86b611dd",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V110_2026-09-28.json",
+  "findingsLedgerExpectedGitBlob": "7331b4d6457c0cb294cb28d2157ba38ac1fa501e",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
-  "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-086",
+  "terminalCertificationAllowed": true,
+  "activeBlocker": null,
   "nextFindingId": "VRM-087",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Align the remaining stale crosswalk and canonical-history assertions in tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs, then rerun only the VRM-086 shoppers focal against immutable Run579 HR revision. No product/data/runtime/Hosting/Rules change; terminal remains disabled.",
+  "exactNextAction": "Execute one canonical terminal certification on unchanged product source 09b4e56be96dedbeb89d14f1d190bfc5b8b4f990. Require fresh stable HR, exhaustive Admin/Shopper human acceptance, corrected semantic focal including VRM-085 and VRM-086 semantics, terminal Module Truth 20/20, Gate20, one deterministic artifact, live fixtures and Gate21 on that same artifact. Do not touch production; I4 remains blocked until I3=GO and explicit Paula authorization.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -131,17 +131,18 @@
     "hrRevision": "2b0114c39d64a0e3697667572de0dfdcffe476c5cd8112449fcab1da24e1085d"
   },
   "lastControlAttempt": {
-    "runId": 36466295060,
-    "runNumber": 580,
-    "jobId": 109077193632,
+    "runId": 36467001515,
+    "runNumber": 581,
+    "jobId": 109079550920,
     "classification": "RELEASE_COMPOSITION_FAILURE",
-    "observedFailureClassification": "MAPPING_FAILURE",
-    "code": "EXACT_HR_CROSSWALK_MISSING_AFTER_ROW_RESOLUTION",
+    "code": "VRM-086_CONTROL_FALSE_NEGATIVE",
+    "decision": "PASS_VRM086_CONTROL_ONLY_EXACT_ALIAS_REPROOF",
+    "browserDecision": "PASS_PRE_I4_VRM086_EXACT_ALIAS_REPROOF",
     "productDefect": false,
     "productSourceChanged": false,
     "hrRevision": "d068b00c62a940f0ad828436ffcf22fbf1dbb43e763ab4e14854102bf5f84a51",
-    "artifactId": 10989688721,
-    "artifactDigest": "sha256:088c0e9aaea66213ff536f32f8c2246919eccc74ff5cd78309f0ff61afb485ae",
+    "artifactId": 10989314804,
+    "artifactDigest": "sha256:17229975c29e98225123bb661d3eb68b94e7ec2b3512fb7f849e11fc8d9adb90",
     "builds": 0,
     "deploys": 0,
     "writes": 0,
@@ -947,23 +948,17 @@
     "production": false
   },
   "vrm086": {
-    "state": "OPEN_PROVEN_RUN580_SECOND_CONTROL_ASSERTION_FIX_REQUIRED",
+    "state": "FIXED_PROVEN_CONTROL_FALSE_NEGATIVE_RUN581",
     "classification": "RELEASE_COMPOSITION_FAILURE",
     "observedFailureClassification": "MAPPING_FAILURE",
     "productDefect": false,
     "provenOwner": "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs",
-    "runId": 36460739231,
-    "diagnosticsArtifactId": 10987632453,
+    "runId": 36467001515,
+    "artifactId": 10989314804,
+    "artifactDigest": "sha256:17229975c29e98225123bb661d3eb68b94e7ec2b3512fb7f849e11fc8d9adb90",
     "hrRevision": "d068b00c62a940f0ad828436ffcf22fbf1dbb43e763ab4e14854102bf5f84a51",
-    "missingExactAliasSourceIds": [
-      "shopper_gt_0e5eac2a4a",
-      "shopper_gt_1f90bb8a75"
-    ],
-    "terminalRerunAllowed": false,
-    "production": false,
-    "lastReproofRunId": 36466295060,
-    "lastReproofArtifactId": 10989688721,
-    "rowResolutionProven": true,
-    "remainingControlAssertion": "crosswalk/history exact alias alignment"
+    "productSourceChanged": false,
+    "terminalRerunAllowed": true,
+    "production": false
   }
 }
