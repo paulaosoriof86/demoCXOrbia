@@ -999,6 +999,54 @@ jobs:
           gcloud logging read "$FILTER" --project "$PROJECT" --freshness=30m --limit=200 --order=desc --format=json > "$VRM081_OUT/cloud-run-logs.json" || printf '[]\n' > "$VRM081_OUT/cloud-run-logs.json"
           jq '[.[] | {timestamp,severity,textPayload,jsonPayload,httpRequest,labels}]' "$VRM081_OUT/cloud-run-logs.json" > "$VRM081_OUT/cloud-run-logs-compact.json" || cp "$VRM081_OUT/cloud-run-logs.json" "$VRM081_OUT/cloud-run-logs-compact.json"
 
+      - name: Capture exact alias canonical principal topology read only
+        run: |
+          set -Eeuo pipefail
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
+          node --input-type=module <<'NODE' > "$VRM081_OUT/principal-topology.json"
+          import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';
+          import {getAuth} from 'firebase-admin/auth';
+          import {getFirestore} from 'firebase-admin/firestore';
+          if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:'cxorbia-backend-dev'});
+          const TENANT='tya',PROJECT='cinepolis',db=getFirestore(),auth=getAuth(),tenant=db.collection('tenants').doc(TENANT);
+          const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[],uniq=v=>[...new Set(arr(v).map(str).filter(Boolean))].sort();
+          const activeMember=m=>m?.active===true&&str(m?.status||'active').toLowerCase()!=='inactive'&&str(m?.role).toLowerCase()==='shopper'&&str(m?.authNamespace).toLowerCase()==='shopper'&&(uniq(m?.projectIds).includes(PROJECT)||str(m?.scopeProjectId)===PROJECT);
+          const exactAuth=(u,id)=>{const c=u?.customClaims||{},role=str(c.role).toLowerCase(),ns=str(c.authNamespace||(role==='shopper'?'shopper':'')).toLowerCase(),projects=uniq([...(arr(c.projectIds)),c.projectId]);return u?.disabled!==true&&(str(c.tenantId)===TENANT||uniq(c.tenants).includes(TENANT))&&str(c.shopperId)===id&&role==='shopper'&&ns==='shopper'&&projects.includes(PROJECT);};
+          const KEYS=['shopperId','legacyShopperId','legacyId','externalShopperId','externalId','sourceId','sourceKey','hrRowId','personId','profileId','shopperDocId','sourceIdentityKey','sourceSubjectId'];
+          const ALIAS=['exactAliases','identityAliases','aliases','sourceAliases','sourceIdentityAliases'];
+          const walk=(v,out=[])=>{if(v==null)return out;if(Array.isArray(v)){v.forEach(x=>walk(x,out));return out;}if(typeof v==='object'){Object.values(v).forEach(x=>walk(x,out));return out;}const s=str(v);if(s)out.push(s);return out;};
+          const tokens=link=>uniq([link,link?.sourceIdentity,link?.identity,link?.crosswalk,link?.profile,link?.exactIdentityAnchors].filter(Boolean).flatMap(x=>[...KEYS.flatMap(k=>walk(x[k])),...ALIAS.flatMap(k=>walk(x[k]))]));
+          const [usersSnap,crossSnap,linksSnap]=await Promise.all([tenant.collection('users').get(),tenant.collection('shopperIdentityCrosswalk').get(),tenant.collection('shopperIdentityLinks').get()]);
+          const users=usersSnap.docs.map(d=>({uid:d.id,...(d.data()||{})})),cross=Object.fromEntries(crossSnap.docs.map(d=>[d.id,{id:d.id,...(d.data()||{})}]));
+          const authUsers=[];let pageToken;do{const page=await auth.listUsers(1000,pageToken);authUsers.push(...page.users);pageToken=page.pageToken;}while(pageToken);
+          const exact={},conflicts=[];
+          for(const doc of linksSnap.docs){
+            const l={id:doc.id,...(doc.data()||{})},status=str(l.status||l.state).toLowerCase(),authority=str(l.authorityType||l.authority?.type).toLowerCase(),scope=str(l.projectScope||l.scope?.projectId||l.projectId||'*'),canonical=str(l.canonicalShopperId||l.canonicalId||l.shopperId||l.profileId),sourceSystem=str(l.sourceSystem||l.sourceNamespace||l.sourceType||l.sourceIdentity?.sourceSystem).toLowerCase();
+            const authorityRef=str(l.authorityRef||l.authority?.evidenceRef||l.authority?.adjudicationId||l.authority?.providerRef||l.authority?.commandId||l.providerAckRef||l.adjudicationId||l.commandId||l.idempotencyKey||doc.id);
+            const eligible=(str(l.tenantId||l.scope?.tenantId)===TENANT)&&['active','confirmed','approved','materialized'].includes(status)&&['provider_exact','tenant_adjudication','platform_created','migrated_exact'].includes(authority)&&!!authorityRef&&!(l.periodKey||l.periodId||l.periodScope)&&(scope==='*'||scope.toLowerCase()==='tenant'||scope===PROJECT)&&!!canonical&&sourceSystem.includes('hr');
+            if(!eligible)continue;
+            for(const token of tokens(l)){if(exact[token]&&exact[token]!==canonical)conflicts.push(token);else exact[token]=canonical;}
+          }
+          const membershipsBy={};for(const m of users){const id=str(m.shopperId);if(id)(membershipsBy[id]??=[]).push(m);}
+          const state=id=>{
+            const memberships=arr(membershipsBy[id]),active=memberships.filter(activeMember),authExact=authUsers.filter(u=>exactAuth(u,id));
+            const paired=active.filter(m=>authExact.some(u=>u.uid===m.uid));
+            return {membershipCount:memberships.length,activeMembershipCount:active.length,enabledExactAuthCount:authExact.length,exactPairedPrincipalCount:paired.length,membershipUids:memberships.map(m=>m.uid).sort(),enabledExactAuthUids:authExact.map(u=>u.uid).sort()};
+          };
+          const rows=[];
+          for(const [sourceId,cw] of Object.entries(cross)){
+            const mode=str(cw.identityMode).toLowerCase(),self=str(cw.shopperId)===sourceId&&str(cw.sourceType).toLowerCase()==='hr_external'&&['stable_hr_shopper_id','exact_technical_keys_only'].includes(mode);
+            const canonical=exact[sourceId];
+            if(!self||!canonical||canonical===sourceId)continue;
+            const alias=state(sourceId),canon=state(canonical);
+            const aliasLive=alias.activeMembershipCount>0||alias.enabledExactAuthCount>0,canonLive=canon.activeMembershipCount>0||canon.enabledExactAuthCount>0;
+            const topology=aliasLive&&canonLive?'DUAL':aliasLive?'ALIAS_ONLY':canonLive?'CANONICAL_ONLY':'NONE';
+            rows.push({sourceShopperId:sourceId,canonicalShopperId:canonical,country:str(cw.country||cw.pais),topology,alias,canonical:canon});
+          }
+          const counts={};for(const r of rows)counts[r.topology]=(counts[r.topology]||0)+1;
+          process.stdout.write(JSON.stringify({decision:'PASS_I3_VRM081_PRINCIPAL_TOPOLOGY_READ_ONLY',rows:rows.length,counts,identityLinkConflicts:conflicts.length,details:rows,writes:0,deploys:0,production:false},null,2));
+          NODE
+
       - name: Seal diagnostic receipt
         run: |
           set -Eeuo pipefail
