@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM081_V90_FINAL_REPROOF_REQUIRED",
+  "status": "HOLD_MODULE_TRUTH_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_REOPENED_POST_RUN500_DRIFT",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "b168955f405cd82630a8caad04de0b1766b26fc8",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "0c3ce84d567a674ec18f90eedba1b2380c45d55b",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V91_2026-09-28.json",
-  "findingsLedgerExpectedGitBlob": "5a337e6efa7ec85a0ce554d5c5fa9c65b516e3b8",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V92_2026-09-28.json",
+  "findingsLedgerExpectedGitBlob": "30577f3a969f3f6605f9ebb33f8a9be3af325551",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-081",
+  "activeBlocker": "TERMINAL_RECERTIFICATION",
   "nextFindingId": "VRM-082",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN read-only final VRM-081 population credential/identity + duplicate canonical Auth proof on existing DEV revision cxorbia-live-hr-dev-00225-vkw; transient runner dependency only; no build/deploy/writes/production.",
+  "exactNextAction": "RUN existing C3 preterminal Module Truth 20/20 against exact V92 source/runtime/Hosting; use VRM-081 proven product owner as sole delta from predecessor; zero build/deploy/writes/production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -358,6 +358,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/657dc30197e38cb4",
     "hrRevision": "7509374c11643838f40f61434e2d076126f466e9c0953cbc2300febaf91919c8",
     "materializationRunId": 36363527500,
+    "finalVrm081ProofRunId": 36363945599,
     "production": false
   },
   "lastFocalAttempt": {
@@ -543,23 +544,9 @@
     "productDriftDemonstrated": false
   },
   "lastModuleTruthProof": {
-    "runId": 36260867718,
-    "runNumber": 497,
-    "jobId": 108456301302,
-    "artifactId": 10911784638,
-    "artifactName": "cxorbia-c3-preterminal-module-truth-36260867718",
-    "artifactDigest": "sha256:6a925058340c3c0caf8e7c5fa35f809b258a2795d8a18120e6952009f0261d05",
-    "decision": "PASS_C3_PRETERMINAL_MODULE_TRUTH_20_20_EXACT_DEV",
-    "sourceSha": "a552e1fbb41d5cacc8ab3157f3d91492b82b8f00",
-    "sourceTree": "c44872eb2dc1529de8387957ec720024944a5e62",
-    "moduleTruthSha256": "6e2682854bd4e01ed18e79c42b7ca91d0f5cf1e5adb9ad845ecc50cc52eb88c6",
-    "moduleCount": 20,
-    "matchModules": 20,
-    "nonMatchModules": 0,
-    "pendingFiles": 0,
-    "runtimeRevision": "cxorbia-live-hr-dev-00223-tlg",
-    "runtimeDigest": "sha256:b34be533f545c6dda7dc9f6c4a1cb0af517aad2aff1d79005412b4a2433d7ecd",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/8ff3b75d0b77f11c",
+    "state": "PENDING_CURRENT_V92",
+    "sourceSha": "b168955f405cd82630a8caad04de0b1766b26fc8",
+    "sourceTree": "7ee35f25dd6a1c1b6f6a562ed770e9ba80cceeeb",
     "production": false
   },
   "terminalCertification": {
@@ -802,20 +789,7 @@
     "hrWrites": 0,
     "production": false
   },
-  "pendingMaterialization": {
-    "sourceSha": "b168955f405cd82630a8caad04de0b1766b26fc8",
-    "sourceTree": "7ee35f25dd6a1c1b6f6a562ed770e9ba80cceeeb",
-    "findingIds": [
-      "VRM-081"
-    ],
-    "mode": "READ_ONLY_FINAL_REPROOF_EXISTING_DEV_RUNTIME",
-    "materializationRunId": 36363527500,
-    "maxAdditionalBuilds": 0,
-    "maxAdditionalRuntimeDeploys": 0,
-    "hostingDeploys": 0,
-    "rulesDeploys": 0,
-    "production": false
-  },
+  "pendingMaterialization": null,
   "lastVrm080Proof": {
     "runId": 36333245670,
     "runNumber": 525,
@@ -858,5 +832,23 @@
     "productionAuthorized": false,
     "supersededBy": "ChatGPT direct writer authority CR-20260910-02",
     "executedByPrimaryWriter": true
+  },
+  "lastVrm081Proof": {
+    "runId": 36363945599,
+    "runNumber": 547,
+    "artifactId": 10946865821,
+    "artifactDigest": "sha256:032b59414aa951706e7a62f806276685e94835171608a6458f539c801c4d3aee",
+    "decision": "PASS_I3_VRM081_FINAL_POPULATION_AUTH_REPROOF",
+    "sourceSha": "b168955f405cd82630a8caad04de0b1766b26fc8",
+    "sourceTree": "7ee35f25dd6a1c1b6f6a562ed770e9ba80cceeeb",
+    "runtimeRevision": "cxorbia-live-hr-dev-00225-vkw",
+    "runtimeDigest": "sha256:d20d50b0090cf3b4bd0030c601174a6dc451a02241d947c4ed5e0c982df5a7e7",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/657dc30197e38cb4",
+    "hrRevision": "7509374c11643838f40f61434e2d076126f466e9c0953cbc2300febaf91919c8",
+    "activeCredentialUniverseResolved": true,
+    "humanDecisionRequired": false,
+    "noDuplicateCanonicalAuth": true,
+    "noDuplicateCanonicalMembership": true,
+    "production": false
   }
 }
