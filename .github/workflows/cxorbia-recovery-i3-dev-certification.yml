@@ -147,7 +147,6 @@ jobs:
     env:
       VRM083_OUT: .tmp/i3-vrm083
       VRM083_TARGET_UID: cxorbia-dev-shopper-eval01
-      VRM083_SOURCE_DIR: ${{ runner.temp }}/vrm083-source
     steps:
       - uses: actions/checkout@v4
         with: {fetch-depth: 0}
@@ -156,14 +155,14 @@ jobs:
       - name: Prove read-only exact candidate
         run: |
           set -Eeuo pipefail
-          mkdir -p "$VRM083_OUT" "$VRM083_SOURCE_DIR"
+          SOURCE_DIR="$RUNNER_TEMP/vrm083-source"\n          rm -rf "$SOURCE_DIR"; mkdir -p "$VRM083_OUT" "$SOURCE_DIR"\n          echo "VRM083_SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
           SOURCE="${{ needs.canonical-candidate-authority.outputs.source_sha }}"
           TREE="${{ needs.canonical-candidate-authority.outputs.source_tree }}"
           test "$SOURCE" = "b168955f405cd82630a8caad04de0b1766b26fc8"
           test "$TREE" = "7ee35f25dd6a1c1b6f6a562ed770e9ba80cceeeb"
           test "$(git rev-parse "$SOURCE^{tree}")" = "$TREE"
           git diff --quiet "$SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
-          git archive "$SOURCE" | tar -x -C "$VRM083_SOURCE_DIR"
+          git archive "$SOURCE" | tar -x -C "$SOURCE_DIR"
           node --check tools/qa/cxorbia-i3-vrm083-hr-browser-revision-diagnostic.mjs
       - name: Install read-only browser dependencies
         run: |
