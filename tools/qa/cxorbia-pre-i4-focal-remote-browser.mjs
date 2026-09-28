@@ -143,12 +143,13 @@ async function signInMember(member,kind,route,options={}){
       const qaReservationVisible=r==='reservas'&&/I3 QA TEMP|\bGT QA\b/i.test(body);
       const periodPosts=(d._posts||[]).filter(x=>String(d.recordPeriodId?d.recordPeriodId(x):(x.periodId||x.projectId)||'')===String(d.currentPeriodId||''));
       const posts=kind==='shopper'&&sid?periodPosts.filter(x=>String(x.shopperId||'')===sid):[];
-      const visitForPost=x=>(d._visitas||[]).find(v=>String(v.id||v.visitId||'')===String(x?.visitId||x?.visitaId||''))||null;
+      const visitForPost=x=>{const key=String(x?.visitId||x?.visitaId||''),hrKey=String(x?.hrRowId||'');return (d._visitas||[]).find(v=>(key&&[v?.id,v?.visitId].some(k=>String(k||'')===key))||(hrKey&&String(v?.hrRowId||'')===hrKey))||null;};
       const syncStateFor=x=>{
         const state=String(x?.estado||x?.status||'').toLowerCase(),v=visitForPost(x),appShopper=String(x?.shopperId||''),visitShopper=String(v?.shopperId||'');
         if(state==='pendiente')return'pending_review';
         if(state!=='aprobada')return state||'unknown';
         if(v?.assignmentReviewRequired===true||v?.assignmentReviewReason==='hr_platform_assignment_conflict')return'conflict_review_required';
+        if(v&&appShopper&&visitShopper&&visitShopper!==appShopper)return'conflict_review_required';
         if(v?.assignmentSource==='platform'&&v?.assignmentSyncStatus==='pending_hr')return'platform_pending_hr_sync';
         if(v&&appShopper&&visitShopper===appShopper)return'assigned_confirmed';
         return'approved_assignment_review';

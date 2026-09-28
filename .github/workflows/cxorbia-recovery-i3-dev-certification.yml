@@ -215,6 +215,73 @@ jobs:
           include-hidden-files: true
 
 
+  vrm085-control-reproof:
+    name: I3 VRM-085 — corrected focal same-revision reproof no deploy
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-085-reproof]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      VRM085_REPROOF_OUT: .tmp/i3-vrm085-reproof
+      VRM085_ROOT: https://cxorbia-backend-dev.web.app
+      VRM085_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      VRM085_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      VRM085_TARGET_HR_REVISION: d068b00c62a940f0ad828436ffcf22fbf1dbb43e763ab4e14854102bf5f84a51
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Prove control-only fix and exact product authority
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$VRM085_REPROOF_OUT/semantic"
+          test "$VRM085_SOURCE" = "09b4e56be96dedbeb89d14f1d190bfc5b8b4f990"
+          test "$VRM085_TREE" = "f6899a631b7b277b16614f1b6534103e7615f11e"
+          test "$(git rev-parse "$VRM085_SOURCE^{tree}")" = "$VRM085_TREE"
+          test "$(git diff --name-only "$VRM085_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**' | wc -l | tr -d ' ')" = "0"
+          node --check tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs
+          grep -Fq "visitShopper&&visitShopper!==appShopper)return'conflict_review_required'" tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs
+          grep -Fq "[v?.id,v?.visitId].some" tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs
+      - name: Download immutable Run574 same-revision evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$VRM085_REPROOF_OUT/run574"
+          gh run download 36451412310 --repo "$GITHUB_REPOSITORY" --name cxorbia-recovery-i3-terminal-diagnostics-36451412310 --dir "$VRM085_REPROOF_OUT/run574"
+          test "$(jq -r '._runtime.revision // .sourceRevision // empty' "$VRM085_REPROOF_OUT/run574/hr-current-live.json")" = "$VRM085_TARGET_HR_REVISION"
+          cp "$VRM085_REPROOF_OUT/run574/semantic/hr-contrast.json" "$VRM085_REPROOF_OUT/semantic/hr-contrast.json"
+          test "$(jq -r '.sourceRevision' "$VRM085_REPROOF_OUT/semantic/hr-contrast.json")" = "$VRM085_TARGET_HR_REVISION"
+      - name: Install read-only browser dependencies
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+      - name: Authenticate canonical Firebase DEV read only
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Reprove hardened focal on exact same HR revision
+        run: |
+          set -Eeuo pipefail
+          PREI4_OUT="$VRM085_REPROOF_OUT/semantic" CXORBIA_PREI4_ROOT="$VRM085_ROOT" CXORBIA_PREI4_SOURCE_SHA="$VRM085_SOURCE" node tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs | tee "$VRM085_REPROOF_OUT/focal-console.log"
+          test "$(jq -r '.decision' "$VRM085_REPROOF_OUT/semantic/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
+          test "$(jq -r '.sourceSha' "$VRM085_REPROOF_OUT/semantic/browser-focal.json")" = "$VRM085_SOURCE"
+          test "$(jq -r '.hrRevision' "$VRM085_REPROOF_OUT/semantic/browser-focal.json")" = "$VRM085_TARGET_HR_REVISION"
+          test "$(jq -r '.admin.routes.postulaciones.postulationSync.visibleConflicts' "$VRM085_REPROOF_OUT/semantic/browser-focal.json")" = "6"
+          test "$(jq -r '.admin.routes.postulaciones.postulationSync.expectedConflicts' "$VRM085_REPROOF_OUT/semantic/browser-focal.json")" = "6"
+          jq -n -S --arg source "$VRM085_SOURCE" --arg tree "$VRM085_TREE" --arg hr "$VRM085_TARGET_HR_REVISION" --arg control "$GITHUB_SHA" '{decision:"PASS_VRM085_CONTROL_ONLY_FOCAL_REPROOF",sourceSha:$source,sourceTree:$tree,hrRevision:$hr,controlHeadSha:$control,provenOwner:"tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs",productChanged:false,builds:0,deploys:0,writes:0,production:false}' > "$VRM085_REPROOF_OUT/result.json"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-vrm085-reproof-${{ github.run_id }}
+          path: ${{ env.VRM085_REPROOF_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+          include-hidden-files: true
+
+
   vrm083-hr-browser-revision-diagnostic:
     name: I3 VRM-083 — HR browser revision coherence read-only
     needs: canonical-candidate-authority
