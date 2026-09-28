@@ -13,6 +13,7 @@ const TENANT=String(process.env.TENANT_ID||'tya');
 const PROJ=String(process.env.PROJECT_ID||'cinepolis');
 const OUT=String(process.env.VRM043_OUT||'.tmp/vrm043-name-diagnostic');
 const EXPECTED_REV=String(process.env.VRM043_EXPECTED_HR_REVISION||'').trim();
+const VRM082_TARGET_IDS=String(process.env.VRM082_TARGET_IDS||'').split(',').map(v=>v.trim()).filter(Boolean);
 const PRE='YES_PAULA_20260628_PREVIEW_DEV',PROT='YES_PAULA_20260730_PROTECTED_DEV',FULL='YES_PAULA_20260731_FULL_PROFILE_DEV';
 const norm=v=>String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
 fs.mkdirSync(OUT,{recursive:true});
@@ -49,6 +50,7 @@ try{
   await page.waitForFunction(()=>window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,null,{timeout:150000});
   const observed=await page.evaluate(()=>({
     revision:String(window.CX?.data?.previewMeta?.sourceRevision||''),
+    identityMap:(window.CX?.data?.__identityMap&&typeof window.CX.data.__identityMap==='object')?window.CX.data.__identityMap:{},
     shoppers:(Array.isArray(window.CX?.data?.shoppers)?window.CX.data.shoppers:[]).map(x=>({
       id:String(x?.id||x?.shopperId||''),
       shopperId:String(x?.shopperId||''),
@@ -98,6 +100,32 @@ try{
       identityAuthority:row.identityAuthority,identityReviewRequired:row.identityReviewRequired,identityReviewReason:row.identityReviewReason,canonicalIdentityOverlay:row.canonicalIdentityOverlay,authorityHuman,matchMode,equal
     });
   }
+  const targetProvenance=VRM082_TARGET_IDS.map(id=>{
+    const directRows=obs.filter(x=>x.id===id||x.shopperId===id);
+    const legacyRows=obs.filter(x=>x.legacyLiveShopperIds.includes(id));
+    const exactAliasRows=obs.filter(x=>x.exactAliases.includes(id));
+    const all=[...directRows,...legacyRows,...exactAliasRows].filter((x,i,a)=>a.findIndex(y=>y.id===x.id)===i);
+    const selected=directRows.length===1?directRows[0]:(directRows.length===0&&all.length===1?all[0]:null);
+    const op=opById.get(id)||{};
+    const expectedName=String(op?.nombre||op?.name||op?.displayName||op?.fullName||'').trim();
+    const mapped=String(observed.identityMap?.[id]||'');
+    return {
+      id,expectedName,identityMapCanonicalTarget:mapped||null,
+      directMatchIds:directRows.map(x=>x.id),
+      legacyMatchIds:legacyRows.map(x=>x.id),
+      exactAliasMatchIds:exactAliasRows.map(x=>x.id),
+      exactAliasOnly:directRows.length===0&&legacyRows.length===0&&exactAliasRows.length===1,
+      ambiguous:all.length>1,
+      selectedId:selected?.id||null,
+      observedName:selected?String(selected.nombre||selected.name||selected.displayName||selected.fullName||'').trim():null,
+      selectedAuthority:selected?.identityAuthority||null,
+      nameEqual:selected&&expectedName?norm(selected.nombre||selected.name||selected.displayName||selected.fullName)===norm(expectedName):false
+    };
+  });
+  const terminalRowForWouldResolve=targetProvenance.filter(x=>x.directMatchIds.length===1||x.legacyMatchIds.length===1).length;
+  const exactAliasOnlyCount=targetProvenance.filter(x=>x.exactAliasOnly).length;
+  const targetNameEqualCount=targetProvenance.filter(x=>x.nameEqual).length;
+  const targetAmbiguousCount=targetProvenance.filter(x=>x.ambiguous).length;
   const report={
     decision:'PASS_VRM043_NAME_DIAGNOSTIC',
     generatedAt:new Date().toISOString(),production:false,writes:0,deploys:0,
@@ -108,7 +136,17 @@ try{
     mismatchRatio:nameMismatch/Math.max(1,nameEqual+nameMismatch),
     unresolvedAuthorityCount:details.filter(x=>x.authorityHuman===false).length,
     unresolvedProperlyReviewOnly:details.filter(x=>x.authorityHuman===false&&x.identityReviewRequired===true&&x.identityReviewReason==='human_display_name_unresolved'&&x.observedName==='Identidad pendiente de revisión').length,
-    sample:details
+    sample:details,
+    vrm082TargetProof:{
+      requested:VRM082_TARGET_IDS.length,
+      terminalRowForWouldResolve,
+      exactAliasOnlyCount,
+      targetNameEqualCount,
+      targetAmbiguousCount,
+      allTargetsResolvedUnambiguously:VRM082_TARGET_IDS.length>0&&targetProvenance.length===VRM082_TARGET_IDS.length&&targetProvenance.every(x=>x.selectedId&&!x.ambiguous&&x.nameEqual),
+      controlGapProven:VRM082_TARGET_IDS.length>0&&exactAliasOnlyCount>0&&targetAmbiguousCount===0&&targetProvenance.every(x=>x.selectedId&&x.nameEqual),
+      rows:targetProvenance
+    }
   };
   fs.writeFileSync(path.join(OUT,'vrm043-name-diagnostic.json'),JSON.stringify(report,null,2)+'\n');
   console.log(JSON.stringify(report,null,2));

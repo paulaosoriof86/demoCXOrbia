@@ -39,6 +39,7 @@ on:
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V92_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V93_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V94_2026-09-28.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V95_2026-09-28.json
       - tools/qa/cxorbia-i3-vrm081-population-credential-diagnostic.mjs
       - app/modules/configuracion.js
       - app/core/config.js
@@ -91,7 +92,7 @@ env:
   I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V94_2026-09-28.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V95_2026-09-28.json
 
 jobs:
   canonical-candidate-authority:
@@ -129,7 +130,7 @@ jobs:
           test "$(jq -r '.findings["VRM-079"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN518"
           test "$(jq -r '.findings["VRM-080"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN525"
           test "$(jq -r '.findings["VRM-081"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN547"
-          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" ]]
+          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" ]]
           echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
@@ -1579,6 +1580,8 @@ jobs:
       PROJECT_ID: cinepolis
       VRM043_OUT: .tmp/vrm043-name-diagnostic
       VRM043_ORACLE: operational-names-v2
+      VRM043_EXPECTED_HR_REVISION: 8c12bbcae91bcfdfee89c44f42777aeb19ec4ac85c7824450f6deb8202d7131b
+      VRM082_TARGET_IDS: shopper_gt_0e5eac2a4a,shopper_gt_1f90bb8a75,shopper_gt_350d7b017d,shopper_gt_3528b0fb90,shopper_gt_3c14073969,shopper_gt_61501eaff4,shopper_gt_64265e8115,shopper_gt_7f23f9a093,shopper_hn_2d5d71b664,shopper_hn_59bbac6a32,shopper_hn_83460e68ba,shopper_hn_b5aabb7d48
     steps:
       - name: Checkout Recovery control head
         uses: actions/checkout@v4

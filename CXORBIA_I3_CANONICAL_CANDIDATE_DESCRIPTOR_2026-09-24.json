@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "READY_FOR_TERMINAL_CERTIFICATION",
+  "status": "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_REOPENED_POST_RUN500_DRIFT",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "b168955f405cd82630a8caad04de0b1766b26fc8",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "0c3ce84d567a674ec18f90eedba1b2380c45d55b",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V94_2026-09-28.json",
-  "findingsLedgerExpectedGitBlob": "8fda1ee34026ef5e79eb5b911735973f62a91386",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V95_2026-09-28.json",
+  "findingsLedgerExpectedGitBlob": "db9ac43274b18895902f0872e9850cd955dd764b",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
-  "terminalCertificationAllowed": true,
-  "activeBlocker": null,
+  "terminalCertificationAllowed": false,
+  "activeBlocker": "VRM-082",
   "nextFindingId": "VRM-083",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN one fresh I3 terminal certification against exact V92 product source/runtime/Hosting and a newly pinned live HR revision, using V94 ledger. Zero build/deploy/product/data writes; require human acceptance, semantic oracle, terminal Module Truth 20/20, Gate20, one deterministic artifact, live fixtures and Gate21.",
+  "exactNextAction": "RUN read-only exact match-provenance diagnostic for the 12 Run551/Run554 Admin identity mismatches on pinned HR revision 8c12bbca...; prove direct/legacy/exactAliases/identityMap resolution. Zero product/build/deploy/writes/production. Only then decide control fix versus product fix.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -101,14 +101,14 @@
     "attempt": 3
   },
   "lastTerminalAttempt": {
-    "runId": 36412281251,
-    "runNumber": 551,
-    "jobId": 108895108389,
+    "runId": 36415439390,
+    "runNumber": 554,
+    "jobId": 108905429487,
     "classification": "MAPPING_FAILURE",
     "code": "ADMIN_REAL_SHOPPER_IDENTITY_NOT_RENDERABLE",
+    "hrRevision": "8c12bbcae91bcfdfee89c44f42777aeb19ec4ac85c7824450f6deb8202d7131b",
     "mismatchCount": 12,
-    "unresolvedAuthorityCount": 1,
-    "productDefect": "UNDETERMINED_PENDING_EXACT_NAME_DIAGNOSTIC",
+    "productDefect": "UNDETERMINED_PENDING_EXACT_ALIAS_PROVENANCE",
     "terminalArtifactCreated": false,
     "production": false
   },
