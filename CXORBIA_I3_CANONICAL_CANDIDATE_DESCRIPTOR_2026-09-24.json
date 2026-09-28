@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED",
+  "status": "READY_FOR_TERMINAL_CERTIFICATION",
   "iteration": "I3_FUNCTIONAL_CLOSURE_REOPENED_POST_RUN500_DRIFT",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "b168955f405cd82630a8caad04de0b1766b26fc8",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "0c3ce84d567a674ec18f90eedba1b2380c45d55b",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V93_2026-09-28.json",
-  "findingsLedgerExpectedGitBlob": "9d6d177eedc4006579f1261ee8fc3bc68373f77e",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V94_2026-09-28.json",
+  "findingsLedgerExpectedGitBlob": "8fda1ee34026ef5e79eb5b911735973f62a91386",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
-  "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-082",
+  "terminalCertificationAllowed": true,
+  "activeBlocker": null,
   "nextFindingId": "VRM-083",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN existing read-only exact HR/Admin identity-name diagnostic against current V92 DEV and HR revision; capture expected versus observed for VRM-082; zero build/deploy/writes/production. Then classify owner as product mapping vs control false negative before any fix.",
+  "exactNextAction": "RUN one fresh I3 terminal certification against exact V92 product source/runtime/Hosting and a newly pinned live HR revision, using V94 ledger. Zero build/deploy/product/data writes; require human acceptance, semantic oracle, terminal Module Truth 20/20, Gate20, one deterministic artifact, live fixtures and Gate21.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -863,6 +863,20 @@
     "humanDecisionRequired": false,
     "noDuplicateCanonicalAuth": true,
     "noDuplicateCanonicalMembership": true,
+    "production": false
+  },
+  "lastVrm082Diagnostic": {
+    "runId": 36414962996,
+    "runNumber": 553,
+    "jobId": 108903912940,
+    "artifactId": 10966158722,
+    "artifactDigest": "sha256:99a381514b4a14ac196d131896a704693c3eed97c69d0fc0dc32ca355dcc229",
+    "decision": "PASS_VRM043_NAME_DIAGNOSTIC",
+    "currentHrRevision": "8c12bbcae91bcfdfee89c44f42777aeb19ec4ac85c7824450f6deb8202d7131b",
+    "currentUncontrolledNameMismatches": 0,
+    "knownTenantAdjudicationMismatchCount": 1,
+    "unresolvedProperlyReviewOnly": 1,
+    "productChanged": false,
     "production": false
   }
 }
