@@ -264,8 +264,8 @@ jobs:
       - name: Reprove hardened focal on exact same HR revision
         run: |
           set -Eeuo pipefail
-          PREI4_OUT="$VRM085_REPROOF_OUT/semantic" CXORBIA_PREI4_ROOT="$VRM085_ROOT" CXORBIA_PREI4_SOURCE_SHA="$VRM085_SOURCE" node tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs | tee "$VRM085_REPROOF_OUT/focal-console.log"
-          test "$(jq -r '.decision' "$VRM085_REPROOF_OUT/semantic/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
+          PREI4_OUT="$VRM085_REPROOF_OUT/semantic" CXORBIA_PREI4_ROOT="$VRM085_ROOT" CXORBIA_PREI4_SOURCE_SHA="$VRM085_SOURCE" CXORBIA_PREI4_SCOPE="vrm085_postulation_sync" node tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs | tee "$VRM085_REPROOF_OUT/focal-console.log"
+          test "$(jq -r '.decision' "$VRM085_REPROOF_OUT/semantic/browser-focal.json")" = "PASS_PRE_I4_VRM085_POSTULATION_SYNC_REPROOF"
           test "$(jq -r '.sourceSha' "$VRM085_REPROOF_OUT/semantic/browser-focal.json")" = "$VRM085_SOURCE"
           test "$(jq -r '.hrRevision' "$VRM085_REPROOF_OUT/semantic/browser-focal.json")" = "$VRM085_TARGET_HR_REVISION"
           test "$(jq -r '.admin.routes.postulaciones.postulationSync.visibleConflicts' "$VRM085_REPROOF_OUT/semantic/browser-focal.json")" = "6"

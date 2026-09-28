@@ -8,6 +8,7 @@ import { chromium } from 'playwright';
 const OUT=process.env.PREI4_OUT;
 const ROOT=String(process.env.CXORBIA_PREI4_ROOT||'').replace(/\/$/,'');
 const sourceSha=String(process.env.CXORBIA_PREI4_SOURCE_SHA||'');
+const scope=String(process.env.CXORBIA_PREI4_SCOPE||'full').trim().toLowerCase();
 if(!OUT||!ROOT||!sourceSha)throw new Error('ENVIRONMENT_FAILURE:PREI4_BROWSER_ENV_MISSING');
 const hr=JSON.parse(fs.readFileSync(OUT+'/hr-contrast.json','utf8'));
 const tenantId='tya',projectId='cinepolis',periodId=String(hr.currentPeriodId||''),hrRevision=String(hr.sourceRevision||''),reference=hr.reference||{};
@@ -340,22 +341,27 @@ try{
   evidence.preAuth=await assertClean(pre,'PREAUTH_DESKTOP');
   await preCtx.close();
 
-  evidence.admin=await signInMember(admin,'admin','dashboard');
-  evidence.shopper=await signInMember(shopper,'shopper','miperfil');
+  if(scope==='vrm085_postulation_sync'){
+    evidence.admin=await signInMember(admin,'admin','postulaciones',{routes:['postulaciones']});
+    evidence.decision='PASS_PRE_I4_VRM085_POSTULATION_SYNC_REPROOF';
+  }else{
+    evidence.admin=await signInMember(admin,'admin','dashboard');
+    evidence.shopper=await signInMember(shopper,'shopper','miperfil');
 
-  const mctx=await browser.newContext({viewport:{width:390,height:844},isMobile:true});
-  const mobile=await mctx.newPage();
-  await mobile.goto(ROOT+'/?prei4mobile='+Date.now(),{waitUntil:'networkidle',timeout:90000});
-  const clean=await assertClean(mobile,'PREAUTH_MOBILE');
-  const layout=await mobile.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,innerWidth:window.innerWidth,logoVisible:!![...document.querySelectorAll('img')].find(x=>/tyaconsultores\.com\/wp-content\/uploads\/2023\/05\/logo\.png/.test(String(x.src||''))&&x.getBoundingClientRect().width>0&&x.getBoundingClientRect().height>0)}));
-  if(layout.scrollWidth>layout.innerWidth+2||!layout.logoVisible)throw new Error('VISUAL_DEFECT:MOBILE_LOGIN_LAYOUT:'+JSON.stringify(layout));
-  evidence.mobile={...clean,layout};
-  await mctx.close();
+    const mctx=await browser.newContext({viewport:{width:390,height:844},isMobile:true});
+    const mobile=await mctx.newPage();
+    await mobile.goto(ROOT+'/?prei4mobile='+Date.now(),{waitUntil:'networkidle',timeout:90000});
+    const clean=await assertClean(mobile,'PREAUTH_MOBILE');
+    const layout=await mobile.evaluate(()=>({scrollWidth:document.documentElement.scrollWidth,innerWidth:window.innerWidth,logoVisible:!![...document.querySelectorAll('img')].find(x=>/tyaconsultores\.com\/wp-content\/uploads\/2023\/05\/logo\.png/.test(String(x.src||''))&&x.getBoundingClientRect().width>0&&x.getBoundingClientRect().height>0)}));
+    if(layout.scrollWidth>layout.innerWidth+2||!layout.logoVisible)throw new Error('VISUAL_DEFECT:MOBILE_LOGIN_LAYOUT:'+JSON.stringify(layout));
+    evidence.mobile={...clean,layout};
+    await mctx.close();
 
-  evidence.adminMobile=await signInMember(admin,'admin','dashboard',{viewport:{width:390,height:844},isMobile:true,routes:['dashboard','postulaciones','financiero','documentos']});
-  evidence.shopperMobile=await signInMember(shopper,'shopper','miperfil',{viewport:{width:390,height:844},isMobile:true,routes:['miperfil','misvisitas','documentos','cert']});
+    evidence.adminMobile=await signInMember(admin,'admin','dashboard',{viewport:{width:390,height:844},isMobile:true,routes:['dashboard','postulaciones','financiero','documentos']});
+    evidence.shopperMobile=await signInMember(shopper,'shopper','miperfil',{viewport:{width:390,height:844},isMobile:true,routes:['miperfil','misvisitas','documentos','cert']});
 
-  evidence.decision='PASS_PRE_I4_FOCAL_HUMAN_BROWSER';
+    evidence.decision='PASS_PRE_I4_FOCAL_HUMAN_BROWSER';
+  }
   fs.writeFileSync(OUT+'/browser-focal.json',JSON.stringify(evidence,null,2)+'\n');
 } catch(error) {
   evidence.decision='FAIL_PRE_I4_FOCAL_HUMAN_BROWSER';
