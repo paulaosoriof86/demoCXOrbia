@@ -46,6 +46,8 @@ on:
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V99_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V100_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V101_2026-09-28.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V102_2026-09-28.json
+      - tools/qa/cxorbia-i3-vrm084-benefits-human-label-live.mjs
       - tools/qa/cxorbia-i3-vrm081-population-credential-diagnostic.mjs
       - tools/qa/cxorbia-i3-vrm083-hr-browser-revision-diagnostic.mjs
       - app/modules/configuracion.js
@@ -99,7 +101,7 @@ env:
   I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V101_2026-09-28.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V102_2026-09-28.json
 
 jobs:
   canonical-candidate-authority:
@@ -137,7 +139,7 @@ jobs:
           test "$(jq -r '.findings["VRM-079"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN518"
           test "$(jq -r '.findings["VRM-080"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN525"
           test "$(jq -r '.findings["VRM-081"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN547"
-          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED" || "$STATUS" == "HOLD_MODULE_TRUTH_REPROOF_REQUIRED" ]]
+          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED" || "$STATUS" == "HOLD_MODULE_TRUTH_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED" ]]
           echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
@@ -387,6 +389,105 @@ jobs:
           include-hidden-files: true
       - if: always()
         run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-vrm083-readback-source"
+
+
+  vrm084-benefits-human-label-hosting:
+    name: I3 VRM-084 — Benefits human payment label Hosting-only DEV proof
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-084-hosting]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      VRM084_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      VRM084_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      VRM084_OUT: .tmp/i3-vrm084
+      VRM084_ROOT: https://cxorbia-backend-dev.web.app
+      EXPECTED_RUNTIME_REVISION: cxorbia-live-hr-dev-00226-wj2
+      EXPECTED_RUNTIME_DIGEST: sha256:d5093cdd92515bad11353c7dfb42e2d192c7f3dec264eea3d24dfcad8c6219bd
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Prove exact VRM-084 source and regression
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$VRM084_OUT"
+          test "$VRM084_SOURCE" = "4b0c02cba9237721cc2e9352f95fd26afce0e037"
+          test "$VRM084_TREE" = "b6744c464835fb66c3c0e3b2db824e1d43cc4da6"
+          test "$(git rev-parse "$VRM084_SOURCE^{tree}")" = "$VRM084_TREE"
+          test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED"
+          git diff --name-only "87888d3792b011b10a87611dde3efc69e3f4eb40" "$VRM084_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**' | tee "$VRM084_OUT/product-diff.txt"
+          test "$(wc -l < "$VRM084_OUT/product-diff.txt" | tr -d ' ')" = "1"
+          grep -Fxq 'app/modules/beneficios.js' "$VRM084_OUT/product-diff.txt"
+          node --check app/modules/beneficios.js
+          node --test backend/runtime/hr-live-service/test/cxorbia-vrm084-benefits-human-payment-label.test.mjs | tee "$VRM084_OUT/source-test.log"
+          SOURCE_DIR="$RUNNER_TEMP/cxorbia-vrm084-source"; rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"
+          git archive "$VRM084_SOURCE" | tar -x -C "$SOURCE_DIR"
+          echo "VRM084_SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
+      - name: Install DEV proof tooling
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+      - name: Authenticate canonical Firebase DEV
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
+      - name: Prove runtime unchanged and deploy exact Hosting only if needed
+        run: |
+          set -Eeuo pipefail
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$VRM084_OUT/runtime.json"
+          test "$(jq -r '.status.latestReadyRevisionName // empty' "$VRM084_OUT/runtime.json")" = "$EXPECTED_RUNTIME_REVISION"
+          gcloud run revisions describe "$EXPECTED_RUNTIME_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$VRM084_OUT/runtime-revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$VRM084_OUT/runtime-revision.json")"
+          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; else DIGEST="sha256:${RAW##*@sha256:}"; fi
+          test "$DIGEST" = "$EXPECTED_RUNTIME_DIGEST"
+          remote="$VRM084_OUT/pre-beneficios.remote"
+          MATCH=1
+          curl -fsSL --retry 4 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$VRM084_ROOT/modules/beneficios.js?pre=$GITHUB_RUN_ID-$(date +%s%N)" -o "$remote" || MATCH=0
+          if [[ "$MATCH" = "1" ]] && [[ "$(sha256sum "$remote"|awk '{print $1}')" != "$(git show "$VRM084_SOURCE:app/modules/beneficios.js" | sha256sum | awk '{print $1}')" ]]; then MATCH=0; fi
+          DEPLOYED=0
+          if [[ "$MATCH" != "1" ]]; then
+            cd "$VRM084_SOURCE_DIR"
+            "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$VRM084_OUT/hosting-deploy.log"
+            cd "$GITHUB_WORKSPACE"
+            DEPLOYED=1
+          fi
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$VRM084_OUT/hosting-live-channel.json"
+          HOSTING_VERSION="$(jq -r '.release.version.name // empty' "$VRM084_OUT/hosting-live-channel.json")"; test -n "$HOSTING_VERSION"
+          echo "VRM084_HOSTING_VERSION=$HOSTING_VERSION" >> "$GITHUB_ENV"
+          echo "VRM084_HOSTING_DEPLOYED=$DEPLOYED" >> "$GITHUB_ENV"
+      - name: Prove exact Benefits bytes served
+        run: |
+          set -Eeuo pipefail
+          curl -fsSL --retry 8 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$VRM084_ROOT/modules/beneficios.js?proof=$GITHUB_RUN_ID-$(date +%s%N)" -o "$VRM084_OUT/beneficios.remote"
+          test "$(sha256sum "$VRM084_OUT/beneficios.remote"|awk '{print $1}')" = "$(git show "$VRM084_SOURCE:app/modules/beneficios.js" | sha256sum | awk '{print $1}')"
+      - name: Run live shopper Benefits human-label proof
+        run: |
+          set -Eeuo pipefail
+          VRM084_SOURCE_DIR="$VRM084_SOURCE_DIR" VRM084_SOURCE="$VRM084_SOURCE" VRM084_ROOT="$VRM084_ROOT" VRM084_OUT="$VRM084_OUT/live" node tools/qa/cxorbia-i3-vrm084-benefits-human-label-live.mjs | tee "$VRM084_OUT/live.log"
+          test "$(jq -r '.decision' "$VRM084_OUT/live/result.json")" = "PASS_I3_VRM084_BENEFITS_HUMAN_LABEL"
+          test "$(jq -r '.technicalTokenVisible' "$VRM084_OUT/live/result.json")" = "false"
+          test "$(jq -r '.humanLabelVisible' "$VRM084_OUT/live/result.json")" = "true"
+          test "$(jq -r '.authorityApplied' "$VRM084_OUT/live/result.json")" = "true"
+      - name: Seal VRM-084 owner receipt
+        run: |
+          set -Eeuo pipefail
+          HR="$(jq -r '.revision' "$VRM084_OUT/live/result.json")"
+          jq -n -S --arg source "$VRM084_SOURCE" --arg tree "$VRM084_TREE" --arg runtime "$EXPECTED_RUNTIME_REVISION" --arg digest "$EXPECTED_RUNTIME_DIGEST" --arg hosting "$VRM084_HOSTING_VERSION" --arg hr "$HR" --argjson hostingDeploys "$VRM084_HOSTING_DEPLOYED" '{decision:"PASS_I3_VRM084_OWNER_RECEIPT",moduleDomain:"finance-benefits-reimbursements",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,ownerPaths:["app/modules/beneficios.js"],actionReal:true,providerAck:true,durableReadback:true,reloadProof:true,noDuplicateRegression:true,technicalLanguageVisible:false,humanPaymentLabelVisible:true,builds:0,runtimeDeploys:0,hostingDeploys:$hostingDeploys,hrWrites:0,authWrites:0,production:false}' > "$VRM084_OUT/owner-receipt.json"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-vrm084-${{ github.run_id }}
+          path: ${{ env.VRM084_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+          include-hidden-files: true
 
   vrm076-terminal-module-truth-finalizer:
     name: I3 VRM-076 — terminal Module Truth fail-closed selftest

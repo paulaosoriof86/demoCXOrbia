@@ -1,0 +1,43 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { applicationDefault, getApps, initializeApp } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore';
+import { chromium } from 'playwright';
+import { settleVisibleShopperAuth } from '../../.github/control/RECOVERY-I3-BROWSER-AUTH-LIFECYCLE-20260919.mjs';
+
+const ROOT=String(process.env.VRM084_ROOT||'https://cxorbia-backend-dev.web.app').replace(/\/$/,'');
+const SOURCE=process.env.VRM084_SOURCE;
+const SOURCE_DIR=process.env.VRM084_SOURCE_DIR;
+const OUT=process.env.VRM084_OUT||'.tmp/i3-vrm084';
+const TENANT='tya',PROJECT='cinepolis',TARGET_NAME='cesar castillo';
+fs.mkdirSync(OUT,{recursive:true});
+if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:'cxorbia-backend-dev'});
+const db=getFirestore(),tenant=db.collection('tenants').doc(TENANT);
+const profiles=(await tenant.collection('shoppers').get()).docs.map(d=>({id:d.id,...(d.data()||{})}));
+const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase().replace(/\s+/g,' ');
+const candidates=profiles.filter(p=>norm(p.nombre||p.name)===TARGET_NAME);
+if(candidates.length!==1)throw new Error('VRM084_TARGET_PROFILE_NOT_UNIQUE:'+candidates.length);
+const profile=candidates[0],shopperId=String(profile.shopperId||profile.id);
+const members=(await tenant.collection('users').where('shopperId','==',shopperId).get()).docs.map(d=>({id:d.id,...(d.data()||{})})).filter(m=>m.active!==false&&String(m.role)==='shopper');
+if(members.length!==1)throw new Error('VRM084_TARGET_MEMBERSHIP_NOT_UNIQUE:'+members.length);
+const member=members[0];
+const credMod=await import(pathToFileURL(path.join(SOURCE_DIR,'backend/runtime/cxorbia-shopper-command-provider-v1.mjs')).href);
+const credential=credMod.shopperCredentialRule(profile);
+if(!credential?.ok)throw new Error('VRM084_TARGET_CREDENTIAL_NOT_DERIVABLE:'+String(credential?.reason||''));
+const base=ROOT+'/index-backend-dev.html?'+new URLSearchParams({cxBackendPreview:'YES_PAULA_20260628_PREVIEW_DEV',cxProjectId:PROJECT,cxProtectedRuntime:'YES_PAULA_20260730_PROTECTED_DEV',cxHumanFullVisual:'YES_PAULA_20260731_FULL_PROFILE_DEV'});
+const browser=await chromium.launch({headless:true});const ctx=await browser.newContext({viewport:{width:1440,height:1000}});const page=await ctx.newPage();
+await settleVisibleShopperAuth({page,rawShopperId:shopperId,canonicalShopperId:shopperId,tenantId:TENANT,projectId:PROJECT,baseUrl:base,login:credential.login,password:credential.password});
+await page.goto(base+'#beneficios',{waitUntil:'domcontentloaded',timeout:90000});
+await page.waitForTimeout(3000);
+if(!/beneficios/i.test(await page.locator('body').innerText())){const link=page.locator('[data-route="beneficios"],a[href="#beneficios"]').first();if(await link.count())await link.click();await page.waitForTimeout(3000);}
+const body=await page.locator('body').innerText();
+const technical=/pending_source_confirmation|pending_financial_source|pending_or_review|honorarium_pending_source|hr_operational_amount_pending_financial_reconciliation/i.test(body);
+const human=/Pendiente de confirmación/i.test(body);
+const heading=/Mis Beneficios/i.test(body);
+await page.screenshot({path:path.join(OUT,'vrm084-beneficios.png'),fullPage:true});
+const result={decision:heading&&human&&!technical?'PASS_I3_VRM084_BENEFITS_HUMAN_LABEL':'FAIL_I3_VRM084_BENEFITS_HUMAN_LABEL',sourceSha:SOURCE,target:{shopperId,name:profile.nombre||profile.name,uid:member.id},heading,humanLabelVisible:human,technicalTokenVisible:technical,authorityApplied:await page.evaluate(()=>window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true),revision:await page.evaluate(()=>String(window.CX?.data?.previewMeta?.sourceRevision||window.CX_TYA_HR_LIVE_META?.revision||'')),safety:{writes:0,hrWrites:0,authWrites:0,production:false}};
+fs.writeFileSync(path.join(OUT,'result.json'),JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result,null,2));
+await ctx.close();await browser.close();
+if(result.decision!=='PASS_I3_VRM084_BENEFITS_HUMAN_LABEL')process.exitCode=1;
