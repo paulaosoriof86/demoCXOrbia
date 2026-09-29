@@ -97,7 +97,7 @@ const provider=run('node',['--test','backend/runtime/hr-live-service/test/cxorbi
 if(!hrMap.includes('PASS_R20_PROJECT_SCOPED_CINEMA_IDENTITY'))fail('HR_MAPPING_SELFTEST');
 if(!hrAssign.includes('PASS_R20_SHOPPER_ASSIGNMENT_CLASSIFICATION'))fail('HR_ASSIGNMENT_SELFTEST');
 if(!post.includes('PASS_PREI4_ADMIN_002_SOURCE_LIFECYCLE'))fail('POST002_SELFTEST');
-if(!provider.includes('pass 25'))fail('ADMIN003_PROVIDER_SUITE');
+if(!provider.includes('pass 26'))fail('ADMIN003_PROVIDER_SUITE');
 
 const result={
   decision:'PASS_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD',
@@ -117,7 +117,7 @@ const result={
     hrMapping:'PASS_R20_PROJECT_SCOPED_CINEMA_IDENTITY',
     hrAssignment:'PASS_R20_SHOPPER_ASSIGNMENT_CLASSIFICATION',
     postulations:'PASS_PREI4_ADMIN_002_SOURCE_LIFECYCLE',
-    focalProviderTests:25
+    focalProviderTests:26
   },
   builds:0,deploys:0,writes:0,production:false
 };
