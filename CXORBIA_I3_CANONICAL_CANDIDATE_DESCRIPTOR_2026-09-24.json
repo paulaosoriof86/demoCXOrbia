@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_ADMIN_004_SOURCE_REPROOF_REQUIRED",
+  "status": "HOLD_PREI4_ADMIN_004_HOSTING_CONFIG_LIVE_REQUIRED",
   "iteration": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "5a6345133d5227e351f07a64d58d49d8cac5eec5",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "c487449e5187d7219033c54fa1ac3db5fb6c822e",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V141_2026-09-29.json",
-  "findingsLedgerExpectedGitBlob": "7bd1af65edb88e02125896fc011b383d3096e30f",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V142_2026-09-29.json",
+  "findingsLedgerExpectedGitBlob": "0535ef7ae424e3dfb6eb41a3496a0c8edf306b72",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run mandatory cumulative source guard on 5dcd8031e44c33d1105e12886472eaa3cfd1471d; require exact ten-file cumulative delta, 20-domain Module Truth, closed HR/Postulations/Identity recurrence and finance suites 6/6 + 4/4. No build, deploy or write until PASS.",
+  "exactNextAction": "Materialize source 5a6345133d5227e351f07a64d58d49d8cac5eec5 to Hosting DEV only, keep runtime cxorbia-live-hr-dev-00229-nxq unchanged, persist GT/HN finance config through canonical project.update provider ACK, then reprove Postulaciones + Identity + Finance on one fresh HR revision. No production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
