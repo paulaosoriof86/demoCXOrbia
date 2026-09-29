@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_ADMIN_004_DEV_MATERIALIZATION_REQUIRED",
+  "status": "HOLD_PREI4_ADMIN_004_PROJECT_CONFIG_DIAGNOSTIC_REQUIRED",
   "iteration": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "00ca442a9628805267835230fd1028d7844a690d",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "c487449e5187d7219033c54fa1ac3db5fb6c822e",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V138_2026-09-29.json",
-  "findingsLedgerExpectedGitBlob": "0b21081c5ff8fbe826fc039b3d9dda52ba43487a",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V139_2026-09-29.json",
+  "findingsLedgerExpectedGitBlob": "4d7d109deedcca85f2a42189feae0f7d7d41d0be",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Materialize exactly ADMIN-004 cumulative source 00ca442a9628805267835230fd1028d7844a690d once to Recovery DEV (runtime + Hosting) from one archived source; then execute cumulative live guard for HR, Postulations, Identity and Finance. No production.",
+  "exactNextAction": "Read only the durable DEV project root record tenants/tya/projects/cinepolis and prove version, country config and operational-source metadata. Then fix only the proven ADMIN-004 persistence owner; do not redeploy until a new cumulative source guard passes.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1088,5 +1088,17 @@
     "artifactId": 11067452316,
     "artifactZipSha256": "d764616f2d3246de35a39f27128885636a2d5065587daf0df4b77363dfd206aa",
     "decision": "PASS_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD"
+  },
+  "lastLiveFailure": {
+    "classification": "PERSISTENCE_FAILURE",
+    "runId": 36644212189,
+    "runNumber": 623,
+    "artifactId": 11068006668,
+    "runtimeRevision": "cxorbia-live-hr-dev-00229-nxq",
+    "runtimeDigest": "sha256:45782480662a18699794811d6e4dd38cf1983e9c6f14eee66ed0b1e585bb9e1b",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/a56ff5bf97ffa99d",
+    "hrRevision": "5de5db49e340139744c0e97bfb593cbf5fc3e2e8b3577cd5c3169d9b814d4be8",
+    "failure": "PREI4_004_PROJECT_COUNTRY_FINANCE_CONFIG",
+    "production": false
   }
 }
