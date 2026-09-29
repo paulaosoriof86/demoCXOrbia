@@ -93,6 +93,8 @@ on:
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V128_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V129_2026-09-29.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V130_2026-09-29.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V131_2026-09-29.json
+      - tools/qa/cxorbia-prei4-admin003-cumulative-live-reproof.mjs
       - CXORBIA_PRE_I4_CUMULATIVE_ANTI_REGRESSION_LOCK_2026-09-29.json
       - tools/qa/cxorbia-prei4-cumulative-regression-source-guard.mjs
       - CXORBIA_PRE_I4_ADMIN_002_POSTULATION_LIFECYCLE_RECEIPT_2026-09-28.json
@@ -153,7 +155,7 @@ env:
   I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V130_2026-09-29.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V131_2026-09-29.json
 
 jobs:
   canonical-candidate-authority:
@@ -191,7 +193,7 @@ jobs:
           test "$(jq -r '.findings["VRM-079"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN518"
           test "$(jq -r '.findings["VRM-080"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN525"
           test "$(jq -r '.findings["VRM-081"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN547"
-          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED" || "$STATUS" == "HOLD_MODULE_TRUTH_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM087_FINALIZER_RECEIPT_SCOPE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM088_LIVE_FIXTURE_AVAILABILITY_REPROOF_REQUIRED" || "$STATUS" == "READY_FOR_GATE21_SAME_CERTIFIED_ARTIFACT" || "$STATUS" == "HOLD_PREI4_ADMIN_008_HR_MAPPING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_008_DEV_RUNTIME_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_RECOVERY_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_HOSTING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_IDENTITY_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_OWNER_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "GO" ]]
+          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED" || "$STATUS" == "HOLD_MODULE_TRUTH_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM087_FINALIZER_RECEIPT_SCOPE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM088_LIVE_FIXTURE_AVAILABILITY_REPROOF_REQUIRED" || "$STATUS" == "READY_FOR_GATE21_SAME_CERTIFIED_ARTIFACT" || "$STATUS" == "HOLD_PREI4_ADMIN_008_HR_MAPPING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_008_DEV_RUNTIME_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_RECOVERY_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_HOSTING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_IDENTITY_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_OWNER_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_LIVE_REPROOF_REQUIRED" || "$STATUS" == "GO" ]]
           echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
@@ -817,6 +819,167 @@ jobs:
           retention-days: 30
           compression-level: 0
           include-hidden-files: true
+
+
+
+  prei4-admin-003-cumulative-live-reproof:
+    name: PRE-I4 ADMIN-003 — cumulative DEV materialization + closed-module regression
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_003_CUMULATIVE_LIVE_REPROOF_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-admin-003-live]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      PREI4_003_LIVE_OUT: .tmp/prei4-admin-003-live
+      PREI4_003_ROOT: https://cxorbia-backend-dev.web.app
+      PREI4_003_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      PREI4_003_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      PREI4_003_HR_REVISION: c16c18a89675d5c6daff9421604f978a558bc3bf78cf8e6a2da550820ff95e6a
+      PREI4_003_PRIOR_RUNTIME: cxorbia-live-hr-dev-00227-nwl
+      PREI4_003_PRIOR_DIGEST: sha256:5d4f0504b18be23d1f9f1ef20ff717389d7db3a01f82d898f70873aa3503e31e
+      PREI4_003_PRIOR_HOSTING: sites/cxorbia-backend-dev/versions/32f858afb4181c7f
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+
+      - name: Prove exact cumulative candidate before materialization
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$PREI4_003_LIVE_OUT"
+          test "$PREI4_003_SOURCE" = "c487449e5187d7219033c54fa1ac3db5fb6c822e"
+          test "$PREI4_003_TREE" = "6bafb0a2e1fa5be7e68814eddec59524cee7ad93"
+          test "$(git rev-parse "$PREI4_003_SOURCE^{tree}")" = "$PREI4_003_TREE"
+          git diff --name-only "deb58669ea44b484716b9e0d83656310398ed54c" "$PREI4_003_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source | sort > "$PREI4_003_LIVE_OUT/product-diff.txt"
+          printf '%s\n' 'app/modules/shoppers.js' 'backend/runtime/cxorbia-shopper-command-provider-v1.mjs' 'backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs' | sort > "$PREI4_003_LIVE_OUT/expected-diff.txt"
+          diff -u "$PREI4_003_LIVE_OUT/expected-diff.txt" "$PREI4_003_LIVE_OUT/product-diff.txt"
+          git diff --quiet "$PREI4_003_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source
+          node --check tools/qa/cxorbia-prei4-admin003-cumulative-live-reproof.mjs
+
+      - name: Install exact DEV proof tooling
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+
+      - name: Authenticate Recovery DEV only
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
+
+      - name: Capture pre-state
+        run: |
+          set -Eeuo pipefail
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$PREI4_003_LIVE_OUT/hosting-before.json"
+          test "$(jq -r '.release.version.name // empty' "$PREI4_003_LIVE_OUT/hosting-before.json")" = "$PREI4_003_PRIOR_HOSTING"
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$PREI4_003_LIVE_OUT/runtime-before.json"
+          test "$(jq -r '.status.latestReadyRevisionName // empty' "$PREI4_003_LIVE_OUT/runtime-before.json")" = "$PREI4_003_PRIOR_RUNTIME"
+          gcloud run revisions describe "$PREI4_003_PRIOR_RUNTIME" --project "$PROJECT" --region "$REGION" --format=json > "$PREI4_003_LIVE_OUT/runtime-revision-before.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$PREI4_003_LIVE_OUT/runtime-revision-before.json")"
+          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; else DIGEST="sha256:${RAW##*@sha256:}"; fi
+          test "$DIGEST" = "$PREI4_003_PRIOR_DIGEST"
+
+      - name: Build exact candidate runtime once
+        run: |
+          set -Eeuo pipefail
+          SOURCE_DIR="$RUNNER_TEMP/cxorbia-prei4-admin003-source"
+          rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"
+          git archive "$PREI4_003_SOURCE" | tar -x -C "$SOURCE_DIR"
+          IMAGE_URI="gcr.io/${PROJECT}/${SERVICE}:prei4-admin003-${PREI4_003_SOURCE:0:12}-${GITHUB_RUN_ID}"
+          echo "$IMAGE_URI" > "$PREI4_003_LIVE_OUT/image-uri.txt"
+          gcloud builds submit "$SOURCE_DIR" --project "$PROJECT" --config "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE_URI" --quiet
+          echo "PREI4_003_SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
+
+      - name: Deploy exact candidate runtime once
+        run: |
+          set -Eeuo pipefail
+          IMAGE_URI="$(cat "$PREI4_003_LIVE_OUT/image-uri.txt")"
+          gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$IMAGE_URI" --min-instances=1 --max-instances=1 --update-env-vars "$LEGAL_ENABLE_NAME=$LEGAL_ENABLE_VALUE,$LEGAL_GATE_NAME=$LEGAL_GATE_VALUE,$I3_HR_CACHE_PIN_NAME=$I3_HR_CACHE_PIN_VALUE" --quiet
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$PREI4_003_LIVE_OUT/runtime-after-deploy.json"
+          REV="$(jq -r '.status.latestReadyRevisionName // empty' "$PREI4_003_LIVE_OUT/runtime-after-deploy.json")"; test -n "$REV"; test "$REV" != "$PREI4_003_PRIOR_RUNTIME"
+          gcloud run revisions describe "$REV" --project "$PROJECT" --region "$REGION" --format=json > "$PREI4_003_LIVE_OUT/runtime-revision-after.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$PREI4_003_LIVE_OUT/runtime-revision-after.json")"
+          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; else DIGEST="sha256:${RAW##*@sha256:}"; fi
+          [[ "$DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
+          echo "PREI4_003_RUNTIME_REVISION=$REV" >> "$GITHUB_ENV"
+          echo "PREI4_003_RUNTIME_DIGEST=$DIGEST" >> "$GITHUB_ENV"
+
+      - name: Deploy exact candidate Hosting once
+        run: |
+          set -Eeuo pipefail
+          cd "$PREI4_003_SOURCE_DIR"
+          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$PREI4_003_LIVE_OUT/hosting-deploy.log"
+          cd "$GITHUB_WORKSPACE"
+
+      - name: Prove fresh HR remains identical after runtime change
+        run: |
+          set -Eeuo pipefail
+          ok=0
+          for i in $(seq 1 18); do
+            if curl -fsS --retry 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$PREI4_003_ROOT/api/$TENANT_ID/$PROJECT_ID/hr-live?fresh=1&prei4003hr=$GITHUB_RUN_ID-$i" > "$PREI4_003_LIVE_OUT/hr-fresh.json"; then
+              if node - "$PREI4_003_LIVE_OUT/hr-fresh.json" "$PREI4_003_HR_REVISION" <<'NODE'
+const fs=require('fs');const [file,expected]=process.argv.slice(2);const d=JSON.parse(fs.readFileSync(file,'utf8'));const runtime=d._runtime||{},revision=String(runtime.revision||d.revision||d.sourceRevision||'');const refreshError=runtime.refreshError??runtime.lastRefreshError??d.refreshError??d.lastRefreshError??null;const summary=Array.isArray(d.periodOperationalSummary)?d.periodOperationalSummary:[];const sep=summary.find(x=>String(x.periodKey)==='2026-09');const aug=summary.find(x=>String(x.periodKey)==='2026-08');const pass=revision===expected&&refreshError==null&&Number(sep?.total)===44&&Number(sep?.byCountry?.GT)===34&&Number(sep?.byCountry?.HN)===10&&Number(aug?.total)===44&&new Set((d.visits||[]).map(v=>String(v.id||v.visitId||''))).size===(d.visits||[]).length;const out={decision:pass?'PASS_PREI4_008_REGRESSION_LIVE':'HOLD_PREI4_008_REGRESSION_LIVE',revision,refreshError,september:sep||null,august:aug||null,visitCount:(d.visits||[]).length};fs.writeFileSync(process.env.PREI4_003_LIVE_OUT+'/hr-regression.json',JSON.stringify(out,null,2)+'\n');console.log(JSON.stringify(out,null,2));if(!pass)process.exit(1);
+NODE
+              then ok=1; break; fi
+            fi
+            sleep 10
+          done
+          test "$ok" = 1
+
+      - name: Reprove closed Postulations contract live on new cumulative candidate
+        env:
+          PREI4_002_LIVE_OUT: .tmp/prei4-admin-003-live/post002
+          PREI4_002_ROOT: https://cxorbia-backend-dev.web.app
+          PREI4_002_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+          PREI4_002_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+          PREI4_002_HR_REVISION: c16c18a89675d5c6daff9421604f978a558bc3bf78cf8e6a2da550820ff95e6a
+        run: |
+          set -Eeuo pipefail
+          node tools/qa/cxorbia-prei4-admin002-hosting-live-reproof.mjs | tee "$PREI4_003_LIVE_OUT/post002-console.log"
+          test "$(jq -r '.decision' "$PREI4_002_LIVE_OUT/result.json")" = "PASS_PREI4_ADMIN_002_HOSTING_LIVE"
+          test "$(jq -r '.admin.initial.active' "$PREI4_002_LIVE_OUT/result.json")" = "0"
+          test "$(jq -r '.admin.initial.archived' "$PREI4_002_LIVE_OUT/result.json")" = "12"
+          test "$(jq -r '.durableBefore.hash' "$PREI4_002_LIVE_OUT/result.json")" = "$(jq -r '.durableAfter.hash' "$PREI4_002_LIVE_OUT/result.json")"
+
+      - name: Prove ADMIN-003 durable identity Admin UI and Shopper login history
+        run: |
+          set -Eeuo pipefail
+          node tools/qa/cxorbia-prei4-admin003-cumulative-live-reproof.mjs | tee "$PREI4_003_LIVE_OUT/admin003-console.log"
+          test "$(jq -r '.decision' "$PREI4_003_LIVE_OUT/result.json")" = "PASS_PREI4_ADMIN_003_CUMULATIVE_LIVE"
+          test "$(jq -r '.shopper.profile.profileName' "$PREI4_003_LIVE_OUT/result.json")" = "Milton De Paz"
+          test "$(jq -r '.shopper.history.visitCount' "$PREI4_003_LIVE_OUT/result.json")" -ge 1
+          test "$(jq '[.admin.patricia[]|select(.found==true and .review=="required")]|length' "$PREI4_003_LIVE_OUT/result.json")" = "3"
+          test "$(jq '[.admin.jary[]|select(.found==true)]|length' "$PREI4_003_LIVE_OUT/result.json")" = "2"
+
+      - name: Seal cumulative live readback
+        run: |
+          set -Eeuo pipefail
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$PREI4_003_LIVE_OUT/hosting-after.json"
+          HOSTING_AFTER="$(jq -r '.release.version.name // empty' "$PREI4_003_LIVE_OUT/hosting-after.json")"; test -n "$HOSTING_AFTER"; test "$HOSTING_AFTER" != "$PREI4_003_PRIOR_HOSTING"
+          while read -r rel; do
+            [[ "$rel" == app/* ]] || continue
+            web="${rel#app/}"
+            remote="$PREI4_003_LIVE_OUT/served_$(echo "$web"|tr '/' '_')"
+            curl -fsSL --retry 10 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$PREI4_003_ROOT/$web?prei4003served=$GITHUB_RUN_ID-$(date +%s%N)" -o "$remote"
+            test "$(sha256sum "$remote"|awk '{print $1}')" = "$(git show "$PREI4_003_SOURCE:$rel" | sha256sum | awk '{print $1}')"
+          done < "$PREI4_003_LIVE_OUT/product-diff.txt"
+          jq -n -S --arg source "$PREI4_003_SOURCE" --arg tree "$PREI4_003_TREE" --arg runtime "$PREI4_003_RUNTIME_REVISION" --arg digest "$PREI4_003_RUNTIME_DIGEST" --arg hosting "$HOSTING_AFTER" --arg hr "$PREI4_003_HR_REVISION" '{decision:"PASS_PREI4_ADMIN_003_CUMULATIVE_LIVE_RECEIPT",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,builds:1,runtimeDeploys:1,hostingDeploys:1,rulesDeploys:0,hrWrites:0,production:false}' > "$PREI4_003_LIVE_OUT/receipt.json"
+
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-prei4-admin-003-cumulative-live-${{ github.run_id }}
+          path: ${{ env.PREI4_003_LIVE_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+          include-hidden-files: true
+      - if: always()
+        run: rm -rf "$RUNNER_TEMP/cxorbia-prei4-admin003-source"
 
 
   vrm085-postulation-sync-diagnostic:

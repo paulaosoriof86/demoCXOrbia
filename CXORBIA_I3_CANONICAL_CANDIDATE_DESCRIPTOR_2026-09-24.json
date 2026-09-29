@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_ADMIN_003_CUMULATIVE_SOURCE_REPROOF_REQUIRED",
+  "status": "HOLD_PREI4_ADMIN_003_CUMULATIVE_LIVE_REPROOF_REQUIRED",
   "iteration": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "c487449e5187d7219033c54fa1ac3db5fb6c822e",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "deb58669ea44b484716b9e0d83656310398ed54c",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V130_2026-09-29.json",
-  "findingsLedgerExpectedGitBlob": "b057af87297f573bf2e5b6b1dbf6c0344dd31535",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V131_2026-09-29.json",
+  "findingsLedgerExpectedGitBlob": "b256382b5415acefea94eeb7f973d1426bd28c83",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Reprove the hardened ADMIN-003 source c487449e5187d7219033c54fa1ac3db5fb6c822e and the cumulative anti-regression guard in the same canonical run. Require exact three-owner cumulative delta from deb58669, 26 provider tests including same-revision adjudicated-name repair, byte parity for closed HR/Postulations owners, 20-domain Module Truth with only the two focal domains COMPOSED_NOT_DEPLOYED, and zero build/deploy/write. Only then materialize DEV.",
+  "exactNextAction": "Materialize product source c487449e5187d7219033c54fa1ac3db5fb6c822e once to DEV runtime and Hosting. Then in the same canonical run require: fresh HR revision c16c18a8 with 34 GT + 10 HN, PREI4-ADMIN-002 Postulations still 0 active/12 archived and Firestore unchanged, ADMIN-003 durable Milton identity repaired/preserved under tenant adjudication, Patricia/Jary remain separate without auto-merge, canonical Milton shopper authenticates and retains history. No production touch.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1062,7 +1062,7 @@
     "freshRevision": "c16c18a89675d5c6daff9421604f978a558bc3bf78cf8e6a2da550820ff95e6a"
   },
   "preI4CumulativeRegression": {
-    "state": "SOURCE_GUARD_REQUIRED",
+    "state": "SOURCE_GUARD_PROVEN_RUN606_LIVE_GUARD_REQUIRED",
     "lockPath": "CXORBIA_PRE_I4_CUMULATIVE_ANTI_REGRESSION_LOCK_2026-09-29.json",
     "baselineSource": "deb58669ea44b484716b9e0d83656310398ed54c",
     "candidateSource": "e3c5f4347a66b45f43e69d64a2d22400f7043e4a",
