@@ -1,5 +1,5 @@
 import test from 'node:test';
-import assert from 'node:assert/strict';
+import assert from 'node:assert/strict';\nimport fs from 'node:fs';
 import {createFinanceCommandProvider} from '../../cxorbia-finance-command-provider-v1.mjs';
 
 const clone=v=>v===undefined?undefined:structuredClone(v);
@@ -61,4 +61,11 @@ test('ADMIN-004 missing config fails closed and payment batch rejects unreconcil
   const p=createFinanceCommandProvider({auth:new Auth(),db,policy});
   const r=await p.execute('token',command('finance.reconcile.visit'));assert.equal(r.ok,false);assert.match(r.code,/FINANCE_RECONCILIATION_SOURCE_INCOMPLETE/);
   const pay=await p.execute('token',command('finance.payment.batch'));assert.equal(pay.ok,true);assert.equal(pay.pagadas,0);assert.equal(pay.reviewRequired.length,1);assert.match(pay.reviewRequired[0].motivo,/Conciliación financiera exacta requerida/);
+});
+
+
+test('ADMIN-004 project.update boundary sends the canonical current version in the provider payload',()=>{
+  const src=fs.readFileSync(new URL('../../../../app/adapters/cxorbia-cxdata-command-boundary-v1.js',import.meta.url),'utf8');
+  assert.match(src,/const currentVersion=versionOf\(current\);/);
+  assert.match(src,/Object\.assign\(\{\},cleanPatch,\{projectId:id,periodId,version:currentVersion\}\)/);
 });
