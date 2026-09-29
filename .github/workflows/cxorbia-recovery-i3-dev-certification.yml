@@ -90,7 +90,11 @@ on:
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V125_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V126_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V127_2026-09-28.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V128_2026-09-28.json
       - CXORBIA_PRE_I4_ADMIN_002_POSTULATION_LIFECYCLE_RECEIPT_2026-09-28.json
+      - app/modules/shoppers.js
+      - backend/runtime/cxorbia-shopper-command-provider-v1.mjs
+      - backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs
       - tools/qa/cxorbia-prei4-admin003-owner-diagnostic-readonly.mjs
       - CXORBIA_PRE_I4_ADMIN_008_FRESH_HR_RECEIPT_2026-09-28.json
       - tools/qa/cxorbia-prei4-admin003-identity-forensic-readonly.mjs
@@ -145,7 +149,7 @@ env:
   I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V127_2026-09-28.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V128_2026-09-28.json
 
 jobs:
   canonical-candidate-authority:
@@ -183,7 +187,7 @@ jobs:
           test "$(jq -r '.findings["VRM-079"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN518"
           test "$(jq -r '.findings["VRM-080"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN525"
           test "$(jq -r '.findings["VRM-081"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN547"
-          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED" || "$STATUS" == "HOLD_MODULE_TRUTH_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM087_FINALIZER_RECEIPT_SCOPE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM088_LIVE_FIXTURE_AVAILABILITY_REPROOF_REQUIRED" || "$STATUS" == "READY_FOR_GATE21_SAME_CERTIFIED_ARTIFACT" || "$STATUS" == "HOLD_PREI4_ADMIN_008_HR_MAPPING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_008_DEV_RUNTIME_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_RECOVERY_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_HOSTING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_IDENTITY_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_OWNER_DIAGNOSTIC_REQUIRED" || "$STATUS" == "GO" ]]
+          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED" || "$STATUS" == "HOLD_MODULE_TRUTH_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM087_FINALIZER_RECEIPT_SCOPE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM088_LIVE_FIXTURE_AVAILABILITY_REPROOF_REQUIRED" || "$STATUS" == "READY_FOR_GATE21_SAME_CERTIFIED_ARTIFACT" || "$STATUS" == "HOLD_PREI4_ADMIN_008_HR_MAPPING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_008_DEV_RUNTIME_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_RECOVERY_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_HOSTING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_IDENTITY_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_OWNER_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "GO" ]]
           echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
@@ -710,6 +714,56 @@ jobs:
         with:
           name: cxorbia-prei4-admin-003-owner-${{ github.run_id }}
           path: ${{ env.PREI4_003_OWNER_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+          include-hidden-files: true
+
+
+
+  prei4-admin-003-source-reproof:
+    name: PRE-I4 ADMIN-003 — exact provider/UI source reproof
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_003_SOURCE_REPROOF_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-admin-003-source]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PREI4_003_SOURCE_OUT: .tmp/prei4-admin-003-source
+      PREI4_003_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      PREI4_003_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Prove exact three-owner product delta
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$PREI4_003_SOURCE_OUT"
+          test "$PREI4_003_SOURCE" = "e3c5f4347a66b45f43e69d64a2d22400f7043e4a"
+          test "$PREI4_003_TREE" = "181de71c7516a51f0d7edbe6f668c1d34e393ed9"
+          test "$(git rev-parse "$PREI4_003_SOURCE^{tree}")" = "$PREI4_003_TREE"
+          git diff --name-only "deb58669ea44b484716b9e0d83656310398ed54c" "$PREI4_003_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source | sort > "$PREI4_003_SOURCE_OUT/product-diff.txt"
+          printf '%s\n' 'app/modules/shoppers.js' 'backend/runtime/cxorbia-shopper-command-provider-v1.mjs' 'backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs' | sort > "$PREI4_003_SOURCE_OUT/expected-diff.txt"
+          diff -u "$PREI4_003_SOURCE_OUT/expected-diff.txt" "$PREI4_003_SOURCE_OUT/product-diff.txt"
+          git diff --quiet "$PREI4_003_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source
+      - name: Syntax and provider recurrence suite
+        run: |
+          set -Eeuo pipefail
+          node --check backend/runtime/cxorbia-shopper-command-provider-v1.mjs
+          node --check backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs
+          node --check app/modules/shoppers.js
+          node --test backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs | tee "$PREI4_003_SOURCE_OUT/provider-tests.log"
+          grep -Fq "PRE-I4 ADMIN-003 tenant-adjudicated canonical name survives fresh exact HR alias reconciliation" "$PREI4_003_SOURCE_OUT/provider-tests.log"
+          grep -Fq "identityReviewIds" app/modules/shoppers.js
+          grep -Fq "Revisar identidad" app/modules/shoppers.js
+          ! grep -Eq "merge.*name|name.*merge|fuzzy.*merge" app/modules/shoppers.js
+          jq -n -S --arg source "$PREI4_003_SOURCE" --arg tree "$PREI4_003_TREE" '{decision:"PASS_PREI4_ADMIN_003_SOURCE",sourceSha:$source,sourceTree:$tree,owners:3,tenantAdjudicationPrecedence:true,sameNameAutoMerge:false,writes:0,deploys:0,production:false}' > "$PREI4_003_SOURCE_OUT/result.json"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-prei4-admin-003-source-${{ github.run_id }}
+          path: ${{ env.PREI4_003_SOURCE_OUT }}
           if-no-files-found: error
           retention-days: 30
           compression-level: 0

@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_ADMIN_003_OWNER_DIAGNOSTIC_REQUIRED",
+  "status": "HOLD_PREI4_ADMIN_003_SOURCE_REPROOF_REQUIRED",
   "iteration": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "deb58669ea44b484716b9e0d83656310398ed54c",
+  "productSourceSha": "e3c5f4347a66b45f43e69d64a2d22400f7043e4a",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
-  "predecessorProductSourceSha": "5c472e089e6d8492b184a7cb24e78816d347c2de",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V127_2026-09-28.json",
-  "findingsLedgerExpectedGitBlob": "061a5f0079006ee9d8625d03029e6f35dc440a50",
+  "predecessorProductSourceSha": "deb58669ea44b484716b9e0d83656310398ed54c",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V128_2026-09-28.json",
+  "findingsLedgerExpectedGitBlob": "453b0fa8e156f6035b160a9a3614fb1c2e8cb839",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run the read-only ADMIN-003 owner diagnostic on HR c16c18a8. Prove canonical Milton durable/browser regression, quarantine status, exact identityLink-vs-crosswalk conflict ID, and whether Admin Shoppers surfaces same-name identity review. No merges by name and no data/product writes until exact owners are proven.",
+  "exactNextAction": "Run exact ADMIN-003 source reproof on e3c5f4347a66b45f43e69d64a2d22400f7043e4a: require only provider + provider test + Shoppers UI product delta, provider test suite PASS including tenant-adjudicated alias recurrence test, and human review badge without any auto-merge. No deploy/data write before PASS.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -428,7 +428,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "d494f4f3f8655cfc541b8c83279b6984608fab41",
+  "productSourceTree": "181de71c7516a51f0d7edbe6f668c1d34e393ed9",
   "lastLiveReproof": {
     "runId": 36217529367,
     "runNumber": 465,
