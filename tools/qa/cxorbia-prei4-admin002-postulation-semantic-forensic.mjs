@@ -34,12 +34,20 @@ if((runtime.refreshError??snapshot.refreshError??null)!==null)throw new Error('P
 const hrVisits=arr(snapshot.visits);
 const hrById=new Map(),hrByRow=new Map();
 for(const v of hrVisits){const id=str(v.id||v.visitId),row=str(v.hrRowId);if(id)hrById.set(id,v);if(row)hrByRow.set(row,v);}
-const members=await docs(tenant.collection('users'));
-let admin=null;
-for(const m of members.filter(x=>x.active===true&&['super','admin','ops','coordinador'].includes(str(x.role).toLowerCase())&&str(x.authNamespace||'staff').toLowerCase()==='staff')){
-  try{await auth.getUser(m.id);admin=m;break;}catch{}
+let admin=null, pageToken=undefined;
+for(let page=0;page<10&&!admin;page++){
+  const listed=await auth.listUsers(1000,pageToken);
+  for(const u of listed.users){
+    const c=u.customClaims||{},role=str(c.role).toLowerCase(),namespace=str(c.authNamespace||'').toLowerCase(),tenantClaim=str(c.tenantId);
+    const projects=arr(c.projectIds).map(str);
+    if(tenantClaim===TENANT&&namespace==='staff'&&['super','admin','ops','coordinador'].includes(role)&&(role==='super'||projects.includes(PROJECT))){
+      admin={id:u.uid,role,authNamespace:namespace};break;
+    }
+  }
+  pageToken=listed.pageToken;
+  if(!pageToken)break;
 }
-if(!admin)throw new Error('AUTH_FAILURE:PREI4_002_ADMIN_MISSING');
+if(!admin)throw new Error('AUTH_FAILURE:PREI4_002_ADMIN_AUTH_CLAIMS_MISSING');
 
 const durableAll=await docs(project.collection('postulations'));
 const durableCurrent=durableAll.filter(p=>str(p.periodId)==='cinepolis-2026-09');
