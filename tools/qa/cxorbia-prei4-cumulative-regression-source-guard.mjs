@@ -107,7 +107,7 @@ if(!hrAssign.includes('PASS_R20_SHOPPER_ASSIGNMENT_CLASSIFICATION'))fail('HR_ASS
 if(!post.includes('PASS_PREI4_ADMIN_002_SOURCE_LIFECYCLE'))fail('POST002_SELFTEST');
 if(!provider.includes('pass 26'))fail('ADMIN003_PROVIDER_SUITE');
 if(!financeHonorarium.includes('pass 6'))fail('ADMIN004_HONORARIUM_SUITE');
-if(!financeProvider.includes('pass 3'))fail('ADMIN004_PROVIDER_SUITE');
+if(!financeProvider.includes('pass 4'))fail('ADMIN004_PROVIDER_SUITE');
 
 const result={
   decision:'PASS_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD',
@@ -129,7 +129,7 @@ const result={
     postulations:'PASS_PREI4_ADMIN_002_SOURCE_LIFECYCLE',
     identityProviderTests:26,
     financeHonorariumTests:6,
-    financeProviderTests:3
+    financeProviderTests:4
   },
   builds:0,deploys:0,writes:0,production:false
 };
