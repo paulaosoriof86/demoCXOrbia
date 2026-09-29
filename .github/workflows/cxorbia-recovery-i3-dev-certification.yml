@@ -760,7 +760,7 @@ jobs:
           node --test backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs | tee "$PREI4_003_SOURCE_OUT/provider-tests.log"
           grep -Fq "PRE-I4 ADMIN-003 tenant-adjudicated canonical name survives fresh exact HR alias reconciliation" "$PREI4_003_SOURCE_OUT/provider-tests.log"
           grep -Fq "PRE-I4 ADMIN-003 same-revision stale tenant-adjudicated alias is repaired before idempotent short-circuit" "$PREI4_003_SOURCE_OUT/provider-tests.log"
-          grep -Fq "# pass 26" "$PREI4_003_SOURCE_OUT/provider-tests.log"
+          grep -Eq "pass[[:space:]]+26" "$PREI4_003_SOURCE_OUT/provider-tests.log"
           grep -Fq "identityReviewIds" app/modules/shoppers.js
           grep -Fq "Revisar identidad" app/modules/shoppers.js
           ! grep -Eq "merge.*name|name.*merge|fuzzy.*merge" app/modules/shoppers.js
