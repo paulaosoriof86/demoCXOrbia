@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_ADMIN_003_CUMULATIVE_LIVE_RESUME_REQUIRED",
+  "status": "HOLD_PREI4_ADMIN_004_FINANCE_DIAGNOSTIC_REQUIRED",
   "iteration": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "c487449e5187d7219033c54fa1ac3db5fb6c822e",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "deb58669ea44b484716b9e0d83656310398ed54c",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V132_2026-09-29.json",
-  "findingsLedgerExpectedGitBlob": "296763e99e9dcbff1ccf2417d0a804d01b1438cc",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V133_2026-09-29.json",
+  "findingsLedgerExpectedGitBlob": "fcd3b05e15d3dace12373bf0c32873524ba922a2",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "PREI4-ADMIN-003",
+  "activeBlocker": "PREI4-ADMIN-004",
   "nextFindingId": "VRM-089",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Do NOT rebuild or redeploy. Run the cumulative live reproof against the already materialized ADMIN-003 candidate c487449e5187d7219033c54fa1ac3db5fb6c822e / runtime cxorbia-live-hr-dev-00228-m8w. Accept the current fresh HR revision dynamically, require stable hrRowId universe hashes, GT=34/HN=10/current totals, then reprove closed Postulations and ADMIN-003 Admin+Shopper against that SAME current revision. Production remains DO_NOT_TOUCH.",
+  "exactNextAction": "Run a read-only PREI4-ADMIN-004 finance forensic against current HR revision f22aa2412d4251b5ce8a2bf84a4b6385fbd8be97dc3213987d7f366104ab9c52. Prove the exact authority precedence for honorarium when HR honorario is null, enumerate durable financialMatch/lot/payment states, and prove whether a durable reconciliation command exists. Do not create batches, mark paid, or mutate financial data until the owner defect is proven.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1068,6 +1068,15 @@
     "observedHrRevision": "f22aa2412d4251b5ce8a2bf84a4b6385fbd8be97dc3213987d7f366104ab9c52",
     "stableAllHrRowIdSetSha256": "dd565d20340cdf861b1ac477b3a280859d0ea2ce41e35ea3e24990547d98d3b7",
     "stableSeptemberHrRowIdSetSha256": "c22841f499f2d05c012f0ec490c2b14781f33147395b16ce0cd0365daca122f4",
+    "production": false
+  },
+  "preI4Admin003": {
+    "state": "FIXED_PROVEN_RUN615",
+    "receiptPath": "CXORBIA_PRE_I4_ADMIN_003_CUMULATIVE_LIVE_RECEIPT_2026-09-29.json",
+    "hrRevision": "f22aa2412d4251b5ce8a2bf84a4b6385fbd8be97dc3213987d7f366104ab9c52",
+    "runtimeRevision": "cxorbia-live-hr-dev-00228-m8w",
+    "runtimeDigest": "sha256:9c47ea9e75cce16c7bf92385e93c0061c5455a21870b5c4cace3050e9afcdf5f",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/990892ad7f83b39b",
     "production": false
   }
 }
