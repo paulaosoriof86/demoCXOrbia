@@ -10,11 +10,12 @@ const MATRIX=String(process.env.CUM_MATRIX||'RECOVERY-I3-MODULE-TRUTH-MATRIX-202
 const OUT=String(process.env.CUM_OUT||'.tmp/prei4-cumulative-regression');
 const HR_SOURCE='5c472e089e6d8492b184a7cb24e78816d347c2de';
 const POST_SOURCE='deb58669ea44b484716b9e0d83656310398ed54c';
-const expectedDelta=[
-  'app/modules/shoppers.js',
-  'backend/runtime/cxorbia-shopper-command-provider-v1.mjs',
-  'backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs'
-];
+const ID3_SOURCE='c487449e5187d7219033c54fa1ac3db5fb6c822e';
+const parseList=(name,fallback=[])=>{try{const v=JSON.parse(process.env[name]||'[]');return Array.isArray(v)?v:fallback;}catch{return fallback;}};
+const expectedDelta=parseList('CUM_EXPECTED_DELTA_JSON');
+const allowedPending=parseList('CUM_ALLOWED_PENDING_MODULES_JSON').sort();
+const expectedPending=parseList('CUM_EXPECTED_PENDING_FILES_JSON').sort();
+if(!expectedDelta.length)throw new Error('RELEASE_COMPOSITION_FAILURE:CUMULATIVE_GUARD:EXPECTED_DELTA_REQUIRED');
 const hrOwners=[
   'backend/contracts/tya-hr-column-map-r20-v1.json',
   'backend/contracts/tya-cinepolis-cinema-identity-r20-v1.json',
@@ -26,6 +27,11 @@ const postOwners=[
   'app/core/data.js',
   'app/modules/postulaciones.js',
   'app/modules/misvisitas.js'
+];
+const id3Owners=[
+  'app/modules/shoppers.js',
+  'backend/runtime/cxorbia-shopper-command-provider-v1.mjs',
+  'backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs'
 ];
 const git=(...args)=>execFileSync('git',args,{encoding:'utf8'}).trim();
 const run=(cmd,args,env={})=>execFileSync(cmd,args,{encoding:'utf8',stdio:['ignore','pipe','pipe'],env:{...process.env,...env}});
@@ -50,6 +56,7 @@ const parity=(ref,paths,label)=>{
 };
 const hrParity=parity(HR_SOURCE,hrOwners,'HR008');
 const postParity=parity(POST_SOURCE,postOwners,'POST002');
+const id3Parity=parity(ID3_SOURCE,id3Owners,'ADMIN003');
 
 const ledger=JSON.parse(fs.readFileSync(LEDGER,'utf8'));
 ledger.findings=ledger.findings||{};
@@ -67,8 +74,9 @@ const inject=(id,entry,owners,state,sourceSha)=>{
 };
 inject('PREI4-ADMIN-008',ledger.preI4Admin008Fix,hrOwners,'FIXED_PROVEN_RUN594',HR_SOURCE);
 inject('PREI4-ADMIN-002',ledger.preI4Admin002,postOwners,'FIXED_PROVEN_RUN601',POST_SOURCE);
-const id3Owners=['app/modules/shoppers.js','backend/runtime/cxorbia-shopper-command-provider-v1.mjs'];
-inject('PREI4-ADMIN-003',ledger.preI4Admin003,id3Owners,'PASS_PREI4_ADMIN_003_SOURCE',SOURCE);
+inject('PREI4-ADMIN-003',ledger.preI4Admin003,id3Owners,'FIXED_PROVEN_RUN615',ID3_SOURCE);
+const focalOwners=expectedDelta.filter(p=>!p.includes('/test/'));
+inject('PREI4-ADMIN-004',ledger.preI4Admin004,focalOwners,'SOURCE_FIX_REPROOF_REQUIRED',SOURCE);
 const normalized=OUT+'/ledger-normalized.json';
 fs.writeFileSync(normalized,JSON.stringify(ledger,null,2)+'\n');
 
@@ -83,27 +91,29 @@ if(Number(mt?.preTerminalComposition?.unauthorizedFileCount)!==0)fail('UNAUTHORI
 if(mt?.entrypointClosure?.allApprovedOwnersLoaded!==true)fail('APPROVED_OWNER_NOT_LOADED');
 if((mt?.entrypointClosure?.duplicateSrc||[]).length)fail('DUPLICATE_SCRIPT');
 const pendingModules=[...(mt?.preTerminalComposition?.composedNotDeployedModules||[])].sort();
-const allowedPending=['persistence-command-ack-boundary','shoppers-mi-visitas-profile'].sort();
 if(JSON.stringify(pendingModules)!==JSON.stringify(allowedPending))fail('UNEXPECTED_PENDING_MODULES:'+JSON.stringify(pendingModules));
 const pendingFiles=(mt.sourceFiles||[]).filter(x=>x.classification==='COMPOSED_NOT_DEPLOYED').map(x=>x.path).sort();
-const expectedPending=['app/modules/shoppers.js','backend/runtime/cxorbia-shopper-command-provider-v1.mjs'].sort();
 if(JSON.stringify(pendingFiles)!==JSON.stringify(expectedPending))fail('UNEXPECTED_PENDING_FILES:'+JSON.stringify(pendingFiles));
 
 const hrMap=run('node',['tools/hr-source/tya-build-live-hr-source-safe-r20.mjs','--mapping-self-test']);
 const hrAssign=run('node',['tools/hr-source/tya-build-live-hr-source-safe-r20.mjs','--assignment-self-test']);
 const post=run('node',['tools/qa/cxorbia-prei4-admin002-lifecycle-source-selftest.mjs'],{PREI4_002_SOURCE:SOURCE,PREI4_002_TREE:TREE,PREI4_002_SOURCE_OUT:OUT+'/post002'});
 const provider=run('node',['--test','backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs']);
+const financeHonorarium=run('node',['--test','backend/runtime/hr-live-service/test/cxorbia-pre-i4-finance-live-source-honorarium.test.mjs']);
+const financeProvider=run('node',['--test','backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs']);
 
 if(!hrMap.includes('PASS_R20_PROJECT_SCOPED_CINEMA_IDENTITY'))fail('HR_MAPPING_SELFTEST');
 if(!hrAssign.includes('PASS_R20_SHOPPER_ASSIGNMENT_CLASSIFICATION'))fail('HR_ASSIGNMENT_SELFTEST');
 if(!post.includes('PASS_PREI4_ADMIN_002_SOURCE_LIFECYCLE'))fail('POST002_SELFTEST');
 if(!provider.includes('pass 26'))fail('ADMIN003_PROVIDER_SUITE');
+if(!financeHonorarium.includes('pass 6'))fail('ADMIN004_HONORARIUM_SUITE');
+if(!financeProvider.includes('pass 3'))fail('ADMIN004_PROVIDER_SUITE');
 
 const result={
   decision:'PASS_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD',
   sourceSha:SOURCE,sourceTree:TREE,baselineSource:BASE,
   exactDeclaredDelta:diff,
-  protectedByteParity:{hr008Owners:hrParity,post002Owners:postParity},
+  protectedByteParity:{hr008Owners:hrParity,post002Owners:postParity,admin003Owners:id3Parity},
   moduleTruth:{
     moduleCount:mt.preTerminalComposition.moduleCount,
     matchModules:mt.preTerminalComposition.matchModules.length,
@@ -117,7 +127,9 @@ const result={
     hrMapping:'PASS_R20_PROJECT_SCOPED_CINEMA_IDENTITY',
     hrAssignment:'PASS_R20_SHOPPER_ASSIGNMENT_CLASSIFICATION',
     postulations:'PASS_PREI4_ADMIN_002_SOURCE_LIFECYCLE',
-    focalProviderTests:26
+    identityProviderTests:26,
+    financeHonorariumTests:6,
+    financeProviderTests:3
   },
   builds:0,deploys:0,writes:0,production:false
 };

@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_ADMIN_004_FINANCE_DIAGNOSTIC_RUNNING",
+  "status": "HOLD_PREI4_ADMIN_004_SOURCE_REPROOF_REQUIRED",
   "iteration": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "c487449e5187d7219033c54fa1ac3db5fb6c822e",
+  "productSourceSha": "01120c7b1a9c0a3eb72d67d28d45c2e8ec06d942",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
-  "predecessorProductSourceSha": "deb58669ea44b484716b9e0d83656310398ed54c",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V134_2026-09-29.json",
-  "findingsLedgerExpectedGitBlob": "da2f9a4d842c77c8fd1a75af2822b01dc3e121fb",
+  "predecessorProductSourceSha": "c487449e5187d7219033c54fa1ac3db5fb6c822e",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V135_2026-09-29.json",
+  "findingsLedgerExpectedGitBlob": "adc4cc5e8e72926addd7aeb3041a88d5fcc218cb",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Execute the read-only ADMIN-004 finance forensic against HR revision f22aa2412d4251b5ce8a2bf84a4b6385fbd8be97dc3213987d7f366104ab9c52. Prove exact missing honorarium authority path, durable financialMatch population, lot-candidate eligibility and reconciliation-command availability. No writes, no lot creation, no payment mutation.",
+  "exactNextAction": "Run mandatory cumulative source guard on ADMIN-004 source 01120c7b1a9c0a3eb72d67d28d45c2e8ec06d942. Require exact ten-file product delta, byte parity for ADMIN-008/002/003 owners, 20-domain Module Truth with only the five declared ADMIN-004 domains COMPOSED_NOT_DEPLOYED, HR/Postulations/Identity recurrence tests, finance honorarium 6/6 and finance provider 3/3. No deploy/write until PASS.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -428,7 +428,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "6bafb0a2e1fa5be7e68814eddec59524cee7ad93",
+  "productSourceTree": "24de2b342ac3e25d65c96eefac69863f013d82f1",
   "lastLiveReproof": {
     "runId": 36217529367,
     "runNumber": 465,
