@@ -795,6 +795,7 @@ jobs:
       - name: Execute mandatory cumulative source guard
         run: |
           set -Eeuo pipefail
+          mkdir -p "$CUM_OUT"
           node --check tools/qa/cxorbia-prei4-cumulative-regression-source-guard.mjs
           node tools/qa/cxorbia-prei4-cumulative-regression-source-guard.mjs | tee "$CUM_OUT/console.log"
           test "$(jq -r '.decision' "$CUM_OUT/result.json")" = "PASS_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD"
