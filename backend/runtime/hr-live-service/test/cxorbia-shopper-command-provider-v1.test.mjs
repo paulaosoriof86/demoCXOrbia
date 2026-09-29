@@ -664,3 +664,49 @@ test('PRE-I4 ADMIN-003 tenant-adjudicated canonical name survives fresh exact HR
   assert.ok(profile.exactAliases.includes(alias));
   assert.equal(db.get(aliasCross).shopperId,canonical);
 });
+
+test('PRE-I4 ADMIN-003 same-revision stale tenant-adjudicated alias is repaired before idempotent short-circuit',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);
+  const alias='shopper_gt_mishael_alias_same_rev',canonical='shopper_gt_milton_canonical_same_rev',uid=stableShopperUid('tenant-a',canonical);
+  const pp=paths(canonical),aliasCross=paths(alias).cross;
+  const visibleLogin='milton.depaz',email=internalEmailTest('tenant-a',visibleLogin),revision='same-live-revision';
+  auth.seed({uid,email,disabled:false,customClaims:{authNamespace:'shopper',projectIds:['project-a'],role:'shopper',shopperId:canonical,tenantId:'tenant-a'}});
+  db.seed(pp.profile,{
+    id:canonical,shopperId:canonical,tenantId:'tenant-a',projectIds:['project-a'],sourceType:'hr_external',
+    nombre:'Mishael De Paz',firstName:'Milton',lastName:'De Paz',visibleLogin,username:visibleLogin,user:visibleLogin,
+    credentialRuleVersion:CREDENTIAL_RULE_VERSION,identityAuthority:'tenant_adjudication',
+    identityAuthorityRef:'tenant-owner-adjudication',hrSourceRevision:revision
+  });
+  db.seed(`${pp.users}/${uid}`,{
+    active:true,tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:canonical,projectIds:['project-a'],
+    providerUidFingerprint:providerUidFingerprint(uid),visibleLogin,credentialRuleVersion:CREDENTIAL_RULE_VERSION
+  });
+  db.seed(aliasCross,{
+    tenantId:'tenant-a',shopperId:canonical,canonicalShopperId:canonical,sourceStableKey:alias,projectIds:['project-a'],
+    providerUidFingerprint:providerUidFingerprint(uid),identityMode:'provider_exact_identity_link',sourceType:'hr_external'
+  });
+  db.seed('tenants/tenant-a/shopperIdentityLinks/tenant-adjudicated-alias-same-rev',{
+    tenantId:'tenant-a',projectId:'project-a',projectScope:'project-a',canonicalShopperId:canonical,
+    sourceSystem:'hr_external',sourceIdentity:{legacyId:alias},status:'confirmed',authorityType:'tenant_adjudication',
+    authorityRef:'tenant-owner-adjudication',periodIndependent:true
+  });
+  const snap=snapshot({shopperId:alias,shopperCode:'TYA_GT_MISHAEL_ALIAS_SAME_REV'});
+  snap.visits[0].shopper='Mishael De Paz';
+  const first=await p.reconcileSnapshot(snap,{sourceRevision:revision});
+  assert.equal(first.ok,true);
+  assert.ok(first.providerWrites>0);
+  const repaired=db.get(pp.profile);
+  assert.equal(repaired.nombre,'Milton De Paz');
+  assert.equal(repaired.firstName,'Milton');
+  assert.equal(repaired.lastName,'De Paz');
+  assert.equal(repaired.identityAuthority,'tenant_adjudication');
+  assert.equal(repaired.identityAuthorityRef,'tenant-owner-adjudication');
+  const pathsAfterFirst=db.paths();
+  const second=await p.reconcileSnapshot(snap,{sourceRevision:revision});
+  assert.equal(second.ok,true);
+  assert.equal(second.providerWrites,0);
+  assert.ok(second.idempotentReplays>=1);
+  assert.deepEqual(db.paths(),pathsAfterFirst);
+  assert.equal(db.get(pp.profile).nombre,'Milton De Paz');
+});
+

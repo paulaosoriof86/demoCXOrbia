@@ -539,7 +539,19 @@ async function durableUpsert({auth,db,policy,candidate,sourceRevision,authUsers,
     const unionProjects=uniq([...(profile.projectIds||[]),...(member.projectIds||[]),...(cross.projectIds||[]),...projectIds,projectId]);
     const credentialCurrent=!credential.ok||(str(member.credentialRuleVersion)===CREDENTIAL_RULE_VERSION&&str(member.visibleLogin).toLowerCase()===visibleLogin&&str(profile.credentialRuleVersion)===CREDENTIAL_RULE_VERSION&&str(profile.username||profile.user||profile.visibleLogin).toLowerCase()===visibleLogin);
     const crossCurrent=crossSnap.exists&&!txExactAliasSelfMap&&str(cross.shopperId)===shopperId&&str(cross.providerUidFingerprint)===providerUidFingerprint(uid);
-    const alreadyCurrent=profileSnap.exists&&memberSnap.exists&&crossCurrent&&str(profile.hrSourceRevision)===sourceRevision&&sameArray(profile.projectIds,unionProjects)&&sameArray(member.projectIds,unionProjects)&&sameArray(cross.projectIds,unionProjects)&&str(member.providerUidFingerprint)===providerUidFingerprint(uid)&&credentialCurrent;
+    /* PRE-I4 cumulative anti-regression: same HR revision is not sufficient for idempotent replay
+       when an exact tenant-adjudicated alias has already polluted the canonical display name.
+       The current durable identity fields are part of the idempotency predicate so a stale alias
+       is repaired once, then subsequent same-revision replays become true no-ops. */
+    const tenantAdjudicatedAlias=
+      sourceShopperId!==shopperId&&
+      str(profile.identityAuthority).toLowerCase()==='tenant_adjudication'&&
+      !!str(profile.identityAuthorityRef);
+    const adjudicatedFirst=str(profile.firstName);
+    const adjudicatedLast=str(profile.lastName||profile.apellido);
+    const adjudicatedName=str([adjudicatedFirst,adjudicatedLast].filter(Boolean).join(' ')||profile.nombre);
+    const adjudicatedIdentityCurrent=!tenantAdjudicatedAlias||!adjudicatedName||str(profile.nombre)===adjudicatedName;
+    const alreadyCurrent=profileSnap.exists&&memberSnap.exists&&crossCurrent&&str(profile.hrSourceRevision)===sourceRevision&&sameArray(profile.projectIds,unionProjects)&&sameArray(member.projectIds,unionProjects)&&sameArray(cross.projectIds,unionProjects)&&str(member.providerUidFingerprint)===providerUidFingerprint(uid)&&credentialCurrent&&adjudicatedIdentityCurrent;
     if(alreadyCurrent)return {providerWrites:credentialNormalized?1:0,idempotentReplay:!credentialNormalized,projectIds:unionProjects,credentialNormalized,credentialRuleApplied:credential.ok,aliasMigrated:false};
     const profilePatch=hrProfilePatch(candidate,unionProjects,sourceRevision);
     profilePatch.sourceShopperIds=uniq([...(profile.sourceShopperIds||[]),...(profilePatch.sourceShopperIds||[])]);
@@ -559,14 +571,7 @@ async function durableUpsert({auth,db,policy,candidate,sourceRevision,authUsers,
        HR continues to own operational fields, but an exact alias (sourceShopperId != canonical)
        must never rewrite the canonical person's adjudicated human name. This prevents a fresh HR
        reconciliation from turning canonical Milton back into the historical invalid Mishael label. */
-    const tenantAdjudicatedAlias=
-      sourceShopperId!==shopperId&&
-      str(profile.identityAuthority).toLowerCase()==='tenant_adjudication'&&
-      !!str(profile.identityAuthorityRef);
     if(tenantAdjudicatedAlias){
-      const adjudicatedFirst=str(profile.firstName);
-      const adjudicatedLast=str(profile.lastName||profile.apellido);
-      const adjudicatedName=str([adjudicatedFirst,adjudicatedLast].filter(Boolean).join(' ')||profile.nombre);
       if(adjudicatedFirst)profilePatch.firstName=adjudicatedFirst;
       if(adjudicatedLast)profilePatch.lastName=adjudicatedLast;
       if(adjudicatedName&&!technicalIdentityLabel(adjudicatedName,shopperId))profilePatch.nombre=adjudicatedName;
