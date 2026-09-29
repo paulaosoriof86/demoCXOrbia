@@ -40,10 +40,22 @@ if(!exact(before)){
   const browser=await chromium.launch({headless:true});
   try{
     const ctx=await browser.newContext({viewport:{width:1440,height:980}}),page=await ctx.newPage();
-    const token=await auth.createCustomToken(actor.uid);
-    await page.goto(ROOT+'/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV',{waitUntil:'domcontentloaded',timeout:90000});
-    await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
-    await page.evaluate(async t=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);await firebase.auth().signInWithCustomToken(t);},token);
+    const url=ROOT+'/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV';
+    let signed=false,lastAuthError='';
+    for(let attempt=1;attempt<=5&&!signed;attempt++){
+      await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
+      await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
+      const token=await auth.createCustomToken(actor.uid);
+      try{
+        await page.evaluate(async t=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);await firebase.auth().signInWithCustomToken(t);},token);
+      }catch(e){
+        lastAuthError=String(e?.message||e);
+        if(!/network-request-failed|Execution context was destroyed|navigation|network|timeout|interrupted/i.test(lastAuthError))throw e;
+      }
+      await page.waitForTimeout(800*attempt);
+      signed=await page.evaluate(uid=>String(firebase.auth().currentUser?.uid||'')===uid,actor.uid).catch(()=>false);
+    }
+    if(!signed)fail('AUTH_FAILURE:ADMIN004_PROJECT_CONFIG_SIGNIN:'+lastAuthError);
     await page.waitForFunction(()=>window.CX?.cxDataCommandBoundary?.canonicalMode?.()===true&&typeof window.CX?.data?.updateProject==='function'&&Array.isArray(window.CX?.data?.__backendAllProjectRecords)&&window.CX.data.__backendAllProjectRecords.some(p=>String(p.id||p.projectId)==='cinepolis'),null,{timeout:150000});
     ack=await page.evaluate(async()=>{
       const current=window.CX.data.__backendAllProjectRecords.find(p=>String(p.id||p.projectId)==='cinepolis');
