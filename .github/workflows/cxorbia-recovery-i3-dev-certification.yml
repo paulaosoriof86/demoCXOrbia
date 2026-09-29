@@ -88,7 +88,10 @@ on:
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V123_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V124_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V125_2026-09-28.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V126_2026-09-28.json
+      - CXORBIA_PRE_I4_ADMIN_002_POSTULATION_LIFECYCLE_RECEIPT_2026-09-28.json
       - CXORBIA_PRE_I4_ADMIN_008_FRESH_HR_RECEIPT_2026-09-28.json
+      - tools/qa/cxorbia-prei4-admin003-identity-forensic-readonly.mjs
       - tools/qa/cxorbia-prei4-admin002-hosting-live-reproof.mjs
       - tools/qa/cxorbia-prei4-admin002-lifecycle-source-selftest.mjs
       - app/core/tya-phase-a-source-safe-preview.js
@@ -140,7 +143,7 @@ env:
   I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V125_2026-09-28.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V126_2026-09-28.json
 
 jobs:
   canonical-candidate-authority:
@@ -178,7 +181,7 @@ jobs:
           test "$(jq -r '.findings["VRM-079"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN518"
           test "$(jq -r '.findings["VRM-080"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN525"
           test "$(jq -r '.findings["VRM-081"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN547"
-          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED" || "$STATUS" == "HOLD_MODULE_TRUTH_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM087_FINALIZER_RECEIPT_SCOPE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM088_LIVE_FIXTURE_AVAILABILITY_REPROOF_REQUIRED" || "$STATUS" == "READY_FOR_GATE21_SAME_CERTIFIED_ARTIFACT" || "$STATUS" == "HOLD_PREI4_ADMIN_008_HR_MAPPING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_008_DEV_RUNTIME_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_RECOVERY_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_HOSTING_REPROOF_REQUIRED" || "$STATUS" == "GO" ]]
+          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED" || "$STATUS" == "HOLD_MODULE_TRUTH_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM087_FINALIZER_RECEIPT_SCOPE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM088_LIVE_FIXTURE_AVAILABILITY_REPROOF_REQUIRED" || "$STATUS" == "READY_FOR_GATE21_SAME_CERTIFIED_ARTIFACT" || "$STATUS" == "HOLD_PREI4_ADMIN_008_HR_MAPPING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_008_DEV_RUNTIME_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_RECOVERY_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_HOSTING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_IDENTITY_DIAGNOSTIC_REQUIRED" || "$STATUS" == "GO" ]]
           echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
@@ -602,6 +605,59 @@ jobs:
           include-hidden-files: true
       - if: always()
         run: rm -rf "$RUNNER_TEMP/cxorbia-prei4-admin002-hosting"
+
+
+
+  prei4-admin-003-identity-diagnostic:
+    name: PRE-I4 ADMIN-003 — exact identity forensic read-only
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_003_IDENTITY_DIAGNOSTIC_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-admin-003-diagnostic]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    env:
+      PREI4_003_OUT: .tmp/prei4-admin-003
+      PREI4_003_ROOT: https://cxorbia-backend-dev.web.app
+      PREI4_003_HR_REVISION: c16c18a89675d5c6daff9421604f978a558bc3bf78cf8e6a2da550820ff95e6a
+      PREI4_003_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      PREI4_003_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Prove exact current product and diagnostic-only successor
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$PREI4_003_OUT"
+          test "$PREI4_003_SOURCE" = "deb58669ea44b484716b9e0d83656310398ed54c"
+          test "$PREI4_003_TREE" = "d494f4f3f8655cfc541b8c83279b6984608fab41"
+          test "$(git rev-parse "$PREI4_003_SOURCE^{tree}")" = "$PREI4_003_TREE"
+          git diff --quiet "$PREI4_003_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source
+          node --check tools/qa/cxorbia-prei4-admin003-identity-forensic-readonly.mjs
+      - name: Install read-only provider dependency
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
+      - name: Authenticate Firebase DEV read only
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Execute exact identity forensic
+        run: |
+          set -Eeuo pipefail
+          node tools/qa/cxorbia-prei4-admin003-identity-forensic-readonly.mjs | tee "$PREI4_003_OUT/console.log"
+          test "$(jq -r '.decision' "$PREI4_003_OUT/result.json")" = "PASS_PREI4_ADMIN_003_IDENTITY_DIAGNOSTIC"
+          test "$(jq -r '.hrRevision' "$PREI4_003_OUT/result.json")" = "$PREI4_003_HR_REVISION"
+          test "$(jq -r '.safety.readOnly' "$PREI4_003_OUT/result.json")" = "true"
+          test "$(jq -r '.safety.firestoreWrites' "$PREI4_003_OUT/result.json")" = "0"
+          test "$(jq -r '.safety.deploys' "$PREI4_003_OUT/result.json")" = "0"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-prei4-admin-003-diagnostic-${{ github.run_id }}
+          path: ${{ env.PREI4_003_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+          include-hidden-files: true
 
 
   vrm085-postulation-sync-diagnostic:
