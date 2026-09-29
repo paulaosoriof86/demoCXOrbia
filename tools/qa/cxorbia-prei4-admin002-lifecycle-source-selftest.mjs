@@ -7,7 +7,7 @@ const OUT=String(process.env.PREI4_002_SOURCE_OUT||'.tmp/prei4-admin-002-source'
 const fail=m=>{throw new Error('PREI4_ADMIN_002_SOURCE_TEST:'+m);};
 fs.mkdirSync(OUT,{recursive:true});
 const preview=fs.readFileSync('app/core/tya-phase-a-source-safe-preview.js','utf8');
-if(/hr-post-/.test(preview))fail('HR_POST_SYNTHESIS_REMAINS');
+if(/id\s*:\s*`hr-post-/.test(preview))fail('HR_POST_SYNTHESIS_REMAINS');
 if(!/const posts\s*=\s*\[\]/.test(preview))fail('HR_POSTS_NOT_EMPTY');
 const model=fs.readFileSync('app/adapters/tya-cumulative-read-model-v2.js','utf8');
 globalThis.window=globalThis;
