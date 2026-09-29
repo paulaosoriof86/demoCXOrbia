@@ -86,7 +86,14 @@ on:
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V121_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V122_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V123_2026-09-28.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V124_2026-09-28.json
       - CXORBIA_PRE_I4_ADMIN_008_FRESH_HR_RECEIPT_2026-09-28.json
+      - tools/qa/cxorbia-prei4-admin002-lifecycle-source-selftest.mjs
+      - app/core/tya-phase-a-source-safe-preview.js
+      - app/adapters/tya-cumulative-read-model-v2.js
+      - app/core/data.js
+      - app/modules/postulaciones.js
+      - app/modules/misvisitas.js
       - tools/qa/cxorbia-prei4-admin002-postulation-semantic-forensic.mjs
       - backend/contracts/tya-hr-column-map-r20-v1.json
       - backend/contracts/tya-cinepolis-cinema-identity-r20-v1.json
@@ -131,7 +138,7 @@ env:
   I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V123_2026-09-28.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V124_2026-09-28.json
 
 jobs:
   canonical-candidate-authority:
@@ -169,7 +176,7 @@ jobs:
           test "$(jq -r '.findings["VRM-079"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN518"
           test "$(jq -r '.findings["VRM-080"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN525"
           test "$(jq -r '.findings["VRM-081"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN547"
-          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED" || "$STATUS" == "HOLD_MODULE_TRUTH_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM087_FINALIZER_RECEIPT_SCOPE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM088_LIVE_FIXTURE_AVAILABILITY_REPROOF_REQUIRED" || "$STATUS" == "READY_FOR_GATE21_SAME_CERTIFIED_ARTIFACT" || "$STATUS" == "HOLD_PREI4_ADMIN_008_HR_MAPPING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_008_DEV_RUNTIME_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_RECOVERY_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_DIAGNOSTIC_REQUIRED" || "$STATUS" == "GO" ]]
+          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED" || "$STATUS" == "HOLD_MODULE_TRUTH_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM087_FINALIZER_RECEIPT_SCOPE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM088_LIVE_FIXTURE_AVAILABILITY_REPROOF_REQUIRED" || "$STATUS" == "READY_FOR_GATE21_SAME_CERTIFIED_ARTIFACT" || "$STATUS" == "HOLD_PREI4_ADMIN_008_HR_MAPPING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_008_DEV_RUNTIME_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_RECOVERY_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "GO" ]]
           echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
@@ -407,6 +414,57 @@ jobs:
         with:
           name: cxorbia-prei4-admin-002-diagnostic-${{ github.run_id }}
           path: ${{ env.PREI4_002_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+          include-hidden-files: true
+
+
+
+  prei4-admin-002-source-reproof:
+    name: PRE-I4 ADMIN-002 — exact lifecycle source reproof
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_002_SOURCE_REPROOF_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-admin-002-source]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      PREI4_002_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      PREI4_002_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      PREI4_002_SOURCE_OUT: .tmp/prei4-admin-002-source
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Prove exact five-owner product delta
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$PREI4_002_SOURCE_OUT"
+          test "$PREI4_002_SOURCE" = "deb58669ea44b484716b9e0d83656310398ed54c"
+          test "$PREI4_002_TREE" = "d494f4f3f8655cfc541b8c83279b6984608fab41"
+          test "$(git rev-parse "$PREI4_002_SOURCE^{tree}")" = "$PREI4_002_TREE"
+          git diff --name-only "5c472e089e6d8492b184a7cb24e78816d347c2de" "$PREI4_002_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source | sort > "$PREI4_002_SOURCE_OUT/product-diff.txt"
+          printf '%s\n' 'app/adapters/tya-cumulative-read-model-v2.js' 'app/core/data.js' 'app/core/tya-phase-a-source-safe-preview.js' 'app/modules/misvisitas.js' 'app/modules/postulaciones.js' | sort > "$PREI4_002_SOURCE_OUT/expected-diff.txt"
+          diff -u "$PREI4_002_SOURCE_OUT/expected-diff.txt" "$PREI4_002_SOURCE_OUT/product-diff.txt"
+          git diff --quiet "$PREI4_002_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source
+      - name: Syntax and deterministic lifecycle self-test
+        run: |
+          set -Eeuo pipefail
+          node --check app/core/tya-phase-a-source-safe-preview.js
+          node --check app/adapters/tya-cumulative-read-model-v2.js
+          node --check app/core/data.js
+          node --check app/modules/postulaciones.js
+          node --check app/modules/misvisitas.js
+          node --check tools/qa/cxorbia-prei4-admin002-lifecycle-source-selftest.mjs
+          node tools/qa/cxorbia-prei4-admin002-lifecycle-source-selftest.mjs | tee "$PREI4_002_SOURCE_OUT/console.log"
+          test "$(jq -r '.decision' "$PREI4_002_SOURCE_OUT/result.json")" = "PASS_PREI4_ADMIN_002_SOURCE_LIFECYCLE"
+          test "$(jq -r '.writes' "$PREI4_002_SOURCE_OUT/result.json")" = "0"
+          test "$(jq -r '.deploys' "$PREI4_002_SOURCE_OUT/result.json")" = "0"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-prei4-admin-002-source-${{ github.run_id }}
+          path: ${{ env.PREI4_002_SOURCE_OUT }}
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
