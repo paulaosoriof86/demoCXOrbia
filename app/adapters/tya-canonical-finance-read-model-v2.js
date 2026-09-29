@@ -21,6 +21,13 @@
   const previousLabel=typeof CX.liq.label==='function'?CX.liq.label.bind(CX.liq):s=>[s,'n'];
   function visitKey(v){return str(v?.id||v?.visitId)||str(v?.hrRowId);}
   function liqKey(l){return str(l?.visitaId||l?.visitId)||str(l?.hrRowId);}
+  function exactProtectedFinancialMatch(v){
+    const rows=arr(CX.data?.__protectedVisits),hrRow=str(v?.hrRowId),ids=new Set([str(v?.id),str(v?.visitId),str(v?.__protectedVisitId)].filter(Boolean));
+    const matches=rows.filter(p=>(hrRow&&str(p?.hrRowId)===hrRow)||ids.has(str(p?.id||p?.visitId)));
+    if(matches.length!==1)return null;
+    const p=matches[0];
+    return str(p?.financialSourceStatus).toLowerCase()==='reconciled_exact'&&p?.financialMatch?p.financialMatch:null;
+  }
   function rootProjectId(project){
     return str(project?.parentProjectId||project?.rootProjectId||project?.program||entry.projectId||project?.id)||null;
   }
@@ -42,9 +49,7 @@
     const visitReimbursementPartial=v.reimbursementPartial===true||v.reembolsoPartial===true||v.reimbursementSourceComplete===false
       || ['partial','incomplete','pending_source'].includes(str(v.reimbursementSourceStatus||v.reimbursementStatus).toLowerCase());
     const visitReimbursementSourceStatus=visitReimbursementPartial?'partial':(v.reimbursementSourceStatus||v.reimbursementStatus||null);
-    const exact=(v?.financialMatch&&str(v?.financialSourceStatus).toLowerCase()==='reconciled_exact')
-      ?v.financialMatch
-      :(typeof CX.data.financialMatchForVisit==='function'?CX.data.financialMatchForVisit(v):null);
+    const exact=exactProtectedFinancialMatch(v)||(typeof CX.data.financialMatchForVisit==='function'?CX.data.financialMatchForVisit(v):null);
     if(exact){
       const merged=Object.assign({},exact,{
         visitaId:v.id||v.visitId,visitId:v.id||v.visitId,hrRowId:v.hrRowId||exact.hrRowId||null,
