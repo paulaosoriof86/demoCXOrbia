@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_ADMIN_002_SOURCE_REPROOF_REQUIRED",
+  "status": "HOLD_PREI4_ADMIN_002_HOSTING_REPROOF_REQUIRED",
   "iteration": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "deb58669ea44b484716b9e0d83656310398ed54c",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "5c472e089e6d8492b184a7cb24e78816d347c2de",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V124_2026-09-28.json",
-  "findingsLedgerExpectedGitBlob": "92c28195d56f4a5e80978f469339e3e6c7e72e22",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V125_2026-09-28.json",
+  "findingsLedgerExpectedGitBlob": "a4595f0fb624fe7ebe88d2c8c64691d02e49a822",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run PREI4-ADMIN-002 source reproof on deb58669ea44b484716b9e0d83656310398ed54c. Require exact five product owners, syntax PASS, no hr-post synthesis, deterministic lifecycle fixture PASS, zero writes/deploys. Only then materialize exact Hosting DEV bytes and reprove Admin + Shopper against HR revision c16c18a89675d5c6daff9421604f978a558bc3bf78cf8e6a2da550820ff95e6a.",
+  "exactNextAction": "Materialize exactly product source deb58669ea44b484716b9e0d83656310398ed54c to Hosting DEV only (no runtime/rules/data writes), prove the five changed bytes served, require runtime cxorbia-live-hr-dev-00227-nwl and HR revision c16c18a89675d5c6daff9421604f978a558bc3bf78cf8e6a2da550820ff95e6a unchanged, then prove Admin shows 0 active/12 archived current-period applications and Shopper hides archived applications from active Mi Visitas while Firestore postulations remain byte-equivalent.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
