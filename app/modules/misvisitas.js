@@ -31,7 +31,7 @@ CX.module('misvisitas',({data,ui})=>{
     if(v&&appShopper&&visitShopper===appShopper)return'assigned_confirmed';
     return'approved_assignment_review';
   };
-  const currentApps=identityOk?(data._posts||[]).filter(x=>String(x.shopperId||'')===String(sid)&&postPeriod(x)===String(data.currentPeriodId)):[];
+  const currentApps=identityOk?(data._posts||[]).filter(x=>x?._archived!==true&&String(x.shopperId||'')===String(sid)&&postPeriod(x)===String(data.currentPeriodId)):[];
   const pendingApps=currentApps.filter(x=>postState(x)==='pendiente');
   const geoPreview=new Map();
   let view='activas';

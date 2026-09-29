@@ -12,7 +12,7 @@ CX.module('postulaciones', ({data,ui})=>{
   /* R19 P0-1: los KPIs superiores deben coincidir con el periodo activo por defecto (mismo
      criterio que el listado abajo) — nunca contar postulaciones de otros periodos salvo que se
      pida explícitamente "Ver históricas". */
-  const activePosts=posts.filter(x=>periodIdOf(x)===data.currentPeriodId);
+  const activePosts=posts.filter(x=>periodIdOf(x)===data.currentPeriodId&&x?._archived!==true);
   const c=(s)=>activePosts.filter(x=>x.estado===s).length;
   const reprog=activePosts.filter(x=>x.reprog);
   const agendadas=data.visitas().filter(v=>v.agendada&&v.shopperId);
@@ -47,9 +47,10 @@ CX.module('postulaciones', ({data,ui})=>{
   const card=(x)=>{
     const hon=x.honorario!=null?`${x.currency||''} ${x.honorario}`.trim():'Pendiente de fuente';
     const sync=syncPresentation(x);
-    return `<div data-pid="${x.id}" data-post-sync="${sync.sync}" style="background:#fff;border:1px solid var(--border);border-radius:11px;padding:13px 15px;margin-bottom:10px">
+    const lifecycleBadge=x?._archived===true?ui.bdg('HISTÓRICA · SUPERADA POR HR','n'):'';
+    return `<div data-pid="${x.id}" data-post-sync="${sync.sync}" data-post-lifecycle="${x.postulationLifecycle||'active'}" style="background:#fff;border:1px solid var(--border);border-radius:11px;padding:13px 15px;margin-bottom:10px">
       <div class="between" style="margin-bottom:8px">
-        <div class="flex" style="gap:8px">${estTag(x.estado)}<span style="font-size:11px;color:var(--t3)">${x.fechaProp}</span>${x.reprog?ui.bdg('Reprog.','a'):''}</div>
+        <div class="flex" style="gap:8px">${estTag(x.estado)}${lifecycleBadge}<span style="font-size:11px;color:var(--t3)">${x.fechaProp}</span>${x.reprog?ui.bdg('Reprog.','a'):''}</div>
         <span style="font-size:11px;color:var(--t3)">${x.quincena}</span>
       </div>
       <div class="between" style="align-items:flex-start;gap:14px;flex-wrap:wrap">
@@ -276,7 +277,8 @@ CX.module('postulaciones', ({data,ui})=>{
     document.querySelectorAll('[data-rj]').forEach(b=>b.addEventListener('click',async()=>{const x=posts.find(z=>z.id===b.dataset.rj);await applicationStatusDurable(x,'rechazada',b,'✕ Rechazada','red','Postulación rechazada');}));
     const search=()=>{const q=(document.getElementById('pSearch').value||'').toLowerCase(),fpr=document.getElementById('pProj').value,fp=document.getElementById('pPais').value,fe=document.getElementById('pEst').value,hist=document.getElementById('pHist').checked;
       document.querySelectorAll('#pGroups [data-pid]').forEach(el=>{const x=posts.find(z=>z.id===el.dataset.pid);
-        const ok=(hist||periodIdOf(x)===data.currentPeriodId)&&(!q||(displayShopper(x)+' '+displayCode(x)+' '+x.sucursal).toLowerCase().includes(q))&&(!fpr||x.projectId===fpr)&&(!fp||x.pais===fp)&&(!fe||x.estado===fe);el.style.display=ok?'':'none';});
+        const lifecycleOk=hist||x?._archived!==true;
+        const ok=lifecycleOk&&(hist||periodIdOf(x)===data.currentPeriodId)&&(!q||(displayShopper(x)+' '+displayCode(x)+' '+x.sucursal).toLowerCase().includes(q))&&(!fpr||x.projectId===fpr)&&(!fp||x.pais===fp)&&(!fe||x.estado===fe);el.style.display=ok?'':'none';});
       // ocultar grupos sin tarjetas visibles
       document.querySelectorAll('#pGroups .card').forEach(g=>{const any=[...g.querySelectorAll('[data-pid]')].some(el=>el.style.display!=='none');g.style.display=any?'':'none';});};
     ['pSearch','pProj','pPais','pEst','pHist'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',search);});

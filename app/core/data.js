@@ -581,7 +581,7 @@ CX.data = {
     return per?this.programKey(per):raw;
   },
   visitas(){const arr=this._visitas.filter(v=>this.recordPeriodId(v)===this.currentPeriodId);return this.scopePaises()?arr.filter(v=>this.inScope(v.pais)):arr;},
-  posts(){const arr=this._posts.filter(p=>this.recordPeriodId(p)===this.currentPeriodId);return this.scopePaises()?arr.filter(p=>this.inScope(p.pais)):arr;},
+  posts(){const arr=this._posts.filter(p=>this.recordPeriodId(p)===this.currentPeriodId&&p?._archived!==true);return this.scopePaises()?arr.filter(p=>this.inScope(p.pais)):arr;},
   shoppersFor(){const cs=this.period().countries;const sc=this.scopePaises();return this.shoppers.filter(s=>cs.includes(s.pais)&&this.inScope(s.pais));},
 
   /* ---- P0-3/GAP3 (paquete V111→V112, 20260714): pool de shoppers RANKEABLES ----

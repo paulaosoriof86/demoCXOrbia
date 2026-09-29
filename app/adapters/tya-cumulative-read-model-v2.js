@@ -287,6 +287,35 @@
     const postMap=new Map(),postKey=p=>{const vid=str(p.visitId||p.visitaId),sid=str(p.shopperId),id=str(p.id||p.applicationId||p.postulationId);return vid&&sid?`vs:${vid}::${sid}`:(id?`id:${id}`:'');};
     for(const raw of basePosts){const p=normalizePostScope(clone(raw)),sid=str(p.shopperId);if(liveToCanonical.has(sid))p.shopperId=liveToCanonical.get(sid);const key=postKey(p);if(key)postMap.set(key,p);}
     for(const raw of [...arr(payload.postulations),...arr(payload.applications)]){const p=normalizePostScope(clone(raw));let vid=str(p.visitId||p.visitaId);if(protectedVisitToHrVisit.has(vid))vid=protectedVisitToHrVisit.get(vid);p.visitId=vid;p.visitaId=vid;const sid=str(p.shopperId);if(liveToCanonical.has(sid))p.shopperId=liveToCanonical.get(sid);const key=postKey(p);if(key)postMap.set(key,postMap.has(key)?patch(postMap.get(key),p):p);}
+    /* PRE-I4 ADMIN-002 — durable application lifecycle against the SAME live HR revision.
+       We never delete/mutate Firestore here. HR can only supersede ACTIVE presentation:
+       - pending application + visit no longer available/unassigned => historical/superseded;
+       - approved application + current HR owner is a different shopper => historical conflict.
+       The durable record remains in result.posts with an explicit lifecycle reason so historical
+       review/audit can still render it when requested. */
+    const currentPostPeriod=str(hr.currentPeriodId);
+    const liveVisitById=new Map(),liveVisitByRow=new Map();
+    for(const v of composedVisits){const id=str(v?.id||v?.visitId),row=str(v?.hrRowId);if(id)liveVisitById.set(id,v);if(row)liveVisitByRow.set(row,v);}
+    let lifecycleArchivedPosts=0,lifecyclePendingSuperseded=0,lifecycleApprovedOwnerChanged=0;
+    for(const p of postMap.values()){
+      const pPeriod=str(p?.periodId||p?.projectId),state=str(p?.estado||p?.status).toLowerCase();
+      if(p?._archived===true||!currentPostPeriod||pPeriod!==currentPostPeriod)continue;
+      const v=liveVisitById.get(str(p?.visitId||p?.visitaId))||liveVisitByRow.get(str(p?.hrRowId))||null;
+      if(!v)continue;
+      const vf=facets(v),appShopper=str(p?.shopperId),hrShopper=str(v?.shopperId);
+      let reason='';
+      if(state==='pendiente'&&(vf.assigned===true||vf.available!==true))reason='pending_superseded_by_live_hr';
+      else if(state==='aprobada'&&appShopper&&hrShopper&&appShopper!==hrShopper)reason='approved_owner_changed_in_live_hr';
+      if(!reason)continue;
+      p._archived=true;
+      p.postulationLifecycle='hr_superseded';
+      p.postulationLifecycleReason=reason;
+      p.postulationLifecycleSource='live_hr_same_revision';
+      p.postulationLifecycleReviewRequired=state==='aprobada';
+      lifecycleArchivedPosts++;
+      if(reason==='pending_superseded_by_live_hr')lifecyclePendingSuperseded++;
+      if(reason==='approved_owner_changed_in_live_hr')lifecycleApprovedOwnerChanged++;
+    }
     const platformOnlyProfiles=platformOnlyAllProfiles.map(p=>{
       const presented=platformOnlyPresentedIds.has(str(p.id));
       return {id:p.id,nombre:p.nombre,exactAliases:p.exactAliases,projectIds:uniq(p.projectIds),presentedToAuthorizedStaff:presented,reason:presented?'authoritative_exact_identity_link':'no_exact_hr_crosswalk'};
@@ -296,7 +325,7 @@
     const sameDisplayNameGroups=[...nameGroups.entries()].filter(([,ids])=>ids.length>1).map(([normalizedName,ids])=>({normalizedName,shopperIds:ids.sort(),reason:'display_name_collision_not_auto_merged'}));
     const uniqueVisitKeys=new Set(composedVisits.map(visitKey).filter(Boolean)),uniqueShopperIds=new Set(composedShoppers.map(s=>str(s.id)).filter(Boolean));
     const summaries=periodSummary(composedVisits);
-    const diagnostics={hrProjects:projects.length,hrVisits:baseVisits.length,hrShoppers:baseShoppers.length,hrPosts:basePosts.length,protectedVisits:protectedVisits.length,protectedProfiles:profiles.length,matchedProtectedVisits:matches.size,unmatchedProtectedVisits:Math.max(0,protectedVisits.length-matches.size),crosswalkLiveToCanonical:liveToCanonical.size,identityConflicts,visitConflicts,assignmentConflicts,pendingPlatformAssignmentOverlays:pendingPlatformAssignmentOverlays.length,platformOnlyProfiles:platformOnlyProfiles.length,platformOnlyProfilesPresented:platformOnlyPresentedIds.size,platformOnlyProfilesCrossProjectExcluded,sameDisplayNameGroups,outputVisits:composedVisits.length,outputShoppers:composedShoppers.length,outputPosts:postMap.size,uniqueVisitKeys:uniqueVisitKeys.size,duplicateVisitKeys:composedVisits.length-uniqueVisitKeys.size,uniqueShopperIds:uniqueShopperIds.size,duplicateShopperIds:composedShoppers.length-uniqueShopperIds.size,protectedVisitsAppended:0,idempotentDesign:true,hrOwnsOperationalState:true,canonicalFacetSource:true,unmatchedProfilesExcludedFromOperationalList:true,platformOnlyPresentationProjectScoped:true,identityContractVersion:contract?.version||'legacy-fallback',identityTechnicalKeyCount:arr(contract?.technicalKeys).length,canonicalProfileIndexConflicts:arr(canonicalProfileIndex?.conflicts).length,durableVisitAuthority:'live_hr_visit_id_equals_firestore_doc_id',durableHistoryPreserved:true,confirmedHistoryExcludesPendingPlatformAssignment:true};
+    const diagnostics={hrProjects:projects.length,hrVisits:baseVisits.length,hrShoppers:baseShoppers.length,hrPosts:basePosts.length,protectedVisits:protectedVisits.length,protectedProfiles:profiles.length,matchedProtectedVisits:matches.size,unmatchedProtectedVisits:Math.max(0,protectedVisits.length-matches.size),crosswalkLiveToCanonical:liveToCanonical.size,identityConflicts,visitConflicts,assignmentConflicts,pendingPlatformAssignmentOverlays:pendingPlatformAssignmentOverlays.length,platformOnlyProfiles:platformOnlyProfiles.length,platformOnlyProfilesPresented:platformOnlyPresentedIds.size,platformOnlyProfilesCrossProjectExcluded,sameDisplayNameGroups,outputVisits:composedVisits.length,outputShoppers:composedShoppers.length,outputPosts:postMap.size,uniqueVisitKeys:uniqueVisitKeys.size,duplicateVisitKeys:composedVisits.length-uniqueVisitKeys.size,uniqueShopperIds:uniqueShopperIds.size,duplicateShopperIds:composedShoppers.length-uniqueShopperIds.size,protectedVisitsAppended:0,idempotentDesign:true,hrOwnsOperationalState:true,canonicalFacetSource:true,unmatchedProfilesExcludedFromOperationalList:true,platformOnlyPresentationProjectScoped:true,identityContractVersion:contract?.version||'legacy-fallback',identityTechnicalKeyCount:arr(contract?.technicalKeys).length,canonicalProfileIndexConflicts:arr(canonicalProfileIndex?.conflicts).length,durableVisitAuthority:'live_hr_visit_id_equals_firestore_doc_id',durableHistoryPreserved:true,confirmedHistoryExcludesPendingPlatformAssignment:true,postulationLifecycleAuthority:'durable_application_plus_same_revision_live_hr',lifecycleArchivedPosts,lifecyclePendingSuperseded,lifecycleApprovedOwnerChanged};
     return {projects,visits:composedVisits,shoppers:composedShoppers,posts:[...postMap.values()],periodOperationalSummary:summaries,currentPeriodId:hr.currentPeriodId||null,currentProjectId:hr.currentProjectId||'cinepolis',sourceRevision:hr.sourceRevision||null,identityMap:Object.fromEntries(liveToCanonical),identityReviewQueue:[...identityConflicts,...platformOnlyProfiles.filter(x=>!x.presentedToAuthorizedStaff),...sameDisplayNameGroups],platformOnlyProfiles,diagnostics};
   }
   function signature(result){const d=result&&result.diagnostics||{};return JSON.stringify({visits:d.outputVisits,shoppers:d.outputShoppers,posts:d.outputPosts,uniqueVisitKeys:d.uniqueVisitKeys,duplicateVisitKeys:d.duplicateVisitKeys,uniqueShopperIds:d.uniqueShopperIds,duplicateShopperIds:d.duplicateShopperIds,visitIds:arr(result&&result.visits).map(visitKey).filter(Boolean).sort(),shopperIds:arr(result&&result.shoppers).map(s=>str(s.id)).filter(Boolean).sort(),periodSummary:result&&result.periodOperationalSummary});}
