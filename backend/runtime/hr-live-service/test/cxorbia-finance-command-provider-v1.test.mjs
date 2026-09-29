@@ -1,5 +1,6 @@
 import test from 'node:test';
-import assert from 'node:assert/strict';\nimport fs from 'node:fs';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import {createFinanceCommandProvider} from '../../cxorbia-finance-command-provider-v1.mjs';
 
 const clone=v=>v===undefined?undefined:structuredClone(v);
