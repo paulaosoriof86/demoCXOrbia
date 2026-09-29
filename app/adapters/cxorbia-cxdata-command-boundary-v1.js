@@ -119,7 +119,7 @@
       const current=(D.__backendAllProjectRecords||[]).find(p=>str(p.id||p.projectId)===str(id))
         ||(D.projects||[]).find(p=>str(p.id||p.projectId)===str(id))||{};
       const periodId=str(cleanPatch.periodId||current.periodId||c.periodId||('setup-'+hash([c.tenantId,id,cleanPatch.name||current.name])));
-      const cmd=buildBase('project.update','project',id,Object.assign({projectId:id,periodId},cleanPatch),versionOf(current),Object.assign({permission:'project.update'},meta));
+      const currentVersion=versionOf(current);\n      const cmd=buildBase('project.update','project',id,Object.assign({},cleanPatch,{projectId:id,periodId,version:currentVersion}),currentVersion,Object.assign({permission:'project.update'},meta));
       cmd.projectId=str(id);cmd.periodId=periodId;
       return execute(cmd,meta);
     };
