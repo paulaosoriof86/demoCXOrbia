@@ -42,7 +42,9 @@
     const visitReimbursementPartial=v.reimbursementPartial===true||v.reembolsoPartial===true||v.reimbursementSourceComplete===false
       || ['partial','incomplete','pending_source'].includes(str(v.reimbursementSourceStatus||v.reimbursementStatus).toLowerCase());
     const visitReimbursementSourceStatus=visitReimbursementPartial?'partial':(v.reimbursementSourceStatus||v.reimbursementStatus||null);
-    const exact=typeof CX.data.financialMatchForVisit==='function'?CX.data.financialMatchForVisit(v):null;
+    const exact=(v?.financialMatch&&str(v?.financialSourceStatus).toLowerCase()==='reconciled_exact')
+      ?v.financialMatch
+      :(typeof CX.data.financialMatchForVisit==='function'?CX.data.financialMatchForVisit(v):null);
     if(exact){
       const merged=Object.assign({},exact,{
         visitaId:v.id||v.visitId,visitId:v.id||v.visitId,hrRowId:v.hrRowId||exact.hrRowId||null,
@@ -53,7 +55,12 @@
         reimbursementSourceStatus:exact.reimbursementSourceStatus||exact.reimbursementStatus||visitReimbursementSourceStatus,
         reimbursementPartial:(exact.reimbursementPartial===true||exact.reembolsoPartial===true||exact.reimbursementSourceComplete===false)
           || (!(exact.reimbursementPartial===false||exact.reimbursementSourceComplete===true) && visitReimbursementPartial),
-        canonicalFacets:Object.assign({},f),readModelVersion:'canonical-finance-v2'
+        canonicalFacets:Object.assign({},f),readModelVersion:'canonical-finance-v2',
+        financialSourceStatus:exact.financialSourceStatus||'reconciled_exact',
+        reviewRequired:false,
+        estado:exact.estado||'validada',
+        liquidationState:exact.liquidationState||'validated_financial_source',
+        paymentState:exact.paymentState||'not_scheduled'
       });
       return merged;
     }

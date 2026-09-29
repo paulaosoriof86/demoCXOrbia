@@ -11,7 +11,7 @@ export const VERSION='cxorbia-command-runtime-v1';
 const ROUTE='/v1/cxorbia/commands';
 const PROJECT_COMMANDS=new Set(['project.create','project.update']);
 const SHOPPER_COMMANDS=new Set(['shopper.create','shopper.update','shopper.credential.reset']);
-const FINANCE_COMMANDS=new Set(['finance.payment.batch']);
+const FINANCE_COMMANDS=new Set(['finance.reconcile.visit','finance.payment.batch']);
 const str=v=>String(v==null?'':v).trim();
 const json=(res,status,body)=>{res.statusCode=status;res.setHeader('Content-Type','application/json; charset=utf-8');res.end(JSON.stringify(body));};
 const blocked=(code,extra={})=>({ok:false,status:'blocked',committed:false,providerAck:false,successUiAllowed:false,localMutation:false,localStorageWrite:false,providerWrites:0,code,production:false,...extra});

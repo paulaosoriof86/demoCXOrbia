@@ -237,6 +237,13 @@
         });
         if(pv.liquidationState&&pf.liquidationConfirmed)out.liquidationState=pv.liquidationState;
         if(pv.paymentState&&pf.paymentConfirmed)out.paymentState=pv.paymentState;
+        out.__protectedVisitVersion=pv.version??pv.updatedAt??pv.lastSyncedAt??null;
+        if(pv.financialMatch&&String(pv.financialSourceStatus||'').toLowerCase()==='reconciled_exact'){
+          out.financialMatch=clone(pv.financialMatch);
+          out.financialSourceStatus='reconciled_exact';
+          out.financialReviewRequired=false;
+          out.__exactFinancialOverlay=true;
+        }
       }else out.canonicalFacets=Object.assign({},base.canonicalFacets||{},facets(base));
       out.__hrOwnedOperational=true;return out;
     });

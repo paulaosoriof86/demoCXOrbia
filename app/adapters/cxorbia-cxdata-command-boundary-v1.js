@@ -95,7 +95,7 @@
     if(D.__cxCommandBoundaryVersion===VERSION&&D.updateShopper?.__cxCommandBoundaryVersion===VERSION)return true;
     if(!D.__prototypeMutationMethods){
       D.__prototypeMutationMethods={};
-      ['addProject','setVisitState','assignVisit','payVisits','addShopper','updateShopper','resetShopperCredential'].forEach(name=>{
+      ['addProject','setVisitState','assignVisit','reconcileFinanceVisit','payVisits','addShopper','updateShopper','resetShopperCredential'].forEach(name=>{
         if(typeof D[name]==='function')D.__prototypeMutationMethods[name]=D[name];
       });
     }
@@ -162,9 +162,18 @@
       const cmd=buildBase(reassign?'visit.reassign':'visit.assign','visit',visitId,payload,versionOf(v),Object.assign({permission:reassign?'visit.reassign':'visit.assign'},meta));
       return execute(cmd,meta);
     };
+    D.reconcileFinanceVisit=function(visitId,meta){
+      meta=commandMeta(meta);const v=visit(visitId);
+      const expected=v?.__protectedVisitVersion||versionOf(v);
+      const cmd=buildBase('finance.reconcile.visit','financeReconciliation',visitId,{
+        visitId,hrRowId:v?.hrRowId||null,sourceRevision:str(CX.data?.previewMeta?.sourceRevision||''),country:v?.pais||v?.country||null
+      },expected,Object.assign({permission:'finance.reconcile'},meta));
+      return execute(cmd,meta);
+    };
     D.payVisits=function(ids,fechaPago,referencia,meta){
-      meta=commandMeta(meta);const list=Array.isArray(ids)?ids.map(str).filter(Boolean):[];const current=list.map(visit).filter(Boolean);const expected=current.map(v=>[v.id,versionOf(v)]);
-      const cmd=buildBase('finance.payment.batch','paymentBatch',idempotency('finance.payment.batch','',list,'source-current'),{visitIds:list,fechaPago:fechaPago||null,referencia:str(referencia)||null},hash(expected),Object.assign({permission:'finance.markPaid'},meta));
+      meta=commandMeta(meta);const list=Array.isArray(ids)?ids.map(str).filter(Boolean):[];const current=list.map(visit).filter(Boolean);const expected=current.map(v=>[v.id,v?.__protectedVisitVersion||versionOf(v)]);
+      const visitRefs=current.map(v=>({visitId:str(v.id||v.visitId),hrRowId:str(v.hrRowId)||null}));
+      const cmd=buildBase('finance.payment.batch','paymentBatch',idempotency('finance.payment.batch','',list,'source-current'),{visitIds:list,visitRefs,fechaPago:fechaPago||null,referencia:str(referencia)||null},hash(expected),Object.assign({permission:'finance.markPaid'},meta));
       return execute(cmd,meta);
     };
     D.createReservation=function(rec,meta){

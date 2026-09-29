@@ -67,6 +67,11 @@ CX.module('proyectos', ({data,ui})=>{
         <label class="lbl" style="margin-top:12px">Países / moneda</label>
         <div class="flex wrap" style="gap:6px">${paisChecks}</div>
 
+        <div style="border-top:1px solid var(--border-2);margin:14px 0 8px;padding-top:12px"><b style="font-size:12.5px">💰 Configuración financiera por país</b><div style="font-size:10.5px;color:var(--t3);margin-top:3px">Estos valores son configuración del proyecto. La HR explícita tiene precedencia cuando trae un importe.</div></div>
+        <div class="grid g2" style="gap:8px 12px" id="cf_finance_country">
+          ${(pr.countries||[]).map(c=>'<div style="border:1px solid var(--border);border-radius:9px;padding:9px"><b style="font-size:12px">'+CX.paisLabel(c)+' · '+(pr.currency?.[c]||'')+'</b><label class="lbl">Honorario shopper</label><input class="inp cf_honorario" data-c="'+c+'" type="number" step="0.01" value="'+(pr.honorario?.[c]??'')+'"><label class="lbl" style="margin-top:6px">Honorario recibido</label><input class="inp cf_honrecibe" data-c="'+c+'" type="number" step="0.01" value="'+(pr.honRecibe?.[c]??pr.honorarioRecibe?.[c]??'')+'"></div>').join('')}
+        </div>
+
         <div class="between" style="margin-top:12px"><label class="lbl" style="margin:0">Escenarios evaluados</label><button class="btn btn-soft btn-sm" id="cf_iaEsc">🤖 Sugerir (heurística local)</button></div>
         <div id="cf_escChips" class="flex wrap" style="gap:6px;margin:6px 0"></div>
         <div class="flex" style="gap:6px"><input class="inp" id="cf_escNew" placeholder="Agregar escenario…" style="flex:1"><button class="btn btn-soft btn-sm" id="cf_escAdd">＋</button></div>
@@ -121,9 +126,13 @@ CX.module('proyectos', ({data,ui})=>{
             periodoCumpl:ov.querySelector('#cf_cumpl').value,
             countries:ps.length?ps:pr.countries,
             currency,
+            honorario:Object.assign({},pr.honorario||{}),
+            honRecibe:Object.assign({},pr.honRecibe||pr.honorarioRecibe||{}),
             scenarios:esc,
             quincenas:ov.querySelector('#cf_quin').value.split('·').map(s=>s.trim()).filter(Boolean)
           };
+          ov.querySelectorAll('.cf_honorario').forEach(i=>{const v=i.value.trim();if(v!=='')next.honorario[i.dataset.c]=Number(v);else delete next.honorario[i.dataset.c];});
+          ov.querySelectorAll('.cf_honrecibe').forEach(i=>{const v=i.value.trim();if(v!=='')next.honRecibe[i.dataset.c]=Number(v);else delete next.honRecibe[i.dataset.c];});
           if(ov.querySelector('#cf_revCons')){
             next.revision={consultora:ov.querySelector('#cf_revCons').checked, cliente:ov.querySelector('#cf_revCli').checked};
             next.submitido={quien:ov.querySelector('#cf_submQuien').value, rol:ov.querySelector('#cf_submRol').value};

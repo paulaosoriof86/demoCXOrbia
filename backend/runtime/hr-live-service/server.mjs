@@ -141,6 +141,20 @@ function snapshotScope(snapshot){
   if(!tenantId||!projectId)throw new Error('SHOPPER_RUNTIME_SOURCE_SCOPE_MISSING');
   return {tenantId,projectId};
 }
+const SAFE_PROJECT_CONFIG_KEYS=Object.freeze(['countries','currency','currencies','honorario','honorarioRecibe','honRecibe','boleto','comboAmt','modelo','isr','regalias']);
+function safeProjectConfig(raw={}){
+  const out={};
+  for(const key of SAFE_PROJECT_CONFIG_KEYS)if(raw[key]!==undefined)out[key]=JSON.parse(JSON.stringify(raw[key]));
+  return out;
+}
+async function withDurableProjectConfig(snapshot){
+  const scope=snapshotScope(snapshot),{db}=ensureAdmin();
+  const snap=await db.collection('tenants').doc(scope.tenantId).collection('projects').doc(scope.projectId).get();
+  if(!snap.exists)return snapshot;
+  const raw=snap.data()||{},durable=safeProjectConfig(raw);
+  const merged={...(snapshot.projectConfig||{}),...durable,projectId:scope.projectId};
+  return {...snapshot,projectConfig:merged,projectConfigAuthority:'firestore_project_config',projectConfigVersion:raw.version??null};
+}
 function canonicalProtectedAuthNamespace(role,value){
   const namespace=String(value||'').trim().toLowerCase();
   if(namespace)return namespace;
@@ -301,7 +315,9 @@ async function refreshSnapshot(){
       await runNode(['tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs','--input',payload,'--out',payload,'--report-dir',path.join(dir,'canonical')],env);
       await runNode(['tools/hr-source/tya-reapply-canonical-state-r20.mjs','--input',payload,'--out',payload,'--report-dir',path.join(dir,'state')],env);
       await runNode(['tools/qa/tya-live-hr-read-probe-gate.mjs','--payload',payload,'--out',path.join(dir,'probe'),'--max-age-seconds','600'],env);
-      const next=materialize(parseSnapshot(payload),'runtime_refresh',parseIdentity(identityFile));
+      const parsed=parseSnapshot(payload);
+      const configured=await withDurableProjectConfig(parsed);
+      const next=materialize(configured,'runtime_refresh',parseIdentity(identityFile));
       await reconcileAuthoritativeShoppers(next);
       await reconcileAuthoritativeVisits(next);
       cache=next;

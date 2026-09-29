@@ -112,7 +112,7 @@ CX.module('financiero', ({data,ui})=>{
       <div class="card-h"><div class="card-t">🔐 Revisiones financieras</div><span class="bdg bdg-r">${revs.length} pendientes</span></div>
       <div style="font-size:11.5px;color:var(--t2);margin-bottom:10px">Estos registros necesitan completar o conciliar su información antes de incluirlos en un lote o confirmar un pago.</div>
       <div class="scroll-hint" aria-label="Desliza para ver más" style="overflow-x:auto"><table class="tbl"><thead><tr><th>País</th><th>Moneda</th><th>Sucursal / visita</th><th>Shopper</th><th>Estado de información</th><th>Motivo</th><th>Campos faltantes</th><th>Revisión</th><th>Trazabilidad</th></tr></thead><tbody>
-      ${revs.map(r=>`<tr><td><b>${r.l.pais?CX.paisLabel(r.l.pais):'<span class="muted">—</span>'}</b></td><td>${r.l.moneda||'<span class="muted">—</span>'}</td><td style="font-size:12px">${r.l.sucursal||'—'}</td><td style="font-size:12px">${r.l.shopper||'—'}</td><td>${ui.bdg(sourceLabel(r.financialSourceStatus),'a')}</td><td style="font-size:11.5px">${r.motivo}</td><td style="font-size:11.5px">${r.faltan.length?r.faltan.join(', '):'—'}</td><td>${ui.bdg('Pendiente · sin pago/lote','a')}</td><td><details><summary style="cursor:pointer;font-size:11px">Ver detalle</summary><div style="font-size:10px;color:var(--t3);margin-top:5px">Visita: ${r.l.visitaId||'—'}<br>Fila de origen: ${r.l.hrRowId||'—'}<br>Estado técnico: ${r.financialSourceStatus}</div></details></td></tr>`).join('')}
+      ${revs.map(r=>`<tr><td><b>${r.l.pais?CX.paisLabel(r.l.pais):'<span class="muted">—</span>'}</b></td><td>${r.l.moneda||'<span class="muted">—</span>'}</td><td style="font-size:12px">${r.l.sucursal||'—'}</td><td style="font-size:12px">${r.l.shopper||'—'}</td><td>${ui.bdg(sourceLabel(r.financialSourceStatus),'a')}</td><td style="font-size:11.5px">${r.motivo}</td><td style="font-size:11.5px">${r.faltan.length?r.faltan.join(', '):'—'}</td><td><button class="btn btn-pr btn-sm" data-fin-reconcile="${r.l.visitaId||''}" ${r.l.visitaId?'':'disabled'}>Conciliar</button></td><td><details><summary style="cursor:pointer;font-size:11px">Ver detalle</summary><div style="font-size:10px;color:var(--t3);margin-top:5px">Visita: ${r.l.visitaId||'—'}<br>Fila de origen: ${r.l.hrRowId||'—'}<br>Estado técnico: ${r.financialSourceStatus}</div></details></td></tr>`).join('')}
       </tbody></table></div>
       <div style="margin-top:10px;font-size:11px;color:var(--t3)">🔒 Pago y lote permanecen bloqueados hasta completar la información requerida.</div>
     </div>`;
@@ -568,6 +568,22 @@ CX.module('movimientos', ({data,ui})=>{
       `,{onMount:(ov,close)=>{ov.querySelector('#abSave').addEventListener('click',()=>{CX.finStore.abonarCxp(pid(),r.id,+ov.querySelector('#abMonto').value||0);close();draw();ui.toast('Abono registrado · egreso vinculado','ok');});}});
     }));
 
+    host.querySelectorAll('[data-fin-reconcile]').forEach(btn=>btn.addEventListener('click',async()=>{
+      const visitId=btn.dataset.finReconcile;
+      if(!visitId||typeof data.reconcileFinanceVisit!=='function'){ui.toast('Conciliación no disponible: falta proveedor durable.','err');return;}
+      const prior=btn.textContent;btn.disabled=true;btn.textContent='Conciliando…';
+      try{
+        const r=await data.reconcileFinanceVisit(visitId,{ackAware:true,reason:'admin-finance-reconcile'});
+        if(!(r?.ok===true&&r?.status==='committed'&&r?.providerAck===true&&r?.successUiAllowed===true))throw new Error(r?.code||'FINANCE_RECONCILE_ACK_REQUIRED');
+        try{if(CX.backend?.refresh)await CX.backend.refresh();}catch(_){}
+        ui.toast('Conciliación financiera confirmada · lista para revisión de lote','ok',4200);
+        draw();
+      }catch(error){
+        ui.toast('No se concilió: la fuente financiera sigue incompleta o no hubo ACK durable.','warn',4800);
+      }finally{
+        if(btn.isConnected){btn.disabled=false;btn.textContent=prior;}
+      }
+    }));
     const pl=host.querySelector('#payLote');
     if(pl){ if(pendingCurrencyRows.length){ pl.disabled=true; pl.title='Bloqueado: hay filas en revisión de moneda'; pl.classList.add('btn-ghost'); }
     pl.addEventListener('click',async()=>{
