@@ -4,11 +4,11 @@
   "iteration": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "5dcd8031e44c33d1105e12886472eaa3cfd1471d",
+  "productSourceSha": "5a6345133d5227e351f07a64d58d49d8cac5eec5",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "c487449e5187d7219033c54fa1ac3db5fb6c822e",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V140_2026-09-29.json",
-  "findingsLedgerExpectedGitBlob": "62ee3ba37e1dc90d72044c2042fb7d3da21d339a",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V141_2026-09-29.json",
+  "findingsLedgerExpectedGitBlob": "7bd1af65edb88e02125896fc011b383d3096e30f",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -428,7 +428,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "4cd10891a7123723ff05fe6014bbb62fbdfbd89a",
+  "productSourceTree": "32408cf4b0031650bee58b625da71abae86cfa78",
   "lastLiveReproof": {
     "runId": 36217529367,
     "runNumber": 465,
