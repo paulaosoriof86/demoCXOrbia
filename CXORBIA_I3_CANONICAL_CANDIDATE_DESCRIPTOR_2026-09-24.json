@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_ADMIN_003_CUMULATIVE_LIVE_REPROOF_REQUIRED",
+  "status": "HOLD_PREI4_ADMIN_003_CUMULATIVE_LIVE_RESUME_REQUIRED",
   "iteration": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "c487449e5187d7219033c54fa1ac3db5fb6c822e",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "deb58669ea44b484716b9e0d83656310398ed54c",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V131_2026-09-29.json",
-  "findingsLedgerExpectedGitBlob": "b256382b5415acefea94eeb7f973d1426bd28c83",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V132_2026-09-29.json",
+  "findingsLedgerExpectedGitBlob": "296763e99e9dcbff1ccf2417d0a804d01b1438cc",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Materialize product source c487449e5187d7219033c54fa1ac3db5fb6c822e once to DEV runtime and Hosting. Then in the same canonical run require: fresh HR revision c16c18a8 with 34 GT + 10 HN, PREI4-ADMIN-002 Postulations still 0 active/12 archived and Firestore unchanged, ADMIN-003 durable Milton identity repaired/preserved under tenant adjudication, Patricia/Jary remain separate without auto-merge, canonical Milton shopper authenticates and retains history. No production touch.",
+  "exactNextAction": "Do NOT rebuild or redeploy. Run the cumulative live reproof against the already materialized ADMIN-003 candidate c487449e5187d7219033c54fa1ac3db5fb6c822e / runtime cxorbia-live-hr-dev-00228-m8w. Accept the current fresh HR revision dynamically, require stable hrRowId universe hashes, GT=34/HN=10/current totals, then reprove closed Postulations and ADMIN-003 Admin+Shopper against that SAME current revision. Production remains DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1062,11 +1062,12 @@
     "freshRevision": "c16c18a89675d5c6daff9421604f978a558bc3bf78cf8e6a2da550820ff95e6a"
   },
   "preI4CumulativeRegression": {
-    "state": "SOURCE_GUARD_PROVEN_RUN606_LIVE_GUARD_REQUIRED",
-    "lockPath": "CXORBIA_PRE_I4_CUMULATIVE_ANTI_REGRESSION_LOCK_2026-09-29.json",
-    "baselineSource": "deb58669ea44b484716b9e0d83656310398ed54c",
-    "candidateSource": "e3c5f4347a66b45f43e69d64a2d22400f7043e4a",
-    "candidateTree": "181de71c7516a51f0d7edbe6f668c1d34e393ed9",
+    "state": "RUN613_DATA_EVOLUTION_CLASSIFIED_RESUME_REQUIRED",
+    "lockPath": "CXORBIA_PRE_I4_CUMULATIVE_ANTI_REGRESSION_LOCK_V2_2026-09-29.json",
+    "baselineHrRevision": "c16c18a89675d5c6daff9421604f978a558bc3bf78cf8e6a2da550820ff95e6a",
+    "observedHrRevision": "f22aa2412d4251b5ce8a2bf84a4b6385fbd8be97dc3213987d7f366104ab9c52",
+    "stableAllHrRowIdSetSha256": "dd565d20340cdf861b1ac477b3a280859d0ea2ce41e35ea3e24990547d98d3b7",
+    "stableSeptemberHrRowIdSetSha256": "c22841f499f2d05c012f0ec490c2b14781f33147395b16ce0cd0365daca122f4",
     "production": false
   }
 }
