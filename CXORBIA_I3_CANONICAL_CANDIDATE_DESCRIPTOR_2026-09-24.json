@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_ADMIN_004_SOURCE_REPROOF_REQUIRED",
+  "status": "HOLD_PREI4_ADMIN_004_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "00ca442a9628805267835230fd1028d7844a690d",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "c487449e5187d7219033c54fa1ac3db5fb6c822e",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V136_2026-09-29.json",
-  "findingsLedgerExpectedGitBlob": "6e776c7efa9c2f2a1fda0bf27a3de1a4231c22da",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V137_2026-09-29.json",
+  "findingsLedgerExpectedGitBlob": "9668af39fcfeaccf72e46a4e29b2c39acf5d7f82",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run mandatory cumulative source guard on ADMIN-004 source 00ca442a9628805267835230fd1028d7844a690d. Require exact ten-file product delta, byte parity for ADMIN-008/002/003 owners, 20-domain Module Truth with only the five declared ADMIN-004 domains COMPOSED_NOT_DEPLOYED, HR/Postulations/Identity recurrence tests, finance honorarium 6/6 and finance provider 3/3. No deploy/write until PASS.",
+  "exactNextAction": "Materialize exactly ADMIN-004 cumulative source 00ca442a9628805267835230fd1028d7844a690d once to Recovery DEV (runtime + Hosting) from one archived source; then execute cumulative live guard for HR, Postulations, Identity and Finance. No production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1088,5 +1088,13 @@
     "diagnosis": "CONTROL_TEST_HARNESS_DEFECT_PROVEN",
     "correctedOwner": "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs",
     "providerChanged": false
+  },
+  "lastSourceGuard": {
+    "runId": 36642974584,
+    "runNumber": 621,
+    "jobId": 109659392474,
+    "artifactId": 11067452316,
+    "artifactZipSha256": "d764616f2d3246de35a39f27128885636a2d5065587daf0df4b77363dfd206aa",
+    "decision": "PASS_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD"
   }
 }
