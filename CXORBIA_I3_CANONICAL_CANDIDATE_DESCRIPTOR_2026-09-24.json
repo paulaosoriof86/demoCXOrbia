@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_ADMIN_003_SOURCE_REPROOF_REQUIRED",
+  "status": "HOLD_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD_REQUIRED",
   "iteration": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "e3c5f4347a66b45f43e69d64a2d22400f7043e4a",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "deb58669ea44b484716b9e0d83656310398ed54c",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V128_2026-09-28.json",
-  "findingsLedgerExpectedGitBlob": "453b0fa8e156f6035b160a9a3614fb1c2e8cb839",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V129_2026-09-29.json",
+  "findingsLedgerExpectedGitBlob": "51367242e5493164d24eb735df749537335b9fae",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "PREI4-ADMIN-003",
+  "activeBlocker": "PREI4-CUMULATIVE-REGRESSION-GUARD",
   "nextFindingId": "VRM-089",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run exact ADMIN-003 source reproof on e3c5f4347a66b45f43e69d64a2d22400f7043e4a: require only provider + provider test + Shoppers UI product delta, provider test suite PASS including tenant-adjudicated alias recurrence test, and human review badge without any auto-merge. No deploy/data write before PASS.",
+  "exactNextAction": "Run the mandatory cumulative anti-regression source guard on e3c5f4347a66b45f43e69d64a2d22400f7043e4a before any ADMIN-003 deployment. Require exact three-owner delta only, byte parity for closed HR/Postulations owners, 20-domain Module Truth/load-order closure with only the two focal ADMIN-003 domains COMPOSED_NOT_DEPLOYED, and PASS of HR mapping/assignment + Postulation lifecycle + ADMIN-003 provider recurrence tests. No build/deploy/write until PASS.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1060,5 +1060,13 @@
     "sourceProofArtifactId": 11004707196,
     "freshReceiptPath": "CXORBIA_PRE_I4_ADMIN_008_FRESH_HR_RECEIPT_2026-09-28.json",
     "freshRevision": "c16c18a89675d5c6daff9421604f978a558bc3bf78cf8e6a2da550820ff95e6a"
+  },
+  "preI4CumulativeRegression": {
+    "state": "SOURCE_GUARD_REQUIRED",
+    "lockPath": "CXORBIA_PRE_I4_CUMULATIVE_ANTI_REGRESSION_LOCK_2026-09-29.json",
+    "baselineSource": "deb58669ea44b484716b9e0d83656310398ed54c",
+    "candidateSource": "e3c5f4347a66b45f43e69d64a2d22400f7043e4a",
+    "candidateTree": "181de71c7516a51f0d7edbe6f668c1d34e393ed9",
+    "production": false
   }
 }

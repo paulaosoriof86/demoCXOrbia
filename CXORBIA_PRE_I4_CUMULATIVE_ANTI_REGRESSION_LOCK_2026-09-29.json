@@ -1,0 +1,44 @@
+{
+  "lockId": "CXORBIA-PRE-I4-CUMULATIVE-ANTI-REGRESSION-2026-09-29",
+  "status": "FROZEN_ACTIVE",
+  "iteration": "I3_PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
+  "classification": "RELEASE_COMPOSITION_FAILURE_PREVENTION",
+  "cause": {
+    "policyAlreadyFrozen": "CXORBIA-I3-CUMULATIVE-MODULE-INTEGRITY-20260918",
+    "enforcementGap": "Exhaustive Module Truth existed, but its source/served-byte anti-regression checks were only executed on special preterminal/terminal triggers instead of being a mandatory prerequisite before every focal product materialization.",
+    "historicalEffect": "A focal fix could be source-correct while previously approved modules were not mechanically re-proven in the same run, allowing source/runtime/hosting/load-order/cache drift to surface later."
+  },
+  "after": {
+    "rule": "Every focal product source must pass a cumulative no-regression source guard before any build/deploy, and every materialization must reprove all previously closed P0 contracts live before the new focal finding can close.",
+    "sourceGuard": [
+      "exact diff from last accepted cumulative product source limited to declared owners",
+      "byte parity for previously closed-module owners",
+      "20-domain Module Truth/load-order/duplicate-script check",
+      "previously closed HR mapping/assignment self-tests",
+      "previously closed postulation lifecycle self-test",
+      "current focal provider/UI recurrence suite"
+    ],
+    "liveGuard": [
+      "same fresh HR authority and counts remain valid",
+      "previously closed Postulaciones active/history contract remains valid",
+      "new focal Admin/Shopper behavior passes",
+      "served bytes match exact candidate",
+      "runtime/hosting revisions are read back",
+      "no production touch"
+    ],
+    "promotionRule": "A newly proven source becomes the next cumulative baseline only after both source guard and live cumulative guard PASS."
+  },
+  "protectedCurrentBaseline": {
+    "lastAcceptedProductSource": "deb58669ea44b484716b9e0d83656310398ed54c",
+    "currentCandidateSource": "e3c5f4347a66b45f43e69d64a2d22400f7043e4a",
+    "currentCandidateTree": "181de71c7516a51f0d7edbe6f668c1d34e393ed9",
+    "freshHrRevision": "c16c18a89675d5c6daff9421604f978a558bc3bf78cf8e6a2da550820ff95e6a",
+    "closedFindings": [
+      "PREI4-ADMIN-008",
+      "PREI4-ADMIN-002"
+    ],
+    "focalFinding": "PREI4-ADMIN-003"
+  },
+  "production": false,
+  "mutable": false
+}
