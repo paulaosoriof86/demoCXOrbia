@@ -555,6 +555,22 @@ async function durableUpsert({auth,db,policy,candidate,sourceRevision,authUsers,
       profilePatch.credentialRuleVersion=CREDENTIAL_RULE_VERSION;
       if(visibleLogin!==credential.login)profilePatch.credentialDisambiguationPolicy='deterministic_technical_suffix';
     }
+    /* PRE-I4 ADMIN-003 — exact tenant adjudication outranks an HR alias display name.
+       HR continues to own operational fields, but an exact alias (sourceShopperId != canonical)
+       must never rewrite the canonical person's adjudicated human name. This prevents a fresh HR
+       reconciliation from turning canonical Milton back into the historical invalid Mishael label. */
+    const tenantAdjudicatedAlias=
+      sourceShopperId!==shopperId&&
+      str(profile.identityAuthority).toLowerCase()==='tenant_adjudication'&&
+      !!str(profile.identityAuthorityRef);
+    if(tenantAdjudicatedAlias){
+      const adjudicatedFirst=str(profile.firstName);
+      const adjudicatedLast=str(profile.lastName||profile.apellido);
+      const adjudicatedName=str([adjudicatedFirst,adjudicatedLast].filter(Boolean).join(' ')||profile.nombre);
+      if(adjudicatedFirst)profilePatch.firstName=adjudicatedFirst;
+      if(adjudicatedLast)profilePatch.lastName=adjudicatedLast;
+      if(adjudicatedName&&!technicalIdentityLabel(adjudicatedName,shopperId))profilePatch.nombre=adjudicatedName;
+    }
     const membership={active:true,tenantId,role:'shopper',authNamespace:'shopper',shopperId,projectIds:unionProjects,providerUidFingerprint:providerUidFingerprint(uid),claimsDigest:claimsDigest(canonicalClaims(shopperId,tenantId,unionProjects)),membershipVersion:'cxorbia-shopper-membership-v1',...(credential.ok?{visibleLogin,credentialRuleVersion:CREDENTIAL_RULE_VERSION,credentialState:'enrolled',...(visibleLogin!==credential.login?{credentialDisambiguationPolicy:'deterministic_technical_suffix'}:{})}:{}),updatedAt:now()};
     const crosswalk={tenantId,shopperId,projectIds:unionProjects,authNamespace:'shopper',providerUidFingerprint:providerUidFingerprint(uid),sourceStableKey:sourceShopperId,identityMode:sourceShopperId===shopperId?'stable_hr_shopper_id':'provider_exact_identity_link',fuzzyMatching:false,sourceType:'hr_external',updatedAt:now()};
     tx.set(profileRef,profilePatch,{merge:true});

@@ -97,9 +97,9 @@ CX.module('shoppers', ({data,ui})=>{
     const perfilCell = lvl==='protected_reference'
       ? '<span class="bdg bdg-n">Referencia protegida</span>'
       : (s.perfilCompleto?ui.bdg('Completo','g'):ui.bdg('Incompleto','a'));
-    return `<tr data-sid="${s.id}" style="cursor:pointer">
+    return `<tr data-sid="${s.id}" data-identity-review="${identityReviewIds.has(String(s.id||''))?'required':'clear'}" style="cursor:pointer">
     <td><div class="flex">${av(s.nombre,30)}
-      <div><b>${s.nombre||('🔒 '+(s.code||'Referencia protegida'))}</b><div style="font-size:11px;color:var(--t3)">${s.ciudad?s.ciudad+', ':''}${CX.paisName(s.pais)||s.pais||'—'}</div></div></div></td>
+      <div><b>${s.nombre||('🔒 '+(s.code||'Referencia protegida'))}</b> ${identityReviewBadge(s)}<div style="font-size:11px;color:var(--t3)">${s.ciudad?s.ciudad+', ':''}${CX.paisName(s.pais)||s.pais||'—'}</div></div></div></td>
     <td><span style="font-size:12px;font-weight:800;color:var(--amber)">${s.rating?('★ '+s.rating):'<span style="color:var(--t3)">—</span>'}</span></td>
     <td style="font-size:12px">${typeof s.visitas==='number'?s.visitas:'<span class="muted">—</span>'}</td>
     <td>${perfilCell}</td>
@@ -109,6 +109,17 @@ CX.module('shoppers', ({data,ui})=>{
   };
 
   const list=()=>data.shoppersFor();
+  /* PRE-I4 ADMIN-003 — same human name is not merge authority. The canonical read model
+     already keeps these identities separate and emits display_name_collision_not_auto_merged.
+     Admin now sees that review state instead of silently treating coincident names as resolved. */
+  const identityReviewIds=(()=>{
+    const out=new Set();
+    arr(data.__identityReviewQueue).forEach(item=>{
+      if(item&&item.reason==='display_name_collision_not_auto_merged')arr(item.shopperIds).forEach(id=>out.add(String(id||'')));
+    });
+    return out;
+  })();
+  const identityReviewBadge=s=>identityReviewIds.has(String(s&&s.id||''))?ui.bdg('Revisar identidad','a'):'';
 
   /* ---------- HTML del módulo ---------- */
   const render=()=>{
@@ -139,7 +150,7 @@ CX.module('shoppers', ({data,ui})=>{
       <table class="tbl"><thead><tr><th>Shopper</th><th>Rating</th><th>Visitas</th><th>Perfil</th><th>Estado</th><th>Honorario</th></tr></thead>
       <tbody id="shBody">${L.map(row).join('')}</tbody></table>
       <div id="shEmpty" style="display:none;padding:12px">${ui.empty('🔍','Sin resultados para tu búsqueda.')}</div>
-      <div style="margin-top:14px">${ui.aiBox('El alta manual pide solo lo esencial (nombre, apellido y WhatsApp); el shopper completa el resto al ingresar. La calificación combina cumplimiento, tiempos, alertas y certificaciones.','Alta y calificación inteligente')}</div>
+      <div style="margin-top:14px">${ui.aiBox('El alta manual pide solo lo esencial (nombre, apellido y WhatsApp); el shopper completa el resto al ingresar. Si dos fichas tienen el mismo nombre pero no existe una coincidencia técnica verificable, permanecen separadas y se marcan para revisión.','Alta y calificación inteligente')}</div>
     </div>`;
   };
 
