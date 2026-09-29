@@ -1,13 +1,13 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_ADMIN_004_PROJECT_CONFIG_DIAGNOSTIC_REQUIRED",
+  "status": "HOLD_PREI4_ADMIN_004_SOURCE_REPROOF_REQUIRED",
   "iteration": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "00ca442a9628805267835230fd1028d7844a690d",
+  "productSourceSha": "5dcd8031e44c33d1105e12886472eaa3cfd1471d",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "c487449e5187d7219033c54fa1ac3db5fb6c822e",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V139_2026-09-29.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V140_2026-09-29.json",
   "findingsLedgerExpectedGitBlob": "4d7d109deedcca85f2a42189feae0f7d7d41d0be",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Read only the durable DEV project root record tenants/tya/projects/cinepolis and prove version, country config and operational-source metadata. Then fix only the proven ADMIN-004 persistence owner; do not redeploy until a new cumulative source guard passes.",
+  "exactNextAction": "Run mandatory cumulative source guard on 5dcd8031e44c33d1105e12886472eaa3cfd1471d; require exact ten-file cumulative delta, 20-domain Module Truth, closed HR/Postulations/Identity recurrence and finance suites 6/6 + 4/4. No build, deploy or write until PASS.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -428,7 +428,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "48aab5458926e3167dfc7b806a49902f8f1769ee",
+  "productSourceTree": "4cd10891a7123723ff05fe6014bbb62fbdfbd89a",
   "lastLiveReproof": {
     "runId": 36217529367,
     "runNumber": 465,
@@ -1099,6 +1099,23 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/a56ff5bf97ffa99d",
     "hrRevision": "5de5db49e340139744c0e97bfb593cbf5fc3e2e8b3577cd5c3169d9b814d4be8",
     "failure": "PREI4_004_PROJECT_COUNTRY_FINANCE_CONFIG",
+    "production": false
+  },
+  "lastProjectConfigDiagnostic": {
+    "runId": 36645085558,
+    "runNumber": 624,
+    "artifactId": 11068197513,
+    "artifactZipSha256": "99315bcb393b71506e1798759f919953d044f90b1d9d915c6d7763ca651fff57",
+    "decision": "PASS_PREI4_ADMIN_004_PROJECT_CONFIG_DIAGNOSTIC",
+    "version": 3,
+    "currency": {
+      "GT": null,
+      "HN": null
+    },
+    "honorario": {
+      "GT": null,
+      "HN": null
+    },
     "production": false
   }
 }
