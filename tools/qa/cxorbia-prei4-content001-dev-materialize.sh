@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 : "${PREI4_CONTENT001_SOURCE:?}" "${PREI4_CONTENT001_TREE:?}" "${PREI4_CONTENT001_OUT:?}" "${PREI4_CONTENT001_ROOT:?}"
-test "$PREI4_CONTENT001_SOURCE" = "2cff3441f126d7d805932127bb9de9289ba273ad"
-test "$PREI4_CONTENT001_TREE" = "3c7b6736e2b5884e28bc87ed9b7dd346e1fd3b8a"
+test "$PREI4_CONTENT001_SOURCE" = "c1c4e748b39c5632e8648023433a00c15d57191b"
+test "$PREI4_CONTENT001_TREE" = "ccb3d9da3c110e2d5fff57bae0d2d0eb76b3c4b4"
 test "$(git rev-parse "$PREI4_CONTENT001_SOURCE^{tree}")" = "$PREI4_CONTENT001_TREE"
 mkdir -p "$PREI4_CONTENT001_OUT"
 
@@ -78,12 +78,14 @@ curl -fsS -H 'Cache-Control: no-cache, no-store, max-age=0' "$PREI4_CONTENT001_R
 jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .refreshError==null and .hrWrites==false and .production==false and (.cacheMs|tonumber)<=15000' "$PREI4_CONTENT001_OUT/hr-fresh.json" >/dev/null
 HR_REVISION="$(jq -r '.revision // empty' "$PREI4_CONTENT001_OUT/hr-fresh.json")"; [[ "$HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
 ok=0
-for i in $(seq 1 24); do
-  curl -fsS -H 'Cache-Control: no-cache, no-store, max-age=0' "$PREI4_CONTENT001_ROOT/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&v176reconcile=$GITHUB_RUN_ID-$i" > "$PREI4_CONTENT001_OUT/hr-meta.json"
-  if jq -e --arg rev "$HR_REVISION" '.ok==true and .revision==$rev and .sourceSafe==true and .refreshError==null and .shopperReconciliation.providerAck==true and .visitReconciliation.providerAck==true and .hrWrites==false and .production==false' "$PREI4_CONTENT001_OUT/hr-meta.json" >/dev/null; then ok=1; break; fi
+for i in $(seq 1 240); do
+  curl -fsS -H 'Cache-Control: no-cache, no-store, max-age=0' "$URL/health?run735reconcile=$GITHUB_RUN_ID-$i" > "$PREI4_CONTENT001_OUT/reconciliation-health.json"
+  if jq -e --arg rev "$HR_REVISION" '.ok==true and .lastShopperReconciliation.providerAck==true and .lastShopperReconciliation.sourceRevision==$rev and .lastVisitReconciliation.providerAck==true and .lastVisitReconciliation.sourceRevision==$rev and .hrWrites==false and .production==false' "$PREI4_CONTENT001_OUT/reconciliation-health.json" >/dev/null; then ok=1; break; fi
   sleep 5
 done
 test "$ok" = 1
+curl -fsS -H 'Cache-Control: no-cache, no-store, max-age=0' "$PREI4_CONTENT001_ROOT/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&v177postreconcile=$GITHUB_RUN_ID" > "$PREI4_CONTENT001_OUT/hr-meta.json"
+jq -e --arg rev "$HR_REVISION" '.ok==true and .revision==$rev and .sourceSafe==true and .refreshError==null and .shopperReconciliation.providerAck==true and .shopperReconciliation.sourceRevision==$rev and .visitReconciliation.providerAck==true and .visitReconciliation.sourceRevision==$rev and .hrWrites==false and .production==false' "$PREI4_CONTENT001_OUT/hr-meta.json" >/dev/null
 curl -fsS -H 'Cache-Control: no-cache, no-store, max-age=0' "$PREI4_CONTENT001_ROOT/api/$TENANT_ID/$PROJECT_ID/hr-live?fresh=1&v176availability=$GITHUB_RUN_ID" > "$PREI4_CONTENT001_OUT/hr-live-current.json"
 node - "$PREI4_CONTENT001_OUT/hr-live-current.json" <<'NODE'
 const fs=require('fs');

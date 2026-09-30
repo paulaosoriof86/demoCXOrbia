@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.prei4.v176-reproof-config.v1",
-  "sourceSha": "2cff3441f126d7d805932127bb9de9289ba273ad",
-  "sourceTree": "3c7b6736e2b5884e28bc87ed9b7dd346e1fd3b8a",
+  "sourceSha": "c1c4e748b39c5632e8648023433a00c15d57191b",
+  "sourceTree": "ccb3d9da3c110e2d5fff57bae0d2d0eb76b3c4b4",
   "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
   "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "base": "c487449e5187d7219033c54fa1ac3db5fb6c822e",

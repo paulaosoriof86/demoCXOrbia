@@ -14,9 +14,9 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "2cff3441f126d7d805932127bb9de9289ba273ad",
-    "sourceTree": "3c7b6736e2b5884e28bc87ed9b7dd346e1fd3b8a",
-    "predecessorSha": "40550b009939fa2e2c72d68eb27e05e48d47eca6",
+    "sourceSha": "c1c4e748b39c5632e8648023433a00c15d57191b",
+    "sourceTree": "ccb3d9da3c110e2d5fff57bae0d2d0eb76b3c4b4",
+    "predecessorSha": "2cff3441f126d7d805932127bb9de9289ba273ad",
     "production": false,
     "state": "SOURCE_FIX_REPROOF_REQUIRED"
   },
@@ -5084,6 +5084,58 @@
         "production": false
       },
       "production": false
+    },
+    "VRM-107": {
+      "id": "VRM-107",
+      "classification": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "title": "Fresh HR polling could enqueue duplicate durable reconciliation for the same revision and starve visit reconciliation before provider ACK",
+      "state": "SOURCE_FIX_REPROOF_REQUIRED",
+      "exactOwners": [
+        "backend/runtime/hr-live-service/server.mjs",
+        "tools/qa/cxorbia-prei4-content001-dev-materialize.sh"
+      ],
+      "rootCause": [
+        "server.mjs scheduled shopper+visit reconciliation after every fresh read without an in-flight single-flight guard keyed by source revision",
+        "the canonical DEV materializer polled the HR meta endpoint every 5 seconds while cacheMs=5000, causing additional source refreshes and duplicate same-revision reconciliation while the first 222-shopper reconciliation was still running",
+        "Run735 proved the effect: shopper reconciliation completed repeatedly while visitReconciliation remained null until the gate timed out"
+      ],
+      "remediationContract": "One durable reconciliation chain per sourceRevision. Fresh HR remains published immediately, but repeated reads of the same revision reuse the in-flight reconciliation. CI waits for provider ACK through the Cloud Run health endpoint without triggering more HR refreshes, then validates one post-ACK HR meta read.",
+      "predecessorSourceSha": "2cff3441f126d7d805932127bb9de9289ba273ad",
+      "sourceSha": "c1c4e748b39c5632e8648023433a00c15d57191b",
+      "sourceTree": "ccb3d9da3c110e2d5fff57bae0d2d0eb76b3c4b4",
+      "sourceFixFiles": [
+        "backend/runtime/hr-live-service/server.mjs"
+      ],
+      "controlFixFiles": [
+        "tools/qa/cxorbia-prei4-content001-dev-materialize.sh"
+      ],
+      "sourceFix": {
+        "sourceSha": "c1c4e748b39c5632e8648023433a00c15d57191b",
+        "sourceTree": "ccb3d9da3c110e2d5fff57bae0d2d0eb76b3c4b4",
+        "predecessorSha": "2cff3441f126d7d805932127bb9de9289ba273ad",
+        "owners": [
+          "backend/runtime/hr-live-service/server.mjs"
+        ],
+        "state": "SOURCE_FIX_REPROOF_REQUIRED",
+        "production": false
+      },
+      "run735Evidence": {
+        "runId": 36772338169,
+        "runNumber": 735,
+        "classification": "FUNCTIONAL_DEFECT",
+        "sourceSha": "2cff3441f126d7d805932127bb9de9289ba273ad",
+        "sourceTree": "3c7b6736e2b5884e28bc87ed9b7dd346e1fd3b8a",
+        "runtimeRevision": "cxorbia-live-hr-dev-00232-h5n",
+        "runtimeDigest": "sha256:09b8ea6d4340c3e461a85c7d27a190d80a1da72aec4a3001ff1a58e0eaebc13b",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/6791ca8145cfd9ee",
+        "hrRevision": "3be75731eff64aa9bb8eb795ea73ae2dad140cb789cbaa15659c67ea02ce33d0",
+        "shopperProviderAck": true,
+        "visitProviderAck": false,
+        "hrWrites": 0,
+        "production": false
+      },
+      "production": false
     }
   },
   "latestEvidenceOverrides": {
@@ -5601,11 +5653,12 @@
       "VRM-103",
       "VRM-104",
       "VRM-105",
-      "VRM-106"
+      "VRM-106",
+      "VRM-107"
     ],
-    "findingCount": 106,
-    "expectedCurrentRange": "VRM-001..VRM-106",
-    "nextFindingId": "VRM-107",
+    "findingCount": 107,
+    "expectedCurrentRange": "VRM-001..VRM-107",
+    "nextFindingId": "VRM-108",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_PREI4_HUMAN_VISUAL_ACCEPTANCE_REQUIRED",
@@ -7015,7 +7068,7 @@
     "PREI4-CONTENT-001",
     "PREI4-CONTENT-002"
   ],
-  "preI4NextAction": "Run the existing cumulative source guard and one deterministic DEV materialization for successor 2cff3441f126d7d805932127bb9de9289ba273ad; require fresh HR visibility, runtime+Hosting readback, closed regression gates, authenticated Admin+Shopper reproof and zero HR/bank/external-payment writes. Do not touch production.",
+  "preI4NextAction": "Repeat only the affected canonical DEV gate on successor c1c4e748b39c5632e8648023433a00c15d57191b: cumulative source guard + exact DEV materialization; require single-flight same-revision reconciliation, provider ACK for shoppers and visits via non-refreshing health polling, same HR revision, runtime/Hosting parity, closed regression gates and zero HR/bank/external-payment writes. Do not touch production.",
   "preI4Admin002": {
     "findingId": "PREI4-ADMIN-002",
     "state": "FIXED_PROVEN_RUN601",
@@ -8600,9 +8653,9 @@
     "production": false
   },
   "currentRemediationCandidate": {
-    "sourceSha": "2cff3441f126d7d805932127bb9de9289ba273ad",
-    "sourceTree": "3c7b6736e2b5884e28bc87ed9b7dd346e1fd3b8a",
-    "predecessorSha": "40550b009939fa2e2c72d68eb27e05e48d47eca6",
+    "sourceSha": "c1c4e748b39c5632e8648023433a00c15d57191b",
+    "sourceTree": "ccb3d9da3c110e2d5fff57bae0d2d0eb76b3c4b4",
+    "predecessorSha": "2cff3441f126d7d805932127bb9de9289ba273ad",
     "findingIds": [
       "VRM-089",
       "VRM-090",
@@ -8620,7 +8673,8 @@
       "VRM-102",
       "VRM-103",
       "VRM-104",
-      "VRM-106"
+      "VRM-106",
+      "VRM-107"
     ],
     "changedRuntime": true,
     "changedHosting": true,
@@ -8670,17 +8724,29 @@
     "production": false
   },
   "latestSourceSuccessor": {
-    "findingId": "VRM-106",
-    "sourceSha": "2cff3441f126d7d805932127bb9de9289ba273ad",
-    "sourceTree": "3c7b6736e2b5884e28bc87ed9b7dd346e1fd3b8a",
-    "predecessorSha": "40550b009939fa2e2c72d68eb27e05e48d47eca6",
+    "findingId": "VRM-107",
+    "sourceSha": "c1c4e748b39c5632e8648023433a00c15d57191b",
+    "sourceTree": "ccb3d9da3c110e2d5fff57bae0d2d0eb76b3c4b4",
+    "predecessorSha": "2cff3441f126d7d805932127bb9de9289ba273ad",
     "exactDelta": [
-      "app/adapters/tya-canonical-shopper-portal-v2.js"
+      "backend/runtime/hr-live-service/server.mjs"
     ],
-    "additions": 0,
-    "deletions": 17,
     "state": "SOURCE_FIX_REPROOF_REQUIRED",
     "sameCanonicalCandidate": true,
+    "production": false
+  },
+  "run735": {
+    "classification": "FUNCTIONAL_DEFECT",
+    "runId": 36772338169,
+    "runNumber": 735,
+    "sourceGuard": "PASS_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD",
+    "runtimeRevision": "cxorbia-live-hr-dev-00232-h5n",
+    "runtimeDigest": "sha256:09b8ea6d4340c3e461a85c7d27a190d80a1da72aec4a3001ff1a58e0eaebc13b",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/6791ca8145cfd9ee",
+    "hrRevision": "3be75731eff64aa9bb8eb795ea73ae2dad140cb789cbaa15659c67ea02ce33d0",
+    "firstMaterialFailure": "visitReconciliation.providerAck remained unavailable while same-revision shopper reconciliation was repeatedly re-enqueued by cache-expiring HR meta polls",
+    "productSourceChanged": false,
+    "hrWrites": 0,
     "production": false
   }
 }
