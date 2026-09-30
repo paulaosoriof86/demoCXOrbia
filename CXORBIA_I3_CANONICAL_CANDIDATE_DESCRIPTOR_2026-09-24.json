@@ -8,13 +8,13 @@
   "productTreeAuthority": "6175786674fd02e454ccc3674b492a29ab1ed482",
   "predecessorProductSourceSha": "c71c7e800490059d36a5be6e266c28086b8db8f4",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "d0af5dd06caa52a8cad16026159c070269daedbe",
+  "findingsLedgerExpectedGitBlob": "a2a4ce6f5f64e9e3876ab22641a8c362f66018c8",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "PREI4_CERT_RES_POST_MATERIALIZATION_LIVE_PROOF_REQUIRED",
-  "nextFindingId": "VRM-119",
+  "activeBlocker": "PREI4_CERT_RES_SOURCE_REPROOF_REQUIRED",
+  "nextFindingId": "VRM-121",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Repeat only the no-deploy authenticated CERT/RES live proof on immutable runtime cxorbia-live-hr-dev-00235-57l and Hosting version a0054d58a85a7d43 using the navigation-tolerant Auth harness. No rebuild, runtime deploy, Hosting deploy, rules deploy, HR import or production action.",
+  "exactNextAction": "Run the canonical focal source contract on the minimal recertification ACK fix. If PASS, promote that exact successor, build/deploy Cloud Run only (no Hosting or rules changes), then repeat the authenticated CERT/RES live proof on the unchanged Hosting version.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1146,15 +1146,13 @@
     "production": false
   },
   "lastLiveFailure": {
-    "classification": "PERSISTENCE_FAILURE",
-    "runId": 36644212189,
-    "runNumber": 623,
-    "artifactId": 11068006668,
-    "runtimeRevision": "cxorbia-live-hr-dev-00229-nxq",
-    "runtimeDigest": "sha256:45782480662a18699794811d6e4dd38cf1983e9c6f14eee66ed0b1e585bb9e1b",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/a56ff5bf97ffa99d",
-    "hrRevision": "5de5db49e340139744c0e97bfb593cbf5fc3e2e8b3577cd5c3169d9b814d4be8",
-    "failure": "PREI4_004_PROJECT_COUNTRY_FINANCE_CONFIG",
+    "findingId": "VRM-119",
+    "runId": 36792293986,
+    "jobId": 110147806023,
+    "cert001": "PASS_LIVE",
+    "attemptScore": 100,
+    "attemptPass": true,
+    "error": "PERSISTENCE_FAILURE:RECERT_ID_MISSING",
     "production": false
   },
   "lastProjectConfigDiagnostic": {

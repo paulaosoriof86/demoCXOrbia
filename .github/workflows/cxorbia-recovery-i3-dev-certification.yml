@@ -26,6 +26,20 @@ on:
       - app/adapters/cxorbia-cxdata-command-boundary-v1.js
       - tools/qa/cxorbia-i3-vrm080-connected-admin-config-live.mjs
       - app/modules/documentos.js
+      - app/adapters/tya-protected-auth-hr-authority-bridge-v2.js
+      - app/core/backend-ai.js
+      - app/core/backend-certifications.js
+      - app/core/backend-protected-dev-mode.js
+      - app/core/backend-resources.js
+      - app/index-backend-dev.html
+      - app/modules/cert.js
+      - backend/runtime/hr-live-service/Dockerfile
+      - backend/runtime/hr-live-service/certification-runtime.mjs
+      - backend/runtime/hr-live-service/server.mjs
+      - backend/runtime/hr-live-service/test/cxorbia-prei4-cert-res-contract.test.mjs
+      - firestore.rules
+      - storage.rules
+      - tools/qa/cxorbia-prei4-cert-res-live.mjs
       - tools/qa/cxorbia-i3-vrm079-documents-resources-live.mjs
       - app/modules/proyecto-wizard.js
       - tools/qa/cxorbia-i3-vrm078-external-project-live.mjs

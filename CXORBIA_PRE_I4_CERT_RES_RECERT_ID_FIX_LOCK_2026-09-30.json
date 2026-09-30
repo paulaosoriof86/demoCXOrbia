@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "cxorbia.recovery.pre-i4-cert-res.recert-id-fix.v1",
+  "frozenAt": "2026-09-30",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
+  "findings": [
+    "VRM-119",
+    "VRM-120"
+  ],
+  "priorProductSource": "f6c3bb6c038a77eee9cbca8bfbfd1096bfd48cbc",
+  "focalFix": {
+    "sha": "38ed6aab4acb3f017fd4107ae60237c6a7e956b0",
+    "tree": "edbb45c9bfa8a739c03bc6c72684bea1da5f4566",
+    "files": [
+      "backend/runtime/hr-live-service/certification-runtime.mjs",
+      "backend/runtime/hr-live-service/test/cxorbia-prei4-cert-res-contract.test.mjs"
+    ]
+  },
+  "liveEvidence": {
+    "runId": 36792293986,
+    "cert001": "PASS_LIVE",
+    "shopperAttempt": "PASS_100_ACK",
+    "failure": "RECERT_ID_MISSING"
+  },
+  "nextAction": "Canonical source reproof, then runtime-only rematerialization if PASS.",
+  "production": "DO_NOT_TOUCH"
+}

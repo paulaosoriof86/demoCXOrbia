@@ -5553,6 +5553,54 @@
       },
       "remediationContract": "Mirror the already-canonical Recovery browser-auth retry/settling behavior locally in the CERT/RES proof harness: treat navigation/context destruction as transient, verify persisted UID, re-enter the exact DEV URL, then require backendAuth context and HR authority. Repeat only the no-deploy live proof.",
       "production": false
+    },
+    "VRM-119": {
+      "id": "VRM-119",
+      "classification": "PERSISTENCE_FAILURE",
+      "severity": "P0",
+      "title": "Recertification first-write response omitted the durable Firestore document id",
+      "state": "FIXED_SOURCE_PENDING_REPROOF",
+      "exactOwner": "backend/runtime/hr-live-service/certification-runtime.mjs",
+      "rootCause": "saveRecertification created a deterministic Firestore docId and persisted the record, but on the first write returned the in-memory item without id. Replay paths included snap.id, creating an inconsistent ACK contract. The authenticated live proof therefore could not read back the just-created recertification by id.",
+      "evidence": {
+        "runId": 36792293986,
+        "jobId": 110147806023,
+        "cert001": "PASS_LIVE",
+        "shopperAttempt": {
+          "score": 100,
+          "pass": true,
+          "providerAck": true
+        },
+        "error": "PERSISTENCE_FAILURE:RECERT_ID_MISSING",
+        "fixtureWritesBeforeFailure": "bank + attempt + recertification",
+        "cleanup": {
+          "attempt": true,
+          "bank": true
+        },
+        "production": false
+      },
+      "remediationContract": "Return durable document identity consistently from certification write responses without changing stored semantics; add a source contract assertion for document-id projection; reprove source, redeploy runtime only, then repeat no-deploy live CERT/RES proof.",
+      "fixedSource": {
+        "sha": "38ed6aab4acb3f017fd4107ae60237c6a7e956b0",
+        "tree": "edbb45c9bfa8a739c03bc6c72684bea1da5f4566"
+      },
+      "production": false
+    },
+    "VRM-120": {
+      "id": "VRM-120",
+      "classification": "MAPPING_FAILURE",
+      "severity": "P0_CONTROL",
+      "title": "Recovery workflow push-path map omitted newly introduced CERT/RES source owners",
+      "state": "FIXED_CONTROL_PENDING_SOURCE_REPROOF",
+      "exactOwner": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+      "rootCause": "The source-proof workflow had assertions for CERT/RES files but its on.push.paths list had not been extended to those new owners. A product-only change to certification-runtime.mjs therefore did not dispatch the canonical Recovery gate.",
+      "evidence": {
+        "sourceSha": "38ed6aab4acb3f017fd4107ae60237c6a7e956b0",
+        "recoveryWorkflowAutoRunObserved": false,
+        "production": false
+      },
+      "remediationContract": "Add all current CERT/RES product/control owners to the canonical workflow push paths so any future focal change dispatches the same Recovery gate automatically.",
+      "production": false
     }
   },
   "latestEvidenceOverrides": {
@@ -6088,14 +6136,16 @@
       "VRM-115",
       "VRM-116",
       "VRM-117",
-      "VRM-118"
+      "VRM-118",
+      "VRM-119",
+      "VRM-120"
     ],
-    "findingCount": 118,
-    "expectedCurrentRange": "VRM-001..VRM-118",
-    "nextFindingId": "VRM-119",
+    "findingCount": 120,
+    "expectedCurrentRange": "VRM-001..VRM-120",
+    "nextFindingId": "VRM-121",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_PREI4_CERT_RES_LIVE_PROOF_REQUIRED",
+    "terminalState": "HOLD_PREI4_CERT_RES_SOURCE_REPROOF_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
