@@ -5647,7 +5647,7 @@ jobs:
           git diff --quiet "$CERT_RES_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
           test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$CERT_RES_SOURCE"
           test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$CERT_RES_TREE"
-          test "$(jq -r '.activeBlocker' "$CANDIDATE_DESCRIPTOR")" = "PREI4_CERT_RES_DEV_MATERIALIZATION_REQUIRED"
+          test "$(jq -r '.activeBlocker' "$CANDIDATE_DESCRIPTOR")" = "PREI4_CERT_RES_RUNTIME_REMATERIALIZATION_REQUIRED"
           test "$(jq -r '.preI4CertResClosure.state' "$CANDIDATE_DESCRIPTOR")" = "SOURCE_PROVEN_READY_EXACT_DEV_MATERIALIZATION"
           node --check tools/qa/cxorbia-prei4-cert-res-configure-dev.mjs
           node --check tools/qa/cxorbia-prei4-cert-res-live.mjs

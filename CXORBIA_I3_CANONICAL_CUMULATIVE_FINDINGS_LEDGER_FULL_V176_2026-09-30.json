@@ -5476,6 +5476,27 @@
         "production": false
       },
       "production": false
+    },
+    "VRM-116": {
+      "id": "VRM-116",
+      "classification": "MAPPING_FAILURE",
+      "severity": "P0_CONTROL",
+      "title": "CERT/RES resume job retained the predecessor activeBlocker literal after runtime packaging failure classification",
+      "state": "FIXED_CONTROL_READY_REPROOF",
+      "exactOwner": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+      "rootCause": "The descriptor correctly advanced activeBlocker to PREI4_CERT_RES_RUNTIME_REMATERIALIZATION_REQUIRED after VRM-115, but the materialization scope assertion still required PREI4_CERT_RES_DEV_MATERIALIZATION_REQUIRED. Run 36791017225 therefore failed before setup, build or deploy.",
+      "evidence": {
+        "runId": 36791017225,
+        "jobId": 110143723497,
+        "failingStep": "Prove exact source authority and zero later product drift",
+        "builds": 0,
+        "runtimeDeploys": 0,
+        "hostingDeploys": 0,
+        "rulesDeploys": 0,
+        "production": false
+      },
+      "remediationContract": "Update only the existing scope assertion to the descriptor's current activeBlocker and repeat the same materialization job. Do not alter product source or re-run source proof.",
+      "production": false
     }
   },
   "latestEvidenceOverrides": {
@@ -6008,11 +6029,12 @@
       "VRM-112",
       "VRM-113",
       "VRM-114",
-      "VRM-115"
+      "VRM-115",
+      "VRM-116"
     ],
-    "findingCount": 115,
-    "expectedCurrentRange": "VRM-001..VRM-115",
-    "nextFindingId": "VRM-116",
+    "findingCount": 116,
+    "expectedCurrentRange": "VRM-001..VRM-116",
+    "nextFindingId": "VRM-117",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_PREI4_CERT_RES_DEV_RESUME_REQUIRED",

@@ -8,13 +8,13 @@
   "productTreeAuthority": "6175786674fd02e454ccc3674b492a29ab1ed482",
   "predecessorProductSourceSha": "c71c7e800490059d36a5be6e266c28086b8db8f4",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "8c72142d8bbd61809f1a80b1d5c119cba1528071",
+  "findingsLedgerExpectedGitBlob": "f6a55b781acde4376acdd8fa2886ee96313b9574",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
   "activeBlocker": "PREI4_CERT_RES_RUNTIME_REMATERIALIZATION_REQUIRED",
-  "nextFindingId": "VRM-116",
+  "nextFindingId": "VRM-117",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -552,13 +552,11 @@
     "findingId": "VRM-055"
   },
   "lastControlFailure": {
-    "runId": 36654659017,
-    "runNumber": 666,
-    "jobId": 109696315713,
-    "artifactId": 11071484278,
-    "artifactZipSha256": "50276df8609b93b2f0fb1cdc7e5c3e4358e687fb700f3aba3d3a65d3dcbe39e6",
-    "classification": "RELEASE_COMPOSITION_FAILURE",
-    "productSourceChanged": false,
+    "findingId": "VRM-116",
+    "runId": 36791017225,
+    "jobId": 110143723497,
+    "classification": "MAPPING_FAILURE",
+    "productChanged": false,
     "production": false
   },
   "lastSecondReviewProof": {
