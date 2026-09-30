@@ -5507,3 +5507,33 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
+
+  pre-i4-cert-res-runtime-readiness:
+    name: PRE-I4 CERT/RES — runtime identity + real Vertex generateContent — read only
+    if: contains(github.event.head_commit.message, '[prei4-cert-res-runtime-readiness]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout canonical Recovery control head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Authenticate canonical Firebase DEV diagnostic
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
+      - name: Prove runtime identity and real provider-backed generation
+        run: bash tools/qa/cxorbia-prei4-cert-res-runtime-readiness.sh
+      - name: Upload runtime readiness evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-prei4-cert-res-runtime-readiness
+          path: .tmp/prei4-cert-res-runtime-readiness
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
