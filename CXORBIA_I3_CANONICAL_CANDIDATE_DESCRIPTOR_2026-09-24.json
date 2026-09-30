@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_ADMIN_004_HOSTING_CORRECTED_LIVE_REQUIRED",
+  "status": "HOLD_PREI4_ADMIN_004_PROVIDER_NO_DEPLOY_RESUME_REQUIRED",
   "iteration": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "4a39b26f6dcdff8f4dcd446b0141a7d3b1dc01d7",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "c487449e5187d7219033c54fa1ac3db5fb6c822e",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V146_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "34ec8512a2876bb4b9beb61ac99d9a6f8932dd9e",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V147_2026-09-30.json",
+  "findingsLedgerExpectedGitBlob": "2609974d0af53929fea078a9b5d22cee23e4fe3a",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Materialize corrected source 4a39b26f6dcdff8f4dcd446b0141a7d3b1dc01d7 to Hosting DEV exactly once, keep runtime cxorbia-live-hr-dev-00229-nxq/digest unchanged, prove served byte parity, persist GT/HN project finance config via project.update ACK, then reprove Postulaciones + Identity + Finance on one fresh HR revision. No production.",
+  "exactNextAction": "Run ADMIN-004 provider no-deploy resume only: prove Hosting DEV remains 4f12336223412365 and runtime remains cxorbia-live-hr-dev-00229-nxq with exact digest; persist GT/HN finance config through the live project.update command provider with real Firebase ID token, ACK/receipt/audit; then reprove Postulaciones + Identity + Finance on one fresh HR revision. Zero build, zero deploy, no production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1124,18 +1124,16 @@
     "production": false
   },
   "lastLiveAttempt": {
-    "runId": 36648109268,
-    "runNumber": 635,
-    "jobId": 109675760597,
-    "artifactId": 11069571977,
-    "artifactZipSha256": "e3c2031ca2d08f00ce0204910d579cceebc7ec160919d0eb570e34e5d6d36160",
-    "classification": "AUTH_FAILURE",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/ced0bd28ac388486",
+    "runId": 36649051738,
+    "runNumber": 643,
+    "jobId": 109678736424,
+    "artifactId": 11069009873,
+    "artifactZipSha256": "9793476fa2317c6906a2f883eeed84768a805468b996efca72eb615a91815e7a",
+    "classification": "ENVIRONMENT_FAILURE",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/4f12336223412365",
     "runtimeRevision": "cxorbia-live-hr-dev-00229-nxq",
     "runtimeDigest": "sha256:45782480662a18699794811d6e4dd38cf1983e9c6f14eee66ed0b1e585bb9e1b",
-    "builds": 0,
-    "runtimeDeploys": 0,
-    "hostingDeploys": 0,
+    "projectConfigWriteExecuted": false,
     "productDefect": false,
     "production": false
   }
