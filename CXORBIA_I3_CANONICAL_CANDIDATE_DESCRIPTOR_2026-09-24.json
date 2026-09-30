@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED",
+  "status": "HOLD_PREI4_CONTENT_001_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "d8874bd952a70ce15b40560c8f17b2d47f53c152",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "61b89fd567c02c651ce1983d8b8f8421d5e70637",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V168_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "9346dac51ffbbac3a3aec9727922d60704331852",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V169_2026-09-30.json",
+  "findingsLedgerExpectedGitBlob": "6a900120a6668f9a7cb7b984433febb7b3b6126e",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run focused source proof for PREI4-CONTENT-001 on d8874bd952a70ce15b40560c8f17b2d47f53c152 and cumulative closed-module source guard. Require project external_general questionnaire URL to survive durable project read + live HR composition, with no external_visit fallback. If PASS, materialize exact source to DEV runtime+Hosting and prove the authenticated shopper route. No production.",
+  "exactNextAction": "Materialize exact product source d8874bd952a70ce15b40560c8f17b2d47f53c152 / tree aec04d107b769ebf1393c760ad8531e45796266c to Recovery DEV runtime + Hosting through the single existing workflow, then rerun cumulative live Postulations + Identity + Finance and authenticated shopper questionnaire routing. Require zero production writes. No production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1072,13 +1072,15 @@
     "production": false
   },
   "lastSourceGuard": {
-    "runId": 36659316796,
-    "runNumber": 678,
-    "jobId": 109710401639,
-    "artifactId": 11073254348,
-    "artifactZipSha256": "5932ca9d802613d5ddab5538d6f274e0736e49737c79f014df2f29ab1d3a560d",
+    "findingId": "PREI4-CONTENT-001",
+    "runId": 36718953011,
+    "runNumber": 694,
+    "jobId": 109898909133,
+    "artifactId": 11097660964,
     "decision": "PASS_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD",
-    "financeProviderTests": 7,
+    "focalDecision": "PASS_PREI4_PROJECT_QUESTIONNAIRE_CONFIG_SOURCE",
+    "sourceSha": "d8874bd952a70ce15b40560c8f17b2d47f53c152",
+    "sourceTree": "aec04d107b769ebf1393c760ad8531e45796266c",
     "production": false
   },
   "lastLiveFailure": {
@@ -1157,7 +1159,7 @@
     "production": false
   },
   "preI4Content001": {
-    "state": "SOURCE_FIX_CREATED_REPROOF_REQUIRED",
+    "state": "SOURCE_PROVEN_RUN694_DEV_MATERIALIZATION_REQUIRED",
     "sourceSha": "d8874bd952a70ce15b40560c8f17b2d47f53c152",
     "sourceTree": "aec04d107b769ebf1393c760ad8531e45796266c",
     "productFiles": [
@@ -1167,6 +1169,9 @@
     ],
     "testFile": "backend/runtime/hr-live-service/test/cxorbia-prei4-project-questionnaire-config.test.mjs",
     "deploys": 0,
-    "production": false
+    "production": false,
+    "sourceProofRunId": 36718953011,
+    "sourceProofDecision": "PASS_PREI4_PROJECT_QUESTIONNAIRE_CONFIG_SOURCE",
+    "cumulativeSourceGuard": "PASS_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD"
   }
 }
