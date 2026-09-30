@@ -70,3 +70,10 @@ test('ADMIN-004 project.update boundary sends the canonical current version in t
   assert.match(src,/const currentVersion=versionOf\(current\);/);
   assert.match(src,/Object\.assign\(\{\},cleanPatch,\{projectId:id,periodId,version:currentVersion\}\)/);
 });
+
+
+test('ADMIN-004 command boundary parses as JavaScript after project.update version fix',()=>{
+  const src=fs.readFileSync(new URL('../../../../app/adapters/cxorbia-cxdata-command-boundary-v1.js',import.meta.url),'utf8');
+  assert.doesNotThrow(()=>new Function(src));
+  assert.equal(src.includes('currentVersion=versionOf(current);\\n      const cmd='),false);
+});
