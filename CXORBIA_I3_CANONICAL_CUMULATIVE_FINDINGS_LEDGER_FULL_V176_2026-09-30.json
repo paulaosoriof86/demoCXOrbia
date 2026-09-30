@@ -5252,7 +5252,7 @@
       "classification": "MAPPING_FAILURE",
       "severity": "P0_CONTROL",
       "title": "Canonical authority workflow status whitelist omitted the new PRE-I4 CERT/RES remediation HOLD state",
-      "state": "FIX_APPLIED_REPROOF_REQUIRED",
+      "state": "FIXED_PROVEN_RUN740",
       "rootCause": "The canonical candidate authority script accepted the source/tree and returned PASS, but the subsequent workflow shell whitelist had not been extended with HOLD_PREI4_CERT_RES_REMEDIATION_REQUIRED, causing run739 authority job to exit 1 after a valid authority result.",
       "run739Evidence": {
         "runId": 36779681556,
@@ -5268,7 +5268,16 @@
       },
       "exactOwner": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
       "remediationContract": "Add HOLD_PREI4_CERT_RES_REMEDIATION_REQUIRED to the existing canonical authority job status whitelist; do not alter product authority or create another workflow.",
-      "production": false
+      "production": false,
+      "closureEvidence": {
+        "runId": 36780040955,
+        "authorityJob": "success",
+        "diagnosticJob": "success",
+        "productSourceSha": "c1c4e748b39c5632e8648023433a00c15d57191b",
+        "productSourceTree": "ccb3d9da3c110e2d5fff57bae0d2d0eb76b3c4b4",
+        "productChanged": false,
+        "production": false
+      }
     }
   },
   "latestEvidenceOverrides": {
@@ -5829,7 +5838,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Run one read-only provider permission/billing diagnostic in the canonical workflow. If DEV credentials already have the required permissions and billing is enabled, enable only the missing Vertex AI and Cloud Storage for Firebase capabilities in cxorbia-backend-dev, then implement PREI4-CERT-001/002 and PREI4-RES-001 on the same product successor. Otherwise request only the exact missing IAM/billing authorization. Do not touch production.",
+  "exactNextAction": "Test the existing project-creator credential routes read-only against cxorbia-backend-dev. If one existing route grants the required Service Usage, Firebase Storage, Rules and Vertex permissions and confirms billing enabled, use that existing route for DEV-only provider activation. Otherwise request only the exact missing IAM/billing authorization. Do not touch production.",
   "supersedesGitBlob": "397a9cee8c71d3156567a0cc96bfdcba88bb7c3a",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -7219,7 +7228,7 @@
     "PREI4-CONTENT-001",
     "PREI4-CONTENT-002"
   ],
-  "preI4NextAction": "Run one read-only provider permission/billing diagnostic in the canonical workflow. If DEV credentials already have the required permissions and billing is enabled, enable only the missing Vertex AI and Cloud Storage for Firebase capabilities in cxorbia-backend-dev, then implement PREI4-CERT-001/002 and PREI4-RES-001 on the same product successor. Otherwise request only the exact missing IAM/billing authorization. Do not touch production.",
+  "preI4NextAction": "Test the existing project-creator credential routes read-only against cxorbia-backend-dev. If one existing route grants the required Service Usage, Firebase Storage, Rules and Vertex permissions and confirms billing enabled, use that existing route for DEV-only provider activation. Otherwise request only the exact missing IAM/billing authorization. Do not touch production.",
   "preI4Admin002": {
     "findingId": "PREI4-ADMIN-002",
     "state": "FIXED_PROVEN_RUN601",
@@ -8993,7 +9002,7 @@
     "production": false
   },
   "preI4CertResProviderCapability": {
-    "state": "PROVIDER_CAPABILITY_GAPS_PROVEN_RUN739_PERMISSION_DIAGNOSTIC_REQUIRED",
+    "state": "RUN740_CURRENT_DEV_CREDENTIAL_INSUFFICIENT_ALTERNATE_CREDENTIAL_DIAGNOSTIC_REQUIRED",
     "runId": 36779681556,
     "artifactId": 11127490166,
     "artifactDigest": "sha256:62990b6952f7752b39738144123c132004f0b652d5c3a2daafdcb1ac8c796f53",
@@ -9014,6 +9023,31 @@
     "writes": 0,
     "deploys": 0,
     "production": false,
-    "exactNextAction": "Read-only test of service enablement, Firebase default bucket creation, Storage rules and Vertex prediction permissions plus billing-enabled state."
+    "exactNextAction": "Read-only test of service enablement, Firebase default bucket creation, Storage rules and Vertex prediction permissions plus billing-enabled state.",
+    "run740": {
+      "runId": 36780040955,
+      "artifactId": 11126284764,
+      "artifactDigest": "sha256:d7d47aa33e5ebf7c0355a724370983e08bb9da994ce049342a4d8d05cf04cbaa",
+      "grantedPermissions": [
+        "firebaserules.rulesets.create",
+        "storage.buckets.create"
+      ],
+      "missingRequiredPermissions": [
+        "serviceusage.services.enable",
+        "firebasestorage.defaultBucket.create",
+        "aiplatform.endpoints.predict",
+        "firebaserules.releases.create"
+      ],
+      "billingHttp": 403,
+      "billingEnabled": null,
+      "writes": 0,
+      "deploys": 0,
+      "production": false
+    },
+    "alternateCredentialRoutes": [
+      "CXORBIA_GCP_PROJECT_CREATOR_JSON",
+      "GOOGLE_CLOUD_PROJECT_CREATOR_JSON",
+      "FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV"
+    ]
   }
 }

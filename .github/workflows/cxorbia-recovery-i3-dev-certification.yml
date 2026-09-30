@@ -5447,3 +5447,33 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
+
+  pre-i4-cert-res-credential-route-diagnostic:
+    name: PRE-I4 CERT/RES — existing credential routes — read only
+    if: contains(github.event.head_commit.message, '[prei4-cert-res-credential-route]')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout canonical Recovery control head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
+      - name: Probe existing credential routes without writes
+        env:
+          DIAG_DIR: .tmp/prei4-cert-res-credential-route
+          DEDICATED_CREATOR_JSON: ${{ secrets.CXORBIA_GCP_PROJECT_CREATOR_JSON }}
+          ALT_CREATOR_JSON: ${{ secrets.GOOGLE_CLOUD_PROJECT_CREATOR_JSON }}
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: bash tools/qa/cxorbia-prei4-cert-res-credential-route-diagnostic.sh
+      - name: Upload sanitized credential route evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-prei4-cert-res-credential-route
+          path: .tmp/prei4-cert-res-credential-route
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
