@@ -847,7 +847,7 @@ jobs:
   prei4-admin-004-cumulative-dev-materialization:
     name: PRE-I4 CONTENT-002 — exact cumulative DEV materialization + live guard
     needs: [canonical-candidate-authority, prei4-cumulative-regression-source-guard]
-    if: ${{ needs.prei4-cumulative-regression-source-guard.result == 'success' && needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CONTENT_002_SOURCE_REPROOF_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-content-002-live]') }}
+    if: ${{ needs['prei4-cumulative-regression-source-guard'].result == 'success' && needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CONTENT_002_SOURCE_REPROOF_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-content-002-live]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 55
     env:
