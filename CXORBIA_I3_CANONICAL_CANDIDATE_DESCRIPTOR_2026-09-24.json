@@ -7,14 +7,14 @@
   "productSourceSha": "a29b8ad89391fb5537d1cbf765ef6ec86f775608",
   "productTreeAuthority": "ea8846d254d1901ac1101c182098c46f995f1141",
   "predecessorProductSourceSha": "d8874bd952a70ce15b40560c8f17b2d47f53c152",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V172_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "75c88b3a9d282a2b59e29c6c5d9b239da3e5a554",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V173_2026-09-30.json",
+  "findingsLedgerExpectedGitBlob": "23129cbaba72f1e5c5e64ef982d73075435f336c",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
   "activeBlocker": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE_ADMIN_FINDINGS",
-  "nextFindingId": "VRM-095",
+  "nextFindingId": "VRM-096",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Keep Run725 product bytes unchanged. Paula completes Shopper/iShopper visual + application flow on the same DEV candidate. Append shopper findings to this same human-acceptance block. Then execute one bounded I3 remediation package by proven owners for VRM-089..094 plus any shopper findings; re-read live HR and rerun only affected owner gates. Do not touch production.",
+  "exactNextAction": "Keep Run725 product bytes unchanged. Paula completes Shopper/iShopper visual + application flow on the same DEV candidate. During the same review, refresh once and recheck VRM-095 rail badge plus current live-HR KPI deltas. Append shopper findings, then execute one bounded I3 remediation package by proven owners. Do not touch production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1355,10 +1355,12 @@
       "VRM-091",
       "VRM-092",
       "VRM-093",
-      "VRM-094"
+      "VRM-094",
+      "VRM-095"
     ],
     "sourceDeltaNotYetProductDefect": true,
     "productSourceChanged": false,
-    "production": false
+    "production": false,
+    "postulationsRailBadgeRecheck": "VRM-095"
   }
 }
