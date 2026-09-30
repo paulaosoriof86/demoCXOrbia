@@ -143,8 +143,15 @@ jobs:
           test -n "$STATUS"
           test "$(jq -r '.status' "$POST_RUN500_LOCK")" = "HOLD"
           test "$(jq -r '.currentState.i3' "$POST_RUN500_LOCK")" = "HOLD"
-          test "$(jq -r '.canonicalFunctionalCandidate.sourceSha' "$POST_RUN500_LEDGER")" = "$SOURCE"
-          test "$(jq -r '.canonicalFunctionalCandidate.sourceTree' "$POST_RUN500_LEDGER")" = "$TREE"
+          if [ "$STATUS" = "HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED" ]; then
+            BASE="$(jq -r '.predecessorProductSourceSha // empty' "$CANDIDATE_DESCRIPTOR")"
+            test -n "$BASE"
+            test "$(jq -r '.canonicalFunctionalCandidate.sourceSha' "$POST_RUN500_LEDGER")" = "$BASE"
+            test "$(jq -r '.canonicalFunctionalCandidate.sourceTree' "$POST_RUN500_LEDGER")" = "$(git show -s --format=%T "$BASE")"
+          else
+            test "$(jq -r '.canonicalFunctionalCandidate.sourceSha' "$POST_RUN500_LEDGER")" = "$SOURCE"
+            test "$(jq -r '.canonicalFunctionalCandidate.sourceTree' "$POST_RUN500_LEDGER")" = "$TREE"
+          fi
           test "$(jq -r '.findings["VRM-076"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN502"
           test "$(jq -r '.findings["VRM-077"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN507"
           test "$(jq -r '.findings["VRM-078"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN515"
