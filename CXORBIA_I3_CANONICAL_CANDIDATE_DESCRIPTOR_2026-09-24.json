@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_ADMIN_004_FINANCE_CONFIG_CACHE_DIAGNOSTIC_REQUIRED",
+  "status": "HOLD_PREI4_ADMIN_004_HONORARIUM_PROPAGATION_DIAGNOSTIC_REQUIRED",
   "iteration": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "4a39b26f6dcdff8f4dcd446b0141a7d3b1dc01d7",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "c487449e5187d7219033c54fa1ac3db5fb6c822e",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V154_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "701a168476f29384fa5e82b991682788390bf653",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V155_2026-09-30.json",
+  "findingsLedgerExpectedGitBlob": "3f609b68fdcf4354d55f19abfcbc9ecf830959c7",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Rerun the same read-only runtime projectConfig cache diagnostic on the existing DEV artifact. Compare durable project v4 against the non-fresh hr-live snapshot projectConfig. Zero writes/build/deploy; no product-source change; no production.",
+  "exactNextAction": "Run one read-only honorarium propagation diagnostic on the existing DEV artifact and same HR authority path: raw HR fallback candidate → composed visit after exact sourceRef → canonical Finance row. Classify the first stage where GT/HN configured honorarium disappears. Zero writes/build/deploy, no production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -466,23 +466,15 @@
     "nextFindingOpened": false
   },
   "lastDiagnostic": {
-    "runId": 36219999288,
-    "runNumber": 469,
-    "jobId": 108343354988,
-    "artifactId": 10898264026,
-    "artifactDigest": "sha256:8b8e696bc1a175b980e193951ac46d62a2afa736992b61a408ef731cf94516f7",
-    "productSourceSha": "04432faa32bef0427223fa2c51cb5b809f53e178",
-    "productSourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f",
-    "decision": "PASS_V42_DURABLE_MILTON_DIAGNOSTIC",
-    "writes": 0,
-    "deploys": 0,
-    "builds": 0,
-    "production": false,
-    "findingId": "VRM-055",
-    "canonicalDocExists": true,
-    "observedNombre": "Mishael De Paz",
-    "expectedNombre": "Milton De Paz",
-    "nextFindingOpened": false
+    "runId": 36654350193,
+    "runNumber": 664,
+    "jobId": 109695328309,
+    "artifactId": 11072050590,
+    "artifactZipSha256": "d5625f92f0b7181e330e74b2ca80a0016742d5efbd6f5e7ba1c231910c999bca",
+    "decision": "PASS_PREI4_ADMIN_004_RUNTIME_PROJECT_CONFIG_CACHE_DIAGNOSTIC",
+    "runtimeConfigFresh": true,
+    "ownerClass": "HONORARIUM_PROPAGATION_AFTER_FRESH_RUNTIME_CONFIG",
+    "production": false
   },
   "lastDurableRepair": {
     "runId": 36220176376,
