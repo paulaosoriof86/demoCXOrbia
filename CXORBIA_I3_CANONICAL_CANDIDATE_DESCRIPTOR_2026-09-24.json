@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_CERT_RES_REMEDIATION_REQUIRED",
+  "status": "HOLD_PREI4_HUMAN_VISUAL_ACCEPTANCE_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4_HUMAN_VISUAL_REMEDIATION",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "d83f57ed07ef684cd274d4b1db3a52d91f4ff400",
   "predecessorProductSourceSha": "f6c3bb6c038a77eee9cbca8bfbfd1096bfd48cbc",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "1e54604c4f89505ae590eecc48817c7bef1fc84f",
+  "findingsLedgerExpectedGitBlob": "1ae6e866aa1bd0f368f7692368114bc18c608c60",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "PREI4_CERT_RES_RUNTIME_ONLY_REMATERIALIZATION_REQUIRED",
+  "activeBlocker": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "nextFindingId": "VRM-121",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Build and deploy only Cloud Run from exact source f769041ddd6adacb5bb16b0eeddab7d08b47a7e8 / tree d83f57ed07ef684cd274d4b1db3a52d91f4ff400. Keep Hosting version a0054d58a85a7d43 and existing Firestore/Storage rules unchanged. Then repeat authenticated CERT/RES live proof and cleanup.",
+  "exactNextAction": "Paula visually inspects the already-materialized DEV candidate at https://cxorbia-backend-dev.web.app in the focused Admin and Shopper routes. The technical CERT/RES P0 block is now PASS. No rebuild or deploy is authorized before visual acceptance. If the fresh visual review finds no new P0, seal PRE_I4_HUMAN_VISUAL_ACCEPTANCE=PASS, run the final same-artifact integrity readback, then request one explicit I4 authorization.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -317,7 +317,7 @@
   },
   "technicalClosureReceipt": "CXORBIA_I3_TERMINAL_TECHNICAL_READY_2026-09-25.json",
   "i4": {
-    "status": "BLOCKED_UNTIL_CERT_RES_DEV_LIVE_PASS_AND_FRESH_PAULA_VISUAL_ACCEPTANCE",
+    "status": "BLOCKED_UNTIL_FRESH_PAULA_VISUAL_ACCEPTANCE",
     "productionAuthorization": false,
     "authorized": false,
     "production": "DO_NOT_TOUCH"
@@ -417,18 +417,18 @@
     "production": false
   },
   "currentMaterialization": {
-    "sourceSha": "f6c3bb6c038a77eee9cbca8bfbfd1096bfd48cbc",
-    "sourceTree": "6175786674fd02e454ccc3674b492a29ab1ed482",
-    "runtimeRevision": "cxorbia-live-hr-dev-00235-57l",
-    "runtimeDigest": "sha256:71199bc92526864af7120c59298d002997792db467bb04936c10c26c02f5d06a",
-    "runtimeImage": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-prei4-cert-res-f6c3bb6c038a-36791149390",
+    "sourceSha": "f769041ddd6adacb5bb16b0eeddab7d08b47a7e8",
+    "sourceTree": "d83f57ed07ef684cd274d4b1db3a52d91f4ff400",
+    "runtimeRevision": "cxorbia-live-hr-dev-00236-fps",
+    "runtimeDigest": "sha256:e560ce1303bc4c3e157c1e7cca1a2c8c28cfca0d0c9ed4eda90251ee6309f7d6",
     "hostingVersion": "sites/cxorbia-backend-dev/versions/a0054d58a85a7d43",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790810984892000",
-    "materializationRunId": 36791149390,
+    "materializationRunId": 36793188546,
+    "artifactId": 11132452994,
+    "artifactDigest": "sha256:c8a5f876188cad8cf566496ebf96b7fb199e7197a6d0b799c832ebd3b97095c9",
     "rulesAuthorityRunId": 36789283777,
     "buildCountThisMaterialization": 1,
     "runtimeDeploysThisMaterialization": 1,
-    "hostingDeploysThisMaterialization": 1,
+    "hostingDeploysThisMaterialization": 0,
     "firestoreRulesDeploysThisMaterialization": 0,
     "storageRulesDeploysThisMaterialization": 0,
     "production": false
@@ -1075,7 +1075,7 @@
     "i4AuthorizationRequired": true
   },
   "humanVisualAcceptance": {
-    "state": "HOLD",
+    "state": "HOLD_FRESH_PAULA_VISUAL_ACCEPTANCE_REQUIRED",
     "lockPath": "CXORBIA_PRE_I4_HUMAN_VISUAL_ACCEPTANCE_LOCK_2026-09-28.json",
     "requiredBeforeI4": true,
     "reviewUrl": "https://cxorbia-backend-dev.web.app",
@@ -1085,14 +1085,11 @@
     "production": "DO_NOT_TOUCH",
     "adminForensicAuditPath": "CXORBIA_PRE_I4_ADMIN_FORENSIC_AUDIT_2026-09-28.json",
     "adminReviewRepeatRequired": false,
-    "liveHrState": "PASS_CURRENT_AUTHORITY_RUN736",
+    "liveHrState": "PASS_RUN_36793188546",
     "liveHrDriftLock": "CXORBIA_PRE_I4_LIVE_HR_DRIFT_LOCK_2026-09-28.json",
     "run736TechnicalClosure": true,
-    "remainingBeforeHumanVisualPass": [
-      "PREI4-CERT-001",
-      "PREI4-CERT-002",
-      "PREI4-RES-001"
-    ]
+    "remainingBeforeHumanVisualPass": [],
+    "certResTechnicalClosure": "PASS_RUN_36793188546"
   },
   "preI4Admin008": {
     "state": "FIXED_PROVEN_RUN594",
@@ -1186,10 +1183,7 @@
     "production": false
   },
   "activeBlockers": [
-    "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
-    "PREI4-CERT-001",
-    "PREI4-CERT-002",
-    "PREI4-RES-001"
+    "PRE_I4_HUMAN_VISUAL_ACCEPTANCE"
   ],
   "preI4Admin004": {
     "state": "FIXED_PROVEN_RUN686",
@@ -1726,38 +1720,31 @@
     }
   },
   "preI4CertResClosure": {
-    "state": "SOURCE_PROVEN_PENDING_RUNTIME_ONLY_REMATERIALIZATION",
+    "state": "PASS_LIVE",
     "sourceSha": "f769041ddd6adacb5bb16b0eeddab7d08b47a7e8",
     "sourceTree": "d83f57ed07ef684cd274d4b1db3a52d91f4ff400",
-    "predecessorSha": "c71c7e800490059d36a5be6e266c28086b8db8f4",
-    "prematerializationLockPath": "CXORBIA_PRE_I4_CERT_RES_PREMATERIALIZATION_LOCK_2026-09-30.json",
-    "sourceProof": {
-      "runId": 36792808797,
-      "jobId": 110149369214,
-      "artifactId": 11132915262,
-      "artifactDigest": "sha256:a24d3d1227dec87aeb6fbec71178c12d7a3752714f6633bc141beba30309dc52"
-    },
-    "remainingP0": [
-      "PREI4-CERT-002",
-      "PREI4-RES-001"
-    ],
-    "nextGate": "AUTHENTICATED_LIVE_PROOF_ONLY_NO_DEPLOY",
-    "production": false,
-    "partialMaterialization": {
-      "runId": 36789283777,
-      "rulesDeployed": true,
-      "buildSucceeded": true,
-      "runtimeDeployFailed": true,
-      "failedRevision": "cxorbia-live-hr-dev-00234-sld",
-      "hostingDeployed": false,
-      "liveProofExecuted": false
-    },
-    "runtimeRevision": "cxorbia-live-hr-dev-00235-57l",
-    "runtimeDigest": "sha256:71199bc92526864af7120c59298d002997792db467bb04936c10c26c02f5d06a",
+    "runtimeRevision": "cxorbia-live-hr-dev-00236-fps",
+    "runtimeDigest": "sha256:e560ce1303bc4c3e157c1e7cca1a2c8c28cfca0d0c9ed4eda90251ee6309f7d6",
     "hostingVersion": "sites/cxorbia-backend-dev/versions/a0054d58a85a7d43",
-    "provenLiveSoFar": {
-      "cert001": "PASS_LIVE",
-      "shopperAttempt": "PASS_100_ACK"
-    }
+    "hrRevision": "3be75731eff64aa9bb8eb795ea73ae2dad140cb789cbaa15659c67ea02ce33d0",
+    "runId": 36793188546,
+    "jobId": 110150611836,
+    "artifactId": 11132452994,
+    "artifactDigest": "sha256:c8a5f876188cad8cf566496ebf96b7fb199e7197a6d0b799c832ebd3b97095c9",
+    "p0": {
+      "PREI4-CERT-001": "PASS_LIVE",
+      "PREI4-CERT-002": "PASS_LIVE",
+      "PREI4-RES-001": "PASS_LIVE"
+    },
+    "fixtureCleanup": {
+      "attempt": true,
+      "recert": true,
+      "bank": true,
+      "resource": true,
+      "binary": true
+    },
+    "remainingP0": [],
+    "nextGate": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
+    "production": false
   }
 }

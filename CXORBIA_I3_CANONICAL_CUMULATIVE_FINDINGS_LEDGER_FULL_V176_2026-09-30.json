@@ -5559,7 +5559,7 @@
       "classification": "PERSISTENCE_FAILURE",
       "severity": "P0",
       "title": "Recertification first-write response omitted the durable Firestore document id",
-      "state": "FIXED_SOURCE_PROVEN_READY_RUNTIME_ONLY_MATERIALIZATION",
+      "state": "FIXED_PROVEN_RUN_36793188546",
       "exactOwner": "backend/runtime/hr-live-service/certification-runtime.mjs",
       "rootCause": "saveRecertification created a deterministic Firestore docId and persisted the record, but on the first write returned the in-memory item without id. Replay paths included snap.id, creating an inconsistent ACK contract. The authenticated live proof therefore could not read back the just-created recertification by id.",
       "evidence": {
@@ -5591,6 +5591,29 @@
         "artifactId": 11132915262,
         "artifactDigest": "sha256:a24d3d1227dec87aeb6fbec71178c12d7a3752714f6633bc141beba30309dc52",
         "decision": "PASS_PREI4_CERT_RES_SOURCE_CONTRACT"
+      },
+      "closureEvidence": {
+        "runId": 36793188546,
+        "jobId": 110150611836,
+        "artifactId": 11132452994,
+        "artifactDigest": "sha256:c8a5f876188cad8cf566496ebf96b7fb199e7197a6d0b799c832ebd3b97095c9",
+        "decision": "PASS_PREI4_CERT_RES_RUNTIME_ONLY_CLOSURE",
+        "cert001": "PASS_LIVE",
+        "cert002": "PASS_LIVE",
+        "res001": "PASS_LIVE",
+        "runtimeRevision": "cxorbia-live-hr-dev-00236-fps",
+        "runtimeDigest": "sha256:e560ce1303bc4c3e157c1e7cca1a2c8c28cfca0d0c9ed4eda90251ee6309f7d6",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/a0054d58a85a7d43",
+        "hrRevision": "3be75731eff64aa9bb8eb795ea73ae2dad140cb789cbaa15659c67ea02ce33d0",
+        "fixtureCleanup": {
+          "attempt": true,
+          "recert": true,
+          "bank": true,
+          "resource": true,
+          "binary": true
+        },
+        "hrWrites": 0,
+        "production": false
       }
     },
     "VRM-120": {
@@ -6158,7 +6181,7 @@
     "nextFindingId": "VRM-121",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_PREI4_CERT_RES_RUNTIME_ONLY_REMATERIALIZATION_REQUIRED",
+    "terminalState": "HOLD_PREI4_HUMAN_VISUAL_ACCEPTANCE_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -9497,5 +9520,36 @@
       ],
       "leastPrivilege": true
     }
+  },
+  "preI4CertResClosure": {
+    "state": "PASS_LIVE_RUN_36793188546",
+    "sourceSha": "f769041ddd6adacb5bb16b0eeddab7d08b47a7e8",
+    "sourceTree": "d83f57ed07ef684cd274d4b1db3a52d91f4ff400",
+    "runtimeRevision": "cxorbia-live-hr-dev-00236-fps",
+    "runtimeDigest": "sha256:e560ce1303bc4c3e157c1e7cca1a2c8c28cfca0d0c9ed4eda90251ee6309f7d6",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/a0054d58a85a7d43",
+    "hrRevision": "3be75731eff64aa9bb8eb795ea73ae2dad140cb789cbaa15659c67ea02ce33d0",
+    "runId": 36793188546,
+    "jobId": 110150611836,
+    "artifactId": 11132452994,
+    "artifactDigest": "sha256:c8a5f876188cad8cf566496ebf96b7fb199e7197a6d0b799c832ebd3b97095c9",
+    "p0": {
+      "PREI4-CERT-001": "PASS_LIVE",
+      "PREI4-CERT-002": "PASS_LIVE",
+      "PREI4-RES-001": "PASS_LIVE"
+    },
+    "fixtureCleanup": {
+      "attempt": true,
+      "recert": true,
+      "bank": true,
+      "resource": true,
+      "binary": true
+    },
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 0,
+    "rulesDeploys": 0,
+    "hrWrites": 0,
+    "production": false
   }
 }
