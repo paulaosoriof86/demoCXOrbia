@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 : "${PREI4_004_SOURCE:?}" "${PREI4_004_TREE:?}" "${PREI4_004_RESUME_OUT:?}" "${PREI4_004_ROOT:?}"
-test "$PREI4_004_SOURCE" = "5a6345133d5227e351f07a64d58d49d8cac5eec5"
-test "$PREI4_004_TREE" = "32408cf4b0031650bee58b625da71abae86cfa78"
+test "$PREI4_004_SOURCE" = "4a39b26f6dcdff8f4dcd446b0141a7d3b1dc01d7"
+test "$PREI4_004_TREE" = "3cdf4b1b3e6b6316e89f9bd249606f081258d07a"
 test "$(git rev-parse "$PREI4_004_SOURCE^{tree}")" = "$PREI4_004_TREE"
 test "$GITHUB_RUN_ATTEMPT" = "1"
 mkdir -p "$PREI4_004_RESUME_OUT/source-guard" "$PREI4_004_RESUME_OUT/post002" "$PREI4_004_RESUME_OUT/admin003" "$PREI4_004_RESUME_OUT/finance"
 
 export CUM_SOURCE="$PREI4_004_SOURCE" CUM_TREE="$PREI4_004_TREE"
 export CUM_BASE="c487449e5187d7219033c54fa1ac3db5fb6c822e"
-export CUM_LEDGER="CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V144_2026-09-29.json"
+export CUM_LEDGER="CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V146_2026-09-30.json"
 export CUM_MATRIX="RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json"
 export CUM_OUT="$PREI4_004_RESUME_OUT/source-guard"
 export CUM_EXPECTED_DELTA_JSON='["app/adapters/cxorbia-cxdata-command-boundary-v1.js","app/adapters/tya-canonical-finance-read-model-v2.js","app/adapters/tya-live-source-inplace-apply.js","app/adapters/tya-protected-auth-hr-authority-bridge-v2.js","app/modules/finanzas.js","app/modules/proyectos.js","backend/runtime/cxorbia-finance-command-provider-v1.mjs","backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs","backend/runtime/hr-live-service/server.mjs","backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs"]'
@@ -18,8 +18,13 @@ export CUM_EXPECTED_PENDING_FILES_JSON='["app/adapters/cxorbia-cxdata-command-bo
 node tools/qa/cxorbia-prei4-cumulative-regression-source-guard.mjs | tee "$CUM_OUT/console.log"
 test "$(jq -r '.decision' "$CUM_OUT/result.json")" = "PASS_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD"
 
-npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
 npx playwright install chromium >/dev/null 2>&1
+
+SOURCE_DIR="$RUNNER_TEMP/cxorbia-prei4-admin004-corrected-hosting"
+rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"
+trap 'rm -rf "$SOURCE_DIR"' EXIT
+git archive "$PREI4_004_SOURCE" | tar -x -C "$SOURCE_DIR"
 
 TOKEN="$(gcloud auth print-access-token)"
 gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$PREI4_004_RESUME_OUT/runtime-before.json"
@@ -29,9 +34,15 @@ gcloud run revisions describe "$REV_BEFORE" --project "$PROJECT" --region "$REGI
 RAW="$(jq -r '.status.imageDigest // empty' "$PREI4_004_RESUME_OUT/runtime-revision-before.json")"
 if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST_BEFORE="$RAW"; else DIGEST_BEFORE="sha256:${RAW##*@sha256:}"; fi
 test "$DIGEST_BEFORE" = "sha256:45782480662a18699794811d6e4dd38cf1983e9c6f14eee66ed0b1e585bb9e1b"
-curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$PREI4_004_RESUME_OUT/hosting-current.json"
-HOSTING_VERSION="$(jq -r '.release.version.name // empty' "$PREI4_004_RESUME_OUT/hosting-current.json")"
-test "$HOSTING_VERSION" = "sites/cxorbia-backend-dev/versions/ced0bd28ac388486"
+curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$PREI4_004_RESUME_OUT/hosting-before.json"
+cd "$SOURCE_DIR"
+"$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$PREI4_004_RESUME_OUT/hosting-deploy.log"
+cd "$GITHUB_WORKSPACE"
+TOKEN="$(gcloud auth print-access-token)"
+curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$PREI4_004_RESUME_OUT/hosting-after.json"
+HOSTING_VERSION="$(jq -r '.release.version.name // empty' "$PREI4_004_RESUME_OUT/hosting-after.json")"
+test -n "$HOSTING_VERSION"
+test "$HOSTING_VERSION" != "sites/cxorbia-backend-dev/versions/ced0bd28ac388486"
 for p in app/adapters/cxorbia-cxdata-command-boundary-v1.js app/adapters/tya-canonical-finance-read-model-v2.js app/adapters/tya-live-source-inplace-apply.js app/adapters/tya-protected-auth-hr-authority-bridge-v2.js app/modules/finanzas.js app/modules/proyectos.js; do
   rel="${p#app/}"; remote="$PREI4_004_RESUME_OUT/served_$(echo "$rel"|tr '/' '_')"
   curl -fsSL --retry 10 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$PREI4_004_ROOT/$rel?prei4004resume=$GITHUB_RUN_ID-$(date +%s%N)" -o "$remote"
@@ -65,4 +76,4 @@ test "$(jq -r '.externalPaymentWrites' "$PREI4_004_RESUME_OUT/finance/result.jso
 test "$(jq -r '.bankWrites' "$PREI4_004_RESUME_OUT/finance/result.json")" = "0"
 test "$(jq -r '.hrWrites' "$PREI4_004_RESUME_OUT/finance/result.json")" = "0"
 
-jq -n -S   --arg source "$PREI4_004_SOURCE" --arg tree "$PREI4_004_TREE" --arg runtime "$REV_AFTER" --arg digest "$DIGEST_BEFORE" --arg hosting "$HOSTING_VERSION" --arg hr "$HR_REVISION"   --arg config "$(jq -r '.decision' "$PREI4_004_RESUME_OUT/project-config-write.json")"   --arg post "$(jq -r '.decision' "$PREI4_004_RESUME_OUT/post002/result.json")"   --arg identity "$(jq -r '.decision' "$PREI4_004_RESUME_OUT/admin003/result.json")"   --arg finance "$(jq -r '.decision' "$PREI4_004_RESUME_OUT/finance/result.json")"   --argjson configWrite "$(jq -r 'if .writeExecuted then 1 else 0 end' "$PREI4_004_RESUME_OUT/project-config-write.json")"   --argjson financeWrites "$(jq -r '.providerAck.providerWrites // 0' "$PREI4_004_RESUME_OUT/finance/result.json")"   '{decision:"PASS_PREI4_ADMIN_004_NO_DEPLOY_RESUME",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,projectConfig:$config,closedRegression:{postulations:$post,identity:$identity},finance:$finance,configCommandExecuted:$configWrite,financeProviderWrites:$financeWrites,builds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0,externalPaymentWrites:0,bankWrites:0,hrWrites:0,production:false}' > "$PREI4_004_RESUME_OUT/receipt.json"
+jq -n -S   --arg source "$PREI4_004_SOURCE" --arg tree "$PREI4_004_TREE" --arg runtime "$REV_AFTER" --arg digest "$DIGEST_BEFORE" --arg hosting "$HOSTING_VERSION" --arg hr "$HR_REVISION"   --arg config "$(jq -r '.decision' "$PREI4_004_RESUME_OUT/project-config-write.json")"   --arg post "$(jq -r '.decision' "$PREI4_004_RESUME_OUT/post002/result.json")"   --arg identity "$(jq -r '.decision' "$PREI4_004_RESUME_OUT/admin003/result.json")"   --arg finance "$(jq -r '.decision' "$PREI4_004_RESUME_OUT/finance/result.json")"   --argjson configWrite "$(jq -r 'if .writeExecuted then 1 else 0 end' "$PREI4_004_RESUME_OUT/project-config-write.json")"   --argjson financeWrites "$(jq -r '.providerAck.providerWrites // 0' "$PREI4_004_RESUME_OUT/finance/result.json")"   '{decision:"PASS_PREI4_ADMIN_004_HOSTING_CORRECTED_LIVE",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,projectConfig:$config,closedRegression:{postulations:$post,identity:$identity},finance:$finance,configCommandExecuted:$configWrite,financeProviderWrites:$financeWrites,builds:0,runtimeDeploys:0,hostingDeploys:1,rulesDeploys:0,externalPaymentWrites:0,bankWrites:0,hrWrites:0,production:false}' > "$PREI4_004_RESUME_OUT/receipt.json"
