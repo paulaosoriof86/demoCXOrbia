@@ -47,13 +47,13 @@ if(!exact(before)){
       await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
       const token=await auth.createCustomToken(actor.uid);
       try{
-        await page.evaluate(async t=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);await firebase.auth().signInWithCustomToken(t);},token);
+        await page.evaluate(async t=>{const fb=window.firebase;if(!fb?.auth)throw new Error('FIREBASE_NOT_READY');await fb.auth().setPersistence(fb.auth.Auth.Persistence.LOCAL);await fb.auth().signInWithCustomToken(t);},token);
       }catch(e){
         lastAuthError=String(e?.message||e);
-        if(!/network-request-failed|Execution context was destroyed|navigation|network|timeout|interrupted/i.test(lastAuthError))throw e;
+        if(!/network-request-failed|FIREBASE_NOT_READY|firebase is not defined|Execution context was destroyed|navigation|network|timeout|interrupted/i.test(lastAuthError))throw e;
       }
       await page.waitForTimeout(800*attempt);
-      signed=await page.evaluate(uid=>String(firebase.auth().currentUser?.uid||'')===uid,actor.uid).catch(()=>false);
+      signed=await page.evaluate(uid=>String(window.firebase?.auth?.().currentUser?.uid||'')===uid,actor.uid).catch(()=>false);
     }
     if(!signed)fail('AUTH_FAILURE:ADMIN004_PROJECT_CONFIG_SIGNIN:'+lastAuthError);
     await page.waitForFunction(()=>window.CX?.cxDataCommandBoundary?.canonicalMode?.()===true&&typeof window.CX?.data?.updateProject==='function'&&Array.isArray(window.CX?.data?.__backendAllProjectRecords)&&window.CX.data.__backendAllProjectRecords.some(p=>String(p.id||p.projectId)==='cinepolis'),null,{timeout:150000});
