@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_ADMIN_004_CLOSED_REGRESSION_HARNESS_REPROOF_REQUIRED",
+  "status": "HOLD_PREI4_ADMIN_004_FINANCE_CONFIG_CACHE_DIAGNOSTIC_REQUIRED",
   "iteration": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "4a39b26f6dcdff8f4dcd446b0141a7d3b1dc01d7",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "c487449e5187d7219033c54fa1ac3db5fb6c822e",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V152_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "3fc496cd4274296c1e87db50209f87139a44a756",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V153_2026-09-30.json",
+  "findingsLedgerExpectedGitBlob": "83b6b2991eb18527b32a6ba5a556b58d216cfd31",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run one sourceRef-isolation no-deploy reproof on the existing DEV artifact. Require exact HR+Firestore sourceRef before Finance evaluation. If sourceRef passes but Finance remains null, owner is honorarium propagation; if sourceRef times out, owner is backend→HR composition. Zero writes/build/deploy, no production.",
+  "exactNextAction": "Run one read-only runtime projectConfig cache diagnostic on the existing DEV artifact. Compare durable tenants/tya/projects/cinepolis v4 against the non-fresh hr-live snapshot projectConfig. If runtime config is stale, owner is runtime cache/config overlay; if fresh, continue only within honorarium propagation. Zero writes/build/deploy, no production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1124,18 +1124,15 @@
     "production": false
   },
   "lastLiveAttempt": {
-    "runId": 36652386765,
-    "runNumber": 658,
-    "jobId": 109689470283,
-    "artifactId": 11071486008,
-    "artifactZipSha256": "bc7d07d5157da5dd5712a0ca1e9fd496b07cc4a6a9b2553c19bb7be4f3d953bf",
+    "runId": 36653147439,
+    "runNumber": 660,
+    "jobId": 109691667291,
+    "artifactId": 11071232597,
+    "artifactZipSha256": "c1a6cb20bb326b5805c8705bb49d203c7fc54a2663ebbd53f2018a221509328c",
     "classification": "FUNCTIONAL_DEFECT",
-    "financeReadiness": "TIMEOUT_150S",
-    "postulations": "PASS",
-    "identity": "PASS",
-    "writes": 0,
-    "builds": 0,
-    "deploys": 0,
+    "exactSourceRefPassed": true,
+    "financeHonorario": null,
+    "financeTotal": null,
     "production": false
   }
 }
