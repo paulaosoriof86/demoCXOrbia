@@ -7,14 +7,14 @@
   "productSourceSha": "a29b8ad89391fb5537d1cbf765ef6ec86f775608",
   "productTreeAuthority": "ea8846d254d1901ac1101c182098c46f995f1141",
   "predecessorProductSourceSha": "d8874bd952a70ce15b40560c8f17b2d47f53c152",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V174_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "5276b74efe63f4fe264d8ad5f2de4edcc47284b8",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V175_2026-09-30.json",
+  "findingsLedgerExpectedGitBlob": "397a9cee8c71d3156567a0cc96bfdcba88bb7c3a",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-096_LIVE_HR_FRESHNESS_AND_CUMULATIVE_VISUAL_FINDINGS",
-  "nextFindingId": "VRM-105",
+  "activeBlocker": "VRM-096_VRM-105_AUTHENTICATED_LIVE_FUNCTIONAL_REMEDIATION",
+  "nextFindingId": "VRM-106",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Execute one bounded cumulative I3 remediation successor covering VRM-089..VRM-104 by proven owners. First close live-HR freshness and auth/reservation false-state P0s, then Admin CRUD/identity/Postulations and Shopper benefits/reports/profile UX; materialize once to DEV and reprove current live HR plus Admin+Shopper flows. Production remains DO_NOT_TOUCH until fresh human acceptance and explicit I4 authorization.",
+  "exactNextAction": "Execute the single cumulative I3 remediation successor for VRM-089..VRM-105. Human visual DEV must become the authenticated provider-backed functional lane, read fresh HR, and expose only truthful durable actions. Reprove Admin+Shopper on that same URL before I4.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
