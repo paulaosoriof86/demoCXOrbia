@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_HUMAN_VISUAL_ACCEPTANCE_REQUIRED",
-  "iteration": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
+  "status": "HOLD_PREI4_HUMAN_VISUAL_REMEDIATION_REQUIRED",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4_HUMAN_VISUAL_REMEDIATION",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "a29b8ad89391fb5537d1cbf765ef6ec86f775608",
   "productTreeAuthority": "ea8846d254d1901ac1101c182098c46f995f1141",
   "predecessorProductSourceSha": "d8874bd952a70ce15b40560c8f17b2d47f53c152",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V173_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "23129cbaba72f1e5c5e64ef982d73075435f336c",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V174_2026-09-30.json",
+  "findingsLedgerExpectedGitBlob": "5276b74efe63f4fe264d8ad5f2de4edcc47284b8",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE_ADMIN_FINDINGS",
-  "nextFindingId": "VRM-096",
+  "activeBlocker": "VRM-096_LIVE_HR_FRESHNESS_AND_CUMULATIVE_VISUAL_FINDINGS",
+  "nextFindingId": "VRM-105",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Keep Run725 product bytes unchanged. Paula completes Shopper/iShopper visual + application flow on the same DEV candidate. During the same review, refresh once and recheck VRM-095 rail badge plus current live-HR KPI deltas. Append shopper findings, then execute one bounded I3 remediation package by proven owners. Do not touch production.",
+  "exactNextAction": "Execute one bounded cumulative I3 remediation successor covering VRM-089..VRM-104 by proven owners. First close live-HR freshness and auth/reservation false-state P0s, then Admin CRUD/identity/Postulations and Shopper benefits/reports/profile UX; materialize once to DEV and reprove current live HR plus Admin+Shopper flows. Production remains DO_NOT_TOUCH until fresh human acceptance and explicit I4 authorization.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -317,7 +317,7 @@
   },
   "technicalClosureReceipt": "CXORBIA_I3_TERMINAL_TECHNICAL_READY_2026-09-25.json",
   "i4": {
-    "status": "BLOCKED_UNTIL_HUMAN_VISUAL_ADMIN_AND_SHOPPER_FINDINGS_CLOSED_THEN_REMAINING_PREI4_CLOSURES_AND_FRESH_PAULA_AUTHORIZATION",
+    "status": "BLOCKED_UNTIL_CURRENT_VISUAL_P0_REMEDIATION_AND_FRESH_ACCEPTANCE",
     "productionAuthorization": false,
     "authorized": false,
     "production": "DO_NOT_TOUCH"
@@ -1362,5 +1362,25 @@
     "productSourceChanged": false,
     "production": false,
     "postulationsRailBadgeRecheck": "VRM-095"
+  },
+  "lastHumanVisualShopperReview": {
+    "reviewedAt": "2026-09-30",
+    "status": "REJECTED_REMEDIATION_REQUIRED",
+    "evidence": "11 Paula Shopper screenshots + direct live Google Sheet + current DEV runtime metadata/browser proof",
+    "lockPath": "CXORBIA_PRE_I4_HUMAN_VISUAL_SHOPPER_AND_LIVE_HR_LOCK_2026-09-30.json",
+    "lockExpectedGitBlob": "2b9ac25a6dcc2f6d77cebe24af49bc587171e9d0",
+    "findings": [
+      "VRM-096",
+      "VRM-097",
+      "VRM-098",
+      "VRM-099",
+      "VRM-100",
+      "VRM-101",
+      "VRM-102",
+      "VRM-103",
+      "VRM-104"
+    ],
+    "productSourceChanged": false,
+    "production": false
   }
 }

@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "cxorbia.prei4.human-visual-shopper-live-hr-lock.v1",
+  "frozenAt": "2026-09-30",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
+  "status": "FROZEN_REMEDIATION_REQUIRED",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadBeforeFreeze": "3283175650c4b9a93a7aec625494f6ff406850f5",
+  "productSourceSha": "a29b8ad89391fb5537d1cbf765ef6ec86f775608",
+  "productTree": "ea8846d254d1901ac1101c182098c46f995f1141",
+  "screenshots": [
+    {
+      "file": "image(20260930-182219).png",
+      "sha256": "e451f2fbeb6e932f80d0cbb902d431778f298c2550377bf215b28e2e2833a640",
+      "scope": "Mi Día notifications/calendar"
+    },
+    {
+      "file": "image(20260930-182305).png",
+      "sha256": "9bdfddc3f9e165c2b88b2a0edd898073a6e0b8752cf96751823573136fdb55f9",
+      "scope": "Mi Día false next-visit/progress"
+    },
+    {
+      "file": "image(20260930-182339).png",
+      "sha256": "8c3f6af349512272e195b6e3eb269d97ac45a162e47bbd55f5ed98b81bb3f3a1",
+      "scope": "Mi Perfil summary/identity/email overflow"
+    },
+    {
+      "file": "image(20260930-182435).png",
+      "sha256": "98a2ab011e9152d6dfcb59ad52ffc312c26517db560721a34393644adf70a806",
+      "scope": "Mi Perfil edit personal/bank fields"
+    },
+    {
+      "file": "image(20260930-182514).png",
+      "sha256": "df8c6bab45d30bb68810fbafadba75643269471473455b7bef191655e6920586",
+      "scope": "Mi Perfil 7-visit history"
+    },
+    {
+      "file": "image(20260930-182801).png",
+      "sha256": "d4893b2e799c2832dbfd74fe15bbc811e62c7abdd9cda5fc1c8f5383d53ee49b",
+      "scope": "Long/technical source validation screen"
+    },
+    {
+      "file": "image(20260930-182814).png",
+      "sha256": "cbcb7b40d9388492847144efbe398f1482831d3cd7ab7219cca30ea4c4702055",
+      "scope": "Available visits incorrectly 0"
+    },
+    {
+      "file": "image(20260930-182844).png",
+      "sha256": "4603c27e48241d0df593325af2a4822566e36fc106576791ad4a066a41f0fc97",
+      "scope": "Reservation write blocked"
+    },
+    {
+      "file": "image(20260930-182847).png",
+      "sha256": "2e096c6a80562b9fd32bf68625d52fdf03858145cce247b6ae8b85ca7ca75546",
+      "scope": "Mis Visitas 0 active/7 history"
+    },
+    {
+      "file": "image(20260930-182906).png",
+      "sha256": "088a86299c3c54c51c97c8762b0b121bcdc151b62f2a09139e45ae1bcb3ea9d0",
+      "scope": "Benefits empty"
+    },
+    {
+      "file": "image(20260930-182939).png",
+      "sha256": "07424553fccbd629f3ce0ff994e33dbe3558911b817e934ef7ecd9b853513417",
+      "scope": "Shopper reports no current-period data"
+    }
+  ],
+  "liveHrProof": {
+    "staleRevision": "277c06513d131cbaefb439925172da234539eaf4f1801ddd45c4e359469ac6b2",
+    "freshRevision": "3be75731eff64aa9bb8eb795ea73ae2dad140cb789cbaa15659c67ea02ce33d0",
+    "runtimeCacheMs": 3600000,
+    "sourceReadAt": "2026-09-30T18:31:29.463Z",
+    "refreshFinishedAt": "2026-09-30T18:32:47.658Z",
+    "refreshDurationMs": 83221,
+    "tinyFishRunId": "09651f83-5bc2-489e-bb80-ffea14327e8c",
+    "currentHrAvailableVisit": {
+      "period": "2026-09",
+      "country": "GT",
+      "branch": "MC. Pradera Zacapa",
+      "quincena": "QUINCENA 2",
+      "shopperId": null,
+      "state": "disponible",
+      "available": true,
+      "assigned": false
+    },
+    "humanPreviewAtCapture": {
+      "availableVisits": 0
+    }
+  },
+  "shopperHistoryProof": {
+    "shopper": "Paula Osorio",
+    "hrVisitCount": 7,
+    "currentSeptemberVisitCount": 0
+  },
+  "findings": [
+    "VRM-096",
+    "VRM-097",
+    "VRM-098",
+    "VRM-099",
+    "VRM-100",
+    "VRM-101",
+    "VRM-102",
+    "VRM-103",
+    "VRM-104"
+  ],
+  "exactNextAction": "Execute one bounded cumulative I3 remediation successor covering VRM-089..VRM-104 by proven owners. First close live-HR freshness and auth/reservation false-state P0s, then Admin CRUD/identity/Postulations and Shopper benefits/reports/profile UX; materialize once to DEV and reprove current live HR plus Admin+Shopper flows. Production remains DO_NOT_TOUCH until fresh human acceptance and explicit I4 authorization.",
+  "production": "DO_NOT_TOUCH"
+}
