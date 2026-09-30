@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED",
+  "status": "HOLD_PREI4_HUMAN_VISUAL_ACCEPTANCE_REQUIRED",
   "iteration": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "a29b8ad89391fb5537d1cbf765ef6ec86f775608",
   "productTreeAuthority": "ea8846d254d1901ac1101c182098c46f995f1141",
   "predecessorProductSourceSha": "d8874bd952a70ce15b40560c8f17b2d47f53c152",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V170_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "a0e3028b4edd54a6ad7c6e4fbb16d1fcd62ff0fa",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V171_2026-09-30.json",
+  "findingsLedgerExpectedGitBlob": "182d41bec5b12e21cde0ddcdcf96309125e58418",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "PREI4-CONTENT-002",
+  "activeBlocker": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "nextFindingId": "VRM-089",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run the known-valid authenticated CONTENT-001 live lane against cumulative successor a29b8ad89391fb5537d1cbf765ef6ec86f775608 / ea8846d254d1901ac1101c182098c46f995f1141 and require PASS_PREI4_CONTENT002_CUMULATIVE_DEV_LIVE including authenticated shopper progressive route, Postulations, Identity and Finance. No production.",
+  "exactNextAction": "Paula reviews exactly the Run725 cumulative DEV candidate in Admin and Shopper/iShopper using the project-scoped Cinépolis DEV entrypoint. Preserve Run725 source/tree/materialization unchanged during review. Classify any observed issue with the Recovery taxonomy. After visual acceptance, continue PREI4-CERT-001, then CERT-002, then RES-001. Production remains DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -317,7 +317,7 @@
   },
   "technicalClosureReceipt": "CXORBIA_I3_TERMINAL_TECHNICAL_READY_2026-09-25.json",
   "i4": {
-    "status": "BLOCKED_UNTIL_I3_GO_AND_FRESH_PAULA_AUTHORIZATION",
+    "status": "BLOCKED_UNTIL_HUMAN_VISUAL_ACCEPTANCE_THEN_REMAINING_PREI4_CLOSURES_AND_FRESH_PAULA_AUTHORIZATION",
     "productionAuthorization": false,
     "authorized": false,
     "production": "DO_NOT_TOUCH"
@@ -367,16 +367,21 @@
     "production": false
   },
   "currentMaterialization": {
-    "sourceSha": "09b4e56be96dedbeb89d14f1d190bfc5b8b4f990",
-    "sourceTree": "f6899a631b7b277b16614f1b6534103e7615f11e",
-    "runtimeRevision": "cxorbia-live-hr-dev-00226-wj2",
-    "runtimeDigest": "sha256:d5093cdd92515bad11353c7dfb42e2d192c7f3dec264eea3d24dfcad8c6219bd",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
-    "hrRevision": "d068b00c62a940f0ad828436ffcf22fbf1dbb43e763ab4e14854102bf5f84a51",
-    "materializationRunId": 36434000658,
+    "sourceSha": "a29b8ad89391fb5537d1cbf765ef6ec86f775608",
+    "sourceTree": "ea8846d254d1901ac1101c182098c46f995f1141",
+    "runtimeRevision": "cxorbia-live-hr-dev-00230-c5m",
+    "runtimeDigest": "sha256:5ece6bb303b6af2d1ad6b08cf40ebfccaa18e14ea604a5ea7b07c5ae1c650a95",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/f4ff99f429a748ea",
+    "hrRevision": "dc136b66b12eb05dee9fd56694c54cdccaaa33ebab4601bce720d0a2513cd7fe",
+    "materializationRunId": 36740335003,
     "finalVrm083ProofRunId": 36435106304,
     "production": false,
-    "vrm084ProofRunId": 36443870486
+    "vrm084ProofRunId": 36443870486,
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790783855378000",
+    "buildCountThisMaterialization": 0,
+    "runtimeDeploysThisMaterialization": 0,
+    "hostingDeploysThisMaterialization": 1,
+    "rulesDeploys": 0
   },
   "lastFocalAttempt": {
     "runId": 36198284266,
@@ -1125,8 +1130,7 @@
     "production": false
   },
   "activeBlockers": [
-    "PREI4-CONTENT-001",
-    "PREI4-CONTENT-002",
+    "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
     "PREI4-CERT-001",
     "PREI4-CERT-002",
     "PREI4-RES-001"
@@ -1157,13 +1161,55 @@
       "PREI4-RES-001"
     ],
     "production": false,
-    "state": "CONTENT_002_SOURCE_GUARD_PASS_RUN721_LIVE_REPROOF_REQUIRED",
+    "state": "CONTENT_001_002_FIXED_PROVEN_RUN725_HUMAN_VISUAL_REQUIRED",
     "sourceGuardRunId": 36733882063,
     "sourceGuardDecision": "PASS_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD",
-    "shopperProgressiveSourceDecision": "PASS_PREI4_SHOPPER_PROGRESSIVE_ROUTE_SOURCE"
+    "shopperProgressiveSourceDecision": "PASS_PREI4_SHOPPER_PROGRESSIVE_ROUTE_SOURCE",
+    "closedFindings": [
+      "PREI4-CONTENT-001",
+      "PREI4-CONTENT-002"
+    ],
+    "remainingFindings": [
+      "PREI4-CERT-001",
+      "PREI4-CERT-002",
+      "PREI4-RES-001"
+    ],
+    "run725Proof": {
+      "state": "FIXED_PROVEN_RUN725",
+      "runId": 36740335003,
+      "runNumber": 725,
+      "jobId": 109972887946,
+      "artifactId": 11109787376,
+      "artifactDigest": "sha256:d28f8aa0723c722c1df6efae59c6afb8076eac88f4eeeeade831501e12829d77",
+      "decision": "PASS_PREI4_CONTENT002_CUMULATIVE_DEV_LIVE",
+      "sourceSha": "a29b8ad89391fb5537d1cbf765ef6ec86f775608",
+      "sourceTree": "ea8846d254d1901ac1101c182098c46f995f1141",
+      "hrRevision": "dc136b66b12eb05dee9fd56694c54cdccaaa33ebab4601bce720d0a2513cd7fe",
+      "runtimeRevision": "cxorbia-live-hr-dev-00230-c5m",
+      "runtimeDigest": "sha256:5ece6bb303b6af2d1ad6b08cf40ebfccaa18e14ea604a5ea7b07c5ae1c650a95",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/f4ff99f429a748ea",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790783855378000",
+      "reviewUrl": "https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV",
+      "closedRegression": {
+        "postulations": "PASS_PREI4_ADMIN_002_HOSTING_LIVE",
+        "identity": "PASS_PREI4_ADMIN_003_CUMULATIVE_LIVE",
+        "finance": "PASS_PREI4_ADMIN_004_CUMULATIVE_LIVE"
+      },
+      "questionnaire": "PASS_PREI4_CONTENT002_AUTHENTICATED_SHOPPER_PROGRESSIVE_ROUTE",
+      "projectId": "cinepolis",
+      "periodId": "cinepolis-2026-09",
+      "builds": 0,
+      "runtimeDeploys": 0,
+      "hostingDeploys": 1,
+      "rulesDeploys": 0,
+      "externalPaymentWrites": 0,
+      "bankWrites": 0,
+      "hrWrites": 0,
+      "production": false
+    }
   },
   "preI4Content001": {
-    "state": "SOURCE_PROVEN_RUN694_INCLUDED_IN_CONTENT_002_SUCCESSOR_LIVE_REPROOF_REQUIRED",
+    "state": "FIXED_PROVEN_RUN725",
     "sourceSha": "d8874bd952a70ce15b40560c8f17b2d47f53c152",
     "sourceTree": "aec04d107b769ebf1393c760ad8531e45796266c",
     "productFiles": [
@@ -1181,10 +1227,43 @@
     "nextControlMarker": "[prei4-content-001-source]",
     "controlTriggerPurpose": "Re-run unchanged cumulative source guard before DEV materialization; product source unchanged; no production.",
     "cumulativeSuccessorSha": "a29b8ad89391fb5537d1cbf765ef6ec86f775608",
-    "cumulativeSuccessorTree": "ea8846d254d1901ac1101c182098c46f995f1141"
+    "cumulativeSuccessorTree": "ea8846d254d1901ac1101c182098c46f995f1141",
+    "liveProof": {
+      "state": "FIXED_PROVEN_RUN725",
+      "runId": 36740335003,
+      "runNumber": 725,
+      "jobId": 109972887946,
+      "artifactId": 11109787376,
+      "artifactDigest": "sha256:d28f8aa0723c722c1df6efae59c6afb8076eac88f4eeeeade831501e12829d77",
+      "decision": "PASS_PREI4_CONTENT002_CUMULATIVE_DEV_LIVE",
+      "sourceSha": "a29b8ad89391fb5537d1cbf765ef6ec86f775608",
+      "sourceTree": "ea8846d254d1901ac1101c182098c46f995f1141",
+      "hrRevision": "dc136b66b12eb05dee9fd56694c54cdccaaa33ebab4601bce720d0a2513cd7fe",
+      "runtimeRevision": "cxorbia-live-hr-dev-00230-c5m",
+      "runtimeDigest": "sha256:5ece6bb303b6af2d1ad6b08cf40ebfccaa18e14ea604a5ea7b07c5ae1c650a95",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/f4ff99f429a748ea",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790783855378000",
+      "reviewUrl": "https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV",
+      "closedRegression": {
+        "postulations": "PASS_PREI4_ADMIN_002_HOSTING_LIVE",
+        "identity": "PASS_PREI4_ADMIN_003_CUMULATIVE_LIVE",
+        "finance": "PASS_PREI4_ADMIN_004_CUMULATIVE_LIVE"
+      },
+      "questionnaire": "PASS_PREI4_CONTENT002_AUTHENTICATED_SHOPPER_PROGRESSIVE_ROUTE",
+      "projectId": "cinepolis",
+      "periodId": "cinepolis-2026-09",
+      "builds": 0,
+      "runtimeDeploys": 0,
+      "hostingDeploys": 1,
+      "rulesDeploys": 0,
+      "externalPaymentWrites": 0,
+      "bankWrites": 0,
+      "hrWrites": 0,
+      "production": false
+    }
   },
   "preI4Content002": {
-    "state": "SOURCE_REPROOF_RUNNING_VIA_KNOWN_VALID_CONTENT001_CONTROL_STATUS",
+    "state": "FIXED_PROVEN_RUN725",
     "classification": "MAPPING_FAILURE",
     "sourceSha": "a29b8ad89391fb5537d1cbf765ef6ec86f775608",
     "sourceTree": "ea8846d254d1901ac1101c182098c46f995f1141",
@@ -1196,6 +1275,72 @@
     "testFile": "backend/runtime/hr-live-service/test/cxorbia-prei4-shopper-progressive-route.test.mjs",
     "contract": "Progressive shopper visit route + exact external-visit questionnaire routing + ACK-gated questionnaire completion.",
     "production": false,
-    "controlStatusReuse": "HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED"
+    "controlStatusReuse": "HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED",
+    "liveProof": {
+      "state": "FIXED_PROVEN_RUN725",
+      "runId": 36740335003,
+      "runNumber": 725,
+      "jobId": 109972887946,
+      "artifactId": 11109787376,
+      "artifactDigest": "sha256:d28f8aa0723c722c1df6efae59c6afb8076eac88f4eeeeade831501e12829d77",
+      "decision": "PASS_PREI4_CONTENT002_CUMULATIVE_DEV_LIVE",
+      "sourceSha": "a29b8ad89391fb5537d1cbf765ef6ec86f775608",
+      "sourceTree": "ea8846d254d1901ac1101c182098c46f995f1141",
+      "hrRevision": "dc136b66b12eb05dee9fd56694c54cdccaaa33ebab4601bce720d0a2513cd7fe",
+      "runtimeRevision": "cxorbia-live-hr-dev-00230-c5m",
+      "runtimeDigest": "sha256:5ece6bb303b6af2d1ad6b08cf40ebfccaa18e14ea604a5ea7b07c5ae1c650a95",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/f4ff99f429a748ea",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790783855378000",
+      "reviewUrl": "https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV",
+      "closedRegression": {
+        "postulations": "PASS_PREI4_ADMIN_002_HOSTING_LIVE",
+        "identity": "PASS_PREI4_ADMIN_003_CUMULATIVE_LIVE",
+        "finance": "PASS_PREI4_ADMIN_004_CUMULATIVE_LIVE"
+      },
+      "questionnaire": "PASS_PREI4_CONTENT002_AUTHENTICATED_SHOPPER_PROGRESSIVE_ROUTE",
+      "projectId": "cinepolis",
+      "periodId": "cinepolis-2026-09",
+      "builds": 0,
+      "runtimeDeploys": 0,
+      "hostingDeploys": 1,
+      "rulesDeploys": 0,
+      "externalPaymentWrites": 0,
+      "bankWrites": 0,
+      "hrWrites": 0,
+      "production": false
+    }
+  },
+  "lastContent002Closure": {
+    "state": "FIXED_PROVEN_RUN725",
+    "runId": 36740335003,
+    "runNumber": 725,
+    "jobId": 109972887946,
+    "artifactId": 11109787376,
+    "artifactDigest": "sha256:d28f8aa0723c722c1df6efae59c6afb8076eac88f4eeeeade831501e12829d77",
+    "decision": "PASS_PREI4_CONTENT002_CUMULATIVE_DEV_LIVE",
+    "sourceSha": "a29b8ad89391fb5537d1cbf765ef6ec86f775608",
+    "sourceTree": "ea8846d254d1901ac1101c182098c46f995f1141",
+    "hrRevision": "dc136b66b12eb05dee9fd56694c54cdccaaa33ebab4601bce720d0a2513cd7fe",
+    "runtimeRevision": "cxorbia-live-hr-dev-00230-c5m",
+    "runtimeDigest": "sha256:5ece6bb303b6af2d1ad6b08cf40ebfccaa18e14ea604a5ea7b07c5ae1c650a95",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/f4ff99f429a748ea",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790783855378000",
+    "reviewUrl": "https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV",
+    "closedRegression": {
+      "postulations": "PASS_PREI4_ADMIN_002_HOSTING_LIVE",
+      "identity": "PASS_PREI4_ADMIN_003_CUMULATIVE_LIVE",
+      "finance": "PASS_PREI4_ADMIN_004_CUMULATIVE_LIVE"
+    },
+    "questionnaire": "PASS_PREI4_CONTENT002_AUTHENTICATED_SHOPPER_PROGRESSIVE_ROUTE",
+    "projectId": "cinepolis",
+    "periodId": "cinepolis-2026-09",
+    "builds": 0,
+    "runtimeDeploys": 0,
+    "hostingDeploys": 1,
+    "rulesDeploys": 0,
+    "externalPaymentWrites": 0,
+    "bankWrites": 0,
+    "hrWrites": 0,
+    "production": false
   }
 }
