@@ -842,9 +842,9 @@ jobs:
       PREI4_CONTENT001_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
       PREI4_CONTENT001_OUT: .tmp/prei4-content001-live
       PREI4_CONTENT001_ROOT: https://cxorbia-backend-dev.web.app
-      PREI4_CONTENT001_EXPECTED_RUNTIME: cxorbia-live-hr-dev-00230-c5m
-      PREI4_CONTENT001_EXPECTED_DIGEST: sha256:5ece6bb303b6af2d1ad6b08cf40ebfccaa18e14ea604a5ea7b07c5ae1c650a95
-      PREI4_CONTENT001_EXPECTED_HOSTING: sites/cxorbia-backend-dev/versions/e1831fa97d8286ec
+      PREI4_CONTENT001_EXPECTED_RUNTIME: 'cxorbia-live-hr-dev-00230-c5m'
+      PREI4_CONTENT001_EXPECTED_DIGEST: 'sha256:5ece6bb303b6af2d1ad6b08cf40ebfccaa18e14ea604a5ea7b07c5ae1c650a95'
+      PREI4_CONTENT001_EXPECTED_HOSTING: 'sites/cxorbia-backend-dev/versions/e1831fa97d8286ec'
     steps:
       - uses: actions/checkout@v4
         with: {fetch-depth: 0}
