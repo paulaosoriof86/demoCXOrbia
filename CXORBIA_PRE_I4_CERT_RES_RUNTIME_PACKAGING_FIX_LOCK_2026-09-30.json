@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "cxorbia.recovery.pre-i4-cert-res.runtime-packaging-fix.v1",
+  "frozenAt": "2026-09-30",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
+  "status": "SOURCE_PROVEN_READY_DEV_RESUME",
+  "findingId": "VRM-115",
+  "classification": "SOURCE_FAILURE",
+  "failedRun": {
+    "runId": 36789283777,
+    "jobId": 110138138739,
+    "failedRevision": "cxorbia-live-hr-dev-00234-sld",
+    "buildSucceeded": true,
+    "rulesDeployed": true,
+    "hostingDeployed": false,
+    "liveProofExecuted": false
+  },
+  "rootCause": "backend/runtime/hr-live-service/Dockerfile omitted COPY backend/runtime/hr-live-service/certification-runtime.mjs although server.mjs imported it.",
+  "fixedSource": {
+    "sha": "f6c3bb6c038a77eee9cbca8bfbfd1096bfd48cbc",
+    "tree": "6175786674fd02e454ccc3674b492a29ab1ed482",
+    "predecessor": "c71c7e800490059d36a5be6e266c28086b8db8f4"
+  },
+  "sourceProof": {
+    "runId": 36790808306,
+    "jobId": 110142998390,
+    "artifactId": 11131847600,
+    "artifactDigest": "sha256:ce380279e6181b278fc0c94968a7f2a6d70a57a8d23df32a40d977e9e81abe24"
+  },
+  "resumeContract": {
+    "reuseRulesRunId": 36789283777,
+    "firestoreRulesDeploysThisRun": 0,
+    "storageRulesDeploysThisRun": 0,
+    "maxBuilds": 1,
+    "maxRuntimeDeploys": 1,
+    "maxHostingDeploys": 1,
+    "production": false
+  },
+  "production": "DO_NOT_TOUCH"
+}

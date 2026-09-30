@@ -4,17 +4,17 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4_HUMAN_VISUAL_REMEDIATION",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "c71c7e800490059d36a5be6e266c28086b8db8f4",
-  "productTreeAuthority": "3db14440c7125e832fffd772a6e1a7230ae31453",
-  "predecessorProductSourceSha": "c1c4e748b39c5632e8648023433a00c15d57191b",
+  "productSourceSha": "f6c3bb6c038a77eee9cbca8bfbfd1096bfd48cbc",
+  "productTreeAuthority": "6175786674fd02e454ccc3674b492a29ab1ed482",
+  "predecessorProductSourceSha": "c71c7e800490059d36a5be6e266c28086b8db8f4",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "25c6518da85aaaa8a14bcd004d224793b44b94d1",
+  "findingsLedgerExpectedGitBlob": "8c72142d8bbd61809f1a80b1d5c119cba1528071",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "PREI4_CERT_RES_DEV_MATERIALIZATION_REQUIRED",
-  "nextFindingId": "VRM-115",
+  "activeBlocker": "PREI4_CERT_RES_RUNTIME_REMATERIALIZATION_REQUIRED",
+  "nextFindingId": "VRM-116",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Materialize exactly product source c71c7e800490059d36a5be6e266c28086b8db8f4 / tree 3db14440c7125e832fffd772a6e1a7230ae31453 to the existing Recovery DEV only: configure the tenant server-side Vertex AI setting idempotently, publish the scoped Firestore/Storage rules, perform one Cloud Run build/deploy and one Hosting deploy, then run authenticated Admin+Shopper live CERT/RES tests with fixture cleanup. Do not touch production.",
+  "exactNextAction": "Resume exact DEV materialization from source f6c3bb6c038a77eee9cbca8bfbfd1096bfd48cbc / tree 6175786674fd02e454ccc3674b492a29ab1ed482. Reuse the already-PASS Firestore and Storage rules deployment from Run 36789283777 because those files are byte-identical to the new source. Build the corrected image once, deploy Cloud Run once, deploy Hosting once, execute authenticated Admin+Shopper CERT/RES live proof with cleanup, then seal I3 if all P0 pass. Do not touch production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -483,7 +483,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "ea8846d254d1901ac1101c182098c46f995f1141",
+  "productSourceTree": "6175786674fd02e454ccc3674b492a29ab1ed482",
   "lastLiveReproof": {
     "runId": 36217529367,
     "runNumber": 465,
@@ -858,13 +858,15 @@
     "production": false
   },
   "pendingMaterialization": {
-    "findingId": "VRM-084",
-    "sourceSha": "09b4e56be96dedbeb89d14f1d190bfc5b8b4f990",
-    "sourceTree": "f6899a631b7b277b16614f1b6534103e7615f11e",
-    "mode": "HOSTING_ONLY",
-    "runtimeRevision": "cxorbia-live-hr-dev-00226-wj2",
-    "runtimeDigest": "sha256:d5093cdd92515bad11353c7dfb42e2d192c7f3dec264eea3d24dfcad8c6219bd",
-    "priorHostingVersion": "sites/cxorbia-backend-dev/versions/657dc30197e38cb4",
+    "sourceSha": "f6c3bb6c038a77eee9cbca8bfbfd1096bfd48cbc",
+    "sourceTree": "6175786674fd02e454ccc3674b492a29ab1ed482",
+    "mode": "RESUME_AFTER_RUNTIME_PACKAGING_FIX_REUSE_RULES",
+    "maxBuilds": 1,
+    "maxRuntimeDeploys": 1,
+    "maxHostingDeploys": 1,
+    "maxFirestoreRulesDeploys": 0,
+    "maxStorageRulesDeploys": 0,
+    "reusedRulesRunId": 36789283777,
     "production": false
   },
   "lastVrm080Proof": {
@@ -1484,15 +1486,13 @@
     "production": false
   },
   "latestSourceSuccessor": {
-    "findingId": "VRM-107",
-    "sourceSha": "c1c4e748b39c5632e8648023433a00c15d57191b",
-    "sourceTree": "ccb3d9da3c110e2d5fff57bae0d2d0eb76b3c4b4",
-    "predecessorSha": "2cff3441f126d7d805932127bb9de9289ba273ad",
-    "exactDelta": [
-      "backend/runtime/hr-live-service/server.mjs"
-    ],
-    "state": "SOURCE_FIX_REPROOF_REQUIRED",
-    "sameCanonicalCandidate": true,
+    "sourceSha": "f6c3bb6c038a77eee9cbca8bfbfd1096bfd48cbc",
+    "sourceTree": "6175786674fd02e454ccc3674b492a29ab1ed482",
+    "predecessorSha": "c71c7e800490059d36a5be6e266c28086b8db8f4",
+    "state": "SOURCE_PROVEN_RUN_36790808306",
+    "sourceContractJobId": 110142998390,
+    "artifactId": 11131847600,
+    "artifactDigest": "sha256:ce380279e6181b278fc0c94968a7f2a6d70a57a8d23df32a40d977e9e81abe24",
     "production": false
   },
   "run736CumulativeDevLiveClosure": {
@@ -1729,15 +1729,15 @@
   },
   "preI4CertResClosure": {
     "state": "SOURCE_PROVEN_READY_EXACT_DEV_MATERIALIZATION",
-    "sourceSha": "c71c7e800490059d36a5be6e266c28086b8db8f4",
-    "sourceTree": "3db14440c7125e832fffd772a6e1a7230ae31453",
-    "predecessorSha": "c1c4e748b39c5632e8648023433a00c15d57191b",
+    "sourceSha": "f6c3bb6c038a77eee9cbca8bfbfd1096bfd48cbc",
+    "sourceTree": "6175786674fd02e454ccc3674b492a29ab1ed482",
+    "predecessorSha": "c71c7e800490059d36a5be6e266c28086b8db8f4",
     "prematerializationLockPath": "CXORBIA_PRE_I4_CERT_RES_PREMATERIALIZATION_LOCK_2026-09-30.json",
     "sourceProof": {
-      "runId": 36788133836,
-      "jobId": 110134359753,
-      "artifactId": 11129824152,
-      "artifactDigest": "sha256:8cf103507690fa2b3e7d4b3130e7431570dad0d04c959deca9544136b255335c",
+      "runId": 36790808306,
+      "jobId": 110142998390,
+      "artifactId": 11131847600,
+      "artifactDigest": "sha256:ce380279e6181b278fc0c94968a7f2a6d70a57a8d23df32a40d977e9e81abe24",
       "decision": "PASS_PREI4_CERT_RES_SOURCE_CONTRACT"
     },
     "remainingP0": [
@@ -1745,7 +1745,16 @@
       "PREI4-CERT-002",
       "PREI4-RES-001"
     ],
-    "nextGate": "EXACT_DEV_MATERIALIZATION_AND_AUTHENTICATED_LIVE_PROOF",
-    "production": false
+    "nextGate": "RESUME_RUNTIME_HOSTING_AND_AUTHENTICATED_LIVE_PROOF",
+    "production": false,
+    "partialMaterialization": {
+      "runId": 36789283777,
+      "rulesDeployed": true,
+      "buildSucceeded": true,
+      "runtimeDeployFailed": true,
+      "failedRevision": "cxorbia-live-hr-dev-00234-sld",
+      "hostingDeployed": false,
+      "liveProofExecuted": false
+    }
   }
 }

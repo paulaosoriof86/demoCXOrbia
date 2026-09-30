@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "c71c7e800490059d36a5be6e266c28086b8db8f4",
-    "sourceTree": "3db14440c7125e832fffd772a6e1a7230ae31453",
-    "predecessorSha": "c1c4e748b39c5632e8648023433a00c15d57191b",
+    "sourceSha": "f6c3bb6c038a77eee9cbca8bfbfd1096bfd48cbc",
+    "sourceTree": "6175786674fd02e454ccc3674b492a29ab1ed482",
+    "predecessorSha": "c71c7e800490059d36a5be6e266c28086b8db8f4",
     "production": false,
-    "state": "SOURCE_PROVEN_READY_CERT_RES_DEV_MATERIALIZATION"
+    "state": "SOURCE_PROVEN_READY_CERT_RES_DEV_RESUME"
   },
   "rootCauseIds": [
     "RC-MONO-01_MULTIPLE_EXECUTABLE_PRODUCT_SOURCE_AUTHORITIES",
@@ -5440,6 +5440,42 @@
       },
       "remediationContract": "Promote the already source-proven c71c7e80 source/tree in both descriptor and append-only ledger, freeze the exact source proof, detached-probe the control-only tree, and re-run authority before any DEV materialization.",
       "production": false
+    },
+    "VRM-115": {
+      "id": "VRM-115",
+      "classification": "SOURCE_FAILURE",
+      "severity": "P0",
+      "title": "Cloud Run image omitted certification-runtime.mjs although server.mjs imported it",
+      "state": "FIXED_SOURCE_PROVEN_READY_DEV_RESUME",
+      "exactOwner": "backend/runtime/hr-live-service/Dockerfile",
+      "rootCause": "The CERT/RES source package added backend/runtime/hr-live-service/certification-runtime.mjs and server.mjs imported it, but the Dockerfile did not COPY that module into the runtime image. Cloud Build succeeded because Docker did not resolve Node imports; Cloud Run revision cxorbia-live-hr-dev-00234-sld then failed before listening on PORT=8080.",
+      "failureEvidence": {
+        "runId": 36789283777,
+        "jobId": 110138138739,
+        "buildId": "7f3d0dc0-71b6-4e36-a4a6-b96a5eb5a22a",
+        "failedRevision": "cxorbia-live-hr-dev-00234-sld",
+        "rulesDeployPassed": true,
+        "buildPassed": true,
+        "runtimeDeployPassed": false,
+        "hostingDeployExecuted": false,
+        "liveProofExecuted": false,
+        "production": false
+      },
+      "remediationContract": "Add the missing Docker COPY for certification-runtime.mjs, make image packaging self-check the module, extend the existing focal source gate to assert the Docker packaging contract, then resume materialization from the failed runtime step. Do not redeploy unchanged Firestore/Storage rules.",
+      "source": {
+        "sha": "f6c3bb6c038a77eee9cbca8bfbfd1096bfd48cbc",
+        "tree": "6175786674fd02e454ccc3674b492a29ab1ed482",
+        "predecessor": "c71c7e800490059d36a5be6e266c28086b8db8f4"
+      },
+      "closureEvidence": {
+        "runId": 36790808306,
+        "jobId": 110142998390,
+        "artifactId": 11131847600,
+        "artifactDigest": "sha256:ce380279e6181b278fc0c94968a7f2a6d70a57a8d23df32a40d977e9e81abe24",
+        "sourceContract": "success",
+        "production": false
+      },
+      "production": false
     }
   },
   "latestEvidenceOverrides": {
@@ -5971,14 +6007,15 @@
       "VRM-111",
       "VRM-112",
       "VRM-113",
-      "VRM-114"
+      "VRM-114",
+      "VRM-115"
     ],
-    "findingCount": 114,
-    "expectedCurrentRange": "VRM-001..VRM-114",
-    "nextFindingId": "VRM-115",
+    "findingCount": 115,
+    "expectedCurrentRange": "VRM-001..VRM-115",
+    "nextFindingId": "VRM-116",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_PREI4_CERT_RES_REMEDIATION_REQUIRED",
+    "terminalState": "HOLD_PREI4_CERT_RES_DEV_RESUME_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,

@@ -5640,8 +5640,8 @@ jobs:
         run: |
           set -Eeuo pipefail
           mkdir -p "$CERT_RES_MAT_OUT"
-          test "$CERT_RES_SOURCE" = "c71c7e800490059d36a5be6e266c28086b8db8f4"
-          test "$CERT_RES_TREE" = "3db14440c7125e832fffd772a6e1a7230ae31453"
+          test "$CERT_RES_SOURCE" = "f6c3bb6c038a77eee9cbca8bfbfd1096bfd48cbc"
+          test "$CERT_RES_TREE" = "6175786674fd02e454ccc3674b492a29ab1ed482"
           test "$(git rev-parse "$CERT_RES_SOURCE^{tree}")" = "$CERT_RES_TREE"
           git merge-base --is-ancestor "$CERT_RES_SOURCE" HEAD
           git diff --quiet "$CERT_RES_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
@@ -5685,13 +5685,11 @@ jobs:
           test "$(jq -r '.decision' "$CERT_RES_MAT_OUT/ai-setting.json")" = "PASS_PREI4_CERT_RES_AI_SETTING_CONFIGURED"
           test "$(jq -r '.serverProxy' "$CERT_RES_MAT_OUT/ai-setting.json")" = "true"
           test "$(jq -r '.production' "$CERT_RES_MAT_OUT/ai-setting.json")" = "false"
-      - name: Publish exact scoped Firestore and Storage rules to DEV
+      - name: Reuse exact scoped rules already deployed in Run747
         run: |
           set -Eeuo pipefail
-          cd "$SOURCE_DIR"
-          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "firestore:rules,storage" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$CERT_RES_MAT_OUT/rules-deploy.log"
-          cd "$GITHUB_WORKSPACE"
-          jq -n -S '{decision:"PASS_PREI4_CERT_RES_RULES_DEPLOY",firestoreRulesDeploys:1,storageRulesDeploys:1,production:false}' > "$CERT_RES_MAT_OUT/rules.json"
+          git diff --quiet c71c7e800490059d36a5be6e266c28086b8db8f4 "$CERT_RES_SOURCE" -- firestore.rules storage.rules
+          jq -n -S '{decision:"PASS_PREI4_CERT_RES_RULES_REUSED",authorityRunId:36789283777,firestoreRulesDeploysThisRun:0,storageRulesDeploysThisRun:0,byteIdentical:true,production:false}' > "$CERT_RES_MAT_OUT/rules.json"
       - name: Build exact CERT/RES source once
         run: |
           set -Eeuo pipefail
@@ -5758,7 +5756,7 @@ jobs:
         run: |
           set -Eeuo pipefail
           jq -n -S --arg source "$CERT_RES_SOURCE" --arg tree "$CERT_RES_TREE" --arg runtime "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg hosting "$HOSTING_VERSION_NAME" --arg hostingRelease "$HOSTING_RELEASE_NAME" --arg hr "$HR_REVISION" \
-            '{decision:"PASS_PREI4_CERT_RES_EXACT_DEV_MATERIALIZATION_AND_LIVE",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hostingRelease:$hostingRelease,hrRevision:$hr,p0:{"PREI4-CERT-001":"PASS_LIVE","PREI4-CERT-002":"PASS_LIVE","PREI4-RES-001":"PASS_LIVE"},builds:1,runtimeDeploys:1,hostingDeploys:1,firestoreRulesDeploys:1,storageRulesDeploys:1,hrWrites:0,production:false}' > "$CERT_RES_MAT_OUT/result.json"
+            '{decision:"PASS_PREI4_CERT_RES_EXACT_DEV_MATERIALIZATION_AND_LIVE",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hostingRelease:$hostingRelease,hrRevision:$hr,p0:{"PREI4-CERT-001":"PASS_LIVE","PREI4-CERT-002":"PASS_LIVE","PREI4-RES-001":"PASS_LIVE"},builds:1,runtimeDeploys:1,hostingDeploys:1,firestoreRulesDeploysThisRun:0,storageRulesDeploysThisRun:0,rulesAuthorityRunId:36789283777,hrWrites:0,production:false}' > "$CERT_RES_MAT_OUT/result.json"
       - name: Upload CERT/RES materialization evidence
         if: always()
         uses: actions/upload-artifact@v4
