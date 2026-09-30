@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_CONTENT_002_SOURCE_REPROOF_REQUIRED",
+  "status": "HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED",
   "iteration": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run one cumulative CONTENT-002 source guard on exact product source a29b8ad89391fb5537d1cbf765ef6ec86f775608 / tree ea8846d254d1901ac1101c182098c46f995f1141, including project questionnaire config + shopper progressive-route source tests. If PASS, materialize only the changed Hosting owners while preserving proven runtime cxorbia-live-hr-dev-00230-c5m, then rerun cumulative live Postulaciones + Identity + Finance + authenticated shopper route proof (assigned -> scheduled -> realized -> questionnaire -> review; external visit route has no general fallback; provider ACK required). No production.",
+  "exactNextAction": "Control-status reuse only: run the known-valid CONTENT-001 source-guard lane against cumulative successor a29b8ad89391fb5537d1cbf765ef6ec86f775608 / ea8846d254d1901ac1101c182098c46f995f1141, including the new shopper progressive-route source test. Functional blocker remains PREI4-CONTENT-002. If PASS, run the known-valid CONTENT-001 live lane using the CONTENT-002 runner/proof. No production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1181,7 +1181,7 @@
     "cumulativeSuccessorTree": "ea8846d254d1901ac1101c182098c46f995f1141"
   },
   "preI4Content002": {
-    "state": "SOURCE_FIX_REPROOF_REQUIRED",
+    "state": "SOURCE_REPROOF_RUNNING_VIA_KNOWN_VALID_CONTENT001_CONTROL_STATUS",
     "classification": "MAPPING_FAILURE",
     "sourceSha": "a29b8ad89391fb5537d1cbf765ef6ec86f775608",
     "sourceTree": "ea8846d254d1901ac1101c182098c46f995f1141",
@@ -1192,6 +1192,7 @@
     ],
     "testFile": "backend/runtime/hr-live-service/test/cxorbia-prei4-shopper-progressive-route.test.mjs",
     "contract": "Progressive shopper visit route + exact external-visit questionnaire routing + ACK-gated questionnaire completion.",
-    "production": false
+    "production": false,
+    "controlStatusReuse": "HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED"
   }
 }
