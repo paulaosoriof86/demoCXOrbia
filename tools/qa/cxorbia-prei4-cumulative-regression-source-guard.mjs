@@ -15,6 +15,7 @@ const parseList=(name,fallback=[])=>{try{const v=JSON.parse(process.env[name]||'
 const expectedDelta=parseList('CUM_EXPECTED_DELTA_JSON');
 const allowedPending=parseList('CUM_ALLOWED_PENDING_MODULES_JSON').sort();
 const expectedPending=parseList('CUM_EXPECTED_PENDING_FILES_JSON').sort();
+const allowedPostSuccessors=parseList('CUM_ALLOWED_POST002_SUCCESSOR_OWNERS_JSON').sort();
 if(!expectedDelta.length)throw new Error('RELEASE_COMPOSITION_FAILURE:CUMULATIVE_GUARD:EXPECTED_DELTA_REQUIRED');
 const hrOwners=[
   'backend/contracts/tya-hr-column-map-r20-v1.json',
@@ -43,19 +44,25 @@ fs.mkdirSync(OUT,{recursive:true});
 const diff=git('diff','--name-only',BASE,SOURCE,'--','app','backend','firebase.json','.firebaserc','firestore.rules','storage.rules','tools/hr-source').split('\n').filter(Boolean).sort();
 if(JSON.stringify(diff)!==JSON.stringify([...expectedDelta].sort()))fail('UNDECLARED_PRODUCT_DELTA:'+JSON.stringify(diff));
 
-const parity=(ref,paths,label)=>{
-  const bad=[];
+const parity=(ref,paths,label,allowedSuccessors=[])=>{
+  const allowed=new Set(allowedSuccessors);
+  const invalidAllowed=[...allowed].filter(p=>!paths.includes(p)||!expectedDelta.includes(p));
+  if(invalidAllowed.length)fail(label+'_INVALID_ALLOWED_SUCCESSOR:'+JSON.stringify(invalidAllowed));
+  const bad=[],approvedSuccessors=[];
   for(const p of paths){
     let a='',b='';
     try{a=git('rev-parse',ref+':'+p);}catch{bad.push({path:p,reason:'APPROVED_MISSING'});continue;}
     try{b=git('rev-parse',SOURCE+':'+p);}catch{bad.push({path:p,reason:'CURRENT_MISSING'});continue;}
-    if(a!==b)bad.push({path:p,approved:a,current:b});
+    if(a!==b){
+      if(allowed.has(p))approvedSuccessors.push({path:p,approved:a,current:b});
+      else bad.push({path:p,approved:a,current:b});
+    }else if(allowed.has(p))fail(label+'_DECLARED_SUCCESSOR_WITHOUT_DELTA:'+p);
   }
   if(bad.length)fail(label+'_BYTE_DRIFT:'+JSON.stringify(bad));
-  return paths.length;
+  return {byteParityOwners:paths.length-approvedSuccessors.length,approvedSuccessors};
 };
 const hrParity=parity(HR_SOURCE,hrOwners,'HR008');
-const postParity=parity(POST_SOURCE,postOwners,'POST002');
+const postParity=parity(POST_SOURCE,postOwners,'POST002',allowedPostSuccessors);
 const id3Parity=parity(ID3_SOURCE,id3Owners,'ADMIN003');
 
 const ledger=JSON.parse(fs.readFileSync(LEDGER,'utf8'));
@@ -113,7 +120,7 @@ const result={
   decision:'PASS_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD',
   sourceSha:SOURCE,sourceTree:TREE,baselineSource:BASE,
   exactDeclaredDelta:diff,
-  protectedByteParity:{hr008Owners:hrParity,post002Owners:postParity,admin003Owners:id3Parity},
+  protectedByteParity:{hr008Owners:hrParity.byteParityOwners,post002Owners:postParity.byteParityOwners,admin003Owners:id3Parity.byteParityOwners,post002ApprovedSuccessors:postParity.approvedSuccessors},
   moduleTruth:{
     moduleCount:mt.preTerminalComposition.moduleCount,
     matchModules:mt.preTerminalComposition.matchModules.length,
