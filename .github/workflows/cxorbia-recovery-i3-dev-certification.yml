@@ -40,6 +40,7 @@ on:
       - firestore.rules
       - storage.rules
       - tools/qa/cxorbia-prei4-cert-res-live.mjs
+      - tools/qa/cxorbia-prei4-cert-res-runtime-only.sh
       - tools/qa/cxorbia-i3-vrm079-documents-resources-live.mjs
       - app/modules/proyecto-wizard.js
       - tools/qa/cxorbia-i3-vrm078-external-project-live.mjs
@@ -5875,6 +5876,48 @@ jobs:
         with:
           name: cxorbia-prei4-cert-res-live-resume-${{ github.run_id }}
           path: .tmp/prei4-cert-res-live-resume
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+  pre-i4-cert-res-runtime-only-rematerialize:
+    name: PRE-I4 CERT/RES — runtime-only rematerialization + live closure
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CERT_RES_REMEDIATION_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-cert-res-runtime-only]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      CERT_RES_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      CERT_RES_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      CERT_RES_MAT_OUT: .tmp/prei4-cert-res-runtime-only
+    steps:
+      - name: Checkout Recovery control head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install live proof dependencies
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+      - name: Authenticate canonical Firebase DEV
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
+      - name: Runtime-only materialization and live closure
+        run: bash tools/qa/cxorbia-prei4-cert-res-runtime-only.sh
+      - name: Upload runtime-only closure evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-prei4-cert-res-runtime-only-${{ github.run_id }}
+          path: .tmp/prei4-cert-res-runtime-only
           if-no-files-found: error
           retention-days: 30
           compression-level: 0

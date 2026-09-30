@@ -53,6 +53,19 @@ const evidence={
   hrWrites:0,production:false
 };
 
+const staleFixturePeriods=['cert-res-fixture-36792293986'];
+let staleRecertificationsDeleted=0;
+for(const stalePeriod of staleFixturePeriods){
+  const stale=await tenant.collection('projects').doc(projectId).collection('certificationRecertifications').where('periodId','==',stalePeriod).get();
+  for(const doc of stale.docs){
+    if(str((doc.data()||{}).reason)==='Recovery PRE-I4 live fixture'){
+      await doc.ref.delete();
+      staleRecertificationsDeleted++;
+    }
+  }
+}
+evidence.preflightCleanup={staleRecertificationsDeleted,periods:staleFixturePeriods};
+
 async function signIn(member,expectedRole){
   const ctx=await browser.newContext({viewport:{width:1440,height:980}});
   const page=await ctx.newPage();

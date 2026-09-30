@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "f6c3bb6c038a77eee9cbca8bfbfd1096bfd48cbc",
-    "sourceTree": "6175786674fd02e454ccc3674b492a29ab1ed482",
-    "predecessorSha": "c71c7e800490059d36a5be6e266c28086b8db8f4",
+    "sourceSha": "f769041ddd6adacb5bb16b0eeddab7d08b47a7e8",
+    "sourceTree": "d83f57ed07ef684cd274d4b1db3a52d91f4ff400",
+    "predecessorSha": "f6c3bb6c038a77eee9cbca8bfbfd1096bfd48cbc",
     "production": false,
-    "state": "SOURCE_PROVEN_READY_CERT_RES_DEV_RESUME"
+    "state": "SOURCE_PROVEN_READY_RUNTIME_ONLY_REMATERIALIZATION"
   },
   "rootCauseIds": [
     "RC-MONO-01_MULTIPLE_EXECUTABLE_PRODUCT_SOURCE_AUTHORITIES",
@@ -5559,7 +5559,7 @@
       "classification": "PERSISTENCE_FAILURE",
       "severity": "P0",
       "title": "Recertification first-write response omitted the durable Firestore document id",
-      "state": "FIXED_SOURCE_PENDING_REPROOF",
+      "state": "FIXED_SOURCE_PROVEN_READY_RUNTIME_ONLY_MATERIALIZATION",
       "exactOwner": "backend/runtime/hr-live-service/certification-runtime.mjs",
       "rootCause": "saveRecertification created a deterministic Firestore docId and persisted the record, but on the first write returned the in-memory item without id. Replay paths included snap.id, creating an inconsistent ACK contract. The authenticated live proof therefore could not read back the just-created recertification by id.",
       "evidence": {
@@ -5584,14 +5584,21 @@
         "sha": "38ed6aab4acb3f017fd4107ae60237c6a7e956b0",
         "tree": "edbb45c9bfa8a739c03bc6c72684bea1da5f4566"
       },
-      "production": false
+      "production": false,
+      "sourceProof": {
+        "runId": 36792808797,
+        "jobId": 110149369214,
+        "artifactId": 11132915262,
+        "artifactDigest": "sha256:a24d3d1227dec87aeb6fbec71178c12d7a3752714f6633bc141beba30309dc52",
+        "decision": "PASS_PREI4_CERT_RES_SOURCE_CONTRACT"
+      }
     },
     "VRM-120": {
       "id": "VRM-120",
       "classification": "MAPPING_FAILURE",
       "severity": "P0_CONTROL",
       "title": "Recovery workflow push-path map omitted newly introduced CERT/RES source owners",
-      "state": "FIXED_CONTROL_PENDING_SOURCE_REPROOF",
+      "state": "FIXED_PROVEN_RUN_36792808797",
       "exactOwner": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
       "rootCause": "The source-proof workflow had assertions for CERT/RES files but its on.push.paths list had not been extended to those new owners. A product-only change to certification-runtime.mjs therefore did not dispatch the canonical Recovery gate.",
       "evidence": {
@@ -5600,7 +5607,13 @@
         "production": false
       },
       "remediationContract": "Add all current CERT/RES product/control owners to the canonical workflow push paths so any future focal change dispatches the same Recovery gate automatically.",
-      "production": false
+      "production": false,
+      "closureEvidence": {
+        "autoDispatchedRecoveryRunId": 36792808797,
+        "sourceContractJobId": 110149369214,
+        "conclusion": "success",
+        "production": false
+      }
     }
   },
   "latestEvidenceOverrides": {
@@ -6145,7 +6158,7 @@
     "nextFindingId": "VRM-121",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_PREI4_CERT_RES_SOURCE_REPROOF_REQUIRED",
+    "terminalState": "HOLD_PREI4_CERT_RES_RUNTIME_ONLY_REMATERIALIZATION_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,

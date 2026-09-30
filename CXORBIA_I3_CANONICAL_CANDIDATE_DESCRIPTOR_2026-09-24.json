@@ -4,16 +4,16 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4_HUMAN_VISUAL_REMEDIATION",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "f6c3bb6c038a77eee9cbca8bfbfd1096bfd48cbc",
-  "productTreeAuthority": "6175786674fd02e454ccc3674b492a29ab1ed482",
-  "predecessorProductSourceSha": "c71c7e800490059d36a5be6e266c28086b8db8f4",
+  "productSourceSha": "f769041ddd6adacb5bb16b0eeddab7d08b47a7e8",
+  "productTreeAuthority": "d83f57ed07ef684cd274d4b1db3a52d91f4ff400",
+  "predecessorProductSourceSha": "f6c3bb6c038a77eee9cbca8bfbfd1096bfd48cbc",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "a2a4ce6f5f64e9e3876ab22641a8c362f66018c8",
+  "findingsLedgerExpectedGitBlob": "1e54604c4f89505ae590eecc48817c7bef1fc84f",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "PREI4_CERT_RES_SOURCE_REPROOF_REQUIRED",
+  "activeBlocker": "PREI4_CERT_RES_RUNTIME_ONLY_REMATERIALIZATION_REQUIRED",
   "nextFindingId": "VRM-121",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run the canonical focal source contract on the minimal recertification ACK fix. If PASS, promote that exact successor, build/deploy Cloud Run only (no Hosting or rules changes), then repeat the authenticated CERT/RES live proof on the unchanged Hosting version.",
+  "exactNextAction": "Build and deploy only Cloud Run from exact source f769041ddd6adacb5bb16b0eeddab7d08b47a7e8 / tree d83f57ed07ef684cd274d4b1db3a52d91f4ff400. Keep Hosting version a0054d58a85a7d43 and existing Firestore/Storage rules unchanged. Then repeat authenticated CERT/RES live proof and cleanup.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -483,7 +483,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "6175786674fd02e454ccc3674b492a29ab1ed482",
+  "productSourceTree": "d83f57ed07ef684cd274d4b1db3a52d91f4ff400",
   "lastLiveReproof": {
     "runId": 36217529367,
     "runNumber": 465,
@@ -857,15 +857,16 @@
     "production": false
   },
   "pendingMaterialization": {
-    "sourceSha": "f6c3bb6c038a77eee9cbca8bfbfd1096bfd48cbc",
-    "sourceTree": "6175786674fd02e454ccc3674b492a29ab1ed482",
-    "mode": "RESUME_AFTER_RUNTIME_PACKAGING_FIX_REUSE_RULES",
+    "sourceSha": "f769041ddd6adacb5bb16b0eeddab7d08b47a7e8",
+    "sourceTree": "d83f57ed07ef684cd274d4b1db3a52d91f4ff400",
+    "mode": "RUNTIME_ONLY_REDEPLOY_REUSE_HOSTING_AND_RULES",
     "maxBuilds": 1,
     "maxRuntimeDeploys": 1,
-    "maxHostingDeploys": 1,
+    "maxHostingDeploys": 0,
     "maxFirestoreRulesDeploys": 0,
     "maxStorageRulesDeploys": 0,
-    "reusedRulesRunId": 36789283777,
+    "hostingAuthorityVersion": "sites/cxorbia-backend-dev/versions/a0054d58a85a7d43",
+    "rulesAuthorityRunId": 36789283777,
     "production": false
   },
   "lastVrm080Proof": {
@@ -1483,13 +1484,13 @@
     "production": false
   },
   "latestSourceSuccessor": {
-    "sourceSha": "f6c3bb6c038a77eee9cbca8bfbfd1096bfd48cbc",
-    "sourceTree": "6175786674fd02e454ccc3674b492a29ab1ed482",
-    "predecessorSha": "c71c7e800490059d36a5be6e266c28086b8db8f4",
-    "state": "SOURCE_PROVEN_RUN_36790808306",
-    "sourceContractJobId": 110142998390,
-    "artifactId": 11131847600,
-    "artifactDigest": "sha256:ce380279e6181b278fc0c94968a7f2a6d70a57a8d23df32a40d977e9e81abe24",
+    "sourceSha": "f769041ddd6adacb5bb16b0eeddab7d08b47a7e8",
+    "sourceTree": "d83f57ed07ef684cd274d4b1db3a52d91f4ff400",
+    "predecessorSha": "f6c3bb6c038a77eee9cbca8bfbfd1096bfd48cbc",
+    "state": "SOURCE_PROVEN_RUN_36792808797",
+    "sourceContractJobId": 110149369214,
+    "artifactId": 11132915262,
+    "artifactDigest": "sha256:a24d3d1227dec87aeb6fbec71178c12d7a3752714f6633bc141beba30309dc52",
     "production": false
   },
   "run736CumulativeDevLiveClosure": {
@@ -1725,20 +1726,18 @@
     }
   },
   "preI4CertResClosure": {
-    "state": "DEV_MATERIALIZED_PENDING_AUTHENTICATED_LIVE_PROOF",
-    "sourceSha": "f6c3bb6c038a77eee9cbca8bfbfd1096bfd48cbc",
-    "sourceTree": "6175786674fd02e454ccc3674b492a29ab1ed482",
+    "state": "SOURCE_PROVEN_PENDING_RUNTIME_ONLY_REMATERIALIZATION",
+    "sourceSha": "f769041ddd6adacb5bb16b0eeddab7d08b47a7e8",
+    "sourceTree": "d83f57ed07ef684cd274d4b1db3a52d91f4ff400",
     "predecessorSha": "c71c7e800490059d36a5be6e266c28086b8db8f4",
     "prematerializationLockPath": "CXORBIA_PRE_I4_CERT_RES_PREMATERIALIZATION_LOCK_2026-09-30.json",
     "sourceProof": {
-      "runId": 36790808306,
-      "jobId": 110142998390,
-      "artifactId": 11131847600,
-      "artifactDigest": "sha256:ce380279e6181b278fc0c94968a7f2a6d70a57a8d23df32a40d977e9e81abe24",
-      "decision": "PASS_PREI4_CERT_RES_SOURCE_CONTRACT"
+      "runId": 36792808797,
+      "jobId": 110149369214,
+      "artifactId": 11132915262,
+      "artifactDigest": "sha256:a24d3d1227dec87aeb6fbec71178c12d7a3752714f6633bc141beba30309dc52"
     },
     "remainingP0": [
-      "PREI4-CERT-001",
       "PREI4-CERT-002",
       "PREI4-RES-001"
     ],
@@ -1755,6 +1754,10 @@
     },
     "runtimeRevision": "cxorbia-live-hr-dev-00235-57l",
     "runtimeDigest": "sha256:71199bc92526864af7120c59298d002997792db467bb04936c10c26c02f5d06a",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/a0054d58a85a7d43"
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/a0054d58a85a7d43",
+    "provenLiveSoFar": {
+      "cert001": "PASS_LIVE",
+      "shopperAttempt": "PASS_100_ACK"
+    }
   }
 }
