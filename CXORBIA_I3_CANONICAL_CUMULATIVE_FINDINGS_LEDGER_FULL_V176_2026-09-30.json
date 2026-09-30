@@ -5284,7 +5284,7 @@
       "classification": "MAPPING_FAILURE",
       "severity": "P0_CONTROL",
       "title": "Credential-route diagnostic aggregated candidates.json with per-route result objects and failed jq type assumptions",
-      "state": "FIX_APPLIED_REPROOF_REQUIRED",
+      "state": "FIXED_PROVEN_RUN742",
       "exactOwner": "tools/qa/cxorbia-prei4-cert-res-credential-route-diagnostic.sh",
       "rootCause": "The diagnostic used a broad safe/*.json glob. That glob included candidates.json, which is an array, alongside per-route objects. The jq readiness mapper expected every input item to expose grantedPermissions and failed with 'Cannot index array with string grantedPermissions'.",
       "run741Evidence": {
@@ -5321,7 +5321,17 @@
         "production": false
       },
       "remediationContract": "Aggregate only per-route result files; exclude candidates.json. Repeat the same read-only gate once. Do not alter credentials, IAM, product source or environment.",
-      "production": false
+      "production": false,
+      "closureEvidence": {
+        "runId": 36780871571,
+        "authorityJob": "success",
+        "credentialRouteDiagnostic": "success",
+        "artifactId": 11128060396,
+        "artifactDigest": "sha256:a6660325535853ecfd6c36a7fde2db8ec3326d153dfff86c44ae876c9bbe28c6",
+        "writes": 0,
+        "deploys": 0,
+        "production": false
+      }
     }
   },
   "latestEvidenceOverrides": {
@@ -5883,7 +5893,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Repeat the corrected read-only credential-route diagnostic once. If it confirms no alternate creator credential and the existing DEV service account still lacks serviceusage.services.enable, firebasestorage.defaultBucket.create, firebaserules.releases.create and aiplatform.endpoints.predict, request only the minimum IAM roles on cxorbia-backend-dev needed for DEV provider activation. Production remains untouched.",
+  "exactNextAction": "Grant the four frozen DEV-only IAM roles in preI4CertResProviderCapability.requiredIam to the existing firebase-adminsdk service account on project cxorbia-backend-dev. Then Recovery will automatically re-read permissions, enable only the missing DEV APIs, create/link the default Firebase Storage bucket, publish scoped Storage rules, implement PREI4-CERT-001/002 and PREI4-RES-001 on the same cumulative candidate, and repeat only the affected gates. Production remains untouched.",
   "supersedesGitBlob": "397a9cee8c71d3156567a0cc96bfdcba88bb7c3a",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -7273,7 +7283,7 @@
     "PREI4-CONTENT-001",
     "PREI4-CONTENT-002"
   ],
-  "preI4NextAction": "Repeat the corrected read-only credential-route diagnostic once. If it confirms no alternate creator credential and the existing DEV service account still lacks serviceusage.services.enable, firebasestorage.defaultBucket.create, firebaserules.releases.create and aiplatform.endpoints.predict, request only the minimum IAM roles on cxorbia-backend-dev needed for DEV provider activation. Production remains untouched.",
+  "preI4NextAction": "Grant the four frozen DEV-only IAM roles in preI4CertResProviderCapability.requiredIam to the existing firebase-adminsdk service account on project cxorbia-backend-dev. Then Recovery will automatically re-read permissions, enable only the missing DEV APIs, create/link the default Firebase Storage bucket, publish scoped Storage rules, implement PREI4-CERT-001/002 and PREI4-RES-001 on the same cumulative candidate, and repeat only the affected gates. Production remains untouched.",
   "preI4Admin002": {
     "findingId": "PREI4-ADMIN-002",
     "state": "FIXED_PROVEN_RUN601",
@@ -9047,7 +9057,7 @@
     "production": false
   },
   "preI4CertResProviderCapability": {
-    "state": "NO_ALTERNATE_CREDENTIALS_PROVEN_RUN741_HARNESS_REPROOF_REQUIRED",
+    "state": "BLOCKED_EXACT_DEV_IAM_AUTHORIZATION_REQUIRED_RUN742",
     "runId": 36779681556,
     "artifactId": 11127490166,
     "artifactDigest": "sha256:62990b6952f7752b39738144123c132004f0b652d5c3a2daafdcb1ac8c796f53",
@@ -9115,6 +9125,85 @@
       "writes": 0,
       "deploys": 0,
       "production": false
+    },
+    "run742": {
+      "runId": 36780871571,
+      "artifactId": 11128060396,
+      "artifactDigest": "sha256:a6660325535853ecfd6c36a7fde2db8ec3326d153dfff86c44ae876c9bbe28c6",
+      "candidates": {
+        "dedicatedProjectCreator": {
+          "present": false,
+          "shapeValid": false
+        },
+        "alternateProjectCreator": {
+          "present": false,
+          "shapeValid": false
+        },
+        "existingDevServiceAccount": {
+          "present": true,
+          "shapeValid": true
+        }
+      },
+      "existingDevReadiness": {
+        "serviceEnable": false,
+        "firebaseDefaultBucketCreate": false,
+        "storageBucketCreate": true,
+        "rulesetCreate": true,
+        "rulesReleaseCreate": false,
+        "vertexPredict": false,
+        "projectRead": true
+      },
+      "existingDevGrantedPermissions": [
+        "firebase.projects.get",
+        "firebaserules.rulesets.create",
+        "resourcemanager.projects.get",
+        "serviceusage.services.get",
+        "storage.buckets.create",
+        "storage.buckets.get",
+        "storage.objects.create",
+        "storage.objects.get"
+      ],
+      "billingHttp": 403,
+      "billingEnabled": null,
+      "writes": 0,
+      "deploys": 0,
+      "production": false
+    },
+    "requiredIam": {
+      "projectId": "cxorbia-backend-dev",
+      "principal": "firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com",
+      "roles": [
+        {
+          "role": "roles/serviceusage.serviceUsageAdmin",
+          "covers": [
+            "serviceusage.services.enable"
+          ],
+          "purpose": "Enable only the missing DEV APIs."
+        },
+        {
+          "role": "roles/firebasestorage.admin",
+          "covers": [
+            "firebasestorage.defaultBucket.create"
+          ],
+          "purpose": "Create/link the default Firebase Storage bucket in the existing DEV project."
+        },
+        {
+          "role": "roles/firebaserules.admin",
+          "covers": [
+            "firebaserules.releases.create",
+            "firebaserules.rulesets.create"
+          ],
+          "purpose": "Publish the scoped Storage Security Rules."
+        },
+        {
+          "role": "roles/aiplatform.user",
+          "covers": [
+            "aiplatform.endpoints.predict"
+          ],
+          "purpose": "Invoke Vertex AI publisher models for real certification generation."
+        }
+      ],
+      "leastPrivilege": true
     }
   }
 }

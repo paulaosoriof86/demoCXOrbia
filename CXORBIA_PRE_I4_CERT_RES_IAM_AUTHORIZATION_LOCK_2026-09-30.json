@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "cxorbia.recovery.pre-i4-cert-res-iam-authorization.v1",
+  "frozenAt": "2026-09-30",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
+  "status": "HOLD_EXACT_DEV_IAM_AUTHORIZATION_REQUIRED",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "productSourceSha": "c1c4e748b39c5632e8648023433a00c15d57191b",
+  "productSourceTree": "ccb3d9da3c110e2d5fff57bae0d2d0eb76b3c4b4",
+  "evidence": {
+    "run740": {
+      "runId": 36780040955,
+      "artifactId": 11126284764
+    },
+    "run741": {
+      "runId": 36780577950,
+      "artifactId": 11127536200,
+      "finding": "VRM-110"
+    },
+    "run742": {
+      "runId": 36780871571,
+      "artifactId": 11128060396,
+      "authority": "PASS",
+      "credentialRouteDiagnostic": "PASS"
+    }
+  },
+  "projectId": "cxorbia-backend-dev",
+  "principal": "firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com",
+  "alternateCredentialsAvailable": false,
+  "requiredRoles": [
+    {
+      "role": "roles/serviceusage.serviceUsageAdmin",
+      "covers": [
+        "serviceusage.services.enable"
+      ],
+      "purpose": "Enable only the missing DEV APIs."
+    },
+    {
+      "role": "roles/firebasestorage.admin",
+      "covers": [
+        "firebasestorage.defaultBucket.create"
+      ],
+      "purpose": "Create/link the default Firebase Storage bucket in the existing DEV project."
+    },
+    {
+      "role": "roles/firebaserules.admin",
+      "covers": [
+        "firebaserules.releases.create",
+        "firebaserules.rulesets.create"
+      ],
+      "purpose": "Publish the scoped Storage Security Rules."
+    },
+    {
+      "role": "roles/aiplatform.user",
+      "covers": [
+        "aiplatform.endpoints.predict"
+      ],
+      "purpose": "Invoke Vertex AI publisher models for real certification generation."
+    }
+  ],
+  "afterAuthorization": [
+    "Read back granted permissions.",
+    "Enable only required missing DEV services.",
+    "Create/link the default Firebase Storage bucket in cxorbia-backend-dev.",
+    "Publish scoped Storage Security Rules.",
+    "Implement PREI4-CERT-001, PREI4-CERT-002 and PREI4-RES-001 on the same cumulative candidate.",
+    "Repeat only affected cumulative gates.",
+    "Resume frozen human visual acceptance."
+  ],
+  "forbidden": [
+    "new Firebase project",
+    "new repository",
+    "production deploy",
+    "data reimport",
+    "legacy database copy",
+    "parallel candidate"
+  ],
+  "production": "DO_NOT_TOUCH"
+}
