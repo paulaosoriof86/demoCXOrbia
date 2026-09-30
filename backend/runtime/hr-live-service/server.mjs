@@ -15,6 +15,7 @@ import { isLegalRuntimePath, maybeHandleLegalRuntimeRequest } from './legal-runt
 import { isCxorbiaCommandRuntimePath, maybeHandleCxorbiaCommandRuntimeRequest } from './cxorbia-command-runtime-v1.mjs';
 import { createShopperCommandProvider } from '../cxorbia-shopper-command-provider-v1.mjs';
 import { createOperationalCommandProvider } from '../cxorbia-operational-command-provider-v1.mjs';
+import { isCertificationRuntimePath, maybeHandleCertificationRuntimeRequest } from './certification-runtime.mjs';
 
 const HERE=path.dirname(fileURLToPath(import.meta.url));
 const ROOT=path.resolve(HERE,'../../..');
@@ -217,21 +218,27 @@ async function protectedPlatformState(current,principal,scope,operational){
   const projectRef=principal.db.collection('tenants').doc(scope.tenantId).collection('projects').doc(scope.projectId);
   const reservationsRef=projectRef.collection('reservations');
   const certificationsRef=projectRef.collection('certifications');
-  let reservationSnap,certificationSnap;
+  const recertificationsRef=projectRef.collection('certificationRecertifications');
+  let reservationSnap,certificationSnap,recertificationSnap;
   if(principal.role==='shopper'){
     if(!principal.shopperId)throw new Error('AUTH_FAILURE:PROTECTED_RUNTIME_SHOPPER_ID_REQUIRED');
-    [reservationSnap,certificationSnap]=await Promise.all([
+    [reservationSnap,certificationSnap,recertificationSnap]=await Promise.all([
       reservationsRef.where('shopperId','==',principal.shopperId).get(),
-      certificationsRef.where('shopperId','==',principal.shopperId).get()
+      certificationsRef.where('shopperId','==',principal.shopperId).get(),
+      recertificationsRef.get()
     ]);
   }else if(['super','admin','ops','coordinador'].includes(principal.role)){
-    [reservationSnap,certificationSnap]=await Promise.all([reservationsRef.get(),certificationsRef.get()]);
+    [reservationSnap,certificationSnap,recertificationSnap]=await Promise.all([reservationsRef.get(),certificationsRef.get(),recertificationsRef.get()]);
   }else{
-    reservationSnap={docs:[]};certificationSnap={docs:[]};
+    reservationSnap={docs:[]};certificationSnap={docs:[]};recertificationSnap={docs:[]};
   }
   const reservations=reservationSnap.docs.map(doc=>({id:doc.id,...(doc.data()||{})}));
   const certifications=certificationSnap.docs.map(doc=>({id:doc.id,...(doc.data()||{}),projectId:doc.data()?.projectId||scope.projectId}));
-  return {snapshot,protectedState:{reservations,certifications,certificationAuthority:'firestore_project_certifications_exact_identity',identityAuthority:'hr_exact_crosswalk',crosswalkTokenCount:cross.size,mappedShoppers,mappedVisits,sourceRevision:current.revision}};
+  const certificationRecertifications=recertificationSnap.docs.map(doc=>({id:doc.id,...(doc.data()||{}),projectId:doc.data()?.projectId||scope.projectId})).filter(row=>{
+    if(principal.role!=='shopper')return true;
+    return String(row.status||'active')==='active'&&(String(row.scope)==='all'||(Array.isArray(row.targetShopperIds)&&row.targetShopperIds.map(String).includes(principal.shopperId)));
+  });
+  return {snapshot,protectedState:{reservations,certifications,certificationRecertifications,certificationAuthority:'firestore_project_certifications_exact_identity',identityAuthority:'hr_exact_crosswalk',crosswalkTokenCount:cross.size,mappedShoppers,mappedVisits,sourceRevision:current.revision}};
 }
 
 function shopperPolicy(snapshot){
@@ -434,6 +441,15 @@ const server=http.createServer(async(req,res)=>{
   }
   if(isLegalRuntimePath(url.pathname)){
     await maybeHandleLegalRuntimeRequest(req,res,url);
+    return;
+  }
+  if(isCertificationRuntimePath(url.pathname)){
+    await maybeHandleCertificationRuntimeRequest(req,res,url,{
+      ensureAdmin,
+      verifyPrincipal:verifiedProtectedPrincipal,
+      sendJson,
+      currentSourceRevision:()=>String(cache?.revision||'')
+    });
     return;
   }
   if(isCxorbiaCommandRuntimePath(url.pathname)){

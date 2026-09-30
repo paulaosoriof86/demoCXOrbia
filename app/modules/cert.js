@@ -7,7 +7,7 @@ CX.certStore = CX.certStore || {
     if(this.connected()){
       const rows=CX.backendResources?.list?.({projectId:CX.data.currentProjectId,periodId:pid,resourceType:'certification_bank'})||[];
       const row=rows.find(x=>x.id===this.resourceId(pid))||rows[0];
-      return row?.bank||null;
+      return row?.bank?Object.assign({},row.bank,{__resourceId:row.id,__resourceVersion:row.version}):null;
     }
     return this._demo[pid]||null;
   },
@@ -56,6 +56,17 @@ CX.module('cert', ({role,data,ui})=>{
        estado confirmado por backend habilitan tomar el examen. Antes cualquier banco con
        preguntas se ofrecía sin mirar su estado. */
     const bank=CX.certStore.bank(p.id);
+    const shopper=currentShopper(),shopperId=String(shopper?.id||shopper?.shopperId||CX.session?.user?.shopperId||'');
+    const durable=CX.backendCertifications?.durableCurrent?.(shopperId,bank);
+    const carry=CX.backendCertifications?.carryoverDecision?.(shopper,bank,data.currentProjectId||p.projectId||'')||{state:'none',eligibilityGranted:false};
+    if(durable){
+      return `${ui.ph('Certificación', p.name+' · certificación vigente')}
+        <div class="card card-p" style="border-left:4px solid var(--green)"><div class="card-t">✓ Certificación vigente</div><div style="font-size:12.5px;color:var(--t2);margin-top:6px">Último intento aprobado: <b>${durable.score}%</b> · requisito ${durable.gate}% · persistido con ACK remoto el ${String(durable.createdAt||'').slice(0,10)}.</div></div>`;
+    }
+    if(carry.eligibilityGranted===true){
+      return `${ui.ph('Certificación', p.name+' · certificación histórica reutilizada')}
+        <div class="card card-p" style="border-left:4px solid var(--green)"><div class="card-t">✓ Certificación vigente por carryover exacto</div><div style="font-size:12.5px;color:var(--t2);margin-top:6px">La certificación histórica aprobada coincide exactamente con el proyecto y la revisión contractual del banco vigente. No necesitas recertificarte mientras esta equivalencia siga válida.</div></div>`;
+    }
     /* P0-7 (paquete acumulado 20260711): 'pending_backend' significa "esperando confirmación de
        backend", NO "disponible para tomar" — incluirlo aquí dejaba certificar sobre un banco que
        todavía no está aprobado ni confirmado. Solo approved_preview (práctica, rotulada como tal)
@@ -81,21 +92,34 @@ CX.module('cert', ({role,data,ui})=>{
             <div class="between" style="margin-top:8px"><span class="muted" style="font-size:11.5px">Responde y verifica; el feedback explica cada respuesta.</span><button class="btn btn-pr btn-sm" id="examGo">Verificar y certificar</button></div>
           </div>`;
         host.querySelectorAll('input[type=radio]').forEach(r=>r.addEventListener('change',e=>{answers[e.target.name]=e.target.value;}));
-        host.querySelector('#examGo').addEventListener('click',()=>{
-          let ok=0; bank.preguntas.forEach((q,i)=>{
-            const mine=answers['q'+i], correct=(mine||'').trim().toLowerCase()===(q.correcta||'').trim().toLowerCase();
-            if(correct)ok++;
-            const fb=host.querySelector('.examFb[data-i="'+i+'"]'); if(fb){fb.style.display='block';
-              fb.innerHTML=(correct?'<b style="color:var(--green)">✓ Correcta</b>':'<b style="color:var(--amber)">↻ A reforzar</b> · correcta: <b style="color:var(--green)">'+(q.correcta||'—')+'</b>')+(q.exp?'<div style="color:var(--t2);margin-top:3px">'+q.exp+'</div>':'');}
-          });
-          const score=Math.round(ok/bank.preguntas.length*100); const pass=score>=(bank.gate||80);
-          const isPreviewOnly = bank.estado==='approved_preview';
-          const box=host.querySelector('#examBox');
-          box.insertAdjacentHTML('afterbegin',`<div class="flex" style="gap:14px;background:var(--${pass?'green':'amber'}-bg);border-radius:11px;padding:13px 16px;margin-bottom:12px"><div style="font-family:var(--disp);font-size:30px;font-weight:800;color:var(--${pass?'green':'amber'})">${score}%</div><div><b style="color:var(--t1)">${pass?'Aprobado':'No alcanzado'}</b> · ${ok}/${bank.preguntas.length} correctas · requisito ${bank.gate||80}%<div style="font-size:12px;color:var(--t3)">${pass?(isPreviewOnly?'Práctica aprobada — la certificación oficial todavía no está publicada.':'Ya puedes ejecutar tus visitas de este proyecto.'):'Repasa el feedback y vuelve a intentarlo.'}</div></div></div>`);
-          /* P0-7: una práctica en preview NO es un evento operativo real — solo se registra el
-             evento de automatización cuando el banco ya está confirmed/published (no approved_preview). */
-          if(!isPreviewOnly) CX.automations&&CX.automations.fire&&CX.automations.fire('certificacion',{shopper:(CX.session.user&&CX.session.user.name)||'',score,pass});
-          ui.toast(pass?(isPreviewOnly?'✓ Práctica aprobada ('+score+'%)':'✓ Certificación aprobada ('+score+'%)'):'Puntaje '+score+'% · no alcanzó el requisito mínimo','ok',4000);
+        host.querySelector('#examGo').addEventListener('click',async()=>{
+          const btn=host.querySelector('#examGo'),isPreviewOnly=bank.estado==='approved_preview';
+          const selected=bank.preguntas.map((q,i)=>answers['q'+i]||'');
+          if(selected.some(x=>!x)){ui.toast('Responde todas las preguntas antes de enviar.','warn',3500);return;}
+          btn.disabled=true;btn.textContent=isPreviewOnly?'Verificando práctica…':'Guardando intento…';
+          try{
+            let result;
+            if(isPreviewOnly){
+              let ok=0;
+              const feedback=bank.preguntas.map((q,i)=>{const mine=selected[i],correct=mine.trim().toLowerCase()===(q.correcta||'').trim().toLowerCase();if(correct)ok++;return {index:i,ok:correct,selected:mine,correcta:q.correcta||'',exp:q.exp||''};});
+              const score=Math.round(ok/bank.preguntas.length*100);
+              result={score,pass:score>=(bank.gate||80),gate:bank.gate||80,feedback,preview:true};
+            }else{
+              if(!CX.backendCertifications?.submitAttempt)throw new Error('CERT_PERSISTENCE_PROVIDER_UNAVAILABLE');
+              result=await CX.backendCertifications.submitAttempt({periodId:p.id,bankResourceId:bank.__resourceId,answers:selected});
+              if(!(result?.providerAck===true&&result?.committed===true))throw new Error('CERT_ATTEMPT_ACK_REQUIRED');
+            }
+            const score=Number(result.score||0),pass=result.pass===true,feedback=Array.isArray(result.feedback)?result.feedback:[];
+            feedback.forEach(x=>{const fb=host.querySelector('.examFb[data-i="'+x.index+'"]');if(fb){fb.style.display='block';fb.innerHTML=(x.ok?'<b style="color:var(--green)">✓ Correcta</b>':'<b style="color:var(--amber)">↻ A reforzar</b> · correcta: <b style="color:var(--green)">'+(x.correcta||'—')+'</b>')+(x.exp?'<div style="color:var(--t2);margin-top:3px">'+x.exp+'</div>':'');}});
+            const ok=feedback.filter(x=>x.ok).length,box=host.querySelector('#examBox');
+            box.insertAdjacentHTML('afterbegin',`<div class="flex" style="gap:14px;background:var(--${pass?'green':'amber'}-bg);border-radius:11px;padding:13px 16px;margin-bottom:12px"><div style="font-family:var(--disp);font-size:30px;font-weight:800;color:var(--${pass?'green':'amber'})">${score}%</div><div><b style="color:var(--t1)">${pass?'Aprobado':'No alcanzado'}</b> · ${ok}/${bank.preguntas.length} correctas · requisito ${result.gate||bank.gate||80}%<div style="font-size:12px;color:var(--t3)">${pass?(isPreviewOnly?'Práctica aprobada — no modifica elegibilidad.':'Intento persistido con ACK remoto · certificación vigente.'):'Intento persistido · repasa el feedback y vuelve a intentarlo.'}</div></div></div>`);
+            if(!isPreviewOnly)CX.automations?.fire?.('certificacion',{shopper:(CX.session.user&&CX.session.user.name)||'',score,pass});
+            ui.toast(pass?(isPreviewOnly?'✓ Práctica aprobada ('+score+'%)':'✓ Certificación aprobada y guardada ('+score+'%)'):'Puntaje '+score+'% · intento guardado','ok',4200);
+          }catch(error){
+            ui.toast('No se pudo confirmar el intento: '+String(error?.message||error),'warn',5200);
+          }finally{
+            btn.disabled=false;btn.textContent='Verificar y certificar';
+          }
         });
       };
       draw(); return host;
@@ -108,7 +132,7 @@ CX.module('cert', ({role,data,ui})=>{
     if(!_showFixturesShopper){
       const ev=historicalEvidenceFor(currentShopper()),approved=ev.filter(x=>String(x.sourceLegacyStatus||'').toLowerCase()==='approved').length,failed=ev.filter(x=>String(x.sourceLegacyStatus||'').toLowerCase()==='failed').length;
       return `${ui.ph('Certificación', p.name+' · aprueba el escenario antes de ejecutar')}
-        ${ev.length?`<div class="card card-p" style="margin-bottom:12px;border-left:4px solid var(--amber)"><div class="card-t" style="font-size:13px">Evidencia histórica de certificación</div><div style="font-size:12px;color:var(--t2);line-height:1.6;margin-top:6px">${ev.length} registro(s) vinculados por identidad técnica exacta · ${approved} aprobado(s) históricamente${failed?' · '+failed+' no aprobado(s)':''}. Esta evidencia está pendiente de validación y <b>no habilita la certificación vigente ni la elegibilidad para ejecutar visitas</b>.</div></div>`:''}
+        ${ev.length?`<div class="card card-p" style="margin-bottom:12px;border-left:4px solid var(--amber)"><div class="card-t" style="font-size:13px">Evidencia histórica de certificación</div><div style="font-size:12px;color:var(--t2);line-height:1.6;margin-top:6px">${ev.length} registro(s) vinculados por identidad técnica exacta · ${approved} aprobado(s) históricamente${failed?' · '+failed+' no aprobado(s)':''}. Esta evidencia se valida contra el banco vigente. Solo una coincidencia contractual exacta habilita carryover; evidencia vencida, no equivalente, pendiente o fallida no concede elegibilidad.</div></div>`:''}
         <div class="card card-p">${ui.degraded('Todavía no hay un banco de certificación publicado ni una certificación vigente validada para este proyecto. No se muestra una aprobación fabricada.',{title:'Certificación vigente · pendiente de validación/publicación'})}</div>`;
     }
     const fb=[
@@ -171,8 +195,8 @@ CX.module('cert', ({role,data,ui})=>{
       <div data-ck="gate" style="cursor:pointer">${ui.kpi('Requisito activo',bank&&bank.gate?'Sí':'No','p')}</div>
     </div>
     <div class="card card-p">
-      <div style="font-size:12px;color:var(--t2);line-height:1.65;margin-bottom:10px"><b>Evidencia histórica exacta:</b> ${all.length} registro(s), ${approved} aprobado(s) legacy${failed?' y '+failed+' no aprobado(s)':''}. Se muestran como evidencia de historial, no como certificación vigente ni como permiso de ejecución.</div>
-      ${bank&&bank.estado==='approved_preview'?ui.degraded('Banco revisado por '+(bank.revisadoPor||'—')+' y disponible para práctica. La publicación oficial sigue pendiente.',{title:'Certificación · práctica disponible · publicación pendiente'}):ui.degraded('La certificación vigente continúa pendiente de una fuente/revisión autorizada. El historial legacy no se promueve automáticamente a elegibilidad actual.', {title:'Certificación vigente · pendiente de validación'})}
+      <div style="font-size:12px;color:var(--t2);line-height:1.65;margin-bottom:10px"><b>Evidencia histórica exacta:</b> ${all.length} registro(s), ${approved} aprobado(s) legacy${failed?' y '+failed+' no aprobado(s)':''}. Se evalúan contra la revisión contractual exacta del banco vigente: solo una equivalencia demostrada puede reutilizarse como carryover.</div>
+      ${bank&&bank.estado==='approved_preview'?ui.degraded('Banco revisado por '+(bank.revisadoPor||'—')+' y disponible para práctica. La publicación oficial sigue pendiente.',{title:'Certificación · práctica disponible · publicación pendiente'}):ui.degraded('La certificación vigente continúa pendiente de una fuente/revisión autorizada. El historial solo habilita carryover cuando existe equivalencia exacta de proyecto y contenido; en caso contrario permanece en revisión.', {title:'Certificación vigente · pendiente de validación'})}
     </div>`;})()}`}`;
   setTimeout(()=>{
     const ckData={
@@ -184,58 +208,47 @@ CX.module('cert', ({role,data,ui})=>{
     document.querySelectorAll('#certKpis [data-ck]').forEach(el=>el.addEventListener('click',()=>{const d=ckData[el.dataset.ck];ui.modal(d[0],d[1]);}));
     const ia=document.getElementById('certIA');
     if(ia)ia.addEventListener('click',()=>ui.modal('🤖 Crear certificación con IA · '+p.name,`
-      <p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Carga el <b>instructivo / protocolo</b> del proyecto (o pega el texto) y la IA genera el <b>banco de preguntas</b> de certificación con su respuesta correcta y explicación. Editas y publicas.</p>
+      <p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Carga el <b>instructivo / protocolo</b> del proyecto (o pega el texto). La generación se ejecuta en el backend con Vertex AI; el navegador no recibe credenciales.</p>
       <input type="file" class="inp" id="ciF" accept=".pdf,.doc,.docx,.txt,image/*" style="padding:7px;margin-bottom:8px">
       <textarea class="inp" id="ciT" rows="4" placeholder="…o pega el instructivo / qué debe dominar el evaluador" style="margin-bottom:10px"></textarea>
-      <div class="grid g2" style="gap:10px 12px;margin-bottom:6px">
-        <div><label class="lbl">Nº de preguntas</label><input class="inp" id="ciN" type="number" value="10"></div>
-        <div><label class="lbl">% mínimo para aprobar</label><input class="inp" id="ciG" type="number" value="80"></div>
-      </div>
-      <div style="text-align:right;margin-top:10px"><button class="btn btn-green btn-sm" id="ciGo">Generar banco</button></div>
-    `,{onMount:(ov,close)=>{ov.querySelector('#ciGo').addEventListener('click',()=>{
-      const n=+ov.querySelector('#ciN').value||10, g=+ov.querySelector('#ciG').value||80;
-      const pasted=(ov.querySelector('#ciT').value||'').trim();
-      /* P0.1 (V98): heurística local directa — nunca se llama CX.ai.ask() (available() es
-         siempre false en el navegador); nunca bloquea por falta de proveedor configurado. */
-      CX.ai.readAttachment(ov.querySelector('#ciF')).then(fileTxt=>{
-        const txt=(pasted+fileTxt).trim();
-        if(!txt){ ui.toast('Pega el instructivo o adjunta un archivo con texto','warn',4000); return; }
-        /* extrae oraciones del instructivo y arma preguntas simples de opción múltiple */
-        const oraciones=txt.replace(/\s+/g,' ').split(/(?<=[.!?])\s+/).map(s=>s.trim()).filter(s=>s.length>25).slice(0,n);
-        const preguntas=oraciones.map((s,i)=>{
-          const frag=s.length>90?s.slice(0,90)+'…':s;
-          return {q:'Según el instructivo, ¿cuál afirmación es correcta? (fragmento '+(i+1)+')',ops:[frag,'Lo opuesto a lo indicado en el instructivo','No se menciona en el instructivo','Aplica solo si el cliente lo autoriza'],correcta:frag,exp:'Extraído directamente del instructivo — revisa y ajusta el redactado antes de publicar.'};
-        });
-        const creador=(CX.session&&CX.session.user&&CX.session.user.name)||'—';
-        /* Bloque 5 (corrección V103, 20260711): bug real — el revisor era un <input> de texto
-           libre (cualquiera podía escribir cualquier nombre, incluso inventado). Ahora se elige
-           de un ROSTER real de personas con el permiso 'certification.publish' en este proyecto
-           (CX.ROLES + equipo con acceso), nunca texto libre. Sigue exigiendo que sea distinto al
-           generador. Queda honestamente rotulado: en este prototipo no hay sesiones concurrentes
-           reales, así que esto es una simulación de "segundo actor" — la confirmación de
-           identidad/autenticación real la hace el sistema central (verificación de identidad) en producción. */
-        const roster=(CX.ROLES||[]).filter(r=>['super','admin','coordinador'].includes(r.id)).map(r=>r.label);
-        const rosterOpts=roster.filter(n=>n.toLowerCase()!==creador.toLowerCase());
-        ui.modal('🤖 Banco generado ('+preguntas.length+' preguntas · requisito mínimo '+g+'%) — borrador local',
-          `<div style="font-size:10.5px;color:var(--t3);margin-bottom:8px">Generado con heurística local (sin proveedor de IA real conectado) — <b>revisión humana obligatoria por una persona distinta a quien lo generó</b> antes de publicar; ajusta el redactado de cada pregunta.</div>
-          <div class="acad-content" style="font-size:12.5px;line-height:1.55;max-height:52vh;overflow:auto">${preguntas.length?preguntas.map((q,i)=>`<div style="border:1px solid var(--border);border-radius:8px;padding:9px 11px;margin-bottom:7px"><b>${i+1}. ${q.q}</b><div style="color:var(--t3);margin-top:3px">${(q.ops||[]).join(' · ')}</div><div style="color:var(--green);margin-top:2px">✓ ${q.correcta}</div></div>`).join(''):'<p style="color:var(--t3)">No se pudieron extraer preguntas de este texto — intenta con un instructivo más largo.</p>'}</div>
-          <div style="font-size:11px;color:var(--t3);margin:10px 0 4px">Generado por: <b>${creador}</b></div>
-          <label class="lbl">Quién revisa y aprueba (rol distinto al generador — no texto libre)</label>
-          <select class="sel" id="pubRevisor" style="margin-bottom:6px">${rosterOpts.length?('<option value="">Selecciona…</option>'+rosterOpts.map(n=>`<option>${n}</option>`).join('')):'<option value="">Sin otro rol disponible en este proyecto</option>'}</select>
-          <div style="font-size:10px;color:var(--t3);margin-bottom:10px">Simulación de segundo actor dentro del prototipo (sin sesiones concurrentes reales) — la verificación de identidad real la hace el sistema central (verificación de identidad) en producción.</div>
-          <div style="text-align:right;margin-top:2px"><button class="btn btn-pr btn-sm" id="pubBank" ${preguntas.length?'':'disabled'}>Confirmar revisión · publicar banco</button></div>`,
-          {onMount:(o2,c2)=>o2.querySelector('#pubBank').addEventListener('click',async()=>{
-        if(!CX.permissions.gate('certification.publish',CX.permissions.ctx({entityType:'certification_bank',entityId:p.id}),ui)) return;
-            const revisor=(o2.querySelector('#pubRevisor').value||'').trim();
-            if(!revisor){ ui.toast('Selecciona quién revisa (segundo actor obligatorio)','warn',3200); return; }
-            if(revisor.toLowerCase()===creador.toLowerCase()){ ui.toast('El revisor debe ser una persona distinta a quien generó el banco (segundo actor obligatorio)','warn',4500); return; }
-            const auditRef='aud_'+Math.random().toString(36).slice(2,8)+Date.now().toString(36).slice(-4);
-            const result=await CX.certStore.save(p.id,{preguntas,gate:g,fecha:new Date().toISOString().slice(0,10),generadoPor:creador,revisadoPor:revisor,auditRef,estado:'approved_preview'});
-            if(!(result?.ok===true&&result?.status==='committed'&&result?.providerAck===true)){ui.toast('Banco no guardado: el cambio no pudo confirmarse.','warn',4400);return;}
-            c2();draw();ui.toast(CX.certStore.connected()?'✅ Banco guardado correctamente':'✅ Banco aprobado en modo demo','ok',5200);
-          })});
-      });
+      <div class="grid g2" style="gap:10px 12px;margin-bottom:6px"><div><label class="lbl">Nº de preguntas</label><input class="inp" id="ciN" type="number" value="10"></div><div><label class="lbl">% mínimo para aprobar</label><input class="inp" id="ciG" type="number" value="80"></div></div>
+      <div style="text-align:right;margin-top:10px"><button class="btn btn-green btn-sm" id="ciGo">Generar banco con IA</button></div>
+    `,{onMount:(ov,close)=>{ov.querySelector('#ciGo').addEventListener('click',async()=>{
+      const btn=ov.querySelector('#ciGo'),n=+ov.querySelector('#ciN').value||10,g=+ov.querySelector('#ciG').value||80,pasted=(ov.querySelector('#ciT').value||'').trim();
+      btn.disabled=true;btn.textContent='Generando…';
+      try{
+        const fileTxt=await CX.ai.readAttachment(ov.querySelector('#ciF')),txt=(pasted+fileTxt).trim();
+        if(!txt)throw new Error('Pega el instructivo o adjunta un archivo con texto');
+        if(!CX.ai?.ready?.())await CX.backendAI?.load?.();
+        if(!CX.ai?.ready?.())throw new Error('AI_PROVIDER_NOT_CONFIGURED');
+        const generated=await CX.ai.ask(txt,{module:'certification',questionCount:n,gate:g});
+        if(!(generated?.providerAck===true&&Array.isArray(generated.preguntas)&&generated.preguntas.length))throw new Error('AI_PROVIDER_ACK_REQUIRED');
+        const uid=CX.backendCertifications?.currentUid?.()||'',creador=CX.session?.user?.name||uid||'—';
+        const bankDraft={preguntas:generated.preguntas,gate:g,fecha:new Date().toISOString().slice(0,10),generadoPor:creador,generadoPorUid:uid,estado:'pending_review',provider:generated.provider,model:generated.model,providerAck:true,contentRevision:generated.contentRevision,generatedAt:new Date().toISOString()};
+        const saved=await CX.certStore.save(p.id,bankDraft);
+        if(!(saved?.providerAck===true&&saved?.committed===true))throw new Error('CERT_BANK_DURABLE_ACK_REQUIRED');
+        close();ui.toast('Banco generado por IA real y guardado · requiere revisión por otro administrador antes de publicarse.','ok',5200);CX.router?.nav?.('cert');
+      }catch(error){
+        ui.toast('No se pudo generar el banco: '+String(error?.message||error),'warn',5600);
+      }finally{
+        btn.disabled=false;btn.textContent='Generar banco con IA';
+      }
     });}}));
+    if(bank?.estado==='pending_review'){
+      const publish=document.createElement('button');publish.className='btn btn-green btn-sm';publish.id='certPublish';publish.textContent='✓ Revisar y publicar banco';ia.insertAdjacentElement('afterend',publish);
+      publish.addEventListener('click',async()=>{
+        const uid=CX.backendCertifications?.currentUid?.()||'';
+        if(!uid){ui.toast('Sesión autenticada requerida.','warn');return;}
+        if(String(bank.generadoPorUid||'')===uid){ui.toast('La revisión debe realizarla una persona distinta a quien generó el banco.','warn',4800);return;}
+        if(!CX.permissions.gate('certification.publish',CX.permissions.ctx({entityType:'certification_bank',entityId:p.id}),ui))return;
+        const reviewer=CX.session?.user?.name||uid;
+        const next=Object.assign({},bank,{estado:'published',revisadoPor:reviewer,revisadoPorUid:uid,publishedAt:new Date().toISOString()});
+        delete next.__resourceId;delete next.__resourceVersion;
+        const saved=await CX.certStore.save(p.id,next);
+        if(!(saved?.providerAck===true&&saved?.committed===true)){ui.toast('No fue posible confirmar la publicación.','warn',4200);return;}
+        ui.toast('Banco revisado y publicado con ACK remoto.','ok',4200);CX.router?.nav?.('cert');
+      });
+    }
     const imp=document.getElementById('certImp');
     if(imp)imp.addEventListener('click',()=>ui.modal('Importar banco de preguntas',`<p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Sube tu banco (CSV/Excel) o pégalo. Formato: pregunta | opción correcta | opciones incorrectas.</p><input type="file" class="inp" style="padding:7px;margin-bottom:10px"><textarea class="inp" rows="4" placeholder="Pega aquí…"></textarea><div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" onclick="CX.ui.toast('Banco importado (demo)','ok');this.closest('.cx-ov').remove()">Importar</button></div>`));
     const recert=document.getElementById('certRecert');
@@ -255,14 +268,20 @@ CX.module('cert', ({role,data,ui})=>{
         <div style="text-align:right"><button class="btn btn-pr btn-sm" id="rcOk">Solicitar re-certificación</button></div>
       `,{onMount:(ov,close)=>{
         const sc=ov.querySelector('#rcScope'); sc.addEventListener('change',()=>{ov.querySelector('#rcOneWrap').style.display=sc.value==='one'?'':'none';});
-        ov.querySelector('#rcOk').addEventListener('click',()=>{
-          const all=sc.value==='all'; const who=all?'todos los certificados':(data.getShopper(ov.querySelector('#rcOne').value)||{}).nombre||'el shopper';
-          const reason=ov.querySelector('#rcReason').value, days=ov.querySelector('#rcDays').value;
-          if(ov.querySelector('#rcNotif').checked){
-            CX.notif&&CX.notif.push({to:'shopper',tipo:'recert',icon:'🔄',tono:'a',titulo:'Re-certificación requerida',txt:p.name+' · '+reason+' · plazo '+days+' días',nav:'cert'});
-            CX.automations&&CX.automations.fire&&CX.automations.fire('recert',{proyecto:p.name,motivo:reason,plazo:days});
+        ov.querySelector('#rcOk').addEventListener('click',async()=>{
+          const btn=ov.querySelector('#rcOk'),all=sc.value==='all',shopperId=all?'':ov.querySelector('#rcOne').value,who=all?'todos los certificados':(data.getShopper(shopperId)||{}).nombre||'el shopper';
+          const reason=ov.querySelector('#rcReason').value,days=+ov.querySelector('#rcDays').value||7;btn.disabled=true;btn.textContent='Guardando…';
+          try{
+            if(!CX.backendCertifications?.requestRecertification)throw new Error('RECERT_PROVIDER_UNAVAILABLE');
+            const result=await CX.backendCertifications.requestRecertification({scope:all?'all':'one',shopperId,reason,days,periodId:p.id});
+            if(!(result?.providerAck===true&&result?.committed===true))throw new Error('RECERT_ACK_REQUIRED');
+            if(ov.querySelector('#rcNotif').checked)CX.notif?.push?.({to:'shopper',tipo:'recert',icon:'🔄',tono:'a',titulo:'Re-certificación requerida',txt:p.name+' · '+reason+' · plazo '+days+' días',nav:'cert'});
+            CX.automations?.fire?.('recert',{proyecto:p.name,motivo:reason,plazo:days});
+            close();ui.toast('Re-certificación persistida para '+who+' · plazo '+days+' días.','ok',4400);
+            window.CX_SCHEDULE_PROTECTED_AUTH_HR_RECONCILE?.('recertification_committed',true);
+          }catch(error){
+            ui.toast('No se pudo confirmar la re-certificación: '+String(error?.message||error),'warn',5200);btn.disabled=false;btn.textContent='Solicitar re-certificación';
           }
-          close(); ui.toast('Re-certificación solicitada a '+who+' · '+reason+' · plazo '+days+' días'+(ov.querySelector('#rcNotif').checked?' · notificado in-app (envío por WhatsApp/correo pendiente de envío)':''),'ok',4200);
         });
       }});
     });

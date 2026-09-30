@@ -5537,3 +5537,84 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
+
+  pre-i4-cert-res-source-contract:
+    name: PRE-I4 CERT/RES — focal source contract — no deploy
+    if: contains(github.event.head_commit.message, '[prei4-cert-res-source]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CERT_RES_BASE: c1c4e748b39c5632e8648023433a00c15d57191b
+      CERT_RES_OUT: .tmp/prei4-cert-res-source
+    steps:
+      - name: Checkout exact cumulative source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Prove exact focal product delta
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$CERT_RES_OUT"
+          git merge-base --is-ancestor "$CERT_RES_BASE" HEAD
+          git diff --name-only "$CERT_RES_BASE" HEAD -- app backend firestore.rules storage.rules \
+            | grep -v '^backend/runtime/hr-live-service/test/' \
+            | sort > "$CERT_RES_OUT/product-files.txt"
+          cat > "$CERT_RES_OUT/expected-product-files.txt" <<'EOF'
+          app/adapters/tya-protected-auth-hr-authority-bridge-v2.js
+          app/core/backend-ai.js
+          app/core/backend-certifications.js
+          app/core/backend-protected-dev-mode.js
+          app/core/backend-resources.js
+          app/index-backend-dev.html
+          app/modules/cert.js
+          app/modules/documentos.js
+          backend/runtime/hr-live-service/certification-runtime.mjs
+          backend/runtime/hr-live-service/server.mjs
+          firestore.rules
+          storage.rules
+          EOF
+          sort -o "$CERT_RES_OUT/expected-product-files.txt" "$CERT_RES_OUT/expected-product-files.txt"
+          diff -u "$CERT_RES_OUT/expected-product-files.txt" "$CERT_RES_OUT/product-files.txt"
+      - name: Syntax and focal contracts
+        run: |
+          set -Eeuo pipefail
+          node --check backend/runtime/hr-live-service/certification-runtime.mjs
+          node --check backend/runtime/hr-live-service/server.mjs
+          node --check app/core/backend-certifications.js
+          node --check app/core/backend-ai.js
+          node --check app/core/backend-resources.js
+          node --check app/core/backend-protected-dev-mode.js
+          node --check app/modules/cert.js
+          node --check app/modules/documentos.js
+          node --check app/adapters/tya-protected-auth-hr-authority-bridge-v2.js
+          node backend/runtime/hr-live-service/test/cxorbia-prei4-cert-res-contract.test.mjs | tee "$CERT_RES_OUT/contract.log"
+          grep -q 'PASS_PREI4_CERT_RES_CONTRACT' "$CERT_RES_OUT/contract.log"
+      - name: Prove secure provider and scoped Storage wiring
+        run: |
+          set -Eeuo pipefail
+          grep -q "firebase-storage-compat.js" app/index-backend-dev.html
+          grep -q "core/backend-certifications.js" app/index-backend-dev.html
+          grep -q "core/backend-ai.js" app/index-backend-dev.html
+          grep -q "resourceStorageAuthorized:true" app/core/backend-protected-dev-mode.js
+          grep -q "resourceStorageRulesValidated:true" app/core/backend-protected-dev-mode.js
+          grep -q "serverProxy===true" app/core/backend-ai.js
+          grep -q "aiplatform.googleapis.com" backend/runtime/hr-live-service/certification-runtime.mjs
+          grep -q "certificationRecertifications" backend/runtime/hr-live-service/server.mjs
+          grep -q "match /tenants/{tenantId}/projects/{projectId}/periods/{periodId}/resources/{resourceId}/{fileName}" storage.rules
+          grep -q "allow read, write: if false;" storage.rules
+          ! grep -q "allow read, write: if true" storage.rules
+          grep -q "match /certifications/{certificationId}" firestore.rules
+          grep -q "match /certificationRecertifications/{requestId}" firestore.rules
+          jq -n -S --arg source "$GITHUB_SHA" \
+            '{decision:"PASS_PREI4_CERT_RES_SOURCE_CONTRACT",sourceSha:$source,cert001:"PROVEN_SOURCE",cert002:"PROVEN_SOURCE",res001:"PROVEN_SOURCE",builds:0,deploys:0,writes:0,production:false}' \
+            > "$CERT_RES_OUT/result.json"
+      - name: Upload focal source evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-prei4-cert-res-source-${{ github.run_id }}
+          path: .tmp/prei4-cert-res-source
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+

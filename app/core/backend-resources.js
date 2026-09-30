@@ -104,13 +104,35 @@ window.CX=window.CX||{};
   };
   api.uploadBinary=async function(file,options={}){
     const st=api.storageStatus();if(!st.authorized)return blocked('RESOURCE_STORAGE_NOT_AUTHORIZED',{storage:st});
+    if(!isOperator())return blocked('RESOURCE_WRITE_ROLE_DENIED');
     if(!file)return blocked('RESOURCE_FILE_REQUIRED');
-    const scope=currentScope(options),rid=str(options.resourceId||('res-'+hash([scope.projectId,scope.periodId,file.name,file.size,file.lastModified])));
+    const scope=currentScope(options);if(!scope.projectId)return blocked('RESOURCE_SCOPE_UNAVAILABLE');
+    const rid=str(options.resourceId||('res-'+hash([scope.projectId,scope.periodId,file.name,file.size,file.lastModified])));
     const safeName=str(file.name||'archivo').replace(/[^a-zA-Z0-9._-]+/g,'_');
     const storagePath=['tenants',scope.tenantId,'projects',scope.projectId,'periods',scope.periodId||'_project','resources',rid,safeName].join('/');
-    const ref=firebase.storage().ref(storagePath),snap=await ref.put(file,{contentType:file.type||'application/octet-stream'});
+    const ref=firebase.storage().ref(storagePath),snap=await ref.put(file,{contentType:file.type||'application/octet-stream',customMetadata:{tenantId:scope.tenantId,projectId:scope.projectId,periodId:scope.periodId||'_project',resourceId:rid}});
     const url=await snap.ref.getDownloadURL();
-    return ack({resourceId:rid,storagePath,url,meta:file.name,mimeType:file.type||null,size:file.size||null},{storage:true});
+    return ack({resourceId:rid,storagePath,url,meta:file.name,mimeType:file.type||null,size:file.size||null},{storage:true,storageProviderAck:true});
+  };
+  api.downloadUrl=async function(storagePath){
+    const st=api.storageStatus();if(!st.authorized)return blocked('RESOURCE_STORAGE_NOT_AUTHORIZED',{storage:st});
+    const path=str(storagePath);if(!path)return blocked('RESOURCE_STORAGE_PATH_REQUIRED');
+    const url=await firebase.storage().ref(path).getDownloadURL();
+    return ack({storagePath:path,url},{storage:true,storageProviderAck:true});
+  };
+  api.deleteBinary=async function(storagePath,options={}){
+    const st=api.storageStatus();if(!st.authorized)return blocked('RESOURCE_STORAGE_NOT_AUTHORIZED',{storage:st});
+    if(!isOperator())return blocked('RESOURCE_WRITE_ROLE_DENIED');
+    const scope=currentScope(options),path=str(storagePath);if(!path)return ack({storagePath:null,status:'no_binary'},{storage:true,storageProviderAck:true,idempotentReplay:true});
+    const prefix=['tenants',scope.tenantId,'projects',scope.projectId,'periods',scope.periodId||'_project','resources'].join('/')+'/';
+    if(!path.startsWith(prefix))return blocked('RESOURCE_STORAGE_SCOPE_MISMATCH');
+    try{await firebase.storage().ref(path).delete();return ack({storagePath:path,status:'deleted'},{storage:true,storageProviderAck:true});}
+    catch(error){if(String(error?.code||'').includes('object-not-found'))return ack({storagePath:path,status:'already_absent'},{storage:true,storageProviderAck:true,idempotentReplay:true});throw error;}
+  };
+  api.deleteResource=async function(item={},options={}){
+    const scope=currentScope({projectId:item.projectId||options.projectId,periodId:item.periodId||options.periodId});
+    if(item.storagePath){const binary=await api.deleteBinary(item.storagePath,scope);if(binary?.providerAck!==true)return binary;}
+    return api.deleteMetadata(item.id,Object.assign({},scope,{idempotencyKey:options.idempotencyKey||('resource.delete:'+item.id)}));
   };
   function start(){
     if(!connected())return;

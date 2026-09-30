@@ -146,7 +146,12 @@ CX.module('documentos', ({data,role,ui})=>{
             if(nf.type==='application/pdf')patch.tipo='pdf';else if(/^image\//.test(nf.type)){patch.tipo='image';patch.ic='🖼️';}else if(/^video\//.test(nf.type)){patch.tipo='video';patch.ic='🎬';}
           }
           const result=await saveDurable(patch,{expectedVersion:d.version});
-          if(!committed(result)){ui.toast('Documento no actualizado: el cambio no pudo confirmarse.','warn',4200);btn.disabled=false;btn.textContent='Guardar';return;}
+          if(!committed(result)){
+            if(nf&&patch.storagePath)await CX.backendResources.deleteBinary(patch.storagePath,scope()).catch(()=>{});
+            ui.toast('Documento no actualizado: el cambio no pudo confirmarse. El archivo nuevo fue retirado para evitar huérfanos.','warn',4800);
+            btn.disabled=false;btn.textContent='Guardar';return;
+          }
+          if(nf&&d.storagePath&&d.storagePath!==patch.storagePath)await CX.backendResources.deleteBinary(d.storagePath,scope()).catch(()=>{});
           close();draw();ui.toast('Documento actualizado y guardado correctamente','ok');
         });}});
     }));
@@ -154,8 +159,8 @@ CX.module('documentos', ({data,role,ui})=>{
       if(!CX.permissions.gate('documento.delete',CX.permissions.ctx({entityType:'documento',entityId:b.dataset.deld}),ui))return;
       const d=docs.find(x=>x.id===b.dataset.deld);
       if(!connected()){CX.docStore.demoRecords[pid]=(CX.docStore.demoRecords[pid]||[]).filter(x=>x.id!==b.dataset.deld);draw();return;}
-      const result=await CX.backendResources.deleteMetadata(b.dataset.deld,Object.assign(scope(),{idempotencyKey:'resource.delete:'+b.dataset.deld}));
-      if(!committed(result)){ui.toast('Documento no eliminado: el cambio no pudo confirmarse.','warn',4200);return;}
+      const result=await CX.backendResources.deleteResource(d,Object.assign(scope(),{idempotencyKey:'resource.delete:'+b.dataset.deld}));
+      if(!committed(result)){ui.toast('Documento no eliminado: el binario y la metadata no pudieron confirmarse como eliminados.','warn',4600);return;}
       CX.automations&&CX.automations.logAction('Documento eliminado',b.dataset.deld,d?d.n:'');draw();ui.toast('Documento eliminado y guardado correctamente','ok');
     }));
     const up=host.querySelector('#docUp');
@@ -212,7 +217,7 @@ CX.module('documentos', ({data,role,ui})=>{
         const visitaId=ov.querySelector('#duVisita').value; if(visitaId)rec.visitaId=visitaId;
         if(t==='video'&&url)rec.url=CX.learnStore?CX.learnStore.embedUrl(url):url;
         if(body)rec.body=body;
-        const finish=async()=>{const result=await saveDurable(rec);if(!committed(result)){ui.toast('Recurso no guardado: el cambio no pudo confirmarse.','warn',4200);return;}close();draw();ui.toast(connected()?'Recurso guardado y guardado correctamente':'Recurso demo guardado','ok');};
+        const finish=async()=>{const result=await saveDurable(rec);if(!committed(result)){if(rec.storagePath)await CX.backendResources.deleteBinary(rec.storagePath,scope()).catch(()=>{});ui.toast('Recurso no guardado: el cambio no pudo confirmarse y el binario fue retirado para evitar huérfanos.','warn',4800);return;}close();draw();ui.toast(connected()?'Recurso guardado y confirmado correctamente':'Recurso demo guardado','ok');};
         if(f){
           if(!connected()){ui.toast('Los archivos binarios no se persisten en modo demo.','warn',4200);return;}
           if(!binaryReady()){ui.toast(binaryHelp,'warn',5200);return;}

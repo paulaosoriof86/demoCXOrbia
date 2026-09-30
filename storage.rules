@@ -2,7 +2,50 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
-    // Storage queda cerrado hasta activar Blaze y definir migración de evidencias.
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function role() {
+      return signedIn() && request.auth.token.role is string
+        ? request.auth.token.role
+        : '';
+    }
+
+    function tenantAllowed(tenantId) {
+      return signedIn() && (
+        role() == 'super' ||
+        request.auth.token.tenantId == tenantId ||
+        (request.auth.token.tenants is list && tenantId in request.auth.token.tenants)
+      );
+    }
+
+    function operator() {
+      return role() in ['super', 'admin', 'ops', 'coordinador'];
+    }
+
+    function projectAssigned(projectId) {
+      return request.auth.token.projectIds is list && projectId in request.auth.token.projectIds;
+    }
+
+    function canReadProject(projectId) {
+      return operator() || projectAssigned(projectId);
+    }
+
+    match /tenants/{tenantId}/projects/{projectId}/periods/{periodId}/resources/{resourceId}/{fileName} {
+      allow read: if tenantAllowed(tenantId) && canReadProject(projectId);
+
+      allow create, update: if tenantAllowed(tenantId) &&
+        operator() &&
+        request.resource.size < 50 * 1024 * 1024 &&
+        request.resource.metadata.tenantId == tenantId &&
+        request.resource.metadata.projectId == projectId &&
+        request.resource.metadata.periodId == periodId &&
+        request.resource.metadata.resourceId == resourceId;
+
+      allow delete: if tenantAllowed(tenantId) && operator();
+    }
+
     match /{allPaths=**} {
       allow read, write: if false;
     }

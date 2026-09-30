@@ -337,6 +337,27 @@ service cloud.firestore {
           );
           allow create, update, delete: if tenantAllowed(tenantId) && isOperator();
         }
+
+        match /certifications/{certificationId} {
+          allow read: if tenantAllowed(tenantId) && (
+            isOperator() ||
+            isShopperRole() && projectAssigned(projectId) && resource.data.shopperId == shopperId()
+          );
+          allow create, update, delete: if false;
+        }
+
+        match /certificationRecertifications/{requestId} {
+          allow read: if tenantAllowed(tenantId) && (
+            isOperator() ||
+            isShopperRole() && projectAssigned(projectId) &&
+            resource.data.status == 'active' &&
+            (
+              resource.data.scope == 'all' ||
+              (resource.data.targetShopperIds is list && shopperId() in resource.data.targetShopperIds)
+            )
+          );
+          allow create, update, delete: if false;
+        }
       }
     }
   }
