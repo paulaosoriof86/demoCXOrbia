@@ -5568,6 +5568,7 @@ jobs:
           app/index-backend-dev.html
           app/modules/cert.js
           app/modules/documentos.js
+          backend/runtime/hr-live-service/Dockerfile
           backend/runtime/hr-live-service/certification-runtime.mjs
           backend/runtime/hr-live-service/server.mjs
           firestore.rules
@@ -5599,6 +5600,8 @@ jobs:
           grep -q "resourceStorageRulesValidated:true" app/core/backend-protected-dev-mode.js
           grep -q "serverProxy===true" app/core/backend-ai.js
           grep -q "aiplatform.googleapis.com" backend/runtime/hr-live-service/certification-runtime.mjs
+          grep -q "COPY backend/runtime/hr-live-service/certification-runtime.mjs" backend/runtime/hr-live-service/Dockerfile
+          grep -q "node --check backend/runtime/hr-live-service/certification-runtime.mjs" backend/runtime/hr-live-service/Dockerfile
           grep -q "certificationRecertifications" backend/runtime/hr-live-service/server.mjs
           grep -q "match /tenants/{tenantId}/projects/{projectId}/periods/{periodId}/resources/{resourceId}/{fileName}" storage.rules
           grep -q "allow read, write: if false;" storage.rules
