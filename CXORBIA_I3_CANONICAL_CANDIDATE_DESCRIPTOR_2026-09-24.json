@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_ADMIN_004_NO_DEPLOY_RESUME_REQUIRED",
+  "status": "HOLD_PREI4_ADMIN_004_SOURCE_REPROOF_REQUIRED",
   "iteration": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "5a6345133d5227e351f07a64d58d49d8cac5eec5",
+  "productSourceSha": "4a39b26f6dcdff8f4dcd446b0141a7d3b1dc01d7",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "c487449e5187d7219033c54fa1ac3db5fb6c822e",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V144_2026-09-29.json",
-  "findingsLedgerExpectedGitBlob": "6f595490a2ce6a15a68175814ab40df2ed9b1c11",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V145_2026-09-30.json",
+  "findingsLedgerExpectedGitBlob": "062cec84155a200d814056d2ff1e89fac65b8dbf",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Repeat only the ADMIN-004 no-deploy resume on the already materialized Hosting/runtime: source guard; project.update GT/HN finance config with provider ACK/receipt/audit; Postulaciones + Identity + Finance on one fresh HR revision. Zero build, zero deploy, no production.",
+  "exactNextAction": "Run mandatory cumulative source guard on 4a39b26f6dcdff8f4dcd446b0141a7d3b1dc01d7; require exact cumulative delta, Module Truth 20 domains, closed HR/Postulations/Identity recurrence, finance honorarium 6/6 and finance provider 5/5 including browser boundary parse. Zero build, deploy or write until PASS.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -428,7 +428,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "32408cf4b0031650bee58b625da71abae86cfa78",
+  "productSourceTree": "3cdf4b1b3e6b6316e89f9bd249606f081258d07a",
   "lastLiveReproof": {
     "runId": 36217529367,
     "runNumber": 465,
@@ -1072,14 +1072,14 @@
     "production": false
   },
   "lastSourceReproofFailure": {
-    "runId": 36637536405,
-    "runNumber": 620,
-    "jobId": 109641823228,
-    "artifactId": 11065501850,
-    "artifactZipSha256": "e8d41b91b799f5c568df5929148cd165d8d25ccd5318a9caddc0e95ef96a812d",
-    "diagnosis": "CONTROL_TEST_HARNESS_DEFECT_PROVEN",
-    "correctedOwner": "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs",
-    "providerChanged": false
+    "runId": 36648359806,
+    "runNumber": 637,
+    "jobId": 109676568418,
+    "artifactId": 11069268157,
+    "artifactZipSha256": "a4c5716c9f73456a09b655a7a2780339f9d249408628bcea97af6fbcbcf2ee47",
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "productDefect": true,
+    "production": false
   },
   "lastSourceGuard": {
     "runId": 36642974584,
