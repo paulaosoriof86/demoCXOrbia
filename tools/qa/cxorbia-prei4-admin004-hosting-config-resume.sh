@@ -8,7 +8,7 @@ mkdir -p "$PREI4_004_RESUME_OUT/source-guard" "$PREI4_004_RESUME_OUT/post002" "$
 
 export CUM_SOURCE="$PREI4_004_SOURCE" CUM_TREE="$PREI4_004_TREE"
 export CUM_BASE="c487449e5187d7219033c54fa1ac3db5fb6c822e"
-export CUM_LEDGER="CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V164_2026-09-30.json"
+export CUM_LEDGER="CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V165_2026-09-30.json"
 export CUM_MATRIX="RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json"
 export CUM_OUT="$PREI4_004_RESUME_OUT/source-guard"
 export CUM_EXPECTED_DELTA_JSON='["app/adapters/cxorbia-cxdata-command-boundary-v1.js","app/adapters/tya-c6-unified-human-runtime-v1.js","app/adapters/tya-canonical-finance-read-model-v2.js","app/adapters/tya-live-source-inplace-apply.js","app/adapters/tya-protected-auth-hr-authority-bridge-v2.js","app/modules/finanzas.js","app/modules/proyectos.js","backend/runtime/cxorbia-finance-command-provider-v1.mjs","backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs","backend/runtime/hr-live-service/server.mjs","backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs"]'
@@ -17,7 +17,7 @@ export CUM_EXPECTED_PENDING_FILES_JSON='["app/adapters/cxorbia-cxdata-command-bo
 node tools/qa/cxorbia-prei4-cumulative-regression-source-guard.mjs | tee "$CUM_OUT/console.log"
 test "$(jq -r '.decision' "$CUM_OUT/result.json")" = "PASS_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD"
 test "$(jq -r '.moduleTruth.moduleCount' "$CUM_OUT/result.json")" = "20"
-test "$(jq -r '.recurrence.financeProviderTests' "$CUM_OUT/result.json")" = "7"
+test "$(jq -r '.closedRegressionTests.financeProviderTests' "$CUM_OUT/result.json")" = "7"
 test "$(jq -r '.deploys' "$CUM_OUT/result.json")" = "0"
 test "$(jq -r '.writes' "$CUM_OUT/result.json")" = "0"
 
