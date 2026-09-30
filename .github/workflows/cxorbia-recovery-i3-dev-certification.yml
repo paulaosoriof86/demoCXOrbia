@@ -740,9 +740,9 @@ jobs:
   prei4-cumulative-regression-source-guard:
     name: PRE-I4 cumulative anti-regression — all prior closures + Module Truth
     needs: canonical-candidate-authority
-    if: ${{ (needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_003_CUMULATIVE_SOURCE_REPROOF_REQUIRED' || (needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_HOSTING_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_FINANCE_LIVE_RESUME_REQUIRED') || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED') && github.event_name == 'push' && (contains(github.event.head_commit.message, '[prei4-cumulative-regression]') || contains(github.event.head_commit.message, '[prei4-content-001-source]')) }}
+    if: ${{ (needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_003_CUMULATIVE_SOURCE_REPROOF_REQUIRED' || (needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_HOSTING_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_FINANCE_LIVE_RESUME_REQUIRED') || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CONTENT_001_DEV_MATERIALIZATION_REQUIRED') && github.event_name == 'push' && (contains(github.event.head_commit.message, '[prei4-cumulative-regression]') || contains(github.event.head_commit.message, '[prei4-content-001-source]') || contains(github.event.head_commit.message, '[prei4-content-001-live]')) }}
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 55
     env:
       CUM_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
       CUM_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
@@ -783,6 +783,24 @@ jobs:
           test "$(jq -r '.moduleTruth.duplicateScripts' "$CUM_OUT/result.json")" = "0"
           test "$(jq -r '.deploys' "$CUM_OUT/result.json")" = "0"
           test "$(jq -r '.writes' "$CUM_OUT/result.json")" = "0"
+      - name: Authenticate Recovery DEV for CONTENT-001 live gate
+        if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CONTENT_001_DEV_MATERIALIZATION_REQUIRED' && contains(github.event.head_commit.message, '[prei4-content-001-live]') }}
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Setup gcloud for CONTENT-001 live gate
+        if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CONTENT_001_DEV_MATERIALIZATION_REQUIRED' && contains(github.event.head_commit.message, '[prei4-content-001-live]') }}
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
+      - name: Materialize CONTENT-001 exact source and run cumulative live guard
+        if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CONTENT_001_DEV_MATERIALIZATION_REQUIRED' && contains(github.event.head_commit.message, '[prei4-content-001-live]') }}
+        env:
+          PREI4_CONTENT001_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+          PREI4_CONTENT001_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+          PREI4_CONTENT001_OUT: ${{ env.CUM_OUT }}/content001-live
+          PREI4_CONTENT001_ROOT: https://cxorbia-backend-dev.web.app
+        run: bash tools/qa/cxorbia-prei4-content001-dev-materialize.sh
       - if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -831,22 +849,17 @@ jobs:
           compression-level: 0
 
 
-
   prei4-admin-004-cumulative-dev-materialization:
-    name: PRE-I4 cumulative DEV materialization + live guard
+    name: PRE-I4 ADMIN-004 — one cumulative DEV materialization + live guard
     needs: canonical-candidate-authority
-    if: ${{ github.event_name == 'push' && ((needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_DEV_MATERIALIZATION_REQUIRED' && contains(github.event.head_commit.message, '[prei4-admin-004-live]')) || (needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CONTENT_001_DEV_MATERIALIZATION_REQUIRED' && contains(github.event.head_commit.message, '[prei4-content-001-live]'))) }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_DEV_MATERIALIZATION_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-admin-004-live]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 55
     env:
       PREI4_004_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
       PREI4_004_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
-      PREI4_004_OUT: .tmp/prei4-cumulative-live
+      PREI4_004_OUT: .tmp/prei4-admin-004-live
       PREI4_004_ROOT: https://cxorbia-backend-dev.web.app
-      PREI4_CONTENT001_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
-      PREI4_CONTENT001_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
-      PREI4_CONTENT001_OUT: .tmp/prei4-cumulative-live
-      PREI4_CONTENT001_ROOT: https://cxorbia-backend-dev.web.app
     steps:
       - uses: actions/checkout@v4
         with: {fetch-depth: 0}
@@ -859,18 +872,12 @@ jobs:
       - uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT }}
-      - name: Execute exact cumulative DEV materialization and live guard
-        run: |
-          set -Eeuo pipefail
-          if [ "${{ needs.canonical-candidate-authority.outputs.status }}" = "HOLD_PREI4_CONTENT_001_DEV_MATERIALIZATION_REQUIRED" ]; then
-            bash tools/qa/cxorbia-prei4-content001-dev-materialize.sh
-          else
-            bash tools/qa/cxorbia-prei4-admin004-dev-materialize.sh
-          fi
+      - name: Execute one fail-closed cumulative DEV materialization and live guard
+        run: bash tools/qa/cxorbia-prei4-admin004-dev-materialize.sh
       - if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-prei4-cumulative-live-${{ github.run_id }}
+          name: cxorbia-prei4-admin-004-cumulative-live-${{ github.run_id }}
           path: ${{ env.PREI4_004_OUT }}
           if-no-files-found: error
           retention-days: 30
