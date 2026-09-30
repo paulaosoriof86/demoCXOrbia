@@ -110,7 +110,7 @@ env:
   I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V162_2026-09-30.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V164_2026-09-30.json
 
 jobs:
   canonical-candidate-authority:
@@ -784,10 +784,10 @@ jobs:
 
 
 
-  prei4-admin-004-composer-boundary-diagnostic:
-    name: PRE-I4 ADMIN-004 — composer-boundary no-deploy diagnostic
+  prei4-admin-004-hosting-materialization-live:
+    name: PRE-I4 ADMIN-004 — Hosting-only materialization + cumulative live closure
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_COMPOSER_BOUNDARY_DIAGNOSTIC_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-admin-004-composer-boundary]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_HOSTING_MATERIALIZATION_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-admin-004-hosting-materialize]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
@@ -807,12 +807,12 @@ jobs:
       - uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT }}
-      - name: Execute exact composer-boundary diagnostic with zero deploy
+      - name: Execute exact Hosting-only materialization and cumulative live proof
         run: bash tools/qa/cxorbia-prei4-admin004-hosting-config-resume.sh
       - if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-prei4-admin-004-composer-boundary-${{ github.run_id }}
+          name: cxorbia-prei4-admin-004-hosting-materialization-${{ github.run_id }}
           path: ${{ env.PREI4_004_RESUME_OUT }}
           if-no-files-found: error
           retention-days: 30
