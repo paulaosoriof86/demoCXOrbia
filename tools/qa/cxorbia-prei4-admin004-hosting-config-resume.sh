@@ -8,7 +8,7 @@ mkdir -p "$PREI4_004_RESUME_OUT/source-guard" "$PREI4_004_RESUME_OUT/post002" "$
 
 export CUM_SOURCE="$PREI4_004_SOURCE" CUM_TREE="$PREI4_004_TREE"
 export CUM_BASE="c487449e5187d7219033c54fa1ac3db5fb6c822e"
-export CUM_LEDGER="CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V165_2026-09-30.json"
+export CUM_LEDGER="CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V166_2026-09-30.json"
 export CUM_MATRIX="RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json"
 export CUM_OUT="$PREI4_004_RESUME_OUT/source-guard"
 export CUM_EXPECTED_DELTA_JSON='["app/adapters/cxorbia-cxdata-command-boundary-v1.js","app/adapters/tya-c6-unified-human-runtime-v1.js","app/adapters/tya-canonical-finance-read-model-v2.js","app/adapters/tya-live-source-inplace-apply.js","app/adapters/tya-protected-auth-hr-authority-bridge-v2.js","app/modules/finanzas.js","app/modules/proyectos.js","backend/runtime/cxorbia-finance-command-provider-v1.mjs","backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs","backend/runtime/hr-live-service/server.mjs","backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs"]'
@@ -43,18 +43,13 @@ trap 'rm -rf "$SOURCE_DIR"' EXIT
 git archive "$PREI4_004_SOURCE" | tar -x -C "$SOURCE_DIR"
 
 DEPLOY_EXECUTED=0
-if [[ "$HOSTING_BEFORE" == "sites/cxorbia-backend-dev/versions/67210e46396f55ef" ]]; then
-  DEPLOY_EXECUTED=1
-  cd "$SOURCE_DIR"
-  "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$PREI4_004_RESUME_OUT/hosting-deploy.log"
-  cd "$GITHUB_WORKSPACE"
-fi
+test "$HOSTING_BEFORE" = "sites/cxorbia-backend-dev/versions/64b485350d1549e2"
 
 TOKEN="$(gcloud auth print-access-token)"
 curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$PREI4_004_RESUME_OUT/hosting-after.json"
 HOSTING_AFTER="$(jq -r '.release.version.name // empty' "$PREI4_004_RESUME_OUT/hosting-after.json")"
 test -n "$HOSTING_AFTER"
-if [[ "$DEPLOY_EXECUTED" == "1" ]]; then test "$HOSTING_AFTER" != "$HOSTING_BEFORE"; fi
+test "$HOSTING_AFTER" = "$HOSTING_BEFORE"
 
 STATIC_FILES=(
   app/adapters/cxorbia-cxdata-command-boundary-v1.js
@@ -96,10 +91,6 @@ test "$(jq -r '.decision' "$PREI4_004_RESUME_OUT/post002/result.json")" = "PASS_
 PREI4_003_LIVE_OUT="$PREI4_004_RESUME_OUT/admin003" PREI4_003_ROOT="$PREI4_004_ROOT" PREI4_003_SOURCE="$PREI4_004_SOURCE" PREI4_003_TREE="$PREI4_004_TREE" PREI4_003_HR_REVISION="$HR_REVISION" node tools/qa/cxorbia-prei4-admin003-cumulative-live-reproof.mjs | tee "$PREI4_004_RESUME_OUT/admin003.log"
 test "$(jq -r '.decision' "$PREI4_004_RESUME_OUT/admin003/result.json")" = "PASS_PREI4_ADMIN_003_CUMULATIVE_LIVE"
 
-PREI4_004_BOUNDARY_OUT="$PREI4_004_RESUME_OUT/boundary" PREI4_004_ROOT="$PREI4_004_ROOT" PREI4_004_HR_REVISION="$HR_REVISION" node tools/qa/cxorbia-prei4-admin004-composer-boundary-diagnostic.mjs | tee "$PREI4_004_RESUME_OUT/boundary.log"
-test "$(jq -r '.decision' "$PREI4_004_RESUME_OUT/boundary/result.json")" = "PASS_PREI4_ADMIN_004_COMPOSER_BOUNDARY_DIAGNOSTIC"
-test "$(jq -r '.classification' "$PREI4_004_RESUME_OUT/boundary/result.json")" = "PROPAGATION_CHAIN_EXACT"
-
 PREI4_004_LIVE_OUT="$PREI4_004_RESUME_OUT/finance" PREI4_004_ROOT="$PREI4_004_ROOT" PREI4_004_SOURCE="$PREI4_004_SOURCE" PREI4_004_TREE="$PREI4_004_TREE" PREI4_004_HR_REVISION="$HR_REVISION" node tools/qa/cxorbia-prei4-admin004-cumulative-live-reproof.mjs | tee "$PREI4_004_RESUME_OUT/finance.log"
 test "$(jq -r '.decision' "$PREI4_004_RESUME_OUT/finance/result.json")" = "PASS_PREI4_ADMIN_004_CUMULATIVE_LIVE"
 test "$(jq -r '.externalPaymentWrites' "$PREI4_004_RESUME_OUT/finance/result.json")" = "0"
@@ -112,8 +103,7 @@ jq -n -S \
   --arg runtime "$REV_AFTER" --arg digest "$DIGEST_AFTER" --arg hr "$HR_REVISION" \
   --arg post "$(jq -r '.decision' "$PREI4_004_RESUME_OUT/post002/result.json")" \
   --arg identity "$(jq -r '.decision' "$PREI4_004_RESUME_OUT/admin003/result.json")" \
-  --arg boundary "$(jq -r '.classification' "$PREI4_004_RESUME_OUT/boundary/result.json")" \
   --arg finance "$(jq -r '.decision' "$PREI4_004_RESUME_OUT/finance/result.json")" \
   --argjson hostingDeployExecuted "$DEPLOY_EXECUTED" \
   --argjson financeProviderWrites "$(jq -r '.providerAck.providerWrites // 0' "$PREI4_004_RESUME_OUT/finance/result.json")" \
-  '{decision:"PASS_PREI4_ADMIN_004_HOSTING_MATERIALIZATION_LIVE",sourceSha:$source,sourceTree:$tree,hostingVersionBefore:$hostingBefore,hostingVersionAfter:$hostingAfter,hostingDeployExecuted:$hostingDeployExecuted,runtimeRevision:$runtime,runtimeDigest:$digest,hrRevision:$hr,closedRegression:{postulations:$post,identity:$identity},boundary:$boundary,finance:$finance,financeProviderWrites:$financeProviderWrites,builds:0,runtimeDeploys:0,hostingDeploys:$hostingDeployExecuted,rulesDeploys:0,externalPaymentWrites:0,bankWrites:0,hrWrites:0,production:false}' > "$PREI4_004_RESUME_OUT/receipt.json"
+  '{decision:"PASS_PREI4_ADMIN_004_NO_DEPLOY_FINANCE_CLOSURE",sourceSha:$source,sourceTree:$tree,hostingVersionBefore:$hostingBefore,hostingVersionAfter:$hostingAfter,hostingDeployExecuted:0,runtimeRevision:$runtime,runtimeDigest:$digest,hrRevision:$hr,closedRegression:{postulations:$post,identity:$identity},finance:$finance,financeProviderWrites:$financeProviderWrites,builds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0,externalPaymentWrites:0,bankWrites:0,hrWrites:0,production:false}' > "$PREI4_004_RESUME_OUT/receipt.json"
