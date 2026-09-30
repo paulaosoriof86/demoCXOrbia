@@ -1,9 +1,4 @@
 name: CXOrbia Recovery I3 DEV Certification
-# Control successor: Gate20 explicit canonical HR reconciliation.
-# V21 direct reproof trigger: no logic change; canonical workflow only.
-# V33 honorarium diagnostic rerun: existing DEV, no deploy.
-# ADMIN-004 V158 Hosting-only stale-HR-authority materialization + cumulative live closure.
-
 on:
   push:
     branches:
@@ -79,20 +74,16 @@ on:
       - CXORBIA_I3_GO_LOCK_2026-09-28.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_2026-09-24.json
   workflow_dispatch:
-
 permissions:
   contents: read
   actions: read
   id-token: write
-
 defaults:
   run:
     shell: bash
-
 concurrency:
   group: cxorbia-recovery-i3-dev-certification
   cancel-in-progress: true
-
 env:
   CANDIDATE_DESCRIPTOR: CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
   FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_2026-09-24.json
@@ -114,7 +105,6 @@ env:
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
   POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V170_2026-09-30.json
-
 jobs:
   canonical-candidate-authority:
     name: I3 single canonical candidate authority guard
@@ -128,7 +118,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Resolve and prove sole executable candidate
         id: authority
         run: |
@@ -155,8 +144,6 @@ jobs:
           echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
-
-
   prei4-admin-008-mapping-reproof:
     name: PRE-I4 ADMIN-008 — HN HR mapping focal reproof
     needs: canonical-candidate-authority
@@ -198,8 +185,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
-
   prei4-admin-008-runtime-materialization:
     name: PRE-I4 ADMIN-008 — fresh HR runtime-only DEV materialization
     needs: canonical-candidate-authority
@@ -217,7 +202,6 @@ jobs:
         with: {fetch-depth: 0}
       - uses: actions/setup-node@v4
         with: {node-version: '24'}
-
       - name: Prove exact focal source and three-owner product delta
         run: |
           set -Eeuo pipefail
@@ -240,7 +224,6 @@ jobs:
           test "$(jq -r '.decision' "$GITHUB_WORKSPACE/$PREI4_008_OUT/assignment-self-test.json")" = "PASS_R20_SHOPPER_ASSIGNMENT_CLASSIFICATION"
           cd "$GITHUB_WORKSPACE"
           echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
-
       - name: Authenticate Recovery DEV only
         uses: google-github-actions/auth@v2
         with:
@@ -248,7 +231,6 @@ jobs:
       - uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT }}
-
       - name: Capture immutable DEV state before runtime materialization
         run: |
           set -Eeuo pipefail
@@ -257,14 +239,12 @@ jobs:
           HOSTING_VERSION="$(jq -r '.release.version.name // empty' "$PREI4_008_OUT/hosting-before.json")"; test -n "$HOSTING_VERSION"
           echo "PREI4_008_HOSTING_VERSION=$HOSTING_VERSION" >> "$GITHUB_ENV"
           gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$PREI4_008_OUT/runtime-before.json"
-
       - name: Build exact PREI4-ADMIN-008 runtime once
         run: |
           set -Eeuo pipefail
           IMAGE_URI="gcr.io/${PROJECT}/${SERVICE}:prei4-admin008-${PREI4_008_SOURCE:0:12}-${GITHUB_RUN_ID}"
           echo "$IMAGE_URI" > "$PREI4_008_OUT/image-uri.txt"
           gcloud builds submit "$SOURCE_DIR" --project "$PROJECT" --config "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE_URI" --quiet
-
       - name: Deploy exact runtime once to Recovery DEV
         run: |
           set -Eeuo pipefail
@@ -277,7 +257,6 @@ jobs:
           if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else exit 1; fi
           echo "PREI4_008_RUNTIME_REVISION=$REV" >> "$GITHUB_ENV"
           echo "PREI4_008_RUNTIME_DIGEST=$DIGEST" >> "$GITHUB_ENV"
-
       - name: Require one coherent fresh HR revision and exact August September authority
         run: |
           set -Eeuo pipefail
@@ -316,7 +295,6 @@ jobs:
           HR_REVISION="$(jq -r '.revision' "$PREI4_008_OUT/fresh-authority.json")"; [[ "$HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
           test "$HR_REVISION" != "$PREI4_008_STALE_REVISION"
           echo "PREI4_008_HR_REVISION=$HR_REVISION" >> "$GITHUB_ENV"
-
       - name: Prove Hosting unchanged and seal fresh HR receipt
         run: |
           set -Eeuo pipefail
@@ -326,7 +304,6 @@ jobs:
           test "$AFTER" = "$PREI4_008_HOSTING_VERSION"
           jq -n -S --arg source "$PREI4_008_SOURCE" --arg tree "$PREI4_008_TREE" --arg runtime "$PREI4_008_RUNTIME_REVISION" --arg digest "$PREI4_008_RUNTIME_DIGEST" --arg hosting "$AFTER" --arg hr "$PREI4_008_HR_REVISION" --argjson proofRun 36499124903 '{decision:"PASS_PREI4_ADMIN_008_RUNTIME_FRESH_HR",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,sourceProofRunId:$proofRun,builds:1,runtimeDeploys:1,hostingDeploys:0,rulesDeploys:0,hrWrites:0,production:false}' > "$PREI4_008_OUT/result.json"
           test "$(jq -r '.decision' "$PREI4_008_OUT/result.json")" = "PASS_PREI4_ADMIN_008_RUNTIME_FRESH_HR"
-
       - if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -338,9 +315,6 @@ jobs:
           include-hidden-files: true
       - if: always()
         run: rm -rf "$RUNNER_TEMP/cxorbia-prei4-admin008-source"
-
-
-
   prei4-admin-002-postulation-semantic-diagnostic:
     name: PRE-I4 ADMIN-002 — postulation semantic forensic read-only
     needs: canonical-candidate-authority
@@ -393,9 +367,6 @@ jobs:
           retention-days: 30
           compression-level: 0
           include-hidden-files: true
-
-
-
   prei4-admin-002-source-reproof:
     name: PRE-I4 ADMIN-002 — exact lifecycle source reproof
     needs: canonical-candidate-authority
@@ -444,9 +415,6 @@ jobs:
           retention-days: 30
           compression-level: 0
           include-hidden-files: true
-
-
-
   prei4-admin-002-hosting-live-reproof:
     name: PRE-I4 ADMIN-002 — exact Hosting DEV + Admin Shopper live reproof
     needs: canonical-candidate-authority
@@ -478,12 +446,10 @@ jobs:
           diff -u "$PREI4_002_LIVE_OUT/expected-diff.txt" "$PREI4_002_LIVE_OUT/product-diff.txt"
           git diff --quiet "$PREI4_002_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source
           node --check tools/qa/cxorbia-prei4-admin002-hosting-live-reproof.mjs
-
       - name: Install DEV proof tooling
         run: |
           npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
           npx playwright install chromium >/dev/null 2>&1
-
       - name: Authenticate canonical Firebase DEV
         uses: google-github-actions/auth@v2
         with:
@@ -491,7 +457,6 @@ jobs:
       - uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT }}
-
       - name: Capture pre-state and prove runtime unchanged
         run: |
           set -Eeuo pipefail
@@ -506,7 +471,6 @@ jobs:
           test "$DIGEST" = "$PREI4_002_EXPECTED_RUNTIME_DIGEST"
           BEFORE="$(jq -r '.release.version.name // empty' "$PREI4_002_LIVE_OUT/hosting-before.json")"; test -n "$BEFORE"
           echo "PREI4_002_HOSTING_BEFORE=$BEFORE" >> "$GITHUB_ENV"
-
       - name: Materialize exact product source to Hosting DEV only if needed
         run: |
           set -Eeuo pipefail
@@ -531,7 +495,6 @@ jobs:
           fi
           echo "PREI4_002_HOSTING_DEPLOYED=$DEPLOYED" >> "$GITHUB_ENV"
           echo "PREI4_002_SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
-
       - name: Prove exact five changed bytes served
         run: |
           set -Eeuo pipefail
@@ -541,7 +504,6 @@ jobs:
             curl -fsSL --retry 10 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$PREI4_002_ROOT/$web?prei4002=$GITHUB_RUN_ID-$(date +%s%N)" -o "$remote"
             test "$(sha256sum "$remote"|awk '{print $1}')" = "$(git show "$PREI4_002_SOURCE:$rel" | sha256sum | awk '{print $1}')"
           done < "$PREI4_002_LIVE_OUT/product-diff.txt"
-
       - name: Execute live Admin and Shopper lifecycle reproof
         run: |
           set -Eeuo pipefail
@@ -553,7 +515,6 @@ jobs:
           test "$(jq -r '.shopper.proof.active' "$PREI4_002_LIVE_OUT/result.json")" = "0"
           test "$(jq -r '.firestoreWrites' "$PREI4_002_LIVE_OUT/result.json")" = "0"
           test "$(jq -r '.hrWrites' "$PREI4_002_LIVE_OUT/result.json")" = "0"
-
       - name: Prove runtime unchanged and capture Hosting readback
         run: |
           set -Eeuo pipefail
@@ -563,7 +524,6 @@ jobs:
           gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$PREI4_002_LIVE_OUT/runtime-after.json"
           test "$(jq -r '.status.latestReadyRevisionName // empty' "$PREI4_002_LIVE_OUT/runtime-after.json")" = "$PREI4_002_EXPECTED_RUNTIME"
           jq -n -S --arg source "$PREI4_002_SOURCE" --arg tree "$PREI4_002_TREE" --arg before "$PREI4_002_HOSTING_BEFORE" --arg after "$AFTER" --arg runtime "$PREI4_002_EXPECTED_RUNTIME" --arg digest "$PREI4_002_EXPECTED_RUNTIME_DIGEST" --arg hr "$PREI4_002_HR_REVISION" --argjson deploys "$PREI4_002_HOSTING_DEPLOYED" '{decision:"PASS_PREI4_ADMIN_002_HOSTING_RECEIPT",sourceSha:$source,sourceTree:$tree,hostingBefore:$before,hostingAfter:$after,hostingDeploys:$deploys,runtimeRevision:$runtime,runtimeDigest:$digest,hrRevision:$hr,runtimeDeploys:0,rulesDeploys:0,firestoreWrites:0,hrWrites:0,production:false}' > "$PREI4_002_LIVE_OUT/receipt.json"
-
       - if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -575,9 +535,6 @@ jobs:
           include-hidden-files: true
       - if: always()
         run: rm -rf "$RUNNER_TEMP/cxorbia-prei4-admin002-hosting"
-
-
-
   prei4-admin-003-identity-diagnostic:
     name: PRE-I4 ADMIN-003 — exact identity forensic read-only
     needs: canonical-candidate-authority
@@ -628,9 +585,6 @@ jobs:
           retention-days: 30
           compression-level: 0
           include-hidden-files: true
-
-
-
   prei4-admin-003-owner-diagnostic:
     name: PRE-I4 ADMIN-003 — owner/root-cause diagnostic read-only
     needs: canonical-candidate-authority
@@ -682,9 +636,6 @@ jobs:
           retention-days: 30
           compression-level: 0
           include-hidden-files: true
-
-
-
   prei4-admin-003-source-reproof:
     name: PRE-I4 ADMIN-003 — exact provider/UI source reproof
     needs: canonical-candidate-authority
@@ -734,9 +685,6 @@ jobs:
           retention-days: 30
           compression-level: 0
           include-hidden-files: true
-
-
-
   prei4-cumulative-regression-source-guard:
     name: PRE-I4 cumulative anti-regression — all prior closures + Module Truth
     needs: canonical-candidate-authority
@@ -795,10 +743,6 @@ jobs:
           retention-days: 30
           compression-level: 0
           include-hidden-files: true
-
-
-
-
   prei4-admin-004-hosting-materialization-live:
     name: PRE-I4 ADMIN-004 — Hosting-only materialization + cumulative live closure
     needs: canonical-candidate-authority
@@ -832,8 +776,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
-
   prei4-admin-004-cumulative-dev-materialization:
     name: PRE-I4 CONTENT-001 — exact cumulative DEV materialization + live guard
     needs: canonical-candidate-authority
@@ -868,9 +810,6 @@ jobs:
           retention-days: 30
           compression-level: 0
           include-hidden-files: true
-
-
-
   prei4-admin-003-cumulative-live-reproof:
     name: PRE-I4 ADMIN-003 — cumulative no-deploy resume + closed-module regression
     needs: canonical-candidate-authority
@@ -924,9 +863,6 @@ jobs:
           retention-days: 30
           compression-level: 0
           include-hidden-files: true
-
-
-
   prei4-admin-004-finance-forensic:
     name: PRE-I4 ADMIN-004 — finance root-cause forensic read-only
     needs: canonical-candidate-authority
@@ -973,8 +909,6 @@ jobs:
           retention-days: 30
           compression-level: 0
           include-hidden-files: true
-
-
   vrm085-postulation-sync-diagnostic:
     name: I3 VRM-085 — same-revision postulation sync forensic read-only
     needs: canonical-candidate-authority
@@ -1039,8 +973,6 @@ jobs:
           retention-days: 30
           compression-level: 0
           include-hidden-files: true
-
-
   vrm085-control-reproof:
     name: I3 VRM-085 — corrected focal same-revision reproof no deploy
     needs: canonical-candidate-authority
@@ -1106,8 +1038,6 @@ jobs:
           retention-days: 30
           compression-level: 0
           include-hidden-files: true
-
-
   vrm086-exact-alias-control-reproof:
     name: I3 VRM-086 — exact alias focal reproof no deploy
     needs: canonical-candidate-authority
@@ -1176,8 +1106,6 @@ jobs:
           retention-days: 30
           compression-level: 0
           include-hidden-files: true
-
-
   vrm088-live-fixture-availability-reproof:
     name: I3 VRM-088 — availability-aware live fixtures on Run584 certified artifact
     needs: canonical-candidate-authority
@@ -1269,8 +1197,6 @@ jobs:
           include-hidden-files: true
       - if: always()
         run: rm -rf node_modules "$RUNNER_TEMP/vrm088-cert" "$RUNNER_TEMP/vrm088-source"
-
-
   gate21-same-certified-artifact-after-vrm088:
     name: I3 Gate21 — Run584 certified artifact + Run585 fixtures — no rebuild
     needs: canonical-candidate-authority
@@ -1389,9 +1315,6 @@ jobs:
           retention-days: 30
           compression-level: 0
           include-hidden-files: true
-
-
-
   vrm083-hr-browser-revision-diagnostic:
     name: I3 VRM-083 — HR browser revision coherence read-only
     needs: canonical-candidate-authority
@@ -1444,8 +1367,6 @@ jobs:
           retention-days: 30
           compression-level: 0
           include-hidden-files: true
-
-
   vrm083-runtime-materialization:
     name: I3 VRM-083 — protected shopper namespace runtime-only DEV materialization
     needs: canonical-candidate-authority
@@ -1553,8 +1474,6 @@ jobs:
           include-hidden-files: true
       - if: always()
         run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-vrm083-source"
-
-
   vrm083-runtime-readback:
     name: I3 VRM-083 — exact materialized runtime protected shopper readback
     needs: canonical-candidate-authority
@@ -1636,8 +1555,6 @@ jobs:
           include-hidden-files: true
       - if: always()
         run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-vrm083-readback-source"
-
-
   vrm084-benefits-human-label-hosting:
     name: I3 VRM-084 — Benefits human payment label Hosting-only DEV proof
     needs: canonical-candidate-authority
@@ -1735,7 +1652,6 @@ jobs:
           retention-days: 30
           compression-level: 0
           include-hidden-files: true
-
   vrm076-terminal-module-truth-finalizer:
     name: I3 VRM-076 — terminal Module Truth fail-closed selftest
     if: ${{ github.event_name == 'push' && (contains(github.event.head_commit.message, '[vrm-076-finalizer]') || contains(github.event.head_commit.message, '[vrm-087-finalizer]')) }}
@@ -1827,7 +1743,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
   vrm077-postulation-hr-conflict-live:
     name: I3 VRM-077 — exact HR conflict Hosting-only DEV reproof
     needs: canonical-candidate-authority
@@ -1956,8 +1871,6 @@ jobs:
           retention-days: 30
           compression-level: 0
           include-hidden-files: true
-
-
   vrm078-external-project-live:
     name: I3 VRM-078 — external source second-project live proof
     needs: canonical-candidate-authority
@@ -2095,8 +2008,6 @@ jobs:
           retention-days: 30
           compression-level: 0
           include-hidden-files: true
-
-
   vrm079-documents-resources-live:
     name: I3 VRM-079 — Documents/Resources fail-closed binary + durable metadata
     needs: canonical-candidate-authority
@@ -2231,8 +2142,6 @@ jobs:
           retention-days: 30
           compression-level: 0
           include-hidden-files: true
-
-
   vrm080-connected-admin-config-live:
     name: I3 VRM-080 — connected admin configuration durable proof
     needs: canonical-candidate-authority
@@ -2357,8 +2266,6 @@ jobs:
           retention-days: 30
           compression-level: 0
           include-hidden-files: true
-
-
   vrm081-population-credential-diagnostic:
     name: I3 VRM-081 — population credential diagnostic read-only
     needs: canonical-candidate-authority
@@ -2413,7 +2320,6 @@ jobs:
           retention-days: 30
           compression-level: 0
           include-hidden-files: true
-
   v52-vrm050-runtime:
     name: I3 V90 — VRM-081 dual-alias runtime-only DEV materialization
     needs: canonical-candidate-authority
@@ -2429,11 +2335,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-
       - name: Prove exact VRM-081 source and run focal regressions before build
         run: |
           set -Eeuo pipefail
@@ -2456,16 +2360,13 @@ jobs:
           cd "$GITHUB_WORKSPACE"
           echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
           jq -n -S --arg source "$VRM081_SOURCE" --arg tree "$VRM081_TREE" '{decision:"PASS_I3_VRM081_SOURCE_FIX",sourceSha:$source,sourceTree:$tree,ownerPaths:["backend/runtime/cxorbia-shopper-command-provider-v1.mjs"],testPaths:["backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs"],builds:0,deploys:0,production:false}' > "$VRM081_OUT/source-proof.json"
-
       - name: Authenticate Recovery DEV
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-
       - uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT }}
-
       - name: Capture immutable DEV state before runtime materialization
         run: |
           set -Eeuo pipefail
@@ -2474,14 +2375,12 @@ jobs:
           HOSTING_VERSION="$(jq -r '.release.version.name // empty' "$VRM081_OUT/hosting-before.json")"; test -n "$HOSTING_VERSION"
           echo "VRM081_HOSTING_VERSION=$HOSTING_VERSION" >> "$GITHUB_ENV"
           gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$VRM081_OUT/runtime-before.json"
-
       - name: Build exact VRM-081 runtime once
         run: |
           set -Eeuo pipefail
           IMAGE_URI="gcr.io/${PROJECT}/${SERVICE}:i3-vrm081-${VRM081_SOURCE:0:12}-${GITHUB_RUN_ID}"
           echo "$IMAGE_URI" > "$VRM081_OUT/image-uri.txt"
           gcloud builds submit "$SOURCE_DIR" --project "$PROJECT" --config "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE_URI" --quiet
-
       - name: Deploy exact VRM-081 runtime once to Recovery DEV
         run: |
           set -Eeuo pipefail
@@ -2494,7 +2393,6 @@ jobs:
           if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else exit 1; fi
           echo "VRM081_RUNTIME_REVISION=$REV" >> "$GITHUB_ENV"
           echo "VRM081_RUNTIME_DIGEST=$DIGEST" >> "$GITHUB_ENV"
-
       - name: Force fresh HR and run population credential reproof
         run: |
           set -Eeuo pipefail
@@ -2519,7 +2417,6 @@ jobs:
           test "$(jq -r '.remediationBuckets.SOURCE_NAME_INCOMPLETE_REQUIRES_ADJUDICATION // 0' "$VRM081_OUT/population/result.json")" = "0"
           test "$(jq -r '.safety.hrWrites' "$VRM081_OUT/population/result.json")" = "0"
           test "$(jq -r '.safety.production' "$VRM081_OUT/population/result.json")" = "false"
-
       - name: Prove no duplicate canonical Auth principals
         run: |
           set -Eeuo pipefail
@@ -2536,7 +2433,6 @@ jobs:
           if(duplicates.length)process.exitCode=1;
           NODE
           test "$(jq -r '.decision' "$VRM081_OUT/auth-population.json")" = "PASS_NO_DUPLICATE_CANONICAL_AUTH"
-
       - name: Prove Hosting unchanged and seal VRM-081 receipt
         run: |
           set -Eeuo pipefail
@@ -2545,7 +2441,6 @@ jobs:
           test "$(jq -r '.release.version.name // empty' "$VRM081_OUT/hosting-after.json")" = "$VRM081_HOSTING_VERSION"
           HR="$(jq -r '.hrRevision' "$VRM081_OUT/population/result.json")"
           jq -n -S --arg source "$VRM081_SOURCE" --arg tree "$VRM081_TREE" --arg runtime "$VRM081_RUNTIME_REVISION" --arg digest "$VRM081_RUNTIME_DIGEST" --arg hosting "$VRM081_HOSTING_VERSION" --arg hr "$HR" --argjson reviewCount "$(jq -r '.providerQueues.reviewCount' "$VRM081_OUT/population/result.json")" --argjson authPrincipals "$(jq -r '.activePrincipals' "$VRM081_OUT/auth-population.json")" '{decision:"PASS_I3_VRM081_RUNTIME_POPULATION_REPROOF",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,reviewCount:$reviewCount,migrationCount:0,activeCredentialUniverseResolved:true,humanDecisionRequired:false,noDuplicateCanonicalAuth:true,activeAuthPrincipals:$authPrincipals,providerAck:true,durableReadback:true,noDuplicateRegression:true,builds:1,runtimeDeploys:1,hostingDeploys:0,rulesDeploys:0,hrWrites:0,externalWrites:0,production:false}' > "$VRM081_OUT/result.json"
-
       - if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -2554,7 +2449,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
   v53-vrm050-runtime-readback:
     name: I3 V91 — VRM-081 final population/Auth reproof — no deploy
     needs: canonical-candidate-authority
@@ -2574,11 +2468,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-
       - name: Prove exact V91 authority and zero additional materialization
         run: |
           set -Eeuo pipefail
@@ -2590,19 +2482,15 @@ jobs:
           test "$(jq -r '.pendingMaterialization.maxAdditionalBuilds' "$CANDIDATE_DESCRIPTOR")" = "0"
           test "$(jq -r '.pendingMaterialization.maxAdditionalRuntimeDeploys' "$CANDIDATE_DESCRIPTOR")" = "0"
           git diff --quiet "$VRM081_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
-
       - name: Install read-only proof dependency
         run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
-
       - name: Authenticate Recovery DEV read only
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-
       - uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT }}
-
       - name: Prove exact existing DEV runtime Hosting and pinned HR — zero deploy
         run: |
           set -Eeuo pipefail
@@ -2623,7 +2511,6 @@ jobs:
           test "$(jq -r '.shopperReconciliation.aliasMigrated' "$VRM081_OUT/hr-meta.json")" = "30"
           test "$(jq -r '.shopperReconciliation.aliasPrincipalsRetired' "$VRM081_OUT/hr-meta.json")" = "26"
           test "$(jq -r '.visitReconciliation.conflicts' "$VRM081_OUT/hr-meta.json")" = "0"
-
       - name: Run population-wide credential identity diagnostic read only
         run: |
           set -Eeuo pipefail
@@ -2641,7 +2528,6 @@ jobs:
           test "$(jq -r '.safety.authWrites' "$VRM081_OUT/population/result.json")" = "0"
           test "$(jq -r '.safety.hrWrites' "$VRM081_OUT/population/result.json")" = "0"
           test "$(jq -r '.safety.deploys' "$VRM081_OUT/population/result.json")" = "0"
-
       - name: Prove no duplicate active canonical Auth or membership principals
         run: |
           set -Eeuo pipefail
@@ -2664,12 +2550,10 @@ jobs:
           if(decision!=='PASS_NO_DUPLICATE_CANONICAL_PRINCIPALS')process.exitCode=1;
           NODE
           test "$(jq -r '.decision' "$VRM081_OUT/principal-uniqueness.json")" = "PASS_NO_DUPLICATE_CANONICAL_PRINCIPALS"
-
       - name: Seal final VRM-081 owner receipt
         run: |
           set -Eeuo pipefail
           jq -n -S             --arg source "$VRM081_SOURCE"             --arg tree "$VRM081_TREE"             --arg runtime "$EXPECTED_RUNTIME_REVISION"             --arg digest "$EXPECTED_RUNTIME_DIGEST"             --arg hosting "$EXPECTED_HOSTING_VERSION"             --arg hr "$EXPECTED_HR_REVISION"             --argjson reviewCount "$(jq -r '.providerQueues.reviewCount' "$VRM081_OUT/population/result.json")"             --argjson nonLoginBearing "$(jq -r '.alreadyResolvedWithoutWrite.nonLoginBearingRows // 0' "$VRM081_OUT/population/result.json")"             --argjson activeAuth "$(jq -r '.activeAuthPrincipals' "$VRM081_OUT/principal-uniqueness.json")"             --argjson activeMemberships "$(jq -r '.activeMemberships' "$VRM081_OUT/principal-uniqueness.json")"             '{decision:"PASS_I3_VRM081_FINAL_POPULATION_AUTH_REPROOF",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,providerReviewQueueCount:$reviewCount,nonLoginBearingSourceRows:$nonLoginBearing,identityMigrationCount:0,aliasMigrated:30,aliasPrincipalsRetired:26,activeCredentialUniverseResolved:true,humanDecisionRequired:false,noDuplicateCanonicalAuth:true,noDuplicateCanonicalMembership:true,activeAuthPrincipals:$activeAuth,activeMemberships:$activeMemberships,providerAck:true,durableReadback:true,builds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0,firestoreWrites:0,authWrites:0,hrWrites:0,externalWrites:0,production:false}' > "$VRM081_OUT/result.json"
-
       - if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -2678,7 +2562,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
   v59-vrm065-revision-diagnostic:
     name: I3 V59 — VRM-065 HR revision drift forensic readback — no deploy
     needs: canonical-candidate-authority
@@ -2735,11 +2618,9 @@ jobs:
           if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else exit 1; fi
           test "$DIGEST" = "$EXPECTED_RUNTIME_DIGEST"
           jq '[.spec.containers[0].env[]? | select(.name=="CXORBIA_LIVE_HR_CACHE_MS" or .name=="CXORBIA_HR_PAYLOAD_VM_TIMEOUT_MS" or .name=="CXORBIA_I3_LEGAL_ACCEPTANCE_WRITE_ENABLED")]' "$V59_OUT/runtime-revision.json" > "$V59_OUT/runtime-env.json"
-
           ACCESS_TOKEN="$(gcloud auth print-access-token)"
           curl -fsS -H "Authorization: Bearer $ACCESS_TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$V59_OUT/hosting-live.json"
           test "$(jq -r '.release.version.name // empty' "$V59_OUT/hosting-live.json")" = "$EXPECTED_HOSTING_VERSION"
-
           ID_TOKEN="$(gcloud auth print-identity-token --audiences="$SERVICE_URL")"
           for n in 1 2 3; do
             curl -fsS --retry 3 -H "Authorization: Bearer $ID_TOKEN" -H 'Cache-Control: no-cache, no-store, max-age=0' "$SERVICE_URL/api/tenants/$TENANT_ID/projects/$PROJECT_ID/hr-live?format=meta&v59=$GITHUB_RUN_ID&n=$n" > "$V59_OUT/direct-meta-$n.json"
@@ -2831,7 +2712,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
   v70-vrm069-operational-visit-key-runtime:
     name: I3 V70 — VRM-069/070 exact visit-key runtime-only DEV materialization
     needs: canonical-candidate-authority
@@ -2849,11 +2729,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-
       - name: Prove exact P0 successor before any build
         run: |
           set -Eeuo pipefail
@@ -2870,30 +2748,25 @@ jobs:
           rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"
           git archive "$V70_SOURCE" | tar -x -C "$SOURCE_DIR"
           echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
-
       - name: Authenticate Recovery DEV
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-
       - uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT }}
-
       - name: Prove Hosting unchanged before runtime materialization
         run: |
           set -Eeuo pipefail
           TOKEN="$(gcloud auth print-access-token)"
           curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$V70_OUT/hosting-before.json"
           test "$(jq -r '.release.version.name // empty' "$V70_OUT/hosting-before.json")" = "$EXPECTED_HOSTING_VERSION"
-
       - name: Build exact P0 successor runtime once
         run: |
           set -Eeuo pipefail
           IMAGE_URI="gcr.io/${PROJECT}/${SERVICE}:i3-v70-${V70_SOURCE:0:12}-${GITHUB_RUN_ID}"
           echo "$IMAGE_URI" > "$V70_OUT/image-uri.txt"
           gcloud builds submit "$SOURCE_DIR" --project "$PROJECT" --config "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE_URI" --quiet
-
       - name: Deploy exact P0 successor runtime once to Recovery DEV
         run: |
           set -Eeuo pipefail
@@ -2910,7 +2783,6 @@ jobs:
           echo "V70_RUNTIME_REVISION=$REV" >> "$GITHUB_ENV"
           echo "V70_RUNTIME_DIGEST=$DIGEST" >> "$GITHUB_ENV"
           echo "V70_SERVICE_URL=$SERVICE_URL" >> "$GITHUB_ENV"
-
       - name: Force fresh HR and prove exact runtime health
         run: |
           set -Eeuo pipefail
@@ -2928,7 +2800,6 @@ jobs:
           curl -fsS --retry 3 -H "Authorization: Bearer $ID_TOKEN" "$V70_SERVICE_URL/health?v70=$GITHUB_RUN_ID" > "$V70_OUT/health.json"
           jq -e '.ok==true and .lastRefreshError==null and .writes==false and .hrWrites==false and .production==false' "$V70_OUT/health.json" >/dev/null
           echo "V70_HR_REVISION=$HR_REV" >> "$GITHUB_ENV"
-
       - name: Prove Hosting still unchanged and seal V70
         run: |
           set -Eeuo pipefail
@@ -2936,7 +2807,6 @@ jobs:
           curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$V70_OUT/hosting-after.json"
           test "$(jq -r '.release.version.name // empty' "$V70_OUT/hosting-after.json")" = "$EXPECTED_HOSTING_VERSION"
           jq -n -S --arg source "$V70_SOURCE" --arg tree "$V70_TREE" --arg runtime "$V70_RUNTIME_REVISION" --arg digest "$V70_RUNTIME_DIGEST" --arg hosting "$EXPECTED_HOSTING_VERSION" --arg hr "$V70_HR_REVISION" '{decision:"PASS_I3_V70_VRM069_070_OPERATIONAL_VISIT_KEY_RUNTIME",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,cacheMs:3600000,sourceSafe:true,shopperProviderAck:true,visitProviderAck:true,visitCount:704,builds:1,runtimeDeploys:1,hostingDeploys:0,rulesDeploys:0,hrWrites:0,production:false}' > "$V70_OUT/result.json"
-
       - if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -2945,7 +2815,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
   v61-vrm065-runtime:
     name: I3 V61 — VRM-065 stable HR revision runtime-only DEV materialization
     needs: canonical-candidate-authority
@@ -3046,7 +2915,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
   c3-preterminal-module-truth:
     name: C3 preterminal Module Truth — exact current DEV — no deploy
     needs: canonical-candidate-authority
@@ -3062,7 +2930,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Prove exact candidate and path-bound independent Module Truth
         run: |
           set -Eeuo pipefail
@@ -3098,17 +2965,14 @@ jobs:
           test "$(jq '.entrypointClosure.duplicateSrc|length' "$C3_OUT/module-truth-preterminal.json")" = "0"
           git archive "$C3_SOURCE" | tar -x -C "$RUNNER_TEMP"
           echo "C3_SOURCE_DIR=$RUNNER_TEMP/app" >> "$GITHUB_ENV"
-
       - name: Authenticate DEV read only
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: cxorbia-backend-dev
-
       - name: Prove exact runtime Hosting and Firestore Rules identity
         run: |
           set -Eeuo pipefail
@@ -3134,7 +2998,6 @@ jobs:
           const sha=x=>crypto.createHash('sha256').update(x).digest('hex');
           fs.writeFileSync(process.env.C3_OUT+'/firestore-live-parity.json',JSON.stringify({decision:'PASS_C3_LIVE_FIRESTORE_RULES_EXACT',liveRulesetName:r.name||null,sha256:sha(local),production:false},null,2)+'\n');
           NODE
-
       - name: Prove every active Phase A browser owner served byte exact
         run: |
           set -Eeuo pipefail
@@ -3161,7 +3024,6 @@ jobs:
           curl -fsSL --retry 5 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/__c3_truth__/admin/dashboard?c3truth=${GITHUB_RUN_ID}" -o "$C3_OUT/remote/deep.html"
           cmp "$RUNNER_TEMP/app/index-backend-dev.html" "$C3_OUT/remote/deep.html"
           printf '%s\n' "$n" > "$C3_OUT/active-browser-owner-count.txt"
-
       - name: Seal exhaustive preterminal Module Truth result
         run: |
           set -Eeuo pipefail
@@ -3173,7 +3035,6 @@ jobs:
             --argjson owners "$(cat "$C3_OUT/active-browser-owner-count.txt")" \
             '{decision:"PASS_C3_PRETERMINAL_MODULE_TRUTH_20_20_EXACT_DEV",sourceSha:$source,sourceTree:$tree,moduleTruthSha256:$matrix,moduleCount:20,matchModules:20,nonMatchModules:0,pendingFiles:0,activeBrowserOwners:$owners,hostingVersion:$hosting,runtimeRevision:$runtime,runtimeDigest:$digest,firestoreRulesSha256:$rules,allApprovedOwnersLoaded:true,duplicateScripts:0,builds:0,deploys:0,writes:0,production:false}' \
             > "$C3_OUT/result.json"
-
       - name: Upload C3 preterminal evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -3183,7 +3044,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
   vrm043-name-diagnostic:
     name: VRM-043 exact HR/Admin identity-name diagnostic — read only
     needs: canonical-candidate-authority
@@ -3202,23 +3062,19 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Setup Node 24
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-
       - name: Authenticate DEV read only
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-
       - name: Install transient diagnostic dependencies
         run: |
           set -Eeuo pipefail
           npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
           npx playwright install chromium >/dev/null 2>&1
-
       - name: Capture exact expected versus observed identity names
         run: |
           set -Eeuo pipefail
@@ -3226,7 +3082,6 @@ jobs:
           node tools/qa/cxorbia-i3-vrm043-name-diagnostic.mjs | tee "$VRM043_OUT/console.log"
           test "$(jq -r '.decision' "$VRM043_OUT/vrm043-name-diagnostic.json")" = "PASS_VRM043_NAME_DIAGNOSTIC"
           test "$(jq -r '.sourceRevision' "$VRM043_OUT/vrm043-name-diagnostic.json")" = "$(jq -r '.sourceRevision' "$VRM043_OUT/vrm043-name-diagnostic.json")"
-
       - name: Upload VRM043 diagnostic
         if: always()
         uses: actions/upload-artifact@v4
@@ -3236,11 +3091,9 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
       - name: Cleanup transient dependencies
         if: always()
         run: rm -rf node_modules
-
   vrm043-control-proof:
     name: VRM-043 terminal control reproving — existing DEV, no deploy
     needs: canonical-candidate-authority
@@ -3263,28 +3116,23 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Setup Node 24
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-
       - name: Authenticate DEV read only
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT }}
-
       - name: Install transient proof dependencies
         run: |
           set -Eeuo pipefail
           npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
           npx playwright install chromium >/dev/null 2>&1
-
       - name: Prepare exact candidate source without build
         run: |
           set -Eeuo pipefail
@@ -3292,7 +3140,6 @@ jobs:
           test "$(git rev-parse "$SOURCE_SHA^{tree}")" = "$SOURCE_TREE"
           git archive "$SOURCE_SHA" | tar -x -C "$RUNNER_TEMP/vrm043-source"
           echo "SOURCE_DIR=$RUNNER_TEMP/vrm043-source" >> "$GITHUB_ENV"
-
       - name: Prove existing DEV still serves Run375 candidate
         run: |
           set -Eeuo pipefail
@@ -3325,7 +3172,6 @@ jobs:
           test "$mismatch" = 0
           jq -n -S --arg revision "$REVISION" --arg digest "$DIGEST" --arg source "$SOURCE_SHA" --argjson mismatch "$mismatch" \
             '{decision:"PASS_VRM043_EXISTING_DEV_EXACT_CANDIDATE",runtimeRevision:$revision,runtimeDigest:$digest,sourceSha:$source,hostingMismatches:$mismatch,builds:0,deploys:0,production:false}' > "$PROOF_OUT/dev-identity.json"
-
       - name: Pin one current HR revision without forced refresh
         run: |
           set -Eeuo pipefail
@@ -3335,7 +3181,6 @@ jobs:
           echo "PINNED_HR_REVISION=$PINNED_HR_REVISION" >> "$GITHUB_ENV"
           curl -fsS --retry 3 --retry-delay 1 "$HOSTING_URL/api/tya/$PROJECT_ID/hr-live?format=meta&vrm043pin=${GITHUB_RUN_ID}" > "$PROOF_OUT/hr-meta.json"
           test "$(jq -r '.revision' "$PROOF_OUT/hr-meta.json")" = "$PINNED_HR_REVISION"
-
       - name: Run corrected exhaustive human acceptance on existing DEV
         run: |
           set -Eeuo pipefail
@@ -3348,7 +3193,6 @@ jobs:
           test "$(jq -r '.decision' "$PROOF_OUT/full-human/human-live-acceptance.json")" = "PASS_I3_HUMAN_LIVE_ACCEPTANCE"
           test "$(jq -r '.sourceRevision' "$PROOF_OUT/full-human/human-live-acceptance.json")" = "$PINNED_HR_REVISION"
           test "$(jq -r '.paulaOsorioProof.ok' "$PROOF_OUT/full-human/human-live-acceptance.json")" = "true"
-
       - name: Run corrected same-revision semantic oracle
         run: |
           set -Eeuo pipefail
@@ -3360,7 +3204,6 @@ jobs:
           test "$(jq -r '.decision' "$PROOF_OUT/semantic/hr-contrast.json")" = "PASS_C3_TERMINAL_HR_SEMANTIC_ORACLE"
           test "$(jq -r '.sourceRevision' "$PROOF_OUT/semantic/hr-contrast.json")" = "$PINNED_HR_REVISION"
           test "$(jq '.reference.humanIdentityCount + .reference.unresolvedIdentityCount' "$PROOF_OUT/semantic/hr-contrast.json")" = "$(jq '.reference.shopperPopulation' "$PROOF_OUT/semantic/hr-contrast.json")"
-
       - name: Run corrected hardened semantic focal on existing DEV
         run: |
           set -Eeuo pipefail
@@ -3368,7 +3211,6 @@ jobs:
           node tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs
           test "$(jq -r '.decision' "$PROOF_OUT/semantic/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
           test "$(jq -r '.hrRevision' "$PROOF_OUT/semantic/browser-focal.json")" = "$PINNED_HR_REVISION"
-
       - name: Seal VRM043 control proof
         run: |
           set -Eeuo pipefail
@@ -3381,7 +3223,6 @@ jobs:
             --argjson unresolved "$(jq '.reference.unresolvedIdentityCount' "$PROOF_OUT/semantic/hr-contrast.json")" \
             '{decision:"PASS_VRM043_CONTROL_FIX_NO_DEPLOY",sourceSha:$source,hrRevision:$revision,humanAcceptance:$human,semanticOracle:$oracle,hardenedFocal:$focal,humanIdentityCount:$humanNames,unresolvedReviewOnlyCount:$unresolved,builds:0,deploys:0,production:false}' \
             > "$PROOF_OUT/final.json"
-
       - name: Upload VRM043 control proof
         if: always()
         uses: actions/upload-artifact@v4
@@ -3391,11 +3232,9 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
       - name: Cleanup transient dependencies
         if: always()
         run: rm -rf node_modules "$RUNNER_TEMP/vrm043-source"
-
   certify:
     name: I3 terminal certification — exact current DEV — no deploy
     needs: canonical-candidate-authority
@@ -3410,12 +3249,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Setup Node 24
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-
       - name: Prove exact terminal authority and current preterminal closure
         env:
           GH_TOKEN: ${{ github.token }}
@@ -3452,7 +3289,6 @@ jobs:
           test "$(jq -r '.matchModules' "$PRIOR/result.json")" = "20"
           test "$(jq -r '.pendingFiles' "$PRIOR/result.json")" = "0"
           cp "$PRIOR/result.json" "$OUT/current-preterminal-result.json"
-
       - name: Install terminal proof dependencies
         run: |
           set -Eeuo pipefail
@@ -3460,17 +3296,14 @@ jobs:
           npx playwright install chromium >/dev/null 2>&1
           node --test backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-semantic-regression.test.mjs | tee "$OUT/source-regressions.log"
           node --test --test-name-pattern="exact HR durable key" backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs | tee "$OUT/operational-visit-key-regression.log"
-
       - name: Authenticate canonical Firebase DEV read only
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT }}
-
       - name: Prepare exact certification source without build or deploy
         run: |
           set -Eeuo pipefail
@@ -3480,7 +3313,6 @@ jobs:
           test ! -e "$SOURCE_DIR/node_modules"
           echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
           cp CXORBIA_CANONICAL_ROUTE_INVENTORY_2026-09-18.json "$OUT/canonical-route-inventory.json"
-
       - name: Reprove exact DEV identity Rules and fresh HR — zero deploy
         run: |
           set -Eeuo pipefail
@@ -3492,14 +3324,12 @@ jobs:
           if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then RUNTIME_DIGEST="$RAW"; else RUNTIME_DIGEST="sha256:${RAW##*@sha256:}"; fi
           test "$RUNTIME_DIGEST" = "$EXPECTED_RUNTIME_DIGEST"
           SOURCE_IMMUTABLE_IMAGE="$(jq -r '.spec.containers[0].image // empty' "$OUT/runtime-revision.json")"
-
           TOKEN="$(gcloud auth print-access-token)"
           curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$OUT/hosting-live-channel.json"
           HOSTING_RELEASE_NAME="$(jq -r '.release.name // empty' "$OUT/hosting-live-channel.json")"
           HOSTING_VERSION_NAME="$(jq -r '.release.version.name // empty' "$OUT/hosting-live-channel.json")"
           HOSTING_RELEASE_TIME="$(jq -r '.release.releaseTime // empty' "$OUT/hosting-live-channel.json")"
           test "$HOSTING_VERSION_NAME" = "$EXPECTED_HOSTING_VERSION"
-
           curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases/cloud.firestore" > "$OUT/firestore-release-live.json"
           RULESET="$(jq -r '.rulesetName // empty' "$OUT/firestore-release-live.json")"; test -n "$RULESET"
           curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/$RULESET" > "$OUT/firestore-ruleset-live.json"
@@ -3512,7 +3342,6 @@ jobs:
           const sha=crypto.createHash('sha256').update(local).digest('hex');
           fs.writeFileSync(process.env.OUT+'/firestore-live-parity.json',JSON.stringify({decision:'PASS_TERMINAL_FIRESTORE_RULES_EXACT',sha256:sha,rulesetName:rs.name||null,production:false},null,2)+'\n');
           NODE
-
           : > "$OUT/hr-meta-attempts.ndjson"
           HR_META_OK=0
           PREV_REV=""
@@ -3534,7 +3363,6 @@ jobs:
           test "$SNAP_REV" = "$CURRENT_LIVE_HR_REVISION"
           jq -e '.sourceSafe==true and .production==false and .hrWrites==false' "$OUT/hr-current-live.json" >/dev/null 2>&1 || true
           jq -n -S --arg revision "$CURRENT_LIVE_HR_REVISION" --argjson attempts "$(wc -l < "$OUT/hr-meta-attempts.ndjson")" '{decision:"PASS_TERMINAL_HR_STABLE_REVISION",revision:$revision,stabilityMethod:"two_consecutive_valid_meta_reads_plus_exact_snapshot_revision",attempts:$attempts,production:false}' > "$OUT/hr-stability-proof.json"
-
           echo "CURRENT_LIVE_HR_REVISION=$CURRENT_LIVE_HR_REVISION" >> "$GITHUB_ENV"
           echo "DEV_REVISION=$DEV_REVISION" >> "$GITHUB_ENV"
           echo "RUNTIME_DIGEST=$RUNTIME_DIGEST" >> "$GITHUB_ENV"
@@ -3542,7 +3370,6 @@ jobs:
           echo "HOSTING_RELEASE_NAME=$HOSTING_RELEASE_NAME" >> "$GITHUB_ENV"
           echo "HOSTING_VERSION_NAME=$HOSTING_VERSION_NAME" >> "$GITHUB_ENV"
           echo "HOSTING_RELEASE_TIME=$HOSTING_RELEASE_TIME" >> "$GITHUB_ENV"
-
       - name: Run fresh exhaustive human acceptance on exact current candidate
         run: |
           set -Eeuo pipefail
@@ -3556,19 +3383,16 @@ jobs:
           test "$(jq '[.routes[]|select(.undefinedVisible==true or .technicalVisible==true or .qaReservationVisible==true)]|length' "$OUT/full-human-acceptance/human-live-acceptance.json")" = "0"
           test "$(jq -r '.probe.reservations.ok' "$OUT/full-human-acceptance/i3-functional-probes.json")" = "true"
           test "$(jq '.probe.reservations.qaResidueIds|length' "$OUT/full-human-acceptance/i3-functional-probes.json")" = "0"
-
       - name: Run same-revision semantic oracle and hardened focal
         run: |
           set -Eeuo pipefail
           C3_SEM_OUT="$OUT/semantic" C3_HR_FILE="$OUT/hr-current-live.json" C3_FIREBASE_PROJECT="$PROJECT" C3_TENANT_ID="$TENANT_ID" C3_PROJECT_ID="$PROJECT_ID" C3_HR_REVISION="$CURRENT_LIVE_HR_REVISION" C3_HOSTING_URL="$HOSTING_URL" node tools/qa/cxorbia-i3-c3-terminal-semantic-oracle.mjs | tee "$OUT/semantic/oracle.log"
           test "$(jq -r '.decision' "$OUT/semantic/hr-contrast.json")" = "PASS_C3_TERMINAL_HR_SEMANTIC_ORACLE"
           test "$(jq -r '.sourceRevision' "$OUT/semantic/hr-contrast.json")" = "$CURRENT_LIVE_HR_REVISION"
-
           PREI4_OUT="$OUT/semantic" CXORBIA_PREI4_ROOT="$HOSTING_URL" CXORBIA_PREI4_SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA" node tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs | tee "$OUT/semantic/focal-console.log"
           test "$(jq -r '.decision' "$OUT/semantic/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
           test "$(jq -r '.sourceSha' "$OUT/semantic/browser-focal.json")" = "$I3_CERTIFICATION_SOURCE_SHA"
           test "$(jq -r '.hrRevision' "$OUT/semantic/browser-focal.json")" = "$CURRENT_LIVE_HR_REVISION"
-
       - name: Rebuild terminal Module Truth from fresh same-source proof and served bytes
         run: |
           set -Eeuo pipefail
@@ -3585,7 +3409,6 @@ jobs:
           test "$(jq '.preTerminalComposition.matchModules|length' "$OUT/module-truth-preterminal.json")" = "20"
           test "$(jq '.preTerminalComposition.pendingFileCount' "$OUT/module-truth-preterminal.json")" = "0"
           test "$(jq -r '.entrypointClosure.allApprovedOwnersLoaded' "$OUT/module-truth-preterminal.json")" = "true"
-
           mkdir -p "$OUT/served"
           : > "$OUT/hosting-parity.tsv"
           n=0
@@ -3601,7 +3424,6 @@ jobs:
           test "$n" -gt 0
           jq -n -S '{decision:"PASS_C3_PENDING_OWNER_BYTE_PARITY",mismatches:0,rows:[],production:false}' > "$OUT/pending-owner-parity.json"
           jq -n -S '{decision:"PASS_C3_QA_RESERVATION_CLEANUP",mode:"CURRENT_TERMINAL_ACCEPTANCE_ZERO_RESIDUE",before:0,deletedIds:[],after:0,ambiguous:0,writes:0,production:false}' > "$OUT/qa-reservation-cleanup.json"
-
           C3_PRETERMINAL="$OUT/module-truth-preterminal.json" C3_FOCAL="$OUT/semantic/browser-focal.json" C3_HUMAN="$OUT/full-human-acceptance/human-live-acceptance.json" C3_QA="$OUT/qa-reservation-cleanup.json" C3_PARITY="$OUT/pending-owner-parity.json" C3_LEDGER="$TERMINAL_LEDGER" C3_FINAL_MATRIX="$OUT/module-truth-matrix.json" C3_SOURCE="$I3_CERTIFICATION_SOURCE_SHA" C3_TREE="$I3_CERTIFICATION_SOURCE_TREE" C3_RUNTIME_REVISION="$DEV_REVISION" C3_RUNTIME_DIGEST="$RUNTIME_DIGEST" C3_HOSTING_VERSION="$HOSTING_VERSION_NAME" node tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs > "$OUT/module-truth-terminal-console.log"
           test "$(jq -r '.terminalClosure.decision' "$OUT/module-truth-matrix.json")" = "PASS_C3_TERMINAL_MODULE_TRUTH_20_20"
           test "$(jq -r '.phaseAComplete' "$OUT/module-truth-matrix.json")" = "true"
@@ -3609,7 +3431,6 @@ jobs:
           test "$(jq '[.modules[]|select(.classification!="MATCH")]|length' "$OUT/module-truth-matrix.json")" = "0"
           MODULE_TRUTH_MATRIX_SHA256="$(sha256sum "$OUT/module-truth-matrix.json"|awk '{print $1}')"
           echo "MODULE_TRUTH_MATRIX_SHA256=$MODULE_TRUTH_MATRIX_SHA256" >> "$GITHUB_ENV"
-
       - name: Reprove atomic source contracts and derive Gate20 receipts
         run: |
           set -Eeuo pipefail
@@ -3622,12 +3443,10 @@ jobs:
           grep -q "'reservation.create'" "$SOURCE_DIR/backend/runtime/cxorbia-operational-command-provider-v1.mjs"
           ! grep -q "const selMonth=new Date().getMonth()" "$SOURCE_DIR/app/modules/dashboard.js"
           jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" '{decision:"PASS_I3_ATOMIC_P0_SOURCE_CONTRACT",sourceSha:$source,durableVisitAuthority:"hrRowId_then_sourceCoord_then_logical_visitId",operationalVisitResolver:true,sourceCurrentConcurrencySentinel:true,hrCrosswalkPrecedence:true,reservationsDurableProvider:true,dashboardSelectedPeriod:true,production:false}' > "$OUT/atomic-p0-source-contract.json"
-
           HUMAN="$OUT/full-human-acceptance/human-live-acceptance.json"; PROBES="$OUT/full-human-acceptance/i3-functional-probes.json"; FOCAL="$OUT/semantic/browser-focal.json"; MATRIX="$OUT/module-truth-matrix.json"
           HUMAN_SHA="$(sha256sum "$HUMAN"|awk '{print $1}')"; PROBES_SHA="$(sha256sum "$PROBES"|awk '{print $1}')"; FOCAL_SHA="$(sha256sum "$FOCAL"|awk '{print $1}')"; MATRIX_SHA="$(sha256sum "$MATRIX"|awk '{print $1}')"; ROUTE_SHA="$(sha256sum "$OUT/canonical-route-inventory.json"|awk '{print $1}')"; SHOTS="$(jq -r '.screenshotCount' "$HUMAN")"
           jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg human "$HUMAN_SHA" --arg focal "$FOCAL_SHA" --arg matrix "$MATRIX_SHA" --arg routes "$ROUTE_SHA" --argjson shots "$SHOTS" '{decision:"PASS_GATE20_FOCAL_VISUAL_DRIFT",gate:20,mode:"CURRENT_TERMINAL_FULL_CANONICAL_VISUAL",sourceSha:$source,fullHumanAcceptanceSha256:$human,hardenedFocalSha256:$focal,moduleTruthSha256:$matrix,routeInventorySha256:$routes,expectedRoleRouteEntries:56,screenshotCount:$shots,production:false}' > "$OUT/gate20/gate20-browser-visual.json"
           jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg human "$HUMAN_SHA" --arg probes "$PROBES_SHA" --arg focal "$FOCAL_SHA" --arg matrix "$MATRIX_SHA" --arg routes "$ROUTE_SHA" '{decision:"PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY",gate:20,mode:"CURRENT_TERMINAL_FULL_CANONICAL_SEMANTIC",sourceSha:$source,fullHumanAcceptanceSha256:$human,functionalProbesSha256:$probes,hardenedFocalSha256:$focal,moduleTruthSha256:$matrix,routeInventorySha256:$routes,expectedRoleRouteEntries:56,production:false}' > "$OUT/gate20-semantic-shopper.json"
-
       - name: Package one deterministic certification artifact and manifest
         run: |
           set -Eeuo pipefail
@@ -3645,10 +3464,8 @@ jobs:
           RUNTIME_SHA="$(sha256sum "$OUT/runtime-revision.json"|awk '{print $1}')"
           HOSTING_SHA="$(sha256sum "$OUT/hosting-live-channel.json"|awk '{print $1}')"
           ATOMIC_SHA="$(sha256sum "$OUT/atomic-p0-source-contract.json"|awk '{print $1}')"
-
           jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg tree "$I3_CERTIFICATION_SOURCE_TREE" --arg control "$GITHUB_SHA" --arg artifact "$ARTIFACT_SHA256" --arg revision "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg image "$SOURCE_IMMUTABLE_IMAGE" --arg hostingRelease "$HOSTING_RELEASE_NAME" --arg hostingVersion "$HOSTING_VERSION_NAME" --arg hostingTime "$HOSTING_RELEASE_TIME" --arg hr "$CURRENT_LIVE_HR_REVISION" --arg hrSha "$HR_SHA" --arg hrMetaSha "$HR_META_SHA" --arg rulesSha "$RULES_SHA" --arg runtimeSha "$RUNTIME_SHA" --arg hostingSha "$HOSTING_SHA" --arg gate20Sha "$GATE20_SHA" --arg semantic20Sha "$SEM20_SHA" --arg humanSha "$HUMAN_SHA" --arg probesSha "$PROBES_SHA" --arg routesSha "$ROUTE_SHA" --arg moduleTruthSha "$MODULE_TRUTH_MATRIX_SHA256" --arg atomicSha "$ATOMIC_SHA" --slurpfile moduleTruth "$OUT/module-truth-matrix.json" '{schemaVersion:"cxorbia.i3.terminal-certification.v2",decision:"PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21",i3CertificationSourceSha:$source,i3CertificationSourceTree:$tree,controlHeadSha:$control,artifactFile:"cxorbia-i3-certified-source.tar",artifactSha256:$artifact,buildCount:1,artifactPackCount:1,runtimeBuilds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0,rebuildAfterCertification:false,devRuntimeRevision:$revision,runtimeImageDigest:$digest,immutableRuntimeImage:$image,hostingReleaseName:$hostingRelease,hostingVersionName:$hostingVersion,hostingReleaseTime:$hostingTime,certificationHrRevision:$hr,certificationHrEvidenceSha256:$hrSha,certificationHrMetaSha256:$hrMetaSha,firestoreParityEvidenceSha256:$rulesSha,runtimeEvidenceSha256:$runtimeSha,hostingEvidenceSha256:$hostingSha,atomicP0:{decision:"PASS_I3_ATOMIC_P0_SOURCE_CONTRACT",evidenceSha256:$atomicSha},fullHumanAcceptance:{decision:"PASS_I3_HUMAN_LIVE_ACCEPTANCE",evidenceSha256:$humanSha,functionalProbesSha256:$probesSha,routeInventorySha256:$routesSha,expectedRoleRouteEntries:56,beforeArtifact:true},gate20:{decision:"PASS_GATE20_FOCAL_VISUAL_DRIFT",sourceSha:$source,evidenceSha256:$gate20Sha},gate20Semantic:{decision:"PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY",sourceSha:$source,evidenceSha256:$semantic20Sha},moduleTruthEvidenceSha256:$moduleTruthSha,moduleTruth:$moduleTruth[0],pendingTerminalFindingsClosedByThisProof:["VRM-034","VRM-035","VRM-041","VRM-043","VRM-069","VRM-070","VRM-071","VRM-073"],sameRevisionWithinCertificationProof:true,production:false}' > "$OUT/i3-certification-manifest.json"
           cp "$OUT/i3-certification-manifest.json" "$OUT/result.json"
-
       - name: Upload one terminal certification artifact
         uses: actions/upload-artifact@v4
         with:
@@ -3658,7 +3475,6 @@ jobs:
           retention-days: 30
           compression-level: 0
           include-hidden-files: true
-
       - name: Upload terminal diagnostics
         if: always()
         uses: actions/upload-artifact@v4
@@ -3668,10 +3484,8 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
           compression-level: 0
-
       - if: always()
         run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-i3-terminal-source" "$RUNNER_TEMP/cxorbia-current-module-truth"
-
   live-fixtures:
     name: I3 full live fixture suite v2 — exact same certified artifact
     needs: [canonical-candidate-authority, certify]
@@ -3738,14 +3552,12 @@ jobs:
           compression-level: 0
       - if: always()
         run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-terminal-cert" "$RUNNER_TEMP/cxorbia-terminal-fixture-source"
-
   gate21:
     name: Gate 21 integrity of exact same certification artifact
     needs: [certify, live-fixtures]
     if: ${{ needs.certify.result == 'success' && needs.live-fixtures.result == 'success' }}
     uses: ./.github/workflows/cxorbia-recovery-i3-gate21-artifact-fingerprint.yml
     secrets: inherit
-
   pre-i4-human-entrypoint-dev:
     name: PRE-I4 focal human entrypoint DEV materialization
     if: ${{ false }}
@@ -3760,12 +3572,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-
       - name: Validate focal authorization and exact source
         id: gate
         run: |
@@ -3790,7 +3600,6 @@ jobs:
           fs.writeFileSync(process.env.PREI4_OUT+'/authorization.json',JSON.stringify({decision:'PASS_PRE_I4_FOCAL_AUTHORIZATION',requestId:r.requestId,sourceSha:r.sourceSha,sourceTree:r.sourceTree,controlHeadSha:head,changedAfterSource:changed,runtimeBuildMax:0,runtimeDeployMax:0,rulesDeployMax:1,hostingDeployMax:1,production:false},null,2)+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,'source_sha='+r.sourceSha+'\nsource_tree='+r.sourceTree+'\n');
           NODE
-
       - name: Prepare exact focal successor and source gate
         run: |
           set -Eeuo pipefail
@@ -3800,7 +3609,6 @@ jobs:
           cd "$PREI4_SOURCE_DIR"
           node tools/qa/cxorbia-pre-i4-human-entrypoint-contract-gate.mjs > "$GITHUB_WORKSPACE/$PREI4_OUT/source-gate.json"
           test "$(jq -r '.decision' "$GITHUB_WORKSPACE/$PREI4_OUT/source-gate.json")" = "PASS_PRE_I4_HUMAN_ENTRYPOINT_CONTRACT"
-
       - name: PRE-I4 focal source gates before any DEV deployment
         run: |
           set -Eeuo pipefail
@@ -3810,7 +3618,6 @@ jobs:
           done
           node --test             backend/runtime/hr-live-service/test/cxorbia-i3-project-period-contract.test.mjs             backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs             backend/runtime/hr-live-service/test/cxorbia-pre-i4-durability-resources.test.mjs             backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-ui-cleanup.test.mjs             | tee "$GITHUB_WORKSPACE/$PREI4_OUT/source-tests.log"
           jq -n -S --arg source "${{ steps.gate.outputs.source_sha }}"             '{decision:"PASS_PRE_I4_FOCAL_SOURCE_GATES",sourceSha:$source,syntax:true,tests:true,production:false}'             > "$GITHUB_WORKSPACE/$PREI4_OUT/source-proof.json"
-
       - name: Freeze exact static app artifact before deploy
         run: |
           set -Eeuo pipefail
@@ -3818,23 +3625,19 @@ jobs:
           tar --sort=name --mtime='UTC 1970-01-01' --owner=0 --group=0 --numeric-owner -cf "$GITHUB_WORKSPACE/$PREI4_OUT/cxorbia-pre-i4-human-app.tar" app
           sha256sum "$GITHUB_WORKSPACE/$PREI4_OUT/cxorbia-pre-i4-human-app.tar" | awk '{print $1}' > "$GITHUB_WORKSPACE/$PREI4_OUT/app-artifact.sha256"
           jq -n -S --arg source "${{ steps.gate.outputs.source_sha }}" --arg tree "${{ steps.gate.outputs.source_tree }}" --arg artifact "$(cat "$GITHUB_WORKSPACE/$PREI4_OUT/app-artifact.sha256")" '{decision:"PASS_PRE_I4_ONE_STATIC_ARTIFACT_FROZEN",sourceSha:$source,sourceTree:$tree,artifactSha256:$artifact,staticBuildCount:0,runtimeBuildMax:0,runtimeDeployMax:0,rulesDeployMax:1,hostingDeployMax:1,production:false}' > "$GITHUB_WORKSPACE/$PREI4_OUT/artifact-manifest.json"
-
       - name: Authenticate existing Firebase DEV only
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-
       - name: Setup gcloud for existing Recovery DEV only
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: cxorbia-backend-dev
-
       - name: Install transient focal tooling
         run: |
           set -Eeuo pipefail
           npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1
           npx playwright install --with-deps chromium >/dev/null 2>&1
-
       - name: Verify existing PRE-I4 runtime from Run 307 without rebuild or redeploy
         run: |
           set -Eeuo pipefail
@@ -3860,7 +3663,6 @@ jobs:
           echo 0 > "$PREI4_OUT/runtime-build-count.txt"
           echo 0 > "$PREI4_OUT/runtime-deploy-count.txt"
           jq -n -S --arg revision "$REVISION" --arg digest "$DIGEST" --arg serviceImage "$SERVICE_IMAGE" --arg revisionImage "$REVISION_IMAGE" '{decision:"PASS_PRE_I4_EXISTING_RUNTIME_EXACT_SOURCE",runtimeRevision:$revision,runtimeDigest:$digest,serviceImage:$serviceImage,revisionImage:$revisionImage,tagDigestMatchesRevision:true,priorRunId:35915126071,priorBuildCount:1,priorDeployCount:1,continuationBuildCount:0,continuationDeployCount:0,production:false}' > "$PREI4_OUT/runtime-continuation.json"
-
       - name: Deploy exact PRE-I4 Firestore rules through proven direct Rules API lane
         env:
           CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
@@ -3892,7 +3694,6 @@ jobs:
           if(local!==remote)throw new Error('RELEASE_COMPOSITION_FAILURE:FIRESTORE_RULES_BYTE_MISMATCH');
           fs.writeFileSync(process.env.PREI4_OUT+'/rules-parity.json',JSON.stringify({decision:'PASS_PRE_I4_FIRESTORE_RULES_PARITY',sha256:sha(local),directApi:true,production:false},null,2)+'\n');
           NODE
-
       - name: Deploy exact frozen successor to existing Hosting DEV once
         run: |
           set -Eeuo pipefail
@@ -3900,7 +3701,6 @@ jobs:
           cd "$PREI4_SOURCE_DIR"
           "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:cxorbia-dev" --project "cxorbia-backend-dev" --non-interactive | tee "$GITHUB_WORKSPACE/$PREI4_OUT/hosting-deploy.log"
           echo 1 > "$GITHUB_WORKSPACE/$PREI4_OUT/hosting-deploy-count.txt"
-
       - name: Prove served byte parity and canonical wildcard
         run: |
           set -Eeuo pipefail
@@ -3919,7 +3719,6 @@ jobs:
           curl -fsSL -H 'Cache-Control: no-cache' "$root/__pre_i4_deep_route__/admin/dashboard?prei4=${GITHUB_RUN_ID}" -o "$PREI4_OUT/remote/deep.html"
           cmp "$PREI4_SOURCE_DIR/app/index-backend-dev.html" "$PREI4_OUT/remote/deep.html"
           jq -n -S --arg source "${{ steps.gate.outputs.source_sha }}" '{decision:"PASS_PRE_I4_HOSTING_REMOTE_BYTE_PARITY",sourceSha:$source,criticalFiles:23,deepRouteCanonicalEntrypoint:true,production:false}' > "$PREI4_OUT/remote-parity.json"
-
       - name: Read fresh HR authority after deploy
         run: |
           set -Eeuo pipefail
@@ -3933,7 +3732,6 @@ jobs:
           if(!period||period.total!==44||period.byCountry?.GT!==34||period.byCountry?.HN!==10)throw new Error('SOURCE_FAILURE:CURRENT_PERIOD_COUNTS_DRIFT');
           fs.writeFileSync(process.env.PREI4_OUT+'/hr-contrast.json',JSON.stringify({decision:'PASS_PRE_I4_HR_FRESH_CONTRAST',generatedAt:p.generatedAt,sourceRevision:revision,currentPeriodKey:key,currentPeriodId:period.id,projectId:p.projectId,projectName:p.projectName,tabs:period.tabs,GT:country('GT'),HN:country('HN'),production:false,hrWrites:0},null,2)+'\n');
           NODE
-
       - name: Focal browser proof pre-auth Admin Shopper refresh mobile
         env:
           CXORBIA_PREI4_ROOT: https://cxorbia-backend-dev.web.app
@@ -3942,7 +3740,6 @@ jobs:
           set -Eeuo pipefail
           node tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs
           test "$(jq -r '.decision' "$PREI4_OUT/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
-
       - name: Prove deployed artifact equals frozen source
         run: |
           set -Eeuo pipefail
@@ -3957,7 +3754,6 @@ jobs:
           PRE="$(cat "$GITHUB_WORKSPACE/$PREI4_OUT/app-artifact.sha256")"
           test "$POST" = "$PRE"
           jq -n -S             --arg source "${{ steps.gate.outputs.source_sha }}"             --arg artifact "$PRE"             --arg hr "$(jq -r '.sourceRevision' "$GITHUB_WORKSPACE/$PREI4_OUT/hr-contrast.json")"             --arg runtimeRevision "$(cat "$GITHUB_WORKSPACE/$PREI4_OUT/runtime-revision-name.txt")"             --arg runtimeDigest "$(cat "$GITHUB_WORKSPACE/$PREI4_OUT/runtime-digest.txt")"             '{decision:"PASS_PRE_I4_SAME_ARTIFACT_DEV",sourceSha:$source,artifactSha256:$artifact,hrRevision:$hr,runtimeRevision:$runtimeRevision,runtimeDigest:$runtimeDigest,staticBuildCount:0,continuationRuntimeBuildCount:0,continuationRuntimeDeployCount:0,cumulativeRuntimeBuildCount:1,cumulativeRuntimeDeployCount:1,rulesDeployCount:1,hostingDeployCount:1,remoteByteParity:true,rulesParity:true,focalBrowser:true,production:false}'             > "$GITHUB_WORKSPACE/$PREI4_OUT/final.json"
-
       - name: Upload focal PRE-I4 evidence and frozen app artifact
         if: always()
         uses: actions/upload-artifact@v4
@@ -3967,7 +3763,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
       - name: Enforce focal result
         run: |
           set -Eeuo pipefail
@@ -3977,7 +3772,6 @@ jobs:
           test "$(jq -r '.decision' "$PREI4_OUT/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
           test "$(jq -r '.decision' "$PREI4_OUT/hr-contrast.json")" = "PASS_PRE_I4_HR_FRESH_CONTRAST"
           test "$(jq -r '.decision' "$PREI4_OUT/remote-parity.json")" = "PASS_PRE_I4_HOSTING_REMOTE_BYTE_PARITY"
-
   pre-i4-finance-p0-hosting-fix:
     name: PRE-I4 focal static P0 Hosting-only materialization
     if: ${{ false }}
@@ -3993,12 +3787,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-
       - name: Validate exact focal functional successor and one-shot scope
         run: |
           set -Eeuo pipefail
@@ -4021,7 +3813,6 @@ jobs:
           if(unsafe.length)throw new Error('RELEASE_COMPOSITION_FAILURE:FOCAL_FIX_RUNTIME_RULES_DRIFT:'+unsafe.join(','));
           fs.writeFileSync(process.env.PREI4_OUT+'/authorization.json',JSON.stringify({decision:'PASS_PRE_I4_FOCAL_FIX_AUTHORIZATION',sourceSha:source,sourceTree:r.sourceTree,productDiff,runtimeBuilds:0,runtimeDeploys:0,rulesDeploys:0,hostingDeployMax:1,production:false},null,2)+'\n');
           NODE
-
       - name: Recreate exact functional source and run regression gates
         run: |
           set -Eeuo pipefail
@@ -4039,23 +3830,19 @@ jobs:
           test "$(jq -r '.decision' "$GITHUB_WORKSPACE/$PREI4_OUT/source-gate.json")" = "PASS_PRE_I4_HUMAN_ENTRYPOINT_CONTRACT"
           tar --sort=name --mtime='UTC 1970-01-01' --owner=0 --group=0 --numeric-owner -cf "$GITHUB_WORKSPACE/$PREI4_OUT/app-artifact.tar" app
           sha256sum "$GITHUB_WORKSPACE/$PREI4_OUT/app-artifact.tar" | awk '{print $1}' > "$GITHUB_WORKSPACE/$PREI4_OUT/app-artifact.sha256"
-
       - name: Authenticate existing Firebase DEV only
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: cxorbia-backend-dev
-
       - name: Install transient Hosting and browser tooling
         run: |
           set -Eeuo pipefail
           npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1
           npx playwright install --with-deps chromium >/dev/null 2>&1
-
       - name: Bind unchanged runtime and Rules evidence from prior materialization
         env:
           GH_TOKEN: ${{ github.token }}
@@ -4071,7 +3858,6 @@ jobs:
           curl -fsS --retry 8 --retry-delay 2 "$(jq -r '.status.url' "$PREI4_OUT/runtime-live.json")/health" > "$PREI4_OUT/runtime-health.json"
           jq -e '.ok==true and .production==false and .hrWrites==false' "$PREI4_OUT/runtime-health.json" >/dev/null
           jq -n -S --arg revision "$RUNTIME_REV" '{decision:"PASS_PRE_I4_RUNTIME_RULES_UNCHANGED_FOR_BROWSER_ONLY_FIX",runtimeRevision:$revision,runtimeDeploysThisRun:0,rulesDeploysThisRun:0,production:false}' > "$PREI4_OUT/runtime-rules-unchanged.json"
-
       - name: Deploy exact focal static successor to Hosting DEV once
         run: |
           set -Eeuo pipefail
@@ -4080,7 +3866,6 @@ jobs:
           "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:cxorbia-dev" --project "cxorbia-backend-dev" --non-interactive | tee "$GITHUB_WORKSPACE/$PREI4_OUT/hosting-deploy.log"
           cd "$GITHUB_WORKSPACE"
           echo 1 > "$PREI4_OUT/hosting-deploy-count.txt"
-
       - name: Prove exact served static bytes after focal deploy
         run: |
           set -Eeuo pipefail
@@ -4097,7 +3882,6 @@ jobs:
           curl -fsSL -H 'Cache-Control: no-cache' "$root/__pre_i4_finance_p0__/admin/financiero?financep0=${GITHUB_RUN_ID}" -o "$PREI4_OUT/remote/deep.html"
           cmp "$PREI4_SOURCE_DIR/app/index-backend-dev.html" "$PREI4_OUT/remote/deep.html"
           jq -n -S '{decision:"PASS_PRE_I4_FOCAL_FIX_HOSTING_BYTE_PARITY",hostingDeploysThisRun:1,production:false}' > "$PREI4_OUT/remote-readback.json"
-
       - name: Force fresh HR read and build same-revision independent reference
         run: |
           set -Eeuo pipefail
@@ -4147,7 +3931,6 @@ jobs:
           };
           fs.writeFileSync(process.env.PREI4_OUT+'/hr-contrast.json',JSON.stringify({decision:'PASS_PRE_I4_HR_FRESH_CONTRAST',generatedAt:p.generatedAt,sourceRevision:revision,currentPeriodKey:key,currentPeriodId:period.id,projectId:p.projectId,projectName:p.projectName,tabs:period.tabs,GT,HN,reference,runtime:{cacheOrigin:p?._runtime?.cacheOrigin||null,sourceReadAt:p?._runtime?.sourceReadAt||null,refreshFinishedAt:p?._runtime?.refreshFinishedAt||null,shopperProviderWrites:Number(p?._runtime?.shopperReconciliation?.providerWrites||0),visitProviderWrites:Number(p?._runtime?.visitReconciliation?.providerWrites||0)},production:false,hrWrites:0},null,2)+'\n');
           NODE
-
       - name: Execute focal Admin Shopper desktop mobile against same HR revision
         env:
           CXORBIA_PREI4_ROOT: https://cxorbia-backend-dev.web.app
@@ -4156,7 +3939,6 @@ jobs:
           set -Eeuo pipefail
           node tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs
           test "$(jq -r '.decision' "$PREI4_OUT/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
-
       - name: Freeze focal static fix PASS
         run: |
           set -Eeuo pipefail
@@ -4170,7 +3952,6 @@ jobs:
           PRE="$(cat "$GITHUB_WORKSPACE/$PREI4_OUT/app-artifact.sha256")"
           test "$POST" = "$PRE"
           jq -n -S --arg source "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0" --arg artifact "$PRE" --arg hr "$(jq -r '.sourceRevision' "$GITHUB_WORKSPACE/$PREI4_OUT/hr-contrast.json")" '{decision:"PASS_PRE_I4_FOCAL_FIX_SAME_ARTIFACT_DEV",sourceSha:$source,artifactSha256:$artifact,hrRevision:$hr,runtimeBuildsThisRun:0,runtimeDeploysThisRun:0,rulesDeploysThisRun:0,hostingDeploysThisRun:1,browserFocal:true,postulationConflictVisibility:true,misvisitasCanonicalOwner:true,production:false}' > "$GITHUB_WORKSPACE/$PREI4_OUT/final.json"
-
       - name: Upload focal static fix evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -4180,12 +3961,10 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
       - name: Enforce focal static fix result
         run: |
           set -Eeuo pipefail
           test "$(jq -r '.decision' "$PREI4_OUT/final.json")" = "PASS_PRE_I4_FOCAL_FIX_SAME_ARTIFACT_DEV"
-
   pre-i4-module-truth-closure:
     name: PRE-I4 exhaustive Module Truth Matrix closure
     if: ${{ false }}
@@ -4201,7 +3980,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Validate exhaustive matrix against exact cumulative source
         run: |
           set -Eeuo pipefail
@@ -4226,7 +4004,6 @@ jobs:
           if(m.entrypointClosure?.allActiveRepoManagedCovered!==true||m.entrypointClosure?.activeRepoManagedOutsideMatrix?.length||m.entrypointClosure?.duplicateSrc?.length||m.entrypointClosure?.unknownActiveOverlays?.length)throw new Error('RELEASE_COMPOSITION_FAILURE:MATRIX_ENTRYPOINT_COVERAGE');
           fs.writeFileSync(process.env.MATRIX_OUT+'/matrix-source-proof.json',JSON.stringify({decision:'PASS_PRE_I4_MATRIX_SOURCE_EXHAUSTIVE',moduleCount:m.modules.length,sourceFileCount:m.sourceFiles.length,activeRepoManaged:m.entrypointClosure.activeRepoManagedScriptCount,nonMatchCount:0,production:false},null,2)+'\n');
           NODE
-
       - name: Prove current entrypoint load order and all active repo scripts served byte-exact
         run: |
           set -Eeuo pipefail
@@ -4256,7 +4033,6 @@ jobs:
           curl -fsSL --retry 5 -H 'Cache-Control: no-cache' "$root/styles/layout.css?matrix=${GITHUB_RUN_ID}" -o "$MATRIX_OUT/remote/layout.css"
           cmp "$MATRIX_OUT/source/app/styles/layout.css" "$MATRIX_OUT/remote/layout.css"
           jq -n -S --argjson scripts "$n" '{decision:"PASS_PRE_I4_ALL_ACTIVE_REPO_SERVED_BYTE_EXACT",activeRepoScripts:$scripts,entrypoint:true,layoutCss:true,production:false}' > "$MATRIX_OUT/live-byte-proof.json"
-
       - name: Bind exact Run333 cumulative focal and Run332 Rules evidence
         env:
           GH_TOKEN: ${{ github.token }}
@@ -4274,12 +4050,10 @@ jobs:
           gh run download 35953009969 --repo "$GITHUB_REPOSITORY" --name "cxorbia-pre-i4-vrm029-rules-35953009969" --dir "$MATRIX_OUT/run332"
           test "$(jq -r '.decision' "$MATRIX_OUT/run332/final.json")" = "PASS_PRE_I4_VRM029_RULES_DEV_EXACT"
           jq -n -S '{decision:"PASS_PRE_I4_BOUND_CUMULATIVE_EVIDENCE",run333:35953230892,run332:35953009969,production:false}' > "$MATRIX_OUT/bound-evidence.json"
-
       - name: Freeze exhaustive Module Truth PASS
         run: |
           set -Eeuo pipefail
           jq -n -S             --arg source "$PRODUCT_SOURCE"             --arg tree "$PRODUCT_TREE"             --arg rules "2f924e6e2057adef9c0c6be8259d564e15c43573"             --arg hr "8f3625f50d760887b5da2d43b34bbf4c881131c300905e2992c7f4cb38a07858"             '{decision:"PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",sourceSha:$source,sourceTree:$tree,rulesSourceSha:$rules,hrRevision:$hr,moduleCount:20,activeRepoScripts:127,approvedNotComposed:0,composedNotDeployed:0,trueFunctionalDefects:0,duplicateScripts:0,unknownOverlays:0,runtimeDeploysThisRun:0,rulesDeploysThisRun:0,hostingDeploysThisRun:0,production:false}' > "$MATRIX_OUT/final.json"
-
       - name: Upload exhaustive Module Truth evidence
         uses: actions/upload-artifact@v4
         with:
@@ -4288,14 +4062,12 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
       - name: Enforce exhaustive Module Truth result
         run: |
           set -Eeuo pipefail
           test "$(jq -r '.decision' "$MATRIX_OUT/final.json")" = "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE"
           test "$(jq -r '.decision' "$MATRIX_OUT/live-byte-proof.json")" = "PASS_PRE_I4_ALL_ACTIVE_REPO_SERVED_BYTE_EXACT"
           test "$(jq -r '.decision' "$MATRIX_OUT/matrix-source-proof.json")" = "PASS_PRE_I4_MATRIX_SOURCE_EXHAUSTIVE"
-
   pre-i4-postdeploy-readback:
     name: PRE-I4 postdeploy no-deploy focal verification
     if: ${{ false }}
@@ -4311,12 +4083,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-
       - name: Validate materialized candidate and zero-deploy continuation
         run: |
           set -Eeuo pipefail
@@ -4335,29 +4105,24 @@ jobs:
           if(JSON.stringify(changed)!==JSON.stringify(allowed))throw new Error('RELEASE_COMPOSITION_FAILURE:READBACK_CONTROL_PRODUCT_DRIFT:'+changed.join(','));
           fs.writeFileSync(process.env.PREI4_OUT+'/readback-authorization.json',JSON.stringify({decision:'PASS_PRE_I4_NO_DEPLOY_READBACK_AUTHORIZATION',sourceSha:r.sourceSha,sourceTree:r.sourceTree,deployedRunId:r.deployedRunId,runtimeDeploysThisRun:0,rulesDeploysThisRun:0,hostingDeploysThisRun:0,production:false},null,2)+'\n');
           NODE
-
       - name: Authenticate existing Firebase DEV for focal verification
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-
       - name: Setup gcloud for rules readback
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: cxorbia-backend-dev
-
       - name: Setup Java 21 for Firestore emulator
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
-
       - name: Install focal browser and rules proof tooling
         run: |
           set -Eeuo pipefail
           npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.55.0 firebase-tools@latest firebase@11.10.0 @firebase/rules-unit-testing@4.0.1 >/dev/null 2>&1
           npx playwright install --with-deps chromium >/dev/null 2>&1
-
       - name: Read back live Firestore Rules and prove exact shopper resource query
         run: |
           set -Eeuo pipefail
@@ -4396,7 +4161,6 @@ jobs:
           }finally{await env.cleanup();}
           NODE
           npx firebase emulators:exec --only firestore --project cxorbia-rules-proof-final "node '$PREI4_OUT/resource-rules-query-proof.mjs'"
-
       - name: Bind Run 322 exact deployed evidence
         if: ${{ !contains(github.event.head_commit.message, '[pre-i4-rules-proof-only]') }}
         env:
@@ -4417,7 +4181,6 @@ jobs:
           test "$(jq -r '.decision' "$PREI4_PRIOR/browser-focal.json")" = "FAIL_PRE_I4_FOCAL_HUMAN_BROWSER"
           jq -e '.error | test("Missing or insufficient permissions";"i")' "$PREI4_PRIOR/browser-focal.json" >/dev/null
           cp "$PREI4_PRIOR/app-artifact.sha256" "$PREI4_OUT/app-artifact.sha256"
-
       - name: Recreate exact product source without build or deploy
         if: ${{ !contains(github.event.head_commit.message, '[pre-i4-rules-proof-only]') }}
         run: |
@@ -4430,7 +4193,6 @@ jobs:
           NOW="$(sha256sum "$GITHUB_WORKSPACE/$PREI4_OUT/app-readback.tar" | awk '{print $1}')"
           PRIOR="$(cat "$GITHUB_WORKSPACE/$PREI4_OUT/app-artifact.sha256")"
           test "$NOW" = "$PRIOR"
-
       - name: Re-prove served source bytes without deployment
         if: ${{ !contains(github.event.head_commit.message, '[pre-i4-rules-proof-only]') }}
         run: |
@@ -4444,7 +4206,6 @@ jobs:
           curl -fsSL -H 'Cache-Control: no-cache' "$root/__pre_i4_readback__/shopper/miperfil?readback=${GITHUB_RUN_ID}" -o "$PREI4_OUT/remote/deep.html"
           cmp "$PREI4_SOURCE_DIR/app/index-backend-dev.html" "$PREI4_OUT/remote/deep.html"
           jq -n -S '{decision:"PASS_PRE_I4_POSTDEPLOY_REMOTE_BYTE_PARITY",hostingDeploysThisRun:0,production:false}' > "$PREI4_OUT/remote-readback.json"
-
       - name: Force fresh HR read and build same-revision independent reference
         if: ${{ !contains(github.event.head_commit.message, '[pre-i4-rules-proof-only]') }}
         run: |
@@ -4495,7 +4256,6 @@ jobs:
           };
           fs.writeFileSync(process.env.PREI4_OUT+'/hr-contrast.json',JSON.stringify({decision:'PASS_PRE_I4_HR_FRESH_CONTRAST',generatedAt:p.generatedAt,sourceRevision:revision,currentPeriodKey:key,currentPeriodId:period.id,projectId:p.projectId,projectName:p.projectName,tabs:period.tabs,GT,HN,reference,runtime:{cacheOrigin:p?._runtime?.cacheOrigin||null,sourceReadAt:p?._runtime?.sourceReadAt||null,refreshFinishedAt:p?._runtime?.refreshFinishedAt||null,shopperProviderWrites:Number(p?._runtime?.shopperReconciliation?.providerWrites||0),visitProviderWrites:Number(p?._runtime?.visitReconciliation?.providerWrites||0)},production:false,hrWrites:0},null,2)+'\n');
           NODE
-
       - name: Execute focal Admin Shopper desktop mobile against same HR revision
         if: ${{ !contains(github.event.head_commit.message, '[pre-i4-rules-proof-only]') }}
         env:
@@ -4505,14 +4265,12 @@ jobs:
           set -Eeuo pipefail
           node tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs
           test "$(jq -r '.decision' "$PREI4_OUT/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
-
       - name: Freeze no-deploy readback PASS
         if: ${{ !contains(github.event.head_commit.message, '[pre-i4-rules-proof-only]') }}
         run: |
           set -Eeuo pipefail
           ART="$(cat "$PREI4_OUT/app-artifact.sha256")"; HR="$(jq -r '.sourceRevision' "$PREI4_OUT/hr-contrast.json")"
           jq -n -S --arg source "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0" --arg artifact "$ART" --arg hr "$HR" --argjson priorRun 35949258270 '{decision:"PASS_PRE_I4_POSTDEPLOY_READBACK",sourceSha:$source,artifactSha256:$artifact,hrRevision:$hr,priorDeployRunId:$priorRun,runtimeBuildsThisRun:0,runtimeDeploysThisRun:0,rulesDeploysThisRun:0,hostingDeploysThisRun:0,remoteByteParity:true,focalBrowser:true,resourceRowsStructured:true,production:false}' > "$PREI4_OUT/final.json"
-
       - name: Upload sanitized postdeploy readback
         if: always()
         uses: actions/upload-artifact@v4
@@ -4522,7 +4280,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
       - name: Enforce postdeploy readback
         if: ${{ !contains(github.event.head_commit.message, '[pre-i4-rules-proof-only]') }}
         run: |
@@ -4550,7 +4307,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Prove exact source and authorized scope
         run: |
           set -Eeuo pipefail
@@ -4578,12 +4334,10 @@ jobs:
           }
           fs.writeFileSync(process.env.SEM_OUT+'/authorization.json',JSON.stringify({decision:'PASS_PRE_I4_HUMAN_SEMANTIC_AUTHORIZATION',sourceSha:source,sourceTree:tree,runtimeBuildsMax:0,runtimeDeploysMax:0,hostingDeploysMax:1,rulesDeploysMax:0,qaCleanupOnly:true,resumeFromRunId:35968285178,production:false},null,2)+'\n');
           NODE
-
       - name: Setup Node 24
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-
       - name: Prepare exact source and run semantic regression suite
         run: |
           set -Eeuo pipefail
@@ -4604,23 +4358,19 @@ jobs:
           tar --sort=name --mtime='UTC 1970-01-01' --owner=0 --group=0 --numeric-owner -cf "$GITHUB_WORKSPACE/$SEM_OUT/app-artifact.tar" app
           sha256sum "$GITHUB_WORKSPACE/$SEM_OUT/app-artifact.tar" | awk '{print $1}' > "$GITHUB_WORKSPACE/$SEM_OUT/app-artifact.sha256"
           jq -n -S --arg source "$SEM_SOURCE" --arg tree "$SEM_TREE" --arg artifact "$(cat "$GITHUB_WORKSPACE/$SEM_OUT/app-artifact.sha256")" '{decision:"PASS_PRE_I4_SEMANTIC_SOURCE_AND_ARTIFACT",sourceSha:$source,sourceTree:$tree,artifactSha256:$artifact,production:false}' > "$GITHUB_WORKSPACE/$SEM_OUT/source-proof.json"
-
       - name: Authenticate existing Recovery DEV
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: cxorbia-backend-dev
-
       - name: Install exact transient verification tooling
         run: |
           set -Eeuo pipefail
           npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1
           npx playwright install --with-deps chromium >/dev/null 2>&1
-
       - name: Bind exact Run339 runtime evidence without rebuild
         env:
           GH_TOKEN: ${{ github.token }}
@@ -4638,7 +4388,6 @@ jobs:
           cp "$PRIOR/runtime-revision.json" "$SEM_OUT/runtime-revision-run339.json"
           echo 0 > "$SEM_OUT/runtime-build-count.txt"
           echo 0 > "$SEM_OUT/runtime-deploy-count.txt"
-
       - name: Read back existing DEV runtime and execute health without redeploy
         run: |
           set -Eeuo pipefail
@@ -4659,7 +4408,6 @@ jobs:
           jq -e '.ok==true and .production==false and .hrWrites==false and .shopperReconciliationReady==true and .visitReconciliationReady==true' "$SEM_OUT/runtime-health.json" >/dev/null
           TAG_IMAGE="$(cat "$SEM_OUT/runtime-image.txt")"
           jq -n -S --arg revision "$REV" --arg digest "$DIGEST" --arg imageUri "$IMAGE_URI" --arg taggedImage "$TAG_IMAGE" --argjson traffic "$TRAFFIC" '{decision:"PASS_PRE_I4_SEMANTIC_RUNTIME_REUSED_RUN339_EXACT",revision:$revision,digest:$digest,imageUri:$imageUri,taggedImage:$taggedImage,trafficPercent:$traffic,resumeFromRunId:35968285178,buildsThisRun:0,deploysThisRun:0,production:false}' > "$SEM_OUT/runtime.json"
-
       - name: Remove only proven I3 QA reservation residue
         run: |
           set -Eeuo pipefail
@@ -4680,7 +4428,6 @@ jobs:
           if(after.length)throw new Error('PERSISTENCE_FAILURE:QA_RESERVATION_CLEANUP_READBACK:'+JSON.stringify(after.map(x=>x.id)));
           fs.writeFileSync(process.env.SEM_OUT+'/qa-reservation-cleanup.json',JSON.stringify({decision:'PASS_PRE_I4_QA_RESERVATION_CLEANUP',before:targets.length,deletedIds:targets.map(x=>x.id).sort(),after:0,hrWrites:0,production:false},null,2)+'\n');
           NODE
-
       - name: Deploy exact frozen app to existing Hosting DEV once
         run: |
           set -Eeuo pipefail
@@ -4688,7 +4435,6 @@ jobs:
           "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:cxorbia-dev" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$SEM_OUT/hosting-deploy.log"
           cd "$GITHUB_WORKSPACE"
           echo 1 > "$SEM_OUT/hosting-deploy-count.txt"
-
       - name: Prove served bytes for every changed human owner
         run: |
           set -Eeuo pipefail
@@ -4703,7 +4449,6 @@ jobs:
             test "$ok" = 1
           done
           jq -n -S '{decision:"PASS_PRE_I4_SEMANTIC_HOSTING_BYTE_PARITY",hostingDeploysThisRun:1,production:false}' > "$SEM_OUT/hosting-parity.json"
-
       - name: Force fresh HR and build independent semantic oracle
         run: |
           set -Eeuo pipefail
@@ -4730,7 +4475,6 @@ jobs:
           const reference={countries:{GT,HN},finance:{GT:GT.finance,HN:HN.finance},liquidations:{total:GT.realized+HN.realized,GT:GT.realized,HN:HN.realized,paymentsConfirmed:GT.paymentConfirmed+HN.paymentConfirmed,liquidationsConfirmed:GT.liquidationConfirmed+HN.liquidationConfirmed},identityCases,shopperPopulation:sourceShoppers.length};
           fs.writeFileSync(process.env.SEM_OUT+'/hr-contrast.json',JSON.stringify({decision:'PASS_PRE_I4_HR_SEMANTIC_ORACLE',generatedAt:p.generatedAt,sourceRevision:revision,currentPeriodKey:key,currentPeriodId:period.id,projectId:p.projectId,GT,HN,reference,runtime:{cacheOrigin:p?._runtime?.cacheOrigin||null,sourceReadAt:p?._runtime?.sourceReadAt||null,refreshFinishedAt:p?._runtime?.refreshFinishedAt||null,shopperProviderWrites:Number(p?._runtime?.shopperReconciliation?.providerWrites||0),visitProviderWrites:Number(p?._runtime?.visitReconciliation?.providerWrites||0)},production:false,hrWrites:0},null,2)+'\n');
           NODE
-
       - name: Execute hardened semantic Admin Shopper desktop mobile focal
         env:
           PREI4_OUT: .tmp/pre-i4-human-semantic
@@ -4740,7 +4484,6 @@ jobs:
           set -Eeuo pipefail
           node "$SEM_SRC/tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
           test "$(jq -r '.decision' "$SEM_OUT/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
-
       - name: Prove Rules untouched and freeze block result
         run: |
           set -Eeuo pipefail
@@ -4755,7 +4498,6 @@ jobs:
           HR="$(jq -r '.sourceRevision' "$SEM_OUT/hr-contrast.json")"
           ART="$(cat "$SEM_OUT/app-artifact.sha256")"
           jq -n -S --arg source "$SEM_SOURCE" --arg tree "$SEM_TREE" --arg hr "$HR" --arg artifact "$ART" '{decision:"PASS_PRE_I4_VRM033_041_SEMANTIC_BLOCK",sourceSha:$source,sourceTree:$tree,hrRevision:$hr,artifactSha256:$artifact,runtimeBuildsThisRun:0,runtimeDeploysThisRun:0,hostingDeploysThisRun:1,rulesDeploysThisRun:0,qaResidueAfter:0,resumeFromRunId:35968285178,production:false}' > "$SEM_OUT/final.json"
-
       - name: Upload human semantic remediation evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -4765,7 +4507,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
       - name: Enforce semantic block
         run: |
           set -Eeuo pipefail
@@ -4774,7 +4515,6 @@ jobs:
           test "$(cat "$SEM_OUT/runtime-deploy-count.txt")" = "0"
           test "$(cat "$SEM_OUT/hosting-deploy-count.txt")" = "1"
           test "$(jq -r '.after' "$SEM_OUT/qa-reservation-cleanup.json")" = "0"
-
   pre-i4-resource-rules-fix:
     name: PRE-I4 shopper resources Rules-only DEV materialization
     if: ${{ false }}
@@ -4788,12 +4528,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-
       - name: Validate exact VRM-029 source and rules-only scope
         run: |
           set -Eeuo pipefail
@@ -4810,22 +4548,18 @@ jobs:
           if(execFileSync('git',['rev-parse',source+'^{tree}'],{encoding:'utf8'}).trim()!==tree)throw new Error('SOURCE_FAILURE:VRM029_RULES_TREE');
           fs.writeFileSync(process.env.RULES_OUT+'/authorization.json',JSON.stringify({decision:'PASS_PRE_I4_VRM029_RULES_AUTHORIZATION',sourceSha:source,sourceTree:tree,previousSourceSha:previous,productDiff,runtimeBuilds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeployMax:1,firestoreWrites:0,production:false},null,2)+'\n');
           NODE
-
       - name: Run cumulative PRE-I4 source regression suite
         run: |
           set -Eeuo pipefail
           node --test backend/runtime/hr-live-service/test/cxorbia-pre-i4-*.test.mjs | tee "$RULES_OUT/source-tests.txt"
-
       - name: Authenticate Firebase DEV for Rules-only deployment
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: cxorbia-backend-dev
-
       - name: Prove prior live Rules exact and freeze predeploy evidence
         run: |
           set -Eeuo pipefail
@@ -4844,7 +4578,6 @@ jobs:
           if(before===next)throw new Error('RELEASE_COMPOSITION_FAILURE:VRM029_RULES_NO_DELTA');
           fs.writeFileSync(process.env.RULES_OUT+'/predeploy-rules.json',JSON.stringify({decision:'PASS_PRE_I4_VRM029_PRIOR_RULES_LOCK',priorRulesetName:r.name||null,priorSha256:before,nextSha256:next,production:false},null,2)+'\n');
           NODE
-
       - name: Deploy exact Firestore Rules to DEV once via Rules API
         run: |
           set -Eeuo pipefail
@@ -4874,7 +4607,6 @@ jobs:
           fi
           test "$(jq -r '.rulesetName // empty' "$RULES_OUT/release-patch-response.json")" = "$NEW_RULESET"
           printf '1\n' > "$RULES_OUT/rules-deploy-count.txt"
-
       - name: Read back exact live Rules after deployment
         run: |
           set -Eeuo pipefail
@@ -4892,7 +4624,6 @@ jobs:
           if(live.content!==src)throw new Error('SOURCE_FAILURE:VRM029_RULES_POSTDEPLOY_MISMATCH');
           fs.writeFileSync(process.env.RULES_OUT+'/final.json',JSON.stringify({decision:'PASS_PRE_I4_VRM029_RULES_DEV_EXACT',sourceSha:'2f924e6e2057adef9c0c6be8259d564e15c43573',sourceTree:'c9ccafef4aaaef6adbb3e797a0ff40067c03aebb',liveRulesetName:r.name||null,liveSha256:sha(live.content),runtimeBuildsThisRun:0,runtimeDeploysThisRun:0,hostingDeploysThisRun:0,rulesDeploysThisRun:1,firestoreWrites:0,production:false},null,2)+'\n');
           NODE
-
       - name: Upload VRM-029 Rules-only evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -4902,15 +4633,12 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
       - name: Enforce VRM-029 Rules-only result
         run: |
           set -Eeuo pipefail
           test "$(cat "$RULES_OUT/rules-deploy-count.txt")" = "1"
           test "$(jq -r '.decision' "$RULES_OUT/final.json")" = "PASS_PRE_I4_VRM029_RULES_DEV_EXACT"
           test "$(jq -r '.production' "$RULES_OUT/final.json")" = "false"
-
-
   pre-i4-human-semantic-focal-only:
     name: PRE-I4 hardened semantic focal only — no deploy
     if: ${{ false }}
@@ -4926,7 +4654,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Prove focal-only scope and exact product source
         run: |
           set -Eeuo pipefail
@@ -4934,23 +4661,19 @@ jobs:
           test "$(git rev-parse "$PRODUCT_SOURCE^{tree}")" = "$PRODUCT_TREE"
           git merge-base --is-ancestor "$PRODUCT_SOURCE" HEAD
           jq -n -S --arg source "$PRODUCT_SOURCE" --arg tree "$PRODUCT_TREE" '{decision:"PASS_PRE_I4_FOCAL_ONLY_SCOPE",sourceSha:$source,sourceTree:$tree,runtimeBuildsThisRun:0,runtimeDeploysThisRun:0,hostingDeploysThisRun:0,rulesDeploysThisRun:0,cleanupWritesThisRun:0,production:false}' > "$FOCAL_OUT/authorization.json"
-
       - name: Setup Node 24
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-
       - name: Authenticate existing Recovery DEV read-only focal
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-
       - name: Install transient focal dependencies
         run: |
           set -Eeuo pipefail
           npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1
           npx playwright install --with-deps chromium >/dev/null 2>&1
-
       - name: Bind Run340 materialization evidence
         env:
           GH_TOKEN: ${{ github.token }}
@@ -4967,13 +4690,11 @@ jobs:
           test "$(jq -r '.sourceSha' "$FOCAL_OUT/prior/source-proof.json")" = "$PRODUCT_SOURCE"
           test "$(jq -r '.sourceTree' "$FOCAL_OUT/prior/source-proof.json")" = "$PRODUCT_TREE"
           jq -n -S --arg priorRun "35970916539" --arg hr "$(jq -r '.sourceRevision' "$FOCAL_OUT/prior/hr-contrast.json")" '{decision:"PASS_PRE_I4_RUN340_PREREQUISITES_BOUND",priorRunId:($priorRun|tonumber),hrRevision:$hr,runtimeDeploysThisRun:0,hostingDeploysThisRun:0,production:false}' > "$FOCAL_OUT/prerequisites.json"
-
       - name: Materialize exact focal script in workspace dependency scope
         run: |
           set -Eeuo pipefail
           git show "$PRODUCT_SOURCE:tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs" > "$FOCAL_OUT/cxorbia-pre-i4-focal-remote-browser.mjs"
           test "$(git hash-object "$FOCAL_OUT/cxorbia-pre-i4-focal-remote-browser.mjs")" = "$(git rev-parse "$PRODUCT_SOURCE:tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs")"
-
       - name: Execute hardened semantic Admin Shopper desktop mobile focal only
         env:
           PREI4_OUT: .tmp/pre-i4-human-semantic-focal-only/prior
@@ -4983,13 +4704,11 @@ jobs:
           set -Eeuo pipefail
           node "$FOCAL_OUT/cxorbia-pre-i4-focal-remote-browser.mjs"
           test "$(jq -r '.decision' "$FOCAL_OUT/prior/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
-
       - name: Freeze focal-only result
         run: |
           set -Eeuo pipefail
           HR="$(jq -r '.sourceRevision' "$FOCAL_OUT/prior/hr-contrast.json")"
           jq -n -S --arg source "$PRODUCT_SOURCE" --arg tree "$PRODUCT_TREE" --arg hr "$HR" '{decision:"PASS_PRE_I4_HARDENED_SEMANTIC_FOCAL_ONLY",sourceSha:$source,sourceTree:$tree,hrRevision:$hr,boundRun340:35970916539,runtimeBuildsThisRun:0,runtimeDeploysThisRun:0,hostingDeploysThisRun:0,rulesDeploysThisRun:0,cleanupWritesThisRun:0,production:false}' > "$FOCAL_OUT/final.json"
-
       - name: Upload focal-only evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -4999,14 +4718,11 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
       - name: Enforce focal-only PASS
         run: |
           set -Eeuo pipefail
           test "$(jq -r '.decision' "$FOCAL_OUT/final.json")" = "PASS_PRE_I4_HARDENED_SEMANTIC_FOCAL_ONLY"
           test "$(jq -r '.decision' "$FOCAL_OUT/prior/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
-
-
   pre-i4-vrm040-hosting-fix:
     name: PRE-I4 VRM-040 HR out-of-range semantic fix — Hosting only
     if: ${{ false }}
@@ -5024,7 +4740,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Prove VRM-040 focal scope and no runtime drift
         run: |
           set -Eeuo pipefail
@@ -5035,34 +4750,28 @@ jobs:
           RUNTIME_DIFF="$(git diff --name-only "$BASE_FUNCTIONAL" "$GITHUB_SHA" -- backend/runtime/hr-live-service | grep -v '^backend/runtime/hr-live-service/test/' || true)"
           test -z "$RUNTIME_DIFF"
           jq -n -S --arg source "$GITHUB_SHA" --arg tree "$(git rev-parse "$GITHUB_SHA^{tree}")" '{decision:"PASS_PRE_I4_VRM040_SCOPE",sourceSha:$source,sourceTree:$tree,productDiff:["app/adapters/tya-canonical-state-semantics-v2.js","backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-semantic-regression.test.mjs"],runtimeBuildsThisRun:0,runtimeDeploysThisRun:0,rulesDeploysThisRun:0,hostingDeployMax:1,production:false}' > "$VRM_OUT/authorization.json"
-
       - name: Setup Node 24
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-
       - name: Run exact VRM-040 regression
         run: |
           set -Eeuo pipefail
           node --check app/adapters/tya-canonical-state-semantics-v2.js
           node --test backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-semantic-regression.test.mjs | tee "$VRM_OUT/regression.log"
-
       - name: Authenticate existing DEV only
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: cxorbia-backend-dev
-
       - name: Install transient Hosting and focal tooling
         run: |
           set -Eeuo pipefail
           npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1
           npx playwright install --with-deps chromium >/dev/null 2>&1
-
       - name: Bind unchanged exact Run339 runtime and Run340 cleanup
         env:
           GH_TOKEN: ${{ github.token }}
@@ -5083,14 +4792,12 @@ jobs:
           curl -fsS --retry 10 --retry-delay 2 "$URL/health" > "$VRM_OUT/runtime-health.json"
           jq -e '.ok==true and .production==false and .hrWrites==false and .shopperReconciliationReady==true and .visitReconciliationReady==true' "$VRM_OUT/runtime-health.json" >/dev/null
           jq -n -S --arg revision "$REV" --arg image "$IMAGE_URI" --argjson traffic "$TRAFFIC" '{decision:"PASS_PRE_I4_VRM040_RUNTIME_UNCHANGED",revision:$revision,imageUri:$image,trafficPercent:$traffic,runtimeBuildsThisRun:0,runtimeDeploysThisRun:0,production:false}' > "$VRM_OUT/runtime.json"
-
       - name: Deploy exact VRM-040 static successor to Hosting DEV once
         run: |
           set -Eeuo pipefail
           test "$GITHUB_RUN_ATTEMPT" = "1"
           ./node_modules/.bin/firebase deploy --config firebase.json --only "hosting:cxorbia-dev" --project "$PROJECT" --non-interactive | tee "$VRM_OUT/hosting-deploy.log"
           echo 1 > "$VRM_OUT/hosting-deploy-count.txt"
-
       - name: Prove exact served VRM-040 owner bytes
         run: |
           set -Eeuo pipefail
@@ -5105,7 +4812,6 @@ jobs:
             test "$ok" = 1
           done
           jq -n -S '{decision:"PASS_PRE_I4_VRM040_HOSTING_BYTE_PARITY",hostingDeploysThisRun:1,production:false}' > "$VRM_OUT/hosting-parity.json"
-
       - name: Force fresh HR and build same-revision independent oracle
         run: |
           set -Eeuo pipefail
@@ -5121,7 +4827,6 @@ jobs:
           if(GT.outOfRange!==3||HN.outOfRange!==1)throw new Error('SOURCE_FAILURE:VRM040_EXPECTED_FRESH_COUNTS:'+JSON.stringify({GT,HN}));
           fs.writeFileSync(process.env.VRM_OUT+'/hr-contrast.json',JSON.stringify({decision:'PASS_PRE_I4_VRM040_HR_ORACLE',sourceRevision:revision,currentPeriodKey:key,currentPeriodId:period.id,projectId:p.projectId,GT,HN,totalOutOfRange:GT.outOfRange+HN.outOfRange,production:false,hrWrites:0},null,2)+'\n');
           NODE
-
       - name: Execute hardened semantic focal from VRM-040 onward
         env:
           PREI4_OUT: .tmp/pre-i4-vrm040
@@ -5147,7 +4852,6 @@ jobs:
           NODE
           node tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs
           test "$(jq -r '.decision' "$VRM_OUT/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
-
       - name: Freeze VRM-040 result
         if: success()
         run: |
@@ -5155,7 +4859,6 @@ jobs:
           test "$(cat "$VRM_OUT/hosting-deploy-count.txt")" = "1"
           HR="$(jq -r '.sourceRevision' "$VRM_OUT/hr-contrast.json")"
           jq -n -S --arg source "$GITHUB_SHA" --arg tree "$(git rev-parse "$GITHUB_SHA^{tree}")" --arg hr "$HR" '{decision:"PASS_PRE_I4_VRM040_AND_HARDENED_FOCAL",sourceSha:$source,sourceTree:$tree,hrRevision:$hr,runtimeBuildsThisRun:0,runtimeDeploysThisRun:0,hostingDeploysThisRun:1,rulesDeploysThisRun:0,qaResidueAfter:0,production:false}' > "$VRM_OUT/final.json"
-
       - name: Upload VRM-040 evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -5165,8 +4868,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
-
   pre-i4-vrm039-config-diagnostic:
     name: PRE-I4 VRM-039 project config authority diagnostic — read only
     needs: canonical-candidate-authority
@@ -5178,27 +4879,22 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Prove diagnostic-only product scope
         run: |
           set -Eeuo pipefail
           git diff --quiet "${{ needs.canonical-candidate-authority.outputs.source_sha }}" "$GITHUB_SHA" -- app backend || {
             echo "Product drift exists after descriptor source; diagnostic remains read-only but does not promote it." >&2
           }
-
       - name: Setup Node 24
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-
       - name: Authenticate DEV read only
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-
       - name: Install transient Firestore reader
         run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
-
       - name: Read independent project configuration
         run: |
           set -Eeuo pipefail
@@ -5237,7 +4933,6 @@ jobs:
           fs.writeFileSync('.tmp/vrm039-config/project-config.json',JSON.stringify(safe,null,2)+'\n');
           console.log(JSON.stringify(safe));
           NODE
-
       - name: Upload config diagnostic
         uses: actions/upload-artifact@v4
         with:
@@ -5245,7 +4940,6 @@ jobs:
           path: .tmp/vrm039-config
           if-no-files-found: error
           retention-days: 30
-
   pre-i4-vrm039-source-proof:
     name: PRE-I4 VRM-039 Resources + Finance final proof — no deploy
     needs: canonical-candidate-authority
@@ -5260,7 +4954,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Prove exact monotonic VRM039 product diff
         run: |
           set -Eeuo pipefail
@@ -5279,12 +4972,10 @@ jobs:
           jq -n -S --arg source "$CANONICAL_SOURCE" --arg predecessor "$PREDECESSOR" \
             '{decision:"PASS_PRE_I4_VRM039_SOURCE_SCOPE",sourceSha:$source,predecessorSha:$predecessor,productFiles:4,production:false}' \
             > "$PROOF_OUT/authorization.json"
-
       - name: Setup Node 24
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-
       - name: Run VRM039 source regressions
         run: |
           set -Eeuo pipefail
@@ -5293,15 +4984,12 @@ jobs:
           node --check app/core/finanzas-core.js
           node --check app/modules/finanzas.js
           node --test backend/runtime/hr-live-service/test/cxorbia-pre-i4-finance-live-source-honorarium.test.mjs | tee "$PROOF_OUT/regression.log"
-
       - name: Authenticate DEV
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-
       - name: Install transient proof dependency
         run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
-
       - name: Bind independent config and same HR revision
         env:
           GH_TOKEN: ${{ github.token }}
@@ -5312,14 +5000,12 @@ jobs:
           gh run download 36037538874 --repo "$GITHUB_REPOSITORY" --name "cxorbia-pre-i4-vrm037-diagnostic-36037538874" --dir "$PROOF_OUT/hr"
           test "$(jq -r '.decision' "$PROOF_OUT/config/project-config.json")" = "PASS_PRE_I4_VRM039_PROJECT_CONFIG_READBACK"
           test "$(jq -r '._runtime.revision' "$PROOF_OUT/hr/prior/hr-fresh.json")" = "834f3c9f36d0f8144507bea234efaa4c7d5ddf461f023d61239525b21de2a8d9"
-
       - name: Prove Finance against independent config and same HR
         run: |
           set -Eeuo pipefail
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import vm from 'node:vm';
-
           const OUT=process.env.PROOF_OUT;
           const config=JSON.parse(fs.readFileSync(OUT+'/config/project-config.json','utf8'));
           const hr=JSON.parse(fs.readFileSync(OUT+'/hr/prior/hr-fresh.json','utf8'));
@@ -5329,7 +5015,6 @@ jobs:
           if(explicitHon.length!==0)throw new Error('SOURCE_FAILURE:VRM039_EXPECTED_NO_EXPLICIT_HONORARIA:'+explicitHon.length);
           if(Object.keys(config.honorario||{}).length!==0)throw new Error('SOURCE_FAILURE:VRM039_PROJECT_HONORARIO_NOT_EMPTY');
           if((config.periods||[]).some(p=>Object.keys(p.honorario||{}).length))throw new Error('SOURCE_FAILURE:VRM039_PERIOD_HONORARIO_NOT_EMPTY');
-
           const snapshot={
             sourceSafe:true,imported:false,production:false,
             tenantId:'tya',projectId:'cinepolis',projectName:'Cinépolis',tenantName:'TyA',
@@ -5361,7 +5046,6 @@ jobs:
           if(mapped.some(v=>v.honorario===0&&v.honorarioSource==='pending_source'))throw new Error('FUNCTIONAL_DEFECT:VRM039_MAPPED_PENDING_ZERO');
           const pending=mapped.filter(v=>v.honorarioSource==='pending_source');
           if(pending.length!==mapped.length)throw new Error('MAPPING_FAILURE:VRM039_EXPECTED_ALL_HONORARIA_PENDING:'+pending.length+'/'+mapped.length);
-
           const finContext={
             console,URLSearchParams,location:{search:'?cxTyaPhaseA=1'},
             CX_DEV_ENTRY_CANONICAL:{canonical:true,protectedRuntime:true,projectId:'cinepolis'},
@@ -5387,11 +5071,9 @@ jobs:
           if(rows.some(r=>r.honorario!==null||r.total!==null||r.honorarioSource!=='pending_source'||r.honorarioSourceKnown!==false))throw new Error('FUNCTIONAL_DEFECT:VRM039_FINANCE_RECOERCED_AMOUNT');
           if(rows.some(r=>r.reviewRequired!==true||r.amountSource!=='honorarium_pending_source'))throw new Error('FUNCTIONAL_DEFECT:VRM039_FINANCE_NOT_FAIL_CLOSED');
           const knownReimbursement=rows.filter(r=>Number.isFinite(r.reembolso)&&r.reembolso>0).length;
-
           const uiSource=fs.readFileSync('app/modules/finanzas.js','utf8');
           if(/honorarioDevengado\.toLocaleString\(\)/.test(uiSource))throw new Error('VISUAL_DEFECT:VRM039_UI_ZERO_PATH_REMAINS');
           if(!/Pendiente de fuente/.test(uiSource))throw new Error('VISUAL_DEFECT:VRM039_PENDING_SOURCE_COPY_MISSING');
-
           fs.writeFileSync(OUT+'/finance-proof.json',JSON.stringify({
             decision:'PASS_PRE_I4_VRM039_FINANCE_PROOF',
             sourceSha:process.env.CANONICAL_SOURCE,
@@ -5408,7 +5090,6 @@ jobs:
             production:false,writes:0,deploys:0
           },null,2)+'\n');
           NODE
-
       - name: Prove Resources metadata persistence, ACK-equivalent readback, update and cleanup
         run: |
           set -Eeuo pipefail
@@ -5416,7 +5097,6 @@ jobs:
           import fs from 'node:fs';
           import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';
           import {getFirestore,FieldValue} from 'firebase-admin/firestore';
-
           const OUT=process.env.PROOF_OUT;
           if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:'cxorbia-backend-dev'});
           const db=getFirestore();
@@ -5437,7 +5117,6 @@ jobs:
             await ref.set(create,{merge:false});writes++;
             let snap=await ref.get();
             if(!snap.exists||snap.data().status!=='active'||snap.data().version!==1||snap.data().projectId!=='cinepolis')throw new Error('PERSISTENCE_FAILURE:VRM039_RESOURCE_CREATE_READBACK');
-
             await db.runTransaction(async tx=>{
               const cur=await tx.get(ref);
               if(!cur.exists)throw new Error('PERSISTENCE_FAILURE:VRM039_RESOURCE_UPDATE_MISSING');
@@ -5446,7 +5125,6 @@ jobs:
             });writes++;
             snap=await ref.get();
             if(snap.data()?.n!=='VRM039 Resource Proof Updated'||snap.data()?.version!==2)throw new Error('PERSISTENCE_FAILURE:VRM039_RESOURCE_UPDATE_READBACK');
-
             await db.runTransaction(async tx=>{
               const cur=await tx.get(ref);if(!cur.exists)throw new Error('PERSISTENCE_FAILURE:VRM039_RESOURCE_DELETE_MISSING');
               const d=cur.data()||{};
@@ -5460,7 +5138,6 @@ jobs:
           }
           const after=await ref.get();
           if(after.exists)throw new Error('PERSISTENCE_FAILURE:VRM039_RESOURCE_CLEANUP_NOT_ZERO');
-
           const source=fs.readFileSync('app/core/backend-resources.js','utf8');
           for(const required of [
             "item.targetAll===true||arr(item.visibleRoles).map(str).includes(role())",
@@ -5468,7 +5145,6 @@ jobs:
             "RESOURCE_STORAGE_NOT_AUTHORIZED",
             "lastIdempotencyKey"
           ]) if(!source.includes(required))throw new Error('SOURCE_FAILURE:VRM039_RESOURCE_CONTRACT_MISSING:'+required);
-
           fs.writeFileSync(OUT+'/resources-proof.json',JSON.stringify({
             decision:'PASS_PRE_I4_VRM039_RESOURCES_PROOF',
             fixtureId:id,projectId:'cinepolis',periodId:'cinepolis-2026-09',
@@ -5477,7 +5153,6 @@ jobs:
             writes,realResourcesMutated:0,production:false,deploys:0
           },null,2)+'\n');
           NODE
-
       - name: Seal VRM039 proof
         run: |
           set -Eeuo pipefail
@@ -5490,7 +5165,6 @@ jobs:
             --arg hr "$(jq -r '.hrRevision' "$PROOF_OUT/finance-proof.json")" \
             '{decision:"PASS_PRE_I4_VRM039_RESOURCE_FINANCE_PROOF",sourceSha:$source,hrRevision:$hr,finance:"PASS",resources:"PASS",resourceFixtureCleanupZero:true,runtimeBuilds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0,production:false}' \
             > "$PROOF_OUT/final.json"
-
       - name: Upload VRM039 proof
         if: always()
         uses: actions/upload-artifact@v4
@@ -5500,7 +5174,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
   pre-i4-vrm036-source-proof:
     name: PRE-I4 VRM-036 certification evidence proof — no deploy
     needs: canonical-candidate-authority
@@ -5515,7 +5188,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Prove exact monotonic functional diff
         run: |
           set -Eeuo pipefail
@@ -5526,12 +5198,10 @@ jobs:
           EXPECTED="$(printf '%s\n' 'app/adapters/tya-protected-auth-hr-authority-bridge-v2.js' 'app/modules/cert.js' 'backend/runtime/hr-live-service/test/cxorbia-pre-i4-certification-evidence-projection.test.mjs' | sort)"
           test "$ACTUAL" = "$EXPECTED"
           jq -n -S --arg source "$CANONICAL_SOURCE" --arg predecessor "$PREDECESSOR"             '{decision:"PASS_PRE_I4_VRM036_SOURCE_SCOPE",sourceSha:$source,predecessorSha:$predecessor,productFiles:3,runtimeBuilds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0,dataWrites:0,production:false}' > "$PROOF_OUT/authorization.json"
-
       - name: Setup Node 24
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-
       - name: Run certification projection regressions
         run: |
           set -Eeuo pipefail
@@ -5541,15 +5211,12 @@ jobs:
           node --check app/adapters/tya-canonical-shopper-portal-v2.js
           node --check app/modules/cert.js
           node --test backend/runtime/hr-live-service/test/cxorbia-pre-i4-certification-evidence-projection.test.mjs | tee "$PROOF_OUT/regression.log"
-
       - name: Authenticate DEV read only
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-
       - name: Install transient read-only dependency
         run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
-
       - name: Bind exact fresh HR evidence
         env:
           GH_TOKEN: ${{ github.token }}
@@ -5559,7 +5226,6 @@ jobs:
           gh run download 36037538874 --repo "$GITHUB_REPOSITORY" --name "cxorbia-pre-i4-vrm037-diagnostic-36037538874" --dir "$PROOF_OUT/prior"
           test -f "$PROOF_OUT/prior/prior/hr-fresh.json"
           test "$(jq -r '._runtime.revision' "$PROOF_OUT/prior/prior/hr-fresh.json")" = "834f3c9f36d0f8144507bea234efaa4c7d5ddf461f023d61239525b21de2a8d9"
-
       - name: Prove exact historical evidence projection on live identities
         run: |
           set -Eeuo pipefail
@@ -5568,7 +5234,6 @@ jobs:
           import vm from 'node:vm';
           import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';
           import {getFirestore} from 'firebase-admin/firestore';
-
           const OUT=process.env.PROOF_OUT;
           const hrRaw=JSON.parse(fs.readFileSync(OUT+'/prior/prior/hr-fresh.json','utf8'));
           const contrast=JSON.parse(fs.readFileSync(OUT+'/prior/prior/hr-contrast.json','utf8'));
@@ -5581,7 +5246,6 @@ jobs:
           ]) vm.runInNewContext(fs.readFileSync(file,'utf8'),context,{filename:file});
           const composer=context.CX_TYA_CUMULATIVE_READ_MODEL,projector=context.CX_TYA_CERTIFICATION_EVIDENCE_PROJECTION,carry=context.CX_TYA_CERTIFICATION_CARRYOVER_SOURCE_SAFE;
           if(!composer?.compose||!projector?.project||!carry)throw new Error('SOURCE_FAILURE:VRM036_PROJECTION_DEPENDENCIES');
-
           if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:'cxorbia-backend-dev'});
           const db=getFirestore(),tenant=db.collection('tenants').doc('tya'),project=tenant.collection('projects').doc('cinepolis');
           const rows=async ref=>(await ref.get()).docs.map(d=>({__docId:d.id,id:d.id,...(d.data()||{})}));
@@ -5619,7 +5283,6 @@ jobs:
           const sourceDoc=JSON.parse(fs.readFileSync('app/docs/evidence/LEGACY-SHOPPERS-CERTIFICATIONS-REFRESH-LATEST.json','utf8'));
           let crosswalkFound=false;const walk=x=>{if(crosswalkFound||x==null)return;if(Array.isArray(x)){x.forEach(walk);return;}if(typeof x==='object'){if(String(x.legacyShopperId||'')==='S3'&&String(x.canonicalDocId||'')==='s3'&&String(x.basis||'')==='deterministic_technical_id_normalization')crosswalkFound=true;Object.values(x).forEach(walk);}};walk(sourceDoc);
           if(!crosswalkFound)throw new Error('SOURCE_FAILURE:VRM036_S3_CANONICAL_CROSSWALK_EVIDENCE');
-
           const result={
             decision:'PASS_PRE_I4_VRM036_EXACT_HISTORICAL_EVIDENCE_PROJECTION',
             sourceSha:process.env.CANONICAL_SOURCE,
@@ -5639,7 +5302,6 @@ jobs:
           };
           fs.writeFileSync(OUT+'/live-certification-evidence-proof.json',JSON.stringify(result,null,2)+'\n');
           NODE
-
       - name: Upload certification evidence proof
         if: always()
         uses: actions/upload-artifact@v4
@@ -5649,14 +5311,12 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
       - name: Enforce proof
         run: |
           set -Eeuo pipefail
           test "$(jq -r '.decision' "$PROOF_OUT/live-certification-evidence-proof.json")" = "PASS_PRE_I4_VRM036_EXACT_HISTORICAL_EVIDENCE_PROJECTION"
           test "$(jq -r '.eligibilityGranted' "$PROOF_OUT/live-certification-evidence-proof.json")" = "0"
           test "$(jq -r '.currentCertificationMutations' "$PROOF_OUT/live-certification-evidence-proof.json")" = "0"
-
   pre-i4-vrm037-042-source-proof:
     name: PRE-I4 VRM-037/042 canonical source proof — no deploy
     needs: canonical-candidate-authority
@@ -5671,7 +5331,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Prove exact monotonic functional diff
         run: |
           set -Eeuo pipefail
@@ -5684,12 +5343,10 @@ jobs:
           EXPECTED="$(printf '%s\n'             'app/adapters/tya-c6-domain-consistency-bridge.js'             'app/adapters/tya-canonical-shopper-portal-v2.js'             'app/adapters/tya-cumulative-read-model-v2.js'             'app/modules/shoppers.js'             'backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-semantic-regression.test.mjs' | sort)"
           test "$ACTUAL" = "$EXPECTED"
           jq -n -S --arg source "$CANONICAL_SOURCE" --arg predecessor "$PREDECESSOR"             '{decision:"PASS_PRE_I4_VRM037_042_SOURCE_SCOPE",sourceSha:$source,predecessorSha:$predecessor,productFiles:5,runtimeBuilds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0,dataWrites:0,production:false}' > "$PROOF_OUT/authorization.json"
-
       - name: Setup Node 24
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-
       - name: Run exact source regressions
         run: |
           set -Eeuo pipefail
@@ -5698,15 +5355,12 @@ jobs:
           node --check app/adapters/tya-canonical-shopper-portal-v2.js
           node --check app/modules/shoppers.js
           node --test backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-semantic-regression.test.mjs | tee "$PROOF_OUT/regression.log"
-
       - name: Authenticate DEV read only
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-
       - name: Install transient read-only dependency
         run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
-
       - name: Bind Run349 exact HR evidence
         env:
           GH_TOKEN: ${{ github.token }}
@@ -5716,7 +5370,6 @@ jobs:
           gh run download 36037538874 --repo "$GITHUB_REPOSITORY" --name "cxorbia-pre-i4-vrm037-diagnostic-36037538874" --dir "$PROOF_OUT/prior"
           test "$(jq -r '.hrRevision' "$PROOF_OUT/prior/identity-history-diagnostic.json")" = "834f3c9f36d0f8144507bea234efaa4c7d5ddf461f023d61239525b21de2a8d9"
           test "$(jq -r '.cases[] | select(.sourceShopperId=="shopper_gt_0b19085086") | .composedVisitCount' "$PROOF_OUT/prior/identity-history-diagnostic.json")" = "6"
-
       - name: Prove fixed source against same live durable inputs
         run: |
           set -Eeuo pipefail
@@ -5755,7 +5408,6 @@ jobs:
           if(control.operationalCount!==1||control.confirmedHistoryCount!==1||control.pendingOperationalCount!==0||control.shopperVisits!==1||control.shopperRealized!==1)throw new Error('FUNCTIONAL_DEFECT:VRM037_042_CONTROL_SOURCE_PROOF:'+JSON.stringify(control));
           fs.writeFileSync(OUT+'/live-source-proof.json',JSON.stringify({decision:'PASS_PRE_I4_VRM037_042_LIVE_SOURCE_PROOF',sourceSha:process.env.CANONICAL_SOURCE,hrRevision:oldDiag.hrRevision,result,pendingAssignmentPreservedOperationally:true,pendingAssignmentExcludedFromConfirmedHistory:true,production:false,writes:0},null,2)+'\n');
           NODE
-
       - name: Upload source proof
         if: always()
         uses: actions/upload-artifact@v4
@@ -5765,12 +5417,10 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
       - name: Enforce proof
         run: |
           set -Eeuo pipefail
           test "$(jq -r '.decision' "$PROOF_OUT/live-source-proof.json")" = "PASS_PRE_I4_VRM037_042_LIVE_SOURCE_PROOF"
-
   pre-i4-vrm037-diagnostic:
     needs: canonical-candidate-authority
     name: PRE-I4 VRM-037 exact shopper history diagnostic — read only
@@ -5786,30 +5436,25 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Prove diagnostic-only scope
         run: |
           set -Eeuo pipefail
           mkdir -p "$DIAG_OUT"
           git diff --quiet "$CANONICAL_SOURCE" "$GITHUB_SHA" -- app backend || { echo "product drift in diagnostic"; exit 1; }
           jq -n -S --arg source "$CANONICAL_SOURCE" '{decision:"PASS_PRE_I4_VRM037_DIAGNOSTIC_SCOPE",servedFunctionalSource:$source,runtimeBuildsThisRun:0,runtimeDeploysThisRun:0,hostingDeploysThisRun:0,rulesDeploysThisRun:0,dataWritesThisRun:0,production:false}' > "$DIAG_OUT/authorization.json"
-
       - name: Setup Node 24
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-
       - name: Authenticate DEV read only
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-
       - name: Install transient diagnostic dependencies
         run: |
           set -Eeuo pipefail
           npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1
           npx playwright install --with-deps chromium >/dev/null 2>&1
-
       - name: Bind Run342 fresh HR authority
         env:
           GH_TOKEN: ${{ github.token }}
@@ -5820,7 +5465,6 @@ jobs:
           test "$(jq -r '.sourceRevision' "$DIAG_OUT/prior/hr-contrast.json")" = "834f3c9f36d0f8144507bea234efaa4c7d5ddf461f023d61239525b21de2a8d9"
           jq -e '.reference.identityCases[] | select(.sourceShopperId=="shopper_gt_0b19085086" and .total==5 and .realized==5)' "$DIAG_OUT/prior/hr-contrast.json" >/dev/null
           jq -e '.reference.identityCases[] | select(.sourceShopperId=="shopper_gt_a55e5b3e9b" and .total==1 and .realized==1)' "$DIAG_OUT/prior/hr-contrast.json" >/dev/null
-
       - name: Recompose exact all-period identity map read only
         run: |
           set -Eeuo pipefail
@@ -5829,19 +5473,16 @@ jobs:
           import vm from 'node:vm';
           import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';
           import {getFirestore} from 'firebase-admin/firestore';
-
           const OUT=process.env.DIAG_OUT;
           const hrRaw=JSON.parse(fs.readFileSync(OUT+'/prior/hr-fresh.json','utf8'));
           const contrast=JSON.parse(fs.readFileSync(OUT+'/prior/hr-contrast.json','utf8'));
           const hrRevision=String(hrRaw?._runtime?.revision||contrast.sourceRevision||'');
           if(!/^[a-f0-9]{64}$/.test(hrRevision))throw new Error('SOURCE_FAILURE:VRM037_COMPOSE_HR_REVISION');
-
           const ctx={console};ctx.globalThis=ctx;ctx.window=ctx;
           vm.runInNewContext(fs.readFileSync('app/adapters/cxorbia-exact-identity-contract-v1.js','utf8'),ctx,{filename:'cxorbia-exact-identity-contract-v1.js'});
           vm.runInNewContext(fs.readFileSync('app/adapters/tya-cumulative-read-model-v2.js','utf8'),ctx,{filename:'tya-cumulative-read-model-v2.js'});
           const composer=ctx.CX_TYA_CUMULATIVE_READ_MODEL;
           if(!composer?.compose)throw new Error('SOURCE_FAILURE:VRM037_COMPOSER_MISSING');
-
           if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:'cxorbia-backend-dev'});
           const db=getFirestore(),tenant=db.collection('tenants').doc('tya'),project=tenant.collection('projects').doc('cinepolis');
           const rows=async ref=>(await ref.get()).docs.map(d=>({__docId:d.id,id:d.id,...(d.data()||{})}));
@@ -5852,7 +5493,6 @@ jobs:
             rows(project.collection('certifications')),
             rows(project.collection('liquidations'))
           ]);
-
           const periods=Array.isArray(hrRaw.periods)?hrRaw.periods:[];
           const currentKey=String(hrRaw?.source?.currentCalendarPeriodKey||contrast.currentPeriodKey||'');
           const current=periods.find(x=>String(x.key||'')===currentKey)||{};
@@ -5906,7 +5546,6 @@ jobs:
           fs.writeFileSync(OUT+'/identity-history-diagnostic.json',JSON.stringify(resultOut,null,2)+'\n');
           if(!merged)throw new Error('MAPPING_FAILURE:VRM037_042_IDENTITY_MERGE_NOT_PROVEN:'+JSON.stringify({identityMap:resultOut.identityMap,cases:cases.map(x=>({id:x.sourceShopperId,canonicalId:x.canonicalId,count:x.composedVisitCount}))}));
           NODE
-
       - name: Upload diagnostic evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -5916,8 +5555,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
-
   vrm044-focal-reproof:
     name: VRM-044 focal source reproof — no deploy
     if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm044-focal]') }}
@@ -5933,7 +5570,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Prove exact focal product delta
         run: |
           set -Eeuo pipefail
@@ -5944,12 +5580,10 @@ jobs:
           EXPECTED="$(printf '%s\n'             'app/adapters/tya-cumulative-read-model-v2.js'             'backend/runtime/cxorbia-shopper-command-provider-v1.mjs'             'backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-semantic-regression.test.mjs'             'backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs' | sort)"
           test "$ACTUAL" = "$EXPECTED"
           jq -n -S --arg source "$VRM044_SOURCE" --arg tree "$VRM044_TREE"             '{decision:"PASS_VRM044_EXACT_FOCAL_SCOPE",sourceSha:$source,sourceTree:$tree,productFiles:2,testFiles:2,runtimeDeploys:0,hostingDeploys:0,production:false}'             > "$VRM044_OUT/scope.json"
-
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-
       - name: Run VRM-044 focal regressions on exact source
         run: |
           set -Eeuo pipefail
@@ -5964,7 +5598,6 @@ jobs:
           node --test             backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs             backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-semantic-regression.test.mjs             | tee "$GITHUB_WORKSPACE/$VRM044_OUT/tests.log"
           cd "$GITHUB_WORKSPACE"
           jq -n -S --arg source "$VRM044_SOURCE" --arg tree "$VRM044_TREE"             '{decision:"PASS_VRM044_FOCAL_SOURCE_REPROOF",sourceSha:$source,sourceTree:$tree,tests:"provider+semantic",builds:0,deploys:0,production:false}'             > "$VRM044_OUT/result.json"
-
       - name: Upload VRM-044 focal receipt
         uses: actions/upload-artifact@v4
         with:
@@ -5972,8 +5605,6 @@ jobs:
           path: .tmp/vrm044-focal-reproof
           if-no-files-found: error
           retention-days: 30
-
-
   vrm044-dev-materialization:
     name: VRM-044 exact DEV materialization — one justified build
     needs: canonical-candidate-authority
@@ -5989,7 +5620,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Prove exact promoted source and no later product drift
         run: |
           set -Eeuo pipefail
@@ -6004,25 +5634,20 @@ jobs:
           test "$(jq -r '.terminalResume.maxBuilds' "$CANDIDATE_DESCRIPTOR")" = "1"
           test "$(jq -r '.terminalResume.maxRuntimeDeploys' "$CANDIDATE_DESCRIPTOR")" = "1"
           test "$(jq -r '.terminalResume.maxHostingDeploys' "$CANDIDATE_DESCRIPTOR")" = "1"
-
       - name: Setup Node 24
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-
       - name: Install existing DEV deploy dependency
         run: npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest >/dev/null 2>&1
-
       - name: Authenticate canonical Firebase DEV
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT }}
-
       - name: Prepare exact source archive
         run: |
           set -Eeuo pipefail
@@ -6032,7 +5657,6 @@ jobs:
           test -f "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml"
           test -f "$SOURCE_DIR/firebase.json"
           echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
-
       - name: Build exact VRM-044 source once
         run: |
           set -Eeuo pipefail
@@ -6040,7 +5664,6 @@ jobs:
           echo "$IMAGE_URI" > "$VRM044_OUT/image-uri.txt"
           gcloud builds submit "$SOURCE_DIR" --project "$PROJECT" --config "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE_URI" --quiet
           jq -n -S --arg source "$VRM044_SOURCE" --arg tree "$VRM044_TREE" --arg image "$IMAGE_URI"             '{decision:"PASS_VRM044_ONE_BUILD",sourceSha:$source,sourceTree:$tree,imageTag:$image,buildCount:1,production:false}'             > "$VRM044_OUT/build.json"
-
       - name: Deploy exact built image once to existing Recovery DEV
         run: |
           set -Eeuo pipefail
@@ -6057,7 +5680,6 @@ jobs:
           jq -e '.ok==true and .production==false and .hrWrites==false and .shopperReconciliationReady==true and .visitReconciliationReady==true' "$VRM044_OUT/health.json" >/dev/null
           echo "DEV_REVISION=$DEV_REVISION" >> "$GITHUB_ENV"
           echo "RUNTIME_DIGEST=$DIGEST" >> "$GITHUB_ENV"
-
       - name: Deploy same exact source once to Hosting DEV
         run: |
           set -Eeuo pipefail
@@ -6078,7 +5700,6 @@ jobs:
           echo "HOSTING_RELEASE_NAME=$HOSTING_RELEASE_NAME" >> "$GITHUB_ENV"
           echo "HOSTING_VERSION_NAME=$HOSTING_VERSION_NAME" >> "$GITHUB_ENV"
           echo "HOSTING_RELEASE_TIME=$HOSTING_RELEASE_TIME" >> "$GITHUB_ENV"
-
       - name: Read fresh DEV HR health after exact materialization
         run: |
           set -Eeuo pipefail
@@ -6087,12 +5708,10 @@ jobs:
           [[ "$HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
           jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .shopperReconciliation.providerAck==true and .visitReconciliation.providerAck==true and .hrWrites==false and .production==false and .refreshError==null' "$VRM044_OUT/hr-meta.json" >/dev/null
           echo "HR_REVISION=$HR_REVISION" >> "$GITHUB_ENV"
-
       - name: Seal one DEV materialization receipt
         run: |
           set -Eeuo pipefail
           jq -n -S             --arg source "$VRM044_SOURCE" --arg tree "$VRM044_TREE"             --arg revision "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST"             --arg hostingRelease "$HOSTING_RELEASE_NAME" --arg hostingVersion "$HOSTING_VERSION_NAME" --arg hostingReleaseTime "$HOSTING_RELEASE_TIME"             --arg hrRevision "$HR_REVISION"             '{decision:"PASS_VRM044_EXACT_DEV_MATERIALIZATION",sourceSha:$source,sourceTree:$tree,runtimeRevision:$revision,runtimeDigest:$digest,hostingReleaseName:$hostingRelease,hostingVersionName:$hostingVersion,hostingReleaseTime:$hostingReleaseTime,hrRevision:$hrRevision,builds:1,runtimeDeploys:1,hostingDeploys:1,production:false}'             > "$VRM044_OUT/result.json"
-
       - name: Upload VRM-044 DEV materialization receipt
         if: always()
         uses: actions/upload-artifact@v4
@@ -6102,12 +5721,9 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
       - name: Cleanup transient dependencies
         if: always()
         run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-vrm044-source"
-
-
   v21-paula-remediation-dev:
     name: I3 V21 Paula remediation — exact DEV materialization + focal live proof
     needs: canonical-candidate-authority
@@ -6124,7 +5740,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Prove exact V21 candidate and deployment scope
         run: |
           set -Eeuo pipefail
@@ -6139,12 +5754,10 @@ jobs:
           test "$(jq -r '.currentRemediationCandidate.changedRuntime' "$CANDIDATE_DESCRIPTOR")" = "true"
           test "$(jq -r '.currentRemediationCandidate.changedHosting' "$CANDIDATE_DESCRIPTOR")" = "true"
           test "$(jq -r '.currentRemediationCandidate.changedRules' "$CANDIDATE_DESCRIPTOR")" = "false"
-
       - name: Setup Node 24
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-
       - name: Prepare exact source and run focal source gates
         run: |
           set -Eeuo pipefail
@@ -6161,29 +5774,24 @@ jobs:
           grep -q 'Pendiente de fuente' "$SOURCE_DIR/app/modules/finanzas.js"
           ! grep -q 'localStorage, Firestore ni HR' "$SOURCE_DIR/app/adapters/tya-canonical-shopper-portal-v2.js"
           jq -n -S --arg source "$V21_SOURCE" --arg tree "$V21_TREE" '{decision:"PASS_I3_V21_SOURCE_GATES",sourceSha:$source,sourceTree:$tree,production:false}' > "$V21_OUT/source-gates.json"
-
       - name: Install DEV tooling
         run: |
           npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
           npx playwright install chromium >/dev/null 2>&1
-
       - name: Authenticate canonical Firebase DEV
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT }}
-
       - name: Build exact V21 runtime once
         run: |
           set -Eeuo pipefail
           IMAGE_URI="gcr.io/${PROJECT}/${SERVICE}:i3-v21-${V21_SOURCE:0:12}-${GITHUB_RUN_ID}"
           echo "$IMAGE_URI" > "$V21_OUT/image-uri.txt"
           gcloud builds submit "$SOURCE_DIR" --project "$PROJECT" --config "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE_URI" --quiet
-
       - name: Deploy exact V21 runtime once to Recovery DEV
         run: |
           set -Eeuo pipefail
@@ -6197,7 +5805,6 @@ jobs:
           if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else exit 1; fi
           echo "DEV_REVISION=$DEV_REVISION" >> "$GITHUB_ENV"
           echo "RUNTIME_DIGEST=$DIGEST" >> "$GITHUB_ENV"
-
       - name: Deploy same exact V21 source once to Hosting DEV
         run: |
           set -Eeuo pipefail
@@ -6211,7 +5818,6 @@ jobs:
           test -n "$HOSTING_VERSION_NAME"
           echo "HOSTING_VERSION_NAME=$HOSTING_VERSION_NAME" >> "$GITHUB_ENV"
           echo "HOSTING_RELEASE_NAME=$HOSTING_RELEASE_NAME" >> "$GITHUB_ENV"
-
       - name: Prove remote byte parity for changed static owners
         run: |
           set -Eeuo pipefail
@@ -6220,7 +5826,6 @@ jobs:
             curl -fsSL --retry 8 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/$rel?v21=$GITHUB_RUN_ID-$(date +%s%N)" -o "$remote"
             test "$(sha256sum "$remote"|awk '{print $1}')" = "$(sha256sum "$SOURCE_DIR/$p"|awk '{print $1}')"
           done
-
       - name: Wait fail-closed for one stable HR revision
         run: |
           set -Eeuo pipefail
@@ -6234,7 +5839,6 @@ jobs:
           HR_REVISION="$(jq -r '.revision // empty' "$V21_OUT/hr-meta.json")"
           [[ "$HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
           echo "HR_REVISION=$HR_REVISION" >> "$GITHUB_ENV"
-
       - name: Run exact Paula + Admin live focal proof
         run: |
           set -Eeuo pipefail
@@ -6242,11 +5846,9 @@ jobs:
           test "$(jq -r '.decision' "$V21_OUT/v21-paula-remediation-live.json")" = "PASS_I3_V21_PAULA_REMEDIATION_LIVE"
           test "$(jq -r '.shopper.sourceRevision' "$V21_OUT/v21-paula-remediation-live.json")" = "$HR_REVISION"
           test "$(jq -r '.admin.sourceRevision' "$V21_OUT/v21-paula-remediation-live.json")" = "$HR_REVISION"
-
       - name: Seal V21 DEV receipt
         run: |
           jq -n -S --arg source "$V21_SOURCE" --arg tree "$V21_TREE" --arg revision "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg hostingVersion "$HOSTING_VERSION_NAME" --arg hostingRelease "$HOSTING_RELEASE_NAME" --arg hrRevision "$HR_REVISION" '{decision:"PASS_I3_V21_DEV_MATERIALIZATION_AND_FOCAL",sourceSha:$source,sourceTree:$tree,runtimeRevision:$revision,runtimeDigest:$digest,hostingVersion:$hostingVersion,hostingRelease:$hostingRelease,hrRevision:$hrRevision,builds:1,runtimeDeploys:1,hostingDeploys:1,rulesDeploys:0,production:false}' > "$V21_OUT/result.json"
-
       - name: Upload V21 remediation evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -6256,7 +5858,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
       - name: Cleanup
         if: always()
         run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-v21-source"
@@ -6279,7 +5880,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Prove readback-only scope
         run: |
           set -Eeuo pipefail
@@ -6291,27 +5891,22 @@ jobs:
           test "$(jq -r '.currentMaterialization.hostingVersion' "$CANDIDATE_DESCRIPTOR")" = "$EXPECTED_HOSTING_VERSION"
           git diff --quiet "$V21_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
           jq -n -S '{decision:"PASS_V21_READBACK_ONLY_SCOPE",builds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0,production:false}' > "$V21_OUT/scope.json"
-
       - name: Setup Node 24
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-
       - name: Install read-only proof dependencies
         run: |
           npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
           npx playwright install chromium >/dev/null 2>&1
-
       - name: Authenticate canonical Firebase DEV read only
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT }}
-
       - name: Prove existing DEV identity without rebuild or redeploy
         run: |
           set -Eeuo pipefail
@@ -6326,7 +5921,6 @@ jobs:
           curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$V21_OUT/hosting-live-channel.json"
           HOSTING_VERSION="$(jq -r '.release.version.name // empty' "$V21_OUT/hosting-live-channel.json")"
           test "$HOSTING_VERSION" = "$EXPECTED_HOSTING_VERSION"
-
       - name: Wait fail-closed through transient provider 504 until stable HR
         run: |
           set -Eeuo pipefail
@@ -6348,7 +5942,6 @@ jobs:
           HR_REVISION="$(jq -r '.revision // empty' "$V21_OUT/hr-meta.json")"
           [[ "$HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
           echo "HR_REVISION=$HR_REVISION" >> "$GITHUB_ENV"
-
       - name: Run exact Paula and Admin focal on existing DEV
         run: |
           set -Eeuo pipefail
@@ -6356,11 +5949,9 @@ jobs:
           test "$(jq -r '.decision' "$V21_OUT/v21-paula-remediation-live.json")" = "PASS_I3_V21_PAULA_REMEDIATION_LIVE"
           test "$(jq -r '.shopper.sourceRevision' "$V21_OUT/v21-paula-remediation-live.json")" = "$HR_REVISION"
           test "$(jq -r '.admin.sourceRevision' "$V21_OUT/v21-paula-remediation-live.json")" = "$HR_REVISION"
-
       - name: Seal readback-only receipt
         run: |
           jq -n -S --arg source "$V21_SOURCE" --arg tree "$V21_TREE" --arg runtime "$EXPECTED_RUNTIME_REVISION" --arg digest "$EXPECTED_RUNTIME_DIGEST" --arg hosting "$EXPECTED_HOSTING_VERSION" --arg hr "$HR_REVISION" '{decision:"PASS_I3_V21_STABLE_READBACK_AND_LIVE_FOCAL",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,builds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0,production:false}' > "$V21_OUT/result.json"
-
       - name: Upload V21 readback evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -6370,11 +5961,9 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
       - name: Cleanup
         if: always()
         run: rm -rf node_modules
-
   v25-second-visual-forensic:
     name: I3 V25 second visual review — read-only forensic
     needs: canonical-candidate-authority
@@ -6419,7 +6008,6 @@ jobs:
       - name: Cleanup
         if: always()
         run: rm -rf node_modules
-
   v26-identity-assignment-reconcile:
     name: I3 V26 identity + assignment reconciliation — read only
     needs: canonical-candidate-authority
@@ -6463,7 +6051,6 @@ jobs:
       - name: Cleanup
         if: always()
         run: rm -rf node_modules
-
   v27-duplicate-visit-owner-proof:
     name: I3 V27 duplicate visit owner proof — read only
     needs: canonical-candidate-authority
@@ -6498,7 +6085,6 @@ jobs:
           compression-level: 0
       - if: always()
         run: rm -rf node_modules
-
   v28-second-review-remediation:
     name: I3 V28 — cumulative DEV remediation + live reproof
     needs: canonical-candidate-authority
@@ -6515,7 +6101,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Prove exact V28 source and scope
         run: |
           set -Eeuo pipefail
@@ -6527,12 +6112,10 @@ jobs:
           test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_V28_SOURCE_READY_FOR_DEV_REMEDIATION"
           git diff --quiet "$V28_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules
           jq -n -S --arg source "$V28_SOURCE" --arg tree "$V28_TREE" '{decision:"PASS_I3_V28_SOURCE_SCOPE",sourceSha:$source,sourceTree:$tree,production:false}' > "$V28_OUT/source-scope.json"
-
       - name: Setup Node 24
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-
       - name: Prepare exact source and focal syntax gates
         run: |
           set -Eeuo pipefail
@@ -6547,29 +6130,24 @@ jobs:
           grep -q "stableVisitId(v){return str(v?.hrRowId)" "$SOURCE_DIR/backend/runtime/cxorbia-operational-command-provider-v1.mjs"
           grep -q "canonicalSelfTarget" "$SOURCE_DIR/backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
           grep -q "Identidad pendiente de resolver" "$SOURCE_DIR/app/core/backend-firebase.js"
-
       - name: Install DEV tooling
         run: |
           npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
           npx playwright install chromium >/dev/null 2>&1
-
       - name: Authenticate canonical Firebase DEV
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT }}
-
       - name: Build exact V28 runtime once
         run: |
           set -Eeuo pipefail
           IMAGE_URI="gcr.io/${PROJECT}/${SERVICE}:i3-v28-${V28_SOURCE:0:12}-${GITHUB_RUN_ID}"
           echo "$IMAGE_URI" > "$V28_OUT/image-uri.txt"
           gcloud builds submit "$SOURCE_DIR" --project "$PROJECT" --config "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE_URI" --quiet
-
       - name: Deploy exact V28 runtime once to Recovery DEV
         run: |
           set -Eeuo pipefail
@@ -6583,7 +6161,6 @@ jobs:
           if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; else DIGEST="sha256:${RAW##*@sha256:}"; fi
           echo "V28_RUNTIME_REVISION=$REV" >> "$GITHUB_ENV"
           echo "V28_RUNTIME_DIGEST=$DIGEST" >> "$GITHUB_ENV"
-
       - name: Deploy same exact V28 source once to Hosting DEV
         run: |
           set -Eeuo pipefail
@@ -6595,7 +6172,6 @@ jobs:
           HOSTING_VERSION="$(jq -r '.release.version.name // empty' "$V28_OUT/hosting-live-channel.json")"
           test -n "$HOSTING_VERSION"
           echo "V28_HOSTING_VERSION=$HOSTING_VERSION" >> "$GITHUB_ENV"
-
       - name: Run archive-first durable DEV repair
         env:
           V28_HR_URL: https://cxorbia-backend-dev.web.app/api/tya/cinepolis/hr-live?format=json&v28=repair-${{ github.run_id }}
@@ -6608,7 +6184,6 @@ jobs:
           test "$(jq -r '.uniqueCurrentHrRows' "$V28_OUT/repair-result.json")" = "44"
           test "$(jq -r '.hrWrites' "$V28_OUT/repair-result.json")" = "0"
           test "$(jq -r '.production' "$V28_OUT/repair-result.json")" = "false"
-
       - name: Run Admin + Shopper V28 live reproof
         run: |
           set -Eeuo pipefail
@@ -6618,11 +6193,9 @@ jobs:
           test "$(jq -r '.admin.currentCount' "$V28_OUT/live-reproof.json")" = "44"
           test "$(jq -r '.admin.invalidShopperVisible' "$V28_OUT/live-reproof.json")" = "false"
           test "$(jq -r '.admin.knownHonorariumCount' "$V28_OUT/live-reproof.json")" = "0"
-
       - name: Seal V28 remediation receipt
         run: |
           jq -n -S             --arg source "$V28_SOURCE" --arg tree "$V28_TREE"             --arg runtime "$V28_RUNTIME_REVISION" --arg digest "$V28_RUNTIME_DIGEST"             --arg hosting "$V28_HOSTING_VERSION"             --arg hr "$(jq -r '.hrRevision' "$V28_OUT/repair-result.json")"             --argjson shopperReadyMs "$(jq -r '.shopper.readyMs' "$V28_OUT/live-reproof.json")"             --argjson adminReadyMs "$(jq -r '.admin.readyMs' "$V28_OUT/live-reproof.json")"             '{decision:"PASS_I3_V28_CUMULATIVE_REMEDIATION",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,shopperReadyMs:$shopperReadyMs,adminReadyMs:$adminReadyMs,builds:1,runtimeDeploys:1,hostingDeploys:1,rulesDeploys:0,production:false}' > "$V28_OUT/result.json"
-
       - name: Upload V28 evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -6632,11 +6205,9 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
       - name: Cleanup
         if: always()
         run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-v28-source"
-
   v28-second-review-resume:
     name: I3 V28 — existing DEV repair resume + live reproof
     needs: canonical-candidate-authority
@@ -6735,7 +6306,6 @@ jobs:
       - name: Cleanup
         if: always()
         run: rm -rf node_modules
-
   v33-profile-boundary-hosting-reproof:
     name: I3 V40 — VRM-057 HR honorarium authority Hosting-only + cumulative live reproof
     needs: canonical-candidate-authority
@@ -6839,7 +6409,6 @@ jobs:
           compression-level: 0
       - if: always()
         run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-v40-source"
-
   v41-second-review-cumulative-live-reproof:
     name: I3 V41 — second-review cumulative live reproof on existing DEV
     needs: canonical-candidate-authority
@@ -6915,7 +6484,6 @@ jobs:
           compression-level: 0
       - if: always()
         run: rm -rf node_modules
-
   v42-milton-durable-diagnostic:
     name: I3 V42 — VRM-055 durable Milton exact readback — no deploy
     needs: canonical-candidate-authority
@@ -6965,7 +6533,6 @@ jobs:
           compression-level: 0
       - if: always()
         run: rm -rf node_modules
-
   v43-milton-durable-repair:
     name: I3 V43 — VRM-055 canonical Milton durable repair — DEV only
     needs: canonical-candidate-authority
@@ -7018,7 +6585,6 @@ jobs:
           compression-level: 0
       - if: always()
         run: rm -rf node_modules
-
   c3-terminal-dev-identity-readback:
     name: C3 terminal DEV identity readback — no deploy
     needs: canonical-candidate-authority
@@ -7035,17 +6601,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Authenticate canonical Firebase DEV read only
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT }}
-
       - name: Capture exact runtime digest Hosting and HR readback
         run: |
           set -Eeuo pipefail
@@ -7110,7 +6673,6 @@ jobs:
           echo "OBSERVED_HR_REVISION=$HR_REVISION"
           jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .shopperReconciliation.providerAck==true and .visitReconciliation.providerAck==true and .hrWrites==false and .production==false and .refreshError==null' "$READBACK_OUT/hr-meta.json" >/dev/null
           jq -e '.matches.runtimeRevision==true and .matches.runtimeDigest==true and .matches.hostingVersion==true' "$READBACK_OUT/result.json" >/dev/null
-
       - name: Upload C3 DEV identity readback
         if: always()
         uses: actions/upload-artifact@v4
