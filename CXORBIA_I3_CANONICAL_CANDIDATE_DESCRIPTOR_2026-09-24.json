@@ -8,13 +8,13 @@
   "productTreeAuthority": "ccb3d9da3c110e2d5fff57bae0d2d0eb76b3c4b4",
   "predecessorProductSourceSha": "2cff3441f126d7d805932127bb9de9289ba273ad",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "c6fa72acefb0808a4f8578a3f60d93f00f7384ea",
+  "findingsLedgerExpectedGitBlob": "67aa836d1921cf2edfc83f39d06366c7ceb20648",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
   "activeBlocker": "PREI4-CERT-001_PREI4-CERT-002_PREI4-RES-001",
-  "nextFindingId": "VRM-109",
+  "nextFindingId": "VRM-110",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Diagnose and close only PREI4-CERT-001, PREI4-CERT-002 and PREI4-RES-001 on the same cumulative candidate. Preserve Run736 source/runtime/Hosting evidence, do not reopen closed HR/Postulations/Identity/Finance/Questionnaire findings, do not touch production. After those three P0s pass, resume the frozen human visual acceptance without requiring Paula to repeat the lost Admin screenshot journey.",
+  "exactNextAction": "Run one read-only provider permission/billing diagnostic in the canonical workflow. If DEV credentials already have the required permissions and billing is enabled, enable only the missing Vertex AI and Cloud Storage for Firebase capabilities in cxorbia-backend-dev, then implement PREI4-CERT-001/002 and PREI4-RES-001 on the same product successor. Otherwise request only the exact missing IAM/billing authorization. Do not touch production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1547,5 +1547,34 @@
     ],
     "productSourceChanged": false,
     "production": false
+  },
+  "controlMappingFinding": {
+    "id": "VRM-109",
+    "state": "FIX_APPLIED_REPROOF_REQUIRED",
+    "owner": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+  },
+  "preI4CertResProviderCapability": {
+    "state": "PROVIDER_CAPABILITY_GAPS_PROVEN_RUN739_PERMISSION_DIAGNOSTIC_REQUIRED",
+    "runId": 36779681556,
+    "artifactId": 11127490166,
+    "artifactDigest": "sha256:62990b6952f7752b39738144123c132004f0b652d5c3a2daafdcb1ac8c796f53",
+    "services": {
+      "firestore": true,
+      "cloudStorage": true,
+      "firebaseStorage": false,
+      "vertexAI": false
+    },
+    "storageBucketCount": 2,
+    "storageBuckets": [
+      "cxorbia-backend-dev_cloudbuild",
+      "run-sources-cxorbia-backend-dev-us-central1"
+    ],
+    "defaultFirebaseStorageBucketPresent": false,
+    "activeAiSettingCount": 0,
+    "certificationDocuments": 77,
+    "writes": 0,
+    "deploys": 0,
+    "production": false,
+    "exactNextAction": "Read-only test of service enablement, Firebase default bucket creation, Storage rules and Vertex prediction permissions plus billing-enabled state."
   }
 }

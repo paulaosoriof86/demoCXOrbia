@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "cxorbia.recovery.pre-i4-cert-res-provider-capability.v1",
+  "frozenAt": "2026-09-30",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
+  "status": "HOLD_PROVIDER_PERMISSION_DIAGNOSTIC_REQUIRED",
+  "run739": {
+    "runId": 36779681556,
+    "artifactId": 11127490166,
+    "artifactDigest": "sha256:62990b6952f7752b39738144123c132004f0b652d5c3a2daafdcb1ac8c796f53",
+    "services": {
+      "firestore": true,
+      "cloudStorage": true,
+      "firebaseStorage": false,
+      "vertexAI": false
+    },
+    "storageBucketCount": 2,
+    "defaultFirebaseStorageBucketPresent": false,
+    "activeAiSettingCount": 0,
+    "certificationDocuments": 77,
+    "writes": 0,
+    "deploys": 0,
+    "production": false
+  },
+  "classifications": {
+    "PREI4-CERT-001": "FUNCTIONAL_DEFECT+PROVIDER_FAILURE",
+    "PREI4-CERT-002": "FUNCTIONAL_DEFECT",
+    "PREI4-RES-001": "PROVIDER_FAILURE"
+  },
+  "nextAction": "Run one read-only provider permission/billing diagnostic in the canonical workflow. If DEV credentials already have the required permissions and billing is enabled, enable only the missing Vertex AI and Cloud Storage for Firebase capabilities in cxorbia-backend-dev, then implement PREI4-CERT-001/002 and PREI4-RES-001 on the same product successor. Otherwise request only the exact missing IAM/billing authorization. Do not touch production.",
+  "production": "DO_NOT_TOUCH"
+}

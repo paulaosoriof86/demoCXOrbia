@@ -5246,6 +5246,29 @@
       "productSourceSha": "c1c4e748b39c5632e8648023433a00c15d57191b",
       "productSourceTree": "ccb3d9da3c110e2d5fff57bae0d2d0eb76b3c4b4",
       "production": false
+    },
+    "VRM-109": {
+      "id": "VRM-109",
+      "classification": "MAPPING_FAILURE",
+      "severity": "P0_CONTROL",
+      "title": "Canonical authority workflow status whitelist omitted the new PRE-I4 CERT/RES remediation HOLD state",
+      "state": "FIX_APPLIED_REPROOF_REQUIRED",
+      "rootCause": "The canonical candidate authority script accepted the source/tree and returned PASS, but the subsequent workflow shell whitelist had not been extended with HOLD_PREI4_CERT_RES_REMEDIATION_REQUIRED, causing run739 authority job to exit 1 after a valid authority result.",
+      "run739Evidence": {
+        "runId": 36779681556,
+        "authorityScriptDecision": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
+        "productSourceSha": "c1c4e748b39c5632e8648023433a00c15d57191b",
+        "productSourceTree": "ccb3d9da3c110e2d5fff57bae0d2d0eb76b3c4b4",
+        "findingCount": 108,
+        "nextFindingId": "VRM-109",
+        "postCandidateProductDrift": false,
+        "failingLayer": "workflow status whitelist after guard PASS",
+        "productChanged": false,
+        "production": false
+      },
+      "exactOwner": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+      "remediationContract": "Add HOLD_PREI4_CERT_RES_REMEDIATION_REQUIRED to the existing canonical authority job status whitelist; do not alter product authority or create another workflow.",
+      "production": false
     }
   },
   "latestEvidenceOverrides": {
@@ -5771,11 +5794,12 @@
       "VRM-105",
       "VRM-106",
       "VRM-107",
-      "VRM-108"
+      "VRM-108",
+      "VRM-109"
     ],
-    "findingCount": 108,
-    "expectedCurrentRange": "VRM-001..VRM-108",
-    "nextFindingId": "VRM-109",
+    "findingCount": 109,
+    "expectedCurrentRange": "VRM-001..VRM-109",
+    "nextFindingId": "VRM-110",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_PREI4_HUMAN_VISUAL_ACCEPTANCE_REQUIRED",
@@ -5805,7 +5829,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Diagnose and close only PREI4-CERT-001, PREI4-CERT-002 and PREI4-RES-001 on the same cumulative candidate. Preserve Run736 source/runtime/Hosting evidence, do not reopen closed HR/Postulations/Identity/Finance/Questionnaire findings, do not touch production. After those three P0s pass, resume the frozen human visual acceptance without requiring Paula to repeat the lost Admin screenshot journey.",
+  "exactNextAction": "Run one read-only provider permission/billing diagnostic in the canonical workflow. If DEV credentials already have the required permissions and billing is enabled, enable only the missing Vertex AI and Cloud Storage for Firebase capabilities in cxorbia-backend-dev, then implement PREI4-CERT-001/002 and PREI4-RES-001 on the same product successor. Otherwise request only the exact missing IAM/billing authorization. Do not touch production.",
   "supersedesGitBlob": "397a9cee8c71d3156567a0cc96bfdcba88bb7c3a",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -7195,7 +7219,7 @@
     "PREI4-CONTENT-001",
     "PREI4-CONTENT-002"
   ],
-  "preI4NextAction": "Diagnose and close only PREI4-CERT-001, PREI4-CERT-002 and PREI4-RES-001 on the same cumulative candidate. Preserve Run736 source/runtime/Hosting evidence, do not reopen closed HR/Postulations/Identity/Finance/Questionnaire findings, do not touch production. After those three P0s pass, resume the frozen human visual acceptance without requiring Paula to repeat the lost Admin screenshot journey.",
+  "preI4NextAction": "Run one read-only provider permission/billing diagnostic in the canonical workflow. If DEV credentials already have the required permissions and billing is enabled, enable only the missing Vertex AI and Cloud Storage for Firebase capabilities in cxorbia-backend-dev, then implement PREI4-CERT-001/002 and PREI4-RES-001 on the same product successor. Otherwise request only the exact missing IAM/billing authorization. Do not touch production.",
   "preI4Admin002": {
     "findingId": "PREI4-ADMIN-002",
     "state": "FIXED_PROVEN_RUN601",
@@ -8967,5 +8991,29 @@
     ],
     "productSourceChanged": false,
     "production": false
+  },
+  "preI4CertResProviderCapability": {
+    "state": "PROVIDER_CAPABILITY_GAPS_PROVEN_RUN739_PERMISSION_DIAGNOSTIC_REQUIRED",
+    "runId": 36779681556,
+    "artifactId": 11127490166,
+    "artifactDigest": "sha256:62990b6952f7752b39738144123c132004f0b652d5c3a2daafdcb1ac8c796f53",
+    "services": {
+      "firestore": true,
+      "cloudStorage": true,
+      "firebaseStorage": false,
+      "vertexAI": false
+    },
+    "storageBucketCount": 2,
+    "storageBuckets": [
+      "cxorbia-backend-dev_cloudbuild",
+      "run-sources-cxorbia-backend-dev-us-central1"
+    ],
+    "defaultFirebaseStorageBucketPresent": false,
+    "activeAiSettingCount": 0,
+    "certificationDocuments": 77,
+    "writes": 0,
+    "deploys": 0,
+    "production": false,
+    "exactNextAction": "Read-only test of service enablement, Firebase default bucket creation, Storage rules and Vertex prediction permissions plus billing-enabled state."
   }
 }

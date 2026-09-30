@@ -97,4 +97,34 @@ jq -n -S \
     certifications:$cert[0],
     writes:0,deploys:0,production:false
   }' > "$D/result.json"
+
+PERM_URL="https://cloudresourcemanager.googleapis.com/v1/projects/$PROJECT:testIamPermissions"
+PERM_BODY='{"permissions":["serviceusage.services.enable","firebasestorage.defaultBucket.create","storage.buckets.create","aiplatform.endpoints.predict","firebaserules.rulesets.create","firebaserules.releases.create"]}'
+PERM_CODE="$(curl -sS -o "$D/project-permissions.raw.json" -w '%{http_code}' -X POST -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' --data "$PERM_BODY" "$PERM_URL" || true)"
+printf '%s\n' "$PERM_CODE" > "$D/project-permissions-http-code.txt"
+if [ "$PERM_CODE" = "200" ]; then
+  jq '{permissions:(.permissions // [] | sort)}' "$D/project-permissions.raw.json" > "$D/project-permissions.json"
+else
+  printf '{"permissions":[]}\n' > "$D/project-permissions.json"
+fi
+
+BILLING_URL="https://cloudbilling.googleapis.com/v1/projects/$PROJECT/billingInfo"
+BILLING_CODE="$(curl -sS -o "$D/billing.raw.json" -w '%{http_code}' -H "Authorization: Bearer $TOKEN" "$BILLING_URL" || true)"
+printf '%s\n' "$BILLING_CODE" > "$D/billing-http-code.txt"
+if [ "$BILLING_CODE" = "200" ]; then
+  jq '{billingEnabled:(.billingEnabled // false)}' "$D/billing.raw.json" > "$D/billing-safe.json"
+else
+  printf '{"billingEnabled":null}\n' > "$D/billing-safe.json"
+fi
+
+jq --slurpfile perms "$D/project-permissions.json" --slurpfile billing "$D/billing-safe.json" \
+  --arg permissionProbeHttp "$PERM_CODE" --arg billingHttp "$BILLING_CODE" \
+  '. + {
+    permissionProbeHttp:$permissionProbeHttp,
+    grantedPermissions:($perms[0].permissions // []),
+    billingHttp:$billingHttp,
+    billingEnabled:($billing[0].billingEnabled // null)
+  }' "$D/result.json" > "$D/result.v2.json"
+mv "$D/result.v2.json" "$D/result.json"
+
 cat "$D/result.json"
