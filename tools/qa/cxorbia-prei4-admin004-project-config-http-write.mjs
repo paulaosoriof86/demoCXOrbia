@@ -19,7 +19,7 @@ const opSafe=o=>({mode:str(o.mode),providerType:str(o.providerType),readPolicy:s
 const exact=d=>Number(d?.honorario?.GT)===60&&Number(d?.honorario?.HN)===200&&str(d?.currency?.GT)==='Q'&&str(d?.currency?.HN)==='L';
 const idempotencyKey='prei4-admin004-project-finance-config-v3-gt60-hn200';
 if(exact(before)){
-  const receiptId=sha(TENANT+'\\0'+idempotencyKey).slice(0,40),auditId='project-'+sha(idempotencyKey).slice(0,32);
+  const receiptId=sha(TENANT+String.fromCharCode(0)+idempotencyKey).slice(0,40),auditId='project-'+sha(idempotencyKey).slice(0,32);
   const [receipt,audit]=await Promise.all([tenant.collection('commandReceipts').doc(receiptId).get(),tenant.collection('entityAuditTrail').doc(auditId).get()]);
   if(!receipt.exists||receipt.data()?.status!=='committed'||receipt.data()?.providerAck!==true)fail('PERSISTENCE_FAILURE:ADMIN004_DURABLE_WITHOUT_EXPECTED_RECEIPT');
   if(!audit.exists||str(audit.data()?.commandType)!=='project.update'||str(audit.data()?.projectId)!==PROJECT)fail('PERSISTENCE_FAILURE:ADMIN004_DURABLE_WITHOUT_EXPECTED_AUDIT');
