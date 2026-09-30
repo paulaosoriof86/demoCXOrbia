@@ -124,13 +124,14 @@
 
   function honorariumAuthority(v){
     const source=str(v&&v.honorarioSource).toLowerCase();
+    const raw=v&&v.honorario;
+    if(source==='hr_explicit'&&raw!==null&&raw!==undefined&&raw!==''&&Number.isFinite(Number(raw)))return 'hr_explicit_known';
+    if((source==='project_country_config'||source==='project_configuration')&&raw!==null&&raw!==undefined&&raw!==''&&Number.isFinite(Number(raw)))return 'project_config_known';
     const hrOwned=!!(CX.data?.previewMeta?.hrAuthority===true
       || v?.__hrOwnedOperational===true
       || source==='hr_explicit'
       || source==='pending_source');
     if(!hrOwned)return 'project_fallback_allowed';
-    const raw=v&&v.honorario;
-    if(source==='hr_explicit'&&raw!==null&&raw!==undefined&&raw!==''&&Number.isFinite(Number(raw)))return 'hr_explicit_known';
     return 'hr_unknown';
   }
 
@@ -150,6 +151,13 @@
       }
       if(authority==='hr_explicit_known'){
         v.honorarioSource='hr_explicit';
+        v.honorarioSourceKnown=true;
+        continue;
+      }
+      if(authority==='project_config_known'){
+        v.honorario=Number(v.honorario);
+        if(configured!=null)v.contractHonorarium=configured;
+        v.honorarioSource='project_country_config';
         v.honorarioSourceKnown=true;
         continue;
       }

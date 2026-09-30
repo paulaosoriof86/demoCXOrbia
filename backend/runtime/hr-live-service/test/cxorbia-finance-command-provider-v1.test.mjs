@@ -92,3 +92,15 @@ test('ADMIN-004 backend refresh invalidates exact HR authority before Firestore 
   assert.ok(invalidate<original,'HR authority must be fail-closed before Firestore refresh');
   assert.ok(original<schedule,'HR recomposition is scheduled only after fresh Firestore capture');
 });
+
+
+test('ADMIN-004 unified human runtime preserves canonical project-country honorarium on HR-owned operational visits',()=>{
+  const src=fs.readFileSync(new URL('../../../../app/adapters/tya-c6-unified-human-runtime-v1.js',import.meta.url),'utf8');
+  assert.match(src,/source==='project_country_config'\|\|source==='project_configuration'/);
+  assert.match(src,/return 'project_config_known'/);
+  assert.match(src,/if\(authority==='project_config_known'\)/);
+  assert.match(src,/v\.honorarioSource='project_country_config'/);
+  const known=src.indexOf("return 'project_config_known'");
+  const unknown=src.indexOf("return 'hr_unknown'");
+  assert.ok(known>=0&&unknown>=0&&known<unknown,'known project-country fallback must be resolved before HR-operational unknown fallback');
+});
