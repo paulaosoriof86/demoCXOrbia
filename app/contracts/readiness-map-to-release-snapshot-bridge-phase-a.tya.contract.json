@@ -1,0 +1,81 @@
+{
+  "contract": "readiness-map-to-release-snapshot-bridge-phase-a-tya",
+  "date": "2026-07-05",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "storageWritesAllowed": false,
+  "makeWriteAllowed": false,
+  "emailSendAllowed": false,
+  "whatsappSendAllowed": false,
+  "geminiAllowed": false,
+  "importRealDataAllowed": false,
+  "deployAllowed": false,
+  "mergeAllowed": false,
+  "dependsOn": [
+    "synthetic-input-pack-readiness-map-phase-a.tya.contract",
+    "release-readiness-snapshot-preview-phase-a-tya"
+  ],
+  "purpose": "Bridge the synthetic input pack readiness map into a release-readiness-snapshot preview input without enabling production, deploy, merge, imports, writes or external providers.",
+  "allowedSourceMapper": "tya-synthetic-input-pack-readiness-map-preview",
+  "allowedTargetValidator": "tya-release-readiness-snapshot-preview-validator",
+  "sourceSafety": {
+    "requiresSyntheticOrSanitizedInput": true,
+    "forbidsRawSensitiveData": true,
+    "rawOperationalDataAllowed": false,
+    "realProviderCredentialsAllowed": false,
+    "humanApprovalRequiredForActivation": true
+  },
+  "sourceMapStatuses": [
+    "synthetic_preview_ready",
+    "preview_review_required",
+    "blocked_sensitive_or_raw_field_key",
+    "blocked_missing_input_or_fixture",
+    "blocked_real_action_flag",
+    "blocked_runner_error"
+  ],
+  "targetSnapshotStatuses": [
+    "draft_preview",
+    "ready_for_review",
+    "manual_review_required",
+    "blocked"
+  ],
+  "statusMap": {
+    "synthetic_preview_ready": "ready_for_review",
+    "preview_review_required": "manual_review_required",
+    "blocked_sensitive_or_raw_field_key": "blocked",
+    "blocked_missing_input_or_fixture": "blocked",
+    "blocked_real_action_flag": "blocked",
+    "blocked_runner_error": "blocked"
+  },
+  "readinessAreaMap": {
+    "synthetic_pack": "release_governance",
+    "sensitive_or_raw": "sensitive_data_policy",
+    "missing_input_or_fixture": "hr_source_preview",
+    "real_action_flag": "release_governance",
+    "runner_error": "release_governance",
+    "prototype_p0": "prototype_audit",
+    "phase_a_data_adapter": "cx_data_adapter"
+  },
+  "defaultPrototypeP0Policy": {
+    "statusWhenUnresolved": "blocked_prototype_pending",
+    "gateStatus": "manual_review_required",
+    "blockingReason": "frontend_p0_honesty_operativa_pending"
+  },
+  "requiredBridgeOutput": [
+    "sourceSafe",
+    "containsRawSensitiveData",
+    "isSyntheticOrSanitized",
+    "snapshot",
+    "readinessItems"
+  ],
+  "hardStops": [
+    "Do not treat bridge output as production-ready.",
+    "Do not activate provider, HR, payment, email, WhatsApp, Make, Gemini, Storage or Firestore writes.",
+    "Do not remove prototype pending blockers while V87/P0 remains unresolved.",
+    "Do not merge or deploy from this bridge."
+  ]
+}

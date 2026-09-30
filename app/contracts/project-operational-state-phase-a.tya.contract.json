@@ -1,0 +1,56 @@
+{
+  "contract": "project-operational-state-phase-a-tya",
+  "date": "2026-07-06",
+  "status": "draft_contract_no_runtime",
+  "phase": "Phase A",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "deployAllowed": false,
+  "mergeAllowed": false,
+  "realDataAllowed": false,
+  "providerActionsAllowed": false,
+  "purpose": "Define the operational readiness state per tenant and project before any real backend connection.",
+  "identity": {
+    "tenantId": "required",
+    "projectId": "required",
+    "projectCode": "required",
+    "country": "required",
+    "currency": "required"
+  },
+  "sourceState": {
+    "hrSourceConfigured": "boolean",
+    "hrSourceMode": ["none", "documented", "preview", "ready_for_controlled_sync"],
+    "questionnaireSourceMode": ["none", "cxorbia", "tya_online", "external_general_link", "external_visit_link"],
+    "sourceLockStatus": ["blocked", "candidate_ready", "approved"]
+  },
+  "operationState": {
+    "p0FrontendStatus": ["pending", "corrected", "audited"],
+    "localReadinessStatus": ["not_run", "review_required", "passed"],
+    "backendConnectionStatus": ["blocked", "contract_ready", "ready_for_dev_connection"],
+    "importStatus": ["blocked", "preview_only", "ready_for_authorization"],
+    "providerStatus": ["blocked", "configured_preview", "ready_for_authorization"]
+  },
+  "phaseAReadiness": {
+    "historicalImportControl": "boolean",
+    "historicalShoppersMapped": "boolean",
+    "certificationsPreserved": "boolean",
+    "liquidationsMapped": "boolean",
+    "paymentsStateTracked": "boolean",
+    "multiProjectEnabled": "boolean"
+  },
+  "syncKeys": [
+    "tenantId",
+    "projectId",
+    "visitId",
+    "hrRowId",
+    "shopperId",
+    "assignmentSource",
+    "assignmentSyncStatus",
+    "lastSyncedAt"
+  ],
+  "conflictPolicy": "send_to_review_no_silent_overwrite",
+  "notes": [
+    "Contract only. No runtime connection.",
+    "Does not authorize source lock, production, import, deploy, merge, or providers."
+  ]
+}

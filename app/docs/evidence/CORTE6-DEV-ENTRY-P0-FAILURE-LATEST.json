@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "cxorbia.corte6.dev-entry-p0-failure.v1",
+  "generatedAt": "2026-08-01T15:38:01.958Z",
+  "decision": "FAIL_C6_DEV_ENTRY_P0_GATE",
+  "failedStage": "local_browser__assert_no_generic_roles",
+  "deployStepOutcome": "skipped",
+  "hostingDeployExecutions": 0,
+  "authorizationConsumed": false,
+  "providerMutationPossible": false,
+  "safety": {
+    "production": false,
+    "merge": false,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "rulesDeploys": 0,
+    "cloudRunDeploys": 0
+  }
+}

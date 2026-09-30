@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "phase-a-period-history-integrity-v1",
+  "purpose": "Fail-closed validation of period identity, historical coverage and visit separation before source-safe runtime consumption.",
+  "required": {
+    "periodKeyFormat": "YYYY-MM",
+    "periodKeysUnique": true,
+    "periodSequenceContiguous": true,
+    "visitIdsUnique": true,
+    "visitPeriodLinkStable": true,
+    "countryCountsMatchPeriod": true,
+    "tabCountsMatchPeriod": true,
+    "unknownStatusBlocks": true
+  },
+  "runtime": {
+    "latestPeriodState": "activo",
+    "priorPeriodState": "cerrado",
+    "fallbackDemoAllowed": false,
+    "onHardStop": "block_source_safe_hydration"
+  },
+  "safeState": {
+    "imported": false,
+    "production": false,
+    "firestoreWrites": false,
+    "hrWrites": false,
+    "providers": false,
+    "payments": false
+  }
+}

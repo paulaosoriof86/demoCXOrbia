@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "cxorbia.c6.staff-repair-bootstrap.exact-write.evidence.v1",
+  "generatedAt": "2026-08-11T20:45:21.462Z",
+  "projectId": "cxorbia-backend-dev",
+  "tenantId": "tya",
+  "decision": "STOP_RETRY_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE",
+  "snapshotAuthority": {
+    "workflowRunId": 31518927950,
+    "expectedAuthPopulationBefore": 228
+  },
+  "preflight": {
+    "sourceContract": true,
+    "requestAuthorized": true,
+    "credentialPrivacyPass": true,
+    "identityResolutionPass": false,
+    "providerStatePass": false
+  },
+  "targetReadback": {
+    "A": false,
+    "B": false,
+    "C": false,
+    "D": false,
+    "R4Canonical": false
+  },
+  "historicalReadback": {
+    "R1_SUPER": 0,
+    "R2_ADMIN": 0,
+    "R3_OPS": 0,
+    "R4_CLIENT_HISTORICAL": 0
+  },
+  "writes": {
+    "authCreates": 0,
+    "customClaimsWrites": 0,
+    "authDisableWrites": 0,
+    "authReenableRollbackWrites": 0,
+    "authDisableCreatedRollbackWrites": 0,
+    "authWritesTotal": 0,
+    "tenantUserWrites": 0,
+    "auditLogWrites": 0,
+    "firestoreWritesTotal": 0,
+    "authDeletes": 0,
+    "firestoreDeletes": 0
+  },
+  "credentialPrivacy": {
+    "source": "EXISTING_ENCRYPTED_PROTECTED_BUNDLE_MEMORY_ONLY",
+    "rawPasswordMaterialized": false,
+    "rawPasswordPersisted": false,
+    "passwordHashPersisted": false,
+    "passwordHashLogged": false,
+    "passwordHashExported": false,
+    "rawVisibleLoginPersisted": false,
+    "rawVisibleLoginLogged": false,
+    "rawVisibleLoginExported": false,
+    "privateCredentialArtifact": false
+  },
+  "blockers": [
+    {
+      "code": "PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B",
+      "fingerprint": "3abd853d9f79e9f9b0846952"
+    }
+  ],
+  "rollback": {
+    "dryRunAuthority": "PASS",
+    "snapshotHeldInMemory": false,
+    "executed": false,
+    "required": false,
+    "reason": null
+  },
+  "safety": {
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeWrites": 0,
+    "geminiCalls": 0,
+    "paymentsWrites": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false
+  }
+}

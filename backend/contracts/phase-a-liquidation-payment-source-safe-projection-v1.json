@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "phase-a-liquidation-payment-source-safe-projection-v1",
+  "scope": {"multiTenant": true,"multiProject": true,"initialTenantId": "tya","initialProjectId": "cinepolis","initialCutPeriod": "2026-06"},
+  "sourceSeparation": {"executionAndLiquidationCandidate": "HR source-safe","paymentConfirmation": "financial movements/payment source-safe","bankDataAllowedInRepo": false},
+  "stableKeys": ["tenantId","projectId","periodKey","visitId","hrRowId","shopperId","liquidationId","paymentItemId","paymentBatchId"],
+  "liquidationStates": ["not_ready","ready_for_review","liquidated","conflict"],
+  "paymentStates": ["not_scheduled","pending_financial_source","pending_historical_payment_match","paid","conflict"],
+  "requiredForPaid": ["paidAt","paymentBatchId","paymentSource","confirmedBy","auditRef"],
+  "hardRules": [
+    "HR liquidada never implies paid.",
+    "realizedAt never becomes paidAt.",
+    "Historical paid-through-May is a documented claim until matched item by item to the sanitized financial source.",
+    "June Q1 requires item-level review because only some payments are pending.",
+    "June Q2 is pending until item-level financial confirmation.",
+    "A missing quincena is a conflict/review item and is not silently inferred.",
+    "Amounts missing in HR remain partial_pending_source and cannot enter a payment batch.",
+    "Source-safe pay actions are blocked and never create local paid movements."
+  ],
+  "safeState": {"sourceSafe": true,"imported": false,"production": false,"writes": false,"providers": false,"paymentExecution": false}
+}

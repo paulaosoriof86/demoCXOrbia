@@ -1,0 +1,109 @@
+{
+  "version": "2.0.0",
+  "updatedAt": "2026-07-20",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "integrationBranch": "docs-tya-v6-v71-audit",
+  "invariant": "activeBaseline advances only after technical gates, DEV smoke and human visual freeze",
+  "previousBaseline": {
+    "version": "V131",
+    "status": "historical_previous_baseline",
+    "active": false,
+    "visualValidated": true,
+    "replacedBy": "V161C"
+  },
+  "activeBaseline": {
+    "version": "V161C",
+    "status": "active_baseline_frozen",
+    "sourceZipSha256": "7504b80eed202fff801b1ce39f1028c91dc8446e56670c932042a4fb4a4e74e8",
+    "manifestFile": "app/docs/MANIFEST-V161C-EMPALME-DIRECTO-20260719.json",
+    "aggregateSha256": "7075f70822e3fed8442d62b56e1467fa643facd756aa88258ae2d6d6bdc95cdf",
+    "active": true,
+    "postGatesPassed": true,
+    "hostingDevPassed": true,
+    "remoteSmokePassed": true,
+    "visualValidated": true,
+    "visualApproval": "APROBADO CON OBSERVACIONES NO BLOQUEANTES",
+    "freezeEvidenceFile": "app/docs/FREEZE-CORTE-0B-ACTIVE-BASELINE-V161C-20260720.md",
+    "rollbackReference": true
+  },
+  "currentRuntime": {
+    "version": "V164",
+    "runtimeIdentity": "V161C/R21 plus V164 Corte 1 reports delta",
+    "status": "hosting_dev_remote_smoke_pass_pending_visual",
+    "sourceZipSha256": "b62a9df4f5e9a20580502e7e971c553af0d2ccac83c82ab8431c509f6a3d8128",
+    "manifestFile": "app/docs/MANIFEST-V164-CORTE1-REPORTES-EMPALME-DIRECTO-20260720.json",
+    "aggregateSha256": "599eeacfe6f06e26f9103fd070ff3a50ebdb599de5c87dd3f0777d4928ab962f",
+    "fileCount": 4,
+    "empalmeCommit": "f708515a637a3998eefdbe39ef66d37a3f130fb6",
+    "parentBaselineVersion": "V161C",
+    "accepted": false,
+    "empalmed": true,
+    "active": false,
+    "postGatesPassed": true,
+    "hostingDevPassed": true,
+    "remoteSmokePassed": true,
+    "visualValidated": false,
+    "technicalEvidence": {
+      "run": 29768206645,
+      "commit": "cf0dbf735522f5ae2ed67d865dfb97d1a37335f2",
+      "artifactId": 8471655866,
+      "artifactDigest": "sha256:37d3a6cc41fcd431ec54ca2cea2d306528e29459ddc48e47a5805ab477e600ac"
+    },
+    "hostingDevEvidence": {
+      "run": 29771355833,
+      "job": 88452970784,
+      "commit": "67e77d2c2bf1a9373c5912e6e42bc5051bb6c693",
+      "artifactId": 8473242334,
+      "artifactDigest": "sha256:5e2251423b4aa627986bdb3117481362b4931b8bcf372fb41c6caa8a93be83dc",
+      "buildLabel": "v164-corte1-reportes-20260720-dev",
+      "devUrl": "https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r18d=visible",
+      "decision": "PASS_V164_CORTE1_HOSTING_DEV_AND_REMOTE_SMOKE"
+    },
+    "verifiedCounts": {
+      "periods": 14,
+      "visits": 616,
+      "periodCountryRows": 28,
+      "branchRows": 308,
+      "assigned": 611,
+      "unassigned": 5,
+      "performed": 592,
+      "questionnaire": 590,
+      "submitted": 527,
+      "paymentConfirmed": 0,
+      "availableReports": 4,
+      "pendingSourceReports": 3,
+      "shopperProtectedReferences": 209
+    },
+    "safeState": {
+      "production": false,
+      "dataWrites": false,
+      "imports": false,
+      "providers": false
+    },
+    "nextRequiredState": "human_visual_validation_corte_1"
+  },
+  "candidate": {
+    "version": "V164",
+    "status": "hosting_dev_remote_smoke_pass_pending_visual",
+    "accepted": false,
+    "empalmed": true,
+    "active": false,
+    "postGatesPassed": true,
+    "hostingDevPassed": true,
+    "remoteSmokePassed": true,
+    "visualValidated": false,
+    "nextRequiredState": "human_visual_validation_corte_1"
+  },
+  "promotionRule": {
+    "visualReviewAfterEveryCut": true,
+    "visualReviewRuleFile": "app/docs/REGLA-PREVALENTE-VALIDACION-VISUAL-DESPUES-DE-CADA-CORTE-20260720.md",
+    "freezeSequence": [
+      "post_gates",
+      "hosting_dev",
+      "remote_smoke",
+      "human_visual_validation",
+      "freeze"
+    ],
+    "rollback": "V161C remains active until visual approval of Corte 1."
+  }
+}

@@ -1,0 +1,192 @@
+{
+  "contract": "shopper-ranking-scoring-preview-phase-a-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "makeWriteAllowed": false,
+  "geminiAllowed": false,
+  "importRealDataAllowed": false,
+  "dependsOn": [
+    "sensitive-data-policy-phase-a-tya",
+    "assignment-sync-conflict-preview-phase-a-tya",
+    "visit-lifecycle-reservation-preview-phase-a-tya",
+    "shopper-communication-history-preview-phase-a-tya",
+    "notification-outbox-preview-phase-a-tya"
+  ],
+  "purpose": "Define source-safe preview validation for shopper ranking and scoring based on operational performance metrics, without using protected attributes, raw sensitive data, real payments, opaque personal data or production writes.",
+  "sourceSafety": {
+    "requiresSyntheticOrSanitizedInput": true,
+    "forbidsRawSensitiveData": true,
+    "requiredInputMetadata": [
+      "sourceSafe=true",
+      "containsRawSensitiveData=false",
+      "isSyntheticOrSanitized=true"
+    ],
+    "rawIdentityDataAllowed": false,
+    "rawBankDataAllowed": false,
+    "rawCommunicationsAllowed": false,
+    "manualReviewForInsufficientSample": true,
+    "manualReviewForConflictingSignals": true
+  },
+  "stableKeys": [
+    "tenantId",
+    "projectId",
+    "shopperId",
+    "rankingPeriodId",
+    "rankingRunId",
+    "scoreId",
+    "metricId",
+    "metricSourceRef",
+    "visitId",
+    "hrRowId",
+    "assignmentId",
+    "postulationId",
+    "reviewId",
+    "communicationId",
+    "certificationId",
+    "scoreStatus",
+    "manualReviewReason",
+    "createdAt",
+    "updatedAt"
+  ],
+  "allowedMetricCategories": [
+    "certification_readiness",
+    "assignment_reliability",
+    "schedule_compliance",
+    "visit_completion",
+    "questionnaire_completion",
+    "review_quality",
+    "correction_rate",
+    "communication_followup",
+    "cancellation_behavior",
+    "manual_admin_adjustment_preview"
+  ],
+  "forbiddenMetricInputs": [
+    "raw_name",
+    "document_number",
+    "dpi",
+    "passport",
+    "bank_account",
+    "address",
+    "phone",
+    "email",
+    "whatsapp_body",
+    "email_body",
+    "audio_content",
+    "attachment_content",
+    "gender",
+    "age",
+    "religion",
+    "health",
+    "nationality_if_not_project_rule",
+    "family_status",
+    "payment_amount_as_quality_proxy"
+  ],
+  "scoreStatuses": [
+    "score_preview_ready",
+    "insufficient_sample_review_required",
+    "conflict_review_required",
+    "blocked_sensitive_metric",
+    "manual_adjustment_review_required",
+    "not_ranked_preview",
+    "ranking_ready_for_review"
+  ],
+  "previewInputShape": {
+    "sourceSafe": true,
+    "containsRawSensitiveData": false,
+    "isSyntheticOrSanitized": true,
+    "rankingRun": {},
+    "shopperMetrics": []
+  },
+  "requiredRankingRunFields": [
+    "tenantId",
+    "projectId",
+    "rankingRunId",
+    "rankingPeriodId",
+    "rankingScope",
+    "scoreVersion",
+    "status"
+  ],
+  "requiredMetricFields": [
+    "tenantId",
+    "projectId",
+    "rankingRunId",
+    "rankingPeriodId",
+    "shopperId",
+    "metricId",
+    "metricCategory",
+    "metricValue",
+    "metricWeight",
+    "metricSourceRef",
+    "sourceSafe"
+  ],
+  "defaultPreviewWeights": {
+    "certification_readiness": 10,
+    "assignment_reliability": 15,
+    "schedule_compliance": 15,
+    "visit_completion": 15,
+    "questionnaire_completion": 15,
+    "review_quality": 15,
+    "correction_rate": 5,
+    "communication_followup": 5,
+    "cancellation_behavior": 5
+  },
+  "scoringRules": [
+    "Ranking is a preview aid for admin review, not an automatic assignment decision.",
+    "Scores must be scoped by tenantId and projectId.",
+    "Scores must be calculated from source-safe operational metrics and stable refs.",
+    "Do not use raw identity, bank, contact, health, age, gender, religion or family data.",
+    "Do not use payment amount as a proxy for quality.",
+    "A shopper with insufficient sample size must not be ranked as better or worse without manual review.",
+    "A shopper with conflicting assignment, visit or review signals must be marked conflict_review_required.",
+    "Manual admin adjustment requires reason and reviewer reference.",
+    "Ranking must show metric breakdown and not only a final score."
+  ],
+  "previewOutcomes": [
+    "shopper_score_preview_ready",
+    "shopper_ranking_ready_for_review",
+    "insufficient_sample_review_required",
+    "conflict_review_required",
+    "blocked_sensitive_metric",
+    "manual_adjustment_review_required",
+    "not_ranked_preview"
+  ],
+  "claudePrototypeImpact": [
+    "Ranking UI must show it is preview/admin aid, not automatic assignment.",
+    "Show metric breakdown and reasons, not only top score.",
+    "Show insufficient sample and conflict review states.",
+    "Do not expose raw identity, contact, bank, private communication or sensitive attributes.",
+    "Do not rank globally across tenants/projects unless explicitly filtered and documented.",
+    "Academia must explain how ranking works, what it can and cannot decide, and how to review conflicts."
+  ],
+  "academyImpact": {
+    "roles": ["super", "admin", "ops", "shopper", "client", "consultant_partner"],
+    "manualsToUpdate": ["Shopper ranking", "Metric breakdown", "Manual review", "Fair scoring rules", "Assignment decision support"],
+    "coursesToUpdate": ["Admin ranking review", "Ops shopper selection", "Shopper performance transparency", "Superadmin scoring configuration"],
+    "newLessons": [
+      "Why ranking is only a decision aid",
+      "Which metrics are allowed",
+      "Which inputs are forbidden",
+      "How to read score breakdown",
+      "When to send a score to manual review"
+    ],
+    "interactiveChecklists": [
+      "Before using ranking for assignment",
+      "Before applying manual adjustment",
+      "Before showing performance to shopper",
+      "Before comparing shoppers across projects"
+    ]
+  },
+  "hardStops": [
+    "Do not auto-assign visits from ranking preview.",
+    "Do not use sensitive/protected attributes or raw contact data.",
+    "Do not write ranking to Firestore from this preview.",
+    "Do not call Gemini to judge shoppers in Phase A preview.",
+    "Do not use payment amount as quality score.",
+    "Do not display ranking as final or punitive without review."
+  ]
+}

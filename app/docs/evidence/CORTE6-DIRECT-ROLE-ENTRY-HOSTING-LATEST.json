@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "cxorbia.corte6.direct-role-entry-hosting-evidence.v1",
+  "generatedAt": "2026-08-01T21:12:47.302Z",
+  "decision": "PASS_C6_HUMAN_DIRECT_ROLE_ENTRY_AND_ISOLATED_AUTH_EXISTING_HOSTING_DEV",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "firebaseProjectId": "cxorbia-backend-dev",
+  "hostingSite": "cxorbia-backend-dev",
+  "hostingTarget": "cxorbia-dev",
+  "humanEntry": {
+    "mode": "native-direct-role-entry",
+    "adminVisible": true,
+    "clientVisible": true,
+    "shopperVisible": true,
+    "usernamePasswordVisible": false,
+    "localBrowser": "PASS_C6_HUMAN_DIRECT_ROLE_ENTRY_BROWSER_SMOKE",
+    "remoteBrowser": "PASS_C6_HUMAN_DIRECT_ROLE_ENTRY_BROWSER_SMOKE"
+  },
+  "technicalAuth": {
+    "isolated": true,
+    "localDecision": "PASS_C6_REAL_USERS_END_TO_END_TECHNICAL_LANE_ISOLATED",
+    "remoteDecision": "PASS_C6_REAL_USERS_END_TO_END_TECHNICAL_LANE_ISOLATED",
+    "staff": {
+      "namespace": "staff",
+      "visits": 616,
+      "refreshPreserved": true,
+      "newTabPreserved": true
+    },
+    "shopper": {
+      "namespace": "shopper",
+      "visits": 616,
+      "ownVisits": 1,
+      "refreshPreserved": true,
+      "newTabPreserved": true
+    }
+  },
+  "canonical": {
+    "periods": 14,
+    "visits": 616,
+    "july": {
+      "total": 44,
+      "gt": 34,
+      "hn": 10,
+      "completed": 40,
+      "questionnaire": 38,
+      "submitted": 33,
+      "outOfRangeActionable": 1
+    }
+  },
+  "hostingDeployExecutions": 1,
+  "authUserCreates": 0,
+  "authWrites": 0,
+  "passwordChanges": 0,
+  "firestoreWrites": 0,
+  "rulesDeploys": 0,
+  "cloudRunDeploys": 0,
+  "hrWrites": 0,
+  "newFirebaseProjects": 0,
+  "newHostingSites": 0,
+  "credentialsExposed": false,
+  "tokensExposed": false,
+  "merge": false,
+  "production": false,
+  "nextGate": "HUMAN_VISUAL_ACCUMULATIVE_C6_FREEZE"
+}

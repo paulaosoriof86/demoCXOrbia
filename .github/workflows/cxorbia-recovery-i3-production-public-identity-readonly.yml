@@ -1,0 +1,90 @@
+name: CXOrbia Recovery I3 Production Public Identity Read-Only
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [recovery/cxorbia-phase-a-20260831]
+    paths:
+      - .github/workflows/cxorbia-recovery-i3-production-public-identity-readonly.yml
+
+permissions:
+  contents: read
+  id-token: write
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  CERTIFIED_SOURCE_SHA: bd2a519db5ebd08f17d47827997056db795c8c09
+  TARGET_SITE_ID: tya-plataforma
+  TARGET_URL: https://tya-plataforma.web.app
+  OUT_DIR: .i3prodidentity
+
+jobs:
+  public-identity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Prove product drift remains zero
+        run: |
+          set -euo pipefail
+          git diff --quiet "$CERTIFIED_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc
+          mkdir -p "$OUT_DIR"
+          echo "PASS_I3_PUBLIC_IDENTITY_PRODUCT_DRIFT productDrift=0"
+
+      - name: Resolve production project from public Firebase reserved config
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --max-time 30 \
+            -H 'Cache-Control: no-cache' \
+            "$TARGET_URL/__/firebase/init.json?cxorbia-recovery=${GITHUB_RUN_ID}" \
+            > "$OUT_DIR/firebase-init.json"
+          jq -e 'type=="object" and (.projectId|type=="string") and (.projectId|length>0)' "$OUT_DIR/firebase-init.json" >/dev/null
+          PROJECT_ID="$(jq -r '.projectId' "$OUT_DIR/firebase-init.json")"
+          AUTH_DOMAIN="$(jq -r '.authDomain // empty' "$OUT_DIR/firebase-init.json")"
+          STORAGE_BUCKET="$(jq -r '.storageBucket // empty' "$OUT_DIR/firebase-init.json")"
+          jq -n --arg projectId "$PROJECT_ID" --arg site "$TARGET_SITE_ID" --arg authDomain "$AUTH_DOMAIN" --arg storageBucket "$STORAGE_BUCKET" \
+            '{decision:"PASS_I3_PRODUCTION_PUBLIC_IDENTITY",targetSite:$site,projectId:$projectId,authDomain:$authDomain,storageBucket:$storageBucket,productionWrites:0}' \
+            > "$OUT_DIR/result.json"
+          echo "PASS_I3_PRODUCTION_PUBLIC_IDENTITY projectId=$PROJECT_ID targetSite=$TARGET_SITE_ID productionWrites=0"
+
+      - name: Authenticate existing DEV service account for direct read-only scope test
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Test direct Hosting read scope against resolved production project
+        run: |
+          set -euo pipefail
+          PROJECT_ID="$(jq -r '.projectId' "$OUT_DIR/result.json")"
+          TOKEN="$(gcloud auth print-access-token)"
+          STATUS="$(curl --silent --show-error --output "$OUT_DIR/site-api.json" --write-out '%{http_code}' \
+            -H "Authorization: Bearer $TOKEN" \
+            "https://firebasehosting.googleapis.com/v1beta1/projects/$PROJECT_ID/sites/$TARGET_SITE_ID")"
+          jq --arg status "$STATUS" '. + {existingDevCredentialDirectHostingStatus:($status|tonumber)}' "$OUT_DIR/result.json" > "$OUT_DIR/result.tmp"
+          mv "$OUT_DIR/result.tmp" "$OUT_DIR/result.json"
+          echo "PASS_I3_PRODUCTION_DIRECT_SCOPE_PROBE projectId=$PROJECT_ID httpStatus=$STATUS writes=0"
+          if [[ "$STATUS" == "200" ]]; then
+            jq -e --arg p "$PROJECT_ID" --arg s "$TARGET_SITE_ID" '.name==("projects/"+$p+"/sites/"+$s)' "$OUT_DIR/site-api.json" >/dev/null
+            echo "PASS_I3_PRODUCTION_DIRECT_SITE_READ"
+          else
+            rm -f "$OUT_DIR/site-api.json"
+          fi
+
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-recovery-i3-production-public-identity-${{ github.run_id }}
+          path: .i3prodidentity/
+          if-no-files-found: warn
+          retention-days: 30
+          compression-level: 0
+          include-hidden-files: true

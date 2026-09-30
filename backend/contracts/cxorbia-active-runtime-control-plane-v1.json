@@ -1,0 +1,100 @@
+{
+  "contractId": "cxorbia-active-runtime-control-plane-v1",
+  "schemaVersion": "1.0.0",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "purpose": "Single active control plane for the C6 Client access transaction and Phase A read-only runtime",
+  "immutableSource": {
+    "requestField": "sourceHeadSha",
+    "checkoutMode": "detached_exact_sha",
+    "branchNameExecutionForbidden": true,
+    "headParentInferenceForbidden": true,
+    "requestCopiedBeforeDetachedCheckout": true
+  },
+  "activePath": {
+    "request": "backend/config/corte6-client-auth-materialization-request.json",
+    "workflow": ".github/workflows/cxorbia-c6-client-auth-materialization.yml",
+    "orchestrator": "tools/qa/cxorbia-c6-client-access-runtime-orchestrator.mjs",
+    "stateMachine": "tools/qa/cxorbia-runtime-state-machine.mjs",
+    "runtimeGate": "tools/qa/tya-phase-a-unified-runtime-state-machine-gate.mjs",
+    "staticGate": "tools/qa/cxorbia-forensic-control-plane-stabilization-gate.mjs"
+  },
+  "runtimeStateOrder": [
+    "AUTH_READY",
+    "CLAIMS_READY",
+    "MEMBERSHIP_READY",
+    "DATA_READY",
+    "SHELL_READY",
+    "ROUTE_READY",
+    "VIEW_READY",
+    "DOMAIN_READY"
+  ],
+  "transactions": {
+    "access": {
+      "name": "C6_CLIENT_ACCESS_TRANSACTION",
+      "steps": [
+        "snapshot",
+        "apply_if_needed",
+        "idempotency",
+        "readback",
+        "rollback_dry_run"
+      ],
+      "passDecision": "PASS_C6_CLIENT_ACCESS_TRANSACTION",
+      "commitPolicy": "retain_after_access_pass",
+      "rollbackOnOwnFailure": true,
+      "invalidatedByReadOnlyRuntimeFailure": false
+    },
+    "runtime": {
+      "name": "PHASE_A_UNIFIED_RUNTIME_READONLY",
+      "steps": [
+        "live_hr_authority",
+        "remote_asset_parity",
+        "single_unified_browser_gate"
+      ],
+      "providerWrites": false,
+      "usesSingleBrowserAuthority": true,
+      "invalidatesAccessTransaction": false
+    }
+  },
+  "historicalNotActive": [
+    {
+      "path": "tools/qa/tya-c6-unified-human-auth-browser-smoke.mjs",
+      "classification": "TEST_HARNESS",
+      "reason": "Duplicated Staff/Shopper session and readiness logic"
+    },
+    {
+      "path": "tools/qa/tya-c6-client-auth-browser-smoke.mjs",
+      "classification": "TEST_HARNESS",
+      "reason": "Duplicated Client session and readiness logic"
+    },
+    {
+      "path": "tools/qa/tya-c6-remote-domain-finance-portals-reservations-gate.mjs",
+      "classification": "TEST_HARNESS",
+      "reason": "Superseded by unified runtime state-machine authority"
+    },
+    {
+      "path": "tools/qa/tya-phase-a-remote-domain-dynamic-wrapper.mjs",
+      "classification": "TEST_HARNESS",
+      "reason": "String-marker wrapper superseded by deterministic control-plane gate"
+    }
+  ],
+  "failureClasses": [
+    "PRODUCT_ACCESS_OR_CONFIGURATION",
+    "PRODUCT_DATA_AUTHORITY",
+    "PRODUCT_RUNTIME_LIFECYCLE",
+    "PRODUCT_DOMAIN",
+    "TEST_HARNESS_OR_GOVERNANCE",
+    "INFRASTRUCTURE",
+    "UNCLASSIFIED_REQUIRES_REVIEW"
+  ],
+  "safety": {
+    "providerReadsInStaticGate": false,
+    "providerWritesInStaticGate": false,
+    "credentialsInStaticGate": false,
+    "runtimeInStaticGate": false,
+    "deploy": false,
+    "merge": false,
+    "production": false
+  }
+}

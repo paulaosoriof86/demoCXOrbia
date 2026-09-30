@@ -1,0 +1,151 @@
+{
+  "schemaVersion": "cxorbia.pre-i4.human-visual-fresh-hr-evidence.v1",
+  "generatedAt": "2026-09-24T06:33:37Z",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "sourceCandidate": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+  "rerun": {
+    "runId": 35953230892,
+    "attempt": 2,
+    "jobId": 107520734891,
+    "artifactId": 10793657700,
+    "artifactDigest": "sha256:6a76bfcf8e0cf57ce3e56b023870fdd9d71a9d5568712d2fdef940814f6aa681",
+    "deploys": {
+      "runtime": 0,
+      "rules": 0,
+      "hosting": 0,
+      "production": false
+    }
+  },
+  "hr": {
+    "sourceRevision": "dbfdabc06b97452bc5bc8ae6aa3bd719ec56040effc54e0dc74b1bca2cea01f7",
+    "sourceReadAt": "2026-09-24T06:31:17.836Z",
+    "refreshFinishedAt": "2026-09-24T06:32:26.387Z",
+    "GT": {
+      "total": 34,
+      "availableUnassigned": 1,
+      "assigned": 33,
+      "scheduled": 28,
+      "realized": 20,
+      "questionnaire": 17,
+      "submitted": 9,
+      "outOfRange": 3,
+      "uniqueAssignedShoppers": 24,
+      "honorarioDevengado": 1200,
+      "knownReimbursements": 2710
+    },
+    "HN": {
+      "total": 10,
+      "availableUnassigned": 1,
+      "assigned": 9,
+      "scheduled": 7,
+      "realized": 6,
+      "questionnaire": 6,
+      "submitted": 6,
+      "outOfRange": 1,
+      "reviewRequired": 1,
+      "uniqueAssignedShoppers": 9,
+      "honorarioDevengado": 1200,
+      "knownReimbursements": 1778
+    },
+    "totalShoppers": 219,
+    "totalOutOfRange": 4
+  },
+  "visualVsFreshHr": {
+    "adminShopperPopulationRendered": 224,
+    "liveHrShoppers": 219,
+    "deltaPlatformOrUnresolved": 5,
+    "screenshotOutOfRangeVisible": 1,
+    "freshHrOutOfRange": 4,
+    "identityExamples": [
+      {
+        "id": "shopper_gt_0757b1eeb4",
+        "freshHrName": "PATRICIA ORDOÑEZ",
+        "screenshotShowsTechnicalId": true
+      },
+      {
+        "id": "shopper_gt_09c5128572",
+        "freshHrName": "Ramsés Salinas",
+        "screenshotShowsTechnicalId": true
+      },
+      {
+        "id": "shopper_gt_0b19085086",
+        "freshHrName": "José Sarat",
+        "screenshotShowsTechnicalId": true
+      },
+      {
+        "id": "shopper_gt_0b2f66d821",
+        "freshHrName": "Jennypher Murga",
+        "screenshotShowsTechnicalId": true
+      },
+      {
+        "id": "shopper_gt_1d3e8c0e83",
+        "freshHrName": "Susseth Cruz",
+        "screenshotShowsTechnicalId": true
+      },
+      {
+        "id": "shopper_gt_1f90bb8a75",
+        "freshHrName": "Herbert Ríos",
+        "screenshotShowsTechnicalId": true
+      },
+      {
+        "id": "shopper_gt_40fa49770f",
+        "freshHrName": "Danniel Sandoval",
+        "screenshotShowsTechnicalId": true
+      },
+      {
+        "id": "shopper_gt_7f23f9a093",
+        "freshHrName": "César Castillo",
+        "screenshotShowsTechnicalId": true
+      },
+      {
+        "id": "shopper_gt_2889189d76",
+        "freshHrName": "Shirley Díaz",
+        "screenshotShowsTechnicalId": true
+      },
+      {
+        "id": "shopper_hn_1691aecc2c",
+        "freshHrName": "Wilson Lanza",
+        "screenshotShowsTechnicalId": true
+      }
+    ],
+    "browserCounterexample": {
+      "id": "shopper_gt_0c198c1055",
+      "expectedHrName": "Julissa Flores",
+      "observedRenderedName": "shopper_gt_0c198c1055",
+      "historyTotal": 6,
+      "historyRealized": 6,
+      "browserDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+      "interpretation": "False PASS: exact history was checked but exact human display name was not."
+    },
+    "resources": {
+      "count": 0,
+      "firestoreStatus": "ready",
+      "storageAuthorized": false,
+      "storageConfigured": false,
+      "storageAvailable": false
+    },
+    "certification": {
+      "sourceStatus": "pending_authenticated_review",
+      "evidenceCandidateCount": 42,
+      "carryoverConfirmed": 0,
+      "eligibilityGranted": 0
+    },
+    "finance": {
+      "GT": {
+        "honorarioDevengado": 1200,
+        "reembolsosConocidos": 2710,
+        "cxp": 3910,
+        "incomeKnown": false
+      },
+      "HN": {
+        "honorarioDevengado": 1200,
+        "reembolsosConocidos": 1778,
+        "cxp": 2978,
+        "incomeKnown": false
+      }
+    }
+  },
+  "decision": "HOLD_CONFIRMED_BY_FRESH_HR",
+  "production": false
+}

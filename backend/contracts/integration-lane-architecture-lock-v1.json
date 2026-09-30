@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 2,
+  "architectureId": "cxorbia-orbit-direct-repository-apply-v1",
+  "status": "ACTIVE_DEFINITIVE",
+  "effectiveDate": "2026-07-17",
+  "repositoryFullName": "paulaosoriof86/demoCXOrbia",
+  "liveBranch": "docs-tya-v6-v71-audit",
+  "sourceOfTruth": "app/docs/ADDENDUM-MAESTRO-EJECUCION-DIRECTA-EMPALMES-CXORBIA-20260716.md",
+  "originPattern": "Orbit 360 direct audited candidate integration",
+  "executionPlane": "authenticated_direct_repository_operations",
+  "flow": [
+    "chatgpt_forensic_audit",
+    "audited_go_decision",
+    "apply_delta_directly_to_live_branch",
+    "preserve_backend_overlays_and_docs",
+    "generate_manifest_build_lock_and_verifier",
+    "commit_push_evidence",
+    "post_empalme_gates",
+    "visual_validation"
+  ],
+  "states": [
+    "AUDIT_INCOMPLETE",
+    "P0_PROVEN",
+    "AUDITED_GO_READY_DIRECT_APPLY",
+    "EMPALMED_PENDING_POST_GATES",
+    "ACTIVE_BASELINE"
+  ],
+  "invariants": {
+    "multiTenant": true,
+    "tenantMultiProjectRequired": true,
+    "projectSelection": "explicit",
+    "globalProjectDefaultAllowed": false,
+    "auditedDeltaOnly": true,
+    "protectedBackendAndOverlays": true,
+    "directApplyRequiredAfterGo": true,
+    "newMethodologyForbiddenAfterGo": true,
+    "manualActionByPaulaForbidden": true,
+    "commitPushEvidenceRequired": true,
+    "manifestAndBuildLockRequired": true,
+    "postEmpalmeGatesRequiredBeforeDevOrProduction": true
+  },
+  "tenantRules": {
+    "tya": {
+      "multiProject": true,
+      "defaultProjectId": null,
+      "cinepolisRole": "initial_explicit_validation_project_only",
+      "cinepolisNeverGlobalDefault": true,
+      "newProjectsCreatedFromPlatformConfiguration": true
+    }
+  },
+  "forbiddenAfterAuditedGo": [
+    "incoming_folder_requirement",
+    "empalme_plan_json_requirement",
+    "local_zip_checkout_requirement",
+    "cmd_or_powershell_for_paula",
+    "github_actions_transport_workflow",
+    "new_branch_or_pr",
+    "drive_transport",
+    "base64_transport",
+    "connector_blobs_or_trees_transport",
+    "manual_file_copy_by_paula",
+    "manual_file_by_file_copy",
+    "general_reaudit",
+    "new_candidate_request",
+    "new_methodology"
+  ],
+  "changeControl": {
+    "requiresProvenP0": true,
+    "requiresReproducibleEvidence": true,
+    "requiresMultiTenantMultiProjectCompatibility": true,
+    "requiresPaulaExplicitAuthorizationInCurrentConversation": true,
+    "requiresSynchronizedDocumentationContractValidatorAndAgentsUpdate": true,
+    "delaySizeOrConnectorPreferenceAreNotP0": true
+  },
+  "currentCandidate": {
+    "candidateId": "V159",
+    "sourceFile": "Prototype development request (8).zip",
+    "sourceSha256": "8ac5b04dda594366e0f27f717ec5f660328b43d9109a44e5df36fdcabcb09bc6",
+    "state": "AUDITED_GO_READY_DIRECT_APPLY",
+    "auditDecision": "GO",
+    "operation": "APPLY_DELTA_DIRECTLY",
+    "candidateFiles": 256,
+    "deltaFromV158": {
+      "added": 0,
+      "modified": 14,
+      "removed": 0
+    },
+    "effectiveRuntimeDeltaAgainstLiveV156Tree": {
+      "modified": 17,
+      "removed": 0
+    },
+    "javascriptFilesChecked": 67,
+    "syntaxErrors": 0,
+    "localScripts": 64,
+    "missingLocalScripts": 0,
+    "duplicateLocalScripts": 0,
+    "moduleIds": 49,
+    "duplicateModuleIds": 0,
+    "secretPatternHits": 0,
+    "physicallyEmpalmed": false
+  },
+  "directApplyStatus": {
+    "code": "FILE_AWARE_AUTHENTICATED_REPOSITORY_WRITE_UNAVAILABLE",
+    "isP0": false,
+    "branchRuntimeChanged": false,
+    "alternativeMethodAuthorized": false,
+    "manualActionRequestedFromPaula": false,
+    "requiredNextOperation": "APPLY_DELTA_DIRECTLY"
+  },
+  "safeState": "no merge, deploy, production, real imports, Firestore/HR writes, Make/Gemini live, real Storage or payments"
+}

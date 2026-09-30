@@ -1,0 +1,117 @@
+{
+  "schemaVersion": "cxorbia.c6.shopper-login-collision-classification-hold.v1",
+  "generatedAt": "2026-08-06T00:56:51.885Z",
+  "decision": "HOLD_C6_SHOPPER_LOGIN_COLLISION_CLASSIFICATION",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "sourceStatic": {
+    "decision": "PASS_READONLY_POST_GATES",
+    "compositionDecision": "PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS",
+    "labDecision": "PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT",
+    "runId": 31061161498,
+    "jobId": 92489240097,
+    "artifactId": 8952153534,
+    "artifactDigest": "sha256:ec793ef97bc8c4fd57df6e5b412aa108324dec65a1aa0af3f0622f78d9cf2a64"
+  },
+  "review": {
+    "runId": 31061262965,
+    "jobId": 92489532791,
+    "artifactId": 8952193087,
+    "artifactDigest": "sha256:4eaf9354e4ed15996237af74fcea05c5b99bc2ec97f1be063dc8d8e52f1dc95f",
+    "requestCommitSha": "ca435f393dd8a2199b08155da8866150225b3019",
+    "targetHeadSha": "33e02ad1897577aba1570243316bb1659a8a7a64",
+    "providerReads": true,
+    "providerWrites": false
+  },
+  "source": {
+    "profiles": 340,
+    "authUsers": 110,
+    "memberships": 1,
+    "credentials": 109,
+    "credentialsMapped": 101,
+    "credentialsUnmapped": 8,
+    "hrImportDocs": 1,
+    "visits": 616,
+    "certifications": 77,
+    "liquidations": 827,
+    "latestPeriod": "2026-07",
+    "recentFloor": "2026-05"
+  },
+  "classification": {
+    "candidateLoginGroups": 109,
+    "candidateLoginProfiles": 238,
+    "groupSizeDistribution": {
+      "2": 94,
+      "3": 11,
+      "4": 3,
+      "5": 1
+    },
+    "resolvedSingleActiveGroups": 39,
+    "resolvedHistoricalOnlyGroups": 0,
+    "resolvedActiveDuplicateGroups": 0,
+    "distinctActiveCollisionGroups": 64,
+    "distinctActiveIdentities": 141,
+    "unresolvedSurnameGroups": 6,
+    "multipleAuthProfiles": 1,
+    "unresolvedMultipleAuthProfiles": 1,
+    "verifiedNameIncompleteActiveProfiles": 83,
+    "verifiedNameIncompleteHistoricalProfiles": 125
+  },
+  "plan": {
+    "rows": 340,
+    "CREATE_AUTH": 5,
+    "UPDATE_AUTH": 3,
+    "NO_OP": 45,
+    "HOLD": 162,
+    "PRESERVE_NO_AUTH": 125,
+    "subchangeEmail": 1,
+    "subchangePassword": 3,
+    "subchangeClaims": 1,
+    "planDigest": "bb82bbf6f7b2a1335668287dc631fa8de73ba39197f07f4e85e014ee9f41af57"
+  },
+  "disambiguation": {
+    "required": true,
+    "affectedGroups": 64,
+    "affectedActiveIdentities": 141,
+    "alternativesNotApplied": [
+      "VERIFIED_SECOND_SURNAME_SUFFIX",
+      "DETERMINISTIC_TECHNICAL_SUFFIX",
+      "TENANT_MANAGED_EXCEPTION_ALIAS"
+    ]
+  },
+  "diagnosis": {
+    "code": "DISTINCT_ACTIVE_SHOPPERS_SHARE_VISIBLE_NOMBRE_APELLIDO_AND_TECHNICAL_SURNAME_COVERAGE_IS_INCOMPLETE",
+    "stopReason": "VISIBLE_LOGIN_CLASSIFICATION_HOLDS:64/6/1/83",
+    "detail": "Thirty-nine groups were resolved as one active canonical profile with historical profiles preserved. Sixty-four groups contain multiple technically distinct active identities sharing the same visible nombre.apellido. Six groups remain unverified under the explicit-or-technical surname policy, 83 active profiles lack a verified technical surname and the one multiple-Auth profile remains tied. No disambiguation was applied."
+  },
+  "stopRetry": {
+    "applied": true,
+    "requestConsumed": true,
+    "automaticRetry": false,
+    "authRepairBlocked": true,
+    "deployBlocked": true
+  },
+  "safety": {
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "membershipWrites": 0,
+    "firestoreWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "rawNamesExported": false,
+    "rawLoginsExported": false,
+    "rawPasswordsExported": false,
+    "uidsExported": false,
+    "merge": false,
+    "production": false
+  },
+  "nextExactBlock": "Tenant decision on the minimum visible-login disambiguation rule for 64 distinct-active collision groups, plus source-safe completion of 83 active technical surnames and resolution of the one tied multi-Auth profile, before every Auth or deploy write."
+}

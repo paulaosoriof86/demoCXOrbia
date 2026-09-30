@@ -1,0 +1,104 @@
+{
+  "schemaVersion": "cxorbia.live-hr-v2-v3-runner-cancellation-root-cause.v1",
+  "generatedAt": "2026-08-06T12:01:00-06:00",
+  "decision": "PASS_V2_V3_PROVIDER_READS_0_PROVEN_BEFORE_RUNNER_STEPS",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "workflow": {
+    "name": "CXOrbia Live HR Authority And Current Period Reconcile",
+    "path": ".github/workflows/cxorbia-live-hr-current-reconcile.yml",
+    "sourceBlobSha": "3026e369fddea0a19d7ef6988dd8e1462ab21165",
+    "registered": true,
+    "enabledByObservedRunCreation": true,
+    "event": "push",
+    "branchFilter": "docs-tya-v6-v71-audit",
+    "pathFilter": ".github/cxorbia-firebase-requests/live-hr-current-reconcile.json",
+    "syntaxRecognizedByGitHub": true
+  },
+  "controlPlaneContract": {
+    "firstRunnerCheckpoint": "WORKFLOW_STARTED_PROVIDER_READS_0",
+    "providerBoundaryCheckpoint": "PROVIDER_READ_BOUNDARY_ENTERED_MAX1",
+    "providerBoundaryStepName": "Mark provider-read boundary before provider access",
+    "providerAccessOccursAfterBoundary": true,
+    "limitationCorrected": "commit status checkpoints require a runner step and cannot exist when the job is cancelled before all steps"
+  },
+  "runs": [
+    {
+      "requestVersion": "v2",
+      "requestCommit": "4e404f2db48ff8b07430d7ac7505eff6c040458a",
+      "runId": 31117638647,
+      "jobId": 92671263961,
+      "jobName": "reconcile",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "durationSecondsReported": 951,
+      "stepsCount": 0,
+      "logsAvailable": false,
+      "providerBoundaryReached": false,
+      "providerReadConsumption": "PROVEN_ZERO_BEFORE_RUNNER_STEPS",
+      "providerReadLowerBound": 0,
+      "providerReadUpperBound": 0
+    },
+    {
+      "requestVersion": "v3",
+      "requestCommit": "d62dbae9b10b0650c2940f4b2bf7d456cb34fc83",
+      "sourceCommit": "18ea2e6ab9b15480c851c7ba34cae8e8fbcae026",
+      "runId": 31123402722,
+      "jobId": 92688738677,
+      "jobName": "reconcile",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "durationSecondsReported": 903,
+      "stepsCount": 0,
+      "logsAvailable": false,
+      "artifactsCount": 0,
+      "providerBoundaryReached": false,
+      "providerReadConsumption": "PROVEN_ZERO_BEFORE_RUNNER_STEPS",
+      "providerReadLowerBound": 0,
+      "providerReadUpperBound": 0
+    }
+  ],
+  "rootCause": {
+    "previousIncorrectInference": "no commit status was treated as no workflow run",
+    "actualFact": "both workflow runs existed and their reconcile jobs were cancelled before any step executed",
+    "recognitionLaneFailure": false,
+    "triggerFailure": false,
+    "pathFilterFailure": false,
+    "providerFailure": false,
+    "failureBoundary": "GITHUB_ACTIONS_JOB_CANCELLED_BEFORE_RUNNER_STEPS",
+    "exactCancellationAnnotationTextRecovered": false,
+    "exactExternalCancellationReason": "UNAVAILABLE_NOT_INFERRED"
+  },
+  "sourceCorrection": {
+    "tool": "tools/qa/cxorbia-live-hr-run-consumption-classifier.mjs",
+    "purpose": "classify run/job/step evidence before interpreting provider-read consumption",
+    "workflowModified": false,
+    "requestModified": false,
+    "triggerEmitted": false,
+    "diagnosticLoopClosed": true
+  },
+  "remaining": {
+    "currentPeriod202608Validated": false,
+    "gtHnTabsValidated": false,
+    "historicalMutationValidated": false,
+    "transversalSourceRevisionValidated": false,
+    "nextProviderReadRequiresFreshAuthorization": true
+  },
+  "safety": {
+    "providerReadsExecutedByThisBlock": 0,
+    "providerWrites": 0,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "make": 0,
+    "gemini": 0,
+    "payments": 0,
+    "merge": false,
+    "production": false
+  }
+}

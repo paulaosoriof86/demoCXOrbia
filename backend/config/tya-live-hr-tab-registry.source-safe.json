@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "cxorbia.tya-live-hr-tab-registry.v1",
+  "observedAt": "2026-07-30T23:58:00Z",
+  "sourceTitle": "HR Guatemala - Sincronizacion Google Sheets",
+  "sourceSafe": true,
+  "providerMetadataReadOnly": true,
+  "monthlyTabs": [
+    "JUNIO 25", "JUNIO 25 HN",
+    "JULIO 25", "JULIO 25 HN",
+    "AGOSTO 25", "AGOSTO 25 HN",
+    "SEPTIEMBRE 25", "SEPTIEMBRE 25 HN",
+    "OCTUBRE 25", "OCTUBRE 25 HN",
+    "NOVIEMBRE 25", "NOVIEMBRE 25 HN",
+    "DICIEMBRE 25", "DICIEMBRE 25 HN",
+    "ENERO 26", "ENERO 26 HN",
+    "FEBRERO 26", "FEBRERO 26 HN",
+    "MARZO 26", "MARZO 26 HN",
+    "ABRIL 26", "ABRIL 26 HN",
+    "MAYO 26", "MAYO 26 HN",
+    "JUNIO 26", "JUNIO 26 HN",
+    "JULIO 26", "JULIO 26 HN"
+  ],
+  "nonMonthlyTabs": ["DASHBOARD", "DASHBOARD HN"],
+  "requiredAugustTabs": ["AGOSTO 26", "AGOSTO 26 HN"],
+  "requiredAugustTabsPresent": false,
+  "safety": {
+    "pii": false,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "production": false,
+    "merge": false
+  }
+}

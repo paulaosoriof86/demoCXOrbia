@@ -1,0 +1,158 @@
+{
+  "configId": "phase-a-readiness-buckets-source-safe",
+  "status": "source_safe_dry_run_only",
+  "date": "2026-07-10",
+  "tenantMode": "genericReusableWithTyASeed",
+  "sourceSafe": true,
+  "production": false,
+  "modules": [
+    {
+      "moduleId": "tenantProjectPeriod",
+      "label": "Tenant / Proyecto / Periodo",
+      "requiredForTyARealConnection": true,
+      "reusableCxorbia": true,
+      "claudePrototypeRequired": true,
+      "requirements": [
+        "tenant is configurable",
+        "project is configurable entity",
+        "period is filter/state, never project clone",
+        "country and currency come from config",
+        "no hardcoded client/project/period"
+      ],
+      "noGoIfMissing": ["projectPeriodSeparation", "configurableTenantProject", "periodFilterState"]
+    },
+    {
+      "moduleId": "hrSource",
+      "label": "HR / Source viva",
+      "requiredForTyARealConnection": true,
+      "reusableCxorbia": true,
+      "claudePrototypeRequired": true,
+      "requirements": [
+        "masked source status",
+        "tabs detected",
+        "source-safe payload",
+        "no private URL visible",
+        "multi-sheet source as generic source type"
+      ],
+      "noGoIfMissing": ["sourceSafePayload", "privateSourceMasked", "routeSheetParsing"]
+    },
+    {
+      "moduleId": "usersRolesScopes",
+      "label": "Usuarios / Personas / Roles / Scopes",
+      "requiredForTyARealConnection": true,
+      "reusableCxorbia": true,
+      "claudePrototypeRequired": true,
+      "requirements": [
+        "representatives, coordinators, franchise, client brand and shoppers modeled",
+        "personaType separated from technical role",
+        "scope by tenant/country/project/own profile",
+        "claims are small and dry-run validated"
+      ],
+      "noGoIfMissing": ["roleTaxonomy", "scopePolicy", "authGateHonestState"]
+    },
+    {
+      "moduleId": "academyCoursesManuals",
+      "label": "Academia / Cursos / Manuales",
+      "requiredForTyARealConnection": true,
+      "reusableCxorbia": true,
+      "claudePrototypeRequired": true,
+      "requirements": [
+        "courses configurable by tenant/project/persona",
+        "manuals by role/persona",
+        "certification flow linked to academy",
+        "AI creation remains gate-off if no provider gate"
+      ],
+      "noGoIfMissing": ["courseConfigurability", "roleBasedAcademy", "honestAIGate"]
+    },
+    {
+      "moduleId": "certificationsCarryover",
+      "label": "Certificaciones / Carryover",
+      "requiredForTyARealConnection": true,
+      "reusableCxorbia": true,
+      "claudePrototypeRequired": true,
+      "requirements": [
+        "already presented certifications are preservable",
+        "carryover candidate path exists",
+        "manual review before protected write",
+        "question banks configurable by project"
+      ],
+      "noGoIfMissing": ["carryoverPath", "questionBankConfig", "reviewBeforeWrite"]
+    },
+    {
+      "moduleId": "shoppersProtectedProfiles",
+      "label": "Shoppers / Perfiles protegidos",
+      "requiredForTyARealConnection": true,
+      "reusableCxorbia": true,
+      "claudePrototypeRequired": true,
+      "requirements": [
+        "public refs separated from protected profile",
+        "Auth/roles required for full profile",
+        "shopper sees own profile only",
+        "no PII in public preview"
+      ],
+      "noGoIfMissing": ["protectedProfileBoundary", "ownProfilePolicy", "noPIIPublicPreview"]
+    },
+    {
+      "moduleId": "liquidationsPayments",
+      "label": "Liquidaciones / Pagos",
+      "requiredForTyARealConnection": true,
+      "reusableCxorbia": true,
+      "claudePrototypeRequired": true,
+      "requirements": [
+        "payment preview/review before any real payment",
+        "no bank raw data",
+        "June pending payments supported for TyA",
+        "payment batch candidate path exists",
+        "state visible without claiming real payment"
+      ],
+      "noGoIfMissing": ["liquidationPreview", "paymentReviewGate", "noBankRaw"]
+    },
+    {
+      "moduleId": "reviewQueueAuditEvents",
+      "label": "ReviewQueue / AuditEvents",
+      "requiredForTyARealConnection": true,
+      "reusableCxorbia": true,
+      "claudePrototypeRequired": true,
+      "requirements": [
+        "conflicts go to reviewQueue",
+        "protected reads generate audit event",
+        "critical changes are auditable",
+        "no silent overwrite"
+      ],
+      "noGoIfMissing": ["reviewQueue", "auditEvents", "noSilentOverwrite"]
+    },
+    {
+      "moduleId": "integrationsGates",
+      "label": "Make / Gemini / Providers / Gates",
+      "requiredForTyARealConnection": true,
+      "reusableCxorbia": true,
+      "claudePrototypeRequired": true,
+      "requirements": [
+        "gate-off visible for Make/Gemini/payments",
+        "no real send/writeback claim without GO",
+        "outbox prepared but not sent",
+        "provider state honest"
+      ],
+      "noGoIfMissing": ["honestGateStates", "outboxNotRealSend", "noProviderPromise"]
+    },
+    {
+      "moduleId": "cxDataSwitch",
+      "label": "CX.data switch backend",
+      "requiredForTyARealConnection": true,
+      "reusableCxorbia": true,
+      "claudePrototypeRequired": false,
+      "requirements": [
+        "preserve CX.data interface",
+        "single future connection point",
+        "do not patch modules with backend logic",
+        "localStorage to backend adapter ready path"
+      ],
+      "noGoIfMissing": ["cxDataContract", "singleConnectionPoint", "noBackendInModules"]
+    }
+  ],
+  "bucketRules": {
+    "NO_GO_BLOCKER": "Any noGoIfMissing critical item blocks real connection.",
+    "WARNING_READY": "All critical backend contracts exist but prototype/state visibility or dry-run mapping remains partial.",
+    "GO_READY": "Backend contract/config/validator exists, prototype representation is clear, and all gates remain safe."
+  }
+}

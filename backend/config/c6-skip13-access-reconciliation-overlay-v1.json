@@ -1,0 +1,178 @@
+{
+  "schemaVersion": "cxorbia.c6.skip13-access-reconciliation-overlay.v1",
+  "generatedAt": "2026-08-07T10:15:00-06:00",
+  "authorizedBy": "Paula",
+  "authorizationSource": "current_conversation_c6_skip13_access_reconciliation_source_only_2026-08-07",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "mode": "SOURCE_ONLY_RECONCILIATION_OVER_FROZEN_PLAN",
+  "inputs": {
+    "freeze": "backend/config/c6-shopper-auth-final-freeze-v1.json",
+    "providerEvidence": "app/docs/evidence/C6-SKIP13-PROVIDER-READONLY-REVALIDATION-V2-HOLD-20260807.json",
+    "residualRootCause": "app/docs/evidence/CORTE6-RESIDUAL-IDENTITY-ROOT-CAUSE-SOURCE-ONLY-LATEST.json",
+    "diagnosticV22": "app/docs/evidence/CORTE6-SHOPPER-EQUIVALENT-UNIVERSE-PROVIDER-V22-HOLD-LATEST.json",
+    "priorDisposition": "backend/config/corte6-shopper-auth-skip13-disposition-v1.json"
+  },
+  "frozenPlan": {
+    "rows": 340,
+    "uniqueRows": 340,
+    "digest": "6060f406a33d4ba926c982871513f8e86ba2b10f44c2da00ab43bd2a409f721b",
+    "operationCounts": {
+      "CREATE_AUTH": 81,
+      "UPDATE_AUTH": 46,
+      "NO_OP": 73,
+      "HOLD": 0,
+      "PRESERVE_NO_AUTH": 140
+    },
+    "immutable": true,
+    "modifiedByThisOverlay": false
+  },
+  "classificationContract": {
+    "canonicalCurrentEffectiveAuthUnique": "Exactly one effective Auth candidate is source-safely tied to the target profile by exact shopperId plus required tya/cinepolis/shopper scope, with no competing matched Auth candidate for that profile.",
+    "historicalAlias": "Requires source-safe evidence that the candidate is historical/alias and not the current canonical principal; no such evidence is present for the nine candidates in the authorized input set.",
+    "duplicateIdentity": "More than one effective Auth candidate is tied to the same canonical profile and available source-safe discriminator signals do not establish a unique keeper.",
+    "accessToRetire": "Requires a source-safe basis identifying a candidate as noncanonical or unauthorized. Effective access alone does not identify which candidate should be retired.",
+    "forbiddenSelectors": [
+      "creationTime",
+      "candidateOrdinal",
+      "firstReturned",
+      "enabledStateAlone",
+      "emailVerifiedAlone"
+    ]
+  },
+  "profiles": [
+    {
+      "profileFingerprint": "cc941934f90032aa48e8",
+      "candidateFingerprints": ["fa84ea99678c2b2f5953"],
+      "classification": "IDENTIDAD_CANONICA_VIGENTE",
+      "technicalClass": "CANONICAL_CURRENT_EFFECTIVE_AUTH_UNIQUE",
+      "disposition": "PRESERVE_EXISTING_AUTH_NO_REPAIR",
+      "primaryTransition": "PRESERVE_NO_AUTH_TO_NO_OP"
+    },
+    {
+      "profileFingerprint": "9ed0cdabf3794b7ccf21",
+      "candidateFingerprints": ["bc5b358c6883a46ef4e2"],
+      "classification": "IDENTIDAD_CANONICA_VIGENTE",
+      "technicalClass": "CANONICAL_CURRENT_EFFECTIVE_AUTH_UNIQUE",
+      "disposition": "PRESERVE_EXISTING_AUTH_NO_REPAIR",
+      "primaryTransition": "PRESERVE_NO_AUTH_TO_NO_OP"
+    },
+    {
+      "profileFingerprint": "80d716626b85e14778ea",
+      "candidateFingerprints": ["ff65430db1848288c596"],
+      "classification": "IDENTIDAD_CANONICA_VIGENTE",
+      "technicalClass": "CANONICAL_CURRENT_EFFECTIVE_AUTH_UNIQUE",
+      "disposition": "PRESERVE_EXISTING_AUTH_NO_REPAIR",
+      "primaryTransition": "PRESERVE_NO_AUTH_TO_NO_OP"
+    },
+    {
+      "profileFingerprint": "8aea97650e97902f7616",
+      "candidateFingerprints": ["8e80a0b286283139ff2e"],
+      "classification": "IDENTIDAD_CANONICA_VIGENTE",
+      "technicalClass": "CANONICAL_CURRENT_EFFECTIVE_AUTH_UNIQUE",
+      "disposition": "PRESERVE_EXISTING_AUTH_NO_REPAIR",
+      "primaryTransition": "PRESERVE_NO_AUTH_TO_NO_OP"
+    },
+    {
+      "profileFingerprint": "540c9e6b71440b393365",
+      "candidateFingerprints": ["cc52fe65814c6b9ae201"],
+      "classification": "IDENTIDAD_CANONICA_VIGENTE",
+      "technicalClass": "CANONICAL_CURRENT_EFFECTIVE_AUTH_UNIQUE",
+      "disposition": "PRESERVE_EXISTING_AUTH_NO_REPAIR",
+      "primaryTransition": "PRESERVE_NO_AUTH_TO_NO_OP"
+    },
+    {
+      "profileFingerprint": "c01e0f344901f03e78d2",
+      "candidateFingerprints": ["63cb1df5e624217df319"],
+      "classification": "IDENTIDAD_CANONICA_VIGENTE",
+      "technicalClass": "CANONICAL_CURRENT_EFFECTIVE_AUTH_UNIQUE",
+      "disposition": "PRESERVE_EXISTING_AUTH_NO_REPAIR",
+      "primaryTransition": "PRESERVE_NO_AUTH_TO_NO_OP"
+    },
+    {
+      "profileFingerprint": "729eb0480d5ec2266a20",
+      "candidateFingerprints": ["26c355c7cabb98038038"],
+      "classification": "IDENTIDAD_CANONICA_VIGENTE",
+      "technicalClass": "CANONICAL_CURRENT_EFFECTIVE_AUTH_UNIQUE",
+      "disposition": "PRESERVE_EXISTING_AUTH_NO_REPAIR",
+      "primaryTransition": "PRESERVE_NO_AUTH_TO_NO_OP"
+    },
+    {
+      "profileFingerprint": "7cc28c78de9bfda01d14",
+      "candidateFingerprints": ["4e6d26551d11db444bd0", "9b2b7ca1bd72c1301d29"],
+      "classification": "IDENTIDAD_DUPLICADA",
+      "technicalClass": "DUPLICATE_EFFECTIVE_AUTH_PAIR_UNRESOLVED_KEEPER",
+      "disposition": "HOLD_TENANT_ADJUDICATION_REQUIRED",
+      "primaryTransition": "PRESERVE_NO_AUTH_TO_HOLD",
+      "candidateDispositions": [
+        {
+          "candidateFingerprint": "4e6d26551d11db444bd0",
+          "classification": "IDENTIDAD_DUPLICADA",
+          "keeper": null,
+          "retireAccess": null
+        },
+        {
+          "candidateFingerprint": "9b2b7ca1bd72c1301d29",
+          "classification": "IDENTIDAD_DUPLICADA",
+          "keeper": null,
+          "retireAccess": null
+        }
+      ],
+      "unresolvedReason": "Both candidates retain effective own-shopper access and prior source-safe scoring/discriminator vectors are tied; no source-only evidence uniquely identifies keeper versus access-to-retire."
+    }
+  ],
+  "unmatchedSkipProfilesPreserved": [
+    "3451d618b5d6307b87da",
+    "32e2de62067ab6ecfb7b",
+    "b31bdc0c7514acbe25ba",
+    "4a59de15805804cbe398",
+    "cfbd0c519e59f40c6239"
+  ],
+  "derivedProvisionalPlanState": {
+    "rows": 340,
+    "uniqueRows": 340,
+    "onePrimaryOperationPerProfile": true,
+    "operationCounts": {
+      "CREATE_AUTH": 81,
+      "UPDATE_AUTH": 46,
+      "NO_OP": 80,
+      "HOLD": 1,
+      "PRESERVE_NO_AUTH": 132
+    },
+    "holdProfiles": ["7cc28c78de9bfda01d14"],
+    "targetHoldZeroSatisfied": false,
+    "executable": false,
+    "finalPlanProduced": false,
+    "reason": "STOP_RETRY_IDENTITY_NOT_RESOLVABLE_SOURCE_ONLY"
+  },
+  "preservation": {
+    "historicalProfilesDeleted": 0,
+    "visitsDeleted": 0,
+    "certificationsDeleted": 0,
+    "liquidationsDeleted": 0,
+    "providerAccountsChanged": 0
+  },
+  "safety": {
+    "providerReads": 0,
+    "authReads": 0,
+    "claimsReads": 0,
+    "membershipReads": 0,
+    "hrReads": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "membershipWrites": 0,
+    "firestoreWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "cloudBuilds": 0,
+    "cloudRunDeploys": 0,
+    "hostingDeploys": 0,
+    "merge": false,
+    "production": false
+  },
+  "decision": "STOP_RETRY_C6_SKIP13_ACCESS_RECONCILIATION_MULTI_AUTH_KEEPER_UNRESOLVED"
+}

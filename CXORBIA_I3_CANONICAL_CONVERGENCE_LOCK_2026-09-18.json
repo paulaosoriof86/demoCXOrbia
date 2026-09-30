@@ -1,0 +1,48 @@
+{
+  "lockId": "CXORBIA-I3-CANONICAL-CONVERGENCE-LOCK-2026-09-18",
+  "status": "FROZEN",
+  "iteration": "I3",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "observedHeadAtFreeze": "19dbae1814a472c9fc7f9c45a79bc568933b5d22",
+  "observedTreeAtFreeze": "322eb67606b95463e3a9707fb444fb60b6763a79",
+  "currentCertificationSource": "10cc157820e816cdb08b51df029038a1c955ced7",
+  "currentCertificationSourceTree": "d9054c7cedfe4bf6331334ca34f28b883ba70912",
+  "evidence": {
+    "latestRun": {
+      "runNumber": 165,
+      "runId": 35322552250,
+      "conclusion": "failure",
+      "hrFresh": "PASS",
+      "failedStep": "Revalidate owner-defined shopper credential contract in DEV"
+    },
+    "runtimeRevision": "cxorbia-live-hr-dev-00106-pf6",
+    "runtimeDigest": "sha256:615c91c412bb3ef3b40ec5878ca10d201792e2a11e49772f05fea5434604d6cf",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/d0ba94d485712bd7",
+    "credentialReadback": {
+      "activeShopperMemberships": 426,
+      "checkedThroughAuth": 228,
+      "mismatchClasses": [
+        "name_incomplete",
+        "member_login",
+        "member_rule",
+        "profile_login",
+        "profile_rule",
+        "auth_email"
+      ]
+    }
+  },
+  "frozenDecisions": {
+    "credentialRule": "nombre.apellido / Nombre123* / tya-shopper-nombre-apellido-v1",
+    "credentialScope": "ALL_DURABLE_ACTIVE_SHOPPERS_WITH_EXACT_IDENTITY",
+    "exceptionalIdentityPolicy": "FAIL_CLOSED_PER_SHOPPER_NON_BLOCKING_GLOBAL_HR",
+    "profileHistoryBinding": "AUTH_MEMBERSHIP_TO_CANONICAL_SHOPPER_PROFILE_HISTORY",
+    "gate20": "SEMANTIC_ADMIN_AND_SHOPPER_ACCEPTANCE_REQUIRED",
+    "artifact": "ONE_SOURCE_ONE_BUILD_ONE_ARTIFACT_NO_REBUILD",
+    "production": "DO_NOT_TOUCH_UNTIL_I3_GO_AND_EXPLICIT_AUTHORIZATION"
+  },
+  "frozenDocument": "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-18_I3_CANONICAL_CONVERGENCE_FROZEN.md",
+  "frozenDocumentSha256": "ec0ab90ae5a29ccd13bb1ec80178381d1c6d85c5138c9e0097c98a064a2b1bc0",
+  "productionTouched": false,
+  "supersessionPolicy": "Never edit frozen files; supersede only with a later dated addendum/lock carrying BEFORE/AFTER, cause, evidence and hash."
+}

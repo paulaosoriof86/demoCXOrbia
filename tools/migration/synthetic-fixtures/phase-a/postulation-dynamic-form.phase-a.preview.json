@@ -1,0 +1,54 @@
+{
+  "sourceSafe": true,
+  "containsRawSensitiveData": false,
+  "isSyntheticOrSanitized": true,
+  "forms": [
+    {
+      "tenantId": "tya",
+      "projectId": "cinepolis-gt-preview",
+      "formId": "postulation-form-preview-cinepolis",
+      "formVersion": "v1-preview",
+      "title": "Postulacion sintetica Cinepolis Phase A",
+      "status": "preview_ready",
+      "fields": [
+        {
+          "fieldId": "availabilityWindow",
+          "label": "Disponibilidad operativa",
+          "type": "select",
+          "required": true,
+          "sensitivityLevel": "public_operational",
+          "shopperVisible": true,
+          "adminVisible": true,
+          "options": ["WK", "WKND"]
+        },
+        {
+          "fieldId": "projectExperienceRef",
+          "label": "Referencia operativa sintetica",
+          "type": "textarea",
+          "required": false,
+          "sensitivityLevel": "shopper_private",
+          "shopperVisible": true,
+          "adminVisible": true
+        }
+      ]
+    }
+  ],
+  "postulations": [
+    {
+      "tenantId": "tya",
+      "projectId": "cinepolis-gt-preview",
+      "formId": "postulation-form-preview-cinepolis",
+      "formVersion": "v1-preview",
+      "postulationId": "postulation-preview-001",
+      "shopperId": "shopper-preview-001",
+      "visitScoped": true,
+      "visitId": "visit-preview-001",
+      "hrRowId": "hr-row-preview-001",
+      "sourceVisitRef": "hr-ref-preview-001",
+      "answers": {
+        "availabilityWindow": "WK",
+        "projectExperienceRef": "source_safe_ref:experience-preview-001"
+      }
+    }
+  ]
+}

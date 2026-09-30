@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "cxorbia.owner-visible-dev-validation-lab.v1",
+  "generatedAt": "2026-08-13T12:24:00-06:00",
+  "decision": "OWNER_VISIBLE_DEV_LAB_HOSTED_PENDING_PAULA_EXECUTION_AND_ACCEPTANCE",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "sourceCommit": "0083be8c2be8b0deb15bbe5e7f8f8410f972dbc1",
+  "deployRequestCommit": "68d8af9a4bf6373696b281dbc5a9ac94c2bbfffb",
+  "hosting": {
+    "firebaseProjectId": "cxorbia-backend-dev",
+    "hostingSite": "cxorbia-backend-dev",
+    "hostingTarget": "cxorbia-dev",
+    "labPath": "/dev-validation/index.html",
+    "canonicalAppPath": "/index-backend-dev.html",
+    "production": false
+  },
+  "workflow": {
+    "name": "CXOrbia C6 DEV Root Entrypoint Hosting",
+    "runId": 31730303749,
+    "jobId": 94548821932,
+    "status": "completed",
+    "conclusion": "success",
+    "artifactId": 9192996410,
+    "artifactDigest": "sha256:1302982ffc68e2d9aedf39dafdce0514d70a0f11e362ab3cc5b731c98dab9474"
+  },
+  "visibleLab": {
+    "autoRunReadOnlyChecks": true,
+    "liveConsole": true,
+    "liveHrReadOnly": true,
+    "forceFreshHrRead": true,
+    "currentPeriodVisible": true,
+    "periodTableVisible": true,
+    "visitsVisible": true,
+    "shoppersVisible": true,
+    "availableVisitCountVisible": true,
+    "canonicalBuildCheck": true,
+    "moduleSurfaceChecks": ["dashboard", "proyectos", "visitas", "postulaciones", "cert", "finanzas", "academia"],
+    "embeddedCanonicalDevApp": true,
+    "ownerSessionAndVisibleModulesProbe": true
+  },
+  "writeE2E": {
+    "status": "BLOCKED_PENDING_SEPARATE_TEMPORARY_WRITE_AND_CLEANUP_GATE",
+    "executed": false
+  },
+  "safety": {
+    "officialTyaCutover": false,
+    "merge": false,
+    "cloudRunDeploys": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0
+  },
+  "next": "Paula opens the hosted DEV lab, watches the read-only checks execute, signs into the embedded canonical DEV app, probes role/tenant/project/period/modules, and reports APROBADO or an observed difference. Only after read-only visual acceptance is the temporary synthetic-write E2E gate evaluated."
+}

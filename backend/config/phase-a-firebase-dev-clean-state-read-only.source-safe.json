@@ -1,0 +1,65 @@
+{
+  "configId": "phase-a-firebase-dev-clean-state-read-only-source-safe",
+  "status": "prepared_not_executed",
+  "generatedAt": "2026-07-10",
+  "target": {
+    "projectId": "cxorbia-backend-dev",
+    "storageBucket": "cxorbia-backend-dev.firebasestorage.app",
+    "hostingTarget": "cxorbia-dev",
+    "environment": "DEV",
+    "expectedServiceAccountEmailSuffix": "@cxorbia-backend-dev.iam.gserviceaccount.com"
+  },
+  "execution": {
+    "workflow": ".github/workflows/cxorbia-firebase-dev-clean-state-read-only-run.yml",
+    "exactConfirmation": "VERIFY_FIREBASE_DEV_READ_ONLY",
+    "providerRunAuthorized": false,
+    "manualOnly": true,
+    "credentialSecretName": "FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV",
+    "credentialStoredInRepo": false,
+    "credentialUploadedAsArtifact": false
+  },
+  "checks": {
+    "authUsers": {"enabled": true, "expectedCount": 0, "outputPII": false},
+    "authConfiguration": {"enabled": true, "outputOnlyBooleans": true},
+    "firestoreRootCollections": {"enabled": true, "expectedCount": 0, "readDocumentFields": false},
+    "firestoreDatabases": {"enabled": true, "outputNames": false},
+    "storageObjects": {"enabled": true, "expectedAnyObject": false, "maxResults": 1, "outputNames": false},
+    "cloudFunctionsV2": {"enabled": true, "expectedAnyFunction": false, "pageSize": 1, "outputNames": false},
+    "firebaseRulesReleases": {"enabled": true, "outputNames": false}
+  },
+  "report": {
+    "directory": ".tmp/firebase-dev-clean-state-read-only-report",
+    "json": "firebase-dev-clean-state-read-only-report.json",
+    "markdown": "firebase-dev-clean-state-read-only-report.md",
+    "allowedArtifactPath": ".tmp/firebase-dev-clean-state-read-only-report",
+    "rawProviderResponsesPersisted": false,
+    "credentialPathPersisted": false
+  },
+  "expectedBeforeExecution": {
+    "authUsers": 0,
+    "firestoreRootCollections": 0,
+    "storageObjects": 0,
+    "cloudFunctions": 0,
+    "assertedAsVerified": false
+  },
+  "blocked": [
+    "create users",
+    "write claims",
+    "read user identifiers",
+    "read Firestore document fields",
+    "write or delete Firestore",
+    "upload or delete Storage",
+    "deploy rules",
+    "create/update/delete/invoke functions",
+    "enable providers",
+    "deploy Hosting",
+    "import data",
+    "production access"
+  ],
+  "notes": [
+    "Expected counts are pre-execution expectations, not verified facts.",
+    "Any unavailable mandatory check produces an inconclusive result, not a clean result.",
+    "Any detected resource produces review_required and never triggers deletion or overwrite.",
+    "This gate does not read TyA HR, shoppers, certifications, liquidations or evidence content."
+  ]
+}

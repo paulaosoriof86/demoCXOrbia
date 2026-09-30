@@ -1,0 +1,73 @@
+name: CXOrbia Source Lock V110 Union Verify
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'app/app.js'
+      - 'app/index.html'
+      - 'app/manifest.webmanifest'
+      - 'app/sw.js'
+      - 'app/core/**'
+      - 'app/modules/**'
+      - 'app/styles/**'
+      - 'app/demo/**'
+      - 'app/docs/MANIFEST-V110-UNION-EMPALME-R1.json'
+      - 'app/docs/verify-manifest-v110-union-empalme.mjs'
+      - 'tools/release/tya-source-lock-v110-union-verify.mjs'
+      - '.github/workflows/cxorbia-source-lock-post-v96-runtime-verify.yml'
+  pull_request:
+    branches:
+      - release/cxorbia-tya-rc-20260630
+    paths:
+      - 'app/app.js'
+      - 'app/index.html'
+      - 'app/manifest.webmanifest'
+      - 'app/sw.js'
+      - 'app/core/**'
+      - 'app/modules/**'
+      - 'app/styles/**'
+      - 'app/demo/**'
+      - 'app/docs/MANIFEST-V110-UNION-EMPALME-R1.json'
+      - 'app/docs/verify-manifest-v110-union-empalme.mjs'
+      - 'tools/release/tya-source-lock-v110-union-verify.mjs'
+      - '.github/workflows/cxorbia-source-lock-post-v96-runtime-verify.yml'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  source-lock-v110-union-verify:
+    name: Source lock V110 union verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Verify V110 union source lock
+        run: |
+          node tools/release/tya-source-lock-v110-union-verify.mjs \
+            --manifest app/docs/MANIFEST-V110-UNION-EMPALME-R1.json \
+            --out .tmp/source-lock-v110-union
+
+      - name: Upload V110 source lock report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-lock-v110-union-report
+          path: .tmp/source-lock-v110-union
+          if-no-files-found: error
+          retention-days: 14

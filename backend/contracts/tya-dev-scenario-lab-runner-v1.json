@@ -1,0 +1,211 @@
+{
+  "contractId": "tya-dev-scenario-lab-runner-v1",
+  "schemaVersion": "1.0.0",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "environment": "DEV",
+  "purpose": "Prepare the controlled in-platform scenario laboratory for the initial Admin/Operations and Shopper Phase A release slice without executing provider writes before the approved final visual candidate is deployed to DEV.",
+  "releaseSlice": "ADMIN_OPERATIONS_AND_SHOPPER",
+  "clientPortalBlocksInitialCutover": false,
+  "runtimeStateOrder": [
+    "AUTH_READY",
+    "CLAIMS_READY",
+    "MEMBERSHIP_READY",
+    "DATA_READY",
+    "SHELL_READY",
+    "ROUTE_READY",
+    "VIEW_READY",
+    "DOMAIN_READY",
+    "SCENARIO_READY",
+    "SCENARIO_EXECUTED",
+    "CROSS_MODULE_VERIFIED",
+    "CLEANUP_VERIFIED"
+  ],
+  "profiles": [
+    {
+      "id": "CORE_OPERATIONS_ADMIN",
+      "persona": "admin_operations",
+      "requiredRoutes": [
+        "dashboard",
+        "historico",
+        "visitas",
+        "postulaciones",
+        "shoppers",
+        "reservas",
+        "financiero"
+      ],
+      "requiredChecks": [
+        "live_hr_period_and_visit_authority_consistent",
+        "roadmap_and_dashboard_use_same_period",
+        "available_and_assigned_visits_are_not_duplicated",
+        "applications_list_and_detail_are_reachable",
+        "shopper_profile_and_history_are_reachable",
+        "delegated_finance_model_does_not_invent_income_or_royalty",
+        "three_reloads_preserve_context",
+        "new_tab_preserves_context"
+      ]
+    },
+    {
+      "id": "SHOPPER_FULL_CYCLE",
+      "persona": "shopper",
+      "requiredRoutes": [
+        "miperfil",
+        "visitas",
+        "misvisitas",
+        "reservas",
+        "aprendizaje",
+        "cert",
+        "mireportes"
+      ],
+      "requiredChecks": [
+        "exact_shopper_identity_not_name_match",
+        "historical_visits_visible",
+        "submitted_certifications_visible",
+        "available_visits_visible_when_eligible",
+        "own_visits_consistent_after_assignment",
+        "payment_or_settlement_status_source_backed",
+        "sensitive_fields_masked_or_permission_gated",
+        "three_reloads_preserve_context",
+        "new_tab_preserves_context"
+      ]
+    },
+    {
+      "id": "CROSS_MODULE_CONSISTENCY",
+      "persona": "admin_operations_and_shopper",
+      "requiredChecks": [
+        "published_visit_appears_in_available_visits",
+        "application_appears_in_list_and_detail",
+        "approved_assignment_removes_visit_from_available",
+        "approved_assignment_appears_in_shopper_own_visits",
+        "dashboard_and_roadmap_reflect_same_status",
+        "hr_and_platform_do_not_duplicate_assignment",
+        "finance_visibility_does_not_invent_amounts"
+      ]
+    },
+    {
+      "id": "RELOAD_NEW_TAB_STABILITY",
+      "persona": "admin_operations_and_shopper",
+      "requiredChecks": [
+        "three_reload_cycle",
+        "one_new_tab_cycle",
+        "tenant_project_period_role_stable",
+        "same_audit_entity_visible",
+        "no_token_secret_or_pii_exposure"
+      ]
+    },
+    {
+      "id": "EXPORTS_AND_VISIBLE_EVIDENCE",
+      "persona": "admin_operations_and_shopper",
+      "requiredChecks": [
+        "critical_route_screenshots",
+        "pdf_rows_scope_and_source_match_visible_state",
+        "xlsx_rows_scope_and_source_match_visible_state",
+        "runner_timeline_visible_in_lab",
+        "evidence_manifest_contains_path_bytes_sha256"
+      ]
+    }
+  ],
+  "auditEntityPolicy": {
+    "prefix": "AUDIT-",
+    "syntheticOnly": true,
+    "realPiiAllowed": false,
+    "legacyDatabaseConnectionAllowed": false,
+    "normalUiAndCanonicalContractsRequired": true,
+    "directDatabaseInsertionAsNormalOperationAllowed": false,
+    "writeExecutionAuthorizedByThisContract": false,
+    "maximumTemporaryEntities": {
+      "shoppers": 1,
+      "visits": 1,
+      "applications": 1,
+      "assignmentsOrReservations": 1,
+      "financeMarkers": 1
+    }
+  },
+  "fingerprint": {
+    "requiredBefore": true,
+    "requiredAfter": true,
+    "requiredFields": [
+      "tenantId",
+      "projectId",
+      "periodId",
+      "visitsCount",
+      "shoppersCount",
+      "applicationsCount",
+      "assignmentsCount",
+      "reservationsCount",
+      "settlementsCount",
+      "auditEntityIds",
+      "duplicateVisitKeys",
+      "duplicateShopperIds",
+      "sourceRevision"
+    ],
+    "hashAlgorithm": "sha256",
+    "baselineRestoredAfterCleanupRequired": true
+  },
+  "cleanup": {
+    "exactAuditIdsRequired": true,
+    "deleteOnlyEntitiesCreatedBySameRun": true,
+    "crossTenantDeletesForbidden": true,
+    "preexistingEntityMutationForbidden": true,
+    "orphansAllowed": false,
+    "cleanupFailureClassification": "P0_CLEANUP_OR_ROLLBACK",
+    "secondRuntimeAttemptAfterCleanupFailureAllowed": false
+  },
+  "evidence": {
+    "schemaVersion": "cxorbia.dev-scenario-lab.runner-evidence.v1",
+    "sanitized": true,
+    "credentialsAllowed": false,
+    "tokensAllowed": false,
+    "emailsAllowed": false,
+    "bankDataAllowed": false,
+    "governmentIdsAllowed": false,
+    "requiredTopLevelFields": [
+      "schemaVersion",
+      "generatedAt",
+      "runId",
+      "sourceHeadSha",
+      "environment",
+      "decision",
+      "stage",
+      "profiles",
+      "fingerprintBefore",
+      "fingerprintAfter",
+      "cleanup",
+      "baselineRestoredAfterCleanup",
+      "captures",
+      "safety"
+    ],
+    "requiredStepFields": [
+      "state",
+      "status",
+      "code",
+      "module",
+      "route",
+      "action",
+      "expected",
+      "observed",
+      "snapshot"
+    ]
+  },
+  "executionGates": {
+    "finalVisualCandidateApproved": true,
+    "exactSourceHeadShaRequired": true,
+    "sourceStaticFinalPassRequired": true,
+    "singleHostingDevDeployRequired": true,
+    "humanAuthorizationForTemporaryWritesRequired": true,
+    "providerSnapshotBeforeWritesRequired": true,
+    "noSecondDeploy": true,
+    "noAutomaticRetry": true
+  },
+  "currentMode": {
+    "sourceOnlyPreparation": true,
+    "runtimeExecution": false,
+    "browserExecution": false,
+    "providerReads": false,
+    "providerWrites": false,
+    "deploy": false,
+    "merge": false,
+    "production": false
+  }
+}

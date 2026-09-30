@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "1.0.0",
+  "gate": "cxorbia-phase-a-create-new-empty-firebase-dev-r15",
+  "generatedAt": "2026-07-13T16:50:49.531Z",
+  "authorization": {
+    "explicitAuthorizationRecorded": true,
+    "scope": "create_new_empty_firebase_dev_and_sanitized_verify_only"
+  },
+  "target": {
+    "projectId": "cxorbia-tya-dev-260713-r15a",
+    "displayName": "CXOrbia TyA DEV Clean R15A",
+    "environment": "DEV",
+    "production": false
+  },
+  "sourceCredential": {
+    "credentialProjectExpected": "cxorbia-backend-dev",
+    "credentialTypeValid": true,
+    "credentialProjectMatch": true,
+    "serviceAccountDomainMatch": true,
+    "identifierOutput": false
+  },
+  "checks": {
+    "sourceParentDiscovery": {
+      "available": true,
+      "parentTypePresent": false,
+      "parentIdOutput": false,
+      "errorCategory": null
+    },
+    "targetPreexistence": {
+      "available": false,
+      "absent": false,
+      "statusCategory": "PERMISSION_DENIED"
+    }
+  },
+  "summary": {
+    "targetAbsenceVerifiedBeforeCreate": false,
+    "projectCreateAttempted": false,
+    "projectCreated": false,
+    "firebaseAddAttempted": false,
+    "firebaseAdded": false,
+    "projectActive": false,
+    "emptyBaselineVerified": false,
+    "appCount": null,
+    "authUserCount": null,
+    "firestoreDatabaseCount": null,
+    "storageBucketCount": null,
+    "hostingSiteCount": null
+  },
+  "safeState": {
+    "authorizedProviderWriteAttempted": false,
+    "onlyAuthorizedProviderWrites": true,
+    "projectDeletionAttempted": false,
+    "billingLinkAttempted": false,
+    "authWrites": false,
+    "claimsWrites": false,
+    "firestoreWrites": false,
+    "storageWrites": false,
+    "rulesDeploy": false,
+    "functionsDeployOrInvocation": false,
+    "hostingDeploy": false,
+    "deploy": false,
+    "imports": false,
+    "dataMigration": false,
+    "production": false,
+    "piiOrCredentialsOutput": false,
+    "credentialPersisted": false
+  },
+  "decision": "BLOCKED_TARGET_PROJECT_EXISTENCE_UNVERIFIED"
+}

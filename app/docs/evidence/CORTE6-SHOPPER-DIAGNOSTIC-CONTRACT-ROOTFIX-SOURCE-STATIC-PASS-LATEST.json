@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "cxorbia.c6.shopper-diagnostic-contract-rootfix-source-static.v1",
+  "generatedAt": "2026-08-06T03:28:09.164Z",
+  "decision": "PASS_C6_SHOPPER_DIAGNOSTIC_CONTRACT_ROOTFIX_SOURCE_STATIC",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "requestId": "c6-shopper-diagnostic-contract-rootfix-source-only-20260805-01",
+  "requestCommitSha": "1de9606ef6d78fec7802913c96ee50bb1deba441",
+  "targetHeadSha": "3b4d83ce14f397c34bbb56ffa85de8f6e4069089",
+  "sha256": {
+    "planner": "46bb0a58a936c9793dd9f405b08d6856ffa498432dc64f9c123e436159e387a6",
+    "classifier": "777b15405acdb526f00f7717cc1c756f0fe69146111be94123c1ec4afb5bd248",
+    "contract": "917b220a67c54740cf5ac1c0e3970561e72d6288f18b45d75e7c3cf45b7e803c"
+  },
+  "contract": {
+    "metrics": [
+      "preConsensusIncompleteActiveProfiles",
+      "completedByConsensus",
+      "remainingIncompleteActiveProfiles"
+    ],
+    "holdVectors": "booleans_counts_bases_only",
+    "multiAuthVectors": "signals_score_margin_no_uid_email_pii",
+    "groupFingerprintNamespace": "shopper-visible-login-group-v1",
+    "collisionReconciliationPolicy": "fingerprint_set_membership_not_rigid_aggregate_equality",
+    "rigidAggregateGateRemoved": true,
+    "expectedPlanRows": 340,
+    "suffixLengths": [
+      4,
+      6,
+      8
+    ]
+  },
+  "checks": [
+    "PASS_NODE_SYNTAX_PLANNER_CLASSIFIER_PATCHER",
+    "PASS_PRE_CONSENSUS_COMPLETED_REMAINING_METRICS",
+    "PASS_METRIC_IDENTITY_GATE",
+    "PASS_HOLD_SOURCE_SAFE_DIAGNOSTIC_VECTORS",
+    "PASS_MULTI_AUTH_SOURCE_SAFE_SIGNAL_VECTOR",
+    "PASS_NO_UID_EMAIL_PII_DIAGNOSTICS",
+    "PASS_STABLE_GROUP_FINGERPRINT_NAMESPACE",
+    "PASS_FINGERPRINT_SET_RECONCILIATION",
+    "PASS_RIGID_64_GATE_REMOVED",
+    "PASS_OLD_83_GATE_REMOVED",
+    "PASS_PLAN_340_SCHEMA_PRESERVED",
+    "PASS_SUFFIX_4_6_8_PRESERVED",
+    "PASS_PROVIDER_READS_ZERO"
+  ],
+  "safety": {
+    "providerReads": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "membershipWrites": 0,
+    "firestoreWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "merge": false,
+    "production": false
+  },
+  "nextGate": "NEW_EXPLICIT_PROVIDER_READONLY_AUTHORIZATION_REQUIRED"
+}

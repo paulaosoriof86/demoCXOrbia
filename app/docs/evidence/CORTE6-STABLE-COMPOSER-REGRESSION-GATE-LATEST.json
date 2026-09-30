@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "cxorbia.c6.stability-regression-gate.v1",
+  "generatedAt": "2026-07-31T21:43:33Z",
+  "decision": "PASS_C6_STABLE_COMPOSER_3X_IDEMPOTENCE",
+  "execution": {
+    "environment": "ephemeral-local-validation-of-authored-sources",
+    "repoCiStatus": "not_run",
+    "syntaxChecks": {
+      "app/adapters/tya-cumulative-read-model.js": "PASS",
+      "app/adapters/tya-dev-full-visual-bridge.js": "PASS",
+      "app/adapters/tya-live-source-refresh-watch.js": "PASS",
+      "tools/qa/tya-cumulative-read-model-regression-gate.mjs": "PASS"
+    }
+  },
+  "repoBlobs": {
+    "app/adapters/tya-cumulative-read-model.js": "b50371c80a6e77325626c655297a26901a3997d0",
+    "app/adapters/tya-dev-full-visual-bridge.js": "83f8c4a8ce630611791c561eb8b89c8640fd0255",
+    "app/adapters/tya-live-source-refresh-watch.js": "ef823cbf083845e1701df9c02e7025f813e5574d",
+    "tools/qa/tya-cumulative-read-model-regression-gate.mjs": "edef616375266151a1c114270baaf95c25a08c00"
+  },
+  "baseline": {
+    "periods": 14,
+    "visits": 616,
+    "shoppers": 208,
+    "protectedProfiles": 120,
+    "protectedVisits": 616
+  },
+  "reapply1": {
+    "outputVisits": 616,
+    "outputShoppers": 208,
+    "uniqueVisitKeys": 616,
+    "duplicateVisitKeys": 0,
+    "duplicateShopperIds": 0,
+    "protectedVisitsAppended": 0
+  },
+  "reapply2": {
+    "outputVisits": 616,
+    "outputShoppers": 208,
+    "uniqueVisitKeys": 616,
+    "duplicateVisitKeys": 0,
+    "duplicateShopperIds": 0,
+    "protectedVisitsAppended": 0
+  },
+  "reapply3": {
+    "outputVisits": 616,
+    "outputShoppers": 208,
+    "uniqueVisitKeys": 616,
+    "duplicateVisitKeys": 0,
+    "duplicateShopperIds": 0,
+    "protectedVisitsAppended": 0
+  },
+  "assertions": {
+    "threeReapplyVisitCountStable": true,
+    "threeReapplyVisitIdsStable": true,
+    "threeReapplyShopperIdsStable": true,
+    "zeroProtectedVisitAppend": true,
+    "zeroDuplicateVisitKeys": true,
+    "zeroDuplicateShopperIds": true,
+    "exactTechnicalCrosswalkPresent": true,
+    "hrOperationalStatePreserved": true,
+    "profileOverlayVisible": true
+  },
+  "liveSourceReadOnlyCheck": {
+    "canonicalSpreadsheetTabs": 30,
+    "monthlyTabs": 28,
+    "july2026GT": 34,
+    "july2026HN": 10,
+    "july2026Total": 44,
+    "august2026TabsPresent": false
+  },
+  "safety": {
+    "providerWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "cloudRunDeploys": 0,
+    "hostingDeploys": 0,
+    "production": false,
+    "merge": false
+  },
+  "nextGate": "FRESH_EXACT_AUTHORIZATION_FOR_ONE_EXISTING_HOSTING_DEV_REDEPLOY_THEN_REMOTE_AND_HUMAN_VISUAL_REGRESSION"
+}

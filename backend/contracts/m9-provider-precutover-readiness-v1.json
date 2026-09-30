@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "cxorbia.m9.provider-precutover-readiness.v1",
+  "milestone": "M9",
+  "title": "Provider pre-cutover readiness + explicit production promotion",
+  "points": 3,
+  "phaseAEntryPercent": 96,
+  "phaseAExitPercentOnFullM9Pass": 99,
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "promotionStrategy": "PROMOTE_EXISTING_CLEAN_PROJECT",
+  "production": {
+    "firebaseProjectId": "cxorbia-backend-dev",
+    "hostingTarget": "cxorbia-dev",
+    "hostingSite": "cxorbia-backend-dev",
+    "cloudRunService": "cxorbia-live-hr-dev",
+    "cloudRunRegion": "us-central1",
+    "currentIdentifiersAndUrlAcceptedAsProduction": true
+  },
+  "m8Evidence": {
+    "path": "app/docs/evidence/m8-human-validation-rollback-ready-31694998731.json",
+    "decision": "PASS_M8_HUMAN_VALIDATION_ROLLBACK_READY_READONLY",
+    "testedTargetHeadSha": "62edaf552c2a62a8964671f691d600a417ae63f8",
+    "buildId": "ecc725866acc3eb8",
+    "aggregateSha256": "ecc725866acc3eb8aab292000be3ec31d1c46b5c14a53c8889fa7d6716a997e2"
+  },
+  "providerReadPhase": {
+    "action": "M9_PROVIDER_PRECUTOVER_READINESS_READONLY",
+    "required": [
+      "Capture the newest live-site Hosting release resource for the production Hosting site.",
+      "Capture and verify the finalized Hosting version referenced by that release.",
+      "Verify from the Firebase Hosting discovery document that a release can be created for a specified versionName on the same site.",
+      "Bind the captured pre-cutover release/version to the exact M8-tested runtime source/build lock.",
+      "Fail closed if no live release, no finalized version, source drift, or provider-supported rollback path is observed."
+    ],
+    "authenticatedMethodsAllowed": [
+      "GET sites.releases.list",
+      "GET sites.versions.get"
+    ],
+    "publicCapabilityReadAllowed": true,
+    "providerWrites": 0,
+    "productionMutation": false,
+    "passDecision": "PASS_M9_PROVIDER_PRECUTOVER_READINESS_READONLY"
+  },
+  "rollbackReadiness": {
+    "capturedPreCutoverReleaseRequired": true,
+    "capturedFinalizedVersionRequired": true,
+    "providerMechanism": "Firebase Hosting releases.create with versionName referring to the captured same-site finalized version",
+    "guessedRollbackCommandForbidden": true,
+    "rollbackExecutionAuthorized": false,
+    "rollbackMutationInProviderReadPhase": false
+  },
+  "promotionPhase": {
+    "explicitNewGateRequired": true,
+    "singleProductionPromotionMaximum": 1,
+    "mustBindExactM8RuntimeBytes": true,
+    "mustBindCapturedPreCutoverRelease": true,
+    "mustBindCapturedRollbackVersion": true,
+    "authorizedByThisContract": false,
+    "hostingDeployAuthorizedByThisContract": false,
+    "cloudRunDeployAuthorizedByThisContract": false,
+    "mergeAuthorizedByThisContract": false,
+    "productionCutoverAuthorizedByThisContract": false,
+    "nextGateName": "M9_EXPLICIT_CUTOVER_ONE_PRODUCTION_PROMOTION"
+  },
+  "safety": {
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "merge": false,
+    "productionMutation": false
+  }
+}

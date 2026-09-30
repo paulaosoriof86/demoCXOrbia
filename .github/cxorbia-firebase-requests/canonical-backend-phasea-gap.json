@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "cxorbia.canonical-backend-phasea-gap.request.v1",
+  "enabled": true,
+  "mode": "READ_ONLY_EVIDENCE_RECONCILIATION",
+  "sourceInventory": "app/docs/evidence/CANONICAL-BACKEND-READONLY-INVENTORY-LATEST.json",
+  "providerWrites": 0,
+  "production": false,
+  "merge": false,
+  "triggerNonce": 1
+}

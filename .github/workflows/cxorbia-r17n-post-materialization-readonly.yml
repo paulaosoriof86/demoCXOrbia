@@ -1,0 +1,120 @@
+name: CXOrbia R17N Post-Materialization Readonly
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - '.github/cxorbia-firebase-requests/r17n-post-materialization-readonly.json'
+
+permissions:
+  contents: read
+  statuses: write
+
+concurrency:
+  group: cxorbia-r17n-post-materialization-readonly
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          ref: docs-tya-v6-v71-audit
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Read request
+        id: request
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const p='.github/cxorbia-firebase-requests/r17n-post-materialization-readonly.json';
+          const r=JSON.parse(fs.readFileSync(p,'utf8'));
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`enabled=${r.enabled===true?'true':'false'}\n`);
+          if(r.enabled===true){
+            if(r.schemaVersion!=='cxorbia.r17n-post-materialization-readonly.request.v1')process.exit(1);
+            if(r.mode!=='R17N_POST_MATERIALIZATION_READONLY')process.exit(1);
+            if(r.projectId!=='cxorbia-backend-dev'||r.tenantId!=='tya'||r.canonicalProjectId!=='cinepolis')process.exit(1);
+            if(r.providerReads!==true||r.providerWrites!==0||r.dataWrites!==0||r.authWrites!==0||r.storageWrites!==0||r.hrWrites!==0||r.legacyWrites!==0||r.deploy!==false||r.merge!==false||r.production!==false)process.exit(1);
+            const {execSync}=require('child_process');
+            const parent=execSync('git rev-parse HEAD^',{encoding:'utf8'}).trim();
+            if(r.targetHeadSha!==parent)process.exit(1);
+          }
+          NODE
+
+      - name: Load canonical DEV credential for read-only verification
+        if: steps.request.outputs.enabled == 'true'
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/r17n-postcompare-private
+          node <<'NODE'
+          const fs=require('fs');const raw=process.env.EXISTING_DEV_JSON||'';let p=null;try{p=JSON.parse(raw)}catch{}
+          if(!(p&&p.type==='service_account'&&p.project_id==='cxorbia-backend-dev'&&p.private_key&&p.client_email))process.exit(1);
+          fs.writeFileSync('.tmp/r17n-postcompare-private/credentials.json',raw,{mode:0o600});
+          NODE
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.tmp/r17n-postcompare-private/credentials.json" >> "$GITHUB_ENV"
+
+      - name: Install transient read-only runtime and validate scripts
+        if: steps.request.outputs.enabled == 'true'
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
+          node --check tools/qa/tya-r17n-post-materialization-readonly-smoke.mjs
+          node --check tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs
+
+      - name: Run provider post-compare and CX.data smoke
+        if: steps.request.outputs.enabled == 'true'
+        id: smoke
+        continue-on-error: true
+        run: |
+          set +e
+          node tools/qa/tya-r17n-post-materialization-readonly-smoke.mjs > /tmp/r17n-postcompare.out
+          code=$?
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          cat /tmp/r17n-postcompare.out
+          exit 0
+
+      - name: Upload sanitized evidence
+        if: always() && steps.request.outputs.enabled == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: r17n-post-materialization-readonly-${{ github.run_id }}
+          path: .tmp/tya-r17n-post-materialization-readonly-smoke
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Publish observable status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [ "${{ steps.request.outputs.enabled }}" != "true" ]; then
+            STATE=success; DESC='SKIPPED_DISABLED_R17N_POSTCOMPARE';
+          elif [ ! -f .tmp/tya-r17n-post-materialization-readonly-smoke/report.json ]; then
+            STATE=error; DESC='HOLD_R17N_POSTCOMPARE_REPORT_MISSING';
+          else
+            DECISION=$(node -e "console.log(require('./.tmp/tya-r17n-post-materialization-readonly-smoke/report.json').decision||'HOLD')")
+            if [[ "$DECISION" == PASS_* ]]; then STATE=success; else STATE=failure; fi
+            DESC="$DECISION"
+          fi
+          RUN_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/r17n-post-materialization-readonly' -f description="${DESC:0:140}" -f target_url="$RUN_URL" >/dev/null
+
+      - name: Cleanup credential
+        if: always()
+        run: rm -rf .tmp/r17n-postcompare-private /tmp/r17n-postcompare.out
+
+      - name: Enforce gate result
+        if: steps.request.outputs.enabled == 'true'
+        run: |
+          test "${{ steps.smoke.outputs.exit_code }}" = "0"
+          node -e "const r=require('./.tmp/tya-r17n-post-materialization-readonly-smoke/report.json');if(!String(r.decision||'').startsWith('PASS_'))process.exit(1)"

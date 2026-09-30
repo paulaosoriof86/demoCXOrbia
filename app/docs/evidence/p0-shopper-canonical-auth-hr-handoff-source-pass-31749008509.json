@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "cxorbia.p0.shopper-canonical-auth-hr-handoff.v1",
+  "generatedAt": "2026-08-13T16:13:29-06:00",
+  "decision": "PASS_P0_SHOPPER_CANONICAL_AUTH_HR_HANDOFF_SOURCE_ONLY",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "sourceHead": "23a708c27ef4abc4ef93d2a027f3dfd7c40b4ee8",
+  "changes": {
+    "shopperCanonicalAuthContextCommit": "2da1a1571a253d2868325ee55374e0948b573ea1",
+    "devStatusFinalAuthorityCommit": "bb6dae78e8fb79ce1995010368ceaf342e0a71e3",
+    "standaloneSourceGateCommit": "adeda3a70907706ef5e709c18c4bc0686833ec98",
+    "visualSmokeMandatoryGateCommit": "23a708c27ef4abc4ef93d2a027f3dfd7c40b4ee8"
+  },
+  "workflow": {
+    "name": "CXOrbia Phase A Visual Smoke",
+    "runId": 31749008509,
+    "status": "completed",
+    "conclusion": "success",
+    "artifactId": 9200168093,
+    "artifactDigest": "sha256:cffb33d875f190b8b30e906932b9f44458ddccb5d394ba5b742913ddeb03c1ca",
+    "verdict": "GO_WITH_WARNINGS_VISUAL_SMOKE_POST_V96",
+    "hardFails": 0
+  },
+  "p0ShopperExactIdentity": {
+    "pass": true,
+    "directCanonicalId": true,
+    "forwardIdentityMap": true,
+    "technicalAlias": true,
+    "ambiguousExactIdentityBlocked": true,
+    "nameOnlyRejected": true
+  },
+  "p0ShopperAuthorityHandoffSource": {
+    "pass": true,
+    "canonicalAuthContextPublished": true,
+    "shopperUsesCanonicalAuthContext": true,
+    "obsoleteWindowAuthApiAbsent": true,
+    "shopperWaitsForHrAuthority": true,
+    "shopperSchedulesHrReconcile": true,
+    "shopperRerendersOnAuthorityReady": true,
+    "authorityReplacesVisitsWithCanonicalHr": true,
+    "authorityReplacesShoppersWithCanonicalHr": true,
+    "authorityPublishesCanonicalSource": true,
+    "authorityEmitsReadyEvent": true,
+    "devStatusListensFinalAuthority": true,
+    "devStatusSeparatesProjectAndHrPeriods": true,
+    "devStatusMarksFirestoreAsTransient": true
+  },
+  "warning": "The legacy prototype role-shell smoke still exercises demo role selection; it is retained only for structural regression. It is not accepted as Firebase human-role certification.",
+  "safety": {
+    "providerReads": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "deploys": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "merge": false,
+    "production": false
+  },
+  "nextGate": "ONE_DEV_HOSTING_DEPLOY_OF_CURRENT_HEAD_THEN_HUMAN_SHOPPER_AND_CROSS_ROLE_ACCEPTANCE"
+}

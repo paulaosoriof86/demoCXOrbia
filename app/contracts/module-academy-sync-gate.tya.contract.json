@@ -1,0 +1,69 @@
+{
+  "contract": "module-academy-sync-gate-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A and Phase B continuity",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "purpose": "Ensure every module change, extension or backend contract update is reviewed against Academy manuals, role learning paths and related course content.",
+  "rule": "Any module update must also evaluate Academy impact before being considered complete.",
+  "requiredChecklistPerModuleChange": [
+    "changedModuleIdentified",
+    "changedFilesListed",
+    "affectedRolesListed",
+    "backendContractImpactReviewed",
+    "manualsImpactReviewed",
+    "coursesImpactReviewed",
+    "roleLearningPathImpactReviewed",
+    "glossaryImpactReviewed",
+    "trainingRequestTopicsReviewed",
+    "commercialEducationImpactReviewed",
+    "pendientesPrototipoUpdated",
+    "resumenParaClaudeUpdatedOrAddendumCreated",
+    "cambiosBackendUpdatedOrAddendumCreated"
+  ],
+  "rolesToCheck": [
+    "super",
+    "admin",
+    "ops",
+    "shopper",
+    "client",
+    "consultant_partner"
+  ],
+  "academyAssetsToReview": [
+    "roleLearningPaths",
+    "moduleManuals",
+    "stepByStepGuides",
+    "buttonAndActionGuides",
+    "commonMistakes",
+    "validationChecklists",
+    "glossary",
+    "trainingRequestTopics",
+    "commercialPackagesEducation",
+    "integrationAndAutomationEducation"
+  ],
+  "moduleReviewTemplateRequiredFields": [
+    "moduleName",
+    "filesChanged",
+    "changeSummary",
+    "phaseAImpact",
+    "phaseBImpact",
+    "affectedRoles",
+    "academyManualsToUpdate",
+    "academyCoursesToUpdate",
+    "academyNewLessonsNeeded",
+    "academyGlossaryTermsNeeded",
+    "trainingRequestTopicsNeeded",
+    "commercialValueNotes",
+    "documentationStatus",
+    "openRisks"
+  ],
+  "hardStops": [
+    "Do not mark a module change as fully documented if Academy impact was not reviewed.",
+    "Do not leave role training impact implicit.",
+    "Do not create generic Academy notes when a role-specific guide is required.",
+    "Do not activate Gemini real content generation without human review.",
+    "Do not write Firestore from this contract."
+  ]
+}

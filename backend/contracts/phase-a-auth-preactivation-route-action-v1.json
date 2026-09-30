@@ -1,0 +1,190 @@
+{
+  "contractId": "phase-a-auth-preactivation-route-action-v1",
+  "status": "safe_preactivation_complete_not_connected",
+  "generatedAt": "2026-07-10",
+  "sourceLockRuntimeSha": "86e592db3f9f8016080302a852bfd194097b2074",
+  "purpose": "Reconcile the post-V96 frontend role/category behavior with the Phase A Firebase Auth/RBAC model before any real Auth configuration, user creation, claims write, protected read or rules deployment.",
+  "safeState": {
+    "authProviderConnected": false,
+    "customClaimsWritten": false,
+    "frontendAuthBinding": false,
+    "firestoreReads": false,
+    "firestoreWrites": false,
+    "rulesDeployed": false,
+    "providerCalls": false,
+    "imports": false,
+    "production": false,
+    "containsSecrets": false,
+    "containsSensitiveData": false
+  },
+  "decisionRule": "Authorization is role + personaType + tenantId + explicit scope + permission bundles + permissionsVersion. Route visibility never authorizes an action by itself.",
+  "evidenceSources": [
+    "app/core/config.js",
+    "app/core/router.js",
+    "app/core/data.js",
+    "backend/contracts/auth-rbac-phase-a-v1.json",
+    "backend/contracts/phase-a-role-taxonomy-org-scope-v1.json",
+    "backend/config/phase-a-role-taxonomy-personas.source-safe.json"
+  ],
+  "frontendCategoryModel": {
+    "op": ["midia", "dashboard", "visitas", "postulaciones", "reservas", "shoppers", "tablon"],
+    "prj": ["proyectos", "periodos", "historico", "clientes", "cuestionarios", "rutas", "importador", "hrsource"],
+    "cap": ["aprendizaje", "cert", "documentos", "soporte", "novedades"],
+    "fin": ["financiero", "movimientos", "liquidaciones", "lotes"],
+    "cfg": ["config", "usuarios", "marca", "automatizaciones", "integraciones", "correo", "saas", "diagnostico", "administrabilidad"],
+    "com": ["costos", "crm", "marketing", "informes"],
+    "sh": ["miperfil", "misvisitas", "beneficios"]
+  },
+  "frontendDefaultPermissionCategories": {
+    "super": ["op", "fin", "prj", "cap", "cfg", "sh", "com"],
+    "admin": ["op", "fin", "prj", "cap", "com"],
+    "ops": ["op", "prj", "cap"],
+    "coordinador": ["op", "prj", "cap"],
+    "aliado": ["op", "prj", "cap"],
+    "shopper": ["sh", "cap"],
+    "customWithoutExplicitMatrix": ["cap"]
+  },
+  "roleReconciliation": {
+    "super": {
+      "personaType": "tenantOwner",
+      "technicalRole": "tenantAdmin",
+      "scope": "tenant",
+      "notes": "Phase A tenant owner. SaaS platform operations remain reserved and are not granted by this mapping."
+    },
+    "admin": {
+      "personaType": "tenantOwner_or_projectCoordinator",
+      "technicalRole": "tenantAdmin_or_projectAdmin",
+      "scope": "tenant_or_project",
+      "notes": "The persona and scope determine whether the admin is tenant-wide or project-only."
+    },
+    "ops": {
+      "personaType": "operationsCoordinator_or_fieldRepresentative",
+      "technicalRole": "projectAdmin",
+      "scope": "tenantProjectOrCountry",
+      "defaultBundles": ["projectOperations", "fieldOperations", "academyRead"]
+    },
+    "coordinador": {
+      "personaType": "countryRepresentative",
+      "technicalRole": "projectAdmin",
+      "scope": "tenantProjectOrCountry",
+      "defaultBundles": ["projectOperations", "fieldOperations", "academyRead"],
+      "adminDelProyectoMeaning": "Scoped project/country administration only; never tenant-global configuration, finance or provider administration by default."
+    },
+    "aliado": {
+      "personaType": "franchiseOwner",
+      "technicalRole": "tenantAdmin",
+      "scope": "tenantOrCountry",
+      "defaultBundles": ["projectOperations", "fieldOperations", "projectConfigurationScoped", "academyRead"],
+      "adminDelProyectoMeaning": "Scoped project/country administration only. tenantAdmin must not imply unrestricted tenant configuration, finance or provider access for franchiseOwner."
+    },
+    "cliente": {
+      "personaType": "clientBrandAdmin_or_clientBrandViewer",
+      "technicalRole": "clientAdmin_or_clientViewer",
+      "scope": "tenantProject",
+      "defaultBundles": ["clientReporting"]
+    },
+    "shopper": {
+      "personaType": "shopperEvaluator",
+      "technicalRole": "shopper",
+      "scope": "ownTenantOrProject",
+      "defaultBundles": ["shopperSelfService", "academyRead"]
+    },
+    "custom": {
+      "personaType": "custom",
+      "technicalRole": "explicit_mapping_required",
+      "scope": "explicit_required",
+      "defaultDecision": "deny",
+      "notes": "No claim template and no expanded route/action access until an explicit mapping, scope and allowlist are reviewed."
+    }
+  },
+  "routeActionPolicy": {
+    "projectOperations": {
+      "allowedTechnicalRoles": ["tenantAdmin", "projectAdmin"],
+      "requiredScopes": ["tenant", "tenantOrCountry", "tenantProject", "tenantProjectOrCountry"],
+      "actions": ["viewVisits", "manageApplications", "prepareAssignments", "manageSchedule", "manageCancellations", "reviewConflicts"],
+      "providerSideEffects": "blocked_until_separate_gate"
+    },
+    "projectConfigurationScoped": {
+      "allowedPersonaTypes": ["tenantOwner", "franchiseOwner", "countryRepresentative", "operationsCoordinator", "projectCoordinator"],
+      "actions": ["viewProjectConfig", "editProjectConfigWithAudit", "managePeriods", "reviewHrSourceConfig", "reviewQuestionnaireOrigin"],
+      "deniedByDefault": ["manageTenantGlobalConfig", "manageSaasConsole", "deployRules", "activateProviders"]
+    },
+    "financeControl": {
+      "allowedTechnicalRoles": ["financeAdmin", "tenantAdmin"],
+      "tenantAdminPersonaAllowlist": ["tenantOwner"],
+      "deniedPersonaTypesByDefault": ["franchiseOwner", "countryRepresentative", "operationsCoordinator", "projectCoordinator", "fieldRepresentative"],
+      "actions": ["viewLiquidations", "preparePaymentBatches", "markPaymentStateWithAudit"],
+      "rawBankData": "deny"
+    },
+    "certificationControl": {
+      "allowedTechnicalRoles": ["certificationAdmin", "tenantAdmin", "projectAdmin"],
+      "actions": ["viewCertificationAttempts", "applyCarryover", "reviewQuestionBankDraft", "publishAfterHumanReview"],
+      "geminiProvider": "blocked_until_separate_gate"
+    },
+    "tenantConfiguration": {
+      "allowedPersonaTypes": ["tenantOwner"],
+      "actions": ["manageTenantConfig", "manageUsers", "viewTenantAudit", "managePermissionVersions"],
+      "franchiseOwner": "explicit_scoped_override_required"
+    },
+    "diagnosticoAndAdministrabilidad": {
+      "allowedPersonaTypes": ["tenantOwner"],
+      "projectAdminDefault": "deny",
+      "franchiseOwnerDefault": "deny",
+      "customDefault": "deny"
+    },
+    "clientPortal": {
+      "allowedTechnicalRoles": ["clientAdmin", "clientViewer"],
+      "scope": "tenantProject",
+      "internalAdminRoutes": "deny"
+    },
+    "shopperSelfService": {
+      "allowedTechnicalRoles": ["shopper"],
+      "scope": "ownTenantOrProject",
+      "otherShopperData": "deny"
+    }
+  },
+  "knownActivationBlockers": [
+    {
+      "id": "RBAC_PROJECT_ADMIN_TOO_BROAD",
+      "detail": "auth-rbac-phase-a-v1 currently lists projectAdmin for finanzas, automatizaciones and diagnostico, while the post-V96 frontend default matrix denies fin/cfg categories to coordinador, aliado and ops. Claims must follow the least-privilege persona/bundle matrix before activation."
+    },
+    {
+      "id": "FRANCHISE_OWNER_TENANTADMIN_REQUIRES_PERSONA_BUNDLE_RESTRICTION",
+      "detail": "franchiseOwner maps to tenantAdmin but must remain country/project scoped and must not inherit tenantOwner-only configuration or finance permissions."
+    },
+    {
+      "id": "CLIENT_ROLES_MISSING_FROM_CLAIMS_SEED_V1",
+      "detail": "clientAdmin and clientViewer exist in the current RBAC/taxonomy but are not included in the v1 claims seed allowed-role/template set."
+    },
+    {
+      "id": "CUSTOM_ROLE_EXPLICIT_MAPPING_REQUIRED",
+      "detail": "Custom roles remain denied except minimum Academia visibility until explicit role/persona/scope/allowlist configuration exists."
+    },
+    {
+      "id": "ACTION_LEVEL_BACKEND_ENFORCEMENT_NOT_CONNECTED",
+      "detail": "Frontend route visibility is not an authorization boundary. Protected actions still require backend checks and audit before any real write."
+    },
+    {
+      "id": "FIREBASE_DEV_CLEAN_STATE_NOT_EXTERNALLY_VERIFIED",
+      "detail": "The expected DEV project identity is documented, but Auth user count, Firestore document count, Storage objects and deployed rules have not been queried in this block."
+    }
+  ],
+  "activationGates": {
+    "routeActionMatrixReview": "complete_safe",
+    "claimsDryRun": "allowed_validator_only",
+    "firebaseCleanStateReadOnlyVerification": "pending_separate_authorization_or_provider_read_gate",
+    "createTestUsers": "blocked",
+    "writeClaims": "blocked",
+    "protectedReads": "blocked",
+    "deployRules": "blocked",
+    "imports": "blocked",
+    "production": "blocked"
+  },
+  "classification": {
+    "reusableCxorbia": ["role-persona-scope-bundle authorization", "least privilege", "route visibility is not action authorization", "custom fail-closed"],
+    "exclusiveClient": ["TyA country/project assignments and Cinépolis configuration remain external source-safe data"],
+    "claudePrototype": ["show scoped Admin del Proyecto", "hide or deny unauthorized actions", "split client admin/viewer", "custom explicit allowlist states"],
+    "academia": ["role versus persona versus scope", "route versus action", "access denied and escalation", "permission version changes"],
+    "sinImpactoClaude": ["validator implementation", "CI artifact", "provider-off safety checks"]
+  }
+}

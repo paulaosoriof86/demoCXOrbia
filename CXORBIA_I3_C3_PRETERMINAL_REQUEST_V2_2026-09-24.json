@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "cxorbia.i3.c3-preterminal-request.v2",
+  "requestedAt": "2026-09-24",
+  "status": "REQUESTED_READ_ONLY",
+  "controlHeadBeforeRequest": "b4290d6bfd757a4bbf6f04b03f26508234fa8286",
+  "productSourceSha": "04b288f7eee315fcb865ed86a8fb41786809edf9",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V11_2026-09-24.json",
+  "expectedDecision": "PASS_C3_PRETERMINAL_MODULE_TRUTH",
+  "production": "DO_NOT_TOUCH",
+  "writes": 0,
+  "deploys": 0
+}

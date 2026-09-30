@@ -1,0 +1,1166 @@
+{
+  "schemaVersion": "cxorbia.r17n-final-write-plan-no-execute.v2",
+  "generatedAt": "2026-07-30T03:14:15.360Z",
+  "target": {
+    "firebaseProjectId": "cxorbia-backend-dev",
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "environment": "DEV_CANONICAL"
+  },
+  "status": "FINAL_PLAN_READY_NOT_AUTHORIZED_NOT_EXECUTABLE",
+  "strategy": {
+    "canonicalShadow": true,
+    "reuseExistingBackend": true,
+    "newFirebaseProject": false,
+    "deletePriorTopology": false,
+    "productionCutover": false,
+    "currentHrThroughJuly": true
+  },
+  "identityResolution": {
+    "totalHrRefs": 208,
+    "reuseExistingRefs": 201,
+    "linkToLegacyProfileCreateRefs": 2,
+    "createFromCurrentHrRefs": 5,
+    "holdRefs": 0,
+    "readyRefs": 208
+  },
+  "groups": {
+    "tenant": {
+      "count": 1,
+      "state": "HOLD_EXISTING_TENANT_FIELD_REVIEW",
+      "authorized": 0
+    },
+    "foundation": {
+      "count": 16,
+      "state": "READY_FOR_EXACT_WRITE_AUTHORIZATION",
+      "authorized": 0
+    },
+    "legacyProfileCreates": {
+      "count": 120,
+      "state": "READY_FOR_EXACT_WRITE_AUTHORIZATION",
+      "authorized": 0
+    },
+    "currentHrProfileCreates": {
+      "count": 5,
+      "state": "READY_FOR_EXACT_WRITE_AUTHORIZATION_WITH_LIVE_IDENTITY_RECHECK",
+      "authorized": 0
+    },
+    "existingProfileUpdates": {
+      "count": 22,
+      "state": "HOLD_EXISTING_FIELD_CONFLICT_REVIEW",
+      "authorized": 0
+    },
+    "legacyProfileHolds": {
+      "count": 7,
+      "state": "HOLD_SOURCE_OR_IDENTITY_REVIEW",
+      "authorized": 0
+    },
+    "certifications": {
+      "readyCreate": 77,
+      "hold": 1,
+      "authorized": 0
+    },
+    "visits": {
+      "total": 616,
+      "readyCreate": 616,
+      "holdIdentity": 0,
+      "source": "CURRENT_HR_THROUGH_JULY",
+      "authorized": 0
+    },
+    "liquidationControls": {
+      "total": 572,
+      "readyCreate": 572,
+      "holdIdentity": 0,
+      "payments": 0,
+      "authorized": 0
+    }
+  },
+  "exactReadyWrites": {
+    "count": 1406,
+    "authorized": 0,
+    "breakdown": {
+      "foundation": 16,
+      "legacyProfileCreates": 120,
+      "currentHrProfileCreates": 5,
+      "certificationCreates": 77,
+      "visitCreates": 616,
+      "liquidationControlCreates": 572
+    }
+  },
+  "holds": {
+    "tenant": true,
+    "existingProfileUpdates": 22,
+    "legacyProfileHolds": 7,
+    "certificationHolds": 1,
+    "currentHrIdentityHolds": 0,
+    "augustHN": "HOLD_COUNTRY_TAB_MISMATCH"
+  },
+  "sourceLocks": {
+    "legacySnapshotSha256": "a4988e2ad473f724248ac9999b6f8ba6edd94f8aba5c7145c09da88159a200c4",
+    "currentHrSourceSha256": "b09f9f1c5f189ba32b2d7304147a86bbfaf5a16118df79834c57e7baf3728d48",
+    "visitCrosswalkHash": "309cb8e76d1a7e21082ea675a7dfa92a80ec41c706a770192e251f8584dce1c3",
+    "currentIdentityEvidenceSha256": "db36615ac9b278074dfdd1d208ca17cfeecaed733e4aa4d516d7f94d36cf0565",
+    "baseR17nSha256": "97c9f708bb1063988df5931fd1baadb4fc22b065b89f964bd46191e69356c14d",
+    "shopperMappingSha256": "2e964198eb92fad7158de81f059577f0a8f83bc924d413e628deee9f13b6ce2d"
+  },
+  "shopperReferenceMapping": [
+    {
+      "sourceShopperRef": "shopper_gt_018ca3e794",
+      "targetKind": "existing",
+      "targetShopperId": "shp-7e6290cdc282"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_0757b1eeb4",
+      "targetKind": "existing",
+      "targetShopperId": "shp-f7a50a8d12b0"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_09c5128572",
+      "targetKind": "existing",
+      "targetShopperId": "shp-ebdd00f0788d"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_0a363269ad",
+      "targetKind": "existing",
+      "targetShopperId": "shp-18fb07907781"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_0b19085086",
+      "targetKind": "existing",
+      "targetShopperId": "shp-d47a101ebbfa"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_0b2f66d821",
+      "targetKind": "existing",
+      "targetShopperId": "shp-3669abbb015a"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_0c0ba8856e",
+      "targetKind": "hr_current_create",
+      "targetShopperId": "shopper_gt_0c0ba8856e"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_0c198c1055",
+      "targetKind": "existing",
+      "targetShopperId": "shp-7309d525805e"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_0c6f828e41",
+      "targetKind": "existing",
+      "targetShopperId": "shp-f80506ccb48e"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_0e5eac2a4a",
+      "targetKind": "existing",
+      "targetShopperId": "shp-08d2865bd6f8"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_117b1b39de",
+      "targetKind": "existing",
+      "targetShopperId": "shp-4d76037b4857"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_13ff51fafd",
+      "targetKind": "existing",
+      "targetShopperId": "shp-2e82d0061f27"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_1440137b73",
+      "targetKind": "existing",
+      "targetShopperId": "shp-cdbf95dccaa6"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_17c3a1dfeb",
+      "targetKind": "existing",
+      "targetShopperId": "shp-617c03c14233"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_19068e65cb",
+      "targetKind": "existing",
+      "targetShopperId": "shp-1ee175c5040c"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_1d3e8c0e83",
+      "targetKind": "existing",
+      "targetShopperId": "shp-e49762473d6a"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_1f4e43db3d",
+      "targetKind": "existing",
+      "targetShopperId": "shp-d235c7cd8a3c"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_1f90bb8a75",
+      "targetKind": "existing",
+      "targetShopperId": "shp-58a449f10a07"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_2171dbe993",
+      "targetKind": "existing",
+      "targetShopperId": "shp-bac5b1f39554"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_2275578b02",
+      "targetKind": "existing",
+      "targetShopperId": "shp-15208cd3e67b"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_233f657d7e",
+      "targetKind": "existing",
+      "targetShopperId": "shp-615068d816c2"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_24e2b5c5b2",
+      "targetKind": "existing",
+      "targetShopperId": "shp-bdbe920ac716"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_24e70bc42c",
+      "targetKind": "existing",
+      "targetShopperId": "shp-4b448db5f831"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_2889189d76",
+      "targetKind": "existing",
+      "targetShopperId": "shp-b8556e956d73"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_2ace80aa68",
+      "targetKind": "existing",
+      "targetShopperId": "shp-57d2e3769946"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_2c6d1482e1",
+      "targetKind": "existing",
+      "targetShopperId": "shp-ddbbeb1b9b21"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_2e8200a26e",
+      "targetKind": "existing",
+      "targetShopperId": "shp-2506521e881f"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_2f37e9abcb",
+      "targetKind": "existing",
+      "targetShopperId": "shp-8a81560fb97c"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_3023959720",
+      "targetKind": "existing",
+      "targetShopperId": "shp-fa91793ac5e8"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_3106d9d44b",
+      "targetKind": "existing",
+      "targetShopperId": "shp-998662c24ca7"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_319cd82eaf",
+      "targetKind": "hr_current_create",
+      "targetShopperId": "shopper_gt_319cd82eaf"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_338ec57592",
+      "targetKind": "existing",
+      "targetShopperId": "shp-ba6a7453ed52"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_3426ec3ff3",
+      "targetKind": "existing",
+      "targetShopperId": "shp-ebc05156bb0c"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_348d87d60f",
+      "targetKind": "existing",
+      "targetShopperId": "shp-b75ee93cc073"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_34d33a3054",
+      "targetKind": "existing",
+      "targetShopperId": "shp-08d2865bd6f8"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_350d7b017d",
+      "targetKind": "existing",
+      "targetShopperId": "shp-5bf5c61e327d"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_3528b0fb90",
+      "targetKind": "existing",
+      "targetShopperId": "shp-97e82ee24afb"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_36c6c37b2a",
+      "targetKind": "existing",
+      "targetShopperId": "shp-8a23568c9ee7"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_37adac8f58",
+      "targetKind": "existing",
+      "targetShopperId": "shp-a62b398318b2"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_39d89a3db9",
+      "targetKind": "existing",
+      "targetShopperId": "shp-15df0b9979c6"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_3afdb1d65f",
+      "targetKind": "existing",
+      "targetShopperId": "shp-cbd6186e520d"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_3c14073969",
+      "targetKind": "existing",
+      "targetShopperId": "shp-09f607e5c39f"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_3d5b842bad",
+      "targetKind": "existing",
+      "targetShopperId": "shp-4299176a58d1"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_3e7975b739",
+      "targetKind": "existing",
+      "targetShopperId": "shp-59515dfeb51e"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_3f36ff81ad",
+      "targetKind": "existing",
+      "targetShopperId": "shp-dc38e5a176f8"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_40fa49770f",
+      "targetKind": "existing",
+      "targetShopperId": "shp-59a153e144d1"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_447020fa18",
+      "targetKind": "existing",
+      "targetShopperId": "shp-71be2c713789"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_4937b8216a",
+      "targetKind": "existing",
+      "targetShopperId": "shp-5fb6aaf9e5f0"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_4ae6a03099",
+      "targetKind": "existing",
+      "targetShopperId": "shp-eb02eebb540a"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_4b7ab39880",
+      "targetKind": "existing",
+      "targetShopperId": "shp-d659fcfd498b"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_4dd893a7e7",
+      "targetKind": "existing",
+      "targetShopperId": "shp-4e16da85ac63"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_4ef19f0e07",
+      "targetKind": "existing",
+      "targetShopperId": "shp-1be600194a67"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_518a436a83",
+      "targetKind": "existing",
+      "targetShopperId": "shp-489b141cbb34"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_5233bd64ee",
+      "targetKind": "existing",
+      "targetShopperId": "shp-d3d494b5233b"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_52524de362",
+      "targetKind": "existing",
+      "targetShopperId": "shp-fbeeed1ba734"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_54b5ca83eb",
+      "targetKind": "existing",
+      "targetShopperId": "shp-6e14c07ecb7c"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_55b1903f6e",
+      "targetKind": "existing",
+      "targetShopperId": "shp-b55ffa133831"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_5818744fb0",
+      "targetKind": "existing",
+      "targetShopperId": "shp-4a40b53b56d6"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_5830743a5e",
+      "targetKind": "existing",
+      "targetShopperId": "shp-e1885b83f79d"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_5eb6ba4913",
+      "targetKind": "existing",
+      "targetShopperId": "shp-fc094d9ca23d"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_5f3d6952c5",
+      "targetKind": "existing",
+      "targetShopperId": "shp-70c0a261cf19"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_6036f7338d",
+      "targetKind": "existing",
+      "targetShopperId": "shp-66e4ff1930c4"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_61501eaff4",
+      "targetKind": "existing",
+      "targetShopperId": "shp-02fc264de8d6"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_634b09c120",
+      "targetKind": "existing",
+      "targetShopperId": "shp-765b5831e1ae"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_63882d59fd",
+      "targetKind": "existing",
+      "targetShopperId": "shp-1fa6227c3e51"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_64265e8115",
+      "targetKind": "existing",
+      "targetShopperId": "shp-6a8134bb3bde"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_679ad8c992",
+      "targetKind": "existing",
+      "targetShopperId": "shp-4562e0f3b1aa"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_6b67f2a89f",
+      "targetKind": "existing",
+      "targetShopperId": "shp-32aa3767add3"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_7155410e54",
+      "targetKind": "existing",
+      "targetShopperId": "shp-bdc3aa4ce18d"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_736d3818e7",
+      "targetKind": "existing",
+      "targetShopperId": "shp-6f03e75b654f"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_751194ffb8",
+      "targetKind": "existing",
+      "targetShopperId": "shp-0a47c3ee3cbd"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_7a034d9eab",
+      "targetKind": "existing",
+      "targetShopperId": "shp-5091cd4e782a"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_7c8b7cbdbf",
+      "targetKind": "existing",
+      "targetShopperId": "shp-f7a50a8d12b0"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_7dd9382c67",
+      "targetKind": "existing",
+      "targetShopperId": "shp-4e0481cf2e41"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_7f23f9a093",
+      "targetKind": "existing",
+      "targetShopperId": "shp-b2e3d7bef69b"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_81de8fb0a2",
+      "targetKind": "existing",
+      "targetShopperId": "shp-f333b7815117"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_833dc86954",
+      "targetKind": "existing",
+      "targetShopperId": "shp-4f1e8e2a732d"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_8343bb7ba7",
+      "targetKind": "existing",
+      "targetShopperId": "shp-4f6467bd2086"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_85800c7de1",
+      "targetKind": "existing",
+      "targetShopperId": "shp-5010c639e3f2"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_859e8c1810",
+      "targetKind": "existing",
+      "targetShopperId": "shp-c37091ae040d"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_86df37a5b3",
+      "targetKind": "existing",
+      "targetShopperId": "shp-bcb03e4a498c"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_8cd3f1ba2e",
+      "targetKind": "existing",
+      "targetShopperId": "shp-95032e6b8ed0"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_8fd7924a95",
+      "targetKind": "existing",
+      "targetShopperId": "shp-77d997a617f5"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_919825bf47",
+      "targetKind": "existing",
+      "targetShopperId": "shp-e9138f6480c0"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_932b89edc7",
+      "targetKind": "existing",
+      "targetShopperId": "shp-3c4f44ad77c2"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_962096be36",
+      "targetKind": "existing",
+      "targetShopperId": "shp-b864c5f23704"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_985acad843",
+      "targetKind": "existing",
+      "targetShopperId": "shp-46f4c8cd7a66"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_98a1bb84ff",
+      "targetKind": "existing",
+      "targetShopperId": "shp-5eb7226afd28"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_9905177db9",
+      "targetKind": "existing",
+      "targetShopperId": "shp-97e82ee24afb"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_9a72c005e6",
+      "targetKind": "existing",
+      "targetShopperId": "shp-147705fc0bf3"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_9f113de0dd",
+      "targetKind": "existing",
+      "targetShopperId": "shp-bb2a060cd25e"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_9fe8184d1f",
+      "targetKind": "existing",
+      "targetShopperId": "shp-4e968395708f"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_a03736edc5",
+      "targetKind": "existing",
+      "targetShopperId": "shp-e993a2f11cac"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_a092a0647f",
+      "targetKind": "existing",
+      "targetShopperId": "shp-3afd097b264f"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_a27341e5f2",
+      "targetKind": "existing",
+      "targetShopperId": "shp-3c2353c661eb"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_a40b00bbbd",
+      "targetKind": "existing",
+      "targetShopperId": "shp-bdf00a861e1f"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_a5fec782ee",
+      "targetKind": "legacy_create",
+      "targetShopperId": "hrsh-ce214c77"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_a681381884",
+      "targetKind": "existing",
+      "targetShopperId": "shp-df07ee633cc2"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_a8990876ea",
+      "targetKind": "existing",
+      "targetShopperId": "shp-49405322dcdf"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_a9b49aa1d4",
+      "targetKind": "existing",
+      "targetShopperId": "shp-03102c63d277"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_adb75b8d02",
+      "targetKind": "existing",
+      "targetShopperId": "shp-3bc7305c00d7"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_b05a031741",
+      "targetKind": "existing",
+      "targetShopperId": "shp-1da244d246f6"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_b1d5a53d04",
+      "targetKind": "existing",
+      "targetShopperId": "shp-ac0b28b6294a"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_b33aa2e641",
+      "targetKind": "existing",
+      "targetShopperId": "shp-416d4781c622"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_b7afe05305",
+      "targetKind": "existing",
+      "targetShopperId": "shp-286db15d4e7a"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_ba66e016c7",
+      "targetKind": "existing",
+      "targetShopperId": "shp-07cf9aca8f42"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_bd74ace936",
+      "targetKind": "existing",
+      "targetShopperId": "shp-80d2ca2b6892"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_bd89d3ecc6",
+      "targetKind": "existing",
+      "targetShopperId": "shp-9ac573af142d"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_c139c5348e",
+      "targetKind": "existing",
+      "targetShopperId": "shp-e2e956aec2fa"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_c342b8c62e",
+      "targetKind": "hr_current_create",
+      "targetShopperId": "shopper_gt_c342b8c62e"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_c4dbcbe2ba",
+      "targetKind": "existing",
+      "targetShopperId": "shp-2a24685cc5ed"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_c521f29122",
+      "targetKind": "existing",
+      "targetShopperId": "shp-c59e111b6f27"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_c73b3f0753",
+      "targetKind": "existing",
+      "targetShopperId": "shp-3375bce226bb"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_c80e9b53ec",
+      "targetKind": "existing",
+      "targetShopperId": "shp-b2dac97d1265"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_c8391cf8d8",
+      "targetKind": "existing",
+      "targetShopperId": "shp-c65978730f87"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_cbcd833740",
+      "targetKind": "existing",
+      "targetShopperId": "shp-f5356c9d8263"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_cc094b28c2",
+      "targetKind": "existing",
+      "targetShopperId": "shp-5bf5c61e327d"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_cd0270c9ca",
+      "targetKind": "existing",
+      "targetShopperId": "shp-ad9c28c636cf"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_ce6a976e54",
+      "targetKind": "existing",
+      "targetShopperId": "shp-58a449f10a07"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_cf009f1d68",
+      "targetKind": "existing",
+      "targetShopperId": "shp-f616b7fb4086"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_d5ebad6b6c",
+      "targetKind": "existing",
+      "targetShopperId": "shp-a363a6ab7703"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_d7b59dfd6a",
+      "targetKind": "existing",
+      "targetShopperId": "shp-b821c62aa4bb"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_d8018a15d0",
+      "targetKind": "existing",
+      "targetShopperId": "shp-532c51ff2394"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_dc08e0f710",
+      "targetKind": "existing",
+      "targetShopperId": "shp-b1ccc3d673fb"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_dc7098fd00",
+      "targetKind": "existing",
+      "targetShopperId": "shp-09f607e5c39f"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_dcb71fa55e",
+      "targetKind": "existing",
+      "targetShopperId": "shp-8b276d89d5ee"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_dcc73986b1",
+      "targetKind": "legacy_create",
+      "targetShopperId": "hrsh-205d3dd2"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_e10ba54cc7",
+      "targetKind": "existing",
+      "targetShopperId": "shp-198170828690"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_e121686a7e",
+      "targetKind": "existing",
+      "targetShopperId": "shp-b2e3d7bef69b"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_e24dff9781",
+      "targetKind": "existing",
+      "targetShopperId": "shp-8d3f02eea7ac"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_e2bac3644d",
+      "targetKind": "existing",
+      "targetShopperId": "shp-4940c5a87768"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_e41c7f3439",
+      "targetKind": "existing",
+      "targetShopperId": "shp-6b3c4480bacd"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_e58ffad6cf",
+      "targetKind": "existing",
+      "targetShopperId": "shp-e8b0ea06691a"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_e8ef4f7159",
+      "targetKind": "existing",
+      "targetShopperId": "shp-75380bbf514c"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_eaa6f8aa33",
+      "targetKind": "existing",
+      "targetShopperId": "shp-0780f6f085b1"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_ebc7c081b4",
+      "targetKind": "existing",
+      "targetShopperId": "shp-6e5f7546e7e0"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_ee24b84bc7",
+      "targetKind": "existing",
+      "targetShopperId": "shp-8b72b37291c3"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_ee7c8b2ee8",
+      "targetKind": "existing",
+      "targetShopperId": "shp-02fc264de8d6"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_ef38845c91",
+      "targetKind": "existing",
+      "targetShopperId": "shp-1ea2b1e34d9c"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_ef7eb475a9",
+      "targetKind": "existing",
+      "targetShopperId": "shp-2b6269f673af"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_f283ec69ad",
+      "targetKind": "existing",
+      "targetShopperId": "shp-10e01cac7b7c"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_f340a8561f",
+      "targetKind": "existing",
+      "targetShopperId": "shp-170131d4c50c"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_f726f2eb34",
+      "targetKind": "existing",
+      "targetShopperId": "shp-2ee2c1351a0f"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_f8c101ded8",
+      "targetKind": "existing",
+      "targetShopperId": "shp-79055422a21a"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_fa80514323",
+      "targetKind": "existing",
+      "targetShopperId": "shp-6a8134bb3bde"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_fc5d6fb927",
+      "targetKind": "existing",
+      "targetShopperId": "shp-104d73902cd7"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_fdf0826c58",
+      "targetKind": "existing",
+      "targetShopperId": "shp-93660dbe95f9"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_fe757bebcd",
+      "targetKind": "existing",
+      "targetShopperId": "shp-0463570db99b"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_feca082d2d",
+      "targetKind": "existing",
+      "targetShopperId": "shp-68bdc98b6744"
+    },
+    {
+      "sourceShopperRef": "shopper_gt_ff7616913a",
+      "targetKind": "existing",
+      "targetShopperId": "shp-3e6d0057e747"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_03156fc84c",
+      "targetKind": "existing",
+      "targetShopperId": "shp-6998ec8abea2"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_0855faf907",
+      "targetKind": "existing",
+      "targetShopperId": "shp-509cbd523a48"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_08ca073ce4",
+      "targetKind": "existing",
+      "targetShopperId": "shp-410da26c9ed2"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_0b28347863",
+      "targetKind": "existing",
+      "targetShopperId": "shp-159ed4844830"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_1691aecc2c",
+      "targetKind": "existing",
+      "targetShopperId": "shp-6a74085876ed"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_1bd5e9bb8b",
+      "targetKind": "existing",
+      "targetShopperId": "shp-0ea76281bbd8"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_208c0bd271",
+      "targetKind": "existing",
+      "targetShopperId": "shp-3e86fb5f4577"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_23b1d3bb61",
+      "targetKind": "existing",
+      "targetShopperId": "shp-918f9e209659"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_29685e0167",
+      "targetKind": "existing",
+      "targetShopperId": "shp-bbff67f54216"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_2d5d71b664",
+      "targetKind": "existing",
+      "targetShopperId": "shp-bd52dbd547e6"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_3010e08ed6",
+      "targetKind": "existing",
+      "targetShopperId": "shp-88a9b370a044"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_365befab79",
+      "targetKind": "existing",
+      "targetShopperId": "shp-96cdf485560c"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_37b727a4c5",
+      "targetKind": "existing",
+      "targetShopperId": "shp-fea0350d4212"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_3b3c2f5cc1",
+      "targetKind": "existing",
+      "targetShopperId": "shp-b572bacbe462"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_4b248f33c4",
+      "targetKind": "existing",
+      "targetShopperId": "shp-66503d184ae3"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_53881b45e1",
+      "targetKind": "existing",
+      "targetShopperId": "shp-ab33fd67628c"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_54b47e1e8a",
+      "targetKind": "existing",
+      "targetShopperId": "shp-a998514d51ef"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_57821b348e",
+      "targetKind": "existing",
+      "targetShopperId": "shp-00b6eab10c7c"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_59bbac6a32",
+      "targetKind": "existing",
+      "targetShopperId": "shp-6a435eeba1ed"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_5b8a9597e1",
+      "targetKind": "existing",
+      "targetShopperId": "shp-5c637384d382"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_5ec302f7d5",
+      "targetKind": "existing",
+      "targetShopperId": "shp-664f66a1b334"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_634b09c120",
+      "targetKind": "existing",
+      "targetShopperId": "shp-23e1226ef607"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_6a2b1aaac7",
+      "targetKind": "existing",
+      "targetShopperId": "shp-e286d7975cfa"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_724509b250",
+      "targetKind": "existing",
+      "targetShopperId": "shp-20405cdda3aa"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_7a5a21048b",
+      "targetKind": "hr_current_create",
+      "targetShopperId": "shopper_hn_7a5a21048b"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_7dd50f15d7",
+      "targetKind": "existing",
+      "targetShopperId": "shp-eefcb213d45e"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_7eb13548d4",
+      "targetKind": "existing",
+      "targetShopperId": "shp-1498eb5e83fc"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_83460e68ba",
+      "targetKind": "existing",
+      "targetShopperId": "shp-b40366080ab9"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_88754eeaa2",
+      "targetKind": "existing",
+      "targetShopperId": "shp-cd2548bab73a"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_97aebe51ee",
+      "targetKind": "existing",
+      "targetShopperId": "shp-58665b30b09c"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_99cb2f9b05",
+      "targetKind": "existing",
+      "targetShopperId": "shp-6a90516aa4b1"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_9a6963fdf6",
+      "targetKind": "existing",
+      "targetShopperId": "shp-3788ee813dab"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_a5eb20c689",
+      "targetKind": "existing",
+      "targetShopperId": "shp-f7f106377bf2"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_a651f7c213",
+      "targetKind": "existing",
+      "targetShopperId": "shp-8a44b5b713aa"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_a766607e28",
+      "targetKind": "existing",
+      "targetShopperId": "shp-3788ee813dab"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_a7da259c01",
+      "targetKind": "existing",
+      "targetShopperId": "shp-6a435eeba1ed"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_a9d0f9ec63",
+      "targetKind": "existing",
+      "targetShopperId": "shp-747986866c93"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_aa9c99ecbe",
+      "targetKind": "existing",
+      "targetShopperId": "shp-683653e7f931"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_ad3a67a97f",
+      "targetKind": "existing",
+      "targetShopperId": "shp-20f73fb2cc91"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_b1b94c1f96",
+      "targetKind": "existing",
+      "targetShopperId": "shp-1c118a34f723"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_b392e51c76",
+      "targetKind": "existing",
+      "targetShopperId": "shp-561a63e04f65"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_b46ec0b894",
+      "targetKind": "existing",
+      "targetShopperId": "shp-4f91cfc6aa95"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_b5aabb7d48",
+      "targetKind": "existing",
+      "targetShopperId": "shp-188eb408383f"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_ba49cafa91",
+      "targetKind": "hr_current_create",
+      "targetShopperId": "shopper_hn_ba49cafa91"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_c76575f9a1",
+      "targetKind": "existing",
+      "targetShopperId": "shp-188eb408383f"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_cff256baeb",
+      "targetKind": "existing",
+      "targetShopperId": "shp-69a756312202"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_d2910831d4",
+      "targetKind": "existing",
+      "targetShopperId": "shp-684ea8add9ad"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_d7025c0ded",
+      "targetKind": "existing",
+      "targetShopperId": "shp-b40366080ab9"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_d9d4214283",
+      "targetKind": "existing",
+      "targetShopperId": "shp-bd52dbd547e6"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_db58c2a3ad",
+      "targetKind": "existing",
+      "targetShopperId": "shp-766b2eb35615"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_e63fa70863",
+      "targetKind": "existing",
+      "targetShopperId": "shp-2215095664eb"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_e88273a777",
+      "targetKind": "existing",
+      "targetShopperId": "shp-c750f2448128"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_ee7585b930",
+      "targetKind": "existing",
+      "targetShopperId": "shp-c837e9666844"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_eea60b5eba",
+      "targetKind": "existing",
+      "targetShopperId": "shp-abd550d22c7a"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_f1a22d569e",
+      "targetKind": "existing",
+      "targetShopperId": "shp-ff1f9499e646"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_f417e005e2",
+      "targetKind": "existing",
+      "targetShopperId": "shp-48b90130c2b7"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_fc52fabe94",
+      "targetKind": "existing",
+      "targetShopperId": "shp-39a41745def0"
+    },
+    {
+      "sourceShopperRef": "shopper_hn_ff2ec7a471",
+      "targetKind": "existing",
+      "targetShopperId": "shp-c27acf2292a2"
+    }
+  ],
+  "safety": {
+    "providerCalls": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "deletes": 0,
+    "imports": 0,
+    "deploys": 0,
+    "production": false,
+    "merge": false,
+    "executeAllowed": false
+  },
+  "offlineIdempotence": {
+    "pass": true,
+    "planHashSha256": "f03cd3e5c225cac80525329c8c09775bd3dbbf24ace025b7a30f77c219404e2e",
+    "rerunHashSha256": "f03cd3e5c225cac80525329c8c09775bd3dbbf24ace025b7a30f77c219404e2e"
+  }
+}

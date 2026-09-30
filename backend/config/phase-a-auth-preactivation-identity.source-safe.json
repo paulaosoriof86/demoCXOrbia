@@ -1,0 +1,211 @@
+{
+  "configId": "phase-a-auth-preactivation-identity-source-safe",
+  "status": "source_safe_not_connected",
+  "generatedAt": "2026-07-10",
+  "purpose": "Prepare external identity and claim templates for the clean CXOrbia Firebase DEV project without real users, emails, passwords, provider calls or claims writes.",
+  "expectedDevProject": {
+    "projectId": "cxorbia-backend-dev",
+    "hostingTarget": "cxorbia-dev",
+    "environment": "DEV",
+    "mustRemainSeparateFromProduction": true,
+    "legacyAuthImportAllowed": false,
+    "externalCleanStateVerification": {
+      "status": "pending",
+      "expectedAuthUsers": 0,
+      "expectedFirestoreBusinessDocuments": 0,
+      "expectedStorageEvidenceObjects": 0,
+      "expectedFunctionsWithBusinessWrites": 0,
+      "assertedAsVerified": false
+    }
+  },
+  "safeState": {
+    "authProviderConnected": false,
+    "customClaimsWritten": false,
+    "testUsersCreated": false,
+    "firestoreReads": false,
+    "firestoreWrites": false,
+    "rulesDeployed": false,
+    "providerCalls": false,
+    "containsRealEmails": false,
+    "containsPasswords": false,
+    "containsSensitiveData": false,
+    "production": false
+  },
+  "claimShape": {
+    "required": ["tenantId", "role", "personaType", "scope", "permissionsVersion"],
+    "optional": ["countryIds", "projectIds", "shopperId", "clientId", "staffId", "franchiseId", "representativeId", "permissionBundles"],
+    "forbidden": ["email", "phone", "password", "rawName", "dpi", "idDocumentRaw", "bankAccountRaw", "signedNdaRaw", "providerToken", "refreshToken", "privateWebhookUrl", "privateSourceUrl", "workbookRaw"]
+  },
+  "templates": [
+    {
+      "templateId": "tenant-owner-dev-template",
+      "userRef": "user_ref_tenant_owner_dev",
+      "claims": {
+        "tenantId": "tenant_demo",
+        "role": "tenantAdmin",
+        "personaType": "tenantOwner",
+        "scope": "tenant",
+        "permissionsVersion": "phase-a-preactivation-v1",
+        "permissionBundles": ["tenantConfiguration", "projectOperations", "financeControl", "certificationControl", "academyAdmin"]
+      }
+    },
+    {
+      "templateId": "franchise-owner-dev-template",
+      "userRef": "user_ref_franchise_owner_dev",
+      "claims": {
+        "tenantId": "tenant_demo",
+        "role": "tenantAdmin",
+        "personaType": "franchiseOwner",
+        "scope": "tenantOrCountry",
+        "countryIds": ["COUNTRY_A"],
+        "projectIds": ["project_alpha"],
+        "franchiseId": "franchise_ref_demo",
+        "permissionsVersion": "phase-a-preactivation-v1",
+        "permissionBundles": ["projectConfigurationScoped", "projectOperations", "fieldOperations", "academyRead"]
+      }
+    },
+    {
+      "templateId": "country-representative-dev-template",
+      "userRef": "user_ref_country_representative_dev",
+      "claims": {
+        "tenantId": "tenant_demo",
+        "role": "projectAdmin",
+        "personaType": "countryRepresentative",
+        "scope": "tenantProjectOrCountry",
+        "countryIds": ["COUNTRY_A"],
+        "projectIds": ["project_alpha"],
+        "representativeId": "representative_ref_demo",
+        "permissionsVersion": "phase-a-preactivation-v1",
+        "permissionBundles": ["projectConfigurationScoped", "projectOperations", "fieldOperations", "academyRead"]
+      }
+    },
+    {
+      "templateId": "operations-coordinator-dev-template",
+      "userRef": "user_ref_operations_coordinator_dev",
+      "claims": {
+        "tenantId": "tenant_demo",
+        "role": "projectAdmin",
+        "personaType": "operationsCoordinator",
+        "scope": "tenantProjectOrCountry",
+        "countryIds": ["COUNTRY_A"],
+        "projectIds": ["project_alpha"],
+        "staffId": "staff_ref_operations_demo",
+        "permissionsVersion": "phase-a-preactivation-v1",
+        "permissionBundles": ["projectOperations", "fieldOperations", "academyRead"]
+      }
+    },
+    {
+      "templateId": "project-coordinator-dev-template",
+      "userRef": "user_ref_project_coordinator_dev",
+      "claims": {
+        "tenantId": "tenant_demo",
+        "role": "projectAdmin",
+        "personaType": "projectCoordinator",
+        "scope": "tenantProject",
+        "projectIds": ["project_alpha"],
+        "staffId": "staff_ref_project_demo",
+        "permissionsVersion": "phase-a-preactivation-v1",
+        "permissionBundles": ["projectConfigurationScoped", "projectOperations", "academyRead"]
+      }
+    },
+    {
+      "templateId": "field-representative-dev-template",
+      "userRef": "user_ref_field_representative_dev",
+      "claims": {
+        "tenantId": "tenant_demo",
+        "role": "projectAdmin",
+        "personaType": "fieldRepresentative",
+        "scope": "tenantProjectOrCountry",
+        "countryIds": ["COUNTRY_A"],
+        "projectIds": ["project_alpha"],
+        "staffId": "staff_ref_field_demo",
+        "permissionsVersion": "phase-a-preactivation-v1",
+        "permissionBundles": ["fieldOperations", "academyRead"]
+      }
+    },
+    {
+      "templateId": "finance-operator-dev-template",
+      "userRef": "user_ref_finance_operator_dev",
+      "claims": {
+        "tenantId": "tenant_demo",
+        "role": "financeAdmin",
+        "personaType": "financeOperator",
+        "scope": "tenantProjectOrCountry",
+        "countryIds": ["COUNTRY_A"],
+        "projectIds": ["project_alpha"],
+        "staffId": "staff_ref_finance_demo",
+        "permissionsVersion": "phase-a-preactivation-v1",
+        "permissionBundles": ["financeControl", "academyRead"]
+      }
+    },
+    {
+      "templateId": "certification-operator-dev-template",
+      "userRef": "user_ref_certification_operator_dev",
+      "claims": {
+        "tenantId": "tenant_demo",
+        "role": "certificationAdmin",
+        "personaType": "certificationOperator",
+        "scope": "tenantProject",
+        "projectIds": ["project_alpha"],
+        "staffId": "staff_ref_certification_demo",
+        "permissionsVersion": "phase-a-preactivation-v1",
+        "permissionBundles": ["certificationControl", "academyAdmin"]
+      }
+    },
+    {
+      "templateId": "client-admin-dev-template",
+      "userRef": "user_ref_client_admin_dev",
+      "claims": {
+        "tenantId": "tenant_demo",
+        "role": "clientAdmin",
+        "personaType": "clientBrandAdmin",
+        "scope": "tenantProject",
+        "projectIds": ["project_alpha"],
+        "clientId": "client_ref_admin_demo",
+        "permissionsVersion": "phase-a-preactivation-v1",
+        "permissionBundles": ["clientReporting", "academyRead"]
+      }
+    },
+    {
+      "templateId": "client-viewer-dev-template",
+      "userRef": "user_ref_client_viewer_dev",
+      "claims": {
+        "tenantId": "tenant_demo",
+        "role": "clientViewer",
+        "personaType": "clientBrandViewer",
+        "scope": "tenantProject",
+        "projectIds": ["project_alpha"],
+        "clientId": "client_ref_viewer_demo",
+        "permissionsVersion": "phase-a-preactivation-v1",
+        "permissionBundles": ["clientReporting", "academyRead"]
+      }
+    },
+    {
+      "templateId": "shopper-dev-template",
+      "userRef": "user_ref_shopper_dev",
+      "claims": {
+        "tenantId": "tenant_demo",
+        "role": "shopper",
+        "personaType": "shopperEvaluator",
+        "scope": "ownTenantOrProject",
+        "projectIds": ["project_alpha"],
+        "shopperId": "shopper_ref_demo",
+        "permissionsVersion": "phase-a-preactivation-v1",
+        "permissionBundles": ["shopperSelfService", "academyRead"]
+      }
+    }
+  ],
+  "customRolePolicy": {
+    "templateCreated": false,
+    "defaultDecision": "deny",
+    "requirementsBeforeTemplate": ["explicit persona mapping", "explicit technical role", "explicit country/project scope", "explicit permission bundle allowlist", "human review", "audit reason"]
+  },
+  "blockedActions": ["createAuthUsers", "setCustomClaims", "importLegacyUsers", "deployFirestoreRules", "enableProtectedReads", "enableFirestoreWrites", "activateProviders", "productionCutover"],
+  "notes": [
+    "This file contains only opaque references and synthetic identifiers.",
+    "No real email, phone, password, document, bank data or private source URL is stored.",
+    "A franchiseOwner uses tenantAdmin only with a restricted persona/scope/bundle set.",
+    "Client admin and viewer are represented separately before any Auth activation.",
+    "The clean-state counts are expected values, not assertions; external read-only verification remains pending."
+  ]
+}

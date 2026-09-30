@@ -1,0 +1,158 @@
+{
+  "schemaVersion": "cxorbia-firestore-config-integrations-automation-v1",
+  "status": "draft-no-write",
+  "tenantScope": "tenants/{tenantId}",
+  "principles": [
+    "El frontend puede mostrar catálogo, pero el estado real vive en backend.",
+    "No guardar secretos en claro ni en localStorage para producción.",
+    "Cada cambio de configuración debe auditarse.",
+    "Cada integración debe tener estado real: configured, validated, active, failed, revoked.",
+    "Cada automatización debe generar runs persistentes con status y error."
+  ],
+  "collections": {
+    "tenantConfig": {
+      "path": "tenants/{tenantId}/config/main",
+      "purpose": "Configuración general del tenant/consultora.",
+      "fields": {
+        "tenantId": "string",
+        "brandConfig": "object",
+        "moduleConfig": "object",
+        "countryConfig": "object",
+        "ndaConfig": "object",
+        "plan": "estandar|pro|enterprise|custom",
+        "updatedAt": "timestamp",
+        "updatedBy": "uid"
+      }
+    },
+    "projectConfig": {
+      "path": "tenants/{tenantId}/projects/{projectId}/config/main",
+      "purpose": "Configuración específica del proyecto.",
+      "fields": {
+        "tenantId": "string",
+        "projectId": "string",
+        "countries": "array",
+        "currencyByCountry": "object",
+        "visitRules": "object",
+        "questionnaireConfig": "object",
+        "evidenceConfig": "object",
+        "hrConfig": "object",
+        "financeConfig": "object",
+        "updatedAt": "timestamp",
+        "updatedBy": "uid"
+      }
+    },
+    "integrationCatalog": {
+      "path": "globalCatalog/integrations/items/{integrationId}",
+      "purpose": "Catálogo global de integraciones disponibles por plan.",
+      "fields": {
+        "id": "string",
+        "category": "string",
+        "name": "string",
+        "description": "string",
+        "plan": "string",
+        "requiredFields": "array",
+        "secretFields": "array",
+        "status": "available|deprecated|disabled"
+      }
+    },
+    "tenantIntegrations": {
+      "path": "tenants/{tenantId}/integrations/{integrationId}",
+      "purpose": "Estado real de una integración para un tenant.",
+      "fields": {
+        "tenantId": "string",
+        "integrationId": "string",
+        "status": "draft|configured|validated|active|failed|revoked|disabled",
+        "planAllowed": "boolean",
+        "configPublic": "object",
+        "secretRef": "string|null",
+        "lastTestAt": "timestamp|null",
+        "lastTestStatus": "ok|warning|error|null",
+        "lastError": "string|null",
+        "scopes": "array",
+        "updatedAt": "timestamp",
+        "updatedBy": "uid"
+      }
+    },
+    "automationRules": {
+      "path": "tenants/{tenantId}/automationRules/{ruleId}",
+      "purpose": "Reglas de automatización por evento/canal/plantilla.",
+      "fields": {
+        "tenantId": "string",
+        "ruleId": "string",
+        "event": "string",
+        "active": "boolean",
+        "channel": "push|whatsapp|email|sheet|webhook|task",
+        "target": "admin|shopper|client|ops|finance",
+        "template": "string",
+        "integrationId": "string|null",
+        "webhookRef": "string|null",
+        "countryScope": "array|null",
+        "projectScope": "array|null",
+        "retryPolicy": "object",
+        "updatedAt": "timestamp",
+        "updatedBy": "uid"
+      }
+    },
+    "automationRuns": {
+      "path": "tenants/{tenantId}/automationRuns/{runId}",
+      "purpose": "Bitácora persistente de cada disparo o prueba.",
+      "fields": {
+        "tenantId": "string",
+        "runId": "string",
+        "ruleId": "string|null",
+        "event": "string",
+        "mode": "test|simulation|real",
+        "status": "queued|sent|ok|failed|skipped|retrying",
+        "payloadVersion": "string",
+        "payloadSanitized": "object",
+        "responseCode": "number|null",
+        "responseSummary": "string|null",
+        "error": "string|null",
+        "projectId": "string|null",
+        "visitId": "string|null",
+        "shopperId": "string|null",
+        "createdAt": "timestamp",
+        "createdBy": "uid|null"
+      }
+    },
+    "aiConfig": {
+      "path": "tenants/{tenantId}/config/ai",
+      "purpose": "Proveedor IA elegido por tenant sin exponer secreto en frontend.",
+      "fields": {
+        "tenantId": "string",
+        "provider": "gemini|openai|anthropic|custom|null",
+        "model": "string|null",
+        "active": "boolean",
+        "secretRef": "string|null",
+        "endpointPublic": "string|null",
+        "usagePolicy": "object",
+        "updatedAt": "timestamp",
+        "updatedBy": "uid"
+      }
+    },
+    "configAuditLogs": {
+      "path": "tenants/{tenantId}/configAuditLogs/{auditId}",
+      "purpose": "Auditoría de cambios de configuración, integraciones y automatizaciones.",
+      "fields": {
+        "tenantId": "string",
+        "auditId": "string",
+        "area": "tenant|project|integration|automation|ai|security",
+        "entityPath": "string",
+        "action": "create|update|delete|test|activate|deactivate|revoke",
+        "beforeSanitized": "object|null",
+        "afterSanitized": "object|null",
+        "createdAt": "timestamp",
+        "createdBy": "uid",
+        "countryScope": "array|null",
+        "projectId": "string|null"
+      }
+    }
+  },
+  "writeGates": [
+    "rulesDrafted",
+    "frontendAdapterMapped",
+    "secretsStrategyDefined",
+    "auditRequired",
+    "devOnlyAuthorization"
+  ]
+}

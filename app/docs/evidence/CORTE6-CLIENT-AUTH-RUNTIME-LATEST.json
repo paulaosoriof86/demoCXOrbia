@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "cxorbia.c6.client-auth-browser-smoke.v1",
+  "generatedAt": "2026-08-02T15:47:58.946Z",
+  "decision": "PASS_C6_CLIENT_AUTH_EXISTING_CREDENTIAL_RUNTIME",
+  "authenticated": true,
+  "existingCredentialSelected": true,
+  "role": "cliente",
+  "namespace": "staff",
+  "tenantId": "tya",
+  "projectIds": [
+    "cinepolis"
+  ],
+  "periods": 14,
+  "visits": 616,
+  "firstPeriod": "2025-06",
+  "latestPeriod": "2026-07",
+  "projectId": "cinepolis",
+  "periodId": "cinepolis-2026-07",
+  "reloadsStable": true,
+  "newTabStable": true,
+  "authWrites": 0,
+  "passwordChanges": 0,
+  "passwordResets": 0,
+  "credentialsExposed": false,
+  "tokensExposed": false,
+  "hostingDeploys": 0,
+  "providerWrites": 0,
+  "merge": false,
+  "production": false
+}

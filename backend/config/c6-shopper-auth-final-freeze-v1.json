@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "cxorbia.c6.shopper-auth-final-freeze.v1",
+  "generatedAt": "2026-08-06T13:52:00-06:00",
+  "authorizationId": "chat-20260806-c6-auth-smoke-final-source-only-01",
+  "authorizedBy": "Paula",
+  "authorizationSource": "current_conversation",
+  "mode": "SOURCE_ONLY_CRYPTOGRAPHIC_PLAN_FREEZE",
+  "sourceHead": "df65bb45629588b7906b957551108a3a5c71b763",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "target": {
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "firebaseProjectId": "cxorbia-backend-dev",
+    "productionStrategy": "PROMOTE_EXISTING_CLEAN_PROJECT",
+    "promotionAuthorizationId": "chat-20260806-promote-existing-clean-project-v1",
+    "acceptCurrentIdentifiersAndUrlAsProduction": true
+  },
+  "planFreeze": {
+    "rows": 340,
+    "uniqueRows": 340,
+    "operationCounts": {
+      "CREATE_AUTH": 81,
+      "UPDATE_AUTH": 46,
+      "NO_OP": 73,
+      "HOLD": 0,
+      "PRESERVE_NO_AUTH": 140
+    },
+    "subchangeCounts": {
+      "email": 39,
+      "password": 14,
+      "claims": 38
+    },
+    "planDigestSha256": "6060f406a33d4ba926c982871513f8e86ba2b10f44c2da00ab43bd2a409f721b",
+    "sourceArtifact": {
+      "providerRunId": 31104541809,
+      "artifactId": 8968941587,
+      "artifactDigest": "sha256:02e36c355b3f2d1c9d1e6f1be7fece93259251ddb0f981cdaac35f2262fcb264"
+    },
+    "sourcePlanDigestBeforeSkip": "acc93da842d1a5d3244327680f88539f0651cb101bae09dd231fd8b5008bea92",
+    "freezeMethod": "DIGEST_PLUS_SOURCE_ARTIFACT_LINEAGE",
+    "rawRowsCopiedToRepository": false,
+    "containsPii": false,
+    "immutable": true,
+    "executable": false,
+    "executionRequiresSeparateAuthorization": true
+  },
+  "skip13": {
+    "policy": "SKIP_AUTH_REPAIR_PRESERVE_HISTORY",
+    "count": 13,
+    "profileFingerprints": [
+      "cc941934f90032aa48e8",
+      "9ed0cdabf3794b7ccf21",
+      "3451d618b5d6307b87da",
+      "80d716626b85e14778ea",
+      "8aea97650e97902f7616",
+      "32e2de62067ab6ecfb7b",
+      "b31bdc0c7514acbe25ba",
+      "4a59de15805804cbe398",
+      "cfbd0c519e59f40c6239",
+      "540c9e6b71440b393365",
+      "c01e0f344901f03e78d2",
+      "729eb0480d5ec2266a20",
+      "7cc28c78de9bfda01d14"
+    ],
+    "preserveHistoricalProfile": true,
+    "doNotCreateAuth": true,
+    "doNotUpdateAuth": true,
+    "doNotDeleteAuthByThisPlan": true,
+    "futureManualReactivationAllowed": true
+  },
+  "accessValidation": {
+    "mode": "SOURCE_ONLY_FAIL_CLOSED",
+    "surnameResidualProfiles": 12,
+    "surnameResidualFinding": "NO_SOURCE_SAFE_LOGIN_EMITTED",
+    "multiAuthResidualProfiles": 1,
+    "multiAuthFinding": "AT_LEAST_TWO_ENABLED_EMAIL_VERIFIED_AUTH_CANDIDATES_TIED_TO_SHOPPER_ID",
+    "unplannedEffectiveAccessProvenAbsent": false,
+    "blockingFingerprint": "7cc28c78de9bfda01d14",
+    "decision": "HOLD_SKIPPED_IDENTITY_EFFECTIVE_ACCESS_NOT_PROVEN_ABSENT",
+    "requiredNextEvidence": "ONE_READ_ONLY_AUTH_MEMBERSHIP_AND_CLAIMS_ADJUDICATION_FOR_SKIPPED_SET_ONLY"
+  },
+  "idempotency": {
+    "keyAlgorithm": "sha256(sourceHead|planDigest|promotionAuthorizationId|authorizationId)",
+    "key": "d3b2cbade967281a42b77fbdb2a6e87801e92c45223ef361003fafdf081148f6",
+    "duplicateExecutionForbidden": true,
+    "runMarkerRequired": true,
+    "planDigestMustMatchAtExecution": true,
+    "sourceHeadMustBeDescendantOrExplicitlyRebased": true
+  },
+  "linkedManifests": {
+    "snapshotRollback": "backend/config/c6-shopper-auth-snapshot-rollback-manifest-v1.json",
+    "smokeMatrix": "backend/config/c6-accumulative-multirole-smoke-matrix-v1.json",
+    "prewriteGate": "tools/qa/cxorbia-c6-auth-smoke-final-preparation-source-only.mjs"
+  },
+  "safeState": {
+    "providerReads": 0,
+    "providerWrites": 0,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "merge": false,
+    "production": false
+  }
+}

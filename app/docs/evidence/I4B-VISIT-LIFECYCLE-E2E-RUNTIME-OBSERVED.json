@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "cxorbia.i4b.visit-lifecycle-e2e.evidence.v1",
+  "generatedAt": "2026-08-19T18:21:31.356Z",
+  "gateId": "NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE__SYNTHETIC_VISIT_ONLY",
+  "requestId": "cxorbia-i4b-single-dev-visit-lifecycle-e2e-20260819-01",
+  "workflowRunId": 32286832002,
+  "workflowCommitSha": "220cc26b547c41d19a0017bd9a40fda2f2a8addd",
+  "sourceHeadSha": "96988840f74afc6de6b46666cbed897b30118c56",
+  "decision": "HOLD_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE__provider_is_not_defined",
+  "fixture": {
+    "visitIdFingerprint": "d37f8212b1861e73b190",
+    "applicationIdFingerprint": "f8487fcc8576e69e5f3f",
+    "synthetic": true,
+    "nonHr": true
+  },
+  "actors": {
+    "shopperIdFingerprint": "c6a1e3ec7435a91157d4",
+    "shopperUidFingerprint": "e8d2d8f7a3210af412b4",
+    "operatorUidFingerprint": "a814780b7fb32afe00a1"
+  },
+  "checks": {
+    "syntheticVisitRemoved": true,
+    "syntheticApplicationRemoved": true,
+    "realVisitsUnchanged": true,
+    "realPostulationsUnchanged": true
+  },
+  "steps": [],
+  "safety": {
+    "syntheticVisitOnly": true,
+    "realHrVisitMutation": false,
+    "historicalShopperAccess": false,
+    "authCreates": 0,
+    "authClaimsWrites": 0,
+    "authPasswordUpdates": 0,
+    "authPasswordResets": 0,
+    "authDeletes": 0,
+    "otherIdentitiesModified": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "merge": false,
+    "production": false
+  },
+  "counters": {
+    "providerCommandCalls": 1,
+    "providerCommittedCalls": 0,
+    "idempotentReplayChecks": 0,
+    "versionConflictChecks": 0,
+    "syntheticFixtureCreates": 1,
+    "syntheticFixtureDeletes": 1,
+    "providerWritesReported": 0,
+    "auditDocsObserved": 0,
+    "receiptDocsObserved": 0
+  },
+  "errors": [
+    "provider is not defined"
+  ],
+  "collector": {
+    "collectedAt": "2026-08-19T18:24:09.902Z",
+    "providerWorkflowRunId": 32286832002,
+    "providerWorkflowStatus": "completed",
+    "providerWorkflowConclusion": "failure",
+    "providerWorkflowHeadSha": "220cc26b547c41d19a0017bd9a40fda2f2a8addd",
+    "artifactId": 9377953415,
+    "artifactDigest": "sha256:4454bd22f9dd8f0539420fd7f581ab14767f7a530a17bcb5c62241d183dd092a",
+    "artifactName": "cxorbia-i4b-single-dev-visit-lifecycle-e2e-evidence"
+  }
+}

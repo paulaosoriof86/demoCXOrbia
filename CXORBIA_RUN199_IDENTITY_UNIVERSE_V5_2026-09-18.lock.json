@@ -1,0 +1,11 @@
+{
+  "lockId": "CXORBIA-RUN199-IDENTITY-UNIVERSE-V5-20260918",
+  "status": "FROZEN",
+  "runId": "35373176355",
+  "artifactId": "10559880718",
+  "artifactDigest": "sha256:22d5e8944c220f806d0df67116f7261d8d08c56e904e2d79639b253d1a36c7b5",
+  "diagnosticFile": "identity-universe-diagnostic.json",
+  "diagnosticSha256": "b5d5b023d1ce696b0c13ce6439d40b842dee38e9257aa602721b5072fcc1f709",
+  "sourceRevision": "807030afae2439942198013a69c390cd856619cfc7bb383b7b1e95c88c65cd7e",
+  "productionTouched": false
+}

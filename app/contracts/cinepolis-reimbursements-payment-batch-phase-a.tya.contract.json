@@ -1,0 +1,135 @@
+{
+  "contract": "cinepolis-reimbursements-payment-batch-phase-a-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "projectSpecific": "cinepolis",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "paymentProviderAllowed": false,
+  "hrWriteAllowed": false,
+  "purpose": "Define Cinepolis-specific reimbursement mapping from HR Boleto and Combo columns, payment batch item selection, individual movement ledger entries and historic payment reconciliation without executing real payments.",
+  "sourceReferences": {
+    "hrColumns": ["Boleto", "Combo"],
+    "historicalSourceFilesOrSheets": [
+      "Fuentes hojas TyA y liquidaciones",
+      "Liquidaciones mayo",
+      "Pagos hechos en mayo",
+      "Pagos hechos en julio"
+    ],
+    "notes": "These are source names described by Paula. This contract does not ingest or store raw files."
+  },
+  "collections": {
+    "paymentBatches": "tenants/{tenantId}/projects/{projectId}/paymentBatches/{batchId}",
+    "paymentBatchItems": "tenants/{tenantId}/projects/{projectId}/paymentBatches/{batchId}/items/{paymentItemId}",
+    "financialMovements": "tenants/{tenantId}/projects/{projectId}/financialMovements/{movementId}",
+    "shopperBenefits": "tenants/{tenantId}/shoppers/{shopperId}/benefits/{benefitId}",
+    "sourcePaymentRefs": "tenants/{tenantId}/projects/{projectId}/sourcePaymentRefs/{sourcePaymentRefId}",
+    "auditEvents": "tenants/{tenantId}/financialAuditEvents/{eventId}"
+  },
+  "stableKeys": [
+    "tenantId",
+    "projectId",
+    "visitId",
+    "hrRowId",
+    "assignmentId",
+    "shopperId",
+    "batchId",
+    "paymentItemId",
+    "movementId",
+    "sourcePaymentRefId",
+    "country",
+    "currency",
+    "periodId",
+    "quincena",
+    "boletoAmount",
+    "comboAmount",
+    "honorariumAmount",
+    "reimbursementTotal",
+    "paymentStatus",
+    "movementStatus",
+    "sourceLockRef"
+  ],
+  "cinepolisReimbursementFields": {
+    "boleto": {
+      "hrColumnLabel": "Boleto",
+      "amountField": "boletoAmount",
+      "type": "reimbursement_ticket",
+      "canBeZero": true
+    },
+    "combo": {
+      "hrColumnLabel": "Combo",
+      "amountField": "comboAmount",
+      "type": "reimbursement_combo",
+      "canBeZero": true
+    },
+    "totalRule": "reimbursementTotal = boletoAmount + comboAmount unless project/country rule overrides with audit note"
+  },
+  "batchRules": [
+    "Admin must be able to select which eligible payment items are included in a batch.",
+    "A batch can include selected shoppers/visits only, not automatically every eligible item.",
+    "Each selected item must keep shopperId, visitId/hrRowId, honorarium, boleto, combo, reimbursementTotal, currency and status.",
+    "A batch can be prepared, reviewed, approved, paid, closed or reopened according to policy.",
+    "Batch payment does not collapse individual movements. Individual movement entries must remain visible and traceable.",
+    "Historical payments from May and July sources must reconcile against items to avoid duplicate payment.",
+    "Payment item can belong to one active paid batch only. Reversals/adjustments require explicit movement entries."
+  ],
+  "movementRules": [
+    "Every paid item must create or map to an individual financial movement.",
+    "Movement must show batchId and paymentItemId.",
+    "Movement must show what it paid: honorarium, boleto, combo and total.",
+    "Movement must show source: batch payment, historical import, manual adjustment or reversal.",
+    "Movement must preserve paidAt/manualPaidAt, paidBy/manualPaidBy and auditTrail when runtime is authorized.",
+    "Shopper-facing movement view must not expose bank details or internal audit notes."
+  ],
+  "historicalReconciliationRules": [
+    "Historical payment records from May and July must be imported/mapped as paid movements or source payment refs before new batch closure.",
+    "Do not duplicate paid items already present in historical sources.",
+    "If historical source lacks stable visitId/hrRowId, route to manual review rather than visual matching only.",
+    "Use tenantId, projectId, shopperId, periodId, hrRowId/visitId, amount and sourceRef for reconciliation candidates."
+  ],
+  "paymentItemStatuses": [
+    "eligible_not_selected",
+    "selected_for_batch",
+    "in_batch_review",
+    "approved_in_batch",
+    "paid_in_batch",
+    "paid_historical_import",
+    "held_conflict",
+    "held_missing_data",
+    "manual_review_required",
+    "cancelled",
+    "reversed_or_adjusted"
+  ],
+  "movementStatuses": [
+    "draft_preview",
+    "pending_batch_payment",
+    "paid_manual_confirmed",
+    "paid_historical_confirmed",
+    "reconciled",
+    "conflict_review_required",
+    "reversed_or_adjusted"
+  ],
+  "academyImpact": {
+    "roles": ["admin", "ops", "shopper", "super", "consultant_partner"],
+    "manualsToUpdate": ["Cinepolis reimbursements", "Payment batches", "Individual payment movements", "Historical reconciliation", "Shopper benefits"],
+    "coursesToUpdate": ["Admin payment batches", "Ops payment reconciliation", "Shopper benefits", "Financial audit basics"],
+    "newLessons": [
+      "How Boleto and Combo reimbursements work",
+      "How to select items into a payment batch",
+      "Why individual movements remain visible after batch payment",
+      "How historical May/July payments are reconciled",
+      "How shoppers see benefits without bank data"
+    ]
+  },
+  "hardStops": [
+    "Do not execute real payments from this contract.",
+    "Do not write Firestore from this contract.",
+    "Do not write HR from this contract.",
+    "Do not import raw source files from this contract.",
+    "Do not duplicate historical May/July paid items.",
+    "Do not expose bank data in shopper-visible movements."
+  ]
+}

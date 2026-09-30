@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "cxorbia.c6.finance-root-fix-source-only.v1",
+  "generatedAt": "2026-08-02T16:40:00-06:00",
+  "decision": "PASS_C6_FINANCE_ROOT_FIX_SOURCE_ONLY",
+  "inputHead": "026d39f1cab14e2005e97f0945917dd26c67945c",
+  "runtimeFixCommit": "d5566acdc7f291f40117bb8ee5324b3f35511b3c",
+  "gateCommit": "eb9f79060763aa1445e7e8a582630bcfe744d9bb",
+  "rootCause": "PROJECT_FINANCIAL_CONFIGURATION_METADATA_NOT_MATERIALIZED_IN_CANONICAL_PROJECTS_BEFORE_NORMALIZATION",
+  "fix": {
+    "file": "app/adapters/tya-project-financial-model-contract-v1.js",
+    "blobSha": "333f5fd204cba2c53eefe8f98acb27a4502da166",
+    "resolution": "exact tenantId + projectId technical registry",
+    "materializationOrder": "materializeAll before normalizeAll",
+    "events": [
+      "script_load",
+      "cx:live-source-updated",
+      "cx:protected-auth-hr-authority-ready",
+      "backend-ready",
+      "project"
+    ],
+    "displayNameMatching": false,
+    "valuesInvented": false,
+    "cinepolis": {
+      "technicalKey": "tya::cinepolis",
+      "model": "delegado",
+      "billingModel": "delegated_coordination",
+      "localBilling": false,
+      "royaltyApplicable": false,
+      "royalty": 0,
+      "honorarium": {
+        "GT": 60,
+        "HN": 200
+      },
+      "compensationModel": "coordination_commission_shared",
+      "splitRule": "project_configuration"
+    }
+  },
+  "gate": {
+    "file": "tools/qa/tya-c6-finance-root-fix-gate.mjs",
+    "syntax": "PASS",
+    "static": "PASS",
+    "localRuntimeSmoke": "PASS",
+    "decision": "PASS_C6_FINANCE_ROOT_FIX_SOURCE_ONLY_GATE",
+    "checks": [
+      "materialization before normalizeAll",
+      "exact tenant/project registry",
+      "technical project resolution",
+      "no display-name classification",
+      "delegated Cinépolis contract",
+      "pre-normalization event bindings",
+      "existing runtime consumer preserved",
+      "read-only no provider write",
+      "script-load canonical single truth",
+      "live-source event canonical single truth",
+      "protected-authority event canonical single truth",
+      "period/project/finance output consistency",
+      "materialization diagnostics",
+      "normalizer contract"
+    ]
+  },
+  "localSmoke": {
+    "periods": 2,
+    "inputState": "directo/local_invoicing/royalty_10",
+    "outputState": "delegado/delegated_coordination/royalty_0",
+    "scriptLoad": "PASS",
+    "liveSourceEvent": "PASS",
+    "protectedAuthorityEvent": "PASS",
+    "periodProjectFinanceSingleTruth": "PASS"
+  },
+  "safety": {
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "rulesDeploys": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "makeWrites": 0,
+    "geminiCalls": 0,
+    "paymentsWrites": 0,
+    "credentialsExposed": false,
+    "tokensExposed": false,
+    "merge": false,
+    "production": false
+  },
+  "nextGate": "FRESH_SINGLE_HOSTING_DEV_DEPLOY_THEN_REMOTE_PARITY_HR_STAFF_SHOPPER_CLIENT_DOMAIN_FINANCE_PORTALS_RESERVATIONS"
+}

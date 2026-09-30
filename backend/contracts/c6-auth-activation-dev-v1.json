@@ -1,0 +1,118 @@
+{
+  "schemaVersion": "cxorbia.c6.auth-activation-dev.contract.v1",
+  "generatedAt": "2026-08-07T13:23:00-06:00",
+  "target": {
+    "firebaseProjectId": "cxorbia-backend-dev",
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "branch": "docs-tya-v6-v71-audit",
+    "pullRequest": 7
+  },
+  "finalPlan": {
+    "path": ".tmp/c6-auth-activation-dev-source/final-plan.json",
+    "rows": 340,
+    "uniqueRows": 340,
+    "operationCounts": {
+      "CREATE_AUTH": 81,
+      "UPDATE_AUTH": 46,
+      "NO_OP": 81,
+      "HOLD": 0,
+      "PRESERVE_NO_AUTH": 132
+    },
+    "subchangeCounts": {
+      "email": 39,
+      "password": 14,
+      "claims": 38
+    },
+    "rowsDigestSha256": "68e26a5217957333d256f2cb547faf3e1eef74e2c789bfd85454d42dfd472dc3",
+    "sourcePlanDigestBeforeSkip": "acc93da842d1a5d3244327680f88539f0651cb101bae09dd231fd8b5008bea92",
+    "priorFreezeDigest": "6060f406a33d4ba926c982871513f8e86ba2b10f44c2da00ab43bd2a409f721b"
+  },
+  "tenantAdjudication": {
+    "profileFingerprint": "7cc28c78de9bfda01d14",
+    "keeperCandidateFingerprint": "4e6d26551d11db444bd0",
+    "retireAccessCandidateFingerprint": "9b2b7ca1bd72c1301d29",
+    "retirementAction": "DISABLE_ONLY_NO_DELETE"
+  },
+  "prewrite": {
+    "required": true,
+    "checks": [
+      "FINAL_PLAN_DIGEST_EXACT",
+      "CURRENT_PROFILE_SET_340_EXACT",
+      "CREDENTIAL_CROSSWALK_101_8_EXACT",
+      "TARGET_LOGIN_FINGERPRINTS_RECONSTRUCT_EXACT",
+      "CREATE_TARGETS_HAVE_NO_AUTH_OR_EMAIL_COLLISION",
+      "UPDATE_TARGETS_HAVE_ONE_EXACT_AUTH_CANDIDATE",
+      "UPDATE_CHANGE_FLAGS_MATCH_CURRENT_PROVIDER",
+      "NO_OP_TARGETS_REMAIN_NO_OP",
+      "SKIP7_PRESERVE_CANDIDATES_EXACT",
+      "MULTI_AUTH_PAIR_EXACT",
+      "PASSWORD_HASH_AND_SALT_PRESENT_FOR_ALL_14_PASSWORD_CHANGES",
+      "PROJECT_HASH_CONFIG_READABLE",
+      "ENCRYPTED_SNAPSHOT_WRITTEN_BEFORE_FIRST_AUTH_WRITE"
+    ],
+    "passwordRollbackHardStop": true,
+    "snapshotEncryption": "AES-256-GCM_HKDF_SHA256_FROM_EXISTING_DEV_SERVICE_ACCOUNT_PRIVATE_KEY_RANDOM_SALT",
+    "snapshotRepositoryForbidden": true,
+    "expectedAuthUsersBefore": 110
+  },
+  "writes": {
+    "authCreatesMaximum": 81,
+    "authUpdatesMaximum": 46,
+    "duplicateDisableMaximum": 1,
+    "deleteExistingAuth": false,
+    "membershipWrites": 0,
+    "firestoreWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "cloudBuilds": 0,
+    "cloudRunDeploys": 0,
+    "hostingDeploys": 0,
+    "writeOrder": [
+      "CREATE_AUTH",
+      "UPDATE_AUTH",
+      "DISABLE_DUPLICATE_AUTH"
+    ],
+    "idempotency": "ONE_REQUEST_ONLY_COMMIT_PLUS_GITHUB_STATUS_CLAIM_PLUS_PREWRITE_DRIFT_GATE"
+  },
+  "readback": {
+    "required": true,
+    "expectedAuthNetIncrease": 81,
+    "checks": [
+      "ALL_81_CREATED_AUTH_PRESENT",
+      "ALL_46_UPDATE_TARGETS_MATCH",
+      "ALL_EXPECTED_CLAIMS_MATCH",
+      "ALL_81_CREATED_PASSWORDS_SIGN_IN",
+      "ALL_14_CHANGED_PASSWORDS_SIGN_IN",
+      "KEEPER_ACTIVE",
+      "DUPLICATE_DISABLED",
+      "NO_UNEXPECTED_TARGET_COLLISIONS"
+    ],
+    "expectedAuthUsersAfter": 191
+  },
+  "rollbackDryRun": {
+    "required": true,
+    "existingSnapshotsEncrypted": true,
+    "createdUidJournalEncrypted": true,
+    "passwordRestoreEntriesExpected": 14,
+    "realRollbackAuthorized": false
+  },
+  "prohibited": {
+    "hrWrites": true,
+    "visitsWrites": true,
+    "certificationsWrites": true,
+    "liquidationsWrites": true,
+    "rulesWrites": true,
+    "storageWrites": true,
+    "hostingDeploy": true,
+    "cloudRunDeploy": true,
+    "cloudBuild": true,
+    "make": true,
+    "gemini": true,
+    "payments": true,
+    "merge": true,
+    "production": true
+  },
+  "freezeManifest": "backend/config/c6-shopper-auth-final-freeze-v2.json"
+}

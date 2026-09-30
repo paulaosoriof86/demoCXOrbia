@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "phase-a-canonical-materialization-dry-run-r16-v1",
+  "purpose": "Compare the canonical TyA source-safe materialization plan against the existing CXOrbia Firebase DEV project and classify create, update, noop and review actions without writes.",
+  "target": {
+    "firebaseProjectId": "cxorbia-backend-dev",
+    "expectedServiceAccountEmailSuffix": "@cxorbia-backend-dev.iam.gserviceaccount.com",
+    "tenantId": "tya",
+    "projectId": "cinepolis"
+  },
+  "authorization": {
+    "confirmation": "CANONICAL_MATERIALIZATION_DRY_RUN_R16",
+    "providerReads": true,
+    "writes": false,
+    "deletes": false,
+    "imports": false,
+    "deploy": false,
+    "production": false
+  },
+  "allowedActions": ["create", "update", "noop", "review"],
+  "forbiddenActions": ["delete", "overwrite_without_precondition", "merge_by_name", "infer_paid", "infer_certification"],
+  "domains": ["tenant", "project", "hrImport", "period", "shopper", "visit", "liquidation"],
+  "blockedDomains": ["payment", "paymentLot", "financeMovement", "certification", "outbox", "providerLog"],
+  "stableKeys": {
+    "tenant": ["tenantId"],
+    "project": ["tenantId", "projectId"],
+    "period": ["tenantId", "projectId", "periodId"],
+    "shopper": ["tenantId", "shopperId"],
+    "visit": ["tenantId", "projectId", "visitId", "hrRowId"],
+    "liquidation": ["tenantId", "projectId", "liquidationId", "visitId", "paymentItemId"]
+  },
+  "conflictFields": {
+    "all": ["tenantId", "production", "imported"],
+    "project": ["projectId"],
+    "period": ["projectId", "periodId"],
+    "shopper": ["shopperId"],
+    "visit": ["projectId", "visitId", "hrRowId", "shopperId"],
+    "liquidation": ["projectId", "liquidationId", "visitId", "hrRowId", "shopperId", "paymentItemId"]
+  },
+  "batching": {
+    "maxPlannedWritesPerBatch": 400,
+    "reviewExcludedFromWrites": true,
+    "noopExcludedFromWrites": true,
+    "deterministicOrder": true
+  },
+  "reviewQueues": {
+    "shopperGapSource": "backend/config/phase-a-shopper-source-snapshot-gap-review-r11d.source-safe.json",
+    "financialSource": "backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json",
+    "certificationSource": "backend/config/phase-a-liquidation-certification-projection-summary.source-safe.json",
+    "noNameMatching": true,
+    "noAutomaticMerge": true
+  },
+  "report": {
+    "persistRawProviderResponses": false,
+    "persistDocumentFields": false,
+    "persistUserIdentifiers": false,
+    "persistCredentials": false,
+    "persistSourceSafeOperationIds": true,
+    "persistPathHashOnly": true
+  },
+  "decisions": {
+    "passWithReview": "PASS_WITH_REVIEW_CANONICAL_MATERIALIZATION_DRY_RUN_R16",
+    "reviewRequired": "REVIEW_REQUIRED_CANONICAL_MATERIALIZATION_DRY_RUN_R16",
+    "hardStop": "HARD_STOP_CANONICAL_MATERIALIZATION_DRY_RUN_R16"
+  },
+  "safeState": {
+    "dryRun": true,
+    "providerReads": true,
+    "writes": false,
+    "deletes": false,
+    "imported": false,
+    "deploy": false,
+    "production": false,
+    "paymentsExecuted": false
+  }
+}

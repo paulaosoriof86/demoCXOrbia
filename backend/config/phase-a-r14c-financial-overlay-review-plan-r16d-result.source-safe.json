@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "1.0.0",
+  "reportId": "phase-a-r14c-financial-overlay-review-plan-r16d-result",
+  "generatedAt": "2026-07-13T19:09:37Z",
+  "decision": "PASS_R14C_FINANCIAL_OVERLAY_REVIEW_PLAN_R16D",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "plan": {
+    "planId": "r16d_f471a6b486f3a269b0dd",
+    "planSha256": "46833c745e3de6e45483ee8eed14ecd6753b4c703938eb780d5c4d4a78545ff2",
+    "baseOperations": 1415,
+    "operations": 1415,
+    "batches": 4
+  },
+  "domains": {
+    "tenant": 1,
+    "project": 1,
+    "hrImport": 1,
+    "period": 14,
+    "shopper": 210,
+    "visit": 616,
+    "liquidationControl": 572
+  },
+  "financial": {
+    "sourceRows": 247,
+    "exactOverlays": 196,
+    "pendingControlRecords": 376,
+    "reviewRows": 51,
+    "ledgerEvidenceRows": 37,
+    "controlledSourceReviewItems": 4,
+    "reviewQueue": 92,
+    "paymentConfirmedOrInferred": 0
+  },
+  "reviewQueues": {
+    "financial": 92,
+    "shopperItems": 1,
+    "shopperGap": 3,
+    "certificationItems": 1,
+    "certificationCandidateShoppers": 213,
+    "certificationSourceRecords": 0
+  },
+  "hardStops": [],
+  "readiness": {
+    "sourceAligned": true,
+    "providerComparisonCompleted": false,
+    "providerComparisonBlocker": "RESOURCE_EXHAUSTED_FIRESTORE_QUOTA",
+    "materializationAuthorizationEligible": false,
+    "nextBlock": "R16E_PROVIDER_COMPARISON_AFTER_QUOTA_RESET"
+  },
+  "evidence": {
+    "workflowRunId": 29277365933,
+    "artifactDigest": "sha256:4a5cb1689454f4477b92f382b550b85c96e7be79de07fb1f14355c7fbf4683b8"
+  },
+  "safeState": {
+    "providerCalls": false,
+    "writes": false,
+    "deletes": false,
+    "imports": false,
+    "deploy": false,
+    "production": false,
+    "paymentsExecuted": false,
+    "piiIncluded": false
+  }
+}

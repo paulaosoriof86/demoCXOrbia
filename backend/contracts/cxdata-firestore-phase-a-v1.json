@@ -1,0 +1,113 @@
+{
+  "contractId": "cxdata-firestore-phase-a-v1",
+  "status": "draft_safe_not_connected",
+  "generatedAt": "2026-07-08",
+  "purpose": "Define the future backend contract for replacing localStorage CX.data with a clean Firestore backend without changing module calls.",
+  "goldenRule": "Keep the same CX.data interface. Do not patch UI modules from backend. Do not connect old databases.",
+  "safeState": {
+    "connectedToFrontend": false,
+    "writesEnabled": false,
+    "importsEnabled": false,
+    "providersEnabled": false,
+    "containsSensitiveData": false
+  },
+  "identityKeys": [
+    "tenantId",
+    "projectId",
+    "entityType",
+    "entityId"
+  ],
+  "syncKeys": [
+    "tenantId",
+    "projectId",
+    "visitId",
+    "hrRowId",
+    "shopperId",
+    "assignmentSource",
+    "assignmentSyncStatus",
+    "lastSyncedAt"
+  ],
+  "collections": {
+    "tenants": {
+      "path": "tenants/{tenantId}",
+      "phaseA": true,
+      "notes": "Tenant configuration root. No raw secrets."
+    },
+    "projects": {
+      "path": "tenants/{tenantId}/projects/{projectId}",
+      "phaseA": true,
+      "notes": "Project configuration for country, currency, HR source ref, questionnaire routing, docs, rules, certification, scheduling, payments and integrations."
+    },
+    "visits": {
+      "path": "tenants/{tenantId}/projects/{projectId}/visits/{visitId}",
+      "phaseA": true,
+      "stableKeys": ["visitId", "hrRowId", "tenantId", "projectId"],
+      "notes": "Visit state and HR derived status. No visual dedupe."
+    },
+    "assignments": {
+      "path": "tenants/{tenantId}/projects/{projectId}/assignments/{assignmentId}",
+      "phaseA": true,
+      "stableKeys": ["visitId", "hrRowId", "shopperId", "assignmentSource", "assignmentSyncStatus", "lastSyncedAt"],
+      "notes": "Source-aware assignment control for platform to HR and HR to platform sync."
+    },
+    "shoppers": {
+      "path": "tenants/{tenantId}/shoppers/{shopperId}",
+      "phaseA": true,
+      "sensitivePolicy": "No raw DPI, bank data, NDA files or private documents in public docs/repo. Store only sanitized operational profile here. Sensitive data needs protected policy or separate encrypted mechanism."
+    },
+    "applications": {
+      "path": "tenants/{tenantId}/projects/{projectId}/applications/{applicationId}",
+      "phaseA": true,
+      "notes": "Postulaciones and reprogramming workflow."
+    },
+    "certifications": {
+      "path": "tenants/{tenantId}/projects/{projectId}/certifications/{certificationId}",
+      "phaseA": true,
+      "notes": "Preserve already presented certifications. Question banks can be generated with Gemini only under human review gate."
+    },
+    "liquidations": {
+      "path": "tenants/{tenantId}/projects/{projectId}/liquidations/{liquidationId}",
+      "phaseA": true,
+      "notes": "Payment state for June and later. No real payment execution from preview."
+    },
+    "hrImports": {
+      "path": "tenants/{tenantId}/projects/{projectId}/hrImports/{importId}",
+      "phaseA": true,
+      "notes": "Historical import control, sanitized and source-safe."
+    },
+    "conflictReviews": {
+      "path": "tenants/{tenantId}/projects/{projectId}/conflictReviews/{conflictId}",
+      "phaseA": true,
+      "notes": "Conflicts are routed to human review; never silently overwritten."
+    },
+    "outbox": {
+      "path": "tenants/{tenantId}/outbox/{messageId}",
+      "phaseA": true,
+      "notes": "Prepared messages only until Make/Outlook/WhatsApp provider gates are enabled."
+    },
+    "auditLog": {
+      "path": "tenants/{tenantId}/auditLog/{auditId}",
+      "phaseA": true,
+      "notes": "Administrative and migration audit trail."
+    }
+  },
+  "cxDataInterface": {
+    "mustRemainStable": true,
+    "minimumMethods": [
+      "get",
+      "set",
+      "remove",
+      "list",
+      "upsert",
+      "seed",
+      "export"
+    ],
+    "migrationStrategy": "Introduce backend adapter behind the existing CX.data facade only after gates pass. Modules keep calling CX.data as today."
+  },
+  "gates": {
+    "devReadOnly": "Allowed after config and rules review. Reads only.",
+    "devWrites": "Blocked until explicit approval and rollback plan.",
+    "stagingImport": "Blocked until sanitized candidate and conflict review pass.",
+    "productionCutover": "Blocked until Paula explicit GO, smoke, rollback and no NO_GO critical."
+  }
+}

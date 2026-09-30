@@ -1,0 +1,117 @@
+name: CXOrbia Recovery I3 Gate 21 Artifact Fingerprint
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+  actions: read
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  CERTIFICATION_ARTIFACT_NAME: cxorbia-recovery-i3-single-source-certification-${{ github.run_id }}
+  LIVE_FIXTURE_ARTIFACT_NAME: cxorbia-recovery-i3-live-fixtures-v2-${{ github.run_id }}
+  OUT_DIR: .gate21
+
+jobs:
+  gate21-same-artifact-integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.CERTIFICATION_ARTIFACT_NAME }}
+          path: .gate21/certification
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.LIVE_FIXTURE_ARTIFACT_NAME }}
+          path: .gate21/live-fixtures
+
+      - name: Derive release identity only from same-run manifest
+        run: |
+          set -Eeuo pipefail
+          CERT="$OUT_DIR/certification"; MAN="$CERT/i3-certification-manifest.json"
+          test -f "$MAN"; test -f "$CERT/result.json"; cmp "$MAN" "$CERT/result.json"
+          test "$(jq -r '.decision' "$MAN")" = "PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21"
+          SOURCE_SHA="$(jq -r '.i3CertificationSourceSha' "$MAN")"; SOURCE_TREE="$(jq -r '.i3CertificationSourceTree' "$MAN")"; CONTROL_HEAD="$(jq -r '.controlHeadSha' "$MAN")"
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]; [[ "$SOURCE_TREE" =~ ^[0-9a-f]{40}$ ]]; [[ "$CONTROL_HEAD" =~ ^[0-9a-f]{40}$ ]]
+          test "$CONTROL_HEAD" = "$(git rev-parse HEAD)"
+          test "$(git rev-parse "$SOURCE_SHA^{tree}")" = "$SOURCE_TREE"
+          git merge-base --is-ancestor "$SOURCE_SHA" HEAD
+          git diff --quiet "$SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          echo "I3_CERTIFICATION_SOURCE_SHA=$SOURCE_SHA" >> "$GITHUB_ENV"
+          echo "I3_CERTIFICATION_SOURCE_TREE=$SOURCE_TREE" >> "$GITHUB_ENV"
+
+      - name: Verify immutable certified artifact Gate20 Module Truth and DEV receipts
+        run: |
+          set -Eeuo pipefail
+          CERT="$OUT_DIR/certification"; MAN="$CERT/result.json"
+          for f in cxorbia-i3-certified-source.tar cxorbia-i3-certified-source.tar.sha256 gate20/gate20-browser-visual.json gate20-semantic-shopper.json module-truth-matrix.json full-human-acceptance/human-live-acceptance.json full-human-acceptance/i3-functional-probes.json canonical-route-inventory.json hr-current-live.json hr-current-live-meta.json firestore-live-parity.json runtime-revision.json hosting-live-channel.json atomic-p0-source-contract.json; do test -f "$CERT/$f"; done
+
+          ART="$(sha256sum "$CERT/cxorbia-i3-certified-source.tar"|awk '{print $1}')"; test "$ART" = "$(jq -r '.artifactSha256' "$MAN")"; test "$ART" = "$(awk '{print $1}' "$CERT/cxorbia-i3-certified-source.tar.sha256")"
+          test "$(jq -r '.buildCount' "$MAN")" = "1"; test "$(jq -r '.runtimeBuilds' "$MAN")" = "0"; test "$(jq -r '.runtimeDeploys' "$MAN")" = "0"; test "$(jq -r '.hostingDeploys' "$MAN")" = "0"; test "$(jq -r '.rulesDeploys' "$MAN")" = "0"; test "$(jq -r '.rebuildAfterCertification' "$MAN")" = "false"; test "$(jq -r '.production' "$MAN")" = "false"
+
+          test "$(jq -r '.terminalClosure.decision' "$CERT/module-truth-matrix.json")" = "PASS_C3_TERMINAL_MODULE_TRUTH_20_20"
+          test "$(jq -r '.phaseAComplete' "$CERT/module-truth-matrix.json")" = "true"
+          test "$(jq -r '.allModulesMatch' "$CERT/module-truth-matrix.json")" = "true"
+          test "$(jq '.modules|length' "$CERT/module-truth-matrix.json")" = "20"
+          test "$(jq '[.modules[]|select(.classification!="MATCH")]|length' "$CERT/module-truth-matrix.json")" = "0"
+          test "$(sha256sum "$CERT/module-truth-matrix.json"|awk '{print $1}')" = "$(jq -r '.moduleTruthEvidenceSha256' "$MAN")"
+
+          test "$(jq -r '.decision' "$CERT/gate20/gate20-browser-visual.json")" = "PASS_GATE20_FOCAL_VISUAL_DRIFT"
+          test "$(jq -r '.sourceSha' "$CERT/gate20/gate20-browser-visual.json")" = "$I3_CERTIFICATION_SOURCE_SHA"
+          test "$(sha256sum "$CERT/gate20/gate20-browser-visual.json"|awk '{print $1}')" = "$(jq -r '.gate20.evidenceSha256' "$MAN")"
+          test "$(jq -r '.decision' "$CERT/gate20-semantic-shopper.json")" = "PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY"
+          test "$(jq -r '.sourceSha' "$CERT/gate20-semantic-shopper.json")" = "$I3_CERTIFICATION_SOURCE_SHA"
+          test "$(sha256sum "$CERT/gate20-semantic-shopper.json"|awk '{print $1}')" = "$(jq -r '.gate20Semantic.evidenceSha256' "$MAN")"
+
+          test "$(jq -r '.decision' "$CERT/full-human-acceptance/human-live-acceptance.json")" = "PASS_I3_HUMAN_LIVE_ACCEPTANCE"
+          test "$(jq -r '.decision' "$CERT/full-human-acceptance/i3-functional-probes.json")" = "PASS_I3_ATOMIC_FUNCTIONAL_PROBES"
+          test "$(jq -r '.sourceRevision' "$CERT/full-human-acceptance/human-live-acceptance.json")" = "$(jq -r '.certificationHrRevision' "$MAN")"
+          test "$(sha256sum "$CERT/full-human-acceptance/human-live-acceptance.json"|awk '{print $1}')" = "$(jq -r '.fullHumanAcceptance.evidenceSha256' "$MAN")"
+          test "$(sha256sum "$CERT/full-human-acceptance/i3-functional-probes.json"|awk '{print $1}')" = "$(jq -r '.fullHumanAcceptance.functionalProbesSha256' "$MAN")"
+          test "$(sha256sum "$CERT/canonical-route-inventory.json"|awk '{print $1}')" = "$(jq -r '.fullHumanAcceptance.routeInventorySha256' "$MAN")"
+          test "$(jq -r '.routeInventory.expectedRoleRouteEntries' "$CERT/full-human-acceptance/human-live-acceptance.json")" = "56"
+
+          test "$(sha256sum "$CERT/hr-current-live.json"|awk '{print $1}')" = "$(jq -r '.certificationHrEvidenceSha256' "$MAN")"
+          test "$(sha256sum "$CERT/hr-current-live-meta.json"|awk '{print $1}')" = "$(jq -r '.certificationHrMetaSha256' "$MAN")"
+          test "$(sha256sum "$CERT/firestore-live-parity.json"|awk '{print $1}')" = "$(jq -r '.firestoreParityEvidenceSha256' "$MAN")"
+          test "$(sha256sum "$CERT/runtime-revision.json"|awk '{print $1}')" = "$(jq -r '.runtimeEvidenceSha256' "$MAN")"
+          test "$(sha256sum "$CERT/hosting-live-channel.json"|awk '{print $1}')" = "$(jq -r '.hostingEvidenceSha256' "$MAN")"
+          test "$(jq -r '.decision' "$CERT/firestore-live-parity.json")" = "PASS_TERMINAL_FIRESTORE_RULES_EXACT"
+          test "$(jq -r '.metadata.name' "$CERT/runtime-revision.json")" = "$(jq -r '.devRuntimeRevision' "$MAN")"
+          test "$(jq -r '.status.imageDigest | split("@")[-1]' "$CERT/runtime-revision.json")" = "$(jq -r '.runtimeImageDigest' "$MAN")"
+          test "$(jq -r '.release.version.name' "$CERT/hosting-live-channel.json")" = "$(jq -r '.hostingVersionName' "$MAN")"
+
+      - name: Verify same-run live fixtures
+        run: |
+          set -Eeuo pipefail
+          LIVE="$OUT_DIR/live-fixtures/i3-live-fixtures-result.json"; test -f "$LIVE"
+          test "$(jq -r '.decision' "$LIVE")" = "PASS_I3_LIVE_FIXTURES_V2"
+          test "$(jq -r '.cleanup.ok' "$LIVE")" = "true"
+          test "$(jq '[.tests[]|select(.ok==true)]|length' "$LIVE")" = "10"
+          test "$(jq -r '.buildCountThisRun' "$LIVE")" = "0"
+          test "$(jq -r '.deployCountThisRun' "$LIVE")" = "0"
+          test "$(jq -r '.production' "$LIVE")" = "false"
+          LIVE_SHA="$(sha256sum "$LIVE"|awk '{print $1}')"; echo "$LIVE_SHA" > "$OUT_DIR/live-fixtures.sha256"
+
+      - name: Seal Gate21 manifest from same artifact only
+        run: |
+          set -Eeuo pipefail
+          CERT="$OUT_DIR/certification"; MAN="$CERT/result.json"; LIVE="$OUT_DIR/live-fixtures/i3-live-fixtures-result.json"
+          ART="$(jq -r '.artifactSha256' "$MAN")"; G20="$(jq -r '.gate20.evidenceSha256' "$MAN")"; SEM20="$(jq -r '.gate20Semantic.evidenceSha256' "$MAN")"; MOD="$(jq -r '.moduleTruthEvidenceSha256' "$MAN")"; LIVE_SHA="$(cat "$OUT_DIR/live-fixtures.sha256")"
+          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg tree "$I3_CERTIFICATION_SOURCE_TREE" --arg control "$(jq -r '.controlHeadSha' "$MAN")" --arg run "$GITHUB_RUN_ID" --arg artifact "$ART" --arg gate20 "$G20" --arg semantic20 "$SEM20" --arg module "$MOD" --arg liveSha "$LIVE_SHA" --arg certHr "$(jq -r '.certificationHrRevision' "$MAN")" --arg liveHr "$(jq -r '.liveFixtureHrRevision // .hrRevision // empty' "$LIVE")" --arg runtime "$(jq -r '.devRuntimeRevision' "$MAN")" --arg digest "$(jq -r '.runtimeImageDigest' "$MAN")" --arg hosting "$(jq -r '.hostingVersionName' "$MAN")" '{schemaVersion:"cxorbia.recovery.i3.gate21.same-artifact.v2",gate:21,verdict:"PASS_GATE21_ARTIFACT_FINGERPRINT",production:false,source:{sha:$source,treeSha:$tree,controlHeadSha:$control},certification:{runId:$run,artifactSha256:$artifact,buildCount:1,rebuildAfterCertification:false},gate20:{visualEvidenceSha256:$gate20,semanticEvidenceSha256:$semantic20},moduleTruth:{evidenceSha256:$module,moduleCount:20,allModulesMatch:true},liveFixtures:{decision:"PASS_I3_LIVE_FIXTURES_V2",evidenceSha256:$liveSha,passed:10,cleanup:true,builds:0,deploys:0,hrRevision:$liveHr},hrAuthority:{certificationRevision:$certHr,liveFixtureRevision:$liveHr,crossRunRevisionEqualityRequired:false,sameRevisionWithinEachProof:true},runtime:{revision:$runtime,digest:$digest},hosting:{version:$hosting},promotion:{exactCertifiedArtifactRequired:true,noRebuild:true,noRecomposition:true,productionAuthorizationRequired:true},writes:{hostingDeploys:0,runtimeDeploys:0,rulesDeploys:0,production:false}}' > "$OUT_DIR/GATE21_RELEASE_MANIFEST.json"
+          sha256sum "$OUT_DIR/GATE21_RELEASE_MANIFEST.json" > "$OUT_DIR/GATE21_RELEASE_MANIFEST.sha256"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-recovery-i3-gate21-${{ github.run_id }}
+          path: .gate21/
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+          include-hidden-files: true

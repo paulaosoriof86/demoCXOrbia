@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm081.codex-handoff-lock.v1",
+  "date": "2026-09-27",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "state": "HOLD_VRM081_CODEX_FOCAL_EXECUTION_REQUIRED",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "diagnosticRun": {
+    "runId": 36352872025,
+    "runNumber": 532,
+    "conclusion": "success",
+    "artifactId": 10943305504,
+    "artifactDigest": "sha256:a37db670a4785218ce5333a31ab5df910cd93cc25993e7b592b545d95fabcd5e"
+  },
+  "certifiedProductBeforeFix": {
+    "sourceSha": "77b29e303c825be586a97e159d4d65bfae7e66c8",
+    "tree": "279f33d6ad734ac7da9e5764dd05c91cab8882aa"
+  },
+  "p0": {
+    "id": "VRM-081",
+    "classification": "AUTH_FAILURE",
+    "proven": true,
+    "primaryOwner": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+    "testOwner": "backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs"
+  },
+  "frozenScope": {
+    "allowedProductFiles": [
+      "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+      "backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs"
+    ],
+    "noNewBranch": true,
+    "noNewCandidate": true,
+    "noNewWorkflow": true,
+    "noGeneralAudit": true,
+    "noProduction": true,
+    "noHrWrites": true,
+    "noFuzzyMatching": true,
+    "noNameBasedMerge": true
+  },
+  "codexTask": {
+    "path": "app/docs/CODEX-EXECUTION-TASK-I3-VRM081-20260927.md",
+    "commit": "db236d491710e26b1eca845b6e51683039b207d8"
+  },
+  "nextAction": "Execute the frozen Codex task on the existing Recovery branch; return HEAD_BEFORE, HEAD_AFTER, exact diff and tests; then Recovery performs DEV population reproof.",
+  "authorization": {
+    "codexFocalI3": "already_allowed_by_plan_for_P0_PROVEN",
+    "production": false
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "contract": "liquidations-phase-a-tya",
+  "date": "2026-07-06",
+  "status": "draft_contract_no_runtime",
+  "phase": "Phase A",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "realDataAllowed": false,
+  "purpose": "Define liquidation control by tenant, project, visit, shopper and period.",
+  "identity": {
+    "tenantId": "required",
+    "projectId": "required",
+    "periodId": "required",
+    "visitId": "required",
+    "shopperId": "required",
+    "hrRowId": "optional"
+  },
+  "sourceChecks": {
+    "visitCompleted": "boolean",
+    "questionnaireCompleted": "boolean",
+    "submittedToClient": "boolean"
+  },
+  "liquidationStatus": ["not_ready", "ready_for_review", "approved", "adjustment_required", "blocked"],
+  "settlementStatus": ["not_scheduled", "scheduled", "confirmed", "reprogrammed", "held"],
+  "notes": ["Contract only. No runtime operation."]
+}

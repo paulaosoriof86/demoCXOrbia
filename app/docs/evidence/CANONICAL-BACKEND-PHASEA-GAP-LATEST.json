@@ -1,0 +1,117 @@
+{
+  "schemaVersion": "cxorbia.canonical-backend-phasea-gap.v1",
+  "generatedAt": "2026-07-29T23:19:42.490Z",
+  "sourceInventoryGeneratedAt": "2026-07-29T23:16:35.864Z",
+  "projectId": "cxorbia-backend-dev",
+  "readOnly": true,
+  "providerWrites": 0,
+  "sourceLockExpectation": {
+    "periodRange": "2025-06..2026-07",
+    "periods": 14,
+    "countryRowsPerPeriod": {
+      "GT": 34,
+      "HN": 10,
+      "total": 44
+    },
+    "expectedFullHistoryVisits": 616
+  },
+  "observed": {
+    "authUsers": 17,
+    "shoppers": 215,
+    "projects": 29,
+    "totalVisits": 619,
+    "canonicalExpectedProjects": 28,
+    "canonicalProjectsFound": 26,
+    "canonicalFoundVisits": 574,
+    "canonicalExpectedForFound": 572,
+    "nonCanonicalProjects": 3,
+    "nonCanonicalVisits": 45,
+    "certificationCollections": 0,
+    "shoppersWithCertificationLikeFields": 0
+  },
+  "missingProjects": [
+    {
+      "id": "cinepolis-julio-26",
+      "periodKey": "2026-07",
+      "country": "GT",
+      "visits": 34
+    },
+    {
+      "id": "cinepolis-julio-26-hn",
+      "periodKey": "2026-07",
+      "country": "HN",
+      "visits": 10
+    }
+  ],
+  "countMismatches": [
+    {
+      "id": "cinepolis-abril-26",
+      "periodKey": "2026-04",
+      "country": "GT",
+      "expectedVisits": 34,
+      "observedVisits": 35,
+      "delta": 1
+    },
+    {
+      "id": "cinepolis-junio-26-hn",
+      "periodKey": "2026-06",
+      "country": "HN",
+      "expectedVisits": 10,
+      "observedVisits": 11,
+      "delta": 1
+    }
+  ],
+  "nonCanonicalProjects": [
+    {
+      "id": "julio-pilot",
+      "status": "dev-active",
+      "visits": 1,
+      "questionnaires": 0,
+      "liquidations": 0,
+      "postulations": 0,
+      "applications": 1,
+      "periods": 1,
+      "certifications": 0
+    },
+    {
+      "id": "r1",
+      "status": "real-dev",
+      "visits": 36,
+      "questionnaires": 0,
+      "liquidations": 0,
+      "postulations": 0,
+      "applications": 0,
+      "periods": 0,
+      "certifications": 0
+    },
+    {
+      "id": "tya-piloto",
+      "status": "dev",
+      "visits": 8,
+      "questionnaires": 1,
+      "liquidations": 0,
+      "postulations": 3,
+      "applications": 0,
+      "periods": 0,
+      "certifications": 0
+    }
+  ],
+  "implications": {
+    "missingExpectedVisits": 44,
+    "netCanonicalOverageOnFound": 2,
+    "canonicalVisitsAfterResolvingOveragesAndAddingMissing": 616,
+    "legacyCertificationRefreshRequired": true,
+    "legacyShopperRefreshMustDiffAgainstExisting": 215
+  },
+  "decision": "PASS_GAP_RECONCILED_INCREMENTAL_PHASEA_REQUIRED",
+  "safety": {
+    "documentWrites": 0,
+    "authWrites": 0,
+    "storageWrites": 0,
+    "rulesWrites": 0,
+    "hostingDeploys": 0,
+    "production": false,
+    "merge": false,
+    "sensitiveValuesExported": false
+  }
+}

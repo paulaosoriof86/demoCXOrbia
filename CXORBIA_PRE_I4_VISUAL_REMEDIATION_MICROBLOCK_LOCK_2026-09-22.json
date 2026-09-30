@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "cxorbia.pre-i4.visual-remediation-microblock-lock.v1",
+  "frozenAt": "2026-09-22T12:05:00-06:00",
+  "iteration": "I3_PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
+  "state": "HOLD_PRE_I4_VISUAL_REMEDIATION_MICROBLOCK_ACTIVE",
+  "production": "DO_NOT_TOUCH",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "headBeforeFreeze": "b500c6e161ec3dec96948aeea01abc748cd090b9",
+  "freezeCommit": "5184e524972d162cbd5d7d69e4b89ad0656c057e",
+  "focalSuccessorSource": "83429d21ee9f6d9dc5cd46fcbb9a3b598e07dcc4",
+  "priorHumanArtifactSha256": "0174cd95e8b7e4d92f39843b65bdcc78929101a3e8108784211a0673ff7638fc",
+  "method": {
+    "newStructuralIteration": false,
+    "newCandidate": false,
+    "newBranch": false,
+    "newPlan": false,
+    "microblock": true,
+    "singleCumulativePackage": true,
+    "singleManifest": true,
+    "singleArtifactSuccessor": true,
+    "productionDeployAuthorized": false
+  },
+  "findingIds": [
+    "VRM-001","VRM-002","VRM-003","VRM-004","VRM-005","VRM-006","VRM-007","VRM-008",
+    "VRM-009","VRM-010","VRM-011","VRM-012","VRM-013","VRM-014","VRM-015","VRM-016",
+    "VRM-017","VRM-018","VRM-019","VRM-020","VRM-021","VRM-022","VRM-023","VRM-024"
+  ],
+  "findingDefaultState": "OPEN_UNTIL_EVIDENCE",
+  "allowedTerminalStates": ["FIXED_PROVEN","ALREADY_PROVEN_NO_DRIFT","NOT_APPLICABLE_WITH_EVIDENCE"],
+  "executionOrder": [
+    "CONTEXT_CONTRACT_FIX",
+    "READ_MODEL_RECONCILIATION",
+    "DURABILITY_AND_RESOURCES",
+    "HUMAN_UI_CLEANUP",
+    "FOCAL_PROOF"
+  ],
+  "liveHrReference": {
+    "periodKey": "2026-09",
+    "total": 44,
+    "GT": {"total":34,"available":6,"assigned":28,"scheduled":21,"realized":16,"questionnaire":16,"submitted":9,"liquidationCandidate":9,"liquidationConfirmed":0,"paymentConfirmed":0},
+    "HN": {"total":10,"available":3,"assigned":7,"scheduled":7,"realized":6,"questionnaire":6,"submitted":6,"liquidationCandidate":6,"liquidationConfirmed":0,"paymentConfirmed":0}
+  },
+  "financialReference": {
+    "GT": {"realizedVisits":16,"honorarium":960,"knownReimbursements":2390,"operationalTotal":3350,"currency":"GTQ"},
+    "HN": {"realizedVisits":6,"honorarium":1200,"knownReimbursements":1778,"operationalTotalKnown":2978,"currency":"HNL","partial":true,"reason":"one realized HN visit has incomplete reimbursement source"},
+    "liquidationsConfirmed": 0,
+    "paymentsConfirmed": 0
+  },
+  "invariants": [
+    "No finding may disappear between runs.",
+    "Every run must emit findingId, owner, state, evidenceRef for all VRM IDs.",
+    "No localStorage or browser-memory state is accepted as operational truth.",
+    "Do not reopen already proven identity/auth/membership without reproducible drift.",
+    "Do not rebuild or recompose globally; fix exact proven owners only.",
+    "Do not touch tya-plataforma.web.app before I4 and explicit authorization.",
+    "The next human candidate is emitted only after every VRM finding reaches an allowed terminal state."
+  ],
+  "nextExactAction": "Execute CONTEXT_CONTRACT_FIX for VRM-001/002/004/006/021 on the single candidate, then update the full findings ledger with readback evidence before moving to read-model reconciliation."
+}

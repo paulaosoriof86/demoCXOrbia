@@ -1,0 +1,192 @@
+{
+  "contract": "crm-external-folder-refs-preview-phase-a-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "storageWritesAllowed": false,
+  "externalProviderReadAllowed": false,
+  "externalProviderWriteAllowed": false,
+  "oauthAllowed": false,
+  "makeWriteAllowed": false,
+  "importRealDataAllowed": false,
+  "dependsOn": [
+    "sensitive-data-policy-phase-a-tya",
+    "email-user-mailbox-preview-phase-a-tya",
+    "notification-outbox-preview-phase-a-tya"
+  ],
+  "purpose": "Define source-safe preview validation for CRM entities linked to external folder references without opening providers, reading documents, writing providers, storing raw private links or processing document contents.",
+  "sourceSafety": {
+    "requiresSyntheticOrSanitizedInput": true,
+    "forbidsRawSensitiveData": true,
+    "requiredInputMetadata": [
+      "sourceSafe=true",
+      "containsRawSensitiveData=false",
+      "isSyntheticOrSanitized=true"
+    ],
+    "rawDocumentContentAllowed": false,
+    "rawPrivateLinksAllowed": false,
+    "providerTokensAllowed": false,
+    "manualReviewForAmbiguousFolderMapping": true
+  },
+  "stableKeys": [
+    "tenantId",
+    "projectId",
+    "crmEntityId",
+    "crmEntityType",
+    "crmStageId",
+    "crmPipelineId",
+    "externalFolderRefId",
+    "externalProviderType",
+    "externalFolderRef",
+    "externalLinkRef",
+    "documentCollectionRef",
+    "relatedEntityType",
+    "relatedEntityRef",
+    "ownerUserId",
+    "ownerRole",
+    "visibilityScope",
+    "accessPolicyId",
+    "accessStatus",
+    "reviewStatus",
+    "sourceSafeRef",
+    "createdAt",
+    "updatedAt"
+  ],
+  "crmEntityTypes": [
+    "project",
+    "shopper",
+    "client",
+    "visit",
+    "postulation",
+    "assignment",
+    "liquidation",
+    "payment_batch",
+    "academy_item",
+    "support_case",
+    "provider_case",
+    "manual_reference"
+  ],
+  "externalProviderTypes": [
+    "onedrive_business_ref",
+    "sharepoint_ref",
+    "google_drive_ref",
+    "dropbox_business_ref",
+    "generic_external_ref",
+    "local_placeholder_ref",
+    "provider_pending_configuration",
+    "manual_reference_only"
+  ],
+  "visibilityScopes": [
+    "tenant_admin_only",
+    "tenant_ops",
+    "project_admin_ops",
+    "finance_restricted",
+    "shopper_own_only",
+    "client_read_only_summary",
+    "superadmin_only",
+    "manual_review_required"
+  ],
+  "accessStatuses": [
+    "not_configured",
+    "ref_preview_only",
+    "provider_pending_configuration",
+    "permission_review_required",
+    "access_granted_future",
+    "access_revoked",
+    "blocked_private_link",
+    "blocked_sensitive_content",
+    "manual_review_required"
+  ],
+  "previewInputShape": {
+    "sourceSafe": true,
+    "containsRawSensitiveData": false,
+    "isSyntheticOrSanitized": true,
+    "crmEntities": [],
+    "externalFolderRefs": []
+  },
+  "requiredCrmEntityFields": [
+    "tenantId",
+    "projectId",
+    "crmEntityId",
+    "crmEntityType",
+    "displayLabelRef",
+    "ownerRole",
+    "visibilityScope",
+    "reviewStatus"
+  ],
+  "requiredExternalFolderRefFields": [
+    "tenantId",
+    "projectId",
+    "externalFolderRefId",
+    "crmEntityId",
+    "crmEntityType",
+    "externalProviderType",
+    "externalFolderRef",
+    "visibilityScope",
+    "accessStatus"
+  ],
+  "folderRefRules": [
+    "External folder references are opaque references in Phase A preview, not provider URLs to open.",
+    "Do not store signed URLs, share URLs with tokens, raw document URLs, provider secrets, OAuth tokens, folder contents or attachment contents.",
+    "External provider access is future only and requires explicit provider configuration and access policy.",
+    "Folder references must be linked to a stable CRM entity and must not be inferred by visual name matching.",
+    "Finance or shopper-private documents must use restricted visibility and manual review until gates are approved.",
+    "Client read-only summaries must not expose internal audit or private shopper documents.",
+    "One externalFolderRefId may link to one primary crmEntityId unless an explicit relatedEntityRef is provided."
+  ],
+  "crmRules": [
+    "CRM entities must be tenant/project scoped.",
+    "CRM pipeline/stage is metadata only in this preview.",
+    "Creating or linking a CRM entity does not create an external folder or write a provider.",
+    "External document references do not prove document existence until a provider integration is authorized.",
+    "Any ambiguous entity-to-folder mapping returns manual_review_required."
+  ],
+  "previewOutcomes": [
+    "crm_entity_preview_ready",
+    "folder_ref_preview_ready",
+    "provider_configuration_required",
+    "permission_review_required",
+    "blocked_private_link",
+    "blocked_sensitive_content",
+    "manual_review_required",
+    "conflict_review_required"
+  ],
+  "claudePrototypeImpact": [
+    "CRM/document UI must not say folder created, synced or connected while provider gates are off.",
+    "Show states: folder ref preview, provider pending, permission review, blocked private link, manual review.",
+    "Do not expose raw private URLs, signed links, document contents or attachments.",
+    "Link folders to stable CRM entities, not visual names only.",
+    "Academia must explain external folder refs, permissions and provider pending states by role."
+  ],
+  "academyImpact": {
+    "roles": ["super", "admin", "ops", "finance", "shopper", "client", "consultant_partner"],
+    "manualsToUpdate": ["CRM folder references", "External provider pending", "Document privacy", "Permission review", "CRM entity linking", "Provider gates"],
+    "coursesToUpdate": ["Admin CRM setup", "Ops document traceability", "Finance restricted documents", "Shopper private files", "Client read-only documents", "Superadmin provider configuration"],
+    "newLessons": [
+      "Why a folder reference is not a provider connection",
+      "How to link a folder ref to a CRM entity",
+      "Why raw private links are blocked",
+      "How permission review works",
+      "How client summaries differ from internal docs"
+    ],
+    "interactiveChecklists": [
+      "Before linking an external folder",
+      "Before exposing a document reference to a role",
+      "Before marking provider connected",
+      "Before sharing a client read-only summary"
+    ]
+  },
+  "hardStops": [
+    "Do not read external providers from this preview.",
+    "Do not write external providers from this preview.",
+    "Do not connect OAuth from this preview.",
+    "Do not store signed URLs, provider tokens or secrets.",
+    "Do not process raw document contents or attachments.",
+    "Do not mark folder created or synced while gates are off.",
+    "Do not infer folder matching by visual names only."
+  ]
+}

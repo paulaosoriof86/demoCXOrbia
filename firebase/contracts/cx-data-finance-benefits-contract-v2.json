@@ -1,0 +1,52 @@
+{
+  "contractVersion": "cx-data-finance-benefits-contract-v2",
+  "status": "draft-no-frontend-change",
+  "purpose": "Contrato CX.data para beneficios, lotes de pago, movimientos reales y conciliacion.",
+  "methods": {
+    "getMyBenefits": {
+      "mode": "read",
+      "input": { "tenantId": "string", "shopperId": "string", "projectId": "string|null", "periodId": "string|null" },
+      "output": { "items": "array", "totals": "object", "status": "ok|error" },
+      "rule": "Nunca devolver beneficios de otros shoppers. Si shopperId falta, devolver vacio."
+    },
+    "getShopperBenefitsAdmin": {
+      "mode": "read",
+      "input": { "tenantId": "string", "projectId": "string|null", "country": "string|null", "status": "string|null" },
+      "output": { "items": "array", "totals": "object", "status": "ok|error" }
+    },
+    "calculateBenefitsPreview": {
+      "mode": "action-readonly",
+      "input": { "tenantId": "string", "projectId": "string", "source": "hr|manual|import", "options": "object" },
+      "output": { "items": "array", "warnings": "array", "status": "ok|review|error" },
+      "rule": "Solo preview. No escribe."
+    },
+    "createPaymentLot": {
+      "mode": "write-command",
+      "input": { "tenantId": "string", "benefitIds": "array", "country": "string", "scheduledDate": "string|null" },
+      "output": { "ok": "boolean", "paymentLotId": "string|null", "errors": "array" },
+      "uses": "performOperationAction"
+    },
+    "markPaymentLotPaid": {
+      "mode": "write-command",
+      "input": { "tenantId": "string", "paymentLotId": "string", "paidDate": "string", "movementId": "string|null" },
+      "output": { "ok": "boolean", "errors": "array" },
+      "uses": "performOperationAction"
+    },
+    "getFinancialMovements": {
+      "mode": "read",
+      "input": { "tenantId": "string", "country": "string|null", "periodId": "string|null", "status": "string|null" },
+      "output": { "items": "array", "totals": "object", "status": "ok|error" }
+    },
+    "suggestReconciliations": {
+      "mode": "action-readonly",
+      "input": { "tenantId": "string", "country": "string|null", "periodId": "string|null" },
+      "output": { "items": "array", "status": "ok|review|error" },
+      "rule": "Sugerir no es conciliar. Requiere aprobacion humana."
+    }
+  },
+  "frontendGuidance": {
+    "misBeneficios": "Filtrar por shopperId autenticado. Si no hay resultados, mostrar vacio.",
+    "finanzas": "Separar beneficios, lotes, movimientos y conciliaciones.",
+    "reports": "Los reportes deben poder exportar CSV y XLSX real."
+  }
+}

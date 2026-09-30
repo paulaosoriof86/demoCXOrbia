@@ -1,0 +1,100 @@
+{
+  "contractName": "phase-a-adapter-route-map",
+  "version": "1.0.0",
+  "status": "draft_contract_no_runtime_no_writes",
+  "scope": "CX.data adapter route mapping for Phase A",
+  "safety": {
+    "frontendChanges": false,
+    "runtimeConnected": false,
+    "firestoreWrites": false,
+    "deploy": false,
+    "production": false
+  },
+  "requiredContext": ["tenantId", "projectId", "sourceMode"],
+  "sourceModes": ["local", "demo", "backend-dev-preview", "backend-operational-gated", "unavailable"],
+  "routes": {
+    "project": {
+      "type": "read",
+      "target": "tenants/{tenantId}/projects/{projectId}",
+      "fallback": "current_CX_data_project_behavior"
+    },
+    "projects": {
+      "type": "read",
+      "target": "tenants/{tenantId}/projects",
+      "fallback": "current_CX_data_projects_behavior"
+    },
+    "projectsFor": {
+      "type": "read_filtered",
+      "target": "tenants/{tenantId}/projects",
+      "filter": "role_or_user_context",
+      "fallback": "current_CX_data_projectsFor_behavior"
+    },
+    "visitas": {
+      "type": "read",
+      "target": "tenants/{tenantId}/projects/{projectId}/visits",
+      "fallback": "current_CX_data_visitas_behavior"
+    },
+    "posts": {
+      "type": "read",
+      "target": "tenants/{tenantId}/projects/{projectId}/postulations",
+      "fallback": "current_CX_data_posts_behavior"
+    },
+    "shoppers": {
+      "type": "read",
+      "target": "tenants/{tenantId}/shoppers",
+      "fallback": "current_CX_data_shoppers_behavior"
+    },
+    "shoppersFor": {
+      "type": "read_filtered",
+      "target": "tenants/{tenantId}/projects/{projectId}/projectShoppers",
+      "fallback": "current_CX_data_shoppersFor_behavior"
+    },
+    "getShopper": {
+      "type": "read_one",
+      "target": "tenants/{tenantId}/shoppers/{shopperId}",
+      "fallback": "current_CX_data_getShopper_behavior"
+    },
+    "postularVisita": {
+      "type": "write_gated",
+      "target": "tenants/{tenantId}/projects/{projectId}/postulations/{postulationId}",
+      "gate": "postulation_write_gate",
+      "sideEffects": ["visit_postulation_status", "notification_event_optional"]
+    },
+    "assignVisit": {
+      "type": "write_gated",
+      "target": "tenants/{tenantId}/projects/{projectId}/assignments/{assignmentId}",
+      "gate": "assignment_write_gate",
+      "sideEffects": ["visit_availability_status", "make_hr_sync_optional", "sync_event"]
+    },
+    "setProject": {
+      "type": "local_state_or_context",
+      "target": "adapter_context.projectId",
+      "fallback": "current_CX_data_setProject_behavior"
+    },
+    "setVisitState": {
+      "type": "write_gated",
+      "target": "tenants/{tenantId}/projects/{projectId}/visits/{visitId}",
+      "gate": "visit_state_write_gate",
+      "sideEffects": ["workflow_event", "notification_event_optional", "hr_writeback_optional"]
+    },
+    "reviewVisit": {
+      "type": "write_gated_future_method",
+      "target": "tenants/{tenantId}/projects/{projectId}/reviews/{reviewId}",
+      "gate": "review_write_gate",
+      "sideEffects": ["visit_review_status", "hr_review_date_optional", "liquidation_gate_update"]
+    },
+    "liquidationsForShopper": {
+      "type": "read_filtered_future_method",
+      "target": "tenants/{tenantId}/projects/{projectId}/liquidations",
+      "filter": "shopperId",
+      "fallback": "current_or_future_liquidation_visibility"
+    }
+  },
+  "writePolicy": {
+    "default": "blocked_until_gate",
+    "requiresExplicitAuthorization": true,
+    "requiresTenantProjectContext": true,
+    "requiresStableVisitKey": true,
+    "conflictPolicy": "review_not_overwrite"
+  }
+}

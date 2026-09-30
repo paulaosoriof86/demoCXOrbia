@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "cxorbia.c6.canonical-head-source-lock.v1",
+  "generatedAt": "2026-08-05T16:28:24.881Z",
+  "sourceLockHead": "eca4d938e9f09ae446b41355bfaefcbd7e33cf7b",
+  "triggerHead": "dc955da8086e879dc6072b16611065fed7f0a687",
+  "lockedAppTree": "1f9896f5e15009fd5d7ca2cd6a22f129fc6c536b",
+  "currentAppTree": "1f9896f5e15009fd5d7ca2cd6a22f129fc6c536b",
+  "lockedQaTree": "aead24d215551c081c83a5a8ae0730e65b9dfec1",
+  "currentQaTree": "aead24d215551c081c83a5a8ae0730e65b9dfec1",
+  "appFiles": 2401,
+  "appBytes": 17441509,
+  "appManifestSha256": "e927f18c5225768ed822f49ccf300ce47dce7e677a32317b8195a954c723bddd",
+  "criticalQa": [
+    {
+      "path": "tools/qa/tya-c6-unified-cumulative-runtime-gate.mjs",
+      "sha256": "ee905967b151aeef42985913523483c1129261816d175ec6d9fbb74c25d699f2"
+    },
+    {
+      "path": "tools/qa/tya-c6-shopper-new-tab-authority-root-fix-gate.mjs",
+      "sha256": "531dd1ddd884dd6899203dbfb79547329e55b777bc38c7c7496f3a2549260c41"
+    },
+    {
+      "path": "tools/qa/tya-c6-unified-human-auth-browser-smoke.mjs",
+      "sha256": "f8db1163f9e0f058d93f83a36564bf89d5d77cb732642465883b2af68b573634"
+    },
+    {
+      "path": "tools/qa/tya-c6-client-auth-browser-smoke.mjs",
+      "sha256": "5110c5ee040e2802a0311a315a038df190df5332af58938591385380d5d4451c"
+    },
+    {
+      "path": "tools/qa/tya-c6-remote-parity-gate.mjs",
+      "sha256": "63e4de25321729a244707cbef3dd5430d58a7c9c21023f76d08761fef9f3f1c0"
+    },
+    {
+      "path": "tools/qa/tya-c6-remote-finance-model-diagnostic.mjs",
+      "sha256": "8d5b316631e5f1d6588f2c33ee99fae79d04d7e24d331ef18973849990fc53e6"
+    },
+    {
+      "path": "tools/qa/tya-c6-remote-domain-finance-portals-reservations-gate.mjs",
+      "sha256": "67f62d0e8a875b6f26874414a1a54a2f236465ecf4fd3bd9dfee6f1533123db5"
+    },
+    {
+      "path": "tools/qa/cxorbia-c6-existing-users-e2e-envelope-compat.mjs",
+      "sha256": "917dd202cae2265e85e2a4c71a3c139872a0c21a97a9afdb6203a495d6b2667d"
+    },
+    {
+      "path": "tools/qa/cxorbia-c6-client-auth-materialization.mjs",
+      "sha256": "08c0fe89ffc018e949cc2d15613c830d7d5b14955589259d987692422db4d153"
+    }
+  ],
+  "deployConfigPath": "firebase.deploy.json",
+  "deployConfigSha256": "0f31046cfb83bd0d7d6f71cf0be3477191b36142ad09538458b63f4bd630c0f3",
+  "runtimeAndQaExact": true,
+  "hostingDeploysBeforeGate": 0,
+  "providerWrites": 0,
+  "production": false
+}

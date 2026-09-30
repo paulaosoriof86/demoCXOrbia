@@ -1,0 +1,24 @@
+{
+  "contract": "p0-operational-copy-scanner-tya",
+  "date": "2026-07-05",
+  "status": "draft_tool_no_runtime_write",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "storageWritesAllowed": false,
+  "makeWriteAllowed": false,
+  "emailSendAllowed": false,
+  "whatsappSendAllowed": false,
+  "geminiAllowed": false,
+  "importRealDataAllowed": false,
+  "deployAllowed": false,
+  "mergeAllowed": false,
+  "scanTargets": [
+    "app/modules",
+    "app/core"
+  ],
+  "outputFolder": "_diagnosticos/tya-p0-operational-copy-scan",
+  "purpose": "Local scanner that detects P0 operational copy that may imply real sends, syncs, automation, or provider actions before backend activation."
+}

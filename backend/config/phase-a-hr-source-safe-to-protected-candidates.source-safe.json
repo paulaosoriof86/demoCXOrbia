@@ -1,0 +1,59 @@
+{
+  "configId": "phase-a-hr-source-safe-to-protected-candidates-source-safe",
+  "status": "source_safe_dry_run_only",
+  "generatedAt": "2026-07-09",
+  "tenantPolicy": {
+    "mode": "multiTenantReusable",
+    "tenantIdRequired": true,
+    "projectIdRequired": true,
+    "periodRequired": true,
+    "countryRequired": true,
+    "noHardcodedTenantInPrototype": true,
+    "noHardcodedProjectInPrototype": true
+  },
+  "candidateRules": {
+    "shopperPublicRefs": {
+      "enabled": true,
+      "allowedFields": ["tenantId", "shopperRefId", "country", "projectCounts", "periodCounts", "statusBucket", "certificationBucket", "paymentEligibilityBucket", "publicSourceSafe", "updatedAt"]
+    },
+    "shopperIdentityLinkCandidates": {
+      "enabled": true,
+      "requiresReviewWhen": ["missingShopperRefId", "duplicateShopperRefId", "multipleCountries", "sourceAmbiguity", "visitWithoutShopperRef"]
+    },
+    "certificationCarryoverCandidates": {
+      "enabled": true,
+      "source": "sourceSafeCertificationBucketOrHistoricalControl",
+      "requiresReviewWhen": ["ambiguousCertification", "missingProject", "missingPeriod", "conflictingStatus"]
+    },
+    "protectedLiquidationCandidates": {
+      "enabled": true,
+      "source": "sourceSafeVisitAndPaymentBuckets",
+      "requiresReviewWhen": ["missingSubmitState", "duplicateVisitLiquidation", "countryCurrencyMismatch", "paymentBucketAmbiguous"]
+    },
+    "protectedPaymentBatchCandidates": {
+      "enabled": true,
+      "source": "liquidationCandidateGroups",
+      "status": "draft_preview_only"
+    },
+    "reviewQueueCandidates": {
+      "enabled": true,
+      "reviewTypes": ["identity", "certification", "liquidation", "assignment", "period", "source"]
+    },
+    "auditEventCandidates": {
+      "enabled": true,
+      "eventTypes": ["candidateGenerated", "candidateBlocked", "candidateNeedsReview", "sourceSafePayloadRead"]
+    }
+  },
+  "forbiddenValuesPolicy": {
+    "blockExactPersonalData": true,
+    "blockSecrets": true,
+    "blockPrivateUrls": true,
+    "notes": "This config contains no raw shopper data, no HR URL, no workbook and no secrets."
+  },
+  "outputs": {
+    "defaultOutDir": ".tmp/hr-source-safe-protected-candidates",
+    "jsonReport": "protected-candidates-report.json",
+    "markdownReport": "protected-candidates-report.md",
+    "candidatePreviewJson": "protected-candidates-preview.source-safe.json"
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "contract": "login-entry-options-phase-a-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A plus SaaS continuity",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "authRealAllowed": false,
+  "purpose": "Define configurable external login entry buttons/options per tenant, independent from internal module entitlements.",
+  "clarification": "This contract is not about internal module visibility after login. It is specifically about which login entry options appear on the external login screen: admin, shopper, client portal, representative, coordinator, consultant/franchisee, etc.",
+  "paths": {
+    "loginEntrySettings": "tenants/{tenantId}/settings/loginEntryOptions",
+    "tenantAccessModel": "tenants/{tenantId}/settings/accessModel",
+    "tenantProfile": "tenants/{tenantId}/profile/main"
+  },
+  "tenantBusinessTypes": [
+    "consultora",
+    "franquicia",
+    "representante",
+    "coordinador_regional",
+    "coordinador_local",
+    "aliado",
+    "socio",
+    "cliente_final_con_portal",
+    "operador_interno",
+    "custom"
+  ],
+  "loginEntryOptions": [
+    "admin",
+    "superadmin",
+    "ops",
+    "shopper",
+    "client_portal",
+    "consultant",
+    "franchisee",
+    "representative",
+    "regional_coordinator",
+    "local_coordinator",
+    "partner",
+    "support",
+    "custom_role_entry"
+  ],
+  "visibilityStates": [
+    "visible_enabled",
+    "hidden",
+    "visible_preview_sales",
+    "visible_requires_invitation",
+    "visible_disabled_message",
+    "disabled_by_plan"
+  ],
+  "rules": [
+    "External login entry options must be configurable per tenant.",
+    "Hiding a login entry option is a UX/business configuration and must not be treated as the only security layer.",
+    "A tenant may enable regional/local access models without limiting the platform globally.",
+    "Client portal login can be hidden initially or shown as preview sales depending on tenant configuration.",
+    "Shopper login can be hidden for tenants that do not operate shopper recruitment directly.",
+    "Admin/ops/coordinator/representative entries must map to Auth claims and permissions later, but this contract does not activate Auth real.",
+    "No login option should be hard-coded for all tenants."
+  ],
+  "tyaInitialRecommendation": {
+    "visible_enabled": ["admin", "shopper"],
+    "visible_preview_sales": ["client_portal"],
+    "hidden": ["representative", "regional_coordinator", "local_coordinator", "partner", "support"],
+    "notes": "Paula may choose to show only admin and shopper initially for TyA, and optionally client portal as commercial preview. This is external login visibility, not internal module capability."
+  },
+  "academyImpact": {
+    "roles": ["super", "admin", "ops", "shopper", "client", "consultant_partner"],
+    "manualsToUpdate": ["Login configuration", "Tenant access model", "Role entry options", "Tenant business type"],
+    "coursesToUpdate": ["Superadmin tenant setup", "Consultant/franchisee access configuration"],
+    "newLessons": [
+      "Difference between login entry visibility and internal module permissions",
+      "How to configure which roles appear on the login screen",
+      "How to configure regional/local coordinators",
+      "How to use client portal as commercial preview"
+    ]
+  },
+  "hardStops": [
+    "Do not hard-code login entry options globally.",
+    "Do not confuse external login entry visibility with internal module entitlements.",
+    "Do not treat hidden login option as backend security.",
+    "Do not activate Auth real from this contract.",
+    "Do not write Firestore from this contract."
+  ]
+}

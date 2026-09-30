@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "cxorbia.corte6.profile-full-identity-bridge-readonly.v3",
+  "generatedAt": "2026-07-31T14:28:00.026Z",
+  "target": {
+    "projectId": "cxorbia-backend-dev",
+    "tenantId": "tya",
+    "canonicalProjectId": "cinepolis"
+  },
+  "source": {
+    "encryptedV2Bundle": true,
+    "records": 151,
+    "plaintextPersisted": false
+  },
+  "policy": {
+    "primaryIdentity": "legacyShopperId exact",
+    "secondaryTechnicalBridge": "exact unique Firestore document id/sourceKey/shopperId/legacyId/externalId/externalShopperId/sourceId equals legacyShopperId",
+    "tertiaryAuthBridge": "deterministic Auth UID from unique legacy username -> validated shopper custom claim -> existing Firestore shopper doc",
+    "nameMatchAllowed": false,
+    "phoneMatchAllowed": false,
+    "emailMatchAllowed": false,
+    "usernameAloneMatchAllowed": false,
+    "technicalKeyMustBeUnique": true,
+    "authClaimRequired": true,
+    "differentLegacyIdCollisionHold": true,
+    "reusedTargetHold": true
+  },
+  "counts": {
+    "sourceRecords": 151,
+    "legacyExact": 120,
+    "legacyMissing": 31,
+    "legacyAmbiguous": 0,
+    "technicalBridge": {
+      "considered": 31,
+      "uniqueCandidate": 0,
+      "ambiguousCandidate": 0,
+      "targetLegacyCollision": 0,
+      "resolvedExact": 0
+    },
+    "authBridge": {
+      "considered": 31,
+      "sourceUsernameMissing": 2,
+      "sourceUsernameDuplicate": 10,
+      "authUserMissing": 19,
+      "authClaimInvalid": 0,
+      "targetProfileMissing": 0,
+      "targetLegacyCollision": 0,
+      "targetReused": 0,
+      "resolvedExact": 0
+    },
+    "final": {
+      "exactProfiles": 120,
+      "remainingHold": 31,
+      "identityLinksPlanned": 0,
+      "docsWithProfileFieldChanges": 118,
+      "docsWithAnyWrite": 120,
+      "profileFieldValuesPlanned": 329
+    }
+  },
+  "plannedProfileFields": {
+    "name": 0,
+    "username": 113,
+    "password": 118,
+    "phone": 0,
+    "email": 0,
+    "country": 0,
+    "city": 0,
+    "department": 2,
+    "document": 17,
+    "address": 1,
+    "birthDate": 2,
+    "acceptedTerms": 72,
+    "accountApproval": 2,
+    "registrationOrigin": 2
+  },
+  "decision": "READY_FULL_PROFILE_PARTIAL_EXACT_WITH_REMAINING_IDENTITY_HOLD",
+  "safety": {
+    "providerReads": true,
+    "providerWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "rulesDeploys": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "legacyWrites": 0,
+    "production": false,
+    "merge": false,
+    "piiExported": false,
+    "identifierValuesExported": false,
+    "usernameValuesExported": false,
+    "passwordValuesExported": false,
+    "profileValuesExported": false,
+    "secretsExported": false
+  }
+}
