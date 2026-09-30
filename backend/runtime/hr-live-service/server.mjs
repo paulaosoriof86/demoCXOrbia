@@ -53,6 +53,7 @@ let lastShopperReconciliation=null;
 let lastShopperReconciledRevision=null;
 let lastVisitReconciliation=null;
 let lastVisitReconciledRevision=null;
+const durableReconciliationByRevision=new Map();
 
 function runNode(args,env){
   return new Promise((resolve,reject)=>{
@@ -277,6 +278,27 @@ async function reconcileAuthoritativeVisits(current){
   return lastVisitReconciliation;
 }
 
+function scheduleDurableReconciliation(current){
+  const revision=String(current?.revision||'').trim();
+  if(!revision)return Promise.resolve(null);
+  if(lastShopperReconciledRevision===revision&&lastVisitReconciledRevision===revision){
+    return Promise.resolve({shopper:lastShopperReconciliation,visits:lastVisitReconciliation});
+  }
+  const existing=durableReconciliationByRevision.get(revision);
+  if(existing)return existing;
+  let tracked;
+  const task=(async()=>{
+    if(lastShopperReconciledRevision!==revision)await reconcileAuthoritativeShoppers(current);
+    if(lastVisitReconciledRevision!==revision)await reconcileAuthoritativeVisits(current);
+    return {shopper:lastShopperReconciliation,visits:lastVisitReconciliation};
+  })();
+  tracked=task.finally(()=>{
+    if(durableReconciliationByRevision.get(revision)===tracked)durableReconciliationByRevision.delete(revision);
+  });
+  durableReconciliationByRevision.set(revision,tracked);
+  return tracked;
+}
+
 function loadBootstrap(){
   try{
     if(!fs.existsSync(BOOTSTRAP_FILE))return;
@@ -323,13 +345,8 @@ async function refreshSnapshot(){
       lastRefreshError=null;
       lastRefreshFinishedAt=new Date().toISOString();
       lastRefreshDurationMs=Date.now()-started;
-      Promise.resolve().then(async()=>{
-        try{
-          await reconcileAuthoritativeShoppers(next);
-          await reconcileAuthoritativeVisits(next);
-        }catch(error){
-          console.error('CXOrbia durable HR reconciliation failed after fresh read: '+String(error?.message||error));
-        }
+      scheduleDurableReconciliation(next).catch(error=>{
+        console.error('CXOrbia durable HR reconciliation failed after fresh read: '+String(error?.message||error));
       });
       return cache;
     } finally {
