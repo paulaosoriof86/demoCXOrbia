@@ -18,7 +18,7 @@
     "sourceTree": "ccb3d9da3c110e2d5fff57bae0d2d0eb76b3c4b4",
     "predecessorSha": "2cff3441f126d7d805932127bb9de9289ba273ad",
     "production": false,
-    "state": "SOURCE_FIX_REPROOF_REQUIRED"
+    "state": "DEV_LIVE_PROVEN_PENDING_CERT_RES_AND_HUMAN_VISUAL"
   },
   "rootCauseIds": [
     "RC-MONO-01_MULTIPLE_EXECUTABLE_PRODUCT_SOURCE_AUTHORITIES",
@@ -5055,7 +5055,7 @@
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Shopper portal retained obsolete password reveal/copy listeners after credential hardening, causing ReferenceError in the authenticated profile flow",
-      "state": "SOURCE_FIX_REPROOF_REQUIRED",
+      "state": "FIXED_PROVEN_RUN736",
       "exactOwner": "app/adapters/tya-canonical-shopper-portal-v2.js",
       "rootCause": "Credential display variables were removed by password hardening, but the credentialAvailable reveal/copy listener block still referenced passwordValue and obsolete controls. The stale branch executed in the shopper portal and could throw ReferenceError.",
       "remediationContract": "After login, password is never displayed or copied. Remove only the stale reveal/copy branch; preserve the existing authenticated shopper profile, HR-backed history/KPIs, benefits, reports and provider-backed actions.",
@@ -5080,17 +5080,56 @@
           "deletions": 17,
           "files": 1
         },
-        "state": "SOURCE_FIX_REPROOF_REQUIRED",
+        "state": "FIXED_PROVEN_RUN736",
         "production": false
       },
-      "production": false
+      "production": false,
+      "closureEvidence": {
+        "state": "PASS_PREI4_V176_CUMULATIVE_DEV_LIVE",
+        "runId": 36774292695,
+        "runNumber": 736,
+        "artifactId": 11125903962,
+        "artifactDigest": "sha256:1b6653e3ff65abcf39a31cddcf2787bf95fbf8c3e69954a98340273a00769d99",
+        "sourceSha": "c1c4e748b39c5632e8648023433a00c15d57191b",
+        "sourceTree": "ccb3d9da3c110e2d5fff57bae0d2d0eb76b3c4b4",
+        "runtimeRevision": "cxorbia-live-hr-dev-00233-2q8",
+        "runtimeDigest": "sha256:44a66a77e219f1e53c36c7f0adfcf57d48f301cef431de2e56255ee9a453cfab",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/1c95d652b5e57c4a",
+        "hrRevision": "3be75731eff64aa9bb8eb795ea73ae2dad140cb789cbaa15659c67ea02ce33d0",
+        "closedRegression": {
+          "postulations": "PASS_PREI4_ADMIN_002_HOSTING_LIVE",
+          "identity": "PASS_PREI4_ADMIN_003_CUMULATIVE_LIVE",
+          "finance": "PASS_PREI4_ADMIN_004_CUMULATIVE_LIVE",
+          "questionnaire": "PASS_PREI4_CONTENT002_AUTHENTICATED_SHOPPER_PROGRESSIVE_ROUTE",
+          "cumulativeSourceGuard": "PASS_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD"
+        },
+        "reconciliation": {
+          "shopperProviderAck": true,
+          "shopperCount": 222,
+          "reconciledShopperCount": 221,
+          "shopperIdempotentReplays": 221,
+          "visitProviderAck": true,
+          "visitCount": 704,
+          "visitCreated": 0,
+          "visitIdempotentReplays": 704,
+          "conflicts": 0
+        },
+        "builds": 1,
+        "runtimeDeploys": 1,
+        "hostingDeploys": 1,
+        "rulesDeploys": 0,
+        "hrWrites": 0,
+        "bankWrites": 0,
+        "externalPaymentWrites": 0,
+        "production": false
+      }
     },
     "VRM-107": {
       "id": "VRM-107",
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Fresh HR polling could enqueue duplicate durable reconciliation for the same revision and starve visit reconciliation before provider ACK",
-      "state": "SOURCE_FIX_REPROOF_REQUIRED",
+      "state": "FIXED_PROVEN_RUN736",
       "exactOwners": [
         "backend/runtime/hr-live-service/server.mjs",
         "tools/qa/cxorbia-prei4-content001-dev-materialize.sh"
@@ -5117,7 +5156,7 @@
         "owners": [
           "backend/runtime/hr-live-service/server.mjs"
         ],
-        "state": "SOURCE_FIX_REPROOF_REQUIRED",
+        "state": "FIXED_PROVEN_RUN736",
         "production": false
       },
       "run735Evidence": {
@@ -5135,7 +5174,46 @@
         "hrWrites": 0,
         "production": false
       },
-      "production": false
+      "production": false,
+      "closureEvidence": {
+        "state": "PASS_PREI4_V176_CUMULATIVE_DEV_LIVE",
+        "runId": 36774292695,
+        "runNumber": 736,
+        "artifactId": 11125903962,
+        "artifactDigest": "sha256:1b6653e3ff65abcf39a31cddcf2787bf95fbf8c3e69954a98340273a00769d99",
+        "sourceSha": "c1c4e748b39c5632e8648023433a00c15d57191b",
+        "sourceTree": "ccb3d9da3c110e2d5fff57bae0d2d0eb76b3c4b4",
+        "runtimeRevision": "cxorbia-live-hr-dev-00233-2q8",
+        "runtimeDigest": "sha256:44a66a77e219f1e53c36c7f0adfcf57d48f301cef431de2e56255ee9a453cfab",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/1c95d652b5e57c4a",
+        "hrRevision": "3be75731eff64aa9bb8eb795ea73ae2dad140cb789cbaa15659c67ea02ce33d0",
+        "closedRegression": {
+          "postulations": "PASS_PREI4_ADMIN_002_HOSTING_LIVE",
+          "identity": "PASS_PREI4_ADMIN_003_CUMULATIVE_LIVE",
+          "finance": "PASS_PREI4_ADMIN_004_CUMULATIVE_LIVE",
+          "questionnaire": "PASS_PREI4_CONTENT002_AUTHENTICATED_SHOPPER_PROGRESSIVE_ROUTE",
+          "cumulativeSourceGuard": "PASS_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD"
+        },
+        "reconciliation": {
+          "shopperProviderAck": true,
+          "shopperCount": 222,
+          "reconciledShopperCount": 221,
+          "shopperIdempotentReplays": 221,
+          "visitProviderAck": true,
+          "visitCount": 704,
+          "visitCreated": 0,
+          "visitIdempotentReplays": 704,
+          "conflicts": 0
+        },
+        "builds": 1,
+        "runtimeDeploys": 1,
+        "hostingDeploys": 1,
+        "rulesDeploys": 0,
+        "hrWrites": 0,
+        "bankWrites": 0,
+        "externalPaymentWrites": 0,
+        "production": false
+      }
     }
   },
   "latestEvidenceOverrides": {
@@ -5544,7 +5622,13 @@
       "productDefect": false,
       "productSourceChanged": false,
       "production": false
-    }
+    },
+    "VRM-106": "FIXED_PROVEN_RUN736",
+    "VRM-107": "FIXED_PROVEN_RUN736",
+    "PREI4-ADMIN-008": "FIXED_PROVEN_REVALIDATED_RUN736",
+    "PREI4-ADMIN-002": "PASS_PREI4_ADMIN_002_HOSTING_LIVE_RUN736",
+    "PREI4-ADMIN-003": "PASS_PREI4_ADMIN_003_CUMULATIVE_LIVE_RUN736",
+    "PREI4-ADMIN-004": "PASS_PREI4_ADMIN_004_CUMULATIVE_LIVE_RUN736"
   },
   "governance": {
     "findingIdsPresent": [
@@ -5688,7 +5772,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Run existing cumulative source guard and one deterministic DEV materialization for V176 source 40550b009939fa2e2c72d68eb27e05e48d47eca6; require fresh HR visibility, runtime+Hosting readback, regression gates and zero HR/bank/external-payment writes; then perform live Admin+Shopper reproof. Do not touch production.",
+  "exactNextAction": "Diagnose and close only PREI4-CERT-001, PREI4-CERT-002 and PREI4-RES-001 on the same cumulative candidate. Preserve Run736 source/runtime/Hosting evidence, do not reopen closed HR/Postulations/Identity/Finance/Questionnaire findings, do not touch production. After those three P0s pass, resume the frozen human visual acceptance without requiring Paula to repeat the lost Admin screenshot journey.",
   "supersedesGitBlob": "397a9cee8c71d3156567a0cc96bfdcba88bb7c3a",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -6967,22 +7051,21 @@
     "i4AuthorizationRequired": true
   },
   "preI4AdminAudit": {
-    "state": "HOLD",
+    "state": "HOLD_CERT_RES_AND_HUMAN_VISUAL",
     "auditPath": "CXORBIA_PRE_I4_ADMIN_FORENSIC_AUDIT_2026-09-28.json",
     "openFindings": [
-      "PREI4-ADMIN-004",
       "PREI4-ADMIN-005",
       "PREI4-ADMIN-006",
       "PREI4-ADMIN-007"
     ],
     "dashboardSeptember": "REVOKED_STALE_RUNTIME_SNAPSHOT",
     "production": false,
-    "liveHrState": "PASS_CURRENT_AUTHORITY_RUN615",
+    "liveHrState": "PASS_CURRENT_AUTHORITY_RUN736",
     "liveHrDriftLock": "CXORBIA_PRE_I4_LIVE_HR_DRIFT_LOCK_2026-09-28.json",
-    "activeFinding": "PREI4-ADMIN-004"
+    "activeFinding": "PREI4-ADMIN-005"
   },
   "preI4LiveHrIncident": {
-    "state": "FIXED_PROVEN_RUN594",
+    "state": "FIXED_PROVEN_REVALIDATED_RUN736",
     "classification": "MAPPING_FAILURE",
     "lockPath": "CXORBIA_PRE_I4_LIVE_HR_DRIFT_LOCK_2026-09-28.json",
     "staleRevision": "d068b00c62a940f0ad828436ffcf22fbf1dbb43e763ab4e14854102bf5f84a51",
@@ -7029,11 +7112,18 @@
       "production": false
     },
     "freshReceiptPath": "CXORBIA_PRE_I4_ADMIN_008_FRESH_HR_RECEIPT_2026-09-28.json",
-    "freshRevision": "c16c18a89675d5c6daff9421604f978a558bc3bf78cf8e6a2da550820ff95e6a"
+    "freshRevision": "c16c18a89675d5c6daff9421604f978a558bc3bf78cf8e6a2da550820ff95e6a",
+    "latestFreshRevision": "3be75731eff64aa9bb8eb795ea73ae2dad140cb789cbaa15659c67ea02ce33d0",
+    "latestRuntimeRevision": "cxorbia-live-hr-dev-00233-2q8",
+    "latestRuntimeDigest": "sha256:44a66a77e219f1e53c36c7f0adfcf57d48f301cef431de2e56255ee9a453cfab",
+    "latestHostingVersion": "sites/cxorbia-backend-dev/versions/1c95d652b5e57c4a",
+    "shopperProviderAck": true,
+    "visitProviderAck": true,
+    "hrWrites": 0
   },
   "preI4Admin008Fix": {
     "findingId": "PREI4-ADMIN-008",
-    "state": "FIXED_PROVEN_RUN594",
+    "state": "FIXED_PROVEN_REVALIDATED_RUN736",
     "classification": "MAPPING_FAILURE",
     "sourceSha": "5c472e089e6d8492b184a7cb24e78816d347c2de",
     "sourceTree": "8abf63499d3df6ef2a9a8dfa22ca1a080ed67c83",
@@ -7058,7 +7148,11 @@
     "freshRevision": "c16c18a89675d5c6daff9421604f978a558bc3bf78cf8e6a2da550820ff95e6a",
     "runtimeRevision": "cxorbia-live-hr-dev-00227-nwl",
     "runtimeDigest": "sha256:5d4f0504b18be23d1f9f1ef20ff717389d7db3a01f82d898f70873aa3503e31e",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676"
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
+    "latestFreshRevision": "3be75731eff64aa9bb8eb795ea73ae2dad140cb789cbaa15659c67ea02ce33d0",
+    "latestRuntimeRevision": "cxorbia-live-hr-dev-00233-2q8",
+    "latestRuntimeDigest": "sha256:44a66a77e219f1e53c36c7f0adfcf57d48f301cef431de2e56255ee9a453cfab",
+    "latestHostingVersion": "sites/cxorbia-backend-dev/versions/1c95d652b5e57c4a"
   },
   "preI4ClosedFindings": [
     "PREI4-ADMIN-008",
@@ -7068,7 +7162,7 @@
     "PREI4-CONTENT-001",
     "PREI4-CONTENT-002"
   ],
-  "preI4NextAction": "Repeat only the affected canonical DEV gate on successor c1c4e748b39c5632e8648023433a00c15d57191b: cumulative source guard + exact DEV materialization; require single-flight same-revision reconciliation, provider ACK for shoppers and visits via non-refreshing health polling, same HR revision, runtime/Hosting parity, closed regression gates and zero HR/bank/external-payment writes. Do not touch production.",
+  "preI4NextAction": "Diagnose and close only PREI4-CERT-001, PREI4-CERT-002 and PREI4-RES-001 on the same cumulative candidate. Preserve Run736 source/runtime/Hosting evidence, do not reopen closed HR/Postulations/Identity/Finance/Questionnaire findings, do not touch production. After those three P0s pass, resume the frozen human visual acceptance without requiring Paula to repeat the lost Admin screenshot journey.",
   "preI4Admin002": {
     "findingId": "PREI4-ADMIN-002",
     "state": "FIXED_PROVEN_RUN601",
@@ -8367,7 +8461,7 @@
   ],
   "preI4ContentRecovery": {
     "lockPath": "CXORBIA_PRE_I4_CONTENT_ROUTING_CERTIFICATION_RESOURCES_LOCK_2026-09-30.json",
-    "state": "CONTENT_001_002_FIXED_PROVEN_RUN725_HUMAN_VISUAL_REQUIRED",
+    "state": "CONTENT_001_002_FIXED_PROVEN_RUN736_CERT_RES_REMAINING",
     "findings": [
       "PREI4-CONTENT-001",
       "PREI4-CONTENT-002",
@@ -8416,6 +8510,45 @@
       "externalPaymentWrites": 0,
       "bankWrites": 0,
       "hrWrites": 0,
+      "production": false
+    },
+    "run736Proof": {
+      "state": "PASS_PREI4_V176_CUMULATIVE_DEV_LIVE",
+      "runId": 36774292695,
+      "runNumber": 736,
+      "artifactId": 11125903962,
+      "artifactDigest": "sha256:1b6653e3ff65abcf39a31cddcf2787bf95fbf8c3e69954a98340273a00769d99",
+      "sourceSha": "c1c4e748b39c5632e8648023433a00c15d57191b",
+      "sourceTree": "ccb3d9da3c110e2d5fff57bae0d2d0eb76b3c4b4",
+      "runtimeRevision": "cxorbia-live-hr-dev-00233-2q8",
+      "runtimeDigest": "sha256:44a66a77e219f1e53c36c7f0adfcf57d48f301cef431de2e56255ee9a453cfab",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/1c95d652b5e57c4a",
+      "hrRevision": "3be75731eff64aa9bb8eb795ea73ae2dad140cb789cbaa15659c67ea02ce33d0",
+      "closedRegression": {
+        "postulations": "PASS_PREI4_ADMIN_002_HOSTING_LIVE",
+        "identity": "PASS_PREI4_ADMIN_003_CUMULATIVE_LIVE",
+        "finance": "PASS_PREI4_ADMIN_004_CUMULATIVE_LIVE",
+        "questionnaire": "PASS_PREI4_CONTENT002_AUTHENTICATED_SHOPPER_PROGRESSIVE_ROUTE",
+        "cumulativeSourceGuard": "PASS_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD"
+      },
+      "reconciliation": {
+        "shopperProviderAck": true,
+        "shopperCount": 222,
+        "reconciledShopperCount": 221,
+        "shopperIdempotentReplays": 221,
+        "visitProviderAck": true,
+        "visitCount": 704,
+        "visitCreated": 0,
+        "visitIdempotentReplays": 704,
+        "conflicts": 0
+      },
+      "builds": 1,
+      "runtimeDeploys": 1,
+      "hostingDeploys": 1,
+      "rulesDeploys": 0,
+      "hrWrites": 0,
+      "bankWrites": 0,
+      "externalPaymentWrites": 0,
       "production": false
     }
   },
@@ -8720,7 +8853,7 @@
       "shoppers-mi-visitas-profile",
       "visits-review-postulations-reservations"
     ],
-    "state": "SOURCE_FIX_REPROOF_REQUIRED",
+    "state": "DEV_LIVE_PROVEN_PENDING_CERT_RES_AND_HUMAN_VISUAL",
     "production": false
   },
   "latestSourceSuccessor": {
@@ -8747,6 +8880,45 @@
     "firstMaterialFailure": "visitReconciliation.providerAck remained unavailable while same-revision shopper reconciliation was repeatedly re-enqueued by cache-expiring HR meta polls",
     "productSourceChanged": false,
     "hrWrites": 0,
+    "production": false
+  },
+  "run736CumulativeDevLiveClosure": {
+    "state": "PASS_PREI4_V176_CUMULATIVE_DEV_LIVE",
+    "runId": 36774292695,
+    "runNumber": 736,
+    "artifactId": 11125903962,
+    "artifactDigest": "sha256:1b6653e3ff65abcf39a31cddcf2787bf95fbf8c3e69954a98340273a00769d99",
+    "sourceSha": "c1c4e748b39c5632e8648023433a00c15d57191b",
+    "sourceTree": "ccb3d9da3c110e2d5fff57bae0d2d0eb76b3c4b4",
+    "runtimeRevision": "cxorbia-live-hr-dev-00233-2q8",
+    "runtimeDigest": "sha256:44a66a77e219f1e53c36c7f0adfcf57d48f301cef431de2e56255ee9a453cfab",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/1c95d652b5e57c4a",
+    "hrRevision": "3be75731eff64aa9bb8eb795ea73ae2dad140cb789cbaa15659c67ea02ce33d0",
+    "closedRegression": {
+      "postulations": "PASS_PREI4_ADMIN_002_HOSTING_LIVE",
+      "identity": "PASS_PREI4_ADMIN_003_CUMULATIVE_LIVE",
+      "finance": "PASS_PREI4_ADMIN_004_CUMULATIVE_LIVE",
+      "questionnaire": "PASS_PREI4_CONTENT002_AUTHENTICATED_SHOPPER_PROGRESSIVE_ROUTE",
+      "cumulativeSourceGuard": "PASS_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD"
+    },
+    "reconciliation": {
+      "shopperProviderAck": true,
+      "shopperCount": 222,
+      "reconciledShopperCount": 221,
+      "shopperIdempotentReplays": 221,
+      "visitProviderAck": true,
+      "visitCount": 704,
+      "visitCreated": 0,
+      "visitIdempotentReplays": 704,
+      "conflicts": 0
+    },
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "rulesDeploys": 0,
+    "hrWrites": 0,
+    "bankWrites": 0,
+    "externalPaymentWrites": 0,
     "production": false
   }
 }

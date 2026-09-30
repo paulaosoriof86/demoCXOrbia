@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED",
+  "status": "HOLD_PREI4_CERT_RES_REMEDIATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4_HUMAN_VISUAL_REMEDIATION",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-107_SOURCE_REPROOF_REQUIRED",
+  "activeBlocker": "PREI4-CERT-001_PREI4-CERT-002_PREI4-RES-001",
   "nextFindingId": "VRM-108",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Repeat only the affected canonical DEV gate on successor c1c4e748b39c5632e8648023433a00c15d57191b; require single-flight provider reconciliation, fresh HR, runtime+Hosting parity and closed Admin/Shopper regressions. Do not touch production.",
+  "exactNextAction": "Diagnose and close only PREI4-CERT-001, PREI4-CERT-002 and PREI4-RES-001 on the same cumulative candidate. Preserve Run736 source/runtime/Hosting evidence, do not reopen closed HR/Postulations/Identity/Finance/Questionnaire findings, do not touch production. After those three P0s pass, resume the frozen human visual acceptance without requiring Paula to repeat the lost Admin screenshot journey.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1083,8 +1083,14 @@
     "production": "DO_NOT_TOUCH",
     "adminForensicAuditPath": "CXORBIA_PRE_I4_ADMIN_FORENSIC_AUDIT_2026-09-28.json",
     "adminReviewRepeatRequired": false,
-    "liveHrState": "HOLD_MAPPING_FAILURE_STALE_RUNTIME_SNAPSHOT",
-    "liveHrDriftLock": "CXORBIA_PRE_I4_LIVE_HR_DRIFT_LOCK_2026-09-28.json"
+    "liveHrState": "PASS_CURRENT_AUTHORITY_RUN736",
+    "liveHrDriftLock": "CXORBIA_PRE_I4_LIVE_HR_DRIFT_LOCK_2026-09-28.json",
+    "run736TechnicalClosure": true,
+    "remainingBeforeHumanVisualPass": [
+      "PREI4-CERT-001",
+      "PREI4-CERT-002",
+      "PREI4-RES-001"
+    ]
   },
   "preI4Admin008": {
     "state": "FIXED_PROVEN_RUN594",
@@ -1487,6 +1493,45 @@
     ],
     "state": "SOURCE_FIX_REPROOF_REQUIRED",
     "sameCanonicalCandidate": true,
+    "production": false
+  },
+  "run736CumulativeDevLiveClosure": {
+    "state": "PASS_PREI4_V176_CUMULATIVE_DEV_LIVE",
+    "runId": 36774292695,
+    "runNumber": 736,
+    "artifactId": 11125903962,
+    "artifactDigest": "sha256:1b6653e3ff65abcf39a31cddcf2787bf95fbf8c3e69954a98340273a00769d99",
+    "sourceSha": "c1c4e748b39c5632e8648023433a00c15d57191b",
+    "sourceTree": "ccb3d9da3c110e2d5fff57bae0d2d0eb76b3c4b4",
+    "runtimeRevision": "cxorbia-live-hr-dev-00233-2q8",
+    "runtimeDigest": "sha256:44a66a77e219f1e53c36c7f0adfcf57d48f301cef431de2e56255ee9a453cfab",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/1c95d652b5e57c4a",
+    "hrRevision": "3be75731eff64aa9bb8eb795ea73ae2dad140cb789cbaa15659c67ea02ce33d0",
+    "closedRegression": {
+      "postulations": "PASS_PREI4_ADMIN_002_HOSTING_LIVE",
+      "identity": "PASS_PREI4_ADMIN_003_CUMULATIVE_LIVE",
+      "finance": "PASS_PREI4_ADMIN_004_CUMULATIVE_LIVE",
+      "questionnaire": "PASS_PREI4_CONTENT002_AUTHENTICATED_SHOPPER_PROGRESSIVE_ROUTE",
+      "cumulativeSourceGuard": "PASS_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD"
+    },
+    "reconciliation": {
+      "shopperProviderAck": true,
+      "shopperCount": 222,
+      "reconciledShopperCount": 221,
+      "shopperIdempotentReplays": 221,
+      "visitProviderAck": true,
+      "visitCount": 704,
+      "visitCreated": 0,
+      "visitIdempotentReplays": 704,
+      "conflicts": 0
+    },
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "rulesDeploys": 0,
+    "hrWrites": 0,
+    "bankWrites": 0,
+    "externalPaymentWrites": 0,
     "production": false
   }
 }

@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "cxorbia.recovery.pre-i4.run736-cumulative-dev-live-closure.v1",
+  "frozenAt": "2026-09-30",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
+  "status": "FROZEN_PASS_TECHNICAL_HOLD_CERT_RES_HUMAN_VISUAL",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "authority": "Run736 exact cumulative DEV live artifact + canonical ledger/descriptor readback",
+  "run736": {
+    "state": "PASS_PREI4_V176_CUMULATIVE_DEV_LIVE",
+    "runId": 36774292695,
+    "runNumber": 736,
+    "artifactId": 11125903962,
+    "artifactDigest": "sha256:1b6653e3ff65abcf39a31cddcf2787bf95fbf8c3e69954a98340273a00769d99",
+    "sourceSha": "c1c4e748b39c5632e8648023433a00c15d57191b",
+    "sourceTree": "ccb3d9da3c110e2d5fff57bae0d2d0eb76b3c4b4",
+    "runtimeRevision": "cxorbia-live-hr-dev-00233-2q8",
+    "runtimeDigest": "sha256:44a66a77e219f1e53c36c7f0adfcf57d48f301cef431de2e56255ee9a453cfab",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/1c95d652b5e57c4a",
+    "hrRevision": "3be75731eff64aa9bb8eb795ea73ae2dad140cb789cbaa15659c67ea02ce33d0",
+    "closedRegression": {
+      "postulations": "PASS_PREI4_ADMIN_002_HOSTING_LIVE",
+      "identity": "PASS_PREI4_ADMIN_003_CUMULATIVE_LIVE",
+      "finance": "PASS_PREI4_ADMIN_004_CUMULATIVE_LIVE",
+      "questionnaire": "PASS_PREI4_CONTENT002_AUTHENTICATED_SHOPPER_PROGRESSIVE_ROUTE",
+      "cumulativeSourceGuard": "PASS_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD"
+    },
+    "reconciliation": {
+      "shopperProviderAck": true,
+      "shopperCount": 222,
+      "reconciledShopperCount": 221,
+      "shopperIdempotentReplays": 221,
+      "visitProviderAck": true,
+      "visitCount": 704,
+      "visitCreated": 0,
+      "visitIdempotentReplays": 704,
+      "conflicts": 0
+    },
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "rulesDeploys": 0,
+    "hrWrites": 0,
+    "bankWrites": 0,
+    "externalPaymentWrites": 0,
+    "production": false
+  },
+  "closedByThisLock": [
+    "VRM-106",
+    "VRM-107",
+    "PREI4-ADMIN-008 revalidated current HR",
+    "PREI4-ADMIN-002 regression",
+    "PREI4-ADMIN-003 regression",
+    "PREI4-ADMIN-004 regression",
+    "PREI4-CONTENT-001 regression",
+    "PREI4-CONTENT-002/questionnaire regression"
+  ],
+  "remainingP0": [
+    "PREI4-CERT-001",
+    "PREI4-CERT-002",
+    "PREI4-RES-001"
+  ],
+  "humanVisualAcceptance": {
+    "state": "HOLD_UNTIL_REMAINING_P0_CLOSE",
+    "adminScreenshotJourneyRepeatRequired": false,
+    "reviewUrl": "https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV"
+  },
+  "production": "DO_NOT_TOUCH",
+  "exactNextAction": "Diagnose and close only PREI4-CERT-001, PREI4-CERT-002 and PREI4-RES-001 on the same cumulative candidate. Preserve Run736 source/runtime/Hosting evidence, do not reopen closed HR/Postulations/Identity/Finance/Questionnaire findings, do not touch production. After those three P0s pass, resume the frozen human visual acceptance without requiring Paula to repeat the lost Admin screenshot journey."
+}
