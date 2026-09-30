@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_CONTENT_001_DEV_MATERIALIZATION_REQUIRED",
+  "status": "HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED",
   "iteration": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Materialize exact product source d8874bd952a70ce15b40560c8f17b2d47f53c152 / tree aec04d107b769ebf1393c760ad8531e45796266c to Recovery DEV runtime + Hosting through the single existing workflow, then rerun cumulative live Postulations + Identity + Finance and authenticated shopper questionnaire routing. Require zero production writes. No production.",
+  "exactNextAction": "SOURCE PROOF IS ALREADY PASS IN RUN 694. Re-run the same cumulative source guard on the unchanged product source d8874bd952a70ce15b40560c8f17b2d47f53c152, then in the same existing job materialize that exact source to Recovery DEV runtime + Hosting and run cumulative live Postulations + Identity + Finance + authenticated shopper questionnaire routing. No production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1159,7 +1159,7 @@
     "production": false
   },
   "preI4Content001": {
-    "state": "SOURCE_PROVEN_RUN694_DEV_MATERIALIZATION_REQUIRED",
+    "state": "SOURCE_PROVEN_RUN694_LIVE_GATE_PENDING_UNDER_EXISTING_SOURCE_REPROOF_STATUS",
     "sourceSha": "d8874bd952a70ce15b40560c8f17b2d47f53c152",
     "sourceTree": "aec04d107b769ebf1393c760ad8531e45796266c",
     "productFiles": [
@@ -1172,6 +1172,8 @@
     "production": false,
     "sourceProofRunId": 36718953011,
     "sourceProofDecision": "PASS_PREI4_PROJECT_QUESTIONNAIRE_CONFIG_SOURCE",
-    "cumulativeSourceGuard": "PASS_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD"
+    "cumulativeSourceGuard": "PASS_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD",
+    "controlStatusReuse": "HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED",
+    "nextControlMarker": "[prei4-content-001-source] [prei4-content-001-live]"
   }
 }
