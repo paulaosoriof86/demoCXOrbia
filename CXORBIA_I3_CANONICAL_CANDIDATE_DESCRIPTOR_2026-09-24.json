@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_ADMIN_004_PROVIDER_NO_DEPLOY_RESUME_REQUIRED",
+  "status": "HOLD_PREI4_ADMIN_004_CLOSED_REGRESSION_HARNESS_REPROOF_REQUIRED",
   "iteration": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "4a39b26f6dcdff8f4dcd446b0141a7d3b1dc01d7",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "c487449e5187d7219033c54fa1ac3db5fb6c822e",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V147_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "2609974d0af53929fea078a9b5d22cee23e4fe3a",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V148_2026-09-30.json",
+  "findingsLedgerExpectedGitBlob": "d32f4133e9892232402ef5a677cbdb0275457db1",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run ADMIN-004 provider no-deploy resume only: prove Hosting DEV remains 4f12336223412365 and runtime remains cxorbia-live-hr-dev-00229-nxq with exact digest; persist GT/HN finance config through the live project.update command provider with real Firebase ID token, ACK/receipt/audit; then reprove Postulaciones + Identity + Finance on one fresh HR revision. Zero build, zero deploy, no production.",
+  "exactNextAction": "Harden only the proven browser-auth control helper pattern in ADMIN-002 and exact duplicate control helpers; rerun same no-deploy resume on durable project config version 4, Hosting 4f12336223412365, runtime 00229-nxq/digest unchanged. Require Postulaciones + Identity + Finance PASS on one fresh HR revision; zero build/deploy, no production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1124,17 +1124,19 @@
     "production": false
   },
   "lastLiveAttempt": {
-    "runId": 36649051738,
-    "runNumber": 643,
-    "jobId": 109678736424,
-    "artifactId": 11069009873,
-    "artifactZipSha256": "9793476fa2317c6906a2f883eeed84768a805468b996efca72eb615a91815e7a",
+    "runId": 36650018958,
+    "runNumber": 645,
+    "jobId": 109681797181,
+    "artifactId": 11070151713,
+    "artifactZipSha256": "823727a751fc775a7425c6936ec978dd5abe8f4eef605e0724e6a535b6138ebb",
     "classification": "ENVIRONMENT_FAILURE",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/4f12336223412365",
-    "runtimeRevision": "cxorbia-live-hr-dev-00229-nxq",
-    "runtimeDigest": "sha256:45782480662a18699794811d6e4dd38cf1983e9c6f14eee66ed0b1e585bb9e1b",
-    "projectConfigWriteExecuted": false,
+    "projectConfig": "PASS_PREI4_ADMIN_004_PROJECT_CONFIG_ACK",
+    "projectConfigVersion": 4,
+    "firstMaterialFailure": "ADMIN-002 control auth helper used bare firebase during navigation race",
     "productDefect": false,
+    "builds": 0,
+    "runtimeDeploys": 0,
+    "hostingDeploys": 0,
     "production": false
   }
 }
