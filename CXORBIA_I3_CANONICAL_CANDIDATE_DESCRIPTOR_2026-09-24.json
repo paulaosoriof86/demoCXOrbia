@@ -4,17 +4,17 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4_HUMAN_VISUAL_REMEDIATION",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "40550b009939fa2e2c72d68eb27e05e48d47eca6",
-  "productTreeAuthority": "c23a05a64b22d30b03cf698e3cd9a4815a64df55",
-  "predecessorProductSourceSha": "a29b8ad89391fb5537d1cbf765ef6ec86f775608",
+  "productSourceSha": "2cff3441f126d7d805932127bb9de9289ba273ad",
+  "productTreeAuthority": "3c7b6736e2b5884e28bc87ed9b7dd346e1fd3b8a",
+  "predecessorProductSourceSha": "40550b009939fa2e2c72d68eb27e05e48d47eca6",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "37b6cc630a542ee1e4ec7e55db7484640db6c97f",
+  "findingsLedgerExpectedGitBlob": "8d37feecdc7be5af2c205c47dc89419c61e9b28c",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-089_VRM-104_CUMULATIVE_SOURCE_REPROOF",
-  "nextFindingId": "VRM-106",
+  "activeBlocker": "VRM-106_SOURCE_REPROOF_REQUIRED",
+  "nextFindingId": "VRM-107",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run existing cumulative source guard and one deterministic DEV materialization for V176 source 40550b009939fa2e2c72d68eb27e05e48d47eca6; require fresh HR visibility, runtime+Hosting readback, regression gates and zero HR/bank/external-payment writes; then perform live Admin+Shopper reproof. Do not touch production.",
+  "exactNextAction": "Run the existing cumulative source guard and one deterministic DEV materialization for successor 2cff3441f126d7d805932127bb9de9289ba273ad; require fresh HR visibility, runtime+Hosting readback, regression gates and authenticated Admin+Shopper reproof. Do not touch production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1475,6 +1475,20 @@
       "shoppers-mi-visitas-profile",
       "visits-review-postulations-reservations"
     ],
+    "production": false
+  },
+  "latestSourceSuccessor": {
+    "findingId": "VRM-106",
+    "sourceSha": "2cff3441f126d7d805932127bb9de9289ba273ad",
+    "sourceTree": "3c7b6736e2b5884e28bc87ed9b7dd346e1fd3b8a",
+    "predecessorSha": "40550b009939fa2e2c72d68eb27e05e48d47eca6",
+    "exactDelta": [
+      "app/adapters/tya-canonical-shopper-portal-v2.js"
+    ],
+    "additions": 0,
+    "deletions": 17,
+    "state": "SOURCE_FIX_REPROOF_REQUIRED",
+    "sameCanonicalCandidate": true,
     "production": false
   }
 }
