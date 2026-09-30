@@ -45,6 +45,7 @@ on:
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V134_2026-09-29.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V158_2026-09-30.json
       - tools/qa/cxorbia-prei4-admin004-finance-forensic-readonly.mjs
+      - tools/qa/cxorbia-prei4-admin004-cumulative-live-reproof.mjs
       - CXORBIA_PRE_I4_ADMIN_003_CUMULATIVE_LIVE_RECEIPT_2026-09-29.json
       - tools/qa/cxorbia-prei4-admin003-cumulative-live-reproof.mjs
       - tools/qa/cxorbia-prei4-admin003-hr-regression-check.mjs
