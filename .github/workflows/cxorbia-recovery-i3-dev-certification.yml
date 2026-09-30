@@ -46,7 +46,7 @@ on:
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V158_2026-09-30.json
       - tools/qa/cxorbia-prei4-admin004-finance-forensic-readonly.mjs
       - backend/runtime/hr-live-service/test/cxorbia-prei4-project-questionnaire-config.test.mjs
-      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V169_2026-09-30.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V168_2026-09-30.json
       - tools/qa/cxorbia-prei4-admin004-cumulative-live-reproof.mjs
       - CXORBIA_PRE_I4_ADMIN_003_CUMULATIVE_LIVE_RECEIPT_2026-09-29.json
       - tools/qa/cxorbia-prei4-admin003-cumulative-live-reproof.mjs
@@ -113,7 +113,7 @@ env:
   I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V169_2026-09-30.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V168_2026-09-30.json
 
 jobs:
   canonical-candidate-authority:
@@ -742,12 +742,12 @@ jobs:
     needs: canonical-candidate-authority
     if: ${{ (needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_003_CUMULATIVE_SOURCE_REPROOF_REQUIRED' || (needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_HOSTING_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_FINANCE_LIVE_RESUME_REQUIRED') || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED') && github.event_name == 'push' && (contains(github.event.head_commit.message, '[prei4-cumulative-regression]') || contains(github.event.head_commit.message, '[prei4-content-001-source]')) }}
     runs-on: ubuntu-latest
-    timeout-minutes: 55
+    timeout-minutes: 20
     env:
       CUM_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
       CUM_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
       CUM_BASE: c487449e5187d7219033c54fa1ac3db5fb6c822e
-      CUM_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V169_2026-09-30.json
+      CUM_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V168_2026-09-30.json
       CUM_MATRIX: RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json
       CUM_OUT: .tmp/prei4-cumulative-regression
       CUM_EXPECTED_DELTA_JSON: '["app/adapters/cxorbia-cxdata-command-boundary-v1.js","app/adapters/tya-c6-unified-human-runtime-v1.js","app/adapters/tya-canonical-finance-read-model-v2.js","app/adapters/tya-live-source-inplace-apply.js","app/adapters/tya-protected-auth-hr-authority-bridge-v2.js","app/modules/finanzas.js","app/modules/proyectos.js","backend/runtime/cxorbia-finance-command-provider-v1.mjs","backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs","backend/runtime/hr-live-service/server.mjs","backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs","backend/runtime/hr-live-service/test/cxorbia-prei4-project-questionnaire-config.test.mjs"]'
@@ -758,14 +758,6 @@ jobs:
         with: {fetch-depth: 0}
       - uses: actions/setup-node@v4
         with: {node-version: '24'}
-      - name: Authenticate Recovery DEV for optional CONTENT-001 live gate
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-      - name: Setup gcloud for optional CONTENT-001 live gate
-        uses: google-github-actions/setup-gcloud@v2
-        with:
-          project_id: ${{ env.PROJECT }}
       - name: Execute mandatory cumulative source guard
         run: |
           set -Eeuo pipefail
@@ -791,14 +783,6 @@ jobs:
           test "$(jq -r '.moduleTruth.duplicateScripts' "$CUM_OUT/result.json")" = "0"
           test "$(jq -r '.deploys' "$CUM_OUT/result.json")" = "0"
           test "$(jq -r '.writes' "$CUM_OUT/result.json")" = "0"
-          MSG="$(jq -r '.head_commit.message // ""' "$GITHUB_EVENT_PATH")"
-          if [[ "$MSG" == *"[prei4-content-001-live]"* ]]; then
-            PREI4_CONTENT001_SOURCE="$CUM_SOURCE" \
-            PREI4_CONTENT001_TREE="$CUM_TREE" \
-            PREI4_CONTENT001_OUT="$CUM_OUT/content001-live" \
-            PREI4_CONTENT001_ROOT="$HOSTING_URL" \
-            bash tools/qa/cxorbia-prei4-content001-dev-materialize.sh
-          fi
       - if: always()
         uses: actions/upload-artifact@v4
         with:
