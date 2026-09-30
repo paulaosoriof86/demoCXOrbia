@@ -2,7 +2,7 @@ name: CXOrbia Recovery I3 DEV Certification
 # Control successor: Gate20 explicit canonical HR reconciliation.
 # V21 direct reproof trigger: no logic change; canonical workflow only.
 # V33 honorarium diagnostic rerun: existing DEV, no deploy.
-# ADMIN-004 V154 runtime projectConfig cache isolation rerun: existing DEV only, no writes/build/deploy.
+# ADMIN-004 V155 honorarium propagation isolation: raw HR → composed visit → Finance; existing DEV only.
 
 on:
   push:
@@ -43,7 +43,7 @@ on:
       - CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V133_2026-09-29.json
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V134_2026-09-29.json
-      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V154_2026-09-30.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V155_2026-09-30.json
       - tools/qa/cxorbia-prei4-admin004-finance-forensic-readonly.mjs
       - CXORBIA_PRE_I4_ADMIN_003_CUMULATIVE_LIVE_RECEIPT_2026-09-29.json
       - tools/qa/cxorbia-prei4-admin003-cumulative-live-reproof.mjs
@@ -110,7 +110,7 @@ env:
   I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V154_2026-09-30.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V155_2026-09-30.json
 
 jobs:
   canonical-candidate-authority:
@@ -148,7 +148,7 @@ jobs:
           test "$(jq -r '.findings["VRM-079"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN518"
           test "$(jq -r '.findings["VRM-080"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN525"
           test "$(jq -r '.findings["VRM-081"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN547"
-          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED" || "$STATUS" == "HOLD_MODULE_TRUTH_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM087_FINALIZER_RECEIPT_SCOPE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM088_LIVE_FIXTURE_AVAILABILITY_REPROOF_REQUIRED" || "$STATUS" == "READY_FOR_GATE21_SAME_CERTIFIED_ARTIFACT" || "$STATUS" == "HOLD_PREI4_ADMIN_008_HR_MAPPING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_008_DEV_RUNTIME_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_RECOVERY_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_HOSTING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_IDENTITY_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_OWNER_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_LIVE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_LIVE_RESUME_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_DIAGNOSTIC_RUNNING" || "$STATUS" == "HOLD_PREI4_ADMIN_004_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_CONFIG_CACHE_DIAGNOSTIC_REQUIRED" || "$STATUS" == "GO" ]]
+          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED" || "$STATUS" == "HOLD_MODULE_TRUTH_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM087_FINALIZER_RECEIPT_SCOPE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM088_LIVE_FIXTURE_AVAILABILITY_REPROOF_REQUIRED" || "$STATUS" == "READY_FOR_GATE21_SAME_CERTIFIED_ARTIFACT" || "$STATUS" == "HOLD_PREI4_ADMIN_008_HR_MAPPING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_008_DEV_RUNTIME_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_RECOVERY_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_HOSTING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_IDENTITY_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_OWNER_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_LIVE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_LIVE_RESUME_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_DIAGNOSTIC_RUNNING" || "$STATUS" == "HOLD_PREI4_ADMIN_004_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_HONORARIUM_PROPAGATION_DIAGNOSTIC_REQUIRED" || "$STATUS" == "GO" ]]
           echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
@@ -744,7 +744,7 @@ jobs:
       CUM_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
       CUM_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
       CUM_BASE: c487449e5187d7219033c54fa1ac3db5fb6c822e
-      CUM_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V154_2026-09-30.json
+      CUM_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V155_2026-09-30.json
       CUM_MATRIX: RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json
       CUM_OUT: .tmp/prei4-cumulative-regression
       CUM_EXPECTED_DELTA_JSON: '["app/adapters/cxorbia-cxdata-command-boundary-v1.js","app/adapters/tya-canonical-finance-read-model-v2.js","app/adapters/tya-live-source-inplace-apply.js","app/adapters/tya-protected-auth-hr-authority-bridge-v2.js","app/modules/finanzas.js","app/modules/proyectos.js","backend/runtime/cxorbia-finance-command-provider-v1.mjs","backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs","backend/runtime/hr-live-service/server.mjs","backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs"]'
@@ -784,10 +784,10 @@ jobs:
 
 
 
-  prei4-admin-004-finance-config-cache-diagnostic:
-    name: PRE-I4 ADMIN-004 — runtime projectConfig cache diagnostic
+  prei4-admin-004-honorarium-propagation-diagnostic:
+    name: PRE-I4 ADMIN-004 — honorarium propagation diagnostic
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_FINANCE_CONFIG_CACHE_DIAGNOSTIC_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-admin-004-cache-diagnostic]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_HONORARIUM_PROPAGATION_DIAGNOSTIC_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-admin-004-propagation-diagnostic]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
@@ -807,12 +807,12 @@ jobs:
       - uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT }}
-      - name: Execute exact read-only Finance config cache diagnostic
+      - name: Execute exact read-only honorarium propagation diagnostic
         run: bash tools/qa/cxorbia-prei4-admin004-hosting-config-resume.sh
       - if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-prei4-admin-004-cache-diagnostic-${{ github.run_id }}
+          name: cxorbia-prei4-admin-004-propagation-diagnostic-${{ github.run_id }}
           path: ${{ env.PREI4_004_RESUME_OUT }}
           if-no-files-found: error
           retention-days: 30
