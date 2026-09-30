@@ -5378,3 +5378,43 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
+  pre-i4-human-entrypoint-dev:
+    if: ${{ false }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Historical disabled job retained for authority guard; intentionally non-executable."
+  pre-i4-finance-p0-hosting-fix:
+    if: ${{ false }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Historical disabled job retained for authority guard; intentionally non-executable."
+  pre-i4-module-truth-closure:
+    if: ${{ false }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Historical disabled job retained for authority guard; intentionally non-executable."
+  pre-i4-postdeploy-readback:
+    if: ${{ false }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Historical disabled job retained for authority guard; intentionally non-executable."
+  pre-i4-human-semantic-remediation:
+    if: ${{ false }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Historical disabled job retained for authority guard; intentionally non-executable."
+  pre-i4-resource-rules-fix:
+    if: ${{ false }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Historical disabled job retained for authority guard; intentionally non-executable."
+  pre-i4-human-semantic-focal-only:
+    if: ${{ false }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Historical disabled job retained for authority guard; intentionally non-executable."
+  pre-i4-vrm040-hosting-fix:
+    if: ${{ false }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Historical disabled job retained for authority guard; intentionally non-executable."
