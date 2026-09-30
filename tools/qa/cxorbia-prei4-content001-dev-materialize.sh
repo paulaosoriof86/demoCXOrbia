@@ -30,30 +30,37 @@ TOKEN="$(gcloud auth print-access-token)"
 curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$PREI4_CONTENT001_OUT/hosting-before.json"
 gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$PREI4_CONTENT001_OUT/runtime-before.json"
 
-IMAGE_URI="gcr.io/${PROJECT}/${SERVICE}:prei4-content001-${PREI4_CONTENT001_SOURCE:0:12}-${GITHUB_RUN_ID}"
-echo "$IMAGE_URI" > "$PREI4_CONTENT001_OUT/image-uri.txt"
-gcloud builds submit "$SOURCE_DIR" --project "$PROJECT" --config "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE_URI" --quiet | tee "$PREI4_CONTENT001_OUT/runtime-build.log"
-gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$IMAGE_URI" --min-instances=1 --max-instances=1 --update-env-vars "$LEGAL_ENABLE_NAME=$LEGAL_ENABLE_VALUE,$LEGAL_GATE_NAME=$LEGAL_GATE_VALUE,$I3_HR_CACHE_PIN_NAME=$I3_HR_CACHE_PIN_VALUE" --quiet
-gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$PREI4_CONTENT001_OUT/runtime-after.json"
+BUILD_COUNT=0
+RUNTIME_DEPLOY_COUNT=0
+HOSTING_DEPLOY_COUNT=0
+REUSED_EXISTING=true
+cp "$PREI4_CONTENT001_OUT/runtime-before.json" "$PREI4_CONTENT001_OUT/runtime-after.json"
 REV="$(jq -r '.status.latestReadyRevisionName // empty' "$PREI4_CONTENT001_OUT/runtime-after.json")"; test -n "$REV"
+test "$REV" = "${PREI4_CONTENT001_EXPECTED_RUNTIME:?}"
 gcloud run revisions describe "$REV" --project "$PROJECT" --region "$REGION" --format=json > "$PREI4_CONTENT001_OUT/runtime-revision.json"
 RAW="$(jq -r '.status.imageDigest // empty' "$PREI4_CONTENT001_OUT/runtime-revision.json")"
 if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else exit 1; fi
+test "$DIGEST" = "${PREI4_CONTENT001_EXPECTED_DIGEST:?}"
 URL="$(jq -r '.status.url // empty' "$PREI4_CONTENT001_OUT/runtime-after.json")"
+cp "$PREI4_CONTENT001_OUT/hosting-before.json" "$PREI4_CONTENT001_OUT/hosting-after.json"
+HOSTING_VERSION="$(jq -r '.release.version.name // empty' "$PREI4_CONTENT001_OUT/hosting-after.json")"; test -n "$HOSTING_VERSION"
+test "$HOSTING_VERSION" = "${PREI4_CONTENT001_EXPECTED_HOSTING:?}"
+printf '%s\n' "Exact Run 710 materialization reused; no build/runtime/hosting deploy in this resume." > "$PREI4_CONTENT001_OUT/no-deploy-resume.txt"
+
 curl -fsS --retry 10 --retry-delay 3 "$URL/health" > "$PREI4_CONTENT001_OUT/health.json"
 jq -e '.ok==true and .production==false and .hrWrites==false and .shopperReconciliationReady==true and .visitReconciliationReady==true' "$PREI4_CONTENT001_OUT/health.json" >/dev/null
 
-cd "$SOURCE_DIR"
-"$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$PREI4_CONTENT001_OUT/hosting-deploy.log"
-cd "$GITHUB_WORKSPACE"
-TOKEN="$(gcloud auth print-access-token)"
-curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$PREI4_CONTENT001_OUT/hosting-after.json"
-HOSTING_VERSION="$(jq -r '.release.version.name // empty' "$PREI4_CONTENT001_OUT/hosting-after.json")"; test -n "$HOSTING_VERSION"
-
 for p in app/modules/proyectos.js app/adapters/tya-live-source-inplace-apply.js; do
   rel="${p#app/}"; remote="$PREI4_CONTENT001_OUT/served_$(echo "$rel"|tr '/' '_')"
-  curl -fsSL --retry 10 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$PREI4_CONTENT001_ROOT/$rel?content001=$GITHUB_RUN_ID-$(date +%s%N)" -o "$remote"
-  test "$(sha256sum "$remote"|awk '{print $1}')" = "$(git show "$PREI4_CONTENT001_SOURCE:$p"|sha256sum|awk '{print $1}')"
+  expected="$(git show "$PREI4_CONTENT001_SOURCE:$p"|sha256sum|awk '{print $1}')"
+  parity=0
+  for attempt in $(seq 1 15); do
+    curl -fsSL --retry 5 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$PREI4_CONTENT001_ROOT/$rel?content001-resume=$GITHUB_RUN_ID-$attempt-$(date +%s%N)" -o "$remote"
+    actual="$(sha256sum "$remote"|awk '{print $1}')"
+    if [ "$actual" = "$expected" ]; then parity=1; break; fi
+    sleep 4
+  done
+  test "$parity" = 1
 done
 
 ok=0
@@ -82,4 +89,5 @@ jq -n -S \
   --arg identity "$(jq -r '.decision' "$PREI4_CONTENT001_OUT/admin003/result.json")" \
   --arg finance "$(jq -r '.decision' "$PREI4_CONTENT001_OUT/finance/result.json")" \
   --arg questionnaire "$(jq -r '.decision' "$PREI4_CONTENT001_OUT/questionnaire/result.json")" \
-  '{decision:"PASS_PREI4_CONTENT001_CUMULATIVE_DEV_LIVE",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,closedRegression:{postulations:$post,identity:$identity,finance:$finance},questionnaire:$questionnaire,builds:1,runtimeDeploys:1,hostingDeploys:1,rulesDeploys:0,externalPaymentWrites:0,bankWrites:0,hrWrites:0,production:false}' > "$PREI4_CONTENT001_OUT/receipt.json"
+  --argjson builds "$BUILD_COUNT" --argjson runtimeDeploys "$RUNTIME_DEPLOY_COUNT" --argjson hostingDeploys "$HOSTING_DEPLOY_COUNT" --argjson reused "$REUSED_EXISTING" \
+  '{decision:"PASS_PREI4_CONTENT001_CUMULATIVE_DEV_LIVE",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,closedRegression:{postulations:$post,identity:$identity,finance:$finance},questionnaire:$questionnaire,builds:$builds,runtimeDeploys:$runtimeDeploys,hostingDeploys:$hostingDeploys,reusedExistingMaterialization:$reused,rulesDeploys:0,externalPaymentWrites:0,bankWrites:0,hrWrites:0,production:false}' > "$PREI4_CONTENT001_OUT/receipt.json"
