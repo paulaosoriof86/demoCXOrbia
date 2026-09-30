@@ -4,12 +4,11 @@ set -Eeuo pipefail
 test "$PREI4_004_SOURCE" = "b6caa184fd83a7e4cec848aee54a5a9704d10a12"
 test "$PREI4_004_TREE" = "ac2e5b70c8170c9582014e30524d357ce66b7634"
 test "$(git rev-parse "$PREI4_004_SOURCE^{tree}")" = "$PREI4_004_TREE"
-test "$GITHUB_RUN_ATTEMPT" = "1"
-mkdir -p "$PREI4_004_RESUME_OUT/source-guard" "$PREI4_004_RESUME_OUT/post002" "$PREI4_004_RESUME_OUT/admin003" "$PREI4_004_RESUME_OUT/finance" "$PREI4_004_RESUME_OUT/remote"
+mkdir -p "$PREI4_004_RESUME_OUT/source-guard" "$PREI4_004_RESUME_OUT/boundary"
 
 export CUM_SOURCE="$PREI4_004_SOURCE" CUM_TREE="$PREI4_004_TREE"
 export CUM_BASE="c487449e5187d7219033c54fa1ac3db5fb6c822e"
-export CUM_LEDGER="CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V158_2026-09-30.json"
+export CUM_LEDGER="CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V159_2026-09-30.json"
 export CUM_MATRIX="RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json"
 export CUM_OUT="$PREI4_004_RESUME_OUT/source-guard"
 export CUM_EXPECTED_DELTA_JSON='["app/adapters/cxorbia-cxdata-command-boundary-v1.js","app/adapters/tya-canonical-finance-read-model-v2.js","app/adapters/tya-live-source-inplace-apply.js","app/adapters/tya-protected-auth-hr-authority-bridge-v2.js","app/modules/finanzas.js","app/modules/proyectos.js","backend/runtime/cxorbia-finance-command-provider-v1.mjs","backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs","backend/runtime/hr-live-service/server.mjs","backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs"]'
@@ -18,74 +17,14 @@ export CUM_EXPECTED_PENDING_FILES_JSON='["app/adapters/cxorbia-cxdata-command-bo
 node tools/qa/cxorbia-prei4-cumulative-regression-source-guard.mjs | tee "$CUM_OUT/console.log"
 test "$(jq -r '.decision' "$CUM_OUT/result.json")" = "PASS_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD"
 
-npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
 npx playwright install chromium >/dev/null 2>&1
 
-SOURCE_DIR="$RUNNER_TEMP/cxorbia-prei4-admin004-hosting"
-rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"
-trap 'rm -rf "$SOURCE_DIR"' EXIT
-git archive "$PREI4_004_SOURCE" | tar -x -C "$SOURCE_DIR"
-
-TOKEN="$(gcloud auth print-access-token)"
-gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$PREI4_004_RESUME_OUT/runtime-before.json"
-REV_BEFORE="$(jq -r '.status.latestReadyRevisionName // empty' "$PREI4_004_RESUME_OUT/runtime-before.json")"
-test "$REV_BEFORE" = "cxorbia-live-hr-dev-00229-nxq"
-gcloud run revisions describe "$REV_BEFORE" --project "$PROJECT" --region "$REGION" --format=json > "$PREI4_004_RESUME_OUT/runtime-revision-before.json"
-RAW="$(jq -r '.status.imageDigest // empty' "$PREI4_004_RESUME_OUT/runtime-revision-before.json")"
-if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST_BEFORE="$RAW"; else DIGEST_BEFORE="sha256:${RAW##*@sha256:}"; fi
-test "$DIGEST_BEFORE" = "sha256:45782480662a18699794811d6e4dd38cf1983e9c6f14eee66ed0b1e585bb9e1b"
-
-cd "$SOURCE_DIR"
-"$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$PREI4_004_RESUME_OUT/hosting-deploy.log"
-cd "$GITHUB_WORKSPACE"
-
-TOKEN="$(gcloud auth print-access-token)"
-curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$PREI4_004_RESUME_OUT/hosting-after.json"
-HOSTING_VERSION="$(jq -r '.release.version.name // empty' "$PREI4_004_RESUME_OUT/hosting-after.json")"
-test -n "$HOSTING_VERSION"
-
-for p in app/adapters/cxorbia-cxdata-command-boundary-v1.js app/adapters/tya-canonical-finance-read-model-v2.js app/adapters/tya-live-source-inplace-apply.js app/adapters/tya-protected-auth-hr-authority-bridge-v2.js app/modules/finanzas.js app/modules/proyectos.js; do
-  rel="${p#app/}"; remote="$PREI4_004_RESUME_OUT/remote/$(echo "$rel"|tr '/' '_')"
-  ok=0
-  for attempt in $(seq 1 20); do
-    if curl -fsSL --retry 2 --retry-delay 1 -H 'Cache-Control: no-cache, no-store, max-age=0' "$PREI4_004_ROOT/$rel?admin004=$GITHUB_RUN_ID-$attempt-$(date +%s%N)" -o "$remote"; then
-      if [[ "$(sha256sum "$remote"|awk '{print $1}')" = "$(git show "$PREI4_004_SOURCE:$p"|sha256sum|awk '{print $1}')" ]]; then ok=1; break; fi
-    fi
-    sleep 2
-  done
-  test "$ok" = 1
-done
-
-gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$PREI4_004_RESUME_OUT/runtime-after.json"
-REV_AFTER="$(jq -r '.status.latestReadyRevisionName // empty' "$PREI4_004_RESUME_OUT/runtime-after.json")"
-test "$REV_AFTER" = "$REV_BEFORE"
-
-ok=0
-for i in $(seq 1 15); do
-  curl -fsS -H 'Cache-Control: no-cache, no-store, max-age=0' "$PREI4_004_ROOT/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&fresh=1&admin004live=$GITHUB_RUN_ID-$i" > "$PREI4_004_RESUME_OUT/hr-meta.json"
-  if jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .refreshError==null and .shopperReconciliation.providerAck==true and .visitReconciliation.providerAck==true and .hrWrites==false and .production==false' "$PREI4_004_RESUME_OUT/hr-meta.json" >/dev/null; then ok=1; break; fi
-  sleep 15
-done
-test "$ok" = 1
-HR_REVISION="$(jq -r '.revision // empty' "$PREI4_004_RESUME_OUT/hr-meta.json")"
-[[ "$HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
-
-PREI4_002_LIVE_OUT="$PREI4_004_RESUME_OUT/post002" PREI4_002_ROOT="$PREI4_004_ROOT" PREI4_002_SOURCE="$PREI4_004_SOURCE" PREI4_002_TREE="$PREI4_004_TREE" PREI4_002_HR_REVISION="$HR_REVISION" node tools/qa/cxorbia-prei4-admin002-hosting-live-reproof.mjs | tee "$PREI4_004_RESUME_OUT/post002.log"
-test "$(jq -r '.decision' "$PREI4_004_RESUME_OUT/post002/result.json")" = "PASS_PREI4_ADMIN_002_HOSTING_LIVE"
-
-PREI4_003_LIVE_OUT="$PREI4_004_RESUME_OUT/admin003" PREI4_003_ROOT="$PREI4_004_ROOT" PREI4_003_SOURCE="$PREI4_004_SOURCE" PREI4_003_TREE="$PREI4_004_TREE" PREI4_003_HR_REVISION="$HR_REVISION" node tools/qa/cxorbia-prei4-admin003-cumulative-live-reproof.mjs | tee "$PREI4_004_RESUME_OUT/admin003.log"
-test "$(jq -r '.decision' "$PREI4_004_RESUME_OUT/admin003/result.json")" = "PASS_PREI4_ADMIN_003_CUMULATIVE_LIVE"
-
-PREI4_004_LIVE_OUT="$PREI4_004_RESUME_OUT/finance" PREI4_004_ROOT="$PREI4_004_ROOT" PREI4_004_SOURCE="$PREI4_004_SOURCE" PREI4_004_TREE="$PREI4_004_TREE" PREI4_004_HR_REVISION="$HR_REVISION" node tools/qa/cxorbia-prei4-admin004-cumulative-live-reproof.mjs | tee "$PREI4_004_RESUME_OUT/finance.log"
-test "$(jq -r '.decision' "$PREI4_004_RESUME_OUT/finance/result.json")" = "PASS_PREI4_ADMIN_004_CUMULATIVE_LIVE"
-test "$(jq -r '.externalPaymentWrites' "$PREI4_004_RESUME_OUT/finance/result.json")" = "0"
-test "$(jq -r '.bankWrites' "$PREI4_004_RESUME_OUT/finance/result.json")" = "0"
-test "$(jq -r '.hrWrites' "$PREI4_004_RESUME_OUT/finance/result.json")" = "0"
-
-jq -n -S \
- --arg source "$PREI4_004_SOURCE" --arg tree "$PREI4_004_TREE" --arg runtime "$REV_AFTER" --arg digest "$DIGEST_BEFORE" --arg hosting "$HOSTING_VERSION" --arg hr "$HR_REVISION" \
- --arg post "$(jq -r '.decision' "$PREI4_004_RESUME_OUT/post002/result.json")" \
- --arg identity "$(jq -r '.decision' "$PREI4_004_RESUME_OUT/admin003/result.json")" \
- --arg finance "$(jq -r '.decision' "$PREI4_004_RESUME_OUT/finance/result.json")" \
- --argjson financeWrites "$(jq -r '.providerAck.providerWrites // 0' "$PREI4_004_RESUME_OUT/finance/result.json")" \
- '{decision:"PASS_PREI4_ADMIN_004_HOSTING_LIVE",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,closedRegression:{postulations:$post,identity:$identity},finance:$finance,financeProviderWrites:$financeWrites,builds:0,runtimeDeploys:0,hostingDeploys:1,rulesDeploys:0,externalPaymentWrites:0,bankWrites:0,hrWrites:0,production:false}' > "$PREI4_004_RESUME_OUT/receipt.json"
+export PREI4_004_BOUNDARY_OUT="$PREI4_004_RESUME_OUT/boundary"
+export PREI4_004_HR_REVISION="0b2f989af18f15ee429a504a4d628cb12b34153fce23bd730c8c74c8228d7877"
+node --check tools/qa/cxorbia-prei4-admin004-composer-boundary-diagnostic.mjs
+node tools/qa/cxorbia-prei4-admin004-composer-boundary-diagnostic.mjs | tee "$PREI4_004_RESUME_OUT/boundary.log"
+test "$(jq -r '.decision' "$PREI4_004_RESUME_OUT/boundary/result.json")" = "PASS_PREI4_ADMIN_004_COMPOSER_BOUNDARY_DIAGNOSTIC"
+test "$(jq -r '.writes' "$PREI4_004_RESUME_OUT/boundary/result.json")" = "0"
+test "$(jq -r '.builds' "$PREI4_004_RESUME_OUT/boundary/result.json")" = "0"
+test "$(jq -r '.deploys' "$PREI4_004_RESUME_OUT/boundary/result.json")" = "0"
