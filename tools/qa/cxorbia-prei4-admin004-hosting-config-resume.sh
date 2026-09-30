@@ -9,7 +9,7 @@ mkdir -p "$PREI4_004_RESUME_OUT/source-guard" "$PREI4_004_RESUME_OUT/post002" "$
 
 export CUM_SOURCE="$PREI4_004_SOURCE" CUM_TREE="$PREI4_004_TREE"
 export CUM_BASE="c487449e5187d7219033c54fa1ac3db5fb6c822e"
-export CUM_LEDGER="CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V147_2026-09-30.json"
+export CUM_LEDGER="CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V148_2026-09-30.json"
 export CUM_MATRIX="RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json"
 export CUM_OUT="$PREI4_004_RESUME_OUT/source-guard"
 export CUM_EXPECTED_DELTA_JSON='["app/adapters/cxorbia-cxdata-command-boundary-v1.js","app/adapters/tya-canonical-finance-read-model-v2.js","app/adapters/tya-live-source-inplace-apply.js","app/adapters/tya-protected-auth-hr-authority-bridge-v2.js","app/modules/finanzas.js","app/modules/proyectos.js","backend/runtime/cxorbia-finance-command-provider-v1.mjs","backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs","backend/runtime/hr-live-service/server.mjs","backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs"]'
@@ -20,6 +20,13 @@ test "$(jq -r '.decision' "$CUM_OUT/result.json")" = "PASS_PREI4_CUMULATIVE_REGR
 
 npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
 npx playwright install chromium >/dev/null 2>&1
+for f in tools/qa/cxorbia-prei4-admin002-hosting-live-reproof.mjs tools/qa/cxorbia-prei4-admin003-cumulative-live-reproof.mjs tools/qa/cxorbia-prei4-admin004-cumulative-live-reproof.mjs; do
+  node --check "$f"
+  if grep -Eq '(^|[^.[:alnum:]_])firebase\.auth\(' "$f"; then
+    echo "ENVIRONMENT_FAILURE:BARE_FIREBASE_AUTH_HELPER:$f" >&2
+    exit 1
+  fi
+done
 
 TOKEN="$(gcloud auth print-access-token)"
 gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$PREI4_004_RESUME_OUT/runtime-before.json"
