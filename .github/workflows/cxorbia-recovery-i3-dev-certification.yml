@@ -787,7 +787,7 @@ jobs:
   prei4-admin-004-hosting-live-closure:
     name: PRE-I4 ADMIN-004 — Hosting-only stale-authority fix + cumulative live closure
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_HONORARIUM_PROPAGATION_DIAGNOSTIC_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-admin-004-hosting-live]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_HOSTING_MATERIALIZATION_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-admin-004-hosting-live]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
