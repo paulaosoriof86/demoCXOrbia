@@ -1159,7 +1159,7 @@
     "production": false
   },
   "preI4Content001": {
-    "state": "SOURCE_PROVEN_RUN694_LIVE_GATE_PENDING_UNDER_EXISTING_SOURCE_REPROOF_STATUS",
+    "state": "SOURCE_PROVEN_RUN694_SOURCE_GUARD_RETRIGGERED",
     "sourceSha": "d8874bd952a70ce15b40560c8f17b2d47f53c152",
     "sourceTree": "aec04d107b769ebf1393c760ad8531e45796266c",
     "productFiles": [
@@ -1174,6 +1174,7 @@
     "sourceProofDecision": "PASS_PREI4_PROJECT_QUESTIONNAIRE_CONFIG_SOURCE",
     "cumulativeSourceGuard": "PASS_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD",
     "controlStatusReuse": "HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED",
-    "nextControlMarker": "[prei4-content-001-source] [prei4-content-001-live]"
+    "nextControlMarker": "[prei4-content-001-source]",
+    "controlTriggerPurpose": "Re-run unchanged cumulative source guard before DEV materialization; product source unchanged; no production."
   }
 }
