@@ -151,7 +151,7 @@ jobs:
           test "$(jq -r '.findings["VRM-079"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN518"
           test "$(jq -r '.findings["VRM-080"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN525"
           test "$(jq -r '.findings["VRM-081"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN547"
-          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED" || "$STATUS" == "HOLD_MODULE_TRUTH_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM087_FINALIZER_RECEIPT_SCOPE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM088_LIVE_FIXTURE_AVAILABILITY_REPROOF_REQUIRED" || "$STATUS" == "READY_FOR_GATE21_SAME_CERTIFIED_ARTIFACT" || "$STATUS" == "HOLD_PREI4_ADMIN_008_HR_MAPPING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_008_DEV_RUNTIME_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_RECOVERY_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_HOSTING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_IDENTITY_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_OWNER_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_LIVE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_LIVE_RESUME_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_DIAGNOSTIC_RUNNING" || "$STATUS" == "HOLD_PREI4_ADMIN_004_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_LIVE_RESUME_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_HONORARIUM_PROPAGATION_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_COMPOSER_BOUNDARY_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_CONTENT_001_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "GO" ]]
+          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED" || "$STATUS" == "HOLD_MODULE_TRUTH_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM087_FINALIZER_RECEIPT_SCOPE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM088_LIVE_FIXTURE_AVAILABILITY_REPROOF_REQUIRED" || "$STATUS" == "READY_FOR_GATE21_SAME_CERTIFIED_ARTIFACT" || "$STATUS" == "HOLD_PREI4_ADMIN_008_HR_MAPPING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_008_DEV_RUNTIME_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_RECOVERY_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_HOSTING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_IDENTITY_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_OWNER_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_LIVE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_LIVE_RESUME_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_DIAGNOSTIC_RUNNING" || "$STATUS" == "HOLD_PREI4_ADMIN_004_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_LIVE_RESUME_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_HONORARIUM_PROPAGATION_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_COMPOSER_BOUNDARY_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "GO" ]]
           echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
@@ -740,7 +740,7 @@ jobs:
   prei4-cumulative-regression-source-guard:
     name: PRE-I4 cumulative anti-regression — all prior closures + Module Truth
     needs: canonical-candidate-authority
-    if: ${{ (needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_003_CUMULATIVE_SOURCE_REPROOF_REQUIRED' || (needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_HOSTING_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_FINANCE_LIVE_RESUME_REQUIRED') || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CONTENT_001_DEV_MATERIALIZATION_REQUIRED') && github.event_name == 'push' && (contains(github.event.head_commit.message, '[prei4-cumulative-regression]') || contains(github.event.head_commit.message, '[prei4-content-001-source]') || contains(github.event.head_commit.message, '[prei4-content-001-live]')) }}
+    if: ${{ (needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_003_CUMULATIVE_SOURCE_REPROOF_REQUIRED' || (needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_HOSTING_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_FINANCE_LIVE_RESUME_REQUIRED') || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED') && github.event_name == 'push' && (contains(github.event.head_commit.message, '[prei4-cumulative-regression]') || contains(github.event.head_commit.message, '[prei4-content-001-source]')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 55
     env:
@@ -758,6 +758,14 @@ jobs:
         with: {fetch-depth: 0}
       - uses: actions/setup-node@v4
         with: {node-version: '24'}
+      - name: Authenticate Recovery DEV for optional CONTENT-001 live gate
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Setup gcloud for optional CONTENT-001 live gate
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
       - name: Execute mandatory cumulative source guard
         run: |
           set -Eeuo pipefail
@@ -783,24 +791,14 @@ jobs:
           test "$(jq -r '.moduleTruth.duplicateScripts' "$CUM_OUT/result.json")" = "0"
           test "$(jq -r '.deploys' "$CUM_OUT/result.json")" = "0"
           test "$(jq -r '.writes' "$CUM_OUT/result.json")" = "0"
-      - name: Authenticate Recovery DEV for CONTENT-001 live gate
-        if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CONTENT_001_DEV_MATERIALIZATION_REQUIRED' && contains(github.event.head_commit.message, '[prei4-content-001-live]') }}
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-      - name: Setup gcloud for CONTENT-001 live gate
-        if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CONTENT_001_DEV_MATERIALIZATION_REQUIRED' && contains(github.event.head_commit.message, '[prei4-content-001-live]') }}
-        uses: google-github-actions/setup-gcloud@v2
-        with:
-          project_id: ${{ env.PROJECT }}
-      - name: Materialize CONTENT-001 exact source and run cumulative live guard
-        if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CONTENT_001_DEV_MATERIALIZATION_REQUIRED' && contains(github.event.head_commit.message, '[prei4-content-001-live]') }}
-        env:
-          PREI4_CONTENT001_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
-          PREI4_CONTENT001_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
-          PREI4_CONTENT001_OUT: ${{ env.CUM_OUT }}/content001-live
-          PREI4_CONTENT001_ROOT: https://cxorbia-backend-dev.web.app
-        run: bash tools/qa/cxorbia-prei4-content001-dev-materialize.sh
+          MSG="$(jq -r '.head_commit.message // ""' "$GITHUB_EVENT_PATH")"
+          if [[ "$MSG" == *"[prei4-content-001-live]"* ]]; then
+            PREI4_CONTENT001_SOURCE="$CUM_SOURCE" \
+            PREI4_CONTENT001_TREE="$CUM_TREE" \
+            PREI4_CONTENT001_OUT="$CUM_OUT/content001-live" \
+            PREI4_CONTENT001_ROOT="$HOSTING_URL" \
+            bash tools/qa/cxorbia-prei4-content001-dev-materialize.sh
+          fi
       - if: always()
         uses: actions/upload-artifact@v4
         with:
