@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_ADMIN_004_HONORARIUM_PROPAGATION_DIAGNOSTIC_REQUIRED",
+  "status": "HOLD_PREI4_ADMIN_004_SOURCE_REPROOF_REQUIRED",
   "iteration": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "4a39b26f6dcdff8f4dcd446b0141a7d3b1dc01d7",
+  "productSourceSha": "b6caa184fd83a7e4cec848aee54a5a9704d10a12",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "c487449e5187d7219033c54fa1ac3db5fb6c822e",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V156_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "659a0b25d76cd067d09e5dc20302820c7d9e53a5",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V157_2026-09-30.json",
+  "findingsLedgerExpectedGitBlob": "46dd9608314e34e35ca3001d5146f3a348548717",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Rerun the same read-only honorarium propagation diagnostic on the existing DEV artifact: raw HR fallback candidate → composed visit after exact sourceRef → canonical Finance row. Zero writes/build/deploy; no product-source change; no production.",
+  "exactNextAction": "Run mandatory cumulative source guard on b6caa184fd83a7e4cec848aee54a5a9704d10a12. Require exact declared delta, Module Truth 20 domains, HR/Postulations/Identity recurrence, finance honorarium 6/6 and finance provider 6/6; zero build/deploy/write. Only after PASS may the corrected static bridge be materialized to Hosting DEV.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -428,7 +428,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "3cdf4b1b3e6b6316e89f9bd249606f081258d07a",
+  "productSourceTree": "ac2e5b70c8170c9582014e30524d357ce66b7634",
   "lastLiveReproof": {
     "runId": 36217529367,
     "runNumber": 465,
@@ -466,14 +466,13 @@
     "nextFindingOpened": false
   },
   "lastDiagnostic": {
-    "runId": 36654350193,
-    "runNumber": 664,
-    "jobId": 109695328309,
-    "artifactId": 11072050590,
-    "artifactZipSha256": "d5625f92f0b7181e330e74b2ca80a0016742d5efbd6f5e7ba1c231910c999bca",
-    "decision": "PASS_PREI4_ADMIN_004_RUNTIME_PROJECT_CONFIG_CACHE_DIAGNOSTIC",
-    "runtimeConfigFresh": true,
-    "ownerClass": "HONORARIUM_PROPAGATION_AFTER_FRESH_RUNTIME_CONFIG",
+    "runId": 36654812644,
+    "runNumber": 668,
+    "jobId": 109696787562,
+    "artifactId": 11071912173,
+    "artifactZipSha256": "c57da2dd5bfcc66f1ca7dc0ca8fffd68f797f4fe1a964140fb3979f9187c81e6",
+    "decision": "PASS_PREI4_ADMIN_004_HONORARIUM_PROPAGATION_DIAGNOSTIC",
+    "classification": "VISIT_COMPOSITION_DROPS_CONFIGURED_HONORARIUM",
     "production": false
   },
   "lastDurableRepair": {
