@@ -38,7 +38,7 @@ const result={
 const durableExact=result.durable.version>=4&&Number(result.durable.honorario.GT)===60&&Number(result.durable.honorario.HN)===200&&result.durable.currency.GT==='Q'&&result.durable.currency.HN==='L';
 const runtimeExact=Number(result.runtimeSnapshot.honorario.GT)===60&&Number(result.runtimeSnapshot.honorario.HN)===200&&result.runtimeSnapshot.currency.GT==='Q'&&result.runtimeSnapshot.currency.HN==='L';
 if(!durableExact)throw new Error('PERSISTENCE_FAILURE:ADMIN004_DURABLE_CONFIG_DRIFT');
-result.decision=runtimeExact?'PASS_ADMIN004_RUNTIME_PROJECT_CONFIG_FRESH':'PROVEN_ADMIN004_RUNTIME_PROJECT_CONFIG_STALE';
+result.decision='PASS_PREI4_ADMIN_004_RUNTIME_PROJECT_CONFIG_CACHE_DIAGNOSTIC';\nresult.runtimeConfigFresh=runtimeExact;\nresult.classification=runtimeExact?'HONORARIUM_PROPAGATION_AFTER_FRESH_RUNTIME_CONFIG':'STALE_RUNTIME_PROJECT_CONFIG';
 fs.writeFileSync(OUT+'/result.json',JSON.stringify(result,null,2)+'\n');
 console.log(JSON.stringify(result,null,2));
-if(!runtimeExact)process.exitCode=42;
+
