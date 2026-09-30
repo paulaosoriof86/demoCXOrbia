@@ -91,6 +91,11 @@ test "$(jq -r '.decision' "$PREI4_004_RESUME_OUT/post002/result.json")" = "PASS_
 PREI4_003_LIVE_OUT="$PREI4_004_RESUME_OUT/admin003" PREI4_003_ROOT="$PREI4_004_ROOT" PREI4_003_SOURCE="$PREI4_004_SOURCE" PREI4_003_TREE="$PREI4_004_TREE" PREI4_003_HR_REVISION="$HR_REVISION" node tools/qa/cxorbia-prei4-admin003-cumulative-live-reproof.mjs | tee "$PREI4_004_RESUME_OUT/admin003.log"
 test "$(jq -r '.decision' "$PREI4_004_RESUME_OUT/admin003/result.json")" = "PASS_PREI4_ADMIN_003_CUMULATIVE_LIVE"
 
+mkdir -p "$PREI4_004_RESUME_OUT/boundary"
+PREI4_004_BOUNDARY_OUT="$PREI4_004_RESUME_OUT/boundary" PREI4_004_ROOT="$PREI4_004_ROOT" PREI4_004_HR_REVISION="$HR_REVISION" PREI4_004_PERIOD_KEY="2026-09" node tools/qa/cxorbia-prei4-admin004-composer-boundary-diagnostic.mjs | tee "$PREI4_004_RESUME_OUT/boundary.log"
+test "$(jq -r '.decision' "$PREI4_004_RESUME_OUT/boundary/result.json")" = "PASS_PREI4_ADMIN_004_COMPOSER_BOUNDARY_DIAGNOSTIC"
+test "$(jq -r '.classification' "$PREI4_004_RESUME_OUT/boundary/result.json")" = "PROPAGATION_CHAIN_EXACT"
+
 PREI4_004_LIVE_OUT="$PREI4_004_RESUME_OUT/finance" PREI4_004_ROOT="$PREI4_004_ROOT" PREI4_004_SOURCE="$PREI4_004_SOURCE" PREI4_004_TREE="$PREI4_004_TREE" PREI4_004_HR_REVISION="$HR_REVISION" node tools/qa/cxorbia-prei4-admin004-cumulative-live-reproof.mjs | tee "$PREI4_004_RESUME_OUT/finance.log"
 test "$(jq -r '.decision' "$PREI4_004_RESUME_OUT/finance/result.json")" = "PASS_PREI4_ADMIN_004_CUMULATIVE_LIVE"
 test "$(jq -r '.externalPaymentWrites' "$PREI4_004_RESUME_OUT/finance/result.json")" = "0"
