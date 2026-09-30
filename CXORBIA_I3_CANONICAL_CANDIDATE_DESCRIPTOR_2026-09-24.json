@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED",
+  "status": "HOLD_PREI4_CONTENT_002_SOURCE_REPROOF_REQUIRED",
   "iteration": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "d8874bd952a70ce15b40560c8f17b2d47f53c152",
-  "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
-  "predecessorProductSourceSha": "61b89fd567c02c651ce1983d8b8f8421d5e70637",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V169_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "6a900120a6668f9a7cb7b984433febb7b3b6126e",
+  "productSourceSha": "a29b8ad89391fb5537d1cbf765ef6ec86f775608",
+  "productTreeAuthority": "ea8846d254d1901ac1101c182098c46f995f1141",
+  "predecessorProductSourceSha": "d8874bd952a70ce15b40560c8f17b2d47f53c152",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V170_2026-09-30.json",
+  "findingsLedgerExpectedGitBlob": "a0e3028b4edd54a6ad7c6e4fbb16d1fcd62ff0fa",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "PREI4-CONTENT-001",
+  "activeBlocker": "PREI4-CONTENT-002",
   "nextFindingId": "VRM-089",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "SOURCE PROOF IS ALREADY PASS IN RUN 694. Re-run the same cumulative source guard on the unchanged product source d8874bd952a70ce15b40560c8f17b2d47f53c152, then in the same existing job materialize that exact source to Recovery DEV runtime + Hosting and run cumulative live Postulations + Identity + Finance + authenticated shopper questionnaire routing. No production.",
+  "exactNextAction": "Run one cumulative CONTENT-002 source guard on exact product source a29b8ad89391fb5537d1cbf765ef6ec86f775608 / tree ea8846d254d1901ac1101c182098c46f995f1141, including project questionnaire config + shopper progressive-route source tests. If PASS, materialize only the changed Hosting owners while preserving proven runtime cxorbia-live-hr-dev-00230-c5m, then rerun cumulative live Postulaciones + Identity + Finance + authenticated shopper route proof (assigned -> scheduled -> realized -> questionnaire -> review; external visit route has no general fallback; provider ACK required). No production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -428,7 +428,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "aec04d107b769ebf1393c760ad8531e45796266c",
+  "productSourceTree": "ea8846d254d1901ac1101c182098c46f995f1141",
   "lastLiveReproof": {
     "runId": 36217529367,
     "runNumber": 465,
@@ -1156,10 +1156,11 @@
       "PREI4-CERT-002",
       "PREI4-RES-001"
     ],
-    "production": false
+    "production": false,
+    "state": "CONTENT_002_CUMULATIVE_SOURCE_REPROOF_REQUIRED"
   },
   "preI4Content001": {
-    "state": "SOURCE_PROVEN_RUN694_SOURCE_GUARD_RETRIGGERED",
+    "state": "SOURCE_PROVEN_RUN694_INCLUDED_IN_CONTENT_002_SUCCESSOR_LIVE_REPROOF_REQUIRED",
     "sourceSha": "d8874bd952a70ce15b40560c8f17b2d47f53c152",
     "sourceTree": "aec04d107b769ebf1393c760ad8531e45796266c",
     "productFiles": [
@@ -1175,6 +1176,22 @@
     "cumulativeSourceGuard": "PASS_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD",
     "controlStatusReuse": "HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED",
     "nextControlMarker": "[prei4-content-001-source]",
-    "controlTriggerPurpose": "Re-run unchanged cumulative source guard before DEV materialization; product source unchanged; no production."
+    "controlTriggerPurpose": "Re-run unchanged cumulative source guard before DEV materialization; product source unchanged; no production.",
+    "cumulativeSuccessorSha": "a29b8ad89391fb5537d1cbf765ef6ec86f775608",
+    "cumulativeSuccessorTree": "ea8846d254d1901ac1101c182098c46f995f1141"
+  },
+  "preI4Content002": {
+    "state": "SOURCE_FIX_REPROOF_REQUIRED",
+    "classification": "MAPPING_FAILURE",
+    "sourceSha": "a29b8ad89391fb5537d1cbf765ef6ec86f775608",
+    "sourceTree": "ea8846d254d1901ac1101c182098c46f995f1141",
+    "predecessorProductSourceSha": "d8874bd952a70ce15b40560c8f17b2d47f53c152",
+    "productFiles": [
+      "app/modules/cuestionario-shopper.js",
+      "app/modules/misvisitas.js"
+    ],
+    "testFile": "backend/runtime/hr-live-service/test/cxorbia-prei4-shopper-progressive-route.test.mjs",
+    "contract": "Progressive shopper visit route + exact external-visit questionnaire routing + ACK-gated questionnaire completion.",
+    "production": false
   }
 }

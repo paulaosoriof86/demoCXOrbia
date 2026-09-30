@@ -35,7 +35,7 @@ const browser=await chromium.launch({headless:true});
 const ctx=await browser.newContext({viewport:{width:1440,height:980}});
 const page=await ctx.newPage();
 const URL=ROOT+'/index-backend-dev.html?cxProjectId=cinepolis';
-const evidence={schemaVersion:'cxorbia.prei4.content001.live.v1',decision:'HOLD',sourceSha:SOURCE,sourceTree:TREE,hrRevision:EXPECTED_HR,production:false,writes:0,hrWrites:0};
+const evidence={schemaVersion:'cxorbia.prei4.content002.live.v1',decision:'HOLD',sourceSha:SOURCE,sourceTree:TREE,hrRevision:EXPECTED_HR,production:false,writes:0,hrWrites:0};
 try{
   let ok=false;
   for(let attempt=1;attempt<=5&&!ok;attempt++){
@@ -53,7 +53,7 @@ try{
     return c.authenticated===true&&String(c.role||'').toLowerCase()==='shopper'&&String(c.shopperId||'')===sid&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&g.ready===true&&g.blocked!==true&&String(d.previewMeta?.sourceRevision||'')===rev;
   },{sid:shopper.shopperId,rev:EXPECTED_HR},{timeout:150000});
 
-  const result=await page.evaluate(({general,visitUrl,wrong})=>{
+  const result=await page.evaluate(async ({general,visitUrl,wrong})=>{
     const d=window.CX?.data,ui=window.CX?.ui;
     if(typeof window.CX?.shopperQuestionnaire!=='function')throw new Error('QUESTIONNAIRE_RUNTIME_MISSING');
     const p=d.period();
@@ -76,21 +76,71 @@ try{
     window.CX.shopperQuestionnaire(d,p,v,ui);
     const visitProof=readModal();closeModal();
 
+    v.questionnaireLink='';v.cuestionarioUrl='';v.linkCuestionario='';v.urlCuestionario='';v.hrQuestionnaireLink='';
+    window.CX.shopperQuestionnaire(d,p,v,ui);
+    const missingVisitProof=readModal();closeModal();
+
+    const originalSubmit=d.submitQuestionnaire;
+    const originalRefresh=window.CX?.backend?.refresh;
+    let ackCall=null;
+    d.submitQuestionnaire=async(id,result,meta)=>{ackCall={id,result,meta};return{ok:true,status:'committed',committed:true,providerAck:true,successUiAllowed:true,providerWrites:0};};
+    if(window.CX?.backend)window.CX.backend.refresh=async()=>({ok:true});
+    p.cuestionario={modo:'externo_general',url:general,etiqueta:'QA ACK'};
+    window.CX.shopperQuestionnaire(d,p,v,ui);
+    const ackModal=[...document.querySelectorAll('.cx-ov')].at(-1);
+    ackModal?.querySelector('#markDone')?.click();
+    await new Promise(resolve=>setTimeout(resolve,80));
+    const ackProof={called:!!ackCall,ackAware:ackCall?.meta?.ackAware===true,reason:String(ackCall?.meta?.reason||'')};
+    d.submitQuestionnaire=originalSubmit;
+    if(window.CX?.backend)window.CX.backend.refresh=originalRefresh;
+    closeModal();
+
+    const sid=String(window.CX?.session?.user?.shopperId||'');
+    const qa=Object.assign({},JSON.parse(JSON.stringify(v)),{
+      id:'qa-progressive-'+Date.now(),visitId:'qa-progressive-'+Date.now(),hrRowId:'QA_PROGRESSIVE',
+      shopperId:sid,projectId:String(d.currentProjectId||''),rootProjectId:String(d.currentProjectId||''),
+      periodId:String(d.currentPeriodId||''),periodKey:String(p.periodKey||''),estado:'asignada',
+      agendada:null,realizada:null,cuestFecha:null,submit:false,submittedAt:null,canonicalFacets:undefined
+    });
+    delete qa.canonicalFacets;
+    d._visitas.push(qa);
+    const inspect=async()=>{
+      window.CX.router.nav('misvisitas');
+      await new Promise(resolve=>setTimeout(resolve,100));
+      const card=document.querySelector('[data-visit-card="'+qa.id+'"]');
+      return {exists:!!card,schedule:!!card?.querySelector('[data-sched]'),done:!!card?.querySelector('[data-done]'),questionnaire:!!card?.querySelector('[data-quest]'),questionnaireComplete:!!card?.querySelector('[data-questionnaire-complete]')};
+    };
+    const assignedStage=await inspect();
+    qa.estado='agendada';qa.agendada='2026-09-30';qa.realizada=null;qa.cuestFecha=null;
+    const scheduledStage=await inspect();
+    qa.estado='realizada';qa.realizada='2026-09-30';qa.cuestFecha=null;
+    const realizedStage=await inspect();
+    qa.estado='cuestionario';qa.cuestFecha='2026-09-30';
+    const questionnaireStage=await inspect();
+    const qidx=d._visitas.indexOf(qa);if(qidx>=0)d._visitas.splice(qidx,1);
+
     p.cuestionario=originalProject;
     Object.assign(v,originalVisit);
-    return {generalProof,visitProof,sourceRevision:String(d.previewMeta?.sourceRevision||''),projectId:String(d.currentProjectId||''),periodId:String(d.currentPeriodId||'')};
+    return {generalProof,visitProof,missingVisitProof,ackProof,progressive:{assignedStage,scheduledStage,realizedStage,questionnaireStage},sourceRevision:String(d.previewMeta?.sourceRevision||''),projectId:String(d.currentProjectId||''),periodId:String(d.currentPeriodId||'')};
   },{general:GENERAL,visitUrl:VISIT,wrong:WRONG});
 
   if(result.sourceRevision!==EXPECTED_HR)fail('SOURCE_FAILURE:CONTENT001_BROWSER_REVISION');
-  if(result.generalProof.href!==GENERAL||!/link general|cuestionario externo/i.test(result.generalProof.text))fail('FUNCTIONAL_DEFECT:CONTENT001_GENERAL_ROUTE:'+JSON.stringify(result.generalProof));
-  if(result.visitProof.href!==VISIT||result.visitProof.href===WRONG||!/link propio por visita/i.test(result.visitProof.text))fail('FUNCTIONAL_DEFECT:CONTENT001_VISIT_ROUTE:'+JSON.stringify(result.visitProof));
-  evidence.decision='PASS_PREI4_CONTENT001_AUTHENTICATED_SHOPPER_ROUTE';
+  if(result.generalProof.href!==GENERAL||!/link general|cuestionario externo/i.test(result.generalProof.text))fail('FUNCTIONAL_DEFECT:CONTENT002_GENERAL_ROUTE:'+JSON.stringify(result.generalProof));
+  if(result.visitProof.href!==VISIT||result.visitProof.href===WRONG||!/link propio por visita/i.test(result.visitProof.text))fail('FUNCTIONAL_DEFECT:CONTENT002_VISIT_ROUTE:'+JSON.stringify(result.visitProof));
+  if(result.missingVisitProof.href!==''||!/pendiente en la hoja de ruta/i.test(result.missingVisitProof.text))fail('MAPPING_FAILURE:CONTENT002_VISIT_ROUTE_FALLBACK:'+JSON.stringify(result.missingVisitProof));
+  if(result.ackProof.called!==true||result.ackProof.ackAware!==true||result.ackProof.reason!=='shopper-external-questionnaire-complete')fail('PERSISTENCE_FAILURE:CONTENT002_PROVIDER_ACK:'+JSON.stringify(result.ackProof));
+  const g=result.progressive||{},a=g.assignedStage||{},sc=g.scheduledStage||{},rr=g.realizedStage||{},qc=g.questionnaireStage||{};
+  if(!(a.exists&&a.schedule&&!a.done&&!a.questionnaire))fail('FUNCTIONAL_DEFECT:CONTENT002_ASSIGNED_STAGE:'+JSON.stringify(a));
+  if(!(sc.exists&&!sc.schedule&&sc.done&&!sc.questionnaire))fail('FUNCTIONAL_DEFECT:CONTENT002_SCHEDULED_STAGE:'+JSON.stringify(sc));
+  if(!(rr.exists&&!rr.schedule&&!rr.done&&rr.questionnaire&&!rr.questionnaireComplete))fail('FUNCTIONAL_DEFECT:CONTENT002_REALIZED_STAGE:'+JSON.stringify(rr));
+  if(!(qc.exists&&!qc.questionnaire&&qc.questionnaireComplete))fail('FUNCTIONAL_DEFECT:CONTENT002_QUESTIONNAIRE_COMPLETE_STAGE:'+JSON.stringify(qc));
+  evidence.decision='PASS_PREI4_CONTENT002_AUTHENTICATED_SHOPPER_PROGRESSIVE_ROUTE';
   evidence.shopperFp=shopper.shopperId.slice(0,12);
   evidence.browser=result;
   fs.writeFileSync(OUT+'/result.json',JSON.stringify(evidence,null,2)+'\n');
   console.log(JSON.stringify(evidence,null,2));
 }catch(error){
-  evidence.decision='FAIL_PREI4_CONTENT001_AUTHENTICATED_SHOPPER_ROUTE';
+  evidence.decision='FAIL_PREI4_CONTENT002_AUTHENTICATED_SHOPPER_PROGRESSIVE_ROUTE';
   evidence.error=String(error?.stack||error);
   fs.writeFileSync(OUT+'/result.json',JSON.stringify(evidence,null,2)+'\n');
   throw error;

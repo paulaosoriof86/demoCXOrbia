@@ -46,7 +46,7 @@ on:
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V158_2026-09-30.json
       - tools/qa/cxorbia-prei4-admin004-finance-forensic-readonly.mjs
       - backend/runtime/hr-live-service/test/cxorbia-prei4-project-questionnaire-config.test.mjs
-      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V168_2026-09-30.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V170_2026-09-30.json
       - tools/qa/cxorbia-prei4-admin004-cumulative-live-reproof.mjs
       - CXORBIA_PRE_I4_ADMIN_003_CUMULATIVE_LIVE_RECEIPT_2026-09-29.json
       - tools/qa/cxorbia-prei4-admin003-cumulative-live-reproof.mjs
@@ -113,7 +113,7 @@ env:
   I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V168_2026-09-30.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V170_2026-09-30.json
 
 jobs:
   canonical-candidate-authority:
@@ -151,7 +151,7 @@ jobs:
           test "$(jq -r '.findings["VRM-079"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN518"
           test "$(jq -r '.findings["VRM-080"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN525"
           test "$(jq -r '.findings["VRM-081"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN547"
-          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED" || "$STATUS" == "HOLD_MODULE_TRUTH_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM087_FINALIZER_RECEIPT_SCOPE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM088_LIVE_FIXTURE_AVAILABILITY_REPROOF_REQUIRED" || "$STATUS" == "READY_FOR_GATE21_SAME_CERTIFIED_ARTIFACT" || "$STATUS" == "HOLD_PREI4_ADMIN_008_HR_MAPPING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_008_DEV_RUNTIME_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_RECOVERY_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_HOSTING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_IDENTITY_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_OWNER_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_LIVE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_LIVE_RESUME_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_DIAGNOSTIC_RUNNING" || "$STATUS" == "HOLD_PREI4_ADMIN_004_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_LIVE_RESUME_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_HONORARIUM_PROPAGATION_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_COMPOSER_BOUNDARY_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "GO" ]]
+          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED" || "$STATUS" == "HOLD_MODULE_TRUTH_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM087_FINALIZER_RECEIPT_SCOPE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM088_LIVE_FIXTURE_AVAILABILITY_REPROOF_REQUIRED" || "$STATUS" == "READY_FOR_GATE21_SAME_CERTIFIED_ARTIFACT" || "$STATUS" == "HOLD_PREI4_ADMIN_008_HR_MAPPING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_008_DEV_RUNTIME_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_RECOVERY_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_HOSTING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_IDENTITY_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_OWNER_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_LIVE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_LIVE_RESUME_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_DIAGNOSTIC_RUNNING" || "$STATUS" == "HOLD_PREI4_ADMIN_004_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_LIVE_RESUME_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_HONORARIUM_PROPAGATION_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_COMPOSER_BOUNDARY_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_CONTENT_002_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "GO" ]]
           echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
@@ -740,19 +740,19 @@ jobs:
   prei4-cumulative-regression-source-guard:
     name: PRE-I4 cumulative anti-regression — all prior closures + Module Truth
     needs: canonical-candidate-authority
-    if: ${{ (needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_003_CUMULATIVE_SOURCE_REPROOF_REQUIRED' || (needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_HOSTING_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_FINANCE_LIVE_RESUME_REQUIRED') || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED') && github.event_name == 'push' && (contains(github.event.head_commit.message, '[prei4-cumulative-regression]') || contains(github.event.head_commit.message, '[prei4-content-001-source]')) }}
+    if: ${{ (needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_003_CUMULATIVE_SOURCE_REPROOF_REQUIRED' || (needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_HOSTING_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_FINANCE_LIVE_RESUME_REQUIRED') || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CONTENT_002_SOURCE_REPROOF_REQUIRED') && github.event_name == 'push' && (contains(github.event.head_commit.message, '[prei4-cumulative-regression]') || contains(github.event.head_commit.message, '[prei4-content-001-source]') || contains(github.event.head_commit.message, '[prei4-content-002-source]')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
       CUM_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
       CUM_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
       CUM_BASE: c487449e5187d7219033c54fa1ac3db5fb6c822e
-      CUM_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V168_2026-09-30.json
+      CUM_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V170_2026-09-30.json
       CUM_MATRIX: RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json
       CUM_OUT: .tmp/prei4-cumulative-regression
-      CUM_EXPECTED_DELTA_JSON: '["app/adapters/cxorbia-cxdata-command-boundary-v1.js","app/adapters/tya-c6-unified-human-runtime-v1.js","app/adapters/tya-canonical-finance-read-model-v2.js","app/adapters/tya-live-source-inplace-apply.js","app/adapters/tya-protected-auth-hr-authority-bridge-v2.js","app/modules/finanzas.js","app/modules/proyectos.js","backend/runtime/cxorbia-finance-command-provider-v1.mjs","backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs","backend/runtime/hr-live-service/server.mjs","backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs","backend/runtime/hr-live-service/test/cxorbia-prei4-project-questionnaire-config.test.mjs"]'
-      CUM_ALLOWED_PENDING_MODULES_JSON: '["canonical-hr-state-adapters","finance-core-liquidation-costs","human-runtime-domain-consistency","persistence-command-ack-boundary","phase-a-supporting-core","projects-periods-hr-source-wizard-multiproject"]'
-      CUM_EXPECTED_PENDING_FILES_JSON: '["app/adapters/cxorbia-cxdata-command-boundary-v1.js","app/adapters/tya-c6-unified-human-runtime-v1.js","app/adapters/tya-canonical-finance-read-model-v2.js","app/adapters/tya-live-source-inplace-apply.js","app/adapters/tya-protected-auth-hr-authority-bridge-v2.js","app/modules/finanzas.js","app/modules/proyectos.js","backend/runtime/cxorbia-finance-command-provider-v1.mjs","backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs","backend/runtime/hr-live-service/server.mjs"]'
+      CUM_EXPECTED_DELTA_JSON: '["app/adapters/cxorbia-cxdata-command-boundary-v1.js","app/adapters/tya-c6-unified-human-runtime-v1.js","app/adapters/tya-canonical-finance-read-model-v2.js","app/adapters/tya-live-source-inplace-apply.js","app/adapters/tya-protected-auth-hr-authority-bridge-v2.js","app/modules/cuestionario-shopper.js","app/modules/finanzas.js","app/modules/misvisitas.js","app/modules/proyectos.js","backend/runtime/cxorbia-finance-command-provider-v1.mjs","backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs","backend/runtime/hr-live-service/server.mjs","backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs","backend/runtime/hr-live-service/test/cxorbia-prei4-project-questionnaire-config.test.mjs","backend/runtime/hr-live-service/test/cxorbia-prei4-shopper-progressive-route.test.mjs"]'
+      CUM_ALLOWED_PENDING_MODULES_JSON: '["canonical-hr-state-adapters","finance-core-liquidation-costs","human-runtime-domain-consistency","persistence-command-ack-boundary","phase-a-supporting-core","projects-periods-hr-source-wizard-multiproject","questionnaire-shopper","shoppers-mi-visitas-profile"]'
+      CUM_EXPECTED_PENDING_FILES_JSON: '["app/adapters/cxorbia-cxdata-command-boundary-v1.js","app/adapters/tya-c6-unified-human-runtime-v1.js","app/adapters/tya-canonical-finance-read-model-v2.js","app/adapters/tya-live-source-inplace-apply.js","app/adapters/tya-protected-auth-hr-authority-bridge-v2.js","app/modules/cuestionario-shopper.js","app/modules/finanzas.js","app/modules/misvisitas.js","app/modules/proyectos.js","backend/runtime/cxorbia-finance-command-provider-v1.mjs","backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs","backend/runtime/hr-live-service/server.mjs"]'
     steps:
       - uses: actions/checkout@v4
         with: {fetch-depth: 0}
@@ -772,6 +772,19 @@ jobs:
               node --check app/adapters/tya-live-source-inplace-apply.js
               node --check backend/runtime/hr-live-service/server.mjs
               node backend/runtime/hr-live-service/test/cxorbia-prei4-project-questionnaire-config.test.mjs | tee "$GITHUB_WORKSPACE/$CUM_OUT/questionnaire-source.log"
+            )
+          fi
+          if [ "${{ needs.canonical-candidate-authority.outputs.status }}" = "HOLD_PREI4_CONTENT_002_SOURCE_REPROOF_REQUIRED" ]; then
+            TMP_CONTENT002="$(mktemp -d)"
+            trap 'rm -rf "$TMP_CONTENT002"' EXIT
+            git archive "$CUM_SOURCE" | tar -x -C "$TMP_CONTENT002"
+            (
+              cd "$TMP_CONTENT002"
+              node --check app/modules/proyectos.js
+              node --check app/modules/cuestionario-shopper.js
+              node --check app/modules/misvisitas.js
+              node backend/runtime/hr-live-service/test/cxorbia-prei4-project-questionnaire-config.test.mjs
+              node backend/runtime/hr-live-service/test/cxorbia-prei4-shopper-progressive-route.test.mjs
             )
           fi
           node --check tools/qa/cxorbia-prei4-cumulative-regression-source-guard.mjs
@@ -807,9 +820,6 @@ jobs:
       PREI4_CONTENT001_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
       PREI4_004_RESUME_OUT: .tmp/prei4-admin-004-config-resume
       PREI4_CONTENT001_ROOT: https://cxorbia-backend-dev.web.app
-      PREI4_CONTENT001_EXPECTED_RUNTIME: 'cxorbia-live-hr-dev-00230-c5m'
-      PREI4_CONTENT001_EXPECTED_DIGEST: 'sha256:5ece6bb303b6af2d1ad6b08cf40ebfccaa18e14ea604a5ea7b07c5ae1c650a95'
-      PREI4_CONTENT001_EXPECTED_HOSTING: 'sites/cxorbia-backend-dev/versions/e1831fa97d8286ec'
     steps:
       - uses: actions/checkout@v4
         with: {fetch-depth: 0}
@@ -835,15 +845,15 @@ jobs:
 
 
   prei4-admin-004-cumulative-dev-materialization:
-    name: PRE-I4 CONTENT-001 — exact cumulative DEV materialization + live guard
-    needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-content-001-live]') }}
+    name: PRE-I4 CONTENT-002 — exact cumulative DEV materialization + live guard
+    needs: [canonical-candidate-authority, prei4-cumulative-regression-source-guard]
+    if: ${{ needs.prei4-cumulative-regression-source-guard.result == 'success' && needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CONTENT_002_SOURCE_REPROOF_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-content-002-live]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 55
     env:
       PREI4_CONTENT001_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
       PREI4_CONTENT001_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
-      PREI4_CONTENT001_OUT: .tmp/prei4-content001-live
+      PREI4_CONTENT001_OUT: .tmp/prei4-content002-live
       PREI4_CONTENT001_ROOT: https://cxorbia-backend-dev.web.app
     steps:
       - uses: actions/checkout@v4
@@ -862,7 +872,7 @@ jobs:
       - if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-prei4-content-001-cumulative-live-${{ github.run_id }}
+          name: cxorbia-prei4-content-002-cumulative-live-${{ github.run_id }}
           path: ${{ env.PREI4_CONTENT001_OUT }}
           if-no-files-found: error
           retention-days: 30
@@ -873,8 +883,8 @@ jobs:
 
   prei4-admin-003-cumulative-live-reproof:
     name: PRE-I4 ADMIN-003 — cumulative no-deploy resume + closed-module regression
-    needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_003_CUMULATIVE_LIVE_RESUME_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-admin-003-live]') }}
+    needs: [canonical-candidate-authority, prei4-cumulative-regression-source-guard]
+    if: ${{ needs.prei4-cumulative-regression-source-guard.result == 'success' && needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CONTENT_002_SOURCE_REPROOF_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-content-002-live]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
