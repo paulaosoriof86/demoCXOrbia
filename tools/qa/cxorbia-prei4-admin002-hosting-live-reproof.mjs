@@ -60,9 +60,9 @@ async function signed(principal,kind){
       await page.goto(URL,{waitUntil:'domcontentloaded',timeout:90000});
       await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
       const token=await auth.createCustomToken(principal.uid);
-      try{await page.evaluate(async t=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);await firebase.auth().signInWithCustomToken(t);},token);}catch(e){if(!/Execution context was destroyed|navigation|network|timeout|interrupted/i.test(String(e?.message||e)))throw e;}
+      try{await page.evaluate(async t=>{const fb=window.firebase;if(!fb?.auth)throw new Error('FIREBASE_NOT_READY');await fb.auth().setPersistence(fb.auth.Auth.Persistence.LOCAL);await fb.auth().signInWithCustomToken(t);},token);}catch(e){if(!/FIREBASE_NOT_READY|firebase is not defined|Execution context was destroyed|navigation|network|timeout|interrupted/i.test(String(e?.message||e)))throw e;}
       await page.waitForTimeout(700*attempt);
-      ok=await page.evaluate(uid=>String(firebase.auth().currentUser?.uid||'')===uid,principal.uid).catch(()=>false);
+      ok=await page.evaluate(uid=>String(window.firebase?.auth?.().currentUser?.uid||'')===uid,principal.uid).catch(()=>false);
     }
     if(!ok)throw new Error('AUTH_FAILURE:PREI4_002_'+kind.toUpperCase()+'_CUSTOM_TOKEN');
     await page.reload({waitUntil:'domcontentloaded',timeout:90000});
