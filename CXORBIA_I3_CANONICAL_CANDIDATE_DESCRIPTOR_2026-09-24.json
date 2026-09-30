@@ -8,13 +8,13 @@
   "productTreeAuthority": "ccb3d9da3c110e2d5fff57bae0d2d0eb76b3c4b4",
   "predecessorProductSourceSha": "2cff3441f126d7d805932127bb9de9289ba273ad",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "3fec5d482326050e22647f5cb63f0d1c61d734e1",
+  "findingsLedgerExpectedGitBlob": "35a5bfa0449fb5cb59e9084970265cb42f016884",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
   "activeBlocker": "PREI4-CERT-001_PREI4-CERT-002_PREI4-RES-001",
-  "nextFindingId": "VRM-110",
+  "nextFindingId": "VRM-111",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Test the existing project-creator credential routes read-only against cxorbia-backend-dev. If one existing route grants the required Service Usage, Firebase Storage, Rules and Vertex permissions and confirms billing enabled, use that existing route for DEV-only provider activation. Otherwise request only the exact missing IAM/billing authorization. Do not touch production.",
+  "exactNextAction": "Repeat the corrected read-only credential-route diagnostic once. If it confirms no alternate creator credential and the existing DEV service account still lacks serviceusage.services.enable, firebasestorage.defaultBucket.create, firebaserules.releases.create and aiplatform.endpoints.predict, request only the minimum IAM roles on cxorbia-backend-dev needed for DEV provider activation. Production remains untouched.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1549,12 +1549,12 @@
     "production": false
   },
   "controlMappingFinding": {
-    "id": "VRM-109",
-    "state": "FIXED_PROVEN_RUN740",
-    "owner": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+    "id": "VRM-110",
+    "state": "FIX_APPLIED_REPROOF_REQUIRED",
+    "owner": "tools/qa/cxorbia-prei4-cert-res-credential-route-diagnostic.sh"
   },
   "preI4CertResProviderCapability": {
-    "state": "RUN740_CURRENT_DEV_CREDENTIAL_INSUFFICIENT_ALTERNATE_CREDENTIAL_DIAGNOSTIC_REQUIRED",
+    "state": "NO_ALTERNATE_CREDENTIALS_PROVEN_RUN741_HARNESS_REPROOF_REQUIRED",
     "runId": 36779681556,
     "artifactId": 11127490166,
     "artifactDigest": "sha256:62990b6952f7752b39738144123c132004f0b652d5c3a2daafdcb1ac8c796f53",
@@ -1600,6 +1600,28 @@
       "CXORBIA_GCP_PROJECT_CREATOR_JSON",
       "GOOGLE_CLOUD_PROJECT_CREATOR_JSON",
       "FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV"
-    ]
+    ],
+    "run741Partial": {
+      "runId": 36780577950,
+      "artifactId": 11127536200,
+      "artifactDigest": "sha256:5ef81a33018ac745f6f7d47ee213dcfdc406c891ed79398b7edb0fc0108bd562",
+      "dedicatedProjectCreatorPresent": false,
+      "alternateProjectCreatorPresent": false,
+      "existingDevPresent": true,
+      "existingDevGrantedPermissions": [
+        "firebase.projects.get",
+        "firebaserules.rulesets.create",
+        "resourcemanager.projects.get",
+        "serviceusage.services.get",
+        "storage.buckets.create",
+        "storage.buckets.get",
+        "storage.objects.create",
+        "storage.objects.get"
+      ],
+      "billingApiState": "DISABLED",
+      "writes": 0,
+      "deploys": 0,
+      "production": false
+    }
   }
 }

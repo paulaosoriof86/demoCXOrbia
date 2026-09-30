@@ -5278,6 +5278,50 @@
         "productChanged": false,
         "production": false
       }
+    },
+    "VRM-110": {
+      "id": "VRM-110",
+      "classification": "MAPPING_FAILURE",
+      "severity": "P0_CONTROL",
+      "title": "Credential-route diagnostic aggregated candidates.json with per-route result objects and failed jq type assumptions",
+      "state": "FIX_APPLIED_REPROOF_REQUIRED",
+      "exactOwner": "tools/qa/cxorbia-prei4-cert-res-credential-route-diagnostic.sh",
+      "rootCause": "The diagnostic used a broad safe/*.json glob. That glob included candidates.json, which is an array, alongside per-route objects. The jq readiness mapper expected every input item to expose grantedPermissions and failed with 'Cannot index array with string grantedPermissions'.",
+      "run741Evidence": {
+        "runId": 36780577950,
+        "authorityJob": "success",
+        "diagnosticFailure": "jq type mismatch",
+        "alternateCredentials": {
+          "dedicatedProjectCreator": {
+            "present": false,
+            "shapeValid": false
+          },
+          "alternateProjectCreator": {
+            "present": false,
+            "shapeValid": false
+          },
+          "existingDevServiceAccount": {
+            "present": true,
+            "shapeValid": true
+          }
+        },
+        "existingDevGrantedPermissions": [
+          "firebase.projects.get",
+          "firebaserules.rulesets.create",
+          "resourcemanager.projects.get",
+          "serviceusage.services.get",
+          "storage.buckets.create",
+          "storage.buckets.get",
+          "storage.objects.create",
+          "storage.objects.get"
+        ],
+        "existingDevBillingHttp": 403,
+        "writes": 0,
+        "deploys": 0,
+        "production": false
+      },
+      "remediationContract": "Aggregate only per-route result files; exclude candidates.json. Repeat the same read-only gate once. Do not alter credentials, IAM, product source or environment.",
+      "production": false
     }
   },
   "latestEvidenceOverrides": {
@@ -5804,11 +5848,12 @@
       "VRM-106",
       "VRM-107",
       "VRM-108",
-      "VRM-109"
+      "VRM-109",
+      "VRM-110"
     ],
-    "findingCount": 109,
-    "expectedCurrentRange": "VRM-001..VRM-109",
-    "nextFindingId": "VRM-110",
+    "findingCount": 110,
+    "expectedCurrentRange": "VRM-001..VRM-110",
+    "nextFindingId": "VRM-111",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_PREI4_HUMAN_VISUAL_ACCEPTANCE_REQUIRED",
@@ -5838,7 +5883,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Test the existing project-creator credential routes read-only against cxorbia-backend-dev. If one existing route grants the required Service Usage, Firebase Storage, Rules and Vertex permissions and confirms billing enabled, use that existing route for DEV-only provider activation. Otherwise request only the exact missing IAM/billing authorization. Do not touch production.",
+  "exactNextAction": "Repeat the corrected read-only credential-route diagnostic once. If it confirms no alternate creator credential and the existing DEV service account still lacks serviceusage.services.enable, firebasestorage.defaultBucket.create, firebaserules.releases.create and aiplatform.endpoints.predict, request only the minimum IAM roles on cxorbia-backend-dev needed for DEV provider activation. Production remains untouched.",
   "supersedesGitBlob": "397a9cee8c71d3156567a0cc96bfdcba88bb7c3a",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -7228,7 +7273,7 @@
     "PREI4-CONTENT-001",
     "PREI4-CONTENT-002"
   ],
-  "preI4NextAction": "Test the existing project-creator credential routes read-only against cxorbia-backend-dev. If one existing route grants the required Service Usage, Firebase Storage, Rules and Vertex permissions and confirms billing enabled, use that existing route for DEV-only provider activation. Otherwise request only the exact missing IAM/billing authorization. Do not touch production.",
+  "preI4NextAction": "Repeat the corrected read-only credential-route diagnostic once. If it confirms no alternate creator credential and the existing DEV service account still lacks serviceusage.services.enable, firebasestorage.defaultBucket.create, firebaserules.releases.create and aiplatform.endpoints.predict, request only the minimum IAM roles on cxorbia-backend-dev needed for DEV provider activation. Production remains untouched.",
   "preI4Admin002": {
     "findingId": "PREI4-ADMIN-002",
     "state": "FIXED_PROVEN_RUN601",
@@ -9002,7 +9047,7 @@
     "production": false
   },
   "preI4CertResProviderCapability": {
-    "state": "RUN740_CURRENT_DEV_CREDENTIAL_INSUFFICIENT_ALTERNATE_CREDENTIAL_DIAGNOSTIC_REQUIRED",
+    "state": "NO_ALTERNATE_CREDENTIALS_PROVEN_RUN741_HARNESS_REPROOF_REQUIRED",
     "runId": 36779681556,
     "artifactId": 11127490166,
     "artifactDigest": "sha256:62990b6952f7752b39738144123c132004f0b652d5c3a2daafdcb1ac8c796f53",
@@ -9048,6 +9093,28 @@
       "CXORBIA_GCP_PROJECT_CREATOR_JSON",
       "GOOGLE_CLOUD_PROJECT_CREATOR_JSON",
       "FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV"
-    ]
+    ],
+    "run741Partial": {
+      "runId": 36780577950,
+      "artifactId": 11127536200,
+      "artifactDigest": "sha256:5ef81a33018ac745f6f7d47ee213dcfdc406c891ed79398b7edb0fc0108bd562",
+      "dedicatedProjectCreatorPresent": false,
+      "alternateProjectCreatorPresent": false,
+      "existingDevPresent": true,
+      "existingDevGrantedPermissions": [
+        "firebase.projects.get",
+        "firebaserules.rulesets.create",
+        "resourcemanager.projects.get",
+        "serviceusage.services.get",
+        "storage.buckets.create",
+        "storage.buckets.get",
+        "storage.objects.create",
+        "storage.objects.get"
+      ],
+      "billingApiState": "DISABLED",
+      "writes": 0,
+      "deploys": 0,
+      "production": false
+    }
   }
 }

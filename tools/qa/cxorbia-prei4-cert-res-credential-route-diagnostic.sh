@@ -49,7 +49,9 @@ for key in "$D"/private/*.json; do
   )
 done
 
-jq -s -S 'def has($p): (.grantedPermissions|index($p)) != null; map(. + {readiness:{serviceEnable:has("serviceusage.services.enable"),firebaseDefaultBucketCreate:has("firebasestorage.defaultBucket.create"),storageBucketCreate:has("storage.buckets.create"),rulesetCreate:has("firebaserules.rulesets.create"),rulesReleaseCreate:has("firebaserules.releases.create"),vertexPredict:has("aiplatform.endpoints.predict"),projectRead:has("resourcemanager.projects.get")}})' "$D"/safe/*.json > "$D/routes.json"
+mapfile -t ROUTE_FILES < <(find "$D/safe" -maxdepth 1 -type f -name '*.json' ! -name 'candidates.json' -print | sort)
+test "${#ROUTE_FILES[@]}" -ge 1
+jq -s -S 'def has($p): (.grantedPermissions|index($p)) != null; map(. + {readiness:{serviceEnable:has("serviceusage.services.enable"),firebaseDefaultBucketCreate:has("firebasestorage.defaultBucket.create"),storageBucketCreate:has("storage.buckets.create"),rulesetCreate:has("firebaserules.rulesets.create"),rulesReleaseCreate:has("firebaserules.releases.create"),vertexPredict:has("aiplatform.endpoints.predict"),projectRead:has("resourcemanager.projects.get")}})' "${ROUTE_FILES[@]}" > "$D/routes.json"
 
 jq -n -S --slurpfile candidates "$D/safe/candidates.json" --slurpfile routes "$D/routes.json" '{decision:"PREI4_CERT_RES_EXISTING_CREDENTIAL_ROUTE_DIAGNOSTIC",candidates:$candidates[0],routes:$routes[0],writes:0,deploys:0,secretsOutput:false,production:false}' > "$D/result.json"
 cat "$D/result.json"
