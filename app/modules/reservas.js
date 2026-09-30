@@ -195,7 +195,7 @@ CX.module('reservas', ({data,role,ui})=>{
           ${all.map(r=>`<tr><td><b>${r.sucursal}</b></td><td style="font-size:12px">${CX.paisFlag(r.pais)} ${r.ciudad}</td>
             <td style="font-size:12px">${r.shopper||'<span class="muted">— sin shopper</span>'}</td>
             <td><select class="sel rEst" data-id="${r.id}" style="width:auto;padding:4px 8px;font-size:11.5px">${['solicitada','asignada','aprobada','rechazada'].concat(r.estado==='cruzada'?['cruzada']:[]).map(e=>`<option value="${e}" ${e===r.estado?'selected':''} ${e==='cruzada'?'disabled':''}>${ESTLBL[e]}</option>`).join('')}</select></td>
-            <td style="text-align:right">${r.estado==='cruzada'?ui.bdg('✓ visita creada','g'):`<button class="btn btn-ghost btn-sm" data-rsh="${r.id}">Cambiar shopper</button>`}</td></tr>`).join('')}
+            <td style="text-align:right">${r.estado==='cruzada'?ui.bdg('✓ visita creada','g'):`<button class="btn btn-ghost btn-sm" data-rsh="${r.id}">Cambiar shopper</button> <button class="btn btn-ghost btn-sm" data-rdel="${r.id}" style="color:var(--red)">Eliminar</button>`}</td></tr>`).join('')}
         </tbody></table></div>`:ui.empty('🗂️','Sin solicitudes este periodo. Asigna sucursales o espera reservas de los shoppers.')}
         <div style="margin-top:12px">${ui.aiBox('Cada periodo cargas los escenarios que envía el cliente. Los shoppers van reservando sucursales; tú confirmas a quién asignas cada una. Al "Publicar y cruzar", las visitas del periodo nacen ya asignadas al shopper que las reservó — sin duplicar postulaciones.','Reserva ↔ asignación ↔ publicación')}</div>
       </div>`;
@@ -217,6 +217,7 @@ CX.module('reservas', ({data,role,ui})=>{
         setTimeout(()=>location.reload(),180);
       }catch(_){draw();ui.toast('No hubo ACK remoto; no se declaró el cambio','warn');}
     }));
+    host.querySelectorAll('[data-rdel]').forEach(b=>b.addEventListener('click',async()=>{if(!confirm('¿Eliminar esta reserva?'))return;b.disabled=true;try{await CX.reservas.remove(pid,b.dataset.rdel);ui.toast('Reserva eliminada y confirmada','ok');setTimeout(()=>location.reload(),180);}catch(error){b.disabled=false;ui.toast('No hubo ACK remoto; la reserva no se declaró eliminada','warn');}}));
     host.querySelectorAll('[data-rsh]').forEach(b=>b.addEventListener('click',()=>{
       const reservation=CX.reservas.list(pid).find(x=>x.id===b.dataset.rsh),cands=data.shoppersFor();
       ui.modal('Asignar shopper · '+reservation.sucursal,`<select class="sel" id="rshSel" style="margin-bottom:14px">${cands.map(s=>`<option value="${s.id}">${s.nombre} · ${s.code}</option>`).join('')}</select>

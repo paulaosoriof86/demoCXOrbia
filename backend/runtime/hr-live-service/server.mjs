@@ -19,7 +19,7 @@ import { createOperationalCommandProvider } from '../cxorbia-operational-command
 const HERE=path.dirname(fileURLToPath(import.meta.url));
 const ROOT=path.resolve(HERE,'../../..');
 const PORT=Number(process.env.PORT||8080);
-const CACHE_MS=Math.max(15000,Number(process.env.CXORBIA_LIVE_HR_CACHE_MS||55000));
+const CACHE_MS=Math.max(5000,Math.min(15000,Number(process.env.CXORBIA_LIVE_HR_CACHE_MS||5000)));
 const BOOTSTRAP_FILE=path.join(ROOT,'app/data/tya-hr-source-safe-periods.js');
 const REGISTRY_FILE=path.join(ROOT,'backend/config/tya-live-hr-tab-registry.source-safe.json');
 const FIREBASE_PROJECT=String(process.env.GOOGLE_CLOUD_PROJECT||process.env.GCLOUD_PROJECT||'').trim();
@@ -318,12 +318,19 @@ async function refreshSnapshot(){
       const parsed=parseSnapshot(payload);
       const configured=await withDurableProjectConfig(parsed);
       const next=materialize(configured,'runtime_refresh',parseIdentity(identityFile));
-      await reconcileAuthoritativeShoppers(next);
-      await reconcileAuthoritativeVisits(next);
+      /* Recovery P0: publish the fresh HR read before durable Firestore reconciliation. */
       cache=next;
       lastRefreshError=null;
       lastRefreshFinishedAt=new Date().toISOString();
       lastRefreshDurationMs=Date.now()-started;
+      Promise.resolve().then(async()=>{
+        try{
+          await reconcileAuthoritativeShoppers(next);
+          await reconcileAuthoritativeVisits(next);
+        }catch(error){
+          console.error('CXOrbia durable HR reconciliation failed after fresh read: '+String(error?.message||error));
+        }
+      });
       return cache;
     } finally {
       fs.rmSync(dir,{recursive:true,force:true});
@@ -346,12 +353,8 @@ async function buildSnapshot({forceFresh=false}={}){
   if(cache?.origin==='build_bootstrap')return inFlight||refreshSnapshot();
   const age=cache?Date.now()-cache.loadedAt:Infinity;
   if(cache&&age<CACHE_MS)return cache;
-  if(inFlight)return cache||inFlight;
-  if(cache){
-    refreshSnapshot().catch(error=>console.error(`CXOrbia live HR background refresh failed: ${String(error?.message||error)}`));
-    return cache;
-  }
-  return refreshSnapshot();
+  /* Expired data is never served as current: wait for a fresh source-safe read. */
+  return inFlight||refreshSnapshot();
 }
 
 function runtimeMeta(current){

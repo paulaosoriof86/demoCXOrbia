@@ -47,7 +47,7 @@ CX.module('financiero', ({data,ui})=>{
       <div class="finDrill" data-c="${c}" style="cursor:pointer">${ui.kpi('Ingresos',moneyOrPending(d,d.ingreso),'g',d.incomeSourceKnown?'Fuente configurada':'Pendiente de fuente/configuración')}</div>
       <div class="finDrill" data-c="${c}" style="cursor:pointer">${ui.kpi('Honorarios devengados',moneyOrPending(d,d.honorarioDevengado,'Pendiente de fuente'),'r',Number.isFinite(d.honorarioDevengado)?'obligación · no implica pago':'Tarifa/honorario no disponible en HR ni configuración')}</div>
       <div class="finDrill" data-c="${c}" style="cursor:pointer">${p.modelo==='directo'?ui.kpi('ISR ('+(p.isr||0)+'%)',moneyOrPending(d,d.isr),'a'):ui.kpi('Reembolsos',d.cur+' '+d.reemb.toLocaleString(),'n',d.reimbursementPartial?'Total conocido · parcial / pendiente de fuente':'Obligación operacional conocida')}</div>
-      <div class="finDrill" data-c="${c}" style="cursor:pointer">${p.modelo==='directo'?ui.kpi('Regalías ('+(p.regalias||0)+'%)',moneyOrPending(d,d.regal),'p'):ui.kpi('Por pagar (CxP)',moneyOrPending(d,d.cxp,'Pendiente de fuente'),'a')}</div>
+      <div class="finDrill" data-c="${c}" style="cursor:pointer">${p.modelo==='directo'?ui.kpi('Regalías ('+(p.regalias||0)+'%)',moneyOrPending(d,d.regal),'p'):ui.kpi('Por pagar',moneyOrPending(d,d.cxp,'Pendiente de fuente'),'a')}</div>
     </div>
     <div class="grid g2" style="gap:8px;margin-top:8px">
       <div>${ui.kpi('Honorario por pagar',moneyOrPending(d,d.honorarioPorPagar,'Pendiente de fuente'),'a')}</div>
@@ -57,8 +57,8 @@ CX.module('financiero', ({data,ui})=>{
       <span style="font-size:12px;color:var(--t2)">Margen neto</span>
       <b style="font-family:var(--disp);font-size:18px;color:${Number.isFinite(d.margen)?(d.margen>=0?'var(--green)':'var(--red)'):'var(--t3)'}">${moneyOrPending(d,d.margen)}</b></div>
     <div class="flex" style="gap:14px;margin-top:8px;font-size:11px;color:var(--t3)">
-      <span>CxC: <b style="color:var(--t2)">${moneyOrPending(d,d.cxc)}</b></span>
-      <span>CxP: <b style="color:var(--t2)">${moneyOrPending(d,d.cxp,'Pendiente de fuente')}</b></span>
+      <span>Por cobrar: <b style="color:var(--t2)">${moneyOrPending(d,d.cxc)}</b></span>
+      <span>Por pagar: <b style="color:var(--t2)">${moneyOrPending(d,d.cxp,'Pendiente de fuente')}</b></span>
       <span>Gastos fijos: <b style="color:var(--t2)" title="Presupuesto sin distribución por país/moneda confirmada — ver tarjeta de presupuesto pendiente">Pendiente de asignación</b></span></div>
   </div>`;};
 
@@ -112,7 +112,7 @@ CX.module('financiero', ({data,ui})=>{
       <div class="card-h"><div class="card-t">🔐 Revisiones financieras</div><span class="bdg bdg-r">${revs.length} pendientes</span></div>
       <div style="font-size:11.5px;color:var(--t2);margin-bottom:10px">Estos registros necesitan completar o conciliar su información antes de incluirlos en un lote o confirmar un pago.</div>
       <div class="scroll-hint" aria-label="Desliza para ver más" style="overflow-x:auto"><table class="tbl"><thead><tr><th>País</th><th>Moneda</th><th>Sucursal / visita</th><th>Shopper</th><th>Estado de información</th><th>Motivo</th><th>Campos faltantes</th><th>Revisión</th><th>Trazabilidad</th></tr></thead><tbody>
-      ${revs.map(r=>`<tr><td><b>${r.l.pais?CX.paisLabel(r.l.pais):'<span class="muted">—</span>'}</b></td><td>${r.l.moneda||'<span class="muted">—</span>'}</td><td style="font-size:12px">${r.l.sucursal||'—'}</td><td style="font-size:12px">${r.l.shopper||'—'}</td><td>${ui.bdg(sourceLabel(r.financialSourceStatus),'a')}</td><td style="font-size:11.5px">${r.motivo}</td><td style="font-size:11.5px">${r.faltan.length?r.faltan.join(', '):'—'}</td><td><button class="btn btn-pr btn-sm" data-fin-reconcile="${r.l.visitaId||''}" ${r.l.visitaId?'':'disabled'}>Conciliar</button></td><td><details><summary style="cursor:pointer;font-size:11px">Ver detalle</summary><div style="font-size:10px;color:var(--t3);margin-top:5px">Visita: ${r.l.visitaId||'—'}<br>Fila de origen: ${r.l.hrRowId||'—'}<br>Estado técnico: ${r.financialSourceStatus}</div></details></td></tr>`).join('')}
+      ${revs.map(r=>`<tr><td><b>${r.l.pais?CX.paisLabel(r.l.pais):'<span class="muted">—</span>'}</b></td><td>${r.l.moneda||'<span class="muted">—</span>'}</td><td style="font-size:12px">${r.l.sucursal||'—'}</td><td style="font-size:12px">${r.l.shopper||'—'}</td><td>${ui.bdg(sourceLabel(r.financialSourceStatus),'a')}</td><td style="font-size:11.5px">${r.motivo}</td><td style="font-size:11.5px">${r.faltan.length?r.faltan.join(', '):'—'}</td><td><button class="btn btn-pr btn-sm" data-fin-reconcile="${r.l.visitaId||''}" ${r.l.visitaId?'':'disabled'}>Conciliar</button></td><td><details><summary style="cursor:pointer;font-size:11px">Ver contexto</summary><div style="font-size:10px;color:var(--t3);margin-top:5px">Estado de la información: ${sourceLabel(r.financialSourceStatus)}<br>Motivo: ${r.motivo||'Revisión requerida'}</div></details></td></tr>`).join('')}
       </tbody></table></div>
       <div style="margin-top:10px;font-size:11px;color:var(--t3)">🔒 Pago y lote permanecen bloqueados hasta completar la información requerida.</div>
     </div>`;
@@ -183,7 +183,7 @@ CX.module('financiero', ({data,ui})=>{
           <div class="card card-p"><div class="card-t" style="font-size:12px;margin-bottom:6px">💰 Ingresos operativos</div><div style="font-size:20px;font-weight:800;color:var(--green);font-family:var(--disp)">${moneyOrPending(d,d.ingreso)}</div><div style="font-size:11px;color:var(--t3);margin-top:4px">${Number.isFinite(d.ingreso)?'Facturado al cliente (sin financiamientos)':'Pendiente de fuente/configuración autorizada'}</div></div>
           <div class="card card-p"><div class="card-t" style="font-size:12px;margin-bottom:6px">💸 Honorario devengado</div><div style="font-size:20px;font-weight:800;color:var(--red);font-family:var(--disp)">${moneyOrPending(d,d.honorarioDevengado,'Pendiente de fuente')}</div><div style="font-size:11px;color:var(--t3);margin-top:4px">${liqs.length} liquidaciones · por pagar ${moneyOrPending(d,d.honorarioPorPagar,'Pendiente de fuente')} · pagado ${moneyOrPending(d,d.honorarioPagado,'Pendiente de fuente')} (${d.pagosConfirmados} confirmado/s)</div></div>
           <div class="card card-p"><div class="card-t" style="font-size:12px;margin-bottom:6px">🟢 Margen neto</div><div style="font-size:20px;font-weight:800;color:${Number.isFinite(d.margen)?(d.margen>=0?'var(--green)':'var(--red)'):'var(--t3)'};font-family:var(--disp)">${moneyOrPending(d,d.margen)}</div><div style="font-size:11px;color:var(--t3);margin-top:4px">${Number.isFinite(d.margenPct)?(d.margenPct>=30?'✓ Sobre objetivo (30%)':'⚠ Bajo objetivo (30%)'):'Pendiente de fuente/configuración autorizada'}</div></div>
-          <div class="card card-p"><div class="card-t" style="font-size:12px;margin-bottom:6px">⏳ Cuentas por cobrar (CxC)</div><div style="font-size:20px;font-weight:800;color:var(--amber);font-family:var(--disp)">${moneyOrPending(d,d.cxc)}</div></div>
+          <div class="card card-p"><div class="card-t" style="font-size:12px;margin-bottom:6px">⏳ Cuentas por cobrar</div><div style="font-size:20px;font-weight:800;color:var(--amber);font-family:var(--disp)">${moneyOrPending(d,d.cxc)}</div></div>
         </div>
         <b style="font-size:13px">Liquidaciones del periodo (${liqs.length})</b>
         <div style="overflow-x:auto;margin-top:10px;max-height:260px;overflow-y:auto">${liqs.length?`<table class="tbl"><thead><tr><th>Visita</th><th>Shopper</th><th>Total</th><th>Estado</th><th>Pago</th></tr></thead><tbody>${liqs.map(l=>`<tr><td style="font-size:12px"><b>${l.sucursal||l.visitaId}</b></td><td style="font-size:12px">${l.shopper||'—'}</td><td>${Number.isFinite(l.total)?(d.cur+' '+l.total.toLocaleString()):'<span class="bdg bdg-a">Pendiente de fuente</span>'}</td><td>${ui.estadoBadge?ui.estadoBadge(l.estado):l.estado}</td><td>${(()=>{const v=data._visitas.find(x=>x.id===l.visitaId);const vc=v&&data.visitContract?data.visitContract(v):null;return vc&&vc.paymentState!=='no_aplica'?ui.bdg(vc.paymentState,vc.paymentState==='confirmado'?'g':'n'):'—';})()}</td></tr>`).join('')}</tbody></table>`:ui.empty('💸','Sin liquidaciones en este periodo.')}</div>`);
@@ -293,7 +293,7 @@ CX.module('movimientos', ({data,ui})=>{
     const cxc=_one.cxc;
 
     host.innerHTML=`
-    <div class="between" style="margin-bottom:12px"><div>${ui.ph('Movimientos & Tesorería', 'Ingresos, egresos, CxC/CxP, financiamientos y remesas · por proyecto o globales')}</div>
+    <div class="between" style="margin-bottom:12px"><div>${ui.ph('Movimientos & Tesorería', 'Ingresos, egresos, cuentas por cobrar y por pagar, financiamientos y remesas · por proyecto o globales')}</div>
       <div class="flex"><span class="bdg bdg-a">Operación financiera</span><button class="btn btn-ghost btn-sm" id="movExport">⤓ Exportar</button></div></div>
 
     <div class="between" style="margin-bottom:14px;flex-wrap:wrap;gap:10px">
@@ -313,17 +313,17 @@ CX.module('movimientos', ({data,ui})=>{
       <button class="btn btn-soft btn-sm" data-new="egreso">＋ Egreso</button>
       <button class="btn btn-soft btn-sm" data-cuenta="cxc">＋ Cuenta por cobrar</button>
       <button class="btn btn-soft btn-sm" data-cuenta="cxp">＋ Cuenta por pagar</button>
-      <button class="btn btn-soft btn-sm" id="autoCxp">⚙️ Generar CxC/CxP automáticas</button>
+      <button class="btn btn-soft btn-sm" id="autoCxp">⚙️ Generar cuentas por cobrar y por pagar automáticas</button>
       <button class="btn btn-soft btn-sm" data-new="remesa">＋ Remesa</button>
       ${!isG?`<button class="btn btn-pr btn-sm" id="payLote">💳 Pagar lote</button>`:''}
       <button class="btn btn-ghost btn-sm" id="impHist">⤒ Importar histórico</button>
     </div>
 
-    ${multiCur ? shownCurs.map(cu=>{const a=aggByCur[cu]||{};return `<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Moneda ${cu}</div><div class="grid" style="grid-template-columns:repeat(5,1fr);gap:11px"><div>${ui.kpi('Ingresos oper.',ui.money(cu,a.ingOper||0),'g',a.financiamiento?'+ fin. aparte':'')}</div><div>${ui.kpi('Egresos',ui.money(cu,Math.abs(a.egr||0)),'r')}</div><div>${ui.kpi('Por cobrar (CxC)',ui.money(cu,a.cxc||0),'a')}</div><div>${ui.kpi('Por pagar (CxP)',ui.money(cu,a.cxp||0),'a',a.financiamiento?'incl. financiamiento':'')}</div><div>${ui.kpi('Remesas',ui.money(cu,a.remesas||0),'b','conciliación')}</div></div></div>`;}).join('')+`<div style="font-size:11px;color:var(--t3);margin:-4px 0 14px">⚠ Monedas separadas: GTQ y HNL no se suman entre sí; cada bloque conserva su moneda.</div>` : `<div class="grid" style="grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:16px">
+    ${multiCur ? shownCurs.map(cu=>{const a=aggByCur[cu]||{};return `<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Moneda ${cu}</div><div class="grid" style="grid-template-columns:repeat(5,1fr);gap:11px"><div>${ui.kpi('Ingresos oper.',ui.money(cu,a.ingOper||0),'g',a.financiamiento?'+ fin. aparte':'')}</div><div>${ui.kpi('Egresos',ui.money(cu,Math.abs(a.egr||0)),'r')}</div><div>${ui.kpi('Por cobrar',ui.money(cu,a.cxc||0),'a')}</div><div>${ui.kpi('Por pagar',ui.money(cu,a.cxp||0),'a',a.financiamiento?'incl. financiamiento':'')}</div><div>${ui.kpi('Remesas',ui.money(cu,a.remesas||0),'b','conciliación')}</div></div></div>`;}).join('')+`<div style="font-size:11px;color:var(--t3);margin:-4px 0 14px">⚠ Monedas separadas: GTQ y HNL no se suman entre sí; cada bloque conserva su moneda.</div>` : `<div class="grid" style="grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:16px">
       <div data-drill="ing" style="cursor:pointer">${ui.kpi('Ingresos oper.',ui.money(cur,ingOper),'g',financiamiento?'+ fin. aparte':'')}</div>
       <div data-drill="egr" style="cursor:pointer">${ui.kpi('Egresos',ui.money(cur,Math.abs(egr)),'r')}</div>
-      <div data-drill="cxc" style="cursor:pointer">${ui.kpi('Por cobrar (CxC)',ui.money(cur,cxc),'a')}</div>
-      <div data-drill="cxp" style="cursor:pointer">${ui.kpi('Por pagar (CxP)',ui.money(cur,cxp),'a',financiamiento?'incl. financiamiento':'')}</div>
+      <div data-drill="cxc" style="cursor:pointer">${ui.kpi('Por cobrar',ui.money(cur,cxc),'a')}</div>
+      <div data-drill="cxp" style="cursor:pointer">${ui.kpi('Por pagar',ui.money(cur,cxp),'a',financiamiento?'incl. financiamiento':'')}</div>
       <div data-drill="rem" style="cursor:pointer">${ui.kpi('Remesas',ui.money(cur,remesas),'b','conciliación')}</div>
     </div>`}
 
@@ -341,11 +341,11 @@ CX.module('movimientos', ({data,ui})=>{
         ${(()=>{ /* income_type_rows por moneda (porMoneda): agrupa por moneda de fila, no cross-currency */
           const porTipoMoneda={}; movs.filter(m=>m.monto>0&&curOf(m)!==PENDING_CURRENCY).forEach(m=>{const t=m.tipoIngreso||'otro';const cu=curOf(m);(porTipoMoneda[cu]=porTipoMoneda[cu]||{})[t]=(porTipoMoneda[cu][t]||0)+m.monto;});
           const cus=Object.keys(porTipoMoneda).filter(c=>c!==PENDING_CURRENCY); if(!cus.length) return '<div class="muted" style="font-size:12px;padding:8px 0">Sin ingresos registrados</div>';
-          return cus.map(cu=>`<div style="font-size:10.5px;font-weight:700;color:var(--t3);margin:6px 0 2px">Moneda ${cu}</div>`+Object.keys(TI).map(t=>{const val=porTipoMoneda[cu][t]||0;return val?`<div class="between" style="padding:6px 0;border-bottom:1px solid var(--border-2)"><span style="font-size:12px;color:var(--t2)">${TI[t]}${t==='financiamiento'?' <span class="bdg bdg-a" style="font-size:9px">→CxP</span>':''}</span><b style="font-size:12.5px;color:${t==='financiamiento'?'var(--amber)':'var(--green)'}">${ui.money(cu,val)}</b></div>`:'';}).join('')).join('');
+          return cus.map(cu=>`<div style="font-size:10.5px;font-weight:700;color:var(--t3);margin:6px 0 2px">Moneda ${cu}</div>`+Object.keys(TI).map(t=>{const val=porTipoMoneda[cu][t]||0;return val?`<div class="between" style="padding:6px 0;border-bottom:1px solid var(--border-2)"><span style="font-size:12px;color:var(--t2)">${TI[t]}${t==='financiamiento'?' <span class="bdg bdg-a" style="font-size:9px">→ por pagar</span>':''}</span><b style="font-size:12.5px;color:${t==='financiamiento'?'var(--amber)':'var(--green)'}">${ui.money(cu,val)}</b></div>`:'';}).join('')).join('');
         })()}
         <div style="font-size:11px;color:var(--t3);margin-top:8px">Los <b>financiamientos</b> no son utilidad: se suman a CxP hasta devolverse.</div>
       </div>
-      <div class="card card-p"><div class="card-h"><div class="card-t">Cuentas por pagar (CxP)</div></div>
+      <div class="card card-p"><div class="card-h"><div class="card-t">Cuentas por pagar</div></div>
         ${CX.finStore.cxp(pid()).length?`<input class="inp" id="cxpFind" placeholder="🔍 Buscar concepto/beneficiario…" style="margin-bottom:8px;padding:5px 9px;font-size:12px">`:''}
         <div id="cxpBody">${CX.finStore.cxp(pid()).length?CX.finStore.cxp(pid()).map(r=>`<div class="between cxpRow" style="padding:7px 0;border-bottom:1px solid var(--border-2)"><div style="cursor:pointer" data-cxdet="cxp:${r.id}"><b style="font-size:12px">${r.concepto}</b><div style="font-size:10px;color:var(--t3)">${r.pais||'<span class="bdg bdg-n" style="font-size:9px">Pendiente de moneda</span>'} · ${r.estado||'pendiente'} · saldo ↗ ver detalle</div></div><div class="flex" style="gap:8px"><b style="font-size:12.5px;color:var(--amber)">${r.pais&&p.currency[r.pais]?ui.money(p.currency[r.pais],r.saldo||0):(r.moneda?ui.money(r.moneda,r.saldo||0):'Pendiente de moneda')}</b>${currencyOf(r)!==PENDING_CURRENCY?`<button class="btn btn-soft btn-sm" data-abono="${r.id}">Abonar</button>`:ui.bdg('Revisión · sin moneda','r')}</div></div>`).join(''):''}
         ${derivedLiqCxps.length?`<div style="font-size:10.5px;font-weight:700;color:var(--t3);text-transform:uppercase;margin:8px 0 4px">CxP derivada de liquidaciones exactas</div>${derivedLiqCxps.slice(0,8).map(l=>`<div class="between cxpRow" style="padding:7px 0;border-bottom:1px solid var(--border-2)"><div><b style="font-size:12px">Liquidación pendiente · ${l.shopper||'Shopper'}</b><div style="font-size:10px;color:var(--t3)">${l.pais||''} · ${l.estado||'conciliada_pendiente_pago'} · fuente exacta, pago pendiente</div></div><b style="font-size:12.5px;color:var(--amber)">${ui.money(currencyOf(l),l.total||0)}</b></div>`).join('')}${derivedLiqCxps.length>8?`<div class="muted" style="font-size:11px;padding:5px 0">+${derivedLiqCxps.length-8} liquidación(es) exacta(s) adicionales</div>`:''}`:''}
@@ -377,7 +377,7 @@ CX.module('movimientos', ({data,ui})=>{
           <td>${ui.bdg(m.estado||'—',(m.estado||'').includes('Cx')?'a':m.monto<0?'r':'g')}</td>
           <td style="text-align:right">${m.id?`<button class="btn btn-ghost btn-sm" data-delm="${m.id}" style="color:var(--red);padding:2px 6px">✕</button>`:''}</td></tr>`).join('')}
       </tbody></table></div>
-      <div style="margin-top:14px">${ui.aiBox('Separo ingresos por comisiones, honorarios, anticipos y facturación de los financiamientos (que van a CxP). Registro CxC/CxP iniciales en la importación y vinculo cada abono a su egreso. Las remesas recibidas se concilian aquí.','Tesorería completa, no solo gastos del proyecto')}</div>
+      <div style="margin-top:14px">${ui.aiBox('Separo ingresos por comisiones, honorarios, anticipos y facturación de los financiamientos (que van a CxP). Registro cuentas por cobrar y por pagar iniciales en la importación y vinculo cada abono a su egreso. Las remesas recibidas se concilian aquí.','Tesorería completa, no solo gastos del proyecto')}</div>
     </div>`;
 
     host.querySelectorAll('[data-scope]').forEach(b=>b.addEventListener('click',()=>{scope=b.dataset.scope;draw();}));
@@ -521,9 +521,9 @@ CX.module('movimientos', ({data,ui})=>{
       const liqPend=CX.liq.forProject(data).filter(l=>['validada','pendiente_submitir','conciliada_pendiente_pago'].includes(l.estado)&&!isFinancialReview(l));
       const yaCxp=new Set(CX.finStore.cxp(pid()).map(r=>r.visitaId).filter(Boolean));
       const nuevasCxp=liqPend.filter(l=>!yaCxp.has(l.visitaId));
-      // CxC: sin fuente confirmada de reintegro no se infiere monto pendiente (Corte 3 P0-3)
+      // Por cobrar: sin fuente confirmada de reintegro no se infiere monto pendiente (Corte 3 P0-3)
       const cxcEst=[];
-      ui.modal('⚙️ Generar CxC/CxP automáticas',`
+      ui.modal('⚙️ Generar cuentas por cobrar y por pagar automáticas',`
         <p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Deriva cuentas automáticamente del histórico operativo. Revisa y confirma:</p>
         <div class="card-t" style="font-size:12.5px;margin-bottom:6px">📤 Cuentas por pagar (liquidaciones pendientes no pagadas)</div>
         ${nuevasCxp.length?`<table class="tbl" style="margin-bottom:12px"><tbody>${nuevasCxp.slice(0,8).map(l=>`<tr><td><b>${l.shopper}</b><div style="font-size:10px;color:var(--t3)">${l.sucursal}</div></td><td style="text-align:right;font-weight:700">${currencyOf(l)!==PENDING_CURRENCY?ui.money(currencyOf(l),l.total):'<span class="bdg bdg-a" style="font-size:9px">Pendiente de moneda</span>'}</td></tr>`).join('')}${nuevasCxp.length>8?`<tr><td colspan="2" style="font-size:11px;color:var(--t3);text-align:center">+${nuevasCxp.length-8} más</td></tr>`:''}</tbody></table>`:'<div class="muted" style="font-size:12px;margin-bottom:12px">Sin liquidaciones pendientes nuevas.</div>'}
@@ -609,9 +609,9 @@ CX.module('movimientos', ({data,ui})=>{
     }); }
     const ih=host.querySelector('#impHist');
     if(ih)ih.addEventListener('click',()=>ui.modal('Importar histórico de movimientos',`
-      <p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Sube tu archivo (Excel/CSV) de movimientos, remesas, CxC/CxP. Vista previa + anti-duplicado por fecha+monto+concepto.</p>
+      <p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Sube tu archivo (Excel/CSV) de movimientos, remesas, cuentas por cobrar y por pagar. Vista previa + anti-duplicado por fecha+monto+concepto.</p>
       <input type="file" class="inp" style="padding:7px;margin-bottom:12px">
-      <div style="background:var(--brand-light);border-radius:9px;padding:10px 12px;font-size:12px;color:var(--brand-dark)">Mapeo de columnas → tipo/categoría/monto/fecha/país/estado. Permite cargar <b>saldos iniciales</b> de CxC/CxP y remesas para conciliar.</div>
+      <div style="background:var(--brand-light);border-radius:9px;padding:10px 12px;font-size:12px;color:var(--brand-dark)">Mapeo de columnas → tipo/categoría/monto/fecha/país/estado. Permite cargar <b>saldos iniciales</b> de cuentas por cobrar y por pagar y remesas para conciliar.</div>
       <div style="text-align:right;margin-top:14px"><button class="btn btn-pr btn-sm" onclick="CX.ui.toast('Vista previa lista (demo)','ok');this.closest('.cx-ov').remove()">Ver vista previa</button></div>
     `));
   };

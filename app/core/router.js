@@ -106,6 +106,11 @@ CX.router = {
     const d=CX.data, p=d.period();
     const rail=document.getElementById('rail');
     const u=CX.session.user||{};
+    if(role==='shopper'){
+      const sh=d.__sessionShopperProfile||((u.shopperId&&d.getShopper)?d.getShopper(u.shopperId):null);
+      const displayName=String(sh?.nombre||sh?.displayName||[sh?.firstName,sh?.lastName].filter(Boolean).join(' ')||'').trim();
+      if(displayName)u.name=displayName;
+    }
     const initials=(u.name||'CX').split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
 
     /* project switcher: admin ve todos; shopper solo los de su país; cliente solo su alcance (P0-3) */

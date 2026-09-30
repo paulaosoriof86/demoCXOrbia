@@ -60,6 +60,26 @@
       source:'admin-shopper-flow',authorization:{providerEnforcementRequired:true,permission:'shopper.update'}
     }};
   }
+  function identityAdjudicate(input){
+    input=input||{};
+    const canonicalShopperId=str(input.canonicalShopperId||input.shopperId||input.entityId);
+    const aliasShopperIds=uniq(input.aliasShopperIds).filter(id=>id&&id!==canonicalShopperId);
+    const errors=validateBase(input);
+    if(!canonicalShopperId)errors.push('missing-canonicalShopperId');
+    if(!aliasShopperIds.length)errors.push('missing-aliasShopperIds');
+    if(input.humanConfirmed!==true)errors.push('human-confirmation-required');
+    return {ok:errors.length===0,errors,command:{
+      commandType:'shopper.identity.adjudicate',entityType:'shopper',entityId:canonicalShopperId||null,
+      tenantId:str(input.tenantId),projectId:str(input.projectId||uniq(input.projectIds)[0]),periodId:str(input.periodId),
+      actor:{actorId:str(input.actorId||''),role:str(input.actorRole),projectIds:uniq(input.projectIds)},
+      expectedVersion:input.expectedVersion==null?'provider-current':input.expectedVersion,
+      idempotencyKey:str(input.idempotencyKey),
+      payload:{canonicalShopperId,aliasShopperIds,humanConfirmed:true,reason:str(input.reason||'admin_confirmed_same_human'),periodIndependent:true,fuzzyMatching:false},
+      source:'admin-shopper-identity-adjudication',
+      authorization:{providerEnforcementRequired:true,permission:'shopper.identity.adjudicate',humanAdjudicationRequired:true}
+    }};
+  }
+
   function credentialReset(input){
     input=input||{};const shopperId=str(input.shopperId);const errors=[!str(input.tenantId)?'missing-tenantId':null,!str(input.projectId)?'missing-projectId':null,!str(input.periodId)?'missing-periodId':null,!shopperId?'missing-shopperId':null,!str(input.idempotencyKey)?'missing-idempotencyKey':null,!str(input.actorRole)?'missing-actorRole':null].filter(Boolean);
     return {ok:errors.length===0,errors,command:{commandType:'shopper.credential.reset',entityType:'shopper',entityId:shopperId||null,tenantId:str(input.tenantId),projectId:str(input.projectId),periodId:str(input.periodId),
@@ -67,5 +87,5 @@
       payload:{periodId:str(input.periodId),shopperId,serverOnly:true,browserPasswordAllowed:false,browserTokenAllowed:false},source:'admin-shopper-credential-reset',authorization:{providerEnforcementRequired:true,permission:'shopper.credential.reset'}}};
   }
 
-  CX.shopperAdminCommandContract=Object.freeze({version:VERSION,create,update,credentialReset,exactIdentityKeys:exactKeys(),protectedFields:PROTECTED_PROFILE_FIELDS.slice(),browserCredentialStorageAllowed:false,localStoragePersistenceAllowed:false,successRequiresProviderAck:true,protectedDataRequiresEncryption:true});
+  CX.shopperAdminCommandContract=Object.freeze({version:VERSION,create,update,identityAdjudicate,credentialReset,exactIdentityKeys:exactKeys(),protectedFields:PROTECTED_PROFILE_FIELDS.slice(),browserCredentialStorageAllowed:false,localStoragePersistenceAllowed:false,successRequiresProviderAck:true,protectedDataRequiresEncryption:true});
 })(typeof window!=='undefined'?window:globalThis);

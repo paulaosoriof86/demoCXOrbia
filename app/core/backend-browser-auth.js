@@ -71,13 +71,8 @@ window.CX = window.CX || {};
     clearSessionCredential();
     if(!ctx || String(ctx.role || '').trim().toLowerCase() !== 'shopper') return;
     const username = String(login || '').trim();
-    const secret = String(password || '');
-    if(!username || !secret) return;
-    sessionCredential = {
-      username: username,
-      password: secret,
-      source: 'validated-shopper-login-memory'
-    };
+    if(!username) return;
+    sessionCredential = {username:username,source:'validated-shopper-login-no-secret'};
   }
 
   function sessionCredentialSnapshot(){
@@ -87,7 +82,7 @@ window.CX = window.CX || {};
     return {
       available:true,
       username:sessionCredential.username,
-      password:sessionCredential.password,
+      password:null,
       source:sessionCredential.source
     };
   }
@@ -285,6 +280,14 @@ window.CX = window.CX || {};
       button.setAttribute('aria-pressed', active ? 'true' : 'false');
       button.dataset.selected = active ? 'true' : 'false';
     });
+    const visible=visibleLoginForm();
+    if(visible){
+      const enabled=!!selectedRole;
+      visible.login.disabled=!enabled;
+      visible.password.disabled=!enabled;
+      visible.submit.disabled=!enabled;
+      visible.form.dataset.accessStep=enabled?'credentials':'role';
+    }
     setCredentialError('');
   }
 
@@ -409,6 +412,7 @@ window.CX = window.CX || {};
     const visible = bindVisibleLoginForm();
     if(!visible) return;
     markSelectedRole(role);
+    visible.login.disabled=false;visible.password.disabled=false;visible.submit.disabled=false;visible.form.dataset.accessStep='credentials';
     if(currentContext){
       if(roleMatchesSelection(currentContext, role)){
         applyCxSession(currentContext);
@@ -427,7 +431,10 @@ window.CX = window.CX || {};
     const visible = bindVisibleLoginForm();
     if(visible){
       visible.form.dataset.selectedRole = '';
-      visible.submit.disabled = false;
+      visible.form.dataset.accessStep = 'role';
+      visible.login.disabled = true;
+      visible.password.disabled = true;
+      visible.submit.disabled = true;
       visible.submit.textContent = 'Ingresar';
     }
     document.querySelectorAll('#login .role-btn[data-role]').forEach(function(button){

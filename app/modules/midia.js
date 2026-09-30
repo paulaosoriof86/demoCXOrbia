@@ -148,21 +148,24 @@ CX.module('midia', ({data,role,ui})=>{
   /* P0 (V172): 'sh1' hardcodeado eliminado; el shopper ve SOLO sus visitas por shopperId real.
      El estado (asignada/agendada) NO sustituye identidad. Sin shopperId: cero contenido privado. */
   const _mySid=(CX.session.user||{}).shopperId||null;
-  const mine=_mySid?data.visitas().filter(v=>v.shopperId===_mySid).slice(0,2):[];
-  const steps=['Postulación aprobada|done','Instructivo leído|done','Certificación 88%|done','Visita realizada|now','Cuestionario|todo','Liquidación|todo'];
+  const mine=_mySid?data.visitas().filter(v=>String(v.shopperId||'')===String(_mySid)&&!(data.visitFacets?.(v)?.cancelled)).slice(0,2):[];
+  const nextVisit=mine[0]||null;
+  const vf=nextVisit&&data.visitFacets?data.visitFacets(nextVisit):(nextVisit?.canonicalFacets||{});
+  const steps=nextVisit?[
+    ['Asignación confirmada',!!vf.assigned],['Agendamiento',!!vf.scheduled],['Visita realizada',!!vf.realized],['Cuestionario completado',!!vf.questionnaire],['Submitida',!!vf.submitted],['Pago confirmado',!!vf.paymentConfirmed]
+  ]:[];
   return `
     ${ui.ph('Mi Día', 'Hola, '+CX.session.user.name.split(' ')[0]+' 👋 · '+data.programBase(p)+' · periodo '+(p.periodo||p.ronda||p.name))}
     ${notifBlock()}
     ${cronograma()}
     <div class="card card-p" style="margin-bottom:16px">
-      <div class="card-h"><div class="card-t">Tu próxima visita</div>${ui.bdg('Por agendar','a')}</div>
-      ${mine[0]?`<div style="font-size:15px;font-weight:700;color:var(--t1)">${mine[0].sucursal}</div>
-      <div style="font-size:12px;color:var(--t3);margin:3px 0 12px">Rango ${mine[0].rango} · ${ui.money(mine[0].currency,mine[0].honorario)}${mine[0].combo?' + '+mine[0].combo:''}</div>
+      <div class="card-h"><div class="card-t">Tu próxima visita</div>${nextVisit?(vf.scheduled?ui.bdg('Agendada','b'):ui.bdg('Pendiente de agendar','a')):''}</div>
+      ${nextVisit?`<div style="font-size:15px;font-weight:700;color:var(--t1)">${nextVisit.sucursal}</div>
+      <div style="font-size:12px;color:var(--t3);margin:3px 0 12px">Rango ${nextVisit.rango||'—'} · ${nextVisit.honorario!=null?ui.money(nextVisit.currency,nextVisit.honorario):'Honorario pendiente de fuente'}${nextVisit.combo?' + '+nextVisit.combo:''}</div>
       <div class="flex wrap"><button class="btn btn-pr btn-sm">📅 Agendar</button><button class="btn btn-ghost btn-sm">📄 Instructivo</button><button class="btn btn-ghost btn-sm">🔄 Reprogramar</button></div>`:ui.empty('🧭','Sin visitas activas')}
     </div>
-    <div class="card card-p">
+    ${nextVisit?`<div class="card card-p">
       <div class="card-h"><div class="card-t">Progreso de la visita</div></div>
-      ${steps.map(s=>{const[t,st]=s.split('|');const ic=st==='done'?'✅':st==='now'?'⏳':'○';const col=st==='done'?'var(--green)':st==='now'?'var(--brand)':'var(--t3)';
-        return `<div class="flex" style="padding:6px 0;font-size:13px;color:${col};font-weight:${st==='now'?'700':'500'}">${ic} <span>${t}</span></div>`;}).join('')}
-    </div>`;
+      ${steps.map(([label,done])=>`<div class="flex" style="padding:6px 0;font-size:13px;color:${done?'var(--green)':'var(--t3)'};font-weight:${done?'600':'500'}">${done?'✅':'○'} <span>${label}</span></div>`).join('')}
+    </div>`:''}`;
 });

@@ -103,7 +103,7 @@
     if(!exactLinks.length||!payload||!Array.isArray(payload.shoppers))return input;
 
     const shoppers=payload.shoppers.map(profile=>Object.assign({},profile||{}));
-    const applied=[],conflicts=[];
+    const applied=[],conflicts=[],retiredIndexes=new Set();
     const hrExact=new Map();
     for(const row of Array.isArray(input?.hr?.shoppers)?input.hr.shoppers:[]){
       const live=str(row?.shopperId||row?.id),canonical=str(row?.canonicalShopperId);
@@ -125,11 +125,24 @@
       const needles=new Set([canonical,...aliases]);
       const matchingIndexes=[];
       for(let i=0;i<shoppers.length;i++){
+        if(retiredIndexes.has(i))continue;
         const values=profileIdentityValues(shoppers[i]);
         if(values.some(value=>needles.has(value)))matchingIndexes.push(i);
       }
 
-      if(matchingIndexes.length!==1){
+      let index=null,adjudicatedRetired=[];
+      if(matchingIndexes.length===1){
+        index=matchingIndexes[0];
+      }else if(matchingIndexes.length>1&&authorityType(link)==='tenant_adjudication'){
+        const canonicalMatches=matchingIndexes.filter(i=>profileIdentityValues(shoppers[i]).includes(canonical));
+        if(canonicalMatches.length!==1){
+          conflicts.push({identityLinkId:str(link.identityLinkId||link.id),canonicalShopperId:canonical,sourceAliases:aliases,matchingProfiles:matchingIndexes.length,canonicalMatches:canonicalMatches.length,reason:'tenant_adjudication_canonical_profile_ambiguous'});
+          continue;
+        }
+        index=canonicalMatches[0];
+        adjudicatedRetired=matchingIndexes.filter(i=>i!==index);
+        adjudicatedRetired.forEach(i=>retiredIndexes.add(i));
+      }else{
         conflicts.push({
           identityLinkId:str(link.identityLinkId||link.id),
           canonicalShopperId:canonical,
@@ -140,11 +153,13 @@
         continue;
       }
 
-      const index=matchingIndexes[0],profile=Object.assign({},shoppers[index]);
+      const profile=Object.assign({},shoppers[index]);
       const priorId=str(profile.shopperId||profile.id);
+      const adjudicatedProfiles=adjudicatedRetired.map(i=>shoppers[i]).filter(Boolean);
       const merged=uniq([
         ...arr(profile.exactAliases),...arr(profile.identityAliases),...arr(profile.aliases),
         ...arr(profile.legacyLiveShopperIds),...arr(profile.sourceShopperIds),
+        ...adjudicatedProfiles.flatMap(p=>profileIdentityValues(p)),
         priorId,...aliases
       ]).filter(value=>value&&value!==canonical);
 
@@ -160,7 +175,7 @@
       profile.__providerIdentityLinkIds=uniq([...arr(profile.__providerIdentityLinkIds),str(link.identityLinkId||link.id)]);
       profile.__providerIdentityAuthorityType=authorityType(link);
       shoppers[index]=profile;
-      applied.push({identityLinkId:str(link.identityLinkId||link.id),priorShopperId:priorId||null,canonicalShopperId:canonical,aliases:merged});
+      applied.push({identityLinkId:str(link.identityLinkId||link.id),priorShopperId:priorId||null,canonicalShopperId:canonical,aliases:merged,retiredShopperIds:adjudicatedRetired.map(i=>str(shoppers[i]?.shopperId||shoppers[i]?.id)).filter(Boolean),humanAdjudication:authorityType(link)==='tenant_adjudication'});
     }
 
     root.CX_PROVIDER_IDENTITY_LINK_PRECOMPOSE={
@@ -169,7 +184,8 @@
     };
 
     if(!applied.length)return input;
-    return Object.assign({},input,{protectedPayload:Object.assign({},payload,{shoppers})});
+    const composedShoppers=shoppers.filter((_,index)=>!retiredIndexes.has(index));
+    return Object.assign({},input,{protectedPayload:Object.assign({},payload,{shoppers:composedShoppers})});
   }
   function bridgeComposeOutput(result,exactLinksOverride){
     if(!result||typeof result!=='object')return result;

@@ -101,7 +101,7 @@
     if(D.__cxCommandBoundaryVersion===VERSION&&D.updateShopper?.__cxCommandBoundaryVersion===VERSION)return true;
     if(!D.__prototypeMutationMethods){
       D.__prototypeMutationMethods={};
-      ['addProject','setVisitState','assignVisit','reconcileFinanceVisit','payVisits','addShopper','updateShopper','resetShopperCredential'].forEach(name=>{
+      ['addProject','setVisitState','assignVisit','reconcileFinanceVisit','payVisits','addShopper','updateShopper','adjudicateShopperIdentity','resetShopperCredential'].forEach(name=>{
         if(typeof D[name]==='function')D.__prototypeMutationMethods[name]=D[name];
       });
     }
@@ -145,6 +145,19 @@
       return execute(built.command,meta);
     };
     D.updateShopper.__cxCommandBoundaryVersion=VERSION;
+    D.adjudicateShopperIdentity=function(canonicalShopperId,aliasShopperIds,meta){
+      meta=commandMeta(meta);const c=ctx(),current=typeof D.getShopper==='function'?D.getShopper(canonicalShopperId):null,expected=versionOf(current);
+      const aliases=Array.isArray(aliasShopperIds)?aliasShopperIds:[];
+      const built=CX.shopperAdminCommandContract?.identityAdjudicate?.({
+        tenantId:c.tenantId,projectId:c.projectId,periodId:c.periodId,projectIds:c.projectIds.length?c.projectIds:[c.projectId],
+        actorId:c.actorId,actorRole:c.role,canonicalShopperId,aliasShopperIds:aliases,humanConfirmed:true,
+        expectedVersion:expected,idempotencyKey:idempotency('shopper.identity.adjudicate',canonicalShopperId,{aliasShopperIds:[...aliases].sort()},expected),
+        reason:meta.reason||'admin_confirmed_same_human'
+      });
+      if(!built?.ok){const r=CX.commandAdapter?.blocked?.(built?.command||{},'SHOPPER_IDENTITY_ADJUDICATION_INVALID',{errors:built?.errors||[]})||{ok:false,status:'blocked'};return meta.ackAware?Promise.resolve(surfaceBlocked(r)):legacyFailClosed(r);}
+      built.command.authorization={providerEnforcementRequired:true,permission:'shopper.identity.adjudicate',humanAdjudicationRequired:true};
+      return execute(built.command,meta);
+    };
     D.resetShopperCredential=function(id,meta){
       meta=commandMeta(meta);const c=ctx();const current=typeof D.getShopper==='function'?D.getShopper(id):null;
       const expected=versionOf(current);

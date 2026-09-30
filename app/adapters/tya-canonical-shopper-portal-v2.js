@@ -101,7 +101,8 @@
       return host;
     }
     const s=identity.row,shopperKey=str(s.id||s.shopperId||identity.canonical),profileEmail=str(s.email||s.correo||s.mail),email=profileEmail||authenticatedEmail(),credential=currentSessionCredential(),rule=shopperCredentialRule(s);
-    const username=rule.ok?rule.login:str(s.username||s.user||credential.username),firstName=rule.ok?rule.firstName:str(s.firstName||s.nombre),lastName=rule.ok?rule.lastName:str(s.lastName||s.apellido),passwordValue=rule.ok?rule.password:str(credential.password);
+    const username=rule.ok?rule.login:str(s.username||s.user||credential.username),firstName=rule.ok?rule.firstName:str(s.firstName||s.nombre),lastName=rule.ok?rule.lastName:str(s.lastName||s.apellido);
+    const masked=(v)=>{const x=str(v);if(!x)return '— sin dato';if(x.length<=4)return '••••';return x.slice(0,2)+'••••'+x.slice(-2);};
     const historySource=typeof data.shopperHistoryVisits==='function'?data.shopperHistoryVisits(shopperKey,false):data.visitsForShopper(shopperKey,false).filter(v=>v&&v.__pendingPlatformAssignmentOverlay!==true);
     const visits=historySource.slice().sort((a,b)=>str(b.realizada||b.cuestFecha||b.submittedAt||b.agendada).localeCompare(str(a.realizada||a.cuestFecha||a.submittedAt||a.agendada)));
     const st=data.shopperStats(shopperKey),cs=cert(s),historicalEvidence=certEvidence(s);
@@ -110,10 +111,7 @@
     let tab='all';
     const draw=()=>{
       const list=tab==='active'?active:tab==='done'?done:tab==='submitted'?submitted:tab==='paid'?paid:visits;
-      const credentialAvailable=!!str(passwordValue);
-      const credentialBody=credentialAvailable
-        ? `<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap"><b data-credential-value>••••••••</b><button class="btn btn-sm btn-ghost" type="button" data-credential-reveal aria-pressed="false">Mostrar</button><button class="btn btn-sm btn-ghost" type="button" data-credential-copy>Copiar</button></div>`
-        : `<b data-credential-unavailable style="font-size:11px">Disponible al ingresar con usuario y contraseña</b>`;
+      const credentialBody=`<b style="font-size:11px;color:var(--t2)">Protegida · no se muestra después de iniciar sesión</b>`;
       host.innerHTML=`${ui.ph('Mi Perfil','Tu información, acceso e historial')}
       <div class="card card-p" style="margin-bottom:14px">
         <div class="between" style="gap:12px;align-items:flex-start"><div><div class="card-t" style="font-size:18px">${esc(s.nombre)}</div><div style="font-size:11px;color:var(--t3);margin-top:3px">${[s.ciudad,s.pais].map(esc).filter(Boolean).join(' · ')||'Perfil de shopper'}</div></div><div class="flex wrap" style="gap:6px"><button class="btn btn-sm btn-soft" type="button" data-profile-edit>Editar mis datos</button><span class="bdg bdg-g">Perfil verificado</span><span class="bdg bdg-${cs==='certificada'?'g':cs==='presentada'?'b':historicalEvidence.length?'a':'n'}">${cs==='certificada'?'Certificada':cs==='presentada'?'Certificación presentada':historicalEvidence.length?'Histórico en revisión':'Sin certificación'}</span></div></div>
@@ -123,7 +121,11 @@
           <div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">USUARIO</div><b>${esc(username||'— sin dato')}</b></div>
           <div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">CONTRASEÑA</div>${credentialBody}</div>
           <div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">WHATSAPP</div><b>${esc(s.whatsapp||s.phone||'— sin dato')}</b></div>
-          <div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">CORREO</div><b>${esc(email||'— sin dato')}</b></div>
+          <div class="card card-p" style="padding:10px;min-width:0"><div class="muted" style="font-size:10px">CORREO</div><b style="overflow-wrap:anywhere">${esc(email||'— sin dato')}</b></div>
+          <div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">CIUDAD / REGIÓN</div><b>${esc([s.ciudad,s.depto].filter(Boolean).join(' · ')||'— sin dato')}</b></div>
+          <div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">EDAD / SEXO</div><b>${esc([s.edad,s.sexo].filter(Boolean).join(' · ')||'— sin dato')}</b></div>
+          <div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">DOCUMENTO</div><b>${esc(masked(s.dpi||s.documentId))}</b></div>
+          <div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">DATOS DE PAGO</div><b>${esc([s.banco,masked(s.ctaNum),s.ctaMoneda].filter(Boolean).join(' · ')||'— sin dato')}</b></div>
         </div>
         <div style="font-size:11px;color:var(--t3);margin-top:9px">Tu usuario se forma con tu primer nombre y primer apellido, sin tildes. Desde “Editar mis datos” puedes actualizar la información personal, de contacto y de pago permitida.</div>
       </div>

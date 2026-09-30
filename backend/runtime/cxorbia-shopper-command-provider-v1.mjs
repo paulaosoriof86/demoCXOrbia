@@ -8,7 +8,7 @@ import crypto from 'node:crypto';
 import ShopperCredentialRule from '../../app/core/shopper-credential-rule.js';
 
 export const VERSION='cxorbia-shopper-command-provider-v1';
-export const COMMAND_TYPES=Object.freeze(['shopper.create','shopper.update','shopper.credential.reset']);
+export const COMMAND_TYPES=Object.freeze(['shopper.create','shopper.update','shopper.credential.reset','shopper.identity.adjudicate']);
 export const OPERATOR_ROLES=Object.freeze(['super','admin']);
 export const CREDENTIAL_RULE_VERSION=ShopperCredentialRule.CREDENTIAL_RULE_VERSION;
 export const DURABLE_CREDENTIAL_SWEEP_VERSION=ShopperCredentialRule.DURABLE_CREDENTIAL_SWEEP_VERSION;
@@ -131,6 +131,12 @@ function validateCommand(command={}){
   if(!str(command.idempotencyKey))errors.push('SHOPPER_IDEMPOTENCY_REQUIRED');
   if(command.authorization?.providerEnforcementRequired!==true)errors.push('SHOPPER_PROVIDER_ENFORCEMENT_REQUIRED');
   if(command.commandType==='shopper.credential.reset'&&containsRawSecret(command.payload||{}))errors.push('SHOPPER_CREDENTIAL_SECRET_IN_COMMAND_PAYLOAD');
+  if(command.commandType==='shopper.identity.adjudicate'){
+    const canonical=str(command.entityId||command.payload?.canonicalShopperId),aliases=uniq(command.payload?.aliasShopperIds||command.payload?.exactAliases||[]).filter(x=>x!==canonical);
+    if(!canonical)errors.push('SHOPPER_IDENTITY_CANONICAL_REQUIRED');
+    if(!aliases.length)errors.push('SHOPPER_IDENTITY_ALIASES_REQUIRED');
+    if(command.payload?.humanConfirmed!==true)errors.push('SHOPPER_IDENTITY_HUMAN_CONFIRMATION_REQUIRED');
+  }
   return {ok:errors.length===0,errors};
 }
 
@@ -638,6 +644,33 @@ function changedHrManagedFields(existing,patch){
   if(str(existing?.sourceType)!=='hr_external')return [];
   return HR_MANAGED_PROFILE_FIELDS.filter(key=>patch[key]!==undefined&&str(patch[key])!==str(existing?.[key]));
 }
+async function durableIdentityAdjudication({db,command,actor,canonicalShopperId}){
+  if(!OPERATOR_ROLES.includes(str(actor?.role))||actor?.selfScoped===true)throw new Error('SHOPPER_IDENTITY_ADJUDICATION_OPERATOR_REQUIRED');
+  const tenantId=str(command.tenantId),projectId=str(command.projectId),tenant=db.collection('tenants').doc(tenantId);
+  const aliases=uniq(command.payload?.aliasShopperIds||command.payload?.exactAliases||[]).filter(x=>x&&x!==canonicalShopperId);
+  if(!aliases.length)throw new Error('SHOPPER_IDENTITY_ALIASES_REQUIRED');
+  const canonicalRef=tenant.collection('shoppers').doc(canonicalShopperId),canonicalSnap=await canonicalRef.get();
+  if(!canonicalSnap.exists)throw new Error('SHOPPER_IDENTITY_CANONICAL_PROFILE_MISSING');
+  const canonical=canonicalSnap.data()||{};
+  if(str(canonical.tenantId||tenantId)!==tenantId)throw new Error('SHOPPER_IDENTITY_CANONICAL_TENANT_CONFLICT');
+  const profileSnaps=await Promise.all(aliases.map(id=>tenant.collection('shoppers').doc(id).get()));
+  const crossSnaps=await Promise.all(aliases.map(id=>tenant.collection('shopperIdentityCrosswalk').doc(id).get()));
+  aliases.forEach((id,index)=>{if(!profileSnaps[index].exists&&!crossSnaps[index].exists)throw new Error('SHOPPER_IDENTITY_ALIAS_UNKNOWN:'+id);});
+  const existing=await exactShopperIdentityMap(db,tenantId,projectId);
+  aliases.forEach(id=>{const prior=existing.get(id);if(prior&&prior!==canonicalShopperId)throw new Error('SHOPPER_IDENTITY_ALIAS_CONFLICT:'+id);});
+  const linkId='irl_'+sha([tenantId,projectId,canonicalShopperId,...aliases].join('\0')).slice(0,32);
+  const stamp=now(),authorityRef=receiptId(command);
+  const link={
+    schemaVersion:'cxorbia.shopper-identity-link.v1',identityLinkId:linkId,tenantId,projectScope:projectId,periodIndependent:true,
+    canonicalShopperId,sourceSystem:'hr_external',sourceIdentityKey:aliases[0],exactAliases:aliases,sourceAliases:aliases,
+    status:'active',state:'active',authorityType:'tenant_adjudication',authorityRef,adjudicationId:authorityRef,
+    humanConfirmed:true,sourceSafe:true,fuzzyMatching:false,actorUidFingerprint:providerUidFingerprint(actor.uid),
+    reason:str(command.payload?.reason||'admin_confirmed_same_human'),createdAt:stamp,updatedAt:stamp
+  };
+  await tenant.collection('shopperIdentityLinks').doc(linkId).set(link,{merge:true});
+  return {identityLinkId:linkId,canonicalShopperId,exactAliases:aliases,providerWrites:1,authorityType:'tenant_adjudication'};
+}
+
 async function durableProfileUpdate({auth,db,command,shopperId,actor}){
   const tenantId=str(command.tenantId),projectId=str(command.projectId),tenant=db.collection('tenants').doc(tenantId),users=tenant.collection('users');
   const selfScoped=actor?.selfScoped===true;
@@ -917,6 +950,11 @@ export function createShopperCommandProvider({auth,db,policy}={}){
           if(p.commandDigest!==digest)throw new Error('SHOPPER_IDEMPOTENCY_REUSE_DIFFERENT_PAYLOAD');
           if(p.status==='committed')return ack(command,p.shopperId,{idempotentReplay:true,providerWrites:0,credentialState:p.credentialState||null,credentialIssued:false,uidFingerprint:p.uidFingerprint||null,profileUpdated:p.profileUpdated===true});
         }
+        if(command.commandType==='shopper.identity.adjudicate'){
+          const result=await durableIdentityAdjudication({db,command,actor,canonicalShopperId:shopperId});
+          await receipt.set({status:'committed',commandDigest:digest,shopperId,commandType:command.commandType,providerAck:true,actorUid:actor.uid,identityLinkId:result.identityLinkId,updatedAt:now()},{merge:false});
+          return ack(command,shopperId,{idempotentReplay:false,providerWrites:result.providerWrites+1,identityAdjudicated:true,identityLinkId:result.identityLinkId,canonicalShopperId:result.canonicalShopperId,exactAliases:result.exactAliases,authorityType:result.authorityType});
+        }
         if(command.commandType==='shopper.credential.reset'){
           if(!auth?.updateUser)throw new Error('SHOPPER_CREDENTIAL_AUTH_UPDATE_UNAVAILABLE');
           const identity=await durableCredentialIdentity({auth,db,command,shopperId});
@@ -946,7 +984,7 @@ export function createShopperCommandProvider({auth,db,policy}={}){
         return ack(command,shopperId,{uidFingerprint:providerUidFingerprint(result.uid),idempotentReplay:result.idempotentReplay,providerWrites:Number(result.providerWrites||0)+Number(manual.providerWrites||0)+1,profileUpdated:true,identityLinkId:manual.identityLinkId,sourceIdentityKey:manual.sourceIdentityKey,platformCreatedAuthority:manual.platformCreatedAuthority===true});
       }catch(error){return blocked(command,str(error?.message||error));}
     },
-    status(){return {version:VERSION,enabled:true,allowedTenantIds:uniq(policy.allowedTenantIds),allowedProjectIds:uniq(policy.allowedProjectIds),hrWrites:false,externalWrites:false,fuzzyMatching:false,stableIdentity:true,profileMutation:true,credentialEnrollment:true,credentialRepair:true,credentialRuleVersion:CREDENTIAL_RULE_VERSION,shopperSelfProfileUpdate:true};}
+    status(){return {version:VERSION,enabled:true,allowedTenantIds:uniq(policy.allowedTenantIds),allowedProjectIds:uniq(policy.allowedProjectIds),hrWrites:false,externalWrites:false,fuzzyMatching:false,stableIdentity:true,profileMutation:true,identityAdjudication:true,credentialEnrollment:true,credentialRepair:true,credentialRuleVersion:CREDENTIAL_RULE_VERSION,shopperSelfProfileUpdate:true};}
   });
 }
 

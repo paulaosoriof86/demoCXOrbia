@@ -434,21 +434,31 @@ CX.module('mireportes', ({data,ui})=>{
   }
   const s=(data.getShopper&&data.getShopper(sid))||{nombre:'Shopper'};
   const periodIdOf=v=>data.recordPeriodId?data.recordPeriodId(v):(v&&((v.periodId||v.projectId)));
-  const vis=(data.visitsForShopper?data.visitsForShopper(sid):[]).filter(v=>String(periodIdOf(v)||'')===String(data.currentPeriodId||''));
+  const visAll=(data.visitsForShopper?data.visitsForShopper(sid,false):[]).filter(v=>v&&v.__pendingPlatformAssignmentOverlay!==true);
+  const vis=visAll.filter(v=>String(periodIdOf(v)||'')===String(data.currentPeriodId||''));
   const projectLabel=data.programBase?data.programBase(p):(p.name||'Proyecto');
   const periodLabel=p.periodo||p.ronda||p.name||'Periodo';
   const isReal=v=>data.visitBucketFns.realizadas(v);
-  const myLiq=(()=>{try{const ids=new Set(vis.map(v=>v.id));return (CX.liq&&CX.liq.forProject?CX.liq.forProject(data):[]).filter(l=>ids.has(l.visitaId));}catch(e){return [];}})();
+  const liqFor=(rows)=>rows.map(v=>{try{const pid=periodIdOf(v),period=data.projects.find(x=>String(x.id)===String(pid))||p;return CX.liq.fromVisita(period,v);}catch(_){return null;}}).filter(Boolean);
+  const myLiq=liqFor(vis),myLiqAll=liqFor(visAll);
 
   const REPORTS={
     misVisitas:{icon:'📋',label:'Mis visitas del periodo',desc:'Detalle de tus visitas asignadas y su estado',
       columns:[{key:'sucursal',label:'Sucursal'},{key:'ciudad',label:'Ciudad'},{key:'escenario',label:'Escenario'},{key:'estado',label:'Estado'},{key:'fecha',label:'Fecha'},{key:'honorario',label:'Honorario'}],
       rows:()=>vis.map(v=>({sucursal:v.sucursal||'—',ciudad:v.ciudad||'—',escenario:v.escenario||'—',estado:v.estado,fecha:v.realizada||v.agendada||'—',honorario:(v.honorario!=null?v.honorario:'—')})),
       chart:()=>{const by={};vis.forEach(v=>{by[v.estado]=(by[v.estado]||0)+1;});return {title:'Mis visitas por estado',data:Object.entries(by).map(([k,n])=>({label:k,value:n}))};}},
-    misPagos:{icon:'💰',label:'Mis liquidaciones',desc:'Honorarios y reembolsos derivados de tus visitas',
+    misPagos:{icon:'💰',label:'Mis liquidaciones del periodo',desc:'Honorarios y reembolsos derivados de tus visitas del periodo',
       columns:[{key:'sucursal',label:'Sucursal'},{key:'estado',label:'Estado'},{key:'honorario',label:'Honorario'},{key:'reembolso',label:'Reembolso'},{key:'total',label:'Total'},{key:'pago',label:'Pago est.'}],
       rows:()=>myLiq.map(l=>({sucursal:l.sucursal||'—',estado:l.estado,honorario:Number.isFinite(l.honorario)?Math.round(l.honorario):'Pendiente de fuente',reembolso:Number.isFinite(l.reembolso)?Math.round(l.reembolso):'Pendiente de fuente',total:Number.isFinite(l.total)?Math.round(l.total):'Pendiente de fuente',pago:l.fechaEstimadaPago||'—'})),
       chart:()=>{const by={};myLiq.forEach(l=>{by[l.estado]=(by[l.estado]||0)+1;});return {title:'Mis liquidaciones por estado',data:Object.entries(by).map(([k,n])=>({label:k,value:n}))};}},
+    historialVisitas:{icon:'🗂️',label:'Histórico de visitas',desc:'Todas tus visitas históricas del proyecto',
+      columns:[{key:'periodo',label:'Periodo'},{key:'sucursal',label:'Sucursal'},{key:'ciudad',label:'Ciudad'},{key:'estado',label:'Estado'},{key:'fecha',label:'Fecha'}],
+      rows:()=>visAll.map(v=>({periodo:v.periodLabel||v.periodKey||periodIdOf(v)||'—',sucursal:v.sucursal||'—',ciudad:v.ciudad||'—',estado:v.estado,fecha:v.realizada||v.agendada||'—'})),
+      chart:()=>{const by={};visAll.forEach(v=>{const k=v.periodLabel||v.periodKey||periodIdOf(v)||'Sin periodo';by[k]=(by[k]||0)+1;});return {title:'Visitas por periodo',data:Object.entries(by).map(([k,n])=>({label:k,value:n}))};}},
+    historialPagos:{icon:'💳',label:'Histórico de beneficios',desc:'Honorarios y reembolsos históricos derivados de tus visitas',
+      columns:[{key:'periodo',label:'Periodo'},{key:'sucursal',label:'Sucursal'},{key:'estado',label:'Estado'},{key:'honorario',label:'Honorario'},{key:'reembolso',label:'Reembolso'},{key:'total',label:'Total'}],
+      rows:()=>myLiqAll.map(l=>({periodo:l.periodId||'—',sucursal:l.sucursal||'—',estado:l.estado,honorario:Number.isFinite(l.honorario)?Math.round(l.honorario):'Pendiente de fuente',reembolso:Number.isFinite(l.reembolso)?Math.round(l.reembolso):'Pendiente de fuente',total:Number.isFinite(l.total)?Math.round(l.total):'Pendiente de fuente'})),
+      chart:()=>{const by={};myLiqAll.forEach(l=>{by[l.estado]=(by[l.estado]||0)+1;});return {title:'Beneficios históricos por estado',data:Object.entries(by).map(([k,n])=>({label:k,value:n}))};}},
   };
 
   const san=(x)=>String(x||'r').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-+|-+$/g,'').toLowerCase()||'r';

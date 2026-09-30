@@ -104,7 +104,7 @@ CX.module('shoppers', ({data,ui})=>{
     <td style="font-size:12px">${typeof s.visitas==='number'?s.visitas:'<span class="muted">—</span>'}</td>
     <td>${perfilCell}</td>
     <td>${estadoCell}</td>
-    <td>${honCell}</td>
+    <td>${honCell}</td><td><span class="btn btn-ghost btn-sm">Ver perfil</span></td>
   </tr>`;
   };
 
@@ -120,6 +120,36 @@ CX.module('shoppers', ({data,ui})=>{
     return out;
   })();
   const identityReviewBadge=s=>identityReviewIds.has(String(s&&s.id||''))?ui.bdg('Revisar identidad','a'):'';
+  const identityCollisionFor=id=>arr(data.__identityReviewQueue).find(item=>item&&item.reason==='display_name_collision_not_auto_merged'&&arr(item.shopperIds).map(String).includes(String(id||'')))||null;
+  const resolveIdentityModal=s=>{
+    const collision=identityCollisionFor(s&&s.id);
+    const ids=arr(collision&&collision.shopperIds).map(String).filter(Boolean);
+    const candidates=ids.map(id=>data.getShopper(id)).filter(Boolean);
+    if(candidates.length<2){ui.toast('No hay un grupo exacto de identidades para resolver','warn');return;}
+    ui.modal('Resolver identidad · '+(s.nombre||'shopper'),`
+      <div style="font-size:12.5px;color:var(--t2);line-height:1.6;margin-bottom:12px">Confirma únicamente cuando estas fichas pertenecen a la misma persona. No se fusiona por nombre, teléfono ni correo automáticamente.</div>
+      <label class="lbl">Ficha canónica que se conservará</label>
+      <select class="sel" id="idCanonical" style="margin-bottom:12px">${candidates.map(x=>`<option value="${esc(x.id)}" ${String(x.id)===String(s.id)?'selected':''}>${esc(x.nombre||x.id)} · ${Number.isFinite(x.visitas)?x.visitas:'—'} visita(s)</option>`).join('')}</select>
+      <div class="card card-p" style="margin-bottom:12px">${candidates.map(x=>`<div class="between" style="padding:7px 0;border-bottom:1px solid var(--border-2)"><div><b>${esc(x.nombre||x.id)}</b><div style="font-size:10.5px;color:var(--t3)">${esc(x.ciudad||'—')} · ${esc(CX.paisName(x.pais)||x.pais||'—')}</div></div><div style="font-size:12px">${Number.isFinite(x.visitas)?x.visitas:'—'} visita(s)</div></div>`).join('')}</div>
+      <label class="flex" style="gap:8px;font-size:12px;color:var(--t1);margin-bottom:14px"><input type="checkbox" id="idConfirm"> Confirmo que todas estas fichas corresponden a la misma persona.</label>
+      <div style="text-align:right"><button class="btn btn-pr btn-sm" id="idResolve">Confirmar fusión de identidad</button></div>
+    `,{onMount:(ov,close)=>{
+      ov.querySelector('#idResolve').addEventListener('click',async e=>{
+        const btn=e.currentTarget,canonical=ov.querySelector('#idCanonical').value,confirmed=ov.querySelector('#idConfirm').checked;
+        if(!confirmed){ui.toast('Debes confirmar que las fichas pertenecen a la misma persona','warn');return;}
+        const aliases=ids.filter(id=>id!==canonical);
+        btn.disabled=true;btn.textContent='Confirmando…';
+        try{
+          const result=await data.adjudicateShopperIdentity(canonical,aliases,{ackAware:true,reason:'admin_identity_human_adjudication'});
+          if(!commandOk(result))throw new Error(commandError(result));
+          close();ui.toast('Identidad confirmada y guardada','ok',3600);
+          try{await CX.backend?.refresh?.();}catch(_){}
+          try{await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('admin_identity_adjudication_refresh');}catch(_){}
+          CX.router.nav('shoppers');
+        }catch(error){ui.toast('No se aplicó la resolución de identidad · '+String(error?.message||error),'err',5200);btn.disabled=false;btn.textContent='Confirmar fusión de identidad';}
+      });
+    }});
+  };
 
   /* ---------- HTML del módulo ---------- */
   const render=()=>{
@@ -147,7 +177,7 @@ CX.module('shoppers', ({data,ui})=>{
           <button class="btn btn-pr btn-sm" id="shNew">+ Alta manual</button>
         </div>
       </div>
-      <table class="tbl"><thead><tr><th>Shopper</th><th>Rating</th><th>Visitas</th><th>Perfil</th><th>Estado</th><th>Honorario</th></tr></thead>
+      <table class="tbl"><thead><tr><th>Shopper</th><th>Rating</th><th>Visitas</th><th>Perfil</th><th>Estado</th><th>Honorario</th><th>Acciones</th></tr></thead>
       <tbody id="shBody">${L.map(row).join('')}</tbody></table>
       <div id="shEmpty" style="display:none;padding:12px">${ui.empty('🔍','Sin resultados para tu búsqueda.')}</div>
       <div style="margin-top:14px">${ui.aiBox('El alta manual pide solo lo esencial (nombre, apellido y WhatsApp); el shopper completa el resto al ingresar. Si dos fichas tienen el mismo nombre pero no existe una coincidencia técnica verificable, permanecen separadas y se marcan para revisión.','Alta y calificación inteligente')}</div>
@@ -257,7 +287,7 @@ CX.module('shoppers', ({data,ui})=>{
         <div class="card-t" style="font-size:12.5px;margin-bottom:6px">📊 Criterio de puntuación</div>
         <div style="font-size:11.5px;color:var(--t2);line-height:1.6">Sin score disponible — esta fuente todavía no entrega un rating para este perfil. No se muestra ni infiere un valor mientras no exista un dato real.</div>`}
       </div>
-      <div class="card-h" style="margin-bottom:10px"><div class="card-t">Datos del shopper</div>${canEdit?'<button class="btn btn-soft btn-sm" id="shEdit">✎ Editar perfil</button>':(lvl==='full_authorized_profile'?'<span class="muted" style="font-size:11px">🔒 Edición requiere acceso completo</span>':'<span class="muted" style="font-size:11px">Sin datos de contacto/documento autorizados para edición</span>')}</div>
+      <div class="card-h" style="margin-bottom:10px"><div class="card-t">Datos del shopper</div><div class="flex" style="gap:7px">${identityReviewIds.has(String(s.id||''))?'<button class="btn btn-warn btn-sm" id="shResolveIdentity">Resolver identidad</button>':''}${canEdit?'<button class="btn btn-soft btn-sm" id="shEdit">✎ Editar perfil</button>':(lvl==='full_authorized_profile'?'<span class="muted" style="font-size:11px">🔒 Edición requiere acceso completo</span>':'<span class="muted" style="font-size:11px">Sin datos de contacto/documento autorizados para edición</span>')}</div></div>
       <div id="shFormHost"></div>
     `;
     ui.modal(s.nombre, body, {onMount:(ov,close)=>{
@@ -276,6 +306,7 @@ CX.module('shoppers', ({data,ui})=>{
         ${(()=>{const c=CX.data&&CX.data.ctx?CX.data.ctx():null;return c?`<div style="margin-top:6px;font-size:10px;color:var(--t3)">alcance: ${c.countryScope&&c.countryScope.length?c.countryScope.join(','):'sin restricción'} · rol ${c.role}</div>`:'';})()}</div>`;
       };
       readView();
+      ov.querySelector('#shResolveIdentity')?.addEventListener('click',()=>resolveIdentityModal(s));
       ov.querySelector('#shResetCredential')?.addEventListener('click',async e=>{
         const btn=e.currentTarget;if(!confirm('¿Restablecer el acceso de este shopper? La credencial anterior dejará de funcionar.'))return;
         btn.disabled=true;btn.textContent='Restableciendo...';

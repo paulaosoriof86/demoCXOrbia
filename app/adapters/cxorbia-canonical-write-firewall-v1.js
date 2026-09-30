@@ -56,17 +56,17 @@
       run(t,()=>CX.data.requestVisitCancel(p.visitaId||p.visitId,{ackAware:true,reason:'admin-cancel',requestOnly:false}),'Cancelación confirmada');return;
     }
 
-    /* These controls still collect/mutate local closure state. Fail closed until their own
-       ACK-aware source conversion is activated in Iteration 3/4; never let them fake success. */
-    if(t.matches('#pGroups [data-edit],#pGroups [data-reasig],#asignManual,#syncHR')){hardBlock(event);return;}
+    /* Fail closed only for controls that still lack a durable ACK-aware owner.
+       Postulations edit/reassign/manual assign/HR refresh and Reservations are now owned by
+       provider-backed handlers; this firewall must not intercept those canonical commands. */
     if(t.id==='qSubmit'){hardBlock(event,'El envío del cuestionario queda bloqueado hasta su persistencia/evidencia canónica con ACK real. Las respuestas no se guardaron localmente.');return;}
-    if(t.matches('#rNew,[data-del],#aCruzar,#aAsignar,#aEscenarios')){hardBlock(event,'Reservas permanece en lectura segura hasta que su persistencia canónica esté habilitada. No se modificó localStorage.');return;}
+    if(t.id==='aEscenarios'){hardBlock(event,'Los escenarios se administran desde la fuente configurada del proyecto; esta acción no realiza una carga local.');return;}
   },true);
 
   document.addEventListener('change',event=>{
     if(!canonical())return;
-    const t=event.target;
-    if(t?.matches?.('.rEst'))hardBlock(event,'El estado de reserva no puede cambiarse en memoria/localStorage en el runtime canónico.');
+    /* Reservation state changes are ACK-aware in modules/reservas.js and are therefore allowed.
+       No generic local-state change is authorized here. */
   },true);
 
   root.CX_CANONICAL_WRITE_FIREWALL={ready:true,version:VERSION,canonical:canonical(),directLocalWriteAllowed:false,providerWrites:0,at:new Date().toISOString()};

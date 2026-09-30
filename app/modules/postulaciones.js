@@ -362,7 +362,7 @@ CX.module('postulaciones', ({data,ui})=>{
     /* asignar visita manual — con búsqueda y opción de crear shopper en el momento */
     const am=document.getElementById('asignManual');
     const shr=document.getElementById('syncHR');
-    if(shr)shr.addEventListener('click',()=>ui.toast('Lectura de HR preparada · la sincronización real (lectura/escritura) queda pendiente de activación','',4200));
+    if(shr)shr.addEventListener('click',async()=>{shr.disabled=true;shr.textContent='Actualizando HR…';try{const before=String(CX.data?.previewMeta?.sourceRevision||'');const result=await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('admin_postulations_manual_hr_refresh');const after=String(CX.data?.previewMeta?.sourceRevision||'');if(!result?.ok)throw new Error(result?.error||result?.reason||'No fue posible leer la HR viva');ui.toast('HR viva actualizada'+(after&&after!==before?' · revisión nueva confirmada':''),'ok',3600);CX.router.nav('postulaciones');}catch(error){ui.toast('No se pudo actualizar HR · '+String(error?.message||error),'err',5200);}finally{shr.disabled=false;shr.textContent='🔄 Sincronizar HR';}});
     if(am)am.addEventListener('click',()=>{
       const projName=(id)=>{const pr=data.projects.find(x=>x.id===id);return pr?pr.name:'';};
       const disp=data._visitas.filter(v=>periodIdOf(v)===data.currentPeriodId&&(v.estado==='disponible'||!v.shopperId));
@@ -390,26 +390,21 @@ CX.module('postulaciones', ({data,ui})=>{
         ov.querySelector('#amSQ').addEventListener('input',e=>filt(e.target,'amS'));
         const nw=ov.querySelector('#amNew');
         nw.addEventListener('change',()=>{ov.querySelector('#amExist').style.display=nw.checked?'none':'';ov.querySelector('#amCreate').style.display=nw.checked?'':'none';});
-        ov.querySelector('#amOk').addEventListener('click',()=>{
-          const vid=ov.querySelector('#amV').value; if(!vid){ui.toast('Elige una visita','warn');return;}
-          let sid, s;
-          if(nw.checked){ const f=(ov.querySelector('#amF').value||'').trim(), l=(ov.querySelector('#amL').value||'').trim(), w=(ov.querySelector('#amW').value||'').trim();
-            if(!f){ui.toast('Escribe al menos el nombre','warn');return;}
-            s=data.addShopper&&data.addShopper({via:'asignacion_manual',firstName:f,lastName:l,whatsapp:w,perfilCompleto:false});
-            sid=s&&s.id;
-            if(s){ CX.notif&&CX.notif.push({to:'shopper',tipo:'completar',icon:'📝',tono:'a',titulo:'Completa tu perfil',txt:'Te asignaron una visita · actualiza tus datos para continuar',nav:'miperfil'}); }
-          } else { sid=ov.querySelector('#amS').value; s=data.getShopper(sid); }
-          const v=data.assignVisit&&data.assignVisit(vid,sid);
-          CX.hr&&CX.hr.writeBack&&CX.hr.writeBack(p,v);
-          CX.notif&&CX.notif.push({to:'admin',tipo:'asignacion',icon:'📌',tono:'g',titulo:'Visita asignada manual',txt:(v?v.sucursal:'')+' → '+(s?s.nombre:''),nav:'postulaciones'});
-          close(); ui.toast('Visita asignada a '+(s?s.nombre:'')+(nw.checked?' (nuevo · perfil incompleto)':'')+' · se reflejará en HR cuando la sincronización esté activa · por '+gestor(),'ok',4400);
+        ov.querySelector('#amOk').addEventListener('click',async()=>{
+          const btn=ov.querySelector('#amOk'),vid=ov.querySelector('#amV').value;if(!vid){ui.toast('Elige una visita','warn');return;}btn.disabled=true;btn.textContent='Asignando…';let sid=null,s=null;
+          try{
+            if(nw.checked){const f=(ov.querySelector('#amF').value||'').trim(),l=(ov.querySelector('#amL').value||'').trim(),w=(ov.querySelector('#amW').value||'').trim();if(!f||!l||!w)throw new Error('Nombre, apellido y WhatsApp son obligatorios');const created=await data.addShopper({via:'asignacion_manual',createdVia:'manual',firstName:f,lastName:l,nombre:(f+' '+l).trim(),whatsapp:w,perfilCompleto:false,sourceType:'platform',__commandMeta:{ackAware:true,reason:'postulations-manual-assignment-create-shopper'}});if(!(created&&created.ok===true&&created.status==='committed'&&created.providerAck===true))throw new Error(created?.code||'Shopper no confirmado');sid=created.entityId;s=data.getShopper?.(sid)||{id:sid,nombre:(f+' '+l).trim()};}
+            else{sid=ov.querySelector('#amS').value;s=data.getShopper(sid);}if(!sid)throw new Error('Selecciona un shopper');
+            const assigned=await data.assignVisit(vid,sid,{ackAware:true,assignmentSource:'platform',reason:'postulations-manual-assignment'});if(!(assigned&&assigned.ok===true&&assigned.status==='committed'&&assigned.providerAck===true&&assigned.successUiAllowed===true))throw new Error(assigned?.code||'Asignación no confirmada');
+            close();ui.toast('Asignación guardada y confirmada'+(s?.nombre?' · '+s.nombre:''),'ok',3600);try{await CX.backend?.refresh?.();}catch(_){}CX.router.nav('postulaciones');
+          }catch(error){ui.toast('No se aplicó la asignación · '+String(error?.message||error),'err',5200);btn.disabled=false;btn.textContent='Asignar';}
         });
       }});
     });
     const reqBtn=document.getElementById('reqShopper');
     if(reqBtn)reqBtn.addEventListener('click',()=>{
       ui.modal('📤 Pedir acción al shopper',`
-        <p style="font-size:12.5px;color:var(--t2);margin-bottom:14px">El equipo puede <b>solicitar</b> al shopper (no solo gestionar lo que él pide). La solicitud le llega en Mi Día, Tablón y por WhatsApp.</p>
+        <p style="font-size:12.5px;color:var(--t2);margin-bottom:14px">El equipo puede <b>solicitar</b> al shopper (no solo gestionar lo que él pide). La solicitud se registra en la experiencia interna del shopper. WhatsApp solo se considera enviado cuando exista ACK del proveedor de mensajería.</p>
         <label class="lbl">Shopper</label>
         <select class="sel" id="rqSh" style="margin-bottom:12px">${posts.slice(0,10).map(x=>`<option>${x.shopper} · ${x.sucursal}</option>`).join('')}</select>
         <label class="lbl">Solicitud</label>
@@ -429,12 +424,12 @@ CX.module('postulaciones', ({data,ui})=>{
           const map={confirmar:['📅','El equipo pide confirmar fecha','confirmar_fecha'],cambio:['📅','El equipo pide cambio de fecha','confirmar_fecha'],reprog:['🔄','El equipo solicita reprogramación',''],agendar:['📅','Recordatorio: agenda tu visita','']};
           const m=map[tipo];
           CX.notif.push({to:'shopper',tipo,icon:m[0],tono:'a',titulo:m[1],txt:sh+' · responde desde Mis Visitas',nav:'misvisitas',accion:m[2]||undefined});
-          close();ui.toast('Solicitud preparada para '+sh+' · visible en Mi Día + Tablón · WhatsApp pendiente de envío','ok',3500);
+          close();ui.toast('Solicitud interna creada para '+sh+' · visible en Mi Día/Tablón; WhatsApp no fue declarado enviado','ok',3500);
         });
       }});
     });
     document.getElementById('openAgenda').addEventListener('click',()=>{
-      const rows=agendadas.slice(0,4).map(v=>`<div class="between" style="padding:9px 11px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px">
+      const rows=agendadas.map(v=>`<div class="between" style="padding:9px 11px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px">
         <div><b style="font-size:13px">${v.shopper}</b> · ${v.sucursal}<div style="font-size:11px;color:var(--t3)">📅 ${v.agendada} · ${v.franjaCode} · autorizada por Coordinación</div></div>
         <button class="btn btn-ghost btn-sm aprAdjust" data-vid="${v.id}" data-sh="${v.shopper}">🗓️ Solicitar ajuste</button></div>`).join('');
       ui.modal('Gestión de agendamientos',`

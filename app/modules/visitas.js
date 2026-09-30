@@ -203,6 +203,7 @@ CX.module('visitas', ({data,role,ui})=>{
   const estadoCanonBadge=(v)=>{const s=estadoCanon(v);return `<span class="bdg bdg-${s.tone}">${s.label}</span>`;};
   /* revisión operativa canónica del alcance (misma que Dashboard/reportes) */
   const sourceRevision=(CX.clienteData&&CX.clienteData.sourceRevision)?CX.clienteData.sourceRevision(p):(p&&p.sourceRevision)||'0';
+  const externalHrAuthority=String(p?.operationalSource?.mode||p?.routeSource||'').toLowerCase().includes('external');
   /* P0-1: mismo criterio de disponibilidad canónica que en el marketplace del shopper. */
   const isAvailableAdmin=(v)=>{
     const f=typeof data.visitFacets==='function'?data.visitFacets(v):null;
@@ -219,14 +220,14 @@ CX.module('visitas', ({data,role,ui})=>{
     <td>${estadoCanonBadge(v)}</td>
     <td style="font-size:12px">${v.agendada||'<span class="muted">—</span>'}</td>
     <td style="font-size:12px;font-weight:600;color:var(--green)">${v.honorario!=null?ui.money(v.currency,v.honorario):'<span class="muted" title="Sin honorario en la fuente">Pendiente de fuente</span>'}</td>
-    <td style="text-align:right"><button class="btn btn-ghost btn-sm" data-vdetail="${v.id}" title="Ver detalle completo">🔍</button> ${!v.shopper&&v.estado!=='fuera_rango'?`<button class="btn btn-soft btn-sm" data-assign="${v.id}">Asignar</button> `:''}<button class="btn btn-ghost btn-sm" data-edit="${v.id}">✏️</button></td>
+    <td style="text-align:right"><button class="btn btn-ghost btn-sm" data-vdetail="${v.id}" title="Ver detalle completo">🔍</button> ${!v.shopper&&v.estado!=='fuera_rango'?`<button class="btn btn-soft btn-sm" data-assign="${v.id}">Asignar</button> `:''}${externalHrAuthority?'':`<button class="btn btn-ghost btn-sm" data-edit="${v.id}">✏️</button>`}</td>
   </tr>`;
   const html=`
     <div class="between" style="margin-bottom:6px"><div>${ui.ph('Visitas', (ALL?('Todos los proyectos · '+all.length+' visitas'):(p.name+' · base operativa'))+' · publica, asigna y edita cada visita')}</div>
       <div class="flex"><span class="bdg bdg-b">● Preview operativo</span><span class="bdg bdg-b">${all.length} visitas</span></div></div>
     <div class="flex wrap" style="gap:8px;margin-bottom:12px">
-      <button class="btn btn-green btn-sm" id="addV">＋ Publicar visita</button>
-      <button class="btn btn-soft btn-sm">⤒ Importar HR</button>
+      ${externalHrAuthority?'':`<button class="btn btn-green btn-sm" id="addV">＋ Publicar visita</button>`}
+      <button class="btn btn-soft btn-sm" id="vRefreshHR">🔄 Actualizar desde HR</button>
       <button class="btn btn-ghost btn-sm" id="vExport">⤓ Exportar</button>
       <div class="spacer"></div>
       <input class="inp" id="vSearch" placeholder="🔎 Sucursal, shopper, ciudad…" style="max-width:240px">
@@ -244,7 +245,7 @@ CX.module('visitas', ({data,role,ui})=>{
     <div class="card card-p">
       <table class="tbl"><thead><tr><th>#</th><th>Sucursal</th><th>Escenario</th><th>Periodo de medición</th><th>Shopper</th><th>Estado</th><th>Agenda</th><th>Honorario</th><th></th></tr></thead>
       <tbody id="vBody">${all.map(row).join('')}</tbody></table>
-      <div style="margin-top:14px">${ui.aiBox('Cada visita es editable: sucursal, escenario, honorario, shopper y estado. Detecto solapamientos, fuera de rango y faltantes de cobertura antes de publicar.','Base operativa inteligente')}</div>
+      <div style="margin-top:14px">${ui.aiBox(externalHrAuthority?'Los campos gestionados por HR se actualizan desde la fuente viva. En CXOrbia administras asignaciones y acciones operativas sin sobrescribir silenciosamente la HR.':'Las visitas internas se administran desde su fuente configurada; ningún guardado se declara sin ACK.','Base operativa inteligente')}</div>
     </div>`;
   setTimeout(()=>{
     const vx=document.getElementById('vExport');
@@ -286,7 +287,8 @@ CX.module('visitas', ({data,role,ui})=>{
       </div>
       <div style="text-align:right;margin-top:16px"><button class="btn btn-pr btn-sm" onclick="CX.ui.toast('Visita guardada','ok');this.closest('.cx-ov').remove()">💾 Guardar</button></div>`);
     document.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>editor(all.find(z=>z.id===b.dataset.edit))));
-    document.getElementById('addV').addEventListener('click',()=>editor(null));
+    document.getElementById('addV')?.addEventListener('click',()=>editor(null));
+    document.getElementById('vRefreshHR')?.addEventListener('click',async e=>{const b=e.currentTarget;b.disabled=true;b.textContent='Actualizando…';try{const r=await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('admin_visits_manual_hr_refresh');if(!r?.ok)throw new Error(r?.error||r?.reason||'Lectura HR no confirmada');CX.ui.toast('HR viva actualizada','ok');CX.router.nav('visitas');}catch(error){CX.ui.toast('No se pudo actualizar HR · '+String(error?.message||error),'err',5200);}finally{b.disabled=false;b.textContent='🔄 Actualizar desde HR';}});
     const assignModal=(v)=>{
       const shoppers=data.shoppersFor();
       ui.modal('Asignar visita · '+v.sucursal, `

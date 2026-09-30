@@ -9,9 +9,11 @@ CX.module('beneficios', ({data,ui})=>{
   if(!sid){
     return `<div class="card card-p">${ui.empty('👤','No hay un shopper autenticado en esta sesión — no se muestran beneficios de otra identidad.')}</div>`;
   }
-  const myVisitIds=new Set((data.visitsForShopper?data.visitsForShopper(sid):[]).map(v=>v.id));
-  const allProj=CX.liq.forProject(data);
-  const all=allProj.filter(l=>myVisitIds.has(l.visitaId));
+  const myVisits=(data.visitsForShopper?data.visitsForShopper(sid,false):[]).filter(v=>v&&v.__pendingPlatformAssignmentOverlay!==true);
+  const currentVisits=myVisits.filter(v=>String(data.recordPeriodId?data.recordPeriodId(v):(v.periodId||v.projectId)||'')===String(data.currentPeriodId||''));
+  const all=myVisits.map(v=>{try{const pid=data.recordPeriodId?data.recordPeriodId(v):(v.periodId||v.projectId);const period=data.projects.find(x=>String(x.id)===String(pid))||p;return CX.liq.fromVisita(period,v);}catch(_){return null;}}).filter(Boolean);
+  const currentIds=new Set(currentVisits.map(v=>v.id));
+  const currentLiquidations=all.filter(l=>currentIds.has(l.visitaId));
   /* V177 P0-3 — SIN moneda primaria del proyecto en ninguna zona. Todo se agrupa por l.moneda.
      benefits_declares_currency_grouping_contract: groupByCurrency / porMoneda / currencyGroups. */
   const isPaid=(l)=>l.paymentConfirmed===true && !!(l.paymentSourceRef||l.paymentRef);
@@ -60,9 +62,10 @@ CX.module('beneficios', ({data,ui})=>{
   },0);
 
   return `
-    ${ui.ph('Mis Beneficios', p.name+' · lo que ganas y lo que disfrutas, claro y separado')}
+    ${ui.ph('Mis Beneficios', (data.programBase?data.programBase(p):p.name)+' · periodo actual e histórico')}
+    <div class="card card-p" style="margin-bottom:12px"><b>${all.length} liquidación(es) históricas derivadas de tus visitas</b><div style="font-size:11px;color:var(--t3);margin-top:3px">Periodo seleccionado: ${p.periodo||p.ronda||p.name||'Periodo'} · ${currentLiquidations.length} en este periodo. Los pagos solo se marcan cuando existe confirmación de fuente.</div></div>
 
-    <div id="benKpis">${curList.length?curList.map(cu=>{const a=byCur[cu];return `<div style="margin-bottom:10px"><div style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Moneda ${cu}</div><div class="grid g4"><div data-k="hon" data-cur="${cu}" style="cursor:pointer">${ui.kpi('💵 Honorarios',ui.money(cu,a.hon),'g','tu ganancia en efectivo')}</div><div data-k="reemb" data-cur="${cu}" style="cursor:pointer">${ui.kpi('🎁 Reembolsos',ui.money(cu,a.reemb),'p','gastos del programa cubiertos')}</div><div data-k="cobrar" data-cur="${cu}" style="cursor:pointer">${ui.kpi('⏳ Por cobrar',ui.money(cu,a.porCobrar),'a')}</div><div data-k="pagado" data-cur="${cu}" style="cursor:pointer">${ui.kpi('✅ Pagado',ui.money(cu,a.pagado),'b','solo con pago confirmado')}</div></div></div>`;}).join(''):`<div class="muted" style="font-size:12px;padding:8px 0">Sin liquidaciones en este periodo.</div>`}</div>
+    <div id="benKpis">${curList.length?curList.map(cu=>{const a=byCur[cu];return `<div style="margin-bottom:10px"><div style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Moneda ${cu} · histórico</div><div class="grid g4"><div data-k="hon" data-cur="${cu}" style="cursor:pointer">${ui.kpi('💵 Honorarios',ui.money(cu,a.hon),'g','tu ganancia en efectivo')}</div><div data-k="reemb" data-cur="${cu}" style="cursor:pointer">${ui.kpi('🎁 Reembolsos',ui.money(cu,a.reemb),'p','gastos del programa cubiertos')}</div><div data-k="cobrar" data-cur="${cu}" style="cursor:pointer">${ui.kpi('⏳ Por cobrar',ui.money(cu,a.porCobrar),'a')}</div><div data-k="pagado" data-cur="${cu}" style="cursor:pointer">${ui.kpi('✅ Pagado',ui.money(cu,a.pagado),'b','solo con pago confirmado')}</div></div></div>`;}).join(''):`<div class="muted" style="font-size:12px;padding:8px 0">Sin liquidaciones en este periodo.</div>`}</div>
     ${curList.length>1?`<div style="font-size:10.5px;color:var(--t3);margin-top:2px">Cada liquidación conserva su moneda; GTQ y HNL no se suman entre sí.</div>`:''}
     ${pendingCurrency.length?`<div class="card card-p" style="margin:10px 0;border-left:3px solid var(--red)"><div class="flex" style="gap:8px;align-items:center;margin-bottom:4px"><span style="font-size:16px">🔒</span><b style="font-size:12.5px">Revisión · ${pendingCurrency.length} liquidación(es) sin moneda</b></div><div style="font-size:11.5px;color:var(--t2)">Estas visitas no tienen moneda resuelta en la fuente; no se incluyen en tus totales ni barras hasta que se corrijan. ${pendingCurrency.map(l=>l.sucursal||l.visitaId).join(', ')}</div></div>`:''}
     <div style="font-size:10.5px;color:var(--t3);margin-top:6px">"Pagado" solo cuenta liquidaciones con pago confirmado y referencia de fuente; hoy la fuente mantiene 0 pagos confirmados.</div>
