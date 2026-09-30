@@ -2,6 +2,7 @@ name: CXOrbia Recovery I3 DEV Certification
 # Control successor: Gate20 explicit canonical HR reconciliation.
 # V21 direct reproof trigger: no logic change; canonical workflow only.
 # V33 honorarium diagnostic rerun: existing DEV, no deploy.
+# ADMIN-004 V148 hardened closed-regression resume: existing DEV only, no deploy.
 
 on:
   push:
