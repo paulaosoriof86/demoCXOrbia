@@ -25,7 +25,7 @@ if(rev!==EXPECTED_HR||refreshError!==null||hr.sourceSafe!==true||hr.production!=
 const sep=arr(hr.visits).filter(v=>str(v.periodKey)==='2026-09'),gt=sep.filter(v=>str(v.pais||v.country)==='GT').length,hn=sep.filter(v=>str(v.pais||v.country)==='HN').length;
 if(sep.length!==44||gt!==34||hn!==10)fail('MAPPING_FAILURE:PREI4_004_HR_COUNTS');
 let admin=null,pageToken;
-for(let p=0;p<10&&!admin;p++){const lu=await auth.listUsers(1000,pageToken);for(const u of lu.users){const c=u.customClaims||{},role=str(c.role).toLowerCase(),ns=str(c.authNamespace).toLowerCase(),projects=arr(c.projectIds).map(str);if(str(c.tenantId)===TENANT&&ns==='staff'&&['super','admin','ops','coordinador'].includes(role)&&(role==='super'||projects.includes(PROJECT))){admin={uid:u.uid,role};break;}}pageToken=lu.pageToken;if(!pageToken)break;}
+for(let p=0;p<10&&!admin;p++){const lu=await auth.listUsers(1000,pageToken);for(const u of lu.users){const c=u.customClaims||{},role=str(c.role).toLowerCase(),ns=str(c.authNamespace).toLowerCase(),projects=arr(c.projectIds).map(str);if(str(c.tenantId)===TENANT&&ns==='staff'&&role==='admin'&&projects.includes(PROJECT)){admin={uid:u.uid,role};break;}}pageToken=lu.pageToken;if(!pageToken)break;}
 if(!admin)fail('AUTH_FAILURE:PREI4_004_ADMIN_MISSING');
 const submitted=sep.filter(v=>v?.canonicalFacets?.submitted===true||!!v?.submittedAt||['submitida','liquidada','pagada'].includes(str(v?.estado||v?.status).toLowerCase())).sort((a,b)=>str(a.hrRowId||a.id).localeCompare(str(b.hrRowId||b.id)));
 let target=null;
