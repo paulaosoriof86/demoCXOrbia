@@ -50,6 +50,7 @@ on:
       - CXORBIA_PRE_I4_CUMULATIVE_ANTI_REGRESSION_LOCK_2026-09-29.json
       - CXORBIA_PRE_I4_CUMULATIVE_ANTI_REGRESSION_LOCK_V2_2026-09-29.json
       - tools/qa/cxorbia-prei4-cumulative-regression-source-guard.mjs
+      - tools/qa/cxorbia-prei4-content001-dev-materialize.sh
       - CXORBIA_PRE_I4_ADMIN_002_POSTULATION_LIFECYCLE_RECEIPT_2026-09-28.json
       - app/modules/shoppers.js
       - backend/runtime/cxorbia-shopper-command-provider-v1.mjs
