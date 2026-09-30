@@ -7,8 +7,8 @@
   "productSourceSha": "4a39b26f6dcdff8f4dcd446b0141a7d3b1dc01d7",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "c487449e5187d7219033c54fa1ac3db5fb6c822e",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V150_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "bb17fc91405cc8555152eeb7e235bef5e97a4ed4",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V151_2026-09-30.json",
+  "findingsLedgerExpectedGitBlob": "206a5f964e955161fd12fd8986cc54799d197ede",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Repeat only ADMIN-004 no-deploy cumulative resume. Require project config version 4 readback with existing provider ACK/receipt/audit, then Postulaciones + Identity + Finance PASS on one fresh HR revision. Zero config writes, zero build/deploy, no production.",
+  "exactNextAction": "Run one fail-closed no-deploy readiness reproof on the existing DEV artifact. Require exact HR+Firestore sourceRef and target visit honorarioSourceKnown=true before Finance. If ready, reconcile and require Finance PASS; if not, freeze the composition owner. Zero build/deploy, no production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1124,18 +1124,19 @@
     "production": false
   },
   "lastLiveAttempt": {
-    "runId": 36651173311,
-    "runNumber": 654,
-    "jobId": 109685452553,
-    "artifactId": 11070985134,
-    "artifactZipSha256": "1f71f621aa8fb1626ef3e620889d6ad9b21d2b9d8b1fafd97f7d53c02567e258",
-    "classification": "MAPPING_FAILURE",
-    "projectConfigState": "DURABLE_ACK_PROVEN_VERSION_4",
-    "configWrites": 0,
+    "runId": 36651470986,
+    "runNumber": 656,
+    "jobId": 109686387960,
+    "artifactId": 11070144515,
+    "artifactZipSha256": "f0e630fc134c2272febab3b630b12ee3e12d9a1783f0d93877fa6e2b2bbcd4fd",
+    "classification": "FUNCTIONAL_DEFECT",
+    "postulations": "PASS_PREI4_ADMIN_002_HOSTING_LIVE",
+    "identity": "PASS_PREI4_ADMIN_003_CUMULATIVE_LIVE",
+    "hrRevision": "0b2f989af18f15ee429a504a4d628cb12b34153fce23bd730c8c74c8228d7877",
+    "finance": "HOLD_PENDING_OR_REVIEW_HONORARIO_NULL",
+    "writes": 0,
     "builds": 0,
-    "runtimeDeploys": 0,
-    "hostingDeploys": 0,
-    "productDefect": false,
+    "deploys": 0,
     "production": false
   }
 }
