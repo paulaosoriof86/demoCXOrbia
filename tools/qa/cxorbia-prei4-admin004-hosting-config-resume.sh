@@ -17,7 +17,8 @@ export CUM_EXPECTED_PENDING_FILES_JSON='["app/adapters/cxorbia-cxdata-command-bo
 node tools/qa/cxorbia-prei4-cumulative-regression-source-guard.mjs | tee "$CUM_OUT/console.log"
 test "$(jq -r '.decision' "$CUM_OUT/result.json")" = "PASS_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD"
 
-npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1\nnpx playwright install chromium >/dev/null 2>&1
+npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+npx playwright install chromium >/dev/null 2>&1
 export PREI4_004_PROP_OUT="$PREI4_004_RESUME_OUT/propagation"
 export PREI4_004_HR_REVISION="0b2f989af18f15ee429a504a4d628cb12b34153fce23bd730c8c74c8228d7877"
 node --check tools/qa/cxorbia-prei4-admin004-honorarium-propagation-diagnostic.mjs
