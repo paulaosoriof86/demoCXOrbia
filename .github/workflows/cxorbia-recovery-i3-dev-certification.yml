@@ -740,17 +740,17 @@ jobs:
   prei4-cumulative-regression-source-guard:
     name: PRE-I4 cumulative anti-regression — all prior closures + Module Truth
     needs: canonical-candidate-authority
-    if: ${{ (needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_003_CUMULATIVE_SOURCE_REPROOF_REQUIRED' || (needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_HOSTING_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_FINANCE_LIVE_RESUME_REQUIRED') || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_SOURCE_REPROOF_REQUIRED') && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-cumulative-regression]') }}
+    if: ${{ (needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_003_CUMULATIVE_SOURCE_REPROOF_REQUIRED' || (needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_HOSTING_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_FINANCE_LIVE_RESUME_REQUIRED') || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED') && github.event_name == 'push' && (contains(github.event.head_commit.message, '[prei4-cumulative-regression]') || contains(github.event.head_commit.message, '[prei4-content-001-source]')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
       CUM_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
       CUM_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
       CUM_BASE: c487449e5187d7219033c54fa1ac3db5fb6c822e
-      CUM_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V162_2026-09-30.json
+      CUM_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V168_2026-09-30.json
       CUM_MATRIX: RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json
       CUM_OUT: .tmp/prei4-cumulative-regression
-      CUM_EXPECTED_DELTA_JSON: '["app/adapters/cxorbia-cxdata-command-boundary-v1.js","app/adapters/tya-c6-unified-human-runtime-v1.js","app/adapters/tya-canonical-finance-read-model-v2.js","app/adapters/tya-live-source-inplace-apply.js","app/adapters/tya-protected-auth-hr-authority-bridge-v2.js","app/modules/finanzas.js","app/modules/proyectos.js","backend/runtime/cxorbia-finance-command-provider-v1.mjs","backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs","backend/runtime/hr-live-service/server.mjs","backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs"]'
+      CUM_EXPECTED_DELTA_JSON: '["app/adapters/cxorbia-cxdata-command-boundary-v1.js","app/adapters/tya-c6-unified-human-runtime-v1.js","app/adapters/tya-canonical-finance-read-model-v2.js","app/adapters/tya-live-source-inplace-apply.js","app/adapters/tya-protected-auth-hr-authority-bridge-v2.js","app/modules/finanzas.js","app/modules/proyectos.js","backend/runtime/cxorbia-finance-command-provider-v1.mjs","backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs","backend/runtime/hr-live-service/server.mjs","backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs","backend/runtime/hr-live-service/test/cxorbia-prei4-project-questionnaire-config.test.mjs"]'
       CUM_ALLOWED_PENDING_MODULES_JSON: '["canonical-hr-state-adapters","finance-core-liquidation-costs","human-runtime-domain-consistency","persistence-command-ack-boundary","phase-a-supporting-core","projects-periods-hr-source-wizard-multiproject"]'
       CUM_EXPECTED_PENDING_FILES_JSON: '["app/adapters/cxorbia-cxdata-command-boundary-v1.js","app/adapters/tya-c6-unified-human-runtime-v1.js","app/adapters/tya-canonical-finance-read-model-v2.js","app/adapters/tya-live-source-inplace-apply.js","app/adapters/tya-protected-auth-hr-authority-bridge-v2.js","app/modules/finanzas.js","app/modules/proyectos.js","backend/runtime/cxorbia-finance-command-provider-v1.mjs","backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs","backend/runtime/hr-live-service/server.mjs"]'
     steps:
@@ -762,6 +762,18 @@ jobs:
         run: |
           set -Eeuo pipefail
           mkdir -p "$CUM_OUT"
+          if [ "${{ needs.canonical-candidate-authority.outputs.status }}" = "HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED" ]; then
+            TMP_CONTENT001="$(mktemp -d)"
+            trap 'rm -rf "$TMP_CONTENT001"' EXIT
+            git archive "$CUM_SOURCE" | tar -x -C "$TMP_CONTENT001"
+            (
+              cd "$TMP_CONTENT001"
+              node --check app/modules/proyectos.js
+              node --check app/adapters/tya-live-source-inplace-apply.js
+              node --check backend/runtime/hr-live-service/server.mjs
+              node backend/runtime/hr-live-service/test/cxorbia-prei4-project-questionnaire-config.test.mjs | tee "$GITHUB_WORKSPACE/$CUM_OUT/questionnaire-source.log"
+            )
+          fi
           node --check tools/qa/cxorbia-prei4-cumulative-regression-source-guard.mjs
           node tools/qa/cxorbia-prei4-cumulative-regression-source-guard.mjs | tee "$CUM_OUT/console.log"
           test "$(jq -r '.decision' "$CUM_OUT/result.json")" = "PASS_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD"
@@ -780,60 +792,6 @@ jobs:
           retention-days: 30
           compression-level: 0
           include-hidden-files: true
-
-
-
-
-  prei4-content-001-source-reproof:
-    name: PRE-I4 CONTENT-001 — project questionnaire source + cumulative guard
-    needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-content-001-source]') }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    env:
-      CONTENT001_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
-      CONTENT001_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
-      CONTENT001_OUT: .tmp/prei4-content-001
-    steps:
-      - uses: actions/checkout@v4
-        with: {fetch-depth: 0}
-      - uses: actions/setup-node@v4
-        with: {node-version: '24'}
-      - name: Reprove questionnaire source and closed-module cumulative guard
-        shell: bash
-        run: |
-          set -Eeuo pipefail
-          test "$CONTENT001_SOURCE" = "d8874bd952a70ce15b40560c8f17b2d47f53c152"
-          test "$CONTENT001_TREE" = "aec04d107b769ebf1393c760ad8531e45796266c"
-          test "$(git rev-parse "$CONTENT001_SOURCE^{tree}")" = "$CONTENT001_TREE"
-          TMP="$(mktemp -d)"
-          trap 'rm -rf "$TMP"' EXIT
-          git archive "$CONTENT001_SOURCE" | tar -x -C "$TMP"
-          (cd "$TMP" && node --check app/modules/proyectos.js && node --check app/adapters/tya-live-source-inplace-apply.js && node --check backend/runtime/hr-live-service/server.mjs && node backend/runtime/hr-live-service/test/cxorbia-prei4-project-questionnaire-config.test.mjs)
-          mkdir -p "$CONTENT001_OUT"
-          export CUM_SOURCE="$CONTENT001_SOURCE" CUM_TREE="$CONTENT001_TREE"
-          export CUM_BASE="c487449e5187d7219033c54fa1ac3db5fb6c822e"
-          export CUM_OUT="$CONTENT001_OUT"
-          export CUM_EXPECTED_DELTA_JSON='["app/adapters/cxorbia-cxdata-command-boundary-v1.js","app/adapters/tya-c6-unified-human-runtime-v1.js","app/adapters/tya-canonical-finance-read-model-v2.js","app/adapters/tya-live-source-inplace-apply.js","app/adapters/tya-protected-auth-hr-authority-bridge-v2.js","app/modules/finanzas.js","app/modules/proyectos.js","backend/runtime/cxorbia-finance-command-provider-v1.mjs","backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs","backend/runtime/hr-live-service/server.mjs","backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs","backend/runtime/hr-live-service/test/cxorbia-prei4-project-questionnaire-config.test.mjs"]'
-          export CUM_ALLOWED_PENDING_MODULES_JSON='["canonical-hr-state-adapters","finance-core-liquidation-costs","human-runtime-domain-consistency","persistence-command-ack-boundary","phase-a-supporting-core","projects-periods-hr-source-wizard-multiproject"]'
-          export CUM_EXPECTED_PENDING_FILES_JSON='["app/adapters/cxorbia-cxdata-command-boundary-v1.js","app/adapters/tya-c6-unified-human-runtime-v1.js","app/adapters/tya-canonical-finance-read-model-v2.js","app/adapters/tya-live-source-inplace-apply.js","app/adapters/tya-protected-auth-hr-authority-bridge-v2.js","app/modules/finanzas.js","app/modules/proyectos.js","backend/runtime/cxorbia-finance-command-provider-v1.mjs","backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs","backend/runtime/hr-live-service/server.mjs"]'
-          node tools/qa/cxorbia-prei4-cumulative-regression-source-guard.mjs | tee "$CONTENT001_OUT/console.log"
-          test "$(jq -r '.decision' "$CONTENT001_OUT/result.json")" = "PASS_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD"
-          test "$(jq -r '.moduleTruth.unauthorizedFileCount' "$CONTENT001_OUT/result.json")" = "0"
-          test "$(jq -r '.moduleTruth.allApprovedOwnersLoaded' "$CONTENT001_OUT/result.json")" = "true"
-          test "$(jq -r '.moduleTruth.duplicateScripts' "$CONTENT001_OUT/result.json")" = "0"
-          test "$(jq -r '.deploys' "$CONTENT001_OUT/result.json")" = "0"
-          test "$(jq -r '.writes' "$CONTENT001_OUT/result.json")" = "0"
-      - if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: cxorbia-prei4-content-001-source-${{ github.run_id }}
-          path: ${{ env.CONTENT001_OUT }}
-          if-no-files-found: error
-          retention-days: 30
-          compression-level: 0
-
-
 
 
 
