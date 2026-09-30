@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_ADMIN_004_SOURCE_REPROOF_REQUIRED",
+  "status": "HOLD_PREI4_ADMIN_004_HOSTING_MATERIALIZATION_REQUIRED",
   "iteration": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "61b89fd567c02c651ce1983d8b8f8421d5e70637",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "c487449e5187d7219033c54fa1ac3db5fb6c822e",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V162_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "7da5c33f5a07a67c1edee695d0865e8bc211ea61",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V163_2026-09-30.json",
+  "findingsLedgerExpectedGitBlob": "363e395dd9561ff988cba4dcd9b08427eafbd7fe",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Rerun mandatory cumulative source guard on 61b89fd567c02c651ce1983d8b8f8421d5e70637 using cumulative ledger V162. Require exact 11-file delta, 20-domain Module Truth with only the six declared pending modules, HR/Postulations/Identity closed-regression recurrence, finance honorarium 6/6 and finance/provider 7/7. Zero build/deploy/write; no production.",
+  "exactNextAction": "Materialize source 61b89fd567c02c651ce1983d8b8f8421d5e70637 to Recovery Hosting DEV exactly once, with zero Cloud Run/runtime change. Prove served byte parity including tya-c6-unified-human-runtime-v1.js, then re-run Postulaciones + Identity + ADMIN-004 boundary/Finance live proof on one fresh stable HR revision. Require project_country_config to survive through final CX.data and Finance, reconciliation ACK durable, and zero external payment/bank/HR writes. No production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1072,12 +1072,13 @@
     "production": false
   },
   "lastSourceGuard": {
-    "runId": 36655178703,
-    "runNumber": 671,
-    "jobId": 109697936833,
-    "artifactId": 11071809280,
-    "artifactZipSha256": "2df20cf1968ed8f97f7b6fa923d9ea20d2143fdef0938502a8197225e51f6c22",
+    "runId": 36659316796,
+    "runNumber": 678,
+    "jobId": 109710401639,
+    "artifactId": 11073254348,
+    "artifactZipSha256": "5932ca9d802613d5ddab5538d6f274e0736e49737c79f014df2f29ab1d3a560d",
     "decision": "PASS_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD",
+    "financeProviderTests": 7,
     "production": false
   },
   "lastLiveFailure": {
