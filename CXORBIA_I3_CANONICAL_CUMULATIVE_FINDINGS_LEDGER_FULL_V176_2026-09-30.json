@@ -5552,7 +5552,7 @@
     ],
     "findingCount": 88,
     "expectedCurrentRange": "VRM-001..VRM-088",
-    "nextFindingId": "VRM-089",
+    "nextFindingId": "VRM-106",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_PREI4_HUMAN_VISUAL_ACCEPTANCE_REQUIRED",
