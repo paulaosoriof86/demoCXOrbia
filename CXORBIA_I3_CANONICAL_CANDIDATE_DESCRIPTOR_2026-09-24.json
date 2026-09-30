@@ -8,13 +8,13 @@
   "productTreeAuthority": "ccb3d9da3c110e2d5fff57bae0d2d0eb76b3c4b4",
   "predecessorProductSourceSha": "2cff3441f126d7d805932127bb9de9289ba273ad",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "f05fd455b795447cb3382fcde2f0b8dafa9f72cf",
+  "findingsLedgerExpectedGitBlob": "c6fa72acefb0808a4f8578a3f60d93f00f7384ea",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
   "activeBlocker": "PREI4-CERT-001_PREI4-CERT-002_PREI4-RES-001",
-  "nextFindingId": "VRM-108",
+  "nextFindingId": "VRM-109",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -1532,6 +1532,20 @@
     "hrWrites": 0,
     "bankWrites": 0,
     "externalPaymentWrites": 0,
+    "production": false
+  },
+  "controlTreeCompositionGuard": {
+    "state": "FIXED_PROVEN",
+    "findingId": "VRM-108",
+    "requiredBaseTreeMode": "EXPLICIT_KNOWN_GOOD_FULL_TREE_SHA",
+    "detachedProbeRequired": true,
+    "unexpectedRemovalTolerance": 0,
+    "criticalParityPaths": [
+      ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+      ".firebaserc",
+      "AGENTS.md"
+    ],
+    "productSourceChanged": false,
     "production": false
   }
 }

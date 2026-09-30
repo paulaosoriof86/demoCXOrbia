@@ -5214,6 +5214,38 @@
         "externalPaymentWrites": 0,
         "production": false
       }
+    },
+    "VRM-108": {
+      "id": "VRM-108",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "severity": "P0",
+      "title": "Control-only Run736 freeze was composed from an incomplete base tree, temporarily removing canonical repository files from the Recovery branch",
+      "state": "FIXED_PROVEN_CONTROL_TREE_RESTORED",
+      "rootCause": "A control-only create_tree operation attempted to derive the base tree from fetch_commit output where the usable full tree SHA was not reliably present. The operation therefore composed the three intended control files over an incomplete tree instead of the known-good full canonical tree.",
+      "evidence": {
+        "badControlCommit": "d9a7a5c0ebdba3f83b93ef5e5f253e508a7f5a6a",
+        "lastGoodControlCommit": "a33108e5b4e00d61f3dff1645ea22b2a777504a3",
+        "lastGoodFullTree": "95fe5c3cb6fc72e4a7bfb6777a815357d2fd82ae",
+        "restoredControlCommit": "a26e2cc0ed75c536870c9327c5c6cfa8a3e3a79f",
+        "restoredFullTree": "b1fa5f1201c2ca86eea2b3f25181d25a42cba4b8",
+        "expectedRun736ControlDelta": [
+          "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+          "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
+          "CXORBIA_PRE_I4_RUN736_CUMULATIVE_DEV_LIVE_CLOSURE_2026-09-30.json"
+        ],
+        "productChanged": false,
+        "devDeployTriggered": false,
+        "productionChanged": false
+      },
+      "preventionContract": [
+        "Never derive create_tree base_tree_sha from an optional or absent fetch_commit tree field.",
+        "For every control-only composition, use an explicitly proven full canonical tree SHA.",
+        "Before moving the branch, create a detached probe commit and compare it against the last known-good control commit.",
+        "Require byte-parity readback of workflow, .firebaserc, AGENTS.md and relevant product owners; reject any unexpected removed file."
+      ],
+      "productSourceSha": "c1c4e748b39c5632e8648023433a00c15d57191b",
+      "productSourceTree": "ccb3d9da3c110e2d5fff57bae0d2d0eb76b3c4b4",
+      "production": false
     }
   },
   "latestEvidenceOverrides": {
@@ -5738,11 +5770,12 @@
       "VRM-104",
       "VRM-105",
       "VRM-106",
-      "VRM-107"
+      "VRM-107",
+      "VRM-108"
     ],
-    "findingCount": 107,
-    "expectedCurrentRange": "VRM-001..VRM-107",
-    "nextFindingId": "VRM-108",
+    "findingCount": 108,
+    "expectedCurrentRange": "VRM-001..VRM-108",
+    "nextFindingId": "VRM-109",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_PREI4_HUMAN_VISUAL_ACCEPTANCE_REQUIRED",
@@ -8919,6 +8952,20 @@
     "hrWrites": 0,
     "bankWrites": 0,
     "externalPaymentWrites": 0,
+    "production": false
+  },
+  "controlTreeCompositionGuard": {
+    "state": "FIXED_PROVEN",
+    "findingId": "VRM-108",
+    "requiredBaseTreeMode": "EXPLICIT_KNOWN_GOOD_FULL_TREE_SHA",
+    "detachedProbeRequired": true,
+    "unexpectedRemovalTolerance": 0,
+    "criticalParityPaths": [
+      ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+      ".firebaserc",
+      "AGENTS.md"
+    ],
+    "productSourceChanged": false,
     "production": false
   }
 }
