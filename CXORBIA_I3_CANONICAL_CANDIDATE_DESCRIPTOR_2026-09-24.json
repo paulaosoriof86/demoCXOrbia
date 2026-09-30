@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Control-status reuse only: run the known-valid CONTENT-001 source-guard lane against cumulative successor a29b8ad89391fb5537d1cbf765ef6ec86f775608 / ea8846d254d1901ac1101c182098c46f995f1141, including the new shopper progressive-route source test. Functional blocker remains PREI4-CONTENT-002. If PASS, run the known-valid CONTENT-001 live lane using the CONTENT-002 runner/proof. No production.",
+  "exactNextAction": "Run the known-valid authenticated CONTENT-001 live lane against cumulative successor a29b8ad89391fb5537d1cbf765ef6ec86f775608 / ea8846d254d1901ac1101c182098c46f995f1141 and require PASS_PREI4_CONTENT002_CUMULATIVE_DEV_LIVE including authenticated shopper progressive route, Postulations, Identity and Finance. No production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1157,7 +1157,10 @@
       "PREI4-RES-001"
     ],
     "production": false,
-    "state": "CONTENT_002_CUMULATIVE_SOURCE_REPROOF_REQUIRED"
+    "state": "CONTENT_002_SOURCE_GUARD_PASS_RUN721_LIVE_REPROOF_REQUIRED",
+    "sourceGuardRunId": 36733882063,
+    "sourceGuardDecision": "PASS_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD",
+    "shopperProgressiveSourceDecision": "PASS_PREI4_SHOPPER_PROGRESSIVE_ROUTE_SOURCE"
   },
   "preI4Content001": {
     "state": "SOURCE_PROVEN_RUN694_INCLUDED_IN_CONTENT_002_SUCCESSOR_LIVE_REPROOF_REQUIRED",
