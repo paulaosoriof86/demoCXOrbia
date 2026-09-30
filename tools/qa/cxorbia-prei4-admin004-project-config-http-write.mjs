@@ -17,8 +17,13 @@ const snap=await project.get();if(!snap.exists)fail('PERSISTENCE_FAILURE:ADMIN00
 const before=snap.data()||{},ops=before.operationalSource||{};
 const opSafe=o=>({mode:str(o.mode),providerType:str(o.providerType),readPolicy:str(o.readPolicy),writePolicy:str(o.writePolicy),mappingRef:str(o.mappingRef),providerBindingId:str(o.providerBindingId||o.integrationSettingId||o.providerRef)});
 const exact=d=>Number(d?.honorario?.GT)===60&&Number(d?.honorario?.HN)===200&&str(d?.currency?.GT)==='Q'&&str(d?.currency?.HN)==='L';
+const idempotencyKey='prei4-admin004-project-finance-config-v3-gt60-hn200';
 if(exact(before)){
-  fs.writeFileSync(OUT+'/project-config-write.json',JSON.stringify({decision:'PASS_PREI4_ADMIN_004_PROJECT_CONFIG_ACK',writeExecuted:false,alreadyDurable:true,beforeVersion:Number(before.version||0),afterVersion:Number(before.version||0),production:false,hrWrites:0,externalProviderWrites:0,paymentWrites:0,deploys:0},null,2)+'\n');
+  const receiptId=sha(TENANT+'\\0'+idempotencyKey).slice(0,40),auditId='project-'+sha(idempotencyKey).slice(0,32);
+  const [receipt,audit]=await Promise.all([tenant.collection('commandReceipts').doc(receiptId).get(),tenant.collection('entityAuditTrail').doc(auditId).get()]);
+  if(!receipt.exists||receipt.data()?.status!=='committed'||receipt.data()?.providerAck!==true)fail('PERSISTENCE_FAILURE:ADMIN004_DURABLE_WITHOUT_EXPECTED_RECEIPT');
+  if(!audit.exists||str(audit.data()?.commandType)!=='project.update'||str(audit.data()?.projectId)!==PROJECT)fail('PERSISTENCE_FAILURE:ADMIN004_DURABLE_WITHOUT_EXPECTED_AUDIT');
+  fs.writeFileSync(OUT+'/project-config-write.json',JSON.stringify({decision:'PASS_PREI4_ADMIN_004_PROJECT_CONFIG_ACK',writeExecuted:false,alreadyDurable:true,beforeVersion:Number(before.version||0),afterVersion:Number(before.version||0),receiptVerified:true,auditVerified:true,production:false,hrWrites:0,externalProviderWrites:0,paymentWrites:0,deploys:0},null,2)+'\n');
   process.exit(0);
 }
 if(Number(before.version)!==3)fail('PERSISTENCE_FAILURE:ADMIN004_UNEXPECTED_VERSION:'+String(before.version));
@@ -61,7 +66,6 @@ if(!idToken)fail('AUTH_FAILURE:ADMIN004_ID_TOKEN_EXCHANGE:'+last);
 
 const payload={...before,projectId:PROJECT,id:PROJECT,periodId:PERIOD,version:Number(before.version),countries:['GT','HN'],currency:{...(before.currency||{}),GT:'Q',HN:'L'},honorario:{...(before.honorario||{}),GT:60,HN:200},operationalSource:{...ops}};
 delete payload.createdAt;delete payload.createdBy;
-const idempotencyKey='prei4-admin004-project-finance-config-v3-gt60-hn200';
 const command={commandType:'project.update',entityType:'project',entityId:PROJECT,tenantId:TENANT,projectId:PROJECT,periodId:PERIOD,expectedVersion:Number(before.version),idempotencyKey,payload,source:'prei4-admin004-control',reason:'Persist proven independent country finance configuration in Recovery DEV',authorization:{providerEnforcementRequired:true,permission:'project.update'}};
 const res=await fetch(ROOT+'/v1/cxorbia/commands',{method:'POST',headers:{Authorization:'Bearer '+idToken,'Content-Type':'application/json','Idempotency-Key':idempotencyKey},body:JSON.stringify(command),signal:AbortSignal.timeout(120000)});
 const ack=await res.json().catch(()=>({}));
