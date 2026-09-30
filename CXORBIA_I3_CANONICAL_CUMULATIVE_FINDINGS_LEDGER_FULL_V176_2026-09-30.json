@@ -5528,6 +5528,31 @@
       },
       "remediationContract": "Do not rebuild or redeploy. Poll the already-materialized runtime until shopperReconciliation.providerAck and visitReconciliation.providerAck are true for the stable HR revision, then execute the authenticated Admin+Shopper CERT/RES live proof and cleanup on the same runtime/Hosting fingerprints.",
       "production": false
+    },
+    "VRM-118": {
+      "id": "VRM-118",
+      "classification": "MAPPING_FAILURE",
+      "severity": "P0_CONTROL",
+      "title": "Authenticated CERT/RES fixture did not tolerate expected Firebase Auth navigation during signInWithCustomToken",
+      "state": "FIXED_CONTROL_READY_NO_DEPLOY_REPROOF",
+      "exactOwner": "tools/qa/cxorbia-prei4-cert-res-live.mjs",
+      "rootCause": "The live proof awaited signInWithCustomToken inside one Playwright page.evaluate call. The application auth lifecycle can navigate/reload immediately after authentication, destroying that execution context even when Firebase persists the user. Run 36791646271 therefore failed before Admin evidence or any CERT/RES fixture write.",
+      "evidence": {
+        "runId": 36791646271,
+        "jobId": 110145727921,
+        "error": "page.evaluate: Execution context was destroyed, most likely because of a navigation",
+        "failingFunction": "signIn",
+        "line": 65,
+        "durableHrReconciliationPassed": true,
+        "productSourceChanged": false,
+        "builds": 0,
+        "runtimeDeploys": 0,
+        "hostingDeploys": 0,
+        "rulesDeploys": 0,
+        "production": false
+      },
+      "remediationContract": "Mirror the already-canonical Recovery browser-auth retry/settling behavior locally in the CERT/RES proof harness: treat navigation/context destruction as transient, verify persisted UID, re-enter the exact DEV URL, then require backendAuth context and HR authority. Repeat only the no-deploy live proof.",
+      "production": false
     }
   },
   "latestEvidenceOverrides": {
@@ -6062,11 +6087,12 @@
       "VRM-114",
       "VRM-115",
       "VRM-116",
-      "VRM-117"
+      "VRM-117",
+      "VRM-118"
     ],
-    "findingCount": 117,
-    "expectedCurrentRange": "VRM-001..VRM-117",
-    "nextFindingId": "VRM-118",
+    "findingCount": 118,
+    "expectedCurrentRange": "VRM-001..VRM-118",
+    "nextFindingId": "VRM-119",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_PREI4_CERT_RES_LIVE_PROOF_REQUIRED",

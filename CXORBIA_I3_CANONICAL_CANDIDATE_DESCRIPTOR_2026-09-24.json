@@ -8,13 +8,13 @@
   "productTreeAuthority": "6175786674fd02e454ccc3674b492a29ab1ed482",
   "predecessorProductSourceSha": "c71c7e800490059d36a5be6e266c28086b8db8f4",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "4454094e0492a19bd5ed2ed30e9ea5f4e299af9d",
+  "findingsLedgerExpectedGitBlob": "d0af5dd06caa52a8cad16026159c070269daedbe",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
   "activeBlocker": "PREI4_CERT_RES_POST_MATERIALIZATION_LIVE_PROOF_REQUIRED",
-  "nextFindingId": "VRM-118",
+  "nextFindingId": "VRM-119",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Without any rebuild or deploy, poll the already-materialized Recovery DEV runtime cxorbia-live-hr-dev-00235-57l until durable shopper/visit reconciliation ACK is present, then execute authenticated Admin+Shopper PREI4-CERT-001/PREI4-CERT-002/PREI4-RES-001 live proof with fixture cleanup against Hosting version a0054d58a85a7d43. If PASS, seal CERT/RES closure and continue to fresh human visual acceptance. Production remains untouched.",
+  "exactNextAction": "Repeat only the no-deploy authenticated CERT/RES live proof on immutable runtime cxorbia-live-hr-dev-00235-57l and Hosting version a0054d58a85a7d43 using the navigation-tolerant Auth harness. No rebuild, runtime deploy, Hosting deploy, rules deploy, HR import or production action.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -552,10 +552,11 @@
     "findingId": "VRM-055"
   },
   "lastControlFailure": {
-    "findingId": "VRM-116",
-    "runId": 36791017225,
-    "jobId": 110143723497,
+    "findingId": "VRM-118",
+    "runId": 36791646271,
+    "jobId": 110145727921,
     "classification": "MAPPING_FAILURE",
+    "owner": "tools/qa/cxorbia-prei4-cert-res-live.mjs",
     "productChanged": false,
     "production": false
   },

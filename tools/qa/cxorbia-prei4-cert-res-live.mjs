@@ -57,19 +57,51 @@ async function signIn(member,expectedRole){
   const ctx=await browser.newContext({viewport:{width:1440,height:980}});
   const page=await ctx.newPage();
   const errors=[];
+  const transient=/Execution context was destroyed|navigation|FIREBASE_SDK_NOT_READY|app-compat\/no-app|No Firebase App|auth\/network-request-failed|network AuthError|timeout|interrupted connection|unreachable host|Target page, context or browser has been closed/i;
   page.on('pageerror',e=>errors.push(str(e?.message||e)));
   const url=root+'/index-backend-dev.html?cxBackendPreview='+PREVIEW+'&cxProjectId='+encodeURIComponent(projectId)+'&cxProtectedRuntime='+PROTECTED+'&cxHumanFullVisual='+FULL+'&certres='+runId;
-  await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
-  await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
-  const token=await auth.createCustomToken(member.id);
-  await page.evaluate(async t=>{
-    await window.firebase.auth().setPersistence(window.firebase.auth.Auth.Persistence.LOCAL);
-    await window.firebase.auth().signInWithCustomToken(t);
-  },token);
+  const basePath=root+'/index-backend-dev.html';
+  let settled=false,lastError='';
+  for(let attempt=1;attempt<=5;attempt++){
+    try{
+      if(attempt>1){
+        await page.goto('about:blank',{waitUntil:'domcontentloaded',timeout:30000}).catch(()=>{});
+        await page.waitForTimeout(1200*attempt);
+      }
+      await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
+      await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
+      const token=await auth.createCustomToken(member.id);
+      await page.evaluate(async t=>{
+        const fb=window.firebase;
+        if(!fb?.auth||!Array.isArray(fb.apps)||!fb.apps.length)throw new Error('FIREBASE_SDK_NOT_READY');
+        await fb.auth().setPersistence(fb.auth.Auth.Persistence.LOCAL);
+        await fb.auth().signInWithCustomToken(t);
+      },token);
+    }catch(error){
+      const msg=str(error?.message||error);
+      if(!transient.test(msg))throw error;
+      lastError=msg;
+    }
+    await page.waitForLoadState('domcontentloaded',{timeout:90000}).catch(()=>{});
+    if(!page.url().startsWith(basePath))await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
+    await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
+    const uid=await page.evaluate(()=>String(window.firebase?.auth?.().currentUser?.uid||'')).catch(()=>'');
+    if(uid===String(member.id)){settled=true;break;}
+    lastError='uid_not_persisted';
+    if(attempt<5)await page.waitForTimeout(1500*attempt);
+  }
+  if(!settled)throw new Error('ENVIRONMENT_FAILURE:CERT_RES_CUSTOM_AUTH_NOT_SETTLED:'+expectedRole+':'+lastError.slice(0,180));
+
   await page.goto('about:blank',{waitUntil:'domcontentloaded',timeout:30000});
   await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
+  await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
   await page.waitForFunction(uid=>String(window.firebase?.auth?.().currentUser?.uid||'')===String(uid),member.id,{timeout:90000});
-  await page.evaluate(async()=>{await window.CX?.backendAuth?.ensureAuthenticated?.();});
+  try{
+    await page.evaluate(async()=>{await window.CX?.backendAuth?.ensureAuthenticated?.();});
+  }catch(error){
+    const msg=str(error?.message||error);
+    if(!transient.test(msg))throw error;
+  }
   await page.waitForFunction(({tenantId,projectId,expectedRole})=>{
     const c=window.CX?.backendAuth?.context?.()||{};
     const role=String(c.role||'').toLowerCase();

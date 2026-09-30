@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "cxorbia.recovery.pre-i4-cert-res.auth-harness-fix.v1",
+  "frozenAt": "2026-09-30",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
+  "findingId": "VRM-118",
+  "classification": "MAPPING_FAILURE",
+  "sourceSha": "f6c3bb6c038a77eee9cbca8bfbfd1096bfd48cbc",
+  "sourceTree": "6175786674fd02e454ccc3674b492a29ab1ed482",
+  "immutableMaterialization": {
+    "runtimeRevision": "cxorbia-live-hr-dev-00235-57l",
+    "runtimeDigest": "sha256:71199bc92526864af7120c59298d002997792db467bb04936c10c26c02f5d06a",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/a0054d58a85a7d43"
+  },
+  "failure": {
+    "runId": 36791646271,
+    "jobId": 110145727921,
+    "error": "Execution context was destroyed during signInWithCustomToken",
+    "beforeFixtureWrites": true
+  },
+  "remediation": "Control harness only. Navigation-tolerant Firebase custom-token settlement. No product or environment mutation.",
+  "production": "DO_NOT_TOUCH"
+}
