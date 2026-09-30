@@ -7,8 +7,8 @@
   "productSourceSha": "4a39b26f6dcdff8f4dcd446b0141a7d3b1dc01d7",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "c487449e5187d7219033c54fa1ac3db5fb6c822e",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V148_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "d32f4133e9892232402ef5a677cbdb0275457db1",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V149_2026-09-30.json",
+  "findingsLedgerExpectedGitBlob": "b03d1dc4ed4e401f8e35f194fc8d208731ee22d5",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Harden only the proven browser-auth control helper pattern in ADMIN-002 and exact duplicate control helpers; rerun same no-deploy resume on durable project config version 4, Hosting 4f12336223412365, runtime 00229-nxq/digest unchanged. Require Postulaciones + Identity + Finance PASS on one fresh HR revision; zero build/deploy, no production.",
+  "exactNextAction": "Rerun only the hardened ADMIN-004 cumulative no-deploy resume on durable project config version 4, Hosting 4f12336223412365 and runtime cxorbia-live-hr-dev-00229-nxq/digest unchanged. Require Postulaciones + Identity + Finance PASS on the same fresh HR revision; zero config writes, zero build/deploy, no production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1124,19 +1124,17 @@
     "production": false
   },
   "lastLiveAttempt": {
-    "runId": 36650018958,
-    "runNumber": 645,
-    "jobId": 109681797181,
-    "artifactId": 11070151713,
-    "artifactZipSha256": "823727a751fc775a7425c6936ec978dd5abe8f4eef605e0724e6a535b6138ebb",
-    "classification": "ENVIRONMENT_FAILURE",
-    "projectConfig": "PASS_PREI4_ADMIN_004_PROJECT_CONFIG_ACK",
-    "projectConfigVersion": 4,
-    "firstMaterialFailure": "ADMIN-002 control auth helper used bare firebase during navigation race",
-    "productDefect": false,
+    "runId": 36650551859,
+    "runNumber": 652,
+    "jobId": 109684504565,
+    "artifactId": 11070158028,
+    "artifactZipSha256": "bc73c87ec9ac7df265e536ca585fe9f688de7152e89367f19dcd85a7d26cbd78",
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "projectConfigState": "DURABLE_ACK_PROVEN_VERSION_4",
     "builds": 0,
     "runtimeDeploys": 0,
     "hostingDeploys": 0,
+    "productDefect": false,
     "production": false
   }
 }
