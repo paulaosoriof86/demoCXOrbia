@@ -7,8 +7,8 @@
   "productSourceSha": "4a39b26f6dcdff8f4dcd446b0141a7d3b1dc01d7",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "c487449e5187d7219033c54fa1ac3db5fb6c822e",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V153_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "83b6b2991eb18527b32a6ba5a556b58d216cfd31",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V154_2026-09-30.json",
+  "findingsLedgerExpectedGitBlob": "701a168476f29384fa5e82b991682788390bf653",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run one read-only runtime projectConfig cache diagnostic on the existing DEV artifact. Compare durable tenants/tya/projects/cinepolis v4 against the non-fresh hr-live snapshot projectConfig. If runtime config is stale, owner is runtime cache/config overlay; if fresh, continue only within honorarium propagation. Zero writes/build/deploy, no production.",
+  "exactNextAction": "Rerun the same read-only runtime projectConfig cache diagnostic on the existing DEV artifact. Compare durable project v4 against the non-fresh hr-live snapshot projectConfig. Zero writes/build/deploy; no product-source change; no production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -506,14 +506,14 @@
     "findingId": "VRM-055"
   },
   "lastControlFailure": {
-    "classification": "ENVIRONMENT_FAILURE",
-    "runId": 36643887004,
-    "runNumber": 622,
-    "jobsCreated": 0,
-    "builds": 0,
-    "deploys": 0,
-    "cause": "workflow file exceeded GitHub Actions 500 KB limit",
-    "fix": "same canonical workflow compact dispatcher + control QA runner"
+    "runId": 36654186251,
+    "runNumber": 662,
+    "jobId": 109694837163,
+    "artifactId": 11071563198,
+    "artifactZipSha256": "f804d1320cb938df04765d214149477c53ea93ce69070aa3c8b704e5a6bd6ef4",
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "productSourceChanged": false,
+    "production": false
   },
   "lastSecondReviewProof": {
     "runId": 36220426137,
