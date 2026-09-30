@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_ADMIN_004_FINANCE_LIVE_RESUME_REQUIRED",
+  "status": "HOLD_PREI4_CONTENT_ROUTING_CERTIFICATION_RESOURCES_REQUIRED",
   "iteration": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "61b89fd567c02c651ce1983d8b8f8421d5e70637",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "c487449e5187d7219033c54fa1ac3db5fb6c822e",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V166_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "85526ddc5e95410585b0a7f9069bc48a42191393",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V167_2026-09-30.json",
+  "findingsLedgerExpectedGitBlob": "c7932909735db625c4937c2a6d3eceec2d114991",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "PREI4-ADMIN-004",
+  "activeBlocker": "PREI4-CONTENT-001",
   "nextFindingId": "VRM-089",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run ADMIN-004 finance closure as a strict no-deploy resume on Hosting DEV 64b485350d1549e2 and runtime cxorbia-live-hr-dev-00229-nxq. Reprove source guard/static parity, obtain one stable fresh HR revision, reprove Postulaciones + Identity, require current-period boundary PROPAGATION_CHAIN_EXACT, then run the September-2026 cumulative Finance live proof. Require visible reconcile action, provider ACK + durable financialMatch, and zero external payment/bank/HR writes. No production.",
+  "exactNextAction": "Preserve durable project questionnaire configuration through the live HR composition and prove external_general plus external_visit routing without global URLs or provider hardcodes. Keep ADMIN-008/002/003/004 closed-module regression guards. Then close durable certification carryover/recertification/attempts with real AI generation from project instruction, followed by scoped binary project resources with full-screen in-platform viewer and download. No production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1120,6 +1120,40 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/64b485350d1549e2",
     "runtimeRevision": "cxorbia-live-hr-dev-00229-nxq",
     "productReadModelDefectProven": false,
+    "production": false
+  },
+  "activeBlockers": [
+    "PREI4-CONTENT-001",
+    "PREI4-CONTENT-002",
+    "PREI4-CERT-001",
+    "PREI4-CERT-002",
+    "PREI4-RES-001"
+  ],
+  "preI4Admin004": {
+    "state": "FIXED_PROVEN_RUN686",
+    "runId": 36716549690,
+    "artifactId": 11096313210,
+    "artifactDigest": "sha256:e81070e2986f96afa05295573823d2766e90afc84828badbac6128cec26dc374",
+    "decision": "PASS_PREI4_ADMIN_004_CUMULATIVE_LIVE",
+    "hrRevision": "0b2f989af18f15ee429a504a4d628cb12b34153fce23bd730c8c74c8228d7877",
+    "projectFinanceConfig": {
+      "GT": 60,
+      "HN": 200
+    },
+    "externalPaymentWrites": 0,
+    "bankWrites": 0,
+    "hrWrites": 0,
+    "production": false
+  },
+  "preI4ContentRecovery": {
+    "lockPath": "CXORBIA_PRE_I4_CONTENT_ROUTING_CERTIFICATION_RESOURCES_LOCK_2026-09-30.json",
+    "findings": [
+      "PREI4-CONTENT-001",
+      "PREI4-CONTENT-002",
+      "PREI4-CERT-001",
+      "PREI4-CERT-002",
+      "PREI4-RES-001"
+    ],
     "production": false
   }
 }
