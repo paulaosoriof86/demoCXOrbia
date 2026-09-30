@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_ADMIN_004_HOSTING_MATERIALIZATION_REQUIRED",
+  "status": "HOLD_PREI4_ADMIN_004_FINANCE_LIVE_RESUME_REQUIRED",
   "iteration": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "61b89fd567c02c651ce1983d8b8f8421d5e70637",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "c487449e5187d7219033c54fa1ac3db5fb6c822e",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V165_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "26813ee4c627e74210d34cd3669409084d1f70c3",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V166_2026-09-30.json",
+  "findingsLedgerExpectedGitBlob": "85526ddc5e95410585b0a7f9069bc48a42191393",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Repeat the same Hosting-only materialization/live gate for source 61b89fd567c02c651ce1983d8b8f8421d5e70637. Source guard must pass; then deploy Hosting DEV at most once, keep Cloud Run revision/digest unchanged, prove seven static owners byte-identical, and reprove Postulaciones + Identity + boundary PROPAGATION_CHAIN_EXACT + Finance reconciliation ACK. No production.",
+  "exactNextAction": "Run ADMIN-004 finance closure as a strict no-deploy resume on Hosting DEV 64b485350d1549e2 and runtime cxorbia-live-hr-dev-00229-nxq. Reprove source guard/static parity, obtain one stable fresh HR revision, reprove Postulaciones + Identity, require current-period boundary PROPAGATION_CHAIN_EXACT, then run the September-2026 cumulative Finance live proof. Require visible reconcile action, provider ACK + durable financialMatch, and zero external payment/bank/HR writes. No production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1111,14 +1111,15 @@
     "production": false
   },
   "lastLiveAttempt": {
-    "runId": 36659835745,
-    "runNumber": 680,
-    "jobId": 109711957394,
-    "artifactId": 11074340951,
-    "artifactZipSha256": "7eded91071f7f95186c7d0b6e86332dffed1715b2ebd25e2ae29ac40874989cc",
+    "runId": 36659972390,
+    "runNumber": 681,
+    "jobId": 109712401517,
+    "artifactId": 11073822918,
+    "artifactZipSha256": "883d35097dfd4a0255b747342dd728523b73cc11ee2f6480594fb7a40aa83680",
     "classification": "RELEASE_COMPOSITION_FAILURE",
-    "hostingDeployExecuted": false,
-    "productDefect": false,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/64b485350d1549e2",
+    "runtimeRevision": "cxorbia-live-hr-dev-00229-nxq",
+    "productReadModelDefectProven": false,
     "production": false
   }
 }
