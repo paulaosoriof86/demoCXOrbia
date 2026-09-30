@@ -8,13 +8,13 @@
   "productTreeAuthority": "6175786674fd02e454ccc3674b492a29ab1ed482",
   "predecessorProductSourceSha": "c71c7e800490059d36a5be6e266c28086b8db8f4",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "f6a55b781acde4376acdd8fa2886ee96313b9574",
+  "findingsLedgerExpectedGitBlob": "4454094e0492a19bd5ed2ed30e9ea5f4e299af9d",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "PREI4_CERT_RES_RUNTIME_REMATERIALIZATION_REQUIRED",
-  "nextFindingId": "VRM-117",
+  "activeBlocker": "PREI4_CERT_RES_POST_MATERIALIZATION_LIVE_PROOF_REQUIRED",
+  "nextFindingId": "VRM-118",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Resume exact DEV materialization from source f6c3bb6c038a77eee9cbca8bfbfd1096bfd48cbc / tree 6175786674fd02e454ccc3674b492a29ab1ed482. Reuse the already-PASS Firestore and Storage rules deployment from Run 36789283777 because those files are byte-identical to the new source. Build the corrected image once, deploy Cloud Run once, deploy Hosting once, execute authenticated Admin+Shopper CERT/RES live proof with cleanup, then seal I3 if all P0 pass. Do not touch production.",
+  "exactNextAction": "Without any rebuild or deploy, poll the already-materialized Recovery DEV runtime cxorbia-live-hr-dev-00235-57l until durable shopper/visit reconciliation ACK is present, then execute authenticated Admin+Shopper PREI4-CERT-001/PREI4-CERT-002/PREI4-RES-001 live proof with fixture cleanup against Hosting version a0054d58a85a7d43. If PASS, seal CERT/RES closure and continue to fresh human visual acceptance. Production remains untouched.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -417,21 +417,21 @@
     "production": false
   },
   "currentMaterialization": {
-    "sourceSha": "a29b8ad89391fb5537d1cbf765ef6ec86f775608",
-    "sourceTree": "ea8846d254d1901ac1101c182098c46f995f1141",
-    "runtimeRevision": "cxorbia-live-hr-dev-00230-c5m",
-    "runtimeDigest": "sha256:5ece6bb303b6af2d1ad6b08cf40ebfccaa18e14ea604a5ea7b07c5ae1c650a95",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/f4ff99f429a748ea",
-    "hrRevision": "dc136b66b12eb05dee9fd56694c54cdccaaa33ebab4601bce720d0a2513cd7fe",
-    "materializationRunId": 36740335003,
-    "finalVrm083ProofRunId": 36435106304,
-    "production": false,
-    "vrm084ProofRunId": 36443870486,
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790783855378000",
-    "buildCountThisMaterialization": 0,
-    "runtimeDeploysThisMaterialization": 0,
+    "sourceSha": "f6c3bb6c038a77eee9cbca8bfbfd1096bfd48cbc",
+    "sourceTree": "6175786674fd02e454ccc3674b492a29ab1ed482",
+    "runtimeRevision": "cxorbia-live-hr-dev-00235-57l",
+    "runtimeDigest": "sha256:71199bc92526864af7120c59298d002997792db467bb04936c10c26c02f5d06a",
+    "runtimeImage": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-prei4-cert-res-f6c3bb6c038a-36791149390",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/a0054d58a85a7d43",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790810984892000",
+    "materializationRunId": 36791149390,
+    "rulesAuthorityRunId": 36789283777,
+    "buildCountThisMaterialization": 1,
+    "runtimeDeploysThisMaterialization": 1,
     "hostingDeploysThisMaterialization": 1,
-    "rulesDeploys": 0
+    "firestoreRulesDeploysThisMaterialization": 0,
+    "storageRulesDeploysThisMaterialization": 0,
+    "production": false
   },
   "lastFocalAttempt": {
     "runId": 36198284266,
@@ -1726,7 +1726,7 @@
     }
   },
   "preI4CertResClosure": {
-    "state": "SOURCE_PROVEN_READY_EXACT_DEV_MATERIALIZATION",
+    "state": "DEV_MATERIALIZED_PENDING_AUTHENTICATED_LIVE_PROOF",
     "sourceSha": "f6c3bb6c038a77eee9cbca8bfbfd1096bfd48cbc",
     "sourceTree": "6175786674fd02e454ccc3674b492a29ab1ed482",
     "predecessorSha": "c71c7e800490059d36a5be6e266c28086b8db8f4",
@@ -1743,7 +1743,7 @@
       "PREI4-CERT-002",
       "PREI4-RES-001"
     ],
-    "nextGate": "RESUME_RUNTIME_HOSTING_AND_AUTHENTICATED_LIVE_PROOF",
+    "nextGate": "AUTHENTICATED_LIVE_PROOF_ONLY_NO_DEPLOY",
     "production": false,
     "partialMaterialization": {
       "runId": 36789283777,
@@ -1753,6 +1753,9 @@
       "failedRevision": "cxorbia-live-hr-dev-00234-sld",
       "hostingDeployed": false,
       "liveProofExecuted": false
-    }
+    },
+    "runtimeRevision": "cxorbia-live-hr-dev-00235-57l",
+    "runtimeDigest": "sha256:71199bc92526864af7120c59298d002997792db467bb04936c10c26c02f5d06a",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/a0054d58a85a7d43"
   }
 }

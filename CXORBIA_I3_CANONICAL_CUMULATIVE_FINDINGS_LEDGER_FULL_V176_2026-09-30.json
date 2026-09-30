@@ -5497,6 +5497,37 @@
       },
       "remediationContract": "Update only the existing scope assertion to the descriptor's current activeBlocker and repeat the same materialization job. Do not alter product source or re-run source proof.",
       "production": false
+    },
+    "VRM-117": {
+      "id": "VRM-117",
+      "classification": "MAPPING_FAILURE",
+      "severity": "P0_CONTROL",
+      "title": "Post-materialization HR readback required asynchronous reconciliation ACK on the first fresh meta response",
+      "state": "FIXED_CONTROL_READY_NO_DEPLOY_REPROOF",
+      "exactOwner": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+      "rootCause": "The HR runtime intentionally publishes the fresh source-safe snapshot before durable shopper/visit reconciliation and schedules reconciliation asynchronously. Run 36791149390 sampled format=meta immediately after a fresh refresh, so both reconciliation fields were still null although HR itself was valid and the new runtime/Hosting materialization had passed.",
+      "evidence": {
+        "runId": 36791149390,
+        "jobId": 110144144474,
+        "runtimeRevision": "cxorbia-live-hr-dev-00235-57l",
+        "runtimeDigest": "sha256:71199bc92526864af7120c59298d002997792db467bb04936c10c26c02f5d06a",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/a0054d58a85a7d43",
+        "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790810984892000",
+        "hrRevision": "3be75731eff64aa9bb8eb795ea73ae2dad140cb789cbaa15659c67ea02ce33d0",
+        "hrPeriods": 16,
+        "hrVisits": 704,
+        "hrSourceSafe": true,
+        "hrRefreshError": null,
+        "shopperReconciliationAtFirstRead": null,
+        "visitReconciliationAtFirstRead": null,
+        "buildPassed": true,
+        "runtimeDeployPassed": true,
+        "hostingDeployPassed": true,
+        "rulesReused": true,
+        "production": false
+      },
+      "remediationContract": "Do not rebuild or redeploy. Poll the already-materialized runtime until shopperReconciliation.providerAck and visitReconciliation.providerAck are true for the stable HR revision, then execute the authenticated Admin+Shopper CERT/RES live proof and cleanup on the same runtime/Hosting fingerprints.",
+      "production": false
     }
   },
   "latestEvidenceOverrides": {
@@ -6030,14 +6061,15 @@
       "VRM-113",
       "VRM-114",
       "VRM-115",
-      "VRM-116"
+      "VRM-116",
+      "VRM-117"
     ],
-    "findingCount": 116,
-    "expectedCurrentRange": "VRM-001..VRM-116",
-    "nextFindingId": "VRM-117",
+    "findingCount": 117,
+    "expectedCurrentRange": "VRM-001..VRM-117",
+    "nextFindingId": "VRM-118",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_PREI4_CERT_RES_DEV_RESUME_REQUIRED",
+    "terminalState": "HOLD_PREI4_CERT_RES_LIVE_PROOF_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,

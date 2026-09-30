@@ -5767,3 +5767,101 @@ jobs:
           retention-days: 30
           compression-level: 0
 
+  pre-i4-cert-res-live-resume:
+    name: PRE-I4 CERT/RES — post-materialization live proof — no deploy
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CERT_RES_REMEDIATION_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-cert-res-live-resume]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      CERT_RES_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      CERT_RES_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      CERT_RES_MAT_OUT: .tmp/prei4-cert-res-live-resume
+    steps:
+      - name: Checkout Recovery control head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Prove immutable materialization fingerprints
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$CERT_RES_MAT_OUT"
+          test "$CERT_RES_SOURCE" = "f6c3bb6c038a77eee9cbca8bfbfd1096bfd48cbc"
+          test "$CERT_RES_TREE" = "6175786674fd02e454ccc3674b492a29ab1ed482"
+          test "$(jq -r '.activeBlocker' "$CANDIDATE_DESCRIPTOR")" = "PREI4_CERT_RES_POST_MATERIALIZATION_LIVE_PROOF_REQUIRED"
+          test "$(jq -r '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")" = "cxorbia-live-hr-dev-00235-57l"
+          test "$(jq -r '.currentMaterialization.runtimeDigest' "$CANDIDATE_DESCRIPTOR")" = "sha256:71199bc92526864af7120c59298d002997792db467bb04936c10c26c02f5d06a"
+          test "$(jq -r '.currentMaterialization.hostingVersion' "$CANDIDATE_DESCRIPTOR")" = "sites/cxorbia-backend-dev/versions/a0054d58a85a7d43"
+          git diff --quiet "$CERT_RES_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install live proof dependencies only
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+      - name: Authenticate canonical Firebase DEV
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
+      - name: Re-read runtime and Hosting without deploy
+        run: |
+          set -Eeuo pipefail
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$CERT_RES_MAT_OUT/runtime.json"
+          test "$(jq -r '.status.latestReadyRevisionName // empty' "$CERT_RES_MAT_OUT/runtime.json")" = "cxorbia-live-hr-dev-00235-57l"
+          test "$(jq -r '.spec.template.spec.containers[0].image // empty' "$CERT_RES_MAT_OUT/runtime.json")" = "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-prei4-cert-res-f6c3bb6c038a-36791149390"
+          gcloud run revisions describe "cxorbia-live-hr-dev-00235-57l" --project "$PROJECT" --region "$REGION" --format=json > "$CERT_RES_MAT_OUT/runtime-revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$CERT_RES_MAT_OUT/runtime-revision.json")"
+          test "$RAW" = "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev@sha256:71199bc92526864af7120c59298d002997792db467bb04936c10c26c02f5d06a"
+          TOKEN="$(gcloud auth print-access-token)"
+          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$CERT_RES_MAT_OUT/hosting-live-channel.json"
+          test "$(jq -r '.release.version.name // empty' "$CERT_RES_MAT_OUT/hosting-live-channel.json")" = "sites/cxorbia-backend-dev/versions/a0054d58a85a7d43"
+          for p in core/backend-certifications.js core/backend-ai.js core/backend-resources.js modules/cert.js modules/documentos.js; do
+            out="$CERT_RES_MAT_OUT/remote-$(echo "$p" | tr '/' '_')"
+            curl -fsSL --retry 8 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/$p?certres=$GITHUB_RUN_ID-$(date +%s%N)" -o "$out"
+            test "$(sha256sum "$out" | awk '{print $1}')" = "$(git show "$CERT_RES_SOURCE:app/$p" | sha256sum | awk '{print $1}')"
+          done
+      - name: Wait for durable HR reconciliation ACK
+        run: |
+          set -Eeuo pipefail
+          PASS=0
+          for i in $(seq 1 36); do
+            curl -fsS --retry 3 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&certres=$GITHUB_RUN_ID-$i" > "$CERT_RES_MAT_OUT/hr-meta.json"
+            if jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .shopperReconciliation.providerAck==true and .visitReconciliation.providerAck==true and .hrWrites==false and .production==false and .refreshError==null' "$CERT_RES_MAT_OUT/hr-meta.json" >/dev/null; then
+              PASS=1
+              break
+            fi
+            sleep 5
+          done
+          test "$PASS" = "1"
+          HR_REVISION="$(jq -r '.revision // empty' "$CERT_RES_MAT_OUT/hr-meta.json")"
+          [[ "$HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
+          echo "HR_REVISION=$HR_REVISION" >> "$GITHUB_ENV"
+      - name: Execute authenticated Admin and Shopper CERT/RES live proof
+        run: |
+          set -Eeuo pipefail
+          PROJECT_ID="$PROJECT_ID" TENANT_ID="$TENANT_ID" HOSTING_URL="$HOSTING_URL" CERT_RES_SOURCE="$CERT_RES_SOURCE" CERT_RES_MAT_OUT="$CERT_RES_MAT_OUT" node tools/qa/cxorbia-prei4-cert-res-live.mjs | tee "$CERT_RES_MAT_OUT/live-console.log"
+          test "$(jq -r '.decision' "$CERT_RES_MAT_OUT/cert-res-live.json")" = "PASS_PREI4_CERT_RES_CUMULATIVE_DEV_LIVE"
+          test "$(jq -r '.cert001.decision' "$CERT_RES_MAT_OUT/cert-res-live.json")" = "PASS_PREI4_CERT_001_LIVE"
+          test "$(jq -r '.cert002.recertification.decision' "$CERT_RES_MAT_OUT/cert-res-live.json")" = "PASS_PREI4_CERT_002_LIVE"
+          test "$(jq -r '.res001.decision' "$CERT_RES_MAT_OUT/cert-res-live.json")" = "PASS_PREI4_RES_001_LIVE"
+          test "$(jq -r '[.cleanup.attempt,.cleanup.recert,.cleanup.bank,.cleanup.resource,.cleanup.binary]|all' "$CERT_RES_MAT_OUT/cert-res-live.json")" = "true"
+      - name: Seal post-materialization live proof receipt
+        run: |
+          set -Eeuo pipefail
+          jq -n -S --arg source "$CERT_RES_SOURCE" --arg tree "$CERT_RES_TREE" --arg hr "$HR_REVISION" --slurpfile live "$CERT_RES_MAT_OUT/cert-res-live.json" '{decision:"PASS_PREI4_CERT_RES_POST_MATERIALIZATION_LIVE",sourceSha:$source,sourceTree:$tree,runtimeRevision:"cxorbia-live-hr-dev-00235-57l",runtimeDigest:"sha256:71199bc92526864af7120c59298d002997792db467bb04936c10c26c02f5d06a",hostingVersion:"sites/cxorbia-backend-dev/versions/a0054d58a85a7d43",hrRevision:$hr,p0:{"PREI4-CERT-001":"PASS_LIVE","PREI4-CERT-002":"PASS_LIVE","PREI4-RES-001":"PASS_LIVE"},fixtureCleanup:$live[0].cleanup,builds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0,hrWrites:0,production:false}' > "$CERT_RES_MAT_OUT/result.json"
+      - name: Upload post-materialization live evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-prei4-cert-res-live-resume-${{ github.run_id }}
+          path: .tmp/prei4-cert-res-live-resume
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
