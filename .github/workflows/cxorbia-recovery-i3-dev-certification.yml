@@ -787,7 +787,7 @@ jobs:
   prei4-admin-004-hosting-materialization-live:
     name: PRE-I4 ADMIN-004 — Hosting-only materialization + cumulative live closure
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_HOSTING_MATERIALIZATION_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-admin-004-finance-live-resume]') }}
+    if: ${{ (needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_HOSTING_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_FINANCE_LIVE_RESUME_REQUIRED') && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-admin-004-finance-live-resume]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
