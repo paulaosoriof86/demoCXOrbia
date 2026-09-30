@@ -14,9 +14,9 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "61b89fd567c02c651ce1983d8b8f8421d5e70637",
-    "sourceTree": "61344532ed21d88846f8a658fdec320e605c13ab",
-    "predecessorSha": "c487449e5187d7219033c54fa1ac3db5fb6c822e",
+    "sourceSha": "d8874bd952a70ce15b40560c8f17b2d47f53c152",
+    "sourceTree": "aec04d107b769ebf1393c760ad8531e45796266c",
+    "predecessorSha": "61b89fd567c02c651ce1983d8b8f8421d5e70637",
     "production": false
   },
   "rootCauseIds": [
@@ -4867,7 +4867,7 @@
     "nextFindingId": "VRM-089",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "GO_I3_CLOSED_GATE21_PASS_I4_AUTHORIZATION_REQUIRED",
+    "terminalState": "HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
