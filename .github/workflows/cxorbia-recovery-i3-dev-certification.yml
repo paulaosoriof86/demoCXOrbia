@@ -855,7 +855,7 @@ jobs:
         with:
           project_id: ${{ env.PROJECT }}
       - name: Execute one fail-closed cumulative DEV materialization and live guard
-        run: bash tools/qa/cxorbia-prei4-admin004-dev-materialize.sh
+        run: PREI4_CONTENT001_SOURCE="$PREI4_004_SOURCE" PREI4_CONTENT001_TREE="$PREI4_004_TREE" PREI4_CONTENT001_OUT="$PREI4_004_OUT" PREI4_CONTENT001_ROOT="$PREI4_004_ROOT" bash tools/qa/cxorbia-prei4-content001-dev-materialize.sh
       - if: always()
         uses: actions/upload-artifact@v4
         with:
