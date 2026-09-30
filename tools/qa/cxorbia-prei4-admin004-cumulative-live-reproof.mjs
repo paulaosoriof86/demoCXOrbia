@@ -53,7 +53,9 @@ try{
 const as=await target.ref.get();if(!as.exists)fail('PERSISTENCE_FAILURE:PREI4_004_TARGET_DISAPPEARED');const ad=as.data()||{},m=ad.financialMatch||{};
 if(str(ad.financialSourceStatus).toLowerCase()!=='reconciled_exact'||str(m.status).toLowerCase()!=='reconciled_exact')fail('PERSISTENCE_FAILURE:PREI4_004_FINANCIAL_MATCH_MISSING');
 if(Number(m.honorario)!==target.honorario||str(m.honorarioSource)!==target.honorarioSource||Number(m.boleto)!==target.boleto||Number(m.combo)!==target.combo||Number(m.total)!==target.honorario+target.boleto+target.combo)fail('MAPPING_FAILURE:PREI4_004_FINANCIAL_MATCH_AMOUNT');
-if(str(m.sourceRevision)!==EXPECTED_HR||m.externalPaymentConfirmed!==false||m.paymentSourceRef!==null)fail('PERSISTENCE_FAILURE:PREI4_004_FINANCIAL_MATCH_AUTHORITY');
+if(m.externalPaymentConfirmed!==false||m.paymentSourceRef!==null)fail('PERSISTENCE_FAILURE:PREI4_004_FINANCIAL_MATCH_AUTHORITY');
+if(!preExact&&str(m.sourceRevision)!==EXPECTED_HR)fail('PERSISTENCE_FAILURE:PREI4_004_FINANCIAL_MATCH_CURRENT_REVISION');
+if(preExact&&!/^[a-f0-9]{64}$/.test(str(m.sourceRevision)))fail('PERSISTENCE_FAILURE:PREI4_004_FINANCIAL_MATCH_HISTORICAL_REVISION');
 const afterReconciled=recCount(await visitDocs()),afterLots=(await tenant.collection('paymentLots').where('periodId','==',PERIOD).get()).size,afterMov=(await tenant.collection('financialMovements').where('periodId','==',PERIOD).get()).size;
 if(afterLots!==beforeLots||afterMov!==beforeMov)fail('PERSISTENCE_FAILURE:PREI4_004_RECONCILE_CREATED_PAYMENT_SIDE_EFFECT');
 if((!preExact&&afterReconciled!==beforeReconciled+1)||(preExact&&afterReconciled!==beforeReconciled))fail('PERSISTENCE_FAILURE:PREI4_004_RECONCILED_COUNT');
