@@ -1,0 +1,145 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "phase-a-corte1-report-frontend-consumer-v1",
+  "activeBaseline": "V161C",
+  "target": {
+    "file": "app/modules/cliente-extra.js",
+    "module": "cli_reportes",
+    "primaryDataSource": "window.CX_TYA_CORTE1_REPORTS"
+  },
+  "protectedFiles": [
+    "app/core/data.js",
+    "app/core/store.js",
+    "app/core/router.js",
+    "backend/contracts/phase-a-corte1-context-history-reports-v1.json",
+    "tools/release/tya-corte1-report-projection-build.mjs"
+  ],
+  "allowedOptionalFiles": [
+    "app/index.html",
+    "app/vendor/pptxgenjs.min.js",
+    "app/REPORTE-DE-CAMBIOS.md"
+  ],
+  "context": {
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "periodKeySource": "CX.data.period().periodKey",
+    "countrySource": "current visible filter or authorized scope",
+    "mustRefreshOnProjectChange": true,
+    "mustRefreshOnPeriodChange": true
+  },
+  "roleScope": {
+    "securityMode": "ui_preview_only_until_corte6_auth_rbac",
+    "mustNotClaimServerEnforced": true,
+    "director": {
+      "status": "available",
+      "scope": "current_project_period_with_optional_country"
+    },
+    "regional": {
+      "status": "pending_scope_mapping_unless_stable_region_exists",
+      "fallback": "disable_export_and_show_pending_scope"
+    },
+    "sucursal": {
+      "status": "available_only_when_scopeSucursal_resolves_to_branchName",
+      "fallback": "disable_export_and_show_pending_scope"
+    }
+  },
+  "reportCards": [
+    {
+      "legacyLabel": "Resumen ejecutivo de la marca",
+      "reportId": "executive_operational_summary",
+      "displayLabel": "Resumen ejecutivo operativo",
+      "availability": "available"
+    },
+    {
+      "legacyLabel": "Scorecard por sucursal",
+      "reportId": "branch_operational_status",
+      "displayLabel": "Estado operativo por sucursal",
+      "availability": "available",
+      "forbiddenClaims": ["score", "weighted_score"]
+    },
+    {
+      "legacyLabel": "Cobertura por región",
+      "reportId": "country_coverage",
+      "displayLabel": "Cobertura por país",
+      "availability": "available",
+      "forbiddenClaims": ["region"]
+    },
+    {
+      "legacyLabel": "Tendencia y benchmarking",
+      "reportId": "period_trend",
+      "displayLabel": "Tendencia operativa por periodo",
+      "availability": "available",
+      "forbiddenClaims": ["benchmark"]
+    },
+    {
+      "legacyLabel": "Planes de acción",
+      "reportId": "action_plans",
+      "displayLabel": "Planes de acción",
+      "availability": "pending_source"
+    },
+    {
+      "legacyLabel": "Brechas y capacitación",
+      "reportId": "training_gaps",
+      "displayLabel": "Brechas y capacitación",
+      "availability": "pending_source"
+    }
+  ],
+  "exportFormats": {
+    "PDF": {
+      "required": true,
+      "behavior": "open_printable_report_view_and_invoke_browser_print",
+      "mustUseSameScopedRows": true
+    },
+    "Excel": {
+      "required": true,
+      "behavior": "generate_real_xlsx_with_existing_SheetJS",
+      "mustUseSameScopedRows": true
+    },
+    "PPT": {
+      "required": true,
+      "behavior": "generate_real_pptx_using_local_reviewed_dependency",
+      "remoteCdnForbidden": true,
+      "mustUseSameScopedRows": true
+    },
+    "JSON": {
+      "required": false,
+      "behavior": "optional_advanced_download_from_projection"
+    },
+    "CSV": {
+      "required": false,
+      "behavior": "optional_advanced_download_from_projection"
+    }
+  },
+  "honestStates": {
+    "pendingSourceLabel": "Pendiente de fuente",
+    "pendingScopeLabel": "Pendiente de alcance autorizado",
+    "noDataLabel": "Sin datos para este periodo y alcance",
+    "forbiddenTextFragments": [
+      "— demo",
+      "PDF demo",
+      "exportada (PDF demo)",
+      "Generando"
+    ],
+    "mustDisableUnavailableReportExports": true,
+    "mustNotInventScores": true,
+    "mustNotInventNps": true,
+    "mustNotInferPayments": true,
+    "mustNotCallExternalProvider": true
+  },
+  "visualAcceptance": [
+    "project_and_period_visible",
+    "source_safe_badge_visible",
+    "available_reports_have_active_export_buttons",
+    "pending_source_reports_have_disabled_export_buttons_and_reason",
+    "period_change_updates_kpis_rows_and_export_content",
+    "country_filter_updates_rows_and_export_content",
+    "mobile_layout_does_not_overflow",
+    "no_page_errors",
+    "no_console_errors"
+  ],
+  "requiredDocumentation": [
+    "app/REPORTE-DE-CAMBIOS.md",
+    "app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-FREEZE-CORTE-0B-V161C-20260720.md",
+    "app/docs/PENDIENTES-CORTE1-20260720.md"
+  ]
+}

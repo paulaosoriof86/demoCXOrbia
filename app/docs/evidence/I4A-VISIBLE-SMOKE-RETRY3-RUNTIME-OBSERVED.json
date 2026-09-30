@@ -1,0 +1,125 @@
+{
+  "schemaVersion": "cxorbia.i4a.visible-shopper-lifecycle-smoke-retry3.evidence.v1",
+  "generatedAt": "2026-08-19T17:36:24.163Z",
+  "gateId": "NEW_AUTH_REQUIRED_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY3__SAFE_GLOBAL_GUARDS__STABLE_SURFACES",
+  "requestId": "cxorbia-i4a-visible-shopper-lifecycle-smoke-retry3-20260819-01",
+  "workflowRunId": 32282507320,
+  "workflowCommitSha": "bbb9ccc8e2784bd1b1cb4ca4fd9552dad034508f",
+  "sourceHeadSha": "2b661fd06fd125169fc8531edd0b1f0e7ffcd609",
+  "uidFingerprint": "c4dbf93bdffb2721b22afe10d8ee48bbd9e1bea057401964d1cee9cfe84611b5",
+  "shopperIdFingerprint": "cf56f4c34cc84482c8aee1b2d031334751b683f606f68737b75496d9ceb90686",
+  "providerReads": 1,
+  "firestoreProviderReads": 4,
+  "authPasswordUpdates": 1,
+  "loginAttempts": 1,
+  "serviceWorkersBlocked": true,
+  "checkpoints": {
+    "page_ready": {
+      "pass": true,
+      "at": "2026-08-19T17:36:26.386Z"
+    },
+    "firebase_user": {
+      "pass": true,
+      "at": "2026-08-19T17:36:26.813Z"
+    },
+    "shopper_auth_context": {
+      "pass": true,
+      "at": "2026-08-19T17:36:26.813Z"
+    },
+    "membership_verified": {
+      "pass": true,
+      "at": "2026-08-19T17:36:27.139Z"
+    },
+    "app_entered": {
+      "pass": true,
+      "at": "2026-08-19T17:36:27.899Z"
+    },
+    "hr_authority_ready": {
+      "pass": true,
+      "at": "2026-08-19T17:36:31.682Z"
+    },
+    "documents": {
+      "pass": true,
+      "at": "2026-08-19T17:36:32.205Z"
+    },
+    "available_visits_postulation": {
+      "pass": true,
+      "at": "2026-08-19T17:36:32.672Z"
+    },
+    "notifications": {
+      "pass": true,
+      "at": "2026-08-19T17:36:33.145Z"
+    },
+    "certification": {
+      "pass": true,
+      "at": "2026-08-19T17:36:33.556Z"
+    }
+  },
+  "surfaces": {
+    "auth": {
+      "role": "shopper",
+      "membership": "verified",
+      "hrPeriods": 15,
+      "hrVisits": 660
+    },
+    "documents": {
+      "routeVisible": true,
+      "visibleOpenButtons": 4,
+      "viewerVisible": true
+    },
+    "availableVisitsPostulation": {
+      "routeVisible": true,
+      "availableDetailControls": 8,
+      "honestEmpty": false,
+      "detailVisible": true,
+      "postulationControlVisible": true,
+      "postulationControlDisabled": false,
+      "ownPostulationState": {
+        "count": 0,
+        "states": []
+      }
+    },
+    "notifications": {
+      "panelVisible": true,
+      "visibleRows": 3,
+      "honestEmpty": false,
+      "backendSource": "firestore",
+      "backendCount": 0
+    },
+    "certification": {
+      "visible": true,
+      "examVisible": false,
+      "pendingSource": true,
+      "bankReview": false,
+      "fakeApprovalVisible": false
+    }
+  },
+  "pageErrors": [],
+  "consoleErrors": [],
+  "backendWriteAttemptsObserved": 0,
+  "safety": {
+    "historicalShopperAccess": false,
+    "otherIdentitiesModified": 0,
+    "authCreates": 0,
+    "authClaimsWrites": 0,
+    "authDeletes": 0,
+    "firestoreWrites": 0,
+    "postulationSubmits": 0,
+    "certificationSubmits": 0,
+    "reservationWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "merge": false,
+    "production": false,
+    "credentialsExported": false
+  },
+  "decision": "PASS_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY3_SAFE_GLOBALS",
+  "failurePhase": null,
+  "nextGate": "I4A_VISIBLE_LIFECYCLE_READY_TO_CLOSE"
+}

@@ -1,0 +1,215 @@
+{
+  "schemaVersion": "cxorbia.c6.multi-auth-final-discriminator.contract.v1",
+  "generatedAt": "2026-08-07T10:45:00-06:00",
+  "authorizedBy": "Paula",
+  "authorizationSource": "current_conversation_c6_multi_auth_final_discriminator_readonly_2026-08-07",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "target": {
+    "firebaseProjectId": "cxorbia-backend-dev",
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "profileFingerprint": "7cc28c78de9bfda01d14",
+    "candidateFingerprints": [
+      "4e6d26551d11db444bd0",
+      "9b2b7ca1bd72c1301d29"
+    ]
+  },
+  "fingerprintContract": {
+    "authCandidateNamespace": "shopper-auth-candidate-v1",
+    "profileNamespace": "deterministic-suffix-plan-profile",
+    "rawUidExportForbidden": true,
+    "rawShopperIdExportForbidden": true
+  },
+  "sourceLocks": {
+    "freeze": "backend/config/c6-shopper-auth-final-freeze-v1.json",
+    "freezeDigest": "6060f406a33d4ba926c982871513f8e86ba2b10f44c2da00ab43bd2a409f721b",
+    "priorOverlay": "backend/config/c6-skip13-access-reconciliation-overlay-v1.json",
+    "providerEvidence": "app/docs/evidence/C6-SKIP13-PROVIDER-READONLY-REVALIDATION-V2-HOLD-20260807.json",
+    "credentialImportEvidence": "app/docs/evidence/CORTE6-CREDENTIAL-IMPORT-LATEST.json",
+    "credentialImportAuthorizationId": "chat-20260730-corte6-combined-auth91-hosting1",
+    "credentialImportDecision": "PASS_EXACT_AUTH_IMPORT_READBACK"
+  },
+  "readPolicy": {
+    "authListPagesMaximum": 1,
+    "candidateInspectionMaximum": 2,
+    "nonTargetUsers": "UID_ONLY_FOR_CANDIDATE_FINGERPRINT_MATCH_THEN_DISCARD",
+    "inspectAuthAttributes": [
+      "providerData.providerId"
+    ],
+    "inspectCustomClaimsAllowlist": [
+      "shopperId",
+      "tenantId",
+      "tenants",
+      "projectId",
+      "projectIds",
+      "role",
+      "roles",
+      "authNamespace",
+      "namespace",
+      "source",
+      "sourceId",
+      "sourceSystem",
+      "sourceType",
+      "identitySource",
+      "credentialSource",
+      "batch",
+      "batchId",
+      "sourceBatch",
+      "migrationBatch",
+      "migrationId",
+      "migrationSource",
+      "migrationVersion",
+      "importBatch",
+      "importBatchId",
+      "importId",
+      "importVersion",
+      "legacyIdentityKey",
+      "credentialKey",
+      "profileId",
+      "claimsVersion",
+      "schemaVersion"
+    ],
+    "forbiddenAuthSelectors": [
+      "creationTime",
+      "lastSignInTime",
+      "candidateOrdinal",
+      "firstReturned",
+      "disabled",
+      "emailVerified"
+    ],
+    "forbiddenReads": [
+      "Firestore",
+      "memberships",
+      "HR",
+      "visits",
+      "certifications",
+      "liquidations",
+      "Storage",
+      "legacyCredentials"
+    ]
+  },
+  "canonicalAnchorPolicy": {
+    "requiredBaseline": {
+      "tenant": "tya",
+      "project": "cinepolis",
+      "role": "shopper",
+      "priorProviderEvidenceShopperIdExactForBoth": true
+    },
+    "decisiveAnchors": [
+      {
+        "id": "UNIQUE_EXACT_CREDENTIAL_IMPORT_AUTHORIZATION_MARKER",
+        "keys": [
+          "batch",
+          "batchId",
+          "sourceBatch",
+          "migrationBatch",
+          "migrationId",
+          "importBatch",
+          "importBatchId",
+          "importId"
+        ],
+        "acceptedValues": [
+          "chat-20260730-corte6-combined-auth91-hosting1"
+        ],
+        "rule": "Exactly one candidate must contain the accepted value under an allowlisted batch/import/migration key."
+      },
+      {
+        "id": "UNIQUE_EXACT_CREDENTIAL_IMPORT_DECISION_MARKER",
+        "keys": [
+          "source",
+          "sourceId",
+          "sourceSystem",
+          "sourceType",
+          "identitySource",
+          "credentialSource",
+          "migrationSource",
+          "migrationVersion",
+          "importVersion",
+          "schemaVersion"
+        ],
+        "acceptedValues": [
+          "PASS_EXACT_AUTH_IMPORT_READBACK",
+          "cxorbia.corte6.credential-import.v1"
+        ],
+        "rule": "Exactly one candidate must contain an accepted versioned credential-import marker under an allowlisted source/version key."
+      }
+    ],
+    "supportiveOnlyNotDecisive": [
+      "shopperId equality/exactness",
+      "tenantId/tenants",
+      "projectId/projectIds",
+      "role/roles",
+      "authNamespace/namespace",
+      "password provider",
+      "presence of unknown technical identifiers",
+      "hash differences of unknown allowlisted values"
+    ],
+    "unknownUniqueMarkerPolicy": "REPORT_SOURCE_SAFE_FINGERPRINT_ONLY__DO_NOT_SELECT_KEEPER",
+    "keeperRule": "PASS only when exactly one candidate matches at least one decisive accepted anchor and the other matches none, while both candidate fingerprints are exact and no contradictory decisive anchor exists.",
+    "otherwise": "STOP_RETRY_TENANT_ADJUDICATION_REQUIRED"
+  },
+  "outputPolicy": {
+    "rawUid": false,
+    "rawName": false,
+    "rawEmail": false,
+    "rawPassword": false,
+    "rawShopperId": false,
+    "rawClaims": false,
+    "rawUnknownClaimValues": false,
+    "allowed": [
+      "candidate fingerprints",
+      "allowlisted claim key names",
+      "booleans",
+      "counts",
+      "known non-PII constants",
+      "SHA-256 fingerprints of allowlisted unknown values",
+      "keeper/access-to-retire classification when decisively proven"
+    ]
+  },
+  "passPlanContract": {
+    "rows": 340,
+    "uniqueRows": 340,
+    "onePrimaryOperationPerProfile": true,
+    "operationCounts": {
+      "CREATE_AUTH": 81,
+      "UPDATE_AUTH": 46,
+      "NO_OP": 81,
+      "HOLD": 0,
+      "PRESERVE_NO_AUTH": 132
+    },
+    "profileDisposition": "PRESERVE_EXISTING_KEEPER_AUTH_NO_REPAIR",
+    "duplicateCandidateDisposition": "RETIRE_ACCESS_PENDING_SEPARATE_WRITE_AUTHORIZATION",
+    "executable": false,
+    "writesRequireSeparateAuthorization": true
+  },
+  "stopPolicy": {
+    "candidateMissing": "STOP_RETRY",
+    "candidateSetDrift": "STOP_RETRY",
+    "noDecisiveAnchor": "STOP_RETRY_TENANT_ADJUDICATION_REQUIRED",
+    "bothCandidatesDecisive": "STOP_RETRY_CONTRADICTORY_ANCHORS",
+    "ambiguousAnchor": "STOP_RETRY_TENANT_ADJUDICATION_REQUIRED"
+  },
+  "safeState": {
+    "providerWrites": 0,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "claimsWrites": 0,
+    "membershipReads": 0,
+    "membershipWrites": 0,
+    "firestoreReads": 0,
+    "firestoreWrites": 0,
+    "hrReads": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageReads": 0,
+    "storageWrites": 0,
+    "cloudBuilds": 0,
+    "cloudRunDeploys": 0,
+    "hostingDeploys": 0,
+    "merge": false,
+    "production": false
+  }
+}

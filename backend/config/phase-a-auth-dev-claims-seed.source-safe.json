@@ -1,0 +1,95 @@
+{
+  "configId": "phase-a-auth-dev-claims-seed-source-safe",
+  "status": "source_safe_plan_no_writes",
+  "generatedAt": "2026-07-09",
+  "safeState": {
+    "authProviderConnected": false,
+    "customClaimsWritten": false,
+    "containsRealEmails": false,
+    "containsPasswords": false,
+    "containsSensitiveData": false,
+    "productionEnabled": false
+  },
+  "authScopeVersion": "phase-a-dev-v1",
+  "tenantRefs": [
+    {
+      "tenantId": "tenant_ref_phase_a_primary",
+      "displayMode": "source_safe_alias",
+      "projects": ["project_ref_primary_ops"]
+    }
+  ],
+  "claimTemplates": [
+    {
+      "templateId": "tenant-admin-dev-template",
+      "userRef": "user_ref_tenant_admin_01",
+      "claims": {
+        "tenantId": "tenant_ref_phase_a_primary",
+        "role": "tenantAdmin",
+        "authScopeVersion": "phase-a-dev-v1",
+        "roleContext": "tenant"
+      },
+      "allowedPurpose": "tenant configuration, project configuration, reviewQueue and audit view"
+    },
+    {
+      "templateId": "project-admin-dev-template",
+      "userRef": "user_ref_project_admin_01",
+      "claims": {
+        "tenantId": "tenant_ref_phase_a_primary",
+        "projectId": "project_ref_primary_ops",
+        "projectIds": ["project_ref_primary_ops"],
+        "role": "projectAdmin",
+        "authScopeVersion": "phase-a-dev-v1",
+        "roleContext": "tenantProject"
+      },
+      "allowedPurpose": "visits, assignments, postulations, certifications and project operations"
+    },
+    {
+      "templateId": "finance-admin-dev-template",
+      "userRef": "user_ref_finance_admin_01",
+      "claims": {
+        "tenantId": "tenant_ref_phase_a_primary",
+        "projectId": "project_ref_primary_ops",
+        "projectIds": ["project_ref_primary_ops"],
+        "role": "financeAdmin",
+        "authScopeVersion": "phase-a-dev-v1",
+        "roleContext": "tenantProjectFinance"
+      },
+      "allowedPurpose": "liquidations and payment state review without raw bank data"
+    },
+    {
+      "templateId": "certification-admin-dev-template",
+      "userRef": "user_ref_certification_admin_01",
+      "claims": {
+        "tenantId": "tenant_ref_phase_a_primary",
+        "projectId": "project_ref_primary_ops",
+        "projectIds": ["project_ref_primary_ops"],
+        "role": "certificationAdmin",
+        "authScopeVersion": "phase-a-dev-v1",
+        "roleContext": "tenantProjectCertification"
+      },
+      "allowedPurpose": "question banks, certification attempts and carryover review"
+    },
+    {
+      "templateId": "shopper-dev-template",
+      "userRef": "user_ref_shopper_01",
+      "claims": {
+        "tenantId": "tenant_ref_phase_a_primary",
+        "role": "shopper",
+        "shopperId": "shopper_ref_opaque_01",
+        "authScopeVersion": "phase-a-dev-v1",
+        "roleContext": "ownProfileOnly"
+      },
+      "allowedPurpose": "own visits, certifications, benefits and shopper profile"
+    }
+  ],
+  "blockedWriteActions": [
+    "createFirebaseUsers",
+    "setCustomClaims",
+    "importUsers",
+    "sendPasswords",
+    "connectFrontendAuth",
+    "deployRules",
+    "productionCutover"
+  ],
+  "nextGateRequired": "Paula explicit GO before any real Auth config or claims write"
+}

@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "cxorbia.firebase-project-identity-probe-request.v1",
+  "requestId": "corte4-probe-project-identity-20260729-03",
+  "enabled": true,
+  "issuedAt": "2026-07-29",
+  "authorizationSource": "current_conversation",
+  "authorizationText": "Viewer IAM granted by Paula to existing runner service account; re-probe identity read-only",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "targetProjectId": "cxorbia-tya-dev-260729-c4",
+  "targetDisplayName": "CXOrbia TyA DEV Clean Corte 4",
+  "providerWrites": false,
+  "production": false,
+  "reuseExistingProject": false,
+  "connectLegacyDatabase": false,
+  "copyLegacyDatabase": false
+}

@@ -1,0 +1,44 @@
+# Indice lectura acumulada Phase A - CXOrbia TyA
+
+Fecha: 2026-07-05
+
+## Objetivo
+
+Dar una ruta unica de lectura para continuar sin perder contexto, metodologia ni pendientes.
+
+## Lectura obligatoria inicial
+
+1. `TRACKER-ACUMULADO-DECISIONES-PHASE-A-20260705.md`
+2. `REGISTRO-AVANCES-LOCALES-20260705.md`
+3. `REGISTRO-PENDIENTES-COMPLETOS-20260705.md`
+4. `PLAN-AVANCE-SIN-CLAUDE-PHASE-A-20260705.md`
+
+## Bloque P0 frontend
+
+1. `MATRIZ-P0-CORRECCION-TEXTOS-OPERATIVOS-20260705.md`
+2. `P0-OPERATIONAL-COPY-SCANNER-SIN-CLAUDE-20260705.md`
+3. `LISTA-REVISION-CANDIDATA-P0-20260705.md`
+4. `AUDITORIA-CANDIDATA-ACTUAL-CLAUDE-P0-20260705.md`
+
+## Bloque readiness y gates
+
+1. `GATES-PENDIENTES-PHASE-A-20260705.md`
+2. `SOURCE-LOCK-PRECONDICIONES-PHASE-A-20260705.md`
+3. `PRODUCCION-PRECONDICIONES-PHASE-A-20260705.md`
+4. `MATRIZ-DECISIONES-PHASE-A-20260705.md`
+
+## Bloque mejoras comercializables
+
+1. `MEJORAS-PROTOTIPO-COMERCIALIZABLE-20260705.md`
+2. `ACADEMIA-REVISION-P0-20260705.md`
+
+## Bloque ejecucion local futura
+
+1. `GO-NO-GO-ANTES-DE-EJECUCION-LOCAL-20260705.md`
+2. `MICRO-PAQUETE-COMANDOS-LOCALES-READINESS-20260705.md`
+3. `CHECKLIST-SALIDAS-LOCALES-READINESS-20260705.md`
+4. `TEMPLATE-REPORTE-LOCAL-READINESS-20260705.md`
+
+## Regla
+
+Si una sesion nueva no lee estos documentos, puede reiniciar mal el trabajo. El orden anterior es la ruta segura.

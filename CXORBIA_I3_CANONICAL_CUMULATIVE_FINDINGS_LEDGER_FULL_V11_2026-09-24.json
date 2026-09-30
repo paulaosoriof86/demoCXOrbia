@@ -1,0 +1,1017 @@
+{
+  "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v11",
+  "frozenAt": "2026-09-24",
+  "status": "HOLD_C3_PRETERMINAL_MODULE_TRUTH_REPROOF",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
+  "microblockId": "CXORBIA-PRE-I4-VISUAL-REMEDIATION-MICROBLOCK-20260922",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "production": "DO_NOT_TOUCH",
+  "sourceRunState": {
+    "path": "CXORBIA_PRE_I4_VISUAL_REMEDIATION_RUN_STATE_2026-09-22.json",
+    "gitBlob": "a2ffbc7ac322a34e925b21f80a1671403a7a84c1",
+    "schemaVersion": "cxorbia.pre-i4.visual-remediation-run-state.v11",
+    "generatedAt": "2026-09-24T07:10:00Z"
+  },
+  "canonicalFunctionalCandidate": {
+    "sourceSha": "04b288f7eee315fcb865ed86a8fb41786809edf9",
+    "predecessorSha": "d02dd90ac9ee361bfdfb0474a05e63f2fa684f07",
+    "rule": "NEXT_FUNCTIONAL_SOURCE_MUST_BE_DESCENDANT_AND_PRESERVE_ALL_PROVEN_DELTAS"
+  },
+  "rootCauseIds": [
+    "RC-MONO-01_MULTIPLE_EXECUTABLE_PRODUCT_SOURCE_AUTHORITIES",
+    "RC-MONO-02_SELF_REFERENTIAL_MODULE_TRUTH_CLOSURE",
+    "RC-MONO-03_STALE_PASS_NOT_MECHANICALLY_REVOKED",
+    "RC-MONO-04_SPLIT_FINDING_MODULE_SOURCE_READINESS_STATE",
+    "RC-MONO-05_UNDERSPECIFIED_TERMINAL_SEMANTIC_ORACLE"
+  ],
+  "findings": {
+    "VRM-001": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
+      "owner": [
+        "app/core/data.js",
+        "app/core/router.js",
+        "app/core/permissions.js"
+      ],
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-002": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
+      "owner": [
+        "app/core/data.js",
+        "app/core/router.js",
+        "app/core/permissions.js"
+      ],
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-003": {
+      "state": "ALREADY_PROVEN_NO_DRIFT",
+      "evidenceRef": "Run299 identity repair + PRE-I4 review; no identity owner touched in db9cda1"
+    },
+    "VRM-004": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2 + feea6ae6b00d36349ae66e43e034bc0b25516cfd + 4aeb41ca6dffb6e5b8324ca50531587539f5058e",
+      "note": "Project/period root and cross-surface source context are reconciled in source; runtime/browser proof pending.",
+      "owner": [
+        "app/core/data.js",
+        "app/core/router.js",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+      ],
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-005": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+      "owner": [
+        "app/core/data.js",
+        "app/modules/misvisitas.js"
+      ],
+      "note": "Canonical shopper visits/facets and pending applications now share shopperId/project/period read model; browser proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-006": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
+      "owner": [
+        "app/core/data.js",
+        "app/core/router.js",
+        "app/core/permissions.js"
+      ],
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-007": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "4aeb41ca6dffb6e5b8324ca50531587539f5058e + 61cf7120603aeff110e97632bb6c69f5c4809d62",
+      "owner": [
+        "app/modules/misvisitas.js",
+        "app/modules/shoppers.js",
+        "app/modules/postulaciones.js",
+        "app/modules/documentos.js",
+        "app/modules/cert.js"
+      ],
+      "note": "Human copy no longer exposes ACK/Storage/shopperId/gate implementation terms in targeted surfaces; browser proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-008": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "4aeb41ca6dffb6e5b8324ca50531587539f5058e",
+      "owner": [
+        "app/core/router.js",
+        "app/index-backend-dev.html",
+        "app/styles/layout.css"
+      ],
+      "note": "Browser history/popstate and mobile role identity implemented; browser proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-009": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "e0bed18b62174544615dc55aa70dd4a1509692d7 + 3a14ca612988637521c3c6b39325f4d220771875",
+      "owner": [
+        "app/modules/cert.js",
+        "app/core/backend-resources.js"
+      ],
+      "note": "Connected certification bank no longer uses localStorage; durable metadata ACK authority implemented; runtime proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-010": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd + Run309/35929165160 live HR ce5534c1",
+      "owner": [
+        "app/core/data.js",
+        "app/modules/dashboard.js"
+      ],
+      "note": "Dashboard canonical phase flow reflected live HR revision ce5534c1 with GT 33 assigned/28 scheduled/20 realized and HN 9 assigned; prior browser FAIL was stale QA expectation, not product mapping.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-011": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+      "owner": [
+        "app/core/data.js",
+        "app/modules/dashboard.js"
+      ],
+      "note": "Ranking rows preserve shoppers without ratings instead of silently filtering them; human/source proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-012": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd + Run310/35930173836 HR revision 46402dc5",
+      "owner": [
+        "app/core/data.js",
+        "app/modules/shoppers.js"
+      ],
+      "note": "Exact-id Admin shopper validation now required from same fresh HR revision; display-name identity tests are prohibited. Run310 exposed a QA name-based check, not yet a product identity defect.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-013": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "672e7f624b1d0328ed1bb25b778ce4b44d52489c + bf859809d831e24665fede339a2ee872bc0e0d0c",
+      "owner": [
+        "app/modules/postulaciones.js",
+        "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+        "app/adapters/cxorbia-command-adapter-v1.js",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+      ],
+      "note": "Approve/standby/reject/edit/reassign/cancel/reprogram all use ACK-aware command provider in source; provider/runtime proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-014": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+      "owner": [
+        "app/core/finanzas-core.js",
+        "app/core/liquidacion.js",
+        "app/modules/finanzas.js"
+      ],
+      "note": "Operational obligations are no longer removed merely because reconciliation is pending; browser proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-015": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd + ab05415eb965404e1a6594df8533b8e0190aa0f7 + 6653ba83b7c95ff413169e48ceb38e95151a2736",
+      "owner": [
+        "app/core/finanzas-core.js",
+        "app/core/liquidacion.js",
+        "app/modules/finanzas.js"
+      ],
+      "note": "Run315 proved the first adapter fix preserved amounts and null margin but canonical finance read model still dropped reimbursementPartial. 6653ba83 propagates reimbursement partial/source completeness into canonical liquidation rows; DEV focal proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-016": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd + ab05415eb965404e1a6594df8533b8e0190aa0f7",
+      "owner": [
+        "app/core/finanzas-core.js",
+        "app/modules/finanzas.js"
+      ],
+      "note": "Run315 live browser showed ingreso=null, margen=null and margenPct=null with pending_or_review as required; retained FIXED_NOT_PROVEN until the cumulative focal browser run closes.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-017": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "4aeb41ca6dffb6e5b8324ca50531587539f5058e",
+      "owner": [
+        "app/modules/finanzas.js"
+      ],
+      "note": "Raw visit/hr/financial enums removed from normal finance table and retained only under expandable trace; browser proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-018": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
+      "owner": [
+        "app/core/finanzas-core.js",
+        "app/core/liquidacion.js",
+        "app/modules/finanzas.js"
+      ],
+      "note": "Review queue and operational obligation rows are separated; cause-specific UI proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-019": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "e0bed18b62174544615dc55aa70dd4a1509692d7 + 3a14ca612988637521c3c6b39325f4d220771875",
+      "owner": [
+        "app/modules/documentos.js",
+        "app/core/backend-resources.js"
+      ],
+      "note": "Connected lane no longer seeds static resources; Firestore metadata is authority or explicit empty/pending state; live proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-020": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "e0bed18b62174544615dc55aa70dd4a1509692d7 + 3a14ca612988637521c3c6b39325f4d220771875 + 50b6a25d79713b0f165cffc4355c7b7ffd1d9e84",
+      "owner": [
+        "app/modules/documentos.js",
+        "app/core/backend-resources.js",
+        "firestore.rules"
+      ],
+      "note": "Durable resource contract remains intact; demo-only store renamed to avoid legacy _d scanner prefix collision. Previous focal run failed before deploy on false-positive scanner; retry source is 50b6a25d79713b0f165cffc4355c7b7ffd1d9e84.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-021": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "db9cda1485c094a4e818cb3f0e1bb8a0af7f17f2",
+      "owner": [
+        "app/core/data.js",
+        "app/core/router.js",
+        "app/core/permissions.js"
+      ],
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-022": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "e0bed18b62174544615dc55aa70dd4a1509692d7",
+      "owner": [
+        "app/data/tya-certification-carryover-source-safe.js",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+        "app/modules/cert.js"
+      ],
+      "note": "MODULE_TRUTH=APPROVED_NOT_COMPOSED. 42 Cinépolis records map deterministically to 16 canonical shoppers but lack reviewedBy/reviewedAt/auditRef, therefore remain pending_review evidence only; certifications=[], carryoverConfirmed=0, eligibilityGranted=0, fuzzyMatching=false.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-023": {
+      "state": "ALREADY_PROVEN_NO_DRIFT",
+      "evidenceRef": "Run304 + human screenshots: official T&A logo visible"
+    },
+    "VRM-024": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "4aeb41ca6dffb6e5b8324ca50531587539f5058e + prior Run304",
+      "owner": [
+        "app/core/router.js",
+        "app/index-backend-dev.html"
+      ],
+      "note": "Prior no-debug state preserved and human data/source diagnostics are hidden unless technical access; browser no-drift proof pending.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-025": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "Run316 35941768293 / artifact 10785028396 / browser-focal.json",
+      "owner": [
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+      ],
+      "note": "Run316 falsely classified STATIC_RESOURCE_SEED_VISIBLE because the harness scanned document.body.innerText for generic terms including Checklist; the legitimate Recursos UI always contains checklists. Control fix now validates only connected project_resource rows by id/demo/source markers and requires Firestore-ready status. No product/Firestore cleanup authorized or performed.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-026": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "Run317 35945195477",
+      "owner": [
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+        "backend/config/pre-i4-human-entrypoint-dev-deploy-request.json"
+      ],
+      "note": "Run317 was a control-lane routing failure: an untagged control-only push selected the historical certify job still anchored to 77bf and failed its source guard before any build/auth/deploy. The existing [pre-i4-readback-only] exclusion is now used with the postdeploy readback lane bound to Run316/source 6653; no new workflow or product candidate is created.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-027": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "Run319 35946850723 + source 275a9893 + Run320 35947885607",
+      "owner": [
+        "app/modules/misvisitas.js",
+        "app/modules/postulaciones.js"
+      ],
+      "note": "The human-state mapping fix remains in canonical modules/misvisitas.js and modules/postulaciones.js. Run321 proved the shopper-side code was not active because a later adapter replaced CX.modules.misvisitas; VRM-027 therefore remains fixed-in-source but blocked from terminal proof by VRM-028.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-028": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "Run321 35948591112 + source f5b96e85 + Run322 35949258270",
+      "owner": [
+        "app/adapters/tya-c6-domain-consistency-bridge.js"
+      ],
+      "test": "backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-ui-cleanup.test.mjs",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "note": "Run322 passed source regression, one Hosting DEV materialization and byte parity including tya-c6-domain-consistency-bridge.js; Admin postulation conflict projection also passed. Terminal proof remains blocked only because the shopper route hit a Firestore permission denial before Mis Visitas could be reached.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-029": {
+      "state": "FIXED_PROVEN",
+      "evidenceRef": "Runs323-329 root cause + Run332 35953009969 exact Rules deploy/readback",
+      "classification": "AUTH_FAILURE",
+      "owner": [
+        "firestore.rules",
+        "backend/runtime/hr-live-service/test/cxorbia-pre-i4-durability-resources.test.mjs"
+      ],
+      "note": "Shopper claims and direct authorized resource reads are correct. Firestore list/query denial is caused by the prior resources read expression combining query-unprovable field type checks and projectAssigned(resource.data.projectId). Emulator proof shows the generic query-compatible form tenantAllowed + shopper + active + resource.data.projectId in request.auth.token.projectIds + role() in resource.data.visibleRoles allows the exact visible-list query while still denying admin-only and other-project documents. Source 2f924e6e contains only the minimal Rules fix plus anti-regression test; DEV Rules deployment still pending. Run332 deployed exactly one Firestore Rules release to DEV via official Rules API and read back exact source parity; terminal status awaits cumulative browser focal.",
+      "terminalEvidence": {
+        "cumulativeFocalRunId": 35953230892,
+        "cumulativeFocalDecision": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+        "moduleTruthRunId": 35954023135,
+        "moduleTruthDecision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
+        "sourceSha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+        "rulesSourceSha": "2f924e6e2057adef9c0c6be8259d564e15c43573"
+      }
+    },
+    "VRM-030": {
+      "state": "NOT_APPLICABLE_WITH_EVIDENCE",
+      "evidenceRef": "Run324 35950371737 + Run325 35950590942",
+      "classification": "ENVIRONMENT_FAILURE",
+      "owner": [
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+      ],
+      "note": "Run324 Firestore emulator proof was blocked solely because firebase-tools required Java 21. Run325 added Java 21 and the emulator proof executed successfully. No product, Rules or data defect resulted from this control-environment failure."
+    },
+    "VRM-031": {
+      "state": "NOT_APPLICABLE_WITH_EVIDENCE",
+      "evidenceRef": "Run330 35952589290 + Run331 35952807023",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "owner": [
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+      ],
+      "note": "Run330 stopped before authentication or deployment because the rules-only scope validator counted backend/config/pre-i4-human-entrypoint-dev-deploy-request.json, a control authorization file, as product drift between f5b96e85 and functional source 2f924e6e. The validator now excludes only that exact control path while preserving exact checks for firestore.rules and the VRM-029 regression test. Run330 performed zero Rules/Hosting/runtime/data/production deploys. Run331 passed the corrected product-scope validator and cumulative source tests, proving the Run330 scope failure was control-only."
+    },
+    "VRM-032": {
+      "state": "NOT_APPLICABLE_WITH_EVIDENCE",
+      "evidenceRef": "Run331 35952807023 + Run332 35953009969",
+      "classification": "AUTH_FAILURE",
+      "owner": [
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+      ],
+      "note": "Firebase CLI :test returned 403 for the DEV principal, but the same authorized principal created the exact Ruleset and updated cloud.firestore through the official Rules API. Run332 succeeded with one exact Rules deploy; no manual IAM change was required."
+    },
+    "VRM-033": {
+      "state": "FIXED_NOT_PROVEN",
+      "classification": "MAPPING_FAILURE",
+      "title": "Admin shopper identities regress to technical IDs despite live HR display names",
+      "evidence": [
+        "Run333 browser-focal recorded expectedName=Julissa Flores for shopper_gt_0c198c1055 but observed name=shopper_gt_0c198c1055 and still passed.",
+        "Commit 6bcbc1df changed unmatched profiles from excluded to presentedToAuthorizedStaff.",
+        "Current composer lets protected/profile name override live HR display name; durable sourceCandidate only treats literal 'Shopper protegido' as placeholder, not shopper_gt_*."
+      ],
+      "owners": [
+        "app/adapters/tya-cumulative-read-model-v2.js",
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+        "app/core/data.js",
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+      ],
+      "expected": "Authorized Admin sees resolved operational display names and exact history/KPIs. Unresolved technical identities stay in review and never render as human shopper rows. No fuzzy matching.",
+      "sourceAuthority": {
+        "sourceSha": "8426370b748443073f6a65355a2fe7af02a9a61c",
+        "message": "fix(pre-i4): restore human shopper truth and semantic safeguards [vrm-033-041]",
+        "proofState": "PENDING_TERMINAL_REPROOF"
+      },
+      "sourceFixFiles": [
+        "app/adapters/tya-cumulative-read-model-v2.js",
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+        "app/core/data.js"
+      ]
+    },
+    "VRM-034": {
+      "state": "FIXED_NOT_PROVEN",
+      "classification": "PERSISTENCE_FAILURE",
+      "title": "Durable DEV QA reservation residue is visible in human lane",
+      "evidence": [
+        "Human screenshot shows five I3 QA TEMP reservations.",
+        "RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs creates durable reservations with sucursal='I3 QA TEMP'.",
+        "Run333 Admin route set did not include reservas, so residue was invisible to the terminal focal."
+      ],
+      "owners": [
+        "RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs",
+        "app/adapters/tya-canonical-reservations-guard-v2.js",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+      ],
+      "expected": "Zero QA/test reservations in the human candidate; fixture writes use deterministic isolated IDs and exact cleanup/readback, with Admin reservas asserted before PASS."
+    },
+    "VRM-035": {
+      "state": "FIXED_NOT_PROVEN",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "title": "Terminal browser proof was structurally green but semantically under-specified",
+      "evidence": [
+        "Shoppers assertion checked row existence/crosswalk/history counts but never asserted row.name===expectedName.",
+        "Dashboard assertion omitted outOfRange.",
+        "Admin focal omitted reservas.",
+        "Benefits/Mi Perfil routes were accepted mainly by generic route/source/count checks rather than their required visible business content.",
+        "Resources count=0 with Storage unauthorized was accepted as PASS.",
+        "Certification pending_authenticated_review with carryoverConfirmed=0 was accepted as PASS."
+      ],
+      "owners": [
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs",
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+        "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json"
+      ],
+      "expected": "PASS requires semantic assertions for names, profile fields/history, benefit rows, reservations cleanliness, out-of-range, resource usability or explicit approved empty-state, certification carryover, and no technical-language leakage."
+    },
+    "VRM-036": {
+      "state": "FIXED_SOURCE_PROVEN_NO_DEPLOY",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "title": "Certification historical authority remains explicitly APPROVED_NOT_COMPOSED but matrix was forced to MATCH",
+      "evidence": [
+        "app/data/tya-certification-carryover-source-safe.js self-declares moduleTruthClassification=APPROVED_NOT_COMPOSED.",
+        "Same source records usefulRecords=78 and deterministicTechnicalIdMatches=22, but active certifications=[] and sourceStatus=pending_authenticated_review.",
+        "Historical DEV inventory contains 77 durable certifications.",
+        "Matrix v6 incorrectly marked this source/module MATCH during mechanical closure."
+      ],
+      "owners": [
+        "app/data/tya-certification-carryover-source-safe.js",
+        "app/modules/cert.js",
+        "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json"
+      ],
+      "expected": "Adjudicate approved historical certification records by exact identity into the durable/read model without granting unsupported eligibility; ambiguous records stay review-only.",
+      "sourceAdjudication": {
+        "approvedSuccessor": "61cf7120603aeff110e97632bb6c69f5c4809d62",
+        "ownerBlobParity": true,
+        "owners": [
+          "app/modules/academia.js",
+          "app/modules/cert.js",
+          "app/data/tya-certification-carryover-source-safe.js"
+        ],
+        "carryoverSourceStatus": "pending_authenticated_review",
+        "evidenceCandidateCount": 42,
+        "deterministicTechnicalIdMatches": 22,
+        "certificationsCommitted": 0,
+        "requiredReviewFieldsMissing": [
+          "reviewedBy",
+          "reviewedAt",
+          "auditRef"
+        ],
+        "conclusion": "No code recovery required. Historical evidence is preserved but intentionally not promoted to certified/eligible. Close by exact adjudication/projection without inventing eligibility."
+      },
+      "functionalSource": "8d764168727832d579d20ceb26580d88c41df24d",
+      "fixContract": "Project evidence to both operational shoppers and protected exact profiles. A protected-only profile remains outside HR operational population. Historical evidence never grants current certification or eligibility.",
+      "productFiles": [
+        "app/adapters/tya-certification-evidence-projection-v1.js",
+        "app/index-backend-dev.html",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+        "app/adapters/tya-c6-domain-consistency-bridge.js",
+        "app/adapters/tya-canonical-shopper-portal-v2.js",
+        "app/modules/cert.js",
+        "backend/runtime/hr-live-service/test/cxorbia-pre-i4-certification-evidence-projection.test.mjs"
+      ],
+      "latestFailure": {
+        "runId": 36041217046,
+        "artifactId": 10826783578,
+        "classification": "MAPPING_FAILURE",
+        "code": "VRM036_PAULA_S3_EXACT_OWNER:0",
+        "rootCause": "historical evidence projector only targeted HR operational shoppers; s3 is an exact protected authenticated profile and must not be forced into HR population"
+      },
+      "crosswalkAuthority": {
+        "source": "app/docs/evidence/LEGACY-SHOPPERS-CERTIFICATIONS-REFRESH-LATEST.json",
+        "legacyShopperId": "S3",
+        "canonicalDocId": "s3",
+        "basis": "deterministic_technical_id_normalization"
+      },
+      "proof": {
+        "runId": 36041811875,
+        "artifactId": 10826689418,
+        "artifactDigest": "sha256:953d01306acb015c16ab31cd9dd6cdcc040fba2b19ea4e98ddc6a09568428441",
+        "sourceSha": "8d764168727832d579d20ceb26580d88c41df24d",
+        "hrRevision": "834f3c9f36d0f8144507bea234efaa4c7d5ddf461f023d61239525b21de2a8d9",
+        "candidates": 42,
+        "matchedUniqueRecords": 42,
+        "matchedProtectedRecords": 42,
+        "reviewRequiredRecords": 0,
+        "paulaS3Owner": "s3",
+        "paulaS3Crosswalk": "S3->s3 deterministic_technical_id_normalization",
+        "currentCertificationMutations": 0,
+        "eligibilityGranted": 0,
+        "writes": 0,
+        "deploys": 0
+      }
+    },
+    "VRM-037": {
+      "state": "FIXED_SOURCE_PROVEN_NO_DEPLOY",
+      "classification": "FUNCTIONAL_DEFECT",
+      "title": "Shopper benefits/profile/history contract was not semantically proven by the final focal",
+      "evidence": [
+        "Run299 froze Paula exact identity s3 with history=7, KPI total=7 and Mi Perfil/Mis Visitas/Beneficios/Mis Reportes PASS.",
+        "Run333 shopper generic assertions fixed total=7 but did not assert visible profile identity/contact fields or benefit/liquidation row content.",
+        "Benefits depends on canonical shopper identity plus liquidation feed, so identity/composition regressions can render it empty while route-level PASS remains green."
+      ],
+      "owners": [
+        "app/adapters/tya-canonical-shopper-portal-v2.js",
+        "app/modules/misvisitas.js",
+        "app/modules/beneficios.js",
+        "app/core/liquidacion.js",
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+      ],
+      "expected": "Paula and representative GT/HN shoppers render exact identity, real historical visits/KPIs and benefit obligations from the same canonical identity; no technical ID fallback.",
+      "functionalSource": "8913a30e3bd1bd3e851d9736ff87e1bae51c30ff",
+      "rootCause": "A platform pending_hr assignment overlay remained operationally visible, correctly, but the late global shopperStats/history facade counted it as HR-confirmed historical ownership.",
+      "proof": {
+        "runId": 36038277262,
+        "artifactId": 10825625581,
+        "artifactDigest": "sha256:229e235b9a3918194b5a656b235305acf89ec199635ac35eaee8d6104ca9b2d0",
+        "sourceSha": "8913a30e3bd1bd3e851d9736ff87e1bae51c30ff",
+        "decision": "PASS_PRE_I4_VRM037_042_LIVE_SOURCE_PROOF",
+        "deploys": 0
+      }
+    },
+    "VRM-038": {
+      "state": "FIXED_NOT_PROVEN",
+      "classification": "FUNCTIONAL_DEFECT",
+      "title": "Human Admin surfaces leak technical vocabulary and incomplete operational states",
+      "evidence": [
+        "Screenshots expose 'ESTADO CANÓNICO' and 'máquina canónica HR'.",
+        "Run333 technicalVisible regex did not include canonical/canónico language.",
+        "Current finance UI surfaces internal source/configuration states as primary business UX."
+      ],
+      "owners": [
+        "app/modules/dashboard.js",
+        "app/modules/visitas.js",
+        "app/modules/finanzas.js",
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+      ],
+      "expected": "Human labels only; technical state/source terminology is hidden from normal Admin/Shopper UI and retained only in optional traceability.",
+      "sourceAuthority": {
+        "sourceSha": "8426370b748443073f6a65355a2fe7af02a9a61c",
+        "message": "fix(pre-i4): restore human shopper truth and semantic safeguards [vrm-033-041]",
+        "proofState": "PENDING_TERMINAL_REPROOF"
+      },
+      "sourceFixFiles": [
+        "app/modules/dashboard.js",
+        "app/modules/visitas.js"
+      ]
+    },
+    "VRM-039": {
+      "state": "FIXED_SOURCE_PROVEN_NO_DEPLOY",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "title": "Resources and finance were fail-closed safely but incorrectly promoted as complete production-ready modules",
+      "evidence": [
+        "Run333 resources: count=0, firestore ready, Storage authorized=false/configured=false/available=false.",
+        "Run333 finance obligations match current HR reference, but income/margin/CxC remain null because project income/commission source is not configured.",
+        "The PRE-I4 gate treated both incomplete states as terminal PASS rather than module-level HOLD/APPROVED_NOT_COMPOSED."
+      ],
+      "owners": [
+        "app/core/backend-resources.js",
+        "app/modules/documentos.js",
+        "app/core/finanzas-core.js",
+        "app/modules/finanzas.js",
+        "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json"
+      ],
+      "expected": "Preserve truthful fail-closed behavior, but do not call the module complete until the last approved resource/financial authority is composed or explicitly adjudicated as intentionally unavailable.",
+      "sourceAdjudication": {
+        "resources": {
+          "approvedSuccessor": "50b6a25d79713b0f165cffc4355c7b7ffd1d9e84",
+          "ownerBlobParity": true,
+          "authority": "Firestore metadata; binary Storage fail-closed unless explicitly authorized/validated"
+        },
+        "finance": {
+          "approvedSuccessor": "4aeb41ca6dffb6e5b8324ca50531587539f5058e",
+          "ownerBlobParity": true,
+          "authority": "canonical finance read model; exact financial source for income/margin/payment, HR for obligations only"
+        },
+        "conclusion": "No owner rollback/recovery required. Close through live CRUD/readback/role proof for Resources and same-revision financial semantic proof; fail-closed must not be mislabeled complete."
+      },
+      "functionalSource": "04b288f7eee315fcb865ed86a8fb41786809edf9",
+      "latestRootCause": {
+        "classification": "FUNCTIONAL_DEFECT",
+        "owners": [
+          "app/adapters/tya-live-source-inplace-apply.js",
+          "app/adapters/tya-canonical-finance-read-model-v2.js",
+          "app/core/finanzas-core.js",
+          "app/modules/finanzas.js"
+        ],
+        "defect": "Missing HR/project-config honorarium was preserved as null by live-source mapping, but canonical finance read model and downstream aggregates/UI re-coerced the unknown amount to zero.",
+        "independentConfigEvidence": {
+          "runId": 36043242781,
+          "artifactId": 10827072320,
+          "artifactDigest": "sha256:ed240f713fe014152ac86b9a894140309fe46c12e0a15d7921283fcfee467f95",
+          "projectHonorarioEmpty": true,
+          "periodHonorarioEmpty": true,
+          "projectCountries": [
+            "GT",
+            "HN"
+          ]
+        },
+        "sameHrEvidence": {
+          "sourceRevision": "834f3c9f36d0f8144507bea234efaa4c7d5ddf461f023d61239525b21de2a8d9",
+          "totalVisits": 704,
+          "explicitHonorariumCount": 0
+        },
+        "expectedContract": "Explicit HR amount wins; otherwise independent project-country configuration wins; if neither exists, honorarium/total/margin/CxP remain pending_source/null and human UI says Pendiente de fuente. Known reimbursement facets remain visible without fabricating honorarium."
+      },
+      "sourceFixFiles": [
+        "app/adapters/tya-live-source-inplace-apply.js",
+        "app/adapters/tya-canonical-finance-read-model-v2.js",
+        "app/core/finanzas-core.js",
+        "app/modules/finanzas.js",
+        "backend/runtime/hr-live-service/test/cxorbia-pre-i4-finance-live-source-honorarium.test.mjs"
+      ],
+      "proof": {
+        "runId": 36045307475,
+        "artifactId": 10828465394,
+        "artifactDigest": "sha256:9f92d111d0d7580ee251bac3c71d639065223628b029b14a51d5a742827fc24e",
+        "sourceSha": "04b288f7eee315fcb865ed86a8fb41786809edf9",
+        "hrRevision": "834f3c9f36d0f8144507bea234efaa4c7d5ddf461f023d61239525b21de2a8d9",
+        "finance": {
+          "hrVisits": 704,
+          "explicitHrHonoraria": 0,
+          "mappedPendingHonoraria": 704,
+          "currentFinanceRows": 26,
+          "financeRowsPendingHonorarium": 26,
+          "financeRowsNullTotal": 26,
+          "knownReimbursementRows": 23,
+          "fabricatedHonorariumZeros": 0
+        },
+        "resources": {
+          "fixtureId": "vrm039-resource-proof-36045307475",
+          "createReadback": true,
+          "updateReadback": true,
+          "softDeleteReadback": true,
+          "cleanupZero": true,
+          "realResourcesMutated": 0,
+          "roleVisibilityContract": true,
+          "idempotencyContract": true,
+          "storageFailClosedContract": true,
+          "writes": 4
+        },
+        "deploys": 0,
+        "production": false
+      }
+    },
+    "VRM-040": {
+      "state": "FIXED_NOT_PROVEN",
+      "classification": "MAPPING_FAILURE",
+      "title": "Out-of-range visible count does not match fresh HR canonical facet",
+      "evidenceRef": "Run333 attempt2 / artifact 10793657700 + human screenshots",
+      "note": "Fresh HR has GT=3 + HN=1 = 4 out-of-range while the human Visitas/Dashboard capture exposes 1. Existing focal did not assert outOfRange.",
+      "owners": [
+        "app/adapters/tya-canonical-state-semantics-v2.js",
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+      ],
+      "sourceAuthority": {
+        "sourceSha": "d8aad982ae4b47e66bf949d906b6c7ede8866f84",
+        "message": "fix(pre-i4): preserve HR out-of-range truth [vrm-040]",
+        "proofRunId": 35972426097,
+        "sameFreshHR": {
+          "GT": 3,
+          "HN": 1,
+          "total": 4
+        },
+        "proofState": "SOURCE_FIX_MATERIALIZED_TERMINAL_REPROOF_REQUIRED"
+      },
+      "sourceFixFiles": [
+        "app/adapters/tya-canonical-state-semantics-v2.js"
+      ]
+    },
+    "VRM-041": {
+      "state": "FIXED_NOT_PROVEN",
+      "classification": "VISUAL_DEFECT",
+      "title": "Postulation human card exposes undefined approval actor",
+      "evidenceRef": "Human screenshots / app/modules/postulaciones.js",
+      "note": "Approved cards render `Aprobada por ${x.aprobadaPor}` without safe fallback, producing visible 'undefined'.",
+      "owners": [
+        "app/modules/postulaciones.js",
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+      ],
+      "sourceAuthority": {
+        "sourceSha": "8426370b748443073f6a65355a2fe7af02a9a61c",
+        "message": "fix(pre-i4): restore human shopper truth and semantic safeguards [vrm-033-041]",
+        "proofState": "PENDING_TERMINAL_REPROOF"
+      },
+      "sourceFixFiles": [
+        "app/modules/postulaciones.js"
+      ]
+    },
+    "VRM-042": {
+      "state": "FIXED_SOURCE_PROVEN_NO_DEPLOY",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "title": "Shopper KPI/history semantic owner shadowing inflates canonical history",
+      "evidence": [
+        "app/modules/shoppers.js excludes __pendingPlatformAssignmentOverlay===true in kpiVisitsForActiveProject before scoped KPI calculation.",
+        "app/adapters/tya-c6-domain-consistency-bridge.js installs global visitsForShopper/shopperStats and counts all mapped visits without that exclusion.",
+        "app/adapters/tya-canonical-shopper-portal-v2.js consumes data.shopperStats().",
+        "Run342 failed exact HR history for José Sarat: expected 5 total/5 realized; observed 6 total/5 realized with one postulation."
+      ],
+      "owners": [
+        "app/adapters/tya-c6-domain-consistency-bridge.js",
+        "app/modules/shoppers.js",
+        "app/adapters/tya-canonical-shopper-portal-v2.js",
+        "app/modules/misvisitas.js",
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+      ],
+      "expected": "One effective semantic owner for shopper history/KPIs. HR-confirmed historical counts exclude pending platform assignment overlays; pending applications remain visible in their own lane. General fix only; no shopper-specific exception.",
+      "dynamicProofRequired": "Identify the sixth mapped visit flags/visitId for shopper_gt_0b19085086 before product write.",
+      "functionalSource": "8913a30e3bd1bd3e851d9736ff87e1bae51c30ff",
+      "dynamicProof": {
+        "runId": 36037538874,
+        "artifactId": 10825033617,
+        "primaryShopper": "shopper_gt_0b19085086",
+        "expectedHrHistory": 5,
+        "composedOperationalVisits": 6,
+        "extraVisit": {
+          "id": "hr_2026-08_hn_5_0fae44594f",
+          "hrRowId": "AGOSTO 26 HN!5",
+          "pendingOverlay": true,
+          "assignmentSource": "platform",
+          "assignmentSyncStatus": "pending_hr"
+        },
+        "controlShopper": "shopper_gt_a55e5b3e9b",
+        "controlHistory": 1
+      },
+      "fixContract": "Keep pending platform assignment in operational visits/Mis Visitas; exclude it from confirmed HR history/KPI/profile history through one canonical confirmed-history semantic owner.",
+      "proof": {
+        "runId": 36038277262,
+        "artifactId": 10825625581,
+        "artifactDigest": "sha256:229e235b9a3918194b5a656b235305acf89ec199635ac35eaee8d6104ca9b2d0",
+        "sourceSha": "8913a30e3bd1bd3e851d9736ff87e1bae51c30ff",
+        "decision": "PASS_PRE_I4_VRM037_042_LIVE_SOURCE_PROOF",
+        "deploys": 0
+      }
+    }
+  },
+  "latestEvidenceOverrides": {
+    "VRM-037": {
+      "state": "P0_PROVEN_ROOT_CAUSE_ACTIVE_BLOCKER",
+      "runId": 35972426097,
+      "code": "MAPPING_FAILURE:EXACT_HR_HISTORY_shopper_gt_0b19085086",
+      "expected": {
+        "name": "José Sarat",
+        "total": 5,
+        "realized": 5
+      },
+      "observed": {
+        "total": 6,
+        "realized": 5,
+        "postulations": 1,
+        "submitted": 4
+      },
+      "diagnosticControlHead": "537f3bb1d32500fa7e200f552cfacd906a3cc4d2"
+    },
+    "VRM-040": {
+      "state": "FUNCTIONAL_FIX_MATERIALIZED_REPROOF_REQUIRED",
+      "functionalSource": "d8aad982ae4b47e66bf949d906b6c7ede8866f84",
+      "runId": 35972426097,
+      "sameFreshHR": {
+        "GT": 3,
+        "HN": 1,
+        "total": 4
+      }
+    }
+  },
+  "governance": {
+    "findingIdsPresent": [
+      "VRM-001",
+      "VRM-002",
+      "VRM-003",
+      "VRM-004",
+      "VRM-005",
+      "VRM-006",
+      "VRM-007",
+      "VRM-008",
+      "VRM-009",
+      "VRM-010",
+      "VRM-011",
+      "VRM-012",
+      "VRM-013",
+      "VRM-014",
+      "VRM-015",
+      "VRM-016",
+      "VRM-017",
+      "VRM-018",
+      "VRM-019",
+      "VRM-020",
+      "VRM-021",
+      "VRM-022",
+      "VRM-023",
+      "VRM-024",
+      "VRM-025",
+      "VRM-026",
+      "VRM-027",
+      "VRM-028",
+      "VRM-029",
+      "VRM-030",
+      "VRM-031",
+      "VRM-032",
+      "VRM-033",
+      "VRM-034",
+      "VRM-035",
+      "VRM-036",
+      "VRM-037",
+      "VRM-038",
+      "VRM-039",
+      "VRM-040",
+      "VRM-041",
+      "VRM-042"
+    ],
+    "findingCount": 42,
+    "expectedCurrentRange": "VRM-001..VRM-042",
+    "nextFindingId": "VRM-043",
+    "appendOnly": true,
+    "omissionNeverCloses": true,
+    "terminalState": "PROVEN_CLOSED",
+    "newReproducibleEvidenceRevokesRelatedReadiness": true,
+    "historicalPassEvidenceOnly": true
+  },
+  "workPlan": [
+    "C0_FREEZE",
+    "C1_SINGLE_AUTHORITY_ENFORCEMENT",
+    "C2_P0_CLOSURE",
+    "C3_TERMINAL_CUMULATIVE_PROOF",
+    "C4_ONE_HUMAN_VISUAL_ACCEPTANCE"
+  ],
+  "exactNextAction": "REPEAT_C3_PRETERMINAL_MODULE_TRUTH_WITH_PATH_BOUND_FINDING_AUTHORITIES",
+  "supersedesGitBlob": "81ccb97085e3c92eca624f8fc48d2faa14c19a8c",
+  "preterminalAuthorityCorrection": {
+    "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
+    "runId": 36051302838,
+    "artifactId": 10831170890,
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "productWrites": 0,
+    "production": false
+  }
+}

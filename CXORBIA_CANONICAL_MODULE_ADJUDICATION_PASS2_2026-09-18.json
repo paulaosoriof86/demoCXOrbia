@@ -1,0 +1,196 @@
+{
+  "schema": "cxorbia.recovery.canonical-module-adjudication.pass2.v1",
+  "frozenAt": "2026-09-18T10:35:00-06:00",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "state": "READ_ONLY_DOMAIN_ADJUDICATION_20_OF_20",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadAtStart": "b356aa7b843d274d477f616c2c8ba1dd6bca8be7",
+  "productSourceUnderComparison": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+  "decisiveFindings": {
+    "priorMatrixWasNotEntrypointExhaustive": true,
+    "entrypointLoadedScripts": 130,
+    "internalLoadedScripts": 124,
+    "loadedInternalAbsentFromPriorMatrix": 56,
+    "criticalAbsentFromPriorMatrix": [
+      "app/adapters/tya-project-financial-model-contract-v1.js",
+      "app/data/tya-financial-canonical-source-safe.js",
+      "app/data/tya-financial-canonical-source-safe-liq-01.js",
+      "app/data/tya-financial-canonical-source-safe-liq-02.js",
+      "app/data/tya-financial-canonical-source-safe-liq-03.js",
+      "app/data/tya-financial-canonical-source-safe-review-01.js",
+      "app/data/tya-financial-canonical-source-safe-review-02.js",
+      "app/data/tya-financial-canonical-source-safe-evidence.js",
+      "app/data/tya-financial-canonical-source-safe-final.js",
+      "app/data/tya-payment-history-source-safe.js",
+      "app/adapters/tya-ab-cumulative-composition-v1.js",
+      "app/adapters/tya-c6-shopper-auth-click-guard-v1.js"
+    ],
+    "fullVisualGatedCanonicalOwners": [
+      "app/adapters/tya-c6-domain-consistency-bridge.js",
+      "app/adapters/tya-canonical-shopper-portal-v2.js",
+      "app/adapters/tya-canonical-reservations-guard-v2.js",
+      "app/adapters/tya-c6-unified-human-runtime-v1.js"
+    ],
+    "rootCause": "RELEASE_COMPOSITION_FAILURE: approved/canonical behavior exists in loaded source but some decisive adapters are DEV-feature-gated, while many active entrypoint dependencies were outside the prior matrix. A blob-MATCH matrix could therefore pass while normal human entry rendered older/base behavior."
+  },
+  "domainDecisions": [
+    {
+      "domain": "auth-protected-data-runtime",
+      "decision": "KEEP_CURRENT",
+      "checkpoint": "C6 source lock 69afc822… + Aug-02/05 Staff-Shopper-Client PASS",
+      "reason": "Auth runtime itself passed integrated multi-role; current blocker is membership/scope, not browser auth owner.",
+      "requiredGate": "staff/shopper/client exact claims + reload/new-tab"
+    },
+    {
+      "domain": "base-router-shell-cache",
+      "decision": "KEEP_CURRENT",
+      "checkpoint": "f836 multiproject entry + 8d0df77 legal-nonblocking",
+      "reason": "Current deltas are explicit Recovery decisions; no shell regression proven.",
+      "requiredGate": "normal canonical entry must not require DEV-only feature flags"
+    },
+    {
+      "domain": "benefits",
+      "decision": "KEEP_EXACT_APPROVED",
+      "checkpoint": "terminal certified b949/F9 exact blob",
+      "reason": "Owner unchanged and no drift evidence.",
+      "requiredGate": "smoke after composition"
+    },
+    {
+      "domain": "canonical-hr-state-adapters",
+      "decision": "RECOVER_APPROVED_BEHAVIOR_IN_EXISTING_OWNER",
+      "checkpoint": "e40a326 shopper display PASS + f836 multiproject source routing",
+      "reason": "Preserve multiproject/current source contract, but restore authorized operational identity semantics and remove synthetic mapPosts projection.",
+      "owners": [
+        "app/adapters/tya-live-source-inplace-apply.js"
+      ],
+      "requiredGate": "same live HR revision drives periods/visits/shoppers/KPIs; durable postulations only"
+    },
+    {
+      "domain": "certifications",
+      "decision": "KEEP_EXACT_APPROVED",
+      "checkpoint": "terminal certified b949/F9 exact blobs",
+      "reason": "No drift evidence.",
+      "requiredGate": "Admin/Shopper certification visual smoke"
+    },
+    {
+      "domain": "client-portal-reportkit",
+      "decision": "KEEP_EXACT_APPROVED",
+      "checkpoint": "Aug-05 PASS_PHASE_A_REMOTE_DOMAIN_FINANCE_PORTALS_RESERVATIONS_DYNAMIC + terminal owner blobs",
+      "reason": "Portal rendered correctly historically; current run191 blocker is missing scoped membership.",
+      "requiredGate": "restore durable client membership then 3 reload/new-tab"
+    },
+    {
+      "domain": "core-config-data-router-permissions",
+      "decision": "KEEP_CURRENT_WITH_GATE",
+      "checkpoint": "3d36b46 canonical project/period separation",
+      "reason": "Project/period independence is required for Rola; no rollback. Connected runtime must not treat localStorage as authority.",
+      "requiredGate": "past/current/future period selection from live HR"
+    },
+    {
+      "domain": "dashboard-operation",
+      "decision": "FOCAL_FIX_TRUE_FUNCTIONAL_DEFECT",
+      "checkpoint": "terminal owner blobs retained",
+      "reason": "dashboard.js uses browser new Date() for month/year/pace labels, causing historical selection to retain current-month semantics.",
+      "owners": [
+        "app/modules/dashboard.js"
+      ],
+      "requiredGate": "all labels/KPIs/drills use selected HR period and same revision"
+    },
+    {
+      "domain": "documents-resources",
+      "decision": "KEEP_EXACT_APPROVED",
+      "checkpoint": "terminal certified b949/F9 exact blobs",
+      "reason": "No drift evidence.",
+      "requiredGate": "smoke only"
+    },
+    {
+      "domain": "finance-core-liquidation-costs",
+      "decision": "KEEP_OWNERS_REPAIR_DEPENDENCY_CLOSURE",
+      "checkpoint": "Corte3 R23 technical PASS + C6 finance root-fix source PASS",
+      "reason": "Core owners are exact terminal; do not rebuild. Add omitted active finance contract/data/adapters to closure and distinguish confirmed finance source from review candidates.",
+      "requiredGate": "Dashboard/Movimientos/Liquidaciones/Lotes reconcile under one source-state model"
+    },
+    {
+      "domain": "historical",
+      "decision": "KEEP_EXACT_APPROVED",
+      "checkpoint": "2026-07-11 period-history integrity + terminal exact owner",
+      "reason": "Historical module already excludes active period by default; dependency is period/data authority.",
+      "requiredGate": "13/closed plus selected active from same HR revision, generalized to actual project periods"
+    },
+    {
+      "domain": "human-runtime-domain-consistency",
+      "decision": "RECOVER_APPROVED_RUNTIME_AS_DEFAULT",
+      "checkpoint": "69afc822 integrated Shopper PASS; current adapters remain gated by cxHumanFullVisual",
+      "reason": "Approved canonical behavior exists but is DEV-flag gated, so normal entry falls back to older behavior.",
+      "owners": [
+        "app/adapters/tya-c6-domain-consistency-bridge.js",
+        "app/adapters/tya-c6-unified-human-runtime-v1.js"
+      ],
+      "requiredGate": "normal authenticated entry uses canonical runtime without cxHumanFullVisual"
+    },
+    {
+      "domain": "identity-membership-roll-forward",
+      "decision": "KEEP_CONTRACTS_AND_REPAIR_DURABLE_LINKS",
+      "checkpoint": "I3.5C period-independent identity source PASS + exact-identity contracts",
+      "reason": "Contracts are correct; run191/manual visual prove missing/ineffective durable linkage for real Shopper and missing Client scope.",
+      "requiredGate": "Auth/membership -> canonicalShopperId exact, project-independent across periods; client membership restored"
+    },
+    {
+      "domain": "persistence-command-ack-boundary",
+      "decision": "KEEP_CURRENT",
+      "checkpoint": "Recovery command providers/gates",
+      "reason": "Durable provider already supports application.create/status/delete and visit.assign with ACK/idempotency; this is the correct authority replacing synthetic/local mutations.",
+      "requiredGate": "remote ACK + idempotent replay + readback"
+    },
+    {
+      "domain": "phase-a-supporting-core",
+      "decision": "KEEP_AND_EXPAND_CLOSURE",
+      "checkpoint": "Corte3/C6 finance canonical source passes",
+      "reason": "Matrix omitted active dependencies such as tya-project-financial-model-contract-v1.js and finance source data. Include them in final closure; no module rebuild.",
+      "requiredGate": "financial config materialized before normalization; source-state coherent"
+    },
+    {
+      "domain": "projects-periods-hr-source-wizard-multiproject",
+      "decision": "KEEP_CURRENT",
+      "checkpoint": "f836 multiproject-safe source routing",
+      "reason": "Required for Rola and future projects; no global Cinépolis defaults.",
+      "requiredGate": "create second project by durable config only, no source change"
+    },
+    {
+      "domain": "questionnaire-shopper",
+      "decision": "KEEP_EXACT_APPROVED",
+      "checkpoint": "terminal certified b949/F9 exact blob",
+      "reason": "No drift evidence.",
+      "requiredGate": "Shopper E2E smoke"
+    },
+    {
+      "domain": "reports-admin-shopper",
+      "decision": "KEEP_EXACT_APPROVED_WITH_PERIOD_GATE",
+      "checkpoint": "terminal certified b949/F9 exact owner",
+      "reason": "No owner drift; reports must inherit selected project/period/source revision.",
+      "requiredGate": "reports match same HR revision and selected period"
+    },
+    {
+      "domain": "shoppers-mi-visitas-profile",
+      "decision": "RECOVER_APPROVED_RUNTIME_ACTIVATION_AND_KEEP_LATER_SAFE_DELTAS",
+      "checkpoint": "69afc822 Shopper PASS + 9d8f44 Mis Visitas canonical-list/ACK + later owner credential rule",
+      "reason": "Current canonical portal is loaded but returns immediately unless cxHumanFullVisual is present. Promote approved portal semantics into normal authenticated runtime; do not revert credential/multiproject contracts.",
+      "owners": [
+        "app/adapters/tya-canonical-shopper-portal-v2.js",
+        "app/modules/shoppers.js",
+        "app/modules/misvisitas.js"
+      ],
+      "requiredGate": "real name/country/profile/KPIs/history for GT and HN, normal login, no protected placeholder"
+    },
+    {
+      "domain": "visits-review-postulations-reservations",
+      "decision": "KEEP_VISITS_POSTULATION_OWNERS__FIX_SOURCE_AND_RESERVATION_PROVIDER",
+      "checkpoint": "3d36 project/period scope + durable operational command provider; Reservations source doc explicitly pending",
+      "reason": "Postulation UI owner is current, but upstream synthetic mapPosts must be removed. Reservations cannot be called final while canonical provider is absent/read-only.",
+      "requiredGate": "postulations only durable real events; assignment removes availability; reservations durable by tenant/project/period with ACK"
+    }
+  ],
+  "all20Adjudicated": true,
+  "productMutationAuthorizedNow": false,
+  "exactNextAction": "Build expanded entrypoint-driven dependency closure from this inventory, then prepare ONE atomic product composition: promote approved canonical runtime to normal authenticated entry, repair HR mapper/postulation source, dashboard period semantics, durable identity memberships and reservation provider integration; preserve KEEP domains byte-exact. No build/deploy before atomic manifest is complete."
+}

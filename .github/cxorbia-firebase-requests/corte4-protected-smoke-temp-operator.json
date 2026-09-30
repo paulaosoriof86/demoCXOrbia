@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "cxorbia.corte4-protected-smoke-temp-operator.v1",
+  "requestId": "corte4-protected-smoke-temp-operator-20260729-01",
+  "enabled": true,
+  "authorizationSource": "current_conversation",
+  "authorizationText": "Autorizo operador DEV temporal para smoke protegido de Corte 4",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "targetProjectId": "cxorbia-tya-dev-260729-c4",
+  "targetDisplayName": "CXOrbia TyA DEV Clean Corte 4",
+  "tenantId": "tya",
+  "temporaryRole": "admin",
+  "temporaryEmail": "admin.tya.dev@cxorbia-dev.example.com",
+  "mode": "EXECUTE_PROTECTED_CXDATA_SMOKE_WITH_REVERSIBLE_TEMP_AUTH",
+  "allowedProviderConfigWrites": {
+    "emailPasswordEnable": true,
+    "emailPasswordDisable": true
+  },
+  "allowedAuthUserWrites": {
+    "createTemporaryUser": 1,
+    "setTemporaryClaims": 1,
+    "deleteTemporaryUser": 1,
+    "permanentUsers": 0
+  },
+  "allowedDataWrites": {
+    "firestoreDocuments": 0,
+    "storage": 0,
+    "hr": 0,
+    "imports": 0,
+    "payments": 0
+  },
+  "hostingDeploy": false,
+  "functions": false,
+  "make": false,
+  "gemini": false,
+  "merge": false,
+  "production": false,
+  "requiredSmoke": {
+    "browser": true,
+    "source": "firestore",
+    "empty": true,
+    "fallbackUsed": false,
+    "readOnly": true,
+    "writeMode": "disabled",
+    "preserveCxDataInterface": true,
+    "firestoreDocumentWrites": 0
+  },
+  "requiredCleanup": {
+    "temporaryUserDeleted": true,
+    "authUsersAfter": 0,
+    "emailPasswordDisabledAfter": true
+  },
+  "containsPii": false,
+  "containsSecrets": false
+}

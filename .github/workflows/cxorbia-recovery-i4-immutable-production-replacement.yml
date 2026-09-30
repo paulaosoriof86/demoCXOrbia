@@ -1,0 +1,258 @@
+name: CXOrbia Recovery I4 Immutable Production Replacement
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [recovery/cxorbia-phase-a-20260831]
+    paths:
+      - .github/workflows/cxorbia-recovery-i4-immutable-production-replacement.yml
+
+permissions:
+  contents: read
+  id-token: write
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  AUTHORIZATION: AUTORIZO_I4_IMMUTABLE_PRODUCTION_REPLACEMENT
+  EXPECTED_PARENT_SHA: 71ffb14dced58c08f653d66dcb3f7d7c86085fd6
+  EXPECTED_PARENT_TREE: 5dac00995da12a1ad2605d747fa0d322c59e233d
+  FUNCTIONAL_SOURCE_SHA: 53683d0e7bb62e90de3ca4b8063db9e85f5d40ee
+  GATE21_RUN_ID: '34654337888'
+  GATE21_MANIFEST_SHA256: 91e1536f6080dd3b5ba126de0758c0ed158ca80927538d49731bfae6546a8483
+  SOURCE_PROJECT: cxorbia-backend-dev
+  SOURCE_SITE: cxorbia-backend-dev
+  SOURCE_VERSION: sites/cxorbia-backend-dev/versions/e811a7e63aff4aaf
+  SOURCE_RUNTIME_REVISION: cxorbia-live-hr-dev-00064-92l
+  RUNTIME_DIGEST: sha256:1437ad71c4aa7752a97041fdd2d9cfbbe0ad46177475c15701f13fd62b703cbb
+  TARGET_SITE: tya-plataforma
+  TARGET_URL: https://tya-plataforma.web.app
+  SERVICE: cxorbia-live-hr-dev
+  REGION: us-central1
+  OUT_DIR: .i4
+
+jobs:
+  immutable-production-replacement:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    concurrency:
+      group: cxorbia-recovery-i4-production
+      cancel-in-progress: false
+    env:
+      CRED_DEV: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+      CRED_CREATOR_A: ${{ secrets.CXORBIA_GCP_PROJECT_CREATOR_JSON }}
+      CRED_CREATOR_B: ${{ secrets.GOOGLE_CLOUD_PROJECT_CREATOR_JSON }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fail closed on source lineage or authorization drift
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT_DIR"
+          test "$AUTHORIZATION" = 'AUTORIZO_I4_IMMUTABLE_PRODUCTION_REPLACEMENT'
+          test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT_SHA"
+          test "$(git rev-parse HEAD^^{tree})" = "$EXPECTED_PARENT_TREE"
+          git diff --quiet "$FUNCTIONAL_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc
+          echo "PASS_I4_SOURCE_PRECONDITION parent=$EXPECTED_PARENT_SHA productDrift=0"
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Resolve production identity and one credential with source plus target scope
+        run: |
+          set -euo pipefail
+          curl -fsS --max-time 30 -H 'Cache-Control: no-cache' \
+            "$TARGET_URL/__/firebase/init.json?i4=${GITHUB_RUN_ID}" > "$OUT_DIR/firebase-init.json"
+          TARGET_PROJECT="$(jq -r '.projectId // empty' "$OUT_DIR/firebase-init.json")"
+          test -n "$TARGET_PROJECT"
+          printf '%s\n' "$TARGET_PROJECT" > "$OUT_DIR/target-project.txt"
+
+          selected=''
+          for name in CRED_DEV CRED_CREATOR_A CRED_CREATOR_B; do
+            value="${!name:-}"
+            test -n "$value" || continue
+            file="$RUNNER_TEMP/i4-${name}.json"
+            printf '%s' "$value" > "$file"
+            chmod 600 "$file"
+            jq -e '.client_email and .private_key and .project_id' "$file" >/dev/null 2>&1 || continue
+            gcloud auth activate-service-account --key-file="$file" --quiet >/dev/null 2>&1 || continue
+            token="$(gcloud auth print-access-token 2>/dev/null || true)"
+            test -n "$token" || continue
+            s1="$(curl -sS -o "$OUT_DIR/probe-source-version.json" -w '%{http_code}' -H "Authorization: Bearer $token" "https://firebasehosting.googleapis.com/v1beta1/$SOURCE_VERSION")"
+            s2="$(curl -sS -o "$OUT_DIR/probe-target-site.json" -w '%{http_code}' -H "Authorization: Bearer $token" "https://firebasehosting.googleapis.com/v1beta1/projects/$TARGET_PROJECT/sites/$TARGET_SITE")"
+            s3="$(curl -sS -o "$OUT_DIR/probe-target-run.json" -w '%{http_code}' -H "Authorization: Bearer $token" "https://run.googleapis.com/v2/projects/$TARGET_PROJECT/locations/$REGION/services/$SERVICE")"
+            if [[ "$s1" == 200 && "$s2" == 200 && "$s3" == 200 ]]; then selected="$name"; cp "$file" "$RUNNER_TEMP/i4-selected.json"; break; fi
+          done
+          if [[ -z "$selected" ]]; then
+            echo '::error::AUTH_FAILURE no existing credential proves source Hosting + target Hosting + target runtime continuity'
+            exit 41
+          fi
+          gcloud auth activate-service-account --key-file="$RUNNER_TEMP/i4-selected.json" --quiet >/dev/null
+          jq -e --arg p "$TARGET_PROJECT" --arg s "$TARGET_SITE" '.name==("projects/"+$p+"/sites/"+$s)' "$OUT_DIR/probe-target-site.json" >/dev/null
+          jq -n --arg project "$TARGET_PROJECT" --arg credential "$selected" '{decision:"PASS_I4_IDENTITY_IAM_CONTINUITY",targetProject:$project,credentialClass:$credential,productionWrites:0}' > "$OUT_DIR/identity.json"
+          echo "PASS_I4_IDENTITY_IAM_CONTINUITY targetProject=$TARGET_PROJECT credentialClass=$selected productionWrites=0"
+
+      - name: Capture immutable source artifact and complete rollback state
+        run: |
+          set -euo pipefail
+          TARGET_PROJECT="$(cat "$OUT_DIR/target-project.txt")"
+          gcloud auth activate-service-account --key-file="$RUNNER_TEMP/i4-selected.json" --quiet >/dev/null
+          TOKEN="$(gcloud auth print-access-token)"
+
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/$SOURCE_VERSION" > "$OUT_DIR/source-version.json"
+          jq -e '.status=="FINALIZED"' "$OUT_DIR/source-version.json" >/dev/null
+          jq -e --arg svc "$SERVICE" '[.config.rewrites[]? | select(.run.serviceId==$svc)] | length>0' "$OUT_DIR/source-version.json" >/dev/null
+
+          gcloud run revisions describe "$SOURCE_RUNTIME_REVISION" --project "$SOURCE_PROJECT" --region "$REGION" --format=json > "$OUT_DIR/source-runtime-revision.json"
+          IMAGE_SPEC="$(jq -r '.spec.containers[0].image // empty' "$OUT_DIR/source-runtime-revision.json")"
+          DIGEST_RAW="$(jq -r '.status.imageDigest // empty' "$OUT_DIR/source-runtime-revision.json")"
+          if [[ "$DIGEST_RAW" == *@sha256:* ]]; then DIGEST="sha256:${DIGEST_RAW##*@sha256:}"; else DIGEST="$DIGEST_RAW"; fi
+          test "$DIGEST" = "$RUNTIME_DIGEST"
+          IMAGE_REPO="${IMAGE_SPEC%@*}"; [[ "$IMAGE_REPO" != "$IMAGE_SPEC" ]] || IMAGE_REPO="${IMAGE_SPEC%:*}"
+          IMMUTABLE_IMAGE="$IMAGE_REPO@$RUNTIME_DIGEST"
+          printf '%s\n' "$IMMUTABLE_IMAGE" > "$OUT_DIR/immutable-image.txt"
+
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$TARGET_SITE/channels/live" > "$OUT_DIR/rollback-hosting-channel.json"
+          OLD_VERSION="$(jq -r '.release.version.name // empty' "$OUT_DIR/rollback-hosting-channel.json")"
+          test -n "$OLD_VERSION"
+          printf '%s\n' "$OLD_VERSION" > "$OUT_DIR/rollback-hosting-version.txt"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/$OLD_VERSION" > "$OUT_DIR/rollback-hosting-version.json"
+
+          gcloud run services describe "$SERVICE" --project "$TARGET_PROJECT" --region "$REGION" --format=json > "$OUT_DIR/rollback-runtime-service.json"
+          OLD_IMAGE="$(jq -r '.spec.template.spec.containers[0].image // .template.containers[0].image // empty' "$OUT_DIR/rollback-runtime-service.json")"
+          test -n "$OLD_IMAGE"
+          printf '%s\n' "$OLD_IMAGE" > "$OUT_DIR/rollback-runtime-image.txt"
+
+          inventory() {
+            local version="$1" out="$2" page='' url
+            : > "$out.ndjson"
+            while :; do
+              url="https://firebasehosting.googleapis.com/v1beta1/$version/files?status=ACTIVE&pageSize=1000"
+              [[ -z "$page" ]] || url="$url&pageToken=$(python3 -c 'import urllib.parse,sys;print(urllib.parse.quote(sys.argv[1],safe=""))' "$page")"
+              curl -fsS -H "Authorization: Bearer $TOKEN" "$url" > "$out.page"
+              jq -c '.files[]?' "$out.page" >> "$out.ndjson"
+              page="$(jq -r '.nextPageToken // empty' "$out.page")"; [[ -n "$page" ]] || break
+            done
+            jq -s -r 'sort_by(.path)[] | [.path,.hash,.status] | @tsv' "$out.ndjson" > "$out.tsv"
+            sha256sum "$out.tsv" | awk '{print $1}'
+          }
+          inventory "$SOURCE_VERSION" "$OUT_DIR/source-files" > "$OUT_DIR/source-files.sha256"
+          jq -S '.config' "$OUT_DIR/source-version.json" | sha256sum | awk '{print $1}' > "$OUT_DIR/source-config.sha256"
+          echo "PASS_I4_ROLLBACK_CAPTURE targetProject=$TARGET_PROJECT oldHostingVersion=$OLD_VERSION rollbackCaptured=1 productionWrites=0"
+
+      - name: Persist rollback evidence before first production write
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i4-prewrite-rollback-${{ github.run_id }}
+          path: .i4/
+          if-no-files-found: error
+          retention-days: 90
+          compression-level: 0
+          include-hidden-files: true
+
+      - name: Promote exact runtime then exact Hosting clone with automatic rollback
+        run: |
+          set -Eeuo pipefail
+          TARGET_PROJECT="$(cat "$OUT_DIR/target-project.txt")"
+          IMMUTABLE_IMAGE="$(cat "$OUT_DIR/immutable-image.txt")"
+          OLD_IMAGE="$(cat "$OUT_DIR/rollback-runtime-image.txt")"
+          OLD_VERSION="$(cat "$OUT_DIR/rollback-hosting-version.txt")"
+          gcloud auth activate-service-account --key-file="$RUNNER_TEMP/i4-selected.json" --quiet >/dev/null
+          TOKEN="$(gcloud auth print-access-token)"
+          runtime_changed=0; hosting_changed=0
+          rollback() {
+            rc=$?
+            set +e
+            if [[ "$hosting_changed" == 1 ]]; then curl -sS -f -X POST -H "Authorization: Bearer $(gcloud auth print-access-token)" "https://firebasehosting.googleapis.com/v1beta1/sites/$TARGET_SITE/releases?versionName=$OLD_VERSION" > "$OUT_DIR/rollback-hosting-result.json"; fi
+            if [[ "$runtime_changed" == 1 ]]; then gcloud run services update "$SERVICE" --project "$TARGET_PROJECT" --region "$REGION" --image "$OLD_IMAGE" --quiet > "$OUT_DIR/rollback-runtime.log" 2>&1; fi
+            echo "::error::I4_DEPLOYMENT_FAILED_ROLLBACK_ATTEMPTED rc=$rc runtimeChanged=$runtime_changed hostingChanged=$hosting_changed"
+            exit "$rc"
+          }
+          trap rollback ERR
+
+          gcloud run services update "$SERVICE" --project "$TARGET_PROJECT" --region "$REGION" --image "$IMMUTABLE_IMAGE" --quiet
+          runtime_changed=1
+          NEW_REVISION="$(gcloud run services describe "$SERVICE" --project "$TARGET_PROJECT" --region "$REGION" --format='value(status.latestReadyRevisionName)')"
+          gcloud run revisions describe "$NEW_REVISION" --project "$TARGET_PROJECT" --region "$REGION" --format=json > "$OUT_DIR/runtime-after.json"
+          DR="$(jq -r '.status.imageDigest // empty' "$OUT_DIR/runtime-after.json")"; [[ "$DR" == *@sha256:* ]] && DR="sha256:${DR##*@sha256:}"
+          test "$DR" = "$RUNTIME_DIGEST"
+
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS -X POST -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' \
+            -d "{\"sourceVersion\":\"$SOURCE_VERSION\",\"finalize\":true}" \
+            "https://firebasehosting.googleapis.com/v1beta1/sites/$TARGET_SITE/versions:clone" > "$OUT_DIR/clone-operation.json"
+          OP="$(jq -r '.name // empty' "$OUT_DIR/clone-operation.json")"; test -n "$OP"
+          for i in $(seq 1 60); do
+            curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/$OP" > "$OUT_DIR/clone-operation-poll.json"
+            [[ "$(jq -r '.done // false' "$OUT_DIR/clone-operation-poll.json")" == true ]] && break
+            sleep 2
+          done
+          jq -e '.done==true and (.error|not)' "$OUT_DIR/clone-operation-poll.json" >/dev/null
+          NEW_VERSION="$(jq -r '.response.name // empty' "$OUT_DIR/clone-operation-poll.json")"; test -n "$NEW_VERSION"
+          printf '%s\n' "$NEW_VERSION" > "$OUT_DIR/production-version.txt"
+          curl -fsS -X POST -H "Authorization: Bearer $TOKEN" \
+            "https://firebasehosting.googleapis.com/v1beta1/sites/$TARGET_SITE/releases?versionName=$NEW_VERSION" > "$OUT_DIR/production-release.json"
+          hosting_changed=1
+          trap - ERR
+          echo "PASS_I4_IMMUTABLE_PROMOTION targetProject=$TARGET_PROJECT runtimeRevision=$NEW_REVISION hostingVersion=$NEW_VERSION"
+
+      - name: Verify production serves exact certified artifact
+        run: |
+          set -euo pipefail
+          TARGET_PROJECT="$(cat "$OUT_DIR/target-project.txt")"
+          EXPECTED_VERSION="$(cat "$OUT_DIR/production-version.txt")"
+          gcloud auth activate-service-account --key-file="$RUNNER_TEMP/i4-selected.json" --quiet >/dev/null
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$TARGET_SITE/channels/live" > "$OUT_DIR/live-after.json"
+          ACTUAL_VERSION="$(jq -r '.release.version.name // empty' "$OUT_DIR/live-after.json")"
+          test "$ACTUAL_VERSION" = "$EXPECTED_VERSION"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/$ACTUAL_VERSION" > "$OUT_DIR/version-after.json"
+          jq -S '.config' "$OUT_DIR/version-after.json" | sha256sum | awk '{print $1}' > "$OUT_DIR/target-config.sha256"
+          cmp -s "$OUT_DIR/source-config.sha256" "$OUT_DIR/target-config.sha256"
+
+          : > "$OUT_DIR/target-files.ndjson"; page=''
+          while :; do
+            url="https://firebasehosting.googleapis.com/v1beta1/$ACTUAL_VERSION/files?status=ACTIVE&pageSize=1000"
+            [[ -z "$page" ]] || url="$url&pageToken=$(python3 -c 'import urllib.parse,sys;print(urllib.parse.quote(sys.argv[1],safe=""))' "$page")"
+            curl -fsS -H "Authorization: Bearer $TOKEN" "$url" > "$OUT_DIR/target-page.json"
+            jq -c '.files[]?' "$OUT_DIR/target-page.json" >> "$OUT_DIR/target-files.ndjson"
+            page="$(jq -r '.nextPageToken // empty' "$OUT_DIR/target-page.json")"; [[ -n "$page" ]] || break
+          done
+          jq -s -r 'sort_by(.path)[] | [.path,.hash,.status] | @tsv' "$OUT_DIR/target-files.ndjson" > "$OUT_DIR/target-files.tsv"
+          sha256sum "$OUT_DIR/target-files.tsv" | awk '{print $1}' > "$OUT_DIR/target-files.sha256"
+          cmp -s "$OUT_DIR/source-files.sha256" "$OUT_DIR/target-files.sha256"
+
+          REV="$(gcloud run services describe "$SERVICE" --project "$TARGET_PROJECT" --region "$REGION" --format='value(status.latestReadyRevisionName)')"
+          gcloud run revisions describe "$REV" --project "$TARGET_PROJECT" --region "$REGION" --format=json > "$OUT_DIR/runtime-verified.json"
+          DIGEST="$(jq -r '.status.imageDigest // empty' "$OUT_DIR/runtime-verified.json")"; [[ "$DIGEST" == *@sha256:* ]] && DIGEST="sha256:${DIGEST##*@sha256:}"
+          test "$DIGEST" = "$RUNTIME_DIGEST"
+
+          curl -fsS --retry 10 --retry-delay 3 -H 'Cache-Control: no-cache' "$TARGET_URL/?i4=$GITHUB_RUN_ID" > "$OUT_DIR/prod-root.html"
+          curl -fsS --retry 10 --retry-delay 3 -H 'Cache-Control: no-cache' "https://cxorbia-backend-dev.web.app/?i4=$GITHUB_RUN_ID" > "$OUT_DIR/source-root.html"
+          cmp -s "$OUT_DIR/source-root.html" "$OUT_DIR/prod-root.html"
+          curl -fsS --retry 10 --retry-delay 3 "$TARGET_URL/health?i4=$GITHUB_RUN_ID" > "$OUT_DIR/prod-health.json"
+          jq -e '.ok==true and .service=="cxorbia-live-hr-source-safe" and .shopperReconciliationReady==true and .visitReconciliationReady==true' "$OUT_DIR/prod-health.json" >/dev/null
+          echo "PASS_I4_IMMUTABLE_PRODUCTION_READBACK targetProject=$TARGET_PROJECT hostingVersion=$ACTUAL_VERSION runtimeRevision=$REV runtimeDigest=$DIGEST artifactEqualsCertified=1"
+
+      - name: Seal I4 evidence verdict
+        run: |
+          set -euo pipefail
+          TARGET_PROJECT="$(cat "$OUT_DIR/target-project.txt")"
+          VERSION="$(cat "$OUT_DIR/production-version.txt")"
+          jq -n -S --arg project "$TARGET_PROJECT" --arg version "$VERSION" --arg digest "$RUNTIME_DIGEST" --arg gate21 "$GATE21_RUN_ID" --arg manifest "$GATE21_MANIFEST_SHA256" \
+            '{schemaVersion:"cxorbia.recovery.i4.production-replacement.v1",verdict:"PASS_I4_IMMUTABLE_PRODUCTION_REPLACEMENT",targetProject:$project,targetSite:"tya-plataforma",hostingVersion:$version,runtimeService:"cxorbia-live-hr-dev",runtimeDigest:$digest,gate21RunId:$gate21,gate21ManifestSha256:$manifest,rebuilds:0,recompositions:0,reimports:0,artifactDeployedEqualsArtifactCertified:true}' > "$OUT_DIR/I4_VERDICT.json"
+          sha256sum "$OUT_DIR/I4_VERDICT.json" > "$OUT_DIR/I4_VERDICT.sha256"
+          echo 'PASS_I4_IMMUTABLE_PRODUCTION_REPLACEMENT'
+
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-recovery-i4-production-${{ github.run_id }}
+          path: .i4/
+          if-no-files-found: warn
+          retention-days: 90
+          compression-level: 0
+          include-hidden-files: true

@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "cxorbia.live-hr-control-plane-observability-root-fix.v1",
+  "generatedAt": "2026-08-06T11:08:00-06:00",
+  "decision": "PASS_SOURCE_ONLY_LIVE_HR_CONTROL_PLANE_OBSERVABILITY_ROOT_FIX",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "previousRequest": {
+    "requestCommit": "4e404f2db48ff8b07430d7ac7505eff6c040458a",
+    "schemaVersion": "cxorbia.live-hr-current-reconcile.request.v2",
+    "providerReadConsumption": "UNKNOWN_NO_EXECUTION_EVIDENCE",
+    "resolvedByThisBlock": false,
+    "retryExecuted": false
+  },
+  "sourceChanges": {
+    "journalToolCommit": "dcbfe1ce4b5a98df9f2cc650dc344f983ed7118f",
+    "workflowCommit": "c46e81bba4fd7424e6076e336bcaf86e82564c14",
+    "journalTool": "tools/qa/cxorbia-live-hr-control-plane-journal.mjs",
+    "workflow": ".github/workflows/cxorbia-live-hr-current-reconcile.yml",
+    "nextRequestSchemaRequired": "cxorbia.live-hr-current-reconcile.request.v3",
+    "controlPlaneContractRequired": "cxorbia.live-hr-control-plane-journal.v1"
+  },
+  "observableCheckpoints": [
+    {
+      "state": "WORKFLOW_STARTED_PROVIDER_READS_0",
+      "meaning": "workflow started and no provider boundary was entered"
+    },
+    {
+      "state": "PROVIDER_READ_BOUNDARY_ENTERED_MAX1",
+      "meaning": "provider access may now consume at most one authorized logical execution"
+    },
+    {
+      "state": "PROVIDER_READ_SEQUENCE_COMPLETED_LOGICAL_1",
+      "meaning": "the authorized logical provider-read sequence completed"
+    },
+    {
+      "state": "FINAL_<JOB_STATUS>_<CONSUMPTION>",
+      "meaning": "final job result and provider-read consumption state"
+    }
+  ],
+  "outputs": {
+    "commitStatusContext": "cxorbia/live-hr-control-plane",
+    "sanitizedArtifactNamePattern": "cxorbia-live-hr-control-plane-<runId>",
+    "artifactRetentionDays": 7,
+    "pii": false,
+    "secretsExported": false
+  },
+  "failClosed": {
+    "oldV2RequestAcceptedByNewWorkflow": false,
+    "providerAccessBeforeJournalOpen": false,
+    "providerAccessBeforeV3Validation": false,
+    "newProviderTriggerExecuted": false
+  },
+  "localValidation": {
+    "journalNodeCheck": "PASS",
+    "journalTransitionTest": "PASS",
+    "workflowYamlParse": "PASS_GENERIC_YAML_PARSE_NOT_GITHUB_RUNTIME_EXECUTION"
+  },
+  "safety": {
+    "providerReads": 0,
+    "providerWrites": 0,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "make": 0,
+    "gemini": 0,
+    "payments": 0,
+    "merge": false,
+    "production": false
+  },
+  "nextGate": "FRESH_EXPLICIT_AUTHORIZATION_FOR_ONE_V3_LIVE_HR_READ_WITH_PREVIOUS_V2_CONSUMPTION_REMAINING_UNKNOWN"
+}

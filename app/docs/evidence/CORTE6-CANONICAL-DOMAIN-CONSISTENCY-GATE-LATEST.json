@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "cxorbia.c6.domain-consistency-regression-gate.v1",
+  "generatedAt": "2026-07-31T19:18:00-06:00",
+  "decision": "PASS_C6_CANONICAL_DOMAIN_CONSISTENCY_LOCAL",
+  "engineVersion": "c6-canonical-domain-composer-v2",
+  "scope": "local deterministic gate over exact repository sources; no provider or browser claim",
+  "representativeJuly": {
+    "total": 44,
+    "GT": 34,
+    "HN": 10,
+    "realized": 40,
+    "questionnaireCompleted": 38,
+    "submitted": 33,
+    "outOfRange": 1
+  },
+  "assertions": {
+    "visitsPreserved": true,
+    "operationalShoppersPreservedWithoutUnmatchedAppend": true,
+    "unmatchedProfileMovedToReviewQueue": true,
+    "exactAliasCrosswalk": true,
+    "displayNameNotUsedForMerge": true,
+    "canonicalFacetCountsConsistent": true,
+    "certificationProjected": true,
+    "falseCompleteProfileRejected": true,
+    "duplicateVisitKeys": 0,
+    "duplicateShopperIds": 0,
+    "protectedVisitsAppended": 0,
+    "watcherUsesStableContentSignature": true,
+    "watcherPreservesCanvasAndRailScroll": true,
+    "watcherDoesNotRestoreRailSelectDOM": true,
+    "preloadSingleRenderContract": true,
+    "financePeriodUsesCanonicalModel": true,
+    "shopperPortalUsesFullCanonicalHistory": true
+  },
+  "files": [
+    "app/adapters/tya-cumulative-read-model-v2.js",
+    "app/adapters/tya-live-source-refresh-watch-v2.js",
+    "app/adapters/tya-c6-domain-consistency-bridge.js",
+    "tools/qa/tya-c6-domain-consistency-regression-gate.mjs",
+    "app/index-backend-dev.html"
+  ],
+  "safety": {
+    "providerWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "deploys": 0,
+    "production": false,
+    "merge": false
+  }
+}

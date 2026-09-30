@@ -1,0 +1,8 @@
+{
+  "schemaVersion": "cxorbia.corte4-entrypoint-script-integrity.v1",
+  "scope": "REPOSITORY_READ_ONLY_GATE",
+  "p0Ref": "P0-C4-VIS-02",
+  "triggerNonce": 1,
+  "providerWrites": 0,
+  "production": false
+}

@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "cxorbia.r16e-provider-compare.v1",
+  "generatedAt": "2026-07-30T00:04:27.126Z",
+  "authorizationText": "Autorizo R16E read-only provider compare contra cxorbia-backend-dev, sin writes, deploy ni producción.",
+  "targetFirebaseProjectId": "cxorbia-backend-dev",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "runId": 29282169628,
+  "attemptJobId": 90741969389,
+  "artifactId": 8743659430,
+  "artifactDigest": "sha256:290b2eb9f956bb8af422ffae8832aa617125d70eab244188f206bd682ad68584",
+  "decision": "PASS_WITH_REVIEW_CANONICAL_MATERIALIZATION_DRY_RUN_R16",
+  "plan": {
+    "planId": "r16d_f471a6b486f3a269b0dd",
+    "planSha256": "a9fe01f72d84908ed0c1663dde6c25e1a45ae9b57454536cec949ab20f9cd7d3",
+    "operations": 1415,
+    "tenant": 1,
+    "project": 1,
+    "hrImport": 1,
+    "periods": 14,
+    "shoppers": 210,
+    "visits": 616,
+    "liquidations": 572
+  },
+  "reconciliation": {
+    "create": 1414,
+    "update": 1,
+    "noop": 0,
+    "recordReview": 0,
+    "extraExistingPreserved": 244,
+    "extraProjectsPreserved": 29,
+    "extraShoppersPreserved": 215,
+    "plannedWriteCandidates": 1415,
+    "plannedBatches": 4,
+    "noDeleteActions": true,
+    "hardBlockers": []
+  },
+  "onlyUpdate": {
+    "domain": "tenant",
+    "changedFields": ["configurable", "name", "schemaVersion"]
+  },
+  "sourceReview": {
+    "total": 265,
+    "shopperGapReviewItems": 1,
+    "shopperHistoricalCount": 213,
+    "shopperLiveCount": 210,
+    "financialRows": 247,
+    "financialExactLinks": 196,
+    "financialReviewRows": 51,
+    "financialReviewQueueTotal": 92,
+    "juneFinancialRows": 27,
+    "juneMissingRows": 17,
+    "certificationCandidateShoppers": 213,
+    "certificationSourceRecords": 0,
+    "noNameMatching": true,
+    "noAutomaticMerge": true
+  },
+  "interpretation": {
+    "canonicalPathsMostlyAbsent": true,
+    "existingBackendIsNotEmpty": true,
+    "existingPeriodCountryAndShopperMaterializationMustNotBeDeletedOrBlindlyDuplicated": true,
+    "r16eResultIsAuthorizationPackageInputNotWriteAuthorization": true
+  },
+  "nextGate": "R17_WRITE_PLAN_EXACT_NO_EXECUTE_PLUS_LEGACY_SHOPPER_CERT_REFRESH",
+  "safeState": {
+    "providerReadsExecuted": true,
+    "providerDocumentValuesPersisted": false,
+    "rawProviderResponsesPersisted": false,
+    "credentialsPersisted": false,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "deletes": 0,
+    "imports": 0,
+    "deploys": 0,
+    "production": false,
+    "paymentsExecuted": false,
+    "piiOutput": false,
+    "merge": false
+  }
+}

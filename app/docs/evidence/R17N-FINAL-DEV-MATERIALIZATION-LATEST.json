@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "cxorbia.r17n-final-dev-materialization.v1",
+  "generatedAt": "2026-07-30T03:50:46.887Z",
+  "decision": "PASS_R17N_FINAL_DEV_MATERIALIZATION",
+  "authorizationId": "r17n-final-dev-20260730-01",
+  "target": {
+    "projectId": "cxorbia-backend-dev",
+    "tenantId": "tya",
+    "project": "cinepolis"
+  },
+  "preflight": {
+    "intended": 1406,
+    "absent": 1406,
+    "alreadySame": 0,
+    "conflict": 0,
+    "liveHrIdentityRechecked": 208,
+    "existingCanonicalTargetsVerified": 201,
+    "existingCanonicalTargetsWithVisibleRealName": 201,
+    "existingCanonicalTargetsPotentialIdentityEnrichment": 0,
+    "financialExactVisitLinks": 196
+  },
+  "execution": {
+    "providerWritesActual": 1406,
+    "maxAuthorizedWrites": 1406,
+    "readbackVerified": 1406,
+    "readbackMismatch": 0
+  },
+  "groups": {
+    "foundation": 16,
+    "legacyProfileCreates": 120,
+    "currentHrProfileCreates": 5,
+    "certificationCreates": 77,
+    "visitCreates": 616,
+    "liquidationControlCreates": 572
+  },
+  "excluded": {
+    "tenantUpdate": 1,
+    "existingProfileUpdates": 22,
+    "legacyProfileHolds": 7,
+    "certificationHold": 1,
+    "augustHN": true,
+    "deletes": 0,
+    "payments": 0
+  },
+  "safety": {
+    "firestoreWrites": 1406,
+    "authWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "legacyWrites": 0,
+    "deletes": 0,
+    "payments": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false,
+    "rawNamesInGitHub": false,
+    "rawEmailsInGitHub": false,
+    "rawPhonesInGitHub": false
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "contract": "questionnaire-routing-phase-a-tya",
+  "date": "2026-07-06",
+  "status": "draft_contract_no_runtime",
+  "phase": "Phase A",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "deployAllowed": false,
+  "mergeAllowed": false,
+  "realDataAllowed": false,
+  "providerActionsAllowed": false,
+  "purpose": "Define configurable questionnaire routing by tenant, project, visit, and source mode before real backend connection.",
+  "identity": {
+    "tenantId": "required",
+    "projectId": "required",
+    "visitId": "optional_when_project_level",
+    "hrRowId": "optional_when_project_level"
+  },
+  "routingModes": [
+    "cxorbia_internal_form",
+    "tya_online",
+    "external_general_link",
+    "external_visit_link_from_hr",
+    "manual_pending"
+  ],
+  "projectLevelConfig": {
+    "questionnaireMode": "routingModes",
+    "defaultUrl": "optional",
+    "requiresVisitSpecificUrl": "boolean",
+    "requiresHumanReviewBeforePublish": "boolean",
+    "formVersion": "optional"
+  },
+  "visitLevelConfig": {
+    "questionnaireUrl": "optional",
+    "questionnaireExternalId": "optional",
+    "hrQuestionnaireColumn": "optional",
+    "availableFrom": "optional",
+    "expiresAt": "optional"
+  },
+  "statusModel": [
+    "not_configured",
+    "configured_preview",
+    "ready_for_assignment",
+    "completed_by_shopper",
+    "submitted_to_client",
+    "review_required",
+    "blocked"
+  ],
+  "wordingRules": [
+    "Do not say sent if no real submit/send happened.",
+    "Use completed or realized for shopper action before submit.",
+    "Use submitted only when external or client submit is confirmed.",
+    "If backend/provider is pending, UI/manuals must say pending backend."
+  ],
+  "notes": [
+    "Contract only. No runtime connection.",
+    "Does not authorize source lock, production, import, deploy, merge, or providers."
+  ]
+}

@@ -1,0 +1,143 @@
+{
+  "contractName": "phase-a-notification-templates",
+  "version": "1.0.0",
+  "status": "draft_no_runtime_no_sends_no_writes",
+  "scope": "Phase A notification template contract for in-app, WhatsApp Web/manual, WhatsApp API and Make",
+  "safety": {
+    "frontendChanges": false,
+    "runtimeConnected": false,
+    "firestoreWrites": false,
+    "deploy": false,
+    "production": false,
+    "realNotifications": false,
+    "messageReplay": false
+  },
+  "templateDefaults": {
+    "mode": "off",
+    "enabled": false,
+    "requiresHumanConfirmation": true,
+    "providerStatus": "not_connected",
+    "honestStatusLabel": "plantilla_preparada"
+  },
+  "tokensAllowed": [
+    "shopperName",
+    "projectName",
+    "visitLabel",
+    "visitDate",
+    "visitWindow",
+    "locationName",
+    "questionnaireLink",
+    "evidenceContactName",
+    "evidenceContactWhatsapp",
+    "supportContactName",
+    "supportContactWhatsapp",
+    "deadlineLabel",
+    "paymentPeriod",
+    "paymentStatus"
+  ],
+  "templates": [
+    {
+      "eventType": "postulation_received",
+      "audience": "admin",
+      "purpose": "Notify admin that a shopper applied to a visit.",
+      "allowedModes": ["off", "in_app", "make"],
+      "defaultMode": "in_app",
+      "sendGate": "admin_notification_gate"
+    },
+    {
+      "eventType": "postulation_approved",
+      "audience": "shopper",
+      "purpose": "Tell shopper their application was approved and next step is schedule or confirmed date.",
+      "allowedModes": ["off", "in_app", "whatsapp_web_template", "whatsapp_api", "make"],
+      "defaultMode": "in_app",
+      "sendGate": "shopper_notification_gate"
+    },
+    {
+      "eventType": "assignment_confirmed",
+      "audience": "shopper",
+      "purpose": "Confirm assignment created from platform or detected from HR.",
+      "allowedModes": ["off", "in_app", "whatsapp_web_template", "whatsapp_api", "make"],
+      "defaultMode": "in_app",
+      "sendGate": "assignment_notification_gate"
+    },
+    {
+      "eventType": "schedule_required",
+      "audience": "shopper",
+      "purpose": "Ask assigned shopper to schedule when HR/platform assignment has no visit date.",
+      "allowedModes": ["off", "in_app", "whatsapp_web_template", "whatsapp_api", "make"],
+      "defaultMode": "in_app",
+      "sendGate": "schedule_notification_gate"
+    },
+    {
+      "eventType": "visit_reminder",
+      "audience": "shopper",
+      "purpose": "Remind upcoming visit without changing visit state.",
+      "allowedModes": ["off", "in_app", "whatsapp_web_template", "whatsapp_api", "make"],
+      "defaultMode": "off",
+      "sendGate": "reminder_notification_gate"
+    },
+    {
+      "eventType": "reschedule_requested",
+      "audience": "admin_or_shopper",
+      "purpose": "Notify that a reschedule was requested and needs review or acknowledgement.",
+      "allowedModes": ["off", "in_app", "whatsapp_web_template", "whatsapp_api", "make"],
+      "defaultMode": "in_app",
+      "sendGate": "reschedule_notification_gate"
+    },
+    {
+      "eventType": "cancel_requested",
+      "audience": "admin_or_shopper",
+      "purpose": "Notify that a cancellation was requested and needs review or acknowledgement.",
+      "allowedModes": ["off", "in_app", "whatsapp_web_template", "whatsapp_api", "make"],
+      "defaultMode": "in_app",
+      "sendGate": "cancel_notification_gate"
+    },
+    {
+      "eventType": "visit_completed_evidence_request",
+      "audience": "shopper",
+      "purpose": "After visit completed, show evidence contact and questionnaire access.",
+      "allowedModes": ["off", "in_app", "whatsapp_web_template"],
+      "defaultMode": "in_app",
+      "sendGate": "evidence_contact_gate"
+    },
+    {
+      "eventType": "questionnaire_pending",
+      "audience": "shopper",
+      "purpose": "Remind shopper to complete or mark questionnaire completed.",
+      "allowedModes": ["off", "in_app", "whatsapp_web_template", "whatsapp_api", "make"],
+      "defaultMode": "off",
+      "sendGate": "questionnaire_notification_gate"
+    },
+    {
+      "eventType": "questionnaire_completed",
+      "audience": "admin",
+      "purpose": "Notify admin that questionnaire is completed and review may be needed.",
+      "allowedModes": ["off", "in_app", "make"],
+      "defaultMode": "in_app",
+      "sendGate": "admin_review_gate"
+    },
+    {
+      "eventType": "review_pending",
+      "audience": "admin_or_reviewer",
+      "purpose": "Notify reviewer that questionnaire/evidence review is pending.",
+      "allowedModes": ["off", "in_app", "make"],
+      "defaultMode": "in_app",
+      "sendGate": "review_notification_gate"
+    },
+    {
+      "eventType": "payment_status_available",
+      "audience": "shopper",
+      "purpose": "Tell shopper that liquidation/payment status is available.",
+      "allowedModes": ["off", "in_app", "whatsapp_web_template", "whatsapp_api", "make"],
+      "defaultMode": "in_app",
+      "sendGate": "payment_notification_gate"
+    }
+  ],
+  "honestyRules": {
+    "prepared": "template generated but not sent",
+    "pending_authorization": "provider or human confirmation missing",
+    "sent": "provider confirmation received",
+    "synced": "Make execution confirmed",
+    "failed": "provider attempted and returned failure"
+  }
+}

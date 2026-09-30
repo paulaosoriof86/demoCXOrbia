@@ -1,0 +1,84 @@
+name: CXOrbia Corte 4 P0 VIS-02 Diagnostic Read-only
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - '.github/cxorbia-firebase-requests/corte4-p0-vis02-diagnostic.json'
+
+permissions:
+  contents: read
+  statuses: write
+
+env:
+  CXORBIA_REQUEST_PATH: .github/cxorbia-firebase-requests/corte4-p0-vis02-revalidate.json
+  CXORBIA_OUT_DIR: .tmp/corte4-p0-vis02-diag
+  CXORBIA_PRIVATE_DIR: .tmp/corte4-p0-vis02-diag-private
+  PREPARE_SCRIPT: tools/release/cxorbia-corte4-p0-vis02-hosting-prepare.mjs
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Load credential
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$CXORBIA_PRIVATE_DIR" "$CXORBIA_OUT_DIR"
+          node <<'NODE'
+          const fs=require('fs');const raw=process.env.EXISTING_DEV_JSON||'';let p=null;try{p=JSON.parse(raw);}catch{}
+          if(!(p&&p.type==='service_account'&&p.client_email&&p.private_key&&p.token_uri)){console.error('credential_invalid');process.exit(1)}
+          fs.writeFileSync(process.env.CXORBIA_PRIVATE_DIR+'/credentials.json',raw,{mode:0o600});
+          NODE
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/${CXORBIA_PRIVATE_DIR}/credentials.json" >> "$GITHUB_ENV"
+      - name: Run provider-safe preflight
+        continue-on-error: true
+        run: node "$PREPARE_SCRIPT"
+      - name: Publish preflight diagnosis
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          R="$CXORBIA_OUT_DIR/preflight.source-safe.json"
+          if [ ! -f "$R" ]; then DESC='VIS02_DIAG_NO_PREFLIGHT'; STATE=error; else DEC=$(node -p "require('./$R').decision||''"); ERR=$(node -p "require('./$R').error||''"); if [ "$DEC" = 'PASS_C4_P0_VIS02_PREFLIGHT_READY_FOR_ONE_DEPLOY' ]; then DESC='VIS02_PREFLIGHT_PASS'; STATE=success; else DESC="VIS02_PRE_${ERR:-$DEC}"; STATE=error; fi; fi
+          DESC=$(printf '%s' "$DESC" | cut -c1-140)
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/c4p0vis02-diag-preflight' -f description="$DESC" >/dev/null
+      - name: Install Chromium
+        if: always()
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts playwright@1.61.1 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null 2>&1
+      - name: Local browser role-switch diagnosis
+        if: always()
+        run: |
+          set +e
+          if [ ! -d "$CXORBIA_OUT_DIR/site" ]; then echo '{"ok":false,"errors":["site_missing"]}' > "$CXORBIA_OUT_DIR/local-role-switch.json"; exit 0; fi
+          python3 -m http.server 4173 --bind 127.0.0.1 --directory "$CXORBIA_OUT_DIR/site" >/dev/null 2>&1 & PID=$!; trap 'kill "$PID" 2>/dev/null || true' EXIT; sleep 1
+          node <<'NODE'
+          const fs=require('fs');const {chromium}=require('playwright');
+          (async()=>{let b;const r={ok:false,errors:[],states:{}};try{b=await chromium.launch({headless:true});const p=await b.newPage();const pe=[];p.on('pageerror',e=>pe.push(String(e.message||e)));await p.goto('http://127.0.0.1:4173/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&p0vis02=diag',{waitUntil:'domcontentloaded',timeout:30000});await p.waitForTimeout(1000);const s=()=>p.evaluate(()=>({role:CX.session?.role,state:window.CX_C4_EMPTY_SHELL_STATE||null,rail:document.getElementById('rail')?.innerText||'',view:document.getElementById('view')?.innerText||'',appOn:document.getElementById('app')?.classList.contains('on'),loginHidden:document.getElementById('login')?.classList.contains('hidden'),shopperClass:document.body.classList.contains('role-shopper')}));await p.evaluate(()=>CX.app.selectRole('admin'));await p.waitForTimeout(300);r.states.a1=await s();await p.evaluate(()=>CX.app.logout());await p.waitForTimeout(100);r.states.l1=await s();await p.evaluate(()=>CX.app.selectRole('shopper'));await p.waitForTimeout(250);r.states.sh=await s();await p.evaluate(()=>CX.app.logout());await p.waitForTimeout(100);r.states.l2=await s();await p.evaluate(()=>CX.app.selectRole('admin'));await p.waitForTimeout(300);r.states.a2=await s();for(const [n,x] of Object.entries({a1:r.states.a1,sh:r.states.sh,a2:r.states.a2})){if(!x.state?.active)r.errors.push(n+'_inactive');if(!x.view.includes('Sin proyectos disponibles'))r.errors.push(n+'_view');if(!x.appOn||!x.loginHidden)r.errors.push(n+'_visibility');}if(r.states.l1.rail.trim()||r.states.l1.view.trim())r.errors.push('l1_stale');if(r.states.l2.rail.trim()||r.states.l2.view.trim())r.errors.push('l2_stale');if(r.states.a2.shopperClass||r.states.a2.rail.includes('Shopper / Evaluador'))r.errors.push('a2_stale_shopper');if(pe.length)r.errors.push('pageerror_'+pe.join('|').slice(0,180));r.ok=r.errors.length===0;}catch(e){r.errors.push(String(e.message||e));}finally{if(b)await b.close();fs.writeFileSync(process.env.CXORBIA_OUT_DIR+'/local-role-switch.json',JSON.stringify(r,null,2)+'\n');}})();
+          NODE
+      - name: Publish local diagnosis
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          R="$CXORBIA_OUT_DIR/local-role-switch.json"
+          if [ ! -f "$R" ]; then ERR='no_report'; STATE=error; else OK=$(node -p "require('./$R').ok===true?'yes':'no'"); ERR=$(node -p "(require('./$R').errors||['unknown']).join(',')"); if [ "$OK" = yes ]; then STATE=success; ERR='pass'; else STATE=error; fi; fi
+          SAFE=$(printf '%s' "$ERR" | tr ' /:,·' '______' | tr -cd 'A-Za-z0-9_.-_' | cut -c1-80)
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="cxorbia/c4p0vis02-diag-local-${SAFE}" -f description="VIS02_LOCAL_${ERR}" >/dev/null
+      - name: Cleanup
+        if: always()
+        run: rm -rf "$CXORBIA_PRIVATE_DIR" "$CXORBIA_OUT_DIR/site" "$CXORBIA_OUT_DIR/firebase.corte4-p0-vis02.json"

@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "cxorbia.i3.finding-terminal-receipt.v1",
+  "findingId": "VRM-043",
+  "frozenAt": "2026-09-24",
+  "baseLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V14_2026-09-24.json",
+  "baseLedgerBlob": "07f546e7f711315b5c34d82f6ee59bc234fd3f69",
+  "state": "PROVEN_CLOSED_CONTROL_FALSE_POSITIVE_NO_PRODUCT_CHANGE",
+  "classification": "RELEASE_COMPOSITION_FAILURE",
+  "observedFailureClassification": "MAPPING_FAILURE",
+  "productDefect": false,
+  "productSourceSha": "04b288f7eee315fcb865ed86a8fb41786809edf9",
+  "productTreeSha": "f6b917c474f32137951a477afecbeccdc20cfd59",
+  "proof": {
+    "decision": "PASS_VRM043_CONTROL_FIX_NO_DEPLOY",
+    "runId": 36072848792,
+    "runNumber": 387,
+    "artifactId": 10839078428,
+    "artifactDigest": "sha256:046c863eadf25ad632f511b66579a650ccd309a7c6f9e38a950c77fbf22587aa",
+    "hrRevision": "2b0114c39d64a0e3697667572de0dfdcffe476c5cd8112449fcab1da24e1085d",
+    "humanAcceptance": "PASS_I3_HUMAN_LIVE_ACCEPTANCE",
+    "semanticOracle": "PASS_C3_TERMINAL_HR_SEMANTIC_ORACLE",
+    "hardenedFocal": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+    "humanIdentityCount": 218,
+    "unresolvedReviewOnlyCount": 1,
+    "builds": 0,
+    "deploys": 0,
+    "production": false
+  },
+  "closureContract": "Same-revision operational-names display-name-only authority is the human-name oracle; source-safe redaction is not. External identities without a human display name remain explicit review-only and never receive an invented name.",
+  "nextFindingId": "VRM-044"
+}

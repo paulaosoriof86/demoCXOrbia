@@ -1,0 +1,3547 @@
+[
+  {
+    "key": "r14_liquidation:finliq_de669fcf6c508afb72ef",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_de669fcf6c508afb72ef",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_cc116fdbe90e990c15ab",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_cc116fdbe90e990c15ab",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_c48875f9a8fabb63f312",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_c48875f9a8fabb63f312",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_6b8907e4a5380ebbab4e",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_6b8907e4a5380ebbab4e",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_27939f07b8e2cf14c2f5",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_27939f07b8e2cf14c2f5",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_a0a440caa587aaf59beb",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_a0a440caa587aaf59beb",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_ad8f2e88a1a557a6b6fb",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_ad8f2e88a1a557a6b6fb",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_db36d1d7b68ac890d9e7",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_db36d1d7b68ac890d9e7",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_28e6bcab2506e6a609a1",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_28e6bcab2506e6a609a1",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_ffd3f665129e6e3b0ff9",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_ffd3f665129e6e3b0ff9",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_aeafce0e4a549056795f",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_aeafce0e4a549056795f",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_2bd2d9a8496144f6c55c",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_2bd2d9a8496144f6c55c",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_7eaba6fea844d6a686a6",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_7eaba6fea844d6a686a6",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_18dec3c8d4503e6aa59a",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_18dec3c8d4503e6aa59a",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_4007fc764b9839b1e4ec",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_4007fc764b9839b1e4ec",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_2410e560f666b382b42c",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_2410e560f666b382b42c",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_8494e8ba314ca0548392",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_8494e8ba314ca0548392",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_13b7344f433847e31ab0",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_13b7344f433847e31ab0",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_b9650ebc89219481dc55",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_b9650ebc89219481dc55",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_4b2c6e322ecd25fd1563",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_4b2c6e322ecd25fd1563",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_c509835a9071117a3105",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_c509835a9071117a3105",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_69a7f919d36e4937b182",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_69a7f919d36e4937b182",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_bcbb57a839695b43a01a",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_bcbb57a839695b43a01a",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_d1f083c0a9d71f231a1a",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_d1f083c0a9d71f231a1a",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_523de8975477348542ff",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_523de8975477348542ff",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_531f4f47a1eebe5424d5",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_531f4f47a1eebe5424d5",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_f7925fb272cc5a249f9b",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_f7925fb272cc5a249f9b",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_bb8566f86236ff8dbabc",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_bb8566f86236ff8dbabc",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_dc0c8aa4e1380164a4fd",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_dc0c8aa4e1380164a4fd",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_46e4c8a6a889c1a3a447",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_46e4c8a6a889c1a3a447",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_c777feaf9a4c6fc0c661",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_c777feaf9a4c6fc0c661",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_830c9ddfd4e969e68cef",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_830c9ddfd4e969e68cef",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_5eb53cb436b53af7b0e6",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_5eb53cb436b53af7b0e6",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_fca238706b2ee88c4bbc",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_fca238706b2ee88c4bbc",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_07fb7db7746c9ee7161b",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_07fb7db7746c9ee7161b",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_dedecd83104160b6dcd5",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_dedecd83104160b6dcd5",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_82dca7d85dd0a4810e37",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_82dca7d85dd0a4810e37",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_060c7dcc29ea50a5354b",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_060c7dcc29ea50a5354b",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_50dd38196964716e920e",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_50dd38196964716e920e",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_1fa0fd080801fbdc059b",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_1fa0fd080801fbdc059b",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_815b58d2c7fa663ea2a1",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_815b58d2c7fa663ea2a1",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_0f4ce73d2c3d11fdfe68",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_0f4ce73d2c3d11fdfe68",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_f5b70123480d2c334f6e",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_f5b70123480d2c334f6e",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_db6d65384f351df0c89b",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_db6d65384f351df0c89b",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_d63fcea589ffa43d70d9",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_d63fcea589ffa43d70d9",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_3890ed1f9dc8fe82c9fb",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_3890ed1f9dc8fe82c9fb",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_cb9070e298e5ae9972ee",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_cb9070e298e5ae9972ee",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_6707bbac087f66aee6e2",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_6707bbac087f66aee6e2",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_6903ed7649e73642cead",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_6903ed7649e73642cead",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_7664a5a3c1d2db6de1b1",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_7664a5a3c1d2db6de1b1",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_527cae692f0c8caaf0e8",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_527cae692f0c8caaf0e8",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_700da71461925c429251",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_700da71461925c429251",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_91fd91a2bc9374916d7f",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_91fd91a2bc9374916d7f",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_2613aa6fa1fac76e19bc",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_2613aa6fa1fac76e19bc",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_e2f45ff5744e47f1d0e8",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_e2f45ff5744e47f1d0e8",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_0e736d75149b8f634fa1",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_0e736d75149b8f634fa1",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_c1905e4c27be8246b62c",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_c1905e4c27be8246b62c",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_ea7eeb63d6d9cd7ac4f2",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_ea7eeb63d6d9cd7ac4f2",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_b43b08589bd8e053022c",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_b43b08589bd8e053022c",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_385d7cacfd9cff3dee65",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_385d7cacfd9cff3dee65",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_d6660c5a986f40da4775",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_d6660c5a986f40da4775",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_765802b32107e4302047",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_765802b32107e4302047",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_d37381da3aad7ed93dc5",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_d37381da3aad7ed93dc5",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_8be7953b39b954c1474f",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_8be7953b39b954c1474f",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_3c740ecd3e62da4135ad",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_3c740ecd3e62da4135ad",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_e51343df4eb899a67ed7",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_e51343df4eb899a67ed7",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_d666518441ed898b19d0",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_d666518441ed898b19d0",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_4b26b8c4f489b1dbbd0a",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_4b26b8c4f489b1dbbd0a",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_d3dd88e98b229afda54d",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_d3dd88e98b229afda54d",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_2a663dcd7cec2f50becc",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_2a663dcd7cec2f50becc",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_d2ed30c3fdcf6119cf3e",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_d2ed30c3fdcf6119cf3e",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_42fe89ebc02623371cec",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_42fe89ebc02623371cec",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_2f2031ff2a4abda535d4",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_2f2031ff2a4abda535d4",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_6d0cbe2928ee8e84d453",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_6d0cbe2928ee8e84d453",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_7c4021787f0dabcf3809",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_7c4021787f0dabcf3809",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_ac320d283a60142c9311",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_ac320d283a60142c9311",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_39e9db9b9012124846f6",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_39e9db9b9012124846f6",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_ef53721ef3f109ddcb54",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_ef53721ef3f109ddcb54",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_8e0d707db748e7ac60a1",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_8e0d707db748e7ac60a1",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_8157f3844b6bd9f9bd72",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_8157f3844b6bd9f9bd72",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_f74f35bd8f4fe1e5c7c7",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_f74f35bd8f4fe1e5c7c7",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_566c0ff2055f26991aa7",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_566c0ff2055f26991aa7",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_e39c03027c0d049075a5",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_e39c03027c0d049075a5",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_4596b2c9540166fdca94",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_4596b2c9540166fdca94",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_02141604462366a0b1f4",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_02141604462366a0b1f4",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_4bc78f56d4c36b0513e9",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_4bc78f56d4c36b0513e9",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_133311bfa3537da6622b",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_133311bfa3537da6622b",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_e3a599f51cfa2b2ffd8c",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_e3a599f51cfa2b2ffd8c",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_00aa3bd86133ddb3a92c",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_00aa3bd86133ddb3a92c",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_1a3031716b05fa1ea2f6",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_1a3031716b05fa1ea2f6",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_d2e3edd81eaf09d824ad",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_d2e3edd81eaf09d824ad",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_e6d4700285c4b961b719",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_e6d4700285c4b961b719",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_a98001941b5782224850",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_a98001941b5782224850",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_b3dd2ae44c912a1b631d",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_b3dd2ae44c912a1b631d",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_97c246fa455bad0bf954",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_97c246fa455bad0bf954",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_317c91afbe6cc445301e",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_317c91afbe6cc445301e",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_aa7e1d0c114721539600",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_aa7e1d0c114721539600",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_32ae961b0a568986bbac",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_32ae961b0a568986bbac",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_5ffefbb4e5b6cd08bbd9",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_5ffefbb4e5b6cd08bbd9",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_84c4e8b972178f3b633d",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_84c4e8b972178f3b633d",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_0ad83403ce09aaa2d8a6",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_0ad83403ce09aaa2d8a6",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_27f8a7387afac35cc545",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_27f8a7387afac35cc545",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_6b3da6dc752176f734d7",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_6b3da6dc752176f734d7",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_c1f12046ee4ad7073d3e",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_c1f12046ee4ad7073d3e",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_a1666a5d6cc8a3f92e58",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_a1666a5d6cc8a3f92e58",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_346e72a6fc32d0879d03",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_346e72a6fc32d0879d03",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_1b1aa884eb627e1f1808",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_1b1aa884eb627e1f1808",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_5b54ec13d62e7dae5bbf",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_5b54ec13d62e7dae5bbf",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_0e3d0a32cef433a57c0f",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_0e3d0a32cef433a57c0f",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_061ad4924fb5528966bc",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_061ad4924fb5528966bc",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_110cd98790cc92237c23",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_110cd98790cc92237c23",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_a492e2ecb1a3983975fb",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_a492e2ecb1a3983975fb",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_9e887dcbe3dd83e54767",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_9e887dcbe3dd83e54767",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_41be276787d6ee7f5c00",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_41be276787d6ee7f5c00",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_28312fb6e41b8114a818",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_28312fb6e41b8114a818",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_6f8a53a1d889385a83e2",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_6f8a53a1d889385a83e2",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_fa88e608e0174a72106e",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_fa88e608e0174a72106e",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_22c5d6b52d122bb1b1a4",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_22c5d6b52d122bb1b1a4",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_2eea10af3f94e9d751ca",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_2eea10af3f94e9d751ca",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_bdcba67fe117c4db2651",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_bdcba67fe117c4db2651",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_246d836854c6f414b93b",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_246d836854c6f414b93b",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_8fd865d41b50f9ad9ad8",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_8fd865d41b50f9ad9ad8",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_d0d27e44132984a472e4",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_d0d27e44132984a472e4",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_7a3533ddb4d46c604ca4",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_7a3533ddb4d46c604ca4",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_57627db18e7984ec6f7b",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_57627db18e7984ec6f7b",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_4db6ade895d6fd0431a1",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_4db6ade895d6fd0431a1",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_52f37f69b4e7662956aa",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_52f37f69b4e7662956aa",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_6cbaf1c60b08a5ff7226",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_6cbaf1c60b08a5ff7226",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_263cc247ff733fd03d0d",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_263cc247ff733fd03d0d",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_80e7671c5abc00130ab8",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_80e7671c5abc00130ab8",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_88ec3d3df60b397d25fa",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_88ec3d3df60b397d25fa",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_3852589a872501ea89c0",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_3852589a872501ea89c0",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_244ad13ffb6bd67743fe",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_244ad13ffb6bd67743fe",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_ce46b9695b2452947d53",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_ce46b9695b2452947d53",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_6c697e3300909a222120",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_6c697e3300909a222120",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_02903627b53bf2d28f61",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_02903627b53bf2d28f61",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_131d5d28d0d32873a29c",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_131d5d28d0d32873a29c",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_d3a74aa1ea34bbbbf160",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_d3a74aa1ea34bbbbf160",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_2d22f04e405c0a22d58f",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_2d22f04e405c0a22d58f",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_9cd5591ae2ab0b340ffb",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_9cd5591ae2ab0b340ffb",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_926c7c389e2000bca48b",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_926c7c389e2000bca48b",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_a1ed01eb9adc80c95b7a",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_a1ed01eb9adc80c95b7a",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_7318b8a00f329f55f902",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_7318b8a00f329f55f902",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_5670e6b06cac71ab7e9b",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_5670e6b06cac71ab7e9b",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_d71ce0b2d6d55a8db8e3",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_d71ce0b2d6d55a8db8e3",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_2e9523e1c82a1cd932f4",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_2e9523e1c82a1cd932f4",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_906ff4868b99df4fb8f2",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_906ff4868b99df4fb8f2",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_8dae9265dd9a98603c94",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_8dae9265dd9a98603c94",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_7376489dd830233836ee",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_7376489dd830233836ee",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_2adde2511e492ae856b1",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_2adde2511e492ae856b1",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_b974cf3cbfccb350d849",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_b974cf3cbfccb350d849",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_ee3ad9a7e8c9502eab73",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_ee3ad9a7e8c9502eab73",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_320c08e3eb6f5c69fbc4",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_320c08e3eb6f5c69fbc4",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_4bedd2e2020159afbdc1",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_4bedd2e2020159afbdc1",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_bbd141e6e714ed5a1e41",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_bbd141e6e714ed5a1e41",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_dad3f4409e706d5225f2",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_dad3f4409e706d5225f2",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_5c78388f54d861ed3e07",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_5c78388f54d861ed3e07",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_74882f2f42772906be18",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_74882f2f42772906be18",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_fabb6a0d2b617879ecf7",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_fabb6a0d2b617879ecf7",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_eb6246678a3fa98a8b2d",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_eb6246678a3fa98a8b2d",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_322192627356df570b78",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_322192627356df570b78",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_8525da84cb25dfcbacc6",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_8525da84cb25dfcbacc6",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_519ff71fe26495aea7a9",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_519ff71fe26495aea7a9",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_e6b9e51a46459a39e479",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_e6b9e51a46459a39e479",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_3d45021193c21bab4fc4",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_3d45021193c21bab4fc4",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_d9a08e3ea489c68f4898",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_d9a08e3ea489c68f4898",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_bdb717f88ac395c2d45b",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_bdb717f88ac395c2d45b",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_4a50dc6c5e770cf28d67",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_4a50dc6c5e770cf28d67",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_f92c7150c63fa1c408f4",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_f92c7150c63fa1c408f4",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_6cbaa5cc0f09fd2ccb16",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_6cbaa5cc0f09fd2ccb16",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_d1970c15af58561dd888",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_d1970c15af58561dd888",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_3143ee55c4d91bc59b28",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_3143ee55c4d91bc59b28",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_87325fd7050edc449574",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_87325fd7050edc449574",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_3fe9fcce4846b8de8ab4",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_3fe9fcce4846b8de8ab4",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_d289b2329a969cb8ad05",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_d289b2329a969cb8ad05",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_d0635be22d73cdca34a4",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_d0635be22d73cdca34a4",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_c77abc48741a7bf06763",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_c77abc48741a7bf06763",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_17664d46e8047c50109b",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_17664d46e8047c50109b",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_2ae3d0cffa1f40682ee8",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_2ae3d0cffa1f40682ee8",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_82f70b8c75300ac182e7",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_82f70b8c75300ac182e7",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_29c1511e5d17be37791b",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_29c1511e5d17be37791b",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_924f40a2439e78044631",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_924f40a2439e78044631",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_4bd634532a9900bee4d2",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_4bd634532a9900bee4d2",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_a95998495a8800cad814",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_a95998495a8800cad814",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_a31781465c0f026a5f03",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_a31781465c0f026a5f03",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_8e660ab2ce07449f235e",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_8e660ab2ce07449f235e",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_5b27ff79b327f2b64d08",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_5b27ff79b327f2b64d08",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_4190777a2763284405c9",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_4190777a2763284405c9",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_48ca4373c6f40faf4e8a",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_48ca4373c6f40faf4e8a",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_e1331fdfcd23e8e6c237",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_e1331fdfcd23e8e6c237",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_e32a2ef0b9560a5dfdc0",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_e32a2ef0b9560a5dfdc0",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_53e4af934d3b77db7f60",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_53e4af934d3b77db7f60",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_a3b19eb1caaeec338cc9",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_a3b19eb1caaeec338cc9",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_569ddce81911cf55e33b",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_569ddce81911cf55e33b",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_aac44df3384446dfbca3",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_aac44df3384446dfbca3",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_d50f85b7921ee1c80ab2",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_d50f85b7921ee1c80ab2",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_8601a1a99f3eef96799b",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_8601a1a99f3eef96799b",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_b078bd5f7cd2e5b7ef3c",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_b078bd5f7cd2e5b7ef3c",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_1fb5e808da197218393b",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_1fb5e808da197218393b",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_6bb40a79994ff0837bde",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_6bb40a79994ff0837bde",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_72c44741d79e7d2d94bb",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_72c44741d79e7d2d94bb",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_f1cacb8a2755c9f9122b",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_f1cacb8a2755c9f9122b",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_421b561800ee6ab20dfa",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_421b561800ee6ab20dfa",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_ba5671dcdafe030efa0c",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_ba5671dcdafe030efa0c",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_4c6acb52918852710531",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_4c6acb52918852710531",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_304297793fb60a0ed3ed",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_304297793fb60a0ed3ed",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_625ca41348ec7da8f147",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_625ca41348ec7da8f147",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_1f7562efaac15dd1f5de",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_1f7562efaac15dd1f5de",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_09747420eb02ff1a57f9",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_09747420eb02ff1a57f9",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_48497bfce7c0f2415bab",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_48497bfce7c0f2415bab",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_268e3516727464031022",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_268e3516727464031022",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_0604b06deaf3c86a5131",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_0604b06deaf3c86a5131",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_b289b4262b03a987d421",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_b289b4262b03a987d421",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_d303b4a099221e3384e1",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_d303b4a099221e3384e1",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_06c039e26a97d4bf5580",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_06c039e26a97d4bf5580",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_c0c286045fd79a40f8be",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_c0c286045fd79a40f8be",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_ec2263fcdec19a580e23",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_ec2263fcdec19a580e23",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_12b21323ab76d4015c85",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_12b21323ab76d4015c85",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_67506c85b7ba8dc574d6",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_67506c85b7ba8dc574d6",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_c8a8e709352021f52fe8",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_c8a8e709352021f52fe8",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_3d0711d8393d4231c416",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_3d0711d8393d4231c416",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_a211bdd8cc7ad4b0acdb",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_a211bdd8cc7ad4b0acdb",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_a2c72e216f48730969cb",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_a2c72e216f48730969cb",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_1f4d57ba846442f20f29",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_1f4d57ba846442f20f29",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_4730db52a429890f75e3",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_4730db52a429890f75e3",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_58b0d0bbbad90581ed37",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_58b0d0bbbad90581ed37",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_c2272e9ec1aff093faf3",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_c2272e9ec1aff093faf3",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_54ac5a9d89377a455e64",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_54ac5a9d89377a455e64",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_dc6a4a16539104b2ff43",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_dc6a4a16539104b2ff43",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_e938e60ad0bde40b764b",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_e938e60ad0bde40b764b",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_5b363a5e38f89912a259",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_5b363a5e38f89912a259",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_efe3a6dbc01756aacdb2",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_efe3a6dbc01756aacdb2",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_ed09f3c351123f4ecb1a",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_ed09f3c351123f4ecb1a",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_4a563ddbf36b40071155",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_4a563ddbf36b40071155",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_f70351c997fa9570a06d",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_f70351c997fa9570a06d",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_978d89a0a7d11a15a1e4",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_978d89a0a7d11a15a1e4",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_0e7ec7f9a4f4124d72d5",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_0e7ec7f9a4f4124d72d5",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_517582445cce56fe6279",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_517582445cce56fe6279",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_447cbdbc2bdf0fa06cb3",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_447cbdbc2bdf0fa06cb3",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_a1095807c4f6175ab47c",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_a1095807c4f6175ab47c",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_1d83a0107fe6d1957710",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_1d83a0107fe6d1957710",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_31c5dc6d0c73c200d334",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_31c5dc6d0c73c200d334",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_02162f444c5c0f6eecbc",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_02162f444c5c0f6eecbc",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_767845696ec8b0e8e0eb",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_767845696ec8b0e8e0eb",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_e8de637be7606e39597b",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_e8de637be7606e39597b",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_14a4bf00a45fdfd32fdb",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_14a4bf00a45fdfd32fdb",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_liquidation:finliq_101fbf8fba8417ca5a05",
+    "type": "liquidation_source_reconciliation",
+    "entityId": "finliq_101fbf8fba8417ca5a05",
+    "state": "pending_review",
+    "reasons": [
+      "no_composite_candidate"
+    ],
+    "candidateCount": 0,
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_e90f53956d7cad55bf89",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_e90f53956d7cad55bf89",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_fbae28ffae479efb2374",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_fbae28ffae479efb2374",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_d5627919a2c58d7209fa",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_d5627919a2c58d7209fa",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_af529906a08df68d1499",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_af529906a08df68d1499",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "paid_at_missing",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_5422cefb21293b70bc75",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_5422cefb21293b70bc75",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "paid_at_missing",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_a419a17a8bb5e515f0c1",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_a419a17a8bb5e515f0c1",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "paid_at_missing",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_d307140feb21750b81c2",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_d307140feb21750b81c2",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "paid_at_missing",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_c19da06a895cf1b50d40",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_c19da06a895cf1b50d40",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "paid_at_missing",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_3dcc845b2971a31cd42b",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_3dcc845b2971a31cd42b",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "paid_at_missing",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_d9217a497143bc2c2c50",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_d9217a497143bc2c2c50",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "paid_at_missing",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_d4988ec568a9bb6c6af3",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_d4988ec568a9bb6c6af3",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "paid_at_missing",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_6429c9943f7f5c6683b5",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_6429c9943f7f5c6683b5",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "paid_at_missing",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_9d097945c538cf6b81f7",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_9d097945c538cf6b81f7",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "paid_at_missing",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_69aca3a6971a817347a3",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_69aca3a6971a817347a3",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "paid_at_missing",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_a8f89b59b93410c16121",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_a8f89b59b93410c16121",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "paid_at_missing",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_c92ee6d1a9e2e285884a",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_c92ee6d1a9e2e285884a",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "paid_at_missing",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_294e7dbd14f712ea511f",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_294e7dbd14f712ea511f",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "paid_at_missing",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_fbdc2d5669f18ca4789b",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_fbdc2d5669f18ca4789b",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_22682dbac4cfc7153cb7",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_22682dbac4cfc7153cb7",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "paid_at_missing",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_939458685204a48ce247",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_939458685204a48ce247",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_53e9939f83c72e970024",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_53e9939f83c72e970024",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_37ad59e5eeea4a356ba8",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_37ad59e5eeea4a356ba8",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_449c92eea000a799e995",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_449c92eea000a799e995",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_7fe8b4aa69a30e8a5414",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_7fe8b4aa69a30e8a5414",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_678fdde5b8c8d6097280",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_678fdde5b8c8d6097280",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_9044df14fa3baf642503",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_9044df14fa3baf642503",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_71ccf9e569d942ad4361",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_71ccf9e569d942ad4361",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_39a2d10f2239a2beb737",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_39a2d10f2239a2beb737",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_e938b2efc8b6aaccfd8f",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_e938b2efc8b6aaccfd8f",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_56fe5a3c26304bf92733",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_56fe5a3c26304bf92733",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_ab9bfcff3fa4e67ff41f",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_ab9bfcff3fa4e67ff41f",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_9a40676d99c867d6fb22",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_9a40676d99c867d6fb22",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_e6ec77633f7a29e4703f",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_e6ec77633f7a29e4703f",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_047048e5e4a33cc67787",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_047048e5e4a33cc67787",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_ea39f3c83d0352b37927",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_ea39f3c83d0352b37927",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_f11639ef678287a6ed7f",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_f11639ef678287a6ed7f",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "key": "r14_ledger:finledger_aa85fe288bfd3efa2394",
+    "type": "payment_evidence_reconciliation",
+    "entityId": "finledger_aa85fe288bfd3efa2394",
+    "state": "pending_review",
+    "reasons": [
+      "no_exact_hr_candidate_by_period_country_shopper_location_amount",
+      "payment_batch_id_not_from_source",
+      "confirmed_by_not_from_source"
+    ],
+    "sourceRef": "sha256:b8e753ade03286caf3ff19e119a9b21b4dde7d5bd21d61fba70ab32719afea89",
+    "sourceSafe": true
+  },
+  {
+    "reviewId": "review_f384446e2f52184792900d51",
+    "type": "financial_source_completeness",
+    "severity": "P0_DATA_GATE",
+    "state": "pending_review",
+    "reasons": [
+      "june_liquidation_control_has_27_source_rows_against_44_expected_visits",
+      "missing_item_level_rows_must_not_be_inferred"
+    ],
+    "allowedActions": [
+      "attach_clean_june_payment_or_liquidation_export",
+      "reconcile_against_live_hr_source_safe",
+      "approve_only_exact_stable_links"
+    ],
+    "blockedActions": [
+      "infer_missing_rows",
+      "mark_missing_visits_paid",
+      "match_by_visual_name",
+      "materialize_without_review"
+    ],
+    "sourceSafe": true
+  },
+  {
+    "reviewId": "review_ed6bc16fea0749a8b15d595e",
+    "type": "payment_evidence_itemization_gap",
+    "severity": "P0_DATA_GATE",
+    "state": "pending_review",
+    "reasons": [
+      "liquidation_control_is_not_payment_proof",
+      "itemized_expense_ledger_covers_only_a_subset",
+      "aggregate_rows_cannot_confirm_individual_visits"
+    ],
+    "allowedActions": [
+      "link_itemized_ledger_rows_to_exact_hr_visits",
+      "attach_clean_payment_movement_export",
+      "bulk_human_confirm_after_source_safe_reconciliation"
+    ],
+    "blockedActions": [
+      "treat_planned_payment_day_as_paid_at",
+      "treat_liquidada_as_pagada",
+      "create_fake_batches",
+      "execute_payments"
+    ],
+    "sourceSafe": true
+  },
+  {
+    "reviewId": "review_3d46ce3aeef2f0b2b24bb19b",
+    "type": "source_workbook_formula_integrity",
+    "severity": "P1_SOURCE_QUALITY",
+    "state": "pending_review",
+    "reasons": [
+      "24_formula_errors_detected_in_january_to_april_gt_dashboards",
+      "direct_row_values_used_instead_of_dashboard_totals"
+    ],
+    "allowedActions": [
+      "continue_with_direct_row_extraction",
+      "repair_source_workbook_separately"
+    ],
+    "blockedActions": [
+      "use_error_cells_as_operational_totals",
+      "commit_raw_workbook"
+    ],
+    "sourceSafe": true
+  },
+  {
+    "reviewId": "review_a07e6947c8f18e877dba5bb7",
+    "type": "cross_source_identity_reconciliation",
+    "severity": "P1_REVIEW",
+    "state": "pending_review",
+    "reasons": [
+      "source_workbook_labels_are_not_stable_visit_keys",
+      "local_exact_source_to_source_link_coverage_is_partial",
+      "live_hr_reconciliation_required"
+    ],
+    "allowedActions": [
+      "use_period_country_normalized_protected_refs_visit_date_and_amount_for_exact_candidate_match",
+      "keep_ambiguous_or_unmatched_rows_in_reviewQueue"
+    ],
+    "blockedActions": [
+      "match_by_visual_similarity",
+      "overwrite_identity",
+      "create_placeholder_shoppers"
+    ],
+    "sourceSafe": true
+  }
+]

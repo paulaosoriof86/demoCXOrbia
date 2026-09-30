@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "migration-tya-package-v1",
+  "title": "CXOrbia TyA migration package v1",
+  "type": "object",
+  "required": ["tenantId", "files"],
+  "properties": {
+    "tenantId": {"const": "tya"},
+    "files": {
+      "type": "object",
+      "required": ["shoppers", "projects", "visits", "benefits"],
+      "properties": {
+        "shoppers": {"$ref": "#/$defs/fileSpec"},
+        "projects": {"$ref": "#/$defs/fileSpec"},
+        "visits": {"$ref": "#/$defs/fileSpec"},
+        "postulations": {"$ref": "#/$defs/fileSpec"},
+        "questionnaires": {"$ref": "#/$defs/fileSpec"},
+        "benefits": {"$ref": "#/$defs/fileSpec"},
+        "certifications": {"$ref": "#/$defs/fileSpec"},
+        "resources": {"$ref": "#/$defs/fileSpec"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "fileSpec": {
+      "type": "object",
+      "required": ["path", "format"],
+      "properties": {
+        "path": {"type": "string"},
+        "format": {"type": "string", "enum": ["csv", "xlsx"]},
+        "sheet": {"type": "string"},
+        "encoding": {"type": "string", "default": "utf-8"}
+      },
+      "additionalProperties": true
+    }
+  }
+}

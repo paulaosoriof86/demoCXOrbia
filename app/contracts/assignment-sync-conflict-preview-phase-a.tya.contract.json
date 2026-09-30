@@ -1,0 +1,137 @@
+{
+  "contract": "assignment-sync-conflict-preview-phase-a-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "makeWriteAllowed": false,
+  "hrWriteAllowed": false,
+  "importRealDataAllowed": false,
+  "dependsOn": [
+    "assignment-sync-phase-a-tya",
+    "sensitive-data-policy-phase-a-tya",
+    "visit-lifecycle-phase-a-tya",
+    "visit-reservation-window-phase-a-tya"
+  ],
+  "purpose": "Define source-safe preview validation for HR/platform assignment synchronization conflicts without writing Firestore, HR or Make, and without using sensitive/raw source data.",
+  "sourceSafety": {
+    "requiresSyntheticOrSanitizedInput": true,
+    "forbidsRawSensitiveData": true,
+    "requiredInputMetadata": [
+      "sourceSafe=true",
+      "containsRawSensitiveData=false",
+      "isSyntheticOrSanitized=true"
+    ],
+    "manualReviewForAmbiguousMapping": true,
+    "visualDedupeAllowed": false,
+    "rawHrFilesAllowed": false,
+    "rawSensitiveFieldsAllowed": false
+  },
+  "stableKeys": [
+    "tenantId",
+    "projectId",
+    "visitId",
+    "hrRowId",
+    "sourceVisitRef",
+    "shopperId",
+    "assignmentId",
+    "postulationId",
+    "assignmentSource",
+    "assignmentSyncStatus",
+    "assignmentSourceRef",
+    "lastSyncedAt",
+    "conflictId"
+  ],
+  "previewInputShape": {
+    "sourceSafe": true,
+    "containsRawSensitiveData": false,
+    "isSyntheticOrSanitized": true,
+    "platformAssignments": [],
+    "hrAssignments": [],
+    "postulations": []
+  },
+  "assignmentSources": [
+    "platform_postulation",
+    "platform_manual_admin",
+    "hr_detected",
+    "historical_import_preview",
+    "manual_review"
+  ],
+  "previewOutcomes": [
+    "platform_pending_hr_sync",
+    "hr_detected_new_assignment",
+    "already_reflected_no_duplicate",
+    "conflict_review_required",
+    "manual_review_required",
+    "cancelled_or_unassignable",
+    "source_safe_metadata_required"
+  ],
+  "conflictReasons": [
+    "missing_stable_visit_key",
+    "missing_shopper_key",
+    "shopper_mismatch",
+    "project_mismatch",
+    "tenant_mismatch",
+    "hr_row_mismatch",
+    "assignment_source_mismatch",
+    "duplicate_platform_assignments",
+    "duplicate_hr_assignments",
+    "cancelled_visit_or_assignment",
+    "sensitive_fields_detected",
+    "visual_match_only_not_allowed"
+  ],
+  "mappingRules": [
+    "A platform assignment and an HR assignment are the same only when tenantId, projectId and a stable visit key match, and shopperId is compatible.",
+    "Stable visit key can be visitId, hrRowId or sourceVisitRef; at least one must exist.",
+    "Do not dedupe by branch name, shopper display name, date, country, city or visual similarity alone.",
+    "If platform and HR disagree on shopperId, projectId, tenantId or hrRowId, classify conflict_review_required.",
+    "If a stable visit key or shopperId is missing, classify manual_review_required.",
+    "If platform assignment exists and HR later reflects the same stable assignment, classify already_reflected_no_duplicate.",
+    "If HR assignment exists and no platform assignment exists for the stable key, classify hr_detected_new_assignment.",
+    "If platform assignment exists and HR has not reflected it yet, classify platform_pending_hr_sync.",
+    "Cancelled visits or cancelled assignments must not be silently reassigned.",
+    "No writes, no Make calls and no HR updates are allowed by this preview."
+  ],
+  "outputRules": [
+    "Validator prints JSON report only; no output files are written by default.",
+    "Report must include counters for platform assignments, HR assignments, matched, pending, conflicts and manual review.",
+    "Mapped rows must contain only safe refs and IDs, not raw sensitive data.",
+    "All gates remain false in the report."
+  ],
+  "claudePrototypeImpact": [
+    "Postulaciones and assignment UI must show prepared/pending HR sync, not HR synchronized, while gates are off.",
+    "If HR and platform conflict, UI must show review required and not overwrite silently.",
+    "Available visits must not duplicate once assigned by either platform or HR preview.",
+    "UI must surface stable references for admin review without exposing sensitive data."
+  ],
+  "academyImpact": {
+    "roles": ["super", "admin", "ops", "shopper", "consultant_partner"],
+    "manualsToUpdate": ["Postulations", "Assignments", "HR/platform sync", "Conflict review", "Sensitive data in assignment previews"],
+    "coursesToUpdate": ["Ops assignment workflow", "Admin conflict review", "Shopper application flow", "Source-safe sync preview"],
+    "newLessons": [
+      "How platform assignment and HR assignment match safely",
+      "Why visual matching is not enough",
+      "What happens when HR and platform disagree",
+      "How to keep available visits from duplicating",
+      "How source-safe assignment preview protects data"
+    ],
+    "interactiveChecklists": [
+      "Before approving a postulation",
+      "Before accepting an HR-detected assignment",
+      "Before resolving an assignment conflict",
+      "Before showing assignment status to shopper"
+    ]
+  },
+  "hardStops": [
+    "Do not call Make from this preview.",
+    "Do not write HR from this preview.",
+    "Do not write Firestore from this preview.",
+    "Do not overwrite assignment conflicts silently.",
+    "Do not dedupe by visual matching.",
+    "Do not process raw sensitive fields.",
+    "Do not mark HR synchronized while sync gates are off."
+  ]
+}

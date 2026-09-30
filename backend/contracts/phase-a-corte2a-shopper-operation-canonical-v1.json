@@ -1,0 +1,87 @@
+{
+  "id": "phase-a-corte2a-shopper-operation-canonical-v1",
+  "version": "1.0.0",
+  "status": "required_before_corte2a_freeze",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "scope": {
+    "cut": "CORTE_2A",
+    "title": "Ciclo shopper y operación canónica",
+    "frontendFiles": [
+      "app/modules/visitas.js",
+      "app/modules/postulaciones.js"
+    ],
+    "backendFiles": [
+      "app/core/tya-phase-a-source-safe-preview.js"
+    ],
+    "mustPreserve": [
+      "app/adapters/tya-live-source-refresh-watch.js",
+      "app/adapters/tya-live-source-inplace-apply.js",
+      "app/adapters/tya-live-source-fast-trigger.js",
+      "app/adapters/tya-corte1-report-projection-live.js"
+    ]
+  },
+  "m1FrozenBaseline": {
+    "functionalBuild": "67c0943260f076f5686284ac509458ed5fd34dbd",
+    "status": "FROZEN_WITH_DOCUMENTED_P1_P2",
+    "invariants": [
+      "one runtime sourceRevision for Admin, Cliente, Shopper and reports",
+      "fresh=1 fail-closed with runtime_refresh and no silent stale fallback",
+      "in-place refresh without location.reload",
+      "project and period remain separate",
+      "period change updates KPI, rows, detail and exports",
+      "assignment/questionnaire canary updates only expected surfaces",
+      "Admin, Cliente and reports remain transversally coherent",
+      "shopper marketplace removes visits assigned in HR",
+      "no payment is inferred"
+    ],
+    "mandatoryRegressionGates": [
+      "tools/qa/tya-hr-header-variants-r20-gate.mjs",
+      "tools/qa/tya-live-hr-inplace-refresh-gate.mjs",
+      "tools/qa/tya-corte1-context-history-reports-gate.mjs",
+      "tools/qa/tya-corte1-report-frontend-runtime-gate.mjs",
+      "tools/qa/tya-project-period-kpi-history-gate-r20.mjs",
+      "tools/qa/tya-corte1-m1-regression-lock.mjs",
+      "remote fresh=1 smoke",
+      "visual canary"
+    ]
+  },
+  "requirements": {
+    "adminVisits": [
+      "Visible state, filters, details, KPI drilldowns and exports must consume canonical visit facets, never raw v.estado as the sole truth.",
+      "Assignment, scheduling, execution, questionnaire, submission, liquidation and payment remain orthogonal.",
+      "Unknown financial values remain null/pending source; explicit zero is shown only when the source confirms zero.",
+      "The current project, period, country scope and sourceRevision must remain unchanged by rendering or export."
+    ],
+    "postulations": [
+      "Reassignment must show current shopper, date and slot and require an explicit decision: keep date/slot, change date/slot, or leave pending scheduling.",
+      "Reassignment must never erase or invent a date silently.",
+      "The Export action must be implemented for the visible filtered scope and active period only, with source revision and authorized columns.",
+      "Protected or absent phone/contact values must display a safe label, never undefined/null/raw technical literals.",
+      "No UI message may claim HR synchronization or real write unless the corresponding authorized gate and write result exist."
+    ],
+    "canary": [
+      "Assign or remove one shopper in the controlled source.",
+      "Confirm or remove one questionnaire in the controlled source.",
+      "Verify expected KPI/list changes without full document reload.",
+      "Verify the shopper marketplace removes/adds only the correct visit.",
+      "Verify Admin, Cliente and reports share the same sourceRevision and counts."
+    ]
+  },
+  "prohibitions": [
+    "Do not reinterpret HR rules in frontend modules.",
+    "Do not hardcode July 2026 counts or any period-specific exception.",
+    "Do not restore snapshot-only behavior or location.reload.",
+    "Do not convert missing data to zero.",
+    "Do not connect or copy the legacy database.",
+    "Do not activate HR, Firestore, Auth, Storage, Make, Gemini, payment or production writes.",
+    "Do not create a new branch or pull request."
+  ],
+  "freezeCriteria": [
+    "All M1 regression gates pass on the exact candidate hash.",
+    "Corte 2A acceptance checks pass without P0.",
+    "Paula validates the exact DEV build visually.",
+    "Checkpoint, CAMBIOS, Claude, PENDIENTES, Academia, tracker and PR #7 are updated.",
+    "The accepted delta is applied atomically to docs-tya-v6-v71-audit and HEAD_AFTER is recorded."
+  ]
+}

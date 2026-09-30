@@ -1,0 +1,96 @@
+{
+  "contractId": "phase-a-real-connection-readiness-gate-v1",
+  "status": "draft_safe_not_connected",
+  "generatedAt": "2026-07-09",
+  "purpose": "Validate that TyA Phase A real connection can proceed without rediscovering known issues in projects, periods, HR/source, users, roles, courses, certifications, shoppers, liquidations and protected data gates.",
+  "safeState": {
+    "connectsToRealDatabase": false,
+    "writesFirestore": false,
+    "writesAuth": false,
+    "importsRealData": false,
+    "deploysRules": false,
+    "productionEnabled": false,
+    "containsSecrets": false,
+    "containsSensitiveData": false
+  },
+  "mustPassBeforeAnyRealConnection": [
+    "tenantProjectPeriodSeparation",
+    "hrSourceShape",
+    "projectConfigComplete",
+    "roleTaxonomyComplete",
+    "authClaimsSeedReady",
+    "protectedReadAccessPolicyReady",
+    "sourceSafeToProtectedCandidatesReady",
+    "certificationCarryoverPathReady",
+    "academyCourseConfigPathReady",
+    "liquidationPaymentPreviewPathReady",
+    "reviewQueuePathReady",
+    "auditEventsPathReady",
+    "gatesRemainBlockedUntilExplicitGO",
+    "noSensitiveDataInPublicPayload"
+  ],
+  "requiredContracts": [
+    "backend/contracts/cxdata-firestore-phase-a-v1.json",
+    "backend/contracts/auth-rbac-phase-a-v1.json",
+    "backend/contracts/phase-a-role-taxonomy-org-scope-v1.json",
+    "backend/contracts/phase-a-auth-dev-claims-taxonomy-seed-v2.json",
+    "backend/contracts/phase-a-protected-read-access-adapter-v1.json",
+    "backend/contracts/phase-a-hr-source-safe-to-protected-candidates-v1.json",
+    "backend/contracts/phase-a-protected-firestore-schema-dev-readiness-v1.json",
+    "backend/contracts/phase-a-protected-firestore-rules-dev-draft-v1.json",
+    "backend/contracts/liquidations-payments-phase-a-v1.json"
+  ],
+  "requiredRuntimeSourceSafeFiles": [
+    "app/data/tya-hr-source-safe-periods.js",
+    "app/core/tya-phase-a-source-safe-preview.js"
+  ],
+  "projectPeriodRules": {
+    "projectIsConfigEntity": true,
+    "periodIsProjectFilter": true,
+    "periodMustNotBecomeProject": true,
+    "projectSelectorShowsProjectsOnly": true,
+    "periodSelectorShowsPeriodsOnly": true,
+    "allOperationalListsFilterBySelectedPeriod": true,
+    "allPeriodsOnlyWhenExplicitlySelected": true
+  },
+  "realDataConnectionReadiness": {
+    "expectedInput": "source-safe payload generated from live HR/source or equivalent",
+    "expectedOutputBeforeWrites": "protected candidates + reviewQueue candidates + auditEvent candidates",
+    "firestoreWritesAllowed": false,
+    "authWritesAllowed": false,
+    "mustUseReviewQueueBeforeProtectedImport": true,
+    "mustPreserveCertificationCarryover": true,
+    "mustPrepareLiquidationsWithoutPaymentExecution": true
+  },
+  "modulesThatMustHaveBackendImpact": [
+    "projects",
+    "periods",
+    "hrSource",
+    "usersRoles",
+    "coursesAcademy",
+    "certifications",
+    "questionnaires",
+    "shoppers",
+    "postulations",
+    "visitsAssignments",
+    "liquidationsPayments",
+    "notificationsOutbox",
+    "reviewQueue",
+    "auditEvents",
+    "adminConfigurability"
+  ],
+  "hardFailExamples": [
+    "period_as_project",
+    "missing_project_config",
+    "missing_period_filter_contract",
+    "missing_role_persona_scope",
+    "missing_certification_carryover_path",
+    "missing_academy_course_config_path",
+    "missing_liquidation_preview_path",
+    "source_not_source_safe",
+    "public_payload_contains_sensitive_data",
+    "writes_enabled_without_go",
+    "review_queue_missing",
+    "audit_events_missing"
+  ]
+}

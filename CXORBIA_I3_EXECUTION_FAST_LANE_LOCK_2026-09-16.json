@@ -1,0 +1,18 @@
+{
+  "lockId": "CXORBIA-I3-EXECUTION-FAST-LANE-LOCK-2026-09-16",
+  "status": "FROZEN",
+  "iteration": "I3",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "expectedParentSha": "96252d56c3e4a794d6d58e53ad49050a82bd97df",
+  "expectedParentTree": "3d9477d8278a647cbe8bdd5bdb0fd512baae3bc4",
+  "i3CertificationSourceSha": "b94911a4748c03c2e604415e8a97ee091da96218",
+  "classification": "RELEASE_COMPOSITION_FAILURE",
+  "executionEngine": "GITHUB_ACTIONS_SERVER_SIDE",
+  "chatRole": "INITIATE_AND_AUDIT_ONLY",
+  "oneSourceOneBuildOneArtifact": true,
+  "newWorkflowAllowed": false,
+  "productionTouched": false,
+  "frozenDocument": "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-16_I3_EXECUTION_FAST_LANE_FROZEN.md",
+  "frozenDocumentSha256": "6d697a5af7293a9323b9c218a766b85786d539e7f92599f8bdfbc8b889fb0173"
+}

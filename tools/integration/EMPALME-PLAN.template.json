@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "candidateId": "VXXX",
+  "candidateFile": "Prototype development request CXOrbia VXXX.zip",
+  "candidateSha256": "REEMPLAZAR_CON_SHA256_AUDITADO",
+  "repositoryFullName": "paulaosoriof86/demoCXOrbia",
+  "expectedBranch": "docs-tya-v6-v71-audit",
+  "expectedHead": null,
+  "tenantId": "tya",
+  "tenantPolicy": "tools/integration/policies/tenants/tya.json",
+  "projectPolicies": [],
+  "files": {
+    "added": [],
+    "modified": [],
+    "removed": []
+  },
+  "allowRemovals": false,
+  "gateIds": [],
+  "commitMessage": "feat: empalme VXXX multi-tenant [skip ci]",
+  "documentation": {
+    "phaseAImpact": "Describir qué parte de Phase A avanza.",
+    "reusableCxorbia": "Describir patrones reutilizables.",
+    "clientSpecific": "Describir reglas exclusivas del tenant o proyecto, sin promoverlas a globales.",
+    "preserved": "Describir backend, overlays, docs y contratos preservados.",
+    "claude": "Describir ajustes de prototipo pendientes o resueltos.",
+    "academia": "Describir impacto en manuales, cursos, rutas y notificaciones.",
+    "pending": "Describir P1/P2, gates y smoke pendientes."
+  }
+}

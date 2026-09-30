@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "cxorbia.canonical-plan-refresh-offline.request.v1",
+  "enabled": true,
+  "mode": "OFFLINE_CANONICAL_PLAN_REFRESH",
+  "providerCalls": 0,
+  "writes": 0,
+  "production": false,
+  "merge": false,
+  "triggerNonce": 8,
+  "purpose": "R17N final current-HR-through-July no-execute after fixing project-scoped HR import path"
+}

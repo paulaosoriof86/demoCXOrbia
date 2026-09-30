@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "cxorbia.i4c.hr-bidirectional-sync-source-readiness.v1",
+  "syncEpoch": "CXORBIA-20260819-I4C-HR-SYNC-SOURCE-READY-32",
+  "generatedAt": "2026-08-19T16:13:00-06:00",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "decision": "PASS_I4C_HR_BIDIRECTIONAL_SYNC_SOURCE_READINESS",
+  "formalProgressPercent": 60,
+  "formalRemainingPercent": 40,
+  "preserved": {
+    "i4b": "PASS_FROZEN_NO_RERUN",
+    "hrAuthority": {"periods": 15, "visits": 660},
+    "historicalShopper": "FROZEN",
+    "targetBAdmin": "NO_RECREATE"
+  },
+  "reusedSource": {
+    "visitLifecycleProvider": "backend/runtime/cxorbia-visit-lifecycle-command-provider-v1.mjs",
+    "platformAssignmentMetadataAlreadyPresent": ["assignmentSource", "assignmentSyncStatus", "lastSyncedAt"],
+    "hrSourceStableIdentityObserved": ["id", "hrRowId", "tenantId", "projectId", "shopperId"],
+    "makeOutboxAdapter": "backend/adapters/make-outbox-adapter.preview.mjs",
+    "makeOutboxHrSyncChannelPresent": true
+  },
+  "created": {
+    "contract": "backend/contracts/hr-bidirectional-assignment-sync-v1.json",
+    "adapter": "backend/adapters/hr-bidirectional-sync-adapter.preview.mjs",
+    "verifier": "tools/verify-cxorbia-i4c-hr-bidirectional-source.mjs"
+  },
+  "verifiedCases": [
+    "platform_to_hr_pending",
+    "same_hr_reflection_confirms_without_duplicate",
+    "hr_to_platform_pending_with_exact_shopper",
+    "unknown_hr_shopper_blocks",
+    "same_visual_name_different_shopperId_conflicts",
+    "stable_identity_mismatch_conflicts",
+    "hr_origin_missing_reflection_conflicts",
+    "stable_visit_key_ignores_names"
+  ],
+  "localDeterministicVerifier": {
+    "decision": "PASS_I4C_HR_BIDIRECTIONAL_SYNC_SOURCE",
+    "tests": 8,
+    "providerCalls": 0,
+    "hrWrites": 0,
+    "makeCalls": 0,
+    "platformWrites": 0
+  },
+  "externalBindingSearch": {
+    "repoLiveRuntimeMakeProviderFound": false,
+    "repoAdapterState": "make-outbox preview only",
+    "gmailMakeHrBindingFound": false,
+    "driveMakeHrBindingFound": false,
+    "liveWebhookOrScenarioIdStored": false
+  },
+  "safety": {
+    "providerCalls": 0,
+    "hrWrites": 0,
+    "makeCalls": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "paymentWrites": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false
+  },
+  "nextFrontier": "I4C_MAKE_HR_PROVIDER_BINDING_EXTERNAL_CONFIGURATION_REQUIRED"
+}

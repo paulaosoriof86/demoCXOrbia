@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "phase-a-financial-payment-import-source-safe-v1",
+  "purpose": "Normalize and dry-run sanitized historical payments/movements without treating HR liquidation as payment evidence.",
+  "acceptedFormats": ["json", "csv", "xlsx", "xlsm"],
+  "stableMatchPriority": ["visitId", "paymentItemId", "hrRowId"],
+  "automaticMatchDisallowed": ["shopperName", "shopperId+amount", "visual_similarity"],
+  "requiredForPaid": ["stableVisitMatch", "paymentBatchId", "paidAt", "paymentSource", "confirmedBy", "amountMatch"],
+  "amountRules": {
+    "reimbursementTotal": "boleto+combo",
+    "grandTotal": "honorario+boleto+combo",
+    "tolerance": 0.01,
+    "mixedCurrencyBatch": "conflict"
+  },
+  "dedupe": {
+    "exactRecord": "collapse",
+    "differentRecordsSameVisit": "review_required",
+    "missingStableVisitKey": "review_required"
+  },
+  "outputs": [
+    "financial-control.source-safe.json",
+    "tya-financial-control-source-safe.js",
+    "financial-candidates.source-safe.json",
+    "review-queue.source-safe.json",
+    "audit-events.source-safe.json",
+    "phase-a-source-safe-import-report.json"
+  ],
+  "security": {
+    "sensitiveColumnsExcluded": ["bank", "account", "dpi", "document", "phone", "email", "address", "card"],
+    "rawRowsInOutput": false,
+    "rawBankData": false
+  },
+  "safeState": {
+    "dryRun": true,
+    "writes": false,
+    "imported": false,
+    "production": false,
+    "providers": false,
+    "paymentsExecuted": false
+  }
+}

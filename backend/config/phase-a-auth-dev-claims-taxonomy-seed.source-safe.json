@@ -1,0 +1,146 @@
+{
+  "configId": "phase-a-auth-dev-claims-taxonomy-seed-source-safe",
+  "status": "source_safe_template_only",
+  "tenantTemplate": "tenant_demo",
+  "permissionsVersion": "phase-a-v2-taxonomy",
+  "safeState": {
+    "usesRealEmails": false,
+    "usesRealNames": false,
+    "usesRealPhones": false,
+    "usesPasswords": false,
+    "writesClaims": false,
+    "createsUsers": false,
+    "containsSecrets": false,
+    "containsSensitiveData": false
+  },
+  "templates": [
+    {
+      "templateId": "tenant-owner-template",
+      "personaType": "tenantOwner",
+      "role": "tenantAdmin",
+      "scope": "tenant",
+      "tenantId": "tenant_demo",
+      "projectIds": [],
+      "countryIds": ["country_a", "country_b"],
+      "staffId": "staff_ref_tenant_owner",
+      "permissionsVersion": "phase-a-v2-taxonomy"
+    },
+    {
+      "templateId": "franchise-owner-template",
+      "personaType": "franchiseOwner",
+      "role": "tenantAdmin",
+      "scope": "country",
+      "tenantId": "tenant_demo",
+      "projectIds": [],
+      "countryIds": ["country_a"],
+      "franchiseId": "franchise_ref_001",
+      "permissionsVersion": "phase-a-v2-taxonomy"
+    },
+    {
+      "templateId": "country-representative-template",
+      "personaType": "countryRepresentative",
+      "role": "projectAdmin",
+      "scope": "tenantProjectOrCountry",
+      "tenantId": "tenant_demo",
+      "projectIds": ["project_demo_001"],
+      "countryIds": ["country_a"],
+      "representativeId": "representative_ref_001",
+      "permissionsVersion": "phase-a-v2-taxonomy"
+    },
+    {
+      "templateId": "operations-coordinator-template",
+      "personaType": "operationsCoordinator",
+      "role": "projectAdmin",
+      "scope": "tenantProjectOrCountry",
+      "tenantId": "tenant_demo",
+      "projectIds": ["project_demo_001", "project_demo_002"],
+      "countryIds": ["country_a", "country_b"],
+      "staffId": "staff_ref_ops_coord",
+      "permissionsVersion": "phase-a-v2-taxonomy"
+    },
+    {
+      "templateId": "project-coordinator-template",
+      "personaType": "projectCoordinator",
+      "role": "projectAdmin",
+      "scope": "tenantProject",
+      "tenantId": "tenant_demo",
+      "projectIds": ["project_demo_001"],
+      "countryIds": ["country_a"],
+      "staffId": "staff_ref_project_coord",
+      "permissionsVersion": "phase-a-v2-taxonomy"
+    },
+    {
+      "templateId": "field-representative-template",
+      "personaType": "fieldRepresentative",
+      "role": "projectAdmin",
+      "scope": "country",
+      "tenantId": "tenant_demo",
+      "projectIds": ["project_demo_001"],
+      "countryIds": ["country_a"],
+      "representativeId": "field_rep_ref_001",
+      "permissionsVersion": "phase-a-v2-taxonomy"
+    },
+    {
+      "templateId": "finance-operator-template",
+      "personaType": "financeOperator",
+      "role": "financeAdmin",
+      "scope": "tenantProjectOrCountry",
+      "tenantId": "tenant_demo",
+      "projectIds": ["project_demo_001"],
+      "countryIds": ["country_a", "country_b"],
+      "staffId": "staff_ref_finance",
+      "permissionsVersion": "phase-a-v2-taxonomy"
+    },
+    {
+      "templateId": "certification-operator-template",
+      "personaType": "certificationOperator",
+      "role": "certificationAdmin",
+      "scope": "tenantProjectOrCountry",
+      "tenantId": "tenant_demo",
+      "projectIds": ["project_demo_001"],
+      "countryIds": ["country_a", "country_b"],
+      "staffId": "staff_ref_certification",
+      "permissionsVersion": "phase-a-v2-taxonomy"
+    },
+    {
+      "templateId": "client-brand-admin-template",
+      "personaType": "clientBrandAdmin",
+      "role": "clientAdmin",
+      "scope": "tenantProject",
+      "tenantId": "tenant_demo",
+      "projectIds": ["project_demo_001"],
+      "countryIds": ["country_a"],
+      "clientId": "client_ref_001",
+      "permissionsVersion": "phase-a-v2-taxonomy"
+    },
+    {
+      "templateId": "client-brand-viewer-template",
+      "personaType": "clientBrandViewer",
+      "role": "clientViewer",
+      "scope": "tenantProject",
+      "tenantId": "tenant_demo",
+      "projectIds": ["project_demo_001"],
+      "countryIds": ["country_a"],
+      "clientId": "client_ref_viewer_001",
+      "permissionsVersion": "phase-a-v2-taxonomy"
+    },
+    {
+      "templateId": "shopper-evaluator-template",
+      "personaType": "shopperEvaluator",
+      "role": "shopper",
+      "scope": "ownTenantOrProject",
+      "tenantId": "tenant_demo",
+      "projectIds": ["project_demo_001"],
+      "countryIds": ["country_a"],
+      "shopperId": "shopper_ref_001",
+      "permissionsVersion": "phase-a-v2-taxonomy"
+    }
+  ],
+  "futureWriteBlocked": {
+    "setCustomClaims": false,
+    "createAuthUsers": false,
+    "importUsers": false,
+    "deployRules": false,
+    "productionCutover": false
+  }
+}

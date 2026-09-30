@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "cxorbia.i3.historical-shopper-login-checkpoint.v2",
+  "generatedAt": "2026-08-15T20:20:46.842Z",
+  "decision": "PASS_I3_HISTORICAL_SHOPPER_LOGIN_AFTER_EXACT_RECOVERY",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "targetHeadSha": "e4d6de3e97745dfa777c9c585d75c72de61d3d17",
+  "requestCommitSha": "701fedc184ccc98e08e7444adc0f04cd54247fce",
+  "workflowRunId": 31906391682,
+  "shopperIdFingerprint": "2eb0746ac429983ef9c8",
+  "uidFingerprint": "8458ed256098c315d009",
+  "identity": {
+    "exact": true,
+    "uidPreserved": true,
+    "claims": true,
+    "profile": true,
+    "membership": true,
+    "crosswalk": true,
+    "history": true,
+    "historyE2E": true
+  },
+  "workspaceState": "legal-gate-pending",
+  "legalGate": {
+    "supported": true,
+    "pending": true,
+    "visible": true,
+    "acceptanceAutomated": false
+  },
+  "workspaceRoutes": {
+    "academiaDeferredByLegalGate": true,
+    "certificationDeferredByLegalGate": true
+  },
+  "writes": {
+    "authPasswordUpdates": 1,
+    "firestoreReconciliation": 0
+  },
+  "safety": {
+    "otherIdentitiesModified": 0,
+    "fuzzyMatching": false,
+    "credentialsExposed": false,
+    "tokensExposed": false,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeWrites": 0,
+    "geminiCalls": 0,
+    "paymentsWrites": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.v1",
+  "frozenAt": "2026-09-24",
+  "status": "HOLD_ACTIVE",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
+  "microblockId": "CXORBIA-PRE-I4-VISUAL-REMEDIATION-MICROBLOCK-20260922",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "production": "DO_NOT_TOUCH",
+  "controlHeadBeforeFreeze": "537f3bb1d32500fa7e200f552cfacd906a3cc4d2",
+  "canonicalFunctionalCandidate": {
+    "sourceSha": "d8aad982ae4b47e66bf949d906b6c7ede8866f84",
+    "predecessorSha": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba",
+    "historicalTechnicalBaseline": "77bf74f807d254637f0b2cde4b1d1668017a0c8a",
+    "historicalPreI4MatrixSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+    "rule": "NEXT_FUNCTIONAL_SOURCE_MUST_BE_DESCENDANT_AND_PRESERVE_ALL_PROVEN_DELTAS"
+  },
+  "durableAuthorities": {
+    "priorRunStateBlob": "a2ffbc7ac322a34e925b21f80a1671403a7a84c1",
+    "moduleTruthBlob": "5aa230cc3199fc8f1a77a83e40bbcf84ca82ed83",
+    "canonicalModuleRegistryBlob": "9a54063dcea2fa1234ae3ddbf3f0ae988eca0f99",
+    "pass2AdjudicationBlob": "4212da1ca7a537eaa9353f227d2446e7316faf3f",
+    "humanVisualRootCauseBlob": "e61aaf4fba7117f715becd090e58702cadba7eca"
+  },
+  "rootCauseIds": [
+    "RC-MONO-01_MULTIPLE_EXECUTABLE_PRODUCT_SOURCE_AUTHORITIES",
+    "RC-MONO-02_SELF_REFERENTIAL_MODULE_TRUTH_CLOSURE",
+    "RC-MONO-03_STALE_PASS_NOT_MECHANICALLY_REVOKED",
+    "RC-MONO-04_SPLIT_FINDING_MODULE_SOURCE_READINESS_STATE",
+    "RC-MONO-05_UNDERSPECIFIED_TERMINAL_SEMANTIC_ORACLE"
+  ],
+  "priorFindings": {
+    "range": "VRM-001..VRM-032",
+    "preservation": "PRESERVED_BY_EXACT_PRIOR_RUN_STATE_BLOB",
+    "priorRunStateBlob": "a2ffbc7ac322a34e925b21f80a1671403a7a84c1",
+    "rule": "MUST_NOT_DISAPPEAR_OR_REGRESS; ANY_REOPEN_REQUIRES_NEW_REPRODUCIBLE_EVIDENCE"
+  },
+  "activeFindings": {
+    "VRM-033": {
+      "classification": "MAPPING_FAILURE",
+      "state": "FIXED_NOT_PROVEN",
+      "contract": "authorized Admin primary name must equal exact HR/profile human name; no technical-id fallback"
+    },
+    "VRM-034": {
+      "classification": "PERSISTENCE_FAILURE",
+      "state": "FIXED_NOT_PROVEN",
+      "contract": "zero QA/test reservation residue; deterministic exact cleanup/readback"
+    },
+    "VRM-035": {
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "state": "FIXED_NOT_PROVEN",
+      "contract": "terminal PASS requires independent visible semantic assertions, not structure/bytes alone"
+    },
+    "VRM-036": {
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "state": "P0_PROVEN_ROOT_CAUSE",
+      "contract": "historical certification authority must be adjudicated/composed by exact identity; ambiguous review-only"
+    },
+    "VRM-037": {
+      "classification": "FUNCTIONAL_DEFECT",
+      "state": "P0_PROVEN_ROOT_CAUSE_ACTIVE_BLOCKER",
+      "contract": "Paula s3 and representative GT/HN must have exact canonical identity, history, KPIs, profile, benefits and reports",
+      "latestEvidence": {
+        "runId": 35972426097,
+        "code": "MAPPING_FAILURE:EXACT_HR_HISTORY_shopper_gt_0b19085086",
+        "expected": {
+          "name": "José Sarat",
+          "total": 5,
+          "realized": 5
+        },
+        "observed": {
+          "total": 6,
+          "realized": 5,
+          "postulations": 1,
+          "submitted": 4
+        },
+        "currentDiagnosticControlHead": "537f3bb1d32500fa7e200f552cfacd906a3cc4d2"
+      }
+    },
+    "VRM-038": {
+      "classification": "FUNCTIONAL_DEFECT",
+      "state": "FIXED_NOT_PROVEN",
+      "contract": "zero primary human-lane technical vocabulary; trace only behind optional technical detail"
+    },
+    "VRM-039": {
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "state": "P0_PROVEN_ROOT_CAUSE",
+      "contract": "Resources and Finance cannot be declared complete merely because they fail closed safely"
+    },
+    "VRM-040": {
+      "classification": "MAPPING_FAILURE",
+      "state": "FUNCTIONAL_FIX_MATERIALIZED_REPROOF_REQUIRED",
+      "contract": "out-of-range must equal same fresh HR revision",
+      "functionalSource": "d8aad982ae4b47e66bf949d906b6c7ede8866f84",
+      "expectedFreshHR": {
+        "GT": 3,
+        "HN": 1,
+        "total": 4
+      },
+      "proofRunId": 35972426097
+    },
+    "VRM-041": {
+      "classification": "VISUAL_DEFECT",
+      "state": "FIXED_NOT_PROVEN",
+      "contract": "no undefined/null/technical UID in human approval copy"
+    }
+  },
+  "closureRules": {
+    "allowedFindingTerminalState": "PROVEN_CLOSED",
+    "omissionNeverClosesFinding": true,
+    "newFindingNextId": "VRM-042",
+    "readinessDerivedOnly": true,
+    "readinessRequires": [
+      "VRM-001..latest all preserved and current-impact findings PROVEN_CLOSED",
+      "20/20 Phase A modules MATCH against independent approved authority",
+      "semantic Admin+Shopper+Client focal PASS",
+      "same fresh HR sourceRevision for oracle and UI",
+      "artifact/served byte parity",
+      "one manifest/build/artifact/Gate21 chain",
+      "production untouched"
+    ],
+    "historicalPassIsEvidenceOnlyAfterNewDrift": true
+  },
+  "workPlan": [
+    "C0_FREEZE",
+    "C1_SINGLE_AUTHORITY_ENFORCEMENT",
+    "C2_P0_CLOSURE",
+    "C3_TERMINAL_CUMULATIVE_PROOF",
+    "C4_ONE_HUMAN_VISUAL_ACCEPTANCE"
+  ],
+  "exactNextAction": "C1: normalize all I3/PRE-I4 jobs to one canonical candidate descriptor, then complete VRM-037 exact ownership diagnostic without product write until owner is proven"
+}

@@ -1,0 +1,71 @@
+{
+  "version": "cxorbia-v58-hr-projects-model",
+  "createdFor": "TyA julio y proyectos autoadministrables",
+  "tenantScope": "tenants/{tenantId}",
+  "rules": {
+    "noRealDataInSchema": true,
+    "allCollectionsSegmentedByTenant": true,
+    "projectDataUnderTenantProject": true,
+    "bankAndNdaDataMustBeEncryptedWhenReal": true,
+    "demoDataMustNotPolluteTenantTya": true
+  },
+  "collections": {
+    "tenants/{tenantId}": {
+      "requiredFields": ["tenantId", "name", "status", "createdAt", "updatedAt"],
+      "purpose": "Tenant principal"
+    },
+    "tenants/{tenantId}/projects/{projectId}": {
+      "requiredFields": ["projectId", "tenantId", "name", "clientId", "status", "countries", "currencies", "activePeriodId", "restrictions", "createdAt", "updatedAt"],
+      "purpose": "Proyecto autoadministrable",
+      "notes": ["Cada proyecto define restricciones propias", "Cinepolis no debe quedar hardcodeado"]
+    },
+    "tenants/{tenantId}/projects/{projectId}/periods/{periodId}": {
+      "requiredFields": ["periodId", "projectId", "tenantId", "label", "year", "month", "countries", "status", "hrSources", "createdAt", "updatedAt"],
+      "purpose": "Periodo operativo detectable por mes, pais y proyecto"
+    },
+    "tenants/{tenantId}/projects/{projectId}/hrImports/{importId}": {
+      "requiredFields": ["importId", "periodId", "country", "sourceType", "sourceName", "sourceHash", "status", "rowCount", "createdAt", "updatedAt"],
+      "purpose": "Control de HR importada o sincronizada"
+    },
+    "tenants/{tenantId}/projects/{projectId}/branches/{branchId}": {
+      "requiredFields": ["branchId", "projectId", "country", "city", "name", "code", "status"],
+      "purpose": "Sucursales normalizadas"
+    },
+    "tenants/{tenantId}/projects/{projectId}/visits/{visitId}": {
+      "requiredFields": ["visitId", "projectId", "periodId", "country", "branchId", "hrRef", "status", "quincena", "franja", "availableFrom", "scenario", "fee", "reimbursements", "responsibleUid", "lastManagedBy", "createdAt", "updatedAt"],
+      "purpose": "Visita operativa viva sincronizada con HR",
+      "validStatuses": ["disponible", "postulada", "asignada", "agendada", "realizada", "cuestionario_pendiente", "submitida", "liquidada", "fuera_de_rango", "standby", "cancelada"]
+    },
+    "tenants/{tenantId}/projects/{projectId}/applications/{applicationId}": {
+      "requiredFields": ["applicationId", "visitId", "shopperId", "status", "proposedDate", "proposedTimeBand", "reason", "responsibleUid", "createdAt", "updatedAt"],
+      "purpose": "Postulacion con aprobacion y control de fecha/franja",
+      "validStatuses": ["pendiente", "aprobada", "fecha_pendiente", "reprogramacion_solicitada", "standby", "no_continua", "cancelada"]
+    },
+    "tenants/{tenantId}/shoppers/{shopperId}": {
+      "requiredFields": ["shopperId", "tenantId", "name", "countries", "cities", "status", "score", "stats", "createdAt", "updatedAt"],
+      "purpose": "Perfil shopper con estadisticas reales"
+    },
+    "tenants/{tenantId}/shopperStats/{shopperId}": {
+      "requiredFields": ["shopperId", "score", "criteria", "history", "updatedAt"],
+      "purpose": "Puntaje y criterios visibles para decision de asignacion"
+    },
+    "tenants/{tenantId}/projects/{projectId}/notifications/{notificationId}": {
+      "requiredFields": ["notificationId", "eventType", "targetRole", "targetUid", "visitId", "applicationId", "status", "createdAt"],
+      "purpose": "Notificaciones internas, shopper y cliente"
+    },
+    "tenants/{tenantId}/projects/{projectId}/responsibilityLog/{logId}": {
+      "requiredFields": ["logId", "visitId", "applicationId", "fromUid", "toUid", "reason", "createdBy", "createdAt"],
+      "purpose": "Trazabilidad de gestor/responsable"
+    }
+  },
+  "backendGateBeforeRealLoad": [
+    "Admin reads tenants/tya",
+    "Admin reads or gets tenants/tya/projects",
+    "Admin denied tenants/otro",
+    "External user denied tenants/tya",
+    "Node preview HTTP 200",
+    "UI source firestore and tenant tya",
+    "No localStorage/demo in backend preview",
+    "No banca in tenant TyA"
+  ]
+}

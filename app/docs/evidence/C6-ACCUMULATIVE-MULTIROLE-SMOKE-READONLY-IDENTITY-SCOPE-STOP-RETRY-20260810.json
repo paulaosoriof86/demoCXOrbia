@@ -1,0 +1,114 @@
+{
+  "schemaVersion": "cxorbia.c6.accumulative-multirole-smoke-readonly-stop.evidence.v1",
+  "generatedAt": "2026-08-10T13:33:00-06:00",
+  "state": "C6_SMOKE_READONLY_STOP_IDENTITY_SCOPE_FINDINGS__AUTH_DEV_228_PRESERVED__ZERO_WRITES__NO_SECOND_SMOKE__NO_PRODUCTION",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "authBaseline": {
+    "authExecuted": true,
+    "authUsersExpected": 228,
+    "readbackPass": true,
+    "rollbackDryRunPass": true,
+    "planDigest": "c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4",
+    "prewriteRepeated": false,
+    "authWritesCurrentBlock": 0
+  },
+  "sourceGate": {
+    "commit": "51dd4fb37a45caaf949392418dbbbc58a8823ac0",
+    "runId": 31424489260,
+    "decision": "PASS_C6_SMOKE_READONLY_CREDENTIAL_LIFECYCLE_SOURCE_ZERO_WRITES_NO_PII"
+  },
+  "request": {
+    "requestId": "c6-accumulative-multirole-smoke-readonly-20260810-01",
+    "requestCommit": "b577d8fcefc57c6743cf2dd3689c51a22e691a5b",
+    "providerSmokeAttemptsMax": 1,
+    "providerSmokeAttempts": 1,
+    "secondSmokeProviderAttempt": false,
+    "consumed": true,
+    "allowedExecutions": 0
+  },
+  "run": {
+    "runId": 31424532292,
+    "jobId": 93572980396,
+    "artifactId": 9076650610,
+    "artifactDigest": "sha256:78844e2fd0a0ce6137543f14802a91522377926ab04bb4cb8ce5bd7789f0545c",
+    "freshEphemeralCredentialLoaded": true,
+    "providerReads": 1,
+    "decision": "STOP_RETRY_C6_ACCUMULATIVE_MULTIROLE_SMOKE_READONLY",
+    "errorCode": "DUPLICATE_PROVIDER_EMAILS",
+    "errorFingerprint": "ce53ab4ec34141e4e696e3c7"
+  },
+  "sourceSafeObservations": {
+    "authPopulation": 228,
+    "enabled": 227,
+    "disabled": 1,
+    "duplicateProviderEmailGroups": 5,
+    "unknownEnabledRoles": 4,
+    "adminOperaciones": {
+      "enabled": 11,
+      "tenantAllowed": 10,
+      "namespaceCompatible": 11
+    },
+    "shopper": {
+      "enabled": 209,
+      "tenantAllowed": 209,
+      "projectScoped": 209,
+      "targetScoped": 208,
+      "shopperScopePresent": 208,
+      "namespaceCompatible": 209,
+      "duplicateShopperScopes": 0
+    },
+    "cliente": {
+      "enabled": 3,
+      "tenantAllowed": 3,
+      "projectScoped": 3,
+      "targetScoped": 3,
+      "namespaceCompatible": 3
+    },
+    "phaseASurfaces": {
+      "required": 20,
+      "present": 20,
+      "missing": 0
+    }
+  },
+  "interpretationBoundary": {
+    "duplicateEmailGroupsAdjudicated": false,
+    "unknownRoleUsersAdjudicated": false,
+    "adminTenantOutlierAdjudicated": false,
+    "shopperScopeOutlierAdjudicated": false,
+    "noRawIdentityMaterialExported": true,
+    "noIdentityReconstructionPerformed": true
+  },
+  "safety": {
+    "providerWrites": 0,
+    "authWrites": 0,
+    "iamWrites": 0,
+    "firestoreWrites": 0,
+    "membershipWrites": 0,
+    "hrWrites": 0,
+    "visitsWrites": 0,
+    "certificationsWrites": 0,
+    "liquidationsWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "cloudBuild": 0,
+    "cloudRun": 0,
+    "hosting": 0,
+    "make": 0,
+    "gemini": 0,
+    "payments": 0,
+    "merge": false,
+    "production": false,
+    "rawPiiExported": false
+  },
+  "failClose": {
+    "executionWorkflowRemoved": true,
+    "sourceGateWorkflowRemoved": true,
+    "requestDisabled": true,
+    "requestConsumed": true,
+    "allowedExecutions": 0,
+    "secondSmokeProviderAttempt": false
+  },
+  "next": "C6_AUTH_READONLY_SMOKE_FINDINGS_ADJUDICATION_SOURCE_SAFE_NO_WRITES_BEFORE_ANY_NEW_SMOKE"
+}

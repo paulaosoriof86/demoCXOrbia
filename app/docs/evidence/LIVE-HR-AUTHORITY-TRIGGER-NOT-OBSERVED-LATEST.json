@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "cxorbia.live-hr-authority-trigger-not-observed.v1",
+  "generatedAt": "2026-08-06T10:11:00-06:00",
+  "decision": "STOP_RETRY_LIVE_HR_PROVIDER_EXECUTION_NOT_OBSERVED",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "sourceCommit": "31f4af0f7501b23b4e72b1a5f8457669a5f91c77",
+  "requestCommit": "4e404f2db48ff8b07430d7ac7505eff6c040458a",
+  "authorizationId": "chat-20260806-live-hr-authority-current-period-01",
+  "expectedWorkflow": ".github/workflows/cxorbia-live-hr-current-reconcile.yml",
+  "expectedEvidence": [
+    "app/docs/evidence/LIVE-HR-AUTHORITY-CONTRACT-LATEST.json",
+    "app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.json",
+    "app/docs/evidence/AUGUST-DELTA-READONLY-PLAN-LATEST.json",
+    "app/docs/evidence/LIVE-HR-TAB-REGISTRY-ENFORCEMENT-LATEST.json"
+  ],
+  "observation": {
+    "requestCommitCreatedAt": "2026-08-06T15:50:46Z",
+    "observationCutoff": "2026-08-06T16:11:00Z",
+    "workflowTimeoutMinutes": 20,
+    "branchHeadAtCutoff": "4e404f2db48ff8b07430d7ac7505eff6c040458a",
+    "branchHeadAdvanced": false,
+    "authorityEvidencePresent": false,
+    "publishedCommitStatuses": 0,
+    "providerExecutionResultAvailable": false
+  },
+  "providerReadConsumption": "UNKNOWN_NO_EXECUTION_EVIDENCE",
+  "prohibitedInference": [
+    "do_not_claim_provider_read_zero",
+    "do_not_claim_august_pass_or_fail_from_this_trigger",
+    "do_not_retry_without_fresh_authorization"
+  ],
+  "sourceChangesApplied": [
+    "live provider registry derives current period dynamically",
+    "registry enforcement removes fixed month authority",
+    "country consistency validates one live source revision",
+    "historical mutation must change stable sourceRevision",
+    "current-period planner removes fixed HR counts"
+  ],
+  "safety": {
+    "providerWrites": 0,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "merge": false,
+    "production": false
+  }
+}

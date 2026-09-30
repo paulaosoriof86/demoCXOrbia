@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "cxorbia.production-promotion-contract.v1",
+  "authorizationId": "chat-20260806-promote-existing-clean-project-v1",
+  "authorizedAt": "2026-08-06T13:39:00-06:00",
+  "authorizedBy": "Paula",
+  "authorizationSource": "current_conversation",
+  "authorized": true,
+  "strategy": "PROMOTE_EXISTING_CLEAN_PROJECT",
+  "allowedStrategies": [
+    "PROMOTE_EXISTING_CLEAN_PROJECT",
+    "SEPARATE_CLEAN_PROD_PROJECT"
+  ],
+  "legacyProjectReuseForBackend": false,
+  "productionProjectId": "cxorbia-backend-dev",
+  "productionHostingTarget": "cxorbia-dev",
+  "productionHostingSite": "cxorbia-backend-dev",
+  "productionCloudRunService": "cxorbia-live-hr-dev",
+  "productionCloudRunRegion": "us-central1",
+  "acceptCurrentIdentifiersAndUrlAsProduction": true,
+  "requiresSeparateProdFiles": false,
+  "requiredPreCutoverGates": [
+    "LIVE_HR_CURRENT_PERIOD_AND_HISTORY_REVISION_PASS",
+    "SHOPPER_AUTH_REPAIR_PASS",
+    "ACCUMULATIVE_MULTIROLE_SMOKE_PASS",
+    "HUMAN_VALIDATION_PASS",
+    "ROLLBACK_READY",
+    "EXPLICIT_CUTOVER_AUTHORIZATION"
+  ],
+  "writesAuthorizedByThisContract": false,
+  "deployAuthorizedByThisContract": false,
+  "mergeAuthorizedByThisContract": false,
+  "productionCutoverAuthorizedByThisContract": false
+}

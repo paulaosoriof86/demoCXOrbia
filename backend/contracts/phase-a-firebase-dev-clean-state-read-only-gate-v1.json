@@ -1,0 +1,172 @@
+{
+  "contractId": "phase-a-firebase-dev-clean-state-read-only-gate-v1",
+  "status": "prepared_manual_provider_read_blocked",
+  "generatedAt": "2026-07-10",
+  "purpose": "Verify the clean and isolated state of the CXOrbia Firebase DEV project using read-only provider calls, without creating users, writing claims, reading business document fields, deploying rules, importing data or touching production.",
+  "expectedTarget": {
+    "projectId": "cxorbia-backend-dev",
+    "storageBucket": "cxorbia-backend-dev.firebasestorage.app",
+    "hostingTarget": "cxorbia-dev",
+    "environment": "DEV",
+    "legacyImportAllowed": false,
+    "productionAllowed": false
+  },
+  "executionGate": {
+    "mode": "manual_workflow_dispatch_only",
+    "exactConfirmation": "VERIFY_FIREBASE_DEV_READ_ONLY",
+    "paulaExplicitAuthorizationRequired": true,
+    "currentAuthorization": false,
+    "providerCallsBeforeAuthorization": "blocked",
+    "writeEscalation": "not_permitted"
+  },
+  "allowedReadOnlyChecks": [
+    {
+      "id": "serviceAccountProjectIdentity",
+      "output": ["projectIdMatch", "serviceAccountDomainMatch"],
+      "rawValueOutput": false
+    },
+    {
+      "id": "authUsers",
+      "method": "Firebase Admin listUsers",
+      "output": ["available", "totalCount", "empty"],
+      "forbiddenOutput": ["uid", "email", "phoneNumber", "displayName", "providerData", "customClaims"]
+    },
+    {
+      "id": "authConfiguration",
+      "method": "Identity Toolkit projects.getConfig",
+      "output": ["available", "emailPasswordEnabled", "anonymousEnabled", "phoneEnabled"],
+      "forbiddenOutput": ["authorizedDomains", "oauthClientIds", "smtp", "hashConfig", "rawConfig"]
+    },
+    {
+      "id": "firestoreRootCollections",
+      "method": "Firestore listCollections plus ID-only limit probes",
+      "output": ["available", "rootCollectionCount", "anyDocumentDetected", "empty"],
+      "forbiddenOutput": ["collectionIds", "documentIds", "documentFields", "documentPaths"]
+    },
+    {
+      "id": "firestoreDatabases",
+      "method": "Firestore projects.databases.list",
+      "output": ["available", "databaseCount"],
+      "forbiddenOutput": ["databaseNames", "locations", "rawResponse"]
+    },
+    {
+      "id": "storageObjects",
+      "method": "Cloud Storage list objects with maxResults=1",
+      "output": ["available", "anyObjectDetected", "empty"],
+      "forbiddenOutput": ["objectNames", "metadata", "downloadTokens", "signedUrls"]
+    },
+    {
+      "id": "cloudFunctions",
+      "method": "Cloud Functions v2 list with pageSize=1",
+      "output": ["available", "anyFunctionDetected", "empty"],
+      "forbiddenOutput": ["functionNames", "serviceConfig", "environmentVariables", "source"]
+    },
+    {
+      "id": "rulesReleases",
+      "method": "Firebase Rules releases list",
+      "output": ["available", "releaseCount"],
+      "forbiddenOutput": ["releaseNames", "rulesetNames", "source", "rawResponse"]
+    }
+  ],
+  "prohibitedActions": [
+    "createAuthUser",
+    "updateAuthUser",
+    "deleteAuthUser",
+    "setCustomClaims",
+    "importUsers",
+    "writeFirestoreDocument",
+    "deleteFirestoreDocument",
+    "deployFirestoreRules",
+    "deployStorageRules",
+    "uploadStorageObject",
+    "deleteStorageObject",
+    "createOrUpdateFunction",
+    "invokeBusinessFunction",
+    "activateProvider",
+    "deployHosting",
+    "readBusinessDocumentFields",
+    "outputPII",
+    "outputSecrets",
+    "productionAccess"
+  ],
+  "decisionModel": {
+    "CLEAN_STATE_VERIFIED_READ_ONLY": {
+      "requirements": [
+        "target identity matches",
+        "Auth users check available and totalCount=0",
+        "Firestore check available and no root collections/documents detected",
+        "Storage check available and no objects detected",
+        "Functions check available and no functions detected"
+      ],
+      "next": "prepare opaque DEV test-user dry-run only"
+    },
+    "NONEMPTY_REVIEW_REQUIRED": {
+      "trigger": "any Auth user, Firestore content, Storage object or Cloud Function detected",
+      "next": "stop; document counts only; classify ownership and request human review; no deletion or overwrite"
+    },
+    "INCONCLUSIVE_PERMISSION_OR_API": {
+      "trigger": "one or more mandatory checks unavailable and no non-empty evidence detected",
+      "next": "stop; correct read-only IAM/API visibility; do not infer clean state"
+    },
+    "TARGET_MISMATCH_HARD_STOP": {
+      "trigger": "projectId, bucket or service-account domain mismatch",
+      "next": "stop before provider data reads"
+    }
+  },
+  "sanitizedReport": {
+    "allowed": [
+      "generatedAt",
+      "projectIdMatch",
+      "check availability",
+      "counts",
+      "empty/non-empty booleans",
+      "sanitized status codes",
+      "decision",
+      "safe-state booleans"
+    ],
+    "forbidden": [
+      "emails",
+      "uids",
+      "phones",
+      "names",
+      "claims payloads",
+      "document fields",
+      "document/object/function names",
+      "tokens",
+      "credentials",
+      "private URLs",
+      "raw API responses"
+    ]
+  },
+  "auditRequirements": [
+    "record workflow run id and commit sha",
+    "record exact confirmation without credential content",
+    "record sanitized decision and counts",
+    "never upload credential files as artifacts",
+    "delete temporary credential file in always step",
+    "do not convert a clean-state result into authorization for writes"
+  ],
+  "safeState": {
+    "providerCallsExecuted": false,
+    "authUsersCreated": false,
+    "claimsWritten": false,
+    "firestoreReadsExecuted": false,
+    "firestoreWrites": false,
+    "storageReadsExecuted": false,
+    "storageWrites": false,
+    "functionReadsExecuted": false,
+    "rulesDeployed": false,
+    "imports": false,
+    "deploy": false,
+    "production": false,
+    "containsSecrets": false,
+    "containsSensitiveData": false
+  },
+  "classification": {
+    "reusableCxorbia": ["manual read-only clean-state verification", "sanitized count-only reporting", "no silent cleanup", "inconclusive is not clean"],
+    "exclusiveClient": ["TyA source data is not read by this gate"],
+    "claudePrototype": ["display clean, non-empty, inconclusive and blocked states honestly"],
+    "academia": ["read-only verification, provider authorization, safe report interpretation and no-deletion rule"],
+    "sinImpactoClaude": ["service account handling, API endpoints, CI artifact internals"]
+  }
+}

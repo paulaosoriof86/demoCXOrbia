@@ -1,0 +1,156 @@
+{
+  "contract": "notification-outbox-phase-a-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "makeWriteAllowed": false,
+  "whatsappApiAllowed": false,
+  "emailSendAllowed": false,
+  "purpose": "Define notification outbox, templates, recipient targeting, delivery channels, WhatsApp Web fallback and future Make/messaging API integration without sending real messages.",
+  "collections": {
+    "notifications": "tenants/{tenantId}/notifications/{notificationId}",
+    "outbox": "tenants/{tenantId}/notificationOutbox/{outboxId}",
+    "templates": "tenants/{tenantId}/notificationTemplates/{templateId}",
+    "deliveryAttempts": "tenants/{tenantId}/notificationDeliveryAttempts/{attemptId}",
+    "userNotificationPreferences": "tenants/{tenantId}/users/{userId}/notificationPreferences/{preferenceId}",
+    "auditEvents": "tenants/{tenantId}/auditEvents/{eventId}"
+  },
+  "stableKeys": [
+    "tenantId",
+    "projectId",
+    "notificationId",
+    "outboxId",
+    "templateId",
+    "recipientUserId",
+    "recipientRole",
+    "recipientChannelRef",
+    "relatedEntityType",
+    "relatedEntityId",
+    "eventType",
+    "channel",
+    "deliveryStatus",
+    "createdAt",
+    "updatedAt"
+  ],
+  "channels": [
+    "in_app",
+    "whatsapp_web",
+    "make_messaging_future",
+    "email_future",
+    "sms_future"
+  ],
+  "deliveryStatuses": [
+    "draft",
+    "queued_preview_only",
+    "prepared_whatsapp_web",
+    "manual_send_required",
+    "sent_manual_confirmed",
+    "sent_api_confirmed_future",
+    "failed_future",
+    "cancelled",
+    "blocked_by_gate",
+    "requires_recipient_contact_review"
+  ],
+  "eventTypesPhaseA": [
+    "postulation_received",
+    "postulation_approved",
+    "postulation_not_selected_soft",
+    "date_adjustment_requested",
+    "date_confirmation_requested",
+    "assignment_created",
+    "visit_schedule_requested",
+    "visit_scheduled",
+    "reschedule_requested_by_shopper",
+    "reschedule_requested_by_ops",
+    "visit_cancelled",
+    "visit_performed",
+    "questionnaire_completed",
+    "review_needs_correction",
+    "submitido_pending_hr",
+    "liquidation_candidate",
+    "payment_scheduled",
+    "academy_course_assigned",
+    "academy_manual_updated",
+    "support_training_requested"
+  ],
+  "recipientGroups": [
+    "shopper",
+    "ops",
+    "admin",
+    "super",
+    "client",
+    "consultant_partner",
+    "support"
+  ],
+  "templateRules": [
+    "Templates must be editable per tenant and project when needed.",
+    "Templates must support role-specific tone and content.",
+    "Templates must avoid saying a message was sent by WhatsApp API or Make when only WhatsApp Web fallback is prepared.",
+    "Soft non-selection messages must avoid harsh rejection wording.",
+    "Admin/internal templates may include approvedBy and audit details; shopper-visible templates should show only user-appropriate content.",
+    "Templates must not expose sensitive internal fields or raw HR column names."
+  ],
+  "fallbackRules": [
+    "If Make/messaging API is disabled, outbox prepares WhatsApp Web text and in-app notification.",
+    "WhatsApp Web fallback requires manual action and must be labelled manual_send_required until confirmed.",
+    "If recipient contact is missing or invalid, status must be requires_recipient_contact_review.",
+    "No real send occurs from this contract.",
+    "Future delivery attempts must preserve channel, timestamp, result, actor or system provider."
+  ],
+  "notificationPayloadFields": [
+    "tenantId",
+    "projectId",
+    "notificationId",
+    "templateId",
+    "eventType",
+    "recipientUserId",
+    "recipientRole",
+    "channel",
+    "deliveryStatus",
+    "subjectOrTitle",
+    "messageBody",
+    "ctaLabel",
+    "ctaTarget",
+    "relatedEntityType",
+    "relatedEntityId",
+    "createdBy",
+    "createdAt",
+    "updatedAt",
+    "auditTrail"
+  ],
+  "automationGate": {
+    "makeEnabled": false,
+    "whatsappApiEnabled": false,
+    "emailEnabled": false,
+    "manualWhatsappWebAllowed": true,
+    "inAppPreviewAllowed": true,
+    "rules": [
+      "Make and WhatsApp API remain future gates.",
+      "Manual WhatsApp Web text can be prepared but not counted as API sent.",
+      "In-app preview may be documented but not written by this contract."
+    ]
+  },
+  "academyImpact": {
+    "roles": ["super", "admin", "ops", "shopper", "client", "consultant_partner"],
+    "manualsToUpdate": ["Notifications", "WhatsApp Web fallback", "Message templates", "Academy notifications", "Postulation and assignment alerts"],
+    "coursesToUpdate": ["Ops notifications workflow", "Admin notification audit", "Shopper notifications", "Academy update alerts"],
+    "newLessons": [
+      "Difference between in-app notification, WhatsApp Web and future Make API",
+      "How to prepare a WhatsApp Web message",
+      "How to confirm manual send",
+      "How to read notification status",
+      "How Academy sends course/manual update notifications"
+    ]
+  },
+  "hardStops": [
+    "Do not send real WhatsApp API messages from this contract.",
+    "Do not call Make from this contract.",
+    "Do not send real email from this contract.",
+    "Do not write Firestore from this contract.",
+    "Do not mark manual WhatsApp Web text as API sent.",
+    "Do not expose sensitive internal fields in shopper/client notifications."
+  ]
+}

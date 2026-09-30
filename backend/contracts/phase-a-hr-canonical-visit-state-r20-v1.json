@@ -1,0 +1,115 @@
+{
+  "contractId": "phase-a-hr-canonical-visit-state-r20-v1",
+  "schemaVersion": "1.0.0",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "status": "implemented_source_safe_pending_runtime_visual",
+  "historyScope": "all_detected_hr_periods",
+  "minimumRequiredHistory": "all_periods_in_current_year_if_older_tabs_unavailable",
+  "sourceOfTruth": {
+    "visits": "HR multi-tab",
+    "assignment": "shopper reference in HR row",
+    "scheduled": "valid scheduled date",
+    "realized": "valid realized date or stronger later evidence",
+    "questionnaire": "valid questionnaire date or confirmed submit evidence",
+    "submitted": "HR/TyA submitted date or confirmed HR submission state",
+    "liquidation": "external financial cross-check",
+    "payment": "external financial confirmation"
+  },
+  "orthogonalDimensions": [
+    "assignmentState",
+    "schedulingState",
+    "executionState",
+    "questionnaireState",
+    "submissionState",
+    "liquidationState",
+    "paymentState",
+    "outOfRange",
+    "reviewRequired"
+  ],
+  "rules": [
+    {
+      "id": "assignment",
+      "when": "shopperId/shopperCode exists",
+      "result": "assigned",
+      "negative": "without shopper reference the visit is unassigned and eligible for availability subject to project rules"
+    },
+    {
+      "id": "pending_schedule",
+      "when": "assigned and no valid scheduled date and not already realized",
+      "result": "pending_schedule"
+    },
+    {
+      "id": "scheduled",
+      "when": "assigned and valid scheduled date and not already realized",
+      "result": "pending_realization"
+    },
+    {
+      "id": "pending_questionnaire",
+      "when": "realized evidence and no questionnaire evidence",
+      "result": "pending_questionnaire"
+    },
+    {
+      "id": "pending_submission",
+      "when": "questionnaire evidence and no submitted evidence",
+      "result": "pending_tya_submit"
+    },
+    {
+      "id": "submitted",
+      "when": "submitted evidence confirmed by HR/TyA",
+      "result": "submitted_complete_and_liquidation_candidate",
+      "doesNotMean": ["liquidated", "paid"]
+    },
+    {
+      "id": "liquidation",
+      "when": "external financial source confirms liquidation",
+      "result": "liquidation_confirmed"
+    },
+    {
+      "id": "payment",
+      "when": "external financial source confirms payment",
+      "result": "payment_confirmed"
+    },
+    {
+      "id": "control_conflict",
+      "when": "control text contradicts shopper/date evidence",
+      "result": "review_required",
+      "doesNotMean": "silently overwrite shopper/date evidence"
+    }
+  ],
+  "monotonicity": [
+    "submitted <= questionnaireCompleted",
+    "questionnaireCompleted <= realized",
+    "paymentConfirmed <= liquidationCandidate"
+  ],
+  "requiredConsumers": [
+    "Dashboard KPI",
+    "Dashboard phase flow",
+    "Dashboard operational lists",
+    "Visitas",
+    "Visitas Disponibles",
+    "Shopper portal",
+    "Liquidaciones",
+    "Dashboard Financiero",
+    "Historical comparison",
+    "exports"
+  ],
+  "prohibitions": [
+    "month-specific state logic",
+    "derive finance from estado alone",
+    "derive assignment from control label when shopper field disagrees",
+    "duplicate state filters inside frontend modules",
+    "invent payment or liquidation",
+    "hide source conflicts"
+  ],
+  "safeState": {
+    "sourceSafe": true,
+    "writes": false,
+    "imports": false,
+    "runtimeLiveSync": false,
+    "deploy": false,
+    "production": false,
+    "providers": false,
+    "payments": false
+  }
+}

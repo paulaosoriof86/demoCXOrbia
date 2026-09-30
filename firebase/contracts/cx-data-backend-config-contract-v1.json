@@ -1,0 +1,105 @@
+{
+  "contractVersion": "cx-data-backend-config-contract-v1",
+  "status": "draft-no-frontend-change",
+  "purpose": "Contrato para que el frontend cambie Configuración, Integraciones y Automatizaciones sin acoplarse directamente a Firestore.",
+  "principles": [
+    "El frontend debe llamar métodos estables de CX.data o adapter, no escribir colecciones directamente.",
+    "Los módulos de UI no deben conocer rutas Firestore.",
+    "Los cambios deben producir auditoría.",
+    "Los estados visibles deben venir de backend o de un preview marcado claramente.",
+    "Los valores privados se representan por privateRef y nunca se devuelven al frontend."
+  ],
+  "methods": {
+    "getTenantConfig": {
+      "scope": "tenant",
+      "mode": "read",
+      "input": { "tenantId": "string" },
+      "output": { "tenantConfig": "object", "source": "backend|localPreview", "status": "ok|empty|error" }
+    },
+    "saveTenantConfig": {
+      "scope": "tenant",
+      "mode": "write",
+      "input": { "tenantId": "string", "patch": "object", "expectedVersion": "string|null" },
+      "output": { "ok": "boolean", "newVersion": "string|null", "auditId": "string|null", "errors": "array" },
+      "requires": ["adminRole", "auditLog", "validation"]
+    },
+    "getProjectConfig": {
+      "scope": "project",
+      "mode": "read",
+      "input": { "tenantId": "string", "projectId": "string" },
+      "output": { "projectConfig": "object", "status": "ok|empty|error" }
+    },
+    "saveProjectConfig": {
+      "scope": "project",
+      "mode": "write",
+      "input": { "tenantId": "string", "projectId": "string", "patch": "object", "expectedVersion": "string|null" },
+      "output": { "ok": "boolean", "newVersion": "string|null", "auditId": "string|null", "errors": "array" },
+      "requires": ["adminRole", "projectScope", "auditLog", "validation"]
+    },
+    "getIntegrationCatalog": {
+      "scope": "global",
+      "mode": "read",
+      "input": { "plan": "string|null" },
+      "output": { "items": "array", "status": "ok|error" }
+    },
+    "getTenantIntegrations": {
+      "scope": "tenant",
+      "mode": "read",
+      "input": { "tenantId": "string" },
+      "output": { "items": "array", "status": "ok|error" }
+    },
+    "saveIntegrationConfig": {
+      "scope": "tenant",
+      "mode": "write",
+      "input": { "tenantId": "string", "integrationId": "string", "configPublic": "object", "privateRef": "string|null", "desiredStatus": "draft|configured|disabled" },
+      "output": { "ok": "boolean", "status": "draft|configured|disabled|error", "auditId": "string|null", "errors": "array" },
+      "requires": ["adminRole", "auditLog", "noPrivateValueEcho"]
+    },
+    "testIntegration": {
+      "scope": "tenant",
+      "mode": "action",
+      "input": { "tenantId": "string", "integrationId": "string", "mode": "simulation|real" },
+      "output": { "ok": "boolean", "testStatus": "ok|warning|error|simulation", "message": "string", "runId": "string|null" },
+      "requires": ["auditLog", "runLog", "noPrivateValueEcho"]
+    },
+    "getAutomationRules": {
+      "scope": "tenant",
+      "mode": "read",
+      "input": { "tenantId": "string", "projectId": "string|null" },
+      "output": { "items": "array", "status": "ok|error" }
+    },
+    "saveAutomationRule": {
+      "scope": "tenant",
+      "mode": "write",
+      "input": { "tenantId": "string", "ruleId": "string", "patch": "object", "expectedVersion": "string|null" },
+      "output": { "ok": "boolean", "newVersion": "string|null", "auditId": "string|null", "errors": "array" },
+      "requires": ["adminRole", "auditLog", "validation"]
+    },
+    "testAutomationRule": {
+      "scope": "tenant",
+      "mode": "action",
+      "input": { "tenantId": "string", "ruleId": "string", "payloadPreview": "object", "mode": "simulation|real" },
+      "output": { "ok": "boolean", "runId": "string", "status": "ok|failed|simulation", "message": "string" },
+      "requires": ["runLog", "payloadSanitization"]
+    },
+    "getAutomationRuns": {
+      "scope": "tenant",
+      "mode": "read",
+      "input": { "tenantId": "string", "ruleId": "string|null", "limit": "number" },
+      "output": { "items": "array", "status": "ok|error" }
+    },
+    "getConfigAuditLogs": {
+      "scope": "tenant",
+      "mode": "read",
+      "input": { "tenantId": "string", "area": "string|null", "limit": "number" },
+      "output": { "items": "array", "status": "ok|error" },
+      "requires": ["adminRole"]
+    }
+  },
+  "frontendGuidance": {
+    "configurationModule": "Debe reemplazar lecturas/escrituras locales por estos métodos cuando se autorice tocar frontend.",
+    "integrationsModule": "Debe mostrar estado real recibido por getTenantIntegrations y usar testIntegration para pruebas.",
+    "automationsModule": "Debe mostrar reglas y runs reales; no depender solo de mensajes de éxito locales.",
+    "fallback": "Si backend no está activo, mostrar badge de preview/local y no prometer persistencia real."
+  }
+}

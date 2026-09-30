@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "cxorbia.i3.post-run500-forensic-drift-lock.v1",
+  "lockId": "CXORBIA-I3-POST-RUN500-FORENSIC-DRIFT-2026-09-26",
+  "status": "HOLD",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "observedControlHeadBeforeFreeze": "fcf4073e68e2860ba3d285b2d47b9f8f8d7e95b4",
+  "observedControlTreeBeforeFreeze": "440f0dabd4afc1abcc622a6d7a1a566afeb69269",
+  "run500": {
+    "runId": 36263099013,
+    "runNumber": 500,
+    "productSourceSha": "a552e1fbb41d5cacc8ab3157f3d91492b82b8f00",
+    "productSourceTree": "c44872eb2dc1529de8387957ec720024944a5e62",
+    "historicalStatus": "GO_FOR_EXACT_ARTIFACT_ONLY"
+  },
+  "currentLiveEvidence": {
+    "hrRevision": "d9bbb352738196d71602a3adb080e4f8bf37e7211a3bc2ffea13711454c71f95",
+    "period": "2026-09",
+    "counts": {
+      "total": 44,
+      "GT": 34,
+      "HN": 10,
+      "assigned": 43,
+      "available": 1,
+      "unscheduled": 7,
+      "realized": 26,
+      "pendingRealization": 18,
+      "questionnairePending": 3,
+      "questionnaireCompleteUnsubmitted": 8,
+      "submitted": 15,
+      "liquidated": 0,
+      "outOfRange": 4
+    }
+  },
+  "currentState": {
+    "i3": "HOLD",
+    "i4Authorized": false,
+    "productionTouched": false,
+    "newFindings": [
+      "VRM-076",
+      "VRM-077",
+      "VRM-078",
+      "VRM-079",
+      "VRM-080",
+      "VRM-081"
+    ],
+    "nextFindingId": "VRM-082"
+  },
+  "invariants": {
+    "singleCandidate": true,
+    "noI5": true,
+    "noRebuildForConvenience": true,
+    "noProduction": true,
+    "run500EvidencePreserved": true,
+    "fixOnlyProvenOwners": true
+  }
+}

@@ -1,0 +1,78 @@
+name: CXOrbia Corte 4 P0 VIS-02 Remote Diagnostic Read-only
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - '.github/cxorbia-firebase-requests/corte4-p0-vis02-remote-diagnostic.json'
+
+permissions:
+  contents: read
+  statuses: write
+
+env:
+  OUT_DIR: .tmp/corte4-p0-vis02-remote-diag
+
+jobs:
+  diagnose-remote:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install Chromium
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT_DIR"
+          npm install --no-save --ignore-scripts playwright@1.61.1 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null 2>&1
+      - name: Inspect deployed proof, script responses and role-switch behavior
+        run: |
+          set +e
+          node <<'NODE'
+          const fs=require('fs'); const {chromium}=require('playwright');
+          (async()=>{let b;const r={ok:false,errors:[],proof:null,states:{},badScripts:[]};try{
+            const expected='548e5f89c5d077686611d1904f4166d3188a2ccd';
+            const pr=await fetch(`https://cxorbia-tya-dev-260729-c4.web.app/corte4-p0-vis02-proof.json?diag=${Date.now()}`,{headers:{'Cache-Control':'no-cache'}});
+            if(pr.ok){try{r.proof=await pr.json();}catch(e){r.errors.push('proof_json');}}else r.errors.push('proof_http_'+pr.status);
+            if(r.proof&&r.proof.sourceCommit!==expected) r.errors.push('proof_source_'+String(r.proof.sourceCommit||'none').slice(0,12));
+            b=await chromium.launch({headless:true});const p=await b.newPage();const pe=[];p.on('pageerror',e=>pe.push(String(e.message||e)));
+            p.on('response',resp=>{try{const req=resp.request();if(req.resourceType()!=='script')return;const ct=String(resp.headers()['content-type']||'');if(!resp.ok()||!/javascript|ecmascript/i.test(ct)){const u=new URL(resp.url());r.badScripts.push(`${u.pathname}:${resp.status()}:${ct.split(';')[0]||'none'}`);}}catch(e){}});
+            const url=`https://cxorbia-tya-dev-260729-c4.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&p0vis02=${expected}&diag=${Date.now()}`;
+            await p.goto(url,{waitUntil:'domcontentloaded',timeout:30000});await p.waitForTimeout(2200);
+            const snap=()=>p.evaluate(async()=>({role:CX.session?.role,guardInstalled:!!window.CX_C4_EMPTY_SHELL_GUARD,guardEmpty:window.CX_C4_EMPTY_SHELL_GUARD?window.CX_C4_EMPTY_SHELL_GUARD.isProtectedEmpty():null,state:window.CX_C4_EMPTY_SHELL_STATE||null,rail:document.getElementById('rail')?.innerText||'',view:document.getElementById('view')?.innerText||'',loginHidden:document.getElementById('login')?.classList.contains('hidden'),appOn:document.getElementById('app')?.classList.contains('on'),shopperClass:document.body.classList.contains('role-shopper'),counts:{projects:(CX.data?.projects||[]).length,visits:(CX.data?._visitas||[]).length,shoppers:(CX.data?.shoppers||[]).length,posts:(CX.data?._posts||[]).length},backend:{previewMode:CX.BACKEND?.previewMode,readOnly:CX.BACKEND?.readOnly,allowEmpty:CX.BACKEND?.allowEmptyBackend},ro:window.CX_CORTE4_READONLY||null,last:window.CX_BACKEND_LAST_STATE||null,source:String(window.CX_BACKEND_DATA_SOURCE||''),ds:{mode:CX.dataSource?.mode,status:CX.dataSource?.status},sw:{controlled:!!navigator.serviceWorker?.controller,script:navigator.serviceWorker?.controller?.scriptURL||''}}));
+            r.states.login=await snap();
+            await p.evaluate(()=>CX.app.selectRole('admin'));await p.waitForTimeout(500);r.states.a1=await snap();
+            await p.evaluate(()=>CX.app.logout());await p.waitForTimeout(180);r.states.l1=await snap();
+            await p.evaluate(()=>CX.app.selectRole('shopper'));await p.waitForTimeout(350);r.states.sh=await snap();
+            await p.evaluate(()=>CX.app.logout());await p.waitForTimeout(180);r.states.l2=await snap();
+            await p.evaluate(()=>CX.app.selectRole('admin'));await p.waitForTimeout(500);r.states.a2=await snap();
+            for(const [n,x] of Object.entries({a1:r.states.a1,sh:r.states.sh,a2:r.states.a2})){
+              if(!x.guardInstalled)r.errors.push(n+'_guard_missing');
+              if(!x.guardEmpty)r.errors.push(n+'_guard_not_empty');
+              if(!x.state?.active)r.errors.push(n+'_inactive');
+              if(!x.view.includes('Sin proyectos disponibles'))r.errors.push(n+'_view');
+              if(!x.appOn||!x.loginHidden)r.errors.push(n+'_visibility');
+              if(x.counts.projects||x.counts.visits||x.counts.shoppers||x.counts.posts)r.errors.push(n+'_counts');
+            }
+            if(r.states.l1.rail.trim()||r.states.l1.view.trim())r.errors.push('l1_stale');
+            if(r.states.l2.rail.trim()||r.states.l2.view.trim())r.errors.push('l2_stale');
+            if(r.states.a2.shopperClass||r.states.a2.rail.includes('Shopper / Evaluador'))r.errors.push('a2_stale_shopper');
+            if(r.badScripts.length)r.errors.push('badscript_'+r.badScripts.join('|').slice(0,260));
+            if(pe.length)r.errors.push('pageerror_'+pe.join('|').slice(0,200));
+            r.ok=r.errors.length===0;
+          }catch(e){r.errors.push(String(e.message||e));}finally{if(b)await b.close();fs.writeFileSync(process.env.OUT_DIR+'/remote-diagnostic.json',JSON.stringify(r,null,2)+'\n');}})();
+          NODE
+      - name: Publish diagnostic status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          R="$OUT_DIR/remote-diagnostic.json"
+          if [ ! -f "$R" ]; then ERR='no_report'; STATE=error; else OK=$(node -p "require('./$R').ok===true?'yes':'no'"); ERR=$(node -p "(require('./$R').errors||['unknown']).join(',')"); if [ "$OK" = yes ]; then STATE=success; ERR='pass'; else STATE=error; fi; fi
+          SAFE=$(printf '%s' "$ERR" | tr ' /:,·|' '_______' | tr -cd 'A-Za-z0-9_.-_' | cut -c1-110)
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="cxorbia/c4p0vis02-remote-${SAFE}" -f description="VIS02_REMOTE_${ERR}" >/dev/null

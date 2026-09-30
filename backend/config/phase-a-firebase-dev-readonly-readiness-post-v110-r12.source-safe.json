@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "1.0.0",
+  "reportId": "phase-a-firebase-dev-readonly-readiness-post-v110-r12",
+  "generatedAt": "2026-07-12T21:42:11.703Z",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "baseline": {
+    "sourceZipSha256": "1f9e30f711899af500683e7292eb8652e9e0bc4b888cd1252a5482795dbba227",
+    "unionAggregateSha256": "d709668cc84886774ee3eb5b2ad3d14514e30ee791b90145f649f2b4f5510744",
+    "fileCount": 1397,
+    "r10Decision": "PASS_WITH_REVIEW_SOURCE_SAFE_VISUAL_SMOKE",
+    "r11dDecision": "REVIEW_QUEUE_SOURCE_LEVEL_ITEM_CREATED",
+    "shopperGapReviewId": "review_7bff5218634728dbf3b9b023"
+  },
+  "target": {
+    "projectId": "cxorbia-backend-dev",
+    "storageBucket": "cxorbia-backend-dev.firebasestorage.app",
+    "hostingTarget": "cxorbia-dev",
+    "environment": "DEV",
+    "expectedServiceAccountEmailSuffix": "@cxorbia-backend-dev.iam.gserviceaccount.com"
+  },
+  "execution": {
+    "workflow": ".github/workflows/cxorbia-firebase-dev-clean-state-read-only-run.yml",
+    "exactConfirmation": "VERIFY_FIREBASE_DEV_READ_ONLY",
+    "manualOnly": true,
+    "providerRunAuthorized": false,
+    "credentialSecretName": "FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV"
+  },
+  "staticGate": {
+    "verdict": "GO_SAFE_FIREBASE_DEV_READ_ONLY_GATE_PREPARED_NOT_EXECUTED",
+    "hardFailCount": 0,
+    "warningCount": 0,
+    "executionAuthorization": false
+  },
+  "decision": "READY_FOR_EXPLICIT_AUTHORIZATION_NOT_EXECUTED",
+  "blockedUntilAuthorization": [
+    "provider_reads",
+    "credential_use",
+    "auth_read",
+    "firestore_read",
+    "storage_read",
+    "functions_read",
+    "rules_release_read"
+  ],
+  "prohibitedAlwaysInThisRun": [
+    "create users",
+    "write claims",
+    "read user identifiers",
+    "read Firestore document fields",
+    "write or delete Firestore",
+    "upload or delete Storage",
+    "deploy rules",
+    "create/update/delete/invoke functions",
+    "enable providers",
+    "deploy Hosting",
+    "import data",
+    "production access"
+  ],
+  "safeState": {
+    "providerCalls": false,
+    "credentialsUsed": false,
+    "authReads": false,
+    "authWrites": false,
+    "firestoreReads": false,
+    "firestoreWrites": false,
+    "storageReads": false,
+    "storageWrites": false,
+    "functionReads": false,
+    "functionWrites": false,
+    "rulesDeploy": false,
+    "hostingDeploy": false,
+    "imports": false,
+    "production": false
+  }
+}

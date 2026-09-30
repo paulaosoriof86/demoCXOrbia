@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "cxorbia.remaining-shopper-identity-reconciliation.readonly.request.v1",
+  "enabled": true,
+  "mode": "READ_ONLY_REAL_IDENTITY_RECONCILIATION_CURRENT_UNRESOLVED",
+  "authorization": "Autorizo reconciliación read-only de las 9 referencias shopper restantes usando la identidad real y la información aplicable de shoppers del proyecto actual tya-plataforma, junto con la HR viva y evidencia canónica disponible, exclusivamente para enlazar correctamente perfil, visitas y certificaciones; sin writes, Auth changes, deploy, merge ni producción, y sin guardar PII cruda en GitHub.",
+  "legacyProjectId": "tya-plataforma",
+  "canonicalProjectId": "cxorbia-backend-dev",
+  "tenantId": "tya",
+  "scope": "current_unresolved_shopper_refs+real_identity+certification_linkage",
+  "rawPiiInGitHub": false,
+  "nameOnlyAutoMerge": false,
+  "providerWrites": 0,
+  "authChanges": false,
+  "deploy": false,
+  "merge": false,
+  "production": false,
+  "requestedAt": "2026-07-30T03:12:00Z",
+  "attempt": 10,
+  "reason": "supersede stale 9-ref set after live HR refresh: current through-July source has 208 refs, 201 exact visit crosswalk matches and 7 current unresolved refs"
+}

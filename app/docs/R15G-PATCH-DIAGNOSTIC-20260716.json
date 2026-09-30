@@ -1,0 +1,62 @@
+{
+  "runId": "29532129375",
+  "steps": {
+    "builderOperations": [
+      {
+        "label": "tenant",
+        "found": true,
+        "after": true
+      },
+      {
+        "label": "context",
+        "replacements": 1
+      },
+      {
+        "label": "warning",
+        "replacements": 1
+      },
+      {
+        "label": "contract",
+        "found": true,
+        "after": true
+      },
+      {
+        "label": "meta",
+        "found": true,
+        "after": true
+      }
+    ],
+    "bridge": {
+      "hadDoubleColon": true,
+      "insertedTenant": true,
+      "finalStable": true,
+      "finalTenant": true
+    },
+    "qaCount": 1,
+    "visibleCount": 1,
+    "workflowCount": 1,
+    "nodeChecks": {
+      "tools/release/tya-source-safe-binding-build-r15f.mjs": {
+        "returncode": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "app/core/tya-phase-a-source-safe-preview.js": {
+        "returncode": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "tools/qa/tya-phase-a-source-safe-visual-smoke.mjs": {
+        "returncode": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "tools/qa/tya-phase-a-visible-data-smoke-r17.mjs": {
+        "returncode": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    }
+  },
+  "decision": "PASS_DIAGNOSTIC"
+}

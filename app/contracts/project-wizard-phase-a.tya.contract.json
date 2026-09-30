@@ -1,0 +1,127 @@
+{
+  "contract": "project-wizard-phase-a-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "authRealAllowed": false,
+  "makeWriteAllowed": false,
+  "geminiRealAllowed": false,
+  "whatsappApiAllowed": false,
+  "purpose": "Define the complete minimum project wizard configuration needed for Phase A without changing frontend runtime or activating backend integrations.",
+  "projectConfigPath": "tenants/{tenantId}/projects/{projectId}",
+  "mustCreateProjectWith": {
+    "identity": {
+      "required": ["tenantId", "projectId", "name", "clientName", "status"],
+      "recommended": ["projectCode", "country", "currency", "timezone", "language", "activePeriodId"]
+    },
+    "scope": {
+      "required": ["countries", "currencies", "modulesEnabled"],
+      "recommended": ["featureFlags", "plan", "tenantLabels"]
+    },
+    "hrSource": {
+      "required": ["mode", "sourceType", "canImport", "syncGate"],
+      "allowedModes": ["none", "hr_driven", "manual_import_preview", "external_source_reference"],
+      "rules": [
+        "canImport must remain false until Paula authorizes real import/runtime.",
+        "raw HR URLs must not be persisted in browser storage for production behavior.",
+        "sourceRef should be opaque when backend provides it."
+      ]
+    },
+    "questionnaire": {
+      "required": ["mode"],
+      "allowedModes": ["interna", "externo_general", "externo_visita"],
+      "legacyCompatibility": {
+        "externa": "externo_general",
+        "link": "externo_visita"
+      },
+      "rules": [
+        "externo_general requires a project-level URL before execution.",
+        "externo_visita requires a visit-level link field before execution.",
+        "external questionnaire without link must show warning and must not fall back to internal form."
+      ]
+    },
+    "review": {
+      "required": ["enabled", "mode", "statuses"],
+      "defaultStatuses": [
+        "pending_review",
+        "in_review",
+        "needs_correction",
+        "approved_for_submitido",
+        "submitido_registered",
+        "rejected",
+        "hr_conflict",
+        "cancelled"
+      ],
+      "rules": ["questionnaire completed is not submitido"]
+    },
+    "submitido": {
+      "required": ["mode", "sourceSystem", "liquidationEligibilityMode"],
+      "allowedModes": ["hr_driven", "external_system", "platform_review", "manual_admin_hr_confirmed"],
+      "defaultForTyaCinepolis": "hr_driven",
+      "rules": [
+        "submitido must be configurable by project and not hard-coded to TyA or Cinepolis.",
+        "liquidation eligibility must not be derived from questionnaire completed alone."
+      ]
+    },
+    "certification": {
+      "required": ["required", "mode", "bankSource", "historicalRecognition"],
+      "allowedModes": ["none", "internal_bank", "external_certification", "manual_review"],
+      "rules": [
+        "historical approved certifications must be preserved.",
+        "Gemini may prepare question banks only with human review before publication."
+      ]
+    },
+    "documents": {
+      "required": ["instructives", "templates", "evidenceRules"],
+      "recommended": ["countrySpecificDocs", "projectSpecificDocs", "versionedDocs"]
+    },
+    "scheduling": {
+      "required": ["assignmentMode", "agendaRules", "rescheduleRules", "cancelRules"],
+      "recommended": ["availableFromRule", "franjaRules", "periodRules"]
+    },
+    "payments": {
+      "required": ["country", "currency", "honorariumPolicy", "reimbursementPolicy", "liquidationPolicy"],
+      "recommended": ["estimatedPaymentRule", "paymentStatusFlow", "historicalPaymentsPolicy"]
+    },
+    "integrations": {
+      "required": ["make", "gemini", "whatsapp", "storage", "auth", "firestore"],
+      "allowedGateStates": ["off", "prepared", "blocked", "requires_authorization", "preview_only"],
+      "rules": [
+        "No integration may be shown as live unless backend authorization exists.",
+        "Make/Gemini/WhatsApp/Storage/Auth/Firestore must remain gates in this contract."
+      ]
+    }
+  },
+  "minimumWizardSteps": [
+    "project_identity",
+    "country_currency_scope",
+    "hr_source",
+    "questionnaire_origin",
+    "admin_review",
+    "submitido_origin",
+    "certification",
+    "documents_and_evidence",
+    "scheduling_rules",
+    "payments_liquidations",
+    "integrations_gates",
+    "confirmation_summary"
+  ],
+  "commercializablePrototypeNotes": [
+    "Wizard must be generic SaaS multi-project, not hard-coded to TyA/Cinepolis.",
+    "Tenant/project visible labels may vary, but internal configuration keys should remain canonical.",
+    "The wizard should honestly show prepared/off/blocked integrations instead of live integrations.",
+    "Project creation should not create real backend resources from frontend-only wizard actions."
+  ],
+  "hardStops": [
+    "Do not activate runtime from the wizard.",
+    "Do not write Firestore from this contract.",
+    "Do not import HR from this contract.",
+    "Do not call Make, Gemini, WhatsApp or Storage from this contract.",
+    "Do not hard-code TyA/Cinepolis as the only project model.",
+    "Do not store raw sensitive data or secrets in project configuration."
+  ]
+}

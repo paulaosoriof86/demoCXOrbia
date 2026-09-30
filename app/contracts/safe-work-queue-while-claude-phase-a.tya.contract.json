@@ -1,0 +1,40 @@
+{
+  "contract": "safe-work-queue-while-claude-phase-a-tya",
+  "date": "2026-07-05",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "storageWritesAllowed": false,
+  "makeWriteAllowed": false,
+  "emailSendAllowed": false,
+  "whatsappSendAllowed": false,
+  "geminiAllowed": false,
+  "importRealDataAllowed": false,
+  "deployAllowed": false,
+  "mergeAllowed": false,
+  "queueStatus": "safe_documental_only",
+  "allowedWork": [
+    "documentation",
+    "indexes",
+    "templates",
+    "checklists",
+    "contracts",
+    "continuity",
+    "audit_preparation",
+    "readiness_mapping"
+  ],
+  "blockedWork": [
+    "frontend_patch",
+    "core_patch",
+    "production",
+    "deploy",
+    "merge",
+    "real_import",
+    "provider_activation",
+    "real_writes"
+  ],
+  "purpose": "Define the safe queue of backend/documentation work that can continue while Claude prepares P0 frontend candidate."
+}

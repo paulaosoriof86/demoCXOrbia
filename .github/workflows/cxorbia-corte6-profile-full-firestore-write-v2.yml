@@ -1,0 +1,142 @@
+name: CXOrbia Corte 6 Full Shopper Profile Firestore Write V2
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'backend/config/corte6-profile-full-firestore-write-execute-v2.json'
+
+permissions:
+  contents: write
+  statuses: write
+
+concurrency:
+  group: cxorbia-corte6-profile-full-firestore-write-v2
+  cancel-in-progress: false
+
+jobs:
+  write-profile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout active branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate explicit one-shot authorization and execute marker before provider access
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const requestPath='backend/config/corte6-profile-full-firestore-write-request-v2.json';
+          const planPath='backend/config/corte6-profile-full-firestore-write-plan-v2.json';
+          const executePath='backend/config/corte6-profile-full-firestore-write-execute-v2.json';
+          const r=JSON.parse(fs.readFileSync(requestPath,'utf8'));
+          const p=JSON.parse(fs.readFileSync(planPath,'utf8'));
+          const x=JSON.parse(fs.readFileSync(executePath,'utf8'));
+          if(r.schemaVersion!=='cxorbia.corte6.profile-full-firestore-write-request.v2')throw new Error('bad_request_schema');
+          if(p.schemaVersion!=='cxorbia.corte6.profile-full-firestore-write-plan.v2')throw new Error('bad_plan_schema');
+          if(x.schemaVersion!=='cxorbia.corte6.profile-full-firestore-write-execute.v2')throw new Error('bad_execute_schema');
+          for(const o of [r,p,x])if(o.repository!=='paulaosoriof86/demoCXOrbia'||o.branch!=='docs-tya-v6-v71-audit'||Number(o.pullRequest)!==7||o.firebaseProjectId!=='cxorbia-backend-dev'||o.tenantId!=='tya'||o.projectId!=='cinepolis')throw new Error('target_mismatch');
+          if(r.enabled!==true||r.authorized!==true||r.consumed!==false||r.status!=='authorized_pending_execution')throw new Error('request_not_authorized');
+          if(r.providerWritesAuthorized!==true||r.firestoreWritesAuthorized!==true||typeof r.authorizationId!=='string'||!r.authorizationId.trim())throw new Error('explicit_authorization_missing');
+          if(p.enabled!==true||p.authorized!==true||p.consumed!==false||p.status!=='authorized_pending_execution'||p.safety?.providerWritesAuthorized!==true||p.safety?.firestoreWritesAuthorized!==true)throw new Error('plan_not_authorized');
+          if(x.enabled!==true||x.consumed!==false||x.status!=='execute_authorized_once'||x.requestId!==r.requestId||x.authorizationId!==r.authorizationId)throw new Error('execute_marker_not_authorized');
+          if(Number(r.maxFirestoreDocumentWrites)!==120||Number(r.expectedDocsWithChanges)!==120||Number(r.expectedProfileFieldChangeDocs)!==118||Number(r.expectedMarkerOnlyDocs)!==2||Number(r.expectedProfileFieldValues)!==329||Number(r.expectedMissingCanonicalHold)!==31)throw new Error('request_count_contract_mismatch');
+          if(Number(p.firestoreDocumentWritesMax)!==120||Number(p.documentsWithPlannedChanges)!==120||Number(p.documentsWithProfileFieldChanges)!==118||Number(p.markerOnlyDocuments)!==2||Number(p.profileFieldWritesPlanned)!==329||Number(p.missingCanonicalHold)!==31)throw new Error('plan_count_contract_mismatch');
+          const expected={username:113,pass:118,depto:2,dpi:17,direccion:1,fecha_nac:2,accepted_terms:72,aprobacionCuenta:2,registroOrigen:2,nombre:0,whatsapp:0,email:0,pais:0,ciudad:0};
+          for(const [k,v] of Object.entries(expected))if(Number(p.fieldPlan?.[k]??-1)!==v)throw new Error('field_plan_contract_mismatch:'+k);
+          for(const k of ['authWrites','firebaseAuthPasswordChanges','rulesDeploys','hostingDeploys','cloudRunDeploys','storageWrites','hrWrites','legacyWrites','makeWrites','geminiCalls','paymentsWrites'])if(Number(r[k]||0)!==0)throw new Error('unsafe_request_scope:'+k);
+          if(r.production!==false||r.merge!==false||p.safety?.production!==false||p.safety?.merge!==false||x.production!==false||x.merge!==false)throw new Error('production_or_merge_not_allowed');
+          console.log(JSON.stringify({authorized:true,authorizationId:r.authorizationId,maxFirestoreDocumentWrites:120,profileFieldChangeDocs:118,markerOnlyDocs:2,profileFieldValues:329,missingCanonicalHold:31}));
+          NODE
+
+      - name: Assemble and cryptographically verify encrypted V2 bundle
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/c6-profile-full-write
+          node <<'NODE'
+          const fs=require('fs'),crypto=require('crypto');
+          const base='backend/private-inbox/corte6-profile-full-v2-parts';
+          const m=JSON.parse(fs.readFileSync(base+'/READY.json','utf8'));
+          if(m.schemaVersion!=='cxorbia.corte6.profile-full-v2-chunk-manifest.v1'||!Array.isArray(m.partFiles)||m.partFiles.length!==17||Number(m.partCount)!==17||Number(m.totalChars)!==192144||m.sourceSha256!=='80a95a523fb3db925b90ff829d7d6939a9c1166dd443b245d82d84350b7214ed')throw new Error('bundle_manifest_contract_drift');
+          if(m.targetProjectId!=='cxorbia-backend-dev'||m.tenantId!=='tya'||m.safety?.encryptedOnly!==true||m.safety?.plaintextProfileValues!==false||m.safety?.plaintextPasswords!==false||Number(m.safety?.providerWrites)!==0)throw new Error('unsafe_chunk_manifest');
+          let assembled='';for(const name of m.partFiles){if(!/^part-\d{3}\.txt$/.test(name))throw new Error('unsafe_part_name:'+name);const p=base+'/'+name;if(!fs.existsSync(p))throw new Error('missing_part:'+name);assembled+=fs.readFileSync(p,'utf8');}
+          if(assembled.length!==Number(m.totalChars))throw new Error('assembled_length_mismatch');
+          const sha=crypto.createHash('sha256').update(Buffer.from(assembled,'utf8')).digest('hex');if(sha!==m.sourceSha256)throw new Error('assembled_sha256_mismatch');
+          const env=JSON.parse(assembled);if(env.schemaVersion!=='cxorbia.corte6.profile-full-handoff-envelope.v2'||env.targetProjectId!=='cxorbia-backend-dev'||env.tenantId!=='tya')throw new Error('assembled_envelope_target_mismatch');
+          fs.writeFileSync('.tmp/c6-profile-full-write/corte6-profile-full-bundle-v2.enc.json',assembled,{mode:0o600});
+          NODE
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Load canonical DEV credential
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/c6-profile-full-write
+          node <<'NODE'
+          const fs=require('fs');const raw=process.env.EXISTING_DEV_JSON||'';let p=null;try{p=JSON.parse(raw);}catch{}
+          if(!(p&&p.type==='service_account'&&p.project_id==='cxorbia-backend-dev'&&p.client_email&&p.private_key))throw new Error('credential_invalid');
+          fs.writeFileSync('.tmp/c6-profile-full-write/credentials.json',raw,{mode:0o600});
+          NODE
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.tmp/c6-profile-full-write/credentials.json" >> "$GITHUB_ENV"
+
+      - name: Execute exact authorized Firestore profile write and readback
+        id: write
+        env:
+          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
+          CXORBIA_TENANT_ID: tya
+          CXORBIA_PROJECT_ID: cinepolis
+          CXORBIA_PROFILE_FULL_ENVELOPE: .tmp/c6-profile-full-write/corte6-profile-full-bundle-v2.enc.json
+          CXORBIA_PROFILE_FULL_WRITE_REQUEST: backend/config/corte6-profile-full-firestore-write-request-v2.json
+          CXORBIA_PROFILE_FULL_WRITE_PLAN: backend/config/corte6-profile-full-firestore-write-plan-v2.json
+          CXORBIA_PROFILE_FULL_WRITE_OUT: app/docs/evidence/CORTE6-PROFILE-FULL-FIRESTORE-WRITE-LATEST.json
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
+          node --check tools/release/cxorbia-corte6-profile-full-firestore-write-v2.mjs
+          node tools/release/cxorbia-corte6-profile-full-firestore-write-v2.mjs
+
+      - name: Persist sanitized PASS evidence and consume one-shot gate
+        if: steps.write.outcome == 'success'
+        run: |
+          set -euo pipefail
+          cp app/docs/evidence/CORTE6-PROFILE-FULL-FIRESTORE-WRITE-LATEST.json /tmp/c6-profile-full-write.json
+          git fetch origin docs-tya-v6-v71-audit
+          git reset --hard origin/docs-tya-v6-v71-audit
+          mkdir -p app/docs/evidence
+          cp /tmp/c6-profile-full-write.json app/docs/evidence/CORTE6-PROFILE-FULL-FIRESTORE-WRITE-LATEST.json
+          node <<'NODE'
+          const fs=require('fs');
+          const rp='backend/config/corte6-profile-full-firestore-write-request-v2.json',pp='backend/config/corte6-profile-full-firestore-write-plan-v2.json',xp='backend/config/corte6-profile-full-firestore-write-execute-v2.json',ep='app/docs/evidence/CORTE6-PROFILE-FULL-FIRESTORE-WRITE-LATEST.json';
+          const r=JSON.parse(fs.readFileSync(rp,'utf8')),p=JSON.parse(fs.readFileSync(pp,'utf8')),x=JSON.parse(fs.readFileSync(xp,'utf8')),e=JSON.parse(fs.readFileSync(ep,'utf8'));
+          if(e.decision!=='PASS_C6_PROFILE_FULL_FIRESTORE_WRITE_READBACK'||Number(e.executed?.firestoreDocumentWrites)!==120||Number(e.executed?.profileFieldChangeDocs)!==118||Number(e.executed?.markerOnlyDocs)!==2||Number(e.executed?.profileFieldValuesWritten)!==329||Number(e.executed?.readbackDocs)!==120||Number(e.executed?.mismatches)!==0)throw new Error('pass_evidence_contract_mismatch');
+          for(const o of [r,p,x]){o.status='consumed_pass';o.enabled=false;o.consumed=true;o.consumedAt=new Date().toISOString();o.decision=e.decision;o.firestoreDocumentWritesExecuted=120;o.profileFieldValuesWritten=329;o.readbackDocs=120;o.readbackMismatches=0;o.nextGate='REQUEST_SEPARATE_PROTECTED_DEV_REDEPLOY_AUTHORIZATION_FOR_HUMAN_VISUAL';}
+          r.authorized=false;r.providerWrites=120;r.providerWritesAuthorized=false;r.firestoreWritesAuthorized=false;
+          p.authorized=false;p.safety.providerWritesAuthorized=false;p.safety.firestoreWritesAuthorized=false;
+          fs.writeFileSync(rp,JSON.stringify(r,null,2)+'\n','utf8');fs.writeFileSync(pp,JSON.stringify(p,null,2)+'\n','utf8');fs.writeFileSync(xp,JSON.stringify(x,null,2)+'\n','utf8');
+          NODE
+          git config user.name 'github-actions[bot]';git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app/docs/evidence/CORTE6-PROFILE-FULL-FIRESTORE-WRITE-LATEST.json backend/config/corte6-profile-full-firestore-write-request-v2.json backend/config/corte6-profile-full-firestore-write-plan-v2.json backend/config/corte6-profile-full-firestore-write-execute-v2.json
+          git commit -m 'evidence: Corte 6 full shopper profile Firestore write readback PASS'
+          git push origin HEAD:docs-tya-v6-v71-audit
+
+      - name: Publish gate status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          STATE=success;DESC='PASS_C6_PROFILE_FULL_FIRESTORE_WRITE';if [ '${{ job.status }}' != 'success' ]; then STATE=error;DESC='FAIL_C6_PROFILE_FULL_FIRESTORE_WRITE'; fi
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="cxorbia/corte6-profile-full-write/$DESC" -f description="$DESC" >/dev/null
+
+      - name: Cleanup credentials and decrypted transport
+        if: always()
+        run: rm -rf .tmp/c6-profile-full-write

@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "cxorbia.c6.skip13-auth-access-adjudication.contract.v1",
+  "purpose": "Determine source-safe whether any of the 13 SKIP_AUTH_REPAIR_PRESERVE_HISTORY profiles retains effective unplanned Auth access under the current versioned tenant/project rules contract.",
+  "target": {
+    "firebaseProjectId": "cxorbia-backend-dev",
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "repository": "paulaosoriof86/demoCXOrbia",
+    "branch": "docs-tya-v6-v71-audit",
+    "pullRequest": 7
+  },
+  "authorizedReadDomains": [
+    "Auth user state",
+    "Auth custom claims",
+    "tenant membership documents for matched candidate UIDs",
+    "Firestore shopper document IDs only for cryptographic fingerprint resolution"
+  ],
+  "forbiddenReadDomains": [
+    "HR imports",
+    "visits",
+    "certifications",
+    "liquidations",
+    "Storage",
+    "legacy credential bundle"
+  ],
+  "effectiveAccessContract": {
+    "source": "firestore.rules",
+    "shopperProjectRead": [
+      "enabled password Auth principal",
+      "role=shopper",
+      "tenantId/tenants permits tya",
+      "projectIds permits cinepolis"
+    ],
+    "ownShopperReadAdditional": [
+      "shopperId claim matches the target shopper profile document ID"
+    ],
+    "membershipRequiredForProjectRead": false
+  },
+  "sourceSafeOutputOnly": true,
+  "rawUidExported": false,
+  "rawShopperIdExported": false,
+  "rawEmailExported": false,
+  "rawClaimsExported": false,
+  "writesAuthorized": false,
+  "deployAuthorized": false,
+  "mergeAuthorized": false,
+  "productionAuthorized": false
+}

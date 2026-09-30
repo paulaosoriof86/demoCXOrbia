@@ -1,0 +1,156 @@
+name: CXOrbia Phase A Live HR Read-Only Probe
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'backend/contracts/phase-a-live-hr-runtime-read-v1.json'
+      - 'tools/qa/tya-live-hr-read-probe-gate.mjs'
+      - '.github/workflows/cxorbia-phase-a-live-hr-read-probe.yml'
+
+permissions:
+  contents: write
+  statuses: write
+
+concurrency:
+  group: cxorbia-phase-a-live-hr-read-probe
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  probe:
+    name: Read current HR source and validate dynamic semantics
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout active branch
+        uses: actions/checkout@v4
+        with:
+          ref: docs-tya-v6-v71-audit
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate contract and scripts
+        run: |
+          set -euo pipefail
+          node --check tools/qa/tya-live-hr-read-probe-gate.mjs
+          node --check tools/hr-source/tya-build-live-hr-source-safe-r20.mjs
+          node --check tools/hr-source/tya-filter-source-safe-to-inventory-r20.mjs
+          node --check tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs
+          node --check tools/hr-source/tya-reapply-canonical-state-r20.mjs
+          node --check tools/reconciliation/tya-filter-current-hr-through-july-source-safe.mjs
+          node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync('backend/contracts/phase-a-live-hr-runtime-read-v1.json','utf8'));if(x.requirements?.noFixedOperationalCounts!==true||x.requirements?.serverSideRead!==true||x.requirements?.writesToHr!==false||x.requirements?.writesToFirestore!==false)process.exit(2);"
+
+      - name: Preserve pre-refresh source for freshness diff
+        run: cp app/data/tya-hr-source-safe-periods.js /tmp/tya-hr-source-safe-pre-refresh.js
+
+      - name: Read HR now and build source-safe projection
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+          CXORBIA_HR_SOURCE_SAFE_OUT: app/data/tya-hr-source-safe-periods.js
+          CXORBIA_HR_LIVE_MAX_ROW: '140'
+          CXORBIA_HR_LIVE_MAX_COL: AI
+          CXORBIA_HR_EARLIEST_PERIOD: '2025-06'
+          CXORBIA_GATE_OUT: .tmp/live-hr-read-probe/source
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/live-hr-read-probe
+          node tools/hr-source/tya-build-live-hr-source-safe-r20.mjs
+          node tools/hr-source/tya-filter-source-safe-to-inventory-r20.mjs \
+            --input app/data/tya-hr-source-safe-periods.js \
+            --out app/data/tya-hr-source-safe-periods.js \
+            --inventory backend/contracts/tya-hr-tab-inventory-r20-v1.json \
+            --report-dir .tmp/live-hr-read-probe/inventory
+          node tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs \
+            --input app/data/tya-hr-source-safe-periods.js \
+            --out app/data/tya-hr-source-safe-periods.js \
+            --report-dir .tmp/live-hr-read-probe/canonical
+          node tools/hr-source/tya-reapply-canonical-state-r20.mjs \
+            --input app/data/tya-hr-source-safe-periods.js \
+            --out app/data/tya-hr-source-safe-periods.js \
+            --report-dir .tmp/live-hr-read-probe/state
+
+      - name: Gate freshness and live semantic consistency
+        run: |
+          set -euo pipefail
+          node tools/qa/tya-live-hr-read-probe-gate.mjs \
+            --payload app/data/tya-hr-source-safe-periods.js \
+            --out .tmp/live-hr-read-probe/gate \
+            --max-age-seconds 900
+
+      - name: Freeze current through-July source-safe candidate without PII
+        env:
+          CXORBIA_CURRENT_HR_FULL: app/data/tya-hr-source-safe-periods.js
+          CXORBIA_CURRENT_HR_THROUGH_JULY: app/data/tya-hr-source-safe-current-through-july.js
+          CXORBIA_STALE_HR_SOURCE: /tmp/tya-hr-source-safe-pre-refresh.js
+          CXORBIA_HR_CUTOFF: '2026-07'
+        run: |
+          set -euo pipefail
+          node tools/reconciliation/tya-filter-current-hr-through-july-source-safe.mjs
+          node - <<'NODE'
+          const fs=require('fs'),vm=require('vm');
+          const code=fs.readFileSync('app/data/tya-hr-source-safe-current-through-july.js','utf8');const s={window:{}};vm.createContext(s);vm.runInContext(code,s);
+          const h=s.window.CX_TYA_HR_SOURCE_SAFE;
+          if(!h||h.sourceSafe!==true||h.production===true||h.imported===true||h.periods?.length!==14||h.visits?.length!==616)process.exit(1);
+          const e=require('./app/docs/evidence/CURRENT-HR-THROUGH-JULY-SOURCE-SAFE-LATEST.json');
+          if(e.safety?.containsPii!==false||e.safety?.providerWrites!==0||e.safety?.hrWrites!==0||e.safety?.firestoreWrites!==0)process.exit(1);
+          NODE
+
+      - name: Prove no provider writes or deploy occurred
+        run: |
+          set -euo pipefail
+          printf '%s\n' '{"hrWrites":0,"firestoreWrites":0,"imports":0,"deploy":0,"production":false,"payments":0}' > .tmp/live-hr-read-probe/safe-state.json
+
+      - name: Commit only source-safe current-through-July evidence
+        run: |
+          set -euo pipefail
+          cp app/data/tya-hr-source-safe-current-through-july.js /tmp/current-through-july.js
+          cp app/docs/evidence/CURRENT-HR-THROUGH-JULY-SOURCE-SAFE-LATEST.json /tmp/current-through-july.json
+          cp app/docs/evidence/CURRENT-HR-THROUGH-JULY-SOURCE-SAFE-LATEST.md /tmp/current-through-july.md
+          git fetch origin docs-tya-v6-v71-audit
+          git reset --hard origin/docs-tya-v6-v71-audit
+          cp /tmp/current-through-july.js app/data/tya-hr-source-safe-current-through-july.js
+          mkdir -p app/docs/evidence
+          cp /tmp/current-through-july.json app/docs/evidence/CURRENT-HR-THROUGH-JULY-SOURCE-SAFE-LATEST.json
+          cp /tmp/current-through-july.md app/docs/evidence/CURRENT-HR-THROUGH-JULY-SOURCE-SAFE-LATEST.md
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app/data/tya-hr-source-safe-current-through-july.js app/docs/evidence/CURRENT-HR-THROUGH-JULY-SOURCE-SAFE-LATEST.*
+          if ! git diff --cached --quiet; then git commit -m 'evidence: freeze current HR source-safe through July'; git push origin HEAD:docs-tya-v6-v71-audit; fi
+
+      - name: Upload source-safe probe evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-live-hr-read-only-probe
+          path: |
+            .tmp/live-hr-read-probe
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Publish probe commit status
+        if: always()
+        uses: actions/github-script@v7
+        env:
+          PROBE_STATE: ${{ job.status }}
+        with:
+          script: |
+            const state = process.env.PROBE_STATE === 'success' ? 'success' : 'failure';
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.sha,
+              state,
+              context: 'cxorbia/live-hr-read-probe',
+              description: state === 'success' ? 'Live HR read-only source is fresh and coherent' : 'Live HR read-only probe failed'
+            });

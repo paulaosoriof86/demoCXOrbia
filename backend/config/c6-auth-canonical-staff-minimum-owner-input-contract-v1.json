@@ -1,0 +1,209 @@
+{
+  "schemaVersion": "cxorbia.c6.auth-canonical-staff-minimum-owner-input-contract.v1",
+  "generatedAt": "2026-08-10T18:57:00-06:00",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "entryHeadSha": "0f0ced120b3554bc97bbcffdca667176438db809",
+  "mode": "SOURCE_SAFE_NO_PROVIDER_NO_REPAIR",
+  "state": "C6_AUTH_CANONICAL_STAFF_MINIMUM_OWNER_INPUT_CONTRACT_READY__SIX_BUSINESS_INPUTS_ONLY__A_REUSE_CONDITIONAL__BC_EPHEMERAL_CREDENTIAL_FIXED__D_PRESERVED__DOCS_ONLY__NO_PRODUCTION",
+  "baseline": {
+    "tenantId": "tya",
+    "authUsers": 228,
+    "activation": "PASS",
+    "readback": "PASS",
+    "rollbackDryRun": "PASS",
+    "planDigest": "c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4",
+    "rebuild340Forbidden": true
+  },
+  "frozenTargets": [
+    {
+      "targetAlias": "A",
+      "groupFp": "1acdcb3782b7cf351056",
+      "role": "super",
+      "requiredBeforeTargetClose": ["OWNER_ANCHOR_REQUIRED", "PROJECT_ENTITLEMENT_REQUIRED"],
+      "credentialStrategy": "REUSE_EXISTING_CANONICAL_SUPER_ONLY_IF_INDEPENDENT_OWNER_BINDING_MATCHES_ELSE_NEW_EPHEMERAL_CREDENTIAL",
+      "legacyKeeperAllowed": false
+    },
+    {
+      "targetAlias": "B",
+      "groupFp": "2c4d19f2b066835473d3",
+      "role": "admin",
+      "requiredBeforeTargetClose": ["OWNER_ANCHOR_REQUIRED", "PROJECT_ENTITLEMENT_REQUIRED", "CREDENTIAL_INPUT_REQUIRED"],
+      "credentialStrategy": "NEW_EPHEMERAL_CREDENTIAL_AT_SEPARATELY_AUTHORIZED_EXECUTION",
+      "legacyKeeperAllowed": false
+    },
+    {
+      "targetAlias": "C",
+      "groupFp": "54225792eeb65f6739c0",
+      "role": "ops",
+      "requiredBeforeTargetClose": ["OWNER_ANCHOR_REQUIRED", "PROJECT_ENTITLEMENT_REQUIRED", "CREDENTIAL_INPUT_REQUIRED"],
+      "credentialStrategy": "NEW_EPHEMERAL_CREDENTIAL_AT_SEPARATELY_AUTHORIZED_EXECUTION",
+      "legacyKeeperAllowed": false
+    }
+  ],
+  "excludedPreservedTarget": {
+    "groupFp": "ae2f920fe6d9ce1fdd82",
+    "status": "REPAIR_PLAN_READY",
+    "reopened": false
+  },
+  "minimumHumanQuestions": [
+    {
+      "questionId": "A_OWNER",
+      "targetAlias": "A",
+      "prompt": "¿Quién debe ser el titular de Superadministración de TyA?",
+      "answerType": "HUMAN_OWNER_REFERENCE",
+      "rawAnswerPersistence": "FORBIDDEN"
+    },
+    {
+      "questionId": "A_SCOPE",
+      "targetAlias": "A",
+      "prompt": "¿Ese titular debe tener acceso a TyA completo o únicamente a proyectos específicos? Si son específicos, indica cuáles.",
+      "answerType": "TYA_COMPLETE_OR_SPECIFIC_PROJECTS",
+      "rawAnswerPersistence": "FORBIDDEN_AFTER_SOURCE_SAFE_CONVERSION"
+    },
+    {
+      "questionId": "B_OWNER",
+      "targetAlias": "B",
+      "prompt": "¿Quién debe ser el titular de Administración de TyA?",
+      "answerType": "HUMAN_OWNER_REFERENCE",
+      "rawAnswerPersistence": "FORBIDDEN"
+    },
+    {
+      "questionId": "B_SCOPE",
+      "targetAlias": "B",
+      "prompt": "¿Ese titular debe tener acceso a TyA completo o únicamente a proyectos específicos? Si son específicos, indica cuáles.",
+      "answerType": "TYA_COMPLETE_OR_SPECIFIC_PROJECTS",
+      "rawAnswerPersistence": "FORBIDDEN_AFTER_SOURCE_SAFE_CONVERSION"
+    },
+    {
+      "questionId": "C_OWNER",
+      "targetAlias": "C",
+      "prompt": "¿Quién debe ser el titular de Operaciones de TyA?",
+      "answerType": "HUMAN_OWNER_REFERENCE",
+      "rawAnswerPersistence": "FORBIDDEN"
+    },
+    {
+      "questionId": "C_SCOPE",
+      "targetAlias": "C",
+      "prompt": "¿Ese titular debe tener acceso a TyA completo o únicamente a proyectos específicos? Si son específicos, indica cuáles.",
+      "answerType": "TYA_COMPLETE_OR_SPECIFIC_PROJECTS",
+      "rawAnswerPersistence": "FORBIDDEN_AFTER_SOURCE_SAFE_CONVERSION"
+    }
+  ],
+  "ownerAnchorConversion": {
+    "authority": "PAULA_BUSINESS_ATTESTATION_IN_CURRENT_CONVERSATION",
+    "inputRule": "Use the human owner designation exactly as supplied; if two people could share the same visible name, require a short business disambiguator such as area/function. Do not ask for email, UID, document number or legacy fingerprint.",
+    "normalization": "NFKC -> trim -> collapse internal whitespace -> lowercase",
+    "ownerIdentityAnchorFormula": "sha256('cxorbia-owner-v1\\0tya\\0' + normalizedHumanOwnerReference)",
+    "ownerRoleBindingFormula": "sha256('cxorbia-owner-role-v1\\0tya\\0' + role + '\\0' + ownerIdentityAnchor)",
+    "persistAllowed": ["ownerIdentityAnchor", "ownerRoleBindingDigest", "attestationSource", "attestationTimestamp"],
+    "persistForbidden": ["raw human owner reference", "raw name", "email", "uid", "document id", "phone"]
+  },
+  "entitlementConversion": {
+    "allowedBusinessModes": ["TYA_COMPLETE", "SPECIFIC_PROJECTS"],
+    "TYA_COMPLETE": {
+      "meaning": "Business authorization for the owner to operate across all TyA projects.",
+      "claimsRule": "No wildcard claim is emitted. Before target close, expand to the exact source-safe canonical TyA projectId set, sort and deduplicate it. If the exact canonical set is not source-safe resolvable, keep PROJECT_ENTITLEMENT_REQUIRED for that target.",
+      "futureProjectRule": "New future projects require an explicit entitlement expansion event; no silent wildcard inheritance."
+    },
+    "SPECIFIC_PROJECTS": {
+      "meaning": "Business authorization only for the explicitly named projects.",
+      "claimsRule": "Resolve each human project label to one exact canonical source-safe projectId, fail closed on ambiguity/missing project, then sort and deduplicate projectIds."
+    },
+    "legacyScopeCopyAllowed": false,
+    "cinepolisDefaultAllowed": false
+  },
+  "targetClaimsConversion": {
+    "fixedClaims": {
+      "authNamespace": "staff",
+      "tenantId": "tya"
+    },
+    "roleByTarget": {
+      "A": "super",
+      "B": "admin",
+      "C": "ops"
+    },
+    "projectIds": "EXACT_SORTED_UNIQUE_OWNER_ENTITLEMENT",
+    "shopperId": "ABSENT",
+    "optionalCountryClaims": "OMIT_UNLESS_SEPARATELY_OWNER_PROVEN_AND_AUTHORIZED",
+    "canonicalSerialization": "compact JSON object with keys in this exact order: authNamespace,projectIds,role,tenantId",
+    "expectedClaimsDigestFormula": "sha256(UTF8(canonicalSerialization))",
+    "digestGenerationGate": "OWNER_ANCHOR_RESOLVED && PROJECT_ENTITLEMENT_EXACT"
+  },
+  "credentialInputContract": {
+    "A": {
+      "primary": "REUSE_EXISTING_CANONICAL_SUPER_IF_OWNER_ROLE_BINDING_MATCHES_INDEPENDENTLY",
+      "fallback": "NEW_EPHEMERAL_CREDENTIAL",
+      "reuseByRoleUniquenessForbidden": true,
+      "ifSecureOwnerBindingCannotBeProven": "DO_NOT_REUSE; REQUIRE_NEW_EPHEMERAL_CREDENTIAL"
+    },
+    "B": {
+      "strategy": "NEW_EPHEMERAL_CREDENTIAL",
+      "reason": "NO_CANONICAL_IMPORTED_ADMIN_PRINCIPAL"
+    },
+    "C": {
+      "strategy": "NEW_EPHEMERAL_CREDENTIAL",
+      "reason": "NO_CANONICAL_IMPORTED_OPS_PRINCIPAL"
+    },
+    "futureExecutionInputs": ["visible login chosen for the canonical staff principal", "new password/secret"],
+    "secretHandling": "EPHEMERAL_MEMORY_ONLY_NO_REPO_NO_ARTIFACT_NO_LOG",
+    "internalIdentifierFormula": "sha256('tya\\0staff\\0' + normalize(lowercase/trim visibleLogin))[0:48] + '@auth.cxorbia.invalid'",
+    "providerReadRequiredByThisContract": false
+  },
+  "targetCloseStateMachine": [
+    "WAIT_BUSINESS_OWNER_AND_SCOPE_INPUT",
+    "CONVERT_OWNER_TO_SOURCE_SAFE_ANCHOR",
+    "RESOLVE_EXACT_PROJECT_ENTITLEMENT_SOURCE_SAFE",
+    "BUILD_CANONICAL_TARGET_CLAIMS",
+    "GENERATE_EXPECTED_CLAIMS_DIGEST",
+    "A_ONLY_EVALUATE_EXISTING_CANONICAL_SUPER_REUSE_BY_INDEPENDENT_OWNER_BINDING",
+    "LOCK_TARGET_CONTRACT",
+    "STOP_NO_REPAIR"
+  ],
+  "targetCloseOutputsPerTarget": [
+    "ownerIdentityAnchor",
+    "ownerRoleBindingDigest",
+    "entitlementMode",
+    "exactProjectIds",
+    "targetClaims",
+    "expectedClaimsDigest",
+    "credentialStrategy",
+    "targetContractDigest"
+  ],
+  "prohibitedInference": [
+    "role uniqueness",
+    "legacy account age",
+    "result order",
+    "lastSignIn",
+    "raw name/email/UID lookup as keeper selection",
+    "legacy scope as entitlement",
+    "legacy principal as keeper",
+    "cinepolis as implicit default"
+  ],
+  "safety": {
+    "providerReads": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "iamWrites": 0,
+    "firestoreReads": 0,
+    "firestoreWrites": 0,
+    "hrReads": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "prewrite": false,
+    "activation": false,
+    "smoke": false,
+    "repair": false,
+    "make": 0,
+    "gemini": 0,
+    "payments": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false,
+    "rawPiiStored": false,
+    "credentialsStored": false
+  },
+  "nextAfterBusinessAnswers": "C6_AUTH_CANONICAL_STAFF_OWNER_INPUT_CAPTURE_AND_TARGET_DIGEST_SOURCE_SAFE_NO_PROVIDER_NO_REPAIR"
+}

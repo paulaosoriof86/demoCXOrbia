@@ -1,0 +1,195 @@
+{
+  "contract": "notification-outbox-preview-phase-a-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "storageWritesAllowed": false,
+  "makeWriteAllowed": false,
+  "emailSendAllowed": false,
+  "whatsappSendAllowed": false,
+  "pushSendAllowed": false,
+  "hrWriteAllowed": false,
+  "importRealDataAllowed": false,
+  "dependsOn": [
+    "sensitive-data-policy-phase-a-tya",
+    "postulation-dynamic-form-preview-phase-a-tya",
+    "assignment-sync-conflict-preview-phase-a-tya",
+    "visit-lifecycle-reservation-preview-phase-a-tya",
+    "email-provider-agnostic-user-mailbox-phase-a-tya"
+  ],
+  "purpose": "Define source-safe preview validation for notification outbox events and manual fallback flows without sending email, WhatsApp, push, Make or HR writes.",
+  "sourceSafety": {
+    "requiresSyntheticOrSanitizedInput": true,
+    "forbidsRawSensitiveData": true,
+    "requiredInputMetadata": [
+      "sourceSafe=true",
+      "containsRawSensitiveData=false",
+      "isSyntheticOrSanitized=true"
+    ],
+    "rawBodiesAllowed": false,
+    "rawAttachmentsAllowed": false,
+    "manualReviewForSensitivePayload": true
+  },
+  "stableKeys": [
+    "tenantId",
+    "projectId",
+    "notificationId",
+    "templateId",
+    "templateVersion",
+    "recipientRole",
+    "recipientRef",
+    "shopperId",
+    "visitId",
+    "hrRowId",
+    "sourceVisitRef",
+    "postulationId",
+    "assignmentId",
+    "reservationId",
+    "scheduleRequestId",
+    "liquidationId",
+    "paymentItemId",
+    "channel",
+    "outboxStatus",
+    "manualFallbackStatus",
+    "sourceSafeRef",
+    "createdAt",
+    "updatedAt"
+  ],
+  "channels": [
+    "in_app",
+    "email_draft",
+    "email_provider_pending",
+    "whatsapp_web_fallback",
+    "whatsapp_provider_pending",
+    "push_pending",
+    "manual_task"
+  ],
+  "outboxStatuses": [
+    "draft_preview",
+    "queued_preview_only",
+    "manual_action_required",
+    "manual_copied_by_user",
+    "provider_pending_configuration",
+    "blocked_sensitive_payload",
+    "blocked_missing_recipient",
+    "cancelled",
+    "sent_external_confirmed_manual",
+    "failed_review_required"
+  ],
+  "manualFallbackStatuses": [
+    "not_required",
+    "copy_button_available",
+    "copied_pending_user_confirmation",
+    "user_confirmed_sent_externally",
+    "user_marked_not_sent",
+    "review_required"
+  ],
+  "notificationEvents": [
+    "postulation_received",
+    "postulation_missing_fields",
+    "postulation_approved_pending_assignment_sync",
+    "postulation_rejected",
+    "assignment_detected_from_hr",
+    "assignment_conflict_review_required",
+    "visit_reserved_preview",
+    "visit_schedule_valid",
+    "visit_out_of_window_review_required",
+    "visit_reschedule_requested",
+    "visit_cancelled",
+    "visit_performed_pending_questionnaire",
+    "questionnaire_completed_pending_review",
+    "admin_review_required",
+    "submitido_registered_preview",
+    "liquidation_candidate_review_required",
+    "payment_status_updated_preview",
+    "academy_course_assigned",
+    "academy_manual_updated"
+  ],
+  "recipientRules": [
+    "Recipient must be represented by recipientRef and role, not raw phone or raw email in Phase A preview.",
+    "Shopper notifications must not expose other shoppers, bank data, identity documents, NDA data, raw communications or private attachments.",
+    "Admin/Ops/Finance notifications may include safe operational references only.",
+    "Client notifications must be read-only summaries without internal audit details unless explicitly configured later."
+  ],
+  "templateRules": [
+    "Every notification must use templateId and templateVersion.",
+    "Template variables must be limited to safe operational values and opaque refs.",
+    "No raw email bodies, raw WhatsApp bodies, raw phone, raw address, bank data, identity document, NDA or raw attachment data in preview payloads.",
+    "Spanish visible copy must be honest: prepared, preview, pending backend, requires review, conflict or manual action; not sent/synchronized unless externally confirmed later."
+  ],
+  "channelRules": [
+    "email_draft creates draft/preview copy only; no email provider send.",
+    "whatsapp_web_fallback provides copy/manual action only; no WhatsApp API send.",
+    "manual_task creates a task-like preview for user action; no provider call.",
+    "in_app is preview-only until runtime is authorized.",
+    "provider_pending_configuration means the provider is not connected yet.",
+    "sent_external_confirmed_manual requires explicit user confirmation, not automatic provider proof."
+  ],
+  "previewInputShape": {
+    "sourceSafe": true,
+    "containsRawSensitiveData": false,
+    "isSyntheticOrSanitized": true,
+    "notifications": []
+  },
+  "requiredNotificationFields": [
+    "tenantId",
+    "projectId",
+    "notificationId",
+    "eventType",
+    "channel",
+    "templateId",
+    "templateVersion",
+    "recipientRole",
+    "recipientRef"
+  ],
+  "previewOutcomes": [
+    "outbox_preview_ready",
+    "manual_action_required",
+    "provider_configuration_required",
+    "blocked_sensitive_payload",
+    "blocked_missing_recipient",
+    "template_review_required",
+    "manual_confirmation_required",
+    "conflict_review_required"
+  ],
+  "claudePrototypeImpact": [
+    "Toasts and notification UI must not say email/WhatsApp/Make sent while providers are off.",
+    "Use draft, copy, manual fallback, pending backend, provider not configured or manual confirmation states.",
+    "Show in-app notification preview separately from external sending.",
+    "Notification templates must be project/tenant configurable and honest.",
+    "Academia must explain notification states, manual fallback and provider gates by role."
+  ],
+  "academyImpact": {
+    "roles": ["super", "admin", "ops", "shopper", "client", "finance", "consultant_partner"],
+    "manualsToUpdate": ["Notification outbox", "WhatsApp Web fallback", "Email draft fallback", "Manual confirmation", "Provider gates", "Sensitive data in notifications"],
+    "coursesToUpdate": ["Shopper notifications", "Ops notification follow-up", "Admin notification templates", "Superadmin provider configuration"],
+    "newLessons": [
+      "What notification preview means",
+      "Why a draft is not sent",
+      "How WhatsApp Web fallback works",
+      "How manual confirmation works",
+      "Which data must never be included in notifications",
+      "How notification templates are configured by project"
+    ],
+    "interactiveChecklists": [
+      "Before sending a manual WhatsApp",
+      "Before confirming external send",
+      "Before publishing a notification template",
+      "Before including payment or private data in a notification"
+    ]
+  },
+  "hardStops": [
+    "Do not send email from this preview.",
+    "Do not send WhatsApp from this preview.",
+    "Do not send push from this preview.",
+    "Do not call Make from this preview.",
+    "Do not write HR from this preview.",
+    "Do not write Firestore from this preview.",
+    "Do not process raw sensitive fields.",
+    "Do not mark sent unless manual external confirmation exists."
+  ]
+}

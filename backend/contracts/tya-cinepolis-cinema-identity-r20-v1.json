@@ -1,0 +1,32 @@
+{
+  "contractId": "tya-cinepolis-cinema-identity-r20-v1",
+  "schemaVersion": "1.0.0",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "country": "HN",
+  "resolutionPolicy": "exact_only",
+  "unknownPolicy": "hold_build",
+  "purpose": "Resolve canonical cinema branch identity only for declared HR header variants where ID CINEMA is present and Shopping is absent.",
+  "cinemas": {
+    "2052001": "C. Las Cascadas Honduras",
+    "2052002": "C. VIP Las Cascadas",
+    "2052003": "C. Altara",
+    "2052004": "C. Mall Premier",
+    "2052005": "C. Mall Premier Juticalpa"
+  },
+  "prohibitions": [
+    "fuzzy_match",
+    "row_position_inference",
+    "city_inference",
+    "global_default",
+    "unknown_id_fallback",
+    "hr_write"
+  ],
+  "safeState": {
+    "sourceSafe": true,
+    "containsPii": false,
+    "writes": false,
+    "deploy": false,
+    "production": false
+  }
+}

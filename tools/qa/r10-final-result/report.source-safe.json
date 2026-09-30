@@ -1,0 +1,483 @@
+{
+  "gate": "cxorbia-tya-phase-a-source-safe-operational-visual-smoke",
+  "generatedAt": "2026-07-12T21:22:24.244Z",
+  "baseUrl": "http://127.0.0.1:4173/index.html?cxTyaPhaseA=1",
+  "expected": {
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "periods": 14,
+    "visits": 616,
+    "shoppers": 213
+  },
+  "source": {
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "generatedAt": "2026-07-12T21:22:03.054Z",
+    "sourceSafe": true,
+    "imported": false,
+    "production": false,
+    "counts": {
+      "periods": 14,
+      "visits": 616,
+      "shoppers": 210
+    },
+    "arrays": {
+      "periods": 14,
+      "visits": 616,
+      "shoppers": 210
+    },
+    "countryCounts": {
+      "GT": 476,
+      "HN": 140
+    },
+    "currencyCounts": {
+      "Q": 476,
+      "L": 140
+    },
+    "unsafeVisitCount": 0,
+    "rawShopperNameSignals": 0,
+    "june": {
+      "visits": 44,
+      "withExecutionEvidence": 44
+    }
+  },
+  "roles": [
+    {
+      "id": "admin",
+      "status": "pass",
+      "sourceSafeMode": true,
+      "projectId": "cinepolis",
+      "expectedModules": [
+        "dashboard",
+        "proyectos",
+        "visitas",
+        "postulaciones",
+        "cert",
+        "financiero",
+        "aprendizaje"
+      ],
+      "availableModuleKeys": [
+        "administrabilidad",
+        "aprendizaje",
+        "automatizaciones",
+        "beneficios",
+        "cert",
+        "cli_acciones",
+        "cli_capacitacion",
+        "cli_dashboard",
+        "cli_insights",
+        "cli_market",
+        "cli_programa",
+        "cli_reportes",
+        "cli_sucursales",
+        "clientes",
+        "config",
+        "correo",
+        "costos",
+        "crm",
+        "cuestionarios",
+        "dashboard",
+        "diagnostico",
+        "documentos",
+        "financiero",
+        "historico",
+        "hrsource",
+        "importador",
+        "informes",
+        "integraciones",
+        "liquidaciones",
+        "lotes",
+        "marca",
+        "marketing",
+        "midia",
+        "miperfil",
+        "misvisitas",
+        "movimientos",
+        "novedades",
+        "periodos",
+        "postulaciones",
+        "proyectos",
+        "reservas",
+        "rutas",
+        "saas",
+        "shoppers",
+        "soporte",
+        "tablon",
+        "usuarios",
+        "visitas"
+      ],
+      "routes": [
+        {
+          "token": "dashboard",
+          "target": "dashboard",
+          "attempted": true,
+          "rendered": true,
+          "textLength": 10633,
+          "hasTechnicalPromise": false
+        },
+        {
+          "token": "proyectos",
+          "target": "proyectos",
+          "attempted": true,
+          "rendered": true,
+          "textLength": 886,
+          "hasTechnicalPromise": false
+        },
+        {
+          "token": "visitas",
+          "target": "visitas",
+          "attempted": true,
+          "rendered": true,
+          "textLength": 74305,
+          "hasTechnicalPromise": false
+        },
+        {
+          "token": "postulaciones",
+          "target": "postulaciones",
+          "attempted": true,
+          "rendered": true,
+          "textLength": 6275,
+          "hasTechnicalPromise": false
+        },
+        {
+          "token": "cert",
+          "target": "cert",
+          "attempted": true,
+          "rendered": true,
+          "textLength": 566,
+          "hasTechnicalPromise": false
+        },
+        {
+          "token": "financiero",
+          "target": "financiero",
+          "attempted": true,
+          "rendered": true,
+          "textLength": 2978,
+          "hasTechnicalPromise": false
+        },
+        {
+          "token": "aprendizaje",
+          "target": "aprendizaje",
+          "attempted": true,
+          "rendered": true,
+          "textLength": 2875,
+          "hasTechnicalPromise": false
+        }
+      ],
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0
+    },
+    {
+      "id": "cliente",
+      "status": "pass",
+      "sourceSafeMode": true,
+      "projectId": "cinepolis",
+      "expectedModules": [
+        "cli_dashboard",
+        "cli_sucursales"
+      ],
+      "availableModuleKeys": [
+        "administrabilidad",
+        "aprendizaje",
+        "automatizaciones",
+        "beneficios",
+        "cert",
+        "cli_acciones",
+        "cli_capacitacion",
+        "cli_dashboard",
+        "cli_insights",
+        "cli_market",
+        "cli_programa",
+        "cli_reportes",
+        "cli_sucursales",
+        "clientes",
+        "config",
+        "correo",
+        "costos",
+        "crm",
+        "cuestionarios",
+        "dashboard",
+        "diagnostico",
+        "documentos",
+        "financiero",
+        "historico",
+        "hrsource",
+        "importador",
+        "informes",
+        "integraciones",
+        "liquidaciones",
+        "lotes",
+        "marca",
+        "marketing",
+        "midia",
+        "miperfil",
+        "misvisitas",
+        "movimientos",
+        "novedades",
+        "periodos",
+        "postulaciones",
+        "proyectos",
+        "reservas",
+        "rutas",
+        "saas",
+        "shoppers",
+        "soporte",
+        "tablon",
+        "usuarios",
+        "visitas"
+      ],
+      "routes": [
+        {
+          "token": "cli_dashboard",
+          "target": "cli_dashboard",
+          "attempted": true,
+          "rendered": true,
+          "textLength": 1338,
+          "hasTechnicalPromise": false
+        },
+        {
+          "token": "cli_sucursales",
+          "target": "cli_sucursales",
+          "attempted": true,
+          "rendered": true,
+          "textLength": 2366,
+          "hasTechnicalPromise": false
+        }
+      ],
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0
+    },
+    {
+      "id": "shopper",
+      "status": "pass",
+      "sourceSafeMode": true,
+      "projectId": "cinepolis",
+      "expectedModules": [
+        "visitas",
+        "cert",
+        "beneficios",
+        "aprendizaje"
+      ],
+      "availableModuleKeys": [
+        "administrabilidad",
+        "aprendizaje",
+        "automatizaciones",
+        "beneficios",
+        "cert",
+        "cli_acciones",
+        "cli_capacitacion",
+        "cli_dashboard",
+        "cli_insights",
+        "cli_market",
+        "cli_programa",
+        "cli_reportes",
+        "cli_sucursales",
+        "clientes",
+        "config",
+        "correo",
+        "costos",
+        "crm",
+        "cuestionarios",
+        "dashboard",
+        "diagnostico",
+        "documentos",
+        "financiero",
+        "historico",
+        "hrsource",
+        "importador",
+        "informes",
+        "integraciones",
+        "liquidaciones",
+        "lotes",
+        "marca",
+        "marketing",
+        "midia",
+        "miperfil",
+        "misvisitas",
+        "movimientos",
+        "novedades",
+        "periodos",
+        "postulaciones",
+        "proyectos",
+        "reservas",
+        "rutas",
+        "saas",
+        "shoppers",
+        "soporte",
+        "tablon",
+        "usuarios",
+        "visitas"
+      ],
+      "routes": [
+        {
+          "token": "visitas",
+          "target": "visitas",
+          "attempted": true,
+          "rendered": true,
+          "textLength": 922,
+          "hasTechnicalPromise": false
+        },
+        {
+          "token": "cert",
+          "target": "cert",
+          "attempted": true,
+          "rendered": true,
+          "textLength": 1758,
+          "hasTechnicalPromise": false
+        },
+        {
+          "token": "beneficios",
+          "target": "beneficios",
+          "attempted": true,
+          "rendered": true,
+          "textLength": 1109,
+          "hasTechnicalPromise": false
+        },
+        {
+          "token": "aprendizaje",
+          "target": "aprendizaje",
+          "attempted": true,
+          "rendered": true,
+          "textLength": 1408,
+          "hasTechnicalPromise": false
+        }
+      ],
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0
+    }
+  ],
+  "modules": [
+    {
+      "role": "admin",
+      "token": "dashboard",
+      "target": "dashboard",
+      "attempted": true,
+      "rendered": true,
+      "textLength": 10633,
+      "hasTechnicalPromise": false
+    },
+    {
+      "role": "admin",
+      "token": "proyectos",
+      "target": "proyectos",
+      "attempted": true,
+      "rendered": true,
+      "textLength": 886,
+      "hasTechnicalPromise": false
+    },
+    {
+      "role": "admin",
+      "token": "visitas",
+      "target": "visitas",
+      "attempted": true,
+      "rendered": true,
+      "textLength": 74305,
+      "hasTechnicalPromise": false
+    },
+    {
+      "role": "admin",
+      "token": "postulaciones",
+      "target": "postulaciones",
+      "attempted": true,
+      "rendered": true,
+      "textLength": 6275,
+      "hasTechnicalPromise": false
+    },
+    {
+      "role": "admin",
+      "token": "cert",
+      "target": "cert",
+      "attempted": true,
+      "rendered": true,
+      "textLength": 566,
+      "hasTechnicalPromise": false
+    },
+    {
+      "role": "admin",
+      "token": "financiero",
+      "target": "financiero",
+      "attempted": true,
+      "rendered": true,
+      "textLength": 2978,
+      "hasTechnicalPromise": false
+    },
+    {
+      "role": "admin",
+      "token": "aprendizaje",
+      "target": "aprendizaje",
+      "attempted": true,
+      "rendered": true,
+      "textLength": 2875,
+      "hasTechnicalPromise": false
+    },
+    {
+      "role": "cliente",
+      "token": "cli_dashboard",
+      "target": "cli_dashboard",
+      "attempted": true,
+      "rendered": true,
+      "textLength": 1338,
+      "hasTechnicalPromise": false
+    },
+    {
+      "role": "cliente",
+      "token": "cli_sucursales",
+      "target": "cli_sucursales",
+      "attempted": true,
+      "rendered": true,
+      "textLength": 2366,
+      "hasTechnicalPromise": false
+    },
+    {
+      "role": "shopper",
+      "token": "visitas",
+      "target": "visitas",
+      "attempted": true,
+      "rendered": true,
+      "textLength": 922,
+      "hasTechnicalPromise": false
+    },
+    {
+      "role": "shopper",
+      "token": "cert",
+      "target": "cert",
+      "attempted": true,
+      "rendered": true,
+      "textLength": 1758,
+      "hasTechnicalPromise": false
+    },
+    {
+      "role": "shopper",
+      "token": "beneficios",
+      "target": "beneficios",
+      "attempted": true,
+      "rendered": true,
+      "textLength": 1109,
+      "hasTechnicalPromise": false
+    },
+    {
+      "role": "shopper",
+      "token": "aprendizaje",
+      "target": "aprendizaje",
+      "attempted": true,
+      "rendered": true,
+      "textLength": 1408,
+      "hasTechnicalPromise": false
+    }
+  ],
+  "blockers": [],
+  "warnings": [
+    "shopper_count_drift_review:210/213"
+  ],
+  "decision": "PASS_WITH_REVIEW_SOURCE_SAFE_VISUAL_SMOKE",
+  "safeState": {
+    "sourceSafe": true,
+    "writes": false,
+    "imported": false,
+    "production": false,
+    "providersWritten": false,
+    "paymentsExecuted": false,
+    "rawSensitiveDataOutput": false
+  },
+  "ok": true
+}

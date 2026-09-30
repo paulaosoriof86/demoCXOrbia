@@ -1,0 +1,366 @@
+{
+  "schemaVersion": "cxorbia.corte6-auth-rbac-readonly-reconciliation.v4",
+  "generatedAt": "2026-07-30T16:55:22.337Z",
+  "projectId": "cxorbia-backend-dev",
+  "tenantId": "tya",
+  "canonicalProjectId": "cinepolis",
+  "mode": "READ_ONLY_SOURCE_SAFE",
+  "providerWrites": 0,
+  "authorizationSemantics": {
+    "tenant": "super OR tenantId==tya OR tenants[] contains tya",
+    "project": "projectIds[] contains cinepolis for client/shopper",
+    "shopper": "shopperId claim matches Firestore shopper document ID"
+  },
+  "auth": {
+    "totalUsers": 17,
+    "activePasswordUsers": 17,
+    "tenantUsers": 13,
+    "usersAssignedCanonicalProject": 8,
+    "shopperWithMatchingProfile": 3,
+    "shopperMatchedProjectScopes": {
+      "cinepolis": 3
+    },
+    "usersWithTenantIdsOnlyGap": 0,
+    "usersWithProjectIdOnlyGap": 0,
+    "unknownRoleUsers": 1,
+    "roleReadiness": {
+      "missing": {
+        "users": 2,
+        "activePassword": 2,
+        "tenantAllowedByRules": 0,
+        "canonicalProjectAssignedByRules": 0,
+        "shopperIdPresent": 0,
+        "shopperProfileMatched": 0,
+        "tenantIdsOnlyGap": 0,
+        "projectIdOnlyGap": 0,
+        "secureReadReady": 0
+      },
+      "admin": {
+        "users": 3,
+        "activePassword": 3,
+        "tenantAllowedByRules": 2,
+        "canonicalProjectAssignedByRules": 0,
+        "shopperIdPresent": 0,
+        "shopperProfileMatched": 0,
+        "tenantIdsOnlyGap": 0,
+        "projectIdOnlyGap": 0,
+        "secureReadReady": 2
+      },
+      "cliente": {
+        "users": 2,
+        "activePassword": 2,
+        "tenantAllowedByRules": 2,
+        "canonicalProjectAssignedByRules": 2,
+        "shopperIdPresent": 0,
+        "shopperProfileMatched": 0,
+        "tenantIdsOnlyGap": 0,
+        "projectIdOnlyGap": 0,
+        "secureReadReady": 2
+      },
+      "externo": {
+        "users": 1,
+        "activePassword": 1,
+        "tenantAllowedByRules": 0,
+        "canonicalProjectAssignedByRules": 0,
+        "shopperIdPresent": 0,
+        "shopperProfileMatched": 0,
+        "tenantIdsOnlyGap": 0,
+        "projectIdOnlyGap": 0,
+        "secureReadReady": 0
+      },
+      "ops": {
+        "users": 2,
+        "activePassword": 2,
+        "tenantAllowedByRules": 2,
+        "canonicalProjectAssignedByRules": 0,
+        "shopperIdPresent": 0,
+        "shopperProfileMatched": 0,
+        "tenantIdsOnlyGap": 0,
+        "projectIdOnlyGap": 0,
+        "secureReadReady": 2
+      },
+      "shopper": {
+        "users": 4,
+        "activePassword": 4,
+        "tenantAllowedByRules": 4,
+        "canonicalProjectAssignedByRules": 3,
+        "shopperIdPresent": 3,
+        "shopperProfileMatched": 3,
+        "tenantIdsOnlyGap": 0,
+        "projectIdOnlyGap": 0,
+        "secureReadReady": 3
+      },
+      "super": {
+        "users": 3,
+        "activePassword": 3,
+        "tenantAllowedByRules": 3,
+        "canonicalProjectAssignedByRules": 3,
+        "shopperIdPresent": 0,
+        "shopperProfileMatched": 0,
+        "tenantIdsOnlyGap": 0,
+        "projectIdOnlyGap": 0,
+        "secureReadReady": 3
+      }
+    },
+    "roleScopeValues": {
+      "missing": {
+        "projectId": {},
+        "projectIds": {},
+        "tenantId": {},
+        "tenants": {},
+        "tenantIds": {}
+      },
+      "admin": {
+        "projectId": {
+          "tya": 1
+        },
+        "projectIds": {
+          "tya": 1,
+          "tya-piloto": 2
+        },
+        "tenantId": {
+          "tya": 2,
+          "otro-tenant": 1
+        },
+        "tenants": {},
+        "tenantIds": {
+          "tya": 1
+        }
+      },
+      "cliente": {
+        "projectId": {
+          "cinepolis": 2
+        },
+        "projectIds": {
+          "cinepolis": 2
+        },
+        "tenantId": {
+          "tya": 2
+        },
+        "tenants": {},
+        "tenantIds": {
+          "tya": 1
+        }
+      },
+      "externo": {
+        "projectId": {
+          "otro": 1
+        },
+        "projectIds": {
+          "otro": 1
+        },
+        "tenantId": {
+          "otro": 1
+        },
+        "tenants": {},
+        "tenantIds": {
+          "otro": 1
+        }
+      },
+      "ops": {
+        "projectId": {
+          "tya": 1
+        },
+        "projectIds": {
+          "tya": 1,
+          "tya-piloto": 1
+        },
+        "tenantId": {
+          "tya": 2
+        },
+        "tenants": {},
+        "tenantIds": {
+          "tya": 1
+        }
+      },
+      "shopper": {
+        "projectId": {
+          "cinepolis": 3
+        },
+        "projectIds": {
+          "cinepolis": 3,
+          "tya-piloto": 1
+        },
+        "tenantId": {
+          "tya": 4
+        },
+        "tenants": {},
+        "tenantIds": {
+          "tya": 1
+        }
+      },
+      "super": {
+        "projectId": {
+          "tya": 1
+        },
+        "projectIds": {
+          "tya": 1,
+          "tya-piloto": 2,
+          "r1": 1
+        },
+        "tenantId": {
+          "tya": 3
+        },
+        "tenants": {
+          "tya": 1
+        },
+        "tenantIds": {
+          "tya": 1
+        }
+      }
+    },
+    "readiness": {
+      "operatorLoginReady": 7,
+      "clientLoginReady": 2,
+      "shopperLoginReady": 3,
+      "allRequiredRoleFamiliesHaveAtLeastOne": true,
+      "legacyClaimsSufficientForSecureDevReadWithoutClaimMutation": true,
+      "rulesMutationRequiredForCanonicalVisitStatusField": true,
+      "claimMutationRequiredForDevVisualIfReady": false,
+      "usersWithTenantIdsOnlyGap": 0,
+      "usersWithProjectIdOnlyGap": 0
+    },
+    "piiExported": false
+  },
+  "canonicalVisitStatus": {
+    "total": 616,
+    "statusPresent": 616,
+    "estadoPresent": 0,
+    "statusValues": {
+      "submitida": 545,
+      "cuestionario": 61,
+      "agendada": 4,
+      "realizada": 3,
+      "fuera_rango": 3
+    },
+    "estadoValues": {},
+    "byPeriod": {
+      "2025-06": {
+        "total": 44,
+        "statusValues": {
+          "submitida": 35,
+          "cuestionario": 9
+        },
+        "estadoValues": {}
+      },
+      "2025-07": {
+        "total": 44,
+        "statusValues": {
+          "submitida": 39,
+          "cuestionario": 5
+        },
+        "estadoValues": {}
+      },
+      "2025-08": {
+        "total": 44,
+        "statusValues": {
+          "submitida": 42,
+          "cuestionario": 1,
+          "agendada": 1
+        },
+        "estadoValues": {}
+      },
+      "2025-09": {
+        "total": 44,
+        "statusValues": {
+          "submitida": 42,
+          "cuestionario": 2
+        },
+        "estadoValues": {}
+      },
+      "2025-10": {
+        "total": 44,
+        "statusValues": {
+          "submitida": 30,
+          "cuestionario": 13,
+          "realizada": 1
+        },
+        "estadoValues": {}
+      },
+      "2025-11": {
+        "total": 44,
+        "statusValues": {
+          "submitida": 37,
+          "cuestionario": 7
+        },
+        "estadoValues": {}
+      },
+      "2025-12": {
+        "total": 44,
+        "statusValues": {
+          "submitida": 29,
+          "cuestionario": 14,
+          "realizada": 1
+        },
+        "estadoValues": {}
+      },
+      "2026-01": {
+        "total": 44,
+        "statusValues": {
+          "submitida": 42,
+          "cuestionario": 2
+        },
+        "estadoValues": {}
+      },
+      "2026-02": {
+        "total": 44,
+        "statusValues": {
+          "submitida": 43,
+          "cuestionario": 1
+        },
+        "estadoValues": {}
+      },
+      "2026-03": {
+        "total": 44,
+        "statusValues": {
+          "submitida": 44
+        },
+        "estadoValues": {}
+      },
+      "2026-04": {
+        "total": 44,
+        "statusValues": {
+          "submitida": 42,
+          "cuestionario": 2
+        },
+        "estadoValues": {}
+      },
+      "2026-05": {
+        "total": 44,
+        "statusValues": {
+          "submitida": 44
+        },
+        "estadoValues": {}
+      },
+      "2026-06": {
+        "total": 44,
+        "statusValues": {
+          "submitida": 44
+        },
+        "estadoValues": {}
+      },
+      "2026-07": {
+        "total": 44,
+        "statusValues": {
+          "submitida": 32,
+          "cuestionario": 5,
+          "agendada": 3,
+          "fuera_rango": 3,
+          "realizada": 1
+        },
+        "estadoValues": {}
+      }
+    }
+  },
+  "safety": {
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "rulesDeploys": 0,
+    "hostingDeploys": 0,
+    "storageWrites": 0,
+    "production": false,
+    "merge": false,
+    "identitiesExported": false,
+    "sensitiveValuesExported": false
+  }
+}

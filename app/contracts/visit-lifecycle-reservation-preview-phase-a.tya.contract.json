@@ -1,0 +1,173 @@
+{
+  "contract": "visit-lifecycle-reservation-preview-phase-a-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "makeWriteAllowed": false,
+  "hrWriteAllowed": false,
+  "storageWritesAllowed": false,
+  "importRealDataAllowed": false,
+  "dependsOn": [
+    "visit-lifecycle-phase-a-tya",
+    "visit-reservation-window-phase-a-tya",
+    "assignment-sync-conflict-preview-phase-a-tya",
+    "sensitive-data-policy-phase-a-tya"
+  ],
+  "purpose": "Define source-safe preview validation for visit lifecycle, reservations, schedule/reschedule windows, performed visit and questionnaire completed states without writes or real integrations.",
+  "sourceSafety": {
+    "requiresSyntheticOrSanitizedInput": true,
+    "forbidsRawSensitiveData": true,
+    "requiredInputMetadata": [
+      "sourceSafe=true",
+      "containsRawSensitiveData=false",
+      "isSyntheticOrSanitized=true"
+    ],
+    "rawHrFilesAllowed": false,
+    "rawSensitiveFieldsAllowed": false,
+    "manualReviewForAmbiguousMapping": true
+  },
+  "stableKeys": [
+    "tenantId",
+    "projectId",
+    "visitId",
+    "hrRowId",
+    "sourceVisitRef",
+    "assignmentId",
+    "shopperId",
+    "reservationId",
+    "scheduleRequestId",
+    "periodId",
+    "country",
+    "franja",
+    "quincena",
+    "availableFrom",
+    "proposedDate",
+    "scheduledAt",
+    "rescheduledAt",
+    "performedAt",
+    "questionnaireCompletedAt",
+    "visitLifecycleStatus",
+    "reservationStatus",
+    "scheduleValidationStatus",
+    "questionnaireStatus",
+    "assignmentSyncOutcome",
+    "lastSyncedAt"
+  ],
+  "previewInputShape": {
+    "sourceSafe": true,
+    "containsRawSensitiveData": false,
+    "isSyntheticOrSanitized": true,
+    "visits": []
+  },
+  "actionTypes": [
+    "reserve_from_postulation",
+    "schedule_visit",
+    "request_reschedule",
+    "approve_reschedule",
+    "cancel_visit",
+    "mark_performed",
+    "mark_questionnaire_completed",
+    "release_reservation"
+  ],
+  "previewOutcomes": [
+    "reservation_ready",
+    "schedule_valid",
+    "reschedule_valid",
+    "released_to_available",
+    "cancelled_or_unassignable",
+    "performed_pending_questionnaire",
+    "questionnaire_completed_pending_review",
+    "assignment_conflict_blocks_schedule",
+    "manual_review_required",
+    "conflict_review_required"
+  ],
+  "validationFailures": [
+    "missing_tenant_project_visit",
+    "missing_assignment_or_shopper",
+    "missing_required_date",
+    "before_available_from",
+    "outside_franja",
+    "outside_quincena",
+    "outside_project_rules",
+    "future_performed_at",
+    "future_questionnaire_completed_at",
+    "questionnaire_before_performed",
+    "assignment_sync_conflict",
+    "reservation_duplicate_risk",
+    "sensitive_fields_detected",
+    "override_required",
+    "manual_review_required"
+  ],
+  "scheduleWindowRules": [
+    "proposedDate, scheduledAt or rescheduledAt must be >= availableFrom when availableFrom exists.",
+    "WK franja allows Monday-Friday unless project rules override it.",
+    "WKND franja allows Saturday-Sunday unless project rules override it.",
+    "Q1 must stay in day 1-15 unless override approved.",
+    "Q2 must stay in day 16-last day of month unless override approved.",
+    "Reservation means visit is held in preview, not HR synchronized.",
+    "Active reservation must prevent duplicate visible availability.",
+    "Out-of-window scheduling requires authorizedBy and authorizedReason before becoming override_approved."
+  ],
+  "lifecycleRules": [
+    "performedAt must not be in the future.",
+    "questionnaireCompletedAt must not be in the future.",
+    "questionnaireCompletedAt must not be before performedAt unless conflict_review_required with note.",
+    "Questionnaire completed is not submitido.",
+    "Performed visit is not automatically liquidable.",
+    "Cancelled visits must not remain available unless released by explicit project/admin rules.",
+    "Assignment conflict blocks scheduling until reviewed."
+  ],
+  "assignmentGateRules": [
+    "assignment_conflict_blocks_schedule applies when assignment sync outcome is conflict_review_required or manual_review_required.",
+    "already_reflected_no_duplicate may proceed if schedule rules are valid.",
+    "platform_pending_hr_sync may proceed only as preview/pending HR sync, not HR synchronized.",
+    "hr_detected_new_assignment may proceed only if stable keys and shopperId exist."
+  ],
+  "outputRules": [
+    "Validator prints JSON report only; no output files are written by default.",
+    "Rows must contain safe operational IDs and references only.",
+    "Report must include counts by outcome and validation failure.",
+    "All gates remain false in the report."
+  ],
+  "claudePrototypeImpact": [
+    "Scheduling UI must not say HR synchronized while gates are off.",
+    "A reservation must be shown as held/prepared/pending HR sync, not confirmed HR sync.",
+    "Out-of-window dates must show failed rule and request override/review.",
+    "Performed visit and questionnaire completed must remain separate from submitido and payment.",
+    "Cancelled or released reservations must not create duplicate availability."
+  ],
+  "academyImpact": {
+    "roles": ["super", "admin", "ops", "shopper", "client", "consultant_partner"],
+    "manualsToUpdate": ["Visit lifecycle", "Reservations", "Scheduling windows", "Rescheduling", "Cancellation", "Questionnaire completed", "Override approvals", "Assignment sync gates"],
+    "coursesToUpdate": ["Shopper scheduling rules", "Ops visit follow-up", "Admin schedule validation", "Client status reading"],
+    "newLessons": [
+      "How a reservation holds a visit without HR sync",
+      "How availableFrom, franja and quincena are validated",
+      "Why assignment conflicts block scheduling",
+      "Why performed visit is not questionnaire completed",
+      "Why questionnaire completed is not submitido or paid",
+      "How out-of-window override works"
+    ],
+    "interactiveChecklists": [
+      "Before reserving a visit",
+      "Before confirming a schedule",
+      "Before approving out-of-window date",
+      "Before marking performed",
+      "Before marking questionnaire completed"
+    ]
+  },
+  "hardStops": [
+    "Do not call Make from this preview.",
+    "Do not write HR from this preview.",
+    "Do not write Firestore from this preview.",
+    "Do not mark reservation as HR synchronized while sync gates are off.",
+    "Do not mark performed visits as paid.",
+    "Do not treat questionnaire completed as submitido.",
+    "Do not allow future performedAt or questionnaireCompletedAt as valid without conflict review.",
+    "Do not process raw sensitive fields."
+  ]
+}

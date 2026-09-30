@@ -1,0 +1,500 @@
+{
+  "schema": "cxorbia.recovery.canonical-module-registry.v1",
+  "frozenAt": "2026-09-18T09:57:00-06:00",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "state": "HOLD_FORENSIC_CANONICAL_ADJUDICATION",
+  "production": "DO_NOT_TOUCH",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "branchHeadAtFreeze": "8c5945f0f6c223511d8ccf02735b5649f2fa75a9",
+  "comparisonCandidate": {
+    "sourceSha": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+    "treeSha": "878fd60a2dc542cf04540026c34f1a7543cc2134",
+    "promotionEligible": false
+  },
+  "certificationEvidence": {
+    "run188": {
+      "runId": "35361181438",
+      "technicalResult": "SUCCESS",
+      "artifactId": "10555321726",
+      "artifactDigest": "sha256:00655f4d8963876c0a8bc49913d0851ffbef5d3c13b046c8f0ca3b5cf3d7e371",
+      "gate21ArtifactId": "10555421090",
+      "gate21Digest": "sha256:db1ea6f2f597935e51d10c6fd40b1ac9ed8e74dff1624307ba8b1ad77c9014f0",
+      "scope": "integrity of exact artifact only"
+    },
+    "run191": {
+      "runId": "35363178226",
+      "result": "HOLD",
+      "artifactId": "10556195012",
+      "artifactDigest": "sha256:07bb5a660530ffcbc37d459ec688c63742039484b0c2d318e7d7684668a63d8a",
+      "terminalBlocker": "AUTH_FAILURE:CLIENT_MEMBERSHIP_MISSING",
+      "certifySkipped": true,
+      "gate21Skipped": true
+    }
+  },
+  "frozenBusinessRules": {
+    "cinepolisLiveHRIsOperationalAuthority": true,
+    "historicalPresentFutureFromSameLiveHRRevision": true,
+    "adminShopperIdentityVisibleWhenAuthorized": true,
+    "shopperOwnIdentityProfileHistoryAndKPIsVisible": true,
+    "postulationsMustBeDurableRealEventsNotDerivedFromVisitState": true,
+    "projectIsolationRequired": true,
+    "perProjectOperationalSourceConfigRequired": true,
+    "secondProjectMustNotRequireGlobalSourceCodeChange": true,
+    "bidirectionalWritesRequireRemoteAckIdempotencyAndReadback": true,
+    "noHardcodedProjectCountryPeriodCurrencySheetOrColumns": true,
+    "legalConsentNeverBlocksAccessTestsOrProduction": true
+  },
+  "sourceForensicFindings": [
+    {
+      "id": "F01",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "owner": "app/adapters/tya-live-source-inplace-apply.js",
+      "fact": "contains fallback nombre 'Shopper protegido' plus piiProtected projection; authorized Admin identity can regress when exact identity overlay does not resolve"
+    },
+    {
+      "id": "F02",
+      "classification": "FUNCTIONAL_DEFECT",
+      "owner": "app/adapters/tya-live-source-inplace-apply.js",
+      "fact": "mapPosts(visits, identity) creates postulation projections from visit state instead of durable real postulation events"
+    },
+    {
+      "id": "F03",
+      "classification": "FUNCTIONAL_DEFECT",
+      "owner": "app/adapters/tya-canonical-reservations-guard-v2.js",
+      "fact": "canonical reservation source pending; readOnly=true and mutationsEnabled=false"
+    },
+    {
+      "id": "F04",
+      "classification": "MAPPING_FAILURE",
+      "owner": "identity/profile dependency closure",
+      "fact": "authenticated Shopper rendered as Evaluador without canonical profile link, country and history"
+    },
+    {
+      "id": "F05",
+      "classification": "VISUAL_DEFECT",
+      "owner": "period/dashboard dependency closure",
+      "fact": "historical-period selection does not govern every visual semantic consistently"
+    },
+    {
+      "id": "F06",
+      "classification": "FUNCTIONAL_DEFECT",
+      "owner": "finance dependency closure",
+      "fact": "Dashboard Financiero and Liquidaciones do not prove a single reconciled canonical finance authority"
+    },
+    {
+      "id": "F07",
+      "classification": "AUTH_FAILURE",
+      "owner": "client membership/scope",
+      "fact": "run191 terminal blocker CLIENT_MEMBERSHIP_MISSING"
+    },
+    {
+      "id": "F08",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "owner": "module-truth methodology",
+      "fact": "prior MATCH proved declared blob equality but not full dependency closure or behavior shadowing"
+    },
+    {
+      "id": "F09",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "owner": "app/adapters/tya-ab-cumulative-composition-v1.js",
+      "fact": "superseded overlay remains loaded; keep/remove only after no-loss proof"
+    }
+  ],
+  "screenshotEvidence": [
+    {
+      "label": "admin-mi-dia-sep",
+      "sha256": "fb3f6071199d778b891cc93366ca32fff1980c5b01128dd651a04a0a98b51d77"
+    },
+    {
+      "label": "admin-dashboard-ago",
+      "sha256": "c1b484c3d7d042dd359f959923be5261ae278869c4ba5f2790a6ad6cfcc8b998"
+    },
+    {
+      "label": "admin-dashboard-sep",
+      "sha256": "2d2f3be51bc9ac66ce3d4dc9346c8d6ac6b69c7308b6418be664b5dbb93343a2"
+    },
+    {
+      "label": "admin-dashboard-phases",
+      "sha256": "393c57a77e260a2a19156d366b067d1d65289dc984b5ffd8f85cee18f729d584"
+    },
+    {
+      "label": "admin-dashboard-visit-state-1",
+      "sha256": "7f92ef285c7ee3b9e35af5f1a456f7d4b46eb2f032be07e128d19991ad6d3629"
+    },
+    {
+      "label": "admin-dashboard-visit-state-2",
+      "sha256": "89261bd98afbf01770d1b4866faec24909730a436eadc53664c3c2394564b7cf"
+    },
+    {
+      "label": "admin-dashboard-pending",
+      "sha256": "3900d03a89caf4d24e5cac0fb5a21756cf73701832fb519040a0ad785d73b97c"
+    },
+    {
+      "label": "admin-dashboard-out-of-range",
+      "sha256": "5ee62a1f5bda83eef4b3f6e604e8fe4b2e3ddfc36cfb227876b5d7d3f1ec4a6f"
+    },
+    {
+      "label": "admin-visitas",
+      "sha256": "e2a5e5359ca366cd8b24ac6c97b3138a3b521e689526343d304f5de75db82a87"
+    },
+    {
+      "label": "admin-postulaciones",
+      "sha256": "63c8f895145f28e3c18d2d0b851a49fddb5464ebc332c8d0935e90268ccb8dc2"
+    },
+    {
+      "label": "admin-reservas",
+      "sha256": "74e50940d8446439999f97f36c9d5c278af5f2c9c31a16761be714d8dddf54e2"
+    },
+    {
+      "label": "admin-shoppers",
+      "sha256": "358b41fefa358aa346335850f3415d2439c57c10c97472e75da273e53c58edfe"
+    },
+    {
+      "label": "admin-finance-dashboard",
+      "sha256": "f07b98890029dd22f6916b6a7ae1773065937cdcf8a67e946220c1cbbdd794b5"
+    },
+    {
+      "label": "admin-liquidaciones",
+      "sha256": "36736ce523cd098ca3d0e7247c7690c68eb78d3a45637cd440429e3b16f6d4fd"
+    },
+    {
+      "label": "shopper-mi-dia",
+      "sha256": "e64388125498577af36c36878dde97ba7a65e81daa207d1ccbf45866b016371e"
+    },
+    {
+      "label": "shopper-mi-perfil",
+      "sha256": "1f7e146fbd2c8cd7bcddab64c63a7d412b9d8c41831ccc68ec2447ba0e834c88"
+    },
+    {
+      "label": "shopper-visitas-disponibles",
+      "sha256": "954cf30d8c923feabc40b7ce575b547b8478b28fe45c705c6a8ffff2712f957e"
+    },
+    {
+      "label": "shopper-mis-visitas",
+      "sha256": "10df07dac26c9098bdb5d956e01e3a0c06026e418ce5e3d17c8302f314058cdf"
+    }
+  ],
+  "adjudicationRule": {
+    "unit": "FUNCTIONAL_MODULE_PLUS_DEPENDENCY_CLOSURE",
+    "precedence": [
+      "explicit human-approved visual/functional checkpoint",
+      "functional gate/receipt for exact module closure",
+      "frozen manifest/blob evidence",
+      "source chronology"
+    ],
+    "requiredOutputPerDomain": [
+      "lastApprovedCheckpoint",
+      "sourceCommit",
+      "ownerBlobs",
+      "dependencyClosureBlobs",
+      "entrypointOrder",
+      "servedBlobs",
+      "humanEvidence",
+      "functionalContracts",
+      "classification",
+      "action"
+    ],
+    "allowedActions": [
+      "KEEP",
+      "RECOVER_EXACT_APPROVED_DELTA",
+      "REMOVE_SUPERSEDED_SHADOW_AFTER_NO_LOSS_GATE",
+      "FOCAL_FIX_ONLY_IF_TRUE_FUNCTIONAL_DEFECT"
+    ]
+  },
+  "modules": [
+    {
+      "domain": "auth-protected-data-runtime",
+      "owners": [
+        "app/core/backend-browser-auth.js",
+        "app/core/backend-protected-dev-session-continuity.js",
+        "app/core/backend-cxdata-read-guard.js",
+        "app/core/backend-firebase.js",
+        "app/core/backend-protected-dev-mode.js"
+      ],
+      "priorMatrixClassification": "MATCH",
+      "priorAuthority": "RECOVERY_SUCCESSOR_CHAIN: F9 accepted -> terminal b949 certified predecessor -> canonical-convergence fixes -> f836 multiproject source",
+      "priorSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "forensicStatus": "DEPENDENCY_REVIEW_REQUIRED",
+      "adjudication": "PENDING_EXACT_DEPENDENCY_CLOSURE"
+    },
+    {
+      "domain": "base-router-shell-cache",
+      "owners": [
+        "app/app.js",
+        "app/index-backend-dev.html",
+        "app/core/build-lock.js",
+        "app/styles/theme.css",
+        "app/styles/layout.css",
+        "app/manifest.webmanifest",
+        "app/sw.js"
+      ],
+      "priorMatrixClassification": "MATCH",
+      "priorAuthority": "RECOVERY_SUCCESSOR_CHAIN: F9 accepted -> terminal b949 certified predecessor -> canonical-convergence fixes -> f836 multiproject source",
+      "priorSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "forensicStatus": "DEPENDENCY_REVIEW_REQUIRED",
+      "adjudication": "PENDING_EXACT_DEPENDENCY_CLOSURE"
+    },
+    {
+      "domain": "benefits",
+      "owners": [
+        "app/modules/beneficios.js"
+      ],
+      "priorMatrixClassification": "MATCH",
+      "priorAuthority": "F9 accepted release lineage preserved through terminal b949 and f836",
+      "priorSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "forensicStatus": "NO_DRIFT_PROVEN_YET",
+      "adjudication": "PENDING_EXACT_DEPENDENCY_CLOSURE"
+    },
+    {
+      "domain": "canonical-hr-state-adapters",
+      "owners": [
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+        "app/adapters/tya-cumulative-read-model-v2.js",
+        "app/adapters/tya-canonical-state-semantics-v2.js",
+        "app/adapters/tya-live-source-refresh-watch-v2.js",
+        "app/adapters/tya-live-source-inplace-apply.js",
+        "backend/runtime/hr-live-service/server.mjs",
+        "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+        "tools/hr-source/tya-canonical-visit-state-r20.mjs",
+        "tools/hr-source/tya-reapply-canonical-state-r20.mjs"
+      ],
+      "priorMatrixClassification": "MATCH",
+      "priorAuthority": "RECOVERY_SUCCESSOR_CHAIN: F9 accepted -> terminal b949 certified predecessor -> canonical-convergence fixes -> f836 multiproject source",
+      "priorSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "forensicStatus": "DRIFT_PROVEN",
+      "adjudication": "PENDING_EXACT_DEPENDENCY_CLOSURE"
+    },
+    {
+      "domain": "certifications",
+      "owners": [
+        "app/modules/academia.js",
+        "app/modules/cert.js"
+      ],
+      "priorMatrixClassification": "MATCH",
+      "priorAuthority": "F9 accepted release lineage preserved through terminal b949 and f836",
+      "priorSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "forensicStatus": "NO_DRIFT_PROVEN_YET",
+      "adjudication": "PENDING_EXACT_DEPENDENCY_CLOSURE"
+    },
+    {
+      "domain": "client-portal-reportkit",
+      "owners": [
+        "app/core/cliente-data.js",
+        "app/modules/cliente.js",
+        "app/modules/cliente-extra.js"
+      ],
+      "priorMatrixClassification": "MATCH",
+      "priorAuthority": "F9 accepted release lineage preserved through terminal b949 and f836",
+      "priorSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "forensicStatus": "DEPENDENCY_REVIEW_REQUIRED",
+      "adjudication": "PENDING_EXACT_DEPENDENCY_CLOSURE"
+    },
+    {
+      "domain": "core-config-data-router-permissions",
+      "owners": [
+        "app/core/config.js",
+        "app/core/router.js",
+        "app/core/permissions.js",
+        "app/core/data.js",
+        "app/core/data-source.js"
+      ],
+      "priorMatrixClassification": "MATCH",
+      "priorAuthority": "RECOVERY_SUCCESSOR_CHAIN: F9 accepted -> terminal b949 certified predecessor -> canonical-convergence fixes -> f836 multiproject source",
+      "priorSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "forensicStatus": "DEPENDENCY_REVIEW_REQUIRED",
+      "adjudication": "PENDING_EXACT_DEPENDENCY_CLOSURE"
+    },
+    {
+      "domain": "dashboard-operation",
+      "owners": [
+        "app/modules/dashboard.js",
+        "app/modules/midia.js"
+      ],
+      "priorMatrixClassification": "MATCH",
+      "priorAuthority": "F9 accepted release lineage preserved through terminal b949 and f836",
+      "priorSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "forensicStatus": "DRIFT_PROVEN",
+      "adjudication": "PENDING_EXACT_DEPENDENCY_CLOSURE"
+    },
+    {
+      "domain": "documents-resources",
+      "owners": [
+        "app/modules/novedades.js",
+        "app/modules/tablon.js",
+        "app/modules/documentos.js"
+      ],
+      "priorMatrixClassification": "MATCH",
+      "priorAuthority": "F9 accepted release lineage preserved through terminal b949 and f836",
+      "priorSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "forensicStatus": "NO_DRIFT_PROVEN_YET",
+      "adjudication": "PENDING_EXACT_DEPENDENCY_CLOSURE"
+    },
+    {
+      "domain": "finance-core-liquidation-costs",
+      "owners": [
+        "app/core/finanzas-core.js",
+        "app/core/liquidacion.js",
+        "app/core/costos.js",
+        "app/modules/finanzas.js"
+      ],
+      "priorMatrixClassification": "MATCH",
+      "priorAuthority": "RECOVERY_SUCCESSOR_CHAIN: F9 accepted -> terminal b949 certified predecessor -> canonical-convergence fixes -> f836 multiproject source",
+      "priorSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "forensicStatus": "DRIFT_PROVEN",
+      "adjudication": "PENDING_EXACT_DEPENDENCY_CLOSURE"
+    },
+    {
+      "domain": "historical",
+      "owners": [
+        "app/modules/historico.js"
+      ],
+      "priorMatrixClassification": "MATCH",
+      "priorAuthority": "F9 accepted release lineage preserved through terminal b949 and f836",
+      "priorSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "forensicStatus": "DEPENDENCY_REVIEW_REQUIRED",
+      "adjudication": "PENDING_EXACT_DEPENDENCY_CLOSURE"
+    },
+    {
+      "domain": "human-runtime-domain-consistency",
+      "owners": [
+        "app/adapters/tya-c6-unified-human-runtime-v1.js",
+        "app/adapters/tya-c6-domain-consistency-bridge.js"
+      ],
+      "priorMatrixClassification": "MATCH",
+      "priorAuthority": "RECOVERY_SUCCESSOR_CHAIN: F9 accepted -> terminal b949 certified predecessor -> canonical-convergence fixes -> f836 multiproject source",
+      "priorSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "forensicStatus": "DRIFT_PROVEN",
+      "adjudication": "PENDING_EXACT_DEPENDENCY_CLOSURE"
+    },
+    {
+      "domain": "identity-membership-roll-forward",
+      "owners": [
+        "app/adapters/cxorbia-exact-identity-contract-v1.js",
+        "app/adapters/cxorbia-identity-roll-forward-v1.js",
+        "app/adapters/cxorbia-shopper-membership-wiring-v1.js",
+        "app/adapters/cxorbia-provider-identity-link-runtime-v1.js",
+        "app/adapters/tya-c6-live-user-admin-membership-wiring-v1.js"
+      ],
+      "priorMatrixClassification": "MATCH",
+      "priorAuthority": "RECOVERY_SUCCESSOR_CHAIN: F9 accepted -> terminal b949 certified predecessor -> canonical-convergence fixes -> f836 multiproject source",
+      "priorSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "forensicStatus": "DRIFT_PROVEN",
+      "adjudication": "PENDING_EXACT_DEPENDENCY_CLOSURE"
+    },
+    {
+      "domain": "persistence-command-ack-boundary",
+      "owners": [
+        "app/adapters/cxorbia-canonical-write-firewall-v1.js",
+        "app/adapters/cxorbia-command-adapter-v1.js",
+        "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+        "app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js",
+        "app/adapters/cxorbia-shopper-admin-command-contract-v1.js",
+        "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+        "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+        "app/adapters/cxorbia-command-http-transport-v1.js",
+        "app/adapters/cxorbia-hr-write-adapter-contract-v1.js",
+        "app/adapters/cxorbia-legal-acceptance-provider-bridge-v1.js",
+        "app/adapters/cxorbia-legal-runtime-http-v1.js"
+      ],
+      "priorMatrixClassification": "MATCH",
+      "priorAuthority": "RECOVERY_SUCCESSOR_CHAIN: F9 accepted -> terminal b949 certified predecessor -> canonical-convergence fixes -> f836 multiproject source",
+      "priorSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "forensicStatus": "NO_DRIFT_PROVEN_YET",
+      "adjudication": "PENDING_EXACT_DEPENDENCY_CLOSURE"
+    },
+    {
+      "domain": "phase-a-supporting-core",
+      "owners": [
+        "app/adapters/tya-canonical-finance-read-model-v2.js",
+        "backend/runtime/hr-live-service/Dockerfile",
+        "app/adapters/tya-phase-a-authority-compat-v1.js",
+        "app/adapters/tya-financial-canonical-source-safe-adapter.js",
+        "app/adapters/tya-delegated-coordination-finance-guard-v1.js"
+      ],
+      "priorMatrixClassification": "MATCH",
+      "priorAuthority": "RECOVERY_SUCCESSOR_CHAIN: F9 accepted -> terminal b949 certified predecessor -> canonical-convergence fixes -> f836 multiproject source",
+      "priorSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "forensicStatus": "DEPENDENCY_REVIEW_REQUIRED",
+      "adjudication": "PENDING_EXACT_DEPENDENCY_CLOSURE"
+    },
+    {
+      "domain": "projects-periods-hr-source-wizard-multiproject",
+      "owners": [
+        "app/modules/proyectos.js",
+        "app/modules/periodos.js",
+        "app/modules/hr-source.js",
+        "app/modules/proyecto-wizard.js",
+        "backend/contracts/cxorbia-project-source-contract-v1.json",
+        "backend/runtime/cxorbia-project-command-provider-v1.mjs"
+      ],
+      "priorMatrixClassification": "MATCH",
+      "priorAuthority": "RECOVERY_SUCCESSOR_CHAIN: F9 accepted -> terminal b949 certified predecessor -> canonical-convergence fixes -> f836 multiproject source",
+      "priorSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "forensicStatus": "DEPENDENCY_REVIEW_REQUIRED",
+      "adjudication": "PENDING_EXACT_DEPENDENCY_CLOSURE"
+    },
+    {
+      "domain": "questionnaire-shopper",
+      "owners": [
+        "app/modules/cuestionario-shopper.js"
+      ],
+      "priorMatrixClassification": "MATCH",
+      "priorAuthority": "F9 accepted release lineage preserved through terminal b949 and f836",
+      "priorSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "forensicStatus": "NO_DRIFT_PROVEN_YET",
+      "adjudication": "PENDING_EXACT_DEPENDENCY_CLOSURE"
+    },
+    {
+      "domain": "reports-admin-shopper",
+      "owners": [
+        "app/modules/operacion-extra.js"
+      ],
+      "priorMatrixClassification": "MATCH",
+      "priorAuthority": "RECOVERY_SUCCESSOR_CHAIN: F9 accepted -> terminal b949 certified predecessor -> canonical-convergence fixes -> f836 multiproject source",
+      "priorSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "forensicStatus": "DEPENDENCY_REVIEW_REQUIRED",
+      "adjudication": "PENDING_EXACT_DEPENDENCY_CLOSURE"
+    },
+    {
+      "domain": "shoppers-mi-visitas-profile",
+      "owners": [
+        "app/adapters/tya-canonical-shopper-portal-v2.js",
+        "app/modules/shoppers.js",
+        "app/modules/misvisitas.js"
+      ],
+      "priorMatrixClassification": "MATCH",
+      "priorAuthority": "RECOVERY_SUCCESSOR_CHAIN: F9 accepted -> terminal b949 certified predecessor -> canonical-convergence fixes -> f836 multiproject source",
+      "priorSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "forensicStatus": "DRIFT_PROVEN",
+      "adjudication": "PENDING_EXACT_DEPENDENCY_CLOSURE"
+    },
+    {
+      "domain": "visits-review-postulations-reservations",
+      "owners": [
+        "app/adapters/tya-canonical-reservations-guard-v2.js",
+        "app/modules/visitas.js",
+        "app/modules/visita-detalle.js",
+        "app/modules/revision-admin.js",
+        "app/modules/postulaciones.js",
+        "app/modules/reservas.js"
+      ],
+      "priorMatrixClassification": "MATCH",
+      "priorAuthority": "RECOVERY_SUCCESSOR_CHAIN: F9 accepted -> terminal b949 certified predecessor -> canonical-convergence fixes -> f836 multiproject source",
+      "priorSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "forensicStatus": "DRIFT_PROVEN",
+      "adjudication": "PENDING_EXACT_DEPENDENCY_CLOSURE"
+    }
+  ],
+  "stopRules": {
+    "productWrites": false,
+    "rebuild": false,
+    "recertification": false,
+    "newCandidate": false,
+    "newBranch": false,
+    "newOverlay": false,
+    "production": false
+  },
+  "nextExactAction": "Read-only adjudicate all 20 domains; emit KEEP/RECOVER for every owner+dependency closure; prepare one atomic recovery composition manifest before any product mutation."
+}
