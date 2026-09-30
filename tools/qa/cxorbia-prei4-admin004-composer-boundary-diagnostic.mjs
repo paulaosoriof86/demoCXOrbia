@@ -24,10 +24,13 @@ const hrRes=await fetch(ROOT+'/api/'+TENANT+'/'+PROJECT+'/hr-live?format=json&bo
 if(!hrRes.ok)fail('PROVIDER_FAILURE:ADMIN004_PUBLIC_HR_'+hrRes.status);
 const hb=await hrRes.json(),hr=hb?.snapshot||hb?.data||hb,rt=hb?._runtime||hr?._runtime||{},revision=str(rt.revision||hr.revision||hr.sourceRevision);
 if(EXPECTED_HR&&revision!==EXPECTED_HR)fail('SOURCE_FAILURE:ADMIN004_HR_REVISION_DRIFT:'+revision);
-const cfg=hr?.projectConfig||{};
-const fallback=arr(hr.visits).filter(v=>{const c=str(v.pais||v.country);return !finite(v.honorario)&&finite(cfg?.honorario?.[c]);});
-if(!fallback.length)fail('MAPPING_FAILURE:ADMIN004_NO_FALLBACK_VISITS');
-const rawTarget=fallback[0],target={id:str(rawTarget.id||rawTarget.visitId),row:str(rawTarget.hrRowId),country:str(rawTarget.pais||rawTarget.country),configured:Number(cfg.honorario[str(rawTarget.pais||rawTarget.country)])};
+const cfg=hr?.projectConfig||{},periodKey=str(process.env.PREI4_004_PERIOD_KEY||'2026-09');
+const fallback=arr(hr.visits).filter(v=>{
+  const c=str(v.pais||v.country),submitted=v?.canonicalFacets?.submitted===true||!!v?.submittedAt||['submitida','liquidada','pagada'].includes(str(v?.estado||v?.status).toLowerCase());
+  return str(v.periodKey)===periodKey&&submitted&&!finite(v.honorario)&&finite(cfg?.honorario?.[c]);
+}).sort((a,b)=>str(a.hrRowId||a.id).localeCompare(str(b.hrRowId||b.id)));
+if(!fallback.length)fail('MAPPING_FAILURE:ADMIN004_NO_CURRENT_PERIOD_SUBMITTED_FALLBACK_VISITS:'+periodKey);
+const rawTarget=fallback[0],target={id:str(rawTarget.id||rawTarget.visitId),row:str(rawTarget.hrRowId),periodKey:str(rawTarget.periodKey),country:str(rawTarget.pais||rawTarget.country),configured:Number(cfg.honorario[str(rawTarget.pais||rawTarget.country)])};
 if(!target.id&&!target.row)fail('MAPPING_FAILURE:ADMIN004_TARGET_KEY_MISSING');
 
 let admin=null,pageToken;
@@ -112,6 +115,6 @@ else if(!known(proof?.finalVisit))classification='POST_COMPOSITION_OVERWRITE';
 else if(!known(proof?.finance))classification='FINANCE_READ_MODEL_DROPS_CONFIGURED_HONORARIUM';
 else classification='PROPAGATION_CHAIN_EXACT';
 
-const result={schemaVersion:'cxorbia.prei4.admin004.composer-boundary-diagnostic.v1',decision:'PASS_PREI4_ADMIN_004_COMPOSER_BOUNDARY_DIAGNOSTIC',classification,hrRevision:revision,target:{visitFp:fp(target.id),hrRowFp:fp(target.row),country:target.country,configuredHonorario:target.configured},proof,writes:0,builds:0,deploys:0,production:false};
+const result={schemaVersion:'cxorbia.prei4.admin004.composer-boundary-diagnostic.v1',decision:'PASS_PREI4_ADMIN_004_COMPOSER_BOUNDARY_DIAGNOSTIC',classification,hrRevision:revision,target:{visitFp:fp(target.id),hrRowFp:fp(target.row),periodKey:target.periodKey,country:target.country,configuredHonorario:target.configured},proof,writes:0,builds:0,deploys:0,production:false};
 fs.writeFileSync(OUT+'/result.json',JSON.stringify(result,null,2)+'\n');
 console.log(JSON.stringify(result,null,2));
