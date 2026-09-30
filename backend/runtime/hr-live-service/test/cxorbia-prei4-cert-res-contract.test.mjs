@@ -3,8 +3,12 @@ import {
   certificationRouteScope,
   certificationBankFingerprint,
   calculateCertificationAttempt,
-  historicalCarryoverDecision
+  historicalCarryoverDecision,
+  withDocumentId
 } from '../certification-runtime.mjs';
+
+assert.deepEqual(withDocumentId('recert-123',{providerAck:true}),{id:'recert-123',providerAck:true});
+assert.throws(()=>withDocumentId('',{}),/PERSISTENCE_DOCUMENT_ID_REQUIRED/);
 
 assert.deepEqual(
   certificationRouteScope('/api/tenants/tya/projects/cinepolis/certifications/attempt'),

@@ -13,6 +13,12 @@ export function certificationRouteScope(pathname){
 }
 export function isCertificationRuntimePath(pathname){return !!certificationRouteScope(pathname);}
 
+export function withDocumentId(docId,item={}){
+  const id=str(docId);
+  if(!id)throw new Error('PERSISTENCE_DOCUMENT_ID_REQUIRED');
+  return {id,...(item||{})};
+}
+
 function canonicalBank(bank={}){
   return {
     preguntas:arr(bank.preguntas).map(q=>({q:str(q?.q),ops:arr(q?.ops).map(str),correcta:str(q?.correcta),exp:str(q?.exp)})),
@@ -173,7 +179,7 @@ async function saveAttempt(db,scope,principal,body,sourceRevision,idem){
     item={recordType:'certification_attempt',tenantId:scope.tenantId,projectId:scope.projectId,periodId:str(body.periodId||resource.periodId),shopperId:str(principal.shopperId),bankResourceId:resource.id,bankFingerprint:fingerprint,contentRevision:str(bank.contentRevision||fingerprint),score:calc.score,gate:calc.gate,pass:calc.pass,status:calc.pass?'certified':'failed',eligibilityGranted:calc.pass,currentCertification:calc.pass,recertificationSatisfied:calc.pass&&recerts.length>0,recertificationRequestIds:recerts.map(r=>r.id),sourceRevision:str(sourceRevision||''),answersHash:sha(body.answers),idempotencyKeyHash:sha(idem),providerAck:true,createdAt,createdByUid:str(principal.uid),updatedAt:createdAt};
     tx.create(ref,item);
   });
-  return {item,calc,idempotentReplay:replay};
+  return {item:withDocumentId(docId,item),calc,idempotentReplay:replay};
 }
 async function saveRecertification(db,scope,principal,body,idem){
   if(!OPERATOR_ROLES.has(str(principal.role)))throw new Error('RECERT_OPERATOR_REQUIRED');
@@ -190,7 +196,7 @@ async function saveRecertification(db,scope,principal,body,idem){
     item={tenantId:scope.tenantId,projectId:scope.projectId,periodId:str(body.periodId),scope:targetScope,targetShopperIds:targetScope==='one'?[shopperId]:[],reason,days,dueAt,status:'active',createdAt,createdByUid:str(principal.uid),createdByRole:str(principal.role),providerAck:true,idempotencyKeyHash:sha(idem)};
     tx.create(ref,item);
   });
-  return {item,idempotentReplay:replay};
+  return {item:withDocumentId(docId,item),idempotentReplay:replay};
 }
 function errorStatus(message){
   if(/AUTH_FAILURE|OPERATOR_REQUIRED|SHOPPER_REQUIRED/.test(message))return 403;
