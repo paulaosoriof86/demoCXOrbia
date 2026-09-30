@@ -88,6 +88,7 @@ CX.module('proyectos', ({data,ui})=>{
           <div><label class="lbl">Etiqueta de plataforma externa (visible)</label><input class="inp" id="cf_hrEtiq" value="${((pr.hrFuente||{}).etiqueta||'').replace(/"/g,'&quot;')}" placeholder="Ej. Hoja compartida del cliente"></div>
           <div><label class="lbl">Origen del cuestionario</label><select class="sel" id="cf_cueOrigen"><option value="interna" ${((pr.cuestionario||{}).modo||'interna')==='interna'?'selected':''}>Interno (plataforma)</option><option value="externo_general" ${((pr.cuestionario||{}).modo)==='externo_general'?'selected':''}>Externo · link general</option><option value="externo_visita" ${((pr.cuestionario||{}).modo)==='externo_visita'?'selected':''}>Externo · link por visita (desde HR)</option></select></div>
           <div><label class="lbl">Etiqueta cuestionario externo</label><input class="inp" id="cf_cueEtiq" value="${((pr.cuestionario||{}).etiqueta||'').replace(/"/g,'&quot;')}" placeholder="Ej. Formulario del cliente"></div>
+          <div id="cf_cueUrlWrap" style="${((pr.cuestionario||{}).modo)==='externo_general'?'':'display:none'};grid-column:1/3"><label class="lbl">URL general del cuestionario</label><input class="inp" id="cf_cueUrl" value="${((pr.cuestionario||{}).url||'').replace(/"/g,'&quot;')}" placeholder="https://…"><div style="font-size:10.5px;color:var(--t3);margin-top:4px">Se guarda en la configuración durable de este proyecto. No se usa para proyectos con link distinto por visita.</div></div>
         </div>
         <div style="font-size:10.5px;color:var(--t3);margin-top:5px">Las URLs privadas de HR/cuestionario se registran de forma segura por el sistema central (Fuente de HR); aquí solo etiqueta y origen.</div>
         <div style="margin-top:12px"><b style="font-size:12px">📲 Contactos WhatsApp por tipo de gestión</b></div>
@@ -107,6 +108,8 @@ CX.module('proyectos', ({data,ui})=>{
         const renderEsc=()=>{ov.querySelector('#cf_escChips').innerHTML=esc.length?esc.map((s,i)=>`<span class="bdg bdg-b" style="display:inline-flex;align-items:center;gap:5px">${s}<b data-delesc="${i}" style="cursor:pointer;color:var(--red)">✕</b></span>`).join(''):'<span class="muted" style="font-size:11.5px">Sin escenarios — agrégalos o extráelos del instructivo.</span>';
           ov.querySelectorAll('[data-delesc]').forEach(b=>b.addEventListener('click',()=>{esc.splice(+b.dataset.delesc,1);renderEsc();}));};
         renderEsc();
+        const cueModeSel=ov.querySelector('#cf_cueOrigen'),cueUrlWrap=ov.querySelector('#cf_cueUrlWrap');
+        if(cueModeSel&&cueUrlWrap)cueModeSel.addEventListener('change',()=>{cueUrlWrap.style.display=cueModeSel.value==='externo_general'?'':'none';});
         ov.querySelector('#cf_escAdd').addEventListener('click',()=>{const val=ov.querySelector('#cf_escNew').value.trim();if(val){esc.push(val);ov.querySelector('#cf_escNew').value='';renderEsc();}});
         ov.querySelector('#cf_escNew').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();ov.querySelector('#cf_escAdd').click();}});
         ov.querySelector('#cf_iaEsc').addEventListener('click',()=>{ const sug=['Atención y bienvenida','Tiempos de espera','Limpieza e imagen','Cierre y despedida'].filter(s=>!esc.includes(s)); esc=esc.concat(sug); renderEsc(); ui.toast(CX.ai&&CX.ai.ready()?'Escenarios extraídos del instructivo con IA':'Sugeridos por IA (configura Gemini para extracción real del instructivo)','ok',3600); });
@@ -137,7 +140,8 @@ CX.module('proyectos', ({data,ui})=>{
             next.revision={consultora:ov.querySelector('#cf_revCons').checked, cliente:ov.querySelector('#cf_revCli').checked};
             next.submitido={quien:ov.querySelector('#cf_submQuien').value, rol:ov.querySelector('#cf_submRol').value};
             next.hrFuente=Object.assign({},pr.hrFuente||{},{origen:ov.querySelector('#cf_hrOrigen').value, etiqueta:ov.querySelector('#cf_hrEtiq').value.trim()});
-            next.cuestionario=Object.assign({},pr.cuestionario||{},{modo:ov.querySelector('#cf_cueOrigen').value, etiqueta:ov.querySelector('#cf_cueEtiq').value.trim()});
+            const cueMode=ov.querySelector('#cf_cueOrigen').value, cueUrl=(ov.querySelector('#cf_cueUrl')?.value||'').trim();
+            next.cuestionario=Object.assign({},pr.cuestionario||{},{modo:cueMode, etiqueta:ov.querySelector('#cf_cueEtiq').value.trim(), url:cueMode==='externo_general'?cueUrl:'', visitLinkField:cueMode==='externo_visita'?((pr.cuestionario||{}).visitLinkField||(pr.operationalSource||{}).visitLinkField||'questionnaireLink'):null});
             next.contactos=Object.assign({},pr.contactos||{}); ov.querySelectorAll('.cf_contacto').forEach(i=>{next.contactos[i.dataset.ck]=i.value.trim();});
             const external=next.hrFuente.origen==='externa';
             const currentSource=pr.operationalSource||{};
