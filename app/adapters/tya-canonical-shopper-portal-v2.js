@@ -175,23 +175,6 @@
           }
         });
       }}));
-      if(credentialAvailable){
-        const value=host.querySelector('[data-credential-value]'),reveal=host.querySelector('[data-credential-reveal]'),copy=host.querySelector('[data-credential-copy]');
-        reveal?.addEventListener('click',()=>{
-          const show=reveal.getAttribute('aria-pressed')!=='true';
-          reveal.setAttribute('aria-pressed',show?'true':'false');
-          reveal.textContent=show?'Ocultar':'Mostrar';
-          if(value)value.textContent=show?String(passwordValue):'••••••••';
-        });
-        copy?.addEventListener('click',async()=>{
-          try{
-            await navigator.clipboard.writeText(String(passwordValue));
-            if(CX.ui?.toast)CX.ui.toast('Contraseña copiada para esta sesión.','',2200);
-          }catch(_){
-            if(CX.ui?.toast)CX.ui.toast('No fue posible copiar. Usa Mostrar para verla.','warn',2600);
-          }
-        });
-      }
     };
     draw();return host;
   }
