@@ -4,17 +4,17 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4_HUMAN_VISUAL_REMEDIATION",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "c1c4e748b39c5632e8648023433a00c15d57191b",
-  "productTreeAuthority": "ccb3d9da3c110e2d5fff57bae0d2d0eb76b3c4b4",
-  "predecessorProductSourceSha": "2cff3441f126d7d805932127bb9de9289ba273ad",
+  "productSourceSha": "c71c7e800490059d36a5be6e266c28086b8db8f4",
+  "productTreeAuthority": "3db14440c7125e832fffd772a6e1a7230ae31453",
+  "predecessorProductSourceSha": "c1c4e748b39c5632e8648023433a00c15d57191b",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "736ac58e2facdd8e8db24790c61e36110c8bdfd6",
+  "findingsLedgerExpectedGitBlob": "25c6518da85aaaa8a14bcd004d224793b44b94d1",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "PREI4_CERT_RES_IAM_AUTHORIZATION_REQUIRED",
-  "nextFindingId": "VRM-111",
+  "activeBlocker": "PREI4_CERT_RES_DEV_MATERIALIZATION_REQUIRED",
+  "nextFindingId": "VRM-115",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Grant the four frozen DEV-only IAM roles in preI4CertResProviderCapability.requiredIam to the existing firebase-adminsdk service account on project cxorbia-backend-dev. Then Recovery will automatically re-read permissions, enable only the missing DEV APIs, create/link the default Firebase Storage bucket, publish scoped Storage rules, implement PREI4-CERT-001/002 and PREI4-RES-001 on the same cumulative candidate, and repeat only the affected gates. Production remains untouched.",
+  "exactNextAction": "Materialize exactly product source c71c7e800490059d36a5be6e266c28086b8db8f4 / tree 3db14440c7125e832fffd772a6e1a7230ae31453 to the existing Recovery DEV only: configure the tenant server-side Vertex AI setting idempotently, publish the scoped Firestore/Storage rules, perform one Cloud Run build/deploy and one Hosting deploy, then run authenticated Admin+Shopper live CERT/RES tests with fixture cleanup. Do not touch production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -317,7 +317,7 @@
   },
   "technicalClosureReceipt": "CXORBIA_I3_TERMINAL_TECHNICAL_READY_2026-09-25.json",
   "i4": {
-    "status": "BLOCKED_UNTIL_V176_DEV_LIVE_REPROOF_AND_FRESH_PAULA_VISUAL_ACCEPTANCE",
+    "status": "BLOCKED_UNTIL_CERT_RES_DEV_LIVE_PASS_AND_FRESH_PAULA_VISUAL_ACCEPTANCE",
     "productionAuthorization": false,
     "authorized": false,
     "production": "DO_NOT_TOUCH"
@@ -1554,28 +1554,28 @@
     "owner": "tools/qa/cxorbia-prei4-cert-res-credential-route-diagnostic.sh"
   },
   "preI4CertResProviderCapability": {
-    "state": "BLOCKED_EXACT_DEV_IAM_AUTHORIZATION_REQUIRED_RUN742",
+    "state": "PASS_DEV_PROVIDER_AND_RUNTIME_READY",
     "runId": 36779681556,
     "artifactId": 11127490166,
     "artifactDigest": "sha256:62990b6952f7752b39738144123c132004f0b652d5c3a2daafdcb1ac8c796f53",
     "services": {
       "firestore": true,
       "cloudStorage": true,
-      "firebaseStorage": false,
-      "vertexAI": false
+      "firebaseStorage": true,
+      "vertexAI": true
     },
     "storageBucketCount": 2,
     "storageBuckets": [
       "cxorbia-backend-dev_cloudbuild",
       "run-sources-cxorbia-backend-dev-us-central1"
     ],
-    "defaultFirebaseStorageBucketPresent": false,
+    "defaultFirebaseStorageBucketPresent": true,
     "activeAiSettingCount": 0,
     "certificationDocuments": 77,
     "writes": 0,
     "deploys": 0,
     "production": false,
-    "exactNextAction": "Read-only test of service enablement, Firebase default bucket creation, Storage rules and Vertex prediction permissions plus billing-enabled state.",
+    "exactNextAction": "Create the authorized tenant server-side AI setting idempotently as part of the exact DEV materialization, deploy scoped rules, then execute live CERT/RES proof.",
     "run740": {
       "runId": 36780040955,
       "artifactId": 11126284764,
@@ -1701,6 +1701,51 @@
         }
       ],
       "leastPrivilege": true
+    },
+    "defaultFirebaseStorageBucket": "cxorbia-backend-dev.firebasestorage.app",
+    "postAuthorization": {
+      "permissionRunId": 36780871571,
+      "permissionJobId": 110124056442,
+      "serviceEnable": true,
+      "firebaseDefaultBucketCreate": true,
+      "storageBucketCreate": true,
+      "rulesetCreate": true,
+      "rulesReleaseCreate": true,
+      "vertexPredict": true
+    },
+    "providerActivation": {
+      "runId": 36785517322,
+      "jobId": 110125866463,
+      "servicesEnabledThisRun": 2,
+      "bucketCreated": true,
+      "bucketLocation": "US-CENTRAL1"
+    },
+    "runtimeReadiness": {
+      "runId": 36786189987,
+      "jobId": 110128043019,
+      "sameIdentity": true,
+      "vertexGenerateContentHttp": "200"
     }
+  },
+  "preI4CertResClosure": {
+    "state": "SOURCE_PROVEN_READY_EXACT_DEV_MATERIALIZATION",
+    "sourceSha": "c71c7e800490059d36a5be6e266c28086b8db8f4",
+    "sourceTree": "3db14440c7125e832fffd772a6e1a7230ae31453",
+    "predecessorSha": "c1c4e748b39c5632e8648023433a00c15d57191b",
+    "prematerializationLockPath": "CXORBIA_PRE_I4_CERT_RES_PREMATERIALIZATION_LOCK_2026-09-30.json",
+    "sourceProof": {
+      "runId": 36788133836,
+      "jobId": 110134359753,
+      "artifactId": 11129824152,
+      "artifactDigest": "sha256:8cf103507690fa2b3e7d4b3130e7431570dad0d04c959deca9544136b255335c",
+      "decision": "PASS_PREI4_CERT_RES_SOURCE_CONTRACT"
+    },
+    "remainingP0": [
+      "PREI4-CERT-001",
+      "PREI4-CERT-002",
+      "PREI4-RES-001"
+    ],
+    "nextGate": "EXACT_DEV_MATERIALIZATION_AND_AUTHENTICATED_LIVE_PROOF",
+    "production": false
   }
 }

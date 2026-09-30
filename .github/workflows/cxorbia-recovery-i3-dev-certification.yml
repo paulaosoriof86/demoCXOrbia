@@ -5618,3 +5618,151 @@ jobs:
           retention-days: 30
           compression-level: 0
 
+  pre-i4-cert-res-dev-materialization:
+    name: PRE-I4 CERT/RES — exact DEV materialization + authenticated live proof
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CERT_RES_REMEDIATION_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-cert-res-materialize]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      CERT_RES_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      CERT_RES_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      CERT_RES_MAT_OUT: .tmp/prei4-cert-res-materialize
+    steps:
+      - name: Checkout Recovery control head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Prove exact source authority and zero later product drift
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$CERT_RES_MAT_OUT"
+          test "$CERT_RES_SOURCE" = "c71c7e800490059d36a5be6e266c28086b8db8f4"
+          test "$CERT_RES_TREE" = "3db14440c7125e832fffd772a6e1a7230ae31453"
+          test "$(git rev-parse "$CERT_RES_SOURCE^{tree}")" = "$CERT_RES_TREE"
+          git merge-base --is-ancestor "$CERT_RES_SOURCE" HEAD
+          git diff --quiet "$CERT_RES_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$CERT_RES_SOURCE"
+          test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$CERT_RES_TREE"
+          test "$(jq -r '.activeBlocker' "$CANDIDATE_DESCRIPTOR")" = "PREI4_CERT_RES_DEV_MATERIALIZATION_REQUIRED"
+          test "$(jq -r '.preI4CertResClosure.state' "$CANDIDATE_DESCRIPTOR")" = "SOURCE_PROVEN_READY_EXACT_DEV_MATERIALIZATION"
+          node --check tools/qa/cxorbia-prei4-cert-res-configure-dev.mjs
+          node --check tools/qa/cxorbia-prei4-cert-res-live.mjs
+          jq -n -S --arg source "$CERT_RES_SOURCE" --arg tree "$CERT_RES_TREE" '{decision:"PASS_PREI4_CERT_RES_EXACT_MATERIALIZATION_SCOPE",sourceSha:$source,sourceTree:$tree,production:false}' > "$CERT_RES_MAT_OUT/scope.json"
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install exact DEV proof dependencies
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+      - name: Authenticate canonical Firebase DEV
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
+      - name: Prepare exact certified source archive
+        run: |
+          set -Eeuo pipefail
+          SOURCE_DIR="$RUNNER_TEMP/cxorbia-prei4-cert-res-source"
+          rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"
+          git archive "$CERT_RES_SOURCE" | tar -x -C "$SOURCE_DIR"
+          test -f "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml"
+          test -f "$SOURCE_DIR/firebase.json"
+          test "$(git -C "$GITHUB_WORKSPACE" rev-parse "$CERT_RES_SOURCE^{tree}")" = "$CERT_RES_TREE"
+          echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
+      - name: Configure tenant server-side AI provider idempotently
+        run: |
+          set -Eeuo pipefail
+          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" CERT_RES_MAT_OUT="$CERT_RES_MAT_OUT" node tools/qa/cxorbia-prei4-cert-res-configure-dev.mjs | tee "$CERT_RES_MAT_OUT/ai-setting-console.log"
+          test "$(jq -r '.decision' "$CERT_RES_MAT_OUT/ai-setting.json")" = "PASS_PREI4_CERT_RES_AI_SETTING_CONFIGURED"
+          test "$(jq -r '.serverProxy' "$CERT_RES_MAT_OUT/ai-setting.json")" = "true"
+          test "$(jq -r '.production' "$CERT_RES_MAT_OUT/ai-setting.json")" = "false"
+      - name: Publish exact scoped Firestore and Storage rules to DEV
+        run: |
+          set -Eeuo pipefail
+          cd "$SOURCE_DIR"
+          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "firestore:rules,storage" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$CERT_RES_MAT_OUT/rules-deploy.log"
+          cd "$GITHUB_WORKSPACE"
+          jq -n -S '{decision:"PASS_PREI4_CERT_RES_RULES_DEPLOY",firestoreRulesDeploys:1,storageRulesDeploys:1,production:false}' > "$CERT_RES_MAT_OUT/rules.json"
+      - name: Build exact CERT/RES source once
+        run: |
+          set -Eeuo pipefail
+          IMAGE_URI="gcr.io/${PROJECT}/${SERVICE}:i3-prei4-cert-res-${CERT_RES_SOURCE:0:12}-${GITHUB_RUN_ID}"
+          echo "$IMAGE_URI" > "$CERT_RES_MAT_OUT/image-uri.txt"
+          gcloud builds submit "$SOURCE_DIR" --project "$PROJECT" --config "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE_URI" --quiet
+          jq -n -S --arg source "$CERT_RES_SOURCE" --arg tree "$CERT_RES_TREE" --arg image "$IMAGE_URI" '{decision:"PASS_PREI4_CERT_RES_ONE_BUILD",sourceSha:$source,sourceTree:$tree,imageTag:$image,builds:1,production:false}' > "$CERT_RES_MAT_OUT/build.json"
+      - name: Deploy exact built runtime once to Recovery DEV
+        run: |
+          set -Eeuo pipefail
+          IMAGE_URI="$(cat "$CERT_RES_MAT_OUT/image-uri.txt")"
+          gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$IMAGE_URI" --min-instances=1 --max-instances=1 --update-env-vars "$LEGAL_ENABLE_NAME=$LEGAL_ENABLE_VALUE,$LEGAL_GATE_NAME=$LEGAL_GATE_VALUE,$I3_HR_CACHE_PIN_NAME=$I3_HR_CACHE_PIN_VALUE" --quiet
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$CERT_RES_MAT_OUT/runtime.json"
+          DEV_REVISION="$(jq -r '.status.latestReadyRevisionName // empty' "$CERT_RES_MAT_OUT/runtime.json")"
+          test -n "$DEV_REVISION"
+          gcloud run revisions describe "$DEV_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$CERT_RES_MAT_OUT/runtime-revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$CERT_RES_MAT_OUT/runtime-revision.json")"
+          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else echo "runtime digest unresolved" >&2; exit 1; fi
+          RUNTIME_URL="$(jq -r '.status.url // empty' "$CERT_RES_MAT_OUT/runtime.json")"
+          curl -fsS --retry 12 --retry-delay 3 "$RUNTIME_URL/health" > "$CERT_RES_MAT_OUT/health.json"
+          jq -e '.ok==true and .production==false and .hrWrites==false and .shopperReconciliationReady==true and .visitReconciliationReady==true' "$CERT_RES_MAT_OUT/health.json" >/dev/null
+          echo "DEV_REVISION=$DEV_REVISION" >> "$GITHUB_ENV"
+          echo "RUNTIME_DIGEST=$DIGEST" >> "$GITHUB_ENV"
+      - name: Deploy same exact source once to Hosting DEV
+        run: |
+          set -Eeuo pipefail
+          cd "$SOURCE_DIR"
+          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$CERT_RES_MAT_OUT/hosting-deploy.log"
+          cd "$GITHUB_WORKSPACE"
+          TOKEN="$(gcloud auth print-access-token)"
+          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$CERT_RES_MAT_OUT/hosting-live-channel.json"
+          HOSTING_RELEASE_NAME="$(jq -r '.release.name // empty' "$CERT_RES_MAT_OUT/hosting-live-channel.json")"
+          HOSTING_VERSION_NAME="$(jq -r '.release.version.name // empty' "$CERT_RES_MAT_OUT/hosting-live-channel.json")"
+          test -n "$HOSTING_VERSION_NAME"
+          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/$HOSTING_VERSION_NAME" > "$CERT_RES_MAT_OUT/hosting-version.json"
+          test "$(jq -r '.status // empty' "$CERT_RES_MAT_OUT/hosting-version.json")" = "FINALIZED"
+          for p in core/backend-certifications.js core/backend-ai.js core/backend-resources.js modules/cert.js modules/documentos.js; do
+            out="$CERT_RES_MAT_OUT/remote-$(echo "$p" | tr '/' '_')"
+            curl -fsSL --retry 8 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/$p?certres=$GITHUB_RUN_ID-$(date +%s%N)" -o "$out"
+            test "$(sha256sum "$out" | awk '{print $1}')" = "$(sha256sum "$SOURCE_DIR/app/$p" | awk '{print $1}')"
+          done
+          echo "HOSTING_RELEASE_NAME=$HOSTING_RELEASE_NAME" >> "$GITHUB_ENV"
+          echo "HOSTING_VERSION_NAME=$HOSTING_VERSION_NAME" >> "$GITHUB_ENV"
+      - name: Read DEV provider and HR identity after materialization
+        run: |
+          set -Eeuo pipefail
+          gcloud storage buckets describe "gs://cxorbia-backend-dev.firebasestorage.app" --project "$PROJECT" --format=json > "$CERT_RES_MAT_OUT/storage-bucket.json"
+          test "$(jq -r '.location // empty' "$CERT_RES_MAT_OUT/storage-bucket.json")" = "US-CENTRAL1"
+          curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&certres=$GITHUB_RUN_ID" > "$CERT_RES_MAT_OUT/hr-meta.json"
+          HR_REVISION="$(jq -r '.revision // empty' "$CERT_RES_MAT_OUT/hr-meta.json")"
+          [[ "$HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
+          jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .shopperReconciliation.providerAck==true and .visitReconciliation.providerAck==true and .hrWrites==false and .production==false and .refreshError==null' "$CERT_RES_MAT_OUT/hr-meta.json" >/dev/null
+          echo "HR_REVISION=$HR_REVISION" >> "$GITHUB_ENV"
+      - name: Execute authenticated Admin and Shopper CERT/RES live proof
+        run: |
+          set -Eeuo pipefail
+          PROJECT_ID="$PROJECT_ID" TENANT_ID="$TENANT_ID" HOSTING_URL="$HOSTING_URL" CERT_RES_SOURCE="$CERT_RES_SOURCE" CERT_RES_MAT_OUT="$CERT_RES_MAT_OUT" node tools/qa/cxorbia-prei4-cert-res-live.mjs | tee "$CERT_RES_MAT_OUT/live-console.log"
+          test "$(jq -r '.decision' "$CERT_RES_MAT_OUT/cert-res-live.json")" = "PASS_PREI4_CERT_RES_CUMULATIVE_DEV_LIVE"
+          test "$(jq -r '.cert001.decision' "$CERT_RES_MAT_OUT/cert-res-live.json")" = "PASS_PREI4_CERT_001_LIVE"
+          test "$(jq -r '.cert002.recertification.decision' "$CERT_RES_MAT_OUT/cert-res-live.json")" = "PASS_PREI4_CERT_002_LIVE"
+          test "$(jq -r '.res001.decision' "$CERT_RES_MAT_OUT/cert-res-live.json")" = "PASS_PREI4_RES_001_LIVE"
+          test "$(jq -r '[.cleanup.attempt,.cleanup.recert,.cleanup.bank,.cleanup.resource,.cleanup.binary]|all' "$CERT_RES_MAT_OUT/cert-res-live.json")" = "true"
+      - name: Seal exact DEV materialization receipt
+        run: |
+          set -Eeuo pipefail
+          jq -n -S --arg source "$CERT_RES_SOURCE" --arg tree "$CERT_RES_TREE" --arg runtime "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg hosting "$HOSTING_VERSION_NAME" --arg hostingRelease "$HOSTING_RELEASE_NAME" --arg hr "$HR_REVISION" \
+            '{decision:"PASS_PREI4_CERT_RES_EXACT_DEV_MATERIALIZATION_AND_LIVE",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hostingRelease:$hostingRelease,hrRevision:$hr,p0:{"PREI4-CERT-001":"PASS_LIVE","PREI4-CERT-002":"PASS_LIVE","PREI4-RES-001":"PASS_LIVE"},builds:1,runtimeDeploys:1,hostingDeploys:1,firestoreRulesDeploys:1,storageRulesDeploys:1,hrWrites:0,production:false}' > "$CERT_RES_MAT_OUT/result.json"
+      - name: Upload CERT/RES materialization evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-prei4-cert-res-materialization-${{ github.run_id }}
+          path: .tmp/prei4-cert-res-materialize
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+

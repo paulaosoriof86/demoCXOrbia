@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "c1c4e748b39c5632e8648023433a00c15d57191b",
-    "sourceTree": "ccb3d9da3c110e2d5fff57bae0d2d0eb76b3c4b4",
-    "predecessorSha": "2cff3441f126d7d805932127bb9de9289ba273ad",
+    "sourceSha": "c71c7e800490059d36a5be6e266c28086b8db8f4",
+    "sourceTree": "3db14440c7125e832fffd772a6e1a7230ae31453",
+    "predecessorSha": "c1c4e748b39c5632e8648023433a00c15d57191b",
     "production": false,
-    "state": "DEV_LIVE_PROVEN_PENDING_CERT_RES_AND_HUMAN_VISUAL"
+    "state": "SOURCE_PROVEN_READY_CERT_RES_DEV_MATERIALIZATION"
   },
   "rootCauseIds": [
     "RC-MONO-01_MULTIPLE_EXECUTABLE_PRODUCT_SOURCE_AUTHORITIES",
@@ -5332,6 +5332,114 @@
         "deploys": 0,
         "production": false
       }
+    },
+    "VRM-111": {
+      "id": "VRM-111",
+      "classification": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "title": "PREI4-CERT-001 certification creation still used local heuristic instead of a provider-backed secure AI path",
+      "state": "FIXED_SOURCE_PROVEN_READY_DEV_MATERIALIZATION",
+      "rootCause": "The certification UI retained the earlier fail-safe local heuristic while the backend had no authorized server-side generation route. Provider activation alone did not connect the module to Vertex AI.",
+      "remediationContract": "Use the authenticated Cloud Run runtime as the only provider proxy, load tenant AI configuration from Firestore, call Vertex generateContent server-side, require provider ACK, persist the generated bank as pending_review, and require a distinct authenticated reviewer before publication.",
+      "source": {
+        "sha": "c71c7e800490059d36a5be6e266c28086b8db8f4",
+        "tree": "3db14440c7125e832fffd772a6e1a7230ae31453"
+      },
+      "owners": [
+        "backend/runtime/hr-live-service/certification-runtime.mjs",
+        "backend/runtime/hr-live-service/server.mjs",
+        "app/core/backend-ai.js",
+        "app/core/backend-certifications.js",
+        "app/index-backend-dev.html",
+        "app/modules/cert.js"
+      ],
+      "evidence": {
+        "runId": 36788133836,
+        "jobId": 110134359753,
+        "artifactId": 11129824152,
+        "artifactDigest": "sha256:8cf103507690fa2b3e7d4b3130e7431570dad0d04c959deca9544136b255335c",
+        "decision": "PASS_PREI4_CERT_RES_SOURCE_CONTRACT"
+      },
+      "production": false
+    },
+    "VRM-112": {
+      "id": "VRM-112",
+      "classification": "PERSISTENCE_FAILURE",
+      "severity": "P0",
+      "title": "PREI4-CERT-002 certification attempts, recertification and carryover were not closed on durable provider-backed state",
+      "state": "FIXED_SOURCE_PROVEN_READY_DEV_MATERIALIZATION",
+      "rootCause": "The shopper exam result and recertification request were presentation/local events. Historical certification evidence was displayed conservatively but had no exact equivalence contract for reusable carryover.",
+      "remediationContract": "Persist attempts and recertification in project-scoped Firestore through the authenticated server boundary with idempotency and ACK; invalidate prior eligibility when a newer recertification exists; allow historical carryover only when project and explicit bank equivalence keys match and validity has not expired.",
+      "source": {
+        "sha": "c71c7e800490059d36a5be6e266c28086b8db8f4",
+        "tree": "3db14440c7125e832fffd772a6e1a7230ae31453"
+      },
+      "owners": [
+        "backend/runtime/hr-live-service/certification-runtime.mjs",
+        "backend/runtime/hr-live-service/server.mjs",
+        "app/core/backend-certifications.js",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+        "app/modules/cert.js",
+        "firestore.rules"
+      ],
+      "evidence": {
+        "runId": 36788133836,
+        "jobId": 110134359753,
+        "artifactId": 11129824152,
+        "artifactDigest": "sha256:8cf103507690fa2b3e7d4b3130e7431570dad0d04c959deca9544136b255335c",
+        "decision": "PASS_PREI4_CERT_RES_SOURCE_CONTRACT"
+      },
+      "production": false
+    },
+    "VRM-113": {
+      "id": "VRM-113",
+      "classification": "PERSISTENCE_FAILURE",
+      "severity": "P0",
+      "title": "PREI4-RES-001 project binary resources were still fail-closed after Firebase Storage provider activation",
+      "state": "FIXED_SOURCE_PROVEN_READY_DEV_MATERIALIZATION",
+      "rootCause": "The default Firebase Storage bucket and IAM prerequisites were absent historically, so connected mode intentionally disabled binary persistence. After provider activation the product still needed scoped SDK wiring, security rules and lifecycle cleanup to prevent orphan binaries.",
+      "remediationContract": "Enable Firebase Storage only in protected DEV config, load the Storage SDK, restrict rules to tenant/project/period/resource paths and authenticated scope, require ACK for upload/read/delete, delete superseded or failed-upload binaries, and verify zero orphan object after resource deletion.",
+      "source": {
+        "sha": "c71c7e800490059d36a5be6e266c28086b8db8f4",
+        "tree": "3db14440c7125e832fffd772a6e1a7230ae31453"
+      },
+      "owners": [
+        "app/core/backend-protected-dev-mode.js",
+        "app/core/backend-resources.js",
+        "app/index-backend-dev.html",
+        "app/modules/documentos.js",
+        "storage.rules"
+      ],
+      "evidence": {
+        "runId": 36788133836,
+        "jobId": 110134359753,
+        "artifactId": 11129824152,
+        "artifactDigest": "sha256:8cf103507690fa2b3e7d4b3130e7431570dad0d04c959deca9544136b255335c",
+        "decision": "PASS_PREI4_CERT_RES_SOURCE_CONTRACT"
+      },
+      "production": false
+    },
+    "VRM-114": {
+      "id": "VRM-114",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "severity": "P0_CONTROL",
+      "title": "Run 36788133836 source gate passed but canonical descriptor and ledger still pointed to the predecessor source",
+      "state": "FIXED_CONTROL_RECONCILIATION_PENDING_REPROOF",
+      "rootCause": "The focal product source was committed first so its isolated no-deploy gate could run, while the canonical descriptor and ledger remained intentionally fail-closed on c1c4e748. The authority guard therefore correctly classified the twelve declared product changes as undeclared drift.",
+      "evidence": {
+        "runId": 36788133836,
+        "authorityJobId": 110134360081,
+        "focalSourceJobId": 110134359753,
+        "focalSourceJobConclusion": "success",
+        "authorityFailure": "RELEASE_COMPOSITION_FAILURE:UNDECLARED_PRODUCT_DRIFT_AFTER_CANONICAL_CANDIDATE",
+        "sourceSha": "c71c7e800490059d36a5be6e266c28086b8db8f4",
+        "sourceTree": "3db14440c7125e832fffd772a6e1a7230ae31453",
+        "productDefect": false,
+        "productSourceChanged": true,
+        "production": false
+      },
+      "remediationContract": "Promote the already source-proven c71c7e80 source/tree in both descriptor and append-only ledger, freeze the exact source proof, detached-probe the control-only tree, and re-run authority before any DEV materialization.",
+      "production": false
     }
   },
   "latestEvidenceOverrides": {
@@ -5859,14 +5967,18 @@
       "VRM-107",
       "VRM-108",
       "VRM-109",
-      "VRM-110"
+      "VRM-110",
+      "VRM-111",
+      "VRM-112",
+      "VRM-113",
+      "VRM-114"
     ],
-    "findingCount": 110,
-    "expectedCurrentRange": "VRM-001..VRM-110",
-    "nextFindingId": "VRM-111",
+    "findingCount": 114,
+    "expectedCurrentRange": "VRM-001..VRM-114",
+    "nextFindingId": "VRM-115",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_PREI4_HUMAN_VISUAL_ACCEPTANCE_REQUIRED",
+    "terminalState": "HOLD_PREI4_CERT_RES_REMEDIATION_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
