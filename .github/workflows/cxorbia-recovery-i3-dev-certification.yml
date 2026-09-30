@@ -5477,3 +5477,33 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
+
+  pre-i4-cert-res-provider-activate:
+    name: PRE-I4 CERT/RES — activate DEV providers and default Storage bucket
+    if: contains(github.event.head_commit.message, '[prei4-cert-res-provider-activate]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout canonical Recovery control head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Authenticate Recovery DEV activation
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
+      - name: Activate only approved DEV providers and default Firebase Storage bucket
+        run: bash tools/qa/cxorbia-prei4-cert-res-provider-activate.sh
+      - name: Upload provider activation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-prei4-cert-res-provider-activation
+          path: .tmp/prei4-cert-res-provider-activate
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
