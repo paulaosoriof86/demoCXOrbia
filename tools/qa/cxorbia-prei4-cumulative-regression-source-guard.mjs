@@ -16,6 +16,7 @@ const expectedDelta=parseList('CUM_EXPECTED_DELTA_JSON');
 const allowedPending=parseList('CUM_ALLOWED_PENDING_MODULES_JSON').sort();
 const expectedPending=parseList('CUM_EXPECTED_PENDING_FILES_JSON').sort();
 const allowedPostSuccessors=parseList('CUM_ALLOWED_POST002_SUCCESSOR_OWNERS_JSON').sort();
+const allowedAdmin003Successors=parseList('CUM_ALLOWED_ADMIN003_SUCCESSOR_OWNERS_JSON').sort();
 if(!expectedDelta.length)throw new Error('RELEASE_COMPOSITION_FAILURE:CUMULATIVE_GUARD:EXPECTED_DELTA_REQUIRED');
 const hrOwners=[
   'backend/contracts/tya-hr-column-map-r20-v1.json',
@@ -63,7 +64,7 @@ const parity=(ref,paths,label,allowedSuccessors=[])=>{
 };
 const hrParity=parity(HR_SOURCE,hrOwners,'HR008');
 const postParity=parity(POST_SOURCE,postOwners,'POST002',allowedPostSuccessors);
-const id3Parity=parity(ID3_SOURCE,id3Owners,'ADMIN003');
+const id3Parity=parity(ID3_SOURCE,id3Owners,'ADMIN003',allowedAdmin003Successors);
 
 const ledger=JSON.parse(fs.readFileSync(LEDGER,'utf8'));
 ledger.findings=ledger.findings||{};
@@ -120,7 +121,7 @@ const result={
   decision:'PASS_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD',
   sourceSha:SOURCE,sourceTree:TREE,baselineSource:BASE,
   exactDeclaredDelta:diff,
-  protectedByteParity:{hr008Owners:hrParity.byteParityOwners,post002Owners:postParity.byteParityOwners,admin003Owners:id3Parity.byteParityOwners,post002ApprovedSuccessors:postParity.approvedSuccessors},
+  protectedByteParity:{hr008Owners:hrParity.byteParityOwners,post002Owners:postParity.byteParityOwners,admin003Owners:id3Parity.byteParityOwners,post002ApprovedSuccessors:postParity.approvedSuccessors,admin003ApprovedSuccessors:id3Parity.approvedSuccessors},
   moduleTruth:{
     moduleCount:mt.preTerminalComposition.moduleCount,
     matchModules:mt.preTerminalComposition.matchModules.length,

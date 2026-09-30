@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_HUMAN_VISUAL_REMEDIATION_REQUIRED",
+  "status": "HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4_HUMAN_VISUAL_REMEDIATION",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "a29b8ad89391fb5537d1cbf765ef6ec86f775608",
-  "productTreeAuthority": "ea8846d254d1901ac1101c182098c46f995f1141",
-  "predecessorProductSourceSha": "d8874bd952a70ce15b40560c8f17b2d47f53c152",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V175_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "397a9cee8c71d3156567a0cc96bfdcba88bb7c3a",
+  "productSourceSha": "40550b009939fa2e2c72d68eb27e05e48d47eca6",
+  "productTreeAuthority": "c23a05a64b22d30b03cf698e3cd9a4815a64df55",
+  "predecessorProductSourceSha": "a29b8ad89391fb5537d1cbf765ef6ec86f775608",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
+  "findingsLedgerExpectedGitBlob": "8d38b41096d5affb503dbb764b0a1dcbb4d07df8",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-096_VRM-105_AUTHENTICATED_LIVE_FUNCTIONAL_REMEDIATION",
+  "activeBlocker": "VRM-089_VRM-104_CUMULATIVE_SOURCE_REPROOF",
   "nextFindingId": "VRM-106",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Execute the single cumulative I3 remediation successor for VRM-089..VRM-105. Human visual DEV must become the authenticated provider-backed functional lane, read fresh HR, and expose only truthful durable actions. Reprove Admin+Shopper on that same URL before I4.",
+  "exactNextAction": "Run existing cumulative source guard and one deterministic DEV materialization for V176 source 40550b009939fa2e2c72d68eb27e05e48d47eca6; require fresh HR visibility, runtime+Hosting readback, regression gates and zero HR/bank/external-payment writes; then perform live Admin+Shopper reproof. Do not touch production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -317,7 +317,7 @@
   },
   "technicalClosureReceipt": "CXORBIA_I3_TERMINAL_TECHNICAL_READY_2026-09-25.json",
   "i4": {
-    "status": "BLOCKED_UNTIL_CURRENT_VISUAL_P0_REMEDIATION_AND_FRESH_ACCEPTANCE",
+    "status": "BLOCKED_UNTIL_V176_DEV_LIVE_REPROOF_AND_FRESH_PAULA_VISUAL_ACCEPTANCE",
     "productionAuthorization": false,
     "authorized": false,
     "production": "DO_NOT_TOUCH"
@@ -339,22 +339,72 @@
     "production": false
   },
   "currentRemediationCandidate": {
-    "sourceSha": "09b4e56be96dedbeb89d14f1d190bfc5b8b4f990",
-    "sourceTree": "f6899a631b7b277b16614f1b6534103e7615f11e",
-    "predecessorSha": "87888d3792b011b10a87611dde3efc69e3f4eb40",
+    "sourceSha": "40550b009939fa2e2c72d68eb27e05e48d47eca6",
+    "sourceTree": "c23a05a64b22d30b03cf698e3cd9a4815a64df55",
+    "predecessorSha": "a29b8ad89391fb5537d1cbf765ef6ec86f775608",
     "findingIds": [
-      "VRM-084"
+      "VRM-089",
+      "VRM-090",
+      "VRM-091",
+      "VRM-092",
+      "VRM-093",
+      "VRM-094",
+      "VRM-095",
+      "VRM-096",
+      "VRM-097",
+      "VRM-098",
+      "VRM-099",
+      "VRM-100",
+      "VRM-101",
+      "VRM-102",
+      "VRM-103",
+      "VRM-104"
     ],
-    "changedRuntime": false,
+    "changedRuntime": true,
     "changedHosting": true,
     "changedRules": false,
     "productFiles": [
-      "app/modules/beneficios.js"
+      "app/adapters/cxorbia-canonical-write-firewall-v1.js",
+      "app/adapters/cxorbia-command-adapter-v1.js",
+      "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+      "app/adapters/cxorbia-provider-identity-link-runtime-v1.js",
+      "app/adapters/cxorbia-shopper-admin-command-contract-v1.js",
+      "app/adapters/tya-canonical-shopper-portal-v2.js",
+      "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+      "app/core/backend-browser-auth.js",
+      "app/core/router.js",
+      "app/modules/beneficios.js",
+      "app/modules/finanzas.js",
+      "app/modules/midia.js",
+      "app/modules/operacion-extra.js",
+      "app/modules/postulaciones.js",
+      "app/modules/reservas.js",
+      "app/modules/shoppers.js",
+      "app/modules/visitas.js",
+      "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+      "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+      "backend/runtime/hr-live-service/server.mjs"
     ],
-    "testFiles": [
-      "backend/runtime/hr-live-service/test/cxorbia-vrm084-benefits-human-payment-label.test.mjs"
+    "expectedDeltaCount": 30,
+    "pendingFileCount": 27,
+    "pendingModules": [
+      "auth-protected-data-runtime",
+      "benefits",
+      "canonical-hr-state-adapters",
+      "core-config-data-router-permissions",
+      "dashboard-operation",
+      "finance-core-liquidation-costs",
+      "human-runtime-domain-consistency",
+      "identity-membership-roll-forward",
+      "persistence-command-ack-boundary",
+      "phase-a-supporting-core",
+      "projects-periods-hr-source-wizard-multiproject",
+      "questionnaire-shopper",
+      "reports-admin-shopper",
+      "shoppers-mi-visitas-profile",
+      "visits-review-postulations-reservations"
     ],
-    "state": "FIXED_PROVEN_RUN572",
+    "state": "SOURCE_FIX_REPROOF_REQUIRED",
     "production": false
   },
   "reproofDispatch": {
@@ -1381,6 +1431,50 @@
       "VRM-104"
     ],
     "productSourceChanged": false,
+    "production": false
+  },
+  "lastHumanVisualRemediation": {
+    "state": "SOURCE_FIX_REPROOF_REQUIRED",
+    "sourceSha": "40550b009939fa2e2c72d68eb27e05e48d47eca6",
+    "sourceTree": "c23a05a64b22d30b03cf698e3cd9a4815a64df55",
+    "findings": [
+      "VRM-089",
+      "VRM-090",
+      "VRM-091",
+      "VRM-092",
+      "VRM-093",
+      "VRM-094",
+      "VRM-095",
+      "VRM-096",
+      "VRM-097",
+      "VRM-098",
+      "VRM-099",
+      "VRM-100",
+      "VRM-101",
+      "VRM-102",
+      "VRM-103",
+      "VRM-104"
+    ],
+    "correctedFalseAttribution": "VRM-105",
+    "expectedDeltaCount": 30,
+    "pendingFileCount": 27,
+    "pendingModules": [
+      "auth-protected-data-runtime",
+      "benefits",
+      "canonical-hr-state-adapters",
+      "core-config-data-router-permissions",
+      "dashboard-operation",
+      "finance-core-liquidation-costs",
+      "human-runtime-domain-consistency",
+      "identity-membership-roll-forward",
+      "persistence-command-ack-boundary",
+      "phase-a-supporting-core",
+      "projects-periods-hr-source-wizard-multiproject",
+      "questionnaire-shopper",
+      "reports-admin-shopper",
+      "shoppers-mi-visitas-profile",
+      "visits-review-postulations-reservations"
+    ],
     "production": false
   }
 }

@@ -42,6 +42,7 @@ on:
       - tools/qa/cxorbia-prei4-admin004-finance-forensic-readonly.mjs
       - backend/runtime/hr-live-service/test/cxorbia-prei4-project-questionnaire-config.test.mjs
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V170_2026-09-30.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json
       - tools/qa/cxorbia-prei4-admin004-cumulative-live-reproof.mjs
       - CXORBIA_PRE_I4_ADMIN_003_CUMULATIVE_LIVE_RECEIPT_2026-09-29.json
       - tools/qa/cxorbia-prei4-admin003-cumulative-live-reproof.mjs
@@ -87,7 +88,7 @@ concurrency:
   cancel-in-progress: true
 env:
   CANDIDATE_DESCRIPTOR: CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
-  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_2026-09-24.json
+  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
@@ -102,10 +103,10 @@ env:
   LEGAL_GATE_NAME: CXORBIA_I3_LEGAL_ACCEPTANCE_WRITE_GATE
   LEGAL_GATE_VALUE: PAULA_DEV_DEPLOY_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_RUNTIME
   I3_HR_CACHE_PIN_NAME: CXORBIA_LIVE_HR_CACHE_MS
-  I3_HR_CACHE_PIN_VALUE: '3600000'
+  I3_HR_CACHE_PIN_VALUE: '5000'
   OUT: .tmp/recovery-i3-dev-certification
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
-  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V170_2026-09-30.json
+  POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json
 jobs:
   canonical-candidate-authority:
     name: I3 single canonical candidate authority guard
@@ -696,13 +697,14 @@ jobs:
       CUM_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
       CUM_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
       CUM_BASE: c487449e5187d7219033c54fa1ac3db5fb6c822e
-      CUM_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V170_2026-09-30.json
+      CUM_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json
       CUM_MATRIX: RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json
       CUM_OUT: .tmp/prei4-cumulative-regression
-      CUM_EXPECTED_DELTA_JSON: '["app/adapters/cxorbia-cxdata-command-boundary-v1.js","app/adapters/tya-c6-unified-human-runtime-v1.js","app/adapters/tya-canonical-finance-read-model-v2.js","app/adapters/tya-live-source-inplace-apply.js","app/adapters/tya-protected-auth-hr-authority-bridge-v2.js","app/modules/cuestionario-shopper.js","app/modules/finanzas.js","app/modules/misvisitas.js","app/modules/proyectos.js","backend/runtime/cxorbia-finance-command-provider-v1.mjs","backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs","backend/runtime/hr-live-service/server.mjs","backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs","backend/runtime/hr-live-service/test/cxorbia-prei4-project-questionnaire-config.test.mjs","backend/runtime/hr-live-service/test/cxorbia-prei4-shopper-progressive-route.test.mjs"]'
-      CUM_ALLOWED_PENDING_MODULES_JSON: '["canonical-hr-state-adapters","finance-core-liquidation-costs","human-runtime-domain-consistency","persistence-command-ack-boundary","phase-a-supporting-core","projects-periods-hr-source-wizard-multiproject","questionnaire-shopper","shoppers-mi-visitas-profile"]'
-      CUM_EXPECTED_PENDING_FILES_JSON: '["app/adapters/cxorbia-cxdata-command-boundary-v1.js","app/adapters/tya-c6-unified-human-runtime-v1.js","app/adapters/tya-canonical-finance-read-model-v2.js","app/adapters/tya-live-source-inplace-apply.js","app/adapters/tya-protected-auth-hr-authority-bridge-v2.js","app/modules/cuestionario-shopper.js","app/modules/finanzas.js","app/modules/misvisitas.js","app/modules/proyectos.js","backend/runtime/cxorbia-finance-command-provider-v1.mjs","backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs","backend/runtime/hr-live-service/server.mjs"]'
-      CUM_ALLOWED_POST002_SUCCESSOR_OWNERS_JSON: '["app/modules/misvisitas.js"]'
+      CUM_EXPECTED_DELTA_JSON: '["app/adapters/cxorbia-canonical-write-firewall-v1.js","app/adapters/cxorbia-command-adapter-v1.js","app/adapters/cxorbia-cxdata-command-boundary-v1.js","app/adapters/cxorbia-provider-identity-link-runtime-v1.js","app/adapters/cxorbia-shopper-admin-command-contract-v1.js","app/adapters/tya-c6-unified-human-runtime-v1.js","app/adapters/tya-canonical-finance-read-model-v2.js","app/adapters/tya-canonical-shopper-portal-v2.js","app/adapters/tya-live-source-inplace-apply.js","app/adapters/tya-protected-auth-hr-authority-bridge-v2.js","app/core/backend-browser-auth.js","app/core/router.js","app/modules/beneficios.js","app/modules/cuestionario-shopper.js","app/modules/finanzas.js","app/modules/midia.js","app/modules/misvisitas.js","app/modules/operacion-extra.js","app/modules/postulaciones.js","app/modules/proyectos.js","app/modules/reservas.js","app/modules/shoppers.js","app/modules/visitas.js","backend/runtime/cxorbia-finance-command-provider-v1.mjs","backend/runtime/cxorbia-shopper-command-provider-v1.mjs","backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs","backend/runtime/hr-live-service/server.mjs","backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs","backend/runtime/hr-live-service/test/cxorbia-prei4-project-questionnaire-config.test.mjs","backend/runtime/hr-live-service/test/cxorbia-prei4-shopper-progressive-route.test.mjs"]'
+      CUM_ALLOWED_PENDING_MODULES_JSON: '["auth-protected-data-runtime","benefits","canonical-hr-state-adapters","core-config-data-router-permissions","dashboard-operation","finance-core-liquidation-costs","human-runtime-domain-consistency","identity-membership-roll-forward","persistence-command-ack-boundary","phase-a-supporting-core","projects-periods-hr-source-wizard-multiproject","questionnaire-shopper","reports-admin-shopper","shoppers-mi-visitas-profile","visits-review-postulations-reservations"]'
+      CUM_EXPECTED_PENDING_FILES_JSON: '["app/adapters/cxorbia-canonical-write-firewall-v1.js","app/adapters/cxorbia-command-adapter-v1.js","app/adapters/cxorbia-cxdata-command-boundary-v1.js","app/adapters/cxorbia-provider-identity-link-runtime-v1.js","app/adapters/cxorbia-shopper-admin-command-contract-v1.js","app/adapters/tya-c6-unified-human-runtime-v1.js","app/adapters/tya-canonical-finance-read-model-v2.js","app/adapters/tya-canonical-shopper-portal-v2.js","app/adapters/tya-live-source-inplace-apply.js","app/adapters/tya-protected-auth-hr-authority-bridge-v2.js","app/core/backend-browser-auth.js","app/core/router.js","app/modules/beneficios.js","app/modules/cuestionario-shopper.js","app/modules/finanzas.js","app/modules/midia.js","app/modules/misvisitas.js","app/modules/operacion-extra.js","app/modules/postulaciones.js","app/modules/proyectos.js","app/modules/reservas.js","app/modules/shoppers.js","app/modules/visitas.js","backend/runtime/cxorbia-finance-command-provider-v1.mjs","backend/runtime/cxorbia-shopper-command-provider-v1.mjs","backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs","backend/runtime/hr-live-service/server.mjs"]'
+      CUM_ALLOWED_POST002_SUCCESSOR_OWNERS_JSON: '["app/modules/misvisitas.js","app/modules/postulaciones.js"]'
+      CUM_ALLOWED_ADMIN003_SUCCESSOR_OWNERS_JSON: '["app/modules/shoppers.js","backend/runtime/cxorbia-shopper-command-provider-v1.mjs"]'
     steps:
       - uses: actions/checkout@v4
         with: {fetch-depth: 0}
