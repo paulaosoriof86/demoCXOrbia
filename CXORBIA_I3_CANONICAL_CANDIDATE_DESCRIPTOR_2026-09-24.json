@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_ADMIN_004_SOURCE_REPROOF_REQUIRED",
+  "status": "HOLD_PREI4_ADMIN_004_HOSTING_CORRECTED_LIVE_REQUIRED",
   "iteration": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "4a39b26f6dcdff8f4dcd446b0141a7d3b1dc01d7",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
   "predecessorProductSourceSha": "c487449e5187d7219033c54fa1ac3db5fb6c822e",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V145_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "062cec84155a200d814056d2ff1e89fac65b8dbf",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V146_2026-09-30.json",
+  "findingsLedgerExpectedGitBlob": "34ec8512a2876bb4b9beb61ac99d9a6f8932dd9e",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run mandatory cumulative source guard on 4a39b26f6dcdff8f4dcd446b0141a7d3b1dc01d7; require exact cumulative delta, Module Truth 20 domains, closed HR/Postulations/Identity recurrence, finance honorarium 6/6 and finance provider 5/5 including browser boundary parse. Zero build, deploy or write until PASS.",
+  "exactNextAction": "Materialize corrected source 4a39b26f6dcdff8f4dcd446b0141a7d3b1dc01d7 to Hosting DEV exactly once, keep runtime cxorbia-live-hr-dev-00229-nxq/digest unchanged, prove served byte parity, persist GT/HN project finance config via project.update ACK, then reprove Postulaciones + Identity + Finance on one fresh HR revision. No production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1082,12 +1082,17 @@
     "production": false
   },
   "lastSourceGuard": {
-    "runId": 36642974584,
-    "runNumber": 621,
-    "jobId": 109659392474,
-    "artifactId": 11067452316,
-    "artifactZipSha256": "d764616f2d3246de35a39f27128885636a2d5065587daf0df4b77363dfd206aa",
-    "decision": "PASS_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD"
+    "runId": 36648884879,
+    "runNumber": 641,
+    "jobId": 109678223871,
+    "artifactId": 11069353381,
+    "artifactZipSha256": "f2b0c845dab8a28968ec7444637112388a21b5ad25e95d3d0bc53b636cd9dd59",
+    "decision": "PASS_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD",
+    "financeProviderTests": 5,
+    "builds": 0,
+    "deploys": 0,
+    "writes": 0,
+    "production": false
   },
   "lastLiveFailure": {
     "classification": "PERSISTENCE_FAILURE",
