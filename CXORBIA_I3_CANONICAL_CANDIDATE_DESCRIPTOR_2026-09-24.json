@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_CONTENT_ROUTING_CERTIFICATION_RESOURCES_REQUIRED",
+  "status": "HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED",
   "iteration": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "61b89fd567c02c651ce1983d8b8f8421d5e70637",
+  "productSourceSha": "d8874bd952a70ce15b40560c8f17b2d47f53c152",
   "productTreeAuthority": "DERIVE_FROM_PRODUCT_SOURCE_SHA_AT_RUNTIME",
-  "predecessorProductSourceSha": "c487449e5187d7219033c54fa1ac3db5fb6c822e",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V167_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "c7932909735db625c4937c2a6d3eceec2d114991",
+  "predecessorProductSourceSha": "61b89fd567c02c651ce1983d8b8f8421d5e70637",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V168_2026-09-30.json",
+  "findingsLedgerExpectedGitBlob": "7e21c28f4873024d88601819ca562f7d0bfa54e6",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Preserve durable project questionnaire configuration through the live HR composition and prove external_general plus external_visit routing without global URLs or provider hardcodes. Keep ADMIN-008/002/003/004 closed-module regression guards. Then close durable certification carryover/recertification/attempts with real AI generation from project instruction, followed by scoped binary project resources with full-screen in-platform viewer and download. No production.",
+  "exactNextAction": "Run focused source proof for PREI4-CONTENT-001 on d8874bd952a70ce15b40560c8f17b2d47f53c152 and cumulative closed-module source guard. Require project external_general questionnaire URL to survive durable project read + live HR composition, with no external_visit fallback. If PASS, materialize exact source to DEV runtime+Hosting and prove the authenticated shopper route. No production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -428,7 +428,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "61344532ed21d88846f8a658fdec320e605c13ab",
+  "productSourceTree": "aec04d107b769ebf1393c760ad8531e45796266c",
   "lastLiveReproof": {
     "runId": 36217529367,
     "runNumber": 465,
@@ -1154,6 +1154,19 @@
       "PREI4-CERT-002",
       "PREI4-RES-001"
     ],
+    "production": false
+  },
+  "preI4Content001": {
+    "state": "SOURCE_FIX_CREATED_REPROOF_REQUIRED",
+    "sourceSha": "d8874bd952a70ce15b40560c8f17b2d47f53c152",
+    "sourceTree": "aec04d107b769ebf1393c760ad8531e45796266c",
+    "productFiles": [
+      "app/modules/proyectos.js",
+      "backend/runtime/hr-live-service/server.mjs",
+      "app/adapters/tya-live-source-inplace-apply.js"
+    ],
+    "testFile": "backend/runtime/hr-live-service/test/cxorbia-prei4-project-questionnaire-config.test.mjs",
+    "deploys": 0,
     "production": false
   }
 }
