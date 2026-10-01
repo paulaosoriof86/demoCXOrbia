@@ -123,6 +123,10 @@ NODE
 mkdir -p "$PREI4_CONTENT001_OUT/post002-forensic" "$PREI4_CONTENT001_OUT/post002" "$PREI4_CONTENT001_OUT/admin003" "$PREI4_CONTENT001_OUT/finance" "$PREI4_CONTENT001_OUT/questionnaire"
 PREI4_002_OUT="$PREI4_CONTENT001_OUT/post002-forensic" PREI4_002_ROOT="$PREI4_CONTENT001_ROOT" PREI4_002_SOURCE="$PREI4_CONTENT001_SOURCE" PREI4_002_HR_REVISION="$HR_REVISION" node tools/qa/cxorbia-prei4-admin002-postulation-semantic-forensic.mjs | tee "$PREI4_CONTENT001_OUT/post002-forensic.log"
 test "$(jq -r '.decision' "$PREI4_CONTENT001_OUT/post002-forensic/result.json")" = "PASS_PREI4_ADMIN_002_ROOT_CAUSE_PROVEN"
+mkdir -p "$PREI4_CONTENT001_OUT/paula-pradera-cleanup"
+node --check tools/qa/cxorbia-prei4-paula-pradera-safe-cleanup.mjs
+PREI4_CLEANUP_OUT="$PREI4_CONTENT001_OUT/paula-pradera-cleanup" PREI4_CLEANUP_ROOT="$PREI4_CONTENT001_ROOT" PREI4_CLEANUP_SOURCE="$PREI4_CONTENT001_SOURCE" PREI4_CLEANUP_HR_REVISION="$HR_REVISION" node tools/qa/cxorbia-prei4-paula-pradera-safe-cleanup.mjs | tee "$PREI4_CONTENT001_OUT/paula-pradera-cleanup.log"
+test "$(jq -r '.decision' "$PREI4_CONTENT001_OUT/paula-pradera-cleanup/result.json")" = "PASS_PREI4_PAULA_PRADERA_SAFE_CLEANUP"
 PREI4_002_LIVE_OUT="$PREI4_CONTENT001_OUT/post002" PREI4_002_ROOT="$PREI4_CONTENT001_ROOT" PREI4_002_SOURCE="$PREI4_CONTENT001_SOURCE" PREI4_002_TREE="$PREI4_CONTENT001_TREE" PREI4_002_HR_REVISION="$HR_REVISION" node tools/qa/cxorbia-prei4-admin002-hosting-live-reproof.mjs | tee "$PREI4_CONTENT001_OUT/post002.log"
 test "$(jq -r '.decision' "$PREI4_CONTENT001_OUT/post002/result.json")" = "PASS_PREI4_ADMIN_002_HOSTING_LIVE"
 PREI4_003_LIVE_OUT="$PREI4_CONTENT001_OUT/admin003" PREI4_003_ROOT="$PREI4_CONTENT001_ROOT" PREI4_003_SOURCE="$PREI4_CONTENT001_SOURCE" PREI4_003_TREE="$PREI4_CONTENT001_TREE" PREI4_003_HR_REVISION="$HR_REVISION" node tools/qa/cxorbia-prei4-admin003-cumulative-live-reproof.mjs | tee "$PREI4_CONTENT001_OUT/admin003.log"
