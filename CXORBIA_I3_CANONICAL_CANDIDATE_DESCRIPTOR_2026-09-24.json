@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "PRE_I4_VRM138_SHOPPER_POSTULATION_CONTROL_REPROOF",
+  "activeBlocker": "PRE_I4_FINAL_FINANCE_PROVIDER_ACK_DIAGNOSTIC",
   "nextFindingId": "VRM-139",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -131,15 +131,15 @@
     "hrRevision": "2b0114c39d64a0e3697667572de0dfdcffe476c5cd8112449fcab1da24e1085d"
   },
   "lastControlAttempt": {
-    "runId": 36938470948,
-    "jobId": 110624232674,
-    "classification": "MAPPING_FAILURE",
-    "code": "VRM-138_SHOPPER_POSTULATION_UNIVERSE",
-    "productDefect": false,
+    "runId": 36939952415,
+    "jobId": 110628934044,
+    "classification": "PERSISTENCE_FAILURE",
+    "code": "FINAL_REVENUE_ACK_DIAGNOSTIC_PENDING",
+    "productDefect": "UNRESOLVED_UNTIL_PROVIDER_CODE_READBACK",
     "productSourceChanged": false,
-    "cumulativePostulations": 1,
-    "currentPeriodPosts": 0,
-    "correctionOwner": "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs",
+    "cleanup": true,
+    "cleanupRemaining": 0,
+    "diagnosticOwner": "tools/qa/cxorbia-prei4-final-focal-finance-live.mjs",
     "production": false
   },
   "findingReceipts": {
