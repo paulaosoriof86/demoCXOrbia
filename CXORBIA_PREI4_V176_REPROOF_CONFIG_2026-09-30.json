@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.prei4.v176-reproof-config.v1",
-  "sourceSha": "19ce6ac1cbea7c94ad5f61009cea961a3b11e606",
-  "sourceTree": "a9dcc983062ea16767b9d9e38521ad096c63a5f8",
+  "sourceSha": "a2f7acd659b68217299f92ef69a320f08e806635",
+  "sourceTree": "524207efe063232333795175ac58964f3898067c",
   "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
   "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "base": "c487449e5187d7219033c54fa1ac3db5fb6c822e",
@@ -22,6 +22,7 @@
     "app/core/backend-bulletins.js",
     "app/core/backend-certifications.js",
     "app/core/backend-cxdata-finance-read.js",
+    "app/core/backend-cxdata-readonly-corte4.js",
     "app/core/backend-finance-benefits.js",
     "app/core/backend-protected-dev-mode.js",
     "app/core/backend-resources.js",
@@ -98,6 +99,7 @@
     "app/core/backend-browser-auth.js",
     "app/core/backend-bulletins.js",
     "app/core/backend-cxdata-finance-read.js",
+    "app/core/backend-cxdata-readonly-corte4.js",
     "app/core/backend-finance-benefits.js",
     "app/core/backend-protected-dev-mode.js",
     "app/core/backend-resources.js",
@@ -145,10 +147,10 @@
   ],
   "runtimeVisitReconciliationConcurrency": 16,
   "latestSourceProof": {
-    "findingId": "VRM-132",
-    "decision": "PASS_PREI4_VRM132_LIQUIDACIONES_SOURCE",
-    "runId": 36925794086,
-    "owner": "app/modules/finanzas.js",
+    "findingId": "VRM-136",
+    "decision": "PENDING_PREI4_VRM136_DEV_LIVE_REPROOF",
+    "runId": null,
+    "owner": "app/core/backend-cxdata-readonly-corte4.js",
     "production": false
   }
 }
