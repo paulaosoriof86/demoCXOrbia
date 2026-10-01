@@ -357,6 +357,10 @@ async function transactionExecute(db,command,actor){
       }
       const patch={estado:next,status:next,updatedAt:now(),version:Number(v.version||0)+1};
       for(const k of ['agendada','realizada','cuestFecha'])if(payload.patch?.[k])patch[k]=payload.patch[k];
+      if(next==='agendada'){
+        const projectSnap=await tx.get(r.project),projectData=projectSnap.exists?(projectSnap.data()||{}):{};
+        patch.agendada=assertSchedulableDate(v,patch.agendada,str(projectData.timeZone||projectData.timezone||'America/Guatemala'));
+      }
       tx.set(vRef,patch,{merge:true});providerWrites++;auditEntityType='visit';
     }
     else if(command.commandType==='visit.reschedule'){
