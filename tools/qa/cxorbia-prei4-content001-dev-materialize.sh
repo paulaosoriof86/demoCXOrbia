@@ -16,6 +16,38 @@ test "$(jq -r '.sourceTree' "$CONFIG")" = "$PREI4_CONTENT001_TREE"
 test "$(git rev-parse "$PREI4_CONTENT001_SOURCE^{tree}")" = "$PREI4_CONTENT001_TREE"
 mkdir -p "$PREI4_CONTENT001_OUT"
 
+if git log -1 --pretty=%B | grep -Fq '[prei4-content-001-final-fast]'; then
+  npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+  npx playwright install chromium >/dev/null 2>&1
+  mkdir -p "$PREI4_CONTENT001_OUT/final-focal/cert"
+  curl -fsS -H 'Cache-Control: no-cache, no-store, max-age=0' "$PREI4_CONTENT001_ROOT/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&finalfast=$GITHUB_RUN_ID-$(date +%s%N)" > "$PREI4_CONTENT001_OUT/final-focal/hr-meta.json"
+  HR_REVISION="$(jq -r '.revision // empty' "$PREI4_CONTENT001_OUT/final-focal/hr-meta.json")"
+  CURRENT_PERIOD_KEY="$(jq -r '.latestPeriodKey // empty' "$PREI4_CONTENT001_OUT/final-focal/hr-meta.json")"
+  CURRENT_PERIOD_ID="$PROJECT_ID-$CURRENT_PERIOD_KEY"
+  test "$HR_REVISION" = "e242d83f7a63b4f390a3ff6eeaeb616dea52f52f159a5e3a929c5473a7225159"
+  test "$CURRENT_PERIOD_ID" = "cinepolis-2026-10"
+  jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .refreshError==null and .hrWrites==false and .production==false' "$PREI4_CONTENT001_OUT/final-focal/hr-meta.json" >/dev/null
+
+  PROJECT="$PROJECT" HOSTING_URL="$PREI4_CONTENT001_ROOT" SOURCE_SHA="$PREI4_CONTENT001_SOURCE" FINAL_FOCAL_PERIOD_ID="$CURRENT_PERIOD_ID" FINAL_FOCAL_OUT="$PREI4_CONTENT001_OUT/final-focal" node tools/qa/cxorbia-prei4-final-focal-finance-live.mjs | tee "$PREI4_CONTENT001_OUT/final-focal/finance-console.log"
+  test "$(jq -r '.decision' "$PREI4_CONTENT001_OUT/final-focal/finance-live.json")" = "PASS_PREI4_FINAL_FOCAL_FINANCE"
+  test "$(jq -r '.cleanup' "$PREI4_CONTENT001_OUT/final-focal/finance-live.json")" = "true"
+
+  PROJECT_ID="$PROJECT_ID" TENANT_ID="$TENANT_ID" HOSTING_URL="$PREI4_CONTENT001_ROOT" CERT_RES_SOURCE="$PREI4_CONTENT001_SOURCE" CERT_RES_MAT_OUT="$PREI4_CONTENT001_OUT/final-focal/cert" node tools/qa/cxorbia-prei4-cert-res-live.mjs | tee "$PREI4_CONTENT001_OUT/final-focal/cert-console.log"
+  test "$(jq -r '.decision' "$PREI4_CONTENT001_OUT/final-focal/cert/cert-res-live.json")" = "PASS_PREI4_CERT_RES_CUMULATIVE_DEV_LIVE"
+  test "$(jq -r '.cert001.decision' "$PREI4_CONTENT001_OUT/final-focal/cert/cert-res-live.json")" = "PASS_PREI4_CERT_001_LIVE"
+  test "$(jq -r '.cert002.recertification.decision' "$PREI4_CONTENT001_OUT/final-focal/cert/cert-res-live.json")" = "PASS_PREI4_CERT_002_LIVE"
+  test "$(jq -r '[.cleanup.attempt,.cleanup.recert,.cleanup.bank,.cleanup.resource,.cleanup.binary]|all' "$PREI4_CONTENT001_OUT/final-focal/cert/cert-res-live.json")" = "true"
+
+  jq -n -S \
+    --arg source "$PREI4_CONTENT001_SOURCE" --arg tree "$PREI4_CONTENT001_TREE" --arg hr "$HR_REVISION" \
+    --arg browserRun "36939433303" --arg browserArtifact "11199053829" \
+    --slurpfile financeLive "$PREI4_CONTENT001_OUT/final-focal/finance-live.json" \
+    --slurpfile certLive "$PREI4_CONTENT001_OUT/final-focal/cert/cert-res-live.json" \
+    '{schemaVersion:"cxorbia.prei4.final-focal-receipt.v2",decision:"PASS_PREI4_VRM121_138_FINAL_FOCAL",sourceSha:$source,sourceTree:$tree,hrRevision:$hr,browser:"PASS_PRE_I4_FOCAL_HUMAN_BROWSER",browserProofRun:($browserRun|tonumber),browserProofArtifact:($browserArtifact|tonumber),finance:$financeLive[0].decision,financeCleanup:$financeLive[0].cleanup,certification:$certLive[0].decision,certificationCleanup:$certLive[0].cleanup,builds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0,hrWrites:0,production:false,next:"SHORT_HUMAN_VISUAL_RETEST"}' > "$PREI4_CONTENT001_OUT/final-focal/receipt.json"
+  test "$(jq -r '.decision' "$PREI4_CONTENT001_OUT/final-focal/receipt.json")" = "PASS_PREI4_VRM121_138_FINAL_FOCAL"
+  exit 0
+fi
+
 if git log -1 --pretty=%B | grep -Fq '[prei4-content-001-browser-fast]'; then
   npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
   npx playwright install chromium >/dev/null 2>&1
