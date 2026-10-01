@@ -270,6 +270,18 @@ service cloud.firestore {
         allow delete: if tenantAllowed(tenantId) && isAdmin();
       }
 
+      // PRE-I4 VRM-142: finance writes remain provider-only. Authenticated
+      // operators may read the durable projections required by Finanzas/Liquidaciones.
+      match /financialMovements/{movementId} {
+        allow read: if tenantAllowed(tenantId) && isOperator();
+        allow create, update, delete: if false;
+      }
+
+      match /financeAccounts/{accountId} {
+        allow read: if tenantAllowed(tenantId) && isOperator();
+        allow create, update, delete: if false;
+      }
+
       match /projects/{projectId} {
         allow read: if tenantAllowed(tenantId) && canReadProject(projectId);
         allow list: if tenantAllowed(tenantId) && isOperator();
