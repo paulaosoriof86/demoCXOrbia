@@ -211,7 +211,7 @@ CX.app = {
   },
 
   showRegister(){
-    const ids={pais:'rgPais',depto:'rgDepto',ciudad:'rgCiudad'};
+    const ids={pais:'rgPais',depto:'rgDepto',municipio:'rgMunicipio',ciudad:'rgCiudad'};
     CX.ui.modal('Registro de evaluador', `
       <p style="font-size:13px;color:var(--t2);margin-bottom:14px">Crea tu cuenta. El equipo revisará tu perfil y te habilitará las visitas de tu país. Los campos marcados con <b style="color:var(--accent)">*</b> son obligatorios.</p>
       <div class="grid g2" style="gap:12px 14px">
@@ -242,10 +242,11 @@ CX.app = {
         const wa   =(ov.querySelector('#rgWa').value||'').trim();
         if(!first||!last||!wa){ CX.ui.toast('Completa nombre, apellido y WhatsApp','err'); return; }
         const geo=CX.geo.read(ov, ids);
+        if(!geo.pais||!geo.municipio||!geo.ciudad){ CX.ui.toast('Completa país, municipio y ciudad','err'); return; }
         const s=CX.data.addShopper({
           via:'registro', estado:'Pendiente',
           firstName:first, lastName:last, whatsapp:wa,
-          pais:geo.pais, depto:geo.depto, ciudad:geo.ciudad,
+          pais:geo.pais, country:geo.pais, depto:geo.depto, municipio:geo.municipio, ciudad:geo.ciudad,
           email:(ov.querySelector('#rgMail').value||'').trim(),
           edad:(ov.querySelector('#rgEdad').value||'').trim(),
           sexo:ov.querySelector('#rgSexo').value||'',
