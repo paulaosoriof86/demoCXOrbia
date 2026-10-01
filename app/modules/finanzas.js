@@ -703,9 +703,31 @@ CX.module('liquidaciones', ({data,ui})=>{
     const cur=l&&(l.moneda||(l.pais&&p.currency&&p.currency[l.pais]));
     return !l||l.reviewRequired===true||l.financialSourceStatus==='pending_or_review'||l.liquidationState==='pending_financial_source'||!l.pais||!cur;
   };
+  const _showFixturesLiq=CX.dataSource?CX.dataSource.showFixtures():true;
+  const canonicalProjectId=()=>String(p.parentProjectId||p.rootProjectId||p.program||p.projectId||p.id||'');
+  const canonicalPeriodId=()=>String(CX.data.currentPeriodId||'');
+  const connectedFinance=()=>CX.BACKEND?.enabled===true&&!_showFixturesLiq;
+  let durableAccounts=Array.isArray(data.__financeAccounts)?data.__financeAccounts:[];
+  const accountKind=(kind)=>durableAccounts.filter(r=>String(r.kind||'').toLowerCase()===kind&&String(r.status||'open')!=='closed');
+  const isLiquidationCxp=(r)=>String(r?.origin||r?.origen||'').toLowerCase()==='liquidacion';
+  const refreshDurableFinance=async(force=false)=>{
+    if(!connectedFinance())return false;
+    const key=canonicalProjectId()+'::'+canonicalPeriodId();
+    if(!force&&data.__financeProjectionKey===key&&Array.isArray(data.__financeAccounts)){
+      durableAccounts=data.__financeAccounts;
+      return true;
+    }
+    if(typeof data.getFinanceAccounts!=='function')return false;
+    const acc=await data.getFinanceAccounts({projectId:canonicalProjectId(),periodId:canonicalPeriodId()});
+    if(acc?.status!=='ok')return false;
+    durableAccounts=Array.isArray(acc.items)?acc.items:[];
+    data.__financeAccounts=durableAccounts;
+    return true;
+  };
 
   const host=ui.el('div');
   const draw=()=>{
+    const cxpAccounts=connectedFinance()?accountKind('cxp'):CX.finStore.cxp(p.id);
     const all=CX.liq.forProject(data);
     const res=CX.liq.resumen(all);
     const reviewLiqAll=all.filter(isFinancialReview);
@@ -742,7 +764,7 @@ CX.module('liquidaciones', ({data,ui})=>{
     const multiMon=Object.keys(porMon).length>1;
     const cart=`<div class="card card-p" style="margin-bottom:16px;border:1px solid ${draft.length?'var(--brand)':'var(--border)'};${draft.length?'background:linear-gradient(180deg,var(--brand-light),var(--surface))':''}">
       <div class="between" style="margin-bottom:10px"><div class="card-t">📦 Lote en construcción ${draft.length?`<span class="bdg bdg-b">${draft.length}</span>`:''}</div>
-        <div class="flex" style="gap:8px">${cxpAccounts.filter(r=>r.origen==='liquidacion'&&Number(r.balance??r.saldo)>0).length?`<button class="btn btn-soft btn-sm" id="addCxp">➕ Incluir CxP meses anteriores (${cxpAccounts.filter(r=>r.origen==='liquidacion'&&Number(r.balance??r.saldo)>0).length})</button>`:''}
+        <div class="flex" style="gap:8px">${cxpAccounts.filter(r=>isLiquidationCxp(r)&&Number(r.balance??r.saldo)>0).length?`<button class="btn btn-soft btn-sm" id="addCxp">➕ Incluir CxP meses anteriores (${cxpAccounts.filter(r=>isLiquidationCxp(r)&&Number(r.balance??r.saldo)>0).length})</button>`:''}
         ${draft.length?`<button class="btn btn-ghost btn-sm" id="clearDraft" style="color:var(--red)">Vaciar</button>`:''}</div></div>
       ${draft.length?`
         <div class="scroll-hint" style="overflow-x:auto"><table class="tbl"><thead><tr><th>Shopper</th><th>Sucursal</th><th>País</th><th style="text-align:right">Total</th><th></th></tr></thead><tbody>
@@ -834,7 +856,7 @@ CX.module('liquidaciones', ({data,ui})=>{
     if(ac)ac.addEventListener('click',()=>{
       const _cxCur=r=>currencyOf(r),cxpSource=connectedFinance()?cxpAccounts:CX.finStore.cxp(p.id);
       const cxps=cxpSource.filter(r=>currencyOf(r)!==PENDING_CURRENCY&&r.origen==='liquidacion'&&Number(r.balance??r.saldo)>0); /* R32: currencyOf excluye moneda no resuelta */
-      const cxpsPend=cxpSource.filter(r=>r.origen==='liquidacion'&&Number(r.balance??r.saldo)>0&&currencyOf(r)===PENDING_CURRENCY);
+      const cxpsPend=cxpSource.filter(r=>isLiquidationCxp(r)&&Number(r.balance??r.saldo)>0&&currencyOf(r)===PENDING_CURRENCY);
       const rows=cxps.length?cxps.map((r,i)=>`<label class="between" style="padding:9px 11px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;cursor:pointer">
         <span><input type="checkbox" class="cxpChk" data-id="${r.id}" checked style="margin-right:8px"><b style="font-size:12.5px">${r.concepto}</b><div style="font-size:11px;color:var(--t3)">${r.pais||''} · pendiente de meses anteriores</div></span>
         <b style="color:var(--amber)">${(r.pais&&p.currency&&p.currency[r.pais])?ui.money(p.currency[r.pais],r.saldo||0):(r.moneda?ui.money(r.moneda,r.saldo||0):'Pendiente de moneda')}</b></label>`).join('')
@@ -895,6 +917,8 @@ CX.module('liquidaciones', ({data,ui})=>{
     });
   };
   draw();
+  if(connectedFinance())refreshDurableFinance(false).then(ok=>{if(ok)draw();}).catch(()=>{});
+  CX.bus.on('finance-durable-ready',()=>{durableAccounts=Array.isArray(data.__financeAccounts)?data.__financeAccounts:durableAccounts;draw();});
   CX.bus.on('lote',()=>draw());
   CX.bus.on('visit-flow',()=>draw());
   return host;

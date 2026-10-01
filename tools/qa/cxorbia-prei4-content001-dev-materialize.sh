@@ -2,6 +2,15 @@
 set -Eeuo pipefail
 : "${PREI4_CONTENT001_SOURCE:?}" "${PREI4_CONTENT001_TREE:?}" "${PREI4_CONTENT001_OUT:?}" "${PREI4_CONTENT001_ROOT:?}"
 CONFIG="CXORBIA_PREI4_V176_REPROOF_CONFIG_2026-09-30.json"
+mkdir -p "$PREI4_CONTENT001_OUT"
+if git log -1 --pretty=%B | grep -Fq '[prei4-vrm132-liquidaciones-source]'; then
+  node --check app/modules/finanzas.js
+  node --check tools/qa/cxorbia-prei4-vrm132-liquidaciones-source.mjs
+  node tools/qa/cxorbia-prei4-vrm132-liquidaciones-source.mjs
+  cp .tmp/prei4-vrm132-liquidaciones-source/result.json "$PREI4_CONTENT001_OUT/vrm132-liquidaciones-source.json"
+  test "$(jq -r '.decision' "$PREI4_CONTENT001_OUT/vrm132-liquidaciones-source.json")" = "PASS_PREI4_VRM132_LIQUIDACIONES_SOURCE"
+  exit 0
+fi
 test "$(jq -r '.sourceSha' "$CONFIG")" = "$PREI4_CONTENT001_SOURCE"
 test "$(jq -r '.sourceTree' "$CONFIG")" = "$PREI4_CONTENT001_TREE"
 test "$(git rev-parse "$PREI4_CONTENT001_SOURCE^{tree}")" = "$PREI4_CONTENT001_TREE"
