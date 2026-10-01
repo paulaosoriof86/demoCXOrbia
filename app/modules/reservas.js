@@ -112,6 +112,10 @@ CX.module('reservas', ({data,role,ui})=>{
   /* P0 (V172): identidad fail-closed — sin shopperId verificable no hay sid; nunca 'sh1'. */
   const sid=()=> (CX.session.user&&CX.session.user.shopperId)||null;
   const shopperIdentityOk=()=>!!sid();
+  const settleWrite=(reason)=>{
+    try{window.CX_SCHEDULE_PROTECTED_AUTH_HR_RECONCILE?.(reason||'reservation_write_committed',true);}catch(_){}
+    queueMicrotask(()=>draw());
+  };
 
   const periodos=()=>{ const s=new Set(); const current=CX.reservas.periodoActual(); if(current)s.add(current); CX.reservas.list(pid).forEach(r=>{if(r.periodo)s.add(r.periodo);}); return [...s].sort().reverse(); };
   let per=CX.reservas.periodoActual();
@@ -161,12 +165,12 @@ CX.module('reservas', ({data,role,ui})=>{
             close();
             if(result.dup){ui.toast('Ya solicitaste esa sucursal para ese periodo','warn');return;}
             ui.toast('Solicitud guardada y confirmada','ok');
-            setTimeout(()=>location.reload(),180);
+            settleWrite('reservation_write_committed');
           }catch(_){ui.toast('No hubo ACK remoto; la solicitud no se declaró guardada','warn');}
         })});
       });
       host.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',async()=>{
-        try{await CX.reservas.remove(pid,b.dataset.del);ui.toast('Solicitud cancelada y confirmada','ok');setTimeout(()=>location.reload(),180);}
+        try{await CX.reservas.remove(pid,b.dataset.del);ui.toast('Solicitud cancelada y confirmada','ok');settleWrite('reservation_write_committed');}
         catch(_){ui.toast('No hubo confirmación del proveedor; la cancelación no se declaró aplicada','warn');}
       }));
       host.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>CX.router.nav('misvisitas')));
@@ -214,17 +218,17 @@ CX.module('reservas', ({data,role,ui})=>{
           CX.notif&&CX.notif.push({to:'shopper',tipo:'reserva_aprobada',icon:'✅',tono:'g',titulo:'¡Tu reserva fue aprobada!',txt:'Sucursal: '+(reservation?.sucursal||'')+' · '+(reservation?.periodo||per)+'. Revisa tu visita en la plataforma.',nav:'misvisitas'});
         }
         ui.toast('Estado confirmado por el proveedor','ok');
-        setTimeout(()=>location.reload(),180);
+        settleWrite('reservation_write_committed');
       }catch(_){draw();ui.toast('No hubo ACK remoto; no se declaró el cambio','warn');}
     }));
-    host.querySelectorAll('[data-rdel]').forEach(b=>b.addEventListener('click',async()=>{if(!confirm('¿Eliminar esta reserva?'))return;b.disabled=true;try{await CX.reservas.remove(pid,b.dataset.rdel);ui.toast('Reserva eliminada y confirmada','ok');setTimeout(()=>location.reload(),180);}catch(error){b.disabled=false;ui.toast('No hubo ACK remoto; la reserva no se declaró eliminada','warn');}}));
+    host.querySelectorAll('[data-rdel]').forEach(b=>b.addEventListener('click',async()=>{if(!confirm('¿Eliminar esta reserva?'))return;b.disabled=true;try{await CX.reservas.remove(pid,b.dataset.rdel);ui.toast('Reserva eliminada y confirmada','ok');settleWrite('reservation_write_committed');}catch(error){b.disabled=false;ui.toast('No hubo ACK remoto; la reserva no se declaró eliminada','warn');}}));
     host.querySelectorAll('[data-rsh]').forEach(b=>b.addEventListener('click',()=>{
       const reservation=CX.reservas.list(pid).find(x=>x.id===b.dataset.rsh),cands=data.shoppersFor();
       ui.modal('Asignar shopper · '+reservation.sucursal,`<select class="sel" id="rshSel" style="margin-bottom:14px">${cands.map(s=>`<option value="${s.id}">${s.nombre} · ${s.code}</option>`).join('')}</select>
         <div style="text-align:right"><button class="btn btn-pr btn-sm" id="rshOk">Asignar</button></div>`,
       {onMount:(ov,close)=>ov.querySelector('#rshOk').addEventListener('click',async()=>{
         const shopper=data.getShopper(ov.querySelector('#rshSel').value);
-        try{await CX.reservas.setEstado(pid,reservation.id,'asignada',{shopperId:shopper.id,shopper:shopper.nombre});close();ui.toast('Shopper asignado y confirmado','ok');setTimeout(()=>location.reload(),180);}
+        try{await CX.reservas.setEstado(pid,reservation.id,'asignada',{shopperId:shopper.id,shopper:shopper.nombre});close();ui.toast('Shopper asignado y confirmado','ok');settleWrite('reservation_write_committed');}
         catch(_){ui.toast('No hubo confirmación del proveedor; la asignación no se declaró aplicada','warn');}
       })});
     }));
@@ -239,7 +243,7 @@ CX.module('reservas', ({data,role,ui})=>{
         const branch=sucs.find(x=>x.id===ov.querySelector('#asSuc').value),shopper=data.getShopper(ov.querySelector('#asSh').value);
         try{
           const result=await CX.reservas.reservar(pid,{sucursalId:branch.id,sucursal:branch.sucursal,ciudad:branch.ciudad,pais:branch.pais,periodo:ov.querySelector('#asPer').value,shopperId:shopper.id,shopper:shopper.nombre,estado:'asignada'});
-          close();ui.toast(result.dup?'Ya existía esa asignación':'Sucursal asignada y confirmada a '+shopper.nombre,result.dup?'warn':'ok');if(!result.dup)setTimeout(()=>location.reload(),180);
+          close();ui.toast(result.dup?'Ya existía esa asignación':'Sucursal asignada y confirmada a '+shopper.nombre,result.dup?'warn':'ok');if(!result.dup)settleWrite('reservation_write_committed');
         }catch(_){ui.toast('No hubo ACK remoto; la asignación no se declaró aplicada','warn');}
       })});
     });
@@ -247,7 +251,7 @@ CX.module('reservas', ({data,role,ui})=>{
     host.querySelector('#aCruzar').addEventListener('click',async()=>{
       try{
         const result=await CX.reservas.cruzar(pid,per);
-        ui.toast(result.cruzadas?(result.cruzadas+' visita(s) cruzada(s) y confirmada(s)'):'No hay reservas asignadas para cruzar este periodo',result.cruzadas?'ok':'warn',4000);if(result.cruzadas)setTimeout(()=>location.reload(),180);
+        ui.toast(result.cruzadas?(result.cruzadas+' visita(s) cruzada(s) y confirmada(s)'):'No hay reservas asignadas para cruzar este periodo',result.cruzadas?'ok':'warn',4000);if(result.cruzadas)settleWrite('reservation_write_committed');
       }catch(_){ui.toast('No se completó el cruce; no se declaró ninguna asignación sin ACK','warn');}
     });
     const km={all:['Todas',()=>true],solicitada:['Por revisar',r=>r.estado==='solicitada'],asignada:['Asignadas',r=>['asignada','aprobada'].includes(r.estado)],cruzada:['Cruzadas',r=>r.estado==='cruzada']};
