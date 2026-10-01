@@ -1,0 +1,141 @@
+{
+  "schemaVersion": "cxorbia.recovery.i3.prei4.cumulative-remediation-package.v1",
+  "frozenAt": "2026-10-01T02:20:00Z",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "state": "READY_FOR_SINGLE_CODEX_REMEDIATION_PACKAGE",
+  "authority": {
+    "controlBase": "6d42ec4e69d9c924d3542d3ec162eac0e60c18bb",
+    "branch": "recovery/cxorbia-phase-a-20260831",
+    "production": "DO_NOT_TOUCH",
+    "productWriter": "CODEX_ONLY",
+    "noParallelCandidate": true,
+    "noOverlayMethodology": true,
+    "noReimport": true
+  },
+  "scope": {
+    "findings": "VRM-121..VRM-135",
+    "blocking": [
+      "VRM-121",
+      "VRM-122",
+      "VRM-123",
+      "VRM-124",
+      "VRM-125",
+      "VRM-126",
+      "VRM-127",
+      "VRM-128",
+      "VRM-129",
+      "VRM-130",
+      "VRM-132",
+      "VRM-133",
+      "VRM-134",
+      "VRM-135"
+    ],
+    "nonBlocking": [
+      "VRM-131"
+    ],
+    "rule": "One cumulative incremental package. Frozen PASS surfaces are not reopened unless an owning file changes."
+  },
+  "frozenPass": {
+    "liveHr": "PASS except assignment KPI composition covered by VRM-121",
+    "dashboard": [
+      "total",
+      "realized",
+      "pending realization",
+      "questionnaire pending",
+      "submit pending",
+      "out of range",
+      "liquidated"
+    ],
+    "financeDisplayArithmetic": "SEP-2026 obligation arithmetic/currencies PASS; durable Movimientos/CxP/CxC workflow explicitly excluded and owned by VRM-132",
+    "resources": "upload/view/download and prior no-orphan proof",
+    "certification": "technical AI generation/persistence only; publication UX remains VRM-126",
+    "shopper": [
+      "instructivo",
+      "reprogram request",
+      "Paula benefits displayed arithmetic"
+    ]
+  },
+  "financeContract": {
+    "currentDefect": "Visible Movimientos/CxP/CxC use browser-memory finStore and do not constitute the canonical durable source for Dashboard income.",
+    "target": [
+      "Every financial mutation is durable, provider-backed, ACK-aware and idempotent.",
+      "A generic income movement does not automatically prove operating revenue.",
+      "Operating income becomes known only from an authorized durable source for exact tenant+project+period+country+currency and a revenue classification allowed by the project financial model.",
+      "Invoice/revenue recognition and cash collection remain distinct when the project model distinguishes them; a collection linked to CxC reduces the receivable without double-counting revenue.",
+      "Financing is non-operating cash inflow and creates/updates linked CxP; repayment reduces that CxP and never inflates operating income.",
+      "Shopper obligations derive from canonical realized/liquidation truth; payment is never inferred from liquidation.",
+      "Payment batch/internal payment event stays pending external reconciliation until paymentSourceRef/audit evidence exists.",
+      "CxP, CxC, Movimientos, Liquidaciones, Lotes and Dashboard are projections of one durable event graph; country/currency never mix."
+    ]
+  },
+  "shopperRegistrationContract": {
+    "selfRegistration": {
+      "required": [
+        "firstName",
+        "lastName",
+        "whatsapp",
+        "country",
+        "municipality",
+        "city"
+      ],
+      "geographyLabels": "data-driven by country; do not hardcode Guatemala globally",
+      "departmentOrRegion": "retained as an additional country-specific administrative level when applicable"
+    },
+    "hrAutoUpsert": {
+      "requiredGeography": false,
+      "rule": "HR-managed automatic shopper upsert must remain idempotent and must not be blocked by missing country/municipality/city profile-completion fields."
+    }
+  },
+  "loginAndFreshnessContract": {
+    "login": [
+      "One deterministic human flow: choose access type, then credentials.",
+      "Authenticate once; preserve selected role through retry.",
+      "Enter usable shell immediately after authorized session/context is established.",
+      "Do not re-show login unless authentication actually failed or expired."
+    ],
+    "liveData": [
+      "Do not block the whole shell on every HR refresh.",
+      "Use already-authorized durable state immediately and refresh HR in-place.",
+      "Coalesce backend-ready/focus/visibility refresh triggers.",
+      "Use sourceRevision + bounded freshness TTL to avoid redundant reads/recomposition.",
+      "A non-HR-managed write must not invalidate the entire HR authority.",
+      "Preserve route, scroll and module context after writes.",
+      "Expose one human freshness/loading status, never successive technical phases."
+    ]
+  },
+  "testCleanup": {
+    "target": "Paula Osorio / MC. Pradera Zacapa / SEP 2026",
+    "deleteOnly": [
+      "platform assignment overlay",
+      "related test application/reservation if present",
+      "related test notifications"
+    ],
+    "forbid": [
+      "HR mutation",
+      "historical visit deletion"
+    ],
+    "readback": [
+      "HR SEPTIEMBRE 26!35 remains available/unassigned",
+      "Paula active test visit disappears",
+      "Dashboard assignment KPI equals same live HR revision",
+      "Paula historical visits remain unchanged"
+    ]
+  },
+  "requiredFocalProof": [
+    "source/static contracts for every changed owner",
+    "finance durable movement -> readback -> Dashboard/CxP/CxC projection",
+    "financing non-operating + linked CxP repayment",
+    "self-registration rejects missing country/municipality/city; HR auto-upsert still succeeds without them",
+    "login fresh + restored session timing and no duplicate technical stages",
+    "post-write route preservation and no full document reload",
+    "live HR refresh coalescing + same-revision KPI truth",
+    "reservations/postulations/scheduling/notifications/certification/identity/reassignment/timezone focal tests",
+    "safe Paula/Pradera cleanup readback",
+    "short human visual retest only for changed flows"
+  ],
+  "acceptance": {
+    "successState": "GO_I3_PREI4_HUMAN_RETEST_READY",
+    "onFailure": "Classify only with existing Recovery taxonomy, repair within I3 and repeat focal gate. No new methodology/candidate/workflow/reimport.",
+    "i4Authorization": "NOT_REQUESTED"
+  }
+}
