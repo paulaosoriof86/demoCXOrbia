@@ -548,11 +548,22 @@ CX.module('movimientos', ({data,ui})=>{
         const mvCur=()=>{const c=ov.querySelector('#mvPais').value;return c&&p.currency[c]?p.currency[c]:PENDING_CURRENCY;};
         const syncMv=()=>{const cu=mvCur();ov.querySelector('#mvCurLbl').textContent=cu===PENDING_CURRENCY?'(elige país)':'('+cu+')';};
         ov.querySelector('#mvPais').addEventListener('change',syncMv); syncMv();
-        ov.querySelector('#mvSave').addEventListener('click',()=>{
+        ov.querySelector('#mvSave').addEventListener('click',async()=>{
         if(mvCur()===PENDING_CURRENCY){ui.toast('Selecciona el país para resolver la moneda antes de registrar','warn');return;} /* R31: bloquear sin moneda */
         const monto=Math.abs(+ov.querySelector('#mvMonto').value||0)*(esIng?1:-1);
-        const rec={tipo:esIng?'ingreso':'egreso',cat:ov.querySelector('#mvCat').value||t,categoria:ov.querySelector('#mvCateg').value,pais:ov.querySelector('#mvPais').value,moneda:mvCur(),monto,fecha:ov.querySelector('#mvFecha').value,desc:ov.querySelector('#mvDesc').value,estado:ov.querySelector('#mvEstado').value,beneficiario:(ov.querySelector('#mvBenef').value||'').trim(),proyectoId:ov.querySelector('#mvProy').value};
+        if(!monto){ui.toast('Ingresa un monto mayor a cero','warn');return;}
+        const rec={tipo:esIng?'ingreso':'egreso',cat:ov.querySelector('#mvCat').value||t,categoria:ov.querySelector('#mvCateg').value,pais:ov.querySelector('#mvPais').value,country:ov.querySelector('#mvPais').value,moneda:mvCur(),currency:mvCur(),monto,amount:Math.abs(monto),fecha:ov.querySelector('#mvFecha').value,desc:ov.querySelector('#mvDesc').value,estado:ov.querySelector('#mvEstado').value,beneficiario:(ov.querySelector('#mvBenef').value||'').trim(),proyectoId:ov.querySelector('#mvProy').value};
         if(esIng)rec.tipoIngreso=ov.querySelector('#mvTipo').value; else rec.tipoEgreso=ov.querySelector('#mvTipo').value;
+        if(connectedFinance()){
+          if(scope==='global'||typeof data.createFinancialMovement!=='function'){ui.toast('Este alcance aún no tiene persistencia financiera durable habilitada.','warn');return;}
+          const btn=ov.querySelector('#mvSave'),prior=btn.textContent;btn.disabled=true;btn.textContent='Registrando…';
+          try{
+            const r=await data.createFinancialMovement(rec,{ackAware:true,reason:'admin-finance-movement-create'});
+            if(!(r?.ok===true&&r?.status==='committed'&&r?.providerAck===true&&r?.successUiAllowed===true))throw new Error(r?.code||'FINANCE_MOVEMENT_ACK_REQUIRED');
+            await refreshDurableFinance(true);close();draw();ui.toast('Movimiento registrado y confirmado en la fuente financiera','ok');
+          }catch(error){btn.disabled=false;btn.textContent=prior;ui.toast('No se registró el movimiento: faltó confirmación durable.','err');}
+          return;
+        }
         CX.finStore.addMov(pid(),rec);close();draw();ui.toast('Movimiento registrado','ok');});}});
     }));
 
