@@ -14,8 +14,8 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "24c329566ca63378ecfdb6f50b3a6329fd16be93",
-    "sourceTree": "e6f0174cf47a6347b9c19c46f73a3901152d303e",
+    "sourceSha": "a2f7acd659b68217299f92ef69a320f08e806635",
+    "sourceTree": "524207efe063232333795175ac58964f3898067c",
     "predecessorSha": "19ce6ac1cbea7c94ad5f61009cea961a3b11e606",
     "production": false,
     "state": "SOURCE_FIX_PENDING_DEV_LIVE_REPROOF",
@@ -6426,8 +6426,8 @@
         "app/core/backend-cxdata-readonly-corte4.js"
       ],
       "sourceFix": {
-        "sourceSha": "24c329566ca63378ecfdb6f50b3a6329fd16be93",
-        "sourceTree": "e6f0174cf47a6347b9c19c46f73a3901152d303e",
+        "sourceSha": "a2f7acd659b68217299f92ef69a320f08e806635",
+        "sourceTree": "524207efe063232333795175ac58964f3898067c",
         "predecessorSha": "19ce6ac1cbea7c94ad5f61009cea961a3b11e606",
         "productOwners": [
           "app/core/backend-cxdata-readonly-corte4.js"
@@ -7024,7 +7024,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Materialize canonical product source 24c329566ca63378ecfdb6f50b3a6329fd16be93 / tree e6f0174cf47a6347b9c19c46f73a3901152d303e exactly once in existing Recovery DEV lane, then execute authenticated Admin+Shopper browser focal with stable HR authority, Liquidaciones, durable Finance, Certification and final focal receipt. Reuse prior PASS gates. Production remains untouched.",
+  "exactNextAction": "Materialize canonical reachable product source a2f7acd659b68217299f92ef69a320f08e806635 / tree 524207efe063232333795175ac58964f3898067c exactly once in existing Recovery DEV lane, then execute authenticated Admin+Shopper browser focal with stable HR authority, Liquidaciones, durable Finance, Certification and final focal receipt. Reuse prior PASS gates. Production remains untouched.",
   "supersedesGitBlob": "397a9cee8c71d3156567a0cc96bfdcba88bb7c3a",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -8414,7 +8414,7 @@
     "PREI4-CONTENT-001",
     "PREI4-CONTENT-002"
   ],
-  "preI4NextAction": "Materialize canonical product source 24c329566ca63378ecfdb6f50b3a6329fd16be93 / tree e6f0174cf47a6347b9c19c46f73a3901152d303e exactly once in existing Recovery DEV lane, then execute authenticated Admin+Shopper browser focal with stable HR authority, Liquidaciones, durable Finance, Certification and final focal receipt. Reuse prior PASS gates. Production remains untouched.",
+  "preI4NextAction": "Materialize canonical reachable product source a2f7acd659b68217299f92ef69a320f08e806635 / tree 524207efe063232333795175ac58964f3898067c exactly once in existing Recovery DEV lane, then execute authenticated Admin+Shopper browser focal with stable HR authority, Liquidaciones, durable Finance, Certification and final focal receipt. Reuse prior PASS gates. Production remains untouched.",
   "preI4Admin002": {
     "findingId": "PREI4-ADMIN-002",
     "state": "FIXED_PROVEN_RUN601",
@@ -10110,8 +10110,8 @@
   },
   "latestSourceSuccessor": {
     "findingId": "VRM-136",
-    "sourceSha": "24c329566ca63378ecfdb6f50b3a6329fd16be93",
-    "sourceTree": "e6f0174cf47a6347b9c19c46f73a3901152d303e",
+    "sourceSha": "a2f7acd659b68217299f92ef69a320f08e806635",
+    "sourceTree": "524207efe063232333795175ac58964f3898067c",
     "predecessorSha": "19ce6ac1cbea7c94ad5f61009cea961a3b11e606",
     "exactDelta": [
       "app/core/backend-cxdata-readonly-corte4.js"
