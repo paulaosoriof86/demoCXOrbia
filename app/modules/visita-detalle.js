@@ -96,6 +96,7 @@ CX.shopperPostForm = function(data, p, v, ui){
     requires_weekend:'Esta visita debe realizarse sábado o domingo.',
     requires_weekday:'Esta visita debe realizarse de lunes a viernes.',
     proposed_date_invalid:'Selecciona una fecha válida.',
+    before_today:'La fecha propuesta no puede estar en el pasado.',
     franja_pending_validation:'La franja de esta oportunidad está pendiente de validación.',
   };
   const isIso=s=>/^20\d{2}-[01]\d-[0-3]\d$/.test(String(s||''));
