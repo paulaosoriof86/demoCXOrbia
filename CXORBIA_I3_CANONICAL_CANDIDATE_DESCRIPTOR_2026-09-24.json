@@ -8,13 +8,13 @@
   "productTreeAuthority": "524207efe063232333795175ac58964f3898067c",
   "predecessorProductSourceSha": "19ce6ac1cbea7c94ad5f61009cea961a3b11e606",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "202e6cedb6a0730d274d6ea34e63c6df9e43608e",
+  "findingsLedgerExpectedGitBlob": "1b8720de432594236acb94a4edd325e3bd5abd5a",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "PRE_I4_FINAL_FINANCE_PROVIDER_ACK_DIAGNOSTIC",
-  "nextFindingId": "VRM-139",
+  "activeBlocker": "PRE_I4_VRM139_FINANCE_CANONICAL_CURRENCY_REPROOF",
+  "nextFindingId": "VRM-140",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run browser-only PRE-I4 focal against already materialized canonical DEV source a2f7acd659b68217299f92ef69a320f08e806635. If PASS, immediately execute Finance durable + Certification + final focal receipt without rebuild/redeploy.",
+  "exactNextAction": "Run final-fast PRE-I4 Finance durable + Certification against canonical DEV source a2f7acd659b68217299f92ef69a320f08e806635, reusing browser PASS run 36939433303 only if HR revision remains e242d83f7a63b4f390a3ff6eeaeb616dea52f52f159a5e3a929c5473a7225159.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -131,15 +131,17 @@
     "hrRevision": "2b0114c39d64a0e3697667572de0dfdcffe476c5cd8112449fcab1da24e1085d"
   },
   "lastControlAttempt": {
-    "runId": 36939952415,
-    "jobId": 110628934044,
-    "classification": "PERSISTENCE_FAILURE",
-    "code": "FINAL_REVENUE_ACK_DIAGNOSTIC_PENDING",
-    "productDefect": "UNRESOLVED_UNTIL_PROVIDER_CODE_READBACK",
+    "runId": 36940358709,
+    "jobId": 110630224254,
+    "classification": "MAPPING_FAILURE",
+    "code": "VRM-139_FINANCE_CANONICAL_CURRENCY",
+    "productDefect": false,
     "productSourceChanged": false,
+    "providerCode": "FINANCE_MOVEMENT_CURRENCY_SCOPE_CONFLICT",
+    "fixtureCurrency": "GTQ",
+    "canonicalCurrency": "Q",
+    "correctionOwner": "tools/qa/cxorbia-prei4-final-focal-finance-live.mjs",
     "cleanup": true,
-    "cleanupRemaining": 0,
-    "diagnosticOwner": "tools/qa/cxorbia-prei4-final-focal-finance-live.mjs",
     "production": false
   },
   "findingReceipts": {
