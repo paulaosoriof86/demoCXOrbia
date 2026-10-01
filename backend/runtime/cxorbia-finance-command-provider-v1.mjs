@@ -201,6 +201,30 @@ export function createFinanceCommandProvider({auth,db,policy}={}){
             tx.set(receipt,{status:'committed',commandDigest:digest,entityId:movementId,commandType:command.commandType,providerAck:true,actorUid:actor.uid,entity:movement,linkedAccount,updatedAt:ts},{merge:false});providerWrites++;
             return ack(command,{entityType:'financialMovement',entityId:movementId,movement,linkedAccount,providerWrites,idempotentReplay:false});
           }
+          if(command.commandType==='finance.account.create'){
+            const prior=await tx.get(receipt);
+            if(prior.exists){
+              const p=prior.data()||{};
+              if(str(p.commandDigest)!==digest)throw new Error('FINANCE_IDEMPOTENCY_REUSE_DIFFERENT_PAYLOAD');
+              if(p.status==='committed')return ack(command,{entityType:'financeAccount',entityId:p.entityId,account:p.entity||null,idempotentReplay:true,providerWrites:0});
+            }
+            const kind=str(command.payload?.kind).toLowerCase(),country=str(command.payload?.country||command.payload?.pais),currency=str(command.payload?.currency||command.payload?.moneda);
+            const amount=Math.abs(Number(command.payload?.amount??command.payload?.monto));
+            if(!['cxp','cxc'].includes(kind))throw new Error('FINANCE_ACCOUNT_KIND_INVALID');
+            if(!country||!currency)throw new Error('FINANCE_ACCOUNT_SCOPE_REQUIRED');
+            if(!Number.isFinite(amount)||amount<=0)throw new Error('FINANCE_ACCOUNT_AMOUNT_INVALID');
+            const projectSnap=await tx.get(project),projectData=projectSnap.exists?(projectSnap.data()||{}):{};
+            const configuredCurrency=str(projectData?.currency?.[country]||projectData?.currencies?.[country]);
+            if(configuredCurrency&&configuredCurrency!==currency)throw new Error('FINANCE_ACCOUNT_CURRENCY_SCOPE_CONFLICT');
+            const accountId=str(command.entityId)||('acct-'+sha(`${command.tenantId}\0${command.projectId}\0${command.periodId}\0${kind}\0${command.idempotencyKey}`).slice(0,28));
+            const accountRef=tenant.collection('financeAccounts').doc(accountId),accountSnap=await tx.get(accountRef);
+            if(accountSnap.exists)throw new Error('FINANCE_ACCOUNT_ALREADY_EXISTS');
+            const ts=now(),account={id:accountId,tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,kind,concepto:str(command.payload?.concepto||command.payload?.counterparty||'Cuenta'),counterparty:str(command.payload?.counterparty)||null,origin:str(command.payload?.origin||'manual'),pais:country,country,currency,moneda:currency,monto:amount,originalAmount:amount,saldo:amount,balance:amount,vence:str(command.payload?.dueDate||command.payload?.vence)||null,status:'open',sourceRef:`admin-entry:${receiptId(command)}`,createdBy:actor.uid,createdAt:ts,updatedAt:ts};
+            tx.create(accountRef,account);let providerWrites=1;
+            tx.set(audit,{tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,entityType:'financeAccount',entityId:accountId,commandType:command.commandType,actorUid:actor.uid,actorRole:actor.role,idempotencyKey:command.idempotencyKey,kind,createdAt:ts},{merge:false});providerWrites++;
+            tx.set(receipt,{status:'committed',commandDigest:digest,entityId:accountId,commandType:command.commandType,providerAck:true,actorUid:actor.uid,entity:account,updatedAt:ts},{merge:false});providerWrites++;
+            return ack(command,{entityType:'financeAccount',entityId:accountId,account,providerWrites,idempotentReplay:false});
+          }
           const prior=await tx.get(receipt);
           if(prior.exists){
             const p=prior.data()||{};
