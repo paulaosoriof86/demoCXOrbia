@@ -75,6 +75,9 @@ window.CX = window.CX || {};
     if(typeof D.getFinancialMovements !== 'function'){
       D.getFinancialMovements = function(input){ return call('getFinancialMovements', input); };
     }
+    if(typeof D.getFinanceAccounts !== 'function'){
+      D.getFinanceAccounts = function(input){ return call('getFinanceAccounts', input); };
+    }
     if(typeof D.getPaymentLots !== 'function'){
       D.getPaymentLots = function(input){ return call('getPaymentLots', input); };
     }
