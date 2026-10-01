@@ -41,26 +41,42 @@ gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" 
 
 BUILD_COUNT=1
 RUNTIME_DEPLOY_COUNT=1
-HOSTING_DEPLOY_COUNT=0
+HOSTING_DEPLOY_COUNT=1
 REUSED_EXISTING=false
-IMAGE_URI="gcr.io/${PROJECT}/${SERVICE}:prei4-v176-${PREI4_CONTENT001_SOURCE:0:12}-${GITHUB_RUN_ID}"
-echo "$IMAGE_URI" > "$PREI4_CONTENT001_OUT/image-uri.txt"
-gcloud builds submit "$SOURCE_DIR" --project "$PROJECT" --config "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE_URI" --quiet | tee "$PREI4_CONTENT001_OUT/runtime-build.log"
-VISIT_RECONCILIATION_CONCURRENCY="$(jq -r '.runtimeVisitReconciliationConcurrency // 16' "$CONFIG")"
-gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$IMAGE_URI" --min-instances=1 --max-instances=1 --update-env-vars "$LEGAL_ENABLE_NAME=$LEGAL_ENABLE_VALUE,$LEGAL_GATE_NAME=$LEGAL_GATE_VALUE,$I3_HR_CACHE_PIN_NAME=$I3_HR_CACHE_PIN_VALUE,CXORBIA_RECOVERY_SOURCE_SHA=$PREI4_CONTENT001_SOURCE,CXORBIA_VISIT_RECONCILIATION_CONCURRENCY=$VISIT_RECONCILIATION_CONCURRENCY" --quiet
-gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$PREI4_CONTENT001_OUT/runtime-after.json"
+CURRENT_SOURCE="$(jq -r '[.spec.template.spec.containers[0].env[]? | select(.name=="CXORBIA_RECOVERY_SOURCE_SHA") | .value][0] // empty' "$PREI4_CONTENT001_OUT/runtime-before.json")"
+HOSTING_MATCH=1
+while IFS= read -r p; do
+  rel="${p#app/}"; expected="$(git show "$PREI4_CONTENT001_SOURCE:$p"|sha256sum|awk '{print $1}')"
+  probe="$PREI4_CONTENT001_OUT/reuse_probe_$(echo "$rel"|tr '/' '_')"
+  if ! curl -fsSL --retry 3 --retry-delay 1 -H 'Cache-Control: no-cache, no-store, max-age=0' "$PREI4_CONTENT001_ROOT/$rel?prei4reuse=$GITHUB_RUN_ID-$(date +%s%N)" -o "$probe"; then HOSTING_MATCH=0; break; fi
+  actual="$(sha256sum "$probe"|awk '{print $1}')"
+  if [ "$actual" != "$expected" ]; then HOSTING_MATCH=0; break; fi
+done < <(jq -r '.expectedPendingFiles[] | select(startswith("app/"))' "$CONFIG")
+if [ "$CURRENT_SOURCE" = "$PREI4_CONTENT001_SOURCE" ] && [ "$HOSTING_MATCH" = 1 ]; then
+  BUILD_COUNT=0
+  RUNTIME_DEPLOY_COUNT=0
+  HOSTING_DEPLOY_COUNT=0
+  REUSED_EXISTING=true
+  cp "$PREI4_CONTENT001_OUT/runtime-before.json" "$PREI4_CONTENT001_OUT/runtime-after.json"
+  cp "$PREI4_CONTENT001_OUT/hosting-before.json" "$PREI4_CONTENT001_OUT/hosting-after.json"
+else
+  IMAGE_URI="gcr.io/${PROJECT}/${SERVICE}:prei4-v176-${PREI4_CONTENT001_SOURCE:0:12}-${GITHUB_RUN_ID}"
+  echo "$IMAGE_URI" > "$PREI4_CONTENT001_OUT/image-uri.txt"
+  gcloud builds submit "$SOURCE_DIR" --project "$PROJECT" --config "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE_URI" --quiet | tee "$PREI4_CONTENT001_OUT/runtime-build.log"
+  VISIT_RECONCILIATION_CONCURRENCY="$(jq -r '.runtimeVisitReconciliationConcurrency // 16' "$CONFIG")"
+  gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$IMAGE_URI" --min-instances=1 --max-instances=1 --update-env-vars "$LEGAL_ENABLE_NAME=$LEGAL_ENABLE_VALUE,$LEGAL_GATE_NAME=$LEGAL_GATE_VALUE,$I3_HR_CACHE_PIN_NAME=$I3_HR_CACHE_PIN_VALUE,CXORBIA_RECOVERY_SOURCE_SHA=$PREI4_CONTENT001_SOURCE,CXORBIA_VISIT_RECONCILIATION_CONCURRENCY=$VISIT_RECONCILIATION_CONCURRENCY" --quiet
+  gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$PREI4_CONTENT001_OUT/runtime-after.json"
+  cd "$SOURCE_DIR"
+  "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$PREI4_CONTENT001_OUT/hosting-deploy.log"
+  cd "$GITHUB_WORKSPACE"
+  TOKEN="$(gcloud auth print-access-token)"
+  curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$PREI4_CONTENT001_OUT/hosting-after.json"
+fi
 REV="$(jq -r '.status.latestReadyRevisionName // empty' "$PREI4_CONTENT001_OUT/runtime-after.json")"; test -n "$REV"
 gcloud run revisions describe "$REV" --project "$PROJECT" --region "$REGION" --format=json > "$PREI4_CONTENT001_OUT/runtime-revision.json"
 RAW="$(jq -r '.status.imageDigest // empty' "$PREI4_CONTENT001_OUT/runtime-revision.json")"
 if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else exit 1; fi
 URL="$(jq -r '.status.url // empty' "$PREI4_CONTENT001_OUT/runtime-after.json")"; test -n "$URL"
-
-cd "$SOURCE_DIR"
-"$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$PREI4_CONTENT001_OUT/hosting-deploy.log"
-cd "$GITHUB_WORKSPACE"
-HOSTING_DEPLOY_COUNT=1
-TOKEN="$(gcloud auth print-access-token)"
-curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$PREI4_CONTENT001_OUT/hosting-after.json"
 HOSTING_VERSION="$(jq -r '.release.version.name // empty' "$PREI4_CONTENT001_OUT/hosting-after.json")"; test -n "$HOSTING_VERSION"
 
 curl -fsS --retry 10 --retry-delay 3 "$URL/health" > "$PREI4_CONTENT001_OUT/health.json"
