@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_PROVIDER_RECONCILIATION_REPROOF_REQUIRED",
+  "status": "HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4_PROVIDER_RECONCILIATION_REPROOF",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Rematerialize Recovery DEV from productSourceSha 37681edd220578f4799b9420eda856cb37f46b5c after VRM-134 provider-concurrency fix; require same-revision shopper+visit providerAck, byte parity, Admin+Shopper live proof, then safe Paula/Pradera cleanup. Production remains DO_NOT_TOUCH.",
+  "exactNextAction": "Use the existing PRE-I4 CONTENT-001 Recovery DEV lane to reprove productSourceSha 37681edd220578f4799b9420eda856cb37f46b5c after VRM-134 provider-concurrency remediation. Require same-revision shopper+visit providerAck, byte parity, authenticated Admin+Shopper live proof, then safe Paula/Pradera cleanup. Production remains DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1798,8 +1798,9 @@
     "production": false,
     "providerFailureRemediation": {
       "classification": "PROVIDER_FAILURE",
+      "shopperAndVisitParallel": true,
       "visitReconciliationConcurrency": 16,
-      "shopperAndVisitParallel": true
+      "workflowCompatibilityState": "HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED"
     }
   }
 }
