@@ -25,7 +25,8 @@ const countryRef=code=>{const rows=periodVisits.filter(v=>String(v.pais||v.count
   finance:{realizedCount:realizedRows.length,honorarioDevengado:realizedRows.length?realizedRows.reduce((n,v)=>n+(Number.isFinite(Number(v.honorario))?Number(v.honorario):0),0):0,knownReimbursements:reimbursementValues.reduce((n,p)=>n+p.filter(Number.isFinite).reduce((a,b)=>a+b,0),0),reimbursementPartial:reimbursementValues.some(p=>p.some(x=>!Number.isFinite(x)))}
 };};
 const gtRef=countryRef('GT'),hnRef=countryRef('HN'),liqRows=periodVisits.filter(v=>facet(v).liquidationCandidate===true&&!facet(v).cancelled);
-const reference={countries:{GT:gtRef,HN:hnRef},finance:{GT:gtRef.finance,HN:hnRef.finance},liquidations:{total:liqRows.length,GT:liqRows.filter(v=>String(v.pais||v.country)==='GT').length,HN:liqRows.filter(v=>String(v.pais||v.country)==='HN').length,paymentsConfirmed:liqRows.filter(v=>facet(v).paymentConfirmed===true).length,liquidationsConfirmed:liqRows.filter(v=>facet(v).liquidationConfirmed===true).length},shopperPopulation:(Array.isArray(hrSnapshot.shoppers)?hrSnapshot.shoppers:[]).length,identityCases:[],unresolvedIdentityCases:[]};
+const hrShopperRows=Array.isArray(hrSnapshot.shoppers)?hrSnapshot.shoppers:[];
+const reference={countries:{GT:gtRef,HN:hnRef},finance:{GT:gtRef.finance,HN:hnRef.finance},liquidations:{total:liqRows.length,GT:liqRows.filter(v=>String(v.pais||v.country)==='GT').length,HN:liqRows.filter(v=>String(v.pais||v.country)==='HN').length,paymentsConfirmed:liqRows.filter(v=>facet(v).paymentConfirmed===true).length,liquidationsConfirmed:liqRows.filter(v=>facet(v).liquidationConfirmed===true).length},shopperPopulation:hrShopperRows.length,sourceHrShopperIds:hrShopperRows.map(x=>String(x.id||x.shopperId||'')).filter(Boolean),identityCases:[],unresolvedIdentityCases:[]};
 if(!/^[a-f0-9]{64}$/.test(hrRevision)||!/^cinepolis-20\d{2}-[01]\d$/.test(periodId)||periodVisits.length!==44)throw new Error('SOURCE_FAILURE:FOCAL_LIVE_HR_REFERENCE_INVALID:'+JSON.stringify({hrRevision,periodId,periodVisits:periodVisits.length}));
 const PREVIEW='YES_PAULA_20260628_PREVIEW_DEV',PROTECTED='YES_PAULA_20260730_PROTECTED_DEV',FULL='YES_PAULA_20260731_FULL_PROFILE_DEV';
 const URL=ROOT+'/index-backend-dev.html?cxBackendPreview='+PREVIEW+'&cxProjectId='+encodeURIComponent(projectId)+'&cxProtectedRuntime='+PROTECTED+'&cxHumanFullVisual='+FULL;
@@ -124,7 +125,7 @@ async function signInMember(member,kind,route,options={}){
       throw new Error((/Missing or insufficient permissions|permission-denied/i.test(msg)?'AUTH_FAILURE':'FUNCTIONAL_DEFECT')+':'+kind+'_ROUTE_'+r+':'+msg);
     }
     await page.waitForTimeout(550);
-    const info=await page.evaluate(({kind,r,identityCases,unresolvedIdentityCases,expectedHrShopperPopulation})=>{
+    const info=await page.evaluate(({kind,r,identityCases,unresolvedIdentityCases,sourceHrShopperIds})=>{
       const d=window.CX?.data||{},c=window.CX?.backendAuth?.context?.()||{},body=String(document.body?.innerText||'');
       const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
       const list=v=>Array.isArray(v)?v:[];
@@ -158,7 +159,7 @@ async function signInMember(member,kind,route,options={}){
         const sourceShopperId=String(ref.sourceShopperId||''),row=rowForSource(sourceShopperId),canonicalId=String(identityMap[sourceShopperId]||sourceShopperId);
         return {sourceShopperId,canonicalId,expectedReviewReason:String(ref.expectedReviewReason||''),expectedVisibleName:String(ref.expectedVisibleName||''),row:row?{id:String(row.id||row.shopperId||''),name:String(row.nombre||row.name||''),legacyLiveShopperIds:list(row.legacyLiveShopperIds).map(String),exactAliases:list(row.exactAliases).map(String),identityReviewRequired:row.identityReviewRequired===true,identityReviewReason:String(row.identityReviewReason||''),providerExactIdentityLink:row.__providerExactIdentityLink===true,providerIdentityAuthorityType:String(row.__providerIdentityAuthorityType||'').toLowerCase()}:null};
       });
-      const expectedCanonicalHrShopperPopulation=Number(expectedHrShopperPopulation||0);
+      const expectedCanonicalHrShopperPopulation=new Set(list(sourceHrShopperIds).map(id=>String(identityMap[String(id)]||id)).filter(Boolean)).size;
       const finance=r==='financiero'&&window.CX?.fin?.porPais?window.CX.fin.porPais(d):null;
       const liqs=r==='liquidaciones'&&window.CX?.liq?.forProject?window.CX.liq.forProject(d):null;
       const sid=String(c.shopperId||'');
@@ -240,7 +241,7 @@ async function signInMember(member,kind,route,options={}){
         shopperPopulation:r==='shoppers'?population.length:null,
         hrShopperPopulation:r==='shoppers'?hrPopulation.length:null,
         expectedCanonicalHrShopperPopulation:r==='shoppers'?expectedCanonicalHrShopperPopulation:null,
-        rawSemanticShopperReferences:r==='shoppers'?identityRows.length+unresolvedIdentityRows.length:null,
+        rawSemanticShopperReferences:r==='shoppers'?list(sourceHrShopperIds).length:null,
         authorizedPlatformShopperPopulation:r==='shoppers'?authorizedPlatformPopulation.length:null,
         untrustedPlatformShopperPopulation:r==='shoppers'?untrustedPlatformPopulation.length:null,
         technicalPrimaryCount,
@@ -257,7 +258,7 @@ async function signInMember(member,kind,route,options={}){
         mobileIdentity:(()=>{const el=document.getElementById('tbRoleIdentity');return el?{text:String(el.innerText||''),visible:getComputedStyle(el).display!=='none'}:null;})(),
         scrollWidth:document.documentElement.scrollWidth,innerWidth:window.innerWidth
       };
-    },{kind,r,identityCases:reference?.identityCases||[],unresolvedIdentityCases:reference?.unresolvedIdentityCases||[],expectedHrShopperPopulation:reference?.shopperPopulation||0});
+    },{kind,r,identityCases:reference?.identityCases||[],unresolvedIdentityCases:reference?.unresolvedIdentityCases||[],sourceHrShopperIds:reference?.sourceHrShopperIds||[]});
     if(pageErrors.length||info.debug||info.lab||info.blocked||info.technicalVisible||info.projectId!==projectId||info.periodId!==periodId||info.sourceRevision!==hrRevision||info.route!==r)throw new Error('FUNCTIONAL_DEFECT:'+kind+'_ROUTE_'+r+':'+JSON.stringify({pageErrors,info}));
     if(options.isMobile===true&&(info.scrollWidth>info.innerWidth+2||!info.mobileIdentity?.visible))throw new Error('VISUAL_DEFECT:'+kind+'_MOBILE_'+r+':'+JSON.stringify(info));
     if(r==='dashboard'){
