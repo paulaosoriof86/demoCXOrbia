@@ -18,9 +18,10 @@ function recalcCounts(source){const visits=source.visits||[],shoppers=source.sho
 function currentPeriodDescriptor(){
   const explicit=String(process.env.CXORBIA_EXPECTED_CURRENT_PERIOD||'').trim();
   const match=explicit.match(/^(20\d{2})-(0[1-9]|1[0-2])$/);
-  const now=new Date();
-  const year=match?Number(match[1]):now.getUTCFullYear();
-  const month=match?Number(match[2]):now.getUTCMonth()+1;
+  const timezone=process.env.CXORBIA_TENANT_TIMEZONE||'America/Guatemala';
+  const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:timezone,year:'numeric',month:'2-digit'}).formatToParts(new Date()).filter(p=>p.type!=='literal').map(p=>[p.type,p.value]));
+  const year=match?Number(match[1]):Number(parts.year);
+  const month=match?Number(match[2]):Number(parts.month);
   const yy=String(year).slice(-2),name=MONTH_NAMES[month-1];
   return {periodKey:`${year}-${String(month).padStart(2,'0')}`,tabs:[`${name} ${yy}`,`${name} ${yy} HN`]};
 }
