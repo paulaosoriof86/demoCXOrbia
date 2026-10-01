@@ -293,7 +293,12 @@ CX.module('movimientos', ({data,ui})=>{
   const draw=()=>{
     const isG=scope==='global';
     const per=canonMonth();
-    const movs=[...(isG||!_showFixtures?[]:seed),...CX.finStore.mov(pid()).filter(m=>!m.fecha||m.fecha.slice(0,7)===per)];
+    const localMovs=CX.finStore.mov(pid()).filter(m=>!m.fecha||m.fecha.slice(0,7)===per);
+    const movs=connectedFinance()&&!isG
+      ? durableMovements.filter(m=>String(m.projectId||canonicalProjectId())===canonicalProjectId()&&String(m.periodId||canonicalPeriodId)===String(canonicalPeriodId))
+      : [...(isG||!_showFixtures?[]:seed),...localMovs];
+    const cxpAccounts=connectedFinance()&&!isG?accountKind('cxp'):CX.finStore.cxp(pid());
+    const cxcAccounts=connectedFinance()&&!isG?accountKind('cxc'):CX.finStore.cxc(pid());
     /* R31 — agregación por MONEDA primero; los KPIs/tablas se derivan de aggByCur DESPUÉS de
        excluir pending_currency. No hay totales crudos multi-moneda previos. */
     const curOf=(m)=>currencyOf(m);
@@ -306,8 +311,8 @@ CX.module('movimientos', ({data,ui})=>{
       if(m.monto>0){ if(m.tipoIngreso==='financiamiento')bump(cu,'financiamiento',m.monto); else if(!m.noOperativo)bump(cu,'ingOper',m.monto); if(m.tipoIngreso==='remesa')bump(cu,'remesas',m.monto); }
       else bump(cu,'egr',m.monto);
       if((m.estado||'').includes('CxC'))bump(cu,'cxc',Math.abs(m.monto)); });
-    CX.finStore.cxp(pid()).forEach(r=>{const cu=currencyOf(r);if(cu===PENDING_CURRENCY){pendingCurrencyRows.push({kind:'cxp',r});return;}bump(cu,'cxp',r.saldo||0);});
-    CX.finStore.cxc(pid()).forEach(r=>{const cu=currencyOf(r);if(cu===PENDING_CURRENCY){pendingCurrencyRows.push({kind:'cxc',r});return;}bump(cu,'cxc',r.saldo||0);});
+    cxpAccounts.forEach(r=>{const cu=currencyOf(r);if(cu===PENDING_CURRENCY){pendingCurrencyRows.push({kind:'cxp',r});return;}bump(cu,'cxp',Number(r.balance??r.saldo)||0);});
+    cxcAccounts.forEach(r=>{const cu=currencyOf(r);if(cu===PENDING_CURRENCY){pendingCurrencyRows.push({kind:'cxc',r});return;}bump(cu,'cxc',Number(r.balance??r.saldo)||0);});
     const derivedLiqCxps=!isG?CX.liq.forProject(data).filter(l=>l.estado!=='pagada'&&l.estado!=='pagada_preview'&&!isFinancialReview(l)):[];
     const derivedLiqReviews=!isG?CX.liq.forProject(data).filter(l=>l.estado!=='pagada'&&l.estado!=='pagada_preview'&&isFinancialReview(l)):[];
     derivedLiqCxps.forEach(l=>{const cu=currencyOf(l);if(cu===PENDING_CURRENCY){pendingCurrencyRows.push({kind:'liq',r:l});return;}bump(cu,'cxp',l.total||0);});
