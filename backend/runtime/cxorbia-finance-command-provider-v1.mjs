@@ -225,6 +225,32 @@ export function createFinanceCommandProvider({auth,db,policy}={}){
             tx.set(receipt,{status:'committed',commandDigest:digest,entityId:accountId,commandType:command.commandType,providerAck:true,actorUid:actor.uid,entity:account,updatedAt:ts},{merge:false});providerWrites++;
             return ack(command,{entityType:'financeAccount',entityId:accountId,account,providerWrites,idempotentReplay:false});
           }
+          if(command.commandType==='finance.account.apply'){
+            const prior=await tx.get(receipt);
+            if(prior.exists){
+              const p=prior.data()||{};
+              if(str(p.commandDigest)!==digest)throw new Error('FINANCE_IDEMPOTENCY_REUSE_DIFFERENT_PAYLOAD');
+              if(p.status==='committed')return ack(command,{entityType:'financeAccount',entityId:p.entityId,account:p.entity||null,movement:p.movement||null,idempotentReplay:true,providerWrites:0});
+            }
+            const accountId=str(command.entityId||command.payload?.accountId),accountRef=tenant.collection('financeAccounts').doc(accountId),accountSnap=await tx.get(accountRef);
+            if(!accountSnap.exists)throw new Error('FINANCE_ACCOUNT_MISSING');
+            const account=accountSnap.data()||{};
+            if(str(account.tenantId||command.tenantId)!==str(command.tenantId)||str(account.projectId)!==str(command.projectId))throw new Error('FINANCE_ACCOUNT_SCOPE_CONFLICT');
+            const expected=str(command.expectedVersion),actual=str(versionOf(account));if(expected&&expected!=='source-current'&&expected!==actual)throw new Error('FINANCE_EXPECTED_VERSION_CONFLICT');
+            const amount=Math.abs(Number(command.payload?.amount??command.payload?.monto)),balance=Number(account.balance??account.saldo);
+            if(!Number.isFinite(amount)||amount<=0||!Number.isFinite(balance)||amount>balance)throw new Error('FINANCE_ACCOUNT_APPLY_AMOUNT_INVALID');
+            const kind=str(account.kind).toLowerCase();if(!['cxp','cxc'].includes(kind))throw new Error('FINANCE_ACCOUNT_KIND_INVALID');
+            const next=Math.max(0,balance-amount),ts=now(),movementId='acct-'+sha(`${accountId}\0${command.idempotencyKey}`).slice(0,30);
+            const movementRef=tenant.collection('financialMovements').doc(movementId),movementSnap=await tx.get(movementRef);if(movementSnap.exists)throw new Error('FINANCE_ACCOUNT_MOVEMENT_ALREADY_EXISTS');
+            const isReceivable=kind==='cxc';
+            const movement={id:movementId,tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,tipo:isReceivable?'ingreso':'egreso',tipoIngreso:isReceivable?'cobro_cxc':null,tipoEgreso:isReceivable?null:'abono_cxp',cat:(isReceivable?'Cobro CxC · ':'Abono CxP · ')+str(account.concepto),categoria:'Financiero',pais:str(account.pais||account.country),country:str(account.country||account.pais),currency:str(account.currency||account.moneda),moneda:str(account.moneda||account.currency),monto:isReceivable?amount:-amount,amount,revenueRecognized:false,operatingRevenue:false,cashCollection:isReceivable,sourceStatus:'confirmed',sourceRef:`finance-account:${accountId}`,accountId,fecha:str(command.payload?.fecha)||today(),desc:str(command.payload?.desc)||null,estado:'Confirmado',createdBy:actor.uid,createdAt:ts,updatedAt:ts};
+            const updated={...account,saldo:next,balance:next,status:next===0?'closed':'open',updatedAt:ts,version:Number(account.version||0)+1,lastMovementId:movementId};
+            tx.set(accountRef,{saldo:next,balance:next,status:updated.status,updatedAt:ts,version:updated.version,lastMovementId:movementId},{merge:true});
+            tx.create(movementRef,movement);let providerWrites=2;
+            tx.set(audit,{tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,entityType:'financeAccount',entityId:accountId,commandType:command.commandType,actorUid:actor.uid,actorRole:actor.role,idempotencyKey:command.idempotencyKey,movementId,amount,balanceBefore:balance,balanceAfter:next,createdAt:ts},{merge:false});providerWrites++;
+            tx.set(receipt,{status:'committed',commandDigest:digest,entityId:accountId,commandType:command.commandType,providerAck:true,actorUid:actor.uid,entity:updated,movement,updatedAt:ts},{merge:false});providerWrites++;
+            return ack(command,{entityType:'financeAccount',entityId:accountId,account:updated,movement,providerWrites,idempotentReplay:false});
+          }
           const prior=await tx.get(receipt);
           if(prior.exists){
             const p=prior.data()||{};
