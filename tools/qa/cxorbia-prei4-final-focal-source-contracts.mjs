@@ -28,7 +28,7 @@ add('VRM125_QUESTIONNAIRE_REQUEST',/<option value="cuestionario">Solicitar cuest
 add('VRM127_DURABLE_TARGETED_REQUEST',/pushDurable/.test(F.post)&&/shopperId:String\(post\.shopperId\)/.test(F.post)&&/idempotencyKey:\['admin-request'/.test(F.post));
 add('VRM129_REASSIGN_ELIGIBILITY',/candidateAudit/.test(F.post)&&/otro país/.test(F.post)&&/otro proyecto/.test(F.post)&&/fuera de alcance autorizado/.test(F.post));
 add('VRM130_TENANT_TIMEZONE',/CXORBIA_TENANT_TIMEZONE/.test(F.hr)&&/Intl\.DateTimeFormat/.test(F.hr)&&/CXORBIA_TENANT_TIMEZONE/.test(F.tabs));
-add('VRM133_SELF_REG_GEO_UI',/rgCountry/.test(F.app)&&/rgMunicip/.test(F.app)&&/rgCity/.test(F.app)&&/Completa país, municipio y ciudad/.test(F.app));
+add('VRM133_SELF_REG_GEO_UI',/rgPais/.test(F.app)&&/rgMunicipio/.test(F.app)&&/rgCiudad/.test(F.app)&&/Completa país, municipio y ciudad/.test(F.app));
 add('VRM133_BOUNDARY_AND_HR_EXEMPT',/SHOPPER_SELF_REGISTRATION_GEO_REQUIRED/.test(F.cmd)&&/sourceType!=='hr_external'/.test(F.cmd));
 add('VRM134_REFRESH_COALESCE',/Date\.now\(\)-appliedAt<30000/.test(F.bridge));
 add('VRM135_AUTHORIZED_SHELL',/hasAuthorizedShell/.test(F.auth)&&/if\(hasAuthorizedShell\)return/.test(F.auth));
