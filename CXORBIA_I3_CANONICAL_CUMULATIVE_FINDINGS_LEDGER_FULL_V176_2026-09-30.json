@@ -6529,6 +6529,30 @@
       },
       "productSourceChanged": false,
       "production": false
+    },
+    "VRM-141": {
+      "id": "VRM-141",
+      "classification": "AUTH_FAILURE",
+      "severity": "CONTROL_BLOCKER",
+      "title": "Final finance projection harness stopped at Firebase currentUser and did not restore CX backend auth context",
+      "state": "FIXED_CONTROL_REPROOF_REQUIRED",
+      "productDefect": false,
+      "observed": "Finance provider commands committed with providerAck=true and cleanup succeeded, but the projection gate timed out waiting for CX.backendAuth authenticated + financeReadBridge.",
+      "rootCause": "The finance harness did not perform the proven post-sign-in reload plus CX.backendAuth.ensureAuthenticated() sequence used by the already-passing browser focal.",
+      "correction": "Reuse the proven backend-auth restore sequence before waiting for the durable finance read bridge.",
+      "exactOwners": [
+        "tools/qa/cxorbia-prei4-final-focal-finance-live.mjs"
+      ],
+      "evidence": {
+        "runId": 36941158274,
+        "jobId": 110632772746,
+        "revenueProviderAck": true,
+        "httpStatus": 200,
+        "cleanup": true,
+        "timeout": "financeReadBridge_after_firebase_user"
+      },
+      "productSourceChanged": false,
+      "production": false
     }
   },
   "latestEvidenceOverrides": {
@@ -7085,7 +7109,7 @@
     ],
     "findingCount": 135,
     "expectedCurrentRange": "VRM-001..VRM-135",
-    "nextFindingId": "VRM-141",
+    "nextFindingId": "VRM-142",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_PREI4_PROVIDER_RECONCILIATION_REPROOF",
@@ -7117,7 +7141,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Run final-fast PRE-I4 Finance durable + Certification with transient-auth retry against the same canonical DEV source, reusing browser PASS run 36939433303 only if the HR revision remains unchanged.",
+  "exactNextAction": "Run final-fast PRE-I4 Finance durable + Certification with proven CX backend-auth restore sequence, same source and same HR revision guard; reuse browser PASS run 36939433303.",
   "supersedesGitBlob": "397a9cee8c71d3156567a0cc96bfdcba88bb7c3a",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -7146,16 +7170,15 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-141",
+  "nextFindingId": "VRM-142",
   "lastControlFailure": {
-    "id": "VRM-140",
-    "classification": "ENVIRONMENT_FAILURE",
-    "runId": 36940641485,
-    "jobId": 110631145379,
+    "id": "VRM-141",
+    "classification": "AUTH_FAILURE",
+    "runId": 36941158274,
+    "jobId": 110632772746,
     "owner": "tools/qa/cxorbia-prei4-final-focal-finance-live.mjs",
     "productDefect": false,
     "productSourceChanged": false,
-    "code": "auth/network-request-failed",
     "cleanup": true,
     "state": "FIXED_CONTROL_REPROOF_REQUIRED",
     "production": false
@@ -8502,7 +8525,7 @@
     "PREI4-CONTENT-001",
     "PREI4-CONTENT-002"
   ],
-  "preI4NextAction": "Run final-fast PRE-I4 Finance durable + Certification with transient-auth retry against the same canonical DEV source, reusing browser PASS run 36939433303 only if the HR revision remains unchanged.",
+  "preI4NextAction": "Run final-fast PRE-I4 Finance durable + Certification with proven CX backend-auth restore sequence, same source and same HR revision guard; reuse browser PASS run 36939433303.",
   "preI4Admin002": {
     "findingId": "PREI4-ADMIN-002",
     "state": "FIXED_PROVEN_RUN601",
