@@ -127,6 +127,8 @@ CX.shopperPostForm = function(data, p, v, ui){
     return {ok:reasons.length===0,reasons};
   };
   const dispValida = isIso(v.disponibleDesde);
+  const todayForInput=new Intl.DateTimeFormat('en-CA',{timeZone:String(p.timeZone||p.timezone||CX.tenantProfile?.timeZone||'America/Guatemala'),year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+  const minProposedDate=dispValida&&v.disponibleDesde>todayForInput?v.disponibleDesde:todayForInput;
   const franjaHelp = franjaCat==='weekend' ? 'fin de semana = sábado y domingo' : franjaCat==='weekday' ? 'semana = lunes a viernes' : 'franja pendiente de validación';
   ui.modal('📩 Enviar postulación', `
     <div style="background:var(--amber-bg);border-radius:10px;padding:10px 13px;margin-bottom:12px;font-size:12px;color:#8a5b00">${p.restriccion||'Confirma que cumples los requisitos del proyecto.'}</div>
@@ -140,7 +142,7 @@ CX.shopperPostForm = function(data, p, v, ui){
     </div>
     <div style="background:var(--amber-bg);border-radius:10px;padding:9px 12px;margin-bottom:14px;font-size:12px;color:#8a5b00">🗓️ Al postularte propones la fecha; el equipo la <b>autoriza y gestiona</b> desde Gestión de Postulaciones.</div>
     <label class="lbl">Fecha propuesta *</label>
-    <input class="inp" id="postDate" type="date" ${dispValida?`value="${v.disponibleDesde}" min="${v.disponibleDesde}"`:''} style="margin-bottom:6px">
+    <input class="inp" id="postDate" type="date" value="${minProposedDate}" min="${minProposedDate}" style="margin-bottom:6px">
     <div id="dateErr" style="font-size:11.5px;color:var(--red);margin-bottom:10px;display:none"></div>
     <div style="font-size:11px;color:var(--t3);margin-bottom:14px">Debe ser posterior a "Disponible a partir de" y en la franja correcta (${franjaHelp}).</div>
     <label class="lbl">¿Visitaste esta sucursal recientemente?</label>
