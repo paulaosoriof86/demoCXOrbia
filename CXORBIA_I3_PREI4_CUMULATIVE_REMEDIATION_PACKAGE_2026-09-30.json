@@ -1,16 +1,18 @@
 {
   "schemaVersion": "cxorbia.recovery.i3.prei4.cumulative-remediation-package.v1",
-  "frozenAt": "2026-10-01T02:20:00Z",
+  "frozenAt": "2026-10-01T02:24:00Z",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
-  "state": "READY_FOR_SINGLE_CODEX_REMEDIATION_PACKAGE",
+  "state": "READY_FOR_SINGLE_DIRECT_REMEDIATION_PACKAGE",
   "authority": {
     "controlBase": "6d42ec4e69d9c924d3542d3ec162eac0e60c18bb",
     "branch": "recovery/cxorbia-phase-a-20260831",
     "production": "DO_NOT_TOUCH",
-    "productWriter": "CODEX_ONLY",
+    "productWriter": "CHATGPT_DIRECT_PRIMARY_CR_20260910_02",
     "noParallelCandidate": true,
     "noOverlayMethodology": true,
-    "noReimport": true
+    "noReimport": true,
+    "codex": "OPTIONAL_EXCEPTION_ONLY_IF_PAULA_REQUESTS_OR_DIRECT_LANE_BLOCKED",
+    "executionSurface": "THIS_CHAT_PROJECT_DIRECT_GITHUB"
   },
   "scope": {
     "findings": "VRM-121..VRM-135",
