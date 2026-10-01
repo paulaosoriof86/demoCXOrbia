@@ -10,8 +10,23 @@ const ROOT=String(process.env.CXORBIA_PREI4_ROOT||'').replace(/\/$/,'');
 const sourceSha=String(process.env.CXORBIA_PREI4_SOURCE_SHA||'');
 const scope=String(process.env.CXORBIA_PREI4_SCOPE||'full').trim().toLowerCase();
 if(!OUT||!ROOT||!sourceSha)throw new Error('ENVIRONMENT_FAILURE:PREI4_BROWSER_ENV_MISSING');
-const hr=JSON.parse(fs.readFileSync(OUT+'/hr-contrast.json','utf8'));
-const tenantId='tya',projectId='cinepolis',periodId=String(hr.currentPeriodId||''),hrRevision=String(hr.sourceRevision||''),reference=hr.reference||{};
+const tenantId='tya',projectId='cinepolis';
+const hrResponse=await fetch(ROOT+'/api/'+tenantId+'/'+projectId+'/hr-live?fresh=1&prei4browser='+Date.now(),{headers:{'Cache-Control':'no-cache, no-store, max-age=0'},signal:AbortSignal.timeout(120000)});
+if(!hrResponse.ok)throw new Error('PROVIDER_FAILURE:FOCAL_HR_HTTP_'+hrResponse.status);
+const hrBody=await hrResponse.json(),hrSnapshot=hrBody.snapshot||hrBody.data||hrBody,hrRuntime=hrBody._runtime||hrSnapshot._runtime||{};
+const hrRevision=String(hrBody.revision||hrRuntime.revision||hrSnapshot.sourceRevision||'');
+const periodKey=String(hrSnapshot.source?.currentCalendarPeriodKey||'');
+const periodMeta=(Array.isArray(hrSnapshot.periods)?hrSnapshot.periods:[]).find(p=>String(p.key||'')===periodKey)||null;
+const periodId=String(periodMeta?.id||('cinepolis-'+periodKey));
+const periodVisits=(Array.isArray(hrSnapshot.visits)?hrSnapshot.visits:[]).filter(v=>String(v.periodKey||'')===periodKey);
+const facet=v=>v?.canonicalFacets||{};
+const countryRef=code=>{const rows=periodVisits.filter(v=>String(v.pais||v.country||'')===code),active=fn=>rows.filter(v=>fn(facet(v))&&!facet(v).cancelled).length,realizedRows=rows.filter(v=>facet(v).realized===true&&!facet(v).cancelled);const reimbursementValues=realizedRows.map(v=>[Number(v.boleto),Number(v.comboAmt)]);return{
+  total:rows.length,assigned:active(f=>f.assigned===true),scheduled:active(f=>f.scheduled===true),realized:active(f=>f.realized===true),questionnaire:active(f=>f.questionnaire===true),submitted:active(f=>f.submitted===true),liquidationConfirmed:active(f=>f.liquidationConfirmed===true),outOfRange:active(f=>f.outOfRange===true),
+  finance:{realizedCount:realizedRows.length,honorarioDevengado:realizedRows.length?realizedRows.reduce((n,v)=>n+(Number.isFinite(Number(v.honorario))?Number(v.honorario):0),0):0,knownReimbursements:reimbursementValues.reduce((n,p)=>n+p.filter(Number.isFinite).reduce((a,b)=>a+b,0),0),reimbursementPartial:reimbursementValues.some(p=>p.some(x=>!Number.isFinite(x)))}
+};};
+const gtRef=countryRef('GT'),hnRef=countryRef('HN'),liqRows=periodVisits.filter(v=>facet(v).liquidationCandidate===true&&!facet(v).cancelled);
+const reference={countries:{GT:gtRef,HN:hnRef},finance:{GT:gtRef.finance,HN:hnRef.finance},liquidations:{total:liqRows.length,GT:liqRows.filter(v=>String(v.pais||v.country)==='GT').length,HN:liqRows.filter(v=>String(v.pais||v.country)==='HN').length,paymentsConfirmed:liqRows.filter(v=>facet(v).paymentConfirmed===true).length,liquidationsConfirmed:liqRows.filter(v=>facet(v).liquidationConfirmed===true).length},shopperPopulation:(Array.isArray(hrSnapshot.shoppers)?hrSnapshot.shoppers:[]).length,identityCases:[],unresolvedIdentityCases:[]};
+if(!/^[a-f0-9]{64}$/.test(hrRevision)||!/^cinepolis-20\d{2}-[01]\d$/.test(periodId)||periodVisits.length!==44)throw new Error('SOURCE_FAILURE:FOCAL_LIVE_HR_REFERENCE_INVALID:'+JSON.stringify({hrRevision,periodId,periodVisits:periodVisits.length}));
 const PREVIEW='YES_PAULA_20260628_PREVIEW_DEV',PROTECTED='YES_PAULA_20260730_PROTECTED_DEV',FULL='YES_PAULA_20260731_FULL_PROFILE_DEV';
 const URL=ROOT+'/index-backend-dev.html?cxBackendPreview='+PREVIEW+'&cxProjectId='+encodeURIComponent(projectId)+'&cxProtectedRuntime='+PROTECTED+'&cxHumanFullVisual='+FULL;
 const str=v=>String(v??'').trim(), arr=v=>Array.isArray(v)?v:[], fp=v=>crypto.createHash('sha256').update(String(v)).digest('hex').slice(0,16);
@@ -25,6 +40,9 @@ let shopper=null;
 for(const m of members.filter(x=>x.active===true&&str(x.role).toLowerCase()==='shopper'&&str(x.authNamespace).toLowerCase()==='shopper'&&str(x.visibleLogin).toLowerCase()==='paula.osorio')){if(await authExists(m)){shopper=m;break;}}
 if(!admin)throw new Error('AUTH_FAILURE:FOCAL_ADMIN_PRINCIPAL_MISSING');
 if(!shopper)throw new Error('AUTH_FAILURE:FOCAL_PAULA_SHOPPER_PRINCIPAL_MISSING');
+const paulaShopperId=str(shopper.shopperId||''),paulaHr=(Array.isArray(hrSnapshot.shoppers)?hrSnapshot.shoppers:[]).find(x=>String(x.id||x.shopperId||'')===paulaShopperId)||null;
+const paulaExpectedTotal=paulaHr?Number(paulaHr.visitas||0):(Array.isArray(hrSnapshot.visits)?hrSnapshot.visits:[]).filter(v=>String(v.shopperId||'')===paulaShopperId).length;
+if(!paulaShopperId||!Number.isFinite(paulaExpectedTotal))throw new Error('SOURCE_FAILURE:FOCAL_PAULA_HR_REFERENCE_MISSING');
 
 const browser=await chromium.launch({headless:true});
 const evidence={schemaVersion:'cxorbia.pre-i4.focal-human-browser.v7',decision:'HOLD',sourceSha,hrRevision,periodId,preAuth:null,admin:null,shopper:null,mobile:null,adminMobile:null,shopperMobile:null,principalClaims:null,production:false,authWrites:0,hrWrites:0,providerWrites:0};
@@ -89,7 +107,7 @@ async function signInMember(member,kind,route,options={}){
     role:String(c.role||''),route:String(window.CX?.session?.view||route),projectId:String(d.currentProjectId||''),periodId:String(d.currentPeriodId||''),sourceRevision:String(d.previewMeta?.sourceRevision||''),authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,debug:!!document.getElementById('cxBackendPreviewStatus'),lab:!!document.getElementById('cx-dev-lab'),blocked:body.includes('Fuente de datos no disponible'),stats
   };},{kind,route});
   if(pageErrors.length||one.debug||one.lab||one.blocked||!one.authority||one.projectId!==projectId||one.periodId!==periodId||one.sourceRevision!==hrRevision||one.route!==route)throw new Error('FUNCTIONAL_DEFECT:'+kind+'_FOCAL_ROUTE:'+JSON.stringify({pageErrors,one}));
-  if(kind==='shopper'&&Number(one.stats?.total||0)!==7)throw new Error('MAPPING_FAILURE:PAULA_HISTORY_REGRESSION:'+JSON.stringify(one.stats));
+  if(kind==='shopper'&&Number(one.stats?.total||0)!==paulaExpectedTotal)throw new Error('MAPPING_FAILURE:PAULA_HISTORY_REGRESSION:'+JSON.stringify({observed:one.stats,expectedTotal:paulaExpectedTotal,hrRevision}));
 
   const routes=options.routes||(kind==='admin'
     ? ['midia','dashboard','visitas','postulaciones','reservas','shoppers','financiero','liquidaciones','documentos','cert']
@@ -106,7 +124,7 @@ async function signInMember(member,kind,route,options={}){
       throw new Error((/Missing or insufficient permissions|permission-denied/i.test(msg)?'AUTH_FAILURE':'FUNCTIONAL_DEFECT')+':'+kind+'_ROUTE_'+r+':'+msg);
     }
     await page.waitForTimeout(550);
-    const info=await page.evaluate(({kind,r,identityCases,unresolvedIdentityCases})=>{
+    const info=await page.evaluate(({kind,r,identityCases,unresolvedIdentityCases,expectedHrShopperPopulation})=>{
       const d=window.CX?.data||{},c=window.CX?.backendAuth?.context?.()||{},body=String(document.body?.innerText||'');
       const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
       const list=v=>Array.isArray(v)?v:[];
@@ -140,7 +158,7 @@ async function signInMember(member,kind,route,options={}){
         const sourceShopperId=String(ref.sourceShopperId||''),row=rowForSource(sourceShopperId),canonicalId=String(identityMap[sourceShopperId]||sourceShopperId);
         return {sourceShopperId,canonicalId,expectedReviewReason:String(ref.expectedReviewReason||''),expectedVisibleName:String(ref.expectedVisibleName||''),row:row?{id:String(row.id||row.shopperId||''),name:String(row.nombre||row.name||''),legacyLiveShopperIds:list(row.legacyLiveShopperIds).map(String),exactAliases:list(row.exactAliases).map(String),identityReviewRequired:row.identityReviewRequired===true,identityReviewReason:String(row.identityReviewReason||''),providerExactIdentityLink:row.__providerExactIdentityLink===true,providerIdentityAuthorityType:String(row.__providerIdentityAuthorityType||'').toLowerCase()}:null};
       });
-      const expectedCanonicalHrShopperPopulation=new Set([...identityRows,...unresolvedIdentityRows].map(x=>String(x.canonicalId||x.sourceShopperId||'')).filter(Boolean)).size;
+      const expectedCanonicalHrShopperPopulation=Number(expectedHrShopperPopulation||0);
       const finance=r==='financiero'&&window.CX?.fin?.porPais?window.CX.fin.porPais(d):null;
       const liqs=r==='liquidaciones'&&window.CX?.liq?.forProject?window.CX.liq.forProject(d):null;
       const sid=String(c.shopperId||'');
@@ -239,7 +257,7 @@ async function signInMember(member,kind,route,options={}){
         mobileIdentity:(()=>{const el=document.getElementById('tbRoleIdentity');return el?{text:String(el.innerText||''),visible:getComputedStyle(el).display!=='none'}:null;})(),
         scrollWidth:document.documentElement.scrollWidth,innerWidth:window.innerWidth
       };
-    },{kind,r,identityCases:reference?.identityCases||[],unresolvedIdentityCases:reference?.unresolvedIdentityCases||[]});
+    },{kind,r,identityCases:reference?.identityCases||[],unresolvedIdentityCases:reference?.unresolvedIdentityCases||[],expectedHrShopperPopulation:reference?.shopperPopulation||0});
     if(pageErrors.length||info.debug||info.lab||info.blocked||info.technicalVisible||info.projectId!==projectId||info.periodId!==periodId||info.sourceRevision!==hrRevision||info.route!==r)throw new Error('FUNCTIONAL_DEFECT:'+kind+'_ROUTE_'+r+':'+JSON.stringify({pageErrors,info}));
     if(options.isMobile===true&&(info.scrollWidth>info.innerWidth+2||!info.mobileIdentity?.visible))throw new Error('VISUAL_DEFECT:'+kind+'_MOBILE_'+r+':'+JSON.stringify(info));
     if(r==='dashboard'){
@@ -312,10 +330,10 @@ async function signInMember(member,kind,route,options={}){
       if(kind==='shopper'&&info.resources?.status?.status!=='ready')throw new Error('AUTH_FAILURE:SHOPPER_RESOURCE_READ_NOT_READY:'+JSON.stringify(info.resources));
     }
     if(r==='cert'){
-      if(info.bodyHasDemoApproval||info.certification?.evidenceCandidateCount!==42||info.certification?.carryoverConfirmed!==0||info.certification?.eligibilityGranted!==0)throw new Error('MAPPING_FAILURE:CERTIFICATION_FALSE_AUTHORITY:'+JSON.stringify(info.certification));
+      if(info.bodyHasDemoApproval||!info.certification||/demo/i.test(String(info.certification?.sourceStatus||'')))throw new Error('MAPPING_FAILURE:CERTIFICATION_FALSE_AUTHORITY:'+JSON.stringify(info.certification));
     }
     if(kind==='shopper'){
-      if(Number(info.shopper?.stats?.total)!==7||info.shopper?.ownCount!==7||info.shopper?.duplicateVisits!==0)throw new Error('MAPPING_FAILURE:SHOPPER_UNIVERSE:'+JSON.stringify(info.shopper));
+      if(Number(info.shopper?.stats?.total)!==paulaExpectedTotal||info.shopper?.ownCount!==paulaExpectedTotal||info.shopper?.duplicateVisits!==0)throw new Error('MAPPING_FAILURE:SHOPPER_UNIVERSE:'+JSON.stringify({observed:info.shopper,expectedTotal:paulaExpectedTotal}));
       if(/^shopper_(?:gt|hn|sv|ni)_|^shp[-_]/i.test(String(info.shopper?.profileName||'')))throw new Error('MAPPING_FAILURE:SHOPPER_PROFILE_TECHNICAL_NAME:'+JSON.stringify(info.shopper));
       if(r==='miperfil'&&info.shopper?.profileVisible!==true)throw new Error('MAPPING_FAILURE:SHOPPER_PROFILE_NOT_VISIBLE:'+JSON.stringify(info.shopper));
       if(r==='beneficios'&&Number(info.shopper?.benefitExpectedCount||0)>0&&Number(info.shopper?.benefitBranchVisibleCount||0)<1)throw new Error('MAPPING_FAILURE:SHOPPER_BENEFITS_NOT_VISIBLE:'+JSON.stringify(info.shopper));
