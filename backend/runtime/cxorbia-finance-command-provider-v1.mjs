@@ -49,17 +49,31 @@ function scopeAllowed(policy,command){
   return tenants.has(str(command.tenantId))&&(!projects.size||projects.has(str(command.projectId)));
 }
 function validateCommand(command={}){
-  const errors=[],type=str(command.commandType),reconcile=type==='finance.reconcile.visit';
+  const errors=[],type=str(command.commandType);
+  const entityByType={
+    'finance.reconcile.visit':'financeReconciliation',
+    'finance.payment.batch':'paymentBatch',
+    'finance.movement.create':'financialMovement',
+    'finance.account.create':'financeAccount',
+    'finance.account.apply':'financeAccount'
+  };
+  const permissionByType={
+    'finance.reconcile.visit':'finance.reconcile',
+    'finance.payment.batch':'finance.markPaid',
+    'finance.movement.create':'finance.movement.write',
+    'finance.account.create':'finance.account.write',
+    'finance.account.apply':'finance.account.apply'
+  };
   if(command.version!=='cxorbia-command-adapter-v1')errors.push('FINANCE_COMMAND_VERSION_INVALID');
   if(!COMMAND_TYPES.includes(type))errors.push('FINANCE_COMMAND_TYPE_INVALID');
-  if(str(command.entityType)!==(reconcile?'financeReconciliation':'paymentBatch'))errors.push('FINANCE_ENTITY_TYPE_INVALID');
+  if(str(command.entityType)!==entityByType[type])errors.push('FINANCE_ENTITY_TYPE_INVALID');
   if(!str(command.tenantId)||!str(command.projectId)||!str(command.periodId))errors.push('FINANCE_SCOPE_REQUIRED');
   if(!str(command.idempotencyKey))errors.push('FINANCE_IDEMPOTENCY_REQUIRED');
   if(command.expectedVersion===undefined||command.expectedVersion===null||command.expectedVersion==='')errors.push('FINANCE_EXPECTED_VERSION_REQUIRED');
-  const permission=reconcile?'finance.reconcile':'finance.markPaid';
-  if(command.authorization?.providerEnforcementRequired!==true||str(command.authorization?.permission)!==permission)errors.push('FINANCE_PROVIDER_PERMISSION_REQUIRED');
-  if(reconcile&&!str(command.payload?.visitId||command.entityId))errors.push('FINANCE_VISIT_ID_REQUIRED');
-  if(!reconcile&&!uniq(command.payload?.visitIds).length)errors.push('FINANCE_VISIT_IDS_REQUIRED');
+  if(command.authorization?.providerEnforcementRequired!==true||str(command.authorization?.permission)!==permissionByType[type])errors.push('FINANCE_PROVIDER_PERMISSION_REQUIRED');
+  if(type==='finance.reconcile.visit'&&!str(command.payload?.visitId||command.entityId))errors.push('FINANCE_VISIT_ID_REQUIRED');
+  if(type==='finance.payment.batch'&&!uniq(command.payload?.visitIds).length)errors.push('FINANCE_VISIT_IDS_REQUIRED');
+  if(type==='finance.account.apply'&&!str(command.entityId||command.payload?.accountId))errors.push('FINANCE_ACCOUNT_ID_REQUIRED');
   return {ok:errors.length===0,errors};
 }
 
