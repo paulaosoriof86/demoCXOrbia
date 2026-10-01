@@ -164,6 +164,43 @@ export function createFinanceCommandProvider({auth,db,policy}={}){
             tx.set(receipt,{status:'committed',commandDigest:digest,entityId:resolved.durableVisitId,commandType:command.commandType,providerAck:true,actorUid:actor.uid,financialMatch:match,updatedAt:now()},{merge:false});
             return ack(command,{entityType:'financeReconciliation',entityId:resolved.durableVisitId,financialMatch:match,providerWrites:3,idempotentReplay:false});
           }
+          if(command.commandType==='finance.movement.create'){
+            const prior=await tx.get(receipt);
+            if(prior.exists){
+              const p=prior.data()||{};
+              if(str(p.commandDigest)!==digest)throw new Error('FINANCE_IDEMPOTENCY_REUSE_DIFFERENT_PAYLOAD');
+              if(p.status==='committed')return ack(command,{entityType:'financialMovement',entityId:p.entityId,movement:p.entity||null,linkedAccount:p.linkedAccount||null,idempotentReplay:true,providerWrites:0});
+            }
+            const projectSnap=await tx.get(project),projectData=projectSnap.exists?(projectSnap.data()||{}):{};
+            const tipo=str(command.payload?.tipo).toLowerCase(),country=str(command.payload?.country||command.payload?.pais),currency=str(command.payload?.currency||command.payload?.moneda);
+            const amount=Math.abs(Number(command.payload?.amount??command.payload?.monto));
+            if(!['ingreso','egreso'].includes(tipo))throw new Error('FINANCE_MOVEMENT_TYPE_INVALID');
+            if(!country)throw new Error('FINANCE_MOVEMENT_COUNTRY_REQUIRED');
+            if(!currency)throw new Error('FINANCE_MOVEMENT_CURRENCY_REQUIRED');
+            if(!Number.isFinite(amount)||amount<=0)throw new Error('FINANCE_MOVEMENT_AMOUNT_INVALID');
+            const configuredCurrency=str(projectData?.currency?.[country]||projectData?.currencies?.[country]);
+            if(configuredCurrency&&configuredCurrency!==currency)throw new Error('FINANCE_MOVEMENT_CURRENCY_SCOPE_CONFLICT');
+            const tipoIngreso=str(command.payload?.tipoIngreso).toLowerCase(),tipoEgreso=str(command.payload?.tipoEgreso).toLowerCase();
+            const incomeTypes=new Set(['comisiones','honorarios','anticipo','facturacion','financiamiento','remesa','cobro_cxc']);
+            const expenseTypes=new Set(['honorarios_shopper','gasto','impuesto','abono_cxp','otro']);
+            if(tipo==='ingreso'&&!incomeTypes.has(tipoIngreso))throw new Error('FINANCE_INCOME_CLASSIFICATION_REQUIRED');
+            if(tipo==='egreso'&&!expenseTypes.has(tipoEgreso))throw new Error('FINANCE_EXPENSE_CLASSIFICATION_REQUIRED');
+            const revenueRecognized=tipo==='ingreso'&&['comisiones','honorarios','facturacion'].includes(tipoIngreso);
+            const nonOperating=tipo==='ingreso'&&tipoIngreso==='financiamiento';
+            const movementId=str(command.entityId)||('mov-'+sha(`${command.tenantId}\0${command.projectId}\0${command.periodId}\0${command.idempotencyKey}`).slice(0,28));
+            const movementRef=tenant.collection('financialMovements').doc(movementId),movementSnap=await tx.get(movementRef);
+            if(movementSnap.exists)throw new Error('FINANCE_MOVEMENT_ALREADY_EXISTS');
+            const ts=now(),movement={id:movementId,tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,tipo,tipoIngreso:tipo==='ingreso'?tipoIngreso:null,tipoEgreso:tipo==='egreso'?tipoEgreso:null,cat:str(command.payload?.cat||command.payload?.categoria||'Movimiento'),categoria:str(command.payload?.categoria),pais:country,country,currency,moneda:currency,monto:tipo==='ingreso'?amount:-amount,amount,revenueRecognized,operatingRevenue:revenueRecognized,nonOperating,sourceStatus:'confirmed',sourceRef:`admin-entry:${receiptId(command)}`,fecha:str(command.payload?.fecha)||today(),desc:str(command.payload?.desc||command.payload?.description),beneficiario:str(command.payload?.beneficiario)||null,estado:str(command.payload?.estado)||'Confirmado',createdBy:actor.uid,createdAt:ts,updatedAt:ts};
+            tx.create(movementRef,movement);let providerWrites=1,linkedAccount=null;
+            if(nonOperating){
+              const accountId='fin-'+sha(`${movementId}\0cxp`).slice(0,28),accountRef=tenant.collection('financeAccounts').doc(accountId);
+              linkedAccount={id:accountId,tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,kind:'cxp',concepto:str(command.payload?.concepto||command.payload?.cat||'Financiamiento'),origin:'financiamiento',sourceMovementId:movementId,pais:country,country,currency,moneda:currency,monto:amount,originalAmount:amount,saldo:amount,balance:amount,status:'open',createdBy:actor.uid,createdAt:ts,updatedAt:ts};
+              tx.create(accountRef,linkedAccount);providerWrites++;
+            }
+            tx.set(audit,{tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,entityType:'financialMovement',entityId:movementId,commandType:command.commandType,actorUid:actor.uid,actorRole:actor.role,idempotencyKey:command.idempotencyKey,revenueRecognized,nonOperating,createdAt:ts},{merge:false});providerWrites++;
+            tx.set(receipt,{status:'committed',commandDigest:digest,entityId:movementId,commandType:command.commandType,providerAck:true,actorUid:actor.uid,entity:movement,linkedAccount,updatedAt:ts},{merge:false});providerWrites++;
+            return ack(command,{entityType:'financialMovement',entityId:movementId,movement,linkedAccount,providerWrites,idempotentReplay:false});
+          }
           const prior=await tx.get(receipt);
           if(prior.exists){
             const p=prior.data()||{};
