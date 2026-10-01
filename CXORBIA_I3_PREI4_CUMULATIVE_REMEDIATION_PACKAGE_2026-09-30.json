@@ -2,7 +2,7 @@
   "schemaVersion": "cxorbia.recovery.i3.prei4.cumulative-remediation-package.v1",
   "frozenAt": "2026-10-01T02:24:00Z",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
-  "state": "READY_FOR_SINGLE_DIRECT_REMEDIATION_PACKAGE",
+  "state": "SOURCE_PROVEN_READY_FOR_SINGLE_DEV_MATERIALIZATION",
   "authority": {
     "controlBase": "6d42ec4e69d9c924d3542d3ec162eac0e60c18bb",
     "branch": "recovery/cxorbia-phase-a-20260831",
@@ -138,6 +138,14 @@
   "acceptance": {
     "successState": "GO_I3_PREI4_HUMAN_RETEST_READY",
     "onFailure": "Classify only with existing Recovery taxonomy, repair within I3 and repeat focal gate. No new methodology/candidate/workflow/reimport.",
-    "i4Authorization": "NOT_REQUESTED"
+    "i4Authorization": "NOT_REQUESTED",
+    "currentState": "SOURCE_PROVEN_PENDING_SINGLE_DEV_MATERIALIZATION"
+  },
+  "sourceSuccessor": {
+    "sha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+    "tree": "eba01186660acc5140773828e0e3048a0ec876c6",
+    "predecessor": "f769041ddd6adacb5bb16b0eeddab7d08b47a7e8",
+    "proof": "PASS_PREI4_VRM121_135_SOURCE_STATIC",
+    "testsPassed": 27
   }
 }

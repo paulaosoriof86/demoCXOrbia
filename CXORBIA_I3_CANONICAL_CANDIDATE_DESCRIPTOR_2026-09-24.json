@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_CUMULATIVE_REMEDIATION_REQUIRED",
-  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4_HUMAN_VISUAL_REMEDIATION",
+  "status": "HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4_SINGLE_DEV_MATERIALIZATION",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "f769041ddd6adacb5bb16b0eeddab7d08b47a7e8",
-  "productTreeAuthority": "d83f57ed07ef684cd274d4b1db3a52d91f4ff400",
-  "predecessorProductSourceSha": "f6c3bb6c038a77eee9cbca8bfbfd1096bfd48cbc",
+  "productSourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+  "productTreeAuthority": "eba01186660acc5140773828e0e3048a0ec876c6",
+  "predecessorProductSourceSha": "f769041ddd6adacb5bb16b0eeddab7d08b47a7e8",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "592c9253eeabe76ed672bbf4ba5b6b3e49bfc18a",
+  "findingsLedgerExpectedGitBlob": "baf3690a15e226443f3f8e9c59137ee3d16e32ca",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "PRE_I4_CUMULATIVE_P0_REMEDIATION",
+  "activeBlocker": "PRE_I4_SINGLE_DEV_MATERIALIZATION_AND_LIVE_REPROOF",
   "nextFindingId": "VRM-136",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Execute one cumulative I3 remediation package covering VRM-121..VRM-135 without reopening frozen PASS surfaces. Finance must be rewired to durable provider-backed movements/CxP/CxC and one canonical read model; self-registration must require country+municipality+city but HR auto-upsert must not; login/session restore and HR refresh must become non-blocking and route-preserving. Then run focal source tests, authenticated Admin+Shopper live tests, safe Paula/Pradera test-overlay cleanup, and a shortened human retest only on changed flows. Production remains DO_NOT_TOUCH.",
+  "exactNextAction": "Materialize exactly productSourceSha 7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5 to Recovery DEV once, run cumulative source guard and authenticated Admin+Shopper focal live tests, then safe Paula/Pradera cleanup and shortened human retest. Production remains DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1785,6 +1785,16 @@
       "Benefits displayed arithmetic"
     ],
     "testCleanupRequired": true,
+    "production": false
+  },
+  "preI4CumulativeRemediation": {
+    "sourceSuccessorSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+    "sourceSuccessorTree": "eba01186660acc5140773828e0e3048a0ec876c6",
+    "predecessorSha": "f769041ddd6adacb5bb16b0eeddab7d08b47a7e8",
+    "sourceProof": "PASS_PREI4_VRM121_135_SOURCE_STATIC",
+    "sourceTestsPassed": 27,
+    "blockingFindings": "VRM-121..VRM-135 excluding non-blocking VRM-131",
+    "state": "SOURCE_PROVEN_PENDING_SINGLE_DEV_MATERIALIZATION",
     "production": false
   }
 }

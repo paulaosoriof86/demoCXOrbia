@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 : "${PREI4_CONTENT001_SOURCE:?}" "${PREI4_CONTENT001_TREE:?}" "${PREI4_CONTENT001_OUT:?}" "${PREI4_CONTENT001_ROOT:?}"
-test "$PREI4_CONTENT001_SOURCE" = "c1c4e748b39c5632e8648023433a00c15d57191b"
-test "$PREI4_CONTENT001_TREE" = "ccb3d9da3c110e2d5fff57bae0d2d0eb76b3c4b4"
+CONFIG="CXORBIA_PREI4_V176_REPROOF_CONFIG_2026-09-30.json"
+test "$(jq -r '.sourceSha' "$CONFIG")" = "$PREI4_CONTENT001_SOURCE"
+test "$(jq -r '.sourceTree' "$CONFIG")" = "$PREI4_CONTENT001_TREE"
 test "$(git rev-parse "$PREI4_CONTENT001_SOURCE^{tree}")" = "$PREI4_CONTENT001_TREE"
 mkdir -p "$PREI4_CONTENT001_OUT"
 
@@ -11,15 +12,18 @@ export CUM_BASE="c487449e5187d7219033c54fa1ac3db5fb6c822e"
 export CUM_LEDGER="CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json"
 export CUM_MATRIX="RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json"
 export CUM_OUT="$PREI4_CONTENT001_OUT/source-guard"
-export CUM_EXPECTED_DELTA_JSON='["app/adapters/cxorbia-canonical-write-firewall-v1.js","app/adapters/cxorbia-command-adapter-v1.js","app/adapters/cxorbia-cxdata-command-boundary-v1.js","app/adapters/cxorbia-provider-identity-link-runtime-v1.js","app/adapters/cxorbia-shopper-admin-command-contract-v1.js","app/adapters/tya-c6-unified-human-runtime-v1.js","app/adapters/tya-canonical-finance-read-model-v2.js","app/adapters/tya-canonical-shopper-portal-v2.js","app/adapters/tya-live-source-inplace-apply.js","app/adapters/tya-protected-auth-hr-authority-bridge-v2.js","app/core/backend-browser-auth.js","app/core/router.js","app/modules/beneficios.js","app/modules/cuestionario-shopper.js","app/modules/finanzas.js","app/modules/midia.js","app/modules/misvisitas.js","app/modules/operacion-extra.js","app/modules/postulaciones.js","app/modules/proyectos.js","app/modules/reservas.js","app/modules/shoppers.js","app/modules/visitas.js","backend/runtime/cxorbia-finance-command-provider-v1.mjs","backend/runtime/cxorbia-shopper-command-provider-v1.mjs","backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs","backend/runtime/hr-live-service/server.mjs","backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs","backend/runtime/hr-live-service/test/cxorbia-prei4-project-questionnaire-config.test.mjs","backend/runtime/hr-live-service/test/cxorbia-prei4-shopper-progressive-route.test.mjs"]'
-export CUM_ALLOWED_PENDING_MODULES_JSON='["auth-protected-data-runtime","benefits","canonical-hr-state-adapters","core-config-data-router-permissions","dashboard-operation","finance-core-liquidation-costs","human-runtime-domain-consistency","identity-membership-roll-forward","persistence-command-ack-boundary","phase-a-supporting-core","projects-periods-hr-source-wizard-multiproject","questionnaire-shopper","reports-admin-shopper","shoppers-mi-visitas-profile","visits-review-postulations-reservations"]'
-export CUM_EXPECTED_PENDING_FILES_JSON='["app/adapters/cxorbia-canonical-write-firewall-v1.js","app/adapters/cxorbia-command-adapter-v1.js","app/adapters/cxorbia-cxdata-command-boundary-v1.js","app/adapters/cxorbia-provider-identity-link-runtime-v1.js","app/adapters/cxorbia-shopper-admin-command-contract-v1.js","app/adapters/tya-c6-unified-human-runtime-v1.js","app/adapters/tya-canonical-finance-read-model-v2.js","app/adapters/tya-canonical-shopper-portal-v2.js","app/adapters/tya-live-source-inplace-apply.js","app/adapters/tya-protected-auth-hr-authority-bridge-v2.js","app/core/backend-browser-auth.js","app/core/router.js","app/modules/beneficios.js","app/modules/cuestionario-shopper.js","app/modules/finanzas.js","app/modules/midia.js","app/modules/misvisitas.js","app/modules/operacion-extra.js","app/modules/postulaciones.js","app/modules/proyectos.js","app/modules/reservas.js","app/modules/shoppers.js","app/modules/visitas.js","backend/runtime/cxorbia-finance-command-provider-v1.mjs","backend/runtime/cxorbia-shopper-command-provider-v1.mjs","backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs","backend/runtime/hr-live-service/server.mjs"]'
-export CUM_ALLOWED_POST002_SUCCESSOR_OWNERS_JSON='["app/modules/misvisitas.js","app/modules/postulaciones.js"]'
-export CUM_ALLOWED_ADMIN003_SUCCESSOR_OWNERS_JSON='["app/modules/shoppers.js","backend/runtime/cxorbia-shopper-command-provider-v1.mjs"]'
+export CUM_EXPECTED_DELTA_JSON="$(jq -c '.expectedDelta' "$CONFIG")"
+export CUM_ALLOWED_PENDING_MODULES_JSON="$(jq -c '.allowedPendingModules' "$CONFIG")"
+export CUM_EXPECTED_PENDING_FILES_JSON="$(jq -c '.expectedPendingFiles' "$CONFIG")"
+export CUM_ALLOWED_HR008_SUCCESSOR_OWNERS_JSON="$(jq -c '.allowedHr008SuccessorOwners // []' "$CONFIG")"
+export CUM_ALLOWED_POST002_SUCCESSOR_OWNERS_JSON="$(jq -c '.allowedPost002SuccessorOwners' "$CONFIG")"
+export CUM_ALLOWED_ADMIN003_SUCCESSOR_OWNERS_JSON="$(jq -c '.allowedAdmin003SuccessorOwners' "$CONFIG")"
 mkdir -p "$CUM_OUT"
 node tools/qa/cxorbia-prei4-cumulative-regression-source-guard.mjs | tee "$CUM_OUT/console.log"
 test "$(jq -r '.decision' "$CUM_OUT/result.json")" = "PASS_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD"
-for p in app/adapters/cxorbia-canonical-write-firewall-v1.js app/adapters/cxorbia-command-adapter-v1.js app/adapters/cxorbia-cxdata-command-boundary-v1.js app/adapters/cxorbia-provider-identity-link-runtime-v1.js app/adapters/cxorbia-shopper-admin-command-contract-v1.js app/adapters/tya-c6-unified-human-runtime-v1.js app/adapters/tya-canonical-finance-read-model-v2.js app/adapters/tya-canonical-shopper-portal-v2.js app/adapters/tya-live-source-inplace-apply.js app/adapters/tya-protected-auth-hr-authority-bridge-v2.js app/core/backend-browser-auth.js app/core/router.js app/modules/beneficios.js app/modules/cuestionario-shopper.js app/modules/finanzas.js app/modules/midia.js app/modules/misvisitas.js app/modules/operacion-extra.js app/modules/postulaciones.js app/modules/proyectos.js app/modules/reservas.js app/modules/shoppers.js app/modules/visitas.js backend/runtime/cxorbia-finance-command-provider-v1.mjs backend/runtime/cxorbia-shopper-command-provider-v1.mjs backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs backend/runtime/hr-live-service/server.mjs; do node --check "$p"; done
+while IFS= read -r p; do
+  case "$p" in *.js|*.mjs) node --check "$p" ;; esac
+done < <(jq -r '.expectedPendingFiles[]' "$CONFIG")
 node backend/runtime/hr-live-service/test/cxorbia-prei4-project-questionnaire-config.test.mjs
 node backend/runtime/hr-live-service/test/cxorbia-prei4-shopper-progressive-route.test.mjs
 
@@ -61,18 +65,18 @@ HOSTING_VERSION="$(jq -r '.release.version.name // empty' "$PREI4_CONTENT001_OUT
 curl -fsS --retry 10 --retry-delay 3 "$URL/health" > "$PREI4_CONTENT001_OUT/health.json"
 jq -e '.ok==true and .production==false and .hrWrites==false' "$PREI4_CONTENT001_OUT/health.json" >/dev/null
 
-for p in app/adapters/cxorbia-canonical-write-firewall-v1.js app/adapters/cxorbia-command-adapter-v1.js app/adapters/cxorbia-cxdata-command-boundary-v1.js app/adapters/cxorbia-provider-identity-link-runtime-v1.js app/adapters/cxorbia-shopper-admin-command-contract-v1.js app/adapters/tya-c6-unified-human-runtime-v1.js app/adapters/tya-canonical-finance-read-model-v2.js app/adapters/tya-canonical-shopper-portal-v2.js app/adapters/tya-live-source-inplace-apply.js app/adapters/tya-protected-auth-hr-authority-bridge-v2.js app/core/backend-browser-auth.js app/core/router.js app/modules/beneficios.js app/modules/cuestionario-shopper.js app/modules/finanzas.js app/modules/midia.js app/modules/misvisitas.js app/modules/operacion-extra.js app/modules/postulaciones.js app/modules/proyectos.js app/modules/reservas.js app/modules/shoppers.js app/modules/visitas.js; do
+while IFS= read -r p; do
   rel="${p#app/}"; remote="$PREI4_CONTENT001_OUT/served_$(echo "$rel"|tr '/' '_')"
   expected="$(git show "$PREI4_CONTENT001_SOURCE:$p"|sha256sum|awk '{print $1}')"
   parity=0
   for attempt in $(seq 1 15); do
-    curl -fsSL --retry 5 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$PREI4_CONTENT001_ROOT/$rel?content002=$GITHUB_RUN_ID-$attempt-$(date +%s%N)" -o "$remote"
+    curl -fsSL --retry 5 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$PREI4_CONTENT001_ROOT/$rel?prei4recovery=$GITHUB_RUN_ID-$attempt-$(date +%s%N)" -o "$remote"
     actual="$(sha256sum "$remote"|awk '{print $1}')"
     if [ "$actual" = "$expected" ]; then parity=1; break; fi
     sleep 4
   done
   test "$parity" = 1
-done
+done < <(jq -r '.expectedPendingFiles[] | select(startswith("app/"))' "$CONFIG")
 
 curl -fsS -H 'Cache-Control: no-cache, no-store, max-age=0' "$PREI4_CONTENT001_ROOT/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&fresh=1&v176fresh=$GITHUB_RUN_ID-$(date +%s%N)" > "$PREI4_CONTENT001_OUT/hr-fresh.json"
 jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .refreshError==null and .hrWrites==false and .production==false and (.cacheMs|tonumber)<=15000' "$PREI4_CONTENT001_OUT/hr-fresh.json" >/dev/null

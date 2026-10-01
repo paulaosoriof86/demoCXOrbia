@@ -2,7 +2,7 @@
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v114",
   "frozenAt": "2026-09-30T02:41:00Z",
   "status": "HOLD",
-  "iteration": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4_SINGLE_DEV_MATERIALIZATION",
   "microblockId": "PRE-I4-LIVE-HR-STALE-CACHE-MAPPING-HOLD-AUGUST-CANONICAL-CORRECTION",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -14,11 +14,16 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "f769041ddd6adacb5bb16b0eeddab7d08b47a7e8",
-    "sourceTree": "d83f57ed07ef684cd274d4b1db3a52d91f4ff400",
-    "predecessorSha": "f6c3bb6c038a77eee9cbca8bfbfd1096bfd48cbc",
+    "sourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+    "sourceTree": "eba01186660acc5140773828e0e3048a0ec876c6",
+    "predecessorSha": "f769041ddd6adacb5bb16b0eeddab7d08b47a7e8",
     "production": false,
-    "state": "SOURCE_PROVEN_READY_RUNTIME_ONLY_REMATERIALIZATION"
+    "state": "SOURCE_PROVEN_PENDING_SINGLE_DEV_MATERIALIZATION",
+    "sourceProof": {
+      "decision": "PASS_PREI4_VRM121_135_SOURCE_STATIC",
+      "testsPassed": 27,
+      "controlWriter": "CHATGPT_DIRECT_PRIMARY_CR_20260910_02"
+    }
   },
   "rootCauseIds": [
     "RC-MONO-01_MULTIPLE_EXECUTABLE_PRODUCT_SOURCE_AUTHORITIES",
@@ -5643,7 +5648,7 @@
       "classification": "MAPPING_FAILURE",
       "severity": "P0",
       "title": "Dashboard assignment KPIs are contaminated by a platform test assignment instead of remaining tied to the same external HR revision",
-      "state": "OPEN_PROVEN_VISUAL_AND_LIVE_SOURCE",
+      "state": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
       "rootCause": "The fresh external HR revision still has two unassigned/available visits (GT MC. Pradera Zacapa and HN C. Mall Premier Juticalpa), but the DEV UI composes Paula's platform-side Pradera assignment into Dashboard assignment buckets. This makes assignment KPIs describe a mixed object while other KPIs remain HR-derived, violating the same-revision KPI contract.",
       "evidence": {
         "sourceRevision": "a30b5e69b73cab9071e203e084129593d837c9d316fdfca295b2173efe701b17",
@@ -5704,14 +5709,35 @@
         "app/modules/dashboard.js",
         "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
       ],
-      "production": false
+      "production": false,
+      "sourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+      "sourceTree": "eba01186660acc5140773828e0e3048a0ec876c6",
+      "sourceFixFiles": [
+        "app/modules/dashboard.js",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+      ],
+      "sourceFix": {
+        "sourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+        "sourceTree": "eba01186660acc5140773828e0e3048a0ec876c6",
+        "owners": [
+          "app/modules/dashboard.js",
+          "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+        ],
+        "productOwners": [
+          "app/modules/dashboard.js",
+          "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+        ],
+        "proof": "PASS_PREI4_VRM121_135_SOURCE_STATIC",
+        "testsPassed": 27,
+        "production": false
+      }
     },
     "VRM-122": {
       "id": "VRM-122",
       "classification": "MAPPING_FAILURE",
       "severity": "P0",
       "title": "Reservation availability is not consistently constrained to the same live canonical availability set and future reservation window",
-      "state": "OPEN_PROVEN_VISUAL_REQUIRES_OWNER_REPLAY",
+      "state": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
       "rootCause": "The source code intends to expose only canonical available/unassigned visits, yet Paula was able to request C. Miraflores, a branch whose September HR row(s) are already realized/submitted. Therefore the rendered reservation candidate set was not the same current live availability truth used by the fresh HR revision. The future-reservation policy is also not encoded: current-month live available opportunities belong to Visitas disponibles, while Reservas is for next fortnight/future period planning.",
       "evidence": {
         "sourceRevision": "a30b5e69b73cab9071e203e084129593d837c9d316fdfca295b2173efe701b17",
@@ -5745,14 +5771,35 @@
         "app/modules/reservas.js",
         "app/core/data.js"
       ],
-      "production": false
+      "production": false,
+      "sourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+      "sourceTree": "eba01186660acc5140773828e0e3048a0ec876c6",
+      "sourceFixFiles": [
+        "app/modules/reservas.js",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+      ],
+      "sourceFix": {
+        "sourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+        "sourceTree": "eba01186660acc5140773828e0e3048a0ec876c6",
+        "owners": [
+          "app/modules/reservas.js",
+          "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+        ],
+        "productOwners": [
+          "app/modules/reservas.js",
+          "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+        ],
+        "proof": "PASS_PREI4_VRM121_135_SOURCE_STATIC",
+        "testsPassed": 27,
+        "production": false
+      }
     },
     "VRM-123": {
       "id": "VRM-123",
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Postulation lifecycle does not yet enforce present-date validity and one authoritative transition from application to assignment",
-      "state": "OPEN_PROVEN_VISUAL_AND_SOURCE",
+      "state": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
       "rootCause": "Postulation date validation checks availability/window/franja but does not reject a proposed date that is already in the past relative to the tenant-local operational date. Separately, approval can persist application status while assignment remains pending HR, leaving the shopper simultaneously represented as an approved application and an active assigned visit; cancellation/refresh can also resurrect stale counters from durable records.",
       "evidence": {
         "pastDateAccepted": "2026-09-26 while visual review occurred 2026-09-30 local",
@@ -5766,14 +5813,38 @@
         "app/modules/postulaciones.js",
         "app/core/data.js"
       ],
-      "production": false
+      "production": false,
+      "sourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+      "sourceTree": "eba01186660acc5140773828e0e3048a0ec876c6",
+      "sourceFixFiles": [
+        "app/modules/visita-detalle.js",
+        "app/modules/postulaciones.js",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+      ],
+      "sourceFix": {
+        "sourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+        "sourceTree": "eba01186660acc5140773828e0e3048a0ec876c6",
+        "owners": [
+          "app/modules/visita-detalle.js",
+          "app/modules/postulaciones.js",
+          "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+        ],
+        "productOwners": [
+          "app/modules/visita-detalle.js",
+          "app/modules/postulaciones.js",
+          "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+        ],
+        "proof": "PASS_PREI4_VRM121_135_SOURCE_STATIC",
+        "testsPassed": 27,
+        "production": false
+      }
     },
     "VRM-124": {
       "id": "VRM-124",
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Successful and failed writes force full-page reload / authority recomposition and lose the user's current route",
-      "state": "OPEN_ROOT_CAUSE_PROVEN",
+      "state": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
       "rootCause": "reservas.js contains multiple setTimeout(()=>location.reload(),180) calls after create/delete/status/reassign/cross actions. Other workflows call CX.backend.refresh(), whose protected-HR wrapper marks authority unapplied and schedules a full recomposition. This explains the repeated return to Mi Día/profile exit and visible 'cargando autoridad viva'. The fresh HR provider read itself completed in 3826 ms, so multi-minute UI stalls cannot be attributed solely to the live HR source.",
       "evidence": {
         "freshProviderRefreshDurationMs": 3826,
@@ -5792,14 +5863,38 @@
         "app/modules/postulaciones.js",
         "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
       ],
-      "production": false
+      "production": false,
+      "sourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+      "sourceTree": "eba01186660acc5140773828e0e3048a0ec876c6",
+      "sourceFixFiles": [
+        "app/modules/reservas.js",
+        "app/modules/postulaciones.js",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+      ],
+      "sourceFix": {
+        "sourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+        "sourceTree": "eba01186660acc5140773828e0e3048a0ec876c6",
+        "owners": [
+          "app/modules/reservas.js",
+          "app/modules/postulaciones.js",
+          "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+        ],
+        "productOwners": [
+          "app/modules/reservas.js",
+          "app/modules/postulaciones.js",
+          "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+        ],
+        "proof": "PASS_PREI4_VRM121_135_SOURCE_STATIC",
+        "testsPassed": 27,
+        "production": false
+      }
     },
     "VRM-125": {
       "id": "VRM-125",
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Scheduling management mixes completed visits with active scheduling and does not preserve/validate the proposed date end-to-end",
-      "state": "OPEN_ROOT_CAUSE_PARTIALLY_PROVEN",
+      "state": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
       "rootCause": "Gestión de agendamientos is built from data.visitas().filter(v=>v.agendada&&v.shopperId), which includes realized/submitted visits. Shopper scheduling defaults to disponibleDesde/today and sends setVisitState without first constraining the date to the canonical measurement window/franja/proposed application date; the observed confirmation then failed. Admin 'Pedir al shopper' lacks a questionnaire action and uses internal notification semantics.",
       "evidence": {
         "codeAgendadasFilter": "v.agendada && v.shopperId",
@@ -5813,14 +5908,38 @@
         "app/modules/postulaciones.js",
         "app/modules/misvisitas.js"
       ],
-      "production": false
+      "production": false,
+      "sourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+      "sourceTree": "eba01186660acc5140773828e0e3048a0ec876c6",
+      "sourceFixFiles": [
+        "app/modules/postulaciones.js",
+        "app/modules/misvisitas.js",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+      ],
+      "sourceFix": {
+        "sourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+        "sourceTree": "eba01186660acc5140773828e0e3048a0ec876c6",
+        "owners": [
+          "app/modules/postulaciones.js",
+          "app/modules/misvisitas.js",
+          "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+        ],
+        "productOwners": [
+          "app/modules/postulaciones.js",
+          "app/modules/misvisitas.js",
+          "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+        ],
+        "proof": "PASS_PREI4_VRM121_135_SOURCE_STATIC",
+        "testsPassed": 27,
+        "production": false
+      }
     },
     "VRM-126": {
       "id": "VRM-126",
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Certification publication is blocked by an unsupported two-person-review rule and long-form modal state is lost on backdrop click",
-      "state": "OPEN_ROOT_CAUSE_PROVEN",
+      "state": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
       "rootCause": "The recovered CERT UI explicitly blocks publication when generatedByUid equals current UID, but the frozen functional contracts do not require maker-checker separation and Paula's admin profile must be able to generate/review/publish when authorized. The global modal implementation also closes on backdrop click, destroying long-form work.",
       "evidence": {
         "certGenerationProvider": "PASS_LIVE",
@@ -5833,14 +5952,35 @@
         "app/modules/cert.js",
         "app/core/ui.js"
       ],
-      "production": false
+      "production": false,
+      "sourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+      "sourceTree": "eba01186660acc5140773828e0e3048a0ec876c6",
+      "sourceFixFiles": [
+        "app/modules/cert.js",
+        "app/core/ui.js"
+      ],
+      "sourceFix": {
+        "sourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+        "sourceTree": "eba01186660acc5140773828e0e3048a0ec876c6",
+        "owners": [
+          "app/modules/cert.js",
+          "app/core/ui.js"
+        ],
+        "productOwners": [
+          "app/modules/cert.js",
+          "app/core/ui.js"
+        ],
+        "proof": "PASS_PREI4_VRM121_135_SOURCE_STATIC",
+        "testsPassed": 27,
+        "production": false
+      }
     },
     "VRM-127": {
       "id": "VRM-127",
       "classification": "PERSISTENCE_FAILURE",
       "severity": "P0",
       "title": "Shopper notification lifecycle can surface stale/non-current messages and admin requests are not clearly durable/targeted",
-      "state": "OPEN_VISUAL_PROVEN_REQUIRES_DURABLE_READBACK",
+      "state": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
       "rootCause": "Mi Día filters only a narrow approval case against current assignment; other notification types can remain visible from historical/test actions. 'Pedir al shopper' currently pushes an internal notification from a display-name selection rather than demonstrating a durable exact-shopper request lifecycle. Paula observed historical approvals she considers non-real and did not see the admin scheduling confirmation request clearly.",
       "evidence": {
         "staleHistoricalNotificationsVisible": true,
@@ -5853,14 +5993,38 @@
         "app/modules/postulaciones.js",
         "app/core/data.js"
       ],
-      "production": false
+      "production": false,
+      "sourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+      "sourceTree": "eba01186660acc5140773828e0e3048a0ec876c6",
+      "sourceFixFiles": [
+        "app/core/notif.js",
+        "app/core/backend-bulletins.js",
+        "app/modules/postulaciones.js"
+      ],
+      "sourceFix": {
+        "sourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+        "sourceTree": "eba01186660acc5140773828e0e3048a0ec876c6",
+        "owners": [
+          "app/core/notif.js",
+          "app/core/backend-bulletins.js",
+          "app/modules/postulaciones.js"
+        ],
+        "productOwners": [
+          "app/core/notif.js",
+          "app/core/backend-bulletins.js",
+          "app/modules/postulaciones.js"
+        ],
+        "proof": "PASS_PREI4_VRM121_135_SOURCE_STATIC",
+        "testsPassed": 27,
+        "production": false
+      }
     },
     "VRM-128": {
       "id": "VRM-128",
       "classification": "MAPPING_FAILURE",
       "severity": "P0",
       "title": "Shopper identity management still exposes duplicate-looking people and lacks an operator merge/adjudication workflow",
-      "state": "OPEN_LIVE_IDENTITY_REVIEW_PROVEN",
+      "state": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
       "rootCause": "The fresh HR reconciliation reports 222 source shoppers, 221 reconciled and one required human identity review (shopper_gt_f65cbc6391, SHOPPER_CREDENTIAL_NAME_INCOMPLETE). The admin UI also visibly exposes multiple Patricia Ordoñez/Ordóñez variants without a merge/adjudicate action, so an operator cannot safely resolve duplicates while preserving visit history and authentication lineage.",
       "evidence": {
         "sourceRevision": "a30b5e69b73cab9071e203e084129593d837c9d316fdfca295b2173efe701b17",
@@ -5886,14 +6050,38 @@
         "app/modules/shoppers.js",
         "backend/runtime/hr-live-service/server.mjs"
       ],
-      "production": false
+      "production": false,
+      "sourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+      "sourceTree": "eba01186660acc5140773828e0e3048a0ec876c6",
+      "sourceFixFiles": [
+        "app/modules/shoppers.js",
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+        "backend/runtime/hr-live-service/server.mjs"
+      ],
+      "sourceFix": {
+        "sourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+        "sourceTree": "eba01186660acc5140773828e0e3048a0ec876c6",
+        "owners": [
+          "app/modules/shoppers.js",
+          "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+          "backend/runtime/hr-live-service/server.mjs"
+        ],
+        "productOwners": [
+          "app/modules/shoppers.js",
+          "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+          "backend/runtime/hr-live-service/server.mjs"
+        ],
+        "proof": "PASS_PREI4_VRM121_135_SOURCE_STATIC",
+        "testsPassed": 27,
+        "production": false
+      }
     },
     "VRM-129": {
       "id": "VRM-129",
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Reassignment candidate selector can render no selectable shoppers despite a populated project shopper base",
-      "state": "OPEN_VISUAL_PROVEN_REQUIRES_EXACT_OWNER_DIAGNOSIS",
+      "state": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
       "rootCause": "The reassign modal calls data.shoppersFor() and then filters current shopper, country/search/certification in UI. Paula observed the modal with no candidates while the Shoppers module showed 210 profiles. The exact scope/filter defect must be proven against the same authenticated admin context before patching.",
       "evidence": {
         "visualProjectShopperCount": 210,
@@ -5904,14 +6092,35 @@
         "app/modules/postulaciones.js",
         "app/core/data.js"
       ],
-      "production": false
+      "production": false,
+      "sourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+      "sourceTree": "eba01186660acc5140773828e0e3048a0ec876c6",
+      "sourceFixFiles": [
+        "app/modules/postulaciones.js",
+        "app/core/data.js"
+      ],
+      "sourceFix": {
+        "sourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+        "sourceTree": "eba01186660acc5140773828e0e3048a0ec876c6",
+        "owners": [
+          "app/modules/postulaciones.js",
+          "app/core/data.js"
+        ],
+        "productOwners": [
+          "app/modules/postulaciones.js",
+          "app/core/data.js"
+        ],
+        "proof": "PASS_PREI4_VRM121_135_SOURCE_STATIC",
+        "testsPassed": 27,
+        "production": false
+      }
     },
     "VRM-130": {
       "id": "VRM-130",
       "classification": "MAPPING_FAILURE",
       "severity": "P0",
       "title": "Current operational period discovery rolls to October using UTC before Guatemala local day rollover",
-      "state": "OPEN_LIVE_SOURCE_PROVEN",
+      "state": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
       "rootCause": "During Paula's Sep 30 Guatemala evening review, the fresh runtime metadata already reported currentCalendarPeriodKey=2026-10 and required OCTUBRE 26 / OCTUBRE 26 HN tabs because the runtime clock had crossed Oct 1 UTC. Operational current-period logic must use tenant/project timezone, not UTC date rollover.",
       "evidence": {
         "localOperationalDate": "2026-09-30 America/Guatemala",
@@ -5927,14 +6136,38 @@
       "owners": [
         "backend/runtime/hr-live-service/server.mjs"
       ],
-      "production": false
+      "production": false,
+      "sourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+      "sourceTree": "eba01186660acc5140773828e0e3048a0ec876c6",
+      "sourceFixFiles": [
+        "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+        "tools/hr-source/tya-enforce-live-tab-registry.mjs",
+        "backend/runtime/hr-live-service/server.mjs"
+      ],
+      "sourceFix": {
+        "sourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+        "sourceTree": "eba01186660acc5140773828e0e3048a0ec876c6",
+        "owners": [
+          "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+          "tools/hr-source/tya-enforce-live-tab-registry.mjs",
+          "backend/runtime/hr-live-service/server.mjs"
+        ],
+        "productOwners": [
+          "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+          "tools/hr-source/tya-enforce-live-tab-registry.mjs",
+          "backend/runtime/hr-live-service/server.mjs"
+        ],
+        "proof": "PASS_PREI4_VRM121_135_SOURCE_STATIC",
+        "testsPassed": 27,
+        "production": false
+      }
     },
     "VRM-131": {
       "id": "VRM-131",
       "classification": "VISUAL_DEFECT",
       "severity": "NON_BLOCKING",
       "title": "Shopper profile and active-visit presentation need visual hierarchy and human-language cleanup",
-      "state": "OPEN_NON_BLOCKING_INCLUDE_IF_TOUCHING_OWNER",
+      "state": "OPEN_NON_BLOCKING_HUMAN_VISUAL_RETEST",
       "rootCause": "Profile cards, labels and visit-flow treatment are visually inconsistent with the stronger frontend hierarchy. The password 'Protegida · no se muestra después de iniciar sesión' note is unnecessary after authentication. These do not block go-live unless they obscure a required action.",
       "evidence": {
         "profileVisualReview": "rejected by Paula",
@@ -5946,14 +6179,16 @@
         "app/modules/shoppers.js",
         "app/modules/misvisitas.js"
       ],
-      "production": false
+      "production": false,
+      "sourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+      "sourceTree": "eba01186660acc5140773828e0e3048a0ec876c6"
     },
     "VRM-132": {
       "id": "VRM-132",
       "classification": "PERSISTENCE_FAILURE",
       "severity": "P0",
       "title": "Finance Movements/CxP/CxC are not the durable source that drives Dashboard income and financial pending-source resolution",
-      "state": "OPEN_ROOT_CAUSE_PROVEN",
+      "state": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
       "rootCause": "The visible Movimientos/CxP/CxC UI still writes through CX.finStore in browser memory, while the durable backend finance bridge is read-only for financialMovements/paymentLots and the command provider only supports finance.reconcile.visit and finance.payment.batch. Dashboard ingreso is currently derived from project-config honRecibe multiplied across financially usable liquidation rows, not from durable operational income movements. Therefore adding an ingreso movement does not, by itself, clear 'Pendiente de fuente/configuración' or become the canonical income source.",
       "historicalContracts": [
         "Finanzas and Beneficios must consume one canonical financial truth.",
@@ -5973,14 +6208,50 @@
         "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
         "backend/runtime/cxorbia-finance-phase-a-read-model-v1.mjs"
       ],
-      "production": false
+      "production": false,
+      "sourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+      "sourceTree": "eba01186660acc5140773828e0e3048a0ec876c6",
+      "sourceFixFiles": [
+        "app/core/finanzas-core.js",
+        "app/modules/finanzas.js",
+        "app/core/backend-cxdata-finance-read.js",
+        "app/core/backend-finance-benefits.js",
+        "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+        "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+        "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs"
+      ],
+      "sourceFix": {
+        "sourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+        "sourceTree": "eba01186660acc5140773828e0e3048a0ec876c6",
+        "owners": [
+          "app/core/finanzas-core.js",
+          "app/modules/finanzas.js",
+          "app/core/backend-cxdata-finance-read.js",
+          "app/core/backend-finance-benefits.js",
+          "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+          "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+          "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs"
+        ],
+        "productOwners": [
+          "app/core/finanzas-core.js",
+          "app/modules/finanzas.js",
+          "app/core/backend-cxdata-finance-read.js",
+          "app/core/backend-finance-benefits.js",
+          "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+          "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+          "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs"
+        ],
+        "proof": "PASS_PREI4_VRM121_135_SOURCE_STATIC",
+        "testsPassed": 27,
+        "production": false
+      }
     },
     "VRM-133": {
       "id": "VRM-133",
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Shopper self-registration geography is not enforced as required and must differ from HR auto-upsert",
-      "state": "OPEN_USER_CONTRACT_PLUS_SOURCE_PROVEN",
+      "state": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
       "rootCause": "The self-registration form renders geographic controls but only validates first name, last name and WhatsApp. Country/administrative location/city can therefore be blank. By contrast, HR auto-upsert must remain permissive because HR-managed shopper creation cannot be blocked by missing self-registration fields.",
       "userContract": "For shopper self-registration, country, municipality and city are mandatory. This requirement does NOT apply to automatic shopper creation/upsert from HR. HR auto-upsert remains idempotent and may create a profile that is later completed by the shopper/admin.",
       "remediationContract": "Introduce an explicit registration-origin validation contract. via='registro'/self-registration requires country+municipality+city before durable create; via='hr_external'/automatic HR upsert does not. Preserve generic geography architecture and do not hardcode Guatemala globally.",
@@ -5990,14 +6261,41 @@
         "app/core/data.js",
         "backend/runtime/hr-live-service/server.mjs"
       ],
-      "production": false
+      "production": false,
+      "sourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+      "sourceTree": "eba01186660acc5140773828e0e3048a0ec876c6",
+      "sourceFixFiles": [
+        "app/app.js",
+        "app/core/geo.js",
+        "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+        "backend/runtime/hr-live-service/server.mjs"
+      ],
+      "sourceFix": {
+        "sourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+        "sourceTree": "eba01186660acc5140773828e0e3048a0ec876c6",
+        "owners": [
+          "app/app.js",
+          "app/core/geo.js",
+          "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+          "backend/runtime/hr-live-service/server.mjs"
+        ],
+        "productOwners": [
+          "app/app.js",
+          "app/core/geo.js",
+          "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+          "backend/runtime/hr-live-service/server.mjs"
+        ],
+        "proof": "PASS_PREI4_VRM121_135_SOURCE_STATIC",
+        "testsPassed": 27,
+        "production": false
+      }
     },
     "VRM-134": {
       "id": "VRM-134",
       "classification": "ENVIRONMENT_FAILURE",
       "severity": "P0",
       "title": "Live-data refresh and post-write recomposition repeatedly block the user for materially too long",
-      "state": "OPEN_RECURRENT_VISUAL_AND_SOURCE_PROVEN",
+      "state": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
       "rootCause": "The HR authority bridge forces/re-schedules whole authority recomposition on backend-ready, backend.refresh, window focus and visibility restore; backend.refresh first reloads Firestore and marks HR authority unapplied. Several modules also force document reload. A fresh HR provider read measured about 3.8s, so the much longer repeated visible wait is orchestration/recomposition and redundant refresh work, not simply HR source latency.",
       "priorEvidenceLinks": [
         "VRM-060 historical live login readiness 2.9s shopper / 7.3s admin",
@@ -6011,14 +6309,41 @@
         "app/modules/reservas.js",
         "app/adapters/tya-canonical-shopper-portal-v2.js"
       ],
-      "production": false
+      "production": false,
+      "sourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+      "sourceTree": "eba01186660acc5140773828e0e3048a0ec876c6",
+      "sourceFixFiles": [
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+        "app/core/backend-browser-auth.js",
+        "app/modules/reservas.js",
+        "app/modules/postulaciones.js"
+      ],
+      "sourceFix": {
+        "sourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+        "sourceTree": "eba01186660acc5140773828e0e3048a0ec876c6",
+        "owners": [
+          "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+          "app/core/backend-browser-auth.js",
+          "app/modules/reservas.js",
+          "app/modules/postulaciones.js"
+        ],
+        "productOwners": [
+          "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+          "app/core/backend-browser-auth.js",
+          "app/modules/reservas.js",
+          "app/modules/postulaciones.js"
+        ],
+        "proof": "PASS_PREI4_VRM121_135_SOURCE_STATIC",
+        "testsPassed": 27,
+        "production": false
+      }
     },
     "VRM-135": {
       "id": "VRM-135",
       "classification": "AUTH_FAILURE",
       "severity": "P0",
       "title": "Human login experience remains ambiguous/slow despite historical source fix",
-      "state": "OPEN_RECURRENCE_REVOKES_HISTORICAL_READINESS",
+      "state": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
       "rootCause": "Historical VRM-104 fixed the role-first source contract and VRM-060 measured one later login as technically passing, but the current human experience still enters visible restore/validation/loading states for too long and can feel like repeated authentication/data-validation phases. Current auth restores Firebase session first, then backend load and HR authority can still gate the usable shell. Historical PASS therefore does not close the recurrent UX/performance defect.",
       "historicalFindings": [
         "VRM-060",
@@ -6031,7 +6356,28 @@
         "app/core/backend-firebase.js",
         "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
       ],
-      "production": false
+      "production": false,
+      "sourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+      "sourceTree": "eba01186660acc5140773828e0e3048a0ec876c6",
+      "sourceFixFiles": [
+        "app/core/backend-browser-auth.js",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+      ],
+      "sourceFix": {
+        "sourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+        "sourceTree": "eba01186660acc5140773828e0e3048a0ec876c6",
+        "owners": [
+          "app/core/backend-browser-auth.js",
+          "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+        ],
+        "productOwners": [
+          "app/core/backend-browser-auth.js",
+          "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+        ],
+        "proof": "PASS_PREI4_VRM121_135_SOURCE_STATIC",
+        "testsPassed": 27,
+        "production": false
+      }
     }
   },
   "latestEvidenceOverrides": {
@@ -6591,7 +6937,7 @@
     "nextFindingId": "VRM-136",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_PREI4_CUMULATIVE_REMEDIATION_REQUIRED",
+    "terminalState": "HOLD_PREI4_SINGLE_DEV_MATERIALIZATION_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
