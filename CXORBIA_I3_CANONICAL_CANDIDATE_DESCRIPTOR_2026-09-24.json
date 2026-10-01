@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_HUMAN_VISUAL_ACCEPTANCE_REQUIRED",
+  "status": "HOLD_PREI4_VISUAL_REMEDIATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4_HUMAN_VISUAL_REMEDIATION",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,13 +8,13 @@
   "productTreeAuthority": "d83f57ed07ef684cd274d4b1db3a52d91f4ff400",
   "predecessorProductSourceSha": "f6c3bb6c038a77eee9cbca8bfbfd1096bfd48cbc",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "1ae6e866aa1bd0f368f7692368114bc18c608c60",
+  "findingsLedgerExpectedGitBlob": "8ac9c8b50baf32a23b2a13ee69017c8c43005310",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
-  "nextFindingId": "VRM-121",
+  "activeBlocker": "PRE_I4_VISUAL_FUNCTIONAL_REMEDIATION",
+  "nextFindingId": "VRM-132",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Paula visually inspects the already-materialized DEV candidate at https://cxorbia-backend-dev.web.app in the focused Admin and Shopper routes. The technical CERT/RES P0 block is now PASS. No rebuild or deploy is authorized before visual acceptance. If the fresh visual review finds no new P0, seal PRE_I4_HUMAN_VISUAL_ACCEPTANCE=PASS, run the final same-artifact integrity readback, then request one explicit I4 authorization.",
+  "exactNextAction": "I3 microblock only: diagnose exact owners for VRM-121..VRM-130, compose one cumulative incremental remediation package without reopening frozen PASS areas, include safe cleanup of the Paula/MC. Pradera Zacapa platform test overlay with HR readback proving the HR row remains available/unassigned, then run focused live Admin+Shopper tests and a shortened human visual retest only for changed flows. Do not touch production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -317,7 +317,7 @@
   },
   "technicalClosureReceipt": "CXORBIA_I3_TERMINAL_TECHNICAL_READY_2026-09-25.json",
   "i4": {
-    "status": "BLOCKED_UNTIL_FRESH_PAULA_VISUAL_ACCEPTANCE",
+    "status": "BLOCKED_BY_NEW_PREI4_VISUAL_P0",
     "productionAuthorization": false,
     "authorized": false,
     "production": "DO_NOT_TOUCH"
@@ -1075,7 +1075,7 @@
     "i4AuthorizationRequired": true
   },
   "humanVisualAcceptance": {
-    "state": "HOLD_FRESH_PAULA_VISUAL_ACCEPTANCE_REQUIRED",
+    "state": "REVOKED_NEW_REPRODUCIBLE_P0_EVIDENCE",
     "lockPath": "CXORBIA_PRE_I4_HUMAN_VISUAL_ACCEPTANCE_LOCK_2026-09-28.json",
     "requiredBeforeI4": true,
     "reviewUrl": "https://cxorbia-backend-dev.web.app",
@@ -1084,12 +1084,15 @@
     "freshHrAtCaptureTimeRequired": true,
     "production": "DO_NOT_TOUCH",
     "adminForensicAuditPath": "CXORBIA_PRE_I4_ADMIN_FORENSIC_AUDIT_2026-09-28.json",
-    "adminReviewRepeatRequired": false,
+    "adminReviewRepeatRequired": true,
     "liveHrState": "PASS_RUN_36793188546",
     "liveHrDriftLock": "CXORBIA_PRE_I4_LIVE_HR_DRIFT_LOCK_2026-09-28.json",
     "run736TechnicalClosure": true,
     "remainingBeforeHumanVisualPass": [],
-    "certResTechnicalClosure": "PASS_RUN_36793188546"
+    "certResTechnicalClosure": "PASS_RUN_36793188546",
+    "latestLiveHrRevision": "a30b5e69b73cab9071e203e084129593d837c9d316fdfca295b2173efe701b17",
+    "frozenGoodScope": "ledger.preI4FrozenGoodAfterVisualReview",
+    "retestScope": "ONLY VRM-121..VRM-130 plus cross-effects; VRM-131 visual polish if owner touched"
   },
   "preI4Admin008": {
     "state": "FIXED_PROVEN_RUN594",
@@ -1183,7 +1186,16 @@
     "production": false
   },
   "activeBlockers": [
-    "PRE_I4_HUMAN_VISUAL_ACCEPTANCE"
+    "VRM-121_DASHBOARD_HR_KPI_PURITY",
+    "VRM-122_RESERVATION_LIVE_ELIGIBILITY",
+    "VRM-123_POSTULATION_LIFECYCLE",
+    "VRM-124_ROUTE_PRESERVING_WRITES",
+    "VRM-125_ACTIVE_SCHEDULING_CONTRACT",
+    "VRM-126_CERT_PUBLICATION_POLICY",
+    "VRM-127_NOTIFICATION_LIFECYCLE",
+    "VRM-128_SHOPPER_IDENTITY_ADJUDICATION",
+    "VRM-129_REASSIGN_CANDIDATES",
+    "VRM-130_TENANT_TIMEZONE_PERIOD"
   ],
   "preI4Admin004": {
     "state": "FIXED_PROVEN_RUN686",
@@ -1745,6 +1757,30 @@
     },
     "remainingP0": [],
     "nextGate": "PRE_I4_HUMAN_VISUAL_ACCEPTANCE",
+    "production": false
+  },
+  "latestVisualForensicReview": {
+    "capturedAt": "2026-09-30T18:58:00-06:00",
+    "liveHrRevision": "a30b5e69b73cab9071e203e084129593d837c9d316fdfca295b2173efe701b17",
+    "liveHrGeneratedAt": "2026-10-01T01:30:39.748Z",
+    "freshSourceRefreshDurationMs": 3826,
+    "providerRefreshError": null,
+    "findingRange": "VRM-121..VRM-131",
+    "p0FindingRange": "VRM-121..VRM-130",
+    "nonBlocking": [
+      "VRM-131"
+    ],
+    "frozenGood": [
+      "HR live connectivity/status detail",
+      "Dashboard total/realized/questionnaire/submit/out-of-range",
+      "Finance SEP 2026",
+      "Resources",
+      "CERT technical provider",
+      "Instructivo",
+      "Shopper reprogram request",
+      "Benefits displayed arithmetic"
+    ],
+    "testCleanupRequired": true,
     "production": false
   }
 }

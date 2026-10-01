@@ -5637,6 +5637,316 @@
         "conclusion": "success",
         "production": false
       }
+    },
+    "VRM-121": {
+      "id": "VRM-121",
+      "classification": "MAPPING_FAILURE",
+      "severity": "P0",
+      "title": "Dashboard assignment KPIs are contaminated by a platform test assignment instead of remaining tied to the same external HR revision",
+      "state": "OPEN_PROVEN_VISUAL_AND_LIVE_SOURCE",
+      "rootCause": "The fresh external HR revision still has two unassigned/available visits (GT MC. Pradera Zacapa and HN C. Mall Premier Juticalpa), but the DEV UI composes Paula's platform-side Pradera assignment into Dashboard assignment buckets. This makes assignment KPIs describe a mixed object while other KPIs remain HR-derived, violating the same-revision KPI contract.",
+      "evidence": {
+        "sourceRevision": "a30b5e69b73cab9071e203e084129593d837c9d316fdfca295b2173efe701b17",
+        "generatedAt": "2026-10-01T01:30:39.748Z",
+        "sourceReadAt": "2026-10-01T01:30:42.434Z",
+        "sourceSafe": true,
+        "refreshError": null,
+        "period": "2026-09",
+        "totalVisits": 44,
+        "GT": 34,
+        "HN": 10,
+        "hrWrites": 0,
+        "production": false,
+        "liveHR": {
+          "assigned": {
+            "total": 42,
+            "GT": 33,
+            "HN": 9
+          },
+          "unassigned": {
+            "total": 2,
+            "GT": 1,
+            "HN": 1
+          },
+          "assignedWithoutSchedule": {
+            "total": 0,
+            "GT": 0,
+            "HN": 0
+          }
+        },
+        "visualDashboard": {
+          "assigned": {
+            "total": 43,
+            "GT": 34,
+            "HN": 9
+          },
+          "unassigned": {
+            "total": 1,
+            "GT": 0,
+            "HN": 1
+          },
+          "assignedWithoutSchedule": {
+            "total": 1,
+            "GT": 1,
+            "HN": 0
+          }
+        },
+        "testOverlay": {
+          "branch": "MC. Pradera Zacapa",
+          "country": "GT",
+          "hrRow": "SEPTIEMBRE 26!35",
+          "hrState": "available/unassigned",
+          "platformView": "Paula Osorio assigned"
+        }
+      },
+      "remediationContract": "Keep external-HR KPI buckets pure to one source revision. Show platform-pending assignments separately as workflow state, never inside HR assignment/availability KPIs until remote HR confirmation. After test cleanup, prove GT33/HN9 assigned and GT1/HN1 unassigned on this revision.",
+      "owners": [
+        "app/modules/dashboard.js",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+      ],
+      "production": false
+    },
+    "VRM-122": {
+      "id": "VRM-122",
+      "classification": "MAPPING_FAILURE",
+      "severity": "P0",
+      "title": "Reservation availability is not consistently constrained to the same live canonical availability set and future reservation window",
+      "state": "OPEN_PROVEN_VISUAL_REQUIRES_OWNER_REPLAY",
+      "rootCause": "The source code intends to expose only canonical available/unassigned visits, yet Paula was able to request C. Miraflores, a branch whose September HR row(s) are already realized/submitted. Therefore the rendered reservation candidate set was not the same current live availability truth used by the fresh HR revision. The future-reservation policy is also not encoded: current-month live available opportunities belong to Visitas disponibles, while Reservas is for next fortnight/future period planning.",
+      "evidence": {
+        "sourceRevision": "a30b5e69b73cab9071e203e084129593d837c9d316fdfca295b2173efe701b17",
+        "generatedAt": "2026-10-01T01:30:39.748Z",
+        "sourceReadAt": "2026-10-01T01:30:42.434Z",
+        "sourceSafe": true,
+        "refreshError": null,
+        "period": "2026-09",
+        "totalVisits": 44,
+        "GT": 34,
+        "HN": 10,
+        "hrWrites": 0,
+        "production": false,
+        "liveAvailable": [
+          {
+            "country": "GT",
+            "branch": "MC. Pradera Zacapa",
+            "row": "SEPTIEMBRE 26!35"
+          },
+          {
+            "country": "HN",
+            "branch": "C. Mall Premier Juticalpa",
+            "row": "SEPTIEMBRE 26 HN!11"
+          }
+        ],
+        "invalidObservedReservation": "C. Miraflores",
+        "visualState": "request accepted/approved although branch is not live-available"
+      },
+      "remediationContract": "Derive reservation candidates from one live source revision plus explicit future-window policy; allow competing shopper requests for the same future branch, then on accepted assignment notify winner and remove branch from eligibility for other reservations without deleting audit history.",
+      "owners": [
+        "app/modules/reservas.js",
+        "app/core/data.js"
+      ],
+      "production": false
+    },
+    "VRM-123": {
+      "id": "VRM-123",
+      "classification": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "title": "Postulation lifecycle does not yet enforce present-date validity and one authoritative transition from application to assignment",
+      "state": "OPEN_PROVEN_VISUAL_AND_SOURCE",
+      "rootCause": "Postulation date validation checks availability/window/franja but does not reject a proposed date that is already in the past relative to the tenant-local operational date. Separately, approval can persist application status while assignment remains pending HR, leaving the shopper simultaneously represented as an approved application and an active assigned visit; cancellation/refresh can also resurrect stale counters from durable records.",
+      "evidence": {
+        "pastDateAccepted": "2026-09-26 while visual review occurred 2026-09-30 local",
+        "approvedApplicationStillVisible": true,
+        "assignedVisitAlsoVisible": true,
+        "postulationBadgeResurfacedAfterRefresh": true
+      },
+      "remediationContract": "Add tenant-local today boundary, preserve proposed date, make approval transition idempotent and non-duplicating, distinguish pending-HR workflow from active assignment, require confirmation for destructive cancellation, and ensure valid delete/cancel does not reappear after refresh.",
+      "owners": [
+        "app/modules/visita-detalle.js",
+        "app/modules/postulaciones.js",
+        "app/core/data.js"
+      ],
+      "production": false
+    },
+    "VRM-124": {
+      "id": "VRM-124",
+      "classification": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "title": "Successful and failed writes force full-page reload / authority recomposition and lose the user's current route",
+      "state": "OPEN_ROOT_CAUSE_PROVEN",
+      "rootCause": "reservas.js contains multiple setTimeout(()=>location.reload(),180) calls after create/delete/status/reassign/cross actions. Other workflows call CX.backend.refresh(), whose protected-HR wrapper marks authority unapplied and schedules a full recomposition. This explains the repeated return to Mi Día/profile exit and visible 'cargando autoridad viva'. The fresh HR provider read itself completed in 3826 ms, so multi-minute UI stalls cannot be attributed solely to the live HR source.",
+      "evidence": {
+        "freshProviderRefreshDurationMs": 3826,
+        "refreshError": null,
+        "explicitFullReloadsIn": "app/modules/reservas.js",
+        "backendRefreshWrappedBy": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+        "observedRouteLoss": [
+          "Mi Perfil edit",
+          "postulation/reservation writes",
+          "admin state changes"
+        ]
+      },
+      "remediationContract": "Replace full document reloads with scoped durable readback + module redraw, preserve current route/modal context where safe, and invoke HR reconcile only when the write changes HR-governed fields or an explicit source refresh is requested.",
+      "owners": [
+        "app/modules/reservas.js",
+        "app/modules/postulaciones.js",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+      ],
+      "production": false
+    },
+    "VRM-125": {
+      "id": "VRM-125",
+      "classification": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "title": "Scheduling management mixes completed visits with active scheduling and does not preserve/validate the proposed date end-to-end",
+      "state": "OPEN_ROOT_CAUSE_PARTIALLY_PROVEN",
+      "rootCause": "Gestión de agendamientos is built from data.visitas().filter(v=>v.agendada&&v.shopperId), which includes realized/submitted visits. Shopper scheduling defaults to disponibleDesde/today and sends setVisitState without first constraining the date to the canonical measurement window/franja/proposed application date; the observed confirmation then failed. Admin 'Pedir al shopper' lacks a questionnaire action and uses internal notification semantics.",
+      "evidence": {
+        "codeAgendadasFilter": "v.agendada && v.shopperId",
+        "completedVisitsShownInScheduling": true,
+        "proposedApplicationDateNotCarriedToSchedule": true,
+        "scheduleConfirmationObservedFail": true,
+        "questionnaireRequestOptionPresent": false
+      },
+      "remediationContract": "Scope scheduling to assigned/not-realized visits only; carry approved proposed date into the visit; constrain date selector to valid operational window/franja; persist schedule with remote ACK; surface admin requests durably and visibly to the exact shopper; add questionnaire request for realized/questionnaire-pending visits.",
+      "owners": [
+        "app/modules/postulaciones.js",
+        "app/modules/misvisitas.js"
+      ],
+      "production": false
+    },
+    "VRM-126": {
+      "id": "VRM-126",
+      "classification": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "title": "Certification publication is blocked by an unsupported two-person-review rule and long-form modal state is lost on backdrop click",
+      "state": "OPEN_ROOT_CAUSE_PROVEN",
+      "rootCause": "The recovered CERT UI explicitly blocks publication when generatedByUid equals current UID, but the frozen functional contracts do not require maker-checker separation and Paula's admin profile must be able to generate/review/publish when authorized. The global modal implementation also closes on backdrop click, destroying long-form work.",
+      "evidence": {
+        "certGenerationProvider": "PASS_LIVE",
+        "bankGenerated": true,
+        "publishBlockedMessage": "La revisión debe realizarla una persona distinta a quien generó el banco.",
+        "globalModalBackdropClose": true
+      },
+      "remediationContract": "Make review policy configurable and default to authorized same-admin publication for this tenant unless a project explicitly requires separation; preserve audit fields. Add non-dismissable backdrop option for long/transactional forms while keeping explicit X/Cancel/Escape policy appropriate to the form.",
+      "owners": [
+        "app/modules/cert.js",
+        "app/core/ui.js"
+      ],
+      "production": false
+    },
+    "VRM-127": {
+      "id": "VRM-127",
+      "classification": "PERSISTENCE_FAILURE",
+      "severity": "P0",
+      "title": "Shopper notification lifecycle can surface stale/non-current messages and admin requests are not clearly durable/targeted",
+      "state": "OPEN_VISUAL_PROVEN_REQUIRES_DURABLE_READBACK",
+      "rootCause": "Mi Día filters only a narrow approval case against current assignment; other notification types can remain visible from historical/test actions. 'Pedir al shopper' currently pushes an internal notification from a display-name selection rather than demonstrating a durable exact-shopper request lifecycle. Paula observed historical approvals she considers non-real and did not see the admin scheduling confirmation request clearly.",
+      "evidence": {
+        "staleHistoricalNotificationsVisible": true,
+        "adminConfirmScheduleRequestNotClearlyReceived": true,
+        "notificationApprovalSpecialFilterExists": true
+      },
+      "remediationContract": "Bind notifications to exact shopperId + entity/event identity, derive validity from current durable lifecycle, provide read/archive/delete controls, suppress superseded/test notifications, and prove admin request appears for the intended shopper with provider ACK/readback.",
+      "owners": [
+        "app/modules/midia.js",
+        "app/modules/postulaciones.js",
+        "app/core/data.js"
+      ],
+      "production": false
+    },
+    "VRM-128": {
+      "id": "VRM-128",
+      "classification": "MAPPING_FAILURE",
+      "severity": "P0",
+      "title": "Shopper identity management still exposes duplicate-looking people and lacks an operator merge/adjudication workflow",
+      "state": "OPEN_LIVE_IDENTITY_REVIEW_PROVEN",
+      "rootCause": "The fresh HR reconciliation reports 222 source shoppers, 221 reconciled and one required human identity review (shopper_gt_f65cbc6391, SHOPPER_CREDENTIAL_NAME_INCOMPLETE). The admin UI also visibly exposes multiple Patricia Ordoñez/Ordóñez variants without a merge/adjudicate action, so an operator cannot safely resolve duplicates while preserving visit history and authentication lineage.",
+      "evidence": {
+        "sourceRevision": "a30b5e69b73cab9071e203e084129593d837c9d316fdfca295b2173efe701b17",
+        "generatedAt": "2026-10-01T01:30:39.748Z",
+        "sourceReadAt": "2026-10-01T01:30:42.434Z",
+        "sourceSafe": true,
+        "refreshError": null,
+        "period": "2026-09",
+        "totalVisits": 44,
+        "GT": 34,
+        "HN": 10,
+        "hrWrites": 0,
+        "production": false,
+        "shopperSourceCount": 222,
+        "reconciledShopperCount": 221,
+        "identityReviewCount": 1,
+        "identityReviewShopperId": "shopper_gt_f65cbc6391",
+        "identityReviewReason": "SHOPPER_CREDENTIAL_NAME_INCOMPLETE",
+        "visualDuplicateExample": "Patricia Ordoñez / Ordóñez variants"
+      },
+      "remediationContract": "Provide operator identity-review/merge tooling with canonical shopperId, aliases, auth principal retirement safeguards, visit/history transfer without duplication, and idempotent readback. Never fuzzy-merge automatically.",
+      "owners": [
+        "app/modules/shoppers.js",
+        "backend/runtime/hr-live-service/server.mjs"
+      ],
+      "production": false
+    },
+    "VRM-129": {
+      "id": "VRM-129",
+      "classification": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "title": "Reassignment candidate selector can render no selectable shoppers despite a populated project shopper base",
+      "state": "OPEN_VISUAL_PROVEN_REQUIRES_EXACT_OWNER_DIAGNOSIS",
+      "rootCause": "The reassign modal calls data.shoppersFor() and then filters current shopper, country/search/certification in UI. Paula observed the modal with no candidates while the Shoppers module showed 210 profiles. The exact scope/filter defect must be proven against the same authenticated admin context before patching.",
+      "evidence": {
+        "visualProjectShopperCount": 210,
+        "reassignCandidatesObservedEmpty": true
+      },
+      "remediationContract": "Reproduce with authenticated admin, inspect shoppersFor scope and identity-review exclusions, then expose eligible candidates with explicit reason for any excluded shopper. Do not broaden scope across unauthorized countries/projects.",
+      "owners": [
+        "app/modules/postulaciones.js",
+        "app/core/data.js"
+      ],
+      "production": false
+    },
+    "VRM-130": {
+      "id": "VRM-130",
+      "classification": "MAPPING_FAILURE",
+      "severity": "P0",
+      "title": "Current operational period discovery rolls to October using UTC before Guatemala local day rollover",
+      "state": "OPEN_LIVE_SOURCE_PROVEN",
+      "rootCause": "During Paula's Sep 30 Guatemala evening review, the fresh runtime metadata already reported currentCalendarPeriodKey=2026-10 and required OCTUBRE 26 / OCTUBRE 26 HN tabs because the runtime clock had crossed Oct 1 UTC. Operational current-period logic must use tenant/project timezone, not UTC date rollover.",
+      "evidence": {
+        "localOperationalDate": "2026-09-30 America/Guatemala",
+        "runtimeGeneratedAtUtc": "2026-10-01T01:30:39.748Z",
+        "currentCalendarPeriodKey": "2026-10",
+        "requiredCurrentPeriodTabs": [
+          "OCTUBRE 26",
+          "OCTUBRE 26 HN"
+        ],
+        "requiredCurrentPeriodTabsPresent": false
+      },
+      "remediationContract": "Resolve current calendar period from tenant/project configured timezone (America/Guatemala for this tenant unless configuration says otherwise), keep UTC only for audit timestamps, and reprove tab discovery across month-boundary tests.",
+      "owners": [
+        "backend/runtime/hr-live-service/server.mjs"
+      ],
+      "production": false
+    },
+    "VRM-131": {
+      "id": "VRM-131",
+      "classification": "VISUAL_DEFECT",
+      "severity": "NON_BLOCKING",
+      "title": "Shopper profile and active-visit presentation need visual hierarchy and human-language cleanup",
+      "state": "OPEN_NON_BLOCKING_INCLUDE_IF_TOUCHING_OWNER",
+      "rootCause": "Profile cards, labels and visit-flow treatment are visually inconsistent with the stronger frontend hierarchy. The password 'Protegida · no se muestra después de iniciar sesión' note is unnecessary after authentication. These do not block go-live unless they obscure a required action.",
+      "evidence": {
+        "profileVisualReview": "rejected by Paula",
+        "passwordNoteVisible": true,
+        "visitFlowPolishRequested": true
+      },
+      "remediationContract": "Polish profile/visit-flow hierarchy without changing contracts; remove unnecessary signed-in password note. Preserve responsive behavior and current tenant styling.",
+      "owners": [
+        "app/modules/shoppers.js",
+        "app/modules/misvisitas.js"
+      ],
+      "production": false
     }
   },
   "latestEvidenceOverrides": {
@@ -6174,23 +6484,36 @@
       "VRM-117",
       "VRM-118",
       "VRM-119",
-      "VRM-120"
+      "VRM-120",
+      "VRM-121",
+      "VRM-122",
+      "VRM-123",
+      "VRM-124",
+      "VRM-125",
+      "VRM-126",
+      "VRM-127",
+      "VRM-128",
+      "VRM-129",
+      "VRM-130",
+      "VRM-131"
     ],
-    "findingCount": 120,
-    "expectedCurrentRange": "VRM-001..VRM-120",
-    "nextFindingId": "VRM-121",
+    "findingCount": 131,
+    "expectedCurrentRange": "VRM-001..VRM-131",
+    "nextFindingId": "VRM-132",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_PREI4_HUMAN_VISUAL_ACCEPTANCE_REQUIRED",
+    "terminalState": "HOLD_PREI4_VISUAL_REMEDIATION_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
     "i4AuthorizationBlocked": true,
     "humanVisualAcceptanceRequiredBeforeI4": true,
-    "humanVisualAcceptanceState": "HOLD",
+    "humanVisualAcceptanceState": "REVOKED_BY_NEW_REPRODUCIBLE_P0_EVIDENCE",
     "humanVisualAcceptanceLockPath": "CXORBIA_PRE_I4_HUMAN_VISUAL_ACCEPTANCE_LOCK_2026-09-28.json",
     "adminForensicAuditPath": "CXORBIA_PRE_I4_ADMIN_FORENSIC_AUDIT_2026-09-28.json",
-    "adminReviewRepeatRequired": false
+    "adminReviewRepeatRequired": true,
+    "latestLiveHrRevision": "a30b5e69b73cab9071e203e084129593d837c9d316fdfca295b2173efe701b17",
+    "latestLiveHrReadAt": "2026-10-01T01:30:42.434Z"
   },
   "workPlan": {
     "0": "C0_FREEZE",
@@ -9551,5 +9874,108 @@
     "rulesDeploys": 0,
     "hrWrites": 0,
     "production": false
+  },
+  "preI4FrozenGoodAfterVisualReview": {
+    "freezeRule": "Do not repeat in next visual review unless an owning file/source contract changes.",
+    "hrLive": {
+      "state": "PASS",
+      "revision": "a30b5e69b73cab9071e203e084129593d837c9d316fdfca295b2173efe701b17",
+      "totalVisits": 704,
+      "periods": 16,
+      "periodSep2026": {
+        "total": 44,
+        "GT": 34,
+        "HN": 10
+      },
+      "reconciliationAck": true,
+      "hrWrites": 0
+    },
+    "dashboardSourceMetrics": {
+      "state": "PASS_EXCEPT_ASSIGNMENT_FACETS",
+      "sep2026": {
+        "total": 44,
+        "realized": 42,
+        "questionnairePending": 3,
+        "submitPending": 7,
+        "outOfRange": 2,
+        "liquidated": 0
+      }
+    },
+    "financeSep2026": {
+      "state": "PASS",
+      "GT": {
+        "realizedVisits": 33,
+        "honoraria": 1980,
+        "reimbursements": 4821,
+        "total": 6801,
+        "currency": "Q"
+      },
+      "HN": {
+        "realizedVisits": 9,
+        "honoraria": 1800,
+        "reimbursements": 3556,
+        "total": 5356,
+        "currency": "L"
+      },
+      "paymentsConfirmed": 0,
+      "incomeMargin": "fail_closed_pending_source"
+    },
+    "resources": {
+      "state": "PASS",
+      "upload": true,
+      "view": true,
+      "download": true,
+      "deleteNoOrphan": "previous live proof PASS"
+    },
+    "certificationProvider": {
+      "state": "PASS_TECHNICAL_GENERATION_ONLY",
+      "vertexServerSide": true,
+      "attemptPersistence": true,
+      "recertificationPersistence": true,
+      "publicationUX": "NOT_FROZEN"
+    },
+    "instructivo": {
+      "state": "PASS_VISUAL",
+      "opens": true
+    },
+    "shopperReprogramRequest": {
+      "state": "PASS_VISUAL",
+      "requestSent": true
+    },
+    "benefits": {
+      "state": "PASS_DISPLAY_ARITHMETIC",
+      "honoraria": 420,
+      "reimbursements": 1055,
+      "total": 1475,
+      "visitHistoryCount": 7,
+      "scope": "Paula displayed history; recheck only if identity/history owner changes"
+    }
+  },
+  "preI4TestDataCleanupRequired": {
+    "state": "REQUIRED_BEFORE_FINAL_VISUAL_PASS",
+    "rule": "Delete only platform-side test artifacts; never alter live HR or historical HR visits.",
+    "target": {
+      "shopper": "Paula Osorio",
+      "branch": "MC. Pradera Zacapa",
+      "period": "2026-09",
+      "hrRow": "SEPTIEMBRE 26!35"
+    },
+    "liveHrTruth": {
+      "revision": "a30b5e69b73cab9071e203e084129593d837c9d316fdfca295b2173efe701b17",
+      "state": "available",
+      "assignmentState": "unassigned"
+    },
+    "platformArtifacts": [
+      "test assignment overlay",
+      "related test postulation/reservation if present",
+      "test notifications generated by this acceptance run"
+    ],
+    "requiredReadback": [
+      "HR row remains available/unassigned",
+      "Paula active visit disappears",
+      "Dashboard HR assignment KPIs revert to HR truth",
+      "historical visits unchanged"
+    ],
+    "manualPaulaActionRequired": false
   }
 }

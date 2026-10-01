@@ -1,0 +1,127 @@
+{
+  "schemaVersion": "cxorbia.recovery.pre-i4.visual-forensic-freeze.v1",
+  "frozenAt": "2026-10-01T01:35:00Z",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
+  "state": "HOLD_VISUAL_REMEDIATION_REQUIRED",
+  "controlBase": "0f0724a39a393668891d0dded45517b7b9bcb528",
+  "productSourceSha": "f769041ddd6adacb5bb16b0eeddab7d08b47a7e8",
+  "productSourceTree": "d83f57ed07ef684cd274d4b1db3a52d91f4ff400",
+  "liveHr": {
+    "revision": "a30b5e69b73cab9071e203e084129593d837c9d316fdfca295b2173efe701b17",
+    "generatedAt": "2026-10-01T01:30:39.748Z",
+    "sourceReadAt": "2026-10-01T01:30:42.434Z",
+    "refreshDurationMs": 3826,
+    "refreshError": null,
+    "periods": 16,
+    "visits": 704,
+    "sep2026": {
+      "total": 44,
+      "GT": 34,
+      "HN": 10
+    },
+    "metrics": {
+      "GT": {
+        "assigned": 33,
+        "unassigned": 1,
+        "realized": 33,
+        "questionnairePending": 3,
+        "submitPending": 6,
+        "submitted": 24,
+        "outOfRange": 1
+      },
+      "HN": {
+        "assigned": 9,
+        "unassigned": 1,
+        "realized": 9,
+        "questionnairePending": 0,
+        "submitPending": 1,
+        "submitted": 8,
+        "outOfRange": 1
+      }
+    },
+    "available": [
+      {
+        "country": "GT",
+        "branch": "MC. Pradera Zacapa",
+        "row": "SEPTIEMBRE 26!35"
+      },
+      {
+        "country": "HN",
+        "branch": "C. Mall Premier Juticalpa",
+        "row": "SEPTIEMBRE 26 HN!11"
+      }
+    ],
+    "hrWrites": 0
+  },
+  "frozenGood": {
+    "dashboard": [
+      "total 44",
+      "realized 42",
+      "questionnaire pending 3",
+      "submit pending 7",
+      "out of range 2",
+      "liquidated 0"
+    ],
+    "finance": [
+      "GT Q1980 honoraria + Q4821 reimbursements = Q6801",
+      "HN L1800 + L3556 = L5356",
+      "33 GT + 9 HN realized obligations",
+      "payment confirmed 0 fail-closed"
+    ],
+    "resources": [
+      "upload",
+      "view",
+      "download",
+      "no-orphan technical delete proof"
+    ],
+    "certification": [
+      "server-side AI generation",
+      "attempt persistence",
+      "recertification persistence"
+    ],
+    "shopper": [
+      "instructivo opens",
+      "reprogram request sends",
+      "benefits arithmetic Q420 + Q1055 = Q1475"
+    ]
+  },
+  "openFindings": [
+    "VRM-121",
+    "VRM-122",
+    "VRM-123",
+    "VRM-124",
+    "VRM-125",
+    "VRM-126",
+    "VRM-127",
+    "VRM-128",
+    "VRM-129",
+    "VRM-130",
+    "VRM-131"
+  ],
+  "testCleanup": {
+    "target": "Paula Osorio / MC. Pradera Zacapa / SEP 2026",
+    "hrTruth": "available/unassigned at SEPTIEMBRE 26!35",
+    "deleteScope": "platform overlays/test notifications only",
+    "hrMutationForbidden": true,
+    "manualPaulaActionRequired": false
+  },
+  "deferredNotDefects": {
+    "NIT": "Frozen for the next invoicing/billing project; do not turn into current I3 architecture blocker.",
+    "profileVisualPolish": "Non-blocking VRM-131; include if touching profile/visit owners.",
+    "profileDropdowns": "country/department/city dropdown infrastructure exists in admin manual create; verify shopper self-edit and currency UX in focused retest."
+  },
+  "nextReviewScope": [
+    "Profile edit/registration + route preservation",
+    "Visitas disponibles/postulation date and lifecycle",
+    "Future reservation competition/acceptance/disappearance",
+    "Postulation approve/cancel/reopen with no duplicate active state",
+    "Assignment/reassignment candidates + cleanup of test assignment",
+    "Scheduling/proposed date/range + questionnaire request",
+    "Notification validity/read/archive/delete/targeting",
+    "Certification publication + modal persistence + shopper visibility",
+    "Shopper identity merge/adjudication",
+    "Assignment KPI purity vs exact HR revision",
+    "Tenant timezone month rollover"
+  ],
+  "production": "DO_NOT_TOUCH"
+}
