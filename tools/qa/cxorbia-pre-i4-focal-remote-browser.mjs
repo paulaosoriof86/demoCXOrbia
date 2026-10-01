@@ -47,7 +47,7 @@ const paulaExpectedTotal=paulaHr?Number(paulaHr.visitas||0):(Array.isArray(hrSna
 if(!paulaShopperId||!Number.isFinite(paulaExpectedTotal))throw new Error('SOURCE_FAILURE:FOCAL_PAULA_HR_REFERENCE_MISSING');
 
 const browser=await chromium.launch({headless:true});
-const evidence={schemaVersion:'cxorbia.pre-i4.focal-human-browser.v8',decision:'HOLD',sourceSha,hrRevision,periodId,preAuth:null,admin:null,shopper:null,mobile:null,adminMobile:null,shopperMobile:null,principalClaims:null,production:false,authWrites:0,hrWrites:0,providerWrites:0};
+const evidence={schemaVersion:'cxorbia.pre-i4.focal-human-browser.v9',decision:'HOLD',sourceSha,hrRevision,periodId,preAuth:null,admin:null,shopper:null,mobile:null,adminMobile:null,shopperMobile:null,principalClaims:null,production:false,authWrites:0,hrWrites:0,providerWrites:0};
 const adminAuthUser=await auth.getUser(admin.id),shopperAuthUser=await auth.getUser(shopper.id);
 const safeClaims=u=>{const c=u?.customClaims||{};return{role:str(c.role),tenantId:str(c.tenantId),projectIds:arr(c.projectIds).map(str),shopperId:str(c.shopperId),authNamespace:str(c.authNamespace),country:str(c.country)};};
 evidence.principalClaims={admin:safeClaims(adminAuthUser),shopper:safeClaims(shopperAuthUser)};
@@ -75,15 +75,32 @@ async function assertClean(page,label){
 
 async function waitForRouteSettle(page,route,kind){
   const started=Date.now(),stableMs=1200;
-  await page.evaluate(()=>{window.__CX_PREI4_ROUTE_STABLE_SINCE__=0;}).catch(()=>{});
+  await page.evaluate(()=>{window.__CX_PREI4_ROUTE_STABLE_SINCE__=0;window.__CX_PREI4_ROUTE_TRACE__=[];window.__CX_PREI4_ROUTE_LAST_SIG__='';}).catch(()=>{});
   try{
     await page.waitForFunction(({projectId,periodId,hrRevision,route,stableMs})=>{
       const d=window.CX?.data||{},now=Date.now();
-      const ready=window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true
-        &&String(d.currentProjectId||'')===projectId
-        &&String(d.currentPeriodId||'')===periodId
-        &&String(d.previewMeta?.sourceRevision||'')===hrRevision
-        &&String(window.CX?.session?.view||'')===route;
+      const state={
+        authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,
+        authorityReason:String(window.CX_PROTECTED_AUTH_HR_AUTHORITY?.reason||''),
+        projectId:String(d.currentProjectId||''),
+        periodId:String(d.currentPeriodId||''),
+        sourceRevision:String(d.previewMeta?.sourceRevision||''),
+        route:String(window.CX?.session?.view||''),
+        dataStatus:String(window.CX?.dataSource?.status||''),
+        sourceRef:String(window.CX?.dataSource?.sourceRef||'')
+      };
+      const sig=JSON.stringify(state);
+      if(window.__CX_PREI4_ROUTE_LAST_SIG__!==sig){
+        const trace=Array.isArray(window.__CX_PREI4_ROUTE_TRACE__)?window.__CX_PREI4_ROUTE_TRACE__:[];
+        trace.push(Object.assign({at:now},state));
+        window.__CX_PREI4_ROUTE_TRACE__=trace.slice(-80);
+        window.__CX_PREI4_ROUTE_LAST_SIG__=sig;
+      }
+      const ready=state.authority===true
+        &&state.projectId===projectId
+        &&state.periodId===periodId
+        &&state.sourceRevision===hrRevision
+        &&state.route===route;
       if(!ready){window.__CX_PREI4_ROUTE_STABLE_SINCE__=0;return false;}
       if(!Number(window.__CX_PREI4_ROUTE_STABLE_SINCE__||0))window.__CX_PREI4_ROUTE_STABLE_SINCE__=now;
       return now-Number(window.__CX_PREI4_ROUTE_STABLE_SINCE__||0)>=stableMs;
@@ -95,8 +112,12 @@ async function waitForRouteSettle(page,route,kind){
       periodId:String(d.currentPeriodId||''),
       sourceRevision:String(d.previewMeta?.sourceRevision||''),
       authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,
-      stableSince:Number(window.__CX_PREI4_ROUTE_STABLE_SINCE__||0)
-    };}).catch(()=>({route:'',projectId:'',periodId:'',sourceRevision:'',authority:false,stableSince:0}));
+      authorityReason:String(window.CX_PROTECTED_AUTH_HR_AUTHORITY?.reason||''),
+      dataStatus:String(window.CX?.dataSource?.status||''),
+      sourceRef:String(window.CX?.dataSource?.sourceRef||''),
+      stableSince:Number(window.__CX_PREI4_ROUTE_STABLE_SINCE__||0),
+      trace:(Array.isArray(window.__CX_PREI4_ROUTE_TRACE__)?window.__CX_PREI4_ROUTE_TRACE__:[]).slice(-40)
+    };}).catch(()=>({route:'',projectId:'',periodId:'',sourceRevision:'',authority:false,authorityReason:'',dataStatus:'',sourceRef:'',stableSince:0,trace:[]}));
     throw new Error('FUNCTIONAL_DEFECT:'+kind+'_ROUTE_'+route+'_SETTLE_TIMEOUT:'+JSON.stringify({routeSettleMs:Date.now()-started,requiredStableMs:stableMs,state,error:String(error&&error.message||error||'timeout').slice(0,240)}));
   }
   return Date.now()-started;
