@@ -57,7 +57,8 @@ try{
   const revenueId='qa-revenue-'+RUN;
   const revenue=base('finance.movement.create','financialMovement',revenueId,'revenue',{tipo:'ingreso',tipoIngreso:'honorarios',country:'GT',currency:'GTQ',amount:11,cat:'QA focal operating revenue',concepto:'QA focal operating revenue',fecha:new Date().toISOString().slice(0,10)},'finance.movement.write');
   const rr=await send(revenue);
-  assert(rr.r.ok&&rr.body?.providerAck===true&&rr.body?.movement?.revenueRecognized===true&&rr.body?.movement?.nonOperating===false,'PERSISTENCE_FAILURE:FINAL_REVENUE_ACK');
+  evidence.revenueAttempt={httpStatus:rr.r.status,httpOk:rr.r.ok,code:str(rr.body?.code),status:str(rr.body?.status),providerAck:rr.body?.providerAck===true,successUiAllowed:rr.body?.successUiAllowed===true,providerKind:str(rr.body?.providerKind),detail:str(rr.body?.detail)};
+  assert(rr.r.ok&&rr.body?.providerAck===true&&rr.body?.movement?.revenueRecognized===true&&rr.body?.movement?.nonOperating===false,'PERSISTENCE_FAILURE:FINAL_REVENUE_ACK:'+JSON.stringify(evidence.revenueAttempt));
   refs.push(['financialMovements',revenueId]);
   const replay=await send(revenue);
   assert(replay.r.ok&&replay.body?.providerAck===true&&replay.body?.idempotentReplay===true&&Number(replay.body?.providerWrites||0)===0,'PERSISTENCE_FAILURE:FINAL_REVENUE_IDEMPOTENCY');
