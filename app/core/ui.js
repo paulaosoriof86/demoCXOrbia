@@ -135,9 +135,9 @@ CX.ui = {
     const prevFocus=document.activeElement;
     /* ítem 14 (accesibilidad — paquete genérico 20260711): Escape cierra el modal, y el foco
        inicial va al primer elemento enfocable dentro de él en vez de quedarse en el fondo. */
-    const onKey=(e)=>{ if(e.key==='Escape') close(); };
+    const onKey=(e)=>{ if(e.key==='Escape'&&opts.dismissOnEscape!==false) close(); };
     document.addEventListener('keydown',onKey);
-    ov.addEventListener('click',e=>{if(e.target===ov)close();});
+    ov.addEventListener('click',e=>{if(e.target===ov&&opts.dismissOnBackdrop!==false)close();});
     ov.querySelector('[data-x]').addEventListener('click',close);
     if(opts.onMount)opts.onMount(ov,close);
     setTimeout(()=>{ const f=ov.querySelector('input,select,textarea,button:not([data-x])'); if(f&&f.focus) f.focus(); },30);
