@@ -196,7 +196,6 @@ CX.shopperPostForm = function(data, p, v, ui){
           ui.toast('La postulación no recibió confirmación del backend. No se mostró éxito ni se aplicó un cambio local.','warn',4200);
           return;
         }
-        try{await CX.backend?.refresh?.();}catch(_){}
         try{window.CX_SCHEDULE_PROTECTED_AUTH_HR_RECONCILE?.('gate9_application_create_committed',true);}catch(_){}
         close();ui.toast('Postulación enviada y confirmada.','ok');
       }catch(_){
