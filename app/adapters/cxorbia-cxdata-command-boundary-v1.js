@@ -202,6 +202,22 @@
       const cmd=buildBase('finance.payment.batch','paymentBatch',idempotency('finance.payment.batch','',list,'source-current'),{visitIds:list,visitRefs,fechaPago:fechaPago||null,referencia:str(referencia)||null},hash(expected),Object.assign({permission:'finance.markPaid'},meta));
       return execute(cmd,meta);
     };
+    D.createFinancialMovement=function(rec,meta){
+      rec=rec||{};meta=commandMeta(meta||rec.__commandMeta);const payload=Object.assign({},rec);delete payload.__commandMeta;
+      const cmd=buildBase('finance.movement.create','financialMovement',null,payload,'absent',Object.assign({permission:'finance.movement.write'},meta));
+      return execute(cmd,meta);
+    };
+    D.createFinanceAccount=function(kind,rec,meta){
+      rec=rec||{};meta=commandMeta(meta||rec.__commandMeta);const payload=Object.assign({},rec,{kind});delete payload.__commandMeta;
+      const cmd=buildBase('finance.account.create','financeAccount',null,payload,'absent',Object.assign({permission:'finance.account.write'},meta));
+      return execute(cmd,meta);
+    };
+    D.applyFinanceAccount=function(accountId,amount,meta){
+      meta=commandMeta(meta);const current=(D.__financeAccounts||[]).find(x=>str(x.id)===str(accountId))||{};
+      const payload={accountId,amount,fecha:meta.fecha||null,desc:meta.desc||null};
+      const cmd=buildBase('finance.account.apply','financeAccount',accountId,payload,versionOf(current),Object.assign({permission:'finance.account.apply'},meta));
+      return execute(cmd,meta);
+    };
     D.createReservation=function(rec,meta){
       rec=rec||{};meta=commandMeta(meta);const payload=Object.assign({},rec);delete payload.__commandMeta;
       const cmd=buildBase('reservation.create','reservation',null,payload,'absent',Object.assign({permission:'reservation.create'},meta));
