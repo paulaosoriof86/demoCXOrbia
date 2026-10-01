@@ -56,7 +56,7 @@ const paulaExpectedTotal=paulaHistoricalVisits.length;
 if(!paulaShopperId||!Number.isFinite(paulaExpectedTotal)||paulaExpectedTotal<1)throw new Error('SOURCE_FAILURE:FOCAL_PAULA_HR_REFERENCE_MISSING:'+JSON.stringify({paulaShopperId,identityIds:[...paulaIdentityIds],historicalVisits:paulaExpectedTotal,hrRevision}));
 
 const browser=await chromium.launch({headless:true});
-const evidence={schemaVersion:'cxorbia.pre-i4.focal-human-browser.v10',decision:'HOLD',sourceSha,hrRevision,periodId,preAuth:null,admin:null,shopper:null,mobile:null,adminMobile:null,shopperMobile:null,principalClaims:null,production:false,authWrites:0,hrWrites:0,providerWrites:0};
+const evidence={schemaVersion:'cxorbia.pre-i4.focal-human-browser.v11',decision:'HOLD',sourceSha,hrRevision,periodId,preAuth:null,admin:null,shopper:null,mobile:null,adminMobile:null,shopperMobile:null,principalClaims:null,production:false,authWrites:0,hrWrites:0,providerWrites:0};
 const adminAuthUser=await auth.getUser(admin.id),shopperAuthUser=await auth.getUser(shopper.id);
 const safeClaims=u=>{const c=u?.customClaims||{};return{role:str(c.role),tenantId:str(c.tenantId),projectIds:arr(c.projectIds).map(str),shopperId:str(c.shopperId),authNamespace:str(c.authNamespace),country:str(c.country)};};
 evidence.principalClaims={admin:safeClaims(adminAuthUser),shopper:safeClaims(shopperAuthUser)};
@@ -410,7 +410,7 @@ async function signInMember(member,kind,route,options={}){
       if(r==='beneficios'&&Number(info.shopper?.benefitExpectedCount||0)>0&&Number(info.shopper?.benefitBranchVisibleCount||0)<1)throw new Error('MAPPING_FAILURE:SHOPPER_BENEFITS_NOT_VISIBLE:'+JSON.stringify(info.shopper));
       if(r==='misvisitas'){
         const expected=arr(info.shopper?.postRows).map(x=>String(x.syncState||'')).sort(),visible=arr(info.shopper?.visibleAppStates).map(String).sort();
-        if(Number(info.shopper?.stats?.postulaciones||0)!==Number(info.shopper?.postCount||0)||JSON.stringify(expected)!==JSON.stringify(visible)||info.shopper?.postBranchRowsVisible!==true)throw new Error('MAPPING_FAILURE:SHOPPER_POSTULATION_STATE_VISIBILITY:'+JSON.stringify(info.shopper));
+        if(JSON.stringify(expected)!==JSON.stringify(visible)||info.shopper?.postBranchRowsVisible!==true)throw new Error('MAPPING_FAILURE:SHOPPER_POSTULATION_STATE_VISIBILITY:'+JSON.stringify({currentPeriodPostCount:info.shopper?.postCount,currentPeriodExpectedStates:expected,currentPeriodVisibleStates:visible,postBranchRowsVisible:info.shopper?.postBranchRowsVisible,diagnostics:info.shopper?.misvisitasDiagnostics}));
       }
     }
     routeEvidence[r]=info;

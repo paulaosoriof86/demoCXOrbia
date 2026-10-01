@@ -6459,6 +6459,29 @@
       },
       "productSourceChanged": false,
       "production": false
+    },
+    "VRM-138": {
+      "id": "VRM-138",
+      "classification": "MAPPING_FAILURE",
+      "severity": "CONTROL_BLOCKER",
+      "title": "Shopper focal compared cumulative postulation KPI with current-period application rows",
+      "state": "FIXED_CONTROL_REPROOF_REQUIRED",
+      "productDefect": false,
+      "observed": "Paula had cumulative shopperStats.postulaciones=1 while October currentApps/postRows=0 and no visible current-period application rows.",
+      "rootCause": "The QA equated cumulative shopperStats.postulaciones with Mis Visitas currentApps, but app/modules/misvisitas.js intentionally scopes currentApps to currentPeriodId.",
+      "correction": "Validate current-period postulation rows only against current-period visible application states/branches; do not compare them to cumulative shopperStats.postulaciones.",
+      "exactOwners": [
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+      ],
+      "evidence": {
+        "runId": 36938470948,
+        "jobId": 110624232674,
+        "cumulativePostulations": 1,
+        "currentPeriodPosts": 0,
+        "currentPeriodId": "cinepolis-2026-10"
+      },
+      "productSourceChanged": false,
+      "production": false
     }
   },
   "latestEvidenceOverrides": {
@@ -7015,7 +7038,7 @@
     ],
     "findingCount": 135,
     "expectedCurrentRange": "VRM-001..VRM-135",
-    "nextFindingId": "VRM-138",
+    "nextFindingId": "VRM-139",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_PREI4_PROVIDER_RECONCILIATION_REPROOF",
@@ -7047,7 +7070,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Run browser-only PRE-I4 focal against the already materialized canonical DEV source a2f7acd659b68217299f92ef69a320f08e806635. If browser PASS, resume only Finance durable + Certification + final focal receipt without rebuild/redeploy. Production remains untouched.",
+  "exactNextAction": "Run browser-only PRE-I4 focal against already materialized canonical DEV source a2f7acd659b68217299f92ef69a320f08e806635. If PASS, immediately execute Finance durable + Certification + final focal receipt without rebuild/redeploy.",
   "supersedesGitBlob": "397a9cee8c71d3156567a0cc96bfdcba88bb7c3a",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -7076,16 +7099,15 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-138",
+  "nextFindingId": "VRM-139",
   "lastControlFailure": {
-    "id": "VRM-137",
+    "id": "VRM-138",
     "classification": "MAPPING_FAILURE",
-    "runId": 36937062335,
-    "jobId": 110619738146,
+    "runId": 36938470948,
+    "jobId": 110624232674,
     "owner": "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs",
     "productDefect": false,
     "productSourceChanged": false,
-    "correction": "Cumulative Paula history reference now comes from exact HR visit history + canonical aliases on the same live revision.",
     "state": "FIXED_CONTROL_REPROOF_REQUIRED",
     "production": false
   },
@@ -8431,7 +8453,7 @@
     "PREI4-CONTENT-001",
     "PREI4-CONTENT-002"
   ],
-  "preI4NextAction": "Run browser-only PRE-I4 focal against the already materialized canonical DEV source a2f7acd659b68217299f92ef69a320f08e806635. If browser PASS, resume only Finance durable + Certification + final focal receipt without rebuild/redeploy. Production remains untouched.",
+  "preI4NextAction": "Run browser-only PRE-I4 focal against already materialized canonical DEV source a2f7acd659b68217299f92ef69a320f08e806635. If PASS, immediately execute Finance durable + Certification + final focal receipt without rebuild/redeploy.",
   "preI4Admin002": {
     "findingId": "PREI4-ADMIN-002",
     "state": "FIXED_PROVEN_RUN601",

@@ -8,13 +8,13 @@
   "productTreeAuthority": "524207efe063232333795175ac58964f3898067c",
   "predecessorProductSourceSha": "19ce6ac1cbea7c94ad5f61009cea961a3b11e606",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "8923becd8ddee5eba9b435dadfa26e3adc18ef94",
+  "findingsLedgerExpectedGitBlob": "202e6cedb6a0730d274d6ea34e63c6df9e43608e",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "PRE_I4_VRM137_PAULA_HISTORY_CONTROL_REPROOF",
-  "nextFindingId": "VRM-138",
+  "activeBlocker": "PRE_I4_VRM138_SHOPPER_POSTULATION_CONTROL_REPROOF",
+  "nextFindingId": "VRM-139",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run browser-only PRE-I4 focal against the already materialized canonical DEV source a2f7acd659b68217299f92ef69a320f08e806635. If browser PASS, resume only Finance durable + Certification + final focal receipt without rebuild/redeploy. Production remains untouched.",
+  "exactNextAction": "Run browser-only PRE-I4 focal against already materialized canonical DEV source a2f7acd659b68217299f92ef69a320f08e806635. If PASS, immediately execute Finance durable + Certification + final focal receipt without rebuild/redeploy.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -131,14 +131,14 @@
     "hrRevision": "2b0114c39d64a0e3697667572de0dfdcffe476c5cd8112449fcab1da24e1085d"
   },
   "lastControlAttempt": {
-    "runId": 36937062335,
-    "jobId": 110619738146,
+    "runId": 36938470948,
+    "jobId": 110624232674,
     "classification": "MAPPING_FAILURE",
-    "code": "VRM-137_PAULA_HISTORY_REFERENCE",
+    "code": "VRM-138_SHOPPER_POSTULATION_UNIVERSE",
     "productDefect": false,
     "productSourceChanged": false,
-    "observedHistoryTotal": 8,
-    "staleExpectedTotal": 0,
+    "cumulativePostulations": 1,
+    "currentPeriodPosts": 0,
     "correctionOwner": "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs",
     "production": false
   },
