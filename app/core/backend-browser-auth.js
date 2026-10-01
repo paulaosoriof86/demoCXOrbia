@@ -239,8 +239,10 @@ window.CX = window.CX || {};
   function showAuthRestoring(){
     if(!protectedLoginEnabled())return;
     const login=document.getElementById('login'),app=document.getElementById('app');
-    if(login)login.classList.add('hidden');
-    if(app)app.classList.remove('on');
+    const hasAuthorizedShell=!!window.CX_BACKEND_AUTHORIZED_STATE;
+    if(login&&!hasAuthorizedShell)login.classList.add('hidden');
+    if(app&&!hasAuthorizedShell)app.classList.remove('on');
+    if(hasAuthorizedShell)return;
     let box=document.getElementById('cxAuthRestoring');
     if(!box){
       box=document.createElement('div');box.id='cxAuthRestoring';
@@ -378,7 +380,8 @@ window.CX = window.CX || {};
       await signIn(login, password, namespace, role);
       visible.password.value = '';
       visible.login.value = '';
-      visible.submit.textContent = 'Cargando...';
+      if(window.CX_BACKEND_AUTHORIZED_STATE){enterAfterBackendReady();visible.submit.textContent='Ingresar';}
+      else visible.submit.textContent = 'Cargando...';
     }catch(e){
       visible.password.value = '';
       setCredentialError(authErrorMessage(e));
