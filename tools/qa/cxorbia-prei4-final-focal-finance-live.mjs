@@ -93,11 +93,35 @@ try{
 
   const browser=await chromium.launch({headless:true});let projection;
   try{
-    const ctx=await browser.newContext(),page=await ctx.newPage(),custom=await auth.createCustomToken(uid);
+    const ctx=await browser.newContext(),page=await ctx.newPage();
     const url=HOST+'/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV';
-    await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
-    await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
-    await page.evaluate(async t=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);await firebase.auth().signInWithCustomToken(t);},custom);
+    const transient=/Execution context was destroyed|navigation|FIREBASE_SDK_NOT_READY|app-compat\/no-app|No Firebase App|auth\/network-request-failed|network AuthError|timeout|interrupted connection|unreachable host|Target page, context or browser has been closed/i;
+    let settled=false,lastAuthError='';
+    for(let attempt=1;attempt<=5;attempt++){
+      try{
+        if(attempt>1){
+          await page.goto('about:blank',{waitUntil:'domcontentloaded',timeout:30000}).catch(()=>{});
+          await page.waitForTimeout(1000*attempt);
+        }
+        await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
+        await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
+        const custom=await auth.createCustomToken(uid);
+        await page.evaluate(async t=>{
+          if(!window.firebase?.auth||!Array.isArray(window.firebase?.apps)||!window.firebase.apps.length)throw new Error('FIREBASE_SDK_NOT_READY');
+          await window.firebase.auth().setPersistence(window.firebase.auth.Auth.Persistence.LOCAL);
+          await window.firebase.auth().signInWithCustomToken(t);
+        },custom);
+      }catch(error){
+        const msg=str(error?.message||error);
+        if(!transient.test(msg))throw error;
+        lastAuthError=msg;
+      }
+      const currentUid=await page.evaluate(()=>String(window.firebase?.auth?.().currentUser?.uid||'')).catch(()=>'');
+      if(currentUid===String(uid)){settled=true;break;}
+      lastAuthError='uid_not_persisted';
+      if(attempt<5)await page.waitForTimeout(1200*attempt);
+    }
+    if(!settled)throw new Error('ENVIRONMENT_FAILURE:FINAL_FINANCE_CUSTOM_AUTH_NOT_SETTLED:'+lastAuthError.slice(0,180));
     await page.waitForFunction(()=>window.CX?.backendAuth?.context?.()?.authenticated===true&&window.CX?.data?.__financeReadBridge===true,null,{timeout:120000});
     projection=await page.evaluate(async ({projectId,periodId,ids})=>{
       const movements=await CX.data.getFinancialMovements({projectId,periodId});
