@@ -603,9 +603,20 @@ CX.module('movimientos', ({data,ui})=>{
         const ctCur=()=>{const c=ov.querySelector('#ctPais').value;return c&&p.currency[c]?p.currency[c]:PENDING_CURRENCY;};
         const syncCt=()=>{const cu=ctCur();ov.querySelector('#ctCurLbl').textContent=cu===PENDING_CURRENCY?'(elige país)':'('+cu+')';};
         ov.querySelector('#ctPais').addEventListener('change',syncCt); syncCt();
-        ov.querySelector('#ctSave').addEventListener('click',()=>{
+        ov.querySelector('#ctSave').addEventListener('click',async()=>{
         if(ctCur()===PENDING_CURRENCY){ui.toast('Selecciona el país para resolver la moneda antes de registrar','warn');return;} /* R31: país/moneda obligatorio */
-        const r={concepto:ov.querySelector('#ctCon').value||'(sin concepto)',monto:+ov.querySelector('#ctMonto').value||0,pais:ov.querySelector('#ctPais').value,moneda:ctCur(),vence:ov.querySelector('#ctVence').value};
+        const r={concepto:ov.querySelector('#ctCon').value||'(sin concepto)',monto:+ov.querySelector('#ctMonto').value||0,amount:+ov.querySelector('#ctMonto').value||0,pais:ov.querySelector('#ctPais').value,country:ov.querySelector('#ctPais').value,moneda:ctCur(),currency:ctCur(),vence:ov.querySelector('#ctVence').value,dueDate:ov.querySelector('#ctVence').value,origin:'manual'};
+        if(!r.amount||r.amount<=0){ui.toast('Ingresa un monto mayor a cero','warn');return;}
+        if(connectedFinance()){
+          if(scope==='global'||typeof data.createFinanceAccount!=='function'){ui.toast('Este alcance aún no tiene persistencia financiera durable habilitada.','warn');return;}
+          const btn=ov.querySelector('#ctSave'),prior=btn.textContent;btn.disabled=true;btn.textContent='Registrando…';
+          try{
+            const ack=await data.createFinanceAccount(k,r,{ackAware:true,reason:'admin-finance-account-create'});
+            if(!(ack?.ok===true&&ack?.status==='committed'&&ack?.providerAck===true&&ack?.successUiAllowed===true))throw new Error(ack?.code||'FINANCE_ACCOUNT_ACK_REQUIRED');
+            await refreshDurableFinance(true);close();draw();ui.toast('Cuenta por '+(k==='cxc'?'cobrar':'pagar')+' registrada y confirmada','ok');
+          }catch(error){btn.disabled=false;btn.textContent=prior;ui.toast('No se registró la cuenta: faltó confirmación durable.','err');}
+          return;
+        }
         if(k==='cxc')CX.finStore.addCxc(pid(),r);else CX.finStore.addCxp(pid(),r);close();draw();ui.toast('Cuenta por '+(k==='cxc'?'cobrar':'pagar')+' registrada','ok');});}});
     }));
 
