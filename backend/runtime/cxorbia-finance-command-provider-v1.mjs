@@ -7,7 +7,7 @@
 import crypto from 'node:crypto';
 
 export const VERSION='cxorbia-finance-command-provider-v1';
-export const COMMAND_TYPES=Object.freeze(['finance.reconcile.visit','finance.payment.batch']);
+export const COMMAND_TYPES=Object.freeze(['finance.reconcile.visit','finance.payment.batch','finance.movement.create','finance.account.create','finance.account.apply']);
 export const OPERATOR_ROLES=Object.freeze(['super','admin']);
 
 const str=v=>String(v==null?'':v).trim();
