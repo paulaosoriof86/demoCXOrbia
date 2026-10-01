@@ -108,6 +108,8 @@ CX.shopperPostForm = function(data, p, v, ui){
     const reasons=[];
     if(!isIso(dateVal)) reasons.push('proposed_date_invalid');
     else{
+      const todayLocal=new Intl.DateTimeFormat('en-CA',{timeZone:String(p.timeZone||p.timezone||CX.tenantProfile?.timeZone||'America/Guatemala'),year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+      if(dateVal<todayLocal) reasons.push('before_today');
       if(!isIso(v.disponibleDesde)) reasons.push('available_from_missing_or_invalid');
       else if(dateVal<v.disponibleDesde) reasons.push('before_available_from');
       /* P0-3 (V161): el fallback ignoraba measurementWindowStart/End — aceptaba fechas fuera de la
