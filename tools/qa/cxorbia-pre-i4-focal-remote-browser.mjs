@@ -130,7 +130,7 @@ async function signInMember(member,kind,route,options={}){
       const list=v=>Array.isArray(v)?v:[];
       const phase=code=>typeof d.phaseFlow==='function'?d.phaseFlow(code):null;
       const ranking=typeof d.shopperRankingRows==='function'?d.shopperRankingRows():[];
-      const population=typeof d.shoppersFor==='function'?d.shoppersFor().filter(s=>typeof d.shopperDataLevel!=='function'||d.shopperDataLevel(s)!=='protected_reference'):[];
+      const population=typeof d.shoppersFor==='function'?d.shoppersFor():[];
       const trustedPlatformAuthorities=new Set(['provider_exact','tenant_adjudication','platform_created','migrated_exact']);
       const authorizedPlatformPopulation=population.filter(s=>s?.__fullProfilePlatformOnly===true&&s?.__authorizedExactPlatformIdentity===true&&s?.__providerExactIdentityLink===true&&trustedPlatformAuthorities.has(String(s?.__providerIdentityAuthorityType||'').toLowerCase())&&Array.isArray(s?.projectIds)&&s.projectIds.map(String).includes(String(d.currentProjectId||'')));
       const untrustedPlatformPopulation=population.filter(s=>(s?.__fullProfilePlatformOnly===true||s?.__platformOnlyProfile===true)&&!authorizedPlatformPopulation.includes(s));
