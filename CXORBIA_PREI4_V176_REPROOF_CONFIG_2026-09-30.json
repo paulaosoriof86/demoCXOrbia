@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.prei4.v176-reproof-config.v1",
-  "sourceSha": "37681edd220578f4799b9420eda856cb37f46b5c",
-  "sourceTree": "0156a818b49ada283da9c0c209427201b7c5f287",
+  "sourceSha": "19ce6ac1cbea7c94ad5f61009cea961a3b11e606",
+  "sourceTree": "a9dcc983062ea16767b9d9e38521ad096c63a5f8",
   "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
   "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "base": "c487449e5187d7219033c54fa1ac3db5fb6c822e",
@@ -143,5 +143,12 @@
   "allowedHr008SuccessorOwners": [
     "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs"
   ],
-  "runtimeVisitReconciliationConcurrency": 16
+  "runtimeVisitReconciliationConcurrency": 16,
+  "latestSourceProof": {
+    "findingId": "VRM-132",
+    "decision": "PASS_PREI4_VRM132_LIQUIDACIONES_SOURCE",
+    "runId": 36925794086,
+    "owner": "app/modules/finanzas.js",
+    "production": false
+  }
 }

@@ -106,7 +106,21 @@
     ]
   },
   "testCleanup": {
-    "target": "Paula Osorio / MC. Pradera Zacapa / SEP 2026",
+    "target": "Paula Osorio / MC. Pradera Zacapa / historical SEP 2026 test target",
+    "currentMode": "READBACK_ONLY_IF_LIVE_HR_TRUTH_CHANGED",
+    "sourceDrift20261001": {
+      "hrRow": "SEPTIEMBRE 26!35",
+      "status": "LIVE_HR_NOW_ASSIGNED_NOT_TEST_AVAILABLE",
+      "rule": "Do not erase or overwrite a legitimate live HR assignment. Remove platform test overlays only when the HR row is still the unassigned test target.",
+      "provenRunId": 36923760688,
+      "paulaActiveTarget": 0,
+      "paulaHistoryBefore": 8,
+      "paulaHistoryAfter": 8,
+      "dashboardPeriod": "cinepolis-2026-10",
+      "dashboardHrAssigned": 13,
+      "dashboardUiAssigned": 13,
+      "hrWrites": 0
+    },
     "deleteOnly": [
       "platform assignment overlay",
       "related test application/reservation if present",
@@ -114,12 +128,13 @@
     ],
     "forbid": [
       "HR mutation",
-      "historical visit deletion"
+      "historical visit deletion",
+      "deleting or clearing a current legitimate HR assignment"
     ],
     "readback": [
-      "HR SEPTIEMBRE 26!35 remains available/unassigned",
-      "Paula active test visit disappears",
-      "Dashboard assignment KPI equals same live HR revision",
+      "Preserve exact live HR truth at readback revision",
+      "Paula has no active stale test target",
+      "Dashboard assignment KPIs equal same live HR revision",
       "Paula historical visits remain unchanged"
     ]
   },
@@ -142,10 +157,10 @@
     "currentState": "SOURCE_PROVEN_PENDING_DEV_LIVE_REPROOF"
   },
   "sourceSuccessor": {
-    "sha": "37681edd220578f4799b9420eda856cb37f46b5c",
-    "tree": "0156a818b49ada283da9c0c209427201b7c5f287",
-    "predecessor": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
-    "proof": "PASS_VRM134_PROVIDER_SOURCE"
+    "sha": "19ce6ac1cbea7c94ad5f61009cea961a3b11e606",
+    "tree": "a9dcc983062ea16767b9d9e38521ad096c63a5f8",
+    "predecessor": "37681edd220578f4799b9420eda856cb37f46b5c",
+    "proof": "PASS_PREI4_VRM132_LIQUIDACIONES_SOURCE_RUN_36925794086"
   },
   "providerFailureRemediation": {
     "classification": "PROVIDER_FAILURE",
@@ -153,5 +168,29 @@
     "shopperAndVisitParallel": true,
     "visitConcurrency": 16,
     "maxVisitConcurrency": 24
+  },
+  "currentOperationalTruth": {
+    "observedAt": "2026-10-01",
+    "hrRevision": "e242d83f7a63b4f390a3ff6eeaeb616dea52f52f159a5e3a929c5473a7225159",
+    "currentPeriodKey": "2026-10",
+    "currentPeriodId": "cinepolis-2026-10",
+    "periods": 17,
+    "visits": 748,
+    "currentPeriodVisits": 44,
+    "GT": 34,
+    "HN": 10,
+    "rawHrShoppers": 226,
+    "sourceSafe": true,
+    "production": false
+  },
+  "vrm132FollowupRemediation": {
+    "classification": "FUNCTIONAL_DEFECT",
+    "owner": "app/modules/finanzas.js",
+    "rootCause": "Liquidaciones referenced cxpAccounts/connectedFinance/refreshDurableFinance outside their Movimientos closure.",
+    "correction": "Local durable account projection helpers inside Liquidaciones; provider origin|origen compatibility; asynchronous durable CxP refresh without route crash.",
+    "sourceProofRunId": 36925794086,
+    "sourceProofDecision": "PASS_PREI4_VRM132_LIQUIDACIONES_SOURCE",
+    "deploys": 0,
+    "production": false
   }
 }

@@ -4,16 +4,16 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4_PROVIDER_RECONCILIATION_REPROOF",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "37681edd220578f4799b9420eda856cb37f46b5c",
-  "productTreeAuthority": "0156a818b49ada283da9c0c209427201b7c5f287",
-  "predecessorProductSourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+  "productSourceSha": "19ce6ac1cbea7c94ad5f61009cea961a3b11e606",
+  "productTreeAuthority": "a9dcc983062ea16767b9d9e38521ad096c63a5f8",
+  "predecessorProductSourceSha": "37681edd220578f4799b9420eda856cb37f46b5c",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "863b603e7c3562ce8eb07cd78a29cf4100bbab65",
+  "findingsLedgerExpectedGitBlob": "1f1b16152027aecc838b71813dbb13e9b2ee8958",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "PRE_I4_PROVIDER_RECONCILIATION_LIVE_REPROOF",
+  "activeBlocker": "PRE_I4_VRM132_LIQUIDACIONES_DEV_LIVE_REPROOF",
   "nextFindingId": "VRM-136",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Use the existing PRE-I4 CONTENT-001 Recovery DEV lane to reprove productSourceSha 37681edd220578f4799b9420eda856cb37f46b5c after VRM-134 provider-concurrency remediation. Require same-revision shopper+visit providerAck, byte parity, authenticated Admin+Shopper live proof, then safe Paula/Pradera cleanup. Production remains DO_NOT_TOUCH.",
+  "exactNextAction": "Use the existing PRE-I4 CONTENT-001 Recovery DEV lane to materialize and reprove productSourceSha 19ce6ac1cbea7c94ad5f61009cea961a3b11e606 exactly once. Require current-period HR parity, authenticated Admin+Shopper browser including Liquidaciones, durable finance ACK/readback/cleanup, certification live proof, and final focal receipt. Production remains DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -41,24 +41,19 @@
   },
   "lastSourceFix": {
     "findingIds": [
-      "VRM-081"
+      "VRM-132"
     ],
-    "sourceSha": "0c3ce84d567a674ec18f90eedba1b2380c45d55b",
-    "sourceTree": "5fee581f4c09dd6b9bd5728dd857b9abda8cf697",
-    "predecessorSha": "5ab4c206ff9397eef6e06ee7cf9a22c3c728721a",
+    "sourceSha": "19ce6ac1cbea7c94ad5f61009cea961a3b11e606",
+    "sourceTree": "a9dcc983062ea16767b9d9e38521ad096c63a5f8",
+    "predecessorSha": "37681edd220578f4799b9420eda856cb37f46b5c",
     "productFiles": 1,
-    "testFiles": 1,
-    "testControlHeadSha": "48f8c0ff56c69e5b529ab2e527960ff69c192bcb",
+    "testFiles": 2,
     "sourceProofs": [
       {
-        "decision": "PASS_VRM081_ISOLATED_RUNTIME_HARNESS",
-        "testsPassed": 8,
-        "sourceSha": "5ab4c206ff9397eef6e06ee7cf9a22c3c728721a"
-      },
-      {
-        "decision": "PASS_VRM081_ALIAS_MIGRATION_FOCAL_HARNESS",
-        "testsPassed": 3,
-        "sourceSha": "0c3ce84d567a674ec18f90eedba1b2380c45d55b"
+        "decision": "PASS_PREI4_VRM132_LIQUIDACIONES_SOURCE",
+        "runId": 36925794086,
+        "owner": "app/modules/finanzas.js",
+        "testsPassed": 8
       }
     ],
     "directWriterAuthority": "CR-20260910-02",
@@ -1802,5 +1797,15 @@
       "visitReconciliationConcurrency": 16,
       "workflowCompatibilityState": "HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED"
     }
+  },
+  "preI4CurrentSourceSuccessor": {
+    "findingId": "VRM-132",
+    "sourceSha": "19ce6ac1cbea7c94ad5f61009cea961a3b11e606",
+    "sourceTree": "a9dcc983062ea16767b9d9e38521ad096c63a5f8",
+    "predecessorSha": "37681edd220578f4799b9420eda856cb37f46b5c",
+    "proofRunId": 36925794086,
+    "proofDecision": "PASS_PREI4_VRM132_LIQUIDACIONES_SOURCE",
+    "currentPeriodKey": "2026-10",
+    "production": false
   }
 }
