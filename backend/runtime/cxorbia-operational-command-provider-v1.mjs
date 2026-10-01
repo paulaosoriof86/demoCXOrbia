@@ -103,6 +103,17 @@ async function resolveVisitDocument(tx,visits,visitId,hrRowId){
 }
 function assertPeriod(command,data){if(str(data?.periodId)!==str(command.periodId))throw new Error('OPS_PERIOD_SCOPE_MISMATCH');}
 function isAvailable(v){const state=str(v?.estado||v?.status).toLowerCase();return ['disponible','available'].includes(state)&&!str(v?.shopperId);}
+function tenantDateKey(timezone='America/Guatemala'){
+  const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:timezone,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).filter(x=>x.type!=='literal').map(x=>[x.type,x.value]));
+  return `${parts.year}-${parts.month}-${parts.day}`;
+}
+function assertSchedulableDate(v,date,timezone){
+  const value=str(date);if(!/^20\d{2}-[01]\d-[0-3]\d$/.test(value))throw new Error('OPS_SCHEDULE_DATE_REQUIRED');
+  const facets=canonicalFacets(v);if(facets.realized===true||facets.questionnaire===true||facets.submitted===true||facets.liquidationConfirmed===true||facets.paymentConfirmed===true||facets.cancelled===true)throw new Error('OPS_VISIT_NOT_SCHEDULABLE');
+  const min=[tenantDateKey(timezone),str(v?.disponibleDesde||v?.availableFrom)].filter(Boolean).sort().at(-1);
+  if(min&&value<min)throw new Error('OPS_SCHEDULE_DATE_BEFORE_ALLOWED');
+  return value;
+}
 function projectScope(snapshot){
   return {
     tenantId:str(snapshot?.tenantId||snapshot?.tenantConfig?.tenantId),
