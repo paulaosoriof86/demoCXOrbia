@@ -104,19 +104,30 @@ while IFS= read -r p; do
   test "$parity" = 1
 done < <(jq -r '.expectedPendingFiles[] | select(startswith("app/"))' "$CONFIG")
 
-curl -fsS -H 'Cache-Control: no-cache, no-store, max-age=0' "$PREI4_CONTENT001_ROOT/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&fresh=1&v176fresh=$GITHUB_RUN_ID-$(date +%s%N)" > "$PREI4_CONTENT001_OUT/hr-fresh.json"
-jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .refreshError==null and .hrWrites==false and .production==false and (.cacheMs|tonumber)<=15000' "$PREI4_CONTENT001_OUT/hr-fresh.json" >/dev/null
-HR_REVISION="$(jq -r '.revision // empty' "$PREI4_CONTENT001_OUT/hr-fresh.json")"; [[ "$HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
-ok=0
-for i in $(seq 1 240); do
-  curl -fsS -H 'Cache-Control: no-cache, no-store, max-age=0' "$URL/health?run735reconcile=$GITHUB_RUN_ID-$i" > "$PREI4_CONTENT001_OUT/reconciliation-health.json"
-  if jq -e --arg rev "$HR_REVISION" '.ok==true and .lastShopperReconciliation.providerAck==true and .lastShopperReconciliation.sourceRevision==$rev and .lastVisitReconciliation.providerAck==true and .lastVisitReconciliation.sourceRevision==$rev and .hrWrites==false and .production==false' "$PREI4_CONTENT001_OUT/reconciliation-health.json" >/dev/null; then ok=1; break; fi
-  sleep 5
-done
-test "$ok" = 1
+HR_RECONCILIATION_REUSED=false
+curl -fsS -H 'Cache-Control: no-cache, no-store, max-age=0' "$PREI4_CONTENT001_ROOT/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&v176preflight=$GITHUB_RUN_ID-$(date +%s%N)" > "$PREI4_CONTENT001_OUT/hr-preflight.json"
+PRE_REVISION="$(jq -r '.revision // empty' "$PREI4_CONTENT001_OUT/hr-preflight.json")"
+curl -fsS -H 'Cache-Control: no-cache, no-store, max-age=0' "$URL/health?v176preflight=$GITHUB_RUN_ID-$(date +%s%N)" > "$PREI4_CONTENT001_OUT/reconciliation-preflight.json"
+if [ "$REUSED_EXISTING" = true ] && [[ "$PRE_REVISION" =~ ^[0-9a-f]{64}$ ]] && jq -e --arg rev "$PRE_REVISION" '.ok==true and .lastShopperReconciliation.providerAck==true and .lastShopperReconciliation.sourceRevision==$rev and .lastVisitReconciliation.providerAck==true and .lastVisitReconciliation.sourceRevision==$rev and .hrWrites==false and .production==false' "$PREI4_CONTENT001_OUT/reconciliation-preflight.json" >/dev/null && jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .refreshError==null and .hrWrites==false and .production==false and (.cacheMs|tonumber)<=15000' "$PREI4_CONTENT001_OUT/hr-preflight.json" >/dev/null; then
+  cp "$PREI4_CONTENT001_OUT/hr-preflight.json" "$PREI4_CONTENT001_OUT/hr-fresh.json"
+  cp "$PREI4_CONTENT001_OUT/reconciliation-preflight.json" "$PREI4_CONTENT001_OUT/reconciliation-health.json"
+  HR_REVISION="$PRE_REVISION"
+  HR_RECONCILIATION_REUSED=true
+else
+  curl -fsS -H 'Cache-Control: no-cache, no-store, max-age=0' "$PREI4_CONTENT001_ROOT/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&fresh=1&v176fresh=$GITHUB_RUN_ID-$(date +%s%N)" > "$PREI4_CONTENT001_OUT/hr-fresh.json"
+  jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .refreshError==null and .hrWrites==false and .production==false and (.cacheMs|tonumber)<=15000' "$PREI4_CONTENT001_OUT/hr-fresh.json" >/dev/null
+  HR_REVISION="$(jq -r '.revision // empty' "$PREI4_CONTENT001_OUT/hr-fresh.json")"; [[ "$HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
+  ok=0
+  for i in $(seq 1 240); do
+    curl -fsS -H 'Cache-Control: no-cache, no-store, max-age=0' "$URL/health?run735reconcile=$GITHUB_RUN_ID-$i" > "$PREI4_CONTENT001_OUT/reconciliation-health.json"
+    if jq -e --arg rev "$HR_REVISION" '.ok==true and .lastShopperReconciliation.providerAck==true and .lastShopperReconciliation.sourceRevision==$rev and .lastVisitReconciliation.providerAck==true and .lastVisitReconciliation.sourceRevision==$rev and .hrWrites==false and .production==false' "$PREI4_CONTENT001_OUT/reconciliation-health.json" >/dev/null; then ok=1; break; fi
+    sleep 5
+  done
+  test "$ok" = 1
+fi
 curl -fsS -H 'Cache-Control: no-cache, no-store, max-age=0' "$PREI4_CONTENT001_ROOT/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&v177postreconcile=$GITHUB_RUN_ID" > "$PREI4_CONTENT001_OUT/hr-meta.json"
 jq -e --arg rev "$HR_REVISION" '.ok==true and .revision==$rev and .sourceSafe==true and .refreshError==null and .shopperReconciliation.providerAck==true and .shopperReconciliation.sourceRevision==$rev and .visitReconciliation.providerAck==true and .visitReconciliation.sourceRevision==$rev and .hrWrites==false and .production==false' "$PREI4_CONTENT001_OUT/hr-meta.json" >/dev/null
-curl -fsS -H 'Cache-Control: no-cache, no-store, max-age=0' "$PREI4_CONTENT001_ROOT/api/$TENANT_ID/$PROJECT_ID/hr-live?fresh=1&v176availability=$GITHUB_RUN_ID" > "$PREI4_CONTENT001_OUT/hr-live-current.json"
+curl -fsS -H 'Cache-Control: no-cache, no-store, max-age=0' "$PREI4_CONTENT001_ROOT/api/$TENANT_ID/$PROJECT_ID/hr-live?v176availability=$GITHUB_RUN_ID" > "$PREI4_CONTENT001_OUT/hr-live-current.json"
 node - "$PREI4_CONTENT001_OUT/hr-live-current.json" <<'NODE'
 const fs=require('fs');
 const file=process.argv[2],body=JSON.parse(fs.readFileSync(file,'utf8')),s=body.snapshot||body.data||body;
