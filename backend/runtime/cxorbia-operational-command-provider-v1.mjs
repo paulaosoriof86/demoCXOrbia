@@ -229,6 +229,12 @@ async function transactionExecute(db,command,actor){
       const resolved=await resolveVisitDocument(tx,r.visits,visitId,payload.hrRowId),vRef=resolved.ref,vSnap=resolved.snap,v=resolved.data;assertPeriod(command,v);
       if(!isAvailable(v))throw new Error('OPS_VISIT_NOT_AVAILABLE');
       const shopperId=str(payload.shopperId||actor.shopperId);if(shopperId!==actor.shopperId)throw new Error('OPS_APPLICATION_SHOPPER_SCOPE_DENIED');
+      const proposedDate=str(payload.proposedDate);if(!/^20\d{2}-[01]\d-[0-3]\d$/.test(proposedDate))throw new Error('OPS_APPLICATION_PROPOSED_DATE_REQUIRED');
+      const projectSnap=await tx.get(r.project),projectData=projectSnap.exists?(projectSnap.data()||{}):{};
+      const timezone=str(projectData.timeZone||projectData.timezone||'America/Guatemala');
+      const localParts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:timezone,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).filter(x=>x.type!=='literal').map(x=>[x.type,x.value]));
+      const localToday=`${localParts.year}-${localParts.month}-${localParts.day}`;
+      if(proposedDate<localToday)throw new Error('OPS_APPLICATION_PROPOSED_DATE_IN_PAST');
       entityId=entityId||('app-'+sha(`${command.tenantId}\0${command.projectId}\0${visitId}\0${shopperId}\0${command.idempotencyKey}`).slice(0,24));
       const aRef=r.applications.doc(entityId),aSnap=await tx.get(aRef);if(aSnap.exists)throw new Error('OPS_APPLICATION_ALREADY_EXISTS');
       tx.create(aRef,{id:entityId,applicationId:entityId,postulationId:entityId,tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,visitId,visitaId:visitId,hrRowId:payload.hrRowId||v.hrRowId||null,shopperId,status:'pendiente',estado:'pendiente',fechaProp:payload.proposedDate||null,note:payload.note||null,source:'platform',version:1,createdAt:now(),updatedAt:now()});providerWrites++;
