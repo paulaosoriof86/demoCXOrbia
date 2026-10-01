@@ -14,19 +14,17 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "19ce6ac1cbea7c94ad5f61009cea961a3b11e606",
-    "sourceTree": "a9dcc983062ea16767b9d9e38521ad096c63a5f8",
-    "predecessorSha": "37681edd220578f4799b9420eda856cb37f46b5c",
+    "sourceSha": "24c329566ca63378ecfdb6f50b3a6329fd16be93",
+    "sourceTree": "e6f0174cf47a6347b9c19c46f73a3901152d303e",
+    "predecessorSha": "19ce6ac1cbea7c94ad5f61009cea961a3b11e606",
     "production": false,
-    "state": "SOURCE_PROVEN_PENDING_DEV_LIVE_REPROOF",
+    "state": "SOURCE_FIX_PENDING_DEV_LIVE_REPROOF",
     "sourceProof": {
-      "decision": "PASS_PREI4_VRM132_LIQUIDACIONES_SOURCE",
-      "runId": 36925794086,
-      "controlHeadSha": "19ce6ac1cbea7c94ad5f61009cea961a3b11e606",
+      "decision": "PENDING_PREI4_VRM136_DEV_LIVE_REPROOF",
       "classification": "FUNCTIONAL_DEFECT",
-      "owner": "app/modules/finanzas.js",
-      "rootCause": "Liquidaciones referenced cxpAccounts/connectedFinance/refreshDurableFinance from the separate Movimientos closure; route crashed before render.",
-      "correction": "Liquidaciones now owns its durable CxP projection helpers, reads financeAccounts for exact project+period, supports provider origin|origen, and redraws after durable read.",
+      "owner": "app/core/backend-cxdata-readonly-corte4.js",
+      "rootCause": "Corte4 readonly empty-backend guard cleared the already-authoritative external HR operational state on protected Firestore empty events, repeatedly blanking project/period and forcing C6 authority reconciliation.",
+      "correction": "When protected Firestore is empty after external HR authority is already valid, record the protected overlay as empty but preserve HR projects/visits/projectId/periodId and avoid project/shoppers/visit-flow empty emissions.",
       "deploys": 0,
       "production": false
     }
@@ -6409,6 +6407,35 @@
         "testsPassed": 27,
         "production": false
       }
+    },
+    "VRM-136": {
+      "id": "VRM-136",
+      "classification": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "title": "Protected Corte4 empty-state guard repeatedly erases valid external HR operational context",
+      "state": "SOURCE_FIX_PENDING_DEV_LIVE_REPROOF",
+      "observed": "Authenticated Admin navigation to Liquidaciones repeatedly alternated between the valid HR authority state and an empty Firestore Corte4 state; projectId and periodId were blanked before HR recomposition restored them.",
+      "rootCause": "app/core/backend-cxdata-readonly-corte4.js clearToBackendEmpty() unconditionally clears projects, visits, shoppers, posts, currentProjectId and currentPeriodId on protected Firestore empty/read-error events. In the external-HR project lane, Firestore is an authenticated protected overlay, not the operational authority, so this legacy fail-closed action overwrote an already-valid HR authority state and triggered a C6 re-render/reconcile loop.",
+      "evidence": {
+        "run36933860677": "15s stable-settle gate failed while final state had correct cinepolis/cinepolis-2026-10, proving repeated flapping rather than a permanent Liquidaciones context loss.",
+        "run36934542377": "Trace showed repeated hr-live-all-periods+firestore-authenticated-exact-overlay -> firebase:protected-dev-corte4 transitions, with projectId/periodId cleared on each transition and restored by HR authority afterward.",
+        "sourceOwner": "app/core/backend-cxdata-readonly-corte4.js"
+      },
+      "remediationContract": "Protected Firestore empty/error remains fail-closed for protected overlay data, but once external HR authority is valid it must not erase or replace HR operational projects/visits/projectId/periodId. Record overlay emptiness separately and preserve the HR sourceRef/context without emitting destructive empty project/shoppers/visit-flow events.",
+      "exactOwners": [
+        "app/core/backend-cxdata-readonly-corte4.js"
+      ],
+      "sourceFix": {
+        "sourceSha": "24c329566ca63378ecfdb6f50b3a6329fd16be93",
+        "sourceTree": "e6f0174cf47a6347b9c19c46f73a3901152d303e",
+        "predecessorSha": "19ce6ac1cbea7c94ad5f61009cea961a3b11e606",
+        "productOwners": [
+          "app/core/backend-cxdata-readonly-corte4.js"
+        ],
+        "proof": "PENDING_DEV_LIVE_REPROOF",
+        "production": false
+      },
+      "production": false
     }
   },
   "latestEvidenceOverrides": {
@@ -6988,17 +7015,16 @@
     "2": "C2_P0_CLOSURE",
     "3": "C3_TERMINAL_CUMULATIVE_PROOF",
     "4": "C4_ONE_HUMAN_VISUAL_ACCEPTANCE",
-    "currentStep": "C3 preterminal Module Truth 20/20 on exact VRM-083 source/runtime",
+    "currentStep": "PRE-I4 VRM-136 exact DEV materialization and focal live reproof",
     "allowedOwnerFiles": [
-      "backend/runtime/hr-live-service/server.mjs",
-      "backend/runtime/hr-live-service/test/cxorbia-vrm083-protected-auth-namespace.test.mjs"
+      "app/core/backend-cxdata-readonly-corte4.js"
     ],
     "noGeneralAudit": true,
     "noNewCandidate": true,
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Grant the four frozen DEV-only IAM roles in preI4CertResProviderCapability.requiredIam to the existing firebase-adminsdk service account on project cxorbia-backend-dev. Then Recovery will automatically re-read permissions, enable only the missing DEV APIs, create/link the default Firebase Storage bucket, publish scoped Storage rules, implement PREI4-CERT-001/002 and PREI4-RES-001 on the same cumulative candidate, and repeat only the affected gates. Production remains untouched.",
+  "exactNextAction": "Materialize canonical product source 24c329566ca63378ecfdb6f50b3a6329fd16be93 / tree e6f0174cf47a6347b9c19c46f73a3901152d303e exactly once in existing Recovery DEV lane, then execute authenticated Admin+Shopper browser focal with stable HR authority, Liquidaciones, durable Finance, Certification and final focal receipt. Reuse prior PASS gates. Production remains untouched.",
   "supersedesGitBlob": "397a9cee8c71d3156567a0cc96bfdcba88bb7c3a",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -7027,7 +7053,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-136",
+  "nextFindingId": "VRM-137",
   "lastControlFailure": {
     "runId": 36261995370,
     "runNumber": 499,
@@ -8388,7 +8414,7 @@
     "PREI4-CONTENT-001",
     "PREI4-CONTENT-002"
   ],
-  "preI4NextAction": "Grant the four frozen DEV-only IAM roles in preI4CertResProviderCapability.requiredIam to the existing firebase-adminsdk service account on project cxorbia-backend-dev. Then Recovery will automatically re-read permissions, enable only the missing DEV APIs, create/link the default Firebase Storage bucket, publish scoped Storage rules, implement PREI4-CERT-001/002 and PREI4-RES-001 on the same cumulative candidate, and repeat only the affected gates. Production remains untouched.",
+  "preI4NextAction": "Materialize canonical product source 24c329566ca63378ecfdb6f50b3a6329fd16be93 / tree e6f0174cf47a6347b9c19c46f73a3901152d303e exactly once in existing Recovery DEV lane, then execute authenticated Admin+Shopper browser focal with stable HR authority, Liquidaciones, durable Finance, Certification and final focal receipt. Reuse prior PASS gates. Production remains untouched.",
   "preI4Admin002": {
     "findingId": "PREI4-ADMIN-002",
     "state": "FIXED_PROVEN_RUN601",
@@ -10083,14 +10109,14 @@
     "production": false
   },
   "latestSourceSuccessor": {
-    "findingId": "VRM-107",
-    "sourceSha": "c1c4e748b39c5632e8648023433a00c15d57191b",
-    "sourceTree": "ccb3d9da3c110e2d5fff57bae0d2d0eb76b3c4b4",
-    "predecessorSha": "2cff3441f126d7d805932127bb9de9289ba273ad",
+    "findingId": "VRM-136",
+    "sourceSha": "24c329566ca63378ecfdb6f50b3a6329fd16be93",
+    "sourceTree": "e6f0174cf47a6347b9c19c46f73a3901152d303e",
+    "predecessorSha": "19ce6ac1cbea7c94ad5f61009cea961a3b11e606",
     "exactDelta": [
-      "backend/runtime/hr-live-service/server.mjs"
+      "app/core/backend-cxdata-readonly-corte4.js"
     ],
-    "state": "SOURCE_FIX_REPROOF_REQUIRED",
+    "state": "SOURCE_FIX_PENDING_DEV_LIVE_REPROOF",
     "sameCanonicalCandidate": true,
     "production": false
   },
