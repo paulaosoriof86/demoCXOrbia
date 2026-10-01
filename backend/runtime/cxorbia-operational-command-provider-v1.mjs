@@ -377,8 +377,9 @@ async function transactionExecute(db,command,actor){
         if(!OPERATOR_ROLES.includes(actor.role))throw new Error('OPS_RESCHEDULE_OPERATOR_ONLY');
         const decision=str(payload.decision||'approved').toLowerCase();if(!['approved','rejected'].includes(decision))throw new Error('OPS_RESCHEDULE_DECISION_INVALID');
         if(decision==='approved'&&!newDate)throw new Error('OPS_RESCHEDULE_DATE_REQUIRED');
-        const patch={rescheduleRequest:{status:decision,newDate:newDate||null,reason:payload.reason||null,decidedBy:actor.uid,decidedAt:now()},updatedAt:now(),version:Number(v.version||0)+1};
-        if(decision==='approved'){patch.agendada=newDate;patch.estado='agendada';patch.status='agendada';patch.pendienteAgendamiento=false;if(str(payload.franjaCode))patch.franjaCode=str(payload.franjaCode);}
+        const validatedDate=decision==='approved'?assertSchedulableDate(v,newDate,timezone):null;
+        const patch={rescheduleRequest:{status:decision,newDate:validatedDate,reason:payload.reason||null,decidedBy:actor.uid,decidedAt:now()},updatedAt:now(),version:Number(v.version||0)+1};
+        if(decision==='approved'){patch.agendada=validatedDate;patch.estado='agendada';patch.status='agendada';patch.pendienteAgendamiento=false;if(str(payload.franjaCode))patch.franjaCode=str(payload.franjaCode);}
         tx.set(vRef,patch,{merge:true});
       }
       providerWrites++;auditEntityType='visit';
