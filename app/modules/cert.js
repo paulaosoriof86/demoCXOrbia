@@ -227,7 +227,7 @@ CX.module('cert', ({role,data,ui})=>{
         const bankDraft={preguntas:generated.preguntas,gate:g,fecha:new Date().toISOString().slice(0,10),generadoPor:creador,generadoPorUid:uid,estado:'pending_review',provider:generated.provider,model:generated.model,providerAck:true,contentRevision:generated.contentRevision,generatedAt:new Date().toISOString()};
         const saved=await CX.certStore.save(p.id,bankDraft);
         if(!(saved?.providerAck===true&&saved?.committed===true))throw new Error('CERT_BANK_DURABLE_ACK_REQUIRED');
-        close();ui.toast('Banco generado por IA real y guardado · requiere revisión por otro administrador antes de publicarse.','ok',5200);CX.router?.nav?.('cert');
+        close();ui.toast('Banco generado por IA real y guardado · requiere revisión autorizada antes de publicarse.','ok',5200);CX.router?.nav?.('cert');
       }catch(error){
         ui.toast('No se pudo generar el banco: '+String(error?.message||error),'warn',5600);
       }finally{
@@ -239,7 +239,9 @@ CX.module('cert', ({role,data,ui})=>{
       publish.addEventListener('click',async()=>{
         const uid=CX.backendCertifications?.currentUid?.()||'';
         if(!uid){ui.toast('Sesión autenticada requerida.','warn');return;}
-        if(String(bank.generadoPorUid||'')===uid){ui.toast('La revisión debe realizarla una persona distinta a quien generó el banco.','warn',4800);return;}
+        const reviewPolicy=String(p.certificationReviewPolicy||p.certReviewPolicy||'authorized_admin').toLowerCase();
+        const distinctReviewerRequired=['maker_checker','distinct_reviewer','two_person'].includes(reviewPolicy);
+        if(distinctReviewerRequired&&String(bank.generadoPorUid||'')===uid){ui.toast('Este proyecto exige revisión por una persona distinta a quien generó el banco.','warn',4800);return;}
         if(!CX.permissions.gate('certification.publish',CX.permissions.ctx({entityType:'certification_bank',entityId:p.id}),ui))return;
         const reviewer=CX.session?.user?.name||uid;
         const next=Object.assign({},bank,{estado:'published',revisadoPor:reviewer,revisadoPorUid:uid,publishedAt:new Date().toISOString()});
