@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_VISUAL_REMEDIATION_REQUIRED",
+  "status": "HOLD_PREI4_CUMULATIVE_REMEDIATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4_HUMAN_VISUAL_REMEDIATION",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,13 +8,13 @@
   "productTreeAuthority": "d83f57ed07ef684cd274d4b1db3a52d91f4ff400",
   "predecessorProductSourceSha": "f6c3bb6c038a77eee9cbca8bfbfd1096bfd48cbc",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "8ac9c8b50baf32a23b2a13ee69017c8c43005310",
+  "findingsLedgerExpectedGitBlob": "592c9253eeabe76ed672bbf4ba5b6b3e49bfc18a",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "PRE_I4_VISUAL_FUNCTIONAL_REMEDIATION",
-  "nextFindingId": "VRM-132",
+  "activeBlocker": "PRE_I4_CUMULATIVE_P0_REMEDIATION",
+  "nextFindingId": "VRM-136",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 microblock only: diagnose exact owners for VRM-121..VRM-130, compose one cumulative incremental remediation package without reopening frozen PASS areas, include safe cleanup of the Paula/MC. Pradera Zacapa platform test overlay with HR readback proving the HR row remains available/unassigned, then run focused live Admin+Shopper tests and a shortened human visual retest only for changed flows. Do not touch production.",
+  "exactNextAction": "Execute one cumulative I3 remediation package covering VRM-121..VRM-135 without reopening frozen PASS surfaces. Finance must be rewired to durable provider-backed movements/CxP/CxC and one canonical read model; self-registration must require country+municipality+city but HR auto-upsert must not; login/session restore and HR refresh must become non-blocking and route-preserving. Then run focal source tests, authenticated Admin+Shopper live tests, safe Paula/Pradera test-overlay cleanup, and a shortened human retest only on changed flows. Production remains DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1195,7 +1195,11 @@
     "VRM-127_NOTIFICATION_LIFECYCLE",
     "VRM-128_SHOPPER_IDENTITY_ADJUDICATION",
     "VRM-129_REASSIGN_CANDIDATES",
-    "VRM-130_TENANT_TIMEZONE_PERIOD"
+    "VRM-130_TENANT_TIMEZONE_PERIOD",
+    "VRM-132_FINANCE_DURABLE_EVENT_GRAPH",
+    "VRM-133_SELF_REGISTRATION_GEO",
+    "VRM-134_NONBLOCKING_LIVE_REFRESH",
+    "VRM-135_HUMAN_LOGIN_EXPERIENCE"
   ],
   "preI4Admin004": {
     "state": "FIXED_PROVEN_RUN686",

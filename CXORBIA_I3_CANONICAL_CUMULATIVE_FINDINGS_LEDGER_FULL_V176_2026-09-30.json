@@ -5947,6 +5947,91 @@
         "app/modules/misvisitas.js"
       ],
       "production": false
+    },
+    "VRM-132": {
+      "id": "VRM-132",
+      "classification": "PERSISTENCE_FAILURE",
+      "severity": "P0",
+      "title": "Finance Movements/CxP/CxC are not the durable source that drives Dashboard income and financial pending-source resolution",
+      "state": "OPEN_ROOT_CAUSE_PROVEN",
+      "rootCause": "The visible Movimientos/CxP/CxC UI still writes through CX.finStore in browser memory, while the durable backend finance bridge is read-only for financialMovements/paymentLots and the command provider only supports finance.reconcile.visit and finance.payment.batch. Dashboard ingreso is currently derived from project-config honRecibe multiplied across financially usable liquidation rows, not from durable operational income movements. Therefore adding an ingreso movement does not, by itself, clear 'Pendiente de fuente/configuración' or become the canonical income source.",
+      "historicalContracts": [
+        "Finanzas and Beneficios must consume one canonical financial truth.",
+        "liquidada never means pagada; paid requires source/audit evidence.",
+        "financing is non-operating cash inflow and simultaneously creates CxP; repayment reduces the linked CxP.",
+        "payment batches create expense movements but remain pending external payment reconciliation until source evidence exists.",
+        "country and currency remain separated; no cross-currency sums.",
+        "source/reconciliation review stays fail-closed and must not erase known operational obligations."
+      ],
+      "remediationContract": "Make durable financialMovements, receivables, payables, payment lots and reconciliation events provider-backed with ACK/idempotency. Operational income becomes known only from an authorized durable income source/movement for the exact tenant+project+period+country+currency (or an explicitly configured billing source), never from an arbitrary movement nor shopper honorarium fallback. CxP/CxC and dashboard totals must update from the same durable event graph. Financing must stay non-operating and linked to CxP. Payment/lote remains unconfirmed until external source evidence.",
+      "exactOwners": [
+        "app/core/finanzas-core.js",
+        "app/modules/finanzas.js",
+        "app/core/backend-cxdata-finance-read.js",
+        "app/core/backend-finance-benefits.js",
+        "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+        "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+        "backend/runtime/cxorbia-finance-phase-a-read-model-v1.mjs"
+      ],
+      "production": false
+    },
+    "VRM-133": {
+      "id": "VRM-133",
+      "classification": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "title": "Shopper self-registration geography is not enforced as required and must differ from HR auto-upsert",
+      "state": "OPEN_USER_CONTRACT_PLUS_SOURCE_PROVEN",
+      "rootCause": "The self-registration form renders geographic controls but only validates first name, last name and WhatsApp. Country/administrative location/city can therefore be blank. By contrast, HR auto-upsert must remain permissive because HR-managed shopper creation cannot be blocked by missing self-registration fields.",
+      "userContract": "For shopper self-registration, country, municipality and city are mandatory. This requirement does NOT apply to automatic shopper creation/upsert from HR. HR auto-upsert remains idempotent and may create a profile that is later completed by the shopper/admin.",
+      "remediationContract": "Introduce an explicit registration-origin validation contract. via='registro'/self-registration requires country+municipality+city before durable create; via='hr_external'/automatic HR upsert does not. Preserve generic geography architecture and do not hardcode Guatemala globally.",
+      "exactOwners": [
+        "app/app.js",
+        "app/core/geo.js",
+        "app/core/data.js",
+        "backend/runtime/hr-live-service/server.mjs"
+      ],
+      "production": false
+    },
+    "VRM-134": {
+      "id": "VRM-134",
+      "classification": "ENVIRONMENT_FAILURE",
+      "severity": "P0",
+      "title": "Live-data refresh and post-write recomposition repeatedly block the user for materially too long",
+      "state": "OPEN_RECURRENT_VISUAL_AND_SOURCE_PROVEN",
+      "rootCause": "The HR authority bridge forces/re-schedules whole authority recomposition on backend-ready, backend.refresh, window focus and visibility restore; backend.refresh first reloads Firestore and marks HR authority unapplied. Several modules also force document reload. A fresh HR provider read measured about 3.8s, so the much longer repeated visible wait is orchestration/recomposition and redundant refresh work, not simply HR source latency.",
+      "priorEvidenceLinks": [
+        "VRM-060 historical live login readiness 2.9s shopper / 7.3s admin",
+        "VRM-124 full-page reload/route loss"
+      ],
+      "remediationContract": "Restore authenticated shell promptly from already-authorized durable state; refresh HR in-place and only when stale/explicitly required; coalesce focus/visibility/backend triggers; cache by source revision with bounded TTL; avoid invalidating the whole authority for writes that do not change HR-managed fields; show non-blocking freshness state instead of holding the whole UI; preserve route and scroll.",
+      "exactOwners": [
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+        "app/core/backend-firebase.js",
+        "app/core/backend-protected-dev-session-continuity.js",
+        "app/modules/reservas.js",
+        "app/adapters/tya-canonical-shopper-portal-v2.js"
+      ],
+      "production": false
+    },
+    "VRM-135": {
+      "id": "VRM-135",
+      "classification": "AUTH_FAILURE",
+      "severity": "P0",
+      "title": "Human login experience remains ambiguous/slow despite historical source fix",
+      "state": "OPEN_RECURRENCE_REVOKES_HISTORICAL_READINESS",
+      "rootCause": "Historical VRM-104 fixed the role-first source contract and VRM-060 measured one later login as technically passing, but the current human experience still enters visible restore/validation/loading states for too long and can feel like repeated authentication/data-validation phases. Current auth restores Firebase session first, then backend load and HR authority can still gate the usable shell. Historical PASS therefore does not close the recurrent UX/performance defect.",
+      "historicalFindings": [
+        "VRM-060",
+        "VRM-104"
+      ],
+      "remediationContract": "Keep one deterministic login: choose access type, enter credentials, authenticate once, enter shell immediately after authorized session/context is established, then load/refresh HR non-blockingly. Session restore should not show a full login again unless auth actually failed or expired. Preserve role selection across retry and provide one concise human status, not successive technical restore/authority phases.",
+      "exactOwners": [
+        "app/core/backend-browser-auth.js",
+        "app/adapters/tya-dev-entry-auth-gate-v1.js",
+        "app/core/backend-firebase.js",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+      ],
+      "production": false
     }
   },
   "latestEvidenceOverrides": {
@@ -6495,14 +6580,18 @@
       "VRM-128",
       "VRM-129",
       "VRM-130",
-      "VRM-131"
+      "VRM-131",
+      "VRM-132",
+      "VRM-133",
+      "VRM-134",
+      "VRM-135"
     ],
-    "findingCount": 131,
-    "expectedCurrentRange": "VRM-001..VRM-131",
-    "nextFindingId": "VRM-132",
+    "findingCount": 135,
+    "expectedCurrentRange": "VRM-001..VRM-135",
+    "nextFindingId": "VRM-136",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_PREI4_VISUAL_REMEDIATION_REQUIRED",
+    "terminalState": "HOLD_PREI4_CUMULATIVE_REMEDIATION_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -6513,7 +6602,8 @@
     "adminForensicAuditPath": "CXORBIA_PRE_I4_ADMIN_FORENSIC_AUDIT_2026-09-28.json",
     "adminReviewRepeatRequired": true,
     "latestLiveHrRevision": "a30b5e69b73cab9071e203e084129593d837c9d316fdfca295b2173efe701b17",
-    "latestLiveHrReadAt": "2026-10-01T01:30:42.434Z"
+    "latestLiveHrReadAt": "2026-10-01T01:30:42.434Z",
+    "userReportedRequirementsFrozenAt": "2026-09-30T20:18:00-06:00"
   },
   "workPlan": {
     "0": "C0_FREEZE",
@@ -9949,6 +10039,11 @@
       "total": 1475,
       "visitHistoryCount": 7,
       "scope": "Paula displayed history; recheck only if identity/history owner changes"
+    },
+    "finance": {
+      "displayArithmeticSep2026": "PASS_FROZEN",
+      "durableMovementsCxpCxcFlow": "NOT_FROZEN_REOPENED_VRM132",
+      "note": "Do not confuse correct displayed obligation arithmetic with durable movements/accounting workflow closure."
     }
   },
   "preI4TestDataCleanupRequired": {
