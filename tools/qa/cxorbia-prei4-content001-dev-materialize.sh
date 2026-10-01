@@ -121,6 +121,38 @@ else
   TOKEN="$(gcloud auth print-access-token)"
   curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$PREI4_CONTENT001_OUT/hosting-after.json"
 fi
+
+RULES_DEPLOY_COUNT=0
+TOKEN="$(gcloud auth print-access-token)"
+curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases/cloud.firestore" > "$PREI4_CONTENT001_OUT/firestore-release-before.json"
+RULESET_BEFORE="$(jq -r '.rulesetName // empty' "$PREI4_CONTENT001_OUT/firestore-release-before.json")"; test -n "$RULESET_BEFORE"
+curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/$RULESET_BEFORE" > "$PREI4_CONTENT001_OUT/firestore-ruleset-before.json"
+if ! SOURCE_RULES="$SOURCE_DIR/firestore.rules" RULESET_JSON="$PREI4_CONTENT001_OUT/firestore-ruleset-before.json" node <<'NODE'
+const fs=require('fs');
+const source=fs.readFileSync(process.env.SOURCE_RULES,'utf8');
+const rs=JSON.parse(fs.readFileSync(process.env.RULESET_JSON,'utf8'));
+const file=(rs?.source?.files||[]).find(x=>x.name==='firestore.rules')||(rs?.source?.files||[]).find(x=>String(x.name||'').endsWith('/firestore.rules'))||(rs?.source?.files||[])[0];
+if(!file||String(file.content)!==source)process.exit(1);
+NODE
+then
+  cd "$SOURCE_DIR"
+  "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "firestore:rules" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$PREI4_CONTENT001_OUT/firestore-rules-deploy.log"
+  cd "$GITHUB_WORKSPACE"
+  RULES_DEPLOY_COUNT=1
+fi
+TOKEN="$(gcloud auth print-access-token)"
+curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases/cloud.firestore" > "$PREI4_CONTENT001_OUT/firestore-release-after.json"
+RULESET_AFTER="$(jq -r '.rulesetName // empty' "$PREI4_CONTENT001_OUT/firestore-release-after.json")"; test -n "$RULESET_AFTER"
+curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/$RULESET_AFTER" > "$PREI4_CONTENT001_OUT/firestore-ruleset-after.json"
+SOURCE_RULES="$SOURCE_DIR/firestore.rules" RULESET_JSON="$PREI4_CONTENT001_OUT/firestore-ruleset-after.json" RULES_DEPLOY_COUNT="$RULES_DEPLOY_COUNT" OUT="$PREI4_CONTENT001_OUT/firestore-rules-parity.json" node <<'NODE'
+const fs=require('fs'),crypto=require('crypto');
+const source=fs.readFileSync(process.env.SOURCE_RULES,'utf8');
+const rs=JSON.parse(fs.readFileSync(process.env.RULESET_JSON,'utf8'));
+const file=(rs?.source?.files||[]).find(x=>x.name==='firestore.rules')||(rs?.source?.files||[]).find(x=>String(x.name||'').endsWith('/firestore.rules'))||(rs?.source?.files||[])[0];
+if(!file||String(file.content)!==source)throw new Error('RELEASE_COMPOSITION_FAILURE:PREI4_FIRESTORE_RULES_DRIFT');
+fs.writeFileSync(process.env.OUT,JSON.stringify({decision:'PASS_PREI4_FIRESTORE_RULES_EXACT',rulesetName:rs.name||null,sha256:crypto.createHash('sha256').update(source).digest('hex'),rulesDeploys:Number(process.env.RULES_DEPLOY_COUNT||0),production:false},null,2)+'\n');
+NODE
+
 REV="$(jq -r '.status.latestReadyRevisionName // empty' "$PREI4_CONTENT001_OUT/runtime-after.json")"; test -n "$REV"
 gcloud run revisions describe "$REV" --project "$PROJECT" --region "$REGION" --format=json > "$PREI4_CONTENT001_OUT/runtime-revision.json"
 RAW="$(jq -r '.status.imageDigest // empty' "$PREI4_CONTENT001_OUT/runtime-revision.json")"
@@ -235,6 +267,6 @@ jq -n -S \
   --arg identity "$(jq -r '.decision' "$PREI4_CONTENT001_OUT/admin003/result.json")" \
   --arg frozen "$(jq -r '.decision' "$PREI4_CONTENT001_OUT/frozen-september-reproofs.json")" \
   --arg finalFocal "$(jq -r '.decision' "$PREI4_CONTENT001_OUT/final-focal/receipt.json")" \
-  --argjson builds "$BUILD_COUNT" --argjson runtimeDeploys "$RUNTIME_DEPLOY_COUNT" --argjson hostingDeploys "$HOSTING_DEPLOY_COUNT" --argjson reused "$REUSED_EXISTING" \
-  '{decision:"PASS_PREI4_CURRENT_PERIOD_CUMULATIVE_DEV_LIVE",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,currentPeriodId:$period,currentPeriodKey:$periodKey,identity:$identity,frozenHistoricalSeptemberReproofs:$frozen,finalFocal:$finalFocal,builds:$builds,runtimeDeploys:$runtimeDeploys,hostingDeploys:$hostingDeploys,reusedExistingMaterialization:$reused,rulesDeploys:0,externalPaymentWrites:0,bankWrites:0,hrWrites:0,production:false}' > "$PREI4_CONTENT001_OUT/receipt.json"
+  --argjson builds "$BUILD_COUNT" --argjson runtimeDeploys "$RUNTIME_DEPLOY_COUNT" --argjson hostingDeploys "$HOSTING_DEPLOY_COUNT" --argjson reused "$REUSED_EXISTING" --argjson rulesDeploys "$RULES_DEPLOY_COUNT" \
+  '{decision:"PASS_PREI4_CURRENT_PERIOD_CUMULATIVE_DEV_LIVE",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,currentPeriodId:$period,currentPeriodKey:$periodKey,identity:$identity,frozenHistoricalSeptemberReproofs:$frozen,finalFocal:$finalFocal,builds:$builds,runtimeDeploys:$runtimeDeploys,hostingDeploys:$hostingDeploys,reusedExistingMaterialization:$reused,rulesDeploys:$rulesDeploys,externalPaymentWrites:0,bankWrites:0,hrWrites:0,production:false}' > "$PREI4_CONTENT001_OUT/receipt.json"
 # PRE-I4 final focal rerun: self-registration selector assertion corrected; product source unchanged.
