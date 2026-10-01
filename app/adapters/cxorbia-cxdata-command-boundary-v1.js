@@ -126,6 +126,12 @@
     };
     D.addShopper=function(cfg){
       cfg=cfg||{};const meta=commandMeta(cfg.__commandMeta);const c=ctx();
+      const isSelfRegistration=String(cfg.via||cfg.createdVia||'').toLowerCase()==='registro';
+      const sourceType=String(cfg.sourceType||'platform').toLowerCase();
+      if(isSelfRegistration&&sourceType!=='hr_external'&&(!str(cfg.pais||cfg.country)||!str(cfg.municipio||cfg.municipality)||!str(cfg.ciudad||cfg.city))){
+        const r=CX.commandAdapter?.blocked?.({commandType:'shopper.create',entityType:'shopper'},'SHOPPER_SELF_REGISTRATION_GEO_REQUIRED',{required:['country','municipality','city']})||{ok:false,status:'blocked'};
+        return meta.ackAware?Promise.resolve(surfaceBlocked(r)):legacyFailClosed(r);
+      }
       const built=CX.shopperAdminCommandContract?.create?.({
         tenantId:c.tenantId,projectId:c.projectId,periodId:c.periodId,projectIds:c.projectIds.length?c.projectIds:[c.projectId],actorId:c.actorId,actorRole:c.role,
         expectedVersion:'absent',idempotencyKey:idempotency('shopper.create','',cfg,'absent'),profile:cfg,identity:cfg,sourceType:cfg.sourceType||'platform',sourceRef:cfg.sourceRef||null
