@@ -4,6 +4,7 @@ import { applicationDefault, initializeApp, getApps } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 import { chromium } from 'playwright';
+// PRE-I4 FAST-PATH CONTROL: routed HR authority settle; product source remains immutable.
 
 const OUT=process.env.PREI4_OUT;
 const ROOT=String(process.env.CXORBIA_PREI4_ROOT||'').replace(/\/$/,'');
