@@ -11,7 +11,7 @@ const sourceSha=String(process.env.CXORBIA_PREI4_SOURCE_SHA||'');
 const scope=String(process.env.CXORBIA_PREI4_SCOPE||'full').trim().toLowerCase();
 if(!OUT||!ROOT||!sourceSha)throw new Error('ENVIRONMENT_FAILURE:PREI4_BROWSER_ENV_MISSING');
 const tenantId='tya',projectId='cinepolis';
-const hrResponse=await fetch(ROOT+'/api/'+tenantId+'/'+projectId+'/hr-live?fresh=1&prei4browser='+Date.now(),{headers:{'Cache-Control':'no-cache, no-store, max-age=0'},signal:AbortSignal.timeout(120000)});
+const hrResponse=await fetch(ROOT+'/api/'+tenantId+'/'+projectId+'/hr-live?prei4browser='+Date.now(),{headers:{'Cache-Control':'no-cache, no-store, max-age=0'},signal:AbortSignal.timeout(120000)});
 if(!hrResponse.ok)throw new Error('PROVIDER_FAILURE:FOCAL_HR_HTTP_'+hrResponse.status);
 const hrBody=await hrResponse.json(),hrSnapshot=hrBody.snapshot||hrBody.data||hrBody,hrRuntime=hrBody._runtime||hrSnapshot._runtime||{};
 const hrRevision=String(hrBody.revision||hrRuntime.revision||hrSnapshot.sourceRevision||'');
@@ -72,6 +72,30 @@ async function assertClean(page,label){
   return d;
 }
 
+async function waitForRouteSettle(page,route,kind){
+  const started=Date.now();
+  try{
+    await page.waitForFunction(({projectId,periodId,hrRevision,route})=>{
+      const d=window.CX?.data||{};
+      return window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true
+        &&String(d.currentProjectId||'')===projectId
+        &&String(d.currentPeriodId||'')===periodId
+        &&String(d.previewMeta?.sourceRevision||'')===hrRevision
+        &&String(window.CX?.session?.view||'')===route;
+    },{projectId,periodId,hrRevision,route},{timeout:15000});
+  }catch(error){
+    const state=await page.evaluate(()=>{const d=window.CX?.data||{};return{
+      route:String(window.CX?.session?.view||''),
+      projectId:String(d.currentProjectId||''),
+      periodId:String(d.currentPeriodId||''),
+      sourceRevision:String(d.previewMeta?.sourceRevision||''),
+      authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true
+    };}).catch(()=>({route:'',projectId:'',periodId:'',sourceRevision:'',authority:false}));
+    throw new Error('FUNCTIONAL_DEFECT:'+kind+'_ROUTE_'+route+'_SETTLE_TIMEOUT:'+JSON.stringify({routeSettleMs:Date.now()-started,state,error:String(error&&error.message||error||'timeout').slice(0,240)}));
+  }
+  return Date.now()-started;
+}
+
 async function signInMember(member,kind,route,options={}){
   const viewport=options.viewport||{width:1440,height:980};
   const ctx=await browser.newContext({viewport,isMobile:options.isMobile===true});
@@ -103,10 +127,12 @@ async function signInMember(member,kind,route,options={}){
   await page.waitForFunction(({kind,tenantId})=>{const c=window.CX?.backendAuth?.context?.()||{},role=String(c.role||'').toLowerCase();return c.authenticated===true&&c.tenantId===tenantId&&(kind==='shopper'?role==='shopper':role!=='shopper'&&role!=='cliente');},{kind,tenantId},{timeout:120000});
   await page.waitForFunction(({projectId,periodId,hrRevision})=>{const d=window.CX?.data||{},g=window.CX_C6_HR_AUTHORITY_GATE||{};return window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&g.ready===true&&g.blocked!==true&&String(d.currentProjectId||'')===projectId&&String(d.currentPeriodId||'')===periodId&&String(d.previewMeta?.sourceRevision||'')===hrRevision;},{projectId,periodId,hrRevision},{timeout:120000});
   await page.evaluate(r=>{window.CX.router.nav(r);},route);
-  await page.waitForTimeout(700);
+  const initialRouteSettleMs=await waitForRouteSettle(page,route,kind);
+  await page.waitForTimeout(150);
   const one=await page.evaluate(({kind,route})=>{const c=window.CX?.backendAuth?.context?.()||{},d=window.CX?.data||{},body=String(document.body?.innerText||'');const stats=kind==='shopper'&&c.shopperId&&typeof d.shopperStats==='function'?d.shopperStats(c.shopperId):null;return{
     role:String(c.role||''),route:String(window.CX?.session?.view||route),projectId:String(d.currentProjectId||''),periodId:String(d.currentPeriodId||''),sourceRevision:String(d.previewMeta?.sourceRevision||''),authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,debug:!!document.getElementById('cxBackendPreviewStatus'),lab:!!document.getElementById('cx-dev-lab'),blocked:body.includes('Fuente de datos no disponible'),stats
   };},{kind,route});
+  one.routeSettleMs=initialRouteSettleMs;
   if(pageErrors.length||one.debug||one.lab||one.blocked||!one.authority||one.projectId!==projectId||one.periodId!==periodId||one.sourceRevision!==hrRevision||one.route!==route)throw new Error('FUNCTIONAL_DEFECT:'+kind+'_FOCAL_ROUTE:'+JSON.stringify({pageErrors,one}));
   if(kind==='shopper'&&Number(one.stats?.total||0)!==paulaExpectedTotal)throw new Error('MAPPING_FAILURE:PAULA_HISTORY_REGRESSION:'+JSON.stringify({observed:one.stats,expectedTotal:paulaExpectedTotal,hrRevision}));
 
@@ -116,15 +142,21 @@ async function signInMember(member,kind,route,options={}){
   const routeEvidence={};
   for(const r of routes){
     try{
-      await page.evaluate(async r=>{
-        window.CX.router.nav(r,{history:false});
-        if(r==='documentos'&&window.CX?.backendResources?.load)await window.CX.backendResources.load({projectId:window.CX.data.currentProjectId,periodId:window.CX.data.currentPeriodId});
-      },r);
+      await page.evaluate(r=>{window.CX.router.nav(r,{history:false});},r);
     }catch(error){
       const msg=String(error&&error.message||error||'unknown').slice(0,700);
       throw new Error((/Missing or insufficient permissions|permission-denied/i.test(msg)?'AUTH_FAILURE':'FUNCTIONAL_DEFECT')+':'+kind+'_ROUTE_'+r+':'+msg);
     }
-    await page.waitForTimeout(550);
+    const routeSettleMs=await waitForRouteSettle(page,r,kind);
+    if(r==='documentos'){
+      try{
+        await page.evaluate(async()=>{if(window.CX?.backendResources?.load)await window.CX.backendResources.load({projectId:window.CX.data.currentProjectId,periodId:window.CX.data.currentPeriodId});});
+      }catch(error){
+        const msg=String(error&&error.message||error||'unknown').slice(0,700);
+        throw new Error((/Missing or insufficient permissions|permission-denied/i.test(msg)?'AUTH_FAILURE':'FUNCTIONAL_DEFECT')+':'+kind+'_ROUTE_'+r+'_RESOURCE_LOAD:'+msg);
+      }
+    }
+    await page.waitForTimeout(150);
     const info=await page.evaluate(({kind,r,identityCases,unresolvedIdentityCases,sourceHrShopperIds})=>{
       const d=window.CX?.data||{},c=window.CX?.backendAuth?.context?.()||{},body=String(document.body?.innerText||'');
       const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
@@ -260,6 +292,7 @@ async function signInMember(member,kind,route,options={}){
         scrollWidth:document.documentElement.scrollWidth,innerWidth:window.innerWidth
       };
     },{kind,r,identityCases:reference?.identityCases||[],unresolvedIdentityCases:reference?.unresolvedIdentityCases||[],sourceHrShopperIds:reference?.sourceHrShopperIds||[]});
+    info.routeSettleMs=routeSettleMs;
     if(pageErrors.length||info.debug||info.lab||info.blocked||info.technicalVisible||info.projectId!==projectId||info.periodId!==periodId||info.sourceRevision!==hrRevision||info.route!==r)throw new Error('FUNCTIONAL_DEFECT:'+kind+'_ROUTE_'+r+':'+JSON.stringify({pageErrors,info}));
     if(options.isMobile===true&&(info.scrollWidth>info.innerWidth+2||!info.mobileIdentity?.visible))throw new Error('VISUAL_DEFECT:'+kind+'_MOBILE_'+r+':'+JSON.stringify(info));
     if(r==='dashboard'){
@@ -348,12 +381,14 @@ async function signInMember(member,kind,route,options={}){
   }
 
   if(routes.length>=2){
-    await page.evaluate(r=>window.CX.router.nav(r),routes[0]);await page.waitForTimeout(200);
-    await page.evaluate(r=>window.CX.router.nav(r),routes[1]);await page.waitForTimeout(200);
+    await page.evaluate(r=>window.CX.router.nav(r),routes[0]);
+    await waitForRouteSettle(page,routes[0],kind);
+    await page.evaluate(r=>window.CX.router.nav(r),routes[1]);
+    await waitForRouteSettle(page,routes[1],kind);
     await page.goBack({waitUntil:'domcontentloaded',timeout:15000}).catch(()=>{});
-    await page.waitForTimeout(400);
+    const backSettleMs=await waitForRouteSettle(page,routes[0],kind);
     const backView=await page.evaluate(()=>String(window.CX?.session?.view||''));
-    if(backView!==routes[0])throw new Error('FUNCTIONAL_DEFECT:BROWSER_BACK_HISTORY:'+JSON.stringify({expected:routes[0],observed:backView}));
+    if(backView!==routes[0])throw new Error('FUNCTIONAL_DEFECT:BROWSER_BACK_HISTORY:'+JSON.stringify({expected:routes[0],observed:backView,routeSettleMs:backSettleMs}));
   }
 
   await page.reload({waitUntil:'domcontentloaded',timeout:90000});
