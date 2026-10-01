@@ -142,13 +142,16 @@ CX.geo = {
     return CX.COUNTRIES.map(p=>`<option value="${p.c}" ${p.c===sel?'selected':''}>${CX.paisFlag(p.c)} ${p.n}</option>`).join('');
   },
 
-  /* Bloque de 3 campos dependientes. ids = {pais, depto, ciudad}; val = valores actuales */
+  /* Bloque geográfico genérico. ids.municipio es opcional para consumidores existentes;
+     autorregistro puede activarlo y exigirlo sin imponerlo a HR auto-upsert. */
   fieldsHTML(ids, val={}){
     return `
       <div><label class="lbl">País</label>
         <select class="sel" id="${ids.pais}"><option value="">Selecciona…</option>${this._countryOptions(val.pais)}</select></div>
       <div data-geo-dep="${ids.depto}"><label class="lbl" id="${ids.depto}-lbl">Departamento</label>
         <div id="${ids.depto}-host"></div></div>
+      ${ids.municipio?`<div data-geo-municipio="${ids.municipio}"><label class="lbl">Municipio / localidad</label>
+        <input class="inp" id="${ids.municipio}" placeholder="Municipio / localidad" value="${val.municipio||''}"></div>`:''}
       <div data-geo-city="${ids.ciudad}"><label class="lbl">Ciudad</label>
         <div id="${ids.ciudad}-host"></div></div>`;
   },
@@ -191,6 +194,6 @@ CX.geo = {
   /* Lee {pais, depto, ciudad} desde los controles (select o input) */
   read(root, ids){
     const v=(id)=>{ const el=root.querySelector('#'+id); return el? (el.value||'').trim() : ''; };
-    return { pais:v(ids.pais), depto:v(ids.depto), ciudad:v(ids.ciudad) };
+    return { pais:v(ids.pais), depto:v(ids.depto), municipio:ids.municipio?v(ids.municipio):'', ciudad:v(ids.ciudad) };
   },
 };
