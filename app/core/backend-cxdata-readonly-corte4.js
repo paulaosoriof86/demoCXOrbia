@@ -143,6 +143,46 @@ window.CX = window.CX || {};
     emit('backend-source-safe-ready',{provider:'source-safe',tenantId:(cfg.tenantId||'tya'),source:'hr-source-safe',counts:c,readOnly:true,humanVisual:true,authValidatedSeparately:true});
   }
 
+  function protectedHrAuthorityApplied(){
+    const d=CX.data||{},a=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{};
+    return a.applied===true
+      && d.previewMeta?.hrAuthority===true
+      && !!String(d.currentProjectId||'').trim()
+      && !!String(d.currentPeriodId||'').trim()
+      && Array.isArray(d.projects)&&d.projects.length>0
+      && Array.isArray(d._visitas)&&d._visitas.length>0;
+  }
+
+  function preserveHrAuthorityOnProtectedEmpty(reason){
+    if(!protectedHrAuthorityApplied()) return false;
+    const d=CX.data||{},c=counts();
+    d.__backendReadOnlyEmpty={
+      status:'empty',source:'firestore',reason:reason||'verified-empty-read',
+      readOnly:true,writes:false,fallbackUsed:false,operationalAuthorityPreserved:'external_hr',
+      at:new Date().toISOString()
+    };
+    window.CX_BACKEND_DATA_SOURCE='firestore';
+    window.CX_BACKEND_LAST_STATE=Object.assign({},window.CX_BACKEND_LAST_STATE||{},{
+      source:'firestore',empty:true,readOnly:true,writes:false,fallbackUsed:false,
+      operationalAuthorityPreserved:'external_hr',reason:reason||'verified-empty-read'
+    });
+    window.CX_CORTE4_READONLY=Object.assign({},window.CX_CORTE4_READONLY||{},{
+      ready:true,source:'firestore',empty:true,readOnly:true,writeMode:'disabled',
+      preserveCxDataInterface:true,fallbackUsed:false,operationalAuthorityPreserved:'external_hr',
+      state:reason||'verified-empty-read',at:new Date().toISOString()
+    });
+    if(CX.dataSource){
+      CX.dataSource.mode='connected';
+      CX.dataSource.status='ready';
+      CX.dataSource.sourceRef='hr-live-all-periods+firestore-authenticated-exact-overlay';
+      CX.dataSource.updatedAt=new Date().toISOString();
+      CX.dataSource.blockers=[];
+      CX.dataSource.warnings=['Firestore protegido sin registros operativos para este alcance; se conserva HR externa como autoridad operacional.'];
+    }
+    emit('corte4-readonly-empty',{...d.__backendReadOnlyEmpty,counts:c});
+    return true;
+  }
+
   function syncDataSource(reason){
     if(!CX.dataSource) return;
     const verified = reason === 'verified-empty-read';
@@ -162,6 +202,7 @@ window.CX = window.CX || {};
 
   function clearToBackendEmpty(reason){
     if(!CX.data) return;
+    if(preserveHrAuthorityOnProtectedEmpty(reason)) return;
     CX.data.projects = [];
     CX.data.periods = [];
     CX.data.__backendAllProjectRecords = [];
