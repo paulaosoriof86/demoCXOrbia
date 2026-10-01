@@ -4,17 +4,17 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4_PROVIDER_RECONCILIATION_REPROOF",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "a2f7acd659b68217299f92ef69a320f08e806635",
-  "productTreeAuthority": "524207efe063232333795175ac58964f3898067c",
-  "predecessorProductSourceSha": "19ce6ac1cbea7c94ad5f61009cea961a3b11e606",
+  "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
+  "productTreeAuthority": "90cbaaa0844bbdde0b4b96a7caa4bfbdff16167f",
+  "predecessorProductSourceSha": "a2f7acd659b68217299f92ef69a320f08e806635",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "9009d8ab93decccf8686a43b261362d9af6b6a68",
+  "findingsLedgerExpectedGitBlob": "2b04b1e249a800e2f0d596435aeeb41d205b4370",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "PRE_I4_VRM141_FINANCE_BACKEND_AUTH_RESTORE_REPROOF",
-  "nextFindingId": "VRM-142",
+  "activeBlocker": "PRE_I4_VRM142_FINANCE_FIRESTORE_RULES_DEV_LIVE_REPROOF",
+  "nextFindingId": "VRM-143",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run final-fast PRE-I4 Finance durable + Certification with proven CX backend-auth restore sequence against canonical DEV source a2f7acd659b68217299f92ef69a320f08e806635; reuse browser PASS run 36939433303 only if HR revision remains e242d83f7a63b4f390a3ff6eeaeb616dea52f52f159a5e3a929c5473a7225159.",
+  "exactNextAction": "Use the existing PRE-I4 CONTENT-001 Recovery DEV lane to materialize productSourceSha 18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd / tree 90cbaaa0844bbdde0b4b96a7caa4bfbdff16167f exactly once, including exact Firestore Rules deployment/parity, then run current-period HR parity, authenticated Admin+Shopper no-regression, Finance durable projection, Certification/Resources live proof/cleanup and final receipt. Production remains DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -41,17 +41,20 @@
   },
   "lastSourceFix": {
     "findingIds": [
-      "VRM-136"
+      "VRM-142"
     ],
-    "sourceSha": "a2f7acd659b68217299f92ef69a320f08e806635",
-    "sourceTree": "524207efe063232333795175ac58964f3898067c",
-    "predecessorSha": "19ce6ac1cbea7c94ad5f61009cea961a3b11e606",
+    "sourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
+    "sourceTree": "90cbaaa0844bbdde0b4b96a7caa4bfbdff16167f",
+    "predecessorSha": "a2f7acd659b68217299f92ef69a320f08e806635",
     "productFiles": 1,
     "testFiles": 0,
+    "productOwners": [
+      "firestore.rules"
+    ],
     "sourceProofs": [
       {
-        "decision": "PENDING_PREI4_VRM136_DEV_LIVE_REPROOF",
-        "owner": "app/core/backend-cxdata-readonly-corte4.js",
+        "decision": "PENDING_PREI4_VRM142_DEV_LIVE_REPROOF",
+        "owner": "firestore.rules",
         "testsPassed": 0
       }
     ],
@@ -1793,10 +1796,10 @@
     }
   },
   "preI4CurrentSourceSuccessor": {
-    "findingId": "VRM-136",
-    "sourceSha": "a2f7acd659b68217299f92ef69a320f08e806635",
-    "sourceTree": "524207efe063232333795175ac58964f3898067c",
-    "predecessorSha": "19ce6ac1cbea7c94ad5f61009cea961a3b11e606",
+    "findingId": "VRM-142",
+    "sourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
+    "sourceTree": "90cbaaa0844bbdde0b4b96a7caa4bfbdff16167f",
+    "predecessorSha": "a2f7acd659b68217299f92ef69a320f08e806635",
     "proofRunId": null,
     "proofDecision": "PENDING_DEV_LIVE_REPROOF",
     "currentPeriodKey": "2026-10",
@@ -1815,6 +1818,18 @@
     "sourceSha": "a2f7acd659b68217299f92ef69a320f08e806635",
     "sourceTree": "524207efe063232333795175ac58964f3898067c",
     "predecessorSha": "19ce6ac1cbea7c94ad5f61009cea961a3b11e606",
+    "production": false
+  },
+  "preI4Vrm142": {
+    "state": "SOURCE_FIX_PENDING_DEV_LIVE_REPROOF",
+    "classification": "AUTH_FAILURE",
+    "owner": "firestore.rules",
+    "evidenceRun": 36941569549,
+    "rootCause": "Durable finance provider writes succeed server-side, but authenticated browser reads of tenant-root financialMovements/financeAccounts are denied because Firestore Rules omit both collections; read adapter masks permission denial as empty items.",
+    "correction": "Operator-only reads for financialMovements and financeAccounts; browser create/update/delete remain denied.",
+    "sourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
+    "sourceTree": "90cbaaa0844bbdde0b4b96a7caa4bfbdff16167f",
+    "predecessorSha": "a2f7acd659b68217299f92ef69a320f08e806635",
     "production": false
   }
 }
