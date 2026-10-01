@@ -6506,6 +6506,29 @@
       },
       "productSourceChanged": false,
       "production": false
+    },
+    "VRM-140": {
+      "id": "VRM-140",
+      "classification": "ENVIRONMENT_FAILURE",
+      "severity": "CONTROL_BLOCKER",
+      "title": "Transient Firebase Auth network failure in final finance durable projection browser",
+      "state": "FIXED_CONTROL_REPROOF_REQUIRED",
+      "productDefect": false,
+      "observed": "Finance durable commands progressed beyond provider ACK and cleanup, but the browser projection sign-in failed with auth/network-request-failed.",
+      "rootCause": "Transient browser/Firebase Auth network failure during the projection readback gate. No evidence of a finance provider or product defect.",
+      "correction": "Bounded retry with fresh custom token and page reload for transient auth/network failures before durable projection readback.",
+      "exactOwners": [
+        "tools/qa/cxorbia-prei4-final-focal-finance-live.mjs"
+      ],
+      "evidence": {
+        "runId": 36940641485,
+        "jobId": 110631145379,
+        "code": "auth/network-request-failed",
+        "cleanup": true,
+        "cleanupRemaining": 0
+      },
+      "productSourceChanged": false,
+      "production": false
     }
   },
   "latestEvidenceOverrides": {
@@ -7062,7 +7085,7 @@
     ],
     "findingCount": 135,
     "expectedCurrentRange": "VRM-001..VRM-135",
-    "nextFindingId": "VRM-140",
+    "nextFindingId": "VRM-141",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_PREI4_PROVIDER_RECONCILIATION_REPROOF",
@@ -7094,7 +7117,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Run final-fast PRE-I4 Finance durable + Certification against canonical DEV source a2f7acd659b68217299f92ef69a320f08e806635, reusing browser PASS run 36939433303 only if HR revision remains e242d83f7a63b4f390a3ff6eeaeb616dea52f52f159a5e3a929c5473a7225159.",
+  "exactNextAction": "Run final-fast PRE-I4 Finance durable + Certification with transient-auth retry against the same canonical DEV source, reusing browser PASS run 36939433303 only if the HR revision remains unchanged.",
   "supersedesGitBlob": "397a9cee8c71d3156567a0cc96bfdcba88bb7c3a",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -7123,16 +7146,16 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-140",
+  "nextFindingId": "VRM-141",
   "lastControlFailure": {
-    "id": "VRM-139",
-    "classification": "MAPPING_FAILURE",
-    "runId": 36940358709,
-    "jobId": 110630224254,
+    "id": "VRM-140",
+    "classification": "ENVIRONMENT_FAILURE",
+    "runId": 36940641485,
+    "jobId": 110631145379,
     "owner": "tools/qa/cxorbia-prei4-final-focal-finance-live.mjs",
     "productDefect": false,
     "productSourceChanged": false,
-    "providerCode": "FINANCE_MOVEMENT_CURRENCY_SCOPE_CONFLICT",
+    "code": "auth/network-request-failed",
     "cleanup": true,
     "state": "FIXED_CONTROL_REPROOF_REQUIRED",
     "production": false
@@ -8479,7 +8502,7 @@
     "PREI4-CONTENT-001",
     "PREI4-CONTENT-002"
   ],
-  "preI4NextAction": "Run final-fast PRE-I4 Finance durable + Certification against canonical DEV source a2f7acd659b68217299f92ef69a320f08e806635, reusing browser PASS run 36939433303 only if HR revision remains e242d83f7a63b4f390a3ff6eeaeb616dea52f52f159a5e3a929c5473a7225159.",
+  "preI4NextAction": "Run final-fast PRE-I4 Finance durable + Certification with transient-auth retry against the same canonical DEV source, reusing browser PASS run 36939433303 only if the HR revision remains unchanged.",
   "preI4Admin002": {
     "findingId": "PREI4-ADMIN-002",
     "state": "FIXED_PROVEN_RUN601",
