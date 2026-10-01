@@ -82,6 +82,15 @@ const hrSnapshot=()=>({
   visits:[{id:'visit-a',visitId:'visit-a',tenantId:'tenant-a',projectId:'period-a',periodId:'period-a',hrRowId:'HR!2',sourceTab:'HR',sourceRow:2,estado:'disponible',status:'disponible',sucursal:'HR Sucursal',ciudad:'Ciudad',pais:'GT',canonicalFacets:{available:true,assigned:false}}]
 });
 
+test('PRE-I4 VRM-134 / visit reconciliation is bounded-concurrent and server does not serialize shopper before visits',()=>{
+  const providerSource=fs.readFileSync(path.join(repoRoot,'backend/runtime/cxorbia-operational-command-provider-v1.mjs'),'utf8');
+  const serverSource=fs.readFileSync(path.join(repoRoot,'backend/runtime/hr-live-service/server.mjs'),'utf8');
+  assert.match(providerSource,/CXORBIA_VISIT_RECONCILIATION_CONCURRENCY\|\|16/);
+  assert.match(providerSource,/Math\.min\(24/);
+  assert.match(providerSource,/Promise\.all\(Array\.from\(\{length:reconciliationConcurrency\}/);
+  assert.match(serverSource,/const \[shopper,visits\]=await Promise\.all\(\[shopperTask,visitTask\]\)/);
+});
+
 test('Gate 7 / visit HR reconciliation creates durable visits idempotently by revision',async()=>{
   const db=new FakeFirestore();
   const first=await provider(db).reconcileSnapshot(hrSnapshot(),{sourceRevision:'hr-rev-1'});

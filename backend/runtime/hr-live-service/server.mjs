@@ -295,9 +295,10 @@ function scheduleDurableReconciliation(current){
   if(existing)return existing;
   let tracked;
   const task=(async()=>{
-    if(lastShopperReconciledRevision!==revision)await reconcileAuthoritativeShoppers(current);
-    if(lastVisitReconciledRevision!==revision)await reconcileAuthoritativeVisits(current);
-    return {shopper:lastShopperReconciliation,visits:lastVisitReconciliation};
+    const shopperTask=lastShopperReconciledRevision===revision?Promise.resolve(lastShopperReconciliation):reconcileAuthoritativeShoppers(current);
+    const visitTask=lastVisitReconciledRevision===revision?Promise.resolve(lastVisitReconciliation):reconcileAuthoritativeVisits(current);
+    const [shopper,visits]=await Promise.all([shopperTask,visitTask]);
+    return {shopper,visits};
   })();
   tracked=task.finally(()=>{
     if(durableReconciliationByRevision.get(revision)===tracked)durableReconciliationByRevision.delete(revision);

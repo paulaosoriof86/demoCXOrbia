@@ -458,16 +458,24 @@ export function createOperationalCommandProvider({auth,db,policy}={}){
       if(!scopeAllowed(policy,scope))throw new Error('OPS_VISIT_RECONCILIATION_SCOPE_DENIED');
       const revision=str(sourceRevision||snapshot?.sourceRevision||snapshot?._runtime?.revision);
       if(!revision)throw new Error('OPS_VISIT_RECONCILIATION_REVISION_REQUIRED');
-      let created=0,replayed=0,writes=0,reviews=0,conflicts=0;
-      for(const candidate of visits){
-        const result=await reconcileVisitDoc({db,policy,candidate,sourceRevision:revision});
-        if(result.created)created++;
-        if(result.idempotentReplay)replayed++;
-        if(result.reviewRequired)reviews++;
-        if(result.conflict)conflicts++;
-        writes+=Number(result.providerWrites||0);
-      }
-      return {ok:true,status:'committed',providerAck:true,sourceRevision:revision,tenantId:scope.tenantId,projectId:scope.projectId,visitCount:visits.length,createdVisits:created,idempotentReplays:replayed,reviewRequiredVisits:reviews,conflicts,providerWrites:writes,hrWrites:0,externalWrites:0,fuzzyMatching:false};
+      let created=0,replayed=0,writes=0,reviews=0,conflicts=0,cursor=0;
+      const startedAt=Date.now();
+      const configured=Number(process.env.CXORBIA_VISIT_RECONCILIATION_CONCURRENCY||16);
+      const reconciliationConcurrency=Math.max(1,Math.min(24,Number.isFinite(configured)?Math.trunc(configured):16,Math.max(1,visits.length)));
+      const worker=async()=>{
+        while(true){
+          const index=cursor++;
+          if(index>=visits.length)return;
+          const result=await reconcileVisitDoc({db,policy,candidate:visits[index],sourceRevision:revision});
+          if(result.created)created++;
+          if(result.idempotentReplay)replayed++;
+          if(result.reviewRequired)reviews++;
+          if(result.conflict)conflicts++;
+          writes+=Number(result.providerWrites||0);
+        }
+      };
+      await Promise.all(Array.from({length:reconciliationConcurrency},()=>worker()));
+      return {ok:true,status:'committed',providerAck:true,sourceRevision:revision,tenantId:scope.tenantId,projectId:scope.projectId,visitCount:visits.length,createdVisits:created,idempotentReplays:replayed,reviewRequiredVisits:reviews,conflicts,providerWrites:writes,reconciliationConcurrency,reconciliationDurationMs:Date.now()-startedAt,hrWrites:0,externalWrites:0,fuzzyMatching:false};
     },
     status(){return {version:VERSION,enabled:true,allowedTenantIds:arr(policy.allowedTenantIds),allowedProjectIds:arr(policy.allowedProjectIds),conflictPolicy:'review_no_silent_overwrite',hrWrites:false,makeCalls:false,geminiCalls:false,storageWrites:false,paymentWrites:false};}
   });
