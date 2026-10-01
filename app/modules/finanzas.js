@@ -262,6 +262,34 @@ CX.module('movimientos', ({data,ui})=>{
   let scope='proyecto'; // 'proyecto' | 'global'
   const pid=()=>scope==='global'?CX.finStore.GLOBAL:p.id;
   const CAT=CX.finStore.CATEGORIAS, TI=CX.finStore.TIPOS_INGRESO, TE=CX.finStore.TIPOS_EGRESO;
+  const canonicalProjectId=()=>String(p.parentProjectId||p.rootProjectId||p.program||p.projectId||p.id||'');
+  const connectedFinance=()=>CX.BACKEND?.enabled===true&&!_showFixtures;
+  let durableMovements=Array.isArray(data.__financialMovements)?data.__financialMovements:[];
+  let durableAccounts=Array.isArray(data.__financeAccounts)?data.__financeAccounts:[];
+  const accountKind=(kind)=>durableAccounts.filter(r=>String(r.kind||'').toLowerCase()===kind&&String(r.status||'open')!=='closed');
+  const refreshDurableFinance=async(force=false)=>{
+    if(!connectedFinance()||scope==='global')return false;
+    const key=canonicalProjectId()+'::'+canonicalPeriodId;
+    if(!force&&data.__financeProjectionKey===key&&data.__financeProjectionLoaded===true){
+      durableMovements=Array.isArray(data.__financialMovements)?data.__financialMovements:[];
+      durableAccounts=Array.isArray(data.__financeAccounts)?data.__financeAccounts:[];
+      return true;
+    }
+    if(typeof data.getFinancialMovements!=='function'||typeof data.getFinanceAccounts!=='function')return false;
+    const [mov,acc]=await Promise.all([
+      data.getFinancialMovements({projectId:canonicalProjectId(),periodId:canonicalPeriodId}),
+      data.getFinanceAccounts({projectId:canonicalProjectId(),periodId:canonicalPeriodId})
+    ]);
+    if(mov?.status!=='ok'||acc?.status!=='ok')return false;
+    durableMovements=Array.isArray(mov.items)?mov.items:[];
+    durableAccounts=Array.isArray(acc.items)?acc.items:[];
+    data.__financialMovements=durableMovements;
+    data.__financeAccounts=durableAccounts;
+    data.__financeProjectionLoaded=true;
+    data.__financeProjectionKey=key;
+    try{CX.bus?.emit?.('finance-durable-ready',{projectId:canonicalProjectId(),periodId:canonicalPeriodId});}catch(_){}
+    return true;
+  };
   const draw=()=>{
     const isG=scope==='global';
     const per=canonMonth();
