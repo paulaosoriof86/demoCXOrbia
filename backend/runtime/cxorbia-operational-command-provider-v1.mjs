@@ -371,7 +371,8 @@ async function transactionExecute(db,command,actor){
       const projectSnap=await tx.get(r.project),projectData=projectSnap.exists?(projectSnap.data()||{}):{},timezone=str(projectData.timeZone||projectData.timezone||'America/Guatemala');
       if(shopperRequest){
         if(!newDate)throw new Error('OPS_RESCHEDULE_DATE_REQUIRED');
-        tx.set(vRef,{rescheduleRequest:{status:'pending_review',newDate,reason:payload.reason||null,requestedByShopperId:actor.shopperId,requestedAt:now()},updatedAt:now(),version:Number(v.version||0)+1},{merge:true});
+        const validatedDate=assertSchedulableDate(v,newDate,timezone);
+        tx.set(vRef,{rescheduleRequest:{status:'pending_review',newDate:validatedDate,reason:payload.reason||null,requestedByShopperId:actor.shopperId,requestedAt:now()},updatedAt:now(),version:Number(v.version||0)+1},{merge:true});
       }else{
         if(!OPERATOR_ROLES.includes(actor.role))throw new Error('OPS_RESCHEDULE_OPERATOR_ONLY');
         const decision=str(payload.decision||'approved').toLowerCase();if(!['approved','rejected'].includes(decision))throw new Error('OPS_RESCHEDULE_DECISION_INVALID');
