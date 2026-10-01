@@ -91,7 +91,7 @@ try{
   browserEvidence=await page.evaluate(()=>{
     const d=window.CX?.data||{},posts=Array.isArray(d._posts)?d._posts:[],visits=Array.isArray(d._visitas)?d._visitas:[];
     const period=String(d.currentPeriodId||''),current=posts.filter(p=>String(d.recordPeriodId?d.recordPeriodId(p):(p.periodId||p.projectId)||'')===period);
-    const rows=current.map(p=>({id:String(p.id||p.applicationId||p.postulationId||''),visitId:String(p.visitId||p.visitaId||''),hrRowId:String(p.hrRowId||''),shopperId:String(p.shopperId||''),state:String(p.estado||p.status||'').toLowerCase(),source:String(p.source||''),sourceSafe:p.sourceSafe===true,piiProtected:p.piiProtected===true,syntheticId:/^hr-post-/.test(String(p.id||''))}));
+    const rows=current.map(p=>({id:String(p.id||p.applicationId||p.postulationId||''),visitId:String(p.visitId||p.visitaId||''),hrRowId:String(p.hrRowId||''),shopperId:String(p.shopperId||''),state:String(p.estado||p.status||'').toLowerCase(),source:String(p.source||''),sucursal:String(p.sucursal||''),archived:p?._archived===true,active:p?.active!==false&&p?._archived!==true&&String(p?.postulationLifecycle||'')!=='transitioned_to_assignment',postulationLifecycle:String(p?.postulationLifecycle||''),postulationLifecycleReason:String(p?.postulationLifecycleReason||''),sourceSafe:p.sourceSafe===true,piiProtected:p.piiProtected===true,syntheticId:/^hr-post-/.test(String(p.id||''))}));
     return {sourceRevision:String(d.previewMeta?.sourceRevision||''),currentPeriodId:period,postCount:current.length,rows,domCards:document.querySelectorAll('[data-pid]').length,visitCount:visits.filter(v=>String(d.recordPeriodId?d.recordPeriodId(v):(v.periodId||v.projectId)||'')===period).length};
   });
   await ctx.close();
@@ -103,12 +103,14 @@ const durableByPair=new Map(durableCurrent.map(p=>[pairKey(p),p]));
 const composed=browserEvidence.rows.map(p=>{
   const match=durableById.get(p.id)||durableByPair.get(str(p.visitId)+'::'+str(p.shopperId))||null;
   return {
-    idFp:fp(p.id),visitFp:fp(p.visitId||p.hrRowId),shopperFp:fp(p.shopperId),state:p.state,source:p.source,
-    syntheticId:p.syntheticId,durableMatch:!!match,durableIdFp:match?fp(idOf(match)):null
+    id:p.id,idFp:fp(p.id),visitId:p.visitId,hrRowId:p.hrRowId,visitFp:fp(p.visitId||p.hrRowId),shopperFp:fp(p.shopperId),state:p.state,source:p.source,sucursal:p.sucursal,
+    archived:p.archived,active:p.active,postulationLifecycle:p.postulationLifecycle,postulationLifecycleReason:p.postulationLifecycleReason,
+    syntheticId:p.syntheticId,durableMatch:!!match,durableId:match?idOf(match):null,durableIdFp:match?fp(idOf(match)):null
   };
 });
 const syntheticOnly=composed.filter(x=>x.syntheticId&&!x.durableMatch);
 const composedNoDurable=composed.filter(x=>!x.durableMatch);
+const activeComposed=composed.filter(x=>x.active===true);
 const staleDurable=durableAnalysis.filter(x=>['orphan_missing_live_visit','pending_on_ineligible_or_assigned_visit','approved_hr_owner_changed'].includes(x.lifecycle));
 
 const freshSyntheticCandidates=hrVisits.filter(v=>str(v.periodKey)==='2026-09'&&['asignada','agendada','fuera_rango','disponible'].includes(str(v.estado))).map(v=>({visitFp:fp(str(v.id||v.visitId)),shopperFp:fp(str(v.shopperId)),state:str(v.estado)}));
@@ -127,12 +129,13 @@ const result={
     firestoreAll:durableAll.length,firestoreCurrentPeriod:durableCurrent.length,
     browserCurrentPeriod:browserEvidence.postCount,browserDomCards:browserEvidence.domCards,
     freshHrSyntheticCandidates:freshSyntheticCandidates.length,syntheticOnlyInReadModel:syntheticOnly.length,
-    composedWithoutDurableMatch:composedNoDurable.length,staleDurable:staleDurable.length,durableDuplicatePairs:durableDuplicatePairs.length
+    composedWithoutDurableMatch:composedNoDurable.length,activeComposed:activeComposed.length,staleDurable:staleDurable.length,durableDuplicatePairs:durableDuplicatePairs.length
   },
   rootCauses,
   durableAnalysis,
   durableDuplicatePairs,
   composed,
+  activeComposed,
   syntheticOnly,
   freshSyntheticCandidates,
   browser:{sourceRevision:browserEvidence.sourceRevision,currentPeriodId:browserEvidence.currentPeriodId,visitCount:browserEvidence.visitCount}
