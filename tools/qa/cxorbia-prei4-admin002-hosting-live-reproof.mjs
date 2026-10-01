@@ -95,12 +95,14 @@ async function adminProof(page){
     return {sourceRevision:String(d.previewMeta?.sourceRevision||''),period,rows:rows.length,active:active.length,historical:historical.length,hrArchived:hrArchived.length,transitioned:transitioned.length,synthetic:synthetic.length,dataPosts:typeof d.posts==='function'?d.posts().length:null,visible};
   });
   const hist=await page.evaluate(()=>{
+    const d=window.CX?.data||{},period=String(d.currentPeriodId||''),periodOf=x=>String(d.recordPeriodId?d.recordPeriodId(x):(x.periodId||x.projectId)||''),isHistorical=x=>x?._archived===true||x?.active===false||String(x?.postulationLifecycle||'')==='transitioned_to_assignment';
+    const currentHistoricalIds=new Set((d._posts||[]).filter(x=>periodOf(x)===period&&isHistorical(x)).map(x=>String(x.id||x.applicationId||x.postulationId||'')));
     const box=document.getElementById('pHist');if(!box)throw new Error('HIST_CONTROL_MISSING');box.checked=true;box.dispatchEvent(new Event('input',{bubbles:true}));box.dispatchEvent(new Event('change',{bubbles:true}));
-    const cards=[...document.querySelectorAll('[data-pid]')].filter(el=>el.offsetParent!==null);
-    return {visible:cards.length,historicalLabels:cards.filter(el=>/HISTÓRICA/i.test(String(el.innerText||''))).length,transitionedVisible:cards.filter(el=>String(el.getAttribute('data-post-lifecycle')||'')==='transitioned_to_assignment').length};
+    const cards=[...document.querySelectorAll('[data-pid]')].filter(el=>el.offsetParent!==null),currentCards=cards.filter(el=>currentHistoricalIds.has(String(el.getAttribute('data-pid')||'')));
+    return {visibleAllPeriods:cards.length,currentVisible:currentCards.length,currentHistoricalLabels:currentCards.filter(el=>/HISTÓRICA/i.test(String(el.innerText||''))).length,currentTransitionedVisible:currentCards.filter(el=>String(el.getAttribute('data-post-lifecycle')||'')==='transitioned_to_assignment').length};
   });
   if(initial.sourceRevision!==EXPECTED_HR||initial.period!==PERIOD||initial.active!==0||initial.historical!==initial.rows||initial.synthetic!==0||initial.dataPosts!==0||initial.visible!==0)throw new Error('FUNCTIONAL_DEFECT:PREI4_002_ADMIN_ACTIVE_SURFACE:'+JSON.stringify(initial));
-  if(hist.visible!==initial.historical||hist.historicalLabels!==hist.visible||hist.transitionedVisible!==initial.transitioned)throw new Error('FUNCTIONAL_DEFECT:PREI4_002_ADMIN_HISTORY_SURFACE:'+JSON.stringify({initial,hist}));
+  if(hist.currentVisible!==initial.historical||hist.currentHistoricalLabels!==hist.currentVisible||hist.currentTransitionedVisible!==initial.transitioned||hist.visibleAllPeriods<hist.currentVisible)throw new Error('FUNCTIONAL_DEFECT:PREI4_002_ADMIN_HISTORY_SURFACE:'+JSON.stringify({initial,hist}));
   return {initial,historical:hist};
 }
 
