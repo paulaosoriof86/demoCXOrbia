@@ -4,11 +4,11 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4_PROVIDER_RECONCILIATION_REPROOF",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "24c329566ca63378ecfdb6f50b3a6329fd16be93",
-  "productTreeAuthority": "e6f0174cf47a6347b9c19c46f73a3901152d303e",
+  "productSourceSha": "a2f7acd659b68217299f92ef69a320f08e806635",
+  "productTreeAuthority": "524207efe063232333795175ac58964f3898067c",
   "predecessorProductSourceSha": "19ce6ac1cbea7c94ad5f61009cea961a3b11e606",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "c513cbaf71f9122e31bf682fc8682214e6335621",
+  "findingsLedgerExpectedGitBlob": "53e829d1419efb935b13b014f243909b3a0c939a",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Use the existing PRE-I4 CONTENT-001 Recovery DEV lane to materialize productSourceSha 24c329566ca63378ecfdb6f50b3a6329fd16be93 / tree e6f0174cf47a6347b9c19c46f73a3901152d303e exactly once, then run current-period HR parity, authenticated Admin+Shopper browser including Liquidaciones, durable Finance ACK/readback/cleanup, Certification live proof and final focal receipt. Reuse all unaffected PASS evidence. Production remains DO_NOT_TOUCH.",
+  "exactNextAction": "Use the existing PRE-I4 CONTENT-001 Recovery DEV lane to materialize reachable productSourceSha a2f7acd659b68217299f92ef69a320f08e806635 / tree 524207efe063232333795175ac58964f3898067c exactly once, then run current-period HR parity, authenticated Admin+Shopper browser including Liquidaciones, durable Finance ACK/readback/cleanup, Certification live proof and final focal receipt. Reuse all unaffected PASS evidence. Production remains DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -43,8 +43,8 @@
     "findingIds": [
       "VRM-136"
     ],
-    "sourceSha": "24c329566ca63378ecfdb6f50b3a6329fd16be93",
-    "sourceTree": "e6f0174cf47a6347b9c19c46f73a3901152d303e",
+    "sourceSha": "a2f7acd659b68217299f92ef69a320f08e806635",
+    "sourceTree": "524207efe063232333795175ac58964f3898067c",
     "predecessorSha": "19ce6ac1cbea7c94ad5f61009cea961a3b11e606",
     "productFiles": 1,
     "testFiles": 0,
@@ -1799,8 +1799,8 @@
   },
   "preI4CurrentSourceSuccessor": {
     "findingId": "VRM-136",
-    "sourceSha": "24c329566ca63378ecfdb6f50b3a6329fd16be93",
-    "sourceTree": "e6f0174cf47a6347b9c19c46f73a3901152d303e",
+    "sourceSha": "a2f7acd659b68217299f92ef69a320f08e806635",
+    "sourceTree": "524207efe063232333795175ac58964f3898067c",
     "predecessorSha": "19ce6ac1cbea7c94ad5f61009cea961a3b11e606",
     "proofRunId": null,
     "proofDecision": "PENDING_DEV_LIVE_REPROOF",
@@ -1817,8 +1817,8 @@
     ],
     "rootCause": "Corte4 protected empty-state guard erased the valid external HR operational context and emitted destructive empty-state events, causing repeated project/period flapping and C6 authority re-reconciliation.",
     "correction": "Preserve external HR operational state when protected Firestore is empty after HR authority is already valid; track protected overlay emptiness separately without destructive operational events.",
-    "sourceSha": "24c329566ca63378ecfdb6f50b3a6329fd16be93",
-    "sourceTree": "e6f0174cf47a6347b9c19c46f73a3901152d303e",
+    "sourceSha": "a2f7acd659b68217299f92ef69a320f08e806635",
+    "sourceTree": "524207efe063232333795175ac58964f3898067c",
     "predecessorSha": "19ce6ac1cbea7c94ad5f61009cea961a3b11e606",
     "production": false
   }
