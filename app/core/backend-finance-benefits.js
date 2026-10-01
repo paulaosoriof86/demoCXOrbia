@@ -83,6 +83,8 @@ window.CX = window.CX || {};
   async function getFinancialMovements(input){
     input = input || {};
     let q = col(input, 'financialMovements');
+    if(input.projectId) q = q.where('projectId', '==', input.projectId);
+    if(input.periodId) q = q.where('periodId', '==', input.periodId);
     if(input.country) q = q.where('country', '==', input.country);
     if(input.status) q = q.where('status', '==', input.status);
     const snap = await q.get();
@@ -90,9 +92,23 @@ window.CX = window.CX || {};
     return {items, status:'ok'};
   }
 
+  async function getFinanceAccounts(input){
+    input = input || {};
+    let q = col(input, 'financeAccounts');
+    if(input.projectId) q = q.where('projectId', '==', input.projectId);
+    if(input.periodId) q = q.where('periodId', '==', input.periodId);
+    if(input.kind) q = q.where('kind', '==', input.kind);
+    if(input.country) q = q.where('country', '==', input.country);
+    if(input.status) q = q.where('status', '==', input.status);
+    const snap = await q.get();
+    return {items:snap.docs.map(docData), status:'ok'};
+  }
+
   async function getPaymentLots(input){
     input = input || {};
     let q = col(input, 'paymentLots');
+    if(input.projectId) q = q.where('projectId', '==', input.projectId);
+    if(input.periodId) q = q.where('periodId', '==', input.periodId);
     if(input.country) q = q.where('country', '==', input.country);
     if(input.status) q = q.where('status', '==', input.status);
     const snap = await q.get();
@@ -126,6 +142,7 @@ window.CX = window.CX || {};
     getMyBenefits(input){ return safeCall('getMyBenefits', getMyBenefits, input); },
     getShopperBenefitsAdmin(input){ return safeCall('getShopperBenefitsAdmin', getShopperBenefitsAdmin, input); },
     getFinancialMovements(input){ return safeCall('getFinancialMovements', getFinancialMovements, input); },
+    getFinanceAccounts(input){ return safeCall('getFinanceAccounts', getFinanceAccounts, input); },
     getPaymentLots(input){ return safeCall('getPaymentLots', getPaymentLots, input); },
     suggestReconciliations(input){ return safeCall('suggestReconciliations', suggestReconciliations, input); },
   });
