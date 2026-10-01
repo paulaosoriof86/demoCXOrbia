@@ -368,6 +368,7 @@ async function transactionExecute(db,command,actor){
       const resolved=await resolveVisitDocument(tx,r.visits,visitId,payload.hrRowId),vRef=resolved.ref,vSnap=resolved.snap,v=resolved.data;assertPeriod(command,v);assertVersion(command,v);
       if(actor.role==='shopper'&&str(v.shopperId)!==actor.shopperId)throw new Error('OPS_VISIT_SHOPPER_SCOPE_DENIED');
       const newDate=str(payload.newDate),shopperRequest=actor.role==='shopper'||payload.requestedByShopper===true;
+      const projectSnap=await tx.get(r.project),projectData=projectSnap.exists?(projectSnap.data()||{}):{},timezone=str(projectData.timeZone||projectData.timezone||'America/Guatemala');
       if(shopperRequest){
         if(!newDate)throw new Error('OPS_RESCHEDULE_DATE_REQUIRED');
         tx.set(vRef,{rescheduleRequest:{status:'pending_review',newDate,reason:payload.reason||null,requestedByShopperId:actor.shopperId,requestedAt:now()},updatedAt:now(),version:Number(v.version||0)+1},{merge:true});
