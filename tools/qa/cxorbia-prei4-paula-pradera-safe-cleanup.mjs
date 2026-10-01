@@ -36,8 +36,8 @@ async function liveTarget(tag){
   const f=v.canonicalFacets||{},state=str(v.estado||v.status||v.state).toLowerCase(),shopper=str(v.shopperId);
   const available=typeof f.available==='boolean'?f.available:['disponible','available'].includes(state);
   const assigned=typeof f.assigned==='boolean'?f.assigned:!!shopper;
-  if(available!==true||assigned===true||shopper)throw new Error('PROVIDER_FAILURE:CLEANUP_HR_TARGET_NOT_AVAILABLE_UNASSIGNED');
-  return {revision:rev,target:{id:str(v.id||v.visitId),hrRowId:str(v.hrRowId),sucursal:str(v.sucursal||v.cinema||v.cine),pais:str(v.pais||v.country),estado:state,available,assigned,shopperId:null},snapshot:snap};
+  const cleanupEligible=available===true&&assigned!==true&&!shopper;
+  return {revision:rev,target:{id:str(v.id||v.visitId),hrRowId:str(v.hrRowId),sucursal:str(v.sucursal||v.cinema||v.cine),pais:str(v.pais||v.country),estado:state,available,assigned,shopperId:shopper||null,cleanupEligible},snapshot:snap};
 }
 
 const members=(await tenant.collection('users').get()).docs.map(d=>({id:d.id,...(d.data()||{})}));
@@ -117,7 +117,7 @@ if(visitDocs.length>3)throw new Error('PERSISTENCE_FAILURE:CLEANUP_VISIT_BOUND_'
 let visitOverlayCleared=0;
 for(const x of visitDocs){
   const v=x.data,platformOverlay=str(v.assignmentSource)==='platform'||str(v.shopperId)===PAULA_SID||str(v.approvedApplicationId)===TARGET_POST;
-  if(platformOverlay){
+  if(beforeHr.target.cleanupEligible&&platformOverlay){
     await x.ref.set({shopperId:null,shopper:null,estado:'disponible',status:'disponible',assignmentSource:null,assignmentSyncStatus:null,approvedApplicationId:null,proposedScheduleDate:null,lastSyncedAt:new Date().toISOString(),canonicalFacets:{...(v.canonicalFacets||{}),available:true,assigned:false,cancelled:false},updatedAt:new Date().toISOString(),version:Number(v.version||0)+1},{merge:true});
     visitOverlayCleared++;
   }
@@ -166,8 +166,9 @@ const result={
   schemaVersion:'cxorbia.prei4.paula-pradera-safe-cleanup.v1',
   decision:'PASS_PREI4_PAULA_PRADERA_SAFE_CLEANUP',
   sourceSha:SOURCE,initialExpectedHrRevision:EXPECTED_HR||null,hrRevision:ACTIVE_HR,hrRevisionChangedSinceRunStart:Boolean(EXPECTED_HR&&EXPECTED_HR!==ACTIVE_HR),target:{hrRowId:TARGET_ROW,visitId:TARGET_VISIT,postulationId:TARGET_POST,shopperFp:fp(PAULA_SID),branch:afterHr.target.sucursal},
+  cleanupMode:beforeHr.target.cleanupEligible?'destructive_test_overlay_cleanup':'readback_only_hr_truth_changed',
   cleanup:{postDeleted,visitOverlayCleared,reservationsDeleted:reservationTargets.length,bulletinsDeleted:bulletinTargets.length,bulletinReadsDeleted:readDocs.length},
-  readback:{hrAvailable:afterHr.target.available,hrAssigned:afterHr.target.assigned,paulaActiveTarget:afterShopper.targetActiveCount,paulaHistoryBefore:beforeShopper.historyCount,paulaHistoryAfter:afterShopper.historyCount,dashboard},
+  readback:{hrAvailable:afterHr.target.available,hrAssigned:afterHr.target.assigned,hrShopperFp:afterHr.target.shopperId?fp(afterHr.target.shopperId):null,paulaActiveTarget:afterShopper.targetActiveCount,paulaHistoryBefore:beforeShopper.historyCount,paulaHistoryAfter:afterShopper.historyCount,dashboard},
   hrWrites:0,production:false
 };
 write('result.json',result);

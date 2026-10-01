@@ -11,7 +11,8 @@ const PROJECT=process.env.PROJECT||'cxorbia-backend-dev';
 const HOST=String(process.env.HOSTING_URL||'https://cxorbia-backend-dev.web.app').replace(/\/$/,'');
 const OUT=process.env.FINAL_FOCAL_OUT||'.tmp/prei4-final-focal';
 const SOURCE=String(process.env.SOURCE_SHA||'');
-const TENANT='tya',PROJECT_ID='cinepolis',PERIOD='cinepolis-2026-09',RUN=String(process.env.GITHUB_RUN_ID||Date.now());
+const TENANT='tya',PROJECT_ID='cinepolis',PERIOD=String(process.env.FINAL_FOCAL_PERIOD_ID||''),RUN=String(process.env.GITHUB_RUN_ID||Date.now());
+if(!/^cinepolis-20\d{2}-[01]\d$/.test(PERIOD))throw new Error('ENVIRONMENT_FAILURE:FINAL_FOCAL_PERIOD_REQUIRED');
 fs.mkdirSync(OUT,{recursive:true});
 const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[],sha=v=>crypto.createHash('sha256').update(String(v)).digest('hex');
 const receiptId=c=>sha(`${c.tenantId}\0${c.projectId}\0${c.periodId}\0${c.idempotencyKey}`).slice(0,40);
@@ -51,7 +52,7 @@ const base=(type,entityType,entityId,key,payload,permission)=>({
   authorization:{providerEnforcementRequired:true,permission},
   audit:{reason:'PRE-I4 final focal DEV fixture'},source:'prei4-final-focal'
 });
-let evidence={schemaVersion:'cxorbia.prei4.final-focal.finance.v1',decision:'HOLD',sourceSha:SOURCE,production:false,hrWrites:0,cleanup:false};
+let evidence={schemaVersion:'cxorbia.prei4.final-focal.finance.v1',decision:'HOLD',sourceSha:SOURCE,periodId:PERIOD,production:false,hrWrites:0,cleanup:false};
 try{
   const revenueId='qa-revenue-'+RUN;
   const revenue=base('finance.movement.create','financialMovement',revenueId,'revenue',{tipo:'ingreso',tipoIngreso:'honorarios',country:'GT',currency:'GTQ',amount:11,cat:'QA focal operating revenue',concepto:'QA focal operating revenue',fecha:new Date().toISOString().slice(0,10)},'finance.movement.write');

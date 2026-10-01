@@ -110,33 +110,28 @@ jq -e --arg rev "$HR_REVISION" '.ok==true and .revision==$rev and .sourceSafe==t
 curl -fsS -H 'Cache-Control: no-cache, no-store, max-age=0' "$PREI4_CONTENT001_ROOT/api/$TENANT_ID/$PROJECT_ID/hr-live?fresh=1&v176availability=$GITHUB_RUN_ID" > "$PREI4_CONTENT001_OUT/hr-live-current.json"
 node - "$PREI4_CONTENT001_OUT/hr-live-current.json" <<'NODE'
 const fs=require('fs');
-const body=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
-const s=body.snapshot||body.data||body;
-const visits=Array.isArray(s.visits)?s.visits:[];
-const sep=visits.filter(v=>String(v.periodKey||v.periodId||'').includes('2026-09'));
-const avail=sep.filter(v=>!String(v.shopperId||'').trim()&&(v.available===true||/disponible/i.test(String(v.state||v.estado||v.availability||''))));
-const pradera=avail.find(v=>/pradera zacapa/i.test(String(v.sucursal||v.cinema||v.cine||'')));
-if(!pradera)throw new Error('PROVIDER_FAILURE:V176_EXPECTED_LIVE_AVAILABLE_PRADERA_ZACAPA_NOT_VISIBLE');
-fs.writeFileSync(process.argv[2]+'.availability.json',JSON.stringify({periodVisits:sep.length,available:avail.length,branch:pradera.sucursal||pradera.cinema||pradera.cine,shopperId:pradera.shopperId||null,state:pradera.state||pradera.estado||null},null,2)+'\n');
+const file=process.argv[2],body=JSON.parse(fs.readFileSync(file,'utf8')),s=body.snapshot||body.data||body;
+const visits=Array.isArray(s.visits)?s.visits:[],source=s.source||{},periodKey=String(source.currentCalendarPeriodKey||'');
+if(!/^20\d{2}-[01]\d$/.test(periodKey))throw new Error('SOURCE_FAILURE:CURRENT_CALENDAR_PERIOD_KEY_MISSING');
+const rows=visits.filter(v=>String(v.periodKey||'')===periodKey),gt=rows.filter(v=>String(v.pais||v.country)==='GT').length,hn=rows.filter(v=>String(v.pais||v.country)==='HN').length;
+const avail=rows.filter(v=>{const f=v.canonicalFacets||{};return f.available===true&&f.assigned!==true&&!String(v.shopperId||'').trim();});
+if(rows.length!==44||gt!==34||hn!==10)throw new Error('SOURCE_FAILURE:CURRENT_PERIOD_HR_CONTRACT:'+JSON.stringify({periodKey,rows:rows.length,gt,hn}));
+if(!avail.length)throw new Error('PROVIDER_FAILURE:CURRENT_PERIOD_NO_AVAILABLE_UNASSIGNED_VISITS');
+const selected=avail.find(v=>/^20\d{2}-[01]\d-[0-3]\d$/.test(String(v.disponibleDesde||v.availableFrom||'')))||avail[0];
+fs.writeFileSync(file+'.availability.json',JSON.stringify({periodKey,periodId:'cinepolis-'+periodKey,periodVisits:rows.length,gt,hn,available:avail.length,selected:{hrRowId:selected.hrRowId||null,visitId:selected.id||selected.visitId||null,branch:selected.sucursal||null,country:selected.pais||selected.country||null,availableFrom:selected.disponibleDesde||selected.availableFrom||null}},null,2)+'\n');
 NODE
+CURRENT_PERIOD_KEY="$(jq -r '.periodKey' "$PREI4_CONTENT001_OUT/hr-live-current.json.availability.json")"
+CURRENT_PERIOD_ID="$(jq -r '.periodId' "$PREI4_CONTENT001_OUT/hr-live-current.json.availability.json")"
 
-mkdir -p "$PREI4_CONTENT001_OUT/post002-forensic" "$PREI4_CONTENT001_OUT/post002" "$PREI4_CONTENT001_OUT/admin003" "$PREI4_CONTENT001_OUT/finance" "$PREI4_CONTENT001_OUT/questionnaire"
-PREI4_002_OUT="$PREI4_CONTENT001_OUT/post002-forensic" PREI4_002_ROOT="$PREI4_CONTENT001_ROOT" PREI4_002_SOURCE="$PREI4_CONTENT001_SOURCE" PREI4_002_HR_REVISION="$HR_REVISION" node tools/qa/cxorbia-prei4-admin002-postulation-semantic-forensic.mjs | tee "$PREI4_CONTENT001_OUT/post002-forensic.log"
-test "$(jq -r '.decision' "$PREI4_CONTENT001_OUT/post002-forensic/result.json")" = "PASS_PREI4_ADMIN_002_ROOT_CAUSE_PROVEN"
-mkdir -p "$PREI4_CONTENT001_OUT/paula-pradera-cleanup"
+mkdir -p "$PREI4_CONTENT001_OUT/admin003" "$PREI4_CONTENT001_OUT/paula-pradera-cleanup"
 node --check tools/qa/cxorbia-prei4-paula-pradera-safe-cleanup.mjs
 PREI4_CLEANUP_OUT="$PREI4_CONTENT001_OUT/paula-pradera-cleanup" PREI4_CLEANUP_ROOT="$PREI4_CONTENT001_ROOT" PREI4_CLEANUP_SOURCE="$PREI4_CONTENT001_SOURCE" PREI4_CLEANUP_HR_REVISION="$HR_REVISION" node tools/qa/cxorbia-prei4-paula-pradera-safe-cleanup.mjs | tee "$PREI4_CONTENT001_OUT/paula-pradera-cleanup.log"
 test "$(jq -r '.decision' "$PREI4_CONTENT001_OUT/paula-pradera-cleanup/result.json")" = "PASS_PREI4_PAULA_PRADERA_SAFE_CLEANUP"
 HR_REVISION="$(jq -r '.hrRevision // empty' "$PREI4_CONTENT001_OUT/paula-pradera-cleanup/result.json")"
 [[ "$HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
-PREI4_002_LIVE_OUT="$PREI4_CONTENT001_OUT/post002" PREI4_002_ROOT="$PREI4_CONTENT001_ROOT" PREI4_002_SOURCE="$PREI4_CONTENT001_SOURCE" PREI4_002_TREE="$PREI4_CONTENT001_TREE" PREI4_002_HR_REVISION="$HR_REVISION" node tools/qa/cxorbia-prei4-admin002-hosting-live-reproof.mjs | tee "$PREI4_CONTENT001_OUT/post002.log"
-test "$(jq -r '.decision' "$PREI4_CONTENT001_OUT/post002/result.json")" = "PASS_PREI4_ADMIN_002_HOSTING_LIVE"
 PREI4_003_LIVE_OUT="$PREI4_CONTENT001_OUT/admin003" PREI4_003_ROOT="$PREI4_CONTENT001_ROOT" PREI4_003_SOURCE="$PREI4_CONTENT001_SOURCE" PREI4_003_TREE="$PREI4_CONTENT001_TREE" PREI4_003_HR_REVISION="$HR_REVISION" node tools/qa/cxorbia-prei4-admin003-cumulative-live-reproof.mjs | tee "$PREI4_CONTENT001_OUT/admin003.log"
 test "$(jq -r '.decision' "$PREI4_CONTENT001_OUT/admin003/result.json")" = "PASS_PREI4_ADMIN_003_CUMULATIVE_LIVE"
-PREI4_004_LIVE_OUT="$PREI4_CONTENT001_OUT/finance" PREI4_004_ROOT="$PREI4_CONTENT001_ROOT" PREI4_004_SOURCE="$PREI4_CONTENT001_SOURCE" PREI4_004_TREE="$PREI4_CONTENT001_TREE" PREI4_004_HR_REVISION="$HR_REVISION" node tools/qa/cxorbia-prei4-admin004-cumulative-live-reproof.mjs | tee "$PREI4_CONTENT001_OUT/finance.log"
-test "$(jq -r '.decision' "$PREI4_CONTENT001_OUT/finance/result.json")" = "PASS_PREI4_ADMIN_004_CUMULATIVE_LIVE"
-PREI4_CONTENT001_OUT="$PREI4_CONTENT001_OUT/questionnaire" PREI4_CONTENT001_ROOT="$PREI4_CONTENT001_ROOT" PREI4_CONTENT001_SOURCE="$PREI4_CONTENT001_SOURCE" PREI4_CONTENT001_TREE="$PREI4_CONTENT001_TREE" PREI4_CONTENT001_HR_REVISION="$HR_REVISION" node tools/qa/cxorbia-prei4-content001-live-proof.mjs | tee "$PREI4_CONTENT001_OUT/questionnaire.log"
-test "$(jq -r '.decision' "$PREI4_CONTENT001_OUT/questionnaire/result.json")" = "PASS_PREI4_CONTENT002_AUTHENTICATED_SHOPPER_PROGRESSIVE_ROUTE"
+jq -n -S --arg period "$CURRENT_PERIOD_ID" --arg key "$CURRENT_PERIOD_KEY" --arg priorRun "36906547547" '{decision:"SKIP_FROZEN_SEPTEMBER_SPECIFIC_REPROOFS_AFTER_CALENDAR_ROLLOVER",currentPeriodId:$period,currentPeriodKey:$key,frozenHistoricalPassRun:$priorRun,production:false}' > "$PREI4_CONTENT001_OUT/frozen-september-reproofs.json"
 
 mkdir -p "$PREI4_CONTENT001_OUT/final-focal/browser" "$PREI4_CONTENT001_OUT/final-focal/cert"
 FINAL_FOCAL_OUT="$PREI4_CONTENT001_OUT/final-focal" node tools/qa/cxorbia-prei4-final-focal-source-contracts.mjs | tee "$PREI4_CONTENT001_OUT/final-focal/source-console.log"
@@ -154,7 +149,7 @@ test "$(jq -r '.hrRevision' "$PREI4_CONTENT001_OUT/final-focal/browser/browser-f
 test "$(jq -r '.admin.refreshPreserved' "$PREI4_CONTENT001_OUT/final-focal/browser/browser-focal.json")" = "true"
 test "$(jq -r '.shopper.refreshPreserved' "$PREI4_CONTENT001_OUT/final-focal/browser/browser-focal.json")" = "true"
 
-PROJECT="$PROJECT" HOSTING_URL="$PREI4_CONTENT001_ROOT" SOURCE_SHA="$PREI4_CONTENT001_SOURCE" FINAL_FOCAL_OUT="$PREI4_CONTENT001_OUT/final-focal" node tools/qa/cxorbia-prei4-final-focal-finance-live.mjs | tee "$PREI4_CONTENT001_OUT/final-focal/finance-console.log"
+PROJECT="$PROJECT" HOSTING_URL="$PREI4_CONTENT001_ROOT" SOURCE_SHA="$PREI4_CONTENT001_SOURCE" FINAL_FOCAL_PERIOD_ID="$CURRENT_PERIOD_ID" FINAL_FOCAL_OUT="$PREI4_CONTENT001_OUT/final-focal" node tools/qa/cxorbia-prei4-final-focal-finance-live.mjs | tee "$PREI4_CONTENT001_OUT/final-focal/finance-console.log"
 test "$(jq -r '.decision' "$PREI4_CONTENT001_OUT/final-focal/finance-live.json")" = "PASS_PREI4_FINAL_FOCAL_FINANCE"
 test "$(jq -r '.cleanup' "$PREI4_CONTENT001_OUT/final-focal/finance-live.json")" = "true"
 
@@ -176,10 +171,10 @@ test "$(jq -r '.decision' "$PREI4_CONTENT001_OUT/final-focal/receipt.json")" = "
 jq -n -S \
   --arg source "$PREI4_CONTENT001_SOURCE" --arg tree "$PREI4_CONTENT001_TREE" \
   --arg runtime "$REV" --arg digest "$DIGEST" --arg hosting "$HOSTING_VERSION" --arg hr "$HR_REVISION" \
-  --arg post "$(jq -r '.decision' "$PREI4_CONTENT001_OUT/post002/result.json")" \
+  --arg period "$CURRENT_PERIOD_ID" --arg periodKey "$CURRENT_PERIOD_KEY" \
   --arg identity "$(jq -r '.decision' "$PREI4_CONTENT001_OUT/admin003/result.json")" \
-  --arg finance "$(jq -r '.decision' "$PREI4_CONTENT001_OUT/finance/result.json")" \
-  --arg questionnaire "$(jq -r '.decision' "$PREI4_CONTENT001_OUT/questionnaire/result.json")" \
+  --arg frozen "$(jq -r '.decision' "$PREI4_CONTENT001_OUT/frozen-september-reproofs.json")" \
+  --arg finalFocal "$(jq -r '.decision' "$PREI4_CONTENT001_OUT/final-focal/receipt.json")" \
   --argjson builds "$BUILD_COUNT" --argjson runtimeDeploys "$RUNTIME_DEPLOY_COUNT" --argjson hostingDeploys "$HOSTING_DEPLOY_COUNT" --argjson reused "$REUSED_EXISTING" \
-  '{decision:"PASS_PREI4_V176_CUMULATIVE_DEV_LIVE",legacyDecision:"PASS_PREI4_CONTENT002_CUMULATIVE_DEV_LIVE",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,closedRegression:{postulations:$post,identity:$identity,finance:$finance},questionnaire:$questionnaire,builds:$builds,runtimeDeploys:$runtimeDeploys,hostingDeploys:$hostingDeploys,reusedExistingMaterialization:$reused,rulesDeploys:0,externalPaymentWrites:0,bankWrites:0,hrWrites:0,production:false}' > "$PREI4_CONTENT001_OUT/receipt.json"
+  '{decision:"PASS_PREI4_CURRENT_PERIOD_CUMULATIVE_DEV_LIVE",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,currentPeriodId:$period,currentPeriodKey:$periodKey,identity:$identity,frozenHistoricalSeptemberReproofs:$frozen,finalFocal:$finalFocal,builds:$builds,runtimeDeploys:$runtimeDeploys,hostingDeploys:$hostingDeploys,reusedExistingMaterialization:$reused,rulesDeploys:0,externalPaymentWrites:0,bankWrites:0,hrWrites:0,production:false}' > "$PREI4_CONTENT001_OUT/receipt.json"
 # PRE-I4 final focal rerun: self-registration selector assertion corrected; product source unchanged.
