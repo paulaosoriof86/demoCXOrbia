@@ -6482,6 +6482,30 @@
       },
       "productSourceChanged": false,
       "production": false
+    },
+    "VRM-139": {
+      "id": "VRM-139",
+      "classification": "MAPPING_FAILURE",
+      "severity": "CONTROL_BLOCKER",
+      "title": "Final finance live fixture used ISO GTQ instead of tenant currency code Q",
+      "state": "FIXED_CONTROL_REPROOF_REQUIRED",
+      "productDefect": false,
+      "observed": "finance.movement.create was rejected with FINANCE_MOVEMENT_CURRENCY_SCOPE_CONFLICT before durable revenue acceptance.",
+      "rootCause": "The final finance QA fixture used GTQ while the canonical Cinepolis currency contract is GT=Q and HN=L; the provider correctly rejected the mismatch.",
+      "correction": "Use Q for every Guatemala finance fixture and preserve provider currency enforcement unchanged.",
+      "exactOwners": [
+        "tools/qa/cxorbia-prei4-final-focal-finance-live.mjs"
+      ],
+      "evidence": {
+        "runId": 36940358709,
+        "jobId": 110630224254,
+        "providerCode": "FINANCE_MOVEMENT_CURRENCY_SCOPE_CONFLICT",
+        "fixtureCurrency": "GTQ",
+        "canonicalCurrency": "Q",
+        "cleanup": true
+      },
+      "productSourceChanged": false,
+      "production": false
     }
   },
   "latestEvidenceOverrides": {
@@ -7038,7 +7062,7 @@
     ],
     "findingCount": 135,
     "expectedCurrentRange": "VRM-001..VRM-135",
-    "nextFindingId": "VRM-139",
+    "nextFindingId": "VRM-140",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_PREI4_PROVIDER_RECONCILIATION_REPROOF",
@@ -7070,7 +7094,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Run browser-only PRE-I4 focal against already materialized canonical DEV source a2f7acd659b68217299f92ef69a320f08e806635. If PASS, immediately execute Finance durable + Certification + final focal receipt without rebuild/redeploy.",
+  "exactNextAction": "Run final-fast PRE-I4 Finance durable + Certification against canonical DEV source a2f7acd659b68217299f92ef69a320f08e806635, reusing browser PASS run 36939433303 only if HR revision remains e242d83f7a63b4f390a3ff6eeaeb616dea52f52f159a5e3a929c5473a7225159.",
   "supersedesGitBlob": "397a9cee8c71d3156567a0cc96bfdcba88bb7c3a",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -7099,15 +7123,17 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-139",
+  "nextFindingId": "VRM-140",
   "lastControlFailure": {
-    "id": "VRM-138",
+    "id": "VRM-139",
     "classification": "MAPPING_FAILURE",
-    "runId": 36938470948,
-    "jobId": 110624232674,
-    "owner": "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs",
+    "runId": 36940358709,
+    "jobId": 110630224254,
+    "owner": "tools/qa/cxorbia-prei4-final-focal-finance-live.mjs",
     "productDefect": false,
     "productSourceChanged": false,
+    "providerCode": "FINANCE_MOVEMENT_CURRENCY_SCOPE_CONFLICT",
+    "cleanup": true,
     "state": "FIXED_CONTROL_REPROOF_REQUIRED",
     "production": false
   },
@@ -8453,7 +8479,7 @@
     "PREI4-CONTENT-001",
     "PREI4-CONTENT-002"
   ],
-  "preI4NextAction": "Run browser-only PRE-I4 focal against already materialized canonical DEV source a2f7acd659b68217299f92ef69a320f08e806635. If PASS, immediately execute Finance durable + Certification + final focal receipt without rebuild/redeploy.",
+  "preI4NextAction": "Run final-fast PRE-I4 Finance durable + Certification against canonical DEV source a2f7acd659b68217299f92ef69a320f08e806635, reusing browser PASS run 36939433303 only if HR revision remains e242d83f7a63b4f390a3ff6eeaeb616dea52f52f159a5e3a929c5473a7225159.",
   "preI4Admin002": {
     "findingId": "PREI4-ADMIN-002",
     "state": "FIXED_PROVEN_RUN601",
