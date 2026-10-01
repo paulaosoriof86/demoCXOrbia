@@ -379,11 +379,11 @@ CX.module('movimientos', ({data,ui})=>{
         <div style="font-size:11px;color:var(--t3);margin-top:8px">Los <b>financiamientos</b> no son utilidad: se suman a CxP hasta devolverse.</div>
       </div>
       <div class="card card-p"><div class="card-h"><div class="card-t">Cuentas por pagar</div></div>
-        ${CX.finStore.cxp(pid()).length?`<input class="inp" id="cxpFind" placeholder="🔍 Buscar concepto/beneficiario…" style="margin-bottom:8px;padding:5px 9px;font-size:12px">`:''}
-        <div id="cxpBody">${CX.finStore.cxp(pid()).length?CX.finStore.cxp(pid()).map(r=>`<div class="between cxpRow" style="padding:7px 0;border-bottom:1px solid var(--border-2)"><div style="cursor:pointer" data-cxdet="cxp:${r.id}"><b style="font-size:12px">${r.concepto}</b><div style="font-size:10px;color:var(--t3)">${r.pais||'<span class="bdg bdg-n" style="font-size:9px">Pendiente de moneda</span>'} · ${r.estado||'pendiente'} · saldo ↗ ver detalle</div></div><div class="flex" style="gap:8px"><b style="font-size:12.5px;color:var(--amber)">${r.pais&&p.currency[r.pais]?ui.money(p.currency[r.pais],r.saldo||0):(r.moneda?ui.money(r.moneda,r.saldo||0):'Pendiente de moneda')}</b>${currencyOf(r)!==PENDING_CURRENCY?`<button class="btn btn-soft btn-sm" data-abono="${r.id}">Abonar</button>`:ui.bdg('Revisión · sin moneda','r')}</div></div>`).join(''):''}
+        ${cxpAccounts.length?`<input class="inp" id="cxpFind" placeholder="🔍 Buscar concepto/beneficiario…" style="margin-bottom:8px;padding:5px 9px;font-size:12px">`:''}
+        <div id="cxpBody">${cxpAccounts.length?cxpAccounts.map(r=>`<div class="between cxpRow" style="padding:7px 0;border-bottom:1px solid var(--border-2)"><div style="cursor:pointer" data-cxdet="cxp:${r.id}"><b style="font-size:12px">${r.concepto}</b><div style="font-size:10px;color:var(--t3)">${r.pais||'<span class="bdg bdg-n" style="font-size:9px">Pendiente de moneda</span>'} · ${r.estado||'pendiente'} · saldo ↗ ver detalle</div></div><div class="flex" style="gap:8px"><b style="font-size:12.5px;color:var(--amber)">${r.pais&&p.currency[r.pais]?ui.money(p.currency[r.pais],r.saldo||0):(r.moneda?ui.money(r.moneda,r.saldo||0):'Pendiente de moneda')}</b>${currencyOf(r)!==PENDING_CURRENCY?`<button class="btn btn-soft btn-sm" data-abono="${r.id}">Abonar</button>`:ui.bdg('Revisión · sin moneda','r')}</div></div>`).join(''):''}
         ${derivedLiqCxps.length?`<div style="font-size:10.5px;font-weight:700;color:var(--t3);text-transform:uppercase;margin:8px 0 4px">CxP derivada de liquidaciones exactas</div>${derivedLiqCxps.slice(0,8).map(l=>`<div class="between cxpRow" style="padding:7px 0;border-bottom:1px solid var(--border-2)"><div><b style="font-size:12px">Liquidación pendiente · ${l.shopper||'Shopper'}</b><div style="font-size:10px;color:var(--t3)">${l.pais||''} · ${l.estado||'conciliada_pendiente_pago'} · fuente exacta, pago pendiente</div></div><b style="font-size:12.5px;color:var(--amber)">${ui.money(currencyOf(l),l.total||0)}</b></div>`).join('')}${derivedLiqCxps.length>8?`<div class="muted" style="font-size:11px;padding:5px 0">+${derivedLiqCxps.length-8} liquidación(es) exacta(s) adicionales</div>`:''}`:''}
         ${derivedLiqReviews.length?`<div style="font-size:11px;color:var(--red);margin-top:8px">🔒 ${derivedLiqReviews.length} liquidación(es) en revisión financiera visibles, excluidas de CxP pagable.</div>`:''}
-        ${!CX.finStore.cxp(pid()).length&&!derivedLiqCxps.length?'<div class="muted" style="font-size:12px;padding:8px 0">Sin CxP registradas ni liquidaciones exactas por pagar. Útil al importar saldos iniciales.</div>':''}</div>
+        ${!cxpAccounts.length&&!derivedLiqCxps.length?'<div class="muted" style="font-size:12px;padding:8px 0">Sin CxP registradas ni liquidaciones exactas por pagar. Útil al importar saldos iniciales.</div>':''}</div>
       </div>
     </div>
 
@@ -450,10 +450,17 @@ CX.module('movimientos', ({data,ui})=>{
 
     // ---- financiamientos ----
     const fl=host.querySelector('#finList');
-    if(fl){ const fins=CX.finStore.financiamientos(p.id);
+    if(fl){ const fins=connectedFinance()
+      ? cxpAccounts.filter(r=>String(r.origin||'').toLowerCase()==='financiamiento').map(r=>Object.assign({},r,{
+          fuente:r.counterparty||r.concepto||'Financiamiento',
+          saldo:Number(r.balance??r.saldo)||0,
+          devuelto:Math.max(0,(Number(r.originalAmount??r.monto)||0)-(Number(r.balance??r.saldo)||0)),
+          fecha:String(r.createdAt||r.fecha||'').slice(0,10)
+        }))
+      : CX.finStore.financiamientos(p.id);
       fl.innerHTML=fins.length?fins.map(f=>`<div style="padding:8px 0;border-bottom:1px solid var(--border-2)"><div class="between"><div><b style="font-size:12.5px">${f.fuente||'Financiamiento'}</b><div style="font-size:10.5px;color:var(--t3)">${f.pais||''} · ${f.fecha} · devuelto ${f.pais&&p.currency[f.pais]?ui.money(p.currency[f.pais],f.devuelto||0):(f.moneda?ui.money(f.moneda,f.devuelto||0):'—')}</div></div>
         <div class="flex" style="gap:8px"><b style="font-size:12.5px;color:${(f.saldo||0)>0?'var(--amber)':'var(--green)'}">saldo ${f.pais&&p.currency[f.pais]?ui.money(p.currency[f.pais],f.saldo||0):(f.moneda?ui.money(f.moneda,f.saldo||0):'Pendiente de moneda')}</b>${(!(f.pais&&p.currency[f.pais])&&!f.moneda)?ui.bdg('Revisión requerida · sin moneda · Bloqueado','r'):((f.saldo||0)<=0?ui.bdg('saldado','g'):`<button class="btn btn-soft btn-sm" data-devfin="${f.id}">Devolver</button>`)}</div></div></div>`).join(''):'<div class="muted" style="font-size:12px;padding:6px 0">Sin financiamientos registrados</div>';
-      fl.querySelectorAll('[data-devfin]').forEach(b=>b.addEventListener('click',()=>{const f=CX.finStore.financiamientos(p.id).find(x=>x.id===b.dataset.devfin);
+      fl.querySelectorAll('[data-devfin]').forEach(b=>b.addEventListener('click',()=>{const f=fins.find(x=>x.id===b.dataset.devfin);
         ui.modal('Devolver financiamiento · '+f.fuente,`<div style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Saldo: <b>${f.pais&&p.currency[f.pais]?ui.money(p.currency[f.pais],f.saldo||0):(f.moneda?ui.money(f.moneda,f.saldo||0):'Pendiente de moneda')}</b></div><label class="lbl">Monto a devolver</label><input class="inp" id="dvM" type="number" value="${f.saldo||0}" style="margin-bottom:14px"><div style="text-align:right"><button class="btn btn-green btn-sm" id="dvOk">Registrar devolución</button></div>`,{onMount:(ov,close)=>{ov.querySelector('#dvOk').addEventListener('click',()=>{CX.finStore.devolverFinanciamiento(p.id,f.id,+ov.querySelector('#dvM').value||0);close();draw();ui.toast('Devolución registrada · egreso generado · CxP reducida','ok',3600);});}});
       }));
     }
@@ -478,7 +485,7 @@ CX.module('movimientos', ({data,ui})=>{
     host.querySelectorAll('[data-delm]').forEach(b=>b.addEventListener('click',()=>{CX.finStore.delMov(pid(),b.dataset.delm);draw();ui.toast('Movimiento eliminado','');}));
     host.querySelectorAll('[data-cxdet]').forEach(el=>el.addEventListener('click',()=>{
       const [kind,id]=el.dataset.cxdet.split(':');
-      const arr=kind==='cxc'?CX.finStore.cxc(pid()):CX.finStore.cxp(pid());
+      const arr=kind==='cxc'?cxcAccounts:cxpAccounts;
       const r=arr.find(x=>x.id===id); if(!r)return;
       const estados=kind==='cxc'?['pendiente','parcial','cobrada','incobrable']:['pendiente','parcial','pagada','programada'];
       ui.modal((kind==='cxc'?'⏳ Cuenta por cobrar':'💸 Cuenta por pagar')+' · '+r.concepto,`
@@ -516,7 +523,7 @@ CX.module('movimientos', ({data,ui})=>{
       const k=el.dataset.drill; let title,rows;
       if(k==='ing'||k==='egr'){const f=movs.filter(m=>(k==='ing'?m.monto>0:m.monto<0)&&curOf(m)!==PENDING_CURRENCY);title=k==='ing'?'Ingresos':'Egresos';rows=f.map(m=>`<tr><td>${m.fecha}</td><td><b>${m.cat}</b></td><td>${TI[m.tipoIngreso]||TE[m.tipoEgreso]||m.tipo}</td><td>${curOf(m)}</td><td style="text-align:right">${_mvMoney(m,Math.abs(m.monto))}</td></tr>`).join('');}
       else if(k==='rem'){const f=movs.filter(m=>m.tipoIngreso==='remesa'&&curOf(m)!==PENDING_CURRENCY);title='Remesas recibidas';rows=f.map(m=>`<tr><td>${m.fecha}</td><td><b>${m.cat}</b></td><td>${m.estado||''}</td><td>${curOf(m)}</td><td style="text-align:right">${_mvMoney(m,m.monto)}</td></tr>`).join('');}
-      else {const arr=k==='cxc'?CX.finStore.cxc(pid()):CX.finStore.cxp(pid());title=k==='cxc'?'Cuentas por cobrar':'Cuentas por pagar';rows=arr.map(r=>`<tr><td><b>${r.concepto}</b></td><td>${r.pais||'Pendiente de moneda'}</td><td style="text-align:right">${r.pais?ui.money(curOfRow(r),r.saldo||0):'Pendiente de moneda'}</td></tr>`).join('');}
+      else {const arr=k==='cxc'?cxcAccounts:cxpAccounts;title=k==='cxc'?'Cuentas por cobrar':'Cuentas por pagar';rows=arr.map(r=>`<tr><td><b>${r.concepto}</b></td><td>${r.pais||'Pendiente de moneda'}</td><td style="text-align:right">${r.pais?ui.money(curOfRow(r),r.saldo||0):'Pendiente de moneda'}</td></tr>`).join('');}
       ui.modal(title,rows?`<table class="tbl"><tbody>${rows}</tbody></table>`:ui.empty('💰','Sin registros.'));
     }));
 
@@ -552,7 +559,7 @@ CX.module('movimientos', ({data,ui})=>{
     const acx=host.querySelector('#autoCxp');
     if(acx)acx.addEventListener('click',()=>{
       const liqPend=CX.liq.forProject(data).filter(l=>['validada','pendiente_submitir','conciliada_pendiente_pago'].includes(l.estado)&&!isFinancialReview(l));
-      const yaCxp=new Set(CX.finStore.cxp(pid()).map(r=>r.visitaId).filter(Boolean));
+      const yaCxp=new Set(cxpAccounts.map(r=>r.visitaId).filter(Boolean));
       const nuevasCxp=liqPend.filter(l=>!yaCxp.has(l.visitaId));
       // Por cobrar: sin fuente confirmada de reintegro no se infiere monto pendiente (Corte 3 P0-3)
       const cxcEst=[];
