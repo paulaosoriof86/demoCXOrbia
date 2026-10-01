@@ -125,6 +125,13 @@ CX.fin = {
     /* R29 finance_core_uses_supplied_data_context_for_period: el periodo se resuelve del CONTEXTO
        'data' recibido (incluye adapters de serieMensual), no del global CX.data.currentPeriodId. */
     const canonicalPeriodId=(data.periodId&&data.periodId())||(data.period&&data.period()&&data.period().id)||p.id;
+    const canonicalProjectId=String(p.parentProjectId||p.rootProjectId||p.program||p.projectId||p.id||'');
+    const durableMovements=Array.isArray(data.__financialMovements)?data.__financialMovements:(Array.isArray(CX.data?.__financialMovements)?CX.data.__financialMovements:[]);
+    const durableAccounts=Array.isArray(data.__financeAccounts)?data.__financeAccounts:(Array.isArray(CX.data?.__financeAccounts)?CX.data.__financeAccounts:[]);
+    const durableProjectionLoaded=data.__financeProjectionLoaded===true||CX.data?.__financeProjectionLoaded===true;
+    const scopeRow=(r)=>r&&String(r.projectId||canonicalProjectId)===canonicalProjectId&&String(r.periodId||canonicalPeriodId)===String(canonicalPeriodId);
+    const movementAmount=(r)=>Number.isFinite(Number(r.amount))?Number(r.amount):Math.abs(Number(r.monto||0));
+    const accountBalance=(r)=>Number.isFinite(Number(r.balance))?Number(r.balance):Number(r.saldo||0);
     const budgetKey=tenantId+'::'+p.id+'::'+canonicalPeriodId;
     const presStore=CX.finStore.pres(p.id, canonicalPeriodId); // periodo explícito desde el contexto data
     const unassignedBudgetTotal=Object.values(presStore).reduce((a,b)=>a+(+b||0),0);
@@ -133,8 +140,21 @@ CX.fin = {
       const countryRows=allLiq.filter(l=>l&&l.pais===c&&((l.moneda||cur)===cur));
       const ls=operationalRows.filter(l=>l.pais===c&&l.moneda===cur);
       const visRe=countryRows.length;                           // incluye filas que esperan fuente monetaria
-      const incomeInfo=this.honRecibeInfo(p,c);
-      const ingreso=incomeInfo.known?ls.reduce((a)=>a+incomeInfo.value,0):null;
+      const configuredIncomeInfo=this.honRecibeInfo(p,c);
+      const durableRevenueRows=durableMovements.filter(r=>scopeRow(r)
+        && String(r.country||r.pais||'')===String(c)
+        && String(r.currency||r.moneda||'')===String(cur)
+        && r.revenueRecognized===true
+        && r.operatingRevenue!==false
+        && String(r.sourceStatus||'confirmed')==='confirmed'
+        && String(r.tipo||'').toLowerCase()==='ingreso');
+      const durableRevenue=durableRevenueRows.reduce((a,r)=>a+movementAmount(r),0);
+      const incomeInfo=durableRevenueRows.length
+        ? {known:true,value:durableRevenue,source:'durable_financial_movements'}
+        : configuredIncomeInfo;
+      const ingreso=durableRevenueRows.length
+        ? durableRevenue
+        : (incomeInfo.known?ls.reduce((a)=>a+incomeInfo.value,0):null);
       /* CORTE 3 P0-2 — honorarios como estados SEPARADOS, nunca "pagado" por inferencia.
          devengado: honorario ganado por la liquidación (obligación), exista o no pago.
          pagado: SOLO filas con paymentConfirmed===true Y paymentSourceRef (fuente de pago).
@@ -157,8 +177,15 @@ CX.fin = {
          ni al margen, y NO se replica en cada out[c]. Se expone una sola vez fuera del mapa. */
       const fijos=0;
       const margen=incomeInfo.known&&Number.isFinite(honorarioDevengado)?(ingreso-honorarioDevengado-isr-regal):null;
-      const cxp=totalComplete?countryRows.filter(l=>!isPaid(l)).reduce((a,l)=>a+l.total,0):null; // sin monto autorizado no se fabrica CxP cero
-      const cxc=incomeInfo.known?ls.filter(l=>['validada','pagada','pagada_preview'].includes(l.estado)).reduce((a)=>a+incomeInfo.value,0):null;
+      const liquidationCxp=totalComplete?countryRows.filter(l=>!isPaid(l)).reduce((a,l)=>a+l.total,0):null; // sin monto autorizado no se fabrica CxP cero
+      const scopedAccounts=durableAccounts.filter(r=>scopeRow(r)
+        && String(r.country||r.pais||'')===String(c)
+        && String(r.currency||r.moneda||'')===String(cur)
+        && String(r.status||'open')!=='closed');
+      const durableCxp=scopedAccounts.filter(r=>String(r.kind||'').toLowerCase()==='cxp'&&String(r.origin||'')!=='liquidacion').reduce((a,r)=>a+Math.max(0,accountBalance(r)),0);
+      const durableCxc=scopedAccounts.filter(r=>String(r.kind||'').toLowerCase()==='cxc').reduce((a,r)=>a+Math.max(0,accountBalance(r)),0);
+      const cxp=Number.isFinite(liquidationCxp)?liquidationCxp+durableCxp:(durableProjectionLoaded?durableCxp:null);
+      const cxc=durableProjectionLoaded?durableCxc:null;
       out[c]={cur,visRe,ingreso,incomeSourceKnown:incomeInfo.known,incomeSource:incomeInfo.source,
         honorarioDevengado,honorarioPorPagar,honorarioPagado,pagosConfirmados,honorariumSourceComplete:honorariumComplete,totalSourceComplete:totalComplete,
         reemb,reimbursementPartial,isr,regal,fijos,margen,cxp,cxc,
