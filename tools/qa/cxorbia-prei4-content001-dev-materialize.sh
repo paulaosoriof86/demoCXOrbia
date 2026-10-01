@@ -136,6 +136,38 @@ test "$(jq -r '.decision' "$PREI4_CONTENT001_OUT/finance/result.json")" = "PASS_
 PREI4_CONTENT001_OUT="$PREI4_CONTENT001_OUT/questionnaire" PREI4_CONTENT001_ROOT="$PREI4_CONTENT001_ROOT" PREI4_CONTENT001_SOURCE="$PREI4_CONTENT001_SOURCE" PREI4_CONTENT001_TREE="$PREI4_CONTENT001_TREE" PREI4_CONTENT001_HR_REVISION="$HR_REVISION" node tools/qa/cxorbia-prei4-content001-live-proof.mjs | tee "$PREI4_CONTENT001_OUT/questionnaire.log"
 test "$(jq -r '.decision' "$PREI4_CONTENT001_OUT/questionnaire/result.json")" = "PASS_PREI4_CONTENT002_AUTHENTICATED_SHOPPER_PROGRESSIVE_ROUTE"
 
+mkdir -p "$PREI4_CONTENT001_OUT/final-focal/browser" "$PREI4_CONTENT001_OUT/final-focal/cert"
+FINAL_FOCAL_OUT="$PREI4_CONTENT001_OUT/final-focal" node tools/qa/cxorbia-prei4-final-focal-source-contracts.mjs | tee "$PREI4_CONTENT001_OUT/final-focal/source-console.log"
+test "$(jq -r '.decision' "$PREI4_CONTENT001_OUT/final-focal/source-contracts.json")" = "PASS_PREI4_FINAL_FOCAL_SOURCE"
+node backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs | tee "$PREI4_CONTENT001_OUT/final-focal/shopper-provider-tests.log"
+node backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs | tee "$PREI4_CONTENT001_OUT/final-focal/operational-provider-tests.log"
+
+PREI4_OUT="$PREI4_CONTENT001_OUT/final-focal/browser" CXORBIA_PREI4_ROOT="$PREI4_CONTENT001_ROOT" CXORBIA_PREI4_SOURCE_SHA="$PREI4_CONTENT001_SOURCE" node tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs | tee "$PREI4_CONTENT001_OUT/final-focal/browser-console.log"
+test "$(jq -r '.decision' "$PREI4_CONTENT001_OUT/final-focal/browser/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"
+test "$(jq -r '.sourceSha' "$PREI4_CONTENT001_OUT/final-focal/browser/browser-focal.json")" = "$PREI4_CONTENT001_SOURCE"
+test "$(jq -r '.hrRevision' "$PREI4_CONTENT001_OUT/final-focal/browser/browser-focal.json")" = "$HR_REVISION"
+test "$(jq -r '.admin.refreshPreserved' "$PREI4_CONTENT001_OUT/final-focal/browser/browser-focal.json")" = "true"
+test "$(jq -r '.shopper.refreshPreserved' "$PREI4_CONTENT001_OUT/final-focal/browser/browser-focal.json")" = "true"
+
+PROJECT="$PROJECT" HOSTING_URL="$PREI4_CONTENT001_ROOT" SOURCE_SHA="$PREI4_CONTENT001_SOURCE" FINAL_FOCAL_OUT="$PREI4_CONTENT001_OUT/final-focal" node tools/qa/cxorbia-prei4-final-focal-finance-live.mjs | tee "$PREI4_CONTENT001_OUT/final-focal/finance-console.log"
+test "$(jq -r '.decision' "$PREI4_CONTENT001_OUT/final-focal/finance-live.json")" = "PASS_PREI4_FINAL_FOCAL_FINANCE"
+test "$(jq -r '.cleanup' "$PREI4_CONTENT001_OUT/final-focal/finance-live.json")" = "true"
+
+PROJECT_ID="$PROJECT_ID" TENANT_ID="$TENANT_ID" HOSTING_URL="$PREI4_CONTENT001_ROOT" CERT_RES_SOURCE="$PREI4_CONTENT001_SOURCE" CERT_RES_MAT_OUT="$PREI4_CONTENT001_OUT/final-focal/cert" node tools/qa/cxorbia-prei4-cert-res-live.mjs | tee "$PREI4_CONTENT001_OUT/final-focal/cert-console.log"
+test "$(jq -r '.decision' "$PREI4_CONTENT001_OUT/final-focal/cert/cert-res-live.json")" = "PASS_PREI4_CERT_RES_CUMULATIVE_DEV_LIVE"
+test "$(jq -r '.cert001.decision' "$PREI4_CONTENT001_OUT/final-focal/cert/cert-res-live.json")" = "PASS_PREI4_CERT_001_LIVE"
+test "$(jq -r '.cert002.recertification.decision' "$PREI4_CONTENT001_OUT/final-focal/cert/cert-res-live.json")" = "PASS_PREI4_CERT_002_LIVE"
+test "$(jq -r '[.cleanup.attempt,.cleanup.recert,.cleanup.bank,.cleanup.resource,.cleanup.binary]|all' "$PREI4_CONTENT001_OUT/final-focal/cert/cert-res-live.json")" = "true"
+
+jq -n -S \
+  --arg source "$PREI4_CONTENT001_SOURCE" --arg tree "$PREI4_CONTENT001_TREE" --arg hr "$HR_REVISION" \
+  --slurpfile sourceProof "$PREI4_CONTENT001_OUT/final-focal/source-contracts.json" \
+  --slurpfile browser "$PREI4_CONTENT001_OUT/final-focal/browser/browser-focal.json" \
+  --slurpfile financeLive "$PREI4_CONTENT001_OUT/final-focal/finance-live.json" \
+  --slurpfile certLive "$PREI4_CONTENT001_OUT/final-focal/cert/cert-res-live.json" \
+  '{schemaVersion:"cxorbia.prei4.final-focal-receipt.v1",decision:"PASS_PREI4_VRM121_135_FINAL_FOCAL",sourceSha:$source,sourceTree:$tree,hrRevision:$hr,sourceProof:$sourceProof[0].decision,browser:$browser[0].decision,finance:$financeLive[0].decision,financeCleanup:$financeLive[0].cleanup,certification:$certLive[0].decision,certificationCleanup:$certLive[0].cleanup,builds:0,runtimeDeploys:0,hostingDeploys:0,rulesDeploys:0,hrWrites:0,production:false,next:"SHORT_HUMAN_VISUAL_RETEST"}' > "$PREI4_CONTENT001_OUT/final-focal/receipt.json"
+test "$(jq -r '.decision' "$PREI4_CONTENT001_OUT/final-focal/receipt.json")" = "PASS_PREI4_VRM121_135_FINAL_FOCAL"
+
 jq -n -S \
   --arg source "$PREI4_CONTENT001_SOURCE" --arg tree "$PREI4_CONTENT001_TREE" \
   --arg runtime "$REV" --arg digest "$DIGEST" --arg hosting "$HOSTING_VERSION" --arg hr "$HR_REVISION" \
