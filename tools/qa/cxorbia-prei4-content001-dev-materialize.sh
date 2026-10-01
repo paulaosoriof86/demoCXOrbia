@@ -16,6 +16,14 @@ test "$(jq -r '.sourceTree' "$CONFIG")" = "$PREI4_CONTENT001_TREE"
 test "$(git rev-parse "$PREI4_CONTENT001_SOURCE^{tree}")" = "$PREI4_CONTENT001_TREE"
 mkdir -p "$PREI4_CONTENT001_OUT"
 
+if git log -1 --pretty=%B | grep -Fq '[prei4-content-001-browser-fast]'; then
+  npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+  npx playwright install chromium >/dev/null 2>&1
+  mkdir -p "$PREI4_CONTENT001_OUT/final-focal/browser"
+  PREI4_OUT="$PREI4_CONTENT001_OUT/final-focal/browser" CXORBIA_PREI4_ROOT="$PREI4_CONTENT001_ROOT" CXORBIA_PREI4_SOURCE_SHA="$PREI4_CONTENT001_SOURCE" node tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs | tee "$PREI4_CONTENT001_OUT/final-focal/browser-console.log"
+  exit ${PIPESTATUS[0]}
+fi
+
 export CUM_SOURCE="$PREI4_CONTENT001_SOURCE" CUM_TREE="$PREI4_CONTENT001_TREE"
 export CUM_BASE="c487449e5187d7219033c54fa1ac3db5fb6c822e"
 export CUM_LEDGER="CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json"
