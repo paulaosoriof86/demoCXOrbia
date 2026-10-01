@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED",
-  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4_SINGLE_DEV_MATERIALIZATION",
+  "status": "HOLD_PREI4_PROVIDER_RECONCILIATION_REPROOF_REQUIRED",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4_PROVIDER_RECONCILIATION_REPROOF",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
-  "productTreeAuthority": "eba01186660acc5140773828e0e3048a0ec876c6",
-  "predecessorProductSourceSha": "f769041ddd6adacb5bb16b0eeddab7d08b47a7e8",
+  "productSourceSha": "37681edd220578f4799b9420eda856cb37f46b5c",
+  "productTreeAuthority": "0156a818b49ada283da9c0c209427201b7c5f287",
+  "predecessorProductSourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "baf3690a15e226443f3f8e9c59137ee3d16e32ca",
+  "findingsLedgerExpectedGitBlob": "863b603e7c3562ce8eb07cd78a29cf4100bbab65",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "PRE_I4_SINGLE_DEV_MATERIALIZATION_AND_LIVE_REPROOF",
+  "activeBlocker": "PRE_I4_PROVIDER_RECONCILIATION_LIVE_REPROOF",
   "nextFindingId": "VRM-136",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Materialize exactly productSourceSha 7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5 to Recovery DEV once, run cumulative source guard and authenticated Admin+Shopper focal live tests, then safe Paula/Pradera cleanup and shortened human retest. Production remains DO_NOT_TOUCH.",
+  "exactNextAction": "Rematerialize Recovery DEV from productSourceSha 37681edd220578f4799b9420eda856cb37f46b5c after VRM-134 provider-concurrency fix; require same-revision shopper+visit providerAck, byte parity, Admin+Shopper live proof, then safe Paula/Pradera cleanup. Production remains DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1788,13 +1788,18 @@
     "production": false
   },
   "preI4CumulativeRemediation": {
-    "sourceSuccessorSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
-    "sourceSuccessorTree": "eba01186660acc5140773828e0e3048a0ec876c6",
-    "predecessorSha": "f769041ddd6adacb5bb16b0eeddab7d08b47a7e8",
-    "sourceProof": "PASS_PREI4_VRM121_135_SOURCE_STATIC",
+    "sourceSuccessorSha": "37681edd220578f4799b9420eda856cb37f46b5c",
+    "sourceSuccessorTree": "0156a818b49ada283da9c0c209427201b7c5f287",
+    "predecessorSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+    "sourceProof": "PASS_VRM134_PROVIDER_SOURCE",
     "sourceTestsPassed": 27,
     "blockingFindings": "VRM-121..VRM-135 excluding non-blocking VRM-131",
-    "state": "SOURCE_PROVEN_PENDING_SINGLE_DEV_MATERIALIZATION",
-    "production": false
+    "state": "SOURCE_PROVEN_PENDING_DEV_LIVE_REPROOF",
+    "production": false,
+    "providerFailureRemediation": {
+      "classification": "PROVIDER_FAILURE",
+      "visitReconciliationConcurrency": 16,
+      "shopperAndVisitParallel": true
+    }
   }
 }

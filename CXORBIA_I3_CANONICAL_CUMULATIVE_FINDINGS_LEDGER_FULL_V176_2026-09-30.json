@@ -2,7 +2,7 @@
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v114",
   "frozenAt": "2026-09-30T02:41:00Z",
   "status": "HOLD",
-  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4_SINGLE_DEV_MATERIALIZATION",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4_PROVIDER_RECONCILIATION_REPROOF",
   "microblockId": "PRE-I4-LIVE-HR-STALE-CACHE-MAPPING-HOLD-AUGUST-CANONICAL-CORRECTION",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -14,15 +14,15 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
-    "sourceTree": "eba01186660acc5140773828e0e3048a0ec876c6",
-    "predecessorSha": "f769041ddd6adacb5bb16b0eeddab7d08b47a7e8",
+    "sourceSha": "37681edd220578f4799b9420eda856cb37f46b5c",
+    "sourceTree": "0156a818b49ada283da9c0c209427201b7c5f287",
+    "predecessorSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
     "production": false,
-    "state": "SOURCE_PROVEN_PENDING_SINGLE_DEV_MATERIALIZATION",
+    "state": "SOURCE_PROVEN_PENDING_DEV_LIVE_REPROOF",
     "sourceProof": {
-      "decision": "PASS_PREI4_VRM121_135_SOURCE_STATIC",
-      "testsPassed": 27,
-      "controlWriter": "CHATGPT_DIRECT_PRIMARY_CR_20260910_02"
+      "decision": "PASS_VRM134_PROVIDER_SOURCE",
+      "controlWriter": "CHATGPT_DIRECT_PRIMARY_CR_20260910_02",
+      "rootCause": "serial shopper->visit reconciliation plus serial 704 visit transactions exceeded live guard window"
     }
   },
   "rootCauseIds": [
@@ -6295,7 +6295,7 @@
       "classification": "ENVIRONMENT_FAILURE",
       "severity": "P0",
       "title": "Live-data refresh and post-write recomposition repeatedly block the user for materially too long",
-      "state": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+      "state": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE_REPROOF",
       "rootCause": "The HR authority bridge forces/re-schedules whole authority recomposition on backend-ready, backend.refresh, window focus and visibility restore; backend.refresh first reloads Firestore and marks HR authority unapplied. Several modules also force document reload. A fresh HR provider read measured about 3.8s, so the much longer repeated visible wait is orchestration/recomposition and redundant refresh work, not simply HR source latency.",
       "priorEvidenceLinks": [
         "VRM-060 historical live login readiness 2.9s shopper / 7.3s admin",
@@ -6310,17 +6310,16 @@
         "app/adapters/tya-canonical-shopper-portal-v2.js"
       ],
       "production": false,
-      "sourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
-      "sourceTree": "eba01186660acc5140773828e0e3048a0ec876c6",
+      "sourceSha": "37681edd220578f4799b9420eda856cb37f46b5c",
+      "sourceTree": "0156a818b49ada283da9c0c209427201b7c5f287",
       "sourceFixFiles": [
-        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
-        "app/core/backend-browser-auth.js",
-        "app/modules/reservas.js",
-        "app/modules/postulaciones.js"
+        "backend/runtime/hr-live-service/server.mjs",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+        "backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs"
       ],
       "sourceFix": {
-        "sourceSha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
-        "sourceTree": "eba01186660acc5140773828e0e3048a0ec876c6",
+        "sourceSha": "37681edd220578f4799b9420eda856cb37f46b5c",
+        "sourceTree": "0156a818b49ada283da9c0c209427201b7c5f287",
         "owners": [
           "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
           "app/core/backend-browser-auth.js",
@@ -6333,9 +6332,11 @@
           "app/modules/reservas.js",
           "app/modules/postulaciones.js"
         ],
-        "proof": "PASS_PREI4_VRM121_135_SOURCE_STATIC",
+        "proof": "PASS_VRM134_PROVIDER_SOURCE",
         "testsPassed": 27,
-        "production": false
+        "production": false,
+        "rootCause": "provider reconciliation was serialized: 222 shopper reconciliation completed before 704 visit transactions began; live guard expired with lastVisitReconciliation=null",
+        "remediation": "shopper and visit reconciliation start concurrently; visits use bounded concurrency=16 (max 24) with idempotent per-visit Firestore transactions"
       }
     },
     "VRM-135": {
@@ -6937,7 +6938,7 @@
     "nextFindingId": "VRM-136",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_PREI4_SINGLE_DEV_MATERIALIZATION_REQUIRED",
+    "terminalState": "HOLD_PREI4_PROVIDER_RECONCILIATION_REPROOF",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,

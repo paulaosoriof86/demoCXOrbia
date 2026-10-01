@@ -2,7 +2,7 @@
   "schemaVersion": "cxorbia.recovery.i3.prei4.cumulative-remediation-package.v1",
   "frozenAt": "2026-10-01T02:24:00Z",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
-  "state": "SOURCE_PROVEN_READY_FOR_SINGLE_DEV_MATERIALIZATION",
+  "state": "SOURCE_PROVEN_PROVIDER_REPROOF_REQUIRED",
   "authority": {
     "controlBase": "6d42ec4e69d9c924d3542d3ec162eac0e60c18bb",
     "branch": "recovery/cxorbia-phase-a-20260831",
@@ -139,13 +139,19 @@
     "successState": "GO_I3_PREI4_HUMAN_RETEST_READY",
     "onFailure": "Classify only with existing Recovery taxonomy, repair within I3 and repeat focal gate. No new methodology/candidate/workflow/reimport.",
     "i4Authorization": "NOT_REQUESTED",
-    "currentState": "SOURCE_PROVEN_PENDING_SINGLE_DEV_MATERIALIZATION"
+    "currentState": "SOURCE_PROVEN_PENDING_DEV_LIVE_REPROOF"
   },
   "sourceSuccessor": {
-    "sha": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
-    "tree": "eba01186660acc5140773828e0e3048a0ec876c6",
-    "predecessor": "f769041ddd6adacb5bb16b0eeddab7d08b47a7e8",
-    "proof": "PASS_PREI4_VRM121_135_SOURCE_STATIC",
-    "testsPassed": 27
+    "sha": "37681edd220578f4799b9420eda856cb37f46b5c",
+    "tree": "0156a818b49ada283da9c0c209427201b7c5f287",
+    "predecessor": "7e9d2f2d4c97161ea5dd31d23fbc35ebb5a5b5b5",
+    "proof": "PASS_VRM134_PROVIDER_SOURCE"
+  },
+  "providerFailureRemediation": {
+    "classification": "PROVIDER_FAILURE",
+    "rootCause": "serial durable reconciliation exceeded live guard",
+    "shopperAndVisitParallel": true,
+    "visitConcurrency": 16,
+    "maxVisitConcurrency": 24
   }
 }
