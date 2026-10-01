@@ -122,6 +122,11 @@ try{
       if(attempt<5)await page.waitForTimeout(1200*attempt);
     }
     if(!settled)throw new Error('ENVIRONMENT_FAILURE:FINAL_FINANCE_CUSTOM_AUTH_NOT_SETTLED:'+lastAuthError.slice(0,180));
+    await page.goto('about:blank');
+    await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
+    await page.waitForFunction(expectedUid=>String(window.firebase?.auth?.().currentUser?.uid||'')===String(expectedUid),String(uid),{timeout:90000});
+    await page.waitForFunction(()=>typeof window.CX?.backendAuth?.ensureAuthenticated==='function',null,{timeout:90000});
+    await page.evaluate(async()=>{await window.CX.backendAuth.ensureAuthenticated();});
     await page.waitForFunction(()=>window.CX?.backendAuth?.context?.()?.authenticated===true&&window.CX?.data?.__financeReadBridge===true,null,{timeout:120000});
     projection=await page.evaluate(async ({projectId,periodId,ids})=>{
       const movements=await CX.data.getFinancialMovements({projectId,periodId});
