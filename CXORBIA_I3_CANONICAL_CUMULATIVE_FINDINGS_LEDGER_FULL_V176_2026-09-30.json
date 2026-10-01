@@ -14,17 +14,15 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "a2f7acd659b68217299f92ef69a320f08e806635",
-    "sourceTree": "524207efe063232333795175ac58964f3898067c",
-    "predecessorSha": "19ce6ac1cbea7c94ad5f61009cea961a3b11e606",
+    "sourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
+    "sourceTree": "90cbaaa0844bbdde0b4b96a7caa4bfbdff16167f",
+    "predecessorSha": "a2f7acd659b68217299f92ef69a320f08e806635",
     "production": false,
     "state": "SOURCE_FIX_PENDING_DEV_LIVE_REPROOF",
     "sourceProof": {
-      "decision": "PENDING_PREI4_VRM136_DEV_LIVE_REPROOF",
-      "classification": "FUNCTIONAL_DEFECT",
-      "owner": "app/core/backend-cxdata-readonly-corte4.js",
-      "rootCause": "Corte4 readonly empty-backend guard cleared the already-authoritative external HR operational state on protected Firestore empty events, repeatedly blanking project/period and forcing C6 authority reconciliation.",
-      "correction": "When protected Firestore is empty after external HR authority is already valid, record the protected overlay as empty but preserve HR projects/visits/projectId/periodId and avoid project/shoppers/visit-flow empty emissions.",
+      "decision": "PENDING_PREI4_VRM142_DEV_LIVE_REPROOF",
+      "classification": "AUTH_FAILURE",
+      "owner": "firestore.rules",
       "deploys": 0,
       "production": false
     }
@@ -6553,6 +6551,47 @@
       },
       "productSourceChanged": false,
       "production": false
+    },
+    "VRM-142": {
+      "id": "VRM-142",
+      "classification": "AUTH_FAILURE",
+      "severity": "P0",
+      "title": "Authenticated Admin finance read bridge cannot read durable financialMovements/financeAccounts because Firestore Rules omit both collections",
+      "state": "SOURCE_FIX_PENDING_DEV_LIVE_REPROOF",
+      "observed": "Run 812 committed finance provider commands with HTTP 200/providerAck=true, then authenticated browser projection returned 0 movements and 0 accounts; cleanup completed with zero residual fixtures.",
+      "rootCause": "backend finance provider writes tenant-root financialMovements and financeAccounts server-side. Browser finance read model queries those same collections, but firestore.rules has no match blocks for either collection; unmatched client reads are denied by default and backend-finance-benefits safeCall converts the denial into empty items.",
+      "remediationContract": "Allow read only for tenant-authorized operators on financialMovements and financeAccounts. Keep create/update/delete false from browser so all durable finance writes remain provider-mediated with ACK/idempotency.",
+      "exactOwners": [
+        "firestore.rules"
+      ],
+      "evidence": {
+        "runId": 36941569549,
+        "jobId": 110634097087,
+        "providerWrite": {
+          "httpStatus": 200,
+          "providerAck": true,
+          "status": "committed"
+        },
+        "durableProjection": {
+          "movementCount": 0,
+          "accountCount": 0
+        },
+        "cleanup": true,
+        "sourceReadOwner": "app/core/backend-finance-benefits.js",
+        "providerWriteOwner": "backend/runtime/cxorbia-finance-command-provider-v1.mjs"
+      },
+      "sourceFix": {
+        "sourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
+        "sourceTree": "90cbaaa0844bbdde0b4b96a7caa4bfbdff16167f",
+        "predecessorSha": "a2f7acd659b68217299f92ef69a320f08e806635",
+        "productOwners": [
+          "firestore.rules"
+        ],
+        "browserWritesRemainDenied": true,
+        "proof": "PENDING_DEV_LIVE_REPROOF",
+        "production": false
+      },
+      "production": false
     }
   },
   "latestEvidenceOverrides": {
@@ -7109,7 +7148,7 @@
     ],
     "findingCount": 135,
     "expectedCurrentRange": "VRM-001..VRM-135",
-    "nextFindingId": "VRM-142",
+    "nextFindingId": "VRM-143",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_PREI4_PROVIDER_RECONCILIATION_REPROOF",
@@ -7132,16 +7171,16 @@
     "2": "C2_P0_CLOSURE",
     "3": "C3_TERMINAL_CUMULATIVE_PROOF",
     "4": "C4_ONE_HUMAN_VISUAL_ACCEPTANCE",
-    "currentStep": "PRE-I4 VRM-136 exact DEV materialization and focal live reproof",
+    "currentStep": "PRE-I4 VRM-142 exact DEV source/rules materialization and Finance→Certification focal live reproof",
     "allowedOwnerFiles": [
-      "app/core/backend-cxdata-readonly-corte4.js"
+      "firestore.rules"
     ],
     "noGeneralAudit": true,
     "noNewCandidate": true,
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Run final-fast PRE-I4 Finance durable + Certification with proven CX backend-auth restore sequence, same source and same HR revision guard; reuse browser PASS run 36939433303.",
+  "exactNextAction": "Materialize canonical source 18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd / tree 90cbaaa0844bbdde0b4b96a7caa4bfbdff16167f exactly once in existing Recovery DEV lane, including exact Firestore Rules parity, then execute Admin/Shopper no-regression + Finance durable projection + Certification/Resources cleanup + final receipt. Production remains untouched.",
   "supersedesGitBlob": "397a9cee8c71d3156567a0cc96bfdcba88bb7c3a",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -7170,17 +7209,17 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-142",
+  "nextFindingId": "VRM-143",
   "lastControlFailure": {
-    "id": "VRM-141",
+    "id": "VRM-142",
     "classification": "AUTH_FAILURE",
-    "runId": 36941158274,
-    "jobId": 110632772746,
-    "owner": "tools/qa/cxorbia-prei4-final-focal-finance-live.mjs",
-    "productDefect": false,
-    "productSourceChanged": false,
+    "runId": 36941569549,
+    "jobId": 110634097087,
+    "owner": "firestore.rules",
+    "productDefect": true,
+    "productSourceChanged": true,
     "cleanup": true,
-    "state": "FIXED_CONTROL_REPROOF_REQUIRED",
+    "state": "SOURCE_FIX_PENDING_DEV_LIVE_REPROOF",
     "production": false
   },
   "vrm044FocalProof": {
@@ -8525,7 +8564,7 @@
     "PREI4-CONTENT-001",
     "PREI4-CONTENT-002"
   ],
-  "preI4NextAction": "Run final-fast PRE-I4 Finance durable + Certification with proven CX backend-auth restore sequence, same source and same HR revision guard; reuse browser PASS run 36939433303.",
+  "preI4NextAction": "Materialize canonical source 18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd / tree 90cbaaa0844bbdde0b4b96a7caa4bfbdff16167f exactly once in existing Recovery DEV lane, including exact Firestore Rules parity, then execute Admin/Shopper no-regression + Finance durable projection + Certification/Resources cleanup + final receipt. Production remains untouched.",
   "preI4Admin002": {
     "findingId": "PREI4-ADMIN-002",
     "state": "FIXED_PROVEN_RUN601",
@@ -10220,12 +10259,12 @@
     "production": false
   },
   "latestSourceSuccessor": {
-    "findingId": "VRM-136",
-    "sourceSha": "a2f7acd659b68217299f92ef69a320f08e806635",
-    "sourceTree": "524207efe063232333795175ac58964f3898067c",
-    "predecessorSha": "19ce6ac1cbea7c94ad5f61009cea961a3b11e606",
+    "findingId": "VRM-142",
+    "sourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
+    "sourceTree": "90cbaaa0844bbdde0b4b96a7caa4bfbdff16167f",
+    "predecessorSha": "a2f7acd659b68217299f92ef69a320f08e806635",
     "exactDelta": [
-      "app/core/backend-cxdata-readonly-corte4.js"
+      "firestore.rules"
     ],
     "state": "SOURCE_FIX_PENDING_DEV_LIVE_REPROOF",
     "sameCanonicalCandidate": true,
