@@ -55,7 +55,7 @@ const base=(type,entityType,entityId,key,payload,permission)=>({
 let evidence={schemaVersion:'cxorbia.prei4.final-focal.finance.v1',decision:'HOLD',sourceSha:SOURCE,periodId:PERIOD,production:false,hrWrites:0,cleanup:false};
 try{
   const revenueId='qa-revenue-'+RUN;
-  const revenue=base('finance.movement.create','financialMovement',revenueId,'revenue',{tipo:'ingreso',tipoIngreso:'honorarios',country:'GT',currency:'GTQ',amount:11,cat:'QA focal operating revenue',concepto:'QA focal operating revenue',fecha:new Date().toISOString().slice(0,10)},'finance.movement.write');
+  const revenue=base('finance.movement.create','financialMovement',revenueId,'revenue',{tipo:'ingreso',tipoIngreso:'honorarios',country:'GT',currency:'Q',amount:11,cat:'QA focal operating revenue',concepto:'QA focal operating revenue',fecha:new Date().toISOString().slice(0,10)},'finance.movement.write');
   const rr=await send(revenue);
   evidence.revenueAttempt={httpStatus:rr.r.status,httpOk:rr.r.ok,code:str(rr.body?.code),status:str(rr.body?.status),providerAck:rr.body?.providerAck===true,successUiAllowed:rr.body?.successUiAllowed===true,providerKind:str(rr.body?.providerKind),detail:str(rr.body?.detail)};
   assert(rr.r.ok&&rr.body?.providerAck===true&&rr.body?.movement?.revenueRecognized===true&&rr.body?.movement?.nonOperating===false,'PERSISTENCE_FAILURE:FINAL_REVENUE_ACK:'+JSON.stringify(evidence.revenueAttempt));
@@ -64,12 +64,12 @@ try{
   assert(replay.r.ok&&replay.body?.providerAck===true&&replay.body?.idempotentReplay===true&&Number(replay.body?.providerWrites||0)===0,'PERSISTENCE_FAILURE:FINAL_REVENUE_IDEMPOTENCY');
 
   const invalidId='qa-invalid-'+RUN;
-  const invalid=base('finance.movement.create','financialMovement',invalidId,'invalid',{tipo:'ingreso',tipoIngreso:'otro',country:'GT',currency:'GTQ',amount:5,cat:'QA invalid unclassified'},'finance.movement.write');
+  const invalid=base('finance.movement.create','financialMovement',invalidId,'invalid',{tipo:'ingreso',tipoIngreso:'otro',country:'GT',currency:'Q',amount:5,cat:'QA invalid unclassified'},'finance.movement.write');
   const ir=await send(invalid);
   assert(ir.body?.providerAck!==true,'PERSISTENCE_FAILURE:UNCLASSIFIED_MOVEMENT_ACCEPTED');
   assert(!(await tenant.collection('financialMovements').doc(invalidId).get()).exists,'PERSISTENCE_FAILURE:UNCLASSIFIED_MOVEMENT_PERSISTED');
 
-  const cxc=base('finance.account.create','financeAccount',null,'cxc',{kind:'cxc',country:'GT',currency:'GTQ',amount:13,concepto:'QA focal CxC',origin:'qa_focal'},'finance.account.write');
+  const cxc=base('finance.account.create','financeAccount',null,'cxc',{kind:'cxc',country:'GT',currency:'Q',amount:13,concepto:'QA focal CxC',origin:'qa_focal'},'finance.account.write');
   const cr=await send(cxc);
   assert(cr.r.ok&&cr.body?.providerAck===true&&cr.body?.account?.kind==='cxc','PERSISTENCE_FAILURE:FINAL_CXC_CREATE');
   const cxcId=str(cr.body.entityId);refs.push(['financeAccounts',cxcId]);
@@ -79,7 +79,7 @@ try{
   refs.push(['financialMovements',str(ca.body.movement.id)]);
 
   const finId='qa-financing-'+RUN;
-  const fin=base('finance.movement.create','financialMovement',finId,'financing',{tipo:'ingreso',tipoIngreso:'financiamiento',country:'GT',currency:'GTQ',amount:17,cat:'QA focal financing',concepto:'QA focal financing',fecha:new Date().toISOString().slice(0,10)},'finance.movement.write');
+  const fin=base('finance.movement.create','financialMovement',finId,'financing',{tipo:'ingreso',tipoIngreso:'financiamiento',country:'GT',currency:'Q',amount:17,cat:'QA focal financing',concepto:'QA focal financing',fecha:new Date().toISOString().slice(0,10)},'finance.movement.write');
   const fr=await send(fin);
   assert(fr.r.ok&&fr.body?.providerAck===true&&fr.body?.movement?.nonOperating===true&&fr.body?.movement?.revenueRecognized===false&&fr.body?.linkedAccount?.kind==='cxp','PERSISTENCE_FAILURE:FINAL_FINANCING_CREATE');
   refs.push(['financialMovements',finId]);
