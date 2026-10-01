@@ -332,6 +332,7 @@ async function refreshSnapshot(){
       CXORBIA_HR_LIVE_MAX_ROW:process.env.CXORBIA_HR_LIVE_MAX_ROW||'140',
       CXORBIA_HR_LIVE_MAX_COL:process.env.CXORBIA_HR_LIVE_MAX_COL||'AI',
       CXORBIA_HR_EARLIEST_PERIOD:process.env.CXORBIA_HR_EARLIEST_PERIOD||'2025-06',
+      CXORBIA_TENANT_TIMEZONE:process.env.CXORBIA_TENANT_TIMEZONE||'America/Guatemala',
       CXORBIA_GATE_OUT:path.join(dir,'source-gates'),
       CXORBIA_HR_TAB_REGISTRY:runtimeRegistry,
       CXORBIA_HR_TAB_REGISTRY_EVIDENCE:registryEvidence,
