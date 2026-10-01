@@ -11,7 +11,17 @@ CX.module('dashboard', ({data,ui})=>{
      activos, sin haber desaparecido físicamente de data._visitas (sigue accesible por su id/
      sourceRef para auditoría). */
   const pool=()=>(ALL?data._visitas.filter(v=>data.inScope(v.pais)):data.visitas()).filter(v=>!v._archived);
-  const phaseCount=(fn)=>{const arr=pool();const o={t:arr.filter(fn).length};cs.forEach(c=>o[c]=arr.filter(x=>x.pais===c&&fn(x)).length);return o;};
+  const hrPool=()=>{
+    const rows=Array.isArray(data.__liveHrVisits)?data.__liveHrVisits:[];
+    const active=String(data.currentPeriodId||'');
+    return rows.filter(v=>{
+      const rowPeriod=String(data.recordPeriodId?data.recordPeriodId(v):(v.periodId||v.projectId)||'');
+      return (!active||rowPeriod===active)&&data.inScope(v.pais)&&!v._archived;
+    });
+  };
+  const countFrom=(arr,fn)=>{const o={t:arr.filter(fn).length};cs.forEach(c=>o[c]=arr.filter(x=>x.pais===c&&fn(x)).length);return o;};
+  const phaseCount=(fn)=>countFrom(pool(),fn);
+  const hrPhaseCount=(fn)=>countFrom(hrPool(),fn);
   /* R19 Gate 1 (20260715): antes, con !ALL, k se tomaba de CX.data.kpis() — una función DISTINTA
      de phaseCount()/pool() de este módulo (no excluye _archived), mientras el modal de detalle
      (drill) siempre usa pool() (sí excluye _archived). Resultado reproducido: el tile "Pend.
@@ -19,9 +29,9 @@ CX.module('dashboard', ({data,ui})=>{
      mismo número. Ahora k SIEMPRE se calcula con la MISMA pool()/phaseCount() que alimenta el
      drill, sin importar ALL — una sola fuente, tile y detalle nunca pueden divergir. */
   const k={
-    total:phaseCount(()=>true), asignadas:phaseCount(BF.asignadas),
-    sinAsignar:phaseCount(BF.sinAsignar),
-    sinAgendar:phaseCount(BF.sinAgendar),
+    total:phaseCount(()=>true), asignadas:hrPhaseCount(BF.asignadas),
+    sinAsignar:hrPhaseCount(BF.sinAsignar),
+    sinAgendar:hrPhaseCount(BF.sinAgendar),
     agendadas:phaseCount(BF.agendadas),
     realizadas:phaseCount(BF.realizadas),
     pendRealizar:phaseCount(BF.pendRealizar),
@@ -31,10 +41,10 @@ CX.module('dashboard', ({data,ui})=>{
     fueraRango:phaseCount(BF.fueraRango),
     postPend:data._posts.filter(pp=>pp.estado==='pendiente'&&data.inScope(pp.pais)&&!pp._archived).length,
   };
-  const phaseFlow=(c)=>{const arr=pool().filter(x=>x.pais===c);const t=arr.length||1;const n=fn=>arr.filter(fn).length;const pc=x=>Math.round(x/t*100);const f=x=>data.visitFacets(x);
-    const assigned=n(x=>f(x).assigned&&!f(x).cancelled),scheduled=n(x=>f(x).scheduled&&!f(x).cancelled),real=n(x=>f(x).realized&&!f(x).cancelled);
+  const phaseFlow=(c)=>{const arr=pool().filter(x=>x.pais===c),hrArr=hrPool().filter(x=>x.pais===c);const t=arr.length||1;const n=fn=>arr.filter(fn).length,hn=fn=>hrArr.filter(fn).length;const pc=x=>Math.round(x/t*100);const f=x=>data.visitFacets(x);
+    const assigned=hn(x=>f(x).assigned&&!f(x).cancelled),scheduled=n(x=>f(x).scheduled&&!f(x).cancelled),real=n(x=>f(x).realized&&!f(x).cancelled);
     const questionnaire=n(x=>f(x).questionnaire&&!f(x).cancelled),submitted=n(x=>f(x).submitted&&!f(x).cancelled),liquidated=n(x=>f(x).liquidationConfirmed&&!f(x).cancelled);
-    const sinAgend=n(x=>f(x).assigned&&!f(x).scheduled&&!f(x).realized&&!f(x).cancelled),sinAsign=n(x=>!f(x).assigned&&!f(x).realized&&!f(x).cancelled);
+    const sinAgend=hn(x=>f(x).assigned&&!f(x).scheduled&&!f(x).realized&&!f(x).cancelled),sinAsign=hn(x=>!f(x).assigned&&!f(x).realized&&!f(x).cancelled);
     return {total:arr.length,asign:[assigned,pc(assigned)],agend:[scheduled,pc(scheduled)],sinAgend:[sinAgend,pc(sinAgend)],sinAsign:[sinAsign,pc(sinAsign)],
       real:[real,pc(real)],cuest:[questionnaire,pc(questionnaire)],submit:[submitted,pc(submitted)],liq:[liquidated,pc(liquidated)]};};
   const shoppersPool=ALL?data.shoppers.filter(s=>data.inScope(s.pais)):data.shoppersFor();
@@ -51,8 +61,8 @@ CX.module('dashboard', ({data,ui})=>{
   const _selectedDay=_selectedIsCurrent?Math.min(_clock.getDate(),_daysInSelectedMonth):_daysInSelectedMonth;
 
   /* drill de un KPI: listado + WA individual por fila + selección múltiple para notificar */
-  const drill=(titulo, filtroFn, waMsg)=>{
-    const vis=pool().filter(filtroFn);
+  const drill=(titulo, filtroFn, waMsg, sourceFn)=>{
+    const vis=(sourceFn?sourceFn():pool()).filter(filtroFn);
     const rows=vis.length?vis.slice(0,40).map(v=>`<tr data-vrow="${v.id}"><td style="width:30px;text-align:center"><input type="checkbox" class="drSel" data-vid="${v.id}" ${v.shopper?'':'disabled'}></td>
       <td><b>${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad}</div></td>
       <td style="font-size:12px">${v.shopper||'<span class="muted">— sin asignar</span>'}</td><td>${ui.estadoBadge(v.estado)}</td>
@@ -389,9 +399,10 @@ CX.module('dashboard', ({data,ui})=>{
       agend:BF.agendadas,
     };
     const WA={ sinasign:'Visitas sin cobertura — avisar a la red de shoppers.', sinagend:'Pídeles agendar fecha.', cuest:'Recuérdales enviar el cuestionario.', fuera:'Coordinar reprogramación.' };
-    host.querySelectorAll('[data-kpi]').forEach(el=>el.addEventListener('click',()=>{const id=el.dataset.kpi;drill(el.querySelector('.k-l').textContent.replace(' ›',''),F[id]||F.total,WA[id]);}));
-    host.querySelectorAll('[data-alert]').forEach(el=>el.addEventListener('click',()=>{const id=el.dataset.alert;drill('Gestión: '+id,F[id]||F.total,WA[id]||'Gestionar con los involucrados.');}));
-    host.querySelectorAll('[data-fase]').forEach(el=>el.addEventListener('click',()=>{const[c,fk]=el.dataset.fase.split('|');drill(CX.paisLabel(c)+' · '+fk,v=>v.pais===c&&(F[fk]||F.total)(v),WA[fk]);}));
+    const hrAssignmentSource=id=>['asign','sinasign','sinagend'].includes(id)?hrPool:null;
+    host.querySelectorAll('[data-kpi]').forEach(el=>el.addEventListener('click',()=>{const id=el.dataset.kpi;drill(el.querySelector('.k-l').textContent.replace(' ›',''),F[id]||F.total,WA[id],hrAssignmentSource(id));}));
+    host.querySelectorAll('[data-alert]').forEach(el=>el.addEventListener('click',()=>{const id=el.dataset.alert;drill('Gestión: '+id,F[id]||F.total,WA[id]||'Gestionar con los involucrados.',hrAssignmentSource(id));}));
+    host.querySelectorAll('[data-fase]').forEach(el=>el.addEventListener('click',()=>{const[c,fk]=el.dataset.fase.split('|');drill(CX.paisLabel(c)+' · '+fk,v=>v.pais===c&&(F[fk]||F.total)(v),WA[fk],hrAssignmentSource(fk));}));
     const dx=host.querySelector('#dashExport');
     if(dx&&CX.reportKit){
       const dSpec=(ext)=>{

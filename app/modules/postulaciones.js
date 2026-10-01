@@ -12,7 +12,7 @@ CX.module('postulaciones', ({data,ui})=>{
   /* R19 P0-1: los KPIs superiores deben coincidir con el periodo activo por defecto (mismo
      criterio que el listado abajo) — nunca contar postulaciones de otros periodos salvo que se
      pida explícitamente "Ver históricas". */
-  const activePosts=posts.filter(x=>periodIdOf(x)===data.currentPeriodId&&x?._archived!==true);
+  const activePosts=posts.filter(x=>periodIdOf(x)===data.currentPeriodId&&x?._archived!==true&&x?.active!==false&&x?.postulationLifecycle!=='transitioned_to_assignment');
   const c=(s)=>activePosts.filter(x=>x.estado===s).length;
   const reprog=activePosts.filter(x=>x.reprog);
   const agendadas=data.visitas().filter(v=>{const f=data.visitFacets?data.visitFacets(v):null;return f?f.scheduled===true&&f.realized!==true&&f.cancelled!==true:!!(v.agendada&&v.shopperId&&!v.realizada);});
@@ -47,7 +47,7 @@ CX.module('postulaciones', ({data,ui})=>{
   const card=(x)=>{
     const hon=x.honorario!=null?`${x.currency||''} ${x.honorario}`.trim():'Pendiente de fuente';
     const sync=syncPresentation(x);
-    const lifecycleBadge=x?._archived===true?ui.bdg('HISTÓRICA · SUPERADA POR HR','n'):'';
+    const lifecycleBadge=(x?._archived===true||x?.active===false||x?.postulationLifecycle==='transitioned_to_assignment')?ui.bdg('HISTÓRICA · TRANSICIÓN COMPLETADA','n'):'';
     return `<div data-pid="${x.id}" data-post-sync="${sync.sync}" data-post-lifecycle="${x.postulationLifecycle||'active'}" style="background:#fff;border:1px solid var(--border);border-radius:11px;padding:13px 15px;margin-bottom:10px">
       <div class="between" style="margin-bottom:8px">
         <div class="flex" style="gap:8px">${estTag(x.estado)}${lifecycleBadge}<span style="font-size:11px;color:var(--t3)">${x.fechaProp}</span>${x.reprog?ui.bdg('Reprog.','a'):''}</div>
@@ -205,7 +205,8 @@ CX.module('postulaciones', ({data,ui})=>{
         return;
       }
       if(CX.automations)CX.automations.fire('aprobacion',{shopper:x.shopper,sucursal:x.sucursal});
-      act(x.id,'✅ Aprobada','green','Aprobada · guardada correctamente');
+      try{queueMicrotask(()=>window.CX_SCHEDULE_PROTECTED_AUTH_HR_RECONCILE?.('postulation_approval_assignment_committed',true));}catch(_){}
+      act(x.id,'✅ Aprobada','green','Aprobada · asignación creada y postulación cerrada');
       if(typeof close==='function')close();
     };
 
@@ -270,14 +271,13 @@ CX.module('postulaciones', ({data,ui})=>{
       let result=null;try{result=await data.setApplicationStatus(x.id,status,{ackAware:true,reason:'admin_'+status});}catch(error){result={ok:false,status:'blocked',providerAck:false,successUiAllowed:false};}
       const ok=result&&result.ok===true&&result.status==='committed'&&result.providerAck===true&&result.successUiAllowed===true;
       if(!ok){if(button){button.disabled=false;button.textContent=prev||label;}ui.toast('Acción no ejecutada: no fue posible confirmar el cambio. La postulación permanece sin cambios.','warn',4200);return false;}
-      try{window.CX_SCHEDULE_PROTECTED_AUTH_HR_RECONCILE?.('postulations_write_committed',true);}catch(_){}
       act(x.id,label,tone,message+' · guardada correctamente');return true;
     };
     document.querySelectorAll('[data-sb]').forEach(b=>b.addEventListener('click',async()=>{const x=posts.find(z=>z.id===b.dataset.sb);await applicationStatusDurable(x,'standby',b,'⏸ Standby','amber','Postulación en standby');}));
     document.querySelectorAll('[data-rj]').forEach(b=>b.addEventListener('click',async()=>{const x=posts.find(z=>z.id===b.dataset.rj);await applicationStatusDurable(x,'rechazada',b,'✕ Rechazada','red','Postulación rechazada');}));
     const search=()=>{const q=(document.getElementById('pSearch').value||'').toLowerCase(),fpr=document.getElementById('pProj').value,fp=document.getElementById('pPais').value,fe=document.getElementById('pEst').value,hist=document.getElementById('pHist').checked;
       document.querySelectorAll('#pGroups [data-pid]').forEach(el=>{const x=posts.find(z=>z.id===el.dataset.pid);
-        const lifecycleOk=hist||x?._archived!==true;
+        const lifecycleOk=hist||(x?._archived!==true&&x?.active!==false&&x?.postulationLifecycle!=='transitioned_to_assignment');
         const ok=lifecycleOk&&(hist||periodIdOf(x)===data.currentPeriodId)&&(!q||(displayShopper(x)+' '+displayCode(x)+' '+x.sucursal).toLowerCase().includes(q))&&(!fpr||x.projectId===fpr)&&(!fp||x.pais===fp)&&(!fe||x.estado===fe);el.style.display=ok?'':'none';});
       // ocultar grupos sin tarjetas visibles
       document.querySelectorAll('#pGroups .card').forEach(g=>{const any=[...g.querySelectorAll('[data-pid]')].some(el=>el.style.display!=='none');g.style.display=any?'':'none';});};
@@ -290,8 +290,8 @@ CX.module('postulaciones', ({data,ui})=>{
     search();
     /* botones de reprogramación (revisar / autorizar nueva fecha / conservar anterior) */
     document.querySelectorAll('[data-revpost]').forEach(b=>b.addEventListener('click',()=>{const x=posts.find(z=>z.id===b.dataset.revpost);ui.modal('Revisar solicitud de reprogramación · '+(x&&x.shopper||''),`<p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Fecha actual: <b>${x&&x.fechaActual||'—'}</b> · Fecha propuesta: <b>${x&&x.fechaProp||'—'}</b></p><div style="background:var(--amber-bg);border-radius:9px;padding:9px 12px;font-size:12px;color:#8a5b00">Usa "Autorizar nueva fecha" para aprobar la reprogramación o "Conservar anterior" para mantener la fecha actual.</div>`);}));
-    document.querySelectorAll('[data-authfecha]').forEach(b=>b.addEventListener('click',async()=>{const x=posts.find(z=>z.id===b.dataset.authfecha);if(!x||!x.fechaProp)return;if(!CX.permissions.gate('visit.reassign',{projectId:x.rootProjectId||x.projectId,pais:x.pais},ui))return;const prev=b.textContent;b.disabled=true;b.textContent='Confirmando…';let r=null;try{r=await data.requestVisitReschedule(x.visitaId,x.fechaProp,{ackAware:true,decision:'approved',reason:'admin_reprogram_approve'});}catch(_){r=null;}const ok=r&&r.ok===true&&r.status==='committed'&&r.providerAck===true&&r.successUiAllowed===true;if(!ok){b.disabled=false;b.textContent=prev;ui.toast('Reprogramación no ejecutada: no fue posible confirmar el cambio.','warn',4200);return;}try{window.CX_SCHEDULE_PROTECTED_AUTH_HR_RECONCILE?.('postulations_write_committed',true);}catch(_){}CX.notif&&CX.notif.push({to:'shopper',tipo:'reprog_aprobada',icon:'✅',tono:'g',titulo:'Reprogramación aprobada',txt:'Tu visita en '+(x.sucursal||'')+' fue reprogramada a '+x.fechaProp,nav:'misvisitas'});ui.toast('Nueva fecha guardada correctamente','ok',3600);}));
-    document.querySelectorAll('[data-keepfecha]').forEach(b=>b.addEventListener('click',async()=>{const x=posts.find(z=>z.id===b.dataset.keepfecha);if(!x)return;const prev=b.textContent;b.disabled=true;b.textContent='Confirmando…';let r=null;try{r=await data.requestVisitReschedule(x.visitaId,null,{ackAware:true,decision:'rejected',reason:'admin_reprogram_reject'});}catch(_){r=null;}const ok=r&&r.ok===true&&r.status==='committed'&&r.providerAck===true&&r.successUiAllowed===true;if(!ok){b.disabled=false;b.textContent=prev;ui.toast('Decisión no ejecutada: no fue posible confirmar el cambio.','warn',4200);return;}try{window.CX_SCHEDULE_PROTECTED_AUTH_HR_RECONCILE?.('postulations_write_committed',true);}catch(_){}CX.notif&&CX.notif.push({to:'shopper',tipo:'reprog_rechazada',icon:'⚠️',tono:'a',titulo:'Reprogramación no autorizada',txt:'La visita en '+(x.sucursal||'')+' conserva la fecha original',nav:'misvisitas'});ui.toast('Fecha original conservada · decisión guardada correctamente','ok');}));
+    document.querySelectorAll('[data-authfecha]').forEach(b=>b.addEventListener('click',async()=>{const x=posts.find(z=>z.id===b.dataset.authfecha);if(!x||!x.fechaProp)return;if(!CX.permissions.gate('visit.reassign',{projectId:x.rootProjectId||x.projectId,pais:x.pais},ui))return;const prev=b.textContent;b.disabled=true;b.textContent='Confirmando…';let r=null;try{r=await data.requestVisitReschedule(x.visitaId,x.fechaProp,{ackAware:true,decision:'approved',reason:'admin_reprogram_approve'});}catch(_){r=null;}const ok=r&&r.ok===true&&r.status==='committed'&&r.providerAck===true&&r.successUiAllowed===true;if(!ok){b.disabled=false;b.textContent=prev;ui.toast('Reprogramación no ejecutada: no fue posible confirmar el cambio.','warn',4200);return;}CX.notif&&CX.notif.push({to:'shopper',tipo:'reprog_aprobada',icon:'✅',tono:'g',titulo:'Reprogramación aprobada',txt:'Tu visita en '+(x.sucursal||'')+' fue reprogramada a '+x.fechaProp,nav:'misvisitas'});ui.toast('Nueva fecha guardada correctamente','ok',3600);}));
+    document.querySelectorAll('[data-keepfecha]').forEach(b=>b.addEventListener('click',async()=>{const x=posts.find(z=>z.id===b.dataset.keepfecha);if(!x)return;const prev=b.textContent;b.disabled=true;b.textContent='Confirmando…';let r=null;try{r=await data.requestVisitReschedule(x.visitaId,null,{ackAware:true,decision:'rejected',reason:'admin_reprogram_reject'});}catch(_){r=null;}const ok=r&&r.ok===true&&r.status==='committed'&&r.providerAck===true&&r.successUiAllowed===true;if(!ok){b.disabled=false;b.textContent=prev;ui.toast('Decisión no ejecutada: no fue posible confirmar el cambio.','warn',4200);return;}CX.notif&&CX.notif.push({to:'shopper',tipo:'reprog_rechazada',icon:'⚠️',tono:'a',titulo:'Reprogramación no autorizada',txt:'La visita en '+(x.sucursal||'')+' conserva la fecha original',nav:'misvisitas'});ui.toast('Fecha original conservada · decisión guardada correctamente','ok');}));
 
     /* editar fecha/franja de la visita de una postulación */
     document.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>{ const x=posts.find(z=>z.id===b.dataset.edit); if(!x)return;
@@ -300,12 +300,22 @@ CX.module('postulaciones', ({data,ui})=>{
         <label class="lbl">Fecha</label><input class="inp" id="edF" type="date" value="${x.fechaProp||''}" style="margin-bottom:10px">
         <label class="lbl">Franja</label><select class="sel" id="edFr" style="margin-bottom:14px">${['AM 8–12h','PM 14–18h','WK fin de semana'].map(o=>`<option ${o.startsWith(x.franjaCode||'')?'selected':''}>${o}</option>`).join('')}</select>
         <div style="text-align:right"><button class="btn btn-pr btn-sm" id="edOk">Guardar</button></div>
-      `,{onMount:(ov,close)=>{ov.querySelector('#edOk').addEventListener('click',async()=>{const f=ov.querySelector('#edF').value,fr=ov.querySelector('#edFr').value;if(!f){ui.toast('Elige la fecha','warn');return;}const btn=ov.querySelector('#edOk');btn.disabled=true;btn.textContent='Confirmando…';let r=null;try{r=await data.requestVisitReschedule(x.visitaId,f,{ackAware:true,decision:'approved',franjaCode:fr,reason:'admin_assignment_edit'});}catch(_){r=null;}const ok=r&&r.ok===true&&r.status==='committed'&&r.providerAck===true&&r.successUiAllowed===true;if(!ok){btn.disabled=false;btn.textContent='Guardar';ui.toast('Cambio no ejecutado: no fue posible confirmar el cambio.','warn',4200);return;}try{window.CX_SCHEDULE_PROTECTED_AUTH_HR_RECONCILE?.('postulations_write_committed',true);}catch(_){}close();ui.toast('Asignación actualizada y guardada correctamente','ok',3600);});}});
+      `,{onMount:(ov,close)=>{ov.querySelector('#edOk').addEventListener('click',async()=>{const f=ov.querySelector('#edF').value,fr=ov.querySelector('#edFr').value;if(!f){ui.toast('Elige la fecha','warn');return;}const btn=ov.querySelector('#edOk');btn.disabled=true;btn.textContent='Confirmando…';let r=null;try{r=await data.requestVisitReschedule(x.visitaId,f,{ackAware:true,decision:'approved',franjaCode:fr,reason:'admin_assignment_edit'});}catch(_){r=null;}const ok=r&&r.ok===true&&r.status==='committed'&&r.providerAck===true&&r.successUiAllowed===true;if(!ok){btn.disabled=false;btn.textContent='Guardar';ui.toast('Cambio no ejecutado: no fue posible confirmar el cambio.','warn',4200);return;}close();ui.toast('Asignación actualizada y guardada correctamente','ok',3600);});}});
     }));
 
     /* reasignar a otro shopper */
     document.querySelectorAll('[data-reasig]').forEach(b=>b.addEventListener('click',()=>{ const x=posts.find(z=>z.id===b.dataset.reasig); if(!x)return;
-      const cands=data.shoppersFor().filter(s=>s.id!==x.shopperId);
+      const projectId=String(data.currentProjectId||''),visitCountry=String(x.pais||'');
+      const candidateAudit=(Array.isArray(data.shoppers)?data.shoppers:[]).filter(s=>String(s.id||'')!==String(x.shopperId||'')).map(s=>{
+        const reasons=[];
+        if(visitCountry&&String(s.pais||s.country||'')!==visitCountry)reasons.push('otro país');
+        if(data.inScope&&!data.inScope(s.pais||s.country))reasons.push('fuera de alcance autorizado');
+        if(Array.isArray(s.projectIds)&&s.projectIds.length&&!s.projectIds.map(String).includes(projectId))reasons.push('otro proyecto');
+        if(typeof data.shopperDataLevel==='function'&&data.shopperDataLevel(s)==='protected_reference')reasons.push('perfil protegido sin identidad operable');
+        return {s,reasons};
+      });
+      const cands=candidateAudit.filter(x=>x.reasons.length===0).map(x=>x.s);
+      const excluded=candidateAudit.filter(x=>x.reasons.length);
       const curFecha=safe(x.fechaProp), curFranja=safe(x.franjaCode);
       ui.modal('Reasignar visita · '+x.sucursal,`
         <div style="background:var(--panel-2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;margin-bottom:12px;font-size:12px;color:var(--t2)">
@@ -331,7 +341,7 @@ CX.module('postulaciones', ({data,ui})=>{
         ov.querySelectorAll('input[name=rsDateMode]').forEach(r=>r.addEventListener('change',()=>{box.style.display=modeOf()==='change'?'':'none';}));
         const draw=()=>{ const q=(ov.querySelector('#rsFind').value||'').toLowerCase(); const fp=ov.querySelector('#rsPais').value; const fc=ov.querySelector('#rsCert').value;
           const list=cands.filter(s=>(!q||(s.nombre+' '+s.code+' '+(s.ciudad||'')).toLowerCase().includes(q))&&(!fp||s.pais===fp)&&(!fc||s.certificado));
-          ov.querySelector('#rsList').innerHTML=list.length?list.slice(0,50).map(s=>`<div class="rsRow" data-id="${s.id}" style="padding:8px 11px;border-bottom:1px solid var(--border-2);cursor:pointer;${sel===s.id?'background:var(--brand-light)':''}"><b style="font-size:12.5px">${s.nombre}</b> <span style="font-size:11px;color:var(--t3)">· ${s.code} · ${s.ciudad||CX.paisName(s.pais)} · ⭐${(s.rating||0).toFixed?s.rating.toFixed(1):s.rating||'—'}</span></div>`).join(''):'<div style="padding:14px;font-size:12px;color:var(--t3)">Sin coincidencias.</div>';
+          ov.querySelector('#rsList').innerHTML=list.length?list.slice(0,50).map(s=>`<div class="rsRow" data-id="${s.id}" style="padding:8px 11px;border-bottom:1px solid var(--border-2);cursor:pointer;${sel===s.id?'background:var(--brand-light)':''}"><b style="font-size:12.5px">${s.nombre}</b> <span style="font-size:11px;color:var(--t3)">· ${s.code} · ${s.ciudad||CX.paisName(s.pais)} · ⭐${(s.rating||0).toFixed?s.rating.toFixed(1):s.rating||'—'}</span></div>`).join(''):`<div style="padding:14px;font-size:12px;color:var(--t3)">Sin shoppers elegibles con estos filtros.${excluded.length?' · '+excluded.length+' excluido(s) por país/proyecto/alcance/perfil.':''}</div>`;
           ov.querySelectorAll('.rsRow').forEach(r=>r.addEventListener('click',()=>{sel=r.dataset.id;ov.querySelector('#rsOk').disabled=false;draw();}));
         };
         ov.querySelector('#rsFind').addEventListener('input',draw); ov.querySelector('#rsPais').addEventListener('change',draw); ov.querySelector('#rsCert').addEventListener('change',draw); draw();
@@ -406,25 +416,30 @@ CX.module('postulaciones', ({data,ui})=>{
       ui.modal('📤 Pedir acción al shopper',`
         <p style="font-size:12.5px;color:var(--t2);margin-bottom:14px">El equipo puede <b>solicitar</b> al shopper (no solo gestionar lo que él pide). La solicitud se registra en la experiencia interna del shopper. WhatsApp solo se considera enviado cuando exista ACK del proveedor de mensajería.</p>
         <label class="lbl">Shopper</label>
-        <select class="sel" id="rqSh" style="margin-bottom:12px">${posts.slice(0,10).map(x=>`<option>${x.shopper} · ${x.sucursal}</option>`).join('')}</select>
+        <select class="sel" id="rqSh" style="margin-bottom:12px">${activePosts.filter(x=>x.shopperId&&x.visitaId).slice(0,50).map(x=>`<option value="${x.id}">${displayShopper(x)} · ${x.sucursal}</option>`).join('')}</select>
         <label class="lbl">Solicitud</label>
         <select class="sel" id="rqTipo" style="margin-bottom:12px">
           <option value="confirmar">Confirmar fecha propuesta</option>
           <option value="cambio">Pedir cambio de fecha</option>
           <option value="reprog">Solicitar reprogramación</option>
           <option value="agendar">Recordar que agende</option>
+          <option value="cuestionario">Solicitar cuestionario</option>
         </select>
         <label class="lbl">Nota (opcional)</label>
         <textarea class="inp" id="rqNota" rows="2" placeholder="Detalle para el shopper…" style="margin-bottom:14px"></textarea>
         <div class="flex" style="justify-content:flex-end;gap:8px"><button class="btn btn-ghost btn-sm" data-x4>Cancelar</button><button class="btn btn-pr btn-sm" id="rqSend">📲 Enviar solicitud</button></div>
       `,{onMount:(ov,close)=>{
         ov.querySelector('[data-x4]').addEventListener('click',close);
-        ov.querySelector('#rqSend').addEventListener('click',()=>{
-          const tipo=ov.querySelector('#rqTipo').value, sh=ov.querySelector('#rqSh').value.split(' · ')[0];
-          const map={confirmar:['📅','El equipo pide confirmar fecha','confirmar_fecha'],cambio:['📅','El equipo pide cambio de fecha','confirmar_fecha'],reprog:['🔄','El equipo solicita reprogramación',''],agendar:['📅','Recordatorio: agenda tu visita','']};
-          const m=map[tipo];
-          CX.notif.push({to:'shopper',tipo,icon:m[0],tono:'a',titulo:m[1],txt:sh+' · responde desde Mis Visitas',nav:'misvisitas',accion:m[2]||undefined});
-          close();ui.toast('Solicitud interna creada para '+sh+' · visible en Mi Día/Tablón; WhatsApp no fue declarado enviado','ok',3500);
+        ov.querySelector('#rqSend').addEventListener('click',async()=>{
+          const tipo=ov.querySelector('#rqTipo').value,post=activePosts.find(x=>String(x.id)===String(ov.querySelector('#rqSh').value));
+          if(!post?.shopperId||!post?.visitaId||typeof CX.notif?.pushDurable!=='function'){ui.toast('Solicitud no enviada: falta identidad exacta o persistencia durable.','warn',4200);return;}
+          const map={confirmar:['📅','El equipo pide confirmar fecha','confirmar_fecha'],cambio:['📅','El equipo pide cambio de fecha','confirmar_fecha'],reprog:['🔄','El equipo solicita reprogramación',''],agendar:['📅','Recordatorio: agenda tu visita',''],cuestionario:['📝','El equipo solicita completar el cuestionario','']};
+          const m=map[tipo],btn=ov.querySelector('#rqSend');btn.disabled=true;btn.textContent='Confirmando…';
+          try{
+            const ack=await CX.notif.pushDurable({to:'shopper',shopperId:String(post.shopperId),targetShopperIds:[String(post.shopperId)],tipo,icon:m[0],tono:'a',titulo:m[1],txt:(ov.querySelector('#rqNota').value||'').trim()||((post.sucursal||'Visita')+' · responde desde Mis Visitas'),nav:'misvisitas',accion:m[2]||undefined,entityType:'visit',entityId:String(post.visitaId),eventKey:'admin_request_'+tipo,operational:true,idempotencyKey:['admin-request',data.currentProjectId,data.currentPeriodId,post.visitaId,post.shopperId,tipo].join(':')});
+            if(!(ack?.ok===true&&ack?.providerAck===true))throw new Error('REQUEST_ACK_REQUIRED');
+            close();ui.toast('Solicitud guardada y dirigida a '+displayShopper(post),'ok',3500);
+          }catch(_){btn.disabled=false;btn.textContent='📲 Enviar solicitud';ui.toast('Solicitud no enviada: no hubo confirmación durable.','warn',4200);}
         });
       }});
     });

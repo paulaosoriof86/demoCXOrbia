@@ -16,6 +16,21 @@ CX.reservas = {
     return p&&(p.periodKey||p.measurementPeriodId||p.measurementWindowId||p.periodo||p.ronda)||null;
   },
   _committed(result){ return !!(result&&result.ok===true&&result.status==='committed'&&result.providerAck===true&&result.successUiAllowed===true); },
+  _tenantToday(){
+    const p=CX.data&&typeof CX.data.period==='function'?CX.data.period():null;
+    const tz=String(p?.timeZone||p?.timezone||CX.tenantProfile?.timeZone||'America/Guatemala');
+    const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).filter(x=>x.type!=='literal').map(x=>[x.type,x.value]));
+    return `${parts.year}-${parts.month}-${parts.day}`;
+  },
+  _futureEligible(v){
+    const p=CX.data&&typeof CX.data.period==='function'?CX.data.period():null;
+    const mode=String(p?.reservationWindowMode||p?.reservationPolicy?.windowMode||'future_only').toLowerCase();
+    if(mode==='all_available')return true;
+    const today=this._tenantToday(),month=today.slice(0,7);
+    const periodKey=String(v?.periodKey||v?.measurementPeriodId||v?.periodo||'');
+    const availableFrom=String(v?.disponibleDesde||v?.availableFrom||'');
+    return (/^20\d{2}-[01]\d$/.test(periodKey)&&periodKey>month)||(/^20\d{2}-[01]\d-[0-3]\d$/.test(availableFrom)&&availableFrom>today);
+  },
   _normalize(r){ return Object.assign({},r,{id:r.id||r.reservationId,reservationId:r.reservationId||r.id,estado:r.estado||r.status,status:r.status||r.estado}); },
 
   list(pid){
@@ -26,15 +41,16 @@ CX.reservas = {
   sucursales(pid){
     const periodId=String(this._key(pid)||''),map={};
     const role=CX.session&&CX.session.role;
-    (CX.data._visitas||[]).filter(v=>{
+    const authority=Array.isArray(CX.data.__liveHrVisits)?CX.data.__liveHrVisits:(CX.data._visitas||[]);
+    authority.filter(v=>{
       const rowPeriod=String(CX.data.recordPeriodId?CX.data.recordPeriodId(v):(v.periodId||v.projectId)||'');
       if(rowPeriod!==periodId)return false;
       if(role==='shopper'&&CX.data.inScope&&!CX.data.inScope(v.pais))return false;
       const f=CX.data.visitFacets?CX.data.visitFacets(v):(v.canonicalFacets||{});
-      return f.available===true&&f.assigned!==true&&f.cancelled!==true;
+      return f.available===true&&f.assigned!==true&&f.cancelled!==true&&this._futureEligible(v);
     }).forEach(v=>{
       const id=(v.sucursal+'|'+v.ciudad).toLowerCase().replace(/\s+/g,'-');
-      if(!map[id])map[id]={id,sucursal:v.sucursal,ciudad:v.ciudad,pais:v.pais};
+      if(!map[id])map[id]={id,sucursal:v.sucursal,ciudad:v.ciudad,pais:v.pais,visitId:v.id||v.visitId,hrRowId:v.hrRowId||null,periodId:String(CX.data.recordPeriodId?CX.data.recordPeriodId(v):(v.periodId||v.projectId)||''),availableFrom:v.disponibleDesde||v.availableFrom||null,sourceRevision:String(CX.data.__liveHrSourceRevision||CX.data.previewMeta?.sourceRevision||'')};
     });
     return Object.values(map);
   },
@@ -48,7 +64,8 @@ CX.reservas = {
     const existing=this.list(pid).find(r=>r.sucursalId===rec.sucursalId&&String(r.periodo||'')===String(rec.periodo||'')&&String(r.shopperId||'')===String(rec.shopperId||''));
     if(existing)return {dup:true,r:existing};
     if(!CX.data||typeof CX.data.createReservation!=='function')throw new Error('RESERVATION_PROVIDER_COMMAND_UNAVAILABLE');
-    const payload=Object.assign({estado:rec.estado||'solicitada',status:rec.status||rec.estado||'solicitada'},rec);
+    if(!rec.visitId||!rec.hrRowId)throw new Error('RESERVATION_ELIGIBLE_VISIT_REQUIRED');
+    const payload=Object.assign({estado:rec.estado||'solicitada',status:rec.status||rec.estado||'solicitada',sourceRevision:String(rec.sourceRevision||CX.data?.__liveHrSourceRevision||CX.data?.previewMeta?.sourceRevision||'')},rec);
     const result=await CX.data.createReservation(payload,{ackAware:true,reason:'reservation-create-provider-backed'});
     if(!this._committed(result)){
       if(String(result&&result.code||'').includes('ALREADY_EXISTS'))return {dup:true};
@@ -112,9 +129,10 @@ CX.module('reservas', ({data,role,ui})=>{
   /* P0 (V172): identidad fail-closed — sin shopperId verificable no hay sid; nunca 'sh1'. */
   const sid=()=> (CX.session.user&&CX.session.user.shopperId)||null;
   const shopperIdentityOk=()=>!!sid();
-  const settleWrite=(reason)=>{
-    try{window.CX_SCHEDULE_PROTECTED_AUTH_HR_RECONCILE?.(reason||'reservation_write_committed',true);}catch(_){}
-    queueMicrotask(()=>draw());
+  const settleWrite=(reason,hrManaged=false)=>{
+    const y=window.scrollY;
+    if(hrManaged){try{queueMicrotask(()=>window.CX_SCHEDULE_PROTECTED_AUTH_HR_RECONCILE?.(reason||'reservation_assignment_write_committed',true));}catch(_){}}
+    queueMicrotask(()=>{draw();requestAnimationFrame(()=>window.scrollTo(0,y));});
   };
 
   const periodos=()=>{ const s=new Set(); const current=CX.reservas.periodoActual(); if(current)s.add(current); CX.reservas.list(pid).forEach(r=>{if(r.periodo)s.add(r.periodo);}); return [...s].sort().reverse(); };
@@ -161,16 +179,16 @@ CX.module('reservas', ({data,role,ui})=>{
           const branch=sucs.find(x=>x.id===ov.querySelector('#rsSuc').value);
           const u=CX.session.user||{};
           try{
-            const result=await CX.reservas.reservar(pid,{sucursalId:branch.id,sucursal:branch.sucursal,ciudad:branch.ciudad,pais:branch.pais,periodo:ov.querySelector('#rsPer').value,shopperId:sid(),shopper:u.name||'Shopper'});
+            const result=await CX.reservas.reservar(pid,{sucursalId:branch.id,sucursal:branch.sucursal,ciudad:branch.ciudad,pais:branch.pais,periodo:ov.querySelector('#rsPer').value,shopperId:sid(),shopper:u.name||'Shopper',visitId:branch.visitId,hrRowId:branch.hrRowId,sourceRevision:branch.sourceRevision,availableFrom:branch.availableFrom});
             close();
             if(result.dup){ui.toast('Ya solicitaste esa sucursal para ese periodo','warn');return;}
             ui.toast('Solicitud guardada y confirmada','ok');
-            settleWrite('reservation_write_committed');
+            settleWrite('reservation_write_committed',false);
           }catch(_){ui.toast('No hubo ACK remoto; la solicitud no se declaró guardada','warn');}
         })});
       });
       host.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',async()=>{
-        try{await CX.reservas.remove(pid,b.dataset.del);ui.toast('Solicitud cancelada y confirmada','ok');settleWrite('reservation_write_committed');}
+        try{await CX.reservas.remove(pid,b.dataset.del);ui.toast('Solicitud cancelada y confirmada','ok');settleWrite('reservation_write_committed',false);}
         catch(_){ui.toast('No hubo confirmación del proveedor; la cancelación no se declaró aplicada','warn');}
       }));
       host.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>CX.router.nav('misvisitas')));
@@ -218,17 +236,17 @@ CX.module('reservas', ({data,role,ui})=>{
           CX.notif&&CX.notif.push({to:'shopper',tipo:'reserva_aprobada',icon:'✅',tono:'g',titulo:'¡Tu reserva fue aprobada!',txt:'Sucursal: '+(reservation?.sucursal||'')+' · '+(reservation?.periodo||per)+'. Revisa tu visita en la plataforma.',nav:'misvisitas'});
         }
         ui.toast('Estado confirmado por el proveedor','ok');
-        settleWrite('reservation_write_committed');
+        settleWrite('reservation_write_committed',!!extra.visitId);
       }catch(_){draw();ui.toast('No hubo ACK remoto; no se declaró el cambio','warn');}
     }));
-    host.querySelectorAll('[data-rdel]').forEach(b=>b.addEventListener('click',async()=>{if(!confirm('¿Eliminar esta reserva?'))return;b.disabled=true;try{await CX.reservas.remove(pid,b.dataset.rdel);ui.toast('Reserva eliminada y confirmada','ok');settleWrite('reservation_write_committed');}catch(error){b.disabled=false;ui.toast('No hubo ACK remoto; la reserva no se declaró eliminada','warn');}}));
+    host.querySelectorAll('[data-rdel]').forEach(b=>b.addEventListener('click',async()=>{if(!confirm('¿Eliminar esta reserva?'))return;b.disabled=true;try{await CX.reservas.remove(pid,b.dataset.rdel);ui.toast('Reserva eliminada y confirmada','ok');settleWrite('reservation_write_committed',false);}catch(error){b.disabled=false;ui.toast('No hubo ACK remoto; la reserva no se declaró eliminada','warn');}}));
     host.querySelectorAll('[data-rsh]').forEach(b=>b.addEventListener('click',()=>{
       const reservation=CX.reservas.list(pid).find(x=>x.id===b.dataset.rsh),cands=data.shoppersFor();
       ui.modal('Asignar shopper · '+reservation.sucursal,`<select class="sel" id="rshSel" style="margin-bottom:14px">${cands.map(s=>`<option value="${s.id}">${s.nombre} · ${s.code}</option>`).join('')}</select>
         <div style="text-align:right"><button class="btn btn-pr btn-sm" id="rshOk">Asignar</button></div>`,
       {onMount:(ov,close)=>ov.querySelector('#rshOk').addEventListener('click',async()=>{
         const shopper=data.getShopper(ov.querySelector('#rshSel').value);
-        try{await CX.reservas.setEstado(pid,reservation.id,'asignada',{shopperId:shopper.id,shopper:shopper.nombre});close();ui.toast('Shopper asignado y confirmado','ok');settleWrite('reservation_write_committed');}
+        try{await CX.reservas.setEstado(pid,reservation.id,'asignada',{shopperId:shopper.id,shopper:shopper.nombre});close();ui.toast('Shopper asignado y confirmado','ok');settleWrite('reservation_write_committed',false);}
         catch(_){ui.toast('No hubo confirmación del proveedor; la asignación no se declaró aplicada','warn');}
       })});
     }));
@@ -242,8 +260,8 @@ CX.module('reservas', ({data,role,ui})=>{
       `,{onMount:(ov,close)=>ov.querySelector('#asOk').addEventListener('click',async()=>{
         const branch=sucs.find(x=>x.id===ov.querySelector('#asSuc').value),shopper=data.getShopper(ov.querySelector('#asSh').value);
         try{
-          const result=await CX.reservas.reservar(pid,{sucursalId:branch.id,sucursal:branch.sucursal,ciudad:branch.ciudad,pais:branch.pais,periodo:ov.querySelector('#asPer').value,shopperId:shopper.id,shopper:shopper.nombre,estado:'asignada'});
-          close();ui.toast(result.dup?'Ya existía esa asignación':'Sucursal asignada y confirmada a '+shopper.nombre,result.dup?'warn':'ok');if(!result.dup)settleWrite('reservation_write_committed');
+          const result=await CX.reservas.reservar(pid,{sucursalId:branch.id,sucursal:branch.sucursal,ciudad:branch.ciudad,pais:branch.pais,periodo:ov.querySelector('#asPer').value,shopperId:shopper.id,shopper:shopper.nombre,estado:'asignada',visitId:branch.visitId,hrRowId:branch.hrRowId,sourceRevision:branch.sourceRevision,availableFrom:branch.availableFrom});
+          close();ui.toast(result.dup?'Ya existía esa asignación':'Sucursal asignada y confirmada a '+shopper.nombre,result.dup?'warn':'ok');if(!result.dup)settleWrite('reservation_write_committed',false);
         }catch(_){ui.toast('No hubo ACK remoto; la asignación no se declaró aplicada','warn');}
       })});
     });
@@ -251,7 +269,7 @@ CX.module('reservas', ({data,role,ui})=>{
     host.querySelector('#aCruzar').addEventListener('click',async()=>{
       try{
         const result=await CX.reservas.cruzar(pid,per);
-        ui.toast(result.cruzadas?(result.cruzadas+' visita(s) cruzada(s) y confirmada(s)'):'No hay reservas asignadas para cruzar este periodo',result.cruzadas?'ok':'warn',4000);if(result.cruzadas)settleWrite('reservation_write_committed');
+        ui.toast(result.cruzadas?(result.cruzadas+' visita(s) cruzada(s) y confirmada(s)'):'No hay reservas asignadas para cruzar este periodo',result.cruzadas?'ok':'warn',4000);if(result.cruzadas)settleWrite('reservation_assignment_write_committed',true);
       }catch(_){ui.toast('No se completó el cruce; no se declaró ninguna asignación sin ACK','warn');}
     });
     const km={all:['Todas',()=>true],solicitada:['Por revisar',r=>r.estado==='solicitada'],asignada:['Asignadas',r=>['asignada','aprobada'].includes(r.estado)],cruzada:['Cruzadas',r=>r.estado==='cruzada']};

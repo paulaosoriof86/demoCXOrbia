@@ -109,23 +109,33 @@ CX.module('shoppers', ({data,ui})=>{
   };
 
   const list=()=>data.shoppersFor();
-  /* PRE-I4 ADMIN-003 — same human name is not merge authority. The canonical read model
-     already keeps these identities separate and emits display_name_collision_not_auto_merged.
-     Admin now sees that review state instead of silently treating coincident names as resolved. */
+  /* PRE-I4 identity review — every provider review reason is visible; only exact
+     collision groups can be merged, and only after explicit human confirmation. */
+  const identityReviewItems=arr(data.__identityReviewQueue);
   const identityReviewIds=(()=>{
     const out=new Set();
-    arr(data.__identityReviewQueue).forEach(item=>{
-      if(item&&item.reason==='display_name_collision_not_auto_merged')arr(item.shopperIds).forEach(id=>out.add(String(id||'')));
+    identityReviewItems.forEach(item=>{
+      if(item?.shopperId)out.add(String(item.shopperId));
+      arr(item?.shopperIds).forEach(id=>out.add(String(id||'')));
     });
     return out;
   })();
+  const identityReviewFor=id=>identityReviewItems.find(item=>String(item?.shopperId||'')===String(id)||arr(item?.shopperIds).map(String).includes(String(id)))||null;
   const identityReviewBadge=s=>identityReviewIds.has(String(s&&s.id||''))?ui.bdg('Revisar identidad','a'):'';
-  const identityCollisionFor=id=>arr(data.__identityReviewQueue).find(item=>item&&item.reason==='display_name_collision_not_auto_merged'&&arr(item.shopperIds).map(String).includes(String(id||'')))||null;
   const resolveIdentityModal=s=>{
-    const collision=identityCollisionFor(s&&s.id);
-    const ids=arr(collision&&collision.shopperIds).map(String).filter(Boolean);
+    const review=identityReviewFor(s&&s.id);
+    if(!review){ui.toast('No existe una revisión de identidad activa para esta ficha','warn');return;}
+    const reason=String(review.reason||'identity_review_required');
+    const ids=arr(review.shopperIds).map(String).filter(Boolean);
     const candidates=ids.map(id=>data.getShopper(id)).filter(Boolean);
-    if(candidates.length<2){ui.toast('No hay un grupo exacto de identidades para resolver','warn');return;}
+    if(reason!=='display_name_collision_not_auto_merged'||candidates.length<2){
+      ui.modal('Revisar identidad · '+(s.nombre||'shopper'),`
+        <div style="font-size:12.5px;color:var(--t2);line-height:1.6;margin-bottom:12px">Esta ficha requiere revisión humana y <b>no se fusionará automáticamente</b>.</div>
+        <div class="card card-p" style="margin-bottom:12px"><div><b>Motivo:</b> ${esc(reason)}</div><div style="margin-top:6px"><b>ID:</b> ${esc(String(s.id||''))}</div></div>
+        <div style="font-size:11.5px;color:var(--t3)">Completa o corrige el perfil si corresponde. La fusión solo se habilita cuando existe un grupo exacto de colisión confirmado.</div>
+      `);
+      return;
+    }
     ui.modal('Resolver identidad · '+(s.nombre||'shopper'),`
       <div style="font-size:12.5px;color:var(--t2);line-height:1.6;margin-bottom:12px">Confirma únicamente cuando estas fichas pertenecen a la misma persona. No se fusiona por nombre, teléfono ni correo automáticamente.</div>
       <label class="lbl">Ficha canónica que se conservará</label>
@@ -143,7 +153,6 @@ CX.module('shoppers', ({data,ui})=>{
           const result=await data.adjudicateShopperIdentity(canonical,aliases,{ackAware:true,reason:'admin_identity_human_adjudication'});
           if(!commandOk(result))throw new Error(commandError(result));
           close();ui.toast('Identidad confirmada y guardada','ok',3600);
-          try{await CX.backend?.refresh?.();}catch(_){}
           try{await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('admin_identity_adjudication_refresh');}catch(_){}
           CX.router.nav('shoppers');
         }catch(error){ui.toast('No se aplicó la resolución de identidad · '+String(error?.message||error),'err',5200);btn.disabled=false;btn.textContent='Confirmar fusión de identidad';}

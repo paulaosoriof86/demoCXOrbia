@@ -17,7 +17,7 @@ window.CX = window.CX || {};
   function uid(){ try{ return firebase.auth().currentUser && firebase.auth().currentUser.uid || ''; }catch(_){ return ''; } }
   function currentEmail(){ try{ return firebase.auth().currentUser && firebase.auth().currentUser.email || ''; }catch(_){ return ''; } }
   function currentProjectId(){ return (CX.data && CX.data.currentProjectId) || cfg.defaultProjectId || ''; }
-  function shopperId(){ return (CX.session && (CX.session.shopperId || CX.session.id)) || ''; }
+  function shopperId(){ try{return String(CX.backendAuth?.context?.()?.shopperId||(CX.session?.user&&CX.session.user.shopperId)||(CX.session&&CX.session.shopperId)||'');}catch(_){return String((CX.session?.user&&CX.session.user.shopperId)||(CX.session&&CX.session.shopperId)||'');} }
   function country(){ return (CX.session && (CX.session.country || CX.session.pais || CX.session.scopeCountry)) || ''; }
   function db(){ return window.firebase && firebase.apps && firebase.apps.length ? firebase.firestore() : null; }
   function tenantRef(){ const d = db(); return d ? d.collection(col.tenants || 'tenants').doc(tenantId()) : null; }
@@ -57,6 +57,13 @@ window.CX = window.CX || {};
       nav: d.actionRoute || d.nav || '',
       para: d.targetLabel || '',
       priority: d.priority || 'normal',
+      targetShopperIds: Array.isArray(d.targetShopperIds)?d.targetShopperIds.map(String):[],
+      entityType: d.entityType || null,
+      entityId: d.entityId || null,
+      eventKey: d.eventKey || null,
+      operational: d.operational === true,
+      accion: d.action || d.accion || undefined,
+      idempotencyKey: d.idempotencyKey || null,
       source: 'firestore',
     };
   }
@@ -135,6 +142,10 @@ window.CX = window.CX || {};
     await Promise.all(list.filter(x=>x && x.id).map(x=>markRead(x.id)));
   }
 
+  function stableBulletinId(value){
+    return 'evt-'+String(value||'').trim().toLowerCase().replace(/[^a-z0-9_-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,180);
+  }
+
   async function createBulletin(data){
     const c = bulletinsCol();
     if(!c) throw new Error('Firestore no inicializado para bulletins');
@@ -147,6 +158,7 @@ window.CX = window.CX || {};
       createdBy: uid(),
       createdByEmail: currentEmail(),
     }, data || {});
+    if(!payload.id&&payload.idempotencyKey)payload.id=stableBulletinId(payload.idempotencyKey);
     const ref = payload.id ? c.doc(payload.id) : c.doc();
     await ref.set(payload, {merge:true});
     return Object.assign({id:ref.id}, payload);
@@ -182,9 +194,27 @@ window.CX = window.CX || {};
           tone: n.tono,
           targetRoles: n.to ? [n.to] : ['admin'],
           actionRoute: n.nav || '',
+          targetShopperIds:Array.isArray(n.targetShopperIds)?n.targetShopperIds:[],
+          entityType:n.entityType||null,entityId:n.entityId||null,eventKey:n.eventKey||null,operational:n.operational===true,action:n.accion||n.action||null,idempotencyKey:n.idempotencyKey||null
         }).catch(e=>console.warn('[CX.backend-bulletins] push no persistido', e));
       }
       return result;
+    };
+
+    CX.notif.pushDurable = async function(n){
+      n=n||{};
+      const sid=String(n.shopperId||(Array.isArray(n.targetShopperIds)&&n.targetShopperIds[0])||'');
+      if(n.to==='shopper'&&!sid)throw new Error('SHOPPER_NOTIFICATION_TARGET_REQUIRED');
+      if(!n.idempotencyKey)throw new Error('NOTIFICATION_IDEMPOTENCY_REQUIRED');
+      const saved=await createBulletin({
+        title:n.titulo||n.title||'Novedad',body:n.txt||n.body||'',type:n.tipo||n.type||'request',icon:n.icon,tone:n.tono,
+        targetRoles:n.to?[n.to]:['shopper'],targetShopperIds:sid?[sid]:[],targetProjectIds:currentProjectId()?[currentProjectId()]:[],
+        actionRoute:n.nav||'',action:n.accion||n.action||null,entityType:n.entityType||null,entityId:n.entityId||null,eventKey:n.eventKey||null,
+        operational:n.operational===true,idempotencyKey:n.idempotencyKey,targetLabel:n.targetLabel||''
+      });
+      const item=normalize(saved,new Set());
+      originalPush.call(this,item);
+      return {ok:true,status:'committed',committed:true,providerAck:true,successUiAllowed:true,entityId:saved.id,item};
     };
 
     CX.notif.__backendBulletinsWrapped = true;
@@ -200,7 +230,7 @@ window.CX = window.CX || {};
     setTimeout(()=>{ if(!loaded) load().catch(()=>{}); }, 2500);
   }
 
-  CX.backendBulletins = {load, markRead, markAllRead, createBulletin};
+  CX.backendBulletins = {load, markRead, markAllRead, createBulletin, pushDurable:(n)=>CX.notif?.pushDurable?.(n)};
 
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
   else start();

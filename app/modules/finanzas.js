@@ -461,7 +461,7 @@ CX.module('movimientos', ({data,ui})=>{
       fl.innerHTML=fins.length?fins.map(f=>`<div style="padding:8px 0;border-bottom:1px solid var(--border-2)"><div class="between"><div><b style="font-size:12.5px">${f.fuente||'Financiamiento'}</b><div style="font-size:10.5px;color:var(--t3)">${f.pais||''} · ${f.fecha} · devuelto ${f.pais&&p.currency[f.pais]?ui.money(p.currency[f.pais],f.devuelto||0):(f.moneda?ui.money(f.moneda,f.devuelto||0):'—')}</div></div>
         <div class="flex" style="gap:8px"><b style="font-size:12.5px;color:${(f.saldo||0)>0?'var(--amber)':'var(--green)'}">saldo ${f.pais&&p.currency[f.pais]?ui.money(p.currency[f.pais],f.saldo||0):(f.moneda?ui.money(f.moneda,f.saldo||0):'Pendiente de moneda')}</b>${(!(f.pais&&p.currency[f.pais])&&!f.moneda)?ui.bdg('Revisión requerida · sin moneda · Bloqueado','r'):((f.saldo||0)<=0?ui.bdg('saldado','g'):`<button class="btn btn-soft btn-sm" data-devfin="${f.id}">Devolver</button>`)}</div></div></div>`).join(''):'<div class="muted" style="font-size:12px;padding:6px 0">Sin financiamientos registrados</div>';
       fl.querySelectorAll('[data-devfin]').forEach(b=>b.addEventListener('click',()=>{const f=fins.find(x=>x.id===b.dataset.devfin);
-        ui.modal('Devolver financiamiento · '+f.fuente,`<div style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Saldo: <b>${f.pais&&p.currency[f.pais]?ui.money(p.currency[f.pais],f.saldo||0):(f.moneda?ui.money(f.moneda,f.saldo||0):'Pendiente de moneda')}</b></div><label class="lbl">Monto a devolver</label><input class="inp" id="dvM" type="number" value="${f.saldo||0}" style="margin-bottom:14px"><div style="text-align:right"><button class="btn btn-green btn-sm" id="dvOk">Registrar devolución</button></div>`,{onMount:(ov,close)=>{ov.querySelector('#dvOk').addEventListener('click',()=>{CX.finStore.devolverFinanciamiento(p.id,f.id,+ov.querySelector('#dvM').value||0);close();draw();ui.toast('Devolución registrada · egreso generado · CxP reducida','ok',3600);});}});
+        ui.modal('Devolver financiamiento · '+f.fuente,`<div style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Saldo: <b>${f.pais&&p.currency[f.pais]?ui.money(p.currency[f.pais],f.saldo||0):(f.moneda?ui.money(f.moneda,f.saldo||0):'Pendiente de moneda')}</b></div><label class="lbl">Monto a devolver</label><input class="inp" id="dvM" type="number" value="${f.saldo||0}" style="margin-bottom:14px"><div style="text-align:right"><button class="btn btn-green btn-sm" id="dvOk">Registrar devolución</button></div>`,{onMount:(ov,close)=>{ov.querySelector('#dvOk').addEventListener('click',async()=>{const amount=Math.abs(+ov.querySelector('#dvM').value||0);if(!amount){ui.toast('Ingresa un monto mayor a cero','warn');return;}const btn=ov.querySelector('#dvOk');btn.disabled=true;try{if(connectedFinance()){const ack=await data.applyFinanceAccount(f.id,amount,{ackAware:true,fecha:new Date().toISOString().slice(0,10),desc:'Devolución de financiamiento'});if(!(ack?.ok&&ack?.providerAck))throw new Error('FINANCE_ACCOUNT_ACK_REQUIRED');await refreshDurableFinance(true);}else CX.finStore.devolverFinanciamiento(p.id,f.id,amount);close();draw();ui.toast('Devolución confirmada · CxP reducida','ok',3600);}catch(_){btn.disabled=false;ui.toast('No se registró la devolución: faltó confirmación durable.','err');}});}});
       }));
     }
     const af=host.querySelector('#addFin');
@@ -477,12 +477,14 @@ CX.module('movimientos', ({data,ui})=>{
       const fnCur=()=>{const c=ov.querySelector('#fnP').value;return c&&p.currency[c]?p.currency[c]:PENDING_CURRENCY;};
       const syncFn=()=>{const cu=fnCur();ov.querySelector('#fnCurLbl').textContent=cu===PENDING_CURRENCY?'(elige país)':'('+cu+')';ov.querySelector('#fnReview').style.display=cu===PENDING_CURRENCY?'':'none';};
       ov.querySelector('#fnP').addEventListener('change',syncFn); syncFn();
-      ov.querySelector('#fnSave').addEventListener('click',()=>{
+      ov.querySelector('#fnSave').addEventListener('click',async()=>{
         if(fnCur()===PENDING_CURRENCY){ui.toast('Selecciona el país para resolver la moneda antes de registrar','warn');return;} /* R31: bloquear sin moneda */
-        CX.finStore.addFinanciamiento(p.id,{fuente:(ov.querySelector('#fnF').value||'').trim(),concepto:(ov.querySelector('#fnC').value||'').trim(),monto:+ov.querySelector('#fnM').value||0,pais:ov.querySelector('#fnP').value,moneda:fnCur()});close();draw();ui.toast('Financiamiento registrado · flujo + CxP (no operativo)','ok',3600);});}}));
+        const amount=Math.abs(+ov.querySelector('#fnM').value||0),country=ov.querySelector('#fnP').value,fuente=(ov.querySelector('#fnF').value||'').trim(),concepto=(ov.querySelector('#fnC').value||'').trim()||'Financiamiento';
+        if(!amount){ui.toast('Ingresa un monto mayor a cero','warn');return;}
+        const btn=ov.querySelector('#fnSave');btn.disabled=true;try{if(connectedFinance()){const ack=await data.createFinancialMovement({tipo:'ingreso',tipoIngreso:'financiamiento',cat:concepto,concepto,beneficiario:fuente,pais:country,country,moneda:fnCur(),currency:fnCur(),monto:amount,amount,fecha:new Date().toISOString().slice(0,10),desc:fuente?('Fuente: '+fuente):concepto},{ackAware:true,reason:'admin-financing-create'});if(!(ack?.ok&&ack?.providerAck))throw new Error('FINANCE_MOVEMENT_ACK_REQUIRED');await refreshDurableFinance(true);}else CX.finStore.addFinanciamiento(p.id,{fuente,concepto,monto:amount,pais:country,moneda:fnCur()});close();draw();ui.toast('Financiamiento confirmado · flujo no operativo + CxP vinculada','ok',3600);}catch(_){btn.disabled=false;ui.toast('No se registró el financiamiento: faltó confirmación durable.','err');}});}}));
     const cxpF=host.querySelector('#cxpFind');
     if(cxpF)cxpF.addEventListener('input',()=>{const q=cxpF.value.toLowerCase();host.querySelectorAll('#cxpBody .cxpRow').forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q)?'':'none';});});
-    host.querySelectorAll('[data-delm]').forEach(b=>b.addEventListener('click',()=>{CX.finStore.delMov(pid(),b.dataset.delm);draw();ui.toast('Movimiento eliminado','');}));
+    host.querySelectorAll('[data-delm]').forEach(b=>b.addEventListener('click',()=>{if(connectedFinance()){ui.toast('El movimiento durable no se elimina localmente. Usa un ajuste/contramovimiento auditado.','warn',4200);return;}CX.finStore.delMov(pid(),b.dataset.delm);draw();ui.toast('Movimiento eliminado','');}));
     host.querySelectorAll('[data-cxdet]').forEach(el=>el.addEventListener('click',()=>{
       const [kind,id]=el.dataset.cxdet.split(':');
       const arr=kind==='cxc'?cxcAccounts:cxpAccounts;
@@ -582,10 +584,18 @@ CX.module('movimientos', ({data,ui})=>{
         ${cxcEst.length?`<table class="tbl" style="margin-bottom:12px"><tbody>${cxcEst.map(x=>`<tr><td><b>Reembolso pendiente · ${CX.paisLabel(x.c)}</b></td><td style="text-align:right;font-weight:700">${x.cur} ${x.monto.toLocaleString()}</td></tr>`).join('')}</tbody></table>`:'<div class="muted" style="font-size:12px;margin-bottom:12px">Reembolsos conciliados.</div>'}
         <div style="background:var(--brand-light);border-radius:9px;padding:9px 12px;font-size:11.5px;color:var(--brand-dark);margin-bottom:12px">Las CxP por liquidación se cruzan automáticamente con el egreso cuando se pagan; las CxC se descargan al conciliar el reembolso.</div>
         <div style="text-align:right"><button class="btn btn-green btn-sm" id="acxOk">Generar ${nuevasCxp.length+cxcEst.length} cuenta(s)</button></div>
-      `,{onMount:(ov,close)=>{ov.querySelector('#acxOk').addEventListener('click',()=>{
-        nuevasCxp.forEach(l=>CX.finStore.addCxp(pid(),{concepto:'Liquidación pendiente · '+l.shopper+' ('+l.sucursal+')',monto:l.total,pais:l.pais,origen:'liquidacion',visitaId:l.visitaId,auto:true}));
-        cxcEst.forEach(x=>CX.finStore.addCxc(pid(),{concepto:'Reembolso pendiente de conciliar · '+CX.paisLabel(x.c),monto:x.monto,pais:x.c,origen:'reembolso',auto:true}));
-        close();draw();ui.toast((nuevasCxp.length+cxcEst.length)+' cuenta(s) generadas automáticamente del histórico','ok',4000);
+      `,{onMount:(ov,close)=>{ov.querySelector('#acxOk').addEventListener('click',async()=>{
+        const btn=ov.querySelector('#acxOk');btn.disabled=true;let created=0;
+        try{
+          if(connectedFinance()){
+            for(const l of nuevasCxp){const currency=l.moneda||(l.pais&&p.currency&&p.currency[l.pais]);if(!currency)throw new Error('FINANCE_ACCOUNT_CURRENCY_REQUIRED');const ack=await data.createFinanceAccount('cxp',{concepto:'Liquidación pendiente · '+l.shopper+' ('+l.sucursal+')',monto:l.total,amount:l.total,pais:l.pais,country:l.pais,moneda:currency,currency,origin:'liquidacion',visitaId:l.visitaId,visitId:l.visitaId},{ackAware:true,reason:'admin-auto-cxp-from-liquidation'});if(!(ack?.ok&&ack?.providerAck))throw new Error('FINANCE_ACCOUNT_ACK_REQUIRED');created++;}
+            await refreshDurableFinance(true);
+          }else{
+            nuevasCxp.forEach(l=>{CX.finStore.addCxp(pid(),{concepto:'Liquidación pendiente · '+l.shopper+' ('+l.sucursal+')',monto:l.total,pais:l.pais,origen:'liquidacion',visitaId:l.visitaId,auto:true});created++;});
+            cxcEst.forEach(x=>{CX.finStore.addCxc(pid(),{concepto:'Reembolso pendiente de conciliar · '+CX.paisLabel(x.c),monto:x.monto,pais:x.c,origen:'reembolso',auto:true});created++;});
+          }
+          close();draw();ui.toast(created+' cuenta(s) confirmadas','ok',4000);
+        }catch(_){btn.disabled=false;ui.toast('No se generaron cuentas: faltó confirmación durable.','err',4200);}
       });}});
     });
     host.querySelectorAll('[data-cuenta]').forEach(b=>b.addEventListener('click',()=>{
@@ -593,7 +603,7 @@ CX.module('movimientos', ({data,ui})=>{
       ui.modal('Registrar cuenta por '+(k==='cxc'?'cobrar':'pagar'),`
         <p style="font-size:12px;color:var(--t2);margin-bottom:10px">Útil para cargar saldos iniciales en la importación o registrar deudas/derechos del periodo.</p>
         <div class="grid g2" style="gap:10px 12px">
-          <div style="grid-column:1/3"><label class="lbl">Concepto / contraparte</label><input class="inp" id="ctCon" list="ctConList" placeholder="${k==='cxc'?'Cliente / casa matriz':'Proveedor / financiamiento'}"></div><datalist id="ctConList">${(k==="cxc"?CX.finStore.cxc(pid()):CX.finStore.cxp(pid())).map(r=>`<option value="${r.concepto}">`).join("")}${CX.data._visitas.filter(v=>v.projectId===CX.data.currentPeriodId).map(v=>v.shopper).filter((s,i,a)=>s&&a.indexOf(s)===i).map(s=>`<option value="${s}">`).join("")}</datalist>
+          <div style="grid-column:1/3"><label class="lbl">Concepto / contraparte</label><input class="inp" id="ctCon" list="ctConList" placeholder="${k==='cxc'?'Cliente / casa matriz':'Proveedor / financiamiento'}"></div><datalist id="ctConList">${(k==="cxc"?cxcAccounts:cxpAccounts).map(r=>`<option value="${r.concepto}">`).join("")}${CX.data._visitas.filter(v=>v.projectId===CX.data.currentPeriodId).map(v=>v.shopper).filter((s,i,a)=>s&&a.indexOf(s)===i).map(s=>`<option value="${s}">`).join("")}</datalist>
           <div><label class="lbl">País</label><select class="sel" id="ctPais"><option value="">—</option>${p.countries.map(c=>`<option>${c}</option>`).join('')}</select></div>
           <div><label class="lbl">Monto <span id="ctCurLbl" class="muted">(elige país)</span></label><input class="inp" id="ctMonto" type="number"></div>
           <div style="grid-column:1/3"><label class="lbl">Vence</label><input class="inp" id="ctVence" type="date"></div>
@@ -621,13 +631,13 @@ CX.module('movimientos', ({data,ui})=>{
     }));
 
     host.querySelectorAll('[data-abono]').forEach(b=>b.addEventListener('click',()=>{
-      const r=CX.finStore.cxp(pid()).find(x=>x.id===b.dataset.abono);
+      const r=(connectedFinance()?cxpAccounts:CX.finStore.cxp(pid())).find(x=>x.id===b.dataset.abono);
       if(!r||currencyOf(r)===PENDING_CURRENCY){ui.toast('Cuenta sin moneda resuelta: resuélvela en “ver detalle” antes de abonar','warn');return;} /* R31: abono fail-closed */
       ui.modal('Abonar a CxP · '+r.concepto,`
-        <div style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Saldo actual: <b>${r.pais?ui.money(curOfRow(r),r.saldo||0):'Pendiente de moneda'}</b></div>
-        <label class="lbl">Monto del abono (${curOfRow(r)})</label><input class="inp" id="abMonto" type="number" value="${r.saldo||0}" style="margin-bottom:14px">
+        <div style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Saldo actual: <b>${r.pais?ui.money(curOfRow(r),Number(r.balance??r.saldo)||0):'Pendiente de moneda'}</b></div>
+        <label class="lbl">Monto del abono (${curOfRow(r)})</label><input class="inp" id="abMonto" type="number" value="${Number(r.balance??r.saldo)||0}" style="margin-bottom:14px">
         <div style="text-align:right"><button class="btn btn-green btn-sm" id="abSave">Registrar abono</button></div>
-      `,{onMount:(ov,close)=>{ov.querySelector('#abSave').addEventListener('click',()=>{CX.finStore.abonarCxp(pid(),r.id,+ov.querySelector('#abMonto').value||0);close();draw();ui.toast('Abono registrado · egreso vinculado','ok');});}});
+      `,{onMount:(ov,close)=>{ov.querySelector('#abSave').addEventListener('click',async()=>{const amount=Math.abs(+ov.querySelector('#abMonto').value||0);if(!amount){ui.toast('Ingresa un monto mayor a cero','warn');return;}const btn=ov.querySelector('#abSave');btn.disabled=true;try{if(connectedFinance()){const ack=await data.applyFinanceAccount(r.id,amount,{ackAware:true,fecha:new Date().toISOString().slice(0,10),desc:'Abono CxP'});if(!(ack?.ok&&ack?.providerAck))throw new Error('FINANCE_ACCOUNT_ACK_REQUIRED');await refreshDurableFinance(true);}else CX.finStore.abonarCxp(pid(),r.id,amount);close();draw();ui.toast('Abono confirmado · CxP reducida','ok');}catch(_){btn.disabled=false;ui.toast('No se registró el abono: faltó confirmación durable.','err');}});}});
     }));
 
     host.querySelectorAll('[data-fin-reconcile]').forEach(btn=>btn.addEventListener('click',async()=>{
@@ -732,7 +742,7 @@ CX.module('liquidaciones', ({data,ui})=>{
     const multiMon=Object.keys(porMon).length>1;
     const cart=`<div class="card card-p" style="margin-bottom:16px;border:1px solid ${draft.length?'var(--brand)':'var(--border)'};${draft.length?'background:linear-gradient(180deg,var(--brand-light),var(--surface))':''}">
       <div class="between" style="margin-bottom:10px"><div class="card-t">📦 Lote en construcción ${draft.length?`<span class="bdg bdg-b">${draft.length}</span>`:''}</div>
-        <div class="flex" style="gap:8px">${CX.finStore.cxp(p.id).filter(r=>r.origen==='liquidacion').length?`<button class="btn btn-soft btn-sm" id="addCxp">➕ Incluir CxP meses anteriores (${CX.finStore.cxp(p.id).filter(r=>r.origen==='liquidacion').length})</button>`:''}
+        <div class="flex" style="gap:8px">${cxpAccounts.filter(r=>r.origen==='liquidacion'&&Number(r.balance??r.saldo)>0).length?`<button class="btn btn-soft btn-sm" id="addCxp">➕ Incluir CxP meses anteriores (${cxpAccounts.filter(r=>r.origen==='liquidacion'&&Number(r.balance??r.saldo)>0).length})</button>`:''}
         ${draft.length?`<button class="btn btn-ghost btn-sm" id="clearDraft" style="color:var(--red)">Vaciar</button>`:''}</div></div>
       ${draft.length?`
         <div class="scroll-hint" style="overflow-x:auto"><table class="tbl"><thead><tr><th>Shopper</th><th>Sucursal</th><th>País</th><th style="text-align:right">Total</th><th></th></tr></thead><tbody>
@@ -822,9 +832,9 @@ CX.module('liquidaciones', ({data,ui})=>{
     const cd=host.querySelector('#clearDraft'); if(cd)cd.addEventListener('click',()=>CX.finStore.clearDraft(p.id));
     const ac=host.querySelector('#addCxp');
     if(ac)ac.addEventListener('click',()=>{
-      const _cxCur=r=>currencyOf(r);
-      const cxps=CX.finStore.cxp(p.id).filter(r=>currencyOf(r)!==PENDING_CURRENCY&&r.origen==='liquidacion'&&(r.saldo||0)>0); /* R32: currencyOf excluye moneda no resuelta */
-      const cxpsPend=CX.finStore.cxp(p.id).filter(r=>r.origen==='liquidacion'&&(r.saldo||0)>0&&currencyOf(r)===PENDING_CURRENCY);
+      const _cxCur=r=>currencyOf(r),cxpSource=connectedFinance()?cxpAccounts:CX.finStore.cxp(p.id);
+      const cxps=cxpSource.filter(r=>currencyOf(r)!==PENDING_CURRENCY&&r.origen==='liquidacion'&&Number(r.balance??r.saldo)>0); /* R32: currencyOf excluye moneda no resuelta */
+      const cxpsPend=cxpSource.filter(r=>r.origen==='liquidacion'&&Number(r.balance??r.saldo)>0&&currencyOf(r)===PENDING_CURRENCY);
       const rows=cxps.length?cxps.map((r,i)=>`<label class="between" style="padding:9px 11px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;cursor:pointer">
         <span><input type="checkbox" class="cxpChk" data-id="${r.id}" checked style="margin-right:8px"><b style="font-size:12.5px">${r.concepto}</b><div style="font-size:11px;color:var(--t3)">${r.pais||''} · pendiente de meses anteriores</div></span>
         <b style="color:var(--amber)">${(r.pais&&p.currency&&p.currency[r.pais])?ui.money(p.currency[r.pais],r.saldo||0):(r.moneda?ui.money(r.moneda,r.saldo||0):'Pendiente de moneda')}</b></label>`).join('')
@@ -834,10 +844,13 @@ CX.module('liquidaciones', ({data,ui})=>{
         ${rows}
         ${cxpsPend.length?`<div style="font-size:11px;color:var(--red);margin:6px 0">🔒 ${cxpsPend.length} CxP con Pendiente de moneda · en revisión, no pagables hasta asignar país/moneda</div>`:''}
         <div style="text-align:right;margin-top:8px"><button class="btn btn-green btn-sm" id="payCxp" ${cxps.length?'':'disabled'}>Pagar seleccionadas</button></div>
-      `,{onMount:(ov,close)=>{const b=ov.querySelector('#payCxp'); if(b)b.addEventListener('click',()=>{
-        const ids=[...ov.querySelectorAll('.cxpChk:checked')].map(c=>c.dataset.id); let n=0; let blocked=0;
-        ids.forEach(id=>{const r=CX.finStore.cxp(p.id).find(x=>x.id===id); if(!r)return; if(currencyOf(r)===PENDING_CURRENCY){blocked++;return;} /* R32: revalida Pendiente de moneda, fail-closed */ CX.finStore.abonarCxp(p.id,id,r.saldo||0);n++;});
-        close(); draw(); ui.toast(n+' CxP de meses anteriores pagada(s) · egreso(s) en Movimientos'+(blocked?(' · '+blocked+' bloqueada(s) sin moneda'):''),blocked?'warn':'ok',4000);
+      `,{onMount:(ov,close)=>{const b=ov.querySelector('#payCxp'); if(b)b.addEventListener('click',async()=>{
+        const ids=[...ov.querySelectorAll('.cxpChk:checked')].map(c=>c.dataset.id); let n=0; let blocked=0;b.disabled=true;
+        try{
+          for(const id of ids){const r=cxpSource.find(x=>x.id===id);if(!r)continue;if(currencyOf(r)===PENDING_CURRENCY){blocked++;continue;}const amount=Number(r.balance??r.saldo)||0;if(connectedFinance()){const ack=await data.applyFinanceAccount(id,amount,{ackAware:true,fecha:new Date().toISOString().slice(0,10),desc:'Pago CxP diferida'});if(!(ack?.ok&&ack?.providerAck))throw new Error('FINANCE_ACCOUNT_ACK_REQUIRED');}else CX.finStore.abonarCxp(p.id,id,amount);n++;}
+          if(connectedFinance())await refreshDurableFinance(true);
+          close();draw();ui.toast(n+' CxP pagada(s) y confirmada(s)'+(blocked?(' · '+blocked+' bloqueada(s) sin moneda'):''),blocked?'warn':'ok',4000);
+        }catch(_){b.disabled=false;ui.toast('No se completó el pago de CxP: faltó confirmación durable.','err',4200);}
       });}});
     });
     const pay=host.querySelector('#payDraft');
@@ -858,7 +871,14 @@ CX.module('liquidaciones', ({data,ui})=>{
           const r=await data.payVisits(ids,null,null,{ackAware:true,reason:'admin-finance-liquidation-batch'});
           if(!(r?.ok===true&&r?.status==='committed'&&r?.providerAck===true&&r?.successUiAllowed===true)) throw new Error(r?.code||'FINANCE_PAYMENT_ACK_REQUIRED');
           let diferidas=0; const difBox=ov.querySelector('#difCxp');
-          if(difBox&&difBox.checked){restantes.forEach(l=>{CX.finStore.addCxp(p.id,{concepto:'Liquidación diferida · '+l.shopper+' ('+l.sucursal+')',monto:l.total,pais:l.pais,origen:'liquidacion',visitaId:l.visitaId});diferidas++;});}
+          if(difBox&&difBox.checked){
+            for(const l of restantes){
+              if(connectedFinance()){const currency=l.moneda||(l.pais&&p.currency&&p.currency[l.pais]);if(!currency)throw new Error('FINANCE_ACCOUNT_CURRENCY_REQUIRED');const a=await data.createFinanceAccount('cxp',{concepto:'Liquidación diferida · '+l.shopper+' ('+l.sucursal+')',monto:l.total,amount:l.total,pais:l.pais,country:l.pais,moneda:currency,currency,origin:'liquidacion',visitaId:l.visitaId,visitId:l.visitaId},{ackAware:true,reason:'admin-deferred-liquidation-cxp'});if(!(a?.ok&&a?.providerAck))throw new Error('FINANCE_ACCOUNT_ACK_REQUIRED');}
+              else CX.finStore.addCxp(p.id,{concepto:'Liquidación diferida · '+l.shopper+' ('+l.sucursal+')',monto:l.total,pais:l.pais,origen:'liquidacion',visitaId:l.visitaId});
+              diferidas++;
+            }
+            if(connectedFinance())await refreshDurableFinance(true);
+          }
           const reviewIds=new Set((r.reviewRequired||[]).map(x=>x.id||x.visitaId).filter(Boolean));
           CX.finStore.clearDraft(p.id);
           reviewIds.forEach(id=>CX.finStore.toggleDraft(p.id,id));

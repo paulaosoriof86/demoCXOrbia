@@ -103,6 +103,14 @@ async function resolveVisitDocument(tx,visits,visitId,hrRowId){
 }
 function assertPeriod(command,data){if(str(data?.periodId)!==str(command.periodId))throw new Error('OPS_PERIOD_SCOPE_MISMATCH');}
 function isAvailable(v){const state=str(v?.estado||v?.status).toLowerCase();return ['disponible','available'].includes(state)&&!str(v?.shopperId);}
+function branchKey(v){return (str(v?.sucursal||v?.branchName||v?.branchId)+'|'+str(v?.ciudad||v?.city)).toLowerCase().replace(/\s+/g,'-');}
+function reservationFutureEligible(v,projectData={}){
+  const mode=str(projectData?.reservationWindowMode||projectData?.reservationPolicy?.windowMode||'future_only').toLowerCase();
+  if(mode==='all_available')return true;
+  const timezone=str(projectData?.timeZone||projectData?.timezone||'America/Guatemala'),today=tenantDateKey(timezone),month=today.slice(0,7);
+  const periodKey=str(v?.periodKey||v?.measurementPeriodId||v?.periodo),availableFrom=str(v?.disponibleDesde||v?.availableFrom);
+  return (/^20\d{2}-[01]\d$/.test(periodKey)&&periodKey>month)||(/^20\d{2}-[01]\d-[0-3]\d$/.test(availableFrom)&&availableFrom>today);
+}
 function tenantDateKey(timezone='America/Guatemala'){
   const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:timezone,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).filter(x=>x.type!=='literal').map(x=>[x.type,x.value]));
   return `${parts.year}-${parts.month}-${parts.day}`;
@@ -265,9 +273,11 @@ async function transactionExecute(db,command,actor){
         }
         if(!assigned&&!isAvailable(v))throw new Error('OPS_VISIT_NOT_AVAILABLE');
       }
-      tx.set(aRef,{status,estado:status,decisionReason:payload.reason||null,managedBy:actor.uid,updatedAt:now(),version:Number(a.version||0)+1},{merge:true});providerWrites++;
+      const transitioned=status==='aprobada';
+      tx.set(aRef,{status,estado:status,decisionReason:payload.reason||null,managedBy:actor.uid,active:!transitioned&&['pendiente','standby'].includes(status),postulationLifecycle:transitioned?'transitioned_to_assignment':status,transitionedToVisitId:transitioned?str(a.visitId||a.visitaId||payload.visitId):null,transitionedAt:transitioned?now():null,updatedAt:now(),version:Number(a.version||0)+1},{merge:true});providerWrites++;
       if(status==='aprobada'){
-        tx.set(vRef,{shopperId:str(a.shopperId),estado:'asignada',status:'asignada',assignmentSource:'platform',assignmentSyncStatus:'pending_hr',lastSyncedAt:null,updatedAt:now(),version:Number(v.version||0)+1},{merge:true});providerWrites++;
+        const proposedScheduleDate=str(a.fechaProp||a.proposedDate);
+        tx.set(vRef,{shopperId:str(a.shopperId),estado:'asignada',status:'asignada',assignmentSource:'platform',assignmentSyncStatus:'pending_hr',proposedScheduleDate:proposedScheduleDate||null,approvedApplicationId:entityId,lastSyncedAt:null,updatedAt:now(),version:Number(v.version||0)+1},{merge:true});providerWrites++;
       }
       auditEntityType='application';
     }
@@ -281,15 +291,20 @@ async function transactionExecute(db,command,actor){
       auditEntityType='application';
     }
     else if(command.commandType==='reservation.create'){
-      const shopperId=str(payload.shopperId||actor.shopperId),branchId=str(payload.branchId||payload.sucursalId);
-      if(!shopperId||!branchId)throw new Error('OPS_RESERVATION_KEYS_REQUIRED');
+      const shopperId=str(payload.shopperId||actor.shopperId),branchId=str(payload.branchId||payload.sucursalId),visitId=str(payload.visitId),hrRowId=str(payload.hrRowId);
+      if(!shopperId||!branchId||!visitId||!hrRowId)throw new Error('OPS_RESERVATION_KEYS_REQUIRED');
       if(actor.role==='shopper'&&shopperId!==actor.shopperId)throw new Error('OPS_RESERVATION_SHOPPER_SCOPE_DENIED');
+      const resolved=await resolveVisitDocument(tx,r.visits,visitId,hrRowId),v=resolved.data;assertPeriod(command,v);
+      if(!isAvailable(v))throw new Error('OPS_RESERVATION_VISIT_NOT_AVAILABLE');
+      if(branchKey(v)!==branchId)throw new Error('OPS_RESERVATION_BRANCH_NOT_ELIGIBLE');
+      const projectSnap=await tx.get(r.project),projectData=projectSnap.exists?(projectSnap.data()||{}):{};
+      if(!reservationFutureEligible(v,projectData))throw new Error('OPS_RESERVATION_FUTURE_WINDOW_REQUIRED');
       const status=str(payload.status||payload.estado||'solicitada').toLowerCase();
       if(!RESERVATION_STATES.includes(status))throw new Error('OPS_RESERVATION_STATUS_INVALID');
       entityId=entityId||('rsv-'+sha(`${command.tenantId}\0${command.projectId}\0${command.periodId}\0${shopperId}\0${branchId}`).slice(0,28));
       const reservationRef=r.reservations.doc(entityId),reservationSnap=await tx.get(reservationRef);
       if(reservationSnap.exists)throw new Error('OPS_RESERVATION_ALREADY_EXISTS');
-      tx.create(reservationRef,{id:entityId,reservationId:entityId,tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,periodo:payload.periodo||null,branchId,sucursalId:branchId,sucursal:payload.sucursal||null,ciudad:payload.ciudad||null,pais:payload.pais||null,shopperId,shopper:payload.shopper||null,status,estado:status,source:'platform',version:1,createdAt:now(),updatedAt:now()});providerWrites++;
+      tx.create(reservationRef,{id:entityId,reservationId:entityId,tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,periodo:payload.periodo||null,branchId,sucursalId:branchId,sucursal:v.sucursal||payload.sucursal||null,ciudad:v.ciudad||payload.ciudad||null,pais:v.pais||v.country||payload.pais||null,visitId:resolved.logicalVisitId||visitId,visitaId:resolved.logicalVisitId||visitId,hrRowId:str(v.hrRowId)||hrRowId,sourceRevision:str(payload.sourceRevision)||null,shopperId,shopper:payload.shopper||null,status,estado:status,source:'platform',eligibilitySource:'live_hr_exact_visit',version:1,createdAt:now(),updatedAt:now()});providerWrites++;
       auditEntityType='reservation';
     }
     else if(command.commandType==='reservation.status.update'){

@@ -24,7 +24,30 @@ CX.notif = {
     ];
   })(),
 
-  for(role){ return this._items.filter(n=>n.to===role); },
+  _validForRole(n,role){
+    if(!n||n.to!==role)return false;
+    if(role!=='shopper'||n.source!=='firestore')return true;
+    const ctx=(()=>{try{return CX.backendAuth?.context?.()||{};}catch(_){return {};}})();
+    const sid=String(ctx.shopperId||(CX.session?.user&&CX.session.user.shopperId)||'');
+    const targets=Array.isArray(n.targetShopperIds)?n.targetShopperIds.map(String):[];
+    if(targets.length&&(!sid||!targets.includes(sid)))return false;
+    const operationalTypes=new Set(['confirmar','cambio','reprog','agendar','cuestionario','pide_fecha','reserva_aprobada','reprog_aprobada','reprog_rechazada','ajuste','cancel']);
+    if(n.operational===true||operationalTypes.has(String(n.tipo||''))){
+      if(!n.entityType||!n.entityId)return false;
+      if(n.entityType==='visit'){
+        const v=(CX.data?._visitas||[]).find(x=>[x?.id,x?.visitId,x?.hrRowId].map(String).includes(String(n.entityId)));
+        if(!v)return false;
+        if(sid&&v.shopperId&&String(v.shopperId)!==sid&&String(n.tipo)!=='cancel')return false;
+      }
+      if(n.entityType==='application'){
+        const a=(CX.data?._posts||[]).find(x=>[x?.id,x?.applicationId,x?.postulationId].map(String).includes(String(n.entityId)));
+        if(!a)return false;
+        if(sid&&a.shopperId&&String(a.shopperId)!==sid)return false;
+      }
+    }
+    return true;
+  },
+  for(role){ return this._items.filter(n=>this._validForRole(n,role)); },
   unread(role){ return this.for(role).filter(n=>!n.leida).length; },
 
   push(n){
