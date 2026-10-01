@@ -42,7 +42,7 @@ const admin=fs.readFileSync('app/modules/postulaciones.js','utf8');
 const shopper=fs.readFileSync('app/modules/misvisitas.js','utf8');
 if(!/posts\(\).*?_archived!==true/.test(data.replace(/\n/g,'')))fail('DATA_ACTIVE_ARCHIVE_FILTER_MISSING');
 if(!/activePosts=.*?_archived!==true/.test(admin.replace(/\n/g,'')))fail('ADMIN_ACTIVE_ARCHIVE_FILTER_MISSING');
-if(!/lifecycleOk=hist\|\|x\?\._archived!==true/.test(admin.replace(/\n/g,'')))fail('ADMIN_HISTORY_ARCHIVE_GATE_MISSING');
+if(!/lifecycleOk=hist\|\|\(x\?\._archived!==true&&x\?\.active!==false&&x\?\.postulationLifecycle!=='transitioned_to_assignment'\)/.test(admin.replace(/\n/g,'')))fail('ADMIN_HISTORY_TRANSITION_GATE_MISSING');
 if(!/currentApps=.*?_archived!==true/.test(shopper.replace(/\n/g,'')))fail('SHOPPER_ACTIVE_ARCHIVE_FILTER_MISSING');
 const receipt={decision:'PASS_PREI4_ADMIN_002_SOURCE_LIFECYCLE',sourceSha:SOURCE,sourceTree:TREE,checks,diagnostics:result.diagnostics,production:false,writes:0,deploys:0};
 fs.writeFileSync(OUT+'/result.json',JSON.stringify(receipt,null,2)+'\n');
