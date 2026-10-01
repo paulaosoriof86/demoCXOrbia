@@ -42,12 +42,21 @@ let shopper=null;
 for(const m of members.filter(x=>x.active===true&&str(x.role).toLowerCase()==='shopper'&&str(x.authNamespace).toLowerCase()==='shopper'&&str(x.visibleLogin).toLowerCase()==='paula.osorio')){if(await authExists(m)){shopper=m;break;}}
 if(!admin)throw new Error('AUTH_FAILURE:FOCAL_ADMIN_PRINCIPAL_MISSING');
 if(!shopper)throw new Error('AUTH_FAILURE:FOCAL_PAULA_SHOPPER_PRINCIPAL_MISSING');
-const paulaShopperId=str(shopper.shopperId||''),paulaHr=(Array.isArray(hrSnapshot.shoppers)?hrSnapshot.shoppers:[]).find(x=>String(x.id||x.shopperId||'')===paulaShopperId)||null;
-const paulaExpectedTotal=paulaHr?Number(paulaHr.visitas||0):(Array.isArray(hrSnapshot.visits)?hrSnapshot.visits:[]).filter(v=>String(v.shopperId||'')===paulaShopperId).length;
-if(!paulaShopperId||!Number.isFinite(paulaExpectedTotal))throw new Error('SOURCE_FAILURE:FOCAL_PAULA_HR_REFERENCE_MISSING');
+const paulaShopperId=str(shopper.shopperId||'');
+const paulaProfileSnap=paulaShopperId?await tenant.collection('shoppers').doc(paulaShopperId).get():null;
+const paulaProfile=paulaProfileSnap?.exists?(paulaProfileSnap.data()||{}):{};
+const paulaIdentityIds=new Set([
+  paulaShopperId,
+  ...arr(paulaProfile.sourceShopperIds),
+  ...arr(paulaProfile.exactAliases),
+  ...arr(paulaProfile.legacyLiveShopperIds)
+].map(str).filter(Boolean));
+const paulaHistoricalVisits=arr(hrSnapshot.visits).filter(v=>paulaIdentityIds.has(str(v.shopperId||v.evaluadorId||v.evaluatorId||'')));
+const paulaExpectedTotal=paulaHistoricalVisits.length;
+if(!paulaShopperId||!Number.isFinite(paulaExpectedTotal)||paulaExpectedTotal<1)throw new Error('SOURCE_FAILURE:FOCAL_PAULA_HR_REFERENCE_MISSING:'+JSON.stringify({paulaShopperId,identityIds:[...paulaIdentityIds],historicalVisits:paulaExpectedTotal,hrRevision}));
 
 const browser=await chromium.launch({headless:true});
-const evidence={schemaVersion:'cxorbia.pre-i4.focal-human-browser.v9',decision:'HOLD',sourceSha,hrRevision,periodId,preAuth:null,admin:null,shopper:null,mobile:null,adminMobile:null,shopperMobile:null,principalClaims:null,production:false,authWrites:0,hrWrites:0,providerWrites:0};
+const evidence={schemaVersion:'cxorbia.pre-i4.focal-human-browser.v10',decision:'HOLD',sourceSha,hrRevision,periodId,preAuth:null,admin:null,shopper:null,mobile:null,adminMobile:null,shopperMobile:null,principalClaims:null,production:false,authWrites:0,hrWrites:0,providerWrites:0};
 const adminAuthUser=await auth.getUser(admin.id),shopperAuthUser=await auth.getUser(shopper.id);
 const safeClaims=u=>{const c=u?.customClaims||{};return{role:str(c.role),tenantId:str(c.tenantId),projectIds:arr(c.projectIds).map(str),shopperId:str(c.shopperId),authNamespace:str(c.authNamespace),country:str(c.country)};};
 evidence.principalClaims={admin:safeClaims(adminAuthUser),shopper:safeClaims(shopperAuthUser)};

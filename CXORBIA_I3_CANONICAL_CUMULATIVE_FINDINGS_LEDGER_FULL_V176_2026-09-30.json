@@ -6436,6 +6436,29 @@
         "production": false
       },
       "production": false
+    },
+    "VRM-137": {
+      "id": "VRM-137",
+      "classification": "MAPPING_FAILURE",
+      "severity": "CONTROL_BLOCKER",
+      "title": "Paula shopper focal compared cumulative UI history against current HR shopper summary count",
+      "state": "FIXED_CONTROL_REPROOF_REQUIRED",
+      "productDefect": false,
+      "observed": "Authenticated shopper focal returned 8 historical visits for paula.osorio while the QA expected 0.",
+      "rootCause": "The browser focal derived paulaExpectedTotal from hrSnapshot.shoppers[].visitas when the matching shopper row existed. That field represents the current/active shopper summary and can be zero after cleanup or period rollover; it is not the cumulative historical visit universe.",
+      "correction": "Derive Paula's expected historical total from the same live HR revision by counting all hrSnapshot.visits across her canonical shopperId plus durable exact/source/legacy aliases from the authorized shopper profile.",
+      "exactOwners": [
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+      ],
+      "evidence": {
+        "runId": 36937062335,
+        "jobId": 110619738146,
+        "observedTotal": 8,
+        "staleExpectedTotal": 0,
+        "hrRevision": "e242d83f7a63b4f390a3ff6eeaeb616dea52f52f159a5e3a929c5473a7225159"
+      },
+      "productSourceChanged": false,
+      "production": false
     }
   },
   "latestEvidenceOverrides": {
@@ -6992,7 +7015,7 @@
     ],
     "findingCount": 135,
     "expectedCurrentRange": "VRM-001..VRM-135",
-    "nextFindingId": "VRM-137",
+    "nextFindingId": "VRM-138",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_PREI4_PROVIDER_RECONCILIATION_REPROOF",
@@ -7024,7 +7047,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Materialize canonical reachable product source a2f7acd659b68217299f92ef69a320f08e806635 / tree 524207efe063232333795175ac58964f3898067c exactly once in existing Recovery DEV lane, then execute authenticated Admin+Shopper browser focal with stable HR authority, Liquidaciones, durable Finance, Certification and final focal receipt. Reuse prior PASS gates. Production remains untouched.",
+  "exactNextAction": "Run browser-only PRE-I4 focal against the already materialized canonical DEV source a2f7acd659b68217299f92ef69a320f08e806635. If browser PASS, resume only Finance durable + Certification + final focal receipt without rebuild/redeploy. Production remains untouched.",
   "supersedesGitBlob": "397a9cee8c71d3156567a0cc96bfdcba88bb7c3a",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -7053,23 +7076,17 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-137",
+  "nextFindingId": "VRM-138",
   "lastControlFailure": {
-    "runId": 36261995370,
-    "runNumber": 499,
-    "jobId": 108461916710,
-    "classification": "RELEASE_COMPOSITION_FAILURE",
-    "code": "GATE21_RECEIPT_SCHEMA_AND_HOSTING_LITERAL",
+    "id": "VRM-137",
+    "classification": "MAPPING_FAILURE",
+    "runId": 36937062335,
+    "jobId": 110619738146,
+    "owner": "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs",
     "productDefect": false,
-    "terminalCertificationPass": true,
-    "liveFixturesPass": "10/10",
-    "cleanup": true,
-    "runtimeReceiptRevisionPath": "metadata.name",
-    "runtimeReceiptDigestPath": "status.imageDigest",
-    "hostingReceiptVersionPath": "release.version.name",
-    "builds": 0,
-    "deploys": 0,
-    "writes": 0,
+    "productSourceChanged": false,
+    "correction": "Cumulative Paula history reference now comes from exact HR visit history + canonical aliases on the same live revision.",
+    "state": "FIXED_CONTROL_REPROOF_REQUIRED",
     "production": false
   },
   "vrm044FocalProof": {
@@ -8414,7 +8431,7 @@
     "PREI4-CONTENT-001",
     "PREI4-CONTENT-002"
   ],
-  "preI4NextAction": "Materialize canonical reachable product source a2f7acd659b68217299f92ef69a320f08e806635 / tree 524207efe063232333795175ac58964f3898067c exactly once in existing Recovery DEV lane, then execute authenticated Admin+Shopper browser focal with stable HR authority, Liquidaciones, durable Finance, Certification and final focal receipt. Reuse prior PASS gates. Production remains untouched.",
+  "preI4NextAction": "Run browser-only PRE-I4 focal against the already materialized canonical DEV source a2f7acd659b68217299f92ef69a320f08e806635. If browser PASS, resume only Finance durable + Certification + final focal receipt without rebuild/redeploy. Production remains untouched.",
   "preI4Admin002": {
     "findingId": "PREI4-ADMIN-002",
     "state": "FIXED_PROVEN_RUN601",

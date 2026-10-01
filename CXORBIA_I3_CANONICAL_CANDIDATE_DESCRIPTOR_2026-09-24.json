@@ -8,13 +8,13 @@
   "productTreeAuthority": "524207efe063232333795175ac58964f3898067c",
   "predecessorProductSourceSha": "19ce6ac1cbea7c94ad5f61009cea961a3b11e606",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "f421bcfb46e982c72e0e5bf8d703c7e0cfcd78df",
+  "findingsLedgerExpectedGitBlob": "8923becd8ddee5eba9b435dadfa26e3adc18ef94",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "PRE_I4_VRM136_HR_AUTHORITY_FLAPPING_DEV_LIVE_REPROOF",
-  "nextFindingId": "VRM-137",
+  "activeBlocker": "PRE_I4_VRM137_PAULA_HISTORY_CONTROL_REPROOF",
+  "nextFindingId": "VRM-138",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Use the existing PRE-I4 CONTENT-001 Recovery DEV lane to materialize reachable productSourceSha a2f7acd659b68217299f92ef69a320f08e806635 / tree 524207efe063232333795175ac58964f3898067c exactly once, then run current-period HR parity, authenticated Admin+Shopper browser including Liquidaciones, durable Finance ACK/readback/cleanup, Certification live proof and final focal receipt. Reuse all unaffected PASS evidence. Production remains DO_NOT_TOUCH.",
+  "exactNextAction": "Run browser-only PRE-I4 focal against the already materialized canonical DEV source a2f7acd659b68217299f92ef69a320f08e806635. If browser PASS, resume only Finance durable + Certification + final focal receipt without rebuild/redeploy. Production remains untouched.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -131,19 +131,15 @@
     "hrRevision": "2b0114c39d64a0e3697667572de0dfdcffe476c5cd8112449fcab1da24e1085d"
   },
   "lastControlAttempt": {
-    "runId": 36469002339,
-    "runNumber": 583,
-    "jobId": 109086213987,
-    "classification": "RELEASE_COMPOSITION_FAILURE",
-    "code": "VRM-087_FINALIZER_RECEIPT_SCOPE",
-    "decision": "PASS_I3_VRM087_FINALIZER_RECEIPT_SCOPE_SELFTEST",
+    "runId": 36937062335,
+    "jobId": 110619738146,
+    "classification": "MAPPING_FAILURE",
+    "code": "VRM-137_PAULA_HISTORY_REFERENCE",
     "productDefect": false,
     "productSourceChanged": false,
-    "artifactId": 10990567833,
-    "artifactDigest": "sha256:aefc17e2d53bdf9f200e0d27b60d6e990c3d67e1e681478bc1e26b8e3f685346",
-    "builds": 0,
-    "deploys": 0,
-    "writes": 0,
+    "observedHistoryTotal": 8,
+    "staleExpectedTotal": 0,
+    "correctionOwner": "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs",
     "production": false
   },
   "findingReceipts": {
