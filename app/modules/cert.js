@@ -233,7 +233,7 @@ CX.module('cert', ({role,data,ui})=>{
       }finally{
         btn.disabled=false;btn.textContent='Generar banco con IA';
       }
-    });}}));
+    });},dismissOnBackdrop:false,dismissOnEscape:false}));
     if(bank?.estado==='pending_review'){
       const publish=document.createElement('button');publish.className='btn btn-green btn-sm';publish.id='certPublish';publish.textContent='✓ Revisar y publicar banco';ia.insertAdjacentElement('afterend',publish);
       publish.addEventListener('click',async()=>{
@@ -285,7 +285,7 @@ CX.module('cert', ({role,data,ui})=>{
             ui.toast('No se pudo confirmar la re-certificación: '+String(error?.message||error),'warn',5200);btn.disabled=false;btn.textContent='Solicitar re-certificación';
           }
         });
-      }});
+      },dismissOnBackdrop:false,dismissOnEscape:false});
     });
     const gate=document.getElementById('certGate');
     if(gate)gate.addEventListener('click',()=>ui.modal('Requisito de certificación',`
