@@ -9,6 +9,7 @@ import {chromium} from 'playwright';
 const OUT=String(process.env.PREI4_CLEANUP_OUT||'.tmp/prei4-paula-pradera-cleanup');
 const ROOT=String(process.env.PREI4_CLEANUP_ROOT||'https://cxorbia-backend-dev.web.app').replace(/\/$/,'');
 const EXPECTED_HR=String(process.env.PREI4_CLEANUP_HR_REVISION||'');
+let ACTIVE_HR='';
 const SOURCE=String(process.env.PREI4_CLEANUP_SOURCE||'');
 const TENANT='tya',PROJECT='cinepolis',PERIOD='cinepolis-2026-09';
 const TARGET_ROW='SEPTIEMBRE 26!35',TARGET_VISIT='hr_2026-09_gt_35_fb52f0860f',TARGET_POST='app-df8c7d971bb36c2f94aab35f';
@@ -16,7 +17,7 @@ const DEV_PROJECT='cxorbia-backend-dev';
 const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[],sha=v=>crypto.createHash('sha256').update(String(v)).digest('hex'),fp=v=>sha(v).slice(0,16);
 fs.mkdirSync(OUT,{recursive:true});
 const write=(n,v)=>fs.writeFileSync(OUT+'/'+n,JSON.stringify(v,null,2)+'\n');
-if(!/^[a-f0-9]{40}$/.test(SOURCE)||!/^[a-f0-9]{64}$/.test(EXPECTED_HR))throw new Error('ENVIRONMENT_FAILURE:CLEANUP_ENV_INVALID');
+if(!/^[a-f0-9]{40}$/.test(SOURCE)||(EXPECTED_HR&&!/^[a-f0-9]{64}$/.test(EXPECTED_HR)))throw new Error('ENVIRONMENT_FAILURE:CLEANUP_ENV_INVALID');
 if(String(process.env.GOOGLE_CLOUD_PROJECT||process.env.GCLOUD_PROJECT||DEV_PROJECT)!==DEV_PROJECT)throw new Error('ENVIRONMENT_FAILURE:CLEANUP_DEV_PROJECT_REQUIRED');
 if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:DEV_PROJECT});
 const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(TENANT),project=tenant.collection('projects').doc(PROJECT);
@@ -26,7 +27,8 @@ async function liveTarget(tag){
   if(!r.ok)throw new Error('PROVIDER_FAILURE:CLEANUP_HR_HTTP_'+r.status);
   const body=await r.json(),snap=body.snapshot||body.data||body,rt=body._runtime||snap._runtime||{};
   const rev=str(body.revision||rt.revision||snap.sourceRevision||snap.revision);
-  if(rev!==EXPECTED_HR)throw new Error('SOURCE_FAILURE:CLEANUP_HR_REVISION:'+rev);
+  if(!ACTIVE_HR)ACTIVE_HR=rev;
+  if(rev!==ACTIVE_HR)throw new Error('SOURCE_FAILURE:CLEANUP_HR_REVISION_DRIFT:'+ACTIVE_HR+'->'+rev);
   if((rt.refreshError??snap.refreshError??null)!==null)throw new Error('PROVIDER_FAILURE:CLEANUP_HR_REFRESH_ERROR');
   if(body.hrWrites===true||snap.hrWrites===true||Number(snap.firestoreWrites||0)!==0)throw new Error('PROVIDER_FAILURE:CLEANUP_HR_WRITE_SIGNAL');
   const visits=arr(snap.visits),v=visits.find(x=>str(x.hrRowId)===TARGET_ROW||str(x.id||x.visitId)===TARGET_VISIT);
@@ -70,7 +72,7 @@ async function signed(uid,kind){
     await page.waitForFunction(({uid,kind,rev})=>{
       const c=window.CX?.backendAuth?.context?.()||{},role=String(c.role||'').toLowerCase(),d=window.CX?.data||{},g=window.CX_C6_HR_AUTHORITY_GATE||{};
       return String(firebase.auth().currentUser?.uid||'')===uid&&c.authenticated===true&&(kind==='shopper'?role==='shopper':role!=='shopper'&&role!=='cliente')&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&g.ready===true&&g.blocked!==true&&String(d.previewMeta?.sourceRevision||'')===rev;
-    },{uid,kind,rev:EXPECTED_HR},{timeout:150000});
+    },{uid,kind,rev:ACTIVE_HR},{timeout:150000});
     return {ctx,page};
   }catch(error){await ctx.close().catch(()=>{});throw error;}
 }
@@ -155,15 +157,15 @@ const bulletinsAfter=(await tenant.collection('bulletins').get()).docs.map(d=>({
 if(bulletinsAfter.length)throw new Error('PERSISTENCE_FAILURE:CLEANUP_BULLETIN_READBACK');
 
 const afterShopper=await shopperReadback();
-if(afterShopper.sourceRevision!==EXPECTED_HR||afterShopper.targetActiveCount!==0)throw new Error('FUNCTIONAL_DEFECT:CLEANUP_PAULA_ACTIVE_READBACK:'+JSON.stringify(afterShopper));
+if(afterShopper.sourceRevision!==ACTIVE_HR||afterShopper.targetActiveCount!==0)throw new Error('FUNCTIONAL_DEFECT:CLEANUP_PAULA_ACTIVE_READBACK:'+JSON.stringify(afterShopper));
 if(afterShopper.historyCount!==beforeShopper.historyCount)throw new Error('PERSISTENCE_FAILURE:CLEANUP_PAULA_HISTORY_CHANGED:'+beforeShopper.historyCount+'->'+afterShopper.historyCount);
 const dashboard=await dashboardReadback();
-if(dashboard.sourceRevision!==EXPECTED_HR||dashboard.uiAssigned!==dashboard.hrAssigned||dashboard.uiUnassigned!==dashboard.hrUnassigned)throw new Error('FUNCTIONAL_DEFECT:CLEANUP_DASHBOARD_HR_PARITY:'+JSON.stringify(dashboard));
+if(dashboard.sourceRevision!==ACTIVE_HR||dashboard.uiAssigned!==dashboard.hrAssigned||dashboard.uiUnassigned!==dashboard.hrUnassigned)throw new Error('FUNCTIONAL_DEFECT:CLEANUP_DASHBOARD_HR_PARITY:'+JSON.stringify(dashboard));
 
 const result={
   schemaVersion:'cxorbia.prei4.paula-pradera-safe-cleanup.v1',
   decision:'PASS_PREI4_PAULA_PRADERA_SAFE_CLEANUP',
-  sourceSha:SOURCE,hrRevision:EXPECTED_HR,target:{hrRowId:TARGET_ROW,visitId:TARGET_VISIT,postulationId:TARGET_POST,shopperFp:fp(PAULA_SID),branch:afterHr.target.sucursal},
+  sourceSha:SOURCE,initialExpectedHrRevision:EXPECTED_HR||null,hrRevision:ACTIVE_HR,hrRevisionChangedSinceRunStart:Boolean(EXPECTED_HR&&EXPECTED_HR!==ACTIVE_HR),target:{hrRowId:TARGET_ROW,visitId:TARGET_VISIT,postulationId:TARGET_POST,shopperFp:fp(PAULA_SID),branch:afterHr.target.sucursal},
   cleanup:{postDeleted,visitOverlayCleared,reservationsDeleted:reservationTargets.length,bulletinsDeleted:bulletinTargets.length,bulletinReadsDeleted:readDocs.length},
   readback:{hrAvailable:afterHr.target.available,hrAssigned:afterHr.target.assigned,paulaActiveTarget:afterShopper.targetActiveCount,paulaHistoryBefore:beforeShopper.historyCount,paulaHistoryAfter:afterShopper.historyCount,dashboard},
   hrWrites:0,production:false
