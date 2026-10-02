@@ -18,7 +18,7 @@
     "sourceTree": "9ba3d0a5f8811b80144e05ba2cc7bb03571246f4",
     "predecessorSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
     "production": false,
-    "state": "VRM151_SOURCE_PROVEN_PENDING_RUNTIME_ONLY_DEV_MATERIALIZATION",
+    "state": "VRM151_RUNTIME_MATERIALIZED_PENDING_FINAL_CANONICAL_DRY_RUN",
     "proof": {
       "runId": 36966761427,
       "decision": "PASS_VRM151_PROVIDER_SOURCE_REPROOF",
@@ -44,19 +44,21 @@
       "production": false
     },
     "materialization": {
-      "runId": 36964474490,
-      "artifactId": 11209153437,
-      "artifactDigest": "sha256:75d0fb49fe3b5cf3fdec2591a685206d22fe4ef2cbeb6d8ad7b3e8fb46fb596a",
-      "decision": "PASS_VRM143_151_EXACT_DEV_MATERIALIZATION",
-      "runtimeRevision": "cxorbia-live-hr-dev-00242-6s6",
-      "runtimeDigest": "sha256:a7098692ac5dafe75a11937f6d58a3bf7f951ba034c2aafa02edb7873b6a68f8",
+      "runId": 36966913105,
+      "artifactId": 11209737330,
+      "artifactDigest": "sha256:4cb08a20f336ce0f5be586151b9f3bf42c68ca74a5ec7c94b8d70aab285351c3",
+      "decision": "PASS_VRM151_RUNTIME_ONLY_DEV_MATERIALIZATION",
+      "sourceSha": "d6d4da0532a8af8e4c45ef05d022768da38cb0cf",
+      "sourceTree": "9ba3d0a5f8811b80144e05ba2cc7bb03571246f4",
+      "runtimeRevision": "cxorbia-live-hr-dev-00243-jbp",
+      "runtimeDigest": "sha256:9f056d0024e83f8968b6a70fd92446e2dbfd78da1a9934e0d2c6767291948a7a",
       "hostingVersion": "sites/cxorbia-backend-dev/versions/3c2418df100edab0",
-      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790915298832000",
       "hrRevision": "e242d83f7a63b4f390a3ff6eeaeb616dea52f52f159a5e3a929c5473a7225159",
       "builds": 1,
       "runtimeDeploys": 1,
-      "hostingDeploys": 1,
+      "hostingDeploys": 0,
       "hrWrites": 0,
+      "bankWrites": 0,
       "production": false
     }
   },
@@ -6960,7 +6962,7 @@
       "secondaryClassification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Historical payment reconciliation needs one durable auditable idempotent source of truth",
-      "state": "SOURCE_PROVEN_PENDING_RUNTIME_ONLY_DEV_MATERIALIZATION",
+      "state": "RUNTIME_MATERIALIZED_PENDING_FINAL_CANONICAL_DRY_RUN",
       "expected": "Durably reconcile confirmed historical payment scope without HR mutation, invented bank refs, current-period contamination or duplicate accounting effects.",
       "observed": "Operational truth supplied: all <= Jul 2026 paid both countries; Aug HN paid; Aug GT pending; Sep all pending; Oct must remain untouched.",
       "rootCauseStatus": "PROVEN",
@@ -7177,6 +7179,24 @@
         "classification": "PASS",
         "productSourceSha": "d6d4da0532a8af8e4c45ef05d022768da38cb0cf",
         "productSourceTree": "9ba3d0a5f8811b80144e05ba2cc7bb03571246f4",
+        "production": false
+      },
+      "runtimeMaterialization": {
+        "runId": 36966913105,
+        "artifactId": 11209737330,
+        "artifactDigest": "sha256:4cb08a20f336ce0f5be586151b9f3bf42c68ca74a5ec7c94b8d70aab285351c3",
+        "decision": "PASS_VRM151_RUNTIME_ONLY_DEV_MATERIALIZATION",
+        "sourceSha": "d6d4da0532a8af8e4c45ef05d022768da38cb0cf",
+        "sourceTree": "9ba3d0a5f8811b80144e05ba2cc7bb03571246f4",
+        "runtimeRevision": "cxorbia-live-hr-dev-00243-jbp",
+        "runtimeDigest": "sha256:9f056d0024e83f8968b6a70fd92446e2dbfd78da1a9934e0d2c6767291948a7a",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/3c2418df100edab0",
+        "hrRevision": "e242d83f7a63b4f390a3ff6eeaeb616dea52f52f159a5e3a929c5473a7225159",
+        "builds": 1,
+        "runtimeDeploys": 1,
+        "hostingDeploys": 0,
+        "hrWrites": 0,
+        "bankWrites": 0,
         "production": false
       }
     }
@@ -7754,7 +7774,7 @@
     "nextFindingId": "VRM-152",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_VRM151_RUNTIME_ONLY_DEV_MATERIALIZATION_REQUIRED",
+    "terminalState": "HOLD_VRM151_FINAL_CANONICAL_DRY_RUN_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -11402,9 +11422,27 @@
     "sourceSha": "d6d4da0532a8af8e4c45ef05d022768da38cb0cf",
     "sourceTree": "9ba3d0a5f8811b80144e05ba2cc7bb03571246f4",
     "predecessorSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
-    "state": "SOURCE_PROVEN_PENDING_RUNTIME_ONLY_DEV_MATERIALIZATION",
+    "state": "RUNTIME_MATERIALIZED_PENDING_FINAL_CANONICAL_DRY_RUN",
     "production": false,
     "sourceProofRunId": 36966761427,
-    "sourceProofDecision": "PASS_VRM151_PROVIDER_SOURCE_REPROOF"
+    "sourceProofDecision": "PASS_VRM151_PROVIDER_SOURCE_REPROOF",
+    "materialization": {
+      "runId": 36966913105,
+      "artifactId": 11209737330,
+      "artifactDigest": "sha256:4cb08a20f336ce0f5be586151b9f3bf42c68ca74a5ec7c94b8d70aab285351c3",
+      "decision": "PASS_VRM151_RUNTIME_ONLY_DEV_MATERIALIZATION",
+      "sourceSha": "d6d4da0532a8af8e4c45ef05d022768da38cb0cf",
+      "sourceTree": "9ba3d0a5f8811b80144e05ba2cc7bb03571246f4",
+      "runtimeRevision": "cxorbia-live-hr-dev-00243-jbp",
+      "runtimeDigest": "sha256:9f056d0024e83f8968b6a70fd92446e2dbfd78da1a9934e0d2c6767291948a7a",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/3c2418df100edab0",
+      "hrRevision": "e242d83f7a63b4f390a3ff6eeaeb616dea52f52f159a5e3a929c5473a7225159",
+      "builds": 1,
+      "runtimeDeploys": 1,
+      "hostingDeploys": 0,
+      "hrWrites": 0,
+      "bankWrites": 0,
+      "production": false
+    }
   }
 }
