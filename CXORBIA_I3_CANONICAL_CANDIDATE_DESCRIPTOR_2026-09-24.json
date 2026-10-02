@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_HUMAN_VISUAL_ACCEPTANCE_REQUIRED",
+  "status": "HOLD_PREI4_HUMAN_VISUAL_REMEDIATION_DIAGNOSTIC_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
   "productTreeAuthority": "6a8b7ec768efbb9af73bcca836125471f7f49ae4",
   "predecessorProductSourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V187_2026-10-02.json",
-  "findingsLedgerExpectedGitBlob": "1dc39b2d5dc5aa1884181c963d94b75bec8b075c",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V188_2026-10-02.json",
+  "findingsLedgerExpectedGitBlob": "d595f1e49870b991b4b5fc419b41ce0df6bcb022",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "PAULA_HUMAN_VISUAL_ACCEPTANCE_REQUIRED",
-  "nextFindingId": "VRM-165",
+  "activeBlocker": "HUMAN_ACCEPTANCE_REMEDIATION_FORENSIC_DIAGNOSTIC_REQUIRED",
+  "nextFindingId": "VRM-179",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Paula reviews exactly the Run 865/866 sealed Recovery DEV using the frozen review URL and route. No rebuild or redeploy is allowed before her visual decision. If accepted, freeze HUMAN_VISUAL_ACCEPTANCE PASS and proceed to I3 terminal closure/certification path; if any defect is reproducible, classify only the specific owner and fix inside I3.",
+  "exactNextAction": "Run one read-only forensic diagnostic on the exact Run 865 DEV materialization to close live-data causes for notifications, scheduling, postulation lifecycle, certification storage, finance projection, identity duplicates and reservation policy. No product writes/build/deploy.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1125,24 +1125,10 @@
     "i4AuthorizationRequired": true
   },
   "humanVisualAcceptance": {
-    "state": "REVOKED_NEW_REPRODUCIBLE_P0_EVIDENCE",
-    "lockPath": "CXORBIA_PRE_I4_HUMAN_VISUAL_ACCEPTANCE_LOCK_2026-09-28.json",
-    "requiredBeforeI4": true,
-    "reviewUrl": "https://cxorbia-backend-dev.web.app",
-    "adminExpectedRoutes": 34,
-    "shopperExpectedRoutes": 12,
-    "freshHrAtCaptureTimeRequired": true,
-    "production": "DO_NOT_TOUCH",
-    "adminForensicAuditPath": "CXORBIA_PRE_I4_ADMIN_FORENSIC_AUDIT_2026-09-28.json",
-    "adminReviewRepeatRequired": true,
-    "liveHrState": "PASS_RUN_36793188546",
-    "liveHrDriftLock": "CXORBIA_PRE_I4_LIVE_HR_DRIFT_LOCK_2026-09-28.json",
-    "run736TechnicalClosure": true,
-    "remainingBeforeHumanVisualPass": [],
-    "certResTechnicalClosure": "PASS_RUN_36793188546",
-    "latestLiveHrRevision": "a30b5e69b73cab9071e203e084129593d837c9d316fdfca295b2173efe701b17",
-    "frozenGoodScope": "ledger.preI4FrozenGoodAfterVisualReview",
-    "retestScope": "ONLY VRM-121..VRM-130 plus cross-effects; VRM-131 visual polish if owner touched"
+    "state": "FAIL_PAULA_2026_10_02_COMPLETE_REVIEW",
+    "sealedDevRun": 866,
+    "reviewComplete": true,
+    "production": false
   },
   "preI4Admin008": {
     "state": "FIXED_PROVEN_RUN594",
