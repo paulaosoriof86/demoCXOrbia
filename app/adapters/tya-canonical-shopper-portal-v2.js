@@ -104,7 +104,7 @@
     const username=rule.ok?rule.login:str(s.username||s.user||credential.username),firstName=rule.ok?rule.firstName:str(s.firstName||s.nombre),lastName=rule.ok?rule.lastName:str(s.lastName||s.apellido);
     const masked=(v)=>{const x=str(v);if(!x)return '— sin dato';if(x.length<=4)return '••••';return x.slice(0,2)+'••••'+x.slice(-2);};
     const historySource=typeof data.shopperHistoryVisits==='function'?data.shopperHistoryVisits(shopperKey,false):data.visitsForShopper(shopperKey,false).filter(v=>v&&v.__pendingPlatformAssignmentOverlay!==true);
-    const visits=historySource.slice().sort((a,b)=>str(a.realizada||a.cuestFecha||a.submittedAt||a.agendada||periodOf(data,a)).localeCompare(str(b.realizada||b.cuestFecha||b.submittedAt||b.agendada||periodOf(data,b)));
+    const visits=historySource.slice().sort((a,b)=>str(a.realizada||a.cuestFecha||a.submittedAt||a.agendada||periodOf(data,a)).localeCompare(str(b.realizada||b.cuestFecha||b.submittedAt||b.agendada||periodOf(data,b))));
     const st=data.shopperStats(shopperKey),cs=cert(s),historicalEvidence=certEvidence(s);
     const active=visits.filter(v=>{const f=facets(v);return String(periodOf(data,v)||'')===String(data.currentPeriodId||'')&&f.assigned&&!f.liquidationConfirmed&&!f.paymentConfirmed&&!f.cancelled;});
     const done=visits.filter(v=>facets(v).realized),submitted=visits.filter(v=>facets(v).submitted),paid=visits.filter(v=>facets(v).paymentConfirmed);
