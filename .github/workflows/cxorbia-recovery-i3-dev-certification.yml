@@ -158,10 +158,69 @@ jobs:
           test "$(jq -r '.findings["VRM-079"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN518"
           test "$(jq -r '.findings["VRM-080"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN525"
           test "$(jq -r '.findings["VRM-081"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN547"
-          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED" || "$STATUS" == "HOLD_MODULE_TRUTH_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM087_FINALIZER_RECEIPT_SCOPE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM088_LIVE_FIXTURE_AVAILABILITY_REPROOF_REQUIRED" || "$STATUS" == "READY_FOR_GATE21_SAME_CERTIFIED_ARTIFACT" || "$STATUS" == "HOLD_PREI4_ADMIN_008_HR_MAPPING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_008_DEV_RUNTIME_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_RECOVERY_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_HOSTING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_IDENTITY_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_OWNER_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_LIVE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_LIVE_RESUME_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_DIAGNOSTIC_RUNNING" || "$STATUS" == "HOLD_PREI4_ADMIN_004_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_LIVE_RESUME_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_HONORARIUM_PROPAGATION_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_COMPOSER_BOUNDARY_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_HUMAN_VISUAL_ACCEPTANCE_REQUIRED" || "$STATUS" == "HOLD_PREI4_CERT_RES_REMEDIATION_REQUIRED" || "$STATUS" == "GO" ]]
+          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED" || "$STATUS" == "HOLD_MODULE_TRUTH_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM087_FINALIZER_RECEIPT_SCOPE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM088_LIVE_FIXTURE_AVAILABILITY_REPROOF_REQUIRED" || "$STATUS" == "READY_FOR_GATE21_SAME_CERTIFIED_ARTIFACT" || "$STATUS" == "HOLD_PREI4_ADMIN_008_HR_MAPPING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_008_DEV_RUNTIME_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_RECOVERY_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_HOSTING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_IDENTITY_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_OWNER_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_LIVE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_LIVE_RESUME_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_DIAGNOSTIC_RUNNING" || "$STATUS" == "HOLD_PREI4_ADMIN_004_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_LIVE_RESUME_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_HONORARIUM_PROPAGATION_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_COMPOSER_BOUNDARY_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_HUMAN_VISUAL_ACCEPTANCE_REQUIRED" || "$STATUS" == "HOLD_PREI4_CERT_RES_REMEDIATION_REQUIRED" || "$STATUS" == "HOLD_VRM143_151_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM143_151_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "GO" ]]
           echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
+  vrm143-151-source-reproof:
+    name: I3 VRM-143..151 — focal source reproof — no deploy
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM143_151_SOURCE_REPROOF_REQUIRED' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      FOCAL_OUT: .tmp/vrm143-151-source-reproof
+    steps:
+      - name: Checkout canonical Recovery control head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Prove single source and zero later product drift
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$FOCAL_OUT"
+          test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
+          test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
+          test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
+          git merge-base --is-ancestor "$FOCAL_SOURCE" HEAD
+          git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          jq -n -S --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" '{decision:"PASS_VRM143_151_SINGLE_SOURCE",sourceSha:$source,sourceTree:$tree,production:false}' > "$FOCAL_OUT/authority.json"
+      - name: Syntax check all changed JavaScript owners
+        run: |
+          set -Eeuo pipefail
+          node --check app/core/notif.js
+          node --check app/modules/midia.js
+          node --check app/adapters/tya-canonical-shopper-portal-v2.js
+          node --check app/modules/reservas.js
+          node --check app/core/automations.js
+          node --check app/modules/cert.js
+          node --check app/modules/beneficios.js
+          node --check app/adapters/cxorbia-cxdata-command-boundary-v1.js
+          node --check backend/runtime/cxorbia-finance-command-provider-v1.mjs
+          node --check backend/runtime/hr-live-service/certification-runtime.mjs
+      - name: Execute VRM-143..151 focal source contracts
+        run: |
+          set -Eeuo pipefail
+          node tools/qa/cxorbia-vrm143-151-source-reproof.mjs | tee "$FOCAL_OUT/result.json"
+          test "$(jq -r '.decision' "$FOCAL_OUT/result.json")" = "PASS_VRM143_151_FOCAL_SOURCE_REPROOF"
+          test "$(jq -r '.findings|length' "$FOCAL_OUT/result.json")" = "9"
+          test "$(jq -r '.production' "$FOCAL_OUT/result.json")" = "false"
+          test "$(jq -r '.hrWrites' "$FOCAL_OUT/result.json")" = "0"
+      - name: Upload focal source evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-vrm143-151-source-reproof-${{ github.run_id }}
+          path: .tmp/vrm143-151-source-reproof
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
   prei4-admin-008-mapping-reproof:
     name: PRE-I4 ADMIN-008 — HN HR mapping focal reproof
     needs: canonical-candidate-authority

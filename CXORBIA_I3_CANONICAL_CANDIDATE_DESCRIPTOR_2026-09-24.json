@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_NEW_VISUAL_FINDINGS_REMEDIATION",
-  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4_PROVIDER_RECONCILIATION_REPROOF",
+  "status": "HOLD_VRM143_151_SOURCE_REPROOF_REQUIRED",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
-  "productTreeAuthority": "90cbaaa0844bbdde0b4b96a7caa4bfbdff16167f",
-  "predecessorProductSourceSha": "a2f7acd659b68217299f92ef69a320f08e806635",
+  "productSourceSha": "0b7e5db7b1035ec4a81ad548284dbb9146fcfc08",
+  "productTreeAuthority": "7297e58872671e36573d3dd961306c493907a6e4",
+  "predecessorProductSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "e2921199d285af1dcbc88f3a6b29e049392f926b",
+  "findingsLedgerExpectedGitBlob": "bd7d16c76c7649faa3a8c162a5031ed935c1f28a",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-143_TO_VRM-151_NEW_HUMAN_VISUAL_FINDINGS",
+  "activeBlocker": "VRM143_151_SOURCE_REPROOF_REQUIRED",
   "nextFindingId": "VRM-152",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Create one cumulative I3 product-source successor from 18ff875e correcting VRM-143..151 functional/data owners first and visual owners second; run focal source tests; then materialize once to DEV.",
+  "exactNextAction": "Run focal source reproof for VRM-143..151 on the single cumulative successor; if PASS, materialize that exact source once to DEV, then run focal live/readback and historical-payment dry-run before any reconciliation writes.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1998,5 +1998,25 @@
         "rootCause": "Durable ACK/idempotency exists, but finance.payment.batch intentionally records paymentState=platform_recorded_pending_external_reconciliation and externalPaymentConfirmed=false. No distinct durable historical_reconciliation event exists to record Paula-confirmed historical operational truth without fabricating bank confirmation."
       }
     ]
+  },
+  "latestFocalSourceFix": {
+    "findingIds": [
+      "VRM-143",
+      "VRM-144",
+      "VRM-145",
+      "VRM-146",
+      "VRM-147",
+      "VRM-148",
+      "VRM-149",
+      "VRM-150",
+      "VRM-151"
+    ],
+    "sourceSha": "0b7e5db7b1035ec4a81ad548284dbb9146fcfc08",
+    "sourceTree": "7297e58872671e36573d3dd961306c493907a6e4",
+    "predecessorSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
+    "productOwners": 11,
+    "sourceProof": "PENDING_FOCAL_REPROOF",
+    "deploys": 0,
+    "production": false
   }
 }
