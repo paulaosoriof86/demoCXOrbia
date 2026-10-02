@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM151_HISTORICAL_DRY_RUN_REQUIRED",
+  "status": "HOLD_VRM151_HISTORICAL_AMOUNT_DIAGNOSTIC_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "422b894b0b92047c0531e5d112e9ccef4abf8fc7",
   "predecessorProductSourceSha": "0b7e5db7b1035ec4a81ad548284dbb9146fcfc08",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "a4244d36e39944e1efbc6ec1ef5e5cba1dc80bc4",
+  "findingsLedgerExpectedGitBlob": "90a0c97c40263663e35a9d9f0ba51a8e159e14f3",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM151_HISTORICAL_DRY_RUN_REQUIRED",
+  "activeBlocker": "VRM151_HISTORICAL_AMOUNT_DIAGNOSTIC_REQUIRED",
   "nextFindingId": "VRM-152",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run VRM-151 historical payment reconciliation dry-run read-only against current DEV data; no historical reconciliation writes until exact scopes are unambiguous. Then run remaining focal live/browser proofs for VRM-143..150.",
+  "exactNextAction": "Run read-only VRM-151 historical amount diagnostic to distinguish true liquidation candidates from non-liquidation visits and prove authorized amount sources before any provider correction or reconciliation write.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",

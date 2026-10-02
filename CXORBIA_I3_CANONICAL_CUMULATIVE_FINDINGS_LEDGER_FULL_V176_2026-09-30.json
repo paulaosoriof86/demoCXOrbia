@@ -18,7 +18,7 @@
     "sourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7",
     "predecessorSha": "0b7e5db7b1035ec4a81ad548284dbb9146fcfc08",
     "production": false,
-    "state": "DEV_MATERIALIZED_PENDING_FOCAL_LIVE_AND_VRM151_DRY_RUN",
+    "state": "DEV_MATERIALIZED_PENDING_VRM151_HISTORICAL_AMOUNT_DIAGNOSTIC",
     "proof": {
       "runId": 36964331142,
       "decision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF",
@@ -6961,7 +6961,7 @@
       "secondaryClassification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Historical payment reconciliation needs one durable auditable idempotent source of truth",
-      "state": "DEV_MATERIALIZED_PENDING_HISTORICAL_DRY_RUN",
+      "state": "DRY_RUN_HOLD_AMOUNT_SOURCE_DIAGNOSTIC_REQUIRED",
       "expected": "Durably reconcile confirmed historical payment scope without HR mutation, invented bank refs, current-period contamination or duplicate accounting effects.",
       "observed": "Operational truth supplied: all <= Jul 2026 paid both countries; Aug HN paid; Aug GT pending; Sep all pending; Oct must remain untouched.",
       "rootCauseStatus": "PROVEN",
@@ -7011,7 +7011,20 @@
         "hostingDeploys": 1,
         "hrWrites": 0,
         "production": false
-      }
+      },
+      "lastDryRun": {
+        "runId": 36964927239,
+        "artifactId": 11209660268,
+        "decision": "HOLD_VRM151_HISTORICAL_RECONCILIATION_AMBIGUOUS",
+        "readDocuments": 2024,
+        "eligibleCount": 1,
+        "ambiguousCount": 1979,
+        "writes": 0,
+        "hrWrites": 0,
+        "bankWrites": 0,
+        "production": false
+      },
+      "diagnosticNext": "Classify true historical liquidation candidates and prove amount source using HR explicit/project-country config + complete reimbursement before changing payment truth."
     }
   },
   "latestEvidenceOverrides": {
@@ -7587,7 +7600,7 @@
     "nextFindingId": "VRM-152",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_VRM151_HISTORICAL_DRY_RUN_REQUIRED",
+    "terminalState": "HOLD_VRM151_HISTORICAL_AMOUNT_DIAGNOSTIC_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
