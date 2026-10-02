@@ -16,7 +16,7 @@ const low=v=>str(v).toLocaleLowerCase('es');
 const cleanDoc=d=>({id:d.id,...(d.data()||{})});
 const tenant=db.collection('tenants').doc(TENANT),project=tenant.collection('projects').doc(PROJECT_ID);
 async function rows(ref){const s=await ref.get();return s.docs.map(cleanDoc);}
-const [bulletins,visits,posts,certs,recerts,resources,recons,shopperProfiles]=await Promise.all([
+const [bulletins,visits,posts,certs,recerts,resources,recons,shopperProfiles,userMemberships]=await Promise.all([
   rows(tenant.collection('bulletins')),
   rows(project.collection('visits')),
   rows(project.collection('postulations')),
@@ -24,7 +24,8 @@ const [bulletins,visits,posts,certs,recerts,resources,recons,shopperProfiles]=aw
   rows(project.collection('certificationRecertifications')),
   rows(tenant.collection('resources')),
   rows(tenant.collection('paymentReconciliations')),
-  rows(tenant.collection('shoppers'))
+  rows(tenant.collection('shoppers')),
+  rows(tenant.collection('users'))
 ]);
 const projectSnap=await project.get(), projectData=projectSnap.exists?(projectSnap.data()||{}):{};
 const hr=HR_FILE&&fs.existsSync(HR_FILE)?JSON.parse(fs.readFileSync(HR_FILE,'utf8')):{};
@@ -65,7 +66,16 @@ for(const hv of cayalaHr){
     stateSchedulable:dv?['asignada'].includes(low(dv.estado||dv.status)):false
   });
 }
-const scheduling={currentKey,currentPeriodId,cayala:visitRows};
+const scheduledShopperIds=[...new Set(visitRows.map(x=>str(x.hr?.shopperId||x.durable?.shopperId)).filter(Boolean))];
+const schedulingMemberships=scheduledShopperIds.map(shopperId=>({
+  shopperId,
+  members:userMemberships.filter(u=>str(u.shopperId)===shopperId).map(u=>({
+    id:u.id,active:u.active===true,role:u.role||null,authNamespace:u.authNamespace||null,tenantId:u.tenantId||null,
+    projectIds:arr(u.projectIds).map(str),uid:u.uid||u.authUid||u.id
+  }))
+}));
+const scheduling={currentKey,currentPeriodId,cayala:visitRows,memberships:schedulingMemberships,
+  sourceAssertions:{providerAcceptsSourceCurrentExpectedVersion:true,clientCommandWritesRequired:true}};
 
 const certBanks=resources.filter(r=>r.resourceType==='certification_bank'&&str(r.projectId)===PROJECT_ID);
 const certifications={

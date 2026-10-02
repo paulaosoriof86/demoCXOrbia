@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_HUMAN_VISUAL_REMEDIATION_CORRECTION_REQUIRED",
+  "status": "HOLD_PREI4_HUMAN_VISUAL_REMEDIATION_DIAGNOSTIC_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "HUMAN_ACCEPTANCE_CUMULATIVE_CORRECTIVE_PACKAGE_REQUIRED",
+  "activeBlocker": "VRM_168_EXACT_PROVIDER_PRECONDITION_READBACK_REQUIRED",
   "nextFindingId": "VRM-181",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Apply one cumulative I3 corrective package for VRM-165..VRM-180 on the unchanged product source 542fb966..., then materialize one DEV candidate and run focal live reproof including Movimientos and Reservas. No production.",
+  "exactNextAction": "Read exact Firestore user membership/project/authNamespace for the shopper on the failed Cayalá scheduling case using the existing read-only forensic job; then continue the already-frozen cumulative corrective package. No product write/deploy in this diagnostic.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
