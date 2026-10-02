@@ -8,7 +8,7 @@
   "productTreeAuthority": "52be15349f012ea8fd2a6231205f16fc0ac02966",
   "predecessorProductSourceSha": "48162cf2ed6502811304de15c24d83cc0854af12",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "3cc81178ebe23c96bb778a90dc3dcc657a89adc6",
+  "findingsLedgerExpectedGitBlob": "d2322c6935839a1ceadc71a5966dceef416a3e7a",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -544,12 +544,14 @@
     "findingId": "VRM-055"
   },
   "lastControlFailure": {
-    "findingId": "VRM-118",
-    "runId": 36791646271,
-    "jobId": 110145727921,
-    "classification": "MAPPING_FAILURE",
-    "owner": "tools/qa/cxorbia-prei4-cert-res-live.mjs",
-    "productChanged": false,
+    "runId": 37007463176,
+    "runNumber": 845,
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "code": "LEDGER_BLOB_DRIFT",
+    "observedLedgerBlob": "d2322c6935839a1ceadc71a5966dceef416a3e7a",
+    "productDefect": false,
+    "productSourceChanged": false,
+    "writes": 0,
     "production": false
   },
   "lastSecondReviewProof": {
