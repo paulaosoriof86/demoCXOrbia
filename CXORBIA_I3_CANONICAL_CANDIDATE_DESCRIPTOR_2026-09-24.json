@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM154_156_FRONTEND_SOURCE_REPROOF_REQUIRED",
+  "status": "HOLD_VRM154_156_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
   "predecessorProductSourceSha": "53b84faa673f2378439e2f33af3faf63948cbbfa",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "3fd5db4d99ff12469ff8992df144b6dc464d3c02",
+  "findingsLedgerExpectedGitBlob": "dfb25ebe01c8e95f3bd11bf14735fc0730270ae2",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM154_156_FRONTEND_SOURCE_REPROOF_REQUIRED",
+  "activeBlocker": "VRM154_156_DEV_MATERIALIZATION_REQUIRED",
   "nextFindingId": "VRM-157",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run exact source proof for VRM-154..156 on da2f750e; require generic scenario-dimensions contract, syntax, finance VRM-153 regression protection and zero deploy.",
+  "exactNextAction": "Materialize exact source da2f750e once to Recovery DEV runtime and Hosting; prove emitted scenarioDimensions/live combo fields, byte-equal changed frontend files, stable HR, and production false.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -854,16 +854,22 @@
     "production": false
   },
   "pendingMaterialization": {
-    "sourceSha": "f769041ddd6adacb5bb16b0eeddab7d08b47a7e8",
-    "sourceTree": "d83f57ed07ef684cd274d4b1db3a52d91f4ff400",
-    "mode": "RUNTIME_ONLY_REDEPLOY_REUSE_HOSTING_AND_RULES",
-    "maxBuilds": 1,
-    "maxRuntimeDeploys": 1,
-    "maxHostingDeploys": 0,
-    "maxFirestoreRulesDeploys": 0,
-    "maxStorageRulesDeploys": 0,
-    "hostingAuthorityVersion": "sites/cxorbia-backend-dev/versions/a0054d58a85a7d43",
-    "rulesAuthorityRunId": 36789283777,
+    "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
+    "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
+    "sourceProof": {
+      "runId": 37021140798,
+      "runNumber": 853,
+      "jobId": 110884317409,
+      "artifactId": 11233275872,
+      "artifactDigest": "sha256:56d37e9cea2b320a7550232e6f4eeafe2f2dddbe412309cd1b96820075fa1780",
+      "decision": "PASS_VRM154_156_FRONTEND_SOURCE_REPROOF",
+      "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
+      "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
+      "genericScenarioContract": true,
+      "financeVrm153Regression": true,
+      "deploys": 0,
+      "production": false
+    },
     "production": false
   },
   "lastVrm080Proof": {
@@ -2014,8 +2020,22 @@
     "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
     "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
     "predecessorSha": "53b84faa673f2378439e2f33af3faf63948cbbfa",
-    "state": "VRM154_156_FRONTEND_SOURCE_REPROOF_REQUIRED",
-    "production": false
+    "state": "SOURCE_PROOF_PASS_DEV_MATERIALIZATION_REQUIRED",
+    "production": false,
+    "sourceProof": {
+      "runId": 37021140798,
+      "runNumber": 853,
+      "jobId": 110884317409,
+      "artifactId": 11233275872,
+      "artifactDigest": "sha256:56d37e9cea2b320a7550232e6f4eeafe2f2dddbe412309cd1b96820075fa1780",
+      "decision": "PASS_VRM154_156_FRONTEND_SOURCE_REPROOF",
+      "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
+      "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
+      "genericScenarioContract": true,
+      "financeVrm153Regression": true,
+      "deploys": 0,
+      "production": false
+    }
   },
   "vrm151RuntimeMaterialization": {
     "runId": 37008320438,
@@ -2215,7 +2235,7 @@
     "secondaryClassification": "MAPPING_FAILURE",
     "severity": "P0",
     "title": "Shopper visit surfaces render only one scenario dimension and omit project-defined additional scenario dimensions",
-    "state": "SOURCE_FIX_PENDING_REPROOF",
+    "state": "SOURCE_PROOF_PASS_DEV_MATERIALIZATION_REQUIRED",
     "expected": "Every shopper visit must render all scenario dimensions configured for that project. The renderer must be project-driven and generic; no Cinépolis-, combo-, country-, period- or column-specific hardcoding. For the current Cinépolis configuration this includes the ticket purchase scenario and the assigned combo scenario.",
     "observed": "Live HR rows already contain the second scenario information (e.g. tipoCombo) while Mis Visitas renders only v.escenario/v.canal and the shopper visit detail checks v.combo instead of the live canonical tipoCombo field. The combo scenario therefore disappears from both shopper-facing surfaces.",
     "rootCauseStatus": "PROVEN",
@@ -2255,6 +2275,20 @@
         "app/modules/visita-detalle.js"
       ],
       "production": false
+    },
+    "sourceProof": {
+      "runId": 37021140798,
+      "runNumber": 853,
+      "jobId": 110884317409,
+      "artifactId": 11233275872,
+      "artifactDigest": "sha256:56d37e9cea2b320a7550232e6f4eeafe2f2dddbe412309cd1b96820075fa1780",
+      "decision": "PASS_VRM154_156_FRONTEND_SOURCE_REPROOF",
+      "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
+      "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
+      "genericScenarioContract": true,
+      "financeVrm153Regression": true,
+      "deploys": 0,
+      "production": false
     }
   },
   "vrm155": {
@@ -2262,7 +2296,7 @@
     "classification": "VISUAL_DEFECT",
     "severity": "P1",
     "title": "Shopper Mis Visitas and Mi Perfil remain visually inconsistent with the approved frontend language",
-    "state": "SOURCE_FIX_PENDING_REPROOF",
+    "state": "SOURCE_PROOF_PASS_DEV_MATERIALIZATION_REQUIRED",
     "relatedFindings": [
       "VRM-131",
       "VRM-145"
@@ -2294,6 +2328,20 @@
         "app/styles/layout.css"
       ],
       "production": false
+    },
+    "sourceProof": {
+      "runId": 37021140798,
+      "runNumber": 853,
+      "jobId": 110884317409,
+      "artifactId": 11233275872,
+      "artifactDigest": "sha256:56d37e9cea2b320a7550232e6f4eeafe2f2dddbe412309cd1b96820075fa1780",
+      "decision": "PASS_VRM154_156_FRONTEND_SOURCE_REPROOF",
+      "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
+      "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
+      "genericScenarioContract": true,
+      "financeVrm153Regression": true,
+      "deploys": 0,
+      "production": false
     }
   },
   "vrm156": {
@@ -2301,7 +2349,7 @@
     "classification": "VISUAL_DEFECT",
     "severity": "P1",
     "title": "Academy/certification course cards are visually inconsistent with the approved frontend",
-    "state": "SOURCE_FIX_PENDING_REPROOF",
+    "state": "SOURCE_PROOF_PASS_DEV_MATERIALIZATION_REQUIRED",
     "expected": "Academy/certification cards use the same coherent frontend system: clear visual hierarchy, solid contrast, corporate palette, meaningful emojis/icons and obvious status/action affordances while preserving certification logic and provider-backed state.",
     "observed": "Paula's current human review reports course cards as visually flat, low-contrast and inconsistent with the rest of the approved frontend.",
     "rootCauseStatus": "OWNER_PROVEN_VISUAL_REDESIGN_REQUIRED",
@@ -2325,6 +2373,20 @@
         "app/modules/academia.js",
         "app/styles/layout.css"
       ],
+      "production": false
+    },
+    "sourceProof": {
+      "runId": 37021140798,
+      "runNumber": 853,
+      "jobId": 110884317409,
+      "artifactId": 11233275872,
+      "artifactDigest": "sha256:56d37e9cea2b320a7550232e6f4eeafe2f2dddbe412309cd1b96820075fa1780",
+      "decision": "PASS_VRM154_156_FRONTEND_SOURCE_REPROOF",
+      "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
+      "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
+      "genericScenarioContract": true,
+      "financeVrm153Regression": true,
+      "deploys": 0,
       "production": false
     }
   }

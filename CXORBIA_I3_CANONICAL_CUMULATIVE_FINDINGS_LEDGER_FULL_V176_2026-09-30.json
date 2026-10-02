@@ -18,9 +18,19 @@
     "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
     "predecessorSha": "53b84faa673f2378439e2f33af3faf63948cbbfa",
     "production": false,
-    "state": "VRM154_156_FRONTEND_SOURCE_REPROOF_REQUIRED",
+    "state": "VRM154_156_DEV_MATERIALIZATION_REQUIRED",
     "proof": {
-      "decision": "PENDING_VRM154_156_FRONTEND_SOURCE_REPROOF",
+      "runId": 37021140798,
+      "runNumber": 853,
+      "jobId": 110884317409,
+      "artifactId": 11233275872,
+      "artifactDigest": "sha256:56d37e9cea2b320a7550232e6f4eeafe2f2dddbe412309cd1b96820075fa1780",
+      "decision": "PASS_VRM154_156_FRONTEND_SOURCE_REPROOF",
+      "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
+      "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
+      "genericScenarioContract": true,
+      "financeVrm153Regression": true,
+      "deploys": 0,
       "production": false
     },
     "priorProof": {
@@ -7469,7 +7479,7 @@
       "secondaryClassification": "MAPPING_FAILURE",
       "severity": "P0",
       "title": "Shopper visit surfaces render only one scenario dimension and omit project-defined additional scenario dimensions",
-      "state": "SOURCE_FIX_PENDING_REPROOF",
+      "state": "SOURCE_PROOF_PASS_DEV_MATERIALIZATION_REQUIRED",
       "expected": "Every shopper visit must render all scenario dimensions configured for that project. The renderer must be project-driven and generic; no Cinépolis-, combo-, country-, period- or column-specific hardcoding. For the current Cinépolis configuration this includes the ticket purchase scenario and the assigned combo scenario.",
       "observed": "Live HR rows already contain the second scenario information (e.g. tipoCombo) while Mis Visitas renders only v.escenario/v.canal and the shopper visit detail checks v.combo instead of the live canonical tipoCombo field. The combo scenario therefore disappears from both shopper-facing surfaces.",
       "rootCauseStatus": "PROVEN",
@@ -7509,6 +7519,20 @@
           "app/modules/visita-detalle.js"
         ],
         "production": false
+      },
+      "sourceProof": {
+        "runId": 37021140798,
+        "runNumber": 853,
+        "jobId": 110884317409,
+        "artifactId": 11233275872,
+        "artifactDigest": "sha256:56d37e9cea2b320a7550232e6f4eeafe2f2dddbe412309cd1b96820075fa1780",
+        "decision": "PASS_VRM154_156_FRONTEND_SOURCE_REPROOF",
+        "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
+        "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
+        "genericScenarioContract": true,
+        "financeVrm153Regression": true,
+        "deploys": 0,
+        "production": false
       }
     },
     "VRM-155": {
@@ -7516,7 +7540,7 @@
       "classification": "VISUAL_DEFECT",
       "severity": "P1",
       "title": "Shopper Mis Visitas and Mi Perfil remain visually inconsistent with the approved frontend language",
-      "state": "SOURCE_FIX_PENDING_REPROOF",
+      "state": "SOURCE_PROOF_PASS_DEV_MATERIALIZATION_REQUIRED",
       "relatedFindings": [
         "VRM-131",
         "VRM-145"
@@ -7548,6 +7572,20 @@
           "app/styles/layout.css"
         ],
         "production": false
+      },
+      "sourceProof": {
+        "runId": 37021140798,
+        "runNumber": 853,
+        "jobId": 110884317409,
+        "artifactId": 11233275872,
+        "artifactDigest": "sha256:56d37e9cea2b320a7550232e6f4eeafe2f2dddbe412309cd1b96820075fa1780",
+        "decision": "PASS_VRM154_156_FRONTEND_SOURCE_REPROOF",
+        "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
+        "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
+        "genericScenarioContract": true,
+        "financeVrm153Regression": true,
+        "deploys": 0,
+        "production": false
       }
     },
     "VRM-156": {
@@ -7555,7 +7593,7 @@
       "classification": "VISUAL_DEFECT",
       "severity": "P1",
       "title": "Academy/certification course cards are visually inconsistent with the approved frontend",
-      "state": "SOURCE_FIX_PENDING_REPROOF",
+      "state": "SOURCE_PROOF_PASS_DEV_MATERIALIZATION_REQUIRED",
       "expected": "Academy/certification cards use the same coherent frontend system: clear visual hierarchy, solid contrast, corporate palette, meaningful emojis/icons and obvious status/action affordances while preserving certification logic and provider-backed state.",
       "observed": "Paula's current human review reports course cards as visually flat, low-contrast and inconsistent with the rest of the approved frontend.",
       "rootCauseStatus": "OWNER_PROVEN_VISUAL_REDESIGN_REQUIRED",
@@ -7579,6 +7617,20 @@
           "app/modules/academia.js",
           "app/styles/layout.css"
         ],
+        "production": false
+      },
+      "sourceProof": {
+        "runId": 37021140798,
+        "runNumber": 853,
+        "jobId": 110884317409,
+        "artifactId": 11233275872,
+        "artifactDigest": "sha256:56d37e9cea2b320a7550232e6f4eeafe2f2dddbe412309cd1b96820075fa1780",
+        "decision": "PASS_VRM154_156_FRONTEND_SOURCE_REPROOF",
+        "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
+        "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
+        "genericScenarioContract": true,
+        "financeVrm153Regression": true,
+        "deploys": 0,
         "production": false
       }
     }
@@ -8161,7 +8213,7 @@
     "nextFindingId": "VRM-157",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_VRM154_156_FRONTEND_SOURCE_REPROOF_REQUIRED",
+    "terminalState": "HOLD_VRM154_156_DEV_MATERIALIZATION_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -8190,7 +8242,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Run exact source proof for VRM-154..156 on da2f750e; require generic scenario-dimensions contract, syntax, finance VRM-153 regression protection and zero deploy.",
+  "exactNextAction": "Materialize exact source da2f750e once to Recovery DEV runtime and Hosting; prove emitted scenarioDimensions/live combo fields, byte-equal changed frontend files, stable HR, and production false.",
   "supersedesGitBlob": "397a9cee8c71d3156567a0cc96bfdcba88bb7c3a",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -11674,7 +11726,7 @@
     "next": "SHORT_HUMAN_VISUAL_RETEST",
     "production": false
   },
-  "activeBlocker": "VRM154_156_FRONTEND_SOURCE_REPROOF_REQUIRED",
+  "activeBlocker": "VRM154_156_DEV_MATERIALIZATION_REQUIRED",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -11812,7 +11864,21 @@
     "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
     "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
     "predecessorSha": "53b84faa673f2378439e2f33af3faf63948cbbfa",
-    "state": "VRM154_156_FRONTEND_SOURCE_REPROOF_REQUIRED",
-    "production": false
+    "state": "SOURCE_PROOF_PASS_DEV_MATERIALIZATION_REQUIRED",
+    "production": false,
+    "sourceProof": {
+      "runId": 37021140798,
+      "runNumber": 853,
+      "jobId": 110884317409,
+      "artifactId": 11233275872,
+      "artifactDigest": "sha256:56d37e9cea2b320a7550232e6f4eeafe2f2dddbe412309cd1b96820075fa1780",
+      "decision": "PASS_VRM154_156_FRONTEND_SOURCE_REPROOF",
+      "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
+      "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
+      "genericScenarioContract": true,
+      "financeVrm153Regression": true,
+      "deploys": 0,
+      "production": false
+    }
   }
 }
