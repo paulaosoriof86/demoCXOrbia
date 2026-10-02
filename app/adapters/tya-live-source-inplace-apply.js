@@ -28,7 +28,7 @@ window.CX = window.CX || {};
       industry:identity.projectConfig.industry||'Mystery shopping',countries:identity.countries,currency:identity.currency,accent:'#2196d3',
       sucursales:Number(identity.projectConfig.sucursales||p.total||0),nVisitas:Number(p.total||0),honorario:identity.projectConfig.honorario||{},honRecibe:identity.projectConfig.honorarioRecibe||identity.projectConfig.honRecibe||{},
       modelo:identity.projectConfig.modelo||'directo',isr:Number(identity.projectConfig.isr??5),regalias:Number(identity.projectConfig.regalias??10),boleto:identity.projectConfig.boleto||{},combo:'Configurable por visita HR',comboAmt:identity.projectConfig.comboAmt||{},
-      scenarios:safeArray(identity.projectConfig.scenarios),
+      scenarios:safeArray(identity.projectConfig.scenarios),scenarioDimensions:safeArray(identity.projectConfig.scenarioDimensions).map(x=>Object.assign({},x)),
       quincenas:safeArray(identity.projectConfig.quincenas).length?safeArray(identity.projectConfig.quincenas):['Quincena 1','Quincena 2'],canales:['Visita presencial'],formato:identity.projectConfig.formato||'Mystery shopping',ronda:p.label,periodicidad:identity.projectConfig.periodicidad||null,periodoCumpl:identity.projectConfig.periodoCumpl||null,
       restriccion:'Reglas Q1/Q2, franja y visita previa configurables por proyecto.',
       cuestionario:Object.assign({modo:'interna',url:'',label:'Cuestionario del proyecto'},identity.projectConfig.cuestionario||{}),
