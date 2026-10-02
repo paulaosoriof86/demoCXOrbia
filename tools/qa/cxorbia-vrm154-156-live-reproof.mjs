@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import {spawnSync} from 'node:child_process';
 import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';
 import {getAuth} from 'firebase-admin/auth';
 import {getFirestore} from 'firebase-admin/firestore';
@@ -162,9 +163,25 @@ try{
   evidence.admin={...adminProof,postulations:postProof};
   await ap.ctx.close();
 
+  const finRoot=OUT+'/finance',dryOut=finRoot+'/dry',readOut=finRoot+'/readback';
+  fs.mkdirSync(dryOut,{recursive:true});fs.mkdirSync(readOut,{recursive:true});
+  const hrUrl=ROOT+'/api/'+tenantId+'/'+projectId+'/hr-live?format=json&vrm154156finance='+Date.now();
+  const runNode=(script,extra,log)=>{
+    const r=spawnSync(process.execPath,[script],{env:{...process.env,PROJECT:process.env.PROJECT||'cxorbia-backend-dev',TENANT_ID:tenantId,PROJECT_ID:projectId,HR_URL:hrUrl,...extra},encoding:'utf8'});
+    fs.writeFileSync(log,(r.stdout||'')+(r.stderr||''));
+    if(r.status!==0)throw new Error('PERSISTENCE_FAILURE:VRM154_156_FINANCE_SCRIPT:'+script+':'+str(r.stderr||r.stdout));
+  };
+  runNode('tools/qa/cxorbia-vrm151-final-canonical-dry-run.mjs',{OUT:dryOut},finRoot+'/dry.log');
+  const dry=JSON.parse(fs.readFileSync(dryOut+'/result.json','utf8'));
+  if(dry.decision!=='PASS_VRM151_FINAL_CANONICAL_HISTORICAL_DRY_RUN'||dry.observed?.canonicalSubmitted!==628||dry.observed?.paid!==562||dry.observed?.pending!==66||dry.observed?.amountReviewRequired!==5||dry.observed?.octoberTouched!==0||dry.writes!==0)throw new Error('PERSISTENCE_FAILURE:VRM154_156_FINANCE_DRY:'+JSON.stringify(dry.observed));
+  runNode('tools/qa/cxorbia-vrm153-reconciliation-readback-diagnostic.mjs',{OUT:readOut,DRY_RESULT:dryOut+'/result.json'},finRoot+'/readback.log');
+  const rb=JSON.parse(fs.readFileSync(readOut+'/result.json','utf8'));
+  if(rb.decision!=='PASS_VRM153_RECONCILIATION_READBACK_MATCH'||rb.counts?.records!==628||rb.counts?.uniqueVisits!==628||rb.counts?.paid!==562||rb.counts?.pending!==66||rb.counts?.amountReviewRequired!==5||rb.octoberRecords!==0||rb.writes!==0)throw new Error('PERSISTENCE_FAILURE:VRM154_156_FINANCE_READBACK:'+JSON.stringify(rb));
+  evidence.finance={canonicalSubmitted:dry.observed.canonicalSubmitted,paid:rb.counts.paid,pending:rb.counts.pending,amountReviewRequired:rb.counts.amountReviewRequired,octoberRecords:rb.octoberRecords,writes:0};
+
   evidence.decision='PASS_VRM154_156_SEALED_DEV_LIVE_REPROOF';
   write(evidence);
-  console.log(JSON.stringify({decision:evidence.decision,hrRevision:evidence.hrRevision,shopper:evidence.selectedShopper,scenarioCard:evidence.shopper.scenarioCard,visitDetail:evidence.shopper.visitDetail,profile:evidence.shopper.profile,academy:evidence.shopper.academy,admin:evidence.admin},null,2));
+  console.log(JSON.stringify({decision:evidence.decision,hrRevision:evidence.hrRevision,shopper:evidence.selectedShopper,scenarioCard:evidence.shopper.scenarioCard,visitDetail:evidence.shopper.visitDetail,profile:evidence.shopper.profile,academy:evidence.shopper.academy,admin:evidence.admin,finance:evidence.finance},null,2));
 }catch(error){
   evidence.decision='FAIL_VRM154_156_SEALED_DEV_LIVE_REPROOF';
   evidence.error=str(error?.stack||error);
