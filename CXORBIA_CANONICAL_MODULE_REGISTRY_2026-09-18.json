@@ -2,7 +2,7 @@
   "schema": "cxorbia.recovery.canonical-module-registry.v1",
   "frozenAt": "2026-09-18T09:57:00-06:00",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
-  "state": "HOLD_V190_DEV_MATERIALIZATION_REQUIRED",
+  "state": "HOLD_V190_LIVE_REPROOF_REQUIRED",
   "production": "DO_NOT_TOUCH",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "branchHeadAtFreeze": "26c2870ce3ff48193de641a29cc23196a2dc2770",
@@ -244,9 +244,12 @@
       "priorMatrixClassification": "MATCH",
       "priorAuthority": "F9 accepted release lineage preserved through terminal b949 and f836",
       "priorSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
-      "forensicStatus": "COMPOSED_NOT_DEPLOYED",
+      "forensicStatus": "MATCH",
       "adjudication": "V190_DEV_LIVE_REPROOF_REQUIRED",
-      "currentSourceCommit": "26c2870ce3ff48193de641a29cc23196a2dc2770"
+      "currentSourceCommit": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+      "liveReproofState": "PENDING",
+      "servedRuntimeRevision": "cxorbia-live-hr-dev-00249-pqh",
+      "servedHostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30"
     },
     {
       "domain": "canonical-hr-state-adapters",
@@ -264,9 +267,12 @@
       "priorMatrixClassification": "MATCH",
       "priorAuthority": "RECOVERY_SUCCESSOR_CHAIN: F9 accepted -> terminal b949 certified predecessor -> canonical-convergence fixes -> f836 multiproject source",
       "priorSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
-      "forensicStatus": "COMPOSED_NOT_DEPLOYED",
+      "forensicStatus": "MATCH",
       "adjudication": "V190_DEV_LIVE_REPROOF_REQUIRED",
-      "currentSourceCommit": "26c2870ce3ff48193de641a29cc23196a2dc2770"
+      "currentSourceCommit": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+      "liveReproofState": "PENDING",
+      "servedRuntimeRevision": "cxorbia-live-hr-dev-00249-pqh",
+      "servedHostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30"
     },
     {
       "domain": "certifications",
@@ -277,9 +283,12 @@
       "priorMatrixClassification": "MATCH",
       "priorAuthority": "F9 accepted release lineage preserved through terminal b949 and f836",
       "priorSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
-      "forensicStatus": "COMPOSED_NOT_DEPLOYED",
+      "forensicStatus": "MATCH",
       "adjudication": "V190_DEV_LIVE_REPROOF_REQUIRED",
-      "currentSourceCommit": "26c2870ce3ff48193de641a29cc23196a2dc2770"
+      "currentSourceCommit": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+      "liveReproofState": "PENDING",
+      "servedRuntimeRevision": "cxorbia-live-hr-dev-00249-pqh",
+      "servedHostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30"
     },
     {
       "domain": "client-portal-reportkit",
@@ -318,9 +327,12 @@
       "priorMatrixClassification": "MATCH",
       "priorAuthority": "F9 accepted release lineage preserved through terminal b949 and f836",
       "priorSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
-      "forensicStatus": "COMPOSED_NOT_DEPLOYED",
+      "forensicStatus": "MATCH",
       "adjudication": "V190_DEV_LIVE_REPROOF_REQUIRED",
-      "currentSourceCommit": "26c2870ce3ff48193de641a29cc23196a2dc2770"
+      "currentSourceCommit": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+      "liveReproofState": "PENDING",
+      "servedRuntimeRevision": "cxorbia-live-hr-dev-00249-pqh",
+      "servedHostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30"
     },
     {
       "domain": "documents-resources",
@@ -332,9 +344,12 @@
       "priorMatrixClassification": "MATCH",
       "priorAuthority": "F9 accepted release lineage preserved through terminal b949 and f836",
       "priorSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
-      "forensicStatus": "COMPOSED_NOT_DEPLOYED",
+      "forensicStatus": "MATCH",
       "adjudication": "V190_DEV_LIVE_REPROOF_REQUIRED",
-      "currentSourceCommit": "26c2870ce3ff48193de641a29cc23196a2dc2770"
+      "currentSourceCommit": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+      "liveReproofState": "PENDING",
+      "servedRuntimeRevision": "cxorbia-live-hr-dev-00249-pqh",
+      "servedHostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30"
     },
     {
       "domain": "finance-core-liquidation-costs",
@@ -347,9 +362,12 @@
       "priorMatrixClassification": "MATCH",
       "priorAuthority": "RECOVERY_SUCCESSOR_CHAIN: F9 accepted -> terminal b949 certified predecessor -> canonical-convergence fixes -> f836 multiproject source",
       "priorSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
-      "forensicStatus": "COMPOSED_NOT_DEPLOYED",
+      "forensicStatus": "MATCH",
       "adjudication": "V190_DEV_LIVE_REPROOF_REQUIRED",
-      "currentSourceCommit": "26c2870ce3ff48193de641a29cc23196a2dc2770"
+      "currentSourceCommit": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+      "liveReproofState": "PENDING",
+      "servedRuntimeRevision": "cxorbia-live-hr-dev-00249-pqh",
+      "servedHostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30"
     },
     {
       "domain": "historical",
@@ -409,9 +427,12 @@
       "priorMatrixClassification": "MATCH",
       "priorAuthority": "RECOVERY_SUCCESSOR_CHAIN: F9 accepted -> terminal b949 certified predecessor -> canonical-convergence fixes -> f836 multiproject source",
       "priorSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
-      "forensicStatus": "COMPOSED_NOT_DEPLOYED",
+      "forensicStatus": "MATCH",
       "adjudication": "V190_DEV_LIVE_REPROOF_REQUIRED",
-      "currentSourceCommit": "26c2870ce3ff48193de641a29cc23196a2dc2770"
+      "currentSourceCommit": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+      "liveReproofState": "PENDING",
+      "servedRuntimeRevision": "cxorbia-live-hr-dev-00249-pqh",
+      "servedHostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30"
     },
     {
       "domain": "phase-a-supporting-core",
@@ -476,9 +497,12 @@
       "priorMatrixClassification": "MATCH",
       "priorAuthority": "RECOVERY_SUCCESSOR_CHAIN: F9 accepted -> terminal b949 certified predecessor -> canonical-convergence fixes -> f836 multiproject source",
       "priorSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
-      "forensicStatus": "COMPOSED_NOT_DEPLOYED",
+      "forensicStatus": "MATCH",
       "adjudication": "V190_DEV_LIVE_REPROOF_REQUIRED",
-      "currentSourceCommit": "26c2870ce3ff48193de641a29cc23196a2dc2770"
+      "currentSourceCommit": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+      "liveReproofState": "PENDING",
+      "servedRuntimeRevision": "cxorbia-live-hr-dev-00249-pqh",
+      "servedHostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30"
     },
     {
       "domain": "visits-review-postulations-reservations",
@@ -493,9 +517,12 @@
       "priorMatrixClassification": "MATCH",
       "priorAuthority": "RECOVERY_SUCCESSOR_CHAIN: F9 accepted -> terminal b949 certified predecessor -> canonical-convergence fixes -> f836 multiproject source",
       "priorSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
-      "forensicStatus": "COMPOSED_NOT_DEPLOYED",
+      "forensicStatus": "MATCH",
       "adjudication": "V190_DEV_LIVE_REPROOF_REQUIRED",
-      "currentSourceCommit": "26c2870ce3ff48193de641a29cc23196a2dc2770"
+      "currentSourceCommit": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+      "liveReproofState": "PENDING",
+      "servedRuntimeRevision": "cxorbia-live-hr-dev-00249-pqh",
+      "servedHostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30"
     }
   ],
   "stopRules": {
@@ -507,7 +534,7 @@
     "newOverlay": false,
     "production": false
   },
-  "nextExactAction": "Run canonical authority guard on promoted V190 source, then exactly one Recovery DEV materialization and same-source live reproof; no production.",
+  "nextExactAction": "Execute V190 same-DEV live acceptance readback. Product source and deployed fingerprints are frozen; no rebuild/deploy.",
   "v190SuccessorSourceReproof": {
     "decision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF",
     "sourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
@@ -518,6 +545,29 @@
     "checksPassed": 34,
     "checksFailed": 0,
     "scope": "SOURCE_SYNTAX_STATIC_NO_DEPLOY",
+    "production": false
+  },
+  "currentMaterialization": {
+    "runId": 37073947232,
+    "runNumber": 884,
+    "jobId": 111059579758,
+    "artifactId": 11255833588,
+    "artifactDigest": "sha256:47a6196f75afb3b6073b8add59062d7bfafc7fb2187feb192cc53ce8681d3500",
+    "decision": "PASS_V190_EXACT_DEV_MATERIALIZATION",
+    "sourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+    "sourceTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
+    "runtimeRevision": "cxorbia-live-hr-dev-00249-pqh",
+    "runtimeDigest": "sha256:593c2a256f0b601173bfaff86dd22fc87e02e287a6eb900d3b6ff3cc9fda06ac",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790981125544000",
+    "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
+    "scenarioDimensionsProven": true,
+    "frontendBytesExact": true,
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "storageRulesDeploys": 1,
+    "state": "SEALED_V190_DEV_PENDING_LIVE_REPROOF",
     "production": false
   }
 }

@@ -173,7 +173,7 @@ async function signInMember(member,kind,route,options={}){
   if(kind==='shopper'&&Number(one.stats?.total||0)!==paulaExpectedTotal)throw new Error('MAPPING_FAILURE:PAULA_HISTORY_REGRESSION:'+JSON.stringify({observed:one.stats,expectedTotal:paulaExpectedTotal,hrRevision}));
 
   const routes=options.routes||(kind==='admin'
-    ? ['midia','dashboard','visitas','postulaciones','reservas','shoppers','financiero','liquidaciones','documentos','cert']
+    ? ['midia','dashboard','visitas','postulaciones','reservas','shoppers','financiero','movimientos','liquidaciones','documentos','cert']
     : ['midia','miperfil','visitas','reservas','misvisitas','beneficios','mireportes','documentos','cert','tablon']);
   const routeEvidence={};
   for(const r of routes){

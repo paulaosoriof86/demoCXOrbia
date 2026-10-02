@@ -18,7 +18,7 @@
     "sourceTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
     "predecessorSha": "542fb96630d2068993d03ae86e3d3299f5386251",
     "production": false,
-    "state": "SOURCE_STATIC_REPROOF_PASS_PENDING_EXACT_DEV_MATERIALIZATION",
+    "state": "SEALED_V190_DEV_PENDING_LIVE_REPROOF",
     "proof": {
       "runId": 37037752771,
       "runNumber": 864,
@@ -54,27 +54,27 @@
       "production": false
     },
     "materialization": {
-      "runId": 37037964831,
-      "runNumber": 865,
-      "jobId": 110940819725,
-      "artifactId": 11241342708,
-      "artifactDigest": "sha256:efc091dfa058cbf6381cd38aba1de7c14d789b3a74612afccc9a07b331d09bc1",
-      "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
-      "sourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
-      "sourceTree": "6a8b7ec768efbb9af73bcca836125471f7f49ae4",
-      "runtimeRevision": "cxorbia-live-hr-dev-00248-xcq",
-      "runtimeDigest": "sha256:3076d6651037a406e1bea1f6c2eea1b0ac83cba4ecd30831a06c8a4aaa450c01",
-      "hostingVersion": "sites/cxorbia-backend-dev/versions/3fd4df67f93e3725",
-      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790960683923000",
+      "runId": 37073947232,
+      "runNumber": 884,
+      "jobId": 111059579758,
+      "artifactId": 11255833588,
+      "artifactDigest": "sha256:47a6196f75afb3b6073b8add59062d7bfafc7fb2187feb192cc53ce8681d3500",
+      "decision": "PASS_V190_EXACT_DEV_MATERIALIZATION",
+      "sourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+      "sourceTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
+      "runtimeRevision": "cxorbia-live-hr-dev-00249-pqh",
+      "runtimeDigest": "sha256:593c2a256f0b601173bfaff86dd22fc87e02e287a6eb900d3b6ff3cc9fda06ac",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790981125544000",
       "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
       "scenarioDimensionsProven": true,
       "frontendBytesExact": true,
       "builds": 1,
       "runtimeDeploys": 1,
       "hostingDeploys": 1,
-      "writes": 0,
-      "production": false,
-      "state": "SEALED_DEV_VRM162_MATERIALIZED_PENDING_LIVE_REPROOF"
+      "storageRulesDeploys": 1,
+      "state": "SEALED_V190_DEV_PENDING_LIVE_REPROOF",
+      "production": false
     },
     "previousSourceProof": {
       "runId": 37021140798,
@@ -8482,7 +8482,7 @@
       "classification": "VISUAL_DEFECT",
       "severity": "P0",
       "title": "Human visual acceptance failed on Mi Día progress and Mi Perfil hierarchy",
-      "state": "SOURCE_FIX_COMPOSED_PENDING_DEV_LIVE_REPROOF",
+      "state": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
       "rootCauseStatus": "PROVEN",
       "rootCause": "Run 866 automated markers only asserted presence of sections/classes, not the human visual contract. Mi Día still renders a plain vertical status list and Mi Perfil uses flat generic data cards; Paula rejected both on the exact sealed DEV.",
       "owners": [
@@ -8498,14 +8498,18 @@
       "production": false,
       "sourceSuccessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
       "sourceSuccessorTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
-      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
+      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF",
+      "devMaterializationRunId": 37073947232,
+      "runtimeRevision": "cxorbia-live-hr-dev-00249-pqh",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30",
+      "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732"
     },
     "VRM-166": {
       "id": "VRM-166",
       "classification": "PERSISTENCE_FAILURE",
       "severity": "P0",
       "title": "Historical shopper notifications are stale and can leak across shopper profiles",
-      "state": "SOURCE_FIX_COMPOSED_PENDING_DEV_LIVE_REPROOF",
+      "state": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
       "rootCauseStatus": "PROVEN",
       "rootCause": "Exact sealed DEV readback found 3 active durable 'Postulación aprobada' bulletins targeted only to role=shopper, with empty targetShopperIds/targetProjectIds and no entity/event/idempotency metadata. backend-bulletins persists ordinary CX.notif.push shopper events role-wide; notif.js accepts them when no specific target exists.",
       "owners": [
@@ -8539,14 +8543,18 @@
       "correction": "Reject unscoped durable shopper bulletins at read/persist boundaries and migrate operational callers to targeted ACK-aware pushDurable with shopperId+projectId+entity+idempotency. Existing broad stale rows must not render.",
       "sourceSuccessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
       "sourceSuccessorTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
-      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
+      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF",
+      "devMaterializationRunId": 37073947232,
+      "runtimeRevision": "cxorbia-live-hr-dev-00249-pqh",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30",
+      "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732"
     },
     "VRM-167": {
       "id": "VRM-167",
       "classification": "MAPPING_FAILURE",
       "severity": "P0",
       "title": "Admin Mi Día postulation KPI and Postulaciones module use different lifecycle filters",
-      "state": "SOURCE_FIX_COMPOSED_PENDING_DEV_LIVE_REPROOF",
+      "state": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
       "rootCauseStatus": "PROVEN",
       "rootCause": "CX.data.kpis().postPend uses data.posts(), which excludes only archived rows, while Postulaciones activePosts additionally excludes active=false and transitioned_to_assignment. The same canonical state can therefore show Por aprobar 10 on Mi Día and 0 in Gestión de Postulaciones.",
       "owners": [
@@ -8561,14 +8569,18 @@
       "production": false,
       "sourceSuccessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
       "sourceSuccessorTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
-      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
+      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF",
+      "devMaterializationRunId": 37073947232,
+      "runtimeRevision": "cxorbia-live-hr-dev-00249-pqh",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30",
+      "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732"
     },
     "VRM-168": {
       "id": "VRM-168",
       "classification": "MAPPING_FAILURE",
       "severity": "P0",
       "title": "Shopper scheduling command failed on sealed DEV",
-      "state": "SOURCE_FIX_COMPOSED_PENDING_DEV_LIVE_REPROOF",
+      "state": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
       "rootCauseStatus": "PROVEN",
       "rootCause": "The exact authenticated October Cayalá visit is canonical in HR/Firestore as shopper_gt_1440137b73, but the protected browser composition renders the same hrRowId OCTUBRE 26!6 in CX.data._visitas with shopperId='s3'. tya-cumulative-read-model-v2 builds an exact relation from the matched protected visit (base shopper identity -> durable canonical identity), but only promotes that relation into liveToCanonical while iterating baseShoppers. When an operational HR shopper identity exists on the visit but is absent from baseShoppers, the exact relation is never promoted; composedVisits therefore falls back to the transient live id 's3'. visitsForShopper(authenticated canonical shopperId) then cannot surface the card/action. Provider/Auth/version were independently proven healthy.",
       "owners": [
@@ -8612,14 +8624,18 @@
       "correction": "Promote every unambiguous exact visit-derived relation into liveToCanonical even when the transient operational identity is not present in baseShoppers; preserve conflict review when one live id maps to multiple canonical ids. Reproof exact Cayalá card, command shape, provider ACK and durable reload on the corrected DEV.",
       "sourceSuccessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
       "sourceSuccessorTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
-      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
+      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF",
+      "devMaterializationRunId": 37073947232,
+      "runtimeRevision": "cxorbia-live-hr-dev-00249-pqh",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30",
+      "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732"
     },
     "VRM-169": {
       "id": "VRM-169",
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Geolocated check-in is preview-only and cannot persist evidence",
-      "state": "SOURCE_FIX_COMPOSED_PENDING_DEV_LIVE_REPROOF",
+      "state": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
       "rootCauseStatus": "PROVEN",
       "rootCause": "Mis Visitas explicitly stores photo/GPS only in an in-memory geoPreview map and tells the user evidence saving is unavailable. No provider ACK or durable check-in/evidence write exists for this action.",
       "owners": [
@@ -8630,14 +8646,18 @@
       "production": false,
       "sourceSuccessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
       "sourceSuccessorTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
-      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
+      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF",
+      "devMaterializationRunId": 37073947232,
+      "runtimeRevision": "cxorbia-live-hr-dev-00249-pqh",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30",
+      "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732"
     },
     "VRM-170": {
       "id": "VRM-170",
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Instructive-read completion has no durable receipt in the visit route",
-      "state": "SOURCE_FIX_COMPOSED_PENDING_DEV_LIVE_REPROOF",
+      "state": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
       "rootCauseStatus": "PROVEN",
       "rootCause": "The visit route displays an Instructivo step/button but the current canonical source has no read receipt/readAt contract or provider-backed completion command tying the exact project resource revision to the shopper/visit.",
       "owners": [
@@ -8648,14 +8668,18 @@
       "production": false,
       "sourceSuccessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
       "sourceSuccessorTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
-      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
+      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF",
+      "devMaterializationRunId": 37073947232,
+      "runtimeRevision": "cxorbia-live-hr-dev-00249-pqh",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30",
+      "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732"
     },
     "VRM-171": {
       "id": "VRM-171",
       "classification": "MAPPING_FAILURE",
       "severity": "P0",
       "title": "Previously certified shoppers are not reliably granted current certification eligibility",
-      "state": "SOURCE_FIX_COMPOSED_PENDING_DEV_LIVE_REPROOF",
+      "state": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
       "rootCauseStatus": "PROVEN",
       "rootCause": "Legacy certification evidence remains pending authenticated review/equivalence unless exact current bank equivalence is established. Thus previously approved program shoppers can appear uncertified even when no recertification was requested.",
       "owners": [
@@ -8667,14 +8691,18 @@
       "production": false,
       "sourceSuccessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
       "sourceSuccessorTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
-      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
+      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF",
+      "devMaterializationRunId": 37073947232,
+      "runtimeRevision": "cxorbia-live-hr-dev-00249-pqh",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30",
+      "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732"
     },
     "VRM-172": {
       "id": "VRM-172",
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Certification admin is not fully self-administered or durable",
-      "state": "SOURCE_FIX_COMPOSED_PENDING_DEV_LIVE_REPROOF",
+      "state": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
       "rootCauseStatus": "PROVEN",
       "rootCause": "Admin Importar banco and Requisito/% mínimo still produce demo/local UI behavior, there is no visible durable delete/archive management for bad banks/attempts, and the runtime bank identity is deterministic per project+period rather than a managed certification catalog.",
       "owners": [
@@ -8719,14 +8747,18 @@
       },
       "sourceSuccessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
       "sourceSuccessorTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
-      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
+      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF",
+      "devMaterializationRunId": 37073947232,
+      "runtimeRevision": "cxorbia-live-hr-dev-00249-pqh",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30",
+      "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732"
     },
     "VRM-173": {
       "id": "VRM-173",
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "P1",
       "title": "Shopper certification route assumes one current-period bank instead of project/multiple certification selection",
-      "state": "SOURCE_FIX_COMPOSED_PENDING_DEV_LIVE_REPROOF",
+      "state": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
       "rootCauseStatus": "PROVEN",
       "rootCause": "Shopper cert loads CX.certStore.bank(data.period().id) directly; there is no project/certification selector or catalog view, so multiple certifications cannot be presented or filtered.",
       "owners": [
@@ -8736,14 +8768,18 @@
       "production": false,
       "sourceSuccessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
       "sourceSuccessorTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
-      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
+      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF",
+      "devMaterializationRunId": 37073947232,
+      "runtimeRevision": "cxorbia-live-hr-dev-00249-pqh",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30",
+      "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732"
     },
     "VRM-174": {
       "id": "VRM-174",
       "classification": "MAPPING_FAILURE",
       "severity": "P0",
       "title": "Durable historical payment reconciliation is not projected into Finance/Mis Beneficios UI",
-      "state": "SOURCE_FIX_COMPOSED_PENDING_DEV_LIVE_REPROOF",
+      "state": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
       "rootCauseStatus": "PROVEN",
       "rootCause": "Exact DEV holds 628 paymentReconciliations (562 paid, 66 pending) and 562 durable visits marked paymentConfirmed/historical paid, but canonical finance exactProtectedFinancialMatch recognizes only financialSourceStatus='reconciled_exact' plus financialMatch. Only 1 visit matches that shape, leaving 562 paid historical rows projected as pending.",
       "owners": [
@@ -8784,14 +8820,18 @@
       "correction": "Project durable historical payment reconciliation markers/source refs into the canonical finance read model without inventing amounts; keep current-period rows source-safe and pending when no reconciliation exists.",
       "sourceSuccessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
       "sourceSuccessorTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
-      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
+      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF",
+      "devMaterializationRunId": 37073947232,
+      "runtimeRevision": "cxorbia-live-hr-dev-00249-pqh",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30",
+      "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732"
     },
     "VRM-175": {
       "id": "VRM-175",
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Shopper identity/incomplete-profile administration lacks complete actionable workflow",
-      "state": "SOURCE_FIX_COMPOSED_PENDING_DEV_LIVE_REPROOF",
+      "state": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
       "rootCauseStatus": "PROVEN",
       "rootCause": "Identity adjudication exists only inside profile for exact collision groups; the list/modal does not expose missing-field requests, side-by-side identity evidence, safe archive/merge management, or a complete action path for non-exact duplicate candidates such as the human-observed Milton/Patricia groups.",
       "owners": [
@@ -8835,14 +8875,18 @@
       },
       "sourceSuccessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
       "sourceSuccessorTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
-      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
+      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF",
+      "devMaterializationRunId": 37073947232,
+      "runtimeRevision": "cxorbia-live-hr-dev-00249-pqh",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30",
+      "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732"
     },
     "VRM-176": {
       "id": "VRM-176",
       "classification": "MAPPING_FAILURE",
       "severity": "P1",
       "title": "Displayed shopper rating criteria do not match the frozen ranking/scoring contract",
-      "state": "SOURCE_FIX_COMPOSED_PENDING_DEV_LIVE_REPROOF",
+      "state": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
       "rootCauseStatus": "PROVEN",
       "rootCause": "The frozen scoring contract defines nine weighted source-safe metrics totaling 100 and requires a metric breakdown, while shoppers.js displays a separate fixed +/- heuristic and merely renders s.rating without proving its calculation/provenance.",
       "owners": [
@@ -8852,14 +8896,18 @@
       "production": false,
       "sourceSuccessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
       "sourceSuccessorTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
-      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
+      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF",
+      "devMaterializationRunId": 37073947232,
+      "runtimeRevision": "cxorbia-live-hr-dev-00249-pqh",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30",
+      "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732"
     },
     "VRM-177": {
       "id": "VRM-177",
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "P1",
       "title": "KPI drill-down/action contract is inconsistent across admin modules",
-      "state": "SOURCE_FIX_COMPOSED_PENDING_DEV_LIVE_REPROOF",
+      "state": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
       "rootCauseStatus": "PROVEN",
       "rootCause": "Some modules implement clickable KPI drill-down while certification live KPIs and several admin surfaces are static; no shared KPI action contract guarantees detail plus contextual WA/email/request actions.",
       "owners": [
@@ -8872,14 +8920,18 @@
       "production": false,
       "sourceSuccessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
       "sourceSuccessorTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
-      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
+      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF",
+      "devMaterializationRunId": 37073947232,
+      "runtimeRevision": "cxorbia-live-hr-dev-00249-pqh",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30",
+      "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732"
     },
     "VRM-178": {
       "id": "VRM-178",
       "classification": "VISUAL_DEFECT",
       "severity": "P0",
       "title": "Academia human visual acceptance failed: cards are too uniform/flat",
-      "state": "SOURCE_FIX_COMPOSED_PENDING_DEV_LIVE_REPROOF",
+      "state": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
       "rootCauseStatus": "PROVEN",
       "rootCause": "The prior normalization made all course cards use nearly the same corporate-blue shell. Paula rejected the exact Run 865 DEV and requires controlled additional solid colors while preserving the corporate visual system.",
       "owners": [
@@ -8889,7 +8941,11 @@
       "production": false,
       "sourceSuccessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
       "sourceSuccessorTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
-      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
+      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF",
+      "devMaterializationRunId": 37073947232,
+      "runtimeRevision": "cxorbia-live-hr-dev-00249-pqh",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30",
+      "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732"
     },
     "VRM-179": {
       "id": "VRM-179",
@@ -9567,7 +9623,7 @@
     "nextFindingId": "VRM-181",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_V190_DEV_MATERIALIZATION_REQUIRED",
+    "terminalState": "HOLD_V190_LIVE_REPROOF_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -9583,7 +9639,30 @@
     "userReviewComplete": true,
     "userReviewEvidence": "19 screenshots plus complete Shopper/Admin observations supplied 2026-10-02",
     "currentProductSourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
-    "currentProductSourceTree": "2e72bf1906a582910ac2f82460f2df493ba40b41"
+    "currentProductSourceTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
+    "currentMaterialization": {
+      "runId": 37073947232,
+      "runNumber": 884,
+      "jobId": 111059579758,
+      "artifactId": 11255833588,
+      "artifactDigest": "sha256:47a6196f75afb3b6073b8add59062d7bfafc7fb2187feb192cc53ce8681d3500",
+      "decision": "PASS_V190_EXACT_DEV_MATERIALIZATION",
+      "sourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+      "sourceTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
+      "runtimeRevision": "cxorbia-live-hr-dev-00249-pqh",
+      "runtimeDigest": "sha256:593c2a256f0b601173bfaff86dd22fc87e02e287a6eb900d3b6ff3cc9fda06ac",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790981125544000",
+      "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
+      "scenarioDimensionsProven": true,
+      "frontendBytesExact": true,
+      "builds": 1,
+      "runtimeDeploys": 1,
+      "hostingDeploys": 1,
+      "storageRulesDeploys": 1,
+      "state": "SEALED_V190_DEV_PENDING_LIVE_REPROOF",
+      "production": false
+    }
   },
   "workPlan": {
     "0": "C0_FREEZE",
@@ -13288,5 +13367,5 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-10-02",
-  "nextExactAction": "Materialize exactly product successor 26c2870 once in Recovery DEV, including runtime + Hosting + Storage rules, then execute same-source focal/transversal live reproof for Shopper/Admin/Finance/Movimientos/Reservas. Production remains DO_NOT_TOUCH."
+  "nextExactAction": "Run the existing same-DEV readback/live acceptance lane against V190 fingerprints only; no build/deploy. Close findings only from live evidence. VRM-179/180 remain focal acceptance requirements."
 }

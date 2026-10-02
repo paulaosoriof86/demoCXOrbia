@@ -249,6 +249,7 @@ jobs:
           curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm143151=$GITHUB_RUN_ID" > "$FOCAL_OUT/hr-meta.json"
           HR_REVISION="$(jq -r '.revision // empty' "$FOCAL_OUT/hr-meta.json")"
           [[ "$HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
+          test "$HR_REVISION" = "$EXPECTED_HR_REVISION"
           jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .hrWrites==false and .production==false' "$FOCAL_OUT/hr-meta.json" >/dev/null
           echo "HR_REVISION=$HR_REVISION" >> "$GITHUB_ENV"
       - name: step
@@ -6723,7 +6724,7 @@ jobs:
           compression-level: 0
   vrm157-dev-readback-only:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM157_DEV_READBACK_ONLY_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM154_156_LIVE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_HUMAN_VISUAL_REMEDIATION_DIAGNOSTIC_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM157_DEV_READBACK_ONLY_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM154_156_LIVE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_HUMAN_VISUAL_REMEDIATION_DIAGNOSTIC_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_V190_LIVE_REPROOF_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -6731,9 +6732,6 @@ jobs:
       FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
       FOCAL_OUT: .tmp/vrm157-dev-readback
       ACTIVE_STATUS: ${{ needs.canonical-candidate-authority.outputs.status }}
-      EXPECTED_RUNTIME_REVISION: cxorbia-live-hr-dev-00248-xcq
-      EXPECTED_RUNTIME_DIGEST: sha256:3076d6651037a406e1bea1f6c2eea1b0ac83cba4ecd30831a06c8a4aaa450c01
-      EXPECTED_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/3fd4df67f93e3725
     steps:
       - uses: actions/checkout@v4
         with:
@@ -6753,6 +6751,9 @@ jobs:
           test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
           test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
           git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          EXPECTED_RUNTIME_REVISION="$(jq -r '.currentMaterialization.runtimeRevision // empty' "$CANDIDATE_DESCRIPTOR")"; EXPECTED_RUNTIME_DIGEST="$(jq -r '.currentMaterialization.runtimeDigest // empty' "$CANDIDATE_DESCRIPTOR")"; EXPECTED_HOSTING_VERSION="$(jq -r '.currentMaterialization.hostingVersion // empty' "$CANDIDATE_DESCRIPTOR")"; EXPECTED_HR_REVISION="$(jq -r '.currentMaterialization.hrRevision // empty' "$CANDIDATE_DESCRIPTOR")"
+          test -n "$EXPECTED_RUNTIME_REVISION"; [[ "$EXPECTED_RUNTIME_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]; test -n "$EXPECTED_HOSTING_VERSION"; [[ "$EXPECTED_HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
+          echo "EXPECTED_RUNTIME_REVISION=$EXPECTED_RUNTIME_REVISION" >> "$GITHUB_ENV"; echo "EXPECTED_RUNTIME_DIGEST=$EXPECTED_RUNTIME_DIGEST" >> "$GITHUB_ENV"; echo "EXPECTED_HOSTING_VERSION=$EXPECTED_HOSTING_VERSION" >> "$GITHUB_ENV"; echo "EXPECTED_HR_REVISION=$EXPECTED_HR_REVISION" >> "$GITHUB_ENV"
           test "$(jq -r '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")" = "$EXPECTED_RUNTIME_REVISION"
           test "$(jq -r '.currentMaterialization.runtimeDigest' "$CANDIDATE_DESCRIPTOR")" = "$EXPECTED_RUNTIME_DIGEST"
           test "$(jq -r '.currentMaterialization.hostingVersion' "$CANDIDATE_DESCRIPTOR")" = "$EXPECTED_HOSTING_VERSION"
@@ -6800,7 +6801,7 @@ jobs:
             test "$(sha256sum "$out" | awk '{print $1}')" = "$(git show "$FOCAL_SOURCE:app/$p" | sha256sum | awk '{print $1}')"
           done
       - name: step
-        if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM154_156_LIVE_REPROOF_REQUIRED' }}
+        if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM154_156_LIVE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_V190_LIVE_REPROOF_REQUIRED' }}
         run: |
           set -Eeuo pipefail
           PREI4_OUT="$FOCAL_OUT/browser" CXORBIA_PREI4_ROOT="$HOSTING_URL" CXORBIA_PREI4_SOURCE_SHA="$FOCAL_SOURCE" CXORBIA_EXPECTED_HR_REVISION="$HR_REVISION" PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" node tools/qa/cxorbia-vrm154-156-live-reproof.mjs | tee "$FOCAL_OUT/live-reproof.log"
@@ -6810,7 +6811,7 @@ jobs:
           test "$(jq -r '.finance.amountReviewRequired' "$FOCAL_OUT/browser/result.json")" = "5"
           test "$(jq -r '.finance.octoberRecords' "$FOCAL_OUT/browser/result.json")" = "0"
       - name: step
-        if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_HUMAN_VISUAL_REMEDIATION_DIAGNOSTIC_REQUIRED' }}
+        if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_HUMAN_VISUAL_REMEDIATION_DIAGNOSTIC_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_V190_LIVE_REPROOF_REQUIRED' }}
         run: |
           set -Eeuo pipefail
           PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" OUT="$FOCAL_OUT/human-acceptance" HR_FILE="$FOCAL_OUT/hr-live.json" node tools/qa/cxorbia-i3-human-acceptance-forensic-readback.mjs | tee "$FOCAL_OUT/human-acceptance.log"
@@ -6823,9 +6824,25 @@ jobs:
           test "$(jq -r '.hrWrites' "$PROBE_OUT/result.json")" = "0"
           test "$(jq -r '.production' "$PROBE_OUT/result.json")" = "false"
       - name: step
+        if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_V190_LIVE_REPROOF_REQUIRED' }}
         run: |
           set -Eeuo pipefail
-          DECISION="PASS_VRM157_EXISTING_DEV_READBACK"; if [ "$ACTIVE_STATUS" = "HOLD_VRM154_156_LIVE_REPROOF_REQUIRED" ]; then DECISION="PASS_VRM154_156_SEALED_DEV_REPROOF"; fi
+          SOURCE_DIR="$RUNNER_TEMP/cxorbia-v190-live-source"; rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"; git archive "$FOCAL_SOURCE" | tar -x -C "$SOURCE_DIR"
+          mkdir -p "$FOCAL_OUT/full-human" "$FOCAL_OUT/semantic" "$FOCAL_OUT/cert-res"
+          curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=json&v190live=$GITHUB_RUN_ID" > "$FOCAL_OUT/hr-live.json"
+          test "$(jq -r '._runtime.revision // .sourceRevision // empty' "$FOCAL_OUT/hr-live.json")" = "$HR_REVISION"
+          PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" I3_CERTIFICATION_SOURCE_SHA="$FOCAL_SOURCE" SOURCE_DIR="$SOURCE_DIR" CX_I3_PINNED_HR_FILE="$FOCAL_OUT/hr-live.json" CX_I3_PINNED_HR_REVISION="$HR_REVISION" ACCEPTANCE_OUT="$FOCAL_OUT/full-human" node RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
+          test "$(jq -r '.decision' "$FOCAL_OUT/full-human/human-live-acceptance.json")" = "PASS_I3_HUMAN_LIVE_ACCEPTANCE"; test "$(jq -r '.decision' "$FOCAL_OUT/full-human/i3-functional-probes.json")" = "PASS_I3_ATOMIC_FUNCTIONAL_PROBES"; test "$(jq -r '.probe.reservations.ok' "$FOCAL_OUT/full-human/i3-functional-probes.json")" = "true"; test "$(jq '.probe.reservations.qaResidueIds|length' "$FOCAL_OUT/full-human/i3-functional-probes.json")" = "0"
+          C3_SEM_OUT="$FOCAL_OUT/semantic" C3_HR_FILE="$FOCAL_OUT/hr-live.json" C3_FIREBASE_PROJECT="$PROJECT" C3_TENANT_ID="$TENANT_ID" C3_PROJECT_ID="$PROJECT_ID" C3_HR_REVISION="$HR_REVISION" C3_HOSTING_URL="$HOSTING_URL" node tools/qa/cxorbia-i3-c3-terminal-semantic-oracle.mjs
+          test "$(jq -r '.decision' "$FOCAL_OUT/semantic/hr-contrast.json")" = "PASS_C3_TERMINAL_HR_SEMANTIC_ORACLE"
+          PREI4_OUT="$FOCAL_OUT/semantic" CXORBIA_PREI4_ROOT="$HOSTING_URL" CXORBIA_PREI4_SOURCE_SHA="$FOCAL_SOURCE" node tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs
+          test "$(jq -r '.decision' "$FOCAL_OUT/semantic/browser-focal.json")" = "PASS_PRE_I4_FOCAL_HUMAN_BROWSER"; test "$(jq -r '.hrRevision' "$FOCAL_OUT/semantic/browser-focal.json")" = "$HR_REVISION"
+          PROJECT_ID="$PROJECT_ID" TENANT_ID="$TENANT_ID" HOSTING_URL="$HOSTING_URL" CERT_RES_SOURCE="$FOCAL_SOURCE" CERT_RES_MAT_OUT="$FOCAL_OUT/cert-res" node tools/qa/cxorbia-prei4-cert-res-live.mjs
+          test "$(jq -r '.decision' "$FOCAL_OUT/cert-res/cert-res-live.json")" = "PASS_PREI4_CERT_RES_CUMULATIVE_DEV_LIVE"; test "$(jq -r '.cleanup.attempt and .cleanup.recert and .cleanup.bank and .cleanup.resource and .cleanup.binary' "$FOCAL_OUT/cert-res/cert-res-live.json")" = "true"
+      - name: step
+        run: |
+          set -Eeuo pipefail
+          DECISION="PASS_VRM157_EXISTING_DEV_READBACK"; if [ "$ACTIVE_STATUS" = "HOLD_VRM154_156_LIVE_REPROOF_REQUIRED" ]; then DECISION="PASS_VRM154_156_SEALED_DEV_REPROOF"; fi; if [ "$ACTIVE_STATUS" = "HOLD_V190_LIVE_REPROOF_REQUIRED" ]; then DECISION="PASS_V190_SAME_DEV_LIVE_REPROOF"; fi
           jq -n -S --arg decision "$DECISION" --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg runtime "$EXPECTED_RUNTIME_REVISION" --arg digest "$EXPECTED_RUNTIME_DIGEST" --arg hosting "$EXPECTED_HOSTING_VERSION" --arg hr "$HR_REVISION" '{decision:$decision,sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,scenarioDimensionsProven:true,frontendBytesExact:true,builds:0,runtimeDeploys:0,hostingDeploys:0,writes:0,production:false}' > "$FOCAL_OUT/result.json"
       - if: always()
         uses: actions/upload-artifact@v4
