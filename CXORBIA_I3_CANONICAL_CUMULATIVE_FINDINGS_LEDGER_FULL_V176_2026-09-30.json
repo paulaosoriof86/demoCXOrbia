@@ -18,9 +18,20 @@
     "sourceTree": "61c44aebc6313847c6baab9beb435095f039310a",
     "predecessorSha": "653be16597a70474456f0170f58a6a1c0c4d39b0",
     "production": false,
-    "state": "VRM153_SOURCE_FIX_PENDING_REPROOF",
+    "state": "VRM153_SOURCE_PROOF_PASS_VRM154_156_FRONTEND_CLOSURE_REQUIRED",
     "proof": {
-      "decision": "PENDING_VRM153_PROVIDER_SOURCE_REPROOF",
+      "runId": 37009830523,
+      "runNumber": 851,
+      "jobId": 110846695040,
+      "artifactId": 11227287888,
+      "artifactDigest": "sha256:66803f4f4c4334c96c7556e433d9c901eed37d41cd577d5a85da6d4b33562791",
+      "decision": "PASS_VRM151_PROVIDER_SOURCE_REPROOF",
+      "sourceSha": "53b84faa673f2378439e2f33af3faf63948cbbfa",
+      "sourceTree": "61c44aebc6313847c6baab9beb435095f039310a",
+      "exactHrAuthority": true,
+      "revisionFailClosed": true,
+      "strictReadBeforeWrite": true,
+      "deploys": 0,
       "production": false
     },
     "priorProof": {
@@ -7375,7 +7386,7 @@
       "secondaryClassification": "PERSISTENCE_FAILURE",
       "severity": "P0",
       "title": "Durable historical reconciliation readback does not match canonical expected counts",
-      "state": "SOURCE_FIX_PENDING_REPROOF",
+      "state": "SOURCE_PROOF_PASS_CUMULATIVE_FRONTEND_CLOSURE_REQUIRED",
       "expected": "628 unique durable reconciliation records must read back as exactly 562 paid, 66 pending and 5 amountReviewRequired on the same HR revision.",
       "observed": "Run 849 passed all batch ACKs and idempotent replays; readback confirmed 628 records and 628 unique visits, then failed the final paid/pending/amountReviewRequired count tuple.",
       "rootCauseStatus": "PROVEN",
@@ -7446,7 +7457,104 @@
           "transaction reads remain complete before writes"
         ],
         "production": false
+      },
+      "sourceProof": {
+        "runId": 37009830523,
+        "runNumber": 851,
+        "jobId": 110846695040,
+        "artifactId": 11227287888,
+        "artifactDigest": "sha256:66803f4f4c4334c96c7556e433d9c901eed37d41cd577d5a85da6d4b33562791",
+        "decision": "PASS_VRM151_PROVIDER_SOURCE_REPROOF",
+        "sourceSha": "53b84faa673f2378439e2f33af3faf63948cbbfa",
+        "sourceTree": "61c44aebc6313847c6baab9beb435095f039310a",
+        "exactHrAuthority": true,
+        "revisionFailClosed": true,
+        "strictReadBeforeWrite": true,
+        "deploys": 0,
+        "production": false
       }
+    },
+    "VRM-154": {
+      "id": "VRM-154",
+      "classification": "FUNCTIONAL_DEFECT",
+      "secondaryClassification": "MAPPING_FAILURE",
+      "severity": "P0",
+      "title": "Shopper visit surfaces render only one scenario dimension and omit project-defined additional scenario dimensions",
+      "state": "ROOT_CAUSE_PROVEN_SOURCE_FIX_REQUIRED",
+      "expected": "Every shopper visit must render all scenario dimensions configured for that project. The renderer must be project-driven and generic; no Cinépolis-, combo-, country-, period- or column-specific hardcoding. For the current Cinépolis configuration this includes the ticket purchase scenario and the assigned combo scenario.",
+      "observed": "Live HR rows already contain the second scenario information (e.g. tipoCombo) while Mis Visitas renders only v.escenario/v.canal and the shopper visit detail checks v.combo instead of the live canonical tipoCombo field. The combo scenario therefore disappears from both shopper-facing surfaces.",
+      "rootCauseStatus": "PROVEN",
+      "rootCause": "Frontend renderers use a singular legacy visit scenario contract and ad-hoc field names instead of iterating a project-level scenario-dimensions contract. visita-detalle.js reads v.combo while the canonical live HR visit exposes tipoCombo; misvisitas.js renders only escenario/canal.",
+      "owners": [
+        "app/modules/misvisitas.js",
+        "app/modules/visita-detalle.js",
+        "app/core/data.js"
+      ],
+      "sourceAuthority": [
+        "live HR canonical visit",
+        "project configuration"
+      ],
+      "acceptance": [
+        "generic project scenarioDimensions contract",
+        "Mis Visitas active visit card shows every configured scenario dimension",
+        "visit detail shows every configured scenario dimension",
+        "postulation detail may show the same compact scenario summary when available",
+        "Cinépolis example renders ticket-purchase scenario plus combo scenario without hardcoded project branching",
+        "projects with one scenario dimension render one dimension only"
+      ],
+      "production": false
+    },
+    "VRM-155": {
+      "id": "VRM-155",
+      "classification": "VISUAL_DEFECT",
+      "severity": "P1",
+      "title": "Shopper Mis Visitas and Mi Perfil remain visually inconsistent with the approved frontend language",
+      "state": "HUMAN_REPRODUCIBLE_FAIL_SOURCE_FIX_REQUIRED",
+      "relatedFindings": [
+        "VRM-131",
+        "VRM-145"
+      ],
+      "expected": "Shopper cards and profile use the same visual system already approved in the postulation card: clear hierarchy, corporate palette, solid contrast, meaningful emojis/icons, coherent action buttons and readable progression. No isolated brown/amber visual treatment or low-contrast dot sequence that reads as a foreign component.",
+      "observed": "Paula's current human review reports Mis Visitas cards/visit detail, progress route and Mi Perfil still visually disconnected from the approved frontend; brown-looking accent, low-impact dots, weak hierarchy and insufficient emoji/color language remain visible.",
+      "rootCauseStatus": "OWNER_PROVEN_VISUAL_REDESIGN_REQUIRED",
+      "rootCause": "Functional patches preserved older inline-card markup and badge/progress treatments instead of composing from the approved shopper/postulation visual language; earlier VRM-131/145 were not human-accepted.",
+      "owners": [
+        "app/modules/misvisitas.js",
+        "app/adapters/tya-canonical-shopper-portal-v2.js",
+        "app/styles/layout.css"
+      ],
+      "acceptance": [
+        "preserve all current logic, routes, buttons and provider contracts",
+        "redesign presentation only using existing corporate CSS variables/components",
+        "clear hierarchy comparable to approved shopper postulation card",
+        "meaningful emojis/icons for scenario, location, status, actions and progression",
+        "no off-palette brown visual token",
+        "human visual reproof required before I4"
+      ],
+      "production": false
+    },
+    "VRM-156": {
+      "id": "VRM-156",
+      "classification": "VISUAL_DEFECT",
+      "severity": "P1",
+      "title": "Academy/certification course cards are visually inconsistent with the approved frontend",
+      "state": "HUMAN_REPRODUCIBLE_FAIL_SOURCE_FIX_REQUIRED",
+      "expected": "Academy/certification cards use the same coherent frontend system: clear visual hierarchy, solid contrast, corporate palette, meaningful emojis/icons and obvious status/action affordances while preserving certification logic and provider-backed state.",
+      "observed": "Paula's current human review reports course cards as visually flat, low-contrast and inconsistent with the rest of the approved frontend.",
+      "rootCauseStatus": "OWNER_PROVEN_VISUAL_REDESIGN_REQUIRED",
+      "rootCause": "Certification module presentation uses generic card/border blocks designed for functional closure rather than the approved shopper-facing visual language.",
+      "owners": [
+        "app/modules/cert.js",
+        "app/styles/layout.css"
+      ],
+      "acceptance": [
+        "no certification logic change",
+        "no eligibility or persistence change",
+        "course/question-bank cards use coherent icons/emojis, contrast and status hierarchy",
+        "corporate palette only",
+        "human visual reproof required before I4"
+      ],
+      "production": false
     }
   },
   "latestEvidenceOverrides": {
@@ -8017,14 +8125,17 @@
       "VRM-150",
       "VRM-151",
       "VRM-152",
-      "VRM-153"
+      "VRM-153",
+      "VRM-154",
+      "VRM-155",
+      "VRM-156"
     ],
-    "findingCount": 153,
-    "expectedCurrentRange": "VRM-001..VRM-153",
-    "nextFindingId": "VRM-154",
+    "findingCount": 156,
+    "expectedCurrentRange": "VRM-001..VRM-156",
+    "nextFindingId": "VRM-157",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_VRM151_PROVIDER_SOURCE_REPROOF_REQUIRED",
+    "terminalState": "HOLD_VRM154_156_CUMULATIVE_FRONTEND_SOURCE_FIX_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -8053,7 +8164,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Run provider source reproof for VRM-153 exact-HR-authority binding; no deploy.",
+  "exactNextAction": "Create one cumulative source successor on top of 53b84faa: generic project-driven multi-scenario rendering plus shopper Mis Visitas/Mi Perfil and Academy visual coherence fixes; preserve all functional/provider contracts; then run focal source proof and one cumulative DEV materialization.",
   "supersedesGitBlob": "397a9cee8c71d3156567a0cc96bfdcba88bb7c3a",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -8082,7 +8193,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-154",
+  "nextFindingId": "VRM-157",
   "lastControlFailure": {
     "id": "VRM-142",
     "classification": "AUTH_FAILURE",
@@ -11537,7 +11648,7 @@
     "next": "SHORT_HUMAN_VISUAL_RETEST",
     "production": false
   },
-  "activeBlocker": "VRM153_PROVIDER_SOURCE_REPROOF_REQUIRED",
+  "activeBlocker": "VRM154_156_CUMULATIVE_FRONTEND_SOURCE_FIX_REQUIRED",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -11667,12 +11778,14 @@
   },
   "latestFocalSourceFix": {
     "findingIds": [
-      "VRM-153"
+      "VRM-153",
+      "VRM-154",
+      "VRM-155",
+      "VRM-156"
     ],
     "sourceSha": "53b84faa673f2378439e2f33af3faf63948cbbfa",
     "sourceTree": "61c44aebc6313847c6baab9beb435095f039310a",
-    "predecessorSha": "653be16597a70474456f0170f58a6a1c0c4d39b0",
-    "state": "SOURCE_WRITTEN_PENDING_REPROOF",
+    "state": "FINANCE_SOURCE_PROOF_PASS_FRONTEND_CUMULATIVE_FIX_REQUIRED",
     "production": false
   }
 }
