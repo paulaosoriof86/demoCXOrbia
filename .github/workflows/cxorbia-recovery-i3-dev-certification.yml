@@ -6605,7 +6605,7 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-vrm151-durable-historical-reconciliation:
+  vrm151-durable-historical-reconciliation:
     name: I3 VRM-151 — durable historical reconciliation — DEV only
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM151_DURABLE_RECONCILIATION_REQUIRED' }}
