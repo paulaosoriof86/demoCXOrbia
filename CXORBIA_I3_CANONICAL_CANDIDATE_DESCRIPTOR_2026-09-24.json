@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM151_CANONICAL_VISIT_OWNER_DIAGNOSTIC_REQUIRED",
+  "status": "HOLD_VRM151_SEVEN_REIMBURSEMENT_EXCEPTIONS_DIAGNOSTIC_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "422b894b0b92047c0531e5d112e9ccef4abf8fc7",
   "predecessorProductSourceSha": "0b7e5db7b1035ec4a81ad548284dbb9146fcfc08",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "4ed2df3213e814ab1d17f469fb1b80e1907aa943",
+  "findingsLedgerExpectedGitBlob": "c0c21184d2ae7ad5eefcebd53f8f10a758b7428e",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM151_CANONICAL_VISIT_OWNER_DIAGNOSTIC_REQUIRED",
+  "activeBlocker": "VRM151_SEVEN_REIMBURSEMENT_EXCEPTIONS_DIAGNOSTIC_REQUIRED",
   "nextFindingId": "VRM-152",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run read-only VRM-151 canonical visit owner diagnostic using the previously proven V27 authority live_hr_visit_id_equals_firestore_doc_id across historical HR periods; no provider changes or reconciliation writes until duplicate scope is removed.",
+  "exactNextAction": "Inspect only the seven canonical historical reimbursement exceptions read-only across live HR and durable Firestore fields; resolve from existing authorized data only, never assume zero or fabricate amounts.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
