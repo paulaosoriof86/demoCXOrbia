@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED",
+  "status": "HOLD_SHORT_HUMAN_VISUAL_RETEST",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4_PROVIDER_RECONCILIATION_REPROOF",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "90cbaaa0844bbdde0b4b96a7caa4bfbdff16167f",
   "predecessorProductSourceSha": "a2f7acd659b68217299f92ef69a320f08e806635",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "2b04b1e249a800e2f0d596435aeeb41d205b4370",
+  "findingsLedgerExpectedGitBlob": "1bdce4d314dfdee7535e7ecdf9b97e40eecb9cd2",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "PRE_I4_VRM142_FINANCE_FIRESTORE_RULES_DEV_LIVE_REPROOF",
+  "activeBlocker": "SHORT_HUMAN_VISUAL_RETEST",
   "nextFindingId": "VRM-143",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Use the existing PRE-I4 CONTENT-001 Recovery DEV lane to materialize productSourceSha 18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd / tree 90cbaaa0844bbdde0b4b96a7caa4bfbdff16167f exactly once, including exact Firestore Rules deployment/parity, then run current-period HR parity, authenticated Admin+Shopper no-regression, Finance durable projection, Certification/Resources live proof/cleanup and final receipt. Production remains DO_NOT_TOUCH.",
+  "exactNextAction": "Perform only the short Paula human visual retest against the already-certified DEV candidate. If accepted with no reproducible drift, mark READY_FOR_EXPLICIT_PRODUCTION_AUTHORIZATION using the exact Run 817 evidence and preserve the exact artifact/runtime/hosting/rules set; no rebuild, no rematerialization, no production touch before explicit authorization.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1830,6 +1830,26 @@
     "sourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
     "sourceTree": "90cbaaa0844bbdde0b4b96a7caa4bfbdff16167f",
     "predecessorSha": "a2f7acd659b68217299f92ef69a320f08e806635",
+    "production": false
+  },
+  "preI4Run817": {
+    "state": "PASS_PENDING_SHORT_HUMAN_VISUAL_RETEST",
+    "runId": 36942289348,
+    "artifactId": 11200941985,
+    "sourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
+    "sourceTree": "90cbaaa0844bbdde0b4b96a7caa4bfbdff16167f",
+    "hrRevision": "e242d83f7a63b4f390a3ff6eeaeb616dea52f52f159a5e3a929c5473a7225159",
+    "runtimeRevision": "cxorbia-live-hr-dev-00241-lnw",
+    "runtimeDigest": "sha256:cf8cdbc37a7373625b7251434dcc70ae9dbe6b06fd2d8381414f51de5f8dd128",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/a5ddde86085cb9f2",
+    "rulesSha256": "bced559c77430dd2f1f14a04b6a357f7ba0cc474a89db7d4859435f86484dcf3",
+    "browser": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+    "finance": "PASS_PREI4_FINAL_FOCAL_FINANCE",
+    "certification": "PASS_PREI4_CERT_RES_CUMULATIVE_DEV_LIVE",
+    "firestoreRules": "PASS_PREI4_FIRESTORE_RULES_EXACT",
+    "financeCleanup": true,
+    "certificationCleanup": true,
+    "hrWrites": 0,
     "production": false
   }
 }
