@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_SHORT_HUMAN_VISUAL_RETEST",
+  "status": "HOLD_NEW_VISUAL_FINDINGS_REMEDIATION",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4_PROVIDER_RECONCILIATION_REPROOF",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,13 +8,13 @@
   "productTreeAuthority": "90cbaaa0844bbdde0b4b96a7caa4bfbdff16167f",
   "predecessorProductSourceSha": "a2f7acd659b68217299f92ef69a320f08e806635",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "1bdce4d314dfdee7535e7ecdf9b97e40eecb9cd2",
+  "findingsLedgerExpectedGitBlob": "b8a9ea57f8866d9a6be8557e7c3077a331afd508",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "SHORT_HUMAN_VISUAL_RETEST",
-  "nextFindingId": "VRM-143",
+  "activeBlocker": "VRM-143_TO_VRM-151_NEW_HUMAN_VISUAL_FINDINGS",
+  "nextFindingId": "VRM-152",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Perform only the short Paula human visual retest against the already-certified DEV candidate. If accepted with no reproducible drift, mark READY_FOR_EXPLICIT_PRODUCTION_AUTHORIZATION using the exact Run 817 evidence and preserve the exact artifact/runtime/hosting/rules set; no rebuild, no rematerialization, no production touch before explicit authorization.",
+  "exactNextAction": "Focal MODULE_TRUTH and root-cause proof for VRM-143..151, then one cumulative I3 source successor correcting functional/data first and visual second; no production touch.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1850,6 +1850,26 @@
     "financeCleanup": true,
     "certificationCleanup": true,
     "hrWrites": 0,
+    "production": false
+  },
+  "latestHumanVisualReview20261001": {
+    "status": "NOT_ACCEPTED_WITH_REPRODUCIBLE_FINDINGS",
+    "reviewRole": "shopper",
+    "user": "paula.osorio",
+    "project": "cinepolis",
+    "period": "2026-10",
+    "findings": [
+      "VRM-143",
+      "VRM-144",
+      "VRM-145",
+      "VRM-146",
+      "VRM-147",
+      "VRM-148",
+      "VRM-149",
+      "VRM-150",
+      "VRM-151"
+    ],
+    "preservedRun817UnaffectedOwnerEvidence": true,
     "production": false
   }
 }

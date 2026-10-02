@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v114",
-  "frozenAt": "2026-09-30T02:41:00Z",
+  "frozenAt": "2026-10-02T01:42:00Z",
   "status": "HOLD",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4_PROVIDER_RECONCILIATION_REPROOF",
   "microblockId": "PRE-I4-LIVE-HR-STALE-CACHE-MAPPING-HOLD-AUGUST-CANONICAL-CORRECTION",
@@ -6604,6 +6604,191 @@
         "production": false
       },
       "production": false
+    },
+    "VRM-143": {
+      "id": "VRM-143",
+      "classification": "FUNCTIONAL_DEFECT",
+      "severity": "PRE_I4_ACCEPTANCE_BLOCKER",
+      "title": "Historical non-current notifications remain unread/current in Mi Día",
+      "state": "FROZEN_OPEN_OWNER_PROOF_REQUIRED",
+      "expected": "Historical/resolved informational notifications must not count as current unread or contaminate Mi Día for a new period; actionable unresolved events remain visible.",
+      "observed": "In OCT 2026 shopper Mi Día shows 3 unread approved-application notifications dated 2026-09-21, 2026-09-07 and 2026-09-30.",
+      "rootCauseStatus": "SOURCE_EVIDENCE_PROVEN_LIFECYCLE_FILTER_ABSENT; focal behavior proof pending",
+      "rootCause": "app/core/notif.js filters by identity/role/entity only; for(role) and unread(role) have no project/period/lifecycle/expiry semantics.",
+      "owners": [
+        "app/core/notif.js",
+        "app/modules/midia.js"
+      ],
+      "testContract": [
+        "Sep resolved/historical not unread-current in Oct",
+        "Oct current event visible",
+        "actionable unresolved event remains visible",
+        "shopper identity unchanged"
+      ],
+      "production": false
+    },
+    "VRM-144": {
+      "id": "VRM-144",
+      "classification": "VISUAL_DEFECT",
+      "severity": "PRE_I4_ACCEPTANCE_BLOCKER",
+      "title": "Mi Día visual hierarchy places secondary content ahead of current action",
+      "state": "FROZEN_OPEN_OWNER_PROOF_REQUIRED",
+      "expected": "Order: next action/visit, visit state/progress, primary actions, current alerts, secondary schedule/summary.",
+      "observed": "Notifications and schedule dominate above the next visit/progress and require excessive scrolling.",
+      "rootCauseStatus": "HUMAN_VISUAL_DRIFT_PROVEN; exact composition owner focal pending",
+      "owners": [
+        "app/modules/midia.js"
+      ],
+      "production": false
+    },
+    "VRM-145": {
+      "id": "VRM-145",
+      "classification": "VISUAL_DEFECT",
+      "severity": "PRE_I4_ACCEPTANCE_BLOCKER",
+      "title": "Mi Perfil hierarchy does not sufficiently separate identity, performance and trajectory",
+      "state": "FROZEN_OPEN_OWNER_PROOF_REQUIRED",
+      "expected": "Preserve all fields/KPIs/history while clearly grouping personal identity, performance and trajectory.",
+      "observed": "Multiple blocks compete at the same level; profile, KPIs and history lack clear hierarchy.",
+      "rootCauseStatus": "HUMAN_VISUAL_DRIFT_PROVEN; exact markup/CSS owner focal pending",
+      "owners": [
+        "app/modules/operacion-extra.js"
+      ],
+      "production": false
+    },
+    "VRM-146": {
+      "id": "VRM-146",
+      "classification": "FUNCTIONAL_DEFECT",
+      "severity": "PRE_I4_ACCEPTANCE_BLOCKER",
+      "title": "Shopper visit history ordering is not explicit/stable oldest-to-newest",
+      "state": "FROZEN_OPEN_OWNER_PROOF_REQUIRED",
+      "expected": "History sorted explicitly oldest -> newest, independent of HR receive order; OCT 2026 last.",
+      "observed": "Visible history order: AGO 2026, JUL 2026, JUN 2026, ABR 2026, DIC 2025, OCT 2025, JUN 2025, OCT 2026.",
+      "rootCauseStatus": "SOURCE_EVIDENCE_PROVEN_PRESENTATION_ROWS_USE_UNSORTED_visAll; focal proof pending",
+      "owners": [
+        "app/modules/operacion-extra.js"
+      ],
+      "production": false
+    },
+    "VRM-147": {
+      "id": "VRM-147",
+      "classification": "MAPPING_FAILURE",
+      "secondaryClassification": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "title": "Reservation request collapses eligible visit slots to branch/city and loses execution cut",
+      "state": "FROZEN_OPEN_OWNER_PROOF_REQUIRED",
+      "expected": "Reservable option represents one eligible visit/slot and shows branch, city/country, period, executionCut and availability; assigned slots excluded.",
+      "observed": "Request branch modal shows branch + period without cut; same branch can collapse across cuts.",
+      "rootCauseStatus": "SOURCE_EVIDENCE_PROVEN_DEDUP_KEY_BRANCH_CITY; exact save mapping focal pending",
+      "owners": [
+        "app/modules/reservas.js"
+      ],
+      "testContract": [
+        "two cuts one assigned one free -> only free",
+        "cut label visible",
+        "request persists correct visitId/hrRowId/cut",
+        "remote ACK",
+        "no duplicate"
+      ],
+      "production": false
+    },
+    "VRM-148": {
+      "id": "VRM-148",
+      "classification": "FUNCTIONAL_DEFECT",
+      "secondaryClassification": "PROVIDER_FAILURE",
+      "severity": "P0",
+      "title": "Certification AI silently publishes fewer questions than requested and grounding is not proven",
+      "state": "FROZEN_OPEN_OWNER_PROOF_REQUIRED",
+      "expected": "requestedQuestionCount is exact when sources suffice; otherwise fail closed with X of N; attached instructive is primary grounding and human admin text may complement it.",
+      "observed": "Admin requested 10 questions; shopper bank shows 8; observed output appears insufficiently grounded in the instructive.",
+      "rootCauseStatus": "FRONTEND_QUESTION_COUNT_FORWARDING_PROVEN; attachment extraction/provider/postprocessing focal pending",
+      "owners": [
+        "app/modules/cert.js",
+        "app/core/backend-ai.js",
+        "backend certification generateBank provider"
+      ],
+      "testContract": [
+        "request 10 -> exactly 10 or explicit fail",
+        "attachment actually extracted",
+        "grounding evidence",
+        "durable draft",
+        "published bank exact",
+        "cleanup fixture"
+      ],
+      "production": false
+    },
+    "VRM-149": {
+      "id": "VRM-149",
+      "classification": "VISUAL_DEFECT",
+      "severity": "PRE_I4_ACCEPTANCE_BLOCKER",
+      "title": "Scrollable sidebar has effectively invisible scrollbar on light theme",
+      "state": "FROZEN_OPEN_OWNER_PROOF_REQUIRED",
+      "expected": "Keep real sidebar scrolling and show a discreet visible corporate scrollbar on the light rail.",
+      "observed": "Long sidebar scrolls but scrollbar is not visually perceptible.",
+      "rootCauseStatus": "SOURCE_EVIDENCE_PROVEN_LOW_CONTRAST_SCROLLBAR",
+      "rootCause": "app/styles/layout.css uses white/translucent scrollbar thumb values intended for dark rail against current light sidebar.",
+      "owners": [
+        "app/styles/layout.css"
+      ],
+      "production": false
+    },
+    "VRM-150": {
+      "id": "VRM-150",
+      "classification": "FUNCTIONAL_DEFECT",
+      "secondaryClassification": "VISUAL_DEFECT",
+      "severity": "P0",
+      "title": "Mis Beneficios mixes historical KPI totals into selected current period",
+      "state": "FROZEN_OPEN_OWNER_PROOF_REQUIRED",
+      "expected": "Selected period KPIs use only that period; historical is separate and filterable by period/status/country/currency and optionally project.",
+      "observed": "OCT 2026 says 0 in this period while top KPIs show Q420 honoraria, Q1055 reimbursements and Q1475 receivable from history.",
+      "rootCauseStatus": "SOURCE_EVIDENCE_PROVEN_KPI_SCOPE_USES_all_NOT_currentLiquidations",
+      "owners": [
+        "app/modules/beneficios.js"
+      ],
+      "testContract": [
+        "OCT KPIs only OCT",
+        "Historical shows history",
+        "period/status/country/currency filters",
+        "no double count"
+      ],
+      "production": false
+    },
+    "VRM-151": {
+      "id": "VRM-151",
+      "classification": "PERSISTENCE_FAILURE",
+      "secondaryClassification": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "title": "Historical payment reconciliation needs one durable auditable idempotent source of truth",
+      "state": "FROZEN_OPEN_OWNER_PROOF_REQUIRED",
+      "expected": "Durably reconcile confirmed historical payment scope without HR mutation, invented bank refs, current-period contamination or duplicate accounting effects.",
+      "observed": "Operational truth supplied: all <= Jul 2026 paid both countries; Aug HN paid; Aug GT pending; Sep all pending; Oct must remain untouched.",
+      "rootCauseStatus": "DURABLE_FINANCE_GRAPH_EXISTS; exact reconciliation entity/command capability focal pending",
+      "owners": [
+        "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+        "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+        "app/core/backend-finance-benefits.js",
+        "app/modules/beneficios.js"
+      ],
+      "reconciliationScope": {
+        "paid": [
+          "<=2026-07 GT+HN",
+          "2026-08 HN"
+        ],
+        "pending": [
+          "2026-08 GT",
+          "2026-09 GT+HN"
+        ],
+        "untouched": [
+          "2026-10"
+        ]
+      },
+      "testContract": [
+        "dry-run counts/amounts period×country×currency×shopper",
+        "durable ACK/readback",
+        "idempotent rerun zero new effects",
+        "current finance dashboard unaffected",
+        "HR writes 0"
+      ],
+      "production": false
     }
   },
   "latestEvidenceOverrides": {
@@ -7192,7 +7377,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Paula performs the short human visual retest on the already-certified DEV candidate 18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd. If accepted and no reproducible drift appears, freeze READY_FOR_EXPLICIT_PRODUCTION_AUTHORIZATION using Run 817 artifact/runtime/hosting/rules evidence; do not rebuild or rematerialize. Production remains untouched until explicit authorization.",
+  "exactNextAction": "Build focal MODULE_TRUTH for VRM-143..151 owners, prove exact root cause, then correct functional/data owners before visual owners on one cumulative I3 successor; production remains DO_NOT_TOUCH.",
   "supersedesGitBlob": "397a9cee8c71d3156567a0cc96bfdcba88bb7c3a",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -7221,7 +7406,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-143",
+  "nextFindingId": "VRM-152",
   "lastControlFailure": {
     "id": "VRM-142",
     "classification": "AUTH_FAILURE",
@@ -7267,7 +7452,7 @@
       "status": "REJECTED_WITH_FINDINGS",
       "receipt": "CXORBIA_I3_PAULA_VISUAL_REVIEW_2026-09-25.json"
     },
-    "status": "REMEDIATION_SOURCE_UNDER_CANONICAL_REPROOF",
+    "status": "REJECTED_2026_10_01_WITH_VRM_143_151",
     "sourceSha": "a29b8ad89391fb5537d1cbf765ef6ec86f775608",
     "sourceTree": "ea8846d254d1901ac1101c182098c46f995f1141",
     "hostingVersion": "sites/cxorbia-backend-dev/versions/f4ff99f429a748ea",
@@ -7408,7 +7593,38 @@
         "VRM-104"
       ],
       "production": false
-    }
+    },
+    "reviewedAt": "2026-10-01T19:42:00-06:00",
+    "reviewerRole": "Shopper",
+    "shopperUser": "paula.osorio",
+    "project": "Cinépolis",
+    "period": "OCT 2026",
+    "newFindings": [
+      "VRM-143",
+      "VRM-144",
+      "VRM-145",
+      "VRM-146",
+      "VRM-147",
+      "VRM-148",
+      "VRM-149",
+      "VRM-150",
+      "VRM-151"
+    ],
+    "preservedPasses": [
+      "shopper login/session",
+      "Cinépolis project context",
+      "OCT 2026 period",
+      "Mi Perfil loads",
+      "live visit history loads",
+      "Visitas Disponibles loads",
+      "Reservas & Asignación loads",
+      "Mis Visitas loads",
+      "Certification opens",
+      "Instructive opens",
+      "Mis Beneficios loads",
+      "active C. Paseo Cayalá visit"
+    ],
+    "run817RemainsValidForUnaffectedOwners": true
   },
   "supersedesLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V175_2026-09-30.json",
   "ownerExpansionFreeze": {
@@ -10645,5 +10861,5 @@
     "next": "SHORT_HUMAN_VISUAL_RETEST",
     "production": false
   },
-  "activeBlocker": "SHORT_HUMAN_VISUAL_RETEST"
+  "activeBlocker": "VRM-143_TO_VRM-151_NEW_HUMAN_VISUAL_FINDINGS"
 }
