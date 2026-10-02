@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM154_156_CUMULATIVE_FRONTEND_SOURCE_FIX_REQUIRED",
+  "status": "HOLD_VRM154_156_FRONTEND_SOURCE_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "53b84faa673f2378439e2f33af3faf63948cbbfa",
-  "productTreeAuthority": "61c44aebc6313847c6baab9beb435095f039310a",
-  "predecessorProductSourceSha": "653be16597a70474456f0170f58a6a1c0c4d39b0",
+  "productSourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
+  "productTreeAuthority": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
+  "predecessorProductSourceSha": "53b84faa673f2378439e2f33af3faf63948cbbfa",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "741b34052a9bce9525e7b4fff3283644f9202a02",
+  "findingsLedgerExpectedGitBlob": "3fd5db4d99ff12469ff8992df144b6dc464d3c02",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM154_156_CUMULATIVE_FRONTEND_SOURCE_FIX_REQUIRED",
+  "activeBlocker": "VRM154_156_FRONTEND_SOURCE_REPROOF_REQUIRED",
   "nextFindingId": "VRM-157",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Create one cumulative source successor on top of 53b84faa: generic project-driven multi-scenario rendering plus shopper Mis Visitas/Mi Perfil and Academy visual coherence fixes; preserve all functional/provider contracts; then run focal source proof and one cumulative DEV materialization.",
+  "exactNextAction": "Run exact source proof for VRM-154..156 on da2f750e; require generic scenario-dimensions contract, syntax, finance VRM-153 regression protection and zero deploy.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2011,9 +2011,10 @@
       "VRM-155",
       "VRM-156"
     ],
-    "sourceSha": "53b84faa673f2378439e2f33af3faf63948cbbfa",
-    "sourceTree": "61c44aebc6313847c6baab9beb435095f039310a",
-    "state": "FINANCE_SOURCE_PROOF_PASS_FRONTEND_CUMULATIVE_FIX_REQUIRED",
+    "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
+    "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
+    "predecessorSha": "53b84faa673f2378439e2f33af3faf63948cbbfa",
+    "state": "VRM154_156_FRONTEND_SOURCE_REPROOF_REQUIRED",
     "production": false
   },
   "vrm151RuntimeMaterialization": {
@@ -2214,15 +2215,18 @@
     "secondaryClassification": "MAPPING_FAILURE",
     "severity": "P0",
     "title": "Shopper visit surfaces render only one scenario dimension and omit project-defined additional scenario dimensions",
-    "state": "ROOT_CAUSE_PROVEN_SOURCE_FIX_REQUIRED",
+    "state": "SOURCE_FIX_PENDING_REPROOF",
     "expected": "Every shopper visit must render all scenario dimensions configured for that project. The renderer must be project-driven and generic; no Cinépolis-, combo-, country-, period- or column-specific hardcoding. For the current Cinépolis configuration this includes the ticket purchase scenario and the assigned combo scenario.",
     "observed": "Live HR rows already contain the second scenario information (e.g. tipoCombo) while Mis Visitas renders only v.escenario/v.canal and the shopper visit detail checks v.combo instead of the live canonical tipoCombo field. The combo scenario therefore disappears from both shopper-facing surfaces.",
     "rootCauseStatus": "PROVEN",
     "rootCause": "Frontend renderers use a singular legacy visit scenario contract and ad-hoc field names instead of iterating a project-level scenario-dimensions contract. visita-detalle.js reads v.combo while the canonical live HR visit exposes tipoCombo; misvisitas.js renders only escenario/canal.",
     "owners": [
+      "backend/runtime/hr-live-service/server.mjs",
+      "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+      "app/core/tya-phase-a-source-safe-preview.js",
+      "app/core/data.js",
       "app/modules/misvisitas.js",
-      "app/modules/visita-detalle.js",
-      "app/core/data.js"
+      "app/modules/visita-detalle.js"
     ],
     "sourceAuthority": [
       "live HR canonical visit",
@@ -2236,14 +2240,29 @@
       "Cinépolis example renders ticket-purchase scenario plus combo scenario without hardcoded project branching",
       "projects with one scenario dimension render one dimension only"
     ],
-    "production": false
+    "production": false,
+    "sourceFix": {
+      "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
+      "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
+      "strategy": "PROJECT_CONFIGURED_SCENARIO_DIMENSIONS",
+      "files": [
+        "backend/runtime/hr-live-service/server.mjs",
+        "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+        "app/data/tya-hr-source-safe-periods.js",
+        "app/core/tya-phase-a-source-safe-preview.js",
+        "app/core/data.js",
+        "app/modules/misvisitas.js",
+        "app/modules/visita-detalle.js"
+      ],
+      "production": false
+    }
   },
   "vrm155": {
     "id": "VRM-155",
     "classification": "VISUAL_DEFECT",
     "severity": "P1",
     "title": "Shopper Mis Visitas and Mi Perfil remain visually inconsistent with the approved frontend language",
-    "state": "HUMAN_REPRODUCIBLE_FAIL_SOURCE_FIX_REQUIRED",
+    "state": "SOURCE_FIX_PENDING_REPROOF",
     "relatedFindings": [
       "VRM-131",
       "VRM-145"
@@ -2265,20 +2284,30 @@
       "no off-palette brown visual token",
       "human visual reproof required before I4"
     ],
-    "production": false
+    "production": false,
+    "sourceFix": {
+      "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
+      "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
+      "files": [
+        "app/modules/misvisitas.js",
+        "app/adapters/tya-canonical-shopper-portal-v2.js",
+        "app/styles/layout.css"
+      ],
+      "production": false
+    }
   },
   "vrm156": {
     "id": "VRM-156",
     "classification": "VISUAL_DEFECT",
     "severity": "P1",
     "title": "Academy/certification course cards are visually inconsistent with the approved frontend",
-    "state": "HUMAN_REPRODUCIBLE_FAIL_SOURCE_FIX_REQUIRED",
+    "state": "SOURCE_FIX_PENDING_REPROOF",
     "expected": "Academy/certification cards use the same coherent frontend system: clear visual hierarchy, solid contrast, corporate palette, meaningful emojis/icons and obvious status/action affordances while preserving certification logic and provider-backed state.",
     "observed": "Paula's current human review reports course cards as visually flat, low-contrast and inconsistent with the rest of the approved frontend.",
     "rootCauseStatus": "OWNER_PROVEN_VISUAL_REDESIGN_REQUIRED",
-    "rootCause": "Certification module presentation uses generic card/border blocks designed for functional closure rather than the approved shopper-facing visual language.",
+    "rootCause": "Academia course cards used per-course arbitrary color/gradient presentation rather than the approved corporate frontend language; the current fix preserves course logic/content and normalizes the card shell to corporate brand variables.",
     "owners": [
-      "app/modules/cert.js",
+      "app/modules/academia.js",
       "app/styles/layout.css"
     ],
     "acceptance": [
@@ -2288,6 +2317,15 @@
       "corporate palette only",
       "human visual reproof required before I4"
     ],
-    "production": false
+    "production": false,
+    "sourceFix": {
+      "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
+      "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
+      "files": [
+        "app/modules/academia.js",
+        "app/styles/layout.css"
+      ],
+      "production": false
+    }
   }
 }
