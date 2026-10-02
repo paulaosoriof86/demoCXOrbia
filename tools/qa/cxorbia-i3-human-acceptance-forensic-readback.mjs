@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';
 import {getFirestore} from 'firebase-admin/firestore';
+import {getAuth} from 'firebase-admin/auth';
 
 const PROJECT=process.env.PROJECT||'cxorbia-backend-dev';
 const TENANT=process.env.TENANT_ID||'tya';
@@ -11,6 +12,7 @@ const HR_FILE=process.env.HR_FILE||'';
 fs.mkdirSync(OUT,{recursive:true});
 if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
 const db=getFirestore();
+const auth=getAuth();
 const str=v=>String(v==null?'':v).trim(), arr=v=>Array.isArray(v)?v:[];
 const low=v=>str(v).toLocaleLowerCase('es');
 const cleanDoc=d=>({id:d.id,...(d.data()||{})});
