@@ -163,7 +163,7 @@ jobs:
           test "$(jq -r '.findings["VRM-079"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN518"
           test "$(jq -r '.findings["VRM-080"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN525"
           test "$(jq -r '.findings["VRM-081"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN547"
-          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED" || "$STATUS" == "HOLD_MODULE_TRUTH_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM087_FINALIZER_RECEIPT_SCOPE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM088_LIVE_FIXTURE_AVAILABILITY_REPROOF_REQUIRED" || "$STATUS" == "READY_FOR_GATE21_SAME_CERTIFIED_ARTIFACT" || "$STATUS" == "HOLD_PREI4_ADMIN_008_HR_MAPPING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_008_DEV_RUNTIME_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_RECOVERY_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_HOSTING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_IDENTITY_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_OWNER_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_LIVE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_LIVE_RESUME_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_DIAGNOSTIC_RUNNING" || "$STATUS" == "HOLD_PREI4_ADMIN_004_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_LIVE_RESUME_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_HONORARIUM_PROPAGATION_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_COMPOSER_BOUNDARY_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_HUMAN_VISUAL_ACCEPTANCE_REQUIRED" || "$STATUS" == "HOLD_PREI4_CERT_RES_REMEDIATION_REQUIRED" || "$STATUS" == "HOLD_VRM143_151_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM143_151_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM151_HISTORICAL_DRY_RUN_REQUIRED" || "$STATUS" == "HOLD_VRM151_HISTORICAL_AMOUNT_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM151_CANONICAL_VISIT_OWNER_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM151_SEVEN_REIMBURSEMENT_EXCEPTIONS_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM151_PAYMENT_ELIGIBILITY_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM151_PROVIDER_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM151_RUNTIME_ONLY_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM151_FINAL_CANONICAL_DRY_RUN_REQUIRED" || "$STATUS" == "HOLD_VRM151_ROUTER_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM151_CANONICAL_OWNER_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "GO" ]]
+          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED" || "$STATUS" == "HOLD_MODULE_TRUTH_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM087_FINALIZER_RECEIPT_SCOPE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM088_LIVE_FIXTURE_AVAILABILITY_REPROOF_REQUIRED" || "$STATUS" == "READY_FOR_GATE21_SAME_CERTIFIED_ARTIFACT" || "$STATUS" == "HOLD_PREI4_ADMIN_008_HR_MAPPING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_008_DEV_RUNTIME_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_RECOVERY_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_HOSTING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_IDENTITY_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_OWNER_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_LIVE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_LIVE_RESUME_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_DIAGNOSTIC_RUNNING" || "$STATUS" == "HOLD_PREI4_ADMIN_004_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_LIVE_RESUME_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_HONORARIUM_PROPAGATION_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_COMPOSER_BOUNDARY_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_HUMAN_VISUAL_ACCEPTANCE_REQUIRED" || "$STATUS" == "HOLD_PREI4_CERT_RES_REMEDIATION_REQUIRED" || "$STATUS" == "HOLD_VRM143_151_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM143_151_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM151_HISTORICAL_DRY_RUN_REQUIRED" || "$STATUS" == "HOLD_VRM151_HISTORICAL_AMOUNT_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM151_CANONICAL_VISIT_OWNER_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM151_SEVEN_REIMBURSEMENT_EXCEPTIONS_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM151_PAYMENT_ELIGIBILITY_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM151_PROVIDER_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM151_RUNTIME_ONLY_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM151_FINAL_CANONICAL_DRY_RUN_REQUIRED" || "$STATUS" == "HOLD_VRM151_ROUTER_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM151_CANONICAL_OWNER_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM151_DURABLE_RECONCILIATION_REQUIRED" || "$STATUS" == "GO" ]]
           echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
@@ -6605,4 +6605,81 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
+vrm151-durable-historical-reconciliation:
+    name: I3 VRM-151 — durable historical reconciliation — DEV only
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM151_DURABLE_RECONCILIATION_REQUIRED' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      VRM151_WRITE_OUT: .tmp/vrm151-durable-reconciliation
+      VRM151_DRY_OUT: .tmp/vrm151-durable-reconciliation/dry
+      VRM151_DRY_HR_URL: https://cxorbia-backend-dev.web.app/api/tya/cinepolis/hr-live?format=json&vrm151=write-preflight-${{ github.run_id }}
+    steps:
+      - name: Checkout canonical Recovery control head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Prove exact product source and runtime identity
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$VRM151_DRY_OUT"
+          test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
+          test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
+          test "$FOCAL_SOURCE" = "b32d590fd33d4391471838e06e89a1d80617b76c"
+          test "$FOCAL_TREE" = "52be15349f012ea8fd2a6231205f16fc0ac02966"
+          test "$(jq -r '.currentMaterialization.sourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
+          test "$(jq -r '.currentMaterialization.sourceTree' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
+          test "$(jq -r '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")" = "cxorbia-live-hr-dev-00245-2dp"
+          git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          node --check tools/qa/cxorbia-vrm151-final-canonical-dry-run.mjs
+          node --check tools/qa/cxorbia-vrm151-durable-reconciliation-live.mjs
+      - name: Install canonical Firebase DEV dependency
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
+      - name: Authenticate canonical Firebase DEV
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Re-run exact canonical zero-write preflight immediately before write
+        run: |
+          set -Eeuo pipefail
+          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HR_URL="$VRM151_DRY_HR_URL" OUT="$VRM151_DRY_OUT" node tools/qa/cxorbia-vrm151-final-canonical-dry-run.mjs > "$VRM151_DRY_OUT/console.log"
+          test "$(jq -r '.decision' "$VRM151_DRY_OUT/result.json")" = "PASS_VRM151_FINAL_CANONICAL_HISTORICAL_DRY_RUN"
+          test "$(jq -r '.observed.canonicalSubmitted' "$VRM151_DRY_OUT/result.json")" = "628"
+          test "$(jq -r '.observed.paid' "$VRM151_DRY_OUT/result.json")" = "562"
+          test "$(jq -r '.observed.pending' "$VRM151_DRY_OUT/result.json")" = "66"
+          test "$(jq -r '.observed.amountReviewRequired' "$VRM151_DRY_OUT/result.json")" = "5"
+          test "$(jq -r '.observed.octoberTouched' "$VRM151_DRY_OUT/result.json")" = "0"
+          test "$(jq -r '.observed.ambiguous' "$VRM151_DRY_OUT/result.json")" = "0"
+          test "$(jq -r '.writes' "$VRM151_DRY_OUT/result.json")" = "0"
+      - name: Execute durable historical reconciliation with ACK readback and replay
+        run: |
+          set -Eeuo pipefail
+          PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" SOURCE_SHA="$FOCAL_SOURCE" SOURCE_TREE="$FOCAL_TREE" DRY_RESULT="$VRM151_DRY_OUT/result.json" OUT="$VRM151_WRITE_OUT" node tools/qa/cxorbia-vrm151-durable-reconciliation-live.mjs | tee "$VRM151_WRITE_OUT/console.log"
+          test "$(jq -r '.decision' "$VRM151_WRITE_OUT/result.json")" = "PASS_VRM151_DURABLE_HISTORICAL_RECONCILIATION"
+          test "$(jq -r '.observed.canonicalSubmitted' "$VRM151_WRITE_OUT/result.json")" = "628"
+          test "$(jq -r '.observed.paid' "$VRM151_WRITE_OUT/result.json")" = "562"
+          test "$(jq -r '.observed.pending' "$VRM151_WRITE_OUT/result.json")" = "66"
+          test "$(jq -r '.observed.amountReviewRequired' "$VRM151_WRITE_OUT/result.json")" = "5"
+          test "$(jq -r '.observed.octoberTouched' "$VRM151_WRITE_OUT/result.json")" = "0"
+          test "$(jq -r '.providerAck' "$VRM151_WRITE_OUT/result.json")" = "true"
+          test "$(jq -r '.durableReadback' "$VRM151_WRITE_OUT/result.json")" = "true"
+          test "$(jq -r '.idempotentReplay' "$VRM151_WRITE_OUT/result.json")" = "true"
+          test "$(jq -r '.financialMovementWrites' "$VRM151_WRITE_OUT/result.json")" = "0"
+          test "$(jq -r '.bankWrites' "$VRM151_WRITE_OUT/result.json")" = "0"
+          test "$(jq -r '.hrWrites' "$VRM151_WRITE_OUT/result.json")" = "0"
+          test "$(jq -r '.production' "$VRM151_WRITE_OUT/result.json")" = "false"
+      - name: Upload VRM-151 durable reconciliation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-vrm151-durable-reconciliation-${{ github.run_id }}
+          path: .tmp/vrm151-durable-reconciliation
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0

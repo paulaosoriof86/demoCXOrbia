@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM151_FINAL_CANONICAL_DRY_RUN_REQUIRED",
+  "status": "HOLD_VRM151_DURABLE_RECONCILIATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM151_FINAL_CANONICAL_DRY_RUN_REQUIRED",
+  "activeBlocker": "VRM151_DURABLE_RECONCILIATION_REQUIRED",
   "nextFindingId": "VRM-152",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Rerun final canonical VRM-151 dry-run against exact materialized source b32d590f: require 628 submitted, 562 paid, 66 pending, 5 amount-review-required, October 0, ambiguous 0, writes 0.",
+  "exactNextAction": "Execute DEV-only durable VRM-151 historical reconciliation from exact canonical dry-run: 628 submitted = 562 paid + 66 pending, 5 amount-review-required, October 0; require provider ACK, durable readback, idempotent replay, 0 HR/bank/financial-movement writes.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2027,6 +2027,30 @@
     "hostingDeploys": 0,
     "hrWrites": 0,
     "bankWrites": 0,
+    "production": false
+  },
+  "vrm151FinalDryRunClosure": {
+    "runId": 36968642420,
+    "runNumber": 843,
+    "jobId": 110717810688,
+    "artifactId": 11211035576,
+    "artifactDigest": "sha256:2e4480f41690468226c3d5aa330feb94ba16f1e57cfe1f447fa933c1107271ba",
+    "decision": "PASS_VRM151_FINAL_CANONICAL_HISTORICAL_DRY_RUN",
+    "sourceSha": "b32d590fd33d4391471838e06e89a1d80617b76c",
+    "sourceTree": "52be15349f012ea8fd2a6231205f16fc0ac02966",
+    "runtimeRevision": "cxorbia-live-hr-dev-00245-2dp",
+    "observed": {
+      "canonicalSubmitted": 628,
+      "paid": 562,
+      "pending": 66,
+      "amountReviewRequired": 5,
+      "octoberTouched": 0,
+      "ambiguous": 0
+    },
+    "writes": 0,
+    "hrWrites": 0,
+    "bankWrites": 0,
+    "financialMovementWrites": 0,
     "production": false
   }
 }
