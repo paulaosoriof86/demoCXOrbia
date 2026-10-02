@@ -18,7 +18,7 @@
     "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
     "predecessorSha": "53b84faa673f2378439e2f33af3faf63948cbbfa",
     "production": false,
-    "state": "VRM154_156_DEV_MATERIALIZATION_REQUIRED",
+    "state": "VRM154_156_DEPLOYED_DEV_VRM157_READBACK_ONLY_REQUIRED",
     "proof": {
       "runId": 37021140798,
       "runNumber": 853,
@@ -7633,6 +7633,48 @@
         "deploys": 0,
         "production": false
       }
+    },
+    "VRM-157": {
+      "id": "VRM-157",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "severity": "P0",
+      "title": "VRM-154..156 DEV materialization harness mixed HR full-data and metadata endpoint contracts",
+      "state": "ROOT_CAUSE_PROVEN_READBACK_ONLY_REQUIRED",
+      "expected": "After the single DEV materialization, revision/health assertions must use hr-live?format=meta while scenarioDimensions and visit scenario values use hr-live?format=json; no rebuild or redeploy is permitted for a harness-only mismatch.",
+      "observed": "Run 854 successfully built and deployed exact source da2f750e to runtime and Hosting, then failed because the readback step queried format=json and immediately asserted .revision/.ok, fields provided by format=meta rather than the full JSON payload.",
+      "rootCauseStatus": "PROVEN",
+      "rootCause": "The new materialization gate conflated two established HR API response contracts. The deployed JSON payload already proves projectConfig.scenarioDimensions plus visits containing escenario/tipoCombo, so the failure is control evidence, not product behavior.",
+      "owners": [
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+      ],
+      "evidence": {
+        "runId": 37021463830,
+        "runNumber": 854,
+        "jobId": 110885422250,
+        "artifactId": 11233281617,
+        "artifactDigest": "sha256:28fad1a279373a51460d4abeade54f45380fbbe745f7d89ae174555820e9f6a3",
+        "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
+        "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
+        "runtimeRevision": "cxorbia-live-hr-dev-00247-4cf",
+        "runtimeDigest": "sha256:f07051abaddc2c72a8a578a65f901a3a384377fc83f6ee7f346866e3b877100f",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/09c4173f2d6525f4",
+        "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790952150208000",
+        "build": true,
+        "runtimeDeploy": true,
+        "hostingDeploy": true,
+        "byteEqualFrontend": true,
+        "scenarioJsonObserved": true,
+        "failedStep": "Prove live HR scenario configuration after materialization",
+        "failureCause": "Harness queried format=json but asserted format=meta fields revision/ok. JSON payload correctly contained sourceSafe=false? no: sourceSafe=true, production=false, scenarioDimensions and visits with escenario+tipoCombo; revision/ok are absent by endpoint contract.",
+        "production": false
+      },
+      "safety": {
+        "rebuildForbidden": true,
+        "redeployForbidden": true,
+        "readbackOnly": true,
+        "productionTouched": false
+      },
+      "production": false
     }
   },
   "latestEvidenceOverrides": {
@@ -8206,14 +8248,15 @@
       "VRM-153",
       "VRM-154",
       "VRM-155",
-      "VRM-156"
+      "VRM-156",
+      "VRM-157"
     ],
-    "findingCount": 156,
-    "expectedCurrentRange": "VRM-001..VRM-156",
-    "nextFindingId": "VRM-157",
+    "findingCount": 157,
+    "expectedCurrentRange": "VRM-001..VRM-157",
+    "nextFindingId": "VRM-158",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_VRM154_156_DEV_MATERIALIZATION_REQUIRED",
+    "terminalState": "HOLD_VRM157_DEV_READBACK_ONLY_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -8242,7 +8285,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Materialize exact source da2f750e once to Recovery DEV runtime and Hosting; prove emitted scenarioDimensions/live combo fields, byte-equal changed frontend files, stable HR, and production false.",
+  "exactNextAction": "Read back existing DEV materialization only: prove current runtime revision/digest and Hosting version remain Run854 outputs; use format=meta for HR revision/health and format=json for project scenarioDimensions/visit values; byte-compare focal frontend files; no build/deploy.",
   "supersedesGitBlob": "397a9cee8c71d3156567a0cc96bfdcba88bb7c3a",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -8271,7 +8314,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-157",
+  "nextFindingId": "VRM-158",
   "lastControlFailure": {
     "id": "VRM-142",
     "classification": "AUTH_FAILURE",
@@ -9383,22 +9426,26 @@
     }
   ],
   "currentMaterialization": {
-    "sourceSha": "a29b8ad89391fb5537d1cbf765ef6ec86f775608",
-    "sourceTree": "ea8846d254d1901ac1101c182098c46f995f1141",
-    "runtimeRevision": "cxorbia-live-hr-dev-00230-c5m",
-    "runtimeDigest": "sha256:5ece6bb303b6af2d1ad6b08cf40ebfccaa18e14ea604a5ea7b07c5ae1c650a95",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/f4ff99f429a748ea",
-    "hrRevision": "dc136b66b12eb05dee9fd56694c54cdccaaa33ebab4601bce720d0a2513cd7fe",
-    "materializationRunId": 36740335003,
-    "finalVrm083ProofRunId": 36435106304,
-    "buildCountThisMaterialization": 0,
-    "runtimeDeploysThisMaterialization": 0,
-    "hostingDeploysThisMaterialization": 1,
-    "rulesDeploys": 0,
+    "runId": 37021463830,
+    "runNumber": 854,
+    "jobId": 110885422250,
+    "artifactId": 11233281617,
+    "artifactDigest": "sha256:28fad1a279373a51460d4abeade54f45380fbbe745f7d89ae174555820e9f6a3",
+    "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
+    "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
+    "runtimeRevision": "cxorbia-live-hr-dev-00247-4cf",
+    "runtimeDigest": "sha256:f07051abaddc2c72a8a578a65f901a3a384377fc83f6ee7f346866e3b877100f",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/09c4173f2d6525f4",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790952150208000",
+    "build": true,
+    "runtimeDeploy": true,
+    "hostingDeploy": true,
+    "byteEqualFrontend": true,
+    "scenarioJsonObserved": true,
+    "failedStep": "Prove live HR scenario configuration after materialization",
+    "failureCause": "Harness queried format=json but asserted format=meta fields revision/ok. JSON payload correctly contained sourceSafe=false? no: sourceSafe=true, production=false, scenarioDimensions and visits with escenario+tipoCombo; revision/ok are absent by endpoint contract.",
     "production": false,
-    "vrm084ProofRunId": 36443870486,
-    "vrm084ProofJobId": 109001077862,
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790783855378000"
+    "state": "DEPLOYED_UNSEALED_HARNESS_FAILURE"
   },
   "lastModuleTruthProof": {
     "runId": 36451085968,
@@ -11726,7 +11773,7 @@
     "next": "SHORT_HUMAN_VISUAL_RETEST",
     "production": false
   },
-  "activeBlocker": "VRM154_156_DEV_MATERIALIZATION_REQUIRED",
+  "activeBlocker": "VRM157_DEV_READBACK_ONLY_REQUIRED",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -11859,26 +11906,12 @@
       "VRM-153",
       "VRM-154",
       "VRM-155",
-      "VRM-156"
+      "VRM-156",
+      "VRM-157"
     ],
     "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
     "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
-    "predecessorSha": "53b84faa673f2378439e2f33af3faf63948cbbfa",
-    "state": "SOURCE_PROOF_PASS_DEV_MATERIALIZATION_REQUIRED",
-    "production": false,
-    "sourceProof": {
-      "runId": 37021140798,
-      "runNumber": 853,
-      "jobId": 110884317409,
-      "artifactId": 11233275872,
-      "artifactDigest": "sha256:56d37e9cea2b320a7550232e6f4eeafe2f2dddbe412309cd1b96820075fa1780",
-      "decision": "PASS_VRM154_156_FRONTEND_SOURCE_REPROOF",
-      "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
-      "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
-      "genericScenarioContract": true,
-      "financeVrm153Regression": true,
-      "deploys": 0,
-      "production": false
-    }
+    "state": "DEV_DEPLOYED_READBACK_ONLY_REQUIRED",
+    "production": false
   }
 }

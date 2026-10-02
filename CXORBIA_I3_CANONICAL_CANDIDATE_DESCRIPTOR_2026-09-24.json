@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM154_156_DEV_MATERIALIZATION_REQUIRED",
+  "status": "HOLD_VRM157_DEV_READBACK_ONLY_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,13 +8,13 @@
   "productTreeAuthority": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
   "predecessorProductSourceSha": "53b84faa673f2378439e2f33af3faf63948cbbfa",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "dfb25ebe01c8e95f3bd11bf14735fc0730270ae2",
+  "findingsLedgerExpectedGitBlob": "5c8026ec94c34b48cb40f0a42ddf719f6f77e9c4",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM154_156_DEV_MATERIALIZATION_REQUIRED",
-  "nextFindingId": "VRM-157",
+  "activeBlocker": "VRM157_DEV_READBACK_ONLY_REQUIRED",
+  "nextFindingId": "VRM-158",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Materialize exact source da2f750e once to Recovery DEV runtime and Hosting; prove emitted scenarioDimensions/live combo fields, byte-equal changed frontend files, stable HR, and production false.",
+  "exactNextAction": "Read back existing DEV materialization only: prove current runtime revision/digest and Hosting version remain Run854 outputs; use format=meta for HR revision/health and format=json for project scenarioDimensions/visit values; byte-compare focal frontend files; no build/deploy.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -409,24 +409,26 @@
     "production": false
   },
   "currentMaterialization": {
-    "runId": 37008320438,
-    "runNumber": 848,
-    "jobId": 110841820568,
-    "artifactId": 11226264383,
-    "artifactDigest": "sha256:4b4e558a2dd9b0e8b3d2091eaac58dac0b44931185246bbfcee7021a64c52dce",
-    "decision": "PASS_VRM151_RUNTIME_ONLY_DEV_MATERIALIZATION",
-    "sourceSha": "653be16597a70474456f0170f58a6a1c0c4d39b0",
-    "sourceTree": "f0d8cb0f900f2ca01cfec635700a82d087e35af4",
-    "runtimeRevision": "cxorbia-live-hr-dev-00246-rxd",
-    "runtimeDigest": "sha256:9318bc8dadffe391aaaf9cea2563fc09b6ee4cb9384c2fa7cfa72408f43d0d10",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/3c2418df100edab0",
-    "hrRevision": "e242d83f7a63b4f390a3ff6eeaeb616dea52f52f159a5e3a929c5473a7225159",
-    "builds": 1,
-    "runtimeDeploys": 1,
-    "hostingDeploys": 0,
-    "hrWrites": 0,
-    "bankWrites": 0,
-    "production": false
+    "runId": 37021463830,
+    "runNumber": 854,
+    "jobId": 110885422250,
+    "artifactId": 11233281617,
+    "artifactDigest": "sha256:28fad1a279373a51460d4abeade54f45380fbbe745f7d89ae174555820e9f6a3",
+    "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
+    "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
+    "runtimeRevision": "cxorbia-live-hr-dev-00247-4cf",
+    "runtimeDigest": "sha256:f07051abaddc2c72a8a578a65f901a3a384377fc83f6ee7f346866e3b877100f",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/09c4173f2d6525f4",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790952150208000",
+    "build": true,
+    "runtimeDeploy": true,
+    "hostingDeploy": true,
+    "byteEqualFrontend": true,
+    "scenarioJsonObserved": true,
+    "failedStep": "Prove live HR scenario configuration after materialization",
+    "failureCause": "Harness queried format=json but asserted format=meta fields revision/ok. JSON payload correctly contained sourceSafe=false? no: sourceSafe=true, production=false, scenarioDimensions and visits with escenario+tipoCombo; revision/ok are absent by endpoint contract.",
+    "production": false,
+    "state": "DEPLOYED_UNSEALED_HARNESS_FAILURE"
   },
   "lastFocalAttempt": {
     "runId": 36198284266,
@@ -2015,27 +2017,13 @@
       "VRM-153",
       "VRM-154",
       "VRM-155",
-      "VRM-156"
+      "VRM-156",
+      "VRM-157"
     ],
     "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
     "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
-    "predecessorSha": "53b84faa673f2378439e2f33af3faf63948cbbfa",
-    "state": "SOURCE_PROOF_PASS_DEV_MATERIALIZATION_REQUIRED",
-    "production": false,
-    "sourceProof": {
-      "runId": 37021140798,
-      "runNumber": 853,
-      "jobId": 110884317409,
-      "artifactId": 11233275872,
-      "artifactDigest": "sha256:56d37e9cea2b320a7550232e6f4eeafe2f2dddbe412309cd1b96820075fa1780",
-      "decision": "PASS_VRM154_156_FRONTEND_SOURCE_REPROOF",
-      "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
-      "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
-      "genericScenarioContract": true,
-      "financeVrm153Regression": true,
-      "deploys": 0,
-      "production": false
-    }
+    "state": "DEV_DEPLOYED_READBACK_ONLY_REQUIRED",
+    "production": false
   },
   "vrm151RuntimeMaterialization": {
     "runId": 37008320438,
@@ -2389,5 +2377,47 @@
       "deploys": 0,
       "production": false
     }
+  },
+  "vrm157": {
+    "id": "VRM-157",
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "severity": "P0",
+    "title": "VRM-154..156 DEV materialization harness mixed HR full-data and metadata endpoint contracts",
+    "state": "ROOT_CAUSE_PROVEN_READBACK_ONLY_REQUIRED",
+    "expected": "After the single DEV materialization, revision/health assertions must use hr-live?format=meta while scenarioDimensions and visit scenario values use hr-live?format=json; no rebuild or redeploy is permitted for a harness-only mismatch.",
+    "observed": "Run 854 successfully built and deployed exact source da2f750e to runtime and Hosting, then failed because the readback step queried format=json and immediately asserted .revision/.ok, fields provided by format=meta rather than the full JSON payload.",
+    "rootCauseStatus": "PROVEN",
+    "rootCause": "The new materialization gate conflated two established HR API response contracts. The deployed JSON payload already proves projectConfig.scenarioDimensions plus visits containing escenario/tipoCombo, so the failure is control evidence, not product behavior.",
+    "owners": [
+      ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+    ],
+    "evidence": {
+      "runId": 37021463830,
+      "runNumber": 854,
+      "jobId": 110885422250,
+      "artifactId": 11233281617,
+      "artifactDigest": "sha256:28fad1a279373a51460d4abeade54f45380fbbe745f7d89ae174555820e9f6a3",
+      "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
+      "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
+      "runtimeRevision": "cxorbia-live-hr-dev-00247-4cf",
+      "runtimeDigest": "sha256:f07051abaddc2c72a8a578a65f901a3a384377fc83f6ee7f346866e3b877100f",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/09c4173f2d6525f4",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790952150208000",
+      "build": true,
+      "runtimeDeploy": true,
+      "hostingDeploy": true,
+      "byteEqualFrontend": true,
+      "scenarioJsonObserved": true,
+      "failedStep": "Prove live HR scenario configuration after materialization",
+      "failureCause": "Harness queried format=json but asserted format=meta fields revision/ok. JSON payload correctly contained sourceSafe=false? no: sourceSafe=true, production=false, scenarioDimensions and visits with escenario+tipoCombo; revision/ok are absent by endpoint contract.",
+      "production": false
+    },
+    "safety": {
+      "rebuildForbidden": true,
+      "redeployForbidden": true,
+      "readbackOnly": true,
+      "productionTouched": false
+    },
+    "production": false
   }
 }

@@ -163,7 +163,7 @@ jobs:
           test "$(jq -r '.findings["VRM-079"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN518"
           test "$(jq -r '.findings["VRM-080"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN525"
           test "$(jq -r '.findings["VRM-081"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN547"
-          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED" || "$STATUS" == "HOLD_MODULE_TRUTH_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM087_FINALIZER_RECEIPT_SCOPE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM088_LIVE_FIXTURE_AVAILABILITY_REPROOF_REQUIRED" || "$STATUS" == "READY_FOR_GATE21_SAME_CERTIFIED_ARTIFACT" || "$STATUS" == "HOLD_PREI4_ADMIN_008_HR_MAPPING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_008_DEV_RUNTIME_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_RECOVERY_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_HOSTING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_IDENTITY_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_OWNER_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_LIVE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_LIVE_RESUME_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_DIAGNOSTIC_RUNNING" || "$STATUS" == "HOLD_PREI4_ADMIN_004_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_LIVE_RESUME_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_HONORARIUM_PROPAGATION_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_COMPOSER_BOUNDARY_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_HUMAN_VISUAL_ACCEPTANCE_REQUIRED" || "$STATUS" == "HOLD_PREI4_CERT_RES_REMEDIATION_REQUIRED" || "$STATUS" == "HOLD_VRM143_151_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM143_151_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM151_HISTORICAL_DRY_RUN_REQUIRED" || "$STATUS" == "HOLD_VRM151_HISTORICAL_AMOUNT_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM151_CANONICAL_VISIT_OWNER_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM151_SEVEN_REIMBURSEMENT_EXCEPTIONS_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM151_PAYMENT_ELIGIBILITY_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM151_PROVIDER_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM151_RUNTIME_ONLY_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM151_FINAL_CANONICAL_DRY_RUN_REQUIRED" || "$STATUS" == "HOLD_VRM151_ROUTER_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM151_CANONICAL_OWNER_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM151_DURABLE_RECONCILIATION_REQUIRED" || "$STATUS" == "HOLD_VRM153_RECONCILIATION_READBACK_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM154_156_FRONTEND_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM154_156_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "GO" ]]
+          [[ "$STATUS" == "READY_FOR_TERMINAL_CERTIFICATION" || "$STATUS" == "HOLD_VRM082_NAME_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM082_ALIAS_MATCH_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED" || "$STATUS" == "HOLD_MODULE_TRUTH_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM087_FINALIZER_RECEIPT_SCOPE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM088_LIVE_FIXTURE_AVAILABILITY_REPROOF_REQUIRED" || "$STATUS" == "READY_FOR_GATE21_SAME_CERTIFIED_ARTIFACT" || "$STATUS" == "HOLD_PREI4_ADMIN_008_HR_MAPPING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_008_DEV_RUNTIME_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_RECOVERY_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_POSTULACIONES_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_002_HOSTING_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_IDENTITY_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_OWNER_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_LIVE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_003_CUMULATIVE_LIVE_RESUME_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_DIAGNOSTIC_RUNNING" || "$STATUS" == "HOLD_PREI4_ADMIN_004_HOSTING_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_FINANCE_LIVE_RESUME_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_HONORARIUM_PROPAGATION_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_COMPOSER_BOUNDARY_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_PREI4_ADMIN_004_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_PREI4_HUMAN_VISUAL_ACCEPTANCE_REQUIRED" || "$STATUS" == "HOLD_PREI4_CERT_RES_REMEDIATION_REQUIRED" || "$STATUS" == "HOLD_VRM143_151_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM143_151_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM151_HISTORICAL_DRY_RUN_REQUIRED" || "$STATUS" == "HOLD_VRM151_HISTORICAL_AMOUNT_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM151_CANONICAL_VISIT_OWNER_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM151_SEVEN_REIMBURSEMENT_EXCEPTIONS_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM151_PAYMENT_ELIGIBILITY_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM151_PROVIDER_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM151_RUNTIME_ONLY_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM151_FINAL_CANONICAL_DRY_RUN_REQUIRED" || "$STATUS" == "HOLD_VRM151_ROUTER_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM151_CANONICAL_OWNER_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM151_DURABLE_RECONCILIATION_REQUIRED" || "$STATUS" == "HOLD_VRM153_RECONCILIATION_READBACK_DIAGNOSTIC_REQUIRED" || "$STATUS" == "HOLD_VRM154_156_FRONTEND_SOURCE_REPROOF_REQUIRED" || "$STATUS" == "HOLD_VRM154_156_DEV_MATERIALIZATION_REQUIRED" || "$STATUS" == "HOLD_VRM157_DEV_READBACK_ONLY_REQUIRED" || "$STATUS" == "GO" ]]
           echo "source_sha=$SOURCE" >> "$GITHUB_OUTPUT"
           echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
@@ -6907,6 +6907,89 @@ jobs:
         with:
           name: cxorbia-vrm154-156-dev-materialization-${{ github.run_id }}
           path: .tmp/vrm154-156-dev-materialization
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+  vrm157-dev-readback-only:
+    name: I3 VRM-157 — exact existing DEV readback — no build/deploy
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM157_DEV_READBACK_ONLY_REQUIRED' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      FOCAL_OUT: .tmp/vrm157-dev-readback
+      EXPECTED_RUNTIME_REVISION: cxorbia-live-hr-dev-00247-4cf
+      EXPECTED_RUNTIME_DIGEST: sha256:f07051abaddc2c72a8a578a65f901a3a384377fc83f6ee7f346866e3b877100f
+      EXPECTED_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/09c4173f2d6525f4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Prove exact source and readback-only scope
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$FOCAL_OUT"
+          test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
+          test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
+          test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
+          git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          test "$(jq -r '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")" = "$EXPECTED_RUNTIME_REVISION"
+          test "$(jq -r '.currentMaterialization.runtimeDigest' "$CANDIDATE_DESCRIPTOR")" = "$EXPECTED_RUNTIME_DIGEST"
+          test "$(jq -r '.currentMaterialization.hostingVersion' "$CANDIDATE_DESCRIPTOR")" = "$EXPECTED_HOSTING_VERSION"
+      - name: Authenticate canonical Firebase DEV read only
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+      - name: Read current runtime and Hosting identity
+        run: |
+          set -Eeuo pipefail
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$FOCAL_OUT/runtime.json"
+          REV="$(jq -r '.status.latestReadyRevisionName // empty' "$FOCAL_OUT/runtime.json")"
+          test "$REV" = "$EXPECTED_RUNTIME_REVISION"
+          gcloud run revisions describe "$REV" --project "$PROJECT" --region "$REGION" --format=json > "$FOCAL_OUT/runtime-revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$FOCAL_OUT/runtime-revision.json")"
+          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else exit 1; fi
+          test "$DIGEST" = "$EXPECTED_RUNTIME_DIGEST"
+          TOKEN="$(gcloud auth print-access-token)"
+          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$FOCAL_OUT/hosting-live-channel.json"
+          HOSTING_VERSION="$(jq -r '.release.version.name // empty' "$FOCAL_OUT/hosting-live-channel.json")"
+          test "$HOSTING_VERSION" = "$EXPECTED_HOSTING_VERSION"
+      - name: Read HR metadata contract
+        run: |
+          set -Eeuo pipefail
+          curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm157=$GITHUB_RUN_ID" > "$FOCAL_OUT/hr-meta.json"
+          HR_REVISION="$(jq -r '.revision // empty' "$FOCAL_OUT/hr-meta.json")"
+          [[ "$HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
+          jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .hrWrites==false and .production==false' "$FOCAL_OUT/hr-meta.json" >/dev/null
+          echo "HR_REVISION=$HR_REVISION" >> "$GITHUB_ENV"
+      - name: Read HR scenario data contract
+        run: |
+          set -Eeuo pipefail
+          curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=json&vrm157=$GITHUB_RUN_ID" > "$FOCAL_OUT/hr-live.json"
+          jq -e '.sourceSafe==true and .production==false and (.projectConfig.scenarioDimensions|length)>=2' "$FOCAL_OUT/hr-live.json" >/dev/null
+          jq -e '[.projectConfig.scenarioDimensions[]|select(.key=="escenario" or .key=="tipoCombo")]|length>=2' "$FOCAL_OUT/hr-live.json" >/dev/null
+          jq -e '[.visits[]|select((.escenario//"")!="" and (.tipoCombo//"")!="")]|length>0' "$FOCAL_OUT/hr-live.json" >/dev/null
+      - name: Prove Hosting bytes remain exact focal source
+        run: |
+          set -Eeuo pipefail
+          for p in core/data.js core/tya-phase-a-source-safe-preview.js data/tya-hr-source-safe-periods.js modules/misvisitas.js modules/visita-detalle.js adapters/tya-canonical-shopper-portal-v2.js modules/academia.js styles/layout.css; do
+            out="$FOCAL_OUT/remote-$(echo "$p" | tr '/' '_')"
+            curl -fsSL --retry 8 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/$p?vrm157=$GITHUB_RUN_ID-$(date +%s%N)" -o "$out"
+            test "$(sha256sum "$out" | awk '{print $1}')" = "$(git show "$FOCAL_SOURCE:app/$p" | sha256sum | awk '{print $1}')"
+          done
+      - name: Seal VRM-157 readback receipt
+        run: |
+          set -Eeuo pipefail
+          jq -n -S --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg runtime "$EXPECTED_RUNTIME_REVISION" --arg digest "$EXPECTED_RUNTIME_DIGEST" --arg hosting "$EXPECTED_HOSTING_VERSION" --arg hr "$HR_REVISION" '{decision:"PASS_VRM157_EXISTING_DEV_READBACK",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,scenarioDimensionsProven:true,frontendBytesExact:true,builds:0,runtimeDeploys:0,hostingDeploys:0,writes:0,production:false}' > "$FOCAL_OUT/result.json"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-vrm157-dev-readback-${{ github.run_id }}
+          path: .tmp/vrm157-dev-readback
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
