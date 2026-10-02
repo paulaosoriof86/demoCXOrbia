@@ -21,6 +21,17 @@ class DB{
     const out=await fn(tx);this.s=w;return out;
   }
 }
+class StrictReadBeforeWriteDB extends DB{
+  async runTransaction(fn){
+    const w=new Map([...this.s].map(([k,v])=>[k,clone(v)]));let wrote=false;
+    const tx={
+      get:async r=>{if(wrote)throw new Error('Firestore transactions require all reads to be executed before all writes.');return new Snap(r.id,w.get(r.path));},
+      set:(r,v,o={})=>{wrote=true;this._set(w,r.path,v,o);},
+      create:(r,v)=>{wrote=true;if(w.has(r.path))throw new Error('ALREADY_EXISTS');this._set(w,r.path,v,{})}
+    };
+    const out=await fn(tx);this.s=w;return out;
+  }
+}
 class Auth{async verifyIdToken(){return{uid:'admin-1',tenantId:'tenant-a',role:'super',authNamespace:'staff',projectIds:['project-a']};}}
 const policy={schemaVersion:'cxorbia.finance-command-provider-policy.v1',enabled:true,allowedTenantIds:['tenant-a'],allowedProjectIds:['project-a'],conflictPolicy:'review_no_silent_overwrite',externalPaymentWrites:false,bankWrites:false,hrWrites:false};
 function baseDb(){
@@ -83,6 +94,18 @@ test('VRM-151 historical reconciliation uses canonical submitted visit, exact am
   const v=db.get('tenants/tenant-a/projects/project-a/visits/SEP!2');
   assert.equal(v.paymentConfirmed,true);assert.equal(v.historicalReconciliationConfirmed,true);assert.equal(v.historicalPaymentAmount,195);assert.equal(v.historicalPaymentAmountReviewRequired,false);assert.equal(v.reconciliationSourceRevision,'rev-hr');
   assert.equal(b.ok,true);assert.equal(b.idempotentReplay,true);assert.equal(b.providerWrites,0);
+});
+
+test('VRM-152 historical reconciliation completes every transaction read before the first write',async()=>{
+  const seed=baseDb(),db=new StrictReadBeforeWriteDB();db.s=new Map([...seed.s].map(([k,v])=>[k,clone(v)]));
+  const v2={...db.get('tenants/tenant-a/projects/project-a/visits/SEP!2'),id:'SEP!3',visitId:'SEP!3',hrRowId:'SEP!3',shopperId:'shopper-2',version:1};
+  db.seed('tenants/tenant-a/projects/project-a/visits/SEP!3',v2);
+  const payload={visitIds:['SEP!2','SEP!3'],visitRefs:[{visitId:'SEP!2',hrRowId:'SEP!2'},{visitId:'SEP!3',hrRowId:'SEP!3'}],paymentStatus:'paid',sourceRevision:'rev-hr',reconciliationBatchId:'hist-read-before-write',sourceRef:'historical-reconciliation:read-before-write'};
+  const cmd=historicalCommand({idempotencyKey:'finance.historical.reconcile:read-before-write',entityId:'hist-read-before-write',payload});
+  const p=createFinanceCommandProvider({auth:new Auth(),db,policy}),r=await p.execute('token',cmd);
+  assert.equal(r.ok,true);assert.equal(r.reconciled,2);assert.equal(r.providerAck,true);
+  assert.equal(db.get('tenants/tenant-a/projects/project-a/visits/SEP!2').paymentConfirmed,true);
+  assert.equal(db.get('tenants/tenant-a/projects/project-a/visits/SEP!3').paymentConfirmed,true);
 });
 
 test('VRM-151 historical reconciliation records paid status but keeps amount null and review-required when reimbursement source is incomplete',async()=>{

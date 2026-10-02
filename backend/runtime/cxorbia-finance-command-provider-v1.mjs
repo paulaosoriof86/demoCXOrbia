@@ -216,7 +216,9 @@ export function createFinanceCommandProvider({auth,db,policy}={}){
             if(!sourceRevision)throw new Error('FINANCE_HISTORICAL_HR_REVISION_REQUIRED');
             const notes=str(command.payload?.notes),reconciledAt=now();
             const projectSnap=await tx.get(project),projectData=projectSnap.exists?(projectSnap.data()||{}):{};
-            let providerWrites=0,reconciled=0,amountReviewRequired=0;const detail=[];
+            let providerWrites=0,reconciled=0,amountReviewRequired=0;const detail=[],prepared=[];
+            // Firestore requires every transaction read to finish before the first write.
+            // Resolve and validate the complete historical batch first; only then persist it.
             for(const id of uniq(command.payload?.visitIds)){
               const hinted=refsInput.find(x=>str(x?.visitId)===id)||{};
               const resolved=await resolveHistoricalVisitDocument(tx,visits,id,hinted.hrRowId);
@@ -232,6 +234,10 @@ export function createFinanceCommandProvider({auth,db,policy}={}){
               const paid=status==='paid';
               const reconciliation={tenantId:command.tenantId,projectId:command.projectId,shopperId:str(v.shopperId),visitId:id,durableVisitId:resolved.durableVisitId,durableVisitAuthority:resolved.authority,hrRowId:str(v.hrRowId)||null,periodId:command.periodId,country:amount.country,currency:amount.currency,honorario:amount.honorario,honorarioSource:amount.honorarioSource,boleto:amount.boleto,combo:amount.combo,reembolso:amount.reembolso,amount:amount.total,amountStatus:amount.amountStatus,amountReviewRequired:amount.amountReviewRequired,reviewReasons:amount.reviewReasons,sourceRevision,paymentStatus:status,paymentConfirmed:paid,paymentDate:null,source:'historical_reconciliation',sourceRef,reconciliationBatchId:batchId,idempotencyKey:command.idempotencyKey,reconciledAt,reconciledBy:actor.uid,notes:notes||null};
               const recRef=tenant.collection('paymentReconciliations').doc(sha(command.tenantId+'\0'+command.projectId+'\0'+id+'\0'+batchId).slice(0,40));
+              prepared.push({id,resolved,v,amount,paid,reconciliation,recRef});
+            }
+            for(const item of prepared){
+              const {id,resolved,v,amount,paid,reconciliation,recRef}=item;
               tx.set(recRef,reconciliation,{merge:false});providerWrites++;
               tx.set(resolved.ref,{paymentState:paid?'historically_reconciled_paid':'historically_reconciled_pending',paymentConfirmed:paid,historicalReconciliationConfirmed:paid,historicalPaymentStatus:status,historicalPaymentAmount:amount.total,historicalPaymentAmountStatus:amount.amountStatus,historicalPaymentAmountReviewRequired:amount.amountReviewRequired,historicalPaymentReviewReasons:amount.reviewReasons,reconciliationSourceRef:sourceRef,reconciliationSourceRevision:sourceRevision,reconciliationBatchId:batchId,reconciledAt,updatedAt:reconciledAt,version:Number(v.version||0)+1},{merge:true});providerWrites++;
               reconciled++;detail.push({visitId:id,status,amount:amount.total,amountStatus:amount.amountStatus,amountReviewRequired:amount.amountReviewRequired,reviewReasons:amount.reviewReasons,country:reconciliation.country,currency:reconciliation.currency});
