@@ -14,14 +14,13 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "b32d590fd33d4391471838e06e89a1d80617b76c",
-    "sourceTree": "52be15349f012ea8fd2a6231205f16fc0ac02966",
-    "predecessorSha": "48162cf2ed6502811304de15c24d83cc0854af12",
+    "sourceSha": "653be16597a70474456f0170f58a6a1c0c4d39b0",
+    "sourceTree": "f0d8cb0f900f2ca01cfec635700a82d087e35af4",
+    "predecessorSha": "b32d590fd33d4391471838e06e89a1d80617b76c",
     "production": false,
-    "state": "VRM151_FINAL_RUNTIME_MATERIALIZED_PENDING_CANONICAL_DRY_RUN",
+    "state": "VRM152_SOURCE_FIX_PENDING_REPROOF",
     "proof": {
-      "runId": 36968159158,
-      "decision": "PASS_VRM151_PROVIDER_SOURCE_REPROOF",
+      "decision": "PENDING_VRM152_PROVIDER_SOURCE_REPROOF",
       "production": false
     },
     "priorProof": {
@@ -7284,6 +7283,55 @@
         "financialMovementWrites": 0,
         "production": false
       }
+    },
+    "VRM-152": {
+      "id": "VRM-152",
+      "classification": "PERSISTENCE_FAILURE",
+      "secondaryClassification": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "title": "Historical reconciliation transaction interleaves Firestore reads and writes",
+      "state": "SOURCE_FIX_PENDING_REPROOF",
+      "expected": "Resolve and validate the complete historical reconciliation batch before the first Firestore transaction write; then commit durable reconciliation with provider ACK and idempotent replay.",
+      "observed": "Run 846 reached the first real DEV reconciliation batch and Firestore aborted it with 'Firestore transactions require all reads to be executed before all writes.' before commit.",
+      "rootCauseStatus": "PROVEN",
+      "rootCause": "The finance.historical.reconcile loop resolved one visit with tx.get, immediately queued tx.set writes, then attempted tx.get for the next visit. Firestore transactions require all reads before any write.",
+      "owners": [
+        "backend/runtime/cxorbia-finance-command-provider-v1.mjs"
+      ],
+      "testOwners": [
+        "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs"
+      ],
+      "testContract": [
+        "two-visit strict transaction reproduces read-after-write failure on old implementation",
+        "all historical batch reads complete before first tx.set",
+        "provider ACK after commit",
+        "idempotent replay produces providerWrites=0",
+        "HR writes 0",
+        "bank writes 0",
+        "financial movement writes 0"
+      ],
+      "evidence": {
+        "runId": 37007590819,
+        "runNumber": 846,
+        "jobId": 110839482790,
+        "artifactId": 11226043656,
+        "artifactDigest": "sha256:636270f6e1dc2ca60bf0b4921cf4cbfe268d50d08333ba7a1ef8aa5301862c89",
+        "firstFailedBatch": "hist-cinepolis-2025-06-paid-scope-v1",
+        "firestoreError": "Firestore transactions require all reads to be executed before all writes.",
+        "preflightDryRun": "PASS_VRM151_FINAL_CANONICAL_HISTORICAL_DRY_RUN",
+        "writesBeforeDetection": 0,
+        "production": false
+      },
+      "sourceFix": {
+        "sourceSha": "653be16597a70474456f0170f58a6a1c0c4d39b0",
+        "sourceTree": "f0d8cb0f900f2ca01cfec635700a82d087e35af4",
+        "predecessorSha": "b32d590fd33d4391471838e06e89a1d80617b76c",
+        "providerBlob": "066278661cff2cef875303c4f7824bfa4ae51c02",
+        "testBlob": "207f9d6ee88a7f84445de3ce281cdead7b5c033d",
+        "strategy": "READ_VALIDATE_ALL_THEN_WRITE_ALL",
+        "state": "SOURCE_WRITTEN_PENDING_REPROOF"
+      },
+      "production": false
     }
   },
   "latestEvidenceOverrides": {
@@ -7852,14 +7900,15 @@
       "VRM-148",
       "VRM-149",
       "VRM-150",
-      "VRM-151"
+      "VRM-151",
+      "VRM-152"
     ],
-    "findingCount": 151,
-    "expectedCurrentRange": "VRM-001..VRM-151",
-    "nextFindingId": "VRM-152",
+    "findingCount": 152,
+    "expectedCurrentRange": "VRM-001..VRM-152",
+    "nextFindingId": "VRM-153",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_VRM151_FINAL_CANONICAL_DRY_RUN_REQUIRED",
+    "terminalState": "HOLD_VRM151_PROVIDER_SOURCE_REPROOF_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -7888,7 +7937,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Execute DEV-only durable VRM-151 historical reconciliation from exact canonical dry-run: 628 submitted = 562 paid + 66 pending, 5 amount-review-required, October 0; require provider ACK, durable readback, idempotent replay, 0 HR/bank/financial-movement writes.",
+  "exactNextAction": "Run VRM-152 provider source reproof on exact source 653be165: strict read-before-write test plus existing VRM-151 provider contracts; no deploy.",
   "supersedesGitBlob": "397a9cee8c71d3156567a0cc96bfdcba88bb7c3a",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -7917,7 +7966,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-152",
+  "nextFindingId": "VRM-153",
   "lastControlFailure": {
     "id": "VRM-142",
     "classification": "AUTH_FAILURE",
@@ -11372,7 +11421,7 @@
     "next": "SHORT_HUMAN_VISUAL_RETEST",
     "production": false
   },
-  "activeBlocker": "VRM151_DURABLE_RECONCILIATION_REQUIRED",
+  "activeBlocker": "VRM152_PROVIDER_SOURCE_REPROOF_REQUIRED",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -11502,11 +11551,15 @@
   },
   "latestFocalSourceFix": {
     "findingIds": [
-      "VRM-151"
+      "VRM-152"
     ],
-    "sourceSha": "b32d590fd33d4391471838e06e89a1d80617b76c",
-    "sourceTree": "52be15349f012ea8fd2a6231205f16fc0ac02966",
-    "predecessorSha": "48162cf2ed6502811304de15c24d83cc0854af12",
+    "sourceSha": "653be16597a70474456f0170f58a6a1c0c4d39b0",
+    "sourceTree": "f0d8cb0f900f2ca01cfec635700a82d087e35af4",
+    "predecessorSha": "b32d590fd33d4391471838e06e89a1d80617b76c",
+    "exactDelta": [
+      "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+      "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs"
+    ],
     "state": "SOURCE_WRITTEN_PENDING_REPROOF",
     "production": false
   }

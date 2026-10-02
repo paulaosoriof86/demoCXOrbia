@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM151_DURABLE_RECONCILIATION_REQUIRED",
+  "status": "HOLD_VRM151_PROVIDER_SOURCE_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "b32d590fd33d4391471838e06e89a1d80617b76c",
-  "productTreeAuthority": "52be15349f012ea8fd2a6231205f16fc0ac02966",
-  "predecessorProductSourceSha": "48162cf2ed6502811304de15c24d83cc0854af12",
+  "productSourceSha": "653be16597a70474456f0170f58a6a1c0c4d39b0",
+  "productTreeAuthority": "f0d8cb0f900f2ca01cfec635700a82d087e35af4",
+  "predecessorProductSourceSha": "b32d590fd33d4391471838e06e89a1d80617b76c",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "d2322c6935839a1ceadc71a5966dceef416a3e7a",
+  "findingsLedgerExpectedGitBlob": "61087003d86bf92e0a55aa09c7059d7fb15c21c4",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM151_DURABLE_RECONCILIATION_REQUIRED",
-  "nextFindingId": "VRM-152",
+  "activeBlocker": "VRM152_PROVIDER_SOURCE_REPROOF_REQUIRED",
+  "nextFindingId": "VRM-153",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Execute DEV-only durable VRM-151 historical reconciliation from exact canonical dry-run: 628 submitted = 562 paid + 66 pending, 5 amount-review-required, October 0; require provider ACK, durable readback, idempotent replay, 0 HR/bank/financial-movement writes.",
+  "exactNextAction": "Run VRM-152 provider source reproof on exact source 653be16597a70474456f0170f58a6a1c0c4d39b0; prove strict read-before-write semantics and all existing VRM-151 provider contracts; no deploy.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2003,15 +2003,19 @@
   },
   "latestFocalSourceFix": {
     "findingIds": [
-      "VRM-151"
+      "VRM-152"
     ],
-    "sourceSha": "b32d590fd33d4391471838e06e89a1d80617b76c",
-    "sourceTree": "52be15349f012ea8fd2a6231205f16fc0ac02966",
-    "predecessorSha": "48162cf2ed6502811304de15c24d83cc0854af12",
-    "sourceProof": "PASS_VRM151_PROVIDER_SOURCE_REPROOF",
-    "deploys": 0,
-    "production": false,
-    "sourceProofRunId": 36968159158
+    "sourceSha": "653be16597a70474456f0170f58a6a1c0c4d39b0",
+    "sourceTree": "f0d8cb0f900f2ca01cfec635700a82d087e35af4",
+    "predecessorSha": "b32d590fd33d4391471838e06e89a1d80617b76c",
+    "productFiles": [
+      "backend/runtime/cxorbia-finance-command-provider-v1.mjs"
+    ],
+    "testFiles": [
+      "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs"
+    ],
+    "state": "SOURCE_WRITTEN_PENDING_REPROOF",
+    "production": false
   },
   "vrm151RuntimeMaterialization": {
     "runId": 36968259184,
@@ -2053,6 +2057,26 @@
     "hrWrites": 0,
     "bankWrites": 0,
     "financialMovementWrites": 0,
+    "production": false
+  },
+  "vrm152": {
+    "classification": "PERSISTENCE_FAILURE",
+    "secondaryClassification": "FUNCTIONAL_DEFECT",
+    "run846": {
+      "runId": 37007590819,
+      "jobId": 110839482790,
+      "artifactId": 11226043656,
+      "writesBeforeDetection": 0,
+      "production": false
+    },
+    "rootCause": "finance.historical.reconcile interleaved tx.get and tx.set across multi-visit batch",
+    "sourceFix": {
+      "sourceSha": "653be16597a70474456f0170f58a6a1c0c4d39b0",
+      "sourceTree": "f0d8cb0f900f2ca01cfec635700a82d087e35af4",
+      "providerBlob": "066278661cff2cef875303c4f7824bfa4ae51c02",
+      "testBlob": "207f9d6ee88a7f84445de3ce281cdead7b5c033d"
+    },
+    "state": "SOURCE_FIX_PENDING_REPROOF",
     "production": false
   }
 }
