@@ -14,9 +14,9 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "0b7e5db7b1035ec4a81ad548284dbb9146fcfc08",
-    "sourceTree": "7297e58872671e36573d3dd961306c493907a6e4",
-    "predecessorSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
+    "sourceSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
+    "sourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7",
+    "predecessorSha": "0b7e5db7b1035ec4a81ad548284dbb9146fcfc08",
     "production": false,
     "state": "VRM143_151_SOURCE_SUCCESSOR_PENDING_FOCAL_REPROOF",
     "proof": null,
@@ -6628,8 +6628,8 @@
       ],
       "production": false,
       "moduleTruth": "TRUE_FUNCTIONAL_DEFECT",
-      "fixSourceSha": "0b7e5db7b1035ec4a81ad548284dbb9146fcfc08",
-      "fixSourceTree": "7297e58872671e36573d3dd961306c493907a6e4"
+      "fixSourceSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
+      "fixSourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7"
     },
     "VRM-144": {
       "id": "VRM-144",
@@ -6646,8 +6646,8 @@
       "production": false,
       "rootCause": "Shopper render order is notifBlock -> cronograma -> next visit -> progress, placing secondary content before the primary operational action.",
       "moduleTruth": "TRUE_FUNCTIONAL_DEFECT",
-      "fixSourceSha": "0b7e5db7b1035ec4a81ad548284dbb9146fcfc08",
-      "fixSourceTree": "7297e58872671e36573d3dd961306c493907a6e4"
+      "fixSourceSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
+      "fixSourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7"
     },
     "VRM-145": {
       "id": "VRM-145",
@@ -6664,8 +6664,8 @@
       "production": false,
       "rootCause": "Human DEV adapter overrides modules.miperfil and renders a dense identity/access grid, then KPIs, then history without explicit section hierarchy between identity/personal data, performance and trajectory.",
       "moduleTruth": "TRUE_FUNCTIONAL_DEFECT",
-      "fixSourceSha": "0b7e5db7b1035ec4a81ad548284dbb9146fcfc08",
-      "fixSourceTree": "7297e58872671e36573d3dd961306c493907a6e4"
+      "fixSourceSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
+      "fixSourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7"
     },
     "VRM-146": {
       "id": "VRM-146",
@@ -6682,8 +6682,14 @@
       "production": false,
       "rootCause": "Human DEV canonical portal explicitly sorts history descending using b-date localeCompare a-date. Required order is ascending oldest->newest.",
       "moduleTruth": "TRUE_FUNCTIONAL_DEFECT",
-      "fixSourceSha": "0b7e5db7b1035ec4a81ad548284dbb9146fcfc08",
-      "fixSourceTree": "7297e58872671e36573d3dd961306c493907a6e4"
+      "fixSourceSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
+      "fixSourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7",
+      "sourceCorrection": {
+        "reason": "FOCAL_SYNTAX_FAILURE_RUN823",
+        "previousSource": "0b7e5db7b1035ec4a81ad548284dbb9146fcfc08",
+        "correctedSource": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
+        "correctedTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7"
+      }
     },
     "VRM-147": {
       "id": "VRM-147",
@@ -6708,8 +6714,8 @@
       "production": false,
       "rootCause": "Eligible HR visits are filtered correctly, then collapsed with key sucursal|ciudad; executionCut is not represented in option label or reservation payload, so slot/cut identity is lost.",
       "moduleTruth": "TRUE_FUNCTIONAL_DEFECT",
-      "fixSourceSha": "0b7e5db7b1035ec4a81ad548284dbb9146fcfc08",
-      "fixSourceTree": "7297e58872671e36573d3dd961306c493907a6e4"
+      "fixSourceSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
+      "fixSourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7"
     },
     "VRM-148": {
       "id": "VRM-148",
@@ -6738,8 +6744,8 @@
       "production": false,
       "rootCause": "Attachment extraction is best-effort byte-regex for PDF and non-text fallback for DOC/DOCX; backend prompt explicitly permits fewer questions; normalizer accepts any nonzero valid count; cert UI accepts any nonzero returned bank instead of exact requested count. Count forwarding itself is correct.",
       "moduleTruth": "TRUE_FUNCTIONAL_DEFECT",
-      "fixSourceSha": "0b7e5db7b1035ec4a81ad548284dbb9146fcfc08",
-      "fixSourceTree": "7297e58872671e36573d3dd961306c493907a6e4"
+      "fixSourceSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
+      "fixSourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7"
     },
     "VRM-149": {
       "id": "VRM-149",
@@ -6756,8 +6762,8 @@
       ],
       "production": false,
       "moduleTruth": "TRUE_FUNCTIONAL_DEFECT",
-      "fixSourceSha": "0b7e5db7b1035ec4a81ad548284dbb9146fcfc08",
-      "fixSourceTree": "7297e58872671e36573d3dd961306c493907a6e4"
+      "fixSourceSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
+      "fixSourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7"
     },
     "VRM-150": {
       "id": "VRM-150",
@@ -6781,8 +6787,8 @@
       "production": false,
       "rootCause": "currentLiquidations is computed correctly, but pendingCurrency/resolved/byCur/KPI drill arrays and detail table are based on all historical liquidations while header says selected period.",
       "moduleTruth": "TRUE_FUNCTIONAL_DEFECT",
-      "fixSourceSha": "0b7e5db7b1035ec4a81ad548284dbb9146fcfc08",
-      "fixSourceTree": "7297e58872671e36573d3dd961306c493907a6e4"
+      "fixSourceSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
+      "fixSourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7"
     },
     "VRM-151": {
       "id": "VRM-151",
@@ -6821,8 +6827,8 @@
       "production": false,
       "rootCause": "Durable ACK/idempotency exists, but finance.payment.batch intentionally records paymentState=platform_recorded_pending_external_reconciliation and externalPaymentConfirmed=false. No distinct durable historical_reconciliation event exists to record Paula-confirmed historical operational truth without fabricating bank confirmation.",
       "moduleTruth": "TRUE_FUNCTIONAL_DEFECT",
-      "fixSourceSha": "0b7e5db7b1035ec4a81ad548284dbb9146fcfc08",
-      "fixSourceTree": "7297e58872671e36573d3dd961306c493907a6e4"
+      "fixSourceSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
+      "fixSourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7"
     }
   },
   "latestEvidenceOverrides": {
@@ -11051,9 +11057,9 @@
       "VRM-150",
       "VRM-151"
     ],
-    "sourceSha": "0b7e5db7b1035ec4a81ad548284dbb9146fcfc08",
-    "sourceTree": "7297e58872671e36573d3dd961306c493907a6e4",
-    "predecessorSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
+    "sourceSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
+    "sourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7",
+    "predecessorSha": "0b7e5db7b1035ec4a81ad548284dbb9146fcfc08",
     "state": "SOURCE_WRITTEN_PENDING_REPROOF",
     "production": false
   }

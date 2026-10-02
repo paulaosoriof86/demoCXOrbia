@@ -4,11 +4,11 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "0b7e5db7b1035ec4a81ad548284dbb9146fcfc08",
-  "productTreeAuthority": "7297e58872671e36573d3dd961306c493907a6e4",
-  "predecessorProductSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
+  "productSourceSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
+  "productTreeAuthority": "422b894b0b92047c0531e5d112e9ccef4abf8fc7",
+  "predecessorProductSourceSha": "0b7e5db7b1035ec4a81ad548284dbb9146fcfc08",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "bd7d16c76c7649faa3a8c162a5031ed935c1f28a",
+  "findingsLedgerExpectedGitBlob": "f64d274626ecb589e4182c0d94a95a669d2a9b48",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run focal source reproof for VRM-143..151 on the single cumulative successor; if PASS, materialize that exact source once to DEV, then run focal live/readback and historical-payment dry-run before any reconciliation writes.",
+  "exactNextAction": "Re-run the focal source proof on corrected product source eb71f4a9; if PASS, materialize exactly that source once to DEV.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2011,12 +2011,13 @@
       "VRM-150",
       "VRM-151"
     ],
-    "sourceSha": "0b7e5db7b1035ec4a81ad548284dbb9146fcfc08",
-    "sourceTree": "7297e58872671e36573d3dd961306c493907a6e4",
-    "predecessorSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
+    "sourceSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
+    "sourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7",
+    "predecessorSha": "0b7e5db7b1035ec4a81ad548284dbb9146fcfc08",
     "productOwners": 11,
     "sourceProof": "PENDING_FOCAL_REPROOF",
     "deploys": 0,
-    "production": false
+    "production": false,
+    "syntaxCorrection": "VRM-146_RUN823"
   }
 }
