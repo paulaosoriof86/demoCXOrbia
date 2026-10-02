@@ -7,14 +7,14 @@
   "productSourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
   "productTreeAuthority": "6a8b7ec768efbb9af73bcca836125471f7f49ae4",
   "predecessorProductSourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V182_2026-10-02.json",
-  "findingsLedgerExpectedGitBlob": "2c0aafdbcaf6884e05d9e925dd4b629b961fcf08",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V183_2026-10-02.json",
+  "findingsLedgerExpectedGitBlob": "4024c5fc7b222c6dd7e140090f74bcd66adcd9ca",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
   "activeBlocker": "VRM162_SOURCE_REPROOF_REQUIRED",
-  "nextFindingId": "VRM-163",
+  "nextFindingId": "VRM-164",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run the existing canonical VRM-154..156 frontend source reproof on source 542fb96630d2068993d03ae86e3d3299f5386251 / tree 6a8b7ec768efbb9af73bcca836125471f7f49ae4. Prove live-source scenarioDimensions propagation and preserve VRM-153 finance contracts. No deploy in this gate.",
+  "exactNextAction": "Run canonical VRM-154..156 frontend source reproof on source 542fb96630d2068993d03ae86e3d3299f5386251 / tree 6a8b7ec768efbb9af73bcca836125471f7f49ae4. No deploy.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -557,13 +557,13 @@
     "findingId": "VRM-055"
   },
   "lastControlFailure": {
-    "findingId": "VRM-162",
-    "runId": 37036120338,
-    "runNumber": 861,
-    "jobId": 110934726936,
-    "classification": "MAPPING_FAILURE",
-    "rootCause": "live mapPeriods omitted projectConfig.scenarioDimensions",
-    "productTouched": true,
+    "findingId": "VRM-163",
+    "runId": 37037320264,
+    "runNumber": 862,
+    "jobId": 110938614930,
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "rootCause": "V182 canonicalFunctionalCandidate remained on predecessor after descriptor advanced",
+    "productTouched": false,
     "production": false
   },
   "lastSecondReviewProof": {
