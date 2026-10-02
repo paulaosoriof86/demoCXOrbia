@@ -72,6 +72,7 @@ on:
       - app/modules/shoppers.js
       - backend/runtime/cxorbia-shopper-command-provider-v1.mjs
       - backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs
+      - backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs
       - tools/qa/cxorbia-prei4-admin003-owner-diagnostic-readonly.mjs
       - CXORBIA_PRE_I4_ADMIN_008_FRESH_HR_RECEIPT_2026-09-28.json
       - tools/qa/cxorbia-prei4-admin003-identity-forensic-readonly.mjs
