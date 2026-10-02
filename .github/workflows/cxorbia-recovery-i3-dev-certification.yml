@@ -109,7 +109,7 @@ concurrency:
   cancel-in-progress: true
 env:
   CANDIDATE_DESCRIPTOR: CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
-  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V181_2026-10-02.json
+  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V182_2026-10-02.json
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
@@ -6769,6 +6769,7 @@ jobs:
           node --check backend/runtime/hr-live-service/server.mjs
           node --check tools/hr-source/tya-build-live-hr-source-safe-r20.mjs
           node --check app/core/tya-phase-a-source-safe-preview.js
+          node --check app/adapters/tya-live-source-inplace-apply.js
           node --check app/core/data.js
           node --check app/modules/misvisitas.js
           node --check app/modules/visita-detalle.js
@@ -6881,7 +6882,7 @@ jobs:
           test -n "$HOSTING_VERSION_NAME"
           curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/$HOSTING_VERSION_NAME" > "$FOCAL_OUT/hosting-version.json"
           test "$(jq -r '.status // empty' "$FOCAL_OUT/hosting-version.json")" = "FINALIZED"
-          for p in core/data.js core/tya-phase-a-source-safe-preview.js data/tya-hr-source-safe-periods.js modules/misvisitas.js modules/visita-detalle.js adapters/tya-canonical-shopper-portal-v2.js modules/academia.js styles/layout.css; do
+          for p in core/data.js core/tya-phase-a-source-safe-preview.js adapters/tya-live-source-inplace-apply.js data/tya-hr-source-safe-periods.js modules/misvisitas.js modules/visita-detalle.js adapters/tya-canonical-shopper-portal-v2.js modules/academia.js styles/layout.css; do
             out="$FOCAL_OUT/remote-$(echo "$p" | tr '/' '_')"
             curl -fsSL --retry 8 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/$p?vrm154156=$GITHUB_RUN_ID-$(date +%s%N)" -o "$out"
             test "$(sha256sum "$out" | awk '{print $1}')" = "$(sha256sum "$SOURCE_DIR/app/$p" | awk '{print $1}')"
@@ -6891,10 +6892,12 @@ jobs:
       - name: Prove live HR scenario configuration after materialization
         run: |
           set -Eeuo pipefail
-          curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=json&vrm154156=$GITHUB_RUN_ID" > "$FOCAL_OUT/hr-live.json"
-          HR_REVISION="$(jq -r '.revision // empty' "$FOCAL_OUT/hr-live.json")"
+          curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm154156=$GITHUB_RUN_ID" > "$FOCAL_OUT/hr-meta.json"
+          HR_REVISION="$(jq -r '.revision // empty' "$FOCAL_OUT/hr-meta.json")"
           [[ "$HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
-          jq -e '.ok==true and .sourceSafe==true and .production==false and (.projectConfig.scenarioDimensions|length)>=2' "$FOCAL_OUT/hr-live.json" >/dev/null
+          jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .hrWrites==false and .production==false' "$FOCAL_OUT/hr-meta.json" >/dev/null
+          curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=json&vrm154156=$GITHUB_RUN_ID" > "$FOCAL_OUT/hr-live.json"
+          jq -e '.sourceSafe==true and .production==false and (.projectConfig.scenarioDimensions|length)>=2' "$FOCAL_OUT/hr-live.json" >/dev/null
           jq -e '[.visits[]|select((.escenario//"")!="" and (.tipoCombo//"")!="")]|length>0' "$FOCAL_OUT/hr-live.json" >/dev/null
           echo "HR_REVISION=$HR_REVISION" >> "$GITHUB_ENV"
       - name: Seal exact cumulative DEV materialization
@@ -6984,7 +6987,7 @@ jobs:
       - name: Prove Hosting bytes remain exact focal source
         run: |
           set -Eeuo pipefail
-          for p in core/data.js core/tya-phase-a-source-safe-preview.js data/tya-hr-source-safe-periods.js modules/misvisitas.js modules/visita-detalle.js adapters/tya-canonical-shopper-portal-v2.js modules/academia.js styles/layout.css; do
+          for p in core/data.js core/tya-phase-a-source-safe-preview.js adapters/tya-live-source-inplace-apply.js data/tya-hr-source-safe-periods.js modules/misvisitas.js modules/visita-detalle.js adapters/tya-canonical-shopper-portal-v2.js modules/academia.js styles/layout.css; do
             out="$FOCAL_OUT/remote-$(echo "$p" | tr '/' '_')"
             curl -fsSL --retry 8 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/$p?vrm157=$GITHUB_RUN_ID-$(date +%s%N)" -o "$out"
             test "$(sha256sum "$out" | awk '{print $1}')" = "$(git show "$FOCAL_SOURCE:app/$p" | sha256sum | awk '{print $1}')"

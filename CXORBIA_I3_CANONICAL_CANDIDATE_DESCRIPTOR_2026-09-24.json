@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM154_156_LIVE_REPROOF_REQUIRED",
+  "status": "HOLD_VRM154_156_FRONTEND_SOURCE_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
-  "productTreeAuthority": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
-  "predecessorProductSourceSha": "53b84faa673f2378439e2f33af3faf63948cbbfa",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V181_2026-10-02.json",
-  "findingsLedgerExpectedGitBlob": "a8bae3da3f2f0950e20564a8a393211ac9693c0d",
+  "productSourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
+  "productTreeAuthority": "6a8b7ec768efbb9af73bcca836125471f7f49ae4",
+  "predecessorProductSourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V182_2026-10-02.json",
+  "findingsLedgerExpectedGitBlob": "2c0aafdbcaf6884e05d9e925dd4b629b961fcf08",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM154_156_LIVE_REPROOF_REQUIRED",
-  "nextFindingId": "VRM-162",
+  "activeBlocker": "VRM162_SOURCE_REPROOF_REQUIRED",
+  "nextFindingId": "VRM-163",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Re-run the same canonical sealed-DEV proof with the established persisted-auth lifecycle. Require exact source/tree/runtime/Hosting, fresh same-revision HR scenarioDimensions, authenticated Shopper/Admin DOM proof for VRM-154/155/156, finance 562/66/5/October 0, and zero writes/builds/deploys.",
+  "exactNextAction": "Run the existing canonical VRM-154..156 frontend source reproof on source 542fb96630d2068993d03ae86e3d3299f5386251 / tree 6a8b7ec768efbb9af73bcca836125471f7f49ae4. Prove live-source scenarioDimensions propagation and preserve VRM-153 finance contracts. No deploy in this gate.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -557,13 +557,13 @@
     "findingId": "VRM-055"
   },
   "lastControlFailure": {
-    "findingId": "VRM-161",
-    "runId": 37035393590,
-    "runNumber": 860,
-    "jobId": 110932308679,
-    "classification": "RELEASE_COMPOSITION_FAILURE",
-    "rootCause": "focal browser helper omitted persisted-session reload + ensureAuthenticated lifecycle",
-    "productTouched": false,
+    "findingId": "VRM-162",
+    "runId": 37036120338,
+    "runNumber": 861,
+    "jobId": 110934726936,
+    "classification": "MAPPING_FAILURE",
+    "rootCause": "live mapPeriods omitted projectConfig.scenarioDimensions",
+    "productTouched": true,
     "production": false
   },
   "lastSecondReviewProof": {
@@ -2021,15 +2021,16 @@
   },
   "latestFocalSourceFix": {
     "findingIds": [
-      "VRM-153",
       "VRM-154",
-      "VRM-155",
-      "VRM-156",
-      "VRM-157"
+      "VRM-162"
     ],
-    "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
-    "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
-    "state": "DEV_MATERIALIZED_VRM153_CLOSED_PENDING_VRM154_156_REPROOF",
+    "sourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
+    "sourceTree": "6a8b7ec768efbb9af73bcca836125471f7f49ae4",
+    "predecessorSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
+    "files": [
+      "app/adapters/tya-live-source-inplace-apply.js"
+    ],
+    "state": "SOURCE_FIX_PENDING_REPROOF",
     "production": false
   },
   "vrm151RuntimeMaterialization": {
