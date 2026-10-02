@@ -103,9 +103,11 @@
     }
   },
   "productSource": {
-    "sha": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
-    "treeSha": "755e448b0c19701a1598ed0727edeae64ef766b0",
-    "message": "fix(pre-i4): stop bridge overriding Mis Visitas [vrm-027]"
+    "sha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+    "treeSha": "2e72bf1906a582910ac2f82460f2df493ba40b41",
+    "message": "I3: close V190 proven functional/visual package",
+    "predecessorSha": "542fb96630d2068993d03ae86e3d3299f5386251",
+    "authorityState": "SOURCE_STATIC_REPROOF_PASS_PENDING_DEV"
   },
   "controlHeadAtConstruction": "9de392b08863069e5ac8a3d68ffd17ad40bcf2d4",
   "phaseAComplete": false,
@@ -185,10 +187,10 @@
         "Shopper"
       ],
       "contractFunctional": "Identidad/Visual",
-      "classification": "TRUE_FUNCTIONAL_DEFECT",
-      "actionRequired": "HUMAN_ACCEPTANCE_2026_10_02__VRM-174",
+      "classification": "COMPOSED_NOT_DEPLOYED",
+      "actionRequired": "V190_EXACT_DEV_AND_LIVE_REPROOF_REQUIRED__VRM-174",
       "preI4SuccessorCommits": [],
-      "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "cumulativeSource": "26c2870ce3ff48193de641a29cc23196a2dc2770",
       "preI4ProvenBy": {
         "runId": 35954023135,
         "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
@@ -196,7 +198,8 @@
       },
       "latestHumanFindingIds": [
         "VRM-174"
-      ]
+      ],
+      "v190SourceReproof": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
     },
     {
       "domain": "canonical-hr-state-adapters",
@@ -222,14 +225,14 @@
         "Cliente"
       ],
       "contractFunctional": "HR/Disponibles/Sync/KPIs",
-      "classification": "TRUE_FUNCTIONAL_DEFECT",
-      "actionRequired": "VRM-168 exact visit-only identity relation must be promoted to canonical shopper identity before shopper rendering/commands.",
+      "classification": "COMPOSED_NOT_DEPLOYED",
+      "actionRequired": "V190_EXACT_DEV_AND_LIVE_REPROOF_REQUIRED__VRM-168",
       "preI4SuccessorCommits": [
         "e0bed18b62174544615dc55aa70dd4a1509692d7",
         "ab05415eb965404e1a6594df8533b8e0190aa0f7",
         "feea6ae6b00d36349ae66e43e034bc0b25516cfd"
       ],
-      "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "cumulativeSource": "26c2870ce3ff48193de641a29cc23196a2dc2770",
       "preI4ProvenBy": {
         "runId": 35954023135,
         "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
@@ -237,7 +240,8 @@
       },
       "latestHumanFindingIds": [
         "VRM-168"
-      ]
+      ],
+      "v190SourceReproof": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
     },
     {
       "domain": "certifications",
@@ -254,12 +258,12 @@
         "Shopper"
       ],
       "contractFunctional": "Shopper/Identidad/Visual",
-      "classification": "TRUE_FUNCTIONAL_DEFECT",
-      "actionRequired": "HUMAN_ACCEPTANCE_2026_10_02__VRM-171_VRM-172_VRM-173",
+      "classification": "COMPOSED_NOT_DEPLOYED",
+      "actionRequired": "V190_EXACT_DEV_AND_LIVE_REPROOF_REQUIRED__VRM-171_VRM-172_VRM-173",
       "preI4SuccessorCommits": [
         "61cf7120603aeff110e97632bb6c69f5c4809d62"
       ],
-      "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "cumulativeSource": "26c2870ce3ff48193de641a29cc23196a2dc2770",
       "preI4ProvenBy": {
         "runId": 35954023135,
         "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
@@ -269,7 +273,8 @@
         "VRM-171",
         "VRM-172",
         "VRM-173"
-      ]
+      ],
+      "v190SourceReproof": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
     },
     {
       "domain": "client-portal-reportkit",
@@ -346,12 +351,12 @@
         "Cliente"
       ],
       "contractFunctional": "Operación/HR/Visual",
-      "classification": "TRUE_FUNCTIONAL_DEFECT",
-      "actionRequired": "HUMAN_ACCEPTANCE_2026_10_02__VRM-165_VRM-167_VRM-177",
+      "classification": "COMPOSED_NOT_DEPLOYED",
+      "actionRequired": "V190_EXACT_DEV_AND_LIVE_REPROOF_REQUIRED__VRM-165_VRM-167_VRM-177",
       "preI4SuccessorCommits": [
         "feea6ae6b00d36349ae66e43e034bc0b25516cfd"
       ],
-      "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "cumulativeSource": "26c2870ce3ff48193de641a29cc23196a2dc2770",
       "preI4ProvenBy": {
         "runId": 35954023135,
         "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
@@ -361,7 +366,8 @@
         "VRM-165",
         "VRM-167",
         "VRM-177"
-      ]
+      ],
+      "v190SourceReproof": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
     },
     {
       "domain": "documents-resources",
@@ -380,12 +386,12 @@
         "Cliente"
       ],
       "contractFunctional": "Proyecto/Contexto/Visual",
-      "classification": "TRUE_FUNCTIONAL_DEFECT",
-      "actionRequired": "HUMAN_ACCEPTANCE_2026_10_02__VRM-170",
+      "classification": "COMPOSED_NOT_DEPLOYED",
+      "actionRequired": "V190_EXACT_DEV_AND_LIVE_REPROOF_REQUIRED__VRM-170",
       "preI4SuccessorCommits": [
         "50b6a25d79713b0f165cffc4355c7b7ffd1d9e84"
       ],
-      "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "cumulativeSource": "26c2870ce3ff48193de641a29cc23196a2dc2770",
       "preI4ProvenBy": {
         "runId": 35954023135,
         "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
@@ -393,7 +399,8 @@
       },
       "latestHumanFindingIds": [
         "VRM-170"
-      ]
+      ],
+      "v190SourceReproof": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
     },
     {
       "domain": "finance-core-liquidation-costs",
@@ -412,13 +419,13 @@
         "Cliente"
       ],
       "contractFunctional": "País/moneda/Persistencia/ACK",
-      "classification": "TRUE_FUNCTIONAL_DEFECT",
-      "actionRequired": "HUMAN_ACCEPTANCE_2026_10_02__VRM-174_VRM-179",
+      "classification": "COMPOSED_NOT_DEPLOYED",
+      "actionRequired": "V190_EXACT_DEV_AND_LIVE_REPROOF_REQUIRED__VRM-174_VRM-179",
       "preI4SuccessorCommits": [
         "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
         "4aeb41ca6dffb6e5b8324ca50531587539f5058e"
       ],
-      "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "cumulativeSource": "26c2870ce3ff48193de641a29cc23196a2dc2770",
       "preI4ProvenBy": {
         "runId": 35954023135,
         "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
@@ -427,7 +434,8 @@
       "latestHumanFindingIds": [
         "VRM-174",
         "VRM-179"
-      ]
+      ],
+      "v190SourceReproof": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
     },
     {
       "domain": "historical",
@@ -533,12 +541,12 @@
         "Cliente"
       ],
       "contractFunctional": "Persistencia/Writes HR/ACK/idempotencia",
-      "classification": "TRUE_FUNCTIONAL_DEFECT",
-      "actionRequired": "VRM-168 exact visit-only identity relation must be promoted to canonical shopper identity before shopper rendering/commands.",
+      "classification": "COMPOSED_NOT_DEPLOYED",
+      "actionRequired": "V190_EXACT_DEV_AND_LIVE_REPROOF_REQUIRED__VRM-168_VRM-169_VRM-170_VRM-179_VRM-180",
       "preI4SuccessorCommits": [
         "672e7f624b1d0328ed1bb25b778ce4b44d52489c"
       ],
-      "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "cumulativeSource": "26c2870ce3ff48193de641a29cc23196a2dc2770",
       "preI4ProvenBy": {
         "runId": 35954023135,
         "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
@@ -550,7 +558,8 @@
         "VRM-170",
         "VRM-179",
         "VRM-180"
-      ]
+      ],
+      "v190SourceReproof": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
     },
     {
       "domain": "phase-a-supporting-core",
@@ -675,13 +684,13 @@
         "Shopper"
       ],
       "contractFunctional": "Shopper/Auth/Identidad/Histórico",
-      "classification": "TRUE_FUNCTIONAL_DEFECT",
-      "actionRequired": "VRM-168 exact visit-only identity relation must be promoted to canonical shopper identity before shopper rendering/commands.",
+      "classification": "COMPOSED_NOT_DEPLOYED",
+      "actionRequired": "V190_EXACT_DEV_AND_LIVE_REPROOF_REQUIRED__VRM-165_VRM-168_VRM-169_VRM-170_VRM-171_VRM-175_VRM-176",
       "preI4SuccessorCommits": [
         "61cf7120603aeff110e97632bb6c69f5c4809d62",
         "275a9893532e9fa11efcbafccd34bb93919d7d64"
       ],
-      "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "cumulativeSource": "26c2870ce3ff48193de641a29cc23196a2dc2770",
       "preI4ProvenBy": {
         "runId": 35954023135,
         "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
@@ -695,7 +704,8 @@
         "VRM-171",
         "VRM-175",
         "VRM-176"
-      ]
+      ],
+      "v190SourceReproof": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
     },
     {
       "domain": "visits-review-postulations-reservations",
@@ -716,12 +726,12 @@
         "Cliente"
       ],
       "contractFunctional": "Disponibles/Asignación/Postulación/Eliminación/Decisión/Persistencia",
-      "classification": "TRUE_FUNCTIONAL_DEFECT",
-      "actionRequired": "HUMAN_ACCEPTANCE_2026_10_02__VRM-167_VRM-168_VRM-180",
+      "classification": "COMPOSED_NOT_DEPLOYED",
+      "actionRequired": "V190_EXACT_DEV_AND_LIVE_REPROOF_REQUIRED__VRM-167_VRM-168_VRM-180",
       "preI4SuccessorCommits": [
         "275a9893532e9fa11efcbafccd34bb93919d7d64"
       ],
-      "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
+      "cumulativeSource": "26c2870ce3ff48193de641a29cc23196a2dc2770",
       "preI4ProvenBy": {
         "runId": 35954023135,
         "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
@@ -731,7 +741,8 @@
         "VRM-167",
         "VRM-168",
         "VRM-180"
-      ]
+      ],
+      "v190SourceReproof": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
     }
   ],
   "sourceFiles": [
@@ -4846,7 +4857,7 @@
     "gate21AfterFullHuman": true,
     "cacheRuntimeFailClosed": true
   },
-  "nextExactAction": "Apply one cumulative I3 corrective product package for VRM-165..VRM-178 including proven VRM-168 identity crosswalk fix, then one exact DEV materialization and focal Shopper/Admin/Finance/Movimientos/Reservas reproof. Production remains DO_NOT_TOUCH.",
+  "nextExactAction": "Materialize 26c2870/2e72bf exactly once in Recovery DEV, then same-source live reproof. Keep VRM-179/180 open until focal Movimientos/Reservas acceptance evidence exists. Production remains DO_NOT_TOUCH.",
   "moduleTruthCorrection": {
     "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
     "run179": {
@@ -5765,5 +5776,17 @@
       "diagnosticRun": 37060288121,
       "production": false
     }
+  },
+  "v190SuccessorSourceReproof": {
+    "decision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF",
+    "sourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+    "sourceTreeAuthority": "2e72bf1906a582910ac2f82460f2df493ba40b41",
+    "parentSha": "d97f6ce80b89cf6a36e046ff15cb25a046189a97",
+    "predecessorProductSourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
+    "deltaFiles": 18,
+    "checksPassed": 34,
+    "checksFailed": 0,
+    "scope": "SOURCE_SYNTAX_STATIC_NO_DEPLOY",
+    "production": false
   }
 }

@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
-    "sourceTree": "6a8b7ec768efbb9af73bcca836125471f7f49ae4",
-    "predecessorSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
+    "sourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+    "sourceTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
+    "predecessorSha": "542fb96630d2068993d03ae86e3d3299f5386251",
     "production": false,
-    "state": "TECHNICAL_LIVE_REPROOF_PASS_PENDING_PAULA_VISUAL_ACCEPTANCE",
+    "state": "SOURCE_STATIC_REPROOF_PASS_PENDING_EXACT_DEV_MATERIALIZATION",
     "proof": {
       "runId": 37037752771,
       "runNumber": 864,
@@ -164,6 +164,121 @@
         "Academia con tarjetas corporativas azules, iconos y jerarquía",
         "Admin con nombre humano, no IDs técnicos y sin duplicados"
       ],
+      "production": false
+    },
+    "predecessorCandidate": {
+      "sourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
+      "sourceTree": "6a8b7ec768efbb9af73bcca836125471f7f49ae4",
+      "state": "TECHNICAL_LIVE_REPROOF_PASS_PENDING_PAULA_VISUAL_ACCEPTANCE",
+      "proof": {
+        "runId": 37037752771,
+        "runNumber": 864,
+        "jobId": 110940128565,
+        "artifactId": 11241222027,
+        "artifactDigest": "sha256:0c5799e38fca13077d3e394972bbcd602e531480f117e82b3fdd6ce8ed0f85ea",
+        "decision": "PASS_VRM154_156_FRONTEND_SOURCE_REPROOF",
+        "sourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
+        "sourceTree": "6a8b7ec768efbb9af73bcca836125471f7f49ae4",
+        "genericScenarioContract": true,
+        "liveRuntimeScenarioDimensionsPropagation": true,
+        "financeVrm153Regression": true,
+        "deploys": 0,
+        "production": false
+      },
+      "materialization": {
+        "runId": 37037964831,
+        "runNumber": 865,
+        "jobId": 110940819725,
+        "artifactId": 11241342708,
+        "artifactDigest": "sha256:efc091dfa058cbf6381cd38aba1de7c14d789b3a74612afccc9a07b331d09bc1",
+        "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
+        "sourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
+        "sourceTree": "6a8b7ec768efbb9af73bcca836125471f7f49ae4",
+        "runtimeRevision": "cxorbia-live-hr-dev-00248-xcq",
+        "runtimeDigest": "sha256:3076d6651037a406e1bea1f6c2eea1b0ac83cba4ecd30831a06c8a4aaa450c01",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/3fd4df67f93e3725",
+        "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790960683923000",
+        "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
+        "scenarioDimensionsProven": true,
+        "frontendBytesExact": true,
+        "builds": 1,
+        "runtimeDeploys": 1,
+        "hostingDeploys": 1,
+        "writes": 0,
+        "production": false,
+        "state": "SEALED_DEV_VRM162_MATERIALIZED_PENDING_LIVE_REPROOF"
+      },
+      "liveReproof": {
+        "runId": 37038509911,
+        "runNumber": 866,
+        "jobId": 110942631840,
+        "artifactId": 11240893657,
+        "artifactDigest": "sha256:ac5090977919f456fa92950f5a2ade3a4a8e1f92b4c6b986e8c8b347e32cbdfd",
+        "decision": "PASS_VRM154_156_SEALED_DEV_REPROOF",
+        "browserDecision": "PASS_VRM154_156_SEALED_DEV_LIVE_REPROOF",
+        "sourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
+        "sourceTree": "6a8b7ec768efbb9af73bcca836125471f7f49ae4",
+        "runtimeRevision": "cxorbia-live-hr-dev-00248-xcq",
+        "runtimeDigest": "sha256:3076d6651037a406e1bea1f6c2eea1b0ac83cba4ecd30831a06c8a4aaa450c01",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/3fd4df67f93e3725",
+        "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
+        "scenarioDimensions": [
+          "escenario",
+          "tipoCombo"
+        ],
+        "selectedShopper": {
+          "shopperId": "shopper_gt_0c198c1055",
+          "name": "Julissa Flores",
+          "visitId": "hr_2026-10_gt_2_97b3975c30",
+          "hrRowId": "OCTUBRE 26!2",
+          "branch": "C. Miraflores",
+          "escenario": "WEB",
+          "tipoCombo": "Refresco + Palomitas + Hot Dog (Combo Hotdog)"
+        },
+        "shopper": {
+          "scenarioCardAllConfiguredDimensionsVisible": true,
+          "visitDetailAllConfiguredDimensionsVisible": true,
+          "profileVisualMarkersPass": true,
+          "academyVisualMarkersPass": true,
+          "ownVisits": 7,
+          "ownVisitsUnique": 7
+        },
+        "admin": {
+          "shopperFound": true,
+          "noDuplicateSelectedShopperVisits": true,
+          "postulationsRendered": true,
+          "rawTechnicalIdentity": false
+        },
+        "finance": {
+          "canonicalSubmitted": 628,
+          "records": 628,
+          "uniqueVisits": 628,
+          "paid": 562,
+          "pending": 66,
+          "amountReviewRequired": 5,
+          "octoberRecords": 0
+        },
+        "frontendBytesExact": true,
+        "builds": 0,
+        "runtimeDeploys": 0,
+        "hostingDeploys": 0,
+        "writes": 0,
+        "hrWrites": 0,
+        "bankWrites": 0,
+        "financialMovementWrites": 0,
+        "production": false
+      }
+    },
+    "successorSourceReproof": {
+      "decision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF",
+      "sourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+      "sourceTreeAuthority": "2e72bf1906a582910ac2f82460f2df493ba40b41",
+      "parentSha": "d97f6ce80b89cf6a36e046ff15cb25a046189a97",
+      "predecessorProductSourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
+      "deltaFiles": 18,
+      "checksPassed": 34,
+      "checksFailed": 0,
+      "scope": "SOURCE_SYNTAX_STATIC_NO_DEPLOY",
       "production": false
     }
   },
@@ -8367,7 +8482,7 @@
       "classification": "VISUAL_DEFECT",
       "severity": "P0",
       "title": "Human visual acceptance failed on Mi Día progress and Mi Perfil hierarchy",
-      "state": "P0_PROVEN_OWNER_FIX_REQUIRED",
+      "state": "SOURCE_FIX_COMPOSED_PENDING_DEV_LIVE_REPROOF",
       "rootCauseStatus": "PROVEN",
       "rootCause": "Run 866 automated markers only asserted presence of sections/classes, not the human visual contract. Mi Día still renders a plain vertical status list and Mi Perfil uses flat generic data cards; Paula rejected both on the exact sealed DEV.",
       "owners": [
@@ -8380,14 +8495,17 @@
         "use coherent corporate hierarchy and meaningful icons/emojis",
         "no logic/source changes"
       ],
-      "production": false
+      "production": false,
+      "sourceSuccessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+      "sourceSuccessorTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
+      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
     },
     "VRM-166": {
       "id": "VRM-166",
       "classification": "PERSISTENCE_FAILURE",
       "severity": "P0",
       "title": "Historical shopper notifications are stale and can leak across shopper profiles",
-      "state": "P0_PROVEN_OWNER_FIX_REQUIRED",
+      "state": "SOURCE_FIX_COMPOSED_PENDING_DEV_LIVE_REPROOF",
       "rootCauseStatus": "PROVEN",
       "rootCause": "Exact sealed DEV readback found 3 active durable 'Postulación aprobada' bulletins targeted only to role=shopper, with empty targetShopperIds/targetProjectIds and no entity/event/idempotency metadata. backend-bulletins persists ordinary CX.notif.push shopper events role-wide; notif.js accepts them when no specific target exists.",
       "owners": [
@@ -8418,14 +8536,17 @@
           "broadShopperApproval": 3
         }
       },
-      "correction": "Reject unscoped durable shopper bulletins at read/persist boundaries and migrate operational callers to targeted ACK-aware pushDurable with shopperId+projectId+entity+idempotency. Existing broad stale rows must not render."
+      "correction": "Reject unscoped durable shopper bulletins at read/persist boundaries and migrate operational callers to targeted ACK-aware pushDurable with shopperId+projectId+entity+idempotency. Existing broad stale rows must not render.",
+      "sourceSuccessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+      "sourceSuccessorTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
+      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
     },
     "VRM-167": {
       "id": "VRM-167",
       "classification": "MAPPING_FAILURE",
       "severity": "P0",
       "title": "Admin Mi Día postulation KPI and Postulaciones module use different lifecycle filters",
-      "state": "P0_PROVEN_OWNER_FIX_REQUIRED",
+      "state": "SOURCE_FIX_COMPOSED_PENDING_DEV_LIVE_REPROOF",
       "rootCauseStatus": "PROVEN",
       "rootCause": "CX.data.kpis().postPend uses data.posts(), which excludes only archived rows, while Postulaciones activePosts additionally excludes active=false and transitioned_to_assignment. The same canonical state can therefore show Por aprobar 10 on Mi Día and 0 in Gestión de Postulaciones.",
       "owners": [
@@ -8437,14 +8558,17 @@
         "one lifecycle selector for all counts/lists",
         "assigned HR visits surfaced in broader operational visit management without fabricating postulations"
       ],
-      "production": false
+      "production": false,
+      "sourceSuccessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+      "sourceSuccessorTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
+      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
     },
     "VRM-168": {
       "id": "VRM-168",
       "classification": "MAPPING_FAILURE",
       "severity": "P0",
       "title": "Shopper scheduling command failed on sealed DEV",
-      "state": "P0_PROVEN_OWNER_FIX_REQUIRED",
+      "state": "SOURCE_FIX_COMPOSED_PENDING_DEV_LIVE_REPROOF",
       "rootCauseStatus": "PROVEN",
       "rootCause": "The exact authenticated October Cayalá visit is canonical in HR/Firestore as shopper_gt_1440137b73, but the protected browser composition renders the same hrRowId OCTUBRE 26!6 in CX.data._visitas with shopperId='s3'. tya-cumulative-read-model-v2 builds an exact relation from the matched protected visit (base shopper identity -> durable canonical identity), but only promotes that relation into liveToCanonical while iterating baseShoppers. When an operational HR shopper identity exists on the visit but is absent from baseShoppers, the exact relation is never promoted; composedVisits therefore falls back to the transient live id 's3'. visitsForShopper(authenticated canonical shopperId) then cannot surface the card/action. Provider/Auth/version were independently proven healthy.",
       "owners": [
@@ -8485,14 +8609,17 @@
         "hrWrites": 0,
         "production": false
       },
-      "correction": "Promote every unambiguous exact visit-derived relation into liveToCanonical even when the transient operational identity is not present in baseShoppers; preserve conflict review when one live id maps to multiple canonical ids. Reproof exact Cayalá card, command shape, provider ACK and durable reload on the corrected DEV."
+      "correction": "Promote every unambiguous exact visit-derived relation into liveToCanonical even when the transient operational identity is not present in baseShoppers; preserve conflict review when one live id maps to multiple canonical ids. Reproof exact Cayalá card, command shape, provider ACK and durable reload on the corrected DEV.",
+      "sourceSuccessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+      "sourceSuccessorTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
+      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
     },
     "VRM-169": {
       "id": "VRM-169",
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Geolocated check-in is preview-only and cannot persist evidence",
-      "state": "P0_PROVEN_OWNER_FIX_REQUIRED",
+      "state": "SOURCE_FIX_COMPOSED_PENDING_DEV_LIVE_REPROOF",
       "rootCauseStatus": "PROVEN",
       "rootCause": "Mis Visitas explicitly stores photo/GPS only in an in-memory geoPreview map and tells the user evidence saving is unavailable. No provider ACK or durable check-in/evidence write exists for this action.",
       "owners": [
@@ -8500,14 +8627,17 @@
         "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
         "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
       ],
-      "production": false
+      "production": false,
+      "sourceSuccessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+      "sourceSuccessorTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
+      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
     },
     "VRM-170": {
       "id": "VRM-170",
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Instructive-read completion has no durable receipt in the visit route",
-      "state": "P0_PROVEN_OWNER_FIX_REQUIRED",
+      "state": "SOURCE_FIX_COMPOSED_PENDING_DEV_LIVE_REPROOF",
       "rootCauseStatus": "PROVEN",
       "rootCause": "The visit route displays an Instructivo step/button but the current canonical source has no read receipt/readAt contract or provider-backed completion command tying the exact project resource revision to the shopper/visit.",
       "owners": [
@@ -8515,14 +8645,17 @@
         "app/core/backend-resources.js",
         "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
       ],
-      "production": false
+      "production": false,
+      "sourceSuccessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+      "sourceSuccessorTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
+      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
     },
     "VRM-171": {
       "id": "VRM-171",
       "classification": "MAPPING_FAILURE",
       "severity": "P0",
       "title": "Previously certified shoppers are not reliably granted current certification eligibility",
-      "state": "P0_PROVEN_CARRYOVER_CLOSURE_REQUIRED",
+      "state": "SOURCE_FIX_COMPOSED_PENDING_DEV_LIVE_REPROOF",
       "rootCauseStatus": "PROVEN",
       "rootCause": "Legacy certification evidence remains pending authenticated review/equivalence unless exact current bank equivalence is established. Thus previously approved program shoppers can appear uncertified even when no recertification was requested.",
       "owners": [
@@ -8531,14 +8664,17 @@
         "app/core/backend-certifications.js",
         "app/modules/cert.js"
       ],
-      "production": false
+      "production": false,
+      "sourceSuccessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+      "sourceSuccessorTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
+      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
     },
     "VRM-172": {
       "id": "VRM-172",
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Certification admin is not fully self-administered or durable",
-      "state": "P0_PROVEN_OWNER_FIX_REQUIRED",
+      "state": "SOURCE_FIX_COMPOSED_PENDING_DEV_LIVE_REPROOF",
       "rootCauseStatus": "PROVEN",
       "rootCause": "Admin Importar banco and Requisito/% mínimo still produce demo/local UI behavior, there is no visible durable delete/archive management for bad banks/attempts, and the runtime bank identity is deterministic per project+period rather than a managed certification catalog.",
       "owners": [
@@ -8580,28 +8716,34 @@
           "passedFieldFalse": 0,
           "recertifications": 0
         }
-      }
+      },
+      "sourceSuccessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+      "sourceSuccessorTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
+      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
     },
     "VRM-173": {
       "id": "VRM-173",
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "P1",
       "title": "Shopper certification route assumes one current-period bank instead of project/multiple certification selection",
-      "state": "OWNER_PROVEN_FIX_REQUIRED",
+      "state": "SOURCE_FIX_COMPOSED_PENDING_DEV_LIVE_REPROOF",
       "rootCauseStatus": "PROVEN",
       "rootCause": "Shopper cert loads CX.certStore.bank(data.period().id) directly; there is no project/certification selector or catalog view, so multiple certifications cannot be presented or filtered.",
       "owners": [
         "app/modules/cert.js",
         "app/core/backend-certifications.js"
       ],
-      "production": false
+      "production": false,
+      "sourceSuccessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+      "sourceSuccessorTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
+      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
     },
     "VRM-174": {
       "id": "VRM-174",
       "classification": "MAPPING_FAILURE",
       "severity": "P0",
       "title": "Durable historical payment reconciliation is not projected into Finance/Mis Beneficios UI",
-      "state": "P0_PROVEN_OWNER_FIX_REQUIRED",
+      "state": "SOURCE_FIX_COMPOSED_PENDING_DEV_LIVE_REPROOF",
       "rootCauseStatus": "PROVEN",
       "rootCause": "Exact DEV holds 628 paymentReconciliations (562 paid, 66 pending) and 562 durable visits marked paymentConfirmed/historical paid, but canonical finance exactProtectedFinancialMatch recognizes only financialSourceStatus='reconciled_exact' plus financialMatch. Only 1 visit matches that shape, leaving 562 paid historical rows projected as pending.",
       "owners": [
@@ -8639,14 +8781,17 @@
           "projectedGap": 562
         }
       },
-      "correction": "Project durable historical payment reconciliation markers/source refs into the canonical finance read model without inventing amounts; keep current-period rows source-safe and pending when no reconciliation exists."
+      "correction": "Project durable historical payment reconciliation markers/source refs into the canonical finance read model without inventing amounts; keep current-period rows source-safe and pending when no reconciliation exists.",
+      "sourceSuccessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+      "sourceSuccessorTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
+      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
     },
     "VRM-175": {
       "id": "VRM-175",
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Shopper identity/incomplete-profile administration lacks complete actionable workflow",
-      "state": "P0_PROVEN_OWNER_FIX_REQUIRED",
+      "state": "SOURCE_FIX_COMPOSED_PENDING_DEV_LIVE_REPROOF",
       "rootCauseStatus": "PROVEN",
       "rootCause": "Identity adjudication exists only inside profile for exact collision groups; the list/modal does not expose missing-field requests, side-by-side identity evidence, safe archive/merge management, or a complete action path for non-exact duplicate candidates such as the human-observed Milton/Patricia groups.",
       "owners": [
@@ -8687,28 +8832,34 @@
             "shr-1780549926672-lypj"
           ]
         }
-      }
+      },
+      "sourceSuccessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+      "sourceSuccessorTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
+      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
     },
     "VRM-176": {
       "id": "VRM-176",
       "classification": "MAPPING_FAILURE",
       "severity": "P1",
       "title": "Displayed shopper rating criteria do not match the frozen ranking/scoring contract",
-      "state": "PROVEN_OWNER_FIX_REQUIRED",
+      "state": "SOURCE_FIX_COMPOSED_PENDING_DEV_LIVE_REPROOF",
       "rootCauseStatus": "PROVEN",
       "rootCause": "The frozen scoring contract defines nine weighted source-safe metrics totaling 100 and requires a metric breakdown, while shoppers.js displays a separate fixed +/- heuristic and merely renders s.rating without proving its calculation/provenance.",
       "owners": [
         "app/contracts/shopper-ranking-scoring-preview-phase-a.tya.contract.json",
         "app/modules/shoppers.js"
       ],
-      "production": false
+      "production": false,
+      "sourceSuccessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+      "sourceSuccessorTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
+      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
     },
     "VRM-177": {
       "id": "VRM-177",
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "P1",
       "title": "KPI drill-down/action contract is inconsistent across admin modules",
-      "state": "OWNER_PROVEN_CUMULATIVE_FIX_REQUIRED",
+      "state": "SOURCE_FIX_COMPOSED_PENDING_DEV_LIVE_REPROOF",
       "rootCauseStatus": "PROVEN",
       "rootCause": "Some modules implement clickable KPI drill-down while certification live KPIs and several admin surfaces are static; no shared KPI action contract guarantees detail plus contextual WA/email/request actions.",
       "owners": [
@@ -8718,21 +8869,27 @@
         "app/modules/finanzas.js",
         "app/modules/midia.js"
       ],
-      "production": false
+      "production": false,
+      "sourceSuccessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+      "sourceSuccessorTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
+      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
     },
     "VRM-178": {
       "id": "VRM-178",
       "classification": "VISUAL_DEFECT",
       "severity": "P0",
       "title": "Academia human visual acceptance failed: cards are too uniform/flat",
-      "state": "P0_PROVEN_OWNER_FIX_REQUIRED",
+      "state": "SOURCE_FIX_COMPOSED_PENDING_DEV_LIVE_REPROOF",
       "rootCauseStatus": "PROVEN",
       "rootCause": "The prior normalization made all course cards use nearly the same corporate-blue shell. Paula rejected the exact Run 865 DEV and requires controlled additional solid colors while preserving the corporate visual system.",
       "owners": [
         "app/modules/academia.js",
         "app/styles/layout.css"
       ],
-      "production": false
+      "production": false,
+      "sourceSuccessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+      "sourceSuccessorTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
+      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF"
     },
     "VRM-179": {
       "id": "VRM-179",
@@ -9401,14 +9558,16 @@
       "VRM-175",
       "VRM-176",
       "VRM-177",
-      "VRM-178"
+      "VRM-178",
+      "VRM-179",
+      "VRM-180"
     ],
-    "findingCount": 178,
-    "expectedCurrentRange": "VRM-001..VRM-178",
+    "findingCount": 180,
+    "expectedCurrentRange": "VRM-001..VRM-180",
     "nextFindingId": "VRM-181",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_PREI4_HUMAN_VISUAL_REMEDIATION_DIAGNOSTIC_REQUIRED",
+    "terminalState": "HOLD_V190_DEV_MATERIALIZATION_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -9422,7 +9581,9 @@
     "latestLiveHrReadAt": "2026-10-02T17:08:09.465Z",
     "userReportedRequirementsFrozenAt": "2026-09-30T20:18:00-06:00",
     "userReviewComplete": true,
-    "userReviewEvidence": "19 screenshots plus complete Shopper/Admin observations supplied 2026-10-02"
+    "userReviewEvidence": "19 screenshots plus complete Shopper/Admin observations supplied 2026-10-02",
+    "currentProductSourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+    "currentProductSourceTree": "2e72bf1906a582910ac2f82460f2df493ba40b41"
   },
   "workPlan": {
     "0": "C0_FREEZE",
@@ -13126,5 +13287,6 @@
     "humanAcceptance": "FAIL",
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
-  "lastUpdatedAt": "2026-10-02"
+  "lastUpdatedAt": "2026-10-02",
+  "nextExactAction": "Materialize exactly product successor 26c2870 once in Recovery DEV, including runtime + Hosting + Storage rules, then execute same-source focal/transversal live reproof for Shopper/Admin/Finance/Movimientos/Reservas. Production remains DO_NOT_TOUCH."
 }

@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_HUMAN_VISUAL_REMEDIATION_CORRECTION_REQUIRED",
+  "status": "HOLD_V190_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
-  "productTreeAuthority": "6a8b7ec768efbb9af73bcca836125471f7f49ae4",
-  "predecessorProductSourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
+  "productSourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+  "productTreeAuthority": "2e72bf1906a582910ac2f82460f2df493ba40b41",
+  "predecessorProductSourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V190_2026-10-02.json",
-  "findingsLedgerExpectedGitBlob": "3531fb6fa4ad80311e4c42ff8622037a9d11d93a",
+  "findingsLedgerExpectedGitBlob": "7f4460ad80062f45a48ace740dbf2c6b5546a692",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "HUMAN_ACCEPTANCE_CUMULATIVE_CORRECTIVE_PACKAGE_REQUIRED",
+  "activeBlocker": "V190_SUCCESSOR_EXACT_DEV_MATERIALIZATION_REQUIRED",
   "nextFindingId": "VRM-181",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Apply one cumulative I3 product successor correcting the proven human-acceptance owners, including VRM-168 visit-only identity crosswalk, without production. Then one DEV materialization and same-candidate live reproof for Shopper/Admin/Finance/Movimientos/Reservas.",
+  "exactNextAction": "Run the canonical I3 workflow: authority guard must PASS for 26c2870/2e72bf, then materialize exactly that source once to Recovery DEV. Do not touch production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -309,7 +309,7 @@
   },
   "technicalClosureReceipt": "CXORBIA_I3_TERMINAL_TECHNICAL_READY_2026-09-25.json",
   "i4": {
-    "status": "BLOCKED_BY_NEW_PREI4_VISUAL_P0",
+    "status": "BLOCKED_PENDING_V190_DEV_LIVE_REPROOF",
     "productionAuthorization": false,
     "authorized": false,
     "production": "DO_NOT_TOUCH"
@@ -409,27 +409,15 @@
     "production": false
   },
   "currentMaterialization": {
-    "runId": 37037964831,
-    "runNumber": 865,
-    "jobId": 110940819725,
-    "artifactId": 11241342708,
-    "artifactDigest": "sha256:efc091dfa058cbf6381cd38aba1de7c14d789b3a74612afccc9a07b331d09bc1",
-    "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
-    "sourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
-    "sourceTree": "6a8b7ec768efbb9af73bcca836125471f7f49ae4",
-    "runtimeRevision": "cxorbia-live-hr-dev-00248-xcq",
-    "runtimeDigest": "sha256:3076d6651037a406e1bea1f6c2eea1b0ac83cba4ecd30831a06c8a4aaa450c01",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/3fd4df67f93e3725",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790960683923000",
-    "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
-    "scenarioDimensionsProven": true,
-    "frontendBytesExact": true,
-    "builds": 1,
-    "runtimeDeploys": 1,
-    "hostingDeploys": 1,
-    "writes": 0,
-    "production": false,
-    "state": "SEALED_DEV_TECHNICAL_REPROOF_PASS_PENDING_PAULA_VISUAL"
+    "state": "NOT_MATERIALIZED_FOR_V190_SUCCESSOR",
+    "sourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+    "sourceTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
+    "predecessorDevSourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
+    "builds": 0,
+    "runtimeDeploys": 0,
+    "hostingDeploys": 0,
+    "storageRulesDeploys": 0,
+    "production": false
   },
   "lastFocalAttempt": {
     "runId": 36198284266,
@@ -2681,5 +2669,40 @@
     "projectedShopperId": "s3",
     "canonicalShopperId": "shopper_gt_1440137b73",
     "owner": "app/adapters/tya-cumulative-read-model-v2.js"
+  },
+  "predecessorMaterialization": {
+    "runId": 37037964831,
+    "runNumber": 865,
+    "jobId": 110940819725,
+    "artifactId": 11241342708,
+    "artifactDigest": "sha256:efc091dfa058cbf6381cd38aba1de7c14d789b3a74612afccc9a07b331d09bc1",
+    "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
+    "sourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
+    "sourceTree": "6a8b7ec768efbb9af73bcca836125471f7f49ae4",
+    "runtimeRevision": "cxorbia-live-hr-dev-00248-xcq",
+    "runtimeDigest": "sha256:3076d6651037a406e1bea1f6c2eea1b0ac83cba4ecd30831a06c8a4aaa450c01",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/3fd4df67f93e3725",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790960683923000",
+    "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
+    "scenarioDimensionsProven": true,
+    "frontendBytesExact": true,
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "writes": 0,
+    "production": false,
+    "state": "SEALED_DEV_TECHNICAL_REPROOF_PASS_PENDING_PAULA_VISUAL"
+  },
+  "sourceSuccessorReproof": {
+    "decision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF",
+    "sourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+    "sourceTreeAuthority": "2e72bf1906a582910ac2f82460f2df493ba40b41",
+    "parentSha": "d97f6ce80b89cf6a36e046ff15cb25a046189a97",
+    "predecessorProductSourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
+    "deltaFiles": 18,
+    "checksPassed": 34,
+    "checksFailed": 0,
+    "scope": "SOURCE_SYNTAX_STATIC_NO_DEPLOY",
+    "production": false
   }
 }
