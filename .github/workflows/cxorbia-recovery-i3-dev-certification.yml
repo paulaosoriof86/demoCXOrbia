@@ -6919,7 +6919,7 @@ jobs:
   vrm157-dev-readback-only:
     name: I3 VRM-154..157 — exact existing DEV readback — no build/deploy
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM157_DEV_READBACK_ONLY_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM154_156_LIVE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_HUMAN_VISUAL_REMEDIATION_DIAGNOSTIC_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM157_DEV_READBACK_ONLY_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM154_156_LIVE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_HUMAN_VISUAL_REMEDIATION_DIAGNOSTIC_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM168_SCHEDULE_PROVIDER_PROBE_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -7012,6 +7012,16 @@ jobs:
           PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" OUT="$FOCAL_OUT/human-acceptance" HR_FILE="$FOCAL_OUT/hr-live.json" node tools/qa/cxorbia-i3-human-acceptance-forensic-readback.mjs | tee "$FOCAL_OUT/human-acceptance.log"
           test "$(jq -r '.decision' "$FOCAL_OUT/human-acceptance/result.json")" = "PASS_READ_ONLY_FORENSIC"
           test "$(jq -r '.writes' "$FOCAL_OUT/human-acceptance/result.json")" = "0"
+      - name: VRM-168 exact shopper scheduling provider probe
+        if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM168_SCHEDULE_PROVIDER_PROBE_REQUIRED' }}
+        run: |
+          set -Eeuo pipefail
+          PROBE_OUT="$FOCAL_OUT/vrm168-provider"
+          PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" OUT="$PROBE_OUT" VRM168_PERIOD_ID="cinepolis-2026-10" VRM168_SHOPPER_ID="shopper_gt_1440137b73" VRM168_UID="cx-sh-d56787c101878e81c94fc7637f66" node tools/qa/cxorbia-i3-vrm168-schedule-provider-probe.mjs | tee "$FOCAL_OUT/vrm168-provider.log"
+          test "$(jq -r '.decision' "$PROBE_OUT/result.json")" = "PASS_VRM168_PROVIDER_SCHEDULE_PATH"
+          test "$(jq -r '.cleanup.visit and .cleanup.receipt and .cleanup.audit' "$PROBE_OUT/result.json")" = "true"
+          test "$(jq -r '.hrWrites' "$PROBE_OUT/result.json")" = "0"
+          test "$(jq -r '.production' "$PROBE_OUT/result.json")" = "false"
       - name: Seal VRM-154..157 readback receipt
         run: |
           set -Eeuo pipefail
@@ -7102,64 +7112,6 @@ jobs:
         with:
           name: cxorbia-vrm153-durable-repair-${{ github.run_id }}
           path: .tmp/vrm153-durable-repair
-          if-no-files-found: error
-          retention-days: 30
-          compression-level: 0
-
-
-
-  vrm168-schedule-provider-probe:
-    name: I3 VRM-168 — exact shopper scheduling provider probe — synthetic DEV + cleanup
-    needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM168_SCHEDULE_PROVIDER_PROBE_REQUIRED' }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    env:
-      OUT: .tmp/vrm168-schedule-provider-probe
-      HOSTING_URL: https://cxorbia-backend-dev.web.app
-      PROJECT: cxorbia-backend-dev
-      TENANT_ID: tya
-      PROJECT_ID: cinepolis
-      VRM168_PERIOD_ID: cinepolis-2026-10
-      VRM168_SHOPPER_ID: shopper_gt_1440137b73
-      VRM168_UID: cx-sh-d56787c101878e81c94fc7637f66
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-      - name: Prove diagnostic scope and source authority
-        run: |
-          set -Eeuo pipefail
-          mkdir -p "$OUT"
-          test "$(jq -r '.production' "$CANDIDATE_DESCRIPTOR")" = "DO_NOT_TOUCH"
-          test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "${{ needs.canonical-candidate-authority.outputs.source_sha }}"
-          node --check tools/qa/cxorbia-i3-vrm168-schedule-provider-probe.mjs
-      - name: Authenticate Firebase DEV
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-      - name: Execute synthetic schedule and mandatory cleanup
-        run: |
-          set -Eeuo pipefail
-          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
-          set +e
-          node tools/qa/cxorbia-i3-vrm168-schedule-provider-probe.mjs | tee "$OUT/console.json"
-          RC=$?
-          set -e
-          test "$RC" = "0"
-          test "$(jq -r '.decision' "$OUT/result.json")" = "PASS_VRM168_PROVIDER_SCHEDULE_PATH"
-          test "$(jq -r '.cleanup.visit and .cleanup.receipt and .cleanup.audit' "$OUT/result.json")" = "true"
-          test "$(jq -r '.hrWrites' "$OUT/result.json")" = "0"
-          test "$(jq -r '.production' "$OUT/result.json")" = "false"
-      - name: Upload VRM-168 provider evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: cxorbia-vrm168-schedule-provider-probe-${{ github.run_id }}
-          path: .tmp/vrm168-schedule-provider-probe
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
