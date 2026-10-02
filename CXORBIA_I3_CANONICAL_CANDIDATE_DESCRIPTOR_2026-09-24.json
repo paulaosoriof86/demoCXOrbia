@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM153_RECONCILIATION_READBACK_DIAGNOSTIC_REQUIRED",
+  "status": "HOLD_VRM151_PROVIDER_SOURCE_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "653be16597a70474456f0170f58a6a1c0c4d39b0",
-  "productTreeAuthority": "f0d8cb0f900f2ca01cfec635700a82d087e35af4",
-  "predecessorProductSourceSha": "b32d590fd33d4391471838e06e89a1d80617b76c",
+  "productSourceSha": "53b84faa673f2378439e2f33af3faf63948cbbfa",
+  "productTreeAuthority": "61c44aebc6313847c6baab9beb435095f039310a",
+  "predecessorProductSourceSha": "653be16597a70474456f0170f58a6a1c0c4d39b0",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "e83b312b124cebb66381d12384fc47792fa49a67",
+  "findingsLedgerExpectedGitBlob": "81d25056eac76232a3f3e31a02c22d121576ed8d",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM153_RECONCILIATION_READBACK_DIAGNOSTIC_REQUIRED",
+  "activeBlocker": "VRM153_PROVIDER_SOURCE_REPROOF_REQUIRED",
   "nextFindingId": "VRM-154",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run read-only VRM-153 persisted reconciliation diagnostic; do not replay any historical reconciliation until exact mismatch is classified.",
+  "exactNextAction": "Run provider source reproof for exact source 53b84faa673f2378439e2f33af3faf63948cbbfa; prove exact HR snapshot/revision authority, strict transaction ordering and existing finance contracts; no deploy.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2006,53 +2006,13 @@
   },
   "latestFocalSourceFix": {
     "findingIds": [
-      "VRM-152"
+      "VRM-153"
     ],
-    "sourceSha": "653be16597a70474456f0170f58a6a1c0c4d39b0",
-    "sourceTree": "f0d8cb0f900f2ca01cfec635700a82d087e35af4",
-    "predecessorSha": "b32d590fd33d4391471838e06e89a1d80617b76c",
-    "productFiles": [
-      "backend/runtime/cxorbia-finance-command-provider-v1.mjs"
-    ],
-    "testFiles": [
-      "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs"
-    ],
-    "state": "RUNTIME_MATERIALIZED_DURABLE_RECONCILIATION_REQUIRED",
-    "production": false,
-    "sourceProof": {
-      "runId": 37008170686,
-      "runNumber": 847,
-      "jobId": 110841344550,
-      "artifactId": 11226054662,
-      "artifactDigest": "sha256:08fe91c8971710a377ef97ef5bcb379da08c00e3c20845b1f405ae7632515c66",
-      "decision": "PASS_VRM151_PROVIDER_SOURCE_REPROOF",
-      "sourceSha": "653be16597a70474456f0170f58a6a1c0c4d39b0",
-      "sourceTree": "f0d8cb0f900f2ca01cfec635700a82d087e35af4",
-      "strictReadBeforeWriteTest": true,
-      "forbiddenSideEffectsGuard": true,
-      "deploys": 0,
-      "production": false
-    },
-    "materialization": {
-      "runId": 37008320438,
-      "runNumber": 848,
-      "jobId": 110841820568,
-      "artifactId": 11226264383,
-      "artifactDigest": "sha256:4b4e558a2dd9b0e8b3d2091eaac58dac0b44931185246bbfcee7021a64c52dce",
-      "decision": "PASS_VRM151_RUNTIME_ONLY_DEV_MATERIALIZATION",
-      "sourceSha": "653be16597a70474456f0170f58a6a1c0c4d39b0",
-      "sourceTree": "f0d8cb0f900f2ca01cfec635700a82d087e35af4",
-      "runtimeRevision": "cxorbia-live-hr-dev-00246-rxd",
-      "runtimeDigest": "sha256:9318bc8dadffe391aaaf9cea2563fc09b6ee4cb9384c2fa7cfa72408f43d0d10",
-      "hostingVersion": "sites/cxorbia-backend-dev/versions/3c2418df100edab0",
-      "hrRevision": "e242d83f7a63b4f390a3ff6eeaeb616dea52f52f159a5e3a929c5473a7225159",
-      "builds": 1,
-      "runtimeDeploys": 1,
-      "hostingDeploys": 0,
-      "hrWrites": 0,
-      "bankWrites": 0,
-      "production": false
-    }
+    "sourceSha": "53b84faa673f2378439e2f33af3faf63948cbbfa",
+    "sourceTree": "61c44aebc6313847c6baab9beb435095f039310a",
+    "predecessorSha": "653be16597a70474456f0170f58a6a1c0c4d39b0",
+    "state": "SOURCE_WRITTEN_PENDING_REPROOF",
+    "production": false
   },
   "vrm151RuntimeMaterialization": {
     "runId": 37008320438,
@@ -2154,18 +2114,18 @@
   },
   "vrm153": {
     "id": "VRM-153",
-    "classification": "PERSISTENCE_FAILURE",
-    "secondaryClassification": "MAPPING_FAILURE",
+    "classification": "MAPPING_FAILURE",
+    "secondaryClassification": "PERSISTENCE_FAILURE",
     "severity": "P0",
     "title": "Durable historical reconciliation readback does not match canonical expected counts",
-    "state": "READ_ONLY_DIAGNOSTIC_REQUIRED",
+    "state": "SOURCE_FIX_PENDING_REPROOF",
     "expected": "628 unique durable reconciliation records must read back as exactly 562 paid, 66 pending and 5 amountReviewRequired on the same HR revision.",
     "observed": "Run 849 passed all batch ACKs and idempotent replays; readback confirmed 628 records and 628 unique visits, then failed the final paid/pending/amountReviewRequired count tuple.",
-    "rootCauseStatus": "DIAGNOSTIC_REQUIRED",
+    "rootCauseStatus": "PROVEN",
     "owners": [
       "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
-      "tools/qa/cxorbia-vrm151-final-canonical-dry-run.mjs",
-      "tools/qa/cxorbia-vrm151-durable-reconciliation-live.mjs"
+      "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+      "backend/runtime/hr-live-service/server.mjs"
     ],
     "evidence": {
       "runId": 37008726266,
@@ -2185,6 +2145,50 @@
       "allBatchAckAssertionsPassed": true,
       "allReplayIdempotencyAssertionsPassed": true
     },
-    "production": false
+    "production": false,
+    "rootCause": "The canonical dry-run merges the exact live HR visit over the durable Firestore visit, but finance.historical.reconcile calculated reimbursement from the durable Firestore visit alone. Seventeen September submitted visits therefore lost authoritative boleto/comboAmt and were falsely persisted as amountReviewRequired.",
+    "readbackDiagnostic": {
+      "runId": 37009216047,
+      "runNumber": 850,
+      "jobId": 110844709637,
+      "artifactId": 11226993416,
+      "artifactDigest": "sha256:e4fa64fb3bce48e0ae3f0bb784547e58c58a6c9d7ab4cb8923048be56b3b117c",
+      "decision": "HOLD_VRM153_RECONCILIATION_READBACK_MISMATCH",
+      "counts": {
+        "records": 628,
+        "uniqueVisits": 628,
+        "paid": 562,
+        "pending": 66,
+        "amountReviewRequired": 22,
+        "expectedAmountReviewRequired": 5
+      },
+      "statusMismatches": 0,
+      "reviewExtra": 17,
+      "reviewMissing": 0,
+      "exactPattern": "All 17 false review rows are September visits whose durable Firestore copy lacks boleto/comboAmt while live HR contains both values.",
+      "writes": 0,
+      "production": false
+    },
+    "testOwners": [
+      "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs"
+    ],
+    "sourceFix": {
+      "sourceSha": "53b84faa673f2378439e2f33af3faf63948cbbfa",
+      "sourceTree": "61c44aebc6313847c6baab9beb435095f039310a",
+      "predecessorSha": "653be16597a70474456f0170f58a6a1c0c4d39b0",
+      "exactDelta": [
+        "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+        "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+        "backend/runtime/hr-live-service/server.mjs",
+        "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs"
+      ],
+      "contract": [
+        "historical reconciliation consumes the same runtime HR snapshot authority",
+        "command sourceRevision must equal runtime HR revision or fail closed",
+        "live HR values override incomplete durable HR-managed amount fields only for the exact historical authority calculation",
+        "transaction reads remain complete before writes"
+      ],
+      "production": false
+    }
   }
 }
