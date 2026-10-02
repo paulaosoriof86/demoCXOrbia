@@ -18,8 +18,12 @@
     "sourceTree": "52be15349f012ea8fd2a6231205f16fc0ac02966",
     "predecessorSha": "48162cf2ed6502811304de15c24d83cc0854af12",
     "production": false,
-    "state": "VRM151_CANONICAL_OWNER_SOURCE_PENDING_REPROOF",
-    "proof": null,
+    "state": "VRM151_CANONICAL_OWNER_SOURCE_PROVEN_PENDING_RUNTIME_ONLY_DEV_MATERIALIZATION",
+    "proof": {
+      "runId": 36968159158,
+      "decision": "PASS_VRM151_PROVIDER_SOURCE_REPROOF",
+      "production": false
+    },
     "priorProof": {
       "runId": 36942289348,
       "artifactId": 11200941985,
@@ -6958,7 +6962,7 @@
       "secondaryClassification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Historical payment reconciliation needs one durable auditable idempotent source of truth",
-      "state": "CANONICAL_OWNER_FIXED_SOURCE_PENDING_REPROOF",
+      "state": "CANONICAL_OWNER_SOURCE_PROVEN_PENDING_RUNTIME_ONLY_DEV_MATERIALIZATION",
       "expected": "Durably reconcile confirmed historical payment scope without HR mutation, invented bank refs, current-period contamination or duplicate accounting effects.",
       "observed": "Operational truth supplied: all <= Jul 2026 paid both countries; Aug HN paid; Aug GT pending; Sep all pending; Oct must remain untouched.",
       "rootCauseStatus": "PROVEN",
@@ -7229,6 +7233,13 @@
         "rootCause": "historical provider resolver tried hrRowId before live visitId, risking writes to legacy duplicate instead of V27 canonical owner",
         "fix": "historical-specific resolver writes live visitId doc first; hrRowId only exact fallback",
         "writesBeforeDetection": 0,
+        "production": false
+      },
+      "canonicalOwnerSourceProof": {
+        "runId": 36968159158,
+        "decision": "PASS_VRM151_PROVIDER_SOURCE_REPROOF",
+        "sourceSha": "b32d590fd33d4391471838e06e89a1d80617b76c",
+        "sourceTree": "52be15349f012ea8fd2a6231205f16fc0ac02966",
         "production": false
       }
     }
@@ -7806,7 +7817,7 @@
     "nextFindingId": "VRM-152",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_VRM151_CANONICAL_OWNER_SOURCE_REPROOF_REQUIRED",
+    "terminalState": "HOLD_VRM151_RUNTIME_ONLY_DEV_MATERIALIZATION_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
