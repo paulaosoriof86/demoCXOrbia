@@ -126,15 +126,29 @@ const captureOut=OUT+'/vrm168-browser-capture';
 const captureEnv={...process.env,OUT:captureOut,HOSTING_URL:process.env.HOSTING_URL||'https://cxorbia-backend-dev.web.app',PROJECT,TENANT_ID:TENANT,PROJECT_ID,
   VRM168_PERIOD_ID:'cinepolis-2026-10',VRM168_SHOPPER_ID:'shopper_gt_1440137b73',VRM168_UID:'cx-sh-d56787c101878e81c94fc7637f66',VRM168_VISIT_ID:'OCTUBRE 26!6',
   VRM168_HR_REVISION:str(process.env.HR_REVISION||hr.sourceRevision||hr.revision||hr._runtime?.revision)};
-const captureProc=spawnSync(process.execPath,['tools/qa/cxorbia-i3-vrm168-browser-command-capture.mjs'],{env:captureEnv,encoding:'utf8',maxBuffer:16*1024*1024});
-fs.writeFileSync(OUT+'/vrm168-browser-capture.stdout.log',captureProc.stdout||'');
-fs.writeFileSync(OUT+'/vrm168-browser-capture.stderr.log',captureProc.stderr||'');
-let browserCommandCapture=null;
-try{browserCommandCapture=JSON.parse(fs.readFileSync(captureOut+'/result.json','utf8'));}catch(error){
-  throw new Error('FUNCTIONAL_DEFECT:VRM168_BROWSER_CAPTURE_RESULT_MISSING:'+str(captureProc.stderr||error?.message||error));
+let captureProc=null,browserCommandCapture=null,lastCaptureError='';
+for(let attempt=1;attempt<=3;attempt++){
+  fs.rmSync(captureOut,{recursive:true,force:true});
+  captureProc=spawnSync(process.execPath,['tools/qa/cxorbia-i3-vrm168-browser-command-capture.mjs'],{env:{...captureEnv,VRM168_CAPTURE_ATTEMPT:String(attempt)},encoding:'utf8',maxBuffer:16*1024*1024});
+  fs.writeFileSync(OUT+'/vrm168-browser-capture-attempt-'+attempt+'.stdout.log',captureProc.stdout||'');
+  fs.writeFileSync(OUT+'/vrm168-browser-capture-attempt-'+attempt+'.stderr.log',captureProc.stderr||'');
+  try{browserCommandCapture=JSON.parse(fs.readFileSync(captureOut+'/result.json','utf8'));}catch(error){browserCommandCapture=null;lastCaptureError=str(captureProc.stderr||error?.message||error);}
+  if(captureProc.status===0&&browserCommandCapture?.decision==='PASS_VRM168_BROWSER_COMMAND_MAPPING'&&browserCommandCapture?.durableUnchanged===true)break;
+  const detail=str(captureProc.stderr||lastCaptureError);
+  const transient=/auth\/network-request-failed|network AuthError|ETIMEDOUT|ECONNRESET|ENETUNREACH|EAI_AGAIN|ERR_NETWORK|fetch failed/i.test(detail);
+  if(!transient)break;
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),0,0,1500*attempt);
 }
-if(captureProc.status!==0||browserCommandCapture?.decision!=='PASS_VRM168_BROWSER_COMMAND_MAPPING'||browserCommandCapture?.durableUnchanged!==true){
-  throw new Error('FUNCTIONAL_DEFECT:VRM168_BROWSER_CAPTURE_FAILED:'+JSON.stringify({status:captureProc.status,decision:browserCommandCapture?.decision,mismatch:browserCommandCapture?.mismatch,durableUnchanged:browserCommandCapture?.durableUnchanged,stderr:str(captureProc.stderr).slice(0,1200)}));
+fs.writeFileSync(OUT+'/vrm168-browser-capture.stdout.log',captureProc?.stdout||'');
+fs.writeFileSync(OUT+'/vrm168-browser-capture.stderr.log',captureProc?.stderr||lastCaptureError||'');
+if(!browserCommandCapture){
+  const detail=str(captureProc?.stderr||lastCaptureError);
+  const transient=/auth\/network-request-failed|network AuthError|ETIMEDOUT|ECONNRESET|ENETUNREACH|EAI_AGAIN|ERR_NETWORK|fetch failed/i.test(detail);
+  throw new Error((transient?'ENVIRONMENT_FAILURE':'FUNCTIONAL_DEFECT')+':VRM168_BROWSER_CAPTURE_RESULT_MISSING:'+detail);
+}
+if(captureProc?.status!==0||browserCommandCapture?.decision!=='PASS_VRM168_BROWSER_COMMAND_MAPPING'||browserCommandCapture?.durableUnchanged!==true){
+  const detail=str(captureProc?.stderr).slice(0,1200),transient=/auth\/network-request-failed|network AuthError|ETIMEDOUT|ECONNRESET|ENETUNREACH|EAI_AGAIN|ERR_NETWORK|fetch failed/i.test(detail);
+  throw new Error((transient?'ENVIRONMENT_FAILURE':'FUNCTIONAL_DEFECT')+':VRM168_BROWSER_CAPTURE_FAILED:'+JSON.stringify({status:captureProc?.status,decision:browserCommandCapture?.decision,mismatch:browserCommandCapture?.mismatch,durableUnchanged:browserCommandCapture?.durableUnchanged,stderr:detail}));
 }
 scheduling.browserCommandCapture=browserCommandCapture;
 const out={schemaVersion:'cxorbia.i3.human-acceptance-forensic-readback.v2',decision:'PASS_READ_ONLY_FORENSIC',tenantId:TENANT,projectId:PROJECT_ID,currentPeriodId,notifications:notif,postulations,scheduling,certifications,finance,identity,reservations,writes:0,hrWrites:0,production:false};
