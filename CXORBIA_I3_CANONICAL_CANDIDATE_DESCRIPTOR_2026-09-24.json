@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM151_PROVIDER_SOURCE_REPROOF_REQUIRED",
+  "status": "HOLD_VRM151_RUNTIME_ONLY_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "f0d8cb0f900f2ca01cfec635700a82d087e35af4",
   "predecessorProductSourceSha": "b32d590fd33d4391471838e06e89a1d80617b76c",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "61087003d86bf92e0a55aa09c7059d7fb15c21c4",
+  "findingsLedgerExpectedGitBlob": "2a9ebc367c46c2bb83a7bd359fd0a5102e26ffba",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM152_PROVIDER_SOURCE_REPROOF_REQUIRED",
+  "activeBlocker": "VRM152_RUNTIME_ONLY_DEV_MATERIALIZATION_REQUIRED",
   "nextFindingId": "VRM-153",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run VRM-152 provider source reproof on exact source 653be16597a70474456f0170f58a6a1c0c4d39b0; prove strict read-before-write semantics and all existing VRM-151 provider contracts; no deploy.",
+  "exactNextAction": "Materialize exact source 653be16597a70474456f0170f58a6a1c0c4d39b0 to cxorbia-live-hr-dev runtime only; no Hosting deploy, no production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2014,8 +2014,22 @@
     "testFiles": [
       "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs"
     ],
-    "state": "SOURCE_WRITTEN_PENDING_REPROOF",
-    "production": false
+    "state": "SOURCE_PROOF_PASS_RUNTIME_MATERIALIZATION_REQUIRED",
+    "production": false,
+    "sourceProof": {
+      "runId": 37008170686,
+      "runNumber": 847,
+      "jobId": 110841344550,
+      "artifactId": 11226054662,
+      "artifactDigest": "sha256:08fe91c8971710a377ef97ef5bcb379da08c00e3c20845b1f405ae7632515c66",
+      "decision": "PASS_VRM151_PROVIDER_SOURCE_REPROOF",
+      "sourceSha": "653be16597a70474456f0170f58a6a1c0c4d39b0",
+      "sourceTree": "f0d8cb0f900f2ca01cfec635700a82d087e35af4",
+      "strictReadBeforeWriteTest": true,
+      "forbiddenSideEffectsGuard": true,
+      "deploys": 0,
+      "production": false
+    }
   },
   "vrm151RuntimeMaterialization": {
     "runId": 36968259184,
@@ -2076,7 +2090,21 @@
       "providerBlob": "066278661cff2cef875303c4f7824bfa4ae51c02",
       "testBlob": "207f9d6ee88a7f84445de3ce281cdead7b5c033d"
     },
-    "state": "SOURCE_FIX_PENDING_REPROOF",
-    "production": false
+    "state": "SOURCE_PROOF_PASS_RUNTIME_MATERIALIZATION_REQUIRED",
+    "production": false,
+    "sourceProof": {
+      "runId": 37008170686,
+      "runNumber": 847,
+      "jobId": 110841344550,
+      "artifactId": 11226054662,
+      "artifactDigest": "sha256:08fe91c8971710a377ef97ef5bcb379da08c00e3c20845b1f405ae7632515c66",
+      "decision": "PASS_VRM151_PROVIDER_SOURCE_REPROOF",
+      "sourceSha": "653be16597a70474456f0170f58a6a1c0c4d39b0",
+      "sourceTree": "f0d8cb0f900f2ca01cfec635700a82d087e35af4",
+      "strictReadBeforeWriteTest": true,
+      "forbiddenSideEffectsGuard": true,
+      "deploys": 0,
+      "production": false
+    }
   }
 }

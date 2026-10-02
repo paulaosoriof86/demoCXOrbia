@@ -18,9 +18,19 @@
     "sourceTree": "f0d8cb0f900f2ca01cfec635700a82d087e35af4",
     "predecessorSha": "b32d590fd33d4391471838e06e89a1d80617b76c",
     "production": false,
-    "state": "VRM152_SOURCE_FIX_PENDING_REPROOF",
+    "state": "VRM152_SOURCE_PROOF_PASS_RUNTIME_MATERIALIZATION_REQUIRED",
     "proof": {
-      "decision": "PENDING_VRM152_PROVIDER_SOURCE_REPROOF",
+      "runId": 37008170686,
+      "runNumber": 847,
+      "jobId": 110841344550,
+      "artifactId": 11226054662,
+      "artifactDigest": "sha256:08fe91c8971710a377ef97ef5bcb379da08c00e3c20845b1f405ae7632515c66",
+      "decision": "PASS_VRM151_PROVIDER_SOURCE_REPROOF",
+      "sourceSha": "653be16597a70474456f0170f58a6a1c0c4d39b0",
+      "sourceTree": "f0d8cb0f900f2ca01cfec635700a82d087e35af4",
+      "strictReadBeforeWriteTest": true,
+      "forbiddenSideEffectsGuard": true,
+      "deploys": 0,
       "production": false
     },
     "priorProof": {
@@ -7290,7 +7300,7 @@
       "secondaryClassification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Historical reconciliation transaction interleaves Firestore reads and writes",
-      "state": "SOURCE_FIX_PENDING_REPROOF",
+      "state": "SOURCE_PROOF_PASS_RUNTIME_MATERIALIZATION_REQUIRED",
       "expected": "Resolve and validate the complete historical reconciliation batch before the first Firestore transaction write; then commit durable reconciliation with provider ACK and idempotent replay.",
       "observed": "Run 846 reached the first real DEV reconciliation batch and Firestore aborted it with 'Firestore transactions require all reads to be executed before all writes.' before commit.",
       "rootCauseStatus": "PROVEN",
@@ -7331,7 +7341,21 @@
         "strategy": "READ_VALIDATE_ALL_THEN_WRITE_ALL",
         "state": "SOURCE_WRITTEN_PENDING_REPROOF"
       },
-      "production": false
+      "production": false,
+      "sourceProof": {
+        "runId": 37008170686,
+        "runNumber": 847,
+        "jobId": 110841344550,
+        "artifactId": 11226054662,
+        "artifactDigest": "sha256:08fe91c8971710a377ef97ef5bcb379da08c00e3c20845b1f405ae7632515c66",
+        "decision": "PASS_VRM151_PROVIDER_SOURCE_REPROOF",
+        "sourceSha": "653be16597a70474456f0170f58a6a1c0c4d39b0",
+        "sourceTree": "f0d8cb0f900f2ca01cfec635700a82d087e35af4",
+        "strictReadBeforeWriteTest": true,
+        "forbiddenSideEffectsGuard": true,
+        "deploys": 0,
+        "production": false
+      }
     }
   },
   "latestEvidenceOverrides": {
@@ -7908,7 +7932,7 @@
     "nextFindingId": "VRM-153",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_VRM151_PROVIDER_SOURCE_REPROOF_REQUIRED",
+    "terminalState": "HOLD_VRM151_RUNTIME_ONLY_DEV_MATERIALIZATION_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -7937,7 +7961,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Run VRM-152 provider source reproof on exact source 653be165: strict read-before-write test plus existing VRM-151 provider contracts; no deploy.",
+  "exactNextAction": "Materialize exact VRM-152 source in DEV runtime only; preserve Hosting bytes/version and production untouched.",
   "supersedesGitBlob": "397a9cee8c71d3156567a0cc96bfdcba88bb7c3a",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -11421,7 +11445,7 @@
     "next": "SHORT_HUMAN_VISUAL_RETEST",
     "production": false
   },
-  "activeBlocker": "VRM152_PROVIDER_SOURCE_REPROOF_REQUIRED",
+  "activeBlocker": "VRM152_RUNTIME_ONLY_DEV_MATERIALIZATION_REQUIRED",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -11560,7 +11584,21 @@
       "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
       "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs"
     ],
-    "state": "SOURCE_WRITTEN_PENDING_REPROOF",
-    "production": false
+    "state": "SOURCE_PROOF_PASS_RUNTIME_MATERIALIZATION_REQUIRED",
+    "production": false,
+    "sourceProof": {
+      "runId": 37008170686,
+      "runNumber": 847,
+      "jobId": 110841344550,
+      "artifactId": 11226054662,
+      "artifactDigest": "sha256:08fe91c8971710a377ef97ef5bcb379da08c00e3c20845b1f405ae7632515c66",
+      "decision": "PASS_VRM151_PROVIDER_SOURCE_REPROOF",
+      "sourceSha": "653be16597a70474456f0170f58a6a1c0c4d39b0",
+      "sourceTree": "f0d8cb0f900f2ca01cfec635700a82d087e35af4",
+      "strictReadBeforeWriteTest": true,
+      "forbiddenSideEffectsGuard": true,
+      "deploys": 0,
+      "production": false
+    }
   }
 }
