@@ -18,7 +18,7 @@
     "sourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7",
     "predecessorSha": "0b7e5db7b1035ec4a81ad548284dbb9146fcfc08",
     "production": false,
-    "state": "DEV_MATERIALIZED_PENDING_VRM151_SEVEN_EXCEPTIONS_DIAGNOSTIC",
+    "state": "DEV_MATERIALIZED_PENDING_VRM151_PAYMENT_ELIGIBILITY_DIAGNOSTIC",
     "proof": {
       "runId": 36964331142,
       "decision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF",
@@ -6961,7 +6961,7 @@
       "secondaryClassification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Historical payment reconciliation needs one durable auditable idempotent source of truth",
-      "state": "SEVEN_REIMBURSEMENT_EXCEPTIONS_DIAGNOSTIC_REQUIRED",
+      "state": "PAYMENT_ELIGIBILITY_DIAGNOSTIC_REQUIRED",
       "expected": "Durably reconcile confirmed historical payment scope without HR mutation, invented bank refs, current-period contamination or duplicate accounting effects.",
       "observed": "Operational truth supplied: all <= Jul 2026 paid both countries; Aug HN paid; Aug GT pending; Sep all pending; Oct must remain untouched.",
       "rootCauseStatus": "PROVEN",
@@ -7024,7 +7024,7 @@
         "bankWrites": 0,
         "production": false
       },
-      "diagnosticNext": "Reuse frozen durable visit authority from V27/read-model: live HR visitId == Firestore docId; reconcile only one canonical durable owner per HR visit, then recompute amount completeness from merged live HR + durable record.",
+      "diagnosticNext": "Apply the existing finance eligibility invariant: only submitted historical visits are reconcilable; quantify canonical submitted scope before changing provider.",
       "amountDiagnostic": {
         "runId": 36965362581,
         "artifactId": 11208644814,
@@ -7078,7 +7078,76 @@
         "hr_2026-04_gt_31_263a722734",
         "hr_2026-05_gt_25_cc5ace594e",
         "hr_2026-07_gt_13_3e8d6f398f"
-      ]
+      ],
+      "sevenExceptionsDiagnostic": {
+        "runId": 36966030938,
+        "artifactId": 11209527976,
+        "artifactDigest": "sha256:0193a68e6d1c78cf3adea6d184016eecbda0aecd6da665a090816c0bf5c75f90",
+        "decision": "PASS_VRM151_SEVEN_REIMBURSEMENT_EXCEPTIONS_READ_ONLY",
+        "exceptions": [
+          {
+            "hrRowId": "DICIEMBRE 25!34",
+            "period": "2025-12",
+            "state": "pending_submission",
+            "missing": [
+              "COMBO"
+            ]
+          },
+          {
+            "hrRowId": "FEBRERO 26!20",
+            "period": "2026-02",
+            "state": "submitted_complete",
+            "missing": [
+              "COMBO"
+            ]
+          },
+          {
+            "hrRowId": "FEBRERO 26!33",
+            "period": "2026-02",
+            "state": "submitted_complete",
+            "missing": [
+              "COMBO"
+            ]
+          },
+          {
+            "hrRowId": "MARZO 26!20",
+            "period": "2026-03",
+            "state": "submitted_complete",
+            "missing": [
+              "COMBO"
+            ]
+          },
+          {
+            "hrRowId": "ABRIL 26!31",
+            "period": "2026-04",
+            "state": "pending_submission",
+            "missing": [
+              "BOLETO",
+              "COMBO"
+            ]
+          },
+          {
+            "hrRowId": "MAYO 26!25",
+            "period": "2026-05",
+            "state": "submitted_complete",
+            "missing": [
+              "COMBO"
+            ]
+          },
+          {
+            "hrRowId": "JULIO 26!13",
+            "period": "2026-07",
+            "state": "submitted_complete",
+            "missing": [
+              "COMBO"
+            ]
+          }
+        ],
+        "writes": 0,
+        "hrWrites": 0,
+        "bankWrites": 0,
+        "production": false
+      }
     }
   },
   "latestEvidenceOverrides": {
@@ -7654,7 +7723,7 @@
     "nextFindingId": "VRM-152",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_VRM151_SEVEN_REIMBURSEMENT_EXCEPTIONS_DIAGNOSTIC_REQUIRED",
+    "terminalState": "HOLD_VRM151_PAYMENT_ELIGIBILITY_DIAGNOSTIC_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
