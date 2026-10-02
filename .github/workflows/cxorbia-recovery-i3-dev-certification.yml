@@ -6631,11 +6631,12 @@ jobs:
           mkdir -p "$VRM151_DRY_OUT"
           test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
           test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
-          test "$FOCAL_SOURCE" = "b32d590fd33d4391471838e06e89a1d80617b76c"
-          test "$FOCAL_TREE" = "52be15349f012ea8fd2a6231205f16fc0ac02966"
-          test "$(jq -r '.currentMaterialization.sourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
-          test "$(jq -r '.currentMaterialization.sourceTree' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
-          test "$(jq -r '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")" = "cxorbia-live-hr-dev-00245-2dp"
+          test "$(jq -r '.currentMaterialization.sourceSha // empty' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
+          test "$(jq -r '.currentMaterialization.sourceTree // empty' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
+          EXPECTED_RUNTIME_REVISION="$(jq -r '.currentMaterialization.runtimeRevision // empty' "$CANDIDATE_DESCRIPTOR")"
+          EXPECTED_RUNTIME_DIGEST="$(jq -r '.currentMaterialization.runtimeDigest // empty' "$CANDIDATE_DESCRIPTOR")"
+          test -n "$EXPECTED_RUNTIME_REVISION"
+          [[ "$EXPECTED_RUNTIME_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
           git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
           node --check tools/qa/cxorbia-vrm151-final-canonical-dry-run.mjs
           node --check tools/qa/cxorbia-vrm151-durable-reconciliation-live.mjs

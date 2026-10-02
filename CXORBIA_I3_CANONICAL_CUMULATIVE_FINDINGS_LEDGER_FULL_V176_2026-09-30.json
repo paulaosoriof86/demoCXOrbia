@@ -18,7 +18,7 @@
     "sourceTree": "f0d8cb0f900f2ca01cfec635700a82d087e35af4",
     "predecessorSha": "b32d590fd33d4391471838e06e89a1d80617b76c",
     "production": false,
-    "state": "VRM152_SOURCE_PROOF_PASS_RUNTIME_MATERIALIZATION_REQUIRED",
+    "state": "VRM152_RUNTIME_MATERIALIZED_DURABLE_RECONCILIATION_REQUIRED",
     "proof": {
       "runId": 37008170686,
       "runNumber": 847,
@@ -53,14 +53,16 @@
       "production": false
     },
     "materialization": {
-      "runId": 36968259184,
-      "artifactId": 11209798806,
-      "artifactDigest": "sha256:afc6baa1df88c7dcf23b36927e6d4b15cc6494aeeb4420995d9737d3851c69f8",
+      "runId": 37008320438,
+      "runNumber": 848,
+      "jobId": 110841820568,
+      "artifactId": 11226264383,
+      "artifactDigest": "sha256:4b4e558a2dd9b0e8b3d2091eaac58dac0b44931185246bbfcee7021a64c52dce",
       "decision": "PASS_VRM151_RUNTIME_ONLY_DEV_MATERIALIZATION",
-      "sourceSha": "b32d590fd33d4391471838e06e89a1d80617b76c",
-      "sourceTree": "52be15349f012ea8fd2a6231205f16fc0ac02966",
-      "runtimeRevision": "cxorbia-live-hr-dev-00245-2dp",
-      "runtimeDigest": "sha256:e70c7ad09ac98242656dfc72995e765e97f0472eb301997292a52bfb16e7000f",
+      "sourceSha": "653be16597a70474456f0170f58a6a1c0c4d39b0",
+      "sourceTree": "f0d8cb0f900f2ca01cfec635700a82d087e35af4",
+      "runtimeRevision": "cxorbia-live-hr-dev-00246-rxd",
+      "runtimeDigest": "sha256:9318bc8dadffe391aaaf9cea2563fc09b6ee4cb9384c2fa7cfa72408f43d0d10",
       "hostingVersion": "sites/cxorbia-backend-dev/versions/3c2418df100edab0",
       "hrRevision": "e242d83f7a63b4f390a3ff6eeaeb616dea52f52f159a5e3a929c5473a7225159",
       "builds": 1,
@@ -7300,7 +7302,7 @@
       "secondaryClassification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Historical reconciliation transaction interleaves Firestore reads and writes",
-      "state": "SOURCE_PROOF_PASS_RUNTIME_MATERIALIZATION_REQUIRED",
+      "state": "RUNTIME_MATERIALIZED_DURABLE_RECONCILIATION_REQUIRED",
       "expected": "Resolve and validate the complete historical reconciliation batch before the first Firestore transaction write; then commit durable reconciliation with provider ACK and idempotent replay.",
       "observed": "Run 846 reached the first real DEV reconciliation batch and Firestore aborted it with 'Firestore transactions require all reads to be executed before all writes.' before commit.",
       "rootCauseStatus": "PROVEN",
@@ -7354,6 +7356,26 @@
         "strictReadBeforeWriteTest": true,
         "forbiddenSideEffectsGuard": true,
         "deploys": 0,
+        "production": false
+      },
+      "runtimeMaterialization": {
+        "runId": 37008320438,
+        "runNumber": 848,
+        "jobId": 110841820568,
+        "artifactId": 11226264383,
+        "artifactDigest": "sha256:4b4e558a2dd9b0e8b3d2091eaac58dac0b44931185246bbfcee7021a64c52dce",
+        "decision": "PASS_VRM151_RUNTIME_ONLY_DEV_MATERIALIZATION",
+        "sourceSha": "653be16597a70474456f0170f58a6a1c0c4d39b0",
+        "sourceTree": "f0d8cb0f900f2ca01cfec635700a82d087e35af4",
+        "runtimeRevision": "cxorbia-live-hr-dev-00246-rxd",
+        "runtimeDigest": "sha256:9318bc8dadffe391aaaf9cea2563fc09b6ee4cb9384c2fa7cfa72408f43d0d10",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/3c2418df100edab0",
+        "hrRevision": "e242d83f7a63b4f390a3ff6eeaeb616dea52f52f159a5e3a929c5473a7225159",
+        "builds": 1,
+        "runtimeDeploys": 1,
+        "hostingDeploys": 0,
+        "hrWrites": 0,
+        "bankWrites": 0,
         "production": false
       }
     }
@@ -7932,7 +7954,7 @@
     "nextFindingId": "VRM-153",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_VRM151_RUNTIME_ONLY_DEV_MATERIALIZATION_REQUIRED",
+    "terminalState": "HOLD_VRM151_DURABLE_RECONCILIATION_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -7961,7 +7983,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Materialize exact VRM-152 source in DEV runtime only; preserve Hosting bytes/version and production untouched.",
+  "exactNextAction": "Execute VRM-151/152 durable historical reconciliation on exact runtime cxorbia-live-hr-dev-00246-rxd after immediate zero-write preflight; require ACK, readback, idempotent replay, 0 HR/bank/financial-movement writes, October untouched.",
   "supersedesGitBlob": "397a9cee8c71d3156567a0cc96bfdcba88bb7c3a",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -11445,7 +11467,7 @@
     "next": "SHORT_HUMAN_VISUAL_RETEST",
     "production": false
   },
-  "activeBlocker": "VRM152_RUNTIME_ONLY_DEV_MATERIALIZATION_REQUIRED",
+  "activeBlocker": "VRM152_DURABLE_RECONCILIATION_REQUIRED",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -11584,7 +11606,7 @@
       "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
       "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs"
     ],
-    "state": "SOURCE_PROOF_PASS_RUNTIME_MATERIALIZATION_REQUIRED",
+    "state": "RUNTIME_MATERIALIZED_DURABLE_RECONCILIATION_REQUIRED",
     "production": false,
     "sourceProof": {
       "runId": 37008170686,
@@ -11598,6 +11620,26 @@
       "strictReadBeforeWriteTest": true,
       "forbiddenSideEffectsGuard": true,
       "deploys": 0,
+      "production": false
+    },
+    "materialization": {
+      "runId": 37008320438,
+      "runNumber": 848,
+      "jobId": 110841820568,
+      "artifactId": 11226264383,
+      "artifactDigest": "sha256:4b4e558a2dd9b0e8b3d2091eaac58dac0b44931185246bbfcee7021a64c52dce",
+      "decision": "PASS_VRM151_RUNTIME_ONLY_DEV_MATERIALIZATION",
+      "sourceSha": "653be16597a70474456f0170f58a6a1c0c4d39b0",
+      "sourceTree": "f0d8cb0f900f2ca01cfec635700a82d087e35af4",
+      "runtimeRevision": "cxorbia-live-hr-dev-00246-rxd",
+      "runtimeDigest": "sha256:9318bc8dadffe391aaaf9cea2563fc09b6ee4cb9384c2fa7cfa72408f43d0d10",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/3c2418df100edab0",
+      "hrRevision": "e242d83f7a63b4f390a3ff6eeaeb616dea52f52f159a5e3a929c5473a7225159",
+      "builds": 1,
+      "runtimeDeploys": 1,
+      "hostingDeploys": 0,
+      "hrWrites": 0,
+      "bankWrites": 0,
       "production": false
     }
   }
