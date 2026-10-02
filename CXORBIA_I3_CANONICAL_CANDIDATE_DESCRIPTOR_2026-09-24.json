@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_HUMAN_VISUAL_REMEDIATION_DIAGNOSTIC_REQUIRED",
+  "status": "HOLD_PREI4_HUMAN_VISUAL_REMEDIATION_CORRECTION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
   "productTreeAuthority": "6a8b7ec768efbb9af73bcca836125471f7f49ae4",
   "predecessorProductSourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V189_2026-10-02.json",
-  "findingsLedgerExpectedGitBlob": "4159d7c921034af19a403b1e7df0a3fca42e43ee",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V190_2026-10-02.json",
+  "findingsLedgerExpectedGitBlob": "3531fb6fa4ad80311e4c42ff8622037a9d11d93a",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM_168_BROWSER_COMMAND_CAPTURE_REQUIRED",
+  "activeBlocker": "HUMAN_ACCEPTANCE_CUMULATIVE_CORRECTIVE_PACKAGE_REQUIRED",
   "nextFindingId": "VRM-181",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run the existing canonical human-acceptance forensic job. The forensic script now captures the exact real Cayalá browser-built scheduling command through a no-send transport and proves the durable visit remains unchanged. Then classify VRM-168 and proceed to the single cumulative I3 corrective package.",
+  "exactNextAction": "Apply one cumulative I3 product successor correcting the proven human-acceptance owners, including VRM-168 visit-only identity crosswalk, without production. Then one DEV materialization and same-candidate live reproof for Shopper/Admin/Finance/Movimientos/Reservas.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2643,7 +2643,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "c54ee1621a42eb6541c2dd7e24d97e0ef30d6621",
+  "moduleTruthExpectedGitBlob": "b07fd8c6fa9c9f8af4c683c0fe3132d79a3ce5b0",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -2671,10 +2671,15 @@
     "probeScript": "tools/qa/cxorbia-i3-vrm168-schedule-provider-probe.mjs",
     "probeScriptGitBlob": "32a2f8d820e37e1f4a3fcd17e025300134b3a0f8",
     "providerSyntheticSchedule": "PASS_RUN_874_CANONICAL_JOB_37059538018",
-    "browserCommandCapture": "PENDING_IN_FORENSIC_SCRIPT",
+    "browserCommandCapture": "ROOT_CAUSE_PROVEN_BEFORE_COMMAND_BUILD",
     "browserCaptureScript": "tools/qa/cxorbia-i3-vrm168-browser-command-capture.mjs",
     "browserCaptureScriptGitBlob": "32554822908b9ee3a0160a18a7ba13efe630c5e8",
     "forensicScriptGitBlob": "58209c0557ab4a359496d7358f38dc23e4f00d2c",
-    "workflowRestoredToValidatedBlob": "ff5cfd7a45650af0ea6278689a36d35b576652bd"
+    "workflowRestoredToValidatedBlob": "ff5cfd7a45650af0ea6278689a36d35b576652bd",
+    "diagnosticRun": 37060288121,
+    "artifactId": 11250540246,
+    "projectedShopperId": "s3",
+    "canonicalShopperId": "shopper_gt_1440137b73",
+    "owner": "app/adapters/tya-cumulative-read-model-v2.js"
   }
 }
