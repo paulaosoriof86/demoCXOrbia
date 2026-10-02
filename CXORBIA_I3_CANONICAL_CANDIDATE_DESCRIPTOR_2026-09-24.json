@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM154_156_LIVE_REPROOF_REQUIRED",
+  "status": "HOLD_PREI4_HUMAN_VISUAL_ACCEPTANCE_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
   "productTreeAuthority": "6a8b7ec768efbb9af73bcca836125471f7f49ae4",
   "predecessorProductSourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V186_2026-10-02.json",
-  "findingsLedgerExpectedGitBlob": "d2018ee8f058552369662c4d42a39b14fa96823c",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V187_2026-10-02.json",
+  "findingsLedgerExpectedGitBlob": "1dc39b2d5dc5aa1884181c963d94b75bec8b075c",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM154_156_LIVE_REPROOF_REQUIRED",
+  "activeBlocker": "PAULA_HUMAN_VISUAL_ACCEPTANCE_REQUIRED",
   "nextFindingId": "VRM-165",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "On exactly the sealed DEV materialization from Run 865 (source 542fb96630d2068993d03ae86e3d3299f5386251 / tree 6a8b7ec768efbb9af73bcca836125471f7f49ae4 / runtime cxorbia-live-hr-dev-00248-xcq / Hosting 3fd4df67f93e3725), run readback-only VRM-154..156 authenticated Shopper/Admin DOM proof plus finance readback 562 paid / 66 pending / 5 reviewRequired / October 0. Require scenario card and visit detail to show both configured dimensions, Mi Perfil and Academia visual markers, Admin identity/postulations/no duplicates, fresh same HR revision, byte-equal frontend, 0 writes, 0 builds, 0 deploys. Then expose DEV to Paula for visual acceptance.",
+  "exactNextAction": "Paula reviews exactly the Run 865/866 sealed Recovery DEV using the frozen review URL and route. No rebuild or redeploy is allowed before her visual decision. If accepted, freeze HUMAN_VISUAL_ACCEPTANCE PASS and proceed to I3 terminal closure/certification path; if any defect is reproducible, classify only the specific owner and fix inside I3.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -429,7 +429,7 @@
     "hostingDeploys": 1,
     "writes": 0,
     "production": false,
-    "state": "SEALED_DEV_VRM162_MATERIALIZED_PENDING_LIVE_REPROOF"
+    "state": "SEALED_DEV_TECHNICAL_REPROOF_PASS_PENDING_PAULA_VISUAL"
   },
   "lastFocalAttempt": {
     "runId": 36198284266,
@@ -483,18 +483,63 @@
   },
   "productSourceTree": "d83f57ed07ef684cd274d4b1db3a52d91f4ff400",
   "lastLiveReproof": {
-    "runId": 36217529367,
-    "runNumber": 465,
-    "jobId": 108336405473,
-    "decision": "FAIL_I3_V28_LIVE_REPROOF",
-    "classification": "MAPPING_FAILURE",
-    "code": "MAPPING_FAILURE:V28_HONORARIUM_FABRICATED",
-    "artifactId": 10898008091,
-    "artifactDigest": "sha256:a380db7ccdedd7dafaad2729d85ac7238e9edc70d0490abb9754d13c241cdf2d",
-    "hrRevision": "67f3af8d616fa611f349b7e707e2b7cd21435d27bca7b2f2097264c8a929726e",
-    "expectedKnownHonorariumCount": 0,
-    "observedKnownHonorariumCount": 44,
-    "firstNullToNumericOwner": "app/adapters/tya-c6-unified-human-runtime-v1.js",
+    "runId": 37038509911,
+    "runNumber": 866,
+    "jobId": 110942631840,
+    "artifactId": 11240893657,
+    "artifactDigest": "sha256:ac5090977919f456fa92950f5a2ade3a4a8e1f92b4c6b986e8c8b347e32cbdfd",
+    "decision": "PASS_VRM154_156_SEALED_DEV_REPROOF",
+    "browserDecision": "PASS_VRM154_156_SEALED_DEV_LIVE_REPROOF",
+    "sourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
+    "sourceTree": "6a8b7ec768efbb9af73bcca836125471f7f49ae4",
+    "runtimeRevision": "cxorbia-live-hr-dev-00248-xcq",
+    "runtimeDigest": "sha256:3076d6651037a406e1bea1f6c2eea1b0ac83cba4ecd30831a06c8a4aaa450c01",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/3fd4df67f93e3725",
+    "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
+    "scenarioDimensions": [
+      "escenario",
+      "tipoCombo"
+    ],
+    "selectedShopper": {
+      "shopperId": "shopper_gt_0c198c1055",
+      "name": "Julissa Flores",
+      "visitId": "hr_2026-10_gt_2_97b3975c30",
+      "hrRowId": "OCTUBRE 26!2",
+      "branch": "C. Miraflores",
+      "escenario": "WEB",
+      "tipoCombo": "Refresco + Palomitas + Hot Dog (Combo Hotdog)"
+    },
+    "shopper": {
+      "scenarioCardAllConfiguredDimensionsVisible": true,
+      "visitDetailAllConfiguredDimensionsVisible": true,
+      "profileVisualMarkersPass": true,
+      "academyVisualMarkersPass": true,
+      "ownVisits": 7,
+      "ownVisitsUnique": 7
+    },
+    "admin": {
+      "shopperFound": true,
+      "noDuplicateSelectedShopperVisits": true,
+      "postulationsRendered": true,
+      "rawTechnicalIdentity": false
+    },
+    "finance": {
+      "canonicalSubmitted": 628,
+      "records": 628,
+      "uniqueVisits": 628,
+      "paid": 562,
+      "pending": 66,
+      "amountReviewRequired": 5,
+      "octoberRecords": 0
+    },
+    "frontendBytesExact": true,
+    "builds": 0,
+    "runtimeDeploys": 0,
+    "hostingDeploys": 0,
+    "writes": 0,
+    "hrWrites": 0,
+    "bankWrites": 0,
+    "financialMovementWrites": 0,
     "production": false
   },
   "lastLiveReproofFailure": {
@@ -2496,7 +2541,7 @@
     "repeatRepairAllowed": false
   },
   "vrm162SourceFix": {
-    "state": "DEV_MATERIALIZED_RUN865_PENDING_LIVE_REPROOF",
+    "state": "CLOSED_PROVEN_RUN866",
     "sourceProof": {
       "runId": 37037752771,
       "runNumber": 864,
@@ -2534,6 +2579,82 @@
       "writes": 0,
       "production": false,
       "state": "SEALED_DEV_VRM162_MATERIALIZED_PENDING_LIVE_REPROOF"
+    },
+    "liveReproof": {
+      "runId": 37038509911,
+      "runNumber": 866,
+      "jobId": 110942631840,
+      "artifactId": 11240893657,
+      "artifactDigest": "sha256:ac5090977919f456fa92950f5a2ade3a4a8e1f92b4c6b986e8c8b347e32cbdfd",
+      "decision": "PASS_VRM154_156_SEALED_DEV_REPROOF",
+      "browserDecision": "PASS_VRM154_156_SEALED_DEV_LIVE_REPROOF",
+      "sourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
+      "sourceTree": "6a8b7ec768efbb9af73bcca836125471f7f49ae4",
+      "runtimeRevision": "cxorbia-live-hr-dev-00248-xcq",
+      "runtimeDigest": "sha256:3076d6651037a406e1bea1f6c2eea1b0ac83cba4ecd30831a06c8a4aaa450c01",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/3fd4df67f93e3725",
+      "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
+      "scenarioDimensions": [
+        "escenario",
+        "tipoCombo"
+      ],
+      "selectedShopper": {
+        "shopperId": "shopper_gt_0c198c1055",
+        "name": "Julissa Flores",
+        "visitId": "hr_2026-10_gt_2_97b3975c30",
+        "hrRowId": "OCTUBRE 26!2",
+        "branch": "C. Miraflores",
+        "escenario": "WEB",
+        "tipoCombo": "Refresco + Palomitas + Hot Dog (Combo Hotdog)"
+      },
+      "shopper": {
+        "scenarioCardAllConfiguredDimensionsVisible": true,
+        "visitDetailAllConfiguredDimensionsVisible": true,
+        "profileVisualMarkersPass": true,
+        "academyVisualMarkersPass": true,
+        "ownVisits": 7,
+        "ownVisitsUnique": 7
+      },
+      "admin": {
+        "shopperFound": true,
+        "noDuplicateSelectedShopperVisits": true,
+        "postulationsRendered": true,
+        "rawTechnicalIdentity": false
+      },
+      "finance": {
+        "canonicalSubmitted": 628,
+        "records": 628,
+        "uniqueVisits": 628,
+        "paid": 562,
+        "pending": 66,
+        "amountReviewRequired": 5,
+        "octoberRecords": 0
+      },
+      "frontendBytesExact": true,
+      "builds": 0,
+      "runtimeDeploys": 0,
+      "hostingDeploys": 0,
+      "writes": 0,
+      "hrWrites": 0,
+      "bankWrites": 0,
+      "financialMovementWrites": 0,
+      "production": false
     }
+  },
+  "devHumanVisualReview": {
+    "root": "https://cxorbia-backend-dev.web.app",
+    "url": "https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV",
+    "routes": [
+      "Shopper: Mi Día -> Mis Visitas -> abrir C. Miraflores OCT 2026 -> verificar Medio de compra + Combo -> Mi Perfil -> Mis Beneficios -> Academia",
+      "Admin: Shoppers -> Julissa Flores -> identidad/KPIs/histórico/asignaciones; Visitas; Gestión de Postulaciones; confirmar ausencia de duplicados y IDs técnicos"
+    ],
+    "expectedVisualMarkers": [
+      "Mis Visitas: dos chips configurados Medio de compra y Combo",
+      "Progreso de visita con jerarquía legible y acciones visibles",
+      "Mi Perfil con hero corporativo, identidad, desempeño e histórico",
+      "Academia con tarjetas corporativas azules, iconos y jerarquía",
+      "Admin con nombre humano, no IDs técnicos y sin duplicados"
+    ],
+    "production": false
   }
 }
