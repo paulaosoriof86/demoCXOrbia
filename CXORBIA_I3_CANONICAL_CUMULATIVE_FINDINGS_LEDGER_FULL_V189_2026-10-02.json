@@ -8444,9 +8444,9 @@
       "classification": "PERSISTENCE_FAILURE",
       "severity": "P0",
       "title": "Shopper scheduling command failed on sealed DEV",
-      "state": "P0_PROVEN_OWNER_FIX_REQUIRED",
-      "rootCauseStatus": "PROVEN",
-      "rootCause": "For exact Cayalá assigned visit OCTUBRE 26!6, HR and durable Firestore state agree (period cinepolis-2026-10, shopper shopper_gt_1440137b73, state asignada, sync synced), but browser projected expectedVersion='source-current' while provider durable version=3. CX.data.setVisitState/requestVisitReschedule/requestVisitCancel use versionOf(projected visit), causing strict provider version rejection.",
+      "state": "P0_DIAGNOSTIC_REQUIRED",
+      "rootCauseStatus": "PARTIAL_NOT_PROVEN",
+      "rootCause": "The failed Cayalá visit is valid, assigned, same-period and synchronized. Browser projected expectedVersion='source-current' while durable version=3, but the current operational provider explicitly accepts expectedVersion='source-current'; therefore that mismatch is not sufficient to explain the failure. Exact authenticated shopper membership/project/authNamespace and command rejection reason must be read back before changing scheduling logic.",
       "owners": [
         "app/modules/misvisitas.js",
         "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
@@ -8478,7 +8478,7 @@
           "stateSchedulable": true
         }
       },
-      "correction": "All visit commands must resolve exact protected durable visit and use its version for expectedVersion, preserving provider ACK/idempotency and no local mutation."
+      "correction": "Do not patch scheduling from the version mismatch alone. Read exact authenticated shopper membership/project/authNamespace and provider rejection evidence first; then correct only the proven owner."
     },
     "VRM-169": {
       "id": "VRM-169",
@@ -9398,7 +9398,7 @@
     ],
     "findingCount": 178,
     "expectedCurrentRange": "VRM-001..VRM-178",
-    "nextFindingId": "VRM-179",
+    "nextFindingId": "VRM-181",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_PREI4_HUMAN_VISUAL_REMEDIATION_DIAGNOSTIC_REQUIRED",
