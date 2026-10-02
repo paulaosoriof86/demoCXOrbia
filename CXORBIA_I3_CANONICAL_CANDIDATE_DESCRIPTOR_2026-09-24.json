@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM_168_EXACT_PROVIDER_PATH_PROBE_REQUIRED",
+  "activeBlocker": "VRM_168_BROWSER_COMMAND_CAPTURE_REQUIRED",
   "nextFindingId": "VRM-181",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Use the existing canonical human-acceptance job to execute the read-only forensic readback and one synthetic DEV visit.state.update through the real authenticated provider, with mandatory cleanup. Do not modify the real Cayalá visit or production.",
+  "exactNextAction": "Capture the exact browser-built scheduling command for the real Cayalá visit through a no-send diagnostic transport on the existing sealed DEV. Prove durable visit remains unchanged. Then classify VRM-168 from exact command mapping evidence.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2669,6 +2669,10 @@
     "authClaimsReadback": "PASS_RUN_873",
     "syntheticProviderProbe": "PENDING_IN_EXISTING_CANONICAL_JOB",
     "probeScript": "tools/qa/cxorbia-i3-vrm168-schedule-provider-probe.mjs",
-    "probeScriptGitBlob": "32a2f8d820e37e1f4a3fcd17e025300134b3a0f8"
+    "probeScriptGitBlob": "32a2f8d820e37e1f4a3fcd17e025300134b3a0f8",
+    "providerSyntheticSchedule": "PASS_RUN_874_CANONICAL_JOB_37059538018",
+    "browserCommandCapture": "PENDING",
+    "browserCaptureScript": "tools/qa/cxorbia-i3-vrm168-browser-command-capture.mjs",
+    "browserCaptureScriptGitBlob": "32554822908b9ee3a0160a18a7ba13efe630c5e8"
   }
 }

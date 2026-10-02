@@ -7018,6 +7018,12 @@ jobs:
           test "$(jq -r '.cleanup.visit and .cleanup.receipt and .cleanup.audit' "$PROBE_OUT/result.json")" = "true"
           test "$(jq -r '.hrWrites' "$PROBE_OUT/result.json")" = "0"
           test "$(jq -r '.production' "$PROBE_OUT/result.json")" = "false"
+          CAPTURE_OUT="$FOCAL_OUT/vrm168-browser-capture"
+          PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" OUT="$CAPTURE_OUT" VRM168_PERIOD_ID="cinepolis-2026-10" VRM168_SHOPPER_ID="shopper_gt_1440137b73" VRM168_UID="cx-sh-d56787c101878e81c94fc7637f66" VRM168_VISIT_ID="OCTUBRE 26!6" VRM168_HR_REVISION="$HR_REVISION" node tools/qa/cxorbia-i3-vrm168-browser-command-capture.mjs | tee "$FOCAL_OUT/vrm168-browser-capture.log"
+          test "$(jq -r '.decision' "$CAPTURE_OUT/result.json")" = "PASS_VRM168_BROWSER_COMMAND_MAPPING"
+          test "$(jq -r '.durableUnchanged' "$CAPTURE_OUT/result.json")" = "true"
+          test "$(jq -r '.writes' "$CAPTURE_OUT/result.json")" = "0"
+          test "$(jq -r '.providerWrites' "$CAPTURE_OUT/result.json")" = "0"
       - name: Seal VRM-154..157 readback receipt
         run: |
           set -Eeuo pipefail
