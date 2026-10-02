@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {createFinanceCommandProvider} from '../../cxorbia-finance-command-provider-v1.mjs';
+import {commandProviderKind} from '../cxorbia-command-runtime-v1.mjs';
 
 const clone=v=>v===undefined?undefined:structuredClone(v);
 const clientHashTest=value=>{const s=typeof value==='string'?value:JSON.stringify(value||{});let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return (h>>>0).toString(36);};
@@ -53,6 +54,10 @@ function historicalCommand(extra={}){
     ...extra
   };
 }
+
+test('VRM-151 command runtime routes finance.historical.reconcile to finance provider',()=>{
+  assert.equal(commandProviderKind('finance.historical.reconcile'),'finance');
+});
 
 test('ADMIN-004 reconcile uses project-country honorarium when HR is blank and never confirms external payment',async()=>{
   const db=baseDb(),p=createFinanceCommandProvider({auth:new Auth(),db,policy});
