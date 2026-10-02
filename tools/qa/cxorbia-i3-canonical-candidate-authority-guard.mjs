@@ -68,7 +68,7 @@ const historicalDisabled=[
 ];
 for(const id of historicalDisabled){
   const body=(jobs[id]||[]).slice(0,12).join('\n');
-  if(!/if:\s*\$\{\{\s*false\s*\}\}/.test(body))fail('RELEASE_COMPOSITION_FAILURE:HISTORICAL_JOB_STILL_EXECUTABLE',id);
+  if(body&&!/if:\s*\$\{\{\s*false\s*\}\}/.test(body))fail('RELEASE_COMPOSITION_FAILURE:HISTORICAL_JOB_STILL_EXECUTABLE',id);
 }
 
 const active=['canonical-candidate-authority','certify','live-fixtures','gate21','pre-i4-vrm037-diagnostic'];
