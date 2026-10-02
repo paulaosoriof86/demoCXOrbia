@@ -74,7 +74,22 @@ const schedulingMemberships=scheduledShopperIds.map(shopperId=>({
     projectIds:arr(u.projectIds).map(str),uid:u.uid||u.authUid||u.id
   }))
 }));
-const scheduling={currentKey,currentPeriodId,cayala:visitRows,memberships:schedulingMemberships,
+const schedulingAuthClaims=[];
+for(const group of schedulingMemberships){
+  for(const member of group.members){
+    try{
+      const au=await auth.getUser(member.uid);
+      schedulingAuthClaims.push({
+        shopperId:group.shopperId,uid:member.uid,disabled:au.disabled===true,
+        customClaims:au.customClaims||{},
+        providerIds:arr(au.providerData).map(x=>x.providerId).filter(Boolean)
+      });
+    }catch(error){
+      schedulingAuthClaims.push({shopperId:group.shopperId,uid:member.uid,error:str(error?.code||error?.message||error)});
+    }
+  }
+}
+const scheduling={currentKey,currentPeriodId,cayala:visitRows,memberships:schedulingMemberships,authClaims:schedulingAuthClaims,
   sourceAssertions:{providerAcceptsSourceCurrentExpectedVersion:true,clientCommandWritesRequired:true}};
 
 const certBanks=resources.filter(r=>r.resourceType==='certification_bank'&&str(r.projectId)===PROJECT_ID);

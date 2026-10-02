@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM_168_EXACT_PROVIDER_PRECONDITION_READBACK_REQUIRED",
+  "activeBlocker": "VRM_168_TOKEN_CLAIMS_READBACK_REQUIRED",
   "nextFindingId": "VRM-181",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run the existing read-only human-acceptance forensic job against exact DEV to read Cayalá shopper membership/project/authNamespace and resolve the actual scheduling rejection owner. Then apply one cumulative I3 corrective package. No production.",
+  "exactNextAction": "Read Firebase Auth custom claims for the exact Cayalá shopper UID and compare them with durable membership. No writes. If claims are valid, run a synthetic DEV scheduling command with full cleanup to capture the exact provider code.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
