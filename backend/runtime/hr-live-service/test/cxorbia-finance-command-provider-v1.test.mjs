@@ -41,6 +41,19 @@ function command(type,extra={}){
   };
 }
 
+function historicalCommand(extra={}){
+  return {
+    version:'cxorbia-command-adapter-v1',
+    commandType:'finance.historical.reconcile',
+    entityType:'historicalPaymentReconciliation',
+    tenantId:'tenant-a',projectId:'project-a',periodId:'project-a-2026-09',entityId:'hist-test',
+    idempotencyKey:'finance.historical.reconcile:key',expectedVersion:'source-current',
+    authorization:{providerEnforcementRequired:true,permission:'finance.reconcile'},
+    payload:{visitIds:['SEP!2'],visitRefs:[{visitId:'SEP!2',hrRowId:'SEP!2'}],paymentStatus:'paid',sourceRevision:'rev-hr',reconciliationBatchId:'hist-test',sourceRef:'historical-reconciliation:test'},
+    ...extra
+  };
+}
+
 test('ADMIN-004 reconcile uses project-country honorarium when HR is blank and never confirms external payment',async()=>{
   const db=baseDb(),p=createFinanceCommandProvider({auth:new Auth(),db,policy});
   const r=await p.execute('token',command('finance.reconcile.visit'));
@@ -55,6 +68,31 @@ test('ADMIN-004 explicit HR honorarium has precedence and reconciliation is idem
   const a=await p.execute('token',cmd),b=await p.execute('token',cmd);
   assert.equal(a.ok,true);assert.equal(a.financialMatch.honorario,75);assert.equal(a.financialMatch.honorarioSource,'hr_explicit');assert.equal(a.financialMatch.total,210);
   assert.equal(b.ok,true);assert.equal(b.idempotentReplay,true);assert.equal(b.providerWrites,0);
+});
+
+test('VRM-151 historical reconciliation uses canonical submitted visit, exact amount and idempotent durable status without bank or HR writes',async()=>{
+  const db=baseDb(),p=createFinanceCommandProvider({auth:new Auth(),db,policy}),cmd=historicalCommand();
+  const a=await p.execute('token',cmd),b=await p.execute('token',cmd);
+  assert.equal(a.ok,true);assert.equal(a.reconciled,1);assert.equal(a.amountReviewRequired,0);assert.equal(a.detail[0].amount,195);assert.equal(a.detail[0].amountStatus,'exact');
+  assert.equal(a.bankWrites,0);assert.equal(a.hrWrites,0);
+  const v=db.get('tenants/tenant-a/projects/project-a/visits/SEP!2');
+  assert.equal(v.paymentConfirmed,true);assert.equal(v.historicalReconciliationConfirmed,true);assert.equal(v.historicalPaymentAmount,195);assert.equal(v.historicalPaymentAmountReviewRequired,false);assert.equal(v.reconciliationSourceRevision,'rev-hr');
+  assert.equal(b.ok,true);assert.equal(b.idempotentReplay,true);assert.equal(b.providerWrites,0);
+});
+
+test('VRM-151 historical reconciliation records paid status but keeps amount null and review-required when reimbursement source is incomplete',async()=>{
+  const db=baseDb(),v=db.get('tenants/tenant-a/projects/project-a/visits/SEP!2');v.comboAmt=null;db.seed('tenants/tenant-a/projects/project-a/visits/SEP!2',v);
+  const p=createFinanceCommandProvider({auth:new Auth(),db,policy}),r=await p.execute('token',historicalCommand());
+  assert.equal(r.ok,true);assert.equal(r.reconciled,1);assert.equal(r.amountReviewRequired,1);assert.equal(r.detail[0].amount,null);assert.equal(r.detail[0].amountStatus,'review_required');assert.deepEqual(r.detail[0].reviewReasons,['COMBO_MISSING']);
+  const after=db.get('tenants/tenant-a/projects/project-a/visits/SEP!2');
+  assert.equal(after.paymentConfirmed,true);assert.equal(after.historicalPaymentAmount,null);assert.equal(after.historicalPaymentAmountReviewRequired,true);assert.deepEqual(after.historicalPaymentReviewReasons,['COMBO_MISSING']);assert.equal(after.financialMatch,undefined);
+});
+
+test('VRM-151 historical reconciliation rejects non-submitted visits even when the historical month is marked paid',async()=>{
+  const db=baseDb(),v=db.get('tenants/tenant-a/projects/project-a/visits/SEP!2');v.canonicalFacets={submitted:false};v.estado='cuestionario';v.submittedAt=null;db.seed('tenants/tenant-a/projects/project-a/visits/SEP!2',v);
+  const p=createFinanceCommandProvider({auth:new Auth(),db,policy}),r=await p.execute('token',historicalCommand());
+  assert.equal(r.ok,false);assert.match(r.code,/FINANCE_HISTORICAL_VISIT_NOT_SUBMITTED/);
+  const after=db.get('tenants/tenant-a/projects/project-a/visits/SEP!2');assert.equal(after.paymentConfirmed,undefined);assert.equal(after.reconciliationSourceRef,undefined);
 });
 
 test('ADMIN-004 missing config fails closed and payment batch rejects unreconciled visit',async()=>{
