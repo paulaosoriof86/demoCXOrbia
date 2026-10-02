@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM157_DEV_READBACK_ONLY_REQUIRED",
+  "status": "HOLD_VRM153_DURABLE_REPAIR_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
   "predecessorProductSourceSha": "53b84faa673f2378439e2f33af3faf63948cbbfa",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "5c8026ec94c34b48cb40f0a42ddf719f6f77e9c4",
+  "findingsLedgerExpectedGitBlob": "5effd355c979a61720c1b7f2318613af093b4c84",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM157_DEV_READBACK_ONLY_REQUIRED",
+  "activeBlocker": "VRM153_DURABLE_REPAIR_REQUIRED",
   "nextFindingId": "VRM-158",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Read back existing DEV materialization only: prove current runtime revision/digest and Hosting version remain Run854 outputs; use format=meta for HR revision/health and format=json for project scenarioDimensions/visit values; byte-compare focal frontend files; no build/deploy.",
+  "exactNextAction": "On current sealed DEV materialization only, run a fresh zero-write canonical historical preflight and repair the same 628 reconciliation documents with a new VRM-153 idempotency namespace; require 562 paid, 66 pending, exactly 5 review-required, October untouched, ACK, same batch/visit IDs, replay zero writes, and zero HR/bank/financial-movement writes.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -409,11 +409,11 @@
     "production": false
   },
   "currentMaterialization": {
-    "runId": 37021463830,
-    "runNumber": 854,
-    "jobId": 110885422250,
-    "artifactId": 11233281617,
-    "artifactDigest": "sha256:28fad1a279373a51460d4abeade54f45380fbbe745f7d89ae174555820e9f6a3",
+    "runId": 37027244927,
+    "runNumber": 855,
+    "jobId": 110904977624,
+    "artifactId": 11235831313,
+    "artifactDigest": "sha256:92572a1cd9c9fe6beb358ed4070693d4b1b4d1da55bf1a34a3f850ad138eb026",
     "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
     "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
     "runtimeRevision": "cxorbia-live-hr-dev-00247-4cf",
@@ -428,7 +428,15 @@
     "failedStep": "Prove live HR scenario configuration after materialization",
     "failureCause": "Harness queried format=json but asserted format=meta fields revision/ok. JSON payload correctly contained sourceSafe=false? no: sourceSafe=true, production=false, scenarioDimensions and visits with escenario+tipoCombo; revision/ok are absent by endpoint contract.",
     "production": false,
-    "state": "DEPLOYED_UNSEALED_HARNESS_FAILURE"
+    "state": "SEALED_DEV_READBACK_PASS",
+    "decision": "PASS_VRM157_EXISTING_DEV_READBACK",
+    "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
+    "scenarioDimensionsProven": true,
+    "frontendBytesExact": true,
+    "builds": 0,
+    "runtimeDeploys": 0,
+    "hostingDeploys": 0,
+    "writes": 0
   },
   "lastFocalAttempt": {
     "runId": 36198284266,
@@ -2022,7 +2030,7 @@
     ],
     "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
     "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
-    "state": "DEV_DEPLOYED_READBACK_ONLY_REQUIRED",
+    "state": "DEV_MATERIALIZED_VRM153_DURABLE_REPAIR_REQUIRED",
     "production": false
   },
   "vrm151RuntimeMaterialization": {
@@ -2129,7 +2137,7 @@
     "secondaryClassification": "PERSISTENCE_FAILURE",
     "severity": "P0",
     "title": "Durable historical reconciliation readback does not match canonical expected counts",
-    "state": "SOURCE_PROOF_PASS_CUMULATIVE_FRONTEND_CLOSURE_REQUIRED",
+    "state": "DURABLE_REPAIR_REQUIRED_ON_CURRENT_MATERIALIZATION",
     "expected": "628 unique durable reconciliation records must read back as exactly 562 paid, 66 pending and 5 amountReviewRequired on the same HR revision.",
     "observed": "Run 849 passed all batch ACKs and idempotent replays; readback confirmed 628 records and 628 unique visits, then failed the final paid/pending/amountReviewRequired count tuple.",
     "rootCauseStatus": "PROVEN",
@@ -2215,6 +2223,29 @@
       "strictReadBeforeWrite": true,
       "deploys": 0,
       "production": false
+    },
+    "repairContract": {
+      "sameBatchIds": true,
+      "newIdempotencyNamespace": "vrm153-repair",
+      "overwriteSameReconciliationDocs": true,
+      "expected": {
+        "records": 628,
+        "uniqueVisits": 628,
+        "paid": 562,
+        "pending": 66,
+        "amountReviewRequired": 5,
+        "octoberTouched": 0
+      },
+      "forbidden": {
+        "hrWrites": 0,
+        "bankWrites": 0,
+        "financialMovementWrites": 0,
+        "externalPaymentWrites": 0,
+        "production": false
+      },
+      "requiresFreshDryRun": true,
+      "requiresExactHrRevisionMatch": true,
+      "requiresReplayZeroWrites": true
     }
   },
   "vrm154": {
@@ -2383,7 +2414,7 @@
     "classification": "RELEASE_COMPOSITION_FAILURE",
     "severity": "P0",
     "title": "VRM-154..156 DEV materialization harness mixed HR full-data and metadata endpoint contracts",
-    "state": "ROOT_CAUSE_PROVEN_READBACK_ONLY_REQUIRED",
+    "state": "CLOSED_PROVEN_RUN855",
     "expected": "After the single DEV materialization, revision/health assertions must use hr-live?format=meta while scenarioDimensions and visit scenario values use hr-live?format=json; no rebuild or redeploy is permitted for a harness-only mismatch.",
     "observed": "Run 854 successfully built and deployed exact source da2f750e to runtime and Hosting, then failed because the readback step queried format=json and immediately asserted .revision/.ok, fields provided by format=meta rather than the full JSON payload.",
     "rootCauseStatus": "PROVEN",
@@ -2418,6 +2449,27 @@
       "readbackOnly": true,
       "productionTouched": false
     },
-    "production": false
+    "production": false,
+    "readback": {
+      "runId": 37027244927,
+      "runNumber": 855,
+      "jobId": 110904977624,
+      "artifactId": 11235831313,
+      "artifactDigest": "sha256:92572a1cd9c9fe6beb358ed4070693d4b1b4d1da55bf1a34a3f850ad138eb026",
+      "decision": "PASS_VRM157_EXISTING_DEV_READBACK",
+      "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
+      "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
+      "runtimeRevision": "cxorbia-live-hr-dev-00247-4cf",
+      "runtimeDigest": "sha256:f07051abaddc2c72a8a578a65f901a3a384377fc83f6ee7f346866e3b877100f",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/09c4173f2d6525f4",
+      "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
+      "scenarioDimensionsProven": true,
+      "frontendBytesExact": true,
+      "builds": 0,
+      "runtimeDeploys": 0,
+      "hostingDeploys": 0,
+      "writes": 0,
+      "production": false
+    }
   }
 }

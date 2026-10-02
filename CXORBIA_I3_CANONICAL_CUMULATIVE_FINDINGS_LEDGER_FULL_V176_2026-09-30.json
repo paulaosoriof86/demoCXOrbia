@@ -18,7 +18,7 @@
     "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
     "predecessorSha": "53b84faa673f2378439e2f33af3faf63948cbbfa",
     "production": false,
-    "state": "VRM154_156_DEPLOYED_DEV_VRM157_READBACK_ONLY_REQUIRED",
+    "state": "VRM157_READBACK_PASS_VRM153_DURABLE_REPAIR_REQUIRED",
     "proof": {
       "runId": 37021140798,
       "runNumber": 853,
@@ -7385,7 +7385,7 @@
       "secondaryClassification": "PERSISTENCE_FAILURE",
       "severity": "P0",
       "title": "Durable historical reconciliation readback does not match canonical expected counts",
-      "state": "SOURCE_PROOF_PASS_CUMULATIVE_FRONTEND_CLOSURE_REQUIRED",
+      "state": "DURABLE_REPAIR_REQUIRED_ON_CURRENT_MATERIALIZATION",
       "expected": "628 unique durable reconciliation records must read back as exactly 562 paid, 66 pending and 5 amountReviewRequired on the same HR revision.",
       "observed": "Run 849 passed all batch ACKs and idempotent replays; readback confirmed 628 records and 628 unique visits, then failed the final paid/pending/amountReviewRequired count tuple.",
       "rootCauseStatus": "PROVEN",
@@ -7471,6 +7471,29 @@
         "strictReadBeforeWrite": true,
         "deploys": 0,
         "production": false
+      },
+      "repairContract": {
+        "sameBatchIds": true,
+        "newIdempotencyNamespace": "vrm153-repair",
+        "overwriteSameReconciliationDocs": true,
+        "expected": {
+          "records": 628,
+          "uniqueVisits": 628,
+          "paid": 562,
+          "pending": 66,
+          "amountReviewRequired": 5,
+          "octoberTouched": 0
+        },
+        "forbidden": {
+          "hrWrites": 0,
+          "bankWrites": 0,
+          "financialMovementWrites": 0,
+          "externalPaymentWrites": 0,
+          "production": false
+        },
+        "requiresFreshDryRun": true,
+        "requiresExactHrRevisionMatch": true,
+        "requiresReplayZeroWrites": true
       }
     },
     "VRM-154": {
@@ -7479,7 +7502,7 @@
       "secondaryClassification": "MAPPING_FAILURE",
       "severity": "P0",
       "title": "Shopper visit surfaces render only one scenario dimension and omit project-defined additional scenario dimensions",
-      "state": "SOURCE_PROOF_PASS_DEV_MATERIALIZATION_REQUIRED",
+      "state": "DEV_MATERIALIZED_PENDING_VRM153_REPAIR_AND_LIVE_REPROOF",
       "expected": "Every shopper visit must render all scenario dimensions configured for that project. The renderer must be project-driven and generic; no Cinépolis-, combo-, country-, period- or column-specific hardcoding. For the current Cinépolis configuration this includes the ticket purchase scenario and the assigned combo scenario.",
       "observed": "Live HR rows already contain the second scenario information (e.g. tipoCombo) while Mis Visitas renders only v.escenario/v.canal and the shopper visit detail checks v.combo instead of the live canonical tipoCombo field. The combo scenario therefore disappears from both shopper-facing surfaces.",
       "rootCauseStatus": "PROVEN",
@@ -7540,7 +7563,7 @@
       "classification": "VISUAL_DEFECT",
       "severity": "P1",
       "title": "Shopper Mis Visitas and Mi Perfil remain visually inconsistent with the approved frontend language",
-      "state": "SOURCE_PROOF_PASS_DEV_MATERIALIZATION_REQUIRED",
+      "state": "DEV_MATERIALIZED_PENDING_VRM153_REPAIR_AND_HUMAN_VISUAL_REPROOF",
       "relatedFindings": [
         "VRM-131",
         "VRM-145"
@@ -7593,7 +7616,7 @@
       "classification": "VISUAL_DEFECT",
       "severity": "P1",
       "title": "Academy/certification course cards are visually inconsistent with the approved frontend",
-      "state": "SOURCE_PROOF_PASS_DEV_MATERIALIZATION_REQUIRED",
+      "state": "DEV_MATERIALIZED_PENDING_VRM153_REPAIR_AND_HUMAN_VISUAL_REPROOF",
       "expected": "Academy/certification cards use the same coherent frontend system: clear visual hierarchy, solid contrast, corporate palette, meaningful emojis/icons and obvious status/action affordances while preserving certification logic and provider-backed state.",
       "observed": "Paula's current human review reports course cards as visually flat, low-contrast and inconsistent with the rest of the approved frontend.",
       "rootCauseStatus": "OWNER_PROVEN_VISUAL_REDESIGN_REQUIRED",
@@ -7639,7 +7662,7 @@
       "classification": "RELEASE_COMPOSITION_FAILURE",
       "severity": "P0",
       "title": "VRM-154..156 DEV materialization harness mixed HR full-data and metadata endpoint contracts",
-      "state": "ROOT_CAUSE_PROVEN_READBACK_ONLY_REQUIRED",
+      "state": "CLOSED_PROVEN_RUN855",
       "expected": "After the single DEV materialization, revision/health assertions must use hr-live?format=meta while scenarioDimensions and visit scenario values use hr-live?format=json; no rebuild or redeploy is permitted for a harness-only mismatch.",
       "observed": "Run 854 successfully built and deployed exact source da2f750e to runtime and Hosting, then failed because the readback step queried format=json and immediately asserted .revision/.ok, fields provided by format=meta rather than the full JSON payload.",
       "rootCauseStatus": "PROVEN",
@@ -7674,7 +7697,28 @@
         "readbackOnly": true,
         "productionTouched": false
       },
-      "production": false
+      "production": false,
+      "readback": {
+        "runId": 37027244927,
+        "runNumber": 855,
+        "jobId": 110904977624,
+        "artifactId": 11235831313,
+        "artifactDigest": "sha256:92572a1cd9c9fe6beb358ed4070693d4b1b4d1da55bf1a34a3f850ad138eb026",
+        "decision": "PASS_VRM157_EXISTING_DEV_READBACK",
+        "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
+        "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
+        "runtimeRevision": "cxorbia-live-hr-dev-00247-4cf",
+        "runtimeDigest": "sha256:f07051abaddc2c72a8a578a65f901a3a384377fc83f6ee7f346866e3b877100f",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/09c4173f2d6525f4",
+        "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
+        "scenarioDimensionsProven": true,
+        "frontendBytesExact": true,
+        "builds": 0,
+        "runtimeDeploys": 0,
+        "hostingDeploys": 0,
+        "writes": 0,
+        "production": false
+      }
     }
   },
   "latestEvidenceOverrides": {
@@ -8256,7 +8300,7 @@
     "nextFindingId": "VRM-158",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_VRM157_DEV_READBACK_ONLY_REQUIRED",
+    "terminalState": "HOLD_VRM153_DURABLE_REPAIR_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -8285,7 +8329,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Read back existing DEV materialization only: prove current runtime revision/digest and Hosting version remain Run854 outputs; use format=meta for HR revision/health and format=json for project scenarioDimensions/visit values; byte-compare focal frontend files; no build/deploy.",
+  "exactNextAction": "On current sealed DEV materialization only, run a fresh zero-write canonical historical preflight and repair the same 628 reconciliation documents with a new VRM-153 idempotency namespace; require 562 paid, 66 pending, exactly 5 review-required, October untouched, ACK, same batch/visit IDs, replay zero writes, and zero HR/bank/financial-movement writes.",
   "supersedesGitBlob": "397a9cee8c71d3156567a0cc96bfdcba88bb7c3a",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -9426,11 +9470,11 @@
     }
   ],
   "currentMaterialization": {
-    "runId": 37021463830,
-    "runNumber": 854,
-    "jobId": 110885422250,
-    "artifactId": 11233281617,
-    "artifactDigest": "sha256:28fad1a279373a51460d4abeade54f45380fbbe745f7d89ae174555820e9f6a3",
+    "runId": 37027244927,
+    "runNumber": 855,
+    "jobId": 110904977624,
+    "artifactId": 11235831313,
+    "artifactDigest": "sha256:92572a1cd9c9fe6beb358ed4070693d4b1b4d1da55bf1a34a3f850ad138eb026",
     "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
     "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
     "runtimeRevision": "cxorbia-live-hr-dev-00247-4cf",
@@ -9445,7 +9489,15 @@
     "failedStep": "Prove live HR scenario configuration after materialization",
     "failureCause": "Harness queried format=json but asserted format=meta fields revision/ok. JSON payload correctly contained sourceSafe=false? no: sourceSafe=true, production=false, scenarioDimensions and visits with escenario+tipoCombo; revision/ok are absent by endpoint contract.",
     "production": false,
-    "state": "DEPLOYED_UNSEALED_HARNESS_FAILURE"
+    "state": "SEALED_DEV_READBACK_PASS",
+    "decision": "PASS_VRM157_EXISTING_DEV_READBACK",
+    "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
+    "scenarioDimensionsProven": true,
+    "frontendBytesExact": true,
+    "builds": 0,
+    "runtimeDeploys": 0,
+    "hostingDeploys": 0,
+    "writes": 0
   },
   "lastModuleTruthProof": {
     "runId": 36451085968,
@@ -11773,7 +11825,7 @@
     "next": "SHORT_HUMAN_VISUAL_RETEST",
     "production": false
   },
-  "activeBlocker": "VRM157_DEV_READBACK_ONLY_REQUIRED",
+  "activeBlocker": "VRM153_DURABLE_REPAIR_REQUIRED",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -11911,7 +11963,7 @@
     ],
     "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
     "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
-    "state": "DEV_DEPLOYED_READBACK_ONLY_REQUIRED",
+    "state": "DEV_MATERIALIZED_VRM153_DURABLE_REPAIR_REQUIRED",
     "production": false
   }
 }
