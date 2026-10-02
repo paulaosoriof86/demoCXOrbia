@@ -18,8 +18,13 @@
     "sourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7",
     "predecessorSha": "0b7e5db7b1035ec4a81ad548284dbb9146fcfc08",
     "production": false,
-    "state": "VRM143_151_SOURCE_SUCCESSOR_PENDING_FOCAL_REPROOF",
-    "proof": null,
+    "state": "SOURCE_PROVEN_PENDING_EXACT_DEV_MATERIALIZATION",
+    "proof": {
+      "runId": 36964331142,
+      "decision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF",
+      "production": false,
+      "hrWrites": 0
+    },
     "priorProof": {
       "runId": 36942289348,
       "artifactId": 11200941985,
@@ -6611,7 +6616,7 @@
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "PRE_I4_ACCEPTANCE_BLOCKER",
       "title": "Historical non-current notifications remain unread/current in Mi Día",
-      "state": "FIXED_SOURCE_PENDING_FOCAL_REPROOF",
+      "state": "SOURCE_PROVEN_PENDING_EXACT_DEV_MATERIALIZATION",
       "expected": "Historical/resolved informational notifications must not count as current unread or contaminate Mi Día for a new period; actionable unresolved events remain visible.",
       "observed": "In OCT 2026 shopper Mi Día shows 3 unread approved-application notifications dated 2026-09-21, 2026-09-07 and 2026-09-30.",
       "rootCauseStatus": "PROVEN",
@@ -6629,14 +6634,16 @@
       "production": false,
       "moduleTruth": "TRUE_FUNCTIONAL_DEFECT",
       "fixSourceSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
-      "fixSourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7"
+      "fixSourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7",
+      "sourceProofRunId": 36964331142,
+      "sourceProofDecision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF"
     },
     "VRM-144": {
       "id": "VRM-144",
       "classification": "VISUAL_DEFECT",
       "severity": "PRE_I4_ACCEPTANCE_BLOCKER",
       "title": "Mi Día visual hierarchy places secondary content ahead of current action",
-      "state": "FIXED_SOURCE_PENDING_FOCAL_REPROOF",
+      "state": "SOURCE_PROVEN_PENDING_EXACT_DEV_MATERIALIZATION",
       "expected": "Order: next action/visit, visit state/progress, primary actions, current alerts, secondary schedule/summary.",
       "observed": "Notifications and schedule dominate above the next visit/progress and require excessive scrolling.",
       "rootCauseStatus": "PROVEN",
@@ -6647,14 +6654,16 @@
       "rootCause": "Shopper render order is notifBlock -> cronograma -> next visit -> progress, placing secondary content before the primary operational action.",
       "moduleTruth": "TRUE_FUNCTIONAL_DEFECT",
       "fixSourceSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
-      "fixSourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7"
+      "fixSourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7",
+      "sourceProofRunId": 36964331142,
+      "sourceProofDecision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF"
     },
     "VRM-145": {
       "id": "VRM-145",
       "classification": "VISUAL_DEFECT",
       "severity": "PRE_I4_ACCEPTANCE_BLOCKER",
       "title": "Mi Perfil hierarchy does not sufficiently separate identity, performance and trajectory",
-      "state": "FIXED_SOURCE_PENDING_FOCAL_REPROOF",
+      "state": "SOURCE_PROVEN_PENDING_EXACT_DEV_MATERIALIZATION",
       "expected": "Preserve all fields/KPIs/history while clearly grouping personal identity, performance and trajectory.",
       "observed": "Multiple blocks compete at the same level; profile, KPIs and history lack clear hierarchy.",
       "rootCauseStatus": "PROVEN",
@@ -6665,14 +6674,16 @@
       "rootCause": "Human DEV adapter overrides modules.miperfil and renders a dense identity/access grid, then KPIs, then history without explicit section hierarchy between identity/personal data, performance and trajectory.",
       "moduleTruth": "TRUE_FUNCTIONAL_DEFECT",
       "fixSourceSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
-      "fixSourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7"
+      "fixSourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7",
+      "sourceProofRunId": 36964331142,
+      "sourceProofDecision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF"
     },
     "VRM-146": {
       "id": "VRM-146",
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "PRE_I4_ACCEPTANCE_BLOCKER",
       "title": "Shopper visit history ordering is not explicit/stable oldest-to-newest",
-      "state": "FIXED_SOURCE_PENDING_FOCAL_REPROOF",
+      "state": "SOURCE_PROVEN_PENDING_EXACT_DEV_MATERIALIZATION",
       "expected": "History sorted explicitly oldest -> newest, independent of HR receive order; OCT 2026 last.",
       "observed": "Visible history order: AGO 2026, JUL 2026, JUN 2026, ABR 2026, DIC 2025, OCT 2025, JUN 2025, OCT 2026.",
       "rootCauseStatus": "PROVEN",
@@ -6689,7 +6700,9 @@
         "previousSource": "0b7e5db7b1035ec4a81ad548284dbb9146fcfc08",
         "correctedSource": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
         "correctedTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7"
-      }
+      },
+      "sourceProofRunId": 36964331142,
+      "sourceProofDecision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF"
     },
     "VRM-147": {
       "id": "VRM-147",
@@ -6697,7 +6710,7 @@
       "secondaryClassification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Reservation request collapses eligible visit slots to branch/city and loses execution cut",
-      "state": "FIXED_SOURCE_PENDING_FOCAL_REPROOF",
+      "state": "SOURCE_PROVEN_PENDING_EXACT_DEV_MATERIALIZATION",
       "expected": "Reservable option represents one eligible visit/slot and shows branch, city/country, period, executionCut and availability; assigned slots excluded.",
       "observed": "Request branch modal shows branch + period without cut; same branch can collapse across cuts.",
       "rootCauseStatus": "PROVEN",
@@ -6715,7 +6728,9 @@
       "rootCause": "Eligible HR visits are filtered correctly, then collapsed with key sucursal|ciudad; executionCut is not represented in option label or reservation payload, so slot/cut identity is lost.",
       "moduleTruth": "TRUE_FUNCTIONAL_DEFECT",
       "fixSourceSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
-      "fixSourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7"
+      "fixSourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7",
+      "sourceProofRunId": 36964331142,
+      "sourceProofDecision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF"
     },
     "VRM-148": {
       "id": "VRM-148",
@@ -6723,7 +6738,7 @@
       "secondaryClassification": "PROVIDER_FAILURE",
       "severity": "P0",
       "title": "Certification AI silently publishes fewer questions than requested and grounding is not proven",
-      "state": "FIXED_SOURCE_PENDING_FOCAL_REPROOF",
+      "state": "SOURCE_PROVEN_PENDING_EXACT_DEV_MATERIALIZATION",
       "expected": "requestedQuestionCount is exact when sources suffice; otherwise fail closed with X of N; attached instructive is primary grounding and human admin text may complement it.",
       "observed": "Admin requested 10 questions; shopper bank shows 8; observed output appears insufficiently grounded in the instructive.",
       "rootCauseStatus": "PROVEN",
@@ -6745,14 +6760,16 @@
       "rootCause": "Attachment extraction is best-effort byte-regex for PDF and non-text fallback for DOC/DOCX; backend prompt explicitly permits fewer questions; normalizer accepts any nonzero valid count; cert UI accepts any nonzero returned bank instead of exact requested count. Count forwarding itself is correct.",
       "moduleTruth": "TRUE_FUNCTIONAL_DEFECT",
       "fixSourceSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
-      "fixSourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7"
+      "fixSourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7",
+      "sourceProofRunId": 36964331142,
+      "sourceProofDecision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF"
     },
     "VRM-149": {
       "id": "VRM-149",
       "classification": "VISUAL_DEFECT",
       "severity": "PRE_I4_ACCEPTANCE_BLOCKER",
       "title": "Scrollable sidebar has effectively invisible scrollbar on light theme",
-      "state": "FIXED_SOURCE_PENDING_FOCAL_REPROOF",
+      "state": "SOURCE_PROVEN_PENDING_EXACT_DEV_MATERIALIZATION",
       "expected": "Keep real sidebar scrolling and show a discreet visible corporate scrollbar on the light rail.",
       "observed": "Long sidebar scrolls but scrollbar is not visually perceptible.",
       "rootCauseStatus": "PROVEN",
@@ -6763,7 +6780,9 @@
       "production": false,
       "moduleTruth": "TRUE_FUNCTIONAL_DEFECT",
       "fixSourceSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
-      "fixSourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7"
+      "fixSourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7",
+      "sourceProofRunId": 36964331142,
+      "sourceProofDecision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF"
     },
     "VRM-150": {
       "id": "VRM-150",
@@ -6771,7 +6790,7 @@
       "secondaryClassification": "VISUAL_DEFECT",
       "severity": "P0",
       "title": "Mis Beneficios mixes historical KPI totals into selected current period",
-      "state": "FIXED_SOURCE_PENDING_FOCAL_REPROOF",
+      "state": "SOURCE_PROVEN_PENDING_EXACT_DEV_MATERIALIZATION",
       "expected": "Selected period KPIs use only that period; historical is separate and filterable by period/status/country/currency and optionally project.",
       "observed": "OCT 2026 says 0 in this period while top KPIs show Q420 honoraria, Q1055 reimbursements and Q1475 receivable from history.",
       "rootCauseStatus": "PROVEN",
@@ -6788,7 +6807,9 @@
       "rootCause": "currentLiquidations is computed correctly, but pendingCurrency/resolved/byCur/KPI drill arrays and detail table are based on all historical liquidations while header says selected period.",
       "moduleTruth": "TRUE_FUNCTIONAL_DEFECT",
       "fixSourceSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
-      "fixSourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7"
+      "fixSourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7",
+      "sourceProofRunId": 36964331142,
+      "sourceProofDecision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF"
     },
     "VRM-151": {
       "id": "VRM-151",
@@ -6796,7 +6817,7 @@
       "secondaryClassification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Historical payment reconciliation needs one durable auditable idempotent source of truth",
-      "state": "FIXED_SOURCE_PENDING_FOCAL_REPROOF",
+      "state": "SOURCE_PROVEN_PENDING_EXACT_DEV_MATERIALIZATION",
       "expected": "Durably reconcile confirmed historical payment scope without HR mutation, invented bank refs, current-period contamination or duplicate accounting effects.",
       "observed": "Operational truth supplied: all <= Jul 2026 paid both countries; Aug HN paid; Aug GT pending; Sep all pending; Oct must remain untouched.",
       "rootCauseStatus": "PROVEN",
@@ -6828,7 +6849,9 @@
       "rootCause": "Durable ACK/idempotency exists, but finance.payment.batch intentionally records paymentState=platform_recorded_pending_external_reconciliation and externalPaymentConfirmed=false. No distinct durable historical_reconciliation event exists to record Paula-confirmed historical operational truth without fabricating bank confirmation.",
       "moduleTruth": "TRUE_FUNCTIONAL_DEFECT",
       "fixSourceSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
-      "fixSourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7"
+      "fixSourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7",
+      "sourceProofRunId": 36964331142,
+      "sourceProofDecision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF"
     }
   },
   "latestEvidenceOverrides": {
@@ -7404,7 +7427,7 @@
     "nextFindingId": "VRM-152",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_VRM143_151_SOURCE_REPROOF_REQUIRED",
+    "terminalState": "HOLD_VRM143_151_DEV_MATERIALIZATION_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -11060,7 +11083,9 @@
     "sourceSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
     "sourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7",
     "predecessorSha": "0b7e5db7b1035ec4a81ad548284dbb9146fcfc08",
-    "state": "SOURCE_WRITTEN_PENDING_REPROOF",
-    "production": false
+    "state": "SOURCE_PROVEN_PENDING_EXACT_DEV_MATERIALIZATION",
+    "production": false,
+    "sourceProofRunId": 36964331142,
+    "sourceProofDecision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF"
   }
 }

@@ -221,6 +221,127 @@ jobs:
           retention-days: 30
           compression-level: 0
 
+  vrm143-151-dev-materialization:
+    name: I3 VRM-143..151 — exact DEV materialization — one build
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM143_151_DEV_MATERIALIZATION_REQUIRED' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      FOCAL_OUT: .tmp/vrm143-151-dev-materialization
+    steps:
+      - name: Checkout canonical Recovery control head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Prove exact source and materialization scope
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$FOCAL_OUT"
+          test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
+          test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
+          test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
+          git merge-base --is-ancestor "$FOCAL_SOURCE" HEAD
+          git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          node tools/qa/cxorbia-vrm143-151-source-reproof.mjs | tee "$FOCAL_OUT/source-reproof.json"
+          test "$(jq -r '.decision' "$FOCAL_OUT/source-reproof.json")" = "PASS_VRM143_151_FOCAL_SOURCE_REPROOF"
+      - name: Install exact DEV dependencies
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+      - name: Authenticate canonical Firebase DEV
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
+      - name: Prepare exact source archive
+        run: |
+          set -Eeuo pipefail
+          SOURCE_DIR="$RUNNER_TEMP/cxorbia-vrm143-151-source"
+          rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"
+          git archive "$FOCAL_SOURCE" | tar -x -C "$SOURCE_DIR"
+          test -f "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml"
+          test -f "$SOURCE_DIR/firebase.json"
+          echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
+      - name: Build exact source once
+        run: |
+          set -Eeuo pipefail
+          IMAGE_URI="gcr.io/${PROJECT}/${SERVICE}:i3-vrm143-151-${FOCAL_SOURCE:0:12}-${GITHUB_RUN_ID}"
+          echo "$IMAGE_URI" > "$FOCAL_OUT/image-uri.txt"
+          gcloud builds submit "$SOURCE_DIR" --project "$PROJECT" --config "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE_URI" --quiet
+          jq -n -S --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg image "$IMAGE_URI" '{decision:"PASS_VRM143_151_ONE_BUILD",sourceSha:$source,sourceTree:$tree,imageTag:$image,builds:1,production:false}' > "$FOCAL_OUT/build.json"
+      - name: Deploy exact built runtime once to Recovery DEV
+        run: |
+          set -Eeuo pipefail
+          IMAGE_URI="$(cat "$FOCAL_OUT/image-uri.txt")"
+          gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$IMAGE_URI" --min-instances=1 --max-instances=1 --update-env-vars "$LEGAL_ENABLE_NAME=$LEGAL_ENABLE_VALUE,$LEGAL_GATE_NAME=$LEGAL_GATE_VALUE,$I3_HR_CACHE_PIN_NAME=$I3_HR_CACHE_PIN_VALUE" --quiet
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$FOCAL_OUT/runtime.json"
+          DEV_REVISION="$(jq -r '.status.latestReadyRevisionName // empty' "$FOCAL_OUT/runtime.json")"
+          test -n "$DEV_REVISION"
+          gcloud run revisions describe "$DEV_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$FOCAL_OUT/runtime-revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$FOCAL_OUT/runtime-revision.json")"
+          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else exit 1; fi
+          RUNTIME_URL="$(jq -r '.status.url // empty' "$FOCAL_OUT/runtime.json")"
+          curl -fsS --retry 12 --retry-delay 3 "$RUNTIME_URL/health" > "$FOCAL_OUT/health.json"
+          jq -e '.ok==true and .production==false and .hrWrites==false' "$FOCAL_OUT/health.json" >/dev/null
+          echo "DEV_REVISION=$DEV_REVISION" >> "$GITHUB_ENV"
+          echo "RUNTIME_DIGEST=$DIGEST" >> "$GITHUB_ENV"
+      - name: Deploy same exact source once to Hosting DEV
+        run: |
+          set -Eeuo pipefail
+          cd "$SOURCE_DIR"
+          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$FOCAL_OUT/hosting-deploy.log"
+          cd "$GITHUB_WORKSPACE"
+          TOKEN="$(gcloud auth print-access-token)"
+          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$FOCAL_OUT/hosting-live-channel.json"
+          HOSTING_RELEASE_NAME="$(jq -r '.release.name // empty' "$FOCAL_OUT/hosting-live-channel.json")"
+          HOSTING_VERSION_NAME="$(jq -r '.release.version.name // empty' "$FOCAL_OUT/hosting-live-channel.json")"
+          test -n "$HOSTING_VERSION_NAME"
+          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/$HOSTING_VERSION_NAME" > "$FOCAL_OUT/hosting-version.json"
+          test "$(jq -r '.status // empty' "$FOCAL_OUT/hosting-version.json")" = "FINALIZED"
+          for p in core/notif.js modules/midia.js adapters/tya-canonical-shopper-portal-v2.js modules/reservas.js core/automations.js modules/cert.js modules/beneficios.js styles/layout.css adapters/cxorbia-cxdata-command-boundary-v1.js; do
+            out="$FOCAL_OUT/remote-$(echo "$p" | tr '/' '_')"
+            curl -fsSL --retry 8 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/$p?vrm143151=$GITHUB_RUN_ID-$(date +%s%N)" -o "$out"
+            test "$(sha256sum "$out" | awk '{print $1}')" = "$(sha256sum "$SOURCE_DIR/app/$p" | awk '{print $1}')"
+          done
+          echo "HOSTING_RELEASE_NAME=$HOSTING_RELEASE_NAME" >> "$GITHUB_ENV"
+          echo "HOSTING_VERSION_NAME=$HOSTING_VERSION_NAME" >> "$GITHUB_ENV"
+      - name: Read live HR after materialization
+        run: |
+          set -Eeuo pipefail
+          curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm143151=$GITHUB_RUN_ID" > "$FOCAL_OUT/hr-meta.json"
+          HR_REVISION="$(jq -r '.revision // empty' "$FOCAL_OUT/hr-meta.json")"
+          [[ "$HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
+          jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .hrWrites==false and .production==false' "$FOCAL_OUT/hr-meta.json" >/dev/null
+          echo "HR_REVISION=$HR_REVISION" >> "$GITHUB_ENV"
+      - name: Execute CERT/RES authenticated live regression
+        run: |
+          set -Eeuo pipefail
+          PROJECT_ID="$PROJECT_ID" TENANT_ID="$TENANT_ID" HOSTING_URL="$HOSTING_URL" CERT_RES_SOURCE="$FOCAL_SOURCE" CERT_RES_MAT_OUT="$FOCAL_OUT" node tools/qa/cxorbia-prei4-cert-res-live.mjs | tee "$FOCAL_OUT/cert-res-live-console.log"
+          test "$(jq -r '.decision' "$FOCAL_OUT/cert-res-live.json")" = "PASS_PREI4_CERT_RES_CUMULATIVE_DEV_LIVE"
+          test "$(jq -r '.cleanup.attempt and .cleanup.recert and .cleanup.bank and .cleanup.resource and .cleanup.binary' "$FOCAL_OUT/cert-res-live.json")" = "true"
+      - name: Seal exact DEV materialization receipt
+        run: |
+          set -Eeuo pipefail
+          jq -n -S --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg runtime "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg hosting "$HOSTING_VERSION_NAME" --arg hostingRelease "$HOSTING_RELEASE_NAME" --arg hr "$HR_REVISION" '{decision:"PASS_VRM143_151_EXACT_DEV_MATERIALIZATION",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hostingRelease:$hostingRelease,hrRevision:$hr,builds:1,runtimeDeploys:1,hostingDeploys:1,hrWrites:0,production:false}' > "$FOCAL_OUT/result.json"
+      - name: Upload materialization evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-vrm143-151-dev-materialization-${{ github.run_id }}
+          path: .tmp/vrm143-151-dev-materialization
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
   prei4-admin-008-mapping-reproof:
     name: PRE-I4 ADMIN-008 — HN HR mapping focal reproof
     needs: canonical-candidate-authority
