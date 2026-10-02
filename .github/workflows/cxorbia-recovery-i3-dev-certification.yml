@@ -109,7 +109,7 @@ concurrency:
   cancel-in-progress: true
 env:
   CANDIDATE_DESCRIPTOR: CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
-  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V183_2026-10-02.json
+  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V184_2026-10-02.json
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
@@ -155,8 +155,11 @@ jobs:
           test -n "$STATUS"
           test "$(jq -r '.status' "$POST_RUN500_LOCK")" = "HOLD"
           test "$(jq -r '.currentState.i3' "$POST_RUN500_LOCK")" = "HOLD"
-          test "$(jq -r '.canonicalFunctionalCandidate.sourceSha' "$POST_RUN500_LEDGER")" = "$SOURCE"
-          test "$(jq -r '.canonicalFunctionalCandidate.sourceTree' "$POST_RUN500_LEDGER")" = "$TREE"
+          HIST_SOURCE="$(jq -r '.canonicalFunctionalCandidate.sourceSha' "$POST_RUN500_LEDGER")"
+          HIST_TREE="$(jq -r '.canonicalFunctionalCandidate.sourceTree' "$POST_RUN500_LEDGER")"
+          test "$HIST_SOURCE" = "$(jq -r '.predecessorProductSourceSha' "$CANDIDATE_DESCRIPTOR")"
+          test "$(git rev-parse "$HIST_SOURCE^{tree}")" = "$HIST_TREE"
+          git merge-base --is-ancestor "$HIST_SOURCE" "$SOURCE"
           test "$(jq -r '.findings["VRM-076"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN502"
           test "$(jq -r '.findings["VRM-077"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN507"
           test "$(jq -r '.findings["VRM-078"].state' "$POST_RUN500_LEDGER")" = "FIXED_PROVEN_RUN515"
