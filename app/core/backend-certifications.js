@@ -30,34 +30,40 @@ window.CX=window.CX||{};
   function currentUid(){try{return str(firebase.auth().currentUser?.uid);}catch(_){return'';}}
   function newId(prefix){return prefix+':'+Date.now().toString(36)+':'+Math.random().toString(36).slice(2,10);}
   function applicableRecertifications(shopperId){
-    return arr(CX.data?.__protectedCertificationRecertifications).filter(r=>str(r.status||'active')==='active'&&(str(r.scope)==='all'||arr(r.targetShopperIds).map(str).includes(str(shopperId))));
+    const projectId=str(CX.data?.currentProjectId);
+    return arr(CX.data?.__protectedCertificationRecertifications).filter(r=>
+      str(r.status||'active')==='active'&&(!r.projectId||str(r.projectId)===projectId)&&
+      (str(r.scope)==='all'||arr(r.targetShopperIds).map(str).includes(str(shopperId)))
+    );
   }
   function durableCurrent(shopperId,bank){
-    const revision=str(bank?.contentRevision);if(!revision)return null;
+    const projectId=str(CX.data?.currentProjectId);
     const latestRecert=applicableRecertifications(shopperId).sort((a,b)=>str(b.createdAt).localeCompare(str(a.createdAt)))[0]||null;
-    const attempts=arr(CX.data?.__protectedCertifications).filter(x=>str(x.shopperId)===str(shopperId)&&x.pass===true&&str(x.contentRevision)===revision).sort((a,b)=>str(b.createdAt).localeCompare(str(a.createdAt)));
+    const attempts=arr(CX.data?.__protectedCertifications).filter(x=>
+      str(x.shopperId)===str(shopperId)&&(x.pass===true||x.passed===true||str(x.status).toLowerCase()==='certified')&&
+      (!x.projectId||str(x.projectId)===projectId)
+    ).sort((a,b)=>str(b.createdAt||b.certifiedAt).localeCompare(str(a.createdAt||a.certifiedAt)));
     const latest=attempts[0]||null;if(!latest)return null;
-    if(latestRecert&&str(latestRecert.createdAt)>str(latest.createdAt))return null;
-    return latest;
+    if(latestRecert&&str(latestRecert.createdAt)>str(latest.createdAt||latest.certifiedAt))return null;
+    return Object.assign({},latest,{eligibilitySource:'durable_project_certification',bankRevisionMatches:!!(bank?.contentRevision&&str(latest.contentRevision)===str(bank.contentRevision))});
   }
   function carryoverDecision(shopper,bank,projectId){
     const records=arr(shopper?.certificationEvidenceRecords),shopperId=str(shopper?.shopperId||shopper?.id);
     const activeRecert=applicableRecertifications(shopperId).sort((a,b)=>str(b.createdAt).localeCompare(str(a.createdAt)))[0]||null;
     if(activeRecert)return {state:'recertification_required',eligibilityGranted:false,recertification:activeRecert};
-    const eq=new Set([...arr(bank?.historicalEquivalenceKeys),...arr(bank?.equivalenceKeys),bank?.certificationId,bank?.sourceCertificationId,bank?.contentRevision].map(str).filter(Boolean));
-    let approved=false,expired=false,nonEquivalent=false,failed=false;
+    let approved=false,expired=false,otherProject=false,failed=false;
     for(const r of records.slice().sort((a,b)=>str(b.sourceApprovedAt||b.presentedAt).localeCompare(str(a.sourceApprovedAt||a.presentedAt)))){
-      const status=str(r.sourceLegacyStatus).toLowerCase();
-      if(status==='failed'){failed=true;continue;}if(status!=='approved')continue;approved=true;
-      if(str(r.projectId)!==str(projectId)){nonEquivalent=true;continue;}
-      const keys=[r.sourceCertificationId,r.certificationId,r.sourceSnapshotSha256,r.contentRevision].map(str).filter(Boolean);
-      if(!keys.some(k=>eq.has(k))){nonEquivalent=true;continue;}
-      const expiry=Date.parse(str(r.validUntil||bank?.carryoverValidUntil)||'');
+      const status=str(r.sourceLegacyStatus||r.status).toLowerCase();
+      if(status==='failed'){failed=true;continue;}
+      if(!['approved','certified','passed'].includes(status))continue;
+      approved=true;
+      if(str(r.projectId)!==str(projectId)){otherProject=true;continue;}
+      const expiry=Date.parse(str(r.validUntil)||'');
       if(Number.isFinite(expiry)&&expiry<Date.now()){expired=true;continue;}
-      return {state:'valid_reusable',eligibilityGranted:true,record:r};
+      return {state:'valid_reusable',eligibilityGranted:true,record:r,eligibilitySource:'historical_project_certification'};
     }
     if(expired)return {state:'expired',eligibilityGranted:false};
-    if(approved&&nonEquivalent)return {state:'non_equivalent',eligibilityGranted:false};
+    if(approved&&otherProject)return {state:'other_project_only',eligibilityGranted:false};
     if(failed)return {state:'failed',eligibilityGranted:false};
     return {state:records.length?'pending':'none',eligibilityGranted:false};
   }

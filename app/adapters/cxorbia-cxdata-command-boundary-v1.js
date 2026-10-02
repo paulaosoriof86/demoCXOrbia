@@ -270,6 +270,25 @@
       const cmd=buildBase('visit.questionnaire.submit','visit',visitId,payload,versionOf(v),Object.assign({permission:'visit.questionnaire.submit'},meta));
       return execute(cmd,meta);
     };
+    D.recordVisitCheckinEvidence=function(visitId,evidence,meta){
+      meta=commandMeta(meta);evidence=evidence||{};const v=visit(visitId),c=ctx();
+      const payload={visitId,hrRowId:v?.hrRowId||null,shopperId:v?.shopperId||c.shopperId||null,
+        evidenceId:str(evidence.evidenceId),storagePath:str(evidence.storagePath),checksum:str(evidence.checksum),
+        mimeType:str(evidence.mimeType),size:Number(evidence.size||0),storageProviderAck:evidence.storageProviderAck===true,
+        lat:Number(evidence.lat),lon:Number(evidence.lon),accuracy:Number(evidence.accuracy||0),capturedAt:str(evidence.capturedAt)};
+      const cmd=buildBase('visit.checkin.evidence','visitEvidence',visitId,payload,versionOf(v),Object.assign({permission:'visit.checkin.evidence'},meta));
+      cmd.idempotencyKey='visit.checkin.evidence:'+hash([c.tenantId,c.projectId,c.periodId,visitId,payload.evidenceId,payload.checksum]);
+      return execute(cmd,meta);
+    };
+    D.recordResourceReadReceipt=function(visitId,resource,meta){
+      meta=commandMeta(meta);resource=resource||{};const v=visit(visitId),c=ctx();
+      const payload={visitId,hrRowId:v?.hrRowId||null,shopperId:v?.shopperId||c.shopperId||null,
+        resourceId:str(resource.id||resource.resourceId),resourceRevision:str(resource.contentRevision||resource.version||resource.updatedAt||'source-current'),
+        resourceType:str(resource.resourceType||resource.tipo||'project_resource'),readAt:now(),humanConfirmed:true};
+      const cmd=buildBase('resource.read.receipt','resourceReadReceipt',payload.resourceId,payload,versionOf(v),Object.assign({permission:'resource.read.receipt'},meta));
+      cmd.idempotencyKey='resource.read.receipt:'+hash([c.tenantId,c.projectId,c.periodId,visitId,payload.resourceId,payload.resourceRevision,c.shopperId]);
+      return execute(cmd,meta);
+    };
 
     D.__firebaseWrapped=true; /* prevents legacy local-first Firebase wrapper from taking ownership */
     D.__cxCommandBoundaryVersion=VERSION;

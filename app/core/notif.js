@@ -29,9 +29,16 @@ CX.notif = {
     if(role!=='shopper'||n.source!=='firestore')return true;
     const ctx=(()=>{try{return CX.backendAuth?.context?.()||{};}catch(_){return {};}})();
     const sid=String(ctx.shopperId||(CX.session?.user&&CX.session.user.shopperId)||'');
-    const targets=Array.isArray(n.targetShopperIds)?n.targetShopperIds.map(String):[];
-    if(targets.length&&(!sid||!targets.includes(sid)))return false;
-    const operationalTypes=new Set(['confirmar','cambio','reprog','agendar','cuestionario','pide_fecha','reserva_aprobada','reprog_aprobada','reprog_rechazada','ajuste','cancel']);
+    const targets=Array.isArray(n.targetShopperIds)?n.targetShopperIds.map(String).filter(Boolean):[];
+    const projectTargets=Array.isArray(n.targetProjectIds)?n.targetProjectIds.map(String).filter(Boolean):[];
+    const currentProject=String(CX.data?.currentProjectId||'');
+    const explicitBroadcast=n.targetAll===true;
+    if(!sid)return false;
+    if(targets.length&&!targets.includes(sid))return false;
+    if(!targets.length&&!explicitBroadcast)return false;
+    if(projectTargets.length&&currentProject&&!projectTargets.includes(currentProject))return false;
+    if(explicitBroadcast&&(!projectTargets.length||!currentProject))return false;
+    const operationalTypes=new Set(['confirmar','cambio','reprog','agendar','cuestionario','pide_fecha','aprobada','reserva_aprobada','reprog_aprobada','reprog_rechazada','ajuste','cancel','recert']);
     if(n.operational===true||operationalTypes.has(String(n.tipo||''))){
       if(!n.entityType||!n.entityId)return false;
       if(n.entityType==='visit'){

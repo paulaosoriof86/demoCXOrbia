@@ -26,7 +26,25 @@
     const matches=rows.filter(p=>(hrRow&&str(p?.hrRowId)===hrRow)||ids.has(str(p?.id||p?.visitId)));
     if(matches.length!==1)return null;
     const p=matches[0];
-    return str(p?.financialSourceStatus).toLowerCase()==='reconciled_exact'&&p?.financialMatch?p.financialMatch:null;
+    if(str(p?.financialSourceStatus).toLowerCase()==='reconciled_exact'&&p?.financialMatch)return p.financialMatch;
+    const historicalPaid=p?.paymentConfirmed===true||p?.historicalReconciliationConfirmed===true||str(p?.historicalPaymentStatus).toLowerCase()==='paid';
+    if(!historicalPaid)return null;
+    const amount=(key,fallback)=>knownAmount(p?.[key])?Number(p[key]):(knownAmount(fallback)?Number(fallback):null);
+    const honorario=amount('honorario',v?.honorario),boleto=amount('boleto',v?.boleto),combo=amount('combo',v?.comboAmt||v?.combo);
+    const parts=[honorario,boleto,combo].filter(x=>x!==null);
+    const total=knownAmount(p?.total)?Number(p.total):(parts.length===3?honorario+boleto+combo:null);
+    return Object.fromEntries(Object.entries({
+      financialSourceStatus:'historical_reconciled_payment',
+      historicalReconciliationConfirmed:true,historicalPaymentStatus:'paid',paymentConfirmed:true,pagada:true,
+      paymentState:'confirmed',liquidationState:p?.liquidationState||'historical_reconciliation_confirmed',estado:'pagada',
+      paymentSourceRef:p?.paymentSourceRef||p?.historicalPaymentSourceRef||p?.reconciliationSourceRef||null,
+      reconciliationSourceRef:p?.reconciliationSourceRef||p?.paymentSourceRef||null,
+      reconciliationRecordId:p?.reconciliationRecordId||null,reconciliationRevision:p?.reconciliationRevision||null,
+      honorario,boleto,combo,reembolso:(boleto!==null&&combo!==null)?boleto+combo:null,total,
+      moneda:p?.moneda||p?.currency||v?.currency||v?.moneda||null,
+      reviewRequired:p?.reviewRequired===true||p?.amountReviewRequired===true,
+      amountReviewRequired:p?.amountReviewRequired===true,sourceSafe:true,production:false
+    }).filter(([,value])=>value!==undefined));
   }
   function rootProjectId(project){
     return str(project?.parentProjectId||project?.rootProjectId||project?.program||entry.projectId||project?.id)||null;
@@ -62,10 +80,15 @@
           || (!(exact.reimbursementPartial===false||exact.reimbursementSourceComplete===true) && visitReimbursementPartial),
         canonicalFacets:Object.assign({},f),readModelVersion:'canonical-finance-v2',
         financialSourceStatus:exact.financialSourceStatus||'reconciled_exact',
-        reviewRequired:false,
+        reviewRequired:exact.reviewRequired===true||exact.amountReviewRequired===true,
         estado:exact.estado||'validada',
         liquidationState:exact.liquidationState||'validated_financial_source',
-        paymentState:exact.paymentState||'not_scheduled'
+        paymentState:exact.paymentState||'not_scheduled',
+        paymentConfirmed:exact.paymentConfirmed===true,
+        historicalReconciliationConfirmed:exact.historicalReconciliationConfirmed===true,
+        historicalPaymentStatus:exact.historicalPaymentStatus||null,
+        paymentSourceRef:exact.paymentSourceRef||exact.reconciliationSourceRef||null,
+        reconciliationSourceRef:exact.reconciliationSourceRef||null
       });
       return merged;
     }

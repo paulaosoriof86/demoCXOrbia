@@ -186,6 +186,13 @@
     const profilesById=uniqueIndex(profiles,p=>p.id),profilesByAlias=new Map();
     for(const p of profiles){for(const alias of arr(p.exactAliases)){if(!profilesByAlias.has(alias))profilesByAlias.set(alias,[]);profilesByAlias.get(alias).push(p);}}
     const liveToCanonical=new Map(),identityConflicts=[];
+    // VRM-168: promote exact visit-derived identity relations even when the transient
+    // operational shopper id is absent from baseShoppers. Conflicts remain review-only.
+    for(const [liveId,canonicalSet] of relation.entries()){
+      const candidates=[...canonicalSet].map(str).filter(Boolean);
+      if(candidates.length===1)liveToCanonical.set(str(liveId),candidates[0]);
+      else if(candidates.length>1)identityConflicts.push({liveShopperId:str(liveId),candidates:candidates.sort(),reason:'conflicting_exact_visit_crosswalk'});
+    }
     for(const s of baseShoppers){
       const liveId=str(s.shopperId||s.id);if(!liveId)continue;
       const authoritativeCanonical=str(s.canonicalShopperId);
@@ -237,6 +244,10 @@
         });
         if(pv.liquidationState&&pf.liquidationConfirmed)out.liquidationState=pv.liquidationState;
         if(pv.paymentState&&pf.paymentConfirmed)out.paymentState=pv.paymentState;
+        // Shopper-owned durable operational evidence never overrides HR-managed state.
+        for(const field of ['latestCheckInEvidenceId','checkInStatus','checkInAt','checkInGeo','instructiveReadAt','instructiveResourceId','instructiveResourceRevision']){
+          if(pv[field]!==undefined&&pv[field]!==null)out[field]=clone(pv[field]);
+        }
       }else out.canonicalFacets=Object.assign({},base.canonicalFacets||{},facets(base));
       out.__hrOwnedOperational=true;return out;
     });

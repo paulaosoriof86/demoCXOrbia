@@ -601,6 +601,7 @@ CX.data = {
   },
   visitas(){const arr=this._visitas.filter(v=>this.recordPeriodId(v)===this.currentPeriodId);return this.scopePaises()?arr.filter(v=>this.inScope(v.pais)):arr;},
   posts(){const arr=this._posts.filter(p=>this.recordPeriodId(p)===this.currentPeriodId&&p?._archived!==true);return this.scopePaises()?arr.filter(p=>this.inScope(p.pais)):arr;},
+  activePosts(){return this.posts().filter(p=>p?.active!==false&&String(p?.postulationLifecycle||'')!=='transitioned_to_assignment');},
   shoppersFor(){const cs=this.period().countries;const sc=this.scopePaises();return this.shoppers.filter(s=>cs.includes(s.pais)&&this.inScope(s.pais));},
 
   /* ---- P0-3/GAP3 (paquete V111→V112, 20260714): pool de shoppers RANKEABLES ----
@@ -851,7 +852,7 @@ CX.data = {
       sinSubmitir:P(BF.sinSubmitir),
       liquidadas:P(BF.liquidadas),
       fueraRango:P(BF.fueraRango),
-      postPend:this.posts().filter(p=>p.estado==='pendiente').length,
+      postPend:this.activePosts().filter(p=>String(p.estado||p.status||'').toLowerCase()==='pendiente').length,
     };
   },
   /* flujo por fases para un país */

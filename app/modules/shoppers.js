@@ -10,6 +10,11 @@ CX.module('shoppers', ({data,ui})=>{
   const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const commandOk=r=>r&&r.ok===true&&r.status==='committed'&&r.providerAck===true&&r.successUiAllowed===true;
   const commandError=r=>String(r&&((r.reason||r.code)||r.error)||'La operación no fue confirmada por el proveedor.');
+  const profileRequirements=[['firstName','Nombre'],['lastName','Apellido'],['whatsapp','WhatsApp'],['pais','País'],['ciudad','Ciudad'],['email','Correo'],['edad','Edad'],['sexo','Sexo']];
+  const missingProfileFields=shopper=>profileRequirements.filter(([key])=>!String(shopper?.[key]||(key==='whatsapp'?shopper?.phone:'')||'').trim()).map(([,label])=>label);
+  const provenScore=shopper=>{const value=Number(shopper?.rating),metrics=shopper?.ratingBreakdown||shopper?.scoreBreakdown||shopper?.rankingMetrics,sourceSafe=shopper?.ratingSourceSafe===true||shopper?.scoreSourceSafe===true;return Number.isFinite(value)&&sourceSafe&&Array.isArray(metrics)&&metrics.length?{value,metrics,status:shopper?.scoreStatus||'score_preview_ready'}:null;};
+  const scoreCell=shopper=>{const score=provenScore(shopper);return score?'<span style="font-size:12px;font-weight:800;color:var(--amber)">★ '+score.value+'</span>':'<span class="muted" style="font-size:11px">— sin cálculo probado</span>';};
+  const profileRequestMessage=shopper=>{const missing=missingProfileFields(shopper);return 'Hola '+String(shopper?.firstName||shopper?.nombre||'')+'. Para completar tu perfil en CXOrbia, por favor actualiza: '+missing.join(', ')+'. Ingresa a Mi Perfil para hacerlo.';};
   const periodForVisit=(v)=>{
     if(!v)return null;
     const id=v.periodId||v.projectId||'';
@@ -100,7 +105,7 @@ CX.module('shoppers', ({data,ui})=>{
     return `<tr data-sid="${s.id}" data-identity-review="${identityReviewIds.has(String(s.id||''))?'required':'clear'}" style="cursor:pointer">
     <td><div class="flex">${av(s.nombre,30)}
       <div><b>${s.nombre||('🔒 '+(s.code||'Referencia protegida'))}</b> ${identityReviewBadge(s)}<div style="font-size:11px;color:var(--t3)">${s.ciudad?s.ciudad+', ':''}${CX.paisName(s.pais)||s.pais||'—'}</div></div></div></td>
-    <td><span style="font-size:12px;font-weight:800;color:var(--amber)">${s.rating?('★ '+s.rating):'<span style="color:var(--t3)">—</span>'}</span></td>
+    <td>${scoreCell(s)}</td>
     <td style="font-size:12px">${typeof s.visitas==='number'?s.visitas:'<span class="muted">—</span>'}</td>
     <td>${perfilCell}</td>
     <td>${estadoCell}</td>
@@ -183,6 +188,7 @@ CX.module('shoppers', ({data,ui})=>{
         <div class="card-t">Base de shoppers</div>
         <div class="flex" style="gap:8px">
           <input class="inp" id="shSearch" placeholder="Buscar nombre, ciudad, código…" style="width:230px">
+          <button class="btn btn-soft btn-sm" id="shScoreContract">📊 Criterios de puntuación</button>
           <button class="btn btn-pr btn-sm" id="shNew">+ Alta manual</button>
         </div>
       </div>
@@ -413,14 +419,41 @@ CX.module('shoppers', ({data,ui})=>{
   /* ---------- montaje de eventos ---------- */
   setTimeout(()=>{
     document.getElementById('shNew')?.addEventListener('click',altaModal);
+    document.getElementById('shScoreContract')?.addEventListener('click',async()=>{
+      try{
+        const r=await fetch('contracts/shopper-ranking-scoring-preview-phase-a.tya.contract.json',{cache:'no-store'}),contract=await r.json(),weights=contract.defaultPreviewWeights||{};
+        const labels={certification_readiness:'Certificación vigente',assignment_reliability:'Confiabilidad en asignaciones',schedule_compliance:'Cumplimiento de agenda',visit_completion:'Finalización de visitas',questionnaire_completion:'Cuestionario completo',review_quality:'Calidad de revisión',correction_rate:'Tasa de correcciones',communication_followup:'Seguimiento de comunicaciones',cancellation_behavior:'Comportamiento de cancelaciones'};
+        const rows=Object.entries(weights);
+        ui.modal('Criterios de puntuación',`<div class="card card-p" style="margin-bottom:12px"><b>Estado del contrato:</b> ${esc(contract.status||'—')} · runtimeEnabled=${contract.runtimeEnabled===true?'sí':'no'}<div style="font-size:11.5px;color:var(--t3);margin-top:5px">La UI no presenta un rating como real si no existe desglose source-safe y provenance runtime.</div></div><table class="tbl"><thead><tr><th>Criterio</th><th>Peso</th></tr></thead><tbody>${rows.map(([k,v])=>'<tr><td>'+esc(labels[k]||k)+'</td><td><b>'+esc(v)+'%</b></td></tr>').join('')}</tbody></table><div style="font-size:11px;color:var(--t3);margin-top:10px">Los datos sensibles, identidad, monto pagado y comunicaciones privadas no pueden usarse como proxy de calidad.</div>`);
+      }catch(error){ui.toast('No fue posible leer el contrato de puntuación.','warn');}
+    });
     const bindRows=()=>document.querySelectorAll('#shBody [data-sid]').forEach(tr=>tr.addEventListener('click',()=>{
       const s=data.getShopper(tr.dataset.sid); if(s)profileModal(s);
     }));
     bindRows();
     const L=list();
     const tkMap={all:['Shoppers del proyecto',()=>true],act:['Shoppers activos (6 meses)',s=>data.shopperActivo(s)],inact:['Inactivas',s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&!data.shopperActivo(s)],prot:['Referencias protegidas',s=>CX.data_shopperDataLevel(s)==='protected_reference'],comp:['Perfiles completos',s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&s.perfilCompleto],incom:['Perfiles incompletos',s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&!s.perfilCompleto]};
-    document.querySelectorAll('#shTopKpis [data-tk]').forEach(el=>el.addEventListener('click',()=>{const d=tkMap[el.dataset.tk];const items=L.filter(d[1]);
-      ui.modal(d[0]+' ('+items.length+')',items.length?`<table class="tbl"><thead><tr><th>Shopper</th><th>Ciudad</th><th>Rating</th><th>Estado</th></tr></thead><tbody>${items.map(s=>`<tr class="hov" data-pk="${s.id}" style="cursor:pointer"><td><b>${s.nombre}</b><div style="font-size:10px;color:var(--t3)">${s.code}</div></td><td style="font-size:12px">${s.ciudad||CX.paisName(s.pais)}</td><td style="font-weight:700;color:var(--amber)">★ ${s.rating||'—'}</td><td>${ui.bdg(s.estado||'—',s.estado==='Pendiente'?'a':'g')}</td></tr>`).join('')}</tbody></table>`:ui.empty('👥','Sin shoppers en esta categoría.'),{onMount:(ov,close)=>ov.querySelectorAll('[data-pk]').forEach(tr=>tr.addEventListener('click',()=>{close();const s=data.getShopper(tr.dataset.pk);if(s)profileModal(s);}))});
+    document.querySelectorAll('#shTopKpis [data-tk]').forEach(el=>el.addEventListener('click',()=>{const d=tkMap[el.dataset.tk],isIncomplete=el.dataset.tk==='incom',items=L.filter(d[1]);
+      const body=items.length?`<table class="tbl"><thead><tr><th>Shopper</th><th>Ciudad</th><th>${isIncomplete?'Falta':'Puntuación'}</th><th>Acción</th></tr></thead><tbody>${items.map(x=>`<tr><td class="hov" data-pk="${x.id}" style="cursor:pointer"><b>${esc(x.nombre||x.id)}</b><div style="font-size:10px;color:var(--t3)">${esc(x.code||'')}</div></td><td style="font-size:12px">${esc(x.ciudad||CX.paisName(x.pais)||'—')}</td><td style="font-size:11.5px">${isIncomplete?esc(missingProfileFields(x).join(', ')||'Revisar perfil'):scoreCell(x)}</td><td>${isIncomplete?`<button class="btn btn-soft btn-sm" data-request-profile="${x.id}">Solicitar completar</button>`:`<button class="btn btn-ghost btn-sm" data-pk="${x.id}">Ver perfil</button>`}</td></tr>`).join('')}</tbody></table>`:ui.empty('👥','Sin shoppers en esta categoría.');
+      ui.modal(d[0]+' ('+items.length+')',body,{onMount:(ov,close)=>{
+        ov.querySelectorAll('[data-pk]').forEach(tr=>tr.addEventListener('click',()=>{close();const x=data.getShopper(tr.dataset.pk);if(x)profileModal(x);}));
+        ov.querySelectorAll('[data-request-profile]').forEach(btn=>btn.addEventListener('click',async()=>{
+          const shopper=data.getShopper(btn.dataset.requestProfile),missing=missingProfileFields(shopper),message=profileRequestMessage(shopper);
+          if(!shopper||!missing.length){ui.toast('El perfil ya no tiene campos pendientes.','ok');return;}
+          btn.disabled=true;btn.textContent='Preparando…';
+          try{
+            if(CX.notif?.pushDurable){
+              const notice=await CX.notif.pushDurable({to:'shopper',shopperId:shopper.id,targetShopperIds:[shopper.id],tipo:'perfil',icon:'👤',tono:'a',titulo:'Completa tu perfil',txt:'Falta completar: '+missing.join(', '),nav:'miperfil',operational:true,entityType:'shopper',entityId:shopper.id,eventKey:'profile_completion_requested',idempotencyKey:'profile.complete.request:'+String(data.currentProjectId)+':'+shopper.id+':'+missing.slice().sort().join('|')});
+              if(!(notice?.providerAck===true&&notice?.committed===true))throw new Error('PROFILE_REQUEST_ACK_REQUIRED');
+              ui.toast('Solicitud in-app guardada para '+(shopper.nombre||shopper.id)+'.','ok',3600);btn.textContent='Solicitud guardada';return;
+            }
+            throw new Error('NO_DURABLE_NOTIFICATION_PROVIDER');
+          }catch(_){
+            ui.modal('Solicitud manual · '+(shopper.nombre||shopper.id),`<div style="font-size:12px;color:var(--t2);margin-bottom:10px">No se registró ningún envío automático. Este es un borrador para que el equipo lo copie y envíe manualmente.</div><textarea class="inp" id="profileDraft" rows="4">${esc(message)}</textarea><div style="font-size:11px;color:var(--t3);margin-top:8px">WhatsApp: ${esc(shopper.whatsapp||shopper.phone||'—')} · Correo: ${esc(shopper.email||'—')}</div><div style="text-align:right;margin-top:10px"><button class="btn btn-soft btn-sm" id="profileCopy">Copiar borrador</button></div>`,{onMount:(draftOv)=>draftOv.querySelector('#profileCopy').addEventListener('click',async()=>{await navigator.clipboard?.writeText?.(message);ui.toast('Borrador copiado. No se marcó como enviado.','ok');})});
+            btn.disabled=false;btn.textContent='Solicitar completar';
+          }
+        }));
+      }});
     }));
     if(CX.session._focusShopper){ const fs=data.getShopper(CX.session._focusShopper); CX.session._focusShopper=null; if(fs)setTimeout(()=>profileModal(fs),120); }
     const search=document.getElementById('shSearch');

@@ -51,7 +51,7 @@ CX.module('midia', ({data,role,ui})=>{
     const nx=document.getElementById('cgNext'); if(nx)nx.addEventListener('click',()=>{_cgMonth=_shiftMonth(_cgMonth,1);CX.router.nav('midia');});
     const cp=document.getElementById('cgProj'); if(cp)cp.addEventListener('change',()=>{_cgProj=cp.value;CX.router.nav('midia');});
     const BF=data.visitBucketFns;
-    document.querySelectorAll('#midKpis [data-mk]').forEach(el=>el.addEventListener('click',()=>{const kD={agd:['Agendadas',data.visitas().filter(BF.agendadas),'visitas'],post:['Por aprobar',data._posts.filter(p=>p.estado==='pendiente'),'postulaciones'],real:['Realizadas',data.visitas().filter(BF.realizadas),'visitas'],sinA:['Sin asignar',data.visitas().filter(BF.sinAsignar),'visitas']};const d=kD[el.dataset.mk];if(!d)return;const L=d[1];ui.modal(d[0]+' ('+L.length+')',L.length?'<table class="tbl"><thead><tr><th>Sucursal</th><th>Shopper</th><th>Estado</th></tr></thead><tbody>'+L.slice(0,20).map(v=>'<tr><td><b>'+v.sucursal+'</b></td><td style="font-size:12px">'+(v.shopper||'—')+'</td><td>'+(v.estado||'')+'</td></tr>').join('')+'</tbody></table>':ui.empty('✅','Sin registros.'));}));
+    document.querySelectorAll('#midKpis [data-mk]').forEach(el=>el.addEventListener('click',()=>{const kD={agd:['Agendadas',data.visitas().filter(BF.agendadas),'visitas'],post:['Por aprobar',(data.activePosts?data.activePosts():data.posts()).filter(p=>String(p.estado||p.status||'').toLowerCase()==='pendiente'),'postulaciones'],real:['Realizadas',data.visitas().filter(BF.realizadas),'visitas'],sinA:['Sin asignar',data.visitas().filter(BF.sinAsignar),'visitas']};const d=kD[el.dataset.mk];if(!d)return;const L=d[1];ui.modal(d[0]+' ('+L.length+')',L.length?'<table class="tbl"><thead><tr><th>Sucursal</th><th>Shopper</th><th>Estado</th></tr></thead><tbody>'+L.slice(0,20).map(v=>'<tr><td><b>'+v.sucursal+'</b></td><td style="font-size:12px">'+(v.shopper||'—')+'</td><td>'+(v.estado||'')+'</td></tr>').join('')+'</tbody></table>':ui.empty('✅','Sin registros.'));}));
   },0);};
 
   /* GAP2 (paquete V111→V112, 20260714): cronograma() arrancaba en `pool=data._visitas` — TODOS
@@ -160,11 +160,11 @@ CX.module('midia', ({data,role,ui})=>{
       <div class="card-h"><div class="card-t">Tu próxima visita</div>${nextVisit?(vf.scheduled?ui.bdg('Agendada','b'):ui.bdg('Pendiente de agendar','a')):''}</div>
       ${nextVisit?`<div style="font-size:15px;font-weight:700;color:var(--t1)">${nextVisit.sucursal}</div>
       <div style="font-size:12px;color:var(--t3);margin:3px 0 12px">Rango ${nextVisit.rango||'—'} · ${nextVisit.honorario!=null?ui.money(nextVisit.currency,nextVisit.honorario):'Honorario pendiente de fuente'}${nextVisit.combo?' + '+nextVisit.combo:''}</div>
-      <div class="flex wrap"><button class="btn btn-pr btn-sm">📅 Agendar</button><button class="btn btn-ghost btn-sm">📄 Instructivo</button><button class="btn btn-ghost btn-sm">🔄 Reprogramar</button></div>`:ui.empty('🧭','Sin visitas activas')}
+      <div class="flex wrap"><button class="btn btn-pr btn-sm" data-cgo="misvisitas">📅 Agendar</button><button class="btn btn-ghost btn-sm" data-cgo="misvisitas">📄 Instructivo</button><button class="btn btn-ghost btn-sm" data-cgo="misvisitas">🔄 Reprogramar</button></div>`:ui.empty('🧭','Sin visitas activas')}
     </div>
-    ${nextVisit?`<div class="card card-p" style="margin-bottom:16px">
-      <div class="card-h"><div class="card-t">Progreso de la visita</div></div>
-      ${steps.map(([label,done])=>`<div class="flex" style="padding:6px 0;font-size:13px;color:${done?'var(--green)':'var(--t3)'};font-weight:${done?'600':'500'}">${done?'✅':'○'} <span>${label}</span></div>`).join('')}
+    ${nextVisit?`<div class="card card-p cx-day-progress-card" style="margin-bottom:16px">
+      <div class="card-h"><div><div class="cx-day-progress-kicker">🧭 TU RUTA</div><div class="card-t">Progreso de la visita</div></div><span class="muted" style="font-size:11px">${steps.filter(x=>x[1]).length}/${steps.length} completados</span></div>
+      <div class="cx-day-progress-grid">${steps.map(([label,done],i)=>`<div class="cx-day-progress-step ${done?'is-done':'is-next'}"><div class="cx-day-progress-icon">${done?'✓':i+1}</div><div><b>${label}</b><span>${done?'Completado':i===steps.findIndex(x=>!x[1])?'Siguiente paso':'Pendiente'}</span></div></div>`).join('')}</div>
     </div>`:''}
     ${notifBlock()}
     ${cronograma()}`;

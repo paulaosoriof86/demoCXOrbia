@@ -10,7 +10,7 @@ import crypto from 'node:crypto';
 export const VERSION='cxorbia-operational-command-provider-v1';
 export const COMMAND_TYPES=Object.freeze([
   'application.create','application.status.update','application.delete','reservation.create','reservation.status.update','reservation.delete',
-  'visit.assign','visit.reassign','visit.state.update','visit.reschedule','visit.cancel','visit.questionnaire.submit','visit.sync.confirm'
+  'visit.assign','visit.reassign','visit.state.update','visit.reschedule','visit.cancel','visit.questionnaire.submit','visit.checkin.evidence','resource.read.receipt','visit.sync.confirm'
 ]);
 export const OPERATOR_ROLES=Object.freeze(['super','admin','ops','coordinador']);
 export const APPLICATION_STATES=Object.freeze(['pendiente','aprobada','rechazada','standby','cancelada']);
@@ -78,6 +78,7 @@ function refs(db,command){
   const tenant=db.collection('tenants').doc(command.tenantId),project=tenant.collection('projects').doc(command.projectId);
   return {
     tenant,project,visits:project.collection('visits'),applications:project.collection('postulations'),reservations:project.collection('reservations'),
+    visitEvidence:project.collection('visitEvidence'),resourceReadReceipts:project.collection('resourceReadReceipts'),resources:tenant.collection('resources'),
     receipt:tenant.collection('commandReceipts').doc(receiptId(command)),
     audit:tenant.collection('entityAuditTrail').doc(auditId(command)),
     review:tenant.collection('reviewQueue').doc('ops-'+auditId(command))
@@ -421,6 +422,41 @@ async function transactionExecute(db,command,actor){
       if(actor.role==='shopper'&&str(v.shopperId)!==actor.shopperId)throw new Error('OPS_VISIT_SHOPPER_SCOPE_DENIED');
       tx.set(vRef,{questionnaireResult:payload.result||{},cuestFecha:payload.completedAt||now().slice(0,10),estado:'cuestionario',status:'cuestionario',questionnaireSubmittedBy:actor.uid,questionnaireSubmittedAt:now(),updatedAt:now(),version:Number(v.version||0)+1},{merge:true});
       providerWrites++;auditEntityType='visit';
+    }
+    else if(command.commandType==='visit.checkin.evidence'){
+      const visitId=str(payload.visitId||entityId),evidenceId=str(payload.evidenceId),storagePath=str(payload.storagePath),checksum=str(payload.checksum),mimeType=str(payload.mimeType);
+      if(!visitId||!evidenceId||!storagePath||!checksum||!mimeType||payload.storageProviderAck!==true)throw new Error('OPS_CHECKIN_EVIDENCE_REQUIRED');entityId=visitId;
+      const resolved=await resolveVisitDocument(tx,r.visits,visitId,payload.hrRowId),vRef=resolved.ref,v=resolved.data;assertPeriod(command,v);assertVersion(command,v);
+      if(actor.role!=='shopper'||str(v.shopperId)!==actor.shopperId)throw new Error('OPS_CHECKIN_SHOPPER_SCOPE_DENIED');
+      if(!/^image\//i.test(mimeType)||!Number.isFinite(Number(payload.size))||Number(payload.size)<=0||Number(payload.size)>15*1024*1024)throw new Error('OPS_CHECKIN_IMAGE_INVALID');
+      const lat=Number(payload.lat),lon=Number(payload.lon),accuracy=Number(payload.accuracy||0);
+      if(!Number.isFinite(lat)||lat<-90||lat>90||!Number.isFinite(lon)||lon<-180||lon>180||!Number.isFinite(accuracy)||accuracy<0)throw new Error('OPS_CHECKIN_GPS_INVALID');
+      const expectedPrefix=['tenants',command.tenantId,'projects',command.projectId,'periods',command.periodId,'visits',visitId,'evidence',evidenceId].join('/')+'/';
+      if(!storagePath.startsWith(expectedPrefix))throw new Error('OPS_CHECKIN_STORAGE_SCOPE_MISMATCH');
+      const capturedAt=str(payload.capturedAt);if(!capturedAt||!Number.isFinite(Date.parse(capturedAt)))throw new Error('OPS_CHECKIN_CAPTURE_TIME_INVALID');
+      const eRef=r.visitEvidence.doc(evidenceId),eSnap=await tx.get(eRef);
+      const item={tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,visitId,hrRowId:str(v.hrRowId)||null,shopperId:actor.shopperId,
+        evidenceId,storagePath,checksum,mimeType,size:Number(payload.size),geo:{lat,lon,accuracy},capturedAt,providerAck:true,
+        createdByUid:actor.uid,createdAt:eSnap.exists?(eSnap.data()?.createdAt||now()):now(),updatedAt:now()};
+      tx.set(eRef,item,{merge:false});
+      tx.set(vRef,{latestCheckInEvidenceId:evidenceId,checkInStatus:'confirmed',checkInAt:capturedAt,checkInGeo:{lat,lon,accuracy},updatedAt:now(),version:Number(v.version||0)+1},{merge:true});
+      providerWrites+=2;auditEntityType='visitEvidence';
+    }
+    else if(command.commandType==='resource.read.receipt'){
+      const visitId=str(payload.visitId),resourceId=str(payload.resourceId);if(!visitId||!resourceId||payload.humanConfirmed!==true)throw new Error('OPS_RESOURCE_READ_CONFIRMATION_REQUIRED');
+      const resolved=await resolveVisitDocument(tx,r.visits,visitId,payload.hrRowId),vRef=resolved.ref,v=resolved.data;assertPeriod(command,v);assertVersion(command,v);
+      if(actor.role!=='shopper'||str(v.shopperId)!==actor.shopperId)throw new Error('OPS_RESOURCE_READ_SHOPPER_SCOPE_DENIED');
+      const resRef=r.resources.doc(resourceId),resSnap=await tx.get(resRef);if(!resSnap.exists)throw new Error('OPS_RESOURCE_MISSING');
+      const resource=resSnap.data()||{};if(resource.status!=='active'||str(resource.projectId)!==command.projectId)throw new Error('OPS_RESOURCE_SCOPE_MISMATCH');
+      if(resource.periodId&&str(resource.periodId)!==command.periodId)throw new Error('OPS_RESOURCE_PERIOD_MISMATCH');
+      const roles=arr(resource.visibleRoles).map(str);if(resource.targetAll!==true&&!roles.includes('shopper'))throw new Error('OPS_RESOURCE_SHOPPER_VISIBILITY_DENIED');
+      const revision=str(payload.resourceRevision||resource.contentRevision||resource.version||resource.updatedAt||'source-current');
+      const receiptKey=sha([command.tenantId,command.projectId,command.periodId,actor.shopperId,visitId,resourceId,revision]).slice(0,36),readAt=str(payload.readAt)||now();
+      const rr=r.resourceReadReceipts.doc('read-'+receiptKey);
+      tx.set(rr,{tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,shopperId:actor.shopperId,visitId,hrRowId:str(v.hrRowId)||null,
+        resourceId,resourceRevision:revision,resourceType:str(payload.resourceType||resource.resourceType||'project_resource'),humanConfirmed:true,readAt,providerAck:true,createdByUid:actor.uid,updatedAt:now()},{merge:true});
+      tx.set(vRef,{instructiveReadAt:readAt,instructiveResourceId:resourceId,instructiveResourceRevision:revision,updatedAt:now(),version:Number(v.version||0)+1},{merge:true});
+      entityId='read-'+receiptKey;providerWrites+=2;auditEntityType='resourceReadReceipt';
     }
     else if(command.commandType==='visit.sync.confirm'){
       if(!OPERATOR_ROLES.includes(actor.role))throw new Error('OPS_SYNC_CONFIRM_OPERATOR_ONLY');

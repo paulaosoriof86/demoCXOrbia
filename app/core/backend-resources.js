@@ -114,6 +114,38 @@ window.CX=window.CX||{};
     const url=await snap.ref.getDownloadURL();
     return ack({resourceId:rid,storagePath,url,meta:file.name,mimeType:file.type||null,size:file.size||null},{storage:true,storageProviderAck:true});
   };
+  async function fileSha256(file){
+    if(!file||!window.crypto?.subtle)return null;
+    const digest=await crypto.subtle.digest('SHA-256',await file.arrayBuffer());
+    return Array.from(new Uint8Array(digest)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  }
+  api.uploadVisitEvidence=async function(file,options={}){
+    const st=api.storageStatus();if(!st.authorized)return blocked('EVIDENCE_STORAGE_NOT_AUTHORIZED',{storage:st});
+    if(role()!=='shopper')return blocked('EVIDENCE_SHOPPER_ROLE_REQUIRED');
+    if(!file||!/^image\//i.test(str(file.type)))return blocked('EVIDENCE_IMAGE_REQUIRED');
+    if(Number(file.size||0)<=0||Number(file.size||0)>15*1024*1024)return blocked('EVIDENCE_IMAGE_SIZE_INVALID');
+    const scope=currentScope(options),visitId=str(options.visitId);
+    const shopperId=str(options.shopperId||CX.backendAuth?.context?.()?.shopperId||CX.session?.user?.shopperId);
+    if(!scope.projectId||!scope.periodId||!visitId||!shopperId)return blocked('EVIDENCE_SCOPE_REQUIRED');
+    const checksum=await fileSha256(file);if(!checksum)return blocked('EVIDENCE_CHECKSUM_UNAVAILABLE');
+    const evidenceId='ev-'+hash([scope.tenantId,scope.projectId,scope.periodId,visitId,shopperId,checksum]);
+    const ext=(str(file.name).match(/\.[a-z0-9]{1,8}$/i)||[])[0]||'.jpg';
+    const safeName=evidenceId+ext.toLowerCase();
+    const storagePath=['tenants',scope.tenantId,'projects',scope.projectId,'periods',scope.periodId,'visits',visitId,'evidence',evidenceId,safeName].join('/');
+    const metadata={tenantId:scope.tenantId,projectId:scope.projectId,periodId:scope.periodId,visitId,evidenceId,shopperId,checksum,kind:'geo_checkin'};
+    const snap=await firebase.storage().ref(storagePath).put(file,{contentType:file.type,customMetadata:metadata});
+    return ack({evidenceId,storagePath,checksum,mimeType:file.type,size:Number(file.size),visitId,shopperId},{storage:true,storageProviderAck:true});
+  };
+  api.deleteVisitEvidence=async function(storagePath,options={}){
+    const st=api.storageStatus();if(!st.authorized)return blocked('EVIDENCE_STORAGE_NOT_AUTHORIZED',{storage:st});
+    const scope=currentScope(options),visitId=str(options.visitId),path=str(storagePath);
+    const shopperId=str(options.shopperId||CX.backendAuth?.context?.()?.shopperId||CX.session?.user?.shopperId);
+    if(role()!=='shopper'&&!isOperator())return blocked('EVIDENCE_DELETE_ROLE_DENIED');
+    const prefix=['tenants',scope.tenantId,'projects',scope.projectId,'periods',scope.periodId,'visits',visitId,'evidence'].join('/')+'/';
+    if(!path||!visitId||!shopperId||!path.startsWith(prefix))return blocked('EVIDENCE_STORAGE_SCOPE_MISMATCH');
+    try{await firebase.storage().ref(path).delete();return ack({storagePath:path,status:'deleted'},{storage:true,storageProviderAck:true});}
+    catch(error){if(String(error?.code||'').includes('object-not-found'))return ack({storagePath:path,status:'already_absent'},{storage:true,storageProviderAck:true,idempotentReplay:true});throw error;}
+  };
   api.downloadUrl=async function(storagePath){
     const st=api.storageStatus();if(!st.authorized)return blocked('RESOURCE_STORAGE_NOT_AUTHORIZED',{storage:st});
     const path=str(storagePath);if(!path)return blocked('RESOURCE_STORAGE_PATH_REQUIRED');

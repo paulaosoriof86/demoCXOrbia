@@ -24,12 +24,41 @@ service firebase.storage {
       return role() in ['super', 'admin', 'ops', 'coordinador'];
     }
 
+    function shopper() {
+      return role() == 'shopper' && request.auth.token.shopperId is string;
+    }
+
+    function shopperId() {
+      return shopper() ? request.auth.token.shopperId : '';
+    }
+
     function projectAssigned(projectId) {
       return request.auth.token.projectIds is list && projectId in request.auth.token.projectIds;
     }
 
     function canReadProject(projectId) {
       return operator() || projectAssigned(projectId);
+    }
+
+    match /tenants/{tenantId}/projects/{projectId}/periods/{periodId}/visits/{visitId}/evidence/{evidenceId}/{fileName} {
+      allow create, update: if tenantAllowed(tenantId) &&
+        shopper() &&
+        projectAssigned(projectId) &&
+        request.resource.size > 0 &&
+        request.resource.size < 15 * 1024 * 1024 &&
+        request.resource.contentType.matches('image/.*') &&
+        request.resource.metadata.tenantId == tenantId &&
+        request.resource.metadata.projectId == projectId &&
+        request.resource.metadata.periodId == periodId &&
+        request.resource.metadata.visitId == visitId &&
+        request.resource.metadata.evidenceId == evidenceId &&
+        request.resource.metadata.shopperId == shopperId() &&
+        request.resource.metadata.kind == 'geo_checkin';
+
+      allow read, delete: if tenantAllowed(tenantId) && (
+        operator() ||
+        (shopper() && projectAssigned(projectId) && resource.metadata.shopperId == shopperId())
+      );
     }
 
     match /tenants/{tenantId}/projects/{projectId}/periods/{periodId}/resources/{resourceId}/{fileName} {

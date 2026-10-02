@@ -184,8 +184,14 @@ window.CX = window.CX || {};
     };
 
     CX.notif.push = function(n){
+      n=n||{};
+      const shopperTargets=Array.isArray(n.targetShopperIds)?n.targetShopperIds.map(String).filter(Boolean):[];
+      if(n.to==='shopper'&&(!shopperTargets.length||!n.idempotencyKey||!n.entityType||!n.entityId)){
+        console.warn('[CX.backend-bulletins] shopper notification blocked: exact target/entity/idempotency required');
+        return false;
+      }
       const result = originalPush.call(this, n);
-      if(cfg.previewMode && n && n.source !== 'firestore'){
+      if(cfg.previewMode && n.source !== 'firestore'){
         createBulletin({
           title: n.titulo || n.title || 'Novedad',
           body: n.txt || n.body || '',
@@ -194,7 +200,8 @@ window.CX = window.CX || {};
           tone: n.tono,
           targetRoles: n.to ? [n.to] : ['admin'],
           actionRoute: n.nav || '',
-          targetShopperIds:Array.isArray(n.targetShopperIds)?n.targetShopperIds:[],
+          targetShopperIds:shopperTargets,
+          targetProjectIds:Array.isArray(n.targetProjectIds)&&n.targetProjectIds.length?n.targetProjectIds:(currentProjectId()?[currentProjectId()]:[]),
           entityType:n.entityType||null,entityId:n.entityId||null,eventKey:n.eventKey||null,operational:n.operational===true,action:n.accion||n.action||null,idempotencyKey:n.idempotencyKey||null
         }).catch(e=>console.warn('[CX.backend-bulletins] push no persistido', e));
       }
