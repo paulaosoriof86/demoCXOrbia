@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM151_ROUTER_SOURCE_REPROOF_REQUIRED",
+  "status": "HOLD_VRM151_RUNTIME_ONLY_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "9a6b9e6df801432f51251c8c27b23ff818853878",
   "predecessorProductSourceSha": "d6d4da0532a8af8e4c45ef05d022768da38cb0cf",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "7198df96b04f97cd7ad107831523a33a2383a34e",
+  "findingsLedgerExpectedGitBlob": "7850264b06d4a435abf93bcc2471f72ef6cf7c69",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM151_ROUTER_SOURCE_REPROOF_REQUIRED",
+  "activeBlocker": "VRM151_RUNTIME_ONLY_DEV_MATERIALIZATION_REQUIRED",
   "nextFindingId": "VRM-152",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Reprove VRM-151 finance provider + command router on source 48162cf2; if PASS, runtime-only materialize exact source once and rerun final canonical dry-run before any historical reconciliation writes.",
+  "exactNextAction": "Runtime-only materialize exact router+provider source 48162cf2 once to Recovery DEV; Hosting must remain 3c2418df100edab0; then rerun final canonical dry-run before writes.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2006,9 +2006,10 @@
     "sourceSha": "48162cf2ed6502811304de15c24d83cc0854af12",
     "sourceTree": "9a6b9e6df801432f51251c8c27b23ff818853878",
     "predecessorSha": "d6d4da0532a8af8e4c45ef05d022768da38cb0cf",
-    "sourceProof": "PENDING_ROUTER_REPROOF",
+    "sourceProof": "PASS_VRM151_PROVIDER_SOURCE_REPROOF",
     "deploys": 0,
-    "production": false
+    "production": false,
+    "sourceProofRunId": 36967635152
   },
   "vrm151RuntimeMaterialization": {
     "runId": 36966913105,
