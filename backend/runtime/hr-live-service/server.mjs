@@ -261,6 +261,8 @@ function configureCommandRuntime(snapshot){
   globalThis.CXORBIA_SHOPPER_COMMAND_PROVIDER_POLICY=shopperPolicy(snapshot);
   globalThis.CXORBIA_PROJECT_COMMAND_PROVIDER_POLICY=projectPolicy(snapshot);
   globalThis.CXORBIA_OPERATIONAL_COMMAND_PROVIDER_POLICY=operationalPolicy(snapshot);
+  globalThis.CXORBIA_COMMAND_HR_SNAPSHOT=snapshot;
+  globalThis.CXORBIA_COMMAND_HR_REVISION=String(cache?.revision||'');
 }
 async function reconcileAuthoritativeShoppers(current){
   if(!current?.snapshot||!current?.revision)throw new Error('SHOPPER_RECONCILIATION_SOURCE_MISSING');

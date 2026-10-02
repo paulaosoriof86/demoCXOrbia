@@ -59,6 +59,8 @@ export function createProviderForCommand(command,overrides={}){
   const operationalPolicy=overrides.operationalPolicy??globalThis.CXORBIA_OPERATIONAL_COMMAND_PROVIDER_POLICY??null;
   const shopperPolicy=overrides.shopperPolicy??globalThis.CXORBIA_SHOPPER_COMMAND_PROVIDER_POLICY??null;
   const financePolicy=overrides.financePolicy??globalThis.CXORBIA_FINANCE_COMMAND_PROVIDER_POLICY??derivedFinancePolicy(operationalPolicy);
+  const hrSnapshot=overrides.hrSnapshot??globalThis.CXORBIA_COMMAND_HR_SNAPSHOT??null;
+  const hrRevision=overrides.hrRevision??globalThis.CXORBIA_COMMAND_HR_REVISION??'';
   if(!auth||!db)return {provider:null,kind,error:'COMMAND_PROVIDER_DEPENDENCIES_NOT_CONFIGURED'};
   if(kind==='project'){
     if(!projectPolicy)return {provider:null,kind,error:'PROJECT_COMMAND_PROVIDER_NOT_CONFIGURED'};
@@ -72,7 +74,7 @@ export function createProviderForCommand(command,overrides={}){
   }
   if(kind==='finance'){
     if(!financePolicy)return {provider:null,kind,error:'FINANCE_COMMAND_PROVIDER_NOT_CONFIGURED'};
-    try{return {provider:createFinanceCommandProvider({auth,db,policy:financePolicy}),kind};}
+    try{return {provider:createFinanceCommandProvider({auth,db,policy:financePolicy,hrSnapshot,hrRevision}),kind};}
     catch(error){return {provider:null,kind,error:'FINANCE_COMMAND_PROVIDER_POLICY_INVALID',detail:str(error?.message||error)};}
   }
   if(!operationalPolicy)return {provider:null,kind,error:'OPERATIONAL_COMMAND_PROVIDER_NOT_CONFIGURED'};

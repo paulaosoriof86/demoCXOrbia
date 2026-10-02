@@ -66,6 +66,19 @@ function historicalCommand(extra={}){
   };
 }
 
+function historicalSnapshotFromDb(db){
+  const visits=[];
+  for(const [path,value] of db.s.entries()){
+    if(!path.includes('/projects/project-a/visits/'))continue;
+    const docId=path.split('/').at(-1),v=clone(value)||{};
+    visits.push({...v,id:v.id||v.visitId||docId,visitId:v.visitId||v.id||docId});
+  }
+  return {tenantId:'tenant-a',projectId:'project-a',visits};
+}
+function historicalProvider(db,hrSnapshot=historicalSnapshotFromDb(db),hrRevision='rev-hr'){
+  return createFinanceCommandProvider({auth:new Auth(),db,policy,hrSnapshot,hrRevision});
+}
+
 test('VRM-151 command runtime routes finance.historical.reconcile to finance provider',()=>{
   assert.equal(commandProviderKind('finance.historical.reconcile'),'finance');
 });
@@ -87,7 +100,7 @@ test('ADMIN-004 explicit HR honorarium has precedence and reconciliation is idem
 });
 
 test('VRM-151 historical reconciliation uses canonical submitted visit, exact amount and idempotent durable status without bank or HR writes',async()=>{
-  const db=baseDb(),p=createFinanceCommandProvider({auth:new Auth(),db,policy}),cmd=historicalCommand();
+  const db=baseDb(),p=historicalProvider(db),cmd=historicalCommand();
   const a=await p.execute('token',cmd),b=await p.execute('token',cmd);
   assert.equal(a.ok,true);assert.equal(a.reconciled,1);assert.equal(a.amountReviewRequired,0);assert.equal(a.detail[0].amount,195);assert.equal(a.detail[0].amountStatus,'exact');
   assert.equal(a.bankWrites,0);assert.equal(a.hrWrites,0);
@@ -102,15 +115,28 @@ test('VRM-152 historical reconciliation completes every transaction read before 
   db.seed('tenants/tenant-a/projects/project-a/visits/SEP!3',v2);
   const payload={visitIds:['SEP!2','SEP!3'],visitRefs:[{visitId:'SEP!2',hrRowId:'SEP!2'},{visitId:'SEP!3',hrRowId:'SEP!3'}],paymentStatus:'paid',sourceRevision:'rev-hr',reconciliationBatchId:'hist-read-before-write',sourceRef:'historical-reconciliation:read-before-write'};
   const cmd=historicalCommand({idempotencyKey:'finance.historical.reconcile:read-before-write',entityId:'hist-read-before-write',payload});
-  const p=createFinanceCommandProvider({auth:new Auth(),db,policy}),r=await p.execute('token',cmd);
+  const p=historicalProvider(db),r=await p.execute('token',cmd);
   assert.equal(r.ok,true);assert.equal(r.reconciled,2);assert.equal(r.providerAck,true);
   assert.equal(db.get('tenants/tenant-a/projects/project-a/visits/SEP!2').paymentConfirmed,true);
   assert.equal(db.get('tenants/tenant-a/projects/project-a/visits/SEP!3').paymentConfirmed,true);
 });
 
+test('VRM-153 historical reconciliation uses exact HR revision for reimbursement authority when durable Firestore copy is incomplete',async()=>{
+  const db=baseDb(),stored=db.get('tenants/tenant-a/projects/project-a/visits/SEP!2');stored.boleto=null;stored.comboAmt=null;db.seed('tenants/tenant-a/projects/project-a/visits/SEP!2',stored);
+  const hrVisit={...stored,id:'SEP!2',visitId:'SEP!2',hrRowId:'SEP!2',boleto:35,comboAmt:100,reimbursementSourceComplete:true};
+  const p=historicalProvider(db,{tenantId:'tenant-a',projectId:'project-a',visits:[hrVisit]}),r=await p.execute('token',historicalCommand());
+  assert.equal(r.ok,true);assert.equal(r.amountReviewRequired,0);assert.equal(r.detail[0].amount,195);assert.equal(r.detail[0].amountStatus,'exact');
+  const after=db.get('tenants/tenant-a/projects/project-a/visits/SEP!2');assert.equal(after.historicalPaymentAmount,195);assert.equal(after.historicalPaymentAmountReviewRequired,false);
+});
+
+test('VRM-153 historical reconciliation fails closed when command HR revision differs from runtime HR authority',async()=>{
+  const db=baseDb(),p=historicalProvider(db,historicalSnapshotFromDb(db),'different-revision'),r=await p.execute('token',historicalCommand());
+  assert.equal(r.ok,false);assert.match(r.code,/FINANCE_HISTORICAL_HR_REVISION_MISMATCH/);
+});
+
 test('VRM-151 historical reconciliation records paid status but keeps amount null and review-required when reimbursement source is incomplete',async()=>{
   const db=baseDb(),v=db.get('tenants/tenant-a/projects/project-a/visits/SEP!2');v.comboAmt=null;db.seed('tenants/tenant-a/projects/project-a/visits/SEP!2',v);
-  const p=createFinanceCommandProvider({auth:new Auth(),db,policy}),r=await p.execute('token',historicalCommand());
+  const p=historicalProvider(db),r=await p.execute('token',historicalCommand());
   assert.equal(r.ok,true);assert.equal(r.reconciled,1);assert.equal(r.amountReviewRequired,1);assert.equal(r.detail[0].amount,null);assert.equal(r.detail[0].amountStatus,'review_required');assert.deepEqual(r.detail[0].reviewReasons,['COMBO_MISSING']);
   const after=db.get('tenants/tenant-a/projects/project-a/visits/SEP!2');
   assert.equal(after.paymentConfirmed,true);assert.equal(after.historicalPaymentAmount,null);assert.equal(after.historicalPaymentAmountReviewRequired,true);assert.deepEqual(after.historicalPaymentReviewReasons,['COMBO_MISSING']);assert.equal(after.financialMatch,undefined);
@@ -122,7 +148,7 @@ test('VRM-151 historical reconciliation writes the live visitId canonical owner 
   db.seed('tenants/tenant-a/projects/project-a/visits/live-visit-1',canonical);
   const payload={visitIds:['live-visit-1'],visitRefs:[{visitId:'live-visit-1',hrRowId:'SEP!2'}],paymentStatus:'paid',sourceRevision:'rev-hr',reconciliationBatchId:'hist-owner-test',sourceRef:'historical-reconciliation:owner-test'};
   const cmd=historicalCommand({idempotencyKey:'finance.historical.reconcile:owner-key',entityId:'hist-owner-test',payload});
-  const p=createFinanceCommandProvider({auth:new Auth(),db,policy}),r=await p.execute('token',cmd);
+  const p=historicalProvider(db),r=await p.execute('token',cmd);
   assert.equal(r.ok,true);assert.equal(r.reconciled,1);
   const exact=db.get('tenants/tenant-a/projects/project-a/visits/live-visit-1');
   const old=db.get('tenants/tenant-a/projects/project-a/visits/SEP!2');
@@ -134,7 +160,7 @@ test('VRM-151 historical reconciliation writes the live visitId canonical owner 
 
 test('VRM-151 historical reconciliation rejects non-submitted visits even when the historical month is marked paid',async()=>{
   const db=baseDb(),v=db.get('tenants/tenant-a/projects/project-a/visits/SEP!2');v.canonicalFacets={submitted:false};v.estado='cuestionario';v.submittedAt=null;db.seed('tenants/tenant-a/projects/project-a/visits/SEP!2',v);
-  const p=createFinanceCommandProvider({auth:new Auth(),db,policy}),r=await p.execute('token',historicalCommand());
+  const p=historicalProvider(db),r=await p.execute('token',historicalCommand());
   assert.equal(r.ok,false);assert.match(r.code,/FINANCE_HISTORICAL_VISIT_NOT_SUBMITTED/);
   const after=db.get('tenants/tenant-a/projects/project-a/visits/SEP!2');assert.equal(after.paymentConfirmed,undefined);assert.equal(after.reconciliationSourceRef,undefined);
 });

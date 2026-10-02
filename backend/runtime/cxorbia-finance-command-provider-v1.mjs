@@ -165,10 +165,28 @@ function lotId(command,country,currency,reference,ids){
   const key=[command.tenantId,command.projectId,country,currency,reference||''].join('::');
   return `L-${sha(`${key}::${[...ids].sort().join(',')}`).slice(0,8).toUpperCase()}`;
 }
+function historicalHrAuthority(snapshot){
+  const visits=arr(snapshot?.visits),byId=new Map(),byRow=new Map();
+  for(const visit of visits){
+    const id=str(visit?.id||visit?.visitId),row=str(visit?.hrRowId);
+    if(id)byId.set(id,visit);
+    if(row){if(!byRow.has(row))byRow.set(row,[]);byRow.get(row).push(visit);}
+  }
+  return {
+    snapshot,
+    resolve(visitId,hrRowId){
+      const id=str(visitId),row=str(hrRowId);
+      if(id&&byId.has(id))return byId.get(id);
+      const rows=row?(byRow.get(row)||[]):[];
+      return rows.length===1?rows[0]:null;
+    }
+  };
+}
 
-export function createFinanceCommandProvider({auth,db,policy}={}){
+export function createFinanceCommandProvider({auth,db,policy,hrSnapshot=null,hrRevision=''}={}){
   const pv=validateProviderPolicy(policy);if(!pv.ok)throw new Error('FINANCE_PROVIDER_POLICY_INVALID:'+pv.errors.join(','));
   if(!auth?.verifyIdToken||!db?.collection||!db?.runTransaction)throw new Error('FINANCE_PROVIDER_DEPENDENCIES_MISSING');
+  const historicalAuthority=historicalHrAuthority(hrSnapshot),authoritativeHrRevision=str(hrRevision);
   return Object.freeze({
     version:VERSION,
     async execute(token,command={}){
@@ -214,6 +232,8 @@ export function createFinanceCommandProvider({auth,db,policy}={}){
             const sourceRef=str(command.payload?.sourceRef)||('historical-reconciliation:'+batchId);
             const sourceRevision=str(command.payload?.sourceRevision);
             if(!sourceRevision)throw new Error('FINANCE_HISTORICAL_HR_REVISION_REQUIRED');
+            if(!authoritativeHrRevision||!historicalAuthority.snapshot)throw new Error('FINANCE_HISTORICAL_HR_AUTHORITY_MISSING');
+            if(sourceRevision!==authoritativeHrRevision)throw new Error('FINANCE_HISTORICAL_HR_REVISION_MISMATCH');
             const notes=str(command.payload?.notes),reconciledAt=now();
             const projectSnap=await tx.get(project),projectData=projectSnap.exists?(projectSnap.data()||{}):{};
             let providerWrites=0,reconciled=0,amountReviewRequired=0;const detail=[],prepared=[];
@@ -224,17 +244,20 @@ export function createFinanceCommandProvider({auth,db,policy}={}){
               const resolved=await resolveHistoricalVisitDocument(tx,visits,id,hinted.hrRowId);
               if(!resolved.snap?.exists)throw new Error('FINANCE_VISIT_MISSING:'+id);
               const v=resolved.data||{};
-              if(str(v.periodId)!==str(command.periodId))throw new Error('FINANCE_PERIOD_SCOPE_CONFLICT:'+id);
-              const submitted=v?.canonicalFacets?.submitted===true||!!v?.submittedAt||['submitida','liquidada','pagada'].includes(str(v?.estado||v?.status).toLowerCase())||str(v?.canonicalState).toLowerCase()==='submitted_complete';
+              const hrVisit=historicalAuthority.resolve(id,hinted.hrRowId||v.hrRowId);
+              if(!hrVisit)throw new Error('FINANCE_HISTORICAL_HR_VISIT_MISSING:'+id);
+              const authoritative={...v,...hrVisit,id,visitId:id,hrRowId:str(hrVisit.hrRowId||v.hrRowId)};
+              if(str(authoritative.periodId||v.periodId)!==str(command.periodId))throw new Error('FINANCE_PERIOD_SCOPE_CONFLICT:'+id);
+              const submitted=authoritative?.canonicalFacets?.submitted===true||!!authoritative?.submittedAt||['submitida','liquidada','pagada'].includes(str(authoritative?.estado||authoritative?.status).toLowerCase())||str(authoritative?.canonicalState).toLowerCase()==='submitted_complete';
               if(!submitted)throw new Error('FINANCE_HISTORICAL_VISIT_NOT_SUBMITTED:'+id);
-              if(!str(v.shopperId))throw new Error('FINANCE_HISTORICAL_SHOPPER_REQUIRED:'+id);
-              const amount=historicalFinanceAmount(v,projectData);
+              if(!str(authoritative.shopperId))throw new Error('FINANCE_HISTORICAL_SHOPPER_REQUIRED:'+id);
+              const amount=historicalFinanceAmount(authoritative,projectData);
               if(!amount.ok)throw new Error('FINANCE_HISTORICAL_SOURCE_INCOMPLETE:'+id+':'+amount.reason);
               if(amount.amountReviewRequired)amountReviewRequired++;
               const paid=status==='paid';
-              const reconciliation={tenantId:command.tenantId,projectId:command.projectId,shopperId:str(v.shopperId),visitId:id,durableVisitId:resolved.durableVisitId,durableVisitAuthority:resolved.authority,hrRowId:str(v.hrRowId)||null,periodId:command.periodId,country:amount.country,currency:amount.currency,honorario:amount.honorario,honorarioSource:amount.honorarioSource,boleto:amount.boleto,combo:amount.combo,reembolso:amount.reembolso,amount:amount.total,amountStatus:amount.amountStatus,amountReviewRequired:amount.amountReviewRequired,reviewReasons:amount.reviewReasons,sourceRevision,paymentStatus:status,paymentConfirmed:paid,paymentDate:null,source:'historical_reconciliation',sourceRef,reconciliationBatchId:batchId,idempotencyKey:command.idempotencyKey,reconciledAt,reconciledBy:actor.uid,notes:notes||null};
+              const reconciliation={tenantId:command.tenantId,projectId:command.projectId,shopperId:str(authoritative.shopperId),visitId:id,durableVisitId:resolved.durableVisitId,durableVisitAuthority:resolved.authority,hrRowId:str(authoritative.hrRowId)||null,periodId:command.periodId,country:amount.country,currency:amount.currency,honorario:amount.honorario,honorarioSource:amount.honorarioSource,boleto:amount.boleto,combo:amount.combo,reembolso:amount.reembolso,amount:amount.total,amountStatus:amount.amountStatus,amountReviewRequired:amount.amountReviewRequired,reviewReasons:amount.reviewReasons,sourceRevision,paymentStatus:status,paymentConfirmed:paid,paymentDate:null,source:'historical_reconciliation',sourceRef,reconciliationBatchId:batchId,idempotencyKey:command.idempotencyKey,reconciledAt,reconciledBy:actor.uid,notes:notes||null};
               const recRef=tenant.collection('paymentReconciliations').doc(sha(command.tenantId+'\0'+command.projectId+'\0'+id+'\0'+batchId).slice(0,40));
-              prepared.push({id,resolved,v,amount,paid,reconciliation,recRef});
+              prepared.push({id,resolved,v,authoritative,amount,paid,reconciliation,recRef});
             }
             for(const item of prepared){
               const {id,resolved,v,amount,paid,reconciliation,recRef}=item;
