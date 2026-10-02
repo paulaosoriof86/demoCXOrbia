@@ -18,7 +18,7 @@
     "sourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7",
     "predecessorSha": "0b7e5db7b1035ec4a81ad548284dbb9146fcfc08",
     "production": false,
-    "state": "SOURCE_PROVEN_PENDING_EXACT_DEV_MATERIALIZATION",
+    "state": "DEV_MATERIALIZED_PENDING_FOCAL_LIVE_AND_VRM151_DRY_RUN",
     "proof": {
       "runId": 36964331142,
       "decision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF",
@@ -41,6 +41,22 @@
       "rulesSha256": "bced559c77430dd2f1f14a04b6a357f7ba0cc474a89db7d4859435f86484dcf3",
       "financeCleanup": true,
       "certificationCleanup": true,
+      "hrWrites": 0,
+      "production": false
+    },
+    "materialization": {
+      "runId": 36964474490,
+      "artifactId": 11209153437,
+      "artifactDigest": "sha256:75d0fb49fe3b5cf3fdec2591a685206d22fe4ef2cbeb6d8ad7b3e8fb46fb596a",
+      "decision": "PASS_VRM143_151_EXACT_DEV_MATERIALIZATION",
+      "runtimeRevision": "cxorbia-live-hr-dev-00242-6s6",
+      "runtimeDigest": "sha256:a7098692ac5dafe75a11937f6d58a3bf7f951ba034c2aafa02edb7873b6a68f8",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/3c2418df100edab0",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790915298832000",
+      "hrRevision": "e242d83f7a63b4f390a3ff6eeaeb616dea52f52f159a5e3a929c5473a7225159",
+      "builds": 1,
+      "runtimeDeploys": 1,
+      "hostingDeploys": 1,
       "hrWrites": 0,
       "production": false
     }
@@ -6616,7 +6632,7 @@
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "PRE_I4_ACCEPTANCE_BLOCKER",
       "title": "Historical non-current notifications remain unread/current in Mi Día",
-      "state": "SOURCE_PROVEN_PENDING_EXACT_DEV_MATERIALIZATION",
+      "state": "DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF",
       "expected": "Historical/resolved informational notifications must not count as current unread or contaminate Mi Día for a new period; actionable unresolved events remain visible.",
       "observed": "In OCT 2026 shopper Mi Día shows 3 unread approved-application notifications dated 2026-09-21, 2026-09-07 and 2026-09-30.",
       "rootCauseStatus": "PROVEN",
@@ -6636,14 +6652,30 @@
       "fixSourceSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
       "fixSourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7",
       "sourceProofRunId": 36964331142,
-      "sourceProofDecision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF"
+      "sourceProofDecision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF",
+      "materialization": {
+        "runId": 36964474490,
+        "artifactId": 11209153437,
+        "artifactDigest": "sha256:75d0fb49fe3b5cf3fdec2591a685206d22fe4ef2cbeb6d8ad7b3e8fb46fb596a",
+        "decision": "PASS_VRM143_151_EXACT_DEV_MATERIALIZATION",
+        "runtimeRevision": "cxorbia-live-hr-dev-00242-6s6",
+        "runtimeDigest": "sha256:a7098692ac5dafe75a11937f6d58a3bf7f951ba034c2aafa02edb7873b6a68f8",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/3c2418df100edab0",
+        "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790915298832000",
+        "hrRevision": "e242d83f7a63b4f390a3ff6eeaeb616dea52f52f159a5e3a929c5473a7225159",
+        "builds": 1,
+        "runtimeDeploys": 1,
+        "hostingDeploys": 1,
+        "hrWrites": 0,
+        "production": false
+      }
     },
     "VRM-144": {
       "id": "VRM-144",
       "classification": "VISUAL_DEFECT",
       "severity": "PRE_I4_ACCEPTANCE_BLOCKER",
       "title": "Mi Día visual hierarchy places secondary content ahead of current action",
-      "state": "SOURCE_PROVEN_PENDING_EXACT_DEV_MATERIALIZATION",
+      "state": "DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF",
       "expected": "Order: next action/visit, visit state/progress, primary actions, current alerts, secondary schedule/summary.",
       "observed": "Notifications and schedule dominate above the next visit/progress and require excessive scrolling.",
       "rootCauseStatus": "PROVEN",
@@ -6656,14 +6688,30 @@
       "fixSourceSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
       "fixSourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7",
       "sourceProofRunId": 36964331142,
-      "sourceProofDecision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF"
+      "sourceProofDecision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF",
+      "materialization": {
+        "runId": 36964474490,
+        "artifactId": 11209153437,
+        "artifactDigest": "sha256:75d0fb49fe3b5cf3fdec2591a685206d22fe4ef2cbeb6d8ad7b3e8fb46fb596a",
+        "decision": "PASS_VRM143_151_EXACT_DEV_MATERIALIZATION",
+        "runtimeRevision": "cxorbia-live-hr-dev-00242-6s6",
+        "runtimeDigest": "sha256:a7098692ac5dafe75a11937f6d58a3bf7f951ba034c2aafa02edb7873b6a68f8",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/3c2418df100edab0",
+        "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790915298832000",
+        "hrRevision": "e242d83f7a63b4f390a3ff6eeaeb616dea52f52f159a5e3a929c5473a7225159",
+        "builds": 1,
+        "runtimeDeploys": 1,
+        "hostingDeploys": 1,
+        "hrWrites": 0,
+        "production": false
+      }
     },
     "VRM-145": {
       "id": "VRM-145",
       "classification": "VISUAL_DEFECT",
       "severity": "PRE_I4_ACCEPTANCE_BLOCKER",
       "title": "Mi Perfil hierarchy does not sufficiently separate identity, performance and trajectory",
-      "state": "SOURCE_PROVEN_PENDING_EXACT_DEV_MATERIALIZATION",
+      "state": "DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF",
       "expected": "Preserve all fields/KPIs/history while clearly grouping personal identity, performance and trajectory.",
       "observed": "Multiple blocks compete at the same level; profile, KPIs and history lack clear hierarchy.",
       "rootCauseStatus": "PROVEN",
@@ -6676,14 +6724,30 @@
       "fixSourceSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
       "fixSourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7",
       "sourceProofRunId": 36964331142,
-      "sourceProofDecision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF"
+      "sourceProofDecision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF",
+      "materialization": {
+        "runId": 36964474490,
+        "artifactId": 11209153437,
+        "artifactDigest": "sha256:75d0fb49fe3b5cf3fdec2591a685206d22fe4ef2cbeb6d8ad7b3e8fb46fb596a",
+        "decision": "PASS_VRM143_151_EXACT_DEV_MATERIALIZATION",
+        "runtimeRevision": "cxorbia-live-hr-dev-00242-6s6",
+        "runtimeDigest": "sha256:a7098692ac5dafe75a11937f6d58a3bf7f951ba034c2aafa02edb7873b6a68f8",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/3c2418df100edab0",
+        "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790915298832000",
+        "hrRevision": "e242d83f7a63b4f390a3ff6eeaeb616dea52f52f159a5e3a929c5473a7225159",
+        "builds": 1,
+        "runtimeDeploys": 1,
+        "hostingDeploys": 1,
+        "hrWrites": 0,
+        "production": false
+      }
     },
     "VRM-146": {
       "id": "VRM-146",
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "PRE_I4_ACCEPTANCE_BLOCKER",
       "title": "Shopper visit history ordering is not explicit/stable oldest-to-newest",
-      "state": "SOURCE_PROVEN_PENDING_EXACT_DEV_MATERIALIZATION",
+      "state": "DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF",
       "expected": "History sorted explicitly oldest -> newest, independent of HR receive order; OCT 2026 last.",
       "observed": "Visible history order: AGO 2026, JUL 2026, JUN 2026, ABR 2026, DIC 2025, OCT 2025, JUN 2025, OCT 2026.",
       "rootCauseStatus": "PROVEN",
@@ -6702,7 +6766,23 @@
         "correctedTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7"
       },
       "sourceProofRunId": 36964331142,
-      "sourceProofDecision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF"
+      "sourceProofDecision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF",
+      "materialization": {
+        "runId": 36964474490,
+        "artifactId": 11209153437,
+        "artifactDigest": "sha256:75d0fb49fe3b5cf3fdec2591a685206d22fe4ef2cbeb6d8ad7b3e8fb46fb596a",
+        "decision": "PASS_VRM143_151_EXACT_DEV_MATERIALIZATION",
+        "runtimeRevision": "cxorbia-live-hr-dev-00242-6s6",
+        "runtimeDigest": "sha256:a7098692ac5dafe75a11937f6d58a3bf7f951ba034c2aafa02edb7873b6a68f8",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/3c2418df100edab0",
+        "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790915298832000",
+        "hrRevision": "e242d83f7a63b4f390a3ff6eeaeb616dea52f52f159a5e3a929c5473a7225159",
+        "builds": 1,
+        "runtimeDeploys": 1,
+        "hostingDeploys": 1,
+        "hrWrites": 0,
+        "production": false
+      }
     },
     "VRM-147": {
       "id": "VRM-147",
@@ -6710,7 +6790,7 @@
       "secondaryClassification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Reservation request collapses eligible visit slots to branch/city and loses execution cut",
-      "state": "SOURCE_PROVEN_PENDING_EXACT_DEV_MATERIALIZATION",
+      "state": "DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF",
       "expected": "Reservable option represents one eligible visit/slot and shows branch, city/country, period, executionCut and availability; assigned slots excluded.",
       "observed": "Request branch modal shows branch + period without cut; same branch can collapse across cuts.",
       "rootCauseStatus": "PROVEN",
@@ -6730,7 +6810,23 @@
       "fixSourceSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
       "fixSourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7",
       "sourceProofRunId": 36964331142,
-      "sourceProofDecision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF"
+      "sourceProofDecision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF",
+      "materialization": {
+        "runId": 36964474490,
+        "artifactId": 11209153437,
+        "artifactDigest": "sha256:75d0fb49fe3b5cf3fdec2591a685206d22fe4ef2cbeb6d8ad7b3e8fb46fb596a",
+        "decision": "PASS_VRM143_151_EXACT_DEV_MATERIALIZATION",
+        "runtimeRevision": "cxorbia-live-hr-dev-00242-6s6",
+        "runtimeDigest": "sha256:a7098692ac5dafe75a11937f6d58a3bf7f951ba034c2aafa02edb7873b6a68f8",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/3c2418df100edab0",
+        "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790915298832000",
+        "hrRevision": "e242d83f7a63b4f390a3ff6eeaeb616dea52f52f159a5e3a929c5473a7225159",
+        "builds": 1,
+        "runtimeDeploys": 1,
+        "hostingDeploys": 1,
+        "hrWrites": 0,
+        "production": false
+      }
     },
     "VRM-148": {
       "id": "VRM-148",
@@ -6738,7 +6834,7 @@
       "secondaryClassification": "PROVIDER_FAILURE",
       "severity": "P0",
       "title": "Certification AI silently publishes fewer questions than requested and grounding is not proven",
-      "state": "SOURCE_PROVEN_PENDING_EXACT_DEV_MATERIALIZATION",
+      "state": "DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF",
       "expected": "requestedQuestionCount is exact when sources suffice; otherwise fail closed with X of N; attached instructive is primary grounding and human admin text may complement it.",
       "observed": "Admin requested 10 questions; shopper bank shows 8; observed output appears insufficiently grounded in the instructive.",
       "rootCauseStatus": "PROVEN",
@@ -6762,14 +6858,30 @@
       "fixSourceSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
       "fixSourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7",
       "sourceProofRunId": 36964331142,
-      "sourceProofDecision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF"
+      "sourceProofDecision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF",
+      "materialization": {
+        "runId": 36964474490,
+        "artifactId": 11209153437,
+        "artifactDigest": "sha256:75d0fb49fe3b5cf3fdec2591a685206d22fe4ef2cbeb6d8ad7b3e8fb46fb596a",
+        "decision": "PASS_VRM143_151_EXACT_DEV_MATERIALIZATION",
+        "runtimeRevision": "cxorbia-live-hr-dev-00242-6s6",
+        "runtimeDigest": "sha256:a7098692ac5dafe75a11937f6d58a3bf7f951ba034c2aafa02edb7873b6a68f8",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/3c2418df100edab0",
+        "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790915298832000",
+        "hrRevision": "e242d83f7a63b4f390a3ff6eeaeb616dea52f52f159a5e3a929c5473a7225159",
+        "builds": 1,
+        "runtimeDeploys": 1,
+        "hostingDeploys": 1,
+        "hrWrites": 0,
+        "production": false
+      }
     },
     "VRM-149": {
       "id": "VRM-149",
       "classification": "VISUAL_DEFECT",
       "severity": "PRE_I4_ACCEPTANCE_BLOCKER",
       "title": "Scrollable sidebar has effectively invisible scrollbar on light theme",
-      "state": "SOURCE_PROVEN_PENDING_EXACT_DEV_MATERIALIZATION",
+      "state": "DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF",
       "expected": "Keep real sidebar scrolling and show a discreet visible corporate scrollbar on the light rail.",
       "observed": "Long sidebar scrolls but scrollbar is not visually perceptible.",
       "rootCauseStatus": "PROVEN",
@@ -6782,7 +6894,23 @@
       "fixSourceSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
       "fixSourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7",
       "sourceProofRunId": 36964331142,
-      "sourceProofDecision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF"
+      "sourceProofDecision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF",
+      "materialization": {
+        "runId": 36964474490,
+        "artifactId": 11209153437,
+        "artifactDigest": "sha256:75d0fb49fe3b5cf3fdec2591a685206d22fe4ef2cbeb6d8ad7b3e8fb46fb596a",
+        "decision": "PASS_VRM143_151_EXACT_DEV_MATERIALIZATION",
+        "runtimeRevision": "cxorbia-live-hr-dev-00242-6s6",
+        "runtimeDigest": "sha256:a7098692ac5dafe75a11937f6d58a3bf7f951ba034c2aafa02edb7873b6a68f8",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/3c2418df100edab0",
+        "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790915298832000",
+        "hrRevision": "e242d83f7a63b4f390a3ff6eeaeb616dea52f52f159a5e3a929c5473a7225159",
+        "builds": 1,
+        "runtimeDeploys": 1,
+        "hostingDeploys": 1,
+        "hrWrites": 0,
+        "production": false
+      }
     },
     "VRM-150": {
       "id": "VRM-150",
@@ -6790,7 +6918,7 @@
       "secondaryClassification": "VISUAL_DEFECT",
       "severity": "P0",
       "title": "Mis Beneficios mixes historical KPI totals into selected current period",
-      "state": "SOURCE_PROVEN_PENDING_EXACT_DEV_MATERIALIZATION",
+      "state": "DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF",
       "expected": "Selected period KPIs use only that period; historical is separate and filterable by period/status/country/currency and optionally project.",
       "observed": "OCT 2026 says 0 in this period while top KPIs show Q420 honoraria, Q1055 reimbursements and Q1475 receivable from history.",
       "rootCauseStatus": "PROVEN",
@@ -6809,7 +6937,23 @@
       "fixSourceSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
       "fixSourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7",
       "sourceProofRunId": 36964331142,
-      "sourceProofDecision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF"
+      "sourceProofDecision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF",
+      "materialization": {
+        "runId": 36964474490,
+        "artifactId": 11209153437,
+        "artifactDigest": "sha256:75d0fb49fe3b5cf3fdec2591a685206d22fe4ef2cbeb6d8ad7b3e8fb46fb596a",
+        "decision": "PASS_VRM143_151_EXACT_DEV_MATERIALIZATION",
+        "runtimeRevision": "cxorbia-live-hr-dev-00242-6s6",
+        "runtimeDigest": "sha256:a7098692ac5dafe75a11937f6d58a3bf7f951ba034c2aafa02edb7873b6a68f8",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/3c2418df100edab0",
+        "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790915298832000",
+        "hrRevision": "e242d83f7a63b4f390a3ff6eeaeb616dea52f52f159a5e3a929c5473a7225159",
+        "builds": 1,
+        "runtimeDeploys": 1,
+        "hostingDeploys": 1,
+        "hrWrites": 0,
+        "production": false
+      }
     },
     "VRM-151": {
       "id": "VRM-151",
@@ -6817,7 +6961,7 @@
       "secondaryClassification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Historical payment reconciliation needs one durable auditable idempotent source of truth",
-      "state": "SOURCE_PROVEN_PENDING_EXACT_DEV_MATERIALIZATION",
+      "state": "DEV_MATERIALIZED_PENDING_HISTORICAL_DRY_RUN",
       "expected": "Durably reconcile confirmed historical payment scope without HR mutation, invented bank refs, current-period contamination or duplicate accounting effects.",
       "observed": "Operational truth supplied: all <= Jul 2026 paid both countries; Aug HN paid; Aug GT pending; Sep all pending; Oct must remain untouched.",
       "rootCauseStatus": "PROVEN",
@@ -6851,7 +6995,23 @@
       "fixSourceSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
       "fixSourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7",
       "sourceProofRunId": 36964331142,
-      "sourceProofDecision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF"
+      "sourceProofDecision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF",
+      "materialization": {
+        "runId": 36964474490,
+        "artifactId": 11209153437,
+        "artifactDigest": "sha256:75d0fb49fe3b5cf3fdec2591a685206d22fe4ef2cbeb6d8ad7b3e8fb46fb596a",
+        "decision": "PASS_VRM143_151_EXACT_DEV_MATERIALIZATION",
+        "runtimeRevision": "cxorbia-live-hr-dev-00242-6s6",
+        "runtimeDigest": "sha256:a7098692ac5dafe75a11937f6d58a3bf7f951ba034c2aafa02edb7873b6a68f8",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/3c2418df100edab0",
+        "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790915298832000",
+        "hrRevision": "e242d83f7a63b4f390a3ff6eeaeb616dea52f52f159a5e3a929c5473a7225159",
+        "builds": 1,
+        "runtimeDeploys": 1,
+        "hostingDeploys": 1,
+        "hrWrites": 0,
+        "production": false
+      }
     }
   },
   "latestEvidenceOverrides": {
@@ -7427,7 +7587,7 @@
     "nextFindingId": "VRM-152",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_VRM143_151_DEV_MATERIALIZATION_REQUIRED",
+    "terminalState": "HOLD_VRM151_HISTORICAL_DRY_RUN_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -11083,9 +11243,25 @@
     "sourceSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
     "sourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7",
     "predecessorSha": "0b7e5db7b1035ec4a81ad548284dbb9146fcfc08",
-    "state": "SOURCE_PROVEN_PENDING_EXACT_DEV_MATERIALIZATION",
+    "state": "DEV_MATERIALIZED",
     "production": false,
     "sourceProofRunId": 36964331142,
-    "sourceProofDecision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF"
+    "sourceProofDecision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF",
+    "materialization": {
+      "runId": 36964474490,
+      "artifactId": 11209153437,
+      "artifactDigest": "sha256:75d0fb49fe3b5cf3fdec2591a685206d22fe4ef2cbeb6d8ad7b3e8fb46fb596a",
+      "decision": "PASS_VRM143_151_EXACT_DEV_MATERIALIZATION",
+      "runtimeRevision": "cxorbia-live-hr-dev-00242-6s6",
+      "runtimeDigest": "sha256:a7098692ac5dafe75a11937f6d58a3bf7f951ba034c2aafa02edb7873b6a68f8",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/3c2418df100edab0",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790915298832000",
+      "hrRevision": "e242d83f7a63b4f390a3ff6eeaeb616dea52f52f159a5e3a929c5473a7225159",
+      "builds": 1,
+      "runtimeDeploys": 1,
+      "hostingDeploys": 1,
+      "hrWrites": 0,
+      "production": false
+    }
   }
 }
