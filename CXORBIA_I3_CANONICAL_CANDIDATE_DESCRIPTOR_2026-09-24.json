@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Read Firebase Auth custom claims for the exact Cayalá shopper UID and compare them with durable membership. No writes. If claims are valid, run a synthetic DEV scheduling command with full cleanup to capture the exact provider code.",
+  "exactNextAction": "Repeat the existing read-only forensic job with Firebase Auth initialized; compare exact Cayalá shopper custom claims with durable membership. If claims match, continue one cumulative I3 corrective package and capture the real schedule command result on the same corrected DEV candidate. No production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2661,5 +2661,11 @@
     "production": false,
     "receiptPath": "CXORBIA_I3_HUMAN_ACCEPTANCE_FORENSIC_READBACK_RUN37049822507_2026-10-02.json",
     "receiptGitBlob": "c81ce776068e9a1afa42789f5abc8b68fd6dd727"
+  },
+  "vrm168DiagnosticSequence": {
+    "membershipReadback": "PASS",
+    "providerSourceCurrentAcceptance": "PASS",
+    "authProbeFixCommit": "28774c51ab57afe76a5cdbba27b07627421ccb03",
+    "authClaimsReadback": "PENDING"
   }
 }
