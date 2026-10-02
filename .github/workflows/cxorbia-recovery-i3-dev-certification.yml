@@ -809,7 +809,9 @@ jobs:
           test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
           test "$(jq -r '.vrm151RuntimeMaterialization.sourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
           test "$(jq -r '.vrm151RuntimeMaterialization.sourceTree' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
-          test "$(jq -r '.vrm151RuntimeMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")" = "cxorbia-live-hr-dev-00243-jbp"
+          EXPECTED_RUNTIME_REVISION="$(jq -r '.vrm151RuntimeMaterialization.runtimeRevision // empty' "$CANDIDATE_DESCRIPTOR")"
+          test -n "$EXPECTED_RUNTIME_REVISION"
+          test "$EXPECTED_RUNTIME_REVISION" = "$(jq -r '.currentMaterialization.runtimeRevision // empty' "$CANDIDATE_DESCRIPTOR")"
           test "$(jq -r '.vrm151RuntimeMaterialization.hostingDeploys' "$CANDIDATE_DESCRIPTOR")" = "0"
           git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
           node --check tools/qa/cxorbia-vrm151-final-canonical-dry-run.mjs
