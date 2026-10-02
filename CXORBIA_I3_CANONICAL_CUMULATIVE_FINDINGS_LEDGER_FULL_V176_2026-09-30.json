@@ -6613,8 +6613,8 @@
       "state": "FROZEN_OPEN_OWNER_PROOF_REQUIRED",
       "expected": "Historical/resolved informational notifications must not count as current unread or contaminate Mi Día for a new period; actionable unresolved events remain visible.",
       "observed": "In OCT 2026 shopper Mi Día shows 3 unread approved-application notifications dated 2026-09-21, 2026-09-07 and 2026-09-30.",
-      "rootCauseStatus": "SOURCE_EVIDENCE_PROVEN_LIFECYCLE_FILTER_ABSENT; focal behavior proof pending",
-      "rootCause": "app/core/notif.js filters by identity/role/entity only; for(role) and unread(role) have no project/period/lifecycle/expiry semantics.",
+      "rootCauseStatus": "PROVEN",
+      "rootCause": "Notification store/filter has identity/role/entity filtering but no general lifecycle/period/expiry semantics; Mi Día uses currentApproval only for one approval subtype and counts all remaining unread.",
       "owners": [
         "app/core/notif.js",
         "app/modules/midia.js"
@@ -6625,7 +6625,8 @@
         "actionable unresolved event remains visible",
         "shopper identity unchanged"
       ],
-      "production": false
+      "production": false,
+      "moduleTruth": "TRUE_FUNCTIONAL_DEFECT"
     },
     "VRM-144": {
       "id": "VRM-144",
@@ -6635,11 +6636,13 @@
       "state": "FROZEN_OPEN_OWNER_PROOF_REQUIRED",
       "expected": "Order: next action/visit, visit state/progress, primary actions, current alerts, secondary schedule/summary.",
       "observed": "Notifications and schedule dominate above the next visit/progress and require excessive scrolling.",
-      "rootCauseStatus": "HUMAN_VISUAL_DRIFT_PROVEN; exact composition owner focal pending",
+      "rootCauseStatus": "PROVEN",
       "owners": [
         "app/modules/midia.js"
       ],
-      "production": false
+      "production": false,
+      "rootCause": "Shopper render order is notifBlock -> cronograma -> next visit -> progress, placing secondary content before the primary operational action.",
+      "moduleTruth": "TRUE_FUNCTIONAL_DEFECT"
     },
     "VRM-145": {
       "id": "VRM-145",
@@ -6649,11 +6652,13 @@
       "state": "FROZEN_OPEN_OWNER_PROOF_REQUIRED",
       "expected": "Preserve all fields/KPIs/history while clearly grouping personal identity, performance and trajectory.",
       "observed": "Multiple blocks compete at the same level; profile, KPIs and history lack clear hierarchy.",
-      "rootCauseStatus": "HUMAN_VISUAL_DRIFT_PROVEN; exact markup/CSS owner focal pending",
+      "rootCauseStatus": "PROVEN",
       "owners": [
-        "app/modules/operacion-extra.js"
+        "app/adapters/tya-canonical-shopper-portal-v2.js"
       ],
-      "production": false
+      "production": false,
+      "rootCause": "Human DEV adapter overrides modules.miperfil and renders a dense identity/access grid, then KPIs, then history without explicit section hierarchy between identity/personal data, performance and trajectory.",
+      "moduleTruth": "TRUE_FUNCTIONAL_DEFECT"
     },
     "VRM-146": {
       "id": "VRM-146",
@@ -6663,11 +6668,13 @@
       "state": "FROZEN_OPEN_OWNER_PROOF_REQUIRED",
       "expected": "History sorted explicitly oldest -> newest, independent of HR receive order; OCT 2026 last.",
       "observed": "Visible history order: AGO 2026, JUL 2026, JUN 2026, ABR 2026, DIC 2025, OCT 2025, JUN 2025, OCT 2026.",
-      "rootCauseStatus": "SOURCE_EVIDENCE_PROVEN_PRESENTATION_ROWS_USE_UNSORTED_visAll; focal proof pending",
+      "rootCauseStatus": "PROVEN",
       "owners": [
-        "app/modules/operacion-extra.js"
+        "app/adapters/tya-canonical-shopper-portal-v2.js"
       ],
-      "production": false
+      "production": false,
+      "rootCause": "Human DEV canonical portal explicitly sorts history descending using b-date localeCompare a-date. Required order is ascending oldest->newest.",
+      "moduleTruth": "TRUE_FUNCTIONAL_DEFECT"
     },
     "VRM-147": {
       "id": "VRM-147",
@@ -6678,7 +6685,7 @@
       "state": "FROZEN_OPEN_OWNER_PROOF_REQUIRED",
       "expected": "Reservable option represents one eligible visit/slot and shows branch, city/country, period, executionCut and availability; assigned slots excluded.",
       "observed": "Request branch modal shows branch + period without cut; same branch can collapse across cuts.",
-      "rootCauseStatus": "SOURCE_EVIDENCE_PROVEN_DEDUP_KEY_BRANCH_CITY; exact save mapping focal pending",
+      "rootCauseStatus": "PROVEN",
       "owners": [
         "app/modules/reservas.js"
       ],
@@ -6689,7 +6696,9 @@
         "remote ACK",
         "no duplicate"
       ],
-      "production": false
+      "production": false,
+      "rootCause": "Eligible HR visits are filtered correctly, then collapsed with key sucursal|ciudad; executionCut is not represented in option label or reservation payload, so slot/cut identity is lost.",
+      "moduleTruth": "TRUE_FUNCTIONAL_DEFECT"
     },
     "VRM-148": {
       "id": "VRM-148",
@@ -6700,11 +6709,12 @@
       "state": "FROZEN_OPEN_OWNER_PROOF_REQUIRED",
       "expected": "requestedQuestionCount is exact when sources suffice; otherwise fail closed with X of N; attached instructive is primary grounding and human admin text may complement it.",
       "observed": "Admin requested 10 questions; shopper bank shows 8; observed output appears insufficiently grounded in the instructive.",
-      "rootCauseStatus": "FRONTEND_QUESTION_COUNT_FORWARDING_PROVEN; attachment extraction/provider/postprocessing focal pending",
+      "rootCauseStatus": "PROVEN",
       "owners": [
+        "app/core/automations.js",
         "app/modules/cert.js",
         "app/core/backend-ai.js",
-        "backend certification generateBank provider"
+        "backend/runtime/hr-live-service/certification-runtime.mjs"
       ],
       "testContract": [
         "request 10 -> exactly 10 or explicit fail",
@@ -6714,7 +6724,9 @@
         "published bank exact",
         "cleanup fixture"
       ],
-      "production": false
+      "production": false,
+      "rootCause": "Attachment extraction is best-effort byte-regex for PDF and non-text fallback for DOC/DOCX; backend prompt explicitly permits fewer questions; normalizer accepts any nonzero valid count; cert UI accepts any nonzero returned bank instead of exact requested count. Count forwarding itself is correct.",
+      "moduleTruth": "TRUE_FUNCTIONAL_DEFECT"
     },
     "VRM-149": {
       "id": "VRM-149",
@@ -6724,12 +6736,13 @@
       "state": "FROZEN_OPEN_OWNER_PROOF_REQUIRED",
       "expected": "Keep real sidebar scrolling and show a discreet visible corporate scrollbar on the light rail.",
       "observed": "Long sidebar scrolls but scrollbar is not visually perceptible.",
-      "rootCauseStatus": "SOURCE_EVIDENCE_PROVEN_LOW_CONTRAST_SCROLLBAR",
-      "rootCause": "app/styles/layout.css uses white/translucent scrollbar thumb values intended for dark rail against current light sidebar.",
+      "rootCauseStatus": "PROVEN",
+      "rootCause": "rail-nav scrollbar thumb is white/translucent while current visible rail variant can be light, making the real scrollbar effectively invisible.",
       "owners": [
         "app/styles/layout.css"
       ],
-      "production": false
+      "production": false,
+      "moduleTruth": "TRUE_FUNCTIONAL_DEFECT"
     },
     "VRM-150": {
       "id": "VRM-150",
@@ -6740,7 +6753,7 @@
       "state": "FROZEN_OPEN_OWNER_PROOF_REQUIRED",
       "expected": "Selected period KPIs use only that period; historical is separate and filterable by period/status/country/currency and optionally project.",
       "observed": "OCT 2026 says 0 in this period while top KPIs show Q420 honoraria, Q1055 reimbursements and Q1475 receivable from history.",
-      "rootCauseStatus": "SOURCE_EVIDENCE_PROVEN_KPI_SCOPE_USES_all_NOT_currentLiquidations",
+      "rootCauseStatus": "PROVEN",
       "owners": [
         "app/modules/beneficios.js"
       ],
@@ -6750,7 +6763,9 @@
         "period/status/country/currency filters",
         "no double count"
       ],
-      "production": false
+      "production": false,
+      "rootCause": "currentLiquidations is computed correctly, but pendingCurrency/resolved/byCur/KPI drill arrays and detail table are based on all historical liquidations while header says selected period.",
+      "moduleTruth": "TRUE_FUNCTIONAL_DEFECT"
     },
     "VRM-151": {
       "id": "VRM-151",
@@ -6761,12 +6776,10 @@
       "state": "FROZEN_OPEN_OWNER_PROOF_REQUIRED",
       "expected": "Durably reconcile confirmed historical payment scope without HR mutation, invented bank refs, current-period contamination or duplicate accounting effects.",
       "observed": "Operational truth supplied: all <= Jul 2026 paid both countries; Aug HN paid; Aug GT pending; Sep all pending; Oct must remain untouched.",
-      "rootCauseStatus": "DURABLE_FINANCE_GRAPH_EXISTS; exact reconciliation entity/command capability focal pending",
+      "rootCauseStatus": "PROVEN",
       "owners": [
         "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
-        "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
-        "app/core/backend-finance-benefits.js",
-        "app/modules/beneficios.js"
+        "app/adapters/cxorbia-cxdata-command-boundary-v1.js"
       ],
       "reconciliationScope": {
         "paid": [
@@ -6788,7 +6801,9 @@
         "current finance dashboard unaffected",
         "HR writes 0"
       ],
-      "production": false
+      "production": false,
+      "rootCause": "Durable ACK/idempotency exists, but finance.payment.batch intentionally records paymentState=platform_recorded_pending_external_reconciliation and externalPaymentConfirmed=false. No distinct durable historical_reconciliation event exists to record Paula-confirmed historical operational truth without fabricating bank confirmation.",
+      "moduleTruth": "TRUE_FUNCTIONAL_DEFECT"
     }
   },
   "latestEvidenceOverrides": {
@@ -7377,7 +7392,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Build focal MODULE_TRUTH for VRM-143..151 owners, prove exact root cause, then correct functional/data owners before visual owners on one cumulative I3 successor; production remains DO_NOT_TOUCH.",
+  "exactNextAction": "Create one cumulative I3 product-source successor from 18ff875e correcting VRM-143..151 functional/data owners first and visual owners second; run focal source tests; then materialize once to DEV.",
   "supersedesGitBlob": "397a9cee8c71d3156567a0cc96bfdcba88bb7c3a",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -10861,5 +10876,132 @@
     "next": "SHORT_HUMAN_VISUAL_RETEST",
     "production": false
   },
-  "activeBlocker": "VRM-143_TO_VRM-151_NEW_HUMAN_VISUAL_FINDINGS"
+  "activeBlocker": "VRM-143_TO_VRM-151_NEW_HUMAN_VISUAL_FINDINGS",
+  "focalModuleTruthVRM143to151": {
+    "frozenAt": "2026-10-02T01:42:00Z",
+    "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
+    "productTreeAuthority": "90cbaaa0844bbdde0b4b96a7caa4bfbdff16167f",
+    "classification": "FOCAL_MODULE_TRUTH_VRM_143_151",
+    "modules": [
+      {
+        "finding": "VRM-143",
+        "owners": [
+          {
+            "path": "app/core/notif.js",
+            "blob": "81572d74a513538ed689527f04a0784d6ff04577"
+          },
+          {
+            "path": "app/modules/midia.js",
+            "blob": "2da4ad62d039015cde762cd878baaa507a57ce51"
+          }
+        ],
+        "truth": "TRUE_FUNCTIONAL_DEFECT",
+        "rootCause": "Notification store/filter has identity/role/entity filtering but no general lifecycle/period/expiry semantics; Mi Día uses currentApproval only for one approval subtype and counts all remaining unread."
+      },
+      {
+        "finding": "VRM-144",
+        "owners": [
+          {
+            "path": "app/modules/midia.js",
+            "blob": "2da4ad62d039015cde762cd878baaa507a57ce51"
+          }
+        ],
+        "truth": "TRUE_FUNCTIONAL_DEFECT",
+        "rootCause": "Shopper render order is notifBlock -> cronograma -> next visit -> progress, placing secondary content before the primary operational action."
+      },
+      {
+        "finding": "VRM-145",
+        "owners": [
+          {
+            "path": "app/adapters/tya-canonical-shopper-portal-v2.js",
+            "blob": "2fcff85f2eeeb6cf7ab429e37ff365cc03d5cad5"
+          }
+        ],
+        "truth": "TRUE_FUNCTIONAL_DEFECT",
+        "rootCause": "Human DEV adapter overrides modules.miperfil and renders a dense identity/access grid, then KPIs, then history without explicit section hierarchy between identity/personal data, performance and trajectory."
+      },
+      {
+        "finding": "VRM-146",
+        "owners": [
+          {
+            "path": "app/adapters/tya-canonical-shopper-portal-v2.js",
+            "blob": "2fcff85f2eeeb6cf7ab429e37ff365cc03d5cad5"
+          }
+        ],
+        "truth": "TRUE_FUNCTIONAL_DEFECT",
+        "rootCause": "Human DEV canonical portal explicitly sorts history descending using b-date localeCompare a-date. Required order is ascending oldest->newest."
+      },
+      {
+        "finding": "VRM-147",
+        "owners": [
+          {
+            "path": "app/modules/reservas.js",
+            "blob": "0ac3ce91c1547a21e2048eebebb19d757c76cc71"
+          }
+        ],
+        "truth": "TRUE_FUNCTIONAL_DEFECT",
+        "rootCause": "Eligible HR visits are filtered correctly, then collapsed with key sucursal|ciudad; executionCut is not represented in option label or reservation payload, so slot/cut identity is lost."
+      },
+      {
+        "finding": "VRM-148",
+        "owners": [
+          {
+            "path": "app/core/automations.js",
+            "blob": "940ece14951719114401891697f303fab88b0f36"
+          },
+          {
+            "path": "app/modules/cert.js",
+            "blob": "9dce02bbc6543e5b7b64df2b50f2fca268b05e5e"
+          },
+          {
+            "path": "app/core/backend-ai.js",
+            "blob": "d8a1a83579acf62332d672649e0553985a0bf18b"
+          },
+          {
+            "path": "backend/runtime/hr-live-service/certification-runtime.mjs",
+            "blob": "5d371f11e7975687e112e6333282feea4fd6a765"
+          }
+        ],
+        "truth": "TRUE_FUNCTIONAL_DEFECT",
+        "rootCause": "Attachment extraction is best-effort byte-regex for PDF and non-text fallback for DOC/DOCX; backend prompt explicitly permits fewer questions; normalizer accepts any nonzero valid count; cert UI accepts any nonzero returned bank instead of exact requested count. Count forwarding itself is correct."
+      },
+      {
+        "finding": "VRM-149",
+        "owners": [
+          {
+            "path": "app/styles/layout.css",
+            "blob": "808121cbe6b059e9b3cf3e15560ddc11e8000b94"
+          }
+        ],
+        "truth": "TRUE_FUNCTIONAL_DEFECT",
+        "rootCause": "rail-nav scrollbar thumb is white/translucent while current visible rail variant can be light, making the real scrollbar effectively invisible."
+      },
+      {
+        "finding": "VRM-150",
+        "owners": [
+          {
+            "path": "app/modules/beneficios.js",
+            "blob": "9cd1a9d88dd28ed9c1df6fd279c9d970ffbfe0c8"
+          }
+        ],
+        "truth": "TRUE_FUNCTIONAL_DEFECT",
+        "rootCause": "currentLiquidations is computed correctly, but pendingCurrency/resolved/byCur/KPI drill arrays and detail table are based on all historical liquidations while header says selected period."
+      },
+      {
+        "finding": "VRM-151",
+        "owners": [
+          {
+            "path": "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+            "blob": "da0799ecc398609dc9108728266a0ba54aa62751"
+          },
+          {
+            "path": "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+            "blob": "f26a580f456029f5d36d6cf72780c559856ad46f"
+          }
+        ],
+        "truth": "TRUE_FUNCTIONAL_DEFECT",
+        "rootCause": "Durable ACK/idempotency exists, but finance.payment.batch intentionally records paymentState=platform_recorded_pending_external_reconciliation and externalPaymentConfirmed=false. No distinct durable historical_reconciliation event exists to record Paula-confirmed historical operational truth without fabricating bank confirmation."
+      }
+    ]
+  }
 }

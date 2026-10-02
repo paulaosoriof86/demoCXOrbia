@@ -8,7 +8,7 @@
   "productTreeAuthority": "90cbaaa0844bbdde0b4b96a7caa4bfbdff16167f",
   "predecessorProductSourceSha": "a2f7acd659b68217299f92ef69a320f08e806635",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "b8a9ea57f8866d9a6be8557e7c3077a331afd508",
+  "findingsLedgerExpectedGitBlob": "e2921199d285af1dcbc88f3a6b29e049392f926b",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Focal MODULE_TRUTH and root-cause proof for VRM-143..151, then one cumulative I3 source successor correcting functional/data first and visual second; no production touch.",
+  "exactNextAction": "Create one cumulative I3 product-source successor from 18ff875e correcting VRM-143..151 functional/data owners first and visual owners second; run focal source tests; then materialize once to DEV.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1871,5 +1871,132 @@
     ],
     "preservedRun817UnaffectedOwnerEvidence": true,
     "production": false
+  },
+  "latestFocalModuleTruthVRM143to151": {
+    "frozenAt": "2026-10-02T01:42:00Z",
+    "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
+    "productTreeAuthority": "90cbaaa0844bbdde0b4b96a7caa4bfbdff16167f",
+    "classification": "FOCAL_MODULE_TRUTH_VRM_143_151",
+    "modules": [
+      {
+        "finding": "VRM-143",
+        "owners": [
+          {
+            "path": "app/core/notif.js",
+            "blob": "81572d74a513538ed689527f04a0784d6ff04577"
+          },
+          {
+            "path": "app/modules/midia.js",
+            "blob": "2da4ad62d039015cde762cd878baaa507a57ce51"
+          }
+        ],
+        "truth": "TRUE_FUNCTIONAL_DEFECT",
+        "rootCause": "Notification store/filter has identity/role/entity filtering but no general lifecycle/period/expiry semantics; Mi Día uses currentApproval only for one approval subtype and counts all remaining unread."
+      },
+      {
+        "finding": "VRM-144",
+        "owners": [
+          {
+            "path": "app/modules/midia.js",
+            "blob": "2da4ad62d039015cde762cd878baaa507a57ce51"
+          }
+        ],
+        "truth": "TRUE_FUNCTIONAL_DEFECT",
+        "rootCause": "Shopper render order is notifBlock -> cronograma -> next visit -> progress, placing secondary content before the primary operational action."
+      },
+      {
+        "finding": "VRM-145",
+        "owners": [
+          {
+            "path": "app/adapters/tya-canonical-shopper-portal-v2.js",
+            "blob": "2fcff85f2eeeb6cf7ab429e37ff365cc03d5cad5"
+          }
+        ],
+        "truth": "TRUE_FUNCTIONAL_DEFECT",
+        "rootCause": "Human DEV adapter overrides modules.miperfil and renders a dense identity/access grid, then KPIs, then history without explicit section hierarchy between identity/personal data, performance and trajectory."
+      },
+      {
+        "finding": "VRM-146",
+        "owners": [
+          {
+            "path": "app/adapters/tya-canonical-shopper-portal-v2.js",
+            "blob": "2fcff85f2eeeb6cf7ab429e37ff365cc03d5cad5"
+          }
+        ],
+        "truth": "TRUE_FUNCTIONAL_DEFECT",
+        "rootCause": "Human DEV canonical portal explicitly sorts history descending using b-date localeCompare a-date. Required order is ascending oldest->newest."
+      },
+      {
+        "finding": "VRM-147",
+        "owners": [
+          {
+            "path": "app/modules/reservas.js",
+            "blob": "0ac3ce91c1547a21e2048eebebb19d757c76cc71"
+          }
+        ],
+        "truth": "TRUE_FUNCTIONAL_DEFECT",
+        "rootCause": "Eligible HR visits are filtered correctly, then collapsed with key sucursal|ciudad; executionCut is not represented in option label or reservation payload, so slot/cut identity is lost."
+      },
+      {
+        "finding": "VRM-148",
+        "owners": [
+          {
+            "path": "app/core/automations.js",
+            "blob": "940ece14951719114401891697f303fab88b0f36"
+          },
+          {
+            "path": "app/modules/cert.js",
+            "blob": "9dce02bbc6543e5b7b64df2b50f2fca268b05e5e"
+          },
+          {
+            "path": "app/core/backend-ai.js",
+            "blob": "d8a1a83579acf62332d672649e0553985a0bf18b"
+          },
+          {
+            "path": "backend/runtime/hr-live-service/certification-runtime.mjs",
+            "blob": "5d371f11e7975687e112e6333282feea4fd6a765"
+          }
+        ],
+        "truth": "TRUE_FUNCTIONAL_DEFECT",
+        "rootCause": "Attachment extraction is best-effort byte-regex for PDF and non-text fallback for DOC/DOCX; backend prompt explicitly permits fewer questions; normalizer accepts any nonzero valid count; cert UI accepts any nonzero returned bank instead of exact requested count. Count forwarding itself is correct."
+      },
+      {
+        "finding": "VRM-149",
+        "owners": [
+          {
+            "path": "app/styles/layout.css",
+            "blob": "808121cbe6b059e9b3cf3e15560ddc11e8000b94"
+          }
+        ],
+        "truth": "TRUE_FUNCTIONAL_DEFECT",
+        "rootCause": "rail-nav scrollbar thumb is white/translucent while current visible rail variant can be light, making the real scrollbar effectively invisible."
+      },
+      {
+        "finding": "VRM-150",
+        "owners": [
+          {
+            "path": "app/modules/beneficios.js",
+            "blob": "9cd1a9d88dd28ed9c1df6fd279c9d970ffbfe0c8"
+          }
+        ],
+        "truth": "TRUE_FUNCTIONAL_DEFECT",
+        "rootCause": "currentLiquidations is computed correctly, but pendingCurrency/resolved/byCur/KPI drill arrays and detail table are based on all historical liquidations while header says selected period."
+      },
+      {
+        "finding": "VRM-151",
+        "owners": [
+          {
+            "path": "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+            "blob": "da0799ecc398609dc9108728266a0ba54aa62751"
+          },
+          {
+            "path": "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+            "blob": "f26a580f456029f5d36d6cf72780c559856ad46f"
+          }
+        ],
+        "truth": "TRUE_FUNCTIONAL_DEFECT",
+        "rootCause": "Durable ACK/idempotency exists, but finance.payment.batch intentionally records paymentState=platform_recorded_pending_external_reconciliation and externalPaymentConfirmed=false. No distinct durable historical_reconciliation event exists to record Paula-confirmed historical operational truth without fabricating bank confirmation."
+      }
+    ]
   }
 }
