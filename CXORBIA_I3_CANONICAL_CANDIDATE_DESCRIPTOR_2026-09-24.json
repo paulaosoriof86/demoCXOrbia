@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM154_156_FRONTEND_SOURCE_REPROOF_REQUIRED",
+  "status": "HOLD_VRM154_156_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
   "productTreeAuthority": "6a8b7ec768efbb9af73bcca836125471f7f49ae4",
   "predecessorProductSourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V184_2026-10-02.json",
-  "findingsLedgerExpectedGitBlob": "86924334bfc7dd64348de54df30c44c768d592f9",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V185_2026-10-02.json",
+  "findingsLedgerExpectedGitBlob": "c235954baabbec28731267a933868afc3126f55c",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM162_SOURCE_REPROOF_REQUIRED",
+  "activeBlocker": "VRM162_DEV_MATERIALIZATION_REQUIRED",
   "nextFindingId": "VRM-165",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run canonical VRM-154..156 frontend source reproof on 542fb96630d2068993d03ae86e3d3299f5386251 after correcting the historical V176 guard to prove predecessor lineage rather than source equality. No deploy.",
+  "exactNextAction": "Execute the existing canonical VRM-154..156 exact cumulative DEV materialization on source 542fb96630d2068993d03ae86e3d3299f5386251 / tree 6a8b7ec768efbb9af73bcca836125471f7f49ae4: exactly one build, one DEV runtime deploy and one DEV Hosting deploy; prove byte-equal frontend including tya-live-source-inplace-apply.js, fresh HR meta+json scenarioDimensions, and production=false. Do not touch production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2030,7 +2030,7 @@
     "files": [
       "app/adapters/tya-live-source-inplace-apply.js"
     ],
-    "state": "SOURCE_FIX_PENDING_REPROOF",
+    "state": "SOURCE_PROVEN_RUN864_PENDING_DEV_MATERIALIZATION",
     "production": false
   },
   "vrm151RuntimeMaterialization": {
@@ -2501,5 +2501,23 @@
     "hostingDeploys": 0,
     "production": false,
     "repeatRepairAllowed": false
+  },
+  "vrm162SourceFix": {
+    "state": "SOURCE_PROVEN_RUN864_PENDING_DEV_MATERIALIZATION",
+    "sourceProof": {
+      "runId": 37037752771,
+      "runNumber": 864,
+      "jobId": 110940128565,
+      "artifactId": 11241222027,
+      "artifactDigest": "sha256:0c5799e38fca13077d3e394972bbcd602e531480f117e82b3fdd6ce8ed0f85ea",
+      "decision": "PASS_VRM154_156_FRONTEND_SOURCE_REPROOF",
+      "sourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
+      "sourceTree": "6a8b7ec768efbb9af73bcca836125471f7f49ae4",
+      "genericScenarioContract": true,
+      "liveRuntimeScenarioDimensionsPropagation": true,
+      "financeVrm153Regression": true,
+      "deploys": 0,
+      "production": false
+    }
   }
 }
