@@ -18,12 +18,24 @@
     "sourceTree": "90cbaaa0844bbdde0b4b96a7caa4bfbdff16167f",
     "predecessorSha": "a2f7acd659b68217299f92ef69a320f08e806635",
     "production": false,
-    "state": "SOURCE_FIX_PENDING_DEV_LIVE_REPROOF",
-    "sourceProof": {
-      "decision": "PENDING_PREI4_VRM142_DEV_LIVE_REPROOF",
-      "classification": "AUTH_FAILURE",
-      "owner": "firestore.rules",
-      "deploys": 0,
+    "state": "DEV_LIVE_CUMULATIVE_PASS_PENDING_SHORT_HUMAN_VISUAL_RETEST",
+    "proof": {
+      "runId": 36942289348,
+      "artifactId": 11200941985,
+      "decision": "PASS_PREI4_CURRENT_PERIOD_CUMULATIVE_DEV_LIVE",
+      "finalFocal": "PASS_PREI4_VRM121_135_FINAL_FOCAL",
+      "browser": "PASS_PRE_I4_FOCAL_HUMAN_BROWSER",
+      "finance": "PASS_PREI4_FINAL_FOCAL_FINANCE",
+      "certification": "PASS_PREI4_CERT_RES_CUMULATIVE_DEV_LIVE",
+      "firestoreRules": "PASS_PREI4_FIRESTORE_RULES_EXACT",
+      "hrRevision": "e242d83f7a63b4f390a3ff6eeaeb616dea52f52f159a5e3a929c5473a7225159",
+      "runtimeRevision": "cxorbia-live-hr-dev-00241-lnw",
+      "runtimeDigest": "sha256:cf8cdbc37a7373625b7251434dcc70ae9dbe6b06fd2d8381414f51de5f8dd128",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/a5ddde86085cb9f2",
+      "rulesSha256": "bced559c77430dd2f1f14a04b6a357f7ba0cc474a89db7d4859435f86484dcf3",
+      "financeCleanup": true,
+      "certificationCleanup": true,
+      "hrWrites": 0,
       "production": false
     }
   },
@@ -7180,7 +7192,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Materialize canonical source 18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd / tree 90cbaaa0844bbdde0b4b96a7caa4bfbdff16167f exactly once in existing Recovery DEV lane, including exact Firestore Rules parity, then execute Admin/Shopper no-regression + Finance durable projection + Certification/Resources cleanup + final receipt. Production remains untouched.",
+  "exactNextAction": "Paula performs the short human visual retest on the already-certified DEV candidate 18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd. If accepted and no reproducible drift appears, freeze READY_FOR_EXPLICIT_PRODUCTION_AUTHORIZATION using Run 817 artifact/runtime/hosting/rules evidence; do not rebuild or rematerialize. Production remains untouched until explicit authorization.",
   "supersedesGitBlob": "397a9cee8c71d3156567a0cc96bfdcba88bb7c3a",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -8564,7 +8576,7 @@
     "PREI4-CONTENT-001",
     "PREI4-CONTENT-002"
   ],
-  "preI4NextAction": "Materialize canonical source 18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd / tree 90cbaaa0844bbdde0b4b96a7caa4bfbdff16167f exactly once in existing Recovery DEV lane, including exact Firestore Rules parity, then execute Admin/Shopper no-regression + Finance durable projection + Certification/Resources cleanup + final receipt. Production remains untouched.",
+  "preI4NextAction": "Paula performs the short human visual retest on the already-certified DEV candidate 18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd. If accepted and no reproducible drift appears, freeze READY_FOR_EXPLICIT_PRODUCTION_AUTHORIZATION using Run 817 artifact/runtime/hosting/rules evidence; do not rebuild or rematerialize. Production remains untouched until explicit authorization.",
   "preI4Admin002": {
     "findingId": "PREI4-ADMIN-002",
     "state": "FIXED_PROVEN_RUN601",
@@ -10625,5 +10637,13 @@
       "historical visits unchanged"
     ],
     "manualPaulaActionRequired": false
-  }
+  },
+  "lastPassedRun": {
+    "runId": 36942289348,
+    "artifactId": 11200941985,
+    "decision": "PASS_PREI4_CURRENT_PERIOD_CUMULATIVE_DEV_LIVE",
+    "next": "SHORT_HUMAN_VISUAL_RETEST",
+    "production": false
+  },
+  "activeBlocker": "SHORT_HUMAN_VISUAL_RETEST"
 }
