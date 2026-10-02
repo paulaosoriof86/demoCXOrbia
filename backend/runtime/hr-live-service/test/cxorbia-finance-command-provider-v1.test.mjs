@@ -93,6 +93,22 @@ test('VRM-151 historical reconciliation records paid status but keeps amount nul
   assert.equal(after.paymentConfirmed,true);assert.equal(after.historicalPaymentAmount,null);assert.equal(after.historicalPaymentAmountReviewRequired,true);assert.deepEqual(after.historicalPaymentReviewReasons,['COMBO_MISSING']);assert.equal(after.financialMatch,undefined);
 });
 
+test('VRM-151 historical reconciliation writes the live visitId canonical owner before legacy hrRowId duplicate',async()=>{
+  const db=baseDb(),legacy=db.get('tenants/tenant-a/projects/project-a/visits/SEP!2');
+  const canonical={...legacy,id:'live-visit-1',visitId:'live-visit-1',hrRowId:'SEP!2',version:4};
+  db.seed('tenants/tenant-a/projects/project-a/visits/live-visit-1',canonical);
+  const payload={visitIds:['live-visit-1'],visitRefs:[{visitId:'live-visit-1',hrRowId:'SEP!2'}],paymentStatus:'paid',sourceRevision:'rev-hr',reconciliationBatchId:'hist-owner-test',sourceRef:'historical-reconciliation:owner-test'};
+  const cmd=historicalCommand({idempotencyKey:'finance.historical.reconcile:owner-key',entityId:'hist-owner-test',payload});
+  const p=createFinanceCommandProvider({auth:new Auth(),db,policy}),r=await p.execute('token',cmd);
+  assert.equal(r.ok,true);assert.equal(r.reconciled,1);
+  const exact=db.get('tenants/tenant-a/projects/project-a/visits/live-visit-1');
+  const old=db.get('tenants/tenant-a/projects/project-a/visits/SEP!2');
+  assert.equal(exact.paymentConfirmed,true);assert.equal(exact.reconciliationSourceRef,'historical-reconciliation:owner-test');
+  assert.equal(old.paymentConfirmed,undefined);assert.equal(old.reconciliationSourceRef,undefined);
+  const rec=[...db.s.entries()].find(([k,v])=>k.includes('/paymentReconciliations/')&&v?.visitId==='live-visit-1')?.[1];
+  assert.equal(rec?.durableVisitId,'live-visit-1');assert.equal(rec?.durableVisitAuthority,'live_hr_visit_id_equals_firestore_doc_id');
+});
+
 test('VRM-151 historical reconciliation rejects non-submitted visits even when the historical month is marked paid',async()=>{
   const db=baseDb(),v=db.get('tenants/tenant-a/projects/project-a/visits/SEP!2');v.canonicalFacets={submitted:false};v.estado='cuestionario';v.submittedAt=null;db.seed('tenants/tenant-a/projects/project-a/visits/SEP!2',v);
   const p=createFinanceCommandProvider({auth:new Auth(),db,policy}),r=await p.execute('token',historicalCommand());

@@ -99,6 +99,19 @@ async function resolveVisitDocument(tx,visits,visitId,hrRowId){
   for(const key of keys){const ref=visits.doc(key),snap=await tx.get(ref);if(snap.exists)return {ref,snap,data:snap.data()||{},durableVisitId:key};}
   return {ref:null,snap:null,data:null,durableVisitId:null};
 }
+async function resolveHistoricalVisitDocument(tx,visits,visitId,hrRowId){
+  const canonicalId=str(visitId);
+  if(canonicalId){
+    const ref=visits.doc(canonicalId),snap=await tx.get(ref);
+    if(snap.exists)return {ref,snap,data:snap.data()||{},durableVisitId:canonicalId,authority:'live_hr_visit_id_equals_firestore_doc_id'};
+  }
+  const legacyId=str(hrRowId);
+  if(legacyId&&legacyId!==canonicalId){
+    const ref=visits.doc(legacyId),snap=await tx.get(ref);
+    if(snap.exists)return {ref,snap,data:snap.data()||{},durableVisitId:legacyId,authority:'exact_legacy_fallback'};
+  }
+  return {ref:null,snap:null,data:null,durableVisitId:null,authority:null};
+}
 const finite=v=>v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v));
 function configuredAmount(project,country,key){
   const map=project?.[key]||project?.financial?.[key]||project?.finance?.[key]||{};
@@ -206,7 +219,7 @@ export function createFinanceCommandProvider({auth,db,policy}={}){
             let providerWrites=0,reconciled=0,amountReviewRequired=0;const detail=[];
             for(const id of uniq(command.payload?.visitIds)){
               const hinted=refsInput.find(x=>str(x?.visitId)===id)||{};
-              const resolved=await resolveVisitDocument(tx,visits,id,hinted.hrRowId);
+              const resolved=await resolveHistoricalVisitDocument(tx,visits,id,hinted.hrRowId);
               if(!resolved.snap?.exists)throw new Error('FINANCE_VISIT_MISSING:'+id);
               const v=resolved.data||{};
               if(str(v.periodId)!==str(command.periodId))throw new Error('FINANCE_PERIOD_SCOPE_CONFLICT:'+id);
@@ -217,7 +230,7 @@ export function createFinanceCommandProvider({auth,db,policy}={}){
               if(!amount.ok)throw new Error('FINANCE_HISTORICAL_SOURCE_INCOMPLETE:'+id+':'+amount.reason);
               if(amount.amountReviewRequired)amountReviewRequired++;
               const paid=status==='paid';
-              const reconciliation={tenantId:command.tenantId,projectId:command.projectId,shopperId:str(v.shopperId),visitId:id,durableVisitId:resolved.durableVisitId,hrRowId:str(v.hrRowId)||null,periodId:command.periodId,country:amount.country,currency:amount.currency,honorario:amount.honorario,honorarioSource:amount.honorarioSource,boleto:amount.boleto,combo:amount.combo,reembolso:amount.reembolso,amount:amount.total,amountStatus:amount.amountStatus,amountReviewRequired:amount.amountReviewRequired,reviewReasons:amount.reviewReasons,sourceRevision,paymentStatus:status,paymentConfirmed:paid,paymentDate:null,source:'historical_reconciliation',sourceRef,reconciliationBatchId:batchId,idempotencyKey:command.idempotencyKey,reconciledAt,reconciledBy:actor.uid,notes:notes||null};
+              const reconciliation={tenantId:command.tenantId,projectId:command.projectId,shopperId:str(v.shopperId),visitId:id,durableVisitId:resolved.durableVisitId,durableVisitAuthority:resolved.authority,hrRowId:str(v.hrRowId)||null,periodId:command.periodId,country:amount.country,currency:amount.currency,honorario:amount.honorario,honorarioSource:amount.honorarioSource,boleto:amount.boleto,combo:amount.combo,reembolso:amount.reembolso,amount:amount.total,amountStatus:amount.amountStatus,amountReviewRequired:amount.amountReviewRequired,reviewReasons:amount.reviewReasons,sourceRevision,paymentStatus:status,paymentConfirmed:paid,paymentDate:null,source:'historical_reconciliation',sourceRef,reconciliationBatchId:batchId,idempotencyKey:command.idempotencyKey,reconciledAt,reconciledBy:actor.uid,notes:notes||null};
               const recRef=tenant.collection('paymentReconciliations').doc(sha(command.tenantId+'\0'+command.projectId+'\0'+id+'\0'+batchId).slice(0,40));
               tx.set(recRef,reconciliation,{merge:false});providerWrites++;
               tx.set(resolved.ref,{paymentState:paid?'historically_reconciled_paid':'historically_reconciled_pending',paymentConfirmed:paid,historicalReconciliationConfirmed:paid,historicalPaymentStatus:status,historicalPaymentAmount:amount.total,historicalPaymentAmountStatus:amount.amountStatus,historicalPaymentAmountReviewRequired:amount.amountReviewRequired,historicalPaymentReviewReasons:amount.reviewReasons,reconciliationSourceRef:sourceRef,reconciliationSourceRevision:sourceRevision,reconciliationBatchId:batchId,reconciledAt,updatedAt:reconciledAt,version:Number(v.version||0)+1},{merge:true});providerWrites++;
