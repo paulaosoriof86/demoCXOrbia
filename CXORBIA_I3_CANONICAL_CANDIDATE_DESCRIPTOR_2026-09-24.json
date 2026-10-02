@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_HUMAN_VISUAL_REMEDIATION_DIAGNOSTIC_REQUIRED",
+  "status": "HOLD_VRM168_SCHEDULE_PROVIDER_PROBE_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM_168_TOKEN_CLAIMS_READBACK_REQUIRED",
+  "activeBlocker": "VRM_168_PROVIDER_PATH_PROBE_REQUIRED",
   "nextFindingId": "VRM-181",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Repeat the existing read-only forensic job with Firebase Auth initialized; compare exact Cayalá shopper custom claims with durable membership. If claims match, continue one cumulative I3 corrective package and capture the real schedule command result on the same corrected DEV candidate. No production.",
+  "exactNextAction": "Execute one synthetic DEV visit.state.update through the real authenticated command endpoint using the exact Cayalá shopper UID/claims, then delete synthetic visit/receipt/audit. Do not touch the real Cayalá visit or production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2666,6 +2666,9 @@
     "membershipReadback": "PASS",
     "providerSourceCurrentAcceptance": "PASS",
     "authProbeFixCommit": "28774c51ab57afe76a5cdbba27b07627421ccb03",
-    "authClaimsReadback": "PENDING"
+    "authClaimsReadback": "PASS_RUN_873",
+    "syntheticProviderProbe": "PENDING",
+    "probeScript": "tools/qa/cxorbia-i3-vrm168-schedule-provider-probe.mjs",
+    "probeScriptGitBlob": "32a2f8d820e37e1f4a3fcd17e025300134b3a0f8"
   }
 }
