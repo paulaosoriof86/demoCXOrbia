@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Capture the exact browser-built scheduling command for the real Cayalá visit through a no-send diagnostic transport on the existing sealed DEV. Prove durable visit remains unchanged. Then classify VRM-168 from exact command mapping evidence.",
+  "exactNextAction": "Run the existing canonical human-acceptance forensic job. The forensic script now captures the exact real Cayalá browser-built scheduling command through a no-send transport and proves the durable visit remains unchanged. Then classify VRM-168 and proceed to the single cumulative I3 corrective package.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2671,8 +2671,10 @@
     "probeScript": "tools/qa/cxorbia-i3-vrm168-schedule-provider-probe.mjs",
     "probeScriptGitBlob": "32a2f8d820e37e1f4a3fcd17e025300134b3a0f8",
     "providerSyntheticSchedule": "PASS_RUN_874_CANONICAL_JOB_37059538018",
-    "browserCommandCapture": "PENDING",
+    "browserCommandCapture": "PENDING_IN_FORENSIC_SCRIPT",
     "browserCaptureScript": "tools/qa/cxorbia-i3-vrm168-browser-command-capture.mjs",
-    "browserCaptureScriptGitBlob": "32554822908b9ee3a0160a18a7ba13efe630c5e8"
+    "browserCaptureScriptGitBlob": "32554822908b9ee3a0160a18a7ba13efe630c5e8",
+    "forensicScriptGitBlob": "58209c0557ab4a359496d7358f38dc23e4f00d2c",
+    "workflowRestoredToValidatedBlob": "ff5cfd7a45650af0ea6278689a36d35b576652bd"
   }
 }

@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';
 import {getFirestore} from 'firebase-admin/firestore';
 import {getAuth} from 'firebase-admin/auth';
+import {spawnSync} from 'node:child_process';
 
 const PROJECT=process.env.PROJECT||'cxorbia-backend-dev';
 const TENANT=process.env.TENANT_ID||'tya';
@@ -120,6 +121,22 @@ const identity={
 };
 
 const reservations={windowMode:projectData.reservationWindowMode||projectData.reservationPolicy?.windowMode||'future_only',timeZone:projectData.timeZone||projectData.timezone||'America/Guatemala'};
-const out={schemaVersion:'cxorbia.i3.human-acceptance-forensic-readback.v1',decision:'PASS_READ_ONLY_FORENSIC',tenantId:TENANT,projectId:PROJECT_ID,currentPeriodId,notifications:notif,postulations,scheduling,certifications,finance,identity,reservations,writes:0,hrWrites:0,production:false};
+
+const captureOut=OUT+'/vrm168-browser-capture';
+const captureEnv={...process.env,OUT:captureOut,HOSTING_URL:process.env.HOSTING_URL||'https://cxorbia-backend-dev.web.app',PROJECT,TENANT_ID:TENANT,PROJECT_ID,
+  VRM168_PERIOD_ID:'cinepolis-2026-10',VRM168_SHOPPER_ID:'shopper_gt_1440137b73',VRM168_UID:'cx-sh-d56787c101878e81c94fc7637f66',VRM168_VISIT_ID:'OCTUBRE 26!6',
+  VRM168_HR_REVISION:str(process.env.HR_REVISION||hr.sourceRevision||hr.revision||hr._runtime?.revision)};
+const captureProc=spawnSync(process.execPath,['tools/qa/cxorbia-i3-vrm168-browser-command-capture.mjs'],{env:captureEnv,encoding:'utf8',maxBuffer:16*1024*1024});
+fs.writeFileSync(OUT+'/vrm168-browser-capture.stdout.log',captureProc.stdout||'');
+fs.writeFileSync(OUT+'/vrm168-browser-capture.stderr.log',captureProc.stderr||'');
+let browserCommandCapture=null;
+try{browserCommandCapture=JSON.parse(fs.readFileSync(captureOut+'/result.json','utf8'));}catch(error){
+  throw new Error('FUNCTIONAL_DEFECT:VRM168_BROWSER_CAPTURE_RESULT_MISSING:'+str(captureProc.stderr||error?.message||error));
+}
+if(captureProc.status!==0||browserCommandCapture?.decision!=='PASS_VRM168_BROWSER_COMMAND_MAPPING'||browserCommandCapture?.durableUnchanged!==true){
+  throw new Error('FUNCTIONAL_DEFECT:VRM168_BROWSER_CAPTURE_FAILED:'+JSON.stringify({status:captureProc.status,decision:browserCommandCapture?.decision,mismatch:browserCommandCapture?.mismatch,durableUnchanged:browserCommandCapture?.durableUnchanged,stderr:str(captureProc.stderr).slice(0,1200)}));
+}
+scheduling.browserCommandCapture=browserCommandCapture;
+const out={schemaVersion:'cxorbia.i3.human-acceptance-forensic-readback.v2',decision:'PASS_READ_ONLY_FORENSIC',tenantId:TENANT,projectId:PROJECT_ID,currentPeriodId,notifications:notif,postulations,scheduling,certifications,finance,identity,reservations,writes:0,hrWrites:0,production:false};
 fs.writeFileSync(OUT+'/result.json',JSON.stringify(out,null,2)+'\n');
 console.log(JSON.stringify(out,null,2));
