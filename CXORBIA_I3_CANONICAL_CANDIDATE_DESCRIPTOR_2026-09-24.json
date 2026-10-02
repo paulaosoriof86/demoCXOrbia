@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM151_PROVIDER_SOURCE_REPROOF_REQUIRED",
+  "status": "HOLD_VRM151_RUNTIME_ONLY_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "9ba3d0a5f8811b80144e05ba2cc7bb03571246f4",
   "predecessorProductSourceSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "8edd0fd70534c49507c7054e03c7e020f0d783c7",
+  "findingsLedgerExpectedGitBlob": "07ae9b7ea2fac690ad9526cc1e89e4a9b935139c",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM151_PROVIDER_SOURCE_REPROOF_REQUIRED",
+  "activeBlocker": "VRM151_RUNTIME_ONLY_DEV_MATERIALIZATION_REQUIRED",
   "nextFindingId": "VRM-152",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run VRM-151 provider source reproof on d6d4da05; if PASS, materialize exact runtime once to Recovery DEV, rerun canonical dry-run, then reconcile only submitted canonical historical visits.",
+  "exactNextAction": "Build exact product source d6d4da05 once and deploy runtime only to Recovery DEV; prove app/Hosting source is byte-unchanged from eb71f4a9 and reuse existing Hosting materialization; then rerun VRM-151 canonical historical dry-run before any reconciliation writes.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2006,8 +2006,9 @@
     "sourceSha": "d6d4da0532a8af8e4c45ef05d022768da38cb0cf",
     "sourceTree": "9ba3d0a5f8811b80144e05ba2cc7bb03571246f4",
     "predecessorSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
-    "sourceProof": "PENDING",
+    "sourceProof": "PASS_VRM151_PROVIDER_SOURCE_REPROOF",
     "deploys": 0,
-    "production": false
+    "production": false,
+    "sourceProofRunId": 36966761427
   }
 }

@@ -18,8 +18,12 @@
     "sourceTree": "9ba3d0a5f8811b80144e05ba2cc7bb03571246f4",
     "predecessorSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
     "production": false,
-    "state": "VRM151_PROVIDER_SOURCE_PENDING_REPROOF",
-    "proof": null,
+    "state": "VRM151_SOURCE_PROVEN_PENDING_RUNTIME_ONLY_DEV_MATERIALIZATION",
+    "proof": {
+      "runId": 36966761427,
+      "decision": "PASS_VRM151_PROVIDER_SOURCE_REPROOF",
+      "production": false
+    },
     "priorProof": {
       "runId": 36942289348,
       "artifactId": 11200941985,
@@ -6956,7 +6960,7 @@
       "secondaryClassification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Historical payment reconciliation needs one durable auditable idempotent source of truth",
-      "state": "FIXED_SOURCE_PENDING_PROVIDER_REPROOF",
+      "state": "SOURCE_PROVEN_PENDING_RUNTIME_ONLY_DEV_MATERIALIZATION",
       "expected": "Durably reconcile confirmed historical payment scope without HR mutation, invented bank refs, current-period contamination or duplicate accounting effects.",
       "observed": "Operational truth supplied: all <= Jul 2026 paid both countries; Aug HN paid; Aug GT pending; Sep all pending; Oct must remain untouched.",
       "rootCauseStatus": "PROVEN",
@@ -7166,6 +7170,14 @@
         "bankWrites": 0,
         "hrWrites": 0,
         "octoberUntouched": true
+      },
+      "sourceProof": {
+        "runId": 36966761427,
+        "decision": "PASS_VRM151_PROVIDER_SOURCE_REPROOF",
+        "classification": "PASS",
+        "productSourceSha": "d6d4da0532a8af8e4c45ef05d022768da38cb0cf",
+        "productSourceTree": "9ba3d0a5f8811b80144e05ba2cc7bb03571246f4",
+        "production": false
       }
     }
   },
@@ -7742,7 +7754,7 @@
     "nextFindingId": "VRM-152",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_VRM151_PROVIDER_SOURCE_REPROOF_REQUIRED",
+    "terminalState": "HOLD_VRM151_RUNTIME_ONLY_DEV_MATERIALIZATION_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -11390,7 +11402,9 @@
     "sourceSha": "d6d4da0532a8af8e4c45ef05d022768da38cb0cf",
     "sourceTree": "9ba3d0a5f8811b80144e05ba2cc7bb03571246f4",
     "predecessorSha": "eb71f4a9e51ad325b27e4b60db2c0bef263f726d",
-    "state": "SOURCE_WRITTEN_PENDING_REPROOF",
-    "production": false
+    "state": "SOURCE_PROVEN_PENDING_RUNTIME_ONLY_DEV_MATERIALIZATION",
+    "production": false,
+    "sourceProofRunId": 36966761427,
+    "sourceProofDecision": "PASS_VRM151_PROVIDER_SOURCE_REPROOF"
   }
 }
