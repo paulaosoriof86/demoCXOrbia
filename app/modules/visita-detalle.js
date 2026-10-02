@@ -33,20 +33,22 @@ CX.shopperVisitDetail = function(data, p, v, ui){
     return 'Pendiente de validación';
   };
   const franjaLabel = franjaLabelOf(v);
+  const scenarioDims=data.scenarioDimensionsForVisit?data.scenarioDimensionsForVisit(v,p):[];
+  const scenarioCards=scenarioDims.length?`<div class="cx-scenario-grid cx-scenario-grid-detail">${scenarioDims.map(x=>`<div class="cx-scenario-chip"><span class="cx-scenario-icon">${x.icon}</span><span><b>${x.label}</b><small>${x.value}</small></span></div>`).join('')}</div>`:'';
   const field=(l,val)=>`<div style="background:#fff;border:1px solid var(--border);border-radius:11px;padding:10px 13px">
     <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--t3);margin-bottom:3px">${l}</div>
     <div style="font-size:13.5px;font-weight:700;color:var(--t1)">${val}</div></div>`;
   const honor=`${v.currency} ${v.honorario}`+(v.combo?' + combo':'')+(v.boleto?' + boleto':'');
 
   ui.modal(`${v.sucursal}<div style="font-size:12px;font-weight:500;color:var(--t3);margin-top:2px">📍 ${v.ciudad}, ${v.pais}</div>`, `
-    <div class="ai-box" style="margin-bottom:14px"><div class="ai-l">RESUMEN DEL PROYECTO / ESCENARIO</div>
-      <p>${p.conocimiento||p.industry}. Escenario: <b>${v.escenario}</b>.</p></div>
+    <div class="ai-box" style="margin-bottom:14px"><div class="ai-l">🎯 RESUMEN DE LA VISITA</div><p>${p.conocimiento||p.industry}.</p></div>
+    ${scenarioCards}
     <div class="grid g2" style="gap:10px;margin-bottom:12px">
       ${field('Proyecto',data.programBase?data.programBase(p):p.name)}${field('Ronda',p.ronda||'—')}
       ${field('Formato',v.formato||p.formato||'—')}${field('Quincena',v.quincena)}
       ${field('Franja',franjaLabel)}${field('Canal',v.canal||'—')}
     </div>
-    ${v.combo?`<div style="background:var(--amber-bg);border-radius:11px;padding:11px 14px;margin-bottom:10px"><div style="font-size:11px;font-weight:700;color:var(--amber)">🍿 TIPO DE COMBO / REEMBOLSO</div><div style="font-size:13px;color:var(--t1);margin-top:2px">${v.combo}</div></div>`:''}
+
     <div style="background:var(--green-bg);border-radius:11px;padding:11px 14px;margin-bottom:10px"><div style="font-size:11px;font-weight:700;color:var(--green)">💲 HONORARIO</div>
       <div style="font-size:16px;font-weight:800;color:var(--green);font-family:var(--disp)">${honor}</div>
       <div style="font-size:11px;color:var(--t3)">Honorario${v.combo?' + combo':''}${v.boleto?' + boleto':''} reembolsados según programa.</div></div>
@@ -130,7 +132,10 @@ CX.shopperPostForm = function(data, p, v, ui){
   const todayForInput=new Intl.DateTimeFormat('en-CA',{timeZone:String(p.timeZone||p.timezone||CX.tenantProfile?.timeZone||'America/Guatemala'),year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
   const minProposedDate=dispValida&&v.disponibleDesde>todayForInput?v.disponibleDesde:todayForInput;
   const franjaHelp = franjaCat==='weekend' ? 'fin de semana = sábado y domingo' : franjaCat==='weekday' ? 'semana = lunes a viernes' : 'franja pendiente de validación';
+  const postScenarioDims=data.scenarioDimensionsForVisit?data.scenarioDimensionsForVisit(v,p):[];
+  const postScenarioHTML=postScenarioDims.length?`<div class="cx-scenario-grid" style="margin-bottom:14px">${postScenarioDims.map(x=>`<div class="cx-scenario-chip"><span class="cx-scenario-icon">${x.icon}</span><span><b>${x.label}</b><small>${x.value}</small></span></div>`).join('')}</div>`:'';
   ui.modal('📩 Enviar postulación', `
+    ${postScenarioHTML}
     <div style="background:var(--amber-bg);border-radius:10px;padding:10px 13px;margin-bottom:12px;font-size:12px;color:#8a5b00">${p.restriccion||'Confirma que cumples los requisitos del proyecto.'}</div>
     <div class="grid g2" style="gap:10px;margin-bottom:14px">
       <div style="background:var(--green-bg);border-radius:11px;padding:11px 13px"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;color:var(--t3)">Disponible a partir de</div>

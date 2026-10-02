@@ -481,6 +481,25 @@ CX.data = {
     return n||p.name;
   },
   programKey(p){ return (p.program||this.programBase(p)).toLowerCase(); },
+  /* VRM-154: las dimensiones de escenario pertenecen a la configuración del proyecto.
+     Un proyecto puede definir cero, una o varias; el renderer no contiene ramas por cliente. */
+  scenarioDimensionsForVisit(v,p){
+    if(!v)return [];
+    const period=p||this.period()||{};
+    const defs=Array.isArray(period.scenarioDimensions)?period.scenarioDimensions:[];
+    const rows=defs.map((def,index)=>{
+      if(!def||typeof def!=='object')return null;
+      const keys=[def.key,def.sourceField,...(Array.isArray(def.aliases)?def.aliases:[])].filter(Boolean);
+      let value='';
+      for(const key of keys){const candidate=v[key];if(candidate!==undefined&&candidate!==null&&String(candidate).trim()!==''){value=String(candidate).trim();break;}}
+      if(!value)return null;
+      return {key:String(def.key||def.sourceField||('scenario_'+index)),label:String(def.label||'Escenario'),icon:String(def.icon||'🎯'),value};
+    }).filter(Boolean);
+    if(rows.length)return rows;
+    const fallback=String(v.escenario||'').trim();
+    return fallback?[{key:'escenario',label:'Escenario',icon:'🎯',value:fallback}]:[];
+  },
+  scenarioSummaryForVisit(v,p){return this.scenarioDimensionsForVisit(v,p).map(x=>(x.icon?x.icon+' ':'')+x.label+': '+x.value).join(' · ');},
   /* lista de programas únicos (lo que el selector de Proyecto debe mostrar) */
   programs(){
     const seen={}, out=[];

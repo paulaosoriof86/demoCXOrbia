@@ -143,7 +143,7 @@ function snapshotScope(snapshot){
   if(!tenantId||!projectId)throw new Error('SHOPPER_RUNTIME_SOURCE_SCOPE_MISSING');
   return {tenantId,projectId};
 }
-const SAFE_PROJECT_CONFIG_KEYS=Object.freeze(['name','client','industry','sucursales','countries','currency','currencies','honorario','honorarioRecibe','honRecibe','boleto','comboAmt','modelo','isr','regalias','periodicidad','periodoCumpl','scenarios','quincenas','cuestionario']);
+const SAFE_PROJECT_CONFIG_KEYS=Object.freeze(['name','client','industry','sucursales','countries','currency','currencies','honorario','honorarioRecibe','honRecibe','boleto','comboAmt','modelo','isr','regalias','periodicidad','periodoCumpl','scenarios','scenarioDimensions','quincenas','cuestionario']);
 function safeProjectConfig(raw={}){
   const out={};
   for(const key of SAFE_PROJECT_CONFIG_KEYS)if(raw[key]!==undefined)out[key]=JSON.parse(JSON.stringify(raw[key]));

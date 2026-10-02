@@ -2607,16 +2607,16 @@ CX.module('aprendizaje', ({data,role,ui})=>{
           const canManage = role==='admin' && CX.permissions && CX.permissions.can('academy.edit', CX.permissions.ctx());
           const isCustom=canManage&&CX.acadData.isCustom(CX._acadAud||'admin',c.id);
           const estadoLbl={borrador:'📝 Borrador',en_revision:'👀 En revisión',aprobado:'✅ Aprobado',archivado:'🗄 Archivado',eliminado:'🗑 Eliminado',publicado_preview:'✓ Publicado (vista previa)'}[c.estado]||'';
-          return `<div class="card hov" data-course="${c.id}" style="cursor:pointer;overflow:hidden;${c.estado==='archivado'||c.estado==='eliminado'?'opacity:.6':''}">
-            <div style="background:linear-gradient(135deg,${c.color},${c.color}99);padding:18px 18px 14px;position:relative">
+          return `<div class="card hov cx-academy-course-card" data-course="${c.id}" style="${c.estado==='archivado'||c.estado==='eliminado'?'opacity:.6':''}">
+            <div class="cx-academy-course-head">
               <div class="between" style="margin-bottom:8px"><span style="background:rgba(255,255,255,.22);color:#fff;border-radius:20px;padding:3px 11px;font-size:11px;font-weight:700">${c.ic} ${c.cat}</span><div class="flex" style="gap:6px;align-items:center">${c.cert&&pct>=100?'<span style="font-size:18px">🏅</span>':''}${canManage?`<button class="acad-dup" data-cid="${c.id}" title="Duplicar curso" style="background:rgba(255,255,255,.25);border:none;color:#fff;width:26px;height:26px;border-radius:8px;cursor:pointer;font-size:12px;line-height:1">🧬</button>`:''}${isCustom?((c.estado==='archivado'||c.estado==='eliminado')?`<button class="acad-restore" data-cid="${c.id}" title="Restaurar curso" style="background:rgba(255,255,255,.25);border:none;color:#fff;width:26px;height:26px;border-radius:8px;cursor:pointer;font-size:12px;line-height:1">♻️</button>`:`<button class="acad-arch" data-cid="${c.id}" title="Archivar curso" style="background:rgba(255,255,255,.25);border:none;color:#fff;width:26px;height:26px;border-radius:8px;cursor:pointer;font-size:12px;line-height:1">🗄</button>`):''}${canManage?`<button class="acad-edit" data-cid="${c.id}" title="Editar / eliminar curso" style="background:rgba(255,255,255,.25);border:none;color:#fff;width:26px;height:26px;border-radius:8px;cursor:pointer;font-size:13px;line-height:1">✎</button>`:''}</div></div>
               <div style="font-size:16px;font-weight:800;color:#fff">${c.n}</div>
               <div style="font-size:12px;color:rgba(255,255,255,.8);margin-top:4px">${c.desc}</div>
             </div>
             <div class="card-p" style="padding:14px 16px">
               <div style="font-size:11.5px;color:var(--t3);margin-bottom:10px">${ls.length} lecciones · ${typeof c.mins==='number'?c.mins:Math.max(10,ls.length*12)} min ${c.cert?'· 🏅 certifica':''} ${estadoLbl?'· '+estadoLbl+((c.contentVersion>1||c.workflowVersion>1)?' · contenido v'+(c.contentVersion||1)+' · flujo v'+(c.workflowVersion||1):''):''}</div>
-              <div style="background:var(--border-2);border-radius:4px;height:6px;margin-bottom:6px"><div style="height:6px;border-radius:4px;background:${pct>=100?'var(--green)':c.color};width:${pct}%;transition:width .4s"></div></div>
-              <div style="font-size:11.5px;color:var(--t3)">${pct>=100?'✅ Completado':pct>0?pct+'% completado':'Comenzar'}</div>
+              <div style="background:var(--border-2);border-radius:4px;height:6px;margin-bottom:6px"><div style="height:6px;border-radius:4px;background:${pct>=100?'var(--green)':'var(--brand)'};width:${pct}%;transition:width .4s"></div></div>
+              <div style="font-size:11.5px;color:var(--t3)">${pct>=100?'✅ Completado':pct>0?'▶️ '+pct+'% completado':'🚀 Comenzar'}</div>
             </div>
           </div>`;}).join('')}
       </div>`;

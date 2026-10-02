@@ -35,6 +35,10 @@
     "configurable": true,
     "hrSourceId": "hr-live-multitab",
     "questionnaireMode": "configurable_by_project_or_visit",
+    "scenarioDimensions": [
+      {"key":"escenario","label":"Medio de compra","icon":"🎟️","sourceField":"tipoCompra"},
+      {"key":"tipoCombo","label":"Combo","icon":"🍿","sourceField":"tipoCombo"}
+    ],
     "countries": [
       "GT",
       "HN"

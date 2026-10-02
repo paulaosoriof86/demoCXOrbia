@@ -1,0 +1,24 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+const read=p=>fs.readFileSync(p,'utf8');
+const must=(ok,msg)=>{if(!ok)throw new Error(msg);};
+const server=read('backend/runtime/hr-live-service/server.mjs');
+const builder=read('tools/hr-source/tya-build-live-hr-source-safe-r20.mjs');
+const preview=read('app/core/tya-phase-a-source-safe-preview.js');
+const data=read('app/core/data.js');
+const mis=read('app/modules/misvisitas.js');
+const detail=read('app/modules/visita-detalle.js');
+const profile=read('app/adapters/tya-canonical-shopper-portal-v2.js');
+const acad=read('app/modules/academia.js');
+const css=read('app/styles/layout.css');
+must(server.includes("'scenarioDimensions'"),'VRM154_RUNTIME_CONFIG_WHITELIST_MISSING');
+must(builder.includes("scenarioDimensions:[{key:'escenario',label:'Medio de compra'"),'VRM154_PROJECT_CONFIG_MISSING');
+must(preview.includes("scenarioDimensions:Array.isArray(data.projectConfig?.scenarioDimensions)"),'VRM154_PHASEA_CONFIG_PROPAGATION_MISSING');
+must(preview.includes("tipoCombo:v.tipoCombo || v.combo || ''"),'VRM154_TIPO_COMBO_PROPAGATION_MISSING');
+must(data.includes('scenarioDimensionsForVisit(v,p)'),'VRM154_GENERIC_SCENARIO_RESOLVER_MISSING');
+must(mis.includes('cx-scenario-grid')&&mis.includes('cx-visit-progress-step'),'VRM155_MISVISITAS_VISUAL_CONTRACT_MISSING');
+must(detail.includes('postScenarioDims')&&detail.includes('scenarioCards'),'VRM154_POSTULATION_SCENARIO_CONTRACT_MISSING');
+must(profile.includes('👤 Identidad y datos personales')&&profile.includes('📊 Desempeño'),'VRM155_PROFILE_HIERARCHY_MISSING');
+must(acad.includes('cx-academy-course-card')&&acad.includes("var(--brand)"),'VRM156_ACADEMY_CORPORATE_VISUAL_MISSING');
+must(css.includes('.cx-shopper-visit-card')&&css.includes('.cx-academy-course-head'),'VRM154_156_SHARED_STYLES_MISSING');
+process.stdout.write(JSON.stringify({decision:'PASS_VRM154_156_FRONTEND_SOURCE_CONTRACT',genericProjectDrivenScenarioDimensions:true,shopperVisitVisualCoherence:true,profileVisualCoherence:true,academyVisualCoherence:true,production:false,writes:0},null,2)+'\n');
