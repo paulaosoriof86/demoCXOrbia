@@ -8,7 +8,7 @@
   "productTreeAuthority": "6a8b7ec768efbb9af73bcca836125471f7f49ae4",
   "predecessorProductSourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V189_2026-10-02.json",
-  "findingsLedgerExpectedGitBlob": "b5f989f4277c62571168fa8eae811ff3e9f1f0f8",
+  "findingsLedgerExpectedGitBlob": "4159d7c921034af19a403b1e7df0a3fca42e43ee",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Read exact Firestore user membership/project/authNamespace for the shopper on the failed Cayalá scheduling case using the existing read-only forensic job; then continue the already-frozen cumulative corrective package. No product write/deploy in this diagnostic.",
+  "exactNextAction": "Run the existing read-only human-acceptance forensic job against exact DEV to read Cayalá shopper membership/project/authNamespace and resolve the actual scheduling rejection owner. Then apply one cumulative I3 corrective package. No production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
