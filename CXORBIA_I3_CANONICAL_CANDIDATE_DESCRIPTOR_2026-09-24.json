@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM151_DURABLE_RECONCILIATION_REQUIRED",
+  "status": "HOLD_VRM153_RECONCILIATION_READBACK_DIAGNOSTIC_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,13 +8,13 @@
   "productTreeAuthority": "f0d8cb0f900f2ca01cfec635700a82d087e35af4",
   "predecessorProductSourceSha": "b32d590fd33d4391471838e06e89a1d80617b76c",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json",
-  "findingsLedgerExpectedGitBlob": "7d6ee064870c222c7fcae7ac3fa13d900eedf84a",
+  "findingsLedgerExpectedGitBlob": "e83b312b124cebb66381d12384fc47792fa49a67",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM152_DURABLE_RECONCILIATION_REQUIRED",
-  "nextFindingId": "VRM-153",
+  "activeBlocker": "VRM153_RECONCILIATION_READBACK_DIAGNOSTIC_REQUIRED",
+  "nextFindingId": "VRM-154",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Execute DEV-only durable historical reconciliation on current materialization cxorbia-live-hr-dev-00246-rxd with immediate canonical dry-run preflight; no production.",
+  "exactNextAction": "Run read-only VRM-153 persisted reconciliation diagnostic; do not replay any historical reconciliation until exact mismatch is classified.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2151,5 +2151,40 @@
       "bankWrites": 0,
       "production": false
     }
+  },
+  "vrm153": {
+    "id": "VRM-153",
+    "classification": "PERSISTENCE_FAILURE",
+    "secondaryClassification": "MAPPING_FAILURE",
+    "severity": "P0",
+    "title": "Durable historical reconciliation readback does not match canonical expected counts",
+    "state": "READ_ONLY_DIAGNOSTIC_REQUIRED",
+    "expected": "628 unique durable reconciliation records must read back as exactly 562 paid, 66 pending and 5 amountReviewRequired on the same HR revision.",
+    "observed": "Run 849 passed all batch ACKs and idempotent replays; readback confirmed 628 records and 628 unique visits, then failed the final paid/pending/amountReviewRequired count tuple.",
+    "rootCauseStatus": "DIAGNOSTIC_REQUIRED",
+    "owners": [
+      "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+      "tools/qa/cxorbia-vrm151-final-canonical-dry-run.mjs",
+      "tools/qa/cxorbia-vrm151-durable-reconciliation-live.mjs"
+    ],
+    "evidence": {
+      "runId": 37008726266,
+      "runNumber": 849,
+      "jobId": 110843118265,
+      "artifactId": 11227360485,
+      "artifactDigest": "sha256:d7e8bc46b1c181d89169e6824fe96ad01b6e1803846d7f31ebacb306778c1f7a",
+      "preflight": "PASS",
+      "records": 628,
+      "uniqueVisits": 628,
+      "failedAssertion": "VRM151_RECONCILIATION_COUNTS",
+      "production": false
+    },
+    "safety": {
+      "doNotReplayUntilDiagnosed": true,
+      "octoberWasExcludedByPreflight": true,
+      "allBatchAckAssertionsPassed": true,
+      "allReplayIdempotencyAssertionsPassed": true
+    },
+    "production": false
   }
 }
