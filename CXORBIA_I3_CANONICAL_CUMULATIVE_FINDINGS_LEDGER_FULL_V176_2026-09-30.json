@@ -18,7 +18,7 @@
     "sourceTree": "422b894b0b92047c0531e5d112e9ccef4abf8fc7",
     "predecessorSha": "0b7e5db7b1035ec4a81ad548284dbb9146fcfc08",
     "production": false,
-    "state": "DEV_MATERIALIZED_PENDING_VRM151_HISTORICAL_AMOUNT_DIAGNOSTIC",
+    "state": "DEV_MATERIALIZED_PENDING_VRM151_CANONICAL_VISIT_OWNER_DIAGNOSTIC",
     "proof": {
       "runId": 36964331142,
       "decision": "PASS_VRM143_151_FOCAL_SOURCE_REPROOF",
@@ -6961,7 +6961,7 @@
       "secondaryClassification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Historical payment reconciliation needs one durable auditable idempotent source of truth",
-      "state": "DRY_RUN_HOLD_AMOUNT_SOURCE_DIAGNOSTIC_REQUIRED",
+      "state": "CANONICAL_VISIT_OWNER_DIAGNOSTIC_REQUIRED",
       "expected": "Durably reconcile confirmed historical payment scope without HR mutation, invented bank refs, current-period contamination or duplicate accounting effects.",
       "observed": "Operational truth supplied: all <= Jul 2026 paid both countries; Aug HN paid; Aug GT pending; Sep all pending; Oct must remain untouched.",
       "rootCauseStatus": "PROVEN",
@@ -7024,7 +7024,28 @@
         "bankWrites": 0,
         "production": false
       },
-      "diagnosticNext": "Classify true historical liquidation candidates and prove amount source using HR explicit/project-country config + complete reimbursement before changing payment truth."
+      "diagnosticNext": "Reuse frozen durable visit authority from V27/read-model: live HR visitId == Firestore docId; reconcile only one canonical durable owner per HR visit, then recompute amount completeness from merged live HR + durable record.",
+      "amountDiagnostic": {
+        "runId": 36965362581,
+        "artifactId": 11208644814,
+        "artifactDigest": "sha256:1453f05ab4391aafb656bdbcc445fa8ba673646c32d24bbb0b11334b25ca949f",
+        "decision": "HOLD_VRM151_HISTORICAL_AMOUNT_DIAGNOSTIC_INCOMPLETE",
+        "readDocuments": 2024,
+        "inScope": 1980,
+        "candidates": 1955,
+        "excludedNonLiquidation": 25,
+        "amountResolvable": 1315,
+        "amountIncomplete": 640,
+        "reasons": {
+          "BOLETO": 628,
+          "COMBO": 640,
+          "SOURCE_REVISION": 606
+        },
+        "writes": 0,
+        "hrWrites": 0,
+        "bankWrites": 0,
+        "production": false
+      }
     }
   },
   "latestEvidenceOverrides": {
@@ -7600,7 +7621,7 @@
     "nextFindingId": "VRM-152",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_VRM151_HISTORICAL_AMOUNT_DIAGNOSTIC_REQUIRED",
+    "terminalState": "HOLD_VRM151_CANONICAL_VISIT_OWNER_DIAGNOSTIC_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
