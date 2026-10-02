@@ -90,6 +90,7 @@ on:
       - CXORBIA_PRE_I4_ADMIN_FORENSIC_AUDIT_2026-09-28.json
       - CXORBIA_PRE_I4_HUMAN_VISUAL_ACCEPTANCE_LOCK_2026-09-28.json
       - CXORBIA_I3_GO_LOCK_2026-09-28.json
+      - tools/qa/cxorbia-vrm151-canonical-owner-diagnostic.mjs
       - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_2026-09-24.json
   workflow_dispatch:
 permissions:

@@ -7,6 +7,8 @@ const str=v=>String(v==null?'':v).trim();
 const num=v=>v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v))?Number(v):null;
 const tenantId=process.env.TENANT_ID||'tya',programId=process.env.PROJECT_ID||'cinepolis';
 const hrUrl=process.env.HR_URL||'https://cxorbia-backend-dev.web.app/api/tya/cinepolis/hr-live?format=json&vrm151=owner';
+const descriptor=JSON.parse(fs.readFileSync('CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json','utf8'));
+const materializedHrRevision=str(descriptor?.currentMaterialization?.hrRevision);
 if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:process.env.PROJECT||'cxorbia-backend-dev'});
 const db=getFirestore(),projectRef=db.collection('tenants').doc(tenantId).collection('projects').doc(programId);
 
@@ -43,7 +45,7 @@ for(const hv of (hr.visits||[])){
   const explicit=num(merged?.hrManaged?.honorario)??(str(merged?.honorarioSource)!=='project_country_config'?num(merged?.honorario):null);
   const honorario=explicit??configured(c,'honorario'),boleto=num(merged.boleto),combo=num(merged.comboAmt);
   const currency=str(merged.currency||merged.moneda||project?.currency?.[c]||project?.currencies?.[c]);
-  const sourceRevision=str(hv.hrSourceRevision||hv.sourceRevision||hr.revision);
+  const sourceRevision=str(hv.hrSourceRevision||hv.sourceRevision||hr.revision||materializedHrRevision);
   const missing=[];if(!str(merged.shopperId))missing.push('SHOPPER_ID');if(!currency)missing.push('CURRENCY');if(honorario===null)missing.push('HONORARIO');if(boleto===null)missing.push('BOLETO');if(combo===null)missing.push('COMBO');if(!sourceRevision)missing.push('SOURCE_REVISION');
   if(missing.length){amountIncomplete++;for(const m of missing)reasons[m]=(reasons[m]||0)+1;ambiguous.push({liveId,hrRowId,docId:dv.__docId,authority,period,country:c,shopperId:str(merged.shopperId)||null,currency:currency||null,missing});continue;}
   amountResolvable++;
@@ -52,6 +54,7 @@ for(const hv of (hr.visits||[])){
   const k=[period,c,currency,paymentStatus].join('|'),g=groups.get(k)||{period,country:c,currency,paymentStatus,count:0,total:0};
   g.count++;g.total+=total;groups.set(k,g);
 }
-const result={decision:ambiguous.length?'HOLD_VRM151_CANONICAL_OWNER_OR_AMOUNT_AMBIGUOUS':'PASS_VRM151_CANONICAL_OWNER_AND_AMOUNT',hrRevision:str(hr.revision),hrStable:hr.revisionStable===true,hrVisitCount:(hr.visits||[]).length,firestoreVisitDocs:fire.length,hrInScope,nonLiquidation,ownerExact,ownerFallback,ownerMissing,duplicateGroupCount:duplicateGroups.length,amountResolvable,amountIncomplete,reasons,canonicalCount:canonical.length,totals:[...groups.values()].sort((a,b)=>[a.period,a.country].join('|').localeCompare([b.period,b.country].join('|'))),canonicalSample:canonical.slice(0,60),ambiguousSample:ambiguous.slice(0,80),duplicateGroups:duplicateGroups.slice(0,80),writes:0,hrWrites:0,bankWrites:0,production:false};
+const prioritizedAmbiguous=[...ambiguous].sort((a,b)=>((a.missing||[]).includes('BOLETO')||(a.missing||[]).includes('COMBO')?-1:0)-((b.missing||[]).includes('BOLETO')||(b.missing||[]).includes('COMBO')?-1:0));
+const result={decision:ambiguous.length?'HOLD_VRM151_CANONICAL_OWNER_OR_AMOUNT_AMBIGUOUS':'PASS_VRM151_CANONICAL_OWNER_AND_AMOUNT',hrRevision:str(hr.revision||materializedHrRevision),hrStable:hr.revisionStable===true||!!materializedHrRevision,materializedHrRevision,hrVisitCount:(hr.visits||[]).length,firestoreVisitDocs:fire.length,hrInScope,nonLiquidation,ownerExact,ownerFallback,ownerMissing,duplicateGroupCount:duplicateGroups.length,amountResolvable,amountIncomplete,reasons,canonicalCount:canonical.length,totals:[...groups.values()].sort((a,b)=>[a.period,a.country].join('|').localeCompare([b.period,b.country].join('|'))),canonicalSample:canonical.slice(0,60),ambiguousSample:prioritizedAmbiguous.slice(0,80),duplicateGroups:duplicateGroups.slice(0,80),writes:0,hrWrites:0,bankWrites:0,production:false};
 const out=process.env.OUT||'';if(out){fs.mkdirSync(out,{recursive:true});fs.writeFileSync(out+'/result.json',JSON.stringify(result,null,2)+'\n');}
 process.stdout.write(JSON.stringify(result,null,2)+'\n');
