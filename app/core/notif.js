@@ -47,7 +47,26 @@ CX.notif = {
     }
     return true;
   },
-  for(role){ return this._items.filter(n=>this._validForRole(n,role)); },
+  _actionable(n){
+    const types=new Set(['confirmar','cambio','reprog','agendar','cuestionario','pide_fecha','reserva_aprobada','reprog_aprobada','ajuste','cancel']);
+    return !!(n?.accion||n?.actionRequired===true||n?.operational===true||types.has(String(n?.tipo||'')));
+  },
+  _activeForRole(n){
+    if(!n||n.expiredAt)return false;
+    if(this._actionable(n)&&!n.resolvedAt)return true;
+    if(n.resolvedAt)return false;
+    const projectId=String(CX.data?.currentProjectId||'');
+    if(n.projectId&&projectId&&String(n.projectId)!==projectId)return false;
+    const periodId=String(CX.data?.currentPeriodId||'');
+    if(n.periodId&&periodId&&String(n.periodId)!==periodId)return false;
+    const ym=(s)=>{const m=String(s||'').match(/20\d{2}-[01]\d/);return m?m[0]:'';};
+    const period=CX.data?.period?.()||{},currentYm=ym(periodId)||ym(period.periodo)||ym(period.ronda)||ym(period.name);
+    const createdYm=ym(n.createdAt)||ym(n.fechaISO)||ym(n.date);
+    if(currentYm&&createdYm&&createdYm!==currentYm)return false;
+    return true;
+  },
+  for(role){ return this._items.filter(n=>this._validForRole(n,role)&&this._activeForRole(n)); },
+  history(role){ return this._items.filter(n=>this._validForRole(n,role)); },
   unread(role){ return this.for(role).filter(n=>!n.leida).length; },
 
   push(n){

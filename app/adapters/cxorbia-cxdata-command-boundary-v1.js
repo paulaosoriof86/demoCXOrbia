@@ -196,6 +196,16 @@
       },expected,Object.assign({permission:'finance.reconcile'},meta));
       return execute(cmd,meta);
     };
+    D.reconcileHistoricalPayments=function(ids,paymentStatus,meta){
+      meta=commandMeta(meta);
+      const list=Array.isArray(ids)?ids.map(str).filter(Boolean):[];
+      const current=list.map(visit).filter(Boolean);
+      const expected=current.map(v=>[v.id,versionOf(protectedVisitFor(v)||v)]);
+      const visitRefs=current.map(v=>({visitId:str(v.id||v.visitId),hrRowId:str(v.hrRowId)||null}));
+      const payload={visitIds:list,visitRefs,paymentStatus:str(paymentStatus).toLowerCase(),reconciliationBatchId:str(meta.reconciliationBatchId),sourceRef:str(meta.sourceRef),notes:str(meta.notes)};
+      const cmd=buildBase('finance.historical.reconcile','historicalPaymentReconciliation',payload.reconciliationBatchId||null,payload,hash(expected),Object.assign({permission:'finance.reconcile'},meta));
+      return execute(cmd,meta);
+    };
     D.payVisits=function(ids,fechaPago,referencia,meta){
       meta=commandMeta(meta);const list=Array.isArray(ids)?ids.map(str).filter(Boolean):[];const current=list.map(visit).filter(Boolean);const expected=current.map(v=>[v.id,versionOf(protectedVisitFor(v)||v)]);
       const visitRefs=current.map(v=>({visitId:str(v.id||v.visitId),hrRowId:str(v.hrRowId)||null}));

@@ -72,11 +72,12 @@ window.CX = window.CX || {};
           const r=new FileReader(); r.onload=e=>{ try{ const raw=new TextDecoder('latin1').decode(e.target.result);
             const chunks=[...raw.matchAll(/\(([^()\\]{2,})\)/g)].map(m=>m[1]).filter(t=>/[a-zA-ZáéíóúñÁÉÍÓÚÑ]{2,}/.test(t));
             const txt=chunks.join(' ').replace(/\s+/g,' ').trim();
-            resolve(txt.length>40?'\n\n[Texto extraído de "'+name+'"]:\n'+txt.slice(0,12000):'\n\n[PDF "'+name+'" adjunto — sin capa de texto legible; usa el texto pegado o un .txt]');
-          }catch(err){ resolve('\n\n[Adjunto PDF: '+name+']'); } };
-          r.onerror=()=>resolve('\n\n[Adjunto PDF: '+name+']'); r.readAsArrayBuffer(f); return;
+            if(txt.length<=40){resolve('');return;}
+            resolve('\n\n[Texto extraído de "'+name+'"]:\n'+txt.slice(0,12000));
+          }catch(err){ resolve(''); } };
+          r.onerror=()=>resolve(''); r.readAsArrayBuffer(f); return;
         }
-        resolve('\n\n[Documento adjunto: '+name+' — formato '+(f.type||'desconocido')+']');
+        resolve('');
       });
     },
     /* ask() NUNCA se invoca por ningún módulo consumidor (todos ejecutan heurística local

@@ -156,16 +156,16 @@ CX.module('midia', ({data,role,ui})=>{
   ]:[];
   return `
     ${ui.ph('Mi Día', 'Hola, '+CX.session.user.name.split(' ')[0]+' 👋 · '+data.programBase(p)+' · periodo '+(p.periodo||p.ronda||p.name))}
-    ${notifBlock()}
-    ${cronograma()}
-    <div class="card card-p" style="margin-bottom:16px">
+    <div class="card card-p" style="margin-bottom:16px;border-left:3px solid var(--brand)">
       <div class="card-h"><div class="card-t">Tu próxima visita</div>${nextVisit?(vf.scheduled?ui.bdg('Agendada','b'):ui.bdg('Pendiente de agendar','a')):''}</div>
       ${nextVisit?`<div style="font-size:15px;font-weight:700;color:var(--t1)">${nextVisit.sucursal}</div>
       <div style="font-size:12px;color:var(--t3);margin:3px 0 12px">Rango ${nextVisit.rango||'—'} · ${nextVisit.honorario!=null?ui.money(nextVisit.currency,nextVisit.honorario):'Honorario pendiente de fuente'}${nextVisit.combo?' + '+nextVisit.combo:''}</div>
       <div class="flex wrap"><button class="btn btn-pr btn-sm">📅 Agendar</button><button class="btn btn-ghost btn-sm">📄 Instructivo</button><button class="btn btn-ghost btn-sm">🔄 Reprogramar</button></div>`:ui.empty('🧭','Sin visitas activas')}
     </div>
-    ${nextVisit?`<div class="card card-p">
+    ${nextVisit?`<div class="card card-p" style="margin-bottom:16px">
       <div class="card-h"><div class="card-t">Progreso de la visita</div></div>
       ${steps.map(([label,done])=>`<div class="flex" style="padding:6px 0;font-size:13px;color:${done?'var(--green)':'var(--t3)'};font-weight:${done?'600':'500'}">${done?'✅':'○'} <span>${label}</span></div>`).join('')}
-    </div>`:''}`;
+    </div>`:''}
+    ${notifBlock()}
+    ${cronograma()}`;
 });

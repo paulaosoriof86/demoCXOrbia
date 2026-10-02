@@ -49,8 +49,10 @@ CX.reservas = {
       const f=CX.data.visitFacets?CX.data.visitFacets(v):(v.canonicalFacets||{});
       return f.available===true&&f.assigned!==true&&f.cancelled!==true&&this._futureEligible(v);
     }).forEach(v=>{
-      const id=(v.sucursal+'|'+v.ciudad).toLowerCase().replace(/\s+/g,'-');
-      if(!map[id])map[id]={id,sucursal:v.sucursal,ciudad:v.ciudad,pais:v.pais,visitId:v.id||v.visitId,hrRowId:v.hrRowId||null,periodId:String(CX.data.recordPeriodId?CX.data.recordPeriodId(v):(v.periodId||v.projectId)||''),availableFrom:v.disponibleDesde||v.availableFrom||null,sourceRevision:String(CX.data.__liveHrSourceRevision||CX.data.previewMeta?.sourceRevision||'')};
+      const visitId=String(v.id||v.visitId||''),hrRowId=String(v.hrRowId||'');
+      const executionCut=String(v.executionCut||v.quincena||v.cut||v.executionWindow||'').trim();
+      const id=('slot|'+(visitId||hrRowId)+'|'+executionCut).toLowerCase().replace(/\s+/g,'-');
+      map[id]={id,sucursal:v.sucursal,ciudad:v.ciudad,pais:v.pais,visitId:visitId||null,hrRowId:hrRowId||null,executionCut,periodId:String(CX.data.recordPeriodId?CX.data.recordPeriodId(v):(v.periodId||v.projectId)||''),availableFrom:v.disponibleDesde||v.availableFrom||null,sourceRevision:String(CX.data.__liveHrSourceRevision||CX.data.previewMeta?.sourceRevision||'')};
     });
     return Object.values(map);
   },
@@ -61,7 +63,7 @@ CX.reservas = {
     pid=this._key(pid);rec=rec||{};
     const current=this.periodoActual();
     if(!current||String(rec.periodo||'')!==String(current))throw new Error('RESERVATION_PERIOD_NOT_PUBLISHED');
-    const existing=this.list(pid).find(r=>r.sucursalId===rec.sucursalId&&String(r.periodo||'')===String(rec.periodo||'')&&String(r.shopperId||'')===String(rec.shopperId||''));
+    const existing=this.list(pid).find(r=>String(r.visitId||r.hrRowId||r.sucursalId)===String(rec.visitId||rec.hrRowId||rec.sucursalId)&&String(r.executionCut||'')===String(rec.executionCut||'')&&String(r.periodo||'')===String(rec.periodo||'')&&String(r.shopperId||'')===String(rec.shopperId||''));
     if(existing)return {dup:true,r:existing};
     if(!CX.data||typeof CX.data.createReservation!=='function')throw new Error('RESERVATION_PROVIDER_COMMAND_UNAVAILABLE');
     if(!rec.visitId||!rec.hrRowId)throw new Error('RESERVATION_ELIGIBLE_VISIT_REQUIRED');
@@ -172,14 +174,14 @@ CX.module('reservas', ({data,role,ui})=>{
       host.querySelector('#rNew').addEventListener('click',()=>{
         ui.modal('Solicitar sucursal · '+per,`
           <label class="lbl">Sucursal</label>
-          <select class="sel" id="rsSuc" style="margin-bottom:10px">${sucs.map(s=>`<option value="${s.id}">${s.sucursal} · ${s.ciudad}</option>`).join('')}</select>
+          <select class="sel" id="rsSuc" style="margin-bottom:10px">${sucs.map(s=>`<option value="${s.id}">${s.sucursal} · ${s.ciudad}${s.pais?' · '+s.pais:''}${s.executionCut?' · '+s.executionCut:''} · Disponible</option>`).join('')}</select>
           <label class="lbl">Periodo</label><select class="sel" id="rsPer" style="margin-bottom:14px">${periodos().map(x=>`<option ${x===per?'selected':''}>${x}</option>`).join('')}</select>
           <div style="text-align:right"><button class="btn btn-pr btn-sm" id="rsOk">Enviar solicitud</button></div>
         `,{onMount:(ov,close)=>ov.querySelector('#rsOk').addEventListener('click',async()=>{
           const branch=sucs.find(x=>x.id===ov.querySelector('#rsSuc').value);
           const u=CX.session.user||{};
           try{
-            const result=await CX.reservas.reservar(pid,{sucursalId:branch.id,sucursal:branch.sucursal,ciudad:branch.ciudad,pais:branch.pais,periodo:ov.querySelector('#rsPer').value,shopperId:sid(),shopper:u.name||'Shopper',visitId:branch.visitId,hrRowId:branch.hrRowId,sourceRevision:branch.sourceRevision,availableFrom:branch.availableFrom});
+            const result=await CX.reservas.reservar(pid,{sucursalId:branch.id,sucursal:branch.sucursal,ciudad:branch.ciudad,pais:branch.pais,periodo:ov.querySelector('#rsPer').value,shopperId:sid(),shopper:u.name||'Shopper',visitId:branch.visitId,hrRowId:branch.hrRowId,executionCut:branch.executionCut,sourceRevision:branch.sourceRevision,availableFrom:branch.availableFrom});
             close();
             if(result.dup){ui.toast('Ya solicitaste esa sucursal para ese periodo','warn');return;}
             ui.toast('Solicitud guardada y confirmada','ok');

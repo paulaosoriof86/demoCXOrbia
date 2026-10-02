@@ -142,6 +142,7 @@ function normalizeGeneratedQuestions(raw,count){
     correcta:str(q?.correcta||q?.respuestaCorrecta),exp:str(q?.exp||q?.explicacion)
   })).filter(q=>q.q&&q.ops.length>=2&&q.correcta&&q.ops.includes(q.correcta));
   if(!questions.length)throw new Error('AI_PROVIDER_RESPONSE_INVALID');
+  if(questions.length!==count)throw new Error('AI_QUESTION_COUNT_INCOMPLETE:'+questions.length+'/'+count);
   return questions;
 }
 async function generateBank(db,scope,body){
@@ -153,8 +154,9 @@ async function generateBank(db,scope,body){
     'Genera un banco de certificación para mystery shopping usando EXCLUSIVAMENTE el instructivo proporcionado.',
     'Devuelve SOLO JSON válido con forma {"preguntas":[{"q":"...","ops":["..."],"correcta":"...","exp":"..."}]}.',
     'Cada pregunta debe tener 4 opciones plausibles, exactamente una correcta incluida literalmente en ops, y una explicación breve.',
-    'No inventes requisitos que no estén en la fuente. Si la fuente es insuficiente, genera menos preguntas en lugar de inventar.',
-    'Cantidad objetivo: '+questionCount+'. Requisito mínimo informado: '+gate+'%.',
+    'No inventes requisitos que no estén en la fuente.',
+    'Devuelve exactamente '+questionCount+' preguntas válidas y distintas, todas sustentadas en el instructivo. Si el material no alcanza, no inventes contenido para completar la cantidad.',
+    'Cantidad requerida: '+questionCount+'. Requisito mínimo informado: '+gate+'%.',
     'INSTRUCTIVO:\n'+sourceText
   ].join('\n');
   const project=process.env.GOOGLE_CLOUD_PROJECT||'cxorbia-backend-dev';
@@ -164,7 +166,7 @@ async function generateBank(db,scope,body){
   if(!response.ok)throw new Error('AI_PROVIDER_HTTP_'+response.status+':'+str(payload?.error?.message).slice(0,300));
   const raw=arr(payload?.candidates?.[0]?.content?.parts).map(p=>str(p?.text)).join('\n');
   const preguntas=normalizeGeneratedQuestions(raw,questionCount),contentRevision=sha({preguntas,gate});
-  return {providerAck:true,provider:setting.provider,model:setting.model,location:setting.location,settingId:setting.id,preguntas,gate,contentRevision};
+  return {providerAck:true,provider:setting.provider,model:setting.model,location:setting.location,settingId:setting.id,preguntas,requestedQuestionCount:questionCount,gate,contentRevision};
 }
 function requestId(req,body){return cleanKey(req.headers['idempotency-key']||body.idempotencyKey);}
 async function saveAttempt(db,scope,principal,body,sourceRevision,idem){

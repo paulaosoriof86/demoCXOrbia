@@ -104,7 +104,7 @@
     const username=rule.ok?rule.login:str(s.username||s.user||credential.username),firstName=rule.ok?rule.firstName:str(s.firstName||s.nombre),lastName=rule.ok?rule.lastName:str(s.lastName||s.apellido);
     const masked=(v)=>{const x=str(v);if(!x)return '— sin dato';if(x.length<=4)return '••••';return x.slice(0,2)+'••••'+x.slice(-2);};
     const historySource=typeof data.shopperHistoryVisits==='function'?data.shopperHistoryVisits(shopperKey,false):data.visitsForShopper(shopperKey,false).filter(v=>v&&v.__pendingPlatformAssignmentOverlay!==true);
-    const visits=historySource.slice().sort((a,b)=>str(b.realizada||b.cuestFecha||b.submittedAt||b.agendada).localeCompare(str(a.realizada||a.cuestFecha||a.submittedAt||a.agendada)));
+    const visits=historySource.slice().sort((a,b)=>str(a.realizada||a.cuestFecha||a.submittedAt||a.agendada||periodOf(data,a)).localeCompare(str(b.realizada||b.cuestFecha||b.submittedAt||b.agendada||periodOf(data,b)));
     const st=data.shopperStats(shopperKey),cs=cert(s),historicalEvidence=certEvidence(s);
     const active=visits.filter(v=>{const f=facets(v);return String(periodOf(data,v)||'')===String(data.currentPeriodId||'')&&f.assigned&&!f.liquidationConfirmed&&!f.paymentConfirmed&&!f.cancelled;});
     const done=visits.filter(v=>facets(v).realized),submitted=visits.filter(v=>facets(v).submitted),paid=visits.filter(v=>facets(v).paymentConfirmed);
@@ -113,7 +113,8 @@
       const list=tab==='active'?active:tab==='done'?done:tab==='submitted'?submitted:tab==='paid'?paid:visits;
       const credentialBody=`<b style="font-size:11px;color:var(--t2)">Protegida · no se muestra después de iniciar sesión</b>`;
       host.innerHTML=`${ui.ph('Mi Perfil','Tu información, acceso e historial')}
-      <div class="card card-p" style="margin-bottom:14px">
+      <div style="font-size:11px;font-weight:800;color:var(--t3);letter-spacing:.08em;text-transform:uppercase;margin:0 0 7px">Identidad y datos personales</div>
+      <div class="card card-p" style="margin-bottom:18px">
         <div class="between" style="gap:12px;align-items:flex-start"><div><div class="card-t" style="font-size:18px">${esc(s.nombre)}</div><div style="font-size:11px;color:var(--t3);margin-top:3px">${[s.ciudad,s.pais].map(esc).filter(Boolean).join(' · ')||'Perfil de shopper'}</div></div><div class="flex wrap" style="gap:6px"><button class="btn btn-sm btn-soft" type="button" data-profile-edit>Editar mis datos</button><span class="bdg bdg-g">Perfil verificado</span><span class="bdg bdg-${cs==='certificada'?'g':cs==='presentada'?'b':historicalEvidence.length?'a':'n'}">${cs==='certificada'?'Certificada':cs==='presentada'?'Certificación presentada':historicalEvidence.length?'Histórico en revisión':'Sin certificación'}</span></div></div>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:14px">
           <div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">NOMBRE</div><b>${esc(firstName||'— sin dato')}</b></div>
@@ -129,7 +130,9 @@
         </div>
         <div style="font-size:11px;color:var(--t3);margin-top:9px">Tu usuario se forma con tu primer nombre y primer apellido, sin tildes. Desde “Editar mis datos” puedes actualizar la información personal, de contacto y de pago permitida.</div>
       </div>
-      <div class="grid g4" style="margin-bottom:12px">${ui.kpi('Visitas',st.total,'b')}${ui.kpi('Realizadas',st.realizadas,'g')}${ui.kpi('Submitidas',st.submitted,'p')}${ui.kpi('Pagadas confirmadas',st.paymentConfirmed,'g')}</div>
+      <div style="font-size:11px;font-weight:800;color:var(--t3);letter-spacing:.08em;text-transform:uppercase;margin:0 0 7px">Desempeño</div>
+      <div class="grid g4" style="margin-bottom:18px">${ui.kpi('Visitas',st.total,'b')}${ui.kpi('Realizadas',st.realizadas,'g')}${ui.kpi('Submitidas',st.submitted,'p')}${ui.kpi('Pagadas confirmadas',st.paymentConfirmed,'g')}</div>
+      <div style="font-size:11px;font-weight:800;color:var(--t3);letter-spacing:.08em;text-transform:uppercase;margin:0 0 7px">Trayectoria</div>
       <div class="card card-p"><div class="between" style="gap:8px;flex-wrap:wrap;margin-bottom:10px"><div class="card-t">Histórico de visitas · ${visits.length}</div><div class="flex wrap" style="gap:6px"><button class="btn btn-sm ${tab==='all'?'btn-pr':'btn-ghost'}" data-tab="all">Todas ${visits.length}</button><button class="btn btn-sm ${tab==='active'?'btn-pr':'btn-ghost'}" data-tab="active">Activas ${active.length}</button><button class="btn btn-sm ${tab==='done'?'btn-pr':'btn-ghost'}" data-tab="done">Realizadas ${done.length}</button><button class="btn btn-sm ${tab==='submitted'?'btn-pr':'btn-ghost'}" data-tab="submitted">Submitidas ${submitted.length}</button><button class="btn btn-sm ${tab==='paid'?'btn-pr':'btn-ghost'}" data-tab="paid">Pagadas ${paid.length}</button></div></div>${rows(list,ui)}</div>`;
       host.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{tab=b.dataset.tab;draw();}));
       const editProfile=host.querySelector('[data-profile-edit]');

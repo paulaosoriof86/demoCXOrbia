@@ -223,8 +223,9 @@ CX.module('cert', ({role,data,ui})=>{
         if(!CX.ai?.ready?.())throw new Error('AI_PROVIDER_NOT_CONFIGURED');
         const generated=await CX.ai.ask(txt,{module:'certification',questionCount:n,gate:g});
         if(!(generated?.providerAck===true&&Array.isArray(generated.preguntas)&&generated.preguntas.length))throw new Error('AI_PROVIDER_ACK_REQUIRED');
+        if(generated.preguntas.length!==n)throw new Error('Se generaron '+generated.preguntas.length+' de '+n+'; falta material suficiente para publicar el banco completo');
         const uid=CX.backendCertifications?.currentUid?.()||'',creador=CX.session?.user?.name||uid||'—';
-        const bankDraft={preguntas:generated.preguntas,gate:g,fecha:new Date().toISOString().slice(0,10),generadoPor:creador,generadoPorUid:uid,estado:'pending_review',provider:generated.provider,model:generated.model,providerAck:true,contentRevision:generated.contentRevision,generatedAt:new Date().toISOString()};
+        const bankDraft={preguntas:generated.preguntas,requestedQuestionCount:n,gate:g,fecha:new Date().toISOString().slice(0,10),generadoPor:creador,generadoPorUid:uid,estado:'pending_review',provider:generated.provider,model:generated.model,providerAck:true,contentRevision:generated.contentRevision,generatedAt:new Date().toISOString()};
         const saved=await CX.certStore.save(p.id,bankDraft);
         if(!(saved?.providerAck===true&&saved?.committed===true))throw new Error('CERT_BANK_DURABLE_ACK_REQUIRED');
         close();ui.toast('Banco generado por IA real y guardado · requiere revisión autorizada antes de publicarse.','ok',5200);CX.router?.nav?.('cert');

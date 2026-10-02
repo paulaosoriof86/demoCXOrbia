@@ -7,7 +7,7 @@
 import crypto from 'node:crypto';
 
 export const VERSION='cxorbia-finance-command-provider-v1';
-export const COMMAND_TYPES=Object.freeze(['finance.reconcile.visit','finance.payment.batch','finance.movement.create','finance.account.create','finance.account.apply']);
+export const COMMAND_TYPES=Object.freeze(['finance.reconcile.visit','finance.historical.reconcile','finance.payment.batch','finance.movement.create','finance.account.create','finance.account.apply']);
 export const OPERATOR_ROLES=Object.freeze(['super','admin']);
 
 const str=v=>String(v==null?'':v).trim();
@@ -52,6 +52,7 @@ function validateCommand(command={}){
   const errors=[],type=str(command.commandType);
   const entityByType={
     'finance.reconcile.visit':'financeReconciliation',
+    'finance.historical.reconcile':'historicalPaymentReconciliation',
     'finance.payment.batch':'paymentBatch',
     'finance.movement.create':'financialMovement',
     'finance.account.create':'financeAccount',
@@ -59,6 +60,7 @@ function validateCommand(command={}){
   };
   const permissionByType={
     'finance.reconcile.visit':'finance.reconcile',
+    'finance.historical.reconcile':'finance.reconcile',
     'finance.payment.batch':'finance.markPaid',
     'finance.movement.create':'finance.movement.write',
     'finance.account.create':'finance.account.write',
@@ -72,6 +74,8 @@ function validateCommand(command={}){
   if(command.expectedVersion===undefined||command.expectedVersion===null||command.expectedVersion==='')errors.push('FINANCE_EXPECTED_VERSION_REQUIRED');
   if(command.authorization?.providerEnforcementRequired!==true||str(command.authorization?.permission)!==permissionByType[type])errors.push('FINANCE_PROVIDER_PERMISSION_REQUIRED');
   if(type==='finance.reconcile.visit'&&!str(command.payload?.visitId||command.entityId))errors.push('FINANCE_VISIT_ID_REQUIRED');
+  if(type==='finance.historical.reconcile'&&!uniq(command.payload?.visitIds).length)errors.push('FINANCE_HISTORICAL_VISIT_IDS_REQUIRED');
+  if(type==='finance.historical.reconcile'&&!['paid','pending'].includes(str(command.payload?.paymentStatus).toLowerCase()))errors.push('FINANCE_HISTORICAL_STATUS_INVALID');
   if(type==='finance.payment.batch'&&!uniq(command.payload?.visitIds).length)errors.push('FINANCE_VISIT_IDS_REQUIRED');
   if(type==='finance.account.apply'&&!str(command.entityId||command.payload?.accountId))errors.push('FINANCE_ACCOUNT_ID_REQUIRED');
   return {ok:errors.length===0,errors};
@@ -163,6 +167,38 @@ export function createFinanceCommandProvider({auth,db,policy}={}){
             tx.set(audit,{tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,entityType:'financeReconciliation',entityId:resolved.durableVisitId,commandType:command.commandType,actorUid:actor.uid,actorRole:actor.role,idempotencyKey:command.idempotencyKey,financialMatch:match,externalPaymentConfirmed:false,createdAt:now()},{merge:false});
             tx.set(receipt,{status:'committed',commandDigest:digest,entityId:resolved.durableVisitId,commandType:command.commandType,providerAck:true,actorUid:actor.uid,financialMatch:match,updatedAt:now()},{merge:false});
             return ack(command,{entityType:'financeReconciliation',entityId:resolved.durableVisitId,financialMatch:match,providerWrites:3,idempotentReplay:false});
+          }
+          if(command.commandType==='finance.historical.reconcile'){
+            const prior=await tx.get(receipt);
+            if(prior.exists){
+              const p=prior.data()||{};
+              if(str(p.commandDigest)!==digest)throw new Error('FINANCE_IDEMPOTENCY_REUSE_DIFFERENT_PAYLOAD');
+              if(p.status==='committed')return ack(command,{entityType:'historicalPaymentReconciliation',entityId:p.entityId||command.entityId,reconciled:Number(p.reconciled||0),idempotentReplay:true,providerWrites:0});
+            }
+            const refsInput=arr(command.payload?.visitRefs),status=str(command.payload?.paymentStatus).toLowerCase();
+            const batchId=str(command.payload?.reconciliationBatchId)||('hist-'+receiptId(command));
+            const sourceRef=str(command.payload?.sourceRef)||('historical-reconciliation:'+batchId);
+            const notes=str(command.payload?.notes),reconciledAt=now();
+            let providerWrites=0,reconciled=0;const detail=[];
+            for(const id of uniq(command.payload?.visitIds)){
+              const hinted=refsInput.find(x=>str(x?.visitId)===id)||{};
+              const resolved=await resolveVisitDocument(tx,visits,id,hinted.hrRowId);
+              if(!resolved.snap?.exists)throw new Error('FINANCE_VISIT_MISSING:'+id);
+              const v=resolved.data||{};
+              if(str(v.periodId)!==str(command.periodId))throw new Error('FINANCE_PERIOD_SCOPE_CONFLICT:'+id);
+              const amount=amountOf(v);
+              if(!amount.ok)throw new Error('FINANCE_HISTORICAL_SOURCE_INCOMPLETE:'+id+':'+amount.reason);
+              const paid=status==='paid';
+              const reconciliation={tenantId:command.tenantId,projectId:command.projectId,shopperId:str(v.shopperId)||null,visitId:id,hrRowId:str(v.hrRowId)||null,periodId:command.periodId,country:str(v.pais||v.country),currency:str(v.currency||v.moneda),amount:amount.total,paymentStatus:status,paymentConfirmed:paid,paymentDate:null,source:'historical_reconciliation',sourceRef,reconciliationBatchId:batchId,idempotencyKey:command.idempotencyKey,reconciledAt,reconciledBy:actor.uid,notes:notes||null};
+              const recRef=tenant.collection('paymentReconciliations').doc(sha(command.tenantId+'\0'+command.projectId+'\0'+id+'\0'+batchId).slice(0,40));
+              tx.set(recRef,reconciliation,{merge:false});providerWrites++;
+              tx.set(resolved.ref,{paymentState:paid?'historically_reconciled_paid':'historically_reconciled_pending',paymentConfirmed:paid,historicalReconciliationConfirmed:paid,reconciliationSourceRef:sourceRef,reconciliationBatchId:batchId,reconciledAt,updatedAt:reconciledAt,version:Number(v.version||0)+1},{merge:true});providerWrites++;
+              reconciled++;detail.push({visitId:id,status,amount:amount.total,country:reconciliation.country,currency:reconciliation.currency});
+            }
+            const summary={status:'committed',commandDigest:digest,commandType:command.commandType,tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,actorUid:actor.uid,reconciled,reconciliationBatchId:batchId,sourceRef,detail,externalPaymentConfirmed:false,externalPaymentWrites:0,bankWrites:0,hrWrites:0,updatedAt:reconciledAt};
+            tx.set(audit,{...summary,auditType:'finance.historical.reconcile',idempotencyKey:command.idempotencyKey},{merge:false});providerWrites++;
+            tx.set(receipt,{...summary,providerAck:true,providerWrites:providerWrites+1,entityId:batchId},{merge:false});providerWrites++;
+            return ack(command,{entityType:'historicalPaymentReconciliation',entityId:batchId,reconciled,reconciliationBatchId:batchId,sourceRef,detail,idempotentReplay:false,providerWrites,hrWrites:0});
           }
           if(command.commandType==='finance.movement.create'){
             const prior=await tx.get(receipt);
