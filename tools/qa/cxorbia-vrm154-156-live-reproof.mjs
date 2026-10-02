@@ -63,22 +63,53 @@ async function signed(member,kind){
   const ctx=await browser.newContext({viewport:{width:1440,height:980}});
   const page=await ctx.newPage(),errors=[];
   page.on('pageerror',e=>errors.push(str(e?.message||e)));
-  await page.goto(URL+'&vrm154156='+Date.now(),{waitUntil:'domcontentloaded',timeout:90000});
-  const token=await auth.createCustomToken(member.id);
-  let signedIn=false;
-  for(let i=0;i<5&&!signedIn;i++){
+  let authSettled=false,lastAuthError=null;
+  for(let attempt=1;attempt<=5&&!authSettled;attempt++){
+    await page.goto(URL+'&vrm154156='+Date.now(),{waitUntil:'domcontentloaded',timeout:90000});
+    await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
+    const token=await auth.createCustomToken(member.id);
     try{
-      await page.waitForFunction(()=>!!window.firebase?.auth,{timeout:30000});
-      await page.evaluate(async t=>{await window.firebase.auth().setPersistence(window.firebase.auth.Auth.Persistence.LOCAL);await window.firebase.auth().signInWithCustomToken(t);},token);
-      signedIn=true;
-    }catch(e){
-      const msg=str(e?.message||e);
-      if(!/Execution context was destroyed|navigation|network|timeout|FIREBASE/i.test(msg))throw e;
-      await page.waitForTimeout(500);
+      await page.evaluate(async t=>{const fb=window.firebase;if(!fb?.auth)throw new Error('FIREBASE_SDK_NOT_READY');await fb.auth().setPersistence(fb.auth.Auth.Persistence.LOCAL);await fb.auth().signInWithCustomToken(t);},token);
+    }catch(error){
+      const msg=str(error?.message||error);
+      if(!/Execution context was destroyed|navigation|FIREBASE_SDK_NOT_READY|No Firebase App|auth\/network-request-failed|network|timeout|interrupted/i.test(msg))throw error;
+      lastAuthError=error;
     }
+    await page.waitForLoadState('domcontentloaded',{timeout:90000}).catch(()=>{});
+    const uid=await page.evaluate(()=>String(window.firebase?.auth?.().currentUser?.uid||'')).catch(()=> '');
+    if(uid===String(member.id)){authSettled=true;break;}
+    if(attempt<5)await page.waitForTimeout(1200*attempt);
   }
-  if(!signedIn)throw new Error('AUTH_FAILURE:VRM154_156_SIGNIN_'+kind);
-  await page.waitForFunction(({kind,rev})=>{const c=window.CX?.backendAuth?.context?.()||{},d=window.CX?.data||{},g=window.CX_C6_HR_AUTHORITY_GATE||{},r=String(c.role||'').toLowerCase();return c.authenticated===true&&(kind==='shopper'?r==='shopper':r!=='shopper'&&r!=='cliente')&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&g.ready===true&&g.blocked!==true&&String(d.previewMeta?.sourceRevision||'')===rev;},{kind,rev:revision},{timeout:120000});
+  if(!authSettled)throw new Error('AUTH_FAILURE:VRM154_156_FIREBASE_SESSION_NOT_PERSISTED:'+str(lastAuthError?.message||lastAuthError||'no-current-user'));
+  await page.goto('about:blank');
+  await page.goto(URL+'&vrm154156settled='+Date.now(),{waitUntil:'domcontentloaded',timeout:90000});
+  await page.waitForFunction(uid=>String(window.firebase?.auth?.().currentUser?.uid||'')===uid,String(member.id),{timeout:90000});
+  await page.waitForFunction(()=>typeof window.CX?.backendAuth?.ensureAuthenticated==='function',null,{timeout:90000});
+  await page.evaluate(async()=>{await window.CX.backendAuth.ensureAuthenticated();});
+  try{
+    await page.waitForFunction(({kind,rev,projectId,periodId})=>{
+      const c=window.CX?.backendAuth?.context?.()||{},d=window.CX?.data||{},g=window.CX_C6_HR_AUTHORITY_GATE||{},r=String(c.role||'').toLowerCase();
+      return c.authenticated===true
+        &&(kind==='shopper'?r==='shopper':r!=='shopper'&&r!=='cliente')
+        &&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true
+        &&g.ready===true&&g.blocked!==true
+        &&String(d.currentProjectId||'')===projectId
+        &&String(d.currentPeriodId||'')===periodId
+        &&String(d.previewMeta?.sourceRevision||'')===rev;
+    },{kind,rev:revision,projectId,periodId},{timeout:120000});
+  }catch(error){
+    const state=await page.evaluate(()=>({
+      firebaseUid:String(window.firebase?.auth?.().currentUser?.uid||''),
+      context:window.CX?.backendAuth?.context?.()||null,
+      currentProjectId:String(window.CX?.data?.currentProjectId||''),
+      currentPeriodId:String(window.CX?.data?.currentPeriodId||''),
+      sourceRevision:String(window.CX?.data?.previewMeta?.sourceRevision||''),
+      authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY||null,
+      gate:window.CX_C6_HR_AUTHORITY_GATE||null,
+      body:String(document.body?.innerText||'').slice(0,1200)
+    })).catch(()=>null);
+    throw new Error('AUTH_FAILURE:VRM154_156_CONTEXT_OR_HR_NOT_READY:'+JSON.stringify({kind,memberId:member.id,expected:{revision,projectId,periodId},state,error:str(error?.message||error)}));
+  }
   if(errors.length)throw new Error('FUNCTIONAL_DEFECT:VRM154_156_PAGEERROR_'+kind+':'+JSON.stringify(errors));
   return {ctx,page};
 }

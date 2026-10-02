@@ -7,14 +7,14 @@
   "productSourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
   "productTreeAuthority": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
   "predecessorProductSourceSha": "53b84faa673f2378439e2f33af3faf63948cbbfa",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V180_2026-10-02.json",
-  "findingsLedgerExpectedGitBlob": "b79f2ef6f14440e95c9ce43a5e7dc68a04dfcb54",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V181_2026-10-02.json",
+  "findingsLedgerExpectedGitBlob": "a8bae3da3f2f0950e20564a8a393211ac9693c0d",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
   "activeBlocker": "VRM154_156_LIVE_REPROOF_REQUIRED",
-  "nextFindingId": "VRM-161",
+  "nextFindingId": "VRM-162",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Re-run the canonical I3 sealed-DEV reproof after synchronizing governance.nextFindingId. Require exact source/tree/runtime/Hosting, fresh same-revision HR scenarioDimensions, authenticated Shopper/Admin DOM proof for VRM-154/155/156, finance 562 paid / 66 pending / 5 reviewRequired / October 0, and zero writes/builds/deploys.",
+  "exactNextAction": "Re-run the same canonical sealed-DEV proof with the established persisted-auth lifecycle. Require exact source/tree/runtime/Hosting, fresh same-revision HR scenarioDimensions, authenticated Shopper/Admin DOM proof for VRM-154/155/156, finance 562/66/5/October 0, and zero writes/builds/deploys.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -557,12 +557,12 @@
     "findingId": "VRM-055"
   },
   "lastControlFailure": {
-    "findingId": "VRM-160",
-    "runId": 37035158920,
-    "runNumber": 859,
-    "jobId": 110931419752,
-    "classification": "MAPPING_FAILURE",
-    "rootCause": "governance.nextFindingId remained VRM-158 while sequence required VRM-160",
+    "findingId": "VRM-161",
+    "runId": 37035393590,
+    "runNumber": 860,
+    "jobId": 110932308679,
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "rootCause": "focal browser helper omitted persisted-session reload + ensureAuthenticated lifecycle",
     "productTouched": false,
     "production": false
   },
