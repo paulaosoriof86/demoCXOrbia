@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PREI4_HUMAN_VISUAL_REMEDIATION_DIAGNOSTIC_REQUIRED",
+  "status": "HOLD_PREI4_HUMAN_VISUAL_REMEDIATION_CORRECTION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
   "productTreeAuthority": "6a8b7ec768efbb9af73bcca836125471f7f49ae4",
   "predecessorProductSourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V188_2026-10-02.json",
-  "findingsLedgerExpectedGitBlob": "d595f1e49870b991b4b5fc419b41ce0df6bcb022",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V189_2026-10-02.json",
+  "findingsLedgerExpectedGitBlob": "b5f989f4277c62571168fa8eae811ff3e9f1f0f8",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "HUMAN_ACCEPTANCE_REMEDIATION_FORENSIC_DIAGNOSTIC_REQUIRED",
-  "nextFindingId": "VRM-179",
+  "activeBlocker": "HUMAN_ACCEPTANCE_CUMULATIVE_CORRECTIVE_PACKAGE_REQUIRED",
+  "nextFindingId": "VRM-181",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run one read-only forensic diagnostic on the exact Run 865 DEV materialization to close live-data causes for notifications, scheduling, postulation lifecycle, certification storage, finance projection, identity duplicates and reservation policy. No product writes/build/deploy.",
+  "exactNextAction": "Apply one cumulative I3 corrective package for VRM-165..VRM-180 on the unchanged product source 542fb966..., then materialize one DEV candidate and run focal live reproof including Movimientos and Reservas. No production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2642,5 +2642,24 @@
       "Admin con nombre humano, no IDs técnicos y sin duplicados"
     ],
     "production": false
+  },
+  "moduleTruthExpectedGitBlob": "c54ee1621a42eb6541c2dd7e24d97e0ef30d6621",
+  "humanAcceptanceForensicReadback": {
+    "runId": 37049822507,
+    "jobId": 110980211939,
+    "artifactId": 11245822402,
+    "artifactName": "cxorbia-vrm157-dev-readback-37049822507",
+    "artifactDigest": "sha256:7a789d50db38a165fa9b3365e5fe7fc94c32aab9989d1947397b5ec8aa5d41c0",
+    "decision": "PASS_READ_ONLY_FORENSIC",
+    "productSourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
+    "productTree": "6a8b7ec768efbb9af73bcca836125471f7f49ae4",
+    "builds": 0,
+    "hostingDeploys": 0,
+    "runtimeDeploys": 0,
+    "writes": 0,
+    "hrWrites": 0,
+    "production": false,
+    "receiptPath": "CXORBIA_I3_HUMAN_ACCEPTANCE_FORENSIC_READBACK_RUN37049822507_2026-10-02.json",
+    "receiptGitBlob": "c81ce776068e9a1afa42789f5abc8b68fd6dd727"
   }
 }

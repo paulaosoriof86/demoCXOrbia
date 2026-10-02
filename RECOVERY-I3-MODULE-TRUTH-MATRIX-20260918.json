@@ -185,15 +185,18 @@
         "Shopper"
       ],
       "contractFunctional": "Identidad/Visual",
-      "classification": "MATCH",
-      "actionRequired": null,
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "actionRequired": "HUMAN_ACCEPTANCE_2026_10_02__VRM-174",
       "preI4SuccessorCommits": [],
       "cumulativeSource": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
       "preI4ProvenBy": {
         "runId": 35954023135,
         "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
         "cumulativeFocalRunId": 35953230892
-      }
+      },
+      "latestHumanFindingIds": [
+        "VRM-174"
+      ]
     },
     {
       "domain": "canonical-hr-state-adapters",
@@ -248,8 +251,8 @@
         "Shopper"
       ],
       "contractFunctional": "Shopper/Identidad/Visual",
-      "classification": "APPROVED_NOT_COMPOSED",
-      "actionRequired": "HUMAN_VISUAL_REJECTION_20260924__SEE_VRM_033_039",
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "actionRequired": "HUMAN_ACCEPTANCE_2026_10_02__VRM-171_VRM-172_VRM-173",
       "preI4SuccessorCommits": [
         "61cf7120603aeff110e97632bb6c69f5c4809d62"
       ],
@@ -258,7 +261,12 @@
         "runId": 35954023135,
         "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
         "cumulativeFocalRunId": 35953230892
-      }
+      },
+      "latestHumanFindingIds": [
+        "VRM-171",
+        "VRM-172",
+        "VRM-173"
+      ]
     },
     {
       "domain": "client-portal-reportkit",
@@ -336,7 +344,7 @@
       ],
       "contractFunctional": "Operación/HR/Visual",
       "classification": "TRUE_FUNCTIONAL_DEFECT",
-      "actionRequired": "HUMAN_VISUAL_REJECTION_20260924__SEE_VRM_033_039",
+      "actionRequired": "HUMAN_ACCEPTANCE_2026_10_02__VRM-165_VRM-167_VRM-177",
       "preI4SuccessorCommits": [
         "feea6ae6b00d36349ae66e43e034bc0b25516cfd"
       ],
@@ -345,7 +353,12 @@
         "runId": 35954023135,
         "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
         "cumulativeFocalRunId": 35953230892
-      }
+      },
+      "latestHumanFindingIds": [
+        "VRM-165",
+        "VRM-167",
+        "VRM-177"
+      ]
     },
     {
       "domain": "documents-resources",
@@ -364,8 +377,8 @@
         "Cliente"
       ],
       "contractFunctional": "Proyecto/Contexto/Visual",
-      "classification": "APPROVED_NOT_COMPOSED",
-      "actionRequired": "HUMAN_VISUAL_REJECTION_20260924__SEE_VRM_033_039",
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "actionRequired": "HUMAN_ACCEPTANCE_2026_10_02__VRM-170",
       "preI4SuccessorCommits": [
         "50b6a25d79713b0f165cffc4355c7b7ffd1d9e84"
       ],
@@ -374,7 +387,10 @@
         "runId": 35954023135,
         "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
         "cumulativeFocalRunId": 35953230892
-      }
+      },
+      "latestHumanFindingIds": [
+        "VRM-170"
+      ]
     },
     {
       "domain": "finance-core-liquidation-costs",
@@ -393,8 +409,8 @@
         "Cliente"
       ],
       "contractFunctional": "País/moneda/Persistencia/ACK",
-      "classification": "APPROVED_NOT_COMPOSED",
-      "actionRequired": "HUMAN_VISUAL_REJECTION_20260924__SEE_VRM_033_039",
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "actionRequired": "HUMAN_ACCEPTANCE_2026_10_02__VRM-174_VRM-179",
       "preI4SuccessorCommits": [
         "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
         "4aeb41ca6dffb6e5b8324ca50531587539f5058e"
@@ -404,7 +420,11 @@
         "runId": 35954023135,
         "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
         "cumulativeFocalRunId": 35953230892
-      }
+      },
+      "latestHumanFindingIds": [
+        "VRM-174",
+        "VRM-179"
+      ]
     },
     {
       "domain": "historical",
@@ -510,8 +530,8 @@
         "Cliente"
       ],
       "contractFunctional": "Persistencia/Writes HR/ACK/idempotencia",
-      "classification": "MATCH",
-      "actionRequired": null,
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "actionRequired": "HUMAN_ACCEPTANCE_2026_10_02__VRM-168_VRM-169_VRM-170_VRM-179_VRM-180",
       "preI4SuccessorCommits": [
         "672e7f624b1d0328ed1bb25b778ce4b44d52489c"
       ],
@@ -520,7 +540,14 @@
         "runId": 35954023135,
         "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
         "cumulativeFocalRunId": 35953230892
-      }
+      },
+      "latestHumanFindingIds": [
+        "VRM-168",
+        "VRM-169",
+        "VRM-170",
+        "VRM-179",
+        "VRM-180"
+      ]
     },
     {
       "domain": "phase-a-supporting-core",
@@ -646,7 +673,7 @@
       ],
       "contractFunctional": "Shopper/Auth/Identidad/Histórico",
       "classification": "TRUE_FUNCTIONAL_DEFECT",
-      "actionRequired": "HUMAN_VISUAL_REJECTION_20260924__SEE_VRM_033_039",
+      "actionRequired": "HUMAN_ACCEPTANCE_2026_10_02__VRM-165_VRM-168_VRM-169_VRM-170_VRM-171_VRM-175_VRM-176",
       "preI4SuccessorCommits": [
         "61cf7120603aeff110e97632bb6c69f5c4809d62",
         "275a9893532e9fa11efcbafccd34bb93919d7d64"
@@ -656,7 +683,16 @@
         "runId": 35954023135,
         "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
         "cumulativeFocalRunId": 35953230892
-      }
+      },
+      "latestHumanFindingIds": [
+        "VRM-165",
+        "VRM-168",
+        "VRM-169",
+        "VRM-170",
+        "VRM-171",
+        "VRM-175",
+        "VRM-176"
+      ]
     },
     {
       "domain": "visits-review-postulations-reservations",
@@ -678,7 +714,7 @@
       ],
       "contractFunctional": "Disponibles/Asignación/Postulación/Eliminación/Decisión/Persistencia",
       "classification": "TRUE_FUNCTIONAL_DEFECT",
-      "actionRequired": "HUMAN_VISUAL_REJECTION_20260924__SEE_VRM_033_039",
+      "actionRequired": "HUMAN_ACCEPTANCE_2026_10_02__VRM-167_VRM-168_VRM-180",
       "preI4SuccessorCommits": [
         "275a9893532e9fa11efcbafccd34bb93919d7d64"
       ],
@@ -687,7 +723,12 @@
         "runId": 35954023135,
         "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
         "cumulativeFocalRunId": 35953230892
-      }
+      },
+      "latestHumanFindingIds": [
+        "VRM-167",
+        "VRM-168",
+        "VRM-180"
+      ]
     }
   ],
   "sourceFiles": [
@@ -4802,7 +4843,7 @@
     "gate21AfterFullHuman": true,
     "cacheRuntimeFailClosed": true
   },
-  "nextExactAction": "Correct only proven owners for VRM-033..039, then rebuild MODULE_TRUTH from independent approved authorities; do not mechanically promote current blobs to MATCH.",
+  "nextExactAction": "One cumulative I3 corrective product package, then exact DEV materialization and focal Shopper/Admin/Finance/Movimientos/Reservas reproof. Production remains DO_NOT_TOUCH.",
   "moduleTruthCorrection": {
     "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
     "run179": {
@@ -5673,5 +5714,46 @@
     "qaResidue": "I3 QA TEMP visible in Admin Reservas",
     "certificationSourceDeclared": "APPROVED_NOT_COMPOSED",
     "production": false
+  },
+  "humanVisualRejection20261002": {
+    "state": "FAIL_HOLD",
+    "reviewComplete": true,
+    "sealedDevRun": 866,
+    "productSourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
+    "productTree": "6a8b7ec768efbb9af73bcca836125471f7f49ae4",
+    "forensicReadback": {
+      "runId": 37049822507,
+      "jobId": 110980211939,
+      "artifactId": 11245822402,
+      "artifactName": "cxorbia-vrm157-dev-readback-37049822507",
+      "artifactDigest": "sha256:7a789d50db38a165fa9b3365e5fe7fc94c32aab9989d1947397b5ec8aa5d41c0",
+      "decision": "PASS_READ_ONLY_FORENSIC",
+      "productSourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
+      "productTree": "6a8b7ec768efbb9af73bcca836125471f7f49ae4",
+      "builds": 0,
+      "hostingDeploys": 0,
+      "runtimeDeploys": 0,
+      "writes": 0,
+      "hrWrites": 0,
+      "production": false
+    },
+    "provenFacts": {
+      "broadShopperApprovalBulletins": 3,
+      "schedulingExpectedVersionMismatch": {
+        "browser": "source-current",
+        "durable": "3"
+      },
+      "financeProjectionGap": {
+        "paidHistorical": 562,
+        "exactMatches": 1,
+        "reconciliationRecords": 628
+      },
+      "identityDuplicatesLive": true,
+      "certificationBanks": 2,
+      "certificationAttempts": 77,
+      "reservationWindowMode": "future_only"
+    },
+    "findingRange": "VRM-165..VRM-180",
+    "nextExactAction": "One cumulative I3 corrective product package, then exact DEV materialization and focal Shopper/Admin/Finance/Movimientos/Reservas reproof. Production remains DO_NOT_TOUCH."
   }
 }
