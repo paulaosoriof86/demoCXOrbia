@@ -109,7 +109,7 @@ concurrency:
   cancel-in-progress: true
 env:
   CANDIDATE_DESCRIPTOR: CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
-  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V185_2026-10-02.json
+  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V186_2026-10-02.json
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
@@ -6927,9 +6927,9 @@ jobs:
       FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
       FOCAL_OUT: .tmp/vrm157-dev-readback
       ACTIVE_STATUS: ${{ needs.canonical-candidate-authority.outputs.status }}
-      EXPECTED_RUNTIME_REVISION: cxorbia-live-hr-dev-00247-4cf
-      EXPECTED_RUNTIME_DIGEST: sha256:f07051abaddc2c72a8a578a65f901a3a384377fc83f6ee7f346866e3b877100f
-      EXPECTED_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/09c4173f2d6525f4
+      EXPECTED_RUNTIME_REVISION: cxorbia-live-hr-dev-00248-xcq
+      EXPECTED_RUNTIME_DIGEST: sha256:3076d6651037a406e1bea1f6c2eea1b0ac83cba4ecd30831a06c8a4aaa450c01
+      EXPECTED_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/3fd4df67f93e3725
     steps:
       - uses: actions/checkout@v4
         with:
