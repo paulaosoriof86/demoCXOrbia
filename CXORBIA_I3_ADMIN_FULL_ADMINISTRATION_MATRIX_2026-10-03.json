@@ -5,8 +5,8 @@
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "controlHeadBeforeFreeze": "2d02ef978d220eb04183df957a2f398bfe1d52e5",
-  "productSourceSha": "190509264f00cee52280b5c8dcf16259673e14d0",
-  "productTree": "ae80cf31eb1357d760388ad9e922cb5bb95ec264",
+  "productSourceSha": "a62d4e5b49fce4464987ca55112221604647933c",
+  "productTree": "6d3dd5abd351586d018be83c2b144ff49d4a94d3",
   "materialization": {
     "runId": 37127209268,
     "runNumber": 939,
@@ -681,7 +681,7 @@
       "owner": [
         "app/modules/academia.js"
       ],
-      "reason": "Course/category/workflow/audit custom content is still persisted in localStorage; therefore Admin content management is not durable despite rich lifecycle UI.",
+      "reason": "VRM-192 source contract moved custom Academia courses, categories, workflow transitions and audit trail to a durable tenant-scoped provider with versioning, idempotency, separation of duties and ACK/readback. Seed/base courses remain immutable source content. Route remains OPEN_BLOCKER until same-source DEV lifecycle/readback is materialized.",
       "renderProof": {
         "run946": true,
         "visible": true,
@@ -692,7 +692,7 @@
         {
           "action": "create/edit/archive/delete/restore/publish course content",
           "classification": "OPEN_BLOCKER",
-          "blocker": "Replace browser-local custom course/audit truth with provider-backed durable content/version/audit storage.",
+          "blocker": "SOURCE_PASS_RUN971; pending same-source DEV provider lifecycle/readback before PASS_PROVEN.",
           "owner": "app/modules/academia.js"
         }
       ],
@@ -704,7 +704,23 @@
         "readbackArtifactId": 11276491534,
         "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
         "adminArtifactId": 11276016226,
-        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487"
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487",
+        "vrm192SourceProof": {
+          "runId": 37142650019,
+          "runNumber": 971,
+          "jobId": 111260120519,
+          "artifactId": 11280793501,
+          "artifactDigest": "sha256:dc053262d839ee34e90cabfc0d1bba1ca418afe80f1e825e907f3095c1b129c4",
+          "decision": "PASS_VRM192_ACADEMY_PROVIDER_SOURCE",
+          "sourceSha": "a62d4e5b49fce4464987ca55112221604647933c",
+          "sourceTree": "6d3dd5abd351586d018be83c2b144ff49d4a94d3",
+          "tests": 6,
+          "testsPass": 6,
+          "testsFail": 0,
+          "builds": 0,
+          "deploys": 0,
+          "production": false
+        }
       },
       "production": false
     },
@@ -1440,5 +1456,5 @@
   "humanVisualApprovalAllowed": false,
   "i4Allowed": false,
   "production": "DO_NOT_TOUCH",
-  "exactNextAction": "Proceed to VRM-192 Academia custom content durability. Preserve the separate HR review-candidate queue blocker; do not materialize DEV yet."
+  "exactNextAction": "Proceed to VRM-193 route-by-route administration classification for support, bulletins, marketing, automations, integrations and mail. Keep source-PASS routes OPEN_BLOCKER until bounded package materialization; do not materialize DEV yet."
 }

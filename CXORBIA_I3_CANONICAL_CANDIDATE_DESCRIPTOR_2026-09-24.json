@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM192_SOURCE_REPROOF_REQUIRED",
+  "status": "HOLD_VRM193_ADMIN_PREVIEW_LIFECYCLES_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "a62d4e5b49fce4464987ca55112221604647933c",
   "productTreeAuthority": "6d3dd5abd351586d018be83c2b144ff49d4a94d3",
   "predecessorProductSourceSha": "190509264f00cee52280b5c8dcf16259673e14d0",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V207_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "17fe2cf8c282892bd89b8646ddb33e115c37948e",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V208_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "a5a91fa9c68931263fb62a261c1c00d1de39c0d1",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM192_SOURCE_REPROOF_REQUIRED",
+  "activeBlocker": "VRM193_ADMIN_PREVIEW_LIFECYCLES_REQUIRED",
   "nextFindingId": "VRM-195",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run only the bounded VRM-192 Academia source reproof on product source a62d4e5b49fce4464987ca55112221604647933c / tree 6d3dd5abd351586d018be83c2b144ff49d4a94d3. Require PASS_VRM192_ACADEMY_PROVIDER_SOURCE plus VRM-187..191 regressions. Do not build or deploy.",
+  "exactNextAction": "Resolve VRM-193 only: classify Soporte, Novedades, Marketing, Automatizaciones, Integraciones and Correo by actual external/provider capability. Add durable provider/receipt authority only where a real owner exists; otherwise disable mutation and mark pending/not applicable. Source-test first; no build/deploy.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3276,6 +3276,25 @@
     "durableReadback": true,
     "buildAllowed": false,
     "deployAllowed": false,
+    "production": false
+  },
+  "vrm192SourceProof": {
+    "runId": 37142650019,
+    "runNumber": 971,
+    "jobId": 111260120519,
+    "artifactId": 11280793501,
+    "artifactDigest": "sha256:dc053262d839ee34e90cabfc0d1bba1ca418afe80f1e825e907f3095c1b129c4",
+    "decision": "PASS_VRM192_ACADEMY_PROVIDER_SOURCE",
+    "sourceSha": "a62d4e5b49fce4464987ca55112221604647933c",
+    "sourceTree": "6d3dd5abd351586d018be83c2b144ff49d4a94d3",
+    "tests": {
+      "total": 6,
+      "pass": 6,
+      "fail": 0
+    },
+    "materializationJob": "SKIPPED",
+    "builds": 0,
+    "deploys": 0,
     "production": false
   }
 }
