@@ -179,7 +179,8 @@
             const result=await data.updateShopper(shopperKey,patch);
             if(!commandOk(result))throw new Error(String(result&&result.code||'PROFILE_NOT_COMMITTED'));
             close();if(CX.ui?.toast)CX.ui.toast('Tus datos se guardaron correctamente.','ok',2600);
-            setTimeout(()=>location.reload(),180);
+            try{await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('shopper_profile_update_committed');}catch(_){}
+            CX.router?.nav?.('miperfil',{history:false});
           }catch(error){
             btn.disabled=false;btn.textContent='Guardar cambios';
             if(CX.ui?.toast)CX.ui.toast('No fue posible guardar tus datos. Intenta de nuevo o solicita revisión.','warn',3800);
