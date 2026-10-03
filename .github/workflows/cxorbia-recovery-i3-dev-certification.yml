@@ -10,7 +10,7 @@ on:
       - RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json
       - RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
       - CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
-      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V215_2026-10-03.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V216_2026-10-03.json
       - CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json
       - app/**
       - backend/**
@@ -32,7 +32,7 @@ concurrency:
   cancel-in-progress: true
 env:
   CANDIDATE_DESCRIPTOR: CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
-  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V215_2026-10-03.json
+  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V216_2026-10-03.json
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
@@ -7186,3 +7186,42 @@ jobs:
           retention-days: 30
           compression-level: 0
 
+
+  phasea-rejected-checkpoint-source-proof:
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_REJECTED_PHASEA_SOURCE_REPROOF_REQUIRED' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+    steps:
+      - name: Checkout exact control head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify bounded product source and run source proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$FOCAL_SOURCE" = "30c4354640ea38a0155d72f14ee5bdcada3512bd"
+          test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
+          git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          node --check app/modules/midia.js
+          node --check app/modules/misvisitas.js
+          node --check app/modules/beneficios.js
+          node --check app/modules/cert.js
+          node --check app/core/router.js
+          node --check app/modules/shoppers.js
+          node --check app/modules/postulaciones.js
+          node --check app/adapters/tya-canonical-finance-read-model-v2.js
+          node --check app/adapters/tya-canonical-shopper-portal-v2.js
+          node --check app/adapters/tya-protected-auth-hr-authority-bridge-v2.js
+          node --check backend/runtime/cxorbia-operational-command-provider-v1.mjs
+          node tools/qa/cxorbia-i3-phasea-rejection-remediation-source-proof.mjs | tee /tmp/phasea-source-proof.json
+          test "$(jq -r '.decision' /tmp/phasea-source-proof.json)" = "PASS_I3_PHASEA_REJECTED_CHECKPOINT_SOURCE_PROOF"
+          test "$(jq -r '.checksFailed' /tmp/phasea-source-proof.json)" = "0"
+          node --test backend/runtime/hr-live-service/test/cxorbia-prei4-shopper-progressive-route.test.mjs
+          node --test backend/runtime/hr-live-service/test/cxorbia-gate9-postulation-immediate.test.mjs
+          node --test backend/runtime/hr-live-service/test/cxorbia-pre-i4-finance-source-semantics.test.mjs
