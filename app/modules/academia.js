@@ -12,36 +12,71 @@ CX.acadData={
      se curan aquí como lista cerrada (misma idea que los planes ya usados en Consola SaaS). */
   NIVELES:[{id:'basico',label:'Básico'},{id:'intermedio',label:'Intermedio'},{id:'avanzado',label:'Avanzado'}],
   PAQUETES:[{id:'starter',label:'Starter'},{id:'estandar',label:'Estándar'},{id:'pro',label:'Pro'},{id:'enterprise',label:'Enterprise'}],
-  CATS:(()=>{try{const s=JSON.parse(localStorage.getItem('cx_acad_cats')||'null');if(s&&Array.isArray(s)&&s.length)return s;}catch(e){}return ['Todos','Inducción','Operación','Set-up','Finanzas','Comercial','Técnico','IA','Industria MS'];})(),
-  /* ── Persistencia de cursos personalizados ── */
+  BASE_CATS:['Todos','Inducción','Operación','Set-up','Finanzas','Comercial','Técnico','IA','Industria MS'],
+  CATS:['Todos','Inducción','Operación','Set-up','Finanzas','Comercial','Técnico','IA','Industria MS'],
   _ck:'cx_acad_cust',
-  getCustom(r){ try{return JSON.parse(localStorage.getItem(this._ck+'_'+r)||'[]');}catch(e){return[];} },
-  saveCustom(r,arr){ try{localStorage.setItem(this._ck+'_'+r,JSON.stringify(arr));}catch(e){} CX.bus&&CX.bus.emit('acad'); },
+  _canonical(){return CX.cxDataCommandBoundary?.canonicalMode?.()===true;},
+  _state(){CX.data.__academyState=CX.data.__academyState||{};return CX.data.__academyState;},
+  _hash(value){const s=JSON.stringify(value||{});let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return(h>>>0).toString(36);},
+  _ackOk(a){return a&&a.ok===true&&a.committed===true&&a.providerAck===true&&a.successUiAllowed===true&&a.readbackVerified===true;},
+  _blocked(code,error){return Promise.resolve({ok:false,status:'blocked',committed:false,providerAck:false,successUiAllowed:false,readbackVerified:false,code,error:error||code});},
+  _exec(commandType,entityId,payload,expectedVersion,permission){
+    const x=CX.cxDataCommandBoundary?.context?.()||{};
+    if(!CX.commandAdapter?.execute)return this._blocked('COMMAND_ADAPTER_UNAVAILABLE');
+    return CX.commandAdapter.execute({version:'cxorbia-academy-command-boundary-v1',commandType,entityType:commandType==='academy.category.create'?'academyCategory':'academyCourse',entityId:entityId||null,tenantId:String(x.tenantId||CX.BRAND?.id||''),projectId:String(x.projectId||CX.data?.currentProjectId||'')||null,periodId:String(x.periodId||CX.data?.currentPeriodId||'')||null,requireProject:false,requirePeriod:false,actor:{actorId:String(x.actorId||''),role:String(x.role||''),projectIds:Array.isArray(x.projectIds)?x.projectIds.slice():[]},expectedVersion,idempotencyKey:commandType+':'+this._hash([x.tenantId,entityId||'',expectedVersion,payload]),payload:JSON.parse(JSON.stringify(payload||{})),source:'academia-ui',authorization:{providerEnforcementRequired:true,permission}});
+  },
+  _apply(result){
+    if(!this._ackOk(result)){if(result&&!result.error)result.error=result.code||'Falta ACK/readback durable del proveedor.';return result;}
+    const st=this._state();
+    if(result.entityType==='academyCourse'&&result.entityReadback){
+      st.courses=Array.isArray(st.courses)?st.courses:[];
+      const i=st.courses.findIndex(x=>x.id===result.entityReadback.id);
+      if(i>=0)st.courses[i]=Object.assign({},result.entityReadback);else st.courses.push(Object.assign({},result.entityReadback));result.course=result.entityReadback;
+    }
+    if(result.entityType==='academyCategory'&&result.entityReadback){
+      st.categories=Array.isArray(st.categories)?st.categories:[];
+      const i=st.categories.findIndex(x=>x.id===result.entityReadback.id);
+      if(i>=0)st.categories[i]=Object.assign({},result.entityReadback);else st.categories.push(Object.assign({},result.entityReadback));result.category=result.entityReadback;
+    }
+    if(result.auditReadback){st.audit=Array.isArray(st.audit)?st.audit:[];st.audit.unshift(Object.assign({},result.auditReadback));}
+    CX.bus&&CX.bus.emit('acad');return result;
+  },
+  categories(){
+    if(this._canonical()){
+      const custom=(Array.isArray(this._state().categories)?this._state().categories:[]).map(x=>x.name).filter(Boolean);
+      return [...new Set(this.BASE_CATS.concat(custom))];
+    }
+    try{const saved=JSON.parse(localStorage.getItem('cx_acad_cats')||'null');return saved&&Array.isArray(saved)&&saved.length?saved:this.CATS;}catch(e){return this.CATS;}
+  },
+  getCustom(r){
+    if(this._canonical())return (Array.isArray(this._state().courses)?this._state().courses:[]).filter(x=>String(x.audience||'admin')===String(r));
+    try{return JSON.parse(localStorage.getItem(this._ck+'_'+r)||'[]');}catch(e){return[];}
+  },
+  saveCustom(r,arr){
+    if(this._canonical())return {ok:false,status:'blocked',providerAck:false,successUiAllowed:false,readbackVerified:false,code:'ACADEMY_PROVIDER_OWNS_CUSTOM_CONTENT'};
+    try{localStorage.setItem(this._ck+'_'+r,JSON.stringify(arr));}catch(e){}CX.bus&&CX.bus.emit('acad');return{ok:true,status:'preview'};
+  },
+  async addCategory(name){
+    name=String(name||'').trim();if(!name)return{ok:false,error:'Nombre requerido.'};
+    if(this._canonical()){const a=await this._exec('academy.category.create',null,{name},'absent','academy.edit');return this._apply(a);}
+    if(!this.CATS.includes(name))this.CATS.push(name);try{localStorage.setItem('cx_acad_cats',JSON.stringify(this.CATS));}catch(e){}return{ok:true,name};
+  },
   /* Bloque 4 (auditoría V100 — corrección exacta): addCourse()/editCourse() ahora EXIGEN permiso
      de acción (academy.create/academy.edit) — antes solo duplicateCourse() lo validaba. Devuelven
      {ok:false,error} en vez de ejecutar en silencio cuando el rol no tiene el permiso. */
-  addCourse(r,c,ctx){
-    if(CX.permissions && !CX.permissions.can('academy.create', ctx)) return {ok:false, error:'Tu rol no tiene el permiso de acción "academy.create".'};
-    const arr=this.getCustom(r); const lessons=c.lessons||[]; const mins=(typeof c.mins==='number')?c.mins:Math.max(10,lessons.length*12);
-    const auditRef='aud_'+Math.random().toString(36).slice(2,8);
-    /* Contrato Academia (paquete 20260711): creator identificado explícitamente y separado de
-       revisor/aprobador (setCourseState). scope opcional (vacío = global) — ver visibleFor(). */
-    const creador=(CX.session&&CX.session.user&&CX.session.user.name)||'—';
-    /* T1b (paquete V109): identidad ESTABLE del creador por id (cx_users o sesión sintética) —
-       creador (nombre) se conserva solo para presentación; la separación de funciones en
-       setCourseState se valida contra createdByUserId, nunca contra el nombre. */
-    const createdByUserId=this.actorId();
-    /* T2.D (paquete V108, sin cambios en V109): todo curso queda vinculado a un tenantId real
-       desde su creación — el eje tenantId del scope se fuerza al tenant activo aunque el resto
-       de ejes queden vacíos (regla documentada: sin scope explícito = global DENTRO del tenant,
-       nunca global cruzando tenants). Con el bug de T1 corregido, CX.acadData.ctx().tenantId
-       ahora SIEMPRE resuelve a este mismo CX.BRAND.id, así que el eje coincide. */
-    const scope=Object.assign({}, c.scope||{}, {tenantId:[CX.BRAND.id]});
-    arr.unshift(Object.assign({id:'cu'+Date.now().toString(36),lessons:[],mins,cert:false,estado:'borrador',contentVersion:1,workflowVersion:1,auditRef,
-      creador, createdByUserId, revisadoPor:null, reviewedByUserId:null, aprobadoPor:null, approvedByUserId:null, scope},c,{mins,scope}));
-    this.saveCustom(r,arr);
-    this._logAudit(r,{accion:'crear',cid:arr[0].id,titulo:arr[0].n,motivo:c.motivo||'(creación)'});
-    return {ok:true, course:arr[0]};
+  async addCourse(r,c,ctx){
+    if(CX.permissions&&!CX.permissions.can('academy.create',ctx))return{ok:false,error:'Tu rol no tiene el permiso de acción "academy.create".'};
+    c=c||{};const lessons=c.lessons||[],mins=(typeof c.mins==='number')?c.mins:Math.max(10,lessons.length*12);
+    const scope=Object.assign({},c.scope||{},{tenantId:[CX.BRAND.id]});
+    if(this._canonical()){
+      const payload=Object.assign({},c,{audience:r,lessons,mins,scope,estado:'borrador',contentVersion:1,workflowVersion:1});
+      const a=await this._exec('academy.course.create',c.id||null,payload,'absent','academy.create');
+      return this._apply(a);
+    }
+    const arr=this.getCustom(r),auditRef='aud_'+Math.random().toString(36).slice(2,8),creador=(CX.session&&CX.session.user&&CX.session.user.name)||'—',createdByUserId=this.actorId();
+    arr.unshift(Object.assign({id:'cu'+Date.now().toString(36),lessons:[],mins,cert:false,estado:'borrador',contentVersion:1,workflowVersion:1,auditRef,creador,createdByUserId,revisadoPor:null,reviewedByUserId:null,aprobadoPor:null,approvedByUserId:null,scope},c,{mins,scope}));
+    this.saveCustom(r,arr);this._logAudit(r,{accion:'crear',cid:arr[0].id,titulo:arr[0].n,motivo:c.motivo||'(creación)'});
+    return{ok:true,course:arr[0]};
   },
 
   /* T1 (paquete V109 — 20260712, corrección P0 real): contexto académico CANÓNICO, propio de
@@ -150,22 +185,32 @@ CX.acadData={
     let h=0; for(let i=0;i<name.length;i++) h=(h*31+name.charCodeAt(i))|0;
     return 'legacy_'+Math.abs(h).toString(36);
   },
-  editCourse(r,cid,patch,ctx){
-    if(CX.permissions && !CX.permissions.can('academy.edit', ctx)) return {ok:false, error:'Tu rol no tiene el permiso de acción "academy.edit".'};
-    const cs=[...this.COURSES[r]||[],...this.getCustom(r)]; const c=cs.find(x=>x.id===cid); if(c)Object.assign(c,patch); const custom=this.getCustom(r); const cu=custom.find(x=>x.id===cid); if(cu){Object.assign(cu,patch); cu.contentVersion=(cu.contentVersion||1)+1;} this.saveCustom(r,custom);
-    this._logAudit(r,{accion:'editar',cid,titulo:(cu&&cu.n)||(c&&c.n)||cid,motivo:patch.motivo||'(edición de campos)'});
-    return {ok:true};
+  async editCourse(r,cid,patch,ctx){
+    if(CX.permissions&&!CX.permissions.can('academy.edit',ctx))return{ok:false,error:'Tu rol no tiene el permiso de acción "academy.edit".'};
+    if(this._canonical()){
+      const current=this.getCustom(r).find(x=>x.id===cid);if(!current)return{ok:false,error:'Curso no encontrado.'};
+      const a=await this._exec('academy.course.update',cid,{audience:r,patch:patch||{},contentChange:true,reason:patch?.motivo||'(edición de campos)'},current.version??0,'academy.edit');
+      return this._apply(a);
+    }
+    const cs=[...this.COURSES[r]||[],...this.getCustom(r)],row=cs.find(x=>x.id===cid);if(row)Object.assign(row,patch);const custom=this.getCustom(r),cu=custom.find(x=>x.id===cid);
+    if(cu){Object.assign(cu,patch);cu.contentVersion=(cu.contentVersion||1)+1;}this.saveCustom(r,custom);this._logAudit(r,{accion:'editar',cid,titulo:(cu&&cu.n)||(row&&row.n)||cid,motivo:patch.motivo||'(edición de campos)'});
+    return{ok:true,course:cu||row};
   },
   /* ---- Ciclo de vida de cursos personalizados (paquete 20260710 — Academia transversal) ----
      Solo aplica a cursos CUSTOM (creados/editados desde la UI); el contenido seed/base de
      Academia es material de referencia de la plataforma y no se archiva ni versiona desde aquí. */
-  _audKey(r){ return 'cx_acad_audit_'+r; },
-  auditLog(r){ try{return JSON.parse(localStorage.getItem(this._audKey(r))||'[]');}catch(e){return [];} },
-  /* P0-5 (paquete genérico 20260711): CADA entrada de auditoría lleva su PROPIO auditRef —
-     antes solo el curso tenía un auditRef fijo desde su creación, y todos los eventos
-     posteriores (editar, transicionar, duplicar…) se registraban sin una referencia propia. */
-  _logAudit(r,entry){ const l=this.auditLog(r); const auditRef='aud_'+Math.random().toString(36).slice(2,8)+Date.now().toString(36).slice(-4);
-    l.unshift(Object.assign({fecha:new Date().toISOString(),por:(CX.session&&CX.session.user&&CX.session.user.name)||'—',auditRef},entry)); try{localStorage.setItem(this._audKey(r),JSON.stringify(l.slice(0,300)));}catch(e){} },
+  _audKey(r){return 'cx_acad_audit_'+r;},
+  auditLog(r){
+    if(this._canonical())return (Array.isArray(this._state().audit)?this._state().audit:[]).filter(x=>!x.audience||String(x.audience)===String(r));
+    try{return JSON.parse(localStorage.getItem(this._audKey(r))||'[]');}catch(e){return[];}
+  },
+  _logAudit(r,entry){
+    if(this._canonical())return null;
+    const l=this.auditLog(r),auditRef='aud_'+Math.random().toString(36).slice(2,8)+Date.now().toString(36).slice(-4);
+    l.unshift(Object.assign({fecha:new Date().toISOString(),por:(CX.session&&CX.session.user&&CX.session.user.name)||'—',auditRef},entry));
+    try{localStorage.setItem(this._audKey(r),JSON.stringify(l.slice(0,300)));}catch(e){}
+    return auditRef;
+  },
   isCustom(r,cid){ return this.getCustom(r).some(x=>x.id===cid); },
 
   /* P0.6 (V98 instrucciones exactas): transición ÚNICA y centralizada de estado de curso.
@@ -183,119 +228,79 @@ CX.acadData={
     eliminado:['borrador'],
   },
   ACTION_FOR_STATE:{ en_revision:'academy.review', aprobado:'academy.approve', archivado:'academy.archive', eliminado:'academy.delete', publicado_preview:'academy.publish', borrador:'academy.restore' },
-  setCourseState(r, cid, nextState, opts){
-    opts=opts||{};
-    const reason=(opts.reason||'').trim();
-    if(!this.isCustom(r,cid)) return {ok:false, error:'El contenido seed no cambia de estado desde el prototipo.'};
-    const custom=this.getCustom(r); const c=custom.find(x=>x.id===cid); if(!c) return {ok:false, error:'Curso no encontrado.'};
-    const prev=c.estado||'borrador';
-    const allowedNext=this.ALLOWED_TRANSITIONS[prev]||[];
-    if(prev!==nextState && !allowedNext.includes(nextState)) return {ok:false, error:'Transición no permitida: '+prev+' → '+nextState+'.'};
-    /* motivo obligatorio en archivar, eliminar, restaurar (→borrador), aprobar, publicar */
-    const needsReason = ['archivado','eliminado','publicado_preview','aprobado'].includes(nextState) || (nextState==='borrador' && (prev==='archivado'||prev==='eliminado'));
-    if(needsReason && !reason) return {ok:false, error:'El motivo es obligatorio para pasar a "'+nextState+'".'};
-    /* permiso de acción — no basta con ocultar el botón, se valida también aquí */
-    const action=this.ACTION_FOR_STATE[nextState];
-    if(action && CX.permissions && !CX.permissions.can(action, opts.ctx)){
-      return {ok:false, error:'Tu rol no tiene el permiso de acción "'+action+'".'};
+  async setCourseState(r,cid,nextState,opts){
+    opts=opts||{};const reason=(opts.reason||'').trim();
+    if(!this.isCustom(r,cid))return{ok:false,error:'El contenido seed no cambia de estado desde aquí.'};
+    const current=this.getCustom(r).find(x=>x.id===cid);if(!current)return{ok:false,error:'Curso no encontrado.'};
+    const prev=current.estado||'borrador',allowedNext=this.ALLOWED_TRANSITIONS[prev]||[];
+    if(prev!==nextState&&!allowedNext.includes(nextState))return{ok:false,error:'Transición no permitida: '+prev+' → '+nextState+'.'};
+    const needsReason=['archivado','eliminado','publicado_preview','aprobado'].includes(nextState)||(nextState==='borrador'&&['archivado','eliminado'].includes(prev));
+    if(needsReason&&!reason)return{ok:false,error:'El motivo es obligatorio para pasar a "'+nextState+'".'};
+    const action=this.ACTION_FOR_STATE[nextState];if(action&&CX.permissions&&!CX.permissions.can(action,opts.ctx))return{ok:false,error:'Tu rol no tiene el permiso de acción "'+action+'".'};
+    if(this._canonical()){
+      const a=await this._exec('academy.course.state',cid,{audience:r,state:nextState,reason},current.version??0,action||'academy.edit');
+      return this._apply(a);
     }
-    /* Contrato Academia (paquete 20260711): revisión y aprobación exigen una identidad
-       autenticada DISTINTA de quien creó el curso (separación de funciones configurable —
-       mismo patrón que el segundo actor de certificación en modules/cert.js). Sin sistema central real
-       de auth, el "autenticado" es la sesión activa del prototipo (session.user.name); nunca
-       texto libre. */
-    /* T1b (paquete V109 — corrección P0): la separación de funciones se valida por ID ESTABLE
-       (createdByUserId/reviewedByUserId/approvedByUserId), no por nombre visible. opts.revisorId /
-       opts.aprobadorId llegan de CX.acadData.actorId() en el módulo; opts.revisor/opts.aprobador
-       (nombre) se conservan solo para mostrarlos en la UI/auditoría. Para cursos legados sin id
-       persistido, c.createdByUserId/c.reviewedByUserId se retro-completan con _idFromName() la
-       primera vez que se necesitan, para no perder la garantía con datos antiguos. */
-    if(nextState==='en_revision'){
-      const revisor=(opts.revisor||'').trim();
-      const revisorId=opts.revisorId||(revisor?this._idFromName(revisor):'');
-      if(!revisor || !revisorId) return {ok:false, error:'Selecciona quién revisa (identidad distinta al creador).'};
-      const creadorId=c.createdByUserId||(c.creador?this._idFromName(c.creador):null);
-      if(creadorId && revisorId===creadorId) return {ok:false, error:'El revisor debe ser distinto de quien creó el curso ('+c.creador+').'};
-      c.revisadoPor=revisor; c.reviewedByUserId=revisorId;
-    }
-    if(nextState==='aprobado'){
-      const aprobador=(opts.aprobador||'').trim();
-      const aprobadorId=opts.aprobadorId||(aprobador?this._idFromName(aprobador):'');
-      if(!aprobador || !aprobadorId) return {ok:false, error:'Selecciona quién aprueba (identidad distinta al creador y, si aplica, al revisor).'};
-      const creadorId=c.createdByUserId||(c.creador?this._idFromName(c.creador):null);
-      const revisorId=c.reviewedByUserId||(c.revisadoPor?this._idFromName(c.revisadoPor):null);
-      if(creadorId && aprobadorId===creadorId) return {ok:false, error:'El aprobador debe ser distinto de quien creó el curso ('+c.creador+').'};
-      if(revisorId && aprobadorId===revisorId) return {ok:false, error:'El aprobador debe ser distinto de quien revisó ('+c.revisadoPor+') — separación de funciones.'};
-      c.aprobadoPor=aprobador; c.approvedByUserId=aprobadorId;
-    }
-    c.estado=nextState; c.workflowVersion=(c.workflowVersion||1)+1; this.saveCustom(r,custom);
-    const accionLbl={en_revision:'enviar a revisión',aprobado:'aprobar',publicado_preview:'publicar (preview)',archivado:'archivar',eliminado:'eliminar',borrador:'restaurar a borrador'}[nextState]||nextState;
-    this._logAudit(r,{accion:accionLbl, cid, titulo:c.n, motivo:reason||'(sin motivo — transición sin exigencia)', estadoAnterior:prev, estadoNuevo:nextState, source:opts.source||'ui_admin', revisadoPor:c.revisadoPor, aprobadoPor:c.aprobadoPor});
-    /* notificación local del cambio (in-app; nunca canal externo) */
-    CX.notif && CX.notif.push({to:'admin', tipo:'academia_estado', icon:'📚', tono:'b', titulo:'Academia: "'+c.n+'" → '+nextState, txt:'workflow v'+c.workflowVersion+' · '+(reason||'sin motivo adicional')+' (auditoría preview local, no del sistema central)', nav:'aprendizaje'});
-    return {ok:true, course:c};
+    const custom=this.getCustom(r),row=custom.find(x=>x.id===cid);
+    if(nextState==='en_revision'){const revisor=(opts.revisor||'').trim(),revisorId=opts.revisorId||(revisor?this._idFromName(revisor):'');if(!revisor||!revisorId)return{ok:false,error:'Selecciona quién revisa.'};const creadorId=row.createdByUserId||(row.creador?this._idFromName(row.creador):null);if(creadorId&&revisorId===creadorId)return{ok:false,error:'El revisor debe ser distinto de quien creó el curso.'};row.revisadoPor=revisor;row.reviewedByUserId=revisorId;}
+    if(nextState==='aprobado'){const aprobador=(opts.aprobador||'').trim(),aprobadorId=opts.aprobadorId||(aprobador?this._idFromName(aprobador):'');if(!aprobador||!aprobadorId)return{ok:false,error:'Selecciona quién aprueba.'};const creadorId=row.createdByUserId||(row.creador?this._idFromName(row.creador):null),revisorId=row.reviewedByUserId||(row.revisadoPor?this._idFromName(row.revisadoPor):null);if(creadorId&&aprobadorId===creadorId)return{ok:false,error:'El aprobador debe ser distinto de quien creó.'};if(revisorId&&aprobadorId===revisorId)return{ok:false,error:'El aprobador debe ser distinto de quien revisó.'};row.aprobadoPor=aprobador;row.approvedByUserId=aprobadorId;}
+    row.estado=nextState;row.workflowVersion=(row.workflowVersion||1)+1;this.saveCustom(r,custom);
+    this._logAudit(r,{accion:nextState,cid,titulo:row.n,motivo:reason||'(sin motivo)',estadoAnterior:prev,estadoNuevo:nextState});
+    CX.notif&&CX.notif.push({to:'admin',tipo:'academia_estado',icon:'📚',tono:'b',titulo:'Academia: "'+row.n+'" → '+nextState,txt:'workflow v'+row.workflowVersion,nav:'aprendizaje'});
+    return{ok:true,course:row};
   },
 
-  duplicateCourse(r,cid,ctx){
-    const src=[...this.COURSES[r]||[],...this.getCustom(r)].find(x=>x.id===cid); if(!src) return null;
-    if(CX.permissions && !CX.permissions.can('academy.duplicate', ctx)) return null;
-    const arr=this.getCustom(r); const auditRef='aud_'+Math.random().toString(36).slice(2,8);
-    const copy=Object.assign({},JSON.parse(JSON.stringify(src)),{id:'cu'+Date.now().toString(36),n:(src.n||'Curso')+' (copia)',estado:'borrador',contentVersion:1,workflowVersion:1,auditRef});
-    arr.unshift(copy); this.saveCustom(r,arr);
-    this._logAudit(r,{accion:'duplicar',cid:copy.id,titulo:copy.n,motivo:'Duplicado desde "'+(src.n||'')+'"'});
-    return copy;
+  async duplicateCourse(r,cid,ctx){
+    const src=[...this.COURSES[r]||[],...this.getCustom(r)].find(x=>x.id===cid);if(!src)return{ok:false,error:'Curso no encontrado.'};
+    if(CX.permissions&&!CX.permissions.can('academy.duplicate',ctx))return{ok:false,error:'Tu rol no tiene permiso para duplicar.'};
+    const copy=Object.assign({},JSON.parse(JSON.stringify(src)),{id:undefined,n:(src.n||'Curso')+' (copia)',estado:'borrador',contentVersion:1,workflowVersion:1});
+    delete copy.version;delete copy.createdAt;delete copy.createdBy;delete copy.updatedAt;delete copy.updatedBy;
+    if(this._canonical()){const a=await this._exec('academy.course.create',null,Object.assign({},copy,{audience:r,reason:'Duplicado desde "'+(src.n||'')+'"'}),'absent','academy.duplicate');return this._apply(a);}
+    const arr=this.getCustom(r);copy.id='cu'+Date.now().toString(36);arr.unshift(copy);this.saveCustom(r,arr);this._logAudit(r,{accion:'duplicar',cid:copy.id,titulo:copy.n,motivo:'Duplicado desde "'+(src.n||'')+'"'});return{ok:true,course:copy};
   },
-  archiveCourse(r,cid,motivo,ctx){ return this.setCourseState(r,cid,'archivado',{reason:motivo,ctx}).ok; },
+  async archiveCourse(r,cid,motivo,ctx){return this.setCourseState(r,cid,'archivado',{reason:motivo,ctx});},
   /* restaurar SIEMPRE vuelve a 'borrador' (nunca directo a publicado_preview) — desde ahí
      el flujo normal es enviar a revisión → aprobar → publicar, cada paso con su propio motivo. */
-  restoreCourse(r,cid,motivo,ctx){ return this.setCourseState(r,cid,'borrador',{reason:motivo,ctx}).ok; },
+  async restoreCourse(r,cid,motivo,ctx){return this.setCourseState(r,cid,'borrador',{reason:motivo,ctx});},
   /* Bloque 4 (auditoría V100 — corrección exacta): crear/editar lecciones ahora exige permiso
      de acción (academy.edit) — antes ninguna de las dos se validaba. Además se corrigió un bug
      real encontrado durante la auditoría: addLesson() nunca llamaba saveCustom(), así que una
      lección agregada se perdía al recargar (mutaba un objeto efímero de getCustom() y solo
      emitía el evento del bus, sin persistir nada). */
-  addLesson(r,cid,lesson,ctx){
-    if(CX.permissions && !CX.permissions.can('academy.edit', ctx)) return {ok:false, error:'Tu rol no tiene el permiso de acción "academy.edit".'};
-    const custom=this.getCustom(r); const c=custom.find(x=>x.id===cid);
-    if(!c) return {ok:false, error:'Solo se pueden agregar lecciones a cursos personalizados.'};
-    c.lessons=c.lessons||[]; c.lessons.push(Object.assign({id:'ls'+Date.now().toString(36)},lesson)); c.contentVersion=(c.contentVersion||1)+1;
-    this.saveCustom(r,custom); CX.bus&&CX.bus.emit('acad');
-    this._logAudit(r,{accion:'agregar_leccion',cid,titulo:c.n,motivo:(lesson&&lesson.motivo)||'(lección nueva)'});
-    return {ok:true};
+  async addLesson(r,cid,lesson,ctx){
+    if(CX.permissions&&!CX.permissions.can('academy.edit',ctx))return{ok:false,error:'Tu rol no tiene el permiso de acción "academy.edit".'};
+    const current=this.getCustom(r).find(x=>x.id===cid);if(!current)return{ok:false,error:'Solo se pueden agregar lecciones a cursos personalizados.'};
+    const lessons=(current.lessons||[]).slice();lessons.push(Object.assign({id:'ls'+Date.now().toString(36)},lesson));
+    if(this._canonical()){const a=await this._exec('academy.course.update',cid,{audience:r,patch:{lessons},contentChange:true,reason:(lesson&&lesson.motivo)||'(lección nueva)'},current.version??0,'academy.edit');return this._apply(a);}
+    current.lessons=lessons;current.contentVersion=(current.contentVersion||1)+1;this.saveCustom(r,this.getCustom(r));this._logAudit(r,{accion:'agregar_leccion',cid,titulo:current.n,motivo:(lesson&&lesson.motivo)||'(lección nueva)'});return{ok:true,course:current};
   },
-  editLesson(r,cid,lid,patch,ctx){
-    if(CX.permissions && !CX.permissions.can('academy.edit', ctx)) return {ok:false, error:'Tu rol no tiene el permiso de acción "academy.edit".'};
-    const custom=this.getCustom(r); const c=custom.find(x=>x.id===cid);
-    if(!c) return {ok:false, error:'Solo se pueden editar lecciones de cursos personalizados.'};
-    const l=(c.lessons||[]).find(x=>x.id===lid); if(l){Object.assign(l,patch); c.contentVersion=(c.contentVersion||1)+1;}
-    this.saveCustom(r,custom); CX.bus&&CX.bus.emit('acad');
-    this._logAudit(r,{accion:'editar_leccion',cid,titulo:c.n,motivo:(patch&&patch.motivo)||'(edición de lección)'});
-    return {ok:true};
+  async editLesson(r,cid,lid,patch,ctx){
+    if(CX.permissions&&!CX.permissions.can('academy.edit',ctx))return{ok:false,error:'Tu rol no tiene el permiso de acción "academy.edit".'};
+    const current=this.getCustom(r).find(x=>x.id===cid);if(!current)return{ok:false,error:'Solo se pueden editar lecciones de cursos personalizados.'};
+    const lessons=(current.lessons||[]).map(l=>l.id===lid?Object.assign({},l,patch):l);
+    if(this._canonical()){const a=await this._exec('academy.course.update',cid,{audience:r,patch:{lessons},contentChange:true,reason:(patch&&patch.motivo)||'(edición de lección)'},current.version??0,'academy.edit');return this._apply(a);}
+    current.lessons=lessons;current.contentVersion=(current.contentVersion||1)+1;this.saveCustom(r,this.getCustom(r));this._logAudit(r,{accion:'editar_leccion',cid,titulo:current.n,motivo:(patch&&patch.motivo)||'(edición de lección)'});return{ok:true,course:current};
   },
   /* soft-delete de lección (P0.8 — auditoría V99): igual patrón que los cursos — nunca
      hard-delete, exige motivo, y queda auditada. La lección oculta no aparece en el reproductor
      normal (se filtra por _deleted) pero es recuperable llamando restoreLesson(). */
-  delLesson(r,cid,lid,motivo,ctx){
-    if(CX.permissions && !CX.permissions.can('academy.edit', ctx)) return {ok:false,error:'Tu rol no tiene el permiso de acción "academy.edit".'};
-    if(!motivo||!motivo.trim()) return {ok:false,error:'El motivo es obligatorio para eliminar una lección.'};
-    const custom=this.getCustom(r); const c=custom.find(x=>x.id===cid); if(!c) return {ok:false,error:'Curso no encontrado.'};
-    const l=(c.lessons||[]).find(x=>x.id===lid); if(!l) return {ok:false,error:'Lección no encontrada.'};
-    l._deleted=true; c.contentVersion=(c.contentVersion||1)+1; this.saveCustom(r,custom);
-    this._logAudit(r,{accion:'eliminar_leccion',cid,titulo:c.n+' → '+l.n,motivo});
-    return {ok:true};
+  async delLesson(r,cid,lid,motivo,ctx){
+    if(CX.permissions&&!CX.permissions.can('academy.edit',ctx))return{ok:false,error:'Tu rol no tiene el permiso de acción "academy.edit".'};
+    if(!motivo||!motivo.trim())return{ok:false,error:'El motivo es obligatorio para eliminar una lección.'};
+    const current=this.getCustom(r).find(x=>x.id===cid);if(!current)return{ok:false,error:'Curso no encontrado.'};
+    const lessons=(current.lessons||[]).map(l=>l.id===lid?Object.assign({},l,{_deleted:true}):l);
+    if(this._canonical()){const a=await this._exec('academy.course.update',cid,{audience:r,patch:{lessons},contentChange:true,reason:motivo.trim()},current.version??0,'academy.edit');return this._apply(a);}
+    current.lessons=lessons;current.contentVersion=(current.contentVersion||1)+1;this.saveCustom(r,this.getCustom(r));this._logAudit(r,{accion:'eliminar_leccion',cid,titulo:current.n,motivo});return{ok:true,course:current};
   },
-  restoreLesson(r,cid,lid,motivo,ctx){
-    if(CX.permissions && !CX.permissions.can('academy.edit', ctx)) return {ok:false,error:'Tu rol no tiene el permiso de acción "academy.edit".'};
-    /* Bloque D (auditoría V101 — 20260711): restaurar una lección eliminada permitía motivo vacío
-       ("sin motivo registrado") — ahora es obligatorio, igual que al eliminar (delLesson). */
-    if(!motivo||!motivo.trim()) return {ok:false,error:'El motivo es obligatorio para restaurar una lección.'};
-    const custom=this.getCustom(r); const c=custom.find(x=>x.id===cid); if(!c) return {ok:false,error:'Curso no encontrado.'};
-    const l=(c.lessons||[]).find(x=>x.id===lid); if(!l) return {ok:false,error:'Lección no encontrada.'};
-    delete l._deleted; c.contentVersion=(c.contentVersion||1)+1; this.saveCustom(r,custom);
-    this._logAudit(r,{accion:'restaurar_leccion',cid,titulo:c.n+' → '+l.n,motivo:motivo.trim()});
-    return {ok:true};
+  async restoreLesson(r,cid,lid,motivo,ctx){
+    if(CX.permissions&&!CX.permissions.can('academy.edit',ctx))return{ok:false,error:'Tu rol no tiene el permiso de acción "academy.edit".'};
+    if(!motivo||!motivo.trim())return{ok:false,error:'El motivo es obligatorio para restaurar una lección.'};
+    const current=this.getCustom(r).find(x=>x.id===cid);if(!current)return{ok:false,error:'Curso no encontrado.'};
+    const lessons=(current.lessons||[]).map(l=>{if(l.id!==lid)return l;const x=Object.assign({},l);delete x._deleted;return x;});
+    if(this._canonical()){const a=await this._exec('academy.course.update',cid,{audience:r,patch:{lessons},contentChange:true,reason:motivo.trim()},current.version??0,'academy.edit');return this._apply(a);}
+    current.lessons=lessons;current.contentVersion=(current.contentVersion||1)+1;this.saveCustom(r,this.getCustom(r));this._logAudit(r,{accion:'restaurar_leccion',cid,titulo:current.n,motivo:motivo.trim()});return{ok:true,course:current};
   },
-  delCourse(r,cid,motivo,ctx){ return this.setCourseState(r,cid,'eliminado',{reason:motivo,ctx}).ok;
+  async delCourse(r,cid,motivo,ctx){return this.setCourseState(r,cid,'eliminado',{reason:motivo,ctx});
   },
   COURSES:{
     admin:[
@@ -2202,11 +2207,9 @@ CX.module('aprendizaje', ({data,role,ui})=>{
       <p style="font-size:12px;color:var(--t2);margin-bottom:8px">"${lesson.n.replace(/"/g,'&quot;')}" se marcará como eliminada (recuperable desde "♻️ Lecciones eliminadas") — no se borra de forma irreversible.</p>
       <label class="lbl">Motivo (obligatorio)</label><textarea class="inp" id="dlMot" rows="2" placeholder="Ej. contenido duplicado, ya no aplica…"></textarea>
       <div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="dlOk" style="background:var(--red);border-color:var(--red)">Eliminar</button></div>
-    `,{onMount:(ov,close)=>{ov.querySelector('#dlOk').addEventListener('click',()=>{
-      const m=(ov.querySelector('#dlMot').value||'').trim();
-      if(!m){ ui.toast('El motivo es obligatorio','warn'); return; }
-      const r=CX.acadData.delLesson(rr,course.id,lesson.id,m,CX.permissions.ctx());
-      if(!r.ok){ ui.toast('🔒 '+r.error,'warn',4200); return; }
+    `,{onMount:(ov,close)=>{ov.querySelector('#dlOk').addEventListener('click',async()=>{
+      const m=(ov.querySelector('#dlMot').value||'').trim();if(!m){ui.toast('El motivo es obligatorio','warn');return;}
+      const r=await Promise.resolve(CX.acadData.delLesson(rr,course.id,lesson.id,m,CX.permissions.ctx()));if(!r.ok){ui.toast('🔒 '+(r.error||r.code),'warn',4200);return;}
       close();openLesson=null;draw();ui.toast('Lección eliminada (recuperable) · auditado','');
     });}}));
     host.querySelector('#viewDelLsn')?.addEventListener('click',()=>{
@@ -2217,11 +2220,9 @@ CX.module('aprendizaje', ({data,role,ui})=>{
         :'<p style="font-size:12.5px;color:var(--t3)">No hay lecciones eliminadas en este curso.</p>'}
       `,{onMount:(ov,close)=>{ov.querySelectorAll('.restLsn').forEach(b=>b.addEventListener('click',()=>{
         close();
-        ui.modal('♻️ Restaurar lección',`<label class="lbl">Motivo (obligatorio)</label><textarea class="inp" id="rlMot" rows="2" placeholder="Ej. vuelve a ser vigente…"></textarea><div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="rlOk">Restaurar</button></div>`,{onMount:(o2,c2)=>{o2.querySelector('#rlOk').addEventListener('click',()=>{
-          const m=(o2.querySelector('#rlMot').value||'').trim();
-          if(!m){ ui.toast('El motivo es obligatorio','warn'); return; }
-          const r=CX.acadData.restoreLesson(rr,course.id,b.dataset.lid,m,CX.permissions.ctx());
-          if(!r.ok){ ui.toast('🔒 '+r.error,'warn',4200); return; }
+        ui.modal('♻️ Restaurar lección',`<label class="lbl">Motivo (obligatorio)</label><textarea class="inp" id="rlMot" rows="2" placeholder="Ej. vuelve a ser vigente…"></textarea><div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="rlOk">Restaurar</button></div>`,{onMount:(o2,c2)=>{o2.querySelector('#rlOk').addEventListener('click',async()=>{
+          const m=(o2.querySelector('#rlMot').value||'').trim();if(!m){ui.toast('El motivo es obligatorio','warn');return;}
+          const r=await Promise.resolve(CX.acadData.restoreLesson(rr,course.id,b.dataset.lid,m,CX.permissions.ctx()));if(!r.ok){ui.toast('🔒 '+(r.error||r.code),'warn',4200);return;}
           c2();draw();ui.toast('Lección restaurada · auditado','ok');
         });}});
       }));}});
@@ -2273,11 +2274,10 @@ CX.module('aprendizaje', ({data,role,ui})=>{
         else if(cmd==='hr')document.execCommand('insertHTML',false,'<hr style="border:none;border-top:1px solid var(--border-2);margin:12px 0">');
         else if(cmd==='clr')document.execCommand('removeFormat');
       });
-      ov.querySelector('#elSave').addEventListener('click',()=>{
-        let content=ov.querySelector('#elEditor').innerHTML;
-        if(newRes)content=newRes+content;
-        const rEd=CX.acadData.editLesson(rr,course.id,lesson.id,{n:ov.querySelector('#elT').value.trim()||lesson.n,ic:ov.querySelector('#elI').value||lesson.ic,content});
-        if(!rEd.ok){ ui.toast('🔒 '+rEd.error,'warn',4200); return; }
+      ov.querySelector('#elSave').addEventListener('click',async()=>{
+        let content=ov.querySelector('#elEditor').innerHTML;if(newRes)content=newRes+content;
+        const rEd=await Promise.resolve(CX.acadData.editLesson(rr,course.id,lesson.id,{n:ov.querySelector('#elT').value.trim()||lesson.n,ic:ov.querySelector('#elI').value||lesson.ic,content},CX.permissions.ctx()));
+        if(!rEd.ok){ui.toast('🔒 '+(rEd.error||rEd.code),'warn',4200);return;}
         /* OLA3 (paquete V120→V121, 04-ACADEMIA-MANUALES-RUTAS-NOTIFICACIONES.md "lección
            actualizada"): antes solo un toast efímero — sin notificación persistente para quienes
            ya cursaron/asignados. No afirma envío real (WhatsApp/correo) sin proveedor. */
@@ -2356,7 +2356,7 @@ CX.module('aprendizaje', ({data,role,ui})=>{
         ov.querySelector('#nlVU')?.addEventListener('blur',e=>{const u=e.target.value;if(u){const src=u.includes('embed')?u:u.replace('watch?v=','embed/').replace('youtu.be/','www.youtube-nocookie.com/embed/');ov.querySelector('#nlVP').innerHTML='<iframe src="'+src+'" style="width:100%;height:180px;border:none;border-radius:8px" allowfullscreen></iframe>';}});
         ov.querySelector('#nlIF')?.addEventListener('change',e=>{const f=e.target.files[0];if(f){const r=new FileReader();r.onload=ev=>{ov.querySelector('#nlIP').innerHTML='<img src="'+ev.target.result+'" style="max-width:100%;max-height:160px;border-radius:8px;object-fit:contain">';ov.querySelector('#nlIP').dataset.src=ev.target.result;};r.readAsDataURL(f);}});
         ov.querySelector('#nlVF')?.addEventListener('change',e=>{const f=e.target.files[0];if(f){const r=new FileReader();r.onload=ev=>{ov.querySelector('#nlVP').innerHTML='<video src="'+ev.target.result+'" controls style="width:100%;max-height:180px;border-radius:8px"></video>';ov.querySelector('#nlVP').dataset.src=ev.target.result;};r.readAsDataURL(f);}});
-        ov.querySelector('#nlSave')?.addEventListener('click',()=>{
+        ov.querySelector('#nlSave')?.addEventListener('click',async()=>{
           const t=(ov.querySelector('#nlT').value||'').trim();if(!t){ui.toast('Pon un título','warn');return;}
           let content='',tipo=lsnType;
           if(lsnType==='texto')content=ov.querySelector('#nlC').value||'<p>Contenido por completar.</p>';
@@ -2369,8 +2369,8 @@ CX.module('aprendizaje', ({data,role,ui})=>{
             else if(src)content='<img src="'+src+'" style="max-width:100%;border-radius:10px">';
             else content='<p>Documento por adjuntar.</p>';}
           else if(lsnType==='quiz'){tipo='quiz';content=ov.querySelector('#nlQD').value;}
-          const rAddL=CX.acadData.addLesson(rr,course.id,{n:t,ic:ov.querySelector('#nlI').value||'📘',tipo,content});
-          if(!rAddL.ok){ ui.toast('🔒 '+rAddL.error,'warn',4200); return; }
+          const rAddL=await Promise.resolve(CX.acadData.addLesson(rr,course.id,{n:t,ic:ov.querySelector('#nlI').value||'📘',tipo,content},CX.permissions.ctx()));
+          if(!rAddL.ok){ui.toast('🔒 '+(rAddL.error||rAddL.code),'warn',4200);return;}
           close();lessonPlayer(course);ui.toast('Lección añadida','ok');
         });
       }});
@@ -2577,7 +2577,7 @@ CX.module('aprendizaje', ({data,role,ui})=>{
         </div>
       </div>
       <div class="flex wrap" style="gap:6px;margin-bottom:16px">
-        ${CX.acadData.CATS.filter(c=>c==='Todos'||visibleCourses.some(x=>x.cat===c)).map(c=>`<button class="btn btn-sm acad-cat ${activeCat===c?'btn-pr':'btn-ghost'}" data-cat="${c}">${c}</button>`).join('')}
+        ${CX.acadData.categories().filter(c=>c==='Todos'||visibleCourses.some(x=>x.cat===c)).map(c=>`<button class="btn btn-sm acad-cat ${activeCat===c?'btn-pr':'btn-ghost'}" data-cat="${c}">${c}</button>`).join('')}
         ${canManageTop?`<button class="btn btn-sm btn-ghost" id="acadNewCat" style="border-style:dashed">＋ Categoría</button>`:''}
       </div>
       ${(()=>{
@@ -2624,16 +2624,14 @@ CX.module('aprendizaje', ({data,role,ui})=>{
 
     host.querySelector('#acadManuales')?.addEventListener('click',()=>openManuales());
     host.querySelector('#acadShowArch')?.addEventListener('click',()=>{showArchived=!showArchived;draw();});
-    host.querySelectorAll('.acad-dup').forEach(b=>b.addEventListener('click',(e)=>{e.stopPropagation();const rr=role==='admin'?(CX._acadAud||'admin'):role;const copy=CX.acadData.duplicateCourse(rr,b.dataset.cid,CX.permissions.ctx());draw();ui.toast(copy?'Curso duplicado como borrador: "'+copy.n+'"':'No se pudo duplicar','ok');}));
+    host.querySelectorAll('.acad-dup').forEach(b=>b.addEventListener('click',async(e)=>{e.stopPropagation();const rr=role==='admin'?(CX._acadAud||'admin'):role;const copy=await Promise.resolve(CX.acadData.duplicateCourse(rr,b.dataset.cid,CX.permissions.ctx()));if(!copy?.ok){ui.toast('🔒 '+(copy?.error||copy?.code||'No se pudo duplicar'),'warn',4200);return;}draw();ui.toast('Curso duplicado como borrador: "'+(copy.course?.n||'Curso')+'"','ok');}));
     host.querySelectorAll('.acad-arch').forEach(b=>b.addEventListener('click',(e)=>{e.stopPropagation();const rr=role==='admin'?(CX._acadAud||'admin'):role;
-      ui.modal('🗄 Archivar curso',`<label class="lbl">Motivo (obligatorio)</label><textarea class="inp" id="archMot" rows="2" placeholder="Ej. contenido desactualizado, se reemplaza por otro curso…"></textarea><div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="archOk">Archivar</button></div>`,{onMount:(ov,close)=>{ov.querySelector('#archOk').addEventListener('click',()=>{const m=(ov.querySelector('#archMot').value||'').trim();if(!m){ui.toast('El motivo es obligatorio','warn');return;}const r=CX.acadData.archiveCourse(rr,b.dataset.cid,m,CX.permissions.ctx());if(!r){ui.toast('🔒 No se pudo archivar (permiso o transición no válida)','warn',4200);return;}close();draw();ui.toast('Curso archivado · auditado','ok');});}});
+      ui.modal('🗄 Archivar curso',`<label class="lbl">Motivo (obligatorio)</label><textarea class="inp" id="archMot" rows="2" placeholder="Ej. contenido desactualizado, se reemplaza por otro curso…"></textarea><div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="archOk">Archivar</button></div>`,{onMount:(ov,close)=>{ov.querySelector('#archOk').addEventListener('click',async()=>{const m=(ov.querySelector('#archMot').value||'').trim();if(!m){ui.toast('El motivo es obligatorio','warn');return;}const r=await Promise.resolve(CX.acadData.archiveCourse(rr,b.dataset.cid,m,CX.permissions.ctx()));if(!r?.ok){ui.toast('🔒 '+(r?.error||r?.code||'No se pudo archivar'),'warn',4200);return;}close();draw();ui.toast('Curso archivado · auditado','ok');});}});
     }));
     host.querySelectorAll('.acad-restore').forEach(b=>b.addEventListener('click',(e)=>{e.stopPropagation();const rr=role==='admin'?(CX._acadAud||'admin'):role;
-      ui.modal('♻️ Restaurar curso',`<p style="font-size:12px;color:var(--t2);margin-bottom:6px">El curso vuelve a estado <b>Borrador</b> — desde ahí sigue el flujo normal (enviar a revisión → aprobar → publicar).</p><label class="lbl">Motivo (obligatorio)</label><textarea class="inp" id="resMot" rows="2" placeholder="Ej. vuelve a ser vigente…"></textarea><div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="resOk">Restaurar a borrador</button></div>`,{onMount:(ov,close)=>{ov.querySelector('#resOk').addEventListener('click',()=>{
-        const m=(ov.querySelector('#resMot').value||'').trim();
-        if(!m){ ui.toast('El motivo es obligatorio','warn'); return; }
-        const r=CX.acadData.setCourseState(rr,b.dataset.cid,'borrador',{reason:m,ctx:CX.permissions.ctx()});
-        if(!r.ok){ ui.toast('🔒 '+r.error,'warn',4200); return; }
+      ui.modal('♻️ Restaurar curso',`<p style="font-size:12px;color:var(--t2);margin-bottom:6px">El curso vuelve a estado <b>Borrador</b> — desde ahí sigue el flujo normal (enviar a revisión → aprobar → publicar).</p><label class="lbl">Motivo (obligatorio)</label><textarea class="inp" id="resMot" rows="2" placeholder="Ej. vuelve a ser vigente…"></textarea><div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="resOk">Restaurar a borrador</button></div>`,{onMount:(ov,close)=>{ov.querySelector('#resOk').addEventListener('click',async()=>{
+        const m=(ov.querySelector('#resMot').value||'').trim();if(!m){ui.toast('El motivo es obligatorio','warn');return;}
+        const r=await Promise.resolve(CX.acadData.setCourseState(rr,b.dataset.cid,'borrador',{reason:m,ctx:CX.permissions.ctx()}));if(!r.ok){ui.toast('🔒 '+(r.error||r.code),'warn',4200);return;}
         close();draw();ui.toast('Curso restaurado a Borrador · auditado','ok');
       });}});
     }));
@@ -2646,9 +2644,9 @@ CX.module('aprendizaje', ({data,role,ui})=>{
     host.querySelector('#acadNewCat')?.addEventListener('click',()=>ui.modal('＋ Nueva categoría',`
       <label class="lbl">Nombre de la categoría</label><input class="inp" id="ncatN" placeholder="Ej. Investigación de mercados" style="margin-bottom:12px">
       <div style="text-align:right"><button class="btn btn-pr btn-sm" id="ncatSave">Crear</button></div>
-    `,{onMount:(ov,close)=>ov.querySelector('#ncatSave').addEventListener('click',()=>{const n=(ov.querySelector('#ncatN').value||'').trim();if(!n){ui.toast('Pon un nombre','warn');return;}if(!CX.acadData.CATS.includes(n))CX.acadData.CATS.push(n);try{localStorage.setItem('cx_acad_cats',JSON.stringify(CX.acadData.CATS));}catch(e){}close();draw();ui.toast('Categoría "'+n+'" creada','ok');})}));
+    `,{onMount:(ov,close)=>ov.querySelector('#ncatSave').addEventListener('click',async()=>{const n=(ov.querySelector('#ncatN').value||'').trim();if(!n){ui.toast('Pon un nombre','warn');return;}const r=await Promise.resolve(CX.acadData.addCategory(n));if(!r?.ok){ui.toast('🔒 '+(r?.error||r?.code||'No se pudo crear la categoría'),'warn',4200);return;}close();draw();ui.toast('Categoría "'+n+'" creada','ok');})}));
     host.querySelectorAll('.acad-edit').forEach(b=>b.addEventListener('click',(e)=>{e.stopPropagation();const rr=role==='admin'?(CX._acadAud||'admin'):(role==='cliente'?'cliente':'shopper');const cc=getCourses().find(x=>x.id===b.dataset.cid);if(!cc)return;
-      ui.modal('✎ Editar curso',`<div class="grid g2" style="gap:8px 12px"><div><label class="lbl">Nombre</label><input class="inp" id="ecN" value="${(cc.n||'').replace(/"/g,'&quot;')}"></div><div><label class="lbl">Categoría</label><select class="sel" id="ecC">${CX.acadData.CATS.filter(c=>c!=='Todos').map(c=>`<option ${c===cc.cat?'selected':''}>${c}</option>`).join('')}</select></div><div style="grid-column:1/3"><label class="lbl">Descripción</label><textarea class="inp" id="ecD" rows="2">${cc.desc||''}</textarea></div>
+      ui.modal('✎ Editar curso',`<div class="grid g2" style="gap:8px 12px"><div><label class="lbl">Nombre</label><input class="inp" id="ecN" value="${(cc.n||'').replace(/"/g,'&quot;')}"></div><div><label class="lbl">Categoría</label><select class="sel" id="ecC">${CX.acadData.categories().filter(c=>c!=='Todos').map(c=>`<option ${c===cc.cat?'selected':''}>${c}</option>`).join('')}</select></div><div style="grid-column:1/3"><label class="lbl">Descripción</label><textarea class="inp" id="ecD" rows="2">${cc.desc||''}</textarea></div>
         ${CX.acadData.isCustom(rr,cc.id)?`<div style="grid-column:1/3;border-top:1px solid var(--border-2);margin-top:4px;padding-top:10px"><label class="lbl">Alcance (opcional — vacío en un eje = visible para todos en ese eje)</label>
           <div class="grid g2" style="gap:6px 10px">
             <div><span style="font-size:10px;color:var(--t3)">Tenant</span><div class="inp" style="background:var(--panel-2);color:var(--t2);cursor:default">${CX.BRAND.id} <span style="color:var(--t3);font-size:10px">(heredado, no editable)</span></div></div>
@@ -2662,14 +2660,14 @@ CX.module('aprendizaje', ({data,role,ui})=>{
           <div style="font-size:10.5px;color:var(--t3);margin-top:6px">Creador: <b>${cc.creador||'—'}</b>${cc.revisadoPor?' · Revisado por: <b>'+cc.revisadoPor+'</b>':''}${cc.aprobadoPor?' · Aprobado por: <b>'+cc.aprobadoPor+'</b>':''}</div>
         </div>`:''}
         ${CX.acadData.isCustom(rr,cc.id)?`<div style="grid-column:1/3;font-size:10.5px;color:var(--t3)">Estado: <b>${({borrador:'📝 Borrador',en_revision:'👀 En revisión',aprobado:'✅ Aprobado',archivado:'🗄 Archivado',eliminado:'🗑 Eliminado',publicado_preview:'✓ Publicado (vista previa)'}[cc.estado]||'—')}</b> · contenido v${cc.contentVersion||1} · flujo v${cc.workflowVersion||1}</div>
-        <div style="grid-column:1/3;display:flex;gap:6px;flex-wrap:wrap;margin-top:2px">${(CX.acadData.ALLOWED_TRANSITIONS[cc.estado||'borrador']||[]).filter(s=>s!=='archivado'&&s!=='eliminado').map(s=>`<button class="btn btn-soft btn-sm acadTrans" data-to="${s}" style="font-size:10.5px;padding:4px 9px">→ ${({borrador:'Borrador',en_revision:'Enviar a revisión',aprobado:'Aprobar',publicado_preview:'Publicar (vista previa)'}[s]||s)}</button>`).join('')}</div>`:''}</div><div style="text-align:right;margin-top:10px;display:flex;justify-content:space-between">${CX.acadData.isCustom(rr,cc.id)?'<button class="btn btn-ghost btn-sm" id="ecDel" style="color:var(--red)">🗑 Eliminar</button>':'<span></span>'}<button class="btn btn-pr btn-sm" id="ecSave">Guardar</button></div>`,{onMount:(ov,close)=>{ov.querySelector('#ecSave').addEventListener('click',()=>{
+        <div style="grid-column:1/3;display:flex;gap:6px;flex-wrap:wrap;margin-top:2px">${(CX.acadData.ALLOWED_TRANSITIONS[cc.estado||'borrador']||[]).filter(s=>s!=='archivado'&&s!=='eliminado').map(s=>`<button class="btn btn-soft btn-sm acadTrans" data-to="${s}" style="font-size:10.5px;padding:4px 9px">→ ${({borrador:'Borrador',en_revision:'Enviar a revisión',aprobado:'Aprobar',publicado_preview:'Publicar (vista previa)'}[s]||s)}</button>`).join('')}</div>`:''}</div><div style="text-align:right;margin-top:10px;display:flex;justify-content:space-between">${CX.acadData.isCustom(rr,cc.id)?'<button class="btn btn-ghost btn-sm" id="ecDel" style="color:var(--red)">🗑 Eliminar</button>':'<span></span>'}<button class="btn btn-pr btn-sm" id="ecSave">Guardar</button></div>`,{onMount:(ov,close)=>{ov.querySelector('#ecSave').addEventListener('click',async()=>{
         /* T2.B (paquete V108): scope ya no es CSV libre — se lee de <select multiple> con IDs
            estables de catálogos reales (proyectos, CX.GEO, CX.ROLES, CX.MODULES, niveles y
            paquetes curados). tenantId siempre se fija al tenant activo (CX.BRAND.id), heredado
            y no editable — todo curso queda vinculado a un tenant real. */
         const multi=(sel)=>{const el=ov.querySelector(sel); if(!el) return undefined; return [...el.selectedOptions].map(o=>o.value).filter(Boolean);};
         const scope=ov.querySelector('#ecScProj')?{tenantId:[CX.BRAND.id],projectId:multi('#ecScProj'),pais:multi('#ecScPais'),rol:multi('#ecScRol'),nivel:multi('#ecScNivel'),modulo:multi('#ecScModulo'),paquete:multi('#ecScPaquete')}:cc.scope;
-        const r=CX.acadData.editCourse(rr,cc.id,{n:ov.querySelector('#ecN').value.trim(),cat:ov.querySelector('#ecC').value,desc:ov.querySelector('#ecD').value.trim(),scope});if(!r.ok){ui.toast('🔒 '+r.error,'warn',4200);return;}
+        const r=await Promise.resolve(CX.acadData.editCourse(rr,cc.id,{n:ov.querySelector('#ecN').value.trim(),cat:ov.querySelector('#ecC').value,desc:ov.querySelector('#ecD').value.trim(),scope},CX.permissions.ctx()));if(!r.ok){ui.toast('🔒 '+(r.error||r.code),'warn',4200);return;}
         /* OLA3 (paquete V120→V121, notificación "manual/curso actualizado" — antes solo toast) */
         CX.notif && CX.notif.push({to:'all',tipo:'academia_curso',icon:'📚',tono:'n',titulo:'Curso actualizado',txt:(cc.n||'Curso')+' tiene cambios nuevos',nav:'aprendizaje'});
         close();draw();ui.toast('Curso actualizado · auditado · notificación registrada','ok');});
@@ -2700,21 +2698,21 @@ CX.module('aprendizaje', ({data,role,ui})=>{
           ? 'quien revisó ('+cc.revisadoPor+')'
           : (creadorId && sessionActorId===creadorId ? 'quien creó ('+cc.creador+')' : null);
         const actorAvailable = needsActor ? (sessionActor && !blockedReason) : true;
-        ui.modal('Cambiar estado → '+to,`<p style="font-size:12px;color:var(--t2);margin-bottom:8px">"${(cc.n||'').replace(/"/g,'&quot;')}" pasará a estado <b>${to}</b>.</p>${needsActor?(actorAvailable?`<div style="font-size:12px;color:var(--t2);margin-bottom:10px">${to==='en_revision'?'Revisa':'Aprueba'}: <b>${sessionActor}</b> (identidad de la sesión activa)</div>`:`<div class="bdg bdg-a" style="margin-bottom:10px;display:inline-block">Preview · requiere usuarios/Auth</div><div style="font-size:11.5px;color:var(--t3);margin-bottom:8px">Este prototipo no tiene un catálogo de usuarios/Auth con una segunda identidad distinta de ${blockedReason||'quien creó el curso'}. En producción, Auth real permite iniciar sesión como el revisor/aprobador correspondiente; aquí el flujo queda pendiente para no simular una separación de funciones inexistente.</div>`):''}<label class="lbl">Motivo</label><textarea class="inp" id="trMot" rows="2" placeholder="Explica el cambio de estado…"></textarea><div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="trOk" ${actorAvailable?'':'disabled style="opacity:.5;cursor:not-allowed"'}>Confirmar</button></div>`,{onMount:(o2,c2)=>{o2.querySelector('#trOk').addEventListener('click',()=>{
+        ui.modal('Cambiar estado → '+to,`<p style="font-size:12px;color:var(--t2);margin-bottom:8px">"${(cc.n||'').replace(/"/g,'&quot;')}" pasará a estado <b>${to}</b>.</p>${needsActor?(actorAvailable?`<div style="font-size:12px;color:var(--t2);margin-bottom:10px">${to==='en_revision'?'Revisa':'Aprueba'}: <b>${sessionActor}</b> (identidad de la sesión activa)</div>`:`<div class="bdg bdg-a" style="margin-bottom:10px;display:inline-block">Preview · requiere usuarios/Auth</div><div style="font-size:11.5px;color:var(--t3);margin-bottom:8px">Este prototipo no tiene un catálogo de usuarios/Auth con una segunda identidad distinta de ${blockedReason||'quien creó el curso'}. En producción, Auth real permite iniciar sesión como el revisor/aprobador correspondiente; aquí el flujo queda pendiente para no simular una separación de funciones inexistente.</div>`):''}<label class="lbl">Motivo</label><textarea class="inp" id="trMot" rows="2" placeholder="Explica el cambio de estado…"></textarea><div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="trOk" ${actorAvailable?'':'disabled style="opacity:.5;cursor:not-allowed"'}>Confirmar</button></div>`,{onMount:(o2,c2)=>{o2.querySelector('#trOk').addEventListener('click',async()=>{
           if(!actorAvailable){ ui.toast('Vista previa · requiere gestión de usuarios/acceso para esta transición','warn',3600); return; }
           const m=(o2.querySelector('#trMot').value||'').trim();
           const actor=needsActor?sessionActor:'';
           const opts={reason:m,ctx:CX.permissions.ctx()};
           if(to==='en_revision'){ opts.revisor=actor; opts.revisorId=sessionActorId; }
           if(to==='aprobado'){ opts.aprobador=actor; opts.aprobadorId=sessionActorId; }
-          const r=CX.acadData.setCourseState(rr,cc.id,to,opts);
-          if(!r.ok){ ui.toast('🔒 '+r.error,'warn',4200); return; }
+          const r=await Promise.resolve(CX.acadData.setCourseState(rr,cc.id,to,opts));
+          if(!r.ok){ui.toast('🔒 '+(r.error||r.code),'warn',4200);return;}
           c2();draw();ui.toast('Curso → '+to+' · auditado','ok');
         });}});
       }));
       ov.querySelector('#ecDel')?.addEventListener('click',()=>{
         close();
-        ui.modal('🗑 Eliminar curso',`<p style="font-size:12px;color:var(--t2);margin-bottom:8px">"${(cc.n||'').replace(/"/g,'&quot;')}" se marcará como eliminado (recuperable desde "Ver archivados") — no se borra de forma irreversible.</p><label class="lbl">Motivo (obligatorio)</label><textarea class="inp" id="delMot" rows="2" placeholder="Ej. duplicado por error, contenido incorrecto…"></textarea><div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="delOk" style="background:var(--red);border-color:var(--red)">Eliminar</button></div>`,{onMount:(o2,c2)=>{o2.querySelector('#delOk').addEventListener('click',()=>{const m=(o2.querySelector('#delMot').value||'').trim();if(!m){ui.toast('El motivo es obligatorio','warn');return;}const rDel=CX.acadData.delCourse(rr,cc.id,m,CX.permissions.ctx());if(!rDel){ui.toast('🔒 No se pudo eliminar (permiso o transición no válida)','warn',4200);return;}c2();draw();ui.toast('Curso eliminado (recuperable) · auditado','');});}});
+        ui.modal('🗑 Eliminar curso',`<p style="font-size:12px;color:var(--t2);margin-bottom:8px">"${(cc.n||'').replace(/"/g,'&quot;')}" se marcará como eliminado (recuperable desde "Ver archivados") — no se borra de forma irreversible.</p><label class="lbl">Motivo (obligatorio)</label><textarea class="inp" id="delMot" rows="2" placeholder="Ej. duplicado por error, contenido incorrecto…"></textarea><div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="delOk" style="background:var(--red);border-color:var(--red)">Eliminar</button></div>`,{onMount:(o2,c2)=>{o2.querySelector('#delOk').addEventListener('click',async()=>{const m=(o2.querySelector('#delMot').value||'').trim();if(!m){ui.toast('El motivo es obligatorio','warn');return;}const rDel=await Promise.resolve(CX.acadData.delCourse(rr,cc.id,m,CX.permissions.ctx()));if(!rDel?.ok){ui.toast('🔒 '+(rDel?.error||rDel?.code||'No se pudo eliminar'),'warn',4200);return;}c2();draw();ui.toast('Curso eliminado (recuperable) · auditado','');});}});
       });}});
     }));
     host.querySelector('#acadNew')?.addEventListener('click',()=>ui.modal('✨ Crear módulo con IA',`
@@ -2727,7 +2725,7 @@ CX.module('aprendizaje', ({data,role,ui})=>{
       /* P0.1 (V98): heurística local directa — nunca se llama CX.ai.ask() (available() es
          siempre false en el navegador); nunca bloquea por falta de proveedor configurado. */
       ui.toast('Leyendo material y generando borrador local…','',2000);
-      CX.ai.readAttachment(ov.querySelector('#aiCourseF')).then(fileTxt=>{
+      CX.ai.readAttachment(ov.querySelector('#aiCourseF')).then(async fileTxt=>{
         const tema=(pasted+fileTxt).trim();
         if(!tema){ui.toast('Describe el tema o adjunta material','warn');return;}
         /* parte el tema/material en 3-4 bloques y arma lecciones + un quiz genérico */
@@ -2739,8 +2737,8 @@ CX.module('aprendizaje', ({data,role,ui})=>{
         const parts=res.split(/##\s+/).filter(Boolean);
         const lessons=parts.map((p,i)=>{const nl=p.indexOf('\n');const n=p.slice(0,nl).trim()||'Lección '+(i+1);const html=p.slice(nl+1).trim();return {id:'l'+Date.now().toString(36)+i,n,ic:/quiz|evalua/i.test(n)?'❓':'📘',tipo:/quiz|evalua/i.test(n)?'quiz':'texto',content:'<div class="acad-content">'+html+'</div>'};});
         const rr=role==='admin'?(CX._acadAud||'admin'):(role==='cliente'?'cliente':'shopper');
-        const rAdd=CX.acadData.addCourse(rr,{cat:activeCat==='Todos'?'IA':activeCat,ic:'✨',color:'#7c3aed',n:tema.slice(0,60),desc:'Borrador local (heurística, sin IA real)',lessons});
-        if(!rAdd.ok){ ui.toast('🔒 '+rAdd.error,'warn',4200); return; }
+        const rAdd=await Promise.resolve(CX.acadData.addCourse(rr,{cat:activeCat==='Todos'?'IA':activeCat,ic:'✨',color:'#7c3aed',n:tema.slice(0,60),desc:'Borrador generado localmente; persistencia sólo tras ACK durable del proveedor',lessons},CX.permissions.ctx()));
+        if(!rAdd.ok){ui.toast('🔒 '+(rAdd.error||rAdd.code),'warn',4200);return;}
         close();draw();ui.toast('Curso generado (borrador local) · revisa, itera y publica','ok',4000);
       });
     })}));

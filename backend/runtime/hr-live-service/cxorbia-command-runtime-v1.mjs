@@ -7,6 +7,7 @@ import { createOperationalCommandProvider } from '../cxorbia-operational-command
 import { createShopperCommandProvider } from '../cxorbia-shopper-command-provider-v1.mjs';
 import { createFinanceCommandProvider } from '../cxorbia-finance-command-provider-v1.mjs';
 import { createCommercialCommandProvider } from '../cxorbia-commercial-command-provider-v1.mjs';
+import { createAcademyCommandProvider } from '../cxorbia-academy-command-provider-v1.mjs';
 
 export const VERSION='cxorbia-command-runtime-v1';
 const ROUTE='/v1/cxorbia/commands';
@@ -14,6 +15,7 @@ const PROJECT_COMMANDS=new Set(['project.create','project.update','period.create
 const SHOPPER_COMMANDS=new Set(['shopper.create','shopper.update','shopper.credential.reset','shopper.identity.adjudicate']);
 const FINANCE_COMMANDS=new Set(['finance.reconcile.visit','finance.historical.reconcile','finance.payment.batch','finance.movement.create','finance.account.create','finance.account.apply']);
 const COMMERCIAL_COMMANDS=new Set(['client.create','client.update','crm.account.create','crm.account.update','crm.contact.create','crm.contact.update','crm.opportunity.create','crm.opportunity.update','crm.column.create','crm.column.update','crm.column.delete']);
+const ACADEMY_COMMANDS=new Set(['academy.course.create','academy.course.update','academy.course.state','academy.category.create']);
 const str=v=>String(v==null?'':v).trim();
 const json=(res,status,body)=>{res.statusCode=status;res.setHeader('Content-Type','application/json; charset=utf-8');res.end(JSON.stringify(body));};
 const blocked=(code,extra={})=>({ok:false,status:'blocked',committed:false,providerAck:false,successUiAllowed:false,localMutation:false,localStorageWrite:false,providerWrites:0,code,production:false,...extra});
@@ -28,6 +30,7 @@ export function commandProviderKind(commandType){
   if(SHOPPER_COMMANDS.has(type))return 'shopper';
   if(FINANCE_COMMANDS.has(type))return 'finance';
   if(COMMERCIAL_COMMANDS.has(type))return 'commercial';
+  if(ACADEMY_COMMANDS.has(type))return 'academy';
   return 'operational';
 }
 
@@ -63,6 +66,7 @@ export function createProviderForCommand(command,overrides={}){
   const shopperPolicy=overrides.shopperPolicy??globalThis.CXORBIA_SHOPPER_COMMAND_PROVIDER_POLICY??null;
   const financePolicy=overrides.financePolicy??globalThis.CXORBIA_FINANCE_COMMAND_PROVIDER_POLICY??derivedFinancePolicy(operationalPolicy);
   const commercialPolicy=overrides.commercialPolicy??globalThis.CXORBIA_COMMERCIAL_COMMAND_PROVIDER_POLICY??null;
+  const academyPolicy=overrides.academyPolicy??globalThis.CXORBIA_ACADEMY_COMMAND_PROVIDER_POLICY??null;
   const hrSnapshot=overrides.hrSnapshot??globalThis.CXORBIA_COMMAND_HR_SNAPSHOT??null;
   const hrRevision=overrides.hrRevision??globalThis.CXORBIA_COMMAND_HR_REVISION??'';
   if(!auth||!db)return {provider:null,kind,error:'COMMAND_PROVIDER_DEPENDENCIES_NOT_CONFIGURED'};
