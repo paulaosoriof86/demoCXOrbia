@@ -7205,7 +7205,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$FOCAL_SOURCE" = "4f87cb0155162674d459b09e3725dd585c84709d"
+          test "$FOCAL_SOURCE" = "7b8b88608c9cd38cc97726c3f17aab55a51f1715"
           test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
           git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
           node --check app/modules/midia.js
