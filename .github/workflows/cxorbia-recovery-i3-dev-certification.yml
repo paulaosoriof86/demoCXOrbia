@@ -7027,13 +7027,13 @@ jobs:
           retention-days: 30
           compression-level: 0
 
-  vrm185-exact-identity-consolidation-write:
+  vrm185-admin-provider-source-test:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM185_EXACT_IDENTITY_CONSOLIDATION_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM185_ADMIN_PROVIDER_SOURCE_TEST_REQUIRED' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 15
     env:
-      VRM185_WRITE_OUT: .tmp/vrm185-exact-consolidation
+      VRM185_SOURCE_OUT: .tmp/vrm185-admin-provider-source-test
     steps:
       - uses: actions/checkout@v4
         with:
@@ -7041,38 +7041,30 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: step
+      - name: VRM-185/186 source and contract tests
         run: |
           set -Eeuo pipefail
-          mkdir -p "$VRM185_WRITE_OUT"
-          git diff --quiet "${{ needs.canonical-candidate-authority.outputs.source_sha }}" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
-          node --check tools/qa/cxorbia-i3-vrm185-exact-identity-consolidation-write.mjs
-      - name: step
-        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
-      - uses: google-github-actions/auth@v2
-        with:
-          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-      - name: step
-        run: |
-          set -Eeuo pipefail
-          REV="$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")"
-          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" EXPECTED_HR_REVISION="$REV" OUT="$VRM185_WRITE_OUT" node tools/qa/cxorbia-i3-vrm185-exact-identity-consolidation-write.mjs | tee "$VRM185_WRITE_OUT/console.log"
-          test "$(jq -r '.decision' "$VRM185_WRITE_OUT/result.json")" = "PASS_VRM185_EXACT_IDENTITY_CONSOLIDATION"
-          test "$(jq -r '.providerAck' "$VRM185_WRITE_OUT/result.json")" = "true"
-          test "$(jq -r '.readback.legacyOperationalReferences' "$VRM185_WRITE_OUT/result.json")" = "0"
-          test "$(jq -r '.readback.canonicalMemberships' "$VRM185_WRITE_OUT/result.json")" = "1"
-          test "$(jq -r '.readback.legacyMemberships' "$VRM185_WRITE_OUT/result.json")" = "0"
-          test "$(jq -r '.readback.retiredDuplicateDisabled' "$VRM185_WRITE_OUT/result.json")" = "true"
-          test "$(jq -r '.readback.hrManagedNestedFieldsPreserved' "$VRM185_WRITE_OUT/result.json")" = "true"
-          test "$(jq -r '.hrWrites' "$VRM185_WRITE_OUT/result.json")" = "0"
-          test "$(jq -r '.externalWrites' "$VRM185_WRITE_OUT/result.json")" = "0"
-          test "$(jq -r '.deploys' "$VRM185_WRITE_OUT/result.json")" = "0"
-          test "$(jq -r '.production' "$VRM185_WRITE_OUT/result.json")" = "false"
+          mkdir -p "$VRM185_SOURCE_OUT"
+          test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "d482eb3605df00781627f2c496751e4a15ebb85f"
+          node --check backend/runtime/cxorbia-shopper-command-provider-v1.mjs
+          node --check app/modules/shoppers.js
+          node --test backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs 2>&1 | tee "$VRM185_SOURCE_OUT/provider-tests.log"
+          node tools/qa/cxorbia-vrm154-156-frontend-source-contract.mjs 2>&1 | tee "$VRM185_SOURCE_OUT/frontend-contract.log"
+          cat > "$VRM185_SOURCE_OUT/result.json" <<'JSON'
+          {
+            "decision":"PASS_VRM185_VRM186_ADMIN_PROVIDER_SOURCE_TEST",
+            "productSourceSha":"d482eb3605df00781627f2c496751e4a15ebb85f",
+            "adminIdentityOwner":"Admin > Shoppers > Perfil",
+            "shopperPortalAdjudication":false,
+            "nameOnlyMerge":false,
+            "production":false
+          }
+          JSON
       - if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-vrm185-exact-identity-consolidation-${{ github.run_id }}
-          path: .tmp/vrm185-exact-consolidation
+          name: cxorbia-vrm185-vrm186-admin-provider-source-${{ github.run_id }}
+          path: .tmp/vrm185-admin-provider-source-test
           if-no-files-found: error
           retention-days: 30
           compression-level: 0

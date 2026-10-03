@@ -9505,7 +9505,7 @@
       "secondaryClassification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "paula.osorio authenticates but exact session profile/history/KPIs do not resolve",
-      "state": "SAFE_CONSOLIDATION_WRITE_MATCHER_FIXED_RETRY_ARMED",
+      "state": "SOURCE_FIXED_ADMIN_PROVIDER_PENDING_TEST",
       "rootCauseStatus": "PROVEN",
       "observed": "Run 914 authenticates paula.osorio, HR authority is applied and all shopper routes navigate, but resolveExactSessionShopper returns identity=false; country/history/KPIs are empty.",
       "evidence": {
@@ -9704,7 +9704,82 @@
         "externalWrites": 0,
         "deploys": 0,
         "production": false
+      },
+      "productFix": {
+        "sourceSha": "d482eb3605df00781627f2c496751e4a15ebb85f",
+        "sourceTree": "bd67e92aba1cae8035c1a2f904bcf398ebcb89f6",
+        "owner": "Admin > Shoppers > Perfil -> shopper.identity.adjudicate -> durable shopper provider",
+        "files": [
+          "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+          "backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs",
+          "app/modules/shoppers.js",
+          "tools/qa/cxorbia-vrm154-156-frontend-source-contract.mjs"
+        ],
+        "behavior": [
+          "unique current password-proof principal is retained as keeper without reading or persisting its password",
+          "keeper claims and active membership move to the selected canonical shopperId",
+          "other exact same-human principals are disabled/superseded",
+          "canonical profile preserves HR-managed authority and fills missing non-HR data from aliases",
+          "top-level operational references are remapped; nested hrManaged provenance is not rewritten",
+          "crosswalks and tenant adjudication links converge on the selected canonical identity",
+          "multiple password-proof principals fail closed",
+          "provider ACK and idempotency are mandatory"
+        ],
+        "adHocWriterExecutionPath": false,
+        "production": false
+      },
+      "writeAttempt2": {
+        "runId": 37099087413,
+        "runNumber": 919,
+        "jobId": 111134948364,
+        "artifactId": 11264939035,
+        "artifactDigest": "sha256:22ce11bfda6797923592370c97e276ca90e3582d4905800dbe11dba7dc8a4062",
+        "classification": "MAPPING_FAILURE",
+        "error": "VRM185_HUMAN_ADJUDICATION_AUTHORITY_COUNT_0",
+        "authWrites": 0,
+        "firestoreWrites": 0,
+        "hrWrites": 0,
+        "externalWrites": 0,
+        "deploys": 0,
+        "production": false,
+        "disposition": "ABANDONED_AD_HOC_PATH_NO_WRITES"
       }
+    },
+    "VRM-186": {
+      "id": "VRM-186",
+      "classification": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "title": "Admin shopper identity review did not normalize all exact-conflict schemas and allowed a name-only merge path",
+      "state": "SOURCE_FIXED_PENDING_TEST",
+      "rootCauseStatus": "PROVEN",
+      "rootCause": "Admin > Shoppers only indexed review items through shopperId/shopperIds, while exact technical conflicts can arrive through liveShopperId/candidates/sourceShopperId/canonicalShopperId/id. In addition, display_name_collision_not_auto_merged was the only path that enabled the merge modal, contradicting the frozen rule that a matching name alone is never merge authority.",
+      "correction": {
+        "sourceSha": "d482eb3605df00781627f2c496751e4a15ebb85f",
+        "sourceTree": "bd67e92aba1cae8035c1a2f904bcf398ebcb89f6",
+        "owner": "app/modules/shoppers.js",
+        "normalizedReviewKeys": [
+          "shopperId",
+          "shopperIds",
+          "sourceShopperId",
+          "canonicalShopperId",
+          "liveShopperId",
+          "id",
+          "candidates"
+        ],
+        "exactResolvableReasons": [
+          "conflicting_exact_crosswalk",
+          "ambiguous_exact_technical_anchor",
+          "conflicting_exact_visit_crosswalk",
+          "exact_profile_alias_requires_admin_resolution"
+        ],
+        "nameOnlyMerge": false,
+        "shopperPortalMayAdjudicate": false,
+        "adminHumanConfirmationRequired": true,
+        "providerConsolidationAckRequired": true,
+        "production": false
+      },
+      "regressionGate": "VRM185_ADMIN_IDENTITY_REVIEW_SCHEMA_NOT_NORMALIZED / VRM185_NAME_ONLY_MERGE_NOT_BLOCKED / VRM185_SHOPPER_PORTAL_IDENTITY_ADJUDICATION_LEAK",
+      "production": false
     }
   },
   "latestEvidenceOverrides": {
@@ -10307,14 +10382,15 @@
       "VRM-182",
       "VRM-183",
       "VRM-184",
-      "VRM-185"
+      "VRM-185",
+      "VRM-186"
     ],
-    "findingCount": 185,
-    "expectedCurrentRange": "VRM-001..VRM-185",
-    "nextFindingId": "VRM-186",
+    "findingCount": 186,
+    "expectedCurrentRange": "VRM-001..VRM-186",
+    "nextFindingId": "VRM-187",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_VRM185_EXACT_IDENTITY_CONSOLIDATION_REQUIRED",
+    "terminalState": "HOLD_VRM185_ADMIN_PROVIDER_SOURCE_TEST_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -10414,9 +10490,12 @@
     "identityResolutionAuthority": {
       "owner": "Admin > Shoppers > Perfil",
       "shopperPortalMayResolve": false,
+      "command": "shopper.identity.adjudicate",
+      "provider": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
       "exactSameHumanOnly": true,
       "fuzzyOrNameMerge": false,
       "preserveAllCumulativeDomains": true,
+      "providerAckRequired": true,
       "production": false
     }
   },
@@ -10435,7 +10514,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Execute the same single VRM-185 consolidation once with the authority matcher aligned to run 917 exact token semantics and frozen authority-link fingerprint df210da083c2eaeca79e. No product change, no deploy, production untouched.",
+  "exactNextAction": "Run source-only VRM-185/186 tests for exact product source d482eb3605df00781627f2c496751e4a15ebb85f. No DEV mutation, no deploy. If PASS, materialize this single cumulative source exactly once in Recovery DEV; then execute the already-frozen Paula identity decision through the Admin command/provider path and re-run same-DEV acceptance.",
   "supersedesGitBlob": "1dc39b2d5dc5aa1884181c963d94b75bec8b075c",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -10464,7 +10543,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-186",
+  "nextFindingId": "VRM-187",
   "lastControlFailure": {
     "id": "VRM-142",
     "classification": "AUTH_FAILURE",
@@ -13913,7 +13992,7 @@
     "next": "SHORT_HUMAN_VISUAL_RETEST",
     "production": false
   },
-  "activeBlocker": "VRM185_EXACT_IDENTITY_CONSOLIDATION_REQUIRED",
+  "activeBlocker": "VRM185_VRM186_ADMIN_PROVIDER_SOURCE_TEST_REQUIRED",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -14105,5 +14184,5 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-10-02",
-  "nextExactAction": "Execute the same single VRM-185 consolidation once with the authority matcher aligned to run 917 exact token semantics and frozen authority-link fingerprint df210da083c2eaeca79e. No product change, no deploy, production untouched."
+  "nextExactAction": "Run source-only VRM-185/186 tests for exact product source d482eb3605df00781627f2c496751e4a15ebb85f. No DEV mutation, no deploy. If PASS, materialize this single cumulative source exactly once in Recovery DEV; then execute the already-frozen Paula identity decision through the Admin command/provider path and re-run same-DEV acceptance."
 }
