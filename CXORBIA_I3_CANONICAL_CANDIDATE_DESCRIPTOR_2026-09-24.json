@@ -7,8 +7,8 @@
   "productSourceSha": "c5c4d002ab783391f915eaf7f41d69dc1005f215",
   "productTreeAuthority": "7909233675f6bed3021f90810edb3d1c696aaf2b",
   "predecessorProductSourceSha": "a62d4e5b49fce4464987ca55112221604647933c",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V210_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "04bdeffbf143bd40830db3360fdf95d3759abb83",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V211_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "f35be726a24d06b9fdc7baa0e389c8ebb0c8c91b",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Reproof VRM-195 runtime packaging closure on the current successor, materialize exactly one cumulative DEV preview from that same source, run same-artifact Admin+Shopper+HR+Finance readback, then give Paula the DEV URL and stop for explicit visual approval. Production remains DO_NOT_TOUCH.",
+  "exactNextAction": "Retry canonical authority on the unchanged product source c5c4d002ab783391f915eaf7f41d69dc1005f215 after the V211 control mapping correction; then perform the one DEV visual checkpoint materialization/readback. Production remains DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -596,13 +596,19 @@
     "findingId": "VRM-055"
   },
   "lastControlFailure": {
-    "findingId": "VRM-164",
-    "runId": 37037546815,
-    "runNumber": 863,
-    "jobId": 110939377408,
-    "classification": "RELEASE_COMPOSITION_FAILURE",
-    "rootCause": "historical V176 shell guard required source equality instead of predecessor lineage",
-    "productTouched": false,
+    "classification": "MAPPING_FAILURE",
+    "runId": 37151525624,
+    "runNumber": 975,
+    "jobId": 111286239239,
+    "code": "MAPPING_FAILURE:NEXT_FINDING_ID",
+    "observed": {
+      "ledgerGovernanceNextFindingId": "VRM-195",
+      "descriptorNextFindingId": "VRM-196",
+      "expected": "VRM-196"
+    },
+    "cause": "V210 added VRM-195 and advanced descriptor/root nextFindingId, but governance.nextFindingId remained VRM-195.",
+    "effect": "Canonical authority failed before build/deploy; product source c5c4d002... was not executed.",
+    "productMutation": false,
     "production": false
   },
   "lastSecondReviewProof": {
