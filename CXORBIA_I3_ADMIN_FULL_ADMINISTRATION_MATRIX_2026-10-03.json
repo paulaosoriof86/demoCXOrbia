@@ -1456,5 +1456,15 @@
   "humanVisualApprovalAllowed": false,
   "i4Allowed": false,
   "production": "DO_NOT_TOUCH",
-  "exactNextAction": "Proceed to VRM-193 route-by-route administration classification for support, bulletins, marketing, automations, integrations and mail. Keep source-PASS routes OPEN_BLOCKER until bounded package materialization; do not materialize DEV yet."
+  "exactNextAction": "Do not mutate VRM-193 or another product owner yet. Prepare one cumulative DEV visual checkpoint from current source a62d4e5b49fce4464987ca55112221604647933c; run same-artifact Admin+Shopper+HR+Finance readback; give Paula the DEV link and review route; wait for explicit visual approval. After approval close Phase A P0, Finance P0, Certifications and VRM-194 before VRM-193 P1.",
+  "visualPhaseAPriorityLock": {
+    "status": "FROZEN",
+    "addendum": "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-10-03_VISUAL_CHECKPOINT_PHASEA_PRIORITY_FROZEN.md",
+    "lock": "CXORBIA_I3_VISUAL_PHASEA_PRIORITY_LOCK_2026-10-03.json",
+    "humanVisualApprovalRequiredBeforeFurtherProductMutation": true,
+    "allShoppersTransversal": true,
+    "multiProject": true,
+    "cinepolisProjectScoped": true,
+    "vrm193Deferred": true
+  }
 }
