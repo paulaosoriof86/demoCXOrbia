@@ -38,6 +38,18 @@ CX.adminCfg = CX.adminCfg || {
 
 CX.module('administrabilidad', ({data, ui, role})=>{
   const host = ui.el('div');
+  const connectedTenantAuthority=()=>!!(CX.canonicalTenantAuthority&&CX.canonicalTenantAuthority()&&window.CX_PROTECTED_DEV_RUNTIME===true&&CX.BACKEND?.enableCommandWrites===true);
+  if(connectedTenantAuthority()){
+    const rt=window.CX_TENANT_RUNTIME_CONFIG||{},brand=CX.BRAND||{};
+    const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    const tenantName=rt.tenantName||brand.clientName||brand.name||'Tenant activo';
+    const countries=Array.isArray(rt.countries)&&rt.countries.length?rt.countries.join(', '):'según configuración vigente';
+    host.dataset.connectedTenantAdmin='read-only';
+    host.innerHTML=ui.ph('Centro de administración','Configuración protegida del tenant')+
+      '<div class="card card-p" data-connected-admin-readonly="true" style="margin-bottom:14px"><div class="card-t">Configuración vigente</div><div style="font-size:12.5px;color:var(--t2);line-height:1.7;margin-top:8px"><b>'+esc(tenantName)+'</b><br>Países: '+esc(countries)+'.</div></div>'+
+      '<div class="card card-p"><div class="card-t">Cambios protegidos</div><p style="font-size:12.5px;color:var(--t2);line-height:1.7;margin-top:8px">La identidad, el plan y los textos legales se muestran desde la configuración vigente. En esta operación no se crean versiones locales ni se muestran cambios como aplicados si todavía no existe una confirmación durable.</p><div class="flex wrap" style="gap:7px;margin-top:10px"><span class="bdg bdg-n">Identidad · solo lectura</span><span class="bdg bdg-n">Plan · solo lectura</span><span class="bdg bdg-n">NDA · solo lectura</span></div></div>';
+    return host;
+  }
   const GATE = { off:['⛔ Sin autorizar','r'], preview:['🧪 Vista previa','b'], human:['👤 Revisión humana','a'] };
   const NDA_ROLES = [['shopper','Evaluador'],['admin','Equipo administrativo'],['ops','Equipo operativo'],['coordinador','Coordinador'],['cliente','Cliente / Portal'],['super','Admin principal']];
   let tab = 'matriz';

@@ -1,6 +1,19 @@
 /* CXOrbia · Identidad de Marca — logo, colores, tipografía → aplica a toda la plataforma */
 CX.module('marca',({data,ui})=>{
   const host=ui.el('div');
+  const connectedTenantAuthority=()=>!!(CX.canonicalTenantAuthority&&CX.canonicalTenantAuthority()&&window.CX_PROTECTED_DEV_RUNTIME===true&&CX.BACKEND?.enableCommandWrites===true);
+  if(connectedTenantAuthority()){
+    const rt=window.CX_TENANT_RUNTIME_CONFIG||{},brand=CX.BRAND||{};
+    const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    const name=rt.tenantName||brand.clientName||brand.name||'Identidad vigente';
+    const logo=brand.logoUrl||brand.logo||rt.logoUrl||'';
+    host.dataset.connectedBrandAuthority='read-only';
+    host.innerHTML=ui.ph('Identidad de Marca','Identidad vigente protegida')+
+      '<div class="card card-p" data-connected-brand-readonly="true"><div class="between" style="gap:14px;align-items:center">'+
+      (logo?'<img class="cx-brand-logo" src="'+esc(logo)+'" alt="Logo del tenant" style="max-height:58px;max-width:180px;object-fit:contain">':'')+
+      '<div style="flex:1"><div class="card-t">'+esc(name)+'</div><p style="font-size:12.5px;color:var(--t2);line-height:1.7;margin-top:7px">Esta identidad se toma de la configuración vigente. La edición local está deshabilitada para evitar que un cambio del navegador se presente como configuración aplicada.</p></div><span class="bdg bdg-n">Solo lectura</span></div></div>';
+    return host;
+  }
   const BRAND_KEY='cx_brand_identity';
   const getBrand=()=>{try{return JSON.parse(localStorage.getItem(BRAND_KEY)||'null');}catch(e){return null;}};
   const saveBrand=(b)=>{localStorage.setItem(BRAND_KEY,JSON.stringify(b));};
