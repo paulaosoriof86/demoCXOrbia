@@ -561,7 +561,7 @@
       ],
       "contractFunctional": "Persistencia/Writes HR/ACK/idempotencia",
       "classification": "TRUE_FUNCTIONAL_DEFECT",
-      "actionRequired": "VRM-168 P0_PROVEN source successor requires existing V190 exact DEV materialization and live reproof before returning to MATCH.",
+      "actionRequired": "VRM-168 identity projection/card/action is repaired in sealed DEV; residual command mapping uses transient browser visit id instead of durable stable HR visit key. Source successor 9102918177d89d9e3d18cfb75c04aba8c29cba86 must pass existing source gate, one exact DEV materialization and same-source live reproof.",
       "preI4SuccessorCommits": [
         "672e7f624b1d0328ed1bb25b778ce4b44d52489c"
       ],
@@ -584,11 +584,11 @@
       "liveReproofState": "PENDING",
       "latestFindingId": "VRM-168",
       "latestClassification": "MAPPING_FAILURE",
-      "latestOwner": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+      "latestOwner": "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
       "latestSourceSuccessor": {
-        "sourceSha": "83d2385dc47f3bfd785a37072100fdbab11b5127",
-        "sourceTree": "e73408c999c691d37d74c248d668b649e5bb85e5",
-        "predecessorSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
+        "sourceSha": "9102918177d89d9e3d18cfb75c04aba8c29cba86",
+        "sourceTree": "0e6f61aa855b1d9677fd200403793099bfecb9b7",
+        "predecessorSha": "83d2385dc47f3bfd785a37072100fdbab11b5127",
         "state": "SOURCE_FIX_READY_EXACT_DEV_MATERIALIZATION",
         "production": false
       }
