@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_V190_DEV_MATERIALIZATION_REQUIRED",
+  "status": "HOLD_V190_LIVE_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6",
   "productTreeAuthority": "2e5b6af67aa0bbb5e0f79a37fe5dbab8453792b2",
   "predecessorProductSourceSha": "72c9114130d6fd1d3475957118b48e48469ad7c8",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V191_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "48707b713db3046f8ad6e2c092ad79ea656a0c5a",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V192_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "46e4bd5f6a8cbe391ab183199a1b996138f83458",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM186_ADMIN_EXACT_REVIEW_PAIR_NOT_NORMALIZED_LIVE",
+  "activeBlocker": "VRM185_VRM186_ADMIN_ADJUDICATION_AND_V190_REPROOF_REQUIRED",
   "nextFindingId": "VRM-187",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Materialize exactly product source ed15751c40bd90856ff8eead1825368fffff40c6 / tree 2e5b6af67aa0bbb5e0f79a37fe5dbab8453792b2 once in DEV through the existing canonical V190 materialization job. Prove modules/shoppers.js remote byte parity, no product drift, HR fresh, then update currentMaterialization from the resulting artifact and run the same-DEV Admin > Shoppers > Perfil identity adjudication for paula.osorio through the visible Resolver identidad control with provider ACK/idempotency/durable readback. No production.",
+  "exactNextAction": "Reuse exactly run 939 DEV materialization: runtime cxorbia-live-hr-dev-00255-7dq, digest sha256:3b67be76f5f85809456e8ad8d99b00992025e6145f896d2c707719e7e8920fa1, Hosting sites/cxorbia-backend-dev/versions/8608d2b0db40403e, HR f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305. No rebuild/redeploy. Execute visible Admin > Shoppers > Perfil identity adjudication for paula.osorio with exact canonical shopper_gt_1440137b73 only, provider ACK/idempotency/durable readback, then full same-DEV V190 reproof. Production DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -409,24 +409,25 @@
     "production": false
   },
   "currentMaterialization": {
-    "runId": 37100444254,
-    "runNumber": 925,
-    "jobId": 111138791148,
-    "artifactId": 11266400251,
-    "artifactDigest": "sha256:c2ced16af0d5e0ea97981e591168fb2be9da0ce3879a2999b03821e6e957969b",
+    "runId": 37127209268,
+    "runNumber": 939,
+    "jobId": 111214863083,
+    "artifactId": 11275079173,
+    "artifactDigest": "sha256:c522c4404cd9a30cf063d8661659f19a890e855816cedb3c53f3cae982ea4a75",
     "decision": "PASS_V190_EXACT_DEV_MATERIALIZATION",
-    "sourceSha": "72c9114130d6fd1d3475957118b48e48469ad7c8",
-    "sourceTree": "ab746be61fe85ef9a6982fe98bf19223e6f7172e",
-    "runtimeRevision": "cxorbia-live-hr-dev-00254-g98",
-    "runtimeDigest": "sha256:a556afcb082292750b5a126725f9405c68e9d1b8b432daf510fadbdd82fd4948",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/b07b427c39f086ab",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791006031583000",
+    "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6",
+    "sourceTree": "2e5b6af67aa0bbb5e0f79a37fe5dbab8453792b2",
+    "runtimeRevision": "cxorbia-live-hr-dev-00255-7dq",
+    "runtimeDigest": "sha256:3b67be76f5f85809456e8ad8d99b00992025e6145f896d2c707719e7e8920fa1",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/8608d2b0db40403e",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791035229758000",
     "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+    "shoppersRemoteSha256": "d4577d0f0a75767c45b2c9061b61de33fd0186ed5a3e3e822c6deafa7e0fdc66",
     "builds": 1,
     "runtimeDeploys": 1,
     "hostingDeploys": 1,
     "storageRulesDeploys": 1,
-    "state": "SUPERSEDED_BY_VRM186_SOURCE_FIX_PENDING_EXACT_DEV_MATERIALIZATION",
+    "state": "SEALED_VRM186_RESIDUAL_DEV_PENDING_ADMIN_ADJUDICATION_AND_V190_REPROOF",
     "production": false
   },
   "lastFocalAttempt": {
@@ -2895,7 +2896,7 @@
   "cumulativeObservationClosureGate": {
     "required": true,
     "timing": "I3_BEFORE_HUMAN_VISUAL_APPROVAL",
-    "sourceOfTruth": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V191_2026-10-03.json",
+    "sourceOfTruth": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V192_2026-10-03.json",
     "rule": "No finding or Paula observation may disappear because a later iteration, source, reproof or visual redesign supersedes it. Every observation must map to a ledger finding/acceptance item with current state, owner, evidence and final disposition.",
     "requiredDomains": [
       "Shoppers identity/profile/fusion/admin management",
@@ -2935,7 +2936,7 @@
       ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
     ],
     "behavior": "Normalize only project-scoped review-only profiles with exactly one currently visible exact technical alias; offer only that operational exact identity as canonical; retain human confirmation and provider ACK; no name/fuzzy/email/phone merge.",
-    "sourceProofState": "PENDING_CANONICAL_SOURCE_TEST_AND_EXACT_DEV_MATERIALIZATION",
+    "sourceProofState": "PASS_RUN939_EXACT_DEV_MATERIALIZATION_PENDING_ADMIN_LIVE_PROOF",
     "production": false
   }
 }
