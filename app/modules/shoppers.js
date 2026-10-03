@@ -119,6 +119,26 @@ CX.module('shoppers', ({data,ui})=>{
      Name/fuzzy similarity never authorizes a merge; exact technical evidence requires explicit
      Admin human confirmation and provider ACK. */
   const providerIdentityReviewItems=arr(data.__identityReviewQueue);
+  /* VRM-186 residual: a protected profile excluded from the operational list can still carry
+     one exact technical alias to a currently visible project shopper. Normalize ONLY that
+     deterministic one-to-one/project-scoped case into an Admin adjudication pair. */
+  const normalizedProviderIdentityReviewItems=providerIdentityReviewItems.map(item=>{
+    if(String(item?.reason||'')!=='no_exact_hr_crosswalk')return item;
+    const reviewId=String(item?.id||item?.shopperId||'').trim();
+    const currentProject=String(data.currentProjectId||'').trim();
+    const scopedProjects=[...new Set(arr(item?.projectIds).map(String).map(x=>x.trim()).filter(Boolean))];
+    const exactVisibleAliases=[...new Set(arr(item?.exactAliases).map(String).map(x=>x.trim()).filter(x=>x&&x!==reviewId&&!!data.getShopper(x)))];
+    if(!reviewId||!currentProject||!scopedProjects.includes(currentProject)||exactVisibleAliases.length!==1)return item;
+    const exactOperationalId=exactVisibleAliases[0];
+    return Object.assign({},item,{
+      reason:'exact_profile_alias_requires_admin_resolution',
+      candidates:[reviewId,exactOperationalId],
+      shopperIds:[reviewId,exactOperationalId],
+      canonicalOptions:[exactOperationalId],
+      requiresHumanAdjudication:true,
+      source:'platform_only_exact_alias_requires_admin_resolution'
+    });
+  });
   const syntheticExactAliasReviews=[];
   const seenAliasPairs=new Set();
   list().forEach(row=>{
@@ -131,8 +151,8 @@ CX.module('shoppers', ({data,ui})=>{
       syntheticExactAliasReviews.push({reason:'exact_profile_alias_requires_admin_resolution',candidates:pair,shopperIds:pair,requiresHumanAdjudication:true,source:'durable_exact_alias_profile'});
     });
   });
-  const identityReviewItems=[...providerIdentityReviewItems,...syntheticExactAliasReviews];
-  const reviewIds=item=>[item?.shopperId,item?.sourceShopperId,item?.canonicalShopperId,item?.liveShopperId,item?.id,...arr(item?.shopperIds),...arr(item?.candidates)].map(String).map(x=>x.trim()).filter(Boolean);
+  const identityReviewItems=[...normalizedProviderIdentityReviewItems,...syntheticExactAliasReviews];
+  const reviewIds=item=>[item?.shopperId,item?.sourceShopperId,item?.canonicalShopperId,item?.liveShopperId,item?.id,...arr(item?.shopperIds),...arr(item?.candidates),...arr(item?.exactAliases)].map(String).map(x=>x.trim()).filter(Boolean);
   const identityReviewIds=(()=>{const out=new Set();identityReviewItems.forEach(item=>reviewIds(item).forEach(id=>out.add(id)));return out;})();
   const identityReviewFor=id=>{id=String(id||'');return identityReviewItems.find(item=>reviewIds(item).includes(id))||null;};
   const identityReviewBadge=s=>identityReviewIds.has(String(s&&s.id||''))?ui.bdg('Revisar identidad','a'):'';
@@ -143,8 +163,17 @@ CX.module('shoppers', ({data,ui})=>{
     const reason=String(review.reason||'identity_review_required');
     const candidateIds=[...new Set([...arr(review.candidates),...arr(review.shopperIds)].map(String).map(x=>x.trim()).filter(Boolean))];
     const liveId=String(review.liveShopperId||review.sourceShopperId||'').trim();
-    const candidates=candidateIds.map(id=>({id,row:data.getShopper(id)})).filter(x=>x.row);
-    const exactResolvable=exactAdminReasons.has(reason)&&candidates.length>=1&&(reason==='exact_profile_alias_requires_admin_resolution'?candidates.length>=2:!!liveId);
+    const reviewOnlyId=String(review.id||review.shopperId||'').trim();
+    const candidates=candidateIds.map(id=>{
+      const row=data.getShopper(id);
+      if(row)return {id,row,reviewOnly:false};
+      if(id===reviewOnlyId&&String(review.source||'')==='platform_only_exact_alias_requires_admin_resolution'){
+        return {id,row:{id,nombre:review.nombre||'Referencia histórica',projectIds:arr(review.projectIds),exactAliases:arr(review.exactAliases),__identityReviewOnly:true},reviewOnly:true};
+      }
+      return null;
+    }).filter(Boolean);
+    const canonicalOptions=[...new Set((arr(review.canonicalOptions).length?arr(review.canonicalOptions):candidateIds).map(String).map(x=>x.trim()).filter(Boolean))];
+    const exactResolvable=exactAdminReasons.has(reason)&&candidates.length>=1&&(reason==='exact_profile_alias_requires_admin_resolution'?candidates.length>=2:!!liveId)&&canonicalOptions.length>=1;
     if(!exactResolvable){
       const sameName=reason==='display_name_collision_not_auto_merged';
       ui.modal('Revisar identidad · '+(s.nombre||'shopper'),`
