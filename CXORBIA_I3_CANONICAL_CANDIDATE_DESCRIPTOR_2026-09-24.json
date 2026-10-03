@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM187_SOURCE_REPROOF_REQUIRED",
+  "status": "HOLD_VRM188_SOURCE_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "3a9dac659c5f4b8f98877a53a1abeca8e422c987",
-  "productTreeAuthority": "ab9e9980b58fff21ed105f62df29fcba7dcae51c",
-  "predecessorProductSourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V196_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "9374c9f34cd920808c1fc6a046caead58e74c5d7",
+  "productSourceSha": "28e060d103f779084c14b401111dbc9da2cce8e2",
+  "productTreeAuthority": "1c83c172a533fb72854b8ff6c086972bb54233f3",
+  "predecessorProductSourceSha": "3a9dac659c5f4b8f98877a53a1abeca8e422c987",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V197_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "a3619dcb86322fcbb474c6b2c99fc5edc9a032ef",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM187_SOURCE_REPROOF_REQUIRED",
+  "activeBlocker": "VRM188_SOURCE_REPROOF_REQUIRED",
   "nextFindingId": "VRM-195",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run only vrm154-156-frontend-source-reproof on product source 3a9dac659c5f4b8f98877a53a1abeca8e422c987 / tree ab9e9980b58fff21ed105f62df29fcba7dcae51c. Require PASS_VRM154_156_FRONTEND_SOURCE_CONTRACT with documentResourceSuperAdmin=true, resourceBinaryProviderLifecycle=true and finance predecessor regressions PASS. Do not build or deploy. Production DO_NOT_TOUCH.",
+  "exactNextAction": "Run only the existing frontend/source reproof plus cxorbia-prei4-project-questionnaire-config.test.mjs on product source 28e060d103f779084c14b401111dbc9da2cce8e2 / tree 1c83c172a533fb72854b8ff6c086972bb54233f3. Require PASS_PREI4_PROJECT_QUESTIONNAIRE_CONFIG_SOURCE, no localStorage authority, project.update provider acceptance, live period projection and VRM187 predecessor regression PASS. Do not build or deploy.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -427,10 +427,10 @@
     "runtimeDeploys": 1,
     "hostingDeploys": 1,
     "storageRulesDeploys": 1,
-    "state": "PREDECESSOR_DEV_MATERIALIZATION_NOT_CURRENT_VRM187_SOURCE",
+    "state": "PREDECESSOR_DEV_MATERIALIZATION_NOT_CURRENT_BOUNDED_ADMIN_SOURCE",
     "production": false,
     "currentProductSourceMaterialized": false,
-    "currentProductSourceSha": "3a9dac659c5f4b8f98877a53a1abeca8e422c987"
+    "currentProductSourceSha": "28e060d103f779084c14b401111dbc9da2cce8e2"
   },
   "lastFocalAttempt": {
     "runId": 36198284266,
@@ -2898,7 +2898,7 @@
   "cumulativeObservationClosureGate": {
     "required": true,
     "timing": "I3_BEFORE_HUMAN_VISUAL_APPROVAL",
-    "sourceOfTruth": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V196_2026-10-03.json",
+    "sourceOfTruth": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V197_2026-10-03.json",
     "rule": "No finding or Paula observation may disappear because a later iteration, source, reproof or visual redesign supersedes it. Every observation must map to a ledger finding/acceptance item with current state, owner, evidence and final disposition.",
     "requiredDomains": [
       "Shoppers identity/profile/fusion/admin management",
@@ -2989,6 +2989,38 @@
       "tools/qa/cxorbia-vrm154-156-frontend-source-contract.mjs"
     ],
     "sourceProofState": "PENDING_EXISTING_FRONTEND_SOURCE_REPROOF",
+    "buildAllowed": false,
+    "deployAllowed": false,
+    "production": false
+  },
+  "vrm187SourceProof": {
+    "runId": 37134587330,
+    "runNumber": 954,
+    "artifactId": 11277891690,
+    "artifactDigest": "sha256:a088e4da99371406d37045dc891ec7167fc7e84f501fb93c4fe70627ab7e6f08",
+    "decision": "PASS_VRM154_156_FRONTEND_SOURCE_CONTRACT",
+    "deploys": 0,
+    "production": false
+  },
+  "vrm188SourceFix": {
+    "findingId": "VRM-188",
+    "classification": "PERSISTENCE_FAILURE",
+    "severity": "P0",
+    "sourceSha": "28e060d103f779084c14b401111dbc9da2cce8e2",
+    "sourceTree": "1c83c172a533fb72854b8ff6c086972bb54233f3",
+    "predecessorProductSourceSha": "3a9dac659c5f4b8f98877a53a1abeca8e422c987",
+    "productFilesChanged": [
+      "app/core/programa.js",
+      "app/modules/configuracion.js",
+      "app/adapters/tya-live-source-inplace-apply.js",
+      "backend/runtime/hr-live-service/server.mjs"
+    ],
+    "qaFilesChanged": [
+      "backend/runtime/hr-live-service/test/cxorbia-prei4-project-questionnaire-config.test.mjs"
+    ],
+    "sourceProofState": "PENDING_EXISTING_SOURCE_REPROOF",
+    "provider": "project.update",
+    "localStorageTruth": false,
     "buildAllowed": false,
     "deployAllowed": false,
     "production": false
