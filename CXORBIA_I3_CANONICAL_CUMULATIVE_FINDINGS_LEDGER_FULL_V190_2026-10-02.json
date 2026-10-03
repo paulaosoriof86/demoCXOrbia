@@ -9446,7 +9446,7 @@
       "classification": "RELEASE_COMPOSITION_FAILURE",
       "severity": "P0",
       "title": "Human acceptance falsely required shopper password to remain present after successful login",
-      "state": "CONTROL_FIXED_REPROOF_REQUIRED",
+      "state": "FIXED_PROVEN_RUN914_CONTROL_FALSE_NEGATIVE",
       "rootCauseStatus": "PROVEN",
       "rootCause": "Run 912 failed ACCEPTED_SHOPPER_PROFILE_OR_CREDENTIAL_FAIL with identity=true, country=GT, history=38 and credential=false because the acceptance harness required passwordPresent=true. app/core/backend-browser-auth.js intentionally captures only the validated shopper username and returns password:null after sign-in; this is the frozen no-secret security contract, not an authentication failure.",
       "evidence": {
@@ -9485,6 +9485,100 @@
         "visualApprovalGateRequired": true,
         "production": false
       },
+      "production": false,
+      "closure": {
+        "runId": 37096793662,
+        "runNumber": 914,
+        "jobId": 111128328404,
+        "artifactId": 11263879791,
+        "artifactDigest": "sha256:d12b6bb77baa304f05d8482819205c81daa3a4cac1a2bab89bf6598da0243e7d",
+        "proof": "Credential gate advanced; first blocker is no longer credential and moved to Paula exact profile identity mapping.",
+        "productChanged": false,
+        "builds": 0,
+        "deploys": 0,
+        "production": false
+      }
+    },
+    "VRM-185": {
+      "id": "VRM-185",
+      "classification": "MAPPING_FAILURE",
+      "secondaryClassification": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "title": "paula.osorio authenticates but exact session profile/history/KPIs do not resolve",
+      "state": "ROOT_CAUSE_DIAGNOSTIC_REQUIRED",
+      "rootCauseStatus": "DIAGNOSTIC_REQUIRED",
+      "observed": "Run 914 authenticates paula.osorio, HR authority is applied and all shopper routes navigate, but resolveExactSessionShopper returns identity=false; country/history/KPIs are empty.",
+      "evidence": {
+        "runId": 37096793662,
+        "runNumber": 914,
+        "jobId": 111128328404,
+        "artifactId": 11263879791,
+        "artifactDigest": "sha256:d12b6bb77baa304f05d8482819205c81daa3a4cac1a2bab89bf6598da0243e7d",
+        "paula": {
+          "found": true,
+          "identity": false,
+          "countryPresent": false,
+          "operational": 0,
+          "history": 0,
+          "kpiTotal": 0,
+          "authority": true,
+          "revision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+          "routesPass": [
+            "miperfil",
+            "misvisitas",
+            "beneficios",
+            "mireportes"
+          ],
+          "navMissing": 0,
+          "currentAccepted": true,
+          "everAccepted": true
+        },
+        "production": false
+      },
+      "diagnosticContract": {
+        "readOnly": true,
+        "visibleLogin": "paula.osorio",
+        "currentExactHrIdentity": "shopper_gt_1440137b73",
+        "historicalCanonicalProfile": "s3",
+        "inspect": [
+          "Firebase claims",
+          "tenant membership",
+          "shopper profiles",
+          "identity links",
+          "HR crosswalk",
+          "live HR history",
+          "browser identityMap",
+          "canonical portal exact resolver"
+        ],
+        "neverRestoreStaleAuthorityBlindly": true,
+        "sameHumanMustBeProvenBeforeMerge": true,
+        "multipleCredentialBearingPrincipalsFailClosed": true,
+        "preserveDomains": [
+          "Auth",
+          "profile",
+          "history",
+          "KPIs",
+          "benefits",
+          "certifications",
+          "postulations",
+          "visits",
+          "reservations",
+          "finance",
+          "audit"
+        ],
+        "noFuzzyOrNameMerge": true,
+        "writes": 0,
+        "deploys": 0,
+        "production": false
+      },
+      "relatedFindings": [
+        "VRM-037",
+        "VRM-081",
+        "VRM-086",
+        "VRM-128",
+        "VRM-137",
+        "VRM-168"
+      ],
       "production": false
     }
   },
@@ -10087,14 +10181,15 @@
       "VRM-181",
       "VRM-182",
       "VRM-183",
-      "VRM-184"
+      "VRM-184",
+      "VRM-185"
     ],
-    "findingCount": 184,
-    "expectedCurrentRange": "VRM-001..VRM-184",
-    "nextFindingId": "VRM-185",
+    "findingCount": 185,
+    "expectedCurrentRange": "VRM-001..VRM-185",
+    "nextFindingId": "VRM-186",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_V190_LIVE_REPROOF_REQUIRED",
+    "terminalState": "HOLD_VRM185_PAULA_IDENTITY_TOPOLOGY_DIAGNOSTIC_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -10207,7 +10302,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Re-run V190 same-DEV acceptance with no rebuild/redeploy. The accepted shopper must prove identity/history and a validated no-secret session credential (username present, password absent). Continue fail-closed to the next exact blocker if any. Preserve visual approval gate before I4.",
+  "exactNextAction": "Run one read-only Paula identity-topology diagnostic on the exact sealed DEV. Prove login->claims->membership->profile/crosswalk/HR/browser resolver topology for shopper_gt_1440137b73 and historical s3. Do not write or merge until same-human lineage and active-principal topology are exact.",
   "supersedesGitBlob": "1dc39b2d5dc5aa1884181c963d94b75bec8b075c",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -10236,7 +10331,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-185",
+  "nextFindingId": "VRM-186",
   "lastControlFailure": {
     "id": "VRM-142",
     "classification": "AUTH_FAILURE",
@@ -13685,7 +13780,7 @@
     "next": "SHORT_HUMAN_VISUAL_RETEST",
     "production": false
   },
-  "activeBlocker": "VRM184_SECURE_SESSION_CREDENTIAL_REPROOF_REQUIRED",
+  "activeBlocker": "VRM185_PAULA_IDENTITY_TOPOLOGY_DIAGNOSTIC_REQUIRED",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -13877,5 +13972,5 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-10-02",
-  "nextExactAction": "Re-run V190 same-DEV acceptance with no rebuild/redeploy. The accepted shopper must prove identity/history and a validated no-secret session credential (username present, password absent). Continue fail-closed to the next exact blocker if any. Preserve visual approval gate before I4."
+  "nextExactAction": "Run one read-only Paula identity-topology diagnostic on the exact sealed DEV. Prove login->claims->membership->profile/crosswalk/HR/browser resolver topology for shopper_gt_1440137b73 and historical s3. Do not write or merge until same-human lineage and active-principal topology are exact."
 }

@@ -6927,3 +6927,60 @@ jobs:
           retention-days: 30
           compression-level: 0
 
+  vrm185-paula-identity-topology-readonly:
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM185_PAULA_IDENTITY_TOPOLOGY_DIAGNOSTIC_REQUIRED' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      VRM185_OUT: .tmp/vrm185-paula-identity-topology
+      PAULA_VISIBLE_LOGIN: paula.osorio
+      PAULA_EXACT_HR_ID: shopper_gt_1440137b73
+      PAULA_LEGACY_CANONICAL_ID: s3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: step
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$VRM185_OUT"
+          test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
+          test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
+          git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          node --check tools/qa/cxorbia-i3-vrm185-paula-identity-topology-readonly.mjs
+      - name: step
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+      - name: step
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: step
+        run: |
+          set -Eeuo pipefail
+          EXPECTED_HR_REVISION="$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")"
+          PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" OUT="$VRM185_OUT" node tools/qa/cxorbia-i3-vrm185-paula-identity-topology-readonly.mjs | tee "$VRM185_OUT/console.log"
+          test "$(jq -r '.decision' "$VRM185_OUT/result.json")" = "PASS_VRM185_PAULA_IDENTITY_TOPOLOGY_PROVEN"
+          test "$(jq -r '.readOnly' "$VRM185_OUT/result.json")" = "true"
+          test "$(jq -r '.writes' "$VRM185_OUT/result.json")" = "0"
+          test "$(jq -r '.authWrites' "$VRM185_OUT/result.json")" = "0"
+          test "$(jq -r '.firestoreWrites' "$VRM185_OUT/result.json")" = "0"
+          test "$(jq -r '.hrWrites' "$VRM185_OUT/result.json")" = "0"
+          test "$(jq -r '.deploys' "$VRM185_OUT/result.json")" = "0"
+          test "$(jq -r '.production' "$VRM185_OUT/result.json")" = "false"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-vrm185-paula-identity-topology-${{ github.run_id }}
+          path: .tmp/vrm185-paula-identity-topology
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
