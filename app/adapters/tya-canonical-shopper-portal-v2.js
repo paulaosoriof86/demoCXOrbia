@@ -1,11 +1,9 @@
-/* CXOrbia TyA — canonical Shopper portal v2 (DEV human visual).
+/* CXOrbia TyA — canonical Shopper portal v2.
    One exact identity powers Mi Perfil, KPI drills, visit history, credentials, contact and
    certification. Shopper-managed profile fields persist only through the provider/ACK boundary; identity authority remains external and fail-closed. */
 (function(){
   'use strict';
   window.CX=window.CX||{};
-  const params=new URLSearchParams(location.search||'');
-  if(params.get('cxHumanFullVisual')!=='YES_PAULA_20260731_FULL_PROFILE_DEV')return;
   const arr=v=>Array.isArray(v)?v:[];
   const str=v=>String(v==null?'':v).trim();
   const esc=v=>str(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
