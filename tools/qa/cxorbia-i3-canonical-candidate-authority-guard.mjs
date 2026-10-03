@@ -44,6 +44,28 @@ const next='VRM-'+String(ids.length+1).padStart(3,'0');
 if(l.governance?.nextFindingId!==next||d.nextFindingId!==next)fail('MAPPING_FAILURE:NEXT_FINDING_ID',JSON.stringify({ledger:l.governance?.nextFindingId,descriptor:d.nextFindingId,expected:next}));
 if(l.canonicalFunctionalCandidate?.sourceSha!==d.productSourceSha)fail('RELEASE_COMPOSITION_FAILURE:LEDGER_DESCRIPTOR_SOURCE_MISMATCH');
 
+const promotionLike=/READY_FOR_|PENDING_PAULA_VISUAL_ACCEPTANCE|PAULA_HUMAN_VISUAL_APPROVAL|HOLD_HUMAN_VISUAL_CHECKPOINT_REQUIRED|READY_FOR_TERMINAL_CERTIFICATION/.test(String(d.status||'')+' '+String(d.activeBlocker||''))
+  && !/REJECTION|REMEDIATION|CONTROL_PLANE_REMEDIATION/.test(String(d.status||'')+' '+String(d.activeBlocker||''));
+if(promotionLike){
+  const scope=d.visualCheckpointScope;
+  if(!scope||!Array.isArray(scope.findingIds)||!scope.findingIds.length||!Array.isArray(scope.modules)||!scope.modules.length)fail('RELEASE_COMPOSITION_FAILURE:VISUAL_CHECKPOINT_SCOPE_REQUIRED');
+  const mt=readJson(String(d.moduleTruthPath||'RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json'));
+  const mtSource=String(mt?.productSource?.sha||mt?.productSourceSha||'');
+  if(mtSource!==d.productSourceSha)fail('RELEASE_COMPOSITION_FAILURE:STALE_MODULE_TRUTH_FOR_PROMOTION',JSON.stringify({matrixSource:mtSource,productSource:d.productSourceSha}));
+  const liveClosed=/^(?:CLOSED|CLOSED_PROVEN|FIXED_PROVEN(?:_RUN\d+|_DURABLE)?|PASS_PROVEN(?:_RUN\d+)?|NOT_APPLICABLE_WITH_EVIDENCE|ALREADY_PROVEN_NO_DRIFT)/;
+  for(const id of scope.findingIds){
+    const finding=l.findings?.[id];
+    if(!finding)fail('RELEASE_COMPOSITION_FAILURE:VISUAL_SCOPE_FINDING_MISSING',id);
+    if(!liveClosed.test(String(finding.state||'')))fail('RELEASE_COMPOSITION_FAILURE:VISUAL_SCOPE_FINDING_NOT_LIVE_CLOSED',id+':'+String(finding.state||''));
+  }
+  if(scope.requiresAdminMatrix===true){
+    const admin=readJson(String(d.adminAdministrationMatrixPath||'CXORBIA_I3_ADMIN_FULL_ADMINISTRATION_MATRIX_2026-10-03.json'));
+    if(admin.humanVisualApprovalAllowed!==true||Number(admin?.summary?.OPEN_BLOCKER||0)!==0)fail('RELEASE_COMPOSITION_FAILURE:ADMIN_MATRIX_NOT_READY',JSON.stringify({humanVisualApprovalAllowed:admin.humanVisualApprovalAllowed,openBlockers:admin?.summary?.OPEN_BLOCKER||0}));
+    if(String(admin.productSourceSha||'')!==d.productSourceSha)fail('RELEASE_COMPOSITION_FAILURE:STALE_ADMIN_MATRIX_FOR_PROMOTION',JSON.stringify({adminSource:admin.productSourceSha,productSource:d.productSourceSha}));
+  }
+  if(scope.requiresShopperPopulation===true&&(!Array.isArray(scope.representativeIdentities)||scope.representativeIdentities.length<3))fail('MAPPING_FAILURE:REPRESENTATIVE_IDENTITY_COVERAGE_REQUIRED');
+}
+
 const wf=fs.readFileSync(WORKFLOW,'utf8');
 if(/^\s*I3_CERTIFICATION_SOURCE_SHA:\s*[a-f0-9]{40}\s*$/m.test(wf))fail('RELEASE_COMPOSITION_FAILURE:TOP_LEVEL_LEGACY_PRODUCT_SOURCE_AUTHORITY');
 if(/^\s*I3_CERTIFICATION_SOURCE_TREE:\s*[a-f0-9]{40}\s*$/m.test(wf))fail('RELEASE_COMPOSITION_FAILURE:TOP_LEVEL_LEGACY_PRODUCT_TREE_AUTHORITY');
