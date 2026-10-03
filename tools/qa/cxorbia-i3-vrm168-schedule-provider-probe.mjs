@@ -8,11 +8,25 @@ import {getFirestore} from 'firebase-admin/firestore';
 const E=process.env,PROJECT=E.PROJECT||'cxorbia-backend-dev',TENANT=E.TENANT_ID||'tya',PROJECT_ID=E.PROJECT_ID||'cinepolis';
 const HOST=String(E.HOSTING_URL||'https://cxorbia-backend-dev.web.app').replace(/\/$/,'');
 const PERIOD_ID=E.VRM168_PERIOD_ID||'cinepolis-2026-10',SHOPPER_ID=E.VRM168_SHOPPER_ID||'shopper_gt_1440137b73';
-const UID=E.VRM168_UID||'cx-sh-d56787c101878e81c94fc7637f66',RUN=String(E.GITHUB_RUN_ID||Date.now()),OUT=E.OUT||'.tmp/vrm168-schedule-probe';
+const UID_HINT=String(E.VRM168_UID||'').trim(),RUN=String(E.GITHUB_RUN_ID||Date.now()),OUT=E.OUT||'.tmp/vrm168-schedule-probe';
 fs.mkdirSync(OUT,{recursive:true}); if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
 const auth=getAuth(),db=getFirestore(),str=v=>String(v==null?'':v).trim();
 const sha=v=>crypto.createHash('sha256').update(String(v),'utf8').digest('hex');
 const tenant=db.collection('tenants').doc(TENANT),project=tenant.collection('projects').doc(PROJECT_ID);
+let UID='';
+async function resolveActiveCanonicalPrincipal(){
+  const snap=await tenant.collection('users').where('shopperId','==',SHOPPER_ID).get();
+  const memberships=snap.docs.map(d=>({uid:d.id,...(d.data()||{})})).filter(row=>
+    row.active===true&&str(row.role)==='shopper'&&str(row.authNamespace)==='shopper'&&
+    Array.isArray(row.projectIds)&&row.projectIds.map(str).includes(PROJECT_ID)
+  );
+  if(memberships.length!==1)throw new Error('AUTH_FAILURE:VRM168_ACTIVE_CANONICAL_MEMBERSHIP_COUNT_'+memberships.length);
+  const member=memberships[0];
+  if(UID_HINT&&UID_HINT!==member.uid)throw new Error('AUTH_FAILURE:VRM168_UID_HINT_STALE');
+  const user=await auth.getUser(member.uid);
+  if(user.disabled===true)throw new Error('AUTH_FAILURE:VRM168_ACTIVE_CANONICAL_AUTH_DISABLED');
+  return {uid:member.uid,user,member};
+}
 const visitId='QA_VRM168_'+RUN,idem='vrm168.schedule.synthetic:'+RUN;
 const receiptId=sha(TENANT+'\0'+PROJECT_ID+'\0'+PERIOD_ID+'\0'+idem).slice(0,40);
 const auditId=sha(idem+'\0visit.state.update\0'+visitId).slice(0,40);
@@ -21,8 +35,8 @@ let created=false,result=null,before=null,after=null,claims=null,cleanup={visit:
 async function apiKey(){const r=await fetch(HOST+'/__/firebase/init.json?ts='+Date.now(),{cache:'no-store'});const j=await r.json();if(!r.ok||!str(j.apiKey))throw new Error('ENVIRONMENT_FAILURE:FIREBASE_INIT_'+r.status);return str(j.apiKey);}
 async function exchange(token,key){const r=await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({token,returnSecureToken:true})});const j=await r.json().catch(()=>({}));if(!r.ok||!j.idToken)throw new Error('AUTH_FAILURE:TOKEN_EXCHANGE_'+r.status);return j.idToken;}
 try{
-  const user=await auth.getUser(UID); const memberSnap=await tenant.collection('users').doc(UID).get(); if(!memberSnap.exists)throw new Error('AUTH_FAILURE:MEMBERSHIP_MISSING');
-  const member=memberSnap.data()||{}; if(member.active!==true||str(member.shopperId)!==SHOPPER_ID)throw new Error('AUTH_FAILURE:MEMBERSHIP_SCOPE');
+  const principal=await resolveActiveCanonicalPrincipal(); UID=principal.uid; const user=principal.user,member=principal.member;
+  if(member.active!==true||str(member.shopperId)!==SHOPPER_ID)throw new Error('AUTH_FAILURE:MEMBERSHIP_SCOPE');
   const custom=await auth.createCustomToken(UID,user.customClaims||{}),idToken=await exchange(custom,await apiKey()); claims=await auth.verifyIdToken(idToken,true);
   const required={tenantId:TENANT,role:'shopper',authNamespace:'shopper',shopperId:SHOPPER_ID};
   for(const [k,v] of Object.entries(required))if(str(claims[k])!==v)throw new Error('AUTH_FAILURE:CLAIM_'+k);
@@ -38,6 +52,6 @@ try{
   try{await auditRef.delete();cleanup.audit=true}catch{}
 }
 const decision=result?.ok===true&&result?.status==='committed'&&result?.providerAck===true&&after?.estado==='agendada'?'PASS_VRM168_PROVIDER_SCHEDULE_PATH':'FAIL_VRM168_PROVIDER_SCHEDULE_PATH';
-const out={decision,uid:UID,shopperId:SHOPPER_ID,claims:{tenantId:claims?.tenantId||null,role:claims?.role||null,authNamespace:claims?.authNamespace||null,shopperId:claims?.shopperId||null,projectIds:claims?.projectIds||[]},before:before?{estado:before.estado,version:before.version,periodId:before.periodId,shopperId:before.shopperId}:null,result,after:after?{estado:after.estado,version:after.version,agendada:after.agendada,periodId:after.periodId,shopperId:after.shopperId}:null,cleanup,writes:created?1:0,hrWrites:0,production:false};
+const out={decision,principalResolution:{mode:'unique_active_canonical_membership',uid:UID,shopperId:SHOPPER_ID,hintProvided:!!UID_HINT},uid:UID,shopperId:SHOPPER_ID,claims:{tenantId:claims?.tenantId||null,role:claims?.role||null,authNamespace:claims?.authNamespace||null,shopperId:claims?.shopperId||null,projectIds:claims?.projectIds||[]},before:before?{estado:before.estado,version:before.version,periodId:before.periodId,shopperId:before.shopperId}:null,result,after:after?{estado:after.estado,version:after.version,agendada:after.agendada,periodId:after.periodId,shopperId:after.shopperId}:null,cleanup,writes:created?1:0,hrWrites:0,production:false};
 fs.writeFileSync(OUT+'/result.json',JSON.stringify(out,null,2)+'\n'); console.log(JSON.stringify(out,null,2));
 if(decision!=='PASS_VRM168_PROVIDER_SCHEDULE_PATH'||!cleanup.visit||!cleanup.receipt||!cleanup.audit)process.exitCode=2;
