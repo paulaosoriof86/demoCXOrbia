@@ -17,6 +17,8 @@ COPY backend/runtime/cxorbia-operational-command-provider-v1.mjs ./backend/runti
 COPY backend/runtime/cxorbia-shopper-command-provider-v1.mjs ./backend/runtime/cxorbia-shopper-command-provider-v1.mjs
 COPY app/core/shopper-credential-rule.js ./app/core/shopper-credential-rule.js
 COPY backend/runtime/cxorbia-finance-command-provider-v1.mjs ./backend/runtime/cxorbia-finance-command-provider-v1.mjs
+COPY backend/runtime/cxorbia-commercial-command-provider-v1.mjs ./backend/runtime/cxorbia-commercial-command-provider-v1.mjs
+COPY backend/runtime/cxorbia-academy-command-provider-v1.mjs ./backend/runtime/cxorbia-academy-command-provider-v1.mjs
 COPY backend/contracts ./backend/contracts
 COPY backend/config/tya-live-hr-tab-registry.source-safe.json ./backend/config/tya-live-hr-tab-registry.source-safe.json
 COPY tools/hr-source ./tools/hr-source
