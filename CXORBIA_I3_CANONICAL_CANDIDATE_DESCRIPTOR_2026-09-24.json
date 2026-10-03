@@ -8,7 +8,7 @@
   "productTreeAuthority": "db4c1cc35b55c03523196fc583bf7cf0b874d87f",
   "predecessorProductSourceSha": "9102918177d89d9e3d18cfb75c04aba8c29cba86",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V190_2026-10-02.json",
-  "findingsLedgerExpectedGitBlob": "5c87ac24879ea8e60f75fad7aa7f0c23234072f9",
+  "findingsLedgerExpectedGitBlob": "27796005966618a0ab2a07fedbd0f5c1d90c7240",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -2805,6 +2805,20 @@
     "sourceSuccessorSha": "9102918177d89d9e3d18cfb75c04aba8c29cba86",
     "sourceSuccessorTree": "0e6f61aa855b1d9677fd200403793099bfecb9b7",
     "state": "P0_PROVEN_SOURCE_FIX_READY_EXACT_DEV_MATERIALIZATION",
+    "production": false
+  },
+  "humanVisualApprovalGate": {
+    "required": true,
+    "timing": "AFTER_I3_TECHNICAL_CLOSURE_BEFORE_I4_PRODUCTIVE_REPLACEMENT",
+    "scope": "Complete pending visual and functional review of the exact certified DEV candidate, preserving every cumulative finding, observation, acceptance note and unresolved visual item.",
+    "requirements": [
+      "Present exact certified candidate for Paula visual review before productive replacement",
+      "Provide review route/checklist covering all pending modules and cumulative findings/observations",
+      "Do not silently drop, supersede or close any finding/observation without evidence",
+      "Any new visual/functional defect remains inside I3 until fixed and re-proved on the same cumulative candidate",
+      "Production tya-plataforma.web.app remains untouched until explicit Paula approval and I4 authorization"
+    ],
+    "approvalAuthority": "Paula explicit approval",
     "production": false
   }
 }

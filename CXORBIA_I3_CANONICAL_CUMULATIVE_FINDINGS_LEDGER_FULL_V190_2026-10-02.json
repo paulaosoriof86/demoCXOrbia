@@ -10129,6 +10129,20 @@
         "amountReviewRequired": 5,
         "octoberTouched": 0
       }
+    },
+    "humanVisualApprovalGate": {
+      "required": true,
+      "timing": "AFTER_I3_TECHNICAL_CLOSURE_BEFORE_I4_PRODUCTIVE_REPLACEMENT",
+      "scope": "Complete pending visual and functional review of the exact certified DEV candidate, preserving every cumulative finding, observation, acceptance note and unresolved visual item.",
+      "requirements": [
+        "Present exact certified candidate for Paula visual review before productive replacement",
+        "Provide review route/checklist covering all pending modules and cumulative findings/observations",
+        "Do not silently drop, supersede or close any finding/observation without evidence",
+        "Any new visual/functional defect remains inside I3 until fixed and re-proved on the same cumulative candidate",
+        "Production tya-plataforma.web.app remains untouched until explicit Paula approval and I4 authorization"
+      ],
+      "approvalAuthority": "Paula explicit approval",
+      "production": false
     }
   },
   "workPlan": {
