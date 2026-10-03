@@ -4,11 +4,11 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "83efe4ad2bc1ca503d4a010a4c0b9a0ed03cf177",
-  "productTreeAuthority": "92e4c77a0d322f9d731cee0c2f4b51df02ba5cc1",
-  "predecessorProductSourceSha": "d482eb3605df00781627f2c496751e4a15ebb85f",
+  "productSourceSha": "72c9114130d6fd1d3475957118b48e48469ad7c8",
+  "productTreeAuthority": "ab746be61fe85ef9a6982fe98bf19223e6f7172e",
+  "predecessorProductSourceSha": "83efe4ad2bc1ca503d4a010a4c0b9a0ed03cf177",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V190_2026-10-02.json",
-  "findingsLedgerExpectedGitBlob": "e33789b5473d35254fadd15da2a90c66116cb908",
+  "findingsLedgerExpectedGitBlob": "2c64b159f1661d521352182869246bc56de834f2",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Re-run source-only VRM-185/186 tests for exact product source 83efe4ad2bc1ca503d4a010a4c0b9a0ed03cf177. No DEV mutation and no deploy.",
+  "exactNextAction": "Re-run source-only VRM-185/186 tests for exact product source 72c9114130d6fd1d3475957118b48e48469ad7c8; no DEV mutation or deploy.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",

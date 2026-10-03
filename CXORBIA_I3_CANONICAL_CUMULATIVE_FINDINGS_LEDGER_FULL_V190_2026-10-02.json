@@ -14,9 +14,9 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "83efe4ad2bc1ca503d4a010a4c0b9a0ed03cf177",
-    "sourceTree": "92e4c77a0d322f9d731cee0c2f4b51df02ba5cc1",
-    "predecessorSha": "d482eb3605df00781627f2c496751e4a15ebb85f",
+    "sourceSha": "72c9114130d6fd1d3475957118b48e48469ad7c8",
+    "sourceTree": "ab746be61fe85ef9a6982fe98bf19223e6f7172e",
+    "predecessorSha": "83efe4ad2bc1ca503d4a010a4c0b9a0ed03cf177",
     "production": false,
     "state": "SOURCE_FIXED_VRM185_VRM186_PENDING_SOURCE_RETEST",
     "proof": {
@@ -9686,8 +9686,8 @@
         "production": false
       },
       "productFix": {
-        "sourceSha": "83efe4ad2bc1ca503d4a010a4c0b9a0ed03cf177",
-        "sourceTree": "92e4c77a0d322f9d731cee0c2f4b51df02ba5cc1",
+        "sourceSha": "72c9114130d6fd1d3475957118b48e48469ad7c8",
+        "sourceTree": "ab746be61fe85ef9a6982fe98bf19223e6f7172e",
         "owner": "Admin > Shoppers > Perfil -> shopper.identity.adjudicate -> durable shopper provider",
         "files": [
           "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
@@ -9707,7 +9707,8 @@
         ],
         "adHocWriterExecutionPath": false,
         "production": false,
-        "exactSetSupersessionRule": "Admin human adjudication may supersede a prior exact adjudication only when the prior target is inside the exact identity set currently confirmed. External targets remain hard conflicts."
+        "exactSetSupersessionRule": "Admin human adjudication may supersede a prior exact adjudication only when the prior target is inside the exact identity set currently confirmed. External targets remain hard conflicts.",
+        "membershipTransactionReferenceFix": true
       },
       "writeAttempt2": {
         "runId": 37099087413,
@@ -9740,6 +9741,35 @@
         "writes": 0,
         "deploys": 0,
         "production": false
+      },
+      "sourceTestAttempt2": {
+        "runId": 37100172503,
+        "runNumber": 922,
+        "jobId": 111138017059,
+        "artifactId": 11265815950,
+        "artifactDigest": "sha256:c685c2be44b1db9d48e918766c1b51aa3f5157b7993ea16b30cfede7510358da",
+        "decision": "FAIL_SOURCE_TEST",
+        "providerTests": {
+          "passed": 28,
+          "failed": 1
+        },
+        "firstFailure": "SHOPPER_IDENTITY_KEEPER_MEMBERSHIP_CHANGED",
+        "rootCause": "Provider stored a membership DocumentSnapshot and used it as a transactional DocumentReference, so keeper readback failed closed before any DEV execution.",
+        "writes": 0,
+        "deploys": 0,
+        "production": false
+      },
+      "sourceDiagnosticAttempt": {
+        "runId": 37100248502,
+        "runNumber": 923,
+        "jobId": 111138236645,
+        "exactBlockedResult": {
+          "ok": false,
+          "providerAck": false,
+          "providerWrites": 0,
+          "code": "SHOPPER_IDENTITY_KEEPER_MEMBERSHIP_CHANGED"
+        },
+        "production": false
       }
     },
     "VRM-186": {
@@ -9751,8 +9781,8 @@
       "rootCauseStatus": "PROVEN",
       "rootCause": "Admin > Shoppers only indexed review items through shopperId/shopperIds, while exact technical conflicts can arrive through liveShopperId/candidates/sourceShopperId/canonicalShopperId/id. In addition, display_name_collision_not_auto_merged was the only path that enabled the merge modal, contradicting the frozen rule that a matching name alone is never merge authority.",
       "correction": {
-        "sourceSha": "83efe4ad2bc1ca503d4a010a4c0b9a0ed03cf177",
-        "sourceTree": "92e4c77a0d322f9d731cee0c2f4b51df02ba5cc1",
+        "sourceSha": "72c9114130d6fd1d3475957118b48e48469ad7c8",
+        "sourceTree": "ab746be61fe85ef9a6982fe98bf19223e6f7172e",
         "owner": "app/modules/shoppers.js",
         "normalizedReviewKeys": [
           "shopperId",
@@ -10402,8 +10432,8 @@
     "userReportedRequirementsFrozenAt": "2026-09-30T20:18:00-06:00",
     "userReviewComplete": true,
     "userReviewEvidence": "19 screenshots plus complete Shopper/Admin observations supplied 2026-10-02",
-    "currentProductSourceSha": "83efe4ad2bc1ca503d4a010a4c0b9a0ed03cf177",
-    "currentProductSourceTree": "92e4c77a0d322f9d731cee0c2f4b51df02ba5cc1",
+    "currentProductSourceSha": "72c9114130d6fd1d3475957118b48e48469ad7c8",
+    "currentProductSourceTree": "ab746be61fe85ef9a6982fe98bf19223e6f7172e",
     "currentMaterialization": null,
     "previousMaterialization": {
       "runId": 37091457753,
@@ -10491,7 +10521,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Re-run source-only VRM-185/186 tests for exact product source 83efe4ad2bc1ca503d4a010a4c0b9a0ed03cf177. No DEV mutation and no deploy.",
+  "exactNextAction": "Re-run source-only VRM-185/186 tests for exact product source 72c9114130d6fd1d3475957118b48e48469ad7c8; no DEV mutation or deploy.",
   "supersedesGitBlob": "1dc39b2d5dc5aa1884181c963d94b75bec8b075c",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -14161,5 +14191,5 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-10-02",
-  "nextExactAction": "Re-run source-only VRM-185/186 tests for exact product source 83efe4ad2bc1ca503d4a010a4c0b9a0ed03cf177. No DEV mutation and no deploy."
+  "nextExactAction": "Re-run source-only VRM-185/186 tests for exact product source 72c9114130d6fd1d3475957118b48e48469ad7c8; no DEV mutation or deploy."
 }
