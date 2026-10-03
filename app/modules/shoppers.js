@@ -337,7 +337,7 @@ CX.module('shoppers', ({data,ui})=>{
         <div class="flex">${av(s.nombre,46)}
           <div><div class="card-t" style="font-size:16px">${s.nombre||'—'}</div>
           <div style="font-size:12px;color:var(--t3)">${s.code} · ${s.ciudad?s.ciudad+', ':''}${CX.paisName(s.pais)||'—'}</div>
-          <div class="flex" style="gap:6px;margin-top:6px">${lvl==='operational_profile'?'<span class="bdg bdg-a">Perfil operativo · datos de contacto pendientes</span>':(s.perfilCompleto?ui.bdg('Perfil completo','g'):ui.bdg('Perfil incompleto','a'))} ${viaBadge(s.createdVia)}</div></div></div>
+          <div class="flex" style="gap:6px;margin-top:6px">${lvl==='operational_profile'?'<span class="bdg bdg-a">Perfil operativo · datos de contacto pendientes</span>':(profileComplete(s)?ui.bdg('Perfil completo','g'):ui.bdg('Perfil incompleto','a'))} ${viaBadge(s.createdVia)}</div></div></div>
         <span style="font-size:18px;font-weight:800;color:var(--amber)">${s.rating?('★ '+s.rating):''}</span>
       </div>
       <div style="background:var(--brand-light);border-radius:10px;padding:9px 13px;font-size:12px;color:var(--brand-dark);margin-bottom:14px" class="between">
