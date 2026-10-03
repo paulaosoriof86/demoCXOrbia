@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_REJECTED_PHASEA_SOURCE_REPROOF_REQUIRED",
+  "status": "HOLD_REJECTED_PHASEA_PRECOMPOSITION_TRUTH_BLOCKERS",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
   "productTreeAuthority": "85c0d287e16269dd07d9c1fa1e93810a0aebdc99",
   "predecessorProductSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V222_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "3f2a4c1591efc9b7208b1237ee39acaf548f3078",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V3.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V223_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "9bc296f3d66e376cce6307c475771986b66bad0a",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V4.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "V222_EXACT_SOURCE_REPROOF_REQUIRED",
+  "activeBlocker": "PRECOMPOSITION_TRUTH_BLOCKERS_MODULE_TRUTH_1_ADMIN_28",
   "nextFindingId": "VRM-204",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run the existing canonical Phase A source-reproof lane against reachable V222 source 2d4da635aeb793aa47d22127295473856108a94f. The source-proof script itself now owns V222 identity/Academy regression so the workflow remains within its validated size/shape. No build/deploy.",
+  "exactNextAction": "No DEV materialization yet. Current source proof is PASS Run1045, but precomposition truth is fail-closed: Module Truth retains a TRUE_FUNCTIONAL_DEFECT and Admin Matrix retains OPEN_BLOCKER routes. Resolve only proven owner-scoped blockers on the same candidate, refresh the matrices, then use the existing HOLD_REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED lane only when precomposition permits it.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2620,7 +2620,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "b07fd8c6fa9c9f8af4c683c0fe3132d79a3ce5b0",
+  "moduleTruthExpectedGitBlob": "e9dc7d95a7a21f32772d6fdd8146ead5d780e1c2",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -3421,7 +3421,7 @@
     "sourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
     "sourceTree": "85c0d287e16269dd07d9c1fa1e93810a0aebdc99",
     "predecessorSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
-    "state": "REACHABLE_V222_SOURCE_PENDING_REPROOF",
+    "state": "SOURCE_PASS_RUN1045_PENDING_EXACT_DEV_LIVE",
     "findingIds": [
       "VRM-134",
       "VRM-165",
@@ -3444,6 +3444,40 @@
     ],
     "preservedAllPriorFindings": true,
     "production": false,
-    "previousDetachedSourceSha": "7b8b88608c9cd38cc97726c3f17aab55a51f1715"
+    "previousDetachedSourceSha": "7b8b88608c9cd38cc97726c3f17aab55a51f1715",
+    "sourceProof": {
+      "runId": 37161034003,
+      "runNumber": 1045,
+      "jobId": 111314363177,
+      "workflow": "CXOrbia Recovery I3 DEV Certification",
+      "controlHeadSha": "ff2f45a7fcd41e59603f0752fe02eadf6af1e2c2",
+      "productSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
+      "productTree": "85c0d287e16269dd07d9c1fa1e93810a0aebdc99",
+      "decision": "PASS_I3_PHASEA_REJECTED_CHECKPOINT_SOURCE_PROOF",
+      "checksPassed": 16,
+      "checksFailed": 0,
+      "sourceOnly": true,
+      "builds": 0,
+      "deploys": 0,
+      "production": false
+    }
+  },
+  "adminMatrixPath": "CXORBIA_I3_ADMIN_FULL_ADMINISTRATION_MATRIX_2026-10-03_V4.json",
+  "adminMatrixExpectedGitBlob": "0131d00f08c8910324692aad8667b398db58630a",
+  "lastSourceReproof": {
+    "runId": 37161034003,
+    "runNumber": 1045,
+    "jobId": 111314363177,
+    "workflow": "CXOrbia Recovery I3 DEV Certification",
+    "controlHeadSha": "ff2f45a7fcd41e59603f0752fe02eadf6af1e2c2",
+    "productSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
+    "productTree": "85c0d287e16269dd07d9c1fa1e93810a0aebdc99",
+    "decision": "PASS_I3_PHASEA_REJECTED_CHECKPOINT_SOURCE_PROOF",
+    "checksPassed": 16,
+    "checksFailed": 0,
+    "sourceOnly": true,
+    "builds": 0,
+    "deploys": 0,
+    "production": false
   }
 }
