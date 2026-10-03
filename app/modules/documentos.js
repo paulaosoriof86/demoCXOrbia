@@ -21,6 +21,7 @@ CX.docStore = CX.docStore || {
 CX.module('documentos', ({data,role,ui})=>{
   const p=data.period(), pid=p.id;
   const host=ui.el('div');
+  const canManage=()=>['super','admin'].includes(String(role||'').toLowerCase());
   const connected=()=>CX.docStore.connected();
   const storageState=()=>CX.backendResources?.storageStatus?.()||{authorized:false,configured:false,available:false,reason:'RESOURCE_STORAGE_NOT_AUTHORIZED'};
   const binaryReady=()=>storageState().authorized===true;
@@ -84,7 +85,7 @@ CX.module('documentos', ({data,role,ui})=>{
     const docs=CX.docStore.list(pid);
     host.innerHTML=`
       ${ui.ph('Recursos del proyecto', p.name+' · documentos, videos, imágenes y checklists · se abren a pantalla completa')}
-      <div class="between" style="margin-bottom:14px">${ui.bdg(docs.length+' recursos','n')}${role==='admin'?'<div class="flex" style="gap:8px"><button class="btn btn-soft btn-sm" id="docIA">📝 Generar borrador (heurística local)</button><button class="btn btn-pr btn-sm" id="docUp">＋ Agregar recurso</button></div>':''}</div>
+      <div class="between" style="margin-bottom:14px">${ui.bdg(docs.length+' recursos','n')}${canManage()?'<div class="flex" style="gap:8px"><button class="btn btn-soft btn-sm" id="docIA">📝 Generar borrador (heurística local)</button><button class="btn btn-pr btn-sm" id="docUp">＋ Agregar recurso</button></div>':''}</div>
       ${connected()&&!docs.length?'<div class="card card-p" style="margin-bottom:14px">'+ui.degraded('No hay recursos reales publicados para este proyecto/periodo. Los recursos de ejemplo no se muestran en la operación conectada.',{title:'Recursos · pendiente de fuente/publicación'})+'</div>':''}
       <div class="grid g2">
         ${docs.map(d=>`<div class="card hov card-p flex" style="gap:13px">
@@ -93,7 +94,7 @@ CX.module('documentos', ({data,role,ui})=>{
           <div class="flex wrap" style="gap:5px;margin-top:5px">${d.externalFolderRef?ui.bdg('📁 carpeta externa: '+d.externalFolderRef,'n'):''}${d.visitaId?(()=>{const lv=data._visitas.find(x=>x.id===d.visitaId);return lv?ui.bdg('🔗 '+lv.sucursal,'b'):'';})():''}</div></div></div>
           <div class="flex" style="gap:6px;flex-shrink:0">
             <button class="btn btn-soft btn-sm" data-doc="${d.id}">Abrir</button>
-            ${role==='admin'?`<button class="btn btn-ghost btn-sm" data-editd="${d.id}" title="Editar">✎</button><button class="btn btn-ghost btn-sm" data-deld="${d.id}" title="Eliminar" style="color:var(--red)">✕</button>`:''}
+            ${canManage()?`<button class="btn btn-ghost btn-sm" data-editd="${d.id}" title="Editar">✎</button><button class="btn btn-ghost btn-sm" data-deld="${d.id}" title="Eliminar" style="color:var(--red)">✕</button>`:''}
           </div></div>`).join('')}
       </div>
       <div class="card card-p" style="margin-top:16px">${ui.aiBox('Cada recurso se abre y se lee dentro de la plataforma (PDF, video embebido, checklist) — sin descargar ni buscar en chats. Entrego el correcto según la visita.','Lectura contextual en plataforma')}</div>`;
