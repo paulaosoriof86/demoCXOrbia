@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_V190_DEV_MATERIALIZATION_REQUIRED",
+  "status": "HOLD_V190_LIVE_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "db4c1cc35b55c03523196fc583bf7cf0b874d87f",
   "predecessorProductSourceSha": "9102918177d89d9e3d18cfb75c04aba8c29cba86",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V190_2026-10-02.json",
-  "findingsLedgerExpectedGitBlob": "8c7a1064c52a59b36f324da4d31c67119c995f20",
+  "findingsLedgerExpectedGitBlob": "8814cb8547a3e2807c9eb0db15e21c99e62f2866",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM181_CERT_ROUTE_RECURSION_EXACT_DEV_MATERIALIZATION_REQUIRED",
+  "activeBlocker": "VRM181_CERT_ROUTE_FIX_SAME_DEV_LIVE_REPROOF_REQUIRED",
   "nextFindingId": "VRM-182",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Materialize exactly source d33faac8d2af8523485d31c00037f639177ca040 tree db4c1cc35b55c03523196fc583bf7cf0b874d87f once in Recovery DEV. Then switch only to same-source V190 live reproof with no rebuild/redeploy between materialization and proof. Admin Certificación must render without recursion; VRM-168 OCTUBRE 26!6 command mapping/provider ACK/cleanup and all cumulative human routes must remain PASS. Production remains DO_NOT_TOUCH.",
+  "exactNextAction": "Reuse exactly runtime cxorbia-live-hr-dev-00253-5f8, digest sha256:a904ae7fc4934d41343d214ad69c4fa94d58618441f9741bf865714d19bca2c1, Hosting sites/cxorbia-backend-dev/versions/beecdb6bc5eb6c84, source d33faac8d2af8523485d31c00037f639177ca040. No rebuild/redeploy. Run V190 same-DEV live reproof; Admin Certificación must render without recursion while VRM-168 OCTUBRE 26!6 mapping/provider ACK/cleanup and every cumulative Shopper/Admin/Reservas/Movimientos/Cert-Res gate remain PASS. Production remains DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -408,7 +408,27 @@
     "writes": 0,
     "production": false
   },
-  "currentMaterialization": null,
+  "currentMaterialization": {
+    "runId": 37091457753,
+    "runNumber": 908,
+    "jobId": 111112533271,
+    "artifactId": 11261679821,
+    "artifactDigest": "sha256:d33d82944d46dfb5ed05b9830ea6d0fca062a3e0ff8accebdf714ba40436b795",
+    "decision": "PASS_V190_EXACT_DEV_MATERIALIZATION",
+    "sourceSha": "d33faac8d2af8523485d31c00037f639177ca040",
+    "sourceTree": "db4c1cc35b55c03523196fc583bf7cf0b874d87f",
+    "runtimeRevision": "cxorbia-live-hr-dev-00253-5f8",
+    "runtimeDigest": "sha256:a904ae7fc4934d41343d214ad69c4fa94d58618441f9741bf865714d19bca2c1",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/beecdb6bc5eb6c84",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790996268562000",
+    "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "storageRulesDeploys": 1,
+    "state": "SEALED_VRM181_CERT_ROUTE_FIX_DEV_PENDING_LIVE_REPROOF",
+    "production": false
+  },
   "lastFocalAttempt": {
     "runId": 36198284266,
     "runNumber": 438,
@@ -878,18 +898,7 @@
     "hrWrites": 0,
     "production": false
   },
-  "pendingMaterialization": {
-    "sourceSha": "d33faac8d2af8523485d31c00037f639177ca040",
-    "sourceTree": "db4c1cc35b55c03523196fc583bf7cf0b874d87f",
-    "predecessorSha": "9102918177d89d9e3d18cfb75c04aba8c29cba86",
-    "status": "HOLD_V190_DEV_MATERIALIZATION_REQUIRED",
-    "maxBuilds": 1,
-    "maxRuntimeDeploys": 1,
-    "maxHostingDeploys": 1,
-    "sourceGate": "tools/qa/cxorbia-vrm154-156-frontend-source-contract.mjs",
-    "liveRegression": "RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs",
-    "production": false
-  },
+  "pendingMaterialization": null,
   "lastVrm080Proof": {
     "runId": 36333245670,
     "runNumber": 525,
