@@ -6576,6 +6576,8 @@ jobs:
           node --check app/modules/visita-detalle.js
           node --check app/adapters/tya-canonical-shopper-portal-v2.js
           node --check app/modules/academia.js
+          node --check app/modules/documentos.js
+          node --check app/core/backend-resources.js
           node --check tools/qa/cxorbia-vrm154-156-frontend-source-contract.mjs
       - name: step
         run: |
@@ -6583,6 +6585,8 @@ jobs:
           node tools/qa/cxorbia-vrm154-156-frontend-source-contract.mjs | tee "$FOCAL_OUT/frontend-contract.json"
           test "$(jq -r '.decision' "$FOCAL_OUT/frontend-contract.json")" = "PASS_VRM154_156_FRONTEND_SOURCE_CONTRACT"
           test "$(jq -r '.genericProjectDrivenScenarioDimensions' "$FOCAL_OUT/frontend-contract.json")" = "true"
+          test "$(jq -r '.documentResourceSuperAdmin' "$FOCAL_OUT/frontend-contract.json")" = "true"
+          test "$(jq -r '.resourceBinaryProviderLifecycle' "$FOCAL_OUT/frontend-contract.json")" = "true"
           test "$(jq -r '.production' "$FOCAL_OUT/frontend-contract.json")" = "false"
       - name: step
         run: |
