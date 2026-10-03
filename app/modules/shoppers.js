@@ -12,6 +12,7 @@ CX.module('shoppers', ({data,ui})=>{
   const commandError=r=>String(r&&((r.reason||r.code)||r.error)||'La operación no fue confirmada por el proveedor.');
   const profileRequirements=[['firstName','Nombre'],['lastName','Apellido'],['whatsapp','WhatsApp'],['pais','País'],['ciudad','Ciudad'],['email','Correo'],['edad','Edad'],['sexo','Sexo']];
   const missingProfileFields=shopper=>profileRequirements.filter(([key])=>!String(shopper?.[key]||(key==='whatsapp'?shopper?.phone:'')||'').trim()).map(([,label])=>label);
+  const profileComplete=shopper=>missingProfileFields(shopper).length===0;
   const provenScore=shopper=>{const value=Number(shopper?.rating),metrics=shopper?.ratingBreakdown||shopper?.scoreBreakdown||shopper?.rankingMetrics,sourceSafe=shopper?.ratingSourceSafe===true||shopper?.scoreSourceSafe===true;return Number.isFinite(value)&&sourceSafe&&Array.isArray(metrics)&&metrics.length?{value,metrics,status:shopper?.scoreStatus||'score_preview_ready'}:null;};
   const scoreCell=shopper=>{const score=provenScore(shopper);return score?'<span style="font-size:12px;font-weight:800;color:var(--amber)">★ '+score.value+'</span>':'<span class="muted" style="font-size:11px">— sin cálculo probado</span>';};
   const profileRequestMessage=shopper=>{const missing=missingProfileFields(shopper);return 'Hola '+String(shopper?.firstName||shopper?.nombre||'')+'. Para completar tu perfil en CXOrbia, por favor actualiza: '+missing.join(', ')+'. Ingresa a Mi Perfil para hacerlo.';};
@@ -101,7 +102,7 @@ CX.module('shoppers', ({data,ui})=>{
       : (s.honorarioPref==='Preferente'?ui.bdg('Preferente','p'):s.honorarioPref==='Estándar'?ui.bdg('Estándar','n'):'<span class="muted">— sin dato</span>');
     const perfilCell = lvl==='protected_reference'
       ? '<span class="bdg bdg-n">Referencia protegida</span>'
-      : (s.perfilCompleto?ui.bdg('Completo','g'):ui.bdg('Incompleto','a'));
+      : (profileComplete(s)?ui.bdg('Completo','g'):ui.bdg('Incompleto','a'));
     return `<tr data-sid="${s.id}" data-identity-review="${identityReviewIds.has(String(s.id||''))?'required':'clear'}" style="cursor:pointer">
     <td><div class="flex">${av(s.nombre,30)}
       <div><b>${s.nombre||('🔒 '+(s.code||'Referencia protegida'))}</b> ${identityReviewBadge(s)}<div style="font-size:11px;color:var(--t3)">${s.ciudad?s.ciudad+', ':''}${CX.paisName(s.pais)||s.pais||'—'}</div></div></div></td>
@@ -222,8 +223,8 @@ CX.module('shoppers', ({data,ui})=>{
       <div data-tk="prot" style="cursor:pointer">${ui.kpi('Referencias protegidas',L.filter(s=>CX.data_shopperDataLevel(s)==='protected_reference').length,'n')}</div>
     </div>
     <div class="grid g4" style="margin-bottom:16px">
-      <div data-tk="comp" style="cursor:pointer">${ui.kpi('Perfiles completos',L.filter(s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&s.perfilCompleto).length,'g')}</div>
-      <div data-tk="incom" style="cursor:pointer">${ui.kpi('Perfiles incompletos',L.filter(s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&!s.perfilCompleto).length,'a')}</div>
+      <div data-tk="comp" style="cursor:pointer">${ui.kpi('Perfiles completos',L.filter(s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&profileComplete(s)).length,'g')}</div>
+      <div data-tk="incom" style="cursor:pointer">${ui.kpi('Perfiles incompletos',L.filter(s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&!profileComplete(s)).length,'a')}</div>
     </div>
     </div>
     <div style="font-size:10.5px;color:var(--t3);margin:-10px 0 12px">Activo = perfil real con al menos 1 visita realizada en los 6 meses previos al ${data.activeRefDate()} (fecha de referencia del periodo). Una referencia protegida nunca cuenta como activa.</div>
@@ -476,7 +477,7 @@ CX.module('shoppers', ({data,ui})=>{
     }));
     bindRows();
     const L=list();
-    const tkMap={all:['Shoppers del proyecto',()=>true],act:['Shoppers activos (6 meses)',s=>data.shopperActivo(s)],inact:['Inactivas',s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&!data.shopperActivo(s)],prot:['Referencias protegidas',s=>CX.data_shopperDataLevel(s)==='protected_reference'],comp:['Perfiles completos',s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&s.perfilCompleto],incom:['Perfiles incompletos',s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&!s.perfilCompleto]};
+    const tkMap={all:['Shoppers del proyecto',()=>true],act:['Shoppers activos (6 meses)',s=>data.shopperActivo(s)],inact:['Inactivas',s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&!data.shopperActivo(s)],prot:['Referencias protegidas',s=>CX.data_shopperDataLevel(s)==='protected_reference'],comp:['Perfiles completos',s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&profileComplete(s)],incom:['Perfiles incompletos',s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&!profileComplete(s)]};
     document.querySelectorAll('#shTopKpis [data-tk]').forEach(el=>el.addEventListener('click',()=>{const d=tkMap[el.dataset.tk],isIncomplete=el.dataset.tk==='incom',items=L.filter(d[1]);
       const body=items.length?`<table class="tbl"><thead><tr><th>Shopper</th><th>Ciudad</th><th>${isIncomplete?'Falta':'Puntuación'}</th><th>Acción</th></tr></thead><tbody>${items.map(x=>`<tr><td class="hov" data-pk="${x.id}" style="cursor:pointer"><b>${esc(x.nombre||x.id)}</b><div style="font-size:10px;color:var(--t3)">${esc(x.code||'')}</div></td><td style="font-size:12px">${esc(x.ciudad||CX.paisName(x.pais)||'—')}</td><td style="font-size:11.5px">${isIncomplete?esc(missingProfileFields(x).join(', ')||'Revisar perfil'):scoreCell(x)}</td><td>${isIncomplete?`<button class="btn btn-soft btn-sm" data-request-profile="${x.id}">Solicitar completar</button>`:`<button class="btn btn-ghost btn-sm" data-pk="${x.id}">Ver perfil</button>`}</td></tr>`).join('')}</tbody></table>`:ui.empty('👥','Sin shoppers en esta categoría.');
       ui.modal(d[0]+' ('+items.length+')',body,{onMount:(ov,close)=>{
