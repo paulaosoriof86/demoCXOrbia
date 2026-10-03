@@ -4,17 +4,17 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "7b8b88608c9cd38cc97726c3f17aab55a51f1715",
-  "productTreeAuthority": "663f89c041732a617bb1ee43af2adc0289a8b5ad",
+  "productSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
+  "productTreeAuthority": "85c0d287e16269dd07d9c1fa1e93810a0aebdc99",
   "predecessorProductSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V221_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "b1b8c8ae6e7b80ee392d77cba43ebdb9f5ba2ce3",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V222_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "3f2a4c1591efc9b7208b1237ee39acaf548f3078",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V3.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "JULISSA_IDENTITY_SOURCE_REPROOF_REQUIRED",
-  "nextFindingId": "VRM-203",
+  "activeBlocker": "V222_EXACT_SOURCE_REPROOF_REQUIRED",
+  "nextFindingId": "VRM-204",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run the canonical rejected-Phase-A source reproof lane against exact V221 product source 7b8b88608c9cd38cc97726c3f17aab55a51f1715, including the identity-provider canonical-login keeper regression and Academy distinct-solid contract. No build/deploy.",
+  "exactNextAction": "Run the existing canonical Phase A source-reproof lane against reachable V222 source 2d4da635aeb793aa47d22127295473856108a94f. The source-proof script itself now owns V222 identity/Academy regression so the workflow remains within its validated size/shape. No build/deploy.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3418,10 +3418,10 @@
   },
   "visualCheckpointScope": null,
   "currentRemediationPackage": {
-    "sourceSha": "7b8b88608c9cd38cc97726c3f17aab55a51f1715",
-    "sourceTree": "663f89c041732a617bb1ee43af2adc0289a8b5ad",
+    "sourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
+    "sourceTree": "85c0d287e16269dd07d9c1fa1e93810a0aebdc99",
     "predecessorSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
-    "state": "JULISSA_IDENTITY_AND_ACADEMY_SOURCE_COMPOSED_PENDING_REPROOF",
+    "state": "REACHABLE_V222_SOURCE_PENDING_REPROOF",
     "findingIds": [
       "VRM-134",
       "VRM-165",
@@ -3443,6 +3443,7 @@
       "VRM-194"
     ],
     "preservedAllPriorFindings": true,
-    "production": false
+    "production": false,
+    "previousDetachedSourceSha": "7b8b88608c9cd38cc97726c3f17aab55a51f1715"
   }
 }
