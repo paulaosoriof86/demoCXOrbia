@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_V190_DEV_MATERIALIZATION_REQUIRED",
+  "status": "HOLD_V190_LIVE_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "ab746be61fe85ef9a6982fe98bf19223e6f7172e",
   "predecessorProductSourceSha": "83efe4ad2bc1ca503d4a010a4c0b9a0ed03cf177",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V190_2026-10-02.json",
-  "findingsLedgerExpectedGitBlob": "8b513201e041c7033b8accf6cf26093b8a990a6d",
+  "findingsLedgerExpectedGitBlob": "6ec7126d0a1c34dfda51cf8921179ee3cfe9fcb8",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM185_VRM186_EXACT_DEV_MATERIALIZATION_REQUIRED",
+  "activeBlocker": "V190_SAME_DEV_TRANSVERSAL_REPROOF_REQUIRED",
   "nextFindingId": "VRM-187",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Materialize exactly source 72c9114130d6fd1d3475957118b48e48469ad7c8 tree ab746be61fe85ef9a6982fe98bf19223e6f7172e once in Recovery DEV through the existing V190 materialization lane. One build, one runtime deploy, one Hosting deploy. No second build. Production remains DO_NOT_TOUCH.",
+  "exactNextAction": "Reuse exactly source 72c9114130d6fd1d3475957118b48e48469ad7c8, runtime cxorbia-live-hr-dev-00254-g98, digest sha256:a556afcb082292750b5a126725f9405c68e9d1b8b432daf510fadbdd82fd4948, Hosting sites/cxorbia-backend-dev/versions/b07b427c39f086ab, HR revision f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305. No rebuild/redeploy. Run V190 same-DEV live reproof proving Admin > Shoppers > Perfil owns identity adjudication, shopper portal cannot adjudicate, name-only merge remains blocked, Paula resolves to the exact canonical HR identity with preserved visible login/history/KPIs, no duplicate principals, all cumulative I3 gates remain PASS, and then present the exact candidate for Paula's visual approval before I4. Production remains DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -408,7 +408,27 @@
     "writes": 0,
     "production": false
   },
-  "currentMaterialization": null,
+  "currentMaterialization": {
+    "runId": 37100444254,
+    "runNumber": 925,
+    "jobId": 111138791148,
+    "artifactId": 11266400251,
+    "artifactDigest": "sha256:c2ced16af0d5e0ea97981e591168fb2be9da0ce3879a2999b03821e6e957969b",
+    "decision": "PASS_V190_EXACT_DEV_MATERIALIZATION",
+    "sourceSha": "72c9114130d6fd1d3475957118b48e48469ad7c8",
+    "sourceTree": "ab746be61fe85ef9a6982fe98bf19223e6f7172e",
+    "runtimeRevision": "cxorbia-live-hr-dev-00254-g98",
+    "runtimeDigest": "sha256:a556afcb082292750b5a126725f9405c68e9d1b8b432daf510fadbdd82fd4948",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/b07b427c39f086ab",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791006031583000",
+    "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "storageRulesDeploys": 1,
+    "state": "SEALED_VRM185_VRM186_DEV_PENDING_SAME_SOURCE_LIVE_REPROOF",
+    "production": false
+  },
   "lastFocalAttempt": {
     "runId": 36198284266,
     "runNumber": 438,
@@ -878,15 +898,7 @@
     "hrWrites": 0,
     "production": false
   },
-  "pendingMaterialization": {
-    "sourceSha": "72c9114130d6fd1d3475957118b48e48469ad7c8",
-    "sourceTree": "ab746be61fe85ef9a6982fe98bf19223e6f7172e",
-    "status": "HOLD_V190_DEV_MATERIALIZATION_REQUIRED",
-    "maxBuilds": 1,
-    "maxRuntimeDeploys": 1,
-    "maxHostingDeploys": 1,
-    "production": false
-  },
+  "pendingMaterialization": null,
   "lastVrm080Proof": {
     "runId": 36333245670,
     "runNumber": 525,

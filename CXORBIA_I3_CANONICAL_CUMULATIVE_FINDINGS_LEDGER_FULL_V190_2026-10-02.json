@@ -18,7 +18,7 @@
     "sourceTree": "ab746be61fe85ef9a6982fe98bf19223e6f7172e",
     "predecessorSha": "83efe4ad2bc1ca503d4a010a4c0b9a0ed03cf177",
     "production": false,
-    "state": "SOURCE_TEST_PASS_PENDING_EXACT_DEV_MATERIALIZATION",
+    "state": "SEALED_VRM185_VRM186_DEV_PENDING_SAME_SOURCE_LIVE_REPROOF",
     "proof": {
       "runId": 37100355655,
       "runNumber": 924,
@@ -53,7 +53,27 @@
       "hrWrites": 0,
       "production": false
     },
-    "materialization": null,
+    "materialization": {
+      "runId": 37100444254,
+      "runNumber": 925,
+      "jobId": 111138791148,
+      "artifactId": 11266400251,
+      "artifactDigest": "sha256:c2ced16af0d5e0ea97981e591168fb2be9da0ce3879a2999b03821e6e957969b",
+      "decision": "PASS_V190_EXACT_DEV_MATERIALIZATION",
+      "sourceSha": "72c9114130d6fd1d3475957118b48e48469ad7c8",
+      "sourceTree": "ab746be61fe85ef9a6982fe98bf19223e6f7172e",
+      "runtimeRevision": "cxorbia-live-hr-dev-00254-g98",
+      "runtimeDigest": "sha256:a556afcb082292750b5a126725f9405c68e9d1b8b432daf510fadbdd82fd4948",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/b07b427c39f086ab",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791006031583000",
+      "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+      "builds": 1,
+      "runtimeDeploys": 1,
+      "hostingDeploys": 1,
+      "storageRulesDeploys": 1,
+      "state": "SEALED_VRM185_VRM186_DEV_PENDING_SAME_SOURCE_LIVE_REPROOF",
+      "production": false
+    },
     "previousSourceProof": {
       "runId": 37021140798,
       "runNumber": 853,
@@ -9485,7 +9505,7 @@
       "secondaryClassification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "paula.osorio authenticates but exact session profile/history/KPIs do not resolve",
-      "state": "SOURCE_FIXED_PROVEN_PENDING_EXACT_DEV_MATERIALIZATION",
+      "state": "EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
       "rootCauseStatus": "PROVEN",
       "observed": "Run 914 authenticates paula.osorio, HR authority is applied and all shopper routes navigate, but resolveExactSessionShopper returns identity=false; country/history/KPIs are empty.",
       "evidence": {
@@ -9785,6 +9805,27 @@
         "shopperPortalAdjudication": false,
         "nameOnlyMerge": false,
         "production": false
+      },
+      "materialization": {
+        "runId": 37100444254,
+        "runNumber": 925,
+        "jobId": 111138791148,
+        "artifactId": 11266400251,
+        "artifactDigest": "sha256:c2ced16af0d5e0ea97981e591168fb2be9da0ce3879a2999b03821e6e957969b",
+        "decision": "PASS_V190_EXACT_DEV_MATERIALIZATION",
+        "sourceSha": "72c9114130d6fd1d3475957118b48e48469ad7c8",
+        "sourceTree": "ab746be61fe85ef9a6982fe98bf19223e6f7172e",
+        "runtimeRevision": "cxorbia-live-hr-dev-00254-g98",
+        "runtimeDigest": "sha256:a556afcb082292750b5a126725f9405c68e9d1b8b432daf510fadbdd82fd4948",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/b07b427c39f086ab",
+        "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791006031583000",
+        "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+        "builds": 1,
+        "runtimeDeploys": 1,
+        "hostingDeploys": 1,
+        "storageRulesDeploys": 1,
+        "state": "SEALED_VRM185_VRM186_DEV_PENDING_SAME_SOURCE_LIVE_REPROOF",
+        "production": false
       }
     },
     "VRM-186": {
@@ -9792,7 +9833,7 @@
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Admin shopper identity review did not normalize all exact-conflict schemas and allowed a name-only merge path",
-      "state": "SOURCE_FIXED_PROVEN_PENDING_EXACT_DEV_MATERIALIZATION",
+      "state": "EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
       "rootCauseStatus": "PROVEN",
       "rootCause": "Admin > Shoppers only indexed review items through shopperId/shopperIds, while exact technical conflicts can arrive through liveShopperId/candidates/sourceShopperId/canonicalShopperId/id. In addition, display_name_collision_not_auto_merged was the only path that enabled the merge modal, contradicting the frozen rule that a matching name alone is never merge authority.",
       "correction": {
@@ -9835,6 +9876,27 @@
         "adminIdentityOwner": "Admin > Shoppers > Perfil",
         "shopperPortalAdjudication": false,
         "nameOnlyMerge": false,
+        "production": false
+      },
+      "materialization": {
+        "runId": 37100444254,
+        "runNumber": 925,
+        "jobId": 111138791148,
+        "artifactId": 11266400251,
+        "artifactDigest": "sha256:c2ced16af0d5e0ea97981e591168fb2be9da0ce3879a2999b03821e6e957969b",
+        "decision": "PASS_V190_EXACT_DEV_MATERIALIZATION",
+        "sourceSha": "72c9114130d6fd1d3475957118b48e48469ad7c8",
+        "sourceTree": "ab746be61fe85ef9a6982fe98bf19223e6f7172e",
+        "runtimeRevision": "cxorbia-live-hr-dev-00254-g98",
+        "runtimeDigest": "sha256:a556afcb082292750b5a126725f9405c68e9d1b8b432daf510fadbdd82fd4948",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/b07b427c39f086ab",
+        "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791006031583000",
+        "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+        "builds": 1,
+        "runtimeDeploys": 1,
+        "hostingDeploys": 1,
+        "storageRulesDeploys": 1,
+        "state": "SEALED_VRM185_VRM186_DEV_PENDING_SAME_SOURCE_LIVE_REPROOF",
         "production": false
       }
     }
@@ -10447,7 +10509,7 @@
     "nextFindingId": "VRM-187",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_V190_DEV_MATERIALIZATION_REQUIRED",
+    "terminalState": "HOLD_V190_LIVE_REPROOF_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -10464,7 +10526,27 @@
     "userReviewEvidence": "19 screenshots plus complete Shopper/Admin observations supplied 2026-10-02",
     "currentProductSourceSha": "72c9114130d6fd1d3475957118b48e48469ad7c8",
     "currentProductSourceTree": "ab746be61fe85ef9a6982fe98bf19223e6f7172e",
-    "currentMaterialization": null,
+    "currentMaterialization": {
+      "runId": 37100444254,
+      "runNumber": 925,
+      "jobId": 111138791148,
+      "artifactId": 11266400251,
+      "artifactDigest": "sha256:c2ced16af0d5e0ea97981e591168fb2be9da0ce3879a2999b03821e6e957969b",
+      "decision": "PASS_V190_EXACT_DEV_MATERIALIZATION",
+      "sourceSha": "72c9114130d6fd1d3475957118b48e48469ad7c8",
+      "sourceTree": "ab746be61fe85ef9a6982fe98bf19223e6f7172e",
+      "runtimeRevision": "cxorbia-live-hr-dev-00254-g98",
+      "runtimeDigest": "sha256:a556afcb082292750b5a126725f9405c68e9d1b8b432daf510fadbdd82fd4948",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/b07b427c39f086ab",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791006031583000",
+      "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+      "builds": 1,
+      "runtimeDeploys": 1,
+      "hostingDeploys": 1,
+      "storageRulesDeploys": 1,
+      "state": "SEALED_VRM185_VRM186_DEV_PENDING_SAME_SOURCE_LIVE_REPROOF",
+      "production": false
+    },
     "previousMaterialization": {
       "runId": 37091457753,
       "runNumber": 908,
@@ -10551,7 +10633,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Materialize exactly source 72c9114130d6fd1d3475957118b48e48469ad7c8 tree ab746be61fe85ef9a6982fe98bf19223e6f7172e once in Recovery DEV through the existing V190 materialization lane. One build, one runtime deploy, one Hosting deploy. No second build. Production remains DO_NOT_TOUCH.",
+  "exactNextAction": "Reuse exactly source 72c9114130d6fd1d3475957118b48e48469ad7c8, runtime cxorbia-live-hr-dev-00254-g98, digest sha256:a556afcb082292750b5a126725f9405c68e9d1b8b432daf510fadbdd82fd4948, Hosting sites/cxorbia-backend-dev/versions/b07b427c39f086ab, HR revision f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305. No rebuild/redeploy. Run V190 same-DEV live reproof proving Admin > Shoppers > Perfil owns identity adjudication, shopper portal cannot adjudicate, name-only merge remains blocked, Paula resolves to the exact canonical HR identity with preserved visible login/history/KPIs, no duplicate principals, all cumulative I3 gates remain PASS, and then present the exact candidate for Paula's visual approval before I4. Production remains DO_NOT_TOUCH.",
   "supersedesGitBlob": "1dc39b2d5dc5aa1884181c963d94b75bec8b075c",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -11691,7 +11773,27 @@
       "production": false
     }
   ],
-  "currentMaterialization": null,
+  "currentMaterialization": {
+    "runId": 37100444254,
+    "runNumber": 925,
+    "jobId": 111138791148,
+    "artifactId": 11266400251,
+    "artifactDigest": "sha256:c2ced16af0d5e0ea97981e591168fb2be9da0ce3879a2999b03821e6e957969b",
+    "decision": "PASS_V190_EXACT_DEV_MATERIALIZATION",
+    "sourceSha": "72c9114130d6fd1d3475957118b48e48469ad7c8",
+    "sourceTree": "ab746be61fe85ef9a6982fe98bf19223e6f7172e",
+    "runtimeRevision": "cxorbia-live-hr-dev-00254-g98",
+    "runtimeDigest": "sha256:a556afcb082292750b5a126725f9405c68e9d1b8b432daf510fadbdd82fd4948",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/b07b427c39f086ab",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791006031583000",
+    "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "storageRulesDeploys": 1,
+    "state": "SEALED_VRM185_VRM186_DEV_PENDING_SAME_SOURCE_LIVE_REPROOF",
+    "production": false
+  },
   "lastModuleTruthProof": {
     "runId": 36451085968,
     "runNumber": 573,
@@ -11765,15 +11867,7 @@
     "vrm083": "FIXED_PROVEN_RUN564",
     "vrm084": "SOURCE_FIXED_HOSTING_MATERIALIZATION_REQUIRED"
   },
-  "pendingMaterialization": {
-    "sourceSha": "72c9114130d6fd1d3475957118b48e48469ad7c8",
-    "sourceTree": "ab746be61fe85ef9a6982fe98bf19223e6f7172e",
-    "status": "HOLD_V190_DEV_MATERIALIZATION_REQUIRED",
-    "maxBuilds": 1,
-    "maxRuntimeDeploys": 1,
-    "maxHostingDeploys": 1,
-    "production": false
-  },
+  "pendingMaterialization": null,
   "lastTerminalAttempt": {
     "runId": 36451412310,
     "runNumber": 574,
@@ -14017,7 +14111,7 @@
     "next": "SHORT_HUMAN_VISUAL_RETEST",
     "production": false
   },
-  "activeBlocker": "VRM185_VRM186_EXACT_DEV_MATERIALIZATION_REQUIRED",
+  "activeBlocker": "V190_SAME_DEV_TRANSVERSAL_REPROOF_REQUIRED",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -14209,5 +14303,5 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-10-02",
-  "nextExactAction": "Materialize exactly source 72c9114130d6fd1d3475957118b48e48469ad7c8 tree ab746be61fe85ef9a6982fe98bf19223e6f7172e once in Recovery DEV through the existing V190 materialization lane. One build, one runtime deploy, one Hosting deploy. No second build. Production remains DO_NOT_TOUCH."
+  "nextExactAction": "Reuse exactly source 72c9114130d6fd1d3475957118b48e48469ad7c8, runtime cxorbia-live-hr-dev-00254-g98, digest sha256:a556afcb082292750b5a126725f9405c68e9d1b8b432daf510fadbdd82fd4948, Hosting sites/cxorbia-backend-dev/versions/b07b427c39f086ab, HR revision f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305. No rebuild/redeploy. Run V190 same-DEV live reproof proving Admin > Shoppers > Perfil owns identity adjudication, shopper portal cannot adjudicate, name-only merge remains blocked, Paula resolves to the exact canonical HR identity with preserved visible login/history/KPIs, no duplicate principals, all cumulative I3 gates remain PASS, and then present the exact candidate for Paula's visual approval before I4. Production remains DO_NOT_TOUCH."
 }
