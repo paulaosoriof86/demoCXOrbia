@@ -762,10 +762,18 @@ async function durableIdentityAdjudication({auth,db,command,actor,canonicalShopp
   const profileRefs=aliases.map(id=>tenant.collection('shoppers').doc(id)),crossRefs=aliases.map(id=>tenant.collection('shopperIdentityCrosswalk').doc(id));
   const profileSnaps=await Promise.all(profileRefs.map(ref=>ref.get())),crossSnaps=await Promise.all(crossRefs.map(ref=>ref.get()));
   aliases.forEach((id,index)=>{if(!profileSnaps[index].exists&&!crossSnaps[index].exists)throw new Error('SHOPPER_IDENTITY_ALIAS_UNKNOWN:'+id);});
+  const identityIds=[canonicalShopperId,...aliases];
+  const identitySet=new Set(identityIds);
   const existing=await exactShopperIdentityMap(db,tenantId,projectId);
-  aliases.forEach(id=>{const prior=existing.get(id);if(prior&&prior!==canonicalShopperId)throw new Error('SHOPPER_IDENTITY_ALIAS_CONFLICT:'+id);});
+  /* VRM-185: an explicit Admin human adjudication may supersede an older exact
+     adjudication only inside the exact same identity set being confirmed now.
+     A mapping to any identity outside that set remains a hard conflict. */
+  aliases.forEach(id=>{
+    const prior=existing.get(id);
+    if(prior&&prior!==canonicalShopperId&&!identitySet.has(prior))throw new Error('SHOPPER_IDENTITY_ALIAS_CONFLICT:'+id);
+  });
   const aliasProfiles=profileSnaps.map(s=>s.exists?(s.data()||{}):{});
-  const identityIds=[canonicalShopperId,...aliases],profilesById=new Map([[canonicalShopperId,canonical],...aliases.map((id,i)=>[id,aliasProfiles[i]])]);
+  const profilesById=new Map([[canonicalShopperId,canonical],...aliases.map((id,i)=>[id,aliasProfiles[i]])]);
   const principalRows=[];
   for(const identityId of identityIds){
     const docs=await adjudicationMembershipDocs(users,identityId),activeDocs=docs.filter(doc=>{
