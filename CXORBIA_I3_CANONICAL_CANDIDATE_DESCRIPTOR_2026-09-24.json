@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM191_SOURCE_REPROOF_REQUIRED",
+  "status": "HOLD_VRM192_ACADEMY_PROVIDER_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "190509264f00cee52280b5c8dcf16259673e14d0",
   "productTreeAuthority": "ae80cf31eb1357d760388ad9e922cb5bb95ec264",
   "predecessorProductSourceSha": "6a5d529d7813b48c90051668c7331065dbc8d82b",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V205_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "541c4e1cfe99c38836e4faffebefc55387eb2dd6",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V206_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "4164addfbf354ad72ecb64bcf87077872a81a742",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM191_SOURCE_REPROOF_REQUIRED",
+  "activeBlocker": "VRM192_ACADEMY_PROVIDER_REQUIRED",
   "nextFindingId": "VRM-195",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Repeat the same bounded VRM-191 source-only reproof on product source 190509264f00cee52280b5c8dcf16259673e14d0 / tree ae80cf31eb1357d760388ad9e922cb5bb95ec264 after correcting only the test fixture normalizedName. No product source change, build or deploy.",
+  "exactNextAction": "Resolve VRM-192 only: replace Academia custom course/category/workflow/audit browser-local authority with a durable tenant-scoped provider contract inside the existing /v1/cxorbia/commands runtime. Preserve seed/base courses as immutable source content; custom content must be versioned, auditable, role-gated and ACK/readback-backed. Source-test first; no build/deploy.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3228,6 +3228,25 @@
     "cause": "Test fixture omitted normalizedName; provider fail-closed behavior was correct.",
     "correction": "backend/runtime/hr-live-service/test/cxorbia-hr-source-admin-provider-v1.test.mjs only",
     "productSourceUnchanged": true,
+    "production": false
+  },
+  "vrm191SourceProof": {
+    "runId": 37141746977,
+    "runNumber": 968,
+    "jobId": 111257479809,
+    "artifactId": 11279944679,
+    "artifactDigest": "sha256:bd6b73d4f8425389ceb5eb45cdd6e23c1259dfe618268dea6eb62fcce339b5ac",
+    "decision": "PASS_VRM191_HR_SOURCE_PROVIDER_CONTRACT",
+    "sourceSha": "190509264f00cee52280b5c8dcf16259673e14d0",
+    "sourceTree": "ae80cf31eb1357d760388ad9e922cb5bb95ec264",
+    "tests": {
+      "total": 6,
+      "pass": 6,
+      "fail": 0
+    },
+    "materializationJob": "SKIPPED",
+    "builds": 0,
+    "deploys": 0,
     "production": false
   }
 }

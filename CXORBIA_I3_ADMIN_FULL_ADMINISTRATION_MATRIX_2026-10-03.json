@@ -5,8 +5,8 @@
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "controlHeadBeforeFreeze": "2d02ef978d220eb04183df957a2f398bfe1d52e5",
-  "productSourceSha": "6a5d529d7813b48c90051668c7331065dbc8d82b",
-  "productTree": "882d4fdf35c1e50e1b231394fd2a94309f7bfe3a",
+  "productSourceSha": "190509264f00cee52280b5c8dcf16259673e14d0",
+  "productTree": "ae80cf31eb1357d760388ad9e922cb5bb95ec264",
   "materialization": {
     "runId": 37127209268,
     "runNumber": 939,
@@ -511,7 +511,7 @@
       "owner": [
         "app/modules/rutas.js"
       ],
-      "reason": "Google Sheets connection UI accepts a raw URL and immediately updates browser-side HR source state / claims online connection without provider ACK. This conflicts with the frozen external-provider/source-reference contract.",
+      "reason": "VRM-191 source contract removed raw-URL self-connection, moved administration to project-scoped providerBindingId/mappingRef and requires project.update ACK/readback. Route remains OPEN_BLOCKER until same-source DEV provider lifecycle/readback is materialized.",
       "renderProof": {
         "run946": true,
         "visible": true,
@@ -522,7 +522,7 @@
         {
           "action": "connect/change HR source",
           "classification": "OPEN_BLOCKER",
-          "blocker": "Must use opaque provider binding + mapping reference, remote ACK and readback; no raw URL as authoritative browser state.",
+          "blocker": "SOURCE_PASS_RUN968; pending same-source DEV provider lifecycle/readback before PASS_PROVEN.",
           "owner": "app/modules/rutas.js"
         }
       ],
@@ -534,7 +534,23 @@
         "readbackArtifactId": 11276491534,
         "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
         "adminArtifactId": 11276016226,
-        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487"
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487",
+        "vrm191SourceProof": {
+          "runId": 37141746977,
+          "runNumber": 968,
+          "jobId": 111257479809,
+          "artifactId": 11279944679,
+          "artifactDigest": "sha256:bd6b73d4f8425389ceb5eb45cdd6e23c1259dfe618268dea6eb62fcce339b5ac",
+          "decision": "PASS_VRM191_HR_SOURCE_PROVIDER_CONTRACT",
+          "sourceSha": "190509264f00cee52280b5c8dcf16259673e14d0",
+          "sourceTree": "ae80cf31eb1357d760388ad9e922cb5bb95ec264",
+          "tests": 6,
+          "testsPass": 6,
+          "testsFail": 0,
+          "builds": 0,
+          "deploys": 0,
+          "production": false
+        }
       },
       "production": false
     },
@@ -544,7 +560,7 @@
       "owner": [
         "app/modules/hr-source.js"
       ],
-      "reason": "Source configuration/test/preview/sync is modeled as local/request-preview state and review candidates use localStorage. It does not yet provide durable source administration with provider ACK/readback.",
+      "reason": "VRM-191 source contract made source configuration project-scoped and provider-backed with opaque binding/mapping, ACK/readback and canonical read-only HR behavior. The separate review-candidate queue remains browser-preview/local and is NOT closed by VRM-191.",
       "renderProof": {
         "run946": true,
         "visible": true,
@@ -555,7 +571,7 @@
         {
           "action": "save source configuration",
           "classification": "OPEN_BLOCKER",
-          "blocker": "Browser-side state is not authority.",
+          "blocker": "SOURCE_PASS_RUN968; pending same-source DEV provider lifecycle/readback before PASS_PROVEN.",
           "owner": "app/modules/hr-source.js"
         },
         {
@@ -573,7 +589,23 @@
         "readbackArtifactId": 11276491534,
         "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
         "adminArtifactId": 11276016226,
-        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487"
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487",
+        "vrm191SourceProof": {
+          "runId": 37141746977,
+          "runNumber": 968,
+          "jobId": 111257479809,
+          "artifactId": 11279944679,
+          "artifactDigest": "sha256:bd6b73d4f8425389ceb5eb45cdd6e23c1259dfe618268dea6eb62fcce339b5ac",
+          "decision": "PASS_VRM191_HR_SOURCE_PROVIDER_CONTRACT",
+          "sourceSha": "190509264f00cee52280b5c8dcf16259673e14d0",
+          "sourceTree": "ae80cf31eb1357d760388ad9e922cb5bb95ec264",
+          "tests": 6,
+          "testsPass": 6,
+          "testsFail": 0,
+          "builds": 0,
+          "deploys": 0,
+          "production": false
+        }
       },
       "production": false
     },
@@ -1408,5 +1440,5 @@
   "humanVisualApprovalAllowed": false,
   "i4Allowed": false,
   "production": "DO_NOT_TOUCH",
-  "exactNextAction": "Proceed to VRM-191 external HR source administration as the next P0 owner. Keep source-PASS routes OPEN_BLOCKER until bounded package materialization and same-source live lifecycle evidence; do not materialize DEV yet."
+  "exactNextAction": "Proceed to VRM-192 Academia custom content durability. Preserve the separate HR review-candidate queue blocker; do not materialize DEV yet."
 }
