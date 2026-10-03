@@ -18,7 +18,7 @@
     "sourceTree": "db4c1cc35b55c03523196fc583bf7cf0b874d87f",
     "predecessorSha": "9102918177d89d9e3d18cfb75c04aba8c29cba86",
     "production": false,
-    "state": "SEALED_VRM181_CERT_ROUTE_FIX_DEV_PENDING_LIVE_REPROOF",
+    "state": "SEALED_DEV_PENDING_V190_TRANSVERSAL_REPROOF",
     "proof": {
       "runId": 37037752771,
       "runNumber": 864,
@@ -9347,7 +9347,7 @@
       "classification": "PERSISTENCE_FAILURE",
       "severity": "P0",
       "title": "Eight newly submitted August GT visits are absent from durable historical payment reconciliation",
-      "state": "DURABLE_REPAIR_ARMED",
+      "state": "FIXED_PROVEN_DURABLE",
       "rootCauseStatus": "PROVEN",
       "rootCause": "Run 910 proved exact HR revision f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305 has 636 historical submitted visits (562 paid, 74 pending), while durable paymentReconciliations still has 628 unique visits (562 paid, 66 pending). The exact delta is the eight August GT visits already proven newly submitted in VRM-182.",
       "evidence": {
@@ -9415,7 +9415,31 @@
         "shopperMergeInvariant": "VRM-081/VRM-128 mandatory: exact same-human consolidation only; preserve canonical Auth/profile/history/KPIs/benefits/certifications/postulations/visits/reservations/finance/audit; retire aliases idempotently; ambiguity fails closed; no fuzzy/name merge.",
         "production": false
       },
-      "production": false
+      "production": false,
+      "receipt": {
+        "runId": 37092305326,
+        "runNumber": 911,
+        "jobId": 111115061148,
+        "artifactId": 11262631635,
+        "artifactDigest": "sha256:957150ebc16817fe5a9aacbcc534eb3a937fa310fa2232210bb33233e3d0911c",
+        "decision": "PASS_VRM151_DURABLE_HISTORICAL_RECONCILIATION",
+        "sourceRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+        "observed": {
+          "canonicalSubmitted": 636,
+          "paid": 562,
+          "pending": 74,
+          "amountReviewRequired": 5,
+          "octoberTouched": 0,
+          "reconciliationRecords": 636
+        },
+        "providerAck": true,
+        "idempotentReplay": true,
+        "financialMovementWrites": 0,
+        "bankWrites": 0,
+        "hrWrites": 0,
+        "externalPaymentWrites": 0,
+        "production": false
+      }
     }
   },
   "latestEvidenceOverrides": {
@@ -10023,7 +10047,7 @@
     "nextFindingId": "VRM-184",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_VRM151_DURABLE_RECONCILIATION_REQUIRED",
+    "terminalState": "HOLD_V190_LIVE_REPROOF_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -10122,7 +10146,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Execute existing finance.historical.reconcile once against exact HR revision f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305 on the already materialized DEV. Require 636 durable records, 562 paid, 74 pending, 5 review-required, 0 October, provider ACK, immediate idempotent replay with zero writes, and zero financialMovement/bank/HR/external-payment writes. Then resume same-DEV V190 reproof without rebuild/redeploy.",
+  "exactNextAction": "Reuse exactly source d33faac8d2af8523485d31c00037f639177ca040, runtime cxorbia-live-hr-dev-00253-5f8, digest sha256:a904ae7fc4934d41343d214ad69c4fa94d58618441f9741bf865714d19bca2c1 and Hosting sites/cxorbia-backend-dev/versions/beecdb6bc5eb6c84. No rebuild/redeploy. Run V190 same-DEV live reproof: finance 636/562/74/5/0, Admin Certificación non-recursive, VRM-168 OCTUBRE 26!6 mapping + provider ACK + cleanup, Shopper/Admin/Reservas/Movimientos/Cert-Res, identity consolidation invariants and no duplicates. Production remains DO_NOT_TOUCH.",
   "supersedesGitBlob": "1dc39b2d5dc5aa1884181c963d94b75bec8b075c",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -13600,7 +13624,7 @@
     "next": "SHORT_HUMAN_VISUAL_RETEST",
     "production": false
   },
-  "activeBlocker": "VRM183_DURABLE_FINANCE_RECONCILIATION_REQUIRED",
+  "activeBlocker": "V190_SAME_DEV_TRANSVERSAL_REPROOF_REQUIRED",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -13792,5 +13816,5 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-10-02",
-  "nextExactAction": "Execute existing finance.historical.reconcile once against exact HR revision f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305 on the already materialized DEV. Require 636 durable records, 562 paid, 74 pending, 5 review-required, 0 October, provider ACK, immediate idempotent replay with zero writes, and zero financialMovement/bank/HR/external-payment writes. Then resume same-DEV V190 reproof without rebuild/redeploy."
+  "nextExactAction": "Reuse exactly source d33faac8d2af8523485d31c00037f639177ca040, runtime cxorbia-live-hr-dev-00253-5f8, digest sha256:a904ae7fc4934d41343d214ad69c4fa94d58618441f9741bf865714d19bca2c1 and Hosting sites/cxorbia-backend-dev/versions/beecdb6bc5eb6c84. No rebuild/redeploy. Run V190 same-DEV live reproof: finance 636/562/74/5/0, Admin Certificación non-recursive, VRM-168 OCTUBRE 26!6 mapping + provider ACK + cleanup, Shopper/Admin/Reservas/Movimientos/Cert-Res, identity consolidation invariants and no duplicates. Production remains DO_NOT_TOUCH."
 }
