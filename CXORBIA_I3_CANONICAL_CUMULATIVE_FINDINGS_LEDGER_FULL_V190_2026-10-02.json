@@ -9278,6 +9278,69 @@
         "state": "SEALED_VRM181_CERT_ROUTE_FIX_DEV_PENDING_LIVE_REPROOF",
         "production": false
       }
+    },
+    "VRM-182": {
+      "id": "VRM-182",
+      "classification": "ENVIRONMENT_FAILURE",
+      "severity": "P0",
+      "title": "Live HR revision advanced eight August GT visits to submitted while finance QA remained pinned to prior counts",
+      "state": "CONTROL_FIX_READY_SAME_DEV_REPROOF_REQUIRED",
+      "rootCauseStatus": "PROVEN",
+      "rootCause": "Between HR revisions 27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732 and f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305, exactly eight August 2026 GT visits changed from non-submitted states to submitida/submitted_complete with submittedAt populated. The finance dry-run still hardcoded the prior revision counts 628/562/66, so it failed before testing persisted reconciliation. No product runtime regression is proven by that count drift.",
+      "evidence": {
+        "run906": {
+          "runId": 37087009806,
+          "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
+          "canonicalSubmitted": 628,
+          "paid": 562,
+          "pending": 66,
+          "excludedNotSubmitted": 76
+        },
+        "run909": {
+          "runId": 37091661255,
+          "artifactId": 11262479560,
+          "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+          "canonicalSubmitted": 636,
+          "paid": 562,
+          "pending": 74,
+          "excludedNotSubmitted": 68,
+          "amountReviewRequired": 5,
+          "octoberTouched": 0
+        },
+        "exactAddedSubmittedVisitIds": [
+          "hr_2026-08_gt_20_a6a92aad5b",
+          "hr_2026-08_gt_21_6689d25300",
+          "hr_2026-08_gt_23_8ed01e4363",
+          "hr_2026-08_gt_25_cc5ace594e",
+          "hr_2026-08_gt_26_39bcd45c73",
+          "hr_2026-08_gt_29_9271c2d8a9",
+          "hr_2026-08_gt_30_61a55ce520",
+          "hr_2026-08_gt_33_dec08b6bc8"
+        ],
+        "removedSubmittedVisitIds": [],
+        "production": false
+      },
+      "correction": {
+        "productSourceUnchanged": "d33faac8d2af8523485d31c00037f639177ca040",
+        "runtimeUnchanged": "cxorbia-live-hr-dev-00253-5f8",
+        "hostingUnchanged": "sites/cxorbia-backend-dev/versions/beecdb6bc5eb6c84",
+        "controlFiles": [
+          "tools/qa/cxorbia-vrm151-final-canonical-dry-run.mjs",
+          "tools/qa/cxorbia-vrm154-156-live-reproof.mjs",
+          "tools/qa/cxorbia-vrm153-reconciliation-readback-diagnostic.mjs",
+          ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+        ],
+        "policy": "Expected finance counts are frozen by exact HR revision; unknown revisions fail closed. Same-DEV readback must still prove persisted reconciliation equals that revision.",
+        "builds": 0,
+        "deploys": 0,
+        "production": false
+      },
+      "cumulativePreservation": {
+        "findingsAppendOnly": true,
+        "shopperMergeInvariant": "VRM-081/VRM-128 unchanged: exact same-human consolidation only; preserve canonical history/Auth/KPIs/benefits/certifications/postulations/visits/reservations/finance; ambiguity fails closed; no fuzzy/name merge.",
+        "production": false
+      },
+      "production": false
     }
   },
   "latestEvidenceOverrides": {
@@ -9876,11 +9939,12 @@
       "VRM-178",
       "VRM-179",
       "VRM-180",
-      "VRM-181"
+      "VRM-181",
+      "VRM-182"
     ],
-    "findingCount": 181,
-    "expectedCurrentRange": "VRM-001..VRM-181",
-    "nextFindingId": "VRM-182",
+    "findingCount": 182,
+    "expectedCurrentRange": "VRM-001..VRM-182",
+    "nextFindingId": "VRM-183",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_V190_LIVE_REPROOF_REQUIRED",
@@ -9893,7 +9957,7 @@
     "humanVisualAcceptanceLockPath": "CXORBIA_PRE_I4_HUMAN_VISUAL_ACCEPTANCE_LOCK_2026-09-28.json",
     "adminForensicAuditPath": "CXORBIA_PRE_I4_ADMIN_FORENSIC_AUDIT_2026-09-28.json",
     "adminReviewRepeatRequired": true,
-    "latestLiveHrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
+    "latestLiveHrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
     "latestLiveHrReadAt": "2026-10-02T17:08:09.465Z",
     "userReportedRequirementsFrozenAt": "2026-09-30T20:18:00-06:00",
     "userReviewComplete": true,
@@ -9949,6 +10013,22 @@
       "preserveCanonicalHistoryAndOperationalDomains": true,
       "retireDuplicateAliasPrincipalsIdempotently": true,
       "ambiguityFailsClosed": true
+    },
+    "financeExpectedByRevision": {
+      "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732": {
+        "canonicalSubmitted": 628,
+        "paid": 562,
+        "pending": 66,
+        "amountReviewRequired": 5,
+        "octoberTouched": 0
+      },
+      "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305": {
+        "canonicalSubmitted": 636,
+        "paid": 562,
+        "pending": 74,
+        "amountReviewRequired": 5,
+        "octoberTouched": 0
+      }
     }
   },
   "workPlan": {
@@ -9966,7 +10046,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Reuse exactly runtime cxorbia-live-hr-dev-00253-5f8, digest sha256:a904ae7fc4934d41343d214ad69c4fa94d58618441f9741bf865714d19bca2c1, Hosting sites/cxorbia-backend-dev/versions/beecdb6bc5eb6c84, source d33faac8d2af8523485d31c00037f639177ca040. No rebuild/redeploy. Run V190 same-DEV live reproof; Admin Certificación must render without recursion while VRM-168 OCTUBRE 26!6 mapping/provider ACK/cleanup and every cumulative Shopper/Admin/Reservas/Movimientos/Cert-Res gate remain PASS. Production remains DO_NOT_TOUCH.",
+  "exactNextAction": "Re-run the existing V190 same-DEV readback against source d33faac8d2af8523485d31c00037f639177ca040, runtime cxorbia-live-hr-dev-00253-5f8 and Hosting beecdb6bc5eb6c84 with revision-aware finance expectations. No rebuild/deploy. If persisted payment reconciliation lacks any of the eight newly submitted August GT visits, classify the residual as PERSISTENCE_FAILURE and repair only the finance reconciliation owner.",
   "supersedesGitBlob": "1dc39b2d5dc5aa1884181c963d94b75bec8b075c",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -9995,7 +10075,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-182",
+  "nextFindingId": "VRM-183",
   "lastControlFailure": {
     "id": "VRM-142",
     "classification": "AUTH_FAILURE",
@@ -13444,7 +13524,7 @@
     "next": "SHORT_HUMAN_VISUAL_RETEST",
     "production": false
   },
-  "activeBlocker": "VRM181_CERT_ROUTE_FIX_SAME_DEV_LIVE_REPROOF_REQUIRED",
+  "activeBlocker": "VRM182_HR_REVISION_PINNED_FINANCE_READBACK_REPROOF_REQUIRED",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -13636,5 +13716,5 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-10-02",
-  "nextExactAction": "Reuse exactly runtime cxorbia-live-hr-dev-00253-5f8, digest sha256:a904ae7fc4934d41343d214ad69c4fa94d58618441f9741bf865714d19bca2c1, Hosting sites/cxorbia-backend-dev/versions/beecdb6bc5eb6c84, source d33faac8d2af8523485d31c00037f639177ca040. No rebuild/redeploy. Run V190 same-DEV live reproof; Admin Certificación must render without recursion while VRM-168 OCTUBRE 26!6 mapping/provider ACK/cleanup and every cumulative Shopper/Admin/Reservas/Movimientos/Cert-Res gate remain PASS. Production remains DO_NOT_TOUCH."
+  "nextExactAction": "Re-run the existing V190 same-DEV readback against source d33faac8d2af8523485d31c00037f639177ca040, runtime cxorbia-live-hr-dev-00253-5f8 and Hosting beecdb6bc5eb6c84 with revision-aware finance expectations. No rebuild/deploy. If persisted payment reconciliation lacks any of the eight newly submitted August GT visits, classify the residual as PERSISTENCE_FAILURE and repair only the finance reconciliation owner."
 }

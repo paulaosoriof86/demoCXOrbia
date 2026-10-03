@@ -6810,10 +6810,7 @@ jobs:
           set -Eeuo pipefail
           PREI4_OUT="$FOCAL_OUT/browser" CXORBIA_PREI4_ROOT="$HOSTING_URL" CXORBIA_PREI4_SOURCE_SHA="$FOCAL_SOURCE" CXORBIA_EXPECTED_HR_REVISION="$HR_REVISION" PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" node tools/qa/cxorbia-vrm154-156-live-reproof.mjs | tee "$FOCAL_OUT/live-reproof.log"
           test "$(jq -r '.decision' "$FOCAL_OUT/browser/result.json")" = "PASS_VRM154_156_SEALED_DEV_LIVE_REPROOF"
-          test "$(jq -r '.finance.paid' "$FOCAL_OUT/browser/result.json")" = "562"
-          test "$(jq -r '.finance.pending' "$FOCAL_OUT/browser/result.json")" = "66"
-          test "$(jq -r '.finance.amountReviewRequired' "$FOCAL_OUT/browser/result.json")" = "5"
-          test "$(jq -r '.finance.octoberRecords' "$FOCAL_OUT/browser/result.json")" = "0"
+          jq -e '.finance.revisionExpected==true and (.finance.canonicalSubmitted==.finance.expected.canonicalSubmitted) and (.finance.paid==.finance.expected.paid) and (.finance.pending==.finance.expected.pending) and (.finance.amountReviewRequired==.finance.expected.amountReviewRequired) and (.finance.octoberRecords==.finance.expected.octoberTouched)' "$FOCAL_OUT/browser/result.json" >/dev/null
       - name: step
         if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_HUMAN_VISUAL_REMEDIATION_DIAGNOSTIC_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_V190_LIVE_REPROOF_REQUIRED' }}
         run: |

@@ -22,6 +22,10 @@ const paymentStatusFor=(period,c)=>{
   return '';
 };
 const submitted=v=>v?.canonicalFacets?.submitted===true||!!v?.submittedAt||v?.submit===true||['submitida','liquidada','pagada'].includes(str(v?.estado||v?.status).toLowerCase())||str(v?.canonicalState).toLowerCase()==='submitted_complete';
+const EXPECTED_BY_REVISION=Object.freeze({
+  '27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732':Object.freeze({canonicalSubmitted:628,paid:562,pending:66,amountReviewRequired:5,octoberTouched:0}),
+  'f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305':Object.freeze({canonicalSubmitted:636,paid:562,pending:74,amountReviewRequired:5,octoberTouched:0})
+});
 
 const [projectSnap,fireSnap,hrRes]=await Promise.all([
   projectRef.get(),
@@ -83,12 +87,13 @@ for(const r of canonical){
 const statusCounts=canonical.reduce((o,r)=>(o[r.paymentStatus]=(o[r.paymentStatus]||0)+1,o),{});
 const reviewRows=canonical.filter(r=>r.amountReviewRequired);
 const octTouched=canonical.filter(r=>r.period==='2026-10').length;
-const decision=!ambiguous.length&&canonical.length===628&&statusCounts.paid===562&&statusCounts.pending===66&&reviewRows.length===5&&octTouched===0
+const expected=EXPECTED_BY_REVISION[sourceRevision]||null;
+const decision=!!expected&&!ambiguous.length&&canonical.length===expected.canonicalSubmitted&&(statusCounts.paid||0)===expected.paid&&(statusCounts.pending||0)===expected.pending&&reviewRows.length===expected.amountReviewRequired&&octTouched===expected.octoberTouched
   ?'PASS_VRM151_FINAL_CANONICAL_HISTORICAL_DRY_RUN'
   :'HOLD_VRM151_FINAL_CANONICAL_HISTORICAL_DRY_RUN_MISMATCH';
 const result={
-  decision,sourceRevision,hrStable:hr.revisionStable===true||!!sourceRevision,
-  expected:{canonicalSubmitted:628,paid:562,pending:66,amountReviewRequired:5,octoberTouched:0},
+  decision,sourceRevision,hrStable:hr.revisionStable===true||!!sourceRevision,expectedRevisionKnown:!!expected,frozenExpectedRevisions:Object.keys(EXPECTED_BY_REVISION),
+  expected,
   observed:{canonicalSubmitted:canonical.length,paid:statusCounts.paid||0,pending:statusCounts.pending||0,amountReviewRequired:reviewRows.length,octoberTouched:octTouched,excludedNotSubmitted:excluded.length,ambiguous:ambiguous.length},
   grouped:[...groups.values()].sort((a,b)=>keyOf(a).localeCompare(keyOf(b))),
   batches:[...byPeriodStatus.values()].sort((a,b)=>[a.period,a.paymentStatus].join('|').localeCompare([b.period,b.paymentStatus].join('|'))),

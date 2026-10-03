@@ -8,13 +8,13 @@
   "productTreeAuthority": "db4c1cc35b55c03523196fc583bf7cf0b874d87f",
   "predecessorProductSourceSha": "9102918177d89d9e3d18cfb75c04aba8c29cba86",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V190_2026-10-02.json",
-  "findingsLedgerExpectedGitBlob": "8814cb8547a3e2807c9eb0db15e21c99e62f2866",
+  "findingsLedgerExpectedGitBlob": "8a3d386c507ce3561edd36385643529b0ef5e4af",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM181_CERT_ROUTE_FIX_SAME_DEV_LIVE_REPROOF_REQUIRED",
-  "nextFindingId": "VRM-182",
+  "activeBlocker": "VRM182_HR_REVISION_PINNED_FINANCE_READBACK_REPROOF_REQUIRED",
+  "nextFindingId": "VRM-183",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Reuse exactly runtime cxorbia-live-hr-dev-00253-5f8, digest sha256:a904ae7fc4934d41343d214ad69c4fa94d58618441f9741bf865714d19bca2c1, Hosting sites/cxorbia-backend-dev/versions/beecdb6bc5eb6c84, source d33faac8d2af8523485d31c00037f639177ca040. No rebuild/redeploy. Run V190 same-DEV live reproof; Admin Certificación must render without recursion while VRM-168 OCTUBRE 26!6 mapping/provider ACK/cleanup and every cumulative Shopper/Admin/Reservas/Movimientos/Cert-Res gate remain PASS. Production remains DO_NOT_TOUCH.",
+  "exactNextAction": "Re-run the existing V190 same-DEV readback against source d33faac8d2af8523485d31c00037f639177ca040, runtime cxorbia-live-hr-dev-00253-5f8 and Hosting beecdb6bc5eb6c84 with revision-aware finance expectations. No rebuild/deploy. If persisted payment reconciliation lacks any of the eight newly submitted August GT visits, classify the residual as PERSISTENCE_FAILURE and repair only the finance reconciliation owner.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",

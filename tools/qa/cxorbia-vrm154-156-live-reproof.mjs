@@ -204,11 +204,11 @@ try{
   };
   runNode('tools/qa/cxorbia-vrm151-final-canonical-dry-run.mjs',{OUT:dryOut},finRoot+'/dry.log');
   const dry=JSON.parse(fs.readFileSync(dryOut+'/result.json','utf8'));
-  if(dry.decision!=='PASS_VRM151_FINAL_CANONICAL_HISTORICAL_DRY_RUN'||dry.observed?.canonicalSubmitted!==628||dry.observed?.paid!==562||dry.observed?.pending!==66||dry.observed?.amountReviewRequired!==5||dry.observed?.octoberTouched!==0||dry.writes!==0)throw new Error('PERSISTENCE_FAILURE:VRM154_156_FINANCE_DRY:'+JSON.stringify(dry.observed));
+  if(dry.decision!=='PASS_VRM151_FINAL_CANONICAL_HISTORICAL_DRY_RUN'||dry.expectedRevisionKnown!==true||!dry.expected||dry.observed?.canonicalSubmitted!==dry.expected.canonicalSubmitted||dry.observed?.paid!==dry.expected.paid||dry.observed?.pending!==dry.expected.pending||dry.observed?.amountReviewRequired!==dry.expected.amountReviewRequired||dry.observed?.octoberTouched!==dry.expected.octoberTouched||dry.writes!==0)throw new Error('PERSISTENCE_FAILURE:VRM154_156_FINANCE_DRY:'+JSON.stringify({sourceRevision:dry.sourceRevision,expectedRevisionKnown:dry.expectedRevisionKnown,expected:dry.expected,observed:dry.observed}));
   runNode('tools/qa/cxorbia-vrm153-reconciliation-readback-diagnostic.mjs',{OUT:readOut,DRY_RESULT:dryOut+'/result.json'},finRoot+'/readback.log');
   const rb=JSON.parse(fs.readFileSync(readOut+'/result.json','utf8'));
-  if(rb.decision!=='PASS_VRM153_RECONCILIATION_READBACK_MATCH'||rb.counts?.records!==628||rb.counts?.uniqueVisits!==628||rb.counts?.paid!==562||rb.counts?.pending!==66||rb.counts?.amountReviewRequired!==5||rb.octoberRecords!==0||rb.writes!==0)throw new Error('PERSISTENCE_FAILURE:VRM154_156_FINANCE_READBACK:'+JSON.stringify(rb));
-  evidence.finance={canonicalSubmitted:dry.observed.canonicalSubmitted,paid:rb.counts.paid,pending:rb.counts.pending,amountReviewRequired:rb.counts.amountReviewRequired,octoberRecords:rb.octoberRecords,writes:0};
+  if(rb.decision!=='PASS_VRM153_RECONCILIATION_READBACK_MATCH'||rb.counts?.records!==dry.expected.canonicalSubmitted||rb.counts?.uniqueVisits!==dry.expected.canonicalSubmitted||rb.counts?.paid!==dry.expected.paid||rb.counts?.pending!==dry.expected.pending||rb.counts?.amountReviewRequired!==dry.expected.amountReviewRequired||rb.octoberRecords!==dry.expected.octoberTouched||rb.writes!==0)throw new Error('PERSISTENCE_FAILURE:VRM154_156_FINANCE_READBACK:'+JSON.stringify({sourceRevision:dry.sourceRevision,expected:dry.expected,readback:rb}));
+  evidence.finance={canonicalSubmitted:dry.observed.canonicalSubmitted,paid:rb.counts.paid,pending:rb.counts.pending,amountReviewRequired:rb.counts.amountReviewRequired,octoberRecords:rb.octoberRecords,expected:dry.expected,revisionExpected:true,writes:0};
 
   evidence.decision='PASS_VRM154_156_SEALED_DEV_LIVE_REPROOF';
   write(evidence);
