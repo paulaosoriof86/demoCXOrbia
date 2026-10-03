@@ -7045,21 +7045,22 @@ jobs:
         run: |
           set -Eeuo pipefail
           mkdir -p "$VRM185_SOURCE_OUT"
-          test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "d482eb3605df00781627f2c496751e4a15ebb85f"
+          SOURCE="$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")"
+          test -n "$SOURCE"
+          test "$SOURCE" = "${{ needs.canonical-candidate-authority.outputs.source_sha }}"
+          git diff --quiet "$SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
           node --check backend/runtime/cxorbia-shopper-command-provider-v1.mjs
           node --check app/modules/shoppers.js
           node --test backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs 2>&1 | tee "$VRM185_SOURCE_OUT/provider-tests.log"
           node tools/qa/cxorbia-vrm154-156-frontend-source-contract.mjs 2>&1 | tee "$VRM185_SOURCE_OUT/frontend-contract.log"
-          cat > "$VRM185_SOURCE_OUT/result.json" <<'JSON'
-          {
-            "decision":"PASS_VRM185_VRM186_ADMIN_PROVIDER_SOURCE_TEST",
-            "productSourceSha":"d482eb3605df00781627f2c496751e4a15ebb85f",
-            "adminIdentityOwner":"Admin > Shoppers > Perfil",
-            "shopperPortalAdjudication":false,
-            "nameOnlyMerge":false,
-            "production":false
-          }
-          JSON
+          jq -n --arg source "$SOURCE" '{
+            decision:"PASS_VRM185_VRM186_ADMIN_PROVIDER_SOURCE_TEST",
+            productSourceSha:$source,
+            adminIdentityOwner:"Admin > Shoppers > Perfil",
+            shopperPortalAdjudication:false,
+            nameOnlyMerge:false,
+            production:false
+          }' > "$VRM185_SOURCE_OUT/result.json"
       - if: always()
         uses: actions/upload-artifact@v4
         with:

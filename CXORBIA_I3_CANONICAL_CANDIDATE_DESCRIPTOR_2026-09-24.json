@@ -4,16 +4,16 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "d482eb3605df00781627f2c496751e4a15ebb85f",
-  "productTreeAuthority": "bd67e92aba1cae8035c1a2f904bcf398ebcb89f6",
-  "predecessorProductSourceSha": "d33faac8d2af8523485d31c00037f639177ca040",
+  "productSourceSha": "83efe4ad2bc1ca503d4a010a4c0b9a0ed03cf177",
+  "productTreeAuthority": "92e4c77a0d322f9d731cee0c2f4b51df02ba5cc1",
+  "predecessorProductSourceSha": "d482eb3605df00781627f2c496751e4a15ebb85f",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V190_2026-10-02.json",
-  "findingsLedgerExpectedGitBlob": "47e977377b19b6932a69fb855117080148fb0a25",
+  "findingsLedgerExpectedGitBlob": "e33789b5473d35254fadd15da2a90c66116cb908",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM185_VRM186_ADMIN_PROVIDER_SOURCE_TEST_REQUIRED",
+  "activeBlocker": "VRM185_VRM186_ADMIN_PROVIDER_SOURCE_RETEST_REQUIRED",
   "nextFindingId": "VRM-187",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run source-only VRM-185/186 tests for exact product source d482eb3605df00781627f2c496751e4a15ebb85f. No DEV mutation, no deploy. If PASS, materialize this single cumulative source exactly once in Recovery DEV; then execute the already-frozen Paula identity decision through the Admin command/provider path and re-run same-DEV acceptance.",
+  "exactNextAction": "Re-run source-only VRM-185/186 tests for exact product source 83efe4ad2bc1ca503d4a010a4c0b9a0ed03cf177. No DEV mutation and no deploy.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
