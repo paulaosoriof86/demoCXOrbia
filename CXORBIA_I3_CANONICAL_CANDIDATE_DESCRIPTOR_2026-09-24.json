@@ -7,13 +7,13 @@
   "productSourceSha": "4b1c0859cc5b43928c083748d00fdc606b32d63e",
   "productTreeAuthority": "ab33d43d483faef9fbec5daaadfa454247df469a",
   "predecessorProductSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V228_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "218e00097d959fee11368fb30ecf20b47c6e7f1c",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V229_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "b88e3f60f896f4770601c6a4dbb35d3c1f92323d",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V5.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM194_SOURCE_REPROOF_REQUIRED__ROUTED_VIA_VALIDATED_CUMULATIVE_SOURCE_LANE",
+  "activeBlocker": "VRM194_SOURCE_REPROOF_REQUIRED__QA_MAPPING_FIXED_PENDING_RERUN",
   "nextFindingId": "VRM-205",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Execute the already-proven cumulative frontend source lane against exact product source 4b1c0859cc5b43928c083748d00fdc606b32d63e. The existing contract now includes VRM-194 connected-admin fail-closed and human-runtime consistency assertions. No build or deploy.",
+  "exactNextAction": "Re-run the same validated source lane with the corrected QA assertion against unchanged product source 4b1c0859cc5b43928c083748d00fdc606b32d63e.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
