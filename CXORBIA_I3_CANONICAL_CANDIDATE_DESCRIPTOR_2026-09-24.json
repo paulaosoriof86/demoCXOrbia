@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_V190_LIVE_REPROOF_REQUIRED",
+  "status": "HOLD_ADMIN_FULL_ADMINISTRATION_AND_OBSERVATION_CLOSURE_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6",
   "productTreeAuthority": "2e5b6af67aa0bbb5e0f79a37fe5dbab8453792b2",
   "predecessorProductSourceSha": "72c9114130d6fd1d3475957118b48e48469ad7c8",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V192_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "46e4bd5f6a8cbe391ab183199a1b996138f83458",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "f47f766cc1acbcd7c69d88fa3afa8b49d7e9c100",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM185_VRM186_ADMIN_ADJUDICATION_AND_V190_REPROOF_REQUIRED",
+  "activeBlocker": "ADMIN_FULL_ADMINISTRATION_AND_CUMULATIVE_OBSERVATION_CLOSURE_REQUIRED",
   "nextFindingId": "VRM-187",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Reuse exactly run 939 DEV materialization: runtime cxorbia-live-hr-dev-00255-7dq, digest sha256:3b67be76f5f85809456e8ad8d99b00992025e6145f896d2c707719e7e8920fa1, Hosting sites/cxorbia-backend-dev/versions/8608d2b0db40403e, HR f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305. No rebuild/redeploy. Execute visible Admin > Shoppers > Perfil identity adjudication for paula.osorio with exact canonical shopper_gt_1440137b73 only, provider ACK/idempotency/durable readback, then full same-DEV V190 reproof. Production DO_NOT_TOUCH.",
+  "exactNextAction": "Build and freeze the current-candidate Admin full-administration matrix for all 34 Admin routes and the cumulative observation-closure matrix for VRM-001..VRM-186 plus all frozen Paula observations. Classify each item only PASS_PROVEN, OPEN_BLOCKER, or NOT_APPLICABLE_WITH_REASON. Do not present DEV for Paula visual approval until both matrices are complete with no unexplained omissions. Any OPEN_BLOCKER is corrected only by its proven owner inside I3. No rebuild/redeploy unless a proven product defect requires it. Production DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2896,7 +2896,7 @@
   "cumulativeObservationClosureGate": {
     "required": true,
     "timing": "I3_BEFORE_HUMAN_VISUAL_APPROVAL",
-    "sourceOfTruth": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V192_2026-10-03.json",
+    "sourceOfTruth": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
     "rule": "No finding or Paula observation may disappear because a later iteration, source, reproof or visual redesign supersedes it. Every observation must map to a ledger finding/acceptance item with current state, owner, evidence and final disposition.",
     "requiredDomains": [
       "Shoppers identity/profile/fusion/admin management",
@@ -2937,6 +2937,17 @@
     ],
     "behavior": "Normalize only project-scoped review-only profiles with exactly one currently visible exact technical alias; offer only that operational exact identity as canonical; retain human confirmation and provider ACK; no name/fuzzy/email/phone merge.",
     "sourceProofState": "PASS_RUN939_EXACT_DEV_MATERIALIZATION_PENDING_ADMIN_LIVE_PROOF",
+    "production": false
+  },
+  "lastTechnicalReproof": {
+    "runId": 37128494088,
+    "runNumber": 946,
+    "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+    "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+    "readbackArtifactId": 11276491534,
+    "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+    "adminArtifactId": 11276016226,
+    "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487",
     "production": false
   }
 }
