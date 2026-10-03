@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_V190_LIVE_REPROOF_REQUIRED",
+  "status": "HOLD_V190_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "72c9114130d6fd1d3475957118b48e48469ad7c8",
-  "productTreeAuthority": "ab746be61fe85ef9a6982fe98bf19223e6f7172e",
-  "predecessorProductSourceSha": "83efe4ad2bc1ca503d4a010a4c0b9a0ed03cf177",
+  "productSourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6",
+  "productTreeAuthority": "2e5b6af67aa0bbb5e0f79a37fe5dbab8453792b2",
+  "predecessorProductSourceSha": "72c9114130d6fd1d3475957118b48e48469ad7c8",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V190_2026-10-02.json",
   "findingsLedgerExpectedGitBlob": "bf14abc6ca93bb8e6a9b65f5b758d5c0ace5897c",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "V190_SAME_DEV_TRANSVERSAL_REPROOF_REQUIRED",
+  "activeBlocker": "VRM186_ADMIN_EXACT_REVIEW_PAIR_NOT_NORMALIZED_LIVE",
   "nextFindingId": "VRM-187",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Reuse exactly source 72c9114130d6fd1d3475957118b48e48469ad7c8, runtime cxorbia-live-hr-dev-00254-g98, digest sha256:a556afcb082292750b5a126725f9405c68e9d1b8b432daf510fadbdd82fd4948, Hosting sites/cxorbia-backend-dev/versions/b07b427c39f086ab, HR revision f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305. No rebuild/redeploy. Run V190 same-DEV live reproof proving Admin > Shoppers > Perfil owns identity adjudication, shopper portal cannot adjudicate, name-only merge remains blocked, Paula resolves to the exact canonical HR identity with preserved visible login/history/KPIs, no duplicate principals, all cumulative I3 gates remain PASS, and then present the exact candidate for Paula's visual approval before I4. Production remains DO_NOT_TOUCH.",
+  "exactNextAction": "Materialize exactly product source ed15751c40bd90856ff8eead1825368fffff40c6 / tree 2e5b6af67aa0bbb5e0f79a37fe5dbab8453792b2 once in DEV through the existing canonical V190 materialization job. Prove modules/shoppers.js remote byte parity, no product drift, HR fresh, then update currentMaterialization from the resulting artifact and run the same-DEV Admin > Shoppers > Perfil identity adjudication for paula.osorio through the visible Resolver identidad control with provider ACK/idempotency/durable readback. No production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -426,7 +426,7 @@
     "runtimeDeploys": 1,
     "hostingDeploys": 1,
     "storageRulesDeploys": 1,
-    "state": "SEALED_VRM185_VRM186_DEV_PENDING_SAME_SOURCE_LIVE_REPROOF",
+    "state": "SUPERSEDED_BY_VRM186_SOURCE_FIX_PENDING_EXACT_DEV_MATERIALIZATION",
     "production": false
   },
   "lastFocalAttempt": {
@@ -2912,6 +2912,30 @@
       "No duplicates, persistence, Auth and permissions"
     ],
     "terminalRequirement": "Before Paula visual review, emit one observation-closure matrix with every cumulative finding/observation marked PASS_PROVEN, OPEN_BLOCKER or NOT_APPLICABLE_WITH_REASON; no silent omissions.",
+    "production": false
+  },
+  "vrm186ResidualSourceFix": {
+    "findingIds": [
+      "VRM-186",
+      "VRM-185"
+    ],
+    "classification": "MAPPING_FAILURE",
+    "rootCauseStatus": "PROVEN_RUN931",
+    "rootCause": "Admin identity review normalization ignored exactAliases on review-only no_exact_hr_crosswalk profiles and required both identities to exist in the operational shopper list, so the exact historical/current pair could not surface the Admin resolver even though the frozen tenant adjudication evidence and exact current HR identity both existed.",
+    "owner": "app/modules/shoppers.js",
+    "predecessorProductSourceSha": "72c9114130d6fd1d3475957118b48e48469ad7c8",
+    "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6",
+    "sourceTree": "2e5b6af67aa0bbb5e0f79a37fe5dbab8453792b2",
+    "productFilesChanged": [
+      "app/modules/shoppers.js"
+    ],
+    "controlFilesChanged": [
+      "tools/qa/cxorbia-vrm154-156-frontend-source-contract.mjs",
+      "tools/qa/cxorbia-i3-vrm185-exact-identity-consolidation-write.mjs",
+      ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+    ],
+    "behavior": "Normalize only project-scoped review-only profiles with exactly one currently visible exact technical alias; offer only that operational exact identity as canonical; retain human confirmation and provider ACK; no name/fuzzy/email/phone merge.",
+    "sourceProofState": "PENDING_CANONICAL_SOURCE_TEST_AND_EXACT_DEV_MATERIALIZATION",
     "production": false
   }
 }
