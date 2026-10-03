@@ -45,7 +45,9 @@
   function versionOf(entity){
     return entity?.version ?? entity?.updatedAt ?? entity?.lastSyncedAt ?? entity?.hrRevision ?? entity?.sourceRevision ?? 'source-current';
   }
-  function visit(id){return (CX.data?._visitas||[]).find(v=>str(v.id||v.visitId)===str(id))||null;}
+  function sourceCoord(v){const tab=str(v?.sourceTab),row=str(v?.sourceRow);return tab&&row?`${tab}::${row}`:'';}
+  function stableVisitKey(v,fallback){return str(v?.hrRowId)||sourceCoord(v)||str(v?.visitId||v?.id||fallback);}
+  function visit(id){const key=str(id);return (CX.data?._visitas||[]).find(v=>[str(v?.id),str(v?.visitId),str(v?.hrRowId),sourceCoord(v)].filter(Boolean).includes(key))||null;}
   function protectedVisitFor(v){
     if(!v)return null;
     const rows=Array.isArray(CX.data?.__protectedVisits)?CX.data.__protectedVisits:[],hrRow=str(v.hrRowId),ids=new Set([str(v.id),str(v.visitId),str(v.__protectedVisitId)].filter(Boolean));
@@ -176,9 +178,9 @@
       return execute(built.command,meta);
     };
     D.setVisitState=function(id,estado,dateField,dateVal,meta){
-      meta=commandMeta(meta);const v=visit(id);const patch={estado};if(dateField&&dateVal)patch[dateField]=dateVal;
+      meta=commandMeta(meta);const v=visit(id),visitId=stableVisitKey(v,id),hrRowId=str(v?.hrRowId)||null;const patch={estado};if(dateField&&dateVal)patch[dateField]=dateVal;
       if(meta.patch&&typeof meta.patch==='object')Object.assign(patch,meta.patch);
-      const cmd=buildBase('visit.state.update','visit',id,{visitId:id,hrRowId:v?.hrRowId||null,shopperId:v?.shopperId||ctx().shopperId||null,patch},versionOf(v),Object.assign({permission:meta.permission||'visit.state.update'},meta));
+      const cmd=buildBase('visit.state.update','visit',visitId,{visitId,hrRowId,shopperId:v?.shopperId||ctx().shopperId||null,patch},versionOf(v),Object.assign({permission:meta.permission||'visit.state.update'},meta));
       return execute(cmd,meta);
     };
     D.assignVisit=function(visitId,shopperId,meta){
