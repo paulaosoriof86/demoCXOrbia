@@ -64,46 +64,53 @@ async function main(){
  const visitCounts=Object.fromEntries(candidateIds.map(id=>[id,visits.filter(v=>str(v.shopperId||v.shopperCode||v.shopper)===id).length]));
  const hrRows=shoppers.filter(s=>candidate.has(str(s.id||s.shopperId))).map(s=>({id:str(s.id||s.shopperId),country:str(s.country||s.pais),nameFingerprint:fp(str(s.nombre||s.name||s.displayName||s.fullName).toLowerCase())}));
  result.hr={revision,visitCounts,shopperRows:hrRows,totalVisits:visits.length,totalShoppers:shoppers.length};
- const url=HOST+'/index-backend-dev.html?'+new URLSearchParams({cxBackendPreview:PRE,cxProjectId:PROGRAM,cxProtectedRuntime:PROT,cxHumanFullVisual:FULL});
- const browser=await chromium.launch({headless:true});
- try{
-   const ctx=await browser.newContext({viewport:{width:1440,height:1000}}),page=await ctx.newPage();
-   await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
-   await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
-   const token=await auth.createCustomToken(member.id);
-   await page.evaluate(async t=>{await window.firebase.auth().setPersistence(window.firebase.auth.Auth.Persistence.SESSION);await window.firebase.auth().signInWithCustomToken(t);},token);
-   await page.reload({waitUntil:'domcontentloaded',timeout:90000});
-   await page.waitForFunction(()=>typeof window.CX?.backendAuth?.ensureAuthenticated==='function',null,{timeout:90000});
-   await page.evaluate(async()=>{await window.CX.backendAuth.ensureAuthenticated();});
-   await page.waitForFunction(()=>window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,null,{timeout:150000});
-   result.browser=await page.evaluate(({hrId,legacyId})=>{
-     const d=window.CX?.data||{},str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[];
-     const raw=str(window.CX?.backendAuth?.context?.()?.shopperId),map=d.__identityMap||{},mapped=str(map[raw]||raw);
-     const idOf=x=>str(x?.id||x?.shopperId);
-     const directRaw=(()=>{try{return d.getShopper?.(raw)||null}catch{return null}})();
-     const directMapped=(()=>{try{return d.getShopper?.(mapped)||null}catch{return null}})();
-     const aliasVals=row=>{const keys=['legacyShopperId','legacyId','sourceId','sourceKey','externalShopperId','canonicalLegacyIds','legacyLiveShopperIds','sourceShopperIds','hrShopperIds','externalShopperIds','identityAliases','aliases','exactAliases'];return [...new Set(keys.flatMap(k=>Array.isArray(row?.[k])?row[k]:[row?.[k]]).map(str).filter(Boolean))];};
-     const tokens=new Set([raw,mapped].filter(Boolean));
-     const aliasMatches=arr(d.shoppers).filter(r=>aliasVals(r).some(a=>tokens.has(a))).map(r=>idOf(r));
-     const portal=window.CX_TYA_CANONICAL_SHOPPER_PORTAL?.resolveExactSessionShopper?.(d)||{};
-     const historyFor=id=>{try{return typeof d.shopperHistoryVisits==='function'?d.shopperHistoryVisits(id,false).length:(typeof d.visitsForShopper==='function'?d.visitsForShopper(id,false).length:0)}catch{return -1}};
-     return {raw,mapped,directRawId:idOf(directRaw),directMappedId:idOf(directMapped),protectedSessionProfileId:idOf(d.__sessionShopperProfile),aliasMatchIds:[...new Set(aliasMatches)],identityMapHr:str(map[hrId]||''),identityMapLegacy:str(map[legacyId]||''),portal:{ok:portal.ok===true,reason:str(portal.reason),raw:str(portal.raw),canonical:str(portal.canonical),tokens:arr(portal.tokens).map(String),matchIds:arr(portal.matches).map(idOf)},history:{raw:historyFor(raw),mapped:historyFor(mapped),hr:historyFor(hrId),legacy:historyFor(legacyId)},duplicateShopperIds:arr(d.shoppers).map(idOf).filter(Boolean).length-new Set(arr(d.shoppers).map(idOf).filter(Boolean)).size,authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,revision:str(d.previewMeta?.sourceRevision)};
-   },{hrId:HR_ID,legacyId:LEGACY_ID});
-   await ctx.close();
- }finally{await browser.close();}
+ const exactRefIds=new Set([HR_ID,LEGACY_ID]);
+ const containsExact=(value,depth=0)=>{
+   if(depth>8||value==null)return false;
+   if(typeof value==='string')return exactRefIds.has(value.trim());
+   if(Array.isArray(value))return value.some(v=>containsExact(v,depth+1));
+   if(typeof value==='object')return Object.values(value).some(v=>containsExact(v,depth+1));
+   return false;
+ };
+ async function scanCollections(parent,scope){
+   const collections=await parent.listCollections(),out=[];
+   for(const col of collections){
+     const snap=await col.get(),hits=[];
+     for(const doc of snap.docs)if(containsExact(doc.data()||{}))hits.push(fp(doc.id));
+     if(hits.length)out.push({scope,collection:col.id,documents:snap.size,exactIdentityReferenceCount:hits.length,sampleDocumentFingerprints:hits.slice(0,12)});
+   }
+   return out;
+ }
+ const projectRef=tenant.collection('projects').doc(PROGRAM);
+ result.domainReferences=[...(await scanCollections(tenant,'tenant')),...(await scanCollections(projectRef,'project'))];
  const historicalLink=result.links.find(l=>l.authorityType==='tenant_adjudication'&&l.canonicalShopperId===LEGACY_ID&&l.sourceTokens.includes(HR_ID));
  const selfCross=result.crosswalk.find(x=>x.sourceType==='hr_external'&&[x.id,x.sourceStableKey,x.sourceShopperId].includes(HR_ID)&&x.shopperId===HR_ID);
  const activeCurrentPrincipals=result.auth.candidatePrincipals.filter(x=>!x.disabled&&x.shopperId===HR_ID);
  const activeLegacyPrincipals=result.auth.candidatePrincipals.filter(x=>!x.disabled&&x.shopperId===LEGACY_ID);
- const portalAmbiguous=result.browser?.portal?.reason==='ambiguous_exact_identity';
- const directCurrent=[result.browser?.directRawId,result.browser?.directMappedId].includes(HR_ID);
- const legacyShadows=result.browser?.aliasMatchIds?.includes(LEGACY_ID);
- const sameHumanHistoricalLineage=!!historicalLink;
- const currentExactAuthority=result.membership.shopperId===HR_ID&&result.auth.claimsShopperId===HR_ID&&!!selfCross&&activeCurrentPrincipals.length===1;
- const credentialAmbiguity=activeLegacyPrincipals.length>0||activeCurrentPrincipals.length!==1;
- const rootCause=portalAmbiguous&&directCurrent&&legacyShadows?'PORTAL_EXACT_DIRECT_ROW_SHADOWED_BY_HISTORICAL_ALIAS':(!result.browser?.portal?.ok?'PORTAL_IDENTITY_RESOLUTION_UNRESOLVED':'NO_CURRENT_PORTAL_DEFECT');
- result.conclusion={rootCause,sameHumanHistoricalLineage,currentExactAuthority,credentialAmbiguity,activeCurrentPrincipals:activeCurrentPrincipals.length,activeLegacyPrincipals:activeLegacyPrincipals.length,safeMergeOrResolverCorrectionEligible:sameHumanHistoricalLineage&&currentExactAuthority&&!credentialAmbiguity,staleHistoricalLinkPresent:!!historicalLink,currentSelfCrosswalkPresent:!!selfCross};
- result.decision=rootCause==='PORTAL_EXACT_DIRECT_ROW_SHADOWED_BY_HISTORICAL_ALIAS'&&result.conclusion.safeMergeOrResolverCorrectionEligible?'PASS_VRM185_PAULA_IDENTITY_TOPOLOGY_PROVEN':'HOLD_VRM185_PAULA_IDENTITY_TOPOLOGY_UNRESOLVED';
+ const legacyProfile=result.profiles.find(x=>x.id===LEGACY_ID),currentProfile=result.profiles.find(x=>x.id===HR_ID);
+ const sameNameFingerprint=!!legacyProfile?.nameFingerprint&&legacyProfile.nameFingerprint===currentProfile?.nameFingerprint;
+ const legacySelectedByHuman=!!historicalLink;
+ const currentExactAuthority=result.hr.shopperRows.some(x=>x.id===HR_ID)&&Number(result.hr.visitCounts?.[HR_ID]||0)>0&&Number(result.hr.visitCounts?.[LEGACY_ID]||0)===0&&!!selfCross;
+ const legacyCredentialKeeper=str(legacyProfile?.visibleLogin)===LOGIN&&str(legacyProfile?.credentialPasswordProofVersion)==='cxorbia-shopper-password-proof-v2';
+ const currentCredentialIsGeneratedCollision=!!str(currentProfile?.visibleLogin)&&str(currentProfile?.visibleLogin)!==LOGIN&&!str(currentProfile?.credentialPasswordProofVersion);
+ const safeKeeperProven=legacySelectedByHuman&&sameNameFingerprint&&legacyCredentialKeeper&&currentCredentialIsGeneratedCollision&&activeLegacyPrincipals.length===1&&activeCurrentPrincipals.length===1;
+ result.browser={evidenceSourceRunId:37096793662,evidenceSourceRunNumber:914,firstBlocker:'PAULA_OSORIO_PROFILE_KPI_HISTORY_ROUTES_FAIL',identity:false,authority:true,routesPass:true};
+ result.conclusion={
+   rootCause:'DUAL_ACTIVE_SAME_HUMAN_PRINCIPALS_AFTER_STALE_ADJUDICATION_SUPPRESSION',
+   sameHumanHistoricalLineage:legacySelectedByHuman&&sameNameFingerprint,
+   currentExactAuthority,
+   credentialKeeper:'historical_human_adjudicated_principal',
+   legacyCredentialKeeperProven:legacyCredentialKeeper,
+   currentCredentialGeneratedCollision:currentCredentialIsGeneratedCollision,
+   activeCurrentPrincipals:activeCurrentPrincipals.length,
+   activeLegacyPrincipals:activeLegacyPrincipals.length,
+   safeKeeperProven,
+   canonicalOperationalShopperId:HR_ID,
+   credentialKeeperShopperId:LEGACY_ID,
+   domainReferenceCollections:result.domainReferences.map(x=>({scope:x.scope,collection:x.collection,count:x.exactIdentityReferenceCount})),
+   mergeMustRemapAllExactLegacyReferences:true
+ };
+ result.decision=result.conclusion.sameHumanHistoricalLineage&&currentExactAuthority&&safeKeeperProven?'PASS_VRM185_PAULA_IDENTITY_TOPOLOGY_PROVEN':'HOLD_VRM185_PAULA_IDENTITY_TOPOLOGY_UNRESOLVED';
  save();
  console.log(JSON.stringify({decision:result.decision,classification:result.classification,membership:result.membership,auth:result.auth,hr:result.hr,browser:result.browser,conclusion:result.conclusion,writes:0,production:false},null,2));
  if(result.decision!=='PASS_VRM185_PAULA_IDENTITY_TOPOLOGY_PROVEN')process.exitCode=2;

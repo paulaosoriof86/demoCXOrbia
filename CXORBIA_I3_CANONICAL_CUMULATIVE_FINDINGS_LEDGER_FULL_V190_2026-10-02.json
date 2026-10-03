@@ -9505,7 +9505,7 @@
       "secondaryClassification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "paula.osorio authenticates but exact session profile/history/KPIs do not resolve",
-      "state": "ROOT_CAUSE_DIAGNOSTIC_REQUIRED",
+      "state": "ROOT_CAUSE_TOPOLOGY_PARTIAL_PROVEN_CROSS_DOMAIN_READBACK_REQUIRED",
       "rootCauseStatus": "DIAGNOSTIC_REQUIRED",
       "observed": "Run 914 authenticates paula.osorio, HR authority is applied and all shopper routes navigate, but resolveExactSessionShopper returns identity=false; country/history/KPIs are empty.",
       "evidence": {
@@ -9579,7 +9579,32 @@
         "VRM-137",
         "VRM-168"
       ],
-      "production": false
+      "production": false,
+      "diagnosticAttempt": {
+        "runId": 37097630515,
+        "runNumber": 915,
+        "jobId": 111130735469,
+        "artifactId": 11265060858,
+        "artifactDigest": "sha256:e8391fb198fc5e7f529d754ce86a97b269536b5902c1c8acc72ddd5ec0e953a6",
+        "readOnly": true,
+        "writes": 0,
+        "production": false,
+        "proven": {
+          "paulaLoginMembershipShopperId": "s3",
+          "currentExactHrShopperId": "shopper_gt_1440137b73",
+          "activeShopperPrincipals": 2,
+          "legacyVisibleLogin": "paula.osorio",
+          "exactHrVisibleLogin": "paula.osorio.b06e",
+          "legacyPasswordProofCurrent": true,
+          "exactHrPasswordProofMissing": true,
+          "sameIdentityFingerprint": true,
+          "historicalTenantAdjudicationPresent": true,
+          "exactHrSelfCrosswalkPresent": true,
+          "hrVisitsLegacy": 0,
+          "hrVisitsExact": 8
+        },
+        "residualEnvironmentFailure": "Playwright execution context destroyed after topology capture; no product inference taken from this browser failure."
+      }
     }
   },
   "latestEvidenceOverrides": {
@@ -10302,7 +10327,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Run one read-only Paula identity-topology diagnostic on the exact sealed DEV. Prove login->claims->membership->profile/crosswalk/HR/browser resolver topology for shopper_gt_1440137b73 and historical s3. Do not write or merge until same-human lineage and active-principal topology are exact.",
+  "exactNextAction": "Repeat VRM-185 read-only without browser: scan exact durable references to s3/shopper_gt_1440137b73 across tenant/project collections. Prove safe keeper and full remap scope before any consolidation write.",
   "supersedesGitBlob": "1dc39b2d5dc5aa1884181c963d94b75bec8b075c",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -13780,7 +13805,7 @@
     "next": "SHORT_HUMAN_VISUAL_RETEST",
     "production": false
   },
-  "activeBlocker": "VRM185_PAULA_IDENTITY_TOPOLOGY_DIAGNOSTIC_REQUIRED",
+  "activeBlocker": "VRM185_CROSS_DOMAIN_IDENTITY_REFERENCE_DIAGNOSTIC_REQUIRED",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -13972,5 +13997,5 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-10-02",
-  "nextExactAction": "Run one read-only Paula identity-topology diagnostic on the exact sealed DEV. Prove login->claims->membership->profile/crosswalk/HR/browser resolver topology for shopper_gt_1440137b73 and historical s3. Do not write or merge until same-human lineage and active-principal topology are exact."
+  "nextExactAction": "Repeat VRM-185 read-only without browser: scan exact durable references to s3/shopper_gt_1440137b73 across tenant/project collections. Prove safe keeper and full remap scope before any consolidation write."
 }
