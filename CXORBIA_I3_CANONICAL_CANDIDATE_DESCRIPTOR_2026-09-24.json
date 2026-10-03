@@ -4,17 +4,17 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "30c4354640ea38a0155d72f14ee5bdcada3512bd",
-  "productTreeAuthority": "e8a5c72753de7c17ead3cc99e48b1c0f5666582f",
-  "predecessorProductSourceSha": "c5c4d002ab783391f915eaf7f41d69dc1005f215",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V216_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "763e2bfc495bddb071f17eff7457aa644c9fdf06",
+  "productSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+  "productTreeAuthority": "e3c45d9c579a417868dbd86143e6be7a36c20a29",
+  "predecessorProductSourceSha": "30c4354640ea38a0155d72f14ee5bdcada3512bd",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V217_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "870f021313779b0bf0ad3451c21645908295520e",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
   "activeBlocker": "REJECTED_PHASEA_SOURCE_REPROOF_REQUIRED",
-  "nextFindingId": "VRM-200",
+  "nextFindingId": "VRM-201",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run exact source reproof for source 30c4354640ea38a0155d72f14ee5bdcada3512bd. On PASS, refresh current Module Truth/Admin matrices without closing still-open acceptance findings, then perform one DEV materialization and representative/population live proof before any new Paula visual checkpoint. No production.",
+  "exactNextAction": "Re-run exact source proof and Gate 9 on source 4f87cb0155162674d459b09e3725dd585c84709d. On PASS, refresh current Module Truth + Admin matrix on the same source, preserving unresolved P0 as unresolved; then one DEV materialization and representative/population live proof before any Paula visual checkpoint. No production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3496,8 +3496,8 @@
   },
   "visualCheckpointScope": null,
   "currentRemediationPackage": {
-    "sourceSha": "30c4354640ea38a0155d72f14ee5bdcada3512bd",
-    "sourceTree": "e8a5c72753de7c17ead3cc99e48b1c0f5666582f",
+    "sourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+    "sourceTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29",
     "qaPath": "tools/qa/cxorbia-i3-phasea-rejection-remediation-source-proof.mjs",
     "findingIds": [
       "VRM-134",
@@ -3509,9 +3509,11 @@
       "VRM-175",
       "VRM-178",
       "VRM-197",
-      "VRM-199"
+      "VRM-199",
+      "VRM-200"
     ],
     "preservedAllPriorFindings": true,
-    "production": false
+    "production": false,
+    "predecessorSourceSha": "30c4354640ea38a0155d72f14ee5bdcada3512bd"
   }
 }
