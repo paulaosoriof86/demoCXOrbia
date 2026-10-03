@@ -1,0 +1,4024 @@
+{
+  "schemaVersion": "cxorbia.i3.cumulative-observation-closure-matrix.v1",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
+  "status": "HOLD",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadBeforeFreeze": "6b6e9cdde99d573b833178ad3490229432d0f0b5",
+  "productSourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6",
+  "productTree": "2e5b6af67aa0bbb5e0f79a37fe5dbab8453792b2",
+  "sourceLedger": {
+    "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+    "gitBlob": "f47f766cc1acbcd7c69d88fa3afa8b49d7e9c100"
+  },
+  "run946": {
+    "runId": 37128494088,
+    "runNumber": 946,
+    "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+    "readbackArtifactId": 11276491534,
+    "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+    "note": "Generic Run946 success is used only where a finding already has terminal/proven evidence or a current explicit closure. It never silently closes an owner-specific pending or human-visual item."
+  },
+  "allowedClassifications": [
+    "PASS_PROVEN",
+    "OPEN_BLOCKER",
+    "NOT_APPLICABLE_WITH_REASON"
+  ],
+  "closureRule": "Every VRM-001..VRM-186 and every frozen Paula observation must have one explicit current disposition. Historical PENDING/REQUIRED states remain OPEN_BLOCKER unless current owner-specific evidence closes them; no generic reproof may erase them.",
+  "summary": {
+    "totalFindings": 186,
+    "PASS_PROVEN": 102,
+    "OPEN_BLOCKER": 81,
+    "NOT_APPLICABLE_WITH_REASON": 3,
+    "missingFindingIds": 0,
+    "frozenObservationGroups": 7,
+    "observationMappingOmissions": 0,
+    "openBySeverity": {
+      "UNSPECIFIED": 8,
+      "P0": 46,
+      "P1": 12,
+      "P0_CONTROL": 4,
+      "NON_BLOCKING": 1,
+      "CONTROL_BLOCKER": 5,
+      "PRE_I4_ACCEPTANCE_BLOCKER": 5
+    }
+  },
+  "rows": [
+    {
+      "id": "VRM-001",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN",
+      "failureClass": null,
+      "severity": null,
+      "owners": [
+        [
+          "app/core/data.js",
+          "app/core/router.js",
+          "app/core/permissions.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-002",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN",
+      "failureClass": null,
+      "severity": null,
+      "owners": [
+        [
+          "app/core/data.js",
+          "app/core/router.js",
+          "app/core/permissions.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-003",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "ALREADY_PROVEN_NO_DRIFT",
+      "failureClass": null,
+      "severity": null,
+      "owners": [],
+      "reason": "Ledger terminal/proven state: ALREADY_PROVEN_NO_DRIFT.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-004",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN",
+      "failureClass": null,
+      "severity": null,
+      "owners": [
+        [
+          "app/core/data.js",
+          "app/core/router.js",
+          "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-005",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN",
+      "failureClass": null,
+      "severity": null,
+      "owners": [
+        [
+          "app/core/data.js",
+          "app/modules/misvisitas.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-006",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN",
+      "failureClass": null,
+      "severity": null,
+      "owners": [
+        [
+          "app/core/data.js",
+          "app/core/router.js",
+          "app/core/permissions.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-007",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN",
+      "failureClass": null,
+      "severity": null,
+      "owners": [
+        [
+          "app/modules/misvisitas.js",
+          "app/modules/shoppers.js",
+          "app/modules/postulaciones.js",
+          "app/modules/documentos.js",
+          "app/modules/cert.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-008",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN",
+      "failureClass": null,
+      "severity": null,
+      "owners": [
+        [
+          "app/core/router.js",
+          "app/index-backend-dev.html",
+          "app/styles/layout.css"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-009",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN",
+      "failureClass": null,
+      "severity": null,
+      "owners": [
+        [
+          "app/modules/cert.js",
+          "app/core/backend-resources.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-010",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN",
+      "failureClass": null,
+      "severity": null,
+      "owners": [
+        [
+          "app/core/data.js",
+          "app/modules/dashboard.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-011",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN",
+      "failureClass": null,
+      "severity": null,
+      "owners": [
+        [
+          "app/core/data.js",
+          "app/modules/dashboard.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-012",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN",
+      "failureClass": null,
+      "severity": null,
+      "owners": [
+        [
+          "app/core/data.js",
+          "app/modules/shoppers.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-013",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN",
+      "failureClass": null,
+      "severity": null,
+      "owners": [
+        [
+          "app/modules/postulaciones.js",
+          "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+          "app/adapters/cxorbia-command-adapter-v1.js",
+          "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-014",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN",
+      "failureClass": null,
+      "severity": null,
+      "owners": [
+        [
+          "app/core/finanzas-core.js",
+          "app/core/liquidacion.js",
+          "app/modules/finanzas.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-015",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN",
+      "failureClass": null,
+      "severity": null,
+      "owners": [
+        [
+          "app/core/finanzas-core.js",
+          "app/core/liquidacion.js",
+          "app/modules/finanzas.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-016",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN",
+      "failureClass": null,
+      "severity": null,
+      "owners": [
+        [
+          "app/core/finanzas-core.js",
+          "app/modules/finanzas.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-017",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN",
+      "failureClass": null,
+      "severity": null,
+      "owners": [
+        [
+          "app/modules/finanzas.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-018",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN",
+      "failureClass": null,
+      "severity": null,
+      "owners": [
+        [
+          "app/core/finanzas-core.js",
+          "app/core/liquidacion.js",
+          "app/modules/finanzas.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-019",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN",
+      "failureClass": null,
+      "severity": null,
+      "owners": [
+        [
+          "app/modules/documentos.js",
+          "app/core/backend-resources.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-020",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN",
+      "failureClass": null,
+      "severity": null,
+      "owners": [
+        [
+          "app/modules/documentos.js",
+          "app/core/backend-resources.js",
+          "firestore.rules"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-021",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN",
+      "failureClass": null,
+      "severity": null,
+      "owners": [
+        [
+          "app/core/data.js",
+          "app/core/router.js",
+          "app/core/permissions.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-022",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN",
+      "failureClass": null,
+      "severity": null,
+      "owners": [
+        [
+          "app/data/tya-certification-carryover-source-safe.js",
+          "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+          "app/modules/cert.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-023",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "ALREADY_PROVEN_NO_DRIFT",
+      "failureClass": null,
+      "severity": null,
+      "owners": [],
+      "reason": "Ledger terminal/proven state: ALREADY_PROVEN_NO_DRIFT.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-024",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN",
+      "failureClass": null,
+      "severity": null,
+      "owners": [
+        [
+          "app/core/router.js",
+          "app/index-backend-dev.html"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-025",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN",
+      "failureClass": null,
+      "severity": null,
+      "owners": [
+        [
+          "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-026",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN",
+      "failureClass": null,
+      "severity": null,
+      "owners": [
+        [
+          ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+          "backend/config/pre-i4-human-entrypoint-dev-deploy-request.json"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-027",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN",
+      "failureClass": null,
+      "severity": null,
+      "owners": [
+        [
+          "app/modules/misvisitas.js",
+          "app/modules/postulaciones.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-028",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN",
+      "failureClass": "RELEASE_COMPOSITION_FAILURE",
+      "severity": null,
+      "owners": [
+        [
+          "app/adapters/tya-c6-domain-consistency-bridge.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-029",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN",
+      "failureClass": "AUTH_FAILURE",
+      "severity": null,
+      "owners": [
+        [
+          "firestore.rules",
+          "backend/runtime/hr-live-service/test/cxorbia-pre-i4-durability-resources.test.mjs"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-030",
+      "title": null,
+      "classification": "NOT_APPLICABLE_WITH_REASON",
+      "ledgerState": "NOT_APPLICABLE_WITH_EVIDENCE",
+      "failureClass": "ENVIRONMENT_FAILURE",
+      "severity": null,
+      "owners": [
+        [
+          ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+        ]
+      ],
+      "reason": "Ledger state explicitly marks this item not applicable: NOT_APPLICABLE_WITH_EVIDENCE.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-031",
+      "title": null,
+      "classification": "NOT_APPLICABLE_WITH_REASON",
+      "ledgerState": "NOT_APPLICABLE_WITH_EVIDENCE",
+      "failureClass": "RELEASE_COMPOSITION_FAILURE",
+      "severity": null,
+      "owners": [
+        [
+          ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+        ]
+      ],
+      "reason": "Ledger state explicitly marks this item not applicable: NOT_APPLICABLE_WITH_EVIDENCE.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-032",
+      "title": null,
+      "classification": "NOT_APPLICABLE_WITH_REASON",
+      "ledgerState": "NOT_APPLICABLE_WITH_EVIDENCE",
+      "failureClass": "AUTH_FAILURE",
+      "severity": null,
+      "owners": [
+        [
+          ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+        ]
+      ],
+      "reason": "Ledger state explicitly marks this item not applicable: NOT_APPLICABLE_WITH_EVIDENCE.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-033",
+      "title": "Admin shopper identities regress to technical IDs despite live HR display names",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_CUMULATIVE_IDENTITY_PROVEN_RUN387_PLUS_RUN472",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": null,
+      "owners": [
+        "app/adapters/tya-cumulative-read-model-v2.js",
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+        "app/core/data.js",
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+      ],
+      "reason": "Ledger terminal/proven state: PASS_CUMULATIVE_IDENTITY_PROVEN_RUN387_PLUS_RUN472.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-034",
+      "title": "Durable DEV QA reservation residue is visible in human lane",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "TERMINAL_REPROOF_PENDING_CURRENT_SOURCE",
+      "failureClass": "PERSISTENCE_FAILURE",
+      "severity": null,
+      "owners": [
+        "RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs",
+        "app/adapters/tya-canonical-reservations-guard-v2.js",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'TERMINAL_REPROOF_PENDING_CURRENT_SOURCE'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-035",
+      "title": "Terminal browser proof was structurally green but semantically under-specified",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "TERMINAL_REPROOF_PENDING_CURRENT_SOURCE",
+      "failureClass": "RELEASE_COMPOSITION_FAILURE",
+      "severity": null,
+      "owners": [
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs",
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+        "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'TERMINAL_REPROOF_PENDING_CURRENT_SOURCE'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-036",
+      "title": "Certification historical authority remains explicitly APPROVED_NOT_COMPOSED but matrix was forced to MATCH",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "FIXED_SOURCE_PROVEN_NO_DEPLOY",
+      "failureClass": "RELEASE_COMPOSITION_FAILURE",
+      "severity": null,
+      "owners": [
+        "app/data/tya-certification-carryover-source-safe.js",
+        "app/modules/cert.js",
+        "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'FIXED_SOURCE_PROVEN_NO_DEPLOY'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-037",
+      "title": "Shopper benefits/profile/history contract was not semantically proven by the final focal",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "FIXED_SOURCE_PROVEN_NO_DEPLOY",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": null,
+      "owners": [
+        "app/adapters/tya-canonical-shopper-portal-v2.js",
+        "app/modules/misvisitas.js",
+        "app/modules/beneficios.js",
+        "app/core/liquidacion.js",
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'FIXED_SOURCE_PROVEN_NO_DEPLOY'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-038",
+      "title": "Human Admin surfaces leak technical vocabulary and incomplete operational states",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_LIVE_PROVEN_RUN387_CURRENT_OWNER_BLOBS_IDENTICAL",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": null,
+      "owners": [
+        "app/modules/dashboard.js",
+        "app/modules/visitas.js",
+        "app/modules/finanzas.js",
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+      ],
+      "reason": "Ledger terminal/proven state: PASS_LIVE_PROVEN_RUN387_CURRENT_OWNER_BLOBS_IDENTICAL.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-039",
+      "title": "Resources and finance were fail-closed safely but incorrectly promoted as complete production-ready modules",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "FIXED_SOURCE_PROVEN_NO_DEPLOY",
+      "failureClass": "RELEASE_COMPOSITION_FAILURE",
+      "severity": null,
+      "owners": [
+        "app/core/backend-resources.js",
+        "app/modules/documentos.js",
+        "app/core/finanzas-core.js",
+        "app/modules/finanzas.js",
+        "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'FIXED_SOURCE_PROVEN_NO_DEPLOY'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-040",
+      "title": "Out-of-range visible count does not match fresh HR canonical facet",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_LIVE_PROVEN_RUN387_CURRENT_OWNER_BLOB_IDENTICAL",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": null,
+      "owners": [
+        "app/adapters/tya-canonical-state-semantics-v2.js",
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+      ],
+      "reason": "Ledger terminal/proven state: PASS_LIVE_PROVEN_RUN387_CURRENT_OWNER_BLOB_IDENTICAL.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-041",
+      "title": "Postulation human card exposes undefined approval actor",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "TERMINAL_REPROOF_PENDING_CURRENT_SOURCE",
+      "failureClass": "VISUAL_DEFECT",
+      "severity": null,
+      "owners": [
+        "app/modules/postulaciones.js",
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'TERMINAL_REPROOF_PENDING_CURRENT_SOURCE'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-042",
+      "title": "Shopper KPI/history semantic owner shadowing inflates canonical history",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "FIXED_SOURCE_PROVEN_NO_DEPLOY",
+      "failureClass": "RELEASE_COMPOSITION_FAILURE",
+      "severity": null,
+      "owners": [
+        "app/adapters/tya-c6-domain-consistency-bridge.js",
+        "app/modules/shoppers.js",
+        "app/adapters/tya-canonical-shopper-portal-v2.js",
+        "app/modules/misvisitas.js",
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'FIXED_SOURCE_PROVEN_NO_DEPLOY'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-043",
+      "title": null,
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "TERMINAL_REPROOF_PENDING_CURRENT_SOURCE",
+      "failureClass": "RELEASE_COMPOSITION_FAILURE",
+      "severity": null,
+      "owners": [],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'TERMINAL_REPROOF_PENDING_CURRENT_SOURCE'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-044",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "CLOSED_PROVEN",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": null,
+      "owners": [],
+      "reason": "Ledger terminal/proven state: CLOSED_PROVEN.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-045",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_LIVE_PROVEN_RUN440",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": null,
+      "owners": [
+        [
+          "app/modules/misvisitas.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: PASS_LIVE_PROVEN_RUN440.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-046",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_LIVE_PROVEN_RUN440",
+      "failureClass": "PERSISTENCE_FAILURE",
+      "severity": null,
+      "owners": [
+        [
+          "app/modules/reservas.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: PASS_LIVE_PROVEN_RUN440.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-047",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_LIVE_PROVEN_RUN440",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": null,
+      "owners": [
+        [
+          "app/adapters/tya-canonical-shopper-portal-v2.js",
+          "app/modules/shoppers.js",
+          "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: PASS_LIVE_PROVEN_RUN440.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-048",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_LIVE_PROVEN_RUN440",
+      "failureClass": "VISUAL_DEFECT",
+      "severity": null,
+      "owners": [
+        [
+          "app/core/backend-browser-auth.js",
+          "app/core/backend-protected-dev-session-continuity.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: PASS_LIVE_PROVEN_RUN440.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-049",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_LIVE_PROVEN_RUN440",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": null,
+      "owners": [
+        [
+          "app/modules/finanzas.js",
+          "app/core/liquidacion.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: PASS_LIVE_PROVEN_RUN440.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-050",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_LIVE_PROVEN_RUN479",
+      "failureClass": "PROVIDER_FAILURE",
+      "severity": null,
+      "owners": [
+        [
+          "backend/runtime/hr-live-service/server.mjs",
+          "tools/hr-source/tya-reapply-canonical-state-r20.mjs"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: PASS_LIVE_PROVEN_RUN479.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-051",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_LIVE_PROVEN_RUN440",
+      "failureClass": "VISUAL_DEFECT",
+      "severity": null,
+      "owners": [
+        [
+          "app/core/router.js",
+          "app/core/config.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: PASS_LIVE_PROVEN_RUN440.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-052",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_LIVE_PROVEN_RUN440",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": "P0",
+      "owners": [
+        [
+          "app/modules/visitas.js",
+          "app/core/data.js",
+          "app/core/router.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: PASS_LIVE_PROVEN_RUN440.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-053",
+      "title": null,
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_LIVE_PROVEN_RUN440",
+      "failureClass": "VISUAL_DEFECT",
+      "severity": "BLOCKING_VISUAL_ACCEPTANCE",
+      "owners": [
+        [
+          "app/adapters/tya-canonical-shopper-portal-v2.js",
+          "app/modules/novedades.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: PASS_LIVE_PROVEN_RUN440.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-054",
+      "title": "SHOPPER_SELF_PROFILE_SAVE_NOT_COMMITTED",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_LIVE_AND_SOURCE_PROVEN_RUN472",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": null,
+      "owners": [
+        [
+          "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+          "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: PASS_LIVE_AND_SOURCE_PROVEN_RUN472.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-055",
+      "title": "SHOPPER_IDENTITY_DISPLAY_MISHAEL_VS_MILTON_DE_PAZ",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_LIVE_PROVEN_RUN472_TENANT_ADJUDICATION_PRESERVED",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": null,
+      "owners": [
+        [
+          "tools/qa/cxorbia-i3-v28-dev-repair.mjs",
+          "tenants/tya/shoppers/shopper_gt_bd74ace936",
+          "exact canonical-ID platform-owned display-name fields in cinepolis postulations/reservations/visits"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: PASS_LIVE_PROVEN_RUN472_TENANT_ADJUDICATION_PRESERVED.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-056",
+      "title": "ADMIN_POSTULATIONS_SHOW_RAW_SHOPPER_IDS_AS_NAMES",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_LIVE_PROVEN_RUN472",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": null,
+      "owners": [
+        [
+          "app/modules/postulaciones.js",
+          "app/core/backend-firebase.js",
+          "app/adapters/tya-cumulative-read-model-v2.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: PASS_LIVE_PROVEN_RUN472.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-057",
+      "title": "VISITS_HONORARIUM_CONTRADICTS_LIVE_HR_FINANCIAL_AUTHORITY",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_LIVE_PROVEN_RUN467_AND_STABLE_RUN472",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": null,
+      "owners": [
+        [
+          "app/adapters/tya-live-source-inplace-apply.js",
+          "app/modules/visitas.js",
+          "app/core/backend-firebase.js",
+          "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+          "app/adapters/tya-c6-unified-human-runtime-v1.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: PASS_LIVE_PROVEN_RUN467_AND_STABLE_RUN472.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-058",
+      "title": "SHOPPER_REPORTS_PERIOD_SCOPE_MIXES_HISTORY_AS_CURRENT",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_LIVE_PROVEN_RUN472",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": null,
+      "owners": [
+        [
+          "app/modules/operacion-extra.js",
+          "app/adapters/tya-canonical-shopper-portal-v2.js",
+          "app/adapters/tya-corte1-report-projection-live.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: PASS_LIVE_PROVEN_RUN472.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-059",
+      "title": "SHOPPER_HOME_APPROVAL_NOTIFICATIONS_CONTRADICT_CURRENT_POSTULATION_STATE",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_LIVE_PROVEN_RUN472",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": null,
+      "owners": [
+        [
+          "app/modules/midia.js",
+          "app/modules/notificaciones.js",
+          "app/modules/misvisitas.js",
+          "app/adapters/tya-cumulative-read-model-v2.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: PASS_LIVE_PROVEN_RUN472.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-060",
+      "title": "SHOPPER_LOGIN_LATENCY_OBSERVED_BY_PAULA",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_LIVE_MEASURED_NO_AUTH_TIMEOUT_RUN472",
+      "failureClass": "ENVIRONMENT_FAILURE",
+      "severity": null,
+      "owners": [],
+      "reason": "Ledger terminal/proven state: PASS_LIVE_MEASURED_NO_AUTH_TIMEOUT_RUN472.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-061",
+      "title": "ADMIN_ASSIGNMENT_MANAGEMENT_STATE_REQUIRES_FRESH_HR_REPROOF",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_LIVE_PROVEN_RUN472",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": null,
+      "owners": [
+        [
+          "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+          "app/core/backend-firebase.js",
+          "app/adapters/tya-cumulative-read-model-v2.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: PASS_LIVE_PROVEN_RUN472.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-062",
+      "title": "CURRENT_HR_VISIT_DUPLICATES_PERSIST_IN_DURABLE_STORE",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_DURABLE_PROVEN_RUN472",
+      "failureClass": "PERSISTENCE_FAILURE",
+      "severity": null,
+      "owners": [
+        [
+          "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+          "app/core/backend-firebase.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: PASS_DURABLE_PROVEN_RUN472.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-063",
+      "title": "TENANT_ADJUDICATION_CROSSWALK_UID_FINGERPRINT_NOT_CANONICALIZED",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_DEV_DURABLE_REPAIR_RUN452",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": null,
+      "owners": [
+        [
+          "tools/qa/cxorbia-i3-v28-dev-repair.mjs"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: PASS_DEV_DURABLE_REPAIR_RUN452.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-064",
+      "title": "TENANT_ADJUDICATION_CROSSWALK_PROJECT_IDS_NOT_ARRAY",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_DEV_DURABLE_REPAIR_RUN452",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": null,
+      "owners": [
+        [
+          "tools/qa/cxorbia-i3-v28-dev-repair.mjs"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: PASS_DEV_DURABLE_REPAIR_RUN452.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-065",
+      "title": "Terminal HR sourceRevision changed inside one same-source certification run",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_LIVE_PROVEN_RUN488",
+      "failureClass": "PROVIDER_FAILURE",
+      "severity": null,
+      "owners": [
+        [
+          "backend/runtime/hr-live-service/server.mjs"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: PASS_LIVE_PROVEN_RUN488.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-066",
+      "title": "Run492 focal gate expected denormalized application branch instead of canonical visit-rendered branch",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_LIVE_PROVEN_RUN494",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": null,
+      "owners": [
+        [
+          "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: PASS_LIVE_PROVEN_RUN494.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-067",
+      "title": "V67 control patch serialized newline escape into executable QA source",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_CONTROL_PROVEN_RUN494",
+      "failureClass": "SOURCE_FAILURE",
+      "severity": null,
+      "owners": [
+        [
+          "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: PASS_CONTROL_PROVEN_RUN494.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-068",
+      "title": "Run494 live fixtures depended on historical hr-proof-run387.json and obsolete terminal manifest HR keys",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_CONTROL_PROVEN_RUN495",
+      "failureClass": "SOURCE_FAILURE",
+      "severity": null,
+      "owners": [
+        [
+          ".github/control/RECOVERY-I3-LIVE-FIXTURES-20260920-V4.mjs"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: PASS_CONTROL_PROVEN_RUN495.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-069",
+      "title": "Operational commands use canonical HR visitId as Firestore doc id although durable visit authority is keyed by hrRowId/sourceCoord",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_TERMINAL_PROVEN_RUN500",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": "P0",
+      "owners": [
+        [
+          "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: PASS_TERMINAL_PROVEN_RUN500.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-070",
+      "title": "Operational provider rejects source-current concurrency token emitted by HR-composed visit command boundary",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_TERMINAL_PROVEN_RUN500",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": "P0",
+      "owners": [
+        [
+          "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: PASS_TERMINAL_PROVEN_RUN500.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-071",
+      "title": "Live fixture required two simultaneously available HR visits although exact current HR has one",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_TERMINAL_PROVEN_RUN500",
+      "failureClass": "ENVIRONMENT_FAILURE",
+      "severity": null,
+      "owners": [
+        [
+          ".github/control/RECOVERY-I3-LIVE-FIXTURES-20260920-V4.mjs"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: PASS_TERMINAL_PROVEN_RUN500.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-072",
+      "title": "C3 and terminal control retained predecessor source/runtime and Run490 proof as second authority after legitimate V70 successor",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_CONTROL_PROVEN_RUN497",
+      "failureClass": "RELEASE_COMPOSITION_FAILURE",
+      "severity": null,
+      "owners": [
+        [
+          ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: PASS_CONTROL_PROVEN_RUN497.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-073",
+      "title": "Terminal atomic P0 gate asserted disproven global visitId equals Firestore docId contract",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_TERMINAL_PROVEN_RUN500",
+      "failureClass": "RELEASE_COMPOSITION_FAILURE",
+      "severity": null,
+      "owners": [
+        [
+          ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: PASS_TERMINAL_PROVEN_RUN500.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-074",
+      "title": "Gate21 retained predecessor runtime literal after certified successor runtime advanced to 00223-tlg",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_CONTROL_PROVEN_RUN500",
+      "failureClass": "RELEASE_COMPOSITION_FAILURE",
+      "severity": null,
+      "owners": [
+        [
+          ".github/workflows/cxorbia-recovery-i3-gate21-artifact-fingerprint.yml"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: PASS_CONTROL_PROVEN_RUN500.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-075",
+      "title": "Gate21 runtime receipt schema assumption invalid and Hosting version still encoded as historical literal",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_CONTROL_PROVEN_RUN500",
+      "failureClass": "RELEASE_COMPOSITION_FAILURE",
+      "severity": null,
+      "owners": [
+        [
+          ".github/workflows/cxorbia-recovery-i3-gate21-artifact-fingerprint.yml"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: PASS_CONTROL_PROVEN_RUN500.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-076",
+      "title": "Terminal Module Truth finalizer force-promotes every module/source file to MATCH after broad gates",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN_RUN502",
+      "failureClass": "RELEASE_COMPOSITION_FAILURE",
+      "severity": "P0",
+      "owners": [
+        [
+          "tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs",
+          ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN_RUN502.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-077",
+      "title": "Approved postulation can remain visible as 'validating assignment' when fresh HR already assigns the same visit to another shopper",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN_RUN507",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": "P0",
+      "owners": [
+        [
+          "app/modules/postulaciones.js",
+          "app/modules/misvisitas.js",
+          "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+          "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN_RUN507.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-078",
+      "title": "External per-project HR source wizard exposes Google Sheets/Excel selection but cannot supply the binding/mapping required to create it",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN_RUN515",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "owners": [
+        [
+          "app/modules/proyecto-wizard.js",
+          "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+          "backend/runtime/cxorbia-project-command-provider-v1.mjs"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN_RUN515.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-079",
+      "title": "Connected project Documents can show an upload control while binary Storage authority is not enabled in the certified protected runtime",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN_RUN518",
+      "failureClass": "PROVIDER_FAILURE",
+      "severity": "P0",
+      "owners": [
+        [
+          "app/core/backend-resources.js",
+          "app/core/backend-protected-dev-mode.js",
+          "app/modules/documentos.js",
+          "firestore.rules"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN_RUN518.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-080",
+      "title": "Connected admin configuration still declares platform-wide autoadministration while security/tenant settings persist only in browser localStorage or memory",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN_RUN525",
+      "failureClass": "PERSISTENCE_FAILURE",
+      "severity": "P0",
+      "owners": [
+        [
+          "app/modules/configuracion.js",
+          "app/core/config.js",
+          "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+          "app/adapters/cxorbia-command-adapter-v1.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN_RUN525.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-081",
+      "title": "Run500 terminal acceptance does not prove the full shopper credential universe although current reconciliation reports unresolved identity/login collisions",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN_RUN547",
+      "failureClass": "AUTH_FAILURE",
+      "severity": "P0",
+      "owners": [
+        [
+          "backend/runtime/hr-live-service/server.mjs",
+          "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+          "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+          "tools/qa/cxorbia-i3-c3-terminal-semantic-oracle.mjs"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN_RUN547.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-082",
+      "title": "Admin canonical shopper display identity mismatches exact operational HR authority for 12 real shoppers",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN_CONTROL_FALSE_NEGATIVE_RUN555",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": "P0",
+      "owners": [
+        [
+          "RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN_CONTROL_FALSE_NEGATIVE_RUN555.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-083",
+      "title": "Authenticated human browser can remain on a stale HR revision and protected HR authority does not settle coherently",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN_RUN564",
+      "failureClass": "AUTH_FAILURE",
+      "severity": "P0",
+      "owners": [
+        [
+          "backend/runtime/hr-live-service/server.mjs"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN_RUN564.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-084",
+      "title": "Shopper Benefits exposes internal payment state token pending_source_confirmation",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN_RUN572",
+      "failureClass": "VISUAL_DEFECT",
+      "severity": "P0",
+      "owners": [
+        [
+          "app/modules/beneficios.js"
+        ]
+      ],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN_RUN572.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-085",
+      "title": "Admin Postulations focal omitted approved HR ownership-conflict semantics already enforced by approved product contract",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN_CONTROL_FALSE_NEGATIVE_RUN578",
+      "failureClass": "RELEASE_COMPOSITION_FAILURE",
+      "severity": "P0",
+      "owners": [],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN_CONTROL_FALSE_NEGATIVE_RUN578.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-086",
+      "title": "Hardened focal omits exactAliases/canonical target resolution and falsely reports exact HR identities missing",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN_CONTROL_FALSE_NEGATIVE_RUN581",
+      "failureClass": "RELEASE_COMPOSITION_FAILURE",
+      "severity": "P0",
+      "owners": [],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN_CONTROL_FALSE_NEGATIVE_RUN581.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-087",
+      "title": "Terminal Module Truth finalizer rejects stale historical owner receipts even when preterminal composition is already 20/20 MATCH with zero pending files",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN_CONTROL_FALSE_NEGATIVE_RUN583",
+      "failureClass": "RELEASE_COMPOSITION_FAILURE",
+      "severity": "P0",
+      "owners": [],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN_CONTROL_FALSE_NEGATIVE_RUN583.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-088",
+      "title": "Live fixture hard-requires an available visit in the active period even when authoritative HR legitimately has zero active-period availability",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN_CONTROL_FALSE_NEGATIVE_RUN585",
+      "failureClass": "RELEASE_COMPOSITION_FAILURE",
+      "severity": "P0",
+      "owners": [],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN_CONTROL_FALSE_NEGATIVE_RUN585.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-089",
+      "title": "Admin Visits edit/publish surface declares success without durable provider write or ACK",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "SOURCE_FIX_REPROOF_REQUIRED",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "owners": [],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'SOURCE_FIX_REPROOF_REQUIRED'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-090",
+      "title": "Admin identity review detects duplicate/colliding shopper identities but exposes no adjudication/merge action",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "SOURCE_FIX_REPROOF_REQUIRED",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "owners": [],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'SOURCE_FIX_REPROOF_REQUIRED'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-091",
+      "title": "Milton identity fragmentation overcounts visible history relative to current live HR",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "SOURCE_FIX_REPROOF_REQUIRED",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": "P0",
+      "owners": [],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'SOURCE_FIX_REPROOF_REQUIRED'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-092",
+      "title": "Postulations management surface mixes durable actions with partial/no-op or unacknowledged actions",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "SOURCE_FIX_REPROOF_REQUIRED",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "owners": [],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'SOURCE_FIX_REPROOF_REQUIRED'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-093",
+      "title": "Reservations & Assignment is provider-backed but Admin CRUD/operational surface is incomplete",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "SOURCE_FIX_REPROOF_REQUIRED",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "owners": [],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'SOURCE_FIX_REPROOF_REQUIRED'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-094",
+      "title": "Finance Admin exposes internal technical identifiers/enums and accounting abbreviations in normal human UI",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "SOURCE_FIX_REPROOF_REQUIRED",
+      "failureClass": "VISUAL_DEFECT",
+      "severity": "P1",
+      "owners": [],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'SOURCE_FIX_REPROOF_REQUIRED'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-095",
+      "title": "Postulations rail badge and active-period Postulations module show contradictory pending counts in the same Admin session",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "SOURCE_FIX_REPROOF_REQUIRED",
+      "failureClass": "VISUAL_DEFECT",
+      "severity": "P1",
+      "owners": [],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'SOURCE_FIX_REPROOF_REQUIRED'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-096",
+      "title": "Protected preview can serve stale HR for up to one hour and blocks fresh visibility behind full Firestore reconciliation",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "SOURCE_FIX_REPROOF_REQUIRED",
+      "failureClass": "PROVIDER_FAILURE",
+      "severity": "P0",
+      "owners": [],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'SOURCE_FIX_REPROOF_REQUIRED'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-097",
+      "title": "Shopper Mi Día fabricates visit progress and misleading next-visit state when there is no active visit; notifications can remain stale/non-actionable",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "SOURCE_FIX_REPROOF_REQUIRED",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "owners": [],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'SOURCE_FIX_REPROOF_REQUIRED'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-098",
+      "title": "Shopper shell/footer shows generic role identity instead of authenticated canonical shopper name",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "SOURCE_FIX_REPROOF_REQUIRED",
+      "failureClass": "VISUAL_DEFECT",
+      "severity": "P1",
+      "owners": [],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'SOURCE_FIX_REPROOF_REQUIRED'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-099",
+      "title": "Shopper profile hides most saved personal/payment data outside edit modal and allows current-session password reveal/copy",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "SOURCE_FIX_REPROOF_REQUIRED",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": "P1",
+      "owners": [],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'SOURCE_FIX_REPROOF_REQUIRED'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-100",
+      "title": "Shopper reservation create/delete are blocked by browser role policy although durable provider implements them",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "SOURCE_FIX_REPROOF_REQUIRED",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "owners": [],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'SOURCE_FIX_REPROOF_REQUIRED'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-101",
+      "title": "Mis Beneficios is current-period-only and hides the shopper's historical benefits when current period has no visits",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "SOURCE_FIX_REPROOF_REQUIRED",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": "P1",
+      "owners": [],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'SOURCE_FIX_REPROOF_REQUIRED'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-102",
+      "title": "Mis Reportes is current-period-only and offers no historical scope when current period has no shopper visits",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "SOURCE_FIX_REPROOF_REQUIRED",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": "P1",
+      "owners": [],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'SOURCE_FIX_REPROOF_REQUIRED'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-103",
+      "title": "Shopper/Admin profile administration is not discoverable enough for protected personal and payment fields",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "SOURCE_FIX_REPROOF_REQUIRED",
+      "failureClass": "VISUAL_DEFECT",
+      "severity": "P1",
+      "owners": [],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'SOURCE_FIX_REPROOF_REQUIRED'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-104",
+      "title": "Human login requires role selection before credentials but presents both simultaneously and resets/restore states make the sequence ambiguous",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "SOURCE_FIX_REPROOF_REQUIRED",
+      "failureClass": "AUTH_FAILURE",
+      "severity": "P0",
+      "owners": [],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'SOURCE_FIX_REPROOF_REQUIRED'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-105",
+      "title": "Initial read-only human-lane attribution disproven; active write blocker was canonical firewall interception",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "CLOSED_FORENSIC_FALSE_ATTRIBUTION_CORRECTED",
+      "failureClass": "RELEASE_COMPOSITION_FAILURE",
+      "severity": "P1",
+      "owners": [],
+      "reason": "Ledger terminal/proven state: CLOSED_FORENSIC_FALSE_ATTRIBUTION_CORRECTED.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-106",
+      "title": "Shopper portal retained obsolete password reveal/copy listeners after credential hardening, causing ReferenceError in the authenticated profile flow",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN_RUN736",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "owners": [],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN_RUN736.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-107",
+      "title": "Fresh HR polling could enqueue duplicate durable reconciliation for the same revision and starve visit reconciliation before provider ACK",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN_RUN736",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "owners": [],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN_RUN736.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-108",
+      "title": "Control-only Run736 freeze was composed from an incomplete base tree, temporarily removing canonical repository files from the Recovery branch",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN_CONTROL_TREE_RESTORED",
+      "failureClass": "RELEASE_COMPOSITION_FAILURE",
+      "severity": "P0",
+      "owners": [],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN_CONTROL_TREE_RESTORED.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-109",
+      "title": "Canonical authority workflow status whitelist omitted the new PRE-I4 CERT/RES remediation HOLD state",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN_RUN740",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": "P0_CONTROL",
+      "owners": [],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN_RUN740.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-110",
+      "title": "Credential-route diagnostic aggregated candidates.json with per-route result objects and failed jq type assumptions",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN_RUN742",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": "P0_CONTROL",
+      "owners": [],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN_RUN742.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-111",
+      "title": "PREI4-CERT-001 certification creation still used local heuristic instead of a provider-backed secure AI path",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "FIXED_SOURCE_PROVEN_READY_DEV_MATERIALIZATION",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "owners": [
+        "backend/runtime/hr-live-service/certification-runtime.mjs",
+        "backend/runtime/hr-live-service/server.mjs",
+        "app/core/backend-ai.js",
+        "app/core/backend-certifications.js",
+        "app/index-backend-dev.html",
+        "app/modules/cert.js"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'FIXED_SOURCE_PROVEN_READY_DEV_MATERIALIZATION'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-112",
+      "title": "PREI4-CERT-002 certification attempts, recertification and carryover were not closed on durable provider-backed state",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "FIXED_SOURCE_PROVEN_READY_DEV_MATERIALIZATION",
+      "failureClass": "PERSISTENCE_FAILURE",
+      "severity": "P0",
+      "owners": [
+        "backend/runtime/hr-live-service/certification-runtime.mjs",
+        "backend/runtime/hr-live-service/server.mjs",
+        "app/core/backend-certifications.js",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+        "app/modules/cert.js",
+        "firestore.rules"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'FIXED_SOURCE_PROVEN_READY_DEV_MATERIALIZATION'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-113",
+      "title": "PREI4-RES-001 project binary resources were still fail-closed after Firebase Storage provider activation",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "FIXED_SOURCE_PROVEN_READY_DEV_MATERIALIZATION",
+      "failureClass": "PERSISTENCE_FAILURE",
+      "severity": "P0",
+      "owners": [
+        "app/core/backend-protected-dev-mode.js",
+        "app/core/backend-resources.js",
+        "app/index-backend-dev.html",
+        "app/modules/documentos.js",
+        "storage.rules"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'FIXED_SOURCE_PROVEN_READY_DEV_MATERIALIZATION'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-114",
+      "title": "Run 36788133836 source gate passed but canonical descriptor and ledger still pointed to the predecessor source",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "FIXED_CONTROL_RECONCILIATION_PENDING_REPROOF",
+      "failureClass": "RELEASE_COMPOSITION_FAILURE",
+      "severity": "P0_CONTROL",
+      "owners": [],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'FIXED_CONTROL_RECONCILIATION_PENDING_REPROOF'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-115",
+      "title": "Cloud Run image omitted certification-runtime.mjs although server.mjs imported it",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "FIXED_SOURCE_PROVEN_READY_DEV_RESUME",
+      "failureClass": "SOURCE_FAILURE",
+      "severity": "P0",
+      "owners": [],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'FIXED_SOURCE_PROVEN_READY_DEV_RESUME'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-116",
+      "title": "CERT/RES resume job retained the predecessor activeBlocker literal after runtime packaging failure classification",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "FIXED_CONTROL_READY_REPROOF",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": "P0_CONTROL",
+      "owners": [],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'FIXED_CONTROL_READY_REPROOF'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-117",
+      "title": "Post-materialization HR readback required asynchronous reconciliation ACK on the first fresh meta response",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "FIXED_CONTROL_READY_NO_DEPLOY_REPROOF",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": "P0_CONTROL",
+      "owners": [],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'FIXED_CONTROL_READY_NO_DEPLOY_REPROOF'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-118",
+      "title": "Authenticated CERT/RES fixture did not tolerate expected Firebase Auth navigation during signInWithCustomToken",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "FIXED_CONTROL_READY_NO_DEPLOY_REPROOF",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": "P0_CONTROL",
+      "owners": [],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'FIXED_CONTROL_READY_NO_DEPLOY_REPROOF'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-119",
+      "title": "Recertification first-write response omitted the durable Firestore document id",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN_RUN_36793188546",
+      "failureClass": "PERSISTENCE_FAILURE",
+      "severity": "P0",
+      "owners": [],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN_RUN_36793188546.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-120",
+      "title": "Recovery workflow push-path map omitted newly introduced CERT/RES source owners",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN_RUN_36792808797",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": "P0_CONTROL",
+      "owners": [],
+      "reason": "Ledger terminal/proven state: FIXED_PROVEN_RUN_36792808797.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-121",
+      "title": "Dashboard assignment KPIs are contaminated by a platform test assignment instead of remaining tied to the same external HR revision",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": "P0",
+      "owners": [
+        "app/modules/dashboard.js",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'SOURCE_FIX_PROVEN_PENDING_DEV_LIVE'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-122",
+      "title": "Reservation availability is not consistently constrained to the same live canonical availability set and future reservation window",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": "P0",
+      "owners": [
+        "app/modules/reservas.js",
+        "app/core/data.js"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'SOURCE_FIX_PROVEN_PENDING_DEV_LIVE'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-123",
+      "title": "Postulation lifecycle does not yet enforce present-date validity and one authoritative transition from application to assignment",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "owners": [
+        "app/modules/visita-detalle.js",
+        "app/modules/postulaciones.js",
+        "app/core/data.js"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'SOURCE_FIX_PROVEN_PENDING_DEV_LIVE'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-124",
+      "title": "Successful and failed writes force full-page reload / authority recomposition and lose the user's current route",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "owners": [
+        "app/modules/reservas.js",
+        "app/modules/postulaciones.js",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'SOURCE_FIX_PROVEN_PENDING_DEV_LIVE'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-125",
+      "title": "Scheduling management mixes completed visits with active scheduling and does not preserve/validate the proposed date end-to-end",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "owners": [
+        "app/modules/postulaciones.js",
+        "app/modules/misvisitas.js"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'SOURCE_FIX_PROVEN_PENDING_DEV_LIVE'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-126",
+      "title": "Certification publication is blocked by an unsupported two-person-review rule and long-form modal state is lost on backdrop click",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "owners": [
+        "app/modules/cert.js",
+        "app/core/ui.js"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'SOURCE_FIX_PROVEN_PENDING_DEV_LIVE'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-127",
+      "title": "Shopper notification lifecycle can surface stale/non-current messages and admin requests are not clearly durable/targeted",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+      "failureClass": "PERSISTENCE_FAILURE",
+      "severity": "P0",
+      "owners": [
+        "app/modules/midia.js",
+        "app/modules/postulaciones.js",
+        "app/core/data.js"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'SOURCE_FIX_PROVEN_PENDING_DEV_LIVE'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-128",
+      "title": "Shopper identity management still exposes duplicate-looking people and lacks an operator merge/adjudication workflow",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": "P0",
+      "owners": [
+        "app/modules/shoppers.js",
+        "backend/runtime/hr-live-service/server.mjs"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'SOURCE_FIX_PROVEN_PENDING_DEV_LIVE'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-129",
+      "title": "Reassignment candidate selector can render no selectable shoppers despite a populated project shopper base",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "owners": [
+        "app/modules/postulaciones.js",
+        "app/core/data.js"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'SOURCE_FIX_PROVEN_PENDING_DEV_LIVE'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-130",
+      "title": "Current operational period discovery rolls to October using UTC before Guatemala local day rollover",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": "P0",
+      "owners": [
+        "backend/runtime/hr-live-service/server.mjs"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'SOURCE_FIX_PROVEN_PENDING_DEV_LIVE'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-131",
+      "title": "Shopper profile and active-visit presentation need visual hierarchy and human-language cleanup",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "OPEN_NON_BLOCKING_HUMAN_VISUAL_RETEST",
+      "failureClass": "VISUAL_DEFECT",
+      "severity": "NON_BLOCKING",
+      "owners": [
+        "app/modules/shoppers.js",
+        "app/modules/misvisitas.js"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'OPEN_NON_BLOCKING_HUMAN_VISUAL_RETEST'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-132",
+      "title": "Finance Movements/CxP/CxC are not the durable source that drives Dashboard income and financial pending-source resolution",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+      "failureClass": "PERSISTENCE_FAILURE",
+      "severity": "P0",
+      "owners": [],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'SOURCE_FIX_PROVEN_PENDING_DEV_LIVE'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-133",
+      "title": "Shopper self-registration geography is not enforced as required and must differ from HR auto-upsert",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "owners": [],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'SOURCE_FIX_PROVEN_PENDING_DEV_LIVE'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-134",
+      "title": "Live-data refresh and post-write recomposition repeatedly block the user for materially too long",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE_REPROOF",
+      "failureClass": "ENVIRONMENT_FAILURE",
+      "severity": "P0",
+      "owners": [],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'SOURCE_FIX_PROVEN_PENDING_DEV_LIVE_REPROOF'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-135",
+      "title": "Human login experience remains ambiguous/slow despite historical source fix",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "SOURCE_FIX_PROVEN_PENDING_DEV_LIVE",
+      "failureClass": "AUTH_FAILURE",
+      "severity": "P0",
+      "owners": [],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'SOURCE_FIX_PROVEN_PENDING_DEV_LIVE'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-136",
+      "title": "Protected Corte4 empty-state guard repeatedly erases valid external HR operational context",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "SOURCE_FIX_PENDING_DEV_LIVE_REPROOF",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "owners": [],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'SOURCE_FIX_PENDING_DEV_LIVE_REPROOF'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-137",
+      "title": "Paula shopper focal compared cumulative UI history against current HR shopper summary count",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "FIXED_CONTROL_REPROOF_REQUIRED",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": "CONTROL_BLOCKER",
+      "owners": [],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'FIXED_CONTROL_REPROOF_REQUIRED'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-138",
+      "title": "Shopper focal compared cumulative postulation KPI with current-period application rows",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "FIXED_CONTROL_REPROOF_REQUIRED",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": "CONTROL_BLOCKER",
+      "owners": [],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'FIXED_CONTROL_REPROOF_REQUIRED'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-139",
+      "title": "Final finance live fixture used ISO GTQ instead of tenant currency code Q",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "FIXED_CONTROL_REPROOF_REQUIRED",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": "CONTROL_BLOCKER",
+      "owners": [],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'FIXED_CONTROL_REPROOF_REQUIRED'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-140",
+      "title": "Transient Firebase Auth network failure in final finance durable projection browser",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "FIXED_CONTROL_REPROOF_REQUIRED",
+      "failureClass": "ENVIRONMENT_FAILURE",
+      "severity": "CONTROL_BLOCKER",
+      "owners": [],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'FIXED_CONTROL_REPROOF_REQUIRED'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-141",
+      "title": "Final finance projection harness stopped at Firebase currentUser and did not restore CX backend auth context",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "FIXED_CONTROL_REPROOF_REQUIRED",
+      "failureClass": "AUTH_FAILURE",
+      "severity": "CONTROL_BLOCKER",
+      "owners": [],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'FIXED_CONTROL_REPROOF_REQUIRED'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-142",
+      "title": "Authenticated Admin finance read bridge cannot read durable financialMovements/financeAccounts because Firestore Rules omit both collections",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "SOURCE_FIX_PENDING_DEV_LIVE_REPROOF",
+      "failureClass": "AUTH_FAILURE",
+      "severity": "P0",
+      "owners": [],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'SOURCE_FIX_PENDING_DEV_LIVE_REPROOF'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-143",
+      "title": "Historical non-current notifications remain unread/current in Mi Día",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": "PRE_I4_ACCEPTANCE_BLOCKER",
+      "owners": [
+        "app/core/notif.js",
+        "app/modules/midia.js"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-144",
+      "title": "Mi Día visual hierarchy places secondary content ahead of current action",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF",
+      "failureClass": "VISUAL_DEFECT",
+      "severity": "PRE_I4_ACCEPTANCE_BLOCKER",
+      "owners": [
+        "app/modules/midia.js"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-145",
+      "title": "Mi Perfil hierarchy does not sufficiently separate identity, performance and trajectory",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF",
+      "failureClass": "VISUAL_DEFECT",
+      "severity": "PRE_I4_ACCEPTANCE_BLOCKER",
+      "owners": [
+        "app/adapters/tya-canonical-shopper-portal-v2.js"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-146",
+      "title": "Shopper visit history ordering is not explicit/stable oldest-to-newest",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": "PRE_I4_ACCEPTANCE_BLOCKER",
+      "owners": [
+        "app/adapters/tya-canonical-shopper-portal-v2.js"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-147",
+      "title": "Reservation request collapses eligible visit slots to branch/city and loses execution cut",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": "P0",
+      "owners": [
+        "app/modules/reservas.js"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-148",
+      "title": "Certification AI silently publishes fewer questions than requested and grounding is not proven",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "owners": [
+        "app/core/automations.js",
+        "app/modules/cert.js",
+        "app/core/backend-ai.js",
+        "backend/runtime/hr-live-service/certification-runtime.mjs"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-149",
+      "title": "Scrollable sidebar has effectively invisible scrollbar on light theme",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF",
+      "failureClass": "VISUAL_DEFECT",
+      "severity": "PRE_I4_ACCEPTANCE_BLOCKER",
+      "owners": [
+        "app/styles/layout.css"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-150",
+      "title": "Mis Beneficios mixes historical KPI totals into selected current period",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "owners": [
+        "app/modules/beneficios.js"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'DEV_MATERIALIZED_PENDING_FOCAL_LIVE_REPROOF'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-151",
+      "title": "Historical payment reconciliation needs one durable auditable idempotent source of truth",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "FINAL_CANONICAL_DRY_RUN_PASS_DURABLE_RECONCILIATION_REQUIRED",
+      "failureClass": "PERSISTENCE_FAILURE",
+      "severity": "P0",
+      "owners": [
+        "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+        "app/adapters/cxorbia-cxdata-command-boundary-v1.js"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'FINAL_CANONICAL_DRY_RUN_PASS_DURABLE_RECONCILIATION_REQUIRED'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-152",
+      "title": "Historical reconciliation transaction interleaves Firestore reads and writes",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "RUNTIME_MATERIALIZED_DURABLE_RECONCILIATION_REQUIRED",
+      "failureClass": "PERSISTENCE_FAILURE",
+      "severity": "P0",
+      "owners": [
+        "backend/runtime/cxorbia-finance-command-provider-v1.mjs"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'RUNTIME_MATERIALIZED_DURABLE_RECONCILIATION_REQUIRED'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-153",
+      "title": "Durable historical reconciliation readback does not match canonical expected counts",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "CLOSED_PROVEN_RUN856",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": "P0",
+      "owners": [
+        "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+        "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+        "backend/runtime/hr-live-service/server.mjs"
+      ],
+      "reason": "Ledger terminal/proven state: CLOSED_PROVEN_RUN856.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-154",
+      "title": "Shopper visit surfaces render only one scenario dimension and omit project-defined additional scenario dimensions",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "CLOSED_PROVEN_RUN866",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "owners": [
+        "backend/runtime/hr-live-service/server.mjs",
+        "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+        "app/core/tya-phase-a-source-safe-preview.js",
+        "app/core/data.js",
+        "app/modules/misvisitas.js",
+        "app/modules/visita-detalle.js"
+      ],
+      "reason": "Ledger terminal/proven state: CLOSED_PROVEN_RUN866.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-155",
+      "title": "Shopper Mis Visitas and Mi Perfil remain visually inconsistent with the approved frontend language",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "HUMAN_VISUAL_FAIL_SUPERSEDED_BY_VRM165",
+      "failureClass": "VISUAL_DEFECT",
+      "severity": "P1",
+      "owners": [
+        "app/modules/misvisitas.js",
+        "app/adapters/tya-canonical-shopper-portal-v2.js",
+        "app/styles/layout.css"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'HUMAN_VISUAL_FAIL_SUPERSEDED_BY_VRM165'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-156",
+      "title": "Academy/certification course cards are visually inconsistent with the approved frontend",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "HUMAN_VISUAL_FAIL_SUPERSEDED_BY_VRM178",
+      "failureClass": "VISUAL_DEFECT",
+      "severity": "P1",
+      "owners": [
+        "app/modules/academia.js",
+        "app/styles/layout.css"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'HUMAN_VISUAL_FAIL_SUPERSEDED_BY_VRM178'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-157",
+      "title": "VRM-154..156 DEV materialization harness mixed HR full-data and metadata endpoint contracts",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "CLOSED_PROVEN_RUN855",
+      "failureClass": "RELEASE_COMPOSITION_FAILURE",
+      "severity": "P0",
+      "owners": [
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+      ],
+      "reason": "Ledger terminal/proven state: CLOSED_PROVEN_RUN855.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-158",
+      "title": "Canonical authority guard rejected the new VRM-154..156 live-reproof continuity state",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "CLOSED_PROVEN_RUN860_AUTHORITY_EXECUTED",
+      "failureClass": "RELEASE_COMPOSITION_FAILURE",
+      "severity": "P0",
+      "owners": [
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+        "tools/qa/cxorbia-vrm154-156-live-reproof.mjs"
+      ],
+      "reason": "Ledger terminal/proven state: CLOSED_PROVEN_RUN860_AUTHORITY_EXECUTED.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-159",
+      "title": "Canonical I3 workflow exceeded GitHub Actions 500 KB workflow-file limit",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "CLOSED_PROVEN_RUN859_WORKFLOW_LOADED_UNDER_LIMIT",
+      "failureClass": "RELEASE_COMPOSITION_FAILURE",
+      "severity": "P0",
+      "owners": [
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+        "tools/qa/cxorbia-vrm154-156-live-reproof.mjs"
+      ],
+      "reason": "Ledger terminal/proven state: CLOSED_PROVEN_RUN859_WORKFLOW_LOADED_UNDER_LIMIT.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-160",
+      "title": "Canonical findings governance nextFindingId desynchronized from ledger sequence",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "CLOSED_PROVEN_RUN860_AUTHORITY_GUARD_PASS",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": "P0",
+      "owners": [
+        "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V179_2026-10-02.json",
+        "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json"
+      ],
+      "reason": "Ledger terminal/proven state: CLOSED_PROVEN_RUN860_AUTHORITY_GUARD_PASS.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-161",
+      "title": "VRM-154..156 focal browser harness omitted canonical persisted-auth lifecycle",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "CLOSED_PROVEN_RUN861_AUTH_LIFECYCLE_REACHED_LIVE_UI",
+      "failureClass": "RELEASE_COMPOSITION_FAILURE",
+      "severity": "P0",
+      "owners": [
+        "tools/qa/cxorbia-vrm154-156-live-reproof.mjs"
+      ],
+      "reason": "Ledger terminal/proven state: CLOSED_PROVEN_RUN861_AUTH_LIFECYCLE_REACHED_LIVE_UI.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-162",
+      "title": "Live runtime period mapping dropped project-configured scenarioDimensions",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "CLOSED_PROVEN_RUN866",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": "P0",
+      "owners": [
+        "app/adapters/tya-live-source-inplace-apply.js",
+        "tools/qa/cxorbia-vrm154-156-frontend-source-contract.mjs"
+      ],
+      "reason": "Ledger terminal/proven state: CLOSED_PROVEN_RUN866.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-163",
+      "title": "V182 ledger canonicalFunctionalCandidate remained on predecessor after descriptor advanced to VRM-162 successor",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "CONTROL_FIXED_PROVEN_RUN864",
+      "failureClass": "RELEASE_COMPOSITION_FAILURE",
+      "severity": "P0",
+      "owners": [
+        "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V182_2026-10-02.json",
+        "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json"
+      ],
+      "reason": "Ledger terminal/proven state: CONTROL_FIXED_PROVEN_RUN864.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-164",
+      "title": "Historical post-Run500 guard incorrectly required frozen V176 source to equal approved successor",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "CONTROL_FIXED_PROVEN_RUN864",
+      "failureClass": "RELEASE_COMPOSITION_FAILURE",
+      "severity": "P0",
+      "owners": [
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+      ],
+      "reason": "Ledger terminal/proven state: CONTROL_FIXED_PROVEN_RUN864.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-165",
+      "title": "Human visual acceptance failed on Mi Día progress and Mi Perfil hierarchy",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
+      "failureClass": "VISUAL_DEFECT",
+      "severity": "P0",
+      "owners": [
+        "app/modules/midia.js",
+        "app/adapters/tya-canonical-shopper-portal-v2.js",
+        "app/styles/layout.css"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-166",
+      "title": "Historical shopper notifications are stale and can leak across shopper profiles",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
+      "failureClass": "PERSISTENCE_FAILURE",
+      "severity": "P0",
+      "owners": [
+        "app/core/notif.js",
+        "app/core/backend-bulletins.js",
+        "callers of CX.notif.push"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-167",
+      "title": "Admin Mi Día postulation KPI and Postulaciones module use different lifecycle filters",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": "P0",
+      "owners": [
+        "app/core/data.js",
+        "app/modules/midia.js",
+        "app/modules/postulaciones.js"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-168",
+      "title": "Shopper scheduling command failed on sealed DEV",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN_FOCAL_RUN906_TRANSVERSAL_BLOCKED_BY_VRM181",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": "P0",
+      "owners": [
+        "app/adapters/cxorbia-cxdata-command-boundary-v1.js"
+      ],
+      "reason": "Current terminal evidence closes this finding on the exact candidate; historical state 'FIXED_PROVEN_FOCAL_RUN906_TRANSVERSAL_BLOCKED_BY_VRM181' is superseded by the frozen current proof.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-169",
+      "title": "Geolocated check-in is preview-only and cannot persist evidence",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "owners": [
+        "app/modules/misvisitas.js",
+        "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-170",
+      "title": "Instructive-read completion has no durable receipt in the visit route",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "owners": [
+        "app/modules/misvisitas.js",
+        "app/core/backend-resources.js",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-171",
+      "title": "Previously certified shoppers are not reliably granted current certification eligibility",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": "P0",
+      "owners": [
+        "app/data/tya-certification-carryover-source-safe.js",
+        "app/adapters/tya-certification-evidence-projection-v1.js",
+        "app/core/backend-certifications.js",
+        "app/modules/cert.js"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-172",
+      "title": "Certification admin is not fully self-administered or durable",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "owners": [
+        "app/modules/cert.js",
+        "app/core/backend-certifications.js",
+        "app/core/backend-resources.js",
+        "backend/runtime/hr-live-service/certification-runtime.mjs"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-173",
+      "title": "Shopper certification route assumes one current-period bank instead of project/multiple certification selection",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": "P1",
+      "owners": [
+        "app/modules/cert.js",
+        "app/core/backend-certifications.js"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-174",
+      "title": "Durable historical payment reconciliation is not projected into Finance/Mis Beneficios UI",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": "P0",
+      "owners": [
+        "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+        "app/adapters/tya-canonical-finance-read-model-v2.js",
+        "app/core/liquidacion.js",
+        "app/modules/beneficios.js",
+        "app/modules/finanzas.js"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-175",
+      "title": "Shopper identity/incomplete-profile administration lacks complete actionable workflow",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "owners": [
+        "app/modules/shoppers.js",
+        "app/adapters/cxorbia-shopper-admin-command-contract-v1.js",
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-176",
+      "title": "Displayed shopper rating criteria do not match the frozen ranking/scoring contract",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": "P1",
+      "owners": [
+        "app/contracts/shopper-ranking-scoring-preview-phase-a.tya.contract.json",
+        "app/modules/shoppers.js"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-177",
+      "title": "KPI drill-down/action contract is inconsistent across admin modules",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": "P1",
+      "owners": [
+        "app/modules/shoppers.js",
+        "app/modules/postulaciones.js",
+        "app/modules/cert.js",
+        "app/modules/finanzas.js",
+        "app/modules/midia.js"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-178",
+      "title": "Academia human visual acceptance failed: cards are too uniform/flat",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
+      "failureClass": "VISUAL_DEFECT",
+      "severity": "P0",
+      "owners": [
+        "app/modules/academia.js",
+        "app/styles/layout.css"
+      ],
+      "reason": "No terminal current-candidate closure may be inferred from ledger state 'V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF'. This item remains open until owner-specific proof or an explicit N/A disposition exists.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-179",
+      "title": "Movimientos lacks same-candidate end-to-end acceptance proof after human review",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "P0_ACCEPTANCE_REPROOF_REQUIRED",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "owners": [
+        "app/modules/finanzas.js",
+        "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+        "backend/runtime/cxorbia-finance-command-provider-v1.mjs"
+      ],
+      "reason": "Current ledger explicitly requires same-candidate acceptance reproof.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-180",
+      "title": "Reservas requires same-candidate contract reproof after human review",
+      "classification": "OPEN_BLOCKER",
+      "ledgerState": "P0_ACCEPTANCE_REPROOF_REQUIRED",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "owners": [
+        "app/modules/reservas.js",
+        "app/adapters/tya-canonical-reservations-guard-v2.js",
+        "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+      ],
+      "reason": "Current ledger explicitly requires same-candidate acceptance reproof.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "mustNotBeSilentlyClosedByGenericRun": true
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-181",
+      "title": "Admin Certificación route crashes by recursive header helper",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
+      "failureClass": "VISUAL_DEFECT",
+      "severity": "P0",
+      "owners": [
+        "app/modules/cert.js"
+      ],
+      "reason": "Current terminal evidence closes this finding on the exact candidate; historical state 'EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF' is superseded by the frozen current proof.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-182",
+      "title": "Live HR revision advanced eight August GT visits to submitted while finance QA remained pinned to prior counts",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "CONTROL_FIXED_SOURCE_DRIFT_PROVEN_RESIDUAL_PERSISTENCE_SEPARATED",
+      "failureClass": "ENVIRONMENT_FAILURE",
+      "severity": "P0",
+      "owners": [],
+      "reason": "Current terminal evidence closes this finding on the exact candidate; historical state 'CONTROL_FIXED_SOURCE_DRIFT_PROVEN_RESIDUAL_PERSISTENCE_SEPARATED' is superseded by the frozen current proof.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-183",
+      "title": "Eight newly submitted August GT visits are absent from durable historical payment reconciliation",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN_DURABLE",
+      "failureClass": "PERSISTENCE_FAILURE",
+      "severity": "P0",
+      "owners": [
+        {
+          "command": "finance.historical.reconcile",
+          "provider": "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+          "executor": "tools/qa/cxorbia-vrm151-durable-reconciliation-live.mjs",
+          "providerCodeChanged": false
+        }
+      ],
+      "reason": "Current terminal evidence closes this finding on the exact candidate; historical state 'FIXED_PROVEN_DURABLE' is superseded by the frozen current proof.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-184",
+      "title": "Human acceptance falsely required shopper password to remain present after successful login",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "FIXED_PROVEN_RUN914_CONTROL_FALSE_NEGATIVE",
+      "failureClass": "RELEASE_COMPOSITION_FAILURE",
+      "severity": "P0",
+      "owners": [],
+      "reason": "Current terminal evidence closes this finding on the exact candidate; historical state 'FIXED_PROVEN_RUN914_CONTROL_FALSE_NEGATIVE' is superseded by the frozen current proof.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-185",
+      "title": "paula.osorio authenticates but exact session profile/history/KPIs do not resolve",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_PROVEN_RUN946",
+      "failureClass": "MAPPING_FAILURE",
+      "severity": "P0",
+      "owners": [],
+      "reason": "Current terminal evidence closes this finding on the exact candidate; historical state 'PASS_PROVEN_RUN946' is superseded by the frozen current proof.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    },
+    {
+      "id": "VRM-186",
+      "title": "Admin shopper identity review did not normalize all exact-conflict schemas and allowed a name-only merge path",
+      "classification": "PASS_PROVEN",
+      "ledgerState": "PASS_PROVEN_RUN946",
+      "failureClass": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "owners": [],
+      "reason": "Current terminal evidence closes this finding on the exact candidate; historical state 'PASS_PROVEN_RUN946' is superseded by the frozen current proof.",
+      "currentCandidateEvidence": {
+        "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+        "run946Eligible": true,
+        "run946Id": 37128494088,
+        "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6"
+      },
+      "production": false
+    }
+  ],
+  "frozenObservationGroups": [
+    {
+      "id": "PAULA-2026-09-24-HUMAN-VISUAL-REJECTION",
+      "source": "CXORBIA_PRE_I4_HUMAN_VISUAL_REJECTION_LOCK_2026-09-24.json",
+      "findingIds": [
+        "VRM-033",
+        "VRM-034",
+        "VRM-035",
+        "VRM-036",
+        "VRM-037",
+        "VRM-038",
+        "VRM-039",
+        "VRM-040",
+        "VRM-041"
+      ],
+      "mapped": [
+        {
+          "id": "VRM-033",
+          "classification": "PASS_PROVEN"
+        },
+        {
+          "id": "VRM-034",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-035",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-036",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-037",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-038",
+          "classification": "PASS_PROVEN"
+        },
+        {
+          "id": "VRM-039",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-040",
+          "classification": "PASS_PROVEN"
+        },
+        {
+          "id": "VRM-041",
+          "classification": "OPEN_BLOCKER"
+        }
+      ],
+      "omissions": 0
+    },
+    {
+      "id": "PAULA-2026-09-25-VISUAL-REVIEW",
+      "source": "CXORBIA_I3_PAULA_VISUAL_REVIEW_2026-09-25.json",
+      "findingIds": [
+        "VRM-045",
+        "VRM-046",
+        "VRM-047",
+        "VRM-048",
+        "VRM-049",
+        "VRM-050",
+        "VRM-051"
+      ],
+      "mapped": [
+        {
+          "id": "VRM-045",
+          "classification": "PASS_PROVEN"
+        },
+        {
+          "id": "VRM-046",
+          "classification": "PASS_PROVEN"
+        },
+        {
+          "id": "VRM-047",
+          "classification": "PASS_PROVEN"
+        },
+        {
+          "id": "VRM-048",
+          "classification": "PASS_PROVEN"
+        },
+        {
+          "id": "VRM-049",
+          "classification": "PASS_PROVEN"
+        },
+        {
+          "id": "VRM-050",
+          "classification": "PASS_PROVEN"
+        },
+        {
+          "id": "VRM-051",
+          "classification": "PASS_PROVEN"
+        }
+      ],
+      "omissions": 0
+    },
+    {
+      "id": "PAULA-2026-09-30-ADMIN-REVIEW",
+      "source": "CXORBIA_PRE_I4_HUMAN_VISUAL_ADMIN_REVIEW_LOCK_2026-09-30.json",
+      "findingIds": [
+        "VRM-089",
+        "VRM-090",
+        "VRM-091",
+        "VRM-092",
+        "VRM-093",
+        "VRM-094",
+        "VRM-095"
+      ],
+      "mapped": [
+        {
+          "id": "VRM-089",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-090",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-091",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-092",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-093",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-094",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-095",
+          "classification": "OPEN_BLOCKER"
+        }
+      ],
+      "omissions": 0
+    },
+    {
+      "id": "PAULA-2026-09-30-SHOPPER-REVIEW",
+      "source": "CXORBIA_PRE_I4_HUMAN_VISUAL_SHOPPER_AND_LIVE_HR_LOCK_2026-09-30.json",
+      "findingIds": [
+        "VRM-096",
+        "VRM-097",
+        "VRM-098",
+        "VRM-099",
+        "VRM-100",
+        "VRM-101",
+        "VRM-102",
+        "VRM-103",
+        "VRM-104"
+      ],
+      "mapped": [
+        {
+          "id": "VRM-096",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-097",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-098",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-099",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-100",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-101",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-102",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-103",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-104",
+          "classification": "OPEN_BLOCKER"
+        }
+      ],
+      "omissions": 0
+    },
+    {
+      "id": "PAULA-2026-10-01-SECOND-SHOPPER-REVIEW",
+      "source": "V193.visualAcceptance.newFindings",
+      "findingIds": [
+        "VRM-143",
+        "VRM-144",
+        "VRM-145",
+        "VRM-146",
+        "VRM-147",
+        "VRM-148",
+        "VRM-149",
+        "VRM-150",
+        "VRM-151"
+      ],
+      "mapped": [
+        {
+          "id": "VRM-143",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-144",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-145",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-146",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-147",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-148",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-149",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-150",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-151",
+          "classification": "OPEN_BLOCKER"
+        }
+      ],
+      "omissions": 0
+    },
+    {
+      "id": "PAULA-2026-10-02-CUMULATIVE-FORENSIC-REVIEW",
+      "source": "V193 + Run946 predecessor human/admin/shopper observations",
+      "findingIds": [
+        "VRM-165",
+        "VRM-166",
+        "VRM-167",
+        "VRM-168",
+        "VRM-169",
+        "VRM-170",
+        "VRM-171",
+        "VRM-172",
+        "VRM-173",
+        "VRM-174",
+        "VRM-175",
+        "VRM-176",
+        "VRM-177",
+        "VRM-178",
+        "VRM-179",
+        "VRM-180"
+      ],
+      "mapped": [
+        {
+          "id": "VRM-165",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-166",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-167",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-168",
+          "classification": "PASS_PROVEN"
+        },
+        {
+          "id": "VRM-169",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-170",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-171",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-172",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-173",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-174",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-175",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-176",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-177",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-178",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-179",
+          "classification": "OPEN_BLOCKER"
+        },
+        {
+          "id": "VRM-180",
+          "classification": "OPEN_BLOCKER"
+        }
+      ],
+      "omissions": 0
+    },
+    {
+      "id": "TECHNICAL-FOLLOWUPS-2026-10-02-03",
+      "source": "V193 current technical continuation",
+      "findingIds": [
+        "VRM-181",
+        "VRM-182",
+        "VRM-183",
+        "VRM-184",
+        "VRM-185",
+        "VRM-186"
+      ],
+      "mapped": [
+        {
+          "id": "VRM-181",
+          "classification": "PASS_PROVEN"
+        },
+        {
+          "id": "VRM-182",
+          "classification": "PASS_PROVEN"
+        },
+        {
+          "id": "VRM-183",
+          "classification": "PASS_PROVEN"
+        },
+        {
+          "id": "VRM-184",
+          "classification": "PASS_PROVEN"
+        },
+        {
+          "id": "VRM-185",
+          "classification": "PASS_PROVEN"
+        },
+        {
+          "id": "VRM-186",
+          "classification": "PASS_PROVEN"
+        }
+      ],
+      "omissions": 0
+    }
+  ],
+  "humanVisualApprovalAllowed": false,
+  "i4Allowed": false,
+  "production": "DO_NOT_TOUCH",
+  "exactNextAction": "Use the Admin full-administration matrix plus this closure matrix to append new current-candidate blocker findings and execute owner-scoped remediation inside I3. Prioritize user-visible project resource/document editing and shared browser-local truth patterns, while retaining all existing OPEN_BLOCKER findings. Re-run only affected source/owner tests, then one deterministic DEV materialization and full cumulative reproof after the bounded product package is complete."
+}
