@@ -177,11 +177,18 @@
       :null;
     const visitIndexes={docId:uniqueIndex(protectedVisits,v=>v&&v.__docId),id:uniqueIndex(protectedVisits,v=>v&&(v.visitId||v.id)),hrRow:uniqueIndex(protectedVisits,v=>v&&v.hrRowId),coord:uniqueIndex(protectedVisits,sourceCoord)};
     const relation=new Map(),protectedVisitToHrVisit=new Map(),matches=new Map(),visitConflicts=[];
+    /* VRM-168 P0: a transient visit-level HR shopper token can be absent from baseShoppers while
+       the exact matched durable visit already carries the canonical shopper id. Pending platform
+       assignment must remain conflict-safe when that HR identity exists, but when it is absent
+       the exact one-to-one visit relation is the only stable crosswalk and must be promoted. */
+    const baseShopperIds=new Set(baseShoppers.flatMap(s=>[str(s&&s.id),str(s&&s.shopperId)]).filter(Boolean));
     for(const base of baseVisits){
       const match=findProtectedVisit(base,visitIndexes),key=visitKey(base);
       if(match.conflict){visitConflicts.push(key);continue;}if(!match.row)continue;
       match.row.__durableAuthority=match.authority||null;
-      matches.set(key,match.row);const pid=str(match.row.visitId||match.row.id);if(pid)protectedVisitToHrVisit.set(pid,str(base.visitId||base.id));if(!pendingPlatformAssignment(match.row))addRelation(relation,base.shopperId,match.row.shopperId);
+      matches.set(key,match.row);const pid=str(match.row.visitId||match.row.id);if(pid)protectedVisitToHrVisit.set(pid,str(base.visitId||base.id));
+      const liveShopperId=str(base&&base.shopperId),pendingPlatform=pendingPlatformAssignment(match.row);
+      if(!pendingPlatform||(liveShopperId&&!baseShopperIds.has(liveShopperId)))addRelation(relation,liveShopperId,match.row.shopperId);
     }
     const profilesById=uniqueIndex(profiles,p=>p.id),profilesByAlias=new Map();
     for(const p of profiles){for(const alias of arr(p.exactAliases)){if(!profilesByAlias.has(alias))profilesByAlias.set(alias,[]);profilesByAlias.get(alias).push(p);}}

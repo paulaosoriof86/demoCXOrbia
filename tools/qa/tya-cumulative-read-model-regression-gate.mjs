@@ -42,12 +42,58 @@ assert('three_reapply_stable_shopper_ids',JSON.stringify(r1.shoppers.map(v=>v.id
 assert('hr_operational_state_preserved',r1.visits.every((v,i)=>v.estado===visits[i].estado),null);
 assert('profile_overlay_visible',r1.shoppers.some(s=>s.username==='user1'&&s.password==='pass1'),null);
 
+let vrm168Focal=null;
+if(/tya-cumulative-read-model-v2\.js$/.test(engineFile)){
+  const focalHr={
+    projects:[{id:'cinepolis-2026-10',periodKey:'2026-10',projectId:'cinepolis'}],
+    currentProjectId:'cinepolis',currentPeriodId:'cinepolis-2026-10',sourceRevision:'vrm168-rev',
+    shoppers:[],
+    visits:[{
+      id:'hr_2026-10_gt_6_7cf9d422f8',visitId:'hr_2026-10_gt_6_7cf9d422f8',hrRowId:'OCTUBRE 26!6',
+      sourceTab:'OCTUBRE 26',sourceRow:6,projectId:'cinepolis',periodId:'cinepolis-2026-10',periodKey:'2026-10',
+      shopperId:'s3',estado:'asignada',canonicalFacets:{assigned:true,available:false,scheduled:false,realized:false,questionnaire:false,submitted:false,cancelled:false}
+    }],
+    posts:[]
+  };
+  const focalProtected={
+    shoppers:[{id:'shopper_gt_1440137b73',shopperId:'shopper_gt_1440137b73',nombre:'Shopper focal',projectIds:['cinepolis']}],
+    visits:[{
+      id:'OCTUBRE 26!6',visitId:'OCTUBRE 26!6',hrRowId:'OCTUBRE 26!6',sourceTab:'OCTUBRE 26',sourceRow:6,
+      projectId:'cinepolis',periodId:'cinepolis-2026-10',shopperId:'shopper_gt_1440137b73',estado:'asignada',version:3,
+      assignmentSource:'platform',assignmentSyncStatus:'pending_hr',canonicalFacets:{assigned:true,available:false}
+    }],
+    postulations:[],applications:[],certifications:[],liquidations:[]
+  };
+  const focalResult=engine.compose({hr:focalHr,protectedPayload:focalProtected});
+  const focalVisit=focalResult.visits.find(v=>v.hrRowId==='OCTUBRE 26!6');
+
+  const conflictHr=JSON.parse(JSON.stringify(focalHr));
+  conflictHr.shoppers=[{id:'s3',shopperId:'s3',nombre:'Existing HR shopper'}];
+  const conflictResult=engine.compose({hr:conflictHr,protectedPayload:focalProtected});
+  const conflictVisit=conflictResult.visits.find(v=>v.hrRowId==='OCTUBRE 26!6');
+
+  vrm168Focal={
+    canonicalProjectedShopperId:focalVisit?.shopperId||null,
+    canonicalReviewRequired:focalVisit?.assignmentReviewRequired===true,
+    canonicalIdentityMap:focalResult.identityMap||{},
+    conflictProjectedShopperId:conflictVisit?.shopperId||null,
+    conflictReviewRequired:conflictVisit?.assignmentReviewRequired===true,
+    conflictReason:conflictVisit?.assignmentReviewReason||null
+  };
+  assert('vrm168_missing_transient_identity_promotes_exact_visit_crosswalk',
+    vrm168Focal.canonicalProjectedShopperId==='shopper_gt_1440137b73'&&vrm168Focal.canonicalReviewRequired===false,
+    vrm168Focal);
+  assert('vrm168_existing_hr_identity_preserves_conflict_review',
+    vrm168Focal.conflictProjectedShopperId==='s3'&&vrm168Focal.conflictReviewRequired===true&&vrm168Focal.conflictReason==='hr_platform_assignment_conflict',
+    vrm168Focal);
+}
+
 const report={
   schemaVersion:'cxorbia.c6.stability-regression-gate.v1',
   decision:assertions.every(a=>a.ok)?'PASS_C6_STABLE_COMPOSER_3X_IDEMPOTENCE':'FAIL_C6_STABLE_COMPOSER_3X_IDEMPOTENCE',
   engineVersion:engine.version,
   baseline:{periods:14,visits:616,shoppers:208,protectedProfiles:120,protectedVisits:616},
-  r1:r1.diagnostics,r2:r2.diagnostics,r3:r3.diagnostics,assertions,
+  r1:r1.diagnostics,r2:r2.diagnostics,r3:r3.diagnostics,vrm168Focal,assertions,
   safety:{providerWrites:0,firestoreWrites:0,authWrites:0,rulesWrites:0,storageWrites:0,hrWrites:0,deploys:0,production:false,merge:false}
 };
 console.log(JSON.stringify(report,null,2));
