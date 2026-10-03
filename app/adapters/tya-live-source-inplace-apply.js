@@ -32,6 +32,8 @@ window.CX = window.CX || {};
       quincenas:safeArray(identity.projectConfig.quincenas).length?safeArray(identity.projectConfig.quincenas):['Quincena 1','Quincena 2'],canales:['Visita presencial'],formato:identity.projectConfig.formato||'Mystery shopping',ronda:p.label,periodicidad:identity.projectConfig.periodicidad||null,periodoCumpl:identity.projectConfig.periodoCumpl||null,
       restriccion:'Reglas Q1/Q2, franja y visita previa configurables por proyecto.',
       cuestionario:Object.assign({modo:'interna',url:'',label:'Cuestionario del proyecto'},identity.projectConfig.cuestionario||{}),
+      questionnaireProgram:(identity.projectConfig.questionnaireProgramsByPeriod&&identity.projectConfig.questionnaireProgramsByPeriod[periodId(identity.projectId,p.key)])||null,
+      questionnaireProgramAuthority:(identity.projectConfig.questionnaireProgramsByPeriod&&identity.projectConfig.questionnaireProgramsByPeriod[periodId(identity.projectId,p.key)])?'firestore_project_config':null,
       pago:{logica:'Pagos y liquidaciones se controlan por submitido y cruce financiero.',diasPago:null,moneda:'local'},
       hrMap:{fuente:'HR TyA multihoja source-safe',cols:['País','ID cinema','Shopping','Quincena','Franja','Disponible desde','Agendada','Realizada','Cuestionario','Submitido','Liquidación']},
       geoloc:false,conocimiento:p.conocimiento||p.projectSummary||p.summary||'',

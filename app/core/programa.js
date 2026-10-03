@@ -12,6 +12,24 @@ window.CX = window.CX || {};
 (function(){
   let _seq = Date.now();
   const uid = (pfx)=> (pfx||'id')+'-'+(++_seq).toString(36);
+  const str=v=>String(v==null?'':v).trim();
+  const clone=v=>JSON.parse(JSON.stringify(v));
+  const periodRow=pid=>{
+    const id=str(pid||CX.data?.currentPeriodId);
+    return (CX.data?.projects||[]).find(x=>str(x?.id||x?.periodId)===id)||null;
+  };
+  const rootProjectRecord=pid=>{
+    const period=periodRow(pid),projectId=str(period?.rootProjectId||period?.projectId||CX.data?.currentProjectId);
+    if(!projectId)return null;
+    return (CX.data?.__backendAllProjectRecords||[]).find(x=>str(x?.id||x?.projectId)===projectId)||null;
+  };
+  const durableProgram=pid=>{
+    const id=str(pid||CX.data?.currentPeriodId),period=periodRow(id);
+    if(period?.questionnaireProgram&&typeof period.questionnaireProgram==='object')return clone(period.questionnaireProgram);
+    const root=rootProjectRecord(id),map=root?.questionnaireProgramsByPeriod;
+    if(map&&typeof map==='object'&&map[id]&&typeof map[id]==='object')return clone(map[id]);
+    return null;
+  };
 
   /* secciones canónicas por defecto (pesos suman 100; preguntas suman 100 por sección) */
   function defaultSections(){
@@ -60,34 +78,53 @@ window.CX = window.CX || {};
     evidLabel(id){ const e=EVID.find(x=>x.id===id); return e?e.label:'Sin evidencia'; },
     evidIcon(id){ const e=EVID.find(x=>x.id===id); return e?e.icon:'—'; },
 
-    _ls(pid){ return 'cx_programa_'+pid; },
+    _cache:Object.create(null),
     _migrate(prog){
       // garantiza ids y estructura
-      if(!prog.versions) prog=defaultProgram();
+      if(!prog||!prog.versions) prog=defaultProgram();
       prog.versions.forEach(v=>{ if(!v.id)v.id=uid('ver'); v.sections=(v.sections||[]).map(s=>{
         if(!s.id)s.id=uid('sec'); s.questions=(s.questions||[]).map(q=>({id:q.id||uid('q'),name:q.name||q.t||'Pregunta',tipo:q.tipo||'Escala 1–5',weight:+q.weight||+q.peso||0,req:!!q.req,critico:!!q.critico,evidencia:q.evidencia||'none',evidNota:q.evidNota||''}));
         return s; }); });
       if(!prog.activeId||!prog.versions.some(v=>v.id===prog.activeId)) prog.activeId=prog.versions[0].id;
       return prog;
     },
-
+    authority(pid){
+      const id=str(pid||CX.data?.currentPeriodId),durable=durableProgram(id);
+      return {periodId:id,source:durable?'firestore_project_config':'default_template',durable:!!durable,localStorageTruth:false};
+    },
     get(pid){
-      pid = pid || CX.data.currentPeriodId;
-      try{ const s=JSON.parse(localStorage.getItem(this._ls(pid))||'null'); if(s) return this._migrate(s); }catch(e){}
+      const id=str(pid||CX.data?.currentPeriodId),durable=durableProgram(id);
+      if(durable){
+        const normalized=this._migrate(durable);this._cache[id]=clone(normalized);return clone(normalized);
+      }
+      if(this._cache[id])return this._migrate(clone(this._cache[id]));
       return defaultProgram();
     },
-    save(pid, prog){ pid=pid||CX.data.currentPeriodId; try{ localStorage.setItem(this._ls(pid), JSON.stringify(prog)); }catch(e){} CX.bus&&CX.bus.emit('programa'); },
-    reset(pid){ try{ localStorage.removeItem(this._ls(pid)); }catch(e){} CX.bus&&CX.bus.emit('programa'); },
+    async save(pid, prog){
+      const id=str(pid||CX.data?.currentPeriodId),normalized=this._migrate(clone(prog||defaultProgram()));
+      if(!(CX.connectedAdminConfig?.enabled?.()&&typeof CX.connectedAdminConfig.updateQuestionnaireProgram==='function')){
+        this._cache[id]=clone(normalized);
+        CX.bus&&CX.bus.emit('programa');
+        return {ok:false,status:'draft_only',committed:false,providerAck:false,successUiAllowed:false,localMutation:true,localStorageWrite:false,code:'QUESTIONNAIRE_PROGRAM_DURABLE_AUTHORITY_REQUIRED'};
+      }
+      const ack=await CX.connectedAdminConfig.updateQuestionnaireProgram(id,normalized);
+      if(!(ack?.ok===true&&ack?.committed===true&&ack?.providerAck===true&&ack?.successUiAllowed===true&&ack?.durableReadback===true))throw new Error(String(ack?.code||'QUESTIONNAIRE_PROGRAM_PROVIDER_ACK_REQUIRED'));
+      this._cache[id]=clone(ack.questionnaireProgram||normalized);
+      CX.bus&&CX.bus.emit('programa');
+      return ack;
+    },
+    set(pid,prog){ return this.save(pid,prog); },
+    reset(pid){ return this.save(pid,defaultProgram()); },
 
     /* versión activa y sus secciones (lo que consumen shopper y portal cliente) */
     activeVersion(pid){ const p=this.get(pid); return p.versions.find(v=>v.id===p.activeId)||p.versions[0]; },
     sections(pid){ return this.activeVersion(pid).sections; },
     versions(pid){ return this.get(pid).versions; },
 
-    addVersion(pid, name, criterio){ const p=this.get(pid); const v={id:uid('ver'), name:name||'Nueva versión', criterio:criterio||'General', aplica:'', sections:defaultSections()}; p.versions.push(v); p.activeId=v.id; this.save(pid,p); return v; },
-    duplicateVersion(pid, vid){ const p=this.get(pid); const src=p.versions.find(v=>v.id===vid); if(!src)return; const c=JSON.parse(JSON.stringify(src)); c.id=uid('ver'); c.name=src.name+' (copia)'; c.sections.forEach(s=>{s.id=uid('sec');s.questions.forEach(q=>q.id=uid('q'));}); p.versions.push(c); p.activeId=c.id; this.save(pid,p); return c; },
-    removeVersion(pid, vid){ const p=this.get(pid); if(p.versions.length<=1)return false; p.versions=p.versions.filter(v=>v.id!==vid); if(p.activeId===vid)p.activeId=p.versions[0].id; this.save(pid,p); return true; },
-    setActive(pid, vid){ const p=this.get(pid); p.activeId=vid; this.save(pid,p); },
+    async addVersion(pid, name, criterio){ const p=this.get(pid); const v={id:uid('ver'), name:name||'Nueva versión', criterio:criterio||'General', aplica:'', sections:defaultSections()}; p.versions.push(v); p.activeId=v.id; await this.save(pid,p); return v; },
+    async duplicateVersion(pid, vid){ const p=this.get(pid); const src=p.versions.find(v=>v.id===vid); if(!src)return null; const c=clone(src); c.id=uid('ver'); c.name=src.name+' (copia)'; c.sections.forEach(s=>{s.id=uid('sec');s.questions.forEach(q=>q.id=uid('q'));}); p.versions.push(c); p.activeId=c.id; await this.save(pid,p); return c; },
+    async removeVersion(pid, vid){ const p=this.get(pid); if(p.versions.length<=1)return false; p.versions=p.versions.filter(v=>v.id!==vid); if(p.activeId===vid)p.activeId=p.versions[0].id; await this.save(pid,p); return true; },
+    async setActive(pid, vid){ const p=this.get(pid); p.activeId=vid; await this.save(pid,p); return true; },
 
     /* validación de pesos */
     validate(sections){

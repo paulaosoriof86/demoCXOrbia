@@ -64,9 +64,9 @@ CX.module('cuestionarios', ({data,ui})=>{
         const crit=ov.querySelector('#aiCrit').value;
         if(mode==='replace') ver().sections=secs;
         else { const nv={id:CX.programa.uid('v'),name:(aplica||'Versión IA'),criteria:crit,aplica,sections:secs}; _qProg.versions.push(nv); _qProg.activeId=nv.id; }
-        CX.programa.set(p.id,_qProg); close(); draw();
-        ui.modal('✅ Set-up generado', `
-          <p style="font-size:13px;color:var(--t2);margin-bottom:14px">La IA propuso <b>${secs.length} secciones</b> para <b>${aplica||'todas las sucursales'}</b>. Revisa y ajusta en el editor.</p>
+        close(); draw();
+        ui.modal('✅ Set-up generado como borrador', `
+          <p style="font-size:13px;color:var(--t2);margin-bottom:14px">La IA propuso <b>${secs.length} secciones</b> para <b>${aplica||'todas las sucursales'}</b>. Revisa y ajusta en el editor; pulsa <b>Guardar programa</b> para confirmar en el proveedor.</p>
           <div style="margin-bottom:12px"><b style="font-size:12.5px">Resumen:</b>
             <ul style="margin:6px 0 0 16px;font-size:12.5px;color:var(--t2)">${secs.map(s=>`<li><b>${s.name}</b> (${s.weight}%) · ${s.questions.length} preguntas</li>`).join('')}</ul>
           </div>
@@ -84,8 +84,8 @@ CX.module('cuestionarios', ({data,ui})=>{
             {onMount:(ov3,cl3)=>ov3.querySelector('#refGo').addEventListener('click',()=>{
               const instr=ov3.querySelector('#refTxt').value||'';
               const newSecs=aiGenerate(instr+' '+secs.map(s=>s.name).join(' '));
-              ver().sections=newSecs; CX.programa.set(p.id,_qProg); cl3(); draw();
-              ui.toast('Set-up refinado y aplicado','ok');
+              ver().sections=newSecs; cl3(); draw();
+              ui.toast('Borrador refinado · guarda el programa para confirmar','',3600);
             })});
           });
         }});
@@ -139,7 +139,7 @@ CX.module('cuestionarios', ({data,ui})=>{
     host.innerHTML=`
     ${ui.ph('Cuestionarios y Programa', p.name+' · secciones y preguntas ponderadas · versiones por criterio')}
     <div class="card card-p" style="margin-bottom:14px;background:var(--brand-light);border-color:#cfe6f7">
-      <div style="font-size:12.5px;color:var(--brand-dark)">📌 <b>Fuente única.</b> Lo que definas aquí calcula el <b>score del shopper</b> al llenar el cuestionario y se refleja en el <b>Portal del Cliente</b> (mismas secciones y pesos).</div>
+      <div style="font-size:12.5px;color:var(--brand-dark)">📌 <b>Fuente durable del proyecto.</b> Lo que confirmes con <b>Guardar programa</b> se persiste con ACK del proveedor y alimenta al <b>shopper</b> y al <b>Portal del Cliente</b> con las mismas secciones y pesos.</div>
     </div>
     <div class="flex wrap" style="gap:7px;margin-bottom:14px;align-items:center">
       <span style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">Versión</span>
@@ -173,22 +173,30 @@ CX.module('cuestionarios', ({data,ui})=>{
 
   const bind=()=>{
     host.querySelectorAll('[data-ver]').forEach(b=>b.addEventListener('click',()=>{sync();_qProg.activeId=b.dataset.ver;draw();}));
-    host.querySelector('#addVer').addEventListener('click',()=>{sync();const v={id:CX.programa.uid('ver'),name:'Versión '+(_qProg.versions.length+1),criterio:'Por sucursal',aplica:'',sections:JSON.parse(JSON.stringify(ver().sections))};v.sections.forEach(s=>{s.id=CX.programa.uid('sec');s.questions.forEach(q=>q.id=CX.programa.uid('q'));});_qProg.versions.push(v);_qProg.activeId=v.id;draw();ui.toast('Versión creada','ok');});
-    const dv=host.querySelector('#delVer'); if(dv)dv.addEventListener('click',()=>{_qProg.versions=_qProg.versions.filter(x=>x.id!==_qProg.activeId);_qProg.activeId=_qProg.versions[0].id;draw();ui.toast('Versión eliminada','');});
-    host.querySelector('#dupVer').addEventListener('click',()=>{sync();const src=ver();const c=JSON.parse(JSON.stringify(src));c.id=CX.programa.uid('ver');c.name=src.name+' (copia)';c.sections.forEach(s=>{s.id=CX.programa.uid('sec');s.questions.forEach(q=>q.id=CX.programa.uid('q'));});_qProg.versions.push(c);_qProg.activeId=c.id;draw();ui.toast('Versión duplicada','ok');});
+    host.querySelector('#addVer').addEventListener('click',()=>{sync();const v={id:CX.programa.uid('ver'),name:'Versión '+(_qProg.versions.length+1),criterio:'Por sucursal',aplica:'',sections:JSON.parse(JSON.stringify(ver().sections))};v.sections.forEach(s=>{s.id=CX.programa.uid('sec');s.questions.forEach(q=>q.id=CX.programa.uid('q'));});_qProg.versions.push(v);_qProg.activeId=v.id;draw();ui.toast('Versión agregada al borrador · guarda para confirmar','',3200);});
+    const dv=host.querySelector('#delVer'); if(dv)dv.addEventListener('click',()=>{_qProg.versions=_qProg.versions.filter(x=>x.id!==_qProg.activeId);_qProg.activeId=_qProg.versions[0].id;draw();ui.toast('Versión retirada del borrador · guarda para confirmar','',3200);});
+    host.querySelector('#dupVer').addEventListener('click',()=>{sync();const src=ver();const c=JSON.parse(JSON.stringify(src));c.id=CX.programa.uid('ver');c.name=src.name+' (copia)';c.sections.forEach(s=>{s.id=CX.programa.uid('sec');s.questions.forEach(q=>q.id=CX.programa.uid('q'));});_qProg.versions.push(c);_qProg.activeId=c.id;draw();ui.toast('Versión duplicada en borrador · guarda para confirmar','',3200);});
     host.querySelector('#addSec').addEventListener('click',()=>{sync();ver().sections.push({id:CX.programa.uid('sec'),name:'Nueva sección',weight:0,questions:[]});draw();});
     host.querySelector('#impBtn').addEventListener('click',()=>{sync();importModal();});
     host.querySelector('#aiBtn').addEventListener('click',()=>{sync();aiModal();});
     host.querySelectorAll('[data-dels]').forEach(b=>b.addEventListener('click',()=>{sync();const v=ver();v.sections=v.sections.filter(s=>s.id!==b.dataset.dels);draw();}));
     host.querySelectorAll('[data-addq]').forEach(b=>b.addEventListener('click',()=>{sync();const s=ver().sections.find(x=>x.id===b.dataset.addq);s.questions.push({id:CX.programa.uid('q'),name:'Nueva pregunta',tipo:'Escala 1–5',weight:0,req:false,critico:false});draw();}));
     host.querySelectorAll('[data-delq]').forEach(b=>b.addEventListener('click',()=>{sync();const[sid,qid]=b.dataset.delq.split('|');const s=ver().sections.find(x=>x.id===sid);s.questions=s.questions.filter(q=>q.id!==qid);draw();}));
-    host.querySelector('#saveProg').addEventListener('click',()=>{
-      sync(); const v=ver();
+    host.querySelector('#saveProg').addEventListener('click',async()=>{
+      sync(); const v=ver(),btn=host.querySelector('#saveProg');
       v.name=host.querySelector('#verName').value||v.name; v.criterio=host.querySelector('#verCrit').value; v.aplica=host.querySelector('#verAplica').value;
       const val=CX.programa.validate(v.sections);
-      CX.programa.save(p.id,_qProg);
-      ui.toast(val.sectionsOk&&val.allQOk?'Programa guardado · aplica a shopper y portal del cliente':'Guardado (revisa pesos: deben sumar 100%)', val.sectionsOk&&val.allQOk?'ok':'a',3600);
-      draw();
+      btn.disabled=true;btn.textContent='Guardando…';
+      try{
+        const ack=await CX.programa.save(p.id,_qProg);
+        if(!(ack?.ok===true&&ack?.committed===true&&ack?.providerAck===true&&ack?.successUiAllowed===true&&ack?.durableReadback===true))throw new Error(String(ack?.code||'QUESTIONNAIRE_PROGRAM_PROVIDER_ACK_REQUIRED'));
+        _qProg=JSON.parse(JSON.stringify(CX.programa.get(p.id)));
+        ui.toast(val.sectionsOk&&val.allQOk?'Programa guardado y confirmado por el proveedor':'Programa confirmado · revisa pesos: deben sumar 100%', val.sectionsOk&&val.allQOk?'ok':'a',4200);
+        draw();
+      }catch(e){
+        ui.toast('Programa no guardado: '+String(e?.message||e),'warn',5200);
+        btn.disabled=false;btn.textContent='💾 Guardar programa';
+      }
     });
   };
   draw();
@@ -199,6 +207,8 @@ CX.module('cuestionarios', ({data,ui})=>{
 const _cfgConnectedAuthority=()=>!!(CX.canonicalTenantAuthority&&CX.canonicalTenantAuthority()&&window.CX_PROTECTED_DEV_RUNTIME===true&&CX.BACKEND?.enableCommandWrites===true);
 const _cfgEsc=v=>String(v==null?'':v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const _cfgOpId=pfx=>(pfx||'cfg')+'-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10);
+const _cfgClone=v=>JSON.parse(JSON.stringify(v));
+const _cfgStable=v=>Array.isArray(v)?v.map(_cfgStable):(v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,_cfgStable(v[k])])):v);
 async function _cfgUserAdminRequest(suffix,method,body){
   const tenant=String(window.CX_TENANT_RUNTIME_CONFIG?.tenantId||CX.BRAND?.id||'').trim();
   const user=window.firebase?.auth?.().currentUser;if(!tenant||!user)throw new Error('AUTHORITY_USER_ADMIN_AUTH_REQUIRED');
@@ -233,6 +243,23 @@ CX.connectedAdminConfig=Object.freeze({
     const got=[...new Set((rb?.countries||[]).map(String))].sort(),want=nextCountries.slice().sort();
     if(JSON.stringify(got)!==JSON.stringify(want))throw new Error('PROJECT_CONFIG_READBACK_MISMATCH');
     return {ok:true,providerAck:true,projectId:id,countries:got,version:rb?.version,localStorageWrite:false};
+  },
+  async updateQuestionnaireProgram(periodId,program){
+    if(!_cfgConnectedAuthority())throw new Error('QUESTIONNAIRE_PROGRAM_CONNECTED_AUTHORITY_REQUIRED');
+    const pid=String(periodId||CX.data?.currentPeriodId||'').trim();if(!pid)throw new Error('QUESTIONNAIRE_PROGRAM_PERIOD_REQUIRED');
+    const period=(CX.data?.projects||[]).find(x=>String(x.id||x.periodId||'')===pid)||CX.data?.period?.()||{};
+    const id=String(period.rootProjectId||period.projectId||CX.data?.currentProjectId||'').trim();if(!id)throw new Error('QUESTIONNAIRE_PROGRAM_PROJECT_REQUIRED');
+    const all=CX.data?.__backendAllProjectRecords||[],current=all.find(x=>String(x.id||x.projectId||'')===id);if(!current)throw new Error('QUESTIONNAIRE_PROGRAM_REGISTRY_RECORD_REQUIRED');
+    const nextPrograms=_cfgClone(current.questionnaireProgramsByPeriod||{});nextPrograms[pid]=_cfgClone(program);
+    const patch={name:current.name,countries:current.countries,currency:current.currency||current.currencies||{},operationalSource:current.operationalSource||current.routeSource,version:current.version,periodId:pid,status:current.status||'draft',questionnaireProgramsByPeriod:nextPrograms};
+    const ack=await CX.data.updateProject(id,patch,{ackAware:true,reason:'connected-config-questionnaire-program'});
+    if(!(ack&&ack.ok===true&&ack.committed===true&&ack.providerAck===true&&ack.successUiAllowed===true))throw new Error(String(ack?.code||'QUESTIONNAIRE_PROGRAM_PROVIDER_ACK_REQUIRED'));
+    if(CX.backend&&typeof CX.backend.refresh==='function')await CX.backend.refresh();
+    const refreshed=(CX.data?.__backendAllProjectRecords||[]).find(x=>String(x.id||x.projectId||'')===id);
+    const rb=refreshed?.questionnaireProgramsByPeriod?.[pid];
+    if(!rb||JSON.stringify(_cfgStable(rb))!==JSON.stringify(_cfgStable(program)))throw new Error('QUESTIONNAIRE_PROGRAM_DURABLE_READBACK_MISMATCH');
+    const livePeriod=(CX.data?.projects||[]).find(x=>String(x.id||x.periodId||'')===pid);if(livePeriod)livePeriod.questionnaireProgram=_cfgClone(rb);
+    return {ok:true,status:'committed',committed:true,providerAck:true,successUiAllowed:true,durableReadback:true,projectId:id,periodId:pid,version:refreshed?.version,questionnaireProgram:_cfgClone(rb),localMutation:false,localStorageWrite:false};
   }
 });
 
