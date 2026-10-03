@@ -6634,6 +6634,10 @@ jobs:
           node tools/qa/cxorbia-vrm154-156-frontend-source-contract.mjs > "$FOCAL_OUT/source-contract.json"
           test "$(jq -r '.decision' "$FOCAL_OUT/source-contract.json")" = "PASS_VRM154_156_FRONTEND_SOURCE_CONTRACT"
           node --test backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs > "$FOCAL_OUT/finance-regression.log"
+          node tools/qa/tya-cumulative-read-model-regression-gate.mjs app/adapters/tya-cumulative-read-model-v2.js > "$FOCAL_OUT/vrm168-regression.json"
+          test "$(jq -r '.decision' "$FOCAL_OUT/vrm168-regression.json")" = "PASS_C6_STABLE_COMPOSER_3X_IDEMPOTENCE"
+          test "$(jq -r '[.assertions[]|select(.name=="vrm168_missing_transient_identity_promotes_exact_visit_crosswalk")][0].ok' "$FOCAL_OUT/vrm168-regression.json")" = "true"
+          test "$(jq -r '[.assertions[]|select(.name=="vrm168_existing_hr_identity_preserves_conflict_review")][0].ok' "$FOCAL_OUT/vrm168-regression.json")" = "true"
       - name: step
         run: npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest >/dev/null 2>&1
       - name: step

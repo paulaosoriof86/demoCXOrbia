@@ -2,16 +2,16 @@
   "schema": "cxorbia.recovery.canonical-module-registry.v1",
   "frozenAt": "2026-09-18T09:57:00-06:00",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
-  "state": "HOLD_V190_LIVE_REPROOF_REQUIRED",
+  "state": "HOLD_V190_DEV_MATERIALIZATION_REQUIRED",
   "production": "DO_NOT_TOUCH",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "branchHeadAtFreeze": "26c2870ce3ff48193de641a29cc23196a2dc2770",
   "comparisonCandidate": {
-    "sourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
-    "treeSha": "2e72bf1906a582910ac2f82460f2df493ba40b41",
-    "predecessorSha": "542fb96630d2068993d03ae86e3d3299f5386251",
+    "sourceSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
+    "treeSha": "e715b9a55ed35f62037e1b82a183a32ff8d3ebcd",
+    "predecessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
     "promotionEligible": true,
-    "promotionScope": "CANONICAL_PRODUCT_SOURCE_PENDING_DEV_LIVE_REPROOF"
+    "promotionScope": "VRM168_P0_PROVEN_FOCAL_SUCCESSOR"
   },
   "certificationEvidence": {
     "run188": {
@@ -267,12 +267,10 @@
       "priorMatrixClassification": "MATCH",
       "priorAuthority": "RECOVERY_SUCCESSOR_CHAIN: F9 accepted -> terminal b949 certified predecessor -> canonical-convergence fixes -> f836 multiproject source",
       "priorSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
-      "forensicStatus": "MATCH",
-      "adjudication": "V190_DEV_LIVE_REPROOF_REQUIRED",
-      "currentSourceCommit": "26c2870ce3ff48193de641a29cc23196a2dc2770",
-      "liveReproofState": "PENDING",
-      "servedRuntimeRevision": "cxorbia-live-hr-dev-00249-pqh",
-      "servedHostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30"
+      "forensicStatus": "COMPOSED_NOT_DEPLOYED",
+      "adjudication": "VRM168_EXACT_DEV_MATERIALIZATION_REQUIRED",
+      "currentSourceCommit": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
+      "liveReproofState": "NOT_MATERIALIZED"
     },
     {
       "domain": "certifications",
@@ -499,8 +497,8 @@
       "priorSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "forensicStatus": "MATCH",
       "adjudication": "V190_DEV_LIVE_REPROOF_REQUIRED",
-      "currentSourceCommit": "26c2870ce3ff48193de641a29cc23196a2dc2770",
-      "liveReproofState": "PENDING",
+      "currentSourceCommit": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
+      "liveReproofState": "DEPENDENCY_REPROOF_PENDING_AFTER_VRM168",
       "servedRuntimeRevision": "cxorbia-live-hr-dev-00249-pqh",
       "servedHostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30"
     },
@@ -519,8 +517,8 @@
       "priorSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "forensicStatus": "MATCH",
       "adjudication": "V190_DEV_LIVE_REPROOF_REQUIRED",
-      "currentSourceCommit": "26c2870ce3ff48193de641a29cc23196a2dc2770",
-      "liveReproofState": "PENDING",
+      "currentSourceCommit": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
+      "liveReproofState": "DEPENDENCY_REPROOF_PENDING_AFTER_VRM168",
       "servedRuntimeRevision": "cxorbia-live-hr-dev-00249-pqh",
       "servedHostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30"
     }
@@ -534,7 +532,7 @@
     "newOverlay": false,
     "production": false
   },
-  "nextExactAction": "Execute V190 same-DEV live acceptance readback. Product source and deployed fingerprints are frozen; no rebuild/deploy.",
+  "nextExactAction": "Run exactly one canonical Recovery DEV materialization for c0fe7f11, then same-version VRM-168 live reproof. Production remains blocked.",
   "v190SuccessorSourceReproof": {
     "decision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF",
     "sourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
@@ -548,6 +546,53 @@
     "production": false
   },
   "currentMaterialization": {
+    "state": "NOT_MATERIALIZED_FOR_VRM168_SUCCESSOR",
+    "sourceSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
+    "sourceTree": "e715b9a55ed35f62037e1b82a183a32ff8d3ebcd",
+    "predecessorDevSourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+    "builds": 0,
+    "runtimeDeploys": 0,
+    "hostingDeploys": 0,
+    "storageRulesDeploys": 0,
+    "production": false
+  },
+  "vrm168SuccessorSourceReproof": {
+    "decision": "PASS_VRM168_SUCCESSOR_SOURCE_STATIC_REPROOF",
+    "findingId": "VRM-168",
+    "classification": "MAPPING_FAILURE",
+    "severity": "P0",
+    "predecessorProductSourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+    "sourceSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
+    "sourceTreeAuthority": "e715b9a55ed35f62037e1b82a183a32ff8d3ebcd",
+    "productFilesChanged": [
+      "app/adapters/tya-cumulative-read-model-v2.js"
+    ],
+    "qaFilesChanged": [
+      "tools/qa/tya-cumulative-read-model-regression-gate.mjs"
+    ],
+    "checksPassed": 12,
+    "checksFailed": 0,
+    "focalRegression": {
+      "missingTransientIdentityMapsTo": "shopper_gt_1440137b73",
+      "existingHrIdentityConflictRemainsFailClosed": true,
+      "conflictReason": "hr_platform_assignment_conflict"
+    },
+    "latestFailedLiveReproof": {
+      "runId": 37080258505,
+      "jobId": 111079052603,
+      "artifactId": 11258119220,
+      "artifactDigest": "sha256:49e9efd7db62b8935bb1d16378bd3090a7828c6d660f1fe97b72928af54c07e2",
+      "hrRowId": "OCTUBRE 26!6",
+      "authenticatedShopperId": "shopper_gt_1440137b73",
+      "projectedBrowserShopperId": "s3",
+      "cardFound": false,
+      "scheduleButtonFound": false,
+      "providerAuthHealthy": true
+    },
+    "scope": "SOURCE_SYNTAX_STATIC_AND_PURE_COMPOSER_REGRESSION_NO_DEPLOY",
+    "production": false
+  },
+  "predecessorMaterialization": {
     "runId": 37073947232,
     "runNumber": 884,
     "jobId": 111059579758,

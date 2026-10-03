@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_V190_LIVE_REPROOF_REQUIRED",
+  "status": "HOLD_V190_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
-  "productTreeAuthority": "2e72bf1906a582910ac2f82460f2df493ba40b41",
-  "predecessorProductSourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
+  "productSourceSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
+  "productTreeAuthority": "e715b9a55ed35f62037e1b82a183a32ff8d3ebcd",
+  "predecessorProductSourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V190_2026-10-02.json",
-  "findingsLedgerExpectedGitBlob": "68b660b756e946b5ee9818d51db5bbaa003ad295",
+  "findingsLedgerExpectedGitBlob": "1d1e7971951edd882c87bdee5221b7c085181ef4",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "V190_SAME_DEV_LIVE_REPROOF_REQUIRED",
+  "activeBlocker": "VRM168_EXACT_DEV_MATERIALIZATION_REQUIRED",
   "nextFindingId": "VRM-181",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Execute same-source/same-DEV focal and transversal live reproof on runtime cxorbia-live-hr-dev-00249-pqh + Hosting ab360ebba8343d30. No rebuild/redeploy. Keep HUMAN_VISUAL_ACCEPTANCE=FAIL/HOLD until technical live reproof passes.",
+  "exactNextAction": "Run the canonical I3 materialization job exactly once for c0fe7f11/e715b9a5 in Recovery DEV. VRM-168 regression must PASS before deploy. Production remains DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -309,7 +309,7 @@
   },
   "technicalClosureReceipt": "CXORBIA_I3_TERMINAL_TECHNICAL_READY_2026-09-25.json",
   "i4": {
-    "status": "BLOCKED_PENDING_V190_LIVE_REPROOF",
+    "status": "BLOCKED_PENDING_VRM168_DEV_LIVE_REPROOF",
     "productionAuthorization": false,
     "authorized": false,
     "production": "DO_NOT_TOUCH"
@@ -409,26 +409,14 @@
     "production": false
   },
   "currentMaterialization": {
-    "runId": 37073947232,
-    "runNumber": 884,
-    "jobId": 111059579758,
-    "artifactId": 11255833588,
-    "artifactDigest": "sha256:47a6196f75afb3b6073b8add59062d7bfafc7fb2187feb192cc53ce8681d3500",
-    "decision": "PASS_V190_EXACT_DEV_MATERIALIZATION",
-    "sourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
-    "sourceTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
-    "runtimeRevision": "cxorbia-live-hr-dev-00249-pqh",
-    "runtimeDigest": "sha256:593c2a256f0b601173bfaff86dd22fc87e02e287a6eb900d3b6ff3cc9fda06ac",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790981125544000",
-    "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
-    "scenarioDimensionsProven": true,
-    "frontendBytesExact": true,
-    "builds": 1,
-    "runtimeDeploys": 1,
-    "hostingDeploys": 1,
-    "storageRulesDeploys": 1,
-    "state": "SEALED_V190_DEV_PENDING_LIVE_REPROOF",
+    "state": "NOT_MATERIALIZED_FOR_VRM168_SUCCESSOR",
+    "sourceSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
+    "sourceTree": "e715b9a55ed35f62037e1b82a183a32ff8d3ebcd",
+    "predecessorDevSourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+    "builds": 0,
+    "runtimeDeploys": 0,
+    "hostingDeploys": 0,
+    "storageRulesDeploys": 0,
     "production": false
   },
   "lastFocalAttempt": {
@@ -2683,38 +2671,98 @@
     "owner": "app/adapters/tya-cumulative-read-model-v2.js"
   },
   "predecessorMaterialization": {
-    "runId": 37037964831,
-    "runNumber": 865,
-    "jobId": 110940819725,
-    "artifactId": 11241342708,
-    "artifactDigest": "sha256:efc091dfa058cbf6381cd38aba1de7c14d789b3a74612afccc9a07b331d09bc1",
-    "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
-    "sourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
-    "sourceTree": "6a8b7ec768efbb9af73bcca836125471f7f49ae4",
-    "runtimeRevision": "cxorbia-live-hr-dev-00248-xcq",
-    "runtimeDigest": "sha256:3076d6651037a406e1bea1f6c2eea1b0ac83cba4ecd30831a06c8a4aaa450c01",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/3fd4df67f93e3725",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790960683923000",
+    "runId": 37073947232,
+    "runNumber": 884,
+    "jobId": 111059579758,
+    "artifactId": 11255833588,
+    "artifactDigest": "sha256:47a6196f75afb3b6073b8add59062d7bfafc7fb2187feb192cc53ce8681d3500",
+    "decision": "PASS_V190_EXACT_DEV_MATERIALIZATION",
+    "sourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+    "sourceTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
+    "runtimeRevision": "cxorbia-live-hr-dev-00249-pqh",
+    "runtimeDigest": "sha256:593c2a256f0b601173bfaff86dd22fc87e02e287a6eb900d3b6ff3cc9fda06ac",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790981125544000",
     "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
     "scenarioDimensionsProven": true,
     "frontendBytesExact": true,
     "builds": 1,
     "runtimeDeploys": 1,
     "hostingDeploys": 1,
-    "writes": 0,
-    "production": false,
-    "state": "SEALED_DEV_TECHNICAL_REPROOF_PASS_PENDING_PAULA_VISUAL"
+    "storageRulesDeploys": 1,
+    "state": "SEALED_V190_DEV_PENDING_LIVE_REPROOF",
+    "production": false
   },
   "sourceSuccessorReproof": {
-    "decision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF",
-    "sourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
-    "sourceTreeAuthority": "2e72bf1906a582910ac2f82460f2df493ba40b41",
-    "parentSha": "d97f6ce80b89cf6a36e046ff15cb25a046189a97",
-    "predecessorProductSourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
-    "deltaFiles": 18,
-    "checksPassed": 34,
+    "decision": "PASS_VRM168_SUCCESSOR_SOURCE_STATIC_REPROOF",
+    "findingId": "VRM-168",
+    "classification": "MAPPING_FAILURE",
+    "severity": "P0",
+    "predecessorProductSourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+    "sourceSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
+    "sourceTreeAuthority": "e715b9a55ed35f62037e1b82a183a32ff8d3ebcd",
+    "productFilesChanged": [
+      "app/adapters/tya-cumulative-read-model-v2.js"
+    ],
+    "qaFilesChanged": [
+      "tools/qa/tya-cumulative-read-model-regression-gate.mjs"
+    ],
+    "checksPassed": 12,
     "checksFailed": 0,
-    "scope": "SOURCE_SYNTAX_STATIC_NO_DEPLOY",
+    "focalRegression": {
+      "missingTransientIdentityMapsTo": "shopper_gt_1440137b73",
+      "existingHrIdentityConflictRemainsFailClosed": true,
+      "conflictReason": "hr_platform_assignment_conflict"
+    },
+    "latestFailedLiveReproof": {
+      "runId": 37080258505,
+      "jobId": 111079052603,
+      "artifactId": 11258119220,
+      "artifactDigest": "sha256:49e9efd7db62b8935bb1d16378bd3090a7828c6d660f1fe97b72928af54c07e2",
+      "hrRowId": "OCTUBRE 26!6",
+      "authenticatedShopperId": "shopper_gt_1440137b73",
+      "projectedBrowserShopperId": "s3",
+      "cardFound": false,
+      "scheduleButtonFound": false,
+      "providerAuthHealthy": true
+    },
+    "scope": "SOURCE_SYNTAX_STATIC_AND_PURE_COMPOSER_REGRESSION_NO_DEPLOY",
+    "production": false
+  },
+  "vrm168SuccessorSourceReproof": {
+    "decision": "PASS_VRM168_SUCCESSOR_SOURCE_STATIC_REPROOF",
+    "findingId": "VRM-168",
+    "classification": "MAPPING_FAILURE",
+    "severity": "P0",
+    "predecessorProductSourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+    "sourceSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
+    "sourceTreeAuthority": "e715b9a55ed35f62037e1b82a183a32ff8d3ebcd",
+    "productFilesChanged": [
+      "app/adapters/tya-cumulative-read-model-v2.js"
+    ],
+    "qaFilesChanged": [
+      "tools/qa/tya-cumulative-read-model-regression-gate.mjs"
+    ],
+    "checksPassed": 12,
+    "checksFailed": 0,
+    "focalRegression": {
+      "missingTransientIdentityMapsTo": "shopper_gt_1440137b73",
+      "existingHrIdentityConflictRemainsFailClosed": true,
+      "conflictReason": "hr_platform_assignment_conflict"
+    },
+    "latestFailedLiveReproof": {
+      "runId": 37080258505,
+      "jobId": 111079052603,
+      "artifactId": 11258119220,
+      "artifactDigest": "sha256:49e9efd7db62b8935bb1d16378bd3090a7828c6d660f1fe97b72928af54c07e2",
+      "hrRowId": "OCTUBRE 26!6",
+      "authenticatedShopperId": "shopper_gt_1440137b73",
+      "projectedBrowserShopperId": "s3",
+      "cardFound": false,
+      "scheduleButtonFound": false,
+      "providerAuthHealthy": true
+    },
+    "scope": "SOURCE_SYNTAX_STATIC_AND_PURE_COMPOSER_REGRESSION_NO_DEPLOY",
     "production": false
   }
 }

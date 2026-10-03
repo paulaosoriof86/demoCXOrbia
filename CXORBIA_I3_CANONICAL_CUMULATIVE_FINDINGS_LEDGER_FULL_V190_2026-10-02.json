@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
-    "sourceTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
-    "predecessorSha": "542fb96630d2068993d03ae86e3d3299f5386251",
+    "sourceSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
+    "sourceTree": "e715b9a55ed35f62037e1b82a183a32ff8d3ebcd",
+    "predecessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
     "production": false,
-    "state": "SEALED_V190_DEV_PENDING_LIVE_REPROOF",
+    "state": "VRM168_SOURCE_STATIC_REPROOF_PASS_PENDING_EXACT_DEV_MATERIALIZATION",
     "proof": {
       "runId": 37037752771,
       "runNumber": 864,
@@ -54,26 +54,14 @@
       "production": false
     },
     "materialization": {
-      "runId": 37073947232,
-      "runNumber": 884,
-      "jobId": 111059579758,
-      "artifactId": 11255833588,
-      "artifactDigest": "sha256:47a6196f75afb3b6073b8add59062d7bfafc7fb2187feb192cc53ce8681d3500",
-      "decision": "PASS_V190_EXACT_DEV_MATERIALIZATION",
-      "sourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
-      "sourceTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
-      "runtimeRevision": "cxorbia-live-hr-dev-00249-pqh",
-      "runtimeDigest": "sha256:593c2a256f0b601173bfaff86dd22fc87e02e287a6eb900d3b6ff3cc9fda06ac",
-      "hostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30",
-      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790981125544000",
-      "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
-      "scenarioDimensionsProven": true,
-      "frontendBytesExact": true,
-      "builds": 1,
-      "runtimeDeploys": 1,
-      "hostingDeploys": 1,
-      "storageRulesDeploys": 1,
-      "state": "SEALED_V190_DEV_PENDING_LIVE_REPROOF",
+      "state": "NOT_MATERIALIZED_FOR_VRM168_SUCCESSOR",
+      "sourceSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
+      "sourceTree": "e715b9a55ed35f62037e1b82a183a32ff8d3ebcd",
+      "predecessorDevSourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+      "builds": 0,
+      "runtimeDeploys": 0,
+      "hostingDeploys": 0,
+      "storageRulesDeploys": 0,
       "production": false
     },
     "previousSourceProof": {
@@ -270,16 +258,68 @@
       }
     },
     "successorSourceReproof": {
-      "decision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF",
-      "sourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
-      "sourceTreeAuthority": "2e72bf1906a582910ac2f82460f2df493ba40b41",
-      "parentSha": "d97f6ce80b89cf6a36e046ff15cb25a046189a97",
-      "predecessorProductSourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
-      "deltaFiles": 18,
-      "checksPassed": 34,
+      "decision": "PASS_VRM168_SUCCESSOR_SOURCE_STATIC_REPROOF",
+      "findingId": "VRM-168",
+      "classification": "MAPPING_FAILURE",
+      "severity": "P0",
+      "predecessorProductSourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+      "sourceSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
+      "sourceTreeAuthority": "e715b9a55ed35f62037e1b82a183a32ff8d3ebcd",
+      "productFilesChanged": [
+        "app/adapters/tya-cumulative-read-model-v2.js"
+      ],
+      "qaFilesChanged": [
+        "tools/qa/tya-cumulative-read-model-regression-gate.mjs"
+      ],
+      "checksPassed": 12,
       "checksFailed": 0,
-      "scope": "SOURCE_SYNTAX_STATIC_NO_DEPLOY",
+      "focalRegression": {
+        "missingTransientIdentityMapsTo": "shopper_gt_1440137b73",
+        "existingHrIdentityConflictRemainsFailClosed": true,
+        "conflictReason": "hr_platform_assignment_conflict"
+      },
+      "latestFailedLiveReproof": {
+        "runId": 37080258505,
+        "jobId": 111079052603,
+        "artifactId": 11258119220,
+        "artifactDigest": "sha256:49e9efd7db62b8935bb1d16378bd3090a7828c6d660f1fe97b72928af54c07e2",
+        "hrRowId": "OCTUBRE 26!6",
+        "authenticatedShopperId": "shopper_gt_1440137b73",
+        "projectedBrowserShopperId": "s3",
+        "cardFound": false,
+        "scheduleButtonFound": false,
+        "providerAuthHealthy": true
+      },
+      "scope": "SOURCE_SYNTAX_STATIC_AND_PURE_COMPOSER_REGRESSION_NO_DEPLOY",
       "production": false
+    },
+    "immediatePredecessor": {
+      "sourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+      "sourceTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
+      "materialization": {
+        "runId": 37073947232,
+        "runNumber": 884,
+        "jobId": 111059579758,
+        "artifactId": 11255833588,
+        "artifactDigest": "sha256:47a6196f75afb3b6073b8add59062d7bfafc7fb2187feb192cc53ce8681d3500",
+        "decision": "PASS_V190_EXACT_DEV_MATERIALIZATION",
+        "sourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+        "sourceTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
+        "runtimeRevision": "cxorbia-live-hr-dev-00249-pqh",
+        "runtimeDigest": "sha256:593c2a256f0b601173bfaff86dd22fc87e02e287a6eb900d3b6ff3cc9fda06ac",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30",
+        "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790981125544000",
+        "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
+        "scenarioDimensionsProven": true,
+        "frontendBytesExact": true,
+        "builds": 1,
+        "runtimeDeploys": 1,
+        "hostingDeploys": 1,
+        "storageRulesDeploys": 1,
+        "state": "SEALED_V190_DEV_PENDING_LIVE_REPROOF",
+        "production": false
+      },
+      "state": "SEALED_V190_DEV_PENDING_LIVE_REPROOF"
     }
   },
   "rootCauseIds": [
@@ -8580,7 +8620,7 @@
       "classification": "MAPPING_FAILURE",
       "severity": "P0",
       "title": "Shopper scheduling command failed on sealed DEV",
-      "state": "V190_EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
+      "state": "SOURCE_FIX_REPROOF_PASS_PENDING_EXACT_DEV_MATERIALIZATION",
       "rootCauseStatus": "PROVEN",
       "rootCause": "The exact authenticated October Cayalá visit is canonical in HR/Firestore as shopper_gt_1440137b73, but the protected browser composition renders the same hrRowId OCTUBRE 26!6 in CX.data._visitas with shopperId='s3'. tya-cumulative-read-model-v2 builds an exact relation from the matched protected visit (base shopper identity -> durable canonical identity), but only promotes that relation into liveToCanonical while iterating baseShoppers. When an operational HR shopper identity exists on the visit but is absent from baseShoppers, the exact relation is never promoted; composedVisits therefore falls back to the transient live id 's3'. visitsForShopper(authenticated canonical shopperId) then cannot surface the card/action. Provider/Auth/version were independently proven healthy.",
       "owners": [
@@ -8622,13 +8662,27 @@
         "production": false
       },
       "correction": "Promote every unambiguous exact visit-derived relation into liveToCanonical even when the transient operational identity is not present in baseShoppers; preserve conflict review when one live id maps to multiple canonical ids. Reproof exact Cayalá card, command shape, provider ACK and durable reload on the corrected DEV.",
-      "sourceSuccessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
-      "sourceSuccessorTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
-      "sourceReproofDecision": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF",
+      "sourceSuccessorSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
+      "sourceSuccessorTree": "e715b9a55ed35f62037e1b82a183a32ff8d3ebcd",
+      "sourceReproofDecision": "PASS_VRM168_SUCCESSOR_SOURCE_STATIC_REPROOF",
       "devMaterializationRunId": 37073947232,
       "runtimeRevision": "cxorbia-live-hr-dev-00249-pqh",
       "hostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30",
-      "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732"
+      "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
+      "latestLiveReproofFailure": {
+        "runId": 37080258505,
+        "jobId": 111079052603,
+        "artifactId": 11258119220,
+        "artifactDigest": "sha256:49e9efd7db62b8935bb1d16378bd3090a7828c6d660f1fe97b72928af54c07e2",
+        "hrRowId": "OCTUBRE 26!6",
+        "authenticatedShopperId": "shopper_gt_1440137b73",
+        "projectedBrowserShopperId": "s3",
+        "cardFound": false,
+        "scheduleButtonFound": false,
+        "providerAuthHealthy": true
+      },
+      "rootCauseRefinement": "The V190 promotion loop was present, but pendingPlatformAssignment prevented the exact visit-derived relation from entering relation at all when the transient HR token s3 was absent from baseShoppers. The focal successor promotes that exact relation only for missing transient identities and preserves conflict review when an HR identity exists.",
+      "focalRegressionPass": true
     },
     "VRM-169": {
       "id": "VRM-169",
@@ -9623,7 +9677,7 @@
     "nextFindingId": "VRM-181",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_V190_LIVE_REPROOF_REQUIRED",
+    "terminalState": "HOLD_V190_DEV_MATERIALIZATION_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -9638,29 +9692,17 @@
     "userReportedRequirementsFrozenAt": "2026-09-30T20:18:00-06:00",
     "userReviewComplete": true,
     "userReviewEvidence": "19 screenshots plus complete Shopper/Admin observations supplied 2026-10-02",
-    "currentProductSourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
-    "currentProductSourceTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
+    "currentProductSourceSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
+    "currentProductSourceTree": "e715b9a55ed35f62037e1b82a183a32ff8d3ebcd",
     "currentMaterialization": {
-      "runId": 37073947232,
-      "runNumber": 884,
-      "jobId": 111059579758,
-      "artifactId": 11255833588,
-      "artifactDigest": "sha256:47a6196f75afb3b6073b8add59062d7bfafc7fb2187feb192cc53ce8681d3500",
-      "decision": "PASS_V190_EXACT_DEV_MATERIALIZATION",
-      "sourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
-      "sourceTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
-      "runtimeRevision": "cxorbia-live-hr-dev-00249-pqh",
-      "runtimeDigest": "sha256:593c2a256f0b601173bfaff86dd22fc87e02e287a6eb900d3b6ff3cc9fda06ac",
-      "hostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30",
-      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790981125544000",
-      "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
-      "scenarioDimensionsProven": true,
-      "frontendBytesExact": true,
-      "builds": 1,
-      "runtimeDeploys": 1,
-      "hostingDeploys": 1,
-      "storageRulesDeploys": 1,
-      "state": "SEALED_V190_DEV_PENDING_LIVE_REPROOF",
+      "state": "NOT_MATERIALIZED_FOR_VRM168_SUCCESSOR",
+      "sourceSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
+      "sourceTree": "e715b9a55ed35f62037e1b82a183a32ff8d3ebcd",
+      "predecessorDevSourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+      "builds": 0,
+      "runtimeDeploys": 0,
+      "hostingDeploys": 0,
+      "storageRulesDeploys": 0,
       "production": false
     }
   },
@@ -13367,5 +13409,5 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-10-02",
-  "nextExactAction": "Run the existing same-DEV readback/live acceptance lane against V190 fingerprints only; no build/deploy. Close findings only from live evidence. VRM-179/180 remain focal acceptance requirements."
+  "nextExactAction": "Materialize exactly c0fe7f11e50d7d73356d99b68aabb54972ae7b45 once in Recovery DEV, with the VRM-168 pure-composer regression required before deploy. Then repeat the same live readback on that exact DEV; no production."
 }

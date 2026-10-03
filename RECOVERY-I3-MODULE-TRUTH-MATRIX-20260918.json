@@ -103,10 +103,10 @@
     }
   },
   "productSource": {
-    "sha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
-    "treeSha": "2e72bf1906a582910ac2f82460f2df493ba40b41",
-    "message": "I3: close V190 proven functional/visual package",
-    "predecessorSha": "542fb96630d2068993d03ae86e3d3299f5386251",
+    "sha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
+    "treeSha": "e715b9a55ed35f62037e1b82a183a32ff8d3ebcd",
+    "message": "fix(i3): close VRM-168 exact visit identity crosswalk",
+    "predecessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
     "authorityState": "SOURCE_STATIC_REPROOF_PASS_PENDING_DEV"
   },
   "controlHeadAtConstruction": "9de392b08863069e5ac8a3d68ffd17ad40bcf2d4",
@@ -228,14 +228,14 @@
         "Cliente"
       ],
       "contractFunctional": "HR/Disponibles/Sync/KPIs",
-      "classification": "MATCH",
-      "actionRequired": "V190_SAME_DEV_LIVE_REPROOF_REQUIRED__VRM-168",
+      "classification": "COMPOSED_NOT_DEPLOYED",
+      "actionRequired": "VRM168_EXACT_DEV_MATERIALIZATION_AND_LIVE_REPROOF_REQUIRED",
       "preI4SuccessorCommits": [
         "e0bed18b62174544615dc55aa70dd4a1509692d7",
         "ab05415eb965404e1a6594df8533b8e0190aa0f7",
         "feea6ae6b00d36349ae66e43e034bc0b25516cfd"
       ],
-      "cumulativeSource": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+      "cumulativeSource": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
       "preI4ProvenBy": {
         "runId": 35954023135,
         "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
@@ -245,9 +245,8 @@
         "VRM-168"
       ],
       "v190SourceReproof": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF",
-      "servedRuntimeRevision": "cxorbia-live-hr-dev-00249-pqh",
-      "servedHostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30",
-      "liveReproofState": "PENDING"
+      "liveReproofState": "NOT_MATERIALIZED",
+      "vrm168SourceReproof": "PASS_VRM168_SUCCESSOR_SOURCE_STATIC_REPROOF"
     },
     {
       "domain": "certifications",
@@ -706,12 +705,12 @@
       ],
       "contractFunctional": "Shopper/Auth/Identidad/Histórico",
       "classification": "MATCH",
-      "actionRequired": "V190_SAME_DEV_LIVE_REPROOF_REQUIRED__VRM-165_VRM-168_VRM-169_VRM-170_VRM-171_VRM-175_VRM-176",
+      "actionRequired": "V190_SAME_DEV_LIVE_REPROOF_REQUIRED__VRM-165_VRM-168_VRM-169_VRM-170_VRM-171_VRM-175_VRM-176__VRM168_SUCCESSOR_DEPENDENCY_REPROOF",
       "preI4SuccessorCommits": [
         "61cf7120603aeff110e97632bb6c69f5c4809d62",
         "275a9893532e9fa11efcbafccd34bb93919d7d64"
       ],
-      "cumulativeSource": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+      "cumulativeSource": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
       "preI4ProvenBy": {
         "runId": 35954023135,
         "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
@@ -729,7 +728,7 @@
       "v190SourceReproof": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF",
       "servedRuntimeRevision": "cxorbia-live-hr-dev-00249-pqh",
       "servedHostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30",
-      "liveReproofState": "PENDING"
+      "liveReproofState": "DEPENDENCY_REPROOF_PENDING_AFTER_VRM168"
     },
     {
       "domain": "visits-review-postulations-reservations",
@@ -751,11 +750,11 @@
       ],
       "contractFunctional": "Disponibles/Asignación/Postulación/Eliminación/Decisión/Persistencia",
       "classification": "MATCH",
-      "actionRequired": "V190_SAME_DEV_LIVE_REPROOF_REQUIRED__VRM-167_VRM-168_VRM-180",
+      "actionRequired": "V190_SAME_DEV_LIVE_REPROOF_REQUIRED__VRM-167_VRM-168_VRM-180__VRM168_SUCCESSOR_DEPENDENCY_REPROOF",
       "preI4SuccessorCommits": [
         "275a9893532e9fa11efcbafccd34bb93919d7d64"
       ],
-      "cumulativeSource": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+      "cumulativeSource": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
       "preI4ProvenBy": {
         "runId": 35954023135,
         "decision": "PASS_PRE_I4_MODULE_TRUTH_EXHAUSTIVE",
@@ -769,7 +768,7 @@
       "v190SourceReproof": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF",
       "servedRuntimeRevision": "cxorbia-live-hr-dev-00249-pqh",
       "servedHostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30",
-      "liveReproofState": "PENDING"
+      "liveReproofState": "DEPENDENCY_REPROOF_PENDING_AFTER_VRM168"
     }
   ],
   "sourceFiles": [
@@ -4884,7 +4883,7 @@
     "gate21AfterFullHuman": true,
     "cacheRuntimeFailClosed": true
   },
-  "nextExactAction": "Same-DEV live reproof only. Do not rebuild/redeploy. Human visual acceptance remains HOLD until live technical probes pass.",
+  "nextExactAction": "Materialize the VRM-168 successor exactly once in Recovery DEV, then same-source live reproof of canonical HR composition, Shopper Mi Visitas, scheduling command mapping/provider ACK and dependent routes. No production.",
   "moduleTruthCorrection": {
     "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
     "run179": {
@@ -5817,6 +5816,53 @@
     "production": false
   },
   "v190Materialization": {
+    "state": "NOT_MATERIALIZED_FOR_VRM168_SUCCESSOR",
+    "sourceSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
+    "sourceTree": "e715b9a55ed35f62037e1b82a183a32ff8d3ebcd",
+    "predecessorDevSourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+    "builds": 0,
+    "runtimeDeploys": 0,
+    "hostingDeploys": 0,
+    "storageRulesDeploys": 0,
+    "production": false
+  },
+  "vrm168SuccessorSourceReproof": {
+    "decision": "PASS_VRM168_SUCCESSOR_SOURCE_STATIC_REPROOF",
+    "findingId": "VRM-168",
+    "classification": "MAPPING_FAILURE",
+    "severity": "P0",
+    "predecessorProductSourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+    "sourceSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
+    "sourceTreeAuthority": "e715b9a55ed35f62037e1b82a183a32ff8d3ebcd",
+    "productFilesChanged": [
+      "app/adapters/tya-cumulative-read-model-v2.js"
+    ],
+    "qaFilesChanged": [
+      "tools/qa/tya-cumulative-read-model-regression-gate.mjs"
+    ],
+    "checksPassed": 12,
+    "checksFailed": 0,
+    "focalRegression": {
+      "missingTransientIdentityMapsTo": "shopper_gt_1440137b73",
+      "existingHrIdentityConflictRemainsFailClosed": true,
+      "conflictReason": "hr_platform_assignment_conflict"
+    },
+    "latestFailedLiveReproof": {
+      "runId": 37080258505,
+      "jobId": 111079052603,
+      "artifactId": 11258119220,
+      "artifactDigest": "sha256:49e9efd7db62b8935bb1d16378bd3090a7828c6d660f1fe97b72928af54c07e2",
+      "hrRowId": "OCTUBRE 26!6",
+      "authenticatedShopperId": "shopper_gt_1440137b73",
+      "projectedBrowserShopperId": "s3",
+      "cardFound": false,
+      "scheduleButtonFound": false,
+      "providerAuthHealthy": true
+    },
+    "scope": "SOURCE_SYNTAX_STATIC_AND_PURE_COMPOSER_REGRESSION_NO_DEPLOY",
+    "production": false
+  },
+  "predecessorV190Materialization": {
     "runId": 37073947232,
     "runNumber": 884,
     "jobId": 111059579758,
