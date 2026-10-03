@@ -6720,9 +6720,84 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-  vrm157-dev-readback-only:
+  vrm185-admin-live-adjudication:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM157_DEV_READBACK_ONLY_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM154_156_LIVE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_HUMAN_VISUAL_REMEDIATION_DIAGNOSTIC_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_V190_LIVE_REPROOF_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_V190_LIVE_REPROOF_REQUIRED' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      VRM185_ADMIN_OUT: .tmp/vrm185-admin-live-adjudication
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: VRM-185 exact-source preflight
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$VRM185_ADMIN_OUT"
+          test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
+          test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
+          test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
+          git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          node --check tools/qa/cxorbia-i3-vrm185-exact-identity-consolidation-write.mjs
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - uses: google-github-actions/setup-gcloud@v2
+      - name: Verify exact sealed DEV materialization before identity write
+        run: |
+          set -Eeuo pipefail
+          EXPECTED_RUNTIME_REVISION="$(jq -r '.currentMaterialization.runtimeRevision // empty' "$CANDIDATE_DESCRIPTOR")"
+          EXPECTED_RUNTIME_DIGEST="$(jq -r '.currentMaterialization.runtimeDigest // empty' "$CANDIDATE_DESCRIPTOR")"
+          EXPECTED_HOSTING_VERSION="$(jq -r '.currentMaterialization.hostingVersion // empty' "$CANDIDATE_DESCRIPTOR")"
+          EXPECTED_HR_REVISION="$(jq -r '.currentMaterialization.hrRevision // empty' "$CANDIDATE_DESCRIPTOR")"
+          test "$EXPECTED_RUNTIME_REVISION" = "cxorbia-live-hr-dev-00254-g98"
+          test "$EXPECTED_RUNTIME_DIGEST" = "sha256:a556afcb082292750b5a126725f9405c68e9d1b8b432daf510fadbdd82fd4948"
+          test "$EXPECTED_HOSTING_VERSION" = "sites/cxorbia-backend-dev/versions/b07b427c39f086ab"
+          test "$EXPECTED_HR_REVISION" = "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305"
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$VRM185_ADMIN_OUT/runtime.json"
+          test "$(jq -r '.status.latestReadyRevisionName // empty' "$VRM185_ADMIN_OUT/runtime.json")" = "$EXPECTED_RUNTIME_REVISION"
+          gcloud run revisions describe "$EXPECTED_RUNTIME_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$VRM185_ADMIN_OUT/runtime-revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$VRM185_ADMIN_OUT/runtime-revision.json")"
+          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else exit 1; fi
+          test "$DIGEST" = "$EXPECTED_RUNTIME_DIGEST"
+          TOKEN="$(gcloud auth print-access-token)"
+          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$VRM185_ADMIN_OUT/hosting-live-channel.json"
+          test "$(jq -r '.release.version.name // empty' "$VRM185_ADMIN_OUT/hosting-live-channel.json")" = "$EXPECTED_HOSTING_VERSION"
+          curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm185preflight=$GITHUB_RUN_ID" > "$VRM185_ADMIN_OUT/hr-meta.json"
+          test "$(jq -r '.revision // empty' "$VRM185_ADMIN_OUT/hr-meta.json")" = "$EXPECTED_HR_REVISION"
+          echo "EXPECTED_HR_REVISION=$EXPECTED_HR_REVISION" >> "$GITHUB_ENV"
+      - name: Admin-only exact identity adjudication through live provider
+        run: |
+          set -Eeuo pipefail
+          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HOSTING_URL="$HOSTING_URL" SOURCE_SHA="$FOCAL_SOURCE" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" OUT="$VRM185_ADMIN_OUT" node tools/qa/cxorbia-i3-vrm185-exact-identity-consolidation-write.mjs | tee "$VRM185_ADMIN_OUT/console.log"
+          test "$(jq -r '.decision' "$VRM185_ADMIN_OUT/result.json")" = "PASS_VRM185_ADMIN_PROVIDER_ADJUDICATION"
+          test "$(jq -r '.providerAck' "$VRM185_ADMIN_OUT/result.json")" = "true"
+          test "$(jq -r '.durableReadback' "$VRM185_ADMIN_OUT/result.json")" = "true"
+          test "$(jq -r '.fuzzyOrNameMerge' "$VRM185_ADMIN_OUT/result.json")" = "false"
+          test "$(jq -r '.shopperPortalAdjudication' "$VRM185_ADMIN_OUT/result.json")" = "false"
+          test "$(jq -r '.hrWrites' "$VRM185_ADMIN_OUT/result.json")" = "0"
+          test "$(jq -r '.externalWrites' "$VRM185_ADMIN_OUT/result.json")" = "0"
+          test "$(jq -r '.production' "$VRM185_ADMIN_OUT/result.json")" = "false"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-vrm185-admin-live-adjudication-${{ github.run_id }}
+          path: .tmp/vrm185-admin-live-adjudication
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
+  vrm157-dev-readback-only:
+    needs: [canonical-candidate-authority, vrm185-admin-live-adjudication]
+    if: ${{ always() && needs.canonical-candidate-authority.result == 'success' && (needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM157_DEV_READBACK_ONLY_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM154_156_LIVE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_HUMAN_VISUAL_REMEDIATION_DIAGNOSTIC_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_V190_LIVE_REPROOF_REQUIRED') && (needs.canonical-candidate-authority.outputs.status != 'HOLD_V190_LIVE_REPROOF_REQUIRED' || needs.vrm185-admin-live-adjudication.result == 'success') }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
