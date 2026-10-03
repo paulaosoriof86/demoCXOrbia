@@ -10,7 +10,7 @@ on:
       - RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json
       - RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
       - CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
-      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V216_2026-10-03.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V217_2026-10-03.json
       - CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json
       - app/**
       - backend/**
@@ -32,7 +32,7 @@ concurrency:
   cancel-in-progress: true
 env:
   CANDIDATE_DESCRIPTOR: CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
-  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V216_2026-10-03.json
+  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V217_2026-10-03.json
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
@@ -7205,7 +7205,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$FOCAL_SOURCE" = "30c4354640ea38a0155d72f14ee5bdcada3512bd"
+          test "$FOCAL_SOURCE" = "4f87cb0155162674d459b09e3725dd585c84709d"
           test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
           git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
           node --check app/modules/midia.js
