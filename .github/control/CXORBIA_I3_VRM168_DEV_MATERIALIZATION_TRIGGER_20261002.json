@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm168.dev-materialization-trigger.v1",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "state": "ARMED_EXACT_DEV_MATERIALIZATION",
+  "authorityControlHead": "8fd4bffe437e9cb1b633de5f0fb1e25c62e3c2d6",
+  "productSourceSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
+  "productTreeAuthority": "e715b9a55ed35f62037e1b82a183a32ff8d3ebcd",
+  "predecessorProductSourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+  "finding": "VRM-168",
+  "classification": "MAPPING_FAILURE",
+  "sourceStaticReproof": "PASS_VRM168_SUCCESSOR_SOURCE_STATIC_REPROOF",
+  "expectedWorkflowStatus": "HOLD_V190_DEV_MATERIALIZATION_REQUIRED",
+  "exactAction": "Run canonical authority guard, focal regression, then exactly one Recovery DEV materialization from productSourceSha.",
+  "production": "DO_NOT_TOUCH"
+}
