@@ -2596,7 +2596,7 @@ CX.module('aprendizaje', ({data,role,ui})=>{
         </div>`;
       })()}
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">
-        ${filtered.map(c=>{
+        ${filtered.map((c,courseIndex)=>{
           const ls=c.lessons||[];const done=ls.filter(l=>prog()[l.id]>=100).length;const pct=ls.length?Math.round(done/ls.length*100):0;
           /* visibilidad de acciones de gestión (Academia — cierre de pendiente auditoría V101):
              antes se mostraban por role==='admin' crudo, que sigue siendo 'admin' incluso cuando
@@ -2607,7 +2607,7 @@ CX.module('aprendizaje', ({data,role,ui})=>{
           const canManage = role==='admin' && CX.permissions && CX.permissions.can('academy.edit', CX.permissions.ctx());
           const isCustom=canManage&&CX.acadData.isCustom(CX._acadAud||'admin',c.id);
           const estadoLbl={borrador:'📝 Borrador',en_revision:'👀 En revisión',aprobado:'✅ Aprobado',archivado:'🗄 Archivado',eliminado:'🗑 Eliminado',publicado_preview:'✓ Publicado (vista previa)'}[c.estado]||'';
-          const toneMap={'Inducción':'sky','Operación':'navy','Set-up':'teal','Finanzas':'violet','Comercial':'coral','Técnico':'slate','IA':'indigo','Industria MS':'emerald'},academyTone=toneMap[c.cat]||'navy';
+          const toneOrder=['sky','navy','teal','violet','coral','slate','indigo','emerald'],academyTone=toneOrder[courseIndex%toneOrder.length];
           return `<div class="card hov cx-academy-course-card tone-${academyTone}" data-course="${c.id}" style="${c.estado==='archivado'||c.estado==='eliminado'?'opacity:.6':''}">
             <div class="cx-academy-course-head">
               <div class="between" style="margin-bottom:8px"><span style="background:rgba(255,255,255,.22);color:#fff;border-radius:20px;padding:3px 11px;font-size:11px;font-weight:700">${c.ic} ${c.cat}</span><div class="flex" style="gap:6px;align-items:center">${c.cert&&pct>=100?'<span style="font-size:18px">🏅</span>':''}${canManage?`<button class="acad-dup" data-cid="${c.id}" title="Duplicar curso" style="background:rgba(255,255,255,.25);border:none;color:#fff;width:26px;height:26px;border-radius:8px;cursor:pointer;font-size:12px;line-height:1">🧬</button>`:''}${isCustom?((c.estado==='archivado'||c.estado==='eliminado')?`<button class="acad-restore" data-cid="${c.id}" title="Restaurar curso" style="background:rgba(255,255,255,.25);border:none;color:#fff;width:26px;height:26px;border-radius:8px;cursor:pointer;font-size:12px;line-height:1">♻️</button>`:`<button class="acad-arch" data-cid="${c.id}" title="Archivar curso" style="background:rgba(255,255,255,.25);border:none;color:#fff;width:26px;height:26px;border-radius:8px;cursor:pointer;font-size:12px;line-height:1">🗄</button>`):''}${canManage?`<button class="acad-edit" data-cid="${c.id}" title="Editar / eliminar curso" style="background:rgba(255,255,255,.25);border:none;color:#fff;width:26px;height:26px;border-radius:8px;cursor:pointer;font-size:13px;line-height:1">✎</button>`:''}</div></div>
