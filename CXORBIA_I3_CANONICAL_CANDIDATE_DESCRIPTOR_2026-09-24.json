@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_V190_LIVE_REPROOF_REQUIRED",
+  "status": "HOLD_V190_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "83d2385dc47f3bfd785a37072100fdbab11b5127",
-  "productTreeAuthority": "e73408c999c691d37d74c248d668b649e5bb85e5",
-  "predecessorProductSourceSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
+  "productSourceSha": "9102918177d89d9e3d18cfb75c04aba8c29cba86",
+  "productTreeAuthority": "0e6f61aa855b1d9677fd200403793099bfecb9b7",
+  "predecessorProductSourceSha": "83d2385dc47f3bfd785a37072100fdbab11b5127",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V190_2026-10-02.json",
-  "findingsLedgerExpectedGitBlob": "938f4b2bc7b5f7288bab12f0895b7dad07f7ad0f",
+  "findingsLedgerExpectedGitBlob": "3d08ed13e5acd3d28ffd0e45f9c826c19a8c5ef2",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM168_REFINED_OWNER_SAME_DEV_LIVE_REPROOF_REQUIRED",
+  "activeBlocker": "VRM168_STABLE_VISIT_COMMAND_KEY_EXACT_DEV_MATERIALIZATION_REQUIRED",
   "nextFindingId": "VRM-181",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run the existing V190 readback/live-reproof lane against exactly runtime cxorbia-live-hr-dev-00251-mrp and Hosting version 3f4c0f77d423a87c for source 83d2385dc47f3bfd785a37072100fdbab11b5127. No rebuild/redeploy. Prove the focal identity remains exact through protected/projected state, card/action visibility, provider ACK, idempotent durable reload and cleanup; then execute the existing transversal V190 acceptance. Production remains DO_NOT_TOUCH.",
+  "exactNextAction": "Run the existing V190 source/materialization gate against source 9102918177d89d9e3d18cfb75c04aba8c29cba86. The existing frontend source contract must prove stableVisitCommandKey before exactly one new Recovery DEV materialization. Then reuse the same V190 live reproof; do not rebuild between materialization and reproof. Production remains DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -408,27 +408,7 @@
     "writes": 0,
     "production": false
   },
-  "currentMaterialization": {
-    "runId": 37085892089,
-    "runNumber": 898,
-    "jobId": 111096037320,
-    "artifactId": 11260584203,
-    "artifactDigest": "sha256:59d3abef9436ad73159d2779cc29b346e12b298bf79344a784b5bf606e214dcd",
-    "decision": "PASS_V190_EXACT_DEV_MATERIALIZATION",
-    "sourceSha": "83d2385dc47f3bfd785a37072100fdbab11b5127",
-    "sourceTree": "e73408c999c691d37d74c248d668b649e5bb85e5",
-    "runtimeRevision": "cxorbia-live-hr-dev-00251-mrp",
-    "runtimeDigest": "sha256:378b8554cc7d4c639e8a560143903afdbc244a61ce73325bbd7d0c8f46f48a6f",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/3f4c0f77d423a87c",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790990754737000",
-    "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
-    "builds": 1,
-    "runtimeDeploys": 1,
-    "hostingDeploys": 1,
-    "storageRulesDeploys": 1,
-    "state": "SEALED_VRM168_REFINED_OWNER_DEV_PENDING_LIVE_REPROOF",
-    "production": false
-  },
+  "currentMaterialization": null,
   "lastFocalAttempt": {
     "runId": 36198284266,
     "runNumber": 438,
@@ -898,7 +878,18 @@
     "hrWrites": 0,
     "production": false
   },
-  "pendingMaterialization": null,
+  "pendingMaterialization": {
+    "sourceSha": "9102918177d89d9e3d18cfb75c04aba8c29cba86",
+    "sourceTree": "0e6f61aa855b1d9677fd200403793099bfecb9b7",
+    "predecessorSha": "83d2385dc47f3bfd785a37072100fdbab11b5127",
+    "status": "HOLD_V190_DEV_MATERIALIZATION_REQUIRED",
+    "maxBuilds": 1,
+    "maxRuntimeDeploys": 1,
+    "maxHostingDeploys": 1,
+    "sourceGate": "tools/qa/cxorbia-vrm154-156-frontend-source-contract.mjs",
+    "liveRegression": "tools/qa/cxorbia-i3-vrm168-browser-command-capture.mjs",
+    "production": false
+  },
   "lastVrm080Proof": {
     "runId": 36333245670,
     "runNumber": 525,
@@ -2768,6 +2759,42 @@
     "staleCanonicalTarget": "s3",
     "sourceSuccessorSha": "83d2385dc47f3bfd785a37072100fdbab11b5127",
     "sourceSuccessorTree": "e73408c999c691d37d74c248d668b649e5bb85e5",
+    "state": "P0_PROVEN_SOURCE_FIX_READY_EXACT_DEV_MATERIALIZATION",
+    "production": false
+  },
+  "previousMaterialization": {
+    "runId": 37085892089,
+    "runNumber": 898,
+    "jobId": 111096037320,
+    "artifactId": 11260584203,
+    "artifactDigest": "sha256:59d3abef9436ad73159d2779cc29b346e12b298bf79344a784b5bf606e214dcd",
+    "decision": "PASS_V190_EXACT_DEV_MATERIALIZATION",
+    "sourceSha": "83d2385dc47f3bfd785a37072100fdbab11b5127",
+    "sourceTree": "e73408c999c691d37d74c248d668b649e5bb85e5",
+    "runtimeRevision": "cxorbia-live-hr-dev-00251-mrp",
+    "runtimeDigest": "sha256:378b8554cc7d4c639e8a560143903afdbc244a61ce73325bbd7d0c8f46f48a6f",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/3f4c0f77d423a87c",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790990754737000",
+    "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "storageRulesDeploys": 1,
+    "state": "SEALED_VRM168_REFINED_OWNER_DEV_PENDING_LIVE_REPROOF",
+    "production": false
+  },
+  "vrm168ResidualCommandMapping": {
+    "run899Id": 37086160151,
+    "identityRepairPass": true,
+    "cardFound": true,
+    "scheduleButtonFound": true,
+    "mismatch": [
+      "entityId",
+      "visitId"
+    ],
+    "owner": "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+    "sourceSuccessorSha": "9102918177d89d9e3d18cfb75c04aba8c29cba86",
+    "sourceSuccessorTree": "0e6f61aa855b1d9677fd200403793099bfecb9b7",
     "state": "P0_PROVEN_SOURCE_FIX_READY_EXACT_DEV_MATERIALIZATION",
     "production": false
   }
