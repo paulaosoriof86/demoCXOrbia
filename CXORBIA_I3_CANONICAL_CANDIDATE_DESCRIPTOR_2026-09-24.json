@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM191_HR_SOURCE_PROVIDER_CONTRACT_REQUIRED",
+  "status": "HOLD_VRM191_SOURCE_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "6a5d529d7813b48c90051668c7331065dbc8d82b",
-  "productTreeAuthority": "882d4fdf35c1e50e1b231394fd2a94309f7bfe3a",
-  "predecessorProductSourceSha": "ef790a5191bc5359d9c67ab2a28f8e04eb54be37",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V203_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "9c1f56c252c6678650481ab0e442e7b09e22f3f9",
+  "productSourceSha": "190509264f00cee52280b5c8dcf16259673e14d0",
+  "productTreeAuthority": "ae80cf31eb1357d760388ad9e922cb5bb95ec264",
+  "predecessorProductSourceSha": "6a5d529d7813b48c90051668c7331065dbc8d82b",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V204_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "a95d9f5773c3f33b6c534494f92e4e39eed4e733",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM191_HR_SOURCE_PROVIDER_CONTRACT_REQUIRED",
+  "activeBlocker": "VRM191_SOURCE_REPROOF_REQUIRED",
   "nextFindingId": "VRM-195",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "VRM-191 only: inspect app/modules/rutas.js and app/modules/hr-source.js plus the exact existing project/integration provider owner; remove raw Google Sheets URL or browser-local configuration as operational authority and require opaque providerBindingId/mappingRef with remote ACK/readback and explicit pending/connected states. Preserve external HR as read authority and do not write to HR. Source-test first; no build/deploy.",
+  "exactNextAction": "Run only the bounded VRM-191 HR source administration source reproof on product source 190509264f00cee52280b5c8dcf16259673e14d0 / tree ae80cf31eb1357d760388ad9e922cb5bb95ec264. Require PASS_VRM191_HR_SOURCE_PROVIDER_CONTRACT plus VRM-187/188/189/190 regressions. Do not build or deploy.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3193,6 +3193,30 @@
     "materializationJob": "SKIPPED",
     "builds": 0,
     "deploys": 0,
+    "production": false
+  },
+  "vrm191SourceImplementation": {
+    "findingId": "VRM-191",
+    "classification": "PROVIDER_FAILURE",
+    "sourceSha": "190509264f00cee52280b5c8dcf16259673e14d0",
+    "sourceTree": "ae80cf31eb1357d760388ad9e922cb5bb95ec264",
+    "predecessorSha": "ac23a9b8c4008fe40bc4f8826a4df06c569e3402",
+    "owners": [
+      "app/modules/hr-source.js",
+      "app/modules/rutas.js",
+      "app/core/hr.js",
+      "app/core/backend-hr-source-bridge.js",
+      "backend/runtime/cxorbia-project-command-provider-v1.mjs"
+    ],
+    "test": "backend/runtime/hr-live-service/test/cxorbia-hr-source-admin-provider-v1.test.mjs",
+    "projectScoped": true,
+    "opaqueBinding": true,
+    "mappingRequired": true,
+    "providerAck": true,
+    "durableReadback": true,
+    "hrWrites": false,
+    "buildAllowed": false,
+    "deployAllowed": false,
     "production": false
   }
 }

@@ -10,7 +10,7 @@ on:
       - RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json
       - RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
       - CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
-      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V203_2026-10-03.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V204_2026-10-03.json
       - CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json
       - app/**
       - backend/**
@@ -32,7 +32,7 @@ concurrency:
   cancel-in-progress: true
 env:
   CANDIDATE_DESCRIPTOR: CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
-  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V203_2026-10-03.json
+  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V204_2026-10-03.json
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
@@ -6541,7 +6541,7 @@ jobs:
           compression-level: 0
   vrm154-156-frontend-source-reproof:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM154_156_FRONTEND_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM187_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM188_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM189_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM190_SOURCE_REPROOF_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM154_156_FRONTEND_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM187_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM188_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM189_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM190_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM191_SOURCE_REPROOF_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -6586,7 +6586,12 @@ jobs:
           node --check backend/runtime/cxorbia-project-command-provider-v1.mjs
           node --check backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs
           node --check app/modules/periodos.js
+          node --check app/modules/hr-source.js
+          node --check app/modules/rutas.js
+          node --check app/core/hr.js
+          node --check app/core/backend-hr-source-bridge.js
           node --check backend/runtime/hr-live-service/test/cxorbia-period-command-provider-v1.test.mjs
+          node --check backend/runtime/hr-live-service/test/cxorbia-hr-source-admin-provider-v1.test.mjs
           node --check tools/qa/cxorbia-vrm154-156-frontend-source-contract.mjs
       - name: step
         run: |
@@ -6612,6 +6617,10 @@ jobs:
           grep -Fq "PASS_VRM190_PERIOD_LIFECYCLE_SOURCE" "$FOCAL_OUT/period-provider-vrm190.log"
           grep -Fq "VRM-190 period create is project-scoped durable audited and idempotent" "$FOCAL_OUT/period-provider-vrm190.log"
           grep -Fq "VRM-190 first state transition can durably overlay a source-derived period, then enforces expectedVersion" "$FOCAL_OUT/period-provider-vrm190.log"
+          node --test backend/runtime/hr-live-service/test/cxorbia-hr-source-admin-provider-v1.test.mjs | tee "$FOCAL_OUT/hr-source-vrm191.log"
+          grep -Fq "PASS_VRM191_HR_SOURCE_PROVIDER_CONTRACT" "$FOCAL_OUT/hr-source-vrm191.log"
+          grep -Fq "VRM-191 project update returns durable readback for provider binding changes" "$FOCAL_OUT/hr-source-vrm191.log"
+          grep -Fq "VRM-191 rutas no self-declares Google Sheets connected from a raw URL" "$FOCAL_OUT/hr-source-vrm191.log"
       - name: step
         if: always()
         uses: actions/upload-artifact@v4
