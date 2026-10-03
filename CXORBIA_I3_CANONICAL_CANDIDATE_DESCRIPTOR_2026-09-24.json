@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_V190_DEV_MATERIALIZATION_REQUIRED",
+  "status": "HOLD_V190_LIVE_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "e715b9a55ed35f62037e1b82a183a32ff8d3ebcd",
   "predecessorProductSourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V190_2026-10-02.json",
-  "findingsLedgerExpectedGitBlob": "1d1e7971951edd882c87bdee5221b7c085181ef4",
+  "findingsLedgerExpectedGitBlob": "a6b36511b7968bf7c507f16676b65b0a86817f50",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM168_EXACT_DEV_MATERIALIZATION_REQUIRED",
+  "activeBlocker": "VRM168_SAME_DEV_LIVE_REPROOF_REQUIRED",
   "nextFindingId": "VRM-181",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run the canonical I3 materialization job exactly once for c0fe7f11/e715b9a5 in Recovery DEV. VRM-168 regression must PASS before deploy. Production remains DO_NOT_TOUCH.",
+  "exactNextAction": "Execute the existing readback/live-reproof lane against exactly runtime cxorbia-live-hr-dev-00250-l9w + Hosting 0f7f7bd7376497b8 for source c0fe7f11. No rebuild/redeploy. Production remains DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -309,7 +309,7 @@
   },
   "technicalClosureReceipt": "CXORBIA_I3_TERMINAL_TECHNICAL_READY_2026-09-25.json",
   "i4": {
-    "status": "BLOCKED_PENDING_VRM168_DEV_LIVE_REPROOF",
+    "status": "BLOCKED_PENDING_VRM168_SAME_DEV_LIVE_REPROOF",
     "productionAuthorization": false,
     "authorized": false,
     "production": "DO_NOT_TOUCH"
@@ -409,14 +409,27 @@
     "production": false
   },
   "currentMaterialization": {
-    "state": "NOT_MATERIALIZED_FOR_VRM168_SUCCESSOR",
+    "runId": 37081102241,
+    "runNumber": 891,
+    "jobId": 111081739013,
+    "artifactId": 11259161246,
+    "artifactDigest": "sha256:e1e283c356024051699a9c37da0b0405a2e0cc2d2d70648130b8055cf09e9ff0",
+    "decision": "PASS_V190_EXACT_DEV_MATERIALIZATION",
     "sourceSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
     "sourceTree": "e715b9a55ed35f62037e1b82a183a32ff8d3ebcd",
-    "predecessorDevSourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
-    "builds": 0,
-    "runtimeDeploys": 0,
-    "hostingDeploys": 0,
-    "storageRulesDeploys": 0,
+    "runtimeRevision": "cxorbia-live-hr-dev-00250-l9w",
+    "runtimeDigest": "sha256:e4633301e99993134eb132892635b77b4006824aab4cc4f4682adc86a08ba9f7",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/0f7f7bd7376497b8",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790986549932000",
+    "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
+    "frontendBytesExact": true,
+    "vrm168RegressionPass": true,
+    "scenarioDimensionsProven": true,
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "storageRulesDeploys": 1,
+    "state": "SEALED_VRM168_SUCCESSOR_DEV_PENDING_LIVE_REPROOF",
     "production": false
   },
   "lastFocalAttempt": {

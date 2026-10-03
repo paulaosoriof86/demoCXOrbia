@@ -228,8 +228,8 @@
         "Cliente"
       ],
       "contractFunctional": "HR/Disponibles/Sync/KPIs",
-      "classification": "COMPOSED_NOT_DEPLOYED",
-      "actionRequired": "VRM168_EXACT_DEV_MATERIALIZATION_AND_LIVE_REPROOF_REQUIRED",
+      "classification": "MATCH",
+      "actionRequired": "VRM168_SAME_DEV_LIVE_REPROOF_REQUIRED",
       "preI4SuccessorCommits": [
         "e0bed18b62174544615dc55aa70dd4a1509692d7",
         "ab05415eb965404e1a6594df8533b8e0190aa0f7",
@@ -245,8 +245,10 @@
         "VRM-168"
       ],
       "v190SourceReproof": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF",
-      "liveReproofState": "NOT_MATERIALIZED",
-      "vrm168SourceReproof": "PASS_VRM168_SUCCESSOR_SOURCE_STATIC_REPROOF"
+      "liveReproofState": "PENDING_VRM168_FOCAL",
+      "vrm168SourceReproof": "PASS_VRM168_SUCCESSOR_SOURCE_STATIC_REPROOF",
+      "servedRuntimeRevision": "cxorbia-live-hr-dev-00250-l9w",
+      "servedHostingVersion": "sites/cxorbia-backend-dev/versions/0f7f7bd7376497b8"
     },
     {
       "domain": "certifications",
@@ -726,9 +728,9 @@
         "VRM-176"
       ],
       "v190SourceReproof": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF",
-      "servedRuntimeRevision": "cxorbia-live-hr-dev-00249-pqh",
-      "servedHostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30",
-      "liveReproofState": "DEPENDENCY_REPROOF_PENDING_AFTER_VRM168"
+      "servedRuntimeRevision": "cxorbia-live-hr-dev-00250-l9w",
+      "servedHostingVersion": "sites/cxorbia-backend-dev/versions/0f7f7bd7376497b8",
+      "liveReproofState": "PENDING_VRM168_DEPENDENCY_REPROOF"
     },
     {
       "domain": "visits-review-postulations-reservations",
@@ -766,9 +768,9 @@
         "VRM-180"
       ],
       "v190SourceReproof": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF",
-      "servedRuntimeRevision": "cxorbia-live-hr-dev-00249-pqh",
-      "servedHostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30",
-      "liveReproofState": "DEPENDENCY_REPROOF_PENDING_AFTER_VRM168"
+      "servedRuntimeRevision": "cxorbia-live-hr-dev-00250-l9w",
+      "servedHostingVersion": "sites/cxorbia-backend-dev/versions/0f7f7bd7376497b8",
+      "liveReproofState": "PENDING_VRM168_DEPENDENCY_REPROOF"
     }
   ],
   "sourceFiles": [
@@ -4883,7 +4885,7 @@
     "gate21AfterFullHuman": true,
     "cacheRuntimeFailClosed": true
   },
-  "nextExactAction": "Materialize the VRM-168 successor exactly once in Recovery DEV, then same-source live reproof of canonical HR composition, Shopper Mi Visitas, scheduling command mapping/provider ACK and dependent routes. No production.",
+  "nextExactAction": "Same-DEV live reproof only on sealed VRM-168 successor. Do not rebuild/redeploy. Human visual acceptance and I4 remain blocked.",
   "moduleTruthCorrection": {
     "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
     "run179": {
@@ -5816,14 +5818,27 @@
     "production": false
   },
   "v190Materialization": {
-    "state": "NOT_MATERIALIZED_FOR_VRM168_SUCCESSOR",
+    "runId": 37081102241,
+    "runNumber": 891,
+    "jobId": 111081739013,
+    "artifactId": 11259161246,
+    "artifactDigest": "sha256:e1e283c356024051699a9c37da0b0405a2e0cc2d2d70648130b8055cf09e9ff0",
+    "decision": "PASS_V190_EXACT_DEV_MATERIALIZATION",
     "sourceSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
     "sourceTree": "e715b9a55ed35f62037e1b82a183a32ff8d3ebcd",
-    "predecessorDevSourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
-    "builds": 0,
-    "runtimeDeploys": 0,
-    "hostingDeploys": 0,
-    "storageRulesDeploys": 0,
+    "runtimeRevision": "cxorbia-live-hr-dev-00250-l9w",
+    "runtimeDigest": "sha256:e4633301e99993134eb132892635b77b4006824aab4cc4f4682adc86a08ba9f7",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/0f7f7bd7376497b8",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790986549932000",
+    "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
+    "frontendBytesExact": true,
+    "vrm168RegressionPass": true,
+    "scenarioDimensionsProven": true,
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "storageRulesDeploys": 1,
+    "state": "SEALED_VRM168_SUCCESSOR_DEV_PENDING_LIVE_REPROOF",
     "production": false
   },
   "vrm168SuccessorSourceReproof": {

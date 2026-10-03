@@ -18,7 +18,7 @@
     "sourceTree": "e715b9a55ed35f62037e1b82a183a32ff8d3ebcd",
     "predecessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
     "production": false,
-    "state": "VRM168_SOURCE_STATIC_REPROOF_PASS_PENDING_EXACT_DEV_MATERIALIZATION",
+    "state": "SEALED_VRM168_SUCCESSOR_DEV_PENDING_LIVE_REPROOF",
     "proof": {
       "runId": 37037752771,
       "runNumber": 864,
@@ -54,14 +54,27 @@
       "production": false
     },
     "materialization": {
-      "state": "NOT_MATERIALIZED_FOR_VRM168_SUCCESSOR",
+      "runId": 37081102241,
+      "runNumber": 891,
+      "jobId": 111081739013,
+      "artifactId": 11259161246,
+      "artifactDigest": "sha256:e1e283c356024051699a9c37da0b0405a2e0cc2d2d70648130b8055cf09e9ff0",
+      "decision": "PASS_V190_EXACT_DEV_MATERIALIZATION",
       "sourceSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
       "sourceTree": "e715b9a55ed35f62037e1b82a183a32ff8d3ebcd",
-      "predecessorDevSourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
-      "builds": 0,
-      "runtimeDeploys": 0,
-      "hostingDeploys": 0,
-      "storageRulesDeploys": 0,
+      "runtimeRevision": "cxorbia-live-hr-dev-00250-l9w",
+      "runtimeDigest": "sha256:e4633301e99993134eb132892635b77b4006824aab4cc4f4682adc86a08ba9f7",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/0f7f7bd7376497b8",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790986549932000",
+      "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
+      "frontendBytesExact": true,
+      "vrm168RegressionPass": true,
+      "scenarioDimensionsProven": true,
+      "builds": 1,
+      "runtimeDeploys": 1,
+      "hostingDeploys": 1,
+      "storageRulesDeploys": 1,
+      "state": "SEALED_VRM168_SUCCESSOR_DEV_PENDING_LIVE_REPROOF",
       "production": false
     },
     "previousSourceProof": {
@@ -8620,7 +8633,7 @@
       "classification": "MAPPING_FAILURE",
       "severity": "P0",
       "title": "Shopper scheduling command failed on sealed DEV",
-      "state": "SOURCE_FIX_REPROOF_PASS_PENDING_EXACT_DEV_MATERIALIZATION",
+      "state": "EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
       "rootCauseStatus": "PROVEN",
       "rootCause": "The exact authenticated October Cayalá visit is canonical in HR/Firestore as shopper_gt_1440137b73, but the protected browser composition renders the same hrRowId OCTUBRE 26!6 in CX.data._visitas with shopperId='s3'. tya-cumulative-read-model-v2 builds an exact relation from the matched protected visit (base shopper identity -> durable canonical identity), but only promotes that relation into liveToCanonical while iterating baseShoppers. When an operational HR shopper identity exists on the visit but is absent from baseShoppers, the exact relation is never promoted; composedVisits therefore falls back to the transient live id 's3'. visitsForShopper(authenticated canonical shopperId) then cannot surface the card/action. Provider/Auth/version were independently proven healthy.",
       "owners": [
@@ -8665,9 +8678,9 @@
       "sourceSuccessorSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
       "sourceSuccessorTree": "e715b9a55ed35f62037e1b82a183a32ff8d3ebcd",
       "sourceReproofDecision": "PASS_VRM168_SUCCESSOR_SOURCE_STATIC_REPROOF",
-      "devMaterializationRunId": 37073947232,
-      "runtimeRevision": "cxorbia-live-hr-dev-00249-pqh",
-      "hostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30",
+      "devMaterializationRunId": 37081102241,
+      "runtimeRevision": "cxorbia-live-hr-dev-00250-l9w",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/0f7f7bd7376497b8",
       "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
       "latestLiveReproofFailure": {
         "runId": 37080258505,
@@ -8682,7 +8695,13 @@
         "providerAuthHealthy": true
       },
       "rootCauseRefinement": "The V190 promotion loop was present, but pendingPlatformAssignment prevented the exact visit-derived relation from entering relation at all when the transient HR token s3 was absent from baseShoppers. The focal successor promotes that exact relation only for missing transient identities and preserves conflict review when an HR identity exists.",
-      "focalRegressionPass": true
+      "focalRegressionPass": true,
+      "devMaterializationJobId": 111081739013,
+      "devMaterializationArtifactId": 11259161246,
+      "devMaterializationArtifactDigest": "sha256:e1e283c356024051699a9c37da0b0405a2e0cc2d2d70648130b8055cf09e9ff0",
+      "runtimeDigest": "sha256:e4633301e99993134eb132892635b77b4006824aab4cc4f4682adc86a08ba9f7",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790986549932000",
+      "vrm168RegressionPass": true
     },
     "VRM-169": {
       "id": "VRM-169",
@@ -9677,7 +9696,7 @@
     "nextFindingId": "VRM-181",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_V190_DEV_MATERIALIZATION_REQUIRED",
+    "terminalState": "HOLD_V190_LIVE_REPROOF_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -9695,14 +9714,27 @@
     "currentProductSourceSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
     "currentProductSourceTree": "e715b9a55ed35f62037e1b82a183a32ff8d3ebcd",
     "currentMaterialization": {
-      "state": "NOT_MATERIALIZED_FOR_VRM168_SUCCESSOR",
+      "runId": 37081102241,
+      "runNumber": 891,
+      "jobId": 111081739013,
+      "artifactId": 11259161246,
+      "artifactDigest": "sha256:e1e283c356024051699a9c37da0b0405a2e0cc2d2d70648130b8055cf09e9ff0",
+      "decision": "PASS_V190_EXACT_DEV_MATERIALIZATION",
       "sourceSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
       "sourceTree": "e715b9a55ed35f62037e1b82a183a32ff8d3ebcd",
-      "predecessorDevSourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
-      "builds": 0,
-      "runtimeDeploys": 0,
-      "hostingDeploys": 0,
-      "storageRulesDeploys": 0,
+      "runtimeRevision": "cxorbia-live-hr-dev-00250-l9w",
+      "runtimeDigest": "sha256:e4633301e99993134eb132892635b77b4006824aab4cc4f4682adc86a08ba9f7",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/0f7f7bd7376497b8",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790986549932000",
+      "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
+      "frontendBytesExact": true,
+      "vrm168RegressionPass": true,
+      "scenarioDimensionsProven": true,
+      "builds": 1,
+      "runtimeDeploys": 1,
+      "hostingDeploys": 1,
+      "storageRulesDeploys": 1,
+      "state": "SEALED_VRM168_SUCCESSOR_DEV_PENDING_LIVE_REPROOF",
       "production": false
     }
   },
@@ -13409,5 +13441,5 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-10-02",
-  "nextExactAction": "Materialize exactly c0fe7f11e50d7d73356d99b68aabb54972ae7b45 once in Recovery DEV, with the VRM-168 pure-composer regression required before deploy. Then repeat the same live readback on that exact DEV; no production."
+  "nextExactAction": "Run same-source/same-DEV live reproof against c0fe7f11 on runtime cxorbia-live-hr-dev-00250-l9w and Hosting 0f7f7bd7376497b8. Reprove exact OCTUBRE 26!6 card/action, command mapping, provider ACK, durable reload, cleanup, and dependent Shopper/Admin/Reservas/Movimientos routes. No rebuild and no production."
 }
