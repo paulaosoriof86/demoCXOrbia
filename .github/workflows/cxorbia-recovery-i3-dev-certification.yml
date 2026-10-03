@@ -7189,14 +7189,13 @@ jobs:
 
   phasea-rejected-checkpoint-source-proof:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_REJECTED_PHASEA_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_JULISSA_IDENTITY_SOURCE_REPROOF_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_REJECTED_PHASEA_SOURCE_REPROOF_REQUIRED' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
     env:
       FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
       FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
-      ACTIVE_STATUS: ${{ needs.canonical-candidate-authority.outputs.status }}
     steps:
       - name: Checkout exact control head
         uses: actions/checkout@v4
@@ -7206,7 +7205,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [ "$ACTIVE_STATUS" = "HOLD_JULISSA_IDENTITY_SOURCE_REPROOF_REQUIRED" ]; then test "$FOCAL_SOURCE" = "7b8b88608c9cd38cc97726c3f17aab55a51f1715"; else test "$FOCAL_SOURCE" = "4f87cb0155162674d459b09e3725dd585c84709d"; fi
+          test "$FOCAL_SOURCE" = "7b8b88608c9cd38cc97726c3f17aab55a51f1715"
           test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
           git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
           node --check app/modules/midia.js
@@ -7226,15 +7225,13 @@ jobs:
           node --test backend/runtime/hr-live-service/test/cxorbia-prei4-shopper-progressive-route.test.mjs
           node --test backend/runtime/hr-live-service/test/cxorbia-gate9-postulation-immediate.test.mjs
           node --test backend/runtime/hr-live-service/test/cxorbia-pre-i4-finance-source-semantics.test.mjs
-          if [ "$ACTIVE_STATUS" = "HOLD_JULISSA_IDENTITY_SOURCE_REPROOF_REQUIRED" ]; then
-            node --check backend/runtime/cxorbia-shopper-command-provider-v1.mjs
-            node --check tools/qa/cxorbia-i3-v221-identity-academy-source-proof.mjs
-            node tools/qa/cxorbia-i3-v221-identity-academy-source-proof.mjs | tee /tmp/v221-source-proof.json
-            test "$(jq -r '.decision' /tmp/v221-source-proof.json)" = "PASS_I3_V221_IDENTITY_ACADEMY_SOURCE_PROOF"
-            node --test backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs | tee /tmp/v221-shopper-provider.log
-            grep -Fq "VRM-197 / multiple password-proof principals choose the unique canonical visible-login keeper" /tmp/v221-shopper-provider.log
-            grep -Fq "VRM-185 / admin identity adjudication fails closed when multiple principals have password proof" /tmp/v221-shopper-provider.log
-          fi
+          node --check backend/runtime/cxorbia-shopper-command-provider-v1.mjs
+          node --check tools/qa/cxorbia-i3-v221-identity-academy-source-proof.mjs
+          node tools/qa/cxorbia-i3-v221-identity-academy-source-proof.mjs | tee /tmp/v221-source-proof.json
+          test "$(jq -r '.decision' /tmp/v221-source-proof.json)" = "PASS_I3_V221_IDENTITY_ACADEMY_SOURCE_PROOF"
+          node --test backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs | tee /tmp/v221-shopper-provider.log
+          grep -Fq "VRM-197 / multiple password-proof principals choose the unique canonical visible-login keeper" /tmp/v221-shopper-provider.log
+          grep -Fq "VRM-185 / admin identity adjudication fails closed when multiple principals have password proof" /tmp/v221-shopper-provider.log
 
   phasea-representative-same-artifact-live-reproof:
     needs: canonical-candidate-authority
