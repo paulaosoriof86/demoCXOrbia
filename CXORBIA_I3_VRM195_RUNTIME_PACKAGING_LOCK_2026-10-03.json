@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm195.runtime-packaging-lock.v1",
+  "frozenAt": "2026-10-03T20:20:22Z",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
+  "status": "FROZEN_PROVEN_RELEASE_COMPOSITION_FAILURE_SUCCESSOR_ARMED",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "production": "DO_NOT_TOUCH",
+  "predecessorProductSourceSha": "a62d4e5b49fce4464987ca55112221604647933c",
+  "successorProductSourceSha": "c5c4d002ab783391f915eaf7f41d69dc1005f215",
+  "successorProductTree": "7909233675f6bed3021f90810edb3d1c696aaf2b",
+  "finding": {
+    "id": "VRM-195",
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "severity": "P0",
+    "owner": "backend/runtime/hr-live-service/Dockerfile",
+    "cause": "Static command-runtime imports for commercial and academy providers were absent from the runtime Docker image, so Node could not finish module loading before server.listen(PORT)."
+  },
+  "evidence": {
+    "runId": 37151022653,
+    "runNumber": 974,
+    "jobId": 111284807669,
+    "failedRevision": "cxorbia-live-hr-dev-00256-8b5",
+    "observedCloudRunError": "container failed to start and listen on PORT=8080",
+    "imageBuildCompleted": true,
+    "hostingDeploys": 0
+  },
+  "fix": {
+    "addedDockerCopies": [
+      "backend/runtime/cxorbia-commercial-command-provider-v1.mjs",
+      "backend/runtime/cxorbia-academy-command-provider-v1.mjs"
+    ],
+    "permanentPreBuildDependencyClosureGuard": true,
+    "productFilesChanged": [
+      "backend/runtime/hr-live-service/Dockerfile"
+    ]
+  },
+  "nextAction": "Run canonical I3 on the successor; require dependency closure PASS, one DEV build/materialization, same-artifact Admin+Shopper+HR+Finance readback, then Paula visual approval.",
+  "changePolicy": "Frozen; supersede only with later explicit evidence."
+}
