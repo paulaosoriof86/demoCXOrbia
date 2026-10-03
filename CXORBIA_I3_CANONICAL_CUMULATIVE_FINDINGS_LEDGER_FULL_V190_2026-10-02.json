@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "83d2385dc47f3bfd785a37072100fdbab11b5127",
-    "sourceTree": "e73408c999c691d37d74c248d668b649e5bb85e5",
-    "predecessorSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
+    "sourceSha": "9102918177d89d9e3d18cfb75c04aba8c29cba86",
+    "sourceTree": "0e6f61aa855b1d9677fd200403793099bfecb9b7",
+    "predecessorSha": "83d2385dc47f3bfd785a37072100fdbab11b5127",
     "production": false,
-    "state": "SEALED_VRM168_REFINED_OWNER_DEV_PENDING_LIVE_REPROOF",
+    "state": "SOURCE_FIX_READY_EXACT_DEV_MATERIALIZATION",
     "proof": {
       "runId": 37037752771,
       "runNumber": 864,
@@ -334,10 +334,10 @@
     "vrm168RefinedAuthority": {
       "findingId": "VRM-168",
       "classification": "MAPPING_FAILURE",
-      "owner": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
-      "sourceSha": "83d2385dc47f3bfd785a37072100fdbab11b5127",
-      "sourceTree": "e73408c999c691d37d74c248d668b649e5bb85e5",
-      "predecessorSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
+      "owner": "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+      "sourceSha": "9102918177d89d9e3d18cfb75c04aba8c29cba86",
+      "sourceTree": "0e6f61aa855b1d9677fd200403793099bfecb9b7",
+      "predecessorSha": "83d2385dc47f3bfd785a37072100fdbab11b5127",
       "production": false
     }
   },
@@ -8639,11 +8639,11 @@
       "classification": "MAPPING_FAILURE",
       "severity": "P0",
       "title": "Shopper scheduling command failed on sealed DEV",
-      "state": "EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
+      "state": "SOURCE_FIX_READY_EXACT_DEV_MATERIALIZATION",
       "rootCauseStatus": "PROVEN",
       "rootCause": "Run 299 materialized a tenant_adjudication that redirected the exact HR identity shopper_gt_1440137b73 to s3 despite an active exact source principal and stable self crosswalk. Later live HR reconciliation in backend/runtime/cxorbia-shopper-command-provider-v1.mjs trusted that historical adjudication as canonical and durableUpsert re-persisted the source crosswalk to s3. server.mjs then consumed that crosswalk before browser composition. HR raw/live, membership and Auth claims were independently proven correct for shopper_gt_1440137b73.",
       "owners": [
-        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
+        "app/adapters/cxorbia-cxdata-command-boundary-v1.js"
       ],
       "production": false,
       "evidence": {
@@ -8679,10 +8679,10 @@
         "hrWrites": 0,
         "production": false
       },
-      "correction": "Suppress only tenant_adjudication redirects where the source token itself has an exact active membership and enabled matching Auth principal in the same tenant/project; repair only structurally proven stale tenant-adjudicated HR crosswalks back to stable self identity. Provider-exact technical links retain existing semantics and ambiguous evidence remains fail-closed.",
-      "sourceSuccessorSha": "83d2385dc47f3bfd785a37072100fdbab11b5127",
-      "sourceSuccessorTree": "e73408c999c691d37d74c248d668b649e5bb85e5",
-      "sourceReproofDecision": "PASS_V190_EXACT_DEV_MATERIALIZATION_PENDING_LIVE_REPROOF",
+      "correction": "Resolve the current visit record at the CX.data command boundary and use hrRowId first, then exact source coordinate, then visitId/id fallback as the command entityId/visitId. Keep hrRowId explicit. The existing browser capture remains unchanged and is the live regression authority.",
+      "sourceSuccessorSha": "9102918177d89d9e3d18cfb75c04aba8c29cba86",
+      "sourceSuccessorTree": "0e6f61aa855b1d9677fd200403793099bfecb9b7",
+      "sourceReproofDecision": "PENDING_EXISTING_V190_STATIC_AND_MATERIALIZATION_GATE",
       "devMaterializationRunId": 37085892089,
       "runtimeRevision": "cxorbia-live-hr-dev-00251-mrp",
       "hostingVersion": "sites/cxorbia-backend-dev/versions/3f4c0f77d423a87c",
@@ -8699,7 +8699,7 @@
         "scheduleButtonFound": false,
         "providerAuthHealthy": true
       },
-      "rootCauseRefinement": "Historical tenant_adjudication incorrectly outranked a current exact HR identity with matching active durable membership and enabled Auth principal. Current owner is the durable shopper identity provider mapping precedence.",
+      "rootCauseRefinement": "The identity/crosswalk layer is now repaired. The remaining VRM-168 owner is app/adapters/cxorbia-cxdata-command-boundary-v1.js: shopper scheduling passed the projected browser id as command entityId/visitId even though the operational provider's durable stable visit key is hrRowId first. This violates the visitId/hrRowId stable sync contract and makes audit/receipt identity transient.",
       "focalRegressionPass": true,
       "devMaterializationJobId": 111096037320,
       "devMaterializationArtifactId": 11260584203,
@@ -8722,21 +8722,40 @@
         "production": false
       },
       "previousSourceSuccessor": {
-        "sourceSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
-        "sourceTree": "e715b9a55ed35f62037e1b82a183a32ff8d3ebcd",
-        "status": "SECONDARY_COMPOSER_PROTECTION_RETAINED_PENDING_COMBINED_REPROOF"
+        "sourceSha": "83d2385dc47f3bfd785a37072100fdbab11b5127",
+        "sourceTree": "e73408c999c691d37d74c248d668b649e5bb85e5",
+        "status": "IDENTITY_MAPPING_FIX_LIVE_PROVEN;RESIDUAL_COMMAND_MAPPING_OWNER_SUPERSEDES_FOR_VRM168"
       },
       "correctionScope": {
         "productFiles": [
-          "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
+          "app/adapters/cxorbia-cxdata-command-boundary-v1.js"
         ],
         "qaFiles": [
-          "backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs"
+          "tools/qa/cxorbia-vrm154-156-frontend-source-contract.mjs"
         ],
-        "focalHardcodesInProduct": false,
         "manualFirestoreEdit": false,
-        "identityLinkDeletion": false,
         "hrWrites": false,
+        "production": false
+      },
+      "residualAfterRun899": {
+        "runId": 37086160151,
+        "artifactId": 11260374896,
+        "identityRepairPass": true,
+        "crosswalkSelfRepaired": true,
+        "cardFound": true,
+        "scheduleButtonFound": true,
+        "identityMapSourceToSelf": true,
+        "failedDecision": "FAIL_VRM168_BROWSER_COMMAND_MAPPING",
+        "mismatch": [
+          "entityId",
+          "visitId"
+        ],
+        "observedEntityId": "hr_2026-10_gt_6_7cf9d422f8",
+        "observedVisitId": "hr_2026-10_gt_6_7cf9d422f8",
+        "observedHrRowId": "OCTUBRE 26!6",
+        "expectedStableVisitKey": "OCTUBRE 26!6",
+        "durableUnchanged": true,
+        "writes": 0,
         "production": false
       }
     },
