@@ -151,8 +151,11 @@ CX.module('midia', ({data,role,ui})=>{
   const mine=_mySid?data.visitas().filter(v=>String(v.shopperId||'')===String(_mySid)&&!(data.visitFacets?.(v)?.cancelled)).slice(0,2):[];
   const nextVisit=mine[0]||null;
   const vf=nextVisit&&data.visitFacets?data.visitFacets(nextVisit):(nextVisit?.canonicalFacets||{});
+  const certBank=(()=>{try{return CX.certStore?.bank?.(p.id,window.CX_CERT_SELECTED_ID||'main')||CX.certStore?.bank?.(p.id)||null;}catch(_){return null;}})();
+  const certRequired=!!(certBank&&certBank.required!==false);
+  const certDone=!certRequired||String((data.getShopper&&data.getShopper(_mySid))?.certificationStatus||'').toLowerCase()==='certificada'||!!((_mySid&&certBank&&CX.backendCertifications?.durableCurrent)&&CX.backendCertifications.durableCurrent(_mySid,certBank));
   const steps=nextVisit?[
-    ['Asignación confirmada',!!vf.assigned],['Agendamiento',!!vf.scheduled],['Visita realizada',!!vf.realized],['Cuestionario completado',!!vf.questionnaire],['Submitida',!!vf.submitted],['Pago confirmado',!!vf.paymentConfirmed]
+    ['Asignación confirmada',!!vf.assigned],['Instructivo leído',!!nextVisit.instructiveReadAt],['Certificación del proyecto',certDone],['Agendamiento',!!vf.scheduled],['Visita realizada',!!vf.realized],['Cuestionario completado',!!vf.questionnaire],['Submitida',!!vf.submitted],['Pago confirmado',!!vf.paymentConfirmed]
   ]:[];
   return `
     ${ui.ph('Mi Día', 'Hola, '+CX.session.user.name.split(' ')[0]+' 👋 · '+data.programBase(p)+' · periodo '+(p.periodo||p.ronda||p.name))}
