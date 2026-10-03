@@ -284,9 +284,13 @@ function hrProfilePatch(candidate,projectIds,sourceRevision){
 }
 
 async function membershipMatches(users,shopperId){
-  const snap=await users.where('shopperId','==',shopperId).limit(2).get();
-  if(snap.size>1)throw new Error('SHOPPER_MEMBERSHIP_DUPLICATE_IDENTITY');
-  return snap.size===1?snap.docs[0]:null;
+  const snap=await users.where('shopperId','==',shopperId).limit(8).get(),docs=arr(snap?.docs);
+  const active=docs.filter(doc=>{const m=doc.data()||{},status=str(m.status).toLowerCase(),state=str(m.identityState).toLowerCase();return m.active===true&&!['inactive','superseded'].includes(status)&&state!=='superseded_exact_alias';});
+  if(active.length>1)throw new Error('SHOPPER_MEMBERSHIP_DUPLICATE_IDENTITY');
+  if(active.length===1)return active[0];
+  const viable=docs.filter(doc=>{const m=doc.data()||{},status=str(m.status).toLowerCase(),state=str(m.identityState).toLowerCase();return !['inactive','superseded'].includes(status)&&state!=='superseded_exact_alias';});
+  if(viable.length>1)throw new Error('SHOPPER_MEMBERSHIP_DUPLICATE_IDENTITY');
+  return viable.length===1?viable[0]:(docs.length===1?docs[0]:null);
 }
 async function safeAuthByUid(auth,uid){try{return await auth.getUser(uid);}catch(error){if(authNotFound(error))return null;throw error;}}
 async function safeAuthByEmail(auth,email){try{return await auth.getUserByEmail(email);}catch(error){if(authNotFound(error))return null;throw error;}}
@@ -677,33 +681,181 @@ function changedHrManagedFields(existing,patch){
   if(str(existing?.sourceType)!=='hr_external')return [];
   return HR_MANAGED_PROFILE_FIELDS.filter(key=>patch[key]!==undefined&&str(patch[key])!==str(existing?.[key]));
 }
-async function durableIdentityAdjudication({db,command,actor,canonicalShopperId}){
+const ADJUDICATION_OWNER_FIELDS=Object.freeze([
+  'shopperId','assignedShopperId','assignedToShopperId','auditorId','profileId','applicantShopperId',
+  'ownerShopperId','targetShopperId','beneficiaryShopperId','liquidationShopperId','reservationShopperId'
+]);
+const ADJUDICATION_OWNER_ARRAY_FIELDS=Object.freeze(['shopperIds','candidateShopperIds']);
+const ADJUDICATION_DOMAIN_COLLECTIONS=Object.freeze([
+  ['tenant','paymentReconciliations'],['tenant','reviewQueue'],
+  ['project','certifications'],['project','liquidations'],['project','postulations'],['project','reservations'],['project','visits']
+]);
+const ADJUDICATION_PROFILE_IDENTITY_FIELDS=new Set([
+  'id','shopperId','canonicalShopperId','tenantId','sourceType','hrSourceRevision','lastHrSyncedAt','hrManaged',
+  'sourceIdentityKey','identityState','supersededByShopperId','supersededAt','providerUidFingerprint',
+  'sourceShopperIds','exactAliases','identityAliases','aliases','legacyLiveShopperIds','canonicalLegacyIds'
+]);
+const emptyProfileValue=v=>v==null||v===''||(Array.isArray(v)&&v.length===0);
+function adjudicationProfilePatch(canonical,aliases,keeperMember,authorityRef,canonicalShopperId,aliasIds,projectIds){
+  const patch={};
+  for(const alias of aliases){
+    for(const [key,value] of Object.entries(alias||{})){
+      if(ADJUDICATION_PROFILE_IDENTITY_FIELDS.has(key)||HR_MANAGED_PROFILE_FIELDS.includes(key))continue;
+      if(Array.isArray(value)){
+        if(!value.length)continue;
+        if(Array.isArray(canonical?.[key]))patch[key]=uniq([...(patch[key]||canonical[key]),...value]);
+        else if(emptyProfileValue(canonical?.[key])&&!patch[key])patch[key]=clean(value);
+      }else if(emptyProfileValue(canonical?.[key])&&emptyProfileValue(patch[key])&&!emptyProfileValue(value))patch[key]=clean(value);
+    }
+  }
+  const keeperLogin=str(keeperMember?.visibleLogin).toLowerCase();
+  if(keeperLogin){patch.visibleLogin=keeperLogin;patch.username=keeperLogin;patch.user=keeperLogin;}
+  for(const key of ['credentialState','credentialVersion','credentialRuleVersion','credentialSweepVersion','credentialPasswordProofVersion','credentialPasswordRuleVersion']){
+    const value=keeperMember?.[key];if(value!==undefined&&value!==null&&value!=='')patch[key]=value;
+  }
+  patch.id=canonicalShopperId;patch.shopperId=canonicalShopperId;patch.tenantId=str(canonical?.tenantId);patch.projectIds=uniq(projectIds);
+  patch.sourceShopperIds=uniq([...(canonical?.sourceShopperIds||[]),...aliasIds]);
+  patch.exactAliases=uniq([...(canonical?.exactAliases||[]),...aliasIds]);
+  patch.legacyLiveShopperIds=uniq([...(canonical?.legacyLiveShopperIds||[]),...aliasIds]);
+  patch.identityAuthority='tenant_adjudication';patch.identityAuthorityRef=authorityRef;patch.identityConsolidatedAt=now();patch.updatedAt=now();
+  return clean(patch);
+}
+async function adjudicationMembershipDocs(users,shopperId){
+  const snap=await users.where('shopperId','==',shopperId).limit(8).get();
+  return arr(snap?.docs);
+}
+function adjudicationStrongCredentialProof(member,profile){
+  return str(member?.credentialPasswordProofVersion)===CREDENTIAL_PASSWORD_PROOF_VERSION||
+    str(profile?.credentialPasswordProofVersion)===CREDENTIAL_PASSWORD_PROOF_VERSION;
+}
+function adjudicationOwnerPatch(data,aliases,canonicalShopperId){
+  const aliasSet=new Set(aliases),patch={};
+  for(const key of ADJUDICATION_OWNER_FIELDS)if(aliasSet.has(str(data?.[key])))patch[key]=canonicalShopperId;
+  for(const key of ADJUDICATION_OWNER_ARRAY_FIELDS){
+    if(!Array.isArray(data?.[key]))continue;
+    const next=uniq(data[key].map(v=>aliasSet.has(str(v))?canonicalShopperId:v));
+    if(JSON.stringify(next)!==JSON.stringify(uniq(data[key])))patch[key]=next;
+  }
+  return patch;
+}
+async function adjudicationDomainPlan(tenant,projectId,aliases,canonicalShopperId){
+  const plan=[];
+  for(const [scope,name] of ADJUDICATION_DOMAIN_COLLECTIONS){
+    const col=scope==='tenant'?tenant.collection(name):tenant.collection('projects').doc(projectId).collection(name);
+    const snap=await col.get();
+    for(const doc of arr(snap?.docs)){
+      const patch=adjudicationOwnerPatch(doc.data()||{},aliases,canonicalShopperId);
+      if(Object.keys(patch).length)plan.push({scope,name,ref:col.doc(doc.id),patch});
+    }
+  }
+  return plan;
+}
+async function durableIdentityAdjudication({auth,db,command,actor,canonicalShopperId}){
   if(!OPERATOR_ROLES.includes(str(actor?.role))||actor?.selfScoped===true)throw new Error('SHOPPER_IDENTITY_ADJUDICATION_OPERATOR_REQUIRED');
-  const tenantId=str(command.tenantId),projectId=str(command.projectId),tenant=db.collection('tenants').doc(tenantId);
+  const tenantId=str(command.tenantId),projectId=str(command.projectId),tenant=db.collection('tenants').doc(tenantId),users=tenant.collection('users');
   const aliases=uniq(command.payload?.aliasShopperIds||command.payload?.exactAliases||[]).filter(x=>x&&x!==canonicalShopperId);
   if(!aliases.length)throw new Error('SHOPPER_IDENTITY_ALIASES_REQUIRED');
   const canonicalRef=tenant.collection('shoppers').doc(canonicalShopperId),canonicalSnap=await canonicalRef.get();
   if(!canonicalSnap.exists)throw new Error('SHOPPER_IDENTITY_CANONICAL_PROFILE_MISSING');
   const canonical=canonicalSnap.data()||{};
   if(str(canonical.tenantId||tenantId)!==tenantId)throw new Error('SHOPPER_IDENTITY_CANONICAL_TENANT_CONFLICT');
-  const profileSnaps=await Promise.all(aliases.map(id=>tenant.collection('shoppers').doc(id).get()));
-  const crossSnaps=await Promise.all(aliases.map(id=>tenant.collection('shopperIdentityCrosswalk').doc(id).get()));
+  const profileRefs=aliases.map(id=>tenant.collection('shoppers').doc(id)),crossRefs=aliases.map(id=>tenant.collection('shopperIdentityCrosswalk').doc(id));
+  const profileSnaps=await Promise.all(profileRefs.map(ref=>ref.get())),crossSnaps=await Promise.all(crossRefs.map(ref=>ref.get()));
   aliases.forEach((id,index)=>{if(!profileSnaps[index].exists&&!crossSnaps[index].exists)throw new Error('SHOPPER_IDENTITY_ALIAS_UNKNOWN:'+id);});
   const existing=await exactShopperIdentityMap(db,tenantId,projectId);
   aliases.forEach(id=>{const prior=existing.get(id);if(prior&&prior!==canonicalShopperId)throw new Error('SHOPPER_IDENTITY_ALIAS_CONFLICT:'+id);});
-  const linkId='irl_'+sha([tenantId,projectId,canonicalShopperId,...aliases].join('\0')).slice(0,32);
-  const stamp=now(),authorityRef=receiptId(command);
-  const link={
+  const aliasProfiles=profileSnaps.map(s=>s.exists?(s.data()||{}):{});
+  const identityIds=[canonicalShopperId,...aliases],profilesById=new Map([[canonicalShopperId,canonical],...aliases.map((id,i)=>[id,aliasProfiles[i]])]);
+  const principalRows=[];
+  for(const identityId of identityIds){
+    const docs=await adjudicationMembershipDocs(users,identityId),activeDocs=docs.filter(doc=>{
+      const m=doc.data()||{};return m.active===true&&str(m.tenantId)===tenantId&&str(m.role)==='shopper'&&str(m.authNamespace)==='shopper'&&uniq(m.projectIds).includes(projectId);
+    });
+    if(activeDocs.length>1)throw new Error('SHOPPER_IDENTITY_MULTIPLE_ACTIVE_MEMBERSHIPS:'+identityId);
+    if(!activeDocs.length)continue;
+    const doc=activeDocs[0],member=doc.data()||{},user=await safeAuthByUid(auth,doc.id);
+    if(!user||user.disabled===true||!authPrincipalMatches(user,tenantId,identityId,projectId))throw new Error('SHOPPER_IDENTITY_ACTIVE_PRINCIPAL_UNSAFE:'+identityId);
+    principalRows.push({identityId,doc,member,user,profile:profilesById.get(identityId)||{},strongProof:adjudicationStrongCredentialProof(member,profilesById.get(identityId)||{})});
+  }
+  const strong=principalRows.filter(x=>x.strongProof);
+  if(strong.length>1)throw new Error('SHOPPER_IDENTITY_MULTIPLE_PASSWORD_PROOF_PRINCIPALS');
+  if(!strong.length&&principalRows.length>1)throw new Error('SHOPPER_IDENTITY_KEEPER_AMBIGUOUS');
+  const keeper=strong[0]||principalRows[0]||null;
+  const linkId='irl_'+sha([tenantId,projectId,canonicalShopperId,...aliases].join('\0')).slice(0,32),linkRef=tenant.collection('shopperIdentityLinks').doc(linkId);
+  const stamp=now(),authorityRef=receiptId(command),link={
     schemaVersion:'cxorbia.shopper-identity-link.v1',identityLinkId:linkId,tenantId,projectScope:projectId,periodIndependent:true,
     canonicalShopperId,sourceSystem:'hr_external',sourceIdentityKey:aliases[0],exactAliases:aliases,sourceAliases:aliases,
     status:'active',state:'active',authorityType:'tenant_adjudication',authorityRef,adjudicationId:authorityRef,
     humanConfirmed:true,sourceSafe:true,fuzzyMatching:false,actorUidFingerprint:providerUidFingerprint(actor.uid),
     reason:str(command.payload?.reason||'admin_confirmed_same_human'),createdAt:stamp,updatedAt:stamp
   };
-  await tenant.collection('shopperIdentityLinks').doc(linkId).set(link,{merge:true});
-  return {identityLinkId:linkId,canonicalShopperId,exactAliases:aliases,providerWrites:1,authorityType:'tenant_adjudication'};
+  if(!keeper){
+    await linkRef.set(link,{merge:true});
+    return {identityLinkId:linkId,canonicalShopperId,exactAliases:aliases,providerWrites:1,authorityType:'tenant_adjudication',identityConsolidated:false,retiredPrincipalCount:0,domainWrites:{}};
+  }
+  const unionProjects=uniq([projectId,...principalRows.flatMap(x=>arr(x.member.projectIds)),...arr(canonical.projectIds),...aliasProfiles.flatMap(x=>arr(x.projectIds))]);
+  const canonicalPatch=adjudicationProfilePatch(canonical,aliasProfiles,keeper.member,authorityRef,canonicalShopperId,aliases,unionProjects);
+  canonicalPatch.tenantId=tenantId;
+  const keeperClaims=canonicalClaims(canonicalShopperId,tenantId,unionProjects),keeperUid=keeper.doc.id,keeperFingerprint=providerUidFingerprint(keeperUid);
+  const otherPrincipals=principalRows.filter(x=>x.doc.id!==keeperUid);
+  const canonicalCrossRef=tenant.collection('shopperIdentityCrosswalk').doc(canonicalShopperId);
+  const domainPlan=await adjudicationDomainPlan(tenant,projectId,aliases,canonicalShopperId);
+  if(domainPlan.length>380)throw new Error('SHOPPER_IDENTITY_DOMAIN_WRITE_BUDGET_EXCEEDED');
+  const allLinks=await tenant.collection('shopperIdentityLinks').get(),staleLinkDocs=arr(allLinks?.docs).filter(doc=>{
+    if(doc.id===linkId)return false;
+    const l=doc.data()||{},status=str(l.status||l.state).toLowerCase(),authority=str(l.authorityType||l.authority?.type).toLowerCase(),target=str(l.canonicalShopperId||l.canonicalId||l.shopperId||l.profileId);
+    return ACTIVE_IDENTITY_LINK_STATES.has(status)&&authority==='tenant_adjudication'&&aliases.includes(target)&&identityLinkTokens(l).includes(canonicalShopperId);
+  });
+  const existingNewLink=await linkRef.get();
+  if(existingNewLink.exists){
+    const prior=existingNewLink.data()||{};
+    if(str(prior.tenantId)!==tenantId||str(prior.canonicalShopperId)!==canonicalShopperId||str(prior.authorityRef)!==authorityRef)throw new Error('SHOPPER_IDENTITY_ADJUDICATION_LINK_CONFLICT');
+  }
+  const authBefore=principalRows.map(x=>({uid:x.user.uid,disabled:x.user.disabled===true,claims:x.user.customClaims||{}})),authChanged=[];
+  try{
+    if(claimsDigest(keeper.user.customClaims||{})!==claimsDigest(keeperClaims)){await auth.setCustomUserClaims(keeperUid,keeperClaims);authChanged.push(keeperUid);}
+    for(const row of otherPrincipals){if(row.user.disabled!==true){await auth.updateUser(row.user.uid,{disabled:true});authChanged.push(row.user.uid);}}
+    await db.runTransaction(async tx=>{
+      const readRefs=[canonicalRef,...profileRefs,keeper.doc,...otherPrincipals.map(x=>x.doc),canonicalCrossRef,...crossRefs,...staleLinkDocs.map(d=>tenant.collection('shopperIdentityLinks').doc(d.id)),...domainPlan.map(x=>x.ref)];
+      const reads=await Promise.all(readRefs.map(ref=>tx.get(ref)));
+      if(!reads[0].exists)throw new Error('SHOPPER_IDENTITY_CANONICAL_PROFILE_MISSING_DURING_COMMIT');
+      let offset=1;
+      for(let i=0;i<profileRefs.length;i++,offset++)if(!reads[offset].exists&&!crossSnaps[i].exists)throw new Error('SHOPPER_IDENTITY_ALIAS_DISAPPEARED:'+aliases[i]);
+      const keeperMemberSnap=reads[offset++];
+      if(!keeperMemberSnap.exists||keeperMemberSnap.data()?.active!==true)throw new Error('SHOPPER_IDENTITY_KEEPER_MEMBERSHIP_CHANGED');
+      for(let i=0;i<otherPrincipals.length;i++,offset++){const snap=reads[offset];if(!snap.exists||snap.data()?.active!==true)throw new Error('SHOPPER_IDENTITY_RETIRE_MEMBERSHIP_CHANGED');}
+      tx.set(canonicalRef,canonicalPatch,{merge:true});
+      profileRefs.forEach((ref,i)=>tx.set(ref,{identityState:'superseded_exact_alias',supersededByShopperId:canonicalShopperId,supersededAt:stamp,updatedAt:stamp},{merge:true}));
+      tx.set(keeper.doc,{active:true,status:'active',tenantId,role:'shopper',authNamespace:'shopper',shopperId:canonicalShopperId,projectIds:unionProjects,providerUidFingerprint:keeperFingerprint,claimsDigest:claimsDigest(keeperClaims),identityConsolidatedFrom:uniq([keeper.identityId,...aliases]),identityConsolidatedAt:stamp,updatedAt:stamp},{merge:true});
+      otherPrincipals.forEach(row=>tx.set(row.doc,{active:false,status:'superseded',identityState:'superseded_exact_alias',supersededByShopperId:canonicalShopperId,supersededByUidFingerprint:keeperFingerprint,supersededAt:stamp,updatedAt:stamp},{merge:true}));
+      tx.set(canonicalCrossRef,{tenantId,shopperId:canonicalShopperId,projectIds:unionProjects,authNamespace:'shopper',providerUidFingerprint:keeperFingerprint,sourceStableKey:canonicalShopperId,identityMode:'stable_hr_shopper_id',sourceType:'hr_external',fuzzyMatching:false,migrationAuthorityType:null,migrationAuthorityRef:null,migratedFromShopperId:null,identityAuthority:'tenant_adjudication',identityAuthorityRef:authorityRef,updatedAt:stamp},{merge:true});
+      crossRefs.forEach((ref,i)=>tx.set(ref,{tenantId,shopperId:canonicalShopperId,canonicalShopperId,projectIds:unionProjects,authNamespace:'shopper',providerUidFingerprint:keeperFingerprint,sourceStableKey:aliases[i],identityMode:'provider_exact_identity_link',sourceType:str((crossSnaps[i].data()||{}).sourceType||'hr_external'),fuzzyMatching:false,migrationAuthorityType:'tenant_adjudication',migrationAuthorityRef:authorityRef,migratedFromShopperId:aliases[i],updatedAt:stamp},{merge:true}));
+      tx.set(linkRef,existingNewLink.exists?{...link,createdAt:(existingNewLink.data()||{}).createdAt||stamp}:link,{merge:true});
+      staleLinkDocs.forEach(doc=>tx.set(tenant.collection('shopperIdentityLinks').doc(doc.id),{status:'superseded',state:'superseded',supersededByIdentityLinkId:linkId,supersededAt:stamp,updatedAt:stamp},{merge:true}));
+      domainPlan.forEach(item=>tx.set(item.ref,{...item.patch,identityConsolidatedAt:stamp},{merge:true}));
+    });
+  }catch(error){
+    const rollbackErrors=[];
+    for(const before of authBefore){
+      try{await auth.setCustomUserClaims(before.uid,before.claims);if((await auth.getUser(before.uid)).disabled!==before.disabled)await auth.updateUser(before.uid,{disabled:before.disabled});}catch(rollback){rollbackErrors.push(str(rollback?.message||rollback));}
+    }
+    if(rollbackErrors.length)throw new Error('SHOPPER_IDENTITY_AUTH_ROLLBACK_FAILED:'+rollbackErrors.join('|'));
+    throw error;
+  }
+  const [keeperRead,...retiredReads]=await Promise.all([auth.getUser(keeperUid),...otherPrincipals.map(x=>auth.getUser(x.user.uid))]);
+  if(keeperRead.disabled===true||!authPrincipalMatches(keeperRead,tenantId,canonicalShopperId,projectId))throw new Error('SHOPPER_IDENTITY_KEEPER_READBACK_MISMATCH');
+  if(retiredReads.some(u=>u.disabled!==true))throw new Error('SHOPPER_IDENTITY_RETIRED_AUTH_READBACK_MISMATCH');
+  const activeCanonical=(await adjudicationMembershipDocs(users,canonicalShopperId)).filter(doc=>(doc.data()||{}).active===true);
+  if(activeCanonical.length!==1||activeCanonical[0].id!==keeperUid)throw new Error('SHOPPER_IDENTITY_CANONICAL_MEMBERSHIP_READBACK_MISMATCH');
+  for(const alias of aliases){const activeAlias=(await adjudicationMembershipDocs(users,alias)).filter(doc=>(doc.data()||{}).active===true);if(activeAlias.length)throw new Error('SHOPPER_IDENTITY_ALIAS_MEMBERSHIP_REMAINS:'+alias);}
+  const domainResidual=await adjudicationDomainPlan(tenant,projectId,aliases,canonicalShopperId);
+  if(domainResidual.length)throw new Error('SHOPPER_IDENTITY_DOMAIN_READBACK_RESIDUAL:'+domainResidual.length);
+  const canonicalCross=await canonicalCrossRef.get();
+  if(!canonicalCross.exists||str((canonicalCross.data()||{}).shopperId)!==canonicalShopperId||str((canonicalCross.data()||{}).providerUidFingerprint)!==keeperFingerprint)throw new Error('SHOPPER_IDENTITY_CANONICAL_CROSSWALK_READBACK_MISMATCH');
+  for(let i=0;i<crossRefs.length;i++){const cross=await crossRefs[i].get();if(!cross.exists||str((cross.data()||{}).shopperId)!==canonicalShopperId||str((cross.data()||{}).providerUidFingerprint)!==keeperFingerprint)throw new Error('SHOPPER_IDENTITY_ALIAS_CROSSWALK_READBACK_MISMATCH:'+aliases[i]);}
+  const domainWrites=domainPlan.reduce((o,x)=>(o[x.name]=(o[x.name]||0)+1,o),{});
+  return {identityLinkId:linkId,canonicalShopperId,exactAliases:aliases,providerWrites:1+domainPlan.length+profileRefs.length+crossRefs.length+otherPrincipals.length+4,authorityType:'tenant_adjudication',identityConsolidated:true,keeperUidFingerprint:keeperFingerprint,retiredPrincipalCount:otherPrincipals.length,domainWrites,hrWrites:0,externalWrites:0};
 }
-
 async function durableProfileUpdate({auth,db,command,shopperId,actor}){
   const tenantId=str(command.tenantId),projectId=str(command.projectId),tenant=db.collection('tenants').doc(tenantId),users=tenant.collection('users');
   const selfScoped=actor?.selfScoped===true;
@@ -988,9 +1140,9 @@ export function createShopperCommandProvider({auth,db,policy}={}){
           if(p.status==='committed')return ack(command,p.shopperId,{idempotentReplay:true,providerWrites:0,credentialState:p.credentialState||null,credentialIssued:false,uidFingerprint:p.uidFingerprint||null,profileUpdated:p.profileUpdated===true});
         }
         if(command.commandType==='shopper.identity.adjudicate'){
-          const result=await durableIdentityAdjudication({db,command,actor,canonicalShopperId:shopperId});
-          await receipt.set({status:'committed',commandDigest:digest,shopperId,commandType:command.commandType,providerAck:true,actorUid:actor.uid,identityLinkId:result.identityLinkId,updatedAt:now()},{merge:false});
-          return ack(command,shopperId,{idempotentReplay:false,providerWrites:result.providerWrites+1,identityAdjudicated:true,identityLinkId:result.identityLinkId,canonicalShopperId:result.canonicalShopperId,exactAliases:result.exactAliases,authorityType:result.authorityType});
+          const result=await durableIdentityAdjudication({auth,db,command,actor,canonicalShopperId:shopperId});
+          await receipt.set({status:'committed',commandDigest:digest,shopperId,commandType:command.commandType,providerAck:true,actorUid:actor.uid,identityLinkId:result.identityLinkId,identityConsolidated:result.identityConsolidated===true,keeperUidFingerprint:result.keeperUidFingerprint||null,retiredPrincipalCount:Number(result.retiredPrincipalCount||0),domainWrites:result.domainWrites||{},updatedAt:now()},{merge:false});
+          return ack(command,shopperId,{idempotentReplay:false,providerWrites:result.providerWrites+1,identityAdjudicated:true,identityConsolidated:result.identityConsolidated===true,keeperUidFingerprint:result.keeperUidFingerprint||null,retiredPrincipalCount:Number(result.retiredPrincipalCount||0),domainWrites:result.domainWrites||{},hrWrites:Number(result.hrWrites||0),externalWrites:Number(result.externalWrites||0),identityLinkId:result.identityLinkId,canonicalShopperId:result.canonicalShopperId,exactAliases:result.exactAliases,authorityType:result.authorityType});
         }
         if(command.commandType==='shopper.credential.reset'){
           if(!auth?.updateUser)throw new Error('SHOPPER_CREDENTIAL_AUTH_UPDATE_UNAVAILABLE');
