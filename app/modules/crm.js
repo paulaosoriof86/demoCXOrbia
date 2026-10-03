@@ -49,7 +49,7 @@ CX.crmStore = CX.crmStore || {
   acts(id){const o=this.list().find(x=>x.id===id);return o?(o.acts||[]):[];},
   async addAct(id,a){const o=this.list().find(x=>x.id===id);if(!o)return this._blocked('CRM_OPPORTUNITY_NOT_FOUND');const acts=(o.acts||[]).slice();acts.unshift(Object.assign({id:'a'+Date.now().toString(36),fecha:new Date().toISOString().slice(0,16).replace('T',' ')},a));return this.updateOpportunity(id,{acts});},
   tareas(){const out=[];this.list().forEach(o=>{(o.acts||[]).forEach(a=>{if(a.tipo==='tarea'&&!a.hecho)out.push(Object.assign({op:o.empresa,opId:o.id},a));});});return out.sort((a,b)=>(a.vence||'').localeCompare(b.vence||''));},
-  async toggleTarea(opId,aId){const o=this.list().find(x=>x.id===opId);if(!o)return this._blocked('CRM_OPPORTUNITY_NOT_FOUND');const acts=(o.acts||[]).map(a=>a.id===aId?Object.assign({},a,{hecho:!a.hecho}):a);return this.updateOpportunity(opId,{acts});}
+  async toggleTarea(opId,aId){const o=this.list().find(x=>x.id===opId);if(!o)return this._blocked('CRM_OPPORTUNITY_NOT_FOUND');const acts=(o.acts||[]).map(a=>a.id===aId?Object.assign({},a,{hecho:!a.hecho}):a);return this.updateOpportunity(opId,{acts});},
 
   /* ── Cuentas (empresas) ── */
   cuentasSeed(){
