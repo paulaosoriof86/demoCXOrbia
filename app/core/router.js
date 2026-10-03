@@ -225,7 +225,7 @@ CX.router = {
        opere en UNO de esos países. Ahora, para shopper, el país activo se deriva de su propio
        registro (CX.data.getShopper) — nunca del proyecto. Coordinador/aliado con scopePaises
        (verdadero alcance multipaís asignado) conservan su indicador multipaís sin cambios. */
-    const _shopperPais = role==='shopper' ? (()=>{ const sh=u.shopperId && CX.data.getShopper && CX.data.getShopper(u.shopperId); return sh&&sh.pais ? (CX.paisFlag(sh.pais)+' '+CX.paisName(sh.pais)) : 'sin país asignado'; })() : null;
+    const _shopperPais = role==='shopper' ? (()=>{ const raw=String(u.shopperId||'').trim(),sid=raw?String(CX.data.__identityMap?.[raw]||raw).trim():'';const sh=sid&&CX.data.getShopper&&CX.data.getShopper(sid); return sh&&sh.pais ? (CX.paisFlag(sh.pais)+' '+CX.paisName(sh.pais)) : 'sin país asignado'; })() : null;
     const _roleLineLbl = role==='admin'?'Administración':role==='cliente'?'Portal del cliente':('Shopper · '+(_shopperPais||'—'));
     const roleIdentity=document.getElementById('tbRoleIdentity');
     if(roleIdentity){
