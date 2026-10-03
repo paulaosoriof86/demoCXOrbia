@@ -4,11 +4,11 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "f41b61629d57432fa6c1382ea9bb09f1a464c263",
-  "productTreeAuthority": "ff21510a2557db02105b6578817e29ff5793dfd2",
-  "predecessorProductSourceSha": "28e060d103f779084c14b401111dbc9da2cce8e2",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V199_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "b7b10281689051e962f923782248611584b43d7f",
+  "productSourceSha": "ef790a5191bc5359d9c67ab2a28f8e04eb54be37",
+  "productTreeAuthority": "b9fa5c52a0cd793dd3408f1935bde90de21ea0f7",
+  "predecessorProductSourceSha": "f41b61629d57432fa6c1382ea9bb09f1a464c263",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V200_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "9b7b31797dc2c1bbcf879b187048e6028938a7ad",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Execute the bounded VRM-189 source-only reproof against f41b61629d57432fa6c1382ea9bb09f1a464c263 / ff21510a2557db02105b6578817e29ff5793dfd2. Require syntax PASS, commercial provider tests PASS, tenant super/admin RBAC, idempotency, expectedVersion, commandReceipts, entityAuditTrail, provider ACK/readback, zero localStorage authority, zero HR/external/payment writes. No build or deploy.",
+  "exactNextAction": "Repeat the bounded VRM-189 source-only reproof on corrected source ef790a5191bc5359d9c67ab2a28f8e04eb54be37 / b9fa5c52a0cd793dd3408f1935bde90de21ea0f7 after run #959 SOURCE_FAILURE syntax correction. No build/deploy.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -482,7 +482,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "ff21510a2557db02105b6578817e29ff5793dfd2",
+  "productSourceTree": "b9fa5c52a0cd793dd3408f1935bde90de21ea0f7",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -1513,10 +1513,10 @@
     "production": false
   },
   "latestSourceSuccessor": {
-    "sourceSha": "f41b61629d57432fa6c1382ea9bb09f1a464c263",
-    "sourceTree": "ff21510a2557db02105b6578817e29ff5793dfd2",
-    "predecessorSha": "28e060d103f779084c14b401111dbc9da2cce8e2",
-    "state": "VRM189_SOURCE_REPROOF_REQUIRED",
+    "sourceSha": "ef790a5191bc5359d9c67ab2a28f8e04eb54be37",
+    "sourceTree": "b9fa5c52a0cd793dd3408f1935bde90de21ea0f7",
+    "predecessorSha": "f41b61629d57432fa6c1382ea9bb09f1a464c263",
+    "state": "VRM189_SOURCE_REPROOF_RETRY_REQUIRED",
     "sourceContractJobId": 110149369214,
     "artifactId": 11132915262,
     "artifactDigest": "sha256:a24d3d1227dec87aeb6fbec71178c12d7a3752714f6633bc141beba30309dc52",
@@ -3061,9 +3061,9 @@
     "production": false
   },
   "vrm189Implementation": {
-    "state": "SOURCE_IMPLEMENTED_REPROOF_REQUIRED",
-    "sourceSha": "f41b61629d57432fa6c1382ea9bb09f1a464c263",
-    "sourceTree": "ff21510a2557db02105b6578817e29ff5793dfd2",
+    "state": "SOURCE_REPROOF_RETRY_REQUIRED",
+    "sourceSha": "ef790a5191bc5359d9c67ab2a28f8e04eb54be37",
+    "sourceTree": "b9fa5c52a0cd793dd3408f1935bde90de21ea0f7",
     "parentSha": "1026b3eae2cb4c45f5f96827451a15d6ccd83f3b",
     "provider": "backend/runtime/cxorbia-commercial-command-provider-v1.mjs",
     "commandRuntime": "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
@@ -3081,6 +3081,17 @@
     "sourceTest": "backend/runtime/hr-live-service/test/cxorbia-commercial-command-provider-v1.test.mjs",
     "build": false,
     "deploy": false,
-    "production": false
+    "production": false,
+    "lastFailedRun": {
+      "runId": 37138298367,
+      "runNumber": 959,
+      "jobId": 111247290516,
+      "classification": "SOURCE_FAILURE"
+    },
+    "syntaxCorrection": {
+      "commitSha": "ef790a5191bc5359d9c67ab2a28f8e04eb54be37",
+      "owner": "app/modules/crm.js",
+      "cause": "missing comma after toggleTarea method"
+    }
   }
 }
