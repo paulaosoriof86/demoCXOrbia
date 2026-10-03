@@ -7306,7 +7306,7 @@ jobs:
 
   julissa-identity-topology-readonly:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_JULISSA_IDENTITY_TOPOLOGY_DIAGNOSTIC_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
