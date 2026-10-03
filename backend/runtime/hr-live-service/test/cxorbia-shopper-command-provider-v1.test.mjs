@@ -788,7 +788,7 @@ test('VRM-185 / admin identity adjudication keeps the unique password-proof prin
   db.seed('tenants/tenant-a/projects/project-a/visits/visit-1',{shopperId:alias,hrManaged:{shopperId:alias},status:'submitted'});
   const command={version:'cxorbia-command-adapter-v1',commandType:'shopper.identity.adjudicate',tenantId:'tenant-a',projectId:'project-a',periodId:'project-a-2026-10',entityId:canonical,idempotencyKey:'vrm185-admin-consolidation-1',authorization:{providerEnforcementRequired:true,permission:'shopper.identity.adjudicate'},payload:{canonicalShopperId:canonical,aliasShopperIds:[alias],humanConfirmed:true,reason:'admin_exact_identity_human_adjudication'}};
   const first=await p.execute('staff-token',command);
-  assert.equal(first.ok,true);assert.equal(first.providerAck,true);assert.equal(first.identityAdjudicated,true);assert.equal(first.identityConsolidated,true);assert.equal(first.retiredPrincipalCount,1);
+  assert.equal(first.ok,true,'VRM185_FIRST_RESULT='+JSON.stringify(first));assert.equal(first.providerAck,true);assert.equal(first.identityAdjudicated,true);assert.equal(first.identityConsolidated,true);assert.equal(first.retiredPrincipalCount,1);
   const keeper=await auth.getUser(keeperUid),retired=await auth.getUser(canonicalUid);
   assert.equal(keeper.disabled,false);assert.equal(keeper.customClaims.shopperId,canonical);assert.equal(retired.disabled,true);assert.equal(keeper.password,'Paula123*');
   assert.equal(db.get(`tenants/tenant-a/users/${keeperUid}`).shopperId,canonical);assert.equal(db.get(`tenants/tenant-a/users/${keeperUid}`).active,true);
