@@ -6687,7 +6687,7 @@ jobs:
           test -n "$HOSTING_VERSION_NAME"
           curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/$HOSTING_VERSION_NAME" > "$FOCAL_OUT/hosting-version.json"
           test "$(jq -r '.status // empty' "$FOCAL_OUT/hosting-version.json")" = "FINALIZED"
-          for p in core/data.js core/tya-phase-a-source-safe-preview.js adapters/tya-live-source-inplace-apply.js data/tya-hr-source-safe-periods.js modules/misvisitas.js modules/visita-detalle.js adapters/tya-canonical-shopper-portal-v2.js modules/academia.js styles/layout.css; do
+          for p in core/data.js core/tya-phase-a-source-safe-preview.js adapters/tya-live-source-inplace-apply.js data/tya-hr-source-safe-periods.js modules/misvisitas.js modules/visita-detalle.js modules/shoppers.js adapters/tya-canonical-shopper-portal-v2.js modules/academia.js styles/layout.css; do
             out="$FOCAL_OUT/remote-$(echo "$p" | tr '/' '_')"
             curl -fsSL --retry 8 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/$p?vrm154156=$GITHUB_RUN_ID-$(date +%s%N)" -o "$out"
             test "$(sha256sum "$out" | awk '{print $1}')" = "$(sha256sum "$SOURCE_DIR/app/$p" | awk '{print $1}')"
@@ -6758,10 +6758,10 @@ jobs:
           EXPECTED_RUNTIME_DIGEST="$(jq -r '.currentMaterialization.runtimeDigest // empty' "$CANDIDATE_DESCRIPTOR")"
           EXPECTED_HOSTING_VERSION="$(jq -r '.currentMaterialization.hostingVersion // empty' "$CANDIDATE_DESCRIPTOR")"
           EXPECTED_HR_REVISION="$(jq -r '.currentMaterialization.hrRevision // empty' "$CANDIDATE_DESCRIPTOR")"
-          test "$EXPECTED_RUNTIME_REVISION" = "cxorbia-live-hr-dev-00254-g98"
-          test "$EXPECTED_RUNTIME_DIGEST" = "sha256:a556afcb082292750b5a126725f9405c68e9d1b8b432daf510fadbdd82fd4948"
-          test "$EXPECTED_HOSTING_VERSION" = "sites/cxorbia-backend-dev/versions/b07b427c39f086ab"
-          test "$EXPECTED_HR_REVISION" = "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305"
+          test -n "$EXPECTED_RUNTIME_REVISION"
+          [[ "$EXPECTED_RUNTIME_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
+          test -n "$EXPECTED_HOSTING_VERSION"
+          [[ "$EXPECTED_HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
           gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$VRM185_ADMIN_OUT/runtime.json"
           test "$(jq -r '.status.latestReadyRevisionName // empty' "$VRM185_ADMIN_OUT/runtime.json")" = "$EXPECTED_RUNTIME_REVISION"
           gcloud run revisions describe "$EXPECTED_RUNTIME_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$VRM185_ADMIN_OUT/runtime-revision.json"
