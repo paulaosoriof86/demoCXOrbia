@@ -10,7 +10,7 @@ on:
       - RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json
       - RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
       - CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
-      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V217_2026-10-03.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V218_2026-10-03.json
       - CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json
       - app/**
       - backend/**
@@ -32,7 +32,7 @@ concurrency:
   cancel-in-progress: true
 env:
   CANDIDATE_DESCRIPTOR: CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
-  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V217_2026-10-03.json
+  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V218_2026-10-03.json
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
@@ -6640,7 +6640,7 @@ jobs:
           compression-level: 0
   vrm154-156-dev-materialization:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM154_156_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_V190_DEV_MATERIALIZATION_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM154_156_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_V190_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
@@ -6726,7 +6726,7 @@ jobs:
           test -n "$HOSTING_VERSION_NAME"
           curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/$HOSTING_VERSION_NAME" > "$FOCAL_OUT/hosting-version.json"
           test "$(jq -r '.status // empty' "$FOCAL_OUT/hosting-version.json")" = "FINALIZED"
-          for p in core/data.js core/tya-phase-a-source-safe-preview.js adapters/tya-live-source-inplace-apply.js data/tya-hr-source-safe-periods.js modules/misvisitas.js modules/visita-detalle.js modules/shoppers.js adapters/tya-canonical-shopper-portal-v2.js modules/academia.js styles/layout.css; do
+          for p in core/data.js core/router.js core/tya-phase-a-source-safe-preview.js adapters/tya-live-source-inplace-apply.js adapters/tya-canonical-finance-read-model-v2.js adapters/tya-canonical-shopper-portal-v2.js adapters/tya-protected-auth-hr-authority-bridge-v2.js data/tya-hr-source-safe-periods.js modules/midia.js modules/misvisitas.js modules/visita-detalle.js modules/shoppers.js modules/postulaciones.js modules/beneficios.js modules/cert.js modules/academia.js styles/layout.css; do
             out="$FOCAL_OUT/remote-$(echo "$p" | tr '/' '_')"
             curl -fsSL --retry 8 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/$p?vrm154156=$GITHUB_RUN_ID-$(date +%s%N)" -o "$out"
             test "$(sha256sum "$out" | awk '{print $1}')" = "$(sha256sum "$SOURCE_DIR/app/$p" | awk '{print $1}')"
@@ -6748,7 +6748,7 @@ jobs:
         run: |
           set -Eeuo pipefail
           DECISION="PASS_VRM154_156_EXACT_DEV_MATERIALIZATION"
-          if [[ "$ACTIVE_STATUS" == "HOLD_V190_DEV_MATERIALIZATION_REQUIRED" ]]; then DECISION="PASS_V190_EXACT_DEV_MATERIALIZATION"; elif [[ "$ACTIVE_STATUS" == "HOLD_HUMAN_VISUAL_CHECKPOINT_REQUIRED_BEFORE_FURTHER_PRODUCT_MUTATION" ]]; then DECISION="PASS_HUMAN_VISUAL_CHECKPOINT_EXACT_DEV_MATERIALIZATION"; fi
+          if [[ "$ACTIVE_STATUS" == "HOLD_V190_DEV_MATERIALIZATION_REQUIRED" ]]; then DECISION="PASS_V190_EXACT_DEV_MATERIALIZATION"; elif [[ "$ACTIVE_STATUS" == "HOLD_REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED" ]]; then DECISION="PASS_REJECTED_PHASEA_EXACT_DEV_MATERIALIZATION"; elif [[ "$ACTIVE_STATUS" == "HOLD_HUMAN_VISUAL_CHECKPOINT_REQUIRED_BEFORE_FURTHER_PRODUCT_MUTATION" ]]; then DECISION="PASS_HUMAN_VISUAL_CHECKPOINT_EXACT_DEV_MATERIALIZATION"; fi
           jq -n -S --arg decision "$DECISION" --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg runtime "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg hosting "$HOSTING_VERSION_NAME" --arg hostingRelease "$HOSTING_RELEASE_NAME" --arg hr "$HR_REVISION" '{decision:$decision,sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hostingRelease:$hostingRelease,hrRevision:$hr,builds:1,runtimeDeploys:1,hostingDeploys:1,storageRulesDeploys:0,scenarioDimensionsProven:true,production:false}' > "$FOCAL_OUT/result.json"
       - name: step
         if: always()
