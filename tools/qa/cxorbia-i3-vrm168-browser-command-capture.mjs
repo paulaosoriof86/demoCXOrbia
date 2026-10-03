@@ -72,7 +72,15 @@ try{
     const hv=(Array.isArray(d.__liveHrVisits)?d.__liveHrVisits:[]).find(x=>String(x.id||x.visitId||'')===visitId||String(x.hrRowId||'')===visitId);
     const raw=(Array.isArray(window.CX_TYA_HR_SOURCE_SAFE?.visits)?window.CX_TYA_HR_SOURCE_SAFE.visits:[]).find(x=>String(x.id||x.visitId||'')===visitId||String(x.hrRowId||'')===visitId);
     const focalIds=new Set(['s3',String(window.CX?.backendAuth?.context?.()?.shopperId||''),String(v?.shopperId||''),String(pv?.shopperId||'')]);
-    const focalShoppers=(Array.isArray(d.shoppers)?d.shoppers:[]).filter(s=>focalIds.has(String(s?.id||''))||focalIds.has(String(s?.shopperId||''))||focalIds.has(String(s?.canonicalShopperId||''))).map(s=>({id:s?.id||null,shopperId:s?.shopperId||null,canonicalShopperId:s?.canonicalShopperId||null,legacyShopperId:s?.legacyShopperId||null,exactAliases:Array.isArray(s?.exactAliases)?s.exactAliases:[],sourceShopperIds:Array.isArray(s?.sourceShopperIds)?s.sourceShopperIds:[]}));
+    const shopperSlim=s=>({id:s?.id||null,shopperId:s?.shopperId||null,canonicalShopperId:s?.canonicalShopperId||null,legacyShopperId:s?.legacyShopperId||null,exactAliases:Array.isArray(s?.exactAliases)?s.exactAliases:[],sourceShopperIds:Array.isArray(s?.sourceShopperIds)?s.sourceShopperIds:[],legacyLiveShopperIds:Array.isArray(s?.legacyLiveShopperIds)?s.legacyLiveShopperIds:[],dataLevel:s?.dataLevel||null});
+    const shopperMatch=s=>{
+      const vals=[s?.id,s?.shopperId,s?.canonicalShopperId,s?.legacyShopperId,...(Array.isArray(s?.exactAliases)?s.exactAliases:[]),...(Array.isArray(s?.sourceShopperIds)?s.sourceShopperIds:[]),...(Array.isArray(s?.legacyLiveShopperIds)?s.legacyLiveShopperIds:[])].map(x=>String(x||''));
+      return vals.some(x=>focalIds.has(x));
+    };
+    const focalShoppers=(Array.isArray(d.shoppers)?d.shoppers:[]).filter(shopperMatch).map(shopperSlim);
+    const rawHrFocalShoppers=(Array.isArray(window.CX_TYA_HR_SOURCE_SAFE?.shoppers)?window.CX_TYA_HR_SOURCE_SAFE.shoppers:[]).filter(shopperMatch).map(shopperSlim);
+    const authorizedFocalShoppers=(Array.isArray(window.CX_BACKEND_AUTHORIZED_STATE?.shoppers)?window.CX_BACKEND_AUTHORIZED_STATE.shoppers:[]).filter(shopperMatch).map(shopperSlim);
+    const sessionShopperProfile=d.__sessionShopperProfile?shopperSlim(d.__sessionShopperProfile):null;
     const card=[...document.querySelectorAll('[data-visit-card]')].find(x=>String(x.getAttribute('data-visit-card')||'')===String(v?.id||v?.visitId||''));
     const sched=card?.querySelector('[data-sched]');
     const slim=x=>x?{id:x.id||x.visitId||null,visitId:x.visitId||null,hrRowId:x.hrRowId||null,periodId:x.periodId||null,projectId:x.projectId||null,estado:x.estado||x.status||null,shopperId:x.shopperId||null,assignmentSource:x.assignmentSource||null,assignmentSyncStatus:x.assignmentSyncStatus||null,version:x.version??null,disponibleDesde:x.disponibleDesde||null}:null;
@@ -88,6 +96,9 @@ try{
       identityMap:d.__identityMap||null,
       identityReviewQueue:Array.isArray(d.__identityReviewQueue)?d.__identityReviewQueue.filter(x=>String(x?.liveShopperId||'')==='s3'||String(x?.entityId||'')===visitId).slice(0,20):[],
       focalShoppers,
+      rawHrFocalShoppers,
+      authorizedFocalShoppers,
+      sessionShopperProfile,
       authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY||null,
       cardFound:!!card,scheduleButtonFound:!!sched,scheduleButtonText:String(sched?.innerText||'')
     };
