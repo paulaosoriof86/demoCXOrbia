@@ -7,8 +7,8 @@
   "productSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
   "productTreeAuthority": "85c0d287e16269dd07d9c1fa1e93810a0aebdc99",
   "predecessorProductSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V223_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "9bc296f3d66e376cce6307c475771986b66bad0a",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V224_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "4d9b0c56fc608d362f6eb1a110324eefc4aaa024",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V4.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "No DEV materialization yet. Current source proof is PASS Run1045, but precomposition truth is fail-closed: Module Truth retains a TRUE_FUNCTIONAL_DEFECT and Admin Matrix retains OPEN_BLOCKER routes. Resolve only proven owner-scoped blockers on the same candidate, refresh the matrices, then use the existing HOLD_REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED lane only when precomposition permits it.",
+  "exactNextAction": "Reconcile precomposition truth on exact product source 2d4da635aeb793aa47d22127295473856108a94f. First determine whether human-runtime-domain-consistency is a current product defect or stale control classification by exact owner/blob evidence; then partition the 28 Admin OPEN_BLOCKER rows into source defects versus live-proof-only gaps. No DEV materialization until all source-level blockers are resolved or proven non-defects.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3479,5 +3479,17 @@
     "builds": 0,
     "deploys": 0,
     "production": false
+  },
+  "lastControlReadback": {
+    "runId": 37162081611,
+    "runNumber": 1046,
+    "headSha": "3b7d3e05db923cc9dfbc5acd067deb34e5cb986c",
+    "conclusion": "success",
+    "canonicalCandidateAuthority": "SUCCESS",
+    "materializationJobsRun": 0,
+    "deploys": 0,
+    "builds": 0,
+    "production": false,
+    "interpretation": "Control-only freeze/readback. No action lane matched the fail-closed precomposition status."
   }
 }
