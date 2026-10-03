@@ -13,6 +13,7 @@ const detail=read('app/modules/visita-detalle.js');
 const profile=read('app/adapters/tya-canonical-shopper-portal-v2.js');
 const acad=read('app/modules/academia.js');
 const css=read('app/styles/layout.css');
+const cert=read('app/modules/cert.js');
 must(server.includes("'scenarioDimensions'"),'VRM154_RUNTIME_CONFIG_WHITELIST_MISSING');
 must(builder.includes("scenarioDimensions:[{key:'escenario',label:'Medio de compra'"),'VRM154_PROJECT_CONFIG_MISSING');
 must(preview.includes("scenarioDimensions:Array.isArray(data.projectConfig?.scenarioDimensions)"),'VRM154_PHASEA_CONFIG_PROPAGATION_MISSING');
@@ -25,4 +26,5 @@ must(detail.includes('postScenarioDims')&&detail.includes('scenarioCards'),'VRM1
 must(profile.includes('👤 Identidad y datos personales')&&profile.includes('📊 Desempeño'),'VRM155_PROFILE_HIERARCHY_MISSING');
 must(acad.includes('cx-academy-course-card')&&acad.includes("var(--brand)"),'VRM156_ACADEMY_CORPORATE_VISUAL_MISSING');
 must(css.includes('.cx-shopper-visit-card')&&css.includes('.cx-academy-course-head'),'VRM154_156_SHARED_STYLES_MISSING');
-process.stdout.write(JSON.stringify({decision:'PASS_VRM154_156_FRONTEND_SOURCE_CONTRACT',genericProjectDrivenScenarioDimensions:true,liveRuntimeScenarioDimensionsPropagation:true,shopperVisitVisualCoherence:true,stableVisitCommandKey:true,profileVisualCoherence:true,academyVisualCoherence:true,production:false,writes:0},null,2)+'\n');
+must(cert.includes("const phCert=subtitle=>ui.ph('Certificación',subtitle)+certFilters();")&&!cert.includes('const phCert=subtitle=>phCert('),'VRM181_CERT_HEADER_RECURSION_PRESENT');
+process.stdout.write(JSON.stringify({decision:'PASS_VRM154_156_FRONTEND_SOURCE_CONTRACT',genericProjectDrivenScenarioDimensions:true,liveRuntimeScenarioDimensionsPropagation:true,shopperVisitVisualCoherence:true,stableVisitCommandKey:true,profileVisualCoherence:true,academyVisualCoherence:true,certRouteNonRecursive:true,production:false,writes:0},null,2)+'\n');

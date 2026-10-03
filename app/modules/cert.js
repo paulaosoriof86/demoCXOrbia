@@ -65,7 +65,7 @@ CX.module('cert', ({role,data,ui})=>{
     const bankSel=banks.length>1?`<div><label class="lbl">Certificación</label><select class="sel" onchange="window.CX_CERT_SELECTED_ID=this.value;CX.router.nav('cert')"><option value="">Selecciona certificación</option>${banks.map(b=>`<option value="${b.certificationId}" ${String(b.certificationId)===selectedCertId()?'selected':''}>${b.certificationName||b.name||b.certificationId} · ${b.estado||'borrador'}</option>`).join('')}</select></div>`:'';
     return project||bankSel?`<div class="grid g2" style="gap:10px;margin-bottom:14px">${project}${bankSel}</div>`:'';
   };
-  const phCert=subtitle=>phCert(subtitle)+certFilters();
+  const phCert=subtitle=>ui.ph('Certificación',subtitle)+certFilters();
   const historicalEvidenceFor=s=>Array.isArray(s?.certificationEvidenceRecords)?s.certificationEvidenceRecords:[];
   const currentShopper=()=>{
     const sid=String(CX.session?.user?.shopperId||'');
