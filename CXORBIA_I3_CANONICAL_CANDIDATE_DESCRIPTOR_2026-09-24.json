@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM190_PERIOD_LIFECYCLE_CONTRACT_REQUIRED",
+  "status": "HOLD_VRM190_SOURCE_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "ef790a5191bc5359d9c67ab2a28f8e04eb54be37",
-  "productTreeAuthority": "b9fa5c52a0cd793dd3408f1935bde90de21ea0f7",
-  "predecessorProductSourceSha": "f41b61629d57432fa6c1382ea9bb09f1a464c263",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V201_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "0bbaa95d5f04a1d1a925de524aa97527c2123241",
+  "productSourceSha": "6a5d529d7813b48c90051668c7331065dbc8d82b",
+  "productTreeAuthority": "882d4fdf35c1e50e1b231394fd2a94309f7bfe3a",
+  "predecessorProductSourceSha": "ef790a5191bc5359d9c67ab2a28f8e04eb54be37",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V202_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "5261fc133c497e0f21d3bb4ffdc1e41b2723623e",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM190_PERIOD_LIFECYCLE_CONTRACT_REQUIRED",
+  "activeBlocker": "VRM190_SOURCE_REPROOF_REQUIRED",
   "nextFindingId": "VRM-195",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "VRM-190 only: inspect app/modules/periodos.js plus its exact data/provider owner, prove the current create/close/archive/reopen persistence path, and implement only the minimum provider ACK/idempotency/expectedVersion/readback contract needed for tenantId + projectId + periodId lifecycle. SOURCE TEST first. Do not materialize DEV yet.",
+  "exactNextAction": "Run only the bounded VRM-190 period lifecycle source reproof on product source 6a5d529d7813b48c90051668c7331065dbc8d82b / tree 882d4fdf35c1e50e1b231394fd2a94309f7bfe3a. Require PASS_VRM190_PERIOD_LIFECYCLE_SOURCE, project provider routing, idempotency, expectedVersion, commandReceipts, entityAuditTrail, provider ACK + durable readback, projectId/periodId separation and VRM-187/188/189 source regressions. Do not build or deploy.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3138,6 +3138,42 @@
       "durable readback",
       "no false-success UI"
     ],
+    "production": false
+  },
+  "vrm189SourceProof": {
+    "runId": 37138483193,
+    "runNumber": 961,
+    "jobId": 111247940320,
+    "artifactId": 11279028081,
+    "artifactDigest": "sha256:1798bb8cc7fd4bd757680a3ede638027cbd6f484a2070137a12ba3ef3793c010",
+    "decision": "PASS_VRM189_COMMERCIAL_SOURCE_REPROOF",
+    "sourceSha": "ef790a5191bc5359d9c67ab2a28f8e04eb54be37",
+    "sourceTree": "b9fa5c52a0cd793dd3408f1935bde90de21ea0f7",
+    "builds": 0,
+    "deploys": 0,
+    "production": false
+  },
+  "vrm190SourceImplementation": {
+    "findingId": "VRM-190",
+    "classification": "PERSISTENCE_FAILURE",
+    "sourceSha": "6a5d529d7813b48c90051668c7331065dbc8d82b",
+    "sourceTree": "882d4fdf35c1e50e1b231394fd2a94309f7bfe3a",
+    "predecessorSha": "67c52609d97dc1a963b626dde7a14edb39199395",
+    "commandProvider": "backend/runtime/cxorbia-project-command-provider-v1.mjs",
+    "commandTypes": [
+      "period.create",
+      "period.state.update"
+    ],
+    "durablePath": "tenants/{tenantId}/projects/{projectId}/periods/{periodId}",
+    "frontendOwners": [
+      "app/core/data.js",
+      "app/modules/periodos.js"
+    ],
+    "test": "backend/runtime/hr-live-service/test/cxorbia-period-command-provider-v1.test.mjs",
+    "projectPeriodIndependent": true,
+    "hrWrites": false,
+    "buildAllowed": false,
+    "deployAllowed": false,
     "production": false
   }
 }
