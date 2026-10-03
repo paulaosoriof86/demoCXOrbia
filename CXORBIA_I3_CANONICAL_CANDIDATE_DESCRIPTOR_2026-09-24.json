@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM154_156_FRONTEND_SOURCE_REPROOF_REQUIRED",
+  "status": "HOLD_REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "4b1c0859cc5b43928c083748d00fdc606b32d63e",
   "productTreeAuthority": "ab33d43d483faef9fbec5daaadfa454247df469a",
   "predecessorProductSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V229_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "b88e3f60f896f4770601c6a4dbb35d3c1f92323d",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V5.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V230_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "d76b2a1370dc96c596fa011e74c3730ebb316bde",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM194_SOURCE_REPROOF_REQUIRED__QA_MAPPING_FIXED_PENDING_RERUN",
+  "activeBlocker": "EXACT_DEV_MATERIALIZATION_REQUIRED_AFTER_RUN1052_SOURCE_PASS",
   "nextFindingId": "VRM-205",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Re-run the same validated source lane with the corrected QA assertion against unchanged product source 4b1c0859cc5b43928c083748d00fdc606b32d63e.",
+  "exactNextAction": "Materialize DEV exactly once from product source 4b1c0859cc5b43928c083748d00fdc606b32d63e / tree ab33d43d483faef9fbec5daaadfa454247df469a using the existing canonical HOLD_REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED lane. Preserve the resulting artifact/runtime/hosting fingerprints for same-artifact live reproof; no production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2620,7 +2620,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "f23c661650e92e70e4db00975339d68b1e3de17e",
+  "moduleTruthExpectedGitBlob": "95b799c3f0bb75cd846bfdd8e042a816c23a412b",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -3401,7 +3401,7 @@
       "Academia visual requirement remains unmet: course cards were requested with distinct solid colors, not repeated blue treatment or gradients."
     ]
   },
-  "adminAdministrationMatrixPath": "CXORBIA_I3_ADMIN_FULL_ADMINISTRATION_MATRIX_2026-10-03_V5.json",
+  "adminAdministrationMatrixPath": "CXORBIA_I3_ADMIN_FULL_ADMINISTRATION_MATRIX_2026-10-03_V6.json",
   "acceptanceIntegrity": {
     "state": "FAIL_CLOSED_GUARD_ACTIVE",
     "findingId": "VRM-198",
@@ -3421,7 +3421,7 @@
     "sourceSha": "4b1c0859cc5b43928c083748d00fdc606b32d63e",
     "sourceTree": "ab33d43d483faef9fbec5daaadfa454247df469a",
     "predecessorSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-    "state": "VRM194_SOURCE_FIX_REPROOF_REQUIRED",
+    "state": "SOURCE_PASS_RUN1052_PENDING_EXACT_DEV_LIVE",
     "findingIds": [
       "VRM-134",
       "VRM-165",
@@ -3447,10 +3447,33 @@
     "preservedAllPriorFindings": true,
     "production": false,
     "previousDetachedSourceSha": "7b8b88608c9cd38cc97726c3f17aab55a51f1715",
-    "sourceProof": null
+    "sourceProof": {
+      "runId": 37163244743,
+      "runNumber": 1052,
+      "controlHeadSha": "47676ffdd75315c2a71defd8daabebb57dad5309",
+      "jobId": 111320901937,
+      "artifactId": 11288611109,
+      "artifactDigest": "sha256:130857743bba6408f87a5bb45b30a681f1304792cbc7ebcbcb8e00ec4b231d4c",
+      "decision": "PASS_VRM154_156_FRONTEND_SOURCE_CONTRACT",
+      "productSourceSha": "4b1c0859cc5b43928c083748d00fdc606b32d63e",
+      "productTree": "ab33d43d483faef9fbec5daaadfa454247df469a",
+      "assertions": {
+        "connectedTenantAdminReadOnly": true,
+        "humanRuntimeHonorariumAuthority": true,
+        "domainConsistencyCertificationEvidence": true,
+        "questionnaire": "PASS_PREI4_PROJECT_QUESTIONNAIRE_CONFIG_SOURCE",
+        "commercial": "VRM-189 durable/idempotent PASS",
+        "period": "PASS_VRM190_PERIOD_LIFECYCLE_SOURCE",
+        "hrSource": "PASS_VRM191_HR_SOURCE_PROVIDER_CONTRACT",
+        "academy": "PASS_VRM192_ACADEMY_PROVIDER_SOURCE"
+      },
+      "builds": 0,
+      "deploys": 0,
+      "production": false
+    }
   },
-  "adminMatrixPath": "CXORBIA_I3_ADMIN_FULL_ADMINISTRATION_MATRIX_2026-10-03_V5.json",
-  "adminMatrixExpectedGitBlob": "707e094a2bf206d95dcef2556e8b080e679133b0",
+  "adminMatrixPath": "CXORBIA_I3_ADMIN_FULL_ADMINISTRATION_MATRIX_2026-10-03_V6.json",
+  "adminMatrixExpectedGitBlob": "667c3ebe8d9b405ec6e22742b7029a5dcd327df2",
   "lastSourceReproof": {
     "runId": 37161034003,
     "runNumber": 1045,
@@ -3478,13 +3501,5 @@
     "builds": 0,
     "production": false,
     "interpretation": "Control-only freeze/readback. No action lane matched the fail-closed precomposition status."
-  },
-  "routingCompatibility": {
-    "logicalStatus": "HOLD_VRM194_SOURCE_REPROOF_REQUIRED",
-    "routedStatus": "HOLD_VRM154_156_FRONTEND_SOURCE_REPROOF_REQUIRED",
-    "reason": "Reuse last validated source-only job without modifying workflow job graph after Runs1048-1050 failed at workflow compilation.",
-    "noBuild": true,
-    "noDeploy": true,
-    "production": false
   }
 }
