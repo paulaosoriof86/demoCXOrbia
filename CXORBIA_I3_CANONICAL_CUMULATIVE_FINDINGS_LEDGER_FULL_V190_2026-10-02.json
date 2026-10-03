@@ -9505,8 +9505,8 @@
       "secondaryClassification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "paula.osorio authenticates but exact session profile/history/KPIs do not resolve",
-      "state": "ROOT_CAUSE_TOPOLOGY_PARTIAL_PROVEN_CROSS_DOMAIN_READBACK_REQUIRED",
-      "rootCauseStatus": "DIAGNOSTIC_REQUIRED",
+      "state": "ROOT_CAUSE_PROVEN_GLOBAL_PLAN_REQUIRED",
+      "rootCauseStatus": "PROVEN",
       "observed": "Run 914 authenticates paula.osorio, HR authority is applied and all shopper routes navigate, but resolveExactSessionShopper returns identity=false; country/history/KPIs are empty.",
       "evidence": {
         "runId": 37096793662,
@@ -9604,6 +9604,36 @@
           "hrVisitsExact": 8
         },
         "residualEnvironmentFailure": "Playwright execution context destroyed after topology capture; no product inference taken from this browser failure."
+      },
+      "rootCause": "A human-adjudicated historical canonical profile can remain active after VRM-168 correctly suppresses that stale mapping in favor of a live exact HR principal. Paula has two active same-human principals: the human-adjudicated credential-bearing s3 principal and an auto-created exact HR principal. The portal then fails closed on exact ambiguity.",
+      "proof": {
+        "runId": 37097919744,
+        "runNumber": 916,
+        "jobId": 111131574188,
+        "artifactId": 11265066277,
+        "artifactDigest": "sha256:f43a023031b43ab4810cde0301d5d9ae61f3a7acb274ad55660f3eff1c644380",
+        "decision": "PASS_VRM185_PAULA_IDENTITY_TOPOLOGY_PROVEN",
+        "safeKeeperProven": true,
+        "currentCanonicalOperationalShopperId": "shopper_gt_1440137b73",
+        "credentialKeeperShopperId": "s3",
+        "activeCurrentPrincipals": 1,
+        "activeLegacyPrincipals": 1,
+        "hrVisitsCurrent": 8,
+        "hrVisitsLegacy": 0,
+        "domainReferenceCollections": [
+          "paymentReconciliations",
+          "reviewQueue",
+          "certifications",
+          "liquidations",
+          "postulations",
+          "reservations",
+          "visits"
+        ],
+        "immutableAuditPreserved": [
+          "commandReceipts"
+        ],
+        "writes": 0,
+        "production": false
       }
     }
   },
@@ -10327,7 +10357,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Repeat VRM-185 read-only without browser: scan exact durable references to s3/shopper_gt_1440137b73 across tenant/project collections. Prove safe keeper and full remap scope before any consolidation write.",
+  "exactNextAction": "Read-only global scan of all active tenant adjudications against exact live HR/Auth principals. Produce safe consolidation plans only when human same-person authority and a unique credential keeper are proven; any ambiguity remains fail-closed.",
   "supersedesGitBlob": "1dc39b2d5dc5aa1884181c963d94b75bec8b075c",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -13805,7 +13835,7 @@
     "next": "SHORT_HUMAN_VISUAL_RETEST",
     "production": false
   },
-  "activeBlocker": "VRM185_CROSS_DOMAIN_IDENTITY_REFERENCE_DIAGNOSTIC_REQUIRED",
+  "activeBlocker": "VRM185_GLOBAL_IDENTITY_CONSOLIDATION_PLAN_REQUIRED",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -13997,5 +14027,5 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-10-02",
-  "nextExactAction": "Repeat VRM-185 read-only without browser: scan exact durable references to s3/shopper_gt_1440137b73 across tenant/project collections. Prove safe keeper and full remap scope before any consolidation write."
+  "nextExactAction": "Read-only global scan of all active tenant adjudications against exact live HR/Auth principals. Produce safe consolidation plans only when human same-person authority and a unique credential keeper are proven; any ambiguity remains fail-closed."
 }

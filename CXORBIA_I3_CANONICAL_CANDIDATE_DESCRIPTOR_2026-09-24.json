@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM185_PAULA_IDENTITY_TOPOLOGY_DIAGNOSTIC_REQUIRED",
+  "status": "HOLD_VRM185_GLOBAL_IDENTITY_CONSOLIDATION_PLAN_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "db4c1cc35b55c03523196fc583bf7cf0b874d87f",
   "predecessorProductSourceSha": "9102918177d89d9e3d18cfb75c04aba8c29cba86",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V190_2026-10-02.json",
-  "findingsLedgerExpectedGitBlob": "0acbd605dbc7ca95f81697e7c6fb2f3fbaed32e2",
+  "findingsLedgerExpectedGitBlob": "18ec05628951eeb46d1789e755f317c2ff4e7aea",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM185_CROSS_DOMAIN_IDENTITY_REFERENCE_DIAGNOSTIC_REQUIRED",
+  "activeBlocker": "VRM185_GLOBAL_IDENTITY_CONSOLIDATION_PLAN_REQUIRED",
   "nextFindingId": "VRM-186",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Repeat VRM-185 read-only without browser: scan exact durable references to s3/shopper_gt_1440137b73 across tenant/project collections. Prove safe keeper and full remap scope before any consolidation write.",
+  "exactNextAction": "Read-only global scan of all active tenant adjudications against exact live HR/Auth principals. Produce safe consolidation plans only when human same-person authority and a unique credential keeper are proven; any ambiguity remains fail-closed.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",

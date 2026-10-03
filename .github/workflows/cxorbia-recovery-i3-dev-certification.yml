@@ -6984,3 +6984,46 @@ jobs:
           retention-days: 30
           compression-level: 0
 
+  vrm185-global-identity-consolidation-plan:
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM185_GLOBAL_IDENTITY_CONSOLIDATION_PLAN_REQUIRED' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      VRM185_GLOBAL_OUT: .tmp/vrm185-global-plan
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: step
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$VRM185_GLOBAL_OUT"
+          node --check tools/qa/cxorbia-i3-vrm185-global-identity-consolidation-plan.mjs
+          git diff --quiet "${{ needs.canonical-candidate-authority.outputs.source_sha }}" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+      - name: step
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: step
+        run: |
+          set -Eeuo pipefail
+          REV="$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")"
+          PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" EXPECTED_HR_REVISION="$REV" OUT="$VRM185_GLOBAL_OUT" node tools/qa/cxorbia-i3-vrm185-global-identity-consolidation-plan.mjs | tee "$VRM185_GLOBAL_OUT/console.log"
+          test "$(jq -r '.decision' "$VRM185_GLOBAL_OUT/result.json")" = "PASS_VRM185_GLOBAL_IDENTITY_CONSOLIDATION_PLAN"
+          test "$(jq -r '.readOnly' "$VRM185_GLOBAL_OUT/result.json")" = "true"
+          test "$(jq -r '.writes' "$VRM185_GLOBAL_OUT/result.json")" = "0"
+          test "$(jq -r '.production' "$VRM185_GLOBAL_OUT/result.json")" = "false"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-vrm185-global-identity-plan-${{ github.run_id }}
+          path: .tmp/vrm185-global-plan
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
