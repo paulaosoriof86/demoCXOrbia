@@ -72,17 +72,25 @@ async function exactAuthorityEvidence(){
   const authorityLinks=allLinks.docs.map(d=>({id:d.id,...(d.data()||{})})).filter(x=>{
     const status=str(x.status||x.state).toLowerCase();
     const authority=str(x.authorityType||x.authority?.type).toLowerCase();
-    return activeState(status)&&authority==='tenant_adjudication'&&x.humanConfirmed===true&&
-      str(x.canonicalShopperId||x.canonicalId||x.shopperId)===LEGACY&&exactLinkTokens(x).includes(CURRENT);
+    const authorityRef=str(x.authorityRef||x.adjudicationId||x.authority?.ref);
+    const canonical=str(x.canonicalShopperId||x.canonicalId||x.shopperId);
+    const exactSource=str(x.sourceIdentityKey||x.sourceShopperId);
+    const projectScope=str(x.projectScope||x.projectId);
+    return activeState(status)&&authority==='tenant_adjudication'&&
+      authorityRef.startsWith('frozen-paula-resolution:')&&x.periodIndependent===true&&
+      canonical===LEGACY&&(exactSource===CURRENT||exactLinkTokens(x).includes(CURRENT))&&
+      (!projectScope||projectScope===PROGRAM);
   });
   if(!profileTokens.includes(CURRENT))throw new Error('MAPPING_FAILURE:VRM185_EXACT_PROFILE_ALIAS_EVIDENCE_MISSING');
-  if(authorityLinks.length!==1)throw new Error('MAPPING_FAILURE:VRM185_EXACT_HUMAN_AUTHORITY_COUNT_'+authorityLinks.length);
+  if(authorityLinks.length!==1)throw new Error('MAPPING_FAILURE:VRM185_EXACT_FROZEN_ADMIN_AUTHORITY_COUNT_'+authorityLinks.length);
   if(str(currentCross.shopperId)!==CURRENT)throw new Error('MAPPING_FAILURE:VRM185_CURRENT_SELF_CROSSWALK_MISSING');
+  const authorityRef=str(authorityLinks[0].authorityRef||authorityLinks[0].adjudicationId||authorityLinks[0].authority?.ref);
   return {
     currentProfile:current,legacyProfile:legacy,currentCross,legacyCross,
     authorityLinkId:authorityLinks[0].id,
+    authorityRefFingerprint:sha(authorityRef).slice(0,20),
     exactProfileAlias:true,
-    humanConfirmedAuthority:true
+    frozenAdminAuthority:true
   };
 }
 async function exactHrRevision(){
@@ -170,7 +178,7 @@ try{
   const exact=await exactAuthorityEvidence();
   const [beforeCurrent,beforeLegacy]=await Promise.all([activeMembers(CURRENT),activeMembers(LEGACY)]);
   const alreadyConverged=beforeCurrent.length===1&&beforeLegacy.length===0&&str(exact.currentCross.shopperId)===CURRENT&&str(exact.legacyCross.shopperId)===CURRENT;
-  result.before={canonicalActive:beforeCurrent.length,aliasActive:beforeLegacy.length,exactProfileAlias:exact.exactProfileAlias,humanConfirmedAuthority:exact.humanConfirmedAuthority,hrRevision:str(hrMeta.revision)};
+  result.before={canonicalActive:beforeCurrent.length,aliasActive:beforeLegacy.length,exactProfileAlias:exact.exactProfileAlias,frozenAdminAuthority:exact.frozenAdminAuthority,authorityRefFingerprint:exact.authorityRefFingerprint,hrRevision:str(hrMeta.revision)};
   if(alreadyConverged){
     result.readback=await durableReadback(null);
     result.decision='PASS_VRM185_ADMIN_PROVIDER_ADJUDICATION';
