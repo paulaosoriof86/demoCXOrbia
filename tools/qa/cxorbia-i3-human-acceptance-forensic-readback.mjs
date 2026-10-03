@@ -157,6 +157,15 @@ const linkTokens=row=>[
   ...arr(row?.sourceAliases),...arr(row?.exactAliases),...arr(row?.identityAliases),...arr(row?.aliases)
 ].map(str);
 const vrm168IdentityLinks=identityLinkRows.filter(row=>linkTokens(row).some(v=>vrm168IdentityTokens.has(v))).map(linkSlim);
+const vrm168FocalMemberships=userMemberships.filter(row=>vrm168IdentityTokens.has(str(row?.shopperId))).map(row=>({
+  id:str(row?.id),shopperId:str(row?.shopperId),role:str(row?.role),authNamespace:str(row?.authNamespace),active:row?.active,
+  projectIds:arr(row?.projectIds).map(str),identityState:str(row?.identityState),supersededByShopperId:str(row?.supersededByShopperId),updatedAt:row?.updatedAt||null
+}));
+const vrm168ActiveCanonicalMemberships=vrm168FocalMemberships.filter(row=>
+  row.active===true&&row.shopperId==='shopper_gt_1440137b73'&&row.role==='shopper'&&row.authNamespace==='shopper'&&row.projectIds.includes(PROJECT_ID)
+);
+if(vrm168ActiveCanonicalMemberships.length!==1)throw new Error('AUTH_FAILURE:VRM168_ACTIVE_CANONICAL_MEMBERSHIP_COUNT_'+vrm168ActiveCanonicalMemberships.length);
+const vrm168ActiveCanonicalUid=vrm168ActiveCanonicalMemberships[0].id;
 const vrm168IdentityAuthorityReadonly={
   decision:'READ_ONLY_VRM168_IDENTITY_AUTHORITY_CAPTURE',
   tokens:[...vrm168IdentityTokens],
@@ -168,10 +177,8 @@ const vrm168IdentityAuthorityReadonly={
     exactAliases:arr(row?.exactAliases).map(str),identityAuthority:str(row?.identityAuthority),identityAuthorityRef:str(row?.identityAuthorityRef),
     hrSourceRevision:str(row?.hrSourceRevision),updatedAt:row?.updatedAt||null
   })),
-  focalMemberships:userMemberships.filter(row=>vrm168IdentityTokens.has(str(row?.shopperId))).map(row=>({
-    id:str(row?.id),shopperId:str(row?.shopperId),role:str(row?.role),authNamespace:str(row?.authNamespace),active:row?.active,
-    projectIds:arr(row?.projectIds).map(str),identityState:str(row?.identityState),supersededByShopperId:str(row?.supersededByShopperId),updatedAt:row?.updatedAt||null
-  })),
+  focalMemberships:vrm168FocalMemberships,
+  activeCanonicalPrincipal:{uid:vrm168ActiveCanonicalUid,shopperId:'shopper_gt_1440137b73',membershipCount:1},
   writes:0,production:false
 };
 fs.writeFileSync(OUT+'/vrm168-crosswalk-readonly.json',JSON.stringify(vrm168CrosswalkReadonly,null,2)+'\n');
@@ -179,7 +186,7 @@ fs.writeFileSync(OUT+'/vrm168-identity-authority-readonly.json',JSON.stringify(v
 
 const captureOut=OUT+'/vrm168-browser-capture';
 const captureEnv={...process.env,OUT:captureOut,HOSTING_URL:process.env.HOSTING_URL||'https://cxorbia-backend-dev.web.app',PROJECT,TENANT_ID:TENANT,PROJECT_ID,
-  VRM168_PERIOD_ID:'cinepolis-2026-10',VRM168_SHOPPER_ID:'shopper_gt_1440137b73',VRM168_UID:'cx-sh-d56787c101878e81c94fc7637f66',VRM168_VISIT_ID:'OCTUBRE 26!6',
+  VRM168_PERIOD_ID:'cinepolis-2026-10',VRM168_SHOPPER_ID:'shopper_gt_1440137b73',VRM168_UID:vrm168ActiveCanonicalUid,VRM168_VISIT_ID:'OCTUBRE 26!6',
   VRM168_HR_REVISION:str(process.env.HR_REVISION||hr.sourceRevision||hr.revision||hr._runtime?.revision)};
 let captureProc=null,browserCommandCapture=null,lastCaptureError='';
 for(let attempt=1;attempt<=3;attempt++){
