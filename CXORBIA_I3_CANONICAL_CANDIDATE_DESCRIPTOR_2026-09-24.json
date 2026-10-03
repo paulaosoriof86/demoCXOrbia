@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_V190_DEV_MATERIALIZATION_REQUIRED",
+  "status": "HOLD_V190_LIVE_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "e73408c999c691d37d74c248d668b649e5bb85e5",
   "predecessorProductSourceSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V190_2026-10-02.json",
-  "findingsLedgerExpectedGitBlob": "84da8b6e7a419f1bdc0b6117b48df9997d66a058",
+  "findingsLedgerExpectedGitBlob": "938f4b2bc7b5f7288bab12f0895b7dad07f7ad0f",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM168_STALE_TENANT_ADJUDICATION_EXACT_DEV_MATERIALIZATION_REQUIRED",
+  "activeBlocker": "VRM168_REFINED_OWNER_SAME_DEV_LIVE_REPROOF_REQUIRED",
   "nextFindingId": "VRM-181",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Reuse the existing V190 DEV materialization lane against source 83d2385dc47f3bfd785a37072100fdbab11b5127. Existing source gates must pass before exactly one Recovery DEV materialization. Then run the existing V190 live reproof. Production remains DO_NOT_TOUCH.",
+  "exactNextAction": "Run the existing V190 readback/live-reproof lane against exactly runtime cxorbia-live-hr-dev-00251-mrp and Hosting version 3f4c0f77d423a87c for source 83d2385dc47f3bfd785a37072100fdbab11b5127. No rebuild/redeploy. Prove the focal identity remains exact through protected/projected state, card/action visibility, provider ACK, idempotent durable reload and cleanup; then execute the existing transversal V190 acceptance. Production remains DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -409,27 +409,24 @@
     "production": false
   },
   "currentMaterialization": {
-    "runId": 37081102241,
-    "runNumber": 891,
-    "jobId": 111081739013,
-    "artifactId": 11259161246,
-    "artifactDigest": "sha256:e1e283c356024051699a9c37da0b0405a2e0cc2d2d70648130b8055cf09e9ff0",
+    "runId": 37085892089,
+    "runNumber": 898,
+    "jobId": 111096037320,
+    "artifactId": 11260584203,
+    "artifactDigest": "sha256:59d3abef9436ad73159d2779cc29b346e12b298bf79344a784b5bf606e214dcd",
     "decision": "PASS_V190_EXACT_DEV_MATERIALIZATION",
-    "sourceSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
-    "sourceTree": "e715b9a55ed35f62037e1b82a183a32ff8d3ebcd",
-    "runtimeRevision": "cxorbia-live-hr-dev-00250-l9w",
-    "runtimeDigest": "sha256:e4633301e99993134eb132892635b77b4006824aab4cc4f4682adc86a08ba9f7",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/0f7f7bd7376497b8",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790986549932000",
+    "sourceSha": "83d2385dc47f3bfd785a37072100fdbab11b5127",
+    "sourceTree": "e73408c999c691d37d74c248d668b649e5bb85e5",
+    "runtimeRevision": "cxorbia-live-hr-dev-00251-mrp",
+    "runtimeDigest": "sha256:378b8554cc7d4c639e8a560143903afdbc244a61ce73325bbd7d0c8f46f48a6f",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/3f4c0f77d423a87c",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790990754737000",
     "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
-    "frontendBytesExact": true,
-    "vrm168RegressionPass": true,
-    "scenarioDimensionsProven": true,
     "builds": 1,
     "runtimeDeploys": 1,
     "hostingDeploys": 1,
     "storageRulesDeploys": 1,
-    "state": "SEALED_VRM168_SUCCESSOR_DEV_PENDING_LIVE_REPROOF",
+    "state": "SEALED_VRM168_REFINED_OWNER_DEV_PENDING_LIVE_REPROOF",
     "production": false
   },
   "lastFocalAttempt": {
@@ -901,16 +898,7 @@
     "hrWrites": 0,
     "production": false
   },
-  "pendingMaterialization": {
-    "sourceSha": "83d2385dc47f3bfd785a37072100fdbab11b5127",
-    "sourceTree": "e73408c999c691d37d74c248d668b649e5bb85e5",
-    "predecessorSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
-    "status": "HOLD_V190_DEV_MATERIALIZATION_REQUIRED",
-    "maxBuilds": 1,
-    "maxRuntimeDeploys": 1,
-    "maxHostingDeploys": 1,
-    "production": false
-  },
+  "pendingMaterialization": null,
   "lastVrm080Proof": {
     "runId": 36333245670,
     "runNumber": 525,
