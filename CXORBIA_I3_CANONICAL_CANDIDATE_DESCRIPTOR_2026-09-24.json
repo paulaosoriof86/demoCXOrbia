@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM189_COMMERCIAL_PROVIDER_CONTRACT_REQUIRED",
+  "status": "HOLD_VRM189_SOURCE_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "28e060d103f779084c14b401111dbc9da2cce8e2",
-  "productTreeAuthority": "1c83c172a533fb72854b8ff6c086972bb54233f3",
-  "predecessorProductSourceSha": "3a9dac659c5f4b8f98877a53a1abeca8e422c987",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V198_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "a0e1fbc8ebdb417275638a29ab68957242f56fa1",
+  "productSourceSha": "f41b61629d57432fa6c1382ea9bb09f1a464c263",
+  "productTreeAuthority": "ff21510a2557db02105b6578817e29ff5793dfd2",
+  "predecessorProductSourceSha": "28e060d103f779084c14b401111dbc9da2cce8e2",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V199_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "b7b10281689051e962f923782248611584b43d7f",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM189_COMMERCIAL_PROVIDER_CONTRACT_REQUIRED",
+  "activeBlocker": "VRM189_SOURCE_REPROOF_REQUIRED",
   "nextFindingId": "VRM-195",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Implement the bounded VRM-189 tenant-scoped commercial command boundary inside the existing /v1/cxorbia/commands runtime: exact client create/update and CRM account/contact/opportunity/column mutations only, with super/admin RBAC, idempotency, expectedVersion, commandReceipts, entityAuditTrail and durable readback. Rewire app/modules/clientes.js and app/modules/crm.js to that provider; localStorage may not be authority. Source-test only; no build/deploy.",
+  "exactNextAction": "Execute the bounded VRM-189 source-only reproof against f41b61629d57432fa6c1382ea9bb09f1a464c263 / ff21510a2557db02105b6578817e29ff5793dfd2. Require syntax PASS, commercial provider tests PASS, tenant super/admin RBAC, idempotency, expectedVersion, commandReceipts, entityAuditTrail, provider ACK/readback, zero localStorage authority, zero HR/external/payment writes. No build or deploy.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -482,7 +482,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "d83f57ed07ef684cd274d4b1db3a52d91f4ff400",
+  "productSourceTree": "ff21510a2557db02105b6578817e29ff5793dfd2",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -1513,10 +1513,10 @@
     "production": false
   },
   "latestSourceSuccessor": {
-    "sourceSha": "f769041ddd6adacb5bb16b0eeddab7d08b47a7e8",
-    "sourceTree": "d83f57ed07ef684cd274d4b1db3a52d91f4ff400",
-    "predecessorSha": "f6c3bb6c038a77eee9cbca8bfbfd1096bfd48cbc",
-    "state": "SOURCE_PROVEN_RUN_36792808797",
+    "sourceSha": "f41b61629d57432fa6c1382ea9bb09f1a464c263",
+    "sourceTree": "ff21510a2557db02105b6578817e29ff5793dfd2",
+    "predecessorSha": "28e060d103f779084c14b401111dbc9da2cce8e2",
+    "state": "VRM189_SOURCE_REPROOF_REQUIRED",
     "sourceContractJobId": 110149369214,
     "artifactId": 11132915262,
     "artifactDigest": "sha256:a24d3d1227dec87aeb6fbec71178c12d7a3752714f6633bc141beba30309dc52",
@@ -3058,6 +3058,29 @@
       "durable readback",
       "no localStorage truth"
     ],
+    "production": false
+  },
+  "vrm189Implementation": {
+    "state": "SOURCE_IMPLEMENTED_REPROOF_REQUIRED",
+    "sourceSha": "f41b61629d57432fa6c1382ea9bb09f1a464c263",
+    "sourceTree": "ff21510a2557db02105b6578817e29ff5793dfd2",
+    "parentSha": "1026b3eae2cb4c45f5f96827451a15d6ccd83f3b",
+    "provider": "backend/runtime/cxorbia-commercial-command-provider-v1.mjs",
+    "commandRuntime": "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+    "serverReadAuthority": "backend/runtime/hr-live-service/server.mjs",
+    "clientOwner": "app/modules/clientes.js",
+    "crmOwner": "app/modules/crm.js",
+    "tenantScoped": true,
+    "superAdminRbac": true,
+    "idempotency": true,
+    "expectedVersion": true,
+    "commandReceipts": true,
+    "entityAuditTrail": true,
+    "durableReadback": true,
+    "localStorageAuthority": false,
+    "sourceTest": "backend/runtime/hr-live-service/test/cxorbia-commercial-command-provider-v1.test.mjs",
+    "build": false,
+    "deploy": false,
     "production": false
   }
 }
