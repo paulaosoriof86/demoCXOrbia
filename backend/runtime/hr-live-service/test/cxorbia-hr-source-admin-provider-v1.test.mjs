@@ -17,7 +17,7 @@ class DB{
 class Auth{async verifyIdToken(){return{uid:'admin-1',tenantId:'tenant-a',role:'super',authNamespace:'staff'};}}
 const policy={schemaVersion:'cxorbia.project-command-provider-policy.v1',enabled:true,allowedTenantIds:['tenant-a'],allowedProjectIds:['project-a'],externalProviderWrites:false,hrWrites:false,makeCalls:false,geminiCalls:false,paymentWrites:false};
 const baseProject={
-  id:'project-a',projectId:'project-a',tenantId:'tenant-a',version:7,name:'Proyecto A',countries:['GT'],periodId:'period-a',
+  id:'project-a',projectId:'project-a',tenantId:'tenant-a',version:7,name:'Proyecto A',normalizedName:'proyecto a',countries:['GT'],periodId:'period-a',
   operationalSource:{mode:'external',authority:'external_source',providerType:'google_sheets',readPolicy:'external_live',writePolicy:'external_read_only',providerBindingId:'binding-old',mappingRef:'map-old'}
 };
 function baseDb(){const d=new DB();d.seed('tenants/tenant-a/users/admin-1',{active:true,tenantId:'tenant-a',role:'super',authNamespace:'staff'});d.seed('tenants/tenant-a/projects/project-a',baseProject);return d;}

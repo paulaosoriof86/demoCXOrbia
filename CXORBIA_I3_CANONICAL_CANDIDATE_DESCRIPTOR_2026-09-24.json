@@ -7,8 +7,8 @@
   "productSourceSha": "190509264f00cee52280b5c8dcf16259673e14d0",
   "productTreeAuthority": "ae80cf31eb1357d760388ad9e922cb5bb95ec264",
   "predecessorProductSourceSha": "6a5d529d7813b48c90051668c7331065dbc8d82b",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V204_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "a95d9f5773c3f33b6c534494f92e4e39eed4e733",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V205_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "541c4e1cfe99c38836e4faffebefc55387eb2dd6",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run only the bounded VRM-191 HR source administration source reproof on product source 190509264f00cee52280b5c8dcf16259673e14d0 / tree ae80cf31eb1357d760388ad9e922cb5bb95ec264. Require PASS_VRM191_HR_SOURCE_PROVIDER_CONTRACT plus VRM-187/188/189/190 regressions. Do not build or deploy.",
+  "exactNextAction": "Repeat the same bounded VRM-191 source-only reproof on product source 190509264f00cee52280b5c8dcf16259673e14d0 / tree ae80cf31eb1357d760388ad9e922cb5bb95ec264 after correcting only the test fixture normalizedName. No product source change, build or deploy.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3217,6 +3217,17 @@
     "hrWrites": false,
     "buildAllowed": false,
     "deployAllowed": false,
+    "production": false
+  },
+  "vrm191LastControlFailure": {
+    "runId": 37141609547,
+    "runNumber": 967,
+    "jobId": 111257077617,
+    "classification": "SOURCE_FAILURE",
+    "productDefect": false,
+    "cause": "Test fixture omitted normalizedName; provider fail-closed behavior was correct.",
+    "correction": "backend/runtime/hr-live-service/test/cxorbia-hr-source-admin-provider-v1.test.mjs only",
+    "productSourceUnchanged": true,
     "production": false
   }
 }
