@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM189_SOURCE_REPROOF_REQUIRED",
+  "status": "HOLD_VRM190_PERIOD_LIFECYCLE_CONTRACT_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "ef790a5191bc5359d9c67ab2a28f8e04eb54be37",
   "productTreeAuthority": "b9fa5c52a0cd793dd3408f1935bde90de21ea0f7",
   "predecessorProductSourceSha": "f41b61629d57432fa6c1382ea9bb09f1a464c263",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V200_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "9b7b31797dc2c1bbcf879b187048e6028938a7ad",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V201_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "0bbaa95d5f04a1d1a925de524aa97527c2123241",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM189_SOURCE_REPROOF_REQUIRED",
+  "activeBlocker": "VRM190_PERIOD_LIFECYCLE_CONTRACT_REQUIRED",
   "nextFindingId": "VRM-195",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Repeat the bounded VRM-189 source-only reproof on corrected source ef790a5191bc5359d9c67ab2a28f8e04eb54be37 / b9fa5c52a0cd793dd3408f1935bde90de21ea0f7 after run #959 SOURCE_FAILURE syntax correction. No build/deploy.",
+  "exactNextAction": "VRM-190 only: inspect app/modules/periodos.js plus its exact data/provider owner, prove the current create/close/archive/reopen persistence path, and implement only the minimum provider ACK/idempotency/expectedVersion/readback contract needed for tenantId + projectId + periodId lifecycle. SOURCE TEST first. Do not materialize DEV yet.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1516,7 +1516,7 @@
     "sourceSha": "ef790a5191bc5359d9c67ab2a28f8e04eb54be37",
     "sourceTree": "b9fa5c52a0cd793dd3408f1935bde90de21ea0f7",
     "predecessorSha": "f41b61629d57432fa6c1382ea9bb09f1a464c263",
-    "state": "VRM189_SOURCE_REPROOF_RETRY_REQUIRED",
+    "state": "VRM189_SOURCE_PASS_RUN961_VRM190_REQUIRED",
     "sourceContractJobId": 110149369214,
     "artifactId": 11132915262,
     "artifactDigest": "sha256:a24d3d1227dec87aeb6fbec71178c12d7a3752714f6633bc141beba30309dc52",
@@ -2954,17 +2954,18 @@
   },
   "adminFullAdministrationMatrix": {
     "path": "CXORBIA_I3_ADMIN_FULL_ADMINISTRATION_MATRIX_2026-10-03.json",
-    "expectedGitBlob": "33cdc30984ef751fa9be10bb1e3a7f15d853e708",
+    "expectedGitBlob": "15f0c47e5600587dc43d9e6e6fb89b771431671e",
     "summary": {
       "PASS_PROVEN": 8,
       "OPEN_BLOCKER": 25,
       "NOT_APPLICABLE_WITH_REASON": 1,
       "omissions": 0
-    }
+    },
+    "vrm189Disposition": "SOURCE_PASS_LIVE_LIFECYCLE_PENDING"
   },
   "cumulativeObservationClosureMatrix": {
     "path": "CXORBIA_I3_CUMULATIVE_OBSERVATION_CLOSURE_MATRIX_2026-10-03.json",
-    "expectedGitBlob": "27af73308843cfef42e66455c9701bcd05f87fa3",
+    "expectedGitBlob": "55d2a38ff063667ba28937ee836a16cbf752e206",
     "summary": {
       "totalFindings": 186,
       "PASS_PROVEN": 102,
@@ -3061,7 +3062,7 @@
     "production": false
   },
   "vrm189Implementation": {
-    "state": "SOURCE_REPROOF_RETRY_REQUIRED",
+    "state": "SOURCE_PASS_RUN961",
     "sourceSha": "ef790a5191bc5359d9c67ab2a28f8e04eb54be37",
     "sourceTree": "b9fa5c52a0cd793dd3408f1935bde90de21ea0f7",
     "parentSha": "1026b3eae2cb4c45f5f96827451a15d6ccd83f3b",
@@ -3092,6 +3093,51 @@
       "commitSha": "ef790a5191bc5359d9c67ab2a28f8e04eb54be37",
       "owner": "app/modules/crm.js",
       "cause": "missing comma after toggleTarea method"
-    }
+    },
+    "sourceProof": {
+      "runId": 37138483193,
+      "runNumber": 961,
+      "jobId": 111247940320,
+      "artifactId": 11279028081,
+      "artifactDigest": "sha256:1798bb8cc7fd4bd757680a3ede638027cbd6f484a2070137a12ba3ef3793c010",
+      "decision": "PASS_VRM189_COMMERCIAL_SOURCE_REPROOF",
+      "sourceSha": "ef790a5191bc5359d9c67ab2a28f8e04eb54be37",
+      "sourceTree": "b9fa5c52a0cd793dd3408f1935bde90de21ea0f7",
+      "commercialTests": {
+        "total": 5,
+        "pass": 5,
+        "fail": 0
+      },
+      "financeRegression": {
+        "total": 15,
+        "pass": 15,
+        "fail": 0
+      },
+      "questionnaireRegression": "PASS_PREI4_PROJECT_QUESTIONNAIRE_CONFIG_SOURCE",
+      "frontendContract": "PASS_VRM154_156_FRONTEND_SOURCE_CONTRACT",
+      "builds": 0,
+      "deploys": 0,
+      "production": false
+    },
+    "liveLifecyclePending": true
+  },
+  "vrm190": {
+    "findingId": "VRM-190",
+    "classification": "PERSISTENCE_FAILURE",
+    "severity": "P0",
+    "state": "OWNER_DIAGNOSTIC_REQUIRED",
+    "owners": [
+      "app/modules/periodos.js",
+      "app/core/data.js"
+    ],
+    "requiredSemantics": [
+      "tenant/project/period scope",
+      "providerAck",
+      "idempotency",
+      "expectedVersion",
+      "durable readback",
+      "no false-success UI"
+    ],
+    "production": false
   }
 }

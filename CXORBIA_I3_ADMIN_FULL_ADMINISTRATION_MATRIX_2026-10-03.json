@@ -5,8 +5,8 @@
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "controlHeadBeforeFreeze": "2d02ef978d220eb04183df957a2f398bfe1d52e5",
-  "productSourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6",
-  "productTree": "2e5b6af67aa0bbb5e0f79a37fe5dbab8453792b2",
+  "productSourceSha": "ef790a5191bc5359d9c67ab2a28f8e04eb54be37",
+  "productTree": "b9fa5c52a0cd793dd3408f1935bde90de21ea0f7",
   "materialization": {
     "runId": 37127209268,
     "runNumber": 939,
@@ -326,7 +326,7 @@
         "app/modules/clientes.js",
         "app/modules/crm.js"
       ],
-      "reason": "Client create/edit and linked CRM/contact state still rely on in-memory/local browser stores without a canonical provider ACK/readback contract.",
+      "reason": "VRM-189 source contract is proven durable for client create/update and linked commercial authority, but same-source DEV provider lifecycle/readback has not yet been materialized; delete/archive/deactivate also remains outside the proven contract.",
       "renderProof": {
         "run946": true,
         "visible": true,
@@ -337,13 +337,13 @@
         {
           "action": "create/edit client",
           "classification": "OPEN_BLOCKER",
-          "blocker": "No durable provider ACK/readback is proven; CRM synchronization can use local store.",
+          "blocker": "SOURCE_PASS_RUN961; pending same-source DEV provider lifecycle/readback before PASS_PROVEN.",
           "owner": "app/modules/clientes.js"
         },
         {
           "action": "delete/archive/deactivate client",
           "classification": "OPEN_BLOCKER",
-          "blocker": "No canonical durable lifecycle is proven.",
+          "blocker": "Delete/archive/deactivate client lifecycle is not included in the VRM-189 source contract and remains OPEN.",
           "owner": "app/modules/clientes.js"
         }
       ],
@@ -355,7 +355,23 @@
         "readbackArtifactId": 11276491534,
         "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
         "adminArtifactId": 11276016226,
-        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487"
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487",
+        "vrm189SourceProof": {
+          "runId": 37138483193,
+          "runNumber": 961,
+          "jobId": 111247940320,
+          "artifactId": 11279028081,
+          "artifactDigest": "sha256:1798bb8cc7fd4bd757680a3ede638027cbd6f484a2070137a12ba3ef3793c010",
+          "decision": "PASS_VRM189_COMMERCIAL_SOURCE_REPROOF",
+          "sourceSha": "ef790a5191bc5359d9c67ab2a28f8e04eb54be37",
+          "sourceTree": "b9fa5c52a0cd793dd3408f1935bde90de21ea0f7",
+          "tests": 5,
+          "testsPass": 5,
+          "testsFail": 0,
+          "builds": 0,
+          "deploys": 0,
+          "production": false
+        }
       },
       "production": false
     },
@@ -976,7 +992,7 @@
       "owner": [
         "app/modules/crm.js"
       ],
-      "reason": "CRM accounts, contacts, columns and targets are stored in localStorage.",
+      "reason": "VRM-189 removed browser/localStorage authority for accounts, contacts, opportunities and columns and proved provider ACK/readback at SOURCE. The route remains OPEN_BLOCKER until same-source DEV lifecycle is proven; CRM targets/meta are explicitly not closed by VRM-189.",
       "renderProof": {
         "run946": true,
         "visible": true,
@@ -987,7 +1003,7 @@
         {
           "action": "accounts/contacts/opportunities/columns/targets lifecycle",
           "classification": "OPEN_BLOCKER",
-          "blocker": "Move authoritative CRM state out of localStorage and prove durable CRUD.",
+          "blocker": "SOURCE_PASS_RUN961 for accounts/contacts/opportunities/columns; pending same-source DEV lifecycle, and targets/meta remain outside this proof.",
           "owner": "app/modules/crm.js"
         }
       ],
@@ -999,7 +1015,23 @@
         "readbackArtifactId": 11276491534,
         "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
         "adminArtifactId": 11276016226,
-        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487"
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487",
+        "vrm189SourceProof": {
+          "runId": 37138483193,
+          "runNumber": 961,
+          "jobId": 111247940320,
+          "artifactId": 11279028081,
+          "artifactDigest": "sha256:1798bb8cc7fd4bd757680a3ede638027cbd6f484a2070137a12ba3ef3793c010",
+          "decision": "PASS_VRM189_COMMERCIAL_SOURCE_REPROOF",
+          "sourceSha": "ef790a5191bc5359d9c67ab2a28f8e04eb54be37",
+          "sourceTree": "b9fa5c52a0cd793dd3408f1935bde90de21ea0f7",
+          "tests": 5,
+          "testsPass": 5,
+          "testsFail": 0,
+          "builds": 0,
+          "deploys": 0,
+          "production": false
+        }
       },
       "production": false
     },
@@ -1360,5 +1392,5 @@
   "humanVisualApprovalAllowed": false,
   "i4Allowed": false,
   "production": "DO_NOT_TOUCH",
-  "exactNextAction": "Freeze the cumulative observation-closure matrix. Then append the proven OPEN_BLOCKER clusters as new I3 findings and remediate only their exact owners, starting with the user-visible project resources/documents blocker and shared durable configuration/content patterns. No rebuild/redeploy until a product-source correction package is complete and source-tested."
+  "exactNextAction": "Proceed to VRM-190 Periodos as the next P0 owner. Keep clientes/crm OPEN_BLOCKER until bounded package materialization and same-source live provider lifecycle evidence; do not materialize DEV yet."
 }

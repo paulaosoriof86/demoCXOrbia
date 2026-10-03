@@ -5,12 +5,9 @@
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "controlHeadBeforeFreeze": "6b6e9cdde99d573b833178ad3490229432d0f0b5",
-  "productSourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6",
-  "productTree": "2e5b6af67aa0bbb5e0f79a37fe5dbab8453792b2",
-  "sourceLedger": {
-    "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
-    "gitBlob": "f47f766cc1acbcd7c69d88fa3afa8b49d7e9c100"
-  },
+  "productSourceSha": "ef790a5191bc5359d9c67ab2a28f8e04eb54be37",
+  "productTree": "b9fa5c52a0cd793dd3408f1935bde90de21ea0f7",
+  "sourceLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V201_2026-10-03.json",
   "run946": {
     "runId": 37128494088,
     "runNumber": 946,
@@ -4020,5 +4017,21 @@
   "humanVisualApprovalAllowed": false,
   "i4Allowed": false,
   "production": "DO_NOT_TOUCH",
-  "exactNextAction": "Use the Admin full-administration matrix plus this closure matrix to append new current-candidate blocker findings and execute owner-scoped remediation inside I3. Prioritize user-visible project resource/document editing and shared browser-local truth patterns, while retaining all existing OPEN_BLOCKER findings. Re-run only affected source/owner tests, then one deterministic DEV materialization and full cumulative reproof after the bounded product package is complete."
+  "exactNextAction": "Preserve all VRM-001..186 dispositions; continue with VRM-190 Periodos. VRM-189 SOURCE_PASS does not silently close historical OPEN_BLOCKER rows or authorize DEV materialization.",
+  "vrm189SourceProof": {
+    "runId": 37138483193,
+    "runNumber": 961,
+    "jobId": 111247940320,
+    "artifactId": 11279028081,
+    "artifactDigest": "sha256:1798bb8cc7fd4bd757680a3ede638027cbd6f484a2070137a12ba3ef3793c010",
+    "decision": "PASS_VRM189_COMMERCIAL_SOURCE_REPROOF",
+    "sourceSha": "ef790a5191bc5359d9c67ab2a28f8e04eb54be37",
+    "sourceTree": "b9fa5c52a0cd793dd3408f1935bde90de21ea0f7",
+    "tests": 5,
+    "testsPass": 5,
+    "testsFail": 0,
+    "builds": 0,
+    "deploys": 0,
+    "production": false
+  }
 }
