@@ -786,9 +786,18 @@ async function durableIdentityAdjudication({auth,db,command,actor,canonicalShopp
     principalRows.push({identityId,doc,ref:users.doc(doc.id),member,user,profile:profilesById.get(identityId)||{},strongProof:adjudicationStrongCredentialProof(member,profilesById.get(identityId)||{})});
   }
   const strong=principalRows.filter(x=>x.strongProof);
-  if(strong.length>1)throw new Error('SHOPPER_IDENTITY_MULTIPLE_PASSWORD_PROOF_PRINCIPALS');
-  if(!strong.length&&principalRows.length>1)throw new Error('SHOPPER_IDENTITY_KEEPER_AMBIGUOUS');
-  const keeper=strong[0]||principalRows[0]||null;
+  let keeper=null;
+  if(strong.length>1){
+    const canonicalCredential=shopperCredentialRule(canonical);
+    const desiredLogin=canonicalCredential?.ok?str(canonicalCredential.login).toLowerCase():'';
+    const canonicalLoginStrong=desiredLogin?strong.filter(x=>str(x.member?.visibleLogin||x.profile?.visibleLogin||x.profile?.username||x.profile?.user).toLowerCase()===desiredLogin):[];
+    if(canonicalLoginStrong.length!==1)throw new Error('SHOPPER_IDENTITY_MULTIPLE_PASSWORD_PROOF_PRINCIPALS');
+    keeper=canonicalLoginStrong[0];
+  }else if(strong.length===1)keeper=strong[0];
+  else{
+    if(principalRows.length>1)throw new Error('SHOPPER_IDENTITY_KEEPER_AMBIGUOUS');
+    keeper=principalRows[0]||null;
+  }
   const linkId='irl_'+sha([tenantId,projectId,canonicalShopperId,...aliases].join('\0')).slice(0,32),linkRef=tenant.collection('shopperIdentityLinks').doc(linkId);
   const stamp=now(),authorityRef=receiptId(command),link={
     schemaVersion:'cxorbia.shopper-identity-link.v1',identityLinkId:linkId,tenantId,projectScope:projectId,periodIndependent:true,
