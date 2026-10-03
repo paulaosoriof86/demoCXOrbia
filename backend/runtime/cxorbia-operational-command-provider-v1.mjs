@@ -215,7 +215,8 @@ async function reconcileVisitDoc({db,policy,candidate,sourceRevision}){
       return {providerWrites:1,created:true,idempotentReplay:false};
     }
     const existing=snap.data()||{};
-    if(str(existing.tenantId||tenantId)!==tenantId||str(existing.projectId||projectId)!==projectId||str(existing.visitId||existing.id||visitId)!==visitId)throw new Error('OPS_VISIT_DURABLE_SCOPE_CONFLICT');
+    const existingStableVisitKey=str(existing.hrRowId)||sourceCoord(existing)||str(existing.visitId||existing.id||visitId);
+    if(str(existing.tenantId||tenantId)!==tenantId||str(existing.projectId||projectId)!==projectId||existingStableVisitKey!==visitId)throw new Error('OPS_VISIT_DURABLE_SCOPE_CONFLICT');
     const durableShopper=str(existing.shopperId),hrShopper=str(candidate.shopperId);
     const platformPending=str(existing.assignmentSource)==='platform'&&str(existing.assignmentSyncStatus)==='pending_hr'&&durableShopper;
     if(platformPending&&hrShopper&&hrShopper!==durableShopper){
