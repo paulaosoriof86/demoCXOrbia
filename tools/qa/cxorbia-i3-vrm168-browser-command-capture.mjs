@@ -69,15 +69,26 @@ try{
   const pre=await page.evaluate(({visitId})=>{
     const d=window.CX?.data||{},v=(Array.isArray(d._visitas)?d._visitas:[]).find(x=>String(x.id||x.visitId||'')===visitId||String(x.hrRowId||'')===visitId);
     const pv=(Array.isArray(d.__protectedVisits)?d.__protectedVisits:[]).find(x=>String(x.id||x.visitId||'')===visitId||String(x.hrRowId||'')===visitId);
+    const hv=(Array.isArray(d.__liveHrVisits)?d.__liveHrVisits:[]).find(x=>String(x.id||x.visitId||'')===visitId||String(x.hrRowId||'')===visitId);
+    const raw=(Array.isArray(window.CX_TYA_HR_SOURCE_SAFE?.visits)?window.CX_TYA_HR_SOURCE_SAFE.visits:[]).find(x=>String(x.id||x.visitId||'')===visitId||String(x.hrRowId||'')===visitId);
+    const focalIds=new Set(['s3',String(window.CX?.backendAuth?.context?.()?.shopperId||''),String(v?.shopperId||''),String(pv?.shopperId||'')]);
+    const focalShoppers=(Array.isArray(d.shoppers)?d.shoppers:[]).filter(s=>focalIds.has(String(s?.id||''))||focalIds.has(String(s?.shopperId||''))||focalIds.has(String(s?.canonicalShopperId||''))).map(s=>({id:s?.id||null,shopperId:s?.shopperId||null,canonicalShopperId:s?.canonicalShopperId||null,legacyShopperId:s?.legacyShopperId||null,exactAliases:Array.isArray(s?.exactAliases)?s.exactAliases:[],sourceShopperIds:Array.isArray(s?.sourceShopperIds)?s.sourceShopperIds:[]}));
     const card=[...document.querySelectorAll('[data-visit-card]')].find(x=>String(x.getAttribute('data-visit-card')||'')===String(v?.id||v?.visitId||''));
     const sched=card?.querySelector('[data-sched]');
+    const slim=x=>x?{id:x.id||x.visitId||null,visitId:x.visitId||null,hrRowId:x.hrRowId||null,periodId:x.periodId||null,projectId:x.projectId||null,estado:x.estado||x.status||null,shopperId:x.shopperId||null,assignmentSource:x.assignmentSource||null,assignmentSyncStatus:x.assignmentSyncStatus||null,version:x.version??null,disponibleDesde:x.disponibleDesde||null}:null;
     return {
       dataCtx:typeof d.ctx==='function'?d.ctx():null,currentProjectId:d.currentProjectId||null,currentPeriodId:d.currentPeriodId||null,
       sourceRevision:d.previewMeta?.sourceRevision||null,
       authContext:window.CX?.backendAuth?.context?.()||null,
       commandStatus:window.CX?.commandAdapter?.status?.()||null,
-      projected:v?{id:v.id||v.visitId,visitId:v.visitId||null,hrRowId:v.hrRowId||null,periodId:v.periodId||null,projectId:v.projectId||null,estado:v.estado||v.status||null,shopperId:v.shopperId||null,version:v.version??null,updatedAt:v.updatedAt||null,lastSyncedAt:v.lastSyncedAt||null,hrRevision:v.hrRevision||null,sourceRevision:v.sourceRevision||null,disponibleDesde:v.disponibleDesde||null}:null,
-      protected:pv?{id:pv.id||pv.visitId,visitId:pv.visitId||null,hrRowId:pv.hrRowId||null,periodId:pv.periodId||null,estado:pv.estado||pv.status||null,shopperId:pv.shopperId||null,version:pv.version??null,disponibleDesde:pv.disponibleDesde||null}:null,
+      rawSnapshot:slim(raw),
+      liveHrBeforeOverlay:slim(hv),
+      projected:slim(v),
+      protected:slim(pv),
+      identityMap:d.__identityMap||null,
+      identityReviewQueue:Array.isArray(d.__identityReviewQueue)?d.__identityReviewQueue.filter(x=>String(x?.liveShopperId||'')==='s3'||String(x?.entityId||'')===visitId).slice(0,20):[],
+      focalShoppers,
+      authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY||null,
       cardFound:!!card,scheduleButtonFound:!!sched,scheduleButtonText:String(sched?.innerText||'')
     };
   },{visitId:VISIT_ID});
