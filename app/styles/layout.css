@@ -462,7 +462,7 @@ body.role-shopper .ph-t{font-size:22px}
 .cx-profile-kpis>[data-profile-kpi]{cursor:pointer;transition:transform .15s ease}
 .cx-profile-kpis>[data-profile-kpi]:hover{transform:translateY(-1px)}
 .cx-academy-course-card .cx-academy-course-head{background:var(--acad-tone,linear-gradient(135deg,var(--brand),var(--brand-dark)))}
-.cx-academy-course-card.tone-sky{--acad-tone:linear-gradient(135deg,#0284c7,#0369a1)}
+.cx-academy-course-card.tone-sky{--acad-tone:#176b87}
 .cx-academy-course-card.tone-navy{--acad-tone:linear-gradient(135deg,#123b5d,#0d2740)}
 .cx-academy-course-card.tone-teal{--acad-tone:linear-gradient(135deg,#0f766e,#115e59)}
 .cx-academy-course-card.tone-violet{--acad-tone:linear-gradient(135deg,#7c3aed,#5b21b6)}
