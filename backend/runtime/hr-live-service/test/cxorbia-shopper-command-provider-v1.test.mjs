@@ -813,6 +813,43 @@ test('VRM-185 / admin identity adjudication keeps the unique password-proof prin
   assert.equal(second.ok,true);assert.equal(second.idempotentReplay,true);assert.equal(second.providerWrites,0);assert.equal((await auth.getUser(keeperUid)).disabled,false);assert.equal((await auth.getUser(canonicalUid)).disabled,true);
 });
 
+test('VRM-197 / multiple password-proof principals choose the unique canonical visible-login keeper',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db),canonical='shopper_gt_exact_julissa',aliasA='legacy-login-exact',aliasB='shopper_gt_alias_history',aliasC='legacy-duplicate-visits';
+  db.seed('tenants/tenant-a/users/admin-1',{active:true,tenantId:'tenant-a',role:'super',authNamespace:'staff',projectIds:['project-a']});
+  const principals=[
+    [canonical,'generated-current','julissa.flores.1234',false],
+    [aliasA,'keeper-human','julissa.flores',true],
+    [aliasB,'other-human','julissa.illescas',true],
+    [aliasC,'legacy-no-proof','',false]
+  ];
+  for(const [id,uid,login,strong] of principals){
+    auth.seed({uid,email:internalEmailTest('tenant-a',login||uid),password:strong?'Human123*':'LEGACY',disabled:false,customClaims:{tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:id,projectIds:['project-a']}});
+    db.seed(`tenants/tenant-a/users/${uid}`,{active:true,tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:id,projectIds:['project-a'],providerUidFingerprint:providerUidFingerprint(uid),visibleLogin:login,credentialRuleVersion:CREDENTIAL_RULE_VERSION,...(strong?{credentialPasswordProofVersion:'cxorbia-shopper-password-proof-v2'}:{})});
+    db.seed(`tenants/tenant-a/shoppers/${id}`,{id,shopperId:id,tenantId:'tenant-a',projectIds:['project-a'],sourceType:'hr_external',nombre:id===aliasB?'Julissa Illescas':'Julissa Flores',firstName:'Julissa',lastName:id===aliasB?'Illescas':'Flores',visibleLogin:login,credentialRuleVersion:CREDENTIAL_RULE_VERSION,...(strong?{credentialPasswordProofVersion:'cxorbia-shopper-password-proof-v2'}:{})});
+    db.seed(`tenants/tenant-a/shopperIdentityCrosswalk/${id}`,{tenantId:'tenant-a',shopperId:id,projectIds:['project-a'],providerUidFingerprint:providerUidFingerprint(uid),sourceStableKey:id,identityMode:'stable_hr_shopper_id',sourceType:'hr_external'});
+  }
+  db.seed('tenants/tenant-a/projects/project-a/visits/v-a',{shopperId:aliasB,status:'submitted'});
+  db.seed('tenants/tenant-a/projects/project-a/visits/v-b',{shopperId:aliasC,status:'asignada'});
+  db.seed('tenants/tenant-a/projects/project-a/postulations/p-a',{shopperId:aliasB,status:'pending'});
+  db.seed('tenants/tenant-a/paymentReconciliations/pay-a',{shopperId:aliasC,status:'paid'});
+  const command={version:'cxorbia-command-adapter-v1',commandType:'shopper.identity.adjudicate',tenantId:'tenant-a',projectId:'project-a',periodId:'project-a-2026-10',entityId:canonical,idempotencyKey:'vrm197-canonical-login-keeper',authorization:{providerEnforcementRequired:true,permission:'shopper.identity.adjudicate'},payload:{canonicalShopperId:canonical,aliasShopperIds:[aliasA,aliasB,aliasC],humanConfirmed:true,reason:'admin_confirmed_same_human'}};
+  const result=await p.execute('staff-token',command);
+  assert.equal(result.ok,true,'VRM197_RESULT='+JSON.stringify(result));
+  assert.equal(result.identityConsolidated,true);
+  assert.equal(result.retiredPrincipalCount,3);
+  assert.equal((await auth.getUser('keeper-human')).disabled,false);
+  assert.equal((await auth.getUser('keeper-human')).customClaims.shopperId,canonical);
+  for(const uid of ['generated-current','other-human','legacy-no-proof'])assert.equal((await auth.getUser(uid)).disabled,true);
+  assert.equal(db.get('tenants/tenant-a/users/keeper-human').shopperId,canonical);
+  assert.equal(db.get('tenants/tenant-a/projects/project-a/visits/v-a').shopperId,canonical);
+  assert.equal(db.get('tenants/tenant-a/projects/project-a/visits/v-b').shopperId,canonical);
+  assert.equal(db.get('tenants/tenant-a/projects/project-a/postulations/p-a').shopperId,canonical);
+  assert.equal(db.get('tenants/tenant-a/paymentReconciliations/pay-a').shopperId,canonical);
+  assert.equal(db.get(`tenants/tenant-a/shoppers/${canonical}`).visibleLogin,'julissa.flores');
+  const replay=await p.execute('staff-token',command);
+  assert.equal(replay.ok,true);assert.equal(replay.idempotentReplay,true);assert.equal(replay.providerWrites,0);
+});
+
 test('VRM-185 / admin identity adjudication fails closed when multiple principals have password proof',async()=>{
   const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db),canonical='shopper_gt_dual_proof',alias='legacy-dual-proof';
   db.seed('tenants/tenant-a/users/admin-1',{active:true,tenantId:'tenant-a',role:'super',authNamespace:'staff',projectIds:['project-a']});
