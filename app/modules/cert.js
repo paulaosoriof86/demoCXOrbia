@@ -68,10 +68,11 @@ CX.module('cert', ({role,data,ui})=>{
   const phCert=subtitle=>ui.ph('Certificación',subtitle)+certFilters();
   const historicalEvidenceFor=s=>Array.isArray(s?.certificationEvidenceRecords)?s.certificationEvidenceRecords:[];
   const currentShopper=()=>{
-    const sid=String(CX.session?.user?.shopperId||'');
+    const raw=String(CX.session?.user?.shopperId||'').trim();
+    const sid=raw?String(data.__identityMap?.[raw]||raw).trim():'';
     const protectedProfile=data.__sessionShopperProfile;
-    if(protectedProfile&&String(protectedProfile.id||protectedProfile.shopperId)===sid)return protectedProfile;
-    return (data.getShopper&&data.getShopper(sid))||(data.shoppers||[]).find(x=>String(x.id||x.shopperId)===sid)||null;
+    if(protectedProfile&&[raw,sid].includes(String(protectedProfile.id||protectedProfile.shopperId)))return protectedProfile;
+    return (data.getShopper&&data.getShopper(sid))||(data.getShopper&&data.getShopper(raw))||(data.shoppers||[]).find(x=>[raw,sid].includes(String(x.id||x.shopperId)))||null;
   };
   if(role==='shopper'){
     /* Bloque A (auditoría V101 — 20260711): un banco en estado draft/pending_review NO habilita
@@ -131,6 +132,8 @@ CX.module('cert', ({role,data,ui})=>{
               if(!CX.backendCertifications?.submitAttempt)throw new Error('CERT_PERSISTENCE_PROVIDER_UNAVAILABLE');
               result=await CX.backendCertifications.submitAttempt({periodId:p.id,bankResourceId:bank.__resourceId,answers:selected});
               if(!(result?.providerAck===true&&result?.committed===true))throw new Error('CERT_ATTEMPT_ACK_REQUIRED');
+              try{window.CX_SCHEDULE_PROTECTED_AUTH_HR_RECONCILE?.('certification_attempt_committed',true);}catch(_){}
+              try{CX.bus?.emit?.('visit-flow',{reason:'certification_attempt_committed',preserveUiState:true});}catch(_){}
             }
             const score=Number(result.score||0),pass=result.pass===true,feedback=Array.isArray(result.feedback)?result.feedback:[];
             feedback.forEach(x=>{const fb=host.querySelector('.examFb[data-i="'+x.index+'"]');if(fb){fb.style.display='block';fb.innerHTML=(x.ok?'<b style="color:var(--green)">✓ Correcta</b>':'<b style="color:var(--amber)">↻ A reforzar</b> · correcta: <b style="color:var(--green)">'+(x.correcta||'—')+'</b>')+(x.exp?'<div style="color:var(--t2);margin-top:3px">'+x.exp+'</div>':'');}});
