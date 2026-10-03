@@ -41,7 +41,7 @@ test('Gate 9 / application.create persists exact shopper visit scope and ACKs be
   const posts=db.paths().filter(p=>p.startsWith(postPrefix));
   assert.equal(posts.length,1);
   const post=db.get(posts[0]);
-  assert.equal(post.tenantId,'tenant-a');assert.equal(post.projectId,'project-a');assert.equal(post.periodId,'period-a');assert.equal(post.visitId,'visit-a');assert.equal(post.shopperId,'shopper-a');assert.equal(post.estado,'pendiente');assert.equal(post.fechaProp,'2026-09-05');
+  assert.equal(post.tenantId,'tenant-a');assert.equal(post.projectId,'project-a');assert.equal(post.periodId,'period-a');assert.equal(post.visitId,'visit-a');assert.equal(post.shopperId,'shopper-a');assert.equal(post.estado,'pendiente');assert.equal(post.fechaProp,futureDate());
 });
 
 test('Gate 9 / application.create replay is idempotent and creates no duplicate postulation',async()=>{
