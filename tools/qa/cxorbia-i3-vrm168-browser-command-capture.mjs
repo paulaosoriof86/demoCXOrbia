@@ -24,7 +24,6 @@ if(!beforeSnap.exists)throw new Error('SOURCE_FAILURE:VRM168_REAL_VISIT_MISSING'
 const before=beforeSnap.data()||{};
 if(String(before.estado||before.status)!=='asignada'||String(before.shopperId||'')!==SHOPPER_ID||String(before.periodId||'')!==PERIOD_ID)throw new Error('SOURCE_FAILURE:VRM168_REAL_VISIT_PRECONDITION:'+JSON.stringify({estado:before.estado,shopperId:before.shopperId,periodId:before.periodId}));
 const user=await auth.getUser(UID);
-const customToken=await auth.createCustomToken(UID,user.customClaims||{});
 const PREVIEW='YES_PAULA_20260628_PREVIEW_DEV',PROTECTED='YES_PAULA_20260730_PROTECTED_DEV',FULL='YES_PAULA_20260731_FULL_PROFILE_DEV';
 const url=ROOT+'/index-backend-dev.html?cxBackendPreview='+PREVIEW+'&cxProjectId='+encodeURIComponent(PROJECT_ID)+'&cxProtectedRuntime='+PROTECTED+'&cxHumanFullVisual='+FULL+'&vrm168capture='+Date.now();
 const browser=await chromium.launch({headless:true});
@@ -33,13 +32,27 @@ try{
   const ctx=await browser.newContext({viewport:{width:1440,height:1000}});
   const page=await ctx.newPage();
   const pageErrors=[];page.on('pageerror',e=>pageErrors.push(String(e?.message||e)));
-  await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
-  await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
-  await page.evaluate(async t=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);await firebase.auth().signInWithCustomToken(t);},customToken);
-  await page.waitForFunction(uid=>String(firebase.auth().currentUser?.uid||'')===uid,UID,{timeout:60000});
+  let authSettled=false,lastAuthError=null;
+  for(let attempt=1;attempt<=5&&!authSettled;attempt++){
+    await page.goto(url+'&authAttempt='+attempt+'-'+Date.now(),{waitUntil:'domcontentloaded',timeout:90000});
+    await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
+    const customToken=await auth.createCustomToken(UID,user.customClaims||{});
+    try{
+      await page.evaluate(async t=>{const fb=window.firebase;if(!fb?.auth)throw new Error('FIREBASE_SDK_NOT_READY');await fb.auth().setPersistence(fb.auth.Auth.Persistence.LOCAL);await fb.auth().signInWithCustomToken(t);},customToken);
+    }catch(error){
+      const msg=String(error?.message||error||'');
+      if(!/Execution context was destroyed|navigation|FIREBASE_SDK_NOT_READY|No Firebase App|auth\/network-request-failed|network|timeout|interrupted/i.test(msg))throw error;
+      lastAuthError=error;
+    }
+    await page.waitForLoadState('domcontentloaded',{timeout:90000}).catch(()=>{});
+    const uid=await page.evaluate(()=>String(window.firebase?.auth?.().currentUser?.uid||'')).catch(()=> '');
+    if(uid===UID){authSettled=true;break;}
+    if(attempt<5)await page.waitForTimeout(1200*attempt);
+  }
+  if(!authSettled)throw new Error('ENVIRONMENT_FAILURE:VRM168_FIREBASE_SESSION_NOT_PERSISTED:'+String(lastAuthError?.message||lastAuthError||'no-current-user'));
   await page.goto('about:blank');
   await page.goto(url+'&settled=1',{waitUntil:'domcontentloaded',timeout:90000});
-  await page.waitForFunction(uid=>String(firebase.auth().currentUser?.uid||'')===uid,UID,{timeout:60000});
+  await page.waitForFunction(uid=>String(firebase.auth().currentUser?.uid||'')===uid,UID,{timeout:90000});
   await page.waitForFunction(()=>typeof window.CX?.backendAuth?.ensureAuthenticated==='function',null,{timeout:90000});
   await page.evaluate(async()=>{await CX.backendAuth.ensureAuthenticated();});
   await page.waitForFunction(({tenant,project,period,shopper,rev})=>{
