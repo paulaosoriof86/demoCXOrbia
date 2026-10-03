@@ -5,8 +5,8 @@
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "controlHeadBeforeFreeze": "2d02ef978d220eb04183df957a2f398bfe1d52e5",
-  "productSourceSha": "ef790a5191bc5359d9c67ab2a28f8e04eb54be37",
-  "productTree": "b9fa5c52a0cd793dd3408f1935bde90de21ea0f7",
+  "productSourceSha": "6a5d529d7813b48c90051668c7331065dbc8d82b",
+  "productTree": "882d4fdf35c1e50e1b231394fd2a94309f7bfe3a",
   "materialization": {
     "runId": 37127209268,
     "runNumber": 939,
@@ -425,7 +425,7 @@
         "app/modules/periodos.js",
         "app/core/data.js"
       ],
-      "reason": "Create/close/archive/reopen UI invokes data lifecycle helpers without an explicit visible ACK/readback contract at the module boundary; terminal same-candidate lifecycle proof is absent.",
+      "reason": "VRM-190 source contract is proven for project-scoped period create/close/archive/reopen with idempotency, expectedVersion, ACK and durable readback. Route remains OPEN_BLOCKER until the bounded cumulative package is materialized to DEV and same-source live lifecycle/readback is proven.",
       "renderProof": {
         "run946": true,
         "visible": true,
@@ -436,7 +436,7 @@
         {
           "action": "create/close/archive/reopen",
           "classification": "OPEN_BLOCKER",
-          "blocker": "Must prove provider ACK/idempotency/readback and correct project scope before success UI.",
+          "blocker": "SOURCE_PASS_RUN964; pending same-source DEV provider lifecycle/readback before PASS_PROVEN.",
           "owner": "app/modules/periodos.js"
         }
       ],
@@ -448,7 +448,23 @@
         "readbackArtifactId": 11276491534,
         "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
         "adminArtifactId": 11276016226,
-        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487"
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487",
+        "vrm190SourceProof": {
+          "runId": 37139306300,
+          "runNumber": 964,
+          "jobId": 111250327412,
+          "artifactId": 11279418847,
+          "artifactDigest": "sha256:aa4a6bc07fc3c670f82639e17d767dc7bb1fe9a0c2a30035409588915112197e",
+          "decision": "PASS_VRM190_PERIOD_LIFECYCLE_SOURCE",
+          "sourceSha": "6a5d529d7813b48c90051668c7331065dbc8d82b",
+          "sourceTree": "882d4fdf35c1e50e1b231394fd2a94309f7bfe3a",
+          "tests": 5,
+          "testsPass": 5,
+          "testsFail": 0,
+          "builds": 0,
+          "deploys": 0,
+          "production": false
+        }
       },
       "production": false
     },
@@ -1392,5 +1408,5 @@
   "humanVisualApprovalAllowed": false,
   "i4Allowed": false,
   "production": "DO_NOT_TOUCH",
-  "exactNextAction": "Proceed to VRM-190 Periodos as the next P0 owner. Keep clientes/crm OPEN_BLOCKER until bounded package materialization and same-source live provider lifecycle evidence; do not materialize DEV yet."
+  "exactNextAction": "Proceed to VRM-191 external HR source administration as the next P0 owner. Keep source-PASS routes OPEN_BLOCKER until bounded package materialization and same-source live lifecycle evidence; do not materialize DEV yet."
 }
