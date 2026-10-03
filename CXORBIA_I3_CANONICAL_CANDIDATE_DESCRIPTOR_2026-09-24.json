@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_V190_DEV_MATERIALIZATION_REQUIRED",
+  "status": "HOLD_V190_LIVE_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "0e6f61aa855b1d9677fd200403793099bfecb9b7",
   "predecessorProductSourceSha": "83d2385dc47f3bfd785a37072100fdbab11b5127",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V190_2026-10-02.json",
-  "findingsLedgerExpectedGitBlob": "3d08ed13e5acd3d28ffd0e45f9c826c19a8c5ef2",
+  "findingsLedgerExpectedGitBlob": "7c2ab3a7a912926b0ef346edac49f577ac3a4553",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM168_STABLE_VISIT_COMMAND_KEY_EXACT_DEV_MATERIALIZATION_REQUIRED",
+  "activeBlocker": "VRM168_STABLE_VISIT_COMMAND_SAME_DEV_LIVE_REPROOF_REQUIRED",
   "nextFindingId": "VRM-181",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run the existing V190 source/materialization gate against source 9102918177d89d9e3d18cfb75c04aba8c29cba86. The existing frontend source contract must prove stableVisitCommandKey before exactly one new Recovery DEV materialization. Then reuse the same V190 live reproof; do not rebuild between materialization and reproof. Production remains DO_NOT_TOUCH.",
+  "exactNextAction": "Run the existing V190 readback/live-reproof lane against exactly runtime cxorbia-live-hr-dev-00252-vlj and Hosting version f39402c7ef4e9eda for source 9102918177d89d9e3d18cfb75c04aba8c29cba86. No rebuild/redeploy. The unchanged VRM-168 browser capture must now emit entityId/visitId/hrRowId = OCTUBRE 26!6, then provider ACK/idempotency/cleanup and V190 transversal must pass. Production remains DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -408,7 +408,27 @@
     "writes": 0,
     "production": false
   },
-  "currentMaterialization": null,
+  "currentMaterialization": {
+    "runId": 37086780548,
+    "runNumber": 904,
+    "jobId": 111098670222,
+    "artifactId": 11261340858,
+    "artifactDigest": "sha256:b463830a9b965820f37434d95d3de59e7b9342cc06385818911879b7c0e02e58",
+    "decision": "PASS_V190_EXACT_DEV_MATERIALIZATION",
+    "sourceSha": "9102918177d89d9e3d18cfb75c04aba8c29cba86",
+    "sourceTree": "0e6f61aa855b1d9677fd200403793099bfecb9b7",
+    "runtimeRevision": "cxorbia-live-hr-dev-00252-vlj",
+    "runtimeDigest": "sha256:9b2fb065df27cbbd24a934d3b123af885fd584a1cb96cf45f8a48588545bec68",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/f39402c7ef4e9eda",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790991581582000",
+    "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "storageRulesDeploys": 1,
+    "state": "SEALED_VRM168_STABLE_VISIT_COMMAND_DEV_PENDING_LIVE_REPROOF",
+    "production": false
+  },
   "lastFocalAttempt": {
     "runId": 36198284266,
     "runNumber": 438,
@@ -878,18 +898,7 @@
     "hrWrites": 0,
     "production": false
   },
-  "pendingMaterialization": {
-    "sourceSha": "9102918177d89d9e3d18cfb75c04aba8c29cba86",
-    "sourceTree": "0e6f61aa855b1d9677fd200403793099bfecb9b7",
-    "predecessorSha": "83d2385dc47f3bfd785a37072100fdbab11b5127",
-    "status": "HOLD_V190_DEV_MATERIALIZATION_REQUIRED",
-    "maxBuilds": 1,
-    "maxRuntimeDeploys": 1,
-    "maxHostingDeploys": 1,
-    "sourceGate": "tools/qa/cxorbia-vrm154-156-frontend-source-contract.mjs",
-    "liveRegression": "tools/qa/cxorbia-i3-vrm168-browser-command-capture.mjs",
-    "production": false
-  },
+  "pendingMaterialization": null,
   "lastVrm080Proof": {
     "runId": 36333245670,
     "runNumber": 525,
