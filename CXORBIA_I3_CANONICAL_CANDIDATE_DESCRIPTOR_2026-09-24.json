@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_JULISSA_IDENTITY_SOURCE_REPROOF_REQUIRED",
+  "status": "HOLD_REJECTED_PHASEA_SOURCE_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run exact source reproof for 7b8b88608c9cd38cc97726c3f17aab55a51f1715. Require shopper provider unit tests (canonical-login keeper + ambiguous multi-proof fail-closed), multi-profile Admin source contract, Academy distinct-solid source contract, Gate 9, progressive route and Finance semantics. No build/deploy.",
+  "exactNextAction": "Run the canonical rejected-Phase-A source reproof lane against exact V221 product source 7b8b88608c9cd38cc97726c3f17aab55a51f1715, including the identity-provider canonical-login keeper regression and Academy distinct-solid contract. No build/deploy.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
