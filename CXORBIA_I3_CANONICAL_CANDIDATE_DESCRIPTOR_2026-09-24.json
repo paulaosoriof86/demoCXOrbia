@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM192_ACADEMY_PROVIDER_REQUIRED",
+  "status": "HOLD_VRM192_SOURCE_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "190509264f00cee52280b5c8dcf16259673e14d0",
-  "productTreeAuthority": "ae80cf31eb1357d760388ad9e922cb5bb95ec264",
-  "predecessorProductSourceSha": "6a5d529d7813b48c90051668c7331065dbc8d82b",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V206_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "4164addfbf354ad72ecb64bcf87077872a81a742",
+  "productSourceSha": "a62d4e5b49fce4464987ca55112221604647933c",
+  "productTreeAuthority": "6d3dd5abd351586d018be83c2b144ff49d4a94d3",
+  "predecessorProductSourceSha": "190509264f00cee52280b5c8dcf16259673e14d0",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V207_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "17fe2cf8c282892bd89b8646ddb33e115c37948e",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM192_ACADEMY_PROVIDER_REQUIRED",
+  "activeBlocker": "VRM192_SOURCE_REPROOF_REQUIRED",
   "nextFindingId": "VRM-195",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Resolve VRM-192 only: replace Academia custom course/category/workflow/audit browser-local authority with a durable tenant-scoped provider contract inside the existing /v1/cxorbia/commands runtime. Preserve seed/base courses as immutable source content; custom content must be versioned, auditable, role-gated and ACK/readback-backed. Source-test first; no build/deploy.",
+  "exactNextAction": "Run only the bounded VRM-192 Academia source reproof on product source a62d4e5b49fce4464987ca55112221604647933c / tree 6d3dd5abd351586d018be83c2b144ff49d4a94d3. Require PASS_VRM192_ACADEMY_PROVIDER_SOURCE plus VRM-187..191 regressions. Do not build or deploy.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3247,6 +3247,35 @@
     "materializationJob": "SKIPPED",
     "builds": 0,
     "deploys": 0,
+    "production": false
+  },
+  "vrm192SourceImplementation": {
+    "findingId": "VRM-192",
+    "classification": "PERSISTENCE_FAILURE",
+    "sourceSha": "a62d4e5b49fce4464987ca55112221604647933c",
+    "sourceTree": "6d3dd5abd351586d018be83c2b144ff49d4a94d3",
+    "predecessorSha": "87e14bb3d885468a114c1d73ca9bb85fc8d8e4af",
+    "commandProvider": "backend/runtime/cxorbia-academy-command-provider-v1.mjs",
+    "commands": [
+      "academy.course.create",
+      "academy.course.update",
+      "academy.course.state",
+      "academy.category.create"
+    ],
+    "durableCollections": [
+      "academyCourses",
+      "academyCategories",
+      "academyAudit",
+      "commandReceipts",
+      "entityAuditTrail"
+    ],
+    "test": "backend/runtime/hr-live-service/test/cxorbia-academy-command-provider-v1.test.mjs",
+    "seedImmutable": true,
+    "tenantScoped": true,
+    "providerAck": true,
+    "durableReadback": true,
+    "buildAllowed": false,
+    "deployAllowed": false,
     "production": false
   }
 }
