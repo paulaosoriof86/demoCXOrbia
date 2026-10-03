@@ -7,13 +7,13 @@
   "productSourceSha": "4b1c0859cc5b43928c083748d00fdc606b32d63e",
   "productTreeAuthority": "ab33d43d483faef9fbec5daaadfa454247df469a",
   "predecessorProductSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V225_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "5137d59052755522812e52876d06bb2b67704b1a",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V226_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "5ee12eaac7125f238f74dcc54f540593e38949a8",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V5.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM194_AND_PRECOMPOSITION_SOURCE_REPROOF_REQUIRED",
+  "activeBlocker": "VRM194_SOURCE_REPROOF_REQUIRED__RUN1048_CONTROL_FAILURE_REPAIRED_PENDING_RERUN",
   "nextFindingId": "VRM-205",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run the canonical cumulative source reproof on product source 4b1c0859cc5b43928c083748d00fdc606b32d63e. It must prove VRM-194 connected tenant administration fail-closed, the existing VRM-057 honorarium authority invariants, the exact VRM-036 domain-consistency bridge blob, and all cumulative VRM-187..192 source regressions. No build or deploy.",
+  "exactNextAction": "Re-run the same source-only proof through a dedicated focal workflow job. Keep product source 4b1c0859cc5b43928c083748d00fdc606b32d63e unchanged; no build or deploy.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
