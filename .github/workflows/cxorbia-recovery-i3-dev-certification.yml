@@ -7303,3 +7303,54 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
+
+  julissa-identity-topology-readonly:
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      JULISSA_OUT: .tmp/i3-julissa-topology
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Preflight exact unchanged DEV artifact
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$JULISSA_OUT"
+          test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
+          test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
+          test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
+          git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          test "$(jq -r '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")" = "cxorbia-live-hr-dev-00258-9fj"
+          test "$(jq -r '.currentMaterialization.hostingVersion' "$CANDIDATE_DESCRIPTOR")" = "sites/cxorbia-backend-dev/versions/9da4b395d0d2099d"
+          node --check tools/qa/cxorbia-i3-julissa-identity-topology-readonly.mjs
+      - name: Install read-only diagnostic dependencies
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Read-only exact Julissa topology
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          EXPECTED_HR_REVISION="$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")"
+          EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" JULISSA_OUT="$JULISSA_OUT" PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HOSTING_URL="$HOSTING_URL" node tools/qa/cxorbia-i3-julissa-identity-topology-readonly.mjs | tee "$JULISSA_OUT/console.log"
+          test "$(jq -r '.decision' "$JULISSA_OUT/result.json")" = "PASS_JULISSA_IDENTITY_TOPOLOGY_READONLY"
+          test "$(jq -r '.writes' "$JULISSA_OUT/result.json")" = "0"
+          test "$(jq -r '.production' "$JULISSA_OUT/result.json")" = "false"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-julissa-identity-topology-${{ github.run_id }}
+          path: .tmp/i3-julissa-topology
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
