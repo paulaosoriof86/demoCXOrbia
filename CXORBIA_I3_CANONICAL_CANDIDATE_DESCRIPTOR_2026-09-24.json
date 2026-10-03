@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED",
+  "status": "HOLD_JULISSA_IDENTITY_TOPOLOGY_DIAGNOSTIC_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
-  "productTreeAuthority": "e3c45d9c579a417868dbd86143e6be7a36c20a29",
-  "predecessorProductSourceSha": "30c4354640ea38a0155d72f14ee5bdcada3512bd",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V219_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "323a665b3a8c55136a2a731508ad422eaf596054",
+  "productSourceSha": "48904fdcc5524cf928893b6258830bf6f34fafc9",
+  "productTreeAuthority": "248409e1e004c50d410290e99361c3d791314cfa",
+  "predecessorProductSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V220_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "9ab01b0533b55fcf901ee92e3bf885a3422f8af3",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V3.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED",
-  "nextFindingId": "VRM-201",
+  "activeBlocker": "JULISSA_IDENTITY_TOPOLOGY_DIAGNOSTIC_REQUIRED",
+  "nextFindingId": "VRM-202",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run read-only same-artifact live proof against Run1016 DEV artifact for Admin, Julissa Flores, Priscila López, Paula Osorio and population invariants. No rebuild/redeploy. Only after scoped live PASS may a new human visual checkpoint be considered.",
+  "exactNextAction": "Run read-only Julissa identity topology diagnostic before any consolidation/write. Determine the exact canonical principal, aliases/duplicate profiles, crosswalk/links, durable visits and live HR ownership. Preserve the Academy successor source; no build/deploy and no production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3394,7 +3394,7 @@
     "production": false
   },
   "visualAcceptance": {
-    "state": "REJECTED_LIVE_REPROOF_REQUIRED",
+    "state": "REJECTED_IDENTITY_DIAGNOSTIC_REQUIRED",
     "ready": false,
     "humanVisualAccepted": false,
     "production": false
@@ -3436,8 +3436,8 @@
   },
   "visualCheckpointScope": null,
   "currentRemediationPackage": {
-    "sourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
-    "sourceTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29",
+    "sourceSha": "48904fdcc5524cf928893b6258830bf6f34fafc9",
+    "sourceTree": "248409e1e004c50d410290e99361c3d791314cfa",
     "qaPath": "tools/qa/cxorbia-i3-phasea-rejection-remediation-source-proof.mjs",
     "findingIds": [
       "VRM-134",
@@ -3454,8 +3454,8 @@
     ],
     "preservedAllPriorFindings": true,
     "production": false,
-    "predecessorSourceSha": "30c4354640ea38a0155d72f14ee5bdcada3512bd",
-    "state": "SOURCE_REPROOF_PASS_RUN1014_DEV_MATERIALIZATION_REQUIRED",
+    "predecessorSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+    "state": "ACADEMY_SOURCE_SUCCESSOR_COMPOSED_JULISSA_TOPOLOGY_DIAGNOSTIC_REQUIRED",
     "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V2.json",
     "adminMatrixPath": "CXORBIA_I3_ADMIN_FULL_ADMINISTRATION_MATRIX_2026-10-03_V2.json",
     "sourceProofRunId": 37159003511,
