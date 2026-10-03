@@ -545,15 +545,39 @@ CX.data = {
   periodosDe(proyectoKey){ return this.periodsForProgram(proyectoKey); },
   proyectoActual(){ return this.programs().find(pg=>pg.key===this.currentProgramKey()); },
   /* ---- #230 Gestión de Periodos (estado por periodo, persistente) ---- */
-  _periodMeta(){ try{ return JSON.parse(localStorage.getItem('cx_period_meta')||'{}'); }catch(e){ return {}; } },
-  _savePeriodMeta(m){ try{ localStorage.setItem('cx_period_meta', JSON.stringify(m)); }catch(e){} CX.bus&&CX.bus.emit('project'); },
+  _periodCanonical(){ return CX.cxDataCommandBoundary?.canonicalMode?.()===true; },
+  _periodProviderRows(){ return Array.isArray(this.__protectedPeriods)?this.__protectedPeriods.filter(x=>x&&x.deleted!==true):[]; },
+  _periodMeta(){
+    if(this._periodCanonical()){ const out={};this._periodProviderRows().forEach(p=>{if(p.periodId||p.id)out[p.periodId||p.id]=p.state||'activo';});return out; }
+    try{ return JSON.parse(localStorage.getItem('cx_period_meta')||'{}'); }catch(e){ return {}; }
+  },
+  _savePeriodMeta(m){ if(this._periodCanonical())return false;try{localStorage.setItem('cx_period_meta',JSON.stringify(m));}catch(e){}CX.bus&&CX.bus.emit('project');return true; },
+  _periodCommandHash(value){const s=JSON.stringify(value||{});let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return(h>>>0).toString(36);},
+  _periodCommand(type,periodId,payload,expectedVersion){
+    const scope=CX.cxDataCommandBoundary?.context?.()||{},projectId=String(payload?.projectId||scope.projectId||this.currentProjectId||'');
+    if(!CX.commandAdapter?.execute)return Promise.resolve({ok:false,status:'blocked',providerAck:false,successUiAllowed:false,readbackVerified:false,code:'COMMAND_ADAPTER_UNAVAILABLE'});
+    const create=type==='period.create',body=JSON.parse(JSON.stringify(Object.assign({},payload||{},{projectId})));
+    return CX.commandAdapter.execute({version:'cxorbia-period-lifecycle-v1',commandType:type,entityType:'period',entityId:periodId||null,tenantId:String(scope.tenantId||''),projectId,periodId:periodId||null,requireProject:true,requirePeriod:!create,actor:{actorId:String(scope.actorId||''),role:String(scope.role||''),projectIds:Array.isArray(scope.projectIds)?scope.projectIds.slice():[]},expectedVersion,idempotencyKey:type+':'+this._periodCommandHash([scope.tenantId,projectId,periodId||'',expectedVersion,body]),payload:body,source:'periodos-ui',authorization:{providerEnforcementRequired:true,permission:type==='period.create'?'period.create':'period.state.update'}});
+  },
+  applyPeriodReadback(row){
+    if(!row)return null;const periodId=String(row.periodId||row.id||'');if(!periodId)return null;
+    this.__protectedPeriods=Array.isArray(this.__protectedPeriods)?this.__protectedPeriods:[];
+    const i=this.__protectedPeriods.findIndex(x=>String(x.periodId||x.id)===periodId);if(i>=0)this.__protectedPeriods[i]=Object.assign({},row);else this.__protectedPeriods.push(Object.assign({},row));
+    let p=this.projects.find(x=>String(x.id)===periodId);
+    if(!p&&row.providerManagedShell===true){p=Object.assign({},row,{id:periodId,periodId,rootProjectId:row.projectId,projectId:row.projectId,program:row.program||row.projectId,nVisitas:0});this.projects.push(p);}
+    else if(p)Object.assign(p,row,{id:periodId,periodId});
+    CX.bus&&CX.bus.emit('project');return p||row;
+  },
   periodState(id){ return this._periodMeta()[id] || 'activo'; },
   periodStats(id){ const vs=this._visitas.filter(v=>this.recordPeriodId(v)===id); const done=vs.filter(v=>['realizada','cuestionario','validada','liquidada'].includes(v.estado)).length;
     return { total:vs.length, done, pct: vs.length? Math.round(done/vs.length*100):0 }; },
-  setPeriodState(id, st){ const m=this._periodMeta(); m[id]=st; this._savePeriodMeta(m); },
-  closePeriod(id){ this.setPeriodState(id,'cerrado'); },
-  archivePeriod(id){ this.setPeriodState(id,'archivado'); },
-  reopenPeriod(id){ this.setPeriodState(id,'activo'); },
+  setPeriodState(id,st){
+    if(this._periodCanonical()){const row=this._periodProviderRows().find(x=>String(x.periodId||x.id)===String(id));return this._periodCommand('period.state.update',id,{projectId:(this.projects.find(p=>p.id===id)||{}).projectId||this.currentProjectId,state:st},row?.version??'source-current');}
+    const m=this._periodMeta();m[id]=st;this._savePeriodMeta(m);return {ok:true,status:'preview'};
+  },
+  closePeriod(id){ return this.setPeriodState(id,'cerrado'); },
+  archivePeriod(id){ return this.setPeriodState(id,'archivado'); },
+  reopenPeriod(id){ return this.setPeriodState(id,'activo'); },
   /* P0-1 (paquete V110→V111): deriva el mes real de un periodo a partir de SUS PROPIAS fechas
      (nunca un literal hardcodeado). Se usa como mes por defecto del calendario de Mi Día — si
      el periodo cambia, el mes visible cambia con él porque se recalcula sobre datos reales del
@@ -572,14 +596,15 @@ CX.data = {
     const sorted=dates.slice().sort();
     return sorted[0].slice(0,7);
   },
-  duplicatePeriod(id, nombre){ /* crea un PERIODO NUEVO dentro del mismo proyecto (programKey) — nunca un proyecto nuevo */
-    const src=this.projects.find(p=>p.id===id); if(!src)return null;
-    const nid='proj-'+Date.now().toString(36);
-    const dup=Object.assign({}, src, {id:nid, name:nombre||(src.name+' (copia)'), periodo:nombre||'Nuevo periodo', program:this.programKey(src), nVisitas:0});
-    this.projects.push(dup);
-    this._saveCustomProjects();
-    /* clona la estructura (sucursales/escenarios) pero NO las visitas ejecutadas — periodo nuevo arranca limpio */
-    CX.bus&&CX.bus.emit('project'); return dup; },
+  duplicatePeriod(id,nombre){ /* crea un PERIODO NUEVO dentro del mismo proyecto; nunca un proyecto raíz nuevo */
+    const src=this.projects.find(p=>p.id===id);if(!src)return this._periodCanonical()?Promise.resolve({ok:false,status:'blocked',providerAck:false,successUiAllowed:false,readbackVerified:false,code:'PERIOD_SOURCE_NOT_FOUND'}):null;
+    const label=nombre||(src.name+' (copia)'),projectId=src.projectId||src.rootProjectId||this.currentProjectId||this.programKey(src);
+    if(this._periodCanonical()){
+      const payload={projectId,name:label,periodo:nombre||'Nuevo periodo',program:src.program||this.programKey(src),countries:Array.isArray(src.countries)?src.countries.slice():[],currency:Object.assign({},src.currency||{}),quincenas:Array.isArray(src.quincenas)?src.quincenas.slice():[],scenarioDimensions:Array.isArray(src.scenarioDimensions)?JSON.parse(JSON.stringify(src.scenarioDimensions)):[],honorario:Object.assign({},src.honorario||{}),honRecibe:Object.assign({},src.honRecibe||src.honorarioRecibe||{}),revision:Object.assign({},src.revision||{}),submitido:Object.assign({},src.submitido||{}),hrFuente:Object.assign({},src.hrFuente||{}),cuestionario:Object.assign({},src.cuestionario||{}),client:src.client||null,clientId:src.clientId||null,industry:src.industry||null,plan:src.plan||null,sourcePeriodId:id};
+      return this._periodCommand('period.create',null,payload,'absent');
+    }
+    const nid='proj-'+Date.now().toString(36),dup=Object.assign({},src,{id:nid,name:label,periodo:nombre||'Nuevo periodo',program:this.programKey(src),nVisitas:0});
+    this.projects.push(dup);this._saveCustomProjects();CX.bus&&CX.bus.emit('project');return dup; },
 
   recordPeriodId(row){
     if(!row)return null;

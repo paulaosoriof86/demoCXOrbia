@@ -3,6 +3,9 @@
    tiene su HR, sus visitas y su estado; NO se mezclan con la operación activa. */
 CX.module('periodos', ({data,ui})=>{
   const host=ui.el('div');
+  const canonical=()=>CX.cxDataCommandBoundary?.canonicalMode?.()===true;
+  const ackOk=a=>a&&a.ok===true&&a.committed===true&&a.providerAck===true&&a.successUiAllowed===true&&a.readbackVerified===true;
+  const durableWarn=()=>ui.toast('Cambio de período no confirmado: falta ACK/readback durable.','warn',4200);
   const stTone={activo:'g',cerrado:'a',archivado:'n'};
   const stLbl={activo:'Activo',cerrado:'Cerrado',archivado:'Archivado'};
 
@@ -40,9 +43,10 @@ CX.module('periodos', ({data,ui})=>{
       <p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Crea una nueva ronda del programa <b>${programa}</b>. Copia la estructura del periodo actual (sucursales, escenarios, cuestionario) y arranca sin visitas ejecutadas.</p>
       <label class="lbl">Nombre del periodo</label><input class="inp" id="pdN" placeholder="Ej. Julio 2026 · Q1" style="margin-bottom:12px">
       <div style="text-align:right"><button class="btn btn-pr btn-sm" id="pdSave">Crear periodo</button></div>
-    `,{onMount:(ov,close)=>ov.querySelector('#pdSave').addEventListener('click',()=>{
-      const n=(ov.querySelector('#pdN').value||'').trim(); if(!n){ui.toast('Pon un nombre','warn');return;}
-      const dup=data.duplicatePeriod(data.currentPeriodId,n); if(dup){data.setProject(dup.id);}
+    `,{onMount:(ov,close)=>ov.querySelector('#pdSave').addEventListener('click',async()=>{
+      const n=(ov.querySelector('#pdN').value||'').trim();if(!n){ui.toast('Pon un nombre','warn');return;}
+      const result=await Promise.resolve(data.duplicatePeriod(data.currentPeriodId,n));
+      if(canonical()){if(!ackOk(result)){durableWarn();return;}const dup=data.applyPeriodReadback&&data.applyPeriodReadback(result.entityReadback);if(dup)data.setProject(dup.id);}else if(result){data.setProject(result.id);}
       close();draw();ui.toast('Periodo "'+n+'" creado · estructura copiada, sin visitas','ok',4000);
     })}));
 
@@ -67,10 +71,10 @@ CX.module('periodos', ({data,ui})=>{
         </div>
       `,{onMount:(ov,close)=>{
         ov.querySelector('#pdGo').addEventListener('click',()=>{data.setProject(id);close();draw();CX.router.buildRail&&CX.router.buildRail(CX.session.role);ui.toast('Periodo activo','ok');});
-        ov.querySelector('#pdClose')?.addEventListener('click',()=>{data.closePeriod(id);close();draw();ui.toast('Periodo cerrado · pasa a histórico','ok');});
-        ov.querySelector('#pdArch')?.addEventListener('click',()=>{data.archivePeriod(id);close();draw();ui.toast('Periodo archivado','');});
-        ov.querySelector('#pdReopen')?.addEventListener('click',()=>{data.reopenPeriod(id);close();draw();ui.toast('Periodo reabierto','ok');});
-        ov.querySelector('#pdReopen2')?.addEventListener('click',()=>{data.reopenPeriod(id);close();draw();ui.toast('Periodo reactivado','ok');});
+        ov.querySelector('#pdClose')?.addEventListener('click',async()=>{const r=await Promise.resolve(data.closePeriod(id));if(canonical()){if(!ackOk(r)){durableWarn();return;}data.applyPeriodReadback&&data.applyPeriodReadback(r.entityReadback);}close();draw();ui.toast('Periodo cerrado · pasa a histórico','ok');});
+        ov.querySelector('#pdArch')?.addEventListener('click',async()=>{const r=await Promise.resolve(data.archivePeriod(id));if(canonical()){if(!ackOk(r)){durableWarn();return;}data.applyPeriodReadback&&data.applyPeriodReadback(r.entityReadback);}close();draw();ui.toast('Periodo archivado','');});
+        ov.querySelector('#pdReopen')?.addEventListener('click',async()=>{const r=await Promise.resolve(data.reopenPeriod(id));if(canonical()){if(!ackOk(r)){durableWarn();return;}data.applyPeriodReadback&&data.applyPeriodReadback(r.entityReadback);}close();draw();ui.toast('Periodo reabierto','ok');});
+        ov.querySelector('#pdReopen2')?.addEventListener('click',async()=>{const r=await Promise.resolve(data.reopenPeriod(id));if(canonical()){if(!ackOk(r)){durableWarn();return;}data.applyPeriodReadback&&data.applyPeriodReadback(r.entityReadback);}close();draw();ui.toast('Periodo reactivado','ok');});
       }});
     }));
   };

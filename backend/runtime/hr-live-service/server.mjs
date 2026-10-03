@@ -234,27 +234,30 @@ async function protectedPlatformState(current,principal,scope,operational){
   const reservationsRef=projectRef.collection('reservations');
   const certificationsRef=projectRef.collection('certifications');
   const recertificationsRef=projectRef.collection('certificationRecertifications');
-  let reservationSnap,certificationSnap,recertificationSnap;
+  const periodsRef=projectRef.collection('periods');
+  let reservationSnap,certificationSnap,recertificationSnap,periodsSnap;
   if(principal.role==='shopper'){
     if(!principal.shopperId)throw new Error('AUTH_FAILURE:PROTECTED_RUNTIME_SHOPPER_ID_REQUIRED');
-    [reservationSnap,certificationSnap,recertificationSnap]=await Promise.all([
+    [reservationSnap,certificationSnap,recertificationSnap,periodsSnap]=await Promise.all([
       reservationsRef.where('shopperId','==',principal.shopperId).get(),
       certificationsRef.where('shopperId','==',principal.shopperId).get(),
-      recertificationsRef.get()
+      recertificationsRef.get(),
+      periodsRef.get()
     ]);
   }else if(['super','admin','ops','coordinador'].includes(principal.role)){
-    [reservationSnap,certificationSnap,recertificationSnap]=await Promise.all([reservationsRef.get(),certificationsRef.get(),recertificationsRef.get()]);
+    [reservationSnap,certificationSnap,recertificationSnap,periodsSnap]=await Promise.all([reservationsRef.get(),certificationsRef.get(),recertificationsRef.get(),periodsRef.get()]);
   }else{
-    reservationSnap={docs:[]};certificationSnap={docs:[]};recertificationSnap={docs:[]};
+    reservationSnap={docs:[]};certificationSnap={docs:[]};recertificationSnap={docs:[]};periodsSnap={docs:[]};
   }
   const reservations=reservationSnap.docs.map(doc=>({id:doc.id,...(doc.data()||{})}));
   const certifications=certificationSnap.docs.map(doc=>({id:doc.id,...(doc.data()||{}),projectId:doc.data()?.projectId||scope.projectId}));
+  const periods=periodsSnap.docs.map(doc=>({id:doc.id,...(doc.data()||{}),projectId:doc.data()?.projectId||scope.projectId}));
   const certificationRecertifications=recertificationSnap.docs.map(doc=>({id:doc.id,...(doc.data()||{}),projectId:doc.data()?.projectId||scope.projectId})).filter(row=>{
     if(principal.role!=='shopper')return true;
     return String(row.status||'active')==='active'&&(String(row.scope)==='all'||(Array.isArray(row.targetShopperIds)&&row.targetShopperIds.map(String).includes(principal.shopperId)));
   });
   const commercial=await commercialTenantState(principal,scope);
-  return {snapshot,protectedState:{reservations,certifications,certificationRecertifications,commercial,certificationAuthority:'firestore_project_certifications_exact_identity',identityAuthority:'hr_exact_crosswalk',crosswalkTokenCount:cross.size,mappedShoppers,mappedVisits,sourceRevision:current.revision}};
+  return {snapshot,protectedState:{reservations,certifications,certificationRecertifications,periods,commercial,certificationAuthority:'firestore_project_certifications_exact_identity',identityAuthority:'hr_exact_crosswalk',crosswalkTokenCount:cross.size,mappedShoppers,mappedVisits,sourceRevision:current.revision}};
 }
 
 function shopperPolicy(snapshot){
