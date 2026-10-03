@@ -147,8 +147,9 @@ CX.module('midia', ({data,role,ui})=>{
   bindNotif();
   /* P0 (V172): 'sh1' hardcodeado eliminado; el shopper ve SOLO sus visitas por shopperId real.
      El estado (asignada/agendada) NO sustituye identidad. Sin shopperId: cero contenido privado. */
-  const _mySid=(CX.session.user||{}).shopperId||null;
-  const mine=_mySid?data.visitas().filter(v=>String(v.shopperId||'')===String(_mySid)&&!(data.visitFacets?.(v)?.cancelled)).slice(0,2):[];
+  const _rawSid=String((CX.session.user||{}).shopperId||'').trim();
+  const _mySid=_rawSid?String(data.__identityMap?.[_rawSid]||_rawSid).trim():null;
+  const mine=_mySid?(data.visitsForShopper?data.visitsForShopper(_mySid,false):data.visitas().filter(v=>String(v.shopperId||'')===String(_mySid))).filter(v=>!(data.visitFacets?.(v)?.cancelled)).slice(0,2):[];
   const nextVisit=mine[0]||null;
   const vf=nextVisit&&data.visitFacets?data.visitFacets(nextVisit):(nextVisit?.canonicalFacets||{});
   const certBank=(()=>{try{return CX.certStore?.bank?.(p.id,window.CX_CERT_SELECTED_ID||'main')||CX.certStore?.bank?.(p.id)||null;}catch(_){return null;}})();
