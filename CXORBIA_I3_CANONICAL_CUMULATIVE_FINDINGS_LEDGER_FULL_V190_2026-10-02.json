@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
-    "sourceTree": "e715b9a55ed35f62037e1b82a183a32ff8d3ebcd",
-    "predecessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+    "sourceSha": "83d2385dc47f3bfd785a37072100fdbab11b5127",
+    "sourceTree": "e73408c999c691d37d74c248d668b649e5bb85e5",
+    "predecessorSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
     "production": false,
-    "state": "SEALED_VRM168_SUCCESSOR_DEV_PENDING_LIVE_REPROOF",
+    "state": "SOURCE_FIX_READY_EXACT_DEV_MATERIALIZATION",
     "proof": {
       "runId": 37037752771,
       "runNumber": 864,
@@ -333,6 +333,15 @@
         "production": false
       },
       "state": "SEALED_V190_DEV_PENDING_LIVE_REPROOF"
+    },
+    "vrm168RefinedAuthority": {
+      "findingId": "VRM-168",
+      "classification": "MAPPING_FAILURE",
+      "owner": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+      "sourceSha": "83d2385dc47f3bfd785a37072100fdbab11b5127",
+      "sourceTree": "e73408c999c691d37d74c248d668b649e5bb85e5",
+      "predecessorSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
+      "production": false
     }
   },
   "rootCauseIds": [
@@ -8633,12 +8642,11 @@
       "classification": "MAPPING_FAILURE",
       "severity": "P0",
       "title": "Shopper scheduling command failed on sealed DEV",
-      "state": "EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
+      "state": "SOURCE_FIX_READY_EXACT_DEV_MATERIALIZATION",
       "rootCauseStatus": "PROVEN",
-      "rootCause": "The exact authenticated October Cayalá visit is canonical in HR/Firestore as shopper_gt_1440137b73, but the protected browser composition renders the same hrRowId OCTUBRE 26!6 in CX.data._visitas with shopperId='s3'. tya-cumulative-read-model-v2 builds an exact relation from the matched protected visit (base shopper identity -> durable canonical identity), but only promotes that relation into liveToCanonical while iterating baseShoppers. When an operational HR shopper identity exists on the visit but is absent from baseShoppers, the exact relation is never promoted; composedVisits therefore falls back to the transient live id 's3'. visitsForShopper(authenticated canonical shopperId) then cannot surface the card/action. Provider/Auth/version were independently proven healthy.",
+      "rootCause": "Run 299 materialized a tenant_adjudication that redirected the exact HR identity shopper_gt_1440137b73 to s3 despite an active exact source principal and stable self crosswalk. Later live HR reconciliation in backend/runtime/cxorbia-shopper-command-provider-v1.mjs trusted that historical adjudication as canonical and durableUpsert re-persisted the source crosswalk to s3. server.mjs then consumed that crosswalk before browser composition. HR raw/live, membership and Auth claims were independently proven correct for shopper_gt_1440137b73.",
       "owners": [
-        "app/adapters/tya-cumulative-read-model-v2.js",
-        "app/modules/misvisitas.js"
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
       ],
       "production": false,
       "evidence": {
@@ -8674,10 +8682,10 @@
         "hrWrites": 0,
         "production": false
       },
-      "correction": "Promote every unambiguous exact visit-derived relation into liveToCanonical even when the transient operational identity is not present in baseShoppers; preserve conflict review when one live id maps to multiple canonical ids. Reproof exact Cayalá card, command shape, provider ACK and durable reload on the corrected DEV.",
-      "sourceSuccessorSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
-      "sourceSuccessorTree": "e715b9a55ed35f62037e1b82a183a32ff8d3ebcd",
-      "sourceReproofDecision": "PASS_VRM168_SUCCESSOR_SOURCE_STATIC_REPROOF",
+      "correction": "Suppress only tenant_adjudication redirects where the source token itself has an exact active membership and enabled matching Auth principal in the same tenant/project; repair only structurally proven stale tenant-adjudicated HR crosswalks back to stable self identity. Provider-exact technical links retain existing semantics and ambiguous evidence remains fail-closed.",
+      "sourceSuccessorSha": "83d2385dc47f3bfd785a37072100fdbab11b5127",
+      "sourceSuccessorTree": "e73408c999c691d37d74c248d668b649e5bb85e5",
+      "sourceReproofDecision": "PENDING_EXISTING_V190_STATIC_AND_MATERIALIZATION_GATE",
       "devMaterializationRunId": 37081102241,
       "runtimeRevision": "cxorbia-live-hr-dev-00250-l9w",
       "hostingVersion": "sites/cxorbia-backend-dev/versions/0f7f7bd7376497b8",
@@ -8694,14 +8702,46 @@
         "scheduleButtonFound": false,
         "providerAuthHealthy": true
       },
-      "rootCauseRefinement": "The V190 promotion loop was present, but pendingPlatformAssignment prevented the exact visit-derived relation from entering relation at all when the transient HR token s3 was absent from baseShoppers. The focal successor promotes that exact relation only for missing transient identities and preserves conflict review when an HR identity exists.",
+      "rootCauseRefinement": "Historical tenant_adjudication incorrectly outranked a current exact HR identity with matching active durable membership and enabled Auth principal. Current owner is the durable shopper identity provider mapping precedence.",
       "focalRegressionPass": true,
       "devMaterializationJobId": 111081739013,
       "devMaterializationArtifactId": 11259161246,
       "devMaterializationArtifactDigest": "sha256:e1e283c356024051699a9c37da0b0405a2e0cc2d2d70648130b8055cf09e9ff0",
       "runtimeDigest": "sha256:e4633301e99993134eb132892635b77b4006824aab4cc4f4682adc86a08ba9f7",
       "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790986549932000",
-      "vrm168RegressionPass": true
+      "vrm168RegressionPass": true,
+      "provenance": {
+        "historicalWriterCommit": "1d259fcea83c139fc3c0a75fde0ab477cd4d081a",
+        "historicalWriterRunId": 35556165139,
+        "historicalWriterRunNumber": 299,
+        "historicalWriterJobId": 106214035562,
+        "identityLinkId": "irl_i3_7f3add057763ed468ca4bd1fb6d812cc",
+        "authorityType": "tenant_adjudication",
+        "sourceStableKey": "shopper_gt_1440137b73",
+        "staleTarget": "s3",
+        "currentExactOperationalIdentity": "shopper_gt_1440137b73",
+        "run896Id": 37083168101,
+        "run896ArtifactId": 11258594304,
+        "production": false
+      },
+      "previousSourceSuccessor": {
+        "sourceSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
+        "sourceTree": "e715b9a55ed35f62037e1b82a183a32ff8d3ebcd",
+        "status": "SECONDARY_COMPOSER_PROTECTION_RETAINED_PENDING_COMBINED_REPROOF"
+      },
+      "correctionScope": {
+        "productFiles": [
+          "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
+        ],
+        "qaFiles": [
+          "backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs"
+        ],
+        "focalHardcodesInProduct": false,
+        "manualFirestoreEdit": false,
+        "identityLinkDeletion": false,
+        "hrWrites": false,
+        "production": false
+      }
     },
     "VRM-169": {
       "id": "VRM-169",

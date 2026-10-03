@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_V190_LIVE_REPROOF_REQUIRED",
+  "status": "HOLD_V190_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
-  "productTreeAuthority": "e715b9a55ed35f62037e1b82a183a32ff8d3ebcd",
-  "predecessorProductSourceSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
+  "productSourceSha": "83d2385dc47f3bfd785a37072100fdbab11b5127",
+  "productTreeAuthority": "e73408c999c691d37d74c248d668b649e5bb85e5",
+  "predecessorProductSourceSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V190_2026-10-02.json",
-  "findingsLedgerExpectedGitBlob": "a6b36511b7968bf7c507f16676b65b0a86817f50",
+  "findingsLedgerExpectedGitBlob": "84da8b6e7a419f1bdc0b6117b48df9997d66a058",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM168_SAME_DEV_LIVE_REPROOF_REQUIRED",
+  "activeBlocker": "VRM168_STALE_TENANT_ADJUDICATION_EXACT_DEV_MATERIALIZATION_REQUIRED",
   "nextFindingId": "VRM-181",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Execute the existing readback/live-reproof lane against exactly runtime cxorbia-live-hr-dev-00250-l9w + Hosting 0f7f7bd7376497b8 for source c0fe7f11. No rebuild/redeploy. Production remains DO_NOT_TOUCH.",
+  "exactNextAction": "Reuse the existing V190 DEV materialization lane against source 83d2385dc47f3bfd785a37072100fdbab11b5127. Existing source gates must pass before exactly one Recovery DEV materialization. Then run the existing V190 live reproof. Production remains DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -902,22 +902,13 @@
     "production": false
   },
   "pendingMaterialization": {
-    "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
-    "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
-    "sourceProof": {
-      "runId": 37021140798,
-      "runNumber": 853,
-      "jobId": 110884317409,
-      "artifactId": 11233275872,
-      "artifactDigest": "sha256:56d37e9cea2b320a7550232e6f4eeafe2f2dddbe412309cd1b96820075fa1780",
-      "decision": "PASS_VRM154_156_FRONTEND_SOURCE_REPROOF",
-      "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
-      "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
-      "genericScenarioContract": true,
-      "financeVrm153Regression": true,
-      "deploys": 0,
-      "production": false
-    },
+    "sourceSha": "83d2385dc47f3bfd785a37072100fdbab11b5127",
+    "sourceTree": "e73408c999c691d37d74c248d668b649e5bb85e5",
+    "predecessorSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
+    "status": "HOLD_V190_DEV_MATERIALIZATION_REQUIRED",
+    "maxBuilds": 1,
+    "maxRuntimeDeploys": 1,
+    "maxHostingDeploys": 1,
     "production": false
   },
   "lastVrm080Proof": {
@@ -2776,6 +2767,20 @@
       "providerAuthHealthy": true
     },
     "scope": "SOURCE_SYNTAX_STATIC_AND_PURE_COMPOSER_REGRESSION_NO_DEPLOY",
+    "production": false
+  },
+  "vrm168RefinedRootCause": {
+    "findingId": "VRM-168",
+    "classification": "MAPPING_FAILURE",
+    "owner": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+    "historicalWriterRunId": 35556165139,
+    "historicalWriterJobId": 106214035562,
+    "historicalAuthority": "tenant_adjudication",
+    "currentExactOperationalIdentity": "shopper_gt_1440137b73",
+    "staleCanonicalTarget": "s3",
+    "sourceSuccessorSha": "83d2385dc47f3bfd785a37072100fdbab11b5127",
+    "sourceSuccessorTree": "e73408c999c691d37d74c248d668b649e5bb85e5",
+    "state": "P0_PROVEN_SOURCE_FIX_READY_EXACT_DEV_MATERIALIZATION",
     "production": false
   }
 }

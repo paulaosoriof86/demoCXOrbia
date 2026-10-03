@@ -560,8 +560,8 @@
         "Cliente"
       ],
       "contractFunctional": "Persistencia/Writes HR/ACK/idempotencia",
-      "classification": "MATCH",
-      "actionRequired": "V190_SAME_DEV_LIVE_REPROOF_REQUIRED__VRM-168_VRM-169_VRM-170_VRM-179_VRM-180",
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "actionRequired": "VRM-168 P0_PROVEN source successor requires existing V190 exact DEV materialization and live reproof before returning to MATCH.",
       "preI4SuccessorCommits": [
         "672e7f624b1d0328ed1bb25b778ce4b44d52489c"
       ],
@@ -581,7 +581,17 @@
       "v190SourceReproof": "PASS_V190_SUCCESSOR_SOURCE_STATIC_REPROOF",
       "servedRuntimeRevision": "cxorbia-live-hr-dev-00249-pqh",
       "servedHostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30",
-      "liveReproofState": "PENDING"
+      "liveReproofState": "PENDING",
+      "latestFindingId": "VRM-168",
+      "latestClassification": "MAPPING_FAILURE",
+      "latestOwner": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+      "latestSourceSuccessor": {
+        "sourceSha": "83d2385dc47f3bfd785a37072100fdbab11b5127",
+        "sourceTree": "e73408c999c691d37d74c248d668b649e5bb85e5",
+        "predecessorSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
+        "state": "SOURCE_FIX_READY_EXACT_DEV_MATERIALIZATION",
+        "production": false
+      }
     },
     {
       "domain": "phase-a-supporting-core",
