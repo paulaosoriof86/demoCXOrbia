@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED",
+  "status": "HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
   "productTreeAuthority": "e3c45d9c579a417868dbd86143e6be7a36c20a29",
   "predecessorProductSourceSha": "30c4354640ea38a0155d72f14ee5bdcada3512bd",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V218_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "ae75efbebb11c461916df64602e75e7b68a83f28",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V2.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V219_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "323a665b3a8c55136a2a731508ad422eaf596054",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V3.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED",
+  "activeBlocker": "REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED",
   "nextFindingId": "VRM-201",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Materialize exactly one DEV artifact from source 4f87cb0155162674d459b09e3725dd585c84709d. Verify exact runtime digest, Hosting version and byte parity for every changed Phase A owner. Then run same-artifact representative/population live proof before any human visual checkpoint. No production.",
+  "exactNextAction": "Run read-only same-artifact live proof against Run1016 DEV artifact for Admin, Julissa Flores, Priscila López, Paula Osorio and population invariants. No rebuild/redeploy. Only after scoped live PASS may a new human visual checkpoint be considered.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -419,7 +419,25 @@
     "writes": 0,
     "production": false
   },
-  "currentMaterialization": null,
+  "currentMaterialization": {
+    "state": "PASS_EXACT_DEV_RUN1016_PENDING_SAME_ARTIFACT_LIVE_REPROOF",
+    "sourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+    "sourceTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29",
+    "runId": 37159236878,
+    "runNumber": 1016,
+    "jobId": 111309018144,
+    "artifactId": 11286862363,
+    "artifactDigest": "sha256:ae85b5407004fbff45a8c6505f9e670b6108ef80ba84c95c8e56541975a77371",
+    "runtimeRevision": "cxorbia-live-hr-dev-00258-9fj",
+    "runtimeDigest": "sha256:6b48431fb4e33927a8a6cdfad2c6ea706cb4bddb1caf23dfb8714112370878c4",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/9da4b395d0d2099d",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791067394588000",
+    "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "production": false
+  },
   "lastFocalAttempt": {
     "runId": 36198284266,
     "runNumber": 438,
@@ -3376,7 +3394,7 @@
     "production": false
   },
   "visualAcceptance": {
-    "state": "REJECTED_DEV_MATERIALIZATION_AND_LIVE_REPROOF_REQUIRED",
+    "state": "REJECTED_LIVE_REPROOF_REQUIRED",
     "ready": false,
     "humanVisualAccepted": false,
     "production": false
@@ -3401,7 +3419,7 @@
       "Academia visual requirement remains unmet: course cards were requested with distinct solid colors, not repeated blue treatment or gradients."
     ]
   },
-  "adminAdministrationMatrixPath": "CXORBIA_I3_ADMIN_FULL_ADMINISTRATION_MATRIX_2026-10-03_V2.json",
+  "adminAdministrationMatrixPath": "CXORBIA_I3_ADMIN_FULL_ADMINISTRATION_MATRIX_2026-10-03_V3.json",
   "acceptanceIntegrity": {
     "state": "FAIL_CLOSED_GUARD_ACTIVE",
     "findingId": "VRM-198",
