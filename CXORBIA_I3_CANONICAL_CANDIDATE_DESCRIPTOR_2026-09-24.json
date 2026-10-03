@@ -7,13 +7,13 @@
   "productSourceSha": "4b1c0859cc5b43928c083748d00fdc606b32d63e",
   "productTreeAuthority": "ab33d43d483faef9fbec5daaadfa454247df469a",
   "predecessorProductSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V226_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "5ee12eaac7125f238f74dcc54f540593e38949a8",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V227_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "3ec1f751562dfde030362627ebc3339d6672b637",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V5.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM194_SOURCE_REPROOF_REQUIRED__RUN1048_CONTROL_FAILURE_REPAIRED_PENDING_RERUN",
+  "activeBlocker": "VRM194_SOURCE_REPROOF_REQUIRED__WORKFLOW_COMPILE_REPAIR_PENDING",
   "nextFindingId": "VRM-205",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Re-run the same source-only proof through a dedicated focal workflow job. Keep product source 4b1c0859cc5b43928c083748d00fdc606b32d63e unchanged; no build or deploy.",
+  "exactNextAction": "Use the last workflow proven valid by Run1047 as the base, reuse its existing cumulative source job, and extend only that job with a folded short condition plus VRM-194/human-runtime source checks. Product source remains unchanged.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
