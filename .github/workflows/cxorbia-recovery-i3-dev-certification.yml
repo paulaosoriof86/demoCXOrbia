@@ -7189,7 +7189,7 @@ jobs:
 
   phasea-rejected-checkpoint-source-proof:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_REJECTED_PHASEA_SOURCE_REPROOF_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_REJECTED_PHASEA_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_JULISSA_IDENTITY_SOURCE_REPROOF_REQUIRED' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -7205,7 +7205,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$FOCAL_SOURCE" = "4f87cb0155162674d459b09e3725dd585c84709d"
+          if [ "${{ needs.canonical-candidate-authority.outputs.status }}" = "HOLD_JULISSA_IDENTITY_SOURCE_REPROOF_REQUIRED" ]; then test "$FOCAL_SOURCE" = "7b8b88608c9cd38cc97726c3f17aab55a51f1715"; else test "$FOCAL_SOURCE" = "4f87cb0155162674d459b09e3725dd585c84709d"; fi
           test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
           git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
           node --check app/modules/midia.js
@@ -7225,6 +7225,15 @@ jobs:
           node --test backend/runtime/hr-live-service/test/cxorbia-prei4-shopper-progressive-route.test.mjs
           node --test backend/runtime/hr-live-service/test/cxorbia-gate9-postulation-immediate.test.mjs
           node --test backend/runtime/hr-live-service/test/cxorbia-pre-i4-finance-source-semantics.test.mjs
+          if [ "${{ needs.canonical-candidate-authority.outputs.status }}" = "HOLD_JULISSA_IDENTITY_SOURCE_REPROOF_REQUIRED" ]; then
+            node --check backend/runtime/cxorbia-shopper-command-provider-v1.mjs
+            node --check tools/qa/cxorbia-i3-v221-identity-academy-source-proof.mjs
+            node tools/qa/cxorbia-i3-v221-identity-academy-source-proof.mjs | tee /tmp/v221-source-proof.json
+            test "$(jq -r '.decision' /tmp/v221-source-proof.json)" = "PASS_I3_V221_IDENTITY_ACADEMY_SOURCE_PROOF"
+            node --test backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs | tee /tmp/v221-shopper-provider.log
+            grep -Fq "VRM-197 / multiple password-proof principals choose the unique canonical visible-login keeper" /tmp/v221-shopper-provider.log
+            grep -Fq "VRM-185 / admin identity adjudication fails closed when multiple principals have password proof" /tmp/v221-shopper-provider.log
+          fi
 
   phasea-representative-same-artifact-live-reproof:
     needs: canonical-candidate-authority
@@ -7351,70 +7360,6 @@ jobs:
         with:
           name: cxorbia-julissa-identity-topology-${{ github.run_id }}
           path: .tmp/i3-julissa-topology
-          if-no-files-found: error
-          retention-days: 30
-          compression-level: 0
-
-  v221-julissa-identity-source-reproof:
-    needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_JULISSA_IDENTITY_SOURCE_REPROOF_REQUIRED' }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    env:
-      FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
-      FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
-      V221_OUT: .tmp/i3-v221-source-reproof
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-      - name: Exact source preflight
-        shell: bash
-        run: |
-          set -Eeuo pipefail
-          mkdir -p "$V221_OUT"
-          test "$FOCAL_SOURCE" = "7b8b88608c9cd38cc97726c3f17aab55a51f1715"
-          test "$FOCAL_TREE" = "663f89c041732a617bb1ee43af2adc0289a8b5ad"
-          test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
-          test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
-          test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
-          git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
-          node --check backend/runtime/cxorbia-shopper-command-provider-v1.mjs
-          node --check app/modules/shoppers.js
-          node --check app/modules/academia.js
-          node --check tools/qa/cxorbia-i3-v221-identity-academy-source-proof.mjs
-      - name: V221 identity and Academy source contract
-        run: |
-          set -Eeuo pipefail
-          node tools/qa/cxorbia-i3-v221-identity-academy-source-proof.mjs | tee "$V221_OUT/v221-source-proof.json"
-          test "$(jq -r '.decision' "$V221_OUT/v221-source-proof.json")" = "PASS_I3_V221_IDENTITY_ACADEMY_SOURCE_PROOF"
-          test "$(jq -r '.checksFailed' "$V221_OUT/v221-source-proof.json")" = "0"
-      - name: Shopper identity provider regression
-        run: |
-          set -Eeuo pipefail
-          node --test backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs | tee "$V221_OUT/shopper-provider.log"
-          grep -Fq "VRM-197 / multiple password-proof principals choose the unique canonical visible-login keeper" "$V221_OUT/shopper-provider.log"
-          grep -Fq "VRM-185 / admin identity adjudication fails closed when multiple principals have password proof" "$V221_OUT/shopper-provider.log"
-      - name: Cumulative rejected Phase A regression
-        run: |
-          set -Eeuo pipefail
-          node tools/qa/cxorbia-i3-phasea-rejection-remediation-source-proof.mjs | tee "$V221_OUT/phasea-source-proof.json"
-          test "$(jq -r '.decision' "$V221_OUT/phasea-source-proof.json")" = "PASS_I3_PHASEA_REJECTED_CHECKPOINT_SOURCE_PROOF"
-          node --test backend/runtime/hr-live-service/test/cxorbia-gate9-postulation-immediate.test.mjs | tee "$V221_OUT/gate9.log"
-          node --test backend/runtime/hr-live-service/test/cxorbia-prei4-shopper-progressive-route.test.mjs | tee "$V221_OUT/progressive-route.log"
-          node --test backend/runtime/hr-live-service/test/cxorbia-pre-i4-finance-source-semantics.test.mjs | tee "$V221_OUT/finance-semantics.log"
-      - name: Freeze source reproof result
-        run: |
-          set -Eeuo pipefail
-          jq -n -S --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" '{decision:"PASS_I3_V221_EXACT_SOURCE_REPROOF",sourceSha:$source,sourceTree:$tree,identityProvider:true,adminMultiProfile:true,academyDistinctSolid:true,gate9:true,progressiveRoute:true,financeSemantics:true,writes:0,deploys:0,production:false}' > "$V221_OUT/result.json"
-      - if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: cxorbia-i3-v221-source-reproof-${{ github.run_id }}
-          path: .tmp/i3-v221-source-reproof
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
