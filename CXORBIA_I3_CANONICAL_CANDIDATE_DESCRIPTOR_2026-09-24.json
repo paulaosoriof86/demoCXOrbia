@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_REJECTED_PHASEA_SOURCE_REPROOF_REQUIRED",
+  "status": "HOLD_REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
   "productTreeAuthority": "e3c45d9c579a417868dbd86143e6be7a36c20a29",
   "predecessorProductSourceSha": "30c4354640ea38a0155d72f14ee5bdcada3512bd",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V217_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "870f021313779b0bf0ad3451c21645908295520e",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V218_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "ae75efbebb11c461916df64602e75e7b68a83f28",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V2.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "REJECTED_PHASEA_SOURCE_REPROOF_REQUIRED",
+  "activeBlocker": "REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED",
   "nextFindingId": "VRM-201",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Re-run exact source proof and Gate 9 on source 4f87cb0155162674d459b09e3725dd585c84709d. On PASS, refresh current Module Truth + Admin matrix on the same source, preserving unresolved P0 as unresolved; then one DEV materialization and representative/population live proof before any Paula visual checkpoint. No production.",
+  "exactNextAction": "Materialize exactly one DEV artifact from source 4f87cb0155162674d459b09e3725dd585c84709d. Verify exact runtime digest, Hosting version and byte parity for every changed Phase A owner. Then run same-artifact representative/population live proof before any human visual checkpoint. No production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -419,85 +419,7 @@
     "writes": 0,
     "production": false
   },
-  "currentMaterialization": {
-    "state": "SEALED_DEV_HUMAN_REJECTED_REMEDIATION_REQUIRED",
-    "sourceSha": "c5c4d002ab783391f915eaf7f41d69dc1005f215",
-    "sourceTree": "7909233675f6bed3021f90810edb3d1c696aaf2b",
-    "materializationRunId": 37151594398,
-    "materializationRunNumber": 976,
-    "materializationJobId": 111286477331,
-    "materializationArtifactId": 11284167174,
-    "materializationArtifactDigest": "sha256:90cc7a539ae8eab881684ccdb7b3af42f1357cff134b75a83b8a20ed204e7d87",
-    "runtimeRevision": "cxorbia-live-hr-dev-00257-7rh",
-    "runtimeDigest": "sha256:8267a1d0a784eba49e1e9bc65eaa3967acba699bafdb67fc2ca330d9f1eedcdf",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/e5adfc75a24a3717",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791059381031000",
-    "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
-    "builds": 1,
-    "runtimeDeploys": 1,
-    "hostingDeploys": 1,
-    "storageRulesDeploys": 0,
-    "delayedSameArtifactReadback": {
-      "runId": 37151968414,
-      "runNumber": 977,
-      "jobId": 111287551176,
-      "artifactId": 11284396936,
-      "artifactDigest": "sha256:a610d318b47e68919af4bfee460f7046752ade7fcf6a0e5713fa3dc25c31120b",
-      "decision": "PASS_VRM154_156_SEALED_DEV_REPROOF",
-      "browserDecision": "PASS_VRM154_156_SEALED_DEV_LIVE_REPROOF",
-      "sourceSha": "c5c4d002ab783391f915eaf7f41d69dc1005f215",
-      "sourceTree": "7909233675f6bed3021f90810edb3d1c696aaf2b",
-      "runtimeRevision": "cxorbia-live-hr-dev-00257-7rh",
-      "runtimeDigest": "sha256:8267a1d0a784eba49e1e9bc65eaa3967acba699bafdb67fc2ca330d9f1eedcdf",
-      "hostingVersion": "sites/cxorbia-backend-dev/versions/e5adfc75a24a3717",
-      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791059381031000",
-      "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
-      "frontendBytesExact": true,
-      "scenarioDimensionsProven": true,
-      "shopper": {
-        "selected": "Julissa Flores",
-        "shopperId": "shopper_gt_0c198c1055",
-        "visitId": "hr_2026-10_gt_2_97b3975c30",
-        "periodId": "cinepolis-2026-10",
-        "scenarioCardPass": true,
-        "visitDetailPass": true,
-        "profileKpisHistoryPass": true,
-        "academyPass": true,
-        "ownVisits": 7,
-        "uniqueOwnVisits": 7
-      },
-      "admin": {
-        "shopperFound": true,
-        "humanNameVisible": true,
-        "visitCount": 7,
-        "uniqueVisitCount": 7,
-        "noDuplicates": true,
-        "postulationsRendered": true,
-        "rawTechnicalIdentity": false
-      },
-      "finance": {
-        "canonicalSubmitted": 636,
-        "paid": 562,
-        "pending": 74,
-        "amountReviewRequired": 5,
-        "octoberRecords": 0,
-        "expectedMatched": true,
-        "writes": 0
-      },
-      "writes": {
-        "auth": 0,
-        "hr": 0,
-        "provider": 0
-      },
-      "builds": 0,
-      "runtimeDeploys": 0,
-      "hostingDeploys": 0,
-      "production": false
-    },
-    "production": false,
-    "humanVisualAccepted": false,
-    "humanVisualRejectedAt": "2026-10-03T21:03:00Z"
-  },
+  "currentMaterialization": null,
   "lastFocalAttempt": {
     "runId": 36198284266,
     "runNumber": 438,
@@ -3454,7 +3376,7 @@
     "production": false
   },
   "visualAcceptance": {
-    "state": "REJECTED_SOURCE_REPROOF_REQUIRED",
+    "state": "REJECTED_DEV_MATERIALIZATION_AND_LIVE_REPROOF_REQUIRED",
     "ready": false,
     "humanVisualAccepted": false,
     "production": false
@@ -3479,7 +3401,7 @@
       "Academia visual requirement remains unmet: course cards were requested with distinct solid colors, not repeated blue treatment or gradients."
     ]
   },
-  "adminAdministrationMatrixPath": "CXORBIA_I3_ADMIN_FULL_ADMINISTRATION_MATRIX_2026-10-03.json",
+  "adminAdministrationMatrixPath": "CXORBIA_I3_ADMIN_FULL_ADMINISTRATION_MATRIX_2026-10-03_V2.json",
   "acceptanceIntegrity": {
     "state": "FAIL_CLOSED_GUARD_ACTIVE",
     "findingId": "VRM-198",
@@ -3514,6 +3436,11 @@
     ],
     "preservedAllPriorFindings": true,
     "production": false,
-    "predecessorSourceSha": "30c4354640ea38a0155d72f14ee5bdcada3512bd"
+    "predecessorSourceSha": "30c4354640ea38a0155d72f14ee5bdcada3512bd",
+    "state": "SOURCE_REPROOF_PASS_RUN1014_DEV_MATERIALIZATION_REQUIRED",
+    "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V2.json",
+    "adminMatrixPath": "CXORBIA_I3_ADMIN_FULL_ADMINISTRATION_MATRIX_2026-10-03_V2.json",
+    "sourceProofRunId": 37159003511,
+    "sourceProofRunNumber": 1014
   }
 }
