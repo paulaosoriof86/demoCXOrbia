@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_ADMIN_FULL_ADMINISTRATION_AND_OBSERVATION_CLOSURE_REQUIRED",
+  "status": "HOLD_ADMIN_FULL_ADMINISTRATION_OPEN_BLOCKERS",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6",
   "productTreeAuthority": "2e5b6af67aa0bbb5e0f79a37fe5dbab8453792b2",
   "predecessorProductSourceSha": "72c9114130d6fd1d3475957118b48e48469ad7c8",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "f47f766cc1acbcd7c69d88fa3afa8b49d7e9c100",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V194_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "30e3bcadfd187033b37ff5c86e9a7af930cdbf54",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "ADMIN_FULL_ADMINISTRATION_AND_CUMULATIVE_OBSERVATION_CLOSURE_REQUIRED",
-  "nextFindingId": "VRM-187",
+  "activeBlocker": "ADMIN_FULL_ADMINISTRATION_OPEN_BLOCKERS_AND_CUMULATIVE_CLOSURE",
+  "nextFindingId": "VRM-195",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Build and freeze the current-candidate Admin full-administration matrix for all 34 Admin routes and the cumulative observation-closure matrix for VRM-001..VRM-186 plus all frozen Paula observations. Classify each item only PASS_PROVEN, OPEN_BLOCKER, or NOT_APPLICABLE_WITH_REASON. Do not present DEV for Paula visual approval until both matrices are complete with no unexplained omissions. Any OPEN_BLOCKER is corrected only by its proven owner inside I3. No rebuild/redeploy unless a proven product defect requires it. Production DO_NOT_TOUCH.",
+  "exactNextAction": "Remediate VRM-187 first: wire Admin Documentos/Recursos binary create/replace/delete to the already-proven durable resource backend with provider ACK/readback, versioning and orphan-free cleanup. Preserve exact product candidate lineage; source-test only until the bounded Admin remediation package is complete. Then update both matrices and proceed to the next proven owner. Production DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2896,7 +2896,7 @@
   "cumulativeObservationClosureGate": {
     "required": true,
     "timing": "I3_BEFORE_HUMAN_VISUAL_APPROVAL",
-    "sourceOfTruth": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V193_2026-10-03.json",
+    "sourceOfTruth": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V194_2026-10-03.json",
     "rule": "No finding or Paula observation may disappear because a later iteration, source, reproof or visual redesign supersedes it. Every observation must map to a ledger finding/acceptance item with current state, owner, evidence and final disposition.",
     "requiredDomains": [
       "Shoppers identity/profile/fusion/admin management",
@@ -2949,5 +2949,27 @@
     "adminArtifactId": 11276016226,
     "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487",
     "production": false
+  },
+  "adminFullAdministrationMatrix": {
+    "path": "CXORBIA_I3_ADMIN_FULL_ADMINISTRATION_MATRIX_2026-10-03.json",
+    "expectedGitBlob": "33cdc30984ef751fa9be10bb1e3a7f15d853e708",
+    "summary": {
+      "PASS_PROVEN": 8,
+      "OPEN_BLOCKER": 25,
+      "NOT_APPLICABLE_WITH_REASON": 1,
+      "omissions": 0
+    }
+  },
+  "cumulativeObservationClosureMatrix": {
+    "path": "CXORBIA_I3_CUMULATIVE_OBSERVATION_CLOSURE_MATRIX_2026-10-03.json",
+    "expectedGitBlob": "27af73308843cfef42e66455c9701bcd05f87fa3",
+    "summary": {
+      "totalFindings": 186,
+      "PASS_PROVEN": 102,
+      "OPEN_BLOCKER": 81,
+      "NOT_APPLICABLE_WITH_REASON": 3,
+      "missingFindingIds": 0,
+      "observationMappingOmissions": 0
+    }
   }
 }
