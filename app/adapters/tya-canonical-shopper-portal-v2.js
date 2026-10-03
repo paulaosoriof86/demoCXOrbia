@@ -116,17 +116,26 @@
       <div class="cx-profile-section-title">👤 Identidad y datos personales</div>
       <div class="card card-p cx-profile-hero">
         <div class="between" style="gap:12px;align-items:flex-start"><div><div class="card-t" style="font-size:18px">${esc(s.nombre)}</div><div style="font-size:11px;color:var(--t3);margin-top:3px">${[s.ciudad,s.pais].map(esc).filter(Boolean).join(' · ')||'Perfil de shopper'}</div></div><div class="flex wrap" style="gap:6px"><button class="btn btn-sm btn-soft" type="button" data-profile-edit>✏️ Editar mis datos</button><span class="bdg bdg-g">Perfil verificado</span><span class="bdg bdg-${cs==='certificada'?'g':cs==='presentada'?'b':historicalEvidence.length?'a':'n'}">${cs==='certificada'?'Certificada':cs==='presentada'?'Certificación presentada':historicalEvidence.length?'Histórico en revisión':'Sin certificación'}</span></div></div>
-        <div class="cx-profile-info-grid">
-          <div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">NOMBRE</div><b>${esc(firstName||'— sin dato')}</b></div>
-          <div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">APELLIDO</div><b>${esc(lastName||'— sin dato')}</b></div>
-          <div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">USUARIO</div><b>${esc(username||'— sin dato')}</b></div>
-          <div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">CONTRASEÑA</div>${credentialBody}</div>
-          <div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">WHATSAPP</div><b>${esc(s.whatsapp||s.phone||'— sin dato')}</b></div>
-          <div class="card card-p" style="padding:10px;min-width:0"><div class="muted" style="font-size:10px">CORREO</div><b style="overflow-wrap:anywhere">${esc(email||'— sin dato')}</b></div>
-          <div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">CIUDAD / REGIÓN</div><b>${esc([s.ciudad,s.depto].filter(Boolean).join(' · ')||'— sin dato')}</b></div>
-          <div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">EDAD / SEXO</div><b>${esc([s.edad,s.sexo].filter(Boolean).join(' · ')||'— sin dato')}</b></div>
-          <div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">DOCUMENTO</div><b>${esc(masked(s.dpi||s.documentId))}</b></div>
-          <div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">DATOS DE PAGO</div><b>${esc([s.banco,masked(s.ctaNum),s.ctaMoneda].filter(Boolean).join(' · ')||'— sin dato')}</b></div>
+        <div class="cx-profile-detail-grid">
+          <section class="cx-profile-group"><div class="cx-profile-group-title">👤 Identidad</div>
+            <div class="cx-profile-field"><span>Nombre completo</span><b>${esc([firstName,lastName].filter(Boolean).join(' ')||s.nombre||'— sin dato')}</b></div>
+            <div class="cx-profile-field"><span>Documento</span><b>${esc(masked(s.dpi||s.documentId))}</b></div>
+            <div class="cx-profile-field"><span>Ciudad / región</span><b>${esc([s.ciudad,s.depto].filter(Boolean).join(' · ')||'— sin dato')}</b></div>
+            <div class="cx-profile-field"><span>Edad / sexo</span><b>${esc([s.edad,s.sexo].filter(Boolean).join(' · ')||'— sin dato')}</b></div>
+          </section>
+          <section class="cx-profile-group"><div class="cx-profile-group-title">💬 Contacto</div>
+            <div class="cx-profile-field"><span>WhatsApp</span><b>${esc(s.whatsapp||s.phone||'— sin dato')}</b></div>
+            <div class="cx-profile-field"><span>Correo</span><b class="cx-profile-break">${esc(email||'— sin dato')}</b></div>
+          </section>
+          <section class="cx-profile-group"><div class="cx-profile-group-title">🔐 Acceso</div>
+            <div class="cx-profile-field"><span>Usuario</span><b>${esc(username||'— sin dato')}</b></div>
+            <div class="cx-profile-field"><span>Contraseña</span><div>${credentialBody}</div></div>
+          </section>
+          <section class="cx-profile-group"><div class="cx-profile-group-title">🏦 Datos de pago</div>
+            <div class="cx-profile-field"><span>Banco</span><b>${esc(s.banco||'— sin dato')}</b></div>
+            <div class="cx-profile-field"><span>Cuenta</span><b>${esc(masked(s.ctaNum))}</b></div>
+            <div class="cx-profile-field"><span>Moneda</span><b>${esc(s.ctaMoneda||'— sin dato')}</b></div>
+          </section>
         </div>
         <div style="font-size:11px;color:var(--t3);margin-top:9px">Tu usuario se forma con tu primer nombre y primer apellido, sin tildes. Desde “Editar mis datos” puedes actualizar la información personal, de contacto y de pago permitida.</div>
       </div>
