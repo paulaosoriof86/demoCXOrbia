@@ -3,9 +3,11 @@
    and command/ACK writes. UI layout and project-driven flow are preserved. */
 CX.module('misvisitas',({data,ui})=>{
   const p=data.period();
-  const sid=(CX.session.user&&CX.session.user.shopperId)||null;
-  const identityOk=!!sid;
-  const mine=identityOk?(data.visitsForShopper?data.visitsForShopper(sid):[]):[];
+  const rawSid=String(CX.session?.user?.shopperId||'').trim();
+  const sid=rawSid?String(data.__identityMap?.[rawSid]||rawSid).trim():null;
+  const shopperProfile=sid?((data.getShopper&&data.getShopper(sid))||(data.shoppers||[]).find(x=>String(x?.id||x?.shopperId||'')===String(sid))||null):null;
+  const identityOk=!!(sid&&shopperProfile);
+  const mine=identityOk?(data.visitsForShopper?data.visitsForShopper(sid,false):[]):[];
   const engine=window.CX_TYA_CUMULATIVE_READ_MODEL;
   const facets=v=>engine?.facets?engine.facets(v):(data.visitFacets?data.visitFacets(v):(v?.canonicalFacets||{}));
   const contract=v=>data.visitContract?data.visitContract(v):{};
