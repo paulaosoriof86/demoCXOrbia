@@ -1,0 +1,172 @@
+{
+  "schemaVersion": "cxorbia.i3.human-visual-checkpoint-ready-lock.v1",
+  "frozenAt": "2026-10-03T20:35:20Z",
+  "status": "FROZEN_HOLD_PENDING_PAULA_VISUAL_APPROVAL",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "productSourceSha": "c5c4d002ab783391f915eaf7f41d69dc1005f215",
+  "productTree": "7909233675f6bed3021f90810edb3d1c696aaf2b",
+  "materialization": {
+    "state": "SEALED_DEV_SAME_ARTIFACT_READBACK_PASS_PENDING_PAULA_VISUAL_APPROVAL",
+    "sourceSha": "c5c4d002ab783391f915eaf7f41d69dc1005f215",
+    "sourceTree": "7909233675f6bed3021f90810edb3d1c696aaf2b",
+    "materializationRunId": 37151594398,
+    "materializationRunNumber": 976,
+    "materializationJobId": 111286477331,
+    "materializationArtifactId": 11284167174,
+    "materializationArtifactDigest": "sha256:90cc7a539ae8eab881684ccdb7b3af42f1357cff134b75a83b8a20ed204e7d87",
+    "runtimeRevision": "cxorbia-live-hr-dev-00257-7rh",
+    "runtimeDigest": "sha256:8267a1d0a784eba49e1e9bc65eaa3967acba699bafdb67fc2ca330d9f1eedcdf",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/e5adfc75a24a3717",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791059381031000",
+    "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "storageRulesDeploys": 0,
+    "delayedSameArtifactReadback": {
+      "runId": 37151968414,
+      "runNumber": 977,
+      "jobId": 111287551176,
+      "artifactId": 11284396936,
+      "artifactDigest": "sha256:a610d318b47e68919af4bfee460f7046752ade7fcf6a0e5713fa3dc25c31120b",
+      "decision": "PASS_VRM154_156_SEALED_DEV_REPROOF",
+      "browserDecision": "PASS_VRM154_156_SEALED_DEV_LIVE_REPROOF",
+      "sourceSha": "c5c4d002ab783391f915eaf7f41d69dc1005f215",
+      "sourceTree": "7909233675f6bed3021f90810edb3d1c696aaf2b",
+      "runtimeRevision": "cxorbia-live-hr-dev-00257-7rh",
+      "runtimeDigest": "sha256:8267a1d0a784eba49e1e9bc65eaa3967acba699bafdb67fc2ca330d9f1eedcdf",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/e5adfc75a24a3717",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791059381031000",
+      "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+      "frontendBytesExact": true,
+      "scenarioDimensionsProven": true,
+      "shopper": {
+        "selected": "Julissa Flores",
+        "shopperId": "shopper_gt_0c198c1055",
+        "visitId": "hr_2026-10_gt_2_97b3975c30",
+        "periodId": "cinepolis-2026-10",
+        "scenarioCardPass": true,
+        "visitDetailPass": true,
+        "profileKpisHistoryPass": true,
+        "academyPass": true,
+        "ownVisits": 7,
+        "uniqueOwnVisits": 7
+      },
+      "admin": {
+        "shopperFound": true,
+        "humanNameVisible": true,
+        "visitCount": 7,
+        "uniqueVisitCount": 7,
+        "noDuplicates": true,
+        "postulationsRendered": true,
+        "rawTechnicalIdentity": false
+      },
+      "finance": {
+        "canonicalSubmitted": 636,
+        "paid": 562,
+        "pending": 74,
+        "amountReviewRequired": 5,
+        "octoberRecords": 0,
+        "expectedMatched": true,
+        "writes": 0
+      },
+      "writes": {
+        "auth": 0,
+        "hr": 0,
+        "provider": 0
+      },
+      "builds": 0,
+      "runtimeDeploys": 0,
+      "hostingDeploys": 0,
+      "production": false
+    },
+    "production": false
+  },
+  "readbackProof": {
+    "runId": 37151968414,
+    "runNumber": 977,
+    "jobId": 111287551176,
+    "artifactId": 11284396936,
+    "artifactDigest": "sha256:a610d318b47e68919af4bfee460f7046752ade7fcf6a0e5713fa3dc25c31120b",
+    "decision": "PASS_VRM154_156_SEALED_DEV_REPROOF",
+    "browserDecision": "PASS_VRM154_156_SEALED_DEV_LIVE_REPROOF",
+    "sourceSha": "c5c4d002ab783391f915eaf7f41d69dc1005f215",
+    "sourceTree": "7909233675f6bed3021f90810edb3d1c696aaf2b",
+    "runtimeRevision": "cxorbia-live-hr-dev-00257-7rh",
+    "runtimeDigest": "sha256:8267a1d0a784eba49e1e9bc65eaa3967acba699bafdb67fc2ca330d9f1eedcdf",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/e5adfc75a24a3717",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791059381031000",
+    "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+    "frontendBytesExact": true,
+    "scenarioDimensionsProven": true,
+    "shopper": {
+      "selected": "Julissa Flores",
+      "shopperId": "shopper_gt_0c198c1055",
+      "visitId": "hr_2026-10_gt_2_97b3975c30",
+      "periodId": "cinepolis-2026-10",
+      "scenarioCardPass": true,
+      "visitDetailPass": true,
+      "profileKpisHistoryPass": true,
+      "academyPass": true,
+      "ownVisits": 7,
+      "uniqueOwnVisits": 7
+    },
+    "admin": {
+      "shopperFound": true,
+      "humanNameVisible": true,
+      "visitCount": 7,
+      "uniqueVisitCount": 7,
+      "noDuplicates": true,
+      "postulationsRendered": true,
+      "rawTechnicalIdentity": false
+    },
+    "finance": {
+      "canonicalSubmitted": 636,
+      "paid": 562,
+      "pending": 74,
+      "amountReviewRequired": 5,
+      "octoberRecords": 0,
+      "expectedMatched": true,
+      "writes": 0
+    },
+    "writes": {
+      "auth": 0,
+      "hr": 0,
+      "provider": 0
+    },
+    "builds": 0,
+    "runtimeDeploys": 0,
+    "hostingDeploys": 0,
+    "production": false
+  },
+  "devReview": {
+    "url": "https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV",
+    "shopperRoute": [
+      "Mi Día",
+      "Mis Visitas",
+      "C. Miraflores OCT 2026",
+      "Mi Perfil",
+      "Mis Beneficios",
+      "Academia"
+    ],
+    "adminRoute": [
+      "Shoppers",
+      "Julissa Flores",
+      "Visitas",
+      "Gestión de Postulaciones"
+    ],
+    "expected": [
+      "Medio de compra + Combo visibles",
+      "progreso y acciones de visita legibles",
+      "Mi Perfil con identidad, KPIs e histórico",
+      "Academia con tarjetas corporativas",
+      "Admin con nombres humanos, sin duplicados ni IDs técnicos visibles"
+    ]
+  },
+  "vrm195": "FIXED_PROVEN_RUN977",
+  "production": "DO_NOT_TOUCH",
+  "nextAction": "Await Paula explicit visual approval before any further product mutation. This is not I4 authorization.",
+  "changePolicy": "Frozen; supersede only with explicit later evidence."
+}
