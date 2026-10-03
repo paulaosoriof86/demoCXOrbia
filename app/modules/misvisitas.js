@@ -51,6 +51,7 @@ CX.module('misvisitas',({data,ui})=>{
       const r=await fn();
       if(!committed(r)){ui.toast(commandMessage(r),'warn',4200);return false;}
       try{await CX.backend?.refresh?.();}catch(_){}
+      try{await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('shopper_visit_command_committed');}catch(_){}
       if(onSuccess)await onSuccess(r);
       return true;
     }catch(_){ui.toast('No fue posible confirmar la acción. No se aplicó un cambio local.','err',4200);return false;}
@@ -66,12 +67,31 @@ CX.module('misvisitas',({data,ui})=>{
     if(f.scheduled)return'agendada';
     return'asignada';
   };
-  const flowSteps=v=>{
-    const order=['asignada','instructivo','certificacion','agendada','realizada','cuestionario','revision','submit','liquidada'];
-    const labels={asignada:'Asignada',instructivo:'Instructivo y documentos',certificacion:'Certificación del proyecto',agendada:'Visita agendada',realizada:'Visita realizada',cuestionario:'Cuestionario',revision:'Revisión',submit:'Submitida',liquidada:'Liquidada'};
-    const idx={asignada:0,agendada:3,realizada:4,cuestionario:5,revision:6,submit:7,liquidada:8}[stageOf(v)]??0;
-    return order.map((s,i)=>({label:labels[s],state:s==='instructivo'&&v.instructiveReadAt?'done':i<idx?'done':i===idx?'now':'todo'}));
+  const certificationState=()=>{
+    let bank=null;try{bank=CX.certStore?.bank?.(p.id,window.CX_CERT_SELECTED_ID||'main')||CX.certStore?.bank?.(p.id)||null;}catch(_){}
+    const required=!!(bank&&bank.required!==false);
+    const durable=(sid&&bank&&CX.backendCertifications?.durableCurrent)?CX.backendCertifications.durableCurrent(sid,bank):null;
+    const carry=(sid&&CX.backendCertifications?.carryoverDecision)?CX.backendCertifications.carryoverDecision(shopperProfile,bank,data.currentProjectId||p.projectId||''):{eligibilityGranted:false};
+    const explicit=String(shopperProfile?.certificationStatus||'').toLowerCase()==='certificada'||shopperProfile?.certified===true;
+    return {required,done:!required||!!durable||carry?.eligibilityGranted===true||explicit,bank};
   };
+  const routeState=v=>{
+    const f=facets(v),c=contract(v),certState=certificationState();
+    const checks=[
+      {key:'asignada',label:'Asignada',done:!!f.assigned},
+      {key:'instructivo',label:'Instructivo y documentos',done:!!v.instructiveReadAt},
+      {key:'certificacion',label:'Certificación del proyecto',done:certState.done,note:certState.required?'':'No requerida'},
+      {key:'agendada',label:'Visita agendada',done:!!f.scheduled},
+      {key:'realizada',label:'Visita realizada',done:!!f.realized},
+      {key:'cuestionario',label:'Cuestionario',done:!!f.questionnaire},
+      {key:'revision',label:'Revisión',done:!!(v.reviewedAt||v.reviewCompletedAt||['approved','revisada','reviewed'].includes(String(v.reviewStatus||v.revisionEstado||'').toLowerCase())||f.submitted)},
+      {key:'submit',label:'Submitida',done:!!f.submitted},
+      {key:'liquidada',label:'Liquidada',done:!!(f.liquidationConfirmed||f.paymentConfirmed||c.paymentState==='confirmado')}
+    ];
+    const firstPending=checks.findIndex(x=>!x.done);
+    return {certState,checks:checks.map((x,i)=>({...x,state:x.done?'done':i===firstPending?'now':'todo'})),scheduleReady:!!v.instructiveReadAt&&certState.done};
+  };
+  const flowSteps=v=>routeState(v).checks;
   const geoOn=!!(CX.addons&&CX.addons.on('geo_checkin','shopper'));
   const geoBtn=v=>{if(!geoOn||!v)return'';return v.checkInStatus==='confirmed'&&v.latestCheckInEvidenceId
     ?`<button class="btn btn-soft btn-sm" data-geo="${v.id}" title="Evidencia confirmada y asociada a esta visita">✅ Check-in confirmado</button>`
@@ -80,7 +100,7 @@ CX.module('misvisitas',({data,ui})=>{
   const visitCard=v=>{
     const kind=kindOf(v),tone={asignada:'amber',agendada:'green',realizada:'brand'}[kind],cfg=p.cuestionario||{modo:'interna'};
     let actions='';
-    if(kind==='asignada')actions=`<button class="btn btn-ghost btn-sm" data-doc="${v.id}">📄 Instructivo</button><button class="btn btn-soft btn-sm" data-cert="${v.id}">🏆 Certificarme</button><button class="btn btn-pr btn-sm" data-sched="${v.id}">📅 Agendar</button><button class="btn btn-ghost btn-sm" data-reprog="${v.id}">🔄 Reprogramar</button>${geoBtn(v)}`;
+    if(kind==='asignada'){const route=routeState(v),certDone=route.certState.done;actions=`<button class="btn btn-ghost btn-sm" data-doc="${v.id}">${v.instructiveReadAt?'✓ Instructivo leído':'📄 Instructivo'}</button><button class="btn btn-soft btn-sm" data-cert="${v.id}" ${v.instructiveReadAt?'':'disabled title="Primero confirma la lectura del instructivo"'}>${certDone?'✓ Certificación vigente':'🏆 Certificarme'}</button><button class="btn btn-pr btn-sm" data-sched="${v.id}" ${route.scheduleReady?'':'disabled title="Completa instructivo y certificación antes de agendar"'}>📅 Agendar</button><button class="btn btn-ghost btn-sm" data-reprog="${v.id}">🔄 Reprogramar</button>${geoBtn(v)}`;}
     else if(kind==='agendada')actions=`<button class="btn btn-green btn-sm" data-done="${v.id}">✅ Marcar realizada</button><button class="btn btn-ghost btn-sm" data-doc="${v.id}">📄 Instructivo</button><button class="btn btn-ghost btn-sm" data-reprog="${v.id}">🔄 Reprogramar</button><button class="btn btn-ghost btn-sm" data-cancel="${v.id}">✕ Cancelar</button>${geoBtn(v)}`;
     else if(facets(v).questionnaire)actions=`<span class="bdg bdg-g" data-questionnaire-complete="${v.id}">✓ Cuestionario completado · pendiente de revisión/submit</span><button class="btn btn-ghost btn-sm" data-doc="${v.id}">📄 Instructivo</button>`;
     else actions=`<button class="btn btn-pr btn-sm" data-quest="${v.id}">📝 ${cfg.modo==='interna'?'Llenar cuestionario':'Abrir cuestionario'}</button><button class="btn btn-ghost btn-sm" data-doc="${v.id}">📄 Instructivo</button>`;
@@ -128,12 +148,13 @@ CX.module('misvisitas',({data,ui})=>{
             const r=await data.recordResourceReadReceipt(v.id,doc,{ackAware:true,reason:'shopper-instructive-read'});
             if(!committed(r))throw new Error(r?.code||'RESOURCE_READ_RECEIPT_NOT_COMMITTED');
             try{await CX.backend?.refresh?.();}catch(_){}
-            close();ui.toast('Lectura del instructivo confirmada y guardada.','ok',3200);draw();
+            try{await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('shopper_instructive_read_committed');}catch(_){}
+            close();ui.toast('Lectura del instructivo confirmada y guardada.','ok',3200);CX.router.nav('misvisitas',{history:false});
           }catch(error){btn.disabled=false;btn.textContent='Confirmo que lo he leído';ui.toast('No fue posible confirmar la lectura. No se registró como completada.','warn',4200);}
         });
       },dismissOnBackdrop:false});
     }));
-    host.querySelectorAll('[data-cert]').forEach(b=>b.addEventListener('click',()=>CX.router.nav('cert')));
+    host.querySelectorAll('[data-cert]').forEach(b=>b.addEventListener('click',()=>{const v=find(b.dataset.cert);if(!v)return;if(!v.instructiveReadAt){ui.toast('Primero confirma la lectura del instructivo.','warn',3200);return;}CX.router.nav('cert');}));
     host.querySelectorAll('[data-quest]').forEach(b=>b.addEventListener('click',()=>CX.shopperQuestionnaire(data,p,find(b.dataset.quest),ui)));
     host.querySelectorAll('[data-geo]').forEach(b=>b.addEventListener('click',()=>{
       const v=find(b.dataset.geo);if(!v)return;
@@ -158,7 +179,7 @@ CX.module('misvisitas',({data,ui})=>{
         });
       },dismissOnBackdrop:false});
     }));
-    host.querySelectorAll('[data-sched]').forEach(b=>b.addEventListener('click',()=>{const v=find(b.dataset.sched);if(!v)return;const minDate=(v.disponibleDesde&&v.disponibleDesde>today())?v.disponibleDesde:today();const proposed=String(v.proposedScheduleDate||v.approvedProposedDate||'');const defaultDate=(/^20\d{2}-[01]\d-[0-3]\d$/.test(proposed)&&proposed>=minDate)?proposed:minDate;ui.modal('Agendar visita',`<p style="font-size:13px;color:var(--t2);margin-bottom:10px">Elige una fecha dentro del rango y la franja <b>${v.franja||''}</b>.</p><label class="lbl">Fecha</label><input class="inp" id="schD" type="date" min="${minDate}" value="${defaultDate}" style="margin-bottom:14px"><div style="text-align:right;margin-top:16px"><button class="btn btn-pr btn-sm" id="schOk">Confirmar agenda</button></div>`,{onMount:(ov,close)=>ov.querySelector('#schOk').addEventListener('click',async()=>{const btn=ov.querySelector('#schOk'),f=ov.querySelector('#schD').value||defaultDate;if(f<minDate){ui.toast('La fecha no puede ser anterior a la disponibilidad vigente','warn');return;}await withCommand(btn,()=>data.setVisitState(v.id,'agendada','agendada',f,{ackAware:true,permission:'visit.schedule',reason:'shopper-schedule'}),async()=>{close();CX.automations&&CX.automations.fire('agenda',{shopper:v.shopper||CX.session.user.name,sucursal:v.sucursal,fecha:f});CX.notif&&CX.notif.push({to:'admin',tipo:'agenda',icon:'📅',tono:'b',titulo:'Visita agendada',txt:(v.shopper||CX.session.user.name)+' · '+v.sucursal+' · '+f,nav:'postulaciones'});ui.toast('Visita agendada correctamente','ok');});})});}));
+    host.querySelectorAll('[data-sched]').forEach(b=>b.addEventListener('click',()=>{const v=find(b.dataset.sched);if(!v)return;if(!routeState(v).scheduleReady){ui.toast('Completa primero el instructivo y la certificación requerida.','warn',3600);return;}const minDate=(v.disponibleDesde&&v.disponibleDesde>today())?v.disponibleDesde:today();const proposed=String(v.proposedScheduleDate||v.approvedProposedDate||'');const defaultDate=(/^20\d{2}-[01]\d-[0-3]\d$/.test(proposed)&&proposed>=minDate)?proposed:minDate;ui.modal('Agendar visita',`<p style="font-size:13px;color:var(--t2);margin-bottom:10px">Elige una fecha dentro del rango y la franja <b>${v.franja||''}</b>.</p><label class="lbl">Fecha</label><input class="inp" id="schD" type="date" min="${minDate}" value="${defaultDate}" style="margin-bottom:14px"><div style="text-align:right;margin-top:16px"><button class="btn btn-pr btn-sm" id="schOk">Confirmar agenda</button></div>`,{onMount:(ov,close)=>ov.querySelector('#schOk').addEventListener('click',async()=>{const btn=ov.querySelector('#schOk'),f=ov.querySelector('#schD').value||defaultDate;if(f<minDate){ui.toast('La fecha no puede ser anterior a la disponibilidad vigente','warn');return;}await withCommand(btn,()=>data.setVisitState(v.id,'agendada','agendada',f,{ackAware:true,permission:'visit.schedule',reason:'shopper-schedule'}),async()=>{close();CX.automations&&CX.automations.fire('agenda',{shopper:v.shopper||CX.session.user.name,sucursal:v.sucursal,fecha:f});CX.notif&&CX.notif.push({to:'admin',tipo:'agenda',icon:'📅',tono:'b',titulo:'Visita agendada',txt:(v.shopper||CX.session.user.name)+' · '+v.sucursal+' · '+f,nav:'postulaciones'});ui.toast('Visita agendada correctamente','ok');});})});}));
     host.querySelectorAll('[data-done]').forEach(b=>b.addEventListener('click',()=>{const v=find(b.dataset.done);if(!v)return;ui.modal('Marcar visita realizada',`<label class="lbl">Fecha de realización</label><input class="inp" id="doneD" type="date" value="${v.agendada||today()}" style="margin-bottom:14px"><div style="text-align:right"><button class="btn btn-green btn-sm" id="doneOk">Confirmar realizada</button></div>`,{onMount:(ov,close)=>ov.querySelector('#doneOk').addEventListener('click',async()=>{const btn=ov.querySelector('#doneOk'),f=ov.querySelector('#doneD').value||today();await withCommand(btn,()=>data.setVisitState(v.id,'realizada','realizada',f,{ackAware:true,permission:'visit.complete',reason:'shopper-complete'}),async()=>{close();CX.automations&&CX.automations.fire('realizada',{shopper:v.shopper||CX.session.user.name,sucursal:v.sucursal});CX.notif&&CX.notif.push({to:'admin',tipo:'realizada',icon:'✅',tono:'g',titulo:'Visita realizada',txt:(v.shopper||CX.session.user.name)+' · '+v.sucursal,nav:'postulaciones'});ui.toast('Visita realizada correctamente','ok');});})});}));
     host.querySelectorAll('[data-reprog]').forEach(b=>b.addEventListener('click',()=>{const v=find(b.dataset.reprog);if(!v)return;ui.modal('Solicitar reprogramación',`<p style="font-size:13px;color:var(--t2);margin-bottom:10px">La solicitud se autoriza desde Gestión de Postulaciones.</p><label class="lbl">Nueva fecha propuesta</label><input class="inp" id="rpD" type="date" style="margin-bottom:10px"><label class="lbl">Motivo</label><textarea class="inp" id="rpM" rows="2" style="margin-bottom:14px"></textarea><div style="text-align:right"><button class="btn btn-pr btn-sm" id="rpOk">Enviar solicitud</button></div>`,{onMount:(ov,close)=>ov.querySelector('#rpOk').addEventListener('click',async()=>{const btn=ov.querySelector('#rpOk'),f=ov.querySelector('#rpD').value,m=ov.querySelector('#rpM').value||'';await withCommand(btn,()=>data.requestVisitReschedule(v.id,f,{ackAware:true,requestedByShopper:true,reason:m||'shopper-reschedule-request'}),async()=>{close();CX.automations&&CX.automations.fire('reprog',{shopper:v.shopper||CX.session.user.name,sucursal:v.sucursal,fecha:f});ui.toast('Solicitud de reprogramación confirmada','ok');});})});}));
     host.querySelectorAll('[data-cancel]').forEach(b=>b.addEventListener('click',async()=>{const v=find(b.dataset.cancel);if(!v)return;await withCommand(b,()=>data.requestVisitCancel(v.id,{ackAware:true,requestOnly:true,reason:'shopper-cancel-request'}),async()=>{CX.notif&&CX.notif.push({to:'admin',tipo:'cancel',icon:'⚠',tono:'r',titulo:'Solicitud de cancelación',txt:v.sucursal,nav:'postulaciones'});ui.toast('Solicitud de cancelación enviada correctamente','ok');});}));
