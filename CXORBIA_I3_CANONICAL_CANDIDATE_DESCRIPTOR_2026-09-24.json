@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_V190_LIVE_REPROOF_REQUIRED",
+  "status": "HOLD_VRM151_DURABLE_RECONCILIATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,13 +8,13 @@
   "productTreeAuthority": "db4c1cc35b55c03523196fc583bf7cf0b874d87f",
   "predecessorProductSourceSha": "9102918177d89d9e3d18cfb75c04aba8c29cba86",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V190_2026-10-02.json",
-  "findingsLedgerExpectedGitBlob": "8a3d386c507ce3561edd36385643529b0ef5e4af",
+  "findingsLedgerExpectedGitBlob": "599cdf2c5f56b82a26207ad8be909dc7409cc6e9",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM182_HR_REVISION_PINNED_FINANCE_READBACK_REPROOF_REQUIRED",
-  "nextFindingId": "VRM-183",
+  "activeBlocker": "VRM183_DURABLE_FINANCE_RECONCILIATION_REQUIRED",
+  "nextFindingId": "VRM-184",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Re-run the existing V190 same-DEV readback against source d33faac8d2af8523485d31c00037f639177ca040, runtime cxorbia-live-hr-dev-00253-5f8 and Hosting beecdb6bc5eb6c84 with revision-aware finance expectations. No rebuild/deploy. If persisted payment reconciliation lacks any of the eight newly submitted August GT visits, classify the residual as PERSISTENCE_FAILURE and repair only the finance reconciliation owner.",
+  "exactNextAction": "Execute existing finance.historical.reconcile once against exact HR revision f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305 on the already materialized DEV. Require 636 durable records, 562 paid, 74 pending, 5 review-required, 0 October, provider ACK, immediate idempotent replay with zero writes, and zero financialMovement/bank/HR/external-payment writes. Then resume same-DEV V190 reproof without rebuild/redeploy.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",

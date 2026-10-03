@@ -6460,23 +6460,17 @@ jobs:
           set -Eeuo pipefail
           PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HR_URL="$VRM151_DRY_HR_URL" OUT="$VRM151_DRY_OUT" node tools/qa/cxorbia-vrm151-final-canonical-dry-run.mjs > "$VRM151_DRY_OUT/console.log"
           test "$(jq -r '.decision' "$VRM151_DRY_OUT/result.json")" = "PASS_VRM151_FINAL_CANONICAL_HISTORICAL_DRY_RUN"
-          test "$(jq -r '.observed.canonicalSubmitted' "$VRM151_DRY_OUT/result.json")" = "628"
-          test "$(jq -r '.observed.paid' "$VRM151_DRY_OUT/result.json")" = "562"
-          test "$(jq -r '.observed.pending' "$VRM151_DRY_OUT/result.json")" = "66"
-          test "$(jq -r '.observed.amountReviewRequired' "$VRM151_DRY_OUT/result.json")" = "5"
-          test "$(jq -r '.observed.octoberTouched' "$VRM151_DRY_OUT/result.json")" = "0"
-          test "$(jq -r '.observed.ambiguous' "$VRM151_DRY_OUT/result.json")" = "0"
+          test "$(jq -r '.expectedRevisionKnown' "$VRM151_DRY_OUT/result.json")" = "true"
+          test "$(jq -r '.sourceRevision' "$VRM151_DRY_OUT/result.json")" = "$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")"
+          jq -e '(.observed.canonicalSubmitted==.expected.canonicalSubmitted) and (.observed.paid==.expected.paid) and (.observed.pending==.expected.pending) and (.observed.amountReviewRequired==.expected.amountReviewRequired) and (.observed.octoberTouched==.expected.octoberTouched) and (.observed.ambiguous==0)' "$VRM151_DRY_OUT/result.json" >/dev/null
           test "$(jq -r '.writes' "$VRM151_DRY_OUT/result.json")" = "0"
       - name: step
         run: |
           set -Eeuo pipefail
           PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" SOURCE_SHA="$FOCAL_SOURCE" SOURCE_TREE="$FOCAL_TREE" DRY_RESULT="$VRM151_DRY_OUT/result.json" OUT="$VRM151_WRITE_OUT" node tools/qa/cxorbia-vrm151-durable-reconciliation-live.mjs | tee "$VRM151_WRITE_OUT/console.log"
           test "$(jq -r '.decision' "$VRM151_WRITE_OUT/result.json")" = "PASS_VRM151_DURABLE_HISTORICAL_RECONCILIATION"
-          test "$(jq -r '.observed.canonicalSubmitted' "$VRM151_WRITE_OUT/result.json")" = "628"
-          test "$(jq -r '.observed.paid' "$VRM151_WRITE_OUT/result.json")" = "562"
-          test "$(jq -r '.observed.pending' "$VRM151_WRITE_OUT/result.json")" = "66"
-          test "$(jq -r '.observed.amountReviewRequired' "$VRM151_WRITE_OUT/result.json")" = "5"
-          test "$(jq -r '.observed.octoberTouched' "$VRM151_WRITE_OUT/result.json")" = "0"
+          test "$(jq -r '.expectedRevisionKnown' "$VRM151_WRITE_OUT/result.json")" = "true"
+          jq -e '(.observed.canonicalSubmitted==.expected.canonicalSubmitted) and (.observed.paid==.expected.paid) and (.observed.pending==.expected.pending) and (.observed.amountReviewRequired==.expected.amountReviewRequired) and (.observed.octoberTouched==.expected.octoberTouched)' "$VRM151_WRITE_OUT/result.json" >/dev/null
           test "$(jq -r '.providerAck' "$VRM151_WRITE_OUT/result.json")" = "true"
           test "$(jq -r '.durableReadback' "$VRM151_WRITE_OUT/result.json")" = "true"
           test "$(jq -r '.idempotentReplay' "$VRM151_WRITE_OUT/result.json")" = "true"

@@ -21,11 +21,13 @@ fs.mkdirSync(OUT,{recursive:true});
 
 const dry=JSON.parse(fs.readFileSync(DRY_RESULT,'utf8'));
 assert(dry.decision==='PASS_VRM151_FINAL_CANONICAL_HISTORICAL_DRY_RUN','VRM151_DURABLE_REQUIRES_PASS_DRY_RUN');
-assert(dry.observed?.canonicalSubmitted===628,'VRM151_DURABLE_CANONICAL_COUNT');
-assert(dry.observed?.paid===562,'VRM151_DURABLE_PAID_COUNT');
-assert(dry.observed?.pending===66,'VRM151_DURABLE_PENDING_COUNT');
-assert(dry.observed?.amountReviewRequired===5,'VRM151_DURABLE_REVIEW_COUNT');
-assert(dry.observed?.octoberTouched===0,'VRM151_DURABLE_OCTOBER_DRY_SCOPE');
+assert(dry.expectedRevisionKnown===true&&dry.expected&&typeof dry.expected==='object','VRM151_DURABLE_EXPECTED_REVISION_UNKNOWN');
+const expected=dry.expected;
+assert(dry.observed?.canonicalSubmitted===expected.canonicalSubmitted,'VRM151_DURABLE_CANONICAL_COUNT');
+assert(dry.observed?.paid===expected.paid,'VRM151_DURABLE_PAID_COUNT');
+assert(dry.observed?.pending===expected.pending,'VRM151_DURABLE_PENDING_COUNT');
+assert(dry.observed?.amountReviewRequired===expected.amountReviewRequired,'VRM151_DURABLE_REVIEW_COUNT');
+assert(dry.observed?.octoberTouched===expected.octoberTouched,'VRM151_DURABLE_OCTOBER_DRY_SCOPE');
 assert(dry.observed?.ambiguous===0,'VRM151_DURABLE_AMBIGUITY');
 const sourceRevision=str(dry.sourceRevision);
 assert(/^[0-9a-f]{64}$/.test(sourceRevision),'VRM151_DURABLE_SOURCE_REVISION_REQUIRED');
@@ -81,7 +83,7 @@ function commandFor(batch){
 }
 const commands=arr(dry.batches).map(commandFor).sort((a,b)=>[a.periodId,a.payload.paymentStatus].join('|').localeCompare([b.periodId,b.payload.paymentStatus].join('|')));
 assert(commands.length>0,'VRM151_DURABLE_BATCHES_REQUIRED');
-assert(commands.reduce((n,c)=>n+c.payload.visitIds.length,0)===628,'VRM151_DURABLE_BATCH_TOTAL');
+assert(commands.reduce((n,c)=>n+c.payload.visitIds.length,0)===expected.canonicalSubmitted,'VRM151_DURABLE_BATCH_TOTAL');
 
 const movementBefore=(await tenant.collection('financialMovements').get()).size;
 const {token,uid}=await adminToken();
@@ -104,12 +106,12 @@ for(const command of commands){
 const recSnap=await tenant.collection('paymentReconciliations').get();
 const batchIds=new Set(commands.map(c=>c.entityId));
 const recs=recSnap.docs.map(d=>({id:d.id,...(d.data()||{})})).filter(r=>batchIds.has(str(r.reconciliationBatchId)));
-assert(recs.length===628,'PERSISTENCE_FAILURE:VRM151_RECONCILIATION_READBACK_COUNT:'+recs.length);
-assert(new Set(recs.map(r=>str(r.visitId))).size===628,'PERSISTENCE_FAILURE:VRM151_RECONCILIATION_DUPLICATES');
+assert(recs.length===expected.canonicalSubmitted,'PERSISTENCE_FAILURE:VRM151_RECONCILIATION_READBACK_COUNT:'+recs.length);
+assert(new Set(recs.map(r=>str(r.visitId))).size===expected.canonicalSubmitted,'PERSISTENCE_FAILURE:VRM151_RECONCILIATION_DUPLICATES');
 const paid=recs.filter(r=>str(r.paymentStatus)==='paid').length;
 const pending=recs.filter(r=>str(r.paymentStatus)==='pending').length;
 const amountReviewRequired=recs.filter(r=>r.amountReviewRequired===true).length;
-assert(paid===562&&pending===66&&amountReviewRequired===5,'PERSISTENCE_FAILURE:VRM151_RECONCILIATION_COUNTS');
+assert(paid===expected.paid&&pending===expected.pending&&amountReviewRequired===expected.amountReviewRequired,'PERSISTENCE_FAILURE:VRM151_RECONCILIATION_COUNTS');
 assert(recs.every(r=>str(r.source)==='historical_reconciliation'&&str(r.sourceRevision)===sourceRevision),'PERSISTENCE_FAILURE:VRM151_RECONCILIATION_AUTHORITY');
 assert(recs.every(r=>str(r.periodId)!=='cinepolis-2026-10'),'PERSISTENCE_FAILURE:VRM151_OCTOBER_RECONCILIATION');
 
@@ -119,10 +121,10 @@ for(let i=0;i<refs.length;i+=100){
   const snaps=await db.getAll(...refs.slice(i,i+100));
   visitDocs.push(...snaps.map(s=>({id:s.id,...(s.data()||{})})));
 }
-assert(visitDocs.length===628&&visitDocs.every(v=>v.id),'PERSISTENCE_FAILURE:VRM151_VISIT_READBACK');
-assert(visitDocs.filter(v=>str(v.historicalPaymentStatus)==='paid').length===562,'PERSISTENCE_FAILURE:VRM151_VISIT_PAID_READBACK');
-assert(visitDocs.filter(v=>str(v.historicalPaymentStatus)==='pending').length===66,'PERSISTENCE_FAILURE:VRM151_VISIT_PENDING_READBACK');
-assert(visitDocs.filter(v=>v.historicalPaymentAmountReviewRequired===true).length===5,'PERSISTENCE_FAILURE:VRM151_VISIT_REVIEW_READBACK');
+assert(visitDocs.length===expected.canonicalSubmitted&&visitDocs.every(v=>v.id),'PERSISTENCE_FAILURE:VRM151_VISIT_READBACK');
+assert(visitDocs.filter(v=>str(v.historicalPaymentStatus)==='paid').length===expected.paid,'PERSISTENCE_FAILURE:VRM151_VISIT_PAID_READBACK');
+assert(visitDocs.filter(v=>str(v.historicalPaymentStatus)==='pending').length===expected.pending,'PERSISTENCE_FAILURE:VRM151_VISIT_PENDING_READBACK');
+assert(visitDocs.filter(v=>v.historicalPaymentAmountReviewRequired===true).length===expected.amountReviewRequired,'PERSISTENCE_FAILURE:VRM151_VISIT_REVIEW_READBACK');
 assert(visitDocs.every(v=>str(v.reconciliationSourceRevision)===sourceRevision),'PERSISTENCE_FAILURE:VRM151_VISIT_SOURCE_REVISION');
 
 const movementAfter=(await tenant.collection('financialMovements').get()).size;
@@ -132,7 +134,8 @@ const result={
   schemaVersion:'cxorbia.vrm151.durable-reconciliation-live.v1',
   decision:'PASS_VRM151_DURABLE_HISTORICAL_RECONCILIATION',
   sourceSha:SOURCE,sourceTree:TREE,sourceRevision,actorUid:uid,
-  observed:{canonicalSubmitted:628,paid,pending,amountReviewRequired,octoberTouched:0,ambiguous:0,batches:commands.length,reconciliationRecords:recs.length},
+  observed:{canonicalSubmitted:expected.canonicalSubmitted,paid,pending,amountReviewRequired,octoberTouched:expected.octoberTouched,ambiguous:0,batches:commands.length,reconciliationRecords:recs.length},
+  expected,expectedRevisionKnown:true,
   firstPass,replay,
   providerAck:true,durableReadback:true,idempotentReplay:true,
   financialMovementWrites:0,financialMovementCountBefore:movementBefore,financialMovementCountAfter:movementAfter,
