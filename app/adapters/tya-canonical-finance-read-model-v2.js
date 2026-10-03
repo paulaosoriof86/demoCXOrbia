@@ -133,6 +133,8 @@
     realizedVisitsIncluded:true,
     submittedVisitsNeverOmitted:true,
     exactFinancialSourceAuthority:true,
+    fromVisit:(project,visit)=>derive(project,visit),
+    exactProtectedFinancialMatch,
     paymentExecutionAllowed:false,
     providerWrites:0,
     production:false
