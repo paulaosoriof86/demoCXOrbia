@@ -19,7 +19,7 @@ const low=v=>str(v).toLocaleLowerCase('es');
 const cleanDoc=d=>({id:d.id,...(d.data()||{})});
 const tenant=db.collection('tenants').doc(TENANT),project=tenant.collection('projects').doc(PROJECT_ID);
 async function rows(ref){const s=await ref.get();return s.docs.map(cleanDoc);}
-const [bulletins,visits,posts,certs,recerts,resources,recons,shopperProfiles,userMemberships]=await Promise.all([
+const [bulletins,visits,posts,certs,recerts,resources,recons,shopperProfiles,userMemberships,identityCrosswalkRows]=await Promise.all([
   rows(tenant.collection('bulletins')),
   rows(project.collection('visits')),
   rows(project.collection('postulations')),
@@ -28,7 +28,8 @@ const [bulletins,visits,posts,certs,recerts,resources,recons,shopperProfiles,use
   rows(tenant.collection('resources')),
   rows(tenant.collection('paymentReconciliations')),
   rows(tenant.collection('shoppers')),
-  rows(tenant.collection('users'))
+  rows(tenant.collection('users')),
+  rows(tenant.collection('shopperIdentityCrosswalk'))
 ]);
 const projectSnap=await project.get(), projectData=projectSnap.exists?(projectSnap.data()||{}):{};
 const hr=HR_FILE&&fs.existsSync(HR_FILE)?JSON.parse(fs.readFileSync(HR_FILE,'utf8')):{};
@@ -122,6 +123,26 @@ const identity={
 
 const reservations={windowMode:projectData.reservationWindowMode||projectData.reservationPolicy?.windowMode||'future_only',timeZone:projectData.timeZone||projectData.timezone||'America/Guatemala'};
 
+const vrm168IdentityTokens=new Set(['shopper_gt_1440137b73','s3']);
+const technicalCrosswalk=row=>({
+  id:str(row?.id),sourceType:str(row?.sourceType),sourceStableKey:str(row?.sourceStableKey),
+  sourceShopperId:str(row?.sourceShopperId),shopperId:str(row?.shopperId),projectId:str(row?.projectId),
+  projectIds:arr(row?.projectIds).map(str),status:str(row?.status||row?.state),active:row?.active,
+  version:row?.version??null,updatedAt:row?.updatedAt||null
+});
+const vrm168CrosswalkMatches=identityCrosswalkRows.filter(row=>{
+  const vals=[row?.id,row?.sourceStableKey,row?.sourceShopperId,row?.shopperId,...arr(row?.projectIds)].map(str);
+  return vals.some(v=>vrm168IdentityTokens.has(v));
+}).map(technicalCrosswalk);
+const vrm168CrosswalkReadonly={
+  decision:'READ_ONLY_VRM168_CROSSWALK_CAPTURE',
+  tokens:[...vrm168IdentityTokens],
+  totalRows:identityCrosswalkRows.length,
+  matches:vrm168CrosswalkMatches,
+  writes:0,production:false
+};
+fs.writeFileSync(OUT+'/vrm168-crosswalk-readonly.json',JSON.stringify(vrm168CrosswalkReadonly,null,2)+'\n');
+
 const captureOut=OUT+'/vrm168-browser-capture';
 const captureEnv={...process.env,OUT:captureOut,HOSTING_URL:process.env.HOSTING_URL||'https://cxorbia-backend-dev.web.app',PROJECT,TENANT_ID:TENANT,PROJECT_ID,
   VRM168_PERIOD_ID:'cinepolis-2026-10',VRM168_SHOPPER_ID:'shopper_gt_1440137b73',VRM168_UID:'cx-sh-d56787c101878e81c94fc7637f66',VRM168_VISIT_ID:'OCTUBRE 26!6',
@@ -144,11 +165,11 @@ fs.writeFileSync(OUT+'/vrm168-browser-capture.stderr.log',captureProc?.stderr||l
 if(!browserCommandCapture){
   const detail=str(captureProc?.stderr||lastCaptureError);
   const transient=/auth\/network-request-failed|network AuthError|ETIMEDOUT|ECONNRESET|ENETUNREACH|EAI_AGAIN|ERR_NETWORK|fetch failed/i.test(detail);
-  throw new Error((transient?'ENVIRONMENT_FAILURE':'FUNCTIONAL_DEFECT')+':VRM168_BROWSER_CAPTURE_RESULT_MISSING:'+detail);
+  throw new Error((transient?'ENVIRONMENT_FAILURE':'FUNCTIONAL_DEFECT')+':VRM168_BROWSER_CAPTURE_RESULT_MISSING:'+detail+':CROSSWALK='+JSON.stringify(vrm168CrosswalkReadonly));
 }
 if(captureProc?.status!==0||browserCommandCapture?.decision!=='PASS_VRM168_BROWSER_COMMAND_MAPPING'||browserCommandCapture?.durableUnchanged!==true){
   const detail=str(captureProc?.stderr).slice(0,1200),transient=/auth\/network-request-failed|network AuthError|ETIMEDOUT|ECONNRESET|ENETUNREACH|EAI_AGAIN|ERR_NETWORK|fetch failed/i.test(detail);
-  throw new Error((transient?'ENVIRONMENT_FAILURE':'FUNCTIONAL_DEFECT')+':VRM168_BROWSER_CAPTURE_FAILED:'+JSON.stringify({status:captureProc?.status,decision:browserCommandCapture?.decision,mismatch:browserCommandCapture?.mismatch,durableUnchanged:browserCommandCapture?.durableUnchanged,stderr:detail}));
+  throw new Error((transient?'ENVIRONMENT_FAILURE':'FUNCTIONAL_DEFECT')+':VRM168_BROWSER_CAPTURE_FAILED:'+JSON.stringify({status:captureProc?.status,decision:browserCommandCapture?.decision,mismatch:browserCommandCapture?.mismatch,durableUnchanged:browserCommandCapture?.durableUnchanged,stderr:detail,crosswalk:vrm168CrosswalkReadonly}));
 }
 scheduling.browserCommandCapture=browserCommandCapture;
 const out={schemaVersion:'cxorbia.i3.human-acceptance-forensic-readback.v2',decision:'PASS_READ_ONLY_FORENSIC',tenantId:TENANT,projectId:PROJECT_ID,currentPeriodId,notifications:notif,postulations,scheduling,certifications,finance,identity,reservations,writes:0,hrWrites:0,production:false};
