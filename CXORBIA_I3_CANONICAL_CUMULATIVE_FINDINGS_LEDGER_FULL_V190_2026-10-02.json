@@ -2,7 +2,7 @@
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v190",
   "frozenAt": "2026-10-02T18:35:00Z",
   "status": "HOLD",
-  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4_PROVIDER_RECONCILIATION_REPROOF",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "microblockId": "PRE-I4-LIVE-HR-STALE-CACHE-MAPPING-HOLD-AUGUST-CANONICAL-CORRECTION",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "9102918177d89d9e3d18cfb75c04aba8c29cba86",
-    "sourceTree": "0e6f61aa855b1d9677fd200403793099bfecb9b7",
-    "predecessorSha": "83d2385dc47f3bfd785a37072100fdbab11b5127",
+    "sourceSha": "d33faac8d2af8523485d31c00037f639177ca040",
+    "sourceTree": "db4c1cc35b55c03523196fc583bf7cf0b874d87f",
+    "predecessorSha": "9102918177d89d9e3d18cfb75c04aba8c29cba86",
     "production": false,
-    "state": "SEALED_VRM168_STABLE_VISIT_COMMAND_DEV_PENDING_LIVE_REPROOF",
+    "state": "SOURCE_FIXED_VRM181_PENDING_EXACT_DEV_MATERIALIZATION",
     "proof": {
       "runId": 37037752771,
       "runNumber": 864,
@@ -53,26 +53,7 @@
       "hrWrites": 0,
       "production": false
     },
-    "materialization": {
-      "runId": 37086780548,
-      "runNumber": 904,
-      "jobId": 111098670222,
-      "artifactId": 11261340858,
-      "artifactDigest": "sha256:b463830a9b965820f37434d95d3de59e7b9342cc06385818911879b7c0e02e58",
-      "decision": "PASS_V190_EXACT_DEV_MATERIALIZATION",
-      "sourceSha": "9102918177d89d9e3d18cfb75c04aba8c29cba86",
-      "sourceTree": "0e6f61aa855b1d9677fd200403793099bfecb9b7",
-      "runtimeRevision": "cxorbia-live-hr-dev-00252-vlj",
-      "runtimeDigest": "sha256:9b2fb065df27cbbd24a934d3b123af885fd584a1cb96cf45f8a48588545bec68",
-      "hostingVersion": "sites/cxorbia-backend-dev/versions/f39402c7ef4e9eda",
-      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790991581582000",
-      "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
-      "builds": 1,
-      "runtimeDeploys": 1,
-      "hostingDeploys": 1,
-      "storageRulesDeploys": 1,
-      "production": false
-    },
+    "materialization": null,
     "previousSourceProof": {
       "runId": 37021140798,
       "runNumber": 853,
@@ -337,6 +318,27 @@
       "sourceSha": "9102918177d89d9e3d18cfb75c04aba8c29cba86",
       "sourceTree": "0e6f61aa855b1d9677fd200403793099bfecb9b7",
       "predecessorSha": "83d2385dc47f3bfd785a37072100fdbab11b5127",
+      "production": false
+    },
+    "predecessorMaterialization": {
+      "runId": 37086780548,
+      "runNumber": 904,
+      "jobId": 111098670222,
+      "artifactId": 11261340858,
+      "artifactDigest": "sha256:b463830a9b965820f37434d95d3de59e7b9342cc06385818911879b7c0e02e58",
+      "decision": "PASS_V190_EXACT_DEV_MATERIALIZATION",
+      "sourceSha": "9102918177d89d9e3d18cfb75c04aba8c29cba86",
+      "sourceTree": "0e6f61aa855b1d9677fd200403793099bfecb9b7",
+      "runtimeRevision": "cxorbia-live-hr-dev-00252-vlj",
+      "runtimeDigest": "sha256:9b2fb065df27cbbd24a934d3b123af885fd584a1cb96cf45f8a48588545bec68",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/f39402c7ef4e9eda",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790991581582000",
+      "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
+      "builds": 1,
+      "runtimeDeploys": 1,
+      "hostingDeploys": 1,
+      "storageRulesDeploys": 1,
+      "state": "SEALED_VRM168_STABLE_VISIT_COMMAND_DEV_PENDING_LIVE_REPROOF",
       "production": false
     }
   },
@@ -8638,7 +8640,7 @@
       "classification": "MAPPING_FAILURE",
       "severity": "P0",
       "title": "Shopper scheduling command failed on sealed DEV",
-      "state": "EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
+      "state": "FIXED_PROVEN_FOCAL_RUN906_TRANSVERSAL_BLOCKED_BY_VRM181",
       "rootCauseStatus": "PROVEN",
       "rootCause": "Run 299 materialized a tenant_adjudication that redirected the exact HR identity shopper_gt_1440137b73 to s3 despite an active exact source principal and stable self crosswalk. Later live HR reconciliation in backend/runtime/cxorbia-shopper-command-provider-v1.mjs trusted that historical adjudication as canonical and durableUpsert re-persisted the source crosswalk to s3. server.mjs then consumed that crosswalk before browser composition. HR raw/live, membership and Auth claims were independently proven correct for shopper_gt_1440137b73.",
       "owners": [
@@ -8756,6 +8758,23 @@
         "durableUnchanged": true,
         "writes": 0,
         "production": false
+      },
+      "latestFocalLiveProof": {
+        "runId": 37087009806,
+        "runNumber": 906,
+        "jobId": 111099329899,
+        "decision": "PASS_VRM168_BROWSER_COMMAND_MAPPING_AND_PROVIDER_SCHEDULE_PATH",
+        "hrRowId": "OCTUBRE 26!6",
+        "entityId": "OCTUBRE 26!6",
+        "visitId": "OCTUBRE 26!6",
+        "cardFound": true,
+        "scheduleButtonFound": true,
+        "providerAck": true,
+        "providerCleanup": true,
+        "hrWrites": 0,
+        "production": false,
+        "transversalRunDecision": "HOLD_I3_HUMAN_LIVE_ACCEPTANCE",
+        "transversalBlockerFindingId": "VRM-181"
       }
     },
     "VRM-169": {
@@ -9146,6 +9165,77 @@
         }
       },
       "correction": "Add focal DEV reservation E2E and targeted shopper notification proof on the corrected candidate.",
+      "production": false
+    },
+    "VRM-181": {
+      "id": "VRM-181",
+      "classification": "VISUAL_DEFECT",
+      "severity": "P0",
+      "title": "Admin Certificación route crashes by recursive header helper",
+      "state": "SOURCE_FIXED_PENDING_EXACT_DEV_MATERIALIZATION",
+      "rootCauseStatus": "PROVEN",
+      "rootCause": "Run 906 reached Admin route cert and threw RangeError: Maximum call stack size exceeded. Exact source inspection proved app/modules/cert.js defined phCert as a direct self-call: const phCert=subtitle=>phCert(subtitle)+certFilters();. This is deterministic recursion introduced while preserving the newer multi-project/multi-certification filters.",
+      "owners": [
+        "app/modules/cert.js"
+      ],
+      "evidence": {
+        "runId": 37087009806,
+        "runNumber": 906,
+        "jobId": 111099329899,
+        "firstBlocker": {
+          "classification": "VISUAL_DEFECT",
+          "code": "ROUTE_NAVIGATION_EXCEPTION",
+          "role": "admin",
+          "route": "cert",
+          "error": "RangeError: Maximum call stack size exceeded at phCert"
+        },
+        "vrm168BeforeBlocker": {
+          "browserCommandMapping": "PASS",
+          "entityId": "OCTUBRE 26!6",
+          "visitId": "OCTUBRE 26!6",
+          "hrRowId": "OCTUBRE 26!6",
+          "providerSchedulePath": "PASS",
+          "providerAck": true,
+          "cleanup": true
+        },
+        "production": false
+      },
+      "correction": {
+        "sourceSha": "d33faac8d2af8523485d31c00037f639177ca040",
+        "sourceTree": "db4c1cc35b55c03523196fc583bf7cf0b874d87f",
+        "predecessorSha": "9102918177d89d9e3d18cfb75c04aba8c29cba86",
+        "productFiles": [
+          "app/modules/cert.js"
+        ],
+        "qaFiles": [
+          "tools/qa/cxorbia-vrm154-156-frontend-source-contract.mjs"
+        ],
+        "exactChange": "Bind phCert to ui.ph('Certificación', subtitle) and append certFilters(); never self-call phCert.",
+        "regressionGuard": "VRM181_CERT_HEADER_RECURSION_PRESENT",
+        "rebuildBudget": 1,
+        "production": false
+      },
+      "cumulativePreservation": {
+        "appendOnlyFindings": true,
+        "preserveVrm081ExactAliasConsolidation": true,
+        "preserveVrm128ShopperMergeAdjudication": true,
+        "shopperMergeRule": "Only exact, proven same-human aliases may consolidate. Preserve one canonical active principal and all linked history/KPIs/benefits/certifications/postulations/visits/reservations/finance; retire duplicate alias principals idempotently; multiple credential-bearing ambiguity fails closed; never merge by name/fuzzy similarity.",
+        "noLossDomains": [
+          "Auth",
+          "HR exact identity",
+          "Firestore shopper profile",
+          "historical visits",
+          "KPIs",
+          "benefits",
+          "certifications/recertifications",
+          "postulations",
+          "assignments",
+          "reservations/check-in",
+          "finance",
+          "audit trail"
+        ],
+        "production": false
+      },
       "production": false
     }
   },
@@ -9744,14 +9834,15 @@
       "VRM-177",
       "VRM-178",
       "VRM-179",
-      "VRM-180"
+      "VRM-180",
+      "VRM-181"
     ],
-    "findingCount": 180,
-    "expectedCurrentRange": "VRM-001..VRM-180",
-    "nextFindingId": "VRM-181",
+    "findingCount": 181,
+    "expectedCurrentRange": "VRM-001..VRM-181",
+    "nextFindingId": "VRM-182",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_V190_LIVE_REPROOF_REQUIRED",
+    "terminalState": "HOLD_V190_DEV_MATERIALIZATION_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -9766,31 +9857,37 @@
     "userReportedRequirementsFrozenAt": "2026-09-30T20:18:00-06:00",
     "userReviewComplete": true,
     "userReviewEvidence": "19 screenshots plus complete Shopper/Admin observations supplied 2026-10-02",
-    "currentProductSourceSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
-    "currentProductSourceTree": "e715b9a55ed35f62037e1b82a183a32ff8d3ebcd",
-    "currentMaterialization": {
-      "runId": 37081102241,
-      "runNumber": 891,
-      "jobId": 111081739013,
-      "artifactId": 11259161246,
-      "artifactDigest": "sha256:e1e283c356024051699a9c37da0b0405a2e0cc2d2d70648130b8055cf09e9ff0",
+    "currentProductSourceSha": "d33faac8d2af8523485d31c00037f639177ca040",
+    "currentProductSourceTree": "db4c1cc35b55c03523196fc583bf7cf0b874d87f",
+    "currentMaterialization": null,
+    "previousMaterialization": {
+      "runId": 37086780548,
+      "runNumber": 904,
+      "jobId": 111098670222,
+      "artifactId": 11261340858,
+      "artifactDigest": "sha256:b463830a9b965820f37434d95d3de59e7b9342cc06385818911879b7c0e02e58",
       "decision": "PASS_V190_EXACT_DEV_MATERIALIZATION",
-      "sourceSha": "c0fe7f11e50d7d73356d99b68aabb54972ae7b45",
-      "sourceTree": "e715b9a55ed35f62037e1b82a183a32ff8d3ebcd",
-      "runtimeRevision": "cxorbia-live-hr-dev-00250-l9w",
-      "runtimeDigest": "sha256:e4633301e99993134eb132892635b77b4006824aab4cc4f4682adc86a08ba9f7",
-      "hostingVersion": "sites/cxorbia-backend-dev/versions/0f7f7bd7376497b8",
-      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790986549932000",
+      "sourceSha": "9102918177d89d9e3d18cfb75c04aba8c29cba86",
+      "sourceTree": "0e6f61aa855b1d9677fd200403793099bfecb9b7",
+      "runtimeRevision": "cxorbia-live-hr-dev-00252-vlj",
+      "runtimeDigest": "sha256:9b2fb065df27cbbd24a934d3b123af885fd584a1cb96cf45f8a48588545bec68",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/f39402c7ef4e9eda",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790991581582000",
       "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
-      "frontendBytesExact": true,
-      "vrm168RegressionPass": true,
-      "scenarioDimensionsProven": true,
       "builds": 1,
       "runtimeDeploys": 1,
       "hostingDeploys": 1,
       "storageRulesDeploys": 1,
-      "state": "SEALED_VRM168_SUCCESSOR_DEV_PENDING_LIVE_REPROOF",
+      "state": "SEALED_VRM168_STABLE_VISIT_COMMAND_DEV_PENDING_LIVE_REPROOF",
       "production": false
+    },
+    "identityMergeInvariant": {
+      "authority": "VRM-081 + VRM-128 cumulative preservation",
+      "exactSameHumanOnly": true,
+      "fuzzyOrNameMerge": false,
+      "preserveCanonicalHistoryAndOperationalDomains": true,
+      "retireDuplicateAliasPrincipalsIdempotently": true,
+      "ambiguityFailsClosed": true
     }
   },
   "workPlan": {
@@ -9808,7 +9905,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Run one read-only forensic diagnostic on the exact Run 865 DEV materialization to close live-data causes for notifications, scheduling, postulation lifecycle, certification storage, finance projection, identity duplicates and reservation policy. No product writes/build/deploy.",
+  "exactNextAction": "Materialize exactly source d33faac8d2af8523485d31c00037f639177ca040 tree db4c1cc35b55c03523196fc583bf7cf0b874d87f once in Recovery DEV, then reuse that exact runtime/Hosting for V190 same-source live reproof. Re-run full human acceptance including Admin Certificación, VRM-168 OCTUBRE 26!6 command/provider ACK/cleanup, Shopper/Admin/Reservas/Movimientos and certification/resources. No second rebuild. Production DO_NOT_TOUCH.",
   "supersedesGitBlob": "1dc39b2d5dc5aa1884181c963d94b75bec8b075c",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -9837,7 +9934,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-181",
+  "nextFindingId": "VRM-182",
   "lastControlFailure": {
     "id": "VRM-142",
     "classification": "AUTH_FAILURE",
@@ -10948,36 +11045,7 @@
       "production": false
     }
   ],
-  "currentMaterialization": {
-    "runId": 37027244927,
-    "runNumber": 855,
-    "jobId": 110904977624,
-    "artifactId": 11235831313,
-    "artifactDigest": "sha256:92572a1cd9c9fe6beb358ed4070693d4b1b4d1da55bf1a34a3f850ad138eb026",
-    "sourceSha": "da2f750e25c1c76d4a772dc65580356a15c35963",
-    "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc",
-    "runtimeRevision": "cxorbia-live-hr-dev-00247-4cf",
-    "runtimeDigest": "sha256:f07051abaddc2c72a8a578a65f901a3a384377fc83f6ee7f346866e3b877100f",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/09c4173f2d6525f4",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790952150208000",
-    "build": true,
-    "runtimeDeploy": true,
-    "hostingDeploy": true,
-    "byteEqualFrontend": true,
-    "scenarioJsonObserved": true,
-    "failedStep": "Prove live HR scenario configuration after materialization",
-    "failureCause": "Harness queried format=json but asserted format=meta fields revision/ok. JSON payload correctly contained sourceSafe=false? no: sourceSafe=true, production=false, scenarioDimensions and visits with escenario+tipoCombo; revision/ok are absent by endpoint contract.",
-    "production": false,
-    "state": "SEALED_DEV_READBACK_PASS",
-    "decision": "PASS_VRM157_EXISTING_DEV_READBACK",
-    "hrRevision": "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
-    "scenarioDimensionsProven": true,
-    "frontendBytesExact": true,
-    "builds": 0,
-    "runtimeDeploys": 0,
-    "hostingDeploys": 0,
-    "writes": 0
-  },
+  "currentMaterialization": null,
   "lastModuleTruthProof": {
     "runId": 36451085968,
     "runNumber": 573,
@@ -11052,13 +11120,15 @@
     "vrm084": "SOURCE_FIXED_HOSTING_MATERIALIZATION_REQUIRED"
   },
   "pendingMaterialization": {
-    "findingId": "VRM-084",
-    "sourceSha": "09b4e56be96dedbeb89d14f1d190bfc5b8b4f990",
-    "sourceTree": "f6899a631b7b277b16614f1b6534103e7615f11e",
-    "mode": "HOSTING_ONLY",
-    "runtimeRevision": "cxorbia-live-hr-dev-00226-wj2",
-    "runtimeDigest": "sha256:d5093cdd92515bad11353c7dfb42e2d192c7f3dec264eea3d24dfcad8c6219bd",
-    "priorHostingVersion": "sites/cxorbia-backend-dev/versions/657dc30197e38cb4",
+    "sourceSha": "d33faac8d2af8523485d31c00037f639177ca040",
+    "sourceTree": "db4c1cc35b55c03523196fc583bf7cf0b874d87f",
+    "predecessorSha": "9102918177d89d9e3d18cfb75c04aba8c29cba86",
+    "status": "HOLD_V190_DEV_MATERIALIZATION_REQUIRED",
+    "maxBuilds": 1,
+    "maxRuntimeDeploys": 1,
+    "maxHostingDeploys": 1,
+    "sourceGate": "tools/qa/cxorbia-vrm154-156-frontend-source-contract.mjs",
+    "liveRegression": "RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs",
     "production": false
   },
   "lastTerminalAttempt": {
@@ -13304,7 +13374,7 @@
     "next": "SHORT_HUMAN_VISUAL_RETEST",
     "production": false
   },
-  "activeBlocker": "HUMAN_ACCEPTANCE_REMEDIATION_FORENSIC_DIAGNOSTIC_REQUIRED",
+  "activeBlocker": "VRM181_CERT_ROUTE_RECURSION_EXACT_DEV_MATERIALIZATION_REQUIRED",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -13496,5 +13566,5 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-10-02",
-  "nextExactAction": "Run same-source/same-DEV live reproof against c0fe7f11 on runtime cxorbia-live-hr-dev-00250-l9w and Hosting 0f7f7bd7376497b8. Reprove exact OCTUBRE 26!6 card/action, command mapping, provider ACK, durable reload, cleanup, and dependent Shopper/Admin/Reservas/Movimientos routes. No rebuild and no production."
+  "nextExactAction": "Materialize exactly source d33faac8d2af8523485d31c00037f639177ca040 tree db4c1cc35b55c03523196fc583bf7cf0b874d87f once in Recovery DEV, then reuse that exact runtime/Hosting for V190 same-source live reproof. Re-run full human acceptance including Admin Certificación, VRM-168 OCTUBRE 26!6 command/provider ACK/cleanup, Shopper/Admin/Reservas/Movimientos and certification/resources. No second rebuild. Production DO_NOT_TOUCH."
 }
