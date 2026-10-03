@@ -287,6 +287,15 @@ CX.module('shoppers', ({data,ui})=>{
     </div>`;
   };
 
+  const requestProfileCompletion=async(shopper)=>{
+    const missing=missingProfileFields(shopper);
+    if(!missing.length){ui.toast('El perfil ya tiene los campos requeridos.','ok');return true;}
+    if(!CX.notif?.pushDurable)throw new Error('PROFILE_REQUEST_PROVIDER_UNAVAILABLE');
+    const notice=await CX.notif.pushDurable({to:'shopper',shopperId:shopper.id,targetShopperIds:[shopper.id],tipo:'perfil',icon:'👤',tono:'a',titulo:'Completa tu perfil',txt:'Falta completar: '+missing.join(', '),nav:'miperfil',operational:true,entityType:'shopper',entityId:shopper.id,eventKey:'profile_completion_requested',idempotencyKey:'profile.complete.request:'+String(data.currentProjectId)+':'+shopper.id+':'+missing.slice().sort().join('|')});
+    if(!(notice?.providerAck===true&&notice?.committed===true))throw new Error('PROFILE_REQUEST_ACK_REQUIRED');
+    ui.toast('Instrucción guardada para '+(shopper.nombre||shopper.id)+'.','ok',3600);
+    return true;
+  };
   /* ---------- modal de perfil completo ---------- */
   const profileModal=(s)=>{
     const lvl=CX.data_shopperDataLevel(s);
@@ -347,7 +356,7 @@ CX.module('shoppers', ({data,ui})=>{
         <div class="card-t" style="font-size:12.5px;margin-bottom:6px">📊 Criterio de puntuación</div>
         <div style="font-size:11.5px;color:var(--t2);line-height:1.6">Sin score disponible — esta fuente todavía no entrega un rating para este perfil. No se muestra ni infiere un valor mientras no exista un dato real.</div>`}
       </div>
-      <div class="card-h" style="margin-bottom:10px"><div class="card-t">Datos del shopper</div><div class="flex" style="gap:7px">${identityReviewIds.has(String(s.id||''))?'<button class="btn btn-warn btn-sm" id="shResolveIdentity">Resolver identidad</button>':''}${canEdit?'<button class="btn btn-soft btn-sm" id="shEdit">✎ Editar perfil</button>':(lvl==='full_authorized_profile'?'<span class="muted" style="font-size:11px">🔒 Edición requiere acceso completo</span>':'<span class="muted" style="font-size:11px">Sin datos de contacto/documento autorizados para edición</span>')}</div></div>
+      <div class="card-h" style="margin-bottom:10px"><div class="card-t">Datos del shopper</div><div class="flex" style="gap:7px">${identityReviewIds.has(String(s.id||''))?'<button class="btn btn-warn btn-sm" id="shResolveIdentity">Resolver identidad</button>':''}<button class="btn btn-soft btn-sm" id="shRequestProfile">📨 Instruir perfil</button>${canEdit?'<button class="btn btn-soft btn-sm" id="shEdit">✎ Editar perfil</button>':(lvl==='full_authorized_profile'?'<span class="muted" style="font-size:11px">🔒 Edición requiere acceso completo</span>':'<span class="muted" style="font-size:11px">Sin datos de contacto/documento autorizados para edición</span>')}</div></div>
       <div id="shFormHost"></div>
     `;
     ui.modal(s.nombre, body, {onMount:(ov,close)=>{
@@ -367,6 +376,7 @@ CX.module('shoppers', ({data,ui})=>{
       };
       readView();
       ov.querySelector('#shResolveIdentity')?.addEventListener('click',()=>resolveIdentityModal(s));
+      ov.querySelector('#shRequestProfile')?.addEventListener('click',async e=>{const btn=e.currentTarget;btn.disabled=true;try{await requestProfileCompletion(s);}catch(error){ui.toast('No se pudo guardar la instrucción · '+String(error?.message||error),'warn',4600);}finally{btn.disabled=false;}});
       ov.querySelector('#shResetCredential')?.addEventListener('click',async e=>{
         const btn=e.currentTarget;if(!confirm('¿Restablecer el acceso de este shopper? La credencial anterior dejará de funcionar.'))return;
         btn.disabled=true;btn.textContent='Restableciendo...';
