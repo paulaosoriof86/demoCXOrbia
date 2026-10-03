@@ -9505,7 +9505,7 @@
       "secondaryClassification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "paula.osorio authenticates but exact session profile/history/KPIs do not resolve",
-      "state": "ROOT_CAUSE_PROVEN_GLOBAL_PLAN_REQUIRED",
+      "state": "ROOT_CAUSE_PROVEN_SAFE_CONSOLIDATION_WRITE_ARMED",
       "rootCauseStatus": "PROVEN",
       "observed": "Run 914 authenticates paula.osorio, HR authority is applied and all shopper routes navigate, but resolveExactSessionShopper returns identity=false; country/history/KPIs are empty.",
       "evidence": {
@@ -9633,6 +9633,60 @@
           "commandReceipts"
         ],
         "writes": 0,
+        "production": false
+      },
+      "globalPlan": {
+        "runId": 37098206349,
+        "runNumber": 917,
+        "jobId": 111132393879,
+        "artifactId": 11265700429,
+        "artifactDigest": "sha256:d0580315a347b1794941554f7f744d825af4ab072783ffdb1067aa03fd5a4785",
+        "decision": "PASS_VRM185_GLOBAL_IDENTITY_CONSOLIDATION_PLAN",
+        "safePlanCount": 1,
+        "reviewRequiredCount": 0,
+        "alreadyConvergedCount": 0,
+        "currentCanonicalShopperId": "shopper_gt_1440137b73",
+        "legacyAliasShopperId": "s3",
+        "keeper": "legacy_human_adjudicated_password_proof",
+        "legacyVisibleLogin": "paula.osorio",
+        "currentVisibleLogin": "paula.osorio.b06e",
+        "mutableOperationalDomains": [
+          "paymentReconciliations",
+          "certifications",
+          "postulations",
+          "reservations",
+          "visits"
+        ],
+        "immutableOrSourceProvenance": [
+          "commandReceipts",
+          "hrManaged.*"
+        ],
+        "writes": 0,
+        "production": false
+      },
+      "resolutionAuthority": {
+        "uiOwner": "Admin > Shoppers > Perfil del shopper",
+        "shopperPortalMayAdjudicate": false,
+        "humanAdminConfirmationRequired": true,
+        "exactTechnicalEvidenceRequired": true,
+        "fuzzyOrNameMerge": false,
+        "shopperPortalConsumesResolvedCanonicalIdentityOnly": true
+      },
+      "writeContract": {
+        "oneSafePlanOnly": true,
+        "currentCanonicalShopperId": "shopper_gt_1440137b73",
+        "legacyAliasShopperId": "s3",
+        "preserveKeeperCredentialWithoutPasswordRead": true,
+        "retireDuplicatePrincipal": true,
+        "remapOperationalReferences": true,
+        "preserveLegacyProfileForAudit": true,
+        "preserveHrManagedNestedProvenance": true,
+        "preserveCommandReceipts": true,
+        "providerAckRequired": true,
+        "idempotentReadback": true,
+        "hrWrites": 0,
+        "externalWrites": 0,
+        "deploys": 0,
         "production": false
       }
     }
@@ -10244,7 +10298,7 @@
     "nextFindingId": "VRM-186",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_VRM185_PAULA_IDENTITY_TOPOLOGY_DIAGNOSTIC_REQUIRED",
+    "terminalState": "HOLD_VRM185_EXACT_IDENTITY_CONSOLIDATION_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -10340,6 +10394,14 @@
       ],
       "approvalAuthority": "Paula explicit approval",
       "production": false
+    },
+    "identityResolutionAuthority": {
+      "owner": "Admin > Shoppers > Perfil",
+      "shopperPortalMayResolve": false,
+      "exactSameHumanOnly": true,
+      "fuzzyOrNameMerge": false,
+      "preserveAllCumulativeDomains": true,
+      "production": false
     }
   },
   "workPlan": {
@@ -10357,7 +10419,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Read-only global scan of all active tenant adjudications against exact live HR/Auth principals. Produce safe consolidation plans only when human same-person authority and a unique credential keeper are proven; any ambiguity remains fail-closed.",
+  "exactNextAction": "Execute the single proven VRM-185 DEV identity consolidation. Canonical operational shopperId must be shopper_gt_1440137b73; preserve paula.osorio keeper credentials without reading/persisting password; retire the duplicate current principal; remap only mutable operational owner references; preserve hrManaged.* provenance, legacy profile audit and commandReceipts. Then re-run same-DEV acceptance. Identity adjudication remains Admin-only.",
   "supersedesGitBlob": "1dc39b2d5dc5aa1884181c963d94b75bec8b075c",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -13835,7 +13897,7 @@
     "next": "SHORT_HUMAN_VISUAL_RETEST",
     "production": false
   },
-  "activeBlocker": "VRM185_GLOBAL_IDENTITY_CONSOLIDATION_PLAN_REQUIRED",
+  "activeBlocker": "VRM185_EXACT_IDENTITY_CONSOLIDATION_REQUIRED",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -14027,5 +14089,5 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-10-02",
-  "nextExactAction": "Read-only global scan of all active tenant adjudications against exact live HR/Auth principals. Produce safe consolidation plans only when human same-person authority and a unique credential keeper are proven; any ambiguity remains fail-closed."
+  "nextExactAction": "Execute the single proven VRM-185 DEV identity consolidation. Canonical operational shopperId must be shopper_gt_1440137b73; preserve paula.osorio keeper credentials without reading/persisting password; retire the duplicate current principal; remap only mutable operational owner references; preserve hrManaged.* provenance, legacy profile audit and commandReceipts. Then re-run same-DEV acceptance. Identity adjudication remains Admin-only."
 }

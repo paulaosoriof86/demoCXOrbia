@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM185_GLOBAL_IDENTITY_CONSOLIDATION_PLAN_REQUIRED",
+  "status": "HOLD_VRM185_EXACT_IDENTITY_CONSOLIDATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "db4c1cc35b55c03523196fc583bf7cf0b874d87f",
   "predecessorProductSourceSha": "9102918177d89d9e3d18cfb75c04aba8c29cba86",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V190_2026-10-02.json",
-  "findingsLedgerExpectedGitBlob": "18ec05628951eeb46d1789e755f317c2ff4e7aea",
+  "findingsLedgerExpectedGitBlob": "22bcebed613fb02e4a607a314edb81ee83a08e4d",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM185_GLOBAL_IDENTITY_CONSOLIDATION_PLAN_REQUIRED",
+  "activeBlocker": "VRM185_EXACT_IDENTITY_CONSOLIDATION_REQUIRED",
   "nextFindingId": "VRM-186",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Read-only global scan of all active tenant adjudications against exact live HR/Auth principals. Produce safe consolidation plans only when human same-person authority and a unique credential keeper are proven; any ambiguity remains fail-closed.",
+  "exactNextAction": "Execute the single proven VRM-185 DEV identity consolidation. Canonical operational shopperId must be shopper_gt_1440137b73; preserve paula.osorio keeper credentials without reading/persisting password; retire the duplicate current principal; remap only mutable operational owner references; preserve hrManaged.* provenance, legacy profile audit and commandReceipts. Then re-run same-DEV acceptance. Identity adjudication remains Admin-only.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
