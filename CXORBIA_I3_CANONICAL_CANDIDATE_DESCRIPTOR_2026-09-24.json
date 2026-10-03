@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_REJECTED_PHASEA_PRECOMPOSITION_TRUTH_BLOCKERS",
+  "status": "HOLD_VRM194_SOURCE_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-  "productTreeAuthority": "85c0d287e16269dd07d9c1fa1e93810a0aebdc99",
-  "predecessorProductSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V224_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "4d9b0c56fc608d362f6eb1a110324eefc4aaa024",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V4.json",
+  "productSourceSha": "4b1c0859cc5b43928c083748d00fdc606b32d63e",
+  "productTreeAuthority": "ab33d43d483faef9fbec5daaadfa454247df469a",
+  "predecessorProductSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V225_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "5137d59052755522812e52876d06bb2b67704b1a",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V5.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "PRECOMPOSITION_TRUTH_BLOCKERS_MODULE_TRUTH_1_ADMIN_28",
-  "nextFindingId": "VRM-204",
+  "activeBlocker": "VRM194_AND_PRECOMPOSITION_SOURCE_REPROOF_REQUIRED",
+  "nextFindingId": "VRM-205",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Reconcile precomposition truth on exact product source 2d4da635aeb793aa47d22127295473856108a94f. First determine whether human-runtime-domain-consistency is a current product defect or stale control classification by exact owner/blob evidence; then partition the 28 Admin OPEN_BLOCKER rows into source defects versus live-proof-only gaps. No DEV materialization until all source-level blockers are resolved or proven non-defects.",
+  "exactNextAction": "Run the canonical cumulative source reproof on product source 4b1c0859cc5b43928c083748d00fdc606b32d63e. It must prove VRM-194 connected tenant administration fail-closed, the existing VRM-057 honorarium authority invariants, the exact VRM-036 domain-consistency bridge blob, and all cumulative VRM-187..192 source regressions. No build or deploy.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2620,7 +2620,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "e9dc7d95a7a21f32772d6fdd8146ead5d780e1c2",
+  "moduleTruthExpectedGitBlob": "f23c661650e92e70e4db00975339d68b1e3de17e",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -3401,7 +3401,7 @@
       "Academia visual requirement remains unmet: course cards were requested with distinct solid colors, not repeated blue treatment or gradients."
     ]
   },
-  "adminAdministrationMatrixPath": "CXORBIA_I3_ADMIN_FULL_ADMINISTRATION_MATRIX_2026-10-03_V3.json",
+  "adminAdministrationMatrixPath": "CXORBIA_I3_ADMIN_FULL_ADMINISTRATION_MATRIX_2026-10-03_V5.json",
   "acceptanceIntegrity": {
     "state": "FAIL_CLOSED_GUARD_ACTIVE",
     "findingId": "VRM-198",
@@ -3418,10 +3418,10 @@
   },
   "visualCheckpointScope": null,
   "currentRemediationPackage": {
-    "sourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-    "sourceTree": "85c0d287e16269dd07d9c1fa1e93810a0aebdc99",
-    "predecessorSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
-    "state": "SOURCE_PASS_RUN1045_PENDING_EXACT_DEV_LIVE",
+    "sourceSha": "4b1c0859cc5b43928c083748d00fdc606b32d63e",
+    "sourceTree": "ab33d43d483faef9fbec5daaadfa454247df469a",
+    "predecessorSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
+    "state": "VRM194_SOURCE_FIX_REPROOF_REQUIRED",
     "findingIds": [
       "VRM-134",
       "VRM-165",
@@ -3435,35 +3435,22 @@
       "VRM-199",
       "VRM-200",
       "VRM-201",
-      "VRM-202"
+      "VRM-202",
+      "VRM-194",
+      "VRM-204"
     ],
     "preservedOpenAcceptance": [
       "VRM-179",
       "VRM-180",
-      "VRM-194"
+      "VRM-193"
     ],
     "preservedAllPriorFindings": true,
     "production": false,
     "previousDetachedSourceSha": "7b8b88608c9cd38cc97726c3f17aab55a51f1715",
-    "sourceProof": {
-      "runId": 37161034003,
-      "runNumber": 1045,
-      "jobId": 111314363177,
-      "workflow": "CXOrbia Recovery I3 DEV Certification",
-      "controlHeadSha": "ff2f45a7fcd41e59603f0752fe02eadf6af1e2c2",
-      "productSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-      "productTree": "85c0d287e16269dd07d9c1fa1e93810a0aebdc99",
-      "decision": "PASS_I3_PHASEA_REJECTED_CHECKPOINT_SOURCE_PROOF",
-      "checksPassed": 16,
-      "checksFailed": 0,
-      "sourceOnly": true,
-      "builds": 0,
-      "deploys": 0,
-      "production": false
-    }
+    "sourceProof": null
   },
-  "adminMatrixPath": "CXORBIA_I3_ADMIN_FULL_ADMINISTRATION_MATRIX_2026-10-03_V4.json",
-  "adminMatrixExpectedGitBlob": "0131d00f08c8910324692aad8667b398db58630a",
+  "adminMatrixPath": "CXORBIA_I3_ADMIN_FULL_ADMINISTRATION_MATRIX_2026-10-03_V5.json",
+  "adminMatrixExpectedGitBlob": "707e094a2bf206d95dcef2556e8b080e679133b0",
   "lastSourceReproof": {
     "runId": 37161034003,
     "runNumber": 1045,
