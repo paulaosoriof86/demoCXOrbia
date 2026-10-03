@@ -210,6 +210,21 @@ CX.module('shoppers', ({data,ui})=>{
     }});
   };
 
+  const manualIdentityAdjudication=s=>{
+    const candidates=list().filter(x=>String(x.id||'')!==String(s.id||'')&&CX.data_shopperDataLevel(x)!=='protected_reference');
+    ui.modal('Revisar / fusionar identidad · '+(s.nombre||s.id),`
+      <div style="font-size:12.5px;color:var(--t2);line-height:1.6;margin-bottom:12px"><b>Decisión administrativa explícita.</b> Selecciona otra ficha solo cuando hayas confirmado que corresponde a la misma persona. La plataforma no fusiona automáticamente por nombre, teléfono o similitud.</div>
+      <div class="grid g2" style="gap:10px;margin-bottom:12px"><div class="card card-p"><div class="muted" style="font-size:10.5px">FICHA ACTUAL</div><b>${esc(s.nombre||s.id)}</b><div style="font-size:11px;color:var(--t3)">${esc(s.ciudad||'—')} · ${kpiVisitsForActiveProject(s.id).length} visita(s)</div></div><div><label class="lbl">Segunda ficha</label><select class="sel" id="manualAlias"><option value="">Selecciona una ficha para comparar</option>${candidates.map(x=>`<option value="${esc(x.id)}">${esc(x.nombre||x.id)} · ${esc(x.ciudad||'—')} · ${kpiVisitsForActiveProject(x.id).length} visita(s)</option>`).join('')}</select></div></div>
+      <div id="manualCompare" class="card card-p" style="margin-bottom:12px;display:none"></div>
+      <label class="lbl">Ficha canónica que se conservará</label><select class="sel" id="manualCanonical" style="margin-bottom:12px" disabled><option value="">Selecciona primero la segunda ficha</option></select>
+      <label class="flex" style="gap:8px;font-size:12px;color:var(--t1);margin-bottom:14px"><input type="checkbox" id="manualConfirm"> Confirmo que ambas fichas corresponden a la misma persona y autorizo consolidar histórico, asignaciones, acceso y perfil en una identidad canónica.</label>
+      <div style="text-align:right"><button class="btn btn-pr btn-sm" id="manualResolve">Consolidar identidad</button></div>
+    `,{onMount:(ov,close)=>{
+      const aliasSel=ov.querySelector('#manualAlias'),canonicalSel=ov.querySelector('#manualCanonical'),compare=ov.querySelector('#manualCompare');
+      aliasSel.addEventListener('change',()=>{const other=data.getShopper(aliasSel.value);if(!other){compare.style.display='none';canonicalSel.disabled=true;return;}compare.style.display='block';compare.innerHTML=`<div class="grid g2" style="gap:12px"><div><b>${esc(s.nombre||s.id)}</b><div style="font-size:11px;color:var(--t3)">WhatsApp ${esc(s.whatsapp||s.phone||'—')} · correo ${esc(s.email||'—')} · ${kpiVisitsForActiveProject(s.id).length} visita(s)</div></div><div><b>${esc(other.nombre||other.id)}</b><div style="font-size:11px;color:var(--t3)">WhatsApp ${esc(other.whatsapp||other.phone||'—')} · correo ${esc(other.email||'—')} · ${kpiVisitsForActiveProject(other.id).length} visita(s)</div></div></div>`;canonicalSel.disabled=false;canonicalSel.innerHTML=`<option value="">Selecciona la ficha canónica</option><option value="${esc(s.id)}">${esc(s.nombre||s.id)}</option><option value="${esc(other.id)}">${esc(other.nombre||other.id)}</option>`;});
+      ov.querySelector('#manualResolve').addEventListener('click',async e=>{const other=data.getShopper(aliasSel.value),canonical=String(canonicalSel.value||''),confirmed=ov.querySelector('#manualConfirm').checked;if(!other||!canonical){ui.toast('Selecciona ambas fichas y la identidad canónica.','warn');return;}if(!confirmed){ui.toast('Confirma explícitamente que se trata de la misma persona.','warn');return;}const alias=canonical===String(s.id)?String(other.id):String(s.id),btn=e.currentTarget;btn.disabled=true;btn.textContent='Consolidando…';try{const result=await data.adjudicateShopperIdentity(canonical,[alias],{ackAware:true,reason:'admin_manual_same_human_confirmation'});if(!commandOk(result)||result.identityConsolidated!==true)throw new Error(commandError(result)||'IDENTITY_CONSOLIDATION_NOT_CONFIRMED');close();ui.toast('Identidad consolidada y verificada por el proveedor.','ok',4200);try{await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('admin_manual_identity_adjudication');}catch(_){}CX.router.nav('shoppers');}catch(error){btn.disabled=false;btn.textContent='Consolidar identidad';ui.toast('No se aplicó la consolidación · '+String(error?.message||error),'err',5200);}});
+    },dismissOnBackdrop:false});
+  };
   /* ---------- HTML del módulo ---------- */
   const render=()=>{
     const L=list();
@@ -356,7 +371,7 @@ CX.module('shoppers', ({data,ui})=>{
         <div class="card-t" style="font-size:12.5px;margin-bottom:6px">📊 Criterio de puntuación</div>
         <div style="font-size:11.5px;color:var(--t2);line-height:1.6">Sin score disponible — esta fuente todavía no entrega un rating para este perfil. No se muestra ni infiere un valor mientras no exista un dato real.</div>`}
       </div>
-      <div class="card-h" style="margin-bottom:10px"><div class="card-t">Datos del shopper</div><div class="flex" style="gap:7px">${identityReviewIds.has(String(s.id||''))?'<button class="btn btn-warn btn-sm" id="shResolveIdentity">Resolver identidad</button>':''}<button class="btn btn-soft btn-sm" id="shRequestProfile">📨 Instruir perfil</button>${canEdit?'<button class="btn btn-soft btn-sm" id="shEdit">✎ Editar perfil</button>':(lvl==='full_authorized_profile'?'<span class="muted" style="font-size:11px">🔒 Edición requiere acceso completo</span>':'<span class="muted" style="font-size:11px">Sin datos de contacto/documento autorizados para edición</span>')}</div></div>
+      <div class="card-h" style="margin-bottom:10px"><div class="card-t">Datos del shopper</div><div class="flex" style="gap:7px"><button class="btn btn-warn btn-sm" id="shResolveIdentity">${identityReviewIds.has(String(s.id||''))?'Resolver identidad':'Revisar / fusionar identidad'}</button><button class="btn btn-soft btn-sm" id="shRequestProfile">📨 Instruir perfil</button>${canEdit?'<button class="btn btn-soft btn-sm" id="shEdit">✎ Editar perfil</button>':(lvl==='full_authorized_profile'?'<span class="muted" style="font-size:11px">🔒 Edición requiere acceso completo</span>':'<span class="muted" style="font-size:11px">Sin datos de contacto/documento autorizados para edición</span>')}</div></div>
       <div id="shFormHost"></div>
     `;
     ui.modal(s.nombre, body, {onMount:(ov,close)=>{
@@ -375,7 +390,7 @@ CX.module('shoppers', ({data,ui})=>{
         ${(()=>{const c=CX.data&&CX.data.ctx?CX.data.ctx():null;return c?`<div style="margin-top:6px;font-size:10px;color:var(--t3)">alcance: ${c.countryScope&&c.countryScope.length?c.countryScope.join(','):'sin restricción'} · rol ${c.role}</div>`:'';})()}</div>`;
       };
       readView();
-      ov.querySelector('#shResolveIdentity')?.addEventListener('click',()=>resolveIdentityModal(s));
+      ov.querySelector('#shResolveIdentity')?.addEventListener('click',()=>identityReviewIds.has(String(s.id||''))?resolveIdentityModal(s):manualIdentityAdjudication(s));
       ov.querySelector('#shRequestProfile')?.addEventListener('click',async e=>{const btn=e.currentTarget;btn.disabled=true;try{await requestProfileCompletion(s);}catch(error){ui.toast('No se pudo guardar la instrucción · '+String(error?.message||error),'warn',4600);}finally{btn.disabled=false;}});
       ov.querySelector('#shResetCredential')?.addEventListener('click',async e=>{
         const btn=e.currentTarget;if(!confirm('¿Restablecer el acceso de este shopper? La credencial anterior dejará de funcionar.'))return;
