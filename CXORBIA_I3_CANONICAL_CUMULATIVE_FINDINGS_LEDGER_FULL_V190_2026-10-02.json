@@ -18,20 +18,20 @@
     "sourceTree": "ab746be61fe85ef9a6982fe98bf19223e6f7172e",
     "predecessorSha": "83efe4ad2bc1ca503d4a010a4c0b9a0ed03cf177",
     "production": false,
-    "state": "SOURCE_FIXED_VRM185_VRM186_PENDING_SOURCE_RETEST",
+    "state": "SOURCE_TEST_PASS_PENDING_EXACT_DEV_MATERIALIZATION",
     "proof": {
-      "runId": 37037752771,
-      "runNumber": 864,
-      "jobId": 110940128565,
-      "artifactId": 11241222027,
-      "artifactDigest": "sha256:0c5799e38fca13077d3e394972bbcd602e531480f117e82b3fdd6ce8ed0f85ea",
-      "decision": "PASS_VRM154_156_FRONTEND_SOURCE_REPROOF",
-      "sourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
-      "sourceTree": "6a8b7ec768efbb9af73bcca836125471f7f49ae4",
-      "genericScenarioContract": true,
-      "liveRuntimeScenarioDimensionsPropagation": true,
-      "financeVrm153Regression": true,
-      "deploys": 0,
+      "runId": 37100355655,
+      "runNumber": 924,
+      "jobId": 111138537180,
+      "artifactId": 11265714024,
+      "artifactDigest": "sha256:28217bd5753a66a09778f47c402746ec55de560e4c2e564e2b6a818238973a14",
+      "decision": "PASS_VRM185_VRM186_ADMIN_PROVIDER_SOURCE_TEST",
+      "sourceSha": "72c9114130d6fd1d3475957118b48e48469ad7c8",
+      "sourceTree": "ab746be61fe85ef9a6982fe98bf19223e6f7172e",
+      "providerTestsPass": true,
+      "adminIdentityOwner": "Admin > Shoppers > Perfil",
+      "shopperPortalAdjudication": false,
+      "nameOnlyMerge": false,
       "production": false
     },
     "priorProof": {
@@ -9485,7 +9485,7 @@
       "secondaryClassification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "paula.osorio authenticates but exact session profile/history/KPIs do not resolve",
-      "state": "SOURCE_FIXED_ADMIN_PROVIDER_PENDING_RETEST",
+      "state": "SOURCE_FIXED_PROVEN_PENDING_EXACT_DEV_MATERIALIZATION",
       "rootCauseStatus": "PROVEN",
       "observed": "Run 914 authenticates paula.osorio, HR authority is applied and all shopper routes navigate, but resolveExactSessionShopper returns identity=false; country/history/KPIs are empty.",
       "evidence": {
@@ -9770,6 +9770,21 @@
           "code": "SHOPPER_IDENTITY_KEEPER_MEMBERSHIP_CHANGED"
         },
         "production": false
+      },
+      "sourceProof": {
+        "runId": 37100355655,
+        "runNumber": 924,
+        "jobId": 111138537180,
+        "artifactId": 11265714024,
+        "artifactDigest": "sha256:28217bd5753a66a09778f47c402746ec55de560e4c2e564e2b6a818238973a14",
+        "decision": "PASS_VRM185_VRM186_ADMIN_PROVIDER_SOURCE_TEST",
+        "sourceSha": "72c9114130d6fd1d3475957118b48e48469ad7c8",
+        "sourceTree": "ab746be61fe85ef9a6982fe98bf19223e6f7172e",
+        "providerTestsPass": true,
+        "adminIdentityOwner": "Admin > Shoppers > Perfil",
+        "shopperPortalAdjudication": false,
+        "nameOnlyMerge": false,
+        "production": false
       }
     },
     "VRM-186": {
@@ -9777,7 +9792,7 @@
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Admin shopper identity review did not normalize all exact-conflict schemas and allowed a name-only merge path",
-      "state": "SOURCE_FIXED_PENDING_TEST",
+      "state": "SOURCE_FIXED_PROVEN_PENDING_EXACT_DEV_MATERIALIZATION",
       "rootCauseStatus": "PROVEN",
       "rootCause": "Admin > Shoppers only indexed review items through shopperId/shopperIds, while exact technical conflicts can arrive through liveShopperId/candidates/sourceShopperId/canonicalShopperId/id. In addition, display_name_collision_not_auto_merged was the only path that enabled the merge modal, contradicting the frozen rule that a matching name alone is never merge authority.",
       "correction": {
@@ -9806,7 +9821,22 @@
         "production": false
       },
       "regressionGate": "VRM185_ADMIN_IDENTITY_REVIEW_SCHEMA_NOT_NORMALIZED / VRM185_NAME_ONLY_MERGE_NOT_BLOCKED / VRM185_SHOPPER_PORTAL_IDENTITY_ADJUDICATION_LEAK",
-      "production": false
+      "production": false,
+      "sourceProof": {
+        "runId": 37100355655,
+        "runNumber": 924,
+        "jobId": 111138537180,
+        "artifactId": 11265714024,
+        "artifactDigest": "sha256:28217bd5753a66a09778f47c402746ec55de560e4c2e564e2b6a818238973a14",
+        "decision": "PASS_VRM185_VRM186_ADMIN_PROVIDER_SOURCE_TEST",
+        "sourceSha": "72c9114130d6fd1d3475957118b48e48469ad7c8",
+        "sourceTree": "ab746be61fe85ef9a6982fe98bf19223e6f7172e",
+        "providerTestsPass": true,
+        "adminIdentityOwner": "Admin > Shoppers > Perfil",
+        "shopperPortalAdjudication": false,
+        "nameOnlyMerge": false,
+        "production": false
+      }
     }
   },
   "latestEvidenceOverrides": {
@@ -10417,7 +10447,7 @@
     "nextFindingId": "VRM-187",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_VRM185_ADMIN_PROVIDER_SOURCE_TEST_REQUIRED",
+    "terminalState": "HOLD_V190_DEV_MATERIALIZATION_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -10521,7 +10551,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Re-run source-only VRM-185/186 tests for exact product source 72c9114130d6fd1d3475957118b48e48469ad7c8; no DEV mutation or deploy.",
+  "exactNextAction": "Materialize exactly source 72c9114130d6fd1d3475957118b48e48469ad7c8 tree ab746be61fe85ef9a6982fe98bf19223e6f7172e once in Recovery DEV through the existing V190 materialization lane. One build, one runtime deploy, one Hosting deploy. No second build. Production remains DO_NOT_TOUCH.",
   "supersedesGitBlob": "1dc39b2d5dc5aa1884181c963d94b75bec8b075c",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -11661,27 +11691,7 @@
       "production": false
     }
   ],
-  "currentMaterialization": {
-    "runId": 37091457753,
-    "runNumber": 908,
-    "jobId": 111112533271,
-    "artifactId": 11261679821,
-    "artifactDigest": "sha256:d33d82944d46dfb5ed05b9830ea6d0fca062a3e0ff8accebdf714ba40436b795",
-    "decision": "PASS_V190_EXACT_DEV_MATERIALIZATION",
-    "sourceSha": "d33faac8d2af8523485d31c00037f639177ca040",
-    "sourceTree": "db4c1cc35b55c03523196fc583bf7cf0b874d87f",
-    "runtimeRevision": "cxorbia-live-hr-dev-00253-5f8",
-    "runtimeDigest": "sha256:a904ae7fc4934d41343d214ad69c4fa94d58618441f9741bf865714d19bca2c1",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/beecdb6bc5eb6c84",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1790996268562000",
-    "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
-    "builds": 1,
-    "runtimeDeploys": 1,
-    "hostingDeploys": 1,
-    "storageRulesDeploys": 1,
-    "state": "SEALED_VRM181_CERT_ROUTE_FIX_DEV_PENDING_LIVE_REPROOF",
-    "production": false
-  },
+  "currentMaterialization": null,
   "lastModuleTruthProof": {
     "runId": 36451085968,
     "runNumber": 573,
@@ -11755,7 +11765,15 @@
     "vrm083": "FIXED_PROVEN_RUN564",
     "vrm084": "SOURCE_FIXED_HOSTING_MATERIALIZATION_REQUIRED"
   },
-  "pendingMaterialization": null,
+  "pendingMaterialization": {
+    "sourceSha": "72c9114130d6fd1d3475957118b48e48469ad7c8",
+    "sourceTree": "ab746be61fe85ef9a6982fe98bf19223e6f7172e",
+    "status": "HOLD_V190_DEV_MATERIALIZATION_REQUIRED",
+    "maxBuilds": 1,
+    "maxRuntimeDeploys": 1,
+    "maxHostingDeploys": 1,
+    "production": false
+  },
   "lastTerminalAttempt": {
     "runId": 36451412310,
     "runNumber": 574,
@@ -13999,7 +14017,7 @@
     "next": "SHORT_HUMAN_VISUAL_RETEST",
     "production": false
   },
-  "activeBlocker": "VRM185_VRM186_ADMIN_PROVIDER_SOURCE_RETEST_REQUIRED",
+  "activeBlocker": "VRM185_VRM186_EXACT_DEV_MATERIALIZATION_REQUIRED",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -14191,5 +14209,5 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-10-02",
-  "nextExactAction": "Re-run source-only VRM-185/186 tests for exact product source 72c9114130d6fd1d3475957118b48e48469ad7c8; no DEV mutation or deploy."
+  "nextExactAction": "Materialize exactly source 72c9114130d6fd1d3475957118b48e48469ad7c8 tree ab746be61fe85ef9a6982fe98bf19223e6f7172e once in Recovery DEV through the existing V190 materialization lane. One build, one runtime deploy, one Hosting deploy. No second build. Production remains DO_NOT_TOUCH."
 }

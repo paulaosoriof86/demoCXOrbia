@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM185_ADMIN_PROVIDER_SOURCE_TEST_REQUIRED",
+  "status": "HOLD_V190_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "ab746be61fe85ef9a6982fe98bf19223e6f7172e",
   "predecessorProductSourceSha": "83efe4ad2bc1ca503d4a010a4c0b9a0ed03cf177",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V190_2026-10-02.json",
-  "findingsLedgerExpectedGitBlob": "2c64b159f1661d521352182869246bc56de834f2",
+  "findingsLedgerExpectedGitBlob": "8b513201e041c7033b8accf6cf26093b8a990a6d",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM185_VRM186_ADMIN_PROVIDER_SOURCE_RETEST_REQUIRED",
+  "activeBlocker": "VRM185_VRM186_EXACT_DEV_MATERIALIZATION_REQUIRED",
   "nextFindingId": "VRM-187",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Re-run source-only VRM-185/186 tests for exact product source 72c9114130d6fd1d3475957118b48e48469ad7c8; no DEV mutation or deploy.",
+  "exactNextAction": "Materialize exactly source 72c9114130d6fd1d3475957118b48e48469ad7c8 tree ab746be61fe85ef9a6982fe98bf19223e6f7172e once in Recovery DEV through the existing V190 materialization lane. One build, one runtime deploy, one Hosting deploy. No second build. Production remains DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -878,7 +878,15 @@
     "hrWrites": 0,
     "production": false
   },
-  "pendingMaterialization": null,
+  "pendingMaterialization": {
+    "sourceSha": "72c9114130d6fd1d3475957118b48e48469ad7c8",
+    "sourceTree": "ab746be61fe85ef9a6982fe98bf19223e6f7172e",
+    "status": "HOLD_V190_DEV_MATERIALIZATION_REQUIRED",
+    "maxBuilds": 1,
+    "maxRuntimeDeploys": 1,
+    "maxHostingDeploys": 1,
+    "production": false
+  },
   "lastVrm080Proof": {
     "runId": 36333245670,
     "runNumber": 525,
