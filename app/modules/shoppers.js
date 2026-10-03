@@ -114,53 +114,68 @@ CX.module('shoppers', ({data,ui})=>{
   };
 
   const list=()=>data.shoppersFor();
-  /* PRE-I4 identity review — every provider review reason is visible; only exact
-     collision groups can be merged, and only after explicit human confirmation. */
-  const identityReviewItems=arr(data.__identityReviewQueue);
-  const identityReviewIds=(()=>{
-    const out=new Set();
-    identityReviewItems.forEach(item=>{
-      if(item?.shopperId)out.add(String(item.shopperId));
-      arr(item?.shopperIds).forEach(id=>out.add(String(id||'')));
+  /* PRE-I4 VRM-185/186 — identity resolution is ADMIN-ONLY.
+     Every review schema is normalized here. Shopper views only consume the adjudicated result.
+     Name/fuzzy similarity never authorizes a merge; exact technical evidence requires explicit
+     Admin human confirmation and provider ACK. */
+  const providerIdentityReviewItems=arr(data.__identityReviewQueue);
+  const syntheticExactAliasReviews=[];
+  const seenAliasPairs=new Set();
+  list().forEach(row=>{
+    const id=String(row?.id||row?.shopperId||'').trim();
+    if(!id)return;
+    const aliases=[...new Set([...arr(row?.exactAliases),...arr(row?.sourceShopperIds),...arr(row?.legacyLiveShopperIds)].map(String).map(x=>x.trim()).filter(x=>x&&x!==id))];
+    aliases.forEach(alias=>{
+      const other=data.getShopper(alias);if(!other)return;
+      const pair=[id,alias].sort(),key=pair.join('|');if(seenAliasPairs.has(key))return;seenAliasPairs.add(key);
+      syntheticExactAliasReviews.push({reason:'exact_profile_alias_requires_admin_resolution',candidates:pair,shopperIds:pair,requiresHumanAdjudication:true,source:'durable_exact_alias_profile'});
     });
-    return out;
-  })();
-  const identityReviewFor=id=>identityReviewItems.find(item=>String(item?.shopperId||'')===String(id)||arr(item?.shopperIds).map(String).includes(String(id)))||null;
+  });
+  const identityReviewItems=[...providerIdentityReviewItems,...syntheticExactAliasReviews];
+  const reviewIds=item=>[item?.shopperId,item?.sourceShopperId,item?.canonicalShopperId,item?.liveShopperId,item?.id,...arr(item?.shopperIds),...arr(item?.candidates)].map(String).map(x=>x.trim()).filter(Boolean);
+  const identityReviewIds=(()=>{const out=new Set();identityReviewItems.forEach(item=>reviewIds(item).forEach(id=>out.add(id)));return out;})();
+  const identityReviewFor=id=>{id=String(id||'');return identityReviewItems.find(item=>reviewIds(item).includes(id))||null;};
   const identityReviewBadge=s=>identityReviewIds.has(String(s&&s.id||''))?ui.bdg('Revisar identidad','a'):'';
+  const exactAdminReasons=new Set(['conflicting_exact_crosswalk','ambiguous_exact_technical_anchor','conflicting_exact_visit_crosswalk','exact_profile_alias_requires_admin_resolution']);
   const resolveIdentityModal=s=>{
     const review=identityReviewFor(s&&s.id);
     if(!review){ui.toast('No existe una revisión de identidad activa para esta ficha','warn');return;}
     const reason=String(review.reason||'identity_review_required');
-    const ids=arr(review.shopperIds).map(String).filter(Boolean);
-    const candidates=ids.map(id=>data.getShopper(id)).filter(Boolean);
-    if(reason!=='display_name_collision_not_auto_merged'||candidates.length<2){
+    const candidateIds=[...new Set([...arr(review.candidates),...arr(review.shopperIds)].map(String).map(x=>x.trim()).filter(Boolean))];
+    const liveId=String(review.liveShopperId||review.sourceShopperId||'').trim();
+    const candidates=candidateIds.map(id=>({id,row:data.getShopper(id)})).filter(x=>x.row);
+    const exactResolvable=exactAdminReasons.has(reason)&&candidates.length>=1&&(reason==='exact_profile_alias_requires_admin_resolution'?candidates.length>=2:!!liveId);
+    if(!exactResolvable){
+      const sameName=reason==='display_name_collision_not_auto_merged';
       ui.modal('Revisar identidad · '+(s.nombre||'shopper'),`
-        <div style="font-size:12.5px;color:var(--t2);line-height:1.6;margin-bottom:12px">Esta ficha requiere revisión humana y <b>no se fusionará automáticamente</b>.</div>
+        <div style="font-size:12.5px;color:var(--t2);line-height:1.6;margin-bottom:12px">Esta ficha requiere revisión administrativa y <b>no se fusionará automáticamente</b>.</div>
         <div class="card card-p" style="margin-bottom:12px"><div><b>Motivo:</b> ${esc(reason)}</div><div style="margin-top:6px"><b>ID:</b> ${esc(String(s.id||''))}</div></div>
-        <div style="font-size:11.5px;color:var(--t3)">Completa o corrige el perfil si corresponde. La fusión solo se habilita cuando existe un grupo exacto de colisión confirmado.</div>
+        <div style="font-size:11.5px;color:var(--t3)">${sameName?'Coincidir en nombre no constituye evidencia suficiente para fusionar perfiles. Se necesita evidencia técnica exacta o una adjudicación humana documentada desde Administración.':'Este caso permanece fail-closed hasta contar con evidencia exacta suficiente para adjudicar una identidad canónica.'}</div>
       `);
       return;
     }
     ui.modal('Resolver identidad · '+(s.nombre||'shopper'),`
-      <div style="font-size:12.5px;color:var(--t2);line-height:1.6;margin-bottom:12px">Confirma únicamente cuando estas fichas pertenecen a la misma persona. No se fusiona por nombre, teléfono ni correo automáticamente.</div>
+      <div data-identity-admin-only="true" style="font-size:12.5px;color:var(--t2);line-height:1.6;margin-bottom:12px">Resolución exclusiva de Administración. Verifica la evidencia exacta antes de seleccionar la ficha canónica. No se fusiona por nombre, teléfono, correo ni similitud.</div>
       <label class="lbl">Ficha canónica que se conservará</label>
-      <select class="sel" id="idCanonical" style="margin-bottom:12px">${candidates.map(x=>`<option value="${esc(x.id)}" ${String(x.id)===String(s.id)?'selected':''}>${esc(x.nombre||x.id)} · ${Number.isFinite(x.visitas)?x.visitas:'—'} visita(s)</option>`).join('')}</select>
-      <div class="card card-p" style="margin-bottom:12px">${candidates.map(x=>`<div class="between" style="padding:7px 0;border-bottom:1px solid var(--border-2)"><div><b>${esc(x.nombre||x.id)}</b><div style="font-size:10.5px;color:var(--t3)">${esc(x.ciudad||'—')} · ${esc(CX.paisName(x.pais)||x.pais||'—')}</div></div><div style="font-size:12px">${Number.isFinite(x.visitas)?x.visitas:'—'} visita(s)</div></div>`).join('')}</div>
-      <label class="flex" style="gap:8px;font-size:12px;color:var(--t1);margin-bottom:14px"><input type="checkbox" id="idConfirm"> Confirmo que todas estas fichas corresponden a la misma persona.</label>
-      <div style="text-align:right"><button class="btn btn-pr btn-sm" id="idResolve">Confirmar fusión de identidad</button></div>
+      <select class="sel" id="idCanonical" style="margin-bottom:12px"><option value="">Selecciona la ficha canónica</option>${candidates.map(x=>`<option value="${esc(x.id)}">${esc(x.row?.nombre||x.id)} · ${Number.isFinite(x.row?.visitas)?x.row.visitas:'—'} visita(s)</option>`).join('')}</select>
+      <div class="card card-p" style="margin-bottom:12px">${candidates.map(x=>`<div class="between" style="padding:7px 0;border-bottom:1px solid var(--border-2)"><div><b>${esc(x.row?.nombre||x.id)}</b><div style="font-size:10.5px;color:var(--t3)">${esc(x.row?.ciudad||'—')} · ${esc(CX.paisName(x.row?.pais)||x.row?.pais||'—')}</div></div><div style="font-size:12px">${Number.isFinite(x.row?.visitas)?x.row.visitas:'—'} visita(s)</div></div>`).join('')}</div>
+      <label class="flex" style="gap:8px;font-size:12px;color:var(--t1);margin-bottom:14px"><input type="checkbox" id="idConfirm"> Verifiqué la evidencia exacta y confirmo que las identidades seleccionadas corresponden a la misma persona.</label>
+      <div style="text-align:right"><button class="btn btn-pr btn-sm" id="idResolve">Confirmar identidad canónica</button></div>
     `,{onMount:(ov,close)=>{
       ov.querySelector('#idResolve').addEventListener('click',async e=>{
-        const btn=e.currentTarget,canonical=ov.querySelector('#idCanonical').value,confirmed=ov.querySelector('#idConfirm').checked;
-        if(!confirmed){ui.toast('Debes confirmar que las fichas pertenecen a la misma persona','warn');return;}
-        const aliases=ids.filter(id=>id!==canonical);
+        const btn=e.currentTarget,canonical=String(ov.querySelector('#idCanonical').value||''),confirmed=ov.querySelector('#idConfirm').checked;
+        if(!canonical){ui.toast('Selecciona primero la ficha canónica','warn');return;}
+        if(!confirmed){ui.toast('Debes confirmar la verificación de identidad antes de continuar','warn');return;}
+        const aliases=reason==='exact_profile_alias_requires_admin_resolution'?candidateIds.filter(id=>id!==canonical):[liveId].filter(id=>id&&id!==canonical);
+        if(!aliases.length){ui.toast('No existe una identidad alias distinta para consolidar','warn');return;}
         btn.disabled=true;btn.textContent='Confirmando…';
         try{
-          const result=await data.adjudicateShopperIdentity(canonical,aliases,{ackAware:true,reason:'admin_identity_human_adjudication'});
-          if(!commandOk(result))throw new Error(commandError(result));
-          close();ui.toast('Identidad confirmada y guardada','ok',3600);
+          const result=await data.adjudicateShopperIdentity(canonical,aliases,{ackAware:true,reason:'admin_exact_identity_human_adjudication'});
+          if(!commandOk(result)||result.identityConsolidated!==true)throw new Error(commandError(result)||'La consolidación durable no fue confirmada por el proveedor');
+          close();ui.toast('Identidad canónica consolidada y guardada','ok',3600);
           try{await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('admin_identity_adjudication_refresh');}catch(_){}
           CX.router.nav('shoppers');
-        }catch(error){ui.toast('No se aplicó la resolución de identidad · '+String(error?.message||error),'err',5200);btn.disabled=false;btn.textContent='Confirmar fusión de identidad';}
+        }catch(error){ui.toast('No se aplicó la resolución de identidad · '+String(error?.message||error),'err',5200);btn.disabled=false;btn.textContent='Confirmar identidad canónica';}
       });
     }});
   };

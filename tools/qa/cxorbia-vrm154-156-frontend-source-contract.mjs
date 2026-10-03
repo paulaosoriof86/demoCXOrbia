@@ -14,6 +14,7 @@ const profile=read('app/adapters/tya-canonical-shopper-portal-v2.js');
 const acad=read('app/modules/academia.js');
 const css=read('app/styles/layout.css');
 const cert=read('app/modules/cert.js');
+const shoppersAdmin=read('app/modules/shoppers.js');
 must(server.includes("'scenarioDimensions'"),'VRM154_RUNTIME_CONFIG_WHITELIST_MISSING');
 must(builder.includes("scenarioDimensions:[{key:'escenario',label:'Medio de compra'"),'VRM154_PROJECT_CONFIG_MISSING');
 must(preview.includes("scenarioDimensions:Array.isArray(data.projectConfig?.scenarioDimensions)"),'VRM154_PHASEA_CONFIG_PROPAGATION_MISSING');
@@ -27,4 +28,8 @@ must(profile.includes('👤 Identidad y datos personales')&&profile.includes('�
 must(acad.includes('cx-academy-course-card')&&acad.includes("var(--brand)"),'VRM156_ACADEMY_CORPORATE_VISUAL_MISSING');
 must(css.includes('.cx-shopper-visit-card')&&css.includes('.cx-academy-course-head'),'VRM154_156_SHARED_STYLES_MISSING');
 must(cert.includes("const phCert=subtitle=>ui.ph('Certificación',subtitle)+certFilters();")&&!cert.includes('const phCert=subtitle=>phCert('),'VRM181_CERT_HEADER_RECURSION_PRESENT');
-process.stdout.write(JSON.stringify({decision:'PASS_VRM154_156_FRONTEND_SOURCE_CONTRACT',genericProjectDrivenScenarioDimensions:true,liveRuntimeScenarioDimensionsPropagation:true,shopperVisitVisualCoherence:true,stableVisitCommandKey:true,profileVisualCoherence:true,academyVisualCoherence:true,certRouteNonRecursive:true,production:false,writes:0},null,2)+'\n');
+must(shoppersAdmin.includes('data-identity-admin-only="true"')&&shoppersAdmin.includes('liveShopperId')&&shoppersAdmin.includes('sourceShopperId')&&shoppersAdmin.includes('exact_profile_alias_requires_admin_resolution')&&shoppersAdmin.includes('ambiguous_exact_technical_anchor'),'VRM185_ADMIN_IDENTITY_REVIEW_SCHEMA_NOT_NORMALIZED');
+must(shoppersAdmin.includes("reason==='display_name_collision_not_auto_merged'")&&shoppersAdmin.includes('Coincidir en nombre no constituye evidencia suficiente para fusionar perfiles'),'VRM185_NAME_ONLY_MERGE_NOT_BLOCKED');
+must(shoppersAdmin.includes('result.identityConsolidated!==true'),'VRM185_ADMIN_PROVIDER_CONSOLIDATION_ACK_NOT_REQUIRED');
+must(!profile.includes('adjudicateShopperIdentity')&&!profile.includes('data-identity-admin-only'),'VRM185_SHOPPER_PORTAL_IDENTITY_ADJUDICATION_LEAK');
+process.stdout.write(JSON.stringify({decision:'PASS_VRM154_156_FRONTEND_SOURCE_CONTRACT',genericProjectDrivenScenarioDimensions:true,liveRuntimeScenarioDimensionsPropagation:true,shopperVisitVisualCoherence:true,stableVisitCommandKey:true,profileVisualCoherence:true,academyVisualCoherence:true,certRouteNonRecursive:true,adminIdentityResolutionOnly:true,nameOnlyMergeBlocked:true,production:false,writes:0},null,2)+'\n');
