@@ -175,10 +175,14 @@ async function durableReadback(before){
 let browser=null;
 try{
   const hrMeta=await exactHrRevision();
-  const exact=await exactAuthorityEvidence();
-  const [beforeCurrent,beforeLegacy]=await Promise.all([activeMembers(CURRENT),activeMembers(LEGACY)]);
-  const alreadyConverged=beforeCurrent.length===1&&beforeLegacy.length===0&&str(exact.currentCross.shopperId)===CURRENT&&str(exact.legacyCross.shopperId)===CURRENT;
-  result.before={canonicalActive:beforeCurrent.length,aliasActive:beforeLegacy.length,exactProfileAlias:exact.exactProfileAlias,frozenAdminAuthority:exact.frozenAdminAuthority,authorityRefFingerprint:exact.authorityRefFingerprint,hrRevision:str(hrMeta.revision)};
+  const [beforeCurrent,beforeLegacy,currentCrossSnap,legacyCrossSnap]=await Promise.all([
+    activeMembers(CURRENT),activeMembers(LEGACY),cross.doc(CURRENT).get(),cross.doc(LEGACY).get()
+  ]);
+  const currentCrossData=currentCrossSnap.exists?(currentCrossSnap.data()||{}):{};
+  const legacyCrossData=legacyCrossSnap.exists?(legacyCrossSnap.data()||{}):{};
+  const alreadyConverged=beforeCurrent.length===1&&beforeLegacy.length===0&&
+    str(currentCrossData.shopperId)===CURRENT&&str(legacyCrossData.shopperId)===CURRENT;
+  result.before={canonicalActive:beforeCurrent.length,aliasActive:beforeLegacy.length,hrRevision:str(hrMeta.revision),alreadyConverged};
   if(alreadyConverged){
     result.readback=await durableReadback(null);
     result.decision='PASS_VRM185_ADMIN_PROVIDER_ADJUDICATION';
@@ -186,10 +190,15 @@ try{
     result.durableReadback=true;
     result.idempotentReplay=true;
     result.noWriteNeeded=true;
+    result.preWriteAuthorityRequired=false;
     save();
     console.log(JSON.stringify(result,null,2));
     process.exit(0);
   }
+  const exact=await exactAuthorityEvidence();
+  result.before.exactProfileAlias=exact.exactProfileAlias;
+  result.before.frozenAdminAuthority=exact.frozenAdminAuthority;
+  result.before.authorityRefFingerprint=exact.authorityRefFingerprint;
   if(beforeCurrent.length!==1||beforeLegacy.length!==1)throw new Error('MAPPING_FAILURE:VRM185_EXPECTED_DUAL_PRINCIPAL_TOPOLOGY_CHANGED');
   const currentProof=str(beforeCurrent[0].credentialPasswordProofVersion||exact.currentProfile.credentialPasswordProofVersion);
   const legacyProof=str(beforeLegacy[0].credentialPasswordProofVersion||exact.legacyProfile.credentialPasswordProofVersion);
