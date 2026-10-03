@@ -316,6 +316,30 @@
   root.addEventListener?.('error',event=>{
     if(event?.error?.cxCommandBlocked===true){event.preventDefault();return false;}
   });
+  function commercialCommand(commandType,entityType,entityId,payload,expectedVersion,permission){
+    const scope=ctx(),body=payload&&typeof payload==='object'?JSON.parse(JSON.stringify(payload)):{};
+    const cmd={
+      commandType,entityType,entityId:entityId||null,tenantId:scope.tenantId,projectId:null,periodId:null,
+      requireProject:false,requirePeriod:false,actor:{actorId:scope.actorId,role:scope.role,projectIds:scope.projectIds},
+      expectedVersion,idempotencyKey:idempotency(commandType,entityId,body,expectedVersion,{tenantId:scope.tenantId,projectId:'',periodId:''}),
+      payload:body,source:'commercial-ui',authorization:{providerEnforcementRequired:true,permission}
+    };
+    return execute(cmd,{ackAware:true,reason:'commercial-durable-write'});
+  }
+  CX.commercialCommandBoundary=Object.freeze({
+    version:'cxorbia-commercial-command-boundary-v1',canonicalMode,context:ctx,
+    createClient:payload=>commercialCommand('client.create','client',payload?.id||null,payload,'absent','cliente.edit'),
+    updateClient:(id,payload,version)=>commercialCommand('client.update','client',id,payload,version,'cliente.edit'),
+    createAccount:payload=>commercialCommand('crm.account.create','crmAccount',payload?.id||null,payload,'absent','crm.edit'),
+    updateAccount:(id,payload,version)=>commercialCommand('crm.account.update','crmAccount',id,payload,version,'crm.edit'),
+    createContact:payload=>commercialCommand('crm.contact.create','crmContact',payload?.id||null,payload,'absent','crm.edit'),
+    updateContact:(id,payload,version)=>commercialCommand('crm.contact.update','crmContact',id,payload,version,'crm.edit'),
+    createOpportunity:payload=>commercialCommand('crm.opportunity.create','crmOpportunity',payload?.id||null,payload,'absent','crm.edit'),
+    updateOpportunity:(id,payload,version)=>commercialCommand('crm.opportunity.update','crmOpportunity',id,payload,version,'crm.edit'),
+    createColumn:payload=>commercialCommand('crm.column.create','crmColumn',payload?.id||null,payload,'absent','crm.edit'),
+    updateColumn:(id,payload,version)=>commercialCommand('crm.column.update','crmColumn',id,payload,version,'crm.edit'),
+    deleteColumn:(id,version)=>commercialCommand('crm.column.delete','crmColumn',id,{},version,'crm.edit')
+  });
   CX.cxDataCommandBoundary=Object.freeze({version:VERSION,install,canonicalMode,context:ctx});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindAfterLegacyGuards);
   else bindAfterLegacyGuards();

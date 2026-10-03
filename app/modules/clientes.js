@@ -7,99 +7,74 @@ window.CX = window.CX || {};
 
 (function(){
   const D=CX.data; if(!D) return;
-  const LS_ADD='cx_clients', LS_PATCH='cx_client_patches';
   const slug=s=>(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  const canonical=()=>CX.commercialCommandBoundary?.canonicalMode?.()===true;
+  const providerRows=()=>Array.isArray(D.__commercialState?.clients)?D.__commercialState.clients.filter(x=>!x.deleted):[];
 
-  /* semilla: agrupa proyectos existentes por su campo client */
-  const seedMap={};
-  D.projects.forEach(p=>{
-    const name=p.client||p.name; const id='cl-'+slug(name);
-    if(!seedMap[id]) seedMap[id]={id,name,industry:p.industry||'',pais:(p.countries&&p.countries[0])||'GT',
-      estado:'Activo', plan:p.plan||'pro', desde:'2025',
-      contactos:[{nombre:'Contacto Principal',rol:'Gerente de Marca',email:'contacto@'+slug(name)+'.com',whatsapp:''}]};
-    p.clientId=id;
-  });
-  const seeds=Object.values(seedMap);
-  seeds.push({id:'cl-prospecto-norte',name:'Prospecto Cadena Norte',industry:'Retail · Supermercados',pais:'GT',estado:'Prospecto',plan:'estandar',desde:'2026',contactos:[]});
-  seeds.push({id:'cl-prospecto-salud',name:'Prospecto Red Salud',industry:'Salud · Clínicas',pais:'HN',estado:'Prospecto',plan:'pro',desde:'2026',contactos:[]});
-  const SEED_IDS=new Set(seeds.map(c=>c.id));
-  D.clients=seeds;
-
-  let patches={}; try{patches=JSON.parse(localStorage.getItem(LS_PATCH)||'{}');}catch(e){}
-  D.clients.forEach(c=>{ if(patches[c.id]) Object.assign(c,patches[c.id]); });
-  try{ (JSON.parse(localStorage.getItem(LS_ADD)||'[]')).forEach(c=>{ if(!D.clients.some(x=>x.id===c.id)) D.clients.push(c); }); }catch(e){}
-
-  function persist(){ const added=D.clients.filter(c=>!SEED_IDS.has(c.id));
-    try{ localStorage.setItem(LS_ADD,JSON.stringify(added)); localStorage.setItem(LS_PATCH,JSON.stringify(patches)); }catch(e){} }
-
-  D.getClient=function(id){ return this.clients.find(c=>c.id===id)||null; };
-  D.projectsForClient=function(id){ return this.projects.filter(p=>p.clientId===id); };
-
-  /* estadísticas operativas agregadas de un cliente (todas sus proyectos) */
-  D.clientStats=function(id){
-    const pids=this.projectsForClient(id).map(p=>p.id);
-    const vis=this._visitas.filter(v=>pids.includes(v.projectId));
-    const real=vis.filter(v=>['realizada','cuestionario','liquidada'].includes(v.estado));
-    const liq=vis.filter(v=>v.estado==='liquidada');
-    const cumpl=vis.length?Math.round(real.length/vis.length*100):0;
-    // puntuación promedio: de los scores de cuestionario si existen, si no de rating de shoppers involucrados
-    const scored=real.filter(v=>typeof v.score==='number');
-    const score=scored.length?Math.round(scored.reduce((a,v)=>a+v.score,0)/scored.length)
-      : (()=>{ const ids=[...new Set(vis.map(v=>v.shopperId).filter(Boolean))]; const rs=ids.map(i=>{const s=this.getShopper&&this.getShopper(i);return s&&s.rating;}).filter(Boolean); return rs.length?Math.round(rs.reduce((a,b)=>a+b,0)/rs.length*20):0; })();
-    const fechas=vis.map(v=>v.realizada||v.agendada||v.disponibleDesde).filter(Boolean).sort();
-    // ranking de sucursales por cumplimiento
-    const bySuc={}; vis.forEach(v=>{const k=v.sucursal; const s=bySuc[k]=bySuc[k]||{t:0,r:0,suc:k,pais:v.pais}; s.t++; if(['realizada','cuestionario','liquidada'].includes(v.estado))s.r++;});
-    const ranking=Object.values(bySuc).map(s=>({...s,pct:s.t?Math.round(s.r/s.t*100):0})).sort((a,b)=>b.pct-a.pct);
-    return {visitas:vis.length, realizadas:real.length, liquidadas:liq.length, cumpl, score, ranking, ultima:fechas[fechas.length-1]||null, proyectos:pids.length};
-  };
-
-  /* Gap 5 (matriz V123): antes clientes.js y crm.js manten\u00edan contactos como DOS colecciones
-     paralelas sin identidad compartida (mismo contacto humano, dos registros sin relaci\u00f3n) \u2014
-     un contacto editado en Clientes nunca se reflejaba en CRM y viceversa. Ahora cada contacto de
-     un cliente se sincroniza a CX.crmStore.contactos() con un contactId DETERMIN\u00edSTICO
-     (clientId+email o clientId+nombre normalizado) y la cuentaId correcta \u2014 mismo patr\u00f3n que ya
-     usaba addClient() para sincronizar la Cuenta (no se invent\u00f3 un mecanismo nuevo). */
-  const _contactKey=(clientId,ct)=>'ctlink-'+clientId+'-'+slug(ct.email||ct.nombre||'sin-nombre');
-  function _syncContacts(clientId, contactos){
-    if(!CX.crmStore || !contactos || !contactos.length) return;
-    try{
-      const c=D.getClient(clientId);
-      const cuentas=CX.crmStore.cuentas();
-      let cu=cuentas.find(x=>x.clientId===clientId);
-      /* clientes sembrados directamente (no vía addClient) nunca tuvieron Cuenta CRM vinculada —
-         se crea aquí mismo, con la misma lógica que ya usa addClient(), para no dejar cuentaId
-         huérfano en los contactos sincronizados. */
-      if(!cu && c){ CX.crmStore.addCuenta({nombre:c.name,rubro:c.industry||'',pais:c.pais,estado:c.estado==='Activo'?'Cliente':'Prospecto',clientId}); cu=CX.crmStore.cuentas().find(x=>x.clientId===clientId); }
-      const existentes=CX.crmStore.contactos();
-      contactos.forEach(ct=>{
-        const key=_contactKey(clientId,ct);
-        let ex=existentes.find(x=>x.linkKey===key);
-        if(ex){ Object.assign(ex,{nombre:ct.nombre,cargo:ct.rol||ex.cargo,email:ct.email||ex.email,tel:ct.whatsapp||ex.tel}); }
-        else { CX.crmStore.contactos().unshift({id:'ct'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),linkKey:key,nombre:ct.nombre,cargo:ct.rol||'',cuentaId:cu?cu.id:null,email:ct.email||'',tel:ct.whatsapp||'',rol:'Contacto'}); }
-      });
-      CX.crmStore.saveContactos();
-    }catch(e){}
+  function derivedSeeds(){
+    const seedMap={};
+    D.projects.forEach(p=>{
+      const name=p.client||p.name,id='cl-'+slug(name);
+      if(!seedMap[id])seedMap[id]={id,name,industry:p.industry||'',pais:(p.countries&&p.countries[0])||'GT',estado:'Activo',plan:p.plan||'pro',desde:'2025',contactos:[{nombre:'Contacto Principal',rol:'Gerente de Marca',email:'contacto@'+slug(name)+'.com',whatsapp:''}],version:'project-derived'};
+      p.clientId=id;
+    });
+    return Object.values(seedMap);
   }
-
-  D.addClient=function(cfg){ const id=cfg.id||('cl-'+slug(cfg.name||'cliente')+'-'+Date.now().toString(36).slice(-3));
-    const c=Object.assign({id,estado:'Prospecto',plan:'estandar',contactos:[],industry:'',pais:'GT',desde:String(new Date().getFullYear())},cfg,{id});
-    this.clients.push(c); persist();
-    /* #174 — sincronizar con CRM: crear/vincular la Cuenta si no existe (misma entidad, una sola fuente) */
-    try{ if(CX.crmStore){ const cuentas=CX.crmStore.cuentas();
-      let cu=cuentas.find(x=>x.clientId===id || (x.nombre||'').toLowerCase()===(c.name||'').toLowerCase());
-      if(!cu){ CX.crmStore.addCuenta({nombre:c.name,rubro:c.industry||'',pais:c.pais,estado:c.estado==='Activo'?'Cliente':'Prospecto',clientId:id}); }
-      else { cu.clientId=id; cu.estado=c.estado==='Activo'?'Cliente':cu.estado; CX.crmStore.saveCuentas(); }
-    }}catch(e){}
-    _syncContacts(id, c.contactos);
-    CX.bus&&CX.bus.emit('clients'); return c; };
-  D.updateClient=function(id,patch){ const c=this.getClient(id); if(!c)return null; Object.assign(c,patch);
-    if(SEED_IDS.has(id)) patches[id]=Object.assign(patches[id]||{},patch); persist();
-    if(patch.contactos) _syncContacts(id, patch.contactos);
-    CX.bus&&CX.bus.emit('clients'); return c; };
+  function refreshClients(){
+    const byId=new Map(derivedSeeds().map(c=>[c.id,c]));
+    if(!canonical()){
+      byId.set('cl-prospecto-norte',{id:'cl-prospecto-norte',name:'Prospecto Cadena Norte',industry:'Retail · Supermercados',pais:'GT',estado:'Prospecto',plan:'estandar',desde:'2026',contactos:[]});
+      byId.set('cl-prospecto-salud',{id:'cl-prospecto-salud',name:'Prospecto Red Salud',industry:'Salud · Clínicas',pais:'HN',estado:'Prospecto',plan:'pro',desde:'2026',contactos:[]});
+    }
+    providerRows().forEach(c=>byId.set(c.id,Object.assign({},byId.get(c.id)||{},c)));
+    D.clients=[...byId.values()];
+    return D.clients;
+  }
+  D.clients=refreshClients();
+  D.getClient=function(id){refreshClients();return this.clients.find(c=>c.id===id)||null;};
+  D.projectsForClient=function(id){return this.projects.filter(p=>p.clientId===id);};
+  D.clientStats=function(id){
+    const pids=this.projectsForClient(id).map(p=>p.id),vis=this._visitas.filter(v=>pids.includes(v.projectId));
+    const real=vis.filter(v=>['realizada','cuestionario','liquidada'].includes(v.estado)),liq=vis.filter(v=>v.estado==='liquidada');
+    const cumpl=vis.length?Math.round(real.length/vis.length*100):0,scored=real.filter(v=>typeof v.score==='number');
+    const score=scored.length?Math.round(scored.reduce((a,v)=>a+v.score,0)/scored.length):(()=>{const ids=[...new Set(vis.map(v=>v.shopperId).filter(Boolean))],rs=ids.map(i=>{const s=this.getShopper&&this.getShopper(i);return s&&s.rating;}).filter(Boolean);return rs.length?Math.round(rs.reduce((a,b)=>a+b,0)/rs.length*20):0;})();
+    const fechas=vis.map(v=>v.realizada||v.agendada||v.disponibleDesde).filter(Boolean).sort(),bySuc={};vis.forEach(v=>{const k=v.sucursal,s=bySuc[k]=bySuc[k]||{t:0,r:0,suc:k,pais:v.pais};s.t++;if(['realizada','cuestionario','liquidada'].includes(v.estado))s.r++;});
+    const ranking=Object.values(bySuc).map(s=>({...s,pct:s.t?Math.round(s.r/s.t*100):0})).sort((a,b)=>b.pct-a.pct);
+    return {visitas:vis.length,realizadas:real.length,liquidadas:liq.length,cumpl,score,ranking,ultima:fechas[fechas.length-1]||null,proyectos:pids.length};
+  };
+  const contactKey=(clientId,ct)=>'ctlink-'+clientId+'-'+slug(ct.email||ct.nombre||'sin-nombre');
+  function syncContactsDemo(clientId,contactos){
+    if(canonical()||!CX.crmStore||!contactos||!contactos.length)return;
+    try{
+      const c=D.getClient(clientId),cuentas=CX.crmStore.cuentas();let cu=cuentas.find(x=>x.clientId===clientId);
+      if(!cu&&c){CX.crmStore.addCuenta({nombre:c.name,rubro:c.industry||'',pais:c.pais,estado:c.estado==='Activo'?'Cliente':'Prospecto',clientId});cu=CX.crmStore.cuentas().find(x=>x.clientId===clientId);}
+      const existentes=CX.crmStore.contactos();
+      contactos.forEach(ct=>{const key=contactKey(clientId,ct),ex=existentes.find(x=>x.linkKey===key);if(ex)Object.assign(ex,{nombre:ct.nombre,cargo:ct.rol||ex.cargo,email:ct.email||ex.email,tel:ct.whatsapp||ex.tel});else CX.crmStore.addContacto({linkKey:key,nombre:ct.nombre,cargo:ct.rol||'',cuentaId:cu?cu.id:null,email:ct.email||'',tel:ct.whatsapp||'',rol:'Contacto'});});
+    }catch(_){}
+  }
+  D.applyClientReadback=function(row){
+    if(!row||!row.id)return null;
+    D.__commercialState=D.__commercialState||{};const rows=Array.isArray(D.__commercialState.clients)?D.__commercialState.clients:[],i=rows.findIndex(x=>x.id===row.id);
+    if(i>=0)rows[i]=Object.assign({},row);else rows.push(Object.assign({},row));D.__commercialState.clients=rows;refreshClients();CX.bus&&CX.bus.emit('clients');return D.getClient(row.id);
+  };
+  D.addClient=function(cfg){
+    cfg=cfg||{};
+    if(canonical())return CX.commercialCommandBoundary.createClient(cfg);
+    const id=cfg.id||('cl-'+slug(cfg.name||'cliente')+'-'+Date.now().toString(36).slice(-3)),c=Object.assign({id,estado:'Prospecto',plan:'estandar',contactos:[],industry:'',pais:'GT',desde:String(new Date().getFullYear())},cfg,{id,version:1});
+    this.clients.push(c);syncContactsDemo(id,c.contactos);CX.bus&&CX.bus.emit('clients');return c;
+  };
+  D.updateClient=function(id,patch){
+    const c=this.getClient(id);if(!c)return canonical()?Promise.resolve({ok:false,status:'blocked',providerAck:false,successUiAllowed:false,code:'CLIENT_NOT_FOUND'}):null;
+    if(canonical())return CX.commercialCommandBoundary.updateClient(id,patch,c.version??'project-derived');
+    Object.assign(c,patch);c.version=Number(c.version||0)+1;if(patch.contactos)syncContactsDemo(id,patch.contactos);CX.bus&&CX.bus.emit('clients');return c;
+  };
+  if(CX.bus?.on)CX.bus.on('clients',()=>{if(canonical())refreshClients();});
 })();
 
 /* ---------- Módulo Clientes (admin) ---------- */
 CX.module('clientes', ({data,ui})=>{
+  const canonicalCommercial=()=>CX.commercialCommandBoundary?.canonicalMode?.()===true;
+  const ackOk=a=>a&&a.ok===true&&a.committed===true&&a.providerAck===true&&a.successUiAllowed===true&&a.readbackVerified===true;
   const estadoTone={Activo:'g',Prospecto:'a',Inactivo:'n',Pausado:'a'};
   const list=()=>data.clients;
   const planLabel=(k)=>(CX.PLANS[k]&&CX.PLANS[k].label)||k||'—';
@@ -179,7 +154,7 @@ CX.module('clientes', ({data,ui})=>{
       ov.querySelector('#cl_edit').addEventListener('click',()=>{
         const body=ov.querySelector('.cx-modal-b'); body.innerHTML=editForm(c);
         body.querySelector('[data-cancel]').addEventListener('click',()=>{ close(); detail(c); });
-        body.querySelector('#cl_save').addEventListener('click',()=>{
+        body.querySelector('#cl_save').addEventListener('click',async()=>{
           if(!CX.permissions.gate('cliente.edit',CX.permissions.ctx({entityType:'cliente',entityId:c.id}),CX.ui))return;
           const patch={ name:body.querySelector('#cl_name').value.trim()||c.name, industry:body.querySelector('#cl_ind').value.trim(),
             pais:body.querySelector('#cl_pais').value, estado:body.querySelector('#cl_est').value, plan:body.querySelector('#cl_plan').value, desde:body.querySelector('#cl_desde').value.trim() };
@@ -190,7 +165,8 @@ CX.module('clientes', ({data,ui})=>{
           /* P1 (paquete V114→V125): historial real de clientes — antes editar no dejaba rastro.
              Reusa CX.automations.logAction (misma bitácora única, ya con ctx desde V123). */
           const changed=Object.keys(patch).filter(k=>k!=='contactos'&&patch[k]!==c[k]);
-          data.updateClient(c.id,patch);
+          const result=await Promise.resolve(data.updateClient(c.id,patch));
+          if(canonicalCommercial()){if(!ackOk(result)){CX.ui.toast('Cliente no actualizado: falta confirmación durable del proveedor.','warn',4200);return;}data.applyClientReadback&&data.applyClientReadback(result.entityReadback);}
           CX.automations&&CX.automations.logAction('Cliente editado', c.id, changed.length?('cambió: '+changed.join(', ')):'sin cambios de campo (contacto agregado)');
           close(); CX.ui.toast('Cliente actualizado','ok'); CX.router.nav('clientes');
         });
@@ -211,13 +187,14 @@ CX.module('clientes', ({data,ui})=>{
       </div>
       <div style="text-align:right;margin-top:16px"><button class="btn btn-green" id="nc_save">Crear cliente</button></div>
     `, {onMount:(ov,close)=>{
-      ov.querySelector('#nc_save').addEventListener('click',()=>{
+      ov.querySelector('#nc_save').addEventListener('click',async()=>{
         const name=ov.querySelector('#nc_name').value.trim();
         if(!name){ CX.ui.toast('Ponle nombre al cliente','err'); return; }
         const ct=ov.querySelector('#nc_ct').value.trim();
-        data.addClient({ name, industry:ov.querySelector('#nc_ind').value.trim(), pais:ov.querySelector('#nc_pais').value,
+        const result=await Promise.resolve(data.addClient({ name, industry:ov.querySelector('#nc_ind').value.trim(), pais:ov.querySelector('#nc_pais').value,
           plan:ov.querySelector('#nc_plan').value, estado:'Prospecto',
-          contactos: ct?[{nombre:ct,rol:'',email:'',whatsapp:''}]:[] });
+          contactos: ct?[{nombre:ct,rol:'',email:'',whatsapp:''}]:[] }));
+        if(canonicalCommercial()){if(!ackOk(result)){CX.ui.toast('Cliente no creado: falta confirmación durable del proveedor.','warn',4200);return;}data.applyClientReadback&&data.applyClientReadback(result.entityReadback);}
         close(); CX.ui.toast('Cliente creado','ok'); CX.router.nav('clientes');
       });
     }});

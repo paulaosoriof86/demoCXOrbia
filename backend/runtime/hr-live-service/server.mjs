@@ -203,6 +203,21 @@ async function exactHrCrosswalk(db,scope){
   return unique;
 }
 
+async function commercialTenantState(principal,scope){
+  const empty={clients:[],accounts:[],contacts:[],opportunities:[],columns:[],authority:'firestore_tenant_commercial',tenantId:scope.tenantId};
+  if(!['super','admin'].includes(String(principal.role||'').toLowerCase()))return empty;
+  const tenant=principal.db.collection('tenants').doc(scope.tenantId);
+  const [clients,accounts,contacts,opportunities,columns]=await Promise.all([
+    tenant.collection('clients').get(),
+    tenant.collection('crmAccounts').get(),
+    tenant.collection('crmContacts').get(),
+    tenant.collection('crmOpportunities').get(),
+    tenant.collection('crmColumns').get()
+  ]);
+  const rows=s=>s.docs.map(doc=>({id:doc.id,...(doc.data()||{})}));
+  return {clients:rows(clients),accounts:rows(accounts),contacts:rows(contacts),opportunities:rows(opportunities),columns:rows(columns),authority:'firestore_tenant_commercial',tenantId:scope.tenantId};
+}
+
 async function protectedPlatformState(current,principal,scope,operational){
   const snapshot=operational?operationalSnapshot(current):JSON.parse(JSON.stringify(current.snapshot));
   const cross=await exactHrCrosswalk(principal.db,scope);
@@ -238,7 +253,8 @@ async function protectedPlatformState(current,principal,scope,operational){
     if(principal.role!=='shopper')return true;
     return String(row.status||'active')==='active'&&(String(row.scope)==='all'||(Array.isArray(row.targetShopperIds)&&row.targetShopperIds.map(String).includes(principal.shopperId)));
   });
-  return {snapshot,protectedState:{reservations,certifications,certificationRecertifications,certificationAuthority:'firestore_project_certifications_exact_identity',identityAuthority:'hr_exact_crosswalk',crosswalkTokenCount:cross.size,mappedShoppers,mappedVisits,sourceRevision:current.revision}};
+  const commercial=await commercialTenantState(principal,scope);
+  return {snapshot,protectedState:{reservations,certifications,certificationRecertifications,commercial,certificationAuthority:'firestore_project_certifications_exact_identity',identityAuthority:'hr_exact_crosswalk',crosswalkTokenCount:cross.size,mappedShoppers,mappedVisits,sourceRevision:current.revision}};
 }
 
 function shopperPolicy(snapshot){
@@ -253,6 +269,10 @@ function operationalPolicy(snapshot){
   const scope=snapshotScope(snapshot);
   return {schemaVersion:'cxorbia.operational.provider-policy.v1',enabled:true,allowedTenantIds:[scope.tenantId],allowedProjectIds:[scope.projectId],conflictPolicy:'review_no_silent_overwrite',hrWrites:false,makeCalls:false,geminiCalls:false,storageWrites:false,paymentWrites:false};
 }
+function commercialPolicy(snapshot){
+  const scope=snapshotScope(snapshot);
+  return {schemaVersion:'cxorbia.commercial-command-provider-policy.v1',enabled:true,allowedTenantIds:[scope.tenantId],hrWrites:false,externalWrites:false,paymentWrites:false};
+}
 function configureCommandRuntime(snapshot){
   if(!snapshot)throw new Error('COMMAND_SOURCE_SCOPE_UNAVAILABLE');
   const {auth,db}=ensureAdmin();
@@ -261,6 +281,7 @@ function configureCommandRuntime(snapshot){
   globalThis.CXORBIA_SHOPPER_COMMAND_PROVIDER_POLICY=shopperPolicy(snapshot);
   globalThis.CXORBIA_PROJECT_COMMAND_PROVIDER_POLICY=projectPolicy(snapshot);
   globalThis.CXORBIA_OPERATIONAL_COMMAND_PROVIDER_POLICY=operationalPolicy(snapshot);
+  globalThis.CXORBIA_COMMERCIAL_COMMAND_PROVIDER_POLICY=commercialPolicy(snapshot);
   globalThis.CXORBIA_COMMAND_HR_SNAPSHOT=snapshot;
   globalThis.CXORBIA_COMMAND_HR_REVISION=String(cache?.revision||'');
 }

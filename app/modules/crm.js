@@ -3,6 +3,13 @@
    correos vinculados, documentos y Reportes de producción/metas/comparativo. */
 CX.crmStore = CX.crmStore || {
   _l:null, _cols:null, _cuentas:null, _contactos:null, _meta:null,
+  _canonical(){return CX.commercialCommandBoundary?.canonicalMode?.()===true;},
+  _state(){CX.data.__commercialState=CX.data.__commercialState||{};return CX.data.__commercialState;},
+  _rows(k){const v=this._state()[k];return Array.isArray(v)?v.filter(x=>!x.deleted):[];},
+  _version(x,fallback=0){return x?.version??(x?.__sourceDefault?'source-default':fallback);},
+  _ackOk(a){return a&&a.ok===true&&a.committed===true&&a.providerAck===true&&a.successUiAllowed===true&&a.readbackVerified===true;},
+  _apply(k,a){if(!this._ackOk(a)||!a.entityReadback)return a;const s=this._state(),rows=Array.isArray(s[k])?s[k]:[],i=rows.findIndex(x=>x.id===a.entityReadback.id);if(i>=0)rows[i]=Object.assign({},a.entityReadback);else rows.push(Object.assign({},a.entityReadback));s[k]=rows;CX.bus&&CX.bus.emit('crm');return a;},
+  _blocked(code){return Promise.resolve({ok:false,status:'blocked',committed:false,providerAck:false,successUiAllowed:false,readbackVerified:false,code});},
   /* columnas del pipeline (personalizables) */
   COLS_DEFAULT:[
     {id:'nuevo',     ic:'🆕', n:'Nuevo',       color:'#6b7280'},
@@ -12,11 +19,11 @@ CX.crmStore = CX.crmStore || {
     {id:'ganado',    ic:'🏆', n:'Ganado',      color:'#10b981'},
     {id:'perdido',   ic:'❌', n:'Perdido',     color:'#ef4444'},
   ],
-  cols(){ if(!this._cols)try{this._cols=JSON.parse(localStorage.getItem('cx_crm_cols')||'null')||JSON.parse(JSON.stringify(this.COLS_DEFAULT));}catch(e){this._cols=JSON.parse(JSON.stringify(this.COLS_DEFAULT));} return this._cols; },
-  saveCols(){ try{localStorage.setItem('cx_crm_cols',JSON.stringify(this._cols||this.COLS_DEFAULT));}catch(e){} CX.bus&&CX.bus.emit('crm'); },
-  addCol(cfg){ this.cols().push(Object.assign({id:'col'+Date.now().toString(36)},cfg)); this.saveCols(); },
-  editCol(id,patch){ const c=this.cols().find(x=>x.id===id); if(c)Object.assign(c,patch); this.saveCols(); },
-  delCol(id){ if(['ganado','perdido','nuevo'].includes(id))return; this._cols=this.cols().filter(x=>x.id!==id); this.saveCols(); },
+  cols(){if(this._canonical()){const persisted=this._state().columns||[],by=new Map(persisted.map(x=>[x.id,x])),out=[];this.COLS_DEFAULT.forEach(d=>{const p=by.get(d.id);by.delete(d.id);if(p?.deleted)return;out.push(Object.assign({__sourceDefault:!p},d,p||{}));});for(const p of by.values())if(!p.deleted)out.push(Object.assign({},p));return out;}if(!this._cols)this._cols=JSON.parse(JSON.stringify(this.COLS_DEFAULT));return this._cols;},
+  saveCols(){CX.bus&&CX.bus.emit('crm');return true;},
+  async addCol(cfg){if(this._canonical()){const a=await CX.commercialCommandBoundary.createColumn(cfg);return this._apply('columns',a);}const row=Object.assign({id:'col'+Date.now().toString(36),version:1},cfg);this.cols().push(row);this.saveCols();return row;},
+  async editCol(id,patch){const x=this.cols().find(v=>v.id===id);if(!x)return this._blocked('CRM_COLUMN_NOT_FOUND');if(this._canonical()){const a=await CX.commercialCommandBoundary.updateColumn(id,patch,this._version(x));return this._apply('columns',a);}Object.assign(x,patch);x.version=Number(x.version||0)+1;this.saveCols();return x;},
+  async delCol(id){if(['ganado','perdido','nuevo'].includes(id))return this._blocked('CRM_PROTECTED_COLUMN_DELETE_DENIED');const x=this.cols().find(v=>v.id===id);if(!x)return this._blocked('CRM_COLUMN_NOT_FOUND');if(this._canonical()){const a=await CX.commercialCommandBoundary.deleteColumn(id,this._version(x));return this._apply('columns',a);}this._cols=this.cols().filter(v=>v.id!==id);this.saveCols();return {ok:true};},
 
   /* ── Oportunidades ── */
   /* OLA1 (paquete V114→V115/V117, 20260714): CRM sembraba oportunidades/cuentas/contactos
@@ -32,20 +39,17 @@ CX.crmStore = CX.crmStore || {
       {id:'op4',empresa:'FarmaPlus',rubro:'Farmacias',pais:'GT',etapa:'nuevo',valor:21000,contacto:'Diego Ramos',cargo:'Mercadeo',contactoEmail:'mktg@farmaplus.gt',tel:'+502 5555 4040',prob:15,fuente:'Referido',cuentaId:'ac4',proximaAccion:'Agendar relevamiento',proximaFecha:'2026-06-30',nota:'Referido. Pendiente reunión de relevamiento.',acts:[],correos:[],docs:[]},
     ];
   },
-  list(){ if(!this._l)this._l=this.seed(); return this._l; },
-  add(o){ this.list().push(Object.assign({id:'op'+Date.now().toString(36),etapa:'nuevo',prob:15,valor:0,acts:[],docs:[],correos:[]},o)); CX.bus&&CX.bus.emit('crm'); },
+  list(){if(this._canonical())return this._rows('opportunities');if(!this._l)this._l=this.seed();return this._l;},
+  async add(o){const payload=Object.assign({etapa:'nuevo',prob:15,valor:0,acts:[],docs:[],correos:[]},o);if(this._canonical()){const a=await CX.commercialCommandBoundary.createOpportunity(payload);return this._apply('opportunities',a);}const row=Object.assign({id:'op'+Date.now().toString(36),version:1},payload);this.list().push(row);CX.bus&&CX.bus.emit('crm');return row;},
+  async updateOpportunity(id,patch){const o=this.list().find(x=>x.id===id);if(!o)return this._blocked('CRM_OPPORTUNITY_NOT_FOUND');if(this._canonical()){const a=await CX.commercialCommandBoundary.updateOpportunity(id,patch,this._version(o));return this._apply('opportunities',a);}Object.assign(o,patch);o.version=Number(o.version||0)+1;CX.bus&&CX.bus.emit('crm');return o;},
   /* P1 (paquete V114→V125): gate + historial en el \u00fanico punto real de mutaci\u00f3n (move()) en
      vez de en cada call-site (bot\u00f3n, drag-drop, ganar/perder) \u2014 as\u00ed ning\u00fan camino nuevo puede
      saltarse la validaci\u00f3n. Antes cualquier admin mov\u00eda una oportunidad sin gate ni rastro. */
-  move(id,etapa){ const o=this.list().find(x=>x.id===id); if(!o)return null;
-    if(CX.permissions && !CX.permissions.gate('crm.edit',CX.permissions.ctx({entityType:'oportunidad',entityId:id}),CX.ui)) return o;
-    const before=o.etapa; o.etapa=etapa;if(etapa==='ganado')o.prob=100;if(etapa==='perdido')o.prob=0;
-    CX.automations&&CX.automations.logAction('Oportunidad movida', id, o.empresa+' · '+before+' \u2192 '+etapa);
-    CX.bus&&CX.bus.emit('crm'); return o; },
-  acts(id){ const o=this.list().find(x=>x.id===id);if(o&&!o.acts)o.acts=[];return o?o.acts:[]; },
-  addAct(id,a){ const o=this.list().find(x=>x.id===id);if(o){o.acts=o.acts||[];o.acts.unshift(Object.assign({id:'a'+Date.now().toString(36),fecha:new Date().toISOString().slice(0,16).replace('T',' ')},a));CX.bus&&CX.bus.emit('crm');} },
-  tareas(){ const out=[];this.list().forEach(o=>{(o.acts||[]).forEach(a=>{if(a.tipo==='tarea'&&!a.hecho)out.push(Object.assign({op:o.empresa,opId:o.id},a));});});return out.sort((a,b)=>(a.vence||'').localeCompare(b.vence||'')); },
-  toggleTarea(opId,aId){ const o=this.list().find(x=>x.id===opId);if(o){const a=(o.acts||[]).find(x=>x.id===aId);if(a){a.hecho=!a.hecho;CX.bus&&CX.bus.emit('crm');}} },
+  async move(id,etapa){const o=this.list().find(x=>x.id===id);if(!o)return this._blocked('CRM_OPPORTUNITY_NOT_FOUND');if(CX.permissions&&!CX.permissions.gate('crm.edit',CX.permissions.ctx({entityType:'oportunidad',entityId:id}),CX.ui))return this._blocked('CRM_PERMISSION_DENIED');const before=o.etapa,patch={etapa,prob:etapa==='ganado'?100:etapa==='perdido'?0:o.prob};const a=await this.updateOpportunity(id,patch);if(!this._canonical()||this._ackOk(a))CX.automations&&CX.automations.logAction('Oportunidad movida',id,o.empresa+' · '+before+' → '+etapa);return a;},
+  acts(id){const o=this.list().find(x=>x.id===id);return o?(o.acts||[]):[];},
+  async addAct(id,a){const o=this.list().find(x=>x.id===id);if(!o)return this._blocked('CRM_OPPORTUNITY_NOT_FOUND');const acts=(o.acts||[]).slice();acts.unshift(Object.assign({id:'a'+Date.now().toString(36),fecha:new Date().toISOString().slice(0,16).replace('T',' ')},a));return this.updateOpportunity(id,{acts});},
+  tareas(){const out=[];this.list().forEach(o=>{(o.acts||[]).forEach(a=>{if(a.tipo==='tarea'&&!a.hecho)out.push(Object.assign({op:o.empresa,opId:o.id},a));});});return out.sort((a,b)=>(a.vence||'').localeCompare(b.vence||''));},
+  async toggleTarea(opId,aId){const o=this.list().find(x=>x.id===opId);if(!o)return this._blocked('CRM_OPPORTUNITY_NOT_FOUND');const acts=(o.acts||[]).map(a=>a.id===aId?Object.assign({},a,{hecho:!a.hecho}):a);return this.updateOpportunity(opId,{acts});}
 
   /* ── Cuentas (empresas) ── */
   cuentasSeed(){
@@ -57,9 +61,10 @@ CX.crmStore = CX.crmStore || {
       {id:'ac4',nombre:'FarmaPlus',rubro:'Farmacias',pais:'GT',sitio:'farmaplus.gt',empleados:'100-200',estado:'Prospecto',salud:40,owner:'Comercial 2',sucursales:31},
     ];
   },
-  cuentas(){ if(!this._cuentas)try{this._cuentas=JSON.parse(localStorage.getItem('cx_crm_cuentas')||'null')||this.cuentasSeed();}catch(e){this._cuentas=this.cuentasSeed();} return this._cuentas; },
-  saveCuentas(){ try{localStorage.setItem('cx_crm_cuentas',JSON.stringify(this._cuentas));}catch(e){} CX.bus&&CX.bus.emit('crm'); },
-  addCuenta(c){ this.cuentas().unshift(Object.assign({id:'ac'+Date.now().toString(36),salud:50,estado:'Prospecto'},c)); this.saveCuentas(); },
+  cuentas(){if(this._canonical())return this._rows('accounts');if(!this._cuentas)this._cuentas=this.cuentasSeed();return this._cuentas;},
+  saveCuentas(){CX.bus&&CX.bus.emit('crm');return true;},
+  async addCuenta(x){const payload=Object.assign({salud:50,estado:'Prospecto'},x);if(this._canonical()){const a=await CX.commercialCommandBoundary.createAccount(payload);return this._apply('accounts',a);}const row=Object.assign({id:'ac'+Date.now().toString(36),version:1},payload);this.cuentas().unshift(row);this.saveCuentas();return row;},
+  async updateCuenta(id,patch){const x=this.cuentas().find(v=>v.id===id);if(!x)return this._blocked('CRM_ACCOUNT_NOT_FOUND');if(this._canonical()){const a=await CX.commercialCommandBoundary.updateAccount(id,patch,this._version(x));return this._apply('accounts',a);}Object.assign(x,patch);x.version=Number(x.version||0)+1;this.saveCuentas();return x;},
 
   /* ── Contactos ── */
   contactosSeed(){
@@ -71,17 +76,19 @@ CX.crmStore = CX.crmStore || {
       {id:'ct4',nombre:'Diego Ramos',cargo:'Mercadeo',cuentaId:'ac4',email:'mktg@farmaplus.gt',tel:'+502 5555 4040',rol:'Contacto'},
     ];
   },
-  contactos(){ if(!this._contactos)try{this._contactos=JSON.parse(localStorage.getItem('cx_crm_contactos')||'null')||this.contactosSeed();}catch(e){this._contactos=this.contactosSeed();} return this._contactos; },
-  saveContactos(){ try{localStorage.setItem('cx_crm_contactos',JSON.stringify(this._contactos));}catch(e){} CX.bus&&CX.bus.emit('crm'); },
-  addContacto(c){ this.contactos().unshift(Object.assign({id:'ct'+Date.now().toString(36),rol:'Contacto'},c)); this.saveContactos(); },
+  contactos(){if(this._canonical())return this._rows('contacts');if(!this._contactos)this._contactos=this.contactosSeed();return this._contactos;},
+  saveContactos(){CX.bus&&CX.bus.emit('crm');return true;},
+  async addContacto(x){const payload=Object.assign({rol:'Contacto'},x);if(this._canonical()){const a=await CX.commercialCommandBoundary.createContact(payload);return this._apply('contacts',a);}const row=Object.assign({id:'ct'+Date.now().toString(36),version:1},payload);this.contactos().unshift(row);this.saveContactos();return row;},
 
   /* ── Metas comerciales ── */
-  meta(){ if(!this._meta)try{this._meta=JSON.parse(localStorage.getItem('cx_crm_meta')||'null')||{mensual:100000,trimestral:300000};}catch(e){this._meta={mensual:100000,trimestral:300000};} return this._meta; },
-  setMeta(m){ this._meta=Object.assign(this.meta(),m); try{localStorage.setItem('cx_crm_meta',JSON.stringify(this._meta));}catch(e){} CX.bus&&CX.bus.emit('crm'); },
+  meta(){if(!this._meta)this._meta={mensual:100000,trimestral:300000};return this._meta;},
+  setMeta(m){if(this._canonical())return this._blocked('CRM_META_PROVIDER_NOT_IN_VRM189_SCOPE');this._meta=Object.assign(this.meta(),m);CX.bus&&CX.bus.emit('crm');return this._meta;},
 };
 
 CX.module('crm', ({data,ui})=>{
   const host=ui.el('div');
+  const ackOk=a=>!CX.crmStore._canonical()||(a&&CX.crmStore._ackOk(a));
+  const durableWarn=()=>ui.toast('Acción no confirmada: el proveedor durable no emitió ACK/readback.','warn',4200);
   let crmView='dashboard'; // dashboard | pipeline | leads | cuentas | contactos | actividades | reportes
   const cur=()=>((data.period().currency&&data.period().currency.GT)||'$');
   const k=(n)=>cur()+' '+(n/1000).toFixed(0)+'k';
@@ -149,7 +156,7 @@ CX.module('crm', ({data,ui})=>{
         <button class="btn btn-green btn-sm" id="fGanar">🏆 Marcar ganado</button>
       </div>
     `,{onMount:(ov,close)=>{
-      ov.querySelector('#addDoc')?.addEventListener('click',()=>{const inp=document.createElement('input');inp.type='file';inp.accept='.pdf,.doc,.docx,.txt,image/*';inp.onchange=e=>{const f=e.target.files[0];if(!f)return;o.docs=o.docs||[];o.docs.push({n:f.name,tipo:(f.type||'archivo')});CX.bus&&CX.bus.emit('crm');close();ficha360(CX.crmStore.list().find(x=>x.id===o.id)||o);ui.toast('📎 '+f.name+' vinculado a la ficha','ok');};inp.click();});
+      ov.querySelector('#addDoc')?.addEventListener('click',()=>{const inp=document.createElement('input');inp.type='file';inp.accept='.pdf,.doc,.docx,.txt,image/*';inp.onchange=async e=>{const f=e.target.files[0];if(!f)return;const docs=(o.docs||[]).slice();docs.push({n:f.name,tipo:(f.type||'archivo')});const a=await Promise.resolve(CX.crmStore.updateOpportunity(o.id,{docs}));if(!ackOk(a)){durableWarn();return;}close();ficha360(CX.crmStore.list().find(x=>x.id===o.id)||o);ui.toast('📎 '+f.name+' vinculado a la ficha','ok');};inp.click();});
       ov.querySelectorAll('[data-newact]').forEach(b=>b.addEventListener('click',()=>{
         const tipo=b.dataset.newact;
         const isMeet=(tipo==='meet'), isMail=(tipo==='correo');
@@ -161,18 +168,17 @@ CX.module('crm', ({data,ui})=>{
             <label class="lbl">Vincular a módulo (navegación cruzada)</label>
             <select class="sel" id="actLink2" style="margin-bottom:10px"><option value="">— Sin vínculo —</option><option value="proyectos">📁 Proyecto</option><option value="costos">📄 Propuesta / Costos</option><option value="visitas">📍 Visita</option><option value="postulaciones">📋 Postulación</option></select>`:''}
           <div style="text-align:right"><button class="btn btn-pr btn-sm" id="actSave">Guardar</button></div>
-        `,{onMount:(o2,close2)=>{o2.querySelector('#actSave').addEventListener('click',()=>{
+        `,{onMount:(o2,close2)=>{o2.querySelector('#actSave').addEventListener('click',async()=>{
           const txt=(o2.querySelector('#actTxt').value||'').trim();if(!txt){ui.toast('Describe la actividad','warn');return;}
-          if(isMail){o.correos=o.correos||[];o.correos.unshift({de:o.contactoEmail||'',asunto:txt,fecha:new Date().toISOString().slice(0,10),preview:'Registrado manualmente'});CX.bus&&CX.bus.emit('crm');}
-          else{const act={tipo,texto:txt};if(isMeet){act.fecha=(o2.querySelector('#actF').value||'')+' '+(o2.querySelector('#actH').value||'');act.link=(o2.querySelector('#actLink')?.value||'').trim();}else if(tipo==='tarea'){act.vence=(o2.querySelector('#actVence')?.value||'');act.modulo=(o2.querySelector('#actLink2')?.value||'');}CX.crmStore.addAct(o.id,act);}
-          close2();close();ficha360(CX.crmStore.list().find(x=>x.id===o.id)||o);
-          ui.toast('Registrado','ok');
+          let a;if(isMail){const correos=(o.correos||[]).slice();correos.unshift({de:o.contactoEmail||'',asunto:txt,fecha:new Date().toISOString().slice(0,10),preview:'Registrado manualmente'});a=await Promise.resolve(CX.crmStore.updateOpportunity(o.id,{correos}));}
+          else{const act={tipo,texto:txt};if(isMeet){act.fecha=(o2.querySelector('#actF').value||'')+' '+(o2.querySelector('#actH').value||'');act.link=(o2.querySelector('#actLink')?.value||'').trim();}else if(tipo==='tarea'){act.vence=(o2.querySelector('#actVence')?.value||'');act.modulo=(o2.querySelector('#actLink2')?.value||'');}a=await Promise.resolve(CX.crmStore.addAct(o.id,act));}
+          if(!ackOk(a)){durableWarn();return;}close2();close();ficha360(CX.crmStore.list().find(x=>x.id===o.id)||o);ui.toast('Registrado','ok');
         });}});
       }));
       ov.querySelector('#fWa')?.addEventListener('click',()=>{const msg=encodeURIComponent('Hola '+(o.contacto||'')+', me comunico de parte de la consultora sobre '+o.empresa+'.');window.open('https://wa.me/?text='+msg,'_blank');});
       ov.querySelector('#fMail')?.addEventListener('click',()=>window.open('mailto:'+o.contactoEmail,'_blank'));
       ov.querySelector('#fProp')?.addEventListener('click',()=>{close();CX.router.nav('costos');ui.toast('Genera la propuesta para '+o.empresa,'ok');});
-      ov.querySelector('#fGanar')?.addEventListener('click',()=>{CX.crmStore.move(o.id,'ganado');const exists=data.clients&&data.clients.find(c=>c.name.toLowerCase()===o.empresa.toLowerCase());if(!exists&&data.addClient)data.addClient({name:o.empresa,industry:o.rubro,pais:o.pais,estado:'Activo',plan:'estandar'});close();draw();ui.toast('🏆 '+o.empresa+' ganado · creado como Cliente','ok',4000);});
+      ov.querySelector('#fGanar')?.addEventListener('click',async()=>{const moved=await Promise.resolve(CX.crmStore.move(o.id,'ganado'));if(!ackOk(moved)){durableWarn();return;}const exists=data.clients&&data.clients.find(c=>c.name.toLowerCase()===o.empresa.toLowerCase());if(!exists&&data.addClient){const ca=await Promise.resolve(data.addClient({name:o.empresa,industry:o.rubro,pais:o.pais,estado:'Activo',plan:'estandar'}));if(CX.crmStore._canonical()&&!(ca&&ca.providerAck&&ca.readbackVerified)){durableWarn();return;}if(ca?.entityReadback)data.applyClientReadback&&data.applyClientReadback(ca.entityReadback);}close();draw();ui.toast('🏆 '+o.empresa+' ganado · creado como Cliente','ok',4000);});
     }});
   };
 
@@ -420,11 +426,11 @@ CX.module('crm', ({data,ui})=>{
       ov.querySelectorAll('.hubCtMail,[data-em]').forEach(b=>b.addEventListener('click',()=>window.open('mailto:'+b.dataset.em,'_blank')));
       ov.querySelector('#hubNewProj')?.addEventListener('click',()=>{ov.__close();CX.router.nav('proyectos');ui.toast('Crea el programa para '+cu.nombre,'ok');});
       ov.querySelector('#hubNewProp')?.addEventListener('click',()=>{ov.__close();CX.router.nav('costos');ui.toast('Genera la propuesta para '+cu.nombre,'ok');});
-      ov.querySelector('#hubNewMeet')?.addEventListener('click',()=>ui.modal('🗓️ Agendar reunión',`<label class="lbl">Tema</label><input class="inp" id="mtT" placeholder="Reunión de seguimiento" style="margin-bottom:8px"><div class="grid g2" style="gap:8px;margin-bottom:8px"><div><label class="lbl">Fecha</label><input class="inp" id="mtF" type="date"></div><div><label class="lbl">Hora</label><input class="inp" id="mtH" type="time" value="10:00"></div></div><label class="lbl">Enlace (Meet/Zoom, opcional)</label><input class="inp" id="mtL" placeholder="https://…" style="margin-bottom:10px"><div style="font-size:10.5px;color:var(--t3);margin-bottom:10px">🔒 Envío de invitación real: pendiente integración calendario.</div><div style="text-align:right"><button class="btn btn-pr btn-sm" id="mtOk">Agendar</button></div>`,{onMount:(o2,c2)=>o2.querySelector('#mtOk').addEventListener('click',()=>{const o=ops2()[0]||CX.crmStore.list().find(x=>x.cuentaId===cu.id);const tema=(o2.querySelector('#mtT').value||'Reunión').trim();if(o){o.acts=o.acts||[];o.acts.unshift({id:'a'+Date.now().toString(36),tipo:'reunion',texto:tema,fecha:(o2.querySelector('#mtF').value||'')+' '+(o2.querySelector('#mtH').value||''),link:(o2.querySelector('#mtL').value||'').trim()});CX.bus&&CX.bus.emit('crm');}c2();draw360(ov);ui.toast('Reunión agendada','ok');})}));
-      ov.querySelector('#hubNewMail')?.addEventListener('click',()=>ui.modal('＋ Registrar correo',`<label class="lbl">Asunto</label><input class="inp" id="hmA" style="margin-bottom:8px"><label class="lbl">De</label><input class="inp" id="hmD" placeholder="correo@cliente.com" style="margin-bottom:8px"><label class="lbl">Resumen</label><textarea class="inp" id="hmP" rows="2" style="margin-bottom:10px"></textarea><div style="text-align:right"><button class="btn btn-pr btn-sm" id="hmOk">Vincular</button></div>`,{onMount:(o2,c2)=>o2.querySelector('#hmOk').addEventListener('click',()=>{const o=ops2()[0];if(o){o.correos=o.correos||[];o.correos.unshift({asunto:o2.querySelector('#hmA').value||'(sin asunto)',de:o2.querySelector('#hmD').value||'',fecha:new Date().toISOString().slice(0,10),preview:o2.querySelector('#hmP').value||''});CX.bus&&CX.bus.emit('crm');}c2();draw360(ov);ui.toast('Correo vinculado a la ficha','ok');})}));
-      ov.querySelector('#hubNewCt')?.addEventListener('click',()=>ui.modal('＋ Contacto',`<label class="lbl">Nombre</label><input class="inp" id="hcN" style="margin-bottom:8px"><label class="lbl">Cargo</label><input class="inp" id="hcC" style="margin-bottom:8px"><div class="grid g2" style="gap:8px;margin-bottom:8px"><div><label class="lbl">Correo</label><input class="inp" id="hcE"></div><div><label class="lbl">Rol</label><select class="sel" id="hcR"><option>Decisor</option><option>Influenciador</option><option>Contacto</option></select></div></div><div style="text-align:right"><button class="btn btn-pr btn-sm" id="hcOk">Crear</button></div>`,{onMount:(o2,c2)=>o2.querySelector('#hcOk').addEventListener('click',()=>{const n=(o2.querySelector('#hcN').value||'').trim();if(!n){ui.toast('Nombre requerido','warn');return;}CX.crmStore.addContacto({nombre:n,cargo:o2.querySelector('#hcC').value,cuentaId:cu.id,email:o2.querySelector('#hcE').value,rol:o2.querySelector('#hcR').value});c2();draw360(ov);ui.toast('Contacto creado','ok');})}));
-      ov.querySelector('#hubDocF')?.addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const o=ops2()[0];if(o){o.docs=o.docs||[];o.docs.push({n:f.name,tipo:'doc'});CX.bus&&CX.bus.emit('crm');}draw360(ov);ui.toast('Documento "'+f.name+'" vinculado','ok');});
-      ov.querySelector('#hubEditCu')?.addEventListener('click',()=>ui.modal('✎ Editar cuenta',`<label class="lbl">Nombre</label><input class="inp" id="heN" value="${(cu.nombre||'').replace(/"/g,'&quot;')}" style="margin-bottom:8px"><div class="grid g2" style="gap:8px;margin-bottom:8px"><div><label class="lbl">Sucursales</label><input class="inp" id="heS" type="number" value="${cu.sucursales||0}"></div><div><label class="lbl">Salud %</label><input class="inp" id="heH" type="number" value="${cu.salud||50}"></div></div><label class="lbl">Owner</label><input class="inp" id="heO" value="${cu.owner||''}" style="margin-bottom:10px"><div style="text-align:right"><button class="btn btn-pr btn-sm" id="heOk">Guardar</button></div>`,{onMount:(o2,c2)=>o2.querySelector('#heOk').addEventListener('click',()=>{cu.nombre=o2.querySelector('#heN').value||cu.nombre;cu.sucursales=+o2.querySelector('#heS').value||cu.sucursales;cu.salud=+o2.querySelector('#heH').value||cu.salud;cu.owner=o2.querySelector('#heO').value;CX.crmStore.saveCuentas();c2();draw360(ov);ui.toast('Cuenta actualizada','ok');})}));
+      ov.querySelector('#hubNewMeet')?.addEventListener('click',()=>ui.modal('🗓️ Agendar reunión',`<label class="lbl">Tema</label><input class="inp" id="mtT" placeholder="Reunión de seguimiento" style="margin-bottom:8px"><div class="grid g2" style="gap:8px;margin-bottom:8px"><div><label class="lbl">Fecha</label><input class="inp" id="mtF" type="date"></div><div><label class="lbl">Hora</label><input class="inp" id="mtH" type="time" value="10:00"></div></div><label class="lbl">Enlace (Meet/Zoom, opcional)</label><input class="inp" id="mtL" placeholder="https://…" style="margin-bottom:10px"><div style="font-size:10.5px;color:var(--t3);margin-bottom:10px">🔒 Envío de invitación real: pendiente integración calendario.</div><div style="text-align:right"><button class="btn btn-pr btn-sm" id="mtOk">Agendar</button></div>`,{onMount:(o2,c2)=>o2.querySelector('#mtOk').addEventListener('click',async()=>{const o=ops2()[0]||CX.crmStore.list().find(x=>x.cuentaId===cu.id),tema=(o2.querySelector('#mtT').value||'Reunión').trim();if(o){const a=await Promise.resolve(CX.crmStore.addAct(o.id,{tipo:'reunion',texto:tema,fecha:(o2.querySelector('#mtF').value||'')+' '+(o2.querySelector('#mtH').value||''),link:(o2.querySelector('#mtL').value||'').trim()}));if(!ackOk(a)){durableWarn();return;}}c2();draw360(ov);ui.toast('Reunión agendada','ok');})}));
+      ov.querySelector('#hubNewMail')?.addEventListener('click',()=>ui.modal('＋ Registrar correo',`<label class="lbl">Asunto</label><input class="inp" id="hmA" style="margin-bottom:8px"><label class="lbl">De</label><input class="inp" id="hmD" placeholder="correo@cliente.com" style="margin-bottom:8px"><label class="lbl">Resumen</label><textarea class="inp" id="hmP" rows="2" style="margin-bottom:10px"></textarea><div style="text-align:right"><button class="btn btn-pr btn-sm" id="hmOk">Vincular</button></div>`,{onMount:(o2,c2)=>o2.querySelector('#hmOk').addEventListener('click',async()=>{const o=ops2()[0];if(o){const correos=(o.correos||[]).slice();correos.unshift({asunto:o2.querySelector('#hmA').value||'(sin asunto)',de:o2.querySelector('#hmD').value||'',fecha:new Date().toISOString().slice(0,10),preview:o2.querySelector('#hmP').value||''});const a=await Promise.resolve(CX.crmStore.updateOpportunity(o.id,{correos}));if(!ackOk(a)){durableWarn();return;}}c2();draw360(ov);ui.toast('Correo vinculado a la ficha','ok');})}));
+      ov.querySelector('#hubNewCt')?.addEventListener('click',()=>ui.modal('＋ Contacto',`<label class="lbl">Nombre</label><input class="inp" id="hcN" style="margin-bottom:8px"><label class="lbl">Cargo</label><input class="inp" id="hcC" style="margin-bottom:8px"><div class="grid g2" style="gap:8px;margin-bottom:8px"><div><label class="lbl">Correo</label><input class="inp" id="hcE"></div><div><label class="lbl">Rol</label><select class="sel" id="hcR"><option>Decisor</option><option>Influenciador</option><option>Contacto</option></select></div></div><div style="text-align:right"><button class="btn btn-pr btn-sm" id="hcOk">Crear</button></div>`,{onMount:(o2,c2)=>o2.querySelector('#hcOk').addEventListener('click',async()=>{const n=(o2.querySelector('#hcN').value||'').trim();if(!n){ui.toast('Nombre requerido','warn');return;}const a=await Promise.resolve(CX.crmStore.addContacto({nombre:n,cargo:o2.querySelector('#hcC').value,cuentaId:cu.id,email:o2.querySelector('#hcE').value,rol:o2.querySelector('#hcR').value}));if(!ackOk(a)){durableWarn();return;}c2();draw360(ov);ui.toast('Contacto creado','ok');})}));
+      ov.querySelector('#hubDocF')?.addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;const o=ops2()[0];if(o){const docs=(o.docs||[]).slice();docs.push({n:f.name,tipo:'doc'});const a=await Promise.resolve(CX.crmStore.updateOpportunity(o.id,{docs}));if(!ackOk(a)){durableWarn();return;}}draw360(ov);ui.toast('Documento "'+f.name+'" vinculado','ok');});
+      ov.querySelector('#hubEditCu')?.addEventListener('click',()=>ui.modal('✎ Editar cuenta',`<label class="lbl">Nombre</label><input class="inp" id="heN" value="${(cu.nombre||'').replace(/"/g,'&quot;')}" style="margin-bottom:8px"><div class="grid g2" style="gap:8px;margin-bottom:8px"><div><label class="lbl">Sucursales</label><input class="inp" id="heS" type="number" value="${cu.sucursales||0}"></div><div><label class="lbl">Salud %</label><input class="inp" id="heH" type="number" value="${cu.salud||50}"></div></div><label class="lbl">Owner</label><input class="inp" id="heO" value="${cu.owner||''}" style="margin-bottom:10px"><div style="text-align:right"><button class="btn btn-pr btn-sm" id="heOk">Guardar</button></div>`,{onMount:(o2,c2)=>o2.querySelector('#heOk').addEventListener('click',async()=>{const patch={nombre:o2.querySelector('#heN').value||cu.nombre,sucursales:+o2.querySelector('#heS').value||cu.sucursales,salud:+o2.querySelector('#heH').value||cu.salud,owner:o2.querySelector('#heO').value};const a=await Promise.resolve(CX.crmStore.updateCuenta(cu.id,patch));if(!ackOk(a)){durableWarn();return;}c2();draw360(ov);ui.toast('Cuenta actualizada','ok');})}));
       ov.querySelectorAll('.hubProp').forEach(b=>b.addEventListener('click',()=>{const pr=(CX.propStore.all()).find(x=>x.id===b.dataset.pid);if(!pr)return;const introHtml=pr.intro?'<div style="font-size:12px;background:var(--panel-2);border-radius:8px;padding:10px;max-height:140px;overflow:auto">'+pr.intro+'</div>':'';ui.modal('📄 '+(pr.proyecto||'Propuesta'),'<div style="font-size:12.5px;line-height:1.8;color:var(--t2);margin-bottom:10px"><div><b>Total:</b> '+(pr.moneda||'')+' '+(pr.total||0).toLocaleString()+'</div><div><b>Estado:</b> '+pr.estado+' · <b>Creada:</b> '+pr.fecha+'</div></div>'+introHtml+'<div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="hprEdit">✎ Retomar en Costos</button></div>',{onMount:(o2,c2)=>o2.querySelector('#hprEdit').addEventListener('click',()=>{c2();ov.__close();CX.router.nav('costos');})});}));
     };
 
@@ -440,7 +446,7 @@ CX.module('crm', ({data,ui})=>{
       draw360(ov);
       ov.querySelector('#hubMail')?.addEventListener('click',()=>{const ct=cts()[0];window.open('mailto:'+(ct?ct.email:''),'_blank');});
       ov.querySelector('#hubVerCli')?.addEventListener('click',()=>{close();CX.router.nav('clientes');});
-      ov.querySelector('#hubCrearCli')?.addEventListener('click',()=>{if(data.addClient)data.addClient({name:cu.nombre,industry:cu.rubro,pais:cu.pais,estado:'Activo',plan:'estandar'});cu.estado='Cliente';CX.crmStore.saveCuentas();close();draw();ui.toast('🏆 '+cu.nombre+' ahora es Cliente activo · ficha sincronizada','ok',4000);});
+      ov.querySelector('#hubCrearCli')?.addEventListener('click',async()=>{let ca=null;if(data.addClient)ca=await Promise.resolve(data.addClient({name:cu.nombre,industry:cu.rubro,pais:cu.pais,estado:'Activo',plan:'estandar'}));if(CX.crmStore._canonical()&&!(ca&&ca.providerAck&&ca.readbackVerified)){durableWarn();return;}if(ca?.entityReadback)data.applyClientReadback&&data.applyClientReadback(ca.entityReadback);const aa=await Promise.resolve(CX.crmStore.updateCuenta(cu.id,{estado:'Cliente'}));if(!ackOk(aa)){durableWarn();return;}close();draw();ui.toast('🏆 '+cu.nombre+' ahora es Cliente activo · ficha sincronizada','ok',4000);});
     }});
   };
 
@@ -462,7 +468,7 @@ CX.module('crm', ({data,ui})=>{
     host.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{crmView=b.dataset.view;draw();}));
     host.querySelectorAll('[data-op]').forEach(c=>c.addEventListener('click',()=>ficha360(CX.crmStore.list().find(x=>x.id===c.dataset.op))));
     host.querySelectorAll('[data-fic]').forEach(c=>c.addEventListener('click',()=>ficha360(CX.crmStore.list().find(x=>x.id===c.dataset.fic))));
-    host.querySelectorAll('.crm-done').forEach(b=>b.addEventListener('click',(e)=>{e.stopPropagation();CX.crmStore.toggleTarea(b.dataset.op,b.dataset.act);draw();ui.toast('Tarea completada','ok');}));
+    host.querySelectorAll('.crm-done').forEach(b=>b.addEventListener('click',async(e)=>{e.stopPropagation();const a=await Promise.resolve(CX.crmStore.toggleTarea(b.dataset.op,b.dataset.act));if(!ackOk(a)){durableWarn();return;}draw();ui.toast('Tarea completada','ok');}));
     host.querySelectorAll('.crm-goto').forEach(b=>b.addEventListener('click',(e)=>{e.stopPropagation();if(b.dataset.mod)CX.router.nav(b.dataset.mod);}));
 
     /* Cuenta → Ficha 360 hub con pestañas (Orbit360 style) */
@@ -479,7 +485,7 @@ CX.module('crm', ({data,ui})=>{
         <div class="grid g2" style="gap:8px;margin-bottom:8px"><div><label class="lbl">Valor est.</label><input class="inp" id="ncV" type="number"></div><div><label class="lbl">País</label><select class="sel" id="ncP">${(CX.COUNTRIES||[{c:'GT'}]).map(c=>`<option value="${c.c}">${c.c}</option>`).join('')}</select></div></div>
         <div class="grid g2" style="gap:8px;margin-bottom:8px"><div><label class="lbl">Contacto</label><input class="inp" id="ncC" placeholder="Nombre"></div><div><label class="lbl">Fuente</label><select class="sel" id="ncF"><option>Referido</option><option>LinkedIn</option><option>RFP</option><option>Web</option><option>Evento</option><option>Directo</option></select></div></div>
         <div style="text-align:right"><button class="btn btn-pr btn-sm" id="ncSave">Crear</button></div>
-      `,{onMount:(ov,close)=>ov.querySelector('#ncSave').addEventListener('click',()=>{const e=(ov.querySelector('#ncE').value||'').trim();if(!e){ui.toast('Nombre requerido','warn');return;}CX.crmStore.add({empresa:e,rubro:ov.querySelector('#ncR').value,pais:ov.querySelector('#ncP').value,valor:+ov.querySelector('#ncV').value||0,contacto:ov.querySelector('#ncC').value,fuente:ov.querySelector('#ncF').value,etapa});close();draw();ui.toast('Oportunidad creada','ok');})});
+      `,{onMount:(ov,close)=>ov.querySelector('#ncSave').addEventListener('click',async()=>{const e=(ov.querySelector('#ncE').value||'').trim();if(!e){ui.toast('Nombre requerido','warn');return;}const a=await Promise.resolve(CX.crmStore.add({empresa:e,rubro:ov.querySelector('#ncR').value,pais:ov.querySelector('#ncP').value,valor:+ov.querySelector('#ncV').value||0,contacto:ov.querySelector('#ncC').value,fuente:ov.querySelector('#ncF').value,etapa}));if(!ackOk(a)){durableWarn();return;}close();draw();ui.toast('Oportunidad creada','ok');})});
     };
     host.querySelectorAll('[data-newcol]').forEach(b=>b.addEventListener('click',()=>newOpModal(b.dataset.newcol)));
     host.querySelector('#crmNew')?.addEventListener('click',()=>newOpModal('nuevo'));
@@ -490,13 +496,13 @@ CX.module('crm', ({data,ui})=>{
       <div class="grid g2" style="gap:8px;margin-bottom:12px"><div><label class="lbl">Nombre</label><input class="inp" id="clN" placeholder="Ej. Demo"></div><div><label class="lbl">Icono</label><input class="inp" id="clI" value="📌" style="max-width:80px"></div></div>
       <label class="lbl">Color</label><input class="inp" id="clC" type="color" value="#6366f1" style="height:36px;margin-bottom:12px">
       <div style="text-align:right"><button class="btn btn-pr btn-sm" id="clSave">Agregar</button></div>
-    `,{onMount:(ov,close)=>ov.querySelector('#clSave').addEventListener('click',()=>{CX.crmStore.addCol({ic:ov.querySelector('#clI').value,n:ov.querySelector('#clN').value.trim()||'Nueva',color:ov.querySelector('#clC').value});close();draw();ui.toast('Columna agregada','ok');})}));
+    `,{onMount:(ov,close)=>ov.querySelector('#clSave').addEventListener('click',async()=>{const a=await Promise.resolve(CX.crmStore.addCol({ic:ov.querySelector('#clI').value,n:ov.querySelector('#clN').value.trim()||'Nueva',color:ov.querySelector('#clC').value}));if(!ackOk(a)){durableWarn();return;}close();draw();ui.toast('Columna agregada','ok');})}));
     host.querySelectorAll('[data-editcol]').forEach(b=>b.addEventListener('click',(e)=>{e.stopPropagation();const col=CX.crmStore.cols().find(c=>c.id===b.dataset.editcol);if(!col)return;
       ui.modal('✎ Editar columna · '+col.n,`
         <div class="grid g2" style="gap:8px;margin-bottom:10px"><div><label class="lbl">Nombre</label><input class="inp" id="ecN" value="${col.n}"></div><div><label class="lbl">Icono</label><input class="inp" id="ecI" value="${col.ic}" style="max-width:80px"></div></div>
         <label class="lbl">Color</label><input class="inp" id="ecC" type="color" value="${col.color}" style="height:36px;margin-bottom:12px">
         <div class="between"><button class="btn btn-ghost btn-sm" id="ecDel" style="color:var(--red)">🗑 Eliminar</button><button class="btn btn-pr btn-sm" id="ecSave">Guardar</button></div>
-      `,{onMount:(ov,close)=>{ov.querySelector('#ecSave').addEventListener('click',()=>{CX.crmStore.editCol(col.id,{n:ov.querySelector('#ecN').value.trim()||col.n,ic:ov.querySelector('#ecI').value||col.ic,color:ov.querySelector('#ecC').value});close();draw();ui.toast('Columna actualizada','ok');});ov.querySelector('#ecDel').addEventListener('click',()=>{CX.crmStore.delCol(col.id);close();draw();ui.toast('Columna eliminada','');});}});
+      `,{onMount:(ov,close)=>{ov.querySelector('#ecSave').addEventListener('click',async()=>{const a=await Promise.resolve(CX.crmStore.editCol(col.id,{n:ov.querySelector('#ecN').value.trim()||col.n,ic:ov.querySelector('#ecI').value||col.ic,color:ov.querySelector('#ecC').value}));if(!ackOk(a)){durableWarn();return;}close();draw();ui.toast('Columna actualizada','ok');});ov.querySelector('#ecDel').addEventListener('click',async()=>{const a=await Promise.resolve(CX.crmStore.delCol(col.id));if(!ackOk(a)){durableWarn();return;}close();draw();ui.toast('Columna eliminada','');});}});
     }));
 
     /* nueva cuenta / contacto */
@@ -525,14 +531,12 @@ CX.module('crm', ({data,ui})=>{
         const fill=()=>{const base=f.name.replace(/\.[^.]+$/,'').replace(/[_-]/g,' ');ov.querySelector('#cuN').value=ov.querySelector('#cuN').value||base.replace(/\b\w/g,c=>c.toUpperCase());ov.querySelector('#cuNota').value=ov.querySelector('#cuNota').value||('Extraído de '+f.name+' con IA.');ov.querySelector('#cuFileName').textContent='✓ Datos extraídos de '+f.name+' — revisa y completa.';ui.toast('IA extrajo los datos del documento','ok');};
         if(CX.ai&&CX.ai.ready()){CX.ai.ask('Extrae de este documento ('+f.name+') el nombre de la empresa, rubro, contacto y datos. Responde breve.').then(fill).catch(fill);}else setTimeout(fill,800);
       });
-      ov.querySelector('#cuSave').addEventListener('click',()=>{
+      ov.querySelector('#cuSave').addEventListener('click',async()=>{
         const n=(ov.querySelector('#cuN').value||'').trim();if(!n){ui.toast('Nombre requerido','warn');return;}
         const nuevaCuenta={nombre:n,rubro:ov.querySelector('#cuR').value,pais:ov.querySelector('#cuP').value,ciudad:ov.querySelector('#cuCity').value,sitio:ov.querySelector('#cuWeb').value,sucursales:+ov.querySelector('#cuS').value||0,empleados:ov.querySelector('#cuE').value,nota:ov.querySelector('#cuNota').value};
-        CX.crmStore.addCuenta(nuevaCuenta);
-        const cuId=CX.crmStore.cuentas()[0].id;
-        const ctN=(ov.querySelector('#cuCtN').value||'').trim();
-        if(ctN)CX.crmStore.addContacto({nombre:ctN,cargo:ov.querySelector('#cuCtC').value,cuentaId:cuId,email:ov.querySelector('#cuCtE').value,tel:ov.querySelector('#cuCtT').value,rol:'Decisor'});
-        if(ov.querySelector('#cuEsCli').checked&&data.addClient){data.addClient({name:n,industry:ov.querySelector('#cuR').value,pais:ov.querySelector('#cuP').value,estado:'Activo',plan:'estandar'});}
+        const cuAck=await Promise.resolve(CX.crmStore.addCuenta(nuevaCuenta));if(!ackOk(cuAck)){durableWarn();return;}const cuId=cuAck?.entityId||cuAck?.id||CX.crmStore.cuentas()[0]?.id;
+        const ctN=(ov.querySelector('#cuCtN').value||'').trim();if(ctN){const ctAck=await Promise.resolve(CX.crmStore.addContacto({nombre:ctN,cargo:ov.querySelector('#cuCtC').value,cuentaId:cuId,email:ov.querySelector('#cuCtE').value,tel:ov.querySelector('#cuCtT').value,rol:'Decisor'}));if(!ackOk(ctAck)){durableWarn();return;}}
+        if(ov.querySelector('#cuEsCli').checked&&data.addClient){const ca=await Promise.resolve(data.addClient({name:n,industry:ov.querySelector('#cuR').value,pais:ov.querySelector('#cuP').value,estado:'Activo',plan:'estandar'}));if(CX.crmStore._canonical()&&!(ca&&ca.providerAck&&ca.readbackVerified)){durableWarn();return;}if(ca?.entityReadback)data.applyClientReadback&&data.applyClientReadback(ca.entityReadback);}
         close();draw();ui.toast('✓ Cuenta'+(ctN?' + contacto':'')+(ov.querySelector('#cuEsCli').checked?' + cliente':'')+' creados y vinculados','ok',4000);
       });
     }}));
@@ -543,14 +547,14 @@ CX.module('crm', ({data,ui})=>{
       <div class="grid g2" style="gap:8px;margin-bottom:8px"><div><label class="lbl">Correo</label><input class="inp" id="coE"></div><div><label class="lbl">Teléfono</label><input class="inp" id="coT"></div></div>
       <label class="lbl">Rol</label><select class="sel" id="coR" style="margin-bottom:12px"><option>Decisor</option><option>Influenciador</option><option>Contacto</option></select>
       <div style="text-align:right"><button class="btn btn-pr btn-sm" id="coSave">Crear contacto</button></div>
-    `,{onMount:(ov,close)=>ov.querySelector('#coSave').addEventListener('click',()=>{const n=(ov.querySelector('#coN').value||'').trim();if(!n){ui.toast('Nombre requerido','warn');return;}CX.crmStore.addContacto({nombre:n,cargo:ov.querySelector('#coC').value,cuentaId:ov.querySelector('#coAc').value,email:ov.querySelector('#coE').value,tel:ov.querySelector('#coT').value,rol:ov.querySelector('#coR').value});close();draw();ui.toast('Contacto creado','ok');})});});
+    `,{onMount:(ov,close)=>ov.querySelector('#coSave').addEventListener('click',async()=>{const n=(ov.querySelector('#coN').value||'').trim();if(!n){ui.toast('Nombre requerido','warn');return;}const a=await Promise.resolve(CX.crmStore.addContacto({nombre:n,cargo:ov.querySelector('#coC').value,cuentaId:ov.querySelector('#coAc').value,email:ov.querySelector('#coE').value,tel:ov.querySelector('#coT').value,rol:ov.querySelector('#coR').value}));if(!ackOk(a)){durableWarn();return;}close();draw();ui.toast('Contacto creado','ok');})});});
 
     /* meta */
     host.querySelector('#editMeta')?.addEventListener('click',()=>{const m=CX.crmStore.meta();ui.modal('🎯 Ajustar meta comercial',`
       <label class="lbl">Meta mensual (${cur()})</label><input class="inp" id="mM" type="number" value="${m.mensual}" style="margin-bottom:8px">
       <label class="lbl">Meta trimestral (${cur()})</label><input class="inp" id="mT" type="number" value="${m.trimestral}" style="margin-bottom:12px">
       <div style="text-align:right"><button class="btn btn-pr btn-sm" id="mSave">Guardar</button></div>
-    `,{onMount:(ov,close)=>ov.querySelector('#mSave').addEventListener('click',()=>{CX.crmStore.setMeta({mensual:+ov.querySelector('#mM').value||m.mensual,trimestral:+ov.querySelector('#mT').value||m.trimestral});close();draw();ui.toast('Meta actualizada','ok');})})});
+    `,{onMount:(ov,close)=>ov.querySelector('#mSave').addEventListener('click',async()=>{await Promise.resolve(CX.crmStore.setMeta({mensual:+ov.querySelector('#mM').value||m.mensual,trimestral:+ov.querySelector('#mT').value||m.trimestral}));if(CX.crmStore._canonical()){durableWarn();return;}close();draw();ui.toast('Meta actualizada','ok');})})});
     host.querySelector('#expRep')?.addEventListener('click',()=>{
       if(!CX.reportKit)return;
       const san=(s)=>String(s||'r').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-+|-+$/g,'').toLowerCase()||'r';
