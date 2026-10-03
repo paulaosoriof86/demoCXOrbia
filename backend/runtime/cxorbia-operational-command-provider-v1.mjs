@@ -69,9 +69,18 @@ async function exactActor(auth,db,token,command){
   if(m.active!==true||str(m.tenantId)!==str(command.tenantId)||str(m.role)!==role||str(m.authNamespace)!==namespace)throw new Error('OPS_ACTOR_MEMBERSHIP_INVALID');
   const memberProjects=arr(m.projectIds).map(str);
   if(role!=='super'&&!memberProjects.includes(str(command.projectId)))throw new Error('OPS_ACTOR_MEMBERSHIP_PROJECT_DENIED');
-  const shopperId=role==='shopper'?str(decoded.shopperId||m.shopperId):null;
-  if(role==='shopper'&&!shopperId)throw new Error('OPS_ACTOR_SHOPPER_ID_MISSING');
-  return {uid:decoded.uid,role,namespace,tenantId:command.tenantId,projectId:command.projectId,shopperId};
+  const rawShopperId=role==='shopper'?str(decoded.shopperId||m.shopperId):null;
+  if(role==='shopper'&&!rawShopperId)throw new Error('OPS_ACTOR_SHOPPER_ID_MISSING');
+  let shopperId=rawShopperId;
+  if(role==='shopper'){
+    const cross=await db.collection('tenants').doc(command.tenantId).collection('shopperIdentityCrosswalk').doc(rawShopperId).get();
+    if(cross.exists){
+      const row=cross.data()||{},canonical=str(row.shopperId||row.canonicalShopperId);
+      if(str(row.tenantId||command.tenantId)!==str(command.tenantId))throw new Error('OPS_ACTOR_IDENTITY_CROSSWALK_TENANT_CONFLICT');
+      if(canonical)shopperId=canonical;
+    }
+  }
+  return {uid:decoded.uid,role,namespace,tenantId:command.tenantId,projectId:command.projectId,shopperId,rawShopperId};
 }
 
 function refs(db,command){
