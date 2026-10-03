@@ -6836,7 +6836,7 @@ jobs:
 
   vrm157-dev-readback-only:
     needs: [canonical-candidate-authority, vrm185-admin-live-adjudication]
-    if: ${{ always() && needs.canonical-candidate-authority.result == 'success' && (needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM157_DEV_READBACK_ONLY_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM154_156_LIVE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_HUMAN_VISUAL_REMEDIATION_DIAGNOSTIC_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_V190_LIVE_REPROOF_REQUIRED') && (needs.canonical-candidate-authority.outputs.status != 'HOLD_V190_LIVE_REPROOF_REQUIRED' || needs.vrm185-admin-live-adjudication.result == 'success') }}
+    if: ${{ always() && needs.canonical-candidate-authority.result == 'success' && (needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM157_DEV_READBACK_ONLY_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM154_156_LIVE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_HUMAN_VISUAL_REMEDIATION_DIAGNOSTIC_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_V190_LIVE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED') && (needs.canonical-candidate-authority.outputs.status != 'HOLD_V190_LIVE_REPROOF_REQUIRED' || needs.vrm185-admin-live-adjudication.result == 'success') }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -6907,13 +6907,13 @@ jobs:
       - name: step
         run: |
           set -Eeuo pipefail
-          for p in core/data.js core/tya-phase-a-source-safe-preview.js adapters/tya-live-source-inplace-apply.js data/tya-hr-source-safe-periods.js modules/misvisitas.js modules/visita-detalle.js adapters/tya-canonical-shopper-portal-v2.js modules/academia.js styles/layout.css; do
+          for p in core/data.js core/router.js core/tya-phase-a-source-safe-preview.js adapters/tya-live-source-inplace-apply.js adapters/tya-protected-auth-hr-authority-bridge-v2.js adapters/tya-canonical-finance-read-model-v2.js data/tya-hr-source-safe-periods.js modules/midia.js modules/misvisitas.js modules/visita-detalle.js modules/cert.js modules/beneficios.js modules/shoppers.js modules/postulaciones.js adapters/tya-canonical-shopper-portal-v2.js modules/academia.js styles/layout.css; do
             out="$FOCAL_OUT/remote-$(echo "$p" | tr '/' '_')"
             curl -fsSL --retry 8 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/$p?vrm157=$GITHUB_RUN_ID-$(date +%s%N)" -o "$out"
             test "$(sha256sum "$out" | awk '{print $1}')" = "$(git show "$FOCAL_SOURCE:app/$p" | sha256sum | awk '{print $1}')"
           done
       - name: step
-        if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM154_156_LIVE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_V190_LIVE_REPROOF_REQUIRED' }}
+        if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM154_156_LIVE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_V190_LIVE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED' }}
         run: |
           set -Eeuo pipefail
           PREI4_OUT="$FOCAL_OUT/browser" CXORBIA_PREI4_ROOT="$HOSTING_URL" CXORBIA_PREI4_SOURCE_SHA="$FOCAL_SOURCE" CXORBIA_EXPECTED_HR_REVISION="$HR_REVISION" PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" node tools/qa/cxorbia-vrm154-156-live-reproof.mjs | tee "$FOCAL_OUT/live-reproof.log"
@@ -6935,7 +6935,7 @@ jobs:
           test "$(jq -r '.hrWrites' "$PROBE_OUT/result.json")" = "0"
           test "$(jq -r '.production' "$PROBE_OUT/result.json")" = "false"
       - name: step
-        if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_V190_LIVE_REPROOF_REQUIRED' }}
+        if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_V190_LIVE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED' }}
         run: |
           set -Eeuo pipefail
           SOURCE_DIR="$RUNNER_TEMP/cxorbia-v190-live-source"; rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"; git archive "$FOCAL_SOURCE" | tar -x -C "$SOURCE_DIR"
@@ -6953,7 +6953,7 @@ jobs:
       - name: step
         run: |
           set -Eeuo pipefail
-          DECISION="PASS_VRM157_EXISTING_DEV_READBACK"; if [ "$ACTIVE_STATUS" = "HOLD_VRM154_156_LIVE_REPROOF_REQUIRED" ]; then DECISION="PASS_VRM154_156_SEALED_DEV_REPROOF"; fi; if [ "$ACTIVE_STATUS" = "HOLD_V190_LIVE_REPROOF_REQUIRED" ]; then DECISION="PASS_V190_SAME_DEV_LIVE_REPROOF"; fi
+          DECISION="PASS_VRM157_EXISTING_DEV_READBACK"; if [ "$ACTIVE_STATUS" = "HOLD_VRM154_156_LIVE_REPROOF_REQUIRED" ]; then DECISION="PASS_VRM154_156_SEALED_DEV_REPROOF"; fi; if [ "$ACTIVE_STATUS" = "HOLD_V190_LIVE_REPROOF_REQUIRED" ]; then DECISION="PASS_V190_SAME_DEV_LIVE_REPROOF"; fi; if [ "$ACTIVE_STATUS" = "HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED" ]; then DECISION="PASS_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF"; fi
           jq -n -S --arg decision "$DECISION" --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg runtime "$EXPECTED_RUNTIME_REVISION" --arg digest "$EXPECTED_RUNTIME_DIGEST" --arg hosting "$EXPECTED_HOSTING_VERSION" --arg hr "$HR_REVISION" '{decision:$decision,sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hrRevision:$hr,scenarioDimensionsProven:true,frontendBytesExact:true,builds:0,runtimeDeploys:0,hostingDeploys:0,writes:0,production:false}' > "$FOCAL_OUT/result.json"
       - if: always()
         uses: actions/upload-artifact@v4
