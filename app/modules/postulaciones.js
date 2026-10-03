@@ -15,7 +15,10 @@ CX.module('postulaciones', ({data,ui})=>{
   const activePosts=posts.filter(x=>periodIdOf(x)===data.currentPeriodId&&x?._archived!==true&&x?.active!==false&&x?.postulationLifecycle!=='transitioned_to_assignment');
   const c=(s)=>activePosts.filter(x=>x.estado===s).length;
   const reprog=activePosts.filter(x=>x.reprog);
-  const agendadas=data.visitas().filter(v=>{const f=data.visitFacets?data.visitFacets(v):null;return f?f.scheduled===true&&f.realized!==true&&f.cancelled!==true:!!(v.agendada&&v.shopperId&&!v.realizada);});
+  const operationalAssignments=data.visitas().filter(v=>{const f=data.visitFacets?data.visitFacets(v):null;return f?f.assigned===true&&f.cancelled!==true:!!v.shopperId;});
+  const agendadas=operationalAssignments.filter(v=>{const f=data.visitFacets?data.visitFacets(v):null;return f?f.scheduled===true&&f.realized!==true:!!(v.agendada&&!v.realizada);});
+  const assignmentOrigin=v=>String(v.assignmentSource||'').toLowerCase()==='platform'?'Plataforma':'HR / Hoja de Ruta';
+  const assignmentState=v=>{const f=data.visitFacets?data.visitFacets(v):null;if(f?.realized)return'Realizada';if(f?.scheduled)return'Agendada';return'Asignada';};
   const visitForPost=x=>{const visitKey=String(x?.visitaId||x?.visitId||''),hrRowKey=String(x?.hrRowId||'');return(data._visitas||[]).find(v=>(visitKey&&[v?.id,v?.visitId].some(k=>String(k||'')===visitKey))||(hrRowKey&&String(v?.hrRowId||'')===hrRowKey))||null;};
   const postSyncState=x=>{
     const state=String(x?.estado||x?.status||'').toLowerCase(),v=visitForPost(x),appShopper=String(x?.shopperId||''),visitShopper=String(v?.shopperId||'');
@@ -90,7 +93,7 @@ CX.module('postulaciones', ({data,ui})=>{
 
   const html=`
   <div class="between" style="margin-bottom:6px">
-    <div>${ui.ph('Gestión de Postulaciones', `${c('pendiente')} pendientes · ${c('aprobada')} aprobadas · ${reprog.length} reprogramación(es) · ${agendadas.length} agendamientos`)}</div>
+    <div>${ui.ph('Gestión de Postulaciones y Asignaciones', `${c('pendiente')} postulaciones pendientes · ${operationalAssignments.length} asignaciones vigentes · ${reprog.length} reprogramación(es) · ${agendadas.length} agendamientos`)}</div>
     <div class="flex"><span class="bdg bdg-b">Gestión activa</span><span class="bdg bdg-b">${p.name}</span></div>
   </div>
 
@@ -128,7 +131,11 @@ CX.module('postulaciones', ({data,ui})=>{
     </div>`).join('')}</div>`:''}
 
   <div id="pGroups">${groupHTML}</div>
-  <div class="card card-p">${ui.aiBox('Sugiero el mejor shopper por historial y certificación, detecto reprogramaciones tardías y disparo WhatsApp y notificaciones automáticamente al aprobar. Cada decisión queda firmada y trazada.','Asistente de asignación')}</div>`;
+  <div class="card card-p" style="margin-bottom:14px">
+    <div class="card-h"><div class="card-t">Asignaciones vigentes · ${operationalAssignments.length}</div><span class="muted" style="font-size:11px">HR / Hoja de Ruta + plataforma</span></div>
+    <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Shopper</th><th>Sucursal</th><th>Origen</th><th>Estado</th><th>Agenda</th></tr></thead><tbody>${operationalAssignments.length?operationalAssignments.map(v=>`<tr><td><b>${safe(v.shopper||displayShopper({shopperId:v.shopperId,shopper:v.shopper}))}</b></td><td>${safe(v.sucursal)}<div style="font-size:10px;color:var(--t3)">${safe(v.escenario)} · ${safe(v.ciudad)}</div></td><td>${ui.bdg(assignmentOrigin(v),String(v.assignmentSource||"").toLowerCase()==="platform"?"b":"n")}</td><td>${ui.bdg(assignmentState(v),data.visitFacets?.(v)?.realized?"g":data.visitFacets?.(v)?.scheduled?"b":"a")}</td><td style="font-size:12px">${safe(v.agendada||"Pendiente")}</td></tr>`).join(""):`<tr><td colspan="5">${ui.empty("🗂️","Sin asignaciones vigentes en este periodo")}</td></tr>`}</tbody></table></div>
+  </div>
+  <div class="card card-p">${ui.aiBox('Postulaciones y asignaciones son ciclos distintos pero relacionados. Una asignación puede venir de HR o de la plataforma y nunca se fabrica una postulación para explicarla.','Gestión operacional')}</div>`;
 
   setTimeout(()=>{
     /* CORTE 2A — Exportar Postulaciones: solo periodo activo + alcance filtrado visible,
