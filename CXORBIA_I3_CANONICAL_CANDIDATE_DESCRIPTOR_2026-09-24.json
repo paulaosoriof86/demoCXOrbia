@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_HUMAN_VISUAL_CHECKPOINT_REQUIRED_BEFORE_FURTHER_PRODUCT_MUTATION",
+  "status": "HOLD_VRM154_156_LIVE_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "c5c4d002ab783391f915eaf7f41d69dc1005f215",
   "productTreeAuthority": "7909233675f6bed3021f90810edb3d1c696aaf2b",
   "predecessorProductSourceSha": "a62d4e5b49fce4464987ca55112221604647933c",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V211_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "f35be726a24d06b9fdc7baa0e389c8ebb0c8c91b",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V212_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "5685326235a24f4e3388b8fb14ccea3562bf1769",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "HUMAN_VISUAL_CHECKPOINT_REQUIRED_BEFORE_FURTHER_PRODUCT_MUTATION",
+  "activeBlocker": "SAME_ARTIFACT_LIVE_REPROOF_REQUIRED_BEFORE_HUMAN_VISUAL_CHECKPOINT",
   "nextFindingId": "VRM-196",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Retry canonical authority on the unchanged product source c5c4d002ab783391f915eaf7f41d69dc1005f215 after the V211 control mapping correction; then perform the one DEV visual checkpoint materialization/readback. Production remains DO_NOT_TOUCH.",
+  "exactNextAction": "Read back the already deployed DEV materialization without build/deploy: runtime/Hosting/HR/frontend bytes + authenticated Admin/Shopper + Finance. On PASS, stop and provide Paula the DEV review URL for explicit visual approval.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -134,14 +134,25 @@
     "hrRevision": "2b0114c39d64a0e3697667572de0dfdcffe476c5cd8112449fcab1da24e1085d"
   },
   "lastControlAttempt": {
-    "runId": 36941158274,
-    "jobId": 110632772746,
-    "classification": "AUTH_FAILURE",
-    "code": "VRM-141_FINANCE_BACKEND_AUTH_RESTORE",
-    "productDefect": false,
-    "productSourceChanged": false,
-    "cleanup": true,
-    "correctionOwner": "tools/qa/cxorbia-prei4-final-focal-finance-live.mjs",
+    "runId": 37151594398,
+    "runNumber": 976,
+    "jobId": 111286477331,
+    "classification": "PROVIDER_FAILURE",
+    "result": "DEV_RUNTIME_AND_HOSTING_DEPLOY_SUCCEEDED_POST_RELEASE_EDGE_PARITY_CHECK_FAILED",
+    "provenFacts": {
+      "runtimeReady": true,
+      "runtimeRevision": "cxorbia-live-hr-dev-00257-7rh",
+      "runtimeDigest": "sha256:8267a1d0a784eba49e1e9bc65eaa3967acba699bafdb67fc2ca330d9f1eedcdf",
+      "hostingDeployComplete": true,
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/e5adfc75a24a3717",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791059381031000",
+      "hrFreshReadPass": true,
+      "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+      "firstRemoteAssetDownloaded": "app/core/data.js",
+      "remainingRemoteAssetsNotReached": true
+    },
+    "causeStatus": "FAILURE_POINT_PROVEN_TRANSIENT_PROVIDER_PROPAGATION_TO_BE_CONFIRMED_BY_DELAYED_READBACK",
+    "productMutation": false,
     "production": false
   },
   "findingReceipts": {
@@ -409,28 +420,25 @@
     "production": false
   },
   "currentMaterialization": {
-    "runId": 37127209268,
-    "runNumber": 939,
-    "jobId": 111214863083,
-    "artifactId": 11275079173,
-    "artifactDigest": "sha256:c522c4404cd9a30cf063d8661659f19a890e855816cedb3c53f3cae982ea4a75",
-    "decision": "PASS_V190_EXACT_DEV_MATERIALIZATION",
-    "sourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6",
-    "sourceTree": "2e5b6af67aa0bbb5e0f79a37fe5dbab8453792b2",
-    "runtimeRevision": "cxorbia-live-hr-dev-00255-7dq",
-    "runtimeDigest": "sha256:3b67be76f5f85809456e8ad8d99b00992025e6145f896d2c707719e7e8920fa1",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/8608d2b0db40403e",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791035229758000",
+    "state": "MATERIALIZED_DEV_PENDING_DELAYED_SAME_ARTIFACT_READBACK",
+    "sourceSha": "c5c4d002ab783391f915eaf7f41d69dc1005f215",
+    "sourceTree": "7909233675f6bed3021f90810edb3d1c696aaf2b",
+    "runId": 37151594398,
+    "runNumber": 976,
+    "jobId": 111286477331,
+    "artifactId": 11284167174,
+    "artifactDigest": "sha256:90cc7a539ae8eab881684ccdb7b3af42f1357cff134b75a83b8a20ed204e7d87",
+    "runtimeRevision": "cxorbia-live-hr-dev-00257-7rh",
+    "runtimeDigest": "sha256:8267a1d0a784eba49e1e9bc65eaa3967acba699bafdb67fc2ca330d9f1eedcdf",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/e5adfc75a24a3717",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791059381031000",
     "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
-    "shoppersRemoteSha256": "d4577d0f0a75767c45b2c9061b61de33fd0186ed5a3e3e822c6deafa7e0fdc66",
     "builds": 1,
     "runtimeDeploys": 1,
     "hostingDeploys": 1,
-    "storageRulesDeploys": 1,
-    "state": "PREDECESSOR_DEV_MATERIALIZATION_NOT_CURRENT_BOUNDED_ADMIN_SOURCE",
-    "production": false,
-    "currentProductSourceMaterialized": false,
-    "currentProductSourceSha": "28e060d103f779084c14b401111dbc9da2cce8e2"
+    "storageRulesDeploys": 0,
+    "immediateEdgeParity": "FAIL_AFTER_FIRST_REMOTE_FILE",
+    "production": false
   },
   "lastFocalAttempt": {
     "runId": 36198284266,
@@ -907,15 +915,7 @@
     "hrWrites": 0,
     "production": false
   },
-  "pendingMaterialization": {
-    "state": "RETRY_REQUIRED_AFTER_VRM195_PACKAGING_FIX",
-    "sourceSha": "c5c4d002ab783391f915eaf7f41d69dc1005f215",
-    "sourceTree": "7909233675f6bed3021f90810edb3d1c696aaf2b",
-    "predecessorFailedRunId": 37151022653,
-    "exactBuilds": 1,
-    "exactCumulativeDevMaterializations": 1,
-    "production": false
-  },
+  "pendingMaterialization": null,
   "lastVrm080Proof": {
     "runId": 36333245670,
     "runNumber": 525,
