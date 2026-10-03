@@ -6,40 +6,86 @@ window.CX = window.CX || {};
 
 CX.hrSource = {
   KEY:'cx_hr_source',
-  /* estados honestos aceptados por el contrato (identificadores internos, no se muestran crudos) */
   STATES:{
     pendiente_backend:{label:'Pendiente de conexión', c:'#d97706', ic:'⏳', canImport:false},
-    connected:        {label:'Conectado',          c:'#0e9c6e', ic:'✅', canImport:false},
-    auth_error:       {label:'Error de permisos',  c:'#c8232c', ic:'🔒', canImport:false},
-    not_found:        {label:'Hoja no encontrada', c:'#c8232c', ic:'❓', canImport:false},
-    empty_range:      {label:'Rango vacío',         c:'#d97706', ic:'␀', canImport:false},
-    schema_changed:   {label:'Columnas cambiadas',  c:'#d97706', ic:'⚠', canImport:false},
-    parsed_with_warnings:{label:'Vista previa con avisos',c:'#d97706', ic:'⚠', canImport:false},
-    blocked:          {label:'Bloqueado por errores críticos', c:'#c8232c', ic:'⛔', canImport:false},
-    ready_for_preview:{label:'Vista previa lista',        c:'#2a6fdb', ic:'👁', canImport:false},
-    ready_for_import: {label:'Listo para importar',  c:'#0e9c6e', ic:'⬇', canImport:true},
+    connected:{label:'Conectado', c:'#0e9c6e', ic:'✅', canImport:false},
+    auth_error:{label:'Error de permisos', c:'#c8232c', ic:'🔒', canImport:false},
+    not_found:{label:'Hoja no encontrada', c:'#c8232c', ic:'❓', canImport:false},
+    empty_range:{label:'Rango vacío', c:'#d97706', ic:'␀', canImport:false},
+    schema_changed:{label:'Columnas cambiadas', c:'#d97706', ic:'⚠', canImport:false},
+    parsed_with_warnings:{label:'Vista previa con avisos',c:'#d97706',ic:'⚠',canImport:false},
+    blocked:{label:'Bloqueado por errores críticos',c:'#c8232c',ic:'⛔',canImport:false},
+    ready_for_preview:{label:'Vista previa lista',c:'#2a6fdb',ic:'👁',canImport:false},
+    ready_for_import:{label:'Listo para importar',c:'#0e9c6e',ic:'⬇',canImport:true},
   },
-  all(){ try{return JSON.parse(localStorage.getItem(this.KEY)||'{}');}catch(e){return {};} },
-  get(pid){ const a=this.all(); return a[pid]||{ tipo:'google_sheets', sourceRef:'', maskedUrl:'', estado:'pendiente_backend', ultimaLectura:null, ultimoPreview:null, periodos:[], counts:{}, incidencias:[], canImport:false }; },
-  /* NUNCA persiste la URL completa. Solo metadatos seguros; la URL real la gestiona el sistema central. */
-  save(pid, cfg){ const a=this.all();
-    const safe={ tipo:cfg.tipo, sourceRef:cfg.sourceRef||'', maskedUrl:cfg.maskedUrl||'', estado:cfg.estado,
-      ultimaLectura:cfg.ultimaLectura||null, ultimoPreview:cfg.ultimoPreview||null,
-      periodos:cfg.periodos||[], counts:cfg.counts||{}, incidencias:cfg.incidencias||[], canImport:!!cfg.canImport,
-      syncMode:cfg.syncMode||'manual', mappingContract:cfg.mappingContract||'', visitLinkField:cfg.visitLinkField||'',
-      stableKeys:cfg.stableKeys||[], gobierna:cfg.gobierna||{} };
-    a[pid]=safe; try{localStorage.setItem(this.KEY, JSON.stringify(a));}catch(e){} CX.bus&&CX.bus.emit('hr-source'); },
-  maskUrl(u){ if(!u) return '—'; try{ const s=String(u); return s.length>28 ? s.slice(0,14)+'…'+s.slice(-8) : s.slice(0,6)+'…'; }catch(e){ return '••••'; } },
-  /* el frontend NO deriva la referencia desde la URL. Solo el sistema central, por canal seguro, la emite. */
-  emitBackend(kind, pid){ const cfg=this.get(pid);
-    const payload={ projectId:pid, sourceType:cfg.tipo, sourceRef:cfg.sourceRef||'', urlPending:!cfg.sourceRef, requestedAt:new Date().toISOString() };
-    CX.bus&&CX.bus.emit('hr-source:'+kind, payload); return payload; },
-};
+  _canonical(){return CX.cxDataCommandBoundary?.canonicalMode?.()===true;},
+  _projectId(){return String(CX.data?.currentProjectId||'');},
+  _projectRecord(pid){
+    pid=String(pid||this._projectId());
+    const backend=Array.isArray(CX.data?.__backendAllProjectRecords)?CX.data.__backendAllProjectRecords.find(p=>String(p?.id||p?.projectId)===pid):null;
+    if(backend)return backend;
+    const current=CX.data?.project?.();if(current&&String(current.id||current.projectId)===pid)return current;
+    const period=CX.data?.period?.();if(period&&CX.data?.programKey&&String(CX.data.programKey(period))===pid)return Object.assign({},period,{id:pid,projectId:pid});
+    return null;
+  },
+  _default(){return{tipo:'google_sheets',sourceRef:'',providerBindingId:'',mappingRef:'',maskedUrl:'',estado:'pendiente_backend',ultimaLectura:null,ultimoPreview:null,periodos:[],counts:{},incidencias:[],canImport:false,syncMode:'manual',mappingContract:'',visitLinkField:'',stableKeys:[],gobierna:{}};},
+  _fromProject(pid){
+    const p=this._projectRecord(pid)||{},src=p.operationalSource||p.routeSource||{},admin=p.hrSourceAdmin||{},binding=String(src.providerBindingId||src.integrationSettingId||src.providerRef||admin.providerBindingId||admin.sourceRef||''),mapping=String(src.mappingRef||admin.mappingRef||admin.mappingContract||'');
+    const tipo=admin.tipo||src.providerType||'google_sheets',estado=admin.estado||((binding&&mapping)?'connected':'pendiente_backend');
+    return Object.assign(this._default(),admin,{tipo,sourceRef:binding,providerBindingId:binding,mappingRef:mapping,mappingContract:mapping,estado,canImport:!!admin.canImport});
+  },
+  all(){
+    if(this._canonical()){const pid=this._projectId();return pid?{[pid]:this._fromProject(pid)}:{};}
+    try{return JSON.parse(localStorage.getItem(this.KEY)||'{}');}catch(e){return{};}
+  },
+  get(pid){pid=String(pid||this._projectId());if(this._canonical())return this._fromProject(pid);const a=this.all();return a[pid]||this._default();},
+  _providerType(tipo){return tipo==='excel_online'?'external_platform':tipo==='xlsx_manual'?'excel_import':'google_sheets';},
+  _readPolicy(tipo){return tipo==='xlsx_manual'?'external_snapshot_import':'external_live';},
+  _applyProjectReadback(row){
+    if(!row?.id)return row;
+    CX.data.__backendAllProjectRecords=Array.isArray(CX.data.__backendAllProjectRecords)?CX.data.__backendAllProjectRecords:[];
+    const i=CX.data.__backendAllProjectRecords.findIndex(p=>String(p?.id||p?.projectId)===String(row.id));
+    if(i>=0)CX.data.__backendAllProjectRecords[i]=Object.assign({},row);else CX.data.__backendAllProjectRecords.push(Object.assign({},row));
+    (CX.data.projects||[]).filter(p=>CX.data.periodMatchesProjectScope?.(p,row.id)).forEach(p=>{p.operationalSource=Object.assign({},row.operationalSource||{});p.hrFuente=Object.assign({},row.hrFuente||{});p.hrSourceAdmin=Object.assign({},row.hrSourceAdmin||{});});
+    CX.bus&&CX.bus.emit('hr-source');return row;
+  },
+  async save(pid,cfg,meta){
+    pid=String(pid||this._projectId());cfg=Object.assign(this.get(pid),cfg||{});
+    const safe={tipo:cfg.tipo||'google_sheets',sourceRef:cfg.sourceRef||cfg.providerBindingId||'',providerBindingId:cfg.providerBindingId||cfg.sourceRef||'',mappingRef:cfg.mappingRef||cfg.mappingContract||'',maskedUrl:cfg.maskedUrl||'',estado:cfg.estado||'pendiente_backend',ultimaLectura:cfg.ultimaLectura||null,ultimoPreview:cfg.ultimoPreview||null,periodos:cfg.periodos||[],counts:cfg.counts||{},incidencias:cfg.incidencias||[],canImport:!!cfg.canImport,syncMode:cfg.syncMode||'manual',mappingContract:cfg.mappingRef||cfg.mappingContract||'',visitLinkField:cfg.visitLinkField||'',stableKeys:cfg.stableKeys||[],gobierna:cfg.gobierna||{}};
+    if(!this._canonical()){
+      const a=this.all();a[pid]=safe;try{localStorage.setItem(this.KEY,JSON.stringify(a));}catch(e){}CX.bus&&CX.bus.emit('hr-source');return{ok:true,status:'preview',providerAck:false,readbackVerified:false};
+    }
+    const binding=String(safe.providerBindingId||''),mapping=String(safe.mappingRef||'');
+    if(!binding||!mapping)return{ok:false,status:'blocked',committed:false,providerAck:false,successUiAllowed:false,readbackVerified:false,code:!binding?'HR_SOURCE_PROVIDER_BINDING_REQUIRED':'HR_SOURCE_MAPPING_REQUIRED'};
+    const current=this._projectRecord(pid);if(!current)return{ok:false,status:'blocked',committed:false,providerAck:false,successUiAllowed:false,readbackVerified:false,code:'HR_SOURCE_PROJECT_RECORD_MISSING'};
+    const next=Object.assign({},current);
+    next.operationalSource=Object.assign({},current.operationalSource||{},{
+      mode:'external',authority:'external_source',providerType:this._providerType(safe.tipo),readPolicy:this._readPolicy(safe.tipo),writePolicy:'external_read_only',providerBindingId:binding,mappingRef:mapping
+    });
+    next.hrFuente=Object.assign({},current.hrFuente||{},{origen:'externa',etiqueta:current.hrFuente?.etiqueta||'Fuente HR externa'});
+    next.hrSourceAdmin=safe;
+    const ack=await Promise.resolve(CX.data.updateProject(pid,next,{ackAware:true,reason:meta?.reason||'hr-source-safe-config'}));
+    if(!(ack&&ack.ok===true&&ack.committed===true&&ack.providerAck===true&&ack.successUiAllowed===true&&ack.readbackVerified===true&&ack.entityReadback))return ack||{ok:false,status:'blocked',providerAck:false,readbackVerified:false,code:'HR_SOURCE_PROJECT_ACK_REQUIRED'};
+    this._applyProjectReadback(ack.entityReadback);return ack;
+  },
+  maskUrl(u){if(!u)return'—';try{const s=String(u);return s.length>28?s.slice(0,14)+'…'+s.slice(-8):s.slice(0,6)+'…';}catch(e){return'••••';}},
+  async register(pid,rawUrl,cfg){
+    pid=String(pid||this._projectId());const current=Object.assign(this.get(pid),cfg||{});
+    if(!rawUrl||!String(rawUrl).trim())return{status:'blocked',providerAck:false,message:'URL requerida para registrar la fuente.'};
+    if(!CX.backendHrSourceBridge?.handle)return{status:'pendiente_backend',providerAck:false,message:'Canal backend HR no disponible.'};
+    return CX.backendHrSourceBridge.handle('register',{projectId:pid,sourceType:current.tipo,sourceRef:current.sourceRef||'',mappingRef:current.mappingRef||current.mappingContract||'',privateSourceUrl:String(rawUrl).trim(),requestedAt:new Date().toISOString()});
+  },
+  emitBackend(kind,pid){
+    pid=String(pid||this._projectId());const cfg=this.get(pid),payload={projectId:pid,sourceType:cfg.tipo,sourceRef:cfg.providerBindingId||cfg.sourceRef||'',mappingRef:cfg.mappingRef||cfg.mappingContract||'',maskedUrl:cfg.maskedUrl||'',urlPending:!(cfg.providerBindingId||cfg.sourceRef),requestedAt:new Date().toISOString()};
+    if(this._canonical()&&CX.backendHrSourceBridge?.handle)return CX.backendHrSourceBridge.handle(kind,payload);
+    CX.bus&&CX.bus.emit('hr-source:'+kind,payload);return Promise.resolve(payload);
+  },
+}
 
 CX.module('hrsource', ({data, ui})=>{
   const host=ui.el('div');
-  const p=data.period();
-  const pid=()=>data.currentPeriodId;
+  const p=data.project();
+  const pid=()=>data.currentProjectId;
 
   const draw=()=>{
     const cfg=CX.hrSource.get(pid());
@@ -185,39 +231,37 @@ CX.module('hrsource', ({data, ui})=>{
         })()}
       </div>`;
 
-    const setEstado=(estado, patch)=>{
-      const c=Object.assign(CX.hrSource.get(pid()), patch||{}, {estado});
-      c.canImport=(CX.hrSource.STATES[estado]||{}).canImport||false;
-      CX.hrSource.save(pid(), c); draw();
+    const setEstado=async(estado,patch)=>{
+      const next=Object.assign(CX.hrSource.get(pid()),patch||{},{estado});
+      next.canImport=(CX.hrSource.STATES[estado]||{}).canImport||false;
+      const ack=await Promise.resolve(CX.hrSource.save(pid(),next,{reason:'hr-source-state-'+estado}));
+      draw();return ack;
     };
-    host.querySelector('#hsSave').addEventListener('click',()=>{
-      const url=(host.querySelector('#hsUrl').value||'').trim();
-      const c=Object.assign(CX.hrSource.get(pid()), {tipo:host.querySelector('#hsTipo').value,
-        syncMode:host.querySelector('#hsSyncMode').value,
-        mappingContract:(host.querySelector('#hsMapping').value||'').trim(),
-        visitLinkField:(host.querySelector('#hsLinkField').value||'').trim(),
-        stableKeys:(host.querySelector('#hsKeys').value||'').split(',').map(s=>s.trim()).filter(Boolean),
-        gobierna:Object.fromEntries([...host.querySelectorAll('.hsGob')].map(cb=>[cb.dataset.k,cb.checked])),
-      });
-      if(url){ c.estado='pendiente_backend'; c.canImport=false; c.maskedUrl=CX.hrSource.maskUrl(url); }
-      CX.hrSource.save(pid(), c); draw();
-      ui.toast('La URL no se almacena en el navegador. El sistema central debe registrar esta fuente por canal seguro y devolver una referencia opaca.','',5200);
+    host.querySelector('#hsSave').addEventListener('click',async()=>{
+      const url=(host.querySelector('#hsUrl').value||'').trim(),mapping=(host.querySelector('#hsMapping').value||'').trim();
+      const next=Object.assign(CX.hrSource.get(pid()),{tipo:host.querySelector('#hsTipo').value,syncMode:host.querySelector('#hsSyncMode').value,mappingContract:mapping,mappingRef:mapping,visitLinkField:(host.querySelector('#hsLinkField').value||'').trim(),stableKeys:(host.querySelector('#hsKeys').value||'').split(',').map(s=>s.trim()).filter(Boolean),gobierna:Object.fromEntries([...host.querySelectorAll('.hsGob')].map(cb=>[cb.dataset.k,cb.checked]))});
+      if(url){
+        if(!mapping){ui.toast('Indica primero el identificador de mapeo del proyecto.','warn',4200);return;}
+        const result=await CX.hrSource.register(pid(),url,next);draw();
+        if(result?.providerAck===true&&result?.projectPersistence?.providerAck===true&&result?.projectPersistence?.readbackVerified===true)ui.toast('Fuente registrada y configuración confirmada por el proveedor.','ok',4200);
+        else ui.toast(result?.message||'Registro enviado; la fuente permanece pendiente hasta recibir vínculo seguro y readback.','',5200);
+        return;
+      }
+      const ack=await CX.hrSource.save(pid(),next,{reason:'hr-source-safe-config-edit'});draw();
+      if(ack?.providerAck===true&&ack?.readbackVerified===true)ui.toast('Configuración HR actualizada con ACK/readback durable.','ok',4200);
+      else ui.toast('Configuración no actualizada: falta vínculo seguro, mapeo o ACK/readback del proveedor.','warn',4800);
     });
-    host.querySelector('#hsTest').addEventListener('click',()=>{
-      CX.hrSource.emitBackend('test', pid());
-      setEstado('pendiente_backend',{});
-      ui.toast('🔌 Solicitud de conexión encolada · el estado real llegará cuando se active (no se conecta desde el navegador)','',4200);
+    host.querySelector('#hsTest').addEventListener('click',async()=>{
+      const cfg=CX.hrSource.get(pid());if(!(cfg.providerBindingId||cfg.sourceRef)){ui.toast('Registra primero la fuente y obtén un vínculo seguro.','warn',4200);return;}
+      const result=await CX.hrSource.emitBackend('test',pid());draw();ui.toast(result?.message||'Prueba solicitada al proveedor.','',4200);
     });
-    host.querySelector('#hsPreview').addEventListener('click',()=>{
-      CX.hrSource.emitBackend('preview', pid());
-      setEstado('pendiente_backend',{});
-      ui.toast('👁 Solicitud de vista previa encolada · verás tabs/periodos, conteos e incidencias cuando se active','',4200);
+    host.querySelector('#hsPreview').addEventListener('click',async()=>{
+      const cfg=CX.hrSource.get(pid());if(!(cfg.providerBindingId||cfg.sourceRef)){ui.toast('Registra primero la fuente y obtén un vínculo seguro.','warn',4200);return;}
+      const result=await CX.hrSource.emitBackend('preview',pid());draw();ui.toast(result?.message||'Vista previa solicitada al proveedor.','',4200);
     });
-    host.querySelector('#hsSync').addEventListener('click',()=>{
-      const cfg=CX.hrSource.get(pid());
-      if(!(cfg.estado==='ready_for_import' && cfg.canImport===true)){ui.toast('⛔ Importación bloqueada: solo avanza cuando la fuente quede lista y validada','warn',4600);return;}
-      CX.hrSource.emitBackend('sync-request', pid());
-      ui.toast('🔄 Solicitud de sincronización encolada','ok');
+    host.querySelector('#hsSync').addEventListener('click',async()=>{
+      const cfg=CX.hrSource.get(pid());if(!(cfg.estado==='ready_for_import'&&cfg.canImport===true)){ui.toast('⛔ Importación bloqueada: solo avanza cuando la fuente quede lista y validada','warn',4600);return;}
+      const result=await CX.hrSource.emitBackend('sync-request',pid());draw();ui.toast(result?.message||'Solicitud de sincronización enviada al proveedor.','',4200);
     });
     host.querySelector('#hsGenCand')?.addEventListener('click',()=>{
       /* genera candidatos (vista previa) a partir del estado actual del proyecto — no lee la

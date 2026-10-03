@@ -18,14 +18,37 @@ window.CX = window.CX || {};
   CX.hr = {
     _ext:{},               // HR externa simulada por proyecto (fuente de verdad externa)
 
-    fuente(p){ p=p||CX.data.period(); return (p.hrMap&&p.hrMap.fuente)||'Hoja creada en plataforma'; },
-    esOnline(p){ const f=this.fuente(p); return /sheets|online|excel/i.test(f); },
-    setFuente(p, f){ p=p||CX.data.period(); p.hrMap=p.hrMap||{}; p.hrMap.fuente=f; CX.bus&&CX.bus.emit('project'); },
+    _canonical(){return CX.cxDataCommandBoundary?.canonicalMode?.()===true;},
+    fuente(p){
+      if(this._canonical()){
+        const project=CX.data?.project?.()||{},src=project.operationalSource||project.routeSource||{},binding=src.providerBindingId||src.integrationSettingId||src.providerRef||'';
+        if(src.mode==='internal')return 'Fuente interna del proyecto';
+        return binding?((src.providerType||'Proveedor externo')+' · vínculo seguro'):'Fuente externa · pendiente de vínculo seguro';
+      }
+      p=p||CX.data.period();return(p.hrMap&&p.hrMap.fuente)||'Hoja creada en plataforma';
+    },
+    esOnline(p){
+      if(this._canonical()){const project=CX.data?.project?.()||{},src=project.operationalSource||project.routeSource||{};return src.mode==='external'&&!!(src.providerBindingId||src.integrationSettingId||src.providerRef)&&!!src.mappingRef;}
+      const f=this.fuente(p);return/sheets|online|excel/i.test(f);
+    },
+    setFuente(p,f){
+      if(this._canonical())return{ok:false,status:'blocked',providerAck:false,successUiAllowed:false,code:'HR_SOURCE_CONFIG_PROVIDER_OWNED'};
+      p=p||CX.data.period();p.hrMap=p.hrMap||{};p.hrMap.fuente=f;CX.bus&&CX.bus.emit('project');return{ok:true,status:'preview'};
+    },
 
     /* HR externa (simula la hoja online). Espeja algunas visitas + filas creadas
        DIRECTAMENTE en la HR (aún no existen como visita en la plataforma). */
     external(p){
       p=p||CX.data.period();
+      if(this._canonical()){
+        const live=Array.isArray(CX.data?.__liveHrVisits)?CX.data.__liveHrVisits:(CX.data?._visitas||[]);
+        return live.filter(v=>!p||!CX.data?.recordPeriodId||CX.data.recordPeriodId(v)===p.id).map((v,i)=>({
+          extId:v.hrRowId||v.extId||('HR-LIVE-'+String(i+1).padStart(3,'0')),visitId:v.visitId||v.id||null,
+          sucursal:v.sucursal||'',ciudad:v.ciudad||'',pais:v.pais||v.country||'',quincena:v.quincena||'',escenario:v.escenario||'',
+          fecha:v.agendada||v.fecha||v.disponibleDesde||'',honorario:v.honorario??null,reembolso:(Number(v.boleto||0)+Number(v.comboAmt||0)),
+          shopper:v.shopper||v.shopperName||'',estado:v.estado||v.operationalState||'',origen:'hr_live',sourceRevision:v.sourceRevision||CX.data.__liveHrSourceRevision||null
+        }));
+      }
       if(this._ext[p.id]) return this._ext[p.id];
       const cur=p.currency||{}; const c0=(p.countries&&p.countries[0])||'GT';
       const vis=CX.data._visitas.filter(v=>v.projectId===p.id).slice(0,6);
@@ -68,6 +91,7 @@ window.CX = window.CX || {};
 
     /* sincroniza HR → plataforma SIN DUPLICAR (crea nuevas, actualiza cambios) */
     sync(p){
+      if(this._canonical())return{ok:false,status:'blocked',providerAck:false,successUiAllowed:false,code:'HR_LIVE_PROVIDER_OWNS_SYNC'};
       p=p||CX.data.period();
       const d=this.diff(p); let creadas=0, actualizadas=0;
       d.nuevos.forEach(r=>{
@@ -96,13 +120,14 @@ window.CX = window.CX || {};
     },
 
     /* edición de una celda de la HR externa (fecha/reembolso/shopper) */
-    editRow(p, extId, patch){ const rows=this.external(p); const r=rows.find(x=>x.extId===extId); if(r)Object.assign(r,patch); return r; },
+    editRow(p,extId,patch){if(this._canonical())return{ok:false,status:'blocked',providerAck:false,successUiAllowed:false,code:'HR_EXTERNAL_EDIT_REQUIRES_PROVIDER_ACK'};const rows=this.external(p);const r=rows.find(x=>x.extId===extId);if(r)Object.assign(r,patch);return r;},
 
     /* ESCRITURA DE VUELTA a la HR (cierra la doble vía sin duplicar):
        al asignar/agendar en la plataforma, actualiza la fila externa que
        corresponde (por llave natural/extId) y dispara la automatización Make. */
-    writeBack(p, v){
-      p=p||CX.data.period(); if(!v) return;
+    writeBack(p,v){
+      if(this._canonical())return{ok:false,status:'blocked',providerAck:false,successUiAllowed:false,code:'HR_WRITEBACK_REQUIRES_AUTHORIZED_PROVIDER_CONTRACT'};
+      p=p||CX.data.period();if(!v)return;
       const rows=this.external(p);
       let r = rows.find(x=>x.visitId===v.id) ||
               (CX.dedupe && rows.find(x=>CX.dedupe.natKey(x)===CX.dedupe.natKey(v)));

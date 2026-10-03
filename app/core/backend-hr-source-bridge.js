@@ -59,8 +59,11 @@
     return {
       status,
       sourceType: r.sourceType || payload.sourceType || 'google_sheets',
-      sourceRef: r.sourceRef || payload.sourceRef || '',
+      sourceRef: r.sourceRef || r.providerBindingId || payload.sourceRef || '',
+      providerBindingId: r.providerBindingId || r.sourceRef || payload.sourceRef || '',
+      mappingRef: r.mappingRef || payload.mappingRef || payload.mappingContract || '',
       maskedUrl: r.maskedUrl || payload.maskedUrl || '',
+      providerAck: r.providerAck===true || Boolean(r.providerBindingId||r.sourceRef),
       periodsDetected: Array.isArray(r.periodsDetected) ? r.periodsDetected : (Array.isArray(r.periodos) ? r.periodos : []),
       counts: r.counts || {},
       issues: Array.isArray(r.issues) ? r.issues.map(normalizeIssue) : [],
@@ -73,7 +76,7 @@
 
   function localPending(kind, payload){
     const cfg = getBackendConfig();
-    const label = kind === 'test' ? 'Probar conexion' : kind === 'preview' ? 'Generar preview' : 'Solicitar sync';
+    const label = kind === 'register' ? 'Registrar fuente' : kind === 'test' ? 'Probar conexion' : kind === 'preview' ? 'Generar preview' : 'Solicitar sync';
     return normalizeResponse(kind, payload, {
       status: 'pendiente_backend',
       sourceType: payload.sourceType,
@@ -101,6 +104,7 @@
       requestedAt: payload.requestedAt || now(),
       env: cfg.env
     };
+    if(kind==='register'&&payload.privateSourceUrl)body.privateSourceUrl=String(payload.privateSourceUrl);
     const res = await fetch(cfg.hrSourceEndpoint, {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
@@ -118,13 +122,15 @@
     return normalizeResponse(kind, payload, await res.json());
   }
 
-  function applyToUi(kind, payload, response){
+  async function applyToUi(kind, payload, response){
     const pid = payload.projectId || (CX.data && CX.data.currentProjectId) || 'cinepolis';
     if(!CX.hrSource || typeof CX.hrSource.get !== 'function' || typeof CX.hrSource.save !== 'function') return;
     const current = CX.hrSource.get(pid);
-    CX.hrSource.save(pid, {
+    const next={
       tipo: response.sourceType || current.tipo,
       sourceRef: response.sourceRef || current.sourceRef,
+      providerBindingId: response.providerBindingId || response.sourceRef || current.providerBindingId || current.sourceRef,
+      mappingRef: response.mappingRef || current.mappingRef || current.mappingContract || '',
       maskedUrl: response.maskedUrl || current.maskedUrl,
       estado: response.status,
       ultimaLectura: response.ultimaLectura || current.ultimaLectura,
@@ -133,7 +139,12 @@
       counts: response.counts || current.counts || {},
       incidencias: response.issues || current.incidencias || [],
       canImport: !!response.canImport
-    });
+    };
+    const persisted=await Promise.resolve(CX.hrSource.save(pid,next,{reason:'hr-source-backend-'+kind}));
+    response.projectPersistence=persisted||null;
+    if(CX.hrSource._canonical?.()&&response.providerAck===true&&!(persisted&&persisted.ok===true&&persisted.providerAck===true&&persisted.readbackVerified===true)){
+      response.status='blocked';response.canImport=false;response.message='La fuente respondió, pero la configuración del proyecto no obtuvo ACK/readback durable.';
+    }
     if(CX.ui && CX.ui.toast){
       const msg = response.message || ('HR backend: '+response.status);
       const tone = response.status === 'ready_for_import' || response.status === 'ready_for_preview' ? 'ok' : (response.status === 'blocked' || response.status === 'auth_error' ? 'warn' : '');
@@ -145,8 +156,9 @@
     payload = payload || {};
     try{
       const response = await callEndpoint(kind, payload);
-      applyToUi(kind, payload, response);
-      CX.backendHrSourceBridge.last = {kind, payload, response, at: now()};
+      await applyToUi(kind, payload, response);
+      const safePayload={projectId:payload.projectId,sourceType:payload.sourceType,sourceRef:payload.sourceRef||'',mappingRef:payload.mappingRef||payload.mappingContract||'',requestedAt:payload.requestedAt};
+      CX.backendHrSourceBridge.last = {kind,payload:safePayload,response,at:now()};
       return response;
     }catch(err){
       const response = normalizeResponse(kind, payload, {
@@ -155,8 +167,9 @@
         issues: [issue('backend_bridge_exception', err && err.message ? err.message : 'Bridge exception', 'alto')],
         message: 'Error en puente backend HR.'
       });
-      applyToUi(kind, payload, response);
-      CX.backendHrSourceBridge.last = {kind, payload, response, error: String(err), at: now()};
+      await applyToUi(kind, payload, response);
+      const safePayload={projectId:payload.projectId,sourceType:payload.sourceType,sourceRef:payload.sourceRef||'',mappingRef:payload.mappingRef||payload.mappingContract||'',requestedAt:payload.requestedAt};
+      CX.backendHrSourceBridge.last = {kind,payload:safePayload,response,error:String(err),at:now()};
       return response;
     }
   }
@@ -164,6 +177,7 @@
   function attach(){
     if(!CX.bus || typeof CX.bus.on !== 'function') return false;
     if(attach.done) return true;
+    CX.bus.on('hr-source:register', payload => handle('register', payload));
     CX.bus.on('hr-source:test', payload => handle('test', payload));
     CX.bus.on('hr-source:preview', payload => handle('preview', payload));
     CX.bus.on('hr-source:sync-request', payload => handle('sync-request', payload));

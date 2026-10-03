@@ -142,28 +142,41 @@ export function createProjectCommandProvider({auth,db,policy}={}){
 
       const mode=type==='project.create'?'create':'update',valid=validateProjectPayload(payload,mode);
       if(!valid.ok)return blocked(command,'PROJECT_CONFIG_INVALID',{errors:valid.errors,warnings:valid.warnings});
-      try{return await db.runTransaction(async tx=>{
-        const prior=await tx.get(receipt);
-        if(prior.exists){const p=prior.data()||{};if(p.commandDigest!==digest)throw new Error('PROJECT_IDEMPOTENCY_REUSE_DIFFERENT_PAYLOAD');if(p.status==='committed')return ack(command,p.projectId,{idempotentReplay:true,providerWrites:0});}
-        let projectId=str(command.projectId||payload.projectId||payload.id),providerWrites=0;
-        if(mode==='create'){
-          const deterministicId=canonicalProjectId(tenantId,payload.name);
-          if(projectId&&projectId!==deterministicId)throw new Error('PROJECT_CREATE_ID_MUST_BE_CANONICAL');
-          projectId=deterministicId;
-          const pRef=projects.doc(projectId),existing=await tx.get(pRef);if(existing.exists)throw new Error('PROJECT_NORMALIZED_NAME_ALREADY_EXISTS');
-          const record={...payload,id:projectId,projectId,tenantId,normalizedName:normalizedName(payload.name),version:1,status:payload.status||'draft',createdAt:now(),createdBy:who.uid,updatedAt:now(),updatedBy:who.uid};
-          tx.create(pRef,record);providerWrites++;
-        }else{
-          if(!projectId)throw new Error('PROJECT_ID_REQUIRED');const pRef=projects.doc(projectId),snap=await tx.get(pRef);if(!snap.exists)throw new Error('PROJECT_MISSING');const current=snap.data()||{};
-          if(String(command.expectedVersion??payload.version)!==String(current.version??0))throw new Error('PROJECT_EXPECTED_VERSION_CONFLICT');
-          const intendedCanonicalId=canonicalProjectId(tenantId,payload.name);if(intendedCanonicalId!==projectId&&normalizedName(payload.name)!==str(current.normalizedName))throw new Error('PROJECT_RENAME_REQUIRES_DEDICATED_MIGRATION');
-          const next={...payload,id:projectId,projectId,tenantId,normalizedName:normalizedName(payload.name),version:Number(current.version||0)+1,updatedAt:now(),updatedBy:who.uid};delete next.createdAt;delete next.createdBy;
-          tx.set(pRef,next,{merge:true});providerWrites++;
-        }
-        tx.set(receipt,{status:'committed',commandDigest:digest,projectId,periodId:command.periodId||payload.periodId||null,commandType:type,providerAck:true,actorUid:who.uid,updatedAt:now()});providerWrites++;
-        tx.create(tenant.collection('entityAuditTrail').doc('project-'+sha(command.idempotencyKey).slice(0,32)),{tenantId,projectId,periodId:command.periodId||payload.periodId||null,entityType:'project',entityId:projectId,commandType:type,actorUid:who.uid,actorRole:who.role,idempotencyKey:command.idempotencyKey,createdAt:now()});providerWrites++;
-        return ack(command,projectId,{providerWrites,warnings:valid.warnings});
-      });}catch(error){return blocked(command,str(error?.message||error));}
+      let projectTx;
+      try{
+        projectTx=await db.runTransaction(async tx=>{
+          const prior=await tx.get(receipt);
+          if(prior.exists){
+            const p=prior.data()||{};
+            if(p.commandDigest!==digest)throw new Error('PROJECT_IDEMPOTENCY_REUSE_DIFFERENT_PAYLOAD');
+            if(p.status==='committed')return {projectId:p.projectId,entityVersion:p.entityVersion??null,idempotentReplay:true,providerWrites:0};
+          }
+          let projectId=str(command.projectId||payload.projectId||payload.id),providerWrites=0,entityVersion=null;
+          if(mode==='create'){
+            const deterministicId=canonicalProjectId(tenantId,payload.name);
+            if(projectId&&projectId!==deterministicId)throw new Error('PROJECT_CREATE_ID_MUST_BE_CANONICAL');
+            projectId=deterministicId;
+            const pRef=projects.doc(projectId),existing=await tx.get(pRef);if(existing.exists)throw new Error('PROJECT_NORMALIZED_NAME_ALREADY_EXISTS');
+            const record={...payload,id:projectId,projectId,tenantId,normalizedName:normalizedName(payload.name),version:1,status:payload.status||'draft',createdAt:now(),createdBy:who.uid,updatedAt:now(),updatedBy:who.uid};
+            tx.create(pRef,record);providerWrites++;entityVersion=1;
+          }else{
+            if(!projectId)throw new Error('PROJECT_ID_REQUIRED');
+            const pRef=projects.doc(projectId),snap=await tx.get(pRef);if(!snap.exists)throw new Error('PROJECT_MISSING');const current=snap.data()||{};
+            if(String(command.expectedVersion??payload.version)!==String(current.version??0))throw new Error('PROJECT_EXPECTED_VERSION_CONFLICT');
+            const intendedCanonicalId=canonicalProjectId(tenantId,payload.name);if(intendedCanonicalId!==projectId&&normalizedName(payload.name)!==str(current.normalizedName))throw new Error('PROJECT_RENAME_REQUIRES_DEDICATED_MIGRATION');
+            const next={...payload,id:projectId,projectId,tenantId,normalizedName:normalizedName(payload.name),version:Number(current.version||0)+1,updatedAt:now(),updatedBy:who.uid};delete next.createdAt;delete next.createdBy;
+            tx.set(pRef,next,{merge:true});providerWrites++;entityVersion=next.version;
+          }
+          tx.set(receipt,{status:'committed',commandDigest:digest,projectId,periodId:command.periodId||payload.periodId||null,entityVersion,commandType:type,providerAck:true,actorUid:who.uid,updatedAt:now()});providerWrites++;
+          tx.create(tenant.collection('entityAuditTrail').doc('project-'+sha(command.idempotencyKey).slice(0,32)),{tenantId,projectId,periodId:command.periodId||payload.periodId||null,entityType:'project',entityId:projectId,commandType:type,actorUid:who.uid,actorRole:who.role,idempotencyKey:command.idempotencyKey,createdAt:now()});providerWrites++;
+          return {projectId,entityVersion,idempotentReplay:false,providerWrites};
+        });
+      }catch(error){return blocked(command,str(error?.message||error));}
+      const pRef=projects.doc(projectTx.projectId),readback=await pRef.get();
+      if(!readback.exists)return blocked(command,'PROJECT_DURABLE_READBACK_MISSING',{projectId:projectTx.projectId});
+      const entityReadback={id:readback.id,...clean(readback.data()||{})};
+      if(projectTx.entityVersion!==null&&String(entityReadback.version)!==String(projectTx.entityVersion))return blocked(command,'PROJECT_DURABLE_READBACK_VERSION_MISMATCH',{projectId:projectTx.projectId,expectedVersion:projectTx.entityVersion,observedVersion:entityReadback.version});
+      return ack(command,projectTx.projectId,{entityVersion:entityReadback.version??projectTx.entityVersion,entityReadback,readbackVerified:true,idempotentReplay:projectTx.idempotentReplay,providerWrites:projectTx.providerWrites,warnings:valid.warnings});
     },
     status(){return {version:VERSION,enabled:true,allowedTenantIds:[...allowedTenants],canonicalProjectId:true,periodLifecycle:true,externalProviderWrites:false,hrWrites:false,makeCalls:false,geminiCalls:false,paymentWrites:false};}
   });
