@@ -1,0 +1,1647 @@
+{
+  "schemaVersion": "cxorbia.i3.admin-full-administration-matrix.v3.20261003",
+  "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
+  "status": "HOLD",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadBeforeFreeze": "d30b8d12be3a39d60a643b82cb3623544bd52f90",
+  "productSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+  "productTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29",
+  "materialization": {
+    "state": "PASS_EXACT_DEV_RUN1016",
+    "runId": 37159236878,
+    "runNumber": 1016,
+    "jobId": 111309018144,
+    "artifactId": 11286862363,
+    "artifactDigest": "sha256:ae85b5407004fbff45a8c6505f9e670b6108ef80ba84c95c8e56541975a77371",
+    "sourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+    "sourceTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29",
+    "runtimeRevision": "cxorbia-live-hr-dev-00258-9fj",
+    "runtimeDigest": "sha256:6b48431fb4e33927a8a6cdfad2c6ea706cb4bddb1caf23dfb8714112370878c4",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/9da4b395d0d2099d",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791067394588000",
+    "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "storageRulesDeploys": 0,
+    "frontendBytesExact": true,
+    "scenarioDimensionsProven": true,
+    "production": false
+  },
+  "technicalReproof": {
+    "state": "SOURCE_PASS_RUN1014",
+    "runId": 37159003511,
+    "runNumber": 1014,
+    "jobId": 111308327591,
+    "decision": "PASS_I3_PHASEA_REJECTED_CHECKPOINT_SOURCE_PROOF",
+    "gate9Pass": true,
+    "sourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+    "sourceTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29",
+    "production": false,
+    "materializationDecision": "PASS_REJECTED_PHASEA_EXACT_DEV_MATERIALIZATION",
+    "materializationRunId": 37159236878
+  },
+  "routeInventoryAuthority": "CXORBIA_CANONICAL_ROUTE_INVENTORY_2026-09-18.json",
+  "expectedAdminRouteCount": 34,
+  "observedAdminRouteCount": 34,
+  "allowedClassifications": [
+    "PASS_PROVEN",
+    "OPEN_BLOCKER",
+    "NOT_APPLICABLE_WITH_REASON"
+  ],
+  "gateRule": "A route is PASS_PROVEN only when all semantically applicable lifecycle actions are proven or explicitly NOT_APPLICABLE_WITH_REASON. Render success alone is never CRUD proof.",
+  "routes": [
+    {
+      "route": "midia",
+      "classification": "OPEN_BLOCKER",
+      "owner": [
+        "app/modules/midia.js"
+      ],
+      "reason": "Exact current source is now materialized on DEV Run1016 with byte parity. Same-artifact functional/live acceptance for this route remains required before PASS_PROVEN.",
+      "renderProof": {
+        "run946": true,
+        "visible": true,
+        "technicalVisible": false,
+        "undefinedVisible": false
+      },
+      "actions": [
+        {
+          "action": "mutation",
+          "classification": "NOT_APPLICABLE_WITH_REASON",
+          "reason": "Mi Día derives current operational work and navigates to owning modules; writes belong to the destination owner."
+        }
+      ],
+      "evidence": {
+        "runId": 37128494088,
+        "runNumber": 946,
+        "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+        "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+        "readbackArtifactId": 11276491534,
+        "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+        "adminArtifactId": 11276016226,
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487"
+      },
+      "production": false,
+      "currentCandidateSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+      "currentCandidateTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29",
+      "currentSourceReproof": {
+        "runId": 37159003511,
+        "decision": "SOURCE_PASS_PENDING_SAME_ARTIFACT_DEV_LIVE"
+      },
+      "currentMaterialization": {
+        "runId": 37159236878,
+        "runtimeRevision": "cxorbia-live-hr-dev-00258-9fj",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/9da4b395d0d2099d",
+        "sourceSha": "4f87cb0155162674d459b09e3725dd585c84709d"
+      }
+    },
+    {
+      "route": "dashboard",
+      "classification": "PASS_PROVEN",
+      "owner": [
+        "app/modules/dashboard.js"
+      ],
+      "reason": "Dashboard is an aggregate/read model route. Run946 proved exact candidate render and source-safe live reproof.",
+      "renderProof": {
+        "run946": true,
+        "visible": true,
+        "technicalVisible": false,
+        "undefinedVisible": false
+      },
+      "actions": [
+        {
+          "action": "mutation",
+          "classification": "NOT_APPLICABLE_WITH_REASON",
+          "reason": "Dashboard itself does not own CRUD; source mutations are performed in owning operational modules."
+        }
+      ],
+      "evidence": {
+        "runId": 37128494088,
+        "runNumber": 946,
+        "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+        "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+        "readbackArtifactId": 11276491534,
+        "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+        "adminArtifactId": 11276016226,
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487"
+      },
+      "production": false,
+      "currentCandidateSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+      "currentCandidateTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29"
+    },
+    {
+      "route": "visitas",
+      "classification": "OPEN_BLOCKER",
+      "owner": [
+        "app/modules/visitas.js",
+        "app/adapters/cxorbia-cxdata-command-boundary-v1.js"
+      ],
+      "reason": "Exact current source is now materialized on DEV Run1016 with byte parity. Same-artifact functional/live acceptance for this route remains required before PASS_PROVEN.",
+      "renderProof": {
+        "run946": true,
+        "visible": true,
+        "technicalVisible": false,
+        "undefinedVisible": false
+      },
+      "actions": [
+        {
+          "action": "mutation",
+          "classification": "NOT_APPLICABLE_WITH_REASON",
+          "reason": "Create/edit/delete HR-managed visit fields are not platform-authoritative under external HR."
+        },
+        {
+          "action": "assign/reassign",
+          "classification": "PASS_PROVEN",
+          "proof": "Provider-backed assignment path and cumulative live source/identity/visit proofs retained through Run946."
+        },
+        {
+          "action": "read/filter/drilldown",
+          "classification": "PASS_PROVEN",
+          "proof": "Run946 exact-candidate Admin route render and same-HR-revision reproof."
+        }
+      ],
+      "evidence": {
+        "runId": 37128494088,
+        "runNumber": 946,
+        "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+        "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+        "readbackArtifactId": 11276491534,
+        "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+        "adminArtifactId": 11276016226,
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487"
+      },
+      "production": false,
+      "currentCandidateSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+      "currentCandidateTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29",
+      "currentSourceReproof": {
+        "runId": 37159003511,
+        "decision": "SOURCE_PASS_PENDING_SAME_ARTIFACT_DEV_LIVE"
+      },
+      "currentMaterialization": {
+        "runId": 37159236878,
+        "runtimeRevision": "cxorbia-live-hr-dev-00258-9fj",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/9da4b395d0d2099d",
+        "sourceSha": "4f87cb0155162674d459b09e3725dd585c84709d"
+      }
+    },
+    {
+      "route": "postulaciones",
+      "classification": "OPEN_BLOCKER",
+      "owner": [
+        "app/modules/postulaciones.js"
+      ],
+      "reason": "Exact current source is now materialized on DEV Run1016 with byte parity. Same-artifact functional/live acceptance for this route remains required before PASS_PROVEN.",
+      "renderProof": {
+        "run946": true,
+        "visible": true,
+        "technicalVisible": false,
+        "undefinedVisible": false
+      },
+      "actions": [
+        {
+          "action": "approve/reject/standby/reassign/cancel core lifecycle",
+          "classification": "PASS_PROVEN",
+          "proof": "Source uses command provider ACK paths."
+        },
+        {
+          "action": "manage scheduling / adjustment request",
+          "classification": "OPEN_BLOCKER",
+          "blocker": "Non-durable notification/preparation path remains exposed.",
+          "owner": "app/modules/postulaciones.js"
+        },
+        {
+          "action": "valid delete + no reappearance after reload",
+          "classification": "OPEN_BLOCKER",
+          "blocker": "Current-candidate terminal E2E receipt missing.",
+          "owner": "app/modules/postulaciones.js"
+        }
+      ],
+      "evidence": {
+        "runId": 37128494088,
+        "runNumber": 946,
+        "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+        "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+        "readbackArtifactId": 11276491534,
+        "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+        "adminArtifactId": 11276016226,
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487"
+      },
+      "production": false,
+      "currentCandidateSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+      "currentCandidateTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29",
+      "currentSourceReproof": {
+        "runId": 37159003511,
+        "decision": "SOURCE_PASS_PENDING_SAME_ARTIFACT_DEV_LIVE"
+      },
+      "currentMaterialization": {
+        "runId": 37159236878,
+        "runtimeRevision": "cxorbia-live-hr-dev-00258-9fj",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/9da4b395d0d2099d",
+        "sourceSha": "4f87cb0155162674d459b09e3725dd585c84709d"
+      }
+    },
+    {
+      "route": "reservas",
+      "classification": "OPEN_BLOCKER",
+      "owner": [
+        "app/modules/reservas.js",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+      ],
+      "reason": "Exact current source is now materialized on DEV Run1016 with byte parity. Same-artifact functional/live acceptance for this route remains required before PASS_PROVEN.",
+      "renderProof": {
+        "run946": true,
+        "visible": true,
+        "technicalVisible": false,
+        "undefinedVisible": false
+      },
+      "actions": [
+        {
+          "action": "create/status/reassign/delete/cross source contract",
+          "classification": "PASS_PROVEN",
+          "proof": "All visible lifecycle mutations call provider-backed reservation commands with ACK."
+        },
+        {
+          "action": "same-candidate full lifecycle E2E",
+          "classification": "OPEN_BLOCKER",
+          "blocker": "Run946 reservation probe remained read-only and did not prove mutation/reload lifecycle.",
+          "owner": "tools/qa + app/modules/reservas.js"
+        }
+      ],
+      "evidence": {
+        "runId": 37128494088,
+        "runNumber": 946,
+        "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+        "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+        "readbackArtifactId": 11276491534,
+        "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+        "adminArtifactId": 11276016226,
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487",
+        "relatedFinding": "VRM-180"
+      },
+      "production": false,
+      "currentCandidateSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+      "currentCandidateTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29",
+      "currentSourceReproof": {
+        "runId": 37159003511,
+        "decision": "SOURCE_PASS_PENDING_SAME_ARTIFACT_DEV_LIVE"
+      },
+      "currentMaterialization": {
+        "runId": 37159236878,
+        "runtimeRevision": "cxorbia-live-hr-dev-00258-9fj",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/9da4b395d0d2099d",
+        "sourceSha": "4f87cb0155162674d459b09e3725dd585c84709d"
+      }
+    },
+    {
+      "route": "shoppers",
+      "classification": "OPEN_BLOCKER",
+      "owner": [
+        "app/modules/shoppers.js",
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
+      ],
+      "reason": "Exact current source is now materialized on DEV Run1016 with byte parity. Same-artifact functional/live acceptance for this route remains required before PASS_PROVEN.",
+      "renderProof": {
+        "run946": true,
+        "visible": true,
+        "technicalVisible": false,
+        "undefinedVisible": false
+      },
+      "actions": [
+        {
+          "action": "exact identity adjudication",
+          "classification": "PASS_PROVEN",
+          "proof": "Run946 admin provider ACK + durable readback; VRM-185/186 PASS_PROVEN_RUN946."
+        },
+        {
+          "action": "create/edit/reset credential source contract",
+          "classification": "PASS_PROVEN",
+          "proof": "Visible commands require ACK/success before success UI."
+        },
+        {
+          "action": "deactivate/archive lifecycle",
+          "classification": "OPEN_BLOCKER",
+          "blocker": "No terminal current-candidate admin lifecycle proof.",
+          "owner": "app/modules/shoppers.js"
+        },
+        {
+          "action": "complete incomplete-profile/non-exact review workflow",
+          "classification": "OPEN_BLOCKER",
+          "blocker": "VRM-175 remains broader than the exact Paula adjudication case.",
+          "owner": "app/modules/shoppers.js"
+        }
+      ],
+      "evidence": {
+        "runId": 37128494088,
+        "runNumber": 946,
+        "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+        "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+        "readbackArtifactId": 11276491534,
+        "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+        "adminArtifactId": 11276016226,
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487",
+        "relatedFindings": [
+          "VRM-175",
+          "VRM-185",
+          "VRM-186"
+        ]
+      },
+      "production": false,
+      "currentCandidateSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+      "currentCandidateTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29",
+      "currentSourceReproof": {
+        "runId": 37159003511,
+        "decision": "SOURCE_PASS_PENDING_SAME_ARTIFACT_DEV_LIVE"
+      },
+      "currentMaterialization": {
+        "runId": 37159236878,
+        "runtimeRevision": "cxorbia-live-hr-dev-00258-9fj",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/9da4b395d0d2099d",
+        "sourceSha": "4f87cb0155162674d459b09e3725dd585c84709d"
+      }
+    },
+    {
+      "route": "informes",
+      "classification": "PASS_PROVEN",
+      "owner": [
+        "app/modules/operacion-extra.js"
+      ],
+      "reason": "Report/KPI route is read/export/configure-view oriented; source provenance remains fail-closed where metrics lack authority.",
+      "renderProof": {
+        "run946": true,
+        "visible": true,
+        "technicalVisible": false,
+        "undefinedVisible": false
+      },
+      "actions": [
+        {
+          "action": "mutation",
+          "classification": "NOT_APPLICABLE_WITH_REASON",
+          "reason": "No authoritative business-record CRUD is owned by this route."
+        },
+        {
+          "action": "render/source-safe report surface",
+          "classification": "PASS_PROVEN",
+          "proof": "Run946 exact candidate rendered route with zero technical/undefined leakage."
+        }
+      ],
+      "evidence": {
+        "runId": 37128494088,
+        "runNumber": 946,
+        "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+        "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+        "readbackArtifactId": 11276491534,
+        "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+        "adminArtifactId": 11276016226,
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487"
+      },
+      "production": false,
+      "currentCandidateSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+      "currentCandidateTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29"
+    },
+    {
+      "route": "clientes",
+      "classification": "OPEN_BLOCKER",
+      "owner": [
+        "app/modules/clientes.js",
+        "app/modules/crm.js"
+      ],
+      "reason": "VRM-189 source contract is proven durable for client create/update and linked commercial authority, but same-source DEV provider lifecycle/readback has not yet been materialized; delete/archive/deactivate also remains outside the proven contract.",
+      "renderProof": {
+        "run946": true,
+        "visible": true,
+        "technicalVisible": false,
+        "undefinedVisible": false
+      },
+      "actions": [
+        {
+          "action": "create/edit client",
+          "classification": "OPEN_BLOCKER",
+          "blocker": "SOURCE_PASS_RUN961; pending same-source DEV provider lifecycle/readback before PASS_PROVEN.",
+          "owner": "app/modules/clientes.js"
+        },
+        {
+          "action": "delete/archive/deactivate client",
+          "classification": "OPEN_BLOCKER",
+          "blocker": "Delete/archive/deactivate client lifecycle is not included in the VRM-189 source contract and remains OPEN.",
+          "owner": "app/modules/clientes.js"
+        }
+      ],
+      "evidence": {
+        "runId": 37128494088,
+        "runNumber": 946,
+        "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+        "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+        "readbackArtifactId": 11276491534,
+        "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+        "adminArtifactId": 11276016226,
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487",
+        "vrm189SourceProof": {
+          "runId": 37138483193,
+          "runNumber": 961,
+          "jobId": 111247940320,
+          "artifactId": 11279028081,
+          "artifactDigest": "sha256:1798bb8cc7fd4bd757680a3ede638027cbd6f484a2070137a12ba3ef3793c010",
+          "decision": "PASS_VRM189_COMMERCIAL_SOURCE_REPROOF",
+          "sourceSha": "ef790a5191bc5359d9c67ab2a28f8e04eb54be37",
+          "sourceTree": "b9fa5c52a0cd793dd3408f1935bde90de21ea0f7",
+          "tests": 5,
+          "testsPass": 5,
+          "testsFail": 0,
+          "builds": 0,
+          "deploys": 0,
+          "production": false
+        }
+      },
+      "production": false,
+      "currentCandidateSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+      "currentCandidateTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29"
+    },
+    {
+      "route": "proyectos",
+      "classification": "PASS_PROVEN",
+      "owner": [
+        "app/modules/proyectos.js",
+        "app/modules/proyecto-wizard.js"
+      ],
+      "reason": "Current source creates projects via data.addProject with ACK/readback and updates project configuration through provider-backed commands. Destructive deletion is intentionally not exposed as routine project management.",
+      "renderProof": {
+        "run946": true,
+        "visible": true,
+        "technicalVisible": false,
+        "undefinedVisible": false
+      },
+      "actions": [
+        {
+          "action": "create project",
+          "classification": "PASS_PROVEN",
+          "proof": "Wizard requires committed/providerAck/successUiAllowed and backend readback."
+        },
+        {
+          "action": "update configuration",
+          "classification": "PASS_PROVEN",
+          "proof": "updateProject requires provider ACK in canonical connected mode."
+        },
+        {
+          "action": "mutation",
+          "classification": "NOT_APPLICABLE_WITH_REASON",
+          "reason": "Hard delete of a project is not a routine lifecycle action; historical/project authority must be preserved."
+        }
+      ],
+      "evidence": {
+        "runId": 37128494088,
+        "runNumber": 946,
+        "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+        "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+        "readbackArtifactId": 11276491534,
+        "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+        "adminArtifactId": 11276016226,
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487"
+      },
+      "production": false,
+      "currentCandidateSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+      "currentCandidateTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29"
+    },
+    {
+      "route": "periodos",
+      "classification": "OPEN_BLOCKER",
+      "owner": [
+        "app/modules/periodos.js",
+        "app/core/data.js"
+      ],
+      "reason": "VRM-190 source contract is proven for project-scoped period create/close/archive/reopen with idempotency, expectedVersion, ACK and durable readback. Route remains OPEN_BLOCKER until the bounded cumulative package is materialized to DEV and same-source live lifecycle/readback is proven.",
+      "renderProof": {
+        "run946": true,
+        "visible": true,
+        "technicalVisible": false,
+        "undefinedVisible": false
+      },
+      "actions": [
+        {
+          "action": "create/close/archive/reopen",
+          "classification": "OPEN_BLOCKER",
+          "blocker": "SOURCE_PASS_RUN964; pending same-source DEV provider lifecycle/readback before PASS_PROVEN.",
+          "owner": "app/modules/periodos.js"
+        }
+      ],
+      "evidence": {
+        "runId": 37128494088,
+        "runNumber": 946,
+        "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+        "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+        "readbackArtifactId": 11276491534,
+        "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+        "adminArtifactId": 11276016226,
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487",
+        "vrm190SourceProof": {
+          "runId": 37139306300,
+          "runNumber": 964,
+          "jobId": 111250327412,
+          "artifactId": 11279418847,
+          "artifactDigest": "sha256:aa4a6bc07fc3c670f82639e17d767dc7bb1fe9a0c2a30035409588915112197e",
+          "decision": "PASS_VRM190_PERIOD_LIFECYCLE_SOURCE",
+          "sourceSha": "6a5d529d7813b48c90051668c7331065dbc8d82b",
+          "sourceTree": "882d4fdf35c1e50e1b231394fd2a94309f7bfe3a",
+          "tests": 5,
+          "testsPass": 5,
+          "testsFail": 0,
+          "builds": 0,
+          "deploys": 0,
+          "production": false
+        }
+      },
+      "production": false,
+      "currentCandidateSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+      "currentCandidateTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29"
+    },
+    {
+      "route": "historico",
+      "classification": "PASS_PROVEN",
+      "owner": [
+        "app/modules/historico.js"
+      ],
+      "reason": "Historical view is intentionally immutable/read-only. Destructive mutation is not semantically applicable.",
+      "renderProof": {
+        "run946": true,
+        "visible": true,
+        "technicalVisible": false,
+        "undefinedVisible": false
+      },
+      "actions": [
+        {
+          "action": "mutation",
+          "classification": "NOT_APPLICABLE_WITH_REASON",
+          "reason": "Historical/audit records must not be deleted or rewritten from this route."
+        },
+        {
+          "action": "read/filter historic state",
+          "classification": "PASS_PROVEN",
+          "proof": "Run946 exact-candidate route rendered with no technical leakage."
+        }
+      ],
+      "evidence": {
+        "runId": 37128494088,
+        "runNumber": 946,
+        "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+        "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+        "readbackArtifactId": 11276491534,
+        "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+        "adminArtifactId": 11276016226,
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487"
+      },
+      "production": false,
+      "currentCandidateSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+      "currentCandidateTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29"
+    },
+    {
+      "route": "rutas",
+      "classification": "OPEN_BLOCKER",
+      "owner": [
+        "app/modules/rutas.js"
+      ],
+      "reason": "VRM-191 source contract removed raw-URL self-connection, moved administration to project-scoped providerBindingId/mappingRef and requires project.update ACK/readback. Route remains OPEN_BLOCKER until same-source DEV provider lifecycle/readback is materialized.",
+      "renderProof": {
+        "run946": true,
+        "visible": true,
+        "technicalVisible": false,
+        "undefinedVisible": false
+      },
+      "actions": [
+        {
+          "action": "connect/change HR source",
+          "classification": "OPEN_BLOCKER",
+          "blocker": "SOURCE_PASS_RUN968; pending same-source DEV provider lifecycle/readback before PASS_PROVEN.",
+          "owner": "app/modules/rutas.js"
+        }
+      ],
+      "evidence": {
+        "runId": 37128494088,
+        "runNumber": 946,
+        "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+        "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+        "readbackArtifactId": 11276491534,
+        "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+        "adminArtifactId": 11276016226,
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487",
+        "vrm191SourceProof": {
+          "runId": 37141746977,
+          "runNumber": 968,
+          "jobId": 111257479809,
+          "artifactId": 11279944679,
+          "artifactDigest": "sha256:bd6b73d4f8425389ceb5eb45cdd6e23c1259dfe618268dea6eb62fcce339b5ac",
+          "decision": "PASS_VRM191_HR_SOURCE_PROVIDER_CONTRACT",
+          "sourceSha": "190509264f00cee52280b5c8dcf16259673e14d0",
+          "sourceTree": "ae80cf31eb1357d760388ad9e922cb5bb95ec264",
+          "tests": 6,
+          "testsPass": 6,
+          "testsFail": 0,
+          "builds": 0,
+          "deploys": 0,
+          "production": false
+        }
+      },
+      "production": false,
+      "currentCandidateSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+      "currentCandidateTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29"
+    },
+    {
+      "route": "hrsource",
+      "classification": "OPEN_BLOCKER",
+      "owner": [
+        "app/modules/hr-source.js"
+      ],
+      "reason": "VRM-191 source contract made source configuration project-scoped and provider-backed with opaque binding/mapping, ACK/readback and canonical read-only HR behavior. The separate review-candidate queue remains browser-preview/local and is NOT closed by VRM-191.",
+      "renderProof": {
+        "run946": true,
+        "visible": true,
+        "technicalVisible": false,
+        "undefinedVisible": false
+      },
+      "actions": [
+        {
+          "action": "save source configuration",
+          "classification": "OPEN_BLOCKER",
+          "blocker": "SOURCE_PASS_RUN968; pending same-source DEV provider lifecycle/readback before PASS_PROVEN.",
+          "owner": "app/modules/hr-source.js"
+        },
+        {
+          "action": "review candidate queue durability",
+          "classification": "OPEN_BLOCKER",
+          "blocker": "Preview queue uses localStorage and cannot be production truth.",
+          "owner": "app/modules/hr-source.js"
+        }
+      ],
+      "evidence": {
+        "runId": 37128494088,
+        "runNumber": 946,
+        "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+        "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+        "readbackArtifactId": 11276491534,
+        "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+        "adminArtifactId": 11276016226,
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487",
+        "vrm191SourceProof": {
+          "runId": 37141746977,
+          "runNumber": 968,
+          "jobId": 111257479809,
+          "artifactId": 11279944679,
+          "artifactDigest": "sha256:bd6b73d4f8425389ceb5eb45cdd6e23c1259dfe618268dea6eb62fcce339b5ac",
+          "decision": "PASS_VRM191_HR_SOURCE_PROVIDER_CONTRACT",
+          "sourceSha": "190509264f00cee52280b5c8dcf16259673e14d0",
+          "sourceTree": "ae80cf31eb1357d760388ad9e922cb5bb95ec264",
+          "tests": 6,
+          "testsPass": 6,
+          "testsFail": 0,
+          "builds": 0,
+          "deploys": 0,
+          "production": false
+        }
+      },
+      "production": false,
+      "currentCandidateSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+      "currentCandidateTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29"
+    },
+    {
+      "route": "cuestionarios",
+      "classification": "OPEN_BLOCKER",
+      "owner": [
+        "app/modules/configuracion.js",
+        "app/core/programa.js"
+      ],
+      "reason": "Questionnaire/program versions, sections and questions persist through CX.programa/localStorage rather than a tenant/project provider authority.",
+      "renderProof": {
+        "run946": true,
+        "visible": true,
+        "technicalVisible": false,
+        "undefinedVisible": false
+      },
+      "actions": [
+        {
+          "action": "create/edit/delete/duplicate/version/save questionnaire",
+          "classification": "OPEN_BLOCKER",
+          "blocker": "Must be durable, versioned, scoped and provider-ACKed; localStorage cannot be truth.",
+          "owner": "app/core/programa.js"
+        }
+      ],
+      "evidence": {
+        "runId": 37128494088,
+        "runNumber": 946,
+        "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+        "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+        "readbackArtifactId": 11276491534,
+        "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+        "adminArtifactId": 11276016226,
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487"
+      },
+      "production": false,
+      "currentCandidateSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+      "currentCandidateTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29"
+    },
+    {
+      "route": "importador",
+      "classification": "NOT_APPLICABLE_WITH_REASON",
+      "owner": [
+        "app/modules/importador.js"
+      ],
+      "reason": "Recovery explicitly forbids reimport of real data. Existing import/setup utilities must not be exercised as a prerequisite to this replacement; they remain outside the current TyA recovery write path.",
+      "renderProof": {
+        "run946": true,
+        "visible": true,
+        "technicalVisible": false,
+        "undefinedVisible": false
+      },
+      "actions": [
+        {
+          "action": "mutation",
+          "classification": "NOT_APPLICABLE_WITH_REASON",
+          "reason": "Real-data reimport is prohibited by Recovery. Any future generic import productization requires its own durable provider contract before activation."
+        }
+      ],
+      "evidence": {
+        "runId": 37128494088,
+        "runNumber": 946,
+        "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+        "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+        "readbackArtifactId": 11276491534,
+        "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+        "adminArtifactId": 11276016226,
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487"
+      },
+      "production": false,
+      "currentCandidateSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+      "currentCandidateTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29"
+    },
+    {
+      "route": "aprendizaje",
+      "classification": "OPEN_BLOCKER",
+      "owner": [
+        "app/modules/academia.js"
+      ],
+      "reason": "VRM-192 source contract moved custom Academia courses, categories, workflow transitions and audit trail to a durable tenant-scoped provider with versioning, idempotency, separation of duties and ACK/readback. Seed/base courses remain immutable source content. Route remains OPEN_BLOCKER until same-source DEV lifecycle/readback is materialized.",
+      "renderProof": {
+        "run946": true,
+        "visible": true,
+        "technicalVisible": false,
+        "undefinedVisible": false
+      },
+      "actions": [
+        {
+          "action": "create/edit/archive/delete/restore/publish course content",
+          "classification": "OPEN_BLOCKER",
+          "blocker": "SOURCE_PASS_RUN971; pending same-source DEV provider lifecycle/readback before PASS_PROVEN.",
+          "owner": "app/modules/academia.js"
+        }
+      ],
+      "evidence": {
+        "runId": 37128494088,
+        "runNumber": 946,
+        "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+        "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+        "readbackArtifactId": 11276491534,
+        "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+        "adminArtifactId": 11276016226,
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487",
+        "vrm192SourceProof": {
+          "runId": 37142650019,
+          "runNumber": 971,
+          "jobId": 111260120519,
+          "artifactId": 11280793501,
+          "artifactDigest": "sha256:dc053262d839ee34e90cabfc0d1bba1ca418afe80f1e825e907f3095c1b129c4",
+          "decision": "PASS_VRM192_ACADEMY_PROVIDER_SOURCE",
+          "sourceSha": "a62d4e5b49fce4464987ca55112221604647933c",
+          "sourceTree": "6d3dd5abd351586d018be83c2b144ff49d4a94d3",
+          "tests": 6,
+          "testsPass": 6,
+          "testsFail": 0,
+          "builds": 0,
+          "deploys": 0,
+          "production": false
+        }
+      },
+      "production": false,
+      "currentCandidateSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+      "currentCandidateTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29"
+    },
+    {
+      "route": "cert",
+      "classification": "OPEN_BLOCKER",
+      "owner": [
+        "app/modules/cert.js",
+        "app/core/backend-certifications.js",
+        "app/core/backend-resources.js"
+      ],
+      "reason": "Exact current source is now materialized on DEV Run1016 with byte parity. Same-artifact functional/live acceptance for this route remains required before PASS_PROVEN.",
+      "renderProof": {
+        "run946": true,
+        "visible": true,
+        "technicalVisible": false,
+        "undefinedVisible": false
+      },
+      "actions": [
+        {
+          "action": "generate/import/edit/publish certification bank",
+          "classification": "PASS_PROVEN",
+          "proof": "Current source uses provider-backed certification/resource authority."
+        },
+        {
+          "action": "attempt/recertification",
+          "classification": "PASS_PROVEN",
+          "proof": "Run946 cert-res live receipt passed."
+        },
+        {
+          "action": "resource create/delete cleanup",
+          "classification": "PASS_PROVEN",
+          "proof": "Run946 provider metadata/binary/delete cleanup passed without orphan."
+        }
+      ],
+      "evidence": {
+        "runId": 37128494088,
+        "runNumber": 946,
+        "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+        "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+        "readbackArtifactId": 11276491534,
+        "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+        "adminArtifactId": 11276016226,
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487"
+      },
+      "production": false,
+      "currentCandidateSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+      "currentCandidateTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29",
+      "currentSourceReproof": {
+        "runId": 37159003511,
+        "decision": "SOURCE_PASS_PENDING_SAME_ARTIFACT_DEV_LIVE"
+      },
+      "currentMaterialization": {
+        "runId": 37159236878,
+        "runtimeRevision": "cxorbia-live-hr-dev-00258-9fj",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/9da4b395d0d2099d",
+        "sourceSha": "4f87cb0155162674d459b09e3725dd585c84709d"
+      }
+    },
+    {
+      "route": "documentos",
+      "classification": "OPEN_BLOCKER",
+      "owner": [
+        "app/modules/documentos.js",
+        "app/core/backend-resources.js"
+      ],
+      "reason": "Metadata create/edit/delete is provider-backed, but the connected Admin UI explicitly disables binary upload/substitution when binaryReady is false and tells the user files are not enabled, despite backend resource capability existing.",
+      "renderProof": {
+        "run946": true,
+        "visible": true,
+        "technicalVisible": false,
+        "undefinedVisible": false
+      },
+      "actions": [
+        {
+          "action": "text/link/reference metadata create/edit/delete",
+          "classification": "PASS_PROVEN",
+          "proof": "Provider-backed metadata path exists with committed/providerAck checks."
+        },
+        {
+          "action": "binary upload/substitute from Admin UI",
+          "classification": "OPEN_BLOCKER",
+          "blocker": "User-observed inability to edit project documents/resources is reproduced by the explicit binary-disabled path.",
+          "owner": "app/modules/documentos.js"
+        }
+      ],
+      "evidence": {
+        "runId": 37128494088,
+        "runNumber": 946,
+        "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+        "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+        "readbackArtifactId": 11276491534,
+        "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+        "adminArtifactId": 11276016226,
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487"
+      },
+      "production": false,
+      "currentCandidateSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+      "currentCandidateTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29"
+    },
+    {
+      "route": "soporte",
+      "classification": "OPEN_BLOCKER",
+      "owner": [
+        "app/modules/soporte.js"
+      ],
+      "reason": "Ticket lifecycle and replies are maintained in local support state / prepared messaging paths; no canonical provider ACK/readback contract is proven.",
+      "renderProof": {
+        "run946": true,
+        "visible": true,
+        "technicalVisible": false,
+        "undefinedVisible": false
+      },
+      "actions": [
+        {
+          "action": "create/update/respond/close support ticket",
+          "classification": "OPEN_BLOCKER",
+          "blocker": "Must use durable tenant-scoped provider state and readback.",
+          "owner": "app/modules/soporte.js"
+        }
+      ],
+      "evidence": {
+        "runId": 37128494088,
+        "runNumber": 946,
+        "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+        "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+        "readbackArtifactId": 11276491534,
+        "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+        "adminArtifactId": 11276016226,
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487"
+      },
+      "production": false,
+      "currentCandidateSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+      "currentCandidateTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29"
+    },
+    {
+      "route": "novedades",
+      "classification": "OPEN_BLOCKER",
+      "owner": [
+        "app/modules/novedades.js"
+      ],
+      "reason": "Publication state and read receipts are stored in localStorage.",
+      "renderProof": {
+        "run946": true,
+        "visible": true,
+        "technicalVisible": false,
+        "undefinedVisible": false
+      },
+      "actions": [
+        {
+          "action": "publish/archive/read receipt",
+          "classification": "OPEN_BLOCKER",
+          "blocker": "Must be durable tenant-scoped provider state; localStorage cannot be truth.",
+          "owner": "app/modules/novedades.js"
+        }
+      ],
+      "evidence": {
+        "runId": 37128494088,
+        "runNumber": 946,
+        "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+        "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+        "readbackArtifactId": 11276491534,
+        "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+        "adminArtifactId": 11276016226,
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487"
+      },
+      "production": false,
+      "currentCandidateSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+      "currentCandidateTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29"
+    },
+    {
+      "route": "financiero",
+      "classification": "OPEN_BLOCKER",
+      "owner": [
+        "app/modules/finanzas.js",
+        "backend/runtime/cxorbia-finance-command-provider-v1.mjs"
+      ],
+      "reason": "Canonical finance read model and several provider-backed writes are proven, but full Admin lifecycle remains mixed with local finStore/global-scope fallbacks and is not terminally certified.",
+      "renderProof": {
+        "run946": true,
+        "visible": true,
+        "technicalVisible": false,
+        "undefinedVisible": false
+      },
+      "actions": [
+        {
+          "action": "canonical finance read model/reconciliation",
+          "classification": "PASS_PROVEN",
+          "proof": "Run946 finance revision/counts and read bridge passed."
+        },
+        {
+          "action": "full CRUD/lifecycle across budgets/accounts/financing/global scope",
+          "classification": "OPEN_BLOCKER",
+          "blocker": "Some visible sub-actions remain local or explicitly lack durable persistence.",
+          "owner": "app/modules/finanzas.js"
+        }
+      ],
+      "evidence": {
+        "runId": 37128494088,
+        "runNumber": 946,
+        "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+        "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+        "readbackArtifactId": 11276491534,
+        "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+        "adminArtifactId": 11276016226,
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487",
+        "relatedFinding": "VRM-179"
+      },
+      "production": false,
+      "currentCandidateSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+      "currentCandidateTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29"
+    },
+    {
+      "route": "movimientos",
+      "classification": "OPEN_BLOCKER",
+      "owner": [
+        "app/modules/finanzas.js",
+        "backend/runtime/cxorbia-finance-command-provider-v1.mjs"
+      ],
+      "reason": "VRM-179 explicitly requires same-candidate E2E for visible movement writes and cross-module readback. Run946 aggregate finance proof did not exercise every exposed write.",
+      "renderProof": {
+        "run946": true,
+        "visible": true,
+        "technicalVisible": false,
+        "undefinedVisible": false
+      },
+      "actions": [
+        {
+          "action": "create/edit/reconcile/adjust movement E2E",
+          "classification": "OPEN_BLOCKER",
+          "blocker": "Same-candidate provider ACK/idempotency/reload/cross-module proof missing.",
+          "owner": "app/modules/finanzas.js"
+        }
+      ],
+      "evidence": {
+        "runId": 37128494088,
+        "runNumber": 946,
+        "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+        "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+        "readbackArtifactId": 11276491534,
+        "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+        "adminArtifactId": 11276016226,
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487",
+        "relatedFinding": "VRM-179"
+      },
+      "production": false,
+      "currentCandidateSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+      "currentCandidateTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29"
+    },
+    {
+      "route": "liquidaciones",
+      "classification": "OPEN_BLOCKER",
+      "owner": [
+        "app/modules/finanzas.js",
+        "app/core/liquidacion.js"
+      ],
+      "reason": "Read calculations are source-safe, but Admin review/state transition lifecycle needs a current-candidate durable per-action matrix and proof.",
+      "renderProof": {
+        "run946": true,
+        "visible": true,
+        "technicalVisible": false,
+        "undefinedVisible": false
+      },
+      "actions": [
+        {
+          "action": "review/approve/correct/submit liquidation lifecycle",
+          "classification": "OPEN_BLOCKER",
+          "blocker": "Terminal same-candidate action proof is incomplete.",
+          "owner": "app/modules/finanzas.js"
+        }
+      ],
+      "evidence": {
+        "runId": 37128494088,
+        "runNumber": 946,
+        "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+        "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+        "readbackArtifactId": 11276491534,
+        "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+        "adminArtifactId": 11276016226,
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487"
+      },
+      "production": false,
+      "currentCandidateSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+      "currentCandidateTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29"
+    },
+    {
+      "route": "lotes",
+      "classification": "OPEN_BLOCKER",
+      "owner": [
+        "app/modules/finanzas.js",
+        "backend/runtime/cxorbia-finance-command-provider-v1.mjs"
+      ],
+      "reason": "Payment commands are provider-backed, but batch creation/payment/reversal/audit lifecycle is not fully terminally proven on the exact candidate.",
+      "renderProof": {
+        "run946": true,
+        "visible": true,
+        "technicalVisible": false,
+        "undefinedVisible": false
+      },
+      "actions": [
+        {
+          "action": "create/pay/reconcile batch lifecycle",
+          "classification": "OPEN_BLOCKER",
+          "blocker": "Need provider ACK/idempotency/readback/no-duplicate proof for each exposed action.",
+          "owner": "app/modules/finanzas.js"
+        }
+      ],
+      "evidence": {
+        "runId": 37128494088,
+        "runNumber": 946,
+        "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+        "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+        "readbackArtifactId": 11276491534,
+        "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+        "adminArtifactId": 11276016226,
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487"
+      },
+      "production": false,
+      "currentCandidateSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+      "currentCandidateTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29"
+    },
+    {
+      "route": "costos",
+      "classification": "OPEN_BLOCKER",
+      "owner": [
+        "app/modules/costos.js",
+        "app/core/costos.js"
+      ],
+      "reason": "Commercial costing/proposal administration lacks a current canonical durable CRUD/readback authority proof.",
+      "renderProof": {
+        "run946": true,
+        "visible": true,
+        "technicalVisible": false,
+        "undefinedVisible": false
+      },
+      "actions": [
+        {
+          "action": "create/edit/version/archive proposal/cost model",
+          "classification": "OPEN_BLOCKER",
+          "blocker": "Durable provider ownership and readback are not terminally proven.",
+          "owner": "app/modules/costos.js"
+        }
+      ],
+      "evidence": {
+        "runId": 37128494088,
+        "runNumber": 946,
+        "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+        "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+        "readbackArtifactId": 11276491534,
+        "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+        "adminArtifactId": 11276016226,
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487"
+      },
+      "production": false,
+      "currentCandidateSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+      "currentCandidateTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29"
+    },
+    {
+      "route": "crm",
+      "classification": "OPEN_BLOCKER",
+      "owner": [
+        "app/modules/crm.js"
+      ],
+      "reason": "VRM-189 removed browser/localStorage authority for accounts, contacts, opportunities and columns and proved provider ACK/readback at SOURCE. The route remains OPEN_BLOCKER until same-source DEV lifecycle is proven; CRM targets/meta are explicitly not closed by VRM-189.",
+      "renderProof": {
+        "run946": true,
+        "visible": true,
+        "technicalVisible": false,
+        "undefinedVisible": false
+      },
+      "actions": [
+        {
+          "action": "accounts/contacts/opportunities/columns/targets lifecycle",
+          "classification": "OPEN_BLOCKER",
+          "blocker": "SOURCE_PASS_RUN961 for accounts/contacts/opportunities/columns; pending same-source DEV lifecycle, and targets/meta remain outside this proof.",
+          "owner": "app/modules/crm.js"
+        }
+      ],
+      "evidence": {
+        "runId": 37128494088,
+        "runNumber": 946,
+        "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+        "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+        "readbackArtifactId": 11276491534,
+        "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+        "adminArtifactId": 11276016226,
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487",
+        "vrm189SourceProof": {
+          "runId": 37138483193,
+          "runNumber": 961,
+          "jobId": 111247940320,
+          "artifactId": 11279028081,
+          "artifactDigest": "sha256:1798bb8cc7fd4bd757680a3ede638027cbd6f484a2070137a12ba3ef3793c010",
+          "decision": "PASS_VRM189_COMMERCIAL_SOURCE_REPROOF",
+          "sourceSha": "ef790a5191bc5359d9c67ab2a28f8e04eb54be37",
+          "sourceTree": "b9fa5c52a0cd793dd3408f1935bde90de21ea0f7",
+          "tests": 5,
+          "testsPass": 5,
+          "testsFail": 0,
+          "builds": 0,
+          "deploys": 0,
+          "production": false
+        }
+      },
+      "production": false,
+      "currentCandidateSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+      "currentCandidateTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29"
+    },
+    {
+      "route": "marketing",
+      "classification": "OPEN_BLOCKER",
+      "owner": [
+        "app/modules/marketing.js"
+      ],
+      "reason": "Content/calendar lifecycle is local and real scheduling/publication is explicitly pending backend/Make.",
+      "renderProof": {
+        "run946": true,
+        "visible": true,
+        "technicalVisible": false,
+        "undefinedVisible": false
+      },
+      "actions": [
+        {
+          "action": "create/edit/delete/schedule/publish content",
+          "classification": "OPEN_BLOCKER",
+          "blocker": "Must distinguish durable draft lifecycle from external publication and require provider ACK/readback.",
+          "owner": "app/modules/marketing.js"
+        }
+      ],
+      "evidence": {
+        "runId": 37128494088,
+        "runNumber": 946,
+        "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+        "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+        "readbackArtifactId": 11276491534,
+        "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+        "adminArtifactId": 11276016226,
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487"
+      },
+      "production": false,
+      "currentCandidateSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+      "currentCandidateTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29"
+    },
+    {
+      "route": "config",
+      "classification": "OPEN_BLOCKER",
+      "owner": [
+        "app/modules/configuracion.js"
+      ],
+      "reason": "Connected mode correctly locks some unsupported settings, but tenant branding/plan/modules/NDA are not fully provider-administered. Project countries are durable; the route as a whole is not full-administration complete.",
+      "renderProof": {
+        "run946": true,
+        "visible": true,
+        "technicalVisible": false,
+        "undefinedVisible": false
+      },
+      "actions": [
+        {
+          "action": "project countries",
+          "classification": "PASS_PROVEN",
+          "proof": "connectedAdminConfig provider path with readback."
+        },
+        {
+          "action": "tenant brand/plan/modules/NDA lifecycle",
+          "classification": "OPEN_BLOCKER",
+          "blocker": "Connected mode is locked/read-only pending durable provider; separate local paths exist outside connected authority.",
+          "owner": "app/modules/configuracion.js"
+        }
+      ],
+      "evidence": {
+        "runId": 37128494088,
+        "runNumber": 946,
+        "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+        "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+        "readbackArtifactId": 11276491534,
+        "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+        "adminArtifactId": 11276016226,
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487"
+      },
+      "production": false,
+      "currentCandidateSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+      "currentCandidateTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29"
+    },
+    {
+      "route": "administrabilidad",
+      "classification": "OPEN_BLOCKER",
+      "owner": [
+        "app/modules/administrabilidad.js"
+      ],
+      "reason": "Plan/NDA administration remains preview/version state with localStorage for plan versions and is explicitly not activated as canonical provider configuration.",
+      "renderProof": {
+        "run946": true,
+        "visible": true,
+        "technicalVisible": false,
+        "undefinedVisible": false
+      },
+      "actions": [
+        {
+          "action": "versioned plan/NDA administration",
+          "classification": "OPEN_BLOCKER",
+          "blocker": "Requires provider-backed version/motive/activation/readback contract.",
+          "owner": "app/modules/administrabilidad.js"
+        }
+      ],
+      "evidence": {
+        "runId": 37128494088,
+        "runNumber": 946,
+        "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+        "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+        "readbackArtifactId": 11276491534,
+        "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+        "adminArtifactId": 11276016226,
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487"
+      },
+      "production": false,
+      "currentCandidateSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+      "currentCandidateTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29"
+    },
+    {
+      "route": "usuarios",
+      "classification": "PASS_PROVEN",
+      "owner": [
+        "app/modules/configuracion.js"
+      ],
+      "reason": "Connected Super Admin path uses backend user-admin API for list/create/profile/scope/disable/reactivate with idempotency and refresh/readback; local fallback is bypassed under canonical connected authority.",
+      "renderProof": {
+        "run946": true,
+        "visible": true,
+        "technicalVisible": false,
+        "undefinedVisible": false
+      },
+      "actions": [
+        {
+          "action": "create user",
+          "classification": "PASS_PROVEN",
+          "proof": "Connected user API + ACK id + refresh/readback."
+        },
+        {
+          "action": "edit profile/scope",
+          "classification": "PASS_PROVEN",
+          "proof": "Connected API then refresh/readback."
+        },
+        {
+          "action": "disable/reactivate",
+          "classification": "PASS_PROVEN",
+          "proof": "Connected provider lifecycle; destructive delete is intentionally replaced by disable/reactivate."
+        }
+      ],
+      "evidence": {
+        "runId": 37128494088,
+        "runNumber": 946,
+        "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+        "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+        "readbackArtifactId": 11276491534,
+        "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+        "adminArtifactId": 11276016226,
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487"
+      },
+      "production": false,
+      "currentCandidateSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+      "currentCandidateTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29"
+    },
+    {
+      "route": "automatizaciones",
+      "classification": "OPEN_BLOCKER",
+      "owner": [
+        "app/modules/automatizaciones.js"
+      ],
+      "reason": "Automation/webhook/AI settings are local preferences and simulation; real execution remains pending activation.",
+      "renderProof": {
+        "run946": true,
+        "visible": true,
+        "technicalVisible": false,
+        "undefinedVisible": false
+      },
+      "actions": [
+        {
+          "action": "configure/activate automation",
+          "classification": "OPEN_BLOCKER",
+          "blocker": "Need durable configuration and explicit external provider state/ACK; local preference is not truth.",
+          "owner": "app/modules/automatizaciones.js"
+        }
+      ],
+      "evidence": {
+        "runId": 37128494088,
+        "runNumber": 946,
+        "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+        "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+        "readbackArtifactId": 11276491534,
+        "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+        "adminArtifactId": 11276016226,
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487"
+      },
+      "production": false,
+      "currentCandidateSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+      "currentCandidateTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29"
+    },
+    {
+      "route": "integraciones",
+      "classification": "OPEN_BLOCKER",
+      "owner": [
+        "app/modules/integraciones.js"
+      ],
+      "reason": "Integration state is requested/pending_backend in browser localStorage; real credentials/connections are not provider-administered from this route.",
+      "renderProof": {
+        "run946": true,
+        "visible": true,
+        "technicalVisible": false,
+        "undefinedVisible": false
+      },
+      "actions": [
+        {
+          "action": "request/configure/disable/test integration lifecycle",
+          "classification": "OPEN_BLOCKER",
+          "blocker": "Need durable provider-side request/config state and readback without secret leakage.",
+          "owner": "app/modules/integraciones.js"
+        }
+      ],
+      "evidence": {
+        "runId": 37128494088,
+        "runNumber": 946,
+        "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+        "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+        "readbackArtifactId": 11276491534,
+        "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+        "adminArtifactId": 11276016226,
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487"
+      },
+      "production": false,
+      "currentCandidateSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+      "currentCandidateTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29"
+    },
+    {
+      "route": "correo",
+      "classification": "OPEN_BLOCKER",
+      "owner": [
+        "app/modules/correo.js"
+      ],
+      "reason": "Connection/starred/sent state is local/demo; visible Send actions prepare local records while actual dispatch is pending activation.",
+      "renderProof": {
+        "run946": true,
+        "visible": true,
+        "technicalVisible": false,
+        "undefinedVisible": false
+      },
+      "actions": [
+        {
+          "action": "connect/send/reply/draft lifecycle",
+          "classification": "OPEN_BLOCKER",
+          "blocker": "Must not present local prepared state as authoritative mail send; requires connector/provider receipt or explicit disabled state.",
+          "owner": "app/modules/correo.js"
+        }
+      ],
+      "evidence": {
+        "runId": 37128494088,
+        "runNumber": 946,
+        "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+        "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+        "readbackArtifactId": 11276491534,
+        "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+        "adminArtifactId": 11276016226,
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487"
+      },
+      "production": false,
+      "currentCandidateSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+      "currentCandidateTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29"
+    },
+    {
+      "route": "marca",
+      "classification": "OPEN_BLOCKER",
+      "owner": [
+        "app/modules/marca.js"
+      ],
+      "reason": "Brand identity is written to localStorage and 'Aplicar identidad' is not provider-backed.",
+      "renderProof": {
+        "run946": true,
+        "visible": true,
+        "technicalVisible": false,
+        "undefinedVisible": false
+      },
+      "actions": [
+        {
+          "action": "apply/reset tenant branding",
+          "classification": "OPEN_BLOCKER",
+          "blocker": "Tenant branding must be durable/provider-authoritative; localStorage cannot be truth.",
+          "owner": "app/modules/marca.js"
+        }
+      ],
+      "evidence": {
+        "runId": 37128494088,
+        "runNumber": 946,
+        "controlHeadSha": "126879cea47ee4c12de56aa860cabf7c68c089ab",
+        "decision": "PASS_V190_SAME_DEV_LIVE_REPROOF",
+        "readbackArtifactId": 11276491534,
+        "readbackArtifactDigest": "sha256:9447c4d15725313cebc13b4a3253fb0cb80ed8a48ac1dd4536ad90194b53c3bc",
+        "adminArtifactId": 11276016226,
+        "adminArtifactDigest": "sha256:32d3f321284bc9158c0ce7c63dca58d123f23c9ec60c82aad7195caa236bc487"
+      },
+      "production": false,
+      "currentCandidateSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+      "currentCandidateTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29"
+    }
+  ],
+  "summary": {
+    "PASS_PROVEN": 5,
+    "OPEN_BLOCKER": 28,
+    "NOT_APPLICABLE_WITH_REASON": 1,
+    "omissions": 0
+  },
+  "blockerClusters": [
+    {
+      "id": "ADMIN-CLUSTER-A",
+      "routes": [
+        "postulaciones",
+        "reservas",
+        "shoppers"
+      ],
+      "classification": "FUNCTIONAL_DEFECT",
+      "theme": "Operational lifecycle completeness and same-candidate mutation proof"
+    },
+    {
+      "id": "ADMIN-CLUSTER-B",
+      "routes": [
+        "clientes",
+        "periodos",
+        "rutas",
+        "hrsource",
+        "cuestionarios"
+      ],
+      "classification": "PERSISTENCE_FAILURE",
+      "theme": "Project/admin configuration still local or lacks provider ACK/readback"
+    },
+    {
+      "id": "ADMIN-CLUSTER-C",
+      "routes": [
+        "aprendizaje",
+        "documentos",
+        "soporte",
+        "novedades"
+      ],
+      "classification": "PERSISTENCE_FAILURE",
+      "theme": "Content/resources/support lifecycle durability"
+    },
+    {
+      "id": "ADMIN-CLUSTER-D",
+      "routes": [
+        "financiero",
+        "movimientos",
+        "liquidaciones",
+        "lotes",
+        "costos"
+      ],
+      "classification": "PERSISTENCE_FAILURE",
+      "theme": "Full finance/commercial lifecycle terminal proof and local fallbacks"
+    },
+    {
+      "id": "ADMIN-CLUSTER-E",
+      "routes": [
+        "crm",
+        "marketing"
+      ],
+      "classification": "PERSISTENCE_FAILURE",
+      "theme": "Commercial state uses browser-local truth"
+    },
+    {
+      "id": "ADMIN-CLUSTER-F",
+      "routes": [
+        "config",
+        "administrabilidad",
+        "automatizaciones",
+        "integraciones",
+        "correo",
+        "marca"
+      ],
+      "classification": "PERSISTENCE_FAILURE",
+      "theme": "Tenant configuration/integration/messaging state is local, preview-only or lacks provider activation"
+    }
+  ],
+  "humanVisualApprovalAllowed": false,
+  "i4Allowed": false,
+  "production": "DO_NOT_TOUCH",
+  "exactNextAction": "Run same-artifact live acceptance for current Phase A Admin/Shopper scope on Run1016 artifact; no rebuild/redeploy. Preserve unrelated OPEN_BLOCKER routes.",
+  "visualPhaseAPriorityLock": {
+    "status": "FROZEN",
+    "addendum": "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-10-03_VISUAL_CHECKPOINT_PHASEA_PRIORITY_FROZEN.md",
+    "lock": "CXORBIA_I3_VISUAL_PHASEA_PRIORITY_LOCK_2026-10-03.json",
+    "humanVisualApprovalRequiredBeforeFurtherProductMutation": true,
+    "allShoppersTransversal": true,
+    "multiProject": true,
+    "cinepolisProjectScoped": true,
+    "vrm193Deferred": true
+  },
+  "supersedesMatrix": "CXORBIA_I3_ADMIN_FULL_ADMINISTRATION_MATRIX_2026-10-03_V2.json",
+  "supersedesGitBlob": "588914db93ab5083020b9e8ae7e924f669934b5d",
+  "currentScope": {
+    "phaseAReviewRoutes": [
+      "midia",
+      "visitas",
+      "postulaciones",
+      "shoppers",
+      "cert"
+    ],
+    "shopperRoutes": [
+      "midia",
+      "miperfil",
+      "misvisitas",
+      "beneficios",
+      "academia"
+    ],
+    "requiredRepresentativeIdentities": [
+      "Julissa Flores",
+      "Priscila López",
+      "Paula Osorio"
+    ],
+    "populationInvariants": [
+      "canonical identity link",
+      "no duplicate identity/visit",
+      "assigned visit visible to exact shopper",
+      "postulation/assignment count coherence",
+      "route progression ACK projection",
+      "historical payment projection",
+      "no old-notification resurrection"
+    ],
+    "production": false
+  }
+}
