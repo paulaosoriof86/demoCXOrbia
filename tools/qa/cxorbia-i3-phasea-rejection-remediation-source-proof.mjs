@@ -33,6 +33,7 @@ pass('protected HR bridge normalizes exact shopper session identity',()=>{
 pass('operational provider resolves durable shopper identity crosswalk',()=>{
   assert(ops.includes("collection('shopperIdentityCrosswalk').doc(rawShopperId)"));
   assert(ops.includes('shopperId,rawShopperId'));
+  assert(ops.includes('const existingStableVisitKey=str(existing.hrRowId)||sourceCoord(existing)||str(existing.visitId||existing.id||visitId)'));
 });
 pass('Mi Dia resolves its own visit list through canonical identity map',()=>{
   assert(midia.includes('data.__identityMap?.[_rawSid]'));
