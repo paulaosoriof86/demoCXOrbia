@@ -14,6 +14,11 @@ const puf=uid=>sha('cxorbia-provider-uid-v1\0'+uid);
 const claims=(shopperId,projectIds)=>({authNamespace:'shopper',projectIds:uniq(projectIds),role:'shopper',shopperId,tenantId:TENANT});
 const claimsDigest=c=>sha(JSON.stringify(claims(c.shopperId,c.projectIds)));
 const ACTIVE=new Set(['active','confirmed','approved','materialized']);
+const EXPECTED_AUTHORITY_LINK_FP='df210da083c2eaeca79e';
+const tech=['shopperId','legacyShopperId','legacyId','externalShopperId','externalId','sourceId','sourceKey','sourceStableKey','sourceShopperId','sourceIdentityKey','sourceSubjectId','profileId','shopperDocId'];
+const aliasKeys=['exactAliases','identityAliases','aliases','sourceAliases','sourceIdentityAliases'];
+const flat=v=>{const o=[];const w=x=>{if(x==null)return;if(Array.isArray(x)){x.forEach(w);return;}if(typeof x==='object'){Object.values(x).forEach(w);return;}const s=str(x);if(s)o.push(s)};w(v);return o};
+const linkTokens=o=>uniq([o,o?.sourceIdentity,o?.identity,o?.crosswalk,o?.profile,o?.exactIdentityAnchors].filter(Boolean).flatMap(c=>[...tech.flatMap(k=>flat(c[k])),...aliasKeys.flatMap(k=>flat(c[k]))]));
 const ownerFields=['shopperId','assignedShopperId','assignedToShopperId','auditorId','profileId','applicantShopperId','ownerShopperId','targetShopperId','beneficiaryShopperId','liquidationShopperId','reservationShopperId'];
 const domains=[['tenant','paymentReconciliations'],['tenant','reviewQueue'],['project','certifications'],['project','liquidations'],['project','postulations'],['project','reservations'],['project','visits']];
 const result={schemaVersion:'cxorbia.i3.vrm185.exact-identity-consolidation.v1',decision:'HOLD',classification:'MAPPING_FAILURE',currentCanonicalShopperId:CURRENT,legacyAliasShopperId:LEGACY,keeperVisibleLogin:KEEPER_LOGIN,retiredVisibleLogin:RETIRE_LOGIN,sourceRevision:EXPECTED,providerAck:false,idempotentReplay:false,authWrites:0,firestoreWrites:0,domainWrites:{},hrWrites:0,externalWrites:0,deploys:0,production:false};
@@ -60,9 +65,8 @@ async function main(){
   if(!legacyProof||currentProof)throw new Error('AUTH_FAILURE:VRM185_UNIQUE_KEEPER_PASSWORD_PROOF_NOT_PRESERVED');
   if(str(cx.shopperId)!==CURRENT||str(cx.sourceType).toLowerCase()!=='hr_external')throw new Error('MAPPING_FAILURE:VRM185_CURRENT_HR_SELF_CROSSWALK_REQUIRED');
   const relevantLinks=linkSnap.docs.map(d=>({id:d.id,...(d.data()||{})})).filter(l=>{
-    const st=str(l.status||l.state).toLowerCase(),a=str(l.authorityType||l.authority?.type).toLowerCase(),can=str(l.canonicalShopperId||l.canonicalId||l.shopperId||l.profileId);
-    const toks=uniq([l.sourceIdentityKey,l.sourceSubjectId,l.sourceId,l.sourceKey,l.legacyShopperId,l.externalShopperId,...arr(l.exactAliases),...arr(l.sourceAliases),...arr(l.sourceIdentityAliases)]);
-    return ACTIVE.has(st)&&a==='tenant_adjudication'&&l.humanConfirmed===true&&((can===LEGACY&&toks.includes(CURRENT))||(can===CURRENT&&toks.includes(LEGACY)));
+    const st=str(l.status||l.state).toLowerCase(),a=str(l.authorityType||l.authority?.type).toLowerCase(),can=str(l.canonicalShopperId||l.canonicalId||l.shopperId||l.profileId),toks=linkTokens(l);
+    return fp(l.id)===EXPECTED_AUTHORITY_LINK_FP&&ACTIVE.has(st)&&a==='tenant_adjudication'&&l.humanConfirmed===true&&((can===LEGACY&&toks.includes(CURRENT))||(can===CURRENT&&toks.includes(LEGACY)));
   });
   if(relevantLinks.length!==1)throw new Error('MAPPING_FAILURE:VRM185_HUMAN_ADJUDICATION_AUTHORITY_COUNT_'+relevantLinks.length);
   const authority=relevantLinks[0],domain=await domainPlan();

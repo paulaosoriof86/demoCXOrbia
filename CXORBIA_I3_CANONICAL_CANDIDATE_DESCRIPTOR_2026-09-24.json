@@ -8,7 +8,7 @@
   "productTreeAuthority": "db4c1cc35b55c03523196fc583bf7cf0b874d87f",
   "predecessorProductSourceSha": "9102918177d89d9e3d18cfb75c04aba8c29cba86",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V190_2026-10-02.json",
-  "findingsLedgerExpectedGitBlob": "22bcebed613fb02e4a607a314edb81ee83a08e4d",
+  "findingsLedgerExpectedGitBlob": "fddfc44b5b276de80ae95830660f65810928d409",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Execute the single proven VRM-185 DEV identity consolidation. Canonical operational shopperId must be shopper_gt_1440137b73; preserve paula.osorio keeper credentials without reading/persisting password; retire the duplicate current principal; remap only mutable operational owner references; preserve hrManaged.* provenance, legacy profile audit and commandReceipts. Then re-run same-DEV acceptance. Identity adjudication remains Admin-only.",
+  "exactNextAction": "Execute the same single VRM-185 consolidation once with the authority matcher aligned to run 917 exact token semantics and frozen authority-link fingerprint df210da083c2eaeca79e. No product change, no deploy, production untouched.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",

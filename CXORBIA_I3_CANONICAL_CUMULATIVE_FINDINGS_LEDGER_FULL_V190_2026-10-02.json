@@ -9505,7 +9505,7 @@
       "secondaryClassification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "paula.osorio authenticates but exact session profile/history/KPIs do not resolve",
-      "state": "ROOT_CAUSE_PROVEN_SAFE_CONSOLIDATION_WRITE_ARMED",
+      "state": "SAFE_CONSOLIDATION_WRITE_MATCHER_FIXED_RETRY_ARMED",
       "rootCauseStatus": "PROVEN",
       "observed": "Run 914 authenticates paula.osorio, HR authority is applied and all shopper routes navigate, but resolveExactSessionShopper returns identity=false; country/history/KPIs are empty.",
       "evidence": {
@@ -9684,6 +9684,22 @@
         "preserveCommandReceipts": true,
         "providerAckRequired": true,
         "idempotentReadback": true,
+        "hrWrites": 0,
+        "externalWrites": 0,
+        "deploys": 0,
+        "production": false
+      },
+      "writeAttempt1": {
+        "runId": 37098969776,
+        "runNumber": 918,
+        "jobId": 111134594352,
+        "artifactId": 11264833987,
+        "artifactDigest": "sha256:ead04cd8a6a881a82207e0520d7a8c84afb01644f034558558953e9ad55c3205",
+        "classification": "MAPPING_FAILURE",
+        "error": "VRM185_HUMAN_ADJUDICATION_AUTHORITY_COUNT_0",
+        "rootCause": "Writer preflight used a narrower top-level token matcher than the already-proven global plan. The adjudication authority is stored through the broader exact technical token contract.",
+        "authWrites": 0,
+        "firestoreWrites": 0,
         "hrWrites": 0,
         "externalWrites": 0,
         "deploys": 0,
@@ -10419,7 +10435,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Execute the single proven VRM-185 DEV identity consolidation. Canonical operational shopperId must be shopper_gt_1440137b73; preserve paula.osorio keeper credentials without reading/persisting password; retire the duplicate current principal; remap only mutable operational owner references; preserve hrManaged.* provenance, legacy profile audit and commandReceipts. Then re-run same-DEV acceptance. Identity adjudication remains Admin-only.",
+  "exactNextAction": "Execute the same single VRM-185 consolidation once with the authority matcher aligned to run 917 exact token semantics and frozen authority-link fingerprint df210da083c2eaeca79e. No product change, no deploy, production untouched.",
   "supersedesGitBlob": "1dc39b2d5dc5aa1884181c963d94b75bec8b075c",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -14089,5 +14105,5 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-10-02",
-  "nextExactAction": "Execute the single proven VRM-185 DEV identity consolidation. Canonical operational shopperId must be shopper_gt_1440137b73; preserve paula.osorio keeper credentials without reading/persisting password; retire the duplicate current principal; remap only mutable operational owner references; preserve hrManaged.* provenance, legacy profile audit and commandReceipts. Then re-run same-DEV acceptance. Identity adjudication remains Admin-only."
+  "nextExactAction": "Execute the same single VRM-185 consolidation once with the authority matcher aligned to run 917 exact token semantics and frozen authority-link fingerprint df210da083c2eaeca79e. No product change, no deploy, production untouched."
 }
