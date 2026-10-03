@@ -5,8 +5,10 @@ CX.module('beneficios', ({data,ui})=>{
      cualquier sesión sin shopperId (ej. un rol mal mapeado) heredara los beneficios de un
      shopper fijo. Sin identidad de shopper autenticada, la vista se muestra vacía/pending,
      nunca con datos de otro shopper. */
-  const sid = CX.session.user && CX.session.user.shopperId;
-  if(!sid){
+  const rawSid=String(CX.session?.user?.shopperId||'').trim();
+  const sid=rawSid?String(data.__identityMap?.[rawSid]||rawSid).trim():null;
+  const shopperProfile=sid?((data.getShopper&&data.getShopper(sid))||(data.shoppers||[]).find(x=>String(x?.id||x?.shopperId||'')===String(sid))||null):null;
+  if(!sid||!shopperProfile){
     return `<div class="card card-p">${ui.empty('👤','No hay un shopper autenticado en esta sesión — no se muestran beneficios de otra identidad.')}</div>`;
   }
   const myVisits=(data.visitsForShopper?data.visitsForShopper(sid,false):[]).filter(v=>v&&v.__pendingPlatformAssignmentOverlay!==true);
