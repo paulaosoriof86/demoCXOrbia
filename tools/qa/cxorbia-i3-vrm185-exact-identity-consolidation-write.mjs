@@ -207,37 +207,46 @@ try{
   await page.evaluate(async token=>{await window.firebase.auth().setPersistence(window.firebase.auth.Auth.Persistence.LOCAL);await window.firebase.auth().signInWithCustomToken(token);},custom);
   await page.reload({waitUntil:'domcontentloaded',timeout:60000});
   await page.waitForFunction(()=>window.CX?.backendAuth?.context?.()?.authenticated===true&&String(window.CX?.backendAuth?.context?.()?.role||'')==='super'&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&typeof window.CX?.data?.adjudicateShopperIdentity==='function',null,{timeout:120000});
-  await page.evaluate(()=>window.CX.router.nav('shoppers',{history:false}));
-  await page.waitForTimeout(500);
-  const ownerProof=await page.evaluate(({current,legacy})=>{
-    const review=Array.isArray(window.CX?.data?.__identityReviewQueue)?window.CX.data.__identityReviewQueue:[];
-    const ids=item=>[item?.shopperId,item?.sourceShopperId,item?.canonicalShopperId,item?.liveShopperId,item?.id,...(Array.isArray(item?.shopperIds)?item.shopperIds:[]),...(Array.isArray(item?.candidates)?item.candidates:[])].map(String).map(x=>x.trim()).filter(Boolean);
-    const focalReviews=review.filter(item=>ids(item).includes(current)||ids(item).includes(legacy)).map(item=>({reason:String(item?.reason||''),ids:ids(item)}));
-    return {
-      role:window.CX?.backendAuth?.context?.()?.role||null,
-      namespace:window.CX?.backendAuth?.context?.()?.authNamespace||null,
-      currentFound:!!window.CX?.data?.getShopper?.(current),
-      aliasFound:!!window.CX?.data?.getShopper?.(legacy),
-      adjudicationFunction:typeof window.CX?.data?.adjudicateShopperIdentity==='function',
-      commandBoundary:String(window.CX?.data?.__cxCommandBoundaryVersion||''),
-      reviewCount:review.length,
-      focalReviews,
-      viewHasResolveIdentity:/Resolver identidad/i.test(document.getElementById('view')?.innerText||'')
-    };
-  },{current:CURRENT,legacy:LEGACY});
-  result.adminPreflight=ownerProof;save();
-  if(ownerProof.role!=='super'||ownerProof.namespace!=='staff'||!ownerProof.currentFound||!ownerProof.aliasFound||!ownerProof.adjudicationFunction)throw new Error('AUTH_FAILURE:VRM185_ADMIN_OWNER_UI_CONTEXT_INVALID');
+  await page.evaluate(current=>{window.CX.session._focusShopper=current;window.CX.router.nav('shoppers',{history:false});},CURRENT);
+  await page.waitForSelector('#shResolveIdentity',{state:'visible',timeout:60000});
+  const ownerProof=await page.evaluate(({current,legacy})=>({
+    role:window.CX?.backendAuth?.context?.()?.role||null,
+    namespace:window.CX?.backendAuth?.context?.()?.authNamespace||null,
+    currentFound:!!window.CX?.data?.getShopper?.(current),
+    aliasOperationallyVisible:!!window.CX?.data?.getShopper?.(legacy),
+    adjudicationFunction:typeof window.CX?.data?.adjudicateShopperIdentity==='function',
+    commandBoundary:String(window.CX?.data?.__cxCommandBoundaryVersion||''),
+    resolverVisible:!!document.querySelector('#shResolveIdentity')
+  }),{current:CURRENT,legacy:LEGACY});
+  if(ownerProof.role!=='super'||ownerProof.namespace!=='staff'||!ownerProof.currentFound||!ownerProof.adjudicationFunction||!ownerProof.resolverVisible)throw new Error('AUTH_FAILURE:VRM185_ADMIN_OWNER_UI_CONTEXT_INVALID');
 
-  const ack=await page.evaluate(async({current,legacy})=>await window.CX.data.adjudicateShopperIdentity(current,[legacy],{ackAware:true,reason:'admin_exact_identity_human_adjudication_vrm185'}),{current:CURRENT,legacy:LEGACY});
+  await page.click('#shResolveIdentity');
+  await page.waitForSelector('#idCanonical',{state:'visible',timeout:30000});
+  const resolverProof=await page.evaluate(({current,legacy})=>{
+    const select=document.querySelector('#idCanonical');
+    const options=[...select.options].map(o=>String(o.value||'').trim()).filter(Boolean);
+    const text=String(select.closest('.modal,.overlay,[role="dialog"]')?.innerText||document.body.innerText||'');
+    return {canonicalOptions:options,currentOption:options.includes(current),legacyOption:options.includes(legacy),adminOnlyMarker:!!document.querySelector('[data-identity-admin-only="true"]'),sameHumanConfirmation:!!document.querySelector('#idConfirm'),historicalReferenceVisible:/Referencia histórica/i.test(text)};
+  },{current:CURRENT,legacy:LEGACY});
+  result.adminPreflight=Object.assign({},ownerProof,{resolverProof});save();
+  if(resolverProof.adminOnlyMarker!==true||resolverProof.sameHumanConfirmation!==true||resolverProof.currentOption!==true||resolverProof.legacyOption===true||resolverProof.canonicalOptions.length!==1)throw new Error('MAPPING_FAILURE:VRM186_ADMIN_EXACT_CANONICAL_OPTIONS_INVALID');
+
+  await page.selectOption('#idCanonical',CURRENT);
+  await page.check('#idConfirm');
+  const providerResponse=page.waitForResponse(response=>response.url().includes('/v1/cxorbia/commands')&&response.request().method()==='POST',{timeout:60000});
+  await page.click('#idResolve');
+  const response=await providerResponse;
+  const ack=await response.json();
   result.commandAck={
-    ok:ack?.ok===true,status:ack?.status||null,providerAck:ack?.providerAck===true,
+    httpStatus:response.status(),ok:ack?.ok===true,status:ack?.status||null,providerAck:ack?.providerAck===true,
     commandType:ack?.commandType||null,canonicalShopperId:ack?.canonicalShopperId||ack?.entityId||null,
     identityConsolidated:ack?.identityConsolidated===true,idempotentReplay:ack?.idempotentReplay===true,
     retiredPrincipalCount:Number(ack?.retiredPrincipalCount||0),providerWrites:Number(ack?.providerWrites||0),
     hrWrites:Number(ack?.hrWrites||0),externalWrites:Number(ack?.externalWrites||0),
     idempotencyKey:ack?.idempotencyKey||null,periodId:ack?.periodId||null
   };
-  if(ack?.ok!==true||ack?.providerAck!==true||ack?.commandType!=='shopper.identity.adjudicate'||ack?.identityConsolidated!==true)throw new Error('PERSISTENCE_FAILURE:VRM185_PROVIDER_ADJUDICATION_ACK_MISSING_'+str(ack?.code||ack?.status));
+  if(response.status()!==200||ack?.ok!==true||ack?.providerAck!==true||ack?.commandType!=='shopper.identity.adjudicate'||ack?.identityConsolidated!==true)throw new Error('PERSISTENCE_FAILURE:VRM185_PROVIDER_ADJUDICATION_ACK_MISSING_'+str(ack?.code||ack?.status));
+  if(str(ack?.canonicalShopperId||ack?.entityId)!==CURRENT)throw new Error('MAPPING_FAILURE:VRM185_PROVIDER_CANONICAL_IDENTITY_MISMATCH');
   if(Number(ack?.hrWrites||0)!==0||Number(ack?.externalWrites||0)!==0)throw new Error('PERSISTENCE_FAILURE:VRM185_EXTERNAL_WRITE_FORBIDDEN');
 
   result.readback=await durableReadback(before);
