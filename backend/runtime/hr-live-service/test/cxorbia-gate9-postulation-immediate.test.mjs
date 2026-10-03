@@ -30,7 +30,8 @@ function seededDb(state='disponible'){
   db.seed(visitPath('visit-a'),{id:'visit-a',visitId:'visit-a',tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',hrRowId:'HR!2',estado:state,status:state,shopperId:''});
   return db;
 }
-const command=(overrides={})=>({version:'cxorbia-command-adapter-v1',commandType:'application.create',entityType:'application',tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',expectedVersion:'absent',idempotencyKey:'gate9-application-create-a',payload:{visitId:'visit-a',hrRowId:'HR!2',shopperId:'shopper-a',proposedDate:'2026-09-05',note:'gate9'},authorization:{providerEnforcementRequired:true,permission:'application.create'},...overrides});
+const futureDate=(days=7)=>{const d=new Date(Date.now()+days*86400000);const p=Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone:'America/Guatemala',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d).filter(x=>x.type!=='literal').map(x=>[x.type,x.value]));return `${p.year}-${p.month}-${p.day}`;};
+const command=(overrides={})=>({version:'cxorbia-command-adapter-v1',commandType:'application.create',entityType:'application',tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',expectedVersion:'absent',idempotencyKey:'gate9-application-create-a',payload:{visitId:'visit-a',hrRowId:'HR!2',shopperId:'shopper-a',proposedDate:futureDate(),note:'gate9'},authorization:{providerEnforcementRequired:true,permission:'application.create'},...overrides});
 
 test('Gate 9 / application.create persists exact shopper visit scope and ACKs before UI success',async()=>{
   const db=seededDb();
@@ -51,16 +52,17 @@ test('Gate 9 / application.create replay is idempotent and creates no duplicate 
 
 test('Gate 9 / application.create rejects shopper mismatch and unavailable visit without writes',async()=>{
   const db=seededDb();const provider=createOperationalCommandProvider({auth:new FakeAuth(),db,policy});
-  const mismatch=await provider.execute('shopper-token',command({idempotencyKey:'gate9-mismatch',payload:{visitId:'visit-a',shopperId:'shopper-b',proposedDate:'2026-09-05'}}));
+  const mismatch=await provider.execute('shopper-token',command({idempotencyKey:'gate9-mismatch',payload:{visitId:'visit-a',shopperId:'shopper-b',proposedDate:futureDate()}}));
   assert.equal(mismatch.ok,false);assert.equal(mismatch.code,'OPS_APPLICATION_SHOPPER_SCOPE_DENIED');assert.equal(db.paths().filter(p=>p.startsWith(postPrefix)).length,0);
   const db2=seededDb('asignada');const provider2=createOperationalCommandProvider({auth:new FakeAuth(),db:db2,policy});
   const unavailable=await provider2.execute('shopper-token',command({idempotencyKey:'gate9-unavailable'}));
   assert.equal(unavailable.ok,false);assert.equal(unavailable.code,'OPS_VISIT_NOT_AVAILABLE');assert.equal(db2.paths().filter(p=>p.startsWith(postPrefix)).length,0);
 });
 
-test('Gate 9 / periodKey maps to a scoped canonical periodId and repairs legacy durable visit scope',async()=>{
-  const db=seededDb();
-  db.seed(visitPath('visit-a'),{...db.get(visitPath('visit-a')),periodId:'project-a',hrSourceRevision:'legacy-period-scope'});
+test('Gate 9 / periodKey maps to canonical periodId on the durable hrRowId visit authority',async()=>{
+  const db=new FakeFirestore();
+  db.seed(memberPath,{active:true,tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:'shopper-a',projectIds:['project-a']});
+  db.seed(visitPath('HR!2'),{id:'visit-a',visitId:'visit-a',tenantId:'tenant-a',projectId:'project-a',periodId:'project-a',hrRowId:'HR!2',estado:'disponible',status:'disponible',shopperId:'',hrSourceRevision:'legacy-period-scope'});
   const provider=createOperationalCommandProvider({auth:new FakeAuth(),db,policy});
   const snapshot={
     sourceSafe:true,
@@ -74,10 +76,12 @@ test('Gate 9 / periodKey maps to a scoped canonical periodId and repairs legacy 
   const mapped=visitsFromSnapshot(snapshot);
   assert.equal(mapped.visits.length,1);
   assert.equal(mapped.visits[0].periodId,'project-a-2026-09');
+  assert.equal(mapped.visits[0].visitId,'HR!2');
   const result=await provider.reconcileSnapshot(snapshot,{sourceRevision:'gate9-period-scope-repair'});
   assert.equal(result.ok,true);
   assert.equal(result.providerAck,true);
-  assert.equal(db.get(visitPath('visit-a')).periodId,'project-a-2026-09');
+  assert.equal(db.get(visitPath('HR!2')).periodId,'project-a-2026-09');
+  assert.equal(db.paths().filter(p=>p.startsWith('tenants/tenant-a/projects/project-a/visits/')).length,1);
 });
 
 test('Gate 9 / frontend requires remote ACK and preserves durable posts through protected HR composition',()=>{
