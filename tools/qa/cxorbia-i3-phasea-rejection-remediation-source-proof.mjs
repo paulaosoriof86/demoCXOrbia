@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
+import {execFileSync} from 'node:child_process';
 
 const read=p=>fs.readFileSync(p,'utf8');
 const checks=[];
@@ -17,6 +18,8 @@ const portal=read('app/adapters/tya-canonical-shopper-portal-v2.js');
 const bridge=read('app/adapters/tya-protected-auth-hr-authority-bridge-v2.js');
 const css=read('app/styles/layout.css');
 const ops=read('backend/runtime/cxorbia-operational-command-provider-v1.mjs');
+const shopperProvider=read('backend/runtime/cxorbia-shopper-command-provider-v1.mjs');
+const academy=read('app/modules/academia.js');
 
 pass('canonical shopper portal is no longer preview-query gated',()=>{
   assert(!portal.includes("cxHumanFullVisual')!=='YES_PAULA_20260731_FULL_PROFILE_DEV"));
@@ -78,6 +81,27 @@ pass('Academia course tones are solid and profile hierarchy styles exist',()=>{
   assert(toneLines.every(l=>!l.includes('linear-gradient')));
   assert(css.includes('.cx-profile-detail-grid'));
   assert(css.includes('.cx-profile-group-title'));
+});
+pass('Admin supports one explicit atomic multi-profile adjudication',()=>{
+  assert(shoppers.includes('id="manualAliases" multiple'));
+  assert(shoppers.includes('selectedRows=()=>[...aliasSel.selectedOptions]'));
+  assert(shoppers.includes('aliases=allIds.filter(id=>id!==canonical)'));
+  assert(shoppers.includes('todas las fichas seleccionadas corresponden a la misma persona'));
+});
+pass('identity provider resolves multiple strong principals only by exact canonical login',()=>{
+  assert(shopperProvider.includes('const canonicalCredential=shopperCredentialRule(canonical)'));
+  assert(shopperProvider.includes('canonicalLoginStrong.length!==1'));
+  assert(shopperProvider.includes("throw new Error('SHOPPER_IDENTITY_MULTIPLE_PASSWORD_PROOF_PRINCIPALS')"));
+});
+pass('Academia assigns a distinct solid palette by visible course position',()=>{
+  assert(academy.includes('filtered.map((c,courseIndex)=>'));
+  assert(academy.includes("toneOrder[courseIndex%toneOrder.length]"));
+  const toneLines=css.split(/\r?\n/).filter(l=>/cx-academy-course-card\.tone-/.test(l));
+  const values=toneLines.map(l=>(l.match(/--acad-tone:([^}]+)/)||[])[1]).filter(Boolean);
+  assert(new Set(values).size>=8);
+});
+pass('shopper identity provider behavioral regression suite passes',()=>{
+  execFileSync(process.execPath,['--test','backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs'],{stdio:'pipe',timeout:120000});
 });
 
 const result={
