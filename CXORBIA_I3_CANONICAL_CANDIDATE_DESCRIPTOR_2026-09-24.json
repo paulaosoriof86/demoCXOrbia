@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_JULISSA_IDENTITY_TOPOLOGY_DIAGNOSTIC_REQUIRED",
+  "status": "HOLD_JULISSA_IDENTITY_SOURCE_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "48904fdcc5524cf928893b6258830bf6f34fafc9",
-  "productTreeAuthority": "248409e1e004c50d410290e99361c3d791314cfa",
+  "productSourceSha": "7b8b88608c9cd38cc97726c3f17aab55a51f1715",
+  "productTreeAuthority": "663f89c041732a617bb1ee43af2adc0289a8b5ad",
   "predecessorProductSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V220_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "9ab01b0533b55fcf901ee92e3bf885a3422f8af3",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V221_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "b1b8c8ae6e7b80ee392d77cba43ebdb9f5ba2ce3",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V3.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "JULISSA_IDENTITY_TOPOLOGY_DIAGNOSTIC_REQUIRED",
-  "nextFindingId": "VRM-202",
+  "activeBlocker": "JULISSA_IDENTITY_SOURCE_REPROOF_REQUIRED",
+  "nextFindingId": "VRM-203",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run read-only Julissa identity topology diagnostic before any consolidation/write. Determine the exact canonical principal, aliases/duplicate profiles, crosswalk/links, durable visits and live HR ownership. Preserve the Academy successor source; no build/deploy and no production.",
+  "exactNextAction": "Run exact source reproof for 7b8b88608c9cd38cc97726c3f17aab55a51f1715. Require shopper provider unit tests (canonical-login keeper + ambiguous multi-proof fail-closed), multi-profile Admin source contract, Academy distinct-solid source contract, Gate 9, progressive route and Finance semantics. No build/deploy.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -419,25 +419,7 @@
     "writes": 0,
     "production": false
   },
-  "currentMaterialization": {
-    "state": "PASS_EXACT_DEV_RUN1016_PENDING_SAME_ARTIFACT_LIVE_REPROOF",
-    "sourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
-    "sourceTree": "e3c45d9c579a417868dbd86143e6be7a36c20a29",
-    "runId": 37159236878,
-    "runNumber": 1016,
-    "jobId": 111309018144,
-    "artifactId": 11286862363,
-    "artifactDigest": "sha256:ae85b5407004fbff45a8c6505f9e670b6108ef80ba84c95c8e56541975a77371",
-    "runtimeRevision": "cxorbia-live-hr-dev-00258-9fj",
-    "runtimeDigest": "sha256:6b48431fb4e33927a8a6cdfad2c6ea706cb4bddb1caf23dfb8714112370878c4",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/9da4b395d0d2099d",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791067394588000",
-    "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
-    "builds": 1,
-    "runtimeDeploys": 1,
-    "hostingDeploys": 1,
-    "production": false
-  },
+  "currentMaterialization": null,
   "lastFocalAttempt": {
     "runId": 36198284266,
     "runNumber": 438,
@@ -3394,7 +3376,7 @@
     "production": false
   },
   "visualAcceptance": {
-    "state": "REJECTED_IDENTITY_DIAGNOSTIC_REQUIRED",
+    "state": "REJECTED_SOURCE_REPROOF_REQUIRED",
     "ready": false,
     "humanVisualAccepted": false,
     "production": false
@@ -3436,9 +3418,10 @@
   },
   "visualCheckpointScope": null,
   "currentRemediationPackage": {
-    "sourceSha": "48904fdcc5524cf928893b6258830bf6f34fafc9",
-    "sourceTree": "248409e1e004c50d410290e99361c3d791314cfa",
-    "qaPath": "tools/qa/cxorbia-i3-phasea-rejection-remediation-source-proof.mjs",
+    "sourceSha": "7b8b88608c9cd38cc97726c3f17aab55a51f1715",
+    "sourceTree": "663f89c041732a617bb1ee43af2adc0289a8b5ad",
+    "predecessorSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
+    "state": "JULISSA_IDENTITY_AND_ACADEMY_SOURCE_COMPOSED_PENDING_REPROOF",
     "findingIds": [
       "VRM-134",
       "VRM-165",
@@ -3450,15 +3433,16 @@
       "VRM-178",
       "VRM-197",
       "VRM-199",
-      "VRM-200"
+      "VRM-200",
+      "VRM-201",
+      "VRM-202"
+    ],
+    "preservedOpenAcceptance": [
+      "VRM-179",
+      "VRM-180",
+      "VRM-194"
     ],
     "preservedAllPriorFindings": true,
-    "production": false,
-    "predecessorSourceSha": "4f87cb0155162674d459b09e3725dd585c84709d",
-    "state": "ACADEMY_SOURCE_SUCCESSOR_COMPOSED_JULISSA_TOPOLOGY_DIAGNOSTIC_REQUIRED",
-    "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V2.json",
-    "adminMatrixPath": "CXORBIA_I3_ADMIN_FULL_ADMINISTRATION_MATRIX_2026-10-03_V2.json",
-    "sourceProofRunId": 37159003511,
-    "sourceProofRunNumber": 1014
+    "production": false
   }
 }
