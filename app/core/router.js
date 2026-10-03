@@ -314,6 +314,10 @@ CX.router = {
     document.getElementById('crumb').innerHTML=`${group?group.sec:''} <span class="sep">/</span> <b>${crumbLbl}</b>`;
     this.render(id);
     try{
+      const postBadge=document.querySelector('#nav-postulaciones .n-badge');
+      if(postBadge){const n=Number(CX.data?.kpis?.()?.postPend||0);postBadge.textContent=n?String(n):'';postBadge.style.display=n?'':'none';}
+    }catch(_){}
+    try{
       const state={cxorbia:true,cxView:id};
       if(opts.history==='replace') history.replaceState(state,'',location.href);
       else if(opts.history!==false && history.state?.cxView!==id) history.pushState(state,'',location.href);
