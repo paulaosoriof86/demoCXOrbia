@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_HUMAN_VISUAL_CHECKPOINT_REQUIRED_BEFORE_FURTHER_PRODUCT_MUTATION",
+  "status": "HOLD_HUMAN_VISUAL_REJECTION_P0_REMEDIATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "c5c4d002ab783391f915eaf7f41d69dc1005f215",
   "productTreeAuthority": "7909233675f6bed3021f90810edb3d1c696aaf2b",
   "predecessorProductSourceSha": "a62d4e5b49fce4464987ca55112221604647933c",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V213_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "9cca38d2a83f34b066d4223041da741c14f054f7",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V214_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "9d0436aa540573b08db3f2862f9c89a85559cae4",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "PAULA_HUMAN_VISUAL_APPROVAL",
-  "nextFindingId": "VRM-196",
+  "activeBlocker": "HUMAN_VISUAL_REJECTION_P0_REMEDIATION_REQUIRED",
+  "nextFindingId": "VRM-198",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Paula reviews the sealed DEV checkpoint at the frozen DEV URL. Do not mutate product, rebuild or redeploy before explicit visual approval. Production remains DO_NOT_TOUCH.",
+  "exactNextAction": "Do not rebuild or redeploy yet. Execute one bounded forensic/remediation block inside I3 against the proven owners already identified: canonical shopper identity across all shopper surfaces (including Julissa), Admin identity adjudication/merge discoverability, Postulaciones count/lifecycle coherence, instructive-certification-scheduling progression, durable payment projection, and the rejected Mi Perfil/Academia visual language. Reuse the same cumulative candidate lineage; no new branch, overlay, reimport or general audit. After source proofs, materialize one cumulative DEV candidate and repeat representative Admin + at least three shopper identities including Julissa, Priscila and Paula before asking for visual approval again.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -420,7 +420,7 @@
     "production": false
   },
   "currentMaterialization": {
-    "state": "SEALED_DEV_SAME_ARTIFACT_READBACK_PASS_PENDING_PAULA_VISUAL_APPROVAL",
+    "state": "SEALED_DEV_HUMAN_REJECTED_REMEDIATION_REQUIRED",
     "sourceSha": "c5c4d002ab783391f915eaf7f41d69dc1005f215",
     "sourceTree": "7909233675f6bed3021f90810edb3d1c696aaf2b",
     "materializationRunId": 37151594398,
@@ -494,7 +494,9 @@
       "hostingDeploys": 0,
       "production": false
     },
-    "production": false
+    "production": false,
+    "humanVisualAccepted": false,
+    "humanVisualRejectedAt": "2026-10-03T21:03:00Z"
   },
   "lastFocalAttempt": {
     "runId": 36198284266,
@@ -3452,14 +3454,31 @@
     "production": false
   },
   "visualAcceptance": {
-    "state": "PAULA_VISUAL_APPROVAL_REQUIRED",
-    "ready": true,
-    "devUrl": "https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV",
+    "state": "REJECTED",
+    "ready": false,
+    "humanVisualAccepted": false,
     "sourceSha": "c5c4d002ab783391f915eaf7f41d69dc1005f215",
     "sourceTree": "7909233675f6bed3021f90810edb3d1c696aaf2b",
-    "runtimeRevision": "cxorbia-live-hr-dev-00257-7rh",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/e5adfc75a24a3717",
-    "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
     "production": false
+  },
+  "humanVisualDecision": {
+    "state": "REJECTED_2026-10-03",
+    "reviewer": "Paula",
+    "sourceSha": "c5c4d002ab783391f915eaf7f41d69dc1005f215",
+    "sourceTree": "7909233675f6bed3021f90810edb3d1c696aaf2b",
+    "devRuntimeRevision": "cxorbia-live-hr-dev-00257-7rh",
+    "devHostingVersion": "sites/cxorbia-backend-dev/versions/e5adfc75a24a3717",
+    "production": false,
+    "conclusion": "The sealed DEV checkpoint is not acceptable for I3 GO. Human evidence contradicts the prior focal readback on representative identity, postulation, route progression, payment projection and approved visual language.",
+    "observed": [
+      "Admin Shoppers shows Julissa Flores and Julissa Illescas as separate people although Paula confirms they are the same person; current UI does not surface a merge action for this pair.",
+      "Admin Visits shows Julissa Flores assigned to C. Miraflores in OCT 2026, while the tested shopper session can render generic Evaluador, no periods, no active visits and Mi Perfil unable to link the session.",
+      "Another shopper, Priscila Lopez, resolves correctly and shows an assigned visit, proving the failure is identity-dependent rather than a universal shopper outage.",
+      "Postulaciones rail badge shows 10 while the module shows 0 pending / 0 approved / 0 total / 0 schedules.",
+      "Mi Perfil visual hierarchy/typography is rejected; the screen remains inconsistent with the approved platform language.",
+      "Instructive read confirmation did not advance the route; certification/scheduling progression is not coherently activated and the certification transition can block on a long refresh.",
+      "Historical payments previously confirmed by Paula still render as pending in Mis Beneficios.",
+      "Academia visual requirement remains unmet: course cards were requested with distinct solid colors, not repeated blue treatment or gradients."
+    ]
   }
 }
