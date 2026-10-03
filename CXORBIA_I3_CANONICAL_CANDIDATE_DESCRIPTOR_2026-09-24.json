@@ -7,8 +7,8 @@
   "productSourceSha": "ed15751c40bd90856ff8eead1825368fffff40c6",
   "productTreeAuthority": "2e5b6af67aa0bbb5e0f79a37fe5dbab8453792b2",
   "predecessorProductSourceSha": "72c9114130d6fd1d3475957118b48e48469ad7c8",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V190_2026-10-02.json",
-  "findingsLedgerExpectedGitBlob": "bf14abc6ca93bb8e6a9b65f5b758d5c0ace5897c",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V191_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "48707b713db3046f8ad6e2c092ad79ea656a0c5a",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -2895,7 +2895,7 @@
   "cumulativeObservationClosureGate": {
     "required": true,
     "timing": "I3_BEFORE_HUMAN_VISUAL_APPROVAL",
-    "sourceOfTruth": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V190_2026-10-02.json",
+    "sourceOfTruth": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V191_2026-10-03.json",
     "rule": "No finding or Paula observation may disappear because a later iteration, source, reproof or visual redesign supersedes it. Every observation must map to a ledger finding/acceptance item with current state, owner, evidence and final disposition.",
     "requiredDomains": [
       "Shoppers identity/profile/fusion/admin management",
