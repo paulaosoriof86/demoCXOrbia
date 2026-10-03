@@ -10,20 +10,38 @@ const PROJECT=E.PROJECT||'cxorbia-backend-dev';
 const ROOT=String(E.HOSTING_URL||'https://cxorbia-backend-dev.web.app').replace(/\/$/,'');
 const TENANT=E.TENANT_ID||'tya',PROJECT_ID=E.PROJECT_ID||'cinepolis';
 const PERIOD_ID=E.VRM168_PERIOD_ID||'cinepolis-2026-10';
-const UID=E.VRM168_UID||'cx-sh-d56787c101878e81c94fc7637f66';
+const UID_HINT=String(E.VRM168_UID||'').trim();
 const SHOPPER_ID=E.VRM168_SHOPPER_ID||'shopper_gt_1440137b73';
 const VISIT_ID=E.VRM168_VISIT_ID||'OCTUBRE 26!6';
 const HR_REVISION=E.VRM168_HR_REVISION||'27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732';
 const OUT=E.OUT||'.tmp/vrm168-browser-command-capture';
 fs.mkdirSync(OUT,{recursive:true});
 if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
-const auth=getAuth(),db=getFirestore();
+const auth=getAuth(),db=getFirestore(),str=v=>String(v==null?'':v).trim();
 const tenant=db.collection('tenants').doc(TENANT),visitRef=tenant.collection('projects').doc(PROJECT_ID).collection('visits').doc(VISIT_ID);
+async function resolveActiveCanonicalPrincipal(){
+  const snap=await tenant.collection('users').where('shopperId','==',SHOPPER_ID).get();
+  const memberships=snap.docs.map(d=>({uid:d.id,...(d.data()||{})})).filter(row=>
+    row.active===true&&str(row.role)==='shopper'&&str(row.authNamespace)==='shopper'&&
+    Array.isArray(row.projectIds)&&row.projectIds.map(str).includes(PROJECT_ID)
+  );
+  if(memberships.length!==1)throw new Error('AUTH_FAILURE:VRM168_ACTIVE_CANONICAL_MEMBERSHIP_COUNT_'+memberships.length);
+  const member=memberships[0];
+  if(UID_HINT&&UID_HINT!==member.uid)throw new Error('AUTH_FAILURE:VRM168_UID_HINT_STALE');
+  const user=await auth.getUser(member.uid);
+  if(user.disabled===true)throw new Error('AUTH_FAILURE:VRM168_ACTIVE_CANONICAL_AUTH_DISABLED');
+  const claims=user.customClaims||{};
+  const required={tenantId:TENANT,role:'shopper',authNamespace:'shopper',shopperId:SHOPPER_ID};
+  for(const [k,v] of Object.entries(required))if(str(claims[k])!==v)throw new Error('AUTH_FAILURE:VRM168_ACTIVE_CANONICAL_CLAIM_'+k);
+  if(!Array.isArray(claims.projectIds)||!claims.projectIds.map(str).includes(PROJECT_ID))throw new Error('AUTH_FAILURE:VRM168_ACTIVE_CANONICAL_CLAIM_PROJECT');
+  return {uid:member.uid,user,member};
+}
 const beforeSnap=await visitRef.get();
 if(!beforeSnap.exists)throw new Error('SOURCE_FAILURE:VRM168_REAL_VISIT_MISSING');
 const before=beforeSnap.data()||{};
 if(String(before.estado||before.status)!=='asignada'||String(before.shopperId||'')!==SHOPPER_ID||String(before.periodId||'')!==PERIOD_ID)throw new Error('SOURCE_FAILURE:VRM168_REAL_VISIT_PRECONDITION:'+JSON.stringify({estado:before.estado,shopperId:before.shopperId,periodId:before.periodId}));
-const user=await auth.getUser(UID);
+const principal=await resolveActiveCanonicalPrincipal();
+const UID=principal.uid,user=principal.user;
 const PREVIEW='YES_PAULA_20260628_PREVIEW_DEV',PROTECTED='YES_PAULA_20260730_PROTECTED_DEV',FULL='YES_PAULA_20260731_FULL_PROFILE_DEV';
 const url=ROOT+'/index-backend-dev.html?cxBackendPreview='+PREVIEW+'&cxProjectId='+encodeURIComponent(PROJECT_ID)+'&cxProtectedRuntime='+PROTECTED+'&cxHumanFullVisual='+FULL+'&vrm168capture='+Date.now();
 const browser=await chromium.launch({headless:true});
@@ -141,7 +159,8 @@ try{
   for(const k of ['tenantId','projectId','periodId','entityId'])if(String(observed[k]??'')!==String(expected[k]))mismatch.push(k);
   for(const k of ['visitId','hrRowId','shopperId','estado','agendada'])if(String(observed[k]??'')!==String(expected[k]))mismatch.push(k);
   const durableUnchanged=String(after.estado||after.status)==='asignada'&&Number(after.version)===Number(before.version)&&String(after.agendada||'')===String(before.agendada||'');
-  result={schemaVersion:'cxorbia.i3.vrm168.browser-command-capture.v1',
+  result={schemaVersion:'cxorbia.i3.vrm168.browser-command-capture.v2',
+    principalResolution:{mode:'unique_active_canonical_membership',uid:UID,shopperId:SHOPPER_ID,hintProvided:!!UID_HINT},
     decision:mismatch.length?'FAIL_VRM168_BROWSER_COMMAND_MAPPING':'PASS_VRM168_BROWSER_COMMAND_MAPPING',
     expected,observed,mismatch,modal,pre,capture,durableBefore:{estado:before.estado||before.status,version:before.version,agendada:before.agendada||null,periodId:before.periodId,shopperId:before.shopperId},
     durableAfter:{estado:after.estado||after.status,version:after.version,agendada:after.agendada||null,periodId:after.periodId,shopperId:after.shopperId},
