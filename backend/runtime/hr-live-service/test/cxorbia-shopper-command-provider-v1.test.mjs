@@ -484,6 +484,61 @@ test('VRM-081 / conflicting exact identity links fail closed and never merge by 
   assert.equal(db.paths().filter(path=>path.includes('/users/')).length,0);
 });
 
+test('VRM-168 / stale tenant adjudication cannot override a live exact HR and Auth principal',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);
+  const source='shopper_gt_live_exact',legacy='s3',uid='live-exact-uid',legacyUid='legacy-target-uid';
+  const visibleLogin='paula.osorio',email=internalEmailTest('tenant-a',visibleLogin);
+  auth.seed({uid,email,password:'Paula123*',disabled:false,customClaims:{tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:source,projectIds:['project-a']}});
+  db.seed(`tenants/tenant-a/users/${uid}`,{
+    active:true,tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:source,projectIds:['project-a'],
+    providerUidFingerprint:providerUidFingerprint(uid),visibleLogin,credentialRuleVersion:CREDENTIAL_RULE_VERSION,credentialState:'enrolled'
+  });
+  db.seed(`tenants/tenant-a/shoppers/${source}`,{
+    id:source,shopperId:source,tenantId:'tenant-a',projectIds:['project-a'],sourceType:'hr_external',
+    nombre:'Paula Osorio',firstName:'Paula',lastName:'Osorio',visibleLogin,username:visibleLogin,user:visibleLogin,
+    credentialRuleVersion:CREDENTIAL_RULE_VERSION,hrSourceRevision:'older-live-revision'
+  });
+  db.seed(`tenants/tenant-a/shoppers/${legacy}`,{id:legacy,shopperId:legacy,tenantId:'tenant-a',projectIds:['project-a'],sourceType:'hr_external'});
+  db.seed(`tenants/tenant-a/users/${legacyUid}`,{
+    active:true,tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:legacy,projectIds:['project-a'],
+    providerUidFingerprint:providerUidFingerprint(legacyUid)
+  });
+  auth.seed({uid:legacyUid,email:'legacy-target@auth.cxorbia.invalid',disabled:false,customClaims:{tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:legacy,projectIds:['project-a']}});
+  db.seed(`tenants/tenant-a/shopperIdentityCrosswalk/${source}`,{
+    tenantId:'tenant-a',shopperId:legacy,projectIds:['project-a'],providerUidFingerprint:providerUidFingerprint(legacyUid),
+    sourceStableKey:source,identityMode:'provider_exact_identity_link',sourceType:'hr_external',fuzzyMatching:false,
+    migrationAuthorityType:'tenant_adjudication',migrationAuthorityRef:'historical-adjudication'
+  });
+  db.seed('tenants/tenant-a/shopperIdentityLinks/stale-tenant-adjudication',{
+    tenantId:'tenant-a',canonicalShopperId:legacy,sourceSystem:'hr',sourceIdentityKey:source,
+    projectScope:'project-a',status:'materialized',authorityType:'tenant_adjudication',
+    authorityRef:'historical-adjudication',periodIndependent:true
+  });
+  const snap=snapshot({shopperId:source,shopperCode:'TYA_GT_LIVE_EXACT'});
+  snap.visits[0].shopper='Paula Osorio';
+  const first=await p.reconcileSnapshot(snap,{sourceRevision:'fresh-live-revision'});
+  assert.equal(first.ok,true);
+  assert.equal(first.tenantAdjudicationSuppressed,1);
+  assert.equal(first.staleTenantAdjudicationRepairs,1);
+  assert.equal(first.authCreated,0);
+  assert.equal((await auth.getUser(uid)).customClaims.shopperId,source);
+  assert.equal((await auth.getUser(uid)).disabled,false);
+  const repaired=db.get(`tenants/tenant-a/shopperIdentityCrosswalk/${source}`);
+  assert.equal(repaired.shopperId,source);
+  assert.equal(repaired.sourceStableKey,source);
+  assert.equal(repaired.identityMode,'stable_hr_shopper_id');
+  assert.equal(repaired.providerUidFingerprint,providerUidFingerprint(uid));
+  assert.equal(repaired.migrationAuthorityType,null);
+  assert.equal(repaired.migrationAuthorityRef,null);
+  assert.equal(repaired.identityRepairAuthority,'live_hr_exact_active_principal');
+  const second=await p.reconcileSnapshot(snap,{sourceRevision:'fresh-live-revision'});
+  assert.equal(second.ok,true);
+  assert.equal(second.tenantAdjudicationSuppressed,1);
+  assert.equal(second.staleTenantAdjudicationRepairs,0);
+  assert.equal(second.providerWrites,0);
+  assert.equal(db.get(`tenants/tenant-a/shopperIdentityCrosswalk/${source}`).shopperId,source);
+});
+
 test('Gate 8 / durable legacy shoppers converge to the frozen credential rule outside the current HR snapshot',async()=>{
   const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);
   const good='shopper_legacy_good',goodUid='legacy-good-uid',bad='shopper_legacy_incomplete',badUid='legacy-bad-uid';
