@@ -168,8 +168,8 @@ try{
   await nav(page,'aprendizaje');
   const academy=await page.evaluate(()=>{
     const body=String(document.body?.innerText||''),cards=[...document.querySelectorAll('.cx-academy-course-card')],heads=[...document.querySelectorAll('.cx-academy-course-head')];
-    const gradients=heads.map(x=>getComputedStyle(x).backgroundImage);
-    return {title:/Academia CXOrbia/i.test(body),courseCards:cards.length,courseHeads:heads.length,gradients,hasIcons:/🎓|📚|🚀|📊|🕵️|🏆/.test(body),visualMarkersPass:/Academia CXOrbia/i.test(body)&&cards.length>0&&heads.length===cards.length&&gradients.every(x=>/linear-gradient/i.test(x))};
+    const gradients=heads.map(x=>getComputedStyle(x).backgroundImage),solidColors=heads.map(x=>getComputedStyle(x).backgroundColor),uniqueSolidColors=[...new Set(solidColors.filter(x=>x&&x!=='rgba(0, 0, 0, 0)'&&x!=='transparent'))];
+    return {title:/Academia CXOrbia/i.test(body),courseCards:cards.length,courseHeads:heads.length,gradients,solidColors,uniqueSolidColors,hasIcons:/🎓|📚|🚀|📊|🕵️|🏆/.test(body),visualMarkersPass:/Academia CXOrbia/i.test(body)&&cards.length>0&&heads.length===cards.length&&gradients.every(x=>x==='none')&&uniqueSolidColors.length===heads.length};
   });
   if(!academy.visualMarkersPass||!academy.hasIcons)throw new Error('VISUAL_DEFECT:VRM156_ACADEMY:'+JSON.stringify(academy));
 
