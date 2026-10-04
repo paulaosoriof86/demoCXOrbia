@@ -19,14 +19,15 @@ const sha=v=>crypto.createHash('sha256').update(str(v).toLowerCase(),'utf8').dig
 const norm=v=>str(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
 const tenant=db.collection('tenants').doc(TENANT),project=tenant.collection('projects').doc(PROJECT_ID);
 const docs=async ref=>(await ref.get()).docs.map(d=>({id:d.id,...(d.data()||{})}));
-const [profiles,members,cross,links,visits,receipts,reviewRows]=await Promise.all([
+const [profiles,members,cross,links,visits,receipts,reviewRows,hrImports]=await Promise.all([
   docs(tenant.collection('shoppers')),
   docs(tenant.collection('users')),
   docs(tenant.collection('shopperIdentityCrosswalk')),
   docs(tenant.collection('shopperIdentityLinks')),
   docs(project.collection('visits')),
   docs(tenant.collection('commandReceipts')),
-  docs(tenant.collection('reviewQueue'))
+  docs(tenant.collection('reviewQueue')),
+  docs(project.collection('hrImports'))
 ]);
 const profileName=p=>str(p.nombre||p.displayName||p.fullName||[p.firstName,p.lastName].filter(Boolean).join(' '));
 const TARGET_SHOPPER_IDS=new Set(['shr-1780611985059-49vr','shopper_gt_0c198c1055','shp-7309d525805e']);
@@ -77,6 +78,32 @@ const currentHrTargetShopperIds=tokenList.filter(id=>(hrVisitCountsByShopper[id]
 const collectTargetIds=(v,out=new Set(),depth=0)=>{if(depth>6||v==null)return out;if(Array.isArray(v)){for(const x of v)collectTargetIds(x,out,depth+1);return out;}if(typeof v==='object'){for(const x of Object.values(v))collectTargetIds(x,out,depth+1);return out;}const s=str(v);if(TARGET_SHOPPER_IDS.has(s))out.add(s);return out;};
 const receiptMatches=receipts.map(r=>({row:r,ids:[...collectTargetIds(r)]})).filter(x=>x.ids.length).map(({row,ids})=>({id:str(row.id),matchedTargetIds:ids,commandType:str(row.commandType),shopperId:str(row.shopperId),providerAck:row.providerAck===true,identityLinkId:str(row.identityLinkId),identityConsolidated:row.identityConsolidated===true,retiredPrincipalCount:Number(row.retiredPrincipalCount||0),visibleLogin:str(row.visibleLogin),authCreated:row.authCreated===true,profileUpdated:row.profileUpdated===true,updatedAt:ts(row.updatedAt)}));
 const reviewMatches=reviewRows.map(r=>({row:r,ids:[...collectTargetIds(r)]})).filter(x=>x.ids.length).map(({row,ids})=>({id:str(row.id),matchedTargetIds:ids,reason:str(row.reason||row.reviewReason||row.code),status:str(row.status||row.state),canonicalShopperId:str(row.canonicalShopperId),sourceShopperId:str(row.sourceShopperId),shopperId:str(row.shopperId),candidateShopperIds:arr(row.candidateShopperIds||row.shopperIds).map(str),createdAt:ts(row.createdAt),updatedAt:ts(row.updatedAt)}));
+const HR_ID_KEYS=['shopperId','profileId','shopperDocId','canonicalShopperId','sourceShopperId','legacyShopperId','externalShopperId','personId','sourceStableKey'];
+const directTargetIds=o=>{const out=new Set();if(!o||typeof o!=='object'||Array.isArray(o))return out;for(const k of HR_ID_KEYS){const vals=Array.isArray(o[k])?o[k]:[o[k]];for(const v of vals){const s=str(v);if(TARGET_SHOPPER_IDS.has(s))out.add(s);}}return out;};
+const walkObjects=(v,out=[],depth=0)=>{if(depth>10||v==null)return out;if(Array.isArray(v)){for(const x of v)walkObjects(x,out,depth+1);return out;}if(typeof v!=='object')return out;out.push(v);for(const x of Object.values(v))if(x&&typeof x==='object')walkObjects(x,out,depth+1);return out;};
+const fpAny=(o,keys,normalize=v=>str(v))=>{for(const k of keys){const raw=normalize(o?.[k]);if(raw)return sha(raw);}return'';};
+const hrImportMatches=[];
+for(const doc of hrImports){
+  for(const node of walkObjects(doc)){
+    const ids=[...directTargetIds(node)];if(!ids.length)continue;
+    hrImportMatches.push({
+      importDocFingerprint:sha(doc.id),
+      matchedTargetIds:ids,
+      sourceRowFingerprint:fpAny(node,['hrRowId','sourceCoord','sourceRowId','rowId','sourceKey','externalId']),
+      phoneFingerprint:fpAny(node,['whatsapp','phone','telefono','teléfono','celular','mobile'],v=>String(v??'').replace(/\D+/g,'')),
+      dpiFingerprint:fpAny(node,['dpi','documentId','identification','identificacion','identificación'],v=>String(v??'').replace(/\D+/g,'')),
+      emailFingerprint:fpAny(node,['email','correo'],v=>str(v).toLowerCase()),
+      nameFingerprint:fpAny(node,['nombre','name','displayName','fullName','shopperName'],v=>norm(v)),
+      periodKey:str(node.periodKey||node.period||node.periodo),
+      country:str(node.country||node.pais||node.país),
+      sourceType:str(node.sourceType||node.sourceSystem||node.source)
+    });
+  }
+}
+const historicalAnchorSets=Object.fromEntries(tokenList.map(id=>[id,{phone:new Set(),dpi:new Set(),email:new Set(),sourceRow:new Set()}]));
+for(const row of hrImportMatches)for(const id of row.matchedTargetIds){const s=historicalAnchorSets[id];if(row.phoneFingerprint)s.phone.add(row.phoneFingerprint);if(row.dpiFingerprint)s.dpi.add(row.dpiFingerprint);if(row.emailFingerprint)s.email.add(row.emailFingerprint);if(row.sourceRowFingerprint)s.sourceRow.add(row.sourceRowFingerprint);}
+const historicalPairEvidence=[];
+for(let i=0;i<tokenList.length;i++)for(let j=i+1;j<tokenList.length;j++){const a=tokenList[i],b=tokenList[j],sa=historicalAnchorSets[a],sb=historicalAnchorSets[b];const shared=(key)=>[...sa[key]].filter(x=>sb[key].has(x));const phone=shared('phone'),dpi=shared('dpi'),email=shared('email'),sourceRow=shared('sourceRow');historicalPairEvidence.push({a,b,sharedPhoneFingerprints:phone.length,sharedDpiFingerprints:dpi.length,sharedEmailFingerprints:email.length,sharedSourceRowFingerprints:sourceRow.length,exactHistoricalAnchorProven:phone.length>0||dpi.length>0||email.length>0||sourceRow.length>0});}
 const result={
   schemaVersion:'cxorbia.i3.julissa.identity-topology.readonly.v1',
   decision:'PASS_JULISSA_IDENTITY_TOPOLOGY_READONLY',
@@ -89,8 +116,8 @@ const result={
   durableVisits:visitMatches.map(v=>({id:str(v.id||v.visitId),hrRowId:str(v.hrRowId),periodId:str(v.periodId),shopperId:str(v.shopperId),branch:str(v.sucursal),state:str(v.estado||v.status),assignmentSource:str(v.assignmentSource)})),
   hrProfiles:hrProfiles.map(slimProfile),
   hrVisits:hrVisits.map(v=>({id:str(v.id||v.visitId),hrRowId:str(v.hrRowId),periodKey:str(v.periodKey),shopperId:str(v.shopperId),shopper:str(v.shopper||v.evaluador||v.evaluator),branch:str(v.sucursal),state:str(v.estado||v.status)})),
-  provenance:{commandReceipts:receiptMatches,reviewQueue:reviewMatches},
-  counts:{profiles:targetProfiles.length,members:memberMatches.length,authRows:authRows.length,crosswalk:crossMatches.length,links:linkMatches.length,durableVisits:visitMatches.length,hrProfiles:hrProfiles.length,hrVisits:hrVisits.length,commandReceipts:receiptMatches.length,reviewQueue:reviewMatches.length},
+  provenance:{commandReceipts:receiptMatches,reviewQueue:reviewMatches,hrImports:hrImportMatches,historicalPairEvidence},
+  counts:{profiles:targetProfiles.length,members:memberMatches.length,authRows:authRows.length,crosswalk:crossMatches.length,links:linkMatches.length,durableVisits:visitMatches.length,hrProfiles:hrProfiles.length,hrVisits:hrVisits.length,commandReceipts:receiptMatches.length,reviewQueue:reviewMatches.length,hrImportDocs:hrImports.length,hrImportMatches:hrImportMatches.length},
   adjudicationReadiness:{targetShopperIds:tokenList,activePrincipalCount:activePrincipals.length,strongPrincipalCount:strongPrincipals.length,strongPrincipalShopperIds:strongPrincipals.map(m=>str(m.shopperId)),credentialKeeperUnambiguous:strongPrincipals.length===1,currentHrTargetShopperIds,canonicalOperationalCandidate:currentHrTargetShopperIds.length===1?currentHrTargetShopperIds[0]:'',canonicalOperationalCandidateUnambiguous:currentHrTargetShopperIds.length===1,durableVisitCountsByShopper,hrVisitCountsByShopper,exactPairEvidence,visitKeyOverlaps:overlaps},
   writes:0,production:false
 };
