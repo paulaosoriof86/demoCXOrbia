@@ -10,7 +10,7 @@ on:
       - RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json
       - RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
       - CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
-      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V230_2026-10-03.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V231_2026-10-03.json
       - CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json
       - app/**
       - backend/**
@@ -32,7 +32,7 @@ concurrency:
   cancel-in-progress: true
 env:
   CANDIDATE_DESCRIPTOR: CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
-  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V230_2026-10-03.json
+  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V231_2026-10-03.json
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
@@ -7260,7 +7260,7 @@ jobs:
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
       - uses: google-github-actions/setup-gcloud@v2
-      - name: Verify unchanged Run1016 DEV artifact
+      - name: Verify unchanged exact DEV artifact from current receipt
         shell: bash
         run: |
           set -Eeuo pipefail
@@ -7268,10 +7268,15 @@ jobs:
           EXPECTED_RUNTIME_DIGEST="$(jq -r '.currentMaterialization.runtimeDigest // empty' "$CANDIDATE_DESCRIPTOR")"
           EXPECTED_HOSTING_VERSION="$(jq -r '.currentMaterialization.hostingVersion // empty' "$CANDIDATE_DESCRIPTOR")"
           EXPECTED_HR_REVISION="$(jq -r '.currentMaterialization.hrRevision // empty' "$CANDIDATE_DESCRIPTOR")"
-          test "$EXPECTED_RUNTIME_REVISION" = "cxorbia-live-hr-dev-00258-9fj"
-          test "$EXPECTED_RUNTIME_DIGEST" = "sha256:6b48431fb4e33927a8a6cdfad2c6ea706cb4bddb1caf23dfb8714112370878c4"
-          test "$EXPECTED_HOSTING_VERSION" = "sites/cxorbia-backend-dev/versions/9da4b395d0d2099d"
-          test "$EXPECTED_HR_REVISION" = "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305"
+          test "$(jq -r '.currentMaterialization.sourceSha // empty' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
+          test "$(jq -r '.currentMaterialization.sourceTree // empty' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
+          test "$(jq -r '.currentMaterialization.runId // 0' "$CANDIDATE_DESCRIPTOR")" = "37163417722"
+          test "$(jq -r '.currentMaterialization.artifactId // 0' "$CANDIDATE_DESCRIPTOR")" = "11287919545"
+          [[ "$(jq -r '.currentMaterialization.artifactDigest // empty' "$CANDIDATE_DESCRIPTOR")" =~ ^sha256:[0-9a-f]{64}$ ]]
+          test -n "$EXPECTED_RUNTIME_REVISION"
+          [[ "$EXPECTED_RUNTIME_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
+          test -n "$EXPECTED_HOSTING_VERSION"
+          [[ "$EXPECTED_HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
           gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$PHASEA_LIVE_OUT/runtime.json"
           test "$(jq -r '.status.latestReadyRevisionName // empty' "$PHASEA_LIVE_OUT/runtime.json")" = "$EXPECTED_RUNTIME_REVISION"
           gcloud run revisions describe "$EXPECTED_RUNTIME_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$PHASEA_LIVE_OUT/runtime-revision.json"
