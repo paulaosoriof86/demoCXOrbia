@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM217_219_PROVIDER_SOURCE_REPROOF_REQUIRED",
+  "status": "HOLD_VRM217_219_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "784bc45c29795f35ffaeef019883a41ca872939b",
   "productTreeAuthority": "7b35abbebc254009b8a114c927b03b5b52d65ee7",
   "predecessorProductSourceSha": "d3d323f30a1120640459aca5b613e42879b66eaa",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V268_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "0b414d29152a694a3b4b3c540feac0b04532ca98",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V269_2026-10-04.json",
+  "findingsLedgerExpectedGitBlob": "d57d958f0e3d6f7670c2e83bb58657f9aeb61ed1",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM220_TRUSTED_CANONICAL_PROFILE_RECOVERY_SOURCE_REPROOF_REQUIRED",
+  "activeBlocker": "VRM220_EXACT_DEV_MATERIALIZATION_REQUIRED",
   "nextFindingId": "VRM-221",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Repeat the existing provider source reproof on exact product source 784bc45c29795f35ffaeef019883a41ca872939b. Require provider syntax/load PASS plus full shopper-provider suite including both VRM-220 trusted-recovery/fail-closed regressions. No DEV materialization or provider write until source PASS. VRM-218 SEPTIEMBRE 26!3 remains separate and untouched.",
+  "exactNextAction": "Materialize exactly product source 784bc45c29795f35ffaeef019883a41ca872939b once in DEV through the existing canonical materialization lane. Freeze runtime revision/digest, Hosting version/release and unchanged HR revision. Then run post-materialization population diagnostic and resolve VRM-220 exact alias consolidation before returning to VRM-218 SEPTIEMBRE 26!3.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
