@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v261",
   "frozenAt": "2026-10-04T09:12:00Z",
-  "status": "HOLD_I3_CLIENT_AUTH_TOPOLOGY_DIAGNOSTIC_REQUIRED",
+  "status": "HOLD_I3_CLIENT_CANONICAL_MEMBERSHIP_READBACK_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "microblockId": "PRE-I4-LIVE-HR-STALE-CACHE-MAPPING-HOLD-AUGUST-CANONICAL-CORRECTION",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -14007,9 +14007,9 @@
       "classification": "AUTH_FAILURE",
       "severity": "P0",
       "title": "Same-artifact multimodule sweep could not start Client lane because no active Firestore member matched role cliente/client with staff namespace",
-      "state": "DIAGNOSTIC_REQUIRED",
+      "state": "DIAGNOSTIC_REFINEMENT_REQUIRED_CLIENT_ACTIVE_SEMANTICS",
       "firstObservedAt": "RUN1120_2026-10-04",
-      "rootCauseStatus": "NOT_YET_PROVEN",
+      "rootCauseStatus": "PARTIAL_RUN1121_TOPOLOGY_PROVEN_SEMANTIC_ACTIVE_TEST_NOT_PROVEN",
       "rootCause": "Run1120 proved the shopper population invariants and exact Run1112 fingerprint, then stopped before browser lanes because the Client selector found no active tenant member satisfying the source-defined Client contract. Source static confirms cliente/client is expected to use authNamespace=staff, so the selector contract itself is correct. Remaining question is whether Firebase Auth has a Client principal whose tenant member is missing/desynced, or whether no Client principal exists in DEV.",
       "evidence": {
         "runId": 37221804606,
@@ -14044,6 +14044,55 @@
         "app/core/backend-browser-auth.js"
       ],
       "productChanged": false,
+      "production": false,
+      "diagnosticRefinement": {
+        "issue": "Run1120/1121 control logic treated Client membership as active only when field active===true.",
+        "canonicalContract": "Existing canonical Client membership contract uses status='active'; production user-admin treats a missing active field as active (data.active!==false).",
+        "consequence": "Run1120 CLIENT_MISSING and Run1121 validClientCount=0 may be control false negatives. No membership write is authorized until exact canonical owner snapshot resolves status/membershipExact.",
+        "productChanged": false,
+        "writes": 0,
+        "production": false
+      }
+    },
+    "VRM-236": {
+      "id": "VRM-236",
+      "classification": "MAPPING_FAILURE",
+      "severity": "P0_CONTROL",
+      "title": "Client topology harness used stricter active===true semantics than the canonical Client membership contract",
+      "state": "READ_ONLY_REPROOF_REQUIRED",
+      "firstObservedAt": "POST_RUN1121_2026-10-04",
+      "rootCauseStatus": "PROVEN_CONTROL_SEMANTIC_MISMATCH_PRODUCT_STATE_PENDING_EXACT_READBACK",
+      "rootCause": "The multimodule/topology harnesses selected a Client only when Firestore field active was literally true. The canonical Client membership contract validates status='active', and the production user-admin read model treats active as true unless data.active===false. Therefore the new harness could exclude a valid canonical Client document that omits the optional active boolean.",
+      "evidence": {
+        "run1120": {
+          "runId": 37221804606,
+          "code": "I3_SWEEP_CLIENT_MISSING"
+        },
+        "run1121": {
+          "runId": 37222111699,
+          "memberClientCount": 1,
+          "authClientCount": 3,
+          "validClientCount": 0
+        },
+        "canonicalOwner": "tools/qa/cxorbia-c6-client-auth-materialization.mjs",
+        "canonicalMembershipPath": "tenants/tya/users/cxorbia-c6-client-tya-cinepolis-v1",
+        "sourceSemantics": {
+          "membershipStatus": "active",
+          "userAdminActiveRule": "data.active!==false"
+        },
+        "productSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "productSourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+        "productChanged": false,
+        "writes": 0,
+        "production": false
+      },
+      "correction": {
+        "strategy": "Run existing canonical Client owner in snapshot mode only; require target unique, claims exact, password sign-in, and inspect membershipExact. No apply and no writes.",
+        "productChanged": false
+      },
+      "expected": "Exact readback determines whether Client membership is already canonical or a bounded membership-only repair is truly required.",
+      "productChanged": false,
+      "writes": 0,
       "production": false
     }
   },
@@ -14696,7 +14745,7 @@
     ],
     "findingCount": 230,
     "expectedCurrentRange": "VRM-001..VRM-230",
-    "nextFindingId": "VRM-236",
+    "nextFindingId": "VRM-237",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_VRM229_PAULA_CONFIRMED_IDENTITY_CONSOLIDATION_REQUIRED",
@@ -14978,7 +15027,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Read-only compare tenant Client memberships with Firebase Auth custom claims; no Client creation or mutation until root cause is proven.",
+  "exactNextAction": "Run the existing canonical Client auth materialization owner in snapshot mode only and read membershipExact; do not mutate Client state.",
   "supersedesGitBlob": "820da41b786054cb8cd23e89827e1f7afbcdd3b3",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -15007,7 +15056,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-236",
+  "nextFindingId": "VRM-237",
   "lastControlFailure": {
     "findingId": "VRM-232",
     "runId": 37213834927,
@@ -18378,7 +18427,7 @@
     "hostingDeploys": 0,
     "production": false
   },
-  "activeBlocker": "CLIENT_AUTH_TOPOLOGY_DIAGNOSTIC_REQUIRED",
+  "activeBlocker": "CLIENT_CANONICAL_MEMBERSHIP_READBACK_REQUIRED",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -18570,7 +18619,7 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-10-04T15:03:00Z",
-  "nextExactAction": "Read-only compare tenant Client memberships with Firebase Auth custom claims; no Client creation or mutation until root cause is proven.",
+  "nextExactAction": "Run the existing canonical Client auth materialization owner in snapshot mode only and read membershipExact; do not mutate Client state.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
@@ -19283,7 +19332,7 @@
   },
   "openFindingsClosureMatrix": {
     "path": "I3_OPEN_FINDINGS_CLOSURE_MATRIX_2026-10-04.json",
-    "findingCount": 235,
+    "findingCount": 236,
     "status": "ACTIVE_CLOSURE_VIEW",
     "missingFindingIds": [],
     "duplicateFindingIds": []

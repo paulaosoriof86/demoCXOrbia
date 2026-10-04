@@ -7284,15 +7284,19 @@ jobs:
 
 
 
-  i3-client-auth-topology-diagnostic:
+
+  i3-client-canonical-membership-readback:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_CLIENT_AUTH_TOPOLOGY_DIAGNOSTIC_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_CLIENT_CANONICAL_MEMBERSHIP_READBACK_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
       FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
       FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
-      CLIENT_DIAG_OUT: .tmp/i3-client-auth-topology
+      CLIENT_READBACK_OUT: .tmp/i3-client-canonical-readback
+      CXORBIA_CLIENT_AUTH_PRIVATE_SNAPSHOT: .tmp/i3-client-canonical-readback/private-snapshot.json
+      CXORBIA_E2E_PRIVATE_CREDENTIALS: .tmp/i3-client-canonical-readback/private-e2e.json
+      CXORBIA_DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
     steps:
       - uses: actions/checkout@v4
         with:
@@ -7304,27 +7308,41 @@ jobs:
         shell: bash
         run: |
           set -Eeuo pipefail
-          mkdir -p "$CLIENT_DIAG_OUT"
+          mkdir -p "$CLIENT_READBACK_OUT"
+          chmod 700 "$CLIENT_READBACK_OUT"
           test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
           test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
           test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
           git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
-          node --check tools/qa/cxorbia-i3-client-auth-topology-readonly.mjs
-      - name: Install diagnostic dependency
+          node --check tools/qa/cxorbia-c6-client-auth-materialization.mjs
+      - name: Install canonical Client owner dependency
         run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
       - uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-      - name: Read Client Auth and membership topology
+      - name: Canonical Client snapshot only
         shell: bash
         run: |
           set -Eeuo pipefail
-          CLIENT_DIAG_OUT="$CLIENT_DIAG_OUT" node tools/qa/cxorbia-i3-client-auth-topology-readonly.mjs | tee "$CLIENT_DIAG_OUT/console.log"
+          node tools/qa/cxorbia-c6-client-auth-materialization.mjs --mode=snapshot | tee "$CLIENT_READBACK_OUT/console.log"
+          tail -n 1 "$CLIENT_READBACK_OUT/console.log" > "$CLIENT_READBACK_OUT/result.json"
+          test "$(jq -r '.decision' "$CLIENT_READBACK_OUT/result.json")" = "PASS_C6_CLIENT_AUTH_MEMBERSHIP_PREWRITE_SNAPSHOT"
+          test "$(jq -r '.targetUnique' "$CLIENT_READBACK_OUT/result.json")" = "true"
+          test "$(jq -r '.target.claimsExact' "$CLIENT_READBACK_OUT/result.json")" = "true"
+          test "$(jq -r '.target.disabled' "$CLIENT_READBACK_OUT/result.json")" = "false"
+          test "$(jq -r '.passwordSignIn' "$CLIENT_READBACK_OUT/result.json")" = "true"
+          test "$(jq -r '.authWrites' "$CLIENT_READBACK_OUT/result.json")" = "0"
+          test "$(jq -r '.claimsWrites' "$CLIENT_READBACK_OUT/result.json")" = "0"
+          test "$(jq -r '.membershipWrites' "$CLIENT_READBACK_OUT/result.json")" = "0"
+          test "$(jq -r '.production' "$CLIENT_READBACK_OUT/result.json")" = "false"
+      - name: Remove private snapshot before artifact
+        if: always()
+        run: rm -f "$CXORBIA_CLIENT_AUTH_PRIVATE_SNAPSHOT" "$CXORBIA_E2E_PRIVATE_CREDENTIALS"
       - if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-i3-client-auth-topology-${{ github.run_id }}
-          path: .tmp/i3-client-auth-topology
+          name: cxorbia-i3-client-canonical-readback-${{ github.run_id }}
+          path: .tmp/i3-client-canonical-readback
           if-no-files-found: error
           retention-days: 30
           compression-level: 0

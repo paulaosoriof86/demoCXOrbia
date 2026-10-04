@@ -31,11 +31,11 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleTruthCount": 21,
   "moduleTruthAllMatch": true,
-  "findingCount": 235,
+  "findingCount": 236,
   "missingFindingIds": [],
   "duplicateFindingIds": [],
-  "currentBlockingCount": 69,
-  "undisposedCount": 83,
+  "currentBlockingCount": 70,
+  "undisposedCount": 84,
   "terminalDispositionCounts": {
     "PASS_CURRENT_ARTIFACT": 140,
     "LIVE_REPROOF_REQUIRED": 78,
@@ -47,7 +47,7 @@
     "CONTROL_ONLY_FIXED": 1
   },
   "nextCriticalSequence": [
-    "VRM-235_CLIENT_AUTH_TOPOLOGY_DIAGNOSTIC",
+    "VRM-236_CLIENT_CANONICAL_SNAPSHOT",
     "I3_MULTIMODULE_LIVE_SWEEP",
     "VRM-215_POPULATION_REPROOF",
     "PAULA_VISUAL_ACCEPTANCE",
@@ -7550,7 +7550,7 @@
         "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
       },
       "successor": null,
-      "rawLedgerState": "DIAGNOSTIC_REQUIRED",
+      "rawLedgerState": "DIAGNOSTIC_REFINEMENT_REQUIRED_CLIENT_ACTIVE_SEMANTICS",
       "realState": "REPROOF_REQUIRED",
       "evidence": {
         "currentProductSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
@@ -7561,7 +7561,45 @@
         "clientLaneStarted": false,
         "productChanged": false
       },
-      "actionRemaining": "read-only Client membership/Auth claims topology diagnostic",
+      "actionRemaining": "exact canonical Client owner snapshot; no writes",
+      "blocking": true,
+      "terminalDisposition": null
+    },
+    {
+      "findingId": "VRM-236",
+      "moduleDomain": [
+        "client-reports-historical-questionnaire",
+        "auth-shell-security-context",
+        "cross-cutting-control"
+      ],
+      "severity": "P0_CONTROL",
+      "classification": "MAPPING_FAILURE",
+      "owner": [
+        "tools/qa/cxorbia-c6-client-auth-materialization.mjs",
+        "tools/qa/cxorbia-i3-multimodule-live-sweep.mjs",
+        "tools/qa/cxorbia-i3-client-auth-topology-readonly.mjs"
+      ],
+      "latestApprovedSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+      "latestLiveProof": {
+        "runNumber": 1121,
+        "runId": 37222111699,
+        "decision": "CONTROL_ACTIVE_SEMANTICS_MISMATCH_DISCOVERED",
+        "artifactId": 11310561867,
+        "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
+      },
+      "successor": null,
+      "rawLedgerState": "READ_ONLY_REPROOF_REQUIRED",
+      "realState": "REPROOF_REQUIRED",
+      "evidence": {
+        "currentProductSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "currentProductTree": "b59da4c090d4639a136168656e7addd544f38e18",
+        "currentMaterializationRunId": 37208163415,
+        "sourceModuleStatus": "MATCH",
+        "writes": 0,
+        "production": false
+      },
+      "actionRemaining": "canonical Client owner snapshot mode; inspect membershipExact",
       "blocking": true,
       "terminalDisposition": null
     }
