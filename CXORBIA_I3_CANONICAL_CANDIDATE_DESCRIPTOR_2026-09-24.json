@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM227_DEV_MATERIALIZATION_REQUIRED",
+  "status": "HOLD_VRM229_PAULA_CONFIRMED_IDENTITY_CONSOLIDATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
   "productTreeAuthority": "b59da4c090d4639a136168656e7addd544f38e18",
   "predecessorProductSourceSha": "bbd66d29192487ac29f8703bd913e3f1e15a28c0",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V282_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "d0c1faed801de8558a67e11bde4a5fc9cbcd3805",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V283_2026-10-04.json",
+  "findingsLedgerExpectedGitBlob": "6c6b9ef180fe272cd18d4fc02e819266773f1dec",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM227_EXACT_DEV_MATERIALIZATION_REQUIRED",
-  "nextFindingId": "VRM-229",
+  "activeBlocker": "VRM229_PAULA_CONFIRMED_IDENTITY_CONSOLIDATION_REQUIRED",
+  "nextFindingId": "VRM-230",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Materialize exactly once to DEV from a03d61afe9b33d01647bb4d58542e87d1496d3d7 / b59da4c090d4639a136168656e7addd544f38e18. Freeze runtime/Hosting/HR fingerprints, then execute Paula-confirmed identity consolidations without rebuilding again.",
+  "exactNextAction": "Execute VRM-229 bounded identity consolidation on exact DEV materialization Run1112, with provider ACK + exact replay + durable readback per named person. Then continue Admin live E2E and VRM-215 population proof without rebuild.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -408,12 +408,24 @@
     "production": false
   },
   "currentMaterialization": {
-    "state": "NOT_MATERIALIZED_FOR_VRM227_SOURCE",
+    "state": "PASS_VRM227_EXACT_DEV_MATERIALIZATION",
+    "runId": 37208163415,
+    "runNumber": 1112,
+    "jobId": 111453675521,
+    "artifactId": 11305847184,
+    "artifactDigest": "sha256:1e81dba4dacff12ec71ff09e0bc725fdfb32ec6b2ef08f6da3debdf2ab7fe29e",
+    "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
     "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
     "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
-    "builds": 0,
-    "runtimeDeploys": 0,
-    "hostingDeploys": 0,
+    "runtimeRevision": "cxorbia-live-hr-dev-00264-pxj",
+    "runtimeDigest": "sha256:d6916255e1cbc94c096b56d2ae0dc7ad7bc3d9eb4e2816f2b4a9bc2819549eae",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/0eb9844cbcbc180f",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791123072167000",
+    "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "storageRulesDeploys": 0,
     "production": false
   },
   "lastFocalAttempt": {
@@ -3537,7 +3549,7 @@
     "interpretation": "Control-only freeze/readback. No action lane matched the fail-closed precomposition status."
   },
   "shopperIdentityGovernanceLockPath": "CXORBIA_I3_SHOPPER_IDENTITY_GOVERNANCE_LOCK_2026-10-04.json",
-  "queuedBlocker": "VRM229_PAULA_CONFIRMED_IDENTITY_CONSOLIDATION",
+  "queuedBlocker": "VRM221_ADMIN_LIVE_E2E_THEN_VRM215_POPULATION_REPROOF",
   "currentSourceProof": {
     "runId": 37208053790,
     "runNumber": 1111,
