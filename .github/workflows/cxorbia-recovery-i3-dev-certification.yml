@@ -10,7 +10,7 @@ on:
       - RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json
       - RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
       - CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
-      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V275_2026-10-04.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V276_2026-10-04.json
       - CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json
       - app/**
       - backend/**
@@ -32,7 +32,7 @@ concurrency:
   cancel-in-progress: true
 env:
   CANDIDATE_DESCRIPTOR: CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
-  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V275_2026-10-04.json
+  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V276_2026-10-04.json
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
@@ -6058,7 +6058,7 @@ jobs:
           compression-level: 0
   vrm154-156-frontend-source-reproof:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM154_156_FRONTEND_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM187_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM188_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM189_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM190_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM191_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM192_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM216_SHARED_IDEMPOTENCY_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM217_219_PROVIDER_SOURCE_REPROOF_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM154_156_FRONTEND_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM187_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM188_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM189_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM190_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM191_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM192_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM216_SHARED_IDEMPOTENCY_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM217_219_PROVIDER_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM221_SOURCE_REPROOF_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -6096,7 +6096,11 @@ jobs:
           node --check app/modules/documentos.js
           node --check app/core/backend-resources.js
           node --check app/adapters/cxorbia-cxdata-command-boundary-v1.js
+          node --check app/adapters/cxorbia-shopper-admin-command-contract-v1.js
           node --check app/adapters/tya-protected-auth-hr-authority-bridge-v2.js
+          node --check app/modules/shoppers.js
+          node --check backend/runtime/cxorbia-shopper-command-provider-v1.mjs
+          node --check backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs
           node --check app/modules/clientes.js
           node --check app/modules/crm.js
           node --check backend/runtime/cxorbia-commercial-command-provider-v1.mjs
