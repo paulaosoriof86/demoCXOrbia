@@ -6969,18 +6969,16 @@ jobs:
 
 
 
-  vrm240-bounded-residual-repair:
+
+  vrm241-login-collision-diagnostic:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM240_BOUNDED_RESIDUAL_REPAIR_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM241_LOGIN_COLLISION_DIAGNOSTIC_REQUIRED' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 15
     env:
       FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
       FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
-      VRM239_INPUT: .tmp/i3-vrm240-root/result.json
-      VRM239_OUT: .tmp/i3-vrm240-readiness
-      VRM240_READINESS: .tmp/i3-vrm240-readiness/result.json
-      VRM240_OUT: .tmp/i3-vrm240-repair
+      VRM241_OUT: .tmp/i3-vrm241-login-collision
     steps:
       - uses: actions/checkout@v4
         with:
@@ -6988,55 +6986,35 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Exact unchanged Run1112 preflight
+      - name: Exact unchanged Run1112 read-only preflight
         shell: bash
         run: |
           set -Eeuo pipefail
-          mkdir -p "$(dirname "$VRM239_INPUT")" "$VRM239_OUT" "$VRM240_OUT"
+          mkdir -p "$VRM241_OUT"
           test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
           test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
           test "$(jq -r '.currentMaterialization.runId' "$CANDIDATE_DESCRIPTOR")" = "37208163415"
-          test "$(jq -r '.currentMaterialization.artifactId' "$CANDIDATE_DESCRIPTOR")" = "11305847184"
           git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
-          node --check tools/qa/cxorbia-i3-vrm217-219-population-root-diagnostic.mjs
-          node --check tools/qa/cxorbia-i3-vrm239-residual-closure-readiness.mjs
-          node --check tools/qa/cxorbia-i3-vrm240-bounded-residual-repair.mjs
-      - run: |
-          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
-          npx playwright install chromium >/dev/null 2>&1
+          node --check tools/qa/cxorbia-i3-vrm241-login-collision-diagnostic.mjs
+      - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
       - uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-      - name: Reproduce bounded readiness before any write
+      - name: Classify base holder and deterministic suffixes
         shell: bash
         run: |
           set -Eeuo pipefail
-          HR="$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")"
-          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$HR" VRM217_OUT="$(dirname "$VRM239_INPUT")" node tools/qa/cxorbia-i3-vrm217-219-population-root-diagnostic.mjs > "$(dirname "$VRM239_INPUT")/console.log"
-          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$HR" VRM239_INPUT="$VRM239_INPUT" VRM239_OUT="$VRM239_OUT" node tools/qa/cxorbia-i3-vrm239-residual-closure-readiness.mjs > "$VRM239_OUT/console.log"
-          test "$(jq -r '.decision' "$VRM240_READINESS")" = "PASS_VRM239_RESIDUAL_CLOSURE_READINESS"
-          echo "EXPECTED_HR_REVISION=$HR" >> "$GITHUB_ENV"
-      - name: Execute only proven bounded owners
-        shell: bash
-        run: |
-          set -Eeuo pipefail
-          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" VRM240_READINESS="$VRM240_READINESS" VRM240_OUT="$VRM240_OUT" node tools/qa/cxorbia-i3-vrm240-bounded-residual-repair.mjs | tee "$VRM240_OUT/console.log"
-          test "$(jq -r '.decision' "$VRM240_OUT/result.json")" = "PASS_VRM240_BOUNDED_RESIDUAL_REPAIR"
-          test "$(jq -r '.reviewOnly.writes' "$VRM240_OUT/result.json")" = "0"
-          test "$(jq -r '.aliasRemap.groups' "$VRM240_OUT/result.json")" = "18"
-          test "$(jq -r '.aliasRemap.aliases' "$VRM240_OUT/result.json")" = "29"
-          test "$(jq -r '.aliasRemap.authoritativeVisitRows' "$VRM240_OUT/result.json")" = "127"
-          test "$(jq -r '.hrWrites' "$VRM240_OUT/result.json")" = "0"
-          test "$(jq -r '.externalWrites' "$VRM240_OUT/result.json")" = "0"
-          test "$(jq -r '.production' "$VRM240_OUT/result.json")" = "false"
+          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" VRM241_OUT="$VRM241_OUT" node tools/qa/cxorbia-i3-vrm241-login-collision-diagnostic.mjs | tee "$VRM241_OUT/console.log"
+          test "$(jq -r '.decision' "$VRM241_OUT/result.json")" = "PASS_VRM241_LOGIN_COLLISION_DIAGNOSTIC"
+          test "$(jq -r '.baseHolder.trustedExactShopperPrincipal' "$VRM241_OUT/result.json")" = "true"
+          test -n "$(jq -r '.selectedLogin' "$VRM241_OUT/result.json")"
+          test "$(jq -r '.writes' "$VRM241_OUT/result.json")" = "0"
+          test "$(jq -r '.production' "$VRM241_OUT/result.json")" = "false"
       - if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-vrm240-bounded-residual-repair-${{ github.run_id }}
-          path: |
-            .tmp/i3-vrm240-root
-            .tmp/i3-vrm240-readiness
-            .tmp/i3-vrm240-repair
+          name: cxorbia-vrm241-login-collision-diagnostic-${{ github.run_id }}
+          path: .tmp/i3-vrm241-login-collision
           if-no-files-found: error
           retention-days: 30
           compression-level: 0

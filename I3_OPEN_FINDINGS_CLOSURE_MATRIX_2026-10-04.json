@@ -31,7 +31,7 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleTruthCount": 21,
   "moduleTruthAllMatch": true,
-  "findingCount": 240,
+  "findingCount": 241,
   "missingFindingIds": [],
   "duplicateFindingIds": [],
   "currentBlockingCount": 69,
@@ -47,7 +47,8 @@
     "CONTROL_ONLY_FIXED": 1
   },
   "nextCriticalSequence": [
-    "VRM-240_BOUNDED_RESIDUAL_REPAIR",
+    "VRM-241_LOGIN_COLLISION_DIAGNOSTIC",
+    "VRM-240_BOUNDED_RESIDUAL_REPAIR_RETRY",
     "VRM-215_POPULATION_REPROOF",
     "PAULA_VISUAL_ACCEPTANCE",
     "GATE20_GATE21_SAME_ARTIFACT"
@@ -7728,16 +7729,16 @@
       ],
       "latestApprovedSource": null,
       "latestLiveProof": {
-        "runNumber": 1126,
-        "runId": 37241380426,
-        "decision": "PASS_BOUNDED_REPAIR_READINESS",
-        "artifactId": 11317178620,
+        "runNumber": 1127,
+        "runId": 37243443536,
+        "decision": "FAIL_CLOSED_NO_WRITES_LOGIN_BASE_COLLISION",
+        "artifactId": 11318675693,
         "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
         "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
       },
-      "successor": null,
-      "rawLedgerState": "BOUNDED_REPAIR_REQUIRED",
-      "realState": "REPAIR_REQUIRED",
+      "successor": "VRM-241",
+      "rawLedgerState": "NO_WRITE_FAIL_CLOSED_RUN1127",
+      "realState": "SUPERSEDED_BY_VRM-241",
       "evidence": {
         "reviewOnly": 1,
         "safeRetire": 1,
@@ -7749,7 +7750,42 @@
         "historicalRowsPreserved": 122,
         "productChanged": false
       },
-      "actionRemaining": "execute bounded residual repair and durable readback",
+      "actionRemaining": "none",
+      "blocking": false,
+      "terminalDisposition": "SUPERSEDED_BY_VRM-241"
+    },
+    {
+      "findingId": "VRM-241",
+      "moduleDomain": [
+        "shoppers-identity-profile-mi-visitas",
+        "cross-cutting-auth-persistence"
+      ],
+      "severity": "P0",
+      "classification": "AUTH_FAILURE",
+      "owner": [
+        "tools/qa/cxorbia-i3-vrm241-login-collision-diagnostic.mjs",
+        "Firebase Auth",
+        "tenants/tya/users"
+      ],
+      "latestApprovedSource": null,
+      "latestLiveProof": {
+        "runNumber": 1127,
+        "runId": 37243443536,
+        "decision": "BASE_LOGIN_COLLISION_NO_WRITES",
+        "artifactId": 11318675693,
+        "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
+      },
+      "successor": null,
+      "rawLedgerState": "READ_ONLY_DIAGNOSTIC_REQUIRED",
+      "realState": "DIAGNOSTIC_REQUIRED",
+      "evidence": {
+        "targetShopperId": "TYA_GT_0C0BA8856E",
+        "baseLogin": "daniel.garcia",
+        "writes": 0,
+        "production": false
+      },
+      "actionRemaining": "classify trusted base holder and approved suffix availability",
       "blocking": true,
       "terminalDisposition": null
     }

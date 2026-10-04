@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v261",
   "frozenAt": "2026-10-04T09:12:00Z",
-  "status": "HOLD_VRM240_BOUNDED_RESIDUAL_REPAIR_REQUIRED",
+  "status": "HOLD_VRM241_LOGIN_COLLISION_DIAGNOSTIC_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "microblockId": "PRE-I4-LIVE-HR-STALE-CACHE-MAPPING-HOLD-AUGUST-CANONICAL-CORRECTION",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -14477,7 +14477,7 @@
       "classification": "MAPPING_FAILURE",
       "severity": "P0",
       "title": "Execute bounded residual closure proven by VRM-239 without broad population rewrites",
-      "state": "BOUNDED_REPAIR_REQUIRED",
+      "state": "NO_WRITE_FAIL_CLOSED_RUN1127",
       "firstObservedAt": "POST_RUN1126_2026-10-04",
       "rootCauseStatus": "OWNERS_PROVEN",
       "rootCause": "VRM-239 proved exactly one review-only current HR identity, one dependency-free noncurrent nameless shopper eligible for safe provider retirement, one exact authNamespace claim drift, one deterministic visible-login drift, and 127 authoritative alias visit rows grouped into 18 executable canonical identity commands. Historical rows are explicitly preserved.",
@@ -14531,6 +14531,49 @@
         "Firebase Auth custom claims"
       ],
       "productChanged": false,
+      "production": false,
+      "terminalDisposition": "SUPERSEDED_BY_VRM-241",
+      "successor": "VRM-241",
+      "run1127": {
+        "runId": 37243443536,
+        "runNumber": 1127,
+        "jobId": 111556599778,
+        "artifactId": 11318675693,
+        "artifactDigest": "sha256:feeebe3865a8b1e67b3bed4b7d3c0b32f2f8a3392e8abb9b08e0a04cc80df7cf",
+        "decision": "FAIL_VRM240_BOUNDED_RESIDUAL_REPAIR",
+        "classification": "AUTH_FAILURE",
+        "code": "VRM240_LOGIN_BASE_COLLISION",
+        "writes": 0,
+        "hrWrites": 0,
+        "externalWrites": 0,
+        "production": false
+      }
+    },
+    "VRM-241": {
+      "id": "VRM-241",
+      "classification": "AUTH_FAILURE",
+      "severity": "P0",
+      "title": "Canonical base login for TYA_GT_0C0BA8856E is occupied; exact trusted holder and deterministic suffix must be proven before repair",
+      "state": "READ_ONLY_DIAGNOSTIC_REQUIRED",
+      "firstObservedAt": "RUN1127_2026-10-04",
+      "rootCauseStatus": "BASE_COLLISION_PROVEN_HOLDER_NOT_YET_CLASSIFIED",
+      "rootCause": "VRM-240 fail-closed preflight proved the canonical base login for TYA_GT_0C0BA8856E is already occupied by another Auth principal. No write occurred. The repair must use the canonical deterministic collision suffix only if the base holder is an exact trusted shopper principal and one approved suffix is free or target-owned.",
+      "evidence": {
+        "runId": 37243443536,
+        "artifactId": 11318675693,
+        "code": "VRM240_LOGIN_BASE_COLLISION",
+        "baseHolderFingerprint": "068cf9700ec97daff154",
+        "writes": 0,
+        "production": false
+      },
+      "expected": "Read-only classify the base holder and approved suffixes 4/6/8. No repair until holder is trusted and the selected suffix is deterministic and collision-free.",
+      "owner": [
+        "tools/qa/cxorbia-i3-vrm241-login-collision-diagnostic.mjs",
+        "Firebase Auth",
+        "tenants/tya/users"
+      ],
+      "productChanged": false,
+      "writes": 0,
       "production": false
     }
   },
@@ -15183,7 +15226,7 @@
     ],
     "findingCount": 230,
     "expectedCurrentRange": "VRM-001..VRM-230",
-    "nextFindingId": "VRM-241",
+    "nextFindingId": "VRM-242",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_VRM229_PAULA_CONFIRMED_IDENTITY_CONSOLIDATION_REQUIRED",
@@ -15465,7 +15508,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Execute VRM-240 bounded residual repair on unchanged Run1112, then rerun the population root diagnostic before VRM-215.",
+  "exactNextAction": "Read-only classify the base login holder and deterministic suffix availability for TYA_GT_0C0BA8856E; no writes.",
   "supersedesGitBlob": "820da41b786054cb8cd23e89827e1f7afbcdd3b3",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -15494,7 +15537,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-241",
+  "nextFindingId": "VRM-242",
   "lastControlFailure": {
     "findingId": "VRM-232",
     "runId": 37213834927,
@@ -18865,7 +18908,7 @@
     "hostingDeploys": 0,
     "production": false
   },
-  "activeBlocker": "VRM240_BOUNDED_RESIDUAL_REPAIR_REQUIRED",
+  "activeBlocker": "VRM241_LOGIN_COLLISION_DIAGNOSTIC_REQUIRED",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -19057,7 +19100,7 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-10-04T15:03:00Z",
-  "nextExactAction": "Execute VRM-240 bounded residual repair on unchanged Run1112, then rerun the population root diagnostic before VRM-215.",
+  "nextExactAction": "Read-only classify the base login holder and deterministic suffix availability for TYA_GT_0C0BA8856E; no writes.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
@@ -19693,7 +19736,7 @@
     "production": false,
     "interpretation": "Control-only freeze/readback. No action lane matched the fail-closed precomposition status."
   },
-  "queuedBlocker": "VRM215_SHOPPER_POPULATION_REPROOF",
+  "queuedBlocker": "VRM240_BOUNDED_RESIDUAL_REPAIR_RETRY_AFTER_EXACT_LOGIN_PLAN",
   "lastSuccessfulRun": {
     "runId": 37211579195,
     "runNumber": 1114,
@@ -19770,7 +19813,7 @@
   },
   "openFindingsClosureMatrix": {
     "path": "I3_OPEN_FINDINGS_CLOSURE_MATRIX_2026-10-04.json",
-    "findingCount": 240,
+    "findingCount": 241,
     "status": "ACTIVE_CLOSURE_VIEW",
     "missingFindingIds": [],
     "duplicateFindingIds": []
