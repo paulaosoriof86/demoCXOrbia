@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_JULISSA_IDENTITY_ADJUDICATION_REQUIRED",
+  "status": "HOLD_VRM214_POSTWRITE_READBACK_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "4b1c0859cc5b43928c083748d00fdc606b32d63e",
   "productTreeAuthority": "ab33d43d483faef9fbec5daaadfa454247df469a",
   "predecessorProductSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V242_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "3ba365438ef5584332a03e8b151832251bcdddc6",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V243_2026-10-04.json",
+  "findingsLedgerExpectedGitBlob": "11adc4e554fbfa255c4f6777e63a59f3e1083244",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM214_ONE_PROVIDER_BACKED_JULISSA_ADJUDICATION_REQUIRED",
-  "nextFindingId": "VRM-216",
+  "activeBlocker": "VRM214_POSTWRITE_READBACK_PLUS_VRM216_SHARED_IDEMPOTENCY_DEFECT",
+  "nextFindingId": "VRM-217",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Complete VRM-214 provider-backed Julissa adjudication on the unchanged Run1053 DEV artifact. Immediately after PASS, execute VRM-215 population-wide shopper identity/Auth/HR/self-scope reproof on the same artifact; I3 remains HOLD until both pass.",
+  "exactNextAction": "Run read-only post-write Julissa topology after Run1065 first ACK; then fix VRM-216 in the shared command adapter and prove idempotency; then run VRM-215 population-wide shopper proof.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
