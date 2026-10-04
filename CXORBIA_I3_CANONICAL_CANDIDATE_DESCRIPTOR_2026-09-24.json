@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_JULISSA_IDENTITY_TOPOLOGY_DIAGNOSTIC_REQUIRED",
+  "status": "HOLD_JULISSA_IDENTITY_HUMAN_CONFIRMATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "4b1c0859cc5b43928c083748d00fdc606b32d63e",
   "productTreeAuthority": "ab33d43d483faef9fbec5daaadfa454247df469a",
   "predecessorProductSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V237_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "5cec2920cfd380c6b48fbcab9d628b2123217ed8",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V238_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "131398ecbd404e64c978ef25f11415b305be2269",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM212_HISTORICAL_HR_IMPORT_EXACT_PROVENANCE_REQUIRED",
-  "nextFindingId": "VRM-213",
+  "activeBlocker": "VRM213_EXPLICIT_ADMIN_SAME_HUMAN_CONFIRMATION_REQUIRED",
+  "nextFindingId": "VRM-214",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Read project hrImports for exact Julissa target IDs and compare only non-reversible technical anchors. If no historical exact anchor connects shr-1780611985059-49vr to shopper_gt_0c198c1055, automatic consolidation remains forbidden and explicit Admin human confirmation is required.",
+  "exactNextAction": "Obtain explicit authorized Admin confirmation that the credential-bearing Julissa Flores principal visible as julissa.flores is the same human as the current HR Julissa Flores identity shopper_gt_0c198c1055. If confirmed, execute one provider-backed shopper.identity.adjudicate in DEV with canonical shopper_gt_0c198c1055 and exact aliases shr-1780611985059-49vr + shp-7309d525805e, then require ACK, idempotent readback, zero residual active aliases, zero HR writes and zero production actions.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3444,7 +3444,7 @@
     "sourceSha": "4b1c0859cc5b43928c083748d00fdc606b32d63e",
     "sourceTree": "ab33d43d483faef9fbec5daaadfa454247df469a",
     "predecessorSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-    "state": "VRM212_HISTORICAL_HR_IMPORT_READ_ONLY_REQUIRED",
+    "state": "VRM213_HUMAN_ADMIN_SAME_HUMAN_CONFIRMATION_REQUIRED",
     "findingIds": [
       "VRM-134",
       "VRM-165",
@@ -3471,7 +3471,7 @@
       "VRM-207",
       "VRM-208",
       "VRM-211",
-      "VRM-212"
+      "VRM-213"
     ],
     "preservedAllPriorFindings": true,
     "production": false,
