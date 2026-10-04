@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM216_SHARED_IDEMPOTENCY_SOURCE_REPROOF_REQUIRED",
+  "status": "HOLD_VRM216_SHARED_IDEMPOTENCY_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "49a5f6cd6683695d862777da7aeb2cf4530e405e",
   "productTreeAuthority": "93797d047e95240029e16b018c4bb2ef2cc0bddd",
   "predecessorProductSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V246_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "5f109744c4010249f2c66e9abc1c2a05d2b8fc9e",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V247_2026-10-04.json",
+  "findingsLedgerExpectedGitBlob": "19e22bb95294d359d3771e4247c2ca890f8e2ef1",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM216_SHARED_COMMAND_IDEMPOTENCY_SOURCE_REPROOF_REQUIRED",
+  "activeBlocker": "VRM216_EXACT_DEV_MATERIALIZATION_REQUIRED",
   "nextFindingId": "VRM-217",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Repeat VRM-216 source reproof on product source 49a5f6cd6683695d862777da7aeb2cf4530e405e after ledger/descriptor source alignment. No materialization until source PASS.",
+  "exactNextAction": "Materialize exactly product source 49a5f6cd6683695d862777da7aeb2cf4530e405e once in DEV through the existing canonical materialization lane. No rebuild after certification. After materialization freeze runtime/hosting/HR fingerprints, prove provider replay live, then run VRM-215 all-shopper population proof.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
