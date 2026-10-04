@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM215_SHOPPER_POPULATION_REPROOF_REQUIRED",
+  "status": "HOLD_VRM238_POPULATION_RESIDUAL_DIAGNOSTIC_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,13 +8,13 @@
   "productTreeAuthority": "b59da4c090d4639a136168656e7addd544f38e18",
   "predecessorProductSourceSha": "bbd66d29192487ac29f8703bd913e3f1e15a28c0",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "549586a2dfc2b50cb55e83012f493136a46c3836",
+  "findingsLedgerExpectedGitBlob": "5869cb95211f9d662928251ec0728ea94b9aa1df",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM215_SHOPPER_POPULATION_REPROOF_REQUIRED",
-  "nextFindingId": "VRM-238",
+  "activeBlocker": "VRM238_POPULATION_RESIDUAL_DIAGNOSTIC_REQUIRED",
+  "nextFindingId": "VRM-239",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run VRM-215 population-wide shopper reproof on the unchanged currentMaterialization (Run1112) after dynamic anti-desync preflight.",
+  "exactNextAction": "Run the existing read-only VRM217/219 population root diagnostic against the unchanged Run1112 materialization to classify Run1124 residuals by exact owner.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3540,7 +3540,7 @@
     "interpretation": "Control-only freeze/readback. No action lane matched the fail-closed precomposition status."
   },
   "shopperIdentityGovernanceLockPath": "CXORBIA_I3_SHOPPER_IDENTITY_GOVERNANCE_LOCK_2026-10-04.json",
-  "queuedBlocker": "PAULA_VISUAL_ACCEPTANCE_THEN_GATE20_GATE21",
+  "queuedBlocker": "VRM215_SHOPPER_POPULATION_REPROOF",
   "currentSourceProof": {
     "runId": 37208053790,
     "runNumber": 1111,
@@ -3800,6 +3800,36 @@
     "externalWrites": 0,
     "builds": 0,
     "deploys": 0,
+    "production": false
+  },
+  "lastVrm215Run1124": {
+    "runId": 37228209050,
+    "runNumber": 1124,
+    "jobId": 111512208522,
+    "artifactId": 11313768076,
+    "artifactDigest": "sha256:0fb4e2a84cbef591ec45012d6616d27a20461c4b2e46832563e1366477ff77e6",
+    "decision": "FAIL_VRM215_ALL_ACTIVE_SHOPPERS",
+    "populationCount": 380,
+    "staticPass": 376,
+    "loginPass": 376,
+    "selfScopePass": 376,
+    "routeContractPass": 376,
+    "hrAssignedVisits": 716,
+    "hrAssignedResolved": 716,
+    "supersededAliasCount": 75,
+    "aliasOperationalResiduals": 249,
+    "exactErrors": {
+      "credentialRuleInvalid": 2,
+      "claimNamespaceMismatch": 1,
+      "visibleLoginNotCanonicalOrApprovedCollision": 1,
+      "durableVisitKeyFailure": 1,
+      "aliasOperationalReferences": 249
+    },
+    "productSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+    "productSourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+    "materializationRunId": 37208163415,
+    "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+    "writes": 0,
     "production": false
   }
 }

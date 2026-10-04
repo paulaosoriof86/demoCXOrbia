@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v261",
   "frozenAt": "2026-10-04T09:12:00Z",
-  "status": "HOLD_VRM215_SHOPPER_POPULATION_REPROOF_REQUIRED",
+  "status": "HOLD_VRM238_POPULATION_RESIDUAL_DIAGNOSTIC_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "microblockId": "PRE-I4-LIVE-HR-STALE-CACHE-MAPPING-HOLD-AUGUST-CANONICAL-CORRECTION",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -12025,7 +12025,7 @@
       "classification": "MAPPING_FAILURE",
       "severity": "P0_CONTROL",
       "title": "Shopper closure must be population-wide, not focal to Julissa",
-      "state": "REPROOF_REQUIRED_AFTER_VRM221_ADMIN_LIVE_AND_MULTIMODULE_SWEEP",
+      "state": "HOLD_RUN1124_RESIDUAL_ROOT_DIAGNOSTIC_REQUIRED",
       "rootCauseStatus": "USER_ACCEPTANCE_SCOPE_FROZEN",
       "rootCause": "A focal Julissa repair cannot certify the Shopper domain. I3 must prove the same identity, Auth, HR, persistence and self-scope invariants across the complete active eligible shopper population before Shopper can be closed.",
       "expected": "Every active eligible TyA shopper in DEV resolves to exactly one canonical profile and at most one active shopper Auth principal; credentials authenticate; tenant/project/shopper claims are exact; current HR assignments resolve; duplicate HR/durable visit keys are absent; aliases do not retain provider-owned operational references; protected shopper reads are self-scoped and expose the canonical profile and owned visits; representative full UI routes remain PASS. Any exception remains fail-closed and is corrected by exact evidence, never fuzzy/name merge.",
@@ -12116,6 +12116,36 @@
         "runtimeDigest": "sha256:d6916255e1cbc94c096b56d2ae0dc7ad7bc3d9eb4e2816f2b4a9bc2819549eae",
         "hostingVersion": "sites/cxorbia-backend-dev/versions/0eb9844cbcbc180f",
         "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+        "production": false
+      },
+      "run1124": {
+        "runId": 37228209050,
+        "runNumber": 1124,
+        "jobId": 111512208522,
+        "artifactId": 11313768076,
+        "artifactDigest": "sha256:0fb4e2a84cbef591ec45012d6616d27a20461c4b2e46832563e1366477ff77e6",
+        "decision": "FAIL_VRM215_ALL_ACTIVE_SHOPPERS",
+        "populationCount": 380,
+        "staticPass": 376,
+        "loginPass": 376,
+        "selfScopePass": 376,
+        "routeContractPass": 376,
+        "hrAssignedVisits": 716,
+        "hrAssignedResolved": 716,
+        "supersededAliasCount": 75,
+        "aliasOperationalResiduals": 249,
+        "exactErrors": {
+          "credentialRuleInvalid": 2,
+          "claimNamespaceMismatch": 1,
+          "visibleLoginNotCanonicalOrApprovedCollision": 1,
+          "durableVisitKeyFailure": 1,
+          "aliasOperationalReferences": 249
+        },
+        "productSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "productSourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+        "materializationRunId": 37208163415,
+        "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+        "writes": 0,
         "production": false
       }
     },
@@ -14155,7 +14185,7 @@
       "classification": "RELEASE_COMPOSITION_FAILURE",
       "severity": "P0_CONTROL",
       "title": "VRM-215 population gate preflight was pinned to obsolete Run1070 materialization instead of the current canonical materialization",
-      "state": "CONTROL_FIX_APPLIED_PENDING_REPROOF",
+      "state": "CONTROL_ONLY_FIXED_RUN1124_PREFLIGHT_PASS",
       "firstObservedAt": "POST_RUN1123_2026-10-04",
       "rootCauseStatus": "PROVEN",
       "rootCause": "The VRM-215 workflow job still required currentMaterialization.runId=37169950715 (Run1070), while the canonical descriptor now points to Run1112 / artifact 11305847184. Executing it unchanged would fail before population proof and would reintroduce a second stale artifact authority.",
@@ -14200,6 +14230,82 @@
         "production": false
       },
       "expected": "VRM-215 executes against the unchanged Run1112 materialization and proves the entire active eligible shopper population.",
+      "productChanged": false,
+      "writes": 0,
+      "production": false,
+      "terminalDisposition": "CONTROL_ONLY_FIXED",
+      "closureEvidence": {
+        "runId": 37228209050,
+        "runNumber": 1124,
+        "jobId": 111512208522,
+        "preflight": true,
+        "immutableFingerprints": true,
+        "productChanged": false,
+        "writes": 0,
+        "production": false
+      }
+    },
+    "VRM-238": {
+      "id": "VRM-238",
+      "classification": "MAPPING_FAILURE",
+      "severity": "P0_CONTROL",
+      "title": "VRM-215 Run1124 residuals mix four live identity failures with historical visit invariants that require exact authority classification",
+      "state": "DIAGNOSTIC_REQUIRED",
+      "firstObservedAt": "RUN1124_2026-10-04",
+      "rootCauseStatus": "PARTIAL_PROOF_REQUIRES_EXACT_OWNER_DIAGNOSTIC",
+      "rootCause": "Run1124 proves 376/380 active shoppers and 716/716 HR assignments, but its visit assertions collapse authoritative and intentionally preserved historical rows into one zero-residual requirement. The canonical population diagnostic already models historical rows separately and freezes noHistoricalVisitRewrite=true. Exact current-state readback is required before deciding whether visit-key and alias-reference counts are product defects or control false positives.",
+      "evidence": {
+        "runId": 37228209050,
+        "artifactId": 11313768076,
+        "population": {
+          "total": 380,
+          "pass": 376,
+          "fail": 4
+        },
+        "hrAssignments": {
+          "assigned": 716,
+          "resolved": 716
+        },
+        "fourLiveIdentityFailures": [
+          {
+            "shopperId": "shopper_gt_8cface989a",
+            "code": "CREDENTIAL_RULE_INVALID"
+          },
+          {
+            "shopperId": "shopper_hn_9a6963fdf6",
+            "code": "CREDENTIAL_RULE_INVALID"
+          },
+          {
+            "shopperId": "shp-b2e3d7bef69b",
+            "code": "CLAIM_NAMESPACE_MISMATCH"
+          },
+          {
+            "shopperId": "TYA_GT_0C0BA8856E",
+            "code": "VISIBLE_LOGIN_NOT_CANONICAL_OR_APPROVED_COLLISION"
+          }
+        ],
+        "visitGate": {
+          "durableRows": 2024,
+          "uniqueBySimpleKey": 748,
+          "aliasReferences": 249,
+          "supersededAliasCount": 75
+        },
+        "canonicalDiagnosticSemantics": {
+          "owner": "tools/qa/cxorbia-i3-vrm217-219-population-root-diagnostic.mjs",
+          "separatesHistoricalRows": true,
+          "separatesAuthoritativeAliasRows": true,
+          "noHistoricalVisitRewrite": true
+        },
+        "productSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "productSourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+        "writes": 0,
+        "production": false
+      },
+      "expected": "Read-only current-state root diagnostic must classify the four live identities, prove whether durable visit duplicates are historical-version rows with unambiguous authority, and split historical alias rows from authoritative/operational alias references.",
+      "owner": [
+        "tools/qa/cxorbia-i3-vrm217-219-population-root-diagnostic.mjs",
+        "tools/qa/cxorbia-i3-vrm215-shopper-population-live-reproof.mjs"
+      ],
       "productChanged": false,
       "writes": 0,
       "production": false
@@ -14854,7 +14960,7 @@
     ],
     "findingCount": 230,
     "expectedCurrentRange": "VRM-001..VRM-230",
-    "nextFindingId": "VRM-238",
+    "nextFindingId": "VRM-239",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_VRM229_PAULA_CONFIRMED_IDENTITY_CONSOLIDATION_REQUIRED",
@@ -15136,7 +15242,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Run VRM-215 population-wide shopper reproof on the unchanged currentMaterialization (Run1112) after dynamic anti-desync preflight.",
+  "exactNextAction": "Run the existing read-only VRM217/219 population root diagnostic against the unchanged Run1112 materialization to classify Run1124 residuals by exact owner.",
   "supersedesGitBlob": "820da41b786054cb8cd23e89827e1f7afbcdd3b3",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -15165,7 +15271,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-238",
+  "nextFindingId": "VRM-239",
   "lastControlFailure": {
     "findingId": "VRM-232",
     "runId": 37213834927,
@@ -18536,7 +18642,7 @@
     "hostingDeploys": 0,
     "production": false
   },
-  "activeBlocker": "VRM215_SHOPPER_POPULATION_REPROOF_REQUIRED",
+  "activeBlocker": "VRM238_POPULATION_RESIDUAL_DIAGNOSTIC_REQUIRED",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -18728,7 +18834,7 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-10-04T15:03:00Z",
-  "nextExactAction": "Run VRM-215 population-wide shopper reproof on the unchanged currentMaterialization (Run1112) after dynamic anti-desync preflight.",
+  "nextExactAction": "Run the existing read-only VRM217/219 population root diagnostic against the unchanged Run1112 materialization to classify Run1124 residuals by exact owner.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
@@ -19364,7 +19470,7 @@
     "production": false,
     "interpretation": "Control-only freeze/readback. No action lane matched the fail-closed precomposition status."
   },
-  "queuedBlocker": "PAULA_VISUAL_ACCEPTANCE_THEN_GATE20_GATE21",
+  "queuedBlocker": "VRM215_SHOPPER_POPULATION_REPROOF",
   "lastSuccessfulRun": {
     "runId": 37211579195,
     "runNumber": 1114,

@@ -31,7 +31,7 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleTruthCount": 21,
   "moduleTruthAllMatch": true,
-  "findingCount": 237,
+  "findingCount": 238,
   "missingFindingIds": [],
   "duplicateFindingIds": [],
   "currentBlockingCount": 69,
@@ -47,7 +47,7 @@
     "CONTROL_ONLY_FIXED": 1
   },
   "nextCriticalSequence": [
-    "VRM-237_CONTROL_REPROOF",
+    "VRM-238_RESIDUAL_ROOT_DIAGNOSTIC",
     "VRM-215_POPULATION_REPROOF",
     "PAULA_VISUAL_ACCEPTANCE",
     "GATE20_GATE21_SAME_ARTIFACT"
@@ -6832,16 +6832,16 @@
       "owner": [],
       "latestApprovedSource": null,
       "latestLiveProof": {
-        "runNumber": 1074,
-        "runId": 37172140164,
-        "decision": "FAIL_VRM215_ALL_ACTIVE_SHOPPERS",
-        "artifactId": 11292396629,
-        "sourceSha": null,
-        "sourceTree": null
+        "runNumber": 1124,
+        "runId": 37228209050,
+        "decision": "FAIL_VRM215_ALL_ACTIVE_SHOPPERS_376_OF_380",
+        "artifactId": 11313768076,
+        "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
       },
       "successor": null,
-      "rawLedgerState": "REPROOF_REQUIRED_CURRENT_RUN1112",
-      "realState": "REPROOF_REQUIRED",
+      "rawLedgerState": "HOLD_RUN1124_RESIDUAL_ROOT_DIAGNOSTIC_REQUIRED",
+      "realState": "REPROOF_REQUIRED_AFTER_RESIDUAL_CLASSIFICATION",
       "evidence": {
         "currentProductSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
         "currentProductTree": "b59da4c090d4639a136168656e7addd544f38e18",
@@ -6856,7 +6856,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "population-wide reproof on current Run1112 materialization",
+      "actionRemaining": "classify four live identity failures and historical visit residual semantics, then rerun population gate",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -7615,16 +7615,16 @@
       ],
       "latestApprovedSource": null,
       "latestLiveProof": {
-        "runNumber": 1123,
-        "runId": 37222795614,
-        "decision": "STALE_VRM215_PREFLIGHT_IDENTIFIED_BEFORE_EXECUTION",
-        "artifactId": 11310363770,
+        "runNumber": 1124,
+        "runId": 37228209050,
+        "decision": "CURRENT_MATERIALIZATION_PREFLIGHT_PASS",
+        "artifactId": 11313768076,
         "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
         "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
       },
       "successor": null,
-      "rawLedgerState": "CONTROL_FIX_APPLIED_PENDING_REPROOF",
-      "realState": "REPROOF_REQUIRED",
+      "rawLedgerState": "CONTROL_ONLY_FIXED_RUN1124_PREFLIGHT_PASS",
+      "realState": "CONTROL_ONLY_FIXED",
       "evidence": {
         "currentProductSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
         "currentProductTree": "b59da4c090d4639a136168656e7addd544f38e18",
@@ -7632,7 +7632,47 @@
         "staleRequiredRunId": 37169950715,
         "productChanged": false
       },
-      "actionRemaining": "run VRM-215 with currentMaterialization-derived preflight",
+      "actionRemaining": "none",
+      "blocking": false,
+      "terminalDisposition": "CONTROL_ONLY_FIXED"
+    },
+    {
+      "findingId": "VRM-238",
+      "moduleDomain": [
+        "shoppers-identity-profile-mi-visitas",
+        "cross-cutting-control"
+      ],
+      "severity": "P0_CONTROL",
+      "classification": "MAPPING_FAILURE",
+      "owner": [
+        "tools/qa/cxorbia-i3-vrm217-219-population-root-diagnostic.mjs",
+        "tools/qa/cxorbia-i3-vrm215-shopper-population-live-reproof.mjs"
+      ],
+      "latestApprovedSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+      "latestLiveProof": {
+        "runNumber": 1124,
+        "runId": 37228209050,
+        "decision": "RESIDUAL_ROOT_DIAGNOSTIC_REQUIRED",
+        "artifactId": 11313768076,
+        "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
+      },
+      "successor": null,
+      "rawLedgerState": "DIAGNOSTIC_REQUIRED",
+      "realState": "DIAGNOSTIC_REQUIRED",
+      "evidence": {
+        "currentProductSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "currentProductTree": "b59da4c090d4639a136168656e7addd544f38e18",
+        "currentMaterializationRunId": 37208163415,
+        "populationPass": "376/380",
+        "hrAssignments": "716/716",
+        "aliasReferences": 249,
+        "durableRows": 2024,
+        "uniqueSimpleVisitKeys": 748,
+        "productChanged": false,
+        "writes": 0
+      },
+      "actionRemaining": "run exact read-only root diagnostic",
       "blocking": true,
       "terminalDisposition": null
     }
