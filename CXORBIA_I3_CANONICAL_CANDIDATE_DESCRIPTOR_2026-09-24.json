@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM216_SHARED_IDEMPOTENCY_SOURCE_FIX_REQUIRED",
+  "status": "HOLD_VRM216_SHARED_IDEMPOTENCY_SOURCE_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "4b1c0859cc5b43928c083748d00fdc606b32d63e",
-  "productTreeAuthority": "ab33d43d483faef9fbec5daaadfa454247df469a",
+  "productSourceSha": "49a5f6cd6683695d862777da7aeb2cf4530e405e",
+  "productTreeAuthority": "93797d047e95240029e16b018c4bb2ef2cc0bddd",
   "predecessorProductSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V244_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "baa4dec05e2cdf2d427529bb8f2ff26c319ed79a",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V245_2026-10-04.json",
+  "findingsLedgerExpectedGitBlob": "ac8d124a79092fd04cc5d18146461ad9d6960774",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM216_SHARED_COMMAND_IDEMPOTENCY_SOURCE_FIX_REQUIRED",
+  "activeBlocker": "VRM216_SHARED_COMMAND_IDEMPOTENCY_SOURCE_REPROOF_REQUIRED",
   "nextFindingId": "VRM-217",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Apply the proven shared command-adapter idempotency correction for VRM-216 with a source test that exercises the adapter path. Do not re-adjudicate Julissa. After source PASS, materialize the corrected artifact once in DEV and prove exact replay; then run VRM-215 population-wide shopper proof.",
+  "exactNextAction": "Run VRM-216 source reproof on product source 49a5f6cd6683695d862777da7aeb2cf4530e405e. Require shared adapter stable semantic command across wall-clock time, exact replay provider ACK with zero writes, changed payload under reused key blocked, and existing frontend/provider regressions PASS. No DEV materialization until source PASS.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
