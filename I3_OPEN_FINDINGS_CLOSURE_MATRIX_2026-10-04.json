@@ -31,7 +31,7 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleTruthCount": 21,
   "moduleTruthAllMatch": true,
-  "findingCount": 241,
+  "findingCount": 242,
   "missingFindingIds": [],
   "duplicateFindingIds": [],
   "currentBlockingCount": 69,
@@ -47,8 +47,7 @@
     "CONTROL_ONLY_FIXED": 1
   },
   "nextCriticalSequence": [
-    "VRM-241_LOGIN_COLLISION_DIAGNOSTIC",
-    "VRM-240_BOUNDED_RESIDUAL_REPAIR_RETRY",
+    "VRM-242_BOUNDED_RESIDUAL_REPAIR",
     "VRM-215_POPULATION_REPROOF",
     "PAULA_VISUAL_ACCEPTANCE",
     "GATE20_GATE21_SAME_ARTIFACT"
@@ -7769,23 +7768,60 @@
       ],
       "latestApprovedSource": null,
       "latestLiveProof": {
-        "runNumber": 1127,
-        "runId": 37243443536,
-        "decision": "BASE_LOGIN_COLLISION_NO_WRITES",
-        "artifactId": 11318675693,
+        "runNumber": 1128,
+        "runId": 37243683143,
+        "decision": "PASS_VRM241_LOGIN_COLLISION_DIAGNOSTIC",
+        "artifactId": 11318556392,
         "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
         "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
       },
       "successor": null,
-      "rawLedgerState": "READ_ONLY_DIAGNOSTIC_REQUIRED",
-      "realState": "DIAGNOSTIC_REQUIRED",
+      "rawLedgerState": "PASS_DIAGNOSTIC_RUN1128",
+      "realState": "PASS_DIAGNOSTIC",
       "evidence": {
         "targetShopperId": "TYA_GT_0C0BA8856E",
         "baseLogin": "daniel.garcia",
         "writes": 0,
         "production": false
       },
-      "actionRemaining": "classify trusted base holder and approved suffix availability",
+      "actionRemaining": "none",
+      "blocking": false,
+      "terminalDisposition": "PASS_DIAGNOSTIC"
+    },
+    {
+      "findingId": "VRM-242",
+      "moduleDomain": [
+        "shoppers-identity-profile-mi-visitas",
+        "cross-cutting-auth-persistence"
+      ],
+      "severity": "P0_CONTROL",
+      "classification": "MAPPING_FAILURE",
+      "owner": [
+        "tools/qa/cxorbia-i3-vrm239-residual-closure-readiness.mjs",
+        "tools/qa/cxorbia-i3-vrm242-bounded-residual-repair.mjs",
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+        "Firebase Auth"
+      ],
+      "latestApprovedSource": null,
+      "latestLiveProof": {
+        "runNumber": 1128,
+        "runId": 37243683143,
+        "decision": "CANONICAL_SUFFIX_PROVEN",
+        "artifactId": 11318556392,
+        "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
+      },
+      "successor": null,
+      "rawLedgerState": "BOUNDED_REPAIR_REQUIRED",
+      "realState": "REPAIR_REQUIRED",
+      "evidence": {
+        "baseLogin": "daniel.garcia",
+        "baseHolderShopperId": "shr-1780611985157-2r5u",
+        "selectedLogin": "daniel.garcia.e48d",
+        "repairScope": "1 review-only preserve + 1 retire + 1 claim + 1 login + 18 alias groups/127 authoritative visits",
+        "productChanged": false
+      },
+      "actionRemaining": "execute corrected bounded repair and durable readback",
       "blocking": true,
       "terminalDisposition": null
     }

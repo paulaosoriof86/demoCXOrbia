@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v261",
   "frozenAt": "2026-10-04T09:12:00Z",
-  "status": "HOLD_VRM241_LOGIN_COLLISION_DIAGNOSTIC_REQUIRED",
+  "status": "HOLD_VRM242_BOUNDED_RESIDUAL_REPAIR_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "microblockId": "PRE-I4-LIVE-HR-STALE-CACHE-MAPPING-HOLD-AUGUST-CANONICAL-CORRECTION",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -14554,7 +14554,7 @@
       "classification": "AUTH_FAILURE",
       "severity": "P0",
       "title": "Canonical base login for TYA_GT_0C0BA8856E is occupied; exact trusted holder and deterministic suffix must be proven before repair",
-      "state": "READ_ONLY_DIAGNOSTIC_REQUIRED",
+      "state": "PASS_DIAGNOSTIC_RUN1128",
       "firstObservedAt": "RUN1127_2026-10-04",
       "rootCauseStatus": "BASE_COLLISION_PROVEN_HOLDER_NOT_YET_CLASSIFIED",
       "rootCause": "VRM-240 fail-closed preflight proved the canonical base login for TYA_GT_0C0BA8856E is already occupied by another Auth principal. No write occurred. The repair must use the canonical deterministic collision suffix only if the base holder is an exact trusted shopper principal and one approved suffix is free or target-owned.",
@@ -14574,6 +14574,82 @@
       ],
       "productChanged": false,
       "writes": 0,
+      "production": false,
+      "terminalDisposition": "PASS_DIAGNOSTIC",
+      "closureEvidence": {
+        "runId": 37243683143,
+        "runNumber": 1128,
+        "jobId": 111557287481,
+        "artifactId": 11318556392,
+        "artifactDigest": "sha256:ea1917a27e1b31001bc65df2c2724b230c6785b0a0736a3e37034d70aa07512",
+        "decision": "PASS_VRM241_LOGIN_COLLISION_DIAGNOSTIC",
+        "baseLogin": "daniel.garcia",
+        "baseHolder": {
+          "shopperId": "shr-1780611985157-2r5u",
+          "trustedExactShopperPrincipal": true,
+          "uidFingerprint": "068cf9700ec97daff154"
+        },
+        "selectedLogin": "daniel.garcia.e48d",
+        "suffixes": [
+          "daniel.garcia.e48d",
+          "daniel.garcia.e48d3b",
+          "daniel.garcia.e48d3b81"
+        ],
+        "writes": 0,
+        "production": false
+      }
+    },
+    "VRM-242": {
+      "id": "VRM-242",
+      "classification": "MAPPING_FAILURE",
+      "severity": "P0_CONTROL",
+      "title": "Residual readiness used literal backslash-zero for collision hashing instead of provider canonical null separator",
+      "state": "BOUNDED_REPAIR_REQUIRED",
+      "firstObservedAt": "POST_RUN1128_2026-10-04",
+      "rootCauseStatus": "PROVEN",
+      "rootCause": "VRM-239 used sha(TENANT+'\\\\0'+shopperId) while the provider canonical deterministic collision policy uses a NUL separator. Run1128, using the provider formula, proved the legitimate base holder and selected daniel.garcia.e48d as the first free canonical suffix.",
+      "evidence": {
+        "run1128": {
+          "runId": 37243683143,
+          "runNumber": 1128,
+          "jobId": 111557287481,
+          "artifactId": 11318556392,
+          "artifactDigest": "sha256:ea1917a27e1b31001bc65df2c2724b230c6785b0a0736a3e37034d70aa07512",
+          "decision": "PASS_VRM241_LOGIN_COLLISION_DIAGNOSTIC",
+          "baseLogin": "daniel.garcia",
+          "baseHolder": {
+            "shopperId": "shr-1780611985157-2r5u",
+            "trustedExactShopperPrincipal": true,
+            "uidFingerprint": "068cf9700ec97daff154"
+          },
+          "selectedLogin": "daniel.garcia.e48d",
+          "suffixes": [
+            "daniel.garcia.e48d",
+            "daniel.garcia.e48d3b",
+            "daniel.garcia.e48d3b81"
+          ],
+          "writes": 0,
+          "production": false
+        },
+        "providerAuthority": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs::deterministicCollisionLogin",
+        "productSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "productSourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
+      },
+      "correction": {
+        "controlOwner": "tools/qa/cxorbia-i3-vrm239-residual-closure-readiness.mjs",
+        "change": "Use canonical NUL separators for internalEmail and collisionLogin.",
+        "repairOwner": "tools/qa/cxorbia-i3-vrm242-bounded-residual-repair.mjs",
+        "selectedLogin": "daniel.garcia.e48d",
+        "productChanged": false
+      },
+      "expected": "Execute the same bounded residual repair from VRM-240 using corrected canonical collision semantics; preserve the legitimate base holder; require durable readback, provider ACK/replay for provider commands, zero HR/external writes.",
+      "owner": [
+        "tools/qa/cxorbia-i3-vrm239-residual-closure-readiness.mjs",
+        "tools/qa/cxorbia-i3-vrm242-bounded-residual-repair.mjs",
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+        "Firebase Auth"
+      ],
+      "productChanged": false,
       "production": false
     }
   },
@@ -15226,7 +15302,7 @@
     ],
     "findingCount": 230,
     "expectedCurrentRange": "VRM-001..VRM-230",
-    "nextFindingId": "VRM-242",
+    "nextFindingId": "VRM-243",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_VRM229_PAULA_CONFIRMED_IDENTITY_CONSOLIDATION_REQUIRED",
@@ -15508,7 +15584,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Read-only classify the base login holder and deterministic suffix availability for TYA_GT_0C0BA8856E; no writes.",
+  "exactNextAction": "Execute corrected VRM-242 bounded residual repair on unchanged Run1112, then rerun root diagnostic and VRM-215.",
   "supersedesGitBlob": "820da41b786054cb8cd23e89827e1f7afbcdd3b3",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -15537,7 +15613,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-242",
+  "nextFindingId": "VRM-243",
   "lastControlFailure": {
     "findingId": "VRM-232",
     "runId": 37213834927,
@@ -18908,7 +18984,7 @@
     "hostingDeploys": 0,
     "production": false
   },
-  "activeBlocker": "VRM241_LOGIN_COLLISION_DIAGNOSTIC_REQUIRED",
+  "activeBlocker": "VRM242_BOUNDED_RESIDUAL_REPAIR_REQUIRED",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -19100,7 +19176,7 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-10-04T15:03:00Z",
-  "nextExactAction": "Read-only classify the base login holder and deterministic suffix availability for TYA_GT_0C0BA8856E; no writes.",
+  "nextExactAction": "Execute corrected VRM-242 bounded residual repair on unchanged Run1112, then rerun root diagnostic and VRM-215.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
@@ -19736,7 +19812,7 @@
     "production": false,
     "interpretation": "Control-only freeze/readback. No action lane matched the fail-closed precomposition status."
   },
-  "queuedBlocker": "VRM240_BOUNDED_RESIDUAL_REPAIR_RETRY_AFTER_EXACT_LOGIN_PLAN",
+  "queuedBlocker": "VRM215_SHOPPER_POPULATION_REPROOF",
   "lastSuccessfulRun": {
     "runId": 37211579195,
     "runNumber": 1114,
@@ -19813,7 +19889,7 @@
   },
   "openFindingsClosureMatrix": {
     "path": "I3_OPEN_FINDINGS_CLOSURE_MATRIX_2026-10-04.json",
-    "findingCount": 241,
+    "findingCount": 242,
     "status": "ACTIVE_CLOSURE_VIEW",
     "missingFindingIds": [],
     "duplicateFindingIds": []

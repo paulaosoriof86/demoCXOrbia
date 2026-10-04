@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM241_LOGIN_COLLISION_DIAGNOSTIC_REQUIRED",
+  "status": "HOLD_VRM242_BOUNDED_RESIDUAL_REPAIR_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,13 +8,13 @@
   "productTreeAuthority": "b59da4c090d4639a136168656e7addd544f38e18",
   "predecessorProductSourceSha": "bbd66d29192487ac29f8703bd913e3f1e15a28c0",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "b72c371e85c915bf66aa9a9eb0968f047faf0667",
+  "findingsLedgerExpectedGitBlob": "96ccc13fb9266c45e0a394f222a75c64ae050b1c",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM241_LOGIN_COLLISION_DIAGNOSTIC_REQUIRED",
-  "nextFindingId": "VRM-242",
+  "activeBlocker": "VRM242_BOUNDED_RESIDUAL_REPAIR_REQUIRED",
+  "nextFindingId": "VRM-243",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Read-only classify the base login holder and deterministic suffix availability for TYA_GT_0C0BA8856E; no writes.",
+  "exactNextAction": "Execute corrected VRM-242 bounded residual repair on unchanged Run1112, then rerun root diagnostic and VRM-215.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3540,7 +3540,7 @@
     "interpretation": "Control-only freeze/readback. No action lane matched the fail-closed precomposition status."
   },
   "shopperIdentityGovernanceLockPath": "CXORBIA_I3_SHOPPER_IDENTITY_GOVERNANCE_LOCK_2026-10-04.json",
-  "queuedBlocker": "VRM240_BOUNDED_RESIDUAL_REPAIR_RETRY_AFTER_EXACT_LOGIN_PLAN",
+  "queuedBlocker": "VRM215_SHOPPER_POPULATION_REPROOF",
   "currentSourceProof": {
     "runId": 37208053790,
     "runNumber": 1111,
@@ -3901,6 +3901,28 @@
       "historicalRowsPreserved": 122,
       "allGroupsExecutable": true
     },
+    "writes": 0,
+    "production": false
+  },
+  "lastVrm241DiagnosticPass": {
+    "runId": 37243683143,
+    "runNumber": 1128,
+    "jobId": 111557287481,
+    "artifactId": 11318556392,
+    "artifactDigest": "sha256:ea1917a27e1b31001bc65df2c2724b230c6785b0a0736a3e37034d70aa07512",
+    "decision": "PASS_VRM241_LOGIN_COLLISION_DIAGNOSTIC",
+    "baseLogin": "daniel.garcia",
+    "baseHolder": {
+      "shopperId": "shr-1780611985157-2r5u",
+      "trustedExactShopperPrincipal": true,
+      "uidFingerprint": "068cf9700ec97daff154"
+    },
+    "selectedLogin": "daniel.garcia.e48d",
+    "suffixes": [
+      "daniel.garcia.e48d",
+      "daniel.garcia.e48d3b",
+      "daniel.garcia.e48d3b81"
+    ],
     "writes": 0,
     "production": false
   }
