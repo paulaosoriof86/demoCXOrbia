@@ -10,7 +10,7 @@ on:
       - RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json
       - RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
       - CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
-      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V240_2026-10-04.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V241_2026-10-04.json
       - CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json
       - app/**
       - backend/**
@@ -32,7 +32,7 @@ concurrency:
   cancel-in-progress: true
 env:
   CANDIDATE_DESCRIPTOR: CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
-  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V240_2026-10-04.json
+  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V241_2026-10-04.json
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
@@ -7354,6 +7354,87 @@ jobs:
         with:
           name: cxorbia-julissa-identity-topology-${{ github.run_id }}
           path: .tmp/i3-julissa-topology
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
+  julissa-identity-adjudication-write:
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_JULISSA_IDENTITY_ADJUDICATION_REQUIRED' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      JULISSA_WRITE_OUT: .tmp/i3-vrm214-julissa-adjudication
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Preflight exact unchanged Run1053 DEV artifact
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$JULISSA_WRITE_OUT"
+          test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
+          test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
+          test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
+          git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          test "$(jq -r '.currentMaterialization.runId' "$CANDIDATE_DESCRIPTOR")" = "37163417722"
+          test "$(jq -r '.currentMaterialization.artifactId' "$CANDIDATE_DESCRIPTOR")" = "11287919545"
+          node --check tools/qa/cxorbia-i3-vrm214-julissa-identity-adjudication-write.mjs
+      - name: Install exact writer dependencies
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - uses: google-github-actions/setup-gcloud@v2
+      - name: Verify unchanged DEV runtime Hosting and HR
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          EXPECTED_RUNTIME_REVISION="$(jq -r '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")"
+          EXPECTED_RUNTIME_DIGEST="$(jq -r '.currentMaterialization.runtimeDigest' "$CANDIDATE_DESCRIPTOR")"
+          EXPECTED_HOSTING_VERSION="$(jq -r '.currentMaterialization.hostingVersion' "$CANDIDATE_DESCRIPTOR")"
+          EXPECTED_HR_REVISION="$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")"
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$JULISSA_WRITE_OUT/runtime.json"
+          test "$(jq -r '.status.latestReadyRevisionName' "$JULISSA_WRITE_OUT/runtime.json")" = "$EXPECTED_RUNTIME_REVISION"
+          gcloud run revisions describe "$EXPECTED_RUNTIME_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$JULISSA_WRITE_OUT/runtime-revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$JULISSA_WRITE_OUT/runtime-revision.json")"
+          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else exit 1; fi
+          test "$DIGEST" = "$EXPECTED_RUNTIME_DIGEST"
+          TOKEN="$(gcloud auth print-access-token)"
+          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$JULISSA_WRITE_OUT/hosting.json"
+          test "$(jq -r '.release.version.name' "$JULISSA_WRITE_OUT/hosting.json")" = "$EXPECTED_HOSTING_VERSION"
+          curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm214preflight=$GITHUB_RUN_ID" > "$JULISSA_WRITE_OUT/hr-meta.json"
+          test "$(jq -r '.revision' "$JULISSA_WRITE_OUT/hr-meta.json")" = "$EXPECTED_HR_REVISION"
+          echo "EXPECTED_HR_REVISION=$EXPECTED_HR_REVISION" >> "$GITHUB_ENV"
+      - name: One provider-backed Julissa adjudication plus replay and readback
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HOSTING_URL="$HOSTING_URL" FOCAL_SOURCE="$FOCAL_SOURCE" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" JULISSA_WRITE_OUT="$JULISSA_WRITE_OUT" node tools/qa/cxorbia-i3-vrm214-julissa-identity-adjudication-write.mjs | tee "$JULISSA_WRITE_OUT/console.log"
+          test "$(jq -r '.decision' "$JULISSA_WRITE_OUT/result.json")" = "PASS_VRM214_JULISSA_PROVIDER_ADJUDICATION"
+          test "$(jq -r '.providerAck' "$JULISSA_WRITE_OUT/result.json")" = "true"
+          test "$(jq -r '.idempotentReplay' "$JULISSA_WRITE_OUT/result.json")" = "true"
+          test "$(jq -r '.durableReadback' "$JULISSA_WRITE_OUT/result.json")" = "true"
+          test "$(jq -r '.readback.activeAliasPrincipals' "$JULISSA_WRITE_OUT/result.json")" = "0"
+          test "$(jq -r '.readback.aliasOperationalReferences' "$JULISSA_WRITE_OUT/result.json")" = "0"
+          test "$(jq -r '.readback.hrMiraflores.hrRowId' "$JULISSA_WRITE_OUT/result.json")" = "OCTUBRE 26!2"
+          test "$(jq -r '.readback.hrMiraflores.shopperId' "$JULISSA_WRITE_OUT/result.json")" = "shopper_gt_0c198c1055"
+          test "$(jq -r '.hrWrites' "$JULISSA_WRITE_OUT/result.json")" = "0"
+          test "$(jq -r '.externalWrites' "$JULISSA_WRITE_OUT/result.json")" = "0"
+          test "$(jq -r '.production' "$JULISSA_WRITE_OUT/result.json")" = "false"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-vrm214-julissa-adjudication-${{ github.run_id }}
+          path: .tmp/i3-vrm214-julissa-adjudication
           if-no-files-found: error
           retention-days: 30
           compression-level: 0

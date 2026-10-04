@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_JULISSA_IDENTITY_TOPOLOGY_DIAGNOSTIC_REQUIRED",
+  "status": "HOLD_JULISSA_IDENTITY_ADJUDICATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "4b1c0859cc5b43928c083748d00fdc606b32d63e",
   "productTreeAuthority": "ab33d43d483faef9fbec5daaadfa454247df469a",
   "predecessorProductSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V240_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "98120762f1b788af662d37a9e6518043fb221ebd",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V241_2026-10-04.json",
+  "findingsLedgerExpectedGitBlob": "8992905549f142ca35798133fa4a3f60375979b2",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM214_JULISSA_TOPOLOGY_REPROOF_AFTER_CONTROL_SOURCE_FIX",
+  "activeBlocker": "VRM214_ONE_PROVIDER_BACKED_JULISSA_ADJUDICATION_REQUIRED",
   "nextFindingId": "VRM-215",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run the existing read-only Julissa topology diagnostic on the exact four same-human candidate identities (shr-1780611985059-49vr, shopper_gt_0c198c1055, shp-7309d525805e, shopper_gt_86254c4228) plus the Miraflores visit against the unchanged Run1053 DEV artifact and current HR revision. Determine canonical HR operational identity, sole credential keeper, exact aliases, Miraflores assignment/hrRowId/visit key/period/country, all provider-remappable operational references, and any additional active principal. Do not adjudicate until this topology is exact.",
+  "exactNextAction": "Execute exactly one DEV Admin shopper.identity.adjudicate with canonical shopper_gt_0c198c1055 and aliases shopper_gt_86254c4228 + shp-7309d525805e + shr-1780611985059-49vr under period cinepolis-2026-10. Require keeper shr-1780611985059-49vr / julissa.flores, provider ACK, exact idempotent replay, durable remap of provider-owned operational references, Miraflores OCTUBRE 26!2 preserved on canonical, zero active alias principals, zero alias operational references, unchanged HR revision, zero HR/external/production writes.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
