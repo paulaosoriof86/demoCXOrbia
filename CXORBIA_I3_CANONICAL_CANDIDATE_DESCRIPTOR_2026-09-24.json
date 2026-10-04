@@ -7,14 +7,14 @@
   "productSourceSha": "4b1c0859cc5b43928c083748d00fdc606b32d63e",
   "productTreeAuthority": "ab33d43d483faef9fbec5daaadfa454247df469a",
   "predecessorProductSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V231_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "b9f14a724b878944c0dd9c72815ceafb3d96fe9c",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V232_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "7b2d29883a37b6e5b7c42ab5c3c617bad1c97f6b",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "SAME_ARTIFACT_LIVE_REPROOF_REQUIRED_AFTER_RUN1053",
-  "nextFindingId": "VRM-206",
+  "activeBlocker": "VRM206_QA_MAPPING_FIX_PENDING_SAME_ARTIFACT_REPROOF",
+  "nextFindingId": "VRM-207",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run same-artifact live reproof against the unchanged Run1053 DEV materialization for product source 4b1c0859cc5b43928c083748d00fdc606b32d63e. Require exact runtime/Hosting/HR fingerprints from the currentMaterialization receipt, execute Admin/Shopper/Reservas/Movimientos/HR/semantic/browser/cert-resource proofs, and perform no build, redeploy or production action.",
+  "exactNextAction": "Re-run the same-artifact live proof on the unchanged Run1053 DEV artifact after the VRM-206 QA-only mapping correction. Require unique active canonical principals, preserve the global duplicate-principal invariant, and continue Admin/Shopper/Reservas/Movimientos/HR/browser/semantic proofs with zero build/redeploy.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3444,7 +3444,7 @@
     "sourceSha": "4b1c0859cc5b43928c083748d00fdc606b32d63e",
     "sourceTree": "ab33d43d483faef9fbec5daaadfa454247df469a",
     "predecessorSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-    "state": "EXACT_DEV_RUN1053_PENDING_SAME_ARTIFACT_LIVE_REPROOF",
+    "state": "SAME_ARTIFACT_RUN1054_MAPPING_FIX_PENDING_REPROOF",
     "findingIds": [
       "VRM-134",
       "VRM-165",
@@ -3467,7 +3467,7 @@
       "VRM-180",
       "VRM-193",
       "VRM-194",
-      "VRM-205"
+      "VRM-206"
     ],
     "preservedAllPriorFindings": true,
     "production": false,

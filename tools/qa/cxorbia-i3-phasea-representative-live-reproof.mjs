@@ -68,16 +68,18 @@ const requiredProfileFields=p=>[
 const authExists=async uid=>{try{await auth.getUser(uid);return true;}catch(e){if(str(e?.code)==='auth/user-not-found')return false;throw e;}};
 
 const targetNames=['Julissa Flores','Priscila López','Paula Osorio'];
-const targets=[];
+const targets=[],profileById=new Map(profiles.map(p=>[p.id,p]));
 for(const name of targetNames){
-  const matches=profiles.filter(p=>norm(profileName(p))===norm(name));
-  if(matches.length!==1)throw new Error('MAPPING_FAILURE:TARGET_PROFILE_'+norm(name).replace(/\s+/g,'_')+':'+JSON.stringify(matches.map(p=>({id:p.id,name:profileName(p)}))));
-  const profile=matches[0];
-  const candidates=members.filter(m=>m.active===true&&str(m.role).toLowerCase()==='shopper'&&str(m.authNamespace).toLowerCase()==='shopper'&&resolveProfileId(m.shopperId)===profile.id);
-  const live=[];
-  for(const m of candidates)if(await authExists(m.id))live.push(m);
-  if(live.length!==1)throw new Error('AUTH_FAILURE:TARGET_PRINCIPAL_'+profile.id+':'+JSON.stringify(live.map(m=>({uid:m.id,shopperId:m.shopperId}))));
-  targets.push({name,profile,member:live[0],missing:requiredProfileFields(profile)});
+  const namedProfiles=profiles.filter(p=>norm(profileName(p))===norm(name));
+  if(!namedProfiles.length)throw new Error('MAPPING_FAILURE:TARGET_PROFILE_NAME_MISSING_'+norm(name).replace(/\s+/g,'_'));
+  const operational=[];
+  for(const m of members.filter(m=>m.active===true&&str(m.role).toLowerCase()==='shopper'&&str(m.authNamespace).toLowerCase()==='shopper')){
+    const resolved=resolveProfileId(m.shopperId),profile=profileById.get(resolved);
+    if(profile&&norm(profileName(profile))===norm(name)&&await authExists(m.id))operational.push({member:m,profile,resolved});
+  }
+  if(operational.length!==1)throw new Error('MAPPING_FAILURE:TARGET_ACTIVE_CANONICAL_PRINCIPAL_'+norm(name).replace(/\s+/g,'_')+':'+JSON.stringify({namedProfiles:namedProfiles.map(p=>({id:p.id,name:profileName(p),resolved:resolveProfileId(p.id)})),operational:operational.map(x=>({uid:x.member.id,shopperId:x.member.shopperId,resolved:x.resolved,profileId:x.profile.id}))}));
+  const selected=operational[0],profile=selected.profile;
+  targets.push({name,profile,member:selected.member,aliasProfileIds:namedProfiles.map(p=>p.id).filter(id=>id!==profile.id),missing:requiredProfileFields(profile)});
 }
 let admin=null;
 for(const m of members.filter(x=>x.active===true&&['admin','super'].includes(str(x.role).toLowerCase())&&str(x.authNamespace).toLowerCase()!=='shopper')){
