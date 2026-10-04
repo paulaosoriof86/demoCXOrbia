@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM219_POST_RUN1090_READBACK_REQUIRED",
+  "status": "HOLD_VRM217_219_PROVIDER_SOURCE_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "8daedad6a34a0015113ea8567b3d92ab6af5568f",
-  "productTreeAuthority": "8b0e30d7fe8e2c8449e691a66c7b67b819836abd",
-  "predecessorProductSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V266_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "9141717d2ae326362fed5f4643cc86fc278c0fca",
+  "productSourceSha": "d3d323f30a1120640459aca5b613e42879b66eaa",
+  "productTreeAuthority": "dda35635fdf3e1b254cd13f52f118c6a3ab08d0c",
+  "predecessorProductSourceSha": "8daedad6a34a0015113ea8567b3d92ab6af5568f",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V267_2026-10-04.json",
+  "findingsLedgerExpectedGitBlob": "6e3f1dd1700a5799c73acc366f5053c3e65df095",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM219_FINAL_TWO_RESIDUALS_EXACT_TECHNICAL_AUTHORITY_DIAGNOSTIC_REQUIRED",
-  "nextFindingId": "VRM-220",
+  "activeBlocker": "VRM220_TRUSTED_CANONICAL_PROFILE_RECOVERY_SOURCE_REPROOF_REQUIRED",
+  "nextFindingId": "VRM-221",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run the same read-only VRM217-219 population diagnostic with residualEvidence enabled. Resolve only exact technical authority for (1) shp-57d2e3769946 versus declared canonical TYA_GT_0C0BA8856E and its four liquidations, and (2) SEPTIEMBRE 26!3 / shopper_gt_f65cbc6391. No profile creation, no adjudication retry, no credential sweep, no historical visit rewrite.",
+  "exactNextAction": "Run the existing provider source reproof on product source d3d323f30a1120640459aca5b613e42879b66eaa. Require the full shopper-provider suite including both VRM-220 trusted-recovery/fail-closed regressions. No DEV materialization or provider write until source PASS. VRM-218 unresolved SEPTIEMBRE 26!3 remains separate and untouched.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -42,26 +42,12 @@
     "state": "VRM214_FOUR_IDENTITY_MIRAFLORES_READ_ONLY_REQUIRED"
   },
   "lastSourceFix": {
-    "findingIds": [
-      "VRM-142"
-    ],
-    "sourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
-    "sourceTree": "90cbaaa0844bbdde0b4b96a7caa4bfbdff16167f",
-    "predecessorSha": "a2f7acd659b68217299f92ef69a320f08e806635",
-    "productFiles": 1,
-    "testFiles": 0,
-    "productOwners": [
-      "firestore.rules"
-    ],
-    "sourceProofs": [
-      {
-        "decision": "PENDING_PREI4_VRM142_DEV_LIVE_REPROOF",
-        "owner": "firestore.rules",
-        "testsPassed": 0
-      }
-    ],
-    "directWriterAuthority": "CR-20260910-02",
-    "deploys": 0,
+    "findingId": "VRM-220",
+    "sourceSha": "d3d323f30a1120640459aca5b613e42879b66eaa",
+    "sourceTree": "dda35635fdf3e1b254cd13f52f118c6a3ab08d0c",
+    "predecessorSourceSha": "8daedad6a34a0015113ea8567b3d92ab6af5568f",
+    "owner": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+    "state": "SOURCE_PATCH_CREATED_PENDING_REPROOF",
     "production": false
   },
   "preterminalRequest": {
