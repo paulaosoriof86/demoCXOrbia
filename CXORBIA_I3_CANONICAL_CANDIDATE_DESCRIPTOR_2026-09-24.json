@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM217_219_RUNTIME_RECONCILIATION_READBACK_REQUIRED",
+  "status": "HOLD_VRM217_DURABLE_CREDENTIAL_SWEEP_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "8daedad6a34a0015113ea8567b3d92ab6af5568f",
   "productTreeAuthority": "8b0e30d7fe8e2c8449e691a66c7b67b819836abd",
   "predecessorProductSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V258_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "e31068aff6dfd3e57fe2dcc741727fb667820628",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V259_2026-10-04.json",
+  "findingsLedgerExpectedGitBlob": "16c614ac0aff15bb94341628c838f87b37da232c",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM217_219_RUNTIME_RECONCILIATION_READBACK_REQUIRED",
+  "activeBlocker": "VRM217_DURABLE_CREDENTIAL_SWEEP_78_REQUIRED",
   "nextFindingId": "VRM-220",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run the existing VRM217-219 read-only population root diagnostic against exact Run1079 materialization (source 8daedad6..., runtime 00261-z4x, Hosting 03d763e9485c48aa). Compare credential candidates/holds/alias authority to Run1076 before any provider repair.",
+  "exactNextAction": "Execute only the VRM-217 durable credential sweep for the 78 exact safe candidates on the unchanged Run1079 DEV artifact. Require first pass normalized=78, review holds=17, second pass normalized=0 with zero writes, HR revision unchanged, and immediate read-only population diagnostic with credential normalize candidates=0. Do not adjudicate aliases or rewrite historical visits in this run.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
