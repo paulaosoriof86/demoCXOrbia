@@ -31,7 +31,7 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleTruthCount": 21,
   "moduleTruthAllMatch": true,
-  "findingCount": 231,
+  "findingCount": 232,
   "missingFindingIds": [],
   "duplicateFindingIds": [],
   "currentBlockingCount": 70,
@@ -47,7 +47,7 @@
     "CONTROL_ONLY_FIXED": 1
   },
   "nextCriticalSequence": [
-    "VRM-231_WORKFLOW_LOAD_REPROOF",
+    "VRM-232_CONTROL_REPROOF",
     "VRM-221_ADMIN_LIVE_E2E",
     "I3_MULTIMODULE_LIVE_SWEEP",
     "VRM-215_POPULATION_REPROOF",
@@ -7391,7 +7391,49 @@
       "classification": "RELEASE_COMPOSITION_FAILURE",
       "owner": [],
       "latestApprovedSource": null,
-      "latestLiveProof": null,
+      "latestLiveProof": {
+        "runNumber": 1116,
+        "runId": 37213834927,
+        "decision": "CANONICAL_WORKFLOW_LOADED_BELOW_LIMIT",
+        "artifactId": null,
+        "sourceSha": null,
+        "sourceTree": null
+      },
+      "successor": null,
+      "rawLedgerState": "CONTROL_ONLY_FIXED_RUN1116_WORKFLOW_LOADED",
+      "realState": "CONTROL_ONLY_FIXED",
+      "evidence": {
+        "currentProductSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "currentProductTree": "b59da4c090d4639a136168656e7addd544f38e18",
+        "currentMaterializationRunId": 37208163415,
+        "sourceModuleStatus": "MATCH",
+        "latestFindingRun": null
+      },
+      "actionRemaining": "none",
+      "blocking": false,
+      "terminalDisposition": "CONTROL_ONLY_FIXED"
+    },
+    {
+      "findingId": "VRM-232",
+      "moduleDomain": [
+        "cross-cutting-control"
+      ],
+      "severity": "P0_CONTROL",
+      "classification": "MAPPING_FAILURE",
+      "owner": [
+        "tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs",
+        "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
+        "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json"
+      ],
+      "latestApprovedSource": null,
+      "latestLiveProof": {
+        "runNumber": 1116,
+        "runId": 37213834927,
+        "decision": "FAIL_CANONICAL_AUTHORITY_NEXT_FINDING_ID",
+        "artifactId": null,
+        "sourceSha": null,
+        "sourceTree": null
+      },
       "successor": null,
       "rawLedgerState": "CONTROL_FIX_APPLIED_PENDING_REPROOF",
       "realState": "REPROOF_REQUIRED",
@@ -7400,9 +7442,10 @@
         "currentProductTree": "b59da4c090d4639a136168656e7addd544f38e18",
         "currentMaterializationRunId": 37208163415,
         "sourceModuleStatus": "MATCH",
-        "latestFindingRun": null
+        "providerReached": false,
+        "writes": 0
       },
-      "actionRemaining": "prove canonical workflow loads below historical boundary",
+      "actionRemaining": "reproof canonical authority with governance.nextFindingId aligned to VRM-233",
       "blocking": true,
       "terminalDisposition": null
     }

@@ -13722,7 +13722,7 @@
       "classification": "RELEASE_COMPOSITION_FAILURE",
       "severity": "P0_CONTROL",
       "title": "Run1115 canonical workflow exceeded the historically proven GitHub Actions workflow-file load boundary after appending the VRM-221 live job",
-      "state": "CONTROL_FIX_APPLIED_PENDING_REPROOF",
+      "state": "CONTROL_ONLY_FIXED_RUN1116_WORKFLOW_LOADED",
       "firstObservedAt": "RUN1115_2026-10-04",
       "rootCauseStatus": "PROVEN_BY_PRIOR_BOUNDARY_AND_CURRENT_ZERO_JOB_FAILURE",
       "rootCause": "Run1115 created zero jobs after the canonical workflow grew to 514175 characters. Historical VRM-209 proved the same loader boundary: 511971 characters compiled in Run1055 while 512581 characters failed before job creation in Run1056. The VRM-221 job was appended to an already near-limit canonical workflow.",
@@ -13753,6 +13753,62 @@
         "production": false
       },
       "expected": "Canonical workflow loads and creates VRM-221 Admin live job on unchanged Run1112 artifact.",
+      "productChanged": false,
+      "writes": 0,
+      "production": false,
+      "terminalDisposition": "CONTROL_ONLY_FIXED",
+      "closureEvidence": {
+        "runId": 37213834927,
+        "runNumber": 1116,
+        "canonicalWorkflowLoaded": true,
+        "jobsCreated": true,
+        "workflowChars": 508716,
+        "productChanged": false,
+        "builds": 0,
+        "deploys": 0,
+        "writes": 0,
+        "production": false
+      }
+    },
+    "VRM-232": {
+      "id": "VRM-232",
+      "classification": "MAPPING_FAILURE",
+      "severity": "P0_CONTROL",
+      "title": "Run1116 canonical authority guard read governance.nextFindingId while the control update advanced only the top-level ledger pointer",
+      "state": "CONTROL_FIX_APPLIED_PENDING_REPROOF",
+      "firstObservedAt": "RUN1116_2026-10-04",
+      "rootCauseStatus": "PROVEN",
+      "rootCause": "The canonical authority guard derives the next finding ID from ledger.governance.nextFindingId, not from the top-level compatibility field. After adding VRM-231 the descriptor and top-level ledger pointer were advanced to VRM-232 while governance.nextFindingId remained VRM-231. The guard correctly failed before VRM-221 or any provider write.",
+      "evidence": {
+        "runId": 37213834927,
+        "runNumber": 1116,
+        "jobId": 111470220296,
+        "decision": "FAIL_CANONICAL_AUTHORITY_NEXT_FINDING_ID",
+        "guardObserved": {
+          "ledgerGovernance": "VRM-231",
+          "descriptor": "VRM-232",
+          "expected": "VRM-232"
+        },
+        "productSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "productSourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+        "builds": 0,
+        "deploys": 0,
+        "writes": 0,
+        "production": false
+      },
+      "correction": {
+        "fields": [
+          "governance.nextFindingId",
+          "nextFindingId",
+          "exactNextAction",
+          "nextExactAction"
+        ],
+        "newWorkflow": false,
+        "newCandidate": false,
+        "productChanged": false,
+        "production": false
+      },
+      "expected": "Canonical authority sees ledger and descriptor nextFindingId equal to VRM-233 after VRM-232 is recorded.",
       "productChanged": false,
       "writes": 0,
       "production": false
@@ -14407,7 +14463,7 @@
     ],
     "findingCount": 230,
     "expectedCurrentRange": "VRM-001..VRM-230",
-    "nextFindingId": "VRM-231",
+    "nextFindingId": "VRM-233",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_VRM229_PAULA_CONFIRMED_IDENTITY_CONSOLIDATION_REQUIRED",
@@ -14689,7 +14745,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Rerun VRM-229 bounded Paula-confirmed identity consolidation against the already-certified DEV artifact. Require provider ACK, exact replay and durable readback for each named person; no rebuild and no production.",
+  "exactNextAction": "Execute VRM-221 Admin live E2E on the unchanged Run1112 artifact after canonical authority guard passes; no rebuild and no production.",
   "supersedesGitBlob": "820da41b786054cb8cd23e89827e1f7afbcdd3b3",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -14718,13 +14774,14 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-232",
+  "nextFindingId": "VRM-233",
   "lastControlFailure": {
-    "findingId": "VRM-231",
-    "runId": 37213486403,
-    "runNumber": 1115,
-    "classification": "RELEASE_COMPOSITION_FAILURE",
-    "jobsCreated": 0,
+    "findingId": "VRM-232",
+    "runId": 37213834927,
+    "runNumber": 1116,
+    "classification": "MAPPING_FAILURE",
+    "providerReached": false,
+    "writes": 0,
     "productChanged": false,
     "production": false
   },
@@ -18280,7 +18337,7 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-10-04T15:03:00Z",
-  "nextExactAction": "Rerun VRM-229 bounded Paula-confirmed identity consolidation against the already-certified DEV artifact. Require provider ACK, exact replay and durable readback for each named person; no rebuild and no production.",
+  "nextExactAction": "Execute VRM-221 Admin live E2E on the unchanged Run1112 artifact after canonical authority guard passes; no rebuild and no production.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
@@ -18993,7 +19050,7 @@
   },
   "openFindingsClosureMatrix": {
     "path": "I3_OPEN_FINDINGS_CLOSURE_MATRIX_2026-10-04.json",
-    "findingCount": 231,
+    "findingCount": 232,
     "status": "ACTIVE_CLOSURE_VIEW",
     "missingFindingIds": [],
     "duplicateFindingIds": []

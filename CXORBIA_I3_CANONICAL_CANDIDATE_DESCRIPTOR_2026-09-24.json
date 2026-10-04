@@ -8,13 +8,13 @@
   "productTreeAuthority": "b59da4c090d4639a136168656e7addd544f38e18",
   "predecessorProductSourceSha": "bbd66d29192487ac29f8703bd913e3f1e15a28c0",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "c3252804a3890e81947bbf4440696aa4b38ba1c8",
+  "findingsLedgerExpectedGitBlob": "bcfb767fd2864c1b4e5788e5f7d7c09a8e48f4aa",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
   "activeBlocker": "VRM221_ADMIN_LIVE_E2E_REQUIRED",
-  "nextFindingId": "VRM-232",
+  "nextFindingId": "VRM-233",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Reproof canonical workflow below the proven load boundary and execute VRM-221 Admin browser E2E on unchanged Run1112 artifact.",
+  "exactNextAction": "Execute VRM-221 Admin live E2E on the unchanged Run1112 artifact after canonical authority guard passes; no rebuild and no production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -600,11 +600,12 @@
     "findingId": "VRM-055"
   },
   "lastControlFailure": {
-    "findingId": "VRM-231",
-    "runId": 37213486403,
-    "runNumber": 1115,
-    "classification": "RELEASE_COMPOSITION_FAILURE",
-    "jobsCreated": 0,
+    "findingId": "VRM-232",
+    "runId": 37213834927,
+    "runNumber": 1116,
+    "classification": "MAPPING_FAILURE",
+    "providerReached": false,
+    "writes": 0,
     "productChanged": false,
     "production": false
   },
@@ -3566,7 +3567,7 @@
     "production": false
   },
   "openFindingsClosureMatrixPath": "I3_OPEN_FINDINGS_CLOSURE_MATRIX_2026-10-04.json",
-  "openFindingsClosureMatrixFindingCount": 231,
+  "openFindingsClosureMatrixFindingCount": 232,
   "lastVrm229Pass": {
     "runId": 37211579195,
     "runNumber": 1114,
