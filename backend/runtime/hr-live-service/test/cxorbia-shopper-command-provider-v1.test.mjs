@@ -6,6 +6,7 @@ import {
   providerUidFingerprint,
   stableShopperUid,
   CREDENTIAL_RULE_VERSION,
+  CREDENTIAL_PASSWORD_PROOF_VERSION,
   DURABLE_CREDENTIAL_SWEEP_VERSION,
   shopperCredentialRule
 } from '../../cxorbia-shopper-command-provider-v1.mjs';
