@@ -8,13 +8,13 @@
   "productTreeAuthority": "b59da4c090d4639a136168656e7addd544f38e18",
   "predecessorProductSourceSha": "bbd66d29192487ac29f8703bd913e3f1e15a28c0",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "8af02355dfa761642fe13f90abc31e0f7b633016",
+  "findingsLedgerExpectedGitBlob": "c3252804a3890e81947bbf4440696aa4b38ba1c8",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
   "activeBlocker": "VRM221_ADMIN_LIVE_E2E_REQUIRED",
-  "nextFindingId": "VRM-231",
+  "nextFindingId": "VRM-232",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run current-artifact VRM-221 Admin browser E2E for review filter, list selection, merge, keep-separate and safe delete with ACK/replay/readback; no rebuild and no production.",
+  "exactNextAction": "Reproof canonical workflow below the proven load boundary and execute VRM-221 Admin browser E2E on unchanged Run1112 artifact.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -600,19 +600,12 @@
     "findingId": "VRM-055"
   },
   "lastControlFailure": {
-    "classification": "MAPPING_FAILURE",
-    "runId": 37151525624,
-    "runNumber": 975,
-    "jobId": 111286239239,
-    "code": "MAPPING_FAILURE:NEXT_FINDING_ID",
-    "observed": {
-      "ledgerGovernanceNextFindingId": "VRM-195",
-      "descriptorNextFindingId": "VRM-196",
-      "expected": "VRM-196"
-    },
-    "cause": "V210 added VRM-195 and advanced descriptor/root nextFindingId, but governance.nextFindingId remained VRM-195.",
-    "effect": "Canonical authority failed before build/deploy; product source c5c4d002... was not executed.",
-    "productMutation": false,
+    "findingId": "VRM-231",
+    "runId": 37213486403,
+    "runNumber": 1115,
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "jobsCreated": 0,
+    "productChanged": false,
     "production": false
   },
   "lastSecondReviewProof": {
@@ -3573,7 +3566,7 @@
     "production": false
   },
   "openFindingsClosureMatrixPath": "I3_OPEN_FINDINGS_CLOSURE_MATRIX_2026-10-04.json",
-  "openFindingsClosureMatrixFindingCount": 230,
+  "openFindingsClosureMatrixFindingCount": 231,
   "lastVrm229Pass": {
     "runId": 37211579195,
     "runNumber": 1114,

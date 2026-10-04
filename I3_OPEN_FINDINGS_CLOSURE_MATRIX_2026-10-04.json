@@ -1,10 +1,10 @@
 {
-  "schemaVersion": "cxorbia.i3.open-findings-closure-matrix.v1",
+  "schemaVersion": "cxorbia.i3.open-findings-closure-matrix.v2",
   "status": "ACTIVE_CLOSURE_VIEW",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
   "generatedFromLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "generatedAtEvidenceTime": "2026-10-04T15:06:32Z",
-  "controlHeadAtGeneration": "4d030d3302e4dc96e37eac81c5be689004fbf794",
+  "generatedAtEvidenceTime": "2026-10-04T15:34:04Z",
+  "controlHeadAtGeneration": "367877c61ba4a87261829aeec493e695605f5685",
   "productSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
   "productSourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
   "exactDevArtifact": {
@@ -31,21 +31,23 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleTruthCount": 21,
   "moduleTruthAllMatch": true,
-  "findingCount": 230,
+  "findingCount": 231,
   "missingFindingIds": [],
-  "currentBlockingCount": 69,
-  "undisposedCount": 83,
+  "duplicateFindingIds": [],
+  "currentBlockingCount": 70,
+  "undisposedCount": 84,
   "terminalDispositionCounts": {
     "PASS_CURRENT_ARTIFACT": 140,
     "LIVE_REPROOF_REQUIRED": 78,
     "SUPERSEDED_BY_VRM-221": 1,
     "NON_BLOCKING_DEFERRED_WITH_EXPLICIT_REASON": 3,
     "PRESERVED_PHASE_B_NOT_I3_AUTHORITY": 1,
-    "REPROOF_REQUIRED": 5,
+    "REPROOF_REQUIRED": 6,
     "SUPERSEDED_BY_VRM-229": 1,
     "CONTROL_ONLY_FIXED": 1
   },
   "nextCriticalSequence": [
+    "VRM-231_WORKFLOW_LOAD_REPROOF",
     "VRM-221_ADMIN_LIVE_E2E",
     "I3_MULTIMODULE_LIVE_SWEEP",
     "VRM-215_POPULATION_REPROOF",
@@ -55,12 +57,17 @@
   "production": "DO_NOT_TOUCH",
   "entries": [
     {
+      "findingId": "VRM-001",
       "moduleDomain": [
         "auth-shell-security-context"
       ],
       "severity": null,
       "classification": null,
-      "owner": [],
+      "owner": [
+        "app/core/data.js",
+        "app/core/router.js",
+        "app/core/permissions.js"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -73,17 +80,22 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-002",
       "moduleDomain": [
         "auth-shell-security-context"
       ],
       "severity": null,
       "classification": null,
-      "owner": [],
+      "owner": [
+        "app/core/data.js",
+        "app/core/router.js",
+        "app/core/permissions.js"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -96,11 +108,12 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-003",
       "moduleDomain": [
         "cross-cutting-control"
       ],
@@ -119,17 +132,22 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-004",
       "moduleDomain": [
         "auth-shell-security-context"
       ],
       "severity": null,
       "classification": null,
-      "owner": [],
+      "owner": [
+        "app/core/data.js",
+        "app/core/router.js",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -142,17 +160,21 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-005",
       "moduleDomain": [
         "visits-review-postulations-reservations"
       ],
       "severity": null,
       "classification": null,
-      "owner": [],
+      "owner": [
+        "app/core/data.js",
+        "app/modules/misvisitas.js"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -165,17 +187,22 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-006",
       "moduleDomain": [
         "auth-shell-security-context"
       ],
       "severity": null,
       "classification": null,
-      "owner": [],
+      "owner": [
+        "app/core/data.js",
+        "app/core/router.js",
+        "app/core/permissions.js"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -188,11 +215,12 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-007",
       "moduleDomain": [
         "visits-review-postulations-reservations",
         "shoppers-identity-profile-mi-visitas",
@@ -200,7 +228,13 @@
       ],
       "severity": null,
       "classification": null,
-      "owner": [],
+      "owner": [
+        "app/modules/misvisitas.js",
+        "app/modules/shoppers.js",
+        "app/modules/postulaciones.js",
+        "app/modules/documentos.js",
+        "app/modules/cert.js"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -213,17 +247,22 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-008",
       "moduleDomain": [
         "auth-shell-security-context"
       ],
       "severity": null,
       "classification": null,
-      "owner": [],
+      "owner": [
+        "app/core/router.js",
+        "app/index-backend-dev.html",
+        "app/styles/layout.css"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -236,17 +275,21 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-009",
       "moduleDomain": [
         "documents-resources"
       ],
       "severity": null,
       "classification": null,
-      "owner": [],
+      "owner": [
+        "app/modules/cert.js",
+        "app/core/backend-resources.js"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -259,17 +302,21 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-010",
       "moduleDomain": [
         "dashboard-mi-dia-notifications"
       ],
       "severity": null,
       "classification": null,
-      "owner": [],
+      "owner": [
+        "app/core/data.js",
+        "app/modules/dashboard.js"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -282,17 +329,21 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-011",
       "moduleDomain": [
         "dashboard-mi-dia-notifications"
       ],
       "severity": null,
       "classification": null,
-      "owner": [],
+      "owner": [
+        "app/core/data.js",
+        "app/modules/dashboard.js"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -305,17 +356,21 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-012",
       "moduleDomain": [
         "shoppers-identity-profile-mi-visitas"
       ],
       "severity": null,
       "classification": null,
-      "owner": [],
+      "owner": [
+        "app/core/data.js",
+        "app/modules/shoppers.js"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -328,17 +383,23 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-013",
       "moduleDomain": [
         "visits-review-postulations-reservations"
       ],
       "severity": null,
       "classification": null,
-      "owner": [],
+      "owner": [
+        "app/modules/postulaciones.js",
+        "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+        "app/adapters/cxorbia-command-adapter-v1.js",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -351,17 +412,22 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-014",
       "moduleDomain": [
         "finance-liquidation-costs-benefits"
       ],
       "severity": null,
       "classification": null,
-      "owner": [],
+      "owner": [
+        "app/core/finanzas-core.js",
+        "app/core/liquidacion.js",
+        "app/modules/finanzas.js"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -374,17 +440,22 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-015",
       "moduleDomain": [
         "finance-liquidation-costs-benefits"
       ],
       "severity": null,
       "classification": null,
-      "owner": [],
+      "owner": [
+        "app/core/finanzas-core.js",
+        "app/core/liquidacion.js",
+        "app/modules/finanzas.js"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -397,17 +468,21 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-016",
       "moduleDomain": [
         "cross-cutting-control"
       ],
       "severity": null,
       "classification": null,
-      "owner": [],
+      "owner": [
+        "app/core/finanzas-core.js",
+        "app/modules/finanzas.js"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -420,17 +495,20 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-017",
       "moduleDomain": [
         "cross-cutting-control"
       ],
       "severity": null,
       "classification": null,
-      "owner": [],
+      "owner": [
+        "app/modules/finanzas.js"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -443,17 +521,22 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-018",
       "moduleDomain": [
         "finance-liquidation-costs-benefits"
       ],
       "severity": null,
       "classification": null,
-      "owner": [],
+      "owner": [
+        "app/core/finanzas-core.js",
+        "app/core/liquidacion.js",
+        "app/modules/finanzas.js"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -466,17 +549,21 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-019",
       "moduleDomain": [
         "documents-resources"
       ],
       "severity": null,
       "classification": null,
-      "owner": [],
+      "owner": [
+        "app/modules/documentos.js",
+        "app/core/backend-resources.js"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -489,17 +576,22 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-020",
       "moduleDomain": [
         "documents-resources"
       ],
       "severity": null,
       "classification": null,
-      "owner": [],
+      "owner": [
+        "app/modules/documentos.js",
+        "app/core/backend-resources.js",
+        "firestore.rules"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -512,17 +604,22 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-021",
       "moduleDomain": [
         "auth-shell-security-context"
       ],
       "severity": null,
       "classification": null,
-      "owner": [],
+      "owner": [
+        "app/core/data.js",
+        "app/core/router.js",
+        "app/core/permissions.js"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -535,18 +632,23 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-022",
       "moduleDomain": [
         "certifications-academy",
         "auth-shell-security-context"
       ],
       "severity": null,
       "classification": null,
-      "owner": [],
+      "owner": [
+        "app/data/tya-certification-carryover-source-safe.js",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+        "app/modules/cert.js"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -559,11 +661,12 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-023",
       "moduleDomain": [
         "cross-cutting-control"
       ],
@@ -582,17 +685,21 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-024",
       "moduleDomain": [
         "auth-shell-security-context"
       ],
       "severity": null,
       "classification": null,
-      "owner": [],
+      "owner": [
+        "app/core/router.js",
+        "app/index-backend-dev.html"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -605,17 +712,20 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-025",
       "moduleDomain": [
         "cross-cutting-control"
       ],
       "severity": null,
       "classification": null,
-      "owner": [],
+      "owner": [
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -628,18 +738,22 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-026",
       "moduleDomain": [
         "certifications-academy",
         "tenant-admin-config-branding"
       ],
       "severity": null,
       "classification": null,
-      "owner": [],
+      "owner": [
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+        "backend/config/pre-i4-human-entrypoint-dev-deploy-request.json"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -652,17 +766,21 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-027",
       "moduleDomain": [
         "visits-review-postulations-reservations"
       ],
       "severity": null,
       "classification": null,
-      "owner": [],
+      "owner": [
+        "app/modules/misvisitas.js",
+        "app/modules/postulaciones.js"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -675,17 +793,20 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-028",
       "moduleDomain": [
         "cross-cutting-control"
       ],
       "severity": null,
       "classification": "RELEASE_COMPOSITION_FAILURE",
-      "owner": [],
+      "owner": [
+        "app/adapters/tya-c6-domain-consistency-bridge.js"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -698,17 +819,21 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-029",
       "moduleDomain": [
         "documents-resources"
       ],
       "severity": null,
       "classification": "AUTH_FAILURE",
-      "owner": [],
+      "owner": [
+        "firestore.rules",
+        "backend/runtime/hr-live-service/test/cxorbia-pre-i4-durability-resources.test.mjs"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -721,17 +846,20 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-030",
       "moduleDomain": [
         "certifications-academy"
       ],
       "severity": null,
       "classification": "ENVIRONMENT_FAILURE",
-      "owner": [],
+      "owner": [
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -744,17 +872,20 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-031",
       "moduleDomain": [
         "certifications-academy"
       ],
       "severity": null,
       "classification": "RELEASE_COMPOSITION_FAILURE",
-      "owner": [],
+      "owner": [
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -767,17 +898,20 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-032",
       "moduleDomain": [
         "certifications-academy"
       ],
       "severity": null,
       "classification": "AUTH_FAILURE",
-      "owner": [],
+      "owner": [
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -790,11 +924,12 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-033",
       "moduleDomain": [
         "shoppers-identity-profile-mi-visitas"
       ],
@@ -818,11 +953,12 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-034",
       "moduleDomain": [
         "visits-review-postulations-reservations"
       ],
@@ -846,11 +982,12 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": false,
       "terminalDisposition": null
     },
     {
+      "findingId": "VRM-035",
       "moduleDomain": [
         "cross-cutting-control"
       ],
@@ -873,11 +1010,12 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": false,
       "terminalDisposition": null
     },
     {
+      "findingId": "VRM-036",
       "moduleDomain": [
         "certifications-academy",
         "auth-shell-security-context",
@@ -902,11 +1040,12 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-037",
       "moduleDomain": [
         "finance-liquidation-costs-benefits",
         "shoppers-identity-profile-mi-visitas",
@@ -947,11 +1086,12 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-038",
       "moduleDomain": [
         "cross-cutting-control"
       ],
@@ -989,11 +1129,12 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-039",
       "moduleDomain": [
         "finance-liquidation-costs-benefits",
         "documents-resources"
@@ -1019,11 +1160,12 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-040",
       "moduleDomain": [
         "cross-cutting-control"
       ],
@@ -1045,11 +1187,12 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-041",
       "moduleDomain": [
         "visits-review-postulations-reservations"
       ],
@@ -1071,11 +1214,12 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": false,
       "terminalDisposition": null
     },
     {
+      "findingId": "VRM-042",
       "moduleDomain": [
         "shoppers-identity-profile-mi-visitas",
         "client-reports-historical-questionnaire"
@@ -1115,11 +1259,12 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-043",
       "moduleDomain": [
         "cross-cutting-control"
       ],
@@ -1138,11 +1283,12 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": false,
       "terminalDisposition": null
     },
     {
+      "findingId": "VRM-044",
       "moduleDomain": [
         "cross-cutting-control"
       ],
@@ -1175,17 +1321,20 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-045",
       "moduleDomain": [
         "visits-review-postulations-reservations"
       ],
       "severity": null,
       "classification": "FUNCTIONAL_DEFECT",
-      "owner": [],
+      "owner": [
+        "app/modules/misvisitas.js"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -1198,17 +1347,20 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-046",
       "moduleDomain": [
         "visits-review-postulations-reservations"
       ],
       "severity": null,
       "classification": "PERSISTENCE_FAILURE",
-      "owner": [],
+      "owner": [
+        "app/modules/reservas.js"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -1221,17 +1373,22 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-047",
       "moduleDomain": [
         "shoppers-identity-profile-mi-visitas"
       ],
       "severity": null,
       "classification": "FUNCTIONAL_DEFECT",
-      "owner": [],
+      "owner": [
+        "app/adapters/tya-canonical-shopper-portal-v2.js",
+        "app/modules/shoppers.js",
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -1244,17 +1401,21 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-048",
       "moduleDomain": [
         "auth-shell-security-context"
       ],
       "severity": null,
       "classification": "VISUAL_DEFECT",
-      "owner": [],
+      "owner": [
+        "app/core/backend-browser-auth.js",
+        "app/core/backend-protected-dev-session-continuity.js"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -1267,17 +1428,21 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-049",
       "moduleDomain": [
         "finance-liquidation-costs-benefits"
       ],
       "severity": null,
       "classification": "FUNCTIONAL_DEFECT",
-      "owner": [],
+      "owner": [
+        "app/modules/finanzas.js",
+        "app/core/liquidacion.js"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -1290,17 +1455,21 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-050",
       "moduleDomain": [
         "cross-cutting-control"
       ],
       "severity": null,
       "classification": "PROVIDER_FAILURE",
-      "owner": [],
+      "owner": [
+        "backend/runtime/hr-live-service/server.mjs",
+        "tools/hr-source/tya-reapply-canonical-state-r20.mjs"
+      ],
       "latestApprovedSource": "62ee2903fdced52c525d5a028c8c4c725940e4cd",
       "latestLiveProof": {
         "runNumber": 479,
@@ -1327,18 +1496,22 @@
           "sourceTree": "e0649d447257745af89efc9845dfb2fb50600cf6"
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-051",
       "moduleDomain": [
         "auth-shell-security-context",
         "tenant-admin-config-branding"
       ],
       "severity": null,
       "classification": "VISUAL_DEFECT",
-      "owner": [],
+      "owner": [
+        "app/core/router.js",
+        "app/core/config.js"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -1351,18 +1524,23 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-052",
       "moduleDomain": [
         "visits-review-postulations-reservations",
         "auth-shell-security-context"
       ],
       "severity": "P0",
       "classification": "MAPPING_FAILURE",
-      "owner": [],
+      "owner": [
+        "app/modules/visitas.js",
+        "app/core/data.js",
+        "app/core/router.js"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -1375,17 +1553,21 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-053",
       "moduleDomain": [
         "shoppers-identity-profile-mi-visitas"
       ],
       "severity": "BLOCKING_VISUAL_ACCEPTANCE",
       "classification": "VISUAL_DEFECT",
-      "owner": [],
+      "owner": [
+        "app/adapters/tya-canonical-shopper-portal-v2.js",
+        "app/modules/novedades.js"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -1398,17 +1580,21 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-054",
       "moduleDomain": [
         "shoppers-identity-profile-mi-visitas"
       ],
       "severity": null,
       "classification": "FUNCTIONAL_DEFECT",
-      "owner": [],
+      "owner": [
+        "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
+      ],
       "latestApprovedSource": "04432faa32bef0427223fa2c51cb5b809f53e178",
       "latestLiveProof": {
         "runNumber": 472,
@@ -1435,11 +1621,12 @@
           "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f"
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-055",
       "moduleDomain": [
         "visits-review-postulations-reservations",
         "shoppers-identity-profile-mi-visitas",
@@ -1447,7 +1634,11 @@
       ],
       "severity": null,
       "classification": "MAPPING_FAILURE",
-      "owner": [],
+      "owner": [
+        "tools/qa/cxorbia-i3-v28-dev-repair.mjs",
+        "tenants/tya/shoppers/shopper_gt_bd74ace936",
+        "exact canonical-ID platform-owned display-name fields in cinepolis postulations/reservations/visits"
+      ],
       "latestApprovedSource": "04432faa32bef0427223fa2c51cb5b809f53e178",
       "latestLiveProof": {
         "runNumber": 472,
@@ -1474,18 +1665,23 @@
           "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f"
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-056",
       "moduleDomain": [
         "visits-review-postulations-reservations",
         "shoppers-identity-profile-mi-visitas"
       ],
       "severity": null,
       "classification": "MAPPING_FAILURE",
-      "owner": [],
+      "owner": [
+        "app/modules/postulaciones.js",
+        "app/core/backend-firebase.js",
+        "app/adapters/tya-cumulative-read-model-v2.js"
+      ],
       "latestApprovedSource": "04432faa32bef0427223fa2c51cb5b809f53e178",
       "latestLiveProof": {
         "runNumber": 472,
@@ -1512,11 +1708,12 @@
           "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f"
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-057",
       "moduleDomain": [
         "finance-liquidation-costs-benefits",
         "visits-review-postulations-reservations",
@@ -1524,7 +1721,13 @@
       ],
       "severity": null,
       "classification": "MAPPING_FAILURE",
-      "owner": [],
+      "owner": [
+        "app/adapters/tya-live-source-inplace-apply.js",
+        "app/modules/visitas.js",
+        "app/core/backend-firebase.js",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+        "app/adapters/tya-c6-unified-human-runtime-v1.js"
+      ],
       "latestApprovedSource": "04432faa32bef0427223fa2c51cb5b809f53e178",
       "latestLiveProof": {
         "runNumber": 472,
@@ -1551,18 +1754,23 @@
           "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f"
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-058",
       "moduleDomain": [
         "shoppers-identity-profile-mi-visitas",
         "client-reports-historical-questionnaire"
       ],
       "severity": null,
       "classification": "FUNCTIONAL_DEFECT",
-      "owner": [],
+      "owner": [
+        "app/modules/operacion-extra.js",
+        "app/adapters/tya-canonical-shopper-portal-v2.js",
+        "app/adapters/tya-corte1-report-projection-live.js"
+      ],
       "latestApprovedSource": "04432faa32bef0427223fa2c51cb5b809f53e178",
       "latestLiveProof": {
         "runNumber": 472,
@@ -1589,11 +1797,12 @@
           "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f"
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-059",
       "moduleDomain": [
         "visits-review-postulations-reservations",
         "shoppers-identity-profile-mi-visitas",
@@ -1601,7 +1810,12 @@
       ],
       "severity": null,
       "classification": "MAPPING_FAILURE",
-      "owner": [],
+      "owner": [
+        "app/modules/midia.js",
+        "app/modules/notificaciones.js",
+        "app/modules/misvisitas.js",
+        "app/adapters/tya-cumulative-read-model-v2.js"
+      ],
       "latestApprovedSource": "04432faa32bef0427223fa2c51cb5b809f53e178",
       "latestLiveProof": {
         "runNumber": 472,
@@ -1628,11 +1842,12 @@
           "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f"
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-060",
       "moduleDomain": [
         "shoppers-identity-profile-mi-visitas",
         "auth-shell-security-context"
@@ -1666,17 +1881,22 @@
           "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f"
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-061",
       "moduleDomain": [
         "visits-review-postulations-reservations"
       ],
       "severity": null,
       "classification": "MAPPING_FAILURE",
-      "owner": [],
+      "owner": [
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+        "app/core/backend-firebase.js",
+        "app/adapters/tya-cumulative-read-model-v2.js"
+      ],
       "latestApprovedSource": "04432faa32bef0427223fa2c51cb5b809f53e178",
       "latestLiveProof": {
         "runNumber": 472,
@@ -1703,17 +1923,21 @@
           "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f"
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-062",
       "moduleDomain": [
         "visits-review-postulations-reservations"
       ],
       "severity": null,
       "classification": "PERSISTENCE_FAILURE",
-      "owner": [],
+      "owner": [
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+        "app/core/backend-firebase.js"
+      ],
       "latestApprovedSource": "04432faa32bef0427223fa2c51cb5b809f53e178",
       "latestLiveProof": {
         "runNumber": 472,
@@ -1740,17 +1964,20 @@
           "sourceTree": "e06905ac9cc9cfad09d9383716bada1988cae90f"
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-063",
       "moduleDomain": [
         "tenant-admin-config-branding"
       ],
       "severity": null,
       "classification": "MAPPING_FAILURE",
-      "owner": [],
+      "owner": [
+        "tools/qa/cxorbia-i3-v28-dev-repair.mjs"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -1763,17 +1990,20 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
+      "findingId": "VRM-064",
       "moduleDomain": [
         "tenant-admin-config-branding"
       ],
       "severity": null,
       "classification": "MAPPING_FAILURE",
-      "owner": [],
+      "owner": [
+        "tools/qa/cxorbia-i3-v28-dev-repair.mjs"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -1786,7 +2016,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -1797,7 +2027,9 @@
       ],
       "severity": null,
       "classification": "PROVIDER_FAILURE",
-      "owner": [],
+      "owner": [
+        "backend/runtime/hr-live-service/server.mjs"
+      ],
       "latestApprovedSource": "f885fb7ab49d8597d992fc02051ffdd584380a85",
       "latestLiveProof": {
         "runNumber": 489,
@@ -1824,7 +2056,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -1835,7 +2067,9 @@
       ],
       "severity": null,
       "classification": "MAPPING_FAILURE",
-      "owner": [],
+      "owner": [
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -1848,7 +2082,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -1859,7 +2093,9 @@
       ],
       "severity": null,
       "classification": "SOURCE_FAILURE",
-      "owner": [],
+      "owner": [
+        "tools/qa/cxorbia-pre-i4-focal-remote-browser.mjs"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -1872,7 +2108,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -1883,7 +2119,9 @@
       ],
       "severity": null,
       "classification": "SOURCE_FAILURE",
-      "owner": [],
+      "owner": [
+        ".github/control/RECOVERY-I3-LIVE-FIXTURES-20260920-V4.mjs"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -1896,7 +2134,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -1908,7 +2146,9 @@
       ],
       "severity": "P0",
       "classification": "MAPPING_FAILURE",
-      "owner": [],
+      "owner": [
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+      ],
       "latestApprovedSource": "a552e1fbb41d5cacc8ab3157f3d91492b82b8f00",
       "latestLiveProof": {
         "runNumber": 496,
@@ -1935,7 +2175,7 @@
           "sourceTree": "c44872eb2dc1529de8387957ec720024944a5e62"
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -1946,7 +2186,9 @@
       ],
       "severity": "P0",
       "classification": "MAPPING_FAILURE",
-      "owner": [],
+      "owner": [
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+      ],
       "latestApprovedSource": "a552e1fbb41d5cacc8ab3157f3d91492b82b8f00",
       "latestLiveProof": {
         "runNumber": 496,
@@ -1973,7 +2215,7 @@
           "sourceTree": "c44872eb2dc1529de8387957ec720024944a5e62"
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -1984,7 +2226,9 @@
       ],
       "severity": null,
       "classification": "ENVIRONMENT_FAILURE",
-      "owner": [],
+      "owner": [
+        ".github/control/RECOVERY-I3-LIVE-FIXTURES-20260920-V4.mjs"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -1997,7 +2241,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -2009,7 +2253,9 @@
       ],
       "severity": null,
       "classification": "RELEASE_COMPOSITION_FAILURE",
-      "owner": [],
+      "owner": [
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+      ],
       "latestApprovedSource": "a552e1fbb41d5cacc8ab3157f3d91492b82b8f00",
       "latestLiveProof": {
         "runNumber": 497,
@@ -2036,7 +2282,7 @@
           "sourceTree": "c44872eb2dc1529de8387957ec720024944a5e62"
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -2048,7 +2294,9 @@
       ],
       "severity": null,
       "classification": "RELEASE_COMPOSITION_FAILURE",
-      "owner": [],
+      "owner": [
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -2061,7 +2309,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -2072,7 +2320,9 @@
       ],
       "severity": null,
       "classification": "RELEASE_COMPOSITION_FAILURE",
-      "owner": [],
+      "owner": [
+        ".github/workflows/cxorbia-recovery-i3-gate21-artifact-fingerprint.yml"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -2085,7 +2335,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -2096,7 +2346,9 @@
       ],
       "severity": null,
       "classification": "RELEASE_COMPOSITION_FAILURE",
-      "owner": [],
+      "owner": [
+        ".github/workflows/cxorbia-recovery-i3-gate21-artifact-fingerprint.yml"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -2109,7 +2361,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -2120,9 +2372,19 @@
       ],
       "severity": "P0",
       "classification": "RELEASE_COMPOSITION_FAILURE",
-      "owner": [],
+      "owner": [
+        "tools/qa/cxorbia-i3-c3-finalize-module-truth.mjs",
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+      ],
       "latestApprovedSource": null,
-      "latestLiveProof": null,
+      "latestLiveProof": {
+        "runNumber": 502,
+        "runId": 36289104329,
+        "decision": "PASS_I3_VRM076_FINALIZER_FAIL_CLOSED_SELFTEST",
+        "artifactId": null,
+        "sourceSha": null,
+        "sourceTree": null
+      },
       "successor": null,
       "rawLedgerState": "FIXED_PROVEN_RUN502",
       "realState": "PASS_CURRENT_ARTIFACT",
@@ -2131,9 +2393,16 @@
         "currentProductTree": "b59da4c090d4639a136168656e7addd544f38e18",
         "currentMaterializationRunId": 37208163415,
         "sourceModuleStatus": "MATCH",
-        "latestFindingRun": null
+        "latestFindingRun": {
+          "runNumber": 502,
+          "runId": 36289104329,
+          "decision": "PASS_I3_VRM076_FINALIZER_FAIL_CLOSED_SELFTEST",
+          "artifactId": null,
+          "sourceSha": null,
+          "sourceTree": null
+        }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -2146,8 +2415,13 @@
       ],
       "severity": "P0",
       "classification": "MAPPING_FAILURE",
-      "owner": [],
-      "latestApprovedSource": null,
+      "owner": [
+        "app/modules/postulaciones.js",
+        "app/modules/misvisitas.js",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+      ],
+      "latestApprovedSource": "ae6016a03e1943250d91f636132178802f4cb114",
       "latestLiveProof": {
         "runNumber": 508,
         "runId": 36319829961,
@@ -2173,7 +2447,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -2184,9 +2458,20 @@
       ],
       "severity": "P0",
       "classification": "FUNCTIONAL_DEFECT",
-      "owner": [],
-      "latestApprovedSource": null,
-      "latestLiveProof": null,
+      "owner": [
+        "app/modules/proyecto-wizard.js",
+        "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+        "backend/runtime/cxorbia-project-command-provider-v1.mjs"
+      ],
+      "latestApprovedSource": "17ffd1cbac4aeee7f6a422b2c27b8d5c6111358f",
+      "latestLiveProof": {
+        "runNumber": 515,
+        "runId": 36325108619,
+        "decision": "PASS_I3_VRM078_EXTERNAL_PROJECT_CREATE_READBACK",
+        "artifactId": 10933738309,
+        "sourceSha": "17ffd1cbac4aeee7f6a422b2c27b8d5c6111358f",
+        "sourceTree": "b389cec06c8e7c1de1988f76105ddebe42ef303d"
+      },
       "successor": null,
       "rawLedgerState": "FIXED_PROVEN_RUN515",
       "realState": "PASS_CURRENT_ARTIFACT",
@@ -2195,9 +2480,16 @@
         "currentProductTree": "b59da4c090d4639a136168656e7addd544f38e18",
         "currentMaterializationRunId": 37208163415,
         "sourceModuleStatus": "MATCH",
-        "latestFindingRun": null
+        "latestFindingRun": {
+          "runNumber": 515,
+          "runId": 36325108619,
+          "decision": "PASS_I3_VRM078_EXTERNAL_PROJECT_CREATE_READBACK",
+          "artifactId": 10933738309,
+          "sourceSha": "17ffd1cbac4aeee7f6a422b2c27b8d5c6111358f",
+          "sourceTree": "b389cec06c8e7c1de1988f76105ddebe42ef303d"
+        }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -2210,9 +2502,21 @@
       ],
       "severity": "P0",
       "classification": "PROVIDER_FAILURE",
-      "owner": [],
-      "latestApprovedSource": null,
-      "latestLiveProof": null,
+      "owner": [
+        "app/core/backend-resources.js",
+        "app/core/backend-protected-dev-mode.js",
+        "app/modules/documentos.js",
+        "firestore.rules"
+      ],
+      "latestApprovedSource": "6877b38171a3b1ef8caf88734d0884a31ebef639",
+      "latestLiveProof": {
+        "runNumber": 518,
+        "runId": 36325915977,
+        "decision": "PASS_I3_VRM079_DOCUMENTS_RESOURCES_DURABLE_METADATA",
+        "artifactId": 10933428609,
+        "sourceSha": "6877b38171a3b1ef8caf88734d0884a31ebef639",
+        "sourceTree": "67a8f88c606332fc3be2251afaf8f1ba40da0047"
+      },
       "successor": null,
       "rawLedgerState": "FIXED_PROVEN_RUN518",
       "realState": "PASS_CURRENT_ARTIFACT",
@@ -2221,9 +2525,16 @@
         "currentProductTree": "b59da4c090d4639a136168656e7addd544f38e18",
         "currentMaterializationRunId": 37208163415,
         "sourceModuleStatus": "MATCH",
-        "latestFindingRun": null
+        "latestFindingRun": {
+          "runNumber": 518,
+          "runId": 36325915977,
+          "decision": "PASS_I3_VRM079_DOCUMENTS_RESOURCES_DURABLE_METADATA",
+          "artifactId": 10933428609,
+          "sourceSha": "6877b38171a3b1ef8caf88734d0884a31ebef639",
+          "sourceTree": "67a8f88c606332fc3be2251afaf8f1ba40da0047"
+        }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -2234,9 +2545,21 @@
       ],
       "severity": "P0",
       "classification": "PERSISTENCE_FAILURE",
-      "owner": [],
-      "latestApprovedSource": null,
-      "latestLiveProof": null,
+      "owner": [
+        "app/modules/configuracion.js",
+        "app/core/config.js",
+        "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+        "app/adapters/cxorbia-command-adapter-v1.js"
+      ],
+      "latestApprovedSource": "77b29e303c825be586a97e159d4d65bfae7e66c8",
+      "latestLiveProof": {
+        "runNumber": 525,
+        "runId": 36333245670,
+        "decision": "PASS_I3_VRM080_CONNECTED_ADMIN_CONFIG_DURABLE",
+        "artifactId": 10936871191,
+        "sourceSha": "77b29e303c825be586a97e159d4d65bfae7e66c8",
+        "sourceTree": "279f33d6ad734ac7da9e5764dd05c91cab8882aa"
+      },
       "successor": null,
       "rawLedgerState": "FIXED_PROVEN_RUN525",
       "realState": "PASS_CURRENT_ARTIFACT",
@@ -2245,9 +2568,16 @@
         "currentProductTree": "b59da4c090d4639a136168656e7addd544f38e18",
         "currentMaterializationRunId": 37208163415,
         "sourceModuleStatus": "MATCH",
-        "latestFindingRun": null
+        "latestFindingRun": {
+          "runNumber": 525,
+          "runId": 36333245670,
+          "decision": "PASS_I3_VRM080_CONNECTED_ADMIN_CONFIG_DURABLE",
+          "artifactId": 10936871191,
+          "sourceSha": "77b29e303c825be586a97e159d4d65bfae7e66c8",
+          "sourceTree": "279f33d6ad734ac7da9e5764dd05c91cab8882aa"
+        }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -2260,7 +2590,12 @@
       ],
       "severity": "P0",
       "classification": "AUTH_FAILURE",
-      "owner": [],
+      "owner": [
+        "backend/runtime/hr-live-service/server.mjs",
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+        "tools/qa/cxorbia-i3-c3-terminal-semantic-oracle.mjs"
+      ],
       "latestApprovedSource": "b168955f405cd82630a8caad04de0b1766b26fc8",
       "latestLiveProof": {
         "runNumber": 547,
@@ -2287,7 +2622,7 @@
           "sourceTree": "7ee35f25dd6a1c1b6f6a562ed770e9ba80cceeeb"
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -2299,7 +2634,9 @@
       ],
       "severity": "P0",
       "classification": "MAPPING_FAILURE",
-      "owner": [],
+      "owner": [
+        "RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -2312,7 +2649,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -2323,7 +2660,9 @@
       ],
       "severity": "P0",
       "classification": "AUTH_FAILURE",
-      "owner": [],
+      "owner": [
+        "backend/runtime/hr-live-service/server.mjs"
+      ],
       "latestApprovedSource": "87888d3792b011b10a87611dde3efc69e3f4eb40",
       "latestLiveProof": {
         "runNumber": 564,
@@ -2350,7 +2689,7 @@
           "sourceTree": "813ac15086da026089fedfb257700b4abe643371"
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -2362,7 +2701,9 @@
       ],
       "severity": "P0",
       "classification": "VISUAL_DEFECT",
-      "owner": [],
+      "owner": [
+        "app/modules/beneficios.js"
+      ],
       "latestApprovedSource": "09b4e56be96dedbeb89d14f1d190bfc5b8b4f990",
       "latestLiveProof": {
         "runNumber": 572,
@@ -2389,7 +2730,7 @@
           "sourceTree": "f6899a631b7b277b16614f1b6534103e7615f11e"
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -2427,7 +2768,7 @@
           "sourceTree": "f6899a631b7b277b16614f1b6534103e7615f11e"
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -2451,7 +2792,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -2475,7 +2816,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -2500,7 +2841,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -2524,7 +2865,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -2548,7 +2889,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -2573,7 +2914,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -2597,7 +2938,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -2621,7 +2962,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -2645,7 +2986,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": false,
       "terminalDisposition": null
     },
@@ -2670,7 +3011,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": false,
       "terminalDisposition": null
     },
@@ -2694,7 +3035,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -2720,7 +3061,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -2745,7 +3086,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": false,
       "terminalDisposition": null
     },
@@ -2771,7 +3112,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": false,
       "terminalDisposition": null
     },
@@ -2797,7 +3138,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -2824,7 +3165,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": false,
       "terminalDisposition": null
     },
@@ -2850,7 +3191,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": false,
       "terminalDisposition": null
     },
@@ -2875,7 +3216,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": false,
       "terminalDisposition": null
     },
@@ -2899,7 +3240,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -2923,7 +3264,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -2962,7 +3303,7 @@
           "sourceTree": "ccb3d9da3c110e2d5fff57bae0d2d0eb76b3c4b4"
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -3000,7 +3341,7 @@
           "sourceTree": "ccb3d9da3c110e2d5fff57bae0d2d0eb76b3c4b4"
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -3024,7 +3365,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -3048,7 +3389,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -3072,7 +3413,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -3117,7 +3458,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -3162,7 +3503,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -3206,7 +3547,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -3230,7 +3571,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -3254,7 +3595,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -3278,7 +3619,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -3302,7 +3643,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -3326,7 +3667,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -3365,7 +3706,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -3389,7 +3730,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -3417,7 +3758,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -3445,7 +3786,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -3473,7 +3814,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -3502,7 +3843,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -3530,7 +3871,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -3557,7 +3898,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -3585,7 +3926,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -3640,7 +3981,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -3666,7 +4007,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -3693,7 +4034,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "carry to final human visual acceptance; no product reopen without drift",
+      "actionRemaining": "carry to final visual acceptance",
       "blocking": false,
       "terminalDisposition": "NON_BLOCKING_DEFERRED_WITH_EXPLICIT_REASON"
     },
@@ -3717,7 +4058,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -3741,7 +4082,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -3765,7 +4106,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -3789,7 +4130,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -3813,7 +4154,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -3838,7 +4179,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -3863,7 +4204,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -3887,7 +4228,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -3911,7 +4252,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -3935,7 +4276,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -3959,7 +4300,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -4000,7 +4341,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -4040,7 +4381,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -4080,7 +4421,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -4122,7 +4463,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -4162,7 +4503,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -4205,7 +4546,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -4245,7 +4586,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -4285,7 +4626,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -4326,7 +4667,7 @@
           "sourceTree": "52be15349f012ea8fd2a6231205f16fc0ac02966"
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -4366,7 +4707,7 @@
           "sourceTree": "f0d8cb0f900f2ca01cfec635700a82d087e35af4"
         }
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -4408,7 +4749,7 @@
           "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc"
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -4454,7 +4795,7 @@
           "sourceTree": "6a8b7ec768efbb9af73bcca836125471f7f49ae4"
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -4497,7 +4838,7 @@
           "sourceTree": "6a8b7ec768efbb9af73bcca836125471f7f49ae4"
         }
       },
-      "actionRemaining": "carry to final human visual acceptance; no product reopen without drift",
+      "actionRemaining": "carry to final visual acceptance",
       "blocking": false,
       "terminalDisposition": "NON_BLOCKING_DEFERRED_WITH_EXPLICIT_REASON"
     },
@@ -4538,7 +4879,7 @@
           "sourceTree": "6a8b7ec768efbb9af73bcca836125471f7f49ae4"
         }
       },
-      "actionRemaining": "carry to final human visual acceptance; no product reopen without drift",
+      "actionRemaining": "carry to final visual acceptance",
       "blocking": false,
       "terminalDisposition": "NON_BLOCKING_DEFERRED_WITH_EXPLICIT_REASON"
     },
@@ -4578,7 +4919,7 @@
           "sourceTree": "545d8959bb0bf75e5b89f20735ebdd1ff23a04dc"
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -4605,7 +4946,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -4632,7 +4973,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -4659,7 +5000,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -4685,7 +5026,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -4726,7 +5067,7 @@
           "sourceTree": "6a8b7ec768efbb9af73bcca836125471f7f49ae4"
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -4753,7 +5094,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -4779,7 +5120,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -4808,7 +5149,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -4850,7 +5191,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -4879,7 +5220,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -4920,7 +5261,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -4948,7 +5289,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -4977,7 +5318,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -5006,7 +5347,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -5049,7 +5390,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -5076,7 +5417,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": false,
       "terminalDisposition": null
     },
@@ -5120,7 +5461,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -5162,7 +5503,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -5189,7 +5530,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": false,
       "terminalDisposition": null
     },
@@ -5219,7 +5560,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": false,
       "terminalDisposition": null
     },
@@ -5246,7 +5587,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -5288,7 +5629,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -5331,7 +5672,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -5371,7 +5712,7 @@
           "sourceTree": "db4c1cc35b55c03523196fc583bf7cf0b874d87f"
         }
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -5396,7 +5737,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -5436,7 +5777,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -5461,7 +5802,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -5501,7 +5842,7 @@
           "sourceTree": "2e5b6af67aa0bbb5e0f79a37fe5dbab8453792b2"
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -5539,7 +5880,7 @@
           "sourceTree": "2e5b6af67aa0bbb5e0f79a37fe5dbab8453792b2"
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -5580,7 +5921,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -5621,7 +5962,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -5663,7 +6004,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -5704,7 +6045,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -5745,7 +6086,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -5785,7 +6126,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -5816,7 +6157,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "preserve; no Phase A expansion unless a transversal P0 is proven",
+      "actionRemaining": "preserve; no Phase A expansion unless transversal P0 is proven",
       "blocking": false,
       "terminalDisposition": "PRESERVED_PHASE_B_NOT_I3_AUTHORITY"
     },
@@ -5858,7 +6199,7 @@
           "sourceTree": "ab33d43d483faef9fbec5daaadfa454247df469a"
         }
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -5884,7 +6225,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -5912,7 +6253,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -5943,7 +6284,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -5973,7 +6314,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -6000,7 +6341,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -6011,7 +6352,9 @@
       ],
       "severity": "P0",
       "classification": "MAPPING_FAILURE",
-      "owner": [],
+      "owner": [
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+      ],
       "latestApprovedSource": null,
       "latestLiveProof": null,
       "successor": null,
@@ -6024,7 +6367,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -6048,7 +6391,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -6072,7 +6415,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -6110,7 +6453,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -6153,7 +6496,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -6194,7 +6537,7 @@
           "sourceTree": "ab33d43d483faef9fbec5daaadfa454247df469a"
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -6221,7 +6564,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -6259,7 +6602,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -6286,7 +6629,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "reconcile in multimodule same-artifact sweep",
+      "actionRemaining": "reconcile in same-artifact multimodule sweep",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -6326,7 +6669,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "reconcile in multimodule same-artifact sweep",
+      "actionRemaining": "reconcile in same-artifact multimodule sweep",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -6352,7 +6695,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "reconcile in multimodule same-artifact sweep",
+      "actionRemaining": "reconcile in same-artifact multimodule sweep",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -6376,7 +6719,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -6415,7 +6758,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "reconcile in multimodule same-artifact sweep",
+      "actionRemaining": "reconcile in same-artifact multimodule sweep",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -6439,7 +6782,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof; do not rebuild by default",
+      "actionRemaining": "same-artifact live sweep / exact owner reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -6477,7 +6820,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -6515,7 +6858,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "population-wide reproof after Admin and multimodule live sweep",
+      "actionRemaining": "population-wide reproof after Admin and multimodule sweep",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -6555,7 +6898,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -6595,7 +6938,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -6635,7 +6978,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -6675,7 +7018,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -6713,7 +7056,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -6761,7 +7104,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -6818,7 +7161,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -6959,7 +7302,7 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "none unless drift is reproduced",
+      "actionRemaining": "none unless drift reproduced",
       "blocking": false,
       "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
@@ -7038,6 +7381,30 @@
       "actionRemaining": "none",
       "blocking": false,
       "terminalDisposition": "CONTROL_ONLY_FIXED"
+    },
+    {
+      "findingId": "VRM-231",
+      "moduleDomain": [
+        "client-reports-historical-questionnaire"
+      ],
+      "severity": "P0_CONTROL",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "owner": [],
+      "latestApprovedSource": null,
+      "latestLiveProof": null,
+      "successor": null,
+      "rawLedgerState": "CONTROL_FIX_APPLIED_PENDING_REPROOF",
+      "realState": "REPROOF_REQUIRED",
+      "evidence": {
+        "currentProductSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "currentProductTree": "b59da4c090d4639a136168656e7addd544f38e18",
+        "currentMaterializationRunId": 37208163415,
+        "sourceModuleStatus": "MATCH",
+        "latestFindingRun": null
+      },
+      "actionRemaining": "prove canonical workflow loads below historical boundary",
+      "blocking": true,
+      "terminalDisposition": null
     }
   ]
 }

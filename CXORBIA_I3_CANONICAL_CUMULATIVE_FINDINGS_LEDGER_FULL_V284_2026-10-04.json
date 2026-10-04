@@ -13716,6 +13716,46 @@
         "deploys": 0,
         "production": false
       }
+    },
+    "VRM-231": {
+      "id": "VRM-231",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "severity": "P0_CONTROL",
+      "title": "Run1115 canonical workflow exceeded the historically proven GitHub Actions workflow-file load boundary after appending the VRM-221 live job",
+      "state": "CONTROL_FIX_APPLIED_PENDING_REPROOF",
+      "firstObservedAt": "RUN1115_2026-10-04",
+      "rootCauseStatus": "PROVEN_BY_PRIOR_BOUNDARY_AND_CURRENT_ZERO_JOB_FAILURE",
+      "rootCause": "Run1115 created zero jobs after the canonical workflow grew to 514175 characters. Historical VRM-209 proved the same loader boundary: 511971 characters compiled in Run1055 while 512581 characters failed before job creation in Run1056. The VRM-221 job was appended to an already near-limit canonical workflow.",
+      "evidence": {
+        "failedRunId": 37213486403,
+        "failedRunNumber": 1115,
+        "jobsCreated": 0,
+        "workflowCharsFailed": 514175,
+        "historicalBoundaryFinding": "VRM-209",
+        "lastProvenCompilableChars": 511971,
+        "firstProvenFailingChars": 512581,
+        "productSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "productSourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+        "currentMaterializationRunId": 37208163415,
+        "builds": 0,
+        "deploys": 0,
+        "writes": 0,
+        "production": false
+      },
+      "correction": {
+        "strategy": "Remove the completed VRM-229 executable job from the same canonical workflow; retain its frozen Run1114 evidence and keep VRM-221 as the active job.",
+        "removedObsoleteJob": "vrm229-paula-confirmed-identity-consolidation",
+        "replacementJob": "vrm221-admin-identity-governance-live",
+        "correctedWorkflowChars": 508716,
+        "newWorkflow": false,
+        "newCandidate": false,
+        "productChanged": false,
+        "production": false
+      },
+      "expected": "Canonical workflow loads and creates VRM-221 Admin live job on unchanged Run1112 artifact.",
+      "productChanged": false,
+      "writes": 0,
+      "production": false
     }
   },
   "latestEvidenceOverrides": {
@@ -14678,16 +14718,14 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-231",
+  "nextFindingId": "VRM-232",
   "lastControlFailure": {
-    "runId": 37158873078,
-    "runNumber": 1009,
-    "jobId": 111307931599,
-    "classification": "MAPPING_FAILURE_PLUS_ENVIRONMENT_FAILURE",
-    "sourceProofPass": true,
-    "progressiveRoutePass": true,
-    "gate9Pass": false,
-    "productMutationRequired": true,
+    "findingId": "VRM-231",
+    "runId": 37213486403,
+    "runNumber": 1115,
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "jobsCreated": 0,
+    "productChanged": false,
     "production": false
   },
   "vrm044FocalProof": {
@@ -18955,8 +18993,9 @@
   },
   "openFindingsClosureMatrix": {
     "path": "I3_OPEN_FINDINGS_CLOSURE_MATRIX_2026-10-04.json",
-    "findingCount": 230,
+    "findingCount": 231,
     "status": "ACTIVE_CLOSURE_VIEW",
-    "generatedAtEvidenceTime": "2026-10-04T15:06:32Z"
+    "missingFindingIds": [],
+    "duplicateFindingIds": []
   }
 }
