@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED",
+  "status": "HOLD_JULISSA_IDENTITY_TOPOLOGY_DIAGNOSTIC_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "4b1c0859cc5b43928c083748d00fdc606b32d63e",
   "productTreeAuthority": "ab33d43d483faef9fbec5daaadfa454247df469a",
   "predecessorProductSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V232_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "7b2d29883a37b6e5b7c42ab5c3c617bad1c97f6b",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V233_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "299c8da997c028dd27f35dbbafc607097c844664",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM206_QA_MAPPING_FIX_PENDING_SAME_ARTIFACT_REPROOF",
-  "nextFindingId": "VRM-207",
+  "activeBlocker": "VRM207_JULISSA_THREE_ACTIVE_PRINCIPALS_EXACT_TOPOLOGY_REQUIRED",
+  "nextFindingId": "VRM-209",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Re-run the same-artifact live proof on the unchanged Run1053 DEV artifact after the VRM-206 QA-only mapping correction. Require unique active canonical principals, preserve the global duplicate-principal invariant, and continue Admin/Shopper/Reservas/Movimientos/HR/browser/semantic proofs with zero build/redeploy.",
+  "exactNextAction": "Run the existing Julissa read-only identity topology diagnostic on the unchanged Run1053 DEV artifact. Determine exact canonical shopper authority from Auth, membership, profile, crosswalk, identity-link, visit and HR evidence. Do not merge by name and do not write anything.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3444,7 +3444,7 @@
     "sourceSha": "4b1c0859cc5b43928c083748d00fdc606b32d63e",
     "sourceTree": "ab33d43d483faef9fbec5daaadfa454247df469a",
     "predecessorSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-    "state": "SAME_ARTIFACT_RUN1054_MAPPING_FIX_PENDING_REPROOF",
+    "state": "VRM207_JULISSA_READ_ONLY_TOPOLOGY_DIAGNOSTIC_REQUIRED",
     "findingIds": [
       "VRM-134",
       "VRM-165",
@@ -3467,7 +3467,9 @@
       "VRM-180",
       "VRM-193",
       "VRM-194",
-      "VRM-206"
+      "VRM-205",
+      "VRM-207",
+      "VRM-208"
     ],
     "preservedAllPriorFindings": true,
     "production": false,
