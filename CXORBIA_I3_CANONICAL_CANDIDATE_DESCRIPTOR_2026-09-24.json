@@ -7,8 +7,8 @@
   "productSourceSha": "8daedad6a34a0015113ea8567b3d92ab6af5568f",
   "productTreeAuthority": "8b0e30d7fe8e2c8449e691a66c7b67b819836abd",
   "predecessorProductSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V257_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "2d649ea7b9000a379a6099a205ca68fcf5e4e58a",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V258_2026-10-04.json",
+  "findingsLedgerExpectedGitBlob": "e31068aff6dfd3e57fe2dcc741727fb667820628",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Wait for the Run1079 DEV runtime shopper reconciliation on HR revision f77e740a... to complete and read back its provider result. Do not start a parallel reconciliation. After that readback, run only the remaining exact provider-backed durable credential sweep and trusted alias remaps; preserve the 18 HOLD cases and all historical visit rows. Then rerun the full population proof.",
+  "exactNextAction": "Run the existing VRM217-219 read-only population root diagnostic against exact Run1079 materialization (source 8daedad6..., runtime 00261-z4x, Hosting 03d763e9485c48aa). Compare credential candidates/holds/alias authority to Run1076 before any provider repair.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
