@@ -7,14 +7,14 @@
   "productSourceSha": "784bc45c29795f35ffaeef019883a41ca872939b",
   "productTreeAuthority": "7b35abbebc254009b8a114c927b03b5b52d65ee7",
   "predecessorProductSourceSha": "d3d323f30a1120640459aca5b613e42879b66eaa",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V273_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "820da41b786054cb8cd23e89827e1f7afbcdd3b3",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V274_2026-10-04.json",
+  "findingsLedgerExpectedGitBlob": "61c450e1763b5cbc12454c1473165d9775ef0770",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
   "activeBlocker": "VRM218_13_POPULATION_HOLDS_PLUS_ONE_UNRESOLVED_HR_IDENTITY",
-  "nextFindingId": "VRM-221",
+  "nextFindingId": "VRM-222",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Inspect the 13 remaining hold rows and the HR-native unresolved shopper against the shared shopper provider/upsert contract. Determine why currentHrReconcileCandidates is zero despite an HR profile/assigned visit, and classify each hold as missing HR-managed name data, stale claims, or other exact owner defect. No identity merge, credential reset, profile creation or HR write until exact owner evidence is proven.",
+  "exactNextAction": "Continue VRM-218 exact owner diagnostic for the 13 population holds plus unresolved HR identity. VRM-221 is now frozen as the immediately queued Shopper acceptance block: implement Admin review filter + list multi-select + merge + keep-separate + safe delete with provider ACK/idempotency/readback, then rerun VRM-215 population proof on the same artifact. Do not open I5, another candidate, branch or workflow.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3539,5 +3539,7 @@
     "builds": 0,
     "production": false,
     "interpretation": "Control-only freeze/readback. No action lane matched the fail-closed precomposition status."
-  }
+  },
+  "shopperIdentityGovernanceLockPath": "CXORBIA_I3_SHOPPER_IDENTITY_GOVERNANCE_LOCK_2026-10-04.json",
+  "queuedBlocker": "VRM221_ADMIN_SHOPPER_IDENTITY_GOVERNANCE_REQUIRED_BEFORE_POPULATION_CLOSURE"
 }
