@@ -10,7 +10,7 @@ on:
       - RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json
       - RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
       - CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
-      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V262_2026-10-04.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V263_2026-10-04.json
       - CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json
       - app/**
       - backend/**
@@ -32,7 +32,7 @@ concurrency:
   cancel-in-progress: true
 env:
   CANDIDATE_DESCRIPTOR: CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
-  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V262_2026-10-04.json
+  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V263_2026-10-04.json
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
@@ -7100,7 +7100,7 @@ jobs:
           compression-level: 0
   vrm219-exact-alias-remap:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM219_EXACT_ALIAS_REMAP_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM219_REMAINING_EXACT_ALIAS_REMAP_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     permissions:
@@ -7136,11 +7136,11 @@ jobs:
       - name: Download exact trusted Run1083 population mapping
         uses: actions/download-artifact@v4
         with:
-          name: cxorbia-vrm217-219-population-root-37178732736
+          name: cxorbia-vrm217-219-population-root-37186180761
           path: .tmp/i3-vrm219-input
           github-token: ${{ github.token }}
           repository: ${{ github.repository }}
-          run-id: 37178732736
+          run-id: 37186180761
       - name: Verify trusted mapping artifact
         run: |
           set -Eeuo pipefail
@@ -7152,7 +7152,7 @@ jobs:
           test "$(jq -r '.identity.exactAliasActivePrincipals' "$VRM219_INPUT/result.json")" = "1"
           test "$(jq -r '.identity.holds' "$VRM219_INPUT/result.json")" = "17"
           test "$(jq -r '.hrAssignments.unresolved' "$VRM219_INPUT/result.json")" = "1"
-          test "$(jq -r '.repairPlan.authoritativeAliasRemap.eligible' "$VRM219_INPUT/result.json")" = "279"
+          test "$(jq -r '.repairPlan.authoritativeAliasRemap.eligible' "$VRM219_INPUT/result.json")" = "277"
           test "$(jq -r '.visits.ambiguousAuthorityGroups' "$VRM219_INPUT/result.json")" = "0"
       - name: Install bounded repair dependencies
         run: |
@@ -7188,8 +7188,8 @@ jobs:
           set -Eeuo pipefail
           PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$EXPECTED_HR" VRM219_DIAGNOSTIC="$VRM219_INPUT/result.json" VRM219_OUT="$VRM219_OUT" node tools/qa/cxorbia-i3-vrm219-exact-alias-remap.mjs | tee "$VRM219_OUT/console.log"
           test "$(jq -r '.decision' "$VRM219_OUT/result.json")" = "PASS_VRM219_EXACT_ALIAS_REPAIR"
-          test "$(jq -r '.groups' "$VRM219_OUT/result.json")" = "21"
-          test "$(jq -r '.aliases' "$VRM219_OUT/result.json")" = "33"
+          test "$(jq -r '.groups' "$VRM219_OUT/result.json")" = "20"
+          test "$(jq -r '.aliases' "$VRM219_OUT/result.json")" = "32"
           test "$(jq -r '.replays' "$VRM219_OUT/result.json")" = "21"
           test "$(jq -r '.hrWrites' "$VRM219_OUT/result.json")" = "0"
           test "$(jq -r '.externalWrites' "$VRM219_OUT/result.json")" = "0"

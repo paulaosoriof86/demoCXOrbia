@@ -23,7 +23,7 @@ save();
 const diag=JSON.parse(fs.readFileSync(DIAG,'utf8'));
 if(diag.decision!=='PASS_VRM217_219_POPULATION_ROOT_DIAGNOSTIC'||diag.hrRevision!==EXPECTED_HR)throw new Error('SOURCE_FAILURE:VRM219_DIAGNOSTIC');
 if(diag.credentials.normalizeCandidates!==0||diag.credentials.currentHrReconcileCandidates!==0||diag.credentials.durableSweepCandidates!==0)throw new Error('MAPPING_FAILURE:VRM219_CREDENTIAL_DEBT');
-if(diag.identity.exactAliasActivePrincipals!==1||diag.identity.holds!==17||diag.hrAssignments.unresolved!==1||diag.repairPlan.authoritativeAliasRemap.eligible!==279||diag.visits.ambiguousAuthorityGroups!==0)throw new Error('MAPPING_FAILURE:VRM219_COUNTS');
+if(diag.identity.exactAliasActivePrincipals!==1||diag.identity.holds!==17||diag.hrAssignments.unresolved!==1||diag.repairPlan.authoritativeAliasRemap.eligible!==277||diag.visits.ambiguousAuthorityGroups!==0)throw new Error('MAPPING_FAILURE:VRM219_COUNTS');
 
 if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
 const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(TENANT),project=tenant.collection('projects').doc(PROGRAM);
@@ -40,7 +40,7 @@ for(const row of diag.visits.authoritativeAliasDetails){
   g.visitIds.add(authoritative[0].id);
 }
 for(const row of diag.operationalAliasReferences.rows)group(str(row.canonicalTarget),str(row.sourceShopperId));
-if(groups.size!==21||uniq([...groups.values()].flatMap(g=>[...g.aliases])).length!==33)throw new Error('MAPPING_FAILURE:VRM219_GROUPS');
+if(groups.size!==20||uniq([...groups.values()].flatMap(g=>[...g.aliases])).length!==32)throw new Error('MAPPING_FAILURE:VRM219_GROUPS');
 
 const users=tenant.collection('users'),members=await users.get();
 const staff=members.docs.map(d=>({uid:d.id,...(d.data()||{})})).filter(x=>x.active===true&&str(x.role).toLowerCase()==='super'&&str(x.authNamespace).toLowerCase()==='staff').sort((a,b)=>a.uid.localeCompare(b.uid));
@@ -61,11 +61,20 @@ try{
   await page.evaluate(()=>window.CX?.data?.setCurrentPeriod?.('cinepolis-2026-10'));
   for(const g of [...groups.values()].sort((a,b)=>a.canonical.localeCompare(b.canonical))){
     const aliases=uniq([...g.aliases]),ids=uniq([...g.visitIds]),allow=ids.length?ids:['__preserve_all_alias_visit_history__'];
-    const meta={ackAware:true,reason:'trusted_exact_alias_population_repair_vrm219',preserveHistoricalVisitRows:true,authoritativeVisitIds:allow};
-    const first=await page.evaluate(async x=>window.CX.data.adjudicateShopperIdentity(x.canonical,x.aliases,x.meta),{canonical:g.canonical,aliases,meta});
+    const idempotencyKey='vrm219:'+hash([TENANT,PROGRAM,EXPECTED_HR,g.canonical,...aliases,...allow].join('\\0')).slice(0,32);
+    const pair=await page.evaluate(async x=>{
+      const a=window.CX?.backendAuth?.context?.()||{};
+      const built=window.CX?.shopperAdminCommandContract?.identityAdjudicate?.({tenantId:a.tenantId,projectId:x.projectId,periodId:x.periodId,projectIds:Array.isArray(a.projectIds)&&a.projectIds.length?a.projectIds:[x.projectId],actorId:a.actorId,actorRole:a.role,canonicalShopperId:x.canonical,aliasShopperIds:x.aliases,humanConfirmed:true,expectedVersion:'provider-current',idempotencyKey:x.idempotencyKey,reason:'trusted_exact_alias_population_repair_vrm219',preserveHistoricalVisitRows:true,authoritativeVisitIds:x.allow});
+      if(!built?.ok)return{buildOk:false,errors:built?.errors||[]};
+      built.command.authorization={providerEnforcementRequired:true,permission:'shopper.identity.adjudicate',humanAdjudicationRequired:true};
+      const first=await window.CX.commandAdapter.execute(built.command);
+      const replay=await window.CX.commandAdapter.execute(built.command);
+      return{buildOk:true,first,replay};
+    },{canonical:g.canonical,aliases,allow,idempotencyKey,projectId:PROGRAM,periodId:'cinepolis-2026-10'});
+    if(pair?.buildOk!==true)throw new Error('SOURCE_FAILURE:VRM219_COMMAND_BUILD_'+g.canonical);
+    const first=pair.first,replay=pair.replay;
     if(first?.ok!==true||first?.providerAck!==true||(first?.identityConsolidated!==true&&first?.idempotentReplay!==true))throw new Error('PERSISTENCE_FAILURE:VRM219_ACK_'+g.canonical+':'+str(first?.code));
-    const replay=await page.evaluate(async x=>window.CX.data.adjudicateShopperIdentity(x.canonical,x.aliases,x.meta),{canonical:g.canonical,aliases,meta});
-    if(replay?.ok!==true||replay?.providerAck!==true||replay?.idempotentReplay!==true||Number(replay?.providerWrites||0)!==0)throw new Error('PERSISTENCE_FAILURE:VRM219_REPLAY_'+g.canonical);
+    if(replay?.ok!==true||replay?.providerAck!==true||replay?.idempotentReplay!==true||Number(replay?.providerWrites||0)!==0)throw new Error('PERSISTENCE_FAILURE:VRM219_REPLAY_'+g.canonical+':'+str(replay?.code));
     result.groups++;result.aliases+=aliases.length;result.providerWrites+=Number(first?.providerWrites||0);result.replays++;result.hrWrites+=Number(first?.hrWrites||0);result.externalWrites+=Number(first?.externalWrites||0);save();
   }
   if(result.hrWrites||result.externalWrites)throw new Error('PERSISTENCE_FAILURE:VRM219_EXTERNAL_WRITE');
