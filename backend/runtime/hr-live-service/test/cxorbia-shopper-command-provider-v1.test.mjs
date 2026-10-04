@@ -924,3 +924,40 @@ test('VRM-219 selective exact adjudication remaps authoritative rows while prese
   const replay=await p.execute('staff-token',command);
   assert.equal(replay.ok,true);assert.equal(replay.idempotentReplay,true);assert.equal(replay.providerWrites,0);
 });
+
+
+test('VRM-220 / exact trusted identity link recovers a missing canonical profile without guessing',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);
+  const canonical='TYA_GT_CANONICAL_MISSING',alias='shp-source-safe-alias',uid='legacy-human-uid';
+  db.seed('tenants/tenant-a/users/admin-1',{active:true,tenantId:'tenant-a',role:'super',authNamespace:'staff',projectIds:['project-a']});
+  auth.seed({uid,email:internalEmailTest('tenant-a','persona.exacta'),password:'Human123*',disabled:false,customClaims:{tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:alias,projectIds:['project-a']}});
+  db.seed('tenants/tenant-a/users/'+uid,{active:true,tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:alias,projectIds:['project-a'],providerUidFingerprint:providerUidFingerprint(uid),visibleLogin:'persona.exacta',credentialRuleVersion:CREDENTIAL_RULE_VERSION,credentialPasswordProofVersion:'cxorbia-shopper-password-proof-v2'});
+  db.seed('tenants/tenant-a/shoppers/'+alias,{id:alias,shopperId:alias,tenantId:'tenant-a',projectIds:['project-a'],sourceType:'hr_external',firstName:'Persona',lastName:'Exacta',nombre:'Persona Exacta',visibleLogin:'persona.exacta',credentialRuleVersion:CREDENTIAL_RULE_VERSION,credentialPasswordProofVersion:'cxorbia-shopper-password-proof-v2',benefits:['legacy-benefit']});
+  db.seed('tenants/tenant-a/shopperIdentityCrosswalk/'+alias,{tenantId:'tenant-a',shopperId:alias,projectIds:['project-a'],providerUidFingerprint:providerUidFingerprint(uid),sourceStableKey:alias,identityMode:'stable_hr_shopper_id',sourceType:'hr_external'});
+  db.seed('tenants/tenant-a/shopperIdentityLinks/frozen-exact-link',{tenantId:'tenant-a',canonicalShopperId:canonical,sourceSystem:'hr',sourceIdentityKey:alias,projectScope:'project-a',status:'materialized',authorityType:'tenant_adjudication',authorityRef:'frozen-admin-resolution',periodIndependent:true});
+  db.seed('tenants/tenant-a/projects/project-a/liquidations/liq-1',{shopperId:alias,status:'pending'});
+  const command={version:'cxorbia-command-adapter-v1',commandType:'shopper.identity.adjudicate',tenantId:'tenant-a',projectId:'project-a',periodId:'project-a-2026-10',entityId:canonical,idempotencyKey:'vrm220-recover-canonical-profile',authorization:{providerEnforcementRequired:true,permission:'shopper.identity.adjudicate'},payload:{canonicalShopperId:canonical,aliasShopperIds:[alias],humanConfirmed:true,reason:'trusted_exact_alias_population_repair_vrm220'}};
+  const first=await p.execute('staff-token',command);
+  assert.equal(first.ok,true,'VRM220_FIRST='+JSON.stringify(first));
+  assert.equal(first.providerAck,true);assert.equal(first.identityConsolidated,true);assert.equal(first.canonicalProfileRecovered,true);assert.equal(first.canonicalProfileRecoveredFromAliasId,alias);assert.equal(first.canonicalRecoveryAuthorityRef,'frozen-admin-resolution');
+  const profile=db.get('tenants/tenant-a/shoppers/'+canonical);
+  assert.equal(profile.shopperId,canonical);assert.equal(profile.nombre,'Persona Exacta');assert.deepEqual(profile.benefits,['legacy-benefit']);assert.equal(profile.identityRecoveryAuthority,'trusted_exact_identity_link');assert.equal(profile.identityRecoveredFromShopperId,alias);
+  assert.equal(db.get('tenants/tenant-a/shoppers/'+alias).identityState,'superseded_exact_alias');
+  assert.equal(db.get('tenants/tenant-a/users/'+uid).shopperId,canonical);assert.equal((await auth.getUser(uid)).customClaims.shopperId,canonical);
+  assert.equal(db.get('tenants/tenant-a/projects/project-a/liquidations/liq-1').shopperId,canonical);
+  const replay=await p.execute('staff-token',command);
+  assert.equal(replay.ok,true);assert.equal(replay.idempotentReplay,true);assert.equal(replay.providerWrites,0);
+});
+
+test('VRM-220 / missing canonical profile stays fail-closed without one exact trusted identity authority',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db),canonical='TYA_GT_NO_AUTHORITY',alias='shp-untrusted',uid='untrusted-uid';
+  db.seed('tenants/tenant-a/users/admin-1',{active:true,tenantId:'tenant-a',role:'super',authNamespace:'staff',projectIds:['project-a']});
+  auth.seed({uid,email:internalEmailTest('tenant-a','persona.untrusted'),password:'Human123*',disabled:false,customClaims:{tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:alias,projectIds:['project-a']}});
+  db.seed('tenants/tenant-a/users/'+uid,{active:true,tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:alias,projectIds:['project-a'],visibleLogin:'persona.untrusted',credentialPasswordProofVersion:'cxorbia-shopper-password-proof-v2'});
+  db.seed('tenants/tenant-a/shoppers/'+alias,{id:alias,shopperId:alias,tenantId:'tenant-a',projectIds:['project-a'],firstName:'Persona',lastName:'Untrusted',nombre:'Persona Untrusted',visibleLogin:'persona.untrusted'});
+  const command={version:'cxorbia-command-adapter-v1',commandType:'shopper.identity.adjudicate',tenantId:'tenant-a',projectId:'project-a',periodId:'project-a-2026-10',entityId:canonical,idempotencyKey:'vrm220-no-authority',authorization:{providerEnforcementRequired:true,permission:'shopper.identity.adjudicate'},payload:{canonicalShopperId:canonical,aliasShopperIds:[alias],humanConfirmed:true}};
+  const result=await p.execute('staff-token',command);
+  assert.equal(result.ok,false);assert.equal(result.providerWrites,0);assert.equal(result.code,'SHOPPER_IDENTITY_CANONICAL_PROFILE_MISSING');
+  assert.equal(db.get('tenants/tenant-a/shoppers/'+canonical),undefined);
+  assert.equal(db.get('tenants/tenant-a/users/'+uid).shopperId,alias);assert.equal((await auth.getUser(uid)).disabled,false);
+});
