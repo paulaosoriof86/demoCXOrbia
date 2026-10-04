@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v261",
   "frozenAt": "2026-10-04T09:12:00Z",
-  "status": "HOLD_I3_MULTIMODULE_LIVE_SWEEP_REQUIRED",
+  "status": "HOLD_I3_CLIENT_AUTH_TOPOLOGY_DIAGNOSTIC_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "microblockId": "PRE-I4-LIVE-HR-STALE-CACHE-MAPPING-HOLD-AUGUST-CANONICAL-CORRECTION",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -14001,6 +14001,50 @@
         "productChanged": false,
         "production": false
       }
+    },
+    "VRM-235": {
+      "id": "VRM-235",
+      "classification": "AUTH_FAILURE",
+      "severity": "P0",
+      "title": "Same-artifact multimodule sweep could not start Client lane because no active Firestore member matched role cliente/client with staff namespace",
+      "state": "DIAGNOSTIC_REQUIRED",
+      "firstObservedAt": "RUN1120_2026-10-04",
+      "rootCauseStatus": "NOT_YET_PROVEN",
+      "rootCause": "Run1120 proved the shopper population invariants and exact Run1112 fingerprint, then stopped before browser lanes because the Client selector found no active tenant member satisfying the source-defined Client contract. Source static confirms cliente/client is expected to use authNamespace=staff, so the selector contract itself is correct. Remaining question is whether Firebase Auth has a Client principal whose tenant member is missing/desynced, or whether no Client principal exists in DEV.",
+      "evidence": {
+        "runId": 37221804606,
+        "runNumber": 1120,
+        "jobId": 111493512759,
+        "artifactId": 11310765904,
+        "artifactDigest": "sha256:3c11bbb7ba6c092b7fc7b78b06a81ed6e4f89f2a95b0266bcfdf4055021317c5",
+        "decision": "FAIL_I3_MULTIMODULE_LIVE_SWEEP",
+        "code": "I3_SWEEP_CLIENT_MISSING",
+        "population": {
+          "activeShopperMemberships": 380,
+          "profiles": 571,
+          "currentHrVisits": 44,
+          "unresolvedMemberships": 0,
+          "duplicateActivePrincipals": 0,
+          "duplicateHrVisitKeys": 0,
+          "unresolvedAssignedVisits": 0
+        },
+        "productSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "productSourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+        "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+        "productChanged": false,
+        "writes": 0,
+        "builds": 0,
+        "deploys": 0,
+        "production": false
+      },
+      "expected": "At least one authenticated Client identity scoped to tenant tya and project cinepolis, with role cliente/client, staff namespace, durable tenant membership and matching Firebase custom claims.",
+      "owner": [
+        "Firebase Auth custom claims",
+        "tenants/tya/users",
+        "app/core/backend-browser-auth.js"
+      ],
+      "productChanged": false,
+      "production": false
     }
   },
   "latestEvidenceOverrides": {
@@ -14652,7 +14696,7 @@
     ],
     "findingCount": 230,
     "expectedCurrentRange": "VRM-001..VRM-230",
-    "nextFindingId": "VRM-235",
+    "nextFindingId": "VRM-236",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_VRM229_PAULA_CONFIRMED_IDENTITY_CONSOLIDATION_REQUIRED",
@@ -14934,7 +14978,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Execute one same-artifact multimodule live sweep across Admin, Shopper and Client on Run1112, preserving the same HR revision and zero writes.",
+  "exactNextAction": "Read-only compare tenant Client memberships with Firebase Auth custom claims; no Client creation or mutation until root cause is proven.",
   "supersedesGitBlob": "820da41b786054cb8cd23e89827e1f7afbcdd3b3",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -14963,7 +15007,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-235",
+  "nextFindingId": "VRM-236",
   "lastControlFailure": {
     "findingId": "VRM-232",
     "runId": 37213834927,
@@ -18334,7 +18378,7 @@
     "hostingDeploys": 0,
     "production": false
   },
-  "activeBlocker": "I3_MULTIMODULE_LIVE_SWEEP_REQUIRED",
+  "activeBlocker": "CLIENT_AUTH_TOPOLOGY_DIAGNOSTIC_REQUIRED",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -18526,7 +18570,7 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-10-04T15:03:00Z",
-  "nextExactAction": "Execute one same-artifact multimodule live sweep across Admin, Shopper and Client on Run1112, preserving the same HR revision and zero writes.",
+  "nextExactAction": "Read-only compare tenant Client memberships with Firebase Auth custom claims; no Client creation or mutation until root cause is proven.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
@@ -19162,7 +19206,7 @@
     "production": false,
     "interpretation": "Control-only freeze/readback. No action lane matched the fail-closed precomposition status."
   },
-  "queuedBlocker": "VRM215_POPULATION_REPROOF",
+  "queuedBlocker": "I3_MULTIMODULE_LIVE_SWEEP_THEN_VRM215_POPULATION_REPROOF",
   "lastSuccessfulRun": {
     "runId": 37211579195,
     "runNumber": 1114,
@@ -19239,9 +19283,35 @@
   },
   "openFindingsClosureMatrix": {
     "path": "I3_OPEN_FINDINGS_CLOSURE_MATRIX_2026-10-04.json",
-    "findingCount": 234,
+    "findingCount": 235,
     "status": "ACTIVE_CLOSURE_VIEW",
     "missingFindingIds": [],
     "duplicateFindingIds": []
+  },
+  "lastMultimoduleAttempt": {
+    "runId": 37221804606,
+    "runNumber": 1120,
+    "jobId": 111493512759,
+    "artifactId": 11310765904,
+    "artifactDigest": "sha256:3c11bbb7ba6c092b7fc7b78b06a81ed6e4f89f2a95b0266bcfdf4055021317c5",
+    "decision": "FAIL_I3_MULTIMODULE_LIVE_SWEEP",
+    "code": "I3_SWEEP_CLIENT_MISSING",
+    "population": {
+      "activeShopperMemberships": 380,
+      "profiles": 571,
+      "currentHrVisits": 44,
+      "unresolvedMemberships": 0,
+      "duplicateActivePrincipals": 0,
+      "duplicateHrVisitKeys": 0,
+      "unresolvedAssignedVisits": 0
+    },
+    "productSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+    "productSourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+    "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+    "productChanged": false,
+    "writes": 0,
+    "builds": 0,
+    "deploys": 0,
+    "production": false
   }
 }

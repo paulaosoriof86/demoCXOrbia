@@ -31,11 +31,11 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleTruthCount": 21,
   "moduleTruthAllMatch": true,
-  "findingCount": 234,
+  "findingCount": 235,
   "missingFindingIds": [],
   "duplicateFindingIds": [],
-  "currentBlockingCount": 68,
-  "undisposedCount": 82,
+  "currentBlockingCount": 69,
+  "undisposedCount": 83,
   "terminalDispositionCounts": {
     "PASS_CURRENT_ARTIFACT": 140,
     "LIVE_REPROOF_REQUIRED": 78,
@@ -47,6 +47,7 @@
     "CONTROL_ONLY_FIXED": 1
   },
   "nextCriticalSequence": [
+    "VRM-235_CLIENT_AUTH_TOPOLOGY_DIAGNOSTIC",
     "I3_MULTIMODULE_LIVE_SWEEP",
     "VRM-215_POPULATION_REPROOF",
     "PAULA_VISUAL_ACCEPTANCE",
@@ -7525,6 +7526,44 @@
       "actionRemaining": "none",
       "blocking": false,
       "terminalDisposition": "CONTROL_ONLY_FIXED"
+    },
+    {
+      "findingId": "VRM-235",
+      "moduleDomain": [
+        "client-reports-historical-questionnaire",
+        "auth-shell-security-context"
+      ],
+      "severity": "P0",
+      "classification": "AUTH_FAILURE",
+      "owner": [
+        "Firebase Auth custom claims",
+        "tenants/tya/users",
+        "app/core/backend-browser-auth.js"
+      ],
+      "latestApprovedSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+      "latestLiveProof": {
+        "runNumber": 1120,
+        "runId": 37221804606,
+        "decision": "FAIL_I3_MULTIMODULE_LIVE_SWEEP_CLIENT_MISSING",
+        "artifactId": 11310765904,
+        "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
+      },
+      "successor": null,
+      "rawLedgerState": "DIAGNOSTIC_REQUIRED",
+      "realState": "REPROOF_REQUIRED",
+      "evidence": {
+        "currentProductSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "currentProductTree": "b59da4c090d4639a136168656e7addd544f38e18",
+        "currentMaterializationRunId": 37208163415,
+        "sourceModuleStatus": "MATCH",
+        "populationInvariantPass": true,
+        "clientLaneStarted": false,
+        "productChanged": false
+      },
+      "actionRemaining": "read-only Client membership/Auth claims topology diagnostic",
+      "blocking": true,
+      "terminalDisposition": null
     }
   ]
 }
