@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM238_POPULATION_RESIDUAL_DIAGNOSTIC_REQUIRED",
+  "status": "HOLD_VRM239_RESIDUAL_CLOSURE_READINESS_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,13 +8,13 @@
   "productTreeAuthority": "b59da4c090d4639a136168656e7addd544f38e18",
   "predecessorProductSourceSha": "bbd66d29192487ac29f8703bd913e3f1e15a28c0",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "5869cb95211f9d662928251ec0728ea94b9aa1df",
+  "findingsLedgerExpectedGitBlob": "007b95cc34a787ea58ed6f537251ba398392a62a",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM238_POPULATION_RESIDUAL_DIAGNOSTIC_REQUIRED",
-  "nextFindingId": "VRM-239",
+  "activeBlocker": "VRM239_RESIDUAL_CLOSURE_READINESS_REQUIRED",
+  "nextFindingId": "VRM-240",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run the existing read-only VRM217/219 population root diagnostic against the unchanged Run1112 materialization to classify Run1124 residuals by exact owner.",
+  "exactNextAction": "Read-only readiness for exactly four live shopper residuals and 127 authoritative alias visits on unchanged Run1112; then execute only proven bounded owners.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3829,6 +3829,39 @@
     "productSourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
     "materializationRunId": 37208163415,
     "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+    "writes": 0,
+    "production": false
+  },
+  "lastVrm238Run1125": {
+    "runId": 37240634316,
+    "runNumber": 1125,
+    "jobId": 111548514496,
+    "artifactId": 11317021781,
+    "artifactDigest": "sha256:bca8e867635fa458a46b018b2eb7892c922734b11c6a84861b492d0a9d811cf7",
+    "decision": "PASS_VRM217_219_POPULATION_ROOT_DIAGNOSTIC",
+    "population": {
+      "activeMemberships": 380,
+      "activeCanonicalIds": 380
+    },
+    "identity": {
+      "holds": 3,
+      "mappingConflicts": 0,
+      "exactAliasActivePrincipals": 0
+    },
+    "hrAssignments": {
+      "assigned": 716,
+      "unresolved": 0
+    },
+    "visits": {
+      "durableRows": 2024,
+      "uniqueVisitKeys": 748,
+      "duplicateGroups": 660,
+      "historicalRows": 1276,
+      "ambiguousAuthorityGroups": 0,
+      "authoritativeAliasRows": 127,
+      "historicalAliasRows": 122
+    },
+    "nonVisitOperationalAliasReferences": 0,
     "writes": 0,
     "production": false
   }

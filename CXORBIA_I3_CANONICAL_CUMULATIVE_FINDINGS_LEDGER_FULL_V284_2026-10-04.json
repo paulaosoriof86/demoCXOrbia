@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v261",
   "frozenAt": "2026-10-04T09:12:00Z",
-  "status": "HOLD_VRM238_POPULATION_RESIDUAL_DIAGNOSTIC_REQUIRED",
+  "status": "HOLD_VRM239_RESIDUAL_CLOSURE_READINESS_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "microblockId": "PRE-I4-LIVE-HR-STALE-CACHE-MAPPING-HOLD-AUGUST-CANONICAL-CORRECTION",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -12147,6 +12147,39 @@
         "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
         "writes": 0,
         "production": false
+      },
+      "run1125ResidualClassification": {
+        "runId": 37240634316,
+        "runNumber": 1125,
+        "jobId": 111548514496,
+        "artifactId": 11317021781,
+        "artifactDigest": "sha256:bca8e867635fa458a46b018b2eb7892c922734b11c6a84861b492d0a9d811cf7",
+        "decision": "PASS_VRM217_219_POPULATION_ROOT_DIAGNOSTIC",
+        "population": {
+          "activeMemberships": 380,
+          "activeCanonicalIds": 380
+        },
+        "identity": {
+          "holds": 3,
+          "mappingConflicts": 0,
+          "exactAliasActivePrincipals": 0
+        },
+        "hrAssignments": {
+          "assigned": 716,
+          "unresolved": 0
+        },
+        "visits": {
+          "durableRows": 2024,
+          "uniqueVisitKeys": 748,
+          "duplicateGroups": 660,
+          "historicalRows": 1276,
+          "ambiguousAuthorityGroups": 0,
+          "authoritativeAliasRows": 127,
+          "historicalAliasRows": 122
+        },
+        "nonVisitOperationalAliasReferences": 0,
+        "writes": 0,
+        "production": false
       }
     },
     "VRM-216": {
@@ -14250,7 +14283,7 @@
       "classification": "MAPPING_FAILURE",
       "severity": "P0_CONTROL",
       "title": "VRM-215 Run1124 residuals mix four live identity failures with historical visit invariants that require exact authority classification",
-      "state": "DIAGNOSTIC_REQUIRED",
+      "state": "PASS_EXACT_OWNER_DIAGNOSTIC_RUN1125",
       "firstObservedAt": "RUN1124_2026-10-04",
       "rootCauseStatus": "PARTIAL_PROOF_REQUIRES_EXACT_OWNER_DIAGNOSTIC",
       "rootCause": "Run1124 proves 376/380 active shoppers and 716/716 HR assignments, but its visit assertions collapse authoritative and intentionally preserved historical rows into one zero-residual requirement. The canonical population diagnostic already models historical rows separately and freezes noHistoricalVisitRewrite=true. Exact current-state readback is required before deciding whether visit-key and alias-reference counts are product defects or control false positives.",
@@ -14305,6 +14338,95 @@
       "owner": [
         "tools/qa/cxorbia-i3-vrm217-219-population-root-diagnostic.mjs",
         "tools/qa/cxorbia-i3-vrm215-shopper-population-live-reproof.mjs"
+      ],
+      "productChanged": false,
+      "writes": 0,
+      "production": false,
+      "terminalDisposition": "PASS_DIAGNOSTIC",
+      "closureEvidence": {
+        "runId": 37240634316,
+        "runNumber": 1125,
+        "jobId": 111548514496,
+        "artifactId": 11317021781,
+        "artifactDigest": "sha256:bca8e867635fa458a46b018b2eb7892c922734b11c6a84861b492d0a9d811cf7",
+        "decision": "PASS_VRM217_219_POPULATION_ROOT_DIAGNOSTIC",
+        "population": {
+          "activeMemberships": 380,
+          "activeCanonicalIds": 380
+        },
+        "identity": {
+          "holds": 3,
+          "mappingConflicts": 0,
+          "exactAliasActivePrincipals": 0
+        },
+        "hrAssignments": {
+          "assigned": 716,
+          "unresolved": 0
+        },
+        "visits": {
+          "durableRows": 2024,
+          "uniqueVisitKeys": 748,
+          "duplicateGroups": 660,
+          "historicalRows": 1276,
+          "ambiguousAuthorityGroups": 0,
+          "authoritativeAliasRows": 127,
+          "historicalAliasRows": 122
+        },
+        "nonVisitOperationalAliasReferences": 0,
+        "writes": 0,
+        "production": false
+      }
+    },
+    "VRM-239": {
+      "id": "VRM-239",
+      "classification": "MAPPING_FAILURE",
+      "severity": "P0_CONTROL",
+      "title": "Bounded closure readiness required for four live shopper residuals and 127 authoritative alias visit rows",
+      "state": "READ_ONLY_READINESS_REQUIRED",
+      "firstObservedAt": "POST_RUN1125_2026-10-04",
+      "rootCauseStatus": "OWNERS_IDENTIFIED_EXECUTION_SAFETY_NOT_YET_PROVEN",
+      "rootCause": "Run1125 proves historical visit duplicates are non-ambiguous and must be preserved, while 127 authoritative visit rows still point to exact superseded aliases. It also isolates three identity holds plus one canonical-login drift. Before any provider/Auth write, exact dependency and executable-target readback is required for only these residuals.",
+      "evidence": {
+        "run1125": {
+          "runId": 37240634316,
+          "artifactId": 11317021781,
+          "authoritativeAliasRows": 127,
+          "historicalAliasRows": 122,
+          "ambiguousAuthorityGroups": 0,
+          "manualHolds": 3
+        },
+        "liveResiduals": [
+          {
+            "shopperId": "shopper_hn_9a6963fdf6",
+            "classification": "MAPPING_FAILURE",
+            "owner": "FROZEN_REVIEW_ONLY_HUMAN_AUTHORITY",
+            "rule": "DO_NOT_INVENT_HUMAN_IDENTITY"
+          },
+          {
+            "shopperId": "shopper_gt_8cface989a",
+            "classification": "MAPPING_FAILURE",
+            "owner": "NONCURRENT_NAME_INCOMPLETE_IDENTITY_REVIEW_OR_SAFE_RETIRE"
+          },
+          {
+            "shopperId": "shp-b2e3d7bef69b",
+            "classification": "AUTH_FAILURE",
+            "owner": "EXACT_AUTH_CLAIMS_REPAIR"
+          },
+          {
+            "shopperId": "TYA_GT_0C0BA8856E",
+            "classification": "MAPPING_FAILURE",
+            "owner": "DURABLE_CREDENTIAL_VISIBLE_LOGIN_NORMALIZATION"
+          }
+        ],
+        "productSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "productSourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+        "writes": 0,
+        "production": false
+      },
+      "expected": "Prove safe disposition for both nameless profiles, exact claims delta for shp-b2e3d7bef69b, canonical approved login delta for TYA_GT_0C0BA8856E, and provider-executable grouping for all 127 authoritative alias visit rows. No fuzzy/name inference and no historical rewrite.",
+      "owner": [
+        "tools/qa/cxorbia-i3-vrm239-residual-closure-readiness.mjs",
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
       ],
       "productChanged": false,
       "writes": 0,
@@ -14960,7 +15082,7 @@
     ],
     "findingCount": 230,
     "expectedCurrentRange": "VRM-001..VRM-230",
-    "nextFindingId": "VRM-239",
+    "nextFindingId": "VRM-240",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_VRM229_PAULA_CONFIRMED_IDENTITY_CONSOLIDATION_REQUIRED",
@@ -15242,7 +15364,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Run the existing read-only VRM217/219 population root diagnostic against the unchanged Run1112 materialization to classify Run1124 residuals by exact owner.",
+  "exactNextAction": "Read-only readiness for exactly four live shopper residuals and 127 authoritative alias visits on unchanged Run1112; then execute only proven bounded owners.",
   "supersedesGitBlob": "820da41b786054cb8cd23e89827e1f7afbcdd3b3",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -15271,7 +15393,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-239",
+  "nextFindingId": "VRM-240",
   "lastControlFailure": {
     "findingId": "VRM-232",
     "runId": 37213834927,
@@ -18642,7 +18764,7 @@
     "hostingDeploys": 0,
     "production": false
   },
-  "activeBlocker": "VRM238_POPULATION_RESIDUAL_DIAGNOSTIC_REQUIRED",
+  "activeBlocker": "VRM239_RESIDUAL_CLOSURE_READINESS_REQUIRED",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -18834,7 +18956,7 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-10-04T15:03:00Z",
-  "nextExactAction": "Run the existing read-only VRM217/219 population root diagnostic against the unchanged Run1112 materialization to classify Run1124 residuals by exact owner.",
+  "nextExactAction": "Read-only readiness for exactly four live shopper residuals and 127 authoritative alias visits on unchanged Run1112; then execute only proven bounded owners.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,

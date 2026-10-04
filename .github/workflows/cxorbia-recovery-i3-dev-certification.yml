@@ -6967,15 +6967,17 @@ jobs:
           compression-level: 0
 
 
-  vrm238-population-residual-root-diagnostic:
+
+  vrm239-residual-closure-readiness:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM238_POPULATION_RESIDUAL_DIAGNOSTIC_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM239_RESIDUAL_CLOSURE_READINESS_REQUIRED' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     env:
       FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
       FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
-      VRM238_OUT: .tmp/i3-vrm238-population-residual
+      VRM239_INPUT: .tmp/i3-vrm239-root/result.json
+      VRM239_OUT: .tmp/i3-vrm239-readiness
     steps:
       - uses: actions/checkout@v4
         with:
@@ -6987,31 +6989,43 @@ jobs:
         shell: bash
         run: |
           set -Eeuo pipefail
-          mkdir -p "$VRM238_OUT"
+          mkdir -p "$(dirname "$VRM239_INPUT")" "$VRM239_OUT"
           test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
           test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
           test "$(jq -r '.currentMaterialization.sourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
           test "$(jq -r '.currentMaterialization.sourceTree' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
           git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
           node --check tools/qa/cxorbia-i3-vrm217-219-population-root-diagnostic.mjs
+          node --check tools/qa/cxorbia-i3-vrm239-residual-closure-readiness.mjs
       - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
       - uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-      - name: Classify Run1124 residuals by exact owner
+      - name: Reproduce current root state read-only
         shell: bash
         run: |
           set -Eeuo pipefail
           HR="$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")"
-          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$HR" VRM217_OUT="$VRM238_OUT" node tools/qa/cxorbia-i3-vrm217-219-population-root-diagnostic.mjs | tee "$VRM238_OUT/console.log"
-          test "$(jq -r '.decision' "$VRM238_OUT/result.json")" = "PASS_VRM217_219_POPULATION_ROOT_DIAGNOSTIC"
-          test "$(jq -r '.writes' "$VRM238_OUT/result.json")" = "0"
-          test "$(jq -r '.production' "$VRM238_OUT/result.json")" = "false"
+          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$HR" VRM217_OUT="$(dirname "$VRM239_INPUT")" node tools/qa/cxorbia-i3-vrm217-219-population-root-diagnostic.mjs > "$(dirname "$VRM239_INPUT")/console.log"
+          test "$(jq -r '.decision' "$VRM239_INPUT")" = "PASS_VRM217_219_POPULATION_ROOT_DIAGNOSTIC"
+          echo "EXPECTED_HR_REVISION=$HR" >> "$GITHUB_ENV"
+      - name: Prove exact bounded residual closure readiness
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" VRM239_INPUT="$VRM239_INPUT" VRM239_OUT="$VRM239_OUT" node tools/qa/cxorbia-i3-vrm239-residual-closure-readiness.mjs | tee "$VRM239_OUT/console.log"
+          test "$(jq -r '.decision' "$VRM239_OUT/result.json")" = "PASS_VRM239_RESIDUAL_CLOSURE_READINESS"
+          test "$(jq -r '.aliasRemap.authoritativeVisitRows' "$VRM239_OUT/result.json")" = "127"
+          test "$(jq -r '.aliasRemap.allGroupsExecutable' "$VRM239_OUT/result.json")" = "true"
+          test "$(jq -r '.writes' "$VRM239_OUT/result.json")" = "0"
+          test "$(jq -r '.production' "$VRM239_OUT/result.json")" = "false"
       - if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-vrm238-population-residual-${{ github.run_id }}
-          path: .tmp/i3-vrm238-population-residual
+          name: cxorbia-vrm239-residual-readiness-${{ github.run_id }}
+          path: |
+            .tmp/i3-vrm239-root
+            .tmp/i3-vrm239-readiness
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
