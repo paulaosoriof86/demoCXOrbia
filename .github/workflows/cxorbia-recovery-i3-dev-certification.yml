@@ -10,7 +10,7 @@ on:
       - RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json
       - RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
       - CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
-      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V250_2026-10-04.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V251_2026-10-04.json
       - CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json
       - app/**
       - backend/**
@@ -32,7 +32,7 @@ concurrency:
   cancel-in-progress: true
 env:
   CANDIDATE_DESCRIPTOR: CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
-  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V250_2026-10-04.json
+  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V251_2026-10-04.json
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
@@ -7055,15 +7055,15 @@ jobs:
           retention-days: 30
           compression-level: 0
 
-  vrm216-live-idempotency-fixture:
+  vrm215-shopper-population-reproof:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM216_SHARED_IDEMPOTENCY_LIVE_FIXTURE_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM215_SHOPPER_POPULATION_REPROOF_REQUIRED' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     env:
       FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
       FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
-      VRM216_LIVE_OUT: .tmp/i3-vrm216-live-idempotency
+      VRM215_OUT: .tmp/i3-vrm215-shopper-population
     steps:
       - uses: actions/checkout@v4
         with:
@@ -7071,22 +7071,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Preflight exact Run1070 materialization and served adapter bytes
+      - name: Preflight exact Run1070 artifact
         shell: bash
         run: |
           set -Eeuo pipefail
-          mkdir -p "$VRM216_LIVE_OUT"
+          mkdir -p "$VRM215_OUT"
           test "$(jq -r '.currentMaterialization.runId' "$CANDIDATE_DESCRIPTOR")" = "37169950715"
-          test "$(jq -r '.currentMaterialization.artifactId' "$CANDIDATE_DESCRIPTOR")" = "11290878585"
           test "$(jq -r '.currentMaterialization.sourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
           test "$(jq -r '.currentMaterialization.sourceTree' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
           test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
           git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
-          node --check tools/qa/cxorbia-i3-vrm216-live-idempotency-fixture.mjs
-          git show "$FOCAL_SOURCE:app/adapters/cxorbia-command-adapter-v1.js" > "$VRM216_LIVE_OUT/expected-command-adapter.js"
-          curl -fsSL --retry 8 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/adapters/cxorbia-command-adapter-v1.js?vrm216=$GITHUB_RUN_ID" > "$VRM216_LIVE_OUT/served-command-adapter.js"
-          test "$(sha256sum "$VRM216_LIVE_OUT/served-command-adapter.js" | awk '{print $1}')" = "$(sha256sum "$VRM216_LIVE_OUT/expected-command-adapter.js" | awk '{print $1}')"
-      - name: Install live-proof dependencies
+          node --check tools/qa/cxorbia-i3-vrm215-shopper-population-live-reproof.mjs
+      - name: Install population-proof dependencies
         run: |
           npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
           npx playwright install chromium >/dev/null 2>&1
@@ -7102,34 +7098,37 @@ jobs:
           EXPECTED_RUNTIME_DIGEST="$(jq -r '.currentMaterialization.runtimeDigest' "$CANDIDATE_DESCRIPTOR")"
           EXPECTED_HOSTING_VERSION="$(jq -r '.currentMaterialization.hostingVersion' "$CANDIDATE_DESCRIPTOR")"
           EXPECTED_HR_REVISION="$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")"
-          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$VRM216_LIVE_OUT/runtime.json"
-          test "$(jq -r '.status.latestReadyRevisionName' "$VRM216_LIVE_OUT/runtime.json")" = "$EXPECTED_RUNTIME_REVISION"
-          gcloud run revisions describe "$EXPECTED_RUNTIME_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$VRM216_LIVE_OUT/runtime-revision.json"
-          RAW="$(jq -r '.status.imageDigest // empty' "$VRM216_LIVE_OUT/runtime-revision.json")"
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$VRM215_OUT/runtime.json"
+          test "$(jq -r '.status.latestReadyRevisionName' "$VRM215_OUT/runtime.json")" = "$EXPECTED_RUNTIME_REVISION"
+          gcloud run revisions describe "$EXPECTED_RUNTIME_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$VRM215_OUT/runtime-revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$VRM215_OUT/runtime-revision.json")"
           if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else exit 1; fi
           test "$DIGEST" = "$EXPECTED_RUNTIME_DIGEST"
           TOKEN="$(gcloud auth print-access-token)"
-          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$VRM216_LIVE_OUT/hosting.json"
-          test "$(jq -r '.release.version.name' "$VRM216_LIVE_OUT/hosting.json")" = "$EXPECTED_HOSTING_VERSION"
-          curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm216=$GITHUB_RUN_ID" > "$VRM216_LIVE_OUT/hr-meta.json"
-          test "$(jq -r '.revision' "$VRM216_LIVE_OUT/hr-meta.json")" = "$EXPECTED_HR_REVISION"
-      - name: Live exact replay on isolated DEV fixture
+          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$VRM215_OUT/hosting.json"
+          test "$(jq -r '.release.version.name' "$VRM215_OUT/hosting.json")" = "$EXPECTED_HOSTING_VERSION"
+          curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm215=$GITHUB_RUN_ID" > "$VRM215_OUT/hr-meta.json"
+          test "$(jq -r '.revision' "$VRM215_OUT/hr-meta.json")" = "$EXPECTED_HR_REVISION"
+          echo "EXPECTED_HR_REVISION=$EXPECTED_HR_REVISION" >> "$GITHUB_ENV"
+      - name: Prove every active eligible shopper
         shell: bash
         run: |
           set -Eeuo pipefail
-          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HOSTING_URL="$HOSTING_URL" VRM216_LIVE_OUT="$VRM216_LIVE_OUT" node tools/qa/cxorbia-i3-vrm216-live-idempotency-fixture.mjs | tee "$VRM216_LIVE_OUT/console.log"
-          test "$(jq -r '.decision' "$VRM216_LIVE_OUT/result.json")" = "PASS_VRM216_LIVE_IDEMPOTENCY_FIXTURE"
-          test "$(jq -r '.providerAck' "$VRM216_LIVE_OUT/result.json")" = "true"
-          test "$(jq -r '.idempotentReplay' "$VRM216_LIVE_OUT/result.json")" = "true"
-          test "$(jq -r '.changedPayloadBlocked' "$VRM216_LIVE_OUT/result.json")" = "true"
-          test "$(jq -r '.second.providerWrites' "$VRM216_LIVE_OUT/result.json")" = "0"
-          test "$(jq -r '.cleanup' "$VRM216_LIVE_OUT/result.json")" = "true"
-          test "$(jq -r '.production' "$VRM216_LIVE_OUT/result.json")" = "false"
+          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" VRM215_OUT="$VRM215_OUT" node tools/qa/cxorbia-i3-vrm215-shopper-population-live-reproof.mjs | tee "$VRM215_OUT/console.log"
+          test "$(jq -r '.decision' "$VRM215_OUT/result.json")" = "PASS_VRM215_ALL_ACTIVE_SHOPPERS"
+          test "$(jq -r '.populationCount' "$VRM215_OUT/result.json")" -gt 0
+          test "$(jq -r '.loginPass' "$VRM215_OUT/result.json")" = "$(jq -r '.populationCount' "$VRM215_OUT/result.json")"
+          test "$(jq -r '.selfScopePass' "$VRM215_OUT/result.json")" = "$(jq -r '.populationCount' "$VRM215_OUT/result.json")"
+          test "$(jq -r '.routeContractPass' "$VRM215_OUT/result.json")" = "$(jq -r '.populationCount' "$VRM215_OUT/result.json")"
+          test "$(jq -r '.aliasOperationalResiduals' "$VRM215_OUT/result.json")" = "0"
+          test "$(jq -r '.hrAssignmentsPass' "$VRM215_OUT/result.json")" = "true"
+          test "$(jq -r '.writes' "$VRM215_OUT/result.json")" = "0"
+          test "$(jq -r '.production' "$VRM215_OUT/result.json")" = "false"
       - if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-vrm216-live-idempotency-${{ github.run_id }}
-          path: .tmp/i3-vrm216-live-idempotency
+          name: cxorbia-vrm215-shopper-population-${{ github.run_id }}
+          path: .tmp/i3-vrm215-shopper-population
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
