@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM221_DEV_MATERIALIZATION_REQUIRED",
+  "status": "HOLD_VRM226_USER_CONFIRMED_IDENTITY_TOPOLOGY_DIAGNOSTIC",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "16b6f494b0d5972ac0096da82568998a5e28c28d",
   "productTreeAuthority": "7c7d92dcd7c1a6440b2693072f4b69f3d6224926",
   "predecessorProductSourceSha": "784bc45c29795f35ffaeef019883a41ca872939b",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V278_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "6aee98d4b6cf7dfea2b9ba3000aad2cec698c72a",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V279_2026-10-04.json",
+  "findingsLedgerExpectedGitBlob": "14b5d19551ea1d696f2a3e2fb17518ed720043e6",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM221_ONE_EXACT_DEV_MATERIALIZATION_REQUIRED",
-  "nextFindingId": "VRM-226",
+  "activeBlocker": "VRM226_USER_CONFIRMED_IDENTITY_TOPOLOGY_DIAGNOSTIC",
+  "nextFindingId": "VRM-227",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Materialize exactly once to DEV from source 16b6f494b0d5972ac0096da82568998a5e28c28d / tree 7c7d92dcd7c1a6440b2693072f4b69f3d6224926. Freeze build/runtime/Hosting/HR fingerprints; no second build before Admin live E2E.",
+  "exactNextAction": "Run VRM-226 read-only topology diagnostic on the frozen DEV artifact. For each user-confirmed person, select one existing canonical credential-bearing profile only when exact topology is unambiguous, then execute provider-backed adjudication with replay/readback. Do not rebuild.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -408,12 +408,24 @@
     "production": false
   },
   "currentMaterialization": {
-    "state": "NOT_MATERIALIZED_FOR_VRM221_SOURCE",
+    "state": "PASS_VRM221_EXACT_DEV_MATERIALIZATION",
+    "runId": 37196202414,
+    "runNumber": 1106,
+    "jobId": 111418531939,
+    "artifactId": 11301376993,
+    "artifactDigest": "sha256:685d0cb9d4e4d07b801713bac4bd1b8c0ff387fa9b319b043753f452c0dcf0a7",
+    "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
     "sourceSha": "16b6f494b0d5972ac0096da82568998a5e28c28d",
     "sourceTree": "7c7d92dcd7c1a6440b2693072f4b69f3d6224926",
-    "builds": 0,
-    "runtimeDeploys": 0,
-    "hostingDeploys": 0,
+    "runtimeRevision": "cxorbia-live-hr-dev-00263-hw5",
+    "runtimeDigest": "sha256:c6d244eb04f7a709c3f9da97edd6fbf8df43227612b208916ca803ec62c24241",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/c6f53fb674b7e49e",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791110673642000",
+    "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "storageRulesDeploys": 0,
     "production": false
   },
   "lastFocalAttempt": {

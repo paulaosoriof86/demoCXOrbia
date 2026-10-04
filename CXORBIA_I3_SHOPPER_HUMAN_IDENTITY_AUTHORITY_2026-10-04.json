@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "cxorbia.i3.shopper-human-identity-authority.v1",
+  "lockId": "CXORBIA_I3_SHOPPER_HUMAN_IDENTITY_AUTHORITY_2026-10-04",
+  "state": "FROZEN_USER_CONFIRMED",
+  "authority": "Paula explicit same-human adjudication 2026-10-04",
+  "policy": {
+    "exactHumanAdjudication": true,
+    "noFuzzyMerge": true,
+    "noUnconfirmedNameMerge": true,
+    "currentNamedAliasesOnly": true,
+    "futureUnanchoredNameOnlyMerge": false,
+    "preserveHrAuthority": true,
+    "preserveHistory": true,
+    "preserveAuth": true,
+    "providerAckRequiredForMerge": true,
+    "production": false
+  },
+  "persons": [
+    {
+      "canonicalHumanName": "Herbert Ríos",
+      "currentHrShopperId": "shopper_gt_f65cbc6391",
+      "confirmedSameHumanNames": [
+        "Herbert",
+        "Herbert Ríos",
+        "Herbert Carrillo"
+      ]
+    },
+    {
+      "canonicalHumanName": "Elizabeth González",
+      "currentHrShopperId": "shopper_gt_833dc86954",
+      "confirmedSameHumanNames": [
+        "ELIZA",
+        "Elizabeth González"
+      ]
+    },
+    {
+      "canonicalHumanName": "Andrea Loarca",
+      "currentHrShopperId": "shopper_gt_5f3d6952c5",
+      "confirmedSameHumanNames": [
+        "Andrea",
+        "Andrea Loarca",
+        "Andrea Luarca"
+      ]
+    },
+    {
+      "canonicalHumanName": "Cinthya Lixon",
+      "currentHrShopperId": "shopper_gt_fc5d6fb927",
+      "confirmedSameHumanNames": [
+        "ÁNGELES",
+        "Angeles",
+        "Cinthya Lixon",
+        "Angeles Martínez",
+        "Ángeles Martínez",
+        "María Lixon",
+        "Maria Lixon"
+      ]
+    },
+    {
+      "canonicalHumanName": "Erick Gomez",
+      "currentHrShopperId": "shopper_gt_3106d9d44b",
+      "confirmedSameHumanNames": [
+        "Erick",
+        "Erick Gomez",
+        "Erick Gómez"
+      ]
+    },
+    {
+      "canonicalHumanName": "Joshua Urbina",
+      "currentHrShopperId": "shopper_hn_fc52fabe94",
+      "confirmedSameHumanNames": [
+        "JOSHUA",
+        "Joshua",
+        "Joshua Urbina"
+      ]
+    },
+    {
+      "canonicalHumanName": "Aldair Ixcayau",
+      "currentHrShopperId": "shopper_gt_3426ec3ff3",
+      "confirmedSameHumanNames": [
+        "ALDAIR",
+        "Aldair",
+        "Aldair Ixcayau",
+        "Aldair Saquich"
+      ]
+    },
+    {
+      "canonicalHumanName": "Flavio Salgado",
+      "currentHrShopperId": "shopper_hn_99cb2f9b05",
+      "confirmedSameHumanNames": [
+        "Flavio",
+        "Flavio Salgado"
+      ]
+    }
+  ],
+  "unresolvedProtectedCurrentHrShopperId": "shopper_hn_9a6963fdf6",
+  "note": "The protected HN current-HR row was not assigned a human name by the user in this adjudication and remains diagnostic-only."
+}
