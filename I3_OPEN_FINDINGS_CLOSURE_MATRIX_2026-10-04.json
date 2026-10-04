@@ -31,7 +31,7 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleTruthCount": 21,
   "moduleTruthAllMatch": true,
-  "findingCount": 242,
+  "findingCount": 243,
   "missingFindingIds": [],
   "duplicateFindingIds": [],
   "currentBlockingCount": 69,
@@ -47,7 +47,7 @@
     "CONTROL_ONLY_FIXED": 1
   },
   "nextCriticalSequence": [
-    "VRM-242_BOUNDED_RESIDUAL_REPAIR",
+    "VRM-243_AUTHORITATIVE_ALIAS_VISIT_REMAP",
     "VRM-215_POPULATION_REPROOF",
     "PAULA_VISUAL_ACCEPTANCE",
     "GATE20_GATE21_SAME_ARTIFACT"
@@ -7804,16 +7804,16 @@
       ],
       "latestApprovedSource": null,
       "latestLiveProof": {
-        "runNumber": 1128,
-        "runId": 37243683143,
-        "decision": "CANONICAL_SUFFIX_PROVEN",
-        "artifactId": 11318556392,
+        "runNumber": 1129,
+        "runId": 37244032411,
+        "decision": "PARTIAL_PASS_ALIAS_LINK_CONFLICT_NO_ALIAS_WRITES",
+        "artifactId": 11318297645,
         "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
         "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
       },
-      "successor": null,
-      "rawLedgerState": "BOUNDED_REPAIR_REQUIRED",
-      "realState": "REPAIR_REQUIRED",
+      "successor": "VRM-243",
+      "rawLedgerState": "PARTIAL_PASS_ALIAS_COMMAND_BLOCKED_RUN1129",
+      "realState": "SUPERSEDED_BY_VRM-243",
       "evidence": {
         "baseLogin": "daniel.garcia",
         "baseHolderShopperId": "shr-1780611985157-2r5u",
@@ -7821,7 +7821,45 @@
         "repairScope": "1 review-only preserve + 1 retire + 1 claim + 1 login + 18 alias groups/127 authoritative visits",
         "productChanged": false
       },
-      "actionRemaining": "execute corrected bounded repair and durable readback",
+      "actionRemaining": "none",
+      "blocking": false,
+      "terminalDisposition": "SUPERSEDED_BY_VRM-243"
+    },
+    {
+      "findingId": "VRM-243",
+      "moduleDomain": [
+        "shoppers-identity-profile-mi-visitas",
+        "cross-cutting-persistence"
+      ],
+      "severity": "P0",
+      "classification": "MAPPING_FAILURE",
+      "owner": [
+        "tools/qa/cxorbia-i3-vrm243-authoritative-alias-visit-remap.mjs",
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs::adjudicationOwnerPatch",
+        "tenants/tya/projects/cinepolis/visits"
+      ],
+      "latestApprovedSource": null,
+      "latestLiveProof": {
+        "runNumber": 1129,
+        "runId": 37244032411,
+        "decision": "EXISTING_TRUSTED_LINK_BLOCKS_READJUDICATION",
+        "artifactId": 11318297645,
+        "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
+      },
+      "successor": null,
+      "rawLedgerState": "AUTHORITATIVE_VISIT_REMAP_REQUIRED",
+      "realState": "REPAIR_REQUIRED",
+      "evidence": {
+        "canonicalGroups": 18,
+        "aliases": 29,
+        "authoritativeVisitRows": 127,
+        "historicalAliasRows": 122,
+        "ambiguousAuthorityGroups": 0,
+        "nonVisitOperationalAliasReferences": 0,
+        "productChanged": false
+      },
+      "actionRemaining": "single-transaction authoritative visit owner remap + post-root diagnostic",
       "blocking": true,
       "terminalDisposition": null
     }

@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v261",
   "frozenAt": "2026-10-04T09:12:00Z",
-  "status": "HOLD_VRM242_BOUNDED_RESIDUAL_REPAIR_REQUIRED",
+  "status": "HOLD_VRM243_AUTHORITATIVE_ALIAS_VISIT_REMAP_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "microblockId": "PRE-I4-LIVE-HR-STALE-CACHE-MAPPING-HOLD-AUGUST-CANONICAL-CORRECTION",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -14604,7 +14604,7 @@
       "classification": "MAPPING_FAILURE",
       "severity": "P0_CONTROL",
       "title": "Residual readiness used literal backslash-zero for collision hashing instead of provider canonical null separator",
-      "state": "BOUNDED_REPAIR_REQUIRED",
+      "state": "PARTIAL_PASS_ALIAS_COMMAND_BLOCKED_RUN1129",
       "firstObservedAt": "POST_RUN1128_2026-10-04",
       "rootCauseStatus": "PROVEN",
       "rootCause": "VRM-239 used sha(TENANT+'\\\\0'+shopperId) while the provider canonical deterministic collision policy uses a NUL separator. Run1128, using the provider formula, proved the legitimate base holder and selected daniel.garcia.e48d as the first free canonical suffix.",
@@ -14648,6 +14648,130 @@
         "tools/qa/cxorbia-i3-vrm242-bounded-residual-repair.mjs",
         "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
         "Firebase Auth"
+      ],
+      "productChanged": false,
+      "production": false,
+      "terminalDisposition": "SUPERSEDED_BY_VRM-243",
+      "successor": "VRM-243",
+      "run1129": {
+        "runId": 37244032411,
+        "runNumber": 1129,
+        "jobId": 111558281218,
+        "artifactId": 11318297645,
+        "artifactDigest": "sha256:c88c2a170edcf53a2856efbacdc0662453ba7713efb90a00a1e636c7f4911759",
+        "decision": "FAIL_VRM242_BOUNDED_RESIDUAL_REPAIR",
+        "completedOwners": {
+          "reviewOnly": {
+            "shopperId": "shopper_hn_9a6963fdf6",
+            "preserved": true,
+            "writes": 0
+          },
+          "safeRetire": {
+            "shopperId": "shopper_gt_8cface989a",
+            "providerAck": true,
+            "idempotentReplay": true,
+            "durableReadback": true,
+            "physicalDelete": false
+          },
+          "claimsRepair": {
+            "shopperId": "shp-b2e3d7bef69b",
+            "field": "authNamespace",
+            "readback": true
+          },
+          "loginRepair": {
+            "shopperId": "TYA_GT_0C0BA8856E",
+            "baseLogin": "daniel.garcia",
+            "visibleLogin": "daniel.garcia.e48d",
+            "baseHolderPreserved": true,
+            "writes": 3,
+            "durableReadback": true
+          }
+        },
+        "aliasAttempt": {
+          "canonicalShopperId": "shopper_gt_0c198c1055",
+          "aliasShopperId": "shopper_gt_86254c4228",
+          "authoritativeVisitIds": [
+            "AGOSTO 26!29",
+            "SEPTIEMBRE 26!7"
+          ],
+          "code": "SHOPPER_IDENTITY_ADJUDICATION_LINK_CONFLICT",
+          "providerWrites": 0
+        },
+        "hrWrites": 0,
+        "externalWrites": 0,
+        "production": false
+      }
+    },
+    "VRM-243": {
+      "id": "VRM-243",
+      "classification": "MAPPING_FAILURE",
+      "severity": "P0",
+      "title": "Already-adjudicated trusted alias sets require authoritative visit-owner remap without re-adjudicating identity",
+      "state": "AUTHORITATIVE_VISIT_REMAP_REQUIRED",
+      "firstObservedAt": "RUN1129_2026-10-04",
+      "rootCauseStatus": "PROVEN",
+      "rootCause": "The 18 alias groups already have active trusted identity authority. Re-executing shopper.identity.adjudicate with a new command authorityRef is correctly blocked by SHOPPER_IDENTITY_ADJUDICATION_LINK_CONFLICT. The remaining defect is not identity adjudication; it is 127 authoritative project visit rows that still carry exact superseded alias ownership. Historical rows must remain unchanged.",
+      "evidence": {
+        "run1129": {
+          "runId": 37244032411,
+          "runNumber": 1129,
+          "jobId": 111558281218,
+          "artifactId": 11318297645,
+          "artifactDigest": "sha256:c88c2a170edcf53a2856efbacdc0662453ba7713efb90a00a1e636c7f4911759",
+          "decision": "FAIL_VRM242_BOUNDED_RESIDUAL_REPAIR",
+          "completedOwners": {
+            "reviewOnly": {
+              "shopperId": "shopper_hn_9a6963fdf6",
+              "preserved": true,
+              "writes": 0
+            },
+            "safeRetire": {
+              "shopperId": "shopper_gt_8cface989a",
+              "providerAck": true,
+              "idempotentReplay": true,
+              "durableReadback": true,
+              "physicalDelete": false
+            },
+            "claimsRepair": {
+              "shopperId": "shp-b2e3d7bef69b",
+              "field": "authNamespace",
+              "readback": true
+            },
+            "loginRepair": {
+              "shopperId": "TYA_GT_0C0BA8856E",
+              "baseLogin": "daniel.garcia",
+              "visibleLogin": "daniel.garcia.e48d",
+              "baseHolderPreserved": true,
+              "writes": 3,
+              "durableReadback": true
+            }
+          },
+          "aliasAttempt": {
+            "canonicalShopperId": "shopper_gt_0c198c1055",
+            "aliasShopperId": "shopper_gt_86254c4228",
+            "authoritativeVisitIds": [
+              "AGOSTO 26!29",
+              "SEPTIEMBRE 26!7"
+            ],
+            "code": "SHOPPER_IDENTITY_ADJUDICATION_LINK_CONFLICT",
+            "providerWrites": 0
+          },
+          "hrWrites": 0,
+          "externalWrites": 0,
+          "production": false
+        },
+        "run1125": {
+          "authoritativeAliasRows": 127,
+          "historicalAliasRows": 122,
+          "ambiguousAuthorityGroups": 0,
+          "nonVisitOperationalAliasReferences": 0
+        }
+      },
+      "expected": "Validate canonical membership/Auth, exact crosswalk and trusted link authority for all 18 groups; in one transaction remap only the 127 authoritative visit rows using the provider's owner-field semantics; preserve all historical rows; require durable post-readback with authoritativeAliasRows=0, historicalAliasRows=122, ambiguousAuthorityGroups=0 and non-visit alias refs=0.",
+      "owner": [
+        "tools/qa/cxorbia-i3-vrm243-authoritative-alias-visit-remap.mjs",
+        "backend/runtime/cxorbia-shopper-command-provider-v1.mjs::adjudicationOwnerPatch",
+        "tenants/tya/projects/cinepolis/visits"
       ],
       "productChanged": false,
       "production": false
@@ -15302,7 +15426,7 @@
     ],
     "findingCount": 230,
     "expectedCurrentRange": "VRM-001..VRM-230",
-    "nextFindingId": "VRM-243",
+    "nextFindingId": "VRM-244",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_VRM229_PAULA_CONFIRMED_IDENTITY_CONSOLIDATION_REQUIRED",
@@ -15584,7 +15708,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Execute corrected VRM-242 bounded residual repair on unchanged Run1112, then rerun root diagnostic and VRM-215.",
+  "exactNextAction": "Reproduce current root state, remap exactly 127 authoritative alias visit rows under existing trusted identity authority, then prove authoritativeAliasRows=0 with historical alias rows preserved.",
   "supersedesGitBlob": "820da41b786054cb8cd23e89827e1f7afbcdd3b3",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -15613,7 +15737,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-243",
+  "nextFindingId": "VRM-244",
   "lastControlFailure": {
     "findingId": "VRM-232",
     "runId": 37213834927,
@@ -18984,7 +19108,7 @@
     "hostingDeploys": 0,
     "production": false
   },
-  "activeBlocker": "VRM242_BOUNDED_RESIDUAL_REPAIR_REQUIRED",
+  "activeBlocker": "VRM243_AUTHORITATIVE_ALIAS_VISIT_REMAP_REQUIRED",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -19176,7 +19300,7 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-10-04T15:03:00Z",
-  "nextExactAction": "Execute corrected VRM-242 bounded residual repair on unchanged Run1112, then rerun root diagnostic and VRM-215.",
+  "nextExactAction": "Reproduce current root state, remap exactly 127 authoritative alias visit rows under existing trusted identity authority, then prove authoritativeAliasRows=0 with historical alias rows preserved.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
@@ -19889,7 +20013,7 @@
   },
   "openFindingsClosureMatrix": {
     "path": "I3_OPEN_FINDINGS_CLOSURE_MATRIX_2026-10-04.json",
-    "findingCount": 242,
+    "findingCount": 243,
     "status": "ACTIVE_CLOSURE_VIEW",
     "missingFindingIds": [],
     "duplicateFindingIds": []
