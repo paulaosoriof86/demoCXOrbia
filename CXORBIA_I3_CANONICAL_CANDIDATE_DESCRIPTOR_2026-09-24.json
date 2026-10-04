@@ -7,8 +7,8 @@
   "productSourceSha": "784bc45c29795f35ffaeef019883a41ca872939b",
   "productTreeAuthority": "7b35abbebc254009b8a114c927b03b5b52d65ee7",
   "predecessorProductSourceSha": "d3d323f30a1120640459aca5b613e42879b66eaa",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V270_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "80a567c34c073f1695b5e3730146cc913d89983e",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V271_2026-10-04.json",
+  "findingsLedgerExpectedGitBlob": "42013e9f9b78726c0bba6bc775fd1f9781be85f9",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run the existing VRM217-219 population root diagnostic read-only against exact Run1095 materialization. Require HR revision unchanged, inspect trusted alias shp-57d2e3769946 -> TYA_GT_0C0BA8856E under the new provider, and confirm no new mapping regressions. No write in this gate. VRM-218 SEPTIEMBRE 26!3 remains separate.",
+  "exactNextAction": "Repeat the existing read-only VRM217-219 population diagnostic against Run1095 after removing the stale materialization-run hardcode. Require exact source/tree/HR alignment and zero writes. VRM-218 remains separate.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
