@@ -7,8 +7,8 @@
   "productSourceSha": "49a5f6cd6683695d862777da7aeb2cf4530e405e",
   "productTreeAuthority": "93797d047e95240029e16b018c4bb2ef2cc0bddd",
   "predecessorProductSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V245_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "ac8d124a79092fd04cc5d18146461ad9d6960774",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V246_2026-10-04.json",
+  "findingsLedgerExpectedGitBlob": "5f109744c4010249f2c66e9abc1c2a05d2b8fc9e",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run VRM-216 source reproof on product source 49a5f6cd6683695d862777da7aeb2cf4530e405e. Require shared adapter stable semantic command across wall-clock time, exact replay provider ACK with zero writes, changed payload under reused key blocked, and existing frontend/provider regressions PASS. No DEV materialization until source PASS.",
+  "exactNextAction": "Repeat VRM-216 source reproof on product source 49a5f6cd6683695d862777da7aeb2cf4530e405e after ledger/descriptor source alignment. No materialization until source PASS.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
