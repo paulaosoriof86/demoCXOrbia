@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM227_SOURCE_REPROOF_REQUIRED",
+  "status": "HOLD_VRM227_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
   "productTreeAuthority": "b59da4c090d4639a136168656e7addd544f38e18",
   "predecessorProductSourceSha": "bbd66d29192487ac29f8703bd913e3f1e15a28c0",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V281_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "cdb84ce0b7e011df98bf34f16fa9d2d954b8ed95",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V282_2026-10-04.json",
+  "findingsLedgerExpectedGitBlob": "d0c1faed801de8558a67e11bde4a5fc9cbcd3805",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM227_MERGE_QUEUE_CLOSURE_SOURCE_REPROOF_REQUIRED",
+  "activeBlocker": "VRM227_EXACT_DEV_MATERIALIZATION_REQUIRED",
   "nextFindingId": "VRM-229",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Repeat the same VRM-227 source reproof on a03d61afe9b33d01647bb4d58542e87d1496d3d7. If PASS, materialize the exact successor once and then execute Paula-confirmed identity consolidations. No production.",
+  "exactNextAction": "Materialize exactly once to DEV from a03d61afe9b33d01647bb4d58542e87d1496d3d7 / b59da4c090d4639a136168656e7addd544f38e18. Freeze runtime/Hosting/HR fingerprints, then execute Paula-confirmed identity consolidations without rebuilding again.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3538,5 +3538,26 @@
   },
   "shopperIdentityGovernanceLockPath": "CXORBIA_I3_SHOPPER_IDENTITY_GOVERNANCE_LOCK_2026-10-04.json",
   "queuedBlocker": "VRM229_PAULA_CONFIRMED_IDENTITY_CONSOLIDATION",
-  "currentSourceProof": null
+  "currentSourceProof": {
+    "runId": 37208053790,
+    "runNumber": 1111,
+    "controlHeadSha": "e384ebf8c3aae1a31f5e3e9bf41e91b411214001",
+    "jobId": 111453346269,
+    "artifactId": 11305612608,
+    "artifactDigest": "sha256:cf3f6be2394b78f1b4d8e979057c72093b36efcfb7d5d510ab40cec6f4a198b8",
+    "decision": "PASS_VRM227_SOURCE_REPROOF",
+    "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+    "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+    "shopperProviderTests": {
+      "total": 39,
+      "pass": 39,
+      "fail": 0,
+      "reviewClosure": true,
+      "idempotentReplay": true
+    },
+    "frontendContract": "PASS_VRM154_156_FRONTEND_SOURCE_CONTRACT",
+    "builds": 0,
+    "deploys": 0,
+    "production": false
+  }
 }
