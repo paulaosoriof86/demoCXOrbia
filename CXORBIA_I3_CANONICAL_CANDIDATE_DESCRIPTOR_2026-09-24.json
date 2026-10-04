@@ -7,14 +7,14 @@
   "productSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
   "productTreeAuthority": "b59da4c090d4639a136168656e7addd544f38e18",
   "predecessorProductSourceSha": "bbd66d29192487ac29f8703bd913e3f1e15a28c0",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V283_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "6c6b9ef180fe272cd18d4fc02e819266773f1dec",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
+  "findingsLedgerExpectedGitBlob": "a94a5ff474e9ea74d85eecf18b2b2be1abe4c250",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
   "activeBlocker": "VRM229_PAULA_CONFIRMED_IDENTITY_CONSOLIDATION_REQUIRED",
-  "nextFindingId": "VRM-230",
+  "nextFindingId": "VRM-231",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Execute VRM-229 bounded identity consolidation on exact DEV materialization Run1112, with provider ACK + exact replay + durable readback per named person. Then continue Admin live E2E and VRM-215 population proof without rebuild.",
+  "exactNextAction": "Rerun VRM-229 bounded Paula-confirmed identity consolidation against the already-certified DEV artifact. Require provider ACK, exact replay and durable readback for each named person; no rebuild and no production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
