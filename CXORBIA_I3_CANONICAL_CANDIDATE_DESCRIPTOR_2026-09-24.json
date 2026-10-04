@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM219_EXACT_ALIAS_REMAP_REQUIRED",
+  "status": "HOLD_VRM219_POST_RUN1087_READBACK_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "8daedad6a34a0015113ea8567b3d92ab6af5568f",
   "productTreeAuthority": "8b0e30d7fe8e2c8449e691a66c7b67b819836abd",
   "predecessorProductSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V261_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "b4ac7bbff4924de2dd0f5e037d01802b348539c1",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V262_2026-10-04.json",
+  "findingsLedgerExpectedGitBlob": "d7b8e9b4c88aa8bd7daa51feacf5ccfeb477898a",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM219_BOUNDED_EXACT_ALIAS_REMAP_279_REQUIRED",
+  "activeBlocker": "VRM219_RUN1087_FIRST_ACK_REPLAY_FAIL_READBACK_REQUIRED",
   "nextFindingId": "VRM-220",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Execute only the bounded VRM-219 exact-alias remap from Run1083 trusted mappings: 21 canonical groups / 33 aliases / 279 authoritative references, preserving historical visit rows and excluding the 17 holds plus unresolved SEPTIEMBRE 26!3 row. Require provider ACK, zero-write replay per group, zero HR/external writes, then run the existing read-only population root diagnostic. Do not rerun credential sweep.",
+  "exactNextAction": "Run only the existing read-only VRM217-219 population root diagnostic after Run1087. Determine whether the first VRM-219 command durably reduced the 279 authoritative alias references and whether the active exact-alias principal changed. No provider write, no credential sweep, no retry until readback.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
