@@ -34,8 +34,8 @@
   "findingCount": 234,
   "missingFindingIds": [],
   "duplicateFindingIds": [],
-  "currentBlockingCount": 70,
-  "undisposedCount": 84,
+  "currentBlockingCount": 68,
+  "undisposedCount": 82,
   "terminalDispositionCounts": {
     "PASS_CURRENT_ARTIFACT": 140,
     "LIVE_REPROOF_REQUIRED": 78,
@@ -47,8 +47,6 @@
     "CONTROL_ONLY_FIXED": 1
   },
   "nextCriticalSequence": [
-    "VRM-234_CONTROL_REPROOF",
-    "VRM-221_ADMIN_LIVE_E2E",
     "I3_MULTIMODULE_LIVE_SWEEP",
     "VRM-215_POPULATION_REPROOF",
     "PAULA_VISUAL_ACCEPTANCE",
@@ -7069,10 +7067,17 @@
       "classification": "FUNCTIONAL_DEFECT",
       "owner": [],
       "latestApprovedSource": null,
-      "latestLiveProof": null,
+      "latestLiveProof": {
+        "runNumber": 1119,
+        "runId": 37221009383,
+        "decision": "PASS_VRM221_ADMIN_LIVE_E2E",
+        "artifactId": 11310124185,
+        "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
+      },
       "successor": null,
-      "rawLedgerState": "CURRENT_ARTIFACT_PENDING_ADMIN_LIVE_E2E",
-      "realState": "LIVE_REPROOF_REQUIRED",
+      "rawLedgerState": "PASS_CURRENT_ARTIFACT_RUN1119",
+      "realState": "PASS_CURRENT_ARTIFACT",
       "evidence": {
         "currentProductSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
         "currentProductTree": "b59da4c090d4639a136168656e7addd544f38e18",
@@ -7080,9 +7085,9 @@
         "sourceModuleStatus": "MATCH",
         "latestFindingRun": null
       },
-      "actionRemaining": "Admin browser E2E on Run1112 artifact",
-      "blocking": true,
-      "terminalDisposition": null
+      "actionRemaining": "none",
+      "blocking": false,
+      "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
       "findingId": "VRM-222",
@@ -7498,16 +7503,16 @@
       ],
       "latestApprovedSource": null,
       "latestLiveProof": {
-        "runNumber": 1118,
-        "runId": 37214762518,
-        "decision": "ROOT_CAUSE_PROVEN_PAGE_OBSERVER_LOST_ON_RELOAD",
-        "artifactId": 11307843230,
+        "runNumber": 1119,
+        "runId": 37221009383,
+        "decision": "CONTROL_FIX_PROVEN_BY_VRM221_PASS",
+        "artifactId": 11310124185,
         "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
         "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
       },
       "successor": null,
-      "rawLedgerState": "CONTROL_FIX_APPLIED_PENDING_REPROOF",
-      "realState": "REPROOF_REQUIRED",
+      "rawLedgerState": "CONTROL_ONLY_FIXED_RUN1119_PASS",
+      "realState": "CONTROL_ONLY_FIXED",
       "evidence": {
         "currentProductSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
         "currentProductTree": "b59da4c090d4639a136168656e7addd544f38e18",
@@ -7517,9 +7522,9 @@
         "mergeLatencySeconds": 5.408413875,
         "productChanged": false
       },
-      "actionRemaining": "rerun VRM-221 with Playwright network observer",
-      "blocking": true,
-      "terminalDisposition": null
+      "actionRemaining": "none",
+      "blocking": false,
+      "terminalDisposition": "CONTROL_ONLY_FIXED"
     }
   ]
 }

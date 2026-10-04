@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM221_ADMIN_LIVE_E2E_REQUIRED",
+  "status": "HOLD_I3_MULTIMODULE_LIVE_SWEEP_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "b59da4c090d4639a136168656e7addd544f38e18",
   "predecessorProductSourceSha": "bbd66d29192487ac29f8703bd913e3f1e15a28c0",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "7815940a3223c5b8323cd257b84d01bb1c679e6b",
+  "findingsLedgerExpectedGitBlob": "62d8807bcc3f964676a45d996bd6765f000b05d8",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM221_ADMIN_LIVE_E2E_REQUIRED",
+  "activeBlocker": "I3_MULTIMODULE_LIVE_SWEEP_REQUIRED",
   "nextFindingId": "VRM-235",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Rerun VRM-221 Admin live E2E on unchanged Run1112 with Playwright-level command observation; require ACK, exact replay, durable readback and zero HR writes.",
+  "exactNextAction": "Execute one same-artifact multimodule live sweep across Admin, Shopper and Client on Run1112, preserving the same HR revision and zero writes.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3540,7 +3540,7 @@
     "interpretation": "Control-only freeze/readback. No action lane matched the fail-closed precomposition status."
   },
   "shopperIdentityGovernanceLockPath": "CXORBIA_I3_SHOPPER_IDENTITY_GOVERNANCE_LOCK_2026-10-04.json",
-  "queuedBlocker": "I3_MULTIMODULE_LIVE_SWEEP_THEN_VRM215_POPULATION_REPROOF",
+  "queuedBlocker": "VRM215_POPULATION_REPROOF",
   "currentSourceProof": {
     "runId": 37208053790,
     "runNumber": 1111,
@@ -3638,5 +3638,58 @@
         "visibleLogin": "flavio.salgado"
       }
     ]
+  },
+  "lastVrm221Pass": {
+    "runId": 37221009383,
+    "runNumber": 1119,
+    "jobId": 111491210441,
+    "artifactId": 11310124185,
+    "artifactDigest": "sha256:c21ac99f31a29d53f9f02d29da45d7d53b69501de06e6f7e06bf40a11f0a9063",
+    "decision": "PASS_VRM221_ADMIN_LIVE_E2E",
+    "productSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+    "productSourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+    "exactDevMaterializationRunId": 37208163415,
+    "runtimeRevision": "cxorbia-live-hr-dev-00264-pxj",
+    "runtimeDigest": "sha256:d6916255e1cbc94c096b56d2ae0dc7ad7bc3d9eb4e2816f2b4a9bc2819549eae",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/0eb9844cbcbc180f",
+    "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+    "filterPass": true,
+    "searchPreserved": true,
+    "multiSelect": true,
+    "merge": {
+      "providerAck": true,
+      "idempotentReplay": true,
+      "durableReadback": true,
+      "retiredPrincipalCount": 1,
+      "resolvedIdentityReviews": 1
+    },
+    "distinct": {
+      "providerAck": true,
+      "idempotentReplay": true,
+      "durableReadback": true,
+      "identityRemap": false
+    },
+    "safeDelete": {
+      "providerAck": true,
+      "idempotentReplay": true,
+      "durableReadback": true,
+      "deletedFromActiveReadModel": true,
+      "physicalDelete": false
+    },
+    "blockedDelete": {
+      "currentHrProfilePreserved": true,
+      "explicitUiBlock": true,
+      "providerAck": false
+    },
+    "cleanup": {
+      "activeSyntheticRemaining": 0,
+      "authDeleted": 5,
+      "firestoreDeleted": 25
+    },
+    "hrWrites": 0,
+    "externalWrites": 0,
+    "builds": 0,
+    "deploys": 0,
+    "production": false
   }
 }
