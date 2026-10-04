@@ -74,7 +74,7 @@
       actor:{actorId:str(input.actorId||''),role:str(input.actorRole),projectIds:uniq(input.projectIds)},
       expectedVersion:input.expectedVersion==null?'provider-current':input.expectedVersion,
       idempotencyKey:str(input.idempotencyKey),
-      payload:{canonicalShopperId,aliasShopperIds,humanConfirmed:true,reason:str(input.reason||'admin_confirmed_same_human'),periodIndependent:true,fuzzyMatching:false},
+      payload:{canonicalShopperId,aliasShopperIds,humanConfirmed:true,reason:str(input.reason||'admin_confirmed_same_human'),periodIndependent:true,fuzzyMatching:false,preserveHistoricalVisitRows:input.preserveHistoricalVisitRows===true,authoritativeVisitIds:uniq(input.authoritativeVisitIds)},
       source:'admin-shopper-identity-adjudication',
       authorization:{providerEnforcementRequired:true,permission:'shopper.identity.adjudicate',humanAdjudicationRequired:true}
     }};

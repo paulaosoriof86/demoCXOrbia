@@ -159,8 +159,8 @@
       const built=CX.shopperAdminCommandContract?.identityAdjudicate?.({
         tenantId:c.tenantId,projectId:c.projectId,periodId:c.periodId,projectIds:c.projectIds.length?c.projectIds:[c.projectId],
         actorId:c.actorId,actorRole:c.role,canonicalShopperId,aliasShopperIds:aliases,humanConfirmed:true,
-        expectedVersion:expected,idempotencyKey:idempotency('shopper.identity.adjudicate',canonicalShopperId,{aliasShopperIds:[...aliases].sort()},expected),
-        reason:meta.reason||'admin_confirmed_same_human'
+        expectedVersion:expected,idempotencyKey:idempotency('shopper.identity.adjudicate',canonicalShopperId,{aliasShopperIds:[...aliases].sort(),preserveHistoricalVisitRows:meta.preserveHistoricalVisitRows===true,authoritativeVisitIds:[...(meta.authoritativeVisitIds||[])].map(String).sort()},expected),
+        reason:meta.reason||'admin_confirmed_same_human',preserveHistoricalVisitRows:meta.preserveHistoricalVisitRows===true,authoritativeVisitIds:meta.authoritativeVisitIds||[]
       });
       if(!built?.ok){const r=CX.commandAdapter?.blocked?.(built?.command||{},'SHOPPER_IDENTITY_ADJUDICATION_INVALID',{errors:built?.errors||[]})||{ok:false,status:'blocked'};return meta.ackAware?Promise.resolve(surfaceBlocked(r)):legacyFailClosed(r);}
       built.command.authorization={providerEnforcementRequired:true,permission:'shopper.identity.adjudicate',humanAdjudicationRequired:true};

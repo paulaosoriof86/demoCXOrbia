@@ -864,3 +864,63 @@ test('VRM-185 / admin identity adjudication fails closed when multiple principal
   assert.equal(result.ok,false);assert.equal(result.providerWrites,0);assert.equal(result.code,'SHOPPER_IDENTITY_MULTIPLE_PASSWORD_PROOF_PRINCIPALS');
   assert.equal((await auth.getUser('dual-current')).disabled,false);assert.equal((await auth.getUser('dual-legacy')).disabled,false);
 });
+
+
+test('VRM-217 reconcile backfills password-proof and sweep metadata even when login is already exact',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db),id='shopper_gt_vrm217_proof';
+  const snap=snapshot({shopperId:id,shopperCode:'TYA_GT_VRM217'});
+  await p.reconcileSnapshot(snap,{sourceRevision:'rev-vrm217-proof'});
+  const uid=stableShopperUid('tenant-a',id),memberPath='tenants/tenant-a/users/'+uid,profilePath='tenants/tenant-a/shoppers/'+id;
+  db.seed(memberPath,{...db.get(memberPath),credentialSweepVersion:null,credentialPasswordProofVersion:null,credentialPasswordRuleVersion:null});
+  db.seed(profilePath,{...db.get(profilePath),credentialSweepVersion:null,credentialPasswordProofVersion:null,credentialPasswordRuleVersion:null});
+  const repaired=await p.reconcileSnapshot(snap,{sourceRevision:'rev-vrm217-proof'});
+  assert.equal(repaired.ok,true);assert.equal(repaired.idempotentReplays,0);assert.ok(repaired.providerWrites>0);
+  assert.equal(db.get(memberPath).credentialSweepVersion,DURABLE_CREDENTIAL_SWEEP_VERSION);
+  assert.equal(db.get(memberPath).credentialPasswordProofVersion,'cxorbia-shopper-password-proof-v2');
+  assert.equal(db.get(profilePath).credentialSweepVersion,DURABLE_CREDENTIAL_SWEEP_VERSION);
+  assert.equal(db.get(profilePath).credentialPasswordProofVersion,'cxorbia-shopper-password-proof-v2');
+  const replay=await p.reconcileSnapshot(snap,{sourceRevision:'rev-vrm217-proof'});
+  assert.equal(replay.idempotentReplays,1);assert.equal(replay.providerWrites,0);
+});
+
+test('VRM-217 durable credential sweep uses deterministic technical suffix under an exact base-login collision',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);
+  const rows=[['shopper_gt_keeper','keeper-uid'],['shopper_gt_suffix','suffix-uid']];
+  for(const [id,uid] of rows){
+    const profile={id,shopperId:id,tenantId:'tenant-a',projectIds:['project-a'],sourceType:'platform',firstName:'Ana',lastName:'Lopez',nombre:'Ana Lopez',credentialRuleVersion:CREDENTIAL_RULE_VERSION};
+    db.seed('tenants/tenant-a/shoppers/'+id,profile);
+    db.seed('tenants/tenant-a/users/'+uid,{active:true,tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:id,projectIds:['project-a'],visibleLogin:id==='shopper_gt_keeper'?'ana.lopez':'legacy.login',credentialRuleVersion:CREDENTIAL_RULE_VERSION});
+  }
+  auth.seed({uid:'keeper-uid',email:internalEmailTest('tenant-a','ana.lopez'),password:'Legacy1*',disabled:false,customClaims:{tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:'shopper_gt_keeper',projectIds:['project-a']}});
+  auth.seed({uid:'suffix-uid',email:internalEmailTest('tenant-a','legacy.login'),password:'Legacy2*',disabled:false,customClaims:{tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:'shopper_gt_suffix',projectIds:['project-a']}});
+  const result=await p.normalizeDurableCredentials({tenantId:'tenant-a'});
+  assert.equal(result.ok,true);assert.equal(result.identityReviewCount,0);assert.equal(result.normalizedShopperCount,2);
+  const expected=suffixLoginTest('ana.lopez','tenant-a','shopper_gt_suffix',4);
+  assert.equal(db.get('tenants/tenant-a/users/suffix-uid').visibleLogin,expected);
+  assert.equal(db.get('tenants/tenant-a/shoppers/shopper_gt_suffix').visibleLogin,expected);
+  assert.equal((await auth.getUser('suffix-uid')).email,internalEmailTest('tenant-a',expected));
+  assert.equal(db.get('tenants/tenant-a/users/suffix-uid').credentialPasswordProofVersion,'cxorbia-shopper-password-proof-v2');
+  const replay=await p.normalizeDurableCredentials({tenantId:'tenant-a'});
+  assert.equal(replay.normalizedShopperCount,0);assert.equal(replay.idempotentReplays,2);
+});
+
+test('VRM-219 selective exact adjudication remaps authoritative rows while preserving historical alias visits',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db),canonical='shp-canonical-vrm219',alias='shopper_gt_alias_vrm219',uid='keeper-vrm219';
+  auth.seed({uid,email:internalEmailTest('tenant-a','persona.exacta'),password:'Human123*',disabled:false,customClaims:{tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:canonical,projectIds:['project-a']}});
+  db.seed('tenants/tenant-a/users/admin-1',{active:true,tenantId:'tenant-a',role:'super',authNamespace:'staff',projectIds:['project-a']});
+  db.seed('tenants/tenant-a/users/'+uid,{active:true,tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:canonical,projectIds:['project-a'],providerUidFingerprint:providerUidFingerprint(uid),visibleLogin:'persona.exacta',credentialRuleVersion:CREDENTIAL_RULE_VERSION,credentialPasswordProofVersion:'cxorbia-shopper-password-proof-v2'});
+  for(const id of [canonical,alias])db.seed('tenants/tenant-a/shoppers/'+id,{id,shopperId:id,tenantId:'tenant-a',projectIds:['project-a'],sourceType:'hr_external',firstName:'Persona',lastName:'Exacta',nombre:'Persona Exacta',visibleLogin:'persona.exacta',credentialRuleVersion:CREDENTIAL_RULE_VERSION});
+  db.seed('tenants/tenant-a/shopperIdentityCrosswalk/'+canonical,{tenantId:'tenant-a',shopperId:canonical,projectIds:['project-a'],providerUidFingerprint:providerUidFingerprint(uid),sourceStableKey:canonical,identityMode:'stable_hr_shopper_id',sourceType:'hr_external'});
+  db.seed('tenants/tenant-a/shopperIdentityCrosswalk/'+alias,{tenantId:'tenant-a',shopperId:canonical,canonicalShopperId:canonical,projectIds:['project-a'],providerUidFingerprint:providerUidFingerprint(uid),sourceStableKey:alias,identityMode:'provider_exact_identity_link',sourceType:'hr_external',migrationAuthorityType:'tenant_adjudication',migrationAuthorityRef:'trusted'});
+  db.seed('tenants/tenant-a/projects/project-a/visits/current-v',{shopperId:alias,hrRowId:'OCT!1',status:'asignada'});
+  db.seed('tenants/tenant-a/projects/project-a/visits/historical-v',{shopperId:alias,hrRowId:'OCT!1',status:'submitted',historical:true});
+  db.seed('tenants/tenant-a/paymentReconciliations/pay-v',{shopperId:alias,status:'pending'});
+  const command={version:'cxorbia-command-adapter-v1',commandType:'shopper.identity.adjudicate',tenantId:'tenant-a',projectId:'project-a',periodId:'project-a-2026-10',entityId:canonical,idempotencyKey:'vrm219-selective',authorization:{providerEnforcementRequired:true,permission:'shopper.identity.adjudicate'},payload:{canonicalShopperId:canonical,aliasShopperIds:[alias],humanConfirmed:true,reason:'trusted_exact_alias_population_repair',preserveHistoricalVisitRows:true,authoritativeVisitIds:['current-v']}};
+  const first=await p.execute('staff-token',command);
+  assert.equal(first.ok,true,'VRM219_FIRST='+JSON.stringify(first));assert.equal(first.providerAck,true);assert.equal(first.historicalVisitRowsPreserved,true);assert.equal(first.authoritativeVisitCount,1);
+  assert.equal(db.get('tenants/tenant-a/projects/project-a/visits/current-v').shopperId,canonical);
+  assert.equal(db.get('tenants/tenant-a/projects/project-a/visits/historical-v').shopperId,alias);
+  assert.equal(db.get('tenants/tenant-a/paymentReconciliations/pay-v').shopperId,canonical);
+  const replay=await p.execute('staff-token',command);
+  assert.equal(replay.ok,true);assert.equal(replay.idempotentReplay,true);assert.equal(replay.providerWrites,0);
+});
