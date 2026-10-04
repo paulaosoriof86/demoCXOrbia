@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v261",
   "frozenAt": "2026-10-04T09:12:00Z",
-  "status": "HOLD_I3_MULTIMODULE_LIVE_SWEEP_REQUIRED",
+  "status": "HOLD_VRM215_SHOPPER_POPULATION_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "microblockId": "PRE-I4-LIVE-HR-STALE-CACHE-MAPPING-HOLD-AUGUST-CANONICAL-CORRECTION",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -12105,6 +12105,18 @@
         },
         "writes": 0,
         "production": false
+      },
+      "reproofTarget": {
+        "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+        "materializationRunId": 37208163415,
+        "artifactId": 11305847184,
+        "artifactDigest": "sha256:1e81dba4dacff12ec71ff09e0bc725fdfb32ec6b2ef08f6da3debdf2ab7fe29e",
+        "runtimeRevision": "cxorbia-live-hr-dev-00264-pxj",
+        "runtimeDigest": "sha256:d6916255e1cbc94c096b56d2ae0dc7ad7bc3d9eb4e2816f2b4a9bc2819549eae",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/0eb9844cbcbc180f",
+        "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+        "production": false
       }
     },
     "VRM-216": {
@@ -14072,7 +14084,7 @@
       "classification": "MAPPING_FAILURE",
       "severity": "P0_CONTROL",
       "title": "Client topology harness used stricter active===true semantics than the canonical Client membership contract",
-      "state": "CONTROL_FIX_APPLIED_PENDING_MULTIMODULE_REPROOF",
+      "state": "CONTROL_ONLY_FIXED_RUN1123_PASS",
       "firstObservedAt": "POST_RUN1121_2026-10-04",
       "rootCauseStatus": "PROVEN_CONTROL_SEMANTIC_MISMATCH_PRODUCT_STATE_PENDING_EXACT_READBACK",
       "rootCause": "The multimodule/topology harnesses selected a Client only when Firestore field active was literally true. The canonical Client membership contract validates status='active', and the production user-admin read model treats active as true unless data.active===false. Therefore the new harness could exclude a valid canonical Client document that omits the optional active boolean.",
@@ -14127,7 +14139,70 @@
         "firestoreWrites": 0,
         "hrWrites": 0,
         "production": false
+      },
+      "terminalDisposition": "CONTROL_ONLY_FIXED",
+      "closureEvidence": {
+        "runId": 37222795614,
+        "runNumber": 1123,
+        "decision": "PASS_I3_MULTIMODULE_LIVE_SWEEP",
+        "productChanged": false,
+        "writes": 0,
+        "production": false
       }
+    },
+    "VRM-237": {
+      "id": "VRM-237",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "severity": "P0_CONTROL",
+      "title": "VRM-215 population gate preflight was pinned to obsolete Run1070 materialization instead of the current canonical materialization",
+      "state": "CONTROL_FIX_APPLIED_PENDING_REPROOF",
+      "firstObservedAt": "POST_RUN1123_2026-10-04",
+      "rootCauseStatus": "PROVEN",
+      "rootCause": "The VRM-215 workflow job still required currentMaterialization.runId=37169950715 (Run1070), while the canonical descriptor now points to Run1112 / artifact 11305847184. Executing it unchanged would fail before population proof and would reintroduce a second stale artifact authority.",
+      "evidence": {
+        "currentProductSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "currentProductSourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+        "currentMaterialization": {
+          "state": "PASS_VRM227_EXACT_DEV_MATERIALIZATION",
+          "runId": 37208163415,
+          "runNumber": 1112,
+          "jobId": 111453675521,
+          "artifactId": 11305847184,
+          "artifactDigest": "sha256:1e81dba4dacff12ec71ff09e0bc725fdfb32ec6b2ef08f6da3debdf2ab7fe29e",
+          "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
+          "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+          "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+          "runtimeRevision": "cxorbia-live-hr-dev-00264-pxj",
+          "runtimeDigest": "sha256:d6916255e1cbc94c096b56d2ae0dc7ad7bc3d9eb4e2816f2b4a9bc2819549eae",
+          "hostingVersion": "sites/cxorbia-backend-dev/versions/0eb9844cbcbc180f",
+          "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791123072167000",
+          "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+          "builds": 1,
+          "runtimeDeploys": 1,
+          "hostingDeploys": 1,
+          "storageRulesDeploys": 0,
+          "production": false
+        },
+        "staleRequiredRunId": 37169950715,
+        "antiDesyncRule": "Gate must derive source/tree/artifact fingerprints from the canonical descriptor rather than a historical hardcoded materialization.",
+        "productChanged": false,
+        "writes": 0,
+        "production": false
+      },
+      "correction": {
+        "owner": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+        "change": "Replace the hardcoded Run1070 preflight with currentMaterialization/productSource checks read from the canonical descriptor; retain immutable runtime/Hosting/HR fingerprint checks.",
+        "productChanged": false,
+        "newCandidate": false,
+        "newWorkflow": false,
+        "rebuild": false,
+        "deploy": false,
+        "production": false
+      },
+      "expected": "VRM-215 executes against the unchanged Run1112 materialization and proves the entire active eligible shopper population.",
+      "productChanged": false,
+      "writes": 0,
+      "production": false
     }
   },
   "latestEvidenceOverrides": {
@@ -14779,7 +14854,7 @@
     ],
     "findingCount": 230,
     "expectedCurrentRange": "VRM-001..VRM-230",
-    "nextFindingId": "VRM-237",
+    "nextFindingId": "VRM-238",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_VRM229_PAULA_CONFIRMED_IDENTITY_CONSOLIDATION_REQUIRED",
@@ -15061,7 +15136,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Rerun the same-artifact Admin + Shopper + Client multimodule live sweep on Run1112 with corrected canonical Client membership semantics; no writes and no rebuild.",
+  "exactNextAction": "Run VRM-215 population-wide shopper reproof on the unchanged currentMaterialization (Run1112) after dynamic anti-desync preflight.",
   "supersedesGitBlob": "820da41b786054cb8cd23e89827e1f7afbcdd3b3",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -15090,7 +15165,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-237",
+  "nextFindingId": "VRM-238",
   "lastControlFailure": {
     "findingId": "VRM-232",
     "runId": 37213834927,
@@ -18461,7 +18536,7 @@
     "hostingDeploys": 0,
     "production": false
   },
-  "activeBlocker": "I3_MULTIMODULE_LIVE_SWEEP_REQUIRED",
+  "activeBlocker": "VRM215_SHOPPER_POPULATION_REPROOF_REQUIRED",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -18653,7 +18728,7 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-10-04T15:03:00Z",
-  "nextExactAction": "Rerun the same-artifact Admin + Shopper + Client multimodule live sweep on Run1112 with corrected canonical Client membership semantics; no writes and no rebuild.",
+  "nextExactAction": "Run VRM-215 population-wide shopper reproof on the unchanged currentMaterialization (Run1112) after dynamic anti-desync preflight.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
@@ -19289,7 +19364,7 @@
     "production": false,
     "interpretation": "Control-only freeze/readback. No action lane matched the fail-closed precomposition status."
   },
-  "queuedBlocker": "VRM215_POPULATION_REPROOF",
+  "queuedBlocker": "PAULA_VISUAL_ACCEPTANCE_THEN_GATE20_GATE21",
   "lastSuccessfulRun": {
     "runId": 37211579195,
     "runNumber": 1114,
@@ -19366,7 +19441,7 @@
   },
   "openFindingsClosureMatrix": {
     "path": "I3_OPEN_FINDINGS_CLOSURE_MATRIX_2026-10-04.json",
-    "findingCount": 236,
+    "findingCount": 237,
     "status": "ACTIVE_CLOSURE_VIEW",
     "missingFindingIds": [],
     "duplicateFindingIds": []
@@ -19393,6 +19468,98 @@
     "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
     "productChanged": false,
     "writes": 0,
+    "builds": 0,
+    "deploys": 0,
+    "production": false
+  },
+  "lastMultimoduleLiveSweep": {
+    "runId": 37222795614,
+    "runNumber": 1123,
+    "jobId": 111496385275,
+    "artifactId": 11310363770,
+    "artifactDigest": "sha256:b19757e89aea35a3589f33183f44cdb8470ade48d7e3ef651d19c996deb1baf1",
+    "decision": "PASS_I3_MULTIMODULE_LIVE_SWEEP",
+    "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+    "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+    "materializationRunId": 37208163415,
+    "materializationArtifactId": 11305847184,
+    "runtimeRevision": "cxorbia-live-hr-dev-00264-pxj",
+    "runtimeDigest": "sha256:d6916255e1cbc94c096b56d2ae0dc7ad7bc3d9eb4e2816f2b4a9bc2819549eae",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/0eb9844cbcbc180f",
+    "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+    "periodId": "cinepolis-2026-10",
+    "adminRoutes": [
+      "midia",
+      "dashboard",
+      "shoppers",
+      "visitas",
+      "postulaciones",
+      "reservas",
+      "cert",
+      "aprendizaje",
+      "documentos",
+      "financiero",
+      "movimientos",
+      "liquidaciones",
+      "config",
+      "marca",
+      "informes",
+      "historico",
+      "cuestionarios"
+    ],
+    "shopperLanes": [
+      "GT",
+      "HN",
+      "Paula Osorio",
+      "consolidated identity"
+    ],
+    "shopperRoutes": [
+      "midia",
+      "miperfil",
+      "visitas",
+      "reservas",
+      "misvisitas",
+      "aprendizaje",
+      "cert",
+      "documentos",
+      "beneficios",
+      "mireportes"
+    ],
+    "clientRoutes": [
+      "cli_dashboard",
+      "cli_sucursales",
+      "cli_acciones",
+      "cli_insights",
+      "cli_capacitacion",
+      "cli_reportes",
+      "cli_programa"
+    ],
+    "phaseBPreservedSmoke": [
+      "soporte",
+      "novedades",
+      "marketing",
+      "automatizaciones",
+      "integraciones",
+      "correo"
+    ],
+    "population": {
+      "activeShopperMemberships": 380,
+      "profiles": 571,
+      "currentHrVisits": 44,
+      "unresolvedMemberships": 0,
+      "duplicateActivePrincipals": 0,
+      "duplicateHrVisitKeys": 0,
+      "unresolvedAssignedVisits": 0
+    },
+    "writesDelta": {
+      "commandReceipts": 0,
+      "users": 0,
+      "postulations": 0,
+      "reservations": 0
+    },
+    "pageErrors": 0,
+    "hrWrites": 0,
+    "externalWrites": 0,
     "builds": 0,
     "deploys": 0,
     "production": false

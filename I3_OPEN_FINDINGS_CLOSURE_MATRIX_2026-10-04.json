@@ -31,7 +31,7 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleTruthCount": 21,
   "moduleTruthAllMatch": true,
-  "findingCount": 236,
+  "findingCount": 237,
   "missingFindingIds": [],
   "duplicateFindingIds": [],
   "currentBlockingCount": 69,
@@ -47,7 +47,7 @@
     "CONTROL_ONLY_FIXED": 1
   },
   "nextCriticalSequence": [
-    "I3_MULTIMODULE_LIVE_SWEEP",
+    "VRM-237_CONTROL_REPROOF",
     "VRM-215_POPULATION_REPROOF",
     "PAULA_VISUAL_ACCEPTANCE",
     "GATE20_GATE21_SAME_ARTIFACT"
@@ -6840,7 +6840,7 @@
         "sourceTree": null
       },
       "successor": null,
-      "rawLedgerState": "REPROOF_REQUIRED_AFTER_VRM221_ADMIN_LIVE_AND_MULTIMODULE_SWEEP",
+      "rawLedgerState": "REPROOF_REQUIRED_CURRENT_RUN1112",
       "realState": "REPROOF_REQUIRED",
       "evidence": {
         "currentProductSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
@@ -6856,7 +6856,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "population-wide reproof after Admin and multimodule sweep",
+      "actionRemaining": "population-wide reproof on current Run1112 materialization",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -7580,16 +7580,16 @@
       ],
       "latestApprovedSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
       "latestLiveProof": {
-        "runNumber": 1122,
-        "runId": 37222574198,
-        "decision": "PASS_C6_CLIENT_AUTH_MEMBERSHIP_PREWRITE_SNAPSHOT",
-        "artifactId": null,
+        "runNumber": 1123,
+        "runId": 37222795614,
+        "decision": "PASS_I3_MULTIMODULE_LIVE_SWEEP",
+        "artifactId": 11310363770,
         "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
         "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
       },
       "successor": null,
-      "rawLedgerState": "CONTROL_FIX_APPLIED_PENDING_MULTIMODULE_REPROOF",
-      "realState": "REPROOF_REQUIRED",
+      "rawLedgerState": "CONTROL_ONLY_FIXED_RUN1123_PASS",
+      "realState": "CONTROL_ONLY_FIXED",
       "evidence": {
         "currentProductSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
         "currentProductTree": "b59da4c090d4639a136168656e7addd544f38e18",
@@ -7598,7 +7598,41 @@
         "writes": 0,
         "production": false
       },
-      "actionRemaining": "same-artifact multimodule sweep",
+      "actionRemaining": "none",
+      "blocking": false,
+      "terminalDisposition": "CONTROL_ONLY_FIXED"
+    },
+    {
+      "findingId": "VRM-237",
+      "moduleDomain": [
+        "shoppers-identity-profile-mi-visitas",
+        "release-composition-control"
+      ],
+      "severity": "P0_CONTROL",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "owner": [
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+      ],
+      "latestApprovedSource": null,
+      "latestLiveProof": {
+        "runNumber": 1123,
+        "runId": 37222795614,
+        "decision": "STALE_VRM215_PREFLIGHT_IDENTIFIED_BEFORE_EXECUTION",
+        "artifactId": 11310363770,
+        "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
+      },
+      "successor": null,
+      "rawLedgerState": "CONTROL_FIX_APPLIED_PENDING_REPROOF",
+      "realState": "REPROOF_REQUIRED",
+      "evidence": {
+        "currentProductSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "currentProductTree": "b59da4c090d4639a136168656e7addd544f38e18",
+        "currentMaterializationRunId": 37208163415,
+        "staleRequiredRunId": 37169950715,
+        "productChanged": false
+      },
+      "actionRemaining": "run VRM-215 with currentMaterialization-derived preflight",
       "blocking": true,
       "terminalDisposition": null
     }

@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_MULTIMODULE_LIVE_SWEEP_REQUIRED",
+  "status": "HOLD_VRM215_SHOPPER_POPULATION_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,13 +8,13 @@
   "productTreeAuthority": "b59da4c090d4639a136168656e7addd544f38e18",
   "predecessorProductSourceSha": "bbd66d29192487ac29f8703bd913e3f1e15a28c0",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "4e77a0a4f1805bf0f83e509f565c4c1d5df96e5b",
+  "findingsLedgerExpectedGitBlob": "549586a2dfc2b50cb55e83012f493136a46c3836",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "I3_MULTIMODULE_LIVE_SWEEP_REQUIRED",
-  "nextFindingId": "VRM-237",
+  "activeBlocker": "VRM215_SHOPPER_POPULATION_REPROOF_REQUIRED",
+  "nextFindingId": "VRM-238",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Rerun the same-artifact Admin + Shopper + Client multimodule live sweep on Run1112 with corrected canonical Client membership semantics; no writes and no rebuild.",
+  "exactNextAction": "Run VRM-215 population-wide shopper reproof on the unchanged currentMaterialization (Run1112) after dynamic anti-desync preflight.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3540,7 +3540,7 @@
     "interpretation": "Control-only freeze/readback. No action lane matched the fail-closed precomposition status."
   },
   "shopperIdentityGovernanceLockPath": "CXORBIA_I3_SHOPPER_IDENTITY_GOVERNANCE_LOCK_2026-10-04.json",
-  "queuedBlocker": "VRM215_POPULATION_REPROOF",
+  "queuedBlocker": "PAULA_VISUAL_ACCEPTANCE_THEN_GATE20_GATE21",
   "currentSourceProof": {
     "runId": 37208053790,
     "runNumber": 1111,
@@ -3708,6 +3708,98 @@
     "membershipWrites": 0,
     "firestoreWrites": 0,
     "hrWrites": 0,
+    "production": false
+  },
+  "lastMultimoduleLiveSweep": {
+    "runId": 37222795614,
+    "runNumber": 1123,
+    "jobId": 111496385275,
+    "artifactId": 11310363770,
+    "artifactDigest": "sha256:b19757e89aea35a3589f33183f44cdb8470ade48d7e3ef651d19c996deb1baf1",
+    "decision": "PASS_I3_MULTIMODULE_LIVE_SWEEP",
+    "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+    "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+    "materializationRunId": 37208163415,
+    "materializationArtifactId": 11305847184,
+    "runtimeRevision": "cxorbia-live-hr-dev-00264-pxj",
+    "runtimeDigest": "sha256:d6916255e1cbc94c096b56d2ae0dc7ad7bc3d9eb4e2816f2b4a9bc2819549eae",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/0eb9844cbcbc180f",
+    "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+    "periodId": "cinepolis-2026-10",
+    "adminRoutes": [
+      "midia",
+      "dashboard",
+      "shoppers",
+      "visitas",
+      "postulaciones",
+      "reservas",
+      "cert",
+      "aprendizaje",
+      "documentos",
+      "financiero",
+      "movimientos",
+      "liquidaciones",
+      "config",
+      "marca",
+      "informes",
+      "historico",
+      "cuestionarios"
+    ],
+    "shopperLanes": [
+      "GT",
+      "HN",
+      "Paula Osorio",
+      "consolidated identity"
+    ],
+    "shopperRoutes": [
+      "midia",
+      "miperfil",
+      "visitas",
+      "reservas",
+      "misvisitas",
+      "aprendizaje",
+      "cert",
+      "documentos",
+      "beneficios",
+      "mireportes"
+    ],
+    "clientRoutes": [
+      "cli_dashboard",
+      "cli_sucursales",
+      "cli_acciones",
+      "cli_insights",
+      "cli_capacitacion",
+      "cli_reportes",
+      "cli_programa"
+    ],
+    "phaseBPreservedSmoke": [
+      "soporte",
+      "novedades",
+      "marketing",
+      "automatizaciones",
+      "integraciones",
+      "correo"
+    ],
+    "population": {
+      "activeShopperMemberships": 380,
+      "profiles": 571,
+      "currentHrVisits": 44,
+      "unresolvedMemberships": 0,
+      "duplicateActivePrincipals": 0,
+      "duplicateHrVisitKeys": 0,
+      "unresolvedAssignedVisits": 0
+    },
+    "writesDelta": {
+      "commandReceipts": 0,
+      "users": 0,
+      "postulations": 0,
+      "reservations": 0
+    },
+    "pageErrors": 0,
+    "hrWrites": 0,
+    "externalWrites": 0,
+    "builds": 0,
+    "deploys": 0,
     "production": false
   }
 }
