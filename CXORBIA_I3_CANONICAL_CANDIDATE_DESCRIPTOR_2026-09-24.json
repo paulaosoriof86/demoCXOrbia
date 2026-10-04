@@ -7,14 +7,14 @@
   "productSourceSha": "4b1c0859cc5b43928c083748d00fdc606b32d63e",
   "productTreeAuthority": "ab33d43d483faef9fbec5daaadfa454247df469a",
   "predecessorProductSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V241_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "8992905549f142ca35798133fa4a3f60375979b2",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V242_2026-10-04.json",
+  "findingsLedgerExpectedGitBlob": "3ba365438ef5584332a03e8b151832251bcdddc6",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
   "activeBlocker": "VRM214_ONE_PROVIDER_BACKED_JULISSA_ADJUDICATION_REQUIRED",
-  "nextFindingId": "VRM-215",
+  "nextFindingId": "VRM-216",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Execute exactly one DEV Admin shopper.identity.adjudicate with canonical shopper_gt_0c198c1055 and aliases shopper_gt_86254c4228 + shp-7309d525805e + shr-1780611985059-49vr under period cinepolis-2026-10. Require keeper shr-1780611985059-49vr / julissa.flores, provider ACK, exact idempotent replay, durable remap of provider-owned operational references, Miraflores OCTUBRE 26!2 preserved on canonical, zero active alias principals, zero alias operational references, unchanged HR revision, zero HR/external/production writes.",
+  "exactNextAction": "Complete VRM-214 provider-backed Julissa adjudication on the unchanged Run1053 DEV artifact. Immediately after PASS, execute VRM-215 population-wide shopper identity/Auth/HR/self-scope reproof on the same artifact; I3 remains HOLD until both pass.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
