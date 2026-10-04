@@ -76,17 +76,20 @@ try{
   await page.goto(url,{waitUntil:'domcontentloaded',timeout:60000});
   await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:60000});
   await page.evaluate(async token=>{await window.firebase.auth().setPersistence(window.firebase.auth.Auth.Persistence.NONE);await window.firebase.auth().signInWithCustomToken(token);},await auth.createCustomToken(actor.uid));
-  await page.waitForFunction(()=>window.CX?.backendAuth?.context?.()?.authenticated===true&&String(window.CX?.backendAuth?.context?.()?.role||'')==='super'&&window.CX?.commandAdapter?.status?.()?.writesEnabled===true&&!!window.CX?.commandAdapter?.status?.()?.activeTransport,null,{timeout:120000});
+  await page.waitForFunction(()=>!!window.firebase?.auth?.().currentUser&&typeof window.CX?.commandAdapter?.build==='function'&&typeof window.CX?.commandHttpTransport?.execute==='function'&&!!window.CX?.commandHttpTransport?.endpoint?.(),null,{timeout:120000});
 
   const run=async city=>page.evaluate(async input=>{
-    return await window.CX.commandAdapter.execute({
+    const built=window.CX.commandAdapter.build({
       commandType:'shopper.update',entityType:'shopper',entityId:input.fixtureId,
       tenantId:input.tenantId,projectId:input.projectId,periodId:input.periodId,
+      actor:{actorId:'vrm216-live-admin',role:'super',projectIds:[input.projectId]},
       expectedVersion:1,idempotencyKey:input.key,
       payload:{periodId:input.periodId,shopperId:input.fixtureId,projectIds:[input.projectId],patch:{ciudad:input.city},protectedPatch:{}},
       source:'vrm216-live-fixture',
       authorization:{providerEnforcementRequired:true,permission:'shopper.update'}
     });
+    if(!built?.ok)return {ok:false,status:'blocked',providerAck:false,code:'VRM216_COMMAND_BUILD_FAILED',errors:built?.errors||[]};
+    return await window.CX.commandHttpTransport.execute(built.command);
   },{fixtureId,tenantId:TENANT,projectId:PROGRAM,periodId:PERIOD,key,city});
 
   const first=await run('Guatemala');result.first=first;save();
