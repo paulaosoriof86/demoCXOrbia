@@ -80,6 +80,38 @@
     }};
   }
 
+
+  function identityReviewResolve(input){
+    input=input||{};const shopperIds=uniq(input.shopperIds||input.candidateShopperIds),errors=validateBase(input);
+    if(shopperIds.length<2)errors.push('missing-shopperIds');
+    if(input.humanConfirmed!==true)errors.push('human-confirmation-required');
+    if(!str(input.reason))errors.push('missing-reason');
+    return {ok:errors.length===0,errors,command:{
+      commandType:'shopper.identity.review.resolve',entityType:'shopperIdentityReview',entityId:shopperIds[0]||null,
+      tenantId:str(input.tenantId),projectId:str(input.projectId||uniq(input.projectIds)[0]),periodId:str(input.periodId),
+      actor:{actorId:str(input.actorId||''),role:str(input.actorRole),projectIds:uniq(input.projectIds)},
+      expectedVersion:input.expectedVersion==null?'provider-current':input.expectedVersion,idempotencyKey:str(input.idempotencyKey),
+      payload:{shopperIds,resolution:'distinct',humanConfirmed:true,reason:str(input.reason),evidence:str(input.evidence||''),identityRemap:false,periodIndependent:true,fuzzyMatching:false},
+      source:'admin-shopper-identity-review-resolution',
+      authorization:{providerEnforcementRequired:true,permission:'shopper.identity.review.resolve',humanAdjudicationRequired:true}
+    }};
+  }
+  function deleteShopper(input){
+    input=input||{};const shopperId=str(input.shopperId||input.entityId),errors=validateBase(input);
+    if(!shopperId)errors.push('missing-shopperId');
+    if(input.humanConfirmed!==true)errors.push('human-confirmation-required');
+    if(!str(input.reason))errors.push('missing-reason');
+    return {ok:errors.length===0,errors,command:{
+      commandType:'shopper.delete',entityType:'shopper',entityId:shopperId||null,
+      tenantId:str(input.tenantId),projectId:str(input.projectId||uniq(input.projectIds)[0]),periodId:str(input.periodId),
+      actor:{actorId:str(input.actorId||''),role:str(input.actorRole),projectIds:uniq(input.projectIds)},
+      expectedVersion:input.expectedVersion==null?'provider-current':input.expectedVersion,idempotencyKey:str(input.idempotencyKey),
+      payload:{shopperId,humanConfirmed:true,reason:str(input.reason),dependencyPreviewRequired:true,physicalDelete:false,preserveHistory:true,preserveHr:true},
+      source:'admin-shopper-safe-retire',
+      authorization:{providerEnforcementRequired:true,permission:'shopper.delete',humanAdjudicationRequired:true}
+    }};
+  }
+
   function credentialReset(input){
     input=input||{};const shopperId=str(input.shopperId);const errors=[!str(input.tenantId)?'missing-tenantId':null,!str(input.projectId)?'missing-projectId':null,!str(input.periodId)?'missing-periodId':null,!shopperId?'missing-shopperId':null,!str(input.idempotencyKey)?'missing-idempotencyKey':null,!str(input.actorRole)?'missing-actorRole':null].filter(Boolean);
     return {ok:errors.length===0,errors,command:{commandType:'shopper.credential.reset',entityType:'shopper',entityId:shopperId||null,tenantId:str(input.tenantId),projectId:str(input.projectId),periodId:str(input.periodId),
@@ -87,5 +119,5 @@
       payload:{periodId:str(input.periodId),shopperId,serverOnly:true,browserPasswordAllowed:false,browserTokenAllowed:false},source:'admin-shopper-credential-reset',authorization:{providerEnforcementRequired:true,permission:'shopper.credential.reset'}}};
   }
 
-  CX.shopperAdminCommandContract=Object.freeze({version:VERSION,create,update,identityAdjudicate,credentialReset,exactIdentityKeys:exactKeys(),protectedFields:PROTECTED_PROFILE_FIELDS.slice(),browserCredentialStorageAllowed:false,localStoragePersistenceAllowed:false,successRequiresProviderAck:true,protectedDataRequiresEncryption:true});
+  CX.shopperAdminCommandContract=Object.freeze({version:VERSION,create,update,identityAdjudicate,identityReviewResolve,deleteShopper,credentialReset,exactIdentityKeys:exactKeys(),protectedFields:PROTECTED_PROFILE_FIELDS.slice(),browserCredentialStorageAllowed:false,localStoragePersistenceAllowed:false,successRequiresProviderAck:true,protectedDataRequiresEncryption:true});
 })(typeof window!=='undefined'?window:globalThis);

@@ -8,7 +8,7 @@ import crypto from 'node:crypto';
 import ShopperCredentialRule from '../../app/core/shopper-credential-rule.js';
 
 export const VERSION='cxorbia-shopper-command-provider-v1';
-export const COMMAND_TYPES=Object.freeze(['shopper.create','shopper.update','shopper.credential.reset','shopper.identity.adjudicate']);
+export const COMMAND_TYPES=Object.freeze(['shopper.create','shopper.update','shopper.credential.reset','shopper.identity.adjudicate','shopper.identity.review.resolve','shopper.delete']);
 export const OPERATOR_ROLES=Object.freeze(['super','admin']);
 export const CREDENTIAL_RULE_VERSION=ShopperCredentialRule.CREDENTIAL_RULE_VERSION;
 export const DURABLE_CREDENTIAL_SWEEP_VERSION=ShopperCredentialRule.DURABLE_CREDENTIAL_SWEEP_VERSION;
@@ -144,6 +144,19 @@ function validateCommand(command={}){
     if(!canonical)errors.push('SHOPPER_IDENTITY_CANONICAL_REQUIRED');
     if(!aliases.length)errors.push('SHOPPER_IDENTITY_ALIASES_REQUIRED');
     if(command.payload?.humanConfirmed!==true)errors.push('SHOPPER_IDENTITY_HUMAN_CONFIRMATION_REQUIRED');
+  }
+  if(command.commandType==='shopper.identity.review.resolve'){
+    const ids=uniq(command.payload?.shopperIds||command.payload?.candidateShopperIds||[]);
+    if(ids.length<2)errors.push('SHOPPER_IDENTITY_REVIEW_IDS_REQUIRED');
+    if(command.payload?.resolution!=='distinct')errors.push('SHOPPER_IDENTITY_REVIEW_RESOLUTION_INVALID');
+    if(command.payload?.humanConfirmed!==true)errors.push('SHOPPER_IDENTITY_REVIEW_HUMAN_CONFIRMATION_REQUIRED');
+    if(!str(command.payload?.reason))errors.push('SHOPPER_IDENTITY_REVIEW_REASON_REQUIRED');
+  }
+  if(command.commandType==='shopper.delete'){
+    const target=str(command.entityId||command.payload?.shopperId);
+    if(!target)errors.push('SHOPPER_DELETE_ID_REQUIRED');
+    if(command.payload?.humanConfirmed!==true)errors.push('SHOPPER_DELETE_HUMAN_CONFIRMATION_REQUIRED');
+    if(!str(command.payload?.reason))errors.push('SHOPPER_DELETE_REASON_REQUIRED');
   }
   return {ok:errors.length===0,errors};
 }
@@ -693,6 +706,190 @@ const ADJUDICATION_DOMAIN_COLLECTIONS=Object.freeze([
   ['tenant','paymentReconciliations'],['tenant','reviewQueue'],
   ['project','certifications'],['project','liquidations'],['project','postulations'],['project','reservations'],['project','visits']
 ]);
+
+const IDENTITY_REVIEW_SCHEMA='cxorbia.shopper-identity-review.v1';
+const IDENTITY_REVIEW_RESOLUTION_SCHEMA='cxorbia.shopper-identity-review-resolution.v1';
+const SHOPPER_TOMBSTONE_SCHEMA='cxorbia.shopper-tombstone.v1';
+const reviewIds=row=>uniq([row?.shopperId,row?.sourceShopperId,row?.canonicalShopperId,...arr(row?.shopperIds),...arr(row?.candidateShopperIds),...arr(row?.candidates)]);
+const sameIdentitySet=(a,b)=>JSON.stringify(uniq(a))===JSON.stringify(uniq(b));
+const reviewPairKey=(tenantId,projectId,ids)=>sha([tenantId,projectId,...uniq(ids)].join('\0')).slice(0,32);
+const reviewResolutionId=(tenantId,projectId,ids)=>'srr_'+reviewPairKey(tenantId,projectId,ids);
+const reviewEvidenceFingerprint=row=>sha({
+  reason:str(row?.reason||'identity_review_required'),
+  shopperIds:reviewIds(row),
+  country:str(row?.country),
+  credentialFingerprint:str(row?.credentialFingerprint)
+}).slice(0,40);
+async function persistIdentityReview({db,tenantId,projectId,sourceRevision,row}){
+  const ids=reviewIds(row);
+  if(!ids.length)throw new Error('SHOPPER_IDENTITY_REVIEW_IDS_REQUIRED');
+  const tenant=db.collection('tenants').doc(tenantId);
+  const reviews=tenant.collection('shopperIdentityReviews');
+  const resolutions=tenant.collection('shopperIdentityReviewResolutions');
+  const evidenceFingerprint=reviewEvidenceFingerprint(row);
+  if(ids.length>=2){
+    const resolution=await resolutions.doc(reviewResolutionId(tenantId,projectId,ids)).get();
+    if(resolution.exists){
+      const rr=resolution.data()||{};
+      if(str(rr.status)==='resolved_distinct'&&sameIdentitySet(rr.shopperIds,ids)&&str(rr.evidenceFingerprint)===evidenceFingerprint){
+        return {row:{...row,shopperIds:ids,evidenceFingerprint,status:'resolved_distinct',durable:true},writes:0,suppressed:true};
+      }
+    }
+  }
+  const reviewId='sir_'+sha([tenantId,projectId,str(row?.reason),...ids].join('\0')).slice(0,32);
+  const ref=reviews.doc(reviewId),snap=await ref.get(),prior=snap.exists?(snap.data()||{}):null;
+  const durable={
+    schemaVersion:IDENTITY_REVIEW_SCHEMA,reviewId,tenantId,projectScope:projectId,periodIndependent:true,
+    shopperIds:ids,candidateShopperIds:ids,sourceShopperId:str(row?.sourceShopperId)||null,
+    canonicalShopperId:str(row?.canonicalShopperId)||null,country:str(row?.country)||null,
+    reason:str(row?.reason||'identity_review_required'),credentialFingerprint:str(row?.credentialFingerprint)||null,
+    evidenceFingerprint,sourceRevision:str(sourceRevision),status:'active',requiresHumanAdjudication:true,
+    fuzzyMatching:false,hrWrites:0,externalWrites:0,updatedAt:now()
+  };
+  if(prior&&str(prior.status)==='active'&&str(prior.evidenceFingerprint)===evidenceFingerprint&&sameIdentitySet(prior.shopperIds,ids)){
+    return {row:{...row,...prior,durable:true},writes:0,suppressed:false};
+  }
+  await ref.set({...durable,createdAt:prior?.createdAt||now(),reopenedAt:prior&&str(prior.status)!=='active'?now():null},{merge:true});
+  return {row:{...row,...durable,durable:true},writes:1,suppressed:false};
+}
+async function durableDistinctIdentityResolution({db,command,actor}){
+  if(!OPERATOR_ROLES.includes(str(actor?.role))||actor?.selfScoped===true)throw new Error('SHOPPER_IDENTITY_REVIEW_OPERATOR_REQUIRED');
+  const tenantId=str(command.tenantId),projectId=str(command.projectId),ids=uniq(command.payload?.shopperIds||command.payload?.candidateShopperIds||[]);
+  if(ids.length<2)throw new Error('SHOPPER_IDENTITY_REVIEW_IDS_REQUIRED');
+  const tenant=db.collection('tenants').doc(tenantId),reviews=tenant.collection('shopperIdentityReviews'),resolutions=tenant.collection('shopperIdentityReviewResolutions');
+  const profiles=tenant.collection('shoppers'),cross=tenant.collection('shopperIdentityCrosswalk');
+  for(const id of ids){
+    const [p,c]=await Promise.all([profiles.doc(id).get(),cross.doc(id).get()]);
+    if(!p.exists&&!c.exists)throw new Error('SHOPPER_IDENTITY_REVIEW_UNKNOWN:'+id);
+  }
+  const reviewSnap=await reviews.get();
+  const matching=arr(reviewSnap?.docs).filter(doc=>sameIdentitySet(reviewIds(doc.data()||{}),ids));
+  const activeMatching=matching.filter(doc=>str((doc.data()||{}).status)==='active');
+  const fps=uniq(activeMatching.map(doc=>str((doc.data()||{}).evidenceFingerprint)));
+  const evidenceFingerprint=fps.length===1?fps[0]:sha({
+    shopperIds:ids,reason:str(command.payload?.reason),evidence:str(command.payload?.evidence)
+  }).slice(0,40);
+  const resolutionId=reviewResolutionId(tenantId,projectId,ids),resolutionRef=resolutions.doc(resolutionId),stamp=now();
+  const before=matching.map(doc=>({reviewId:doc.id,status:str((doc.data()||{}).status),reason:str((doc.data()||{}).reason),evidenceFingerprint:str((doc.data()||{}).evidenceFingerprint)}));
+  await db.runTransaction(async tx=>{
+    const prior=await tx.get(resolutionRef);
+    if(prior.exists){
+      const p=prior.data()||{};
+      if(!sameIdentitySet(p.shopperIds,ids))throw new Error('SHOPPER_IDENTITY_REVIEW_RESOLUTION_CONFLICT');
+    }
+    tx.set(resolutionRef,{
+      schemaVersion:IDENTITY_REVIEW_RESOLUTION_SCHEMA,resolutionId,tenantId,projectScope:projectId,periodIndependent:true,
+      shopperIds:ids,status:'resolved_distinct',resolution:'distinct',identityRemap:false,fuzzyMatching:false,
+      evidenceFingerprint,reason:str(command.payload?.reason),evidence:str(command.payload?.evidence)||null,
+      actorUidFingerprint:providerUidFingerprint(actor.uid),humanConfirmed:true,before,
+      after:{status:'resolved_distinct',identityRemap:false},resolvedAt:stamp,updatedAt:stamp
+    },{merge:true});
+    activeMatching.forEach(doc=>tx.set(reviews.doc(doc.id),{
+      status:'resolved_distinct',resolutionId,resolutionReason:str(command.payload?.reason),
+      actorUidFingerprint:providerUidFingerprint(actor.uid),resolvedAt:stamp,updatedAt:stamp
+    },{merge:true}));
+  });
+  const readback=await resolutionRef.get();
+  if(!readback.exists||str((readback.data()||{}).status)!=='resolved_distinct'||!sameIdentitySet((readback.data()||{}).shopperIds,ids))throw new Error('SHOPPER_IDENTITY_REVIEW_RESOLUTION_READBACK_MISMATCH');
+  for(const doc of activeMatching){
+    const rb=await reviews.doc(doc.id).get();
+    if(rb.exists&&str((rb.data()||{}).status)==='active')throw new Error('SHOPPER_IDENTITY_REVIEW_ACTIVE_AFTER_RESOLUTION');
+  }
+  return {resolutionId,shopperIds:ids,evidenceFingerprint,providerWrites:1+activeMatching.length,identityRemap:false,hrWrites:0,externalWrites:0,before,after:{status:'resolved_distinct',identityRemap:false}};
+}
+function referencesShopper(row,ids){
+  const set=new Set(ids);
+  if(ADJUDICATION_OWNER_FIELDS.some(key=>set.has(str(row?.[key]))))return true;
+  return ADJUDICATION_OWNER_ARRAY_FIELDS.some(key=>arr(row?.[key]).some(v=>set.has(str(v))));
+}
+const NONBLOCKING_TERMINAL=/^(?:submitted|submitida|realizada|completed|completada|liquidated|liquidada|paid|pagada|cancelled|cancelada|rejected|rechazada|certificada|certified|closed|cerrada)$/i;
+async function shopperDependencyPreview({db,tenantId,projectId,shopperId,hrSnapshot}){
+  const tenant=db.collection('tenants').doc(tenantId),project=tenant.collection('projects').doc(projectId);
+  const crossSnap=await tenant.collection('shopperIdentityCrosswalk').get();
+  const sourceIds=new Set([shopperId]);
+  for(const doc of arr(crossSnap?.docs)){
+    const row=doc.data()||{};
+    if(str(row.shopperId||row.canonicalShopperId)===shopperId){
+      [doc.id,row.sourceStableKey,row.sourceShopperId].map(str).filter(Boolean).forEach(x=>sourceIds.add(x));
+    }
+  }
+  let hrAvailable=false,currentHrIdentity=false,currentHrAssignedVisits=0,hrRevision='';
+  if(hrSnapshot){
+    const parsed=shoppersFromSnapshot(hrSnapshot);hrAvailable=true;
+    hrRevision=str(hrSnapshot?.revision||hrSnapshot?.sourceRevision||'');
+    currentHrIdentity=parsed.shoppers.some(x=>sourceIds.has(str(x.shopperId)));
+    currentHrAssignedVisits=arr(hrSnapshot.visits).filter(v=>sourceIds.has(str(v?.shopperId))).length;
+  }
+  const domainCounts={},blocking=[];
+  for(const [scope,name] of ADJUDICATION_DOMAIN_COLLECTIONS){
+    const col=scope==='tenant'?tenant.collection(name):project.collection(name),snap=await col.get();
+    const rows=arr(snap?.docs).map(doc=>({id:doc.id,...(doc.data()||{})})).filter(row=>referencesShopper(row,[...sourceIds]));
+    domainCounts[name]=rows.length;
+    if(['visits','postulations','reservations','liquidations'].includes(name)){
+      const active=rows.filter(row=>!NONBLOCKING_TERMINAL.test(str(row.status||row.estado||row.state)));
+      if(active.length)blocking.push({domain:name,count:active.length});
+    }
+  }
+  if(currentHrIdentity)blocking.push({domain:'hr_current_identity',count:1});
+  if(currentHrAssignedVisits)blocking.push({domain:'hr_current_assignments',count:currentHrAssignedVisits});
+  if(!hrAvailable)blocking.push({domain:'hr_authority_unavailable',count:1});
+  const members=await adjudicationMembershipDocs(tenant.collection('users'),shopperId);
+  const profile=await tenant.collection('shoppers').doc(shopperId).get();
+  return {
+    shopperId,sourceShopperIds:[...sourceIds].sort(),hrAvailable,hrRevision,currentHrIdentity,currentHrAssignedVisits,
+    activeMemberships:members.filter(doc=>(doc.data()||{}).active===true).length,
+    profilePresent:profile.exists,domainCounts,blocking,safeToRetire:blocking.length===0,
+    hrWrites:0,externalWrites:0
+  };
+}
+async function durableShopperRetire({auth,db,command,actor,shopperId,hrSnapshot}){
+  if(!OPERATOR_ROLES.includes(str(actor?.role))||actor?.selfScoped===true)throw new Error('SHOPPER_DELETE_OPERATOR_REQUIRED');
+  const tenantId=str(command.tenantId),projectId=str(command.projectId),tenant=db.collection('tenants').doc(tenantId);
+  const preview=await shopperDependencyPreview({db,tenantId,projectId,shopperId,hrSnapshot});
+  if(!preview.safeToRetire){
+    const error=new Error('SHOPPER_DELETE_UNSAFE_DEPENDENCIES');
+    error.dependencyPreview=preview;throw error;
+  }
+  const profileRef=tenant.collection('shoppers').doc(shopperId),profileSnap=await profileRef.get();
+  if(!profileSnap.exists)throw new Error('SHOPPER_DELETE_PROFILE_MISSING');
+  const users=tenant.collection('users'),memberDocs=await adjudicationMembershipDocs(users,shopperId);
+  const authBefore=[];
+  for(const doc of memberDocs){
+    try{const u=await auth.getUser(doc.id);authBefore.push({uid:u.uid,disabled:u.disabled===true});if(u.disabled!==true)await auth.updateUser(u.uid,{disabled:true});}
+    catch(error){if(!isNotFound(error))throw error;}
+  }
+  const crossSnap=await tenant.collection('shopperIdentityCrosswalk').get();
+  const crossRefs=arr(crossSnap?.docs).filter(doc=>str((doc.data()||{}).shopperId||doc.id)===shopperId).map(doc=>tenant.collection('shopperIdentityCrosswalk').doc(doc.id));
+  const reviewSnap=await tenant.collection('shopperIdentityReviews').get();
+  const reviewRefs=arr(reviewSnap?.docs).filter(doc=>reviewIds(doc.data()||{}).includes(shopperId)&&str((doc.data()||{}).status)==='active').map(doc=>tenant.collection('shopperIdentityReviews').doc(doc.id));
+  const tombstoneRef=tenant.collection('shopperTombstones').doc(shopperId),stamp=now(),before=clean(profileSnap.data()||{});
+  try{
+    await db.runTransaction(async tx=>{
+      const current=await tx.get(profileRef);if(!current.exists)throw new Error('SHOPPER_DELETE_PROFILE_DISAPPEARED');
+      tx.set(profileRef,{active:false,status:'retired',identityState:'retired_by_admin',visibleInActiveReadModel:false,retiredAt:stamp,retiredReason:str(command.payload?.reason),updatedAt:stamp},{merge:true});
+      memberDocs.forEach(doc=>tx.set(users.doc(doc.id),{active:false,status:'retired',identityState:'retired_by_admin',retiredAt:stamp,updatedAt:stamp},{merge:true}));
+      crossRefs.forEach(ref=>tx.set(ref,{active:false,status:'retired',retiredAt:stamp,updatedAt:stamp},{merge:true}));
+      reviewRefs.forEach(ref=>tx.set(ref,{status:'retired',retiredAt:stamp,updatedAt:stamp},{merge:true}));
+      tx.set(tombstoneRef,{
+        schemaVersion:SHOPPER_TOMBSTONE_SCHEMA,shopperId,tenantId,projectId,status:'retired',
+        reason:str(command.payload?.reason),actorUidFingerprint:providerUidFingerprint(actor.uid),
+        dependencyPreview:preview,before:{shopperId,sourceType:str(before.sourceType),identityState:str(before.identityState),active:before.active!==false},
+        after:{active:false,status:'retired',identityState:'retired_by_admin'},retiredAt:stamp,updatedAt:stamp,
+        hrWrites:0,externalWrites:0,physicalDelete:false
+      },{merge:false});
+    });
+  }catch(error){
+    for(const prior of authBefore){try{await auth.updateUser(prior.uid,{disabled:prior.disabled});}catch(_){}}
+    throw error;
+  }
+  for(const prior of authBefore){try{const u=await auth.getUser(prior.uid);if(u.disabled!==true)throw new Error('SHOPPER_DELETE_AUTH_READBACK_MISMATCH');}catch(error){if(!isNotFound(error))throw error;}}
+  const [profileRb,tombRb]=await Promise.all([profileRef.get(),tombstoneRef.get()]);
+  if(!profileRb.exists||str((profileRb.data()||{}).identityState)!=='retired_by_admin'||!tombRb.exists)throw new Error('SHOPPER_DELETE_DURABLE_READBACK_MISMATCH');
+  const activeAfter=(await adjudicationMembershipDocs(users,shopperId)).filter(doc=>(doc.data()||{}).active===true);
+  if(activeAfter.length)throw new Error('SHOPPER_DELETE_ACTIVE_MEMBERSHIP_REMAINS');
+  return {shopperId,retired:true,deletedFromActiveReadModel:true,tombstoneId:shopperId,dependencyPreview:preview,providerWrites:2+memberDocs.length+crossRefs.length+reviewRefs.length,authRetired:authBefore.length,physicalDelete:false,hrWrites:0,externalWrites:0};
+}
+
 const ADJUDICATION_PROFILE_IDENTITY_FIELDS=new Set([
   'id','shopperId','canonicalShopperId','tenantId','sourceType','hrSourceRevision','lastHrSyncedAt','hrManaged',
   'sourceIdentityKey','identityState','supersededByShopperId','supersededAt','providerUidFingerprint',
@@ -1109,7 +1306,7 @@ async function normalizeDurableShopperCredentials({auth,db,tenantId}={}){
   };
 }
 
-export function createShopperCommandProvider({auth,db,policy}={}){
+export function createShopperCommandProvider({auth,db,policy,hrSnapshot=null,hrRevision=''}={}){
   const pv=validateProviderPolicy(policy);if(!pv.ok)throw new Error('SHOPPER_PROVIDER_POLICY_INVALID:'+pv.errors.join(','));
   if(!auth?.getUser||!auth?.createUser||!auth?.setCustomUserClaims||!db?.collection||!db?.runTransaction)throw new Error('SHOPPER_PROVIDER_DEPENDENCIES_MISSING');
   return Object.freeze({
@@ -1134,7 +1331,7 @@ export function createShopperCommandProvider({auth,db,policy}={}){
         const priority=p=>p?.mode==='ALIAS_KEEPER'?0:p?.mode==='ALIAS_RETIRE_AFTER_KEEPER'?2:1;
         return priority(pa)-priority(pb)||str(a.shopperId).localeCompare(str(b.shopperId));
       });
-      let created=0,replayed=0,writes=0,credentialNormalized=0,credentialRuleMissing=0,aliasMigrated=0,aliasPrincipalsRetired=0,staleTenantAdjudicationRepairs=0;
+      let created=0,replayed=0,writes=0,credentialNormalized=0,credentialRuleMissing=0,aliasMigrated=0,aliasPrincipalsRetired=0,staleTenantAdjudicationRepairs=0,identityReviewWrites=0;
       const identityReviewQueue=[],identityMigrationQueue=[];
       const reviewableCredentialCollisions=new Set([
         'SHOPPER_VISIBLE_LOGIN_COLLISION','SHOPPER_AUTH_EMAIL_CONFLICT','SHOPPER_CREDENTIAL_NAME_INCOMPLETE',
@@ -1149,14 +1346,18 @@ export function createShopperCommandProvider({auth,db,policy}={}){
           const reason=str(error?.message||error).split(':')[0];
           if(!reviewableCredentialCollisions.has(reason))throw error;
           const credential=shopperCredentialRule(source);
-          identityReviewQueue.push({
+          const reviewRow={
             sourceShopperId:source.shopperId,
             canonicalShopperId,
+            shopperIds:uniq([source.shopperId,canonicalShopperId]),
             country:str(source.country||source.pais),
             reason,
             credentialFingerprint:credential.ok?sha(`${scope.tenantId}\0${credential.login}`).slice(0,24):null,
             requiresHumanAdjudication:true
-          });
+          };
+          const durableReview=await persistIdentityReview({db,tenantId:scope.tenantId,projectId:scope.projectId,sourceRevision,row:reviewRow});
+          identityReviewWrites+=Number(durableReview.writes||0);writes+=Number(durableReview.writes||0);
+          if(!durableReview.suppressed)identityReviewQueue.push(durableReview.row);
           continue;
         }
         if(result.authCreated)created++;
@@ -1184,7 +1385,7 @@ export function createShopperCommandProvider({auth,db,policy}={}){
         aliasMigrated,aliasPrincipalsRetired,
         tenantAdjudicationSuppressed:suppressedTenantAdjudications.size,staleTenantAdjudicationRepairs,
         authCreated:created,idempotentReplays:replayed,credentialNormalized,credentialRuleMissing,
-        credentialRuleVersion:CREDENTIAL_RULE_VERSION,passwordProofVersion:CREDENTIAL_PASSWORD_PROOF_VERSION,providerWrites:writes,hrWrites:0,externalWrites:0,fuzzyMatching:false
+        credentialRuleVersion:CREDENTIAL_RULE_VERSION,passwordProofVersion:CREDENTIAL_PASSWORD_PROOF_VERSION,identityReviewWrites,providerWrites:writes,hrWrites:0,externalWrites:0,fuzzyMatching:false
       };
     },
     async execute(token,command={}){
@@ -1204,6 +1405,16 @@ export function createShopperCommandProvider({auth,db,policy}={}){
           const result=await durableIdentityAdjudication({auth,db,command,actor,canonicalShopperId:shopperId});
           await receipt.set({status:'committed',commandDigest:digest,shopperId,commandType:command.commandType,providerAck:true,actorUid:actor.uid,identityLinkId:result.identityLinkId,identityConsolidated:result.identityConsolidated===true,canonicalProfileRecovered:result.canonicalProfileRecovered===true,canonicalProfileRecoveredFromAliasId:result.canonicalProfileRecoveredFromAliasId||null,canonicalRecoveryAuthorityRef:result.canonicalRecoveryAuthorityRef||null,keeperUidFingerprint:result.keeperUidFingerprint||null,retiredPrincipalCount:Number(result.retiredPrincipalCount||0),domainWrites:result.domainWrites||{},updatedAt:now()},{merge:false});
           return ack(command,shopperId,{idempotentReplay:false,providerWrites:result.providerWrites+1,identityAdjudicated:true,identityConsolidated:result.identityConsolidated===true,canonicalProfileRecovered:result.canonicalProfileRecovered===true,canonicalProfileRecoveredFromAliasId:result.canonicalProfileRecoveredFromAliasId||null,canonicalRecoveryAuthorityRef:result.canonicalRecoveryAuthorityRef||null,keeperUidFingerprint:result.keeperUidFingerprint||null,retiredPrincipalCount:Number(result.retiredPrincipalCount||0),domainWrites:result.domainWrites||{},historicalVisitRowsPreserved:result.historicalVisitRowsPreserved===true,authoritativeVisitCount:Number(result.authoritativeVisitCount||0),hrWrites:Number(result.hrWrites||0),externalWrites:Number(result.externalWrites||0),identityLinkId:result.identityLinkId,canonicalShopperId:result.canonicalShopperId,exactAliases:result.exactAliases,authorityType:result.authorityType});
+        }
+        if(command.commandType==='shopper.identity.review.resolve'){
+          const result=await durableDistinctIdentityResolution({db,command,actor});
+          await receipt.set({status:'committed',commandDigest:digest,shopperId,commandType:command.commandType,providerAck:true,actorUid:actor.uid,resolutionId:result.resolutionId,shopperIds:result.shopperIds,evidenceFingerprint:result.evidenceFingerprint,identityRemap:false,updatedAt:now()},{merge:false});
+          return ack(command,shopperId,{idempotentReplay:false,providerWrites:result.providerWrites+1,identityReviewResolved:true,resolution:'distinct',resolutionId:result.resolutionId,shopperIds:result.shopperIds,identityRemap:false,before:result.before,after:result.after,hrWrites:0,externalWrites:0});
+        }
+        if(command.commandType==='shopper.delete'){
+          const result=await durableShopperRetire({auth,db,command,actor,shopperId,hrSnapshot});
+          await receipt.set({status:'committed',commandDigest:digest,shopperId,commandType:command.commandType,providerAck:true,actorUid:actor.uid,retired:true,tombstoneId:result.tombstoneId,dependencyPreview:result.dependencyPreview,updatedAt:now()},{merge:false});
+          return ack(command,shopperId,{idempotentReplay:false,providerWrites:result.providerWrites+1,shopperRetired:true,deletedFromActiveReadModel:true,tombstoneId:result.tombstoneId,dependencyPreview:result.dependencyPreview,authRetired:result.authRetired,physicalDelete:false,hrWrites:0,externalWrites:0});
         }
         if(command.commandType==='shopper.credential.reset'){
           if(!auth?.updateUser)throw new Error('SHOPPER_CREDENTIAL_AUTH_UPDATE_UNAVAILABLE');
@@ -1232,9 +1443,9 @@ export function createShopperCommandProvider({auth,db,policy}={}){
         const manual=await persistManualProfile({db,command,shopperId,uid:result.uid,projectIds:result.projectIds||[command.projectId]});
         await receipt.set({status:'committed',commandDigest:digest,shopperId,commandType:command.commandType,providerAck:true,actorUid:actor.uid,updatedAt:now()},{merge:false});
         return ack(command,shopperId,{uidFingerprint:providerUidFingerprint(result.uid),idempotentReplay:result.idempotentReplay,providerWrites:Number(result.providerWrites||0)+Number(manual.providerWrites||0)+1,profileUpdated:true,identityLinkId:manual.identityLinkId,sourceIdentityKey:manual.sourceIdentityKey,platformCreatedAuthority:manual.platformCreatedAuthority===true});
-      }catch(error){return blocked(command,str(error?.message||error));}
+      }catch(error){return blocked(command,str(error?.message||error),error?.dependencyPreview?{dependencyPreview:error.dependencyPreview}:{});}
     },
-    status(){return {version:VERSION,enabled:true,allowedTenantIds:uniq(policy.allowedTenantIds),allowedProjectIds:uniq(policy.allowedProjectIds),hrWrites:false,externalWrites:false,fuzzyMatching:false,stableIdentity:true,profileMutation:true,identityAdjudication:true,credentialEnrollment:true,credentialRepair:true,credentialRuleVersion:CREDENTIAL_RULE_VERSION,shopperSelfProfileUpdate:true};}
+    status(){return {version:VERSION,enabled:true,allowedTenantIds:uniq(policy.allowedTenantIds),allowedProjectIds:uniq(policy.allowedProjectIds),hrWrites:false,externalWrites:false,fuzzyMatching:false,stableIdentity:true,profileMutation:true,identityAdjudication:true,identityReviewResolution:true,safeRetire:true,credentialEnrollment:true,credentialRepair:true,credentialRuleVersion:CREDENTIAL_RULE_VERSION,shopperSelfProfileUpdate:true};}
   });
 }
 

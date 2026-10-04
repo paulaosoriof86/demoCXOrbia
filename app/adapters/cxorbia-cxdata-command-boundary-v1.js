@@ -166,6 +166,31 @@
       built.command.authorization={providerEnforcementRequired:true,permission:'shopper.identity.adjudicate',humanAdjudicationRequired:true};
       return execute(built.command,meta);
     };
+
+    D.resolveShopperIdentityReview=function(shopperIds,meta){
+      meta=commandMeta(meta);const c=ctx(),ids=[...new Set((Array.isArray(shopperIds)?shopperIds:[]).map(String).map(x=>x.trim()).filter(Boolean))].sort();
+      const current=ids.map(id=>typeof D.getShopper==='function'?D.getShopper(id):null).filter(Boolean);
+      const expected=hash(current.map(x=>[String(x.id||x.shopperId),versionOf(x)]));
+      const built=CX.shopperAdminCommandContract?.identityReviewResolve?.({
+        tenantId:c.tenantId,projectId:c.projectId,periodId:c.periodId,projectIds:c.projectIds.length?c.projectIds:[c.projectId],
+        actorId:c.actorId,actorRole:c.role,shopperIds:ids,humanConfirmed:true,reason:meta.reason||'admin_confirmed_distinct_humans',
+        evidence:meta.evidence||'',expectedVersion:expected,idempotencyKey:idempotency('shopper.identity.review.resolve',ids.join('|'),{shopperIds:ids,reason:meta.reason||'admin_confirmed_distinct_humans',evidence:meta.evidence||''},expected)
+      });
+      if(!built?.ok){const r=CX.commandAdapter?.blocked?.(built?.command||{},'SHOPPER_IDENTITY_REVIEW_RESOLUTION_INVALID',{errors:built?.errors||[]})||{ok:false,status:'blocked'};return meta.ackAware?Promise.resolve(surfaceBlocked(r)):legacyFailClosed(r);}
+      built.command.authorization={providerEnforcementRequired:true,permission:'shopper.identity.review.resolve',humanAdjudicationRequired:true};
+      return execute(built.command,meta);
+    };
+    D.deleteShopperProfile=function(id,meta){
+      meta=commandMeta(meta);const c=ctx(),current=typeof D.getShopper==='function'?D.getShopper(id):null,expected=versionOf(current);
+      const built=CX.shopperAdminCommandContract?.deleteShopper?.({
+        tenantId:c.tenantId,projectId:c.projectId,periodId:c.periodId,projectIds:c.projectIds.length?c.projectIds:[c.projectId],
+        actorId:c.actorId,actorRole:c.role,shopperId:id,humanConfirmed:true,reason:meta.reason||'admin_safe_retire',
+        expectedVersion:expected,idempotencyKey:idempotency('shopper.delete',id,{shopperId:id,reason:meta.reason||'admin_safe_retire'},expected)
+      });
+      if(!built?.ok){const r=CX.commandAdapter?.blocked?.(built?.command||{},'SHOPPER_DELETE_INVALID',{errors:built?.errors||[]})||{ok:false,status:'blocked'};return meta.ackAware?Promise.resolve(surfaceBlocked(r)):legacyFailClosed(r);}
+      built.command.authorization={providerEnforcementRequired:true,permission:'shopper.delete',humanAdjudicationRequired:true};
+      return execute(built.command,meta);
+    };
     D.resetShopperCredential=function(id,meta){
       meta=commandMeta(meta);const c=ctx();const current=typeof D.getShopper==='function'?D.getShopper(id):null;
       const expected=versionOf(current);

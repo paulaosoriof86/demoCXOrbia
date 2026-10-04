@@ -12,7 +12,7 @@ import { createAcademyCommandProvider } from '../cxorbia-academy-command-provide
 export const VERSION='cxorbia-command-runtime-v1';
 const ROUTE='/v1/cxorbia/commands';
 const PROJECT_COMMANDS=new Set(['project.create','project.update','period.create','period.state.update']);
-const SHOPPER_COMMANDS=new Set(['shopper.create','shopper.update','shopper.credential.reset','shopper.identity.adjudicate']);
+const SHOPPER_COMMANDS=new Set(['shopper.create','shopper.update','shopper.credential.reset','shopper.identity.adjudicate','shopper.identity.review.resolve','shopper.delete']);
 const FINANCE_COMMANDS=new Set(['finance.reconcile.visit','finance.historical.reconcile','finance.payment.batch','finance.movement.create','finance.account.create','finance.account.apply']);
 const COMMERCIAL_COMMANDS=new Set(['client.create','client.update','crm.account.create','crm.account.update','crm.contact.create','crm.contact.update','crm.opportunity.create','crm.opportunity.update','crm.column.create','crm.column.update','crm.column.delete']);
 const ACADEMY_COMMANDS=new Set(['academy.course.create','academy.course.update','academy.course.state','academy.category.create']);
@@ -77,7 +77,7 @@ export function createProviderForCommand(command,overrides={}){
   }
   if(kind==='shopper'){
     if(!shopperPolicy)return {provider:null,kind,error:'SHOPPER_COMMAND_PROVIDER_NOT_CONFIGURED'};
-    try{return {provider:createShopperCommandProvider({auth,db,policy:shopperPolicy}),kind};}
+    try{return {provider:createShopperCommandProvider({auth,db,policy:shopperPolicy,hrSnapshot,hrRevision}),kind};}
     catch(error){return {provider:null,kind,error:'SHOPPER_COMMAND_PROVIDER_POLICY_INVALID',detail:str(error?.message||error)};}
   }
   if(kind==='finance'){

@@ -98,7 +98,7 @@ const paths=id=>({
   cross:`tenants/tenant-a/shopperIdentityCrosswalk/${id}`,
   users:'tenants/tenant-a/users'
 });
-const provider=(auth,db)=>createShopperCommandProvider({auth,db,policy});
+const provider=(auth,db,options={})=>createShopperCommandProvider({auth,db,policy,...options});
 
 // 1. Creación inicial: Auth + claims + perfil + membership + crosswalk con identidad estable.
 test('Gate 6 / 1 initial HR shopper creates one durable identity',async()=>{
@@ -960,4 +960,43 @@ test('VRM-220 / missing canonical profile stays fail-closed without one exact tr
   assert.equal(result.ok,false);assert.equal(result.providerWrites,0);assert.equal(result.code,'SHOPPER_IDENTITY_CANONICAL_PROFILE_MISSING');
   assert.equal(db.get('tenants/tenant-a/shoppers/'+canonical),undefined);
   assert.equal(db.get('tenants/tenant-a/users/'+uid).shopperId,alias);assert.equal((await auth.getUser(uid)).disabled,false);
+});
+
+test('VRM-221 keep-separate persists durable decision with zero identity remap and exact replay',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db),a='shopper_gt_distinct_a',b='shopper_gt_distinct_b';
+  db.seed('tenants/tenant-a/users/admin-1',{active:true,tenantId:'tenant-a',role:'super',authNamespace:'staff',projectIds:['project-a']});
+  for(const id of [a,b]){db.seed('tenants/tenant-a/shoppers/'+id,{id,shopperId:id,tenantId:'tenant-a',projectIds:['project-a'],firstName:'Persona',lastName:id===a?'Uno':'Dos'});db.seed('tenants/tenant-a/shopperIdentityCrosswalk/'+id,{tenantId:'tenant-a',shopperId:id,sourceStableKey:id,projectIds:['project-a']});}
+  db.seed('tenants/tenant-a/shopperIdentityReviews/review-pair',{schemaVersion:'cxorbia.shopper-identity-review.v1',reviewId:'review-pair',tenantId:'tenant-a',projectScope:'project-a',shopperIds:[a,b],candidateShopperIds:[a,b],status:'active',reason:'ambiguous_exact_technical_anchor',evidenceFingerprint:'evidence-1'});
+  const command={version:'cxorbia-command-adapter-v1',commandType:'shopper.identity.review.resolve',tenantId:'tenant-a',projectId:'project-a',periodId:'project-a-2026-10',entityId:a,idempotencyKey:'vrm221-distinct-1',authorization:{providerEnforcementRequired:true,permission:'shopper.identity.review.resolve'},payload:{shopperIds:[a,b],resolution:'distinct',humanConfirmed:true,reason:'documentos_y_datos_operativos_distintos',evidence:'verificacion_admin_exacta'}};
+  const first=await p.execute('staff-token',command);assert.equal(first.ok,true);assert.equal(first.providerAck,true);assert.equal(first.identityReviewResolved,true);assert.equal(first.identityRemap,false);
+  assert.equal(db.get('tenants/tenant-a/shopperIdentityReviews/review-pair').status,'resolved_distinct');
+  const resolution=db.get('tenants/tenant-a/shopperIdentityReviewResolutions/'+first.resolutionId);assert.equal(resolution.status,'resolved_distinct');assert.equal(resolution.identityRemap,false);assert.deepEqual(resolution.shopperIds,[a,b].sort());
+  assert.equal(db.get('tenants/tenant-a/shopperIdentityCrosswalk/'+a).shopperId,a);assert.equal(db.get('tenants/tenant-a/shopperIdentityCrosswalk/'+b).shopperId,b);
+  const replay=await p.execute('staff-token',command);assert.equal(replay.ok,true);assert.equal(replay.idempotentReplay,true);assert.equal(replay.providerWrites,0);
+});
+
+test('VRM-221 delete blocks current HR identity and preserves Auth/profile/HR authority',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),id='shopper_gt_hr_current_delete_block',uid='hr-current-uid',snap=snapshot({shopperId:id,shopperCode:'TYA_GT_CURRENT'}),p=provider(auth,db,{hrSnapshot:snap,hrRevision:'rev-current'});
+  db.seed('tenants/tenant-a/users/admin-1',{active:true,tenantId:'tenant-a',role:'super',authNamespace:'staff',projectIds:['project-a']});
+  auth.seed({uid,email:internalEmailTest('tenant-a','persona.actual'),disabled:false,customClaims:{tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:id,projectIds:['project-a']}});
+  db.seed('tenants/tenant-a/users/'+uid,{active:true,tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:id,projectIds:['project-a']});
+  db.seed('tenants/tenant-a/shoppers/'+id,{id,shopperId:id,tenantId:'tenant-a',projectIds:['project-a'],sourceType:'hr_external',firstName:'Persona',lastName:'Actual'});
+  db.seed('tenants/tenant-a/shopperIdentityCrosswalk/'+id,{tenantId:'tenant-a',shopperId:id,sourceStableKey:id,projectIds:['project-a']});
+  const command={version:'cxorbia-command-adapter-v1',commandType:'shopper.delete',tenantId:'tenant-a',projectId:'project-a',periodId:'project-a-2026-10',entityId:id,idempotencyKey:'vrm221-delete-block',authorization:{providerEnforcementRequired:true,permission:'shopper.delete'},payload:{shopperId:id,humanConfirmed:true,reason:'admin_requested_duplicate_cleanup'}};
+  const result=await p.execute('staff-token',command);assert.equal(result.ok,false);assert.equal(result.code,'SHOPPER_DELETE_UNSAFE_DEPENDENCIES');assert.equal(result.dependencyPreview.safeToRetire,false);assert.equal(result.dependencyPreview.currentHrIdentity,true);assert.equal(result.providerWrites,0);
+  assert.equal((await auth.getUser(uid)).disabled,false);assert.notEqual(db.get('tenants/tenant-a/shoppers/'+id).identityState,'retired_by_admin');assert.equal(db.get('tenants/tenant-a/shopperTombstones/'+id),undefined);
+});
+
+test('VRM-221 safe delete retires platform orphan, disables Auth and preserves tombstone with replay',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),id='shopper_manual_vrm221_orphan',uid='orphan-uid',emptyHr={sourceSafe:true,imported:false,firestoreWrites:0,tenantId:'tenant-a',projectId:'project-a',visits:[],shoppers:[]},p=provider(auth,db,{hrSnapshot:emptyHr,hrRevision:'rev-empty'});
+  db.seed('tenants/tenant-a/users/admin-1',{active:true,tenantId:'tenant-a',role:'super',authNamespace:'staff',projectIds:['project-a']});
+  auth.seed({uid,email:internalEmailTest('tenant-a','persona.orphan'),disabled:false,customClaims:{tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:id,projectIds:['project-a']}});
+  db.seed('tenants/tenant-a/users/'+uid,{active:true,tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:id,projectIds:['project-a']});
+  db.seed('tenants/tenant-a/shoppers/'+id,{id,shopperId:id,tenantId:'tenant-a',projectIds:['project-a'],sourceType:'platform',firstName:'Persona',lastName:'Orphan',active:true});
+  db.seed('tenants/tenant-a/shopperIdentityCrosswalk/'+id,{tenantId:'tenant-a',shopperId:id,sourceStableKey:id,projectIds:['project-a'],sourceType:'platform'});
+  db.seed('tenants/tenant-a/projects/project-a/certifications/cert-historical',{shopperId:id,status:'certificada'});
+  const command={version:'cxorbia-command-adapter-v1',commandType:'shopper.delete',tenantId:'tenant-a',projectId:'project-a',periodId:'project-a-2026-10',entityId:id,idempotencyKey:'vrm221-delete-safe',authorization:{providerEnforcementRequired:true,permission:'shopper.delete'},payload:{shopperId:id,humanConfirmed:true,reason:'perfil_huerfano_confirmado'}};
+  const first=await p.execute('staff-token',command);assert.equal(first.ok,true);assert.equal(first.shopperRetired,true);assert.equal(first.deletedFromActiveReadModel,true);assert.equal(first.physicalDelete,false);assert.equal(first.dependencyPreview.safeToRetire,true);
+  assert.equal((await auth.getUser(uid)).disabled,true);assert.equal(db.get('tenants/tenant-a/users/'+uid).active,false);assert.equal(db.get('tenants/tenant-a/shoppers/'+id).identityState,'retired_by_admin');assert.equal(db.get('tenants/tenant-a/shopperTombstones/'+id).status,'retired');assert.equal(db.get('tenants/tenant-a/projects/project-a/certifications/cert-historical').shopperId,id);
+  const replay=await p.execute('staff-token',command);assert.equal(replay.ok,true);assert.equal(replay.idempotentReplay,true);assert.equal(replay.providerWrites,0);assert.equal((await auth.getUser(uid)).disabled,true);
 });

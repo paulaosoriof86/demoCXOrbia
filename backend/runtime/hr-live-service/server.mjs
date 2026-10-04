@@ -241,7 +241,8 @@ async function protectedPlatformState(current,principal,scope,operational){
     const live=String(visit.shopperId||'').trim(),canonical=cross.get(live);
     if(canonical){visit.canonicalShopperId=canonical;visit.identityAuthority='hr_exact_crosswalk';mappedVisits++;}
   }
-  const projectRef=principal.db.collection('tenants').doc(scope.tenantId).collection('projects').doc(scope.projectId);
+  const tenantRef=principal.db.collection('tenants').doc(scope.tenantId);
+  const projectRef=tenantRef.collection('projects').doc(scope.projectId);
   const reservationsRef=projectRef.collection('reservations');
   const certificationsRef=projectRef.collection('certifications');
   const recertificationsRef=projectRef.collection('certificationRecertifications');
@@ -267,9 +268,23 @@ async function protectedPlatformState(current,principal,scope,operational){
     if(principal.role!=='shopper')return true;
     return String(row.status||'active')==='active'&&(String(row.scope)==='all'||(Array.isArray(row.targetShopperIds)&&row.targetShopperIds.map(String).includes(principal.shopperId)));
   });
+  const governanceAllowed=['super','admin'].includes(String(principal.role||'').toLowerCase());
+  const [identityReviewSnap,identityResolutionSnap,tombstoneSnap]=governanceAllowed?await Promise.all([
+    tenantRef.collection('shopperIdentityReviews').get(),
+    tenantRef.collection('shopperIdentityReviewResolutions').get(),
+    tenantRef.collection('shopperTombstones').get()
+  ]):[{docs:[]},{docs:[]},{docs:[]}];
+  const rows=s=>s.docs.map(doc=>({id:doc.id,...(doc.data()||{})}));
+  const projectScoped=row=>{
+    const scopeId=String(row.projectScope||row.projectId||'*');
+    return scopeId==='*'||scopeId==='tenant'||scopeId===scope.projectId;
+  };
+  const identityReviews=rows(identityReviewSnap).filter(projectScoped);
+  const identityReviewResolutions=rows(identityResolutionSnap).filter(projectScoped);
+  const shopperTombstones=rows(tombstoneSnap).filter(row=>!row.projectId||String(row.projectId)===scope.projectId);
   const commercial=await commercialTenantState(principal,scope);
   const academy=await academyTenantState(principal,scope);
-  return {snapshot,protectedState:{reservations,certifications,certificationRecertifications,periods,commercial,academy,certificationAuthority:'firestore_project_certifications_exact_identity',identityAuthority:'hr_exact_crosswalk',crosswalkTokenCount:cross.size,mappedShoppers,mappedVisits,sourceRevision:current.revision}};
+  return {snapshot,protectedState:{reservations,certifications,certificationRecertifications,periods,identityReviews,identityReviewResolutions,shopperTombstones,commercial,academy,certificationAuthority:'firestore_project_certifications_exact_identity',identityGovernanceAuthority:'firestore_tenant_shopper_identity_governance',identityAuthority:'hr_exact_crosswalk',crosswalkTokenCount:cross.size,mappedShoppers,mappedVisits,sourceRevision:current.revision}};
 }
 
 function shopperPolicy(snapshot){

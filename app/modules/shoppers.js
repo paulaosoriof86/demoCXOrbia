@@ -85,6 +85,17 @@ CX.module('shoppers', ({data,ui})=>{
     return result;
   };
 
+  const selectedShopperIds=new Set();
+  let reviewListFilter=false,shopperSearchQuery='';
+  const selectedRows=()=>[...selectedShopperIds].map(id=>data.getShopper(id)).filter(Boolean);
+  const idSetForRows=rows=>new Set(rows.map(x=>String(x?.id||x?.shopperId||'')).filter(Boolean));
+  const referenceCount=(records,ids)=>arr(records).filter(r=>['shopperId','assignedShopperId','applicantShopperId','ownerShopperId','targetShopperId','beneficiaryShopperId','liquidationShopperId','reservationShopperId'].some(k=>ids.has(String(r?.[k]||'')))||arr(r?.shopperIds).some(v=>ids.has(String(v)))).length;
+  const dependencyPreviewHtml=rows=>{
+    const ids=idSetForRows(rows),visits=rows.reduce((n,x)=>n+data.visitsForShopper(x.id,false).length,0),access=rows.filter(x=>x?.visibleLogin||x?.user||x?.username).length;
+    const certs=referenceCount(data.__protectedCertifications,ids),posts=referenceCount(data._posts,ids),reservations=referenceCount(data.__protectedReservations,ids),liquidations=referenceCount(data.__protectedLiquidations,ids);
+    const financeRows=arr(data.__paymentReconciliations||data.__financeReconciliations||data.paymentReconciliations),finance=referenceCount(financeRows,ids),benefits=rows.reduce((n,x)=>n+arr(x?.benefits).length,0);
+    return `<div class="card card-p" style="margin-bottom:12px"><div style="font-weight:800;margin-bottom:8px">Vista previa antes de decidir</div><div class="grid g4" style="gap:8px"><div><b>${access}</b><div class="muted" style="font-size:10.5px">Acceso / usuario</div></div><div><b>${visits}</b><div class="muted" style="font-size:10.5px">Visitas / histórico</div></div><div><b>${certs}</b><div class="muted" style="font-size:10.5px">Certificaciones</div></div><div><b>${posts}</b><div class="muted" style="font-size:10.5px">Postulaciones</div></div><div><b>${reservations}</b><div class="muted" style="font-size:10.5px">Reservas</div></div><div><b>${liquidations}</b><div class="muted" style="font-size:10.5px">Liquidaciones</div></div><div><b>${financeRows.length?finance:'Proveedor'}</b><div class="muted" style="font-size:10.5px">Finanzas</div></div><div><b>${benefits}</b><div class="muted" style="font-size:10.5px">Otras referencias</div></div></div><div style="font-size:10.5px;color:var(--t3);margin-top:8px">El proveedor vuelve a validar dependencias, Auth y autoridad HR antes del commit. Esta vista no autoriza un retiro inseguro.</div></div>`;
+  };
   const row=(s)=>{
     /* P0-3 (paquete V110→V111, 20260714): antes el estado y el honorario SIEMPRE mostraban un
        badge concreto — si s.estado no era exactamente 'Pendiente' ni 'Certificado', el código
@@ -104,6 +115,7 @@ CX.module('shoppers', ({data,ui})=>{
       ? '<span class="bdg bdg-n">Referencia protegida</span>'
       : (profileComplete(s)?ui.bdg('Completo','g'):ui.bdg('Incompleto','a'));
     return `<tr data-sid="${s.id}" data-identity-review="${identityReviewIds.has(String(s.id||''))?'required':'clear'}" style="cursor:pointer">
+    <td style="width:38px"><input type="checkbox" data-select-shopper="${esc(s.id)}" aria-label="Seleccionar ${esc(s.nombre||'shopper')}" ${selectedShopperIds.has(String(s.id))?'checked':'' }></td>
     <td><div class="flex">${av(s.nombre,30)}
       <div><b>${s.nombre||('🔒 '+(s.code||'Referencia protegida'))}</b> ${identityReviewBadge(s)}<div style="font-size:11px;color:var(--t3)">${s.ciudad?s.ciudad+', ':''}${CX.paisName(s.pais)||s.pais||'—'}</div></div></div></td>
     <td>${scoreCell(s)}</td>
@@ -119,7 +131,9 @@ CX.module('shoppers', ({data,ui})=>{
      Every review schema is normalized here. Shopper views only consume the adjudicated result.
      Name/fuzzy similarity never authorizes a merge; exact technical evidence requires explicit
      Admin human confirmation and provider ACK. */
-  const providerIdentityReviewItems=arr(data.__identityReviewQueue);
+  const providerIdentityReviewItems=arr(data.__identityReviewQueue).filter(x=>String(x?.status||'active').toLowerCase()==='active');
+  const reviewIds=item=>[item?.shopperId,item?.sourceShopperId,item?.canonicalShopperId,item?.liveShopperId,item?.id,...arr(item?.shopperIds),...arr(item?.candidateShopperIds),...arr(item?.candidates),...arr(item?.exactAliases)].map(String).map(x=>x.trim()).filter(Boolean);
+  const distinctResolutionPairKeys=new Set(arr(data.__identityReviewResolutions).filter(x=>String(x?.status||'').toLowerCase()==='resolved_distinct'&&x?.identityRemap!==true).map(x=>[...new Set(reviewIds(x))].sort().join('|')).filter(Boolean));
   /* VRM-186 residual: a protected profile excluded from the operational list can still carry
      one exact technical alias to a currently visible project shopper. Normalize ONLY that
      deterministic one-to-one/project-scoped case into an Admin adjudication pair. */
@@ -152,8 +166,10 @@ CX.module('shoppers', ({data,ui})=>{
       syntheticExactAliasReviews.push({reason:'exact_profile_alias_requires_admin_resolution',candidates:pair,shopperIds:pair,requiresHumanAdjudication:true,source:'durable_exact_alias_profile'});
     });
   });
-  const identityReviewItems=[...normalizedProviderIdentityReviewItems,...syntheticExactAliasReviews];
-  const reviewIds=item=>[item?.shopperId,item?.sourceShopperId,item?.canonicalShopperId,item?.liveShopperId,item?.id,...arr(item?.shopperIds),...arr(item?.candidates),...arr(item?.exactAliases)].map(String).map(x=>x.trim()).filter(Boolean);
+  const identityReviewItems=[...normalizedProviderIdentityReviewItems,...syntheticExactAliasReviews].filter(item=>{
+    const ids=[...new Set(reviewIds(item))].sort();
+    return ids.length<2||!distinctResolutionPairKeys.has(ids.join('|'));
+  });
   const identityReviewIds=(()=>{const out=new Set();identityReviewItems.forEach(item=>reviewIds(item).forEach(id=>out.add(id)));return out;})();
   const identityReviewFor=id=>{id=String(id||'');return identityReviewItems.find(item=>reviewIds(item).includes(id))||null;};
   const identityReviewBadge=s=>identityReviewIds.has(String(s&&s.id||''))?ui.bdg('Revisar identidad','a'):'';
@@ -252,6 +268,28 @@ CX.module('shoppers', ({data,ui})=>{
       });
     },dismissOnBackdrop:false});
   };
+  const mergeSelectedIdentities=()=>{
+    const rows=selectedRows();if(rows.length<2){ui.toast('Selecciona al menos dos fichas para fusionar.','warn');return;}
+    ui.modal('Fusionar identidades',`<div style="font-size:12.5px;color:var(--t2);line-height:1.6;margin-bottom:12px">Confirma únicamente si todas las fichas seleccionadas corresponden a la misma persona. La plataforma no fusiona por nombre o similitud.</div>${dependencyPreviewHtml(rows)}<label class="lbl">Ficha canónica que se conservará</label><select class="sel" id="bulkCanonical" style="margin-bottom:12px"><option value="">Selecciona la ficha canónica</option>${rows.map(x=>`<option value="${esc(x.id)}">${esc(x.nombre||'Perfil sin nombre')} · ${esc(x.ciudad||CX.paisName(x.pais)||'—')}</option>`).join('')}</select><label class="flex" style="gap:8px;font-size:12px;color:var(--t1);margin-bottom:14px"><input type="checkbox" id="bulkMergeConfirm"> Confirmo que corresponden a la misma persona y autorizo consolidar acceso, histórico y referencias.</label><div style="text-align:right"><button class="btn btn-pr btn-sm" id="bulkMergeCommit">Fusionar identidades</button></div>`,{onMount:(ov,close)=>ov.querySelector('#bulkMergeCommit').addEventListener('click',async e=>{
+      const canonical=String(ov.querySelector('#bulkCanonical').value||''),confirmed=ov.querySelector('#bulkMergeConfirm').checked;if(!canonical){ui.toast('Selecciona la ficha canónica.','warn');return;}if(!confirmed){ui.toast('Confirma que las fichas corresponden a la misma persona.','warn');return;}
+      const aliases=rows.map(x=>String(x.id)).filter(id=>id!==canonical),btn=e.currentTarget;btn.disabled=true;btn.textContent='Fusionando…';
+      try{const result=await data.adjudicateShopperIdentity(canonical,aliases,{ackAware:true,reason:'admin_list_multi_select_same_human'});if(!commandOk(result)||result.identityConsolidated!==true)throw new Error(commandError(result)||'IDENTITY_CONSOLIDATION_NOT_CONFIRMED');selectedShopperIds.clear();close();ui.toast('Identidades fusionadas y confirmadas por el proveedor.','ok',4200);await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('admin_bulk_identity_merge');CX.router.nav('shoppers');}catch(error){btn.disabled=false;btn.textContent='Fusionar identidades';ui.toast('No se aplicó la fusión · '+String(error?.message||error),'err',5200);}
+    })});
+  };
+  const keepSelectedSeparate=()=>{
+    const rows=selectedRows();if(rows.length<2){ui.toast('Selecciona al menos dos fichas para mantener separadas.','warn');return;}
+    ui.modal('Mantener separadas',`<div style="font-size:12.5px;color:var(--t2);line-height:1.6;margin-bottom:12px">Esta decisión indica que las fichas seleccionadas <b>no corresponden a la misma persona</b>. No habrá remapeo de identidad.</div>${dependencyPreviewHtml(rows)}<label class="lbl">Razón de la decisión</label><textarea class="inp" id="bulkDistinctReason" rows="2" placeholder="Describe por qué deben permanecer separadas"></textarea><label class="lbl" style="margin-top:10px">Evidencia revisada</label><textarea class="inp" id="bulkDistinctEvidence" rows="2" placeholder="Indica la evidencia utilizada"></textarea><label class="flex" style="gap:8px;font-size:12px;color:var(--t1);margin:12px 0"><input type="checkbox" id="bulkDistinctConfirm"> Confirmo que no son la misma persona.</label><div style="text-align:right"><button class="btn btn-pr btn-sm" id="bulkDistinctCommit">Guardar decisión</button></div>`,{onMount:(ov,close)=>ov.querySelector('#bulkDistinctCommit').addEventListener('click',async e=>{
+      const reason=String(ov.querySelector('#bulkDistinctReason').value||'').trim(),evidence=String(ov.querySelector('#bulkDistinctEvidence').value||'').trim(),confirmed=ov.querySelector('#bulkDistinctConfirm').checked;if(!reason||!evidence){ui.toast('Registra la razón y la evidencia revisada.','warn');return;}if(!confirmed){ui.toast('Confirma que no son la misma persona.','warn');return;}
+      const btn=e.currentTarget;btn.disabled=true;btn.textContent='Guardando…';try{const result=await data.resolveShopperIdentityReview(rows.map(x=>x.id),{ackAware:true,reason,evidence});if(!commandOk(result)||result.identityReviewResolved!==true||result.identityRemap!==false)throw new Error(commandError(result)||'IDENTITY_DISTINCT_RESOLUTION_NOT_CONFIRMED');selectedShopperIds.clear();close();ui.toast('Decisión guardada. Las identidades permanecen separadas.','ok',4200);await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('admin_identity_distinct_resolution');CX.router.nav('shoppers');}catch(error){btn.disabled=false;btn.textContent='Guardar decisión';ui.toast('No se guardó la decisión · '+String(error?.message||error),'err',5200);}
+    })});
+  };
+  const deleteSelectedShopper=()=>{
+    const rows=selectedRows();if(rows.length!==1){ui.toast('Selecciona exactamente una ficha para eliminarla del listado activo.','warn');return;}const shopper=rows[0];
+    ui.modal('Eliminar perfil · '+(shopper.nombre||'shopper'),`<div style="font-size:12.5px;color:var(--t2);line-height:1.6;margin-bottom:12px">La plataforma hará un <b>retiro seguro</b>, no un borrado ciego. Si la identidad sigue vigente en HR o tiene dependencias autoritativas activas, el proveedor bloqueará la operación y mostrará la causa.</div>${dependencyPreviewHtml(rows)}<label class="lbl">Motivo</label><textarea class="inp" id="bulkDeleteReason" rows="2" placeholder="Indica por qué debe retirarse este perfil"></textarea><label class="flex" style="gap:8px;font-size:12px;color:var(--t1);margin:12px 0"><input type="checkbox" id="bulkDeleteConfirm"> Confirmo el retiro de esta ficha si el proveedor determina que es seguro.</label><div style="text-align:right"><button class="btn btn-warn btn-sm" id="bulkDeleteCommit">Eliminar perfil</button></div>`,{onMount:(ov,close)=>ov.querySelector('#bulkDeleteCommit').addEventListener('click',async e=>{
+      const reason=String(ov.querySelector('#bulkDeleteReason').value||'').trim(),confirmed=ov.querySelector('#bulkDeleteConfirm').checked;if(!reason){ui.toast('Registra el motivo del retiro.','warn');return;}if(!confirmed){ui.toast('Confirma el retiro seguro.','warn');return;}const btn=e.currentTarget;btn.disabled=true;btn.textContent='Validando dependencias…';
+      try{const result=await data.deleteShopperProfile(shopper.id,{ackAware:true,reason});if(!commandOk(result)||result.shopperRetired!==true){const er=new Error(commandError(result)||'SHOPPER_RETIRE_NOT_CONFIRMED');er.result=result;throw er;}selectedShopperIds.clear();close();ui.toast('Perfil retirado del listado activo con auditoría preservada.','ok',4200);await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('admin_shopper_safe_retire');CX.router.nav('shoppers');}catch(error){const p=error?.result?.dependencyPreview||error?.dependencyPreview;btn.disabled=false;btn.textContent='Eliminar perfil';if(p&&p.safeToRetire===false){ui.modal('No se puede eliminar este perfil',`<div style="font-size:12.5px;line-height:1.6">El proveedor bloqueó el retiro porque existen dependencias autoritativas.</div><div class="card card-p" style="margin-top:10px">${arr(p.blocking).map(x=>`<div><b>${esc(x.domain)}</b> · ${esc(x.count)}</div>`).join('')}</div><div style="font-size:11.5px;color:var(--t3);margin-top:10px">Corrige la dependencia o utiliza Fusionar identidades / Mantener separadas. No se modificó HR ni se borró histórico.</div>`);}else ui.toast('No se retiró el perfil · '+String(error?.message||error),'err',5200);}
+    })});
+  };
   /* ---------- HTML del módulo ---------- */
   const render=()=>{
     const L=list();
@@ -267,6 +305,7 @@ CX.module('shoppers', ({data,ui})=>{
     <div class="grid g4" style="margin-bottom:16px">
       <div data-tk="comp" style="cursor:pointer">${ui.kpi('Perfiles completos',L.filter(s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&profileComplete(s)).length,'g')}</div>
       <div data-tk="incom" style="cursor:pointer">${ui.kpi('Perfiles incompletos',L.filter(s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&!profileComplete(s)).length,'a')}</div>
+      <div data-tk="review" style="cursor:pointer">${ui.kpi('Requieren revisión / decisión',identityReviewIds.size,'a')}</div>
     </div>
     </div>
     <div style="font-size:10.5px;color:var(--t3);margin:-10px 0 12px">Activo = perfil real con al menos 1 visita realizada en los 6 meses previos al ${data.activeRefDate()} (fecha de referencia del periodo). Una referencia protegida nunca cuenta como activa.</div>
@@ -279,7 +318,8 @@ CX.module('shoppers', ({data,ui})=>{
           <button class="btn btn-pr btn-sm" id="shNew">+ Alta manual</button>
         </div>
       </div>
-      <table class="tbl"><thead><tr><th>Shopper</th><th>Rating</th><th>Visitas</th><th>Perfil</th><th>Estado</th><th>Honorario</th><th>Acciones</th></tr></thead>
+      <div id="shSelectionBar" class="between" style="display:none;margin:0 0 10px;padding:9px 11px;border:1px solid var(--border);border-radius:9px;background:var(--panel-2)"><b id="shSelectedCount">0 seleccionadas</b><div class="flex" style="gap:6px"><button class="btn btn-pr btn-sm" id="shBulkMerge">Fusionar identidades</button><button class="btn btn-soft btn-sm" id="shBulkDistinct">Mantener separadas</button><button class="btn btn-warn btn-sm" id="shBulkDelete">Eliminar perfil</button></div></div>
+      <table class="tbl"><thead><tr><th style="width:38px"><input type="checkbox" id="shSelectVisible" aria-label="Seleccionar visibles"></th><th>Shopper</th><th>Rating</th><th>Visitas</th><th>Perfil</th><th>Estado</th><th>Honorario</th><th>Acciones</th></tr></thead>
       <tbody id="shBody">${L.map(row).join('')}</tbody></table>
       <div id="shEmpty" style="display:none;padding:12px">${ui.empty('🔍','Sin resultados para tu búsqueda.')}</div>
       <div style="margin-top:14px">${ui.aiBox('El alta manual pide solo lo esencial (nombre, apellido y WhatsApp); el shopper completa el resto al ingresar. Si dos fichas tienen el mismo nombre pero no existe una coincidencia técnica verificable, permanecen separadas y se marcan para revisión.','Alta y calificación inteligente')}</div>
@@ -524,13 +564,17 @@ CX.module('shoppers', ({data,ui})=>{
         ui.modal('Criterios de puntuación',`<div class="card card-p" style="margin-bottom:12px"><b>Estado del contrato:</b> ${esc(contract.status||'—')} · runtimeEnabled=${contract.runtimeEnabled===true?'sí':'no'}<div style="font-size:11.5px;color:var(--t3);margin-top:5px">La UI no presenta un rating como real si no existe desglose source-safe y provenance runtime.</div></div><table class="tbl"><thead><tr><th>Criterio</th><th>Peso</th></tr></thead><tbody>${rows.map(([k,v])=>'<tr><td>'+esc(labels[k]||k)+'</td><td><b>'+esc(v)+'%</b></td></tr>').join('')}</tbody></table><div style="font-size:11px;color:var(--t3);margin-top:10px">Los datos sensibles, identidad, monto pagado y comunicaciones privadas no pueden usarse como proxy de calidad.</div>`);
       }catch(error){ui.toast('No fue posible leer el contrato de puntuación.','warn');}
     });
-    const bindRows=()=>document.querySelectorAll('#shBody [data-sid]').forEach(tr=>tr.addEventListener('click',()=>{
-      const s=data.getShopper(tr.dataset.sid); if(s)profileModal(s);
-    }));
-    bindRows();
-    const L=list();
-    const tkMap={all:['Shoppers del proyecto',()=>true],act:['Shoppers activos (6 meses)',s=>data.shopperActivo(s)],inact:['Inactivas',s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&!data.shopperActivo(s)],prot:['Referencias protegidas',s=>CX.data_shopperDataLevel(s)==='protected_reference'],comp:['Perfiles completos',s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&profileComplete(s)],incom:['Perfiles incompletos',s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&!profileComplete(s)]};
-    document.querySelectorAll('#shTopKpis [data-tk]').forEach(el=>el.addEventListener('click',()=>{const d=tkMap[el.dataset.tk],isIncomplete=el.dataset.tk==='incom',items=L.filter(d[1]);
+    const updateSelectionBar=()=>{const bar=document.getElementById('shSelectionBar'),count=document.getElementById('shSelectedCount');if(!bar||!count)return;const n=selectedShopperIds.size;bar.style.display=n?'flex':'none';count.textContent=n+' seleccionada'+(n===1?'':'s');};
+    const activeRows=()=>list().filter(x=>!['retired_by_admin','superseded_exact_alias'].includes(String(x?.identityState||''))&&String(x?.status||'').toLowerCase()!=='retired');
+    const currentRows=()=>activeRows().filter(s=>{const hay=!shopperSearchQuery||[s.nombre,s.ciudad,s.code,CX.paisName(s.pais)].join(' ').toLowerCase().includes(shopperSearchQuery);return hay&&(!reviewListFilter||identityReviewIds.has(String(s.id||'')));});
+    const bindRows=()=>{document.querySelectorAll('#shBody [data-sid]').forEach(tr=>tr.addEventListener('click',e=>{if(e.target?.closest?.('[data-select-shopper]'))return;const s=data.getShopper(tr.dataset.sid);if(s)profileModal(s);}));document.querySelectorAll('#shBody [data-select-shopper]').forEach(box=>{box.addEventListener('click',e=>e.stopPropagation());box.addEventListener('change',()=>{const id=String(box.dataset.selectShopper||'');if(box.checked)selectedShopperIds.add(id);else selectedShopperIds.delete(id);updateSelectionBar();});});};
+    const renderRowsDom=()=>{const rows=currentRows(),body=document.getElementById('shBody'),empty=document.getElementById('shEmpty');if(!body)return;body.innerHTML=rows.map(row).join('');if(empty)empty.style.display=rows.length?'none':'block';bindRows();updateSelectionBar();};
+    bindRows();updateSelectionBar();
+    document.getElementById('shBulkMerge')?.addEventListener('click',mergeSelectedIdentities);document.getElementById('shBulkDistinct')?.addEventListener('click',keepSelectedSeparate);document.getElementById('shBulkDelete')?.addEventListener('click',deleteSelectedShopper);
+    document.getElementById('shSelectVisible')?.addEventListener('change',e=>{currentRows().forEach(x=>e.currentTarget.checked?selectedShopperIds.add(String(x.id)):selectedShopperIds.delete(String(x.id)));renderRowsDom();});
+    const L=activeRows();
+    const tkMap={all:['Shoppers del proyecto',()=>true],act:['Shoppers activos (6 meses)',s=>data.shopperActivo(s)],inact:['Inactivas',s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&!data.shopperActivo(s)],prot:['Referencias protegidas',s=>CX.data_shopperDataLevel(s)==='protected_reference'],comp:['Perfiles completos',s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&profileComplete(s)],incom:['Perfiles incompletos',s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&!profileComplete(s)],review:['Requieren revisión / decisión',s=>identityReviewIds.has(String(s.id||''))]};
+    document.querySelectorAll('#shTopKpis [data-tk]').forEach(el=>el.addEventListener('click',()=>{if(el.dataset.tk==='review'){reviewListFilter=!reviewListFilter;renderRowsDom();ui.toast(reviewListFilter?'Mostrando solo perfiles que requieren revisión o decisión.':'Filtro de revisión desactivado.','ok',2600);return;}const d=tkMap[el.dataset.tk],isIncomplete=el.dataset.tk==='incom',items=L.filter(d[1]);
       const body=items.length?`<table class="tbl"><thead><tr><th>Shopper</th><th>Ciudad</th><th>${isIncomplete?'Falta':'Puntuación'}</th><th>Acción</th></tr></thead><tbody>${items.map(x=>`<tr><td class="hov" data-pk="${x.id}" style="cursor:pointer"><b>${esc(x.nombre||x.id)}</b><div style="font-size:10px;color:var(--t3)">${esc(x.code||'')}</div></td><td style="font-size:12px">${esc(x.ciudad||CX.paisName(x.pais)||'—')}</td><td style="font-size:11.5px">${isIncomplete?esc(missingProfileFields(x).join(', ')||'Revisar perfil'):scoreCell(x)}</td><td>${isIncomplete?`<button class="btn btn-soft btn-sm" data-request-profile="${x.id}">Solicitar completar</button>`:`<button class="btn btn-ghost btn-sm" data-pk="${x.id}">Ver perfil</button>`}</td></tr>`).join('')}</tbody></table>`:ui.empty('👥','Sin shoppers en esta categoría.');
       ui.modal(d[0]+' ('+items.length+')',body,{onMount:(ov,close)=>{
         ov.querySelectorAll('[data-pk]').forEach(tr=>tr.addEventListener('click',()=>{close();const x=data.getShopper(tr.dataset.pk);if(x)profileModal(x);}));
@@ -554,14 +598,7 @@ CX.module('shoppers', ({data,ui})=>{
     }));
     if(CX.session._focusShopper){ const fs=data.getShopper(CX.session._focusShopper); CX.session._focusShopper=null; if(fs)setTimeout(()=>profileModal(fs),120); }
     const search=document.getElementById('shSearch');
-    if(search)search.addEventListener('input',()=>{
-      const q=search.value.toLowerCase().trim();
-      const filtered=list().filter(s=>!q||[s.nombre,s.ciudad,s.code,CX.paisName(s.pais)].join(' ').toLowerCase().includes(q));
-      const body=document.getElementById('shBody'), empty=document.getElementById('shEmpty');
-      body.innerHTML=filtered.map(row).join('');
-      empty.style.display=filtered.length?'none':'block';
-      bindRows();
-    });
+    if(search)search.addEventListener('input',()=>{shopperSearchQuery=search.value.toLowerCase().trim();renderRowsDom();});
   },0);
 
   return render();
