@@ -7285,18 +7285,15 @@ jobs:
 
 
 
-  i3-client-canonical-membership-readback:
+  i3-multimodule-live-sweep:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_CLIENT_CANONICAL_MEMBERSHIP_READBACK_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_MULTIMODULE_LIVE_SWEEP_REQUIRED' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 45
     env:
       FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
       FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
-      CLIENT_READBACK_OUT: .tmp/i3-client-canonical-readback
-      CXORBIA_CLIENT_AUTH_PRIVATE_SNAPSHOT: .tmp/i3-client-canonical-readback/private-snapshot.json
-      CXORBIA_E2E_PRIVATE_CREDENTIALS: .tmp/i3-client-canonical-readback/private-e2e.json
-      CXORBIA_DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
+      I3_SWEEP_OUT: .tmp/i3-multimodule-live-sweep
     steps:
       - uses: actions/checkout@v4
         with:
@@ -7304,45 +7301,65 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Exact unchanged product preflight
+      - name: Exact unchanged Run1112 artifact preflight
         shell: bash
         run: |
           set -Eeuo pipefail
-          mkdir -p "$CLIENT_READBACK_OUT"
-          chmod 700 "$CLIENT_READBACK_OUT"
+          mkdir -p "$I3_SWEEP_OUT"
           test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
           test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
           test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
           git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
-          node --check tools/qa/cxorbia-c6-client-auth-materialization.mjs
-      - name: Install canonical Client owner dependency
-        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
+          test "$(jq -r '.currentMaterialization.runId' "$CANDIDATE_DESCRIPTOR")" = "37208163415"
+          test "$(jq -r '.currentMaterialization.artifactId' "$CANDIDATE_DESCRIPTOR")" = "11305847184"
+          node --check tools/qa/cxorbia-i3-multimodule-live-sweep.mjs
+      - name: Install live sweep dependencies
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
       - uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-      - name: Canonical Client snapshot only
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
+      - name: Verify runtime Hosting and HR fingerprint unchanged
         shell: bash
         run: |
           set -Eeuo pipefail
-          node tools/qa/cxorbia-c6-client-auth-materialization.mjs --mode=snapshot | tee "$CLIENT_READBACK_OUT/console.log"
-          tail -n 1 "$CLIENT_READBACK_OUT/console.log" > "$CLIENT_READBACK_OUT/result.json"
-          test "$(jq -r '.decision' "$CLIENT_READBACK_OUT/result.json")" = "PASS_C6_CLIENT_AUTH_MEMBERSHIP_PREWRITE_SNAPSHOT"
-          test "$(jq -r '.targetUnique' "$CLIENT_READBACK_OUT/result.json")" = "true"
-          test "$(jq -r '.target.claimsExact' "$CLIENT_READBACK_OUT/result.json")" = "true"
-          test "$(jq -r '.target.disabled' "$CLIENT_READBACK_OUT/result.json")" = "false"
-          test "$(jq -r '.passwordSignIn' "$CLIENT_READBACK_OUT/result.json")" = "true"
-          test "$(jq -r '.authWrites' "$CLIENT_READBACK_OUT/result.json")" = "0"
-          test "$(jq -r '.claimsWrites' "$CLIENT_READBACK_OUT/result.json")" = "0"
-          test "$(jq -r '.membershipWrites' "$CLIENT_READBACK_OUT/result.json")" = "0"
-          test "$(jq -r '.production' "$CLIENT_READBACK_OUT/result.json")" = "false"
-      - name: Remove private snapshot before artifact
-        if: always()
-        run: rm -f "$CXORBIA_CLIENT_AUTH_PRIVATE_SNAPSHOT" "$CXORBIA_E2E_PRIVATE_CREDENTIALS"
+          EXPECTED_RUNTIME="$(jq -r '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")"
+          EXPECTED_DIGEST="$(jq -r '.currentMaterialization.runtimeDigest' "$CANDIDATE_DESCRIPTOR")"
+          EXPECTED_HOSTING="$(jq -r '.currentMaterialization.hostingVersion' "$CANDIDATE_DESCRIPTOR")"
+          EXPECTED_HR="$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")"
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$I3_SWEEP_OUT/runtime.json"
+          test "$(jq -r '.status.latestReadyRevisionName' "$I3_SWEEP_OUT/runtime.json")" = "$EXPECTED_RUNTIME"
+          gcloud run revisions describe "$EXPECTED_RUNTIME" --project "$PROJECT" --region "$REGION" --format=json > "$I3_SWEEP_OUT/revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$I3_SWEEP_OUT/revision.json")"
+          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else exit 1; fi
+          test "$DIGEST" = "$EXPECTED_DIGEST"
+          TOKEN="$(gcloud auth print-access-token)"
+          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$I3_SWEEP_OUT/hosting.json"
+          test "$(jq -r '.release.version.name' "$I3_SWEEP_OUT/hosting.json")" = "$EXPECTED_HOSTING"
+          curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&i3sweeppre=$GITHUB_RUN_ID" > "$I3_SWEEP_OUT/hr-meta.json"
+          test "$(jq -r '.revision' "$I3_SWEEP_OUT/hr-meta.json")" = "$EXPECTED_HR"
+          echo "EXPECTED_HR_REVISION=$EXPECTED_HR" >> "$GITHUB_ENV"
+      - name: Admin Shopper Client same-artifact multimodule sweep
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          FOCAL_SOURCE="$FOCAL_SOURCE" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" I3_SWEEP_OUT="$I3_SWEEP_OUT" node tools/qa/cxorbia-i3-multimodule-live-sweep.mjs | tee "$I3_SWEEP_OUT/console.log"
+          test "$(jq -r '.decision' "$I3_SWEEP_OUT/result.json")" = "PASS_I3_MULTIMODULE_LIVE_SWEEP"
+          test "$(jq -r '.writes.delta.commandReceipts' "$I3_SWEEP_OUT/result.json")" = "0"
+          test "$(jq -r '.writes.delta.users' "$I3_SWEEP_OUT/result.json")" = "0"
+          test "$(jq -r '.writes.delta.postulations' "$I3_SWEEP_OUT/result.json")" = "0"
+          test "$(jq -r '.writes.delta.reservations' "$I3_SWEEP_OUT/result.json")" = "0"
+          test "$(jq -r '.hrWrites' "$I3_SWEEP_OUT/result.json")" = "0"
+          test "$(jq -r '.production' "$I3_SWEEP_OUT/result.json")" = "false"
       - if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-i3-client-canonical-readback-${{ github.run_id }}
-          path: .tmp/i3-client-canonical-readback
+          name: cxorbia-i3-multimodule-live-sweep-${{ github.run_id }}
+          path: .tmp/i3-multimodule-live-sweep
           if-no-files-found: error
           retention-days: 30
           compression-level: 0

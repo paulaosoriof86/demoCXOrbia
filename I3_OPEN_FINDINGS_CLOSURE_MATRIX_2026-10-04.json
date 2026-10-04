@@ -34,8 +34,8 @@
   "findingCount": 236,
   "missingFindingIds": [],
   "duplicateFindingIds": [],
-  "currentBlockingCount": 70,
-  "undisposedCount": 84,
+  "currentBlockingCount": 69,
+  "undisposedCount": 83,
   "terminalDispositionCounts": {
     "PASS_CURRENT_ARTIFACT": 140,
     "LIVE_REPROOF_REQUIRED": 78,
@@ -47,7 +47,6 @@
     "CONTROL_ONLY_FIXED": 1
   },
   "nextCriticalSequence": [
-    "VRM-236_CLIENT_CANONICAL_SNAPSHOT",
     "I3_MULTIMODULE_LIVE_SWEEP",
     "VRM-215_POPULATION_REPROOF",
     "PAULA_VISUAL_ACCEPTANCE",
@@ -7542,16 +7541,16 @@
       ],
       "latestApprovedSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
       "latestLiveProof": {
-        "runNumber": 1120,
-        "runId": 37221804606,
-        "decision": "FAIL_I3_MULTIMODULE_LIVE_SWEEP_CLIENT_MISSING",
-        "artifactId": 11310765904,
+        "runNumber": 1122,
+        "runId": 37222574198,
+        "decision": "CANONICAL_CLIENT_MEMBERSHIP_EXACT",
+        "artifactId": null,
         "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
         "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
       },
-      "successor": null,
-      "rawLedgerState": "DIAGNOSTIC_REFINEMENT_REQUIRED_CLIENT_ACTIVE_SEMANTICS",
-      "realState": "REPROOF_REQUIRED",
+      "successor": "VRM-236",
+      "rawLedgerState": "SUPERSEDED_BY_VRM-236",
+      "realState": "SUPERSEDED_BY_VRM-236",
       "evidence": {
         "currentProductSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
         "currentProductTree": "b59da4c090d4639a136168656e7addd544f38e18",
@@ -7561,9 +7560,9 @@
         "clientLaneStarted": false,
         "productChanged": false
       },
-      "actionRemaining": "exact canonical Client owner snapshot; no writes",
-      "blocking": true,
-      "terminalDisposition": null
+      "actionRemaining": "none",
+      "blocking": false,
+      "terminalDisposition": "SUPERSEDED_BY_VRM-236"
     },
     {
       "findingId": "VRM-236",
@@ -7581,15 +7580,15 @@
       ],
       "latestApprovedSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
       "latestLiveProof": {
-        "runNumber": 1121,
-        "runId": 37222111699,
-        "decision": "CONTROL_ACTIVE_SEMANTICS_MISMATCH_DISCOVERED",
-        "artifactId": 11310561867,
+        "runNumber": 1122,
+        "runId": 37222574198,
+        "decision": "PASS_C6_CLIENT_AUTH_MEMBERSHIP_PREWRITE_SNAPSHOT",
+        "artifactId": null,
         "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
         "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
       },
       "successor": null,
-      "rawLedgerState": "READ_ONLY_REPROOF_REQUIRED",
+      "rawLedgerState": "CONTROL_FIX_APPLIED_PENDING_MULTIMODULE_REPROOF",
       "realState": "REPROOF_REQUIRED",
       "evidence": {
         "currentProductSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
@@ -7599,7 +7598,7 @@
         "writes": 0,
         "production": false
       },
-      "actionRemaining": "canonical Client owner snapshot mode; inspect membershipExact",
+      "actionRemaining": "same-artifact multimodule sweep",
       "blocking": true,
       "terminalDisposition": null
     }

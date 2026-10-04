@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_CLIENT_CANONICAL_MEMBERSHIP_READBACK_REQUIRED",
+  "status": "HOLD_I3_MULTIMODULE_LIVE_SWEEP_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "b59da4c090d4639a136168656e7addd544f38e18",
   "predecessorProductSourceSha": "bbd66d29192487ac29f8703bd913e3f1e15a28c0",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "4d82731ba4a33f868b23f6923d46b06eb36d2b40",
+  "findingsLedgerExpectedGitBlob": "4e77a0a4f1805bf0f83e509f565c4c1d5df96e5b",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "CLIENT_CANONICAL_MEMBERSHIP_READBACK_REQUIRED",
+  "activeBlocker": "I3_MULTIMODULE_LIVE_SWEEP_REQUIRED",
   "nextFindingId": "VRM-237",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run the existing canonical Client auth materialization owner in snapshot mode only and read membershipExact; do not mutate Client state.",
+  "exactNextAction": "Rerun the same-artifact Admin + Shopper + Client multimodule live sweep on Run1112 with corrected canonical Client membership semantics; no writes and no rebuild.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3540,7 +3540,7 @@
     "interpretation": "Control-only freeze/readback. No action lane matched the fail-closed precomposition status."
   },
   "shopperIdentityGovernanceLockPath": "CXORBIA_I3_SHOPPER_IDENTITY_GOVERNANCE_LOCK_2026-10-04.json",
-  "queuedBlocker": "I3_MULTIMODULE_LIVE_SWEEP_THEN_VRM215_POPULATION_REPROOF",
+  "queuedBlocker": "VRM215_POPULATION_REPROOF",
   "currentSourceProof": {
     "runId": 37208053790,
     "runNumber": 1111,
@@ -3690,6 +3690,24 @@
     "externalWrites": 0,
     "builds": 0,
     "deploys": 0,
+    "production": false
+  },
+  "lastClientCanonicalReadback": {
+    "runId": 37222574198,
+    "runNumber": 1122,
+    "jobId": 111495770488,
+    "decision": "PASS_C6_CLIENT_AUTH_MEMBERSHIP_PREWRITE_SNAPSHOT",
+    "membershipExact": true,
+    "targetUnique": true,
+    "potentialClientIdentityCount": 3,
+    "authDisabled": false,
+    "claimsExact": true,
+    "passwordSignIn": true,
+    "authWrites": 0,
+    "claimsWrites": 0,
+    "membershipWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
     "production": false
   }
 }

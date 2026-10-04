@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v261",
   "frozenAt": "2026-10-04T09:12:00Z",
-  "status": "HOLD_I3_CLIENT_CANONICAL_MEMBERSHIP_READBACK_REQUIRED",
+  "status": "HOLD_I3_MULTIMODULE_LIVE_SWEEP_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "microblockId": "PRE-I4-LIVE-HR-STALE-CACHE-MAPPING-HOLD-AUGUST-CANONICAL-CORRECTION",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -14007,10 +14007,10 @@
       "classification": "AUTH_FAILURE",
       "severity": "P0",
       "title": "Same-artifact multimodule sweep could not start Client lane because no active Firestore member matched role cliente/client with staff namespace",
-      "state": "DIAGNOSTIC_REFINEMENT_REQUIRED_CLIENT_ACTIVE_SEMANTICS",
+      "state": "SUPERSEDED_BY_VRM-236",
       "firstObservedAt": "RUN1120_2026-10-04",
-      "rootCauseStatus": "PARTIAL_RUN1121_TOPOLOGY_PROVEN_SEMANTIC_ACTIVE_TEST_NOT_PROVEN",
-      "rootCause": "Run1120 proved the shopper population invariants and exact Run1112 fingerprint, then stopped before browser lanes because the Client selector found no active tenant member satisfying the source-defined Client contract. Source static confirms cliente/client is expected to use authNamespace=staff, so the selector contract itself is correct. Remaining question is whether Firebase Auth has a Client principal whose tenant member is missing/desynced, or whether no Client principal exists in DEV.",
+      "rootCauseStatus": "CONTROL_FALSE_NEGATIVE_PROVEN",
+      "rootCause": "Run1120 did not prove missing Client authority. It used m.active===true and excluded the canonical Client membership because the canonical contract is status='active' and does not require an active boolean. Run1122 canonical owner snapshot proved membershipExact=true, target unique, claims exact, Auth enabled and password sign-in PASS.",
       "evidence": {
         "runId": 37221804606,
         "runNumber": 1120,
@@ -14052,6 +14052,19 @@
         "productChanged": false,
         "writes": 0,
         "production": false
+      },
+      "terminalDisposition": "SUPERSEDED_BY_VRM-236",
+      "successor": "VRM-236",
+      "closureEvidence": {
+        "runId": 37222574198,
+        "runNumber": 1122,
+        "decision": "PASS_C6_CLIENT_AUTH_MEMBERSHIP_PREWRITE_SNAPSHOT",
+        "membershipExact": true,
+        "targetUnique": true,
+        "claimsExact": true,
+        "passwordSignIn": true,
+        "writes": 0,
+        "production": false
       }
     },
     "VRM-236": {
@@ -14059,7 +14072,7 @@
       "classification": "MAPPING_FAILURE",
       "severity": "P0_CONTROL",
       "title": "Client topology harness used stricter active===true semantics than the canonical Client membership contract",
-      "state": "READ_ONLY_REPROOF_REQUIRED",
+      "state": "CONTROL_FIX_APPLIED_PENDING_MULTIMODULE_REPROOF",
       "firstObservedAt": "POST_RUN1121_2026-10-04",
       "rootCauseStatus": "PROVEN_CONTROL_SEMANTIC_MISMATCH_PRODUCT_STATE_PENDING_EXACT_READBACK",
       "rootCause": "The multimodule/topology harnesses selected a Client only when Firestore field active was literally true. The canonical Client membership contract validates status='active', and the production user-admin read model treats active as true unless data.active===false. Therefore the new harness could exclude a valid canonical Client document that omits the optional active boolean.",
@@ -14087,13 +14100,34 @@
         "production": false
       },
       "correction": {
-        "strategy": "Run existing canonical Client owner in snapshot mode only; require target unique, claims exact, password sign-in, and inspect membershipExact. No apply and no writes.",
-        "productChanged": false
+        "owner": "tools/qa/cxorbia-i3-multimodule-live-sweep.mjs",
+        "change": "Client lane uses canonical active semantics: active is valid unless explicitly false; status must not be disabled; role and staff namespace remain required.",
+        "productChanged": false,
+        "writes": 0,
+        "production": false
       },
       "expected": "Exact readback determines whether Client membership is already canonical or a bounded membership-only repair is truly required.",
       "productChanged": false,
       "writes": 0,
-      "production": false
+      "production": false,
+      "readback": {
+        "runId": 37222574198,
+        "runNumber": 1122,
+        "jobId": 111495770488,
+        "decision": "PASS_C6_CLIENT_AUTH_MEMBERSHIP_PREWRITE_SNAPSHOT",
+        "membershipExact": true,
+        "targetUnique": true,
+        "potentialClientIdentityCount": 3,
+        "authDisabled": false,
+        "claimsExact": true,
+        "passwordSignIn": true,
+        "authWrites": 0,
+        "claimsWrites": 0,
+        "membershipWrites": 0,
+        "firestoreWrites": 0,
+        "hrWrites": 0,
+        "production": false
+      }
     }
   },
   "latestEvidenceOverrides": {
@@ -15027,7 +15061,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Run the existing canonical Client auth materialization owner in snapshot mode only and read membershipExact; do not mutate Client state.",
+  "exactNextAction": "Rerun the same-artifact Admin + Shopper + Client multimodule live sweep on Run1112 with corrected canonical Client membership semantics; no writes and no rebuild.",
   "supersedesGitBlob": "820da41b786054cb8cd23e89827e1f7afbcdd3b3",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -18427,7 +18461,7 @@
     "hostingDeploys": 0,
     "production": false
   },
-  "activeBlocker": "CLIENT_CANONICAL_MEMBERSHIP_READBACK_REQUIRED",
+  "activeBlocker": "I3_MULTIMODULE_LIVE_SWEEP_REQUIRED",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -18619,7 +18653,7 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-10-04T15:03:00Z",
-  "nextExactAction": "Run the existing canonical Client auth materialization owner in snapshot mode only and read membershipExact; do not mutate Client state.",
+  "nextExactAction": "Rerun the same-artifact Admin + Shopper + Client multimodule live sweep on Run1112 with corrected canonical Client membership semantics; no writes and no rebuild.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
@@ -19255,7 +19289,7 @@
     "production": false,
     "interpretation": "Control-only freeze/readback. No action lane matched the fail-closed precomposition status."
   },
-  "queuedBlocker": "I3_MULTIMODULE_LIVE_SWEEP_THEN_VRM215_POPULATION_REPROOF",
+  "queuedBlocker": "VRM215_POPULATION_REPROOF",
   "lastSuccessfulRun": {
     "runId": 37211579195,
     "runNumber": 1114,

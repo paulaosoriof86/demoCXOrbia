@@ -63,7 +63,7 @@ let admin=null,client=null;
 for(const m of members){
  const role=str(m.role).toLowerCase(),ns=str(m.authNamespace).toLowerCase();
  if(!admin&&m.active===true&&ns==='staff'&&['super','admin'].includes(role)&&await authExists(m.id))admin=m;
- if(!client&&m.active===true&&ns==='staff'&&['cliente','client'].includes(role)&&await authExists(m.id))client=m;
+ if(!client&&m.active!==false&&String(m.status||'active').toLowerCase()!=='disabled'&&ns==='staff'&&['cliente','client'].includes(role)&&await authExists(m.id))client=m;
 }
 need(admin,'AUTH_FAILURE','I3_SWEEP_ADMIN_MISSING');
 need(client,'AUTH_FAILURE','I3_SWEEP_CLIENT_MISSING');
