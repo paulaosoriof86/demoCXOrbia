@@ -15,6 +15,7 @@ fs.mkdirSync(OUT,{recursive:true});
 if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
 const db=getFirestore(),auth=getAuth();
 const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[];
+const uniq=v=>[...new Set(arr(v).map(str).filter(Boolean))];
 const sha=v=>crypto.createHash('sha256').update(str(v).toLowerCase(),'utf8').digest('hex').slice(0,20);
 const norm=v=>str(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
 const tenant=db.collection('tenants').doc(TENANT),project=tenant.collection('projects').doc(PROJECT_ID);
