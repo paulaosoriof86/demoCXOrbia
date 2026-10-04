@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM229_PAULA_CONFIRMED_IDENTITY_CONSOLIDATION_REQUIRED",
+  "status": "HOLD_VRM221_ADMIN_LIVE_E2E_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "b59da4c090d4639a136168656e7addd544f38e18",
   "predecessorProductSourceSha": "bbd66d29192487ac29f8703bd913e3f1e15a28c0",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "a94a5ff474e9ea74d85eecf18b2b2be1abe4c250",
+  "findingsLedgerExpectedGitBlob": "8af02355dfa761642fe13f90abc31e0f7b633016",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM229_PAULA_CONFIRMED_IDENTITY_CONSOLIDATION_REQUIRED",
+  "activeBlocker": "VRM221_ADMIN_LIVE_E2E_REQUIRED",
   "nextFindingId": "VRM-231",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Rerun VRM-229 bounded Paula-confirmed identity consolidation against the already-certified DEV artifact. Require provider ACK, exact replay and durable readback for each named person; no rebuild and no production.",
+  "exactNextAction": "Run current-artifact VRM-221 Admin browser E2E for review filter, list selection, merge, keep-separate and safe delete with ACK/replay/readback; no rebuild and no production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3549,7 +3549,7 @@
     "interpretation": "Control-only freeze/readback. No action lane matched the fail-closed precomposition status."
   },
   "shopperIdentityGovernanceLockPath": "CXORBIA_I3_SHOPPER_IDENTITY_GOVERNANCE_LOCK_2026-10-04.json",
-  "queuedBlocker": "VRM221_ADMIN_LIVE_E2E_THEN_VRM215_POPULATION_REPROOF",
+  "queuedBlocker": "I3_MULTIMODULE_LIVE_SWEEP_THEN_VRM215_POPULATION_REPROOF",
   "currentSourceProof": {
     "runId": 37208053790,
     "runNumber": 1111,
@@ -3571,5 +3571,81 @@
     "builds": 0,
     "deploys": 0,
     "production": false
+  },
+  "openFindingsClosureMatrixPath": "I3_OPEN_FINDINGS_CLOSURE_MATRIX_2026-10-04.json",
+  "openFindingsClosureMatrixFindingCount": 230,
+  "lastVrm229Pass": {
+    "runId": 37211579195,
+    "runNumber": 1114,
+    "jobId": 111463713486,
+    "artifactId": 11306498965,
+    "artifactDigest": "sha256:aa0ec311378cf1c596f49e261aeff595efd4ebc237b365c2e200f5bf4bf3e48f",
+    "decision": "PASS_VRM229_PAULA_CONFIRMED_IDENTITY_CONSOLIDATION",
+    "controlHeadSha": "4d030d3302e4dc96e37eac81c5be689004fbf794",
+    "productSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+    "productSourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+    "exactDevMaterializationRunId": 37208163415,
+    "exactDevMaterializationRunNumber": 1112,
+    "runtimeRevision": "cxorbia-live-hr-dev-00264-pxj",
+    "runtimeDigest": "sha256:d6916255e1cbc94c096b56d2ae0dc7ad7bc3d9eb4e2816f2b4a9bc2819549eae",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/0eb9844cbcbc180f",
+    "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+    "personCount": 8,
+    "providerAck": true,
+    "idempotentReplay": true,
+    "durableReadback": true,
+    "hrWrites": 0,
+    "externalWrites": 0,
+    "production": false,
+    "persons": [
+      {
+        "name": "Herbert Ríos",
+        "retiredPrincipalCount": 2,
+        "resolvedIdentityReviews": 1,
+        "visibleLogin": "herbert.rios"
+      },
+      {
+        "name": "Elizabeth González",
+        "retiredPrincipalCount": 1,
+        "resolvedIdentityReviews": 0,
+        "visibleLogin": "elizabeth.gonzalez"
+      },
+      {
+        "name": "Andrea Loarca",
+        "retiredPrincipalCount": 5,
+        "resolvedIdentityReviews": 0,
+        "visibleLogin": "andrea.loarca"
+      },
+      {
+        "name": "Cinthya Lixon",
+        "retiredPrincipalCount": 5,
+        "resolvedIdentityReviews": 0,
+        "visibleLogin": "cinthya.lixon"
+      },
+      {
+        "name": "Erick Gomez",
+        "retiredPrincipalCount": 2,
+        "resolvedIdentityReviews": 0,
+        "visibleLogin": "erick.gomez"
+      },
+      {
+        "name": "Joshua Urbina",
+        "retiredPrincipalCount": 1,
+        "resolvedIdentityReviews": 0,
+        "visibleLogin": "joshua.urbina"
+      },
+      {
+        "name": "Aldair Ixcayau",
+        "retiredPrincipalCount": 5,
+        "resolvedIdentityReviews": 0,
+        "visibleLogin": "aldair.ixcayau"
+      },
+      {
+        "name": "Flavio Salgado",
+        "retiredPrincipalCount": 5,
+        "resolvedIdentityReviews": 0,
+        "visibleLogin": "flavio.salgado"
+      }
+    ]
   }
 }
