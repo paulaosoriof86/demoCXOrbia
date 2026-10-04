@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM219_REMAINING_EXACT_ALIAS_REMAP_REQUIRED",
+  "status": "HOLD_VRM218_EXACT_OWNER_DIAGNOSTIC_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "784bc45c29795f35ffaeef019883a41ca872939b",
   "productTreeAuthority": "7b35abbebc254009b8a114c927b03b5b52d65ee7",
   "predecessorProductSourceSha": "d3d323f30a1120640459aca5b613e42879b66eaa",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V272_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "b165c4acec58bdcee2aee40e8c0233e9d6a915bf",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V273_2026-10-04.json",
+  "findingsLedgerExpectedGitBlob": "820da41b786054cb8cd23e89827e1f7afbcdd3b3",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM220_ONE_TRUSTED_EXACT_ALIAS_PROVIDER_CONSOLIDATION_REQUIRED",
+  "activeBlocker": "VRM218_13_POPULATION_HOLDS_PLUS_ONE_UNRESOLVED_HR_IDENTITY",
   "nextFindingId": "VRM-221",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Execute the existing VRM219 exact-alias writer only for shp-57d2e3769946 -> TYA_GT_0C0BA8856E using Run1097 read-only authority. Require provider ACK, exact zero-write replay, recovered canonical profile, retired alias principal, four liquidations remapped, historical visit rows preserved, unchanged HR revision, and post-readback exactAliasActivePrincipals=0. Do not touch VRM-218.",
+  "exactNextAction": "Inspect the 13 remaining hold rows and the HR-native unresolved shopper against the shared shopper provider/upsert contract. Determine why currentHrReconcileCandidates is zero despite an HR profile/assigned visit, and classify each hold as missing HR-managed name data, stale claims, or other exact owner defect. No identity merge, credential reset, profile creation or HR write until exact owner evidence is proven.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
