@@ -10,7 +10,7 @@ on:
       - RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json
       - RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
       - CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
-      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V271_2026-10-04.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V272_2026-10-04.json
       - CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json
       - app/**
       - backend/**
@@ -32,7 +32,7 @@ concurrency:
   cancel-in-progress: true
 env:
   CANDIDATE_DESCRIPTOR: CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
-  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V271_2026-10-04.json
+  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V272_2026-10-04.json
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
@@ -7129,20 +7129,20 @@ jobs:
           test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
           test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
           test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
-          test "$(jq -r '.currentMaterialization.runId' "$CANDIDATE_DESCRIPTOR")" = "37176935159"
-          test "$(jq -r '.currentMaterialization.artifactId' "$CANDIDATE_DESCRIPTOR")" = "11292973432"
           test "$(jq -r '.currentMaterialization.sourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
           test "$(jq -r '.currentMaterialization.sourceTree' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
+          test "$(jq -r '.currentMaterialization.runId' "$CANDIDATE_DESCRIPTOR")" = "37189599265"
+          test "$(jq -r '.currentMaterialization.artifactId' "$CANDIDATE_DESCRIPTOR")" = "11297569172"
           node --check tools/qa/cxorbia-i3-vrm219-exact-alias-remap.mjs
           node --check tools/qa/cxorbia-i3-vrm217-219-population-root-diagnostic.mjs
       - name: Download exact trusted Run1083 population mapping
         uses: actions/download-artifact@v4
         with:
-          name: cxorbia-vrm217-219-population-root-37186180761
+          name: cxorbia-vrm217-219-population-root-37190025557
           path: .tmp/i3-vrm219-input
           github-token: ${{ github.token }}
           repository: ${{ github.repository }}
-          run-id: 37186180761
+          run-id: 37190025557
       - name: Verify trusted mapping artifact
         run: |
           set -Eeuo pipefail
@@ -7152,9 +7152,12 @@ jobs:
           test "$(jq -r '.credentials.currentHrReconcileCandidates' "$VRM219_INPUT/result.json")" = "0"
           test "$(jq -r '.credentials.durableSweepCandidates' "$VRM219_INPUT/result.json")" = "0"
           test "$(jq -r '.identity.exactAliasActivePrincipals' "$VRM219_INPUT/result.json")" = "1"
-          test "$(jq -r '.identity.holds' "$VRM219_INPUT/result.json")" = "17"
+          test "$(jq -r '.identity.mappingConflicts' "$VRM219_INPUT/result.json")" = "0"
           test "$(jq -r '.hrAssignments.unresolved' "$VRM219_INPUT/result.json")" = "1"
-          test "$(jq -r '.repairPlan.authoritativeAliasRemap.eligible' "$VRM219_INPUT/result.json")" = "277"
+          test "$(jq -r '.residualEvidence.aliasVsDeclaredCanonical.aliasProfile != null' "$VRM219_INPUT/result.json")" = "true"
+          test "$(jq -r '.residualEvidence.aliasVsDeclaredCanonical.canonicalProfile == null' "$VRM219_INPUT/result.json")" = "true"
+          test "$(jq -r '.residualEvidence.aliasVsDeclaredCanonical.links[0].authorityType' "$VRM219_INPUT/result.json")" = "tenant_adjudication"
+          test "$(jq -r '.operationalAliasReferences.liquidations' "$VRM219_INPUT/result.json")" = "4"
           test "$(jq -r '.visits.ambiguousAuthorityGroups' "$VRM219_INPUT/result.json")" = "0"
       - name: Install bounded repair dependencies
         run: |
@@ -7190,9 +7193,9 @@ jobs:
           set -Eeuo pipefail
           PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$EXPECTED_HR" VRM219_DIAGNOSTIC="$VRM219_INPUT/result.json" VRM219_OUT="$VRM219_OUT" node tools/qa/cxorbia-i3-vrm219-exact-alias-remap.mjs | tee "$VRM219_OUT/console.log"
           test "$(jq -r '.decision' "$VRM219_OUT/result.json")" = "PASS_VRM219_EXACT_ALIAS_REPAIR"
-          test "$(jq -r '.groups' "$VRM219_OUT/result.json")" = "20"
-          test "$(jq -r '.aliases' "$VRM219_OUT/result.json")" = "32"
-          test "$(jq -r '.replays' "$VRM219_OUT/result.json")" = "21"
+          test "$(jq -r '.groups' "$VRM219_OUT/result.json")" = "1"
+          test "$(jq -r '.aliases' "$VRM219_OUT/result.json")" = "1"
+          test "$(jq -r '.replays' "$VRM219_OUT/result.json")" = "1"
           test "$(jq -r '.hrWrites' "$VRM219_OUT/result.json")" = "0"
           test "$(jq -r '.externalWrites' "$VRM219_OUT/result.json")" = "0"
           test "$(jq -r '.production' "$VRM219_OUT/result.json")" = "false"
@@ -7206,9 +7209,10 @@ jobs:
           test "$(jq -r '.credentials.currentHrReconcileCandidates' "$VRM219_OUT/post/result.json")" = "0"
           test "$(jq -r '.credentials.durableSweepCandidates' "$VRM219_OUT/post/result.json")" = "0"
           test "$(jq -r '.identity.exactAliasActivePrincipals' "$VRM219_OUT/post/result.json")" = "0"
-          test "$(jq -r '.identity.holds' "$VRM219_OUT/post/result.json")" = "17"
+          test "$(jq -r '.identity.mappingConflicts' "$VRM219_OUT/post/result.json")" = "0"
           test "$(jq -r '.hrAssignments.unresolved' "$VRM219_OUT/post/result.json")" = "1"
-          test "$(jq -r '.repairPlan.authoritativeAliasRemap.eligible' "$VRM219_OUT/post/result.json")" = "0"
+          test "$(jq -r '.residualEvidence.aliasVsDeclaredCanonical.canonicalProfile != null' "$VRM219_OUT/post/result.json")" = "true"
+          test "$(jq -r '.operationalAliasReferences.liquidations' "$VRM219_OUT/post/result.json")" = "0"
           test "$(jq -r '.visits.ambiguousAuthorityGroups' "$VRM219_OUT/post/result.json")" = "0"
       - if: always()
         uses: actions/upload-artifact@v4

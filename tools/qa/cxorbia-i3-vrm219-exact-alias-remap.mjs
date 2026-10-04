@@ -23,7 +23,12 @@ save();
 const diag=JSON.parse(fs.readFileSync(DIAG,'utf8'));
 if(diag.decision!=='PASS_VRM217_219_POPULATION_ROOT_DIAGNOSTIC'||diag.hrRevision!==EXPECTED_HR)throw new Error('SOURCE_FAILURE:VRM219_DIAGNOSTIC');
 if(diag.credentials.normalizeCandidates!==0||diag.credentials.currentHrReconcileCandidates!==0||diag.credentials.durableSweepCandidates!==0)throw new Error('MAPPING_FAILURE:VRM219_CREDENTIAL_DEBT');
-if(diag.identity.exactAliasActivePrincipals!==1||diag.identity.holds!==17||diag.hrAssignments.unresolved!==1||diag.repairPlan.authoritativeAliasRemap.eligible!==277||diag.visits.ambiguousAuthorityGroups!==0)throw new Error('MAPPING_FAILURE:VRM219_COUNTS');
+if(diag.identity.exactAliasActivePrincipals!==1||diag.identity.mappingConflicts!==0||diag.hrAssignments.unresolved!==1||diag.visits.ambiguousAuthorityGroups!==0)throw new Error('MAPPING_FAILURE:VRM219_COUNTS');
+const activeAliasRows=arr(diag.identity.aliasRows).filter(row=>str(row.classification)==='EXACT_ALIAS_ACTIVE_PRINCIPAL');
+if(activeAliasRows.length!==1)throw new Error('MAPPING_FAILURE:VRM219_ACTIVE_ALIAS_ROWS_'+activeAliasRows.length);
+const targetAlias=str(activeAliasRows[0].shopperId),targetCanonical=str(activeAliasRows[0].canonicalTarget),targetBasis=str(activeAliasRows[0].canonicalBasis);
+if(targetAlias!=='shp-57d2e3769946'||targetCanonical!=='TYA_GT_0C0BA8856E'||targetBasis!=='trusted_identity_link')throw new Error('MAPPING_FAILURE:VRM220_TRUSTED_TARGET_DRIFT');
+const targetAliases=new Set([targetAlias]);
 
 if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
 const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(TENANT),project=tenant.collection('projects').doc(PROGRAM);
@@ -33,14 +38,17 @@ for(const v of visitDocs){const k=key(v);if(!byKey.has(k))byKey.set(k,[]);byKey.
 const groups=new Map();
 function group(c,a){if(!groups.has(c))groups.set(c,{canonical:c,aliases:new Set(),visitIds:new Set()});const g=groups.get(c);g.aliases.add(a);return g;}
 for(const row of diag.visits.authoritativeAliasDetails){
+  if(!targetAliases.has(str(row.sourceShopperId)))continue;
+  if(str(row.canonicalTarget)!==targetCanonical)throw new Error('MAPPING_FAILURE:VRM220_VISIT_TARGET_DRIFT_'+str(row.visitKey));
   const g=group(str(row.canonicalTarget),str(row.sourceShopperId)),rows=byKey.get(str(row.visitKey))||[];
   let authoritative=rows.filter(v=>v.id===str(row.visitKey));
   if(authoritative.length!==1)authoritative=rows.filter(v=>str(v.hrSourceRevision)===EXPECTED_HR);
   if(authoritative.length!==1||str(authoritative[0].shopperId)!==str(row.sourceShopperId))throw new Error('MAPPING_FAILURE:VRM219_VISIT_'+row.visitKey);
   g.visitIds.add(authoritative[0].id);
 }
-for(const row of diag.operationalAliasReferences.rows)group(str(row.canonicalTarget),str(row.sourceShopperId));
-if(groups.size!==20||uniq([...groups.values()].flatMap(g=>[...g.aliases])).length!==32)throw new Error('MAPPING_FAILURE:VRM219_GROUPS');
+for(const row of diag.operationalAliasReferences.rows){if(!targetAliases.has(str(row.sourceShopperId)))continue;if(str(row.canonicalTarget)!==targetCanonical)throw new Error('MAPPING_FAILURE:VRM220_OPERATIONAL_TARGET_DRIFT_'+str(row.id));group(str(row.canonicalTarget),str(row.sourceShopperId));}
+const groupedAliases=uniq([...groups.values()].flatMap(g=>[...g.aliases]));
+if(groups.size!==1||groupedAliases.length!==1||groupedAliases[0]!==targetAlias||![...groups.keys()].includes(targetCanonical))throw new Error('MAPPING_FAILURE:VRM220_BOUNDED_GROUP');
 
 const users=tenant.collection('users'),members=await users.get();
 const staff=members.docs.map(d=>({uid:d.id,...(d.data()||{})})).filter(x=>x.active===true&&str(x.role).toLowerCase()==='super'&&str(x.authNamespace).toLowerCase()==='staff').sort((a,b)=>a.uid.localeCompare(b.uid));
