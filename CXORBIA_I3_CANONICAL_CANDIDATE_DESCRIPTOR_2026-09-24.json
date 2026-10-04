@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM215_SHOPPER_POPULATION_REPROOF_REQUIRED",
+  "status": "HOLD_VRM217_219_POPULATION_ROOT_DIAGNOSTIC_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "49a5f6cd6683695d862777da7aeb2cf4530e405e",
   "productTreeAuthority": "93797d047e95240029e16b018c4bb2ef2cc0bddd",
   "predecessorProductSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V251_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "d98e16c251fea0997e598ae0d87e0c673a91ecdd",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V252_2026-10-04.json",
+  "findingsLedgerExpectedGitBlob": "7dd86347577bae9359bf978eabdfbd9158eb97f3",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM215_ALL_ACTIVE_SHOPPERS_POPULATION_REPROOF_REQUIRED",
-  "nextFindingId": "VRM-217",
+  "activeBlocker": "VRM217_219_POPULATION_ROOT_DIAGNOSTIC_REQUIRED",
+  "nextFindingId": "VRM-220",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Execute VRM-215 population-wide live reproof against the exact Run1070 DEV materialization. Require every active eligible shopper to pass canonical identity/Auth/claims, real password login, protected self-scope/profile/visits, required Shopper modules, HR assignment resolution, duplicate-key and alias-residual checks. Production false.",
+  "exactNextAction": "Run one read-only VRM217-219 population root diagnostic on the exact Run1070 DEV artifact. Partition active identities into current-HR reconcile, durable credential sweep, exact-alias repair or HOLD; separate authoritative current visit/operational alias residuals from preserved historical rows. No writes, no deploy, production false.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",

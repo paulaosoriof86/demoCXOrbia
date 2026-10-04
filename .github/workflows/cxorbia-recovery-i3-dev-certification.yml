@@ -10,7 +10,7 @@ on:
       - RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json
       - RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
       - CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
-      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V251_2026-10-04.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V252_2026-10-04.json
       - CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json
       - app/**
       - backend/**
@@ -32,7 +32,7 @@ concurrency:
   cancel-in-progress: true
 env:
   CANDIDATE_DESCRIPTOR: CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
-  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V251_2026-10-04.json
+  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V252_2026-10-04.json
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
@@ -2867,57 +2867,54 @@ jobs:
           include-hidden-files: true
   vrm081-population-credential-diagnostic:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM081_DIAGNOSTIC_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-081-diagnostic]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM217_219_POPULATION_ROOT_DIAGNOSTIC_REQUIRED' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     env:
-      VRM081_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
-      VRM081_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
-      VRM081_OUT: .tmp/i3-vrm081
-      VRM081_ROOT: https://cxorbia-backend-dev.web.app
-      VRM081_TENANT: tya
-      VRM081_PROJECT: cinepolis
+      FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      VRM217_OUT: .tmp/i3-vrm217-219-root
     steps:
       - uses: actions/checkout@v4
         with: {fetch-depth: 0}
       - uses: actions/setup-node@v4
         with: {node-version: '24'}
-      - name: step
+      - name: Exact artifact and read-only preflight
+        shell: bash
         run: |
           set -Eeuo pipefail
-          mkdir -p "$VRM081_OUT"
-          test "$VRM081_SOURCE" = "77b29e303c825be586a97e159d4d65bfae7e66c8"
-          test "$VRM081_TREE" = "279f33d6ad734ac7da9e5764dd05c91cab8882aa"
-          test "$(git rev-parse "$VRM081_SOURCE^{tree}")" = "$VRM081_TREE"
-          test "$(git diff --name-only "$VRM081_SOURCE" "$GITHUB_SHA" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**' | wc -l | tr -d ' ')" = "0"
-          node --check tools/qa/cxorbia-i3-vrm081-population-credential-diagnostic.mjs
-          ! grep -Eq '\.(set|create|update|delete)\(' tools/qa/cxorbia-i3-vrm081-population-credential-diagnostic.mjs
-          ! grep -Eq 'auth\.(createUser|updateUser|deleteUser|setCustomUserClaims)\(' tools/qa/cxorbia-i3-vrm081-population-credential-diagnostic.mjs
-      - name: step
+          mkdir -p "$VRM217_OUT"
+          test "$(jq -r '.currentMaterialization.runId' "$CANDIDATE_DESCRIPTOR")" = "37169950715"
+          test "$(jq -r '.currentMaterialization.sourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
+          test "$(jq -r '.currentMaterialization.sourceTree' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
+          test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
+          git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          node --check tools/qa/cxorbia-i3-vrm217-219-population-root-diagnostic.mjs
+          ! grep -Eq '\.(set|create|update|delete)\(' tools/qa/cxorbia-i3-vrm217-219-population-root-diagnostic.mjs
+          ! grep -Eq 'auth\.(createUser|updateUser|deleteUser|setCustomUserClaims)\(' tools/qa/cxorbia-i3-vrm217-219-population-root-diagnostic.mjs
+      - name: Install read-only diagnostic dependency
         run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
-      - name: step
-        uses: google-github-actions/auth@v2
+      - uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-      - name: step
+      - name: Run VRM217-219 root diagnostic
+        shell: bash
         run: |
           set -Eeuo pipefail
-          VRM081_OUT="$VRM081_OUT" VRM081_ROOT="$VRM081_ROOT" VRM081_SOURCE="$VRM081_SOURCE" VRM081_TENANT="$VRM081_TENANT" VRM081_PROJECT="$VRM081_PROJECT" node tools/qa/cxorbia-i3-vrm081-population-credential-diagnostic.mjs | tee "$VRM081_OUT/console.log"
-          test "$(jq -r '.decision' "$VRM081_OUT/result.json")" = "PASS_I3_VRM081_POPULATION_CREDENTIAL_DIAGNOSTIC"
-          test "$(jq -r '.safety.firestoreWrites' "$VRM081_OUT/result.json")" = "0"
-          test "$(jq -r '.safety.authWrites' "$VRM081_OUT/result.json")" = "0"
-          test "$(jq -r '.safety.hrWrites' "$VRM081_OUT/result.json")" = "0"
-          test "$(jq -r '.safety.production' "$VRM081_OUT/result.json")" = "false"
-          jq '{decision,hrRevision,population,blockers,providerReconciliationGap,activeCredentialUniverseResolved,safety}' "$VRM081_OUT/result.json"
+          HR="$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")"
+          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$HR" VRM217_OUT="$VRM217_OUT" node tools/qa/cxorbia-i3-vrm217-219-population-root-diagnostic.mjs | tee "$VRM217_OUT/console.log"
+          test "$(jq -r '.decision' "$VRM217_OUT/result.json")" = "PASS_VRM217_219_POPULATION_ROOT_DIAGNOSTIC"
+          test "$(jq -r '.writes' "$VRM217_OUT/result.json")" = "0"
+          test "$(jq -r '.production' "$VRM217_OUT/result.json")" = "false"
       - if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-i3-vrm081-diagnostic-${{ github.run_id }}
-          path: ${{ env.VRM081_OUT }}
+          name: cxorbia-vrm217-219-population-root-${{ github.run_id }}
+          path: .tmp/i3-vrm217-219-root
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-          include-hidden-files: true
+
   v70-vrm069-operational-visit-key-runtime:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM069_RUNTIME_MATERIALIZATION_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v70-vrm069-runtime]') }}
