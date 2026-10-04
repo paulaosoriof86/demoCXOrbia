@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM219_REMAINING_EXACT_ALIAS_REMAP_REQUIRED",
+  "status": "HOLD_VRM219_POST_RUN1090_READBACK_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "8daedad6a34a0015113ea8567b3d92ab6af5568f",
   "productTreeAuthority": "8b0e30d7fe8e2c8449e691a66c7b67b819836abd",
   "predecessorProductSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V264_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "11ba9fcf0834a229f6c2e74a9d170c5a010f5a24",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V265_2026-10-04.json",
+  "findingsLedgerExpectedGitBlob": "1cffd4c19e23306542d6d48395d81c558ac01f19",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM219_REMAINING_20_GROUPS_32_ALIASES_277_REFERENCES_REQUIRED",
+  "activeBlocker": "VRM219_RUN1090_LAST_CANONICAL_PROFILE_MISSING_READBACK_REQUIRED",
   "nextFindingId": "VRM-220",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Repeat the same remaining VRM-219 exact-alias remap after correcting the control-only status assertion. Scope remains 20 canonical groups / 32 aliases / 277 authoritative references from Run1088; no credential sweep, no production.",
+  "exactNextAction": "Run only the existing read-only VRM217-219 population root diagnostic after Run1090. Measure remaining exact alias principal/references and inspect the TYA_GT_0C0BA8856E -> shp-57d2e3769946 trusted mapping plus unresolved SEPTIEMBRE 26!3. Do not create a profile, do not retry adjudication, do not run credential sweep.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
