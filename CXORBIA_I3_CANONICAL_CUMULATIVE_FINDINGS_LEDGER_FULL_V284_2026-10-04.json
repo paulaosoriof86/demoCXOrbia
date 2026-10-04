@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v261",
   "frozenAt": "2026-10-04T09:12:00Z",
-  "status": "HOLD_VRM221_PROVIDER_DIAGNOSTIC_REQUIRED",
+  "status": "HOLD_VRM221_ADMIN_LIVE_E2E_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "microblockId": "PRE-I4-LIVE-HR-STALE-CACHE-MAPPING-HOLD-AUGUST-CANONICAL-CORRECTION",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -13830,7 +13830,7 @@
       "classification": "ENVIRONMENT_FAILURE",
       "severity": "P0_CONTROL",
       "title": "Run1117 VRM-221 harness timed out after Admin merge click because its fetch observer recorded requests only after a response, preventing request-start versus provider-latency diagnosis",
-      "state": "CONTROL_DIAGNOSTIC_REQUIRED",
+      "state": "SUPERSEDED_BY_VRM-234",
       "firstObservedAt": "RUN1117_2026-10-04",
       "rootCauseStatus": "PROVEN_HARNESS_OBSERVABILITY_GAP_UNDERLYING_PRODUCT_RESULT_NOT_YET_CLASSIFIED",
       "rootCause": "The browser acceptance wrapper awaited the original fetch and only then appended the command to __vrm221Traffic. The merge wait therefore timed out with no recorded command whether the POST never started or the provider request started and did not return. Run1117 proved filter/search/multi-select/modal entry and exact Run1112 fingerprint, but did not produce a trustworthy product PASS/FAIL for merge.",
@@ -13871,6 +13871,72 @@
         "productChanged": false,
         "production": false
       },
+      "productChanged": false,
+      "writes": 0,
+      "production": false,
+      "terminalDisposition": "SUPERSEDED_BY_VRM-234",
+      "successor": "VRM-234",
+      "providerDiagnostic": {
+        "runId": 37214762518,
+        "runNumber": 1118,
+        "artifactId": 11307843230,
+        "artifactDigest": "sha256:e9c1ad891e13cb99bc65a59f5c499c8045b377871a101e4bef2eb266ef3bef48",
+        "exactMergeRequestObserved": true,
+        "requestTimestamp": "2026-10-04T15:43:09.226774Z",
+        "requestMethod": "POST",
+        "path": "/v1/cxorbia/commands",
+        "httpStatus": 200,
+        "latencySeconds": 5.408413875,
+        "productSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "productSourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+        "production": false
+      }
+    },
+    "VRM-234": {
+      "id": "VRM-234",
+      "classification": "ENVIRONMENT_FAILURE",
+      "severity": "P0_CONTROL",
+      "title": "VRM-221 page-local fetch observer was destroyed by the deliberate page reload before Admin merge",
+      "state": "CONTROL_FIX_APPLIED_PENDING_REPROOF",
+      "firstObservedAt": "RUN1117_DIAGNOSED_RUN1118_2026-10-04",
+      "rootCauseStatus": "PROVEN",
+      "rootCause": "The VRM-221 harness installed window.fetch observation before fixture creation, then called refresh(), which performs page.reload(). Reload destroyed __vrm221Traffic and the wrapped fetch. The Admin merge later reached /v1/cxorbia/commands and returned HTTP 200 in 5.408s, but the harness was waiting on a page-local observer that no longer existed.",
+      "evidence": {
+        "run1117": {
+          "runId": 37213946473,
+          "jobId": 111470575982,
+          "artifactId": 11307857117,
+          "timeoutAt": "shopper.identity.adjudicate observer wait",
+          "cleanupComplete": true
+        },
+        "run1118": {
+          "runId": 37214762518,
+          "runNumber": 1118,
+          "artifactId": 11307843230,
+          "mergePostTimestamp": "2026-10-04T15:43:09.226774Z",
+          "httpStatus": 200,
+          "latencySeconds": 5.408413875
+        },
+        "codeProof": {
+          "refreshUsesPageReload": true,
+          "observerWasWindowLocal": true,
+          "observerInstalledBeforeLaterRefresh": true
+        },
+        "productSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "productSourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+        "builds": 0,
+        "deploys": 0,
+        "production": false
+      },
+      "correction": {
+        "owner": "tools/qa/cxorbia-i3-vrm221-admin-identity-governance-live.mjs",
+        "strategy": "Capture shopper command requests/responses with Playwright page network events outside the page JavaScript lifecycle. Exact replay uses the Node-side captured command, so reload cannot erase command evidence.",
+        "productChanged": false,
+        "newCandidate": false,
+        "newWorkflow": false,
+        "production": false
+      },
+      "expected": "VRM-221 can prove merge, keep-separate, safe delete, blocked delete, provider ACK, exact replay and durable readback on unchanged Run1112.",
       "productChanged": false,
       "writes": 0,
       "production": false
@@ -14525,7 +14591,7 @@
     ],
     "findingCount": 230,
     "expectedCurrentRange": "VRM-001..VRM-230",
-    "nextFindingId": "VRM-234",
+    "nextFindingId": "VRM-235",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_VRM229_PAULA_CONFIRMED_IDENTITY_CONSOLIDATION_REQUIRED",
@@ -14807,7 +14873,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Read Cloud Run request/application logs for Run1117 15:42:30Z–15:45:20Z and classify the VRM-221 merge timeout without retrying provider writes.",
+  "exactNextAction": "Rerun VRM-221 Admin live E2E on unchanged Run1112 with Playwright-level command observation; require ACK, exact replay, durable readback and zero HR writes.",
   "supersedesGitBlob": "820da41b786054cb8cd23e89827e1f7afbcdd3b3",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -14836,7 +14902,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-234",
+  "nextFindingId": "VRM-235",
   "lastControlFailure": {
     "findingId": "VRM-232",
     "runId": 37213834927,
@@ -18207,7 +18273,7 @@
     "hostingDeploys": 0,
     "production": false
   },
-  "activeBlocker": "VRM221_ADMIN_MERGE_REQUEST_PATH_DIAGNOSTIC_REQUIRED",
+  "activeBlocker": "VRM221_ADMIN_LIVE_E2E_REQUIRED",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -18399,7 +18465,7 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-10-04T15:03:00Z",
-  "nextExactAction": "Read Cloud Run request/application logs for Run1117 15:42:30Z–15:45:20Z and classify the VRM-221 merge timeout without retrying provider writes.",
+  "nextExactAction": "Rerun VRM-221 Admin live E2E on unchanged Run1112 with Playwright-level command observation; require ACK, exact replay, durable readback and zero HR writes.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
@@ -19112,7 +19178,7 @@
   },
   "openFindingsClosureMatrix": {
     "path": "I3_OPEN_FINDINGS_CLOSURE_MATRIX_2026-10-04.json",
-    "findingCount": 233,
+    "findingCount": 234,
     "status": "ACTIVE_CLOSURE_VIEW",
     "missingFindingIds": [],
     "duplicateFindingIds": []

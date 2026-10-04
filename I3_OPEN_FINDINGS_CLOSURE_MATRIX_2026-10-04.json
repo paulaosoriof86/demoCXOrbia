@@ -31,7 +31,7 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleTruthCount": 21,
   "moduleTruthAllMatch": true,
-  "findingCount": 233,
+  "findingCount": 234,
   "missingFindingIds": [],
   "duplicateFindingIds": [],
   "currentBlockingCount": 70,
@@ -47,7 +47,7 @@
     "CONTROL_ONLY_FIXED": 1
   },
   "nextCriticalSequence": [
-    "VRM-233_RUN1117_PROVIDER_LOG_DIAGNOSTIC",
+    "VRM-234_CONTROL_REPROOF",
     "VRM-221_ADMIN_LIVE_E2E",
     "I3_MULTIMODULE_LIVE_SWEEP",
     "VRM-215_POPULATION_REPROOF",
@@ -7462,16 +7462,16 @@
       ],
       "latestApprovedSource": null,
       "latestLiveProof": {
-        "runNumber": 1117,
-        "runId": 37213946473,
-        "decision": "HARNESS_TIMEOUT_PRODUCT_RESULT_UNCLASSIFIED",
-        "artifactId": 11307857117,
+        "runNumber": 1118,
+        "runId": 37214762518,
+        "decision": "PROVIDER_REQUEST_OBSERVED_HTTP_200",
+        "artifactId": 11307843230,
         "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
         "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
       },
-      "successor": null,
-      "rawLedgerState": "CONTROL_DIAGNOSTIC_REQUIRED",
-      "realState": "REPROOF_REQUIRED",
+      "successor": "VRM-234",
+      "rawLedgerState": "SUPERSEDED_BY_VRM-234",
+      "realState": "SUPERSEDED_BY_VRM-234",
       "evidence": {
         "currentProductSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
         "currentProductTree": "b59da4c090d4639a136168656e7addd544f38e18",
@@ -7481,7 +7481,43 @@
         "externalWrites": 0,
         "cleanupComplete": true
       },
-      "actionRemaining": "read exact Cloud Run logs for Run1117 merge window; no write retry",
+      "actionRemaining": "none",
+      "blocking": false,
+      "terminalDisposition": "SUPERSEDED_BY_VRM-234"
+    },
+    {
+      "findingId": "VRM-234",
+      "moduleDomain": [
+        "shoppers-identity-profile-mi-visitas",
+        "cross-cutting-control"
+      ],
+      "severity": "P0_CONTROL",
+      "classification": "ENVIRONMENT_FAILURE",
+      "owner": [
+        "tools/qa/cxorbia-i3-vrm221-admin-identity-governance-live.mjs"
+      ],
+      "latestApprovedSource": null,
+      "latestLiveProof": {
+        "runNumber": 1118,
+        "runId": 37214762518,
+        "decision": "ROOT_CAUSE_PROVEN_PAGE_OBSERVER_LOST_ON_RELOAD",
+        "artifactId": 11307843230,
+        "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
+      },
+      "successor": null,
+      "rawLedgerState": "CONTROL_FIX_APPLIED_PENDING_REPROOF",
+      "realState": "REPROOF_REQUIRED",
+      "evidence": {
+        "currentProductSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "currentProductTree": "b59da4c090d4639a136168656e7addd544f38e18",
+        "currentMaterializationRunId": 37208163415,
+        "sourceModuleStatus": "MATCH",
+        "mergeHttpStatus": 200,
+        "mergeLatencySeconds": 5.408413875,
+        "productChanged": false
+      },
+      "actionRemaining": "rerun VRM-221 with Playwright network observer",
       "blocking": true,
       "terminalDisposition": null
     }

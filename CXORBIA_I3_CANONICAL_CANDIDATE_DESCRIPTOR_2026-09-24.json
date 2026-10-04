@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM221_PROVIDER_DIAGNOSTIC_REQUIRED",
+  "status": "HOLD_VRM221_ADMIN_LIVE_E2E_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,13 +8,13 @@
   "productTreeAuthority": "b59da4c090d4639a136168656e7addd544f38e18",
   "predecessorProductSourceSha": "bbd66d29192487ac29f8703bd913e3f1e15a28c0",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "258898cb94b67cca1c10875f0adcedbac5077a71",
+  "findingsLedgerExpectedGitBlob": "7815940a3223c5b8323cd257b84d01bb1c679e6b",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM221_ADMIN_MERGE_REQUEST_PATH_DIAGNOSTIC_REQUIRED",
-  "nextFindingId": "VRM-234",
+  "activeBlocker": "VRM221_ADMIN_LIVE_E2E_REQUIRED",
+  "nextFindingId": "VRM-235",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Read Cloud Run request/application logs for Run1117 15:42:30Z–15:45:20Z and classify the VRM-221 merge timeout without retrying provider writes.",
+  "exactNextAction": "Rerun VRM-221 Admin live E2E on unchanged Run1112 with Playwright-level command observation; require ACK, exact replay, durable readback and zero HR writes.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -600,11 +600,9 @@
     "findingId": "VRM-055"
   },
   "lastControlFailure": {
-    "findingId": "VRM-233",
-    "runId": 37213946473,
-    "runNumber": 1117,
+    "findingId": "VRM-234",
     "classification": "ENVIRONMENT_FAILURE",
-    "productResult": "UNCLASSIFIED",
+    "rootCause": "page-local observer destroyed by reload",
     "productChanged": false,
     "production": false
   },
@@ -3566,7 +3564,7 @@
     "production": false
   },
   "openFindingsClosureMatrixPath": "I3_OPEN_FINDINGS_CLOSURE_MATRIX_2026-10-04.json",
-  "openFindingsClosureMatrixFindingCount": 233,
+  "openFindingsClosureMatrixFindingCount": 234,
   "lastVrm229Pass": {
     "runId": 37211579195,
     "runNumber": 1114,

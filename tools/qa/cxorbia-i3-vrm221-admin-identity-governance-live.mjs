@@ -45,14 +45,22 @@ const fixtures=[
   {key:'distinctB',firstName:'Vrmdistb',lastName:'Qa'+suffix},
   {key:'deleteA',firstName:'Vrmdelete',lastName:'Qa'+suffix}
 ];
-const created=[],reviewDocIds=[];
+const created=[],reviewDocIds=[],traffic=[];
 let browser=null,ctx=null,page=null;
 async function readProfile(id){const s=await tenant.collection('shoppers').doc(id).get();return s.exists?{id:s.id,...s.data()}:null;}
-async function capture(type){
-  return await page.evaluate(t=>{const a=(window.__vrm221Traffic||[]).filter(x=>x.command?.commandType===t);return a.length?a[a.length-1]:null;},type);
+const latestTraffic=(type,after=0)=>{for(let i=traffic.length-1;i>=after;i--){const x=traffic[i];if(x.command?.commandType===type)return x;}return null;};
+async function waitTraffic(type,predicate=x=>x?.response!=null,timeout=120000,after=0){
+  const started=Date.now();
+  while(Date.now()-started<timeout){
+    const row=latestTraffic(type,after);
+    if(row&&predicate(row))return row;
+    await new Promise(r=>setTimeout(r,100));
+  }
+  throw new Error('VRM221_TRAFFIC_TIMEOUT:'+type+':'+JSON.stringify({after,traffic:traffic.slice(after).map(x=>({type:x.command?.commandType,httpStatus:x.httpStatus,completed:x.completed,error:x.error||null}))}));
 }
-async function exactReplay(type){
-  return await page.evaluate(async t=>{const a=(window.__vrm221Traffic||[]).filter(x=>x.command?.commandType===t);if(!a.length)return null;return await window.CX.commandHttpTransport.execute(a[a.length-1].command);},type);
+async function exactReplay(type,after=0){
+  const row=latestTraffic(type,after);if(!row?.command)return null;
+  return await page.evaluate(async cmd=>await window.CX.commandHttpTransport.execute(cmd),row.command);
 }
 async function refresh(){
   await page.reload({waitUntil:'domcontentloaded',timeout:90000});
@@ -81,17 +89,35 @@ try{
   ctx=await browser.newContext({viewport:{width:1440,height:1050}});
   page=await ctx.newPage();
   const pageErrors=[];page.on('pageerror',e=>pageErrors.push(str(e?.message||e).slice(0,500)));
+  const requestRows=new WeakMap();
+  page.on('request',req=>{
+    if(req.method()!=='POST')return;
+    try{
+      const command=JSON.parse(req.postData()||'{}');
+      if(!String(command?.commandType||'').startsWith('shopper.'))return;
+      const row={url:req.url(),command,startedAt:new Date().toISOString(),httpStatus:null,response:null,completed:false,error:null};
+      traffic.push(row);requestRows.set(req,row);
+    }catch(_){}
+  });
+  page.on('response',async res=>{
+    const row=requestRows.get(res.request());if(!row)return;
+    row.httpStatus=res.status();
+    try{row.response=await res.json();}catch(_){row.response=null;}
+    row.completed=true;row.completedAt=new Date().toISOString();
+  });
+  page.on('requestfailed',req=>{const row=requestRows.get(req);if(row){row.error=str(req.failure()?.errorText||'requestfailed');row.completed=true;row.completedAt=new Date().toISOString();}});
   const url=ROOT+'/index-backend-dev.html?cxBackendPreview='+PREVIEW+'&cxProjectId='+encodeURIComponent(PROGRAM)+'&cxProtectedRuntime='+PROTECTED+'&cxTechnicalAuthE2E='+TECH;
   await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
   await page.evaluate(async t=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);await firebase.auth().signInWithCustomToken(t);},token);token='';
   await refresh();
-  await page.evaluate(()=>{if(window.__vrm221FetchWrapped)return;window.__vrm221FetchWrapped=true;window.__vrm221Traffic=[];const orig=window.fetch.bind(window);window.fetch=async(input,init={})=>{let command=null;try{if(String(init?.method||'GET').toUpperCase()==='POST'&&typeof init?.body==='string'){const parsed=JSON.parse(init.body);if(String(parsed?.commandType||'').startsWith('shopper.'))command=parsed;}}catch(_){}const response=await orig(input,init);if(command){let body=null;try{body=await response.clone().json();}catch(_){}window.__vrm221Traffic.push({url:String(input),command,response:body,httpStatus:response.status});}return response;};});
 
   for(let i=0;i<fixtures.length;i++){
     const f=fixtures[i],phone='+50255'+String(100000+i+Number(RUN.slice(-4)||0)).padStart(6,'0').slice(-6);
+    const trafficStart=traffic.length;
     const ack=await page.evaluate(async cfg=>await window.CX.data.addShopper({via:'manual',createdVia:'manual',sourceType:'platform',estado:'Pendiente',firstName:cfg.firstName,lastName:cfg.lastName,nombre:cfg.firstName+' '+cfg.lastName,whatsapp:cfg.phone,pais:'GT',depto:'Guatemala',ciudad:'Guatemala',__commandMeta:{ackAware:true,reason:'qa_vrm221_admin_live_fixture'}}),{...f,phone});
     need(ack?.ok===true&&ack?.providerAck===true&&str(ack?.entityId),'PERSISTENCE_FAILURE','VRM221_FIXTURE_CREATE_ACK_'+f.key,{ack});
-    const replay=await exactReplay('shopper.create');
+    await waitTraffic('shopper.create',x=>x.completed===true,120000,trafficStart);
+    const replay=await exactReplay('shopper.create',trafficStart);
     need(replay?.ok===true&&replay?.providerAck===true&&replay?.idempotentReplay===true&&Number(replay?.providerWrites||0)===0,'PERSISTENCE_FAILURE','VRM221_FIXTURE_CREATE_REPLAY_'+f.key,{replay});
     created.push({key:f.key,id:str(ack.entityId),name:f.firstName+' '+f.lastName});
   }
@@ -133,11 +159,11 @@ try{
   await page.waitForSelector('#bulkMergeCommit',{timeout:10000});
   await page.selectOption('#bulkCanonical',byKey.mergeA.id);
   await page.check('#bulkMergeConfirm');
+  const mergeStart=traffic.length;
   await page.click('#bulkMergeCommit');
-  await page.waitForFunction(()=>{const a=(window.__vrm221Traffic||[]).filter(x=>x.command?.commandType==='shopper.identity.adjudicate');return a.length&&a[a.length-1].response?.providerAck===true;},null,{timeout:120000});
-  const mergeTraffic=await capture('shopper.identity.adjudicate');
+  const mergeTraffic=await waitTraffic('shopper.identity.adjudicate',x=>x.completed===true,120000,mergeStart);
   need(mergeTraffic?.response?.ok===true&&mergeTraffic?.response?.providerAck===true&&mergeTraffic?.response?.identityConsolidated===true,'PERSISTENCE_FAILURE','VRM221_MERGE_UI_ACK',{mergeTraffic});
-  const mergeReplay=await exactReplay('shopper.identity.adjudicate');
+  const mergeReplay=await exactReplay('shopper.identity.adjudicate',mergeStart);
   need(mergeReplay?.ok===true&&mergeReplay?.providerAck===true&&mergeReplay?.idempotentReplay===true&&Number(mergeReplay?.providerWrites||0)===0,'PERSISTENCE_FAILURE','VRM221_MERGE_EXACT_REPLAY',{mergeReplay});
   const mergeA=await readProfile(byKey.mergeA.id),mergeB=await readProfile(byKey.mergeB.id);
   need(mergeA&&String(mergeA.identityState||'')!=='superseded_exact_alias'&&mergeB?.identityState==='superseded_exact_alias'&&str(mergeB.supersededByShopperId)===byKey.mergeA.id,'PERSISTENCE_FAILURE','VRM221_MERGE_DURABLE_READBACK');
@@ -149,11 +175,10 @@ try{
   await page.click('#shBulkDistinct');await page.waitForSelector('#bulkDistinctCommit',{timeout:10000});
   await page.fill('#bulkDistinctReason','QA exact Admin decision: personas distintas');
   await page.fill('#bulkDistinctEvidence','Fixture controlado VRM-221, identidades técnicas distintas');
-  await page.check('#bulkDistinctConfirm');await page.click('#bulkDistinctCommit');
-  await page.waitForFunction(()=>{const a=(window.__vrm221Traffic||[]).filter(x=>x.command?.commandType==='shopper.identity.review.resolve');return a.length&&a[a.length-1].response?.providerAck===true;},null,{timeout:120000});
-  const distinctTraffic=await capture('shopper.identity.review.resolve');
+  await page.check('#bulkDistinctConfirm');const distinctStart=traffic.length;await page.click('#bulkDistinctCommit');
+  const distinctTraffic=await waitTraffic('shopper.identity.review.resolve',x=>x.completed===true,120000,distinctStart);
   need(distinctTraffic?.response?.ok===true&&distinctTraffic?.response?.providerAck===true&&distinctTraffic?.response?.identityReviewResolved===true&&distinctTraffic?.response?.identityRemap===false,'PERSISTENCE_FAILURE','VRM221_DISTINCT_UI_ACK',{distinctTraffic});
-  const distinctReplay=await exactReplay('shopper.identity.review.resolve');
+  const distinctReplay=await exactReplay('shopper.identity.review.resolve',distinctStart);
   need(distinctReplay?.ok===true&&distinctReplay?.providerAck===true&&distinctReplay?.idempotentReplay===true&&Number(distinctReplay?.providerWrites||0)===0,'PERSISTENCE_FAILURE','VRM221_DISTINCT_EXACT_REPLAY',{distinctReplay});
   const distinctReview=await tenant.collection('shopperIdentityReviews').doc('qa_vrm221_distinct_'+RUN).get();
   need(distinctReview.exists&&str((distinctReview.data()||{}).status)==='resolved_distinct','PERSISTENCE_FAILURE','VRM221_DISTINCT_DURABLE_READBACK');
@@ -161,11 +186,10 @@ try{
 
   await refresh();await page.evaluate(()=>window.CX.router.nav('shoppers'));await page.waitForSelector('#shBody [data-sid]',{timeout:30000});
   await page.fill('#shSearch','Vrmdelete');await page.waitForTimeout(150);await selectRows([byKey.deleteA.id]);
-  await page.click('#shBulkDelete');await page.waitForSelector('#bulkDeleteCommit',{timeout:10000});await page.fill('#bulkDeleteReason','QA VRM-221 safe retire success');await page.check('#bulkDeleteConfirm');await page.click('#bulkDeleteCommit');
-  await page.waitForFunction(()=>{const a=(window.__vrm221Traffic||[]).filter(x=>x.command?.commandType==='shopper.delete');return a.length&&a[a.length-1].response?.providerAck===true;},null,{timeout:120000});
-  const deleteTraffic=await capture('shopper.delete');
+  await page.click('#shBulkDelete');await page.waitForSelector('#bulkDeleteCommit',{timeout:10000});await page.fill('#bulkDeleteReason','QA VRM-221 safe retire success');await page.check('#bulkDeleteConfirm');const deleteStart=traffic.length;await page.click('#bulkDeleteCommit');
+  const deleteTraffic=await waitTraffic('shopper.delete',x=>x.completed===true,120000,deleteStart);
   need(deleteTraffic?.response?.ok===true&&deleteTraffic?.response?.providerAck===true&&deleteTraffic?.response?.shopperRetired===true,'PERSISTENCE_FAILURE','VRM221_DELETE_UI_ACK',{deleteTraffic});
-  const deleteReplay=await exactReplay('shopper.delete');
+  const deleteReplay=await exactReplay('shopper.delete',deleteStart);
   need(deleteReplay?.ok===true&&deleteReplay?.providerAck===true&&deleteReplay?.idempotentReplay===true&&Number(deleteReplay?.providerWrites||0)===0,'PERSISTENCE_FAILURE','VRM221_DELETE_EXACT_REPLAY',{deleteReplay});
   const deletedProfile=await readProfile(byKey.deleteA.id);
   const tomb=await tenant.collection('shopperTombstones').doc(byKey.deleteA.id).get();
@@ -175,10 +199,9 @@ try{
   await refresh();await page.evaluate(()=>window.CX.router.nav('shoppers'));await page.waitForSelector('#shBody [data-sid]',{timeout:30000});
   const realId=await page.evaluate(hrIds=>{for(const id of hrIds){const s=window.CX.data.getShopper(id);if(s&&document.querySelector('#shBody [data-sid="'+CSS.escape(id)+'"]'))return id;}return '';},hrIds);
   need(realId,'MAPPING_FAILURE','VRM221_NO_CURRENT_HR_PROFILE_FOR_DELETE_BLOCK');
-  await selectRows([realId]);await page.click('#shBulkDelete');await page.waitForSelector('#bulkDeleteCommit',{timeout:10000});await page.fill('#bulkDeleteReason','QA VRM-221 verify HR-authoritative delete block');await page.check('#bulkDeleteConfirm');await page.click('#bulkDeleteCommit');
-  await page.waitForFunction(()=>{const a=(window.__vrm221Traffic||[]).filter(x=>x.command?.commandType==='shopper.delete');return a.length>=2;},null,{timeout:120000});
+  await selectRows([realId]);await page.click('#shBulkDelete');await page.waitForSelector('#bulkDeleteCommit',{timeout:10000});await page.fill('#bulkDeleteReason','QA VRM-221 verify HR-authoritative delete block');await page.check('#bulkDeleteConfirm');const blockedStart=traffic.length;await page.click('#bulkDeleteCommit');
+  const blockedTraffic=await waitTraffic('shopper.delete',x=>x.completed===true,120000,blockedStart);
   await page.waitForTimeout(500);
-  const blockedTraffic=await capture('shopper.delete');
   const realAfter=await readProfile(realId);
   need(blockedTraffic?.response?.providerAck!==true&&realAfter&&realAfter.identityState!=='retired_by_admin','FUNCTIONAL_DEFECT','VRM221_DELETE_HR_BLOCK_FAILED',{blockedTraffic});
   const blockedUi=await page.evaluate(()=>String(document.body.innerText||'').includes('No se puede eliminar este perfil')||String(document.body.innerText||'').includes('SHOPPER_DELETE_UNSAFE_DEPENDENCIES'));
