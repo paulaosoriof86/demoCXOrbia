@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM217_219_PROVIDER_SOURCE_REPROOF_REQUIRED",
+  "status": "HOLD_VRM217_219_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "8daedad6a34a0015113ea8567b3d92ab6af5568f",
   "productTreeAuthority": "8b0e30d7fe8e2c8449e691a66c7b67b819836abd",
   "predecessorProductSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V255_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "bbbf337778b58d9dab46016b563e3a1e54c0ebf3",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V256_2026-10-04.json",
+  "findingsLedgerExpectedGitBlob": "d08af2c75b66bb813abb3960e1d135c320240567",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM217_219_PROVIDER_SOURCE_REPROOF_REQUIRED",
+  "activeBlocker": "VRM217_219_EXACT_DEV_MATERIALIZATION_REQUIRED",
   "nextFindingId": "VRM-220",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Repeat the same VRM-217..219 provider source reproof on product source 8daedad6a34a0015113ea8567b3d92ab6af5568f. No materialization or population writes until PASS.",
+  "exactNextAction": "Materialize exactly product source 8daedad6a34a0015113ea8567b3d92ab6af5568f once in DEV through the existing canonical materialization lane. Then run exact provider-backed population repairs and reproof. Production remains false.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
