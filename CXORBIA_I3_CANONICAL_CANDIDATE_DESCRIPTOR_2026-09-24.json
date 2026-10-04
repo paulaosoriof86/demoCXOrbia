@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_JULISSA_IDENTITY_HUMAN_CONFIRMATION_REQUIRED",
+  "status": "HOLD_JULISSA_IDENTITY_TOPOLOGY_DIAGNOSTIC_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "4b1c0859cc5b43928c083748d00fdc606b32d63e",
   "productTreeAuthority": "ab33d43d483faef9fbec5daaadfa454247df469a",
   "predecessorProductSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V238_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "131398ecbd404e64c978ef25f11415b305be2269",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V239_2026-10-04.json",
+  "findingsLedgerExpectedGitBlob": "4d0442cacfc5c36a2e31330caae75b649c32d7d1",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM213_EXPLICIT_ADMIN_SAME_HUMAN_CONFIRMATION_REQUIRED",
-  "nextFindingId": "VRM-214",
+  "activeBlocker": "VRM214_JULISSA_FLORES_ILLESCAS_MIRAFLORES_TOPOLOGY_REPROOF_REQUIRED",
+  "nextFindingId": "VRM-215",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,18 +26,20 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Obtain explicit authorized Admin confirmation that the credential-bearing Julissa Flores principal visible as julissa.flores is the same human as the current HR Julissa Flores identity shopper_gt_0c198c1055. If confirmed, execute one provider-backed shopper.identity.adjudicate in DEV with canonical shopper_gt_0c198c1055 and exact aliases shr-1780611985059-49vr + shp-7309d525805e, then require ACK, idempotent readback, zero residual active aliases, zero HR writes and zero production actions.",
+  "exactNextAction": "Run the existing read-only Julissa topology diagnostic on the exact four same-human candidate identities (shr-1780611985059-49vr, shopper_gt_0c198c1055, shp-7309d525805e, shopper_gt_86254c4228) plus the Miraflores visit against the unchanged Run1053 DEV artifact and current HR revision. Determine canonical HR operational identity, sole credential keeper, exact aliases, Miraflores assignment/hrRowId/visit key/period/country, all provider-remappable operational references, and any additional active principal. Do not adjudicate until this topology is exact.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
-      "VRM-042"
+      "VRM-042",
+      "VRM-214"
     ],
     "mode": "READ_ONLY_EXACT_MAPPED_VISIT_OWNERSHIP",
     "targetSourceSha": "d8aad982ae4b47e66bf949d906b6c7ede8866f84",
     "expectedPrimaryCase": "shopper_gt_0b19085086",
     "expectedControlCase": "shopper_gt_a55e5b3e9b",
     "productWrites": 0,
-    "production": false
+    "production": false,
+    "state": "VRM214_FOUR_IDENTITY_MIRAFLORES_READ_ONLY_REQUIRED"
   },
   "lastSourceFix": {
     "findingIds": [

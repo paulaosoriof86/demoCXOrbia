@@ -30,7 +30,7 @@ const [profiles,members,cross,links,visits,receipts,reviewRows,hrImports]=await 
   docs(project.collection('hrImports'))
 ]);
 const profileName=p=>str(p.nombre||p.displayName||p.fullName||[p.firstName,p.lastName].filter(Boolean).join(' '));
-const TARGET_SHOPPER_IDS=new Set(['shr-1780611985059-49vr','shopper_gt_0c198c1055','shp-7309d525805e']);
+const TARGET_SHOPPER_IDS=new Set(['shr-1780611985059-49vr','shopper_gt_0c198c1055','shp-7309d525805e','shopper_gt_86254c4228']);
 const targetProfiles=profiles.filter(p=>TARGET_SHOPPER_IDS.has(str(p.id||p.shopperId)));
 const tokens=new Set(TARGET_SHOPPER_IDS);
 for(const p of targetProfiles){
@@ -49,12 +49,13 @@ for(const m of memberMatches){
     authRows.push({uid:m.id,shopperId:str(m.shopperId),active:m.active===true,role:str(m.role),authNamespace:str(m.authNamespace),visibleLogin:str(m.visibleLogin||m.username),emailPresent:!!u.email,emailFingerprint:u.email?sha(u.email):'',disabled:u.disabled===true,claims:u.customClaims||{},strongPasswordProof:str(m.credentialPasswordProofVersion)===CREDENTIAL_PASSWORD_PROOF_VERSION});
   }catch(e){authRows.push({uid:m.id,shopperId:str(m.shopperId),active:m.active===true,role:str(m.role),authNamespace:str(m.authNamespace),error:str(e?.code||e?.message||e)});}
 }
-const visitMatches=visits.filter(v=>tokens.has(str(v.shopperId))||/\bjulissa\b/i.test(norm(v.shopper||v.evaluador||v.evaluator||'')));
+const isMirafloresVisit=v=>/miraflores/i.test(norm(v.sucursal||v.branch||v.location||v.cinema||v.cine||''));
+const visitMatches=visits.filter(v=>tokens.has(str(v.shopperId))||/\bjulissa\b/i.test(norm(v.shopper||v.evaluador||v.evaluator||''))||isMirafloresVisit(v));
 const hrRes=await fetch(HOST+'/api/'+TENANT+'/'+PROJECT_ID+'/hr-live?format=json&julissatopology='+Date.now(),{headers:{'Cache-Control':'no-cache, no-store, max-age=0'},signal:AbortSignal.timeout(120000)});
 if(!hrRes.ok)throw new Error('PROVIDER_FAILURE:JULISSA_HR_HTTP_'+hrRes.status);
 const hrBody=await hrRes.json(),hr=hrBody.snapshot||hrBody.data||hrBody;
 const hrProfiles=arr(hr.shoppers).filter(p=>tokens.has(str(p.id||p.shopperId)));
-const hrVisits=arr(hr.visits).filter(v=>tokens.has(str(v.shopperId)));
+const hrVisits=arr(hr.visits).filter(v=>tokens.has(str(v.shopperId))||isMirafloresVisit(v));
 const ts=v=>v?.toDate?.()?.toISOString?.()||str(v);
 const slimProfile=p=>({id:str(p.id||p.shopperId),name:profileName(p),firstName:str(p.firstName),lastName:str(p.lastName),visibleLogin:str(p.visibleLogin||p.username||p.user),whatsappPresent:!!str(p.whatsapp||p.phone),whatsappFingerprint:str(p.whatsapp||p.phone)?sha(String(p.whatsapp||p.phone).replace(/\D+/g,'')):'',emailPresent:!!str(p.email),emailFingerprint:str(p.email)?sha(p.email):'',dpiFingerprint:str(p.dpi||p.documentId||p.identification)?sha(String(p.dpi||p.documentId||p.identification).replace(/\D+/g,'')):'',bankAccountFingerprint:str(p.ctaNum||p.accountNumber)?sha(String(p.ctaNum||p.accountNumber).replace(/\s+/g,'')):'',accountHolderFingerprint:str(p.ctaTitular||p.accountHolder)?sha(p.ctaTitular||p.accountHolder):'',city:str(p.ciudad),country:str(p.pais||p.country),active:p.active,status:str(p.status||p.estado),sourceType:str(p.sourceType),sourceIdentityKey:str(p.sourceIdentityKey),hrSourceRevision:str(p.hrSourceRevision),createdAt:ts(p.createdAt),updatedAt:ts(p.updatedAt),canonicalShopperId:str(p.canonicalShopperId),sourceShopperIds:arr(p.sourceShopperIds).map(str),exactAliases:arr(p.exactAliases).map(str),legacyLiveShopperIds:arr(p.legacyLiveShopperIds).map(str),identityAuthority:str(p.identityAuthority),identityAuthorityRefPresent:!!str(p.identityAuthorityRef),identityReviewRequired:p.identityReviewRequired===true,credentialPasswordProofVersion:str(p.credentialPasswordProofVersion),strongPasswordProof:str(p.credentialPasswordProofVersion)===CREDENTIAL_PASSWORD_PROOF_VERSION});
 const activePrincipals=memberMatches.filter(m=>m.active===true&&str(m.role)==='shopper'&&str(m.authNamespace)==='shopper');
@@ -104,8 +105,16 @@ const historicalAnchorSets=Object.fromEntries(tokenList.map(id=>[id,{phone:new S
 for(const row of hrImportMatches)for(const id of row.matchedTargetIds){const s=historicalAnchorSets[id];if(row.phoneFingerprint)s.phone.add(row.phoneFingerprint);if(row.dpiFingerprint)s.dpi.add(row.dpiFingerprint);if(row.emailFingerprint)s.email.add(row.emailFingerprint);if(row.sourceRowFingerprint)s.sourceRow.add(row.sourceRowFingerprint);}
 const historicalPairEvidence=[];
 for(let i=0;i<tokenList.length;i++)for(let j=i+1;j<tokenList.length;j++){const a=tokenList[i],b=tokenList[j],sa=historicalAnchorSets[a],sb=historicalAnchorSets[b];const shared=(key)=>[...sa[key]].filter(x=>sb[key].has(x));const phone=shared('phone'),dpi=shared('dpi'),email=shared('email'),sourceRow=shared('sourceRow');historicalPairEvidence.push({a,b,sharedPhoneFingerprints:phone.length,sharedDpiFingerprints:dpi.length,sharedEmailFingerprints:email.length,sharedSourceRowFingerprints:sourceRow.length,exactHistoricalAnchorProven:phone.length>0||dpi.length>0||email.length>0||sourceRow.length>0});}
+const ADJ_OWNER_FIELDS=['shopperId','assignedShopperId','assignedToShopperId','auditorId','profileId','applicantShopperId','ownerShopperId','targetShopperId','beneficiaryShopperId','liquidationShopperId','reservationShopperId'];
+const ADJ_OWNER_ARRAY_FIELDS=['shopperIds','candidateShopperIds'];
+const ADJ_DOMAIN_COLLECTIONS=[['tenant','paymentReconciliations'],['tenant','reviewQueue'],['project','certifications'],['project','liquidations'],['project','postulations'],['project','reservations'],['project','visits']];
+const operationalReferences=[];
+for(const [scope,name] of ADJ_DOMAIN_COLLECTIONS){const col=scope==='tenant'?tenant.collection(name):project.collection(name);const snap=await col.get();for(const doc of snap.docs){const data=doc.data()||{},fields=[];for(const key of ADJ_OWNER_FIELDS)if(tokens.has(str(data[key])))fields.push(key);for(const key of ADJ_OWNER_ARRAY_FIELDS)if(arr(data[key]).some(x=>tokens.has(str(x))))fields.push(key);if(fields.length)operationalReferences.push({scope,collection:name,id:doc.id,fields,values:Object.fromEntries(fields.map(k=>[k,Array.isArray(data[k])?arr(data[k]).map(str):str(data[k])]))});}}
+const mirafloresDurable=visitMatches.filter(isMirafloresVisit).map(v=>({id:str(v.id||v.visitId),visitKey:str(v.hrRowId||v.id||v.visitId),hrRowId:str(v.hrRowId),periodId:str(v.periodId||v.periodKey),country:str(v.country||v.pais||v.país),shopperId:str(v.shopperId),shopper:str(v.shopper||v.evaluador||v.evaluator),branch:str(v.sucursal||v.branch),state:str(v.estado||v.status),assignmentSource:str(v.assignmentSource)}));
+const mirafloresHr=hrVisits.filter(isMirafloresVisit).map(v=>({id:str(v.id||v.visitId),visitKey:str(v.hrRowId||v.id||v.visitId),hrRowId:str(v.hrRowId),periodKey:str(v.periodKey||v.periodId),country:str(v.country||v.pais||v.país),shopperId:str(v.shopperId),shopper:str(v.shopper||v.evaluador||v.evaluator),branch:str(v.sucursal||v.branch),state:str(v.estado||v.status),assignmentSource:str(v.assignmentSource)}));
+const mirafloresAssignmentShopperIds=uniq([...mirafloresDurable,...mirafloresHr].map(v=>v.shopperId));
 const result={
-  schemaVersion:'cxorbia.i3.julissa.identity-topology.readonly.v1',
+  schemaVersion:'cxorbia.i3.julissa.identity-topology.readonly.v2',
   decision:'PASS_JULISSA_IDENTITY_TOPOLOGY_READONLY',
   sourceRevision:str(hrBody.revision||hrBody._runtime?.revision||hr.sourceRevision),
   profiles:targetProfiles.map(slimProfile),
@@ -113,11 +122,12 @@ const result={
   auth:authRows,
   crosswalk:crossMatches.map(x=>({id:str(x.id),shopperId:str(x.shopperId),canonicalShopperId:str(x.canonicalShopperId),sourceStableKey:str(x.sourceStableKey),sourceShopperId:str(x.sourceShopperId),identityMode:str(x.identityMode),sourceType:str(x.sourceType),migrationAuthorityType:str(x.migrationAuthorityType),migrationAuthorityRefPresent:!!str(x.migrationAuthorityRef),identityAuthority:str(x.identityAuthority),identityAuthorityRefPresent:!!str(x.identityAuthorityRef),providerUidFingerprintPresent:!!str(x.providerUidFingerprint),status:str(x.status||x.state),active:x.active,updatedAt:ts(x.updatedAt)})),
   links:linkMatches.map(x=>({id:str(x.id),canonicalShopperId:str(x.canonicalShopperId||x.canonicalId||x.shopperId||x.profileId),sourceIdentityKey:str(x.sourceIdentityKey),sourceShopperId:str(x.sourceShopperId),sourceSubjectId:str(x.sourceSubjectId),sourceAliases:arr(x.sourceAliases).map(str),exactAliases:arr(x.exactAliases).map(str),authorityType:str(x.authorityType||x.authority?.type),status:str(x.status||x.state)})),
-  durableVisits:visitMatches.map(v=>({id:str(v.id||v.visitId),hrRowId:str(v.hrRowId),periodId:str(v.periodId),shopperId:str(v.shopperId),branch:str(v.sucursal),state:str(v.estado||v.status),assignmentSource:str(v.assignmentSource)})),
+  durableVisits:visitMatches.map(v=>({id:str(v.id||v.visitId),visitKey:str(v.hrRowId||v.id||v.visitId),hrRowId:str(v.hrRowId),periodId:str(v.periodId||v.periodKey),country:str(v.country||v.pais||v.país),shopperId:str(v.shopperId),branch:str(v.sucursal||v.branch),state:str(v.estado||v.status),assignmentSource:str(v.assignmentSource)})),
   hrProfiles:hrProfiles.map(slimProfile),
-  hrVisits:hrVisits.map(v=>({id:str(v.id||v.visitId),hrRowId:str(v.hrRowId),periodKey:str(v.periodKey),shopperId:str(v.shopperId),shopper:str(v.shopper||v.evaluador||v.evaluator),branch:str(v.sucursal),state:str(v.estado||v.status)})),
-  provenance:{commandReceipts:receiptMatches,reviewQueue:reviewMatches,hrImports:hrImportMatches,historicalPairEvidence},
-  counts:{profiles:targetProfiles.length,members:memberMatches.length,authRows:authRows.length,crosswalk:crossMatches.length,links:linkMatches.length,durableVisits:visitMatches.length,hrProfiles:hrProfiles.length,hrVisits:hrVisits.length,commandReceipts:receiptMatches.length,reviewQueue:reviewMatches.length,hrImportDocs:hrImports.length,hrImportMatches:hrImportMatches.length},
+  hrVisits:hrVisits.map(v=>({id:str(v.id||v.visitId),visitKey:str(v.hrRowId||v.id||v.visitId),hrRowId:str(v.hrRowId),periodKey:str(v.periodKey||v.periodId),country:str(v.country||v.pais||v.país),shopperId:str(v.shopperId),shopper:str(v.shopper||v.evaluador||v.evaluator),branch:str(v.sucursal||v.branch),state:str(v.estado||v.status),assignmentSource:str(v.assignmentSource)})),
+  provenance:{commandReceipts:receiptMatches,reviewQueue:reviewMatches,hrImports:hrImportMatches,historicalPairEvidence,operationalReferences},
+  miraflores:{durable:mirafloresDurable,hr:mirafloresHr,assignmentShopperIds:mirafloresAssignmentShopperIds},
+  counts:{profiles:targetProfiles.length,members:memberMatches.length,authRows:authRows.length,crosswalk:crossMatches.length,links:linkMatches.length,durableVisits:visitMatches.length,hrProfiles:hrProfiles.length,hrVisits:hrVisits.length,commandReceipts:receiptMatches.length,reviewQueue:reviewMatches.length,hrImportDocs:hrImports.length,hrImportMatches:hrImportMatches.length,operationalReferences:operationalReferences.length,mirafloresDurable:mirafloresDurable.length,mirafloresHr:mirafloresHr.length},
   adjudicationReadiness:{targetShopperIds:tokenList,activePrincipalCount:activePrincipals.length,strongPrincipalCount:strongPrincipals.length,strongPrincipalShopperIds:strongPrincipals.map(m=>str(m.shopperId)),credentialKeeperUnambiguous:strongPrincipals.length===1,currentHrTargetShopperIds,canonicalOperationalCandidate:currentHrTargetShopperIds.length===1?currentHrTargetShopperIds[0]:'',canonicalOperationalCandidateUnambiguous:currentHrTargetShopperIds.length===1,durableVisitCountsByShopper,hrVisitCountsByShopper,exactPairEvidence,visitKeyOverlaps:overlaps},
   writes:0,production:false
 };
