@@ -7,14 +7,14 @@
   "productSourceSha": "4b1c0859cc5b43928c083748d00fdc606b32d63e",
   "productTreeAuthority": "ab33d43d483faef9fbec5daaadfa454247df469a",
   "predecessorProductSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V235_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "a3d2f70db9dce70b61a5e793c45d35caad12c0c3",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V236_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "bb1fd8266e54012313498ce427648c18226c99dc",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM207_EXACT_THREE_ID_JULISSA_TOPOLOGY_REPROOF_REQUIRED",
-  "nextFindingId": "VRM-211",
+  "activeBlocker": "VRM211_JULISSA_KEEPER_TO_HR_CANONICAL_EXACT_PROVENANCE_REQUIRED",
+  "nextFindingId": "VRM-212",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Re-run Julissa topology read-only for only shr-1780611985059-49vr, shopper_gt_0c198c1055 and shp-7309d525805e. Require non-reversible technical anchors and current HR ownership evidence before any identity adjudication.",
+  "exactNextAction": "Run Julissa provenance read-only on the exact three identities. Search provider receipts, review queue, profile provenance and crosswalk authority for an exact historical link between shr-1780611985059-49vr and shopper_gt_0c198c1055. No write or adjudication yet.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3444,7 +3444,7 @@
     "sourceSha": "4b1c0859cc5b43928c083748d00fdc606b32d63e",
     "sourceTree": "ab33d43d483faef9fbec5daaadfa454247df469a",
     "predecessorSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-    "state": "VRM207_EXACT_THREE_ID_READ_ONLY_REPROOF_REQUIRED",
+    "state": "VRM211_JULISSA_PROVENANCE_READ_ONLY_REQUIRED",
     "findingIds": [
       "VRM-134",
       "VRM-165",
@@ -3470,7 +3470,7 @@
       "VRM-205",
       "VRM-207",
       "VRM-208",
-      "VRM-210"
+      "VRM-211"
     ],
     "preservedAllPriorFindings": true,
     "production": false,
