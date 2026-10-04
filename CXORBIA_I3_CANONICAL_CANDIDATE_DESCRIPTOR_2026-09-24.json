@@ -7,14 +7,14 @@
   "productSourceSha": "4b1c0859cc5b43928c083748d00fdc606b32d63e",
   "productTreeAuthority": "ab33d43d483faef9fbec5daaadfa454247df469a",
   "predecessorProductSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V234_2026-10-03.json",
-  "findingsLedgerExpectedGitBlob": "3d26d50aae9aed9955a5256d9324df412d912e72",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V235_2026-10-03.json",
+  "findingsLedgerExpectedGitBlob": "a3d2f70db9dce70b61a5e793c45d35caad12c0c3",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM207_JULISSA_TOPOLOGY_DIAGNOSTIC_REQUIRED_AFTER_VRM209_CONTROL_SHRINK",
-  "nextFindingId": "VRM-210",
+  "activeBlocker": "VRM207_EXACT_THREE_ID_JULISSA_TOPOLOGY_REPROOF_REQUIRED",
+  "nextFindingId": "VRM-211",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run the existing Julissa read-only identity topology diagnostic on the unchanged Run1053 DEV artifact after shrinking the workflow below the previously compiled size. No build, deploy or data writes.",
+  "exactNextAction": "Re-run Julissa topology read-only for only shr-1780611985059-49vr, shopper_gt_0c198c1055 and shp-7309d525805e. Require non-reversible technical anchors and current HR ownership evidence before any identity adjudication.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3444,7 +3444,7 @@
     "sourceSha": "4b1c0859cc5b43928c083748d00fdc606b32d63e",
     "sourceTree": "ab33d43d483faef9fbec5daaadfa454247df469a",
     "predecessorSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-    "state": "VRM207_DIAGNOSTIC_PENDING_AFTER_VRM209_CONTROL_SHRINK",
+    "state": "VRM207_EXACT_THREE_ID_READ_ONLY_REPROOF_REQUIRED",
     "findingIds": [
       "VRM-134",
       "VRM-165",
@@ -3470,7 +3470,7 @@
       "VRM-205",
       "VRM-207",
       "VRM-208",
-      "VRM-209"
+      "VRM-210"
     ],
     "preservedAllPriorFindings": true,
     "production": false,
