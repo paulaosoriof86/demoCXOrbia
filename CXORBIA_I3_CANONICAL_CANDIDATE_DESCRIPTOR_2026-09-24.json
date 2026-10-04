@@ -7,8 +7,8 @@
   "productSourceSha": "8daedad6a34a0015113ea8567b3d92ab6af5568f",
   "productTreeAuthority": "8b0e30d7fe8e2c8449e691a66c7b67b819836abd",
   "predecessorProductSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V263_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "712772f9a5f5cb9c655b3871e59bc384ae0a8cc4",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V264_2026-10-04.json",
+  "findingsLedgerExpectedGitBlob": "11ba9fcf0834a229f6c2e74a9d170c5a010f5a24",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Execute only the remaining VRM-219 trusted exact-alias remap from Run1088: 20 canonical groups / 32 aliases / 277 authoritative references. Build each semantic adjudication command once and execute that exact command object twice for provider ACK + zero-write replay. Preserve historical visit rows, exclude 17 holds and unresolved SEPTIEMBRE 26!3, then run the existing read-only population root diagnostic. Do not rerun credential sweep.",
+  "exactNextAction": "Repeat the same remaining VRM-219 exact-alias remap after correcting the control-only status assertion. Scope remains 20 canonical groups / 32 aliases / 277 authoritative references from Run1088; no credential sweep, no production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
