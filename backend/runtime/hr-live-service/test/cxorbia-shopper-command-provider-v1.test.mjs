@@ -1000,3 +1000,24 @@ test('VRM-221 safe delete retires platform orphan, disables Auth and preserves t
   assert.equal((await auth.getUser(uid)).disabled,true);assert.equal(db.get('tenants/tenant-a/users/'+uid).active,false);assert.equal(db.get('tenants/tenant-a/shoppers/'+id).identityState,'retired_by_admin');assert.equal(db.get('tenants/tenant-a/shopperTombstones/'+id).status,'retired');assert.equal(db.get('tenants/tenant-a/projects/project-a/certifications/cert-historical').shopperId,id);
   const replay=await p.execute('staff-token',command);assert.equal(replay.ok,true);assert.equal(replay.idempotentReplay,true);assert.equal(replay.providerWrites,0);assert.equal((await auth.getUser(uid)).disabled,true);
 });
+
+test('VRM-227 same-human merge durably closes matching active identity review and replay stays exact',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),canonical='shopper_gt_review_merge_can',alias='shopper_gt_review_merge_alias',p=provider(auth,db);
+  db.seed('tenants/tenant-a/users/admin-1',{active:true,tenantId:'tenant-a',role:'super',authNamespace:'staff',projectIds:['project-a']});
+  auth.seed({uid:'can-uid',email:internalEmailTest('tenant-a','persona.canonica'),disabled:false,customClaims:{tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:canonical,projectIds:['project-a']}});
+  auth.seed({uid:'alias-uid',email:internalEmailTest('tenant-a','persona.alias'),disabled:false,customClaims:{tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:alias,projectIds:['project-a']}});
+  db.seed('tenants/tenant-a/users/can-uid',{active:true,tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:canonical,projectIds:['project-a'],visibleLogin:'persona.canonica',credentialPasswordProofVersion:CREDENTIAL_PASSWORD_PROOF_VERSION});
+  db.seed('tenants/tenant-a/users/alias-uid',{active:true,tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:alias,projectIds:['project-a'],visibleLogin:'persona.alias',credentialPasswordProofVersion:CREDENTIAL_PASSWORD_PROOF_VERSION});
+  db.seed('tenants/tenant-a/shoppers/'+canonical,{id:canonical,shopperId:canonical,tenantId:'tenant-a',projectIds:['project-a'],firstName:'Persona',lastName:'Canonica',nombre:'Persona Canonica',visibleLogin:'persona.canonica',credentialPasswordProofVersion:CREDENTIAL_PASSWORD_PROOF_VERSION});
+  db.seed('tenants/tenant-a/shoppers/'+alias,{id:alias,shopperId:alias,tenantId:'tenant-a',projectIds:['project-a'],firstName:'Persona',lastName:'Alias',nombre:'Persona Alias',visibleLogin:'persona.alias',credentialPasswordProofVersion:CREDENTIAL_PASSWORD_PROOF_VERSION});
+  db.seed('tenants/tenant-a/shopperIdentityCrosswalk/'+canonical,{tenantId:'tenant-a',shopperId:canonical,sourceStableKey:canonical,projectIds:['project-a'],providerUidFingerprint:providerUidFingerprint('can-uid'),sourceType:'hr_external',identityMode:'stable_hr_shopper_id'});
+  db.seed('tenants/tenant-a/shopperIdentityCrosswalk/'+alias,{tenantId:'tenant-a',shopperId:alias,sourceStableKey:alias,projectIds:['project-a'],providerUidFingerprint:providerUidFingerprint('alias-uid'),sourceType:'hr_external',identityMode:'stable_hr_shopper_id'});
+  db.seed('tenants/tenant-a/shopperIdentityReviews/review-merge',{reviewId:'review-merge',tenantId:'tenant-a',projectScope:'project-a',shopperIds:[canonical,alias],candidateShopperIds:[canonical,alias],status:'active',reason:'duplicate_exact_identity'});
+  const command={version:'cxorbia-command-adapter-v1',commandType:'shopper.identity.adjudicate',tenantId:'tenant-a',projectId:'project-a',periodId:'project-a-2026-10',entityId:canonical,idempotencyKey:'vrm227-review-close',authorization:{providerEnforcementRequired:true,permission:'shopper.identity.adjudicate'},payload:{canonicalShopperId:canonical,aliasShopperIds:[alias],humanConfirmed:true,reason:'admin_confirmed_same_human'}};
+  const first=await p.execute('staff-token',command);
+  assert.equal(first.ok,true);assert.equal(first.identityConsolidated,true);assert.equal(first.resolvedIdentityReviews,1);
+  const review=db.get('tenants/tenant-a/shopperIdentityReviews/review-merge');
+  assert.equal(review.status,'resolved_merged');assert.equal(review.canonicalShopperId,canonical);assert.equal(review.resolution,'merged_same_human');
+  const replay=await p.execute('staff-token',command);
+  assert.equal(replay.ok,true);assert.equal(replay.idempotentReplay,true);assert.equal(replay.providerWrites,0);
+});
