@@ -6,15 +6,15 @@
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "16b6f494b0d5972ac0096da82568998a5e28c28d",
   "productTreeAuthority": "7c7d92dcd7c1a6440b2693072f4b69f3d6224926",
-  "predecessorProductSourceSha": "d3d323f30a1120640459aca5b613e42879b66eaa",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V276_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "5647a73bc9b0844ab048e8d5afe65e8f3ca071d3",
+  "predecessorProductSourceSha": "784bc45c29795f35ffaeef019883a41ca872939b",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V277_2026-10-04.json",
+  "findingsLedgerExpectedGitBlob": "10f7f14c423ecdd779de598e032646005bf67f09",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
   "activeBlocker": "VRM221_ADMIN_SHOPPER_IDENTITY_GOVERNANCE_SOURCE_REPROOF_REQUIRED",
-  "nextFindingId": "VRM-224",
+  "nextFindingId": "VRM-225",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run canonical VRM-221 source reproof on source 16b6f494...: syntax for all touched owners, shopper provider regressions including keep-separate/delete/idempotent replay, frontend source contract and anti-regression. Do not materialize DEV until source reproof PASS.",
+  "exactNextAction": "Rerun canonical VRM-221 source reproof after control pointer correction. No DEV materialization until source reproof PASS.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
