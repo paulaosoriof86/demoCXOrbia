@@ -4,11 +4,11 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "770cd5bb9df522ba1da1511b72034cd21e72f731",
-  "productTreeAuthority": "4abd0fe9c4670b3966f44c577e1b2725b278907b",
+  "productSourceSha": "8daedad6a34a0015113ea8567b3d92ab6af5568f",
+  "productTreeAuthority": "8b0e30d7fe8e2c8449e691a66c7b67b819836abd",
   "predecessorProductSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V254_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "4e97d4f0e741f4de0ddfc59af7ed48d12ad2da29",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V255_2026-10-04.json",
+  "findingsLedgerExpectedGitBlob": "bbbf337778b58d9dab46016b563e3a1e54c0ebf3",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run source reproof for product source 770cd5bb9df522ba1da1511b72034cd21e72f731. Require the full shopper provider suite plus VRM-217 proof/sweep backfill and collision-safe suffix tests plus VRM-219 selective-authoritative remap/historical-preservation test. No DEV materialization or population writes until source PASS.",
+  "exactNextAction": "Repeat the same VRM-217..219 provider source reproof on product source 8daedad6a34a0015113ea8567b3d92ab6af5568f. No materialization or population writes until PASS.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
