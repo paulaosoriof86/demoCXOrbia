@@ -76,7 +76,6 @@ try{
   await page.goto(url,{waitUntil:'domcontentloaded',timeout:60000});
   await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:60000});
   await page.evaluate(async token=>{await window.firebase.auth().setPersistence(window.firebase.auth.Auth.Persistence.NONE);await window.firebase.auth().signInWithCustomToken(token);},await auth.createCustomToken(actor.uid));
-  await page.reload({waitUntil:'domcontentloaded',timeout:60000});
   await page.waitForFunction(()=>window.CX?.backendAuth?.context?.()?.authenticated===true&&String(window.CX?.backendAuth?.context?.()?.role||'')==='super'&&window.CX?.commandAdapter?.status?.()?.writesEnabled===true&&!!window.CX?.commandAdapter?.status?.()?.activeTransport,null,{timeout:120000});
 
   const run=async city=>page.evaluate(async input=>{

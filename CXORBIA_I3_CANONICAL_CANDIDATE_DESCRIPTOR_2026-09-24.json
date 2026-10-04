@@ -7,8 +7,8 @@
   "productSourceSha": "49a5f6cd6683695d862777da7aeb2cf4530e405e",
   "productTreeAuthority": "93797d047e95240029e16b018c4bb2ef2cc0bddd",
   "predecessorProductSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V248_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "c7980dc5a7f6994ca002cc314fb6b06cbffb6c89",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V249_2026-10-04.json",
+  "findingsLedgerExpectedGitBlob": "001e4cb3b1400bd9d516c95f52879d383e2e14fe",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run VRM-216 isolated DEV fixture idempotency proof against the exact Run1070 materialization, including byte-exact served command adapter, first provider ACK, exact replay zero writes, changed payload same key blocked, and fixture cleanup. Do not mutate any real shopper. Then run VRM-215 all-shopper population proof.",
+  "exactNextAction": "Repeat VRM-216 isolated DEV fixture idempotency proof on the unchanged Run1070 materialization after the control-only harness fix. No real shopper mutation. Then run VRM-215 all-shopper population proof.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
