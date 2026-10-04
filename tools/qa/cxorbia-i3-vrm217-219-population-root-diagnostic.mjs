@@ -5,7 +5,7 @@ import {applicationDefault,getApps,initializeApp} from 'firebase-admin/app';
 import {getAuth} from 'firebase-admin/auth';
 import {getFirestore} from 'firebase-admin/firestore';
 import ShopperCredentialRule from '../../app/core/shopper-credential-rule.js';
-import {CREDENTIAL_PASSWORD_PROOF_VERSION,DURABLE_CREDENTIAL_SWEEP_VERSION} from '../../backend/runtime/cxorbia-shopper-command-provider-v1.mjs';
+import {CREDENTIAL_PASSWORD_PROOF_VERSION,DURABLE_CREDENTIAL_SWEEP_VERSION,shoppersFromSnapshot} from '../../backend/runtime/cxorbia-shopper-command-provider-v1.mjs';
 
 const PROJECT=String(process.env.PROJECT||'cxorbia-backend-dev').trim();
 const TENANT=String(process.env.TENANT_ID||'tya').trim();
@@ -233,6 +233,70 @@ result.residualEvidence={
     exactTokenCandidates:{profiles:durableCandidatesByHrToken,crosswalks:crossCandidatesByHrToken,links:linkCandidatesByHrToken},
     review:residualReview.filter(x=>[x.shopperId,x.sourceShopperId,x.canonicalShopperId,...x.candidateShopperIds].some(v=>str(v)===UNRESOLVED_HR_SHOPPER))
   }
+};
+
+
+const providerSourceShoppers=shoppersFromSnapshot(hr).shoppers;
+const providerSourceById=new Map(providerSourceShoppers.map(x=>[str(x.shopperId),x]));
+function credentialShape(profile){
+  const p=profile||{},rule=ShopperCredentialRule.shopperCredentialRule(p);
+  const full=str(p.nombre||p.name||p.displayName||p.fullName),tokens=full.split(/\s+/).filter(Boolean);
+  return {
+    present:!!profile,
+    credentialRuleOk:rule.ok===true,
+    credentialReason:rule.reason||null,
+    fullNameTokenCount:tokens.length,
+    firstNamePresent:!!str(p.firstName),
+    lastNamePresent:!!str(p.firstSurname||p.primerApellido||p.lastName||p.apellido)
+  };
+}
+const holdOwnerDiagnostics=holds.map(row=>{
+  const sid=str(row.shopperId),source=providerSourceById.get(sid),durable=profileById.get(sid);
+  const sourceShape=credentialShape(source),durableShape=credentialShape(durable);
+  let exactOwner='OTHER_EXACT_OWNER_DIAGNOSTIC_REQUIRED',classification='MAPPING_FAILURE';
+  if(row.credentialRuleOk===true&&row.claimsExact===false){
+    exactOwner='AUTH_CLAIMS_STALE_FOR_CANONICAL_SHOPPER';classification='AUTH_FAILURE';
+  }else if(row.currentHrSource===true&&source&&sourceShape.credentialRuleOk===false){
+    exactOwner='HR_MANAGED_CREDENTIAL_NAME_INCOMPLETE';classification='MAPPING_FAILURE';
+  }else if(row.currentHrSource===true&&source&&sourceShape.credentialRuleOk===true&&durableShape.credentialRuleOk===false){
+    exactOwner='PROVIDER_RECONCILIATION_DID_NOT_REFRESH_CREDENTIAL_NAME';classification='PERSISTENCE_FAILURE';
+  }else if(row.currentHrSource!==true&&durableShape.credentialRuleOk===false){
+    exactOwner='DURABLE_NONCURRENT_NAME_INCOMPLETE_REQUIRES_IDENTITY_REVIEW';classification='MAPPING_FAILURE';
+  }
+  return {
+    shopperId:sid,currentHrSource:row.currentHrSource===true,
+    source:sourceShape,durable:durableShape,
+    claimsExact:row.claimsExact===true,profilePresent:row.profilePresent===true,
+    crosswalkPresent:row.crosswalkPresent===true,authPresent:row.authPresent===true,
+    classification,exactOwner
+  };
+});
+const unresolvedProviderSource=providerSourceById.get(UNRESOLVED_HR_SHOPPER)||null;
+const unresolvedSourceShape=credentialShape(unresolvedProviderSource);
+result.ownerDiagnostic={
+  semantics:{
+    currentHrReconcileCandidates:"credential-normalization candidates among already-active memberships only",
+    providerSnapshotCandidates:providerSourceShoppers.length,
+    unresolvedHrIncludedByProviderSnapshot:providerSourceById.has(UNRESOLVED_HR_SHOPPER),
+    explanation:"currentHrReconcileCandidates=0 does not mean reconcileSnapshot has zero HR shoppers; holds are excluded from credentialCandidates and a brand-new HR shopper without membership is outside the active-membership loop."
+  },
+  holdRows:holdOwnerDiagnostics,
+  holdClassCounts:countBy(holdOwnerDiagnostics,x=>x.exactOwner),
+  unresolvedHr:{
+    shopperId:UNRESOLVED_HR_SHOPPER,
+    sourceCandidatePresent:!!unresolvedProviderSource,
+    source:unresolvedSourceShape,
+    durableProfilePresent:profileById.has(UNRESOLVED_HR_SHOPPER),
+    crosswalkPresent:crossById.has(UNRESOLVED_HR_SHOPPER),
+    activeMembershipPresent:activeIds.has(UNRESOLVED_HR_SHOPPER),
+    exactTechnicalAlternateCandidates:
+      durableCandidatesByHrToken.length+crossCandidatesByHrToken.length+linkCandidatesByHrToken.length,
+    expectedProviderPath:unresolvedSourceShape.credentialRuleOk
+      ?'HR_NATIVE_DURABLE_UPSERT'
+      :'IDENTITY_REVIEW_QUEUE_NAME_INCOMPLETE',
+    fuzzyOrNameMergeAllowed:false
+  },
+  writes:0,production:false
 };
 
 result.hrRevision=hrRevision;
