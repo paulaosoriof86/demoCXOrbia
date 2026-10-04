@@ -130,6 +130,111 @@ function domainAliasPlan(rows,name){
 }
 const paymentAlias=domainAliasPlan(payments,'paymentReconciliations'),certAlias=domainAliasPlan(certs,'certifications'),liqAlias=domainAliasPlan(liqs,'liquidations'),postAlias=domainAliasPlan(posts,'postulations'),reservationAlias=domainAliasPlan(reservations,'reservations');
 
+
+const RESIDUAL_ALIAS='shp-57d2e3769946';
+const RESIDUAL_DECLARED_CANONICAL='TYA_GT_0C0BA8856E';
+const UNRESOLVED_HR_SHOPPER='shopper_gt_f65cbc6391';
+const residualIds=new Set([RESIDUAL_ALIAS,RESIDUAL_DECLARED_CANONICAL,UNRESOLVED_HR_SHOPPER]);
+const exactTokens=o=>uniq([...ID_KEYS.flatMap(k=>flatten(o?.[k])),...ALIAS_KEYS.flatMap(k=>flatten(o?.[k]))]);
+const slimProfileResidual=p=>p?{
+  id:str(p.id||p.shopperId),
+  shopperId:str(p.shopperId||p.id),
+  canonicalShopperId:str(p.canonicalShopperId),
+  supersededByShopperId:str(p.supersededByShopperId),
+  sourceType:str(p.sourceType),
+  sourceIdentityKey:str(p.sourceIdentityKey),
+  sourceSubjectId:str(p.sourceSubjectId||p.personId),
+  sourceRef:str(p.sourceRef),
+  identityAuthority:str(p.identityAuthority),
+  identityAuthorityRef:str(p.identityAuthorityRef),
+  hrSourceRevision:str(p.hrSourceRevision),
+  exactAliases:uniq(p.exactAliases),
+  sourceShopperIds:uniq(p.sourceShopperIds),
+  nameFingerprint:fp('name',norm(p.nombre||p.displayName||p.fullName||[p.firstName,p.lastName].filter(Boolean).join(' '))),
+  emailFingerprint:str(p.email)?fp('email',norm(p.email)):null,
+  phoneFingerprint:str(p.whatsapp||p.phone)?fp('phone',String(p.whatsapp||p.phone).replace(/\D+/g,'')):null,
+  technicalTokens:exactTokens(p)
+}:null;
+const slimCrossResidual=c=>c?{
+  id:str(c.id),
+  shopperId:str(c.shopperId),
+  canonicalShopperId:str(c.canonicalShopperId),
+  sourceShopperId:str(c.sourceShopperId),
+  sourceStableKey:str(c.sourceStableKey),
+  sourceIdentityKey:str(c.sourceIdentityKey),
+  identityMode:str(c.identityMode),
+  migrationAuthorityType:str(c.migrationAuthorityType),
+  migrationAuthorityRef:str(c.migrationAuthorityRef),
+  identityAuthority:str(c.identityAuthority),
+  identityAuthorityRef:str(c.identityAuthorityRef),
+  status:str(c.status||c.state),
+  active:c.active,
+  technicalTokens:exactTokens(c)
+}:null;
+const residualMembers=membersAll.filter(m=>residualIds.has(str(m.shopperId))).map(m=>{
+  const u=authByUid.get(m.id),claims=u?.customClaims||{};
+  return{shopperId:str(m.shopperId),uidFingerprint:fp('uid',m.id),active:m.active===true,status:str(m.status),identityState:str(m.identityState),supersededByShopperId:str(m.supersededByShopperId),visibleLoginFingerprint:str(m.visibleLogin||m.username)?fp('login',norm(m.visibleLogin||m.username)):null,authPresent:!!u,authDisabled:u?.disabled===true,claimsShopperId:str(claims.shopperId),claimsTenantId:str(claims.tenantId),claimsRole:str(claims.role),claimsNamespace:str(claims.authNamespace),projectIds:uniq([...(arr(claims.projectIds)),claims.projectId])};
+});
+const residualLinks=links.filter(l=>linkTokens(l).some(t=>residualIds.has(str(t)))).map(l=>({
+  id:str(l.id),
+  canonicalShopperId:str(l.canonicalShopperId||l.canonicalId||l.shopperId||l.profileId),
+  exactAliases:uniq(l.exactAliases),
+  sourceAliases:uniq(l.sourceAliases),
+  authorityType:str(l.authorityType||l.authority?.type),
+  authorityRef:str(l.authorityRef||l.identityAuthorityRef||l.migrationAuthorityRef),
+  status:str(l.status||l.state),
+  tenantId:str(l.tenantId),
+  projectScope:str(l.projectScope||l.projectId||'*'),
+  sourceIdentityKey:str(l.sourceIdentityKey),
+  sourceShopperId:str(l.sourceShopperId),
+  sourceSubjectId:str(l.sourceSubjectId),
+  technicalTokens:linkTokens(l)
+}));
+const unresolvedHrProfile=arr(hr.shoppers).find(x=>str(x.id||x.shopperId)===UNRESOLVED_HR_SHOPPER)||null;
+const unresolvedHrVisits=arr(hr.visits).filter(x=>str(x.shopperId)===UNRESOLVED_HR_SHOPPER);
+const unresolvedHrTokens=new Set([
+  ...exactTokens(unresolvedHrProfile||{}),
+  ...unresolvedHrVisits.flatMap(v=>exactTokens(v))
+].map(str).filter(Boolean));
+const durableCandidatesByHrToken=profiles
+  .map(p=>({profile:p,tokens:exactTokens(p)}))
+  .filter(x=>x.tokens.some(t=>unresolvedHrTokens.has(t)) && str(x.profile.id||x.profile.shopperId)!==UNRESOLVED_HR_SHOPPER)
+  .map(x=>slimProfileResidual(x.profile));
+const crossCandidatesByHrToken=crosswalk
+  .map(c=>({cross:c,tokens:exactTokens(c)}))
+  .filter(x=>x.tokens.some(t=>unresolvedHrTokens.has(t)))
+  .map(x=>slimCrossResidual(x.cross));
+const linkCandidatesByHrToken=links
+  .filter(l=>linkTokens(l).some(t=>unresolvedHrTokens.has(t)))
+  .map(l=>({id:str(l.id),canonicalShopperId:str(l.canonicalShopperId||l.canonicalId||l.shopperId||l.profileId),exactAliases:uniq(l.exactAliases),authorityType:str(l.authorityType||l.authority?.type),status:str(l.status||l.state),technicalTokens:linkTokens(l)}));
+const residualReceipts=(await docs(tenant.collection('commandReceipts'))).filter(x=>flatten(x).some(v=>residualIds.has(str(v)))).map(x=>({id:str(x.id),commandType:str(x.commandType),shopperId:str(x.shopperId),status:str(x.status),providerAck:x.providerAck===true,identityConsolidated:x.identityConsolidated===true,identityLinkId:str(x.identityLinkId),retiredPrincipalCount:Number(x.retiredPrincipalCount||0)}));
+const residualReview=(await docs(tenant.collection('reviewQueue'))).filter(x=>flatten(x).some(v=>residualIds.has(str(v)))).map(x=>({id:str(x.id),shopperId:str(x.shopperId),sourceShopperId:str(x.sourceShopperId),canonicalShopperId:str(x.canonicalShopperId),candidateShopperIds:uniq(x.candidateShopperIds||x.shopperIds),reason:str(x.reason||x.reviewReason||x.code),status:str(x.status||x.state)}));
+result.residualEvidence={
+  aliasVsDeclaredCanonical:{
+    aliasId:RESIDUAL_ALIAS,
+    declaredCanonicalId:RESIDUAL_DECLARED_CANONICAL,
+    canonicalProfile:slimProfileResidual(profileById.get(RESIDUAL_DECLARED_CANONICAL)),
+    aliasProfile:slimProfileResidual(profileById.get(RESIDUAL_ALIAS)),
+    canonicalCrosswalk:slimCrossResidual(crossById.get(RESIDUAL_DECLARED_CANONICAL)),
+    aliasCrosswalk:slimCrossResidual(crossById.get(RESIDUAL_ALIAS)),
+    memberships:residualMembers.filter(x=>[RESIDUAL_ALIAS,RESIDUAL_DECLARED_CANONICAL].includes(x.shopperId)),
+    links:residualLinks.filter(l=>l.technicalTokens.some(t=>[RESIDUAL_ALIAS,RESIDUAL_DECLARED_CANONICAL].includes(str(t)))),
+    hrProfiles:arr(hr.shoppers).filter(x=>[RESIDUAL_ALIAS,RESIDUAL_DECLARED_CANONICAL].includes(str(x.id||x.shopperId))).map(slimProfileResidual),
+    hrVisits:arr(hr.visits).filter(x=>[RESIDUAL_ALIAS,RESIDUAL_DECLARED_CANONICAL].includes(str(x.shopperId))).map(v=>({hrRowId:str(v.hrRowId),shopperId:str(v.shopperId),periodKey:str(v.periodKey||v.periodId),country:str(v.country||v.pais||v.país),branchFingerprint:fp('branch',norm(v.sucursal||v.branch)),technicalTokens:exactTokens(v)})),
+    receipts:residualReceipts.filter(x=>[RESIDUAL_ALIAS,RESIDUAL_DECLARED_CANONICAL].includes(x.shopperId)||str(x.identityLinkId)),
+    review:residualReview.filter(x=>[x.shopperId,x.sourceShopperId,x.canonicalShopperId,...x.candidateShopperIds].some(v=>[RESIDUAL_ALIAS,RESIDUAL_DECLARED_CANONICAL].includes(str(v))))
+  },
+  unresolvedHr:{
+    shopperId:UNRESOLVED_HR_SHOPPER,
+    hrProfile:slimProfileResidual(unresolvedHrProfile),
+    visits:unresolvedHrVisits.map(v=>({hrRowId:str(v.hrRowId),shopperId:str(v.shopperId),periodKey:str(v.periodKey||v.periodId),country:str(v.country||v.pais||v.país),branchFingerprint:fp('branch',norm(v.sucursal||v.branch)),technicalTokens:exactTokens(v)})),
+    durableProfile:slimProfileResidual(profileById.get(UNRESOLVED_HR_SHOPPER)),
+    crosswalk:slimCrossResidual(crossById.get(UNRESOLVED_HR_SHOPPER)),
+    exactTokenCandidates:{profiles:durableCandidatesByHrToken,crosswalks:crossCandidatesByHrToken,links:linkCandidatesByHrToken},
+    review:residualReview.filter(x=>[x.shopperId,x.sourceShopperId,x.canonicalShopperId,...x.candidateShopperIds].some(v=>str(v)===UNRESOLVED_HR_SHOPPER))
+  }
+};
+
 result.hrRevision=hrRevision;
 result.population={activeMemberships:members.length,activeCanonicalIds:activeIds.size,memberRows:memberRows.length};
 result.identity={exactAliasActivePrincipals:aliasActive.length,mappingConflicts:mapConflicts.length,holds:holds.length,aliasRows:aliasActive,holdRows:holds};
