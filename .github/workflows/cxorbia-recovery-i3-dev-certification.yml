@@ -6968,16 +6968,19 @@ jobs:
 
 
 
-  vrm239-residual-closure-readiness:
+
+  vrm240-bounded-residual-repair:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM239_RESIDUAL_CLOSURE_READINESS_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM240_BOUNDED_RESIDUAL_REPAIR_REQUIRED' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
     env:
       FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
       FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
-      VRM239_INPUT: .tmp/i3-vrm239-root/result.json
-      VRM239_OUT: .tmp/i3-vrm239-readiness
+      VRM239_INPUT: .tmp/i3-vrm240-root/result.json
+      VRM239_OUT: .tmp/i3-vrm240-readiness
+      VRM240_READINESS: .tmp/i3-vrm240-readiness/result.json
+      VRM240_OUT: .tmp/i3-vrm240-repair
     steps:
       - uses: actions/checkout@v4
         with:
@@ -6985,47 +6988,55 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Exact current artifact read-only preflight
+      - name: Exact unchanged Run1112 preflight
         shell: bash
         run: |
           set -Eeuo pipefail
-          mkdir -p "$(dirname "$VRM239_INPUT")" "$VRM239_OUT"
+          mkdir -p "$(dirname "$VRM239_INPUT")" "$VRM239_OUT" "$VRM240_OUT"
           test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
           test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
-          test "$(jq -r '.currentMaterialization.sourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
-          test "$(jq -r '.currentMaterialization.sourceTree' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
+          test "$(jq -r '.currentMaterialization.runId' "$CANDIDATE_DESCRIPTOR")" = "37208163415"
+          test "$(jq -r '.currentMaterialization.artifactId' "$CANDIDATE_DESCRIPTOR")" = "11305847184"
           git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
           node --check tools/qa/cxorbia-i3-vrm217-219-population-root-diagnostic.mjs
           node --check tools/qa/cxorbia-i3-vrm239-residual-closure-readiness.mjs
-      - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
+          node --check tools/qa/cxorbia-i3-vrm240-bounded-residual-repair.mjs
+      - run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
       - uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-      - name: Reproduce current root state read-only
+      - name: Reproduce bounded readiness before any write
         shell: bash
         run: |
           set -Eeuo pipefail
           HR="$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")"
           PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$HR" VRM217_OUT="$(dirname "$VRM239_INPUT")" node tools/qa/cxorbia-i3-vrm217-219-population-root-diagnostic.mjs > "$(dirname "$VRM239_INPUT")/console.log"
-          test "$(jq -r '.decision' "$VRM239_INPUT")" = "PASS_VRM217_219_POPULATION_ROOT_DIAGNOSTIC"
+          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$HR" VRM239_INPUT="$VRM239_INPUT" VRM239_OUT="$VRM239_OUT" node tools/qa/cxorbia-i3-vrm239-residual-closure-readiness.mjs > "$VRM239_OUT/console.log"
+          test "$(jq -r '.decision' "$VRM240_READINESS")" = "PASS_VRM239_RESIDUAL_CLOSURE_READINESS"
           echo "EXPECTED_HR_REVISION=$HR" >> "$GITHUB_ENV"
-      - name: Prove exact bounded residual closure readiness
+      - name: Execute only proven bounded owners
         shell: bash
         run: |
           set -Eeuo pipefail
-          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" VRM239_INPUT="$VRM239_INPUT" VRM239_OUT="$VRM239_OUT" node tools/qa/cxorbia-i3-vrm239-residual-closure-readiness.mjs | tee "$VRM239_OUT/console.log"
-          test "$(jq -r '.decision' "$VRM239_OUT/result.json")" = "PASS_VRM239_RESIDUAL_CLOSURE_READINESS"
-          test "$(jq -r '.aliasRemap.authoritativeVisitRows' "$VRM239_OUT/result.json")" = "127"
-          test "$(jq -r '.aliasRemap.allGroupsExecutable' "$VRM239_OUT/result.json")" = "true"
-          test "$(jq -r '.writes' "$VRM239_OUT/result.json")" = "0"
-          test "$(jq -r '.production' "$VRM239_OUT/result.json")" = "false"
+          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" VRM240_READINESS="$VRM240_READINESS" VRM240_OUT="$VRM240_OUT" node tools/qa/cxorbia-i3-vrm240-bounded-residual-repair.mjs | tee "$VRM240_OUT/console.log"
+          test "$(jq -r '.decision' "$VRM240_OUT/result.json")" = "PASS_VRM240_BOUNDED_RESIDUAL_REPAIR"
+          test "$(jq -r '.reviewOnly.writes' "$VRM240_OUT/result.json")" = "0"
+          test "$(jq -r '.aliasRemap.groups' "$VRM240_OUT/result.json")" = "18"
+          test "$(jq -r '.aliasRemap.aliases' "$VRM240_OUT/result.json")" = "29"
+          test "$(jq -r '.aliasRemap.authoritativeVisitRows' "$VRM240_OUT/result.json")" = "127"
+          test "$(jq -r '.hrWrites' "$VRM240_OUT/result.json")" = "0"
+          test "$(jq -r '.externalWrites' "$VRM240_OUT/result.json")" = "0"
+          test "$(jq -r '.production' "$VRM240_OUT/result.json")" = "false"
       - if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-vrm239-residual-readiness-${{ github.run_id }}
+          name: cxorbia-vrm240-bounded-residual-repair-${{ github.run_id }}
           path: |
-            .tmp/i3-vrm239-root
-            .tmp/i3-vrm239-readiness
+            .tmp/i3-vrm240-root
+            .tmp/i3-vrm240-readiness
+            .tmp/i3-vrm240-repair
           if-no-files-found: error
           retention-days: 30
           compression-level: 0

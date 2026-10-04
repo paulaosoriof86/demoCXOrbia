@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM239_RESIDUAL_CLOSURE_READINESS_REQUIRED",
+  "status": "HOLD_VRM240_BOUNDED_RESIDUAL_REPAIR_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,13 +8,13 @@
   "productTreeAuthority": "b59da4c090d4639a136168656e7addd544f38e18",
   "predecessorProductSourceSha": "bbd66d29192487ac29f8703bd913e3f1e15a28c0",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "007b95cc34a787ea58ed6f537251ba398392a62a",
+  "findingsLedgerExpectedGitBlob": "33c3fe0ca63c44f028ec0ecb553e467444112a75",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM239_RESIDUAL_CLOSURE_READINESS_REQUIRED",
-  "nextFindingId": "VRM-240",
+  "activeBlocker": "VRM240_BOUNDED_RESIDUAL_REPAIR_REQUIRED",
+  "nextFindingId": "VRM-241",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Read-only readiness for exactly four live shopper residuals and 127 authoritative alias visits on unchanged Run1112; then execute only proven bounded owners.",
+  "exactNextAction": "Execute VRM-240 bounded residual repair on unchanged Run1112, then rerun the population root diagnostic before VRM-215.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3862,6 +3862,45 @@
       "historicalAliasRows": 122
     },
     "nonVisitOperationalAliasReferences": 0,
+    "writes": 0,
+    "production": false
+  },
+  "lastVrm239ReadinessPass": {
+    "runId": 37241380426,
+    "runNumber": 1126,
+    "jobId": 111550673314,
+    "artifactId": 11317178620,
+    "artifactDigest": "sha256:5eb19d04bf4a72bccdff90f171ae132a024260de2ecdb62860995a20c7fca86e",
+    "decision": "PASS_VRM239_RESIDUAL_CLOSURE_READINESS",
+    "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+    "reviewOnly": {
+      "shopperId": "shopper_hn_9a6963fdf6",
+      "disposition": "EXCLUDE_FROM_AUTH_ELIGIBLE_POPULATION_PRESERVE_REVIEW_ONLY",
+      "currentHrIdentity": true,
+      "currentHrAssignedVisits": 2
+    },
+    "safeRetire": {
+      "shopperId": "shopper_gt_8cface989a",
+      "disposition": "SAFE_PROVIDER_RETIRE"
+    },
+    "claimsRepair": {
+      "shopperId": "shp-b2e3d7bef69b",
+      "disposition": "BOUNDED_AUTH_NAMESPACE_CLAIM_REPAIR",
+      "mismatch": [
+        "authNamespace"
+      ]
+    },
+    "loginRepair": {
+      "shopperId": "TYA_GT_0C0BA8856E",
+      "disposition": "DURABLE_CREDENTIAL_NORMALIZE_VISIBLE_LOGIN"
+    },
+    "aliasRemap": {
+      "canonicalGroups": 18,
+      "aliases": 29,
+      "authoritativeVisitRows": 127,
+      "historicalRowsPreserved": 122,
+      "allGroupsExecutable": true
+    },
     "writes": 0,
     "production": false
   }
