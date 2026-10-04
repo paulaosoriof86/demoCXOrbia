@@ -71,7 +71,7 @@
       tenantId,projectId:projectId||null,periodId:periodId||null,requireProject:input.requireProject!==false,requirePeriod:input.requirePeriod!==false,
       actor:{actorId:str(input.actorId||actor.actorId),role:str(input.role||actor.role),projectIds:uniq(actor.projectIds),shopperId:str(actor.shopperId)||null},
       expectedVersion:input.expectedVersion,idempotencyKey:str(input.idempotencyKey),payload:clean(input.payload||{}),
-      source:str(input.source||'cx.data'),requestedAt:now(),authorization:clean(input.authorization||{providerEnforcementRequired:true}),
+      source:str(input.source||'cx.data'),requestedAt:str(input.requestedAt)||null,authorization:clean(input.authorization||{providerEnforcementRequired:true}),
       audit:{reason:str(input.reason||''),correlationId:str(input.correlationId||input.idempotencyKey),clientVersion:str(root.CX_BUILD_LOCK?.version||root.CX_BUILD_LOCK?.sha||'')||null}
     };
     const errors=validate(command);return{ok:errors.length===0,command,errors};
