@@ -799,7 +799,7 @@ async function durableIdentityAdjudication({auth,db,command,actor,canonicalShopp
     const prior=existing.get(id);
     if(prior&&prior!==canonicalShopperId&&!identitySet.has(prior))throw new Error('SHOPPER_IDENTITY_ALIAS_CONFLICT:'+id);
   });
-  const aliasProfiles=profileSnaps.map(s=>s.exists?(s.data()||{}):{});
+
   const profilesById=new Map([[canonicalShopperId,canonical],...aliases.map((id,i)=>[id,aliasProfiles[i]])]);
   const principalRows=[];
   for(const identityId of identityIds){
