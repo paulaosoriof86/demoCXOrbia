@@ -10,7 +10,7 @@ on:
       - RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json
       - RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
       - CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
-      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V253_2026-10-04.json
+      - CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V254_2026-10-04.json
       - CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json
       - app/**
       - backend/**
@@ -32,7 +32,7 @@ concurrency:
   cancel-in-progress: true
 env:
   CANDIDATE_DESCRIPTOR: CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json
-  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V253_2026-10-04.json
+  FINDINGS_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V254_2026-10-04.json
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
@@ -135,6 +135,8 @@ jobs:
           node --check app/adapters/cxorbia-cxdata-command-boundary-v1.js
           node --check app/adapters/cxorbia-command-adapter-v1.js
           node --check backend/runtime/hr-live-service/test/cxorbia-command-adapter-idempotency.test.mjs
+          node --check backend/runtime/cxorbia-shopper-command-provider-v1.mjs
+          node --check backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs
           node --check backend/runtime/cxorbia-finance-command-provider-v1.mjs
           node --check backend/runtime/hr-live-service/certification-runtime.mjs
       - name: step
@@ -6153,7 +6155,7 @@ jobs:
           compression-level: 0
   vrm154-156-frontend-source-reproof:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM154_156_FRONTEND_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM187_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM188_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM189_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM190_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM191_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM192_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM216_SHARED_IDEMPOTENCY_SOURCE_REPROOF_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM154_156_FRONTEND_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM187_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM188_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM189_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM190_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM191_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM192_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM216_SHARED_IDEMPOTENCY_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM217_219_PROVIDER_SOURCE_REPROOF_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -6242,6 +6244,10 @@ jobs:
           node --test backend/runtime/hr-live-service/test/cxorbia-command-adapter-idempotency.test.mjs | tee "$FOCAL_OUT/command-idempotency-vrm216.log"
           grep -Fq "VRM-216 shared adapter emits a stable semantic command across wall-clock time" "$FOCAL_OUT/command-idempotency-vrm216.log"
           grep -Fq "VRM-216 exact replay succeeds with zero writes while changed payload under same key remains blocked" "$FOCAL_OUT/command-idempotency-vrm216.log"
+          node --test backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs | tee "$FOCAL_OUT/shopper-provider-vrm217-219.log"
+          grep -Fq "VRM-217 reconcile backfills password-proof and sweep metadata even when login is already exact" "$FOCAL_OUT/shopper-provider-vrm217-219.log"
+          grep -Fq "VRM-217 durable credential sweep uses deterministic technical suffix under an exact base-login collision" "$FOCAL_OUT/shopper-provider-vrm217-219.log"
+          grep -Fq "VRM-219 selective exact adjudication remaps authoritative rows while preserving historical alias visits" "$FOCAL_OUT/shopper-provider-vrm217-219.log"
       - name: step
         if: always()
         uses: actions/upload-artifact@v4
