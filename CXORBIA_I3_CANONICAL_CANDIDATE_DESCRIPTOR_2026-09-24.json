@@ -7,8 +7,8 @@
   "productSourceSha": "49a5f6cd6683695d862777da7aeb2cf4530e405e",
   "productTreeAuthority": "93797d047e95240029e16b018c4bb2ef2cc0bddd",
   "predecessorProductSourceSha": "2d4da635aeb793aa47d22127295473856108a94f",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V252_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "7dd86347577bae9359bf978eabdfbd9158eb97f3",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V253_2026-10-04.json",
+  "findingsLedgerExpectedGitBlob": "2b86be9bbc3d0048bfe7efb411d3d51e9f6b6838",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run one read-only VRM217-219 population root diagnostic on the exact Run1070 DEV artifact. Partition active identities into current-HR reconcile, durable credential sweep, exact-alias repair or HOLD; separate authoritative current visit/operational alias residuals from preserved historical rows. No writes, no deploy, production false.",
+  "exactNextAction": "Repeat the same read-only VRM217-219 population root diagnostic after the control-only syntax fix. No writes, no deploy, production false.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",

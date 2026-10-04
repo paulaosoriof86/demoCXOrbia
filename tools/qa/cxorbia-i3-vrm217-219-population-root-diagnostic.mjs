@@ -140,7 +140,7 @@ result.operationalAliasReferences={paymentReconciliations:paymentAlias.length,ce
 result.repairPlan={
   currentHrProviderReconcile:{eligible:currentHrReconcileCandidates.length,owner:'cxorbia-shopper-command-provider-v1.reconcileSnapshot',humanDecisionRequired:false},
   durableCredentialSweep:{eligible:durableSweepCandidates.length,owner:'cxorbia-shopper-command-provider-v1.normalizeDurableCredentials',humanDecisionRequired:false},
-  exactAliasActiveRepair:{eligible:aliasActive.filter(x=>x.canonicalBasis!=='CONFLICT').length,owner:'exact identity authority required before retire/remap',humanDecisionRequired:falseWhenTrustedMapping:true},
+  exactAliasActiveRepair:{eligible:aliasActive.filter(x=>x.canonicalBasis!=='CONFLICT').length,owner:'exact identity authority required before retire/remap',humanDecisionRequiredWhenTrustedMapping:false},
   authoritativeAliasRemap:{eligible:authoritativeAliasRows+paymentAlias.length+certAlias.length+liqAlias.length+postAlias.length+reservationAlias.length,owner:'provider exact alias remap',historicalVisitRowsExcluded:true},
   manualHolds:holds.length+mapConflicts.length+hrAssignmentErrors.length,
   noHistoricalVisitRewrite:true
