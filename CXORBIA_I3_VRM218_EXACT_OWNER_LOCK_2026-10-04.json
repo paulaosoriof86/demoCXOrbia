@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "cxorbia.i3.vrm218-exact-owner-lock.v1",
+  "lockId": "CXORBIA_I3_VRM218_EXACT_OWNER_LOCK_2026-10-04",
+  "status": "FROZEN",
+  "iteration": "I3",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "productSourceSha": "784bc45c29795f35ffaeef019883a41ca872939b",
+  "productTreeAuthority": "7b35abbebc254009b8a114c927b03b5b52d65ee7",
+  "controlDiagnostic": {
+    "commit": "1fae96e081c64dfe64404b88ef6f768690dcf38a",
+    "runId": 37194593933,
+    "runNumber": 1101,
+    "artifactId": 11300218541,
+    "artifactDigest": "sha256:51efd706474b954d278967177ddfc0bcbda11feb7626a15ee41c0d1c6903e7e4"
+  },
+  "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+  "exactOwner": {
+    "providerSnapshotCandidates": 226,
+    "providerReconciled": 225,
+    "providerIdentityReviewCount": 1,
+    "currentHrCredentialNameIncomplete": 8,
+    "nonCurrentDurableNameIncomplete": 4,
+    "staleClaims": 1,
+    "unresolvedHrNative": {
+      "shopperId": "shopper_gt_f65cbc6391",
+      "hrRowId": "SEPTIEMBRE 26!3",
+      "reason": "SHOPPER_CREDENTIAL_NAME_INCOMPLETE",
+      "exactAlternateCandidates": 0
+    }
+  },
+  "policy": {
+    "noInventedSurname": true,
+    "noNameOnlyMerge": true,
+    "noFuzzyMerge": true,
+    "noBlindCredentialReset": true,
+    "noHrWrites": true,
+    "production": false
+  },
+  "next": "VRM-221 same bounded Shopper domain, then source reproof -> one DEV materialization -> Admin live E2E -> VRM-215 full population proof."
+}

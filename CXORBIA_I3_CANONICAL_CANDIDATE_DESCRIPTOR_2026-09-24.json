@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM218_EXACT_OWNER_DIAGNOSTIC_REQUIRED",
+  "status": "HOLD_VRM221_SHOPPER_IDENTITY_GOVERNANCE_IMPLEMENTATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "784bc45c29795f35ffaeef019883a41ca872939b",
   "productTreeAuthority": "7b35abbebc254009b8a114c927b03b5b52d65ee7",
   "predecessorProductSourceSha": "d3d323f30a1120640459aca5b613e42879b66eaa",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V274_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "61c450e1763b5cbc12454c1473165d9775ef0770",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V275_2026-10-04.json",
+  "findingsLedgerExpectedGitBlob": "9f8b0944ac506883641ad4c488465f85026c93ee",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM218_13_POPULATION_HOLDS_PLUS_ONE_UNRESOLVED_HR_IDENTITY",
-  "nextFindingId": "VRM-222",
+  "activeBlocker": "VRM221_ADMIN_SHOPPER_IDENTITY_GOVERNANCE_REQUIRED_BEFORE_POPULATION_CLOSURE",
+  "nextFindingId": "VRM-223",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Continue VRM-218 exact owner diagnostic for the 13 population holds plus unresolved HR identity. VRM-221 is now frozen as the immediately queued Shopper acceptance block: implement Admin review filter + list multi-select + merge + keep-separate + safe delete with provider ACK/idempotency/readback, then rerun VRM-215 population proof on the same artifact. Do not open I5, another candidate, branch or workflow.",
+  "exactNextAction": "Implement VRM-221 incrementally in the proven Shopper owners: durable review queue/filter, list multi-select, merge dependency preview/readback, keep-separate via shopper.identity.review.resolve, and safe delete via shopper.delete. Preserve VRM-218 residuals explicitly; then source reproof, one DEV materialization, Admin live E2E and VRM-215 full population proof on the same artifact.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -561,13 +561,21 @@
     "nextFindingOpened": false
   },
   "lastDiagnostic": {
-    "runId": 36654812644,
-    "runNumber": 668,
-    "jobId": 109696787562,
-    "artifactId": 11071912173,
-    "artifactZipSha256": "c57da2dd5bfcc66f1ca7dc0ca8fffd68f797f4fe1a964140fb3979f9187c81e6",
-    "decision": "PASS_PREI4_ADMIN_004_HONORARIUM_PROPAGATION_DIAGNOSTIC",
-    "classification": "VISIT_COMPOSITION_DROPS_CONFIGURED_HONORARIUM",
+    "findingId": "VRM-222",
+    "sourceFinding": "VRM-218",
+    "runId": 37194593933,
+    "runNumber": 1101,
+    "jobId": 111413752055,
+    "artifactId": 11300218541,
+    "artifactDigest": "sha256:51efd706474b954d278967177ddfc0bcbda11feb7626a15ee41c0d1c6903e7e4",
+    "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+    "providerShopperCount": 226,
+    "reconciledShopperCount": 225,
+    "providerIdentityReviewCount": 1,
+    "populationHolds": 13,
+    "exactOwnerProven": true,
+    "productChanged": false,
+    "writes": 0,
     "production": false
   },
   "lastDurableRepair": {
@@ -3541,5 +3549,5 @@
     "interpretation": "Control-only freeze/readback. No action lane matched the fail-closed precomposition status."
   },
   "shopperIdentityGovernanceLockPath": "CXORBIA_I3_SHOPPER_IDENTITY_GOVERNANCE_LOCK_2026-10-04.json",
-  "queuedBlocker": "VRM221_ADMIN_SHOPPER_IDENTITY_GOVERNANCE_REQUIRED_BEFORE_POPULATION_CLOSURE"
+  "queuedBlocker": "VRM215_FULL_POPULATION_REPROOF_REQUIRED_AFTER_VRM221"
 }
