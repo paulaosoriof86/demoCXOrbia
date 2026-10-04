@@ -4,11 +4,11 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "d3d323f30a1120640459aca5b613e42879b66eaa",
-  "productTreeAuthority": "dda35635fdf3e1b254cd13f52f118c6a3ab08d0c",
-  "predecessorProductSourceSha": "8daedad6a34a0015113ea8567b3d92ab6af5568f",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V267_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "6e3f1dd1700a5799c73acc366f5053c3e65df095",
+  "productSourceSha": "784bc45c29795f35ffaeef019883a41ca872939b",
+  "productTreeAuthority": "7b35abbebc254009b8a114c927b03b5b52d65ee7",
+  "predecessorProductSourceSha": "d3d323f30a1120640459aca5b613e42879b66eaa",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V268_2026-10-04.json",
+  "findingsLedgerExpectedGitBlob": "0b414d29152a694a3b4b3c540feac0b04532ca98",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run the existing provider source reproof on product source d3d323f30a1120640459aca5b613e42879b66eaa. Require the full shopper-provider suite including both VRM-220 trusted-recovery/fail-closed regressions. No DEV materialization or provider write until source PASS. VRM-218 unresolved SEPTIEMBRE 26!3 remains separate and untouched.",
+  "exactNextAction": "Repeat the existing provider source reproof on exact product source 784bc45c29795f35ffaeef019883a41ca872939b. Require provider syntax/load PASS plus full shopper-provider suite including both VRM-220 trusted-recovery/fail-closed regressions. No DEV materialization or provider write until source PASS. VRM-218 SEPTIEMBRE 26!3 remains separate and untouched.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
