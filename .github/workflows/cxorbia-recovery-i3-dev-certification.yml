@@ -7281,23 +7281,21 @@ jobs:
           retention-days: 30
           compression-level: 0
 
+
   vrm221-admin-identity-governance-live:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM221_ADMIN_LIVE_E2E_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM221_PROVIDER_DIAGNOSTIC_REQUIRED' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 15
     env:
       FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
       FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
-      VRM221_OUT: .tmp/i3-vrm221-admin-live
+      VRM221_OUT: .tmp/i3-vrm221-provider-diagnostic
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-      - name: Exact unchanged Run1112 artifact preflight
+      - name: Exact unchanged Run1112 control preflight
         shell: bash
         run: |
           set -Eeuo pipefail
@@ -7308,59 +7306,25 @@ jobs:
           git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
           test "$(jq -r '.currentMaterialization.runId' "$CANDIDATE_DESCRIPTOR")" = "37208163415"
           test "$(jq -r '.currentMaterialization.artifactId' "$CANDIDATE_DESCRIPTOR")" = "11305847184"
-          node --check tools/qa/cxorbia-i3-vrm221-admin-identity-governance-live.mjs
-      - name: Install live acceptance dependencies
-        run: |
-          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
-          npx playwright install chromium >/dev/null 2>&1
       - uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
       - uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT }}
-      - name: Verify runtime Hosting and HR fingerprint unchanged
+      - name: Read exact Cloud Run evidence for Run1117 merge window
         shell: bash
         run: |
           set -Eeuo pipefail
-          EXPECTED_RUNTIME="$(jq -r '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")"
-          EXPECTED_DIGEST="$(jq -r '.currentMaterialization.runtimeDigest' "$CANDIDATE_DESCRIPTOR")"
-          EXPECTED_HOSTING="$(jq -r '.currentMaterialization.hostingVersion' "$CANDIDATE_DESCRIPTOR")"
-          EXPECTED_HR="$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")"
-          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$VRM221_OUT/runtime.json"
-          test "$(jq -r '.status.latestReadyRevisionName' "$VRM221_OUT/runtime.json")" = "$EXPECTED_RUNTIME"
-          gcloud run revisions describe "$EXPECTED_RUNTIME" --project "$PROJECT" --region "$REGION" --format=json > "$VRM221_OUT/revision.json"
-          RAW="$(jq -r '.status.imageDigest // empty' "$VRM221_OUT/revision.json")"
-          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else exit 1; fi
-          test "$DIGEST" = "$EXPECTED_DIGEST"
-          TOKEN="$(gcloud auth print-access-token)"
-          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$VRM221_OUT/hosting.json"
-          test "$(jq -r '.release.version.name' "$VRM221_OUT/hosting.json")" = "$EXPECTED_HOSTING"
-          curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm221pre=$GITHUB_RUN_ID" > "$VRM221_OUT/hr-meta.json"
-          test "$(jq -r '.revision' "$VRM221_OUT/hr-meta.json")" = "$EXPECTED_HR"
-          echo "EXPECTED_HR_REVISION=$EXPECTED_HR" >> "$GITHUB_ENV"
-      - name: Admin browser identity governance acceptance
-        shell: bash
-        run: |
-          set -Eeuo pipefail
-          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" VRM221_OUT="$VRM221_OUT" node tools/qa/cxorbia-i3-vrm221-admin-identity-governance-live.mjs | tee "$VRM221_OUT/console.log"
-          test "$(jq -r '.decision' "$VRM221_OUT/result.json")" = "PASS_VRM221_ADMIN_LIVE_E2E"
-          test "$(jq -r '.filter.pass' "$VRM221_OUT/result.json")" = "true"
-          test "$(jq -r '.selection.multiSelect' "$VRM221_OUT/result.json")" = "true"
-          test "$(jq -r '.merge.providerAck and .merge.idempotentReplay and .merge.durableReadback' "$VRM221_OUT/result.json")" = "true"
-          test "$(jq -r '.distinct.providerAck and .distinct.idempotentReplay and .distinct.durableReadback' "$VRM221_OUT/result.json")" = "true"
-          test "$(jq -r '.safeDelete.providerAck and .safeDelete.idempotentReplay and .safeDelete.durableReadback' "$VRM221_OUT/result.json")" = "true"
-          test "$(jq -r '.blockedDelete.currentHrProfilePreserved and .blockedDelete.explicitUiBlock' "$VRM221_OUT/result.json")" = "true"
-          test "$(jq -r '.hrWrites' "$VRM221_OUT/result.json")" = "0"
-          test "$(jq -r '.externalWrites' "$VRM221_OUT/result.json")" = "0"
-          test "$(jq -r '.builds' "$VRM221_OUT/result.json")" = "0"
-          test "$(jq -r '.deploys' "$VRM221_OUT/result.json")" = "0"
-          test "$(jq -r '.production' "$VRM221_OUT/result.json")" = "false"
+          FILTER='resource.type="cloud_run_revision" AND resource.labels.service_name="cxorbia-live-hr-dev" AND timestamp>="2026-10-04T15:42:30Z" AND timestamp<="2026-10-04T15:45:20Z"'
+          gcloud logging read "$FILTER" --project "$PROJECT" --limit=1000 --order=asc --format=json > "$VRM221_OUT/cloud-run-window.json"
+          jq '{entries:length, http:(map(select(.httpRequest!=null))|map({timestamp,httpRequest,severity,trace,labels,resource})), application:(map(select(.httpRequest==null))|map({timestamp,severity,textPayload,jsonPayload,labels,resource}))}' "$VRM221_OUT/cloud-run-window.json" > "$VRM221_OUT/diagnostic.json"
+          jq -e '.entries > 0' "$VRM221_OUT/diagnostic.json"
       - if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-vrm221-admin-identity-governance-live-${{ github.run_id }}
-          path: .tmp/i3-vrm221-admin-live
+          name: cxorbia-vrm221-provider-diagnostic-${{ github.run_id }}
+          path: .tmp/i3-vrm221-provider-diagnostic
           if-no-files-found: error
           retention-days: 30
           compression-level: 0

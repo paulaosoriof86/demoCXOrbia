@@ -31,7 +31,7 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleTruthCount": 21,
   "moduleTruthAllMatch": true,
-  "findingCount": 232,
+  "findingCount": 233,
   "missingFindingIds": [],
   "duplicateFindingIds": [],
   "currentBlockingCount": 70,
@@ -47,7 +47,7 @@
     "CONTROL_ONLY_FIXED": 1
   },
   "nextCriticalSequence": [
-    "VRM-232_CONTROL_REPROOF",
+    "VRM-233_RUN1117_PROVIDER_LOG_DIAGNOSTIC",
     "VRM-221_ADMIN_LIVE_E2E",
     "I3_MULTIMODULE_LIVE_SWEEP",
     "VRM-215_POPULATION_REPROOF",
@@ -7427,16 +7427,16 @@
       ],
       "latestApprovedSource": null,
       "latestLiveProof": {
-        "runNumber": 1116,
-        "runId": 37213834927,
-        "decision": "FAIL_CANONICAL_AUTHORITY_NEXT_FINDING_ID",
+        "runNumber": 1117,
+        "runId": 37213946473,
+        "decision": "CANONICAL_AUTHORITY_PASS",
         "artifactId": null,
         "sourceSha": null,
         "sourceTree": null
       },
       "successor": null,
-      "rawLedgerState": "CONTROL_FIX_APPLIED_PENDING_REPROOF",
-      "realState": "REPROOF_REQUIRED",
+      "rawLedgerState": "CONTROL_ONLY_FIXED_RUN1117_CANONICAL_AUTHORITY_PASS",
+      "realState": "CONTROL_ONLY_FIXED",
       "evidence": {
         "currentProductSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
         "currentProductTree": "b59da4c090d4639a136168656e7addd544f38e18",
@@ -7445,7 +7445,43 @@
         "providerReached": false,
         "writes": 0
       },
-      "actionRemaining": "reproof canonical authority with governance.nextFindingId aligned to VRM-233",
+      "actionRemaining": "none",
+      "blocking": false,
+      "terminalDisposition": "CONTROL_ONLY_FIXED"
+    },
+    {
+      "findingId": "VRM-233",
+      "moduleDomain": [
+        "shoppers-identity-profile-mi-visitas",
+        "cross-cutting-control"
+      ],
+      "severity": "P0_CONTROL",
+      "classification": "ENVIRONMENT_FAILURE",
+      "owner": [
+        "tools/qa/cxorbia-i3-vrm221-admin-identity-governance-live.mjs"
+      ],
+      "latestApprovedSource": null,
+      "latestLiveProof": {
+        "runNumber": 1117,
+        "runId": 37213946473,
+        "decision": "HARNESS_TIMEOUT_PRODUCT_RESULT_UNCLASSIFIED",
+        "artifactId": 11307857117,
+        "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
+      },
+      "successor": null,
+      "rawLedgerState": "CONTROL_DIAGNOSTIC_REQUIRED",
+      "realState": "REPROOF_REQUIRED",
+      "evidence": {
+        "currentProductSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "currentProductTree": "b59da4c090d4639a136168656e7addd544f38e18",
+        "currentMaterializationRunId": 37208163415,
+        "sourceModuleStatus": "MATCH",
+        "hrWrites": 0,
+        "externalWrites": 0,
+        "cleanupComplete": true
+      },
+      "actionRemaining": "read exact Cloud Run logs for Run1117 merge window; no write retry",
       "blocking": true,
       "terminalDisposition": null
     }

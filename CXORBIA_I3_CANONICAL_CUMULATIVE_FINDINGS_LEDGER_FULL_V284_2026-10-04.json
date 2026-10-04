@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v261",
   "frozenAt": "2026-10-04T09:12:00Z",
-  "status": "HOLD_VRM221_ADMIN_LIVE_E2E_REQUIRED",
+  "status": "HOLD_VRM221_PROVIDER_DIAGNOSTIC_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "microblockId": "PRE-I4-LIVE-HR-STALE-CACHE-MAPPING-HOLD-AUGUST-CANONICAL-CORRECTION",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -13775,7 +13775,7 @@
       "classification": "MAPPING_FAILURE",
       "severity": "P0_CONTROL",
       "title": "Run1116 canonical authority guard read governance.nextFindingId while the control update advanced only the top-level ledger pointer",
-      "state": "CONTROL_FIX_APPLIED_PENDING_REPROOF",
+      "state": "CONTROL_ONLY_FIXED_RUN1117_CANONICAL_AUTHORITY_PASS",
       "firstObservedAt": "RUN1116_2026-10-04",
       "rootCauseStatus": "PROVEN",
       "rootCause": "The canonical authority guard derives the next finding ID from ledger.governance.nextFindingId, not from the top-level compatibility field. After adding VRM-231 the descriptor and top-level ledger pointer were advanced to VRM-232 while governance.nextFindingId remained VRM-231. The guard correctly failed before VRM-221 or any provider write.",
@@ -13809,6 +13809,68 @@
         "production": false
       },
       "expected": "Canonical authority sees ledger and descriptor nextFindingId equal to VRM-233 after VRM-232 is recorded.",
+      "productChanged": false,
+      "writes": 0,
+      "production": false,
+      "terminalDisposition": "CONTROL_ONLY_FIXED",
+      "closureEvidence": {
+        "runId": 37213946473,
+        "runNumber": 1117,
+        "jobId": 111470542568,
+        "canonicalAuthorityPass": true,
+        "productChanged": false,
+        "writes": 0,
+        "builds": 0,
+        "deploys": 0,
+        "production": false
+      }
+    },
+    "VRM-233": {
+      "id": "VRM-233",
+      "classification": "ENVIRONMENT_FAILURE",
+      "severity": "P0_CONTROL",
+      "title": "Run1117 VRM-221 harness timed out after Admin merge click because its fetch observer recorded requests only after a response, preventing request-start versus provider-latency diagnosis",
+      "state": "CONTROL_DIAGNOSTIC_REQUIRED",
+      "firstObservedAt": "RUN1117_2026-10-04",
+      "rootCauseStatus": "PROVEN_HARNESS_OBSERVABILITY_GAP_UNDERLYING_PRODUCT_RESULT_NOT_YET_CLASSIFIED",
+      "rootCause": "The browser acceptance wrapper awaited the original fetch and only then appended the command to __vrm221Traffic. The merge wait therefore timed out with no recorded command whether the POST never started or the provider request started and did not return. Run1117 proved filter/search/multi-select/modal entry and exact Run1112 fingerprint, but did not produce a trustworthy product PASS/FAIL for merge.",
+      "evidence": {
+        "runId": 37213946473,
+        "runNumber": 1117,
+        "jobId": 111470575982,
+        "artifactId": 11307857117,
+        "artifactDigest": "sha256:2225a5394eee4fd6bba18640a120cfd8ba8b6316ca60d445ef71c3cce5528fc6",
+        "exactRun1112Preflight": true,
+        "runtimeHostingHrFingerprintPass": true,
+        "filter": {
+          "durableQueueRecords": 304,
+          "renderedFilteredRows": 23
+        },
+        "selection": {
+          "searchPreserved": true,
+          "multiSelect": true
+        },
+        "timeoutAt": "shopper.identity.adjudicate providerAck wait",
+        "timeoutMs": 120000,
+        "syntheticCleanup": {
+          "activeSyntheticRemaining": 0,
+          "authDeleted": 5,
+          "firestoreDeleted": 23
+        },
+        "hrWrites": 0,
+        "externalWrites": 0,
+        "builds": 0,
+        "deploys": 0,
+        "production": false
+      },
+      "correction": {
+        "nextDiagnostic": "Read Cloud Run request/application logs for the exact Run1117 merge window before any retry; determine whether command POST reached the provider and its latency/status.",
+        "noRetryUntilReadback": true,
+        "newWorkflow": false,
+        "newCandidate": false,
+        "productChanged": false,
+        "production": false
+      },
       "productChanged": false,
       "writes": 0,
       "production": false
@@ -14463,7 +14525,7 @@
     ],
     "findingCount": 230,
     "expectedCurrentRange": "VRM-001..VRM-230",
-    "nextFindingId": "VRM-233",
+    "nextFindingId": "VRM-234",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_VRM229_PAULA_CONFIRMED_IDENTITY_CONSOLIDATION_REQUIRED",
@@ -14745,7 +14807,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Execute VRM-221 Admin live E2E on the unchanged Run1112 artifact after canonical authority guard passes; no rebuild and no production.",
+  "exactNextAction": "Read Cloud Run request/application logs for Run1117 15:42:30Z–15:45:20Z and classify the VRM-221 merge timeout without retrying provider writes.",
   "supersedesGitBlob": "820da41b786054cb8cd23e89827e1f7afbcdd3b3",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -14774,7 +14836,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-233",
+  "nextFindingId": "VRM-234",
   "lastControlFailure": {
     "findingId": "VRM-232",
     "runId": 37213834927,
@@ -18145,7 +18207,7 @@
     "hostingDeploys": 0,
     "production": false
   },
-  "activeBlocker": "VRM221_ADMIN_LIVE_E2E_REQUIRED",
+  "activeBlocker": "VRM221_ADMIN_MERGE_REQUEST_PATH_DIAGNOSTIC_REQUIRED",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -18337,7 +18399,7 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-10-04T15:03:00Z",
-  "nextExactAction": "Execute VRM-221 Admin live E2E on the unchanged Run1112 artifact after canonical authority guard passes; no rebuild and no production.",
+  "nextExactAction": "Read Cloud Run request/application logs for Run1117 15:42:30Z–15:45:20Z and classify the VRM-221 merge timeout without retrying provider writes.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
@@ -19050,7 +19112,7 @@
   },
   "openFindingsClosureMatrix": {
     "path": "I3_OPEN_FINDINGS_CLOSURE_MATRIX_2026-10-04.json",
-    "findingCount": 232,
+    "findingCount": 233,
     "status": "ACTIVE_CLOSURE_VIEW",
     "missingFindingIds": [],
     "duplicateFindingIds": []
