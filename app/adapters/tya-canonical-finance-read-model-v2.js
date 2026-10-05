@@ -35,25 +35,31 @@
       if(matches.length!==1)return null;
       p=matches[0];
     }
-    if(str(p?.financialSourceStatus).toLowerCase()==='reconciled_exact'&&p?.financialMatch)return p.financialMatch;
+    const financialMatch=str(p?.financialSourceStatus).toLowerCase()==='reconciled_exact'&&p?.financialMatch?p.financialMatch:null;
     const historicalPaid=p?.paymentConfirmed===true||p?.historicalReconciliationConfirmed===true||str(p?.historicalPaymentStatus).toLowerCase()==='paid';
+    if(financialMatch&&!historicalPaid)return financialMatch;
     if(!historicalPaid)return null;
-    const amount=(key,fallback)=>knownAmount(p?.[key])?Number(p[key]):(knownAmount(fallback)?Number(fallback):null);
+    /* VRM-174 residual: exact amount reconciliation can predate historical payment
+       reconciliation on the same durable visit. In that case financialMatch remains the
+       amount authority, but the later durable historical paid marker must upgrade payment
+       truth instead of being discarded by an early return. */
+    const amount=(key,fallback)=>knownAmount(financialMatch?.[key])?Number(financialMatch[key]):(knownAmount(p?.[key])?Number(p[key]):(knownAmount(fallback)?Number(fallback):null));
     const honorario=amount('honorario',v?.honorario),boleto=amount('boleto',v?.boleto),combo=amount('combo',v?.comboAmt||v?.combo);
+    const reembolso=knownAmount(financialMatch?.reembolso)?Number(financialMatch.reembolso):((boleto!==null&&combo!==null)?boleto+combo:null);
     const parts=[honorario,boleto,combo].filter(x=>x!==null);
-    const total=knownAmount(p?.total)?Number(p.total):(parts.length===3?honorario+boleto+combo:null);
-    return Object.fromEntries(Object.entries({
-      financialSourceStatus:'historical_reconciled_payment',
+    const total=knownAmount(financialMatch?.total)?Number(financialMatch.total):(knownAmount(p?.total)?Number(p.total):(parts.length===3?honorario+boleto+combo:null));
+    return Object.fromEntries(Object.entries(Object.assign({},financialMatch||{},{
+      financialSourceStatus:financialMatch?.financialSourceStatus||p?.financialSourceStatus||'historical_reconciled_payment',
       historicalReconciliationConfirmed:true,historicalPaymentStatus:'paid',paymentConfirmed:true,pagada:true,
-      paymentState:'confirmed',liquidationState:p?.liquidationState||'historical_reconciliation_confirmed',estado:'pagada',
-      paymentSourceRef:p?.paymentSourceRef||p?.historicalPaymentSourceRef||p?.reconciliationSourceRef||null,
-      reconciliationSourceRef:p?.reconciliationSourceRef||p?.paymentSourceRef||null,
-      reconciliationRecordId:p?.reconciliationRecordId||null,reconciliationRevision:p?.reconciliationRevision||null,
-      honorario,boleto,combo,reembolso:(boleto!==null&&combo!==null)?boleto+combo:null,total,
-      moneda:p?.moneda||p?.currency||v?.currency||v?.moneda||null,
-      reviewRequired:p?.reviewRequired===true||p?.amountReviewRequired===true,
-      amountReviewRequired:p?.amountReviewRequired===true,sourceSafe:true,production:false
-    }).filter(([,value])=>value!==undefined));
+      paymentState:'confirmed',liquidationState:financialMatch?.liquidationState||p?.liquidationState||'historical_reconciliation_confirmed',estado:'pagada',
+      paymentSourceRef:p?.paymentSourceRef||p?.historicalPaymentSourceRef||p?.reconciliationSourceRef||financialMatch?.paymentSourceRef||financialMatch?.reconciliationSourceRef||null,
+      reconciliationSourceRef:p?.reconciliationSourceRef||p?.paymentSourceRef||financialMatch?.reconciliationSourceRef||null,
+      reconciliationRecordId:p?.reconciliationRecordId||financialMatch?.reconciliationRecordId||null,reconciliationRevision:p?.reconciliationRevision||financialMatch?.reconciliationRevision||null,
+      honorario,boleto,combo,reembolso,total,
+      moneda:financialMatch?.moneda||financialMatch?.currency||p?.moneda||p?.currency||v?.currency||v?.moneda||null,
+      reviewRequired:financialMatch?.reviewRequired===true||p?.reviewRequired===true||p?.amountReviewRequired===true,
+      amountReviewRequired:financialMatch?.amountReviewRequired===true||p?.amountReviewRequired===true,sourceSafe:true,production:false
+    })).filter(([,value])=>value!==undefined));
   }
   function rootProjectId(project){
     return str(project?.parentProjectId||project?.rootProjectId||project?.program||entry.projectId||project?.id)||null;
