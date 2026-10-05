@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM215_SHOPPER_POPULATION_REPROOF_REQUIRED",
+  "status": "HOLD_I3_MULTIMODULE_LIVE_SWEEP_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM215_SHOPPER_POPULATION_REPROOF_REQUIRED",
+  "activeBlocker": "I3_MULTIMODULE_LIVE_SWEEP_REQUIRED",
   "nextFindingId": "VRM-247",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Complete VRM215 v2 population proof on unchanged Run1112 artifact. Require root semantics 379 memberships / 1 review-only hold / 0 authoritative alias rows / 122 historical rows / 0 ambiguous / zero non-visit refs, then prove all 378 auth-eligible shoppers. If PASS, immediately switch the same blocker slot to I3 multimodule live sweep.",
+  "exactNextAction": "Execute same-artifact I3 multimodule live sweep on unchanged Run1112 materialization. Require PASS_I3_MULTIMODULE_LIVE_SWEEP, zero page errors, zero write deltas, unchanged runtime/hosting/HR fingerprints; then reconcile matrix for Paula visual acceptance.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3540,7 +3540,7 @@
     "interpretation": "Control-only freeze/readback. No action lane matched the fail-closed precomposition status."
   },
   "shopperIdentityGovernanceLockPath": "CXORBIA_I3_SHOPPER_IDENTITY_GOVERNANCE_LOCK_2026-10-04.json",
-  "queuedBlocker": "I3_MULTIMODULE_LIVE_SWEEP",
+  "queuedBlocker": "PAULA_VISUAL_ACCEPTANCE",
   "currentSourceProof": {
     "runId": 37208053790,
     "runNumber": 1111,
@@ -4007,7 +4007,7 @@
     "production": false
   },
   "vrm245": {
-    "state": "CONTROL_FIX_COMMITTED_REPROOF_REQUIRED",
+    "state": "CONTROL_ONLY_FIXED_RUN1142",
     "classification": "MAPPING_FAILURE",
     "severity": "P0_CONTROL",
     "controlScript": "tools/qa/cxorbia-i3-vrm215-shopper-population-live-reproof.mjs",
@@ -4025,7 +4025,26 @@
     "concurrency": 6,
     "coverageReduced": false,
     "productChanged": false,
-    "production": false
+    "production": false,
+    "terminalDisposition": "CONTROL_ONLY_FIXED",
+    "closureEvidence": {
+      "runId": 37247621441,
+      "runNumber": 1142,
+      "jobId": 111568690842,
+      "artifactId": 11319784732,
+      "artifactDigest": "sha256:76d92762cc2bc1e9941776a429dab8c989141f986695e95461f0698c33cd531c",
+      "decision": "PASS_VRM215_ALL_ACTIVE_SHOPPERS",
+      "membershipUniverseCount": 379,
+      "reviewOnlyExcludedCount": 1,
+      "authEligiblePopulation": 378,
+      "loginPass": 378,
+      "selfScopePass": 378,
+      "routeContractPass": 378,
+      "aliasOperationalResiduals": 0,
+      "hrAssignmentsPass": true,
+      "writes": 0,
+      "production": false
+    }
   },
   "vrm246": {
     "state": "CONTROL_ONLY_FIXED_WORKFLOW_ACCEPTED",
@@ -4039,6 +4058,24 @@
     "validationRunNumber": 1139,
     "singleMovingBlockerSlot": true,
     "productChanged": false,
+    "production": false
+  },
+  "lastVrm215Pass": {
+    "runId": 37247621441,
+    "runNumber": 1142,
+    "jobId": 111568690842,
+    "artifactId": 11319784732,
+    "artifactDigest": "sha256:76d92762cc2bc1e9941776a429dab8c989141f986695e95461f0698c33cd531c",
+    "decision": "PASS_VRM215_ALL_ACTIVE_SHOPPERS",
+    "membershipUniverseCount": 379,
+    "reviewOnlyExcludedCount": 1,
+    "authEligiblePopulation": 378,
+    "loginPass": 378,
+    "selfScopePass": 378,
+    "routeContractPass": 378,
+    "aliasOperationalResiduals": 0,
+    "hrAssignmentsPass": true,
+    "writes": 0,
     "production": false
   }
 }
