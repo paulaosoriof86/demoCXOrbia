@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM174_HISTORICAL_PAYMENT_REPROOF_REQUIRED",
+  "status": "HOLD_I3_VRM254_CONTROL_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run read-only VRM174 historical payment projection proof on exact Run1176 DEV. Require every durable confirmed historical payment to project as paid in canonical liquidations and show paid labeling in Mis Beneficios, with zero writes.",
+  "exactNextAction": "Fix the control-only Playwright global reference in VRM174 QA (firebase -> window.firebase), preserve Run1215 evidence, and rerun the same read-only historical proof on unchanged Run1176.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -4217,6 +4217,22 @@
   },
   "vrm174": {
     "state": "HISTORICAL_PAYMENT_REPROOF_REQUIRED",
+    "productChanged": false,
+    "production": false
+  },
+  "vrm254": {
+    "state": "CONTROL_FIX_REQUIRED",
+    "classification": "ENVIRONMENT_FAILURE",
+    "severity": "P0_CONTROL",
+    "run1215": {
+      "runId": 37334982515,
+      "runNumber": 1215,
+      "jobId": 111847450417,
+      "artifactId": 11355144129,
+      "artifactDigest": "sha256:4e071f1d421a973f91e1555258ece985c38b417c44aac0d8d6a90764d3b585fb",
+      "error": "page.evaluate ReferenceError: firebase is not defined",
+      "durableHistoricalPaid": 562
+    },
     "productChanged": false,
     "production": false
   }
