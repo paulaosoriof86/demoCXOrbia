@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE_REQUIRED",
+  "status": "HOLD_I3_VRM249_RESERVATION_READ_MODEL_FIX_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,13 +8,13 @@
   "productTreeAuthority": "b59da4c090d4639a136168656e7addd544f38e18",
   "predecessorProductSourceSha": "bbd66d29192487ac29f8703bd913e3f1e15a28c0",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "033704fed6e211e6c3b60450bbb6b89f1f62d763",
+  "findingsLedgerExpectedGitBlob": "6d21fcb223e8ce78e5e51be16ab04263efefdc58",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE_REQUIRED",
-  "nextFindingId": "VRM-249",
+  "activeBlocker": "VRM-249",
+  "nextFindingId": "VRM-250",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Rerun identical Postulations lifecycle after fixing only Playwright Admin-auth navigation observer. Require provider-backed delete, exact replay, durable absence, browser reload no reappearance and fallbackDirectDelete=false.",
+  "exactNextAction": "Apply only VRM-249 exact read-model mapping fix in backend-firebase + protected authority bridge; prove source, create one monotonic product successor, materialize once to DEV, rerun the same Reservations lifecycle.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3540,7 +3540,7 @@
     "interpretation": "Control-only freeze/readback. No action lane matched the fail-closed precomposition status."
   },
   "shopperIdentityGovernanceLockPath": "CXORBIA_I3_SHOPPER_IDENTITY_GOVERNANCE_LOCK_2026-10-04.json",
-  "queuedBlocker": "I3_ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE_REQUIRED",
+  "queuedBlocker": "I3_ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE_REPROOF",
   "currentSourceProof": {
     "runId": 37208053790,
     "runNumber": 1111,
@@ -3564,7 +3564,7 @@
     "production": false
   },
   "openFindingsClosureMatrixPath": "I3_OPEN_FINDINGS_CLOSURE_MATRIX_2026-10-04.json",
-  "openFindingsClosureMatrixFindingCount": 248,
+  "openFindingsClosureMatrixFindingCount": 249,
   "lastVrm229Pass": {
     "runId": 37211579195,
     "runNumber": 1114,
@@ -4052,6 +4052,20 @@
       "cleanupFallbackDirectDelete": true
     },
     "productChanged": false,
+    "production": false
+  },
+  "vrm249": {
+    "state": "P0_PROVEN_ROOT_CAUSE_FIX_REQUIRED",
+    "classification": "MAPPING_FAILURE",
+    "runId": 37253163627,
+    "runNumber": 1162,
+    "jobId": 111584811420,
+    "artifactId": 11321362047,
+    "exactOwners": [
+      "app/core/backend-firebase.js",
+      "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+    ],
+    "productMutationAllowed": true,
     "production": false
   }
 }
