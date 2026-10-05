@@ -5,8 +5,8 @@
   "generatedFromLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
   "generatedAtEvidenceTime": "2026-10-05T18:43:00Z",
   "controlHeadAtGeneration": "a10ce5c5b14be7d361d6d06d1e6f5a7feadca539",
-  "productSourceSha": "f971ea18556e7be3ede0a26195e7977e4e706dfe",
-  "productSourceTree": "3f0ebeab075ec841d1b2329d1ce7bf31523dc2f0",
+  "productSourceSha": "dc06e5c1ab3896b88a5b66627ae551b40eef000b",
+  "productSourceTree": "4a27b1a642cbd425b9909ba057760431368464cf",
   "exactDevArtifact": {
     "state": "PASS_VRM257_EXACT_DEV_MATERIALIZATION",
     "runId": 37378446938,
@@ -33,11 +33,11 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleTruthCount": 21,
   "moduleTruthAllMatch": true,
-  "findingCount": 257,
+  "findingCount": 258,
   "missingFindingIds": [],
   "duplicateFindingIds": [],
-  "currentBlockingCount": 55,
-  "undisposedCount": 70,
+  "currentBlockingCount": 56,
+  "undisposedCount": 71,
   "terminalDispositionCounts": {
     "PASS_CURRENT_ARTIFACT": 156,
     "SUPERSEDED_BY_VRM-221": 1,
@@ -54,9 +54,9 @@
     "FIXED_PROVEN": 2
   },
   "nextCriticalSequence": [
-    "SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF",
-    "PAULA_VISUAL_CHECKPOINT",
-    "GATE20_GATE21_TERMINAL_CLOSURE"
+    "VRM-258_SOURCE_PROOF",
+    "VRM-258_ONE_DEV_MATERIALIZATION",
+    "VRM-258_SAME_ARTIFACT_LIVE_REPROOF"
   ],
   "production": "DO_NOT_TOUCH",
   "entries": [
@@ -8569,6 +8569,50 @@
       "actionRemaining": null,
       "blocking": false,
       "terminalDisposition": "FIXED_PROVEN"
+    },
+    {
+      "findingId": "VRM-258",
+      "moduleDomain": [
+        "admin",
+        "shoppers",
+        "identity",
+        "canonical-read-model"
+      ],
+      "severity": "P0",
+      "classification": "FUNCTIONAL_DEFECT",
+      "owner": [
+        "app/adapters/tya-cumulative-read-model-v2.js"
+      ],
+      "latestApprovedSource": {
+        "sourceSha": "dc06e5c1ab3896b88a5b66627ae551b40eef000b",
+        "sourceTree": "4a27b1a642cbd425b9909ba057760431368464cf",
+        "state": "SOURCE_FIX_PENDING_SOURCE_PROOF"
+      },
+      "latestLiveProof": {
+        "runId": 37389203710,
+        "runNumber": 1245,
+        "jobId": 112030047172,
+        "failure": "MAPPING_FAILURE:ADMIN_JULISSA_DISCOVERY",
+        "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+        "identityMapCollision": {
+          "shopper_gt_86254c4228": "shopper_gt_0c198c1055"
+        },
+        "production": false
+      },
+      "successor": {
+        "sourceSha": "dc06e5c1ab3896b88a5b66627ae551b40eef000b",
+        "sourceTree": "4a27b1a642cbd425b9909ba057760431368464cf"
+      },
+      "rawLedgerState": "FIXED_SOURCE_PROOF_REQUIRED",
+      "realState": "SOURCE_FIX_PENDING_PROOF",
+      "evidence": {
+        "liveHrFloresId": "shopper_gt_0c198c1055",
+        "liveHrIllescasId": "shopper_gt_86254c4228",
+        "staleDurableRow": "AGOSTO 26!29"
+      },
+      "actionRemaining": "SOURCE_PROOF_THEN_ONE_DEV_MATERIALIZATION_THEN_SAME_ARTIFACT_LIVE_REPROOF",
+      "blocking": true,
+      "terminalDisposition": null
     }
   ],
   "exactDevArtifactRole": "CURRENT_VRM249_SUCCESSOR",

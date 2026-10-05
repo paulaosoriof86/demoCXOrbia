@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "f971ea18556e7be3ede0a26195e7977e4e706dfe",
-    "sourceTree": "3f0ebeab075ec841d1b2329d1ce7bf31523dc2f0",
-    "predecessorSha": "994b8f7c201162a3aa865798e9de4aa8fc8a3525",
+    "sourceSha": "dc06e5c1ab3896b88a5b66627ae551b40eef000b",
+    "sourceTree": "4a27b1a642cbd425b9909ba057760431368464cf",
+    "predecessorSha": "f971ea18556e7be3ede0a26195e7977e4e706dfe",
     "production": false,
-    "state": "VRM257_SOURCE_FIX_COMPOSED_DEV_MATERIALIZATION_REQUIRED",
+    "state": "VRM258_SOURCE_FIX_PENDING_SOURCE_PROOF",
     "proof": {
       "state": "PASS_VRM249_SOURCE_REPROOF_AND_EXACT_DEV_MATERIALIZATION",
       "accumulatedSourceProofs": [
@@ -16271,6 +16271,101 @@
       "production": false,
       "blocking": false,
       "terminalDisposition": "FIXED_PROVEN"
+    },
+    "VRM-258": {
+      "id": "VRM-258",
+      "classification": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "title": "Admin canonical read model collapses Julissa Illescas into Julissa Flores through stale durable historical visit crosswalk",
+      "state": "FIXED_SOURCE_PROOF_REQUIRED",
+      "firstObservedAt": "RUN1243_2026-10-05",
+      "rootCauseStatus": "PROVEN_RUN1245",
+      "rootCause": "app/adapters/tya-cumulative-read-model-v2.js created live->canonical shopper relations from exact-matched durable historical visits even when live HR already exposed both the live shopperId and the stale durable shopperId as two distinct authoritative HR identities. On AGOSTO 26!29, live HR owner shopper_gt_86254c4228 (Julissa Illescas) was paired with a stale durable owner shopper_gt_0c198c1055 (Julissa Flores), causing identityMap[86254c4228]=0c198c1055 and collapsing both Admin shopper rows.",
+      "expected": "Distinct shopper IDs already present as separate live HR identities must remain separate. A stale durable historical visit may enrich the visit but may not create an identity crosswalk between two known live HR shoppers.",
+      "owner": [
+        "app/adapters/tya-cumulative-read-model-v2.js"
+      ],
+      "evidence": {
+        "run1243": {
+          "runId": 37378984271,
+          "runNumber": 1243,
+          "jobId": 111995733169,
+          "artifactId": 11373375178,
+          "artifactDigest": "sha256:b7766749307ee38ba7b5a53f0d6109b2c607e6b04144c93e2b0e2ca760b29a24",
+          "failure": "VISUAL_DEFECT:ADMIN_JULISSA_DISCOVERY",
+          "floresVisible": false,
+          "illescasVisible": true,
+          "exactRun1242DevPreflightPass": true
+        },
+        "run1244": {
+          "runId": 37388752486,
+          "runNumber": 1244,
+          "jobId": 112028597543,
+          "failure": "MAPPING_FAILURE:ADMIN_JULISSA_DISCOVERY",
+          "composed": [
+            {
+              "id": "shopper_gt_0c198c1055",
+              "nombre": "Julissa Illescas"
+            }
+          ],
+          "floresVisible": false,
+          "illescasVisible": true,
+          "exactRun1242DevPreflightPass": true
+        },
+        "run1245": {
+          "runId": 37389203710,
+          "runNumber": 1245,
+          "jobId": 112030047172,
+          "exactRun1242DevPreflightPass": true,
+          "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+          "liveHrIdentities": {
+            "julissaFlores": {
+              "shopperId": "shopper_gt_0c198c1055",
+              "activeVisit": "OCTUBRE 26!2",
+              "name": "Julissa Flores"
+            },
+            "julissaIllescas": {
+              "shopperId": "shopper_gt_86254c4228",
+              "historicalRows": [
+                "AGOSTO 26!29",
+                "SEPTIEMBRE 26!7"
+              ],
+              "name": "Julissa Illescas"
+            }
+          },
+          "staleDurableCollision": {
+            "hrRowId": "AGOSTO 26!29",
+            "liveHrShopperId": "shopper_gt_86254c4228",
+            "durableShopperId": "shopper_gt_0c198c1055"
+          },
+          "observedIdentityMap": {
+            "shopper_gt_0c198c1055": "shopper_gt_0c198c1055",
+            "shopper_gt_86254c4228": "shopper_gt_0c198c1055"
+          },
+          "identityReviewQueue": [],
+          "production": false,
+          "writes": {
+            "auth": 0,
+            "hr": 0,
+            "provider": 0
+          },
+          "deploys": 0
+        },
+        "sourceFix": {
+          "sourceSha": "dc06e5c1ab3896b88a5b66627ae551b40eef000b",
+          "sourceTree": "4a27b1a642cbd425b9909ba057760431368464cf",
+          "predecessorSha": "f971ea18556e7be3ede0a26195e7977e4e706dfe",
+          "files": [
+            "app/adapters/tya-cumulative-read-model-v2.js",
+            "tools/qa/tya-cumulative-read-model-regression-gate.mjs"
+          ],
+          "behavior": "Suppress visit-derived identity crosswalk when liveShopperId and durableShopperId are different and both are already distinct live HR shopper identities; preserve VRM-168 transient-token behavior and fail-closed identity semantics.",
+          "regression": "vrm258_distinct_live_hr_identities_resist_stale_durable_crosswalk"
+        }
+      },
+      "productChanged": true,
+      "production": false,
+      "blocking": true
     }
   },
   "latestEvidenceOverrides": {
@@ -16945,14 +17040,15 @@
       "VRM-254",
       "VRM-255",
       "VRM-256",
-      "VRM-257"
+      "VRM-257",
+      "VRM-258"
     ],
-    "findingCount": 257,
-    "expectedCurrentRange": "VRM-001..VRM-257",
-    "nextFindingId": "VRM-258",
+    "findingCount": 258,
+    "expectedCurrentRange": "VRM-001..VRM-258",
+    "nextFindingId": "VRM-259",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_I3_SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF_REQUIRED",
+    "terminalState": "HOLD_VRM258_SOURCE_PROOF_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -16967,8 +17063,8 @@
     "userReportedRequirementsFrozenAt": "2026-09-30T20:18:00-06:00",
     "userReviewComplete": true,
     "userReviewEvidence": "19 screenshots plus complete Shopper/Admin observations supplied 2026-10-02",
-    "currentProductSourceSha": "f971ea18556e7be3ede0a26195e7977e4e706dfe",
-    "currentProductSourceTree": "3f0ebeab075ec841d1b2329d1ce7bf31523dc2f0",
+    "currentProductSourceSha": "dc06e5c1ab3896b88a5b66627ae551b40eef000b",
+    "currentProductSourceTree": "4a27b1a642cbd425b9909ba057760431368464cf",
     "currentMaterialization": {
       "state": "PASS_VRM257_EXACT_DEV_MATERIALIZATION",
       "runId": 37378446938,
@@ -17233,7 +17329,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Repeat same-artifact representative live reproof on exact Run1242 DEV materialization after control-only ADMIN_JULISSA_DISCOVERY harness correction. Do not consume VRM-258 unless the deterministic Admin search proves Julissa Flores absent from the product data/UI. Zero rebuilds, zero deploys, zero writes, no production.",
+  "exactNextAction": "Run exact source-only proof for VRM-258 on source dc06e5c1ab3896b88a5b66627ae551b40eef000b. Prove the canonical composer keeps Julissa Flores and Julissa Illescas as distinct live HR identities, preserves VRM-168 behavior, performs zero builds/deploys/writes, then allow exactly one DEV materialization.",
   "supersedesGitBlob": "820da41b786054cb8cd23e89827e1f7afbcdd3b3",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -17262,7 +17358,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-258",
+  "nextFindingId": "VRM-259",
   "lastControlFailure": {
     "id": "RUN1238_NEXT_FINDING_ID_GOVERNANCE_DESYNC",
     "classification": "MAPPING_FAILURE",
@@ -20210,15 +20306,11 @@
     "production": false
   },
   "latestSourceSuccessor": {
-    "findingId": "VRM-142",
-    "sourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
-    "sourceTree": "90cbaaa0844bbdde0b4b96a7caa4bfbdff16167f",
-    "predecessorSha": "a2f7acd659b68217299f92ef69a320f08e806635",
-    "exactDelta": [
-      "firestore.rules"
-    ],
-    "state": "SOURCE_FIX_PENDING_DEV_LIVE_REPROOF",
-    "sameCanonicalCandidate": true,
+    "findingId": "VRM-258",
+    "sourceSha": "dc06e5c1ab3896b88a5b66627ae551b40eef000b",
+    "sourceTree": "4a27b1a642cbd425b9909ba057760431368464cf",
+    "predecessorSha": "f971ea18556e7be3ede0a26195e7977e4e706dfe",
+    "state": "SOURCE_PROOF_REQUIRED",
     "production": false
   },
   "run735": {
@@ -20634,7 +20726,7 @@
     "hostingDeploys": 0,
     "production": false
   },
-  "activeBlocker": "VRM-257",
+  "activeBlocker": "VRM-258",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -20825,8 +20917,8 @@
     "humanAcceptance": "FAIL",
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
-  "lastUpdatedAt": "2026-10-05T23:25:00Z",
-  "nextExactAction": "Repeat same-artifact representative live reproof on exact Run1242 DEV materialization after control-only ADMIN_JULISSA_DISCOVERY harness correction. Do not consume VRM-258 unless the deterministic Admin search proves Julissa Flores absent from the product data/UI. Zero rebuilds, zero deploys, zero writes, no production.",
+  "lastUpdatedAt": "2026-10-05T23:36:30Z",
+  "nextExactAction": "Run exact source-only proof for VRM-258 on source dc06e5c1ab3896b88a5b66627ae551b40eef000b. Prove the canonical composer keeps Julissa Flores and Julissa Illescas as distinct live HR identities, preserves VRM-168 behavior, performs zero builds/deploys/writes, then allow exactly one DEV materialization.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
