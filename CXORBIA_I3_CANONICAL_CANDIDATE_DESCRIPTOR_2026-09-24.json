@@ -8,13 +8,13 @@
   "productTreeAuthority": "638ab7ab63244286ff460205da441221d5957ef0",
   "predecessorProductSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "7f3ce8aaa4a5527512df954668e8c9350f5f600e",
+  "findingsLedgerExpectedGitBlob": "a222cdcf1b79b096ab323dcbf6e03a3197ac72eb",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
   "activeBlocker": "VRM-249",
-  "nextFindingId": "VRM-251",
+  "nextFindingId": "VRM-252",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Bind Admin Cluster A Postulations + Reservations lifecycle proof to current Run1176 materialization using descriptor fingerprints only; no historical run/artifact pointer.",
+  "exactNextAction": "Switch only to HOLD_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE_REQUIRED and execute the existing bounded Postulations + Reservations lifecycle on the exact current Run1176 DEV materialization.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3562,7 +3562,7 @@
     "production": false
   },
   "openFindingsClosureMatrixPath": "I3_OPEN_FINDINGS_CLOSURE_MATRIX_2026-10-04.json",
-  "openFindingsClosureMatrixFindingCount": 250,
+  "openFindingsClosureMatrixFindingCount": 251,
   "lastVrm229Pass": {
     "runId": 37211579195,
     "runNumber": 1114,
@@ -4122,6 +4122,17 @@
     "workflowCharsAfter": 496018,
     "validationRunId": 37303340531,
     "validationRunNumber": 1174,
+    "productChanged": false,
+    "production": false,
+    "terminalDisposition": "CONTROL_ONLY_FIXED"
+  },
+  "vrm251": {
+    "state": "CONTROL_ONLY_FIXED_SCOPED_READBACK_PASS",
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "severity": "P0_CONTROL",
+    "faultyCommit": "778b3a5b67ebdfd1a589f27e21b5b2d531f64f72",
+    "correctionCommit": "ea61189a9206f85f0e87530eeb6168176db6937f",
+    "exactScopedParity": true,
     "productChanged": false,
     "production": false,
     "terminalDisposition": "CONTROL_ONLY_FIXED"
