@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM174_HISTORICAL_PAYMENT_REPROOF_REQUIRED",
+  "status": "HOLD_I3_VRM254_CONTROL_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Re-run the read-only VRM174 historical payment projection proof on the exact unchanged Run1176 DEV artifact after VRM254 browser-global correction.",
+  "exactNextAction": "Extend VRM254 control fix with the already-proven retrying browser authentication helper used by the reservations lifecycle; rerun unchanged Run1176 historical payment proof.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -4221,7 +4221,7 @@
     "production": false
   },
   "vrm254": {
-    "state": "CONTROL_FIX_REPROOF_ACTIVE",
+    "state": "CONTROL_FIX_INCOMPLETE_AUTH_STABILIZATION_REQUIRED",
     "classification": "ENVIRONMENT_FAILURE",
     "severity": "P0_CONTROL",
     "run1215": {
@@ -4235,6 +4235,15 @@
     },
     "productChanged": false,
     "production": false,
-    "correctionCommit": "c4c810aef5ec4f5fabd48cc6ee1d763d30f5d9b6"
+    "correctionCommit": "c4c810aef5ec4f5fabd48cc6ee1d763d30f5d9b6",
+    "run1220": {
+      "runId": 37335598661,
+      "runNumber": 1220,
+      "jobId": 111849560214,
+      "artifactId": 11355519064,
+      "artifactDigest": "sha256:2241c4cfcca9b5e2abb581cb0058d36ffb956d1dcb0d8305d84acc95a6fc006d",
+      "error": "window.firebase became undefined during browser sign-in after initial readiness; transient navigation/auth race",
+      "durableHistoricalPaid": 562
+    }
   }
 }
