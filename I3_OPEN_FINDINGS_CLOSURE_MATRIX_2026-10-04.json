@@ -3,8 +3,8 @@
   "status": "ACTIVE_CLOSURE_VIEW",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
   "generatedFromLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "generatedAtEvidenceTime": "2026-10-05T17:36:00Z",
-  "controlHeadAtGeneration": "cd136cd170dc9203d61f13641093a8c35ca851b6",
+  "generatedAtEvidenceTime": "2026-10-05T17:50:00Z",
+  "controlHeadAtGeneration": "6fe414b55b19683bac7d2644b2ab91130350c030",
   "productSourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
   "productSourceTree": "638ab7ab63244286ff460205da441221d5957ef0",
   "exactDevArtifact": {
@@ -8419,6 +8419,17 @@
           "decision": "HOLD_VRM174_PERIOD_LOOKUP_BEFORE_STABLE_HR_COMPOSITION",
           "artifactId": 11355494816,
           "sourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f"
+        },
+        "run1226": {
+          "runId": 37350785639,
+          "runNumber": 1226,
+          "jobId": 111900799893,
+          "classification": "MAPPING_FAILURE",
+          "code": "NEXT_FINDING_ID",
+          "productCodeReached": false,
+          "reproofReached": false,
+          "productChanged": false,
+          "production": false
         }
       },
       "actionRemaining": "same unchanged Run1176 artifact VRM174 reproof with stable all-period HR authority composition",
