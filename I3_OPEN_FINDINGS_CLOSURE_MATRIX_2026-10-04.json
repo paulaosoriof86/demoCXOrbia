@@ -5,8 +5,8 @@
   "generatedFromLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
   "generatedAtEvidenceTime": "2026-10-05T18:43:00Z",
   "controlHeadAtGeneration": "a10ce5c5b14be7d361d6d06d1e6f5a7feadca539",
-  "productSourceSha": "dc06e5c1ab3896b88a5b66627ae551b40eef000b",
-  "productSourceTree": "4a27b1a642cbd425b9909ba057760431368464cf",
+  "productSourceSha": "b5d63c20dcd0e30a9c3d9f5f8520c28e481d0718",
+  "productSourceTree": "c8462a25832427390d96c288d74b76bd9f30ecc5",
   "exactDevArtifact": {
     "state": "PASS_VRM257_EXACT_DEV_MATERIALIZATION",
     "runId": 37378446938,
@@ -54,9 +54,8 @@
     "FIXED_PROVEN": 2
   },
   "nextCriticalSequence": [
-    "VRM-258_CORRECT_SOURCE",
-    "VRM-258_SOURCE_PROOF",
-    "VRM-258_ONE_DEV_MATERIALIZATION",
+    "VRM-258_CORRECTED_SOURCE_PROOF",
+    "VRM-258_ONE_CORRECTED_DEV_MATERIALIZATION",
     "VRM-258_SAME_ARTIFACT_LIVE_REPROOF"
   ],
   "production": "DO_NOT_TOUCH",
@@ -8585,9 +8584,9 @@
         "app/adapters/tya-cumulative-read-model-v2.js"
       ],
       "latestApprovedSource": {
-        "sourceSha": "dc06e5c1ab3896b88a5b66627ae551b40eef000b",
-        "sourceTree": "4a27b1a642cbd425b9909ba057760431368464cf",
-        "state": "SOURCE_FIX_PENDING_SOURCE_PROOF"
+        "sourceSha": "b5d63c20dcd0e30a9c3d9f5f8520c28e481d0718",
+        "sourceTree": "c8462a25832427390d96c288d74b76bd9f30ecc5",
+        "state": "CORRECTED_SOURCE_PENDING_PROOF"
       },
       "latestLiveProof": {
         "runId": 37389203710,
@@ -8601,21 +8600,19 @@
         "production": false
       },
       "successor": {
-        "sourceSha": "dc06e5c1ab3896b88a5b66627ae551b40eef000b",
-        "sourceTree": "4a27b1a642cbd425b9909ba057760431368464cf"
+        "sourceSha": "b5d63c20dcd0e30a9c3d9f5f8520c28e481d0718",
+        "sourceTree": "c8462a25832427390d96c288d74b76bd9f30ecc5"
       },
-      "rawLedgerState": "ROOT_CAUSE_CORRECTION_REQUIRED_HUMAN_AUTHORITY_PREVAILS",
-      "realState": "P0_PROVEN_CORRECT_OWNER_PENDING_CORRECTED_SOURCE",
+      "rawLedgerState": "CORRECTED_SOURCE_PENDING_PROOF",
+      "realState": "P0_PROVEN_CORRECTED_SOURCE_PENDING_PROOF",
       "evidence": {
-        "liveHrFloresId": "shopper_gt_0c198c1055",
-        "liveHrIllescasId": "shopper_gt_86254c4228",
-        "staleDurableRow": "AGOSTO 26!29",
         "humanAuthority": "VRM-214 + Run1066",
         "canonicalShopperId": "shopper_gt_0c198c1055",
         "aliasShopperId": "shopper_gt_86254c4228",
-        "requiredDisplayName": "Julissa Flores"
+        "requiredDisplayName": "Julissa Flores",
+        "invalidRun1247": true
       },
-      "actionRemaining": "CORRECT_CANONICAL_DISPLAY_NAME_PRECEDENCE_THEN_SOURCE_PROOF_THEN_ONE_DEV_MATERIALIZATION",
+      "actionRemaining": "CORRECTED_SOURCE_PROOF_THEN_ONE_DEV_MATERIALIZATION_THEN_SAME_ARTIFACT_LIVE_REPROOF",
       "blocking": true,
       "terminalDisposition": null,
       "sourceProof": {
