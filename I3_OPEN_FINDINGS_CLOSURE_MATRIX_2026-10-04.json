@@ -3,8 +3,8 @@
   "status": "ACTIVE_CLOSURE_VIEW",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
   "generatedFromLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "generatedAtEvidenceTime": "2026-10-05T15:50:00Z",
-  "controlHeadAtGeneration": "93c233b07b9f599f2004be0a39211339cf42c602",
+  "generatedAtEvidenceTime": "2026-10-05T17:36:00Z",
+  "controlHeadAtGeneration": "cd136cd170dc9203d61f13641093a8c35ca851b6",
   "productSourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
   "productSourceTree": "638ab7ab63244286ff460205da441221d5957ef0",
   "exactDevArtifact": {
@@ -27,7 +27,7 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleTruthCount": 21,
   "moduleTruthAllMatch": true,
-  "findingCount": 254,
+  "findingCount": 255,
   "missingFindingIds": [],
   "duplicateFindingIds": [],
   "currentBlockingCount": 57,
@@ -38,7 +38,7 @@
     "NON_BLOCKING_DEFERRED_WITH_EXPLICIT_REASON": 3,
     "PRESERVED_PHASE_B_NOT_I3_AUTHORITY": 1,
     "SUPERSEDED_BY_VRM-229": 1,
-    "CONTROL_ONLY_FIXED": 14,
+    "CONTROL_ONLY_FIXED": 15,
     "SUPERSEDED_BY_VRM-234": 1,
     "SUPERSEDED_BY_VRM-236": 1,
     "PASS_DIAGNOSTIC": 2,
@@ -47,7 +47,7 @@
     "SUPERSEDED_BY_VRM-243": 1
   },
   "nextCriticalSequence": [
-    "VRM254_CONTROL_REPROOF",
+    "VRM255_CONTROL_REPROOF",
     "VRM174_HISTORICAL_PAYMENT_REPROOF",
     "SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF",
     "PAULA_VISUAL_CHECKPOINT",
@@ -8360,10 +8360,18 @@
         "tools/qa/cxorbia-i3-vrm174-historical-payment-live.mjs"
       ],
       "latestApprovedSource": null,
-      "latestLiveProof": null,
+      "latestLiveProof": {
+        "runId": 37336302394,
+        "runNumber": 1225,
+        "jobId": 111851931828,
+        "artifactId": 11355494816,
+        "artifactDigest": "sha256:4e3549c1c1441485ee35dfea58dbc732633396ded047530ac0b81ef6ee94e96c",
+        "decision": "AUTH_STABILIZATION_REACHED_HR_PERIOD_INSPECTION",
+        "production": false
+      },
       "successor": null,
-      "rawLedgerState": "CONTROL_FIX_COMPOSED_REPROOF_REQUIRED",
-      "realState": "CONTROL_FIX_COMPOSED_REPROOF_REQUIRED",
+      "rawLedgerState": "CONTROL_ONLY_FIXED_RUN1225_AUTH_PASS",
+      "realState": "CONTROL_ONLY_FIXED",
       "evidence": {
         "run1215": 37334982515,
         "durableHistoricalPaid": 562,
@@ -8372,9 +8380,48 @@
         "productChanged": false,
         "production": false,
         "run1220": 37335598661,
-        "authStabilizationCommit": "14e864b71ade98c329a3dc45ec50d97e00770049"
+        "authStabilizationCommit": "14e864b71ade98c329a3dc45ec50d97e00770049",
+        "run1225": {
+          "browserAuthPassed": true,
+          "reachedHrPeriodInspection": true,
+          "productChanged": false,
+          "production": false
+        }
       },
-      "actionRemaining": "same unchanged Run1176 VRM174 historical payment reproof",
+      "actionRemaining": null,
+      "blocking": false,
+      "terminalDisposition": "CONTROL_ONLY_FIXED"
+    },
+    {
+      "findingId": "VRM-255",
+      "moduleDomain": [
+        "cross-cutting-control",
+        "finance"
+      ],
+      "severity": "P0_CONTROL",
+      "classification": "ENVIRONMENT_FAILURE",
+      "owner": [
+        "tools/qa/cxorbia-i3-vrm174-historical-payment-live.mjs"
+      ],
+      "latestApprovedSource": null,
+      "latestLiveProof": null,
+      "successor": null,
+      "rawLedgerState": "CONTROL_FIX_COMPOSED_REPROOF_REQUIRED",
+      "realState": "CONTROL_FIX_COMPOSED_REPROOF_REQUIRED",
+      "evidence": {
+        "currentProductSource": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
+        "currentProductTree": "638ab7ab63244286ff460205da441221d5957ef0",
+        "currentMaterializationRunId": 37303539281,
+        "sourceModuleStatus": "MATCH",
+        "latestFindingRun": {
+          "runNumber": 1225,
+          "runId": 37336302394,
+          "decision": "HOLD_VRM174_PERIOD_LOOKUP_BEFORE_STABLE_HR_COMPOSITION",
+          "artifactId": 11355494816,
+          "sourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f"
+        }
+      },
+      "actionRemaining": "same unchanged Run1176 artifact VRM174 reproof with stable all-period HR authority composition",
       "blocking": true,
       "terminalDisposition": null
     }
