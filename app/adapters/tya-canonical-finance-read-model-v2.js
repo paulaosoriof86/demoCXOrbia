@@ -124,8 +124,26 @@
     const existing=new Map();for(const l of legacy){const k=liqKey(l);if(k&&!existing.has(k))existing.set(k,l);}
     const result=[];
     for(const v of visits){const f=facets(v);if(!f.realized)continue;const k=visitKey(v),prior=existing.get(k),fresh=derive(project,v);if(!fresh)continue;
-      if(prior&&prior.financialSourceStatus&&prior.financialSourceStatus!=='pending_or_review')result.push(Object.assign({},fresh,prior,{visitaId:v.id||v.visitId,visitId:v.id||v.visitId,hrRowId:v.hrRowId||prior.hrRowId||null,shopperId:v.shopperId||prior.shopperId||null,shopper:v.shopper||prior.shopper||null,canonicalFacets:Object.assign({},f),operationalVisitStage:f.submitted?'submitida':f.questionnaire?'cuestionario':'realizada',readModelVersion:'canonical-finance-v2'}));
-      else result.push(fresh);
+      if(prior&&prior.financialSourceStatus&&prior.financialSourceStatus!=='pending_or_review'){
+        const historicalPaid=fresh.paymentConfirmed===true&&fresh.historicalReconciliationConfirmed===true;
+        const merged=Object.assign({},fresh,prior,{
+          visitaId:v.id||v.visitId,visitId:v.id||v.visitId,hrRowId:v.hrRowId||prior.hrRowId||null,
+          shopperId:v.shopperId||prior.shopperId||null,shopper:v.shopper||prior.shopper||null,
+          canonicalFacets:Object.assign({},f),operationalVisitStage:f.submitted?'submitida':f.questionnaire?'cuestionario':'realizada',
+          readModelVersion:'canonical-finance-v2'
+        });
+        /* VRM-174 residual: legacy exact liquidations remain authoritative for amounts,
+           but they must not overwrite a later durable historical payment confirmation
+           already proven by the fresh canonical read model. */
+        if(historicalPaid)Object.assign(merged,{
+          estado:fresh.estado,paymentState:fresh.paymentState,paymentConfirmed:true,
+          historicalReconciliationConfirmed:true,historicalPaymentStatus:fresh.historicalPaymentStatus||'paid',
+          paymentSourceRef:fresh.paymentSourceRef||fresh.reconciliationSourceRef||null,
+          reconciliationSourceRef:fresh.reconciliationSourceRef||fresh.paymentSourceRef||null,
+          liquidationState:fresh.liquidationState,pagada:true
+        });
+        result.push(merged);
+      }else result.push(fresh);
     }
     const unique=new Map();for(const l of result){const k=liqKey(l);if(k&&!unique.has(k))unique.set(k,l);}
     return [...unique.values()];
