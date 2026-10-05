@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v261",
   "frozenAt": "2026-10-04T09:12:00Z",
-  "status": "HOLD_I3_SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF_REQUIRED",
+  "status": "HOLD_VRM256_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "microblockId": "PRE-I4-LIVE-HR-STALE-CACHE-MAPPING-HOLD-AUGUST-CANONICAL-CORRECTION",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "617ff043d77c4c3abdf20683abe05fe9d6a6e546",
-    "sourceTree": "fdea83d9baf760cd379bfdbcd1bad4281d894df5",
-    "predecessorSha": "170d09983d4696a02453a58f46b027d41c579132",
+    "sourceSha": "994b8f7c201162a3aa865798e9de4aa8fc8a3525",
+    "sourceTree": "00e67e6d1d49421cd59f7207676b015eaf02ce20",
+    "predecessorSha": "617ff043d77c4c3abdf20683abe05fe9d6a6e546",
     "production": false,
-    "state": "VRM174_EXACT_DEV_MATERIALIZED_HISTORICAL_REPROOF_REQUIRED",
+    "state": "VRM256_SOURCE_FIX_COMPOSED_DEV_MATERIALIZATION_REQUIRED",
     "proof": {
       "state": "PASS_VRM249_SOURCE_REPROOF_AND_EXACT_DEV_MATERIALIZATION",
       "accumulatedSourceProofs": [
@@ -16070,6 +16070,60 @@
       "production": false,
       "blocking": false,
       "terminalDisposition": "CONTROL_ONLY_FIXED"
+    },
+    "VRM-256": {
+      "id": "VRM-256",
+      "classification": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "title": "Mi Día selected historical shopper visit as next visit under active period",
+      "state": "SOURCE_FIX_COMPOSED_DEV_MATERIALIZATION_REQUIRED",
+      "firstObservedAt": "RUN1236_2026-10-05",
+      "rootCauseStatus": "PROVEN",
+      "rootCause": "app/modules/midia.js built shopper mine from visitsForShopper(_mySid,false), filtered only cancelled visits, then selected mine[0]. That collection includes historical periods, so Julissa's March/June MC. Santa Clara could render under OCT 2026 while the exact active OCT visit is C. Miraflores.",
+      "evidence": {
+        "run1236": {
+          "runId": 37376251847,
+          "runNumber": 1236,
+          "jobId": 111985906076,
+          "artifactId": 11371807572,
+          "artifactDigest": "sha256:23d9ad72b5069f77c3fd51e9db73a1edd339f19b48f937ca443f172a53c28ef5",
+          "failure": "FUNCTIONAL_DEFECT:MIDIA_ACTIVE_VISIT_MISSING:Julissa Flores",
+          "exactDevPreflightPass": true
+        },
+        "julissa": {
+          "shopperId": "shopper_gt_0c198c1055",
+          "activePeriod": "2026-10",
+          "activeVisit": {
+            "hrRowId": "OCTUBRE 26!2",
+            "branch": "C. Miraflores",
+            "assigned": true,
+            "realized": false
+          },
+          "wrongRenderedBranch": "MC. Santa Clara",
+          "historicalSantaClaraPeriods": [
+            "2026-03",
+            "2026-06"
+          ]
+        },
+        "owner": "app/modules/midia.js",
+        "sourceFix": {
+          "sourceSha": "994b8f7c201162a3aa865798e9de4aa8fc8a3525",
+          "sourceTree": "00e67e6d1d49421cd59f7207676b015eaf02ce20",
+          "files": [
+            "app/modules/midia.js",
+            "backend/runtime/hr-live-service/test/cxorbia-vrm256-midia-current-period.test.mjs"
+          ],
+          "behavior": "nextVisit is limited to currentPeriodId + assigned + not realized + not cancelled"
+        }
+      },
+      "expected": "Shopper Mi Día must show only an active visit belonging to the selected active period; historical realized visits cannot be rendered as Tu próxima visita under another period.",
+      "owner": [
+        "app/modules/midia.js"
+      ],
+      "productChanged": true,
+      "production": false,
+      "blocking": true,
+      "terminalDisposition": null
     }
   },
   "latestEvidenceOverrides": {
@@ -17029,7 +17083,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Run the existing phasea-representative-same-artifact-live-reproof against exact Run1232 DEV artifact using exact shopper authority for Paula (shopper_gt_1440137b73 + visibleLogin paula.osorio), while keeping shp-cdbf95dccaa6 separate because Run1235 proved same display name without exact lineage; zero rebuilds, zero deploys, zero writes, no production.",
+  "exactNextAction": "Materialize exactly product source 994b8f7c201162a3aa865798e9de4aa8fc8a3525 / tree 00e67e6d1d49421cd59f7207676b015eaf02ce20 in DEV using the existing vrm154-156-dev-materialization job, requiring PASS_VRM256_MIDIA_CURRENT_PERIOD_SOURCE before the single build/deploy; then repeat phasea-representative-same-artifact-live-reproof. No production.",
   "supersedesGitBlob": "820da41b786054cb8cd23e89827e1f7afbcdd3b3",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -17058,7 +17112,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-256",
+  "nextFindingId": "VRM-257",
   "lastControlFailure": {
     "id": "RUN1235_PAULA_TOPOLOGY_BASE_KEEPER_ASSERTION_STALE",
     "classification": "MAPPING_FAILURE",
@@ -20425,7 +20479,7 @@
     "hostingDeploys": 0,
     "production": false
   },
-  "activeBlocker": null,
+  "activeBlocker": "VRM-256",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -20617,7 +20671,7 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-10-05T18:42:00Z",
-  "nextExactAction": "Run the existing phasea-representative-same-artifact-live-reproof against exact Run1232 DEV artifact using exact shopper authority for Paula (shopper_gt_1440137b73 + visibleLogin paula.osorio), while keeping shp-cdbf95dccaa6 separate because Run1235 proved same display name without exact lineage; zero rebuilds, zero deploys, zero writes, no production.",
+  "nextExactAction": "Materialize exactly product source 994b8f7c201162a3aa865798e9de4aa8fc8a3525 / tree 00e67e6d1d49421cd59f7207676b015eaf02ce20 in DEV using the existing vrm154-156-dev-materialization job, requiring PASS_VRM256_MIDIA_CURRENT_PERIOD_SOURCE before the single build/deploy; then repeat phasea-representative-same-artifact-live-reproof. No production.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,

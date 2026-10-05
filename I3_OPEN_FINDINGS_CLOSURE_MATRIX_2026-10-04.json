@@ -5,8 +5,8 @@
   "generatedFromLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
   "generatedAtEvidenceTime": "2026-10-05T18:43:00Z",
   "controlHeadAtGeneration": "a10ce5c5b14be7d361d6d06d1e6f5a7feadca539",
-  "productSourceSha": "617ff043d77c4c3abdf20683abe05fe9d6a6e546",
-  "productSourceTree": "fdea83d9baf760cd379bfdbcd1bad4281d894df5",
+  "productSourceSha": "994b8f7c201162a3aa865798e9de4aa8fc8a3525",
+  "productSourceTree": "00e67e6d1d49421cd59f7207676b015eaf02ce20",
   "exactDevArtifact": {
     "runId": 37356275140,
     "runNumber": 1232,
@@ -26,10 +26,10 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleTruthCount": 21,
   "moduleTruthAllMatch": true,
-  "findingCount": 255,
+  "findingCount": 256,
   "missingFindingIds": [],
   "duplicateFindingIds": [],
-  "currentBlockingCount": 55,
+  "currentBlockingCount": 56,
   "undisposedCount": 70,
   "terminalDispositionCounts": {
     "PASS_CURRENT_ARTIFACT": 156,
@@ -46,6 +46,7 @@
     "SUPERSEDED_BY_VRM-243": 1
   },
   "nextCriticalSequence": [
+    "VRM256_EXACT_DEV_MATERIALIZATION",
     "SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF",
     "PAULA_VISUAL_CHECKPOINT",
     "GATE20_GATE21_TERMINAL_CLOSURE"
@@ -8460,6 +8461,50 @@
       "actionRemaining": null,
       "blocking": false,
       "terminalDisposition": "CONTROL_ONLY_FIXED"
+    },
+    {
+      "findingId": "VRM-256",
+      "moduleDomain": [
+        "shopper",
+        "mi-dia",
+        "period-scope"
+      ],
+      "severity": "P0",
+      "classification": "FUNCTIONAL_DEFECT",
+      "owner": [
+        "app/modules/midia.js"
+      ],
+      "latestApprovedSource": {
+        "sourceSha": "994b8f7c201162a3aa865798e9de4aa8fc8a3525",
+        "sourceTree": "00e67e6d1d49421cd59f7207676b015eaf02ce20",
+        "state": "SOURCE_FIX_COMPOSED_DEV_MATERIALIZATION_REQUIRED"
+      },
+      "latestLiveProof": {
+        "runId": 37376251847,
+        "runNumber": 1236,
+        "jobId": 111985906076,
+        "artifactId": 11371807572,
+        "decision": "FAIL_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+        "production": false
+      },
+      "successor": {
+        "sourceSha": "994b8f7c201162a3aa865798e9de4aa8fc8a3525",
+        "sourceTree": "00e67e6d1d49421cd59f7207676b015eaf02ce20"
+      },
+      "rawLedgerState": "SOURCE_FIX_COMPOSED_DEV_MATERIALIZATION_REQUIRED",
+      "realState": "P0_PROVEN_SOURCE_FIX_PENDING_DEV_MATERIALIZATION",
+      "evidence": {
+        "activePeriod": "2026-10",
+        "expectedBranch": "C. Miraflores",
+        "observedBranch": "MC. Santa Clara",
+        "historicalPeriods": [
+          "2026-03",
+          "2026-06"
+        ]
+      },
+      "actionRemaining": "Exact DEV materialization then same-artifact live reproof",
+      "blocking": true,
+      "terminalDisposition": null
     }
   ],
   "exactDevArtifactRole": "CURRENT_VRM249_SUCCESSOR",
