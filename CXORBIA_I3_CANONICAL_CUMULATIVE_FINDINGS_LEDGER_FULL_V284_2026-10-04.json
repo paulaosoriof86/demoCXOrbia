@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v261",
   "frozenAt": "2026-10-04T09:12:00Z",
-  "status": "HOLD_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE_REQUIRED",
+  "status": "HOLD_I3_VRM249_RESERVATION_READ_MODEL_FIX_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "microblockId": "PRE-I4-LIVE-HR-STALE-CACHE-MAPPING-HOLD-AUGUST-CANONICAL-CORRECTION",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -15291,6 +15291,67 @@
       "production": false,
       "terminalDisposition": null,
       "successor": null
+    },
+    "VRM-249": {
+      "id": "VRM-249",
+      "classification": "MAPPING_FAILURE",
+      "severity": "P0",
+      "title": "Durable reservations are omitted from the authorized Firebase read model and remain stale in Admin after provider ACK",
+      "state": "P0_PROVEN_ROOT_CAUSE_FIX_REQUIRED",
+      "firstObservedAt": "RUN1162_2026-10-05",
+      "rootCauseStatus": "PROVEN",
+      "rootCause": "Run1162 proved the reservation provider lifecycle reaches durable Firestore through create/approve/reassign, but Admin fails at RSV_ADMIN_READ_MODEL_BEFORE_DELETE. app/core/backend-firebase.js loads and publishes projects/periods/shoppers/visits/posts but omits reservations from loadProjectData, loadTenantData, publishAuthorizedState and applyData. app/adapters/tya-protected-auth-hr-authority-bridge-v2.js captureAuthorizedBackend() then sources reservations from stale CX.data.__protectedReservations instead of window.CX_BACKEND_AUTHORIZED_STATE.reservations. The reservation module correctly renders only CX.data.__protectedReservations, so the durable row cannot enter the Admin read model after refresh.",
+      "evidence": {
+        "run1162": {
+          "runId": 37253163627,
+          "runNumber": 1162,
+          "jobId": 111584811420,
+          "artifactId": 11321362047,
+          "artifactDigest": "sha256:b692a49480edf0102704bdfe3c8572d7b1227296c4d24a82c605f7947229ba59",
+          "failureCode": "RSV_ADMIN_READ_MODEL_BEFORE_DELETE",
+          "postulationsStillPass": true,
+          "reservationProviderLifecycleReachedReadModelCheck": true,
+          "hrWrites": 0,
+          "externalWrites": 0,
+          "production": false
+        },
+        "ownerReadback": {
+          "backendFirebase": {
+            "path": "app/core/backend-firebase.js",
+            "publishedFields": [
+              "projects",
+              "allProjects",
+              "periods",
+              "shoppers",
+              "visits",
+              "posts"
+            ],
+            "reservationsLoaded": false,
+            "reservationsPublished": false,
+            "reservationsApplied": false
+          },
+          "protectedAuthorityBridge": {
+            "path": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+            "captureAuthorizedBackendReservationSource": "CX.data.__protectedReservations",
+            "expectedReservationSource": "CX_BACKEND_AUTHORIZED_STATE.reservations"
+          },
+          "consumer": {
+            "path": "app/modules/reservas.js",
+            "source": "CX.data.__protectedReservations",
+            "providerCommandsAckGated": true
+          }
+        }
+      },
+      "expected": "Load reservations with role/project scope into the authorized Firebase state, publish/apply them as __protectedReservations, and have captureAuthorizedBackend consume b.reservations. Re-run the exact same bounded reservation lifecycle and require Admin visibility after refresh, provider delete, reload no-reappearance, unchanged visit when no cross action is requested, zero residue and zero HR/external writes.",
+      "owner": [
+        "app/core/backend-firebase.js",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+      ],
+      "productMutationAllowed": true,
+      "productChanged": false,
+      "production": false,
+      "terminalDisposition": null,
+      "successor": null
     }
   },
   "latestEvidenceOverrides": {
@@ -15956,14 +16017,15 @@
       "VRM-245",
       "VRM-246",
       "VRM-247",
-      "VRM-248"
+      "VRM-248",
+      "VRM-249"
     ],
-    "findingCount": 248,
-    "expectedCurrentRange": "VRM-001..VRM-248",
-    "nextFindingId": "VRM-249",
+    "findingCount": 249,
+    "expectedCurrentRange": "VRM-001..VRM-249",
+    "nextFindingId": "VRM-250",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE_REQUIRED",
+    "terminalState": "HOLD_I3_VRM249_RESERVATION_READ_MODEL_FIX_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -16271,7 +16333,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-249",
+  "nextFindingId": "VRM-250",
   "lastControlFailure": {
     "runId": 37251758888,
     "runNumber": 1157,
@@ -19666,7 +19728,7 @@
     "hostingDeploys": 0,
     "production": false
   },
-  "activeBlocker": "I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE_REQUIRED",
+  "activeBlocker": "VRM-249",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -19857,8 +19919,8 @@
     "humanAcceptance": "FAIL",
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
-  "lastUpdatedAt": "2026-10-05T01:36:00Z",
-  "nextExactAction": "Run bounded Postulations lifecycle E2E on unchanged Run1112: current eligible shopper + available HR visit, application.create via shopper authority, idempotent replay, Admin standby/reject lifecycle, durable readback/reload, valid provider-backed delete and no reappearance, then verify no HR/external writes and zero QA residue.",
+  "lastUpdatedAt": "2026-10-05T02:02:00Z",
+  "nextExactAction": "Apply only the proven VRM-249 read-model mapping fix in app/core/backend-firebase.js and app/adapters/tya-protected-auth-hr-authority-bridge-v2.js, run source proof, materialize the single successor candidate to DEV, then rerun the bounded Reservations lifecycle.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
@@ -20494,7 +20556,7 @@
     "production": false,
     "interpretation": "Control-only freeze/readback. No action lane matched the fail-closed precomposition status."
   },
-  "queuedBlocker": "I3_ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE_REQUIRED",
+  "queuedBlocker": "I3_ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE_REPROOF",
   "lastSuccessfulRun": {
     "runId": 37211579195,
     "runNumber": 1114,
