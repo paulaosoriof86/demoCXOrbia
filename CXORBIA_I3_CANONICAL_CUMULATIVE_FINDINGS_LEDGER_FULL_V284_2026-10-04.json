@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v261",
   "frozenAt": "2026-10-04T09:12:00Z",
-  "status": "HOLD_I3_VRM174_HISTORICAL_PAYMENT_REPROOF_REQUIRED",
+  "status": "HOLD_I3_VRM174_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "microblockId": "PRE-I4-LIVE-HR-STALE-CACHE-MAPPING-HOLD-AUGUST-CANONICAL-CORRECTION",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
-    "sourceTree": "638ab7ab63244286ff460205da441221d5957ef0",
-    "predecessorSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+    "sourceSha": "b3cc541c38d80708e8ee7e2007611eb9126bc34a",
+    "sourceTree": "1dd01eb285503ee474201a172a2d6afe35cf390e",
+    "predecessorSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
     "production": false,
-    "state": "VRM249_EXACT_DEV_MATERIALIZED_LIFECYCLE_REPROOF_REQUIRED",
+    "state": "VRM174_SOURCE_FIX_PENDING_EXACT_DEV_MATERIALIZATION",
     "proof": {
       "state": "PASS_VRM249_SOURCE_REPROOF_AND_EXACT_DEV_MATERIALIZATION",
       "accumulatedSourceProofs": [
@@ -480,25 +480,20 @@
     },
     "predecessorSourceSha": "bbd66d29192487ac29f8703bd913e3f1e15a28c0",
     "currentSourceProof": {
-      "runId": 37208053790,
-      "runNumber": 1111,
-      "controlHeadSha": "e384ebf8c3aae1a31f5e3e9bf41e91b411214001",
-      "jobId": 111453346269,
-      "artifactId": 11305612608,
-      "artifactDigest": "sha256:cf3f6be2394b78f1b4d8e979057c72093b36efcfb7d5d510ab40cec6f4a198b8",
-      "decision": "PASS_VRM227_SOURCE_REPROOF",
-      "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
-      "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
-      "shopperProviderTests": {
-        "total": 39,
-        "pass": 39,
-        "fail": 0,
-        "reviewClosure": true,
-        "idempotentReplay": true
-      },
-      "frontendContract": "PASS_VRM154_156_FRONTEND_SOURCE_CONTRACT",
-      "builds": 0,
-      "deploys": 0,
+      "findingId": "VRM-174",
+      "state": "SOURCE_FIX_COMPOSED_PENDING_MATERIALIZATION",
+      "sourceSha": "b3cc541c38d80708e8ee7e2007611eb9126bc34a",
+      "sourceTree": "1dd01eb285503ee474201a172a2d6afe35cf390e",
+      "predecessorSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
+      "productFilesChanged": [
+        "app/adapters/tya-canonical-finance-read-model-v2.js"
+      ],
+      "qaFilesChanged": [
+        "tools/qa/tya-c6-canonical-finance-read-model-gate.mjs"
+      ],
+      "controlFilesChanged": [
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+      ],
       "production": false
     },
     "lastPredecessorMaterialization": {
@@ -9213,9 +9208,9 @@
       "classification": "MAPPING_FAILURE",
       "severity": "P0",
       "title": "Durable historical payment reconciliation is not projected into Finance/Mis Beneficios UI",
-      "state": "RUN1209_FOCAL_PASS_HISTORICAL_PAYMENT_REPROOF_REQUIRED",
-      "rootCauseStatus": "PROVEN",
-      "rootCause": "Exact DEV holds 628 paymentReconciliations (562 paid, 66 pending) and 562 durable visits marked paymentConfirmed/historical paid, but canonical finance exactProtectedFinancialMatch recognizes only financialSourceStatus='reconciled_exact' plus financialMatch. Only 1 visit matches that shape, leaving 562 paid historical rows projected as pending.",
+      "state": "SOURCE_FIX_COMPOSED_DEV_MATERIALIZATION_REQUIRED",
+      "rootCauseStatus": "PROVEN_RUN1227_EXACT_DURABLE_AUTHORITY_PRECEDENCE",
+      "rootCause": "Run1227 eliminated the HR-composition race and proved the exact stable revision with 17 periods. The first historical period then found the expected durable visits but projected paid rows as pending. exactProtectedFinancialMatch() gathered durable candidates by hrRowId/id and returned null whenever matches.length!==1. Durable visit history intentionally contains duplicate historical rows, while the cumulative composer already resolves the authoritative durable row by Firestore __docId == live HR visitId before weaker fallbacks. Finance lacked that precedence, so legitimate duplicate history suppressed paymentConfirmed/historical paid projection.",
       "owners": [
         "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
         "app/adapters/tya-canonical-finance-read-model-v2.js",
@@ -9251,9 +9246,9 @@
           "projectedGap": 562
         }
       },
-      "correction": "Project durable historical payment reconciliation markers/source refs into the canonical finance read model without inventing amounts; keep current-period rows source-safe and pending when no reconciliation exists.",
-      "sourceSuccessorSha": "26c2870ce3ff48193de641a29cc23196a2dc2770",
-      "sourceSuccessorTree": "2e72bf1906a582910ac2f82460f2df493ba40b41",
+      "correction": "Apply the same exact durable-visit authority already proven by the cumulative composer: prefer one protected visit whose Firestore __docId equals the live HR visitId; fail closed on multiple exact-doc matches; only then fall back to unique hrRow/id matching. Preserve historical rows and never infer payment from duplicate/fuzzy data.",
+      "sourceSuccessorSha": "b3cc541c38d80708e8ee7e2007611eb9126bc34a",
+      "sourceSuccessorTree": "1dd01eb285503ee474201a172a2d6afe35cf390e",
       "sourceReproofDecision": "PASS_I3_PHASEA_REJECTED_CHECKPOINT_SOURCE_PROOF",
       "devMaterializationRunId": 37073947232,
       "runtimeRevision": "cxorbia-live-hr-dev-00249-pqh",
@@ -9292,7 +9287,39 @@
         "production": false
       },
       "blocking": true,
-      "terminalDisposition": null
+      "terminalDisposition": null,
+      "latestRun1227": {
+        "runId": 37350975911,
+        "runNumber": 1227,
+        "jobId": 111901522498,
+        "artifactId": 11362442533,
+        "artifactDigest": "sha256:017eac726624d7654d3f966f82da308346b7f2e7bf25897d1ed5e76ad1457828",
+        "stableHrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+        "authorityPeriodCount": 17,
+        "durableHistoricalPaid": 562,
+        "firstFailedPeriodId": "cinepolis-2025-06",
+        "firstMissesFound": true,
+        "observedState": "pending_source_confirmation",
+        "writes": 0,
+        "hrWrites": 0,
+        "externalWrites": 0,
+        "builds": 0,
+        "deploys": 0,
+        "production": false
+      },
+      "correctionPackage": {
+        "productOwner": "app/adapters/tya-canonical-finance-read-model-v2.js",
+        "productBlob": "bcba07516b277d68ba85d0378da7188c3c8c4c66",
+        "regressionOwner": "tools/qa/tya-c6-canonical-finance-read-model-gate.mjs",
+        "regressionBlob": "a4cf1bd55176c9f6e706047a6812b653417a5bcb",
+        "workflowOwner": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+        "workflowBlob": "948a39019820225ac71412b4831488898bf735c8",
+        "regression": "vrm174_duplicate_hrrow_exact_doc_payment_authority_preserved",
+        "sourceSha": "b3cc541c38d80708e8ee7e2007611eb9126bc34a",
+        "sourceTree": "1dd01eb285503ee474201a172a2d6afe35cf390e",
+        "productChanged": true,
+        "production": false
+      }
     },
     "VRM-175": {
       "id": "VRM-175",
@@ -15806,9 +15833,9 @@
       "observedHarnessClassification": "MAPPING_FAILURE",
       "severity": "P0_CONTROL",
       "title": "VRM174 historical payment QA sampled period registry before stable all-period HR authority composition",
-      "state": "CONTROL_FIX_COMPOSED_REPROOF_REQUIRED",
+      "state": "CONTROL_ONLY_FIXED_RUN1227_STABLE_HR",
       "firstObservedAt": "RUN1225_2026-10-05",
-      "rootCauseStatus": "PROVEN_CONTROL_READINESS_RACE",
+      "rootCauseStatus": "PROVEN_AND_REPROOF_PASS",
       "rootCause": "Run1225 passed stabilized browser authentication and exact Run1176 DEV fingerprints, then reported cinepolis-2025-06 unavailable. The exact Run1176 HR artifact contains 17 periods including cinepolis-2025-06 and the live-source adapter maps each HR period key to projectId-key. The QA only waited for authority.applied and refreshed backend between period checks, allowing a transient Firestore/backend state during HR recomposition to be sampled as if it were the final all-period registry.",
       "evidence": {
         "run1225": {
@@ -15867,6 +15894,17 @@
           "reproofReached": false,
           "productChanged": false,
           "production": false
+        },
+        "run1227": {
+          "runId": 37350975911,
+          "runNumber": 1227,
+          "jobId": 111901522498,
+          "stableHrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+          "authorityPeriodCount": 17,
+          "periodLookupPassed": true,
+          "reachedHistoricalProjection": true,
+          "productChanged": false,
+          "production": false
         }
       },
       "expected": "Rerun the same read-only VRM174 proof on unchanged Run1176 artifact. It must prove stable all-period HR authority composition, preserve one sourceRevision across the historical sweep and project all 562 durable paid visits through the canonical finance read model.",
@@ -15875,8 +15913,8 @@
       ],
       "productChanged": false,
       "production": false,
-      "blocking": true,
-      "terminalDisposition": null
+      "blocking": false,
+      "terminalDisposition": "CONTROL_ONLY_FIXED"
     }
   },
   "latestEvidenceOverrides": {
@@ -16836,7 +16874,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Re-run VRM174 historical payment proof with VRM255 stable all-period HR authority control on the exact unchanged Run1176 DEV artifact; no rebuild, deploy, provider write, HR write or production.",
+  "exactNextAction": "Materialize the exact VRM174 successor once in DEV through the existing canonical materialization lane, then re-run the historical payment projection on that same artifact; no production.",
   "supersedesGitBlob": "820da41b786054cb8cd23e89827e1f7afbcdd3b3",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -16866,18 +16904,7 @@
     "production": false
   },
   "nextFindingId": "VRM-256",
-  "lastControlFailure": {
-    "findingId": "VRM-255",
-    "classification": "MAPPING_FAILURE",
-    "runId": 37350785639,
-    "runNumber": 1226,
-    "jobId": 111900799893,
-    "code": "NEXT_FINDING_ID",
-    "productCodeReached": false,
-    "reproofReached": false,
-    "productChanged": false,
-    "production": false
-  },
+  "lastControlFailure": null,
   "vrm044FocalProof": {
     "runId": 36155194727,
     "runNumber": 403,
@@ -20427,8 +20454,8 @@
     "humanAcceptance": "FAIL",
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
-  "lastUpdatedAt": "2026-10-05T17:49:00Z",
-  "nextExactAction": "Re-run VRM174 historical payment proof with VRM255 stable all-period HR authority control on the exact unchanged Run1176 DEV artifact; no rebuild, deploy, provider write, HR write or production.",
+  "lastUpdatedAt": "2026-10-05T18:02:00Z",
+  "nextExactAction": "Materialize the exact VRM174 successor once in DEV through the existing canonical materialization lane, then re-run the historical payment projection on that same artifact; no production.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
@@ -21064,7 +21091,7 @@
     "production": false,
     "interpretation": "Control-only freeze/readback. No action lane matched the fail-closed precomposition status."
   },
-  "queuedBlocker": "VRM-255",
+  "queuedBlocker": null,
   "lastSuccessfulRun": {
     "runId": 37211579195,
     "runNumber": 1114,
