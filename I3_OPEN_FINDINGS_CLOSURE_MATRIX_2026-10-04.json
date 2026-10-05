@@ -3,8 +3,8 @@
   "status": "ACTIVE_CLOSURE_VIEW",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
   "generatedFromLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "generatedAtEvidenceTime": "2026-10-05T18:37:00Z",
-  "controlHeadAtGeneration": "cc66a2cac81b6f62b134becca449a57113c0beff",
+  "generatedAtEvidenceTime": "2026-10-05T18:43:00Z",
+  "controlHeadAtGeneration": "a10ce5c5b14be7d361d6d06d1e6f5a7feadca539",
   "productSourceSha": "617ff043d77c4c3abdf20683abe05fe9d6a6e546",
   "productSourceTree": "fdea83d9baf760cd379bfdbcd1bad4281d894df5",
   "exactDevArtifact": {
@@ -29,10 +29,10 @@
   "findingCount": 255,
   "missingFindingIds": [],
   "duplicateFindingIds": [],
-  "currentBlockingCount": 56,
-  "undisposedCount": 71,
+  "currentBlockingCount": 55,
+  "undisposedCount": 70,
   "terminalDispositionCounts": {
-    "PASS_CURRENT_ARTIFACT": 155,
+    "PASS_CURRENT_ARTIFACT": 156,
     "SUPERSEDED_BY_VRM-221": 1,
     "NON_BLOCKING_DEFERRED_WITH_EXPLICIT_REASON": 3,
     "PRESERVED_PHASE_B_NOT_I3_AUTHORITY": 1,
@@ -46,7 +46,6 @@
     "SUPERSEDED_BY_VRM-243": 1
   },
   "nextCriticalSequence": [
-    "VRM174_HISTORICAL_PAYMENT_REPROOF",
     "SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF",
     "PAULA_VISUAL_CHECKPOINT",
     "GATE20_GATE21_TERMINAL_CLOSURE"
@@ -5451,24 +5450,27 @@
         "state": "VRM174_LEGACY_MERGE_PAYMENT_PRECEDENCE_SUCCESSOR"
       },
       "latestLiveProof": {
-        "runId": 37356275140,
-        "runNumber": 1232,
-        "jobId": 111919456033,
-        "artifactId": 11365046107,
-        "artifactDigest": "sha256:a1be27364fa30a27134782d76247ded92523f2775ea3da727efc300f1de4d416",
-        "decision": "PASS_I3_VRM174_EXACT_DEV_MATERIALIZATION",
-        "sourceSha": "617ff043d77c4c3abdf20683abe05fe9d6a6e546",
-        "sourceTree": "fdea83d9baf760cd379bfdbcd1bad4281d894df5",
-        "runtimeRevision": "cxorbia-live-hr-dev-00268-jsw",
-        "runtimeDigest": "sha256:7e7571b1a87af2d046d24cd1f65bc336f03bffe7b1f4de86a83b13113dde6803",
-        "hostingVersion": "sites/cxorbia-backend-dev/versions/461b9839d4a5542c",
-        "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791225113581000",
-        "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+        "runId": 37356927243,
+        "runNumber": 1233,
+        "jobId": 111921686480,
+        "artifactId": 11364812188,
+        "artifactDigest": "sha256:afd46733319b88f2a14b64eb85377c94b34d34132ab29fca15cd7546c8ffc82a",
+        "decision": "PASS_I3_VRM174_HISTORICAL_PAYMENT_LIVE",
+        "exactMaterializationRunId": 37356275140,
+        "exactMaterializationArtifactId": 11365046107,
+        "stableHrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+        "historicalPeriodCount": 15,
+        "durableHistoricalPaid": 562,
+        "projectedHistoricalPaid": 562,
+        "misses": 0,
+        "writes": 0,
+        "hrWrites": 0,
+        "externalWrites": 0,
         "production": false
       },
       "successor": null,
-      "rawLedgerState": "DEV_MATERIALIZED_HISTORICAL_PAYMENT_REPROOF_REQUIRED",
-      "realState": "DEV_MATERIALIZED_HISTORICAL_PAYMENT_REPROOF_REQUIRED",
+      "rawLedgerState": "PASS_CURRENT_ARTIFACT_RUN1233",
+      "realState": "PASS_CURRENT_ARTIFACT",
       "evidence": {
         "currentProductSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
         "currentProductTree": "b59da4c090d4639a136168656e7addd544f38e18",
@@ -5489,9 +5491,9 @@
         "run1229Residual": "historicalReconciliationConfirmed=true was shadowed by earlier exact financialMatch paymentConfirmed=false",
         "run1231RootCause": "CX.liq.forProject legacy prior merge overwrote fresh canonical historical payment truth after derive() had already resolved it correctly."
       },
-      "actionRemaining": "same-artifact read-only historical payment projection reproof",
-      "blocking": true,
-      "terminalDisposition": null
+      "actionRemaining": null,
+      "blocking": false,
+      "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
       "findingId": "VRM-175",
