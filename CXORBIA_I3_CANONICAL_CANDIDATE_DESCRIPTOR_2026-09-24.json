@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_ADMIN_CLUSTER_A_SHOPPERS_LIFECYCLE_REQUIRED",
+  "status": "HOLD_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "b59da4c090d4639a136168656e7addd544f38e18",
   "predecessorProductSourceSha": "bbd66d29192487ac29f8703bd913e3f1e15a28c0",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "b7dcb147ff388578b969f2bb32c9045791433db8",
+  "findingsLedgerExpectedGitBlob": "383104699761f43688f8bfc7c5fed40b86456ee4",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "I3_ADMIN_CLUSTER_A_SHOPPERS_LIFECYCLE_REQUIRED",
+  "activeBlocker": "I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE_REQUIRED",
   "nextFindingId": "VRM-248",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run bounded Admin Shoppers lifecycle E2E on unchanged Run1112 candidate using existing VRM221 synthetic-fixture harness: create/update, identity merge, keep-separate adjudication, safe retire, HR-authoritative delete block, provider ACK, idempotent replay, durable readback and cleanup. No product mutation or production.",
+  "exactNextAction": "Run bounded Postulations lifecycle E2E on unchanged Run1112: create via authenticated existing shopper against one current available HR visit, exact replay, Admin standby/reject transitions, exact replay, provider-backed delete, durable reload/readback and no reappearance; no HR/external writes and zero QA residue.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3510,7 +3510,7 @@
     }
   },
   "adminMatrixPath": "CXORBIA_I3_ADMIN_FULL_ADMINISTRATION_MATRIX_2026-10-03_V6.json",
-  "adminMatrixExpectedGitBlob": "da588a0e5e5eee1488149a317a389201d5e1c4ec",
+  "adminMatrixExpectedGitBlob": "7b39ed168282706da355cc78cde4e38f04f87cc7",
   "lastSourceReproof": {
     "runId": 37161034003,
     "runNumber": 1045,
@@ -3540,7 +3540,7 @@
     "interpretation": "Control-only freeze/readback. No action lane matched the fail-closed precomposition status."
   },
   "shopperIdentityGovernanceLockPath": "CXORBIA_I3_SHOPPER_IDENTITY_GOVERNANCE_LOCK_2026-10-04.json",
-  "queuedBlocker": "I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE_REQUIRED",
+  "queuedBlocker": "I3_ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE_REQUIRED",
   "currentSourceProof": {
     "runId": 37208053790,
     "runNumber": 1111,
@@ -4024,5 +4024,18 @@
       "multimoduleSweepPassed": true,
       "production": false
     }
+  },
+  "lastAdminClusterAShoppersPass": {
+    "runId": 37251257394,
+    "runNumber": 1152,
+    "jobId": 111579226933,
+    "artifactId": 11320549762,
+    "artifactDigest": "sha256:10ebee0d337febf24360d7eb6ca38a04670da2504bfd636a6af496a58b179d46",
+    "decision": "PASS_VRM221_ADMIN_LIVE_E2E",
+    "providerAck": true,
+    "idempotentReplay": true,
+    "durableReadback": true,
+    "cleanupActiveSyntheticRemaining": 0,
+    "production": false
   }
 }
