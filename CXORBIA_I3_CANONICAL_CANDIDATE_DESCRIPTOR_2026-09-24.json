@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM252_CONTROL_REPROOF_REQUIRED",
+  "status": "HOLD_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Re-run unchanged Run1176 Postulations + Reservations lifecycle with period-scoped QA assertions; no product mutation or rebuild.",
+  "exactNextAction": "Re-run the same bounded Postulations + Reservations lifecycle against exact Run1176 DEV using rPeriodId for reservation list assertions. No product mutation, build, or deploy.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -4156,7 +4156,7 @@
     "terminalDisposition": "CONTROL_ONLY_FIXED"
   },
   "vrm252": {
-    "state": "CONTROL_FIX_COMPOSED_REPROOF_REQUIRED",
+    "state": "CONTROL_FIX_REPROOF_ACTIVE",
     "classification": "MAPPING_FAILURE",
     "severity": "P0_CONTROL",
     "run1186": 37304608567,
