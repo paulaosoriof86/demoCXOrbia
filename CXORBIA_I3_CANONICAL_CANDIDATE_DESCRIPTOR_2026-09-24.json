@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM249_REFRESH_RECONCILIATION_DIAGNOSTIC_REQUIRED",
+  "status": "HOLD_I3_VRM252_CONTROL_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,13 +8,13 @@
   "productTreeAuthority": "638ab7ab63244286ff460205da441221d5957ef0",
   "predecessorProductSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "ebaf5308f0069237c01c7790ecddd507d9f19a51",
+  "findingsLedgerExpectedGitBlob": "c9b66d744a8095336a2850f5b245c222f9c59c9e",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
   "activeBlocker": "VRM-249",
-  "nextFindingId": "VRM-252",
+  "nextFindingId": "VRM-253",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Instrument and rerun the same bounded lifecycle only as a control diagnostic: capture reservations in CX_BACKEND_AUTHORIZED_STATE, CX.data.__protectedReservations and CX.reservas.list immediately after backend.refresh and after CX_PROTECTED_AUTH_HR_AUTHORITY reapplies. Product remains frozen.",
+  "exactNextAction": "Re-run unchanged Run1176 Postulations + Reservations lifecycle with period-scoped QA assertions; no product mutation or rebuild.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3562,7 +3562,7 @@
     "production": false
   },
   "openFindingsClosureMatrixPath": "I3_OPEN_FINDINGS_CLOSURE_MATRIX_2026-10-04.json",
-  "openFindingsClosureMatrixFindingCount": 251,
+  "openFindingsClosureMatrixFindingCount": 252,
   "lastVrm229Pass": {
     "runId": 37211579195,
     "runNumber": 1114,
@@ -4154,5 +4154,14 @@
     "productChanged": false,
     "production": false,
     "terminalDisposition": "CONTROL_ONLY_FIXED"
+  },
+  "vrm252": {
+    "state": "CONTROL_FIX_COMPOSED_REPROOF_REQUIRED",
+    "classification": "MAPPING_FAILURE",
+    "severity": "P0_CONTROL",
+    "run1186": 37304608567,
+    "correctionCommit": "fec74949073ac5d05150cd79737be8e8f8f05a4f",
+    "productChanged": false,
+    "production": false
   }
 }
