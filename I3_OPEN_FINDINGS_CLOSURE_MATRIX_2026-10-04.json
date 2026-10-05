@@ -3,8 +3,8 @@
   "status": "ACTIVE_CLOSURE_VIEW",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
   "generatedFromLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "generatedAtEvidenceTime": "2026-10-05T11:35:00Z",
-  "controlHeadAtGeneration": "5630867436038c3dc037ee4edcc121c3b254a33c",
+  "generatedAtEvidenceTime": "2026-10-05T11:39:00Z",
+  "controlHeadAtGeneration": "b6995592b1d9e73662dbb1796c27f3b8276c7d71",
   "productSourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
   "productSourceTree": "638ab7ab63244286ff460205da441221d5957ef0",
   "exactDevArtifact": {
@@ -27,7 +27,7 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleTruthCount": 21,
   "moduleTruthAllMatch": true,
-  "findingCount": 250,
+  "findingCount": 251,
   "missingFindingIds": [],
   "duplicateFindingIds": [],
   "currentBlockingCount": 58,
@@ -38,7 +38,7 @@
     "NON_BLOCKING_DEFERRED_WITH_EXPLICIT_REASON": 3,
     "PRESERVED_PHASE_B_NOT_I3_AUTHORITY": 1,
     "SUPERSEDED_BY_VRM-229": 1,
-    "CONTROL_ONLY_FIXED": 11,
+    "CONTROL_ONLY_FIXED": 12,
     "SUPERSEDED_BY_VRM-234": 1,
     "SUPERSEDED_BY_VRM-236": 1,
     "PASS_DIAGNOSTIC": 2,
@@ -47,7 +47,6 @@
     "SUPERSEDED_BY_VRM-243": 1
   },
   "nextCriticalSequence": [
-    "BIND_CURRENT_MATERIALIZATION_TO_CLUSTER_A_LIFECYCLE",
     "ADMIN_CLUSTER_A_POSTULATIONS_AND_RESERVATIONS_LIFECYCLE_REPROOF",
     "SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF",
     "PAULA_VISUAL_CHECKPOINT",
@@ -8223,6 +8222,33 @@
         "workflowCharsAfter": 496018,
         "archivedHistoricalJob": "control/archive/workflow-jobs/pre-i4-vrm039-source-proof.yml",
         "parallelWorkflowCreated": false,
+        "productChanged": false,
+        "production": false
+      },
+      "actionRemaining": null,
+      "blocking": false,
+      "terminalDisposition": "CONTROL_ONLY_FIXED"
+    },
+    {
+      "findingId": "VRM-251",
+      "moduleDomain": [
+        "cross-cutting-control"
+      ],
+      "severity": "P0_CONTROL",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "owner": [
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+      ],
+      "latestApprovedSource": null,
+      "latestLiveProof": null,
+      "successor": null,
+      "rawLedgerState": "CONTROL_ONLY_FIXED_SCOPED_READBACK_PASS",
+      "realState": "CONTROL_ONLY_FIXED",
+      "evidence": {
+        "faultyCommit": "778b3a5b67ebdfd1a589f27e21b5b2d531f64f72",
+        "correctionCommit": "ea61189a9206f85f0e87530eeb6168176db6937f",
+        "exactScopedParity": true,
+        "unrelatedGuardsRestored": true,
         "productChanged": false,
         "production": false
       },
