@@ -1482,7 +1482,7 @@ jobs:
           include-hidden-files: true
   i3-finance-focal-reproof:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_FINANCE_FOCAL_REPROOF_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_FINANCE_FOCAL_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM174_HISTORICAL_PAYMENT_REPROOF_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     env:
@@ -1529,17 +1529,27 @@ jobs:
           TOKEN="$(gcloud auth print-access-token)"
           curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$FINAL_FOCAL_OUT/hosting.json"
           test "$(jq -r '.release.version.name' "$FINAL_FOCAL_OUT/hosting.json")" = "$H"
-      - name: Execute existing focal finance E2E
+      - name: Execute finance focal or historical payment proof
         run: |
           set -Eeuo pipefail
-          SOURCE_SHA="$FOCAL_SOURCE" PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" FINAL_FOCAL_OUT="$FINAL_FOCAL_OUT/live" FINAL_FOCAL_PERIOD_ID="$PERIOD_ID" node tools/qa/cxorbia-prei4-final-focal-finance-live.mjs | tee "$FINAL_FOCAL_OUT/console.log"
-          R="$FINAL_FOCAL_OUT/live/finance-live.json"
-          test "$(jq -r '.decision' "$R")" = "PASS_PREI4_FINAL_FOCAL_FINANCE"
-          test "$(jq -r '.durableProjection' "$R")" = "true"
-          test "$(jq -r '.idempotentReplay' "$R")" = "true"
-          test "$(jq -r '.cleanup' "$R")" = "true"
-          test "$(jq -r '.hrWrites' "$R")" = "0"
-          test "$(jq -r '.production' "$R")" = "false"
+          STATUS="$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")"
+          if [[ "$STATUS" == "HOLD_I3_VRM174_HISTORICAL_PAYMENT_REPROOF_REQUIRED" ]]; then
+            PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" VRM174_OUT="$FINAL_FOCAL_OUT/historical" node tools/qa/cxorbia-i3-vrm174-historical-payment-live.mjs | tee "$FINAL_FOCAL_OUT/console.log"
+            R="$FINAL_FOCAL_OUT/historical/result.json"
+            test "$(jq -r '.decision' "$R")" = "PASS_I3_VRM174_HISTORICAL_PAYMENT_LIVE"
+            test "$(jq -r '.writes' "$R")" = "0"
+            test "$(jq -r '.hrWrites' "$R")" = "0"
+            test "$(jq -r '.production' "$R")" = "false"
+          else
+            SOURCE_SHA="$FOCAL_SOURCE" PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" FINAL_FOCAL_OUT="$FINAL_FOCAL_OUT/live" FINAL_FOCAL_PERIOD_ID="$PERIOD_ID" node tools/qa/cxorbia-prei4-final-focal-finance-live.mjs | tee "$FINAL_FOCAL_OUT/console.log"
+            R="$FINAL_FOCAL_OUT/live/finance-live.json"
+            test "$(jq -r '.decision' "$R")" = "PASS_PREI4_FINAL_FOCAL_FINANCE"
+            test "$(jq -r '.durableProjection' "$R")" = "true"
+            test "$(jq -r '.idempotentReplay' "$R")" = "true"
+            test "$(jq -r '.cleanup' "$R")" = "true"
+            test "$(jq -r '.hrWrites' "$R")" = "0"
+            test "$(jq -r '.production' "$R")" = "false"
+          fi
       - if: always()
         uses: actions/upload-artifact@v4
         with:
