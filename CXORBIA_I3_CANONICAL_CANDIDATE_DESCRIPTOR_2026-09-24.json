@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM249_READ_MODEL_LAYER_DIAGNOSTIC_REQUIRED",
+  "status": "HOLD_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Capture exact reservation presence across CX_BACKEND_AUTHORIZED_STATE, CX.data.__protectedReservations and CX.reservas.list(rPeriodId) immediately after backend.refresh and after protected HR authority reapplies. Product remains frozen.",
+  "exactNextAction": "Run the same bounded lifecycle on unchanged Run1176 DEV with layer diagnostics for authorized state -> protected state -> period-scoped reservations list. No build/deploy/product mutation.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -4053,7 +4053,7 @@
     "production": false
   },
   "vrm249": {
-    "state": "RUN1195_REPRODUCED_READ_MODEL_LAYER_DIAGNOSTIC_REQUIRED",
+    "state": "READ_MODEL_LAYER_DIAGNOSTIC_ACTIVE",
     "classification": "MAPPING_FAILURE",
     "runId": 37253163627,
     "runNumber": 1162,
