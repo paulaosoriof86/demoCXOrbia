@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v261",
   "frozenAt": "2026-10-04T09:12:00Z",
-  "status": "HOLD_I3_VRM174_HISTORICAL_PAYMENT_REPROOF_REQUIRED",
+  "status": "HOLD_I3_VRM174_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "microblockId": "PRE-I4-LIVE-HR-STALE-CACHE-MAPPING-HOLD-AUGUST-CANONICAL-CORRECTION",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "b3cc541c38d80708e8ee7e2007611eb9126bc34a",
-    "sourceTree": "1dd01eb285503ee474201a172a2d6afe35cf390e",
-    "predecessorSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
+    "sourceSha": "170d09983d4696a02453a58f46b027d41c579132",
+    "sourceTree": "d20c7a52ea702d3c2c9d5235aa3c45d1a00419f6",
+    "predecessorSha": "b3cc541c38d80708e8ee7e2007611eb9126bc34a",
     "production": false,
-    "state": "VRM174_EXACT_DEV_MATERIALIZED_HISTORICAL_REPROOF_REQUIRED",
+    "state": "VRM174_RESIDUAL_SOURCE_FIX_PENDING_EXACT_DEV_MATERIALIZATION",
     "proof": {
       "state": "PASS_VRM249_SOURCE_REPROOF_AND_EXACT_DEV_MATERIALIZATION",
       "accumulatedSourceProofs": [
@@ -480,17 +480,18 @@
     "currentSourceProof": {
       "findingId": "VRM-174",
       "state": "SOURCE_FIX_COMPOSED_PENDING_MATERIALIZATION",
-      "sourceSha": "b3cc541c38d80708e8ee7e2007611eb9126bc34a",
-      "sourceTree": "1dd01eb285503ee474201a172a2d6afe35cf390e",
-      "predecessorSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
+      "sourceSha": "170d09983d4696a02453a58f46b027d41c579132",
+      "sourceTree": "d20c7a52ea702d3c2c9d5235aa3c45d1a00419f6",
+      "predecessorSha": "b3cc541c38d80708e8ee7e2007611eb9126bc34a",
       "productFilesChanged": [
         "app/adapters/tya-canonical-finance-read-model-v2.js"
       ],
       "qaFilesChanged": [
         "tools/qa/tya-c6-canonical-finance-read-model-gate.mjs"
       ],
-      "controlFilesChanged": [
-        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+      "regressionAssertions": [
+        "vrm174_duplicate_hrrow_exact_doc_payment_authority_preserved",
+        "vrm174_historical_paid_overlays_exact_amount_match"
       ],
       "production": false
     },
@@ -516,28 +517,7 @@
       "scenarioDimensionsProven": true,
       "production": false
     },
-    "currentMaterialization": {
-      "state": "PASS_I3_VRM174_EXACT_DEV_MATERIALIZATION",
-      "runId": 37351952599,
-      "runNumber": 1228,
-      "controlHeadSha": "89cf436e8db732957b7d89e8f6d7a8ec6cacd5e0",
-      "jobId": 111904957923,
-      "artifactId": 11363246712,
-      "artifactDigest": "sha256:1fd35361058ec7307837cc76e45b3e23d1edc0836de01531dd339d1ccc4863c3",
-      "decision": "PASS_I3_VRM174_EXACT_DEV_MATERIALIZATION",
-      "sourceSha": "b3cc541c38d80708e8ee7e2007611eb9126bc34a",
-      "sourceTree": "1dd01eb285503ee474201a172a2d6afe35cf390e",
-      "runtimeRevision": "cxorbia-live-hr-dev-00266-q2z",
-      "runtimeDigest": "sha256:d622a31115b59e79ccaf8156ca98b64144feba72f2bbd855d1cd8f3b1bf0e044",
-      "hostingVersion": "sites/cxorbia-backend-dev/versions/36a59f69f3a01db9",
-      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791223059149000",
-      "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
-      "builds": 1,
-      "runtimeDeploys": 1,
-      "hostingDeploys": 1,
-      "storageRulesDeploys": 0,
-      "production": false
-    },
+    "currentMaterialization": null,
     "currentLiveReproof": null,
     "historicalEvidenceNotice": "Run1112 remains predecessor materialization evidence only; it does not certify the VRM-249 successor until exact source proof and one DEV rematerialization pass.",
     "treeSha": "638ab7ab63244286ff460205da441221d5957ef0"
@@ -9227,9 +9207,9 @@
       "classification": "MAPPING_FAILURE",
       "severity": "P0",
       "title": "Durable historical payment reconciliation is not projected into Finance/Mis Beneficios UI",
-      "state": "DEV_MATERIALIZED_HISTORICAL_PAYMENT_REPROOF_REQUIRED",
-      "rootCauseStatus": "PROVEN_RUN1227_EXACT_DURABLE_AUTHORITY_PRECEDENCE",
-      "rootCause": "Run1227 eliminated the HR-composition race and proved the exact stable revision with 17 periods. The first historical period then found the expected durable visits but projected paid rows as pending. exactProtectedFinancialMatch() gathered durable candidates by hrRowId/id and returned null whenever matches.length!==1. Durable visit history intentionally contains duplicate historical rows, while the cumulative composer already resolves the authoritative durable row by Firestore __docId == live HR visitId before weaker fallbacks. Finance lacked that precedence, so legitimate duplicate history suppressed paymentConfirmed/historical paid projection.",
+      "state": "RESIDUAL_SOURCE_FIX_COMPOSED_DEV_MATERIALIZATION_REQUIRED",
+      "rootCauseStatus": "PROVEN_RUN1229_SECOND_PRECEDENCE_LAYER",
+      "rootCause": "Run1229 proved the duplicate-row authority fix across all 2025 periods (June through December) with zero misses, then failed at January 2026. Those rows already carried historicalReconciliationConfirmed=true and a durable reconciliation source ref, but also had an earlier exact financialMatch whose paymentConfirmed remained false. exactProtectedFinancialMatch() returned financialMatch before applying the later durable historical paid marker, so exact amount authority incorrectly suppressed payment truth.",
       "owners": [
         "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
         "app/adapters/tya-canonical-finance-read-model-v2.js",
@@ -9265,9 +9245,9 @@
           "projectedGap": 562
         }
       },
-      "correction": "Apply the same exact durable-visit authority already proven by the cumulative composer: prefer one protected visit whose Firestore __docId equals the live HR visitId; fail closed on multiple exact-doc matches; only then fall back to unique hrRow/id matching. Preserve historical rows and never infer payment from duplicate/fuzzy data.",
-      "sourceSuccessorSha": "b3cc541c38d80708e8ee7e2007611eb9126bc34a",
-      "sourceSuccessorTree": "1dd01eb285503ee474201a172a2d6afe35cf390e",
+      "correction": "Preserve exact financialMatch as the amount authority, but when the same authoritative durable visit has a later historical paid marker, overlay payment truth onto that exact amount match: paymentConfirmed=true, estado=pagada, confirmed payment state and durable reconciliation source ref. Do not change amounts, infer payment without the historical marker, or fabricate external bank confirmation.",
+      "sourceSuccessorSha": "170d09983d4696a02453a58f46b027d41c579132",
+      "sourceSuccessorTree": "d20c7a52ea702d3c2c9d5235aa3c45d1a00419f6",
       "sourceReproofDecision": "PASS_I3_PHASEA_REJECTED_CHECKPOINT_SOURCE_PROOF",
       "devMaterializationRunId": 37073947232,
       "runtimeRevision": "cxorbia-live-hr-dev-00249-pqh",
@@ -9328,14 +9308,11 @@
       },
       "correctionPackage": {
         "productOwner": "app/adapters/tya-canonical-finance-read-model-v2.js",
-        "productBlob": "bcba07516b277d68ba85d0378da7188c3c8c4c66",
+        "productBlob": "3585430a04b42598ba1a16419c44eebab9ba3d9b",
         "regressionOwner": "tools/qa/tya-c6-canonical-finance-read-model-gate.mjs",
-        "regressionBlob": "a4cf1bd55176c9f6e706047a6812b653417a5bcb",
-        "workflowOwner": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
-        "workflowBlob": "948a39019820225ac71412b4831488898bf735c8",
-        "regression": "vrm174_duplicate_hrrow_exact_doc_payment_authority_preserved",
-        "sourceSha": "b3cc541c38d80708e8ee7e2007611eb9126bc34a",
-        "sourceTree": "1dd01eb285503ee474201a172a2d6afe35cf390e",
+        "regressionBlob": "19fec7d8e00cc341e465f871298d9fa82730cb3a",
+        "sourceSha": "170d09983d4696a02453a58f46b027d41c579132",
+        "sourceTree": "d20c7a52ea702d3c2c9d5235aa3c45d1a00419f6",
         "productChanged": true,
         "production": false
       },
@@ -9359,6 +9336,68 @@
         "runtimeDeploys": 1,
         "hostingDeploys": 1,
         "storageRulesDeploys": 0,
+        "production": false
+      },
+      "run1229": {
+        "runId": 37352616801,
+        "runNumber": 1229,
+        "jobId": 111907065437,
+        "artifactId": 11363541703,
+        "artifactDigest": "sha256:03d70d2ed464ba174bb3cce6d5423ce6944ab67ecb16570f10644f093dd07038",
+        "exactArtifactRun": 1228,
+        "stableHrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+        "authorityPeriodCount": 17,
+        "durableHistoricalPaid": 562,
+        "passedPeriods": [
+          {
+            "periodId": "cinepolis-2025-06",
+            "expectedPaid": 35,
+            "projectedPaid": 35
+          },
+          {
+            "periodId": "cinepolis-2025-07",
+            "expectedPaid": 39,
+            "projectedPaid": 39
+          },
+          {
+            "periodId": "cinepolis-2025-08",
+            "expectedPaid": 42,
+            "projectedPaid": 42
+          },
+          {
+            "periodId": "cinepolis-2025-09",
+            "expectedPaid": 42,
+            "projectedPaid": 42
+          },
+          {
+            "periodId": "cinepolis-2025-10",
+            "expectedPaid": 30,
+            "projectedPaid": 30
+          },
+          {
+            "periodId": "cinepolis-2025-11",
+            "expectedPaid": 37,
+            "projectedPaid": 37
+          },
+          {
+            "periodId": "cinepolis-2025-12",
+            "expectedPaid": 29,
+            "projectedPaid": 29
+          }
+        ],
+        "firstFailedPeriodId": "cinepolis-2026-01",
+        "observed": {
+          "historicalReconciliationConfirmed": true,
+          "paymentSourceRef": "internal:historical_reconciliation_scope_v1",
+          "paymentConfirmed": false,
+          "paymentState": "pending_source_confirmation",
+          "financialSourceStatus": "exact_reconciled_source_safe"
+        },
+        "writes": 0,
+        "hrWrites": 0,
+        "externalWrites": 0,
+        "builds": 0,
+        "deploys": 0,
         "production": false
       }
     },
@@ -16915,7 +16954,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Re-run the read-only VRM174 historical payment projection against exact Run1228 DEV materialization; require all 562 durable paid visits projected paid on the same stable HR revision, with zero writes and no production.",
+  "exactNextAction": "Materialize the refined VRM174 successor once in DEV through the same canonical lane, then repeat the historical payment proof on that exact artifact; no production.",
   "supersedesGitBlob": "820da41b786054cb8cd23e89827e1f7afbcdd3b3",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -20495,8 +20534,8 @@
     "humanAcceptance": "FAIL",
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
-  "lastUpdatedAt": "2026-10-05T18:08:00Z",
-  "nextExactAction": "Re-run the read-only VRM174 historical payment projection against exact Run1228 DEV materialization; require all 562 durable paid visits projected paid on the same stable HR revision, with zero writes and no production.",
+  "lastUpdatedAt": "2026-10-05T18:15:00Z",
+  "nextExactAction": "Materialize the refined VRM174 successor once in DEV through the same canonical lane, then repeat the historical payment proof on that exact artifact; no production.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
