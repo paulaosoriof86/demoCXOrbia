@@ -228,9 +228,20 @@ try{
   await page.waitForSelector('#shSearch');
   // shoppers.js binds the input listener from setTimeout(...,0); do not race that mount.
   await page.waitForTimeout(100);
-  const adminJulissaData=await page.evaluate(()=>((window.CX?.data?.shoppersFor?.()||[])
-    .filter(s=>/Julissa/i.test(String(s?.nombre||'')))
-    .map(s=>({id:String(s?.id||''),nombre:String(s?.nombre||''),status:String(s?.status||''),identityState:String(s?.identityState||'')}))));
+  const adminJulissaData=await page.evaluate(()=>{
+    const data=window.CX?.data||{},ids=new Set(['shopper_gt_0c198c1055','shopper_gt_86254c4228']);
+    const pickVisit=v=>({id:String(v?.id||v?.visitId||''),hrRowId:String(v?.hrRowId||''),periodId:String(v?.periodId||''),periodKey:String(v?.periodKey||''),shopperId:String(v?.shopperId||''),shopper:String(v?.shopper||''),sucursal:String(v?.sucursal||v?.shopping||'')});
+    const relevant=v=>ids.has(String(v?.shopperId||''))||/Julissa/i.test(String(v?.shopper||''));
+    const identityMap=Object.entries(data.__identityMap||{}).filter(([a,b])=>ids.has(String(a))||ids.has(String(b))).map(([liveId,canonicalId])=>({liveId:String(liveId),canonicalId:String(canonicalId)}));
+    const identityReviews=(data.__identityReviewQueue||[]).filter(x=>JSON.stringify(x).includes('0c198c1055')||JSON.stringify(x).includes('86254c4228')||/Julissa/i.test(JSON.stringify(x))).slice(0,20);
+    return {
+      composed:(data.shoppersFor?.()||[]).filter(s=>ids.has(String(s?.id||s?.shopperId||''))||/Julissa/i.test(String(s?.nombre||''))).map(s=>({id:String(s?.id||s?.shopperId||''),nombre:String(s?.nombre||''),legacyLiveShopperIds:s?.legacyLiveShopperIds||[],status:String(s?.status||''),identityState:String(s?.identityState||'')})),
+      rawHrVisits:(data.__liveHrVisits||[]).filter(relevant).map(pickVisit).slice(0,80),
+      durableVisits:(data.__protectedVisits||[]).filter(relevant).map(pickVisit).slice(0,80),
+      identityMap,
+      identityReviews
+    };
+  });
   const searchAdminShopper=async(name)=>{
     const search=page.locator('#shSearch');
     await search.fill('');
@@ -254,7 +265,7 @@ try{
       return true;
     },flores.sid);
   }
-  const shopperAdmin={dataJulissas:adminJulissaData,floresVisible:flores.visible,illescasVisible:illescas.visible,floresRow:flores.row,illescasRow:illescas.row,floresSid:flores.sid,illescasSid:illescas.sid,clicked};
+  const shopperAdmin={julissaDiagnostics:adminJulissaData,floresVisible:flores.visible,illescasVisible:illescas.visible,floresRow:flores.row,illescasRow:illescas.row,floresSid:flores.sid,illescasSid:illescas.sid,clicked};
   if(!shopperAdmin.floresVisible||!shopperAdmin.illescasVisible||!shopperAdmin.clicked)throw new Error('MAPPING_FAILURE:ADMIN_JULISSA_DISCOVERY:'+JSON.stringify(shopperAdmin));
   await page.waitForTimeout(250);
   const modal=await page.evaluate(()=>{const m=[...document.querySelectorAll('[role="dialog"],.modal,.overlay,.ov')].find(x=>/Julissa Flores/i.test(String(x.innerText||'')))||[...document.querySelectorAll('body *')].find(x=>/Revisar \/ fusionar identidad/i.test(String(x.innerText||''))&&/Instruir perfil/i.test(String(x.innerText||'')));const text=String(m?.innerText||document.body.innerText||'');return {manualMerge:/Revisar \/ fusionar identidad|Resolver identidad/i.test(text),instructProfile:/Instruir perfil/i.test(text),text:text.slice(0,1800)};});
