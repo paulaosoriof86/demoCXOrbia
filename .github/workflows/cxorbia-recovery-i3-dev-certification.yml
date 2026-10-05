@@ -7016,7 +7016,8 @@ jobs:
           test "$(jq -r '.visits.authoritativeAliasRows' "$VRM243_INPUT")" = "127"
           test "$(jq -r '.visits.historicalAliasRows' "$VRM243_INPUT")" = "122"
           test "$(jq -r '.visits.ambiguousAuthorityGroups' "$VRM243_INPUT")" = "0"
-          test "$(jq -r '.operationalAliasReferences.count' "$VRM243_INPUT")" = "0"
+          test "$(jq '.operationalAliasReferences.rows | length' "$VRM243_INPUT")" = "0"
+          test "$(jq '[.operationalAliasReferences.paymentReconciliations, .operationalAliasReferences.certifications, .operationalAliasReferences.liquidations, .operationalAliasReferences.postulations, .operationalAliasReferences.reservations] | add' "$VRM243_INPUT")" = "0"
           echo "EXPECTED_HR_REVISION=$HR" >> "$GITHUB_ENV"
       - name: Remap exactly authoritative visit owners
         shell: bash
@@ -7040,7 +7041,8 @@ jobs:
           test "$(jq -r '.visits.authoritativeAliasRows' "$VRM243_POST/result.json")" = "0"
           test "$(jq -r '.visits.historicalAliasRows' "$VRM243_POST/result.json")" = "122"
           test "$(jq -r '.visits.ambiguousAuthorityGroups' "$VRM243_POST/result.json")" = "0"
-          test "$(jq -r '.operationalAliasReferences.count' "$VRM243_POST/result.json")" = "0"
+          test "$(jq '.operationalAliasReferences.rows | length' "$VRM243_POST/result.json")" = "0"
+          test "$(jq '[.operationalAliasReferences.paymentReconciliations, .operationalAliasReferences.certifications, .operationalAliasReferences.liquidations, .operationalAliasReferences.postulations, .operationalAliasReferences.reservations] | add' "$VRM243_POST/result.json")" = "0"
           test "$(jq -r '.hrAssignments.unresolved' "$VRM243_POST/result.json")" = "0"
       - if: always()
         uses: actions/upload-artifact@v4
