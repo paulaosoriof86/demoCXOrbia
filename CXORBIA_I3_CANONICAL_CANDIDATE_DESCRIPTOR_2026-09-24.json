@@ -8,7 +8,7 @@
   "productTreeAuthority": "638ab7ab63244286ff460205da441221d5957ef0",
   "predecessorProductSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "a222cdcf1b79b096ab323dcbf6e03a3197ac72eb",
+  "findingsLedgerExpectedGitBlob": "ebaf5308f0069237c01c7790ecddd507d9f19a51",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Instrument the same bounded reservation lifecycle to compare immediate post-refresh authorized state against post-reconciliation canonical state. Do not mutate product until the race hypothesis is proven or disproven.",
+  "exactNextAction": "Instrument and rerun the same bounded lifecycle only as a control diagnostic: capture reservations in CX_BACKEND_AUTHORIZED_STATE, CX.data.__protectedReservations and CX.reservas.list immediately after backend.refresh and after CX_PROTECTED_AUTH_HR_AUTHORITY reapplies. Product remains frozen.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
