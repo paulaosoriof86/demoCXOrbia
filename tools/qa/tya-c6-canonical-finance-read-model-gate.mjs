@@ -12,7 +12,8 @@ const data={
   period:()=>({id:'cinepolis-2026-07',periodKey:'2026-07',countries:['GT','HN'],currency:{GT:'Q',HN:'L'}}),
   __protectedVisits:[
     {__docId:'v1',id:'durable-v1-current',visitId:'v1',hrRowId:'JULIO 26!3',paymentConfirmed:true,historicalReconciliationConfirmed:true,historicalPaymentStatus:'paid',paymentSourceRef:'historical-authority-v1',honorario:60,boleto:40,comboAmt:100,currency:'Q'},
-    {__docId:'historical-v1-duplicate',id:'historical-v1-duplicate',visitId:'legacy-v1',hrRowId:'JULIO 26!3',paymentConfirmed:false,historicalReconciliationConfirmed:false,historicalPaymentStatus:'pending',honorario:60,boleto:40,comboAmt:100,currency:'Q'}
+    {__docId:'historical-v1-duplicate',id:'historical-v1-duplicate',visitId:'legacy-v1',hrRowId:'JULIO 26!3',paymentConfirmed:false,historicalReconciliationConfirmed:false,historicalPaymentStatus:'pending',honorario:60,boleto:40,comboAmt:100,currency:'Q'},
+    {__docId:'v2',id:'durable-v2-current',visitId:'v2',hrRowId:'JULIO 26!4',financialSourceStatus:'reconciled_exact',financialMatch:{status:'reconciled_exact',financialSourceStatus:'exact_reconciled_source_safe',honorario:60,boleto:40,combo:100,reembolso:140,total:200,moneda:'Q',estado:'validada',liquidationState:'validated_financial_source',paymentState:'pending_source_confirmation',paymentConfirmed:false,paymentSourceRef:null,reviewRequired:false},historicalReconciliationConfirmed:true,historicalPaymentStatus:'paid',paymentConfirmed:true,reconciliationSourceRef:'internal:historical_reconciliation_scope_v1',honorario:60,boleto:40,comboAmt:100,currency:'Q'}
   ],
   financialMatchForVisit:v=>v.id==='v0'?{visitaId:v.id,visitId:v.id,hrRowId:v.hrRowId,estado:'pagada',financialSourceStatus:'exact_reconciled_source_safe',liquidationState:'reconciled_source_safe',paymentState:'payment_confirmed',paymentConfirmed:true,paymentSourceRef:'hist-source',honorario:60,reembolso:140,total:200,pais:'GT',moneda:'Q',reviewRequired:false}:null
 };
@@ -23,9 +24,10 @@ assert('all_realized_visits_in_liquidations',list.length===40,list.length);
 assert('submitted_visits_not_omitted',list.filter(l=>l.canonicalFacets?.submitted===true).length===33,list.filter(l=>l.canonicalFacets?.submitted===true).length);
 assert('questionnaire_pending_count',list.filter(l=>l.estado==='pendiente_submitir').length===5,list.filter(l=>l.estado==='pendiente_submitir').length);
 assert('questionnaire_missing_count',list.filter(l=>l.estado==='pendiente_cuestionario').length===2,list.filter(l=>l.estado==='pendiente_cuestionario').length);
-assert('submitted_without_financial_source_is_review_required',list.filter(l=>l.operationalVisitStage==='submitida'&&l.reviewRequired===true).length===31,list.filter(l=>l.operationalVisitStage==='submitida'&&l.reviewRequired===true).length);
+assert('submitted_without_financial_source_is_review_required',list.filter(l=>l.operationalVisitStage==='submitida'&&l.reviewRequired===true).length===30,list.filter(l=>l.operationalVisitStage==='submitida'&&l.reviewRequired===true).length);
 assert('exact_paid_source_preserved',list.some(l=>l.visitId==='v0'&&l.paymentConfirmed===true&&l.paymentSourceRef==='hist-source'),list.find(l=>l.visitId==='v0'));
 assert('vrm174_duplicate_hrrow_exact_doc_payment_authority_preserved',list.some(l=>l.visitId==='v1'&&l.paymentConfirmed===true&&l.historicalReconciliationConfirmed===true&&l.paymentSourceRef==='historical-authority-v1'&&l.estado==='pagada'),list.find(l=>l.visitId==='v1'));
+assert('vrm174_historical_paid_overlays_exact_amount_match',list.some(l=>l.visitId==='v2'&&l.paymentConfirmed===true&&l.historicalReconciliationConfirmed===true&&l.paymentSourceRef==='internal:historical_reconciliation_scope_v1'&&l.estado==='pagada'&&l.total===200&&l.honorario===60&&l.reembolso===140),list.find(l=>l.visitId==='v2'));
 assert('not_realized_excluded',!list.some(l=>l.visitId==='v40'||l.visitId==='v41'||l.visitId==='v42'||l.visitId==='v43'),list.filter(l=>/^v4[0-3]$/.test(l.visitId)));
 assert('unique_liquidation_keys',new Set(list.map(l=>l.visitId||l.hrRowId)).size===list.length,null);
 assert('payment_execution_remains_disabled',sandbox.window.CX_TYA_CANONICAL_FINANCE_READ_MODEL?.paymentExecutionAllowed===false,sandbox.window.CX_TYA_CANONICAL_FINANCE_READ_MODEL);
