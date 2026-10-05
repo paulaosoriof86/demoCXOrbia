@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v261",
   "frozenAt": "2026-10-04T09:12:00Z",
-  "status": "HOLD_I3_VRM254_CONTROL_REPROOF_REQUIRED",
+  "status": "HOLD_I3_VRM174_HISTORICAL_PAYMENT_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "microblockId": "PRE-I4-LIVE-HR-STALE-CACHE-MAPPING-HOLD-AUGUST-CANONICAL-CORRECTION",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -15733,9 +15733,9 @@
       "classification": "ENVIRONMENT_FAILURE",
       "severity": "P0_CONTROL",
       "title": "VRM174 historical payment QA used bare firebase global inside Playwright evaluate",
-      "state": "CONTROL_FIX_COMPOSED_REPROOF_REQUIRED",
+      "state": "CONTROL_ONLY_FIXED_RUN1225_AUTH_PASS",
       "firstObservedAt": "RUN1215_2026-10-05",
-      "rootCauseStatus": "PROVEN_CONTROL_AUTH_STABILIZATION_DEFECT",
+      "rootCauseStatus": "PROVEN_CONTROL_AUTH_STABILIZATION_FIXED",
       "rootCause": "The read-only QA reached the browser sign-in step and failed before period inspection because Playwright evaluate referenced firebase.auth() instead of window.firebase.auth(). The page had loaded the Firebase compat SDK; the failure was the test harness global reference, not Finance.",
       "evidence": {
         "run1215": {
@@ -15768,6 +15768,27 @@
           "strategy": "Reuse proven retrying browser auth helper; wait for SDK per attempt and re-enter base URL on transient navigation",
           "productChanged": false,
           "production": false
+        },
+        "run1225": {
+          "runId": 37336302394,
+          "runNumber": 1225,
+          "jobId": 111851931828,
+          "artifactId": 11355494816,
+          "artifactDigest": "sha256:4e3549c1c1441485ee35dfea58dbc732633396ded047530ac0b81ef6ee94e96c",
+          "browserAuthPassed": true,
+          "reachedHrPeriodInspection": true,
+          "exactProductSource": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
+          "exactProductTree": "638ab7ab63244286ff460205da441221d5957ef0",
+          "runtimeRevision": "cxorbia-live-hr-dev-00265-p8k",
+          "runtimeDigest": "sha256:9bda19d4357980a11705e5f19539a7a786d91a47b920e2615e1bad89f69228f4",
+          "hostingVersion": "sites/cxorbia-backend-dev/versions/20f0b68b4bdc8266",
+          "durableHistoricalPaid": 562,
+          "writes": 0,
+          "hrWrites": 0,
+          "externalWrites": 0,
+          "builds": 0,
+          "deploys": 0,
+          "production": false
         }
       },
       "expected": "Rerun the same read-only historical payment projection proof on unchanged Run1176 artifact.",
@@ -15776,6 +15797,69 @@
       ],
       "productChanged": false,
       "production": false,
+      "terminalDisposition": "CONTROL_ONLY_FIXED",
+      "blocking": false
+    },
+    "VRM-255": {
+      "id": "VRM-255",
+      "classification": "ENVIRONMENT_FAILURE",
+      "observedHarnessClassification": "MAPPING_FAILURE",
+      "severity": "P0_CONTROL",
+      "title": "VRM174 historical payment QA sampled period registry before stable all-period HR authority composition",
+      "state": "CONTROL_FIX_COMPOSED_REPROOF_REQUIRED",
+      "firstObservedAt": "RUN1225_2026-10-05",
+      "rootCauseStatus": "PROVEN_CONTROL_READINESS_RACE",
+      "rootCause": "Run1225 passed stabilized browser authentication and exact Run1176 DEV fingerprints, then reported cinepolis-2025-06 unavailable. The exact Run1176 HR artifact contains 17 periods including cinepolis-2025-06 and the live-source adapter maps each HR period key to projectId-key. The QA only waited for authority.applied and refreshed backend between period checks, allowing a transient Firestore/backend state during HR recomposition to be sampled as if it were the final all-period registry.",
+      "evidence": {
+        "run1225": {
+          "runId": 37336302394,
+          "runNumber": 1225,
+          "jobId": 111851931828,
+          "artifactId": 11355494816,
+          "artifactDigest": "sha256:4e3549c1c1441485ee35dfea58dbc732633396ded047530ac0b81ef6ee94e96c",
+          "failure": "MAPPING_FAILURE:VRM174_PERIOD_NOT_AVAILABLE:cinepolis-2025-06",
+          "durableHistoricalPaid": 562,
+          "browserAuthPassed": true,
+          "exactDevFingerprintsPass": true,
+          "writes": 0,
+          "hrWrites": 0,
+          "externalWrites": 0,
+          "builds": 0,
+          "deploys": 0,
+          "production": false
+        },
+        "run1176HrArtifact": {
+          "runId": 37303539281,
+          "runNumber": 1176,
+          "artifactId": 11342836553,
+          "artifactDigest": "sha256:ed193a4c168970c7b684bc3693b3652909ea3635304dd1b977c07a06c92cb8e4",
+          "periodCount": 17,
+          "firstPeriodKey": "2025-06",
+          "firstPeriodId": "cinepolis-2025-06",
+          "latestPeriodKey": "2026-10",
+          "latestPeriodId": "cinepolis-2026-10",
+          "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305"
+        },
+        "exactSourceContract": {
+          "path": "app/adapters/tya-live-source-inplace-apply.js",
+          "mapping": "periodId(projectId,key)=projectId+'-'+key",
+          "authoritySourceRef": "hr-live-all-periods+firestore-authenticated-exact-overlay"
+        },
+        "correction": {
+          "commitSha": "c854cdea0b10818652e22d006f85234827b8b93f",
+          "path": "tools/qa/cxorbia-i3-vrm174-historical-payment-live.mjs",
+          "strategy": "wait for stable all-period HR authority composition, require period-count parity and one stable sourceRevision, and stop refreshing backend between historical period selections",
+          "productChanged": false,
+          "production": false
+        }
+      },
+      "expected": "Rerun the same read-only VRM174 proof on unchanged Run1176 artifact. It must prove stable all-period HR authority composition, preserve one sourceRevision across the historical sweep and project all 562 durable paid visits through the canonical finance read model.",
+      "owner": [
+        "tools/qa/cxorbia-i3-vrm174-historical-payment-live.mjs"
+      ],
+      "productChanged": false,
+      "production": false,
+      "blocking": true,
       "terminalDisposition": null
     }
   },
@@ -16736,7 +16820,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Re-run VRM174 historical payment proof after completing VRM254 browser auth stabilization; same Run1176 artifact, no writes.",
+  "exactNextAction": "Re-run VRM174 historical payment proof with VRM255 stable all-period HR authority control on the exact unchanged Run1176 DEV artifact; no rebuild, deploy, provider write, HR write or production.",
   "supersedesGitBlob": "820da41b786054cb8cd23e89827e1f7afbcdd3b3",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -16765,38 +16849,16 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-255",
+  "nextFindingId": "VRM-256",
   "lastControlFailure": {
-    "runId": 37251758888,
-    "runNumber": 1157,
-    "jobId": 111580706110,
-    "artifactId": 11320109824,
-    "artifactDigest": "sha256:6c79634a4217f9916bed2a6230189d82ff7e3d861bdb3574e69225401007cf82",
-    "create": {
-      "providerAck": true,
-      "idempotentReplay": true,
-      "durableReadback": true,
-      "version": 1
-    },
-    "standby": {
-      "providerAck": true,
-      "idempotentReplay": true,
-      "durableReadback": true,
-      "version": 2
-    },
-    "reject": {
-      "providerAck": true,
-      "idempotentReplay": true,
-      "durableReadback": true,
-      "version": 3
-    },
-    "failure": "page.evaluate: Execution context was destroyed, most likely because of a navigation.",
-    "cleanup": {
-      "fallbackDirectDelete": true,
-      "exactQaId": "qa-i3-app-37251758888"
-    },
-    "hrWrites": 0,
-    "externalWrites": 0,
+    "findingId": "VRM-255",
+    "classification": "ENVIRONMENT_FAILURE",
+    "observedHarnessClassification": "MAPPING_FAILURE",
+    "runId": 37336302394,
+    "runNumber": 1225,
+    "jobId": 111851931828,
+    "artifactId": 11355494816,
+    "error": "MAPPING_FAILURE:VRM174_PERIOD_NOT_AVAILABLE:cinepolis-2025-06",
     "productChanged": false,
     "production": false
   },
@@ -17757,6 +17819,14 @@
       },
       "causeStatus": "FAILURE_POINT_PROVEN_TRANSIENT_PROVIDER_PROPAGATION_TO_BE_CONFIRMED_BY_DELAYED_READBACK",
       "productMutation": false,
+      "production": false
+    },
+    {
+      "id": "RUN1225_VRM255_HR_COMPOSITION_READINESS_RACE",
+      "findingId": "VRM-255",
+      "classification": "ENVIRONMENT_FAILURE",
+      "runId": 37336302394,
+      "productChanged": false,
       "production": false
     }
   ],
@@ -20341,8 +20411,8 @@
     "humanAcceptance": "FAIL",
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
-  "lastUpdatedAt": "2026-10-05T15:50:00Z",
-  "nextExactAction": "Re-run VRM174 historical payment proof after completing VRM254 browser auth stabilization; same Run1176 artifact, no writes.",
+  "lastUpdatedAt": "2026-10-05T17:35:00Z",
+  "nextExactAction": "Re-run VRM174 historical payment proof with VRM255 stable all-period HR authority control on the exact unchanged Run1176 DEV artifact; no rebuild, deploy, provider write, HR write or production.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
@@ -20978,7 +21048,7 @@
     "production": false,
     "interpretation": "Control-only freeze/readback. No action lane matched the fail-closed precomposition status."
   },
-  "queuedBlocker": "HOLD_VRM249_DEV_MATERIALIZATION_REQUIRED",
+  "queuedBlocker": "VRM-255",
   "lastSuccessfulRun": {
     "runId": 37211579195,
     "runNumber": 1114,
