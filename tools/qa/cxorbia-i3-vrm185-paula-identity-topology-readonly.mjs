@@ -14,6 +14,7 @@ const OUT=process.env.OUT||'.tmp/vrm185-paula-identity-topology';
 const EXPECTED_REV=String(process.env.EXPECTED_HR_REVISION||'').trim();
 const HR_ID=String(process.env.PAULA_EXACT_HR_ID||'shopper_gt_1440137b73').trim();
 const LEGACY_ID=String(process.env.PAULA_LEGACY_CANONICAL_ID||'s3').trim();
+const SECOND_ID=String(process.env.PAULA_SECOND_PRINCIPAL_ID||'').trim();
 const LOGIN=String(process.env.PAULA_VISIBLE_LOGIN||'paula.osorio').trim().toLowerCase();
 const PRE='YES_PAULA_20260628_PREVIEW_DEV',PROT='YES_PAULA_20260730_PROTECTED_DEV',FULL='YES_PAULA_20260731_FULL_PROFILE_DEV';
 const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[],uniq=v=>[...new Set(arr(v).map(str).filter(Boolean))],sha=v=>crypto.createHash('sha256').update(String(v)).digest('hex');
@@ -24,7 +25,7 @@ const tokens=o=>uniq([...techKeys.map(k=>o?.[k]),...aliasKeys.flatMap(k=>arr(o?.
 const docId=x=>str(x?.canonicalShopperId||x?.shopperId||x?.id);
 const sanitizeProfile=p=>p?{id:docId(p),sourceType:str(p.sourceType),country:str(p.country||p.pais),visibleLogin:str(p.visibleLogin||p.username||p.user).toLowerCase(),credentialRuleVersion:str(p.credentialRuleVersion),credentialPasswordProofVersion:str(p.credentialPasswordProofVersion),exactAliases:uniq(p.exactAliases),legacyLiveShopperIds:uniq(p.legacyLiveShopperIds),identityAliases:uniq(p.identityAliases),nameFingerprint:fp(str(p.nombre||p.name||[p.firstName,p.lastName].filter(Boolean).join(' ')).toLowerCase()),hasFirstName:!!str(p.firstName),hasLastName:!!str(p.lastName)}:null;
 fs.mkdirSync(OUT,{recursive:true});
-const result={schemaVersion:'cxorbia.i3.vrm185.paula-identity-topology.v1',decision:'HOLD_VRM185_PAULA_IDENTITY_TOPOLOGY',classification:'MAPPING_FAILURE',readOnly:true,writes:0,authWrites:0,firestoreWrites:0,hrWrites:0,deploys:0,production:false,expectedHrRevision:EXPECTED_REV,knownLineage:{exactHrId:HR_ID,legacyCanonicalId:LEGACY_ID,visibleLogin:LOGIN},membership:null,auth:null,profiles:[],links:[],crosswalk:[],hr:null,browser:null,conclusion:null};
+const result={schemaVersion:'cxorbia.i3.vrm185.paula-identity-topology.v2',decision:'HOLD_VRM185_PAULA_IDENTITY_TOPOLOGY',classification:'MAPPING_FAILURE',readOnly:true,writes:0,authWrites:0,firestoreWrites:0,hrWrites:0,deploys:0,production:false,expectedHrRevision:EXPECTED_REV,knownLineage:{exactHrId:HR_ID,legacyCanonicalId:LEGACY_ID,secondObservedPrincipalId:SECOND_ID||null,visibleLogin:LOGIN},membership:null,auth:null,profiles:[],links:[],crosswalk:[],hr:null,browser:null,conclusion:null};
 const save=()=>fs.writeFileSync(OUT+'/result.json',JSON.stringify(result,null,2)+'\n');
 save();
 
@@ -41,7 +42,7 @@ async function main(){
  const loginMembers=members.filter(m=>m.active===true&&str(m.role).toLowerCase()==='shopper'&&str(m.authNamespace).toLowerCase()==='shopper'&&str(m.visibleLogin).toLowerCase()===LOGIN);
  if(loginMembers.length!==1)throw new Error('AUTH_FAILURE:VRM185_PAULA_LOGIN_MEMBERSHIP_COUNT_'+loginMembers.length);
  const member=loginMembers[0],user=await auth.getUser(member.id),claims=user.customClaims||{};
- const currentId=str(member.shopperId),candidate=new Set([currentId,HR_ID,LEGACY_ID]);
+ const currentId=str(member.shopperId),candidate=new Set([currentId,HR_ID,LEGACY_ID,SECOND_ID].filter(Boolean));
  for(let pass=0;pass<3;pass++){
    for(const l of links){const ts=tokens(l),to=str(l.canonicalShopperId||l.canonicalId||l.shopperId||l.profileId);if(ts.some(x=>candidate.has(x))||candidate.has(to)){ts.forEach(x=>candidate.add(x));if(to)candidate.add(to);}}
    for(const x of cross){const ts=tokens(x),to=str(x.shopperId);if(ts.some(y=>candidate.has(y))||candidate.has(to)){ts.forEach(y=>candidate.add(y));if(to)candidate.add(to);}}
@@ -94,9 +95,22 @@ async function main(){
  const legacyCredentialKeeper=str(legacyProfile?.visibleLogin)===LOGIN&&str(legacyProfile?.credentialPasswordProofVersion)==='cxorbia-shopper-password-proof-v2';
  const currentCredentialIsGeneratedCollision=!!str(currentProfile?.visibleLogin)&&str(currentProfile?.visibleLogin)!==LOGIN&&!str(currentProfile?.credentialPasswordProofVersion);
  const safeKeeperProven=legacySelectedByHuman&&sameNameFingerprint&&legacyCredentialKeeper&&currentCredentialIsGeneratedCollision&&activeLegacyPrincipals.length===1&&activeCurrentPrincipals.length===1;
+ const knownIds=new Set([HR_ID,LEGACY_ID]);
+ const secondProfile=result.profiles.find(x=>x.id===SECOND_ID)||null;
+ const secondActivePrincipals=result.auth.candidatePrincipals.filter(x=>SECOND_ID&&x.shopperId===SECOND_ID&&!x.disabled);
+ const secondHrVisits=SECOND_ID?Number(result.hr.visitCounts?.[SECOND_ID]||0):0;
+ const connectionRows=[];
+ const addConnection=(kind,id,values,authority,status)=>{const vals=uniq(values);if(SECOND_ID&&vals.includes(SECOND_ID)&&vals.some(x=>knownIds.has(x)))connectionRows.push({kind,id,authority:authority||null,status:status||null,tokens:vals});};
+ for(const p of relevantProfiles)addConnection('profile',docId(p),tokens(p),str(p.authorityType||p.identityAuthority),str(p.identityState||p.status));
+ for(const l of relevantLinks)addConnection('identityLink',str(l.__docId),[...tokens(l),str(l.canonicalShopperId||l.canonicalId||l.shopperId||l.profileId)],str(l.authorityType||l.authority?.type),str(l.status||l.state));
+ for(const x of relevantCross)addConnection('crosswalk',str(x.__docId),[...tokens(x),str(x.shopperId)],str(x.sourceType),str(x.status||x.identityMode));
+ const trustedSecondConnections=connectionRows.filter(x=>['tenant_adjudication','hr_external','provider_exact','manual_adjudication'].includes(str(x.authority).toLowerCase())||['materialized','active','resolved','exact'].includes(str(x.status).toLowerCase()));
+ const secondExactLinkedToKnown=trustedSecondConnections.length>0;
+ const secondNameMatchesKnown=!!secondProfile?.nameFingerprint&&(secondProfile.nameFingerprint===currentProfile?.nameFingerprint||secondProfile.nameFingerprint===legacyProfile?.nameFingerprint);
+ const secondClassification=!SECOND_ID?'not_provided':secondExactLinkedToKnown?'exact_technical_lineage_to_known_paula':secondNameMatchesKnown?'same_display_name_without_exact_lineage':'independent_technical_identity';
  result.browser={evidenceSourceRunId:37096793662,evidenceSourceRunNumber:914,firstBlocker:'PAULA_OSORIO_PROFILE_KPI_HISTORY_ROUTES_FAIL',identity:false,authority:true,routesPass:true};
  result.conclusion={
-   rootCause:'DUAL_ACTIVE_SAME_HUMAN_PRINCIPALS_AFTER_STALE_ADJUDICATION_SUPPRESSION',
+   rootCause:'PAULA_IDENTITY_TOPOLOGY_CURRENT_ARTIFACT_READ_ONLY',
    sameHumanHistoricalLineage:legacySelectedByHuman&&sameNameFingerprint,
    currentExactAuthority,
    credentialKeeper:'historical_human_adjudicated_principal',
@@ -107,10 +121,22 @@ async function main(){
    safeKeeperProven,
    canonicalOperationalShopperId:HR_ID,
    credentialKeeperShopperId:LEGACY_ID,
+   secondObservedPrincipalId:SECOND_ID||null,
+   secondProfilePresent:!!secondProfile,
+   secondActivePrincipals:secondActivePrincipals.length,
+   secondHrVisits,
+   secondNameMatchesKnown,
+   secondExactLinkedToKnown,
+   secondClassification,
+   secondTechnicalConnections:connectionRows,
+   trustedSecondConnections,
    domainReferenceCollections:result.domainReferences.map(x=>({scope:x.scope,collection:x.collection,count:x.exactIdentityReferenceCount})),
-   mergeMustRemapAllExactLegacyReferences:true
+   mergeMustRemapAllExactLegacyReferences:true,
+   secondPrincipalMustNotMergeByNameOnly:!secondExactLinkedToKnown
  };
- result.decision=result.conclusion.sameHumanHistoricalLineage&&currentExactAuthority&&safeKeeperProven?'PASS_VRM185_PAULA_IDENTITY_TOPOLOGY_PROVEN':'HOLD_VRM185_PAULA_IDENTITY_TOPOLOGY_UNRESOLVED';
+ const baseTopologyProven=result.conclusion.sameHumanHistoricalLineage&&currentExactAuthority&&safeKeeperProven;
+ const secondTopologyResolved=!SECOND_ID||!!secondProfile;
+ result.decision=baseTopologyProven&&secondTopologyResolved?'PASS_VRM185_PAULA_IDENTITY_TOPOLOGY_PROVEN':'HOLD_VRM185_PAULA_IDENTITY_TOPOLOGY_UNRESOLVED';
  save();
  console.log(JSON.stringify({decision:result.decision,classification:result.classification,membership:result.membership,auth:result.auth,hr:result.hr,browser:result.browser,conclusion:result.conclusion,writes:0,production:false},null,2));
  if(result.decision!=='PASS_VRM185_PAULA_IDENTITY_TOPOLOGY_PROVEN')process.exitCode=2;
