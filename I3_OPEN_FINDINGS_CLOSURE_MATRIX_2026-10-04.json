@@ -3,8 +3,8 @@
   "status": "ACTIVE_CLOSURE_VIEW",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
   "generatedFromLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "generatedAtEvidenceTime": "2026-10-05T01:12:00Z",
-  "controlHeadAtGeneration": "dc3b0b20d639b9f9d7de6ed46a0894ef5ba6f7c9",
+  "generatedAtEvidenceTime": "2026-10-05T01:20:00Z",
+  "controlHeadAtGeneration": "982cdf8915e8bdb9d0a23befa8f7e36de932c8f1",
   "productSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
   "productSourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
   "exactDevArtifact": {
@@ -34,15 +34,15 @@
   "findingCount": 247,
   "missingFindingIds": [],
   "duplicateFindingIds": [],
-  "currentBlockingCount": 67,
-  "undisposedCount": 82,
+  "currentBlockingCount": 62,
+  "undisposedCount": 76,
   "terminalDispositionCounts": {
-    "PASS_CURRENT_ARTIFACT": 143,
+    "PASS_CURRENT_ARTIFACT": 148,
     "SUPERSEDED_BY_VRM-221": 1,
     "NON_BLOCKING_DEFERRED_WITH_EXPLICIT_REASON": 3,
     "PRESERVED_PHASE_B_NOT_I3_AUTHORITY": 1,
     "SUPERSEDED_BY_VRM-229": 1,
-    "CONTROL_ONLY_FIXED": 9,
+    "CONTROL_ONLY_FIXED": 10,
     "SUPERSEDED_BY_VRM-234": 1,
     "SUPERSEDED_BY_VRM-236": 1,
     "PASS_DIAGNOSTIC": 2,
@@ -51,8 +51,10 @@
     "SUPERSEDED_BY_VRM-243": 1
   },
   "nextCriticalSequence": [
-    "VRM-247_CONTROL_POINTER_REPROOF",
-    "I3_MULTIMODULE_LIVE_SWEEP",
+    "ADMIN_CLUSTER_A_SHOPPERS_LIFECYCLE",
+    "ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE",
+    "ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE",
+    "RECONCILE_REMAINING_P0",
     "PAULA_VISUAL_ACCEPTANCE",
     "GATE20_GATE21_SAME_ARTIFACT"
   ],
@@ -5690,33 +5692,30 @@
       ],
       "latestApprovedSource": "d33faac8d2af8523485d31c00037f639177ca040",
       "latestLiveProof": {
-        "runNumber": 908,
-        "runId": 37091457753,
-        "decision": "PASS_V190_EXACT_DEV_MATERIALIZATION",
-        "artifactId": 11261679821,
-        "sourceSha": "d33faac8d2af8523485d31c00037f639177ca040",
-        "sourceTree": "db4c1cc35b55c03523196fc583bf7cf0b874d87f"
+        "runNumber": 1148,
+        "runId": 37250379451,
+        "decision": "PASS_I3_MULTIMODULE_LIVE_SWEEP",
+        "artifactId": 11319914278,
+        "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
       },
       "successor": null,
-      "rawLedgerState": "EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
-      "realState": "LIVE_REPROOF_REQUIRED",
+      "rawLedgerState": "PASS_CURRENT_ARTIFACT_RUN1148",
+      "realState": "PASS_CURRENT_ARTIFACT",
       "evidence": {
-        "currentProductSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
-        "currentProductTree": "b59da4c090d4639a136168656e7addd544f38e18",
-        "currentMaterializationRunId": 37208163415,
-        "sourceModuleStatus": "MATCH",
-        "latestFindingRun": {
-          "runNumber": 908,
-          "runId": 37091457753,
-          "decision": "PASS_V190_EXACT_DEV_MATERIALIZATION",
-          "artifactId": 11261679821,
-          "sourceSha": "d33faac8d2af8523485d31c00037f639177ca040",
-          "sourceTree": "db4c1cc35b55c03523196fc583bf7cf0b874d87f"
-        }
+        "sameArtifact": true,
+        "pageErrors": 0,
+        "activeShopperMemberships": 379,
+        "unresolvedMemberships": 0,
+        "duplicateActivePrincipals": 0,
+        "duplicateHrVisitKeys": 0,
+        "unresolvedAssignedVisits": 0,
+        "writesDelta": 0,
+        "production": false
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof",
-      "blocking": true,
-      "terminalDisposition": null
+      "actionRemaining": "none",
+      "blocking": false,
+      "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
       "findingId": "VRM-182",
@@ -6275,20 +6274,31 @@
         "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
       ],
       "latestApprovedSource": null,
-      "latestLiveProof": null,
-      "successor": null,
-      "rawLedgerState": "SOURCE_PASS_RUN1045_PENDING_EXACT_DEV_LIVE",
-      "realState": "LIVE_REPROOF_REQUIRED",
-      "evidence": {
-        "currentProductSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
-        "currentProductTree": "b59da4c090d4639a136168656e7addd544f38e18",
-        "currentMaterializationRunId": 37208163415,
-        "sourceModuleStatus": "MATCH",
-        "latestFindingRun": null
+      "latestLiveProof": {
+        "runNumber": 1148,
+        "runId": 37250379451,
+        "decision": "PASS_I3_MULTIMODULE_LIVE_SWEEP",
+        "artifactId": 11319914278,
+        "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof",
-      "blocking": true,
-      "terminalDisposition": null
+      "successor": null,
+      "rawLedgerState": "PASS_CURRENT_ARTIFACT_RUN1148",
+      "realState": "PASS_CURRENT_ARTIFACT",
+      "evidence": {
+        "sameArtifact": true,
+        "pageErrors": 0,
+        "activeShopperMemberships": 379,
+        "unresolvedMemberships": 0,
+        "duplicateActivePrincipals": 0,
+        "duplicateHrVisitKeys": 0,
+        "unresolvedAssignedVisits": 0,
+        "writesDelta": 0,
+        "production": false
+      },
+      "actionRemaining": "none",
+      "blocking": false,
+      "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
       "findingId": "VRM-198",
@@ -6332,20 +6342,31 @@
         "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json"
       ],
       "latestApprovedSource": null,
-      "latestLiveProof": null,
-      "successor": null,
-      "rawLedgerState": "SOURCE_PASS_RUN1045_PENDING_EXACT_DEV_LIVE",
-      "realState": "LIVE_REPROOF_REQUIRED",
-      "evidence": {
-        "currentProductSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
-        "currentProductTree": "b59da4c090d4639a136168656e7addd544f38e18",
-        "currentMaterializationRunId": 37208163415,
-        "sourceModuleStatus": "MATCH",
-        "latestFindingRun": null
+      "latestLiveProof": {
+        "runNumber": 1148,
+        "runId": 37250379451,
+        "decision": "PASS_I3_MULTIMODULE_LIVE_SWEEP",
+        "artifactId": 11319914278,
+        "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof",
-      "blocking": true,
-      "terminalDisposition": null
+      "successor": null,
+      "rawLedgerState": "PASS_CURRENT_ARTIFACT_RUN1148",
+      "realState": "PASS_CURRENT_ARTIFACT",
+      "evidence": {
+        "sameArtifact": true,
+        "pageErrors": 0,
+        "activeShopperMemberships": 379,
+        "unresolvedMemberships": 0,
+        "duplicateActivePrincipals": 0,
+        "duplicateHrVisitKeys": 0,
+        "unresolvedAssignedVisits": 0,
+        "writesDelta": 0,
+        "production": false
+      },
+      "actionRemaining": "none",
+      "blocking": false,
+      "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
       "findingId": "VRM-200",
@@ -6406,20 +6427,31 @@
       "classification": "MAPPING_FAILURE",
       "owner": [],
       "latestApprovedSource": null,
-      "latestLiveProof": null,
-      "successor": null,
-      "rawLedgerState": "SOURCE_PASS_RUN1045_PENDING_EXACT_DEV_LIVE",
-      "realState": "LIVE_REPROOF_REQUIRED",
-      "evidence": {
-        "currentProductSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
-        "currentProductTree": "b59da4c090d4639a136168656e7addd544f38e18",
-        "currentMaterializationRunId": 37208163415,
-        "sourceModuleStatus": "MATCH",
-        "latestFindingRun": null
+      "latestLiveProof": {
+        "runNumber": 1148,
+        "runId": 37250379451,
+        "decision": "PASS_I3_MULTIMODULE_LIVE_SWEEP",
+        "artifactId": 11319914278,
+        "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof",
-      "blocking": true,
-      "terminalDisposition": null
+      "successor": null,
+      "rawLedgerState": "PASS_CURRENT_ARTIFACT_RUN1148",
+      "realState": "PASS_CURRENT_ARTIFACT",
+      "evidence": {
+        "sameArtifact": true,
+        "pageErrors": 0,
+        "activeShopperMemberships": 379,
+        "unresolvedMemberships": 0,
+        "duplicateActivePrincipals": 0,
+        "duplicateHrVisitKeys": 0,
+        "unresolvedAssignedVisits": 0,
+        "writesDelta": 0,
+        "production": false
+      },
+      "actionRemaining": "none",
+      "blocking": false,
+      "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
       "findingId": "VRM-203",
@@ -6580,33 +6612,30 @@
       "owner": [],
       "latestApprovedSource": null,
       "latestLiveProof": {
-        "runNumber": 1058,
-        "runId": 37166314581,
-        "decision": "PASS_JULISSA_IDENTITY_TOPOLOGY_READONLY",
-        "artifactId": null,
-        "sourceSha": null,
-        "sourceTree": null
+        "runNumber": 1148,
+        "runId": 37250379451,
+        "decision": "PASS_I3_MULTIMODULE_LIVE_SWEEP",
+        "artifactId": 11319914278,
+        "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
       },
       "successor": null,
-      "rawLedgerState": "PROVENANCE_DIAGNOSTIC_REQUIRED_BEFORE_ADJUDICATION",
-      "realState": "LIVE_REPROOF_REQUIRED",
+      "rawLedgerState": "PASS_CURRENT_ARTIFACT_RUN1148",
+      "realState": "PASS_CURRENT_ARTIFACT",
       "evidence": {
-        "currentProductSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
-        "currentProductTree": "b59da4c090d4639a136168656e7addd544f38e18",
-        "currentMaterializationRunId": 37208163415,
-        "sourceModuleStatus": "MATCH",
-        "latestFindingRun": {
-          "runNumber": 1058,
-          "runId": 37166314581,
-          "decision": "PASS_JULISSA_IDENTITY_TOPOLOGY_READONLY",
-          "artifactId": null,
-          "sourceSha": null,
-          "sourceTree": null
-        }
+        "sameArtifact": true,
+        "pageErrors": 0,
+        "activeShopperMemberships": 379,
+        "unresolvedMemberships": 0,
+        "duplicateActivePrincipals": 0,
+        "duplicateHrVisitKeys": 0,
+        "unresolvedAssignedVisits": 0,
+        "writesDelta": 0,
+        "production": false
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof",
-      "blocking": true,
-      "terminalDisposition": null
+      "actionRemaining": "none",
+      "blocking": false,
+      "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
       "findingId": "VRM-208",
@@ -7990,24 +8019,25 @@
       ],
       "latestApprovedSource": null,
       "latestLiveProof": {
-        "runNumber": 1145,
-        "runId": 37250274061,
-        "decision": "FAIL_CANONICAL_AUTHORITY_LEDGER_BLOB_DRIFT",
+        "runNumber": 1148,
+        "runId": 37250379451,
+        "decision": "PASS_I3_MULTIMODULE_LIVE_SWEEP",
+        "artifactId": 11319914278,
         "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
         "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
       },
       "successor": null,
-      "rawLedgerState": "CONTROL_POINTER_FIX_REQUIRED",
-      "realState": "CONTROL_FIX_PENDING_REPROOF",
+      "rawLedgerState": "CONTROL_ONLY_FIXED_RUN1148",
+      "realState": "CONTROL_ONLY_FIXED",
       "evidence": {
-        "currentLedgerBlob": "551e00fe11a7709ceeabc427098fe6b3c9969c06",
-        "staleDescriptorLedgerBlob": "11fb308680ae3fd08d8cc7c59ade3311289d94ed",
+        "canonicalAuthorityPassed": true,
+        "multimoduleSweepPassed": true,
         "productChanged": false,
         "production": false
       },
-      "actionRemaining": "bind descriptor to final ledger blob and rerun canonical authority + same-artifact multimodule sweep",
+      "actionRemaining": "none",
       "blocking": false,
-      "terminalDisposition": null
+      "terminalDisposition": "CONTROL_ONLY_FIXED"
     }
   ]
 }
