@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_FINANCE_FOCAL_CONTROL_PREP_REQUIRED",
+  "status": "HOLD_I3_FINANCE_FOCAL_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Replace the obsolete historical finance forensic job inside the same canonical workflow with the already-existing focal finance QA, then execute it against the exact current Run1176 DEV artifact. No finance rebuild.",
+  "exactNextAction": "Execute the existing focal finance E2E on the exact unchanged Run1176 DEV artifact. Prove operating revenue, blocked unclassified movement, CxC/CxP application, financing non-operating semantics, idempotency, durable browser projection, cleanup, zero HR writes and no production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
