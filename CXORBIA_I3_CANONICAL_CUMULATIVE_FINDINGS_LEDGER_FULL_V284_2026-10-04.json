@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v261",
   "frozenAt": "2026-10-04T09:12:00Z",
-  "status": "HOLD_I3_VRM249_LIFECYCLE_CONTROL_BINDING_REQUIRED",
+  "status": "HOLD_I3_VRM249_REFRESH_RECONCILIATION_DIAGNOSTIC_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "microblockId": "PRE-I4-LIVE-HR-STALE-CACHE-MAPPING-HOLD-AUGUST-CANONICAL-CORRECTION",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -15277,9 +15277,9 @@
       "classification": "MAPPING_FAILURE",
       "severity": "P0",
       "title": "Durable reservations are omitted from the authorized Firebase read model and remain stale in Admin after provider ACK",
-      "state": "EXACT_DEV_MATERIALIZED_LIFECYCLE_REPROOF_REQUIRED",
+      "state": "RUN1186_REPRODUCED_REFRESH_RECONCILIATION_DIAGNOSTIC_REQUIRED",
       "firstObservedAt": "RUN1162_2026-10-05",
-      "rootCauseStatus": "PROVEN_FIXED_PENDING_SAME_LIFECYCLE_REPROOF",
+      "rootCauseStatus": "PARTIALLY_PROVEN_READ_MODEL_REFRESH_RACE_HYPOTHESIS_PENDING_DIAGNOSTIC",
       "rootCause": "Run1162 proved the reservation provider lifecycle reaches durable Firestore through create/approve/reassign, but Admin fails at RSV_ADMIN_READ_MODEL_BEFORE_DELETE. app/core/backend-firebase.js loads and publishes projects/periods/shoppers/visits/posts but omits reservations from loadProjectData, loadTenantData, publishAuthorizedState and applyData. app/adapters/tya-protected-auth-hr-authority-bridge-v2.js captureAuthorizedBackend() then sources reservations from stale CX.data.__protectedReservations instead of window.CX_BACKEND_AUTHORIZED_STATE.reservations. The reservation module correctly renders only CX.data.__protectedReservations, so the durable row cannot enter the Admin read model after refresh.",
       "evidence": {
         "run1162": {
@@ -15393,6 +15393,43 @@
         "storageRulesDeploys": 0,
         "scenarioDimensionsProven": true,
         "production": false
+      },
+      "run1186": {
+        "runId": 37304608567,
+        "runNumber": 1186,
+        "jobId": 111745234833,
+        "artifactId": 11342299548,
+        "artifactDigest": "sha256:c200453cb550e79a89b441019baa6d9d5b7540ed6e92d6a0456002ae420f0d6b",
+        "decision": "FAIL_I3_ADMIN_CLUSTER_A_POSTULATIONS",
+        "code": "RSV_ADMIN_READ_MODEL_BEFORE_DELETE",
+        "classification": "FUNCTIONAL_DEFECT",
+        "exactDevFingerprintsPass": true,
+        "postulations": {
+          "create": true,
+          "standby": true,
+          "reject": true,
+          "delete": true,
+          "noReappearance": true
+        },
+        "authObserver": {
+          "pass": true,
+          "attempt": 2,
+          "retries": 1
+        },
+        "hrWrites": 0,
+        "externalWrites": 0,
+        "builds": 0,
+        "deploys": 0,
+        "production": false
+      },
+      "diagnosticHypothesis": {
+        "code": "BACKEND_REFRESH_RETURNS_BEFORE_CANONICAL_HR_RECOMPOSITION",
+        "basis": [
+          "CX.backend.refresh is wrapped by tya-protected-auth-hr-authority-bridge-v2 and schedules reconciliation asynchronously after original Firebase refresh returns.",
+          "Run1186 samples the reservation read model 750ms after refresh without waiting for CX_PROTECTED_AUTH_HR_AUTHORITY.applied to return true.",
+          "backend-firebase source now loads/publishes/applies reservations and HR protectedState also includes reservations; therefore timing between Firebase refresh and HR recomposition must be proven before another product fix."
+        ],
+        "productMutationAuthorized": false
       }
     },
     "VRM-250": {
@@ -16158,7 +16195,7 @@
     "nextFindingId": "VRM-252",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_I3_VRM249_LIFECYCLE_CONTROL_BINDING_REQUIRED",
+    "terminalState": "HOLD_I3_VRM249_REFRESH_RECONCILIATION_DIAGNOSTIC_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -16439,7 +16476,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Synchronize VRM251 into closure matrix and descriptor, then switch only to the existing Cluster A lifecycle status and re-run Postulations + Reservations against the exact Run1176 DEV artifact.",
+  "exactNextAction": "Run a control-only diagnostic on the exact Run1176 DEV artifact that records immediate post-refresh authorized reservations, CX.data.__protectedReservations, canonical authority state, and the same values after canonical reconciliation; keep product frozen.",
   "supersedesGitBlob": "820da41b786054cb8cd23e89827e1f7afbcdd3b3",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -20044,8 +20081,8 @@
     "humanAcceptance": "FAIL",
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
-  "lastUpdatedAt": "2026-10-05T11:39:00Z",
-  "nextExactAction": "Synchronize VRM251 into closure matrix and descriptor, then switch only to the existing Cluster A lifecycle status and re-run Postulations + Reservations against the exact Run1176 DEV artifact.",
+  "lastUpdatedAt": "2026-10-05T11:44:00Z",
+  "nextExactAction": "Run a control-only diagnostic on the exact Run1176 DEV artifact that records immediate post-refresh authorized reservations, CX.data.__protectedReservations, canonical authority state, and the same values after canonical reconciliation; keep product frozen.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
