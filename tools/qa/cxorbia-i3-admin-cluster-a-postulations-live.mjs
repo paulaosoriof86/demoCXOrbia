@@ -27,6 +27,41 @@ async function idTokenFor(uid){const custom=await auth.createCustomToken(uid);co
 async function send(token,command){const r=await fetch(ROOT+'/v1/cxorbia/commands',{method:'POST',headers:{authorization:'Bearer '+token,'content-type':'application/json'},body:JSON.stringify(command)});const body=await r.json().catch(()=>null);return {httpStatus:r.status,ok:r.ok,body};}
 const base=(type,entityId,periodId,key,expectedVersion,payload)=>({version:'cxorbia-command-adapter-v1',commandType:type,entityType:'application',entityId,tenantId:TENANT,projectId:PROGRAM,periodId,idempotencyKey:key,expectedVersion,authorization:{providerEnforcementRequired:true},payload});
 function localToday(){const p=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'America/Guatemala',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).filter(x=>x.type!=='literal').map(x=>[x.type,x.value]));return p.year+'-'+p.month+'-'+p.day;}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+async function browserAdminSignIn(page,uid){
+  const attempts=[];
+  for(let attempt=1;attempt<=4;attempt++){
+    const custom=await auth.createCustomToken(uid);
+    try{
+      const state=await page.evaluate(async token=>{
+        try{
+          await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);
+          const credential=await firebase.auth().signInWithCustomToken(token);
+          return {ok:true,uid:String(credential?.user?.uid||'')};
+        }catch(error){
+          return {ok:false,code:String(error?.code||''),message:String(error?.message||error)};
+        }
+      },custom);
+      if(state?.ok===true)return {ok:true,attempt,attempts};
+      attempts.push({attempt,code:str(state?.code),message:str(state?.message).slice(0,240)});
+      const retryable=/network-request-failed|timeout|interrupted|unreachable/i.test(str(state?.code)+' '+str(state?.message));
+      if(!retryable)throw new Error('POST_BROWSER_ADMIN_AUTH_NONRETRYABLE:'+str(state?.code)+':'+str(state?.message).slice(0,240));
+    }catch(error){
+      const message=str(error?.message||error);
+      const retryable=/Execution context was destroyed|navigation|network-request-failed|timeout|interrupted|unreachable|ERR_NETWORK_CHANGED|ERR_INTERNET_DISCONNECTED/i.test(message);
+      attempts.push({attempt,code:'PLAYWRIGHT_OR_AUTH',message:message.slice(0,240)});
+      if(!retryable)throw error;
+    }
+    if(attempt<4){
+      await page.waitForLoadState('domcontentloaded',{timeout:30000}).catch(()=>{});
+      await sleep(1000*attempt);
+      await page.reload({waitUntil:'domcontentloaded',timeout:90000}).catch(()=>{});
+    }
+  }
+  const err=new Error('POST_BROWSER_ADMIN_AUTH_TRANSIENT_EXHAUSTED');
+  err.vrm248Attempts=attempts;
+  throw err;
+}
 let adminToken='',shopperToken='',selected=null,created=false,browser=null;
 try{
   need(/^[a-f0-9]{64}$/.test(EXPECTED_HR),'SOURCE_FAILURE','POST_EXPECTED_HR_REQUIRED');
@@ -64,9 +99,9 @@ try{
   result.reject={providerAck:true,idempotentReplay:true,durableReadback:true,version:3};
 
   browser=await chromium.launch({headless:true});const ctx=await browser.newContext({viewport:{width:1440,height:1000}}),page=await ctx.newPage();const pageErrors=[];page.on('pageerror',e=>pageErrors.push(str(e?.message||e)));
-  const custom=await auth.createCustomToken(staff.id);
   await page.goto(ROOT+'/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId='+encodeURIComponent(PROGRAM)+'&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV',{waitUntil:'domcontentloaded',timeout:90000});
-  await page.evaluate(async token=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);await firebase.auth().signInWithCustomToken(token);},custom);
+  const authObserver=await browserAdminSignIn(page,staff.id);
+  result.browser.authObserver={pass:true,attempt:authObserver.attempt,retries:Math.max(0,authObserver.attempt-1)};
   await page.reload({waitUntil:'domcontentloaded',timeout:90000});
   await page.waitForFunction(({TENANT,PROGRAM})=>{const c=window.CX?.backendAuth?.context?.()||{};return c.authenticated===true&&c.tenantId===TENANT&&['super','admin'].includes(String(c.role||''))&&(c.role==='super'||(Array.isArray(c.projectIds)&&c.projectIds.map(String).includes(PROGRAM)))&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true;},{TENANT,PROGRAM},{timeout:120000});
   await page.evaluate(()=>window.CX?.router?.nav?.('postulaciones'));
@@ -94,7 +129,14 @@ try{
   save();console.log(JSON.stringify(result,null,2));
   await ctx.close();
 }catch(error){
-  if(!result.classification)fail('FUNCTIONAL_DEFECT','POST_UNCLASSIFIED',{error:str(error?.message||error)});
+  if(!result.classification){
+    const message=str(error?.message||error);
+    if(/POST_BROWSER_ADMIN_AUTH_TRANSIENT_EXHAUSTED|network-request-failed|Execution context was destroyed|navigation|timeout|interrupted|unreachable|ERR_NETWORK_CHANGED|ERR_INTERNET_DISCONNECTED/i.test(message)){
+      fail('ENVIRONMENT_FAILURE','POST_BROWSER_AUTH_OBSERVER_TRANSIENT',{error:message.slice(0,500),attempts:error?.vrm248Attempts||null,productChanged:false});
+    }else{
+      fail('FUNCTIONAL_DEFECT','POST_UNCLASSIFIED',{error:message});
+    }
+  }
 }finally{
   try{if(browser)await browser.close();}catch(_){}
   try{
