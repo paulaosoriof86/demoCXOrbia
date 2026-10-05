@@ -14898,6 +14898,53 @@
       "production": false,
       "terminalDisposition": null,
       "successor": null
+    },
+    "VRM-246": {
+      "id": "VRM-246",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "severity": "P0_CONTROL",
+      "title": "Canonical I3 workflow exceeded GitHub Actions 500 KB maximum after retaining closed VRM243 job beside current VRM215 slot",
+      "state": "CONTROL_ONLY_FIXED_WORKFLOW_ACCEPTED_RUN1139",
+      "firstObservedAt": "RUN1138_2026-10-05",
+      "rootCauseStatus": "PROVEN_AND_FIXED",
+      "rootCause": "Run1138 was rejected before job creation because the canonical workflow file exceeded GitHub Actions' maximum allowed size of 500 KB. VRM243 was already closed in Run1131, but its executable job remained beside the newly restored VRM215 job, duplicating blocker-slot control code and pushing the workflow over the platform limit.",
+      "evidence": {
+        "run1138": {
+          "runId": 37247368431,
+          "runNumber": 1138,
+          "headSha": "3c285564d0f906a795022b311fa2283c42c1b50b",
+          "jobsCreated": 0,
+          "conclusion": "failure",
+          "annotation": "Workflow file exceeds the maximum allowed size of 500 KB.",
+          "productChanged": false,
+          "production": false
+        },
+        "correction": {
+          "commitSha": "3956a8e9ec11f9d5de54e3ec2530dcf3333bdbee",
+          "removedClosedExecutableJob": "vrm243-authoritative-alias-visit-remap",
+          "preservedCurrentExecutableJob": "vrm215-shopper-population-reproof",
+          "workflowCharsBefore": 516029,
+          "workflowCharsAfter": 510250,
+          "evidencePreservedInLedgerAndRun1131Artifact": true,
+          "workflowTopology": "single moving blocker slot",
+          "productChanged": false
+        },
+        "validation": {
+          "runId": 37247549404,
+          "runNumber": 1139,
+          "workflowAccepted": true,
+          "canonicalCandidateAuthority": "PASS",
+          "vrm215JobCreated": true
+        }
+      },
+      "expected": "Keep closed blocker evidence in immutable ledger/artifacts, not as indefinitely retained executable YAML. Maintain one current blocker slot inside the same canonical workflow so the file remains below provider limits without creating a parallel workflow.",
+      "owner": [
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+      ],
+      "productChanged": false,
+      "production": false,
+      "terminalDisposition": "CONTROL_ONLY_FIXED",
+      "successor": null
     }
   },
   "latestEvidenceOverrides": {
@@ -15560,11 +15607,12 @@
       "VRM-242",
       "VRM-243",
       "VRM-244",
-      "VRM-245"
+      "VRM-245",
+      "VRM-246"
     ],
-    "findingCount": 245,
-    "expectedCurrentRange": "VRM-001..VRM-245",
-    "nextFindingId": "VRM-246",
+    "findingCount": 246,
+    "expectedCurrentRange": "VRM-001..VRM-246",
+    "nextFindingId": "VRM-247",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_VRM215_SHOPPER_POPULATION_REPROOF_REQUIRED",
@@ -15875,7 +15923,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-246",
+  "nextFindingId": "VRM-247",
   "lastControlFailure": {
     "findingId": "VRM-232",
     "runId": 37213834927,
@@ -19437,8 +19485,8 @@
     "humanAcceptance": "FAIL",
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
-  "lastUpdatedAt": "2026-10-04T15:03:00Z",
-  "nextExactAction": "Run corrected VRM215 v2 on unchanged Run1112 artifact: prove membershipUniverse=379, exactly one frozen HR-managed review-only identity excluded from auth eligibility but included in HR assignment integrity, authEligiblePopulation=378, zero non-visit alias operational references, and canonical root visit semantics authoritativeAliasRows=0/historicalAliasRows=122/ambiguousAuthorityGroups=0. Then rerun same-artifact multimodule sweep.",
+  "lastUpdatedAt": "2026-10-05T00:27:30Z",
+  "nextExactAction": "Complete VRM215 v2 population proof on unchanged Run1112 artifact. If PASS, advance same canonical workflow to I3 multimodule same-artifact live sweep.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
@@ -20151,7 +20199,7 @@
   },
   "openFindingsClosureMatrix": {
     "path": "I3_OPEN_FINDINGS_CLOSURE_MATRIX_2026-10-04.json",
-    "findingCount": 245,
+    "findingCount": 246,
     "status": "ACTIVE_CLOSURE_VIEW",
     "missingFindingIds": [],
     "duplicateFindingIds": []
