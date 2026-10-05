@@ -8,7 +8,7 @@
   "productTreeAuthority": "638ab7ab63244286ff460205da441221d5957ef0",
   "predecessorProductSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "15dceb9a0f40c2d0c0203cb6391d724383e36486",
+  "findingsLedgerExpectedGitBlob": "e226bc18ae3537195c070db3f0d2e3b5e0f78a86",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -603,10 +603,11 @@
   },
   "lastControlFailure": {
     "findingId": "VRM-255",
-    "classification": "ENVIRONMENT_FAILURE",
-    "observedHarnessClassification": "MAPPING_FAILURE",
-    "runId": 37336302394,
-    "runNumber": 1225,
+    "classification": "MAPPING_FAILURE",
+    "runId": 37350785639,
+    "runNumber": 1226,
+    "jobId": 111900799893,
+    "code": "NEXT_FINDING_ID",
     "productChanged": false,
     "production": false
   },
@@ -4264,7 +4265,7 @@
   },
   "openFindingsClosureMatrix": {
     "path": "I3_OPEN_FINDINGS_CLOSURE_MATRIX_2026-10-04.json",
-    "expectedGitBlob": "a7951ab236d297ee10a5f5b321936e352acfacd0",
+    "expectedGitBlob": "2b74c3dea06197238d14d167eb397a6a638c584a",
     "findingCount": 255,
     "nextFindingId": "VRM-256",
     "currentBlockingCount": 57,
