@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM185_PAULA_IDENTITY_TOPOLOGY_DIAGNOSTIC_REQUIRED",
+  "status": "HOLD_I3_SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,7 +8,7 @@
   "productTreeAuthority": "fdea83d9baf760cd379bfdbcd1bad4281d894df5",
   "predecessorProductSourceSha": "170d09983d4696a02453a58f46b027d41c579132",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "0bb0a74121c579851f0b5ca6544e0640a275ae4d",
+  "findingsLedgerExpectedGitBlob": "8abfaca25413a9c155bb805fc178200f715bf25b",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run the existing vrm185-paula-identity-topology-readonly job against exact Run1232 DEV artifact with PAULA_SECOND_PRINCIPAL_ID=shp-cdbf95dccaa6; classify only by exact technical lineage, perform zero Auth/Firestore/HR/product writes, zero deploys, no production, and do not consume VRM-256.",
+  "exactNextAction": "Run the existing phasea-representative-same-artifact-live-reproof against exact Run1232 DEV artifact using exact shopper authority for Paula (shopper_gt_1440137b73 + visibleLogin paula.osorio), while keeping shp-cdbf95dccaa6 separate because Run1235 proved same display name without exact lineage; zero rebuilds, zero deploys, zero writes, no production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -4385,7 +4385,7 @@
     }
   },
   "paulaIdentityTopologyDiagnostic": {
-    "state": "READ_ONLY_DIAGNOSTIC_REQUIRED",
+    "state": "RESOLVED_NO_EXACT_SECOND_LINEAGE",
     "originatingRunId": 37357554739,
     "originatingRunNumber": 1234,
     "originatingFailure": "MAPPING_FAILURE:TARGET_ACTIVE_CANONICAL_PRINCIPAL_paula_osorio",
@@ -4408,6 +4408,44 @@
     "nextFindingIdReserved": "VRM-256",
     "nextFindingIdConsumed": false,
     "enteredAtEvidenceTime": "2026-10-05T20:46:00Z",
-    "expectedParentSha": "b6c3aad52ea904cecb04feff647e13f3660f9bf7"
+    "expectedParentSha": "b6c3aad52ea904cecb04feff647e13f3660f9bf7",
+    "receipt": {
+      "state": "CONTROL_ONLY_HARNESS_ASSUMPTION_PROVEN",
+      "runId": 37372324986,
+      "runNumber": 1235,
+      "runAttempt": 2,
+      "jobId": 111978208059,
+      "artifactId": 11371400276,
+      "artifactDigest": "sha256:1b185215e526ad6a8a9d627128b06fff9d4fd79d36a95c59ae9101ec89884f89",
+      "rawDecision": "HOLD_VRM185_PAULA_IDENTITY_TOPOLOGY_UNRESOLVED",
+      "classification": "MAPPING_FAILURE",
+      "canonicalOperationalShopperId": "shopper_gt_1440137b73",
+      "canonicalVisibleLogin": "paula.osorio",
+      "secondPrincipalId": "shp-cdbf95dccaa6",
+      "secondPrincipalVisibleLogin": "paula.osorio.829d",
+      "secondHrVisits": 0,
+      "secondExactLinkedToKnown": false,
+      "secondClassification": "same_display_name_without_exact_lineage",
+      "secondTechnicalConnections": 0,
+      "trustedSecondConnections": 0,
+      "secondPrincipalMustNotMergeByNameOnly": true,
+      "disposition": "TREAT_AS_INDEPENDENT_TECHNICAL_IDENTITY_FOR_REPRESENTATIVE_SELECTION",
+      "vrm256Consumed": false,
+      "productDefect": false,
+      "productSourceChanged": false,
+      "writes": 0,
+      "authWrites": 0,
+      "firestoreWrites": 0,
+      "hrWrites": 0,
+      "deploys": 0,
+      "production": false
+    }
+  },
+  "lastControlCorrection": {
+    "type": "REPRESENTATIVE_HARNESS_EXACT_AUTHORITY_SELECTION",
+    "owner": "tools/qa/cxorbia-i3-phasea-representative-live-reproof.mjs",
+    "expectedParentSha": "009776ccf6fd498951bebf2fd516403b236673e1",
+    "productSourceChanged": false,
+    "production": false
   }
 }

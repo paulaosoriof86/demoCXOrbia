@@ -6567,6 +6567,8 @@ jobs:
       FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
       FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
       PHASEA_LIVE_OUT: .tmp/phasea-representative-live
+      PAULA_VISIBLE_LOGIN: paula.osorio
+      PAULA_EXACT_HR_ID: shopper_gt_1440137b73
     steps:
       - uses: actions/checkout@v4
         with:

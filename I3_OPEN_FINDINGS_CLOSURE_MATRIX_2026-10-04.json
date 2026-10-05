@@ -46,7 +46,6 @@
     "SUPERSEDED_BY_VRM-243": 1
   },
   "nextCriticalSequence": [
-    "PAULA_IDENTITY_TOPOLOGY_DIAGNOSTIC_READ_ONLY",
     "SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF",
     "PAULA_VISUAL_CHECKPOINT",
     "GATE20_GATE21_TERMINAL_CLOSURE"
@@ -8467,7 +8466,7 @@
   "moduleTruthScopeSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
   "currentSuccessorRequiresModuleTruthReproof": true,
   "paulaIdentityTopologyDiagnostic": {
-    "state": "READ_ONLY_DIAGNOSTIC_REQUIRED",
+    "state": "RESOLVED_NO_EXACT_SECOND_LINEAGE",
     "originatingRunId": 37357554739,
     "originatingRunNumber": 1234,
     "originatingFailure": "MAPPING_FAILURE:TARGET_ACTIVE_CANONICAL_PRINCIPAL_paula_osorio",
@@ -8490,13 +8489,45 @@
     "nextFindingIdReserved": "VRM-256",
     "nextFindingIdConsumed": false,
     "enteredAtEvidenceTime": "2026-10-05T20:46:00Z",
-    "expectedParentSha": "b6c3aad52ea904cecb04feff647e13f3660f9bf7"
+    "expectedParentSha": "b6c3aad52ea904cecb04feff647e13f3660f9bf7",
+    "receipt": {
+      "state": "CONTROL_ONLY_HARNESS_ASSUMPTION_PROVEN",
+      "runId": 37372324986,
+      "runNumber": 1235,
+      "runAttempt": 2,
+      "jobId": 111978208059,
+      "artifactId": 11371400276,
+      "artifactDigest": "sha256:1b185215e526ad6a8a9d627128b06fff9d4fd79d36a95c59ae9101ec89884f89",
+      "rawDecision": "HOLD_VRM185_PAULA_IDENTITY_TOPOLOGY_UNRESOLVED",
+      "classification": "MAPPING_FAILURE",
+      "canonicalOperationalShopperId": "shopper_gt_1440137b73",
+      "canonicalVisibleLogin": "paula.osorio",
+      "secondPrincipalId": "shp-cdbf95dccaa6",
+      "secondPrincipalVisibleLogin": "paula.osorio.829d",
+      "secondHrVisits": 0,
+      "secondExactLinkedToKnown": false,
+      "secondClassification": "same_display_name_without_exact_lineage",
+      "secondTechnicalConnections": 0,
+      "trustedSecondConnections": 0,
+      "secondPrincipalMustNotMergeByNameOnly": true,
+      "disposition": "TREAT_AS_INDEPENDENT_TECHNICAL_IDENTITY_FOR_REPRESENTATIVE_SELECTION",
+      "vrm256Consumed": false,
+      "productDefect": false,
+      "productSourceChanged": false,
+      "writes": 0,
+      "authWrites": 0,
+      "firestoreWrites": 0,
+      "hrWrites": 0,
+      "deploys": 0,
+      "production": false
+    }
   },
   "controlTransition": {
-    "state": "HOLD_VRM185_PAULA_IDENTITY_TOPOLOGY_DIAGNOSTIC_REQUIRED",
-    "expectedParentSha": "b6c3aad52ea904cecb04feff647e13f3660f9bf7",
+    "state": "HOLD_I3_SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF_REQUIRED",
+    "expectedParentSha": "009776ccf6fd498951bebf2fd516403b236673e1",
     "productSourceChanged": false,
     "findingCreated": false,
+    "vrm256Consumed": false,
     "production": false
   }
 }
