@@ -3,8 +3,8 @@
   "status": "ACTIVE_CLOSURE_VIEW",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
   "generatedFromLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "generatedAtEvidenceTime": "2026-10-05T11:39:00Z",
-  "controlHeadAtGeneration": "b6995592b1d9e73662dbb1796c27f3b8276c7d71",
+  "generatedAtEvidenceTime": "2026-10-05T11:44:00Z",
+  "controlHeadAtGeneration": "022ba506008abb525b0046d37314f6ae1963f123",
   "productSourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
   "productSourceTree": "638ab7ab63244286ff460205da441221d5957ef0",
   "exactDevArtifact": {
@@ -47,7 +47,9 @@
     "SUPERSEDED_BY_VRM-243": 1
   },
   "nextCriticalSequence": [
-    "ADMIN_CLUSTER_A_POSTULATIONS_AND_RESERVATIONS_LIFECYCLE_REPROOF",
+    "VRM249_REFRESH_RECONCILIATION_DIAGNOSTIC",
+    "VRM249_EXACT_OWNER_FIX_ONLY_IF_PROVEN",
+    "VRM249_SAME_LIFECYCLE_REPROOF",
     "SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF",
     "PAULA_VISUAL_CHECKPOINT",
     "GATE20_GATE21_TERMINAL_CLOSURE"
@@ -8161,8 +8163,8 @@
           "production": false
         }
       },
-      "rawLedgerState": "EXACT_DEV_MATERIALIZED_LIFECYCLE_REPROOF_REQUIRED",
-      "realState": "EXACT_DEV_MATERIALIZED_LIFECYCLE_REPROOF_REQUIRED",
+      "rawLedgerState": "RUN1186_REPRODUCED_REFRESH_RECONCILIATION_DIAGNOSTIC_REQUIRED",
+      "realState": "RUN1186_REPRODUCED_REFRESH_RECONCILIATION_DIAGNOSTIC_REQUIRED",
       "evidence": {
         "durableProviderLifecycleReached": true,
         "adminReadModelVisibleAfterRefresh": false,
@@ -8189,9 +8191,25 @@
           "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791200082274000",
           "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
           "production": false
-        }
+        },
+        "run1186": {
+          "runId": 37304608567,
+          "runNumber": 1186,
+          "jobId": 111745234833,
+          "artifactId": 11342299548,
+          "artifactDigest": "sha256:c200453cb550e79a89b441019baa6d9d5b7540ed6e92d6a0456002ae420f0d6b",
+          "code": "RSV_ADMIN_READ_MODEL_BEFORE_DELETE",
+          "classification": "FUNCTIONAL_DEFECT",
+          "postulationsLifecyclePass": true,
+          "exactDevFingerprintsPass": true,
+          "authObserverPass": true,
+          "hrWrites": 0,
+          "externalWrites": 0,
+          "production": false
+        },
+        "refreshReconciliationDiagnosticRequired": true
       },
-      "actionRemaining": "same bounded Postulations + Reservations lifecycle reproof on exact Run1176 DEV artifact",
+      "actionRemaining": "control-only immediate-vs-reconciled read-model diagnostic on exact Run1176 DEV artifact",
       "blocking": true,
       "terminalDisposition": null
     },
