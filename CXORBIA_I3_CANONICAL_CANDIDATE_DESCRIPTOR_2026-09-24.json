@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM254_CONTROL_REPROOF_REQUIRED",
+  "status": "HOLD_I3_VRM174_HISTORICAL_PAYMENT_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,13 +8,13 @@
   "productTreeAuthority": "638ab7ab63244286ff460205da441221d5957ef0",
   "predecessorProductSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "6460270c1ae37307c3987bfdceb6adee68c0dbc7",
+  "findingsLedgerExpectedGitBlob": "d64a91833f34c22bd206bf6762048739b8c6d932",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
   "activeBlocker": "VRM-249",
-  "nextFindingId": "VRM-254",
+  "nextFindingId": "VRM-255",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Fix the control-only Playwright global reference in VRM174 QA (firebase -> window.firebase), preserve Run1215 evidence, and rerun the same read-only historical proof on unchanged Run1176.",
+  "exactNextAction": "Re-run the read-only VRM174 historical payment projection proof on the exact unchanged Run1176 DEV artifact after VRM254 browser-global correction.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3562,7 +3562,7 @@
     "production": false
   },
   "openFindingsClosureMatrixPath": "I3_OPEN_FINDINGS_CLOSURE_MATRIX_2026-10-04.json",
-  "openFindingsClosureMatrixFindingCount": 253,
+  "openFindingsClosureMatrixFindingCount": 254,
   "lastVrm229Pass": {
     "runId": 37211579195,
     "runNumber": 1114,
@@ -4221,7 +4221,7 @@
     "production": false
   },
   "vrm254": {
-    "state": "CONTROL_FIX_REQUIRED",
+    "state": "CONTROL_FIX_REPROOF_ACTIVE",
     "classification": "ENVIRONMENT_FAILURE",
     "severity": "P0_CONTROL",
     "run1215": {
@@ -4234,6 +4234,7 @@
       "durableHistoricalPaid": 562
     },
     "productChanged": false,
-    "production": false
+    "production": false,
+    "correctionCommit": "c4c810aef5ec4f5fabd48cc6ee1d763d30f5d9b6"
   }
 }
