@@ -8,7 +8,7 @@
   "productTreeAuthority": "b59da4c090d4639a136168656e7addd544f38e18",
   "predecessorProductSourceSha": "bbd66d29192487ac29f8703bd913e3f1e15a28c0",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "c5c586a1e6c13c385edf45323722864d25a5ebd2",
+  "findingsLedgerExpectedGitBlob": "f25b3594a03cee4e45b7ef6fad3d7b47982d1658",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run corrected VRM215 across the complete current auth-eligible shopper population on unchanged Run1112 artifact, while proving exactly one frozen HR review-only identity remains excluded from authentication but included in HR assignment integrity; then run same-artifact multimodule sweep.",
+  "exactNextAction": "Execute VRM215 v2 against unchanged Run1112 artifact. Require 379 membership universe / 1 frozen review-only / 378 auth-eligible, every eligible login + self-scope + required routes PASS, HR assignments resolved, root visit authority 0 authoritative / 122 historical / 0 ambiguous, no non-visit alias refs. If PASS, immediately advance to same-artifact multimodule live sweep.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3564,7 +3564,7 @@
     "production": false
   },
   "openFindingsClosureMatrixPath": "I3_OPEN_FINDINGS_CLOSURE_MATRIX_2026-10-04.json",
-  "openFindingsClosureMatrixFindingCount": 236,
+  "openFindingsClosureMatrixFindingCount": 245,
   "lastVrm229Pass": {
     "runId": 37211579195,
     "runNumber": 1114,
@@ -4007,11 +4007,23 @@
     "production": false
   },
   "vrm245": {
-    "state": "CONTROL_FIX_IN_PROGRESS",
+    "state": "CONTROL_FIX_COMMITTED_REPROOF_REQUIRED",
     "classification": "MAPPING_FAILURE",
     "severity": "P0_CONTROL",
-    "rootCause": "VRM215 activeMember population gate includes a frozen review-only HR identity whose authoritative external human name is unavailable. VRM043/VRM239 explicitly require DO_NOT_INVENT_HUMAN_IDENTITY and EXCLUDE_FROM_AUTH_ELIGIBLE_POPULATION_PRESERVE_REVIEW_ONLY.",
-    "requiredSemantics": "membership universe must include review-only identity for HR/assignment integrity, while auth-eligible population excludes only exact HR-managed SHOPPER_CREDENTIAL_NAME_INCOMPLETE cases under current HR revision; cardinality must remain exactly one for the frozen revision.",
+    "controlScript": "tools/qa/cxorbia-i3-vrm215-shopper-population-live-reproof.mjs",
+    "controlScriptGitBlob": "69adb08bcfaed69d74ce468a6b05231d6973f382",
+    "lockPath": "CXORBIA_I3_VRM245_REVIEW_ONLY_POPULATION_SEMANTICS_LOCK_2026-10-04.json",
+    "expected": {
+      "membershipUniverse": 379,
+      "reviewOnlyExcluded": 1,
+      "authEligiblePopulation": 378,
+      "authoritativeAliasRows": 0,
+      "historicalAliasRows": 122,
+      "ambiguousAuthorityGroups": 0,
+      "nonVisitOperationalAliasReferences": 0
+    },
+    "concurrency": 6,
+    "coverageReduced": false,
     "productChanged": false,
     "production": false
   }
