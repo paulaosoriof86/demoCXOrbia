@@ -3,8 +3,8 @@
   "status": "ACTIVE_CLOSURE_VIEW",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
   "generatedFromLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "generatedAtEvidenceTime": "2026-10-05T01:29:00Z",
-  "controlHeadAtGeneration": "56b71d8e98c55bdc74d06d2be4fde850ac2bca22",
+  "generatedAtEvidenceTime": "2026-10-05T01:36:00Z",
+  "controlHeadAtGeneration": "43807aec0f3a60fceb3e5a1eac49e98b274b52e1",
   "productSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
   "productSourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
   "exactDevArtifact": {
@@ -31,11 +31,11 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleTruthCount": 21,
   "moduleTruthAllMatch": true,
-  "findingCount": 247,
+  "findingCount": 248,
   "missingFindingIds": [],
   "duplicateFindingIds": [],
   "currentBlockingCount": 57,
-  "undisposedCount": 71,
+  "undisposedCount": 72,
   "terminalDispositionCounts": {
     "PASS_CURRENT_ARTIFACT": 153,
     "SUPERSEDED_BY_VRM-221": 1,
@@ -51,6 +51,7 @@
     "SUPERSEDED_BY_VRM-243": 1
   },
   "nextCriticalSequence": [
+    "VRM-248_POSTULATIONS_OBSERVER_REPROOF",
     "ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE",
     "ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE",
     "RECONCILE_REMAINING_P0",
@@ -8083,6 +8084,42 @@
       "actionRemaining": "none",
       "blocking": false,
       "terminalDisposition": "CONTROL_ONLY_FIXED"
+    },
+    {
+      "findingId": "VRM-248",
+      "moduleDomain": [
+        "postulations",
+        "qa-control"
+      ],
+      "severity": "P0_CONTROL",
+      "classification": "ENVIRONMENT_FAILURE",
+      "owner": [
+        "tools/qa/cxorbia-i3-admin-cluster-a-postulations-live.mjs"
+      ],
+      "latestApprovedSource": null,
+      "latestLiveProof": {
+        "runNumber": 1157,
+        "runId": 37251758888,
+        "decision": "FAIL_QA_OBSERVER_AFTER_POSTULATION_LIFECYCLE_PARTIAL_PASS",
+        "artifactId": 11320109824,
+        "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
+      },
+      "successor": null,
+      "rawLedgerState": "CONTROL_OBSERVER_FIX_REQUIRED",
+      "realState": "CONTROL_FIX_PENDING_REPROOF",
+      "evidence": {
+        "createPass": true,
+        "createReplayPass": true,
+        "standbyPass": true,
+        "rejectPass": true,
+        "cleanupExactQaId": true,
+        "productChanged": false,
+        "production": false
+      },
+      "actionRemaining": "make Admin auth observer navigation-tolerant and rerun same Postulations delete/no-reappearance proof",
+      "blocking": false,
+      "terminalDisposition": null
     }
   ]
 }
