@@ -12,10 +12,10 @@ const ROOT=String(process.env.HOSTING_URL||'https://cxorbia-backend-dev.web.app'
 const EXPECTED_HR=String(process.env.EXPECTED_HR_REVISION||'').trim();
 const OUT=String(process.env.ADMIN_A_POST_OUT||'.tmp/i3-admin-cluster-a-postulations').trim();
 const RUN=String(process.env.GITHUB_RUN_ID||Date.now()).replace(/\D/g,'');
-const APP_ID='qa-i3-app-'+RUN;
+const APP_ID='qa-i3-app-'+RUN,RSV_ID='qa-i3-rsv-'+RUN;
 const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[];
 fs.mkdirSync(OUT,{recursive:true});
-const result={schemaVersion:'cxorbia.i3.admin-cluster-a-postulations.v1',decision:'HOLD',tenantId:TENANT,projectId:PROGRAM,applicationId:APP_ID,create:{},standby:{},reject:{},delete:{},browser:{},cleanup:{},hrWrites:0,externalWrites:0,builds:0,deploys:0,production:false};
+const result={schemaVersion:'cxorbia.i3.admin-cluster-a-postulations.v2',decision:'HOLD',tenantId:TENANT,projectId:PROGRAM,applicationId:APP_ID,reservationId:RSV_ID,create:{},standby:{},reject:{},delete:{},reservations:{},browser:{},cleanup:{},hrWrites:0,externalWrites:0,builds:0,deploys:0,production:false};
 const save=()=>fs.writeFileSync(OUT+'/result.json',JSON.stringify(result,null,2)+'\n');
 const fail=(classification,code,extra={})=>{Object.assign(result,{decision:'FAIL_I3_ADMIN_CLUSTER_A_POSTULATIONS',classification,code,...extra});save();console.log(JSON.stringify(result,null,2));process.exitCode=2;};
 const need=(ok,classification,code,extra={})=>{if(!ok){fail(classification,code,extra);throw new Error(code);}};
@@ -26,7 +26,10 @@ async function apiKey(){const r=await fetch(ROOT+'/__/firebase/init.json',{heade
 async function idTokenFor(uid){const custom=await auth.createCustomToken(uid);const key=await apiKey();const r=await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({token:custom,returnSecureToken:true})});const j=await r.json().catch(()=>null);need(r.ok&&j?.idToken,'AUTH_FAILURE','POST_CUSTOM_TOKEN_EXCHANGE',{status:r.status,code:j?.error?.message||null});return j.idToken;}
 async function send(token,command){const r=await fetch(ROOT+'/v1/cxorbia/commands',{method:'POST',headers:{authorization:'Bearer '+token,'content-type':'application/json'},body:JSON.stringify(command)});const body=await r.json().catch(()=>null);return {httpStatus:r.status,ok:r.ok,body};}
 const base=(type,entityId,periodId,key,expectedVersion,payload)=>({version:'cxorbia-command-adapter-v1',commandType:type,entityType:'application',entityId,tenantId:TENANT,projectId:PROGRAM,periodId,idempotencyKey:key,expectedVersion,authorization:{providerEnforcementRequired:true},payload});
+const rbase=(type,entityId,periodId,key,expectedVersion,payload)=>({version:'cxorbia-command-adapter-v1',commandType:type,entityType:'reservation',entityId,tenantId:TENANT,projectId:PROGRAM,periodId,idempotencyKey:key,expectedVersion,authorization:{providerEnforcementRequired:true},payload});
+const branchKey=v=>(str(v?.sucursal||v?.branchName||v?.branchId)+'|'+str(v?.ciudad||v?.city)).toLowerCase().replace(/\s+/g,'-');
 function localToday(){const p=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'America/Guatemala',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).filter(x=>x.type!=='literal').map(x=>[x.type,x.value]));return p.year+'-'+p.month+'-'+p.day;}
+function reservationFutureEligible(v,projectData={}){const mode=str(projectData?.reservationWindowMode||projectData?.reservationPolicy?.windowMode||'future_only').toLowerCase();if(mode==='all_available')return true;const timezone=str(projectData?.timeZone||projectData?.timezone||'America/Guatemala'),p=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:timezone,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).filter(x=>x.type!=='literal').map(x=>[x.type,x.value])),today=p.year+'-'+p.month+'-'+p.day,month=today.slice(0,7),periodKey=str(v?.periodKey||v?.measurementPeriodId||v?.periodo),availableFrom=str(v?.disponibleDesde||v?.availableFrom);return (/^20\d{2}-[01]\d$/.test(periodKey)&&periodKey>month)||(/^20\d{2}-[01]\d-[0-3]\d$/.test(availableFrom)&&availableFrom>today);}
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 async function browserAdminSignIn(page,uid){
   const attempts=[];
@@ -125,6 +128,34 @@ try{
   const pairAfter=(await docs(project.collection('postulations'))).filter(p=>str(p.visitId||p.visitaId)===visitId&&str(p.shopperId)===shopperId&&str(p.id||p.applicationId||p.postulationId)===APP_ID);
   need(pairAfter.length===0,'PERSISTENCE_FAILURE','POST_QA_RESIDUE',{count:pairAfter.length});
   result.cleanup={providerDelete:true,fallbackDirectDelete:false,qaResidue:0};
+
+  const secondMember=candidates.find(m=>str(m.shopperId)!==shopperId);
+  need(secondMember,'SOURCE_FAILURE','RSV_SECOND_SHOPPER_REQUIRED',{candidates:candidates.length});
+  const projectSnap=await project.get(),projectData=projectSnap.exists?(projectSnap.data()||{}):{},reservationRows=await docs(project.collection('reservations'));
+  const rVisit=available.find(v=>str(v.hrRowId)&&reservationFutureEligible(v,projectData)&&!reservationRows.some(r=>str(r.visitId||r.visitaId)===str(v.visitId||v.id)&&str(r.shopperId)===shopperId));
+  need(rVisit,'SOURCE_FAILURE','RSV_NO_SAFE_FUTURE_AVAILABLE_PAIR',{available:available.length});
+  const rVisitId=str(rVisit.visitId||rVisit.id),rHrRowId=str(rVisit.hrRowId),rPeriodId=str(rVisit.periodId),rBranch=branchKey(rVisit),shopperB=str(secondMember.shopperId);
+  need(rBranch,'SOURCE_FAILURE','RSV_BRANCH_KEY_REQUIRED');
+  const rVisitRef=project.collection('visits').doc(rVisit.id),rVisitBeforeSnap=await rVisitRef.get(),rVisitBefore=rVisitBeforeSnap.data()||{};
+  const rCreate=rbase('reservation.create',RSV_ID,rPeriodId,'qa-rsv-create-'+RUN,'absent',{visitId:rVisitId,hrRowId:rHrRowId,branchId:rBranch,sucursalId:rBranch,shopperId,shopper:str(profileById.get(shopperId)?.nombre||'QA Shopper A'),sourceRevision:EXPECTED_HR,status:'solicitada',periodo:rPeriodId});
+  const rc1=await send(shopperToken,rCreate);need(rc1.ok&&rc1.body?.providerAck===true&&rc1.body?.status==='committed','PERSISTENCE_FAILURE','RSV_CREATE_ACK',{rc1});
+  const rc2=await send(shopperToken,rCreate);need(rc2.ok&&rc2.body?.providerAck===true&&rc2.body?.idempotentReplay===true&&Number(rc2.body?.providerWrites||0)===0,'PERSISTENCE_FAILURE','RSV_CREATE_REPLAY',{rc2});
+  let rsnap=await project.collection('reservations').doc(RSV_ID).get(),rrow=rsnap.data()||{};need(rsnap.exists&&str(rrow.status||rrow.estado)==='solicitada'&&Number(rrow.version)===1,'PERSISTENCE_FAILURE','RSV_CREATE_READBACK',{rrow});
+  const rApprove=rbase('reservation.status.update',RSV_ID,rPeriodId,'qa-rsv-approve-'+RUN,1,{status:'aprobada',shopperId,shopper:str(profileById.get(shopperId)?.nombre||'QA Shopper A')});
+  const ra1=await send(adminToken,rApprove);need(ra1.ok&&ra1.body?.providerAck===true,'PERSISTENCE_FAILURE','RSV_APPROVE_ACK',{ra1});const ra2=await send(adminToken,rApprove);need(ra2.ok&&ra2.body?.idempotentReplay===true&&Number(ra2.body?.providerWrites||0)===0,'PERSISTENCE_FAILURE','RSV_APPROVE_REPLAY',{ra2});
+  rsnap=await project.collection('reservations').doc(RSV_ID).get();rrow=rsnap.data()||{};need(rsnap.exists&&str(rrow.status||rrow.estado)==='aprobada'&&Number(rrow.version)===2,'PERSISTENCE_FAILURE','RSV_APPROVE_READBACK',{rrow});
+  const rReassign=rbase('reservation.status.update',RSV_ID,rPeriodId,'qa-rsv-reassign-'+RUN,2,{status:'asignada',shopperId:shopperB,shopper:str(profileById.get(shopperB)?.nombre||'QA Shopper B')});
+  const rr1=await send(adminToken,rReassign);need(rr1.ok&&rr1.body?.providerAck===true,'PERSISTENCE_FAILURE','RSV_REASSIGN_ACK',{rr1});const rr2=await send(adminToken,rReassign);need(rr2.ok&&rr2.body?.idempotentReplay===true&&Number(rr2.body?.providerWrites||0)===0,'PERSISTENCE_FAILURE','RSV_REASSIGN_REPLAY',{rr2});
+  rsnap=await project.collection('reservations').doc(RSV_ID).get();rrow=rsnap.data()||{};need(rsnap.exists&&str(rrow.status||rrow.estado)==='asignada'&&Number(rrow.version)===3&&str(rrow.shopperId)===shopperB,'PERSISTENCE_FAILURE','RSV_REASSIGN_READBACK',{rrow});
+  await page.evaluate(()=>window.CX?.backend?.refresh?.()).catch(()=>{});await page.evaluate(()=>window.CX?.router?.nav?.('reservas'));await page.waitForTimeout(750);
+  const rBefore=await page.evaluate(({id,program})=>{const rows=typeof window.CX?.reservas?.list==='function'?window.CX.reservas.list(program):(Array.isArray(window.CX?.data?.__protectedReservations)?window.CX.data.__protectedReservations:[]);return rows.some(r=>String(r?.id||r?.reservationId||'')===id);},{id:RSV_ID,program:PROGRAM});need(rBefore,'FUNCTIONAL_DEFECT','RSV_ADMIN_READ_MODEL_BEFORE_DELETE');
+  const rDelete=rbase('reservation.delete',RSV_ID,rPeriodId,'qa-rsv-delete-'+RUN,3,{reason:'QA bounded lifecycle cleanup'});const rd1=await send(adminToken,rDelete);need(rd1.ok&&rd1.body?.providerAck===true,'PERSISTENCE_FAILURE','RSV_DELETE_ACK',{rd1});const rd2=await send(adminToken,rDelete);need(rd2.ok&&rd2.body?.idempotentReplay===true&&Number(rd2.body?.providerWrites||0)===0,'PERSISTENCE_FAILURE','RSV_DELETE_REPLAY',{rd2});
+  rsnap=await project.collection('reservations').doc(RSV_ID).get();need(!rsnap.exists,'PERSISTENCE_FAILURE','RSV_DELETE_READBACK');
+  await page.reload({waitUntil:'domcontentloaded',timeout:90000});await page.waitForFunction(({TENANT})=>window.CX?.backendAuth?.context?.()?.authenticated===true&&window.CX?.backendAuth?.context?.()?.tenantId===TENANT&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,{TENANT},{timeout:120000});await page.evaluate(()=>window.CX?.router?.nav?.('reservas'));await page.waitForTimeout(750);
+  const rAfter=await page.evaluate(({id,program})=>{const rows=typeof window.CX?.reservas?.list==='function'?window.CX.reservas.list(program):(Array.isArray(window.CX?.data?.__protectedReservations)?window.CX.data.__protectedReservations:[]);return rows.some(r=>String(r?.id||r?.reservationId||'')===id);},{id:RSV_ID,program:PROGRAM});need(rAfter===false,'FUNCTIONAL_DEFECT','RSV_REAPPEARED_AFTER_DELETE');
+  const rVisitAfterSnap=await rVisitRef.get(),rVisitAfter=rVisitAfterSnap.data()||{},visitUnchanged=str(rVisitAfter.shopperId)===str(rVisitBefore.shopperId)&&str(rVisitAfter.estado||rVisitAfter.status)===str(rVisitBefore.estado||rVisitBefore.status)&&Number(rVisitAfter.version||0)===Number(rVisitBefore.version||0);need(visitUnchanged,'PERSISTENCE_FAILURE','RSV_VISIT_MUTATED_WITHOUT_CROSS');
+  const rResidue=(await docs(project.collection('reservations'))).filter(r=>str(r.id||r.reservationId)===RSV_ID).length;need(rResidue===0,'PERSISTENCE_FAILURE','RSV_QA_RESIDUE',{rResidue});
+  result.reservations={decision:'PASS_I3_ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE',create:{providerAck:true,idempotentReplay:true,durableReadback:true,version:1},approve:{providerAck:true,idempotentReplay:true,durableReadback:true,version:2},reassign:{providerAck:true,idempotentReplay:true,durableReadback:true,version:3,fromShopperId:shopperId,toShopperId:shopperB,visitWrite:false},delete:{providerAck:true,idempotentReplay:true,durableReadback:true,noReappearance:true},browser:{beforeDeleteVisible:true,afterDeleteVisible:false,reloadNoReappearance:true},visitInvariant:{unchanged:true,noCrossWrite:true},cleanup:{providerDelete:true,fallbackDirectDelete:false,qaResidue:0}};
   result.decision='PASS_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE';
   save();console.log(JSON.stringify(result,null,2));
   await ctx.close();
@@ -144,6 +175,12 @@ try{
     if(snap.exists){
       await ref.delete();
       result.cleanup={...(result.cleanup||{}),fallbackDirectDelete:true,exactQaId:APP_ID};
+      save();
+    }
+    const rref=project.collection('reservations').doc(RSV_ID),rsnap=await rref.get();
+    if(rsnap.exists){
+      await rref.delete();
+      result.reservations={...(result.reservations||{}),cleanup:{...((result.reservations||{}).cleanup||{}),fallbackDirectDelete:true,exactQaId:RSV_ID}};
       save();
     }
   }catch(e){result.cleanup={...(result.cleanup||{}),cleanupError:str(e?.message||e)};save();}
