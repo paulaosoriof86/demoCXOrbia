@@ -36,14 +36,37 @@ async function apiKey(){
   assert(r.ok,'ENVIRONMENT_FAILURE:VRM174_FIREBASE_INIT_'+r.status);
   return str((await r.json()).apiKey);
 }
-async function browserSignIn(page){
-  const custom=await auth.createCustomToken(staff.id);
-  await page.evaluate(async token=>{
-    await window.firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);
-    await window.firebase.auth().signInWithCustomToken(token);
-  },custom);
-}
 const baseUrl=HOST+'/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV';
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+async function browserSignIn(page){
+  const attempts=[];
+  for(let attempt=1;attempt<=5;attempt++){
+    const custom=await auth.createCustomToken(staff.id);
+    try{
+      await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:45000});
+      const state=await page.evaluate(async token=>{
+        try{
+          const f=window.firebase;
+          if(!f?.auth||!Array.isArray(f.apps)||!f.apps.length)return {ok:false,code:'FIREBASE_SDK_NOT_READY'};
+          await f.auth().setPersistence(f.auth.Auth.Persistence.SESSION);
+          const credential=await f.auth().signInWithCustomToken(token);
+          return {ok:true,uid:String(credential?.user?.uid||'')};
+        }catch(error){return {ok:false,code:String(error?.code||''),message:String(error?.message||error)};}
+      },custom);
+      if(state?.ok===true)return {ok:true,attempt,attempts};
+      attempts.push({attempt,code:str(state?.code),message:str(state?.message).slice(0,200)});
+    }catch(error){
+      attempts.push({attempt,code:'PLAYWRIGHT_OR_AUTH',message:str(error?.message||error).slice(0,200)});
+    }
+    if(attempt<5){
+      await sleep(800*attempt);
+      await page.goto(baseUrl,{waitUntil:'domcontentloaded',timeout:90000}).catch(()=>{});
+    }
+  }
+  const err=new Error('ENVIRONMENT_FAILURE:VRM174_BROWSER_AUTH_TRANSIENT_EXHAUSTED');
+  err.attempts=attempts;
+  throw err;
+}
 const browser=await chromium.launch({headless:true});
 const result={schemaVersion:'cxorbia.i3.vrm174.historical-payment-live.v1',decision:'HOLD',durableHistoricalPaid:historicalPaid.length,periods:[],writes:0,hrWrites:0,externalWrites:0,builds:0,deploys:0,production:false};
 try{
