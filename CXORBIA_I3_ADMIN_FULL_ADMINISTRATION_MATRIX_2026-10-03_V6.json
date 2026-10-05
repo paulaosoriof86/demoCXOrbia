@@ -363,7 +363,7 @@
     },
     {
       "route": "shoppers",
-      "classification": "OPEN_BLOCKER",
+      "classification": "PASS_PROVEN",
       "owner": [
         "app/modules/shoppers.js",
         "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
@@ -434,7 +434,28 @@
         "runtimeRevision": "cxorbia-live-hr-dev-00258-9fj",
         "hostingVersion": "sites/cxorbia-backend-dev/versions/9da4b395d0d2099d",
         "sourceSha": "4f87cb0155162674d459b09e3725dd585c84709d"
-      }
+      },
+      "currentArtifactProof": {
+        "runId": 37251257394,
+        "runNumber": 1152,
+        "jobId": 111579226933,
+        "artifactId": 11320549762,
+        "decision": "PASS_VRM221_ADMIN_LIVE_E2E",
+        "providerAck": true,
+        "idempotentReplay": true,
+        "durableReadback": true,
+        "reviewFilter": true,
+        "multiSelect": true,
+        "merge": true,
+        "keepSeparate": true,
+        "safeRetire": true,
+        "currentHrDeleteBlocked": true,
+        "cleanupActiveSyntheticRemaining": 0,
+        "hrWrites": 0,
+        "externalWrites": 0,
+        "production": false
+      },
+      "remaining": "Run1152 proves the full bounded Admin identity-governance lifecycle on the unchanged candidate with synthetic fixtures and cleanup. Existing create/edit/reset source contracts plus live merge/distinct/retire/block readback close this route."
     },
     {
       "route": "informes",
@@ -1650,8 +1671,8 @@
     }
   ],
   "summary": {
-    "PASS_PROVEN": 8,
-    "OPEN_BLOCKER": 25,
+    "PASS_PROVEN": 9,
+    "OPEN_BLOCKER": 24,
     "NOT_APPLICABLE_WITH_REASON": 1,
     "omissions": 0
   },
@@ -1727,7 +1748,7 @@
   "humanVisualApprovalAllowed": false,
   "i4Allowed": false,
   "production": "DO_NOT_TOUCH",
-  "exactNextAction": "Admin Cluster A: prove Shoppers administrative lifecycle E2E with synthetic QA fixtures and cleanup; then Postulations and Reservations mutation/reload lifecycle. Run1148 route visibility does not close unexercised writes.",
+  "exactNextAction": "Admin Cluster A: Postulations lifecycle E2E with provider ACK/replay/readback/delete/no-reappearance, then Reservations lifecycle E2E. Do not close mutation gaps from route visibility alone.",
   "visualPhaseAPriorityLock": {
     "status": "FROZEN",
     "addendum": "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-10-03_VISUAL_CHECKPOINT_PHASEA_PRIORITY_FROZEN.md",
