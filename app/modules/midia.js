@@ -149,7 +149,14 @@ CX.module('midia', ({data,role,ui})=>{
      El estado (asignada/agendada) NO sustituye identidad. Sin shopperId: cero contenido privado. */
   const _rawSid=String((CX.session.user||{}).shopperId||'').trim();
   const _mySid=_rawSid?String(data.__identityMap?.[_rawSid]||_rawSid).trim():null;
-  const mine=_mySid?(data.visitsForShopper?data.visitsForShopper(_mySid,false):data.visitas().filter(v=>String(v.shopperId||'')===String(_mySid))).filter(v=>!(data.visitFacets?.(v)?.cancelled)).slice(0,2):[];
+  /* VRM-256: "Tu próxima visita" debe pertenecer al período activo. Antes se tomaban
+     las primeras visitas históricas del shopper y podía mostrarse una visita realizada de
+     otro período bajo el encabezado del período actual. */
+  const mine=_mySid?(data.visitsForShopper?data.visitsForShopper(_mySid,false):data.visitas().filter(v=>String(v.shopperId||'')===String(_mySid))).filter(v=>{
+    const f=data.visitFacets?.(v)||v.canonicalFacets||{};
+    const recordPeriodId=String(data.recordPeriodId?data.recordPeriodId(v):(v.periodId||v.projectId)||'');
+    return recordPeriodId===String(data.currentPeriodId||'')&&f.assigned===true&&f.realized!==true&&f.cancelled!==true;
+  }).slice(0,2):[];
   const nextVisit=mine[0]||null;
   const vf=nextVisit&&data.visitFacets?data.visitFacets(nextVisit):(nextVisit?.canonicalFacets||{});
   const certBank=(()=>{try{return CX.certStore?.bank?.(p.id,window.CX_CERT_SELECTED_ID||'main')||CX.certStore?.bank?.(p.id)||null;}catch(_){return null;}})();
