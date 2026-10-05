@@ -3,10 +3,10 @@
   "status": "ACTIVE_CLOSURE_VIEW",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
   "generatedFromLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "generatedAtEvidenceTime": "2026-10-05T18:09:00Z",
-  "controlHeadAtGeneration": "496101ef8f596b2fe705994dba3365feaf5a4c15",
-  "productSourceSha": "b3cc541c38d80708e8ee7e2007611eb9126bc34a",
-  "productSourceTree": "1dd01eb285503ee474201a172a2d6afe35cf390e",
+  "generatedAtEvidenceTime": "2026-10-05T18:16:00Z",
+  "controlHeadAtGeneration": "83efbf042c2f1cef471823e818e0a773e80617d5",
+  "productSourceSha": "170d09983d4696a02453a58f46b027d41c579132",
+  "productSourceTree": "d20c7a52ea702d3c2c9d5235aa3c45d1a00419f6",
   "exactDevArtifact": {
     "state": "PASS_I3_VRM174_EXACT_DEV_MATERIALIZATION",
     "runId": 37351952599,
@@ -47,6 +47,7 @@
     "SUPERSEDED_BY_VRM-243": 1
   },
   "nextCriticalSequence": [
+    "VRM174_EXACT_DEV_MATERIALIZATION",
     "VRM174_HISTORICAL_PAYMENT_REPROOF",
     "SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF",
     "PAULA_VISUAL_CHECKPOINT",
@@ -5447,27 +5448,25 @@
         "app/modules/finanzas.js"
       ],
       "latestApprovedSource": {
-        "sourceSha": "b3cc541c38d80708e8ee7e2007611eb9126bc34a",
-        "sourceTree": "1dd01eb285503ee474201a172a2d6afe35cf390e",
-        "state": "VRM174_EXACT_DURABLE_AUTHORITY_SUCCESSOR"
+        "sourceSha": "170d09983d4696a02453a58f46b027d41c579132",
+        "sourceTree": "d20c7a52ea702d3c2c9d5235aa3c45d1a00419f6",
+        "state": "VRM174_HISTORICAL_PAID_OVER_EXACT_MATCH_SUCCESSOR"
       },
       "latestLiveProof": {
-        "runId": 37351952599,
-        "runNumber": 1228,
-        "jobId": 111904957923,
-        "artifactId": 11363246712,
-        "artifactDigest": "sha256:1fd35361058ec7307837cc76e45b3e23d1edc0836de01531dd339d1ccc4863c3",
-        "decision": "PASS_I3_VRM174_EXACT_DEV_MATERIALIZATION",
-        "sourceSha": "b3cc541c38d80708e8ee7e2007611eb9126bc34a",
-        "runtimeRevision": "cxorbia-live-hr-dev-00266-q2z",
-        "runtimeDigest": "sha256:d622a31115b59e79ccaf8156ca98b64144feba72f2bbd855d1cd8f3b1bf0e044",
-        "hostingVersion": "sites/cxorbia-backend-dev/versions/36a59f69f3a01db9",
-        "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+        "runId": 37352616801,
+        "runNumber": 1229,
+        "jobId": 111907065437,
+        "artifactId": 11363541703,
+        "artifactDigest": "sha256:03d70d2ed464ba174bb3cce6d5423ce6944ab67ecb16570f10644f093dd07038",
+        "decision": "HOLD_VRM174_JAN2026_EXACT_MATCH_PAYMENT_PRECEDENCE",
+        "stableHrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+        "passedHistoricalPeriods": 7,
+        "firstFailedPeriodId": "cinepolis-2026-01",
         "production": false
       },
       "successor": null,
-      "rawLedgerState": "DEV_MATERIALIZED_HISTORICAL_PAYMENT_REPROOF_REQUIRED",
-      "realState": "DEV_MATERIALIZED_HISTORICAL_PAYMENT_REPROOF_REQUIRED",
+      "rawLedgerState": "RESIDUAL_SOURCE_FIX_COMPOSED_DEV_MATERIALIZATION_REQUIRED",
+      "realState": "RESIDUAL_SOURCE_FIX_COMPOSED_DEV_MATERIALIZATION_REQUIRED",
       "evidence": {
         "currentProductSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
         "currentProductTree": "b59da4c090d4639a136168656e7addd544f38e18",
@@ -5482,10 +5481,12 @@
           "sourceTree": null
         },
         "run1227RootCause": "Finance matcher lacked __docId == live HR visitId precedence across legitimate durable duplicate history.",
-        "successorSource": "b3cc541c38d80708e8ee7e2007611eb9126bc34a",
-        "successorTree": "1dd01eb285503ee474201a172a2d6afe35cf390e"
+        "successorSource": "170d09983d4696a02453a58f46b027d41c579132",
+        "successorTree": "d20c7a52ea702d3c2c9d5235aa3c45d1a00419f6",
+        "run1229Passed2025Periods": true,
+        "run1229Residual": "historicalReconciliationConfirmed=true was shadowed by earlier exact financialMatch paymentConfirmed=false"
       },
-      "actionRemaining": "same-artifact read-only historical payment projection reproof",
+      "actionRemaining": "one exact DEV materialization of refined VRM174 successor, then same-artifact historical payment reproof",
       "blocking": true,
       "terminalDisposition": null
     },
