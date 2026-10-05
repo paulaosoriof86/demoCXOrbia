@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM249_LIFECYCLE_CONTROL_BINDING_REQUIRED",
+  "status": "HOLD_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Switch only to HOLD_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE_REQUIRED and execute the existing bounded Postulations + Reservations lifecycle on the exact current Run1176 DEV materialization.",
+  "exactNextAction": "Execute the existing bounded Admin Cluster A Postulations + Reservations lifecycle against the exact current Run1176 DEV materialization. Require provider ACK/idempotency/readback, Admin reservation visibility after refresh, delete no-reappearance, unchanged visit when no cross action is requested, zero residue, zero HR/external writes.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -4053,7 +4053,7 @@
     "production": false
   },
   "vrm249": {
-    "state": "EXACT_DEV_MATERIALIZED_LIFECYCLE_REPROOF_REQUIRED",
+    "state": "EXACT_DEV_MATERIALIZED_LIFECYCLE_REPROOF_ACTIVE",
     "classification": "MAPPING_FAILURE",
     "runId": 37253163627,
     "runNumber": 1162,
