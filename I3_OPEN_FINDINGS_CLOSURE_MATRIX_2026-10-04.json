@@ -3,8 +3,8 @@
   "status": "ACTIVE_CLOSURE_VIEW",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
   "generatedFromLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "generatedAtEvidenceTime": "2026-10-05T15:45:00Z",
-  "controlHeadAtGeneration": "88aa0f46936dc68ca8134d8b64f18f3820240931",
+  "generatedAtEvidenceTime": "2026-10-05T15:50:00Z",
+  "controlHeadAtGeneration": "93c233b07b9f599f2004be0a39211339cf42c602",
   "productSourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
   "productSourceTree": "638ab7ab63244286ff460205da441221d5957ef0",
   "exactDevArtifact": {
@@ -8370,9 +8370,11 @@
         "error": "ReferenceError: firebase is not defined",
         "correctionCommit": "c4c810aef5ec4f5fabd48cc6ee1d763d30f5d9b6",
         "productChanged": false,
-        "production": false
+        "production": false,
+        "run1220": 37335598661,
+        "authStabilizationCommit": "14e864b71ade98c329a3dc45ec50d97e00770049"
       },
-      "actionRemaining": "same unchanged Run1176 historical payment reproof",
+      "actionRemaining": "same unchanged Run1176 VRM174 historical payment reproof",
       "blocking": true,
       "terminalDisposition": null
     }
