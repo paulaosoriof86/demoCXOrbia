@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_FINANCE_FOCAL_REPROOF_REQUIRED",
+  "status": "HOLD_I3_VRM174_HISTORICAL_PAYMENT_CONTROL_PREP_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,7 +8,7 @@
   "productTreeAuthority": "638ab7ab63244286ff460205da441221d5957ef0",
   "predecessorProductSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "619d1fff4c906609d89335958087a1905c6abe73",
+  "findingsLedgerExpectedGitBlob": "6460270c1ae37307c3987bfdceb6adee68c0dbc7",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Execute the existing focal finance E2E on the exact unchanged Run1176 DEV artifact. Prove operating revenue, blocked unclassified movement, CxC/CxP application, financing non-operating semantics, idempotency, durable browser projection, cleanup, zero HR writes and no production.",
+  "exactNextAction": "Prepare read-only historical payment projection QA against exact current Run1176 DEV; compare durable confirmed-payment visits to canonical browser liquidations per period.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -4200,6 +4200,24 @@
     "artifactDigest": "sha256:25d484e2d071dba6440f4bda2f01baf837a4244e51de908fdd4844d5029a680d",
     "reservationsDecision": "PASS_I3_ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE",
     "postulationsDecision": "PASS_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE",
+    "production": false
+  },
+  "financeFocalReceipt": {
+    "runId": 37333811676,
+    "runNumber": 1209,
+    "jobId": 111843459146,
+    "artifactId": 11355651173,
+    "artifactDigest": "sha256:20424a0a6584aacc9def0eb6b8902bbd89ee20d42031e2224a0ef0bd7a92e5de",
+    "decision": "PASS_PREI4_FINAL_FOCAL_FINANCE",
+    "production": false
+  },
+  "vrm179": {
+    "state": "PASS_RUN1209_CURRENT_ARTIFACT",
+    "terminalDisposition": "PASS_CURRENT_ARTIFACT"
+  },
+  "vrm174": {
+    "state": "HISTORICAL_PAYMENT_REPROOF_REQUIRED",
+    "productChanged": false,
     "production": false
   }
 }
