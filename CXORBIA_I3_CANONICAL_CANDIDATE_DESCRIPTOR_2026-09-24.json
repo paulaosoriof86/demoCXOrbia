@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF_REQUIRED",
+  "status": "HOLD_VRM185_PAULA_IDENTITY_TOPOLOGY_DIAGNOSTIC_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,7 +8,7 @@
   "productTreeAuthority": "fdea83d9baf760cd379bfdbcd1bad4281d894df5",
   "predecessorProductSourceSha": "170d09983d4696a02453a58f46b027d41c579132",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "4765aaaf64a6b9a2305e83dca203f69149175960",
+  "findingsLedgerExpectedGitBlob": "0bb0a74121c579851f0b5ca6544e0640a275ae4d",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run the existing phasea-representative-same-artifact-live-reproof against exact Run1232 DEV artifact to reprove representative Admin/Shopper/population P0 contracts without rebuild or writes; no production.",
+  "exactNextAction": "Run the existing vrm185-paula-identity-topology-readonly job against exact Run1232 DEV artifact with PAULA_SECOND_PRINCIPAL_ID=shp-cdbf95dccaa6; classify only by exact technical lineage, perform zero Auth/Firestore/HR/product writes, zero deploys, no production, and do not consume VRM-256.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -4383,5 +4383,31 @@
       "periodLookupPassed": true,
       "production": false
     }
+  },
+  "paulaIdentityTopologyDiagnostic": {
+    "state": "READ_ONLY_DIAGNOSTIC_REQUIRED",
+    "originatingRunId": 37357554739,
+    "originatingRunNumber": 1234,
+    "originatingFailure": "MAPPING_FAILURE:TARGET_ACTIVE_CANONICAL_PRINCIPAL_paula_osorio",
+    "visibleLogin": "paula.osorio",
+    "exactHrId": "shopper_gt_1440137b73",
+    "legacyCanonicalId": "s3",
+    "secondPrincipalId": "shp-cdbf95dccaa6",
+    "artifactRunId": 37356275140,
+    "artifactId": 11365046107,
+    "sourceSha": "617ff043d77c4c3abdf20683abe05fe9d6a6e546",
+    "sourceTree": "fdea83d9baf760cd379bfdbcd1bad4281d894df5",
+    "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+    "nameOnlyMergeAllowed": false,
+    "writes": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "deploys": 0,
+    "production": false,
+    "nextFindingIdReserved": "VRM-256",
+    "nextFindingIdConsumed": false,
+    "enteredAtEvidenceTime": "2026-10-05T20:46:00Z",
+    "expectedParentSha": "b6c3aad52ea904cecb04feff647e13f3660f9bf7"
   }
 }

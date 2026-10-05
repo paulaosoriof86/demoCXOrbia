@@ -46,6 +46,7 @@
     "SUPERSEDED_BY_VRM-243": 1
   },
   "nextCriticalSequence": [
+    "PAULA_IDENTITY_TOPOLOGY_DIAGNOSTIC_READ_ONLY",
     "SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF",
     "PAULA_VISUAL_CHECKPOINT",
     "GATE20_GATE21_TERMINAL_CLOSURE"
@@ -8464,5 +8465,38 @@
   ],
   "exactDevArtifactRole": "CURRENT_VRM249_SUCCESSOR",
   "moduleTruthScopeSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
-  "currentSuccessorRequiresModuleTruthReproof": true
+  "currentSuccessorRequiresModuleTruthReproof": true,
+  "paulaIdentityTopologyDiagnostic": {
+    "state": "READ_ONLY_DIAGNOSTIC_REQUIRED",
+    "originatingRunId": 37357554739,
+    "originatingRunNumber": 1234,
+    "originatingFailure": "MAPPING_FAILURE:TARGET_ACTIVE_CANONICAL_PRINCIPAL_paula_osorio",
+    "visibleLogin": "paula.osorio",
+    "exactHrId": "shopper_gt_1440137b73",
+    "legacyCanonicalId": "s3",
+    "secondPrincipalId": "shp-cdbf95dccaa6",
+    "artifactRunId": 37356275140,
+    "artifactId": 11365046107,
+    "sourceSha": "617ff043d77c4c3abdf20683abe05fe9d6a6e546",
+    "sourceTree": "fdea83d9baf760cd379bfdbcd1bad4281d894df5",
+    "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+    "nameOnlyMergeAllowed": false,
+    "writes": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "deploys": 0,
+    "production": false,
+    "nextFindingIdReserved": "VRM-256",
+    "nextFindingIdConsumed": false,
+    "enteredAtEvidenceTime": "2026-10-05T20:46:00Z",
+    "expectedParentSha": "b6c3aad52ea904cecb04feff647e13f3660f9bf7"
+  },
+  "controlTransition": {
+    "state": "HOLD_VRM185_PAULA_IDENTITY_TOPOLOGY_DIAGNOSTIC_REQUIRED",
+    "expectedParentSha": "b6c3aad52ea904cecb04feff647e13f3660f9bf7",
+    "productSourceChanged": false,
+    "findingCreated": false,
+    "production": false
+  }
 }

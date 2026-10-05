@@ -6386,6 +6386,7 @@ jobs:
       PAULA_VISIBLE_LOGIN: paula.osorio
       PAULA_EXACT_HR_ID: shopper_gt_1440137b73
       PAULA_LEGACY_CANONICAL_ID: s3
+      PAULA_SECOND_PRINCIPAL_ID: shp-cdbf95dccaa6
     steps:
       - uses: actions/checkout@v4
         with:
