@@ -3,8 +3,8 @@
   "status": "ACTIVE_CLOSURE_VIEW",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
   "generatedFromLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "generatedAtEvidenceTime": "2026-10-05T15:30:00Z",
-  "controlHeadAtGeneration": "6d2c96a97e4fdc13966bf716149245f5151b021e",
+  "generatedAtEvidenceTime": "2026-10-05T15:36:00Z",
+  "controlHeadAtGeneration": "e50f3efee63f6245d904fdc6ca188cead513dcec",
   "productSourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
   "productSourceTree": "638ab7ab63244286ff460205da441221d5957ef0",
   "exactDevArtifact": {
@@ -30,10 +30,10 @@
   "findingCount": 253,
   "missingFindingIds": [],
   "duplicateFindingIds": [],
-  "currentBlockingCount": 57,
-  "undisposedCount": 72,
+  "currentBlockingCount": 56,
+  "undisposedCount": 71,
   "terminalDispositionCounts": {
-    "PASS_CURRENT_ARTIFACT": 154,
+    "PASS_CURRENT_ARTIFACT": 155,
     "SUPERSEDED_BY_VRM-221": 1,
     "NON_BLOCKING_DEFERRED_WITH_EXPLICIT_REASON": 3,
     "PRESERVED_PHASE_B_NOT_I3_AUTHORITY": 1,
@@ -47,7 +47,7 @@
     "SUPERSEDED_BY_VRM-243": 1
   },
   "nextCriticalSequence": [
-    "VRM174_VRM179_FINANCE_FOCAL_REPROOF",
+    "VRM174_HISTORICAL_PAYMENT_REPROOF",
     "SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF",
     "PAULA_VISUAL_CHECKPOINT",
     "GATE20_GATE21_TERMINAL_CLOSURE"
@@ -5448,16 +5448,17 @@
       ],
       "latestApprovedSource": "542fb96630d2068993d03ae86e3d3299f5386251",
       "latestLiveProof": {
-        "runNumber": 0,
-        "runId": 37049822507,
-        "decision": "PASS_READ_ONLY_FORENSIC",
-        "artifactId": 11245822402,
-        "sourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
-        "sourceTree": null
+        "runId": 37333811676,
+        "runNumber": 1209,
+        "jobId": 111843459146,
+        "artifactId": 11355651173,
+        "artifactDigest": "sha256:20424a0a6584aacc9def0eb6b8902bbd89ee20d42031e2224a0ef0bd7a92e5de",
+        "decision": "PASS_PREI4_FINAL_FOCAL_FINANCE",
+        "production": false
       },
       "successor": null,
-      "rawLedgerState": "SOURCE_PASS_RUN1045_PENDING_EXACT_DEV_LIVE",
-      "realState": "LIVE_REPROOF_REQUIRED",
+      "rawLedgerState": "RUN1209_FOCAL_PASS_HISTORICAL_PAYMENT_REPROOF_REQUIRED",
+      "realState": "RUN1209_FOCAL_PASS_HISTORICAL_PAYMENT_REPROOF_REQUIRED",
       "evidence": {
         "currentProductSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
         "currentProductTree": "b59da4c090d4639a136168656e7addd544f38e18",
@@ -5472,7 +5473,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof",
+      "actionRemaining": "same-artifact historical payment projection reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -5615,16 +5616,17 @@
       ],
       "latestApprovedSource": "542fb96630d2068993d03ae86e3d3299f5386251",
       "latestLiveProof": {
-        "runNumber": 0,
-        "runId": 37049822507,
-        "decision": "PASS_READ_ONLY_FORENSIC",
-        "artifactId": 11245822402,
-        "sourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
-        "sourceTree": null
+        "runId": 37333811676,
+        "runNumber": 1209,
+        "jobId": 111843459146,
+        "artifactId": 11355651173,
+        "artifactDigest": "sha256:20424a0a6584aacc9def0eb6b8902bbd89ee20d42031e2224a0ef0bd7a92e5de",
+        "decision": "PASS_PREI4_FINAL_FOCAL_FINANCE",
+        "production": false
       },
       "successor": null,
-      "rawLedgerState": "P0_ACCEPTANCE_REPROOF_REQUIRED",
-      "realState": "LIVE_REPROOF_REQUIRED",
+      "rawLedgerState": "PASS_RUN1209_CURRENT_ARTIFACT",
+      "realState": "PASS_CURRENT_ARTIFACT",
       "evidence": {
         "currentProductSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
         "currentProductTree": "b59da4c090d4639a136168656e7addd544f38e18",
@@ -5639,9 +5641,9 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "same-artifact live sweep / exact owner reproof",
-      "blocking": true,
-      "terminalDisposition": null
+      "actionRemaining": null,
+      "blocking": false,
+      "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
       "findingId": "VRM-180",
