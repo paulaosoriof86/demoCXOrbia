@@ -6625,6 +6625,12 @@ jobs:
             test "$MAT_DIGEST" = "sha256:cb32fdcbb1995dd56fbea4bf120d2a505c45c67873dd9ae9c6e029fd4a75eec0"
             test "$MAT_DECISION" = "PASS_VRM256_EXACT_DEV_MATERIALIZATION"
           fi
+          if [[ "$(jq -r '.activeBlocker // empty' "$CANDIDATE_DESCRIPTOR")" == "VRM-257" ]]; then
+            test "$MAT_RUN" = "37378446938"
+            test "$MAT_ARTIFACT" = "11372621572"
+            test "$MAT_DIGEST" = "sha256:0af9f909e02083a7f728de536609298b89304513f9f92d3db71d952b36adea34"
+            test "$MAT_DECISION" = "PASS_VRM257_EXACT_DEV_MATERIALIZATION"
+          fi
           test -n "$EXPECTED_RUNTIME_REVISION"
           [[ "$EXPECTED_RUNTIME_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
           test -n "$EXPECTED_HOSTING_VERSION"
