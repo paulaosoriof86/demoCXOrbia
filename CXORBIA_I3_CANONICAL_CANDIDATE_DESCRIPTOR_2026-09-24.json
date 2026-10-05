@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM174_HISTORICAL_PAYMENT_REPROOF_REQUIRED",
+  "status": "HOLD_I3_VRM174_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
-  "productTreeAuthority": "638ab7ab63244286ff460205da441221d5957ef0",
-  "predecessorProductSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+  "productSourceSha": "b3cc541c38d80708e8ee7e2007611eb9126bc34a",
+  "productTreeAuthority": "1dd01eb285503ee474201a172a2d6afe35cf390e",
+  "predecessorProductSourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "e226bc18ae3537195c070db3f0d2e3b5e0f78a86",
+  "findingsLedgerExpectedGitBlob": "1c2b4c63f54fbae219424bab56e8a68b38579ea0",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Re-run VRM174 historical payment proof with VRM255 stable all-period HR authority control on the exact unchanged Run1176 DEV artifact; no rebuild, deploy, provider write, HR write or production.",
+  "exactNextAction": "Materialize the exact VRM174 successor once in DEV through the existing canonical materialization lane, then re-run the historical payment projection on that same artifact; no production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -601,16 +601,7 @@
     "production": false,
     "findingId": "VRM-055"
   },
-  "lastControlFailure": {
-    "findingId": "VRM-255",
-    "classification": "MAPPING_FAILURE",
-    "runId": 37350785639,
-    "runNumber": 1226,
-    "jobId": 111900799893,
-    "code": "NEXT_FINDING_ID",
-    "productChanged": false,
-    "production": false
-  },
+  "lastControlFailure": null,
   "lastSecondReviewProof": {
     "runId": 36220426137,
     "runNumber": 472,
@@ -4219,9 +4210,22 @@
     "terminalDisposition": "PASS_CURRENT_ARTIFACT"
   },
   "vrm174": {
-    "state": "HISTORICAL_PAYMENT_REPROOF_REQUIRED",
+    "state": "SOURCE_FIX_COMPOSED_DEV_MATERIALIZATION_REQUIRED",
     "productChanged": false,
-    "production": false
+    "production": false,
+    "sourceSuccessorSha": "b3cc541c38d80708e8ee7e2007611eb9126bc34a",
+    "sourceSuccessorTree": "1dd01eb285503ee474201a172a2d6afe35cf390e",
+    "productOwner": "app/adapters/tya-canonical-finance-read-model-v2.js",
+    "regressionOwner": "tools/qa/tya-c6-canonical-finance-read-model-gate.mjs",
+    "rootCause": "Durable duplicate history caused the finance matcher to return null before applying the already-proven __docId == live HR visitId authority precedence.",
+    "run1227": {
+      "runId": 37350975911,
+      "runNumber": 1227,
+      "artifactId": 11362442533,
+      "authorityPeriodCount": 17,
+      "stableHrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+      "production": false
+    }
   },
   "vrm254": {
     "state": "CONTROL_ONLY_FIXED_RUN1225_AUTH_PASS",
@@ -4265,16 +4269,16 @@
   },
   "openFindingsClosureMatrix": {
     "path": "I3_OPEN_FINDINGS_CLOSURE_MATRIX_2026-10-04.json",
-    "expectedGitBlob": "2b74c3dea06197238d14d167eb397a6a638c584a",
+    "expectedGitBlob": "ac7c9e8faecdaea5110f09691a500945c32098c8",
     "findingCount": 255,
     "nextFindingId": "VRM-256",
-    "currentBlockingCount": 57,
+    "currentBlockingCount": 56,
     "production": false
   },
   "vrm255": {
     "classification": "ENVIRONMENT_FAILURE",
     "observedHarnessClassification": "MAPPING_FAILURE",
-    "state": "CONTROL_FIX_COMPOSED_REPROOF_REQUIRED",
+    "state": "CONTROL_ONLY_FIXED_RUN1227_STABLE_HR",
     "owner": "tools/qa/cxorbia-i3-vrm174-historical-payment-live.mjs",
     "correctionCommit": "c854cdea0b10818652e22d006f85234827b8b93f",
     "run1225": {
@@ -4287,6 +4291,16 @@
     },
     "exactDevArtifactUnchanged": true,
     "productSourceChanged": false,
-    "production": false
+    "production": false,
+    "terminalDisposition": "CONTROL_ONLY_FIXED",
+    "blocking": false,
+    "run1227": {
+      "runId": 37350975911,
+      "runNumber": 1227,
+      "authorityPeriodCount": 17,
+      "stableHrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+      "periodLookupPassed": true,
+      "production": false
+    }
   }
 }
