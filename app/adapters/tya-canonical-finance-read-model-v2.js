@@ -22,10 +22,19 @@
   function visitKey(v){return str(v?.id||v?.visitId)||str(v?.hrRowId);}
   function liqKey(l){return str(l?.visitaId||l?.visitId)||str(l?.hrRowId);}
   function exactProtectedFinancialMatch(v){
-    const rows=arr(CX.data?.__protectedVisits),hrRow=str(v?.hrRowId),ids=new Set([str(v?.id),str(v?.visitId),str(v?.__protectedVisitId)].filter(Boolean));
-    const matches=rows.filter(p=>(hrRow&&str(p?.hrRowId)===hrRow)||ids.has(str(p?.id||p?.visitId)));
-    if(matches.length!==1)return null;
-    const p=matches[0];
+    const rows=arr(CX.data?.__protectedVisits),liveId=str(v?.visitId||v?.id),hrRow=str(v?.hrRowId),ids=new Set([str(v?.id),str(v?.visitId),str(v?.__protectedVisitId)].filter(Boolean));
+    /* VRM-174: durable visit history legitimately contains duplicate historical rows.
+       The cumulative composer already proves the authoritative row by exact Firestore docId
+       equal to the live HR visit id. Finance must apply the same precedence before weaker
+       hrRow/id fallbacks; otherwise duplicate history makes an actually paid visit look pending. */
+    const exactDoc=liveId?rows.filter(p=>str(p?.__docId)===liveId):[];
+    if(exactDoc.length>1)return null;
+    let p=exactDoc.length===1?exactDoc[0]:null;
+    if(!p){
+      const matches=rows.filter(row=>(hrRow&&str(row?.hrRowId)===hrRow)||ids.has(str(row?.id||row?.visitId)));
+      if(matches.length!==1)return null;
+      p=matches[0];
+    }
     if(str(p?.financialSourceStatus).toLowerCase()==='reconciled_exact'&&p?.financialMatch)return p.financialMatch;
     const historicalPaid=p?.paymentConfirmed===true||p?.historicalReconciliationConfirmed===true||str(p?.historicalPaymentStatus).toLowerCase()==='paid';
     if(!historicalPaid)return null;
