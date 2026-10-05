@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_MULTIMODULE_LIVE_SWEEP_REQUIRED",
+  "status": "HOLD_I3_ADMIN_CLUSTER_A_SHOPPERS_LIFECYCLE_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "b59da4c090d4639a136168656e7addd544f38e18",
   "predecessorProductSourceSha": "bbd66d29192487ac29f8703bd913e3f1e15a28c0",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "551e00fe11a7709ceeabc427098fe6b3c9969c06",
+  "findingsLedgerExpectedGitBlob": "b7dcb147ff388578b969f2bb32c9045791433db8",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "I3_MULTIMODULE_LIVE_SWEEP_REQUIRED",
+  "activeBlocker": "I3_ADMIN_CLUSTER_A_SHOPPERS_LIFECYCLE_REQUIRED",
   "nextFindingId": "VRM-248",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Re-run canonical authority with ledger blob 551e00fe11a7709ceeabc427098fe6b3c9969c06, then execute the existing same-artifact I3 multimodule live sweep on unchanged Run1112 materialization.",
+  "exactNextAction": "Run bounded Admin Shoppers lifecycle E2E on unchanged Run1112 candidate using existing VRM221 synthetic-fixture harness: create/update, identity merge, keep-separate adjudication, safe retire, HR-authoritative delete block, provider ACK, idempotent replay, durable readback and cleanup. No product mutation or production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3510,7 +3510,7 @@
     }
   },
   "adminMatrixPath": "CXORBIA_I3_ADMIN_FULL_ADMINISTRATION_MATRIX_2026-10-03_V6.json",
-  "adminMatrixExpectedGitBlob": "667c3ebe8d9b405ec6e22742b7029a5dcd327df2",
+  "adminMatrixExpectedGitBlob": "da588a0e5e5eee1488149a317a389201d5e1c4ec",
   "lastSourceReproof": {
     "runId": 37161034003,
     "runNumber": 1045,
@@ -3540,7 +3540,7 @@
     "interpretation": "Control-only freeze/readback. No action lane matched the fail-closed precomposition status."
   },
   "shopperIdentityGovernanceLockPath": "CXORBIA_I3_SHOPPER_IDENTITY_GOVERNANCE_LOCK_2026-10-04.json",
-  "queuedBlocker": "PAULA_VISUAL_ACCEPTANCE",
+  "queuedBlocker": "I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE_REQUIRED",
   "currentSourceProof": {
     "runId": 37208053790,
     "runNumber": 1111,
@@ -3711,95 +3711,22 @@
     "production": false
   },
   "lastMultimoduleLiveSweep": {
-    "runId": 37222795614,
-    "runNumber": 1123,
-    "jobId": 111496385275,
-    "artifactId": 11310363770,
-    "artifactDigest": "sha256:b19757e89aea35a3589f33183f44cdb8470ade48d7e3ef651d19c996deb1baf1",
+    "runId": 37250379451,
+    "runNumber": 1148,
+    "jobId": 111576677537,
+    "artifactId": 11319914278,
+    "artifactDigest": "sha256:3db3fcbdc10fd4648be84b6cae85f1ca0f198a00c4a33562471bc86e99957242",
     "decision": "PASS_I3_MULTIMODULE_LIVE_SWEEP",
     "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
     "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
-    "materializationRunId": 37208163415,
-    "materializationArtifactId": 11305847184,
-    "runtimeRevision": "cxorbia-live-hr-dev-00264-pxj",
-    "runtimeDigest": "sha256:d6916255e1cbc94c096b56d2ae0dc7ad7bc3d9eb4e2816f2b4a9bc2819549eae",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/0eb9844cbcbc180f",
-    "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
-    "periodId": "cinepolis-2026-10",
-    "adminRoutes": [
-      "midia",
-      "dashboard",
-      "shoppers",
-      "visitas",
-      "postulaciones",
-      "reservas",
-      "cert",
-      "aprendizaje",
-      "documentos",
-      "financiero",
-      "movimientos",
-      "liquidaciones",
-      "config",
-      "marca",
-      "informes",
-      "historico",
-      "cuestionarios"
-    ],
-    "shopperLanes": [
-      "GT",
-      "HN",
-      "Paula Osorio",
-      "consolidated identity"
-    ],
-    "shopperRoutes": [
-      "midia",
-      "miperfil",
-      "visitas",
-      "reservas",
-      "misvisitas",
-      "aprendizaje",
-      "cert",
-      "documentos",
-      "beneficios",
-      "mireportes"
-    ],
-    "clientRoutes": [
-      "cli_dashboard",
-      "cli_sucursales",
-      "cli_acciones",
-      "cli_insights",
-      "cli_capacitacion",
-      "cli_reportes",
-      "cli_programa"
-    ],
-    "phaseBPreservedSmoke": [
-      "soporte",
-      "novedades",
-      "marketing",
-      "automatizaciones",
-      "integraciones",
-      "correo"
-    ],
-    "population": {
-      "activeShopperMemberships": 380,
-      "profiles": 571,
-      "currentHrVisits": 44,
-      "unresolvedMemberships": 0,
-      "duplicateActivePrincipals": 0,
-      "duplicateHrVisitKeys": 0,
-      "unresolvedAssignedVisits": 0
-    },
-    "writesDelta": {
-      "commandReceipts": 0,
-      "users": 0,
-      "postulations": 0,
-      "reservations": 0
-    },
+    "activeShopperMemberships": 379,
+    "currentHrVisits": 44,
+    "unresolvedMemberships": 0,
+    "duplicateActivePrincipals": 0,
+    "duplicateHrVisitKeys": 0,
+    "unresolvedAssignedVisits": 0,
     "pageErrors": 0,
-    "hrWrites": 0,
-    "externalWrites": 0,
-    "builds": 0,
-    "deploys": 0,
+    "writesDelta": 0,
     "production": false
   },
   "lastVrm215Run1124": {
@@ -4079,7 +4006,7 @@
     "production": false
   },
   "vrm247": {
-    "state": "CONTROL_POINTER_FIXED_PENDING_REPROOF",
+    "state": "CONTROL_ONLY_FIXED_RUN1148",
     "run1145": {
       "runId": 37250274061,
       "runNumber": 1145,
@@ -4088,6 +4015,14 @@
     },
     "boundLedgerBlob": "551e00fe11a7709ceeabc427098fe6b3c9969c06",
     "productChanged": false,
-    "production": false
+    "production": false,
+    "terminalDisposition": "CONTROL_ONLY_FIXED",
+    "closureEvidence": {
+      "runId": 37250379451,
+      "runNumber": 1148,
+      "canonicalAuthorityPassed": true,
+      "multimoduleSweepPassed": true,
+      "production": false
+    }
   }
 }
