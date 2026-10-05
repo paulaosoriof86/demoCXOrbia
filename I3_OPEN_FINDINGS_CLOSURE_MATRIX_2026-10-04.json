@@ -3,8 +3,8 @@
   "status": "ACTIVE_CLOSURE_VIEW",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
   "generatedFromLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "generatedAtEvidenceTime": "2026-10-05T11:44:00Z",
-  "controlHeadAtGeneration": "022ba506008abb525b0046d37314f6ae1963f123",
+  "generatedAtEvidenceTime": "2026-10-05T11:45:00Z",
+  "controlHeadAtGeneration": "7eea30c73e35b17c3360ae0c14df93e30d2365ba",
   "productSourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
   "productSourceTree": "638ab7ab63244286ff460205da441221d5957ef0",
   "exactDevArtifact": {
@@ -27,7 +27,7 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleTruthCount": 21,
   "moduleTruthAllMatch": true,
-  "findingCount": 251,
+  "findingCount": 252,
   "missingFindingIds": [],
   "duplicateFindingIds": [],
   "currentBlockingCount": 58,
@@ -47,9 +47,8 @@
     "SUPERSEDED_BY_VRM-243": 1
   },
   "nextCriticalSequence": [
-    "VRM249_REFRESH_RECONCILIATION_DIAGNOSTIC",
-    "VRM249_EXACT_OWNER_FIX_ONLY_IF_PROVEN",
-    "VRM249_SAME_LIFECYCLE_REPROOF",
+    "VRM252_SAME_ARTIFACT_CONTROL_REPROOF",
+    "VRM249_SAME_LIFECYCLE_ADJUDICATION",
     "SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF",
     "PAULA_VISUAL_CHECKPOINT",
     "GATE20_GATE21_TERMINAL_CLOSURE"
@@ -8273,6 +8272,33 @@
       "actionRemaining": null,
       "blocking": false,
       "terminalDisposition": "CONTROL_ONLY_FIXED"
+    },
+    {
+      "findingId": "VRM-252",
+      "moduleDomain": [
+        "cross-cutting-control",
+        "reservations"
+      ],
+      "severity": "P0_CONTROL",
+      "classification": "MAPPING_FAILURE",
+      "owner": [
+        "tools/qa/cxorbia-i3-admin-cluster-a-postulations-live.mjs"
+      ],
+      "latestApprovedSource": null,
+      "latestLiveProof": null,
+      "successor": null,
+      "rawLedgerState": "CONTROL_FIX_COMPOSED_REPROOF_REQUIRED",
+      "realState": "CONTROL_FIX_COMPOSED_REPROOF_REQUIRED",
+      "evidence": {
+        "run1186": 37304608567,
+        "wrongArgument": "projectId cinepolis",
+        "requiredArgument": "rPeriodId",
+        "correctionCommit": "fec74949073ac5d05150cd79737be8e8f8f05a4f",
+        "productChanged": false
+      },
+      "actionRemaining": "same unchanged Run1176 lifecycle reproof",
+      "blocking": true,
+      "terminalDisposition": null
     }
   ],
   "exactDevArtifactRole": "CURRENT_VRM249_SUCCESSOR",
