@@ -15851,6 +15851,22 @@
           "strategy": "wait for stable all-period HR authority composition, require period-count parity and one stable sourceRevision, and stop refreshing backend between historical period selections",
           "productChanged": false,
           "production": false
+        },
+        "run1226": {
+          "runId": 37350785639,
+          "runNumber": 1226,
+          "jobId": 111900799893,
+          "classification": "MAPPING_FAILURE",
+          "code": "NEXT_FINDING_ID",
+          "observed": {
+            "ledgerGovernanceNextFindingId": "VRM-255",
+            "descriptorNextFindingId": "VRM-256"
+          },
+          "expected": "VRM-256",
+          "productCodeReached": false,
+          "reproofReached": false,
+          "productChanged": false,
+          "production": false
         }
       },
       "expected": "Rerun the same read-only VRM174 proof on unchanged Run1176 artifact. It must prove stable all-period HR authority composition, preserve one sourceRevision across the historical sweep and project all 562 durable paid visits through the canonical finance read model.",
@@ -16536,7 +16552,7 @@
     ],
     "findingCount": 254,
     "expectedCurrentRange": "VRM-001..VRM-254",
-    "nextFindingId": "VRM-255",
+    "nextFindingId": "VRM-256",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_I3_VRM254_CONTROL_REPROOF_REQUIRED",
@@ -16852,13 +16868,13 @@
   "nextFindingId": "VRM-256",
   "lastControlFailure": {
     "findingId": "VRM-255",
-    "classification": "ENVIRONMENT_FAILURE",
-    "observedHarnessClassification": "MAPPING_FAILURE",
-    "runId": 37336302394,
-    "runNumber": 1225,
-    "jobId": 111851931828,
-    "artifactId": 11355494816,
-    "error": "MAPPING_FAILURE:VRM174_PERIOD_NOT_AVAILABLE:cinepolis-2025-06",
+    "classification": "MAPPING_FAILURE",
+    "runId": 37350785639,
+    "runNumber": 1226,
+    "jobId": 111900799893,
+    "code": "NEXT_FINDING_ID",
+    "productCodeReached": false,
+    "reproofReached": false,
     "productChanged": false,
     "production": false
   },
@@ -20411,7 +20427,7 @@
     "humanAcceptance": "FAIL",
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
-  "lastUpdatedAt": "2026-10-05T17:35:00Z",
+  "lastUpdatedAt": "2026-10-05T17:49:00Z",
   "nextExactAction": "Re-run VRM174 historical payment proof with VRM255 stable all-period HR authority control on the exact unchanged Run1176 DEV artifact; no rebuild, deploy, provider write, HR write or production.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
