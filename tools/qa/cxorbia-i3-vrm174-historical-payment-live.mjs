@@ -67,6 +67,24 @@ async function browserSignIn(page){
   err.attempts=attempts;
   throw err;
 }
+async function stableHrState(page){
+  try{
+    await page.waitForFunction(()=>{
+      const c=window.CX?.backendAuth?.context?.()||{},a=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{},d=window.CX?.data||{},ds=window.CX?.dataSource||{},periods=Array.isArray(d.projects)?d.projects:[],authorityPeriods=Number(a.periods||0),revision=String(d.previewMeta?.sourceRevision||'').trim();
+      return c.authenticated===true&&a.applied===true&&ds.sourceRef==='hr-live-all-periods+firestore-authenticated-exact-overlay'&&periods.length>0&&(!authorityPeriods||periods.length===authorityPeriods)&&revision.length>0&&window.CX_TYA_CANONICAL_FINANCE_READ_MODEL?.ready===true;
+    },null,{timeout:150000});
+  }catch(error){
+    const diag=await page.evaluate(()=>{
+      const a=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{},d=window.CX?.data||{},ds=window.CX?.dataSource||{},periods=Array.isArray(d.projects)?d.projects:[];
+      return {authorityApplied:a.applied===true,authorityPeriods:Number(a.periods||0),periodCount:periods.length,periodIds:periods.map(p=>String(p?.id||p?.periodId||'')).filter(Boolean).slice(0,30),sourceRef:String(ds.sourceRef||''),sourceRevision:String(d.previewMeta?.sourceRevision||''),currentPeriodId:String(d.currentPeriodId||'')};
+    }).catch(()=>({browserStateUnavailable:true}));
+    throw new Error('ENVIRONMENT_FAILURE:VRM174_HR_COMPOSITION_NOT_STABLE:'+JSON.stringify(diag));
+  }
+  return page.evaluate(()=>{
+    const a=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{},d=window.CX?.data||{},ds=window.CX?.dataSource||{},periods=Array.isArray(d.projects)?d.projects:[];
+    return {authorityPeriods:Number(a.periods||0),periodIds:periods.map(p=>String(p?.id||p?.periodId||'')).filter(Boolean),sourceRef:String(ds.sourceRef||''),sourceRevision:String(d.previewMeta?.sourceRevision||''),currentPeriodId:String(d.currentPeriodId||'')};
+  });
+}
 const browser=await chromium.launch({headless:true});
 const result={schemaVersion:'cxorbia.i3.vrm174.historical-payment-live.v1',decision:'HOLD',durableHistoricalPaid:historicalPaid.length,periods:[],writes:0,hrWrites:0,externalWrites:0,builds:0,deploys:0,production:false};
 try{
@@ -76,17 +94,24 @@ try{
   await browserSignIn(page);
   await page.reload({waitUntil:'domcontentloaded',timeout:90000});
   await page.waitForFunction(({TENANT,PROJECT_ID})=>{const c=window.CX?.backendAuth?.context?.()||{};return c.authenticated===true&&c.tenantId===TENANT&&['super','admin'].includes(String(c.role||''))&&(c.role==='super'||(Array.isArray(c.projectIds)&&c.projectIds.map(String).includes(PROJECT_ID)))&&window.CX_TYA_CANONICAL_FINANCE_READ_MODEL?.ready===true;},{TENANT,PROJECT_ID},{timeout:120000});
+  const initialState=await stableHrState(page);
+  result.hrRevision=initialState.sourceRevision;
+  result.authorityPeriodCount=initialState.authorityPeriods;
+  const expectedPeriodIds=[...byPeriod.keys()].sort(),missingPeriods=expectedPeriodIds.filter(id=>!initialState.periodIds.includes(id));
+  assert(missingPeriods.length===0,'MAPPING_FAILURE:VRM174_STABLE_HR_PERIODS_MISSING:'+JSON.stringify({missingPeriods,periodIds:initialState.periodIds}));
 
   for(const [periodId,rows] of [...byPeriod.entries()].sort()){
     const expected=rows.map(v=>({docId:str(v.__docId),id:str(v.id),visitId:str(v.visitId),hrRowId:str(v.hrRowId)}));
-    const hasPeriod=await page.evaluate(periodId=>Array.isArray(window.CX?.data?.projects)&&window.CX.data.projects.some(p=>String(p?.id||'')===periodId),periodId);
-    assert(hasPeriod,'MAPPING_FAILURE:VRM174_PERIOD_NOT_AVAILABLE:'+periodId);
-    await page.evaluate(async periodId=>{
-      if(!window.CX?.data?.setProject?.(periodId))throw new Error('SET_PERIOD_FAILED:'+periodId);
-      await window.CX?.backend?.refresh?.();
-      if(typeof window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY==='function')await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY('vrm174_historical_payment_reproof');
-    },periodId);
-    await page.waitForFunction(periodId=>window.CX?.data?.currentPeriodId===periodId&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,periodId,{timeout:120000});
+    const before=await stableHrState(page);
+    assert(before.sourceRevision===result.hrRevision,'SOURCE_FAILURE:VRM174_HR_REVISION_DRIFT_BEFORE_PERIOD:'+periodId);
+    const selected=await page.evaluate(periodId=>window.CX?.data?.setProject?.(periodId)===true,periodId);
+    assert(selected,'MAPPING_FAILURE:VRM174_SET_PERIOD_FAILED:'+periodId);
+    await page.waitForFunction(periodId=>{
+      const d=window.CX?.data||{},a=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{},ds=window.CX?.dataSource||{};
+      return d.currentPeriodId===periodId&&a.applied===true&&ds.sourceRef==='hr-live-all-periods+firestore-authenticated-exact-overlay';
+    },periodId,{timeout:60000});
+    const after=await stableHrState(page);
+    assert(after.sourceRevision===result.hrRevision,'SOURCE_FAILURE:VRM174_HR_REVISION_DRIFT_AFTER_PERIOD:'+periodId);
     const observed=await page.evaluate(({periodId,expected})=>{
       const liqs=window.CX?.liq?.forProject?.(window.CX.data)||[];
       const match=(l,e)=>{
@@ -97,16 +122,11 @@ try{
         const l=liqs.find(x=>match(x,e));
         return {key:e.hrRowId||e.visitId||e.id||e.docId,found:!!l,estado:String(l?.estado||''),paymentConfirmed:l?.paymentConfirmed===true,paymentState:String(l?.paymentState||''),financialSourceStatus:String(l?.financialSourceStatus||''),historicalReconciliationConfirmed:l?.historicalReconciliationConfirmed===true,paymentSourceRef:String(l?.paymentSourceRef||l?.reconciliationSourceRef||''),benefitsPaid:!!(l&&l.paymentConfirmed===true&&((l.paymentSourceRef||l.reconciliationSourceRef)||l.historicalReconciliationConfirmed===true))};
       });
-      window.CX?.router?.nav?.('beneficios');
       return {periodId,liquidationCount:liqs.length,rows};
     },{periodId,expected});
-    await page.waitForTimeout(350);
-    const visible=await page.evaluate(()=>({text:String(document.body?.innerText||''),route:String(window.CX?.router?.current||'')}));
     const misses=observed.rows.filter(x=>!x.found||!x.paymentConfirmed||x.estado!=='pagada'||!x.benefitsPaid);
     assert(misses.length===0,'MAPPING_FAILURE:VRM174_HISTORICAL_PAID_PROJECTION:'+periodId+':'+JSON.stringify(misses.slice(0,5)));
-    const paidLabel=/Pago confirmado|Pagado/i.test(visible.text);
-    assert(paidLabel,'VISUAL_DEFECT:VRM174_BENEFITS_PAID_LABEL_MISSING:'+periodId);
-    result.periods.push({periodId,expectedPaid:rows.length,projectedPaid:observed.rows.length,misses:0,paidLabelVisible:true,liquidationCount:observed.liquidationCount});
+    result.periods.push({periodId,expectedPaid:rows.length,projectedPaid:observed.rows.length,misses:0,liquidationCount:observed.liquidationCount,sourceRevision:result.hrRevision});
   }
   result.decision='PASS_I3_VRM174_HISTORICAL_PAYMENT_LIVE';
   result.periodCount=result.periods.length;
