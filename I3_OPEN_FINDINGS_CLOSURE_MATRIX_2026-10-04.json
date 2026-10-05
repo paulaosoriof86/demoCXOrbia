@@ -3,8 +3,8 @@
   "status": "ACTIVE_CLOSURE_VIEW",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
   "generatedFromLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "generatedAtEvidenceTime": "2026-10-05T15:23:00Z",
-  "controlHeadAtGeneration": "92f6275f88357f68614ce15dfc7e6674868951f6",
+  "generatedAtEvidenceTime": "2026-10-05T15:30:00Z",
+  "controlHeadAtGeneration": "6d2c96a97e4fdc13966bf716149245f5151b021e",
   "productSourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
   "productSourceTree": "638ab7ab63244286ff460205da441221d5957ef0",
   "exactDevArtifact": {
@@ -30,15 +30,15 @@
   "findingCount": 253,
   "missingFindingIds": [],
   "duplicateFindingIds": [],
-  "currentBlockingCount": 58,
-  "undisposedCount": 73,
+  "currentBlockingCount": 57,
+  "undisposedCount": 72,
   "terminalDispositionCounts": {
-    "PASS_CURRENT_ARTIFACT": 153,
+    "PASS_CURRENT_ARTIFACT": 154,
     "SUPERSEDED_BY_VRM-221": 1,
     "NON_BLOCKING_DEFERRED_WITH_EXPLICIT_REASON": 3,
     "PRESERVED_PHASE_B_NOT_I3_AUTHORITY": 1,
     "SUPERSEDED_BY_VRM-229": 1,
-    "CONTROL_ONLY_FIXED": 12,
+    "CONTROL_ONLY_FIXED": 14,
     "SUPERSEDED_BY_VRM-234": 1,
     "SUPERSEDED_BY_VRM-236": 1,
     "PASS_DIAGNOSTIC": 2,
@@ -47,8 +47,6 @@
     "SUPERSEDED_BY_VRM-243": 1
   },
   "nextCriticalSequence": [
-    "VRM253_SAME_ARTIFACT_CONTROL_REPROOF",
-    "VRM249_RESERVATIONS_TERMINAL_ADJUDICATION",
     "VRM174_VRM179_FINANCE_FOCAL_REPROOF",
     "SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF",
     "PAULA_VISUAL_CHECKPOINT",
@@ -8135,12 +8133,13 @@
         "state": "SOURCE_REPROOF_PASS"
       },
       "latestLiveProof": {
-        "runNumber": 1162,
-        "runId": 37253163627,
-        "decision": "FAIL_RSV_ADMIN_READ_MODEL_BEFORE_DELETE",
-        "artifactId": 11321362047,
-        "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
-        "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
+        "runId": 37332823277,
+        "runNumber": 1204,
+        "jobId": 111840079765,
+        "artifactId": 11355715072,
+        "artifactDigest": "sha256:25d484e2d071dba6440f4bda2f01baf837a4244e51de908fdd4844d5029a680d",
+        "reservationsDecision": "PASS_I3_ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE",
+        "production": false
       },
       "successor": {
         "sourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
@@ -8163,8 +8162,8 @@
           "production": false
         }
       },
-      "rawLedgerState": "RUN1186_REPRODUCED_REFRESH_RECONCILIATION_DIAGNOSTIC_REQUIRED",
-      "realState": "RUN1186_REPRODUCED_REFRESH_RECONCILIATION_DIAGNOSTIC_REQUIRED",
+      "rawLedgerState": "PASS_RUN1204_CURRENT_ARTIFACT",
+      "realState": "PASS_CURRENT_ARTIFACT",
       "evidence": {
         "durableProviderLifecycleReached": true,
         "adminReadModelVisibleAfterRefresh": false,
@@ -8209,9 +8208,9 @@
         },
         "refreshReconciliationDiagnosticRequired": true
       },
-      "actionRemaining": "control-only immediate-vs-reconciled read-model diagnostic on exact Run1176 DEV artifact",
-      "blocking": true,
-      "terminalDisposition": null
+      "actionRemaining": null,
+      "blocking": false,
+      "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
       "findingId": "VRM-250",
@@ -8286,10 +8285,18 @@
         "tools/qa/cxorbia-i3-admin-cluster-a-postulations-live.mjs"
       ],
       "latestApprovedSource": null,
-      "latestLiveProof": null,
+      "latestLiveProof": {
+        "runId": 37332823277,
+        "runNumber": 1204,
+        "jobId": 111840079765,
+        "artifactId": 11355715072,
+        "artifactDigest": "sha256:25d484e2d071dba6440f4bda2f01baf837a4244e51de908fdd4844d5029a680d",
+        "reservationsDecision": "PASS_I3_ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE",
+        "production": false
+      },
       "successor": null,
-      "rawLedgerState": "CONTROL_FIX_COMPOSED_REPROOF_REQUIRED",
-      "realState": "CONTROL_FIX_COMPOSED_REPROOF_REQUIRED",
+      "rawLedgerState": "CONTROL_ONLY_FIXED_RUN1204_PASS",
+      "realState": "CONTROL_ONLY_FIXED",
       "evidence": {
         "run1186": 37304608567,
         "wrongArgument": "projectId cinepolis",
@@ -8297,9 +8304,9 @@
         "correctionCommit": "fec74949073ac5d05150cd79737be8e8f8f05a4f",
         "productChanged": false
       },
-      "actionRemaining": "same unchanged Run1176 lifecycle reproof",
-      "blocking": true,
-      "terminalDisposition": null
+      "actionRemaining": null,
+      "blocking": false,
+      "terminalDisposition": "CONTROL_ONLY_FIXED"
     },
     {
       "findingId": "VRM-253",
@@ -8313,10 +8320,18 @@
         "tools/qa/cxorbia-i3-admin-cluster-a-postulations-live.mjs"
       ],
       "latestApprovedSource": null,
-      "latestLiveProof": null,
+      "latestLiveProof": {
+        "runId": 37332823277,
+        "runNumber": 1204,
+        "jobId": 111840079765,
+        "artifactId": 11355715072,
+        "artifactDigest": "sha256:25d484e2d071dba6440f4bda2f01baf837a4244e51de908fdd4844d5029a680d",
+        "reservationsDecision": "PASS_I3_ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE",
+        "production": false
+      },
       "successor": null,
-      "rawLedgerState": "CONTROL_FIX_COMPOSED_REPROOF_REQUIRED",
-      "realState": "CONTROL_FIX_COMPOSED_REPROOF_REQUIRED",
+      "rawLedgerState": "CONTROL_ONLY_FIXED_RUN1204_PASS",
+      "realState": "CONTROL_ONLY_FIXED",
       "evidence": {
         "run1199": 37331790177,
         "wrongSyntheticPeriodo": "cinepolis-2026-10",
@@ -8326,9 +8341,9 @@
         "productChanged": false,
         "production": false
       },
-      "actionRemaining": "same unchanged Run1176 lifecycle reproof",
-      "blocking": true,
-      "terminalDisposition": null
+      "actionRemaining": null,
+      "blocking": false,
+      "terminalDisposition": "CONTROL_ONLY_FIXED"
     }
   ],
   "exactDevArtifactRole": "CURRENT_VRM249_SUCCESSOR",
