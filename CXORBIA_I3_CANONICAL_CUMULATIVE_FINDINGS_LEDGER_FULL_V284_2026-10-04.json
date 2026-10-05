@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v261",
   "frozenAt": "2026-10-04T09:12:00Z",
-  "status": "HOLD_VRM215_SHOPPER_POPULATION_REPROOF_REQUIRED",
+  "status": "HOLD_I3_MULTIMODULE_LIVE_SWEEP_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "microblockId": "PRE-I4-LIVE-HR-STALE-CACHE-MAPPING-HOLD-AUGUST-CANONICAL-CORRECTION",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -12025,8 +12025,8 @@
       "classification": "MAPPING_FAILURE",
       "severity": "P0_CONTROL",
       "title": "Shopper closure must be population-wide, not focal to Julissa",
-      "state": "HOLD_RUN1124_RESIDUAL_ROOT_DIAGNOSTIC_REQUIRED",
-      "rootCauseStatus": "USER_ACCEPTANCE_SCOPE_FROZEN",
+      "state": "PASS_RUN1142",
+      "rootCauseStatus": "CLOSED_CURRENT_ARTIFACT",
       "rootCause": "A focal Julissa repair cannot certify the Shopper domain. I3 must prove the same identity, Auth, HR, persistence and self-scope invariants across the complete active eligible shopper population before Shopper can be closed.",
       "expected": "Every active eligible TyA shopper in DEV resolves to exactly one canonical profile and at most one active shopper Auth principal; credentials authenticate; tenant/project/shopper claims are exact; current HR assignments resolve; duplicate HR/durable visit keys are absent; aliases do not retain provider-owned operational references; protected shopper reads are self-scoped and expose the canonical profile and owned visits; representative full UI routes remain PASS. Any exception remains fail-closed and is corrected by exact evidence, never fuzzy/name merge.",
       "scope": {
@@ -12178,6 +12178,29 @@
           "historicalAliasRows": 122
         },
         "nonVisitOperationalAliasReferences": 0,
+        "writes": 0,
+        "production": false
+      },
+      "terminalDisposition": "PASS_CURRENT_ARTIFACT",
+      "closureEvidence": {
+        "runId": 37247621441,
+        "runNumber": 1142,
+        "jobId": 111568690842,
+        "artifactId": 11319784732,
+        "artifactDigest": "sha256:76d92762cc2bc1e9941776a429dab8c989141f986695e95461f0698c33cd531c",
+        "decision": "PASS_VRM215_ALL_ACTIVE_SHOPPERS",
+        "productSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "productSourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+        "materializationRunId": 37208163415,
+        "membershipUniverseCount": 379,
+        "reviewOnlyExcludedCount": 1,
+        "reviewOnlyPass": true,
+        "authEligiblePopulation": 378,
+        "loginPass": 378,
+        "selfScopePass": 378,
+        "routeContractPass": 378,
+        "aliasOperationalResiduals": 0,
+        "hrAssignmentsPass": true,
         "writes": 0,
         "production": false
       }
@@ -14838,9 +14861,9 @@
       "classification": "MAPPING_FAILURE",
       "severity": "P0_CONTROL",
       "title": "VRM-215 population gate must honor frozen review-only identity and canonical historical visit semantics",
-      "state": "CONTROL_FIX_COMMITTED_REPROOF_REQUIRED",
+      "state": "CONTROL_ONLY_FIXED_RUN1142",
       "firstObservedAt": "POST_RUN1131_2026-10-04",
-      "rootCauseStatus": "PROVEN",
+      "rootCauseStatus": "PROVEN_AND_FIXED",
       "rootCause": "VRM-215 v1 still treated every active membership as authentication-eligible and treated duplicate durable visit keys plus all alias-owned visit history as active defects. Frozen VRM-043/VRM-239 already require one current HR identity with unavailable external human name to remain review-only and excluded from authentication eligibility, while VRM-238/VRM-243 prove historical visit versions and historical alias rows must be preserved and only authoritative current rows may be remapped.",
       "evidence": {
         "run1131": {
@@ -14896,8 +14919,20 @@
       },
       "productChanged": false,
       "production": false,
-      "terminalDisposition": null,
-      "successor": null
+      "terminalDisposition": "CONTROL_ONLY_FIXED",
+      "successor": null,
+      "closureEvidence": {
+        "runId": 37247621441,
+        "runNumber": 1142,
+        "jobId": 111568690842,
+        "artifactId": 11319784732,
+        "decision": "PASS_VRM215_ALL_ACTIVE_SHOPPERS",
+        "reviewOnlySemanticsPreserved": true,
+        "historicalVisitSemanticsPreserved": true,
+        "coverageReduced": false,
+        "productChanged": false,
+        "production": false
+      }
     },
     "VRM-246": {
       "id": "VRM-246",
@@ -15615,7 +15650,7 @@
     "nextFindingId": "VRM-247",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_VRM215_SHOPPER_POPULATION_REPROOF_REQUIRED",
+    "terminalState": "HOLD_I3_MULTIMODULE_LIVE_SWEEP_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -19294,7 +19329,7 @@
     "hostingDeploys": 0,
     "production": false
   },
-  "activeBlocker": "VRM215_SHOPPER_POPULATION_REPROOF_REQUIRED",
+  "activeBlocker": "I3_MULTIMODULE_LIVE_SWEEP_REQUIRED",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -19485,8 +19520,8 @@
     "humanAcceptance": "FAIL",
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
-  "lastUpdatedAt": "2026-10-05T00:27:30Z",
-  "nextExactAction": "Complete VRM215 v2 population proof on unchanged Run1112 artifact. If PASS, advance same canonical workflow to I3 multimodule same-artifact live sweep.",
+  "lastUpdatedAt": "2026-10-05T00:55:00Z",
+  "nextExactAction": "Execute the existing same-artifact I3 multimodule live sweep against unchanged Run1112 materialization; require Admin + Shopper + Client route coverage, current HR revision, zero page errors and zero writes.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
@@ -20122,7 +20157,7 @@
     "production": false,
     "interpretation": "Control-only freeze/readback. No action lane matched the fail-closed precomposition status."
   },
-  "queuedBlocker": "I3_MULTIMODULE_LIVE_SWEEP",
+  "queuedBlocker": "PAULA_VISUAL_ACCEPTANCE",
   "lastSuccessfulRun": {
     "runId": 37211579195,
     "runNumber": 1114,
@@ -20346,6 +20381,28 @@
     "state": "CONTROL_FIX_COMMITTED_REPROOF_REQUIRED",
     "scriptCommitSha": "aa0cd93ba49675c737e0f25539196eb10900bcd0",
     "productChanged": false,
+    "production": false
+  },
+  "lastVrm215Pass": {
+    "runId": 37247621441,
+    "runNumber": 1142,
+    "jobId": 111568690842,
+    "artifactId": 11319784732,
+    "artifactDigest": "sha256:76d92762cc2bc1e9941776a429dab8c989141f986695e95461f0698c33cd531c",
+    "decision": "PASS_VRM215_ALL_ACTIVE_SHOPPERS",
+    "productSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+    "productSourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+    "materializationRunId": 37208163415,
+    "membershipUniverseCount": 379,
+    "reviewOnlyExcludedCount": 1,
+    "reviewOnlyPass": true,
+    "authEligiblePopulation": 378,
+    "loginPass": 378,
+    "selfScopePass": 378,
+    "routeContractPass": 378,
+    "aliasOperationalResiduals": 0,
+    "hrAssignmentsPass": true,
+    "writes": 0,
     "production": false
   }
 }
