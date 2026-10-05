@@ -279,7 +279,7 @@ window.CX = window.CX || {};
       tenantId:tenantId(),
       principal:{role:roleOf(ctx),tenantId:String(ctx.tenantId||tenantId()),authNamespace:String(ctx.authNamespace||''),shopperId:String(ctx.shopperId||''),projectIds:toList(ctx.projectIds)},
       projects:(state&&state.projects)||[],allProjects:(state&&state.allProjects)||[],periods:(state&&state.periods)||[],
-      shoppers:(state&&state.shoppers)||[],visits:(state&&state.visits)||[],posts:(state&&state.posts)||[],
+      shoppers:(state&&state.shoppers)||[],visits:(state&&state.visits)||[],posts:(state&&state.posts)||[],reservations:(state&&state.reservations)||[],
       capturedAt:now(),source:'firestore-authorized'
     });
     return window.CX_BACKEND_AUTHORIZED_STATE;
@@ -342,6 +342,16 @@ window.CX = window.CX || {};
     return [];
   }
 
+  async function loadReservationsForPrincipal(projectId, ctx){
+    if(!ctx || isOperator(ctx)){
+      return getAll(subCol(projectId, 'reservations')).catch(function(e){ warn('No se pudieron leer reservations de '+projectId, e); return []; });
+    }
+    if(isShopper(ctx) && ctx.shopperId){
+      return getAll(subCol(projectId, 'reservations').where('shopperId','==',ctx.shopperId)).catch(function(e){ warn('No se pudieron leer reservations propias de '+projectId, e); return []; });
+    }
+    return [];
+  }
+
   function resolveActiveProjects(projects){
     const ctx = authContext();
     const scoped = ctx && !isOperator(ctx) ? toList(ctx.projectIds) : [];
@@ -377,12 +387,13 @@ window.CX = window.CX || {};
     const visits = visitsRaw.map(function(v){ return normalizeVisit(v, projectId, periodId); });
     visits.forEach(function(v){ v.projectId = v.projectId || projectId; visitsById[v.id] = v; visitsById[v.visitId] = v; });
     const rawPosts = isClient(ctx) ? [] : await loadPostsForPrincipal(projectId, ctx);
+    const reservations = isClient(ctx) ? [] : await loadReservationsForPrincipal(projectId, ctx);
     const posts = [];
     rawPosts.forEach(function(x){
       const item = normalizeApplication(x, projectId, periodId, visitsById, shoppersById);
       if(item) posts.push(item);
     });
-    return {visits:visits, posts:posts};
+    return {visits:visits, posts:posts, reservations:reservations};
   }
 
   async function loadTenantData(){
@@ -399,15 +410,17 @@ window.CX = window.CX || {};
     const perProject = await Promise.all(activeProjects.map(function(p){ return loadProjectData(p, shoppersById, ctx); }));
     const visits = [];
     const posts = [];
+    const reservations = [];
     perProject.forEach(function(bucket){
       (bucket.visits || []).forEach(function(v){ visits.push(v); });
       (bucket.posts || []).forEach(function(p){ posts.push(p); });
+      (bucket.reservations || []).forEach(function(r){ reservations.push(r); });
     });
-    const counts = {projects:activeProjects.length, projectRecords:allProjects.length, periods:periods.length, shoppers:shoppers.length, visits:visits.length, posts:posts.length};
+    const counts = {projects:activeProjects.length, projectRecords:allProjects.length, periods:periods.length, shoppers:shoppers.length, visits:visits.length, posts:posts.length, reservations:reservations.length};
     window.CX_BACKEND_PERIODS = periods;
     window.CX_BACKEND_PROJECT_SCOPE = {mode:'firebase-auth-principal', role:roleOf(ctx), activeProjectIds:activeProjects.map(function(p){return p.id;}), totalProjectRecords:allProjects.length, at:now()};
     emit('backend-loaded', {provider:'firebase', tenantId:tenantId(), source:'firestore', ms:Date.now()-loadStartedAt, counts:counts, role:roleOf(ctx), scoped:!!ctx});
-    return {projects:activeProjects, allProjects:allProjects, periods:periods, shoppers:shoppers, visits:visits, posts:posts};
+    return {projects:activeProjects, allProjects:allProjects, periods:periods, shoppers:shoppers, visits:visits, posts:posts, reservations:reservations};
   }
 
   function applyData(state){
@@ -424,13 +437,15 @@ window.CX = window.CX || {};
       CX.data.shoppers = safeState.shoppers || [];
       CX.data._visitas = safeState.visits || [];
       CX.data._posts = safeState.posts || [];
+      CX.data.__protectedReservations = safeState.reservations || [];
       const counts = {
         projects:0,
         projectRecords:(safeState.allProjects || []).length,
         periods:CX.data.periods.length,
         visits:CX.data._visitas.length,
         shoppers:CX.data.shoppers.length,
-        posts:CX.data._posts.length
+        posts:CX.data._posts.length,
+        reservations:CX.data.__protectedReservations.length
       };
       markSource('firestore', {empty:true, counts:counts, scope:'firebase-auth-principal'});
       emit('shoppers', {source:'firebase'});
@@ -445,6 +460,7 @@ window.CX = window.CX || {};
     CX.data.shoppers = state.shoppers || [];
     CX.data._visitas = state.visits || [];
     CX.data._posts = state.posts || [];
+    CX.data.__protectedReservations = state.reservations || [];
     const keep = CX.data.currentProjectId;
     const exists = CX.data.projects.some(function(p){ return p.id === keep; });
     const explicitProjectId = String(cfg.defaultProjectId || '').trim();
@@ -454,11 +470,12 @@ window.CX = window.CX || {};
     const periodExists = CX.data.periods.some(function(p){ return p.id === keepPeriod; });
     const activePeriod = CX.data.periods.find(function(p){ return p.active; }) || CX.data.periods[CX.data.periods.length - 1] || null;
     CX.data.currentPeriodId = periodExists ? keepPeriod : (activePeriod ? activePeriod.id : '');
-    const counts = {projects:CX.data.projects.length, projectRecords:state.allProjects ? state.allProjects.length : CX.data.projects.length, periods:CX.data.periods.length, visits:CX.data._visitas.length, shoppers:CX.data.shoppers.length, posts:CX.data._posts.length, projectId:CX.data.currentProjectId, periodId:CX.data.currentPeriodId};
+    const counts = {projects:CX.data.projects.length, projectRecords:state.allProjects ? state.allProjects.length : CX.data.projects.length, periods:CX.data.periods.length, visits:CX.data._visitas.length, shoppers:CX.data.shoppers.length, posts:CX.data._posts.length, reservations:CX.data.__protectedReservations.length, projectId:CX.data.currentProjectId, periodId:CX.data.currentPeriodId};
     markSource('firestore', {empty:false, counts:counts, scope:'firebase-auth-principal'});
     emit('project', {source:'firebase'});
     emit('shoppers', {source:'firebase'});
     emit('visit-flow', {source:'firebase'});
+    emit('reservas', {source:'firebase'});
     emit('backend-ready', {provider:'firebase', empty:false, tenantId:tenantId(), source:'firestore', counts:counts, scope:'firebase-auth-principal'});
     return true;
   }
