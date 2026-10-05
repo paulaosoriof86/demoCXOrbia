@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v261",
   "frozenAt": "2026-10-04T09:12:00Z",
-  "status": "HOLD_I3_VRM249_RESERVATION_READ_MODEL_FIX_REQUIRED",
+  "status": "HOLD_I3_VRM249_SOURCE_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "microblockId": "PRE-I4-LIVE-HR-STALE-CACHE-MAPPING-HOLD-AUGUST-CANONICAL-CORRECTION",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
-    "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
-    "predecessorSha": "784bc45c29795f35ffaeef019883a41ca872939b",
+    "sourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
+    "sourceTree": "638ab7ab63244286ff460205da441221d5957ef0",
+    "predecessorSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
     "production": false,
-    "state": "PASS_VRM227_DEV_MATERIALIZED_HOLD_VRM229_IDENTITY_CONSOLIDATION",
+    "state": "VRM249_SOURCE_FIX_COMPOSED_REPROOF_REQUIRED",
     "proof": {
       "state": "PASS_VRM227_SOURCE_REPROOF_PENDING_DEV_MATERIALIZATION",
       "accumulatedSourceProofs": [
@@ -458,19 +458,19 @@
       "production": false
     },
     "previousMaterialization": {
-      "state": "PASS_VRM221_EXACT_DEV_MATERIALIZATION",
-      "runId": 37196202414,
-      "runNumber": 1106,
-      "jobId": 111418531939,
-      "artifactId": 11301376993,
-      "artifactDigest": "sha256:685d0cb9d4e4d07b801713bac4bd1b8c0ff387fa9b319b043753f452c0dcf0a7",
+      "state": "PASS_VRM227_EXACT_DEV_MATERIALIZATION",
+      "runId": 37208163415,
+      "runNumber": 1112,
+      "jobId": 111453675521,
+      "artifactId": 11305847184,
+      "artifactDigest": "sha256:1e81dba4dacff12ec71ff09e0bc725fdfb32ec6b2ef08f6da3debdf2ab7fe29e",
       "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
-      "sourceSha": "16b6f494b0d5972ac0096da82568998a5e28c28d",
-      "sourceTree": "7c7d92dcd7c1a6440b2693072f4b69f3d6224926",
-      "runtimeRevision": "cxorbia-live-hr-dev-00263-hw5",
-      "runtimeDigest": "sha256:c6d244eb04f7a709c3f9da97edd6fbf8df43227612b208916ca803ec62c24241",
-      "hostingVersion": "sites/cxorbia-backend-dev/versions/c6f53fb674b7e49e",
-      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791110673642000",
+      "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+      "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+      "runtimeRevision": "cxorbia-live-hr-dev-00264-pxj",
+      "runtimeDigest": "sha256:d6916255e1cbc94c096b56d2ae0dc7ad7bc3d9eb4e2816f2b4a9bc2819549eae",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/0eb9844cbcbc180f",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791123072167000",
       "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
       "builds": 1,
       "runtimeDeploys": 1,
@@ -523,30 +523,10 @@
       "scenarioDimensionsProven": true,
       "production": false
     },
-    "currentMaterialization": {
-      "state": "PASS_VRM227_EXACT_DEV_MATERIALIZATION",
-      "runId": 37208163415,
-      "runNumber": 1112,
-      "jobId": 111453675521,
-      "artifactId": 11305847184,
-      "artifactDigest": "sha256:1e81dba4dacff12ec71ff09e0bc725fdfb32ec6b2ef08f6da3debdf2ab7fe29e",
-      "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
-      "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
-      "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
-      "runtimeRevision": "cxorbia-live-hr-dev-00264-pxj",
-      "runtimeDigest": "sha256:d6916255e1cbc94c096b56d2ae0dc7ad7bc3d9eb4e2816f2b4a9bc2819549eae",
-      "hostingVersion": "sites/cxorbia-backend-dev/versions/0eb9844cbcbc180f",
-      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791123072167000",
-      "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
-      "builds": 1,
-      "runtimeDeploys": 1,
-      "hostingDeploys": 1,
-      "storageRulesDeploys": 0,
-      "production": false
-    },
+    "currentMaterialization": null,
     "currentLiveReproof": null,
-    "historicalEvidenceNotice": "All source proofs/materializations below whose sourceSha is not 16b6f494b0d5972ac0096da82568998a5e28c28d are historical evidence only and do not certify the VRM-221 successor.",
-    "treeSha": "b59da4c090d4639a136168656e7addd544f38e18"
+    "historicalEvidenceNotice": "Run1112 remains predecessor materialization evidence only; it does not certify the VRM-249 successor until exact source proof and one DEV rematerialization pass.",
+    "treeSha": "638ab7ab63244286ff460205da441221d5957ef0"
   },
   "rootCauseIds": [
     "RC-MONO-01_MULTIPLE_EXECUTABLE_PRODUCT_SOURCE_AUTHORITIES",
@@ -15297,7 +15277,7 @@
       "classification": "MAPPING_FAILURE",
       "severity": "P0",
       "title": "Durable reservations are omitted from the authorized Firebase read model and remain stale in Admin after provider ACK",
-      "state": "P0_PROVEN_ROOT_CAUSE_FIX_REQUIRED",
+      "state": "SOURCE_FIX_COMPOSED_REPROOF_REQUIRED",
       "firstObservedAt": "RUN1162_2026-10-05",
       "rootCauseStatus": "PROVEN",
       "rootCause": "Run1162 proved the reservation provider lifecycle reaches durable Firestore through create/approve/reassign, but Admin fails at RSV_ADMIN_READ_MODEL_BEFORE_DELETE. app/core/backend-firebase.js loads and publishes projects/periods/shoppers/visits/posts but omits reservations from loadProjectData, loadTenantData, publishAuthorizedState and applyData. app/adapters/tya-protected-auth-hr-authority-bridge-v2.js captureAuthorizedBackend() then sources reservations from stale CX.data.__protectedReservations instead of window.CX_BACKEND_AUTHORIZED_STATE.reservations. The reservation module correctly renders only CX.data.__protectedReservations, so the durable row cannot enter the Admin read model after refresh.",
@@ -15348,10 +15328,31 @@
         "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
       ],
       "productMutationAllowed": true,
-      "productChanged": false,
+      "productChanged": true,
       "production": false,
       "terminalDisposition": null,
-      "successor": null
+      "successor": null,
+      "correction": {
+        "sourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
+        "sourceTree": "638ab7ab63244286ff460205da441221d5957ef0",
+        "predecessorSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "filesChanged": [
+          "app/core/backend-firebase.js",
+          "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+        ],
+        "scope": "reservation authorized read-model mapping only",
+        "backendFirebase": {
+          "loadReservationsForPrincipal": true,
+          "publishAuthorizedState": true,
+          "applyProtectedReservations": true
+        },
+        "protectedAuthorityBridge": {
+          "authorizedReservationSource": "CX_BACKEND_AUTHORIZED_STATE.reservations"
+        },
+        "rebuild": false,
+        "deploy": false,
+        "production": false
+      }
     }
   },
   "latestEvidenceOverrides": {
@@ -16025,7 +16026,7 @@
     "nextFindingId": "VRM-250",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_I3_VRM249_RESERVATION_READ_MODEL_FIX_REQUIRED",
+    "terminalState": "HOLD_I3_VRM249_SOURCE_REPROOF_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -19919,8 +19920,8 @@
     "humanAcceptance": "FAIL",
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
-  "lastUpdatedAt": "2026-10-05T02:02:00Z",
-  "nextExactAction": "Apply only the proven VRM-249 read-model mapping fix in app/core/backend-firebase.js and app/adapters/tya-protected-auth-hr-authority-bridge-v2.js, run source proof, materialize the single successor candidate to DEV, then rerun the bounded Reservations lifecycle.",
+  "lastUpdatedAt": "2026-10-05T02:08:00Z",
+  "nextExactAction": "Run exact VRM-249 source proof for the two authorized read-model owners only; if PASS, materialize exactly source 9d948a6a1b506b75b93cb1b023603cd6cd6d357f to DEV once and rerun Reservations lifecycle.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
@@ -20556,7 +20557,7 @@
     "production": false,
     "interpretation": "Control-only freeze/readback. No action lane matched the fail-closed precomposition status."
   },
-  "queuedBlocker": "I3_ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE_REPROOF",
+  "queuedBlocker": "HOLD_VRM249_DEV_MATERIALIZATION_REQUIRED",
   "lastSuccessfulRun": {
     "runId": 37211579195,
     "runNumber": 1114,
