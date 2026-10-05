@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v261",
   "frozenAt": "2026-10-04T09:12:00Z",
-  "status": "HOLD_I3_SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF_REQUIRED",
+  "status": "HOLD_VRM257_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "microblockId": "PRE-I4-LIVE-HR-STALE-CACHE-MAPPING-HOLD-AUGUST-CANONICAL-CORRECTION",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "994b8f7c201162a3aa865798e9de4aa8fc8a3525",
-    "sourceTree": "00e67e6d1d49421cd59f7207676b015eaf02ce20",
-    "predecessorSha": "617ff043d77c4c3abdf20683abe05fe9d6a6e546",
+    "sourceSha": "f971ea18556e7be3ede0a26195e7977e4e706dfe",
+    "sourceTree": "3f0ebeab075ec841d1b2329d1ce7bf31523dc2f0",
+    "predecessorSha": "994b8f7c201162a3aa865798e9de4aa8fc8a3525",
     "production": false,
-    "state": "VRM256_SOURCE_FIX_COMPOSED_DEV_MATERIALIZATION_REQUIRED",
+    "state": "VRM257_SOURCE_FIX_COMPOSED_DEV_MATERIALIZATION_REQUIRED",
     "proof": {
       "state": "PASS_VRM249_SOURCE_REPROOF_AND_EXACT_DEV_MATERIALIZATION",
       "accumulatedSourceProofs": [
@@ -16076,7 +16076,7 @@
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Mi Día selected historical shopper visit as next visit under active period",
-      "state": "DEV_MATERIALIZED_PENDING_SAME_ARTIFACT_LIVE_REPROOF",
+      "state": "FIXED_PROVEN_RUN1240_MIDIA_PASS",
       "firstObservedAt": "RUN1236_2026-10-05",
       "rootCauseStatus": "PROVEN",
       "rootCause": "app/modules/midia.js built shopper mine from visitsForShopper(_mySid,false), filtered only cancelled visits, then selected mine[0]. That collection includes historical periods, so Julissa's March/June MC. Santa Clara could render under OCT 2026 while the exact active OCT visit is C. Miraflores.",
@@ -16137,11 +16137,77 @@
           "storageRulesDeploys": 0,
           "scenarioDimensionsProven": true,
           "production": false
+        },
+        "liveReproof": {
+          "runId": 37377895951,
+          "runNumber": 1240,
+          "jobId": 111991881517,
+          "artifactId": 11373015293,
+          "artifactDigest": "sha256:eeef68681a020e302080f7879b672ff924f65498954726767b64e7dbfa4a7471",
+          "exactDevPreflightPass": true,
+          "failure": "PERSISTENCE_FAILURE:PAULA_HISTORICAL_PAYMENT_PROJECTION",
+          "productSourceSha": "994b8f7c201162a3aa865798e9de4aa8fc8a3525",
+          "productSourceTree": "00e67e6d1d49421cd59f7207676b015eaf02ce20",
+          "production": false,
+          "midiaPassed": true,
+          "advancedTo": "PAULA_BENEFITS"
         }
       },
       "expected": "Shopper Mi Día must show only an active visit belonging to the selected active period; historical realized visits cannot be rendered as Tu próxima visita under another period.",
       "owner": [
         "app/modules/midia.js"
+      ],
+      "productChanged": true,
+      "production": false,
+      "blocking": false,
+      "terminalDisposition": "FIXED_PROVEN"
+    },
+    "VRM-257": {
+      "id": "VRM-257",
+      "classification": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "title": "Mis Beneficios renders canonical paid liquidation together with stale pending payment badge",
+      "state": "SOURCE_FIX_COMPOSED_DEV_MATERIALIZATION_REQUIRED",
+      "firstObservedAt": "RUN1240_2026-10-05",
+      "rootCauseStatus": "PROVEN",
+      "rootCause": "app/modules/beneficios.js correctly determines canonical historical paid truth with isPaid(l), but independently derives the last payment badge from visitContract(v).paymentState. Historical reconciliation can make the liquidation paid while the visit contract retains pending_source_confirmation, producing contradictory text such as 'Pagada confirmada ✓' and 'Pendiente de confirmación' on the same row.",
+      "evidence": {
+        "run1240": {
+          "runId": 37377895951,
+          "runNumber": 1240,
+          "jobId": 111991881517,
+          "artifactId": 11373015293,
+          "artifactDigest": "sha256:eeef68681a020e302080f7879b672ff924f65498954726767b64e7dbfa4a7471",
+          "exactDevPreflightPass": true,
+          "failure": "PERSISTENCE_FAILURE:PAULA_HISTORICAL_PAYMENT_PROJECTION",
+          "productSourceSha": "994b8f7c201162a3aa865798e9de4aa8fc8a3525",
+          "productSourceTree": "00e67e6d1d49421cd59f7207676b015eaf02ce20",
+          "production": false
+        },
+        "observed": {
+          "paulaRows": 8,
+          "oldRows": 4,
+          "oldPendingCount": 4,
+          "historicalPaidSummary": 4,
+          "contradictoryExample": "Pagada confirmada ✓ ... Pendiente de confirmación"
+        },
+        "authority": "Canonical liquidation isPaid(l) already includes paymentConfirmed + source reference / historicalReconciliationConfirmed.",
+        "vrm174Reopened": false,
+        "persistenceLoss": false,
+        "owner": "app/modules/beneficios.js",
+        "sourceFix": {
+          "sourceSha": "f971ea18556e7be3ede0a26195e7977e4e706dfe",
+          "sourceTree": "3f0ebeab075ec841d1b2329d1ce7bf31523dc2f0",
+          "files": [
+            "app/modules/beneficios.js",
+            "backend/runtime/hr-live-service/test/cxorbia-vrm257-benefits-payment-label.test.mjs"
+          ],
+          "behavior": "If canonical liquidation is paid, secondary payment badge is forced to Pago confirmado; visitContract paymentState is consulted only for non-paid liquidations."
+        }
+      },
+      "expected": "A canonically paid historical liquidation must display a consistent paid state across all badges; stale visit payment state cannot contradict durable canonical payment truth.",
+      "owner": [
+        "app/modules/beneficios.js"
       ],
       "productChanged": true,
       "production": false,
@@ -16820,14 +16886,15 @@
       "VRM-253",
       "VRM-254",
       "VRM-255",
-      "VRM-256"
+      "VRM-256",
+      "VRM-257"
     ],
-    "findingCount": 256,
-    "expectedCurrentRange": "VRM-001..VRM-256",
-    "nextFindingId": "VRM-257",
+    "findingCount": 257,
+    "expectedCurrentRange": "VRM-001..VRM-257",
+    "nextFindingId": "VRM-258",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_I3_SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF_REQUIRED",
+    "terminalState": "HOLD_VRM257_DEV_MATERIALIZATION_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -16842,8 +16909,8 @@
     "userReportedRequirementsFrozenAt": "2026-09-30T20:18:00-06:00",
     "userReviewComplete": true,
     "userReviewEvidence": "19 screenshots plus complete Shopper/Admin observations supplied 2026-10-02",
-    "currentProductSourceSha": "994b8f7c201162a3aa865798e9de4aa8fc8a3525",
-    "currentProductSourceTree": "00e67e6d1d49421cd59f7207676b015eaf02ce20",
+    "currentProductSourceSha": "f971ea18556e7be3ede0a26195e7977e4e706dfe",
+    "currentProductSourceTree": "3f0ebeab075ec841d1b2329d1ce7bf31523dc2f0",
     "currentMaterialization": {
       "state": "PASS_VRM256_EXACT_DEV_MATERIALIZATION",
       "runId": 37377137444,
@@ -17108,7 +17175,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Run the existing phasea-representative-same-artifact-live-reproof against exact Run1239 DEV materialization for source 994b8f7c201162a3aa865798e9de4aa8fc8a3525 / tree 00e67e6d1d49421cd59f7207676b015eaf02ce20, using descriptor-bound runtime/Hosting/HR fingerprints; zero rebuilds, zero deploys, zero writes, no production.",
+  "exactNextAction": "Materialize exactly product source f971ea18556e7be3ede0a26195e7977e4e706dfe / tree 3f0ebeab075ec841d1b2329d1ce7bf31523dc2f0 in DEV with the existing vrm154-156-dev-materialization job, requiring PASS_VRM256_MIDIA_CURRENT_PERIOD_SOURCE and PASS_VRM257_BENEFITS_PAYMENT_LABEL_SOURCE before the single build/deploy; then repeat the same representative live reproof. No production.",
   "supersedesGitBlob": "820da41b786054cb8cd23e89827e1f7afbcdd3b3",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -17137,7 +17204,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-257",
+  "nextFindingId": "VRM-258",
   "lastControlFailure": {
     "id": "RUN1238_NEXT_FINDING_ID_GOVERNANCE_DESYNC",
     "classification": "MAPPING_FAILURE",
@@ -20509,7 +20576,7 @@
     "hostingDeploys": 0,
     "production": false
   },
-  "activeBlocker": "VRM-256",
+  "activeBlocker": "VRM-257",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -20701,7 +20768,7 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-10-05T18:42:00Z",
-  "nextExactAction": "Run the existing phasea-representative-same-artifact-live-reproof against exact Run1239 DEV materialization for source 994b8f7c201162a3aa865798e9de4aa8fc8a3525 / tree 00e67e6d1d49421cd59f7207676b015eaf02ce20, using descriptor-bound runtime/Hosting/HR fingerprints; zero rebuilds, zero deploys, zero writes, no production.",
+  "nextExactAction": "Materialize exactly product source f971ea18556e7be3ede0a26195e7977e4e706dfe / tree 3f0ebeab075ec841d1b2329d1ce7bf31523dc2f0 in DEV with the existing vrm154-156-dev-materialization job, requiring PASS_VRM256_MIDIA_CURRENT_PERIOD_SOURCE and PASS_VRM257_BENEFITS_PAYMENT_LABEL_SOURCE before the single build/deploy; then repeat the same representative live reproof. No production.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,

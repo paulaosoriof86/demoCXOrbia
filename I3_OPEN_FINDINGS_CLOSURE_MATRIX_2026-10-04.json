@@ -5,8 +5,8 @@
   "generatedFromLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
   "generatedAtEvidenceTime": "2026-10-05T18:43:00Z",
   "controlHeadAtGeneration": "a10ce5c5b14be7d361d6d06d1e6f5a7feadca539",
-  "productSourceSha": "994b8f7c201162a3aa865798e9de4aa8fc8a3525",
-  "productSourceTree": "00e67e6d1d49421cd59f7207676b015eaf02ce20",
+  "productSourceSha": "f971ea18556e7be3ede0a26195e7977e4e706dfe",
+  "productSourceTree": "3f0ebeab075ec841d1b2329d1ce7bf31523dc2f0",
   "exactDevArtifact": {
     "state": "PASS_VRM256_EXACT_DEV_MATERIALIZATION",
     "runId": 37377137444,
@@ -33,7 +33,7 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleTruthCount": 21,
   "moduleTruthAllMatch": true,
-  "findingCount": 256,
+  "findingCount": 257,
   "missingFindingIds": [],
   "duplicateFindingIds": [],
   "currentBlockingCount": 56,
@@ -53,6 +53,7 @@
     "SUPERSEDED_BY_VRM-243": 1
   },
   "nextCriticalSequence": [
+    "VRM257_EXACT_DEV_MATERIALIZATION",
     "SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF",
     "PAULA_VISUAL_CHECKPOINT",
     "GATE20_GATE21_TERMINAL_CLOSURE"
@@ -8486,42 +8487,23 @@
         "state": "SOURCE_FIX_COMPOSED_DEV_MATERIALIZATION_REQUIRED"
       },
       "latestLiveProof": {
-        "runId": 37376251847,
-        "runNumber": 1236,
-        "jobId": 111985906076,
-        "artifactId": 11371807572,
-        "decision": "FAIL_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
-        "production": false,
-        "materialization": {
-          "state": "PASS_VRM256_EXACT_DEV_MATERIALIZATION",
-          "runId": 37377137444,
-          "runNumber": 1239,
-          "controlHeadSha": "6ec1f195a42aad431ac99ff86e7ff71dcbb76438",
-          "jobId": 111989316091,
-          "artifactId": 11371928001,
-          "artifactDigest": "sha256:cb32fdcbb1995dd56fbea4bf120d2a505c45c67873dd9ae9c6e029fd4a75eec0",
-          "decision": "PASS_VRM256_EXACT_DEV_MATERIALIZATION",
-          "sourceSha": "994b8f7c201162a3aa865798e9de4aa8fc8a3525",
-          "sourceTree": "00e67e6d1d49421cd59f7207676b015eaf02ce20",
-          "runtimeRevision": "cxorbia-live-hr-dev-00269-7gb",
-          "runtimeDigest": "sha256:097bfc7fc7addfc6b0fc315a122a777faebab757c0d43bebc290283c0ae0a349",
-          "hostingVersion": "sites/cxorbia-backend-dev/versions/e3368d137a96e495",
-          "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791236470498000",
-          "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
-          "builds": 1,
-          "runtimeDeploys": 1,
-          "hostingDeploys": 1,
-          "storageRulesDeploys": 0,
-          "scenarioDimensionsProven": true,
-          "production": false
-        }
+        "runId": 37377895951,
+        "runNumber": 1240,
+        "jobId": 111991881517,
+        "artifactId": 11373015293,
+        "artifactDigest": "sha256:eeef68681a020e302080f7879b672ff924f65498954726767b64e7dbfa4a7471",
+        "exactDevPreflightPass": true,
+        "failure": "PERSISTENCE_FAILURE:PAULA_HISTORICAL_PAYMENT_PROJECTION",
+        "productSourceSha": "994b8f7c201162a3aa865798e9de4aa8fc8a3525",
+        "productSourceTree": "00e67e6d1d49421cd59f7207676b015eaf02ce20",
+        "production": false
       },
       "successor": {
         "sourceSha": "994b8f7c201162a3aa865798e9de4aa8fc8a3525",
         "sourceTree": "00e67e6d1d49421cd59f7207676b015eaf02ce20"
       },
-      "rawLedgerState": "DEV_MATERIALIZED_PENDING_SAME_ARTIFACT_LIVE_REPROOF",
-      "realState": "P0_PROVEN_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
+      "rawLedgerState": "FIXED_PROVEN_RUN1240_MIDIA_PASS",
+      "realState": "FIXED_PROVEN",
       "evidence": {
         "activePeriod": "2026-10",
         "expectedBranch": "C. Miraflores",
@@ -8531,7 +8513,51 @@
           "2026-06"
         ]
       },
-      "actionRemaining": "Same-artifact representative/population live reproof on exact Run1239 DEV materialization",
+      "actionRemaining": null,
+      "blocking": false,
+      "terminalDisposition": "FIXED_PROVEN"
+    },
+    {
+      "findingId": "VRM-257",
+      "moduleDomain": [
+        "shopper",
+        "benefits",
+        "historical-payments"
+      ],
+      "severity": "P0",
+      "classification": "FUNCTIONAL_DEFECT",
+      "owner": [
+        "app/modules/beneficios.js"
+      ],
+      "latestApprovedSource": {
+        "sourceSha": "f971ea18556e7be3ede0a26195e7977e4e706dfe",
+        "sourceTree": "3f0ebeab075ec841d1b2329d1ce7bf31523dc2f0",
+        "state": "SOURCE_FIX_COMPOSED_DEV_MATERIALIZATION_REQUIRED"
+      },
+      "latestLiveProof": {
+        "runId": 37377895951,
+        "runNumber": 1240,
+        "jobId": 111991881517,
+        "artifactId": 11373015293,
+        "artifactDigest": "sha256:eeef68681a020e302080f7879b672ff924f65498954726767b64e7dbfa4a7471",
+        "exactDevPreflightPass": true,
+        "failure": "PERSISTENCE_FAILURE:PAULA_HISTORICAL_PAYMENT_PROJECTION",
+        "productSourceSha": "994b8f7c201162a3aa865798e9de4aa8fc8a3525",
+        "productSourceTree": "00e67e6d1d49421cd59f7207676b015eaf02ce20",
+        "production": false
+      },
+      "successor": {
+        "sourceSha": "f971ea18556e7be3ede0a26195e7977e4e706dfe",
+        "sourceTree": "3f0ebeab075ec841d1b2329d1ce7bf31523dc2f0"
+      },
+      "rawLedgerState": "SOURCE_FIX_COMPOSED_DEV_MATERIALIZATION_REQUIRED",
+      "realState": "P0_PROVEN_SOURCE_FIX_PENDING_DEV_MATERIALIZATION",
+      "evidence": {
+        "historicalPaidSummary": 4,
+        "contradictoryBadge": "Pagada confirmada + Pendiente de confirmación",
+        "vrm174Reopened": false
+      },
+      "actionRemaining": "Exact DEV materialization then same-artifact representative live reproof",
       "blocking": true,
       "terminalDisposition": null
     }
