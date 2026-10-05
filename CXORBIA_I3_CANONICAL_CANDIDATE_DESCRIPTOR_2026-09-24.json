@@ -8,13 +8,13 @@
   "productTreeAuthority": "b59da4c090d4639a136168656e7addd544f38e18",
   "predecessorProductSourceSha": "bbd66d29192487ac29f8703bd913e3f1e15a28c0",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "383104699761f43688f8bfc7c5fed40b86456ee4",
+  "findingsLedgerExpectedGitBlob": "033704fed6e211e6c3b60450bbb6b89f1f62d763",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
   "activeBlocker": "I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE_REQUIRED",
-  "nextFindingId": "VRM-248",
+  "nextFindingId": "VRM-249",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run bounded Postulations lifecycle E2E on unchanged Run1112: create via authenticated existing shopper against one current available HR visit, exact replay, Admin standby/reject transitions, exact replay, provider-backed delete, durable reload/readback and no reappearance; no HR/external writes and zero QA residue.",
+  "exactNextAction": "Rerun identical Postulations lifecycle after fixing only Playwright Admin-auth navigation observer. Require provider-backed delete, exact replay, durable absence, browser reload no reappearance and fallbackDirectDelete=false.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3564,7 +3564,7 @@
     "production": false
   },
   "openFindingsClosureMatrixPath": "I3_OPEN_FINDINGS_CLOSURE_MATRIX_2026-10-04.json",
-  "openFindingsClosureMatrixFindingCount": 247,
+  "openFindingsClosureMatrixFindingCount": 248,
   "lastVrm229Pass": {
     "runId": 37211579195,
     "runNumber": 1114,
@@ -4036,6 +4036,22 @@
     "idempotentReplay": true,
     "durableReadback": true,
     "cleanupActiveSyntheticRemaining": 0,
+    "production": false
+  },
+  "vrm248": {
+    "state": "CONTROL_OBSERVER_FIX_REQUIRED",
+    "run1157": {
+      "runId": 37251758888,
+      "runNumber": 1157,
+      "jobId": 111580706110,
+      "artifactId": 11320109824,
+      "classification": "ENVIRONMENT_FAILURE",
+      "createPass": true,
+      "standbyPass": true,
+      "rejectPass": true,
+      "cleanupFallbackDirectDelete": true
+    },
+    "productChanged": false,
     "production": false
   }
 }
