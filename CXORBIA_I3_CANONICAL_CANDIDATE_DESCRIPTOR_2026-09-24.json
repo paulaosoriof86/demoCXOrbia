@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM249_RESERVATION_READ_MODEL_FIX_REQUIRED",
+  "status": "HOLD_I3_VRM249_SOURCE_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
-  "productTreeAuthority": "b59da4c090d4639a136168656e7addd544f38e18",
-  "predecessorProductSourceSha": "bbd66d29192487ac29f8703bd913e3f1e15a28c0",
+  "productSourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
+  "productTreeAuthority": "638ab7ab63244286ff460205da441221d5957ef0",
+  "predecessorProductSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "6d21fcb223e8ce78e5e51be16ab04263efefdc58",
+  "findingsLedgerExpectedGitBlob": "40ad956a6b9bf77d44ac1c68b13cad848fd00452",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Apply only VRM-249 exact read-model mapping fix in backend-firebase + protected authority bridge; prove source, create one monotonic product successor, materialize once to DEV, rerun the same Reservations lifecycle.",
+  "exactNextAction": "Run VRM-249 source reproof on the exact two-owner successor. If PASS, switch only to HOLD_VRM249_DEV_MATERIALIZATION_REQUIRED and materialize this exact source once.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -407,27 +407,7 @@
     "writes": 0,
     "production": false
   },
-  "currentMaterialization": {
-    "state": "PASS_VRM227_EXACT_DEV_MATERIALIZATION",
-    "runId": 37208163415,
-    "runNumber": 1112,
-    "jobId": 111453675521,
-    "artifactId": 11305847184,
-    "artifactDigest": "sha256:1e81dba4dacff12ec71ff09e0bc725fdfb32ec6b2ef08f6da3debdf2ab7fe29e",
-    "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
-    "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
-    "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
-    "runtimeRevision": "cxorbia-live-hr-dev-00264-pxj",
-    "runtimeDigest": "sha256:d6916255e1cbc94c096b56d2ae0dc7ad7bc3d9eb4e2816f2b4a9bc2819549eae",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/0eb9844cbcbc180f",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791123072167000",
-    "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
-    "builds": 1,
-    "runtimeDeploys": 1,
-    "hostingDeploys": 1,
-    "storageRulesDeploys": 0,
-    "production": false
-  },
+  "currentMaterialization": null,
   "lastFocalAttempt": {
     "runId": 36198284266,
     "runNumber": 438,
@@ -3540,7 +3520,7 @@
     "interpretation": "Control-only freeze/readback. No action lane matched the fail-closed precomposition status."
   },
   "shopperIdentityGovernanceLockPath": "CXORBIA_I3_SHOPPER_IDENTITY_GOVERNANCE_LOCK_2026-10-04.json",
-  "queuedBlocker": "I3_ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE_REPROOF",
+  "queuedBlocker": "HOLD_VRM249_DEV_MATERIALIZATION_REQUIRED",
   "currentSourceProof": {
     "runId": 37208053790,
     "runNumber": 1111,
@@ -4055,7 +4035,7 @@
     "production": false
   },
   "vrm249": {
-    "state": "P0_PROVEN_ROOT_CAUSE_FIX_REQUIRED",
+    "state": "SOURCE_FIX_COMPOSED_REPROOF_REQUIRED",
     "classification": "MAPPING_FAILURE",
     "runId": 37253163627,
     "runNumber": 1162,
@@ -4066,6 +4046,9 @@
       "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
     ],
     "productMutationAllowed": true,
-    "production": false
+    "production": false,
+    "sourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
+    "sourceTree": "638ab7ab63244286ff460205da441221d5957ef0",
+    "predecessorSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7"
   }
 }
