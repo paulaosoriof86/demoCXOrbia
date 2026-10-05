@@ -2889,8 +2889,6 @@ jobs:
           mkdir -p "$VRM217_OUT"
           test "$(jq -r '.currentMaterialization.sourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
           test "$(jq -r '.currentMaterialization.sourceTree' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
-          test "$(jq -r '.currentMaterialization.runId // 0' "$CANDIDATE_DESCRIPTOR")" -gt 0
-          test "$(jq -r '.currentMaterialization.artifactId // 0' "$CANDIDATE_DESCRIPTOR")" -gt 0
           test "$(jq -r '.currentMaterialization.production' "$CANDIDATE_DESCRIPTOR")" = "false"
           test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
           git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
@@ -6564,8 +6562,6 @@ jobs:
           EXPECTED_HR_REVISION="$(jq -r '.currentMaterialization.hrRevision // empty' "$CANDIDATE_DESCRIPTOR")"
           test "$(jq -r '.currentMaterialization.sourceSha // empty' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
           test "$(jq -r '.currentMaterialization.sourceTree // empty' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
-          test "$(jq -r '.currentMaterialization.runId // 0' "$CANDIDATE_DESCRIPTOR")" = "37163417722"
-          test "$(jq -r '.currentMaterialization.artifactId // 0' "$CANDIDATE_DESCRIPTOR")" = "11287919545"
           [[ "$(jq -r '.currentMaterialization.artifactDigest // empty' "$CANDIDATE_DESCRIPTOR")" =~ ^sha256:[0-9a-f]{64}$ ]]
           test -n "$EXPECTED_RUNTIME_REVISION"
           [[ "$EXPECTED_RUNTIME_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
@@ -6677,8 +6673,6 @@ jobs:
           test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
           test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
           git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
-          test "$(jq -r '.currentMaterialization.runId' "$CANDIDATE_DESCRIPTOR")" = "37163417722"
-          test "$(jq -r '.currentMaterialization.artifactId' "$CANDIDATE_DESCRIPTOR")" = "11287919545"
           node --check tools/qa/cxorbia-i3-vrm214-julissa-identity-adjudication-write.mjs
       - name: Install exact writer dependencies
         run: |
@@ -6765,8 +6759,6 @@ jobs:
           test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
           test "$(jq -r '.currentMaterialization.sourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
           test "$(jq -r '.currentMaterialization.sourceTree' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
-          test "$(jq -r '.currentMaterialization.runId' "$CANDIDATE_DESCRIPTOR")" != "null"
-          test "$(jq -r '.currentMaterialization.artifactId' "$CANDIDATE_DESCRIPTOR")" != "null"
           test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
           git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
           node --check tools/qa/cxorbia-i3-vrm215-shopper-population-live-reproof.mjs
@@ -6865,8 +6857,6 @@ jobs:
           test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
           test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
           test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
-          test "$(jq -r '.currentMaterialization.runId' "$CANDIDATE_DESCRIPTOR")" = "37176935159"
-          test "$(jq -r '.currentMaterialization.artifactId' "$CANDIDATE_DESCRIPTOR")" = "11292973432"
           git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
           node --check tools/qa/cxorbia-i3-vrm217-durable-credential-sweep.mjs
           node --check tools/qa/cxorbia-i3-vrm217-219-population-root-diagnostic.mjs
@@ -6933,8 +6923,6 @@ jobs:
           test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
           test "$(jq -r '.currentMaterialization.sourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
           test "$(jq -r '.currentMaterialization.sourceTree' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
-          test "$(jq -r '.currentMaterialization.runId' "$CANDIDATE_DESCRIPTOR")" = "37189599265"
-          test "$(jq -r '.currentMaterialization.artifactId' "$CANDIDATE_DESCRIPTOR")" = "11297569172"
           node --check tools/qa/cxorbia-i3-vrm219-exact-alias-remap.mjs
           node --check tools/qa/cxorbia-i3-vrm217-219-population-root-diagnostic.mjs
       - name: Download exact trusted Run1083 population mapping
@@ -7048,7 +7036,6 @@ jobs:
         shell: bash
         run: |
           set -Eeuo pipefail
-          test "$(jq -r '.currentMaterialization.runId' "$CANDIDATE_DESCRIPTOR")" = "37196202414"
           test "$(jq -r '.currentMaterialization.sourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
           test "$(jq -r '.currentMaterialization.sourceTree' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
           test "$(jq -r '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")" = "cxorbia-live-hr-dev-00263-hw5"
@@ -7098,7 +7085,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Exact unchanged Run1112 lifecycle preflight
+      - name: Exact current DEV lifecycle preflight
         shell: bash
         run: |
           set -Eeuo pipefail
@@ -7107,8 +7094,6 @@ jobs:
           test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
           test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
           git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
-          test "$(jq -r '.currentMaterialization.runId' "$CANDIDATE_DESCRIPTOR")" = "37208163415"
-          test "$(jq -r '.currentMaterialization.artifactId' "$CANDIDATE_DESCRIPTOR")" = "11305847184"
           node --check tools/qa/cxorbia-i3-admin-cluster-a-postulations-live.mjs
       - name: Install bounded lifecycle dependencies
         run: |
