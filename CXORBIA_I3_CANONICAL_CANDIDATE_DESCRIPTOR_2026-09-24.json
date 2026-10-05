@@ -3523,16 +3523,14 @@
     "production": false
   },
   "lastControlReadback": {
-    "runId": 37162081611,
-    "runNumber": 1046,
-    "headSha": "3b7d3e05db923cc9dfbc5acd067deb34e5cb986c",
-    "conclusion": "success",
-    "canonicalCandidateAuthority": "SUCCESS",
-    "materializationJobsRun": 0,
-    "deploys": 0,
-    "builds": 0,
-    "production": false,
-    "interpretation": "Control-only freeze/readback. No action lane matched the fail-closed precomposition status."
+    "state": "VRM256_GOVERNANCE_POINTER_ALIGNED",
+    "previousRunId": 37376914899,
+    "previousFailure": "MAPPING_FAILURE:NEXT_FINDING_ID",
+    "ledgerNextFindingId": "VRM-257",
+    "descriptorNextFindingId": "VRM-257",
+    "productSourceSha": "994b8f7c201162a3aa865798e9de4aa8fc8a3525",
+    "productSourceChanged": false,
+    "production": false
   },
   "shopperIdentityGovernanceLockPath": "CXORBIA_I3_SHOPPER_IDENTITY_GOVERNANCE_LOCK_2026-10-04.json",
   "queuedBlocker": "HOLD_VRM249_DEV_MATERIALIZATION_REQUIRED",
