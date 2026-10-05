@@ -134,10 +134,10 @@ try{
   const projectSnap=await project.get(),projectData=projectSnap.exists?(projectSnap.data()||{}):{},reservationRows=await docs(project.collection('reservations'));
   const rVisit=available.find(v=>str(v.hrRowId)&&reservationFutureEligible(v,projectData)&&!reservationRows.some(r=>str(r.visitId||r.visitaId)===str(v.visitId||v.id)&&str(r.shopperId)===shopperId));
   need(rVisit,'SOURCE_FAILURE','RSV_NO_SAFE_FUTURE_AVAILABLE_PAIR',{available:available.length});
-  const rVisitId=str(rVisit.visitId||rVisit.id),rHrRowId=str(rVisit.hrRowId),rPeriodId=str(rVisit.periodId),rBranch=branchKey(rVisit),shopperB=str(secondMember.shopperId);
+  const rVisitId=str(rVisit.visitId||rVisit.id),rHrRowId=str(rVisit.hrRowId),rPeriodId=str(rVisit.periodId),rPeriodo=str(rVisit.periodKey||rVisit.periodo||rPeriodId.replace(/^cinepolis-/,'')),rBranch=branchKey(rVisit),shopperB=str(secondMember.shopperId);
   need(rBranch,'SOURCE_FAILURE','RSV_BRANCH_KEY_REQUIRED');
   const rVisitRef=project.collection('visits').doc(rVisit.id),rVisitBeforeSnap=await rVisitRef.get(),rVisitBefore=rVisitBeforeSnap.data()||{};
-  const rCreate=rbase('reservation.create',RSV_ID,rPeriodId,'qa-rsv-create-'+RUN,'absent',{visitId:rVisitId,hrRowId:rHrRowId,branchId:rBranch,sucursalId:rBranch,shopperId,shopper:str(profileById.get(shopperId)?.nombre||'QA Shopper A'),sourceRevision:EXPECTED_HR,status:'solicitada',periodo:rPeriodId});
+  const rCreate=rbase('reservation.create',RSV_ID,rPeriodId,'qa-rsv-create-'+RUN,'absent',{visitId:rVisitId,hrRowId:rHrRowId,branchId:rBranch,sucursalId:rBranch,shopperId,shopper:str(profileById.get(shopperId)?.nombre||'QA Shopper A'),sourceRevision:EXPECTED_HR,status:'solicitada',periodo:rPeriodo});
   const rc1=await send(shopperToken,rCreate);need(rc1.ok&&rc1.body?.providerAck===true&&rc1.body?.status==='committed','PERSISTENCE_FAILURE','RSV_CREATE_ACK',{rc1});
   const rc2=await send(shopperToken,rCreate);need(rc2.ok&&rc2.body?.providerAck===true&&rc2.body?.idempotentReplay===true&&Number(rc2.body?.providerWrites||0)===0,'PERSISTENCE_FAILURE','RSV_CREATE_REPLAY',{rc2});
   let rsnap=await project.collection('reservations').doc(RSV_ID).get(),rrow=rsnap.data()||{};need(rsnap.exists&&str(rrow.status||rrow.estado)==='solicitada'&&Number(rrow.version)===1,'PERSISTENCE_FAILURE','RSV_CREATE_READBACK',{rrow});
