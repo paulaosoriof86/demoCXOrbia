@@ -7056,6 +7056,108 @@ jobs:
           retention-days: 30
           compression-level: 0
 
+  vrm215-shopper-population-reproof:
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM215_SHOPPER_POPULATION_REPROOF_REQUIRED' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      VRM215_OUT: .tmp/i3-vrm215-shopper-population
+      VRM215_CONCURRENCY: '6'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Preflight exact current canonical materialization
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$VRM215_OUT"
+          test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
+          test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
+          test "$(jq -r '.currentMaterialization.sourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
+          test "$(jq -r '.currentMaterialization.sourceTree' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
+          test "$(jq -r '.currentMaterialization.runId' "$CANDIDATE_DESCRIPTOR")" != "null"
+          test "$(jq -r '.currentMaterialization.artifactId' "$CANDIDATE_DESCRIPTOR")" != "null"
+          test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
+          git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          node --check tools/qa/cxorbia-i3-vrm215-shopper-population-live-reproof.mjs
+          node --check tools/qa/cxorbia-i3-vrm217-219-population-root-diagnostic.mjs
+      - name: Install population-proof dependencies
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - uses: google-github-actions/setup-gcloud@v2
+      - name: Verify immutable DEV fingerprints
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          EXPECTED_RUNTIME_REVISION="$(jq -r '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")"
+          EXPECTED_RUNTIME_DIGEST="$(jq -r '.currentMaterialization.runtimeDigest' "$CANDIDATE_DESCRIPTOR")"
+          EXPECTED_HOSTING_VERSION="$(jq -r '.currentMaterialization.hostingVersion' "$CANDIDATE_DESCRIPTOR")"
+          EXPECTED_HR_REVISION="$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")"
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$VRM215_OUT/runtime.json"
+          test "$(jq -r '.status.latestReadyRevisionName' "$VRM215_OUT/runtime.json")" = "$EXPECTED_RUNTIME_REVISION"
+          gcloud run revisions describe "$EXPECTED_RUNTIME_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$VRM215_OUT/runtime-revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$VRM215_OUT/runtime-revision.json")"
+          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else exit 1; fi
+          test "$DIGEST" = "$EXPECTED_RUNTIME_DIGEST"
+          TOKEN="$(gcloud auth print-access-token)"
+          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$VRM215_OUT/hosting.json"
+          test "$(jq -r '.release.version.name' "$VRM215_OUT/hosting.json")" = "$EXPECTED_HOSTING_VERSION"
+          curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm215=$GITHUB_RUN_ID" > "$VRM215_OUT/hr-meta.json"
+          test "$(jq -r '.revision' "$VRM215_OUT/hr-meta.json")" = "$EXPECTED_HR_REVISION"
+          echo "EXPECTED_HR_REVISION=$EXPECTED_HR_REVISION" >> "$GITHUB_ENV"
+      - name: Prove canonical root semantics after VRM243
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          ROOT_OUT="$VRM215_OUT/root"
+          mkdir -p "$ROOT_OUT"
+          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" VRM217_OUT="$ROOT_OUT" node tools/qa/cxorbia-i3-vrm217-219-population-root-diagnostic.mjs | tee "$ROOT_OUT/console.log"
+          test "$(jq -r '.decision' "$ROOT_OUT/result.json")" = "PASS_VRM217_219_POPULATION_ROOT_DIAGNOSTIC"
+          test "$(jq -r '.population.activeMemberships' "$ROOT_OUT/result.json")" = "379"
+          test "$(jq -r '.identity.holds' "$ROOT_OUT/result.json")" = "1"
+          test "$(jq -r '.hrAssignments.unresolved' "$ROOT_OUT/result.json")" = "0"
+          test "$(jq -r '.visits.authoritativeAliasRows' "$ROOT_OUT/result.json")" = "0"
+          test "$(jq -r '.visits.historicalAliasRows' "$ROOT_OUT/result.json")" = "122"
+          test "$(jq -r '.visits.ambiguousAuthorityGroups' "$ROOT_OUT/result.json")" = "0"
+          test "$(jq '.operationalAliasReferences.rows | length' "$ROOT_OUT/result.json")" = "0"
+          test "$(jq '[.operationalAliasReferences.paymentReconciliations, .operationalAliasReferences.certifications, .operationalAliasReferences.liquidations, .operationalAliasReferences.postulations, .operationalAliasReferences.reservations] | add' "$ROOT_OUT/result.json")" = "0"
+      - name: Prove every auth-eligible shopper
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" VRM215_OUT="$VRM215_OUT" VRM215_CONCURRENCY="$VRM215_CONCURRENCY" node tools/qa/cxorbia-i3-vrm215-shopper-population-live-reproof.mjs | tee "$VRM215_OUT/console.log"
+          test "$(jq -r '.decision' "$VRM215_OUT/result.json")" = "PASS_VRM215_ALL_ACTIVE_SHOPPERS"
+          test "$(jq -r '.membershipUniverseCount' "$VRM215_OUT/result.json")" = "379"
+          test "$(jq -r '.reviewOnlyExcludedCount' "$VRM215_OUT/result.json")" = "1"
+          test "$(jq -r '.reviewOnlyPass' "$VRM215_OUT/result.json")" = "true"
+          test "$(jq -r '.populationCount' "$VRM215_OUT/result.json")" = "378"
+          test "$(jq -r '.loginPass' "$VRM215_OUT/result.json")" = "$(jq -r '.populationCount' "$VRM215_OUT/result.json")"
+          test "$(jq -r '.selfScopePass' "$VRM215_OUT/result.json")" = "$(jq -r '.populationCount' "$VRM215_OUT/result.json")"
+          test "$(jq -r '.routeContractPass' "$VRM215_OUT/result.json")" = "$(jq -r '.populationCount' "$VRM215_OUT/result.json")"
+          test "$(jq -r '.aliasOperationalResiduals' "$VRM215_OUT/result.json")" = "0"
+          test "$(jq -r '.hrAssignmentsPass' "$VRM215_OUT/result.json")" = "true"
+          test "$(jq -r '.writes' "$VRM215_OUT/result.json")" = "0"
+          test "$(jq -r '.production' "$VRM215_OUT/result.json")" = "false"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-vrm215-shopper-population-${{ github.run_id }}
+          path: .tmp/i3-vrm215-shopper-population
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
   vrm217-durable-credential-sweep:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM217_DURABLE_CREDENTIAL_SWEEP_REQUIRED' }}
