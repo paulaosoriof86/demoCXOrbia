@@ -3,8 +3,8 @@
   "status": "ACTIVE_CLOSURE_VIEW",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
   "generatedFromLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "generatedAtEvidenceTime": "2026-10-05T00:27:30Z",
-  "controlHeadAtGeneration": "367877c61ba4a87261829aeec493e695605f5685",
+  "generatedAtEvidenceTime": "2026-10-05T00:55:00Z",
+  "controlHeadAtGeneration": "0643490abd67670b5fe37356f15f28202c22f073",
   "productSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
   "productSourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
   "exactDevArtifact": {
@@ -34,15 +34,15 @@
   "findingCount": 246,
   "missingFindingIds": [],
   "duplicateFindingIds": [],
-  "currentBlockingCount": 68,
-  "undisposedCount": 83,
+  "currentBlockingCount": 67,
+  "undisposedCount": 81,
   "terminalDispositionCounts": {
-    "PASS_CURRENT_ARTIFACT": 142,
+    "PASS_CURRENT_ARTIFACT": 143,
     "SUPERSEDED_BY_VRM-221": 1,
     "NON_BLOCKING_DEFERRED_WITH_EXPLICIT_REASON": 3,
     "PRESERVED_PHASE_B_NOT_I3_AUTHORITY": 1,
     "SUPERSEDED_BY_VRM-229": 1,
-    "CONTROL_ONLY_FIXED": 8,
+    "CONTROL_ONLY_FIXED": 9,
     "SUPERSEDED_BY_VRM-234": 1,
     "SUPERSEDED_BY_VRM-236": 1,
     "PASS_DIAGNOSTIC": 2,
@@ -51,7 +51,6 @@
     "SUPERSEDED_BY_VRM-243": 1
   },
   "nextCriticalSequence": [
-    "VRM-215_POPULATION_REPROOF_V2",
     "I3_MULTIMODULE_LIVE_SWEEP",
     "PAULA_VISUAL_ACCEPTANCE",
     "GATE20_GATE21_SAME_ARTIFACT"
@@ -6836,33 +6835,32 @@
       "owner": [],
       "latestApprovedSource": null,
       "latestLiveProof": {
-        "runNumber": 1124,
-        "runId": 37228209050,
-        "decision": "FAIL_VRM215_ALL_ACTIVE_SHOPPERS_376_OF_380",
-        "artifactId": 11313768076,
+        "runNumber": 1142,
+        "runId": 37247621441,
+        "decision": "PASS_VRM215_ALL_ACTIVE_SHOPPERS",
+        "artifactId": 11319784732,
         "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
         "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
       },
       "successor": null,
-      "rawLedgerState": "CONTROL_FIX_PENDING_REPROOF_AFTER_VRM243_PASS",
-      "realState": "REPROOF_REQUIRED",
+      "rawLedgerState": "PASS_RUN1142",
+      "realState": "PASS_CURRENT_ARTIFACT",
       "evidence": {
-        "currentProductSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
-        "currentProductTree": "b59da4c090d4639a136168656e7addd544f38e18",
-        "currentMaterializationRunId": 37208163415,
-        "sourceModuleStatus": "MATCH",
-        "latestFindingRun": {
-          "runNumber": 1074,
-          "runId": 37172140164,
-          "decision": "FAIL_VRM215_ALL_ACTIVE_SHOPPERS",
-          "artifactId": 11292396629,
-          "sourceSha": null,
-          "sourceTree": null
-        }
+        "membershipUniverseCount": 379,
+        "reviewOnlyExcludedCount": 1,
+        "reviewOnlyPass": true,
+        "authEligiblePopulation": 378,
+        "loginPass": 378,
+        "selfScopePass": 378,
+        "routeContractPass": 378,
+        "aliasOperationalResiduals": 0,
+        "hrAssignmentsPass": true,
+        "writes": 0,
+        "production": false
       },
-      "actionRemaining": "run VRM215 v2 over all 378 auth-eligible shoppers while proving membershipUniverse=379, exactly one frozen review-only HR identity, all HR assignments resolved, and root visit authority 0 authoritative / 122 historical / 0 ambiguous",
-      "blocking": true,
-      "terminalDisposition": null
+      "actionRemaining": "none",
+      "blocking": false,
+      "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     {
       "findingId": "VRM-216",
@@ -7917,29 +7915,26 @@
       ],
       "latestApprovedSource": null,
       "latestLiveProof": {
-        "runNumber": 1131,
-        "runId": 37245792720,
-        "decision": "PASS_VRM217_219_POPULATION_ROOT_DIAGNOSTIC",
-        "artifactId": 11319310864,
+        "runNumber": 1142,
+        "runId": 37247621441,
+        "decision": "PASS_VRM215_ALL_ACTIVE_SHOPPERS",
+        "artifactId": 11319784732,
         "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
         "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
       },
       "successor": null,
-      "rawLedgerState": "CONTROL_FIX_COMMITTED_REPROOF_REQUIRED",
-      "realState": "CONTROL_FIX_PENDING_REPROOF",
+      "rawLedgerState": "CONTROL_ONLY_FIXED_RUN1142",
+      "realState": "CONTROL_ONLY_FIXED",
       "evidence": {
-        "membershipUniverse": 379,
-        "reviewOnlyExpected": 1,
-        "authEligibleExpected": 378,
-        "authoritativeAliasRows": 0,
-        "historicalAliasRows": 122,
-        "ambiguousAuthorityGroups": 0,
-        "nonVisitOperationalAliasReferences": 0,
-        "productChanged": false
+        "reviewOnlySemanticsPreserved": true,
+        "historicalVisitSemanticsPreserved": true,
+        "coverageReduced": false,
+        "productChanged": false,
+        "production": false
       },
-      "actionRemaining": "prove corrected VRM215 v2 on unchanged Run1112 materialization",
+      "actionRemaining": "none",
       "blocking": false,
-      "terminalDisposition": null
+      "terminalDisposition": "CONTROL_ONLY_FIXED"
     },
     {
       "findingId": "VRM-246",
