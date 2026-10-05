@@ -54,7 +54,6 @@
     "FIXED_PROVEN": 2
   },
   "nextCriticalSequence": [
-    "VRM-258_CORRECTED_SOURCE_PROOF",
     "VRM-258_ONE_CORRECTED_DEV_MATERIALIZATION",
     "VRM-258_SAME_ARTIFACT_LIVE_REPROOF"
   ],
@@ -8603,8 +8602,8 @@
         "sourceSha": "b5d63c20dcd0e30a9c3d9f5f8520c28e481d0718",
         "sourceTree": "c8462a25832427390d96c288d74b76bd9f30ecc5"
       },
-      "rawLedgerState": "CORRECTED_SOURCE_PENDING_PROOF",
-      "realState": "P0_PROVEN_CORRECTED_SOURCE_PENDING_PROOF",
+      "rawLedgerState": "CORRECTED_SOURCE_PROVEN_RUN1249_DEV_MATERIALIZATION_REQUIRED",
+      "realState": "SOURCE_PROVEN_DEV_MATERIALIZATION_REQUIRED",
       "evidence": {
         "humanAuthority": "VRM-214 + Run1066",
         "canonicalShopperId": "shopper_gt_0c198c1055",
@@ -8612,20 +8611,14 @@
         "requiredDisplayName": "Julissa Flores",
         "invalidRun1247": true
       },
-      "actionRemaining": "CORRECTED_SOURCE_PROOF_THEN_ONE_DEV_MATERIALIZATION_THEN_SAME_ARTIFACT_LIVE_REPROOF",
+      "actionRemaining": "ONE_CORRECTED_DEV_MATERIALIZATION_THEN_SAME_ARTIFACT_LIVE_REPROOF",
       "blocking": true,
       "terminalDisposition": null,
       "sourceProof": {
-        "runId": 37389965175,
-        "runNumber": 1246,
-        "controlHeadSha": "ab00aead131f265a4e4248c2100dd452cf8c1dff",
-        "jobId": 112032509598,
-        "artifactId": 11381445301,
-        "artifactDigest": "sha256:bfd41e21f9bf120ccd45db472c85c0ae9edaf8c9e076d65204b2eb6cb588ab84",
-        "decision": "PASS_VRM258_SOURCE_REPROOF",
-        "sourceSha": "dc06e5c1ab3896b88a5b66627ae551b40eef000b",
-        "sourceTree": "4a27b1a642cbd425b9909ba057760431368464cf",
-        "regression": "vrm258_distinct_live_hr_identities_resist_stale_durable_crosswalk",
+        "runId": 37391098178,
+        "runNumber": 1249,
+        "jobId": 112036167295,
+        "assertion": "vrm258_authorized_alias_keeps_canonical_display_name",
         "vrm168Preserved": true,
         "builds": 0,
         "deploys": 0,
