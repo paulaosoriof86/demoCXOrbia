@@ -15452,6 +15452,37 @@
       "production": false,
       "terminalDisposition": "CONTROL_ONLY_FIXED",
       "successor": null
+    },
+    "VRM-251": {
+      "id": "VRM-251",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "severity": "P0_CONTROL",
+      "title": "Cluster A dynamic materialization edit accidentally removed unrelated materialization guards",
+      "state": "CONTROL_ONLY_FIXED_SCOPED_READBACK_PASS",
+      "firstObservedAt": "CONTROL_COMMIT_778b3a5_2026-10-05",
+      "rootCauseStatus": "PROVEN_AND_FIXED",
+      "rootCause": "A broad line filter intended to remove two historical Run1112 assertions in the Cluster A lifecycle job also removed currentMaterialization run/artifact guards from several unrelated dormant jobs.",
+      "evidence": {
+        "faultyCommit": "778b3a5b67ebdfd1a589f27e21b5b2d531f64f72",
+        "correctionCommit": "ea61189a9206f85f0e87530eeb6168176db6937f",
+        "authoritativeWorkflowBase": "67f5fc18f7fe6afecd4248ac8e584ea7d5bc2698",
+        "exactScopedParity": true,
+        "intendedChangesOnly": [
+          "Rename Cluster A preflight from historical Run1112 wording to current DEV wording",
+          "Replace only Cluster A hardcoded Run1112 runId/artifactId assertions with generic positive currentMaterialization assertions"
+        ],
+        "unrelatedGuardsRestored": true,
+        "productChanged": false,
+        "devArtifactChanged": false,
+        "production": false
+      },
+      "expected": "Control edits must use owner-scoped replacement and full-file readback against the immediate authority; broad filters across the canonical workflow are forbidden.",
+      "owner": [
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+      ],
+      "productChanged": false,
+      "production": false,
+      "terminalDisposition": "CONTROL_ONLY_FIXED"
     }
   },
   "latestEvidenceOverrides": {
@@ -16119,11 +16150,12 @@
       "VRM-247",
       "VRM-248",
       "VRM-249",
-      "VRM-250"
+      "VRM-250",
+      "VRM-251"
     ],
-    "findingCount": 250,
-    "expectedCurrentRange": "VRM-001..VRM-250",
-    "nextFindingId": "VRM-251",
+    "findingCount": 251,
+    "expectedCurrentRange": "VRM-001..VRM-251",
+    "nextFindingId": "VRM-252",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_I3_VRM249_LIFECYCLE_CONTROL_BINDING_REQUIRED",
@@ -16407,7 +16439,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Bind Admin Cluster A Postulations + Reservations lifecycle proof to the current materialization without historical run/artifact hardcodes, then re-run the same bounded lifecycle on Run1176 artifact.",
+  "exactNextAction": "Synchronize VRM251 into closure matrix and descriptor, then switch only to the existing Cluster A lifecycle status and re-run Postulations + Reservations against the exact Run1176 DEV artifact.",
   "supersedesGitBlob": "820da41b786054cb8cd23e89827e1f7afbcdd3b3",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -16436,7 +16468,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-251",
+  "nextFindingId": "VRM-252",
   "lastControlFailure": {
     "runId": 37251758888,
     "runNumber": 1157,
@@ -20012,8 +20044,8 @@
     "humanAcceptance": "FAIL",
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
-  "lastUpdatedAt": "2026-10-05T11:35:00Z",
-  "nextExactAction": "Bind Admin Cluster A Postulations + Reservations lifecycle proof to the current materialization without historical run/artifact hardcodes, then re-run the same bounded lifecycle on Run1176 artifact.",
+  "lastUpdatedAt": "2026-10-05T11:39:00Z",
+  "nextExactAction": "Synchronize VRM251 into closure matrix and descriptor, then switch only to the existing Cluster A lifecycle status and re-run Postulations + Reservations against the exact Run1176 DEV artifact.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
