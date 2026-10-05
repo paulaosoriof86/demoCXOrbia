@@ -8,19 +8,26 @@
   "productSourceSha": "994b8f7c201162a3aa865798e9de4aa8fc8a3525",
   "productSourceTree": "00e67e6d1d49421cd59f7207676b015eaf02ce20",
   "exactDevArtifact": {
-    "runId": 37356275140,
-    "runNumber": 1232,
-    "jobId": 111919456033,
-    "artifactId": 11365046107,
-    "artifactDigest": "sha256:a1be27364fa30a27134782d76247ded92523f2775ea3da727efc300f1de4d416",
-    "decision": "PASS_I3_VRM174_EXACT_DEV_MATERIALIZATION",
-    "sourceSha": "617ff043d77c4c3abdf20683abe05fe9d6a6e546",
-    "sourceTree": "fdea83d9baf760cd379bfdbcd1bad4281d894df5",
-    "runtimeRevision": "cxorbia-live-hr-dev-00268-jsw",
-    "runtimeDigest": "sha256:7e7571b1a87af2d046d24cd1f65bc336f03bffe7b1f4de86a83b13113dde6803",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/461b9839d4a5542c",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791225113581000",
+    "state": "PASS_VRM256_EXACT_DEV_MATERIALIZATION",
+    "runId": 37377137444,
+    "runNumber": 1239,
+    "controlHeadSha": "6ec1f195a42aad431ac99ff86e7ff71dcbb76438",
+    "jobId": 111989316091,
+    "artifactId": 11371928001,
+    "artifactDigest": "sha256:cb32fdcbb1995dd56fbea4bf120d2a505c45c67873dd9ae9c6e029fd4a75eec0",
+    "decision": "PASS_VRM256_EXACT_DEV_MATERIALIZATION",
+    "sourceSha": "994b8f7c201162a3aa865798e9de4aa8fc8a3525",
+    "sourceTree": "00e67e6d1d49421cd59f7207676b015eaf02ce20",
+    "runtimeRevision": "cxorbia-live-hr-dev-00269-7gb",
+    "runtimeDigest": "sha256:097bfc7fc7addfc6b0fc315a122a777faebab757c0d43bebc290283c0ae0a349",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/e3368d137a96e495",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791236470498000",
     "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "storageRulesDeploys": 0,
+    "scenarioDimensionsProven": true,
     "production": false
   },
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
@@ -46,7 +53,6 @@
     "SUPERSEDED_BY_VRM-243": 1
   },
   "nextCriticalSequence": [
-    "VRM256_EXACT_DEV_MATERIALIZATION",
     "SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF",
     "PAULA_VISUAL_CHECKPOINT",
     "GATE20_GATE21_TERMINAL_CLOSURE"
@@ -8485,14 +8491,37 @@
         "jobId": 111985906076,
         "artifactId": 11371807572,
         "decision": "FAIL_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
-        "production": false
+        "production": false,
+        "materialization": {
+          "state": "PASS_VRM256_EXACT_DEV_MATERIALIZATION",
+          "runId": 37377137444,
+          "runNumber": 1239,
+          "controlHeadSha": "6ec1f195a42aad431ac99ff86e7ff71dcbb76438",
+          "jobId": 111989316091,
+          "artifactId": 11371928001,
+          "artifactDigest": "sha256:cb32fdcbb1995dd56fbea4bf120d2a505c45c67873dd9ae9c6e029fd4a75eec0",
+          "decision": "PASS_VRM256_EXACT_DEV_MATERIALIZATION",
+          "sourceSha": "994b8f7c201162a3aa865798e9de4aa8fc8a3525",
+          "sourceTree": "00e67e6d1d49421cd59f7207676b015eaf02ce20",
+          "runtimeRevision": "cxorbia-live-hr-dev-00269-7gb",
+          "runtimeDigest": "sha256:097bfc7fc7addfc6b0fc315a122a777faebab757c0d43bebc290283c0ae0a349",
+          "hostingVersion": "sites/cxorbia-backend-dev/versions/e3368d137a96e495",
+          "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791236470498000",
+          "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+          "builds": 1,
+          "runtimeDeploys": 1,
+          "hostingDeploys": 1,
+          "storageRulesDeploys": 0,
+          "scenarioDimensionsProven": true,
+          "production": false
+        }
       },
       "successor": {
         "sourceSha": "994b8f7c201162a3aa865798e9de4aa8fc8a3525",
         "sourceTree": "00e67e6d1d49421cd59f7207676b015eaf02ce20"
       },
-      "rawLedgerState": "SOURCE_FIX_COMPOSED_DEV_MATERIALIZATION_REQUIRED",
-      "realState": "P0_PROVEN_SOURCE_FIX_PENDING_DEV_MATERIALIZATION",
+      "rawLedgerState": "DEV_MATERIALIZED_PENDING_SAME_ARTIFACT_LIVE_REPROOF",
+      "realState": "P0_PROVEN_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
       "evidence": {
         "activePeriod": "2026-10",
         "expectedBranch": "C. Miraflores",
@@ -8502,7 +8531,7 @@
           "2026-06"
         ]
       },
-      "actionRemaining": "Exact DEV materialization then same-artifact live reproof",
+      "actionRemaining": "Same-artifact representative/population live reproof on exact Run1239 DEV materialization",
       "blocking": true,
       "terminalDisposition": null
     }

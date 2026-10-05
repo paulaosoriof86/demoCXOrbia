@@ -6607,16 +6607,20 @@ jobs:
           EXPECTED_HR_REVISION="$(jq -r '.currentMaterialization.hrRevision // empty' "$CANDIDATE_DESCRIPTOR")"
           test "$(jq -r '.currentMaterialization.sourceSha // empty' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
           test "$(jq -r '.currentMaterialization.sourceTree // empty' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
-          if [[ "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" == "HOLD_I3_SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF_REQUIRED" ]]; then
-            test "$(jq -r '.currentMaterialization.runId // 0' "$CANDIDATE_DESCRIPTOR")" = "37356275140"
-            test "$(jq -r '.currentMaterialization.artifactId // 0' "$CANDIDATE_DESCRIPTOR")" = "11365046107"
-            test "$(jq -r '.currentMaterialization.artifactDigest // empty' "$CANDIDATE_DESCRIPTOR")" = "sha256:a1be27364fa30a27134782d76247ded92523f2775ea3da727efc300f1de4d416"
-            test "$(jq -r '.currentMaterialization.decision // empty' "$CANDIDATE_DESCRIPTOR")" = "PASS_I3_VRM174_EXACT_DEV_MATERIALIZATION"
-            test "$(jq -r '.currentMaterialization.production' "$CANDIDATE_DESCRIPTOR")" = "false"
-          else
-            test "$(jq -r '.currentMaterialization.runId // 0' "$CANDIDATE_DESCRIPTOR")" = "37163417722"
-            test "$(jq -r '.currentMaterialization.artifactId // 0' "$CANDIDATE_DESCRIPTOR")" = "11287919545"
-            [[ "$(jq -r '.currentMaterialization.artifactDigest // empty' "$CANDIDATE_DESCRIPTOR")" =~ ^sha256:[0-9a-f]{64}$ ]]
+          MAT_RUN="$(jq -r '.currentMaterialization.runId // 0' "$CANDIDATE_DESCRIPTOR")"
+          MAT_ARTIFACT="$(jq -r '.currentMaterialization.artifactId // 0' "$CANDIDATE_DESCRIPTOR")"
+          MAT_DIGEST="$(jq -r '.currentMaterialization.artifactDigest // empty' "$CANDIDATE_DESCRIPTOR")"
+          MAT_DECISION="$(jq -r '.currentMaterialization.decision // empty' "$CANDIDATE_DESCRIPTOR")"
+          test "$MAT_RUN" -gt 0
+          test "$MAT_ARTIFACT" -gt 0
+          [[ "$MAT_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
+          [[ "$MAT_DECISION" =~ ^PASS_.*EXACT_DEV_MATERIALIZATION$ ]]
+          test "$(jq -r '.currentMaterialization.production' "$CANDIDATE_DESCRIPTOR")" = "false"
+          if [[ "$(jq -r '.activeBlocker // empty' "$CANDIDATE_DESCRIPTOR")" == "VRM-256" ]]; then
+            test "$MAT_RUN" = "37377137444"
+            test "$MAT_ARTIFACT" = "11371928001"
+            test "$MAT_DIGEST" = "sha256:cb32fdcbb1995dd56fbea4bf120d2a505c45c67873dd9ae9c6e029fd4a75eec0"
+            test "$MAT_DECISION" = "PASS_VRM256_EXACT_DEV_MATERIALIZATION"
           fi
           test -n "$EXPECTED_RUNTIME_REVISION"
           [[ "$EXPECTED_RUNTIME_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
