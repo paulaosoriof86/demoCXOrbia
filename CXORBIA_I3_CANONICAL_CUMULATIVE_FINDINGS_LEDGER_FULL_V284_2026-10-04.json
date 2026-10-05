@@ -14980,6 +14980,39 @@
       "production": false,
       "terminalDisposition": "CONTROL_ONLY_FIXED",
       "successor": null
+    },
+    "VRM-247": {
+      "id": "VRM-247",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "severity": "P0_CONTROL",
+      "title": "Descriptor retained pre-Run1142 findings-ledger blob after freezing VRM215 closure",
+      "state": "CONTROL_POINTER_FIX_REQUIRED",
+      "firstObservedAt": "RUN1145_2026-10-05",
+      "rootCauseStatus": "PROVEN",
+      "rootCause": "Run1145 canonical-candidate-authority rejected LEDGER_BLOB_DRIFT because the Run1142 closure changed the canonical ledger blob from 11fb308... to 75831af..., while the candidate descriptor still declared findingsLedgerExpectedGitBlob=11fb308.... Product source, tree and DEV materialization were unchanged.",
+      "evidence": {
+        "runId": 37250274061,
+        "runNumber": 1145,
+        "jobId": 111576329984,
+        "code": "RELEASE_COMPOSITION_FAILURE:LEDGER_BLOB_DRIFT:75831af902088586a708386dafb8e039e352fa38",
+        "currentLedgerBlob": "75831af902088586a708386dafb8e039e352fa38",
+        "staleDescriptorLedgerBlob": "11fb308680ae3fd08d8cc7c59ade3311289d94ed",
+        "productSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "productSourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+        "productChanged": false,
+        "build": false,
+        "deploy": false,
+        "production": false
+      },
+      "expected": "Update only the descriptor's expected ledger blob to the final ledger blob that includes VRM247, then rerun the same canonical authority and multimodule sweep.",
+      "owner": [
+        "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+        "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json"
+      ],
+      "productChanged": false,
+      "production": false,
+      "terminalDisposition": null,
+      "successor": null
     }
   },
   "latestEvidenceOverrides": {
@@ -15643,11 +15676,12 @@
       "VRM-243",
       "VRM-244",
       "VRM-245",
-      "VRM-246"
+      "VRM-246",
+      "VRM-247"
     ],
-    "findingCount": 246,
-    "expectedCurrentRange": "VRM-001..VRM-246",
-    "nextFindingId": "VRM-247",
+    "findingCount": 247,
+    "expectedCurrentRange": "VRM-001..VRM-247",
+    "nextFindingId": "VRM-248",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_I3_MULTIMODULE_LIVE_SWEEP_REQUIRED",
@@ -15958,15 +15992,19 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-247",
+  "nextFindingId": "VRM-248",
   "lastControlFailure": {
-    "findingId": "VRM-232",
-    "runId": 37213834927,
-    "runNumber": 1116,
-    "classification": "MAPPING_FAILURE",
-    "providerReached": false,
-    "writes": 0,
+    "runId": 37250274061,
+    "runNumber": 1145,
+    "jobId": 111576329984,
+    "code": "RELEASE_COMPOSITION_FAILURE:LEDGER_BLOB_DRIFT:75831af902088586a708386dafb8e039e352fa38",
+    "currentLedgerBlob": "75831af902088586a708386dafb8e039e352fa38",
+    "staleDescriptorLedgerBlob": "11fb308680ae3fd08d8cc7c59ade3311289d94ed",
+    "productSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+    "productSourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
     "productChanged": false,
+    "build": false,
+    "deploy": false,
     "production": false
   },
   "vrm044FocalProof": {
@@ -19520,7 +19558,7 @@
     "humanAcceptance": "FAIL",
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
-  "lastUpdatedAt": "2026-10-05T00:55:00Z",
+  "lastUpdatedAt": "2026-10-05T01:12:00Z",
   "nextExactAction": "Execute the existing same-artifact I3 multimodule live sweep against unchanged Run1112 materialization; require Admin + Shopper + Client route coverage, current HR revision, zero page errors and zero writes.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
