@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM253_CONTROL_REPROOF_REQUIRED",
+  "status": "HOLD_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,13 +8,13 @@
   "productTreeAuthority": "638ab7ab63244286ff460205da441221d5957ef0",
   "predecessorProductSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "c9b66d744a8095336a2850f5b245c222f9c59c9e",
+  "findingsLedgerExpectedGitBlob": "4afd293bd8ac30517739e1d77002f775d3f5b786",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
   "activeBlocker": "VRM-249",
-  "nextFindingId": "VRM-253",
+  "nextFindingId": "VRM-254",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Correct only the synthetic reservation period label in the bounded QA fixture: periodId remains cinepolis-YYYY-MM, periodo must be YYYY-MM as required by the canonical reservations guard. Product remains frozen; re-run same Run1176 artifact once.",
+  "exactNextAction": "Re-run the same bounded Postulations + Reservations lifecycle on the exact unchanged Run1176 DEV artifact with corrected canonical periodo label. If PASS, close reservations and advance directly to finance focal reproof.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3562,7 +3562,7 @@
     "production": false
   },
   "openFindingsClosureMatrixPath": "I3_OPEN_FINDINGS_CLOSURE_MATRIX_2026-10-04.json",
-  "openFindingsClosureMatrixFindingCount": 252,
+  "openFindingsClosureMatrixFindingCount": 253,
   "lastVrm229Pass": {
     "runId": 37211579195,
     "runNumber": 1114,
@@ -4176,7 +4176,7 @@
     "terminalDisposition": "CONTROL_ONLY_FIXED"
   },
   "vrm253": {
-    "state": "CONTROL_FIX_REQUIRED",
+    "state": "CONTROL_FIX_REPROOF_ACTIVE",
     "classification": "MAPPING_FAILURE",
     "severity": "P0_CONTROL",
     "run1199": {
@@ -4187,6 +4187,7 @@
     },
     "rootCause": "QA fixture persisted periodo with the technical periodId (cinepolis-YYYY-MM) while the canonical reservations guard correctly filters periodo by canonical label YYYY-MM. Durable protected reservation was present with matching periodId/projectId but excluded by this control-only label mismatch.",
     "productChanged": false,
-    "production": false
+    "production": false,
+    "correctionCommit": "d4a5d6414c95a9dd420c6d3e35e8b07f8c15ae1d"
   }
 }
