@@ -7315,15 +7315,15 @@ jobs:
 
 
 
-  admin-cluster-a-shoppers-lifecycle:
+  admin-cluster-a-postulations-lifecycle:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_ADMIN_CLUSTER_A_SHOPPERS_LIFECYCLE_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
       FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
       FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
-      ADMIN_A_SHOPPERS_OUT: .tmp/i3-admin-cluster-a-shoppers
+      ADMIN_A_POST_OUT: .tmp/i3-admin-cluster-a-postulations
     steps:
       - uses: actions/checkout@v4
         with:
@@ -7335,14 +7335,14 @@ jobs:
         shell: bash
         run: |
           set -Eeuo pipefail
-          mkdir -p "$ADMIN_A_SHOPPERS_OUT"
+          mkdir -p "$ADMIN_A_POST_OUT"
           test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
           test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
           test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
           git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
           test "$(jq -r '.currentMaterialization.runId' "$CANDIDATE_DESCRIPTOR")" = "37208163415"
           test "$(jq -r '.currentMaterialization.artifactId' "$CANDIDATE_DESCRIPTOR")" = "11305847184"
-          node --check tools/qa/cxorbia-i3-vrm221-admin-identity-governance-live.mjs
+          node --check tools/qa/cxorbia-i3-admin-cluster-a-postulations-live.mjs
       - name: Install bounded lifecycle dependencies
         run: |
           npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
@@ -7361,41 +7361,42 @@ jobs:
           EXPECTED_DIGEST="$(jq -r '.currentMaterialization.runtimeDigest' "$CANDIDATE_DESCRIPTOR")"
           EXPECTED_HOSTING="$(jq -r '.currentMaterialization.hostingVersion' "$CANDIDATE_DESCRIPTOR")"
           EXPECTED_HR="$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")"
-          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$ADMIN_A_SHOPPERS_OUT/runtime.json"
-          test "$(jq -r '.status.latestReadyRevisionName' "$ADMIN_A_SHOPPERS_OUT/runtime.json")" = "$EXPECTED_RUNTIME"
-          gcloud run revisions describe "$EXPECTED_RUNTIME" --project "$PROJECT" --region "$REGION" --format=json > "$ADMIN_A_SHOPPERS_OUT/revision.json"
-          RAW="$(jq -r '.status.imageDigest // empty' "$ADMIN_A_SHOPPERS_OUT/revision.json")"
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$ADMIN_A_POST_OUT/runtime.json"
+          test "$(jq -r '.status.latestReadyRevisionName' "$ADMIN_A_POST_OUT/runtime.json")" = "$EXPECTED_RUNTIME"
+          gcloud run revisions describe "$EXPECTED_RUNTIME" --project "$PROJECT" --region "$REGION" --format=json > "$ADMIN_A_POST_OUT/revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$ADMIN_A_POST_OUT/revision.json")"
           if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else exit 1; fi
           test "$DIGEST" = "$EXPECTED_DIGEST"
           TOKEN="$(gcloud auth print-access-token)"
-          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$ADMIN_A_SHOPPERS_OUT/hosting.json"
-          test "$(jq -r '.release.version.name' "$ADMIN_A_SHOPPERS_OUT/hosting.json")" = "$EXPECTED_HOSTING"
-          curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&adminash=$GITHUB_RUN_ID" > "$ADMIN_A_SHOPPERS_OUT/hr-meta.json"
-          test "$(jq -r '.revision' "$ADMIN_A_SHOPPERS_OUT/hr-meta.json")" = "$EXPECTED_HR"
+          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$ADMIN_A_POST_OUT/hosting.json"
+          test "$(jq -r '.release.version.name' "$ADMIN_A_POST_OUT/hosting.json")" = "$EXPECTED_HOSTING"
+          curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&adminapost=$GITHUB_RUN_ID" > "$ADMIN_A_POST_OUT/hr-meta.json"
+          test "$(jq -r '.revision' "$ADMIN_A_POST_OUT/hr-meta.json")" = "$EXPECTED_HR"
           echo "EXPECTED_HR_REVISION=$EXPECTED_HR" >> "$GITHUB_ENV"
-      - name: Admin Shoppers create adjudicate retire lifecycle
+      - name: Postulations create transition delete reload lifecycle
         shell: bash
         run: |
           set -Eeuo pipefail
-          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" VRM221_OUT="$ADMIN_A_SHOPPERS_OUT/live" node tools/qa/cxorbia-i3-vrm221-admin-identity-governance-live.mjs | tee "$ADMIN_A_SHOPPERS_OUT/console.log"
-          R="$ADMIN_A_SHOPPERS_OUT/live/result.json"
-          test "$(jq -r '.decision' "$R")" = "PASS_VRM221_ADMIN_LIVE_E2E"
-          test "$(jq -r '.providerAck' "$R")" = "true"
-          test "$(jq -r '.idempotentReplay' "$R")" = "true"
-          test "$(jq -r '.durableReadback' "$R")" = "true"
-          test "$(jq -r '.merge.providerAck' "$R")" = "true"
-          test "$(jq -r '.distinct.identityRemap' "$R")" = "false"
-          test "$(jq -r '.safeDelete.physicalDelete' "$R")" = "false"
-          test "$(jq -r '.blockedDelete.currentHrProfilePreserved' "$R")" = "true"
-          test "$(jq -r '.cleanup.activeSyntheticRemaining' "$R")" = "0"
+          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" ADMIN_A_POST_OUT="$ADMIN_A_POST_OUT/live" node tools/qa/cxorbia-i3-admin-cluster-a-postulations-live.mjs | tee "$ADMIN_A_POST_OUT/console.log"
+          R="$ADMIN_A_POST_OUT/live/result.json"
+          test "$(jq -r '.decision' "$R")" = "PASS_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE"
+          test "$(jq -r '.create.providerAck' "$R")" = "true"
+          test "$(jq -r '.create.idempotentReplay' "$R")" = "true"
+          test "$(jq -r '.standby.durableReadback' "$R")" = "true"
+          test "$(jq -r '.reject.durableReadback' "$R")" = "true"
+          test "$(jq -r '.delete.providerAck' "$R")" = "true"
+          test "$(jq -r '.delete.noReappearance' "$R")" = "true"
+          test "$(jq -r '.browser.reloadNoReappearance' "$R")" = "true"
+          test "$(jq -r '.cleanup.qaResidue' "$R")" = "0"
+          test "$(jq -r '.cleanup.fallbackDirectDelete' "$R")" = "false"
           test "$(jq -r '.hrWrites' "$R")" = "0"
           test "$(jq -r '.externalWrites' "$R")" = "0"
           test "$(jq -r '.production' "$R")" = "false"
       - if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-i3-admin-cluster-a-shoppers-${{ github.run_id }}
-          path: .tmp/i3-admin-cluster-a-shoppers
+          name: cxorbia-i3-admin-cluster-a-postulations-${{ github.run_id }}
+          path: .tmp/i3-admin-cluster-a-postulations
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
