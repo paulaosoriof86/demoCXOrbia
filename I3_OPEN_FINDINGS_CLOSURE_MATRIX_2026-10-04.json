@@ -3,10 +3,10 @@
   "status": "ACTIVE_CLOSURE_VIEW",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
   "generatedFromLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "generatedAtEvidenceTime": "2026-10-05T17:50:00Z",
-  "controlHeadAtGeneration": "6fe414b55b19683bac7d2644b2ab91130350c030",
-  "productSourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
-  "productSourceTree": "638ab7ab63244286ff460205da441221d5957ef0",
+  "generatedAtEvidenceTime": "2026-10-05T18:03:00Z",
+  "controlHeadAtGeneration": "2808e3c891aeca24ce29c3bbc207232a0272082d",
+  "productSourceSha": "b3cc541c38d80708e8ee7e2007611eb9126bc34a",
+  "productSourceTree": "1dd01eb285503ee474201a172a2d6afe35cf390e",
   "exactDevArtifact": {
     "state": "PASS_VRM249_EXACT_DEV_MATERIALIZATION",
     "runId": 37303539281,
@@ -30,15 +30,15 @@
   "findingCount": 255,
   "missingFindingIds": [],
   "duplicateFindingIds": [],
-  "currentBlockingCount": 57,
-  "undisposedCount": 72,
+  "currentBlockingCount": 56,
+  "undisposedCount": 71,
   "terminalDispositionCounts": {
     "PASS_CURRENT_ARTIFACT": 155,
     "SUPERSEDED_BY_VRM-221": 1,
     "NON_BLOCKING_DEFERRED_WITH_EXPLICIT_REASON": 3,
     "PRESERVED_PHASE_B_NOT_I3_AUTHORITY": 1,
     "SUPERSEDED_BY_VRM-229": 1,
-    "CONTROL_ONLY_FIXED": 15,
+    "CONTROL_ONLY_FIXED": 16,
     "SUPERSEDED_BY_VRM-234": 1,
     "SUPERSEDED_BY_VRM-236": 1,
     "PASS_DIAGNOSTIC": 2,
@@ -47,7 +47,7 @@
     "SUPERSEDED_BY_VRM-243": 1
   },
   "nextCriticalSequence": [
-    "VRM255_CONTROL_REPROOF",
+    "VRM174_EXACT_DEV_MATERIALIZATION",
     "VRM174_HISTORICAL_PAYMENT_REPROOF",
     "SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF",
     "PAULA_VISUAL_CHECKPOINT",
@@ -5447,24 +5447,30 @@
         "app/modules/beneficios.js",
         "app/modules/finanzas.js"
       ],
-      "latestApprovedSource": "542fb96630d2068993d03ae86e3d3299f5386251",
+      "latestApprovedSource": {
+        "sourceSha": "b3cc541c38d80708e8ee7e2007611eb9126bc34a",
+        "sourceTree": "1dd01eb285503ee474201a172a2d6afe35cf390e",
+        "state": "VRM174_EXACT_DURABLE_AUTHORITY_SUCCESSOR"
+      },
       "latestLiveProof": {
-        "runId": 37333811676,
-        "runNumber": 1209,
-        "jobId": 111843459146,
-        "artifactId": 11355651173,
-        "artifactDigest": "sha256:20424a0a6584aacc9def0eb6b8902bbd89ee20d42031e2224a0ef0bd7a92e5de",
-        "decision": "PASS_PREI4_FINAL_FOCAL_FINANCE",
+        "runId": 37350975911,
+        "runNumber": 1227,
+        "jobId": 111901522498,
+        "artifactId": 11362442533,
+        "artifactDigest": "sha256:017eac726624d7654d3f966f82da308346b7f2e7bf25897d1ed5e76ad1457828",
+        "decision": "HOLD_VRM174_HISTORICAL_PAID_PROJECTION",
+        "stableHrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+        "authorityPeriodCount": 17,
         "production": false
       },
       "successor": null,
-      "rawLedgerState": "RUN1209_FOCAL_PASS_HISTORICAL_PAYMENT_REPROOF_REQUIRED",
-      "realState": "RUN1209_FOCAL_PASS_HISTORICAL_PAYMENT_REPROOF_REQUIRED",
+      "rawLedgerState": "SOURCE_FIX_COMPOSED_DEV_MATERIALIZATION_REQUIRED",
+      "realState": "SOURCE_FIX_COMPOSED_DEV_MATERIALIZATION_REQUIRED",
       "evidence": {
         "currentProductSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
         "currentProductTree": "b59da4c090d4639a136168656e7addd544f38e18",
         "currentMaterializationRunId": 37208163415,
-        "sourceModuleStatus": "MATCH",
+        "sourceModuleStatus": "TRUE_FUNCTIONAL_DEFECT_FIXED_SOURCE_PENDING_MATERIALIZATION",
         "latestFindingRun": {
           "runNumber": 0,
           "runId": 37049822507,
@@ -5472,9 +5478,12 @@
           "artifactId": 11245822402,
           "sourceSha": "542fb96630d2068993d03ae86e3d3299f5386251",
           "sourceTree": null
-        }
+        },
+        "run1227RootCause": "Finance matcher lacked __docId == live HR visitId precedence across legitimate durable duplicate history.",
+        "successorSource": "b3cc541c38d80708e8ee7e2007611eb9126bc34a",
+        "successorTree": "1dd01eb285503ee474201a172a2d6afe35cf390e"
       },
-      "actionRemaining": "same-artifact historical payment projection reproof",
+      "actionRemaining": "one exact DEV materialization of VRM174 successor, then same-artifact historical payment reproof",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -8404,10 +8413,18 @@
         "tools/qa/cxorbia-i3-vrm174-historical-payment-live.mjs"
       ],
       "latestApprovedSource": null,
-      "latestLiveProof": null,
+      "latestLiveProof": {
+        "runId": 37350975911,
+        "runNumber": 1227,
+        "jobId": 111901522498,
+        "decision": "PASS_VRM255_STABLE_ALL_PERIOD_HR_CONTROL",
+        "stableHrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+        "authorityPeriodCount": 17,
+        "production": false
+      },
       "successor": null,
-      "rawLedgerState": "CONTROL_FIX_COMPOSED_REPROOF_REQUIRED",
-      "realState": "CONTROL_FIX_COMPOSED_REPROOF_REQUIRED",
+      "rawLedgerState": "CONTROL_ONLY_FIXED_RUN1227_STABLE_HR",
+      "realState": "CONTROL_ONLY_FIXED",
       "evidence": {
         "currentProductSource": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
         "currentProductTree": "638ab7ab63244286ff460205da441221d5957ef0",
@@ -8432,9 +8449,9 @@
           "production": false
         }
       },
-      "actionRemaining": "same unchanged Run1176 artifact VRM174 reproof with stable all-period HR authority composition",
-      "blocking": true,
-      "terminalDisposition": null
+      "actionRemaining": null,
+      "blocking": false,
+      "terminalDisposition": "CONTROL_ONLY_FIXED"
     }
   ],
   "exactDevArtifactRole": "CURRENT_VRM249_SUCCESSOR",
