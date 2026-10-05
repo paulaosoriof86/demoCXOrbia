@@ -15239,6 +15239,58 @@
         "productChanged": false,
         "production": false
       }
+    },
+    "VRM-248": {
+      "id": "VRM-248",
+      "classification": "ENVIRONMENT_FAILURE",
+      "severity": "P0_CONTROL",
+      "title": "Postulations QA observer loses Playwright execution context during Admin auth navigation",
+      "state": "CONTROL_OBSERVER_FIX_REQUIRED",
+      "firstObservedAt": "RUN1157_2026-10-05",
+      "rootCauseStatus": "PROVEN",
+      "rootCause": "Run1157 proved application.create, exact replay, standby and reject provider lifecycles with durable readback. The harness then failed when Firebase Admin browser sign-in caused a page navigation while page.evaluate was awaiting the auth promise, destroying the Playwright execution context before provider-backed delete/no-reappearance verification.",
+      "evidence": {
+        "runId": 37251758888,
+        "runNumber": 1157,
+        "jobId": 111580706110,
+        "artifactId": 11320109824,
+        "artifactDigest": "sha256:6c79634a4217f9916bed2a6230189d82ff7e3d861bdb3574e69225401007cf82",
+        "create": {
+          "providerAck": true,
+          "idempotentReplay": true,
+          "durableReadback": true,
+          "version": 1
+        },
+        "standby": {
+          "providerAck": true,
+          "idempotentReplay": true,
+          "durableReadback": true,
+          "version": 2
+        },
+        "reject": {
+          "providerAck": true,
+          "idempotentReplay": true,
+          "durableReadback": true,
+          "version": 3
+        },
+        "failure": "page.evaluate: Execution context was destroyed, most likely because of a navigation.",
+        "cleanup": {
+          "fallbackDirectDelete": true,
+          "exactQaId": "qa-i3-app-37251758888"
+        },
+        "hrWrites": 0,
+        "externalWrites": 0,
+        "productChanged": false,
+        "production": false
+      },
+      "expected": "Keep product and lifecycle commands unchanged. Make Admin browser auth observer navigation-tolerant, execute provider-backed application.delete before/with reload verification, require no reappearance and no fallback cleanup.",
+      "owner": [
+        "tools/qa/cxorbia-i3-admin-cluster-a-postulations-live.mjs"
+      ],
+      "productChanged": false,
+      "production": false,
+      "terminalDisposition": null,
+      "successor": null
     }
   },
   "latestEvidenceOverrides": {
@@ -15903,11 +15955,12 @@
       "VRM-244",
       "VRM-245",
       "VRM-246",
-      "VRM-247"
+      "VRM-247",
+      "VRM-248"
     ],
-    "findingCount": 247,
-    "expectedCurrentRange": "VRM-001..VRM-247",
-    "nextFindingId": "VRM-248",
+    "findingCount": 248,
+    "expectedCurrentRange": "VRM-001..VRM-248",
+    "nextFindingId": "VRM-249",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE_REQUIRED",
@@ -16218,19 +16271,39 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-248",
+  "nextFindingId": "VRM-249",
   "lastControlFailure": {
-    "runId": 37250274061,
-    "runNumber": 1145,
-    "jobId": 111576329984,
-    "code": "RELEASE_COMPOSITION_FAILURE:LEDGER_BLOB_DRIFT:75831af902088586a708386dafb8e039e352fa38",
-    "currentLedgerBlob": "75831af902088586a708386dafb8e039e352fa38",
-    "staleDescriptorLedgerBlob": "11fb308680ae3fd08d8cc7c59ade3311289d94ed",
-    "productSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
-    "productSourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+    "runId": 37251758888,
+    "runNumber": 1157,
+    "jobId": 111580706110,
+    "artifactId": 11320109824,
+    "artifactDigest": "sha256:6c79634a4217f9916bed2a6230189d82ff7e3d861bdb3574e69225401007cf82",
+    "create": {
+      "providerAck": true,
+      "idempotentReplay": true,
+      "durableReadback": true,
+      "version": 1
+    },
+    "standby": {
+      "providerAck": true,
+      "idempotentReplay": true,
+      "durableReadback": true,
+      "version": 2
+    },
+    "reject": {
+      "providerAck": true,
+      "idempotentReplay": true,
+      "durableReadback": true,
+      "version": 3
+    },
+    "failure": "page.evaluate: Execution context was destroyed, most likely because of a navigation.",
+    "cleanup": {
+      "fallbackDirectDelete": true,
+      "exactQaId": "qa-i3-app-37251758888"
+    },
+    "hrWrites": 0,
+    "externalWrites": 0,
     "productChanged": false,
-    "build": false,
-    "deploy": false,
     "production": false
   },
   "vrm044FocalProof": {
@@ -19784,7 +19857,7 @@
     "humanAcceptance": "FAIL",
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
-  "lastUpdatedAt": "2026-10-05T01:29:00Z",
+  "lastUpdatedAt": "2026-10-05T01:36:00Z",
   "nextExactAction": "Run bounded Postulations lifecycle E2E on unchanged Run1112: current eligible shopper + available HR visit, application.create via shopper authority, idempotent replay, Admin standby/reject lifecycle, durable readback/reload, valid provider-backed delete and no reappearance, then verify no HR/external writes and zero QA residue.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
