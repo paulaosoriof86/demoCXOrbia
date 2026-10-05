@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM254_CONTROL_REPROOF_REQUIRED",
+  "status": "HOLD_I3_VRM174_HISTORICAL_PAYMENT_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,7 +8,7 @@
   "productTreeAuthority": "638ab7ab63244286ff460205da441221d5957ef0",
   "predecessorProductSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "d64a91833f34c22bd206bf6762048739b8c6d932",
+  "findingsLedgerExpectedGitBlob": "93118ebf4fdbccfeec71edafa98b09f29688d6aa",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Extend VRM254 control fix with the already-proven retrying browser authentication helper used by the reservations lifecycle; rerun unchanged Run1176 historical payment proof.",
+  "exactNextAction": "Re-run read-only VRM174 historical payment proof with stabilized browser auth on exact unchanged Run1176 DEV artifact.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -4221,7 +4221,7 @@
     "production": false
   },
   "vrm254": {
-    "state": "CONTROL_FIX_INCOMPLETE_AUTH_STABILIZATION_REQUIRED",
+    "state": "CONTROL_FIX_REPROOF_ACTIVE",
     "classification": "ENVIRONMENT_FAILURE",
     "severity": "P0_CONTROL",
     "run1215": {
@@ -4244,6 +4244,7 @@
       "artifactDigest": "sha256:2241c4cfcca9b5e2abb581cb0058d36ffb956d1dcb0d8305d84acc95a6fc006d",
       "error": "window.firebase became undefined during browser sign-in after initial readiness; transient navigation/auth race",
       "durableHistoricalPaid": 562
-    }
+    },
+    "authStabilizationCommit": "14e864b71ade98c329a3dc45ec50d97e00770049"
   }
 }
