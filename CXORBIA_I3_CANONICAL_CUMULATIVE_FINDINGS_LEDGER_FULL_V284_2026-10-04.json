@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v261",
   "frozenAt": "2026-10-04T09:12:00Z",
-  "status": "HOLD_I3_VRM174_HISTORICAL_PAYMENT_CONTROL_PREP_REQUIRED",
+  "status": "HOLD_I3_VRM254_CONTROL_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "microblockId": "PRE-I4-LIVE-HR-STALE-CACHE-MAPPING-HOLD-AUGUST-CANONICAL-CORRECTION",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -15727,6 +15727,41 @@
         "production": false
       },
       "blocking": false
+    },
+    "VRM-254": {
+      "id": "VRM-254",
+      "classification": "ENVIRONMENT_FAILURE",
+      "severity": "P0_CONTROL",
+      "title": "VRM174 historical payment QA used bare firebase global inside Playwright evaluate",
+      "state": "CONTROL_FIX_COMPOSED_REPROOF_REQUIRED",
+      "firstObservedAt": "RUN1215_2026-10-05",
+      "rootCauseStatus": "PROVEN_CONTROL_ENVIRONMENT_DEFECT",
+      "rootCause": "The read-only QA reached the browser sign-in step and failed before period inspection because Playwright evaluate referenced firebase.auth() instead of window.firebase.auth(). The page had loaded the Firebase compat SDK; the failure was the test harness global reference, not Finance.",
+      "evidence": {
+        "run1215": {
+          "runId": 37334982515,
+          "runNumber": 1215,
+          "jobId": 111847450417,
+          "artifactId": 11355144129,
+          "artifactDigest": "sha256:4e071f1d421a973f91e1555258ece985c38b417c44aac0d8d6a90764d3b585fb",
+          "durableHistoricalPaid": 562,
+          "error": "ReferenceError: firebase is not defined"
+        },
+        "correction": {
+          "commitSha": "c4c810aef5ec4f5fabd48cc6ee1d763d30f5d9b6",
+          "path": "tools/qa/cxorbia-i3-vrm174-historical-payment-live.mjs",
+          "replacement": "window.firebase.auth()",
+          "productChanged": false,
+          "production": false
+        }
+      },
+      "expected": "Rerun the same read-only historical payment projection proof on unchanged Run1176 artifact.",
+      "owner": [
+        "tools/qa/cxorbia-i3-vrm174-historical-payment-live.mjs"
+      ],
+      "productChanged": false,
+      "production": false,
+      "terminalDisposition": null
     }
   },
   "latestEvidenceOverrides": {
@@ -16397,14 +16432,15 @@
       "VRM-250",
       "VRM-251",
       "VRM-252",
-      "VRM-253"
+      "VRM-253",
+      "VRM-254"
     ],
-    "findingCount": 253,
-    "expectedCurrentRange": "VRM-001..VRM-253",
-    "nextFindingId": "VRM-254",
+    "findingCount": 254,
+    "expectedCurrentRange": "VRM-001..VRM-254",
+    "nextFindingId": "VRM-255",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_I3_VRM174_HISTORICAL_PAYMENT_CONTROL_PREP_REQUIRED",
+    "terminalState": "HOLD_I3_VRM254_CONTROL_REPROOF_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -16685,7 +16721,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Run read-only historical payment projection proof on the exact Run1176 DEV artifact. Compare durable payment-confirmed visits to canonical finance liquidations per period and prove paid rows render as paid, not pending.",
+  "exactNextAction": "Re-run VRM174 read-only historical payment projection on unchanged Run1176 after VRM254 control fix.",
   "supersedesGitBlob": "820da41b786054cb8cd23e89827e1f7afbcdd3b3",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -16714,7 +16750,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-254",
+  "nextFindingId": "VRM-255",
   "lastControlFailure": {
     "runId": 37251758888,
     "runNumber": 1157,
@@ -20290,8 +20326,8 @@
     "humanAcceptance": "FAIL",
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
-  "lastUpdatedAt": "2026-10-05T15:36:00Z",
-  "nextExactAction": "Run read-only historical payment projection proof on the exact Run1176 DEV artifact. Compare durable payment-confirmed visits to canonical finance liquidations per period and prove paid rows render as paid, not pending.",
+  "lastUpdatedAt": "2026-10-05T15:45:00Z",
+  "nextExactAction": "Re-run VRM174 read-only historical payment projection on unchanged Run1176 after VRM254 control fix.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
