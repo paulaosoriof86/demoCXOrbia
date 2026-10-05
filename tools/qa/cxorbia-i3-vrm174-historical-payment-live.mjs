@@ -39,8 +39,8 @@ async function apiKey(){
 async function browserSignIn(page){
   const custom=await auth.createCustomToken(staff.id);
   await page.evaluate(async token=>{
-    await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);
-    await firebase.auth().signInWithCustomToken(token);
+    await window.firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);
+    await window.firebase.auth().signInWithCustomToken(token);
   },custom);
 }
 const baseUrl=HOST+'/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV';
