@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "cxorbia.i3.control-synchronization.v1",
+  "id": "CXORBIA-I3-CONTROL-SYNC-VRM249-20261005",
+  "status": "FROZEN_SYNC_READY_FOR_CANONICAL_WORKFLOW_COMPACTION",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadBeforeCompaction": "1747ac6f3c56a0451976b2c8ee995605b8f7020c",
+  "productAuthority": {
+    "sourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
+    "sourceTree": "638ab7ab63244286ff460205da441221d5957ef0",
+    "predecessorSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+    "productDriftAfterSource": false
+  },
+  "preservedEvidence": {
+    "cumulativeLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
+    "closureMatrix": "I3_OPEN_FINDINGS_CLOSURE_MATRIX_2026-10-04.json",
+    "findingCount": 249,
+    "predecessorExactDev": {
+      "runId": 37208163415,
+      "runNumber": 1112,
+      "artifactId": 11305847184,
+      "artifactDigest": "sha256:1e81dba4dacff12ec71ff09e0bc725fdfb32ec6b2ef08f6da3debdf2ab7fe29e"
+    },
+    "moduleTruthCount": 21,
+    "predecessorModuleTruthAllMatch": true
+  },
+  "activeFinding": {
+    "id": "VRM-249",
+    "severity": "P0",
+    "classification": "MAPPING_FAILURE",
+    "owners": [
+      "app/core/backend-firebase.js",
+      "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+    ],
+    "state": "SOURCE_FIX_COMPOSED_REPROOF_REQUIRED"
+  },
+  "latestControlFailure": {
+    "runId": 37253776030,
+    "runNumber": 1170,
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "exactCause": "Canonical GitHub Actions workflow exceeded the 500 KB maximum and was rejected before jobs were created.",
+    "productFailureProven": false
+  },
+  "compactionPreservation": {
+    "vrm249ProofScript": "control/qa/cxorbia-vrm249-reservations-read-model-source-reproof.mjs",
+    "archivedHistoricalJob": "control/archive/workflow-jobs/pre-i4-vrm039-source-proof.yml",
+    "archivedFinding": "VRM-039",
+    "vrm039LedgerState": "FIXED_SOURCE_PROVEN_NO_DEPLOY",
+    "parallelWorkflowCreated": false,
+    "productChanged": false,
+    "findingsDropped": false
+  },
+  "requiredSequence": [
+    "COMPACT_SAME_CANONICAL_WORKFLOW",
+    "VRM249_SOURCE_REPROOF",
+    "ONE_VRM249_SUCCESSOR_DEV_MATERIALIZATION",
+    "ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE_REPROOF",
+    "SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF",
+    "PAULA_VISUAL_CHECKPOINT",
+    "GATE20_GATE21_TERMINAL_CLOSURE"
+  ],
+  "visualApprovalRule": "No further product mutation after accumulated DEV proof until Paula receives the DEV link and review route and explicitly approves the visual checkpoint.",
+  "production": "DO_NOT_TOUCH"
+}
