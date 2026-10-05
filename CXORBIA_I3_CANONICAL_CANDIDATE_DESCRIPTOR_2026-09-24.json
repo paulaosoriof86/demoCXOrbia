@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE_REQUIRED",
+  "status": "HOLD_I3_FINANCE_FOCAL_CONTROL_PREP_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,7 +8,7 @@
   "productTreeAuthority": "638ab7ab63244286ff460205da441221d5957ef0",
   "predecessorProductSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "4afd293bd8ac30517739e1d77002f775d3f5b786",
+  "findingsLedgerExpectedGitBlob": "619d1fff4c906609d89335958087a1905c6abe73",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Re-run the same bounded Postulations + Reservations lifecycle on the exact unchanged Run1176 DEV artifact with corrected canonical periodo label. If PASS, close reservations and advance directly to finance focal reproof.",
+  "exactNextAction": "Replace the obsolete historical finance forensic job inside the same canonical workflow with the already-existing focal finance QA, then execute it against the exact current Run1176 DEV artifact. No finance rebuild.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -4053,7 +4053,7 @@
     "production": false
   },
   "vrm249": {
-    "state": "READ_MODEL_LAYER_DIAGNOSTIC_ACTIVE",
+    "state": "PASS_RUN1204_CURRENT_ARTIFACT",
     "classification": "MAPPING_FAILURE",
     "runId": 37253163627,
     "runNumber": 1162,
@@ -4126,7 +4126,8 @@
       "builds": 0,
       "deploys": 0,
       "production": false
-    }
+    },
+    "terminalDisposition": "PASS_CURRENT_ARTIFACT"
   },
   "vrm250": {
     "state": "CONTROL_ONLY_FIXED_WORKFLOW_ACCEPTED_RUN1174",
@@ -4156,7 +4157,7 @@
     "terminalDisposition": "CONTROL_ONLY_FIXED"
   },
   "vrm252": {
-    "state": "CONTROL_ONLY_FIXED_RUN1195_NON_CAUSAL_TO_VRM249",
+    "state": "CONTROL_ONLY_FIXED_RUN1204_PASS",
     "classification": "MAPPING_FAILURE",
     "severity": "P0_CONTROL",
     "run1186": 37304608567,
@@ -4176,7 +4177,7 @@
     "terminalDisposition": "CONTROL_ONLY_FIXED"
   },
   "vrm253": {
-    "state": "CONTROL_FIX_REPROOF_ACTIVE",
+    "state": "CONTROL_ONLY_FIXED_RUN1204_PASS",
     "classification": "MAPPING_FAILURE",
     "severity": "P0_CONTROL",
     "run1199": {
@@ -4188,6 +4189,17 @@
     "rootCause": "QA fixture persisted periodo with the technical periodId (cinepolis-YYYY-MM) while the canonical reservations guard correctly filters periodo by canonical label YYYY-MM. Durable protected reservation was present with matching periodId/projectId but excluded by this control-only label mismatch.",
     "productChanged": false,
     "production": false,
-    "correctionCommit": "d4a5d6414c95a9dd420c6d3e35e8b07f8c15ae1d"
+    "correctionCommit": "d4a5d6414c95a9dd420c6d3e35e8b07f8c15ae1d",
+    "terminalDisposition": "CONTROL_ONLY_FIXED"
+  },
+  "reservationsTerminalReceipt": {
+    "runId": 37332823277,
+    "runNumber": 1204,
+    "jobId": 111840079765,
+    "artifactId": 11355715072,
+    "artifactDigest": "sha256:25d484e2d071dba6440f4bda2f01baf837a4244e51de908fdd4844d5029a680d",
+    "reservationsDecision": "PASS_I3_ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE",
+    "postulationsDecision": "PASS_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE",
+    "production": false
   }
 }
