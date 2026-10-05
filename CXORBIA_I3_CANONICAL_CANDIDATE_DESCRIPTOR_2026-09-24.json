@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE_REQUIRED",
+  "status": "HOLD_I3_VRM249_REFRESH_RECONCILIATION_DIAGNOSTIC_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Execute the existing bounded Admin Cluster A Postulations + Reservations lifecycle against the exact current Run1176 DEV materialization. Require provider ACK/idempotency/readback, Admin reservation visibility after refresh, delete no-reappearance, unchanged visit when no cross action is requested, zero residue, zero HR/external writes.",
+  "exactNextAction": "Instrument the same bounded reservation lifecycle to compare immediate post-refresh authorized state against post-reconciliation canonical state. Do not mutate product until the race hypothesis is proven or disproven.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -4053,7 +4053,7 @@
     "production": false
   },
   "vrm249": {
-    "state": "EXACT_DEV_MATERIALIZED_LIFECYCLE_REPROOF_ACTIVE",
+    "state": "RUN1186_SAME_FAILURE_REFRESH_RECONCILIATION_DIAGNOSTIC_REQUIRED",
     "classification": "MAPPING_FAILURE",
     "runId": 37253163627,
     "runNumber": 1162,
@@ -4107,6 +4107,24 @@
       "hostingDeploys": 1,
       "storageRulesDeploys": 0,
       "scenarioDimensionsProven": true,
+      "production": false
+    },
+    "run1186": {
+      "runId": 37304608567,
+      "runNumber": 1186,
+      "jobId": 111745234833,
+      "artifactId": 11342299548,
+      "artifactDigest": "sha256:c200453cb550e79a89b441019baa6d9d5b7540ed6e92d6a0456002ae420f0d6b",
+      "decision": "FAIL_I3_ADMIN_CLUSTER_A_POSTULATIONS",
+      "code": "RSV_ADMIN_READ_MODEL_BEFORE_DELETE",
+      "classification": "FUNCTIONAL_DEFECT",
+      "postulationsLifecyclePass": true,
+      "exactDevFingerprintsPass": true,
+      "authObserverPass": true,
+      "hrWrites": 0,
+      "externalWrites": 0,
+      "builds": 0,
+      "deploys": 0,
       "production": false
     }
   },
