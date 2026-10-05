@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM174_HISTORICAL_PAYMENT_REPROOF_REQUIRED",
+  "status": "HOLD_I3_VRM174_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "b3cc541c38d80708e8ee7e2007611eb9126bc34a",
-  "productTreeAuthority": "1dd01eb285503ee474201a172a2d6afe35cf390e",
-  "predecessorProductSourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
+  "productSourceSha": "170d09983d4696a02453a58f46b027d41c579132",
+  "productTreeAuthority": "d20c7a52ea702d3c2c9d5235aa3c45d1a00419f6",
+  "predecessorProductSourceSha": "b3cc541c38d80708e8ee7e2007611eb9126bc34a",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "06ce09a35b687b140dbea35b84a9032b00824646",
+  "findingsLedgerExpectedGitBlob": "54e243929375ee2369cac2421d86d379f8f582ee",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Re-run the read-only VRM174 historical payment projection against exact Run1228 DEV materialization; require all 562 durable paid visits projected paid on the same stable HR revision, with zero writes and no production.",
+  "exactNextAction": "Materialize the refined VRM174 successor once in DEV through the same canonical lane, then repeat the historical payment proof on that exact artifact; no production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -407,28 +407,7 @@
     "writes": 0,
     "production": false
   },
-  "currentMaterialization": {
-    "state": "PASS_I3_VRM174_EXACT_DEV_MATERIALIZATION",
-    "runId": 37351952599,
-    "runNumber": 1228,
-    "controlHeadSha": "89cf436e8db732957b7d89e8f6d7a8ec6cacd5e0",
-    "jobId": 111904957923,
-    "artifactId": 11363246712,
-    "artifactDigest": "sha256:1fd35361058ec7307837cc76e45b3e23d1edc0836de01531dd339d1ccc4863c3",
-    "decision": "PASS_I3_VRM174_EXACT_DEV_MATERIALIZATION",
-    "sourceSha": "b3cc541c38d80708e8ee7e2007611eb9126bc34a",
-    "sourceTree": "1dd01eb285503ee474201a172a2d6afe35cf390e",
-    "runtimeRevision": "cxorbia-live-hr-dev-00266-q2z",
-    "runtimeDigest": "sha256:d622a31115b59e79ccaf8156ca98b64144feba72f2bbd855d1cd8f3b1bf0e044",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/36a59f69f3a01db9",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791223059149000",
-    "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
-    "builds": 1,
-    "runtimeDeploys": 1,
-    "hostingDeploys": 1,
-    "storageRulesDeploys": 0,
-    "production": false
-  },
+  "currentMaterialization": null,
   "lastFocalAttempt": {
     "runId": 36198284266,
     "runNumber": 438,
@@ -4209,11 +4188,11 @@
     "terminalDisposition": "PASS_CURRENT_ARTIFACT"
   },
   "vrm174": {
-    "state": "DEV_MATERIALIZED_HISTORICAL_PAYMENT_REPROOF_REQUIRED",
+    "state": "RESIDUAL_SOURCE_FIX_COMPOSED_DEV_MATERIALIZATION_REQUIRED",
     "productChanged": false,
     "production": false,
-    "sourceSuccessorSha": "b3cc541c38d80708e8ee7e2007611eb9126bc34a",
-    "sourceSuccessorTree": "1dd01eb285503ee474201a172a2d6afe35cf390e",
+    "sourceSuccessorSha": "170d09983d4696a02453a58f46b027d41c579132",
+    "sourceSuccessorTree": "d20c7a52ea702d3c2c9d5235aa3c45d1a00419f6",
     "productOwner": "app/adapters/tya-canonical-finance-read-model-v2.js",
     "regressionOwner": "tools/qa/tya-c6-canonical-finance-read-model-gate.mjs",
     "rootCause": "Durable duplicate history caused the finance matcher to return null before applying the already-proven __docId == live HR visitId authority precedence.",
@@ -4248,7 +4227,40 @@
       "production": false
     },
     "blocking": true,
-    "terminalDisposition": null
+    "terminalDisposition": null,
+    "predecessorMaterialization": {
+      "state": "PASS_I3_VRM174_EXACT_DEV_MATERIALIZATION",
+      "runId": 37351952599,
+      "runNumber": 1228,
+      "controlHeadSha": "89cf436e8db732957b7d89e8f6d7a8ec6cacd5e0",
+      "jobId": 111904957923,
+      "artifactId": 11363246712,
+      "artifactDigest": "sha256:1fd35361058ec7307837cc76e45b3e23d1edc0836de01531dd339d1ccc4863c3",
+      "decision": "PASS_I3_VRM174_EXACT_DEV_MATERIALIZATION",
+      "sourceSha": "b3cc541c38d80708e8ee7e2007611eb9126bc34a",
+      "sourceTree": "1dd01eb285503ee474201a172a2d6afe35cf390e",
+      "runtimeRevision": "cxorbia-live-hr-dev-00266-q2z",
+      "runtimeDigest": "sha256:d622a31115b59e79ccaf8156ca98b64144feba72f2bbd855d1cd8f3b1bf0e044",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/36a59f69f3a01db9",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791223059149000",
+      "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+      "builds": 1,
+      "runtimeDeploys": 1,
+      "hostingDeploys": 1,
+      "storageRulesDeploys": 0,
+      "production": false
+    },
+    "run1229": {
+      "runId": 37352616801,
+      "runNumber": 1229,
+      "jobId": 111907065437,
+      "artifactId": 11363541703,
+      "artifactDigest": "sha256:03d70d2ed464ba174bb3cce6d5423ce6944ab67ecb16570f10644f093dd07038",
+      "passedHistoricalPeriods": 7,
+      "firstFailedPeriodId": "cinepolis-2026-01",
+      "stableHrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+      "production": false
+    }
   },
   "vrm254": {
     "state": "CONTROL_ONLY_FIXED_RUN1225_AUTH_PASS",
@@ -4292,7 +4304,7 @@
   },
   "openFindingsClosureMatrix": {
     "path": "I3_OPEN_FINDINGS_CLOSURE_MATRIX_2026-10-04.json",
-    "expectedGitBlob": "b2a188c71ccb041f84fa4b9fb5c169997d410762",
+    "expectedGitBlob": "c551336d08eb65efd65f4107987795e1e507f3a0",
     "findingCount": 255,
     "nextFindingId": "VRM-256",
     "currentBlockingCount": 56,
