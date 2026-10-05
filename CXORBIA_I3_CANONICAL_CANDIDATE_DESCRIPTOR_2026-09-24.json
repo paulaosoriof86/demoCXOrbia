@@ -8,13 +8,13 @@
   "productTreeAuthority": "638ab7ab63244286ff460205da441221d5957ef0",
   "predecessorProductSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "93118ebf4fdbccfeec71edafa98b09f29688d6aa",
+  "findingsLedgerExpectedGitBlob": "15dceb9a0f40c2d0c0203cb6391d724383e36486",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-249",
-  "nextFindingId": "VRM-255",
+  "activeBlocker": "VRM-174",
+  "nextFindingId": "VRM-256",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Re-run read-only VRM174 historical payment proof with stabilized browser auth on exact unchanged Run1176 DEV artifact.",
+  "exactNextAction": "Re-run VRM174 historical payment proof with VRM255 stable all-period HR authority control on the exact unchanged Run1176 DEV artifact; no rebuild, deploy, provider write, HR write or production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -602,9 +602,11 @@
     "findingId": "VRM-055"
   },
   "lastControlFailure": {
-    "findingId": "VRM-234",
+    "findingId": "VRM-255",
     "classification": "ENVIRONMENT_FAILURE",
-    "rootCause": "page-local observer destroyed by reload",
+    "observedHarnessClassification": "MAPPING_FAILURE",
+    "runId": 37336302394,
+    "runNumber": 1225,
     "productChanged": false,
     "production": false
   },
@@ -4221,7 +4223,7 @@
     "production": false
   },
   "vrm254": {
-    "state": "CONTROL_FIX_REPROOF_ACTIVE",
+    "state": "CONTROL_ONLY_FIXED_RUN1225_AUTH_PASS",
     "classification": "ENVIRONMENT_FAILURE",
     "severity": "P0_CONTROL",
     "run1215": {
@@ -4245,6 +4247,45 @@
       "error": "window.firebase became undefined during browser sign-in after initial readiness; transient navigation/auth race",
       "durableHistoricalPaid": 562
     },
-    "authStabilizationCommit": "14e864b71ade98c329a3dc45ec50d97e00770049"
+    "authStabilizationCommit": "14e864b71ade98c329a3dc45ec50d97e00770049",
+    "blocking": false,
+    "terminalDisposition": "CONTROL_ONLY_FIXED",
+    "run1225": {
+      "runId": 37336302394,
+      "runNumber": 1225,
+      "jobId": 111851931828,
+      "artifactId": 11355494816,
+      "artifactDigest": "sha256:4e3549c1c1441485ee35dfea58dbc732633396ded047530ac0b81ef6ee94e96c",
+      "browserAuthPassed": true,
+      "reachedHrPeriodInspection": true,
+      "productChanged": false,
+      "production": false
+    }
+  },
+  "openFindingsClosureMatrix": {
+    "path": "I3_OPEN_FINDINGS_CLOSURE_MATRIX_2026-10-04.json",
+    "expectedGitBlob": "a7951ab236d297ee10a5f5b321936e352acfacd0",
+    "findingCount": 255,
+    "nextFindingId": "VRM-256",
+    "currentBlockingCount": 57,
+    "production": false
+  },
+  "vrm255": {
+    "classification": "ENVIRONMENT_FAILURE",
+    "observedHarnessClassification": "MAPPING_FAILURE",
+    "state": "CONTROL_FIX_COMPOSED_REPROOF_REQUIRED",
+    "owner": "tools/qa/cxorbia-i3-vrm174-historical-payment-live.mjs",
+    "correctionCommit": "c854cdea0b10818652e22d006f85234827b8b93f",
+    "run1225": {
+      "runId": 37336302394,
+      "runNumber": 1225,
+      "jobId": 111851931828,
+      "artifactId": 11355494816,
+      "artifactDigest": "sha256:4e3549c1c1441485ee35dfea58dbc732633396ded047530ac0b81ef6ee94e96c",
+      "failure": "MAPPING_FAILURE:VRM174_PERIOD_NOT_AVAILABLE:cinepolis-2025-06"
+    },
+    "exactDevArtifactUnchanged": true,
+    "productSourceChanged": false,
+    "production": false
   }
 }
