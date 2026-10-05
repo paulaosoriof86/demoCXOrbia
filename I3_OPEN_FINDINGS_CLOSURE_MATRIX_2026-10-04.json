@@ -54,6 +54,8 @@
     "FIXED_PROVEN": 2
   },
   "nextCriticalSequence": [
+    "VRM-258_CORRECT_SOURCE",
+    "VRM-258_SOURCE_PROOF",
     "VRM-258_ONE_DEV_MATERIALIZATION",
     "VRM-258_SAME_ARTIFACT_LIVE_REPROOF"
   ],
@@ -8602,14 +8604,18 @@
         "sourceSha": "dc06e5c1ab3896b88a5b66627ae551b40eef000b",
         "sourceTree": "4a27b1a642cbd425b9909ba057760431368464cf"
       },
-      "rawLedgerState": "FIXED_SOURCE_PROVEN_RUN1246_DEV_MATERIALIZATION_REQUIRED",
-      "realState": "SOURCE_PROVEN_DEV_MATERIALIZATION_REQUIRED",
+      "rawLedgerState": "ROOT_CAUSE_CORRECTION_REQUIRED_HUMAN_AUTHORITY_PREVAILS",
+      "realState": "P0_PROVEN_CORRECT_OWNER_PENDING_CORRECTED_SOURCE",
       "evidence": {
         "liveHrFloresId": "shopper_gt_0c198c1055",
         "liveHrIllescasId": "shopper_gt_86254c4228",
-        "staleDurableRow": "AGOSTO 26!29"
+        "staleDurableRow": "AGOSTO 26!29",
+        "humanAuthority": "VRM-214 + Run1066",
+        "canonicalShopperId": "shopper_gt_0c198c1055",
+        "aliasShopperId": "shopper_gt_86254c4228",
+        "requiredDisplayName": "Julissa Flores"
       },
-      "actionRemaining": "ONE_DEV_MATERIALIZATION_THEN_SAME_ARTIFACT_LIVE_REPROOF",
+      "actionRemaining": "CORRECT_CANONICAL_DISPLAY_NAME_PRECEDENCE_THEN_SOURCE_PROOF_THEN_ONE_DEV_MATERIALIZATION",
       "blocking": true,
       "terminalDisposition": null,
       "sourceProof": {

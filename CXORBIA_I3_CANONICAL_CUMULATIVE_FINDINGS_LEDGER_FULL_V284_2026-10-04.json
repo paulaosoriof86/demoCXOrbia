@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v261",
   "frozenAt": "2026-10-04T09:12:00Z",
-  "status": "HOLD_I3_SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF_REQUIRED",
+  "status": "HOLD_VRM258_HUMAN_AUTHORITY_CORRECTION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "microblockId": "PRE-I4-LIVE-HR-STALE-CACHE-MAPPING-HOLD-AUGUST-CANONICAL-CORRECTION",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -16277,11 +16277,11 @@
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Admin canonical read model collapses Julissa Illescas into Julissa Flores through stale durable historical visit crosswalk",
-      "state": "FIXED_SOURCE_PROVEN_RUN1246_DEV_MATERIALIZATION_REQUIRED",
+      "state": "ROOT_CAUSE_CORRECTION_REQUIRED_HUMAN_AUTHORITY_PREVAILS",
       "firstObservedAt": "RUN1243_2026-10-05",
-      "rootCauseStatus": "PROVEN_RUN1245",
-      "rootCause": "app/adapters/tya-cumulative-read-model-v2.js created live->canonical shopper relations from exact-matched durable historical visits even when live HR already exposed both the live shopperId and the stale durable shopperId as two distinct authoritative HR identities. On AGOSTO 26!29, live HR owner shopper_gt_86254c4228 (Julissa Illescas) was paired with a stale durable owner shopper_gt_0c198c1055 (Julissa Flores), causing identityMap[86254c4228]=0c198c1055 and collapsing both Admin shopper rows.",
-      "expected": "Distinct shopper IDs already present as separate live HR identities must remain separate. A stale durable historical visit may enrich the visit but may not create an identity crosswalk between two known live HR shoppers.",
+      "rootCauseStatus": "CORRECTED_BY_FROZEN_VRM214_RUN1066_AUTHORITY",
+      "rootCause": "The durable Julissa merge is valid and explicitly authorized. VRM-214/Run1066 established shopper_gt_0c198c1055 as canonical Julissa Flores and shopper_gt_86254c4228 as an exact alias. The current defect is presentation precedence in app/adapters/tya-cumulative-read-model-v2.js: when multiple live HR rows resolve to the same canonical shopper, the alias HR display name can overwrite the adjudicated canonical profile name, rendering Julissa Illescas instead of Julissa Flores.",
+      "expected": "Authorized aliases remain merged to canonical shopper_gt_0c198c1055, with one active principal/login and all history preserved; Admin and Shopper display the adjudicated canonical human name Julissa Flores. No re-separation of Julissa Illescas.",
       "owner": [
         "app/adapters/tya-cumulative-read-model-v2.js"
       ],
@@ -16378,6 +16378,20 @@
           "deploys": 0,
           "writes": 0,
           "production": false
+        },
+        "humanAuthority": {
+          "findingId": "VRM-214",
+          "topologyRun": 37167941396,
+          "postWriteReadbackRun": 37169333847,
+          "canonicalShopperId": "shopper_gt_0c198c1055",
+          "exactAliases": [
+            "shopper_gt_86254c4228",
+            "shp-7309d525805e",
+            "shr-1780611985059-49vr"
+          ],
+          "activePrincipalCount": 1,
+          "activeVisibleLogin": "julissa.flores",
+          "humanAuthorityPreserved": true
         }
       },
       "productChanged": true,
@@ -17065,7 +17079,7 @@
     "nextFindingId": "VRM-259",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_VRM258_DEV_MATERIALIZATION_REQUIRED",
+    "terminalState": "HOLD_VRM258_HUMAN_AUTHORITY_CORRECTION_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -17346,7 +17360,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Perform exactly one DEV materialization of VRM-258 source dc06e5c1ab3896b88a5b66627ae551b40eef000b/tree 4a27b1a642cbd425b9909ba057760431368464cf using the existing canonical materialization lane. No additional source changes, no production, then record exact artifact/runtime/Hosting/HR fingerprints before same-artifact live reproof.",
+  "exactNextAction": "Correct VRM-258 against frozen human authority VRM-214/Run1066: Julissa Illescas is an authorized alias of canonical Julissa Flores shopper_gt_0c198c1055. Preserve the durable merge and fix only canonical display-name precedence so the alias HR label cannot overwrite the adjudicated canonical name. Do not materialize source dc06e5c1 until corrected source proof passes. No production.",
   "supersedesGitBlob": "820da41b786054cb8cd23e89827e1f7afbcdd3b3",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -20934,8 +20948,8 @@
     "humanAcceptance": "FAIL",
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
-  "lastUpdatedAt": "2026-10-05T23:42:30Z",
-  "nextExactAction": "Perform exactly one DEV materialization of VRM-258 source dc06e5c1ab3896b88a5b66627ae551b40eef000b/tree 4a27b1a642cbd425b9909ba057760431368464cf using the existing canonical materialization lane. No additional source changes, no production, then record exact artifact/runtime/Hosting/HR fingerprints before same-artifact live reproof.",
+  "lastUpdatedAt": "2026-10-05T23:47:00Z",
+  "nextExactAction": "Correct VRM-258 against frozen human authority VRM-214/Run1066: Julissa Illescas is an authorized alias of canonical Julissa Flores shopper_gt_0c198c1055. Preserve the durable merge and fix only canonical display-name precedence so the alias HR label cannot overwrite the adjudicated canonical name. Do not materialize source dc06e5c1 until corrected source proof passes. No production.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,

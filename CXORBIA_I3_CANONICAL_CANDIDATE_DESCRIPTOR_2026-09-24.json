@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM258_DEV_MATERIALIZATION_REQUIRED",
+  "status": "HOLD_VRM258_HUMAN_AUTHORITY_CORRECTION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,7 +8,7 @@
   "productTreeAuthority": "4a27b1a642cbd425b9909ba057760431368464cf",
   "predecessorProductSourceSha": "f971ea18556e7be3ede0a26195e7977e4e706dfe",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "dc554b243a10bcac7d84c13f8f340f9d2d091a04",
+  "findingsLedgerExpectedGitBlob": "81fa92df093581270e170535ee6d7e78707d3353",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Perform exactly one DEV materialization of VRM-258 source dc06e5c1ab3896b88a5b66627ae551b40eef000b/tree 4a27b1a642cbd425b9909ba057760431368464cf using the existing canonical materialization lane. No additional source changes, no production, then record exact artifact/runtime/Hosting/HR fingerprints before same-artifact live reproof.",
+  "exactNextAction": "Correct VRM-258 against frozen human authority VRM-214/Run1066: Julissa Illescas is an authorized alias of canonical Julissa Flores shopper_gt_0c198c1055. Preserve the durable merge and fix only canonical display-name precedence so the alias HR label cannot overwrite the adjudicated canonical name. Do not materialize source dc06e5c1 until corrected source proof passes. No production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -4566,8 +4566,8 @@
     "sourceSha": "dc06e5c1ab3896b88a5b66627ae551b40eef000b",
     "sourceTree": "4a27b1a642cbd425b9909ba057760431368464cf",
     "predecessorSha": "f971ea18556e7be3ede0a26195e7977e4e706dfe",
-    "sourceProofRequired": false,
-    "materializationAllowed": true,
+    "sourceProofRequired": true,
+    "materializationAllowed": false,
     "run1245": {
       "runId": 37389203710,
       "runNumber": 1245,
@@ -4591,6 +4591,8 @@
       "deploys": 0,
       "writes": 0,
       "production": false
-    }
+    },
+    "authorityCorrection": "VRM-214 + Run1066 human adjudication prevails; alias shopper_gt_86254c4228 must remain merged into canonical shopper_gt_0c198c1055 and display as Julissa Flores.",
+    "wrongAssumptionRevoked": true
   }
 }
