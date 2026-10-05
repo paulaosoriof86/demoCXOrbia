@@ -3,7 +3,7 @@
   "status": "ACTIVE_CLOSURE_VIEW",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
   "generatedFromLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "generatedAtEvidenceTime": "2026-10-05T01:36:00Z",
+  "generatedAtEvidenceTime": "2026-10-05T02:02:00Z",
   "controlHeadAtGeneration": "43807aec0f3a60fceb3e5a1eac49e98b274b52e1",
   "productSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
   "productSourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
@@ -31,11 +31,11 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleTruthCount": 21,
   "moduleTruthAllMatch": true,
-  "findingCount": 248,
+  "findingCount": 249,
   "missingFindingIds": [],
   "duplicateFindingIds": [],
-  "currentBlockingCount": 57,
-  "undisposedCount": 72,
+  "currentBlockingCount": 58,
+  "undisposedCount": 73,
   "terminalDispositionCounts": {
     "PASS_CURRENT_ARTIFACT": 153,
     "SUPERSEDED_BY_VRM-221": 1,
@@ -51,12 +51,11 @@
     "SUPERSEDED_BY_VRM-243": 1
   },
   "nextCriticalSequence": [
-    "VRM-248_POSTULATIONS_OBSERVER_REPROOF",
-    "ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE",
-    "ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE",
-    "RECONCILE_REMAINING_P0",
-    "PAULA_VISUAL_ACCEPTANCE",
-    "GATE20_GATE21_SAME_ARTIFACT"
+    "VRM-249_EXACT_OWNER_FIX",
+    "VRM-249_SOURCE_REPROOF",
+    "VRM-249_SINGLE_SUCCESSOR_MATERIALIZATION",
+    "ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE_REPROOF",
+    "RECONCILE_REMAINING_P0"
   ],
   "production": "DO_NOT_TOUCH",
   "entries": [
@@ -8119,6 +8118,43 @@
       },
       "actionRemaining": "make Admin auth observer navigation-tolerant and rerun same Postulations delete/no-reappearance proof",
       "blocking": false,
+      "terminalDisposition": null
+    },
+    {
+      "findingId": "VRM-249",
+      "moduleDomain": [
+        "visits-review-postulations-reservations",
+        "cross-cutting-control"
+      ],
+      "severity": "P0",
+      "classification": "MAPPING_FAILURE",
+      "owner": [
+        "app/core/backend-firebase.js",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+      ],
+      "latestApprovedSource": null,
+      "latestLiveProof": {
+        "runNumber": 1162,
+        "runId": 37253163627,
+        "decision": "FAIL_RSV_ADMIN_READ_MODEL_BEFORE_DELETE",
+        "artifactId": 11321362047,
+        "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
+      },
+      "successor": null,
+      "rawLedgerState": "P0_PROVEN_ROOT_CAUSE_FIX_REQUIRED",
+      "realState": "P0_PROVEN_FIX_REQUIRED",
+      "evidence": {
+        "durableProviderLifecycleReached": true,
+        "adminReadModelVisibleAfterRefresh": false,
+        "backendAuthorizedStateReservationsMissing": true,
+        "bridgeAuthorizedReservationSourceStale": true,
+        "hrWrites": 0,
+        "externalWrites": 0,
+        "production": false
+      },
+      "actionRemaining": "exact owner fix + source proof + one successor materialization + same lifecycle reproof",
+      "blocking": true,
       "terminalDisposition": null
     }
   ]
