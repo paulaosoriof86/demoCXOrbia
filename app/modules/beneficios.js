@@ -45,7 +45,10 @@ CX.module('beneficios', ({data,ui})=>{
     const lb=CX.liq.label(l.estado);
     const v=data._visitas.find(x=>x.id===l.visitaId);
     const vc=v&&data.visitContract?data.visitContract(v):null;
-    const payLabel=paymentHumanLabel(vc&&vc.paymentState);
+    /* VRM-257: la liquidación canónica manda sobre el badge secundario de pago.
+       Una liquidación históricamente reconciliada como pagada no puede mostrar a la vez
+       "Pagada confirmada" y "Pendiente de confirmación" por un paymentState de visita anterior. */
+    const payLabel=isPaid(l)?['Pago confirmado','g']:paymentHumanLabel(vc&&vc.paymentState);
     return `<tr data-ben-country="${String(l.pais||'')}" data-ben-currency="${String(curOfL(l)||'')}" data-ben-status="${isPaid(l)?'paid':'pending'}"><td><b>${l.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(l.pais)} ${l.shopper||''}</div></td>
       <td style="font-size:12px">${l.freal||'—'}</td>
       <td style="color:var(--green);font-weight:700">${_bmoney(l,l.honorario)}</td>
