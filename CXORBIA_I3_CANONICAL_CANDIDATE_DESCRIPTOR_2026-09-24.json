@@ -8,13 +8,13 @@
   "productTreeAuthority": "638ab7ab63244286ff460205da441221d5957ef0",
   "predecessorProductSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "40ad956a6b9bf77d44ac1c68b13cad848fd00452",
+  "findingsLedgerExpectedGitBlob": "7f3ce8aaa4a5527512df954668e8c9350f5f600e",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
   "activeBlocker": "VRM-249",
-  "nextFindingId": "VRM-250",
+  "nextFindingId": "VRM-251",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Bind the existing Admin Cluster A Postulations + Reservations lifecycle proof to the current materialization dynamically (no historical run/artifact hardcode), then run it on this exact artifact.",
+  "exactNextAction": "Bind Admin Cluster A Postulations + Reservations lifecycle proof to current Run1176 materialization using descriptor fingerprints only; no historical run/artifact pointer.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3562,7 +3562,7 @@
     "production": false
   },
   "openFindingsClosureMatrixPath": "I3_OPEN_FINDINGS_CLOSURE_MATRIX_2026-10-04.json",
-  "openFindingsClosureMatrixFindingCount": 249,
+  "openFindingsClosureMatrixFindingCount": 250,
   "lastVrm229Pass": {
     "runId": 37211579195,
     "runNumber": 1114,
@@ -4109,5 +4109,21 @@
       "scenarioDimensionsProven": true,
       "production": false
     }
+  },
+  "vrm250": {
+    "state": "CONTROL_ONLY_FIXED_WORKFLOW_ACCEPTED_RUN1174",
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "severity": "P0_CONTROL",
+    "failedRunId": 37253776030,
+    "failedRunNumber": 1170,
+    "cause": "Canonical workflow exceeded GitHub Actions 500 KB maximum before jobs.",
+    "correctionCommit": "2515956d5ca2f6f3898e0115c15de643405da166",
+    "workflowCharsBefore": 514163,
+    "workflowCharsAfter": 496018,
+    "validationRunId": 37303340531,
+    "validationRunNumber": 1174,
+    "productChanged": false,
+    "production": false,
+    "terminalDisposition": "CONTROL_ONLY_FIXED"
   }
 }
