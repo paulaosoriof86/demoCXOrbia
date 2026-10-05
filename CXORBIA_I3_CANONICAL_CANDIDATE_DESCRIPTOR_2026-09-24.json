@@ -8,13 +8,13 @@
   "productTreeAuthority": "b59da4c090d4639a136168656e7addd544f38e18",
   "predecessorProductSourceSha": "bbd66d29192487ac29f8703bd913e3f1e15a28c0",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "11fb308680ae3fd08d8cc7c59ade3311289d94ed",
+  "findingsLedgerExpectedGitBlob": "551e00fe11a7709ceeabc427098fe6b3c9969c06",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
   "activeBlocker": "I3_MULTIMODULE_LIVE_SWEEP_REQUIRED",
-  "nextFindingId": "VRM-247",
+  "nextFindingId": "VRM-248",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Execute same-artifact I3 multimodule live sweep on unchanged Run1112 materialization. Require PASS_I3_MULTIMODULE_LIVE_SWEEP, zero page errors, zero write deltas, unchanged runtime/hosting/HR fingerprints; then reconcile matrix for Paula visual acceptance.",
+  "exactNextAction": "Re-run canonical authority with ledger blob 551e00fe11a7709ceeabc427098fe6b3c9969c06, then execute the existing same-artifact I3 multimodule live sweep on unchanged Run1112 materialization.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3564,7 +3564,7 @@
     "production": false
   },
   "openFindingsClosureMatrixPath": "I3_OPEN_FINDINGS_CLOSURE_MATRIX_2026-10-04.json",
-  "openFindingsClosureMatrixFindingCount": 246,
+  "openFindingsClosureMatrixFindingCount": 247,
   "lastVrm229Pass": {
     "runId": 37211579195,
     "runNumber": 1114,
@@ -4076,6 +4076,18 @@
     "aliasOperationalResiduals": 0,
     "hrAssignmentsPass": true,
     "writes": 0,
+    "production": false
+  },
+  "vrm247": {
+    "state": "CONTROL_POINTER_FIXED_PENDING_REPROOF",
+    "run1145": {
+      "runId": 37250274061,
+      "runNumber": 1145,
+      "jobId": 111576329984,
+      "code": "RELEASE_COMPOSITION_FAILURE:LEDGER_BLOB_DRIFT:75831af902088586a708386dafb8e039e352fa38"
+    },
+    "boundLedgerBlob": "551e00fe11a7709ceeabc427098fe6b3c9969c06",
+    "productChanged": false,
     "production": false
   }
 }
