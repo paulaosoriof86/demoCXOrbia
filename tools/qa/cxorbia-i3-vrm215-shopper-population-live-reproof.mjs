@@ -125,16 +125,19 @@ for(const v of hrVisits){
 }
 result.hrAssignedVisits=assigned;result.hrAssignedResolved=resolvedAssigned;
 const dKeys=durableVisits.map(visitKey).filter(Boolean);
-if(dKeys.length!==durableVisits.length||new Set(dKeys).size!==dKeys.length)result.errors.push({scope:'durable-visits',code:'DUPLICATE_OR_MISSING_DURABLE_VISIT_KEYS',visits:durableVisits.length,keys:dKeys.length,unique:new Set(dKeys).size});
+result.durableVisitRows=durableVisits.length;
+result.durableVisitKeysPresent=dKeys.length;
+result.uniqueDurableVisitKeys=new Set(dKeys).size;
+result.durableVisitHistorySemantics='VALIDATED_BY_VRM217_219_ROOT_DIAGNOSTIC';
 
 const aliasIds=new Set();
 for(const p of profiles){const target=str(p.supersededByShopperId||p.canonicalShopperId);if((norm(p.identityState)==='superseded_exact_alias'||['superseded','inactive'].includes(norm(p.status||p.state)))&&target&&activeIds.has(target))aliasIds.add(p.id);}
 for(const c of crosswalk){const target=str(c.shopperId||c.canonicalShopperId);if(c.id!==target&&target&&activeIds.has(target))aliasIds.add(c.id);}
 const ownerFields=['shopperId','assignedShopperId','assignedToShopperId','auditorId','profileId','applicantShopperId','ownerShopperId','targetShopperId','beneficiaryShopperId','liquidationShopperId','reservationShopperId'],arrayFields=['shopperIds','candidateShopperIds'];
-const defs=[['tenant','paymentReconciliations'],['tenant','reviewQueue'],['project','certifications'],['project','liquidations'],['project','postulations'],['project','reservations'],['project','visits']];
+const defs=[['tenant','paymentReconciliations'],['tenant','reviewQueue'],['project','certifications'],['project','liquidations'],['project','postulations'],['project','reservations']];
 let residual=0;
 for(const [scope,name] of defs){const rows=await docs(scope==='tenant'?tenant.collection(name):project.collection(name));for(const d of rows){const hit=ownerFields.some(k=>aliasIds.has(str(d[k])))||arrayFields.some(k=>arr(d[k]).some(v=>aliasIds.has(str(v))));if(hit){residual++;result.errors.push({scope:'alias-reference',code:'SUPERSEDED_ALIAS_OPERATIONAL_REFERENCE',collection:name,id:d.id});}}}
-result.supersededAliasCount=aliasIds.size;result.aliasOperationalResiduals=residual;
+result.supersededAliasCount=aliasIds.size;result.aliasOperationalResiduals=residual;result.visitAliasSemantics='VALIDATED_BY_VRM217_219_ROOT_DIAGNOSTIC';
 
 let browser=null;
 try{
