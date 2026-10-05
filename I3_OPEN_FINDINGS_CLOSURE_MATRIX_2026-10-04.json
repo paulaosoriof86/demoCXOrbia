@@ -3,8 +3,8 @@
   "status": "ACTIVE_CLOSURE_VIEW",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
   "generatedFromLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "generatedAtEvidenceTime": "2026-10-05T15:36:00Z",
-  "controlHeadAtGeneration": "e50f3efee63f6245d904fdc6ca188cead513dcec",
+  "generatedAtEvidenceTime": "2026-10-05T15:45:00Z",
+  "controlHeadAtGeneration": "88aa0f46936dc68ca8134d8b64f18f3820240931",
   "productSourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
   "productSourceTree": "638ab7ab63244286ff460205da441221d5957ef0",
   "exactDevArtifact": {
@@ -27,11 +27,11 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleTruthCount": 21,
   "moduleTruthAllMatch": true,
-  "findingCount": 253,
+  "findingCount": 254,
   "missingFindingIds": [],
   "duplicateFindingIds": [],
-  "currentBlockingCount": 56,
-  "undisposedCount": 71,
+  "currentBlockingCount": 57,
+  "undisposedCount": 72,
   "terminalDispositionCounts": {
     "PASS_CURRENT_ARTIFACT": 155,
     "SUPERSEDED_BY_VRM-221": 1,
@@ -47,6 +47,7 @@
     "SUPERSEDED_BY_VRM-243": 1
   },
   "nextCriticalSequence": [
+    "VRM254_CONTROL_REPROOF",
     "VRM174_HISTORICAL_PAYMENT_REPROOF",
     "SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF",
     "PAULA_VISUAL_CHECKPOINT",
@@ -8346,6 +8347,34 @@
       "actionRemaining": null,
       "blocking": false,
       "terminalDisposition": "CONTROL_ONLY_FIXED"
+    },
+    {
+      "findingId": "VRM-254",
+      "moduleDomain": [
+        "cross-cutting-control",
+        "finance"
+      ],
+      "severity": "P0_CONTROL",
+      "classification": "ENVIRONMENT_FAILURE",
+      "owner": [
+        "tools/qa/cxorbia-i3-vrm174-historical-payment-live.mjs"
+      ],
+      "latestApprovedSource": null,
+      "latestLiveProof": null,
+      "successor": null,
+      "rawLedgerState": "CONTROL_FIX_COMPOSED_REPROOF_REQUIRED",
+      "realState": "CONTROL_FIX_COMPOSED_REPROOF_REQUIRED",
+      "evidence": {
+        "run1215": 37334982515,
+        "durableHistoricalPaid": 562,
+        "error": "ReferenceError: firebase is not defined",
+        "correctionCommit": "c4c810aef5ec4f5fabd48cc6ee1d763d30f5d9b6",
+        "productChanged": false,
+        "production": false
+      },
+      "actionRemaining": "same unchanged Run1176 historical payment reproof",
+      "blocking": true,
+      "terminalDisposition": null
     }
   ],
   "exactDevArtifactRole": "CURRENT_VRM249_SUCCESSOR",
