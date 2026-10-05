@@ -225,16 +225,37 @@ try{
 
   const ap=await signed(admin,'admin'),page=ap.page;
   await nav(page,'shoppers');
-  const shopperAdmin=await page.evaluate(()=>{
-    const search=document.querySelector('input[placeholder*="Buscar nombre"]')||document.querySelector('input[placeholder*="Buscar"]');
-    if(search){search.value='juli';search.dispatchEvent(new Event('input',{bubbles:true}));}
-    const rows=[...document.querySelectorAll('tbody tr')].map(tr=>({text:String(tr.innerText||''),node:tr}));
-    const flores=rows.find(r=>/Julissa Flores/i.test(r.text)),illescas=rows.find(r=>/Julissa Illescas/i.test(r.text));
-    const btn=flores?.node?.querySelector('button');
-    if(btn)btn.click();
-    return {floresVisible:!!flores,illescasVisible:!!illescas,floresRow:String(flores?.text||''),clicked:!!btn};
-  });
-  if(!shopperAdmin.floresVisible||!shopperAdmin.illescasVisible||!shopperAdmin.clicked)throw new Error('VISUAL_DEFECT:ADMIN_JULISSA_DISCOVERY:'+JSON.stringify(shopperAdmin));
+  await page.waitForSelector('#shSearch');
+  // shoppers.js binds the input listener from setTimeout(...,0); do not race that mount.
+  await page.waitForTimeout(100);
+  const adminJulissaData=await page.evaluate(()=>((window.CX?.data?.shoppersFor?.()||[])
+    .filter(s=>/Julissa/i.test(String(s?.nombre||'')))
+    .map(s=>({id:String(s?.id||''),nombre:String(s?.nombre||''),status:String(s?.status||''),identityState:String(s?.identityState||'')}))));
+  const searchAdminShopper=async(name)=>{
+    const search=page.locator('#shSearch');
+    await search.fill('');
+    await search.fill(name);
+    await page.waitForFunction(wanted=>[...document.querySelectorAll('#shBody tr')]
+      .some(tr=>String(tr.innerText||'').toLowerCase().includes(String(wanted||'').toLowerCase())),name,{timeout:3000}).catch(()=>{});
+    return page.evaluate(wanted=>{
+      const rows=[...document.querySelectorAll('#shBody tr')].map(tr=>({text:String(tr.innerText||'').replace(/\s+/g,' ').trim(),sid:String(tr.dataset.sid||'')}));
+      const exact=rows.find(r=>r.text.toLowerCase().includes(String(wanted||'').toLowerCase()));
+      return {visible:!!exact,row:String(exact?.text||''),sid:String(exact?.sid||''),rows:rows.map(r=>r.text).slice(0,20)};
+    },name);
+  };
+  const illescas=await searchAdminShopper('Julissa Illescas');
+  const flores=await searchAdminShopper('Julissa Flores');
+  let clicked=false;
+  if(flores.visible&&flores.sid){
+    clicked=await page.evaluate(sid=>{
+      const tr=[...document.querySelectorAll('#shBody tr')].find(x=>String(x.dataset.sid||'')===String(sid||''));
+      if(!tr)return false;
+      tr.click();
+      return true;
+    },flores.sid);
+  }
+  const shopperAdmin={dataJulissas:adminJulissaData,floresVisible:flores.visible,illescasVisible:illescas.visible,floresRow:flores.row,illescasRow:illescas.row,floresSid:flores.sid,illescasSid:illescas.sid,clicked};
+  if(!shopperAdmin.floresVisible||!shopperAdmin.illescasVisible||!shopperAdmin.clicked)throw new Error('MAPPING_FAILURE:ADMIN_JULISSA_DISCOVERY:'+JSON.stringify(shopperAdmin));
   await page.waitForTimeout(250);
   const modal=await page.evaluate(()=>{const m=[...document.querySelectorAll('[role="dialog"],.modal,.overlay,.ov')].find(x=>/Julissa Flores/i.test(String(x.innerText||'')))||[...document.querySelectorAll('body *')].find(x=>/Revisar \/ fusionar identidad/i.test(String(x.innerText||''))&&/Instruir perfil/i.test(String(x.innerText||'')));const text=String(m?.innerText||document.body.innerText||'');return {manualMerge:/Revisar \/ fusionar identidad|Resolver identidad/i.test(text),instructProfile:/Instruir perfil/i.test(text),text:text.slice(0,1800)};});
   if(!modal.manualMerge||!modal.instructProfile)throw new Error('FUNCTIONAL_DEFECT:ADMIN_IDENTITY_ACTIONS_MISSING:'+JSON.stringify(modal));

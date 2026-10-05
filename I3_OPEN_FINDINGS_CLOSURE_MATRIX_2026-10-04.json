@@ -36,7 +36,7 @@
   "findingCount": 257,
   "missingFindingIds": [],
   "duplicateFindingIds": [],
-  "currentBlockingCount": 56,
+  "currentBlockingCount": 55,
   "undisposedCount": 70,
   "terminalDispositionCounts": {
     "PASS_CURRENT_ARTIFACT": 156,
@@ -50,7 +50,8 @@
     "PASS_DIAGNOSTIC": 2,
     "PASS_READINESS": 1,
     "SUPERSEDED_BY_VRM-241": 1,
-    "SUPERSEDED_BY_VRM-243": 1
+    "SUPERSEDED_BY_VRM-243": 1,
+    "FIXED_PROVEN": 2
   },
   "nextCriticalSequence": [
     "SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF",
@@ -8534,55 +8535,40 @@
         "state": "SOURCE_FIX_COMPOSED_DEV_MATERIALIZATION_REQUIRED"
       },
       "latestLiveProof": {
-        "runId": 37377895951,
-        "runNumber": 1240,
-        "jobId": 111991881517,
-        "artifactId": 11373015293,
-        "artifactDigest": "sha256:eeef68681a020e302080f7879b672ff924f65498954726767b64e7dbfa4a7471",
-        "exactDevPreflightPass": true,
-        "failure": "PERSISTENCE_FAILURE:PAULA_HISTORICAL_PAYMENT_PROJECTION",
-        "productSourceSha": "994b8f7c201162a3aa865798e9de4aa8fc8a3525",
-        "productSourceTree": "00e67e6d1d49421cd59f7207676b015eaf02ce20",
-        "production": false,
-        "materialization": {
-          "state": "PASS_VRM257_EXACT_DEV_MATERIALIZATION",
-          "runId": 37378446938,
-          "runNumber": 1242,
-          "controlHeadSha": "3d13e4ce8181dd7a085e980734868dd3c4917f87",
-          "jobId": 111993858201,
-          "artifactId": 11372621572,
-          "artifactDigest": "sha256:0af9f909e02083a7f728de536609298b89304513f9f92d3db71d952b36adea34",
-          "decision": "PASS_VRM257_EXACT_DEV_MATERIALIZATION",
-          "sourceSha": "f971ea18556e7be3ede0a26195e7977e4e706dfe",
-          "sourceTree": "3f0ebeab075ec841d1b2329d1ce7bf31523dc2f0",
-          "runtimeRevision": "cxorbia-live-hr-dev-00270-b5g",
-          "runtimeDigest": "sha256:4135bf92a8efd4b4be037874e8bb3768694db69533e4ac8f5e24cb53f0100e96",
-          "hostingVersion": "sites/cxorbia-backend-dev/versions/100161d350149fc8",
-          "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791237125034000",
-          "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
-          "builds": 1,
-          "runtimeDeploys": 1,
-          "hostingDeploys": 1,
-          "storageRulesDeploys": 0,
-          "scenarioDimensionsProven": true,
-          "production": false
+        "runId": 37378984271,
+        "runNumber": 1243,
+        "jobId": 111995733169,
+        "artifactId": 11373375178,
+        "artifactDigest": "sha256:b7766749307ee38ba7b5a53f0d6109b2c607e6b04144c93e2b0e2ca760b29a24",
+        "exactRun1242DevPreflightPass": true,
+        "sourceSha": "f971ea18556e7be3ede0a26195e7977e4e706dfe",
+        "sourceTree": "3f0ebeab075ec841d1b2329d1ce7bf31523dc2f0",
+        "julissaFlores": {
+          "oldPaid": 3,
+          "paidContradictionCount": 0
         },
-        "controlCorrection": "paid-only contradiction check"
+        "paulaOsorio": {
+          "oldPaid": 2,
+          "paidContradictionCount": 0
+        },
+        "downstreamFailure": "ADMIN_JULISSA_DISCOVERY",
+        "productChanged": false,
+        "production": false
       },
       "successor": {
         "sourceSha": "f971ea18556e7be3ede0a26195e7977e4e706dfe",
         "sourceTree": "3f0ebeab075ec841d1b2329d1ce7bf31523dc2f0"
       },
-      "rawLedgerState": "DEV_MATERIALIZED_PENDING_SAME_ARTIFACT_LIVE_REPROOF",
-      "realState": "P0_PROVEN_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
+      "rawLedgerState": "FIXED_PROVEN_RUN1243_BENEFITS_PASS",
+      "realState": "FIXED_PROVEN",
       "evidence": {
         "historicalPaidSummary": 4,
         "contradictoryBadge": "Pagada confirmada + Pendiente de confirmación",
         "vrm174Reopened": false
       },
-      "actionRemaining": "Same-artifact representative live reproof on exact Run1242 DEV materialization",
-      "blocking": true,
-      "terminalDisposition": null
+      "actionRemaining": null,
+      "blocking": false,
+      "terminalDisposition": "FIXED_PROVEN"
     }
   ],
   "exactDevArtifactRole": "CURRENT_VRM249_SUCCESSOR",

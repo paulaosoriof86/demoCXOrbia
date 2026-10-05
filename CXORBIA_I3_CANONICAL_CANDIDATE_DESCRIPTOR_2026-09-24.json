@@ -8,12 +8,12 @@
   "productTreeAuthority": "3f0ebeab075ec841d1b2329d1ce7bf31523dc2f0",
   "predecessorProductSourceSha": "994b8f7c201162a3aa865798e9de4aa8fc8a3525",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "e647b5335f81546b8e3b34361221923f297618ee",
+  "findingsLedgerExpectedGitBlob": "cfb4a1d80a63d27678622e757a54e1f91edd8a77",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-257",
+  "activeBlocker": "CONTROL_ADMIN_JULISSA_DISCOVERY_HARNESS_REPROOF",
   "nextFindingId": "VRM-258",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run the existing phasea-representative-same-artifact-live-reproof against exact Run1242 DEV materialization for source f971ea18556e7be3ede0a26195e7977e4e706dfe / tree 3f0ebeab075ec841d1b2329d1ce7bf31523dc2f0. Historical Benefits proof must require at least one canonical paid row and zero paid-row pending-label contradictions; legitimate unpaid historical rows remain allowed. Zero rebuilds, zero deploys, zero writes, no production.",
+  "exactNextAction": "Repeat the existing phasea-representative-same-artifact-live-reproof against exact Run1242 DEV materialization after the control-only Admin Julissa harness correction. The harness must wait for the Shoppers search binding, search Julissa Illescas and Julissa Flores deterministically, and open Julissa Flores using the row-click contract. Keep product source f971ea18556e7be3ede0a26195e7977e4e706dfe and Run1242 artifact unchanged. Do not consume VRM-258 unless product absence is reproduced. Zero rebuilds, zero deploys, zero writes, no production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -4547,5 +4547,15 @@
       "production": false
     },
     "controlAssertion": "paid rows cannot contain pending confirmation; unpaid historical rows are allowed"
+  },
+  "run1243Evidence": {
+    "runId": 37378984271,
+    "runNumber": 1243,
+    "jobId": 111995733169,
+    "artifactId": 11373375178,
+    "artifactDigest": "sha256:b7766749307ee38ba7b5a53f0d6109b2c607e6b04144c93e2b0e2ca760b29a24",
+    "vrm257": "FIXED_PROVEN_RUN1243_BENEFITS_PASS",
+    "adminJulissaDiscovery": "CONTROL_HARNESS_REPROOF_REQUIRED",
+    "production": false
   }
 }

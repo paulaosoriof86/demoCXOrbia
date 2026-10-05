@@ -16167,7 +16167,7 @@
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Mis Beneficios renders canonical paid liquidation together with stale pending payment badge",
-      "state": "DEV_MATERIALIZED_PENDING_SAME_ARTIFACT_LIVE_REPROOF",
+      "state": "FIXED_PROVEN_RUN1243_BENEFITS_PASS",
       "firstObservedAt": "RUN1240_2026-10-05",
       "rootCauseStatus": "PROVEN",
       "rootCause": "app/modules/beneficios.js correctly determines canonical historical paid truth with isPaid(l), but independently derives the last payment badge from visitContract(v).paymentState. Historical reconciliation can make the liquidation paid while the visit contract retains pending_source_confirmation, producing contradictory text such as 'Pagada confirmada ✓' and 'Pendiente de confirmación' on the same row.",
@@ -16227,7 +16227,41 @@
           "scenarioDimensionsProven": true,
           "production": false
         },
-        "controlCorrection": "Require oldPaid>=1 and paidContradictions=0; do not require all historical rows paid."
+        "controlCorrection": "Require oldPaid>=1 and paidContradictions=0; do not require all historical rows paid.",
+        "run1243": {
+          "runId": 37378984271,
+          "runNumber": 1243,
+          "jobId": 111995733169,
+          "artifactId": 11373375178,
+          "artifactDigest": "sha256:b7766749307ee38ba7b5a53f0d6109b2c607e6b04144c93e2b0e2ca760b29a24",
+          "exactRun1242DevPreflightPass": true,
+          "sourceSha": "f971ea18556e7be3ede0a26195e7977e4e706dfe",
+          "sourceTree": "3f0ebeab075ec841d1b2329d1ce7bf31523dc2f0",
+          "julissaFlores": {
+            "oldRows": 3,
+            "oldPaid": 3,
+            "paidContradictionCount": 0
+          },
+          "paulaOsorio": {
+            "oldRows": 4,
+            "oldPaid": 2,
+            "paidContradictionCount": 0
+          },
+          "priscilaLopez": {
+            "oldRows": 0,
+            "oldPaid": 0,
+            "paidContradictionCount": 0
+          },
+          "shopperChecksPassedBeforeAdminFailure": true,
+          "downstreamFailure": "VISUAL_DEFECT:ADMIN_JULISSA_DISCOVERY",
+          "production": false,
+          "writes": {
+            "auth": 0,
+            "hr": 0,
+            "provider": 0
+          },
+          "deploys": 0
+        }
       },
       "expected": "A canonically paid historical liquidation must display a consistent paid state across all badges; stale visit payment state cannot contradict durable canonical payment truth.",
       "owner": [
@@ -16235,8 +16269,8 @@
       ],
       "productChanged": true,
       "production": false,
-      "blocking": true,
-      "terminalDisposition": null
+      "blocking": false,
+      "terminalDisposition": "FIXED_PROVEN"
     }
   },
   "latestEvidenceOverrides": {
@@ -17199,7 +17233,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Run the existing phasea-representative-same-artifact-live-reproof against exact Run1242 DEV materialization for source f971ea18556e7be3ede0a26195e7977e4e706dfe / tree 3f0ebeab075ec841d1b2329d1ce7bf31523dc2f0. Historical Benefits proof must require at least one canonical paid row and zero paid-row pending-label contradictions; legitimate unpaid historical rows remain allowed. Zero rebuilds, zero deploys, zero writes, no production.",
+  "exactNextAction": "Repeat same-artifact representative live reproof on exact Run1242 DEV materialization after control-only ADMIN_JULISSA_DISCOVERY harness correction. Do not consume VRM-258 unless the deterministic Admin search proves Julissa Flores absent from the product data/UI. Zero rebuilds, zero deploys, zero writes, no production.",
   "supersedesGitBlob": "820da41b786054cb8cd23e89827e1f7afbcdd3b3",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -20791,8 +20825,8 @@
     "humanAcceptance": "FAIL",
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
-  "lastUpdatedAt": "2026-10-05T18:42:00Z",
-  "nextExactAction": "Run the existing phasea-representative-same-artifact-live-reproof against exact Run1242 DEV materialization for source f971ea18556e7be3ede0a26195e7977e4e706dfe / tree 3f0ebeab075ec841d1b2329d1ce7bf31523dc2f0. Historical Benefits proof must require at least one canonical paid row and zero paid-row pending-label contradictions; legitimate unpaid historical rows remain allowed. Zero rebuilds, zero deploys, zero writes, no production.",
+  "lastUpdatedAt": "2026-10-05T23:25:00Z",
+  "nextExactAction": "Repeat same-artifact representative live reproof on exact Run1242 DEV materialization after control-only ADMIN_JULISSA_DISCOVERY harness correction. Do not consume VRM-258 unless the deterministic Admin search proves Julissa Flores absent from the product data/UI. Zero rebuilds, zero deploys, zero writes, no production.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
