@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v261",
   "frozenAt": "2026-10-04T09:12:00Z",
-  "status": "HOLD_I3_ADMIN_CLUSTER_A_LIFECYCLE_REPROOF_REQUIRED",
+  "status": "HOLD_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "microblockId": "PRE-I4-LIVE-HR-STALE-CACHE-MAPPING-HOLD-AUGUST-CANONICAL-CORRECTION",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -4928,7 +4928,7 @@
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Admin identity review detects duplicate/colliding shopper identities but exposes no adjudication/merge action",
-      "state": "SOURCE_FIX_REPROOF_REQUIRED",
+      "state": "PASS_CURRENT_ARTIFACT_RUN1152",
       "contractViolated": "Authorized admins must see and administer shopper identity/history/KPIs without unsafe fuzzy merging.",
       "provenOwner": [
         "app/modules/shoppers.js",
@@ -4986,6 +4986,29 @@
           "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs"
         ],
         "state": "SOURCE_FIX_REPROOF_REQUIRED",
+        "production": false
+      },
+      "terminalDisposition": "PASS_CURRENT_ARTIFACT",
+      "closureEvidence": {
+        "runId": 37251257394,
+        "runNumber": 1152,
+        "jobId": 111579226933,
+        "artifactId": 11320549762,
+        "artifactDigest": "sha256:10ebee0d337febf24360d7eb6ca38a04670da2504bfd636a6af496a58b179d46",
+        "decision": "PASS_VRM221_ADMIN_LIVE_E2E",
+        "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+        "materializationRunId": 37208163415,
+        "providerAck": true,
+        "idempotentReplay": true,
+        "durableReadback": true,
+        "mergePass": true,
+        "distinctPass": true,
+        "safeRetirePass": true,
+        "currentHrDeleteBlocked": true,
+        "cleanupActiveSyntheticRemaining": 0,
+        "hrWrites": 0,
+        "externalWrites": 0,
         "production": false
       }
     },
@@ -9274,7 +9297,7 @@
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Shopper identity/incomplete-profile administration lacks complete actionable workflow",
-      "state": "SOURCE_PASS_RUN1045_PENDING_EXACT_DEV_LIVE",
+      "state": "PASS_CURRENT_ARTIFACT_RUN1152",
       "rootCauseStatus": "PROVEN",
       "rootCause": "Identity adjudication exists only inside profile for exact collision groups; the list/modal does not expose missing-field requests, side-by-side identity evidence, safe archive/merge management, or a complete action path for non-exact duplicate candidates such as the human-observed Milton/Patricia groups.",
       "owners": [
@@ -9334,7 +9357,30 @@
       "sourceReproofRunId": 37161034003,
       "sourceReproofJobId": 111314363177,
       "sourceReproofChecksPassed": 16,
-      "sourceReproofChecksFailed": 0
+      "sourceReproofChecksFailed": 0,
+      "terminalDisposition": "PASS_CURRENT_ARTIFACT",
+      "closureEvidence": {
+        "runId": 37251257394,
+        "runNumber": 1152,
+        "jobId": 111579226933,
+        "artifactId": 11320549762,
+        "artifactDigest": "sha256:10ebee0d337febf24360d7eb6ca38a04670da2504bfd636a6af496a58b179d46",
+        "decision": "PASS_VRM221_ADMIN_LIVE_E2E",
+        "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+        "materializationRunId": 37208163415,
+        "providerAck": true,
+        "idempotentReplay": true,
+        "durableReadback": true,
+        "mergePass": true,
+        "distinctPass": true,
+        "safeRetirePass": true,
+        "currentHrDeleteBlocked": true,
+        "cleanupActiveSyntheticRemaining": 0,
+        "hrWrites": 0,
+        "externalWrites": 0,
+        "production": false
+      }
     },
     "VRM-176": {
       "id": "VRM-176",
@@ -11779,7 +11825,7 @@
       "classification": "MAPPING_FAILURE",
       "severity": "P0",
       "title": "Julissa credential keeper lacks exact technical anchor to the current HR canonical identity",
-      "state": "HUMAN_ADMIN_CONFIRMATION_REQUIRED",
+      "state": "PASS_CURRENT_ARTIFACT_RUN1152_WITH_JULISSA_RUN1066",
       "rootCauseStatus": "PROVEN_RUN1058_EVIDENCE_GAP",
       "rootCause": "Run1058 proves shopper_gt_0c198c1055 is the sole current HR operational identity and shr-1780611985059-49vr is the sole strong credential keeper, but no exact phone/DPI/bank/auth-email/visit anchor links the keeper to the HR canonical profile. Automatic consolidation would therefore violate the no-fuzzy/no-name-only merge contract.",
       "evidence": {
@@ -11828,6 +11874,33 @@
         "keeperToCanonicalExactHistoricalAnchor": false,
         "writes": 0,
         "production": false
+      },
+      "terminalDisposition": "PASS_CURRENT_ARTIFACT",
+      "closureEvidence": {
+        "runId": 37251257394,
+        "runNumber": 1152,
+        "jobId": 111579226933,
+        "artifactId": 11320549762,
+        "artifactDigest": "sha256:10ebee0d337febf24360d7eb6ca38a04670da2504bfd636a6af496a58b179d46",
+        "decision": "PASS_VRM221_ADMIN_LIVE_E2E",
+        "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+        "materializationRunId": 37208163415,
+        "providerAck": true,
+        "idempotentReplay": true,
+        "durableReadback": true,
+        "mergePass": true,
+        "distinctPass": true,
+        "safeRetirePass": true,
+        "currentHrDeleteBlocked": true,
+        "cleanupActiveSyntheticRemaining": 0,
+        "hrWrites": 0,
+        "externalWrites": 0,
+        "production": false,
+        "julissaAuthorityRun1066": 37169333847,
+        "julissaActivePrincipalCount": 1,
+        "julissaAliasOwnedOperationalReferences": 0,
+        "humanAuthorityPreserved": true
       }
     },
     "VRM-212": {
@@ -11835,7 +11908,7 @@
       "classification": "MAPPING_FAILURE",
       "severity": "P0_CONTROL",
       "title": "Current provider provenance contains no authority linking Julissa credential keeper to HR canonical identity",
-      "state": "READ_ONLY_EXHAUSTED_NO_EXACT_KEEPER_LINK_RUN1060",
+      "state": "PASS_CURRENT_ARTIFACT_RUN1152_WITH_JULISSA_RUN1066",
       "rootCauseStatus": "PROVEN_RUN1059",
       "rootCause": "Run1059 found zero command receipts, zero review-queue records and zero identity links involving the exact Julissa target set. The current crosswalks are self-maps. Automatic same-human adjudication therefore cannot be authorized from current provider provenance.",
       "evidence": {
@@ -11861,6 +11934,33 @@
         "historicalPairExactAnchor": false,
         "writes": 0,
         "production": false
+      },
+      "terminalDisposition": "PASS_CURRENT_ARTIFACT",
+      "closureEvidence": {
+        "runId": 37251257394,
+        "runNumber": 1152,
+        "jobId": 111579226933,
+        "artifactId": 11320549762,
+        "artifactDigest": "sha256:10ebee0d337febf24360d7eb6ca38a04670da2504bfd636a6af496a58b179d46",
+        "decision": "PASS_VRM221_ADMIN_LIVE_E2E",
+        "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+        "materializationRunId": 37208163415,
+        "providerAck": true,
+        "idempotentReplay": true,
+        "durableReadback": true,
+        "mergePass": true,
+        "distinctPass": true,
+        "safeRetirePass": true,
+        "currentHrDeleteBlocked": true,
+        "cleanupActiveSyntheticRemaining": 0,
+        "hrWrites": 0,
+        "externalWrites": 0,
+        "production": false,
+        "julissaAuthorityRun1066": 37169333847,
+        "julissaActivePrincipalCount": 1,
+        "julissaAliasOwnedOperationalReferences": 0,
+        "humanAuthorityPreserved": true
       }
     },
     "VRM-213": {
@@ -11868,7 +11968,7 @@
       "classification": "MAPPING_FAILURE",
       "severity": "P0",
       "title": "Julissa identity consolidation requires explicit Admin same-human confirmation",
-      "state": "HUMAN_ADMIN_CONFIRMATION_REQUIRED",
+      "state": "PASS_CURRENT_ARTIFACT_RUN1152_WITH_JULISSA_RUN1066",
       "rootCauseStatus": "PROVEN_AUTOMATIC_EVIDENCE_EXHAUSTED_RUN1060",
       "rootCause": "The exact Run1053 DEV state has one sole credential keeper (shr-1780611985059-49vr) and one sole current HR operational identity (shopper_gt_0c198c1055), while shp-7309d525805e is technically linked to the HR identity by six identical visit keys. No current or historical provider receipt, review record, identity link, HR import anchor, phone/DPI/email/bank fingerprint or shared visit key links the credential keeper to the HR canonical identity. Automatic consolidation would therefore be a forbidden name-only/fuzzy merge.",
       "expected": "An authorized Admin explicitly confirms that the credential-bearing principal visible as julissa.flores and the current HR Julissa Flores identity are the same human. Only then may the existing shopper.identity.adjudicate provider consolidate canonical shopper_gt_0c198c1055 with aliases shr-1780611985059-49vr and shp-7309d525805e, retaining the sole strong credential keeper, remapping operational references, requiring provider ACK/idempotent readback, and writing neither HR nor production.",
@@ -11912,7 +12012,34 @@
       },
       "productChanged": false,
       "writes": 0,
-      "production": false
+      "production": false,
+      "terminalDisposition": "PASS_CURRENT_ARTIFACT",
+      "closureEvidence": {
+        "runId": 37251257394,
+        "runNumber": 1152,
+        "jobId": 111579226933,
+        "artifactId": 11320549762,
+        "artifactDigest": "sha256:10ebee0d337febf24360d7eb6ca38a04670da2504bfd636a6af496a58b179d46",
+        "decision": "PASS_VRM221_ADMIN_LIVE_E2E",
+        "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+        "materializationRunId": 37208163415,
+        "providerAck": true,
+        "idempotentReplay": true,
+        "durableReadback": true,
+        "mergePass": true,
+        "distinctPass": true,
+        "safeRetirePass": true,
+        "currentHrDeleteBlocked": true,
+        "cleanupActiveSyntheticRemaining": 0,
+        "hrWrites": 0,
+        "externalWrites": 0,
+        "production": false,
+        "julissaAuthorityRun1066": 37169333847,
+        "julissaActivePrincipalCount": 1,
+        "julissaAliasOwnedOperationalReferences": 0,
+        "humanAuthorityPreserved": true
+      }
     },
     "VRM-214": {
       "id": "VRM-214",
@@ -15783,7 +15910,7 @@
     "nextFindingId": "VRM-248",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_I3_ADMIN_CLUSTER_A_LIFECYCLE_REPROOF_REQUIRED",
+    "terminalState": "HOLD_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -19466,7 +19593,7 @@
     "hostingDeploys": 0,
     "production": false
   },
-  "activeBlocker": "I3_ADMIN_CLUSTER_A_LIFECYCLE_REPROOF_REQUIRED",
+  "activeBlocker": "I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE_REQUIRED",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -19657,8 +19784,8 @@
     "humanAcceptance": "FAIL",
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
-  "lastUpdatedAt": "2026-10-05T01:20:00Z",
-  "nextExactAction": "Execute bounded Admin Cluster A lifecycle proof on unchanged Run1112 candidate, beginning with Shoppers Admin identity/create/update/retire/keep-separate E2E using synthetic QA fixtures and guaranteed cleanup; then Postulations and Reservations lifecycle proofs. Do not close read-only-inadequate CRUD items from Run1148.",
+  "lastUpdatedAt": "2026-10-05T01:29:00Z",
+  "nextExactAction": "Run bounded Postulations lifecycle E2E on unchanged Run1112: current eligible shopper + available HR visit, application.create via shopper authority, idempotent replay, Admin standby/reject lifecycle, durable readback/reload, valid provider-backed delete and no reappearance, then verify no HR/external writes and zero QA residue.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
@@ -20294,7 +20421,7 @@
     "production": false,
     "interpretation": "Control-only freeze/readback. No action lane matched the fail-closed precomposition status."
   },
-  "queuedBlocker": "PAULA_VISUAL_ACCEPTANCE_AFTER_ALL_P0_CLOSURE",
+  "queuedBlocker": "I3_ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE_REQUIRED",
   "lastSuccessfulRun": {
     "runId": 37211579195,
     "runNumber": 1114,
@@ -20486,6 +20613,28 @@
     "aliasOperationalResiduals": 0,
     "hrAssignmentsPass": true,
     "writes": 0,
+    "production": false
+  },
+  "lastAdminClusterAShoppersPass": {
+    "runId": 37251257394,
+    "runNumber": 1152,
+    "jobId": 111579226933,
+    "artifactId": 11320549762,
+    "artifactDigest": "sha256:10ebee0d337febf24360d7eb6ca38a04670da2504bfd636a6af496a58b179d46",
+    "decision": "PASS_VRM221_ADMIN_LIVE_E2E",
+    "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+    "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+    "materializationRunId": 37208163415,
+    "providerAck": true,
+    "idempotentReplay": true,
+    "durableReadback": true,
+    "mergePass": true,
+    "distinctPass": true,
+    "safeRetirePass": true,
+    "currentHrDeleteBlocked": true,
+    "cleanupActiveSyntheticRemaining": 0,
+    "hrWrites": 0,
+    "externalWrites": 0,
     "production": false
   }
 }
