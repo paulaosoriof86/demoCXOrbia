@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM249_DEV_MATERIALIZATION_REQUIRED",
+  "status": "HOLD_I3_VRM249_LIFECYCLE_CONTROL_BINDING_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Materialize exact VRM-249 successor once to DEV through the canonical materializer; then run same-artifact Reservations lifecycle reproof before any further product mutation.",
+  "exactNextAction": "Bind the existing Admin Cluster A Postulations + Reservations lifecycle proof to the current materialization dynamically (no historical run/artifact hardcode), then run it on this exact artifact.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -407,7 +407,29 @@
     "writes": 0,
     "production": false
   },
-  "currentMaterialization": null,
+  "currentMaterialization": {
+    "state": "PASS_VRM249_EXACT_DEV_MATERIALIZATION",
+    "runId": 37303539281,
+    "runNumber": 1176,
+    "controlHeadSha": "4e1a51e3005eadcd5c825d6ecf58e2e17e9e8f27",
+    "jobId": 111741764213,
+    "artifactId": 11342836553,
+    "artifactDigest": "sha256:ed193a4c168970c7b684bc3693b3652909ea3635304dd1b977c07a06c92cb8e4",
+    "decision": "PASS_VRM249_EXACT_DEV_MATERIALIZATION",
+    "sourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
+    "sourceTree": "638ab7ab63244286ff460205da441221d5957ef0",
+    "runtimeRevision": "cxorbia-live-hr-dev-00265-p8k",
+    "runtimeDigest": "sha256:9bda19d4357980a11705e5f19539a7a786d91a47b920e2615e1bad89f69228f4",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/20f0b68b4bdc8266",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791200082274000",
+    "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "storageRulesDeploys": 0,
+    "scenarioDimensionsProven": true,
+    "production": false
+  },
   "lastFocalAttempt": {
     "runId": 36198284266,
     "runNumber": 438,
@@ -882,16 +904,7 @@
     "hrWrites": 0,
     "production": false
   },
-  "pendingMaterialization": {
-    "findingId": "VRM-249",
-    "sourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
-    "sourceTree": "638ab7ab63244286ff460205da441221d5957ef0",
-    "requiredDecision": "PASS_VRM249_EXACT_DEV_MATERIALIZATION",
-    "buildsExpected": 1,
-    "runtimeDeploysExpected": 1,
-    "hostingDeploysExpected": 1,
-    "production": false
-  },
+  "pendingMaterialization": null,
   "lastVrm080Proof": {
     "runId": 36333245670,
     "runNumber": 525,
@@ -4040,7 +4053,7 @@
     "production": false
   },
   "vrm249": {
-    "state": "SOURCE_REPROOF_PASS_DEV_MATERIALIZATION_REQUIRED",
+    "state": "EXACT_DEV_MATERIALIZED_LIFECYCLE_REPROOF_REQUIRED",
     "classification": "MAPPING_FAILURE",
     "runId": 37253163627,
     "runNumber": 1162,
@@ -4071,6 +4084,29 @@
       ],
       "builds": 0,
       "deploys": 0,
+      "production": false
+    },
+    "materialization": {
+      "state": "PASS_VRM249_EXACT_DEV_MATERIALIZATION",
+      "runId": 37303539281,
+      "runNumber": 1176,
+      "controlHeadSha": "4e1a51e3005eadcd5c825d6ecf58e2e17e9e8f27",
+      "jobId": 111741764213,
+      "artifactId": 11342836553,
+      "artifactDigest": "sha256:ed193a4c168970c7b684bc3693b3652909ea3635304dd1b977c07a06c92cb8e4",
+      "decision": "PASS_VRM249_EXACT_DEV_MATERIALIZATION",
+      "sourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
+      "sourceTree": "638ab7ab63244286ff460205da441221d5957ef0",
+      "runtimeRevision": "cxorbia-live-hr-dev-00265-p8k",
+      "runtimeDigest": "sha256:9bda19d4357980a11705e5f19539a7a786d91a47b920e2615e1bad89f69228f4",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/20f0b68b4bdc8266",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791200082274000",
+      "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+      "builds": 1,
+      "runtimeDeploys": 1,
+      "hostingDeploys": 1,
+      "storageRulesDeploys": 0,
+      "scenarioDimensionsProven": true,
       "production": false
     }
   }
