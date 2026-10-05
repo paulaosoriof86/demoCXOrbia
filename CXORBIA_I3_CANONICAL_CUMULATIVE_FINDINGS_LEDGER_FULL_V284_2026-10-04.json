@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v261",
   "frozenAt": "2026-10-04T09:12:00Z",
-  "status": "HOLD_I3_MULTIMODULE_LIVE_SWEEP_REQUIRED",
+  "status": "HOLD_I3_ADMIN_CLUSTER_A_LIFECYCLE_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "microblockId": "PRE-I4-LIVE-HR-STALE-CACHE-MAPPING-HOLD-AUGUST-CANONICAL-CORRECTION",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -9492,7 +9492,7 @@
       "classification": "VISUAL_DEFECT",
       "severity": "P0",
       "title": "Admin Certificación route crashes by recursive header helper",
-      "state": "EXACT_DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
+      "state": "PASS_CURRENT_ARTIFACT_RUN1148",
       "rootCauseStatus": "PROVEN",
       "rootCause": "Run 906 reached Admin route cert and threw RangeError: Maximum call stack size exceeded. Exact source inspection proved app/modules/cert.js defined phCert as a direct self-call: const phCert=subtitle=>phCert(subtitle)+certFilters();. This is deterministic recursion introduced while preserving the newer multi-project/multi-certification filters.",
       "owners": [
@@ -9576,6 +9576,24 @@
         "hostingDeploys": 1,
         "storageRulesDeploys": 1,
         "state": "SEALED_VRM181_CERT_ROUTE_FIX_DEV_PENDING_LIVE_REPROOF",
+        "production": false
+      },
+      "terminalDisposition": "PASS_CURRENT_ARTIFACT",
+      "closureEvidence": {
+        "runId": 37250379451,
+        "runNumber": 1148,
+        "jobId": 111576677537,
+        "decision": "PASS_I3_MULTIMODULE_LIVE_SWEEP",
+        "population": {
+          "activeShopperMemberships": 379,
+          "profiles": 571,
+          "currentHrVisits": 44,
+          "unresolvedMemberships": 0,
+          "duplicateActivePrincipals": 0,
+          "duplicateHrVisitKeys": 0,
+          "unresolvedAssignedVisits": 0
+        },
+        "pageErrors": 0,
         "production": false
       }
     },
@@ -10938,7 +10956,7 @@
       "classification": "MAPPING_FAILURE",
       "severity": "P0",
       "title": "Shopper route ownership still depends on raw session shopperId instead of the canonical exact identity across Mi Dia and Mis Visitas",
-      "state": "SOURCE_PASS_RUN1045_PENDING_EXACT_DEV_LIVE",
+      "state": "PASS_CURRENT_ARTIFACT_RUN1148",
       "rootCauseStatus": "PROVEN",
       "rootCause": "app/modules/midia.js and app/modules/misvisitas.js filter visits and posts by CX.session.user.shopperId with direct equality. The canonical shopper portal separately resolves aliases through __identityMap, so an authenticated alias/superseded identity can resolve in one surface while Mi Dia/Mis Visitas see zero visits. Paula's Julissa counterexample shows Admin C. Miraflores assigned to canonical Julissa while the shopper lane can render generic Evaluador / no periods / no linked profile; Priscila and Paula resolve normally.",
       "owners": [
@@ -11012,7 +11030,25 @@
       "sourceReproofRunId": 37161034003,
       "sourceReproofJobId": 111314363177,
       "sourceReproofChecksPassed": 16,
-      "sourceReproofChecksFailed": 0
+      "sourceReproofChecksFailed": 0,
+      "terminalDisposition": "PASS_CURRENT_ARTIFACT",
+      "closureEvidence": {
+        "runId": 37250379451,
+        "runNumber": 1148,
+        "jobId": 111576677537,
+        "decision": "PASS_I3_MULTIMODULE_LIVE_SWEEP",
+        "population": {
+          "activeShopperMemberships": 379,
+          "profiles": 571,
+          "currentHrVisits": 44,
+          "unresolvedMemberships": 0,
+          "duplicateActivePrincipals": 0,
+          "duplicateHrVisitKeys": 0,
+          "unresolvedAssignedVisits": 0
+        },
+        "pageErrors": 0,
+        "production": false
+      }
     },
     "VRM-198": {
       "id": "VRM-198",
@@ -11050,7 +11086,7 @@
       "classification": "RELEASE_COMPOSITION_FAILURE",
       "severity": "P0",
       "title": "Canonical shopper portal was loaded but disabled by a DEV-only query gate, so approved profile behavior was not active by default",
-      "state": "SOURCE_PASS_RUN1045_PENDING_EXACT_DEV_LIVE",
+      "state": "PASS_CURRENT_ARTIFACT_RUN1148",
       "rootCauseStatus": "PROVEN",
       "rootCause": "app/adapters/tya-canonical-shopper-portal-v2.js returned unless cxHumanFullVisual matched a preview token. Module presence/load-order therefore did not guarantee runtime activation, violating module-truth anti-regression rules and allowing recovered profile behavior to exist in source while remaining inactive outside the special visual URL.",
       "owners": [
@@ -11066,7 +11102,25 @@
       "sourceReproofRunId": 37161034003,
       "sourceReproofJobId": 111314363177,
       "sourceReproofChecksPassed": 16,
-      "sourceReproofChecksFailed": 0
+      "sourceReproofChecksFailed": 0,
+      "terminalDisposition": "PASS_CURRENT_ARTIFACT",
+      "closureEvidence": {
+        "runId": 37250379451,
+        "runNumber": 1148,
+        "jobId": 111576677537,
+        "decision": "PASS_I3_MULTIMODULE_LIVE_SWEEP",
+        "population": {
+          "activeShopperMemberships": 379,
+          "profiles": 571,
+          "currentHrVisits": 44,
+          "unresolvedMemberships": 0,
+          "duplicateActivePrincipals": 0,
+          "duplicateHrVisitKeys": 0,
+          "unresolvedAssignedVisits": 0
+        },
+        "pageErrors": 0,
+        "production": false
+      }
     },
     "VRM-200": {
       "id": "VRM-200",
@@ -11165,7 +11219,7 @@
       "classification": "MAPPING_FAILURE",
       "severity": "P0",
       "title": "Confirmed same-human identity group had multiple strong Auth principals and no deterministic canonical keeper rule",
-      "state": "SOURCE_PASS_RUN1045_PENDING_EXACT_DEV_LIVE",
+      "state": "PASS_CURRENT_ARTIFACT_RUN1148",
       "rootCauseStatus": "PROVEN",
       "rootCause": "The durable adjudication provider failed closed whenever more than one active principal carried password-proof metadata. The Julissa topology has four active identity principals and two strong credential principals. One strong principal carries the visible login derived from the current canonical HR identity, while the other belongs to a confirmed historical alias. Without a deterministic exact canonical-login rule, Admin cannot consolidate the confirmed same-human group in one safe transaction.",
       "evidence": {
@@ -11200,7 +11254,25 @@
       "sourceReproofRunId": 37161034003,
       "sourceReproofJobId": 111314363177,
       "sourceReproofChecksPassed": 16,
-      "sourceReproofChecksFailed": 0
+      "sourceReproofChecksFailed": 0,
+      "terminalDisposition": "PASS_CURRENT_ARTIFACT",
+      "closureEvidence": {
+        "runId": 37250379451,
+        "runNumber": 1148,
+        "jobId": 111576677537,
+        "decision": "PASS_I3_MULTIMODULE_LIVE_SWEEP",
+        "population": {
+          "activeShopperMemberships": 379,
+          "profiles": 571,
+          "currentHrVisits": 44,
+          "unresolvedMemberships": 0,
+          "duplicateActivePrincipals": 0,
+          "duplicateHrVisitKeys": 0,
+          "unresolvedAssignedVisits": 0
+        },
+        "pageErrors": 0,
+        "production": false
+      }
     },
     "VRM-203": {
       "id": "VRM-203",
@@ -11486,7 +11558,7 @@
       "classification": "MAPPING_FAILURE",
       "severity": "P0",
       "title": "Julissa Flores resolves to three active shopper principals on the exact Run1053 candidate",
-      "state": "PROVENANCE_DIAGNOSTIC_REQUIRED_BEFORE_ADJUDICATION",
+      "state": "PASS_CURRENT_ARTIFACT_RUN1148",
       "rootCauseStatus": "PROVEN_OPERATIONAL_DUPLICATION_PENDING_CANONICAL_ADJUDICATION",
       "rootCause": "Run1055 proved three distinct active shopper principals with three distinct shopperIds for the same visible human name after exact Run1053 artifact preflight passed. This is not a display-name-only artifact: all three principals are active and independently operationally addressable. The identity contract therefore requires exact same-human technical proof before any consolidation.",
       "expected": "Exactly one active canonical shopper principal for Julissa after exact technical adjudication. Any legacy/alias principals must be retired/superseded idempotently while preserving profile/history/KPIs/benefits/certifications/postulations/visits/reservations/finance/audit. Name/fuzzy similarity alone never authorizes merge.",
@@ -11573,6 +11645,24 @@
         },
         "keeperToCanonicalExactAnchor": false,
         "writes": 0,
+        "production": false
+      },
+      "terminalDisposition": "PASS_CURRENT_ARTIFACT",
+      "closureEvidence": {
+        "runId": 37250379451,
+        "runNumber": 1148,
+        "jobId": 111576677537,
+        "decision": "PASS_I3_MULTIMODULE_LIVE_SWEEP",
+        "population": {
+          "activeShopperMemberships": 379,
+          "profiles": 571,
+          "currentHrVisits": 44,
+          "unresolvedMemberships": 0,
+          "duplicateActivePrincipals": 0,
+          "duplicateHrVisitKeys": 0,
+          "unresolvedAssignedVisits": 0
+        },
+        "pageErrors": 0,
         "production": false
       }
     },
@@ -14986,9 +15076,9 @@
       "classification": "RELEASE_COMPOSITION_FAILURE",
       "severity": "P0_CONTROL",
       "title": "Descriptor retained pre-Run1142 findings-ledger blob after freezing VRM215 closure",
-      "state": "CONTROL_POINTER_FIX_REQUIRED",
+      "state": "CONTROL_ONLY_FIXED_RUN1148",
       "firstObservedAt": "RUN1145_2026-10-05",
-      "rootCauseStatus": "PROVEN",
+      "rootCauseStatus": "PROVEN_AND_FIXED",
       "rootCause": "Run1145 canonical-candidate-authority rejected LEDGER_BLOB_DRIFT because the Run1142 closure changed the canonical ledger blob from 11fb308... to 75831af..., while the candidate descriptor still declared findingsLedgerExpectedGitBlob=11fb308.... Product source, tree and DEV materialization were unchanged.",
       "evidence": {
         "runId": 37250274061,
@@ -15011,8 +15101,17 @@
       ],
       "productChanged": false,
       "production": false,
-      "terminalDisposition": null,
-      "successor": null
+      "terminalDisposition": "CONTROL_ONLY_FIXED",
+      "successor": null,
+      "closureEvidence": {
+        "runId": 37250379451,
+        "runNumber": 1148,
+        "jobId": 111576640358,
+        "canonicalAuthorityPassed": true,
+        "multimoduleSweepPassed": true,
+        "productChanged": false,
+        "production": false
+      }
     }
   },
   "latestEvidenceOverrides": {
@@ -15684,7 +15783,7 @@
     "nextFindingId": "VRM-248",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_I3_MULTIMODULE_LIVE_SWEEP_REQUIRED",
+    "terminalState": "HOLD_I3_ADMIN_CLUSTER_A_LIFECYCLE_REPROOF_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -19367,7 +19466,7 @@
     "hostingDeploys": 0,
     "production": false
   },
-  "activeBlocker": "I3_MULTIMODULE_LIVE_SWEEP_REQUIRED",
+  "activeBlocker": "I3_ADMIN_CLUSTER_A_LIFECYCLE_REPROOF_REQUIRED",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -19558,8 +19657,8 @@
     "humanAcceptance": "FAIL",
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
-  "lastUpdatedAt": "2026-10-05T01:12:00Z",
-  "nextExactAction": "Execute the existing same-artifact I3 multimodule live sweep against unchanged Run1112 materialization; require Admin + Shopper + Client route coverage, current HR revision, zero page errors and zero writes.",
+  "lastUpdatedAt": "2026-10-05T01:20:00Z",
+  "nextExactAction": "Execute bounded Admin Cluster A lifecycle proof on unchanged Run1112 candidate, beginning with Shoppers Admin identity/create/update/retire/keep-separate E2E using synthetic QA fixtures and guaranteed cleanup; then Postulations and Reservations lifecycle proofs. Do not close read-only-inadequate CRUD items from Run1148.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
@@ -20195,7 +20294,7 @@
     "production": false,
     "interpretation": "Control-only freeze/readback. No action lane matched the fail-closed precomposition status."
   },
-  "queuedBlocker": "PAULA_VISUAL_ACCEPTANCE",
+  "queuedBlocker": "PAULA_VISUAL_ACCEPTANCE_AFTER_ALL_P0_CLOSURE",
   "lastSuccessfulRun": {
     "runId": 37211579195,
     "runNumber": 1114,
@@ -20304,11 +20403,11 @@
     "production": false
   },
   "lastMultimoduleLiveSweep": {
-    "runId": 37222795614,
-    "runNumber": 1123,
-    "jobId": 111496385275,
-    "artifactId": 11310363770,
-    "artifactDigest": "sha256:b19757e89aea35a3589f33183f44cdb8470ade48d7e3ef651d19c996deb1baf1",
+    "runId": 37250379451,
+    "runNumber": 1148,
+    "jobId": 111576677537,
+    "artifactId": 11319914278,
+    "artifactDigest": "sha256:3db3fcbdc10fd4648be84b6cae85f1ca0f198a00c4a33562471bc86e99957242",
     "decision": "PASS_I3_MULTIMODULE_LIVE_SWEEP",
     "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
     "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
@@ -20319,62 +20418,8 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/0eb9844cbcbc180f",
     "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
     "periodId": "cinepolis-2026-10",
-    "adminRoutes": [
-      "midia",
-      "dashboard",
-      "shoppers",
-      "visitas",
-      "postulaciones",
-      "reservas",
-      "cert",
-      "aprendizaje",
-      "documentos",
-      "financiero",
-      "movimientos",
-      "liquidaciones",
-      "config",
-      "marca",
-      "informes",
-      "historico",
-      "cuestionarios"
-    ],
-    "shopperLanes": [
-      "GT",
-      "HN",
-      "Paula Osorio",
-      "consolidated identity"
-    ],
-    "shopperRoutes": [
-      "midia",
-      "miperfil",
-      "visitas",
-      "reservas",
-      "misvisitas",
-      "aprendizaje",
-      "cert",
-      "documentos",
-      "beneficios",
-      "mireportes"
-    ],
-    "clientRoutes": [
-      "cli_dashboard",
-      "cli_sucursales",
-      "cli_acciones",
-      "cli_insights",
-      "cli_capacitacion",
-      "cli_reportes",
-      "cli_programa"
-    ],
-    "phaseBPreservedSmoke": [
-      "soporte",
-      "novedades",
-      "marketing",
-      "automatizaciones",
-      "integraciones",
-      "correo"
-    ],
     "population": {
-      "activeShopperMemberships": 380,
+      "activeShopperMemberships": 379,
       "profiles": 571,
       "currentHrVisits": 44,
       "unresolvedMemberships": 0,
