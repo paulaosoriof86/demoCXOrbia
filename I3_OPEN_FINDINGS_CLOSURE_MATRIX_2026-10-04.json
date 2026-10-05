@@ -3,8 +3,8 @@
   "status": "ACTIVE_CLOSURE_VIEW",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
   "generatedFromLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "generatedAtEvidenceTime": "2026-10-05T11:45:00Z",
-  "controlHeadAtGeneration": "7eea30c73e35b17c3360ae0c14df93e30d2365ba",
+  "generatedAtEvidenceTime": "2026-10-05T15:23:00Z",
+  "controlHeadAtGeneration": "92f6275f88357f68614ce15dfc7e6674868951f6",
   "productSourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
   "productSourceTree": "638ab7ab63244286ff460205da441221d5957ef0",
   "exactDevArtifact": {
@@ -27,7 +27,7 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleTruthCount": 21,
   "moduleTruthAllMatch": true,
-  "findingCount": 252,
+  "findingCount": 253,
   "missingFindingIds": [],
   "duplicateFindingIds": [],
   "currentBlockingCount": 58,
@@ -47,8 +47,9 @@
     "SUPERSEDED_BY_VRM-243": 1
   },
   "nextCriticalSequence": [
-    "VRM252_SAME_ARTIFACT_CONTROL_REPROOF",
-    "VRM249_SAME_LIFECYCLE_ADJUDICATION",
+    "VRM253_SAME_ARTIFACT_CONTROL_REPROOF",
+    "VRM249_RESERVATIONS_TERMINAL_ADJUDICATION",
+    "VRM174_VRM179_FINANCE_FOCAL_REPROOF",
     "SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF",
     "PAULA_VISUAL_CHECKPOINT",
     "GATE20_GATE21_TERMINAL_CLOSURE"
@@ -8295,6 +8296,35 @@
         "requiredArgument": "rPeriodId",
         "correctionCommit": "fec74949073ac5d05150cd79737be8e8f8f05a4f",
         "productChanged": false
+      },
+      "actionRemaining": "same unchanged Run1176 lifecycle reproof",
+      "blocking": true,
+      "terminalDisposition": null
+    },
+    {
+      "findingId": "VRM-253",
+      "moduleDomain": [
+        "cross-cutting-control",
+        "reservations"
+      ],
+      "severity": "P0_CONTROL",
+      "classification": "MAPPING_FAILURE",
+      "owner": [
+        "tools/qa/cxorbia-i3-admin-cluster-a-postulations-live.mjs"
+      ],
+      "latestApprovedSource": null,
+      "latestLiveProof": null,
+      "successor": null,
+      "rawLedgerState": "CONTROL_FIX_COMPOSED_REPROOF_REQUIRED",
+      "realState": "CONTROL_FIX_COMPOSED_REPROOF_REQUIRED",
+      "evidence": {
+        "run1199": 37331790177,
+        "wrongSyntheticPeriodo": "cinepolis-2026-10",
+        "canonicalPeriodo": "2026-10",
+        "guard": "app/adapters/tya-canonical-reservations-guard-v2.js",
+        "correctionCommit": "d4a5d6414c95a9dd420c6d3e35e8b07f8c15ae1d",
+        "productChanged": false,
+        "production": false
       },
       "actionRemaining": "same unchanged Run1176 lifecycle reproof",
       "blocking": true,
