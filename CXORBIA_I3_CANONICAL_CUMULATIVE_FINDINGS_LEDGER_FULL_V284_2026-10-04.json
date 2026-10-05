@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v261",
   "frozenAt": "2026-10-04T09:12:00Z",
-  "status": "HOLD_VRM243_AUTHORITATIVE_ALIAS_VISIT_REMAP_REQUIRED",
+  "status": "HOLD_VRM215_SHOPPER_POPULATION_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "microblockId": "PRE-I4-LIVE-HR-STALE-CACHE-MAPPING-HOLD-AUGUST-CANONICAL-CORRECTION",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -14707,7 +14707,7 @@
       "classification": "MAPPING_FAILURE",
       "severity": "P0",
       "title": "Already-adjudicated trusted alias sets require authoritative visit-owner remap without re-adjudicating identity",
-      "state": "AUTHORITATIVE_VISIT_REMAP_REQUIRED",
+      "state": "PASS_RUN1131",
       "firstObservedAt": "RUN1129_2026-10-04",
       "rootCauseStatus": "PROVEN",
       "rootCause": "The 18 alias groups already have active trusted identity authority. Re-executing shopper.identity.adjudicate with a new command authorityRef is correctly blocked by SHOPPER_IDENTITY_ADJUDICATION_LINK_CONFLICT. The remaining defect is not identity adjudication; it is 127 authoritative project visit rows that still carry exact superseded alias ownership. Historical rows must remain unchanged.",
@@ -14774,7 +14774,130 @@
         "tenants/tya/projects/cinepolis/visits"
       ],
       "productChanged": false,
-      "production": false
+      "production": false,
+      "terminalDisposition": "PASS_CURRENT_ARTIFACT",
+      "successor": null,
+      "closureEvidence": {
+        "runId": 37245792720,
+        "runNumber": 1131,
+        "jobId": 111563355465,
+        "artifactId": 11319310864,
+        "artifactDigest": "sha256:f1f4dfabf9eaa3ed7044db68adf96c0f4f36d1d0d9f6dfaec60d7fcf69a9fb8e",
+        "decision": "PASS_VRM243_AUTHORITATIVE_ALIAS_VISIT_REMAP",
+        "productSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "productSourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+        "membershipUniverseAfter": 379,
+        "authoritativeAliasRowsBefore": 127,
+        "authoritativeAliasRowsAfter": 0,
+        "historicalAliasRowsPreserved": 122,
+        "ambiguousAuthorityGroups": 0,
+        "nonVisitOperationalAliasReferences": 0,
+        "writes": 127,
+        "hrWrites": 0,
+        "externalWrites": 0,
+        "production": false
+      }
+    },
+    "VRM-244": {
+      "id": "VRM-244",
+      "classification": "MAPPING_FAILURE",
+      "severity": "P0_CONTROL",
+      "title": "VRM-243 workflow asserted removed operationalAliasReferences.count instead of the live diagnostic schema",
+      "state": "CONTROL_ONLY_FIXED_RUN1131",
+      "firstObservedAt": "RUN1130_2026-10-04",
+      "rootCauseStatus": "PROVEN_AND_FIXED",
+      "rootCause": "Run1130 reproduced the expected alias residuals but the workflow asserted operationalAliasReferences.count. The live VRM217/219 schema exposes paymentReconciliations, certifications, liquidations, postulations, reservations and rows, so jq returned null and failed before any remap write.",
+      "owner": [
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+      ],
+      "correction": {
+        "commitSha": "e2b486a3a149f1c20e396c44444d30a31547d5ec",
+        "scope": "control assertion only",
+        "preAndPost": [
+          "operationalAliasReferences.rows.length == 0",
+          "sum(paymentReconciliations, certifications, liquidations, postulations, reservations) == 0"
+        ],
+        "productChanged": false
+      },
+      "closureEvidence": {
+        "runId": 37245792720,
+        "runNumber": 1131,
+        "jobId": 111563355465,
+        "decision": "PASS_VRM243_AUTHORITATIVE_ALIAS_VISIT_REMAP",
+        "correctedPreflightPassed": true,
+        "correctedPostReadbackPassed": true,
+        "production": false
+      },
+      "productChanged": false,
+      "production": false,
+      "terminalDisposition": "CONTROL_ONLY_FIXED",
+      "successor": null
+    },
+    "VRM-245": {
+      "id": "VRM-245",
+      "classification": "MAPPING_FAILURE",
+      "severity": "P0_CONTROL",
+      "title": "VRM-215 population gate must honor frozen review-only identity and canonical historical visit semantics",
+      "state": "CONTROL_FIX_COMMITTED_REPROOF_REQUIRED",
+      "firstObservedAt": "POST_RUN1131_2026-10-04",
+      "rootCauseStatus": "PROVEN",
+      "rootCause": "VRM-215 v1 still treated every active membership as authentication-eligible and treated duplicate durable visit keys plus all alias-owned visit history as active defects. Frozen VRM-043/VRM-239 already require one current HR identity with unavailable external human name to remain review-only and excluded from authentication eligibility, while VRM-238/VRM-243 prove historical visit versions and historical alias rows must be preserved and only authoritative current rows may be remapped.",
+      "evidence": {
+        "run1131": {
+          "runId": 37245792720,
+          "artifactId": 11319310864,
+          "postRootDecision": "PASS_VRM217_219_POPULATION_ROOT_DIAGNOSTIC",
+          "membershipUniverse": 379,
+          "credentialHolds": 1,
+          "reviewOnlyShopperClass": "HR_MANAGED_CREDENTIAL_NAME_INCOMPLETE",
+          "hrAssignmentsUnresolved": 0,
+          "authoritativeAliasRows": 0,
+          "historicalAliasRows": 122,
+          "ambiguousAuthorityGroups": 0,
+          "nonVisitOperationalAliasReferences": 0
+        },
+        "frozenAuthority": {
+          "vrm043Rule": "DO_NOT_INVENT_HUMAN_IDENTITY",
+          "vrm239Disposition": "EXCLUDE_FROM_AUTH_ELIGIBLE_POPULATION_PRESERVE_REVIEW_ONLY",
+          "vrm238HistoricalSemantics": "historical rows are preserved; simple duplicate visit keys are not by themselves a defect"
+        }
+      },
+      "expected": {
+        "membershipUniverse": 379,
+        "reviewOnlyExcludedCount": 1,
+        "authEligiblePopulation": 378,
+        "reviewOnlyMustRemainCurrentHr": true,
+        "reviewOnlyAssignmentsRemainResolved": true,
+        "allAuthEligibleCredentialsAuthenticate": true,
+        "allAuthEligibleClaimsExact": true,
+        "allAuthEligibleSelfScopePass": true,
+        "allAuthEligibleRouteContractPass": true,
+        "nonVisitOperationalAliasReferences": 0,
+        "authoritativeAliasRows": 0,
+        "historicalAliasRows": 122,
+        "ambiguousAuthorityGroups": 0,
+        "hrWrites": 0,
+        "externalWrites": 0,
+        "production": false
+      },
+      "owner": [
+        "tools/qa/cxorbia-i3-vrm215-shopper-population-live-reproof.mjs",
+        "tools/qa/cxorbia-i3-vrm217-219-population-root-diagnostic.mjs",
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+      ],
+      "correction": {
+        "scriptSchema": "cxorbia.i3.vrm215.shopper-population.v2",
+        "genericReviewOnlyRule": "current HR source + source and durable credential rule both SHOPPER_CREDENTIAL_NAME_INCOMPLETE",
+        "exactReviewOnlyCardinality": 1,
+        "historicalVisitAuthority": "VRM217_219 root diagnostic",
+        "browserConcurrency": 6,
+        "coverageReduced": false,
+        "productChanged": false
+      },
+      "productChanged": false,
+      "production": false,
+      "terminalDisposition": null,
+      "successor": null
     }
   },
   "latestEvidenceOverrides": {
@@ -15422,14 +15545,29 @@
       "VRM-227",
       "VRM-228",
       "VRM-229",
-      "VRM-230"
+      "VRM-230",
+      "VRM-231",
+      "VRM-232",
+      "VRM-233",
+      "VRM-234",
+      "VRM-235",
+      "VRM-236",
+      "VRM-237",
+      "VRM-238",
+      "VRM-239",
+      "VRM-240",
+      "VRM-241",
+      "VRM-242",
+      "VRM-243",
+      "VRM-244",
+      "VRM-245"
     ],
-    "findingCount": 230,
-    "expectedCurrentRange": "VRM-001..VRM-230",
-    "nextFindingId": "VRM-244",
+    "findingCount": 245,
+    "expectedCurrentRange": "VRM-001..VRM-245",
+    "nextFindingId": "VRM-246",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_VRM229_PAULA_CONFIRMED_IDENTITY_CONSOLIDATION_REQUIRED",
+    "terminalState": "HOLD_VRM215_SHOPPER_POPULATION_REPROOF_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -15737,7 +15875,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-244",
+  "nextFindingId": "VRM-246",
   "lastControlFailure": {
     "findingId": "VRM-232",
     "runId": 37213834927,
@@ -19108,7 +19246,7 @@
     "hostingDeploys": 0,
     "production": false
   },
-  "activeBlocker": "VRM243_AUTHORITATIVE_ALIAS_VISIT_REMAP_REQUIRED",
+  "activeBlocker": "VRM215_SHOPPER_POPULATION_REPROOF_REQUIRED",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -19300,7 +19438,7 @@
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
   "lastUpdatedAt": "2026-10-04T15:03:00Z",
-  "nextExactAction": "Reproduce current root state, remap exactly 127 authoritative alias visit rows under existing trusted identity authority, then prove authoritativeAliasRows=0 with historical alias rows preserved.",
+  "nextExactAction": "Run corrected VRM215 v2 on unchanged Run1112 artifact: prove membershipUniverse=379, exactly one frozen HR-managed review-only identity excluded from auth eligibility but included in HR assignment integrity, authEligiblePopulation=378, zero non-visit alias operational references, and canonical root visit semantics authoritativeAliasRows=0/historicalAliasRows=122/ambiguousAuthorityGroups=0. Then rerun same-artifact multimodule sweep.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
@@ -19936,7 +20074,7 @@
     "production": false,
     "interpretation": "Control-only freeze/readback. No action lane matched the fail-closed precomposition status."
   },
-  "queuedBlocker": "VRM215_SHOPPER_POPULATION_REPROOF",
+  "queuedBlocker": "I3_MULTIMODULE_LIVE_SWEEP",
   "lastSuccessfulRun": {
     "runId": 37211579195,
     "runNumber": 1114,
@@ -20013,7 +20151,7 @@
   },
   "openFindingsClosureMatrix": {
     "path": "I3_OPEN_FINDINGS_CLOSURE_MATRIX_2026-10-04.json",
-    "findingCount": 243,
+    "findingCount": 245,
     "status": "ACTIVE_CLOSURE_VIEW",
     "missingFindingIds": [],
     "duplicateFindingIds": []
@@ -20134,6 +20272,32 @@
     "externalWrites": 0,
     "builds": 0,
     "deploys": 0,
+    "production": false
+  },
+  "lastVrm243Pass": {
+    "runId": 37245792720,
+    "runNumber": 1131,
+    "jobId": 111563355465,
+    "artifactId": 11319310864,
+    "artifactDigest": "sha256:f1f4dfabf9eaa3ed7044db68adf96c0f4f36d1d0d9f6dfaec60d7fcf69a9fb8e",
+    "decision": "PASS_VRM243_AUTHORITATIVE_ALIAS_VISIT_REMAP",
+    "productSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+    "productSourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+    "membershipUniverseAfter": 379,
+    "authoritativeAliasRowsBefore": 127,
+    "authoritativeAliasRowsAfter": 0,
+    "historicalAliasRowsPreserved": 122,
+    "ambiguousAuthorityGroups": 0,
+    "nonVisitOperationalAliasReferences": 0,
+    "writes": 127,
+    "hrWrites": 0,
+    "externalWrites": 0,
+    "production": false
+  },
+  "vrm245Control": {
+    "state": "CONTROL_FIX_COMMITTED_REPROOF_REQUIRED",
+    "scriptCommitSha": "aa0cd93ba49675c737e0f25539196eb10900bcd0",
+    "productChanged": false,
     "production": false
   }
 }
