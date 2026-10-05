@@ -277,7 +277,14 @@
       const p=onlyUnique(profilesById,canonical)||onlyUnique(profilesByAlias,liveId)||null;if(p&&p.id)consumedProfiles.add(str(p.id));
       let row=p?patch(base,p):clone(base);row.id=canonical;row.shopperId=canonical;row.legacyLiveShopperIds=uniq([...(arr(row.legacyLiveShopperIds)),liveId]);
       const hrDisplayName=normalizedName(base),profileDisplayName=p?normalizedName(p):'';
-      const humanDisplayName=hrDisplayName&&!technicalIdentityLabel(hrDisplayName,liveId)?hrDisplayName:(profileDisplayName&&!technicalIdentityLabel(profileDisplayName,canonical)?profileDisplayName:'');
+      /* VRM-258 corrected authority: a provider/tenant-adjudicated HR alias is already the same
+         human as the canonical shopper. The live HR alias label remains valid source evidence,
+         but it cannot replace the human name frozen on the canonical tenant-adjudicated profile.
+         Non-adjudicated HR identities keep the existing HR-name-first rule. */
+      const canonicalAlias=str(base.canonicalShopperId)&&str(base.canonicalShopperId)===canonical&&liveId!==canonical;
+      const tenantAdjudicatedProfile=p&&lower(p.identityAuthority)==='tenant_adjudication'&&!!str(p.identityAuthorityRef);
+      const canonicalProfileName=canonicalAlias&&tenantAdjudicatedProfile&&profileDisplayName&&!technicalIdentityLabel(profileDisplayName,canonical)?profileDisplayName:'';
+      const humanDisplayName=canonicalProfileName||(hrDisplayName&&!technicalIdentityLabel(hrDisplayName,liveId)?hrDisplayName:(profileDisplayName&&!technicalIdentityLabel(profileDisplayName,canonical)?profileDisplayName:''));
       row.nombre=humanDisplayName||'Identidad pendiente de revisión';row.code=base.code||row.code||row.username||row.user||row.legacyShopperId||'';
       if(!humanDisplayName){row.identityReviewRequired=true;row.identityReviewReason=row.identityReviewReason||'human_display_name_unresolved';}
       row.sourceSafe=p?false:base.sourceSafe;row.piiProtected=p?false:base.piiProtected;row.__canonicalIdentityOverlay=!!p;

@@ -95,19 +95,19 @@ if(/tya-cumulative-read-model-v2\.js$/.test(engineFile)){
       {id:'cinepolis-2026-10',periodKey:'2026-10',projectId:'cinepolis'}
     ],
     shoppers:[
-      {id:flores,shopperId:flores,nombre:'Julissa Flores',pais:'GT'},
-      {id:illescas,shopperId:illescas,nombre:'Julissa Illescas',pais:'GT'}
+      {id:flores,shopperId:flores,nombre:'Julissa Flores',pais:'GT',canonicalShopperId:flores},
+      {id:illescas,shopperId:illescas,nombre:'Julissa Illescas',pais:'GT',canonicalShopperId:flores}
     ],
     visits:[
-      {id:'hr-aug-29',visitId:'hr-aug-29',hrRowId:'AGOSTO 26!29',sourceTab:'AGOSTO 26',sourceRow:29,projectId:'cinepolis',periodId:'cinepolis-2026-08',periodKey:'2026-08',shopperId:illescas,shopper:'Julissa Illescas',estado:'realizada',canonicalFacets:{assigned:true,realized:true}},
-      {id:'hr-oct-2',visitId:'hr-oct-2',hrRowId:'OCTUBRE 26!2',sourceTab:'OCTUBRE 26',sourceRow:2,projectId:'cinepolis',periodId:'cinepolis-2026-10',periodKey:'2026-10',shopperId:flores,shopper:'Julissa Flores',estado:'asignada',canonicalFacets:{assigned:true,available:false,realized:false}}
+      {id:'hr-aug-29',visitId:'hr-aug-29',hrRowId:'AGOSTO 26!29',sourceTab:'AGOSTO 26',sourceRow:29,projectId:'cinepolis',periodId:'cinepolis-2026-08',periodKey:'2026-08',shopperId:illescas,canonicalShopperId:flores,shopper:'Julissa Illescas',estado:'realizada',canonicalFacets:{assigned:true,realized:true}},
+      {id:'hr-oct-2',visitId:'hr-oct-2',hrRowId:'OCTUBRE 26!2',sourceTab:'OCTUBRE 26',sourceRow:2,projectId:'cinepolis',periodId:'cinepolis-2026-10',periodKey:'2026-10',shopperId:flores,canonicalShopperId:flores,shopper:'Julissa Flores',estado:'asignada',canonicalFacets:{assigned:true,available:false,realized:false}}
     ],
     posts:[]
   };
   const vrm258Protected={
     shoppers:[
-      {id:flores,shopperId:flores,nombre:'Julissa Flores',projectIds:['cinepolis']},
-      {id:illescas,shopperId:illescas,nombre:'Julissa Illescas',projectIds:['cinepolis']}
+      {id:flores,shopperId:flores,nombre:'Julissa Flores',firstName:'Julissa',lastName:'Flores',visibleLogin:'julissa.flores',projectIds:['cinepolis'],identityAuthority:'tenant_adjudication',identityAuthorityRef:'shopper.identity.adjudicate:shmztc',exactAliases:[illescas,'shp-7309d525805e','shr-1780611985059-49vr']},
+      {id:illescas,shopperId:illescas,nombre:'Julissa Illescas',projectIds:['cinepolis'],identityState:'superseded_exact_alias',supersededByShopperId:flores}
     ],
     visits:[
       {id:'AGOSTO 26!29',visitId:'AGOSTO 26!29',hrRowId:'AGOSTO 26!29',sourceTab:'AGOSTO 26',sourceRow:29,projectId:'cinepolis',periodId:'cinepolis-2026-08',shopperId:flores,canonicalFacets:{assigned:true,realized:true}},
@@ -116,17 +116,15 @@ if(/tya-cumulative-read-model-v2\.js$/.test(engineFile)){
     postulations:[],applications:[],certifications:[],liquidations:[]
   };
   const vrm258Result=engine.compose({hr:vrm258Hr,protectedPayload:vrm258Protected});
-  const vrm258Flores=vrm258Result.shoppers.find(s=>s.id===flores);
-  const vrm258Illescas=vrm258Result.shoppers.find(s=>s.id===illescas);
+  const vrm258Canonical=vrm258Result.shoppers.find(s=>s.id===flores);
+  const vrm258AliasVisible=vrm258Result.shoppers.some(s=>s.id===illescas);
   const vrm258Aug=vrm258Result.visits.find(v=>v.hrRowId==='AGOSTO 26!29');
   const vrm258Oct=vrm258Result.visits.find(v=>v.hrRowId==='OCTUBRE 26!2');
-  const vrm258Suppressed=(vrm258Result.diagnostics.suppressedDistinctHrIdentityCrosswalks||[])
-    .some(x=>x.liveShopperId===illescas&&x.durableShopperId===flores&&x.reason==='distinct_live_hr_identities_must_not_crosswalk');
-  assert('vrm258_distinct_live_hr_identities_resist_stale_durable_crosswalk',
-    vrm258Result.identityMap?.[illescas]!==flores&&
-    vrm258Flores?.nombre==='Julissa Flores'&&vrm258Illescas?.nombre==='Julissa Illescas'&&
-    vrm258Aug?.shopperId===illescas&&vrm258Oct?.shopperId===flores&&vrm258Suppressed,
-    {identityMap:vrm258Result.identityMap,shoppers:vrm258Result.shoppers.map(s=>({id:s.id,nombre:s.nombre})),augShopperId:vrm258Aug?.shopperId,octShopperId:vrm258Oct?.shopperId,suppressed:vrm258Result.diagnostics.suppressedDistinctHrIdentityCrosswalks});
+  assert('vrm258_authorized_alias_keeps_canonical_display_name',
+    vrm258Result.identityMap?.[illescas]===flores&&
+    vrm258Canonical?.nombre==='Julissa Flores'&&vrm258Canonical?.visibleLogin==='julissa.flores'&&
+    vrm258AliasVisible===false&&vrm258Aug?.shopperId===flores&&vrm258Oct?.shopperId===flores,
+    {identityMap:vrm258Result.identityMap,shoppers:vrm258Result.shoppers.map(s=>({id:s.id,nombre:s.nombre,visibleLogin:s.visibleLogin||null})),augShopperId:vrm258Aug?.shopperId,octShopperId:vrm258Oct?.shopperId});
 }
 
 const report={
