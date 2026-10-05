@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v261",
   "frozenAt": "2026-10-04T09:12:00Z",
-  "status": "HOLD_I3_FINANCE_FOCAL_CONTROL_PREP_REQUIRED",
+  "status": "HOLD_I3_VRM174_HISTORICAL_PAYMENT_CONTROL_PREP_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "microblockId": "PRE-I4-LIVE-HR-STALE-CACHE-MAPPING-HOLD-AUGUST-CANONICAL-CORRECTION",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -9213,7 +9213,7 @@
       "classification": "MAPPING_FAILURE",
       "severity": "P0",
       "title": "Durable historical payment reconciliation is not projected into Finance/Mis Beneficios UI",
-      "state": "SOURCE_PASS_RUN1045_PENDING_EXACT_DEV_LIVE",
+      "state": "RUN1209_FOCAL_PASS_HISTORICAL_PAYMENT_REPROOF_REQUIRED",
       "rootCauseStatus": "PROVEN",
       "rootCause": "Exact DEV holds 628 paymentReconciliations (562 paid, 66 pending) and 562 durable visits marked paymentConfirmed/historical paid, but canonical finance exactProtectedFinancialMatch recognizes only financialSourceStatus='reconciled_exact' plus financialMatch. Only 1 visit matches that shape, leaving 562 paid historical rows projected as pending.",
       "owners": [
@@ -9270,7 +9270,29 @@
       "sourceReproofRunId": 37161034003,
       "sourceReproofJobId": 111314363177,
       "sourceReproofChecksPassed": 16,
-      "sourceReproofChecksFailed": 0
+      "sourceReproofChecksFailed": 0,
+      "run1209Focal": {
+        "runId": 37333811676,
+        "runNumber": 1209,
+        "jobId": 111843459146,
+        "artifactId": 11355651173,
+        "artifactDigest": "sha256:20424a0a6584aacc9def0eb6b8902bbd89ee20d42031e2224a0ef0bd7a92e5de",
+        "decision": "PASS_PREI4_FINAL_FOCAL_FINANCE",
+        "sourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
+        "periodId": "cinepolis-2026-09",
+        "operatingRevenueAck": true,
+        "unclassifiedBlocked": true,
+        "cxcCollectionNoDoubleRevenue": true,
+        "financingNonOperatingLinkedCxp": true,
+        "cxpSettlement": true,
+        "idempotentReplay": true,
+        "durableProjection": true,
+        "cleanup": true,
+        "hrWrites": 0,
+        "production": false
+      },
+      "blocking": true,
+      "terminalDisposition": null
     },
     "VRM-175": {
       "id": "VRM-175",
@@ -9445,8 +9467,8 @@
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Movimientos lacks same-candidate end-to-end acceptance proof after human review",
-      "state": "P0_ACCEPTANCE_REPROOF_REQUIRED",
-      "rootCauseStatus": "PROVEN_EVIDENCE_GAP",
+      "state": "PASS_RUN1209_CURRENT_ARTIFACT",
+      "rootCauseStatus": "ACCEPTANCE_GAP_CLOSED",
       "rootCause": "Run 866 proves aggregate finance authority/readback but the current acceptance evidence does not exercise the Movimientos UI and its visible create/edit/reconciliation relationships on the exact sealed candidate. Usability must not be claimed from aggregate counts alone.",
       "owners": [
         "app/modules/finanzas.js",
@@ -9472,7 +9494,29 @@
         "production": false
       },
       "correction": "Add focal DEV test using synthetic scoped movement data only; validate create/edit only if those actions are exposed, reconciliation/readback/cross-module projection and cleanup, without production/HR writes.",
-      "production": false
+      "production": false,
+      "run1209": {
+        "runId": 37333811676,
+        "runNumber": 1209,
+        "jobId": 111843459146,
+        "artifactId": 11355651173,
+        "artifactDigest": "sha256:20424a0a6584aacc9def0eb6b8902bbd89ee20d42031e2224a0ef0bd7a92e5de",
+        "decision": "PASS_PREI4_FINAL_FOCAL_FINANCE",
+        "sourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
+        "periodId": "cinepolis-2026-09",
+        "operatingRevenueAck": true,
+        "unclassifiedBlocked": true,
+        "cxcCollectionNoDoubleRevenue": true,
+        "financingNonOperatingLinkedCxp": true,
+        "cxpSettlement": true,
+        "idempotentReplay": true,
+        "durableProjection": true,
+        "cleanup": true,
+        "hrWrites": 0,
+        "production": false
+      },
+      "blocking": false,
+      "terminalDisposition": "PASS_CURRENT_ARTIFACT"
     },
     "VRM-180": {
       "id": "VRM-180",
@@ -16360,7 +16404,7 @@
     "nextFindingId": "VRM-254",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_I3_FINANCE_FOCAL_CONTROL_PREP_REQUIRED",
+    "terminalState": "HOLD_I3_VRM174_HISTORICAL_PAYMENT_CONTROL_PREP_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -16641,7 +16685,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Prepare and execute existing focal finance QA on the exact current Run1176 DEV artifact; recover approved finance authority, do not rebuild finance.",
+  "exactNextAction": "Run read-only historical payment projection proof on the exact Run1176 DEV artifact. Compare durable payment-confirmed visits to canonical finance liquidations per period and prove paid rows render as paid, not pending.",
   "supersedesGitBlob": "820da41b786054cb8cd23e89827e1f7afbcdd3b3",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -20246,8 +20290,8 @@
     "humanAcceptance": "FAIL",
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
-  "lastUpdatedAt": "2026-10-05T15:30:00Z",
-  "nextExactAction": "Prepare and execute existing focal finance QA on the exact current Run1176 DEV artifact; recover approved finance authority, do not rebuild finance.",
+  "lastUpdatedAt": "2026-10-05T15:36:00Z",
+  "nextExactAction": "Run read-only historical payment projection proof on the exact Run1176 DEV artifact. Compare durable payment-confirmed visits to canonical finance liquidations per period and prove paid rows render as paid, not pending.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
@@ -21121,6 +21165,26 @@
     "externalWrites": 0,
     "builds": 0,
     "deploys": 0,
+    "production": false
+  },
+  "financeFocalReceipt": {
+    "runId": 37333811676,
+    "runNumber": 1209,
+    "jobId": 111843459146,
+    "artifactId": 11355651173,
+    "artifactDigest": "sha256:20424a0a6584aacc9def0eb6b8902bbd89ee20d42031e2224a0ef0bd7a92e5de",
+    "decision": "PASS_PREI4_FINAL_FOCAL_FINANCE",
+    "sourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
+    "periodId": "cinepolis-2026-09",
+    "operatingRevenueAck": true,
+    "unclassifiedBlocked": true,
+    "cxcCollectionNoDoubleRevenue": true,
+    "financingNonOperatingLinkedCxp": true,
+    "cxpSettlement": true,
+    "idempotentReplay": true,
+    "durableProjection": true,
+    "cleanup": true,
+    "hrWrites": 0,
     "production": false
   }
 }
