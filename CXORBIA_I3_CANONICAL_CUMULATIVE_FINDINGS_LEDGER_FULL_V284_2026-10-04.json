@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v261",
   "frozenAt": "2026-10-04T09:12:00Z",
-  "status": "HOLD_VRM258_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_VRM258_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "microblockId": "PRE-I4-LIVE-HR-STALE-CACHE-MAPPING-HOLD-AUGUST-CANONICAL-CORRECTION",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -18,7 +18,7 @@
     "sourceTree": "c8462a25832427390d96c288d74b76bd9f30ecc5",
     "predecessorSha": "dc06e5c1ab3896b88a5b66627ae551b40eef000b",
     "production": false,
-    "state": "VRM258_CORRECTED_SOURCE_PENDING_PROOF",
+    "state": "VRM258_CORRECTED_SOURCE_PROVEN_DEV_MATERIALIZATION_REQUIRED",
     "proof": {
       "state": "PASS_VRM249_SOURCE_REPROOF_AND_EXACT_DEV_MATERIALIZATION",
       "accumulatedSourceProofs": [
@@ -16277,7 +16277,7 @@
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Admin canonical read model collapses Julissa Illescas into Julissa Flores through stale durable historical visit crosswalk",
-      "state": "CORRECTED_SOURCE_PENDING_PROOF",
+      "state": "CORRECTED_SOURCE_PROVEN_RUN1249_DEV_MATERIALIZATION_REQUIRED",
       "firstObservedAt": "RUN1243_2026-10-05",
       "rootCauseStatus": "PROVEN_HUMAN_AUTHORITY_DISPLAY_PRECEDENCE",
       "rootCause": "VRM-214/Run1066 validly consolidated alias shopper_gt_86254c4228 into canonical shopper_gt_0c198c1055. The current defect is display-name precedence: the canonical read model lets the live HR alias label overwrite the tenant-adjudicated canonical profile name after canonicalization.",
@@ -16425,6 +16425,21 @@
           ],
           "regression": "vrm258_authorized_alias_keeps_canonical_display_name",
           "authority": "VRM-214 + Run1066"
+        },
+        "correctedSourceProof": {
+          "runId": 37391098178,
+          "runNumber": 1249,
+          "controlHeadSha": "e7425b48ba89aa30505efdc1291fb83dd03fbe65",
+          "jobId": 112036167295,
+          "workflowConclusion": "success",
+          "assertion": "vrm258_authorized_alias_keeps_canonical_display_name",
+          "sourceSha": "b5d63c20dcd0e30a9c3d9f5f8520c28e481d0718",
+          "sourceTree": "c8462a25832427390d96c288d74b76bd9f30ecc5",
+          "vrm168Preserved": true,
+          "builds": 0,
+          "deploys": 0,
+          "writes": 0,
+          "production": false
         }
       },
       "productChanged": true,
@@ -17112,7 +17127,7 @@
     "nextFindingId": "VRM-259",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_VRM258_SOURCE_PROOF_REQUIRED",
+    "terminalState": "HOLD_VRM258_DEV_MATERIALIZATION_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -17392,7 +17407,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Run exact source-only VRM-258 proof on corrected source b5d63c20dcd0e30a9c3d9f5f8520c28e481d0718. Require alias shopper_gt_86254c4228 to resolve to canonical shopper_gt_0c198c1055, canonical display Julissa Flores, visibleLogin julissa.flores, no separate alias shopper, VRM-168 preserved, and 0 builds/deploys/writes. Then exactly one corrected DEV materialization.",
+  "exactNextAction": "Materialize exactly corrected VRM-258 source b5d63c20dcd0e30a9c3d9f5f8520c28e481d0718/tree c8462a25832427390d96c288d74b76bd9f30ecc5 once in DEV using the existing canonical lane. Require the corrected Julissa regression plus VRM-168, VRM-256 and VRM-257 regressions before build/deploy. No production. Then record exact artifact/runtime/Hosting/HR fingerprints and run same-artifact live reproof.",
   "supersedesGitBlob": "820da41b786054cb8cd23e89827e1f7afbcdd3b3",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -20979,8 +20994,8 @@
     "humanAcceptance": "FAIL",
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
-  "lastUpdatedAt": "2026-10-05T23:55:00Z",
-  "nextExactAction": "Run exact source-only VRM-258 proof on corrected source b5d63c20dcd0e30a9c3d9f5f8520c28e481d0718. Require alias shopper_gt_86254c4228 to resolve to canonical shopper_gt_0c198c1055, canonical display Julissa Flores, visibleLogin julissa.flores, no separate alias shopper, VRM-168 preserved, and 0 builds/deploys/writes. Then exactly one corrected DEV materialization.",
+  "lastUpdatedAt": "2026-10-05T23:58:00Z",
+  "nextExactAction": "Materialize exactly corrected VRM-258 source b5d63c20dcd0e30a9c3d9f5f8520c28e481d0718/tree c8462a25832427390d96c288d74b76bd9f30ecc5 once in DEV using the existing canonical lane. Require the corrected Julissa regression plus VRM-168, VRM-256 and VRM-257 regressions before build/deploy. No production. Then record exact artifact/runtime/Hosting/HR fingerprints and run same-artifact live reproof.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
