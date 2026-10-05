@@ -3,7 +3,7 @@
   "status": "ACTIVE_CLOSURE_VIEW",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
   "generatedFromLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "generatedAtEvidenceTime": "2026-10-04T15:34:04Z",
+  "generatedAtEvidenceTime": "2026-10-05T00:27:30Z",
   "controlHeadAtGeneration": "367877c61ba4a87261829aeec493e695605f5685",
   "productSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
   "productSourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
@@ -31,7 +31,7 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleTruthCount": 21,
   "moduleTruthAllMatch": true,
-  "findingCount": 245,
+  "findingCount": 246,
   "missingFindingIds": [],
   "duplicateFindingIds": [],
   "currentBlockingCount": 68,
@@ -42,7 +42,7 @@
     "NON_BLOCKING_DEFERRED_WITH_EXPLICIT_REASON": 3,
     "PRESERVED_PHASE_B_NOT_I3_AUTHORITY": 1,
     "SUPERSEDED_BY_VRM-229": 1,
-    "CONTROL_ONLY_FIXED": 7,
+    "CONTROL_ONLY_FIXED": 8,
     "SUPERSEDED_BY_VRM-234": 1,
     "SUPERSEDED_BY_VRM-236": 1,
     "PASS_DIAGNOSTIC": 2,
@@ -7940,6 +7940,46 @@
       "actionRemaining": "prove corrected VRM215 v2 on unchanged Run1112 materialization",
       "blocking": false,
       "terminalDisposition": null
+    },
+    {
+      "findingId": "VRM-246",
+      "moduleDomain": [
+        "release-composition-control"
+      ],
+      "severity": "P0_CONTROL",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "owner": [
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+      ],
+      "latestApprovedSource": null,
+      "latestLiveProof": {
+        "runNumber": 1139,
+        "runId": 37247549404,
+        "decision": "WORKFLOW_ACCEPTED_CANONICAL_AUTHORITY_PASS_VRM215_JOB_CREATED",
+        "artifactId": null,
+        "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
+      },
+      "successor": null,
+      "rawLedgerState": "CONTROL_ONLY_FIXED_WORKFLOW_ACCEPTED_RUN1139",
+      "realState": "CONTROL_ONLY_FIXED",
+      "evidence": {
+        "run1138": {
+          "runId": 37247368431,
+          "annotation": "Workflow file exceeds the maximum allowed size of 500 KB.",
+          "jobsCreated": 0
+        },
+        "fixCommit": "3956a8e9ec11f9d5de54e3ec2530dcf3333bdbee",
+        "run1139": {
+          "runId": 37247549404,
+          "canonicalAuthorityPass": true,
+          "vrm215JobCreated": true
+        },
+        "productChanged": false
+      },
+      "actionRemaining": "none",
+      "blocking": false,
+      "terminalDisposition": "CONTROL_ONLY_FIXED"
     }
   ]
 }
