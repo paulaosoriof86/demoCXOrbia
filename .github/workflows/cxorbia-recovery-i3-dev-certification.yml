@@ -7400,3 +7400,53 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
+
+  vrm249-reservations-read-model-source-reproof:
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM249_SOURCE_REPROOF_REQUIRED' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      VRM249_OUT: .tmp/i3-vrm249-source
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Exact two-owner source proof
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$VRM249_OUT"
+          PREDECESSOR="$(jq -r '.predecessorProductSourceSha' "$CANDIDATE_DESCRIPTOR")"
+          test "$PREDECESSOR" = "a03d61afe9b33d01647bb4d58542e87d1496d3d7"
+          test "$FOCAL_SOURCE" = "9d948a6a1b506b75b93cb1b023603cd6cd6d357f"
+          test "$FOCAL_TREE" = "638ab7ab63244286ff460205da441221d5957ef0"
+          test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
+          git merge-base --is-ancestor "$PREDECESSOR" "$FOCAL_SOURCE"
+          git diff --name-only "$PREDECESSOR" "$FOCAL_SOURCE" -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**' | sort > "$VRM249_OUT/product-diff.txt"
+          printf '%s\n' 'app/adapters/tya-protected-auth-hr-authority-bridge-v2.js' 'app/core/backend-firebase.js' | sort > "$VRM249_OUT/expected-diff.txt"
+          diff -u "$VRM249_OUT/expected-diff.txt" "$VRM249_OUT/product-diff.txt"
+          git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          node --check app/core/backend-firebase.js
+          node --check app/adapters/tya-protected-auth-hr-authority-bridge-v2.js
+          grep -Fq "async function loadReservationsForPrincipal(projectId, ctx)" app/core/backend-firebase.js
+          grep -Fq "reservations:(state&&state.reservations)||[]" app/core/backend-firebase.js
+          grep -Fq "CX.data.__protectedReservations = state.reservations || []" app/core/backend-firebase.js
+          grep -Fq "CX.data.__protectedReservations = safeState.reservations || []" app/core/backend-firebase.js
+          grep -Fq "reservations:clone(b.reservations||[])" app/adapters/tya-protected-auth-hr-authority-bridge-v2.js
+          jq -n -S --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg predecessor "$PREDECESSOR" '{decision:"PASS_VRM249_RESERVATIONS_READ_MODEL_SOURCE_REPROOF",sourceSha:$source,sourceTree:$tree,predecessorSourceSha:$predecessor,productFilesChanged:["app/core/backend-firebase.js","app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"],reservationsLoadedByAuthorizedBackend:true,reservationsPublishedInAuthorizedState:true,reservationsAppliedToProtectedReadModel:true,bridgeUsesAuthorizedReservationState:true,builds:0,deploys:0,production:false}' > "$VRM249_OUT/result.json"
+          cat "$VRM249_OUT/result.json"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-vrm249-source-${{ github.run_id }}
+          path: .tmp/i3-vrm249-source
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+
