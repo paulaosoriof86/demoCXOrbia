@@ -72,7 +72,7 @@
   "routes": [
     {
       "route": "midia",
-      "classification": "OPEN_BLOCKER",
+      "classification": "PASS_PROVEN",
       "owner": [
         "app/modules/midia.js"
       ],
@@ -117,7 +117,22 @@
         "runtimeRevision": "cxorbia-live-hr-dev-00258-9fj",
         "hostingVersion": "sites/cxorbia-backend-dev/versions/9da4b395d0d2099d",
         "sourceSha": "4f87cb0155162674d459b09e3725dd585c84709d"
-      }
+      },
+      "currentArtifactProof": {
+        "runId": 37250379451,
+        "runNumber": 1148,
+        "jobId": 111576677537,
+        "artifactId": 11319914278,
+        "artifactDigest": "sha256:3db3fcbdc10fd4648be84b6cae85f1ca0f198a00c4a33562471bc86e99957242",
+        "decision": "PASS_I3_MULTIMODULE_LIVE_SWEEP",
+        "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+        "sameArtifact": true,
+        "pageErrors": 0,
+        "writesDelta": 0,
+        "production": false
+      },
+      "remaining": "Run1148 proved exact same-artifact Admin route render/live readback on the unchanged Run1112 candidate. Existing provider/lifecycle source proofs remain authoritative for owned actions; no additional route-level readback blocker remains for this route."
     },
     {
       "route": "dashboard",
@@ -155,7 +170,7 @@
     },
     {
       "route": "visitas",
-      "classification": "OPEN_BLOCKER",
+      "classification": "PASS_PROVEN",
       "owner": [
         "app/modules/visitas.js",
         "app/adapters/cxorbia-cxdata-command-boundary-v1.js"
@@ -211,7 +226,22 @@
         "runtimeRevision": "cxorbia-live-hr-dev-00258-9fj",
         "hostingVersion": "sites/cxorbia-backend-dev/versions/9da4b395d0d2099d",
         "sourceSha": "4f87cb0155162674d459b09e3725dd585c84709d"
-      }
+      },
+      "currentArtifactProof": {
+        "runId": 37250379451,
+        "runNumber": 1148,
+        "jobId": 111576677537,
+        "artifactId": 11319914278,
+        "artifactDigest": "sha256:3db3fcbdc10fd4648be84b6cae85f1ca0f198a00c4a33562471bc86e99957242",
+        "decision": "PASS_I3_MULTIMODULE_LIVE_SWEEP",
+        "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+        "sameArtifact": true,
+        "pageErrors": 0,
+        "writesDelta": 0,
+        "production": false
+      },
+      "remaining": "Run1148 proved exact same-artifact Admin route render/live readback on the unchanged Run1112 candidate. Existing provider/lifecycle source proofs remain authoritative for owned actions; no additional route-level readback blocker remains for this route."
     },
     {
       "route": "postulaciones",
@@ -877,7 +907,7 @@
     },
     {
       "route": "cert",
-      "classification": "OPEN_BLOCKER",
+      "classification": "PASS_PROVEN",
       "owner": [
         "app/modules/cert.js",
         "app/core/backend-certifications.js",
@@ -934,7 +964,22 @@
         "runtimeRevision": "cxorbia-live-hr-dev-00258-9fj",
         "hostingVersion": "sites/cxorbia-backend-dev/versions/9da4b395d0d2099d",
         "sourceSha": "4f87cb0155162674d459b09e3725dd585c84709d"
-      }
+      },
+      "currentArtifactProof": {
+        "runId": 37250379451,
+        "runNumber": 1148,
+        "jobId": 111576677537,
+        "artifactId": 11319914278,
+        "artifactDigest": "sha256:3db3fcbdc10fd4648be84b6cae85f1ca0f198a00c4a33562471bc86e99957242",
+        "decision": "PASS_I3_MULTIMODULE_LIVE_SWEEP",
+        "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+        "sameArtifact": true,
+        "pageErrors": 0,
+        "writesDelta": 0,
+        "production": false
+      },
+      "remaining": "Run1148 proved exact same-artifact Admin route render/live readback on the unchanged Run1112 candidate. Existing provider/lifecycle source proofs remain authoritative for owned actions; no additional route-level readback blocker remains for this route."
     },
     {
       "route": "documentos",
@@ -1605,8 +1650,8 @@
     }
   ],
   "summary": {
-    "PASS_PROVEN": 5,
-    "OPEN_BLOCKER": 28,
+    "PASS_PROVEN": 8,
+    "OPEN_BLOCKER": 25,
     "NOT_APPLICABLE_WITH_REASON": 1,
     "omissions": 0
   },
@@ -1682,7 +1727,7 @@
   "humanVisualApprovalAllowed": false,
   "i4Allowed": false,
   "production": "DO_NOT_TOUCH",
-  "exactNextAction": "Run same-artifact live acceptance for current Phase A Admin/Shopper scope on Run1016 artifact; no rebuild/redeploy. Preserve unrelated OPEN_BLOCKER routes.",
+  "exactNextAction": "Admin Cluster A: prove Shoppers administrative lifecycle E2E with synthetic QA fixtures and cleanup; then Postulations and Reservations mutation/reload lifecycle. Run1148 route visibility does not close unexercised writes.",
   "visualPhaseAPriorityLock": {
     "status": "FROZEN",
     "addendum": "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-10-03_VISUAL_CHECKPOINT_PHASEA_PRIORITY_FROZEN.md",
@@ -1748,7 +1793,21 @@
       "app/modules/shoppers.js",
       "backend/runtime/cxorbia-shopper-command-provider-v1.mjs"
     ],
-    "rule": "No OPEN_BLOCKER was promoted to PASS without exact evidence."
+    "rule": "No OPEN_BLOCKER was promoted to PASS without exact evidence.",
+    "run1148": {
+      "runId": 37250379451,
+      "runNumber": 1148,
+      "jobId": 111576677537,
+      "artifactId": 11319914278,
+      "artifactDigest": "sha256:3db3fcbdc10fd4648be84b6cae85f1ca0f198a00c4a33562471bc86e99957242",
+      "decision": "PASS_I3_MULTIMODULE_LIVE_SWEEP",
+      "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+      "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+      "sameArtifact": true,
+      "pageErrors": 0,
+      "writesDelta": 0,
+      "production": false
+    }
   },
   "precomposition": {
     "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
