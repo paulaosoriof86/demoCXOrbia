@@ -31,24 +31,28 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleTruthCount": 21,
   "moduleTruthAllMatch": true,
-  "findingCount": 243,
+  "findingCount": 245,
   "missingFindingIds": [],
   "duplicateFindingIds": [],
-  "currentBlockingCount": 69,
+  "currentBlockingCount": 68,
   "undisposedCount": 83,
   "terminalDispositionCounts": {
-    "PASS_CURRENT_ARTIFACT": 140,
-    "LIVE_REPROOF_REQUIRED": 78,
+    "PASS_CURRENT_ARTIFACT": 142,
     "SUPERSEDED_BY_VRM-221": 1,
     "NON_BLOCKING_DEFERRED_WITH_EXPLICIT_REASON": 3,
     "PRESERVED_PHASE_B_NOT_I3_AUTHORITY": 1,
-    "REPROOF_REQUIRED": 6,
     "SUPERSEDED_BY_VRM-229": 1,
-    "CONTROL_ONLY_FIXED": 1
+    "CONTROL_ONLY_FIXED": 7,
+    "SUPERSEDED_BY_VRM-234": 1,
+    "SUPERSEDED_BY_VRM-236": 1,
+    "PASS_DIAGNOSTIC": 2,
+    "PASS_READINESS": 1,
+    "SUPERSEDED_BY_VRM-241": 1,
+    "SUPERSEDED_BY_VRM-243": 1
   },
   "nextCriticalSequence": [
-    "VRM-243_AUTHORITATIVE_ALIAS_VISIT_REMAP",
-    "VRM-215_POPULATION_REPROOF",
+    "VRM-215_POPULATION_REPROOF_V2",
+    "I3_MULTIMODULE_LIVE_SWEEP",
     "PAULA_VISUAL_ACCEPTANCE",
     "GATE20_GATE21_SAME_ARTIFACT"
   ],
@@ -6840,8 +6844,8 @@
         "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
       },
       "successor": null,
-      "rawLedgerState": "HOLD_RUN1124_RESIDUAL_ROOT_DIAGNOSTIC_REQUIRED",
-      "realState": "REPROOF_REQUIRED_AFTER_RESIDUAL_CLASSIFICATION",
+      "rawLedgerState": "CONTROL_FIX_PENDING_REPROOF_AFTER_VRM243_PASS",
+      "realState": "REPROOF_REQUIRED",
       "evidence": {
         "currentProductSource": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
         "currentProductTree": "b59da4c090d4639a136168656e7addd544f38e18",
@@ -6856,7 +6860,7 @@
           "sourceTree": null
         }
       },
-      "actionRemaining": "classify four live identity failures and historical visit residual semantics, then rerun population gate",
+      "actionRemaining": "run VRM215 v2 over all 378 auth-eligible shoppers while proving membershipUniverse=379, exactly one frozen review-only HR identity, all HR assignments resolved, and root visit authority 0 authoritative / 122 historical / 0 ambiguous",
       "blocking": true,
       "terminalDisposition": null
     },
@@ -7840,27 +7844,101 @@
       ],
       "latestApprovedSource": null,
       "latestLiveProof": {
-        "runNumber": 1129,
-        "runId": 37244032411,
-        "decision": "EXISTING_TRUSTED_LINK_BLOCKS_READJUDICATION",
-        "artifactId": 11318297645,
+        "runNumber": 1131,
+        "runId": 37245792720,
+        "decision": "PASS_VRM243_AUTHORITATIVE_ALIAS_VISIT_REMAP",
+        "artifactId": 11319310864,
         "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
         "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
       },
       "successor": null,
-      "rawLedgerState": "AUTHORITATIVE_VISIT_REMAP_REQUIRED",
-      "realState": "REPAIR_REQUIRED",
+      "rawLedgerState": "PASS_RUN1131",
+      "realState": "PASS_CURRENT_ARTIFACT",
       "evidence": {
-        "canonicalGroups": 18,
-        "aliases": 29,
-        "authoritativeVisitRows": 127,
+        "membershipUniverseAfter": 379,
+        "authoritativeAliasRowsBefore": 127,
+        "authoritativeAliasRowsAfter": 0,
+        "historicalAliasRowsPreserved": 122,
+        "ambiguousAuthorityGroups": 0,
+        "nonVisitOperationalAliasReferences": 0,
+        "writes": 127,
+        "hrWrites": 0,
+        "externalWrites": 0,
+        "productChanged": false
+      },
+      "actionRemaining": "none",
+      "blocking": false,
+      "terminalDisposition": "PASS_CURRENT_ARTIFACT"
+    },
+    {
+      "findingId": "VRM-244",
+      "moduleDomain": [
+        "shoppers-identity-profile-mi-visitas",
+        "release-composition-control"
+      ],
+      "severity": "P0_CONTROL",
+      "classification": "MAPPING_FAILURE",
+      "owner": [
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+      ],
+      "latestApprovedSource": null,
+      "latestLiveProof": {
+        "runNumber": 1131,
+        "runId": 37245792720,
+        "decision": "PASS_VRM243_AUTHORITATIVE_ALIAS_VISIT_REMAP",
+        "artifactId": 11319310864,
+        "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
+      },
+      "successor": null,
+      "rawLedgerState": "CONTROL_ONLY_FIXED_RUN1131",
+      "realState": "CONTROL_ONLY_FIXED",
+      "evidence": {
+        "invalidAssertion": ".operationalAliasReferences.count",
+        "correctedSemanticAssertion": true,
+        "productChanged": false
+      },
+      "actionRemaining": "none",
+      "blocking": false,
+      "terminalDisposition": "CONTROL_ONLY_FIXED"
+    },
+    {
+      "findingId": "VRM-245",
+      "moduleDomain": [
+        "shoppers-identity-profile-mi-visitas",
+        "release-composition-control"
+      ],
+      "severity": "P0_CONTROL",
+      "classification": "MAPPING_FAILURE",
+      "owner": [
+        "tools/qa/cxorbia-i3-vrm215-shopper-population-live-reproof.mjs",
+        "tools/qa/cxorbia-i3-vrm217-219-population-root-diagnostic.mjs",
+        ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+      ],
+      "latestApprovedSource": null,
+      "latestLiveProof": {
+        "runNumber": 1131,
+        "runId": 37245792720,
+        "decision": "PASS_VRM217_219_POPULATION_ROOT_DIAGNOSTIC",
+        "artifactId": 11319310864,
+        "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
+      },
+      "successor": null,
+      "rawLedgerState": "CONTROL_FIX_COMMITTED_REPROOF_REQUIRED",
+      "realState": "CONTROL_FIX_PENDING_REPROOF",
+      "evidence": {
+        "membershipUniverse": 379,
+        "reviewOnlyExpected": 1,
+        "authEligibleExpected": 378,
+        "authoritativeAliasRows": 0,
         "historicalAliasRows": 122,
         "ambiguousAuthorityGroups": 0,
         "nonVisitOperationalAliasReferences": 0,
         "productChanged": false
       },
-      "actionRemaining": "single-transaction authoritative visit owner remap + post-root diagnostic",
-      "blocking": true,
+      "actionRemaining": "prove corrected VRM215 v2 on unchanged Run1112 materialization",
+      "blocking": false,
       "terminalDisposition": null
     }
   ]
