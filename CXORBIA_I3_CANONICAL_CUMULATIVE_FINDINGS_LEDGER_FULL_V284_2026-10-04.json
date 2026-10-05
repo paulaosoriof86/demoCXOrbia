@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v261",
   "frozenAt": "2026-10-04T09:12:00Z",
-  "status": "HOLD_I3_VRM174_HISTORICAL_PAYMENT_REPROOF_REQUIRED",
+  "status": "HOLD_I3_VRM174_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "microblockId": "PRE-I4-LIVE-HR-STALE-CACHE-MAPPING-HOLD-AUGUST-CANONICAL-CORRECTION",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "170d09983d4696a02453a58f46b027d41c579132",
-    "sourceTree": "d20c7a52ea702d3c2c9d5235aa3c45d1a00419f6",
-    "predecessorSha": "b3cc541c38d80708e8ee7e2007611eb9126bc34a",
+    "sourceSha": "617ff043d77c4c3abdf20683abe05fe9d6a6e546",
+    "sourceTree": "fdea83d9baf760cd379bfdbcd1bad4281d894df5",
+    "predecessorSha": "170d09983d4696a02453a58f46b027d41c579132",
     "production": false,
-    "state": "VRM174_EXACT_DEV_MATERIALIZED_HISTORICAL_REPROOF_REQUIRED",
+    "state": "VRM174_LEGACY_MERGE_FIX_PENDING_EXACT_DEV_MATERIALIZATION",
     "proof": {
       "state": "PASS_VRM249_SOURCE_REPROOF_AND_EXACT_DEV_MATERIALIZATION",
       "accumulatedSourceProofs": [
@@ -480,9 +480,9 @@
     "currentSourceProof": {
       "findingId": "VRM-174",
       "state": "SOURCE_FIX_COMPOSED_PENDING_MATERIALIZATION",
-      "sourceSha": "170d09983d4696a02453a58f46b027d41c579132",
-      "sourceTree": "d20c7a52ea702d3c2c9d5235aa3c45d1a00419f6",
-      "predecessorSha": "b3cc541c38d80708e8ee7e2007611eb9126bc34a",
+      "sourceSha": "617ff043d77c4c3abdf20683abe05fe9d6a6e546",
+      "sourceTree": "fdea83d9baf760cd379bfdbcd1bad4281d894df5",
+      "predecessorSha": "170d09983d4696a02453a58f46b027d41c579132",
       "productFilesChanged": [
         "app/adapters/tya-canonical-finance-read-model-v2.js"
       ],
@@ -491,7 +491,8 @@
       ],
       "regressionAssertions": [
         "vrm174_duplicate_hrrow_exact_doc_payment_authority_preserved",
-        "vrm174_historical_paid_overlays_exact_amount_match"
+        "vrm174_historical_paid_overlays_exact_amount_match",
+        "vrm174_legacy_liquidation_cannot_overwrite_later_historical_paid_truth"
       ],
       "production": false
     },
@@ -517,28 +518,7 @@
       "scenarioDimensionsProven": true,
       "production": false
     },
-    "currentMaterialization": {
-      "state": "PASS_I3_VRM174_EXACT_DEV_MATERIALIZATION",
-      "runId": 37353369172,
-      "runNumber": 1230,
-      "controlHeadSha": "2857d253b03b598f831e6a36d0a1684c415c5a3a",
-      "jobId": 111909611587,
-      "artifactId": 11363791509,
-      "artifactDigest": "sha256:f0030788fb22cdb990d3544c838672f8ece8a6911dfd51588caf0f14b8b4b345",
-      "decision": "PASS_I3_VRM174_EXACT_DEV_MATERIALIZATION",
-      "sourceSha": "170d09983d4696a02453a58f46b027d41c579132",
-      "sourceTree": "d20c7a52ea702d3c2c9d5235aa3c45d1a00419f6",
-      "runtimeRevision": "cxorbia-live-hr-dev-00267-8k5",
-      "runtimeDigest": "sha256:e6d3377fbc675da73c3405e6ef2b4303adfe18301dc946d2b3a07f3235f42176",
-      "hostingVersion": "sites/cxorbia-backend-dev/versions/d45ec7c84f7813ee",
-      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791223726512000",
-      "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
-      "builds": 1,
-      "runtimeDeploys": 1,
-      "hostingDeploys": 1,
-      "storageRulesDeploys": 0,
-      "production": false
-    },
+    "currentMaterialization": null,
     "currentLiveReproof": null,
     "historicalEvidenceNotice": "Run1112 remains predecessor materialization evidence only; it does not certify the VRM-249 successor until exact source proof and one DEV rematerialization pass.",
     "treeSha": "638ab7ab63244286ff460205da441221d5957ef0"
@@ -9228,9 +9208,9 @@
       "classification": "MAPPING_FAILURE",
       "severity": "P0",
       "title": "Durable historical payment reconciliation is not projected into Finance/Mis Beneficios UI",
-      "state": "DEV_MATERIALIZED_HISTORICAL_PAYMENT_REPROOF_REQUIRED",
-      "rootCauseStatus": "PROVEN_RUN1229_SECOND_PRECEDENCE_LAYER",
-      "rootCause": "Run1229 proved the duplicate-row authority fix across all 2025 periods (June through December) with zero misses, then failed at January 2026. Those rows already carried historicalReconciliationConfirmed=true and a durable reconciliation source ref, but also had an earlier exact financialMatch whose paymentConfirmed remained false. exactProtectedFinancialMatch() returned financialMatch before applying the later durable historical paid marker, so exact amount authority incorrectly suppressed payment truth.",
+      "state": "LEGACY_MERGE_FIX_COMPOSED_DEV_MATERIALIZATION_REQUIRED",
+      "rootCauseStatus": "PROVEN_RUN1231_LEGACY_MERGE_PRECEDENCE",
+      "rootCause": "Run1231 used the exact Run1230 DEV fingerprints and again passed all 2025 historical periods with zero misses. January 2026 still rendered historicalReconciliationConfirmed=true but paymentConfirmed=false. Source tracing proved derive() now returns the durable historical payment truth correctly; the later CX.liq.forProject() merge used Object.assign({}, fresh, prior, ...), allowing a legacy exact liquidation prior to overwrite the fresh canonical payment fields. Thus amount authority was preserved at the cost of incorrectly reverting payment truth.",
       "owners": [
         "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
         "app/adapters/tya-canonical-finance-read-model-v2.js",
@@ -9266,9 +9246,9 @@
           "projectedGap": 562
         }
       },
-      "correction": "Preserve exact financialMatch as the amount authority, but when the same authoritative durable visit has a later historical paid marker, overlay payment truth onto that exact amount match: paymentConfirmed=true, estado=pagada, confirmed payment state and durable reconciliation source ref. Do not change amounts, infer payment without the historical marker, or fabricate external bank confirmation.",
-      "sourceSuccessorSha": "170d09983d4696a02453a58f46b027d41c579132",
-      "sourceSuccessorTree": "d20c7a52ea702d3c2c9d5235aa3c45d1a00419f6",
+      "correction": "Keep legacy exact liquidation fields authoritative for monetary detail, but after the merge re-apply only the later durable historical payment truth from the fresh canonical projection when fresh.paymentConfirmed===true and fresh.historicalReconciliationConfirmed===true. Override only payment state/status/source references and paid presentation; never alter authoritative amounts or infer payment without the durable historical marker.",
+      "sourceSuccessorSha": "617ff043d77c4c3abdf20683abe05fe9d6a6e546",
+      "sourceSuccessorTree": "fdea83d9baf760cd379bfdbcd1bad4281d894df5",
       "sourceReproofDecision": "PASS_I3_PHASEA_REJECTED_CHECKPOINT_SOURCE_PROOF",
       "devMaterializationRunId": 37073947232,
       "runtimeRevision": "cxorbia-live-hr-dev-00249-pqh",
@@ -9329,11 +9309,11 @@
       },
       "correctionPackage": {
         "productOwner": "app/adapters/tya-canonical-finance-read-model-v2.js",
-        "productBlob": "3585430a04b42598ba1a16419c44eebab9ba3d9b",
+        "productBlob": "4311ff686de2c8e18fc7177d95926afe72ca7ccf",
         "regressionOwner": "tools/qa/tya-c6-canonical-finance-read-model-gate.mjs",
-        "regressionBlob": "19fec7d8e00cc341e465f871298d9fa82730cb3a",
-        "sourceSha": "170d09983d4696a02453a58f46b027d41c579132",
-        "sourceTree": "d20c7a52ea702d3c2c9d5235aa3c45d1a00419f6",
+        "regressionBlob": "32bb722941ecc7df09fd99f21b5652ede53bcc43",
+        "sourceSha": "617ff043d77c4c3abdf20683abe05fe9d6a6e546",
+        "sourceTree": "fdea83d9baf760cd379bfdbcd1bad4281d894df5",
         "productChanged": true,
         "production": false
       },
@@ -9412,6 +9392,35 @@
           "paymentSourceRef": "internal:historical_reconciliation_scope_v1",
           "paymentConfirmed": false,
           "paymentState": "pending_source_confirmation",
+          "financialSourceStatus": "exact_reconciled_source_safe"
+        },
+        "writes": 0,
+        "hrWrites": 0,
+        "externalWrites": 0,
+        "builds": 0,
+        "deploys": 0,
+        "production": false
+      },
+      "run1231": {
+        "runId": 37355543765,
+        "runNumber": 1231,
+        "jobId": 111916991660,
+        "artifactId": 11364317960,
+        "artifactDigest": "sha256:84033fa203b607a2f5a7d9db11fed032a850545a3eac438a31a83860a707d682",
+        "exactArtifactRun": 1230,
+        "sourceSha": "170d09983d4696a02453a58f46b027d41c579132",
+        "sourceTree": "d20c7a52ea702d3c2c9d5235aa3c45d1a00419f6",
+        "stableHrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+        "authorityPeriodCount": 17,
+        "durableHistoricalPaid": 562,
+        "passedHistoricalPeriods": 7,
+        "firstFailedPeriodId": "cinepolis-2026-01",
+        "observed": {
+          "historicalReconciliationConfirmed": true,
+          "paymentSourceRef": "internal:historical_reconciliation_scope_v1",
+          "paymentConfirmed": false,
+          "paymentState": "pending_source_confirmation",
+          "estado": "conciliada_pendiente_pago",
           "financialSourceStatus": "exact_reconciled_source_safe"
         },
         "writes": 0,
@@ -16975,7 +16984,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Run read-only VRM174 historical payment proof against exact Run1230 DEV artifact; require all 562 durable paid visits projected paid on the same stable HR revision, zero writes, zero rebuilds and no production.",
+  "exactNextAction": "Materialize the VRM174 legacy-merge successor once in DEV through the same canonical lane, then repeat the historical payment proof on that exact artifact; no production.",
   "supersedesGitBlob": "820da41b786054cb8cd23e89827e1f7afbcdd3b3",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -20555,8 +20564,8 @@
     "humanAcceptance": "FAIL",
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
-  "lastUpdatedAt": "2026-10-05T18:22:00Z",
-  "nextExactAction": "Run read-only VRM174 historical payment proof against exact Run1230 DEV artifact; require all 562 durable paid visits projected paid on the same stable HR revision, zero writes, zero rebuilds and no production.",
+  "lastUpdatedAt": "2026-10-05T18:31:00Z",
+  "nextExactAction": "Materialize the VRM174 legacy-merge successor once in DEV through the same canonical lane, then repeat the historical payment proof on that exact artifact; no production.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
