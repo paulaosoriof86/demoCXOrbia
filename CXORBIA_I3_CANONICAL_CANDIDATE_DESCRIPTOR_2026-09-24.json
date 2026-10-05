@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM249_SOURCE_REPROOF_REQUIRED",
+  "status": "HOLD_I3_VRM249_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run VRM-249 source reproof on the exact two-owner successor. If PASS, switch only to HOLD_VRM249_DEV_MATERIALIZATION_REQUIRED and materialize this exact source once.",
+  "exactNextAction": "Materialize exact VRM-249 successor once to DEV through the canonical materializer; then run same-artifact Reservations lifecycle reproof before any further product mutation.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -882,7 +882,16 @@
     "hrWrites": 0,
     "production": false
   },
-  "pendingMaterialization": null,
+  "pendingMaterialization": {
+    "findingId": "VRM-249",
+    "sourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
+    "sourceTree": "638ab7ab63244286ff460205da441221d5957ef0",
+    "requiredDecision": "PASS_VRM249_EXACT_DEV_MATERIALIZATION",
+    "buildsExpected": 1,
+    "runtimeDeploysExpected": 1,
+    "hostingDeploysExpected": 1,
+    "production": false
+  },
   "lastVrm080Proof": {
     "runId": 36333245670,
     "runNumber": 525,
@@ -3522,23 +3531,19 @@
   "shopperIdentityGovernanceLockPath": "CXORBIA_I3_SHOPPER_IDENTITY_GOVERNANCE_LOCK_2026-10-04.json",
   "queuedBlocker": "HOLD_VRM249_DEV_MATERIALIZATION_REQUIRED",
   "currentSourceProof": {
-    "runId": 37208053790,
-    "runNumber": 1111,
-    "controlHeadSha": "e384ebf8c3aae1a31f5e3e9bf41e91b411214001",
-    "jobId": 111453346269,
-    "artifactId": 11305612608,
-    "artifactDigest": "sha256:cf3f6be2394b78f1b4d8e979057c72093b36efcfb7d5d510ab40cec6f4a198b8",
-    "decision": "PASS_VRM227_SOURCE_REPROOF",
-    "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
-    "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
-    "shopperProviderTests": {
-      "total": 39,
-      "pass": 39,
-      "fail": 0,
-      "reviewClosure": true,
-      "idempotentReplay": true
-    },
-    "frontendContract": "PASS_VRM154_156_FRONTEND_SOURCE_CONTRACT",
+    "runId": 37303340531,
+    "runNumber": 1174,
+    "controlHeadSha": "2515956d5ca2f6f3898e0115c15de643405da166",
+    "jobId": 111741132091,
+    "artifactId": 11342097353,
+    "artifactDigest": "sha256:c258cdfbac7bff9ee68613fe3785debc006547df5af33f8b746312116f8a4cb1",
+    "decision": "PASS_VRM249_RESERVATIONS_READ_MODEL_SOURCE_REPROOF",
+    "sourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
+    "sourceTree": "638ab7ab63244286ff460205da441221d5957ef0",
+    "productFilesChanged": [
+      "app/core/backend-firebase.js",
+      "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+    ],
     "builds": 0,
     "deploys": 0,
     "production": false
@@ -4035,7 +4040,7 @@
     "production": false
   },
   "vrm249": {
-    "state": "SOURCE_FIX_COMPOSED_REPROOF_REQUIRED",
+    "state": "SOURCE_REPROOF_PASS_DEV_MATERIALIZATION_REQUIRED",
     "classification": "MAPPING_FAILURE",
     "runId": 37253163627,
     "runNumber": 1162,
@@ -4045,10 +4050,28 @@
       "app/core/backend-firebase.js",
       "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
     ],
-    "productMutationAllowed": true,
+    "productMutationAllowed": false,
     "production": false,
     "sourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
     "sourceTree": "638ab7ab63244286ff460205da441221d5957ef0",
-    "predecessorSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7"
+    "predecessorSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+    "sourceProof": {
+      "runId": 37303340531,
+      "runNumber": 1174,
+      "controlHeadSha": "2515956d5ca2f6f3898e0115c15de643405da166",
+      "jobId": 111741132091,
+      "artifactId": 11342097353,
+      "artifactDigest": "sha256:c258cdfbac7bff9ee68613fe3785debc006547df5af33f8b746312116f8a4cb1",
+      "decision": "PASS_VRM249_RESERVATIONS_READ_MODEL_SOURCE_REPROOF",
+      "sourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
+      "sourceTree": "638ab7ab63244286ff460205da441221d5957ef0",
+      "productFilesChanged": [
+        "app/core/backend-firebase.js",
+        "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+      ],
+      "builds": 0,
+      "deploys": 0,
+      "production": false
+    }
   }
 }
