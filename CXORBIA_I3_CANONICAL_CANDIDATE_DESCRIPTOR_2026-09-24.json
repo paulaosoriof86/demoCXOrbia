@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM243_AUTHORITATIVE_ALIAS_VISIT_REMAP_REQUIRED",
+  "status": "HOLD_VRM215_SHOPPER_POPULATION_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,8 +13,8 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM243_AUTHORITATIVE_ALIAS_VISIT_REMAP_REQUIRED",
-  "nextFindingId": "VRM-244",
+  "activeBlocker": "VRM215_SHOPPER_POPULATION_REPROOF_REQUIRED",
+  "nextFindingId": "VRM-246",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Reproduce current root state, remap exactly 127 authoritative alias visit rows under existing trusted identity authority, then prove authoritativeAliasRows=0 with historical alias rows preserved.",
+  "exactNextAction": "Run corrected VRM215 across the complete current auth-eligible shopper population on unchanged Run1112 artifact, while proving exactly one frozen HR review-only identity remains excluded from authentication but included in HR assignment integrity; then run same-artifact multimodule sweep.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3540,7 +3540,7 @@
     "interpretation": "Control-only freeze/readback. No action lane matched the fail-closed precomposition status."
   },
   "shopperIdentityGovernanceLockPath": "CXORBIA_I3_SHOPPER_IDENTITY_GOVERNANCE_LOCK_2026-10-04.json",
-  "queuedBlocker": "VRM215_SHOPPER_POPULATION_REPROOF",
+  "queuedBlocker": "I3_MULTIMODULE_LIVE_SWEEP",
   "currentSourceProof": {
     "runId": 37208053790,
     "runNumber": 1111,
@@ -3972,6 +3972,47 @@
     },
     "hrWrites": 0,
     "externalWrites": 0,
+    "production": false
+  },
+  "lastVrm243Pass": {
+    "state": "PASS_VRM243_AUTHORITATIVE_ALIAS_VISIT_REMAP",
+    "runId": 37245792720,
+    "runNumber": 1131,
+    "jobId": 111563355465,
+    "artifactId": 11319310864,
+    "artifactDigest": "sha256:f1f4dfabf9eaa3ed7044db68adf96c0f4f36d1d0d9f6dfaec60d7fcf69a9fb8e",
+    "controlHeadSha": "e2b486a3a149f1c20e396c44444d30a31547d5ec",
+    "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+    "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
+    "authoritativeAliasRowsBefore": 127,
+    "authoritativeAliasRowsAfter": 0,
+    "historicalAliasRowsPreserved": 122,
+    "ambiguousAuthorityGroups": 0,
+    "nonVisitOperationalAliasReferences": 0,
+    "activeMembershipsAfter": 379,
+    "reviewOnlyCredentialHoldsAfter": 1,
+    "hrWrites": 0,
+    "externalWrites": 0,
+    "production": false
+  },
+  "vrm244": {
+    "state": "CONTROL_ONLY_FIXED_RUN1131",
+    "classification": "MAPPING_FAILURE",
+    "severity": "P0_CONTROL",
+    "rootCause": "VRM243 workflow asserted removed operationalAliasReferences.count instead of live five-counter-plus-rows schema.",
+    "correctionCommit": "e2b486a3a149f1c20e396c44444d30a31547d5ec",
+    "proofRunId": 37245792720,
+    "proofRunNumber": 1131,
+    "productChanged": false,
+    "production": false
+  },
+  "vrm245": {
+    "state": "CONTROL_FIX_IN_PROGRESS",
+    "classification": "MAPPING_FAILURE",
+    "severity": "P0_CONTROL",
+    "rootCause": "VRM215 activeMember population gate includes a frozen review-only HR identity whose authoritative external human name is unavailable. VRM043/VRM239 explicitly require DO_NOT_INVENT_HUMAN_IDENTITY and EXCLUDE_FROM_AUTH_ELIGIBLE_POPULATION_PRESERVE_REVIEW_ONLY.",
+    "requiredSemantics": "membership universe must include review-only identity for HR/assignment integrity, while auth-eligible population excludes only exact HR-managed SHOPPER_CREDENTIAL_NAME_INCOMPLETE cases under current HR revision; cardinality must remain exactly one for the frozen revision.",
+    "productChanged": false,
     "production": false
   }
 }
