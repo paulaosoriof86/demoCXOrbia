@@ -15735,7 +15735,7 @@
       "title": "VRM174 historical payment QA used bare firebase global inside Playwright evaluate",
       "state": "CONTROL_FIX_COMPOSED_REPROOF_REQUIRED",
       "firstObservedAt": "RUN1215_2026-10-05",
-      "rootCauseStatus": "PROVEN_CONTROL_ENVIRONMENT_DEFECT",
+      "rootCauseStatus": "PROVEN_CONTROL_AUTH_STABILIZATION_DEFECT",
       "rootCause": "The read-only QA reached the browser sign-in step and failed before period inspection because Playwright evaluate referenced firebase.auth() instead of window.firebase.auth(). The page had loaded the Firebase compat SDK; the failure was the test harness global reference, not Finance.",
       "evidence": {
         "run1215": {
@@ -15751,6 +15751,21 @@
           "commitSha": "c4c810aef5ec4f5fabd48cc6ee1d763d30f5d9b6",
           "path": "tools/qa/cxorbia-i3-vrm174-historical-payment-live.mjs",
           "replacement": "window.firebase.auth()",
+          "productChanged": false,
+          "production": false
+        },
+        "run1220": {
+          "runId": 37335598661,
+          "runNumber": 1220,
+          "jobId": 111849560214,
+          "artifactId": 11355519064,
+          "artifactDigest": "sha256:2241c4cfcca9b5e2abb581cb0058d36ffb956d1dcb0d8305d84acc95a6fc006d",
+          "error": "window.firebase unavailable during transient navigation/auth race",
+          "durableHistoricalPaid": 562
+        },
+        "stabilizationCorrection": {
+          "commitSha": "14e864b71ade98c329a3dc45ec50d97e00770049",
+          "strategy": "Reuse proven retrying browser auth helper; wait for SDK per attempt and re-enter base URL on transient navigation",
           "productChanged": false,
           "production": false
         }
@@ -16721,7 +16736,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Re-run VRM174 read-only historical payment projection on unchanged Run1176 after VRM254 control fix.",
+  "exactNextAction": "Re-run VRM174 historical payment proof after completing VRM254 browser auth stabilization; same Run1176 artifact, no writes.",
   "supersedesGitBlob": "820da41b786054cb8cd23e89827e1f7afbcdd3b3",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -20326,8 +20341,8 @@
     "humanAcceptance": "FAIL",
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
-  "lastUpdatedAt": "2026-10-05T15:45:00Z",
-  "nextExactAction": "Re-run VRM174 read-only historical payment projection on unchanged Run1176 after VRM254 control fix.",
+  "lastUpdatedAt": "2026-10-05T15:50:00Z",
+  "nextExactAction": "Re-run VRM174 historical payment proof after completing VRM254 browser auth stabilization; same Run1176 artifact, no writes.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
