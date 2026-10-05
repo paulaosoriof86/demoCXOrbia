@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v261",
   "frozenAt": "2026-10-04T09:12:00Z",
-  "status": "HOLD_I3_VRM252_CONTROL_REPROOF_REQUIRED",
+  "status": "HOLD_I3_VRM253_CONTROL_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "microblockId": "PRE-I4-LIVE-HR-STALE-CACHE-MAPPING-HOLD-AUGUST-CANONICAL-CORRECTION",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -15564,6 +15564,50 @@
       "productChanged": false,
       "production": false,
       "terminalDisposition": null
+    },
+    "VRM-253": {
+      "id": "VRM-253",
+      "classification": "MAPPING_FAILURE",
+      "severity": "P0_CONTROL",
+      "title": "Reservation QA persisted canonical period label using technical periodId",
+      "state": "CONTROL_FIX_COMPOSED_REPROOF_REQUIRED",
+      "firstObservedAt": "RUN1199_2026-10-05",
+      "rootCauseStatus": "PROVEN_CONTROL_MAPPING_DEFECT",
+      "rootCause": "The QA fixture created a durable reservation with periodId='cinepolis-2026-10' and periodo='cinepolis-2026-10'. The canonical reservations guard intentionally filters periodId against the technical id and periodo against the canonical label '2026-10'. Run1199 proved the row existed in __protectedReservations with matching projectId/periodId but CX.reservas.list() correctly excluded the malformed periodo.",
+      "evidence": {
+        "run1199": {
+          "runId": 37331790177,
+          "runNumber": 1199,
+          "jobId": 111836581093,
+          "artifactId": 11354338795,
+          "artifactDigest": "sha256:93c2a84d773eba615ec0b600508285754f25bfa8399e0b58a368e4f5369db7c7",
+          "code": "RSV_MODULE_FILTER_MISS"
+        },
+        "protectedRow": {
+          "periodId": "cinepolis-2026-10",
+          "projectId": "cinepolis",
+          "periodo": "cinepolis-2026-10"
+        },
+        "realRowControl": {
+          "periodId": "cinepolis-2026-09",
+          "projectId": "cinepolis",
+          "periodo": "2026-09"
+        },
+        "guardContract": "app/adapters/tya-canonical-reservations-guard-v2.js records() requires periodId technical id and periodo canonical YYYY-MM label",
+        "correction": {
+          "commitSha": "d4a5d6414c95a9dd420c6d3e35e8b07f8c15ae1d",
+          "qaPath": "tools/qa/cxorbia-i3-admin-cluster-a-postulations-live.mjs",
+          "productChanged": false,
+          "production": false
+        }
+      },
+      "expected": "Use rVisit.periodKey/rVisit.periodo or strip the cinepolis- technical prefix for the synthetic periodo label, then re-run the unchanged Run1176 artifact once.",
+      "owner": [
+        "tools/qa/cxorbia-i3-admin-cluster-a-postulations-live.mjs"
+      ],
+      "productChanged": false,
+      "production": false,
+      "terminalDisposition": null
     }
   },
   "latestEvidenceOverrides": {
@@ -16233,14 +16277,15 @@
       "VRM-249",
       "VRM-250",
       "VRM-251",
-      "VRM-252"
+      "VRM-252",
+      "VRM-253"
     ],
-    "findingCount": 252,
-    "expectedCurrentRange": "VRM-001..VRM-252",
-    "nextFindingId": "VRM-253",
+    "findingCount": 253,
+    "expectedCurrentRange": "VRM-001..VRM-253",
+    "nextFindingId": "VRM-254",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_I3_VRM252_CONTROL_REPROOF_REQUIRED",
+    "terminalState": "HOLD_I3_VRM253_CONTROL_REPROOF_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -16521,7 +16566,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Re-run the exact bounded Postulations + Reservations lifecycle on unchanged Run1176 DEV after VRM252 period-scope correction. No product mutation and no rebuild.",
+  "exactNextAction": "Re-run unchanged Run1176 Postulations + Reservations lifecycle with corrected canonical periodo label; if PASS, close VRM249/252/253 and advance directly to finance focal reproof.",
   "supersedesGitBlob": "820da41b786054cb8cd23e89827e1f7afbcdd3b3",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -16550,7 +16595,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-253",
+  "nextFindingId": "VRM-254",
   "lastControlFailure": {
     "runId": 37251758888,
     "runNumber": 1157,
@@ -20126,8 +20171,8 @@
     "humanAcceptance": "FAIL",
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
-  "lastUpdatedAt": "2026-10-05T11:45:00Z",
-  "nextExactAction": "Re-run the exact bounded Postulations + Reservations lifecycle on unchanged Run1176 DEV after VRM252 period-scope correction. No product mutation and no rebuild.",
+  "lastUpdatedAt": "2026-10-05T15:23:00Z",
+  "nextExactAction": "Re-run unchanged Run1176 Postulations + Reservations lifecycle with corrected canonical periodo label; if PASS, close VRM249/252/253 and advance directly to finance focal reproof.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
