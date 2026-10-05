@@ -3,8 +3,8 @@
   "status": "ACTIVE_CLOSURE_VIEW",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
   "generatedFromLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "generatedAtEvidenceTime": "2026-10-05T00:55:00Z",
-  "controlHeadAtGeneration": "0643490abd67670b5fe37356f15f28202c22f073",
+  "generatedAtEvidenceTime": "2026-10-05T01:12:00Z",
+  "controlHeadAtGeneration": "dc3b0b20d639b9f9d7de6ed46a0894ef5ba6f7c9",
   "productSourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
   "productSourceTree": "b59da4c090d4639a136168656e7addd544f38e18",
   "exactDevArtifact": {
@@ -31,11 +31,11 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleTruthCount": 21,
   "moduleTruthAllMatch": true,
-  "findingCount": 246,
+  "findingCount": 247,
   "missingFindingIds": [],
   "duplicateFindingIds": [],
   "currentBlockingCount": 67,
-  "undisposedCount": 81,
+  "undisposedCount": 82,
   "terminalDispositionCounts": {
     "PASS_CURRENT_ARTIFACT": 143,
     "SUPERSEDED_BY_VRM-221": 1,
@@ -51,6 +51,7 @@
     "SUPERSEDED_BY_VRM-243": 1
   },
   "nextCriticalSequence": [
+    "VRM-247_CONTROL_POINTER_REPROOF",
     "I3_MULTIMODULE_LIVE_SWEEP",
     "PAULA_VISUAL_ACCEPTANCE",
     "GATE20_GATE21_SAME_ARTIFACT"
@@ -7975,6 +7976,38 @@
       "actionRemaining": "none",
       "blocking": false,
       "terminalDisposition": "CONTROL_ONLY_FIXED"
+    },
+    {
+      "findingId": "VRM-247",
+      "moduleDomain": [
+        "release-composition-control"
+      ],
+      "severity": "P0_CONTROL",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "owner": [
+        "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+        "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json"
+      ],
+      "latestApprovedSource": null,
+      "latestLiveProof": {
+        "runNumber": 1145,
+        "runId": 37250274061,
+        "decision": "FAIL_CANONICAL_AUTHORITY_LEDGER_BLOB_DRIFT",
+        "sourceSha": "a03d61afe9b33d01647bb4d58542e87d1496d3d7",
+        "sourceTree": "b59da4c090d4639a136168656e7addd544f38e18"
+      },
+      "successor": null,
+      "rawLedgerState": "CONTROL_POINTER_FIX_REQUIRED",
+      "realState": "CONTROL_FIX_PENDING_REPROOF",
+      "evidence": {
+        "currentLedgerBlob": "551e00fe11a7709ceeabc427098fe6b3c9969c06",
+        "staleDescriptorLedgerBlob": "11fb308680ae3fd08d8cc7c59ade3311289d94ed",
+        "productChanged": false,
+        "production": false
+      },
+      "actionRemaining": "bind descriptor to final ledger blob and rerun canonical authority + same-artifact multimodule sweep",
+      "blocking": false,
+      "terminalDisposition": null
     }
   ]
 }
