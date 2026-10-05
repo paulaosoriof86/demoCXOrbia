@@ -54,7 +54,6 @@
     "FIXED_PROVEN": 2
   },
   "nextCriticalSequence": [
-    "VRM-258_SOURCE_PROOF",
     "VRM-258_ONE_DEV_MATERIALIZATION",
     "VRM-258_SAME_ARTIFACT_LIVE_REPROOF"
   ],
@@ -8603,16 +8602,33 @@
         "sourceSha": "dc06e5c1ab3896b88a5b66627ae551b40eef000b",
         "sourceTree": "4a27b1a642cbd425b9909ba057760431368464cf"
       },
-      "rawLedgerState": "FIXED_SOURCE_PROOF_REQUIRED",
-      "realState": "SOURCE_FIX_PENDING_PROOF",
+      "rawLedgerState": "FIXED_SOURCE_PROVEN_RUN1246_DEV_MATERIALIZATION_REQUIRED",
+      "realState": "SOURCE_PROVEN_DEV_MATERIALIZATION_REQUIRED",
       "evidence": {
         "liveHrFloresId": "shopper_gt_0c198c1055",
         "liveHrIllescasId": "shopper_gt_86254c4228",
         "staleDurableRow": "AGOSTO 26!29"
       },
-      "actionRemaining": "SOURCE_PROOF_THEN_ONE_DEV_MATERIALIZATION_THEN_SAME_ARTIFACT_LIVE_REPROOF",
+      "actionRemaining": "ONE_DEV_MATERIALIZATION_THEN_SAME_ARTIFACT_LIVE_REPROOF",
       "blocking": true,
-      "terminalDisposition": null
+      "terminalDisposition": null,
+      "sourceProof": {
+        "runId": 37389965175,
+        "runNumber": 1246,
+        "controlHeadSha": "ab00aead131f265a4e4248c2100dd452cf8c1dff",
+        "jobId": 112032509598,
+        "artifactId": 11381445301,
+        "artifactDigest": "sha256:bfd41e21f9bf120ccd45db472c85c0ae9edaf8c9e076d65204b2eb6cb588ab84",
+        "decision": "PASS_VRM258_SOURCE_REPROOF",
+        "sourceSha": "dc06e5c1ab3896b88a5b66627ae551b40eef000b",
+        "sourceTree": "4a27b1a642cbd425b9909ba057760431368464cf",
+        "regression": "vrm258_distinct_live_hr_identities_resist_stale_durable_crosswalk",
+        "vrm168Preserved": true,
+        "builds": 0,
+        "deploys": 0,
+        "writes": 0,
+        "production": false
+      }
     }
   ],
   "exactDevArtifactRole": "CURRENT_VRM249_SUCCESSOR",

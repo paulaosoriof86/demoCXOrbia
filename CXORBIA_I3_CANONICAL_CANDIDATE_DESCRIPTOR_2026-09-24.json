@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM258_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_VRM258_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,7 +8,7 @@
   "productTreeAuthority": "4a27b1a642cbd425b9909ba057760431368464cf",
   "predecessorProductSourceSha": "f971ea18556e7be3ede0a26195e7977e4e706dfe",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "4b87928a54222e733d048cde960e084798c74a4f",
+  "findingsLedgerExpectedGitBlob": "dc554b243a10bcac7d84c13f8f340f9d2d091a04",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run exact source-only proof for VRM-258 on source dc06e5c1ab3896b88a5b66627ae551b40eef000b. Prove the canonical composer keeps Julissa Flores and Julissa Illescas as distinct live HR identities, preserves VRM-168 behavior, performs zero builds/deploys/writes, then allow exactly one DEV materialization.",
+  "exactNextAction": "Perform exactly one DEV materialization of VRM-258 source dc06e5c1ab3896b88a5b66627ae551b40eef000b/tree 4a27b1a642cbd425b9909ba057760431368464cf using the existing canonical materialization lane. No additional source changes, no production, then record exact artifact/runtime/Hosting/HR fingerprints before same-artifact live reproof.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -4566,14 +4566,31 @@
     "sourceSha": "dc06e5c1ab3896b88a5b66627ae551b40eef000b",
     "sourceTree": "4a27b1a642cbd425b9909ba057760431368464cf",
     "predecessorSha": "f971ea18556e7be3ede0a26195e7977e4e706dfe",
-    "sourceProofRequired": true,
-    "materializationAllowed": false,
+    "sourceProofRequired": false,
+    "materializationAllowed": true,
     "run1245": {
       "runId": 37389203710,
       "runNumber": 1245,
       "jobId": 112030047172,
       "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305"
     },
-    "production": false
+    "production": false,
+    "sourceProof": {
+      "runId": 37389965175,
+      "runNumber": 1246,
+      "controlHeadSha": "ab00aead131f265a4e4248c2100dd452cf8c1dff",
+      "jobId": 112032509598,
+      "artifactId": 11381445301,
+      "artifactDigest": "sha256:bfd41e21f9bf120ccd45db472c85c0ae9edaf8c9e076d65204b2eb6cb588ab84",
+      "decision": "PASS_VRM258_SOURCE_REPROOF",
+      "sourceSha": "dc06e5c1ab3896b88a5b66627ae551b40eef000b",
+      "sourceTree": "4a27b1a642cbd425b9909ba057760431368464cf",
+      "regression": "vrm258_distinct_live_hr_identities_resist_stale_durable_crosswalk",
+      "vrm168Preserved": true,
+      "builds": 0,
+      "deploys": 0,
+      "writes": 0,
+      "production": false
+    }
   }
 }

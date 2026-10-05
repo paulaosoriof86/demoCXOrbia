@@ -18,7 +18,7 @@
     "sourceTree": "4a27b1a642cbd425b9909ba057760431368464cf",
     "predecessorSha": "f971ea18556e7be3ede0a26195e7977e4e706dfe",
     "production": false,
-    "state": "VRM258_SOURCE_FIX_PENDING_SOURCE_PROOF",
+    "state": "VRM258_SOURCE_PROVEN_DEV_MATERIALIZATION_REQUIRED",
     "proof": {
       "state": "PASS_VRM249_SOURCE_REPROOF_AND_EXACT_DEV_MATERIALIZATION",
       "accumulatedSourceProofs": [
@@ -16277,7 +16277,7 @@
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Admin canonical read model collapses Julissa Illescas into Julissa Flores through stale durable historical visit crosswalk",
-      "state": "FIXED_SOURCE_PROOF_REQUIRED",
+      "state": "FIXED_SOURCE_PROVEN_RUN1246_DEV_MATERIALIZATION_REQUIRED",
       "firstObservedAt": "RUN1243_2026-10-05",
       "rootCauseStatus": "PROVEN_RUN1245",
       "rootCause": "app/adapters/tya-cumulative-read-model-v2.js created live->canonical shopper relations from exact-matched durable historical visits even when live HR already exposed both the live shopperId and the stale durable shopperId as two distinct authoritative HR identities. On AGOSTO 26!29, live HR owner shopper_gt_86254c4228 (Julissa Illescas) was paired with a stale durable owner shopper_gt_0c198c1055 (Julissa Flores), causing identityMap[86254c4228]=0c198c1055 and collapsing both Admin shopper rows.",
@@ -16361,6 +16361,23 @@
           ],
           "behavior": "Suppress visit-derived identity crosswalk when liveShopperId and durableShopperId are different and both are already distinct live HR shopper identities; preserve VRM-168 transient-token behavior and fail-closed identity semantics.",
           "regression": "vrm258_distinct_live_hr_identities_resist_stale_durable_crosswalk"
+        },
+        "sourceProof": {
+          "runId": 37389965175,
+          "runNumber": 1246,
+          "controlHeadSha": "ab00aead131f265a4e4248c2100dd452cf8c1dff",
+          "jobId": 112032509598,
+          "artifactId": 11381445301,
+          "artifactDigest": "sha256:bfd41e21f9bf120ccd45db472c85c0ae9edaf8c9e076d65204b2eb6cb588ab84",
+          "decision": "PASS_VRM258_SOURCE_REPROOF",
+          "sourceSha": "dc06e5c1ab3896b88a5b66627ae551b40eef000b",
+          "sourceTree": "4a27b1a642cbd425b9909ba057760431368464cf",
+          "regression": "vrm258_distinct_live_hr_identities_resist_stale_durable_crosswalk",
+          "vrm168Preserved": true,
+          "builds": 0,
+          "deploys": 0,
+          "writes": 0,
+          "production": false
         }
       },
       "productChanged": true,
@@ -17048,7 +17065,7 @@
     "nextFindingId": "VRM-259",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_VRM258_SOURCE_PROOF_REQUIRED",
+    "terminalState": "HOLD_VRM258_DEV_MATERIALIZATION_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -17329,7 +17346,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Run exact source-only proof for VRM-258 on source dc06e5c1ab3896b88a5b66627ae551b40eef000b. Prove the canonical composer keeps Julissa Flores and Julissa Illescas as distinct live HR identities, preserves VRM-168 behavior, performs zero builds/deploys/writes, then allow exactly one DEV materialization.",
+  "exactNextAction": "Perform exactly one DEV materialization of VRM-258 source dc06e5c1ab3896b88a5b66627ae551b40eef000b/tree 4a27b1a642cbd425b9909ba057760431368464cf using the existing canonical materialization lane. No additional source changes, no production, then record exact artifact/runtime/Hosting/HR fingerprints before same-artifact live reproof.",
   "supersedesGitBlob": "820da41b786054cb8cd23e89827e1f7afbcdd3b3",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -20917,8 +20934,8 @@
     "humanAcceptance": "FAIL",
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
-  "lastUpdatedAt": "2026-10-05T23:36:30Z",
-  "nextExactAction": "Run exact source-only proof for VRM-258 on source dc06e5c1ab3896b88a5b66627ae551b40eef000b. Prove the canonical composer keeps Julissa Flores and Julissa Illescas as distinct live HR identities, preserves VRM-168 behavior, performs zero builds/deploys/writes, then allow exactly one DEV materialization.",
+  "lastUpdatedAt": "2026-10-05T23:42:30Z",
+  "nextExactAction": "Perform exactly one DEV materialization of VRM-258 source dc06e5c1ab3896b88a5b66627ae551b40eef000b/tree 4a27b1a642cbd425b9909ba057760431368464cf using the existing canonical materialization lane. No additional source changes, no production, then record exact artifact/runtime/Hosting/HR fingerprints before same-artifact live reproof.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
