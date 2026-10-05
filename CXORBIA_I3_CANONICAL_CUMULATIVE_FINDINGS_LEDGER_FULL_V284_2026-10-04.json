@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v261",
   "frozenAt": "2026-10-04T09:12:00Z",
-  "status": "HOLD_I3_VRM253_CONTROL_REPROOF_REQUIRED",
+  "status": "HOLD_I3_FINANCE_FOCAL_CONTROL_PREP_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "microblockId": "PRE-I4-LIVE-HR-STALE-CACHE-MAPPING-HOLD-AUGUST-CANONICAL-CORRECTION",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -15277,9 +15277,9 @@
       "classification": "MAPPING_FAILURE",
       "severity": "P0",
       "title": "Durable reservations are omitted from the authorized Firebase read model and remain stale in Admin after provider ACK",
-      "state": "RUN1186_REPRODUCED_REFRESH_RECONCILIATION_DIAGNOSTIC_REQUIRED",
+      "state": "PASS_RUN1204_CURRENT_ARTIFACT",
       "firstObservedAt": "RUN1162_2026-10-05",
-      "rootCauseStatus": "PARTIALLY_PROVEN_READ_MODEL_REFRESH_RACE_HYPOTHESIS_PENDING_DIAGNOSTIC",
+      "rootCauseStatus": "PROVEN_FIXED_AND_LIVE_REPROVED",
       "rootCause": "Run1162 proved the reservation provider lifecycle reaches durable Firestore through create/approve/reassign, but Admin fails at RSV_ADMIN_READ_MODEL_BEFORE_DELETE. app/core/backend-firebase.js loads and publishes projects/periods/shoppers/visits/posts but omits reservations from loadProjectData, loadTenantData, publishAuthorizedState and applyData. app/adapters/tya-protected-auth-hr-authority-bridge-v2.js captureAuthorizedBackend() then sources reservations from stale CX.data.__protectedReservations instead of window.CX_BACKEND_AUTHORIZED_STATE.reservations. The reservation module correctly renders only CX.data.__protectedReservations, so the durable row cannot enter the Admin read model after refresh.",
       "evidence": {
         "run1162": {
@@ -15330,7 +15330,7 @@
       "productMutationAllowed": false,
       "productChanged": true,
       "production": false,
-      "terminalDisposition": null,
+      "terminalDisposition": "PASS_CURRENT_ARTIFACT",
       "successor": null,
       "correction": {
         "sourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
@@ -15430,7 +15430,32 @@
           "backend-firebase source now loads/publishes/applies reservations and HR protectedState also includes reservations; therefore timing between Firebase refresh and HR recomposition must be proven before another product fix."
         ],
         "productMutationAuthorized": false
-      }
+      },
+      "run1204": {
+        "runId": 37332823277,
+        "runNumber": 1204,
+        "jobId": 111840079765,
+        "artifactId": 11355715072,
+        "artifactDigest": "sha256:25d484e2d071dba6440f4bda2f01baf837a4244e51de908fdd4844d5029a680d",
+        "decision": "PASS_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE",
+        "reservationsDecision": "PASS_I3_ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE",
+        "sourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
+        "materializationRunNumber": 1176,
+        "providerAck": true,
+        "idempotentReplay": true,
+        "durableReadback": true,
+        "beforeDeleteVisible": true,
+        "afterDeleteVisible": false,
+        "reloadNoReappearance": true,
+        "visitInvariantUnchanged": true,
+        "qaResidue": 0,
+        "hrWrites": 0,
+        "externalWrites": 0,
+        "builds": 0,
+        "deploys": 0,
+        "production": false
+      },
+      "blocking": false
     },
     "VRM-250": {
       "id": "VRM-250",
@@ -15526,7 +15551,7 @@
       "classification": "MAPPING_FAILURE",
       "severity": "P0_CONTROL",
       "title": "Reservation lifecycle QA passed projectId into a period-scoped reservation list API",
-      "state": "CONTROL_FIX_COMPOSED_REPROOF_REQUIRED",
+      "state": "CONTROL_ONLY_FIXED_RUN1204_PASS",
       "firstObservedAt": "RUN1186_FORENSIC_READBACK_2026-10-05",
       "rootCauseStatus": "PROVEN_CONTROL_MAPPING_DEFECT",
       "rootCause": "The bounded lifecycle called CX.reservas.list(program) with program='cinepolis'. CX.reservas.list(pid) is period-scoped and filters reservations by periodId. The QA therefore excluded the durable reservation even when the authorized read model contained it, producing a false RSV_ADMIN_READ_MODEL_BEFORE_DELETE.",
@@ -15563,14 +15588,39 @@
       ],
       "productChanged": false,
       "production": false,
-      "terminalDisposition": null
+      "terminalDisposition": "CONTROL_ONLY_FIXED",
+      "run1204": {
+        "runId": 37332823277,
+        "runNumber": 1204,
+        "jobId": 111840079765,
+        "artifactId": 11355715072,
+        "artifactDigest": "sha256:25d484e2d071dba6440f4bda2f01baf837a4244e51de908fdd4844d5029a680d",
+        "decision": "PASS_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE",
+        "reservationsDecision": "PASS_I3_ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE",
+        "sourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
+        "materializationRunNumber": 1176,
+        "providerAck": true,
+        "idempotentReplay": true,
+        "durableReadback": true,
+        "beforeDeleteVisible": true,
+        "afterDeleteVisible": false,
+        "reloadNoReappearance": true,
+        "visitInvariantUnchanged": true,
+        "qaResidue": 0,
+        "hrWrites": 0,
+        "externalWrites": 0,
+        "builds": 0,
+        "deploys": 0,
+        "production": false
+      },
+      "blocking": false
     },
     "VRM-253": {
       "id": "VRM-253",
       "classification": "MAPPING_FAILURE",
       "severity": "P0_CONTROL",
       "title": "Reservation QA persisted canonical period label using technical periodId",
-      "state": "CONTROL_FIX_COMPOSED_REPROOF_REQUIRED",
+      "state": "CONTROL_ONLY_FIXED_RUN1204_PASS",
       "firstObservedAt": "RUN1199_2026-10-05",
       "rootCauseStatus": "PROVEN_CONTROL_MAPPING_DEFECT",
       "rootCause": "The QA fixture created a durable reservation with periodId='cinepolis-2026-10' and periodo='cinepolis-2026-10'. The canonical reservations guard intentionally filters periodId against the technical id and periodo against the canonical label '2026-10'. Run1199 proved the row existed in __protectedReservations with matching projectId/periodId but CX.reservas.list() correctly excluded the malformed periodo.",
@@ -15607,7 +15657,32 @@
       ],
       "productChanged": false,
       "production": false,
-      "terminalDisposition": null
+      "terminalDisposition": "CONTROL_ONLY_FIXED",
+      "run1204": {
+        "runId": 37332823277,
+        "runNumber": 1204,
+        "jobId": 111840079765,
+        "artifactId": 11355715072,
+        "artifactDigest": "sha256:25d484e2d071dba6440f4bda2f01baf837a4244e51de908fdd4844d5029a680d",
+        "decision": "PASS_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE",
+        "reservationsDecision": "PASS_I3_ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE",
+        "sourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
+        "materializationRunNumber": 1176,
+        "providerAck": true,
+        "idempotentReplay": true,
+        "durableReadback": true,
+        "beforeDeleteVisible": true,
+        "afterDeleteVisible": false,
+        "reloadNoReappearance": true,
+        "visitInvariantUnchanged": true,
+        "qaResidue": 0,
+        "hrWrites": 0,
+        "externalWrites": 0,
+        "builds": 0,
+        "deploys": 0,
+        "production": false
+      },
+      "blocking": false
     }
   },
   "latestEvidenceOverrides": {
@@ -16285,7 +16360,7 @@
     "nextFindingId": "VRM-254",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_I3_VRM253_CONTROL_REPROOF_REQUIRED",
+    "terminalState": "HOLD_I3_FINANCE_FOCAL_CONTROL_PREP_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -16566,7 +16641,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Re-run unchanged Run1176 Postulations + Reservations lifecycle with corrected canonical periodo label; if PASS, close VRM249/252/253 and advance directly to finance focal reproof.",
+  "exactNextAction": "Prepare and execute existing focal finance QA on the exact current Run1176 DEV artifact; recover approved finance authority, do not rebuild finance.",
   "supersedesGitBlob": "820da41b786054cb8cd23e89827e1f7afbcdd3b3",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -19980,7 +20055,7 @@
     "hostingDeploys": 0,
     "production": false
   },
-  "activeBlocker": "VRM-249",
+  "activeBlocker": "VRM-174",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -20171,8 +20246,8 @@
     "humanAcceptance": "FAIL",
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
-  "lastUpdatedAt": "2026-10-05T15:23:00Z",
-  "nextExactAction": "Re-run unchanged Run1176 Postulations + Reservations lifecycle with corrected canonical periodo label; if PASS, close VRM249/252/253 and advance directly to finance focal reproof.",
+  "lastUpdatedAt": "2026-10-05T15:30:00Z",
+  "nextExactAction": "Prepare and execute existing focal finance QA on the exact current Run1176 DEV artifact; recover approved finance authority, do not rebuild finance.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
@@ -21022,6 +21097,30 @@
     "cleanupActiveSyntheticRemaining": 0,
     "hrWrites": 0,
     "externalWrites": 0,
+    "production": false
+  },
+  "reservationsTerminalReceipt": {
+    "runId": 37332823277,
+    "runNumber": 1204,
+    "jobId": 111840079765,
+    "artifactId": 11355715072,
+    "artifactDigest": "sha256:25d484e2d071dba6440f4bda2f01baf837a4244e51de908fdd4844d5029a680d",
+    "decision": "PASS_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE",
+    "reservationsDecision": "PASS_I3_ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE",
+    "sourceSha": "9d948a6a1b506b75b93cb1b023603cd6cd6d357f",
+    "materializationRunNumber": 1176,
+    "providerAck": true,
+    "idempotentReplay": true,
+    "durableReadback": true,
+    "beforeDeleteVisible": true,
+    "afterDeleteVisible": false,
+    "reloadNoReappearance": true,
+    "visitInvariantUnchanged": true,
+    "qaResidue": 0,
+    "hrWrites": 0,
+    "externalWrites": 0,
+    "builds": 0,
+    "deploys": 0,
     "production": false
   }
 }
