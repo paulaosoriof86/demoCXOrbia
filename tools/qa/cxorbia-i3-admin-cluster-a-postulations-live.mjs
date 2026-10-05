@@ -147,8 +147,22 @@ try{
   const rReassign=rbase('reservation.status.update',RSV_ID,rPeriodId,'qa-rsv-reassign-'+RUN,2,{status:'asignada',shopperId:shopperB,shopper:str(profileById.get(shopperB)?.nombre||'QA Shopper B')});
   const rr1=await send(adminToken,rReassign);need(rr1.ok&&rr1.body?.providerAck===true,'PERSISTENCE_FAILURE','RSV_REASSIGN_ACK',{rr1});const rr2=await send(adminToken,rReassign);need(rr2.ok&&rr2.body?.idempotentReplay===true&&Number(rr2.body?.providerWrites||0)===0,'PERSISTENCE_FAILURE','RSV_REASSIGN_REPLAY',{rr2});
   rsnap=await project.collection('reservations').doc(RSV_ID).get();rrow=rsnap.data()||{};need(rsnap.exists&&str(rrow.status||rrow.estado)==='asignada'&&Number(rrow.version)===3&&str(rrow.shopperId)===shopperB,'PERSISTENCE_FAILURE','RSV_REASSIGN_READBACK',{rrow});
-  await page.evaluate(()=>window.CX?.backend?.refresh?.()).catch(()=>{});await page.evaluate(()=>window.CX?.router?.nav?.('reservas'));await page.waitForTimeout(750);
-  const rBefore=await page.evaluate(({id,periodId})=>{const rows=typeof window.CX?.reservas?.list==='function'?window.CX.reservas.list(periodId):(Array.isArray(window.CX?.data?.__protectedReservations)?window.CX.data.__protectedReservations:[]);return rows.some(r=>String(r?.id||r?.reservationId||'')===id);},{id:RSV_ID,periodId:rPeriodId});need(rBefore,'FUNCTIONAL_DEFECT','RSV_ADMIN_READ_MODEL_BEFORE_DELETE');
+  const reservationLayer=async()=>page.evaluate(({id,periodId})=>{const has=a=>Array.isArray(a)&&a.some(r=>String(r?.id||r?.reservationId||'')===id),auth=window.CX_BACKEND_AUTHORIZED_STATE||{},prot=window.CX?.data?.__protectedReservations||[],list=typeof window.CX?.reservas?.list==='function'?window.CX.reservas.list(periodId):prot;return {authorized:has(auth.reservations),authorizedCount:Array.isArray(auth.reservations)?auth.reservations.length:-1,protected:has(prot),protectedCount:Array.isArray(prot)?prot.length:-1,list:has(list),listCount:Array.isArray(list)?list.length:-1,currentProjectId:String(window.CX?.data?.currentProjectId||''),currentPeriodId:String(window.CX?.data?.currentPeriodId||''),authorityApplied:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,authorityProtectedReservations:Number(window.CX_PROTECTED_AUTH_HR_AUTHORITY?.protectedReservations??-1)};},{id:RSV_ID,periodId:rPeriodId});
+  await page.evaluate(()=>window.CX?.backend?.refresh?.()).catch(()=>{});
+  const immediate=await reservationLayer();
+  await page.waitForFunction(()=>window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,{timeout:30000}).catch(()=>{});
+  const reconciled=await reservationLayer();
+  let explicit=null;
+  if(!reconciled.list&&typeof await page.evaluate(()=>typeof window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY)==='string'){
+    await page.evaluate(()=>window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('qa_reservation_layer_diagnostic')).catch(()=>{});
+    explicit=await reservationLayer();
+  }
+  result.reservations.layerDiagnostic={immediate,reconciled,explicit};
+  await page.evaluate(()=>window.CX?.router?.nav?.('reservas'));await page.waitForTimeout(350);
+  const finalLayer=explicit||reconciled;
+  if(!finalLayer.authorized)need(false,'MAPPING_FAILURE','RSV_AUTHORIZED_STATE_MISSING',{layerDiagnostic:result.reservations.layerDiagnostic});
+  if(!finalLayer.protected)need(false,'MAPPING_FAILURE','RSV_PROTECTED_STATE_MISSING',{layerDiagnostic:result.reservations.layerDiagnostic});
+  need(finalLayer.list,'FUNCTIONAL_DEFECT','RSV_MODULE_FILTER_MISS',{layerDiagnostic:result.reservations.layerDiagnostic});
   const rDelete=rbase('reservation.delete',RSV_ID,rPeriodId,'qa-rsv-delete-'+RUN,3,{reason:'QA bounded lifecycle cleanup'});const rd1=await send(adminToken,rDelete);need(rd1.ok&&rd1.body?.providerAck===true,'PERSISTENCE_FAILURE','RSV_DELETE_ACK',{rd1});const rd2=await send(adminToken,rDelete);need(rd2.ok&&rd2.body?.idempotentReplay===true&&Number(rd2.body?.providerWrites||0)===0,'PERSISTENCE_FAILURE','RSV_DELETE_REPLAY',{rd2});
   rsnap=await project.collection('reservations').doc(RSV_ID).get();need(!rsnap.exists,'PERSISTENCE_FAILURE','RSV_DELETE_READBACK');
   await page.reload({waitUntil:'domcontentloaded',timeout:90000});await page.waitForFunction(({TENANT})=>window.CX?.backendAuth?.context?.()?.authenticated===true&&window.CX?.backendAuth?.context?.()?.tenantId===TENANT&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,{TENANT},{timeout:120000});await page.evaluate(()=>window.CX?.router?.nav?.('reservas'));await page.waitForTimeout(750);
