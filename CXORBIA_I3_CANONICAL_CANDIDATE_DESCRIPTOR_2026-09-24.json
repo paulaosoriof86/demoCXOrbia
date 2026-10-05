@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM174_HISTORICAL_PAYMENT_CONTROL_PREP_REQUIRED",
+  "status": "HOLD_I3_VRM174_HISTORICAL_PAYMENT_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Prepare read-only historical payment projection QA against exact current Run1176 DEV; compare durable confirmed-payment visits to canonical browser liquidations per period.",
+  "exactNextAction": "Run read-only VRM174 historical payment projection proof on exact Run1176 DEV. Require every durable confirmed historical payment to project as paid in canonical liquidations and show paid labeling in Mis Beneficios, with zero writes.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
