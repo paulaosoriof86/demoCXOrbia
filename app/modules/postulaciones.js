@@ -14,6 +14,11 @@ CX.module('postulaciones', ({data,ui})=>{
      pida explícitamente "Ver históricas". */
   const activePosts=posts.filter(x=>periodIdOf(x)===data.currentPeriodId&&x?._archived!==true&&x?.active!==false&&x?.postulationLifecycle!=='transitioned_to_assignment');
   const c=(s)=>activePosts.filter(x=>x.estado===s).length;
+  /* VRM-259: Postulaciones is the canonical owner of the visible pending count while this
+     route is rendered. The rail can have been built before the final protected-HR composition,
+     so synchronize its badge after this render commits instead of leaving a stale bootstrap count. */
+  const syncPendingRailBadge=()=>{const badge=document.querySelector('#nav-postulaciones .n-badge');if(!badge)return;const n=c('pendiente');badge.textContent=n?String(n):'';badge.style.display=n?'':'none';};
+  setTimeout(syncPendingRailBadge,0);
   const reprog=activePosts.filter(x=>x.reprog);
   const operationalAssignments=data.visitas().filter(v=>{const f=data.visitFacets?data.visitFacets(v):null;return f?f.assigned===true&&f.cancelled!==true:!!v.shopperId;});
   const agendadas=operationalAssignments.filter(v=>{const f=data.visitFacets?data.visitFacets(v):null;return f?f.scheduled===true&&f.realized!==true:!!(v.agendada&&!v.realizada);});
