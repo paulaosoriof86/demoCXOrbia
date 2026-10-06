@@ -36,8 +36,8 @@
   "findingCount": 259,
   "missingFindingIds": [],
   "duplicateFindingIds": [],
-  "currentBlockingCount": 56,
-  "undisposedCount": 71,
+  "currentBlockingCount": 55,
+  "undisposedCount": 70,
   "terminalDispositionCounts": {
     "PASS_CURRENT_ARTIFACT": 156,
     "SUPERSEDED_BY_VRM-221": 1,
@@ -51,10 +51,13 @@
     "PASS_READINESS": 1,
     "SUPERSEDED_BY_VRM-241": 1,
     "SUPERSEDED_BY_VRM-243": 1,
-    "FIXED_PROVEN": 3
+    "FIXED_PROVEN": 4
   },
   "nextCriticalSequence": [
-    "VRM-259_SAME_ARTIFACT_LIVE_REPROOF"
+    "PAULA_VISUAL_CHECKPOINT",
+    "GATE20",
+    "GATE21",
+    "I3_GO"
   ],
   "production": "DO_NOT_TOUCH",
   "entries": [
@@ -8641,28 +8644,70 @@
         "state": "SOURCE_FIX_PENDING_SOURCE_PROOF"
       },
       "latestLiveProof": {
-        "runId": 37392371743,
-        "runNumber": 1258,
-        "jobId": 112040287022,
-        "failure": "MAPPING_FAILURE:POSTULATIONS_COUNT_DESYNC",
-        "pending": 0,
-        "badgeText": "10",
-        "assignments": 13,
+        "runId": 37409319996,
+        "runNumber": 1261,
+        "controlHeadSha": "7678334b4618e7376bd8c9422007c30217982102",
+        "jobId": 112093987709,
+        "artifactId": 11388371981,
+        "artifactDigest": "sha256:f3ee45e28cee37ace752b25233a8eddf1805bdb4ae8e3f93c12c401917c88fcb",
+        "decision": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+        "sourceSha": "be4e54e92285cef24f4b4c5442383a8076df6664",
+        "sourceTree": "53061fa8d5faae8f0213840ff9d12d4a710508a3",
+        "materializationRunId": 37406898804,
+        "materializationRunNumber": 1260,
+        "materializationArtifactId": 11387038399,
+        "materializationArtifactDigest": "sha256:6f0cd8f9986c3759c922209026396ade8a8ae0f705c7057ac6667bdf95ffbea6",
+        "runtimeRevision": "cxorbia-live-hr-dev-00273-6p9",
+        "runtimeDigest": "sha256:0d4ee89f75e759fa96e0f6e2a706aac3c7b73b7162e93da30653b47a0ee7bfc1",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/f7f4a6a5488bae2c",
+        "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791255818473000",
+        "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+        "julissa": {
+          "canonicalShopperId": "shopper_gt_0c198c1055",
+          "floresVisible": true,
+          "illescasVisible": false,
+          "aliasMapped": true,
+          "ownVisits": 9,
+          "currentVisits": 1,
+          "activeVisits": 1,
+          "branch": "C. Miraflores"
+        },
+        "postulations": {
+          "pending": 0,
+          "assignments": 13,
+          "badgeText": ""
+        },
+        "population": {
+          "activeShopperMemberships": 379,
+          "profiles": 571,
+          "currentHrVisits": 44,
+          "assignedHrVisits": 13,
+          "unresolvedMemberships": 0,
+          "duplicateActivePrincipals": 0,
+          "unresolvedAssignedVisits": 0,
+          "duplicateHrVisitKeys": 0
+        },
+        "writes": {
+          "auth": 0,
+          "hr": 0,
+          "provider": 0
+        },
+        "deploys": 0,
         "production": false
       },
       "successor": {
         "sourceSha": "be4e54e92285cef24f4b4c5442383a8076df6664",
         "sourceTree": "53061fa8d5faae8f0213840ff9d12d4a710508a3"
       },
-      "rawLedgerState": "CORRECTED_DEV_MATERIALIZED_RUN1260_PENDING_SAME_ARTIFACT_LIVE_REPROOF",
-      "realState": "DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
+      "rawLedgerState": "FIXED_PROVEN_RUN1261_SAME_ARTIFACT_PASS",
+      "realState": "FIXED_PROVEN",
       "evidence": {
         "canonicalPending": 0,
         "staleRailBadge": 10
       },
-      "actionRemaining": "SAME_ARTIFACT_LIVE_REPROOF",
-      "blocking": true,
-      "terminalDisposition": null,
+      "actionRemaining": null,
+      "blocking": false,
+      "terminalDisposition": "FIXED_PROVEN",
       "sourceProof": {
         "runId": 37406787253,
         "runNumber": 1259,
@@ -8765,11 +8810,59 @@
     }
   },
   "controlTransition": {
-    "state": "HOLD_I3_SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF_REQUIRED",
-    "expectedParentSha": "009776ccf6fd498951bebf2fd516403b236673e1",
-    "productSourceChanged": false,
-    "findingCreated": false,
-    "vrm256Consumed": false,
+    "state": "HOLD_HUMAN_VISUAL_CHECKPOINT_REQUIRED",
+    "run1261": {
+      "runId": 37409319996,
+      "runNumber": 1261,
+      "controlHeadSha": "7678334b4618e7376bd8c9422007c30217982102",
+      "jobId": 112093987709,
+      "artifactId": 11388371981,
+      "artifactDigest": "sha256:f3ee45e28cee37ace752b25233a8eddf1805bdb4ae8e3f93c12c401917c88fcb",
+      "decision": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+      "sourceSha": "be4e54e92285cef24f4b4c5442383a8076df6664",
+      "sourceTree": "53061fa8d5faae8f0213840ff9d12d4a710508a3",
+      "materializationRunId": 37406898804,
+      "materializationRunNumber": 1260,
+      "materializationArtifactId": 11387038399,
+      "materializationArtifactDigest": "sha256:6f0cd8f9986c3759c922209026396ade8a8ae0f705c7057ac6667bdf95ffbea6",
+      "runtimeRevision": "cxorbia-live-hr-dev-00273-6p9",
+      "runtimeDigest": "sha256:0d4ee89f75e759fa96e0f6e2a706aac3c7b73b7162e93da30653b47a0ee7bfc1",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/f7f4a6a5488bae2c",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791255818473000",
+      "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+      "julissa": {
+        "canonicalShopperId": "shopper_gt_0c198c1055",
+        "floresVisible": true,
+        "illescasVisible": false,
+        "aliasMapped": true,
+        "ownVisits": 9,
+        "currentVisits": 1,
+        "activeVisits": 1,
+        "branch": "C. Miraflores"
+      },
+      "postulations": {
+        "pending": 0,
+        "assignments": 13,
+        "badgeText": ""
+      },
+      "population": {
+        "activeShopperMemberships": 379,
+        "profiles": 571,
+        "currentHrVisits": 44,
+        "assignedHrVisits": 13,
+        "unresolvedMemberships": 0,
+        "duplicateActivePrincipals": 0,
+        "unresolvedAssignedVisits": 0,
+        "duplicateHrVisitKeys": 0
+      },
+      "writes": {
+        "auth": 0,
+        "hr": 0,
+        "provider": 0
+      },
+      "deploys": 0,
+      "production": false
+    },
     "production": false
   }
 }

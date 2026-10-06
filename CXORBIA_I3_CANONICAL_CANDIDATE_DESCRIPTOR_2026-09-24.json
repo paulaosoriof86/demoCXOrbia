@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF_REQUIRED",
+  "status": "HOLD_HUMAN_VISUAL_CHECKPOINT_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "53061fa8d5faae8f0213840ff9d12d4a710508a3",
   "predecessorProductSourceSha": "b5d63c20dcd0e30a9c3d9f5f8520c28e481d0718",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "b8ba2a4225dc77bb036b92e860385b5302036adc",
+  "findingsLedgerExpectedGitBlob": "bfe98caaf9ac758279eb2facee2e1fd015a9281a",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-259",
+  "activeBlocker": "HUMAN_VISUAL_CHECKPOINT_REQUIRED",
   "nextFindingId": "VRM-260",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run the existing phasea-representative-same-artifact-live-reproof against exact Run1260 DEV materialization. Verify Julissa canonical identity, Julissa/Priscila/Paula shopper flows, Postulaciones pending count and rail badge equality, historical payment, assignments and population checks. Zero rebuilds, zero deploys, zero writes, no production.",
+  "exactNextAction": "Paula visual checkpoint on exact Run1260 DEV materialization / Run1261 same-artifact PASS. No product mutation unless Paula reports a reproducible visual/functional defect. After explicit visual acceptance, run Gate20 then Gate21 and close I3 if both PASS. Production remains DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3419,7 +3419,14 @@
     "broadHumanReviewAllowed": false,
     "production": false
   },
-  "visualCheckpointScope": null,
+  "visualCheckpointScope": {
+    "state": "PENDING_PAULA_VISUAL_REVIEW",
+    "sourceSha": "be4e54e92285cef24f4b4c5442383a8076df6664",
+    "sourceTree": "53061fa8d5faae8f0213840ff9d12d4a710508a3",
+    "materializationRunId": 37406898804,
+    "liveReproofRunId": 37409319996,
+    "devUrl": "https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV"
+  },
   "currentRemediationPackage": {
     "sourceSha": "4b1c0859cc5b43928c083748d00fdc606b32d63e",
     "sourceTree": "ab33d43d483faef9fbec5daaadfa454247df469a",
@@ -4714,6 +4721,59 @@
       "scenarioDimensionsProven": true,
       "production": false
     },
-    "sameArtifactLiveReproofRequired": true
+    "sameArtifactLiveReproofRequired": true,
+    "liveReproof": {
+      "runId": 37409319996,
+      "runNumber": 1261,
+      "controlHeadSha": "7678334b4618e7376bd8c9422007c30217982102",
+      "jobId": 112093987709,
+      "artifactId": 11388371981,
+      "artifactDigest": "sha256:f3ee45e28cee37ace752b25233a8eddf1805bdb4ae8e3f93c12c401917c88fcb",
+      "decision": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+      "sourceSha": "be4e54e92285cef24f4b4c5442383a8076df6664",
+      "sourceTree": "53061fa8d5faae8f0213840ff9d12d4a710508a3",
+      "materializationRunId": 37406898804,
+      "materializationRunNumber": 1260,
+      "materializationArtifactId": 11387038399,
+      "materializationArtifactDigest": "sha256:6f0cd8f9986c3759c922209026396ade8a8ae0f705c7057ac6667bdf95ffbea6",
+      "runtimeRevision": "cxorbia-live-hr-dev-00273-6p9",
+      "runtimeDigest": "sha256:0d4ee89f75e759fa96e0f6e2a706aac3c7b73b7162e93da30653b47a0ee7bfc1",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/f7f4a6a5488bae2c",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791255818473000",
+      "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+      "julissa": {
+        "canonicalShopperId": "shopper_gt_0c198c1055",
+        "floresVisible": true,
+        "illescasVisible": false,
+        "aliasMapped": true,
+        "ownVisits": 9,
+        "currentVisits": 1,
+        "activeVisits": 1,
+        "branch": "C. Miraflores"
+      },
+      "postulations": {
+        "pending": 0,
+        "assignments": 13,
+        "badgeText": ""
+      },
+      "population": {
+        "activeShopperMemberships": 379,
+        "profiles": 571,
+        "currentHrVisits": 44,
+        "assignedHrVisits": 13,
+        "unresolvedMemberships": 0,
+        "duplicateActivePrincipals": 0,
+        "unresolvedAssignedVisits": 0,
+        "duplicateHrVisitKeys": 0
+      },
+      "writes": {
+        "auth": 0,
+        "hr": 0,
+        "provider": 0
+      },
+      "deploys": 0,
+      "production": false
+    },
+    "state": "FIXED_PROVEN_RUN1261_SAME_ARTIFACT_PASS"
   }
 }
