@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_PHASE_A_COMPLETION_EXECUTION_LOCK_ACTIVE",
+  "status": "HOLD_B1_INCREMENTAL_HUMAN_ACCEPTANCE_ACTIVE",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "HUMAN_VISUAL_REJECTION_CUMULATIVE_APPROVED_FRONTEND_RECOVERY",
+  "activeBlocker": "B1_IDENTITY_VISIBLE_CANONICAL_PLUS_MIDIA_SHELL",
   "nextFindingId": "VRM-260",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "BUILD_ONE_CUMULATIVE_PRODUCT_SOURCE_SUCCESSOR_FROM_APPROVED_MODULE_AUTHORITIES_PLUS_LATER_P0_PROVEN_DELTAS__SOURCE_PROOF_BEFORE_DEV",
+  "exactNextAction": "B1_SOURCE_FIX_THEN_SOURCE_PROOF_DEV_E2E_TINYFISH_PAULA_PASS",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -4805,6 +4805,16 @@
     "humanCheckpoint": "FAIL",
     "vrm260Consumed": false,
     "nextExactAction": "I3-B_ONE_CUMULATIVE_PRODUCT_SOURCE_SUCCESSOR__SOURCE_PROOF_BEFORE_DEV",
+    "production": "DO_NOT_TOUCH"
+  },
+  "incrementalHumanAcceptance": {
+    "status": "FROZEN_ACTIVE",
+    "addendumPath": "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-10-06_INCREMENTAL_HUMAN_MODULE_ACCEPTANCE_FROZEN.md",
+    "machineLockPath": "CXORBIA_I3_INCREMENTAL_HUMAN_MODULE_ACCEPTANCE_LOCK_2026-10-06.json",
+    "tinyfishRequiredBeforePaula": true,
+    "paulaPassRequiredPerBlock": true,
+    "activeBlock": "B1",
+    "finalCertifiedArtifactCount": 1,
     "production": "DO_NOT_TOUCH"
   }
 }
