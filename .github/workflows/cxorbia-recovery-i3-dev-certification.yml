@@ -6612,8 +6612,10 @@ jobs:
           git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
           mapfile -t changed < <(git diff --name-only "$PREDECESSOR_SOURCE" "$FOCAL_SOURCE" -- app backend | sort)
           printf '%s\n' "${changed[@]}" > /tmp/b1-changed.txt
-          expected="$(printf '%s\\n' app/core/router.js app/modules/midia.js backend/runtime/hr-live-service/test/cxorbia-b1-canonical-visible-identity.test.mjs)"
-          test "$(cat /tmp/b1-changed.txt)" = "$expected"
+          test "$(wc -l < /tmp/b1-changed.txt | tr -d ' ')" = "3"
+          grep -Fxq 'app/core/router.js' /tmp/b1-changed.txt
+          grep -Fxq 'app/modules/midia.js' /tmp/b1-changed.txt
+          grep -Fxq 'backend/runtime/hr-live-service/test/cxorbia-b1-canonical-visible-identity.test.mjs' /tmp/b1-changed.txt
           node --check app/core/router.js
           node --check app/modules/midia.js
           node --test backend/runtime/hr-live-service/test/cxorbia-b1-canonical-visible-identity.test.mjs
