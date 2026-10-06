@@ -5,8 +5,8 @@
   "generatedFromLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
   "generatedAtEvidenceTime": "2026-10-05T18:43:00Z",
   "controlHeadAtGeneration": "a10ce5c5b14be7d361d6d06d1e6f5a7feadca539",
-  "productSourceSha": "b5d63c20dcd0e30a9c3d9f5f8520c28e481d0718",
-  "productSourceTree": "c8462a25832427390d96c288d74b76bd9f30ecc5",
+  "productSourceSha": "be4e54e92285cef24f4b4c5442383a8076df6664",
+  "productSourceTree": "53061fa8d5faae8f0213840ff9d12d4a710508a3",
   "exactDevArtifact": {
     "state": "PASS_VRM258_EXACT_DEV_MATERIALIZATION",
     "runId": 37391640121,
@@ -33,7 +33,7 @@
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleTruthCount": 21,
   "moduleTruthAllMatch": true,
-  "findingCount": 258,
+  "findingCount": 259,
   "missingFindingIds": [],
   "duplicateFindingIds": [],
   "currentBlockingCount": 56,
@@ -51,12 +51,12 @@
     "PASS_READINESS": 1,
     "SUPERSEDED_BY_VRM-241": 1,
     "SUPERSEDED_BY_VRM-243": 1,
-    "FIXED_PROVEN": 2
+    "FIXED_PROVEN": 3
   },
   "nextCriticalSequence": [
-    "VRM-258_SAME_ARTIFACT_LIVE_REPROOF",
-    "PAULA_VISUAL_CHECKPOINT",
-    "GATE20_GATE21_TERMINAL_CLOSURE"
+    "VRM-259_SOURCE_PROOF",
+    "VRM-259_ONE_DEV_MATERIALIZATION",
+    "VRM-259_SAME_ARTIFACT_LIVE_REPROOF"
   ],
   "production": "DO_NOT_TOUCH",
   "entries": [
@@ -8589,34 +8589,20 @@
         "state": "CORRECTED_SOURCE_PENDING_PROOF"
       },
       "latestLiveProof": {
-        "state": "PASS_VRM258_EXACT_DEV_MATERIALIZATION",
-        "runId": 37391640121,
-        "runNumber": 1253,
-        "controlHeadSha": "de78d0fc8f90a7d90199c8d5d6b3dc7b68532922",
-        "jobId": 112037944878,
-        "artifactId": 11381128238,
-        "artifactDigest": "sha256:72f5d639f1a0da18149d1080081b32ce1ba45402e9ad42611c2d7e551a7e9559",
-        "decision": "PASS_VRM258_EXACT_DEV_MATERIALIZATION",
-        "sourceSha": "b5d63c20dcd0e30a9c3d9f5f8520c28e481d0718",
-        "sourceTree": "c8462a25832427390d96c288d74b76bd9f30ecc5",
-        "runtimeRevision": "cxorbia-live-hr-dev-00272-69q",
-        "runtimeDigest": "sha256:236cb108ad11ca4a9c4527f518929f2bf4f7b206aaf35060a0c4f9b0d89c738f",
-        "hostingVersion": "sites/cxorbia-backend-dev/versions/70d25db38af1ab0f",
-        "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791245025235000",
-        "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
-        "builds": 1,
-        "runtimeDeploys": 1,
-        "hostingDeploys": 1,
-        "storageRulesDeploys": 0,
-        "scenarioDimensionsProven": true,
+        "runId": 37392371743,
+        "runNumber": 1258,
+        "jobId": 112040287022,
+        "exactRun1253DevPreflightPass": true,
+        "julissaCanonicalChecksPassed": true,
+        "downstreamFailure": "POSTULATIONS_COUNT_DESYNC",
         "production": false
       },
       "successor": {
         "sourceSha": "b5d63c20dcd0e30a9c3d9f5f8520c28e481d0718",
         "sourceTree": "c8462a25832427390d96c288d74b76bd9f30ecc5"
       },
-      "rawLedgerState": "CORRECTED_DEV_MATERIALIZED_RUN1253_PENDING_SAME_ARTIFACT_LIVE_REPROOF",
-      "realState": "DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
+      "rawLedgerState": "FIXED_PROVEN_RUN1258_JULISSA_CANONICAL_PASS",
+      "realState": "FIXED_PROVEN",
       "evidence": {
         "humanAuthority": "VRM-214 + Run1066",
         "canonicalShopperId": "shopper_gt_0c198c1055",
@@ -8624,9 +8610,9 @@
         "requiredDisplayName": "Julissa Flores",
         "invalidRun1247": true
       },
-      "actionRemaining": "SAME_ARTIFACT_LIVE_REPROOF",
-      "blocking": true,
-      "terminalDisposition": null,
+      "actionRemaining": null,
+      "blocking": false,
+      "terminalDisposition": "FIXED_PROVEN",
       "sourceProof": {
         "runId": 37391098178,
         "runNumber": 1249,
@@ -8638,6 +8624,47 @@
         "writes": 0,
         "production": false
       }
+    },
+    {
+      "findingId": "VRM-259",
+      "moduleDomain": [
+        "admin",
+        "postulaciones",
+        "navigation-badge"
+      ],
+      "severity": "P0",
+      "classification": "VISUAL_DEFECT",
+      "owner": [
+        "app/modules/postulaciones.js"
+      ],
+      "latestApprovedSource": {
+        "sourceSha": "be4e54e92285cef24f4b4c5442383a8076df6664",
+        "sourceTree": "53061fa8d5faae8f0213840ff9d12d4a710508a3",
+        "state": "SOURCE_FIX_PENDING_SOURCE_PROOF"
+      },
+      "latestLiveProof": {
+        "runId": 37392371743,
+        "runNumber": 1258,
+        "jobId": 112040287022,
+        "failure": "MAPPING_FAILURE:POSTULATIONS_COUNT_DESYNC",
+        "pending": 0,
+        "badgeText": "10",
+        "assignments": 13,
+        "production": false
+      },
+      "successor": {
+        "sourceSha": "be4e54e92285cef24f4b4c5442383a8076df6664",
+        "sourceTree": "53061fa8d5faae8f0213840ff9d12d4a710508a3"
+      },
+      "rawLedgerState": "FIXED_SOURCE_PROOF_REQUIRED",
+      "realState": "SOURCE_FIX_PENDING_PROOF",
+      "evidence": {
+        "canonicalPending": 0,
+        "staleRailBadge": 10
+      },
+      "actionRemaining": "SOURCE_PROOF_THEN_ONE_DEV_MATERIALIZATION_THEN_SAME_ARTIFACT_LIVE_REPROOF",
+      "blocking": true,
+      "terminalDisposition": null
     }
   ],
   "exactDevArtifactRole": "CURRENT_VRM249_SUCCESSOR",

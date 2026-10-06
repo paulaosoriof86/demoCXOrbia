@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF_REQUIRED",
+  "status": "HOLD_VRM259_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "b5d63c20dcd0e30a9c3d9f5f8520c28e481d0718",
-  "productTreeAuthority": "c8462a25832427390d96c288d74b76bd9f30ecc5",
-  "predecessorProductSourceSha": "dc06e5c1ab3896b88a5b66627ae551b40eef000b",
+  "productSourceSha": "be4e54e92285cef24f4b4c5442383a8076df6664",
+  "productTreeAuthority": "53061fa8d5faae8f0213840ff9d12d4a710508a3",
+  "predecessorProductSourceSha": "b5d63c20dcd0e30a9c3d9f5f8520c28e481d0718",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "12e6d82e52a837e975324515cd7e412f5f0a1dc1",
+  "findingsLedgerExpectedGitBlob": "4a76de30bbc856c213415c6844611c124decfef2",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-258",
-  "nextFindingId": "VRM-259",
+  "activeBlocker": "VRM-259",
+  "nextFindingId": "VRM-260",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run the existing phasea-representative-same-artifact-live-reproof against exact Run1253 DEV materialization. Admin must expose exactly one canonical Julissa Flores shopper_gt_0c198c1055, map alias shopper_gt_86254c4228 to it, preserve julissa.flores and not render Julissa Illescas separately. Repeat Julissa/Priscila/Paula Shopper, Mi Dia, Mi Perfil, Mis Visitas, Academia, Benefits, historical payment and population checks. Zero rebuilds, zero deploys, zero writes, no production.",
+  "exactNextAction": "Run source-only proof for VRM-259 on source be4e54e92285cef24f4b4c5442383a8076df6664. Prove Postulaciones rail badge derives from the same canonical pending count and preserve all prior P0 regressions. Zero builds/deploys/writes; then exactly one DEV materialization and same-artifact live reproof.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -4654,6 +4654,26 @@
       "scenarioDimensionsProven": true,
       "production": false
     },
-    "sameArtifactLiveReproofRequired": true
+    "sameArtifactLiveReproofRequired": true,
+    "liveReproof": {
+      "runId": 37392371743,
+      "runNumber": 1258,
+      "jobId": 112040287022,
+      "julissaCanonicalPassed": true,
+      "downstreamFailure": "MAPPING_FAILURE:POSTULATIONS_COUNT_DESYNC",
+      "production": false
+    }
+  },
+  "vrm259": {
+    "classification": "VISUAL_DEFECT",
+    "severity": "P0",
+    "rootCauseStatus": "PROVEN_RUN1258",
+    "owner": "app/modules/postulaciones.js",
+    "sourceSha": "be4e54e92285cef24f4b4c5442383a8076df6664",
+    "sourceTree": "53061fa8d5faae8f0213840ff9d12d4a710508a3",
+    "predecessorSha": "b5d63c20dcd0e30a9c3d9f5f8520c28e481d0718",
+    "sourceProofRequired": true,
+    "materializationAllowed": false,
+    "production": false
   }
 }

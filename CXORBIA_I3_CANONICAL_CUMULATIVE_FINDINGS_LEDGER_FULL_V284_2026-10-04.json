@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "b5d63c20dcd0e30a9c3d9f5f8520c28e481d0718",
-    "sourceTree": "c8462a25832427390d96c288d74b76bd9f30ecc5",
-    "predecessorSha": "dc06e5c1ab3896b88a5b66627ae551b40eef000b",
+    "sourceSha": "be4e54e92285cef24f4b4c5442383a8076df6664",
+    "sourceTree": "53061fa8d5faae8f0213840ff9d12d4a710508a3",
+    "predecessorSha": "b5d63c20dcd0e30a9c3d9f5f8520c28e481d0718",
     "production": false,
-    "state": "VRM258_CORRECTED_DEV_MATERIALIZED_PENDING_SAME_ARTIFACT_LIVE_REPROOF",
+    "state": "VRM259_SOURCE_FIX_PENDING_SOURCE_PROOF",
     "proof": {
       "state": "PASS_VRM249_SOURCE_REPROOF_AND_EXACT_DEV_MATERIALIZATION",
       "accumulatedSourceProofs": [
@@ -16278,7 +16278,7 @@
       "classification": "FUNCTIONAL_DEFECT",
       "severity": "P0",
       "title": "Admin canonical read model collapses Julissa Illescas into Julissa Flores through stale durable historical visit crosswalk",
-      "state": "CORRECTED_DEV_MATERIALIZED_RUN1253_PENDING_SAME_ARTIFACT_LIVE_REPROOF",
+      "state": "FIXED_PROVEN_RUN1258_JULISSA_CANONICAL_PASS",
       "firstObservedAt": "RUN1243_2026-10-05",
       "rootCauseStatus": "PROVEN_HUMAN_AUTHORITY_DISPLAY_PRECEDENCE",
       "rootCause": "VRM-214/Run1066 validly consolidated alias shopper_gt_86254c4228 into canonical shopper_gt_0c198c1055. The current defect is display-name precedence: the canonical read model lets the live HR alias label overwrite the tenant-adjudicated canonical profile name after canonicalization.",
@@ -16463,6 +16463,71 @@
           "hostingDeploys": 1,
           "storageRulesDeploys": 0,
           "scenarioDimensionsProven": true,
+          "production": false
+        },
+        "run1258": {
+          "runId": 37392371743,
+          "runNumber": 1258,
+          "jobId": 112040287022,
+          "artifactId": 11381333816,
+          "artifactDigest": "sha256:cfb913bcd3f853c9550fabc4b62185eedeba61d31834143342d7c7a22ea0d421",
+          "exactRun1253DevPreflightPass": true,
+          "julissaCanonicalChecksPassedBeforePostulationsFailure": true,
+          "failureAfterJulissa": "MAPPING_FAILURE:POSTULATIONS_COUNT_DESYNC",
+          "production": false,
+          "writes": {
+            "auth": 0,
+            "hr": 0,
+            "provider": 0
+          },
+          "deploys": 0
+        }
+      },
+      "productChanged": true,
+      "production": false,
+      "blocking": false,
+      "terminalDisposition": "FIXED_PROVEN"
+    },
+    "VRM-259": {
+      "id": "VRM-259",
+      "classification": "VISUAL_DEFECT",
+      "severity": "P0",
+      "title": "Postulaciones rail badge remains stale after canonical pending count renders zero",
+      "state": "FIXED_SOURCE_PROOF_REQUIRED",
+      "firstObservedAt": "RUN1258_2026-10-05",
+      "rootCauseStatus": "PROVEN",
+      "rootCause": "Admin Postulaciones rendered its canonical active-period truth after protected HR composition (0 pending, 13 assignments), but the sidebar badge could retain a bootstrap/pre-composition value (10). The module did not resynchronize #nav-postulaciones .n-badge from the same activePosts/c('pendiente') truth when its final route render committed.",
+      "expected": "The Postulaciones sidebar badge must equal the same active-period pending count rendered by Gestión de Postulaciones; when pending is 0 the badge must be empty/hidden.",
+      "owner": [
+        "app/modules/postulaciones.js"
+      ],
+      "evidence": {
+        "run1258": {
+          "runId": 37392371743,
+          "runNumber": 1258,
+          "jobId": 112040287022,
+          "artifactId": 11381333816,
+          "artifactDigest": "sha256:cfb913bcd3f853c9550fabc4b62185eedeba61d31834143342d7c7a22ea0d421",
+          "exactRun1253DevPreflightPass": true,
+          "observed": {
+            "pending": 0,
+            "assignments": 13,
+            "badgeText": "10",
+            "headerPending": true,
+            "headerAssignments": true
+          },
+          "failure": "MAPPING_FAILURE:POSTULATIONS_COUNT_DESYNC",
+          "production": false
+        },
+        "sourceFix": {
+          "sourceSha": "be4e54e92285cef24f4b4c5442383a8076df6664",
+          "sourceTree": "53061fa8d5faae8f0213840ff9d12d4a710508a3",
+          "predecessorSha": "b5d63c20dcd0e30a9c3d9f5f8520c28e481d0718",
+          "files": [
+            "app/modules/postulaciones.js",
+            "backend/runtime/hr-live-service/test/cxorbia-vrm259-postulations-rail-badge.test.mjs"
+          ],
+          "behavior": "On every Postulaciones route render, synchronize the rail badge from the same canonical c('pendiente') count after DOM commit.",
           "production": false
         }
       },
@@ -17144,14 +17209,15 @@
       "VRM-255",
       "VRM-256",
       "VRM-257",
-      "VRM-258"
+      "VRM-258",
+      "VRM-259"
     ],
-    "findingCount": 258,
-    "expectedCurrentRange": "VRM-001..VRM-258",
-    "nextFindingId": "VRM-259",
+    "findingCount": 259,
+    "expectedCurrentRange": "VRM-001..VRM-259",
+    "nextFindingId": "VRM-260",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_I3_SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF_REQUIRED",
+    "terminalState": "HOLD_VRM259_SOURCE_PROOF_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -17166,8 +17232,8 @@
     "userReportedRequirementsFrozenAt": "2026-09-30T20:18:00-06:00",
     "userReviewComplete": true,
     "userReviewEvidence": "19 screenshots plus complete Shopper/Admin observations supplied 2026-10-02",
-    "currentProductSourceSha": "b5d63c20dcd0e30a9c3d9f5f8520c28e481d0718",
-    "currentProductSourceTree": "c8462a25832427390d96c288d74b76bd9f30ecc5",
+    "currentProductSourceSha": "be4e54e92285cef24f4b4c5442383a8076df6664",
+    "currentProductSourceTree": "53061fa8d5faae8f0213840ff9d12d4a710508a3",
     "currentMaterialization": {
       "state": "PASS_VRM258_EXACT_DEV_MATERIALIZATION",
       "runId": 37391640121,
@@ -17432,7 +17498,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Run the existing phasea-representative-same-artifact-live-reproof against exact Run1253 DEV materialization. Admin must expose exactly one canonical Julissa Flores shopper_gt_0c198c1055, map alias shopper_gt_86254c4228 to it, preserve julissa.flores and not render Julissa Illescas separately. Repeat Julissa/Priscila/Paula Shopper, Mi Dia, Mi Perfil, Mis Visitas, Academia, Benefits, historical payment and population checks. Zero rebuilds, zero deploys, zero writes, no production.",
+  "exactNextAction": "Run source-only proof for VRM-259 on source be4e54e92285cef24f4b4c5442383a8076df6664. Prove Postulaciones rail badge derives from the same canonical pending count and preserve all prior P0 regressions. Zero builds/deploys/writes; then exactly one DEV materialization and same-artifact live reproof.",
   "supersedesGitBlob": "820da41b786054cb8cd23e89827e1f7afbcdd3b3",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -17461,7 +17527,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-259",
+  "nextFindingId": "VRM-260",
   "lastControlFailure": {
     "id": "RUN1238_NEXT_FINDING_ID_GOVERNANCE_DESYNC",
     "classification": "MAPPING_FAILURE",
@@ -20409,11 +20475,11 @@
     "production": false
   },
   "latestSourceSuccessor": {
-    "findingId": "VRM-258",
-    "sourceSha": "b5d63c20dcd0e30a9c3d9f5f8520c28e481d0718",
-    "sourceTree": "c8462a25832427390d96c288d74b76bd9f30ecc5",
-    "predecessorSha": "dc06e5c1ab3896b88a5b66627ae551b40eef000b",
-    "state": "CORRECTED_SOURCE_PROOF_REQUIRED",
+    "findingId": "VRM-259",
+    "sourceSha": "be4e54e92285cef24f4b4c5442383a8076df6664",
+    "sourceTree": "53061fa8d5faae8f0213840ff9d12d4a710508a3",
+    "predecessorSha": "b5d63c20dcd0e30a9c3d9f5f8520c28e481d0718",
+    "state": "SOURCE_PROOF_REQUIRED",
     "production": false
   },
   "run735": {
@@ -20829,7 +20895,7 @@
     "hostingDeploys": 0,
     "production": false
   },
-  "activeBlocker": "VRM-258",
+  "activeBlocker": "VRM-259",
   "focalModuleTruthVRM143to151": {
     "frozenAt": "2026-10-02T01:42:00Z",
     "productSourceSha": "18ff875e5cbecaf4b1d6977ac17df2b7e97ca6dd",
@@ -21020,8 +21086,8 @@
     "humanAcceptance": "FAIL",
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
-  "lastUpdatedAt": "2026-10-06T00:06:00Z",
-  "nextExactAction": "Run the existing phasea-representative-same-artifact-live-reproof against exact Run1253 DEV materialization. Admin must expose exactly one canonical Julissa Flores shopper_gt_0c198c1055, map alias shopper_gt_86254c4228 to it, preserve julissa.flores and not render Julissa Illescas separately. Repeat Julissa/Priscila/Paula Shopper, Mi Dia, Mi Perfil, Mis Visitas, Academia, Benefits, historical payment and population checks. Zero rebuilds, zero deploys, zero writes, no production.",
+  "lastUpdatedAt": "2026-10-06T02:58:00Z",
+  "nextExactAction": "Run source-only proof for VRM-259 on source be4e54e92285cef24f4b4c5442383a8076df6664. Prove Postulaciones rail badge derives from the same canonical pending count and preserve all prior P0 regressions. Zero builds/deploys/writes; then exactly one DEV materialization and same-artifact live reproof.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
