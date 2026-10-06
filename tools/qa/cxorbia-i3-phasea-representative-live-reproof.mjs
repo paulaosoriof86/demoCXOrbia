@@ -180,7 +180,7 @@ try{
       const profile=d.__sessionShopperProfile||((canonical&&d.getShopper)?d.getShopper(canonical):null)||null;
       return {
         firebaseUid:String(fb?.uid||''),authShopperId:String(auth.shopperId||''),authRole:String(auth.role||''),authNamespace:String(auth.authNamespace||''),
-        sessionUser:{name:String(sessionUser.name||''),shopperId:sid,role:String(sessionUser.role||'')},
+        sessionShopperId:sid,sessionUser:{name:String(sessionUser.name||''),shopperId:sid,role:String(sessionUser.role||'')},
         rawShopperId:raw,canonicalShopperId:canonical,identityMapValue:String(d.__identityMap?.[raw]||''),
         sessionProfile:profile?{id:String(profile.id||profile.shopperId||''),name:String(profile.nombre||profile.displayName||[profile.firstName,profile.lastName].filter(Boolean).join(' ')),visibleLogin:String(profile.visibleLogin||profile.username||profile.user||'')}:null,
         ownVisits:own.length,uniqueOwnVisits:new Set(own.map(v=>String(v.hrRowId||v.id||v.visitId||''))).size,currentVisits:current.length,activeVisits:active.length,
@@ -193,6 +193,11 @@ try{
     await nav(page,'midia');
     const midia=await page.evaluate(branch=>{const text=String(document.body?.innerText||''),rail=[...document.querySelectorAll('.rail-user')].map(x=>String(x.innerText||'').replace(/\s+/g,' ').trim()).join(' | '),heading=String(document.querySelector('.page-h,.page-head,.page-title')?.innerText||'');return {text:text.slice(0,1400),noActive:/Sin visitas activas/i.test(text),branchVisible:branch?text.includes(branch):true,railUser:rail,heading};},base.firstActive?.branch||'');
     if(base.activeVisits>0&&(midia.noActive||!midia.branchVisible))throw new Error('FUNCTIONAL_DEFECT:MIDIA_ACTIVE_VISIT_MISSING:'+target.name+':'+JSON.stringify({base,midia}));
+    if(target.name==='Julissa Flores'){
+      if(base.authShopperId!==target.profile.id||base.canonicalShopperId!==target.profile.id||base.sessionProfile?.id!==target.profile.id)throw new Error('MAPPING_FAILURE:B1_JULISSA_CANONICAL_OWNER:'+JSON.stringify(base));
+      if(!norm(midia.railUser).includes(norm('Julissa Flores'))||norm(midia.railUser).includes(norm('Paula Osorio')))throw new Error('VISUAL_DEFECT:B1_RAIL_IDENTITY:'+JSON.stringify(midia));
+      if(!norm(midia.text).includes(norm('Hola, Julissa'))||norm(midia.text).includes(norm('Hola, Paula')))throw new Error('VISUAL_DEFECT:B1_MIDIA_GREETING:'+JSON.stringify(midia));
+    }
 
     await nav(page,'miperfil');
     const profile=await page.evaluate(expectedName=>{const body=String(document.body?.innerText||''),titles=[...document.querySelectorAll('.cx-profile-group-title')].map(x=>String(x.innerText||''));return {body:body.slice(0,1600),locked:/No fue posible vincular esta sesión con tu perfil/i.test(body),grid:!!document.querySelector('.cx-profile-detail-grid'),titles,nameVisible:normLocal(body).includes(normLocal(expectedName))};function normLocal(v){return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();}},target.name);
