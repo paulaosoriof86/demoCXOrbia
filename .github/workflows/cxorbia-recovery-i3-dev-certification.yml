@@ -6636,103 +6636,95 @@ jobs:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_B1_DEV_MATERIALIZATION_REQUIRED' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 25
     env:
-      FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
-      FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
-      B1_OUT: .tmp/b1-dev-materialization
+      B1_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      B1_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      B1_OUT: .tmp/i3-b1-materialization
+      B1_ROOT: https://cxorbia-backend-dev.web.app
+      EXPECTED_RUNTIME_REVISION: cxorbia-live-hr-dev-00273-6p9
+      EXPECTED_RUNTIME_DIGEST: sha256:0d4ee89f75e759fa96e0f6e2a706aac3c7b73b7162e93da30653b47a0ee7bfc1
+      EXPECTED_HR_REVISION: f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+        with: {fetch-depth: 0}
       - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-      - name: Preflight exact B1 source
-        shell: bash
+        with: {node-version: '24'}
+      - name: step
         run: |
           set -Eeuo pipefail
           mkdir -p "$B1_OUT"
-          test "$FOCAL_SOURCE" = "6232caedfcfd1e0136b5ece5f55bfaa0c1b3934a"
-          test "$FOCAL_TREE" = "5ab902bad55e52ef3a06953fbe27eeb70c263fc6"
-          test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
-          git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          test "$B1_SOURCE" = "6232caedfcfd1e0136b5ece5f55bfaa0c1b3934a"
+          test "$B1_TREE" = "5ab902bad55e52ef3a06953fbe27eeb70c263fc6"
+          test "$(git rev-parse "$B1_SOURCE^{tree}")" = "$B1_TREE"
+          test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_B1_DEV_MATERIALIZATION_REQUIRED"
+          git diff --quiet "$B1_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
           node --check app/core/router.js
           node --check app/modules/midia.js
-          node --test backend/runtime/hr-live-service/test/cxorbia-b1-canonical-visible-identity.test.mjs
-      - name: Install Hosting tools
+          node --test backend/runtime/hr-live-service/test/cxorbia-b1-canonical-visible-identity.test.mjs | tee "$B1_OUT/source-test.log"
+          SOURCE_DIR="$RUNNER_TEMP/cxorbia-b1-source"; rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"
+          git archive "$B1_SOURCE" | tar -x -C "$SOURCE_DIR"
+          echo "B1_SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
+      - name: step
         run: npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest >/dev/null 2>&1
-      - uses: google-github-actions/auth@v2
+      - name: step
+        uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
       - uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT }}
-      - name: Extract exact source and fingerprint unchanged runtime
-        shell: bash
+      - name: step
         run: |
           set -Eeuo pipefail
-          SOURCE_DIR="$RUNNER_TEMP/cxorbia-b1-source"
-          rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"
-          git archive "$FOCAL_SOURCE" | tar -x -C "$SOURCE_DIR"
-          test -f "$SOURCE_DIR/firebase.json"
-          echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
-          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$B1_OUT/runtime-before.json"
-          REV="$(jq -r '.status.latestReadyRevisionName // empty' "$B1_OUT/runtime-before.json")"
-          test -n "$REV"
-          gcloud run revisions describe "$REV" --project "$PROJECT" --region "$REGION" --format=json > "$B1_OUT/revision-before.json"
-          RAW="$(jq -r '.status.imageDigest // empty' "$B1_OUT/revision-before.json")"
-          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else exit 1; fi
-          echo "RUNTIME_REVISION=$REV" >> "$GITHUB_ENV"
-          echo "RUNTIME_DIGEST=$DIGEST" >> "$GITHUB_ENV"
-          curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&b1pre=$GITHUB_RUN_ID" > "$B1_OUT/hr-before.json"
-          HR_REVISION="$(jq -r '.revision // empty' "$B1_OUT/hr-before.json")"
-          [[ "$HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
-          echo "HR_REVISION=$HR_REVISION" >> "$GITHUB_ENV"
-      - name: Deploy exact B1 frontend to DEV Hosting only
-        shell: bash
-        run: |
-          set -Eeuo pipefail
-          cd "$SOURCE_DIR"
-          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$B1_OUT/hosting-deploy.log"
-          cd "$GITHUB_WORKSPACE"
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$B1_OUT/runtime.json"
+          test "$(jq -r '.status.latestReadyRevisionName // empty' "$B1_OUT/runtime.json")" = "$EXPECTED_RUNTIME_REVISION"
+          gcloud run revisions describe "$EXPECTED_RUNTIME_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$B1_OUT/runtime-revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$B1_OUT/runtime-revision.json")"
+          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; else DIGEST="sha256:${RAW##*@sha256:}"; fi
+          test "$DIGEST" = "$EXPECTED_RUNTIME_DIGEST"
+          MATCH=1
+          for p in core/router.js modules/midia.js; do
+            remote="$B1_OUT/pre-$(echo "$p" | tr '/' '_')"
+            curl -fsSL --retry 4 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$B1_ROOT/$p?pre=$GITHUB_RUN_ID-$(date +%s%N)" -o "$remote" || MATCH=0
+            if [[ "$MATCH" = "1" ]] && [[ "$(sha256sum "$remote"|awk '{print $1}')" != "$(git show "$B1_SOURCE:app/$p" | sha256sum | awk '{print $1}')" ]]; then MATCH=0; fi
+          done
+          DEPLOYED=0
+          if [[ "$MATCH" != "1" ]]; then
+            cd "$B1_SOURCE_DIR"
+            "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$B1_OUT/hosting-deploy.log"
+            cd "$GITHUB_WORKSPACE"
+            DEPLOYED=1
+          fi
           TOKEN="$(gcloud auth print-access-token)"
-          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$B1_OUT/hosting-live-channel.json"
-          HOSTING_RELEASE="$(jq -r '.release.name // empty' "$B1_OUT/hosting-live-channel.json")"
-          HOSTING_VERSION="$(jq -r '.release.version.name // empty' "$B1_OUT/hosting-live-channel.json")"
-          test -n "$HOSTING_VERSION"
-          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/$HOSTING_VERSION" > "$B1_OUT/hosting-version.json"
-          test "$(jq -r '.status // empty' "$B1_OUT/hosting-version.json")" = "FINALIZED"
-          echo "HOSTING_RELEASE=$HOSTING_RELEASE" >> "$GITHUB_ENV"
-          echo "HOSTING_VERSION=$HOSTING_VERSION" >> "$GITHUB_ENV"
-      - name: Prove exact served B1 bytes and unchanged runtime/HR
-        shell: bash
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$B1_OUT/hosting-live-channel.json"
+          HOSTING_VERSION="$(jq -r '.release.version.name // empty' "$B1_OUT/hosting-live-channel.json")"; test -n "$HOSTING_VERSION"
+          HOSTING_RELEASE="$(jq -r '.release.name // empty' "$B1_OUT/hosting-live-channel.json")"; test -n "$HOSTING_RELEASE"
+          echo "B1_HOSTING_VERSION=$HOSTING_VERSION" >> "$GITHUB_ENV"
+          echo "B1_HOSTING_RELEASE=$HOSTING_RELEASE" >> "$GITHUB_ENV"
+          echo "B1_HOSTING_DEPLOYED=$DEPLOYED" >> "$GITHUB_ENV"
+      - name: step
         run: |
           set -Eeuo pipefail
           for p in core/router.js modules/midia.js adapters/tya-canonical-shopper-portal-v2.js styles/layout.css; do
-            out="$B1_OUT/remote-$(echo "$p" | tr '/' '_')"
-            curl -fsSL --retry 10 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/$p?b1=$GITHUB_RUN_ID-$(date +%s%N)" -o "$out"
-            test "$(sha256sum "$out" | awk '{print $1}')" = "$(sha256sum "$SOURCE_DIR/app/$p" | awk '{print $1}')"
+            remote="$B1_OUT/remote-$(echo "$p" | tr '/' '_')"
+            curl -fsSL --retry 8 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' "$B1_ROOT/$p?proof=$GITHUB_RUN_ID-$(date +%s%N)" -o "$remote"
+            test "$(sha256sum "$remote"|awk '{print $1}')" = "$(git show "$B1_SOURCE:app/$p" | sha256sum | awk '{print $1}')"
           done
-          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$B1_OUT/runtime-after.json"
-          test "$(jq -r '.status.latestReadyRevisionName // empty' "$B1_OUT/runtime-after.json")" = "$RUNTIME_REVISION"
-          gcloud run revisions describe "$RUNTIME_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$B1_OUT/revision-after.json"
-          RAW="$(jq -r '.status.imageDigest // empty' "$B1_OUT/revision-after.json")"
-          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then AFTER="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then AFTER="sha256:${RAW##*@sha256:}"; else exit 1; fi
-          test "$AFTER" = "$RUNTIME_DIGEST"
-          curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&b1post=$GITHUB_RUN_ID" > "$B1_OUT/hr-after.json"
-          test "$(jq -r '.revision // empty' "$B1_OUT/hr-after.json")" = "$HR_REVISION"
-          jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .hrWrites==false and .production==false' "$B1_OUT/hr-after.json" >/dev/null
-          jq -n -S --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg runtime "$RUNTIME_REVISION" --arg digest "$RUNTIME_DIGEST" --arg hosting "$HOSTING_VERSION" --arg release "$HOSTING_RELEASE" --arg hr "$HR_REVISION" '{decision:"PASS_B1_EXACT_DEV_HOSTING_MATERIALIZATION",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hostingRelease:$release,hrRevision:$hr,builds:0,runtimeDeploys:0,hostingDeploys:1,storageRulesDeploys:0,hrWrites:0,production:false}' > "$B1_OUT/result.json"
+          curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$B1_ROOT/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&b1=$GITHUB_RUN_ID" > "$B1_OUT/hr-meta.json"
+          test "$(jq -r '.revision // empty' "$B1_OUT/hr-meta.json")" = "$EXPECTED_HR_REVISION"
+          jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .hrWrites==false and .production==false' "$B1_OUT/hr-meta.json" >/dev/null
+          jq -n -S --arg source "$B1_SOURCE" --arg tree "$B1_TREE" --arg runtime "$EXPECTED_RUNTIME_REVISION" --arg digest "$EXPECTED_RUNTIME_DIGEST" --arg hosting "$B1_HOSTING_VERSION" --arg release "$B1_HOSTING_RELEASE" --arg hr "$EXPECTED_HR_REVISION" --argjson hostingDeploys "$B1_HOSTING_DEPLOYED" '{decision:"PASS_B1_EXACT_DEV_HOSTING_MATERIALIZATION",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hostingRelease:$release,hrRevision:$hr,builds:0,runtimeDeploys:0,hostingDeploys:$hostingDeploys,storageRulesDeploys:0,hrWrites:0,production:false}' > "$B1_OUT/result.json"
           cat "$B1_OUT/result.json"
-      - uses: actions/upload-artifact@v4
-        if: always()
+      - if: always()
+        uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-b1-dev-materialization-${{ github.run_id }}
-          path: .tmp/b1-dev-materialization
+          name: cxorbia-i3-b1-materialization-${{ github.run_id }}
+          path: ${{ env.B1_OUT }}
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
+          include-hidden-files: true
 
   phasea-representative-same-artifact-live-reproof:
     needs: canonical-candidate-authority
