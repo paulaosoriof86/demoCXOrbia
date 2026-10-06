@@ -6587,7 +6587,7 @@ jobs:
 
   phasea-representative-same-artifact-live-reproof:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_B1_IDENTITY_LIVE_READBACK_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     env:

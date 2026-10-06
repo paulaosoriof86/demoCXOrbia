@@ -173,16 +173,25 @@ try{
   for(const target of targets){
     const sp=await signed(target.member,'shopper'),page=sp.page;
     const base=await page.evaluate(({expectedId,currentPeriodId})=>{
-      const d=window.CX?.data||{},sid=String(window.CX?.session?.user?.shopperId||''),own=typeof d.visitsForShopper==='function'?d.visitsForShopper(expectedId,false):[];
+      const d=window.CX?.data||{},sessionUser=window.CX?.session?.user||{},sid=String(sessionUser.shopperId||''),own=typeof d.visitsForShopper==='function'?d.visitsForShopper(expectedId,false):[];
       const current=own.filter(v=>String(d.recordPeriodId?d.recordPeriodId(v):(v.periodId||v.projectId)||'')===currentPeriodId);
       const active=current.filter(v=>{const f=d.visitFacets?.(v)||{};return f.assigned===true&&f.realized!==true&&f.cancelled!==true;});
-      return {sessionShopperId:sid,ownVisits:own.length,uniqueOwnVisits:new Set(own.map(v=>String(v.hrRowId||v.id||v.visitId||''))).size,currentVisits:current.length,activeVisits:active.length,firstActive:active[0]?{id:String(active[0].id||active[0].visitId||''),hrRowId:String(active[0].hrRowId||''),branch:String(active[0].sucursal||''),instructiveReadAt:String(active[0].instructiveReadAt||'')}:null};
+      const auth=window.CX?.backendAuth?.context?.()||{},fb=window.firebase?.auth?.().currentUser||null,raw=String(auth.shopperId||sid||''),canonical=String(d.__identityMap?.[raw]||sid||raw||'');
+      const profile=d.__sessionShopperProfile||((canonical&&d.getShopper)?d.getShopper(canonical):null)||null;
+      return {
+        firebaseUid:String(fb?.uid||''),authShopperId:String(auth.shopperId||''),authRole:String(auth.role||''),authNamespace:String(auth.authNamespace||''),
+        sessionUser:{name:String(sessionUser.name||''),shopperId:sid,role:String(sessionUser.role||'')},
+        rawShopperId:raw,canonicalShopperId:canonical,identityMapValue:String(d.__identityMap?.[raw]||''),
+        sessionProfile:profile?{id:String(profile.id||profile.shopperId||''),name:String(profile.nombre||profile.displayName||[profile.firstName,profile.lastName].filter(Boolean).join(' ')),visibleLogin:String(profile.visibleLogin||profile.username||profile.user||'')}:null,
+        ownVisits:own.length,uniqueOwnVisits:new Set(own.map(v=>String(v.hrRowId||v.id||v.visitId||''))).size,currentVisits:current.length,activeVisits:active.length,
+        firstActive:active[0]?{id:String(active[0].id||active[0].visitId||''),hrRowId:String(active[0].hrRowId||''),branch:String(active[0].sucursal||''),instructiveReadAt:String(active[0].instructiveReadAt||'')}:null
+      };
     },{expectedId:target.profile.id,currentPeriodId:periodId});
     if(base.sessionShopperId!==target.profile.id)throw new Error('MAPPING_FAILURE:SESSION_NOT_CANONICAL:'+target.name+':'+JSON.stringify(base));
     if(base.ownVisits!==base.uniqueOwnVisits)throw new Error('MAPPING_FAILURE:DUPLICATE_OWN_VISITS:'+target.name+':'+JSON.stringify(base));
 
     await nav(page,'midia');
-    const midia=await page.evaluate(branch=>{const text=String(document.body?.innerText||'');return {text:text.slice(0,1400),noActive:/Sin visitas activas/i.test(text),branchVisible:branch?text.includes(branch):true};},base.firstActive?.branch||'');
+    const midia=await page.evaluate(branch=>{const text=String(document.body?.innerText||''),rail=[...document.querySelectorAll('.rail-user')].map(x=>String(x.innerText||'').replace(/\s+/g,' ').trim()).join(' | '),heading=String(document.querySelector('.page-h,.page-head,.page-title')?.innerText||'');return {text:text.slice(0,1400),noActive:/Sin visitas activas/i.test(text),branchVisible:branch?text.includes(branch):true,railUser:rail,heading};},base.firstActive?.branch||'');
     if(base.activeVisits>0&&(midia.noActive||!midia.branchVisible))throw new Error('FUNCTIONAL_DEFECT:MIDIA_ACTIVE_VISIT_MISSING:'+target.name+':'+JSON.stringify({base,midia}));
 
     await nav(page,'miperfil');
@@ -219,7 +228,7 @@ try{
     const benefits=await page.evaluate(()=>{const rows=[...document.querySelectorAll('tbody tr')].map(tr=>({text:String(tr.innerText||'').replace(/\s+/g,' ').trim(),status:String(tr.dataset.benStatus||'')}));const old=rows.filter(r=>{const m=r.text.match(/20\d{2}-\d{2}-\d{2}/);return m&&m[0]<='2026-05-31';});const oldPaid=old.filter(r=>r.status==='paid');const paidContradictions=oldPaid.filter(r=>/Pendiente de confirmación/i.test(r.text));return {rows:rows.length,oldRows:old.length,oldPaid:oldPaid.length,paidContradictions:paidContradictions.map(r=>r.text),body:String(document.body?.innerText||'').slice(0,1800)};});
     if(target.name==='Paula Osorio'&&(benefits.oldRows<1||benefits.oldPaid<1||benefits.paidContradictions.length))throw new Error('FUNCTIONAL_DEFECT:PAULA_HISTORICAL_PAYMENT_DISPLAY:'+JSON.stringify(benefits));
 
-    evidence.representatives[target.name]={shopperId:target.profile.id,uid:target.member.id,selectionAuthority:target.selectionAuthority,independentSameDisplayNamePrincipals:target.independentSameDisplayNamePrincipals,missingProfileFields:target.missing,base,midia:{noActive:midia.noActive,branchVisible:midia.branchVisible},profile:{grid:profile.grid,titles:profile.titles,nameVisible:profile.nameVisible},route,cert:{rendered:cert.rendered},academy,benefits:{rows:benefits.rows,oldRows:benefits.oldRows,oldPaid:benefits.oldPaid,paidContradictionCount:benefits.paidContradictions.length}};
+    evidence.representatives[target.name]={shopperId:target.profile.id,uid:target.member.id,selectionAuthority:target.selectionAuthority,independentSameDisplayNamePrincipals:target.independentSameDisplayNamePrincipals,missingProfileFields:target.missing,base,midia:{noActive:midia.noActive,branchVisible:midia.branchVisible,railUser:midia.railUser,heading:midia.heading},profile:{grid:profile.grid,titles:profile.titles,nameVisible:profile.nameVisible},route,cert:{rendered:cert.rendered},academy,benefits:{rows:benefits.rows,oldRows:benefits.oldRows,oldPaid:benefits.oldPaid,paidContradictionCount:benefits.paidContradictions.length}};
     await sp.ctx.close();
   }
 

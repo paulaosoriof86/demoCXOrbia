@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_B1_INCREMENTAL_HUMAN_ACCEPTANCE_ACTIVE",
+  "status": "HOLD_B1_IDENTITY_LIVE_READBACK_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "B1_IDENTITY_VISIBLE_CANONICAL_PLUS_MIDIA_SHELL",
+  "activeBlocker": "B1_IDENTITY_VISIBLE_CANONICAL_LIVE_READBACK",
   "nextFindingId": "VRM-260",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "B1_SOURCE_FIX_THEN_SOURCE_PROOF_DEV_E2E_TINYFISH_PAULA_PASS",
+  "exactNextAction": "RUN_CANONICAL_REPRESENTATIVE_LIVE_REPROOF_WITH_B1_IDENTITY_FIELDS__NO_PRODUCT_CHANGE",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -4815,6 +4815,7 @@
     "paulaPassRequiredPerBlock": true,
     "activeBlock": "B1",
     "finalCertifiedArtifactCount": 1,
-    "production": "DO_NOT_TOUCH"
+    "production": "DO_NOT_TOUCH",
+    "b1State": "LIVE_READBACK_REQUIRED"
   }
 }
