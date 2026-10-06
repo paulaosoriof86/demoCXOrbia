@@ -6612,7 +6612,26 @@ jobs:
           git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
           mapfile -t changed < <(git diff --name-only "$PREDECESSOR_SOURCE" "$FOCAL_SOURCE" -- app backend | sort)
           printf '%s\n' "${changed[@]}" > /tmp/b1-changed.txt
-          expected=    needs: canonical-candidate-authority
+          expected="$(printf '%s\\n' app/core/router.js app/modules/midia.js backend/runtime/hr-live-service/test/cxorbia-b1-canonical-visible-identity.test.mjs)"
+          test "$(cat /tmp/b1-changed.txt)" = "$expected"
+          node --check app/core/router.js
+          node --check app/modules/midia.js
+          node --test backend/runtime/hr-live-service/test/cxorbia-b1-canonical-visible-identity.test.mjs
+          node --test backend/runtime/hr-live-service/test/cxorbia-prei4-shopper-progressive-route.test.mjs
+          node --test backend/runtime/hr-live-service/test/cxorbia-gate9-postulation-immediate.test.mjs
+          jq -n -S --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg predecessor "$PREDECESSOR_SOURCE" '{decision:"PASS_B1_CANONICAL_VISIBLE_IDENTITY_SOURCE_PROOF",sourceSha:$source,sourceTree:$tree,predecessorSha:$predecessor,changedFiles:["app/core/router.js","app/modules/midia.js","backend/runtime/hr-live-service/test/cxorbia-b1-canonical-visible-identity.test.mjs"],productWrites:0,deploys:0,production:false}' > /tmp/b1-source-proof.json
+          cat /tmp/b1-source-proof.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cxorbia-b1-source-proof-${{ github.run_id }}
+          path: /tmp/b1-source-proof.json
+          if-no-files-found: warn
+          retention-days: 30
+          compression-level: 0
+
+  phasea-representative-same-artifact-live-reproof:
+    needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_B1_IDENTITY_LIVE_READBACK_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
