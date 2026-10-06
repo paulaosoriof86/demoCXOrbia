@@ -1,0 +1,84 @@
+{
+  "lockId": "CXORBIA-I3-INCREMENTAL-HUMAN-MODULE-ACCEPTANCE-20261006",
+  "status": "FROZEN",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadBeforeFreeze": "7874efb3cb5ceb8e679af89a912a4709766b6787",
+  "productSourceAtFreeze": "be4e54e92285cef24f4b4c5442383a8076df6664",
+  "supersedesOnly": [
+    "DEFER_ALL_HUMAN_REVIEW_UNTIL_FINAL",
+    "ONE_DEV_MATERIALIZATION_ONLY"
+  ],
+  "preserves": [
+    "ONE_CUMULATIVE_CANDIDATE",
+    "ONE_FINAL_CERTIFIED_ARTIFACT",
+    "RECOVER_DO_NOT_REBUILD",
+    "45_OBSERVATIONS",
+    "MODULE_TRUTH_V7",
+    "NO_PRODUCTION_BEFORE_I3_GO_AND_I4_AUTH"
+  ],
+  "blockStateMachine": [
+    "OWNER_PROVEN",
+    "SOURCE_FIXED",
+    "SOURCE_PROVEN",
+    "DEV_BLOCK_MATERIALIZED",
+    "TECHNICAL_E2E_PASS",
+    "TINYFISH_PRE_HUMAN_PASS",
+    "PAULA_HUMAN_PASS",
+    "BLOCK_LOCKED"
+  ],
+  "blocks": [
+    {
+      "id": "B1",
+      "name": "Identity + Mi Dia + shell identity",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "B2",
+      "name": "Mi Perfil + Shoppers Admin",
+      "status": "PENDING"
+    },
+    {
+      "id": "B3",
+      "name": "Mis Visitas + Agendar + Check-in",
+      "status": "PENDING"
+    },
+    {
+      "id": "B4",
+      "name": "Certificaciones",
+      "status": "PENDING"
+    },
+    {
+      "id": "B5",
+      "name": "Beneficios",
+      "status": "PENDING"
+    },
+    {
+      "id": "B6",
+      "name": "Dashboard + Visitas/Detalle",
+      "status": "PENDING"
+    },
+    {
+      "id": "B7",
+      "name": "Postulaciones/Asignaciones",
+      "status": "PENDING"
+    },
+    {
+      "id": "B8",
+      "name": "Finanzas",
+      "status": "PENDING"
+    },
+    {
+      "id": "B9",
+      "name": "Transversal final + final artifact + Gate20/Gate21",
+      "status": "PENDING"
+    }
+  ],
+  "tinyfishRequiredBeforePaula": true,
+  "paulaPassRequiredPerBlock": true,
+  "blockReceiptRequired": true,
+  "finalCertifiedArtifactCount": 1,
+  "production": "DO_NOT_TOUCH",
+  "nextExactAction": "B1_IDENTITY_VISIBLE_CANONICAL_PLUS_MIDIA_SHELL__SOURCE_PROOF__DEV__E2E__TINYFISH__PAULA"
+}
