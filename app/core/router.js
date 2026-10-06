@@ -106,12 +106,17 @@ CX.router = {
     const d=CX.data, p=d.period();
     const rail=document.getElementById('rail');
     const u=CX.session.user||{};
+    let railDisplayName=String(u.name||'').trim();
     if(role==='shopper'){
-      const sh=d.__sessionShopperProfile||((u.shopperId&&d.getShopper)?d.getShopper(u.shopperId):null);
+      let identity=null;
+      try{identity=window.CX_TYA_CANONICAL_SHOPPER_PORTAL?.resolveExactSessionShopper?.(d)||null;}catch(_){}
+      const sh=identity?.ok===true?identity.row:(d.__sessionShopperProfile||((u.shopperId&&d.getShopper)?d.getShopper(u.shopperId):null));
       const displayName=String(sh?.nombre||sh?.displayName||[sh?.firstName,sh?.lastName].filter(Boolean).join(' ')||'').trim();
+      railDisplayName=displayName||'Shopper';
+      if(identity?.ok===true&&identity.canonical)u.shopperId=String(identity.canonical);
       if(displayName)u.name=displayName;
     }
-    const initials=(u.name||'CX').split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
+    const initials=(railDisplayName||u.name||'CX').split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
 
     /* project switcher: admin ve todos; shopper solo los de su país; cliente solo su alcance (P0-3) */
     const visibleProjects = this.resolveVisibleProjects(role);
@@ -240,7 +245,7 @@ CX.router = {
       <nav class="rail-nav">${nav}</nav>
       <div class="rail-foot">
         <div class="rail-user"><div class="rail-av">${initials}</div>
-          <div><div style="font-size:12.5px;font-weight:700;color:#fff" title="${(u.name||'Usuario demo').replace(/"/g,'&quot;')}">${u.name||'Usuario demo'}</div>
+          <div><div style="font-size:12.5px;font-weight:700;color:#fff" title="${(role==='shopper'?railDisplayName:(u.name||'Usuario demo')).replace(/"/g,'&quot;')}">${role==='shopper'?railDisplayName:(u.name||'Usuario demo')}</div>
           <div style="font-size:10.5px;color:rgba(255,255,255,.5)" title="${_roleLineLbl+((u.scopePaises&&u.scopePaises.length)?' · 🌎 alcance multipaís: '+u.scopePaises.join('/'):'')}">${_roleLineLbl}${(u.scopePaises&&u.scopePaises.length)?' · 🌎 '+u.scopePaises.join('/'):''}</div></div></div>
         <button class="rail-logout" id="logoutBtn">Cerrar sesión</button>
       </div>`;

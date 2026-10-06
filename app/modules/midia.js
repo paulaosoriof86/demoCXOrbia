@@ -14,9 +14,24 @@ CX.module('midia', ({data,role,ui})=>{
      primera carga o cambio real de periodo; navegación manual (‹ ›) se conserva mientras el
      periodo no cambie. */
   if(_cgLastPeriod!==data.currentPeriodId){ _cgMonth=data.periodMonth(data.currentPeriodId); _cgLastPeriod=data.currentPeriodId; }
+  /* B1: toda identidad visible/privada Shopper se resuelve desde el mismo owner exacto que Mi Perfil.
+     session.user.name queda como transporte de sesión, nunca como autoridad visual primaria. */
+  const exactSessionIdentity=()=>{
+    if(role!=='shopper')return null;
+    try{
+      const exact=window.CX_TYA_CANONICAL_SHOPPER_PORTAL?.resolveExactSessionShopper?.(data)||null;
+      if(exact?.ok===true)return exact;
+    }catch(_){}
+    const raw=String(CX.session?.user?.shopperId||'').trim();
+    const canonical=raw?String(data.__identityMap?.[raw]||raw).trim():'';
+    const row=canonical&&data.getShopper?data.getShopper(canonical):null;
+    return canonical&&row?{ok:true,raw,canonical,row}:{ok:false,raw,canonical,row:null};
+  };
+  const sessionShopperId=()=>{const x=exactSessionIdentity();return x?.ok===true?String(x.canonical||x.row?.id||x.row?.shopperId||'').trim():'';};
+  const sessionShopperDisplayName=()=>{const x=exactSessionIdentity(),s=x?.row;return String(s?.nombre||s?.displayName||[s?.firstName,s?.lastName].filter(Boolean).join(' ')||'Shopper').trim();};
   /* bloque de notificaciones (común a ambos roles) */
   const notifBlock=()=>{
-    const sid=(CX.session.user&&CX.session.user.shopperId)||null;
+    const sid=role==='shopper'?sessionShopperId():null;
     const currentApproval=n=>{
       if(role!=='shopper'||n.tipo!=='aprobada')return true;
       if(!sid)return false;
@@ -64,7 +79,7 @@ CX.module('midia', ({data,role,ui})=>{
      activo). Periodo vacío: data.visitas() ya devuelve [] honestamente — el calendario se ve sin
      puntos, no reutiliza eventos de otro periodo. */
   const cronograma=()=>{
-    const sid=(CX.session.user||{}).shopperId||null;
+    const sid=role==='shopper'?sessionShopperId():null;
     const projName=(id)=>{const pr=data.projects.find(x=>x.id===id);return pr?pr.name:'';};
     let pool = _cgProj==='ALL' ? data._visitas.filter(v=>data.inScope(v.pais)) : data.visitas();
     let vis;
@@ -147,8 +162,8 @@ CX.module('midia', ({data,role,ui})=>{
   bindNotif();
   /* P0 (V172): 'sh1' hardcodeado eliminado; el shopper ve SOLO sus visitas por shopperId real.
      El estado (asignada/agendada) NO sustituye identidad. Sin shopperId: cero contenido privado. */
-  const _rawSid=String((CX.session.user||{}).shopperId||'').trim();
-  const _mySid=_rawSid?String(data.__identityMap?.[_rawSid]||_rawSid).trim():null;
+  const _mySid=sessionShopperId();
+  const _shopperDisplayName=sessionShopperDisplayName();
   /* VRM-256: "Tu próxima visita" debe pertenecer al período activo. Antes se tomaban
      las primeras visitas históricas del shopper y podía mostrarse una visita realizada de
      otro período bajo el encabezado del período actual. */
@@ -166,12 +181,14 @@ CX.module('midia', ({data,role,ui})=>{
     ['Asignación confirmada',!!vf.assigned],['Instructivo leído',!!nextVisit.instructiveReadAt],['Certificación del proyecto',certDone],['Agendamiento',!!vf.scheduled],['Visita realizada',!!vf.realized],['Cuestionario completado',!!vf.questionnaire],['Submitida',!!vf.submitted],['Pago confirmado',!!vf.paymentConfirmed]
   ]:[];
   return `
-    ${ui.ph('Mi Día', 'Hola, '+CX.session.user.name.split(' ')[0]+' 👋 · '+data.programBase(p)+' · periodo '+(p.periodo||p.ronda||p.name))}
-    <div class="card card-p" style="margin-bottom:16px;border-left:3px solid var(--brand)">
-      <div class="card-h"><div class="card-t">Tu próxima visita</div>${nextVisit?(vf.scheduled?ui.bdg('Agendada','b'):ui.bdg('Pendiente de agendar','a')):''}</div>
-      ${nextVisit?`<div style="font-size:15px;font-weight:700;color:var(--t1)">${nextVisit.sucursal}</div>
-      <div style="font-size:12px;color:var(--t3);margin:3px 0 12px">Rango ${nextVisit.rango||'—'} · ${nextVisit.honorario!=null?ui.money(nextVisit.currency,nextVisit.honorario):'Honorario pendiente de fuente'}${nextVisit.combo?' + '+nextVisit.combo:''}</div>
-      <div class="flex wrap"><button class="btn btn-pr btn-sm" data-cgo="misvisitas">📅 Agendar</button><button class="btn btn-ghost btn-sm" data-cgo="misvisitas">📄 Instructivo</button><button class="btn btn-ghost btn-sm" data-cgo="misvisitas">🔄 Reprogramar</button></div>`:ui.empty('🧭','Sin visitas activas')}
+    ${ui.ph('Mi Día', 'Hola, '+(_shopperDisplayName.split(' ')[0]||'Shopper')+' 👋 · '+data.programBase(p)+' · periodo '+(p.periodo||p.ronda||p.name))}
+    <div class="card card-p cx-shopper-visit-card" style="margin-bottom:16px">
+      <div class="between cx-visit-card-head">
+        <div><div class="cx-visit-kicker">🧭 PRÓXIMA VISITA</div>${nextVisit?`<b class="cx-visit-title">${nextVisit.sucursal}</b><div class="cx-visit-location">📍 ${nextVisit.ciudad||'Ubicación pendiente'} · ${nextVisit.escenario||'Escenario operativo'} · ${p.periodo||p.ronda||p.name}</div>`:'<b class="cx-visit-title">Sin visitas activas</b>'}</div>
+        ${nextVisit?(vf.scheduled?ui.bdg('📅 Agendada','b'):ui.bdg('🧭 Pendiente de agendar','a')):''}
+      </div>
+      ${nextVisit?`<div class="cx-visit-payline"><span>📆 Rango ${nextVisit.rango||'—'}</span><span>💵 ${nextVisit.honorario!=null?ui.money(nextVisit.currency,nextVisit.honorario):'Honorario pendiente de fuente'}</span>${nextVisit.combo?`<span>🍿 ${typeof nextVisit.combo==='string'?nextVisit.combo:'Combo incluido'}</span>`:''}</div>
+      <div class="flex wrap cx-visit-actions"><button class="btn btn-pr btn-sm" data-cgo="misvisitas">📅 Agendar</button><button class="btn btn-ghost btn-sm" data-cgo="misvisitas">📄 Instructivo</button><button class="btn btn-ghost btn-sm" data-cgo="misvisitas">🔄 Reprogramar</button></div>`:ui.empty('🧭','Sin visitas activas')}
     </div>
     ${nextVisit?`<div class="card card-p cx-day-progress-card" style="margin-bottom:16px">
       <div class="card-h"><div><div class="cx-day-progress-kicker">🧭 TU RUTA</div><div class="card-t">Progreso de la visita</div></div><span class="muted" style="font-size:11px">${steps.filter(x=>x[1]).length}/${steps.length} completados</span></div>
