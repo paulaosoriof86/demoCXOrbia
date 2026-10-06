@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_B1_IDENTITY_LIVE_READBACK_REQUIRED",
+  "status": "HOLD_B1_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "be4e54e92285cef24f4b4c5442383a8076df6664",
-  "productTreeAuthority": "53061fa8d5faae8f0213840ff9d12d4a710508a3",
-  "predecessorProductSourceSha": "b5d63c20dcd0e30a9c3d9f5f8520c28e481d0718",
+  "productSourceSha": "6232caedfcfd1e0136b5ece5f55bfaa0c1b3934a",
+  "productTreeAuthority": "5ab902bad55e52ef3a06953fbe27eeb70c263fc6",
+  "predecessorProductSourceSha": "be4e54e92285cef24f4b4c5442383a8076df6664",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V285_2026-10-06.json",
   "findingsLedgerExpectedGitBlob": "f08610a2d7f9679a6df609ceaa27b30180cb3575",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261006-V7.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "B1_IDENTITY_VISIBLE_CANONICAL_LIVE_READBACK",
+  "activeBlocker": "B1_CANONICAL_VISIBLE_IDENTITY_SOURCE_PROOF",
   "nextFindingId": "VRM-260",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN_CANONICAL_REPRESENTATIVE_LIVE_REPROOF_WITH_B1_IDENTITY_FIELDS__NO_PRODUCT_CHANGE",
+  "exactNextAction": "RUN_B1_SOURCE_PROOF__NO_DEV_BEFORE_PASS",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -4816,6 +4816,21 @@
     "activeBlock": "B1",
     "finalCertifiedArtifactCount": 1,
     "production": "DO_NOT_TOUCH",
-    "b1State": "LIVE_READBACK_REQUIRED"
+    "b1State": "SOURCE_PROOF_REQUIRED"
+  },
+  "b1CanonicalVisibleIdentity": {
+    "classification": "FUNCTIONAL_DEFECT_PLUS_VISUAL_DEFECT",
+    "predecessorSha": "be4e54e92285cef24f4b4c5442383a8076df6664",
+    "sourceSha": "6232caedfcfd1e0136b5ece5f55bfaa0c1b3934a",
+    "sourceTree": "5ab902bad55e52ef3a06953fbe27eeb70c263fc6",
+    "owners": [
+      "app/core/router.js",
+      "app/modules/midia.js"
+    ],
+    "test": "backend/runtime/hr-live-service/test/cxorbia-b1-canonical-visible-identity.test.mjs",
+    "liveReadbackRunId": 37529557485,
+    "liveReadbackFinding": "CLEAN_SESSION_CANONICAL_JULISSA_PROVEN__VISIBLE_CONSUMERS_MUST_USE_EXACT_RESOLVER",
+    "productDataWrites": 0,
+    "production": false
   }
 }
