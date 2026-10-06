@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM258_DEV_MATERIALIZATION_REQUIRED",
+  "status": "HOLD_VRM258_CONTROL_UPDATE_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Perform exactly one corrected DEV materialization of source b5d63c20dcd0e30a9c3d9f5f8520c28e481d0718/tree c8462a25832427390d96c288d74b76bd9f30ecc5 using the existing canonical materialization lane. No production. Then record exact artifact/runtime/Hosting/HR fingerprints and run same-artifact representative live reproof.",
+  "exactNextAction": "Apply control-only Run1253 receipt and Admin Julissa canonical-display harness expectation, then immediately advance to same-artifact live reproof. No build, no deploy, no writes, no production during this control update.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
