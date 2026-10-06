@@ -8,7 +8,7 @@ test('B1 shopper rail resolves the exact canonical shopper before rendering iden
   const s=read('app/core/router.js');
   assert.match(s,/resolveExactSessionShopper/);
   assert.match(s,/railDisplayName/);
-  assert.match(s,/identity\?\.canonical/);
+  assert.match(s,/identity\.canonical/);
   assert.match(s,/role==='shopper'\?railDisplayName/);
 });
 
