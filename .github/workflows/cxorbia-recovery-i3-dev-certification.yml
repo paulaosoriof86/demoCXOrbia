@@ -6677,7 +6677,7 @@ jobs:
           test "$MAT_RUN" -gt 0
           test "$MAT_ARTIFACT" -gt 0
           [[ "$MAT_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
-          [[ "$MAT_DECISION" =~ ^PASS_.*EXACT_DEV_MATERIALIZATION$ ]]
+          [[ "$MAT_DECISION" =~ ^PASS_.*EXACT_DEV(_HOSTING)?_MATERIALIZATION$ ]]
           test "$(jq -r '.currentMaterialization.production' "$CANDIDATE_DESCRIPTOR")" = "false"
           if [[ "$(jq -r '.activeBlocker // empty' "$CANDIDATE_DESCRIPTOR")" == "VRM-256" ]]; then
             test "$MAT_RUN" = "37377137444"
