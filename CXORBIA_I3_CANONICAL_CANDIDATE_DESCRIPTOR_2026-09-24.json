@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM259_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_VRM259_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,7 +8,7 @@
   "productTreeAuthority": "53061fa8d5faae8f0213840ff9d12d4a710508a3",
   "predecessorProductSourceSha": "b5d63c20dcd0e30a9c3d9f5f8520c28e481d0718",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V284_2026-10-04.json",
-  "findingsLedgerExpectedGitBlob": "4a76de30bbc856c213415c6844611c124decfef2",
+  "findingsLedgerExpectedGitBlob": "2607adf6bf866124048749b23e88004930e5fd51",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261003-V6.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run source-only proof for VRM-259 on source be4e54e92285cef24f4b4c5442383a8076df6664. Prove Postulaciones rail badge derives from the same canonical pending count and preserve all prior P0 regressions. Zero builds/deploys/writes; then exactly one DEV materialization and same-artifact live reproof.",
+  "exactNextAction": "Perform exactly one DEV materialization of VRM-259 source be4e54e92285cef24f4b4c5442383a8076df6664/tree 53061fa8d5faae8f0213840ff9d12d4a710508a3 using the existing canonical lane. No additional source changes, no production. Then record exact artifact/runtime/Hosting/HR fingerprints and repeat same-artifact live reproof.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -4672,8 +4672,24 @@
     "sourceSha": "be4e54e92285cef24f4b4c5442383a8076df6664",
     "sourceTree": "53061fa8d5faae8f0213840ff9d12d4a710508a3",
     "predecessorSha": "b5d63c20dcd0e30a9c3d9f5f8520c28e481d0718",
-    "sourceProofRequired": true,
-    "materializationAllowed": false,
-    "production": false
+    "sourceProofRequired": false,
+    "materializationAllowed": true,
+    "production": false,
+    "sourceProof": {
+      "runId": 37406787253,
+      "runNumber": 1259,
+      "controlHeadSha": "c9337d6d7655e8b9808afb4b9e63b4a16d3e089f",
+      "jobId": 112086066314,
+      "artifactId": 11387067886,
+      "artifactDigest": "sha256:db9e54ba20494a6e8ee4c4fc108754be921bb0654c3b6ec66dfc498b414f04ce",
+      "decision": "PASS_VRM259_SOURCE_REPROOF",
+      "sourceSha": "be4e54e92285cef24f4b4c5442383a8076df6664",
+      "sourceTree": "53061fa8d5faae8f0213840ff9d12d4a710508a3",
+      "regression": "PASS_VRM259_POSTULATIONS_RAIL_BADGE_SOURCE",
+      "builds": 0,
+      "deploys": 0,
+      "writes": 0,
+      "production": false
+    }
   }
 }

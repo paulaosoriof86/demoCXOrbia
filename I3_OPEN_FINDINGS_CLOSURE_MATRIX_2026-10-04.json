@@ -54,7 +54,6 @@
     "FIXED_PROVEN": 3
   },
   "nextCriticalSequence": [
-    "VRM-259_SOURCE_PROOF",
     "VRM-259_ONE_DEV_MATERIALIZATION",
     "VRM-259_SAME_ARTIFACT_LIVE_REPROOF"
   ],
@@ -8656,15 +8655,31 @@
         "sourceSha": "be4e54e92285cef24f4b4c5442383a8076df6664",
         "sourceTree": "53061fa8d5faae8f0213840ff9d12d4a710508a3"
       },
-      "rawLedgerState": "FIXED_SOURCE_PROOF_REQUIRED",
-      "realState": "SOURCE_FIX_PENDING_PROOF",
+      "rawLedgerState": "FIXED_SOURCE_PROVEN_RUN1259_DEV_MATERIALIZATION_REQUIRED",
+      "realState": "SOURCE_PROVEN_DEV_MATERIALIZATION_REQUIRED",
       "evidence": {
         "canonicalPending": 0,
         "staleRailBadge": 10
       },
-      "actionRemaining": "SOURCE_PROOF_THEN_ONE_DEV_MATERIALIZATION_THEN_SAME_ARTIFACT_LIVE_REPROOF",
+      "actionRemaining": "ONE_DEV_MATERIALIZATION_THEN_SAME_ARTIFACT_LIVE_REPROOF",
       "blocking": true,
-      "terminalDisposition": null
+      "terminalDisposition": null,
+      "sourceProof": {
+        "runId": 37406787253,
+        "runNumber": 1259,
+        "controlHeadSha": "c9337d6d7655e8b9808afb4b9e63b4a16d3e089f",
+        "jobId": 112086066314,
+        "artifactId": 11387067886,
+        "artifactDigest": "sha256:db9e54ba20494a6e8ee4c4fc108754be921bb0654c3b6ec66dfc498b414f04ce",
+        "decision": "PASS_VRM259_SOURCE_REPROOF",
+        "sourceSha": "be4e54e92285cef24f4b4c5442383a8076df6664",
+        "sourceTree": "53061fa8d5faae8f0213840ff9d12d4a710508a3",
+        "regression": "PASS_VRM259_POSTULATIONS_RAIL_BADGE_SOURCE",
+        "builds": 0,
+        "deploys": 0,
+        "writes": 0,
+        "production": false
+      }
     }
   ],
   "exactDevArtifactRole": "CURRENT_VRM249_SUCCESSOR",

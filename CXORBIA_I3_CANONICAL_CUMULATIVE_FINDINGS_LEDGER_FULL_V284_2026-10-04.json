@@ -18,7 +18,7 @@
     "sourceTree": "53061fa8d5faae8f0213840ff9d12d4a710508a3",
     "predecessorSha": "b5d63c20dcd0e30a9c3d9f5f8520c28e481d0718",
     "production": false,
-    "state": "VRM259_SOURCE_FIX_PENDING_SOURCE_PROOF",
+    "state": "VRM259_SOURCE_PROVEN_DEV_MATERIALIZATION_REQUIRED",
     "proof": {
       "state": "PASS_VRM249_SOURCE_REPROOF_AND_EXACT_DEV_MATERIALIZATION",
       "accumulatedSourceProofs": [
@@ -16493,7 +16493,7 @@
       "classification": "VISUAL_DEFECT",
       "severity": "P0",
       "title": "Postulaciones rail badge remains stale after canonical pending count renders zero",
-      "state": "FIXED_SOURCE_PROOF_REQUIRED",
+      "state": "FIXED_SOURCE_PROVEN_RUN1259_DEV_MATERIALIZATION_REQUIRED",
       "firstObservedAt": "RUN1258_2026-10-05",
       "rootCauseStatus": "PROVEN",
       "rootCause": "Admin Postulaciones rendered its canonical active-period truth after protected HR composition (0 pending, 13 assignments), but the sidebar badge could retain a bootstrap/pre-composition value (10). The module did not resynchronize #nav-postulaciones .n-badge from the same activePosts/c('pendiente') truth when its final route render committed.",
@@ -16528,6 +16528,22 @@
             "backend/runtime/hr-live-service/test/cxorbia-vrm259-postulations-rail-badge.test.mjs"
           ],
           "behavior": "On every Postulaciones route render, synchronize the rail badge from the same canonical c('pendiente') count after DOM commit.",
+          "production": false
+        },
+        "sourceProof": {
+          "runId": 37406787253,
+          "runNumber": 1259,
+          "controlHeadSha": "c9337d6d7655e8b9808afb4b9e63b4a16d3e089f",
+          "jobId": 112086066314,
+          "artifactId": 11387067886,
+          "artifactDigest": "sha256:db9e54ba20494a6e8ee4c4fc108754be921bb0654c3b6ec66dfc498b414f04ce",
+          "decision": "PASS_VRM259_SOURCE_REPROOF",
+          "sourceSha": "be4e54e92285cef24f4b4c5442383a8076df6664",
+          "sourceTree": "53061fa8d5faae8f0213840ff9d12d4a710508a3",
+          "regression": "PASS_VRM259_POSTULATIONS_RAIL_BADGE_SOURCE",
+          "builds": 0,
+          "deploys": 0,
+          "writes": 0,
           "production": false
         }
       },
@@ -17217,7 +17233,7 @@
     "nextFindingId": "VRM-260",
     "appendOnly": true,
     "omissionNeverCloses": true,
-    "terminalState": "HOLD_VRM259_SOURCE_PROOF_REQUIRED",
+    "terminalState": "HOLD_VRM259_DEV_MATERIALIZATION_REQUIRED",
     "newReproducibleEvidenceRevokesRelatedReadiness": true,
     "historicalPassEvidenceOnly": true,
     "run500HistoricalPassEvidenceOnly": true,
@@ -17498,7 +17514,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Run source-only proof for VRM-259 on source be4e54e92285cef24f4b4c5442383a8076df6664. Prove Postulaciones rail badge derives from the same canonical pending count and preserve all prior P0 regressions. Zero builds/deploys/writes; then exactly one DEV materialization and same-artifact live reproof.",
+  "exactNextAction": "Perform exactly one DEV materialization of VRM-259 source be4e54e92285cef24f4b4c5442383a8076df6664/tree 53061fa8d5faae8f0213840ff9d12d4a710508a3 using the existing canonical lane. No additional source changes, no production. Then record exact artifact/runtime/Hosting/HR fingerprints and repeat same-artifact live reproof.",
   "supersedesGitBlob": "820da41b786054cb8cd23e89827e1f7afbcdd3b3",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -21086,8 +21102,8 @@
     "humanAcceptance": "FAIL",
     "vrm168RootCause": "PROVEN_VISIT_ONLY_IDENTITY_RELATION_NOT_PROMOTED"
   },
-  "lastUpdatedAt": "2026-10-06T02:58:00Z",
-  "nextExactAction": "Run source-only proof for VRM-259 on source be4e54e92285cef24f4b4c5442383a8076df6664. Prove Postulaciones rail badge derives from the same canonical pending count and preserve all prior P0 regressions. Zero builds/deploys/writes; then exactly one DEV materialization and same-artifact live reproof.",
+  "lastUpdatedAt": "2026-10-06T03:00:00Z",
+  "nextExactAction": "Perform exactly one DEV materialization of VRM-259 source be4e54e92285cef24f4b4c5442383a8076df6664/tree 53061fa8d5faae8f0213840ff9d12d4a710508a3 using the existing canonical lane. No additional source changes, no production. Then record exact artifact/runtime/Hosting/HR fingerprints and repeat same-artifact live reproof.",
   "run946TechnicalClosure": {
     "runId": 37128494088,
     "runNumber": 946,
