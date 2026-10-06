@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM258_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_VRM258_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run exact source-only VRM-258 proof on corrected source b5d63c20dcd0e30a9c3d9f5f8520c28e481d0718. Require alias shopper_gt_86254c4228 to resolve to canonical shopper_gt_0c198c1055, canonical display Julissa Flores, visibleLogin julissa.flores, no separate alias shopper, VRM-168 preserved, and 0 builds/deploys/writes. Then exactly one corrected DEV materialization.",
+  "exactNextAction": "Perform exactly one corrected DEV materialization of source b5d63c20dcd0e30a9c3d9f5f8520c28e481d0718/tree c8462a25832427390d96c288d74b76bd9f30ecc5 using the existing canonical materialization lane. No production. Then record exact artifact/runtime/Hosting/HR fingerprints and run same-artifact representative live reproof.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -4564,8 +4564,8 @@
     "sourceSha": "b5d63c20dcd0e30a9c3d9f5f8520c28e481d0718",
     "sourceTree": "c8462a25832427390d96c288d74b76bd9f30ecc5",
     "predecessorSha": "dc06e5c1ab3896b88a5b66627ae551b40eef000b",
-    "sourceProofRequired": true,
-    "materializationAllowed": false,
+    "sourceProofRequired": false,
+    "materializationAllowed": true,
     "run1245": {
       "runId": 37389203710,
       "runNumber": 1245,
@@ -4615,6 +4615,18 @@
       "runtimeDeploys": 1,
       "hostingDeploys": 1,
       "storageRulesDeploys": 0,
+      "production": false
+    },
+    "correctedSourceProof": {
+      "runId": 37391543119,
+      "runNumber": 1252,
+      "jobId": 112037612792,
+      "workflowConclusion": "success",
+      "assertion": "vrm258_authorized_alias_keeps_canonical_display_name",
+      "vrm168Preserved": true,
+      "builds": 0,
+      "deploys": 0,
+      "writes": 0,
       "production": false
     }
   }
