@@ -18,8 +18,9 @@ test('B1 Mi Dia uses the same exact canonical identity owner for name and privat
   assert.match(s,/resolveExactSessionShopper/);
   assert.match(s,/const sessionShopperId=/);
   assert.match(s,/const sessionShopperDisplayName=/);
-  assert.doesNotMatch(s,/CX\.session\.user\.name\.split/);
+  assert.doesNotMatch(s,/Hola, '\+CX\.session\.user\.name/);
   assert.match(s,/Hola, '\+\(_shopperDisplayName\.split/);
+  assert.match(s,/Buen día, '\+\(CX\.session\.user\.name\.split/);
 });
 
 test('B1 Mi Dia reuses the accepted Mis Visitas visual language instead of a new frontend',()=>{
