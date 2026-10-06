@@ -8,20 +8,20 @@
   "productSourceSha": "b5d63c20dcd0e30a9c3d9f5f8520c28e481d0718",
   "productSourceTree": "c8462a25832427390d96c288d74b76bd9f30ecc5",
   "exactDevArtifact": {
-    "state": "PASS_VRM257_EXACT_DEV_MATERIALIZATION",
-    "runId": 37378446938,
-    "runNumber": 1242,
-    "controlHeadSha": "3d13e4ce8181dd7a085e980734868dd3c4917f87",
-    "jobId": 111993858201,
-    "artifactId": 11372621572,
-    "artifactDigest": "sha256:0af9f909e02083a7f728de536609298b89304513f9f92d3db71d952b36adea34",
-    "decision": "PASS_VRM257_EXACT_DEV_MATERIALIZATION",
-    "sourceSha": "f971ea18556e7be3ede0a26195e7977e4e706dfe",
-    "sourceTree": "3f0ebeab075ec841d1b2329d1ce7bf31523dc2f0",
-    "runtimeRevision": "cxorbia-live-hr-dev-00270-b5g",
-    "runtimeDigest": "sha256:4135bf92a8efd4b4be037874e8bb3768694db69533e4ac8f5e24cb53f0100e96",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/100161d350149fc8",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791237125034000",
+    "state": "PASS_VRM258_EXACT_DEV_MATERIALIZATION",
+    "runId": 37391640121,
+    "runNumber": 1253,
+    "controlHeadSha": "de78d0fc8f90a7d90199c8d5d6b3dc7b68532922",
+    "jobId": 112037944878,
+    "artifactId": 11381128238,
+    "artifactDigest": "sha256:72f5d639f1a0da18149d1080081b32ce1ba45402e9ad42611c2d7e551a7e9559",
+    "decision": "PASS_VRM258_EXACT_DEV_MATERIALIZATION",
+    "sourceSha": "b5d63c20dcd0e30a9c3d9f5f8520c28e481d0718",
+    "sourceTree": "c8462a25832427390d96c288d74b76bd9f30ecc5",
+    "runtimeRevision": "cxorbia-live-hr-dev-00272-69q",
+    "runtimeDigest": "sha256:236cb108ad11ca4a9c4527f518929f2bf4f7b206aaf35060a0c4f9b0d89c738f",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/70d25db38af1ab0f",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791245025235000",
     "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
     "builds": 1,
     "runtimeDeploys": 1,
@@ -54,8 +54,9 @@
     "FIXED_PROVEN": 2
   },
   "nextCriticalSequence": [
-    "VRM-258_ONE_CORRECTED_DEV_MATERIALIZATION",
-    "VRM-258_SAME_ARTIFACT_LIVE_REPROOF"
+    "VRM-258_SAME_ARTIFACT_LIVE_REPROOF",
+    "PAULA_VISUAL_CHECKPOINT",
+    "GATE20_GATE21_TERMINAL_CLOSURE"
   ],
   "production": "DO_NOT_TOUCH",
   "entries": [
@@ -8588,22 +8589,34 @@
         "state": "CORRECTED_SOURCE_PENDING_PROOF"
       },
       "latestLiveProof": {
-        "runId": 37389203710,
-        "runNumber": 1245,
-        "jobId": 112030047172,
-        "failure": "MAPPING_FAILURE:ADMIN_JULISSA_DISCOVERY",
+        "state": "PASS_VRM258_EXACT_DEV_MATERIALIZATION",
+        "runId": 37391640121,
+        "runNumber": 1253,
+        "controlHeadSha": "de78d0fc8f90a7d90199c8d5d6b3dc7b68532922",
+        "jobId": 112037944878,
+        "artifactId": 11381128238,
+        "artifactDigest": "sha256:72f5d639f1a0da18149d1080081b32ce1ba45402e9ad42611c2d7e551a7e9559",
+        "decision": "PASS_VRM258_EXACT_DEV_MATERIALIZATION",
+        "sourceSha": "b5d63c20dcd0e30a9c3d9f5f8520c28e481d0718",
+        "sourceTree": "c8462a25832427390d96c288d74b76bd9f30ecc5",
+        "runtimeRevision": "cxorbia-live-hr-dev-00272-69q",
+        "runtimeDigest": "sha256:236cb108ad11ca4a9c4527f518929f2bf4f7b206aaf35060a0c4f9b0d89c738f",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/70d25db38af1ab0f",
+        "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791245025235000",
         "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
-        "identityMapCollision": {
-          "shopper_gt_86254c4228": "shopper_gt_0c198c1055"
-        },
+        "builds": 1,
+        "runtimeDeploys": 1,
+        "hostingDeploys": 1,
+        "storageRulesDeploys": 0,
+        "scenarioDimensionsProven": true,
         "production": false
       },
       "successor": {
         "sourceSha": "b5d63c20dcd0e30a9c3d9f5f8520c28e481d0718",
         "sourceTree": "c8462a25832427390d96c288d74b76bd9f30ecc5"
       },
-      "rawLedgerState": "CORRECTED_SOURCE_PROVEN_RUN1249_DEV_MATERIALIZATION_REQUIRED",
-      "realState": "SOURCE_PROVEN_DEV_MATERIALIZATION_REQUIRED",
+      "rawLedgerState": "CORRECTED_DEV_MATERIALIZED_RUN1253_PENDING_SAME_ARTIFACT_LIVE_REPROOF",
+      "realState": "DEV_MATERIALIZED_PENDING_LIVE_REPROOF",
       "evidence": {
         "humanAuthority": "VRM-214 + Run1066",
         "canonicalShopperId": "shopper_gt_0c198c1055",
@@ -8611,7 +8624,7 @@
         "requiredDisplayName": "Julissa Flores",
         "invalidRun1247": true
       },
-      "actionRemaining": "ONE_CORRECTED_DEV_MATERIALIZATION_THEN_SAME_ARTIFACT_LIVE_REPROOF",
+      "actionRemaining": "SAME_ARTIFACT_LIVE_REPROOF",
       "blocking": true,
       "terminalDisposition": null,
       "sourceProof": {
