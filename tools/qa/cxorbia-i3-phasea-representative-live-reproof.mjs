@@ -256,6 +256,9 @@ try{
   };
   const illescas=await searchAdminShopper('Julissa Illescas');
   const flores=await searchAdminShopper('Julissa Flores');
+  const canonicalComposed=adminJulissaData.composed.find(x=>x.id==='shopper_gt_0c198c1055')||null;
+  const aliasComposed=adminJulissaData.composed.find(x=>x.id==='shopper_gt_86254c4228')||null;
+  const aliasMapped=adminJulissaData.identityMap.some(x=>x.liveId==='shopper_gt_86254c4228'&&x.canonicalId==='shopper_gt_0c198c1055');
   let clicked=false;
   if(flores.visible&&flores.sid){
     clicked=await page.evaluate(sid=>{
@@ -265,8 +268,8 @@ try{
       return true;
     },flores.sid);
   }
-  const shopperAdmin={julissaDiagnostics:adminJulissaData,floresVisible:flores.visible,illescasVisible:illescas.visible,floresRow:flores.row,illescasRow:illescas.row,floresSid:flores.sid,illescasSid:illescas.sid,clicked};
-  if(!shopperAdmin.floresVisible||!shopperAdmin.illescasVisible||!shopperAdmin.clicked)throw new Error('MAPPING_FAILURE:ADMIN_JULISSA_DISCOVERY:'+JSON.stringify(shopperAdmin));
+  const shopperAdmin={julissaDiagnostics:adminJulissaData,canonicalComposed,aliasComposed,aliasMapped,floresVisible:flores.visible,illescasVisible:illescas.visible,floresRow:flores.row,illescasRow:illescas.row,floresSid:flores.sid,illescasSid:illescas.sid,clicked};
+  if(!shopperAdmin.floresVisible||shopperAdmin.illescasVisible||shopperAdmin.floresSid!=='shopper_gt_0c198c1055'||shopperAdmin.canonicalComposed?.nombre!=='Julissa Flores'||shopperAdmin.aliasComposed||!shopperAdmin.aliasMapped||!shopperAdmin.clicked)throw new Error('FUNCTIONAL_DEFECT:ADMIN_JULISSA_CANONICAL_DISPLAY:'+JSON.stringify(shopperAdmin));
   await page.waitForTimeout(250);
   const modal=await page.evaluate(()=>{const m=[...document.querySelectorAll('[role="dialog"],.modal,.overlay,.ov')].find(x=>/Julissa Flores/i.test(String(x.innerText||'')))||[...document.querySelectorAll('body *')].find(x=>/Revisar \/ fusionar identidad/i.test(String(x.innerText||''))&&/Instruir perfil/i.test(String(x.innerText||'')));const text=String(m?.innerText||document.body.innerText||'');return {manualMerge:/Revisar \/ fusionar identidad|Resolver identidad/i.test(text),instructProfile:/Instruir perfil/i.test(text),text:text.slice(0,1800)};});
   if(!modal.manualMerge||!modal.instructProfile)throw new Error('FUNCTIONAL_DEFECT:ADMIN_IDENTITY_ACTIONS_MISSING:'+JSON.stringify(modal));
