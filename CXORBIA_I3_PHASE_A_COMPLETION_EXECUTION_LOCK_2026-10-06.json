@@ -1,0 +1,82 @@
+{
+  "lockId": "CXORBIA-I3-PHASE-A-COMPLETION-EXECUTION-LOCK-20261006",
+  "status": "FROZEN",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadBeforeFreeze": "64c5d79c0b96d713c1d67a488741197adb91486d",
+  "controlTreeBeforeFreeze": "c5a62d21ca8105433f13dd16e75810802efc3cbd",
+  "productSourceAtFreeze": "be4e54e92285cef24f4b4c5442383a8076df6664",
+  "productTreeAtFreeze": "53061fa8d5faae8f0213840ff9d12d4a710508a3",
+  "humanVisualCheckpoint": "FAIL",
+  "observationAuthority": {
+    "path": "RECOVERY-I3-HUMAN-VISUAL-FAIL-OBSERVATION-MAP-20261006.json",
+    "count": 45,
+    "vrm260Consumed": false
+  },
+  "moduleTruthAuthority": {
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261006-V7.json",
+    "domainCount": 21,
+    "MATCH": 13,
+    "APPROVED_NOT_COMPOSED": 3,
+    "TRUE_FUNCTIONAL_DEFECT": 5,
+    "phaseAComplete": false,
+    "allModulesMatch": false
+  },
+  "blockingDomains": [
+    {"domain":"base-router-shell-cache","classification":"APPROVED_NOT_COMPOSED"},
+    {"domain":"benefits","classification":"APPROVED_NOT_COMPOSED"},
+    {"domain":"dashboard-operation","classification":"APPROVED_NOT_COMPOSED"},
+    {"domain":"certifications","classification":"TRUE_FUNCTIONAL_DEFECT"},
+    {"domain":"finance-core-liquidation-costs","classification":"TRUE_FUNCTIONAL_DEFECT"},
+    {"domain":"identity-membership-roll-forward","classification":"TRUE_FUNCTIONAL_DEFECT"},
+    {"domain":"shoppers-mi-visitas-profile","classification":"TRUE_FUNCTIONAL_DEFECT"},
+    {"domain":"visits-review-postulations-reservations","classification":"TRUE_FUNCTIONAL_DEFECT"}
+  ],
+  "preserveAuthorities": [
+    "Academia current accepted UX",
+    "Mi Perfil current approved direction",
+    "Mis Visitas current approved direction",
+    "Julissa Flores canonical adjudication",
+    "identity merge/adjudication functionality",
+    "revision-admin exact MATCH while no drift",
+    "VRM-259 closed unless exact drift"
+  ],
+  "financeHistoricalCut": {
+    "through": "2026-07",
+    "state": "paid_and_historically_reconciled",
+    "augustPaidDate": "2026-10-02",
+    "septemberPaidSubsetDate": "2026-10-02",
+    "liveFinanceStart": "2026-10-01",
+    "inferSeptemberPaidRows": false
+  },
+  "embeddedExternalHr": {
+    "classification": "P1_POST_GO_LIVE_UNLESS_PRIOR_PHASE_A_P0_PROVEN",
+    "authority": "external provider/Google Sheet",
+    "localCopyTruth": false,
+    "writesRequireAckIdempotency": true
+  },
+  "monotonicStateMachine": [
+    "OPEN_OR_REOPENED","OWNER_PROVEN","SOURCE_FIXED","SOURCE_PROVEN","DEV_MATERIALIZED","LIVE_E2E_PASS","HUMAN_PASS","GATE20_PASS","GATE21_PASS","I3_GO"
+  ],
+  "executionLane": [
+    "I3-A_COMPLETION_LOCK",
+    "I3-B_ONE_CUMULATIVE_PRODUCT_SOURCE_SUCCESSOR",
+    "I3-C_SOURCE_PROOF_21_OF_21_MATCH",
+    "I3-D_ONE_DEV_MATERIALIZATION",
+    "I3-E_SAME_ARTIFACT_LIVE_E2E",
+    "I3-F_ONE_HUMAN_VISUAL_CHECKPOINT",
+    "I3-G_GATE20_GATE21_SAME_ARTIFACT",
+    "I4_EXPLICIT_AUTH_IMMUTABLE_PRODUCTION_REPLACEMENT",
+    "PRODUCTION_LOCK"
+  ],
+  "prohibitions": [
+    "another_candidate","another_branch","overlay","materializer","general_reaudit","wholesale_revert","reimport","legacy_database_copy","production_before_I3_GO_and_explicit_I4_auth","rebuild_between_certification_and_production"
+  ],
+  "nextExactAction": "BUILD_ONE_CUMULATIVE_PRODUCT_SOURCE_SUCCESSOR_FROM_APPROVED_MODULE_AUTHORITIES_PLUS_LATER_P0_PROVEN_DELTAS__SOURCE_PROOF_BEFORE_DEV",
+  "production": "DO_NOT_TOUCH",
+  "addendum": {
+    "path": "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-10-06_PHASE_A_COMPLETION_EXECUTION_LOCK_FROZEN.md",
+    "sha256": "1971f41d8970c9b4584050f3b6e082a4842d079d57c86afe2775d53bef8e373c"
+  }
+}
