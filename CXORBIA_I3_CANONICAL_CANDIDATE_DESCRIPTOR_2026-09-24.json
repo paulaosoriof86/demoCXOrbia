@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_HUMAN_VISUAL_REJECTION_CUMULATIVE_REMEDIATION_REQUIRED",
+  "status": "HOLD_PHASE_A_COMPLETION_EXECUTION_LOCK_ACTIVE",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "CREATE_ONE_CUMULATIVE_PRODUCT_SOURCE_SUCCESSOR_FROM_APPROVED_FRONTEND_AUTHORITY_PLUS_LATER_P0_PROVEN_DELTAS__SOURCE_PROOF_BEFORE_DEV_BUILD",
+  "exactNextAction": "BUILD_ONE_CUMULATIVE_PRODUCT_SOURCE_SUCCESSOR_FROM_APPROVED_MODULE_AUTHORITIES_PLUS_LATER_P0_PROVEN_DELTAS__SOURCE_PROOF_BEFORE_DEV",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -4788,5 +4788,23 @@
     "nextFindingIdPreserved": "VRM-260",
     "productChanged": false,
     "production": false
+  },
+  "phaseACompletionExecutionLock": {
+    "status": "FROZEN",
+    "addendumPath": "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-10-06_PHASE_A_COMPLETION_EXECUTION_LOCK_FROZEN.md",
+    "addendumSha256": "1971f41d8970c9b4584050f3b6e082a4842d079d57c86afe2775d53bef8e373c",
+    "machineLockPath": "CXORBIA_I3_PHASE_A_COMPLETION_EXECUTION_LOCK_2026-10-06.json",
+    "machineLockSha256": "9198a68c3cb70628835a654f804ed5a8431370ddf040f693d7f3d3b1f552a884",
+    "observationMapPath": "RECOVERY-I3-HUMAN-VISUAL-FAIL-OBSERVATION-MAP-20261006.json",
+    "observationCount": 45,
+    "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261006-V7.json",
+    "phaseADomains": 21,
+    "match": 13,
+    "approvedNotComposed": 3,
+    "trueFunctionalDefect": 5,
+    "humanCheckpoint": "FAIL",
+    "vrm260Consumed": false,
+    "nextExactAction": "I3-B_ONE_CUMULATIVE_PRODUCT_SOURCE_SUCCESSOR__SOURCE_PROOF_BEFORE_DEV",
+    "production": "DO_NOT_TOUCH"
   }
 }
