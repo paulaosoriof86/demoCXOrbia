@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_B1_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_B1_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "17373b4f79a68fed4155fed67aa23d3306fda2e2",
   "productTreeAuthority": "8bba316baa878ca37928404586d882a06734e628",
   "predecessorProductSourceSha": "6232caedfcfd1e0136b5ece5f55bfaa0c1b3934a",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V288_2026-10-06.json",
-  "findingsLedgerExpectedGitBlob": "c38e71f9246ed535835b1827089a9c73a06cf7fd",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V289_2026-10-06.json",
+  "findingsLedgerExpectedGitBlob": "c7479c64949198943e6ba1cd453362ed23cb6bfd",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261006-V7.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "B1_TRANSVERSAL_SHOPPER_ACTION_SOURCE_PROOF",
+  "activeBlocker": "B1_DEV_HOSTING_MATERIALIZATION",
   "nextFindingId": "VRM-260",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN_B1_TRANSVERSAL_SHOPPER_ACTION_SOURCE_PROOF",
+  "exactNextAction": "MATERIALIZE_B1_TRANSVERSAL_SHOPPER_ACTION_SUCCESSOR_TO_DEV_HOSTING_ONLY",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -4855,12 +4855,23 @@
     "productDataWrites": 0,
     "production": false,
     "sourceProof": {
-      "runId": 37531710035,
-      "runNumber": 1275,
-      "jobId": 112502561250,
-      "artifactId": 11444167950,
-      "artifactDigest": "sha256:74950a7012fa115a02f25c726c398f12073459c329b559204b147e6a4ad82b38",
-      "decision": "PASS_B1_CANONICAL_VISIBLE_IDENTITY_SOURCE_PROOF"
+      "state": "PASS_B1_TRANSVERSAL_SHOPPER_ACTION_SOURCE_PROOF",
+      "runId": 37559982719,
+      "runNumber": 1285,
+      "jobId": 112594870893,
+      "artifactId": 11456411779,
+      "artifactDigest": "sha256:93306c586b48104bc3189a1096fe424ebf54de8f4915dded656f5af9a5234f13",
+      "decision": "PASS_B1_TRANSVERSAL_SHOPPER_ACTION_SOURCE_PROOF",
+      "sourceSha": "17373b4f79a68fed4155fed67aa23d3306fda2e2",
+      "sourceTree": "8bba316baa878ca37928404586d882a06734e628",
+      "focalTests": {
+        "b1Identity": 4,
+        "b1TransversalActions": 6,
+        "progressiveRoute": 1,
+        "gate9Regression": 5,
+        "failed": 0
+      },
+      "production": false
     },
     "devMaterialization": {
       "state": "PASS_B1_EXACT_DEV_HOSTING_MATERIALIZATION",
@@ -4885,7 +4896,7 @@
       "hrWrites": 0,
       "production": false
     },
-    "nextState": "SOURCE_PROOF_REQUIRED",
+    "nextState": "DEV_MATERIALIZATION_REQUIRED",
     "technicalE2E": {
       "runId": 37536774581,
       "runNumber": 1280,
@@ -4961,7 +4972,7 @@
     "nextAction": "FIX_B1_TRANSVERSAL_MI_DIA_ACTION_SEMANTICS_AND_SYNC_GUARD__REAL_MULTI_SHOPPER_ACTION_E2E"
   },
   "b1HumanFailFix": {
-    "state": "SOURCE_FIXED_PENDING_PROOF",
+    "state": "SOURCE_PROVEN_PENDING_DEV_MATERIALIZATION",
     "predecessorSourceSha": "6232caedfcfd1e0136b5ece5f55bfaa0c1b3934a",
     "sourceSha": "17373b4f79a68fed4155fed67aa23d3306fda2e2",
     "sourceTree": "8bba316baa878ca37928404586d882a06734e628",
@@ -4978,6 +4989,25 @@
       "certification authority aligned to durable/carryover",
       "bounded HR synchronization reset cycle"
     ],
-    "production": false
+    "production": false,
+    "sourceProof": {
+      "state": "PASS_B1_TRANSVERSAL_SHOPPER_ACTION_SOURCE_PROOF",
+      "runId": 37559982719,
+      "runNumber": 1285,
+      "jobId": 112594870893,
+      "artifactId": 11456411779,
+      "artifactDigest": "sha256:93306c586b48104bc3189a1096fe424ebf54de8f4915dded656f5af9a5234f13",
+      "decision": "PASS_B1_TRANSVERSAL_SHOPPER_ACTION_SOURCE_PROOF",
+      "sourceSha": "17373b4f79a68fed4155fed67aa23d3306fda2e2",
+      "sourceTree": "8bba316baa878ca37928404586d882a06734e628",
+      "focalTests": {
+        "b1Identity": 4,
+        "b1TransversalActions": 6,
+        "progressiveRoute": 1,
+        "gate9Regression": 5,
+        "failed": 0
+      },
+      "production": false
+    }
   }
 }
