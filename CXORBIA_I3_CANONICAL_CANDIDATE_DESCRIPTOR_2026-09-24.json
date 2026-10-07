@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
+  "status": "READY_FOR_HUMAN_VISUAL_CHECKPOINT",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "411e1e3712e6abfd60475aef16a75aecc7399c08",
   "productTreeAuthority": "0991894ed9396c334ca62c44626f5b6f2a5e3d14",
   "predecessorProductSourceSha": "1bd4805b33c3f9b10f06581c4c36fbbc0b3e0a04",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V321_2026-10-07.json",
-  "findingsLedgerExpectedGitBlob": "d6f9225b8cf94a3eb4df39972fb6e7392c662a89",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V31.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V322_2026-10-07.json",
+  "findingsLedgerExpectedGitBlob": "745911507003fae10ff5fb1ddba82ac827ee2b86",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V32.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM268_VRM269_ONE_FINAL_SAME_ARTIFACT_FUNCTIONAL_VISUAL_REPROOF",
+  "activeBlocker": "PAULA_HUMAN_VISUAL_CHECKPOINT_REQUIRED_BEFORE_I4",
   "nextFindingId": "VRM-271",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN_ONE_FINAL_SAME_ARTIFACT_LIVE_E2E_AND_VISUAL_REVIEW_ON_RUN1356_MATERIALIZATION",
+  "exactNextAction": "PAULA_VISUALIZES_THE_EXACT_RUN1356_DEV_ARTIFACT_AND_ACCEPTS_OR_REJECTS;_DO_NOT_ENTER_I4_WITHOUT_EXPLICIT_AUTHORIZATION",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -3446,56 +3446,33 @@
     "production": false
   },
   "visualCheckpointScope": {
-    "state": "REJECTED_BY_PAULA_20261006",
-    "sourceSha": "be4e54e92285cef24f4b4c5442383a8076df6664",
-    "sourceTree": "53061fa8d5faae8f0213840ff9d12d4a710508a3",
-    "materializationRunId": 37406898804,
-    "liveReproofRunId": 37409319996,
     "findingIds": [
-      "VRM-035",
-      "VRM-092",
-      "VRM-099",
-      "VRM-125",
-      "VRM-132",
-      "VRM-144",
-      "VRM-148",
-      "VRM-165",
-      "VRM-168",
-      "VRM-169",
-      "VRM-171",
-      "VRM-172",
-      "VRM-173",
-      "VRM-177",
-      "VRM-197",
-      "VRM-258",
-      "VRM-259"
+      "VRM-260",
+      "VRM-261",
+      "VRM-262",
+      "VRM-263",
+      "VRM-264",
+      "VRM-267",
+      "VRM-268",
+      "VRM-269",
+      "VRM-270"
     ],
     "modules": [
-      "shell-layout",
-      "mi-dia",
-      "mi-perfil",
-      "mis-visitas",
-      "certificaciones",
-      "beneficios",
-      "dashboard",
-      "visitas",
-      "postulaciones",
-      "shoppers",
-      "finanzas-liquidaciones-lotes",
-      "identity-adapters",
-      "finance-adapters",
-      "load-order"
+      "base-router-shell-cache",
+      "client-portal-reportkit",
+      "support-bulletins",
+      "shopper-benefits-reservations-news",
+      "admin-operations-finance-cert-resources"
     ],
-    "requiresAdminMatrix": true,
+    "requiresAdminMatrix": false,
     "requiresShopperPopulation": true,
     "representativeIdentities": [
-      "shopper_gt_0c198c1055",
-      "paula.osorio",
-      "representative_hn"
+      "Julissa Flores",
+      "Priscila López",
+      "Paula Osorio"
     ],
-    "humanAccepted": false,
-    "observationMap": "RECOVERY-I3-HUMAN-VISUAL-FAIL-OBSERVATION-MAP-20261006.json",
-    "production": false
+    "sameArtifactMaterializationRunId": 37678616331,
+    "sameArtifactCertificationRunId": 37679004913
   },
   "currentRemediationPackage": {
     "state": "CUMULATIVE_APPROVED_FRONTEND_FUNCTIONAL_RECOVERY_REQUIRED",
@@ -5891,5 +5868,149 @@
     "firestoreRulesDeploys": 0,
     "hrWrites": 0,
     "production": false
-  }
+  },
+  "i3TechnicalState": "GO",
+  "i4State": "BLOCKED_PENDING_PAULA_EXPLICIT_AUTHORIZATION",
+  "finalSameArtifactCertification": {
+    "decision": "PASS_I3_PHASEA_FINAL_SAME_ARTIFACT_FUNCTIONAL_VISUAL_CERTIFICATION",
+    "runId": 37679004913,
+    "runNumber": 1357,
+    "jobId": 112989963393,
+    "artifactId": 11508912500,
+    "artifactDigest": "sha256:78ac1e5c89cc175381adef69aa370ae3953a5edaecacb2619dd05db0ffb69fa2",
+    "artifactFileCount": 124,
+    "routeScreenshotCount": 108,
+    "sourceSha": "411e1e3712e6abfd60475aef16a75aecc7399c08",
+    "sourceTree": "0991894ed9396c334ca62c44626f5b6f2a5e3d14",
+    "materialization": {
+      "state": "PASS_VRM268_VRM269_HOSTING_ONLY_DEV_MATERIALIZATION",
+      "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+      "sourceSha": "411e1e3712e6abfd60475aef16a75aecc7399c08",
+      "sourceTree": "0991894ed9396c334ca62c44626f5b6f2a5e3d14",
+      "runId": 37678616331,
+      "runNumber": 1356,
+      "jobId": 112988606010,
+      "artifactId": 11508456266,
+      "artifactDigest": "sha256:1e17fb0642d776d8202a98046f291ab625aaba0b000f02048e6f8a5283deef5f",
+      "runtimeRevision": "cxorbia-live-hr-dev-00274-wvg",
+      "runtimeDigest": "sha256:6daac07ef92478f18ce8eec4972eb590230ae9e76b827d41d4bc5edae9452854",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/7e16d6cec566ef93",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791403238841000",
+      "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/35b87c26-8f64-43d4-ac6f-a244474a8a6c",
+      "firestoreRulesRelease": "projects/cxorbia-backend-dev/releases/cloud.firestore",
+      "hrRevision": "44c8a38a45800606ddb7db5c8ab902324bd7daf588fe8653165fd5e1b7e1a285",
+      "builds": 0,
+      "runtimeDeploys": 0,
+      "hostingDeploys": 1,
+      "firestoreRulesDeploys": 0,
+      "hrWrites": 0,
+      "production": false
+    },
+    "results": {
+      "representative": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+      "exhaustiveClickVisual": "PASS_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL",
+      "adminPostulations": "PASS_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE",
+      "adminReservations": "PASS_I3_ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE",
+      "providerSchedule": "PASS_VRM168_PROVIDER_SCHEDULE_PATH",
+      "finance": "PASS_PREI4_FINAL_FOCAL_FINANCE",
+      "certResources": "PASS_PREI4_CERT_RES_CUMULATIVE_DEV_LIVE"
+    },
+    "coverage": {
+      "shopper": "12/12",
+      "admin": "34/34",
+      "client": "10/10",
+      "clickCount": 34,
+      "actionFindings": []
+    },
+    "population": {
+      "activeShopperMemberships": 380,
+      "profiles": 573,
+      "currentHrVisits": 44,
+      "assignedHrVisits": 24,
+      "unresolvedMemberships": 0,
+      "duplicateActivePrincipals": 0,
+      "unresolvedAssignedVisits": 0,
+      "duplicateHrVisitKeys": 0
+    },
+    "representatives": {
+      "Julissa Flores": {
+        "shopperId": "shopper_gt_0c198c1055",
+        "ownVisits": 9,
+        "currentVisits": 1,
+        "branch": "C. Miraflores"
+      },
+      "Priscila López": {
+        "shopperId": "shopper_gt_4b32215b4e",
+        "ownVisits": 1,
+        "currentVisits": 1,
+        "branch": "C. Oakland Mall VIP"
+      },
+      "Paula Osorio": {
+        "shopperId": "shopper_gt_1440137b73",
+        "ownVisits": 8,
+        "currentVisits": 1,
+        "branch": "C. Paseo Cayalá"
+      }
+    },
+    "shopperActions": {
+      "reservationsFailClosedEligible0": true,
+      "benefitsReceiptDownloaded": true,
+      "supportCreated": true,
+      "supportPersistsReload": true,
+      "newsMarkedRead": true,
+      "newsDurableNewContext": true,
+      "reportsRendered": true
+    },
+    "visual": {
+      "clientCurrentOperations": {
+        "visits": 44,
+        "GT": 34,
+        "HN": 10
+      },
+      "literalTechnicalNewlineVisible": false,
+      "loginBrandingTenantCorrect": true,
+      "cuaHumanLikeBrowser": "PASS_NO_AUTH_FAILURE",
+      "representativeScreenshots": [
+        "clicks/full-julissa-flores-shopper-misvisitas.png",
+        "clicks/full-priscila-lopez-shopper-misvisitas.png",
+        "clicks/full-paula-osorio-shopper-beneficios.png",
+        "clicks/full-admin-admin-dashboard.png",
+        "clicks/full-client-client-cli_dashboard.png"
+      ]
+    },
+    "supportContinuity": {
+      "focalRunId": 37673516701,
+      "focalRunNumber": 1348,
+      "focalArtifactId": 11506780163,
+      "focalDecision": "PASS_VRM267_SUPPORT_FOCAL_LIVE",
+      "creation": true,
+      "remoteAck": true,
+      "durableReadback": true,
+      "reload": true,
+      "freshContext": true,
+      "shopperVisibility": true,
+      "adminVisibility": true,
+      "noDuplicate": true,
+      "idempotentReplay": true,
+      "cleanup": true,
+      "finalSameArtifactRun1357": {
+        "supportCreated": true,
+        "supportPersistsReload": true,
+        "relevantOwnerDrift": false
+      }
+    },
+    "cleanup": {
+      "adminFixtures": 0,
+      "reservationFixture": 0,
+      "providerSchedule": true,
+      "finance": true,
+      "certResources": true
+    },
+    "safety": {
+      "hrWrites": 0,
+      "production": false,
+      "noI4": true
+    }
+  },
+  "humanVisualCheckpointUrl": "https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV"
 }

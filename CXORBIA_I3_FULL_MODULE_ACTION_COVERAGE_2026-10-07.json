@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.full-module-action-coverage.v1",
-  "frozenAt": "2026-10-07T20:02:00Z",
+  "frozenAt": "2026-10-07T20:15:00Z",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
   "productSourceSha": "411e1e3712e6abfd60475aef16a75aecc7399c08",
   "artifactAuthority": {
@@ -94,20 +94,20 @@
       "mireportes"
     ],
     "benefitsRequired": true,
-    "currentState": "ROUTES_12_12_RUN1350_AUTOMATED_PASS__ENTRYPOINT_VISUAL_FIX_REPROOF_REQUIRED"
+    "currentState": "PASS_12_12_ACTIONS_AND_DURABILITY"
   },
   "admin": {
     "routesRequired": 34,
-    "currentState": "ROUTES_34_34_RUN1350_AUTOMATED_PASS__ENTRYPOINT_VISUAL_FIX_REPROOF_REQUIRED"
+    "currentState": "PASS_34_34_ACTIONS_LIFECYCLES_AND_CLEANUP"
   },
   "client": {
     "routesRequired": 10,
-    "currentState": "ROUTES_10_10_RUN1350_AUTOMATED_PASS__VISUAL_MAPPING_DEFECT_SOURCE_FIXED_REPROOF_REQUIRED"
+    "currentState": "PASS_10_10_HR_OPERATION_44_GT34_HN10"
   },
   "noPartialHumanCheckpoint": true,
-  "nextExactAction": "RUN_ONE_FINAL_SAME_ARTIFACT_LIVE_E2E_AND_VISUAL_REVIEW_ON_RUN1356_MATERIALIZATION",
+  "nextExactAction": "PAULA_HUMAN_VISUAL_CHECKPOINT_ON_EXACT_RUN1356_DEV_ARTIFACT",
   "production": false,
-  "currentState": "VRM268_VRM269_DEV_MATERIALIZED_FINAL_SAME_ARTIFACT_E2E_REQUIRED",
+  "currentState": "PASS_FULL_SAME_ARTIFACT_FUNCTIONAL_VISUAL_CERTIFICATION_READY_FOR_HUMAN_VISUAL_CHECKPOINT",
   "run1321DeepActionDiagnostic": {
     "runId": 37649334166,
     "runNumber": 1321,
@@ -383,5 +383,146 @@
     "firestoreRulesDeploys": 0,
     "hrWrites": 0,
     "production": false
+  },
+  "finalSameArtifactCertification": {
+    "decision": "PASS_I3_PHASEA_FINAL_SAME_ARTIFACT_FUNCTIONAL_VISUAL_CERTIFICATION",
+    "runId": 37679004913,
+    "runNumber": 1357,
+    "jobId": 112989963393,
+    "artifactId": 11508912500,
+    "artifactDigest": "sha256:78ac1e5c89cc175381adef69aa370ae3953a5edaecacb2619dd05db0ffb69fa2",
+    "artifactFileCount": 124,
+    "routeScreenshotCount": 108,
+    "sourceSha": "411e1e3712e6abfd60475aef16a75aecc7399c08",
+    "sourceTree": "0991894ed9396c334ca62c44626f5b6f2a5e3d14",
+    "materialization": {
+      "state": "PASS_VRM268_VRM269_HOSTING_ONLY_DEV_MATERIALIZATION",
+      "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+      "sourceSha": "411e1e3712e6abfd60475aef16a75aecc7399c08",
+      "sourceTree": "0991894ed9396c334ca62c44626f5b6f2a5e3d14",
+      "runId": 37678616331,
+      "runNumber": 1356,
+      "jobId": 112988606010,
+      "artifactId": 11508456266,
+      "artifactDigest": "sha256:1e17fb0642d776d8202a98046f291ab625aaba0b000f02048e6f8a5283deef5f",
+      "runtimeRevision": "cxorbia-live-hr-dev-00274-wvg",
+      "runtimeDigest": "sha256:6daac07ef92478f18ce8eec4972eb590230ae9e76b827d41d4bc5edae9452854",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/7e16d6cec566ef93",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791403238841000",
+      "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/35b87c26-8f64-43d4-ac6f-a244474a8a6c",
+      "firestoreRulesRelease": "projects/cxorbia-backend-dev/releases/cloud.firestore",
+      "hrRevision": "44c8a38a45800606ddb7db5c8ab902324bd7daf588fe8653165fd5e1b7e1a285",
+      "builds": 0,
+      "runtimeDeploys": 0,
+      "hostingDeploys": 1,
+      "firestoreRulesDeploys": 0,
+      "hrWrites": 0,
+      "production": false
+    },
+    "results": {
+      "representative": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+      "exhaustiveClickVisual": "PASS_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL",
+      "adminPostulations": "PASS_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE",
+      "adminReservations": "PASS_I3_ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE",
+      "providerSchedule": "PASS_VRM168_PROVIDER_SCHEDULE_PATH",
+      "finance": "PASS_PREI4_FINAL_FOCAL_FINANCE",
+      "certResources": "PASS_PREI4_CERT_RES_CUMULATIVE_DEV_LIVE"
+    },
+    "coverage": {
+      "shopper": "12/12",
+      "admin": "34/34",
+      "client": "10/10",
+      "clickCount": 34,
+      "actionFindings": []
+    },
+    "population": {
+      "activeShopperMemberships": 380,
+      "profiles": 573,
+      "currentHrVisits": 44,
+      "assignedHrVisits": 24,
+      "unresolvedMemberships": 0,
+      "duplicateActivePrincipals": 0,
+      "unresolvedAssignedVisits": 0,
+      "duplicateHrVisitKeys": 0
+    },
+    "representatives": {
+      "Julissa Flores": {
+        "shopperId": "shopper_gt_0c198c1055",
+        "ownVisits": 9,
+        "currentVisits": 1,
+        "branch": "C. Miraflores"
+      },
+      "Priscila López": {
+        "shopperId": "shopper_gt_4b32215b4e",
+        "ownVisits": 1,
+        "currentVisits": 1,
+        "branch": "C. Oakland Mall VIP"
+      },
+      "Paula Osorio": {
+        "shopperId": "shopper_gt_1440137b73",
+        "ownVisits": 8,
+        "currentVisits": 1,
+        "branch": "C. Paseo Cayalá"
+      }
+    },
+    "shopperActions": {
+      "reservationsFailClosedEligible0": true,
+      "benefitsReceiptDownloaded": true,
+      "supportCreated": true,
+      "supportPersistsReload": true,
+      "newsMarkedRead": true,
+      "newsDurableNewContext": true,
+      "reportsRendered": true
+    },
+    "visual": {
+      "clientCurrentOperations": {
+        "visits": 44,
+        "GT": 34,
+        "HN": 10
+      },
+      "literalTechnicalNewlineVisible": false,
+      "loginBrandingTenantCorrect": true,
+      "cuaHumanLikeBrowser": "PASS_NO_AUTH_FAILURE",
+      "representativeScreenshots": [
+        "clicks/full-julissa-flores-shopper-misvisitas.png",
+        "clicks/full-priscila-lopez-shopper-misvisitas.png",
+        "clicks/full-paula-osorio-shopper-beneficios.png",
+        "clicks/full-admin-admin-dashboard.png",
+        "clicks/full-client-client-cli_dashboard.png"
+      ]
+    },
+    "supportContinuity": {
+      "focalRunId": 37673516701,
+      "focalRunNumber": 1348,
+      "focalArtifactId": 11506780163,
+      "focalDecision": "PASS_VRM267_SUPPORT_FOCAL_LIVE",
+      "creation": true,
+      "remoteAck": true,
+      "durableReadback": true,
+      "reload": true,
+      "freshContext": true,
+      "shopperVisibility": true,
+      "adminVisibility": true,
+      "noDuplicate": true,
+      "idempotentReplay": true,
+      "cleanup": true,
+      "finalSameArtifactRun1357": {
+        "supportCreated": true,
+        "supportPersistsReload": true,
+        "relevantOwnerDrift": false
+      }
+    },
+    "cleanup": {
+      "adminFixtures": 0,
+      "reservationFixture": 0,
+      "providerSchedule": true,
+      "finance": true,
+      "certResources": true
+    },
+    "safety": {
+      "hrWrites": 0,
+      "production": false,
+      "noI4": true
+    }
   }
 }
