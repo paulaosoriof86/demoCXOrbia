@@ -162,17 +162,42 @@ async function deepShopperActions(page,target,key){
   await nav(page,'beneficios');
   cov.benefitFilterExercises=0;
   for(const sel of ['#benStatus','#benCountry','#benCurrency']){const loc=page.locator(sel);if(await loc.count()){const opts=await loc.locator('option').count();if(opts>1){await loc.selectOption({index:1});await page.waitForTimeout(100);await loc.selectOption({index:0});cov.benefitFilterExercises++;}}}
-  const receipt=page.getByRole('button',{name:/Descargar comprobante/i});
+  const originalBenefitPeriod=await page.locator('#periodSel').inputValue().catch(()=>'');
+  let benefitRows=await page.locator('#benCurrentTable tbody tr[data-ben-status]').count();
+  let exercisedPeriod=originalBenefitPeriod;
+  if(benefitRows===0&&await page.locator('#periodSel').count()){
+    const options=await page.locator('#periodSel option').evaluateAll(opts=>opts.map(o=>({value:String(o.value||''),label:String(o.textContent||'')})));
+    for(const opt of options.slice().reverse()){
+      if(!opt.value||opt.value===originalBenefitPeriod)continue;
+      await page.locator('#periodSel').selectOption(opt.value);await page.waitForTimeout(650);
+      benefitRows=await page.locator('#benCurrentTable tbody tr[data-ben-status]').count();
+      if(benefitRows>0){exercisedPeriod=opt.value;break;}
+    }
+  }
+  let receipt=page.getByRole('button',{name:/Descargar comprobante/i});
   if(await receipt.count()){
-    const beforeModal=await page.locator('.cx-ov:visible').count(),beforeView=await page.evaluate(()=>String(CX?.session?.view||''));
-    let downloaded=false;
-    try{const dl=page.waitForEvent('download',{timeout:1800});await receipt.click();result.clickCount++;await dl;downloaded=true;}catch(_){}
-    await page.waitForTimeout(180);
-    const afterModal=await page.locator('.cx-ov:visible').count(),afterView=await page.evaluate(()=>String(CX?.session?.view||''));
-    cov.benefitReceipt={present:true,downloaded,modalOpened:afterModal>beforeModal,routeChanged:afterView!==beforeView};
-    if(!downloaded&&afterModal<=beforeModal&&afterView===beforeView)finding('FUNCTIONAL_DEFECT','BENEFITS_RECEIPT_DOWNLOAD_INERT',{shopper:key});
-    await dismissOverlays(page);
-  }else cov.benefitReceipt={present:false};
+    const disabled=await receipt.isDisabled().catch(()=>false);
+    if(benefitRows>0){
+      let downloaded=false,fileName='';
+      try{
+        const [dl]=await Promise.all([page.waitForEvent('download',{timeout:6000}),receipt.click({timeout:6000})]);
+        result.clickCount++;downloaded=true;fileName=dl.suggestedFilename();
+      }catch(_){}
+      cov.benefitReceipt={present:true,periodId:exercisedPeriod,rowCount:benefitRows,downloaded,fileName,disabled};
+      if(!downloaded)finding('FUNCTIONAL_DEFECT','BENEFITS_RECEIPT_DOWNLOAD_INERT',{shopper:key,periodId:exercisedPeriod,rowCount:benefitRows});
+    }else{
+      let honestEmpty=disabled;
+      if(!disabled){
+        await receipt.click({timeout:5000});result.clickCount++;
+        honestEmpty=await page.locator('#cx-toasts .toast').filter({hasText:/No hay beneficios del periodo para descargar/i}).count()>0;
+      }
+      cov.benefitReceipt={present:true,periodId:exercisedPeriod,rowCount:0,downloaded:false,disabled,honestEmpty};
+      if(!honestEmpty)finding('FUNCTIONAL_DEFECT','BENEFITS_RECEIPT_EMPTY_STATE_NOT_FAIL_CLOSED',{shopper:key,periodId:exercisedPeriod});
+    }
+  }else cov.benefitReceipt={present:false,periodId:exercisedPeriod,rowCount:benefitRows};
+  if(originalBenefitPeriod&&exercisedPeriod!==originalBenefitPeriod&&await page.locator('#periodSel').count()){
+    await page.locator('#periodSel').selectOption(originalBenefitPeriod);await page.waitForTimeout(500);
+  }
 
   await nav(page,'soporte');
   const supportSubject='QA I3 SUPPORT '+String(process.env.GITHUB_RUN_ID||Date.now());
@@ -180,11 +205,18 @@ async function deepShopperActions(page,target,key){
   if(await newTab.count()){
     await newTab.click();result.clickCount++;
     await page.locator('#spAsunto').fill(supportSubject);
+    await page.locator('#spDet').fill('Prueba acotada de persistencia I3 · eliminar al finalizar').catch(()=>{});
     await page.locator('#spSend').click();result.clickCount++;
-    cov.supportCreated=await page.evaluate(s=>window.CX?.supportStore?.list?.().some(x=>String(x?.asunto||'')===s),supportSubject);
-    await waitReadyAfterReload(page,target.member,'shopper');
-    cov.supportPersistsReload=await page.evaluate(s=>window.CX?.supportStore?.list?.().some(x=>String(x?.asunto||'')===s),supportSubject);
-    if(cov.supportCreated&&!cov.supportPersistsReload)finding('PERSISTENCE_FAILURE','SUPPORT_TICKET_NOT_DURABLE_AFTER_RELOAD',{shopper:key});
+    cov.supportCreated=await page.waitForFunction(s=>window.CX?.supportStore?.list?.().some(x=>String(x?.asunto||'')===s),supportSubject,{timeout:20000}).then(()=>true).catch(()=>false);
+    if(!cov.supportCreated){
+      const toast=await page.locator('#cx-toasts .toast').last().innerText().catch(()=>'');
+      finding('PERSISTENCE_FAILURE','SUPPORT_TICKET_PROVIDER_ACK_NOT_OBSERVED',{shopper:key,toast});
+    }else{
+      await waitReadyAfterReload(page,target.member,'shopper');
+      await nav(page,'soporte');
+      cov.supportPersistsReload=await page.waitForFunction(s=>window.CX?.supportStore?.list?.().some(x=>String(x?.asunto||'')===s),supportSubject,{timeout:20000}).then(()=>true).catch(()=>false);
+      if(!cov.supportPersistsReload)finding('PERSISTENCE_FAILURE','SUPPORT_TICKET_NOT_DURABLE_AFTER_RELOAD',{shopper:key});
+    }
     const qs=await tenant.collection('bulletins').where('title','==','Nueva solicitud de soporte').get().catch(()=>null);
     if(qs){const batch=db.batch();let n=0;for(const doc of qs.docs){const row=doc.data()||{};if(String(row.body||'').includes(supportSubject)){batch.delete(doc.ref);n++;}}if(n)await batch.commit();}
   }else cov.supportCreated='NOT_APPLICABLE_WITH_REASON:no new request control';
@@ -194,12 +226,15 @@ async function deepShopperActions(page,target,key){
   if(await unread.count()){
     const bulletinId=await unread.getAttribute('data-id');
     await unread.click();result.clickCount++;
-    cov.newsMarkedRead=await page.evaluate(id=>window.CX?.novedades?.isRead?.(id)===true,bulletinId);
+    cov.newsMarkedRead=await page.waitForFunction(id=>window.CX?.novedades?.isRead?.(id)===true,bulletinId,{timeout:15000}).then(()=>true).catch(()=>false);
+    if(!cov.newsMarkedRead)finding('PERSISTENCE_FAILURE','NOVEDADES_READ_ACK_NOT_OBSERVED',{shopper:key,bulletinId});
     const second=await signed(target.member,'shopper');
     await nav(second.page,'novedades');
-    cov.newsDurableNewContext=await second.page.evaluate(id=>window.CX?.novedades?.isRead?.(id)===true,bulletinId);
+    cov.newsDurableNewContext=await second.page.waitForFunction(id=>window.CX?.novedades?.isRead?.(id)===true,bulletinId,{timeout:15000}).then(()=>true).catch(()=>false);
     await second.ctx.close();
     if(cov.newsMarkedRead&&!cov.newsDurableNewContext)finding('PERSISTENCE_FAILURE','NOVEDADES_READ_STATE_BROWSER_LOCAL_ONLY',{shopper:key,bulletinId});
+    const readId=String(target.member.id)+'_'+String(bulletinId||'');
+    await tenant.collection('bulletinReads').doc(readId).delete().catch(()=>{});
   }else cov.newsMarkedRead='NOT_APPLICABLE_WITH_REASON:no unread item';
 
   await nav(page,'mireportes');

@@ -102,9 +102,9 @@
     "currentState": "ROUTES_10_10_PASS_ACTION_CLOSURE_PENDING"
   },
   "noPartialHumanCheckpoint": true,
-  "nextExactAction": "RUN_SAME_ARTIFACT_LIVE_E2E_ON_RUN1328_MATERIALIZATION",
+  "nextExactAction": "RERUN_SAME_RUN1328_ARTIFACT_WITH_CORRECTED_DEEP_ACTION_ORACLE",
   "production": false,
-  "currentState": "VRM261_VRM264_EXACT_DEV_MATERIALIZED_LIVE_E2E_REQUIRED",
+  "currentState": "RUN1329_CONTROL_ORACLE_CORRECTION_PENDING_REPROOF",
   "run1321DeepActionDiagnostic": {
     "runId": 37649334166,
     "runNumber": 1321,
@@ -181,6 +181,24 @@
     "correctedSource": "4ab7fc91847a9d7da5af13c14b8eb0b82a96b652",
     "correctedTree": "6cea5789d3a6c109f22d96722dd790a5987930ef",
     "productMutationInThisCorrection": false,
+    "production": false
+  },
+  "controlOracleFindings": [
+    "VRM-265",
+    "VRM-266"
+  ],
+  "run1329Adjudication": {
+    "runId": 37657203321,
+    "runNumber": 1329,
+    "jobId": 112915325990,
+    "artifactId": 11499931423,
+    "artifactDigest": "sha256:6fd9476966391da9cda6ef5cb39067f8be5f9b4bb8d4377f728ec59c265527a0",
+    "vrm261": "PASS_LIVE",
+    "vrm262": "CONTROL_ORACLE_FALSE_NEGATIVE_PENDING_REPROOF",
+    "vrm263": "INCONCLUSIVE_CONTROL_TIMING",
+    "vrm264": "DURABLE_NEW_CONTEXT_TRUE_LOCAL_SAMPLE_PRE_ACK",
+    "productSourceSha": "4ab7fc91847a9d7da5af13c14b8eb0b82a96b652",
+    "materializationRunId": 37656521280,
     "production": false
   }
 }

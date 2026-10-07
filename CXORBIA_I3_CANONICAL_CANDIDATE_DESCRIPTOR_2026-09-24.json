@@ -7,14 +7,14 @@
   "productSourceSha": "4ab7fc91847a9d7da5af13c14b8eb0b82a96b652",
   "productTreeAuthority": "6cea5789d3a6c109f22d96722dd790a5987930ef",
   "predecessorProductSourceSha": "b7b8978cda791deea38316e34e6a2dd93e5c6137",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V308_2026-10-07.json",
-  "findingsLedgerExpectedGitBlob": "c41f45344fb2e2a2c7c27a97554c12008929d2ea",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V22.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V309_2026-10-07.json",
+  "findingsLedgerExpectedGitBlob": "0799b9e830cc1394f93f0e9ccd1e560b9494537b",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V23.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM261_VRM264_SAME_ARTIFACT_LIVE_E2E",
-  "nextFindingId": "VRM-265",
+  "activeBlocker": "VRM265_VRM266_CONTROL_ORACLE_REPROOF",
+  "nextFindingId": "VRM-267",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN_SAME_ARTIFACT_LIVE_E2E_ON_RUN1328_MATERIALIZATION",
+  "exactNextAction": "RERUN_SAME_RUN1328_ARTIFACT_WITH_CORRECTED_DEEP_ACTION_ORACLE",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -323,7 +323,7 @@
   },
   "technicalClosureReceipt": "CXORBIA_I3_TERMINAL_TECHNICAL_READY_2026-09-25.json",
   "i4": {
-    "status": "BLOCKED_PENDING_VRM261_VRM264_SAME_ARTIFACT_LIVE_E2E",
+    "status": "BLOCKED_PENDING_CORRECTED_SAME_ARTIFACT_LIVE_E2E",
     "productionAuthorization": false,
     "authorized": false,
     "production": "DO_NOT_TOUCH"
@@ -616,10 +616,13 @@
   },
   "lastControlFailure": {
     "classification": "MAPPING_FAILURE",
-    "runId": 37655904155,
-    "runNumber": 1326,
-    "jobId": 112910337614,
-    "code": "NEXT_FINDING_ID",
+    "runId": 37657203321,
+    "runNumber": 1329,
+    "jobId": 112915325990,
+    "findingIds": [
+      "VRM-265",
+      "VRM-266"
+    ],
     "productChanged": false,
     "deploys": 0,
     "production": false
@@ -2645,7 +2648,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "433ce83a4145bba145bc41d78ce01147f961573a",
+  "moduleTruthExpectedGitBlob": "fcc13d6a9004aa5a26aa6e937801eaf63e060129",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -5374,7 +5377,7 @@
     "production": false
   },
   "fullModuleActionCoveragePath": "CXORBIA_I3_FULL_MODULE_ACTION_COVERAGE_2026-10-07.json",
-  "fullModuleActionCoverageExpectedGitBlob": "bb499ba40127d255535eff00a7683c749f153094",
+  "fullModuleActionCoverageExpectedGitBlob": "a3253a9ef825706eca6942ce5f66117bbe45a73a",
   "run1321DeepActionDiagnostic": {
     "runId": 37649334166,
     "runNumber": 1321,
