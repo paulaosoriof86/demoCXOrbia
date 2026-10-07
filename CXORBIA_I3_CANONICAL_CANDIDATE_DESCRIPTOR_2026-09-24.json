@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "1b668d32341756fa8f621a8e22d1b0ef1c3884ab",
   "productTreeAuthority": "b4a2b4efc0ad9229509f8330a64401fafe7f2869",
   "predecessorProductSourceSha": "4ab7fc91847a9d7da5af13c14b8eb0b82a96b652",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V310_2026-10-07.json",
-  "findingsLedgerExpectedGitBlob": "ad3aa97a13ac65d0332ea596454c45087a15406d",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V24.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V311_2026-10-07.json",
+  "findingsLedgerExpectedGitBlob": "134194d5c20bc71234ecf3675b96cabfe6590d16",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V25.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM267_SUPPORT_AUTH_SOURCE_PROOF",
+  "activeBlocker": "VRM267_SUPPORT_AUTH_DEV_MATERIALIZATION",
   "nextFindingId": "VRM-268",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN_VRM267_SOURCE_PROOF_THEN_HOSTING_ONLY_DEV_MATERIALIZATION",
+  "exactNextAction": "HOSTING_ONLY_DEV_MATERIALIZATION_FROM_1B668_SOURCE",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -314,7 +314,7 @@
   },
   "technicalClosureReceipt": "CXORBIA_I3_TERMINAL_TECHNICAL_READY_2026-09-25.json",
   "i4": {
-    "status": "BLOCKED_VRM267_SOURCE_PROOF_AND_DEV_MATERIALIZATION",
+    "status": "BLOCKED_PENDING_VRM267_HOSTING_ONLY_DEV_MATERIALIZATION",
     "productionAuthorization": false,
     "authorized": false,
     "production": "DO_NOT_TOUCH"
@@ -414,7 +414,7 @@
     "production": false
   },
   "currentMaterialization": {
-    "state": "SUPERSEDED_BY_VRM267_FRONTEND_SOURCE_PENDING_PROOF",
+    "state": "VRM267_HOSTING_ONLY_PENDING",
     "decision": "PASS_REJECTED_PHASEA_EXACT_DEV_MATERIALIZATION",
     "sourceSha": "4ab7fc91847a9d7da5af13c14b8eb0b82a96b652",
     "sourceTree": "6cea5789d3a6c109f22d96722dd790a5987930ef",
@@ -2640,7 +2640,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "48727cccc054cbc37c055e436292d1baa5b178c6",
+  "moduleTruthExpectedGitBlob": "3c18d484cdde3f5acef711cec01553df66b8ad1a",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -5401,19 +5401,19 @@
   },
   "phaseACompositionFixSourceProof": {
     "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
-    "runId": 37656246240,
-    "runNumber": 1327,
-    "jobId": 112912012550,
-    "artifactId": 11497709838,
-    "artifactDigest": "sha256:77b1ac0cbd8c87f30fa35a6875bc7cd3f27c40722978dd3d247ba52e66625425",
-    "sourceSha": "4ab7fc91847a9d7da5af13c14b8eb0b82a96b652",
-    "sourceTree": "6cea5789d3a6c109f22d96722dd790a5987930ef",
-    "phaseAContract": {
+    "runId": 37661114579,
+    "runNumber": 1332,
+    "jobId": 112928666801,
+    "artifactId": 11501315571,
+    "artifactDigest": "sha256:32b4730c98b0aa1d9a430bd0c992510e8afd7aa3add87a87fe891a2ff6a3f551",
+    "sourceSha": "1b668d32341756fa8f621a8e22d1b0ef1c3884ab",
+    "sourceTree": "b4a2b4efc0ad9229509f8330a64401fafe7f2869",
+    "cumulativeTests": {
       "tests": 7,
       "pass": 7,
       "fail": 0
     },
-    "vrm261to264Contract": {
+    "focalTests": {
       "tests": 4,
       "pass": 4,
       "fail": 0
@@ -5481,6 +5481,28 @@
       "vrm264": "PASS_LIVE_READ_DURABLE_NEW_CONTEXT",
       "vrm263": "FAIL_SUPPORT_PROVIDER_ACK_NOT_OBSERVED"
     },
+    "production": false
+  },
+  "vrm267SourceProof": {
+    "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "runId": 37661114579,
+    "runNumber": 1332,
+    "jobId": 112928666801,
+    "artifactId": 11501315571,
+    "artifactDigest": "sha256:32b4730c98b0aa1d9a430bd0c992510e8afd7aa3add87a87fe891a2ff6a3f551",
+    "sourceSha": "1b668d32341756fa8f621a8e22d1b0ef1c3884ab",
+    "sourceTree": "b4a2b4efc0ad9229509f8330a64401fafe7f2869",
+    "cumulativeTests": {
+      "tests": 7,
+      "pass": 7,
+      "fail": 0
+    },
+    "focalTests": {
+      "tests": 4,
+      "pass": 4,
+      "fail": 0
+    },
+    "deploys": 0,
     "production": false
   }
 }
