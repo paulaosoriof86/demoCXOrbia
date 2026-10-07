@@ -6756,6 +6756,7 @@ jobs:
           TOKEN="$(gcloud auth print-access-token)"
           curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$VRM267_OUT/hosting.json"
           test "$(jq -r '.release.version.name' "$VRM267_OUT/hosting.json")" = "$EXPECTED_HOSTING"
+          npx firebase-tools deploy --only firestore:rules --project "$PROJECT" --non-interactive | tee "$VRM267_OUT/firestore-rules-deploy.log"
           curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases/cloud.firestore" > "$VRM267_OUT/firestore-release.json"
           FOCAL_SOURCE="$FOCAL_SOURCE" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" VRM267_OUT="$VRM267_OUT/live" node tools/qa/cxorbia-i3-vrm267-support-focal-live.mjs | tee "$VRM267_OUT/console.log"
           R="$VRM267_OUT/live/result.json"
