@@ -1,0 +1,17 @@
+{
+  "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+  "runId": 37620293425,
+  "runNumber": 1306,
+  "jobId": 112788640154,
+  "artifactId": 11481427548,
+  "artifactDigest": "sha256:40dc68e27c5f8f77dd5c66049707196d97e170d46cfcf887bfe6d23ac671ea0c",
+  "sourceSha": "9dee84dd31a0eff2cfa2de9ed0313af75e02769a",
+  "sourceTree": "768fb9ccc1f3ff49ff6bd94df092ea0fb772da8c",
+  "tests": 7,
+  "passed": 7,
+  "failed": 0,
+  "trueFunctionalDefects": 0,
+  "clickE2ERequired": true,
+  "deploys": 0,
+  "production": false
+}
