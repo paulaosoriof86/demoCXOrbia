@@ -840,24 +840,52 @@ CX.module('liquidaciones', ({data,ui})=>{
     host.querySelectorAll('#liqKpis [data-lk]').forEach(el=>el.addEventListener('click',()=>{const m=lkMap[el.dataset.lk];const arr=all.filter(m[1]);
       ui.modal(m[0]+' ('+arr.length+')',arr.length?`<table class="tbl"><thead><tr><th>Shopper</th><th>Sucursal</th><th>Total</th><th>Pago est.</th></tr></thead><tbody>${arr.map(l=>`<tr><td><b>${l.shopper||'—'}</b></td><td style="font-size:12px">${l.sucursal}</td><td style="font-weight:700">${_liqMoney(l,l.total)}</td><td style="font-size:12px">${l.fechaEstimadaPago||'—'}</td></tr>`).join('')}</tbody></table>`:ui.empty('💸','Sin liquidaciones en esta categoría.'));
     }));
-    // editar liquidación (corregir honorario/reembolso/fecha)
-    host.querySelectorAll('[data-ledit]').forEach(b=>b.addEventListener('click',()=>{ const l=all.find(x=>x.visitaId===b.dataset.ledit); const v=data._visitas.find(x=>x.id===b.dataset.ledit); if(!l||!v)return;
-      ui.modal('Editar liquidación · '+(l.shopper||''),`
-        <div style="font-size:12px;color:var(--t2);margin-bottom:10px">📍 ${l.sucursal} · estado: ${l.estado}</div>
-        <div class="grid g2" style="gap:10px 12px">
-          <div><label class="lbl">País</label><select class="sel" id="le_pais"><option value="">—</option>${p.countries.map(c=>`<option ${l.pais===c?'selected':''}>${c}</option>`).join('')}</select></div>
-          <div><label class="lbl">Moneda</label><input class="inp" id="le_moneda" value="${l.moneda||(l.pais&&p.currency&&p.currency[l.pais])||''}" placeholder="resuelve país" readonly></div>
-          <div><label class="lbl">Honorario <span id="le_curL" class="muted">${_lcur(l)||'(elige país)'}</span></label><input class="inp" id="le_hon" type="number" value="${l.honorario||0}"></div>
-          <div><label class="lbl">Reembolso</label><input class="inp" id="le_re" type="number" value="${l.reembolso||0}"></div>
-          <div><label class="lbl">Fecha realizada</label><input class="inp" id="le_f" type="date" value="${v.realizada||''}"></div>
-          <div><label class="lbl">Estado</label><select class="sel" id="le_est">${['realizada','cuestionario','liquidada'].map(o=>`<option ${o===v.estado?'selected':''}>${o}</option>`).join('')}</select></div>
+    // Detalle y acciones financieras: el carril conectado nunca muta montos/estado localmente.
+    host.querySelectorAll('[data-ldetail]').forEach(b=>b.addEventListener('click',()=>{const l=all.find(x=>String(x.visitaId)===String(b.dataset.ldetail));if(!l)return;
+      const review=isFinancialReview(l),paid=isPaidConfirmed(l),label=CX.liq.label(l.estado);
+      ui.modal('Detalle financiero · '+(l.shopper||'Shopper'),`
+        <div class="grid g2" style="gap:10px 14px">
+          <div><span class="muted">Visita</span><div><b>${l.sucursal||'—'}</b></div></div>
+          <div><span class="muted">Estado</span><div>${ui.bdg(label[0],label[1])}</div></div>
+          <div><span class="muted">Honorario</span><div>${_liqMoney(l,l.honorario)}</div></div>
+          <div><span class="muted">Reembolso</span><div>${Number.isFinite(Number(l.reembolso))?_liqMoney(l,l.reembolso):'Pendiente de fuente'}</div></div>
+          <div><span class="muted">Total</span><div><b>${_liqMoney(l,l.total)}</b></div></div>
+          <div><span class="muted">Pago externo</span><div>${paid?ui.bdg('Confirmado por fuente','g'):ui.bdg('No confirmado','a')}</div></div>
+          <div style="grid-column:1/3"><span class="muted">Referencia de fuente</span><div style="font-size:11.5px;word-break:break-all">${l.paymentSourceRef||l.reconciliationSourceRef||'Pendiente de fuente'}</div></div>
         </div>
-        <div style="background:var(--amber-bg);border-radius:9px;padding:8px 11px;font-size:11px;color:#8a5b00;margin-top:12px">Corrige aquí errores de captura. El cambio se refleja en la liquidación y se sincroniza con Beneficios y Finanzas.</div>
-        <div style="text-align:right;margin-top:14px"><button class="btn btn-pr btn-sm" id="le_ok">Guardar corrección</button></div>
-      `,{onMount:(ov,close)=>{
-        const syncLe=()=>{const c=ov.querySelector('#le_pais').value;const cu=c&&p.currency&&p.currency[c]?p.currency[c]:'';ov.querySelector('#le_moneda').value=cu;ov.querySelector('#le_curL').textContent=cu||'(elige país)';};
-        ov.querySelector('#le_pais').addEventListener('change',syncLe);
-        ov.querySelector('#le_ok').addEventListener('click',()=>{ const c=ov.querySelector('#le_pais').value; if(!(c&&p.currency&&p.currency[c])){ui.toast('Resuelve el país/moneda antes de guardar montos','warn');return;} v.pais=c; v.moneda=p.currency[c]; l.pais=c; l.moneda=p.currency[c]; v.honorario=+ov.querySelector('#le_hon').value||0; const re=+ov.querySelector('#le_re').value||0; v.boleto=re; v.comboAmt=0; v.realizada=ov.querySelector('#le_f').value||v.realizada; v.estado=ov.querySelector('#le_est').value; CX.bus&&CX.bus.emit('visit-flow'); close(); draw(); ui.toast('Liquidación corregida · sincronizada','ok',3200); });}});
+        ${review?'<div style="margin-top:12px;background:var(--amber-bg);padding:9px 11px;border-radius:9px;font-size:11.5px;color:#8a5b00">Esta fila requiere conciliación financiera antes de poder registrarse en un pago.</div>':''}
+        <div class="flex wrap" style="justify-content:flex-end;gap:8px;margin-top:14px">
+          ${review?'<button class="btn btn-pr btn-sm" id="liqDetailReconcile">Conciliar fuente</button>':''}
+          ${canRecordInternalPayment(l)?'<button class="btn btn-green btn-sm" id="liqDetailPay">Registrar pago interno</button>':''}
+        </div>`,
+      {onMount:(ov,close)=>{
+        ov.querySelector('#liqDetailReconcile')?.addEventListener('click',async()=>{const btn=ov.querySelector('#liqDetailReconcile');btn.disabled=true;btn.textContent='Conciliando…';try{const r=await data.reconcileFinanceVisit(l.visitaId,{ackAware:true,reason:'admin-finance-liquidation-detail-reconcile'});if(!(r?.ok===true&&r?.status==='committed'&&r?.providerAck===true&&r?.successUiAllowed===true))throw new Error(r?.code||'FINANCE_RECONCILE_ACK_REQUIRED');close();try{await CX.backend?.refresh?.();}catch(_){}draw();ui.toast('Conciliación financiera confirmada','ok');}catch(_){btn.disabled=false;btn.textContent='Conciliar fuente';ui.toast('No se concilió: falta fuente financiera exacta o ACK durable.','warn',4200);}});
+        ov.querySelector('#liqDetailPay')?.addEventListener('click',()=>{close();host.querySelector('[data-payone="'+l.visitaId+'"]')?.click();});
+      }});
+    }));
+    host.querySelectorAll('[data-payone]').forEach(b=>b.addEventListener('click',()=>{const l=all.find(x=>String(x.visitaId)===String(b.dataset.payone));if(!l||!canRecordInternalPayment(l))return;
+      ui.modal('Registrar pago interno · '+(l.shopper||'Shopper'),`
+        <div style="font-size:12px;color:var(--t2);margin-bottom:12px">${l.sucursal} · ${_liqMoney(l,l.total)}. Este registro crea trazabilidad interna; no confirma el banco sin una fuente externa.</div>
+        <div class="grid g2" style="gap:10px 12px">
+          <div><label class="lbl">Fecha</label><input class="inp" id="onePayDate" type="date" value="${new Date().toISOString().slice(0,10)}"></div>
+          <div><label class="lbl">Referencia interna (opcional)</label><input class="inp" id="onePayRef" placeholder="Referencia / comprobante"></div>
+          <div style="grid-column:1/3"><label class="lbl">Soporte (opcional)</label><input class="inp" id="onePaySupport" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp" style="padding:7px"><div style="font-size:10.5px;color:var(--t3);margin-top:4px">El soporte se guarda con ACK de Storage/metadata y no se interpreta automáticamente como confirmación bancaria.</div></div>
+        </div>
+        <div style="text-align:right;margin-top:14px"><button class="btn btn-green btn-sm" id="onePayOk">Registrar pago interno</button></div>`,
+      {onMount:(ov,close)=>ov.querySelector('#onePayOk').addEventListener('click',async()=>{const btn=ov.querySelector('#onePayOk'),file=ov.querySelector('#onePaySupport')?.files?.[0]||null,manualRef=(ov.querySelector('#onePayRef')?.value||'').trim(),date=ov.querySelector('#onePayDate')?.value||null;btn.disabled=true;btn.textContent='Registrando…';try{
+        let ref=manualRef||null;
+        if(file){
+          if(!CX.backendResources?.uploadBinary||!CX.backendResources?.saveMetadata)throw new Error('FINANCE_SUPPORT_PROVIDER_UNAVAILABLE');
+          const up=await CX.backendResources.uploadBinary(file,{projectId:data.currentProjectId,periodId:data.currentPeriodId});
+          if(!(up?.ok===true&&up?.providerAck===true&&up?.storageProviderAck===true))throw new Error(up?.code||'FINANCE_SUPPORT_UPLOAD_ACK_REQUIRED');
+          const meta=await CX.backendResources.saveMetadata({id:up.resourceId,resourceType:'finance_payment_support',projectId:data.currentProjectId,periodId:data.currentPeriodId,n:file.name,tipo:'finance_payment_support',url:up.url,storagePath:up.storagePath,visitId:l.visitaId,visibleRoles:['super','admin'],targetAll:false,externalPaymentConfirmed:false},{projectId:data.currentProjectId,periodId:data.currentPeriodId,idempotencyKey:'finance.support.visit:'+l.visitaId+':'+up.resourceId});
+          if(!(meta?.ok===true&&meta?.providerAck===true)){await CX.backendResources.deleteBinary?.(up.storagePath,{projectId:data.currentProjectId,periodId:data.currentPeriodId}).catch(()=>{});throw new Error(meta?.code||'FINANCE_SUPPORT_METADATA_ACK_REQUIRED');}
+          ref=up.resourceId;
+        }
+        const r=await data.payVisits([l.visitaId],date,ref,{ackAware:true,reason:'admin-finance-liquidation-individual'});
+        if(!(r?.ok===true&&r?.status==='committed'&&r?.providerAck===true&&r?.successUiAllowed===true))throw new Error(r?.code||'FINANCE_PAYMENT_ACK_REQUIRED');
+        close();try{await CX.backend?.refresh?.();}catch(_){}draw();ui.toast('Pago interno registrado · conciliación bancaria/externa pendiente','ok',4200);
+      }catch(error){btn.disabled=false;btn.textContent='Registrar pago interno';ui.toast('No se registró el pago: faltó confirmación durable.','err',4200);}})});
     }));
     const cd=host.querySelector('#clearDraft'); if(cd)cd.addEventListener('click',()=>CX.finStore.clearDraft(p.id));
     const ac=host.querySelector('#addCxp');
@@ -892,13 +920,27 @@ CX.module('liquidaciones', ({data,ui})=>{
       ui.modal('Confirmar pago de lote',`
         <p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Vas a registrar internamente <b>${draft.length}</b> liquidación(es) por <b>${Object.keys(porMon).map(m=>ui.money(m,porMon[m])).join(' + ')}</b>. El registro durable no equivale a confirmación bancaria; la conciliación externa seguirá pendiente.</p>
         ${restantes.length?`<label class="flex" style="gap:8px;font-size:12px;color:var(--t1);background:var(--amber-bg);padding:9px 11px;border-radius:9px;cursor:pointer"><input type="checkbox" id="difCxp" checked> Diferir las <b>${restantes.length}</b> validada(s) no incluida(s) a Cuentas por Pagar (cierre de mes)</label>`:''}
+        <div class="grid g2" style="gap:10px 12px;margin-top:12px">
+          <div><label class="lbl">Fecha</label><input class="inp" id="batchPayDate" type="date" value="${new Date().toISOString().slice(0,10)}"></div>
+          <div><label class="lbl">Referencia interna (opcional)</label><input class="inp" id="batchPayRef" placeholder="Referencia / comprobante"></div>
+          <div style="grid-column:1/3"><label class="lbl">Soporte (opcional)</label><input class="inp" id="batchPaySupport" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp" style="padding:7px"><div style="font-size:10.5px;color:var(--t3);margin-top:4px">Soporte interno; no confirma la transferencia bancaria.</div></div>
+        </div>
         <div style="text-align:right;margin-top:14px"><button class="btn btn-green btn-sm" id="confPay">Registrar pago interno</button></div>
       `,{onMount:(ov,close)=>{const conf=ov.querySelector('#confPay');conf.addEventListener('click',async()=>{
         if(conf.disabled)return;
         const priorLabel=conf.textContent; conf.disabled=true; conf.textContent='Registrando…';
         try{
-          const ids=[...draft];
-          const r=await data.payVisits(ids,null,null,{ackAware:true,reason:'admin-finance-liquidation-batch'});
+          const ids=[...draft],payDate=ov.querySelector('#batchPayDate')?.value||null,manualRef=(ov.querySelector('#batchPayRef')?.value||'').trim(),supportFile=ov.querySelector('#batchPaySupport')?.files?.[0]||null;
+          let ref=manualRef||null;
+          if(supportFile){
+            if(!CX.backendResources?.uploadBinary||!CX.backendResources?.saveMetadata)throw new Error('FINANCE_SUPPORT_PROVIDER_UNAVAILABLE');
+            const up=await CX.backendResources.uploadBinary(supportFile,{projectId:data.currentProjectId,periodId:data.currentPeriodId});
+            if(!(up?.ok===true&&up?.providerAck===true&&up?.storageProviderAck===true))throw new Error(up?.code||'FINANCE_SUPPORT_UPLOAD_ACK_REQUIRED');
+            const meta=await CX.backendResources.saveMetadata({id:up.resourceId,resourceType:'finance_payment_support',projectId:data.currentProjectId,periodId:data.currentPeriodId,n:supportFile.name,tipo:'finance_payment_support',url:up.url,storagePath:up.storagePath,visitIds:ids,visibleRoles:['super','admin'],targetAll:false,externalPaymentConfirmed:false},{projectId:data.currentProjectId,periodId:data.currentPeriodId,idempotencyKey:'finance.support.batch:'+up.resourceId});
+            if(!(meta?.ok===true&&meta?.providerAck===true)){await CX.backendResources.deleteBinary?.(up.storagePath,{projectId:data.currentProjectId,periodId:data.currentPeriodId}).catch(()=>{});throw new Error(meta?.code||'FINANCE_SUPPORT_METADATA_ACK_REQUIRED');}
+            ref=up.resourceId;
+          }
+          const r=await data.payVisits(ids,payDate,ref,{ackAware:true,reason:'admin-finance-liquidation-batch'});
           if(!(r?.ok===true&&r?.status==='committed'&&r?.providerAck===true&&r?.successUiAllowed===true)) throw new Error(r?.code||'FINANCE_PAYMENT_ACK_REQUIRED');
           let diferidas=0; const difBox=ov.querySelector('#difCxp');
           if(difBox&&difBox.checked){
