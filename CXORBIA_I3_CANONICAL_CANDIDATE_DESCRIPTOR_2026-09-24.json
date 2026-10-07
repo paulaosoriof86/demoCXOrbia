@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_B1_LIVE_E2E_REQUIRED",
+  "status": "HOLD_PHASE_A_REMAINING_HUMAN_FINDINGS",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "17373b4f79a68fed4155fed67aa23d3306fda2e2",
   "productTreeAuthority": "8bba316baa878ca37928404586d882a06734e628",
   "predecessorProductSourceSha": "6232caedfcfd1e0136b5ece5f55bfaa0c1b3934a",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V291_2026-10-06.json",
-  "findingsLedgerExpectedGitBlob": "3fb31a9aef8d497803a3c694633b19e5595058fd",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V292_2026-10-06.json",
+  "findingsLedgerExpectedGitBlob": "0420a1f395af100764c7ad128e8196ada3154636",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261006-V7.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "B1_MULTI_SHOPPER_ACTION_E2E",
+  "activeBlocker": "REMAINING_NON_MATCH_DOMAINS_AND_HUMAN_VISUAL_FINDINGS",
   "nextFindingId": "VRM-260",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN_B1_REAL_MULTI_SHOPPER_ACTION_E2E_ON_EXACT_DEV",
+  "exactNextAction": "CONTINUE_I3_B_CUMULATIVE_REMAINING_NON_MATCH_OWNERS__NO_HUMAN_CHECKPOINT_YET",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -4905,7 +4905,7 @@
       "hrWrites": 0,
       "production": false
     },
-    "nextState": "TECHNICAL_ACTION_E2E_REQUIRED",
+    "nextState": "TECHNICAL_LIVE_PASS_HUMAN_FINDINGS_REMAIN",
     "technicalE2E": {
       "runId": 37536774581,
       "runNumber": 1280,
@@ -4961,7 +4961,40 @@
       "receiptPath": "CXORBIA_I3_B1_HUMAN_FAIL_RECEIPT_2026-10-06.json",
       "addendumPath": "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-10-06_B1_HUMAN_FAIL_TRANSVERSAL_SHOPPER_FINDINGS_FROZEN.md"
     },
-    "preHumanReadyReceipt": "CXORBIA_I3_B1_PRE_HUMAN_READY_RECEIPT_2026-10-06.json"
+    "preHumanReadyReceipt": "CXORBIA_I3_B1_PRE_HUMAN_READY_RECEIPT_2026-10-06.json",
+    "liveE2E": {
+      "state": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+      "runId": 37566071161,
+      "runNumber": 1292,
+      "jobId": 112614009294,
+      "artifactId": 11458639737,
+      "artifactDigest": "sha256:6556776ca344a1970dfa7c2e8728581598dea6b9297fc0a97d99c22484e26061",
+      "decision": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+      "sourceSha": "17373b4f79a68fed4155fed67aa23d3306fda2e2",
+      "sourceTree": "8bba316baa878ca37928404586d882a06734e628",
+      "hrRevision": "44c8a38a45800606ddb7db5c8ab902324bd7daf588fe8653165fd5e1b7e1a285",
+      "representatives": [
+        "Julissa Flores",
+        "Priscila López",
+        "Paula Osorio"
+      ],
+      "providerSchedule": {
+        "decision": "PASS_VRM168_PROVIDER_SCHEDULE_PATH",
+        "providerAck": true,
+        "cleanup": {
+          "visit": true,
+          "receipt": true,
+          "audit": true
+        },
+        "hrWrites": 0
+      },
+      "authorityReadyMs": {
+        "Julissa": 23124,
+        "Priscila": 13641,
+        "Paula": 34600
+      },
+      "production": false
+    }
   },
   "b1HumanFailTransversalFindings": {
     "count": 9,
@@ -4981,7 +5014,7 @@
     "nextAction": "FIX_B1_TRANSVERSAL_MI_DIA_ACTION_SEMANTICS_AND_SYNC_GUARD__REAL_MULTI_SHOPPER_ACTION_E2E"
   },
   "b1HumanFailFix": {
-    "state": "DEV_MATERIALIZED_PENDING_MULTI_SHOPPER_ACTION_E2E",
+    "state": "LIVE_E2E_PASS_TECHNICAL__NOT_HUMAN_PASS",
     "predecessorSourceSha": "6232caedfcfd1e0136b5ece5f55bfaa0c1b3934a",
     "sourceSha": "17373b4f79a68fed4155fed67aa23d3306fda2e2",
     "sourceTree": "8bba316baa878ca37928404586d882a06734e628",
@@ -5051,6 +5084,48 @@
       "Paula Osorio"
     ],
     "syncMaxMs": 60000,
-    "providerSyntheticCleanupRequired": true
+    "providerSyntheticCleanupRequired": true,
+    "liveProof": {
+      "state": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+      "runId": 37566071161,
+      "runNumber": 1292,
+      "jobId": 112614009294,
+      "artifactId": 11458639737,
+      "artifactDigest": "sha256:6556776ca344a1970dfa7c2e8728581598dea6b9297fc0a97d99c22484e26061",
+      "decision": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+      "sourceSha": "17373b4f79a68fed4155fed67aa23d3306fda2e2",
+      "sourceTree": "8bba316baa878ca37928404586d882a06734e628",
+      "hrRevision": "44c8a38a45800606ddb7db5c8ab902324bd7daf588fe8653165fd5e1b7e1a285",
+      "representatives": [
+        "Julissa Flores",
+        "Priscila López",
+        "Paula Osorio"
+      ],
+      "providerSchedule": {
+        "decision": "PASS_VRM168_PROVIDER_SCHEDULE_PATH",
+        "providerAck": true,
+        "cleanup": {
+          "visit": true,
+          "receipt": true,
+          "audit": true
+        },
+        "hrWrites": 0
+      },
+      "authorityReadyMs": {
+        "Julissa": 23124,
+        "Priscila": 13641,
+        "Paula": 34600
+      },
+      "production": false
+    }
+  },
+  "performanceReadback": {
+    "runId": 37566071161,
+    "authorityReadyMs": {
+      "Julissa": 23124,
+      "Priscila": 13641,
+      "Paula": 34600
+    },
+    "assessment": "NO_MULTI_MINUTE_STALL_IN_RUN1292_BUT_13_TO_35_SECONDS_REMAINS_OPEN_FOR_HUMAN_ACCEPTANCE"
   }
 }
