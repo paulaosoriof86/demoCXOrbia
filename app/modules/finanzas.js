@@ -1034,7 +1034,7 @@ CX.module('lotes', ({data,ui})=>{
   };
   const porLote={}; liqsPagadas.forEach(l=>{const k=groupKey(l);(porLote[k]=porLote[k]||[]).push(l);});
   const lotesReales=Object.keys(porLote).map((k,i)=>{const ls=porLote[k];const monto=ls.reduce((a,l)=>a+(l.total||0),0);
-    const confirmado=ls.every(l=>l.estado==='pagada');
+    const confirmado=ls.every(l=>l.paymentConfirmed===true&&!!(l.paymentSourceRef||l.reconciliationSourceRef));
     const f=ls[0].fechaEstimadaPago||ls[0].fechaPago||'—';
     /* id estable derivado de la llave real de agrupación (loteId+país+moneda o compuesta) — no
        del índice de iteración ni de solo la fecha. */
@@ -1043,7 +1043,7 @@ CX.module('lotes', ({data,ui})=>{
     const baseId = ls[0].loteId?('#'+ls[0].loteId):('#LOTE-'+Math.abs(h).toString(36).toUpperCase().slice(0,6));
     return {id: conflict?(baseId+' · '+(ls[0].pais||'—')+'/'+(ls[0].moneda||'—')):baseId,
       n:ls.length,monto,cur:(ls[0].moneda||(ls[0].pais&&p.currency&&p.currency[ls[0].pais])||'pending_currency'),pais:ls[0].pais,
-      estado: conflict?'Revisión requerida':(ls[0].moneda||(ls[0].pais&&p.currency&&p.currency[ls[0].pais]))?(confirmado?'Pagado':'Pagado (preview)'):'Revisión requerida', tone: conflict?'r':((ls[0].moneda||(ls[0].pais&&p.currency&&p.currency[ls[0].pais]))?(confirmado?'g':'a'):'r'), confirmado, conflict,
+      estado: conflict?'Revisión requerida':(ls[0].moneda||(ls[0].pais&&p.currency&&p.currency[ls[0].pais]))?(confirmado?'Pago confirmado por fuente':'Registro interno · conciliación pendiente'):'Revisión requerida', tone: conflict?'r':((ls[0].moneda||(ls[0].pais&&p.currency&&p.currency[ls[0].pais]))?(confirmado?'g':'a'):'r'), confirmado, conflict,
       fecha:f,visitas:ls.slice(0,10).map(l=>[l.shopper||'—',l.sucursal||'—',l.total||0])}; });
   const lotes = _showFixturesLotes ? lotesDemo : lotesReales;
   const html=`
@@ -1064,11 +1064,8 @@ CX.module('lotes', ({data,ui})=>{
         ${r.visitas.map(v=>`<tr><td><b>${v[0]}</b></td><td style="font-size:12px">${v[1]}</td><td style="text-align:right;font-weight:700">${r.cur===PENDING_CURRENCY?'Pendiente de moneda':_m(r.cur,v[2])}</td></tr>`).join('')}
         ${r.visitas.length<r.n?`<tr><td colspan="3" style="font-size:11px;color:var(--t3);text-align:center">+ ${r.n-r.visitas.length} visita(s) más en el lote</td></tr>`:''}
         </tbody></table>
-        <div style="margin-top:14px;display:flex;justify-content:flex-end;gap:8px">${_loteReview?ui.bdg('🔒 Revisión requerida · sin moneda · pago y export bloqueados','r'):(r.estado!=='Pagado'?`<button class="btn btn-green btn-sm" id="loteMark">Marcar pagado (vista previa)</button><button class="btn btn-ghost btn-sm" id="loteExp">⤓ Exportar</button>`:ui.bdg('✓ Egreso preparado · cruce real pendiente backend','g')+`<button class="btn btn-ghost btn-sm" id="loteExp">⤓ Exportar</button>`)}</div>
-      `,{onMount:(ov,close)=>{ const lm=ov.querySelector('#loteMark'); if(lm)lm.addEventListener('click',()=>{
-        if(r.cur===PENDING_CURRENCY||r.estado==='Revisión requerida'){ui.toast('Lote en revisión de moneda: no se puede marcar pagado','err');return;} /* R32: fail-closed */
-        if(!CX.permissions.gate('finance.markPaid',CX.permissions.ctx({entityType:'lote_pago',entityId:r.id}),ui)) return;
-        close();ui.toast('Lote '+r.id+' marcado pagado (preview) · egreso reflejado en Movimientos · pendiente cruce financiero real','ok',36000);}); const le=ov.querySelector('#loteExp'); if(le)le.addEventListener('click',()=>{ if(r.cur===PENDING_CURRENCY||r.estado==='Revisión requerida'){ui.toast('Lote en revisión de moneda: export bloqueado','err');return;} ui.toast('Exportando lote '+r.id+'…','ok');}); }});
+        <div style="margin-top:14px;display:flex;justify-content:flex-end;gap:8px">${_loteReview?ui.bdg('🔒 Revisión requerida · sin moneda · pago y export bloqueados','r'):(r.confirmado?ui.bdg('✓ Pago confirmado por fuente externa','g'):ui.bdg('◐ Registro interno · conciliación externa pendiente','a'))+`<button class="btn btn-ghost btn-sm" id="loteExp">⤓ Exportar</button>`}</div>
+      `,{onMount:(ov,close)=>{ const le=ov.querySelector('#loteExp'); if(le)le.addEventListener('click',()=>{ if(r.cur===PENDING_CURRENCY||r.estado==='Revisión requerida'){ui.toast('Lote en revisión de moneda: export bloqueado','err');return;} ui.toast('Exportando lote '+r.id+'…','ok');}); }});
     }));
   },0);
   return html;
