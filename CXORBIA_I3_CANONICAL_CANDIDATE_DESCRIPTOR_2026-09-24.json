@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_B1_HUMAN_FAIL_OWNER_FIX_REQUIRED",
+  "status": "HOLD_B1_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "6232caedfcfd1e0136b5ece5f55bfaa0c1b3934a",
-  "productTreeAuthority": "5ab902bad55e52ef3a06953fbe27eeb70c263fc6",
-  "predecessorProductSourceSha": "be4e54e92285cef24f4b4c5442383a8076df6664",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V287_2026-10-06.json",
-  "findingsLedgerExpectedGitBlob": "2fa33163e9d819bd1eeb3402873a644b81d14e1a",
+  "productSourceSha": "17373b4f79a68fed4155fed67aa23d3306fda2e2",
+  "productTreeAuthority": "8bba316baa878ca37928404586d882a06734e628",
+  "predecessorProductSourceSha": "6232caedfcfd1e0136b5ece5f55bfaa0c1b3934a",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V288_2026-10-06.json",
+  "findingsLedgerExpectedGitBlob": "c38e71f9246ed535835b1827089a9c73a06cf7fd",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261006-V7.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "B1_HUMAN_FUNCTIONAL_VISUAL_FAIL",
+  "activeBlocker": "B1_TRANSVERSAL_SHOPPER_ACTION_SOURCE_PROOF",
   "nextFindingId": "VRM-260",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "FIX_B1_TRANSVERSAL_MI_DIA_ACTION_SEMANTICS_AND_SYNC_GUARD__REAL_MULTI_SHOPPER_ACTION_E2E",
+  "exactNextAction": "RUN_B1_TRANSVERSAL_SHOPPER_ACTION_SOURCE_PROOF",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -4841,14 +4841,15 @@
   },
   "b1CanonicalVisibleIdentity": {
     "classification": "FUNCTIONAL_DEFECT_PLUS_VISUAL_DEFECT",
-    "predecessorSha": "be4e54e92285cef24f4b4c5442383a8076df6664",
-    "sourceSha": "6232caedfcfd1e0136b5ece5f55bfaa0c1b3934a",
-    "sourceTree": "5ab902bad55e52ef3a06953fbe27eeb70c263fc6",
+    "predecessorSha": "6232caedfcfd1e0136b5ece5f55bfaa0c1b3934a",
+    "sourceSha": "17373b4f79a68fed4155fed67aa23d3306fda2e2",
+    "sourceTree": "8bba316baa878ca37928404586d882a06734e628",
     "owners": [
-      "app/core/router.js",
-      "app/modules/midia.js"
+      "app/modules/midia.js",
+      "app/modules/misvisitas.js",
+      "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
     ],
-    "test": "backend/runtime/hr-live-service/test/cxorbia-b1-canonical-visible-identity.test.mjs",
+    "test": "backend/runtime/hr-live-service/test/cxorbia-b1-transversal-shopper-actions.test.mjs",
     "liveReadbackRunId": 37529557485,
     "liveReadbackFinding": "CLEAN_SESSION_CANONICAL_JULISSA_PROVEN__VISIBLE_CONSUMERS_MUST_USE_EXACT_RESOLVER",
     "productDataWrites": 0,
@@ -4884,7 +4885,7 @@
       "hrWrites": 0,
       "production": false
     },
-    "nextState": "HUMAN_FAIL_OWNER_FIX_REQUIRED",
+    "nextState": "SOURCE_PROOF_REQUIRED",
     "technicalE2E": {
       "runId": 37536774581,
       "runNumber": 1280,
@@ -4958,5 +4959,25 @@
       "app/modules/cert.js"
     ],
     "nextAction": "FIX_B1_TRANSVERSAL_MI_DIA_ACTION_SEMANTICS_AND_SYNC_GUARD__REAL_MULTI_SHOPPER_ACTION_E2E"
+  },
+  "b1HumanFailFix": {
+    "state": "SOURCE_FIXED_PENDING_PROOF",
+    "predecessorSourceSha": "6232caedfcfd1e0136b5ece5f55bfaa0c1b3934a",
+    "sourceSha": "17373b4f79a68fed4155fed67aa23d3306fda2e2",
+    "sourceTree": "8bba316baa878ca37928404586d882a06734e628",
+    "productFiles": [
+      "app/modules/midia.js",
+      "app/modules/misvisitas.js",
+      "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+    ],
+    "qaFile": "backend/runtime/hr-live-service/test/cxorbia-b1-transversal-shopper-actions.test.mjs",
+    "semantics": [
+      "Mi Día distinct schedule/instructive/reschedule intents",
+      "scheduled date/state-aware actions",
+      "resource load before absent decision",
+      "certification authority aligned to durable/carryover",
+      "bounded HR synchronization reset cycle"
+    ],
+    "production": false
   }
 }
