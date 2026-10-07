@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "4ab7fc91847a9d7da5af13c14b8eb0b82a96b652",
   "productTreeAuthority": "6cea5789d3a6c109f22d96722dd790a5987930ef",
   "predecessorProductSourceSha": "b7b8978cda791deea38316e34e6a2dd93e5c6137",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V307_2026-10-07.json",
-  "findingsLedgerExpectedGitBlob": "9ff77490bd294c077dec685a33f6ad5bc186ce8e",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V21.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V308_2026-10-07.json",
+  "findingsLedgerExpectedGitBlob": "c41f45344fb2e2a2c7c27a97554c12008929d2ea",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V22.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM261_VRM264_DEV_MATERIALIZATION",
+  "activeBlocker": "VRM261_VRM264_SAME_ARTIFACT_LIVE_E2E",
   "nextFindingId": "VRM-265",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "ONE_EXACT_DEV_MATERIALIZATION_FROM_4AB7_SOURCE",
+  "exactNextAction": "RUN_SAME_ARTIFACT_LIVE_E2E_ON_RUN1328_MATERIALIZATION",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -323,7 +323,7 @@
   },
   "technicalClosureReceipt": "CXORBIA_I3_TERMINAL_TECHNICAL_READY_2026-09-25.json",
   "i4": {
-    "status": "BLOCKED_PENDING_VRM261_VRM264_EXACT_DEV_MATERIALIZATION",
+    "status": "BLOCKED_PENDING_VRM261_VRM264_SAME_ARTIFACT_LIVE_E2E",
     "productionAuthorization": false,
     "authorized": false,
     "production": "DO_NOT_TOUCH"
@@ -423,26 +423,25 @@
     "production": false
   },
   "currentMaterialization": {
-    "state": "SUPERSEDED_BY_SOURCE_4AB7_READY_ONE_EXACT_DEV_MATERIALIZATION",
-    "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
-    "sourceSha": "b7b8978cda791deea38316e34e6a2dd93e5c6137",
-    "sourceTree": "9985bfac4d3188abf2bddb21eee541336aff2222",
-    "runId": 37641062754,
-    "runNumber": 1317,
-    "jobId": 112859949379,
-    "artifactId": 11492601227,
-    "artifactDigest": "sha256:f68f7c24f979b1d13c4e4053cc1e08a3c0c6964221898b5aa48294e63d013cbd",
-    "runtimeRevision": "cxorbia-live-hr-dev-00273-6p9",
-    "runtimeDigest": "sha256:0d4ee89f75e759fa96e0f6e2a706aac3c7b73b7162e93da30653b47a0ee7bfc1",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/f9f23f610214eac2",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791385136193000",
+    "state": "PASS_VRM261_VRM264_EXACT_DEV_MATERIALIZATION",
+    "decision": "PASS_REJECTED_PHASEA_EXACT_DEV_MATERIALIZATION",
+    "sourceSha": "4ab7fc91847a9d7da5af13c14b8eb0b82a96b652",
+    "sourceTree": "6cea5789d3a6c109f22d96722dd790a5987930ef",
+    "runId": 37656521280,
+    "runNumber": 1328,
+    "jobId": 112913111604,
+    "artifactId": 11498507910,
+    "artifactDigest": "sha256:7797968ba2b8e3fe5caec45263e8b543241e32f4d69a79e9a5a7dfaa7c6aa241",
+    "runtimeRevision": "cxorbia-live-hr-dev-00274-wvg",
+    "runtimeDigest": "sha256:6daac07ef92478f18ce8eec4972eb590230ae9e76b827d41d4bc5edae9452854",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/c9f3e0f8339aa130",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791393000263000",
     "hrRevision": "44c8a38a45800606ddb7db5c8ab902324bd7daf588fe8653165fd5e1b7e1a285",
-    "builds": 0,
-    "runtimeDeploys": 0,
+    "builds": 1,
+    "runtimeDeploys": 1,
     "hostingDeploys": 1,
-    "hrWrites": 0,
-    "production": false,
-    "supersededForSourceSha": "4ab7fc91847a9d7da5af13c14b8eb0b82a96b652"
+    "storageRulesDeploys": 0,
+    "production": false
   },
   "lastFocalAttempt": {
     "runId": 36198284266,
@@ -2646,7 +2645,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "dd3c8685fb46e6199553281cd8cb565e5d067711",
+  "moduleTruthExpectedGitBlob": "433ce83a4145bba145bc41d78ce01147f961573a",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -5375,7 +5374,7 @@
     "production": false
   },
   "fullModuleActionCoveragePath": "CXORBIA_I3_FULL_MODULE_ACTION_COVERAGE_2026-10-07.json",
-  "fullModuleActionCoverageExpectedGitBlob": "f8a7e31b07c50e3ab46562cf8f3d0ade1dc842b7",
+  "fullModuleActionCoverageExpectedGitBlob": "bb499ba40127d255535eff00a7683c749f153094",
   "run1321DeepActionDiagnostic": {
     "runId": 37649334166,
     "runNumber": 1321,
@@ -5447,6 +5446,27 @@
       "fail": 0
     },
     "deploys": 0,
+    "production": false
+  },
+  "vrm261to264Materialization": {
+    "state": "PASS_VRM261_VRM264_EXACT_DEV_MATERIALIZATION",
+    "decision": "PASS_REJECTED_PHASEA_EXACT_DEV_MATERIALIZATION",
+    "sourceSha": "4ab7fc91847a9d7da5af13c14b8eb0b82a96b652",
+    "sourceTree": "6cea5789d3a6c109f22d96722dd790a5987930ef",
+    "runId": 37656521280,
+    "runNumber": 1328,
+    "jobId": 112913111604,
+    "artifactId": 11498507910,
+    "artifactDigest": "sha256:7797968ba2b8e3fe5caec45263e8b543241e32f4d69a79e9a5a7dfaa7c6aa241",
+    "runtimeRevision": "cxorbia-live-hr-dev-00274-wvg",
+    "runtimeDigest": "sha256:6daac07ef92478f18ce8eec4972eb590230ae9e76b827d41d4bc5edae9452854",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/c9f3e0f8339aa130",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791393000263000",
+    "hrRevision": "44c8a38a45800606ddb7db5c8ab902324bd7daf588fe8653165fd5e1b7e1a285",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "storageRulesDeploys": 0,
     "production": false
   }
 }
