@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_FULL_ACTION_E2E_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "FULL_ACTION_E2E_ALL_MODULES",
+  "activeBlocker": "FULL_ACTION_E2E_SHOPPER_DIAGNOSTIC",
   "nextFindingId": "VRM-261",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "CLOSE_ALL_APPLICABLE_ACTION_FAMILIES_ON_SAME_ARTIFACT_ACROSS_SHOPPER_ADMIN_CLIENT",
+  "exactNextAction": "RUN_SHOPPER_12_OF_12_DEEP_ACTION_DIAGNOSTIC_ON_SAME_ARTIFACT",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",

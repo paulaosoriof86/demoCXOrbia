@@ -31,7 +31,8 @@ let admin=null;for(const m of members.filter(x=>x.active===true&&['admin','super
 const targets=[];for(const n of ['Julissa Flores','Priscila López','Paula Osorio'])targets.push(await target(n));
 let client=null;for(const m of members.filter(x=>x.active!==false&&['cliente','client'].includes(str(x.role).toLowerCase())&&str(x.authNamespace).toLowerCase()==='staff'))if(await exists(m.id)){client=m;break;}
 const browser=await chromium.launch({headless:true});
-const result={schemaVersion:'cxorbia.i3.phasea.exhaustive-click-visual.v2',decision:'HOLD',hrRevision:revision,periodId,shopper:{},admin:{},client:{},routeInventory:{},globalControls:{},screenshots:[],clickCount:0,writes:{auth:0,hr:0,provider:0},production:false};
+const result={schemaVersion:'cxorbia.i3.phasea.exhaustive-click-visual.v3',decision:'HOLD',hrRevision:revision,periodId,shopper:{},admin:{},client:{},routeInventory:{},globalControls:{},shopperActionCoverage:{},actionFindings:[],screenshots:[],clickCount:0,writes:{auth:0,hr:0,provider:0},production:false};
+const finding=(classification,code,detail={})=>result.actionFindings.push({classification,code,...detail});
 const shot=async(page,name)=>{const file=name+'.png';try{await page.screenshot({path:OUT+'/'+file,fullPage:true,timeout:15000,animations:'disabled'});}catch(first){try{await page.screenshot({path:OUT+'/'+file,fullPage:false,timeout:15000,animations:'disabled'});}catch(second){throw new Error('ENVIRONMENT_FAILURE:CLICK_SCREENSHOT:'+name+':'+str(second?.message||first?.message||second||first));}}result.screenshots.push(file);};
 const overlay=async page=>page.locator('.cx-ov:visible').last().innerText().catch(()=>'');
 const visual=async(page,label)=>{const v=await page.evaluate(()=>{const t=String(document.body?.innerText||'');return{technical:/AUTH_READY|CLAIMS_READY|HRROWID|FINANCIALSOURCESTATUS|sourceSafe\s*[:=]|providerAck\s*[:=]|máquina canónica HR/i.test(t),blocked:t.includes('Fuente de datos no disponible'),body:t.slice(0,5000)};});if(v.technical||v.blocked)throw new Error('VISUAL_DEFECT:'+label+':'+JSON.stringify({technical:v.technical,blocked:v.blocked}));return v;};
@@ -107,6 +108,105 @@ async function globalControlInventory(page,role){
   },role);result.globalControls[role]=g;return g;
 }
 
+async function waitReadyAfterReload(page,member,role){
+  await page.reload({waitUntil:'domcontentloaded',timeout:90000});
+  await page.waitForFunction(uid=>String(window.firebase?.auth?.().currentUser?.uid||'')===uid,String(member.id),{timeout:90000});
+  await page.waitForFunction(()=>typeof window.CX?.backendAuth?.ensureAuthenticated==='function',null,{timeout:90000});
+  await page.evaluate(async()=>{await window.CX.backendAuth.ensureAuthenticated();});
+  await page.waitForFunction(({role,rev,periodId})=>{const c=window.CX?.backendAuth?.context?.()||{},r=String(c.role||'').toLowerCase(),g=window.CX_C6_HR_AUTHORITY_GATE||{};return c.authenticated===true&&(role==='shopper'?r==='shopper':true)&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&g.ready===true&&g.blocked!==true&&String(window.CX?.data?.previewMeta?.sourceRevision||'')===rev&&String(window.CX?.data?.currentPeriodId||'')===periodId;},{role,rev:revision,periodId},{timeout:120000});
+}
+async function deepShopperActions(page,target,key){
+  const cov={};
+  await nav(page,'miperfil');
+  cov.profileEditModal=await click(page,'[data-profile-edit]');
+  if(cov.profileEditModal){
+    await page.waitForTimeout(180);
+    cov.profileFields=await page.locator('.cx-ov:visible #sp_save').count()>0&&await page.locator('.cx-ov:visible #sp_wa').count()>0&&await page.locator('.cx-ov:visible #sp_banco').count()>0;
+    if(!cov.profileFields)finding('FUNCTIONAL_DEFECT','SHOPPER_PROFILE_EDIT_FIELDS_MISSING',{shopper:key});
+    await dismissOverlays(page);
+  }
+
+  await nav(page,'visitas');
+  cov.availableFilters=0;
+  for(const sel of ['#vdQ','#vdEsc','#vdCan']){const loc=page.locator(sel);if(await loc.count()){const opts=await loc.locator('option').count();if(opts>1){await loc.selectOption({index:1});await page.waitForTimeout(100);await loc.selectOption({index:0});cov.availableFilters++;}}}
+  cov.availableDetail=await click(page,'[data-vd]');
+  if(cov.availableDetail){await page.waitForTimeout(180);if(!/detalle|sucursal|visita/i.test(await overlay(page)))finding('FUNCTIONAL_DEFECT','SHOPPER_AVAILABLE_VISIT_DETAIL_FAIL',{shopper:key});await dismissOverlays(page);}
+
+  await nav(page,'reservas');
+  const resState=await page.evaluate(()=>({eligible:Array.isArray(window.CX?.reservas?.sucursales?.())?window.CX.reservas.sucursales().length:0,button:!!document.querySelector('#rNew'),buttonDisabled:document.querySelector('#rNew')?.disabled===true||document.querySelector('#rNew')?.getAttribute('aria-disabled')==='true',emptyText:/sin (?:sucursales|visitas).*disponible|no hay.*disponible/i.test(String((document.querySelector('#view')||document.body).innerText||''))}));
+  cov.reservations=resState;
+  if(resState.eligible===0&&resState.button&&!resState.buttonDisabled)finding('FUNCTIONAL_DEFECT','RESERVATION_EMPTY_ELIGIBILITY_ACTION_EXPOSED',{shopper:key,resState});
+
+  await nav(page,'misvisitas');
+  cov.instructive=await click(page,'[data-doc]');
+  if(cov.instructive){await page.waitForTimeout(200);cov.instructiveAckButton=await page.locator('.cx-ov:visible #docReadAck').count()>0;await dismissOverlays(page);}
+  cov.scheduleButton=await page.locator('[data-sched]').count()>0;
+  cov.rescheduleButton=await page.locator('[data-reprog]').count()>0;
+  cov.cancelButton=await page.locator('[data-cancel]').count()>0;
+  cov.completeButton=await page.locator('[data-done]').count()>0;
+  cov.questionnaireButton=await page.locator('[data-quest]').count()>0;
+  cov.geoButton=await page.locator('[data-geo]').count()>0;
+
+  await nav(page,'aprendizaje');
+  cov.academyFilters=0;
+  for(const sel of ['#acadFilter','#acadCat']){const loc=page.locator(sel);if(await loc.count()){const opts=await loc.locator('option').count();if(opts>1){await loc.selectOption({index:1});await page.waitForTimeout(100);await loc.selectOption({index:0});cov.academyFilters++;}}}
+
+  await nav(page,'cert');
+  cov.certRendered=await page.locator('#view').count()>0;
+  cov.certControls=await page.locator('#view button,#view select,#view input').count();
+
+  await nav(page,'documentos');
+  cov.resourceOpen=await click(page,'[data-opend],.docOpen,[data-open]');
+  if(cov.resourceOpen){await page.waitForTimeout(160);await dismissOverlays(page);}
+
+  await nav(page,'beneficios');
+  cov.benefitFilterExercises=0;
+  for(const sel of ['#benStatus','#benCountry','#benCurrency']){const loc=page.locator(sel);if(await loc.count()){const opts=await loc.locator('option').count();if(opts>1){await loc.selectOption({index:1});await page.waitForTimeout(100);await loc.selectOption({index:0});cov.benefitFilterExercises++;}}}
+  const receipt=page.getByRole('button',{name:/Descargar comprobante/i});
+  if(await receipt.count()){
+    const beforeModal=await page.locator('.cx-ov:visible').count(),beforeView=await page.evaluate(()=>String(CX?.session?.view||''));
+    let downloaded=false;
+    try{const dl=page.waitForEvent('download',{timeout:1800});await receipt.click();result.clickCount++;await dl;downloaded=true;}catch(_){}
+    await page.waitForTimeout(180);
+    const afterModal=await page.locator('.cx-ov:visible').count(),afterView=await page.evaluate(()=>String(CX?.session?.view||''));
+    cov.benefitReceipt={present:true,downloaded,modalOpened:afterModal>beforeModal,routeChanged:afterView!==beforeView};
+    if(!downloaded&&afterModal<=beforeModal&&afterView===beforeView)finding('FUNCTIONAL_DEFECT','BENEFITS_RECEIPT_DOWNLOAD_INERT',{shopper:key});
+    await dismissOverlays(page);
+  }else cov.benefitReceipt={present:false};
+
+  await nav(page,'soporte');
+  const supportSubject='QA I3 SUPPORT '+String(process.env.GITHUB_RUN_ID||Date.now());
+  const newTab=page.locator('[data-tab="nueva"]');
+  if(await newTab.count()){
+    await newTab.click();result.clickCount++;
+    await page.locator('#spAsunto').fill(supportSubject);
+    await page.locator('#spSend').click();result.clickCount++;
+    cov.supportCreated=await page.evaluate(s=>window.CX?.supportStore?.list?.().some(x=>String(x?.asunto||'')===s),supportSubject);
+    await waitReadyAfterReload(page,target.member,'shopper');
+    cov.supportPersistsReload=await page.evaluate(s=>window.CX?.supportStore?.list?.().some(x=>String(x?.asunto||'')===s),supportSubject);
+    if(cov.supportCreated&&!cov.supportPersistsReload)finding('PERSISTENCE_FAILURE','SUPPORT_TICKET_NOT_DURABLE_AFTER_RELOAD',{shopper:key});
+    const qs=await tenant.collection('bulletins').where('title','==','Nueva solicitud de soporte').get().catch(()=>null);
+    if(qs){const batch=db.batch();let n=0;for(const doc of qs.docs){const row=doc.data()||{};if(String(row.body||'').includes(supportSubject)){batch.delete(doc.ref);n++;}}if(n)await batch.commit();}
+  }else cov.supportCreated='NOT_APPLICABLE_WITH_REASON:no new request control';
+
+  await nav(page,'novedades');
+  const unread=page.locator('.novRead').first();
+  if(await unread.count()){
+    const bulletinId=await unread.getAttribute('data-id');
+    await unread.click();result.clickCount++;
+    cov.newsMarkedRead=await page.evaluate(id=>window.CX?.novedades?.isRead?.(id)===true,bulletinId);
+    const second=await signed(target.member,'shopper');
+    await nav(second.page,'novedades');
+    cov.newsDurableNewContext=await second.page.evaluate(id=>window.CX?.novedades?.isRead?.(id)===true,bulletinId);
+    await second.ctx.close();
+    if(cov.newsMarkedRead&&!cov.newsDurableNewContext)finding('PERSISTENCE_FAILURE','NOVEDADES_READ_STATE_BROWSER_LOCAL_ONLY',{shopper:key,bulletinId});
+  }else cov.newsMarkedRead='NOT_APPLICABLE_WITH_REASON:no unread item';
+
+  await nav(page,'mireportes');
+  cov.reportsRendered=await page.locator('#view').count()>0;
+  result.shopperActionCoverage[key]=cov;
+}
+
 
 try{
  for(const t of targets){
@@ -118,7 +218,7 @@ try{
   await nav(page,'misvisitas');e.reprogram=await click(page,'[data-reprog]');if(e.reprogram){await page.waitForTimeout(250);if(!/Solicitar reprogramación/i.test(await overlay(page)))throw new Error('FUNCTIONAL_DEFECT:REPROGRAM_MODAL_'+key);}await shot(page,'shopper-'+key+'-visits');
   await nav(page,'cert');e.certSelector=await click(page,'select');await shot(page,'shopper-'+key+'-cert');
   await nav(page,'novedades');const nt=await page.locator('body').innerText();if(/providerAck|sourceSafe|hrRowId|financialSourceStatus/i.test(nt))throw new Error('VISUAL_DEFECT:NEWS_TECHNICAL_COPY_'+key);await shot(page,'shopper-'+key+'-news');
-  await globalControlInventory(page,'shopper');for(const rid of FULL_SCOPE.roles.shopper)await inventoryRoute(page,'shopper',rid,key);result.shopper[pname(t.profile)]=e;await ctx.close();
+  await globalControlInventory(page,'shopper');for(const rid of FULL_SCOPE.roles.shopper)await inventoryRoute(page,'shopper',rid,key);if(key==='julissa-flores')await deepShopperActions(page,t,key);result.shopper[pname(t.profile)]=e;await ctx.close();
  }
  const {ctx,page}=await signed(admin,'admin'),a={};
  await nav(page,'dashboard');a.dashboardSelect=await click(page,'.bdSel');if(a.dashboardSelect&&!/[1-9]/.test(await page.locator('#bdSelectedCount').innerText()))throw new Error('FUNCTIONAL_DEFECT:DASHBOARD_SELECTION_COUNT');a.dashboardContext=await click(page,'.bdCtx');if(!a.dashboardContext)a.dashboardContext=await click(page,'#bdBulkRequest');if(a.dashboardContext){await page.waitForTimeout(700);const view=await page.evaluate(()=>String(CX?.session?.view||''));if(view!=='postulaciones'||!/Pedir acción al shopper/i.test(await overlay(page)))throw new Error('FUNCTIONAL_DEFECT:DASHBOARD_HANDOFF');}await shot(page,'admin-dashboard');
@@ -134,5 +234,5 @@ try{
  if(client){const s=await signed(client,'client');await globalControlInventory(s.page,'client');for(const rid of FULL_SCOPE.roles.cliente)await inventoryRoute(s.page,'client',rid,'client');result.client={memberId:client.id,routeCount:FULL_SCOPE.roles.cliente.length};await s.ctx.close();}else{throw new Error('AUTH_FAILURE:FULL_EXHAUSTIVE_CLIENT_MISSING');}
  const counts={admin:Object.keys(result.routeInventory.admin||{}).length,shopper:Object.keys(result.routeInventory.shopper||{}).length,client:Object.keys(result.routeInventory.client||{}).length};
  if(counts.admin!==FULL_SCOPE.counts.admin||counts.shopper!==FULL_SCOPE.counts.shopper||counts.client!==FULL_SCOPE.counts.cliente)throw new Error('RELEASE_COMPOSITION_FAILURE:FULL_ROUTE_INVENTORY_INCOMPLETE:'+JSON.stringify(counts));
- await browser.close();result.coverage={counts,expected:FULL_SCOPE.counts,shopperModules:FULL_SCOPE.shopperModules,benefitsIncluded:FULL_SCOPE.shopperModules.includes('beneficios'),globalControls:FULL_SCOPE.globalControls};result.decision='PASS_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL';fs.writeFileSync(OUT+'/result.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result,null,2));
+ await browser.close();result.coverage={counts,expected:FULL_SCOPE.counts,shopperModules:FULL_SCOPE.shopperModules,benefitsIncluded:FULL_SCOPE.shopperModules.includes('beneficios'),globalControls:FULL_SCOPE.globalControls};if(result.actionFindings.length){result.decision='HOLD_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL_ACTION_FINDINGS';fs.writeFileSync(OUT+'/result.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result,null,2));process.exitCode=2;}else{result.decision='PASS_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL';fs.writeFileSync(OUT+'/result.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result,null,2));}
 }catch(error){result.decision='FAIL_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL';result.error=str(error?.stack||error);fs.writeFileSync(OUT+'/result.json',JSON.stringify(result,null,2)+'\n');await browser.close().catch(()=>{});console.log(JSON.stringify(result,null,2));process.exitCode=2;}
