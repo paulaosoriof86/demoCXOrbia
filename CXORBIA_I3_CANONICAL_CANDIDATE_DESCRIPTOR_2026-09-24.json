@@ -7,8 +7,8 @@
   "productSourceSha": "4ab7fc91847a9d7da5af13c14b8eb0b82a96b652",
   "productTreeAuthority": "6cea5789d3a6c109f22d96722dd790a5987930ef",
   "predecessorProductSourceSha": "b7b8978cda791deea38316e34e6a2dd93e5c6137",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V305_2026-10-07.json",
-  "findingsLedgerExpectedGitBlob": "749f6b212265c4fd0cc80962a07c5e98ec1ccdcc",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V306_2026-10-07.json",
+  "findingsLedgerExpectedGitBlob": "d86a63da32dc5ca1adbf53a60f6fd870fa87ef8b",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V20.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -616,21 +616,13 @@
     "findingId": "VRM-055"
   },
   "lastControlFailure": {
-    "classification": "RELEASE_COMPOSITION_FAILURE",
-    "runId": 37655220726,
-    "runNumber": 1325,
-    "jobId": 112908509277,
-    "code": "UNDECLARED_PRODUCT_DRIFT_AFTER_CANONICAL_CANDIDATE",
-    "observedFiles": [
-      "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
-      "app/core/backend-bulletins.js",
-      "app/modules/soporte.js",
-      "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
-    ],
-    "priorDeclaredSource": "6344733145eb6c59a257f9e3b3665a5425dd728c",
-    "correctedSource": "4ab7fc91847a9d7da5af13c14b8eb0b82a96b652",
-    "correctedTree": "6cea5789d3a6c109f22d96722dd790a5987930ef",
-    "productMutationInThisCorrection": false,
+    "classification": "MAPPING_FAILURE",
+    "runId": 37655904155,
+    "runNumber": 1326,
+    "jobId": 112910337614,
+    "code": "NEXT_FINDING_ID",
+    "productChanged": false,
+    "deploys": 0,
     "production": false
   },
   "lastSecondReviewProof": {
