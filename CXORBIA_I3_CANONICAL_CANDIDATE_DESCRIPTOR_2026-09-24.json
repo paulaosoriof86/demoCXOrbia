@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "b7b8978cda791deea38316e34e6a2dd93e5c6137",
   "productTreeAuthority": "9985bfac4d3188abf2bddb21eee541336aff2222",
   "predecessorProductSourceSha": "9dee84dd31a0eff2cfa2de9ed0313af75e02769a",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V298_2026-10-07.json",
-  "findingsLedgerExpectedGitBlob": "1821e626182028c290837937d9d5d9f6d3161525",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V13.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V299_2026-10-07.json",
+  "findingsLedgerExpectedGitBlob": "da86a3d1ef721485cb6c193440d05f7421618478",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V14.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-260_PLUS_VRM-180_SOURCE_PROOF",
+  "activeBlocker": "CUMULATIVE_DEV_MATERIALIZATION",
   "nextFindingId": "VRM-261",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN_I3_B_CUMULATIVE_SOURCE_PROOF_ON_B7B8978C",
+  "exactNextAction": "MATERIALIZE_B7B8978C_ONCE_TO_DEV",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -904,9 +904,20 @@
     "production": false
   },
   "pendingMaterialization": {
-    "state": "SOURCE_PROOF_REQUIRED",
+    "state": "SOURCE_PROVEN_READY_SINGLE_DEV_MATERIALIZATION",
     "sourceSha": "b7b8978cda791deea38316e34e6a2dd93e5c6137",
     "sourceTree": "9985bfac4d3188abf2bddb21eee541336aff2222",
+    "sourceProof": {
+      "runId": 37640783399,
+      "runNumber": 1316,
+      "jobId": 112858968044,
+      "artifactId": 11492425862,
+      "artifactDigest": "sha256:ff97fe64d8eb5d60628a2fd00d8d1805f00acf543a2ea265cda2853d8177869b",
+      "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+      "sourceSha": "b7b8978cda791deea38316e34e6a2dd93e5c6137",
+      "sourceTree": "9985bfac4d3188abf2bddb21eee541336aff2222",
+      "production": false
+    },
     "production": false
   },
   "lastVrm080Proof": {
@@ -2633,7 +2644,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "5ca43cb40c9020a24cf8ee1003beed4e79c982a6",
+  "moduleTruthExpectedGitBlob": "ed59c5f7fc4546425e7dbeb65225a0ae964acda2",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -5133,7 +5144,7 @@
     "assessment": "NO_MULTI_MINUTE_STALL_IN_RUN1292_BUT_13_TO_35_SECONDS_REMAINS_OPEN_FOR_HUMAN_ACCEPTANCE"
   },
   "i3BCumulativeRecovery": {
-    "state": "SOURCE_FIX_PENDING_PROOF",
+    "state": "SOURCE_PROVEN_PENDING_DEV_MATERIALIZATION",
     "proofReceipt": "CXORBIA_I3_B_CUMULATIVE_SOURCE_DECLARATION_2026-10-06.json",
     "proof": {
       "decision": "PASS_I3_B_CUMULATIVE_APPROVED_NOT_COMPOSED_SOURCE_PROOF",
@@ -5258,20 +5269,14 @@
     },
     "clickE2ERequired": true,
     "sourceProof": {
+      "runId": 37640783399,
+      "runNumber": 1316,
+      "jobId": 112858968044,
+      "artifactId": 11492425862,
+      "artifactDigest": "sha256:ff97fe64d8eb5d60628a2fd00d8d1805f00acf543a2ea265cda2853d8177869b",
       "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
-      "runId": 37620293425,
-      "runNumber": 1306,
-      "jobId": 112788640154,
-      "artifactId": 11481427548,
-      "artifactDigest": "sha256:40dc68e27c5f8f77dd5c66049707196d97e170d46cfcf887bfe6d23ac671ea0c",
-      "sourceSha": "9dee84dd31a0eff2cfa2de9ed0313af75e02769a",
-      "sourceTree": "768fb9ccc1f3ff49ff6bd94df092ea0fb772da8c",
-      "tests": 7,
-      "passed": 7,
-      "failed": 0,
-      "trueFunctionalDefects": 0,
-      "clickE2ERequired": true,
-      "deploys": 0,
+      "sourceSha": "b7b8978cda791deea38316e34e6a2dd93e5c6137",
+      "sourceTree": "9985bfac4d3188abf2bddb21eee541336aff2222",
       "production": false
     },
     "materialization": {
