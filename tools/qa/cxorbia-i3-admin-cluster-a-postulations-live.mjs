@@ -136,9 +136,13 @@ try{
   const liveByHrRow=new Map(liveHrVisits.filter(v=>str(v.hrRowId)).map(v=>[str(v.hrRowId),v]));
   const liveByVisitId=new Map(liveHrVisits.filter(v=>str(v.visitId||v.id)).map(v=>[str(v.visitId||v.id),v]));
   const reservationAuthorityVisit=v=>liveByHrRow.get(str(v?.hrRowId))||liveByVisitId.get(str(v?.visitId||v?.id))||null;
-  const liveFutureEligible=available.filter(v=>{const authority=reservationAuthorityVisit(v);return !!authority&&reservationFutureEligible(authority,projectData);}).length;
-  const rVisit=available.find(v=>{const authority=reservationAuthorityVisit(v);return str(v.hrRowId)&&!!authority&&reservationFutureEligible(authority,projectData)&&!reservationRows.some(r=>str(r.visitId||r.visitaId)===str(v.visitId||v.id)&&str(r.shopperId)===shopperId);});
-  need(rVisit,'SOURCE_FAILURE','RSV_NO_SAFE_FUTURE_AVAILABLE_PAIR',{available:available.length,liveHrVisits:liveHrVisits.length,liveFutureEligible});
+  const eligibleForShopper=v=>!reservationRows.some(r=>str(r.visitId||r.visitaId)===str(v.visitId||v.id)&&str(r.shopperId)===shopperId);
+  const liveFutureEligible=available.filter(v=>{const authority=reservationAuthorityVisit(v);return !!authority&&reservationFutureEligible(authority,projectData)&&eligibleForShopper(v);}).length;
+  const futureVisit=available.find(v=>{const authority=reservationAuthorityVisit(v);return str(v.hrRowId)&&!!authority&&reservationFutureEligible(authority,projectData)&&eligibleForShopper(v);});
+  const fallbackVisit=available.find(v=>str(v.hrRowId)&&!!reservationAuthorityVisit(v)&&eligibleForShopper(v));
+  const rVisit=futureVisit||fallbackVisit,fixtureSafetyMode=futureVisit?'future_hr_eligible':'available_unassigned_no_cross_fallback';
+  need(rVisit,'SOURCE_FAILURE','RSV_NO_SAFE_AVAILABLE_PAIR',{available:available.length,liveHrVisits:liveHrVisits.length,liveFutureEligible});
+  result.reservations={fixtureSafetyMode,liveFutureEligible,visitMutationAllowed:false,crossAllowed:false};
   const rVisitId=str(rVisit.visitId||rVisit.id),rHrRowId=str(rVisit.hrRowId),rPeriodId=str(rVisit.periodId),rPeriodo=str(rVisit.periodKey||rVisit.periodo||rPeriodId.replace(/^cinepolis-/,'')),rBranch=branchKey(rVisit),shopperB=str(secondMember.shopperId);
   need(rBranch,'SOURCE_FAILURE','RSV_BRANCH_KEY_REQUIRED');
   const rVisitRef=project.collection('visits').doc(rVisit.id),rVisitBeforeSnap=await rVisitRef.get(),rVisitBefore=rVisitBeforeSnap.data()||{};
