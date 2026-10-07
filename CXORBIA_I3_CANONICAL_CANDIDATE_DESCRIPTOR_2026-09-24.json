@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
+  "status": "HOLD_I3_VRM267_SUPPORT_FOCAL_LIVE_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM267_SUPPORT_AUTH_SAME_ARTIFACT_LIVE_E2E",
+  "activeBlocker": "VRM267_SUPPORT_FOCAL_LIVE_REPROOF",
   "nextFindingId": "VRM-268",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN_FULL_SAME_ARTIFACT_LIVE_E2E_ON_RUN1333_MATERIALIZATION",
+  "exactNextAction": "RUN_SINGLE_VRM267_SUPPORT_FOCAL_LIVE_PROBE_ON_RUN1333_MATERIALIZATION",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -5522,6 +5522,34 @@
     "builds": 0,
     "runtimeDeploys": 0,
     "hostingDeploys": 1,
+    "hrWrites": 0,
+    "production": false
+  },
+  "run1334Readback": {
+    "runId": 37661803193,
+    "runNumber": 1334,
+    "jobId": 112931036635,
+    "conclusion": "failure",
+    "representativeDecision": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+    "exhaustiveDecision": "HOLD_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL_ACTION_FINDINGS",
+    "coverage": {
+      "admin": "34/34",
+      "shopper": "12/12",
+      "client": "10/10"
+    },
+    "visualEvidence": {
+      "artifactId": 11501077677,
+      "artifactDigest": "sha256:640a6ca40cf0e51558ded68d9da5a428ada4a27cfe36cb908fbc225257965c76",
+      "files": 118
+    },
+    "firstObservedBreak": {
+      "classification": "PERSISTENCE_FAILURE",
+      "code": "SUPPORT_TICKET_PROVIDER_ACK_NOT_OBSERVED",
+      "shopper": "julissa-flores"
+    },
+    "builds": 0,
+    "runtimeDeploys": 0,
+    "hostingDeploys": 0,
     "hrWrites": 0,
     "production": false
   }
