@@ -6548,42 +6548,19 @@ jobs:
 
   phasea-rejected-checkpoint-source-proof:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_REJECTED_PHASEA_SOURCE_REPROOF_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED' }}
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    env:
-      FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
-      FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+    timeout-minutes: 12
+    env: {FOCAL_SOURCE: "${{ needs.canonical-candidate-authority.outputs.source_sha }}", FOCAL_TREE: "${{ needs.canonical-candidate-authority.outputs.source_tree }}"}
     steps:
-      - name: Checkout exact control head
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Verify bounded product source and run source proof
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$FOCAL_SOURCE" = "2d4da635aeb793aa47d22127295473856108a94f"
-          test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
-          git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
-          node --check app/modules/midia.js
-          node --check app/modules/misvisitas.js
-          node --check app/modules/beneficios.js
-          node --check app/modules/cert.js
-          node --check app/core/router.js
-          node --check app/modules/shoppers.js
-          node --check app/modules/postulaciones.js
-          node --check app/adapters/tya-canonical-finance-read-model-v2.js
-          node --check app/adapters/tya-canonical-shopper-portal-v2.js
-          node --check app/adapters/tya-protected-auth-hr-authority-bridge-v2.js
-          node --check backend/runtime/cxorbia-operational-command-provider-v1.mjs
-          node tools/qa/cxorbia-i3-phasea-rejection-remediation-source-proof.mjs | tee /tmp/phasea-source-proof.json
-          test "$(jq -r '.decision' /tmp/phasea-source-proof.json)" = "PASS_I3_PHASEA_REJECTED_CHECKPOINT_SOURCE_PROOF"
-          test "$(jq -r '.checksFailed' /tmp/phasea-source-proof.json)" = "0"
-          node --test backend/runtime/hr-live-service/test/cxorbia-prei4-shopper-progressive-route.test.mjs
-          node --test backend/runtime/hr-live-service/test/cxorbia-gate9-postulation-immediate.test.mjs
-          node --test backend/runtime/hr-live-service/test/cxorbia-pre-i4-finance-source-semantics.test.mjs
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - run: bash .github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh source-proof
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: "cxorbia-i3-phasea-source-proof-${{ github.run_id }}", path: /tmp/i3-phasea-completion-source-proof.json, if-no-files-found: warn, retention-days: 30, compression-level: 0}
 
   b1-canonical-visible-identity-source-proof:
     needs: canonical-candidate-authority
@@ -6603,30 +6580,30 @@ jobs:
 
   b1-canonical-visible-identity-dev-materialization:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_B1_DEV_MATERIALIZATION_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
-    env: {B1_SOURCE: "${{ needs.canonical-candidate-authority.outputs.source_sha }}", B1_TREE: "${{ needs.canonical-candidate-authority.outputs.source_tree }}"}
+    env: {PHASEA_SOURCE: "${{ needs.canonical-candidate-authority.outputs.source_sha }}", PHASEA_TREE: "${{ needs.canonical-candidate-authority.outputs.source_tree }}"}
     steps:
       - uses: actions/checkout@v4
         with: {fetch-depth: 0}
       - uses: actions/setup-node@v4
         with: {node-version: '24'}
-      - run: bash .github/control/CXORBIA_I3_B1_CONTROL_20261006.sh preflight
+      - run: bash .github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh preflight
       - run: npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest >/dev/null 2>&1
       - uses: google-github-actions/auth@v2
         with: {credentials_json: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}"}
       - uses: google-github-actions/setup-gcloud@v2
         with: {project_id: "${{ env.PROJECT }}"}
-      - run: bash .github/control/CXORBIA_I3_B1_CONTROL_20261006.sh materialize
-      - run: bash .github/control/CXORBIA_I3_B1_CONTROL_20261006.sh proof
+      - run: bash .github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh materialize
+      - run: bash .github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh proof
       - uses: actions/upload-artifact@v4
         if: always()
-        with: {name: "cxorbia-i3-b1-materialization-${{ github.run_id }}", path: .tmp/i3-b1-materialization, if-no-files-found: error, retention-days: 30, compression-level: 0, include-hidden-files: true}
+        with: {name: "cxorbia-i3-phasea-materialization-${{ github.run_id }}", path: .tmp/i3-phasea-completion, if-no-files-found: error, retention-days: 30, compression-level: 0, include-hidden-files: true}
 
   phasea-representative-same-artifact-live-reproof:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_B1_IDENTITY_LIVE_READBACK_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_B1_LIVE_E2E_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_B1_IDENTITY_LIVE_READBACK_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_B1_LIVE_E2E_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     env:

@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_TRUE_FUNCTIONAL_DEFECT_DOMAINS_REMAIN",
+  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "daedb5d51f0e5391ee4fe7e74a0b5f385a986b61",
-  "productTreeAuthority": "6c390799bae5e3d734c02b9f8bc484ff56369468",
-  "predecessorProductSourceSha": "29d645447c6c24bdacf903e035b7f7083e236890",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V294_2026-10-06.json",
-  "findingsLedgerExpectedGitBlob": "7cbe080baf95007f2f7c65780d020ab1f07913d3",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261006-V9.json",
+  "productSourceSha": "9dee84dd31a0eff2cfa2de9ed0313af75e02769a",
+  "productTreeAuthority": "768fb9ccc1f3ff49ff6bd94df092ea0fb772da8c",
+  "predecessorProductSourceSha": "daedb5d51f0e5391ee4fe7e74a0b5f385a986b61",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V295_2026-10-07.json",
+  "findingsLedgerExpectedGitBlob": "c5c933504a42a1acde46a34e1f501a4aad884dc6",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V10.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "CERTIFICATIONS_FINANCE_SHOPPER_PROFILE_VISITS_POSTULATIONS",
+  "activeBlocker": "CUMULATIVE_SOURCE_PROOF",
   "nextFindingId": "VRM-260",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "CONTINUE_TRUE_FUNCTIONAL_DEFECT_SOURCE_CLOSURE_ON_SAME_CUMULATIVE_SOURCE",
+  "exactNextAction": "RUN_I3_B_CUMULATIVE_SOURCE_PROOF",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -436,8 +436,8 @@
     "runNumber": 1287,
     "jobId": 112596082123,
     "isCurrentProductSource": false,
-    "currentProductSourceSha": "29d645447c6c24bdacf903e035b7f7083e236890",
-    "note": "Run1287 materialization and Run1292 live proof certify predecessor B1 source 17373b4f; cumulative successor is intentionally not materialized until remaining source domains close."
+    "currentProductSourceSha": "9dee84dd31a0eff2cfa2de9ed0313af75e02769a",
+    "note": "Existing DEV certifies predecessor; cumulative source 9dee84dd awaits source proof and one Hosting-only DEV materialization."
   },
   "lastFocalAttempt": {
     "runId": 36198284266,
@@ -2632,7 +2632,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "c227be1960598d8d79cd5fe6dded03f2dcc971a5",
+  "moduleTruthExpectedGitBlob": "8e63fdac9a0496d3c76e2c1808376945fbb0fe1d",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -5132,7 +5132,7 @@
     "assessment": "NO_MULTI_MINUTE_STALL_IN_RUN1292_BUT_13_TO_35_SECONDS_REMAINS_OPEN_FOR_HUMAN_ACCEPTANCE"
   },
   "i3BCumulativeRecovery": {
-    "state": "CUMULATIVE_SOURCE_DECLARED__TRUE_FUNCTIONAL_DEFECTS_REMAIN",
+    "state": "SOURCE_COMPOSED_PENDING_PROOF",
     "proofReceipt": "CXORBIA_I3_B_CUMULATIVE_SOURCE_DECLARATION_2026-10-06.json",
     "proof": {
       "decision": "PASS_I3_B_CUMULATIVE_APPROVED_NOT_COMPOSED_SOURCE_PROOF",
@@ -5195,8 +5195,8 @@
       "deploys": 0,
       "production": false
     },
-    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261006-V9.json",
-    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V294_2026-10-06.json",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V10.json",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V295_2026-10-07.json",
     "remainingDomains": [
       "certifications",
       "finance-core-liquidation-costs",
@@ -5206,6 +5206,55 @@
     "humanCheckpointAllowed": false,
     "production": false,
     "productSourceSha": "daedb5d51f0e5391ee4fe7e74a0b5f385a986b61",
-    "productTree": "6c390799bae5e3d734c02b9f8bc484ff56369468"
+    "productTree": "6c390799bae5e3d734c02b9f8bc484ff56369468",
+    "sourceContract": {
+      "certifications": {
+        "state": "COMPOSED_NOT_DEPLOYED",
+        "proof": [
+          "multi certification selector",
+          "durable bank save/import/gate/delete",
+          "recertification provider",
+          "AI exact requested question count",
+          "shopper fail-closed carryover"
+        ]
+      },
+      "finance": {
+        "state": "COMPOSED_NOT_DEPLOYED",
+        "proof": [
+          "historical cut through July",
+          "August paid 2026-10-02",
+          "September explicit-only",
+          "individual internal payment",
+          "batch selection",
+          "optional durable support",
+          "reconcile action",
+          "external-payment truth labels"
+        ]
+      },
+      "shopperProfile": {
+        "state": "COMPOSED_NOT_DEPLOYED",
+        "proof": [
+          "canonical profile hierarchy",
+          "history detail",
+          "self-edit ACK",
+          "admin banking/profile controls",
+          "tenant-local visit completion gate",
+          "durable check-in",
+          "durable instructive read receipt"
+        ]
+      },
+      "visitsPostulationsReservations": {
+        "state": "COMPOSED_NOT_DEPLOYED",
+        "proof": [
+          "dashboard contextual handoff",
+          "HR assignments included in request targets",
+          "durable notification target",
+          "reservation create/update/delete",
+          "future-only policy",
+          "provider ACK/idempotency boundary"
+        ]
+      }
+    },
+    "clickE2ERequired": true
   }
 }
