@@ -72,7 +72,7 @@
   }
   const commandOk=r=>!!(r&&r.ok===true&&r.status==='committed'&&r.providerAck===true&&r.successUiAllowed===true);
   const periodOf=(data,v)=>data?.recordPeriodId?data.recordPeriodId(v):(v&&(v.periodId||v.projectId));
-  function rows(vs,ui){return vs.length?`<div style="overflow:auto"><table class="tbl"><thead><tr><th>Periodo</th><th>Visita</th><th>Estado</th><th>Fecha</th><th>País</th></tr></thead><tbody>${vs.map(v=>{const st=stage(v);return `<tr><td>${esc(v.periodLabel||v.periodKey)}</td><td><b>${esc(v.sucursal)}</b><div style="font-size:10px;color:var(--t3)">${esc(v.escenario)} · ${esc(v.ciudad)}</div></td><td><span class="bdg bdg-${st[1]}">${esc(st[0])}</span></td><td>${esc(v.realizada||v.cuestFecha||v.submittedAt||v.agendada||v.disponibleDesde||'—')}</td><td>${esc(v.pais||v.country||'—')}</td></tr>`;}).join('')}</tbody></table></div>`:ui.empty('🗒️','Sin visitas en esta categoría.');}
+  function rows(vs,ui){return vs.length?`<div style="overflow:auto"><table class="tbl"><thead><tr><th>Periodo</th><th>Visita</th><th>Estado</th><th>Fecha</th><th>País</th></tr></thead><tbody>${vs.map(v=>{const st=stage(v);return `<tr data-profile-visit-row="${esc(v.id||v.visitId||'')}" style="cursor:pointer" title="Abrir detalle de la visita"><td>${esc(v.periodLabel||v.periodKey)}</td><td><b>${esc(v.sucursal)}</b><div style="font-size:10px;color:var(--t3)">${esc(v.escenario)} · ${esc(v.ciudad)}</div></td><td><span class="bdg bdg-${st[1]}">${esc(st[0])}</span></td><td>${esc(v.realizada||v.cuestFecha||v.submittedAt||v.agendada||v.disponibleDesde||'—')}</td><td>${esc(v.pais||v.country||'—')}</td></tr>`;}).join('')}</tbody></table></div>`:ui.empty('🗒️','Sin visitas en esta categoría.');}
   function render({data,ui}){
     const host=ui.el('div');
     const redraw=()=>{
@@ -111,25 +111,31 @@
       const list=tab==='active'?active:tab==='done'?done:tab==='submitted'?submitted:tab==='paid'?paid:visits;
       const credentialBody=`<b style="font-size:11px;color:var(--t2)">Protegida · no se muestra después de iniciar sesión</b>`;
       host.innerHTML=`${ui.ph('Mi Perfil','Tu información, acceso e historial')}
-      <div class="cx-profile-section-title">👤 Identidad y datos personales</div>
+      <div class="grid g2" style="gap:14px;margin-bottom:16px" data-profile-overview>
+        <div class="card hov card-p flex" data-profile-jump="identity" style="gap:12px;cursor:pointer;align-items:flex-start"><div style="font-size:24px">👤</div><div style="flex:1"><div class="card-t">Identidad y contacto</div><div style="font-size:11.5px;color:var(--t3);margin-top:3px">Tus datos personales y medios de contacto verificados.</div><div style="margin-top:7px">${ui.bdg('Fuente real','g')}</div></div><span class="btn btn-soft btn-sm">Ver datos ↓</span></div>
+        <div class="card hov card-p flex" data-profile-jump="history" style="gap:12px;cursor:pointer;align-items:flex-start"><div style="font-size:24px">🗂️</div><div style="flex:1"><div class="card-t">Trayectoria e histórico</div><div style="font-size:11.5px;color:var(--t3);margin-top:3px">${visits.length} visita(s) asociadas a tu identidad canónica.</div><div style="margin-top:7px">${ui.bdg(visits.length+' fila(s) · fuente real','g')}</div></div><span class="btn btn-soft btn-sm">Abrir ↓</span></div>
+        <div class="card hov card-p flex" data-profile-jump="access" style="gap:12px;cursor:pointer;align-items:flex-start"><div style="font-size:24px">🔐</div><div style="flex:1"><div class="card-t">Acceso</div><div style="font-size:11.5px;color:var(--t3);margin-top:3px">Usuario canónico y credencial protegida.</div><div style="margin-top:7px">${ui.bdg(username?'Usuario activo':'Pendiente de acceso',username?'b':'a')}</div></div><span class="btn btn-soft btn-sm">Ver acceso ↓</span></div>
+        <div class="card hov card-p flex" data-profile-jump="payment" style="gap:12px;cursor:pointer;align-items:flex-start"><div style="font-size:24px">💳</div><div style="flex:1"><div class="card-t">Datos de pago</div><div style="font-size:11.5px;color:var(--t3);margin-top:3px">Banco, cuenta y moneda bajo control de perfil.</div><div style="margin-top:7px">${ui.bdg(s.banco||s.ctaNum?'Datos registrados':'Pendiente de completar',s.banco||s.ctaNum?'g':'a')}</div></div><span class="btn btn-soft btn-sm">Ver pagos ↓</span></div>
+      </div>
+      <div class="cx-profile-section-title" id="profileIdentityAnchor">👤 Identidad y datos personales</div>
       <div class="card card-p cx-profile-hero">
         <div class="between" style="gap:12px;align-items:flex-start"><div><div class="card-t" style="font-size:18px">${esc(s.nombre)}</div><div style="font-size:11px;color:var(--t3);margin-top:3px">${[s.ciudad,s.pais].map(esc).filter(Boolean).join(' · ')||'Perfil de shopper'}</div></div><div class="flex wrap" style="gap:6px"><button class="btn btn-sm btn-soft" type="button" data-profile-edit>✏️ Editar mis datos</button><span class="bdg bdg-g">Perfil verificado</span><span class="bdg bdg-${cs==='certificada'?'g':cs==='presentada'?'b':historicalEvidence.length?'a':'n'}">${cs==='certificada'?'Certificada':cs==='presentada'?'Certificación presentada':historicalEvidence.length?'Histórico en revisión':'Sin certificación'}</span></div></div>
         <div class="cx-profile-detail-grid">
-          <section class="cx-profile-group"><div class="cx-profile-group-title">👤 Identidad</div>
+          <section class="cx-profile-group" data-profile-section="identity"><div class="cx-profile-group-title">👤 Identidad</div>
             <div class="cx-profile-field"><span>Nombre completo</span><b>${esc([firstName,lastName].filter(Boolean).join(' ')||s.nombre||'— sin dato')}</b></div>
             <div class="cx-profile-field"><span>Documento</span><b>${esc(masked(s.dpi||s.documentId))}</b></div>
             <div class="cx-profile-field"><span>Ciudad / región</span><b>${esc([s.ciudad,s.depto].filter(Boolean).join(' · ')||'— sin dato')}</b></div>
             <div class="cx-profile-field"><span>Edad / sexo</span><b>${esc([s.edad,s.sexo].filter(Boolean).join(' · ')||'— sin dato')}</b></div>
           </section>
-          <section class="cx-profile-group"><div class="cx-profile-group-title">💬 Contacto</div>
+          <section class="cx-profile-group" data-profile-section="contact"><div class="cx-profile-group-title">💬 Contacto</div>
             <div class="cx-profile-field"><span>WhatsApp</span><b>${esc(s.whatsapp||s.phone||'— sin dato')}</b></div>
             <div class="cx-profile-field"><span>Correo</span><b class="cx-profile-break">${esc(email||'— sin dato')}</b></div>
           </section>
-          <section class="cx-profile-group"><div class="cx-profile-group-title">🔐 Acceso</div>
+          <section class="cx-profile-group" data-profile-section="access"><div class="cx-profile-group-title">🔐 Acceso</div>
             <div class="cx-profile-field"><span>Usuario</span><b>${esc(username||'— sin dato')}</b></div>
             <div class="cx-profile-field"><span>Contraseña</span><div>${credentialBody}</div></div>
           </section>
-          <section class="cx-profile-group"><div class="cx-profile-group-title">🏦 Datos de pago</div>
+          <section class="cx-profile-group" data-profile-section="payment"><div class="cx-profile-group-title">🏦 Datos de pago</div>
             <div class="cx-profile-field"><span>Banco</span><b>${esc(s.banco||'— sin dato')}</b></div>
             <div class="cx-profile-field"><span>Cuenta</span><b>${esc(masked(s.ctaNum))}</b></div>
             <div class="cx-profile-field"><span>Moneda</span><b>${esc(s.ctaMoneda||'— sin dato')}</b></div>
@@ -139,9 +145,11 @@
       </div>
       <div style="font-size:11px;font-weight:800;color:var(--t3);letter-spacing:.08em;text-transform:uppercase;margin:0 0 7px">📊 Desempeño</div>
       <div class="grid g4 cx-profile-kpis" style="margin-bottom:18px"><div data-profile-kpi="all">${ui.kpi('Visitas',st.total,'b')}</div><div data-profile-kpi="done">${ui.kpi('Realizadas',st.realizadas,'g')}</div><div data-profile-kpi="submitted">${ui.kpi('Submitidas',st.submitted,'p')}</div><div data-profile-kpi="paid">${ui.kpi('Pagadas confirmadas',st.paymentConfirmed,'g')}</div></div>
-      <div style="font-size:11px;font-weight:800;color:var(--t3);letter-spacing:.08em;text-transform:uppercase;margin:0 0 7px">🧭 Trayectoria</div>
+      <div style="font-size:11px;font-weight:800;color:var(--t3);letter-spacing:.08em;text-transform:uppercase;margin:0 0 7px" id="profileHistoryAnchor">🧭 Trayectoria</div>
       <div class="card card-p"><div class="between" style="gap:8px;flex-wrap:wrap;margin-bottom:10px"><div class="card-t">Histórico de visitas · ${visits.length}</div><div class="flex wrap" style="gap:6px"><button class="btn btn-sm ${tab==='all'?'btn-pr':'btn-ghost'}" data-tab="all">Todas ${visits.length}</button><button class="btn btn-sm ${tab==='active'?'btn-pr':'btn-ghost'}" data-tab="active">Activas ${active.length}</button><button class="btn btn-sm ${tab==='done'?'btn-pr':'btn-ghost'}" data-tab="done">Realizadas ${done.length}</button><button class="btn btn-sm ${tab==='submitted'?'btn-pr':'btn-ghost'}" data-tab="submitted">Submitidas ${submitted.length}</button><button class="btn btn-sm ${tab==='paid'?'btn-pr':'btn-ghost'}" data-tab="paid">Pagadas ${paid.length}</button></div></div>${rows(list,ui)}</div>`;
       host.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{tab=b.dataset.tab;draw();}));
+      host.querySelectorAll('[data-profile-jump]').forEach(card=>card.addEventListener('click',()=>{const key=card.dataset.profileJump;const target=key==='history'?host.querySelector('#profileHistoryAnchor'):key==='identity'?host.querySelector('#profileIdentityAnchor'):host.querySelector('[data-profile-section="'+key+'"]');target?.scrollIntoView({behavior:'smooth',block:'start'});}));
+      host.querySelectorAll('[data-profile-visit-row]').forEach(tr=>tr.addEventListener('click',()=>{const v=visits.find(x=>String(x.id||x.visitId||'')===String(tr.dataset.profileVisitRow||''));if(!v)return;const stg=stage(v);ui.modal('📋 '+(v.sucursal||'Detalle de visita'),`<div class="grid g2" style="gap:10px 16px"><div><span class="muted">Periodo</span><div><b>${esc(v.periodLabel||v.periodKey||periodOf(data,v)||'—')}</b></div></div><div><span class="muted">Estado</span><div><span class="bdg bdg-${stg[1]}">${esc(stg[0])}</span></div></div><div><span class="muted">Sucursal</span><div><b>${esc(v.sucursal||'—')}</b></div></div><div><span class="muted">Ciudad / país</span><div>${esc([v.ciudad,v.pais||v.country].filter(Boolean).join(' · ')||'—')}</div></div><div><span class="muted">Escenario</span><div>${esc(v.escenario||'—')}</div></div><div><span class="muted">Fecha agendada</span><div>${esc(v.agendada||'—')}</div></div><div><span class="muted">Fecha realizada</span><div>${esc(v.realizada||'—')}</div></div><div><span class="muted">Honorario</span><div>${v.honorario!=null?ui.money(v.currency,v.honorario):'Pendiente de fuente'}</div></div></div><div style="font-size:11px;color:var(--t3);margin-top:12px">Este detalle usa la misma visita canónica del historial; abrirlo no modifica datos.</div>`);}));
       host.querySelectorAll('[data-profile-kpi]').forEach(k=>k.addEventListener('click',()=>{const key=k.dataset.profileKpi,list=key==='done'?done:key==='submitted'?submitted:key==='paid'?paid:visits;ui.modal((key==='done'?'Visitas realizadas':key==='submitted'?'Visitas submitidas':key==='paid'?'Pagos confirmados':'Histórico de visitas')+' · '+list.length,rows(list,ui));}));
       const editProfile=host.querySelector('[data-profile-edit]');
       editProfile?.addEventListener('click',()=>ui.modal('Editar mis datos',`
