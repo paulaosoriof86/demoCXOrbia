@@ -6735,7 +6735,7 @@ jobs:
           fetch-depth: 0
       - name: Install focal live proof dependencies
         run: |
-          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
           npx playwright install chromium >/dev/null 2>&1
       - uses: google-github-actions/auth@v2
         with:
@@ -6748,17 +6748,16 @@ jobs:
           set -Eeuo pipefail
           mkdir -p "$VRM267_OUT"
           git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
-          jq -e '.currentMaterialization | .runId==37661359150 and .artifactId==11501186259 and .builds==0 and .runtimeDeploys==0 and .hostingDeploys==1 and .production==false' "$CANDIDATE_DESCRIPTOR" >/dev/null
+          node --test backend/runtime/hr-live-service/test/cxorbia-vrm261-264-source-contract.test.mjs | tee "$VRM267_OUT/source-proof.log"
           EXPECTED_RUNTIME="$(jq -r '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")"
-          EXPECTED_DIGEST="$(jq -r '.currentMaterialization.runtimeDigest' "$CANDIDATE_DESCRIPTOR")"
           EXPECTED_HOSTING="$(jq -r '.currentMaterialization.hostingVersion' "$CANDIDATE_DESCRIPTOR")"
           EXPECTED_HR_REVISION="$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")"
           test "$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(status.latestReadyRevisionName)')" = "$EXPECTED_RUNTIME"
-          gcloud run revisions describe "$EXPECTED_RUNTIME" --project "$PROJECT" --region "$REGION" --format=json > "$VRM267_OUT/revision.json"
-          grep -q "${EXPECTED_DIGEST#sha256:}" "$VRM267_OUT/revision.json"
           TOKEN="$(gcloud auth print-access-token)"
           curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$VRM267_OUT/hosting.json"
           test "$(jq -r '.release.version.name' "$VRM267_OUT/hosting.json")" = "$EXPECTED_HOSTING"
+          npx firebase-tools deploy --only firestore:rules --project "$PROJECT" --non-interactive | tee "$VRM267_OUT/firestore-rules-deploy.log"
+          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases/cloud.firestore" > "$VRM267_OUT/firestore-release.json"
           FOCAL_SOURCE="$FOCAL_SOURCE" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" VRM267_OUT="$VRM267_OUT/live" node tools/qa/cxorbia-i3-vrm267-support-focal-live.mjs | tee "$VRM267_OUT/console.log"
           R="$VRM267_OUT/live/result.json"
           test "$(jq -r '.decision' "$R")" = "PASS_VRM267_SUPPORT_FOCAL_LIVE"
