@@ -7,8 +7,8 @@
   "productSourceSha": "17373b4f79a68fed4155fed67aa23d3306fda2e2",
   "productTreeAuthority": "8bba316baa878ca37928404586d882a06734e628",
   "predecessorProductSourceSha": "6232caedfcfd1e0136b5ece5f55bfaa0c1b3934a",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V290_2026-10-06.json",
-  "findingsLedgerExpectedGitBlob": "b8ea62c8f6b39349530b9c72947b857719123b86",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V291_2026-10-06.json",
+  "findingsLedgerExpectedGitBlob": "3fb31a9aef8d497803a3c694633b19e5595058fd",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261006-V7.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -431,7 +431,10 @@
     "hostingDeploysOrigin": 1,
     "hostingDeploysProofRun": 0,
     "hrWrites": 0,
-    "production": false
+    "production": false,
+    "runId": 37560375450,
+    "runNumber": 1287,
+    "jobId": 112596082123
   },
   "lastFocalAttempt": {
     "runId": 36198284266,
@@ -5040,6 +5043,14 @@
       "hostingDeploysProofRun": 0,
       "hrWrites": 0,
       "production": false
-    }
+    },
+    "qaScope": "MULTI_SHOPPER_ACTION_UI_PLUS_SYNTHETIC_PROVIDER_ACK",
+    "qaRepresentatives": [
+      "Julissa Flores",
+      "Priscila López",
+      "Paula Osorio"
+    ],
+    "syncMaxMs": 60000,
+    "providerSyntheticCleanupRequired": true
   }
 }

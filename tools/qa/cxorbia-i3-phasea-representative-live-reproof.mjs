@@ -139,6 +139,7 @@ async function signed(member,kind){
   }
   if(!settled)throw new Error('AUTH_FAILURE:BROWSER_SESSION:'+member.id+':'+lastError);
   await page.goto('about:blank');
+  const authorityStartedAt=Date.now();
   await page.goto(URL+'&phaselivesettled='+Date.now(),{waitUntil:'domcontentloaded',timeout:90000});
   await page.waitForFunction(uid=>String(window.firebase?.auth?.().currentUser?.uid||'')===uid,String(member.id),{timeout:90000});
   await page.waitForFunction(()=>typeof window.CX?.backendAuth?.ensureAuthenticated==='function',null,{timeout:90000});
@@ -149,8 +150,10 @@ async function signed(member,kind){
       &&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&g.ready===true&&g.blocked!==true
       &&String(d.currentProjectId||'')===projectId&&String(d.currentPeriodId||'')===periodId&&String(d.previewMeta?.sourceRevision||'')===rev;
   },{kind,rev:revision,projectId,periodId},{timeout:120000});
+  const authorityReadyMs=Date.now()-authorityStartedAt;
+  if(authorityReadyMs>60000)throw new Error('ENVIRONMENT_FAILURE:AUTHORITY_SYNC_EXCEEDED_60S_'+authorityReadyMs);
   if(errors.length)throw new Error('FUNCTIONAL_DEFECT:PAGEERROR_'+kind+':'+JSON.stringify(errors));
-  return {ctx,page};
+  return {ctx,page,authorityReadyMs};
 }
 async function nav(page,route){
   await page.evaluate(r=>window.CX.router.nav(r,{history:false}),route);
@@ -176,6 +179,7 @@ try{
       const d=window.CX?.data||{},sessionUser=window.CX?.session?.user||{},sid=String(sessionUser.shopperId||''),own=typeof d.visitsForShopper==='function'?d.visitsForShopper(expectedId,false):[];
       const current=own.filter(v=>String(d.recordPeriodId?d.recordPeriodId(v):(v.periodId||v.projectId)||'')===currentPeriodId);
       const active=current.filter(v=>{const f=d.visitFacets?.(v)||{};return f.assigned===true&&f.realized!==true&&f.cancelled!==true;});
+      const first=active[0]||null,firstFacets=first?(d.visitFacets?.(first)||first.canonicalFacets||{}):{};
       const auth=window.CX?.backendAuth?.context?.()||{},fb=window.firebase?.auth?.().currentUser||null,raw=String(auth.shopperId||sid||''),canonical=String(d.__identityMap?.[raw]||sid||raw||'');
       const profile=d.__sessionShopperProfile||((canonical&&d.getShopper)?d.getShopper(canonical):null)||null;
       return {
@@ -184,15 +188,23 @@ try{
         rawShopperId:raw,canonicalShopperId:canonical,identityMapValue:String(d.__identityMap?.[raw]||''),
         sessionProfile:profile?{id:String(profile.id||profile.shopperId||''),name:String(profile.nombre||profile.displayName||[profile.firstName,profile.lastName].filter(Boolean).join(' ')),visibleLogin:String(profile.visibleLogin||profile.username||profile.user||'')}:null,
         ownVisits:own.length,uniqueOwnVisits:new Set(own.map(v=>String(v.hrRowId||v.id||v.visitId||''))).size,currentVisits:current.length,activeVisits:active.length,
-        firstActive:active[0]?{id:String(active[0].id||active[0].visitId||''),hrRowId:String(active[0].hrRowId||''),branch:String(active[0].sucursal||''),instructiveReadAt:String(active[0].instructiveReadAt||'')}:null
+        firstActive:first?{id:String(first.id||first.visitId||''),hrRowId:String(first.hrRowId||''),branch:String(first.sucursal||''),instructiveReadAt:String(first.instructiveReadAt||''),scheduled:firstFacets.scheduled===true,scheduledDate:String(first.agendada||first.scheduledDate||first.fechaAgendada||'')}:null
       };
     },{expectedId:target.profile.id,currentPeriodId:periodId});
     if(base.sessionShopperId!==target.profile.id)throw new Error('MAPPING_FAILURE:SESSION_NOT_CANONICAL:'+target.name+':'+JSON.stringify(base));
     if(base.ownVisits!==base.uniqueOwnVisits)throw new Error('MAPPING_FAILURE:DUPLICATE_OWN_VISITS:'+target.name+':'+JSON.stringify(base));
 
     await nav(page,'midia');
-    const midia=await page.evaluate(branch=>{const text=String(document.body?.innerText||''),rail=[...document.querySelectorAll('.rail-user')].map(x=>String(x.innerText||'').replace(/\s+/g,' ').trim()).join(' | '),heading=String(document.querySelector('.page-h,.page-head,.page-title')?.innerText||'');return {text:text.slice(0,1400),noActive:/Sin visitas activas/i.test(text),branchVisible:branch?text.includes(branch):true,railUser:rail,heading};},base.firstActive?.branch||'');
+    const midia=await page.evaluate(branch=>{const text=String(document.body?.innerText||''),rail=[...document.querySelectorAll('.rail-user')].map(x=>String(x.innerText||'').replace(/\s+/g,' ').trim()).join(' | '),heading=String(document.querySelector('.page-h,.page-head,.page-title')?.innerText||''),actions=[...document.querySelectorAll('[data-visit-action]')].map(b=>({action:String(b.dataset.visitAction||''),visitId:String(b.dataset.visitId||''),text:String(b.innerText||'').trim()})),progress=[...document.querySelectorAll('.cx-day-progress-card')].map(c=>String(c.innerText||'').replace(/\s+/g,' ').trim());return {text:text.slice(0,2200),noActive:/Sin visitas activas/i.test(text),branchVisible:branch?text.includes(branch):true,railUser:rail,heading,actions,progress};},base.firstActive?.branch||'');
     if(base.activeVisits>0&&(midia.noActive||!midia.branchVisible))throw new Error('FUNCTIONAL_DEFECT:MIDIA_ACTIVE_VISIT_MISSING:'+target.name+':'+JSON.stringify({base,midia}));
+    if(base.firstActive){
+      const acts=new Set(midia.actions.filter(a=>a.visitId===base.firstActive.id).map(a=>a.action));
+      if(!acts.has('instructive'))throw new Error('FUNCTIONAL_DEFECT:MIDIA_INSTRUCTIVE_ACTION_MISSING:'+target.name+':'+JSON.stringify({base,midia}));
+      if(base.firstActive.scheduled){
+        if(!acts.has('reschedule')||acts.has('schedule'))throw new Error('FUNCTIONAL_DEFECT:MIDIA_SCHEDULED_ACTION_HIERARCHY:'+target.name+':'+JSON.stringify({base,midia}));
+        if(base.firstActive.scheduledDate&&!midia.text.includes(base.firstActive.scheduledDate))throw new Error('VISUAL_DEFECT:MIDIA_SCHEDULED_DATE_MISSING:'+target.name+':'+JSON.stringify({base,midia}));
+      }else if(!acts.has('schedule')||acts.has('reschedule'))throw new Error('FUNCTIONAL_DEFECT:MIDIA_UNSCHEDULED_ACTION_HIERARCHY:'+target.name+':'+JSON.stringify({base,midia}));
+    }
     if(target.name==='Julissa Flores'){
       if(base.authShopperId!==target.profile.id||base.canonicalShopperId!==target.profile.id||base.sessionProfile?.id!==target.profile.id)throw new Error('MAPPING_FAILURE:B1_JULISSA_CANONICAL_OWNER:'+JSON.stringify(base));
       if(!norm(midia.railUser).includes(norm('Julissa Flores'))||norm(midia.railUser).includes(norm('Paula Osorio')))throw new Error('VISUAL_DEFECT:B1_RAIL_IDENTITY:'+JSON.stringify(midia));
@@ -208,22 +220,66 @@ try{
       const body=String(document.body?.innerText||''),cards=[...document.querySelectorAll('[data-visit-card]')];
       const card=branch?cards.find(c=>String(c.innerText||'').includes(branch)):cards[0]||null;
       const cert=card?.querySelector('[data-cert]'),sched=card?.querySelector('[data-sched]'),doc=card?.querySelector('[data-doc]');
-      return {cards:cards.length,body:body.slice(0,1600),branchVisible:branch?body.includes(branch):true,certDisabled:cert?cert.disabled:null,scheduleDisabled:sched?sched.disabled:null,certText:String(cert?.innerText||''),docText:String(doc?.innerText||''),progressLabels:[...card?.querySelectorAll('.cx-visit-progress-label')||[]].map(x=>String(x.innerText||'')),read};
+      return {cards:cards.length,body:body.slice(0,2200),branchVisible:branch?body.includes(branch):true,certDisabled:cert?cert.disabled:null,scheduleDisabled:sched?sched.disabled:null,certAriaDisabled:cert?cert.getAttribute('aria-disabled')==='true':null,scheduleAriaDisabled:sched?sched.getAttribute('aria-disabled')==='true':null,hasSchedule:!!sched,hasReschedule:!!card?.querySelector('[data-reprog]'),certText:String(cert?.innerText||''),docText:String(doc?.innerText||''),progressLabels:[...card?.querySelectorAll('.cx-visit-progress-label')||[]].map(x=>String(x.innerText||'')),read};
     },{branch:base.firstActive?.branch||'',read:!!base.firstActive?.instructiveReadAt});
     if(base.activeVisits>0&&!route.branchVisible)throw new Error('FUNCTIONAL_DEFECT:MISVISITAS_ACTIVE_MISSING:'+target.name);
     if(base.firstActive){
-      if(!base.firstActive.instructiveReadAt){
-        if(route.certDisabled!==true||route.scheduleDisabled!==true)throw new Error('FUNCTIONAL_DEFECT:ROUTE_PREREQUISITE_BYPASS:'+target.name+':'+JSON.stringify(route));
+      if(base.firstActive.scheduled){
+        if(route.hasSchedule||!route.hasReschedule)throw new Error('FUNCTIONAL_DEFECT:MISVISITAS_SCHEDULED_ACTION_HIERARCHY:'+target.name+':'+JSON.stringify(route));
+      }else if(!base.firstActive.instructiveReadAt){
+        if(route.certAriaDisabled!==true||route.scheduleAriaDisabled!==true)throw new Error('FUNCTIONAL_DEFECT:ROUTE_PREREQUISITE_FEEDBACK_MISSING:'+target.name+':'+JSON.stringify(route));
       }else{
         if(!/Instructivo leído/i.test(route.docText))throw new Error('FUNCTIONAL_DEFECT:INSTRUCTIVE_ACK_NOT_PROJECTED:'+target.name+':'+JSON.stringify(route));
-        if(/Certificación vigente/i.test(route.certText)&&route.scheduleDisabled===true)throw new Error('FUNCTIONAL_DEFECT:CERTIFIED_SCHEDULE_STILL_BLOCKED:'+target.name+':'+JSON.stringify(route));
-        if(!/Certificación vigente/i.test(route.certText)&&route.certDisabled===true)throw new Error('FUNCTIONAL_DEFECT:CERT_ACTION_BLOCKED_AFTER_INSTRUCTIVE:'+target.name+':'+JSON.stringify(route));
+        if(/Certificación vigente/i.test(route.certText)&&route.scheduleAriaDisabled===true)throw new Error('FUNCTIONAL_DEFECT:CERTIFIED_SCHEDULE_STILL_BLOCKED:'+target.name+':'+JSON.stringify(route));
+        if(!/Certificación vigente/i.test(route.certText)&&route.certAriaDisabled===true)throw new Error('FUNCTIONAL_DEFECT:CERT_ACTION_BLOCKED_AFTER_INSTRUCTIVE:'+target.name+':'+JSON.stringify(route));
       }
     }
 
     await nav(page,'cert');
     const cert=await page.evaluate(()=>{const body=String(document.body?.innerText||'');return {rendered:/Certificación/i.test(body),body:body.slice(0,1200)};});
     if(!cert.rendered)throw new Error('FUNCTIONAL_DEFECT:CERT_ROUTE_NOT_RENDERED:'+target.name);
+    const certSaysUnavailable=/no hay un banco|pendiente de validación\/publicación/i.test(cert.body);
+    const routeSaysValid=/Certificación vigente/i.test(route.certText);
+    if(certSaysUnavailable&&routeSaysValid)throw new Error('FUNCTIONAL_DEFECT:CERT_AUTHORITY_CROSS_SURFACE_CONTRADICTION:'+target.name+':'+JSON.stringify({route:route.certText,cert:cert.body}));
+    if(/Certificación vigente para este proyecto/i.test(cert.body)&&!routeSaysValid)throw new Error('FUNCTIONAL_DEFECT:CERT_CARRYOVER_NOT_PROJECTED_TO_VISIT:'+target.name+':'+JSON.stringify({route:route.certText,cert:cert.body}));
+
+    let b1ActionExercise={};
+    if(target.name==='Julissa Flores'&&base.firstActive){
+      await nav(page,'midia');
+      const instr=page.locator('[data-visit-action="instructive"][data-visit-id="'+base.firstActive.id+'"]').first();
+      if(await instr.count()!==1)throw new Error('FUNCTIONAL_DEFECT:B1_JULISSA_MIDIA_INSTRUCTIVE_CONTROL_MISSING');
+      await instr.click();
+      await page.waitForFunction(()=>String(window.CX?.session?.view||'')==='misvisitas',null,{timeout:10000});
+      const ov=page.locator('.cx-ov:visible').last();
+      await ov.waitFor({state:'visible',timeout:10000});
+      const instructiveModalText=String(await ov.innerText());
+      if(!/Instructivo|Confirmo que lo he leído/i.test(instructiveModalText))throw new Error('FUNCTIONAL_DEFECT:B1_JULISSA_INSTRUCTIVE_MODAL_NOT_OPENED:'+instructiveModalText.slice(0,600));
+      await page.evaluate(()=>{const visible=e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect();return s.display!=='none'&&s.visibility!=='hidden'&&r.width>0&&r.height>0;};const o=[...document.querySelectorAll('.cx-ov')].find(visible);if(!o)return;const b=[...o.querySelectorAll('button')].find(x=>/×|cerrar/i.test(String(x.innerText||x.getAttribute('aria-label')||'')));if(b)b.click();else o.remove();});
+      await nav(page,'midia');
+      if(!base.firstActive.scheduled){
+        const sched=page.locator('[data-visit-action="schedule"][data-visit-id="'+base.firstActive.id+'"]').first();
+        if(await sched.count()!==1)throw new Error('FUNCTIONAL_DEFECT:B1_JULISSA_MIDIA_SCHEDULE_CONTROL_MISSING');
+        await sched.click();
+        await page.waitForFunction(()=>String(window.CX?.session?.view||'')==='misvisitas',null,{timeout:10000});
+        await page.waitForFunction(()=>{const t=String(document.body?.innerText||'');return /Completa primero el instructivo y la certificación requerida|Agendar visita/i.test(t);},null,{timeout:10000});
+        const scheduleOutcome=await page.evaluate(()=>String(document.body?.innerText||'').match(/Completa primero el instructivo y la certificación requerida|Agendar visita/i)?.[0]||'');
+        b1ActionExercise.scheduleOutcome=scheduleOutcome;
+      }
+      b1ActionExercise.instructiveModalOpened=true;
+    }
+    if(base.firstActive?.scheduled){
+      await nav(page,'midia');
+      const rp=page.locator('[data-visit-action="reschedule"][data-visit-id="'+base.firstActive.id+'"]').first();
+      if(await rp.count()!==1)throw new Error('FUNCTIONAL_DEFECT:B1_REPROGRAM_CONTROL_MISSING:'+target.name);
+      await rp.click();
+      await page.waitForFunction(()=>String(window.CX?.session?.view||'')==='misvisitas',null,{timeout:10000});
+      const rov=page.locator('.cx-ov:visible').last();
+      await rov.waitFor({state:'visible',timeout:10000});
+      const rtext=String(await rov.innerText());
+      if(!/Reprogramar visita/i.test(rtext))throw new Error('FUNCTIONAL_DEFECT:B1_REPROGRAM_MODAL_NOT_OPENED:'+target.name+':'+rtext.slice(0,500));
+      await page.evaluate(()=>{const visible=e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect();return s.display!=='none'&&s.visibility!=='hidden'&&r.width>0&&r.height>0;};const o=[...document.querySelectorAll('.cx-ov')].find(visible);if(!o)return;const b=[...o.querySelectorAll('button')].find(x=>/×|cerrar/i.test(String(x.innerText||x.getAttribute('aria-label')||'')));if(b)b.click();else o.remove();});
+      b1ActionExercise.reprogramModalOpened=true;
+    }
 
     await nav(page,'aprendizaje');
     const academy=await page.evaluate(()=>{const heads=[...document.querySelectorAll('.cx-academy-course-head')],cards=[...document.querySelectorAll('.cx-academy-course-card')],colors=heads.map(h=>getComputedStyle(h).backgroundColor),images=heads.map(h=>getComputedStyle(h).backgroundImage);return {cards:cards.length,heads:heads.length,colors,images,distinctColors:new Set(colors).size,solid:images.every(v=>v==='none')};});
@@ -233,7 +289,7 @@ try{
     const benefits=await page.evaluate(()=>{const rows=[...document.querySelectorAll('tbody tr')].map(tr=>({text:String(tr.innerText||'').replace(/\s+/g,' ').trim(),status:String(tr.dataset.benStatus||'')}));const old=rows.filter(r=>{const m=r.text.match(/20\d{2}-\d{2}-\d{2}/);return m&&m[0]<='2026-05-31';});const oldPaid=old.filter(r=>r.status==='paid');const paidContradictions=oldPaid.filter(r=>/Pendiente de confirmación/i.test(r.text));return {rows:rows.length,oldRows:old.length,oldPaid:oldPaid.length,paidContradictions:paidContradictions.map(r=>r.text),body:String(document.body?.innerText||'').slice(0,1800)};});
     if(target.name==='Paula Osorio'&&(benefits.oldRows<1||benefits.oldPaid<1||benefits.paidContradictions.length))throw new Error('FUNCTIONAL_DEFECT:PAULA_HISTORICAL_PAYMENT_DISPLAY:'+JSON.stringify(benefits));
 
-    evidence.representatives[target.name]={shopperId:target.profile.id,uid:target.member.id,selectionAuthority:target.selectionAuthority,independentSameDisplayNamePrincipals:target.independentSameDisplayNamePrincipals,missingProfileFields:target.missing,base,midia:{noActive:midia.noActive,branchVisible:midia.branchVisible,railUser:midia.railUser,heading:midia.heading},profile:{grid:profile.grid,titles:profile.titles,nameVisible:profile.nameVisible},route,cert:{rendered:cert.rendered},academy,benefits:{rows:benefits.rows,oldRows:benefits.oldRows,oldPaid:benefits.oldPaid,paidContradictionCount:benefits.paidContradictions.length}};
+    evidence.representatives[target.name]={shopperId:target.profile.id,uid:target.member.id,selectionAuthority:target.selectionAuthority,independentSameDisplayNamePrincipals:target.independentSameDisplayNamePrincipals,missingProfileFields:target.missing,authorityReadyMs:sp.authorityReadyMs,base,midia:{noActive:midia.noActive,branchVisible:midia.branchVisible,railUser:midia.railUser,heading:midia.heading,actions:midia.actions,progress:midia.progress},profile:{grid:profile.grid,titles:profile.titles,nameVisible:profile.nameVisible},route,cert:{rendered:cert.rendered,unavailable:certSaysUnavailable,routeSaysValid},b1ActionExercise,academy,benefits:{rows:benefits.rows,oldRows:benefits.oldRows,oldPaid:benefits.oldPaid,paidContradictionCount:benefits.paidContradictions.length}};
     await sp.ctx.close();
   }
 

@@ -6713,6 +6713,9 @@ jobs:
           set -Eeuo pipefail
           FOCAL_SOURCE="$FOCAL_SOURCE" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" PHASEA_LIVE_OUT="$PHASEA_LIVE_OUT" node tools/qa/cxorbia-i3-phasea-representative-live-reproof.mjs | tee "$PHASEA_LIVE_OUT/console.log"
           test "$(jq -r '.decision' "$PHASEA_LIVE_OUT/result.json")" = "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF"
+          VRM168_OUT="$PHASEA_LIVE_OUT/provider-schedule" VRM168_PERIOD_ID="$PERIOD_ID" node tools/qa/cxorbia-i3-vrm168-schedule-provider-probe.mjs | tee "$PHASEA_LIVE_OUT/provider-schedule-console.log"
+          test "$(jq -r '.decision' "$PHASEA_LIVE_OUT/provider-schedule/result.json")" = "PASS_VRM168_PROVIDER_SCHEDULE_PATH"
+          jq -e '.result.providerAck==true and .cleanup.visit==true and .cleanup.receipt==true and .cleanup.audit==true and .hrWrites==0 and .production==false' "$PHASEA_LIVE_OUT/provider-schedule/result.json" >/dev/null
           test "$(jq -r '.writes.auth' "$PHASEA_LIVE_OUT/result.json")" = "0"
           test "$(jq -r '.writes.hr' "$PHASEA_LIVE_OUT/result.json")" = "0"
           test "$(jq -r '.writes.provider' "$PHASEA_LIVE_OUT/result.json")" = "0"
