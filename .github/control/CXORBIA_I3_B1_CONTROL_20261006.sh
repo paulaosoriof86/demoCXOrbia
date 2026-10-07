@@ -16,10 +16,11 @@ source-proof)
   git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
   mapfile -t changed < <(git diff --name-only "$PREDECESSOR_SOURCE" "$FOCAL_SOURCE" -- app backend | sort)
   printf '%s\n' "${changed[@]}" > /tmp/b1-changed.txt
-  test "$(wc -l < /tmp/b1-changed.txt | tr -d ' ')" = "4"
+  test "$(wc -l < /tmp/b1-changed.txt | tr -d ' ')" = "5"
   grep -Fxq 'app/modules/midia.js' /tmp/b1-changed.txt
   grep -Fxq 'app/modules/misvisitas.js' /tmp/b1-changed.txt
   grep -Fxq 'app/adapters/tya-protected-auth-hr-authority-bridge-v2.js' /tmp/b1-changed.txt
+  grep -Fxq 'backend/runtime/hr-live-service/test/cxorbia-b1-canonical-visible-identity.test.mjs' /tmp/b1-changed.txt
   grep -Fxq 'backend/runtime/hr-live-service/test/cxorbia-b1-transversal-shopper-actions.test.mjs' /tmp/b1-changed.txt
   node --check app/modules/midia.js
   node --check app/modules/misvisitas.js
