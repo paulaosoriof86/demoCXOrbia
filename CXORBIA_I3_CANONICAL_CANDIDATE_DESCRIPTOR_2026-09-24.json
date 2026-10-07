@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
+  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "4ab7fc91847a9d7da5af13c14b8eb0b82a96b652",
-  "productTreeAuthority": "6cea5789d3a6c109f22d96722dd790a5987930ef",
-  "predecessorProductSourceSha": "b7b8978cda791deea38316e34e6a2dd93e5c6137",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V309_2026-10-07.json",
-  "findingsLedgerExpectedGitBlob": "0799b9e830cc1394f93f0e9ccd1e560b9494537b",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V23.json",
+  "productSourceSha": "1b668d32341756fa8f621a8e22d1b0ef1c3884ab",
+  "productTreeAuthority": "b4a2b4efc0ad9229509f8330a64401fafe7f2869",
+  "predecessorProductSourceSha": "4ab7fc91847a9d7da5af13c14b8eb0b82a96b652",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V310_2026-10-07.json",
+  "findingsLedgerExpectedGitBlob": "ad3aa97a13ac65d0332ea596454c45087a15406d",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V24.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM265_VRM266_CONTROL_ORACLE_REPROOF",
-  "nextFindingId": "VRM-267",
+  "activeBlocker": "VRM267_SUPPORT_AUTH_SOURCE_PROOF",
+  "nextFindingId": "VRM-268",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RERUN_SAME_RUN1328_ARTIFACT_WITH_CORRECTED_DEEP_ACTION_ORACLE",
+  "exactNextAction": "RUN_VRM267_SOURCE_PROOF_THEN_HOSTING_ONLY_DEV_MATERIALIZATION",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -42,25 +42,16 @@
     "state": "VRM214_FOUR_IDENTITY_MIRAFLORES_READ_ONLY_REQUIRED"
   },
   "lastSourceFix": {
-    "observedAt": "2026-10-07T16:50:38Z",
-    "sourceSha": "4ab7fc91847a9d7da5af13c14b8eb0b82a96b652",
-    "sourceTree": "6cea5789d3a6c109f22d96722dd790a5987930ef",
-    "predecessorSha": "b7b8978cda791deea38316e34e6a2dd93e5c6137",
-    "classification": "FUNCTIONAL_DEFECT+PERSISTENCE_FAILURE",
+    "observedAt": "2026-10-07T17:38:03Z",
+    "sourceSha": "1b668d32341756fa8f621a8e22d1b0ef1c3884ab",
+    "sourceTree": "b4a2b4efc0ad9229509f8330a64401fafe7f2869",
+    "predecessorSha": "4ab7fc91847a9d7da5af13c14b8eb0b82a96b652",
+    "classification": "AUTH_FAILURE",
     "findingIds": [
-      "VRM-261",
-      "VRM-262",
-      "VRM-263",
-      "VRM-264"
+      "VRM-267"
     ],
     "productFilesChanged": [
-      "app/modules/reservas.js",
-      "app/modules/beneficios.js",
-      "app/modules/soporte.js",
-      "app/modules/novedades.js",
-      "app/core/backend-bulletins.js",
-      "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
-      "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+      "app/adapters/cxorbia-command-adapter-v1.js"
     ],
     "sourceContractTest": "backend/runtime/hr-live-service/test/cxorbia-vrm261-264-source-contract.test.mjs",
     "production": false
@@ -323,7 +314,7 @@
   },
   "technicalClosureReceipt": "CXORBIA_I3_TERMINAL_TECHNICAL_READY_2026-09-25.json",
   "i4": {
-    "status": "BLOCKED_PENDING_CORRECTED_SAME_ARTIFACT_LIVE_E2E",
+    "status": "BLOCKED_VRM267_SOURCE_PROOF_AND_DEV_MATERIALIZATION",
     "productionAuthorization": false,
     "authorized": false,
     "production": "DO_NOT_TOUCH"
@@ -423,7 +414,7 @@
     "production": false
   },
   "currentMaterialization": {
-    "state": "PASS_VRM261_VRM264_EXACT_DEV_MATERIALIZATION",
+    "state": "SUPERSEDED_BY_VRM267_FRONTEND_SOURCE_PENDING_PROOF",
     "decision": "PASS_REJECTED_PHASEA_EXACT_DEV_MATERIALIZATION",
     "sourceSha": "4ab7fc91847a9d7da5af13c14b8eb0b82a96b652",
     "sourceTree": "6cea5789d3a6c109f22d96722dd790a5987930ef",
@@ -441,7 +432,8 @@
     "runtimeDeploys": 1,
     "hostingDeploys": 1,
     "storageRulesDeploys": 0,
-    "production": false
+    "production": false,
+    "supersededForSourceSha": "1b668d32341756fa8f621a8e22d1b0ef1c3884ab"
   },
   "lastFocalAttempt": {
     "runId": 36198284266,
@@ -2648,7 +2640,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "fcc13d6a9004aa5a26aa6e937801eaf63e060129",
+  "moduleTruthExpectedGitBlob": "48727cccc054cbc37c055e436292d1baa5b178c6",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -5377,7 +5369,7 @@
     "production": false
   },
   "fullModuleActionCoveragePath": "CXORBIA_I3_FULL_MODULE_ACTION_COVERAGE_2026-10-07.json",
-  "fullModuleActionCoverageExpectedGitBlob": "a3253a9ef825706eca6942ce5f66117bbe45a73a",
+  "fullModuleActionCoverageExpectedGitBlob": "dedbcccf722b947639668ca1ed9f065f196bfc6c",
   "run1321DeepActionDiagnostic": {
     "runId": 37649334166,
     "runNumber": 1321,
@@ -5470,6 +5462,25 @@
     "runtimeDeploys": 1,
     "hostingDeploys": 1,
     "storageRulesDeploys": 0,
+    "production": false
+  },
+  "run1330Adjudication": {
+    "runId": 37659572945,
+    "runNumber": 1330,
+    "jobId": 112923456733,
+    "artifactId": 11500660610,
+    "artifactDigest": "sha256:e417dd32329eda4796602b576e0924a8fd36e95af180c572dfb9458bb8d38046",
+    "materializationRunId": 37656521280,
+    "materializationArtifactId": 11498507910,
+    "materializationArtifactDigest": "sha256:7797968ba2b8e3fe5caec45263e8b543241e32f4d69a79e9a5a7dfaa7c6aa241",
+    "predecessorProductSource": "4ab7fc91847a9d7da5af13c14b8eb0b82a96b652",
+    "hrRevision": "44c8a38a45800606ddb7db5c8ab902324bd7daf588fe8653165fd5e1b7e1a285",
+    "results": {
+      "vrm261": "PASS_LIVE_EMPTY_ELIGIBILITY_FAIL_CLOSED",
+      "vrm262": "PASS_LIVE_RECEIPT_DOWNLOAD_PERIOD_CINEPOLIS_2026_09",
+      "vrm264": "PASS_LIVE_READ_DURABLE_NEW_CONTEXT",
+      "vrm263": "FAIL_SUPPORT_PROVIDER_ACK_NOT_OBSERVED"
+    },
     "production": false
   }
 }
