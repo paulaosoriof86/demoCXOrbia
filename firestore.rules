@@ -109,6 +109,8 @@ service cloud.firestore {
         listHasValue('targetRoles', role()) ||
         (resource.data.targetUserIds is list && request.auth.uid in resource.data.targetUserIds) ||
         (resource.data.targetShopperIds is list && shopperId() != '' && shopperId() in resource.data.targetShopperIds) ||
+        resource.data.supportRequesterUserId == request.auth.uid ||
+        (shopperId() != '' && resource.data.supportRequesterShopperId == shopperId()) ||
         (resource.data.targetProjectIds is list && request.auth.token.projectIds is list && resource.data.targetProjectIds.hasAny(request.auth.token.projectIds)) ||
         listHasValue('targetCountries', country())
       );

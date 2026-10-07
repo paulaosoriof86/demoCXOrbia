@@ -212,8 +212,8 @@ window.CX = window.CX || {};
     const r=role(),userId=uid(),sid=shopperId(),seen=new Map(),queries=[];
     if(['super','admin','ops','coordinador'].includes(r))queries.push(c.where('status','==','active'));
     else{
-      if(userId)queries.push(c.where('targetUserIds','array-contains',userId));
-      if(sid)queries.push(c.where('targetShopperIds','array-contains',sid));
+      if(userId)queries.push(c.where('supportRequesterUserId','==',userId));
+      if(sid)queries.push(c.where('supportRequesterShopperId','==',sid));
     }
     for(const q of queries){
       try{const snap=await q.get();snap.forEach(doc=>{const d=doc.data()||{};if(d.entityType==='support_ticket'&&(d.status||'active')==='active')seen.set(doc.id,doc);});}

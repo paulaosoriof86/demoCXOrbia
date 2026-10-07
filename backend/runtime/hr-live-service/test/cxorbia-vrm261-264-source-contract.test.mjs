@@ -21,7 +21,7 @@ test('VRM262 benefits receipt has an executable truthful download',()=>{
 });
 
 test('VRM263 support uses existing operational command provider and durable readback',()=>{
-  const ui=read('app/modules/soporte.js'),adapter=read('app/adapters/cxorbia-command-adapter-v1.js'),boundary=read('app/adapters/cxorbia-cxdata-command-boundary-v1.js'),provider=read('backend/runtime/cxorbia-operational-command-provider-v1.mjs'),rules=read('firestore.rules');
+  const ui=read('app/modules/soporte.js'),bridge=read('app/core/backend-bulletins.js'),adapter=read('app/adapters/cxorbia-command-adapter-v1.js'),boundary=read('app/adapters/cxorbia-cxdata-command-boundary-v1.js'),provider=read('backend/runtime/cxorbia-operational-command-provider-v1.mjs'),rules=read('firestore.rules');
   assert.match(ui,/CX\.data\?\.createSupportTicket/);
   assert.match(ui,/await this\.hydrate\(true\)/);
   assert.doesNotMatch(ui,/CX\.backendBulletins\.createSupportTicket/);
@@ -41,6 +41,10 @@ test('VRM263 support uses existing operational command provider and durable read
   assert.match(rules,/resource\.data\.targetShopperIds is list && shopperId\(\) != '' && shopperId\(\) in resource\.data\.targetShopperIds/);
   assert.doesNotMatch(rules,/listHasValue\('targetUserIds'/);
   assert.doesNotMatch(rules,/listHasValue\('targetShopperIds'/);
+  assert.match(bridge,/where\('supportRequesterUserId','==',userId\)/);
+  assert.match(bridge,/where\('supportRequesterShopperId','==',sid\)/);
+  assert.match(rules,/resource\.data\.supportRequesterUserId == request\.auth\.uid/);
+  assert.match(rules,/resource\.data\.supportRequesterShopperId == shopperId\(\)/);
 });
 
 test('VRM264 novedades read state is bulletinReads durable authority, not localStorage',()=>{

@@ -170,8 +170,8 @@ try{
     const attempt=async(name,fn,retries=1)=>{let last=null;for(let i=1;i<=retries;i++){try{const value=await fn();return{name,ok:true,size:value?.size??null,exists:value?.exists??null,attempt:i};}catch(error){last={name,ok:false,code:String(error?.code||''),message:String(error?.message||error),attempt:i};if(i<retries)await new Promise(resolve=>setTimeout(resolve,5000));}}return last;};
     const [direct,targetUser,targetShopper]=await Promise.all([
       attempt('direct',()=>c.doc(spec.docId).get()),
-      attempt('targetUser',()=>c.where('targetUserIds','array-contains',spec.userId).get(),13),
-      attempt('targetShopper',()=>c.where('targetShopperIds','array-contains',spec.shopperId).get(),13)
+      attempt('targetUser',()=>c.where('supportRequesterUserId','==',spec.userId).get(),13),
+      attempt('targetShopper',()=>c.where('supportRequesterShopperId','==',spec.shopperId).get(),13)
     ]);
     return {
       uid:String(window.firebase.auth().currentUser?.uid||''),
