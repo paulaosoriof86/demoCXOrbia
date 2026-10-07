@@ -33,7 +33,36 @@ const result={schemaVersion:'cxorbia.i3.phasea.exhaustive-click-visual.v1',decis
 const shot=async(page,name)=>{await page.screenshot({path:OUT+'/'+name+'.png',fullPage:true});result.screenshots.push(name+'.png');};
 const overlay=async page=>page.locator('.cx-ov:visible').last().innerText().catch(()=>'');
 const visual=async(page,label)=>{const v=await page.evaluate(()=>{const t=String(document.body?.innerText||'');return{technical:/AUTH_READY|CLAIMS_READY|HRROWID|FINANCIALSOURCESTATUS|sourceSafe\s*[:=]|providerAck\s*[:=]|máquina canónica HR/i.test(t),blocked:t.includes('Fuente de datos no disponible'),body:t.slice(0,5000)};});if(v.technical||v.blocked)throw new Error('VISUAL_DEFECT:'+label+':'+JSON.stringify({technical:v.technical,blocked:v.blocked}));return v;};
-async function signed(member,role){const ctx=await browser.newContext({viewport:{width:1440,height:980}}),page=await ctx.newPage(),errs=[];page.on('pageerror',e=>errs.push(str(e?.message||e)));await page.goto(URL,{waitUntil:'domcontentloaded',timeout:90000});await page.waitForFunction(()=>!!window.firebase?.auth&&window.firebase.apps?.length,null,{timeout:90000});const token=await auth.createCustomToken(member.id);await page.evaluate(async t=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);await firebase.auth().signInWithCustomToken(t);},token);await page.goto('about:blank');await page.goto(URL+'&settled='+Date.now(),{waitUntil:'domcontentloaded',timeout:90000});await page.waitForFunction(uid=>String(firebase.auth().currentUser?.uid||'')===uid,member.id,{timeout:90000});await page.waitForFunction(()=>typeof CX?.backendAuth?.ensureAuthenticated==='function',null,{timeout:90000});await page.evaluate(async()=>CX.backendAuth.ensureAuthenticated());await page.waitForFunction(({role,rev,periodId})=>{const c=CX?.backendAuth?.context?.()||{},r=String(c.role||'').toLowerCase();return c.authenticated===true&&(role==='shopper'?r==='shopper':r!=='shopper'&&r!=='cliente')&&CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&String(CX?.data?.previewMeta?.sourceRevision||'')===rev&&String(CX?.data?.currentPeriodId||'')===periodId;},{role,rev:revision,periodId},{timeout:120000});if(errs.length)throw new Error('FUNCTIONAL_DEFECT:CLICK_PAGEERROR:'+role+':'+JSON.stringify(errs));return{ctx,page};}
+async function signed(member,role){
+ const ctx=await browser.newContext({viewport:{width:1440,height:980}});
+ const page=await ctx.newPage(),errs=[];
+ page.on('pageerror',e=>errs.push(str(e?.message||e)));
+ let settled=false,lastError='';
+ for(let attempt=1;attempt<=5&&!settled;attempt++){
+  await page.goto(URL+'&signinattempt='+attempt+'&ts='+Date.now(),{waitUntil:'domcontentloaded',timeout:90000});
+  await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
+  const token=await auth.createCustomToken(member.id);
+  try{
+   await page.evaluate(async t=>{const fb=window.firebase;await fb.auth().setPersistence(fb.auth.Auth.Persistence.LOCAL);await fb.auth().signInWithCustomToken(t);},token);
+  }catch(e){lastError=str(e?.message||e);}
+  await page.waitForLoadState('domcontentloaded',{timeout:90000}).catch(()=>{});
+  const uid=await page.evaluate(()=>String(window.firebase?.auth?.().currentUser?.uid||'')).catch(()=>'');
+  if(uid===String(member.id))settled=true;
+  else if(attempt<5)await page.waitForTimeout(800*attempt);
+ }
+ if(!settled)throw new Error('AUTH_FAILURE:CLICK_BROWSER_SESSION:'+member.id+':'+lastError);
+ await page.goto('about:blank');
+ const authorityStartedAt=Date.now();
+ await page.goto(URL+'&settled='+Date.now(),{waitUntil:'domcontentloaded',timeout:90000});
+ await page.waitForFunction(uid=>String(window.firebase?.auth?.().currentUser?.uid||'')===uid,String(member.id),{timeout:90000});
+ await page.waitForFunction(()=>typeof window.CX?.backendAuth?.ensureAuthenticated==='function',null,{timeout:90000});
+ await page.evaluate(async()=>{await window.CX.backendAuth.ensureAuthenticated();});
+ await page.waitForFunction(({role,rev,periodId})=>{const c=window.CX?.backendAuth?.context?.()||{},r=String(c.role||'').toLowerCase(),g=window.CX_C6_HR_AUTHORITY_GATE||{};return c.authenticated===true&&(role==='shopper'?r==='shopper':r!=='shopper'&&r!=='cliente')&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&g.ready===true&&g.blocked!==true&&String(window.CX?.data?.previewMeta?.sourceRevision||'')===rev&&String(window.CX?.data?.currentPeriodId||'')===periodId;},{role,rev:revision,periodId},{timeout:120000});
+ const authorityReadyMs=Date.now()-authorityStartedAt;
+ if(authorityReadyMs>60000)throw new Error('ENVIRONMENT_FAILURE:CLICK_AUTHORITY_SYNC_EXCEEDED_60S_'+authorityReadyMs);
+ if(errs.length)throw new Error('FUNCTIONAL_DEFECT:CLICK_PAGEERROR:'+role+':'+JSON.stringify(errs));
+ return{ctx,page,authorityReadyMs};
+}
 async function nav(page,route){await page.evaluate(r=>CX.router.nav(r,{history:false}),route);await page.waitForFunction(r=>String(CX?.session?.view||'')===r,route,{timeout:45000});await page.waitForTimeout(450);await visual(page,route);}
 async function click(page,sel){const l=page.locator(sel).first();if(!await l.count())return false;await l.click({timeout:10000});result.clickCount++;return true;}
 
