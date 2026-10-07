@@ -5,6 +5,7 @@ import {getFirestore} from 'firebase-admin/firestore';
 import {chromium} from 'playwright';
 
 const OUT=String(process.env.PHASEA_CLICK_OUT||''),ROOT=String(process.env.HOSTING_URL||'').replace(/\/$/,''),EXPECTED_HR=String(process.env.EXPECTED_HR_REVISION||'');
+const FULL_SCOPE=JSON.parse(fs.readFileSync('CXORBIA_I3_FULL_MODULE_EXHAUSTIVE_SCOPE_2026-10-07.json','utf8'));
 if(!OUT||!ROOT||!EXPECTED_HR)throw new Error('ENVIRONMENT_FAILURE:CLICK_E2E_ENV');
 fs.mkdirSync(OUT,{recursive:true});
 const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[],norm=v=>str(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim(),slug=v=>norm(v).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
@@ -28,8 +29,9 @@ const exists=async id=>{try{await auth.getUser(id);return true;}catch(e){if(str(
 async function target(name){const list=[];for(const m of members.filter(x=>x.active===true&&str(x.role).toLowerCase()==='shopper')){const p=profileById.get(resolve(m.shopperId));if(p&&norm(pname(p))===norm(name)&&await exists(m.id))list.push({member:m,profile:p});}if(name==='Paula Osorio'){const x=list.find(v=>str(v.member.visibleLogin||v.member.username).toLowerCase()==='paula.osorio'&&str(v.profile.id)==='shopper_gt_1440137b73');if(x)return x;}if(list.length!==1)throw new Error('MAPPING_FAILURE:CLICK_TARGET_'+slug(name)+':'+list.length);return list[0];}
 let admin=null;for(const m of members.filter(x=>x.active===true&&['admin','super'].includes(str(x.role).toLowerCase())&&str(x.authNamespace).toLowerCase()!=='shopper'))if(await exists(m.id)){admin=m;break;}if(!admin)throw new Error('AUTH_FAILURE:CLICK_ADMIN');
 const targets=[];for(const n of ['Julissa Flores','Priscila López','Paula Osorio'])targets.push(await target(n));
+let client=null;for(const m of members.filter(x=>x.active!==false&&['cliente','client'].includes(str(x.role).toLowerCase())&&str(x.authNamespace).toLowerCase()==='staff'))if(await exists(m.id)){client=m;break;}
 const browser=await chromium.launch({headless:true});
-const result={schemaVersion:'cxorbia.i3.phasea.exhaustive-click-visual.v1',decision:'HOLD',hrRevision:revision,periodId,shopper:{},admin:{},screenshots:[],clickCount:0,writes:{auth:0,hr:0,provider:0},production:false};
+const result={schemaVersion:'cxorbia.i3.phasea.exhaustive-click-visual.v2',decision:'HOLD',hrRevision:revision,periodId,shopper:{},admin:{},client:{},routeInventory:{},globalControls:{},screenshots:[],clickCount:0,writes:{auth:0,hr:0,provider:0},production:false};
 const shot=async(page,name)=>{const file=name+'.png';try{await page.screenshot({path:OUT+'/'+file,fullPage:true,timeout:15000,animations:'disabled'});}catch(first){try{await page.screenshot({path:OUT+'/'+file,fullPage:false,timeout:15000,animations:'disabled'});}catch(second){throw new Error('ENVIRONMENT_FAILURE:CLICK_SCREENSHOT:'+name+':'+str(second?.message||first?.message||second||first));}}result.screenshots.push(file);};
 const overlay=async page=>page.locator('.cx-ov:visible').last().innerText().catch(()=>'');
 const visual=async(page,label)=>{const v=await page.evaluate(()=>{const t=String(document.body?.innerText||'');return{technical:/AUTH_READY|CLAIMS_READY|HRROWID|FINANCIALSOURCESTATUS|sourceSafe\s*[:=]|providerAck\s*[:=]|máquina canónica HR/i.test(t),blocked:t.includes('Fuente de datos no disponible'),body:t.slice(0,5000)};});if(v.technical||v.blocked)throw new Error('VISUAL_DEFECT:'+label+':'+JSON.stringify({technical:v.technical,blocked:v.blocked}));return v;};
@@ -57,7 +59,7 @@ async function signed(member,role){
  await page.waitForFunction(uid=>String(window.firebase?.auth?.().currentUser?.uid||'')===uid,String(member.id),{timeout:90000});
  await page.waitForFunction(()=>typeof window.CX?.backendAuth?.ensureAuthenticated==='function',null,{timeout:90000});
  await page.evaluate(async()=>{await window.CX.backendAuth.ensureAuthenticated();});
- await page.waitForFunction(({role,rev,periodId})=>{const c=window.CX?.backendAuth?.context?.()||{},r=String(c.role||'').toLowerCase(),g=window.CX_C6_HR_AUTHORITY_GATE||{};return c.authenticated===true&&(role==='shopper'?r==='shopper':r!=='shopper'&&r!=='cliente')&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&g.ready===true&&g.blocked!==true&&String(window.CX?.data?.previewMeta?.sourceRevision||'')===rev&&String(window.CX?.data?.currentPeriodId||'')===periodId;},{role,rev:revision,periodId},{timeout:120000});
+ await page.waitForFunction(({role,rev,periodId})=>{const c=window.CX?.backendAuth?.context?.()||{},r=String(c.role||'').toLowerCase(),g=window.CX_C6_HR_AUTHORITY_GATE||{};const roleOk=role==='shopper'?r==='shopper':role==='client'?['cliente','client'].includes(r):(r!=='shopper'&&!['cliente','client'].includes(r));return c.authenticated===true&&roleOk&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&g.ready===true&&g.blocked!==true&&String(window.CX?.data?.previewMeta?.sourceRevision||'')===rev&&String(window.CX?.data?.currentPeriodId||'')===periodId;},{role,rev:revision,periodId},{timeout:120000});
  const authorityReadyMs=Date.now()-authorityStartedAt;
  if(authorityReadyMs>60000)throw new Error('ENVIRONMENT_FAILURE:CLICK_AUTHORITY_SYNC_EXCEEDED_60S_'+authorityReadyMs);
  if(errs.length)throw new Error('FUNCTIONAL_DEFECT:CLICK_PAGEERROR:'+role+':'+JSON.stringify(errs));
@@ -78,6 +80,34 @@ async function dismissOverlays(page){
 async function nav(page,route){await dismissOverlays(page);await page.evaluate(r=>CX.router.nav(r,{history:false}),route);await page.waitForFunction(r=>String(CX?.session?.view||'')===r,route,{timeout:45000});await page.waitForTimeout(450);await visual(page,route);}
 async function click(page,sel){const l=page.locator(sel).first();if(!await l.count())return false;await l.click({timeout:10000});result.clickCount++;return true;}
 
+async function inventoryRoute(page,role,routeId,tag){
+  await nav(page,routeId);
+  const data=await page.evaluate(({role,routeId})=>{
+    const root=document.querySelector('#view')||document.querySelector('main.content')||document.body;
+    const nodes=[...root.querySelectorAll('button,select,input,textarea,a[href],[role="button"],[tabindex="0"]')].filter(el=>{
+      const r=el.getBoundingClientRect(),s=getComputedStyle(el);return r.width>0&&r.height>0&&s.visibility!=='hidden'&&s.display!=='none';
+    });
+    const controls=nodes.map((el,i)=>({
+      i,tag:el.tagName.toLowerCase(),id:String(el.id||''),type:String(el.getAttribute('type')||''),
+      text:String((el.innerText||el.getAttribute('aria-label')||el.getAttribute('title')||el.value||'')).trim().replace(/\s+/g,' ').slice(0,180),
+      disabled:!!el.disabled||el.getAttribute('aria-disabled')==='true',
+      href:el.tagName==='A'?String(el.getAttribute('href')||'').replace(/^https?:\/\/[^/]+/,''):null,
+      dataset:Object.fromEntries(Object.entries(el.dataset||{}).filter(([k])=>/action|jump|kpi|rk|id|tab|go|doc|cert|sched|reprog|cancel|done|quest|geo|pay|detail|edit|del|save|create|add|new|export|filter|search|select|request|assign/i.test(k)))
+    }));
+    return {role,routeId,title:String(root.querySelector('h1,h2,.page-title,.ph-title,.card-t')?.textContent||'').trim(),controlCount:controls.length,controls};
+  },{role,routeId});
+  result.routeInventory[role]??={};result.routeInventory[role][routeId]=data;
+  await shot(page,'full-'+tag+'-'+role+'-'+routeId);
+  return data;
+}
+async function globalControlInventory(page,role){
+  const g=await page.evaluate(role=>{
+    const one=id=>{const el=document.getElementById(id);if(!el)return null;const r=el.getBoundingClientRect();return{present:true,visible:r.width>0&&r.height>0,disabled:!!el.disabled||el.getAttribute('aria-disabled')==='true',text:String(el.innerText||el.getAttribute('aria-label')||'').trim().replace(/\s+/g,' ').slice(0,120)}};
+    return{role,projectSelector:one('projSel'),periodSelector:one('periodSel'),notifications:one('tbBell'),mail:one('tbMail'),support:one('tbSupport'),logout:one('logoutBtn'),roleIdentity:one('tbRoleIdentity'),sidebarSections:document.querySelectorAll('.nav-sec-wrap').length};
+  },role);result.globalControls[role]=g;return g;
+}
+
+
 try{
  for(const t of targets){
   const {ctx,page}=await signed(t.member,'shopper'),key=slug(pname(t.profile)),e={};
@@ -88,7 +118,7 @@ try{
   await nav(page,'misvisitas');e.reprogram=await click(page,'[data-reprog]');if(e.reprogram){await page.waitForTimeout(250);if(!/Solicitar reprogramación/i.test(await overlay(page)))throw new Error('FUNCTIONAL_DEFECT:REPROGRAM_MODAL_'+key);}await shot(page,'shopper-'+key+'-visits');
   await nav(page,'cert');e.certSelector=await click(page,'select');await shot(page,'shopper-'+key+'-cert');
   await nav(page,'novedades');const nt=await page.locator('body').innerText();if(/providerAck|sourceSafe|hrRowId|financialSourceStatus/i.test(nt))throw new Error('VISUAL_DEFECT:NEWS_TECHNICAL_COPY_'+key);await shot(page,'shopper-'+key+'-news');
-  result.shopper[pname(t.profile)]=e;await ctx.close();
+  await globalControlInventory(page,'shopper');for(const rid of FULL_SCOPE.roles.shopper)await inventoryRoute(page,'shopper',rid,key);result.shopper[pname(t.profile)]=e;await ctx.close();
  }
  const {ctx,page}=await signed(admin,'admin'),a={};
  await nav(page,'dashboard');a.dashboardSelect=await click(page,'.bdSel');if(a.dashboardSelect&&!/[1-9]/.test(await page.locator('#bdSelectedCount').innerText()))throw new Error('FUNCTIONAL_DEFECT:DASHBOARD_SELECTION_COUNT');a.dashboardContext=await click(page,'.bdCtx');if(!a.dashboardContext)a.dashboardContext=await click(page,'#bdBulkRequest');if(a.dashboardContext){await page.waitForTimeout(700);const view=await page.evaluate(()=>String(CX?.session?.view||''));if(view!=='postulaciones'||!/Pedir acción al shopper/i.test(await overlay(page)))throw new Error('FUNCTIONAL_DEFECT:DASHBOARD_HANDOFF');}await shot(page,'admin-dashboard');
@@ -99,5 +129,10 @@ try{
  await nav(page,'movimientos');a.cxc=await click(page,'[data-cuenta="cxc"]');if(a.cxc&&!/cuenta por cobrar/i.test(await overlay(page)))throw new Error('FUNCTIONAL_DEFECT:CXC_MODAL');await nav(page,'movimientos');a.cxp=await click(page,'[data-cuenta="cxp"]');if(a.cxp&&!/cuenta por pagar/i.test(await overlay(page)))throw new Error('FUNCTIONAL_DEFECT:CXP_MODAL');await shot(page,'admin-movements');
  await nav(page,'cert');a.certImport=await click(page,'#certImp');if(a.certImport&&!/Importar banco/i.test(await overlay(page)))throw new Error('FUNCTIONAL_DEFECT:CERT_IMPORT_MODAL');await shot(page,'admin-cert');
  await nav(page,'reservas');a.reservationAssign=await click(page,'#aAsignar');if(a.reservationAssign){await page.waitForTimeout(250);if(!/Asignar sucursal a shopper/i.test(await overlay(page)))throw new Error('FUNCTIONAL_DEFECT:RESERVATION_ASSIGN_MODAL');}await shot(page,'admin-reservations');
- result.admin=a;result.admin.financePeriod=finPeriod;await ctx.close();await browser.close();result.decision='PASS_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL';fs.writeFileSync(OUT+'/result.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result,null,2));
+ await globalControlInventory(page,'admin');for(const rid of FULL_SCOPE.roles.admin)await inventoryRoute(page,'admin',rid,'admin');
+ result.admin=a;result.admin.financePeriod=finPeriod;await ctx.close();
+ if(client){const s=await signed(client,'client');await globalControlInventory(s.page,'client');for(const rid of FULL_SCOPE.roles.cliente)await inventoryRoute(s.page,'client',rid,'client');result.client={memberId:client.id,routeCount:FULL_SCOPE.roles.cliente.length};await s.ctx.close();}else{throw new Error('AUTH_FAILURE:FULL_EXHAUSTIVE_CLIENT_MISSING');}
+ const counts={admin:Object.keys(result.routeInventory.admin||{}).length,shopper:Object.keys(result.routeInventory.shopper||{}).length,client:Object.keys(result.routeInventory.client||{}).length};
+ if(counts.admin!==FULL_SCOPE.counts.admin||counts.shopper!==FULL_SCOPE.counts.shopper||counts.client!==FULL_SCOPE.counts.cliente)throw new Error('RELEASE_COMPOSITION_FAILURE:FULL_ROUTE_INVENTORY_INCOMPLETE:'+JSON.stringify(counts));
+ await browser.close();result.coverage={counts,expected:FULL_SCOPE.counts,shopperModules:FULL_SCOPE.shopperModules,benefitsIncluded:FULL_SCOPE.shopperModules.includes('beneficios'),globalControls:FULL_SCOPE.globalControls};result.decision='PASS_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL';fs.writeFileSync(OUT+'/result.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result,null,2));
 }catch(error){result.decision='FAIL_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL';result.error=str(error?.stack||error);fs.writeFileSync(OUT+'/result.json',JSON.stringify(result,null,2)+'\n');await browser.close().catch(()=>{});console.log(JSON.stringify(result,null,2));process.exitCode=2;}

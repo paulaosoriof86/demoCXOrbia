@@ -7,13 +7,13 @@
   "productSourceSha": "b7b8978cda791deea38316e34e6a2dd93e5c6137",
   "productTreeAuthority": "9985bfac4d3188abf2bddb21eee541336aff2222",
   "predecessorProductSourceSha": "9dee84dd31a0eff2cfa2de9ed0313af75e02769a",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V300_2026-10-07.json",
-  "findingsLedgerExpectedGitBlob": "314ffc3c0d267db5fd37562cf3165515222d8739",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V15.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V301_2026-10-07.json",
+  "findingsLedgerExpectedGitBlob": "8cc43c38fda41b631fe48419158266ad2e509e01",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V16.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "CUMULATIVE_EXHAUSTIVE_CLICK_E2E",
+  "activeBlocker": "FULL_56_ROLE_ROUTE_EXHAUSTIVE_ACTION_COVERAGE",
   "nextFindingId": "VRM-261",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL_FUNCTIONAL_E2E_ON_EXACT_DEV",
+  "exactNextAction": "RUN_FULL_56_ROLE_ROUTE_INTERACTION_INVENTORY_ON_SAME_ARTIFACT_THEN_CLOSE_ACTION_GAPS",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2628,7 +2628,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "fc31adc6b02ef38ec3d6c6cb9c967a1486ffd232",
+  "moduleTruthExpectedGitBlob": "51281ca35ade6d162b45cff64b67b2cfb4431064",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -5284,5 +5284,12 @@
       "hrWrites": 0,
       "production": false
     }
+  },
+  "fullModuleExhaustiveScope": {
+    "path": "CXORBIA_I3_FULL_MODULE_EXHAUSTIVE_SCOPE_2026-10-07.json",
+    "expectedGitBlob": "7f5ddf1022ae35493bff58bc30b713af416bec0d",
+    "roleRouteEntries": 56,
+    "benefitsIncluded": true,
+    "production": false
   }
 }
