@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM267_SUPPORT_FOCAL_LIVE_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "9f8ec0f5c1cefc3c06f2f6a4fd8b19e58e0931f3",
   "productTreeAuthority": "c0b97289acbc0ba6600c6f3aff1a614cef9deafd",
   "predecessorProductSourceSha": "cb081c511ba90feab94fa51a2c107301249171cf",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V316_2026-10-07.json",
-  "findingsLedgerExpectedGitBlob": "12ac96dffb225ae1e13cefe83443fcd9236d0d63",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V26.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V317_2026-10-07.json",
+  "findingsLedgerExpectedGitBlob": "8aee2b8af9c06188102ea42e4316f27e847244ef",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V27.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM267_EXACT_REQUESTER_HOSTING_RULES_MATERIALIZATION_AND_FOCAL",
+  "activeBlocker": "SINGLE_EXHAUSTIVE_SAME_ARTIFACT_FUNCTIONAL_VISUAL_CERTIFICATION",
   "nextFindingId": "VRM-268",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "DEPLOY_HOSTING_AND_FIRESTORE_RULES_ONLY_THEN_RUN_SINGLE_VRM267_FOCAL",
+  "exactNextAction": "RUN_ONE_FULL_SAME_ARTIFACT_LIVE_E2E_ON_RUN1347_MATERIALIZATION",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -42,17 +42,20 @@
     "state": "VRM214_FOUR_IDENTITY_MIRAFLORES_READ_ONLY_REQUIRED"
   },
   "lastSourceFix": {
-    "observedAt": "2026-10-07T17:38:03Z",
-    "sourceSha": "1b668d32341756fa8f621a8e22d1b0ef1c3884ab",
-    "sourceTree": "b4a2b4efc0ad9229509f8330a64401fafe7f2869",
-    "predecessorSha": "4ab7fc91847a9d7da5af13c14b8eb0b82a96b652",
-    "classification": "AUTH_FAILURE",
+    "observedAt": "2026-10-07T19:15:10Z",
+    "sourceSha": "9f8ec0f5c1cefc3c06f2f6a4fd8b19e58e0931f3",
+    "sourceTree": "c0b97289acbc0ba6600c6f3aff1a614cef9deafd",
+    "predecessorSha": "cb081c511ba90feab94fa51a2c107301249171cf",
+    "classification": "PERSISTENCE_FAILURE",
     "findingIds": [
+      "VRM-263",
       "VRM-267"
     ],
     "productFilesChanged": [
-      "app/adapters/cxorbia-command-adapter-v1.js"
+      "app/core/backend-bulletins.js",
+      "firestore.rules"
     ],
+    "behavior": "query and authorize provider-persisted exact scalar requester identities",
     "sourceContractTest": "backend/runtime/hr-live-service/test/cxorbia-vrm261-264-source-contract.test.mjs",
     "production": false
   },
@@ -414,25 +417,29 @@
     "production": false
   },
   "currentMaterialization": {
-    "state": "PASS_VRM267_HOSTING_ONLY_DEV_MATERIALIZATION",
-    "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
-    "sourceSha": "1b668d32341756fa8f621a8e22d1b0ef1c3884ab",
-    "sourceTree": "b4a2b4efc0ad9229509f8330a64401fafe7f2869",
-    "runId": 37661359150,
-    "runNumber": 1333,
-    "jobId": 112929490492,
-    "artifactId": 11501186259,
-    "artifactDigest": "sha256:6a3e3a2a1d4c58d351c0bb356f22fdd3a8bab617f86927b5d1ef4f20076f5ff0",
+    "state": "PASS_VRM267_HOSTING_RULES_DEV_MATERIALIZATION",
+    "decision": "PASS_VRM267_HOSTING_RULES_DEV_MATERIALIZATION_READBACK_RUN1348",
+    "sourceSha": "9f8ec0f5c1cefc3c06f2f6a4fd8b19e58e0931f3",
+    "sourceTree": "c0b97289acbc0ba6600c6f3aff1a614cef9deafd",
+    "runId": 37672847531,
+    "runNumber": 1347,
+    "jobId": 112968892503,
+    "artifactId": 11505468839,
+    "artifactDigest": "sha256:7297112acd3dcc8f62fd7feee79da92d5a173ff3f58bd0d016277bd9d077b6c0",
     "runtimeRevision": "cxorbia-live-hr-dev-00274-wvg",
     "runtimeDigest": "sha256:6daac07ef92478f18ce8eec4972eb590230ae9e76b827d41d4bc5edae9452854",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/9a3645028800059b",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791395129090000",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/84996d2d0d724aa9",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791400510134000",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/35b87c26-8f64-43d4-ac6f-a244474a8a6c",
+    "firestoreRulesRelease": "projects/cxorbia-backend-dev/releases/cloud.firestore",
     "hrRevision": "44c8a38a45800606ddb7db5c8ab902324bd7daf588fe8653165fd5e1b7e1a285",
     "builds": 0,
     "runtimeDeploys": 0,
     "hostingDeploys": 1,
+    "firestoreRulesDeploys": 1,
     "hrWrites": 0,
-    "production": false
+    "production": false,
+    "controlReadbackRunId": 37673516701
   },
   "lastFocalAttempt": {
     "runId": 36198284266,
@@ -914,20 +921,7 @@
     "hrWrites": 0,
     "production": false
   },
-  "pendingMaterialization": {
-    "sourceSha": "9f8ec0f5c1cefc3c06f2f6a4fd8b19e58e0931f3",
-    "sourceTree": "c0b97289acbc0ba6600c6f3aff1a614cef9deafd",
-    "layers": [
-      "hosting",
-      "firestore.rules"
-    ],
-    "builds": 0,
-    "runtimeDeploys": 0,
-    "hostingDeploys": 1,
-    "firestoreRulesDeploys": 1,
-    "hrWrites": 0,
-    "production": false
-  },
+  "pendingMaterialization": null,
   "lastVrm080Proof": {
     "runId": 36333245670,
     "runNumber": 525,
@@ -2652,7 +2646,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "7fab78a1f54d84be71e915d4bbff8698c128db22",
+  "moduleTruthExpectedGitBlob": "d40ceafe6ef567333309dcf98e54a7c4fa5dfe4a",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -5371,13 +5365,14 @@
   },
   "fullModuleActionCoverage": {
     "path": "CXORBIA_I3_FULL_MODULE_ACTION_COVERAGE_2026-10-07.json",
-    "expectedGitBlob": "802592105641a85c6a6521fb6abcfc7bbc9d04d3",
-    "state": "ACTION_E2E_PENDING",
+    "expectedGitBlob": "1d8f9f1f37b45d25ca81b3fafeee1479d1b74406",
+    "state": "VRM263_VRM267_FOCAL_PASS_FULL_SAME_ARTIFACT_E2E_REQUIRED",
     "benefitsIncluded": true,
+    "supportFocalPass": true,
     "production": false
   },
   "fullModuleActionCoveragePath": "CXORBIA_I3_FULL_MODULE_ACTION_COVERAGE_2026-10-07.json",
-  "fullModuleActionCoverageExpectedGitBlob": "c5e17f7532aa7240072f788e1d76558048fb42c1",
+  "fullModuleActionCoverageExpectedGitBlob": "1d8f9f1f37b45d25ca81b3fafeee1479d1b74406",
   "run1321DeepActionDiagnostic": {
     "runId": 37649334166,
     "runNumber": 1321,
@@ -5506,25 +5501,29 @@
     "production": false
   },
   "vrm267Materialization": {
-    "state": "PASS_VRM267_HOSTING_ONLY_DEV_MATERIALIZATION",
-    "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
-    "sourceSha": "1b668d32341756fa8f621a8e22d1b0ef1c3884ab",
-    "sourceTree": "b4a2b4efc0ad9229509f8330a64401fafe7f2869",
-    "runId": 37661359150,
-    "runNumber": 1333,
-    "jobId": 112929490492,
-    "artifactId": 11501186259,
-    "artifactDigest": "sha256:6a3e3a2a1d4c58d351c0bb356f22fdd3a8bab617f86927b5d1ef4f20076f5ff0",
+    "state": "PASS_VRM267_HOSTING_RULES_DEV_MATERIALIZATION",
+    "decision": "PASS_VRM267_HOSTING_RULES_DEV_MATERIALIZATION_READBACK_RUN1348",
+    "sourceSha": "9f8ec0f5c1cefc3c06f2f6a4fd8b19e58e0931f3",
+    "sourceTree": "c0b97289acbc0ba6600c6f3aff1a614cef9deafd",
+    "runId": 37672847531,
+    "runNumber": 1347,
+    "jobId": 112968892503,
+    "artifactId": 11505468839,
+    "artifactDigest": "sha256:7297112acd3dcc8f62fd7feee79da92d5a173ff3f58bd0d016277bd9d077b6c0",
     "runtimeRevision": "cxorbia-live-hr-dev-00274-wvg",
     "runtimeDigest": "sha256:6daac07ef92478f18ce8eec4972eb590230ae9e76b827d41d4bc5edae9452854",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/9a3645028800059b",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791395129090000",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/84996d2d0d724aa9",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791400510134000",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/35b87c26-8f64-43d4-ac6f-a244474a8a6c",
+    "firestoreRulesRelease": "projects/cxorbia-backend-dev/releases/cloud.firestore",
     "hrRevision": "44c8a38a45800606ddb7db5c8ab902324bd7daf588fe8653165fd5e1b7e1a285",
     "builds": 0,
     "runtimeDeploys": 0,
     "hostingDeploys": 1,
+    "firestoreRulesDeploys": 1,
     "hrWrites": 0,
-    "production": false
+    "production": false,
+    "controlReadbackRunId": 37673516701
   },
   "run1334Readback": {
     "runId": 37661803193,
@@ -5736,6 +5735,21 @@
     "runtimeDeploys": 0,
     "hostingDeploys": 0,
     "firestoreRulesDeploys": 1,
+    "hrWrites": 0,
+    "production": false
+  },
+  "vrm267FocalClosure": {
+    "runId": 37673516701,
+    "runNumber": 1348,
+    "controlHeadSha": "6326bc2739599130aa0d013277fba4be9852cb33",
+    "jobId": 112971139352,
+    "artifactId": 11506780163,
+    "artifactDigest": "sha256:93d924f950c0ed17877889ca2877acd5661194f093e90678bd04d95922d6e46f",
+    "decision": "PASS_VRM267_SUPPORT_FOCAL_LIVE",
+    "materializationRunId": 37672847531,
+    "allRequiredStagesPass": true,
+    "duplicateCount": 1,
+    "cleanupRemaining": 0,
     "hrWrites": 0,
     "production": false
   }
