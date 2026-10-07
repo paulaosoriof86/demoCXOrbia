@@ -114,20 +114,25 @@
     }
     const board=document.getElementById('estadoBoard');
     if(board){
-      const vs=currentVisits();
-      const groups=[
-        ['Próximas — pendientes de realizar','brand',v=>{const f=facets(v);return f.scheduled&&!f.realized;}],
-        ['Realizadas — pendientes de cuestionario','amber',v=>{const f=facets(v);return f.realized&&!f.questionnaire;}],
-        ['Cuestionario completo — pendientes de submitir','purple',v=>{const f=facets(v);return f.questionnaire&&!f.submitted;}],
-        ['Pendientes por programar','green',v=>{const f=facets(v);return f.assigned&&!f.scheduled&&!f.realized;}],
-        ['Pendientes por asignar','purple',v=>{const f=facets(v);return !f.assigned&&!f.realized;}],
-        ['Fuera de rango','red',v=>facets(v).outOfRange]
-      ];
-      const rows=list=>list.slice(0,20).map(v=>`<tr><td>${esc(v.num||'')}</td><td><b>${esc(v.sucursal)}</b><div class="muted" style="font-size:10px">${esc(countryOf(v))} · ${esc(v.ciudad)}</div></td><td>${esc(v.shopper||'— sin asignar')}</td><td>${esc(v.escenario)}</td><td>${esc(v.realizada||v.agendada||v.disponibleDesde||'—')}</td><td><span class="bdg bdg-${stageTone(v)}">${esc(stageLabel(v))}</span></td></tr>`).join('');
-      board.innerHTML=`<div class="card-h"><div class="card-t">🗂️ Estado operativo de visitas</div><span class="muted" style="font-size:11px">información operativa del periodo</span></div>`+groups.map(([t,tone,fn])=>{
-        const list=vs.filter(fn);
-        return `<details ${list.length?'open':''} style="margin-bottom:10px"><summary style="background:var(--${tone}-bg);padding:8px 12px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:800;color:var(--${tone})">${t} (${list.length})</summary>${list.length?`<div style="overflow:auto"><table class="tbl"><thead><tr><th>Ref</th><th>Sucursal</th><th>Shopper</th><th>Escenario</th><th>Fecha</th><th>Estado</th></tr></thead><tbody>${rows(list)}</tbody></table></div>`:''}</details>`;
-      }).join('');
+      const canonicalActions=board.querySelector('[data-dashboard-actions]');
+      if(canonicalActions){
+        board.dataset.c6PrimarySurfacePreserved='true';
+      }else{
+        const vs=currentVisits();
+        const groups=[
+          ['Próximas — pendientes de realizar','brand',v=>{const f=facets(v);return f.scheduled&&!f.realized;}],
+          ['Realizadas — pendientes de cuestionario','amber',v=>{const f=facets(v);return f.realized&&!f.questionnaire;}],
+          ['Cuestionario completo — pendientes de submitir','purple',v=>{const f=facets(v);return f.questionnaire&&!f.submitted;}],
+          ['Pendientes por programar','green',v=>{const f=facets(v);return f.assigned&&!f.scheduled&&!f.realized;}],
+          ['Pendientes por asignar','purple',v=>{const f=facets(v);return !f.assigned&&!f.realized;}],
+          ['Fuera de rango','red',v=>facets(v).outOfRange]
+        ];
+        const rows=list=>list.slice(0,20).map(v=>`<tr><td>${esc(v.num||'')}</td><td><b>${esc(v.sucursal)}</b><div class="muted" style="font-size:10px">${esc(countryOf(v))} · ${esc(v.ciudad)}</div></td><td>${esc(v.shopper||'— sin asignar')}</td><td>${esc(v.escenario)}</td><td>${esc(v.realizada||v.agendada||v.disponibleDesde||'—')}</td><td><span class="bdg bdg-${stageTone(v)}">${esc(stageLabel(v))}</span></td></tr>`).join('');
+        board.innerHTML=`<div class="card-h"><div class="card-t">🗂️ Estado operativo de visitas</div><span class="muted" style="font-size:11px">información operativa del periodo</span></div>`+groups.map(([t,tone,fn])=>{
+          const list=vs.filter(fn);
+          return `<details ${list.length?'open':''} style="margin-bottom:10px"><summary style="background:var(--${tone}-bg);padding:8px 12px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:800;color:var(--${tone})">${t} (${list.length})</summary>${list.length?`<div style="overflow:auto"><table class="tbl"><thead><tr><th>Ref</th><th>Sucursal</th><th>Shopper</th><th>Escenario</th><th>Fecha</th><th>Estado</th></tr></thead><tbody>${rows(list)}</tbody></table></div>`:''}</details>`;
+        }).join('');
+      }
     }
     const comp=[...document.querySelectorAll('.card-t')].find(x=>x.textContent.includes('Comparativo último trimestre'))?.closest('.card');
     if(!comp) return;

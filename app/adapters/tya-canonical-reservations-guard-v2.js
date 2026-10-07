@@ -43,17 +43,17 @@
     if(!result?.ok||result?.providerAck!==true||result?.committed!==true||result?.successUiAllowed!==true)throw new Error(result?.code||'RESERVATION_PROVIDER_ACK_REQUIRED');
     return result;
   }
+  let canonicalBaseSucursales=null;
   function install(){
     if(!CX.reservas)return;
+    if(!canonicalBaseSucursales&&typeof CX.reservas.sucursales==='function'&&CX.reservas.sucursales.__cxDurableGuard!==true){
+      canonicalBaseSucursales=CX.reservas.sucursales.bind(CX.reservas);
+    }
     CX.reservas._key=()=>canonicalPeriodId();
     CX.reservas.periodoActual=canonicalPeriod;
-    CX.reservas.sucursales=()=>{
-      const project=canonicalProjectId(),periodId=canonicalPeriodId(),map={};
-      arr(CX.data?._visitas).filter(v=>str(v.projectId)===project&&str(v.periodId)===periodId).forEach(v=>{
-        const id=branchId(v);if(id&&!map[id])map[id]={id,sucursal:v.sucursal,ciudad:v.ciudad,pais:v.pais};
-      });
-      return Object.values(map);
-    };
+    const guardedSucursales=(pid)=>canonicalBaseSucursales?canonicalBaseSucursales(pid||canonicalPeriodId()):[];
+    guardedSucursales.__cxDurableGuard=true;
+    CX.reservas.sucursales=guardedSucursales;
     CX.reservas._seed=()=>[];
     CX.reservas.list=()=>records();
     CX.reservas._persist=()=>false;
