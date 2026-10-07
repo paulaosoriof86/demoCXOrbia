@@ -276,7 +276,7 @@ try{
       const rov=page.locator('.cx-ov:visible').last();
       await rov.waitFor({state:'visible',timeout:10000});
       const rtext=String(await rov.innerText());
-      if(!/Reprogramar visita/i.test(rtext))throw new Error('FUNCTIONAL_DEFECT:B1_REPROGRAM_MODAL_NOT_OPENED:'+target.name+':'+rtext.slice(0,500));
+      if(!/(?:Reprogramar visita|Solicitar reprogramación)/i.test(rtext))throw new Error('FUNCTIONAL_DEFECT:B1_REPROGRAM_MODAL_NOT_OPENED:'+target.name+':'+rtext.slice(0,500));
       await page.evaluate(()=>{const visible=e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect();return s.display!=='none'&&s.visibility!=='hidden'&&r.width>0&&r.height>0;};const o=[...document.querySelectorAll('.cx-ov')].find(visible);if(!o)return;const b=[...o.querySelectorAll('button')].find(x=>/×|cerrar/i.test(String(x.innerText||x.getAttribute('aria-label')||'')));if(b)b.click();else o.remove();});
       b1ActionExercise.reprogramModalOpened=true;
     }
