@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM261_VRM264_SOURCE_FIX_REQUIRED",
+  "status": "HOLD_I3_VRM261_VRM264_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "b7b8978cda791deea38316e34e6a2dd93e5c6137",
-  "productTreeAuthority": "9985bfac4d3188abf2bddb21eee541336aff2222",
-  "predecessorProductSourceSha": "9dee84dd31a0eff2cfa2de9ed0313af75e02769a",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V303_2026-10-07.json",
-  "findingsLedgerExpectedGitBlob": "23ba062256bd0a66fa9c2b0a7f586c4271388b22",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V18.json",
+  "productSourceSha": "6344733145eb6c59a257f9e3b3665a5425dd728c",
+  "productTreeAuthority": "d71f464a77884696fa65d7cc6ae9d6fa0e6497d0",
+  "predecessorProductSourceSha": "b7b8978cda791deea38316e34e6a2dd93e5c6137",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V304_2026-10-07.json",
+  "findingsLedgerExpectedGitBlob": "0386512bc391bb49b0d42cef8df90cc28634b771",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V19.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM261_VRM264_EXACT_OWNER_CORRECTION",
+  "activeBlocker": "VRM261_VRM264_SOURCE_PROOF",
   "nextFindingId": "VRM-265",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "FIX_ONLY_VRM261_VRM264_PROVEN_OWNERS_THEN_SOURCE_PROOF",
+  "exactNextAction": "RUN_VRM261_VRM264_SOURCE_PROOF_THEN_ONE_DEV_MATERIALIZATION",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -42,18 +42,23 @@
     "state": "VRM214_FOUR_IDENTITY_MIRAFLORES_READ_ONLY_REQUIRED"
   },
   "lastSourceFix": {
-    "observedAt": "2026-10-07T14:47:00Z",
-    "sourceSha": "b7b8978cda791deea38316e34e6a2dd93e5c6137",
-    "sourceTree": "9985bfac4d3188abf2bddb21eee541336aff2222",
-    "predecessorSha": "9dee84dd31a0eff2cfa2de9ed0313af75e02769a",
-    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "observedAt": "2026-10-07T16:45:06Z",
+    "sourceSha": "6344733145eb6c59a257f9e3b3665a5425dd728c",
+    "sourceTree": "d71f464a77884696fa65d7cc6ae9d6fa0e6497d0",
+    "predecessorSha": "b7b8978cda791deea38316e34e6a2dd93e5c6137",
+    "classification": "FUNCTIONAL_DEFECT+PERSISTENCE_FAILURE",
     "findingIds": [
-      "VRM-180",
-      "VRM-260"
+      "VRM-261",
+      "VRM-262",
+      "VRM-263",
+      "VRM-264"
     ],
     "productFilesChanged": [
-      "app/adapters/tya-c6-domain-consistency-bridge.js",
-      "app/adapters/tya-canonical-reservations-guard-v2.js"
+      "app/modules/reservas.js",
+      "app/modules/beneficios.js",
+      "app/modules/soporte.js",
+      "app/modules/novedades.js",
+      "app/core/backend-bulletins.js"
     ],
     "production": false
   },
@@ -2628,7 +2633,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "d4d265771398886d82094f1ae21ab5cff458a257",
+  "moduleTruthExpectedGitBlob": "7a2a8ea7c0fa72dfa26b8bb02c1b15f503233db5",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -5357,7 +5362,7 @@
     "production": false
   },
   "fullModuleActionCoveragePath": "CXORBIA_I3_FULL_MODULE_ACTION_COVERAGE_2026-10-07.json",
-  "fullModuleActionCoverageExpectedGitBlob": "c1105be91053039e01c7134323adbeed9582109d",
+  "fullModuleActionCoverageExpectedGitBlob": "8bd8a638a8a80041ca78d9feebc5c38f65986930",
   "run1321DeepActionDiagnostic": {
     "runId": 37649334166,
     "runNumber": 1321,

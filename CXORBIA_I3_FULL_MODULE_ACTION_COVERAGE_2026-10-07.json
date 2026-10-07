@@ -95,9 +95,9 @@
     "currentState": "ROUTES_10_10_PASS_ACTION_CLOSURE_PENDING"
   },
   "noPartialHumanCheckpoint": true,
-  "nextExactAction": "FIX_ONLY_VRM261_VRM264_PROVEN_OWNERS_THEN_SOURCE_PROOF",
+  "nextExactAction": "RUN_VRM261_VRM264_SOURCE_PROOF_THEN_ONE_DEV_MATERIALIZATION",
   "production": false,
-  "currentState": "RUN1321_ACTION_FINDINGS_OPEN",
+  "currentState": "VRM261_VRM264_SOURCE_FIXED_PENDING_SOURCE_PROOF",
   "run1321DeepActionDiagnostic": {
     "runId": 37649334166,
     "runNumber": 1321,
@@ -147,5 +147,14 @@
         "state": "OWNER_PROVEN_SOURCE_FIX_REQUIRED"
       }
     }
+  },
+  "run1323AuthorityGuard": {
+    "runId": 37654491441,
+    "runNumber": 1323,
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "expectedFailClosed": true,
+    "cause": "descriptor had not yet declared exact five-file product source successor",
+    "productDefect": false,
+    "production": false
   }
 }
