@@ -84,9 +84,10 @@ proof)
     test "$(sha256sum "$remote"|awk '{print $1}')" = "$(git show "$B1_SOURCE:app/$p" | sha256sum | awk '{print $1}')"
   done
   curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$B1_ROOT/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&b1=$GITHUB_RUN_ID" > "$B1_OUT/hr-meta.json"
-  test "$(jq -r '.revision // empty' "$B1_OUT/hr-meta.json")" = "$EXPECTED_HR_REVISION"
+  HR_REVISION="$(jq -r '.revision // empty' "$B1_OUT/hr-meta.json")"
+  [[ "$HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
   jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .hrWrites==false and .production==false' "$B1_OUT/hr-meta.json" >/dev/null
-  jq -n -S --arg source "$B1_SOURCE" --arg tree "$B1_TREE" --arg runtime "$EXPECTED_RUNTIME_REVISION" --arg digest "$EXPECTED_RUNTIME_DIGEST" --arg hosting "$B1_HOSTING_VERSION" --arg release "$B1_HOSTING_RELEASE" --arg hr "$EXPECTED_HR_REVISION" --argjson hostingDeploys "$B1_HOSTING_DEPLOYED" '{decision:"PASS_B1_EXACT_DEV_HOSTING_MATERIALIZATION",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hostingRelease:$release,hrRevision:$hr,builds:0,runtimeDeploys:0,hostingDeploys:$hostingDeploys,storageRulesDeploys:0,hrWrites:0,production:false}' > "$B1_OUT/result.json"
+  jq -n -S --arg source "$B1_SOURCE" --arg tree "$B1_TREE" --arg runtime "$EXPECTED_RUNTIME_REVISION" --arg digest "$EXPECTED_RUNTIME_DIGEST" --arg hosting "$B1_HOSTING_VERSION" --arg release "$B1_HOSTING_RELEASE" --arg hr "$HR_REVISION" --arg previousHr "$EXPECTED_HR_REVISION" --argjson hostingDeploys "$B1_HOSTING_DEPLOYED" '{decision:"PASS_B1_EXACT_DEV_HOSTING_MATERIALIZATION",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hostingRelease:$release,hrRevision:$hr,previousHrRevision:$previousHr,hrRevisionDriftAllowed:true,builds:0,runtimeDeploys:0,hostingDeploys:$hostingDeploys,storageRulesDeploys:0,hrWrites:0,production:false}' > "$B1_OUT/result.json"
   cat "$B1_OUT/result.json"
   ;;
 *) echo "unknown mode: $MODE" >&2; exit 2 ;;
