@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "411e1e3712e6abfd60475aef16a75aecc7399c08",
   "productTreeAuthority": "0991894ed9396c334ca62c44626f5b6f2a5e3d14",
   "predecessorProductSourceSha": "1bd4805b33c3f9b10f06581c4c36fbbc0b3e0a04",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V318_2026-10-07.json",
-  "findingsLedgerExpectedGitBlob": "290d3c8d10e7b5ce79e4645b13bf3e43d676489e",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V28.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V319_2026-10-07.json",
+  "findingsLedgerExpectedGitBlob": "65550a824b1f36f85bfafa8460061464660e88b7",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V29.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM268_VRM269_SOURCE_PROOF",
+  "activeBlocker": "VRM268_VRM269_HOSTING_ONLY_DEV_MATERIALIZATION",
   "nextFindingId": "VRM-270",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN_ONE_CUMULATIVE_SOURCE_PROOF_FOR_VRM268_VRM269",
+  "exactNextAction": "RUN_ONE_HOSTING_ONLY_DEV_MATERIALIZATION_FOR_VRM268_VRM269",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -5821,6 +5821,33 @@
       "clicks/full-priscila-lopez-shopper-misvisitas.png",
       "clicks/full-paula-osorio-shopper-misvisitas.png"
     ],
+    "production": false
+  },
+  "lastSourceProof": {
+    "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "runId": 37678003445,
+    "runNumber": 1354,
+    "jobId": 112986496678,
+    "artifactId": 11507384937,
+    "artifactDigest": "sha256:54cb3b8e45013907cf6bded97fd48aef6329d7429d1999bd14969b9790237807",
+    "sourceSha": "411e1e3712e6abfd60475aef16a75aecc7399c08",
+    "sourceTree": "0991894ed9396c334ca62c44626f5b6f2a5e3d14",
+    "phaseAContract": {
+      "tests": 7,
+      "pass": 7,
+      "fail": 0
+    },
+    "vrm261to264Contract": {
+      "tests": 4,
+      "pass": 4,
+      "fail": 0
+    },
+    "vrm268to269Contract": {
+      "tests": 3,
+      "pass": 3,
+      "fail": 0
+    },
+    "deploys": 0,
     "production": false
   }
 }

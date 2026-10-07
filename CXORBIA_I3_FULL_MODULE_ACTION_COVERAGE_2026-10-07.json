@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.full-module-action-coverage.v1",
-  "frozenAt": "2026-10-07T19:50:00Z",
+  "frozenAt": "2026-10-07T19:55:00Z",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
   "productSourceSha": "411e1e3712e6abfd60475aef16a75aecc7399c08",
   "artifactAuthority": {
@@ -105,9 +105,9 @@
     "currentState": "ROUTES_10_10_RUN1350_AUTOMATED_PASS__VISUAL_MAPPING_DEFECT_SOURCE_FIXED_REPROOF_REQUIRED"
   },
   "noPartialHumanCheckpoint": true,
-  "nextExactAction": "RUN_ONE_CUMULATIVE_SOURCE_PROOF_FOR_VRM268_VRM269",
+  "nextExactAction": "RUN_ONE_HOSTING_ONLY_DEV_MATERIALIZATION_FOR_VRM268_VRM269",
   "production": false,
-  "currentState": "VRM268_VRM269_SOURCE_FIXED_SOURCE_PROOF_REQUIRED",
+  "currentState": "VRM268_VRM269_SOURCE_PROOF_PASS_HOSTING_ONLY_MATERIALIZATION_REQUIRED",
   "run1321DeepActionDiagnostic": {
     "runId": 37649334166,
     "runNumber": 1321,
@@ -304,5 +304,32 @@
       "state": "SOURCE_FIXED_REPROOF_REQUIRED",
       "affected": "all human routes"
     }
+  },
+  "sourceProof": {
+    "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "runId": 37678003445,
+    "runNumber": 1354,
+    "jobId": 112986496678,
+    "artifactId": 11507384937,
+    "artifactDigest": "sha256:54cb3b8e45013907cf6bded97fd48aef6329d7429d1999bd14969b9790237807",
+    "sourceSha": "411e1e3712e6abfd60475aef16a75aecc7399c08",
+    "sourceTree": "0991894ed9396c334ca62c44626f5b6f2a5e3d14",
+    "phaseAContract": {
+      "tests": 7,
+      "pass": 7,
+      "fail": 0
+    },
+    "vrm261to264Contract": {
+      "tests": 4,
+      "pass": 4,
+      "fail": 0
+    },
+    "vrm268to269Contract": {
+      "tests": 3,
+      "pass": 3,
+      "fail": 0
+    },
+    "deploys": 0,
+    "production": false
   }
 }
