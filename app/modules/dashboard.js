@@ -260,15 +260,18 @@ CX.module('dashboard', ({data,ui})=>{
     const fmtD=(d)=>d||'—';
     const waBtn=(v,msg)=>`<button class="btn btn-soft btn-sm" data-wa='${encodeURIComponent((v.shopper||'Shopper')+': '+msg)}' title="WhatsApp">📲</button>`;
     const mailBtn=(v,msg)=>`<button class="btn btn-ghost btn-sm" data-mail='${encodeURIComponent(msg)}' title="Correo">✉️</button>`;
-    const goBtn=`<button class="btn btn-ghost btn-sm" data-goseco title="Ir a Visitas">↗</button>`;
-    const boardRow=(v,extra,extraLbl)=>`<tr>
+    const goBtn=v=>`<button class="btn btn-ghost btn-sm" data-goseco data-vid="${v.id}" title="Ir a Visitas">↗</button>`;
+    const contextBtn=v=>{const f=data.visitFacets?.(v)||{};if(f.scheduled)return `<button class="btn btn-soft btn-sm bdCtx" data-kind="reschedule" data-vid="${v.id}" title="Gestionar reprogramación">🔄</button>`;if(f.assigned&&!f.realized)return `<button class="btn btn-soft btn-sm bdCtx" data-kind="schedule" data-vid="${v.id}" title="Gestionar agendamiento">🗓️</button>`;return '';};
+    const requestBtn=v=>v.shopper?`<button class="btn btn-soft btn-sm bdCtx" data-kind="request" data-vid="${v.id}" title="Pedir acción al shopper">📤</button>`:'';
+    const boardRow=(v,extra,extraLbl)=>`<tr data-board-row="${v.id}">
+      <td style="width:30px;text-align:center"><input type="checkbox" class="bdSel" data-vid="${v.id}" aria-label="Seleccionar ${v.sucursal}"></td>
       <td style="font-size:11px;color:var(--t3)">#${v.num||''}</td>
       <td><b style="font-size:12.5px">${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad} · ${v.franjaCode||v.franja||''}</div></td>
       <td style="font-size:12px">${v.shopper||'<span class="muted">— sin asignar</span>'}${v.shopperCode?`<div style="font-size:10px;color:var(--t3)">${v.shopperCode}</div>`:''}</td>
       <td style="font-size:11.5px">${v.escenario||''}${v.combo?`<div style="font-size:10px;color:var(--t3)">${typeof v.combo==='string'?v.combo:'combo'}</div>`:''}</td>
       <td style="font-size:11.5px;color:${extraLbl==='alerta'?'var(--red)':'var(--t2)'};font-weight:${extraLbl==='alerta'?'700':'400'}">${extra}</td>
       <td>${ui.estadoBadge(v.estado)}</td>
-      <td style="text-align:right;white-space:nowrap"><button class="btn btn-ghost btn-sm bd-det" data-vid="${v.id}" title="Ver detalle">👁</button> ${goBtn} ${v.shopper?waBtn(v,'sobre tu visita en '+v.sucursal)+' '+mailBtn(v,'Visita '+v.sucursal):''}</td>
+      <td style="text-align:right;white-space:nowrap"><button class="btn btn-ghost btn-sm bd-det" data-vid="${v.id}" title="Ver detalle">👁</button> ${contextBtn(v)} ${requestBtn(v)} ${goBtn(v)} ${v.shopper?waBtn(v,'sobre tu visita en '+v.sucursal)+' '+mailBtn(v,'Visita '+v.sucursal):''}</td>
     </tr>`;
     const bucket=(titulo,color,vis,extraFn,extraLbl,bulkMsg)=>{
       const bid='bk'+Math.random().toString(36).slice(2,7);
@@ -278,7 +281,7 @@ CX.module('dashboard', ({data,ui})=>{
           <span style="font-size:12px;font-weight:800;color:var(--${color})"><span class="bd-caret" style="display:inline-block;width:14px">▾</span> ${titulo} (${vis.length})</span>
           ${bulkMsg&&vis.some(v=>v.shopper)?`<button class="btn btn-soft btn-sm" data-bulk='${encodeURIComponent(bulkMsg)}'>📣 Recordar a todos</button>`:''}
         </div>
-        <div id="${bid}" style="overflow-x:auto"><table class="tbl" style="min-width:720px"><thead><tr><th>Ref</th><th>Sucursal</th><th>Shopper</th><th>Escenario</th><th>${extraLbl==='alerta'?'Alerta':'Fecha'}</th><th>Estado</th><th></th></tr></thead>
+        <div id="${bid}" style="overflow-x:auto"><table class="tbl" style="min-width:860px"><thead><tr><th style="width:30px"></th><th>Ref</th><th>Sucursal</th><th>Shopper</th><th>Escenario</th><th>${extraLbl==='alerta'?'Alerta':'Fecha'}</th><th>Estado</th><th>Acciones</th></tr></thead>
         <tbody>${vis.slice(0,15).map(v=>boardRow(v,extraFn(v),extraLbl)).join('')}</tbody></table></div>
       </div>`;
     };
@@ -290,13 +293,33 @@ CX.module('dashboard', ({data,ui})=>{
     const porProgramar=all.filter(v=>v.estado==='asignada'&&!v.agendada);
     const porAsignar=all.filter(v=>!v.shopperId&&v.estado!=='fuera_rango'&&v.estado!=='liquidada');
     const board=document.getElementById('estadoBoard');
-    board.innerHTML=`<div class="card-h"><div class="card-t">🗂️ Estado operativo de visitas</div><span class="muted" style="font-size:11px">por etapa · gestiona o recuerda desde cada fila</span></div>
+    board.innerHTML=`<div class="card-h"><div><div class="card-t">🗂️ Estado operativo de visitas</div><div class="muted" style="font-size:11px;margin-top:3px">Selecciona visitas y actúa desde esta superficie; las acciones conservan su owner canónico.</div></div><span class="muted" style="font-size:11px">por etapa · acciones contextuales por estado</span></div>
+      <div class="flex wrap" style="gap:8px;align-items:center;margin-bottom:12px;padding:10px 12px;background:var(--brand-light);border-radius:10px" data-dashboard-actions>
+        <label class="flex" style="gap:6px;font-size:12px;color:var(--t2)"><input type="checkbox" id="bdAll"> Seleccionar visibles</label>
+        <span class="bdg bdg-b" id="bdSelectedCount">0 seleccionadas</span>
+        <div class="spacer"></div>
+        <button class="btn btn-soft btn-sm" id="bdBulkWa">📲 WhatsApp</button>
+        <button class="btn btn-ghost btn-sm" id="bdBulkMail">✉️ Correo</button>
+        <button class="btn btn-soft btn-sm" id="bdBulkRequest">📤 Pedir acción</button>
+        <button class="btn btn-pr btn-sm" id="bdBulkAgenda">🗓️ Gestionar agenda</button>
+      </div>
       ${bucket('📅 Próximas — pendientes de realizar','brand',proxim,v=>'Prog: '+fmtD(v.agendada),'fecha','Recordatorio: tu visita está próxima, no olvides realizarla.')}
       ${bucket('📝 Realizadas — pendientes de cuestionario','amber',realPend,v=>'Real: '+fmtD(v.realizada),'fecha','Recordatorio: completa el cuestionario de tu visita realizada.')}
       ${bucket('📤 Cuestionario completo — pendientes de submitir','purple',submitPend,v=>'Cuest: '+fmtD(v.cuestFecha||v.realizada),'fecha','Recordatorio: envía (submit) tu cuestionario.')}
       ${bucket('🗓️ Pendientes por programar','green',porProgramar,v=>'Desde: '+fmtD(v.disponibleDesde),'fecha','Recordatorio: agenda la fecha de tu visita asignada.')}
       ${bucket('👤 Pendientes por asignar','purple',porAsignar,v=>'Sin shopper','fecha')}
       ${bucket('⚠ Alertas — límites de tiempo excedidos','red',scan.atrasadas,v=>'Vencida · '+fmtD(v.agendada||v.disponibleDesde),'alerta','Urgente: tu visita está vencida, contáctanos.')}`;
+    const boardSelected=()=>[...board.querySelectorAll('.bdSel:checked')].map(x=>x.dataset.vid).filter(Boolean);
+    const refreshBoardSelection=()=>{const n=boardSelected().length;const badge=board.querySelector('#bdSelectedCount');if(badge)badge.textContent=n+' seleccionada'+(n===1?'':'s');};
+    board.querySelectorAll('.bdSel').forEach(x=>x.addEventListener('change',refreshBoardSelection));
+    board.querySelector('#bdAll')?.addEventListener('change',e=>{board.querySelectorAll('.bdSel').forEach(x=>{const tr=x.closest('tr');x.checked=e.target.checked&&(!tr||tr.offsetParent!==null);});refreshBoardSelection();});
+    const requireSelected=()=>{const ids=boardSelected();if(!ids.length)ui.toast('Selecciona al menos una visita','warn');return ids;};
+    const handoff=(kind,ids)=>{if(!ids.length)return;window.CX_PENDING_ADMIN_OPERATION_ACTION={kind,visitIds:ids,requestedAt:Date.now(),source:'dashboard-operation'};CX.router.nav('postulaciones');};
+    board.querySelector('#bdBulkRequest')?.addEventListener('click',()=>handoff('request',requireSelected()));
+    board.querySelector('#bdBulkAgenda')?.addEventListener('click',()=>handoff('agenda',requireSelected()));
+    board.querySelector('#bdBulkWa')?.addEventListener('click',()=>{const ids=requireSelected();if(!ids.length)return;let opened=0;ids.forEach(id=>{const v=all.find(x=>String(x.id)===String(id));const wa=v&&(v.shopperWa||v.whatsapp||'');if(!v?.shopper||!wa)return;const msg=encodeURIComponent('Hola '+v.shopper+', sobre tu visita en '+v.sucursal+'.');window.open('https://wa.me/'+String(wa).replace(/[^0-9]/g,'')+'?text='+msg,'_blank');opened++;});ui.toast(opened?'WhatsApp preparado para '+opened+' shopper(s)':'Las visitas seleccionadas no tienen WhatsApp disponible',opened?'ok':'warn');});
+    board.querySelector('#bdBulkMail')?.addEventListener('click',()=>{const ids=requireSelected();if(ids.length)ui.toast('Correo preparado para '+ids.length+' visita(s) · envío sujeto al proveedor conectado','ok');});
+    board.querySelectorAll('.bdCtx').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();handoff(String(b.dataset.kind||''),[String(b.dataset.vid||'')]);}));
     board.querySelectorAll('[data-goseco]').forEach(b=>b.addEventListener('click',()=>{
       const vid=b.dataset.vid||'';
       CX.router.nav('visitas');
