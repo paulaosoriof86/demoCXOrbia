@@ -288,7 +288,7 @@ CX.module('cli_dashboard', ({ui})=>{
       </div>
     </div>` : '';
 
-  if(!hasBranches){
+  if(!hasBranches&&!OP.hasOps){
     return `
       ${ui.ph('Panorama de '+CX.data.programBase(p), 'Resultados de la marca · score ponderado por programa · periodo '+(p.periodo||p.ronda||p.name))}
       ${CX.cliUI.personaBarHTML()}

@@ -35,6 +35,19 @@ window.CX = window.CX || {};
   CX.clienteData = {
     NAMES,
 
+    /* Fuente única de visitas del periodo/proyecto activo. Las visitas HR usan
+       projectId para el programa (cinepolis) y periodId para el periodo
+       (cinepolis-YYYY-MM); comparar projectId con p.id vaciaba el Portal Cliente. */
+    _periodVisits(p){
+      p=p||CX.data.period(); if(!p)return [];
+      const periodId=p.id, projectId=CX.data.programKey?CX.data.programKey(p):p.projectId;
+      return (CX.data._visitas||[]).filter(v=>{
+        const vp=CX.data.recordPeriodId?CX.data.recordPeriodId(v):v.periodId;
+        const vproj=CX.data.recordProjectId?CX.data.recordProjectId(v):v.projectId;
+        return vp===periodId && (!projectId||vproj===projectId) && (!CX.data.inScope||CX.data.inScope(v.pais));
+      });
+    },
+
     /* ---- programa del proyecto (FUENTE ÚNICA: core/programa.js) ---- */
     programa(p){
       p = p || CX.data.period();
@@ -62,7 +75,7 @@ window.CX = window.CX || {};
       const key = this._cacheKey(p);
       if(this._cache && this._cache.key===key) return this._cache.list;
       const prog=this.programa(p);
-      const vis=(CX.data._visitas||[]).filter(v=>v.projectId===p.id);
+      const vis=this._periodVisits(p);
       const list = vis.length ? this._fromVisitas(p, prog, vis) : this._synthetic(p, prog);
       list.sort((a,b)=>(b.score||0)-(a.score||0));
       this._cache={key, list};
@@ -256,12 +269,12 @@ window.CX = window.CX || {};
       if(typeof p.periodKey==='string'&&p.periodKey) return p.periodKey;
       /* mes real (YYYY-MM) derivado de las fechas de las visitas del periodo;
          nunca del id visual. Estable por proyecto/periodo. */
-      try{ const vis=(CX.data._visitas||[]).filter(v=>v.projectId===p.id); const ds=[];
+      try{ const vis=this._periodVisits(p); const ds=[];
         vis.forEach(v=>{ [v.realizada,v.agendada,v.cuestFecha,v.disponibleDesde].forEach(d=>{ if(typeof d==='string'&&d.length>=7) ds.push(d); }); });
         ds.sort(); if(ds.length) return ds[0].slice(0,7); }catch(e){}
       return p.id; },
     sourceRevision(p){ p=p||CX.data.period(); if(!p) return '0';
-      const vis=(CX.data._visitas||[]).filter(v=>v.projectId===p.id);
+      const vis=this._periodVisits(p);
       let h=(vis.length*2654435761)>>>0;
       for(const v of vis){ const s=(v.id||'')+'|'+(v.estado||'')+'|'+(v.score==null?'':v.score)+'|'+(v.evaluada?1:0)+'|'+(v.cuestFecha||'')+'|'+(v.shopperId||''); for(let i=0;i<s.length;i++){ h=((h*31)+s.charCodeAt(i))>>>0; } }
       return String(h); },
@@ -276,7 +289,7 @@ window.CX = window.CX || {};
          Prohibido redefinir done/cuest/submitted aquí; submitted exige submit explícito;
          se excluyen canceladas/archivadas. Dashboard, detalle, Panorama y reportes coinciden. */
       const BF=CX.data.visitBucketFns, F=CX.data.visitFacets;
-      const vis=(CX.data._visitas||[]).filter(v=>v.projectId===p.id && !F(v).cancelled);
+      const vis=this._periodVisits(p).filter(v=>!F(v).cancelled);
       const countries=[...new Set(vis.map(v=>v.pais).filter(Boolean))];
       const agg=(arr)=>({visitas:arr.length,asignadas:arr.filter(BF.asignadas).length,realizadas:arr.filter(BF.realizadas).length,cuestionarios:arr.filter(v=>F(v).questionnaire&&!F(v).cancelled).length,submitidas:arr.filter(v=>F(v).submitted&&!F(v).cancelled).length,cobertura:arr.length?Math.round(arr.filter(BF.realizadas).length/arr.length*100):0});
       return { periodKey:this.periodKey(p), sourceRevision:this.sourceRevision(p),
@@ -291,7 +304,7 @@ window.CX = window.CX || {};
        enviados por shoppers en este proyecto (sincronía operación → cliente). */
     realResults(p){
       p=p||CX.data.period();
-      const vis=CX.data._visitas.filter(v=>v.projectId===p.id && typeof v.score==='number' && v.evaluada);
+      const vis=this._periodVisits(p).filter(v=>typeof v.score==='number' && v.evaluada);
       if(!vis.length) return {count:0};
       const avg=Math.round(vis.reduce((a,v)=>a+v.score,0)/vis.length);
       const prog=this.programa(p); const bySection={};
