@@ -28,20 +28,22 @@ CX.supportStore = CX.supportStore || {
     return this._hydrating;
   },
   async add(t){
-    if(!CX.backendBulletins?.createSupportTicket)throw new Error('SUPPORT_PROVIDER_UNAVAILABLE');
-    const authUid=String(window.firebase?.auth?.().currentUser?.uid||CX.session?.user?.id||'user');
-    const idem='support.ticket:'+authUid+':'+Date.now()+':'+Math.random().toString(36).slice(2,8);
-    const result=await CX.backendBulletins.createSupportTicket(Object.assign({},t,{idempotencyKey:idem}));
+    if(!CX.data?.createSupportTicket)throw new Error('SUPPORT_PROVIDER_UNAVAILABLE');
+    const result=await CX.data.createSupportTicket(t,{ackAware:true,reason:'support_ticket_create'});
     if(!(result?.ok===true&&result?.providerAck===true&&result?.committed===true&&result?.successUiAllowed===true))throw new Error(result?.code||'SUPPORT_PROVIDER_ACK_REQUIRED');
-    const ticket=result.ticket;this._t=[ticket,...this._t.filter(x=>x.id!==ticket.id)];this._hydrated=true;
-    CX.bus&&CX.bus.emit('support',{source:'firestore',id:ticket.id});return result;
+    await this.hydrate(true);
+    const ticket=this._t.find(x=>String(x.id)===String(result.entityId));
+    if(!ticket)throw new Error('SUPPORT_TICKET_DURABLE_READBACK_FAILED');
+    CX.bus&&CX.bus.emit('support',{source:'firestore',id:ticket.id});return Object.assign({},result,{ticket});
   },
   async setEstado(id,e,extra={}){
-    if(!CX.backendBulletins?.updateSupportTicket)throw new Error('SUPPORT_PROVIDER_UNAVAILABLE');
-    const result=await CX.backendBulletins.updateSupportTicket(id,{estado:e,nota:extra.nota,responsable:extra.responsable});
+    if(!CX.data?.updateSupportTicket)throw new Error('SUPPORT_PROVIDER_UNAVAILABLE');
+    const result=await CX.data.updateSupportTicket(id,{estado:e,nota:extra.nota,responsable:extra.responsable},{ackAware:true,reason:'support_ticket_update'});
     if(!(result?.ok===true&&result?.providerAck===true&&result?.committed===true&&result?.successUiAllowed===true))throw new Error(result?.code||'SUPPORT_PROVIDER_ACK_REQUIRED');
-    const ticket=result.ticket;this._t=[ticket,...this._t.filter(x=>x.id!==ticket.id)];this._hydrated=true;
-    CX.bus&&CX.bus.emit('support',{source:'firestore',id:ticket.id});return result;
+    await this.hydrate(true);
+    const ticket=this._t.find(x=>String(x.id)===String(result.entityId));
+    if(!ticket)throw new Error('SUPPORT_TICKET_DURABLE_READBACK_FAILED');
+    CX.bus&&CX.bus.emit('support',{source:'firestore',id:ticket.id});return Object.assign({},result,{ticket});
   }
 };
 
@@ -116,7 +118,8 @@ CX.module('soporte', ({data,role,ui})=>{
     const asunto=host.querySelector('#spAsunto').value.trim(); if(!asunto){ui.toast('Escribe el asunto','warn');return;}
     b.disabled=true;b.textContent='Enviando…';
     try{
-      await CX.supportStore.add({de:(CX.session.user&&CX.session.user.name)||'Usuario',rol:role,tipo:host.querySelector('#spTipo').value,asunto,detalle:host.querySelector('#spDet').value.trim(),prio:host.querySelector('#spPrio').value});
+      const clientRequestId=b.dataset.requestId||(b.dataset.requestId='support-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8));
+      await CX.supportStore.add({de:(CX.session.user&&CX.session.user.name)||'Usuario',rol:role,tipo:host.querySelector('#spTipo').value,asunto,detalle:host.querySelector('#spDet').value.trim(),prio:host.querySelector('#spPrio').value,clientRequestId});
       ui.toast('Solicitud registrada y confirmada por el proveedor','ok',3200); tab='ia'; draw();
     }catch(_){b.disabled=false;b.textContent='Enviar solicitud';ui.toast('No hubo ACK remoto; la solicitud no se declaró registrada','warn',4200);}
   }); };

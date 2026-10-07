@@ -10,7 +10,8 @@ import crypto from 'node:crypto';
 export const VERSION='cxorbia-operational-command-provider-v1';
 export const COMMAND_TYPES=Object.freeze([
   'application.create','application.status.update','application.delete','reservation.create','reservation.status.update','reservation.delete',
-  'visit.assign','visit.reassign','visit.state.update','visit.reschedule','visit.cancel','visit.questionnaire.submit','visit.checkin.evidence','resource.read.receipt','visit.sync.confirm'
+  'visit.assign','visit.reassign','visit.state.update','visit.reschedule','visit.cancel','visit.questionnaire.submit','visit.checkin.evidence','resource.read.receipt','visit.sync.confirm',
+  'support.ticket.create','support.ticket.update'
 ]);
 export const OPERATOR_ROLES=Object.freeze(['super','admin','ops','coordinador']);
 export const APPLICATION_STATES=Object.freeze(['pendiente','aprobada','rechazada','standby','cancelada']);
@@ -87,7 +88,7 @@ function refs(db,command){
   const tenant=db.collection('tenants').doc(command.tenantId),project=tenant.collection('projects').doc(command.projectId);
   return {
     tenant,project,visits:project.collection('visits'),applications:project.collection('postulations'),reservations:project.collection('reservations'),
-    visitEvidence:project.collection('visitEvidence'),resourceReadReceipts:project.collection('resourceReadReceipts'),resources:tenant.collection('resources'),
+    visitEvidence:project.collection('visitEvidence'),resourceReadReceipts:project.collection('resourceReadReceipts'),resources:tenant.collection('resources'),bulletins:tenant.collection('bulletins'),
     receipt:tenant.collection('commandReceipts').doc(receiptId(command)),
     audit:tenant.collection('entityAuditTrail').doc(auditId(command)),
     review:tenant.collection('reviewQueue').doc('ops-'+auditId(command))
@@ -343,6 +344,38 @@ async function transactionExecute(db,command,actor){
         tx.delete(reservationRef);providerWrites++;
       }
       auditEntityType='reservation';
+    }
+    else if(command.commandType==='support.ticket.create'){
+      if(actor.role!=='shopper'&&!OPERATOR_ROLES.includes(actor.role))throw new Error('OPS_SUPPORT_CREATE_ROLE_DENIED');
+      const subject=str(payload.subject||payload.asunto),detail=str(payload.detail||payload.detalle),supportType=str(payload.supportType||payload.tipo||'Plataforma'),priority=str(payload.priority||payload.prio||'media').toLowerCase();
+      if(!subject)throw new Error('OPS_SUPPORT_SUBJECT_REQUIRED');
+      if(!['baja','media','alta'].includes(priority))throw new Error('OPS_SUPPORT_PRIORITY_INVALID');
+      entityId=entityId||('support-'+sha(`${command.tenantId}\0${command.projectId}\0${command.periodId}\0${actor.uid}\0${command.idempotencyKey}`).slice(0,30));
+      const ticketRef=r.bulletins.doc(entityId),ticketSnap=await tx.get(ticketRef);
+      if(ticketSnap.exists)throw new Error('OPS_SUPPORT_TICKET_ALREADY_EXISTS');
+      const shopperTargets=actor.role==='shopper'&&actor.shopperId?[actor.shopperId]:[];
+      tx.create(ticketRef,{
+        id:entityId,tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,status:'active',type:'request',priority,
+        title:'Nueva solicitud de soporte',body:subject+(detail?(' · '+detail):''),targetRoles:['admin'],targetUserIds:[actor.uid],targetShopperIds:shopperTargets,targetProjectIds:[command.projectId],
+        actionRoute:'soporte',entityType:'support_ticket',entityId,operational:true,idempotencyKey:command.idempotencyKey,
+        supportRequesterUserId:actor.uid,supportRequesterShopperId:actor.shopperId||null,supportRequesterName:str(payload.requesterName)||actor.uid,supportRequesterRole:actor.role,
+        supportType,supportSubject:subject,supportDetail:detail,supportStatus:'abierto',supportPriority:priority,supportNote:'',supportOwnerName:'',
+        version:1,createdBy:actor.uid,createdAt:now(),updatedAt:now()
+      });providerWrites++;auditEntityType='supportTicket';
+    }
+    else if(command.commandType==='support.ticket.update'){
+      if(!OPERATOR_ROLES.includes(actor.role))throw new Error('OPS_SUPPORT_UPDATE_OPERATOR_ONLY');
+      if(!entityId)throw new Error('OPS_SUPPORT_TICKET_ID_REQUIRED');
+      const ticketRef=r.bulletins.doc(entityId),ticketSnap=await tx.get(ticketRef);
+      if(!ticketSnap.exists)throw new Error('OPS_SUPPORT_TICKET_MISSING');
+      const ticket=ticketSnap.data()||{};
+      if(str(ticket.entityType)!=='support_ticket')throw new Error('OPS_SUPPORT_TICKET_TYPE_MISMATCH');
+      if(str(ticket.projectId)!==str(command.projectId)||str(ticket.periodId)!==str(command.periodId))throw new Error('OPS_SUPPORT_SCOPE_MISMATCH');
+      assertVersion(command,ticket);
+      const supportStatus=str(payload.status||payload.estado||ticket.supportStatus||'abierto').toLowerCase();
+      if(!['abierto','en_proceso','resuelto'].includes(supportStatus))throw new Error('OPS_SUPPORT_STATUS_INVALID');
+      tx.set(ticketRef,{supportStatus,supportNote:str(payload.note??payload.nota??ticket.supportNote),supportOwnerName:str(payload.ownerName??payload.responsable??ticket.supportOwnerName),managedBy:actor.uid,updatedAt:now(),version:Number(ticket.version||0)+1},{merge:true});
+      providerWrites++;auditEntityType='supportTicket';
     }
     else if(command.commandType==='visit.assign'){
       if(!OPERATOR_ROLES.includes(actor.role))throw new Error('OPS_VISIT_ASSIGN_OPERATOR_ONLY');

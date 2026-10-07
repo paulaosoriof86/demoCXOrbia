@@ -255,6 +255,20 @@
       const cmd=buildBase('finance.account.apply','financeAccount',accountId,payload,versionOf(current),Object.assign({permission:'finance.account.apply'},meta));
       return execute(cmd,meta);
     };
+    D.createSupportTicket=function(rec,meta){
+      rec=rec||{};meta=commandMeta(meta);const c=ctx();
+      const payload={subject:str(rec.asunto||rec.subject),detail:str(rec.detalle||rec.detail),supportType:str(rec.tipo||rec.supportType||'Plataforma'),priority:str(rec.prio||rec.priority||'media'),requesterName:str(rec.de||rec.requesterName),clientRequestId:str(rec.clientRequestId)};
+      const cmd=buildBase('support.ticket.create','supportTicket',null,payload,'absent',Object.assign({permission:'support.ticket.create'},meta));
+      if(payload.clientRequestId)cmd.idempotencyKey='support.ticket.create:'+hash([c.tenantId,c.projectId,c.periodId,c.actorId,payload.clientRequestId]);
+      return execute(cmd,meta);
+    };
+    D.updateSupportTicket=function(ticketId,patch,meta){
+      patch=patch&&typeof patch==='object'?patch:{};meta=commandMeta(meta);
+      const current=(CX.backendBulletins?.cachedSupportTickets?.()||[]).find(x=>str(x.id)===str(ticketId))||{};
+      const payload={status:str(patch.estado||patch.status),note:str(patch.nota??patch.note),ownerName:str(patch.responsable??patch.ownerName)};
+      const cmd=buildBase('support.ticket.update','supportTicket',ticketId,payload,versionOf(current),Object.assign({permission:'support.ticket.update'},meta));
+      return execute(cmd,meta);
+    };
     D.createReservation=function(rec,meta){
       rec=rec||{};meta=commandMeta(meta);const payload=Object.assign({},rec);delete payload.__commandMeta;
       const cmd=buildBase('reservation.create','reservation',null,payload,'absent',Object.assign({permission:'reservation.create'},meta));

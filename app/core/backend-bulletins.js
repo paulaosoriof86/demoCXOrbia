@@ -198,7 +198,7 @@ window.CX = window.CX || {};
   function supportNormalize(doc){
     const d=Object.assign({id:doc.id},doc.data?doc.data():doc);
     return {
-      id:String(d.id||''),de:d.supportRequesterName||d.createdByEmail||'Usuario',rol:d.supportRequesterRole||'shopper',
+      id:String(d.id||''),version:d.version??d.updatedAt??'source-current',de:d.supportRequesterName||d.createdByEmail||'Usuario',rol:d.supportRequesterRole||'shopper',
       tipo:d.supportType||'Plataforma',asunto:d.supportSubject||d.title||'Solicitud de soporte',detalle:d.supportDetail||d.body||'',
       estado:d.supportStatus||'abierto',prio:d.supportPriority||'media',fecha:String(d.createdAt||'').slice(0,10)||new Date().toISOString().slice(0,10),
       nota:d.supportNote||'',responsable:d.supportOwnerName||'',requesterUserId:d.supportRequesterUserId||'',requesterShopperId:d.supportRequesterShopperId||'',
@@ -230,47 +230,6 @@ window.CX = window.CX || {};
 
   function cachedSupportTickets(){return supportTicketCache.map(x=>Object.assign({},x));}
 
-  async function createSupportTicket(ticket){
-    ticket=ticket||{};
-    const userId=uid(),sid=shopperId();
-    if(!userId)throw new Error('SUPPORT_AUTH_REQUIRED');
-    const idem=String(ticket.idempotencyKey||('support.ticket:'+userId+':'+Date.now()));
-    const stableId=stableBulletinId(idem);
-    const saved=await createBulletin({
-      id:stableId,idempotencyKey:idem,status:'active',type:'request',priority:ticket.prio||'media',
-      title:'Nueva solicitud de soporte',body:(ticket.asunto||'Solicitud')+(ticket.detalle?(' · '+ticket.detalle):''),
-      targetRoles:['admin'],targetUserIds:[userId],targetShopperIds:sid?[sid]:[],targetProjectIds:currentProjectId()?[currentProjectId()]:[],
-      actionRoute:'soporte',entityType:'support_ticket',entityId:stableId,operational:true,
-      supportRequesterUserId:userId,supportRequesterShopperId:sid,supportRequesterName:ticket.de||currentEmail()||'Usuario',supportRequesterRole:ticket.rol||role(),
-      supportType:ticket.tipo||'Plataforma',supportSubject:ticket.asunto||'Solicitud de soporte',supportDetail:ticket.detalle||'',
-      supportStatus:'abierto',supportPriority:ticket.prio||'media',supportNote:''
-    });
-    const c=bulletinsCol(),snap=c?await c.doc(saved.id).get():null;
-    if(!snap||!snap.exists)throw new Error('SUPPORT_TICKET_DURABLE_READBACK_FAILED');
-    const durable=supportNormalize(snap);
-    supportTicketCache=[durable,...supportTicketCache.filter(x=>x.id!==durable.id)];
-    emit('support',{source:'firestore',id:durable.id});
-    return {ok:true,status:'committed',committed:true,providerAck:true,successUiAllowed:true,entityId:durable.id,ticket:durable};
-  }
-
-  async function updateSupportTicket(id,changes){
-    const c=bulletinsCol();
-    if(!c||!id)throw new Error('SUPPORT_PROVIDER_UNAVAILABLE');
-    const ref=c.doc(String(id)),before=await ref.get();
-    if(!before.exists||(before.data()||{}).entityType!=='support_ticket')throw new Error('SUPPORT_TICKET_NOT_FOUND');
-    changes=changes||{};
-    const patch={updatedAt:new Date().toISOString()};
-    if(changes.estado)patch.supportStatus=changes.estado;
-    if(Object.prototype.hasOwnProperty.call(changes,'nota'))patch.supportNote=changes.nota||'';
-    if(Object.prototype.hasOwnProperty.call(changes,'responsable'))patch.supportOwnerName=changes.responsable||'';
-    await ref.set(patch,{merge:true});
-    const after=await ref.get();
-    if(!after.exists)throw new Error('SUPPORT_TICKET_DURABLE_READBACK_FAILED');
-    const durable=supportNormalize(after);
-    supportTicketCache=[durable,...supportTicketCache.filter(x=>x.id!==durable.id)];
-    emit('support',{source:'firestore',id:durable.id});
-    return {ok:true,status:'committed',committed:true,providerAck:true,successUiAllowed:true,entityId:durable.id,ticket:durable};
-  }
 
   function patchNotifWrites(){
     if(!CX.notif || CX.notif.__backendBulletinsWrapped) return;
@@ -345,7 +304,7 @@ window.CX = window.CX || {};
     setTimeout(()=>{ if(!loaded) load().catch(()=>{}); }, 2500);
   }
 
-  CX.backendBulletins = {load, markRead, markAllRead, isRead, readIds, refreshReads, createBulletin, listSupportTickets, cachedSupportTickets, createSupportTicket, updateSupportTicket, pushDurable:(n)=>CX.notif?.pushDurable?.(n)};
+  CX.backendBulletins = {load, markRead, markAllRead, isRead, readIds, refreshReads, createBulletin, listSupportTickets, cachedSupportTickets, pushDurable:(n)=>CX.notif?.pushDurable?.(n)};
 
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
   else start();
