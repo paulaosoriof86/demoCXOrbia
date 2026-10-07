@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "9f8ec0f5c1cefc3c06f2f6a4fd8b19e58e0931f3",
-    "sourceTree": "c0b97289acbc0ba6600c6f3aff1a614cef9deafd",
+    "sourceSha": "411e1e3712e6abfd60475aef16a75aecc7399c08",
+    "sourceTree": "0991894ed9396c334ca62c44626f5b6f2a5e3d14",
     "predecessorSha": "cb081c511ba90feab94fa51a2c107301249171cf",
     "production": false,
-    "state": "VRM263_VRM267_FOCAL_PASS_FULL_SAME_ARTIFACT_E2E_REQUIRED",
+    "state": "SOURCE_FIXED_SOURCE_PROOF_REQUIRED",
     "proof": {
       "state": "PASS_VRM249_SOURCE_REPROOF_AND_EXACT_DEV_MATERIALIZATION",
       "accumulatedSourceProofs": [
@@ -18765,7 +18765,7 @@
     ],
     "findingCount": 259,
     "expectedCurrentRange": "VRM-001..VRM-259",
-    "nextFindingId": "VRM-268",
+    "nextFindingId": "VRM-270",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
