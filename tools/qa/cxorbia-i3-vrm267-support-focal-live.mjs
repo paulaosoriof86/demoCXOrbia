@@ -165,8 +165,21 @@ try{
   result.durable.initialCount=ticketDocs.length;
   result.durable.initialRows=ticketDocs.map(d=>({id:d.id,...(d.data()||{})}));
   stage('firestore_durable_write',ticketDocs.length===1,{owner:'backend/runtime/cxorbia-operational-command-provider-v1.mjs',count:ticketDocs.length});
+  const readDiagnostic=await page.evaluate(async spec=>{
+    const c=window.firebase.firestore().collection('tenants').doc(spec.tenantId).collection('bulletins');
+    const attempt=async(name,fn)=>{try{const value=await fn();return{name,ok:true,size:value?.size??null,exists:value?.exists??null};}catch(error){return{name,ok:false,code:String(error?.code||''),message:String(error?.message||error)};}};
+    return {
+      uid:String(window.firebase.auth().currentUser?.uid||''),
+      context:window.CX?.backendAuth?.context?.()||null,
+      direct:await attempt('direct',()=>c.doc(spec.docId).get()),
+      targetUser:await attempt('targetUser',()=>c.where('targetUserIds','array-contains',spec.userId).get()),
+      targetShopper:await attempt('targetShopper',()=>c.where('targetShopperIds','array-contains',spec.shopperId).get())
+    };
+  },{tenantId,userId:julissa.member.id,shopperId:julissa.profile.id,docId:ticketDocs[0]?.id||''});
+  result.browser.firestoreReadDiagnostic=readDiagnostic;
   const liveVisible=await supportVisible(page);result.visibility.shopperImmediate=liveVisible;
-  stage('shopper_visibility',liveVisible.ok&&liveVisible.count===1,{owner:'app/core/backend-bulletins.js',readback:liveVisible});
+  const queryFailure=[readDiagnostic.targetUser,readDiagnostic.targetShopper].find(x=>x?.ok===false);
+  stage('shopper_visibility',liveVisible.ok&&liveVisible.count===1,{owner:queryFailure?'firestore.rules':'app/core/backend-bulletins.js',code:queryFailure?.code||null,queryDiagnostic:readDiagnostic,readback:liveVisible});
   await page.screenshot({path:OUT+'/shopper-support-created.png',fullPage:true,animations:'disabled'}).catch(()=>{});
 
   const replay=await page.evaluate(async spec=>{try{return await window.CX.data.createSupportTicket(spec,{ackAware:true,reason:'support_ticket_create'});}catch(error){return{thrown:true,code:error?.result?.code||null,message:String(error?.message||error),result:error?.result||null};}},{asunto:subject,detalle:detail,tipo:'Plataforma',prio:'media',de:'Julissa Flores',clientRequestId});
