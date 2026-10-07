@@ -37,6 +37,10 @@ test('VRM263 support uses existing operational command provider and durable read
   assert.match(rules,/resource\.data\.get\('targetAll', false\) == true/);
   assert.doesNotMatch(rules,/resource\.data\.targetAll == true/);
   assert.doesNotMatch(rules,/return tenantAllowed\(tenantId\) && resource\.data\.status == 'active' && \(/);
+  assert.match(rules,/resource\.data\.targetUserIds is list && request\.auth\.uid in resource\.data\.targetUserIds/);
+  assert.match(rules,/resource\.data\.targetShopperIds is list && shopperId\(\) != '' && shopperId\(\) in resource\.data\.targetShopperIds/);
+  assert.doesNotMatch(rules,/listHasValue\('targetUserIds'/);
+  assert.doesNotMatch(rules,/listHasValue\('targetShopperIds'/);
 });
 
 test('VRM264 novedades read state is bulletinReads durable authority, not localStorage',()=>{

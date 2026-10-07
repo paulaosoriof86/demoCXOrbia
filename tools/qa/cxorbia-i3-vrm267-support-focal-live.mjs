@@ -167,13 +167,16 @@ try{
   stage('firestore_durable_write',ticketDocs.length===1,{owner:'backend/runtime/cxorbia-operational-command-provider-v1.mjs',count:ticketDocs.length});
   const readDiagnostic=await page.evaluate(async spec=>{
     const c=window.firebase.firestore().collection('tenants').doc(spec.tenantId).collection('bulletins');
-    const attempt=async(name,fn)=>{try{const value=await fn();return{name,ok:true,size:value?.size??null,exists:value?.exists??null};}catch(error){return{name,ok:false,code:String(error?.code||''),message:String(error?.message||error)};}};
+    const attempt=async(name,fn,retries=1)=>{let last=null;for(let i=1;i<=retries;i++){try{const value=await fn();return{name,ok:true,size:value?.size??null,exists:value?.exists??null,attempt:i};}catch(error){last={name,ok:false,code:String(error?.code||''),message:String(error?.message||error),attempt:i};if(i<retries)await new Promise(resolve=>setTimeout(resolve,5000));}}return last;};
+    const [direct,targetUser,targetShopper]=await Promise.all([
+      attempt('direct',()=>c.doc(spec.docId).get()),
+      attempt('targetUser',()=>c.where('targetUserIds','array-contains',spec.userId).get(),13),
+      attempt('targetShopper',()=>c.where('targetShopperIds','array-contains',spec.shopperId).get(),13)
+    ]);
     return {
       uid:String(window.firebase.auth().currentUser?.uid||''),
       context:window.CX?.backendAuth?.context?.()||null,
-      direct:await attempt('direct',()=>c.doc(spec.docId).get()),
-      targetUser:await attempt('targetUser',()=>c.where('targetUserIds','array-contains',spec.userId).get()),
-      targetShopper:await attempt('targetShopper',()=>c.where('targetShopperIds','array-contains',spec.shopperId).get())
+      direct,targetUser,targetShopper
     };
   },{tenantId,userId:julissa.member.id,shopperId:julissa.profile.id,docId:ticketDocs[0]?.id||''});
   result.browser.firestoreReadDiagnostic=readDiagnostic;
