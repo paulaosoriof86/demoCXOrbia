@@ -1484,7 +1484,7 @@ jobs:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_FINANCE_FOCAL_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM174_HISTORICAL_PAYMENT_REPROOF_REQUIRED' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 60
     env:
       FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
       FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
@@ -6629,6 +6629,7 @@ jobs:
           test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
           git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
           node --check tools/qa/cxorbia-i3-phasea-representative-live-reproof.mjs
+          node --check tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs
       - name: Install live proof dependencies
         run: |
           npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
@@ -6654,7 +6655,7 @@ jobs:
           test "$MAT_RUN" -gt 0
           test "$MAT_ARTIFACT" -gt 0
           [[ "$MAT_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
-          [[ "$MAT_DECISION" =~ ^PASS_.*EXACT_DEV(_HOSTING)?_MATERIALIZATION$ ]]
+          [[ "$MAT_DECISION" =~ ^PASS_.*EXACT_DEV(_HOSTING)?_MATERIALIZATION$ || "$MAT_DECISION" == "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION" ]]
           test "$(jq -r '.currentMaterialization.production' "$CANDIDATE_DESCRIPTOR")" = "false"
           if [[ "$(jq -r '.activeBlocker // empty' "$CANDIDATE_DESCRIPTOR")" == "VRM-256" ]]; then
             test "$MAT_RUN" = "37377137444"
@@ -6698,6 +6699,19 @@ jobs:
           test "$(jq -r '.writes.provider' "$PHASEA_LIVE_OUT/result.json")" = "0"
           test "$(jq -r '.deploys' "$PHASEA_LIVE_OUT/result.json")" = "0"
           test "$(jq -r '.production' "$PHASEA_LIVE_OUT/result.json")" = "false"
+          PHASEA_CLICK_OUT="$PHASEA_LIVE_OUT/clicks" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" node tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs | tee "$PHASEA_LIVE_OUT/clicks-console.log"
+          test "$(jq -r '.decision' "$PHASEA_LIVE_OUT/clicks/result.json")" = "PASS_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL"
+          test "$(jq -r '.clickCount' "$PHASEA_LIVE_OUT/clicks/result.json")" -ge 18
+          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" ADMIN_A_POST_OUT="$PHASEA_LIVE_OUT/admin-cluster" node tools/qa/cxorbia-i3-admin-cluster-a-postulations-live.mjs | tee "$PHASEA_LIVE_OUT/admin-cluster-console.log"
+          test "$(jq -r '.decision' "$PHASEA_LIVE_OUT/admin-cluster/result.json")" = "PASS_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE"
+          test "$(jq -r '.reservations.decision' "$PHASEA_LIVE_OUT/admin-cluster/result.json")" = "PASS_I3_ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE"
+          test "$(jq -r '.reservations.delete.noReappearance' "$PHASEA_LIVE_OUT/admin-cluster/result.json")" = "true"
+          SOURCE_SHA="$FOCAL_SOURCE" PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" FINAL_FOCAL_OUT="$PHASEA_LIVE_OUT/finance" FINAL_FOCAL_PERIOD_ID="$PERIOD_ID" node tools/qa/cxorbia-prei4-final-focal-finance-live.mjs | tee "$PHASEA_LIVE_OUT/finance-console.log"
+          test "$(jq -r '.decision' "$PHASEA_LIVE_OUT/finance/finance-live.json")" = "PASS_PREI4_FINAL_FOCAL_FINANCE"
+          test "$(jq -r '.cleanup' "$PHASEA_LIVE_OUT/finance/finance-live.json")" = "true"
+          PROJECT_ID="$PROJECT_ID" TENANT_ID="$TENANT_ID" HOSTING_URL="$HOSTING_URL" CERT_RES_SOURCE="$FOCAL_SOURCE" CERT_RES_MAT_OUT="$PHASEA_LIVE_OUT/cert-res" node tools/qa/cxorbia-prei4-cert-res-live.mjs | tee "$PHASEA_LIVE_OUT/cert-res-console.log"
+          test "$(jq -r '.decision' "$PHASEA_LIVE_OUT/cert-res/cert-res-live.json")" = "PASS_PREI4_CERT_RES_CUMULATIVE_DEV_LIVE"
+          test "$(jq -r '[.cleanup.attempt,.cleanup.recert,.cleanup.bank,.cleanup.resource,.cleanup.binary]|all' "$PHASEA_LIVE_OUT/cert-res/cert-res-live.json")" = "true"
       - if: always()
         uses: actions/upload-artifact@v4
         with:
