@@ -22,6 +22,7 @@ CX.module('postulaciones', ({data,ui})=>{
   const reprog=activePosts.filter(x=>x.reprog);
   const operationalAssignments=data.visitas().filter(v=>{const f=data.visitFacets?data.visitFacets(v):null;return f?f.assigned===true&&f.cancelled!==true:!!v.shopperId;});
   const agendadas=operationalAssignments.filter(v=>{const f=data.visitFacets?data.visitFacets(v):null;return f?f.scheduled===true&&f.realized!==true:!!(v.agendada&&!v.realizada);});
+  const requestTargets=(()=>{const byVisitShopper=new Map();activePosts.filter(x=>x.shopperId&&x.visitaId).forEach(x=>byVisitShopper.set(String(x.visitaId)+'::'+String(x.shopperId),Object.assign({},x,{__requestId:'post:'+String(x.id)})));operationalAssignments.filter(v=>v.shopperId).forEach(v=>{const key=String(v.id||v.visitId)+'::'+String(v.shopperId);if(!byVisitShopper.has(key))byVisitShopper.set(key,{__requestId:'visit:'+String(v.id||v.visitId),id:String(v.id||v.visitId),visitaId:String(v.id||v.visitId),visitId:String(v.id||v.visitId),shopperId:String(v.shopperId),shopper:v.shopper||'',sucursal:v.sucursal||'',ciudad:v.ciudad||'',pais:v.pais||'',projectId:data.currentProjectId,periodId:data.currentPeriodId,sourceType:'operational_assignment'});});return [...byVisitShopper.values()];})();
   const assignmentOrigin=v=>String(v.assignmentSource||'').toLowerCase()==='platform'?'Plataforma':'HR / Hoja de Ruta';
   const assignmentState=v=>{const f=data.visitFacets?data.visitFacets(v):null;if(f?.realized)return'Realizada';if(f?.scheduled)return'Agendada';return'Asignada';};
   const visitForPost=x=>{const visitKey=String(x?.visitaId||x?.visitId||''),hrRowKey=String(x?.hrRowId||'');return(data._visitas||[]).find(v=>(visitKey&&[v?.id,v?.visitId].some(k=>String(k||'')===visitKey))||(hrRowKey&&String(v?.hrRowId||'')===hrRowKey))||null;};
@@ -428,7 +429,7 @@ CX.module('postulaciones', ({data,ui})=>{
       ui.modal('📤 Pedir acción al shopper',`
         <p style="font-size:12.5px;color:var(--t2);margin-bottom:14px">El equipo puede <b>solicitar</b> al shopper (no solo gestionar lo que él pide). La solicitud se registra en la experiencia interna del shopper. WhatsApp solo se considera enviado cuando exista ACK del proveedor de mensajería.</p>
         <label class="lbl">Shopper</label>
-        <select class="sel" id="rqSh" style="margin-bottom:12px">${activePosts.filter(x=>x.shopperId&&x.visitaId).slice(0,50).map(x=>`<option value="${x.id}">${displayShopper(x)} · ${x.sucursal}</option>`).join('')}</select>
+        <select class="sel" id="rqSh" style="margin-bottom:12px">${requestTargets.slice(0,100).map(x=>`<option value="${x.__requestId}">${displayShopper(x)} · ${x.sucursal} · ${x.sourceType==='operational_assignment'?'asignación vigente':'postulación'}</option>`).join('')}</select>
         <label class="lbl">Solicitud</label>
         <select class="sel" id="rqTipo" style="margin-bottom:12px">
           <option value="confirmar">Confirmar fecha propuesta</option>
@@ -443,7 +444,7 @@ CX.module('postulaciones', ({data,ui})=>{
       `,{onMount:(ov,close)=>{
         ov.querySelector('[data-x4]').addEventListener('click',close);
         ov.querySelector('#rqSend').addEventListener('click',async()=>{
-          const tipo=ov.querySelector('#rqTipo').value,post=activePosts.find(x=>String(x.id)===String(ov.querySelector('#rqSh').value));
+          const tipo=ov.querySelector('#rqTipo').value,post=requestTargets.find(x=>String(x.__requestId)===String(ov.querySelector('#rqSh').value));
           if(!post?.shopperId||!post?.visitaId||typeof CX.notif?.pushDurable!=='function'){ui.toast('Solicitud no enviada: falta identidad exacta o persistencia durable.','warn',4200);return;}
           const map={confirmar:['📅','El equipo pide confirmar fecha','confirmar_fecha'],cambio:['📅','El equipo pide cambio de fecha','confirmar_fecha'],reprog:['🔄','El equipo solicita reprogramación',''],agendar:['📅','Recordatorio: agenda tu visita',''],cuestionario:['📝','El equipo solicita completar el cuestionario','']};
           const m=map[tipo],btn=ov.querySelector('#rqSend');btn.disabled=true;btn.textContent='Confirmando…';
@@ -474,6 +475,17 @@ CX.module('postulaciones', ({data,ui})=>{
         close();ui.toast('Ajuste solicitado a '+sh+' · notificación preparada (Mi Día + WhatsApp fallback) · pendiente confirmación','ok',3500);
       }))});
     });
+    const pendingHandoff=window.CX_PENDING_ADMIN_OPERATION_ACTION;
+    if(pendingHandoff&&Date.now()-Number(pendingHandoff.requestedAt||0)<20000){
+      delete window.CX_PENDING_ADMIN_OPERATION_ACTION;
+      const ids=Array.isArray(pendingHandoff.visitIds)?pendingHandoff.visitIds.map(String):[];
+      const kind=String(pendingHandoff.kind||'');
+      if(kind==='agenda'){document.getElementById('openAgenda')?.click();}
+      else if(['request','schedule','reschedule'].includes(kind)){
+        reqBtn?.click();
+        setTimeout(()=>{const ovs=[...document.querySelectorAll('.cx-ov')].filter(el=>{const st=getComputedStyle(el),r=el.getBoundingClientRect();return st.display!=='none'&&st.visibility!=='hidden'&&r.width>0&&r.height>0;});const ov=ovs.at(-1);if(!ov)return;const target=requestTargets.find(x=>ids.includes(String(x.visitaId||x.visitId||'')));if(target){const sel=ov.querySelector('#rqSh');if(sel){sel.value=target.__requestId;sel.dispatchEvent(new Event('change',{bubbles:true}));}}const type=ov.querySelector('#rqTipo');if(type){if(kind==='schedule')type.value='agendar';if(kind==='reschedule')type.value='reprog';}},0);
+      }
+    }
   },0);
   return html;
 });
