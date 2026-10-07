@@ -6748,7 +6748,7 @@ jobs:
           set -Eeuo pipefail
           mkdir -p "$VRM267_OUT"
           git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
-          jq -e '.currentMaterialization | .runId=="37661359150" and .artifactId=="11501186259" and .builds==0 and .runtimeDeploys==0 and .hostingDeploys==1 and .production==false' "$CANDIDATE_DESCRIPTOR" >/dev/null
+          jq -e '.currentMaterialization | .runId==37661359150 and .artifactId==11501186259 and .builds==0 and .runtimeDeploys==0 and .hostingDeploys==1 and .production==false' "$CANDIDATE_DESCRIPTOR" >/dev/null
           EXPECTED_RUNTIME="$(jq -r '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")"
           EXPECTED_DIGEST="$(jq -r '.currentMaterialization.runtimeDigest' "$CANDIDATE_DESCRIPTOR")"
           EXPECTED_HOSTING="$(jq -r '.currentMaterialization.hostingVersion' "$CANDIDATE_DESCRIPTOR")"
