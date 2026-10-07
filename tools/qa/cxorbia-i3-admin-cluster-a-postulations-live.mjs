@@ -132,8 +132,13 @@ try{
   const secondMember=candidates.find(m=>str(m.shopperId)!==shopperId);
   need(secondMember,'SOURCE_FAILURE','RSV_SECOND_SHOPPER_REQUIRED',{candidates:candidates.length});
   const projectSnap=await project.get(),projectData=projectSnap.exists?(projectSnap.data()||{}):{},reservationRows=await docs(project.collection('reservations'));
-  const rVisit=available.find(v=>str(v.hrRowId)&&reservationFutureEligible(v,projectData)&&!reservationRows.some(r=>str(r.visitId||r.visitaId)===str(v.visitId||v.id)&&str(r.shopperId)===shopperId));
-  need(rVisit,'SOURCE_FAILURE','RSV_NO_SAFE_FUTURE_AVAILABLE_PAIR',{available:available.length});
+  const liveHrVisits=arr(hr?.visits);
+  const liveByHrRow=new Map(liveHrVisits.filter(v=>str(v.hrRowId)).map(v=>[str(v.hrRowId),v]));
+  const liveByVisitId=new Map(liveHrVisits.filter(v=>str(v.visitId||v.id)).map(v=>[str(v.visitId||v.id),v]));
+  const reservationAuthorityVisit=v=>liveByHrRow.get(str(v?.hrRowId))||liveByVisitId.get(str(v?.visitId||v?.id))||null;
+  const liveFutureEligible=available.filter(v=>{const authority=reservationAuthorityVisit(v);return !!authority&&reservationFutureEligible(authority,projectData);}).length;
+  const rVisit=available.find(v=>{const authority=reservationAuthorityVisit(v);return str(v.hrRowId)&&!!authority&&reservationFutureEligible(authority,projectData)&&!reservationRows.some(r=>str(r.visitId||r.visitaId)===str(v.visitId||v.id)&&str(r.shopperId)===shopperId);});
+  need(rVisit,'SOURCE_FAILURE','RSV_NO_SAFE_FUTURE_AVAILABLE_PAIR',{available:available.length,liveHrVisits:liveHrVisits.length,liveFutureEligible});
   const rVisitId=str(rVisit.visitId||rVisit.id),rHrRowId=str(rVisit.hrRowId),rPeriodId=str(rVisit.periodId),rPeriodo=str(rVisit.periodKey||rVisit.periodo||rPeriodId.replace(/^cinepolis-/,'')),rBranch=branchKey(rVisit),shopperB=str(secondMember.shopperId);
   need(rBranch,'SOURCE_FAILURE','RSV_BRANCH_KEY_REQUIRED');
   const rVisitRef=project.collection('visits').doc(rVisit.id),rVisitBeforeSnap=await rVisitRef.get(),rVisitBefore=rVisitBeforeSnap.data()||{};
