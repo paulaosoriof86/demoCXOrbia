@@ -30,7 +30,7 @@ let admin=null;for(const m of members.filter(x=>x.active===true&&['admin','super
 const targets=[];for(const n of ['Julissa Flores','Priscila López','Paula Osorio'])targets.push(await target(n));
 const browser=await chromium.launch({headless:true});
 const result={schemaVersion:'cxorbia.i3.phasea.exhaustive-click-visual.v1',decision:'HOLD',hrRevision:revision,periodId,shopper:{},admin:{},screenshots:[],clickCount:0,writes:{auth:0,hr:0,provider:0},production:false};
-const shot=async(page,name)=>{await page.screenshot({path:OUT+'/'+name+'.png',fullPage:true});result.screenshots.push(name+'.png');};
+const shot=async(page,name)=>{const file=name+'.png';try{await page.screenshot({path:OUT+'/'+file,fullPage:true,timeout:15000,animations:'disabled'});}catch(first){try{await page.screenshot({path:OUT+'/'+file,fullPage:false,timeout:15000,animations:'disabled'});}catch(second){throw new Error('ENVIRONMENT_FAILURE:CLICK_SCREENSHOT:'+name+':'+str(second?.message||first?.message||second||first));}}result.screenshots.push(file);};
 const overlay=async page=>page.locator('.cx-ov:visible').last().innerText().catch(()=>'');
 const visual=async(page,label)=>{const v=await page.evaluate(()=>{const t=String(document.body?.innerText||'');return{technical:/AUTH_READY|CLAIMS_READY|HRROWID|FINANCIALSOURCESTATUS|sourceSafe\s*[:=]|providerAck\s*[:=]|máquina canónica HR/i.test(t),blocked:t.includes('Fuente de datos no disponible'),body:t.slice(0,5000)};});if(v.technical||v.blocked)throw new Error('VISUAL_DEFECT:'+label+':'+JSON.stringify({technical:v.technical,blocked:v.blocked}));return v;};
 async function signed(member,role){
