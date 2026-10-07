@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
+  "status": "HOLD_I3_FULL_ACTION_E2E_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "b7b8978cda791deea38316e34e6a2dd93e5c6137",
   "productTreeAuthority": "9985bfac4d3188abf2bddb21eee541336aff2222",
   "predecessorProductSourceSha": "9dee84dd31a0eff2cfa2de9ed0313af75e02769a",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V301_2026-10-07.json",
-  "findingsLedgerExpectedGitBlob": "8cc43c38fda41b631fe48419158266ad2e509e01",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V16.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V302_2026-10-07.json",
+  "findingsLedgerExpectedGitBlob": "82d976f8a4e0eec054f0487a0a8613b4fe8b3f65",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V17.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "FULL_56_ROLE_ROUTE_EXHAUSTIVE_ACTION_COVERAGE",
+  "activeBlocker": "FULL_ACTION_E2E_ALL_MODULES",
   "nextFindingId": "VRM-261",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN_FULL_56_ROLE_ROUTE_INTERACTION_INVENTORY_ON_SAME_ARTIFACT_THEN_CLOSE_ACTION_GAPS",
+  "exactNextAction": "CLOSE_ALL_APPLICABLE_ACTION_FAMILIES_ON_SAME_ARTIFACT_ACROSS_SHOPPER_ADMIN_CLIENT",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2628,7 +2628,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "51281ca35ade6d162b45cff64b67b2cfb4431064",
+  "moduleTruthExpectedGitBlob": "9ad83d8dbcf9d696364eeecd85da0c01c8f302ca",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -5289,6 +5289,70 @@
     "path": "CXORBIA_I3_FULL_MODULE_EXHAUSTIVE_SCOPE_2026-10-07.json",
     "expectedGitBlob": "7f5ddf1022ae35493bff58bc30b713af416bec0d",
     "roleRouteEntries": 56,
+    "benefitsIncluded": true,
+    "production": false
+  },
+  "fullModuleInventoryReceipt": {
+    "state": "PASS_ROUTE_AND_INTERACTION_INVENTORY_ACTION_E2E_STILL_REQUIRED",
+    "runId": 37645324550,
+    "runNumber": 1319,
+    "jobId": 112874575393,
+    "artifactId": 11494213219,
+    "artifactDigest": "sha256:114eaddd88db10c97bfd182bc4aead335924cc621e701811669cdc3027bc636d",
+    "decision": "PASS_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL",
+    "productSourceSha": "b7b8978cda791deea38316e34e6a2dd93e5c6137",
+    "materializationRunId": 37641062754,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/f9f23f610214eac2",
+    "hrRevision": "44c8a38a45800606ddb7db5c8ab902324bd7daf588fe8653165fd5e1b7e1a285",
+    "routeCoverage": {
+      "admin": 34,
+      "shopper": 12,
+      "client": 10,
+      "total": 56
+    },
+    "interactiveControlsInventoried": {
+      "admin": 970,
+      "shopper": 51,
+      "client": 63,
+      "total": 1084
+    },
+    "targetedClickCount": 28,
+    "benefitsIncluded": true,
+    "shopperRepresentatives": [
+      "Julissa Flores",
+      "Priscila López",
+      "Paula Osorio"
+    ],
+    "benefitsEvidence": {
+      "routeScreenshotsForAllThree": true,
+      "rowDetail": {
+        "julissa": true,
+        "paula": true,
+        "priscila": "NOT_APPLICABLE_WITH_REASON:no benefit row in current profile"
+      },
+      "remaining": [
+        "filters",
+        "download receipt",
+        "same-truth cross-check against finance where applicable"
+      ]
+    },
+    "globalControlsInventoried": [
+      "project_selector",
+      "period_selector",
+      "sidebar_navigation",
+      "sidebar_sections",
+      "topbar_notifications",
+      "topbar_mail",
+      "topbar_support",
+      "role_identity",
+      "logout"
+    ],
+    "production": false
+  },
+  "fullModuleActionCoverage": {
+    "path": "CXORBIA_I3_FULL_MODULE_ACTION_COVERAGE_2026-10-07.json",
+    "expectedGitBlob": "802592105641a85c6a6521fb6abcfc7bbc9d04d3",
+    "state": "ACTION_E2E_PENDING",
     "benefitsIncluded": true,
     "production": false
   }

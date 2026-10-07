@@ -1,0 +1,100 @@
+{
+  "schemaVersion": "cxorbia.i3.full-module-action-coverage.v1",
+  "frozenAt": "2026-10-07T15:45:00Z",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "productSourceSha": "b7b8978cda791deea38316e34e6a2dd93e5c6137",
+  "artifactAuthority": {
+    "materializationRunId": 37641062754,
+    "materializationArtifactId": 11492601227,
+    "materializationArtifactDigest": "sha256:f68f7c24f979b1d13c4e4053cc1e08a3c0c6964221898b5aa48294e63d013cbd",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/f9f23f610214eac2"
+  },
+  "inventoryReceipt": {
+    "state": "PASS_ROUTE_AND_INTERACTION_INVENTORY_ACTION_E2E_STILL_REQUIRED",
+    "runId": 37645324550,
+    "runNumber": 1319,
+    "jobId": 112874575393,
+    "artifactId": 11494213219,
+    "artifactDigest": "sha256:114eaddd88db10c97bfd182bc4aead335924cc621e701811669cdc3027bc636d",
+    "decision": "PASS_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL",
+    "productSourceSha": "b7b8978cda791deea38316e34e6a2dd93e5c6137",
+    "materializationRunId": 37641062754,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/f9f23f610214eac2",
+    "hrRevision": "44c8a38a45800606ddb7db5c8ab902324bd7daf588fe8653165fd5e1b7e1a285",
+    "routeCoverage": {
+      "admin": 34,
+      "shopper": 12,
+      "client": 10,
+      "total": 56
+    },
+    "interactiveControlsInventoried": {
+      "admin": 970,
+      "shopper": 51,
+      "client": 63,
+      "total": 1084
+    },
+    "targetedClickCount": 28,
+    "benefitsIncluded": true,
+    "shopperRepresentatives": [
+      "Julissa Flores",
+      "Priscila López",
+      "Paula Osorio"
+    ],
+    "benefitsEvidence": {
+      "routeScreenshotsForAllThree": true,
+      "rowDetail": {
+        "julissa": true,
+        "paula": true,
+        "priscila": "NOT_APPLICABLE_WITH_REASON:no benefit row in current profile"
+      },
+      "remaining": [
+        "filters",
+        "download receipt",
+        "same-truth cross-check against finance where applicable"
+      ]
+    },
+    "globalControlsInventoried": [
+      "project_selector",
+      "period_selector",
+      "sidebar_navigation",
+      "sidebar_sections",
+      "topbar_notifications",
+      "topbar_mail",
+      "topbar_support",
+      "role_identity",
+      "logout"
+    ],
+    "production": false
+  },
+  "gateRule": "56/56 route render is necessary but not sufficient. I3 remains HOLD until every applicable visible action is exercised with provider ACK/readback/reload where it writes, or classified NOT_APPLICABLE_WITH_REASON with evidence.",
+  "shopper": {
+    "allModulesRequired": true,
+    "modules": [
+      "midia",
+      "miperfil",
+      "visitas",
+      "reservas",
+      "misvisitas",
+      "aprendizaje",
+      "cert",
+      "documentos",
+      "soporte",
+      "novedades",
+      "beneficios",
+      "mireportes"
+    ],
+    "benefitsRequired": true,
+    "currentState": "ROUTES_12_12_PASS_ACTION_CLOSURE_PENDING"
+  },
+  "admin": {
+    "routesRequired": 34,
+    "currentState": "ROUTES_34_34_PASS_ACTION_CLOSURE_PENDING"
+  },
+  "client": {
+    "routesRequired": 10,
+    "currentState": "ROUTES_10_10_PASS_ACTION_CLOSURE_PENDING"
+  },
+  "noPartialHumanCheckpoint": true,
+  "nextExactAction": "CLOSE_ALL_APPLICABLE_ACTION_FAMILIES_ON_SAME_ARTIFACT_ACROSS_SHOPPER_ADMIN_CLIENT",
+  "production": false
+}
