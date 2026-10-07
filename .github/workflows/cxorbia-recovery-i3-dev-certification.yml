@@ -6735,7 +6735,7 @@ jobs:
           fetch-depth: 0
       - name: Install focal live proof dependencies
         run: |
-          npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
           npx playwright install chromium >/dev/null 2>&1
       - uses: google-github-actions/auth@v2
         with:
@@ -6753,10 +6753,11 @@ jobs:
           EXPECTED_HR_REVISION="$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")"
           test "$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(status.latestReadyRevisionName)')" = "$EXPECTED_RUNTIME"
           TOKEN="$(gcloud auth print-access-token)"
-          npx firebase-tools deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET,firestore:rules" --project "$PROJECT" --non-interactive | tee "$VRM267_OUT/dev-deploy.log"
           curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases/cloud.firestore" > "$VRM267_OUT/firestore-release.json"
           curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$VRM267_OUT/hosting-after.json"
-          test "$(curl -fsSL --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/core/backend-bulletins.js?vrm267=$GITHUB_RUN_ID"|sha256sum|awk '{print $1}')" = "$(git show "$FOCAL_SOURCE:app/core/backend-bulletins.js"|sha256sum|awk '{print $1}')"
+          WANT="$(git show "$FOCAL_SOURCE:app/core/backend-bulletins.js"|sha256sum|awk '{print $1}')"
+          for _ in {1..12}; do GOT="$(curl -fsSL -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/core/backend-bulletins.js?vrm267=$GITHUB_RUN_ID-$_"|sha256sum|awk '{print $1}')"; [ "$GOT" = "$WANT" ] && break; sleep 5; done
+          test "$GOT" = "$WANT"
           FOCAL_SOURCE="$FOCAL_SOURCE" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" VRM267_OUT="$VRM267_OUT/live" node tools/qa/cxorbia-i3-vrm267-support-focal-live.mjs | tee "$VRM267_OUT/console.log"
           R="$VRM267_OUT/live/result.json"
           test "$(jq -r '.decision' "$R")" = "PASS_VRM267_SUPPORT_FOCAL_LIVE"
