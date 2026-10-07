@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "4ab7fc91847a9d7da5af13c14b8eb0b82a96b652",
   "productTreeAuthority": "6cea5789d3a6c109f22d96722dd790a5987930ef",
   "predecessorProductSourceSha": "b7b8978cda791deea38316e34e6a2dd93e5c6137",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V306_2026-10-07.json",
-  "findingsLedgerExpectedGitBlob": "d86a63da32dc5ca1adbf53a60f6fd870fa87ef8b",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V20.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V307_2026-10-07.json",
+  "findingsLedgerExpectedGitBlob": "9ff77490bd294c077dec685a33f6ad5bc186ce8e",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V21.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM261_VRM264_SOURCE_PROOF",
+  "activeBlocker": "VRM261_VRM264_DEV_MATERIALIZATION",
   "nextFindingId": "VRM-265",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN_VRM261_VRM264_SOURCE_PROOF_ON_DECLARED_4AB7_SOURCE",
+  "exactNextAction": "ONE_EXACT_DEV_MATERIALIZATION_FROM_4AB7_SOURCE",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -323,7 +323,7 @@
   },
   "technicalClosureReceipt": "CXORBIA_I3_TERMINAL_TECHNICAL_READY_2026-09-25.json",
   "i4": {
-    "status": "BLOCKED_VRM261_VRM264_SOURCE_PROOF_AND_NEW_MATERIALIZATION",
+    "status": "BLOCKED_PENDING_VRM261_VRM264_EXACT_DEV_MATERIALIZATION",
     "productionAuthorization": false,
     "authorized": false,
     "production": "DO_NOT_TOUCH"
@@ -423,7 +423,7 @@
     "production": false
   },
   "currentMaterialization": {
-    "state": "SUPERSEDED_BY_NEW_PRODUCT_SOURCE_PENDING_SOURCE_PROOF",
+    "state": "SUPERSEDED_BY_SOURCE_4AB7_READY_ONE_EXACT_DEV_MATERIALIZATION",
     "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
     "sourceSha": "b7b8978cda791deea38316e34e6a2dd93e5c6137",
     "sourceTree": "9985bfac4d3188abf2bddb21eee541336aff2222",
@@ -2646,7 +2646,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "2ad06ad635aa1101c5df343e7eb7d0b71e0a4ed8",
+  "moduleTruthExpectedGitBlob": "dd3c8685fb46e6199553281cd8cb565e5d067711",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -5403,6 +5403,50 @@
     "profileId": "prof_67673ed0a9194322",
     "result": "LOGIN_SCREEN_SESSION_NOT_PRESENT",
     "consequence": "Human-like reproduction deferred; CI/source findings remain valid and product correction may proceed. Do not attribute this AUTH_FAILURE to CXOrbia product behavior.",
+    "production": false
+  },
+  "phaseACompositionFixSourceProof": {
+    "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "runId": 37656246240,
+    "runNumber": 1327,
+    "jobId": 112912012550,
+    "artifactId": 11497709838,
+    "artifactDigest": "sha256:77b1ac0cbd8c87f30fa35a6875bc7cd3f27c40722978dd3d247ba52e66625425",
+    "sourceSha": "4ab7fc91847a9d7da5af13c14b8eb0b82a96b652",
+    "sourceTree": "6cea5789d3a6c109f22d96722dd790a5987930ef",
+    "phaseAContract": {
+      "tests": 7,
+      "pass": 7,
+      "fail": 0
+    },
+    "vrm261to264Contract": {
+      "tests": 4,
+      "pass": 4,
+      "fail": 0
+    },
+    "deploys": 0,
+    "production": false
+  },
+  "vrm261to264SourceProof": {
+    "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "runId": 37656246240,
+    "runNumber": 1327,
+    "jobId": 112912012550,
+    "artifactId": 11497709838,
+    "artifactDigest": "sha256:77b1ac0cbd8c87f30fa35a6875bc7cd3f27c40722978dd3d247ba52e66625425",
+    "sourceSha": "4ab7fc91847a9d7da5af13c14b8eb0b82a96b652",
+    "sourceTree": "6cea5789d3a6c109f22d96722dd790a5987930ef",
+    "phaseAContract": {
+      "tests": 7,
+      "pass": 7,
+      "fail": 0
+    },
+    "vrm261to264Contract": {
+      "tests": 4,
+      "pass": 4,
+      "fail": 0
+    },
+    "deploys": 0,
     "production": false
   }
 }
