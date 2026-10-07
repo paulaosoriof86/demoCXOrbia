@@ -2,7 +2,7 @@
   "schemaVersion": "cxorbia.i3.full-module-action-coverage.v1",
   "frozenAt": "2026-10-07T15:45:00Z",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
-  "productSourceSha": "b7b8978cda791deea38316e34e6a2dd93e5c6137",
+  "productSourceSha": "4ab7fc91847a9d7da5af13c14b8eb0b82a96b652",
   "artifactAuthority": {
     "materializationRunId": 37641062754,
     "materializationArtifactId": 11492601227,
@@ -95,7 +95,7 @@
     "currentState": "ROUTES_10_10_PASS_ACTION_CLOSURE_PENDING"
   },
   "noPartialHumanCheckpoint": true,
-  "nextExactAction": "RUN_VRM261_VRM264_SOURCE_PROOF_THEN_ONE_DEV_MATERIALIZATION",
+  "nextExactAction": "RUN_VRM261_VRM264_SOURCE_PROOF_ON_DECLARED_4AB7_SOURCE",
   "production": false,
   "currentState": "VRM261_VRM264_SOURCE_FIXED_PENDING_SOURCE_PROOF",
   "run1321DeepActionDiagnostic": {
@@ -155,6 +155,25 @@
     "expectedFailClosed": true,
     "cause": "descriptor had not yet declared exact five-file product source successor",
     "productDefect": false,
+    "production": false
+  },
+  "productTree": "6cea5789d3a6c109f22d96722dd790a5987930ef",
+  "sourceAuthorityCorrection": {
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "runId": 37655220726,
+    "runNumber": 1325,
+    "jobId": 112908509277,
+    "code": "UNDECLARED_PRODUCT_DRIFT_AFTER_CANONICAL_CANDIDATE",
+    "observedFiles": [
+      "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+      "app/core/backend-bulletins.js",
+      "app/modules/soporte.js",
+      "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+    ],
+    "priorDeclaredSource": "6344733145eb6c59a257f9e3b3665a5425dd728c",
+    "correctedSource": "4ab7fc91847a9d7da5af13c14b8eb0b82a96b652",
+    "correctedTree": "6cea5789d3a6c109f22d96722dd790a5987930ef",
+    "productMutationInThisCorrection": false,
     "production": false
   }
 }
