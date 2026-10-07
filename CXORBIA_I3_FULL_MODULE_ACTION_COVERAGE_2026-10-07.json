@@ -84,7 +84,7 @@
       "mireportes"
     ],
     "benefitsRequired": true,
-    "currentState": "ROUTES_12_12_PASS_ACTION_CLOSURE_PENDING"
+    "currentState": "ROUTES_12_12_PASS__VRM261_VRM264_ACTION_FIX_REQUIRED"
   },
   "admin": {
     "routesRequired": 34,
@@ -95,6 +95,57 @@
     "currentState": "ROUTES_10_10_PASS_ACTION_CLOSURE_PENDING"
   },
   "noPartialHumanCheckpoint": true,
-  "nextExactAction": "CLOSE_ALL_APPLICABLE_ACTION_FAMILIES_ON_SAME_ARTIFACT_ACROSS_SHOPPER_ADMIN_CLIENT",
-  "production": false
+  "nextExactAction": "FIX_ONLY_VRM261_VRM264_PROVEN_OWNERS_THEN_SOURCE_PROOF",
+  "production": false,
+  "currentState": "RUN1321_ACTION_FINDINGS_OPEN",
+  "run1321DeepActionDiagnostic": {
+    "runId": 37649334166,
+    "runNumber": 1321,
+    "jobId": 112888347381,
+    "artifactId": 11495203364,
+    "artifactDigest": "sha256:a99665041162e47c0053dd672b5dcab88e462de5da5743c92a0fb7c56e9dbb4f",
+    "decision": "HOLD_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL_ACTION_FINDINGS",
+    "sourceSha": "b7b8978cda791deea38316e34e6a2dd93e5c6137",
+    "sourceTree": "9985bfac4d3188abf2bddb21eee541336aff2222",
+    "materializationRunId": 37641062754,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/f9f23f610214eac2",
+    "hrRevision": "44c8a38a45800606ddb7db5c8ab902324bd7daf588fe8653165fd5e1b7e1a285",
+    "production": false,
+    "findings": {
+      "VRM-261": {
+        "classification": "FUNCTIONAL_DEFECT",
+        "title": "Reservation action remains enabled when shopper has zero eligible branches",
+        "owner": [
+          "app/modules/reservas.js"
+        ],
+        "state": "OWNER_PROVEN_SOURCE_FIX_REQUIRED"
+      },
+      "VRM-262": {
+        "classification": "FUNCTIONAL_DEFECT",
+        "title": "Mis Beneficios receipt download control is rendered without an action owner",
+        "owner": [
+          "app/modules/beneficios.js"
+        ],
+        "state": "OWNER_PROVEN_SOURCE_FIX_REQUIRED"
+      },
+      "VRM-263": {
+        "classification": "PERSISTENCE_FAILURE",
+        "title": "Shopper support tickets are browser-memory only and disappear after reload",
+        "owner": [
+          "app/modules/soporte.js",
+          "app/core/backend-bulletins.js"
+        ],
+        "state": "OWNER_PROVEN_SOURCE_FIX_REQUIRED"
+      },
+      "VRM-264": {
+        "classification": "PERSISTENCE_FAILURE",
+        "title": "Novedades read receipts use browser localStorage instead of durable bulletinReads",
+        "owner": [
+          "app/modules/novedades.js",
+          "app/core/backend-bulletins.js"
+        ],
+        "state": "OWNER_PROVEN_SOURCE_FIX_REQUIRED"
+      }
+    }
+  }
 }

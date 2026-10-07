@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
+  "status": "HOLD_I3_VRM261_VRM264_SOURCE_FIX_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "b7b8978cda791deea38316e34e6a2dd93e5c6137",
   "productTreeAuthority": "9985bfac4d3188abf2bddb21eee541336aff2222",
   "predecessorProductSourceSha": "9dee84dd31a0eff2cfa2de9ed0313af75e02769a",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V302_2026-10-07.json",
-  "findingsLedgerExpectedGitBlob": "82d976f8a4e0eec054f0487a0a8613b4fe8b3f65",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V17.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V303_2026-10-07.json",
+  "findingsLedgerExpectedGitBlob": "23ba062256bd0a66fa9c2b0a7f586c4271388b22",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V18.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "FULL_ACTION_E2E_SHOPPER_DIAGNOSTIC",
-  "nextFindingId": "VRM-261",
+  "activeBlocker": "VRM261_VRM264_EXACT_OWNER_CORRECTION",
+  "nextFindingId": "VRM-265",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN_SHOPPER_12_OF_12_DEEP_ACTION_DIAGNOSTIC_ON_SAME_ARTIFACT",
+  "exactNextAction": "FIX_ONLY_VRM261_VRM264_PROVEN_OWNERS_THEN_SOURCE_PROOF",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -315,7 +315,7 @@
   },
   "technicalClosureReceipt": "CXORBIA_I3_TERMINAL_TECHNICAL_READY_2026-09-25.json",
   "i4": {
-    "status": "BLOCKED_PENDING_VRM168_SAME_DEV_LIVE_REPROOF",
+    "status": "BLOCKED_VRM261_VRM264_AND_HUMAN_TINYFISH_AUTH_RESTORE",
     "productionAuthorization": false,
     "authorized": false,
     "production": "DO_NOT_TOUCH"
@@ -2628,7 +2628,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "9ad83d8dbcf9d696364eeecd85da0c01c8f302ca",
+  "moduleTruthExpectedGitBlob": "d4d265771398886d82094f1ae21ab5cff458a257",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -5354,6 +5354,37 @@
     "expectedGitBlob": "802592105641a85c6a6521fb6abcfc7bbc9d04d3",
     "state": "ACTION_E2E_PENDING",
     "benefitsIncluded": true,
+    "production": false
+  },
+  "fullModuleActionCoveragePath": "CXORBIA_I3_FULL_MODULE_ACTION_COVERAGE_2026-10-07.json",
+  "fullModuleActionCoverageExpectedGitBlob": "c1105be91053039e01c7134323adbeed9582109d",
+  "run1321DeepActionDiagnostic": {
+    "runId": 37649334166,
+    "runNumber": 1321,
+    "jobId": 112888347381,
+    "artifactId": 11495203364,
+    "artifactDigest": "sha256:a99665041162e47c0053dd672b5dcab88e462de5da5743c92a0fb7c56e9dbb4f",
+    "decision": "HOLD_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL_ACTION_FINDINGS",
+    "sourceSha": "b7b8978cda791deea38316e34e6a2dd93e5c6137",
+    "sourceTree": "9985bfac4d3188abf2bddb21eee541336aff2222",
+    "materializationRunId": 37641062754,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/f9f23f610214eac2",
+    "hrRevision": "44c8a38a45800606ddb7db5c8ab902324bd7daf588fe8653165fd5e1b7e1a285",
+    "production": false,
+    "findings": [
+      "VRM-261",
+      "VRM-262",
+      "VRM-263",
+      "VRM-264"
+    ]
+  },
+  "lastTinyFishHumanAttempt": {
+    "classification": "AUTH_FAILURE",
+    "productDefect": false,
+    "runId": "2fef6770-1abd-40d5-8f95-f3681561cfbf",
+    "profileId": "prof_67673ed0a9194322",
+    "result": "LOGIN_SCREEN_SESSION_NOT_PRESENT",
+    "consequence": "Human-like reproduction deferred; CI/source findings remain valid and product correction may proceed. Do not attribute this AUTH_FAILURE to CXOrbia product behavior.",
     "production": false
   }
 }
