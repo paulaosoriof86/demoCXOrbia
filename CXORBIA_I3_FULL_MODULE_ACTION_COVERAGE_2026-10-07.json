@@ -1,8 +1,8 @@
 {
   "schemaVersion": "cxorbia.i3.full-module-action-coverage.v1",
-  "frozenAt": "2026-10-07T19:21:01Z",
+  "frozenAt": "2026-10-07T19:50:00Z",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
-  "productSourceSha": "9f8ec0f5c1cefc3c06f2f6a4fd8b19e58e0931f3",
+  "productSourceSha": "411e1e3712e6abfd60475aef16a75aecc7399c08",
   "artifactAuthority": {
     "materializationRunId": 37672847531,
     "materializationRunNumber": 1347,
@@ -94,20 +94,20 @@
       "mireportes"
     ],
     "benefitsRequired": true,
-    "currentState": "ROUTES_12_12_PRIOR_PASS__SUPPORT_FOCAL_PASS__FINAL_SAME_ARTIFACT_SWEEP_REQUIRED"
+    "currentState": "ROUTES_12_12_RUN1350_AUTOMATED_PASS__ENTRYPOINT_VISUAL_FIX_REPROOF_REQUIRED"
   },
   "admin": {
     "routesRequired": 34,
-    "currentState": "ROUTES_34_34_PRIOR_PASS__SUPPORT_ADMIN_VISIBILITY_PASS__FINAL_SAME_ARTIFACT_SWEEP_REQUIRED"
+    "currentState": "ROUTES_34_34_RUN1350_AUTOMATED_PASS__ENTRYPOINT_VISUAL_FIX_REPROOF_REQUIRED"
   },
   "client": {
     "routesRequired": 10,
-    "currentState": "ROUTES_10_10_PRIOR_PASS__FINAL_SAME_ARTIFACT_SWEEP_REQUIRED"
+    "currentState": "ROUTES_10_10_RUN1350_AUTOMATED_PASS__VISUAL_MAPPING_DEFECT_SOURCE_FIXED_REPROOF_REQUIRED"
   },
   "noPartialHumanCheckpoint": true,
-  "nextExactAction": "RUN_ONE_FULL_SAME_ARTIFACT_LIVE_E2E_ON_RUN1347_MATERIALIZATION",
+  "nextExactAction": "RUN_ONE_CUMULATIVE_SOURCE_PROOF_FOR_VRM268_VRM269",
   "production": false,
-  "currentState": "VRM263_VRM267_FOCAL_PASS_FULL_SAME_ARTIFACT_E2E_REQUIRED",
+  "currentState": "VRM268_VRM269_SOURCE_FIXED_SOURCE_PROOF_REQUIRED",
   "run1321DeepActionDiagnostic": {
     "runId": 37649334166,
     "runNumber": 1321,
@@ -167,7 +167,7 @@
     "productDefect": false,
     "production": false
   },
-  "productTree": "c0b97289acbc0ba6600c6f3aff1a614cef9deafd",
+  "productTree": "0991894ed9396c334ca62c44626f5b6f2a5e3d14",
   "sourceAuthorityCorrection": {
     "classification": "RELEASE_COMPOSITION_FAILURE",
     "runId": 37655220726,
@@ -244,5 +244,65 @@
     },
     "hrWrites": 0,
     "production": false
+  },
+  "run1350ExhaustiveVisualAdjudication": {
+    "runId": 37674798877,
+    "runNumber": 1350,
+    "jobId": 112975516411,
+    "artifactId": 11506208306,
+    "artifactDigest": "sha256:f8bd7d38a09f3417319dbfb94df643076a1beca941d5ac7e345ff75927b91dd5",
+    "decision": "PASS_AUTOMATED_BUT_HUMAN_VISUAL_ADJUDICATION_HOLD",
+    "sourceSha": "9f8ec0f5c1cefc3c06f2f6a4fd8b19e58e0931f3",
+    "sourceTree": "c0b97289acbc0ba6600c6f3aff1a614cef9deafd",
+    "materialization": {
+      "runId": 37672847531,
+      "runNumber": 1347,
+      "artifactId": 11505468839,
+      "artifactDigest": "sha256:7297112acd3dcc8f62fd7feee79da92d5a173ff3f58bd0d016277bd9d077b6c0",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/84996d2d0d724aa9",
+      "runtimeRevision": "cxorbia-live-hr-dev-00274-wvg",
+      "runtimeDigest": "sha256:6daac07ef92478f18ce8eec4972eb590230ae9e76b827d41d4bc5edae9452854",
+      "hrRevision": "44c8a38a45800606ddb7db5c8ab902324bd7daf588fe8653165fd5e1b7e1a285"
+    },
+    "automated": {
+      "representative": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+      "exhaustive": "PASS_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL",
+      "routes": {
+        "shopper": "12/12",
+        "admin": "34/34",
+        "client": "10/10"
+      },
+      "clickCount": 34,
+      "actionFindings": [],
+      "hrCurrentVisits": 44,
+      "hrAssignedVisits": 24,
+      "hrWrites": 0,
+      "externalWrites": 0,
+      "builds": 0,
+      "deploys": 0,
+      "production": false
+    },
+    "visualFindings": [
+      "VRM-268",
+      "VRM-269"
+    ],
+    "screenshots": [
+      "clicks/full-client-client-cli_dashboard.png",
+      "clicks/full-admin-admin-dashboard.png",
+      "clicks/full-julissa-flores-shopper-misvisitas.png",
+      "clicks/full-priscila-lopez-shopper-misvisitas.png",
+      "clicks/full-paula-osorio-shopper-misvisitas.png"
+    ],
+    "production": false
+  },
+  "visualFindings": {
+    "VRM-268": {
+      "state": "SOURCE_FIXED_REPROOF_REQUIRED",
+      "affected": "Client dashboard current-period HR operations"
+    },
+    "VRM-269": {
+      "state": "SOURCE_FIXED_REPROOF_REQUIRED",
+      "affected": "all human routes"
+    }
   }
 }

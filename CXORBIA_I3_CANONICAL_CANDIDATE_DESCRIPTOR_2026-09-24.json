@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
+  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "9f8ec0f5c1cefc3c06f2f6a4fd8b19e58e0931f3",
-  "productTreeAuthority": "c0b97289acbc0ba6600c6f3aff1a614cef9deafd",
-  "predecessorProductSourceSha": "cb081c511ba90feab94fa51a2c107301249171cf",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V317_2026-10-07.json",
-  "findingsLedgerExpectedGitBlob": "8aee2b8af9c06188102ea42e4316f27e847244ef",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V27.json",
+  "productSourceSha": "411e1e3712e6abfd60475aef16a75aecc7399c08",
+  "productTreeAuthority": "0991894ed9396c334ca62c44626f5b6f2a5e3d14",
+  "predecessorProductSourceSha": "1bd4805b33c3f9b10f06581c4c36fbbc0b3e0a04",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V318_2026-10-07.json",
+  "findingsLedgerExpectedGitBlob": "026b1d8e6cdc9f2a0da852478df20bd43affe27e",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V28.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "SINGLE_EXHAUSTIVE_SAME_ARTIFACT_FUNCTIONAL_VISUAL_CERTIFICATION",
-  "nextFindingId": "VRM-268",
+  "activeBlocker": "VRM268_VRM269_SOURCE_PROOF",
+  "nextFindingId": "VRM-270",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN_ONE_FULL_SAME_ARTIFACT_LIVE_E2E_ON_RUN1347_MATERIALIZATION",
+  "exactNextAction": "RUN_ONE_CUMULATIVE_SOURCE_PROOF_FOR_VRM268_VRM269",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -42,21 +42,32 @@
     "state": "VRM214_FOUR_IDENTITY_MIRAFLORES_READ_ONLY_REQUIRED"
   },
   "lastSourceFix": {
-    "observedAt": "2026-10-07T19:15:10Z",
-    "sourceSha": "9f8ec0f5c1cefc3c06f2f6a4fd8b19e58e0931f3",
-    "sourceTree": "c0b97289acbc0ba6600c6f3aff1a614cef9deafd",
-    "predecessorSha": "cb081c511ba90feab94fa51a2c107301249171cf",
-    "classification": "PERSISTENCE_FAILURE",
+    "observedAt": "2026-10-07T19:50:00Z",
+    "sourceSha": "411e1e3712e6abfd60475aef16a75aecc7399c08",
+    "sourceTree": "0991894ed9396c334ca62c44626f5b6f2a5e3d14",
+    "predecessorSha": "1bd4805b33c3f9b10f06581c4c36fbbc0b3e0a04",
+    "classification": "MAPPING_FAILURE_AND_RELEASE_COMPOSITION_FAILURE",
     "findingIds": [
-      "VRM-263",
-      "VRM-267"
+      "VRM-268",
+      "VRM-269"
     ],
     "productFilesChanged": [
-      "app/core/backend-bulletins.js",
-      "firestore.rules"
+      "app/core/cliente-data.js",
+      "app/modules/cliente.js",
+      "app/index-backend-dev.html"
     ],
-    "behavior": "query and authorize provider-persisted exact scalar requester identities",
-    "sourceContractTest": "backend/runtime/hr-live-service/test/cxorbia-vrm261-264-source-contract.test.mjs",
+    "behavior": "restore exact period/project client operations and remove visible technical entrypoint token",
+    "sourceContractTest": "backend/runtime/hr-live-service/test/cxorbia-vrm268-269-source-contract.test.mjs",
+    "localSourceProof": {
+      "tests": 3,
+      "pass": 3,
+      "fail": 0,
+      "relatedRegression": {
+        "tests": 38,
+        "pass": 38,
+        "fail": 0
+      }
+    },
     "production": false
   },
   "preterminalRequest": {
@@ -921,7 +932,16 @@
     "hrWrites": 0,
     "production": false
   },
-  "pendingMaterialization": null,
+  "pendingMaterialization": {
+    "sourceSha": "411e1e3712e6abfd60475aef16a75aecc7399c08",
+    "sourceTree": "0991894ed9396c334ca62c44626f5b6f2a5e3d14",
+    "layer": "HOSTING_ONLY_DEV",
+    "buildsAllowed": 0,
+    "runtimeDeploysAllowed": 0,
+    "hostingDeploysAllowed": 1,
+    "rulesDeploysAllowed": 0,
+    "production": false
+  },
   "lastVrm080Proof": {
     "runId": 36333245670,
     "runNumber": 525,
@@ -5751,6 +5771,56 @@
     "duplicateCount": 1,
     "cleanupRemaining": 0,
     "hrWrites": 0,
+    "production": false
+  },
+  "run1350ExhaustiveVisualAdjudication": {
+    "runId": 37674798877,
+    "runNumber": 1350,
+    "jobId": 112975516411,
+    "artifactId": 11506208306,
+    "artifactDigest": "sha256:f8bd7d38a09f3417319dbfb94df643076a1beca941d5ac7e345ff75927b91dd5",
+    "decision": "PASS_AUTOMATED_BUT_HUMAN_VISUAL_ADJUDICATION_HOLD",
+    "sourceSha": "9f8ec0f5c1cefc3c06f2f6a4fd8b19e58e0931f3",
+    "sourceTree": "c0b97289acbc0ba6600c6f3aff1a614cef9deafd",
+    "materialization": {
+      "runId": 37672847531,
+      "runNumber": 1347,
+      "artifactId": 11505468839,
+      "artifactDigest": "sha256:7297112acd3dcc8f62fd7feee79da92d5a173ff3f58bd0d016277bd9d077b6c0",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/84996d2d0d724aa9",
+      "runtimeRevision": "cxorbia-live-hr-dev-00274-wvg",
+      "runtimeDigest": "sha256:6daac07ef92478f18ce8eec4972eb590230ae9e76b827d41d4bc5edae9452854",
+      "hrRevision": "44c8a38a45800606ddb7db5c8ab902324bd7daf588fe8653165fd5e1b7e1a285"
+    },
+    "automated": {
+      "representative": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+      "exhaustive": "PASS_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL",
+      "routes": {
+        "shopper": "12/12",
+        "admin": "34/34",
+        "client": "10/10"
+      },
+      "clickCount": 34,
+      "actionFindings": [],
+      "hrCurrentVisits": 44,
+      "hrAssignedVisits": 24,
+      "hrWrites": 0,
+      "externalWrites": 0,
+      "builds": 0,
+      "deploys": 0,
+      "production": false
+    },
+    "visualFindings": [
+      "VRM-268",
+      "VRM-269"
+    ],
+    "screenshots": [
+      "clicks/full-client-client-cli_dashboard.png",
+      "clicks/full-admin-admin-dashboard.png",
+      "clicks/full-julissa-flores-shopper-misvisitas.png",
+      "clicks/full-priscila-lopez-shopper-misvisitas.png",
+      "clicks/full-paula-osorio-shopper-misvisitas.png"
+    ],
     "production": false
   }
 }
