@@ -66,7 +66,31 @@ window.CX = window.CX || {};
     if(explicit) return explicit;
     const periodKey = periodKeyOf(visit,item);
     const policy = periodPolicies[periodKey];
-    return policy && policy.paymentConfirmed === true ? policy : null;
+    if(policy && policy.paymentConfirmed === true) return policy;
+    const cut=paymentHistory.historicalCut||{},from=String(cut.paidFromPeriodKey||''),through=String(cut.paidThroughPeriodKey||'');
+    if(periodKey&&from&&through&&periodKey>=from&&periodKey<=through){
+      const base=cut.throughJuly||{};
+      return Object.assign({},base,{
+        periodKey,
+        paymentState:'payment_confirmed',
+        paymentConfirmed:true,
+        paymentSourceRef:'recovery-lock:phase-a-completion:historical-cut:'+periodKey,
+        auditRef:'CXORBIA_I3_PHASE_A_COMPLETION_EXECUTION_LOCK_2026-10-06',
+        historicalPaymentGroupId:'hist_tya_cinepolis_frozen_cut_through_2026-07',
+        sourceSafe:true,immutable:true,executionAllowed:false
+      });
+    }
+    const aug=cut.august||{};
+    if(periodKey&&String(aug.periodKey||'')===periodKey&&aug.paymentConfirmed===true){
+      return Object.assign({},aug,{
+        paymentState:'payment_confirmed',
+        paymentSourceRef:'recovery-lock:phase-a-completion:historical-cut:'+periodKey,
+        auditRef:'CXORBIA_I3_PHASE_A_COMPLETION_EXECUTION_LOCK_2026-10-06',
+        historicalPaymentGroupId:'hist_tya_cinepolis_2026-08_frozen_cut',
+        sourceSafe:true,immutable:true,executionAllowed:false
+      });
+    }
+    return null;
   }
 
   function applyHistoricalPaymentTruth(liquidation, visit, item){
@@ -132,7 +156,9 @@ window.CX = window.CX || {};
     reviewQueue:snapshot.summary && snapshot.summary.reviewQueue,
     amountReviewRequired:snapshot.summary && snapshot.summary.amountReviewRequired,
     canonicalAmountReady:snapshot.summary && snapshot.summary.canonicalAmountReady,
-    paymentConfirmedCount:paymentHistory.summary && paymentHistory.summary.confirmedPaymentVisits || 0,
+    paymentConfirmedCount:Number.isFinite(Number(paymentHistory.summary&&paymentHistory.summary.confirmedPaymentVisits))?Number(paymentHistory.summary.confirmedPaymentVisits):null,
+    paymentConfirmationScope:paymentHistory.summary&&paymentHistory.summary.confirmedPaymentScope||null,
+    historicalCut:clone(paymentHistory.historicalCut||null),
     historicalPaymentGroups:paymentHistory.historicalPaymentGroups.length,
     sourceSafe:true,
     imported:false,

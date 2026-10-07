@@ -2,7 +2,7 @@
    Generated from the exact workbook SHA-256 b8e753ad... in read-only mode.
    No shopper names, bank data, raw workbook rows or executable payment batches are included. */
 window.CX_TYA_PAYMENT_HISTORY_SOURCE_SAFE = Object.freeze({
-  schemaVersion:'1.0.0',
+  schemaVersion:'1.1.0',
   mode:'historical_source_safe',
   tenantId:'tya',
   projectId:'cinepolis',
@@ -26,6 +26,18 @@ window.CX_TYA_PAYMENT_HISTORY_SOURCE_SAFE = Object.freeze({
     juneGtFinancialRows:17,
     juneHnFinancialRows:10,
     juneOperationalVisits:44
+  },
+  historicalCut:{
+    authority:'CXORBIA_I3_PHASE_A_COMPLETION_EXECUTION_LOCK_2026-10-06',
+    authorityType:'frozen_recovery_historical_payment_cut',
+    paidFromPeriodKey:'2025-06',
+    paidThroughPeriodKey:'2026-07',
+    throughJuly:{paymentConfirmed:true,honorarioPaymentState:'paid',reimbursementPaymentState:'paid',paidAt:null,paidAtPrecision:'frozen_cut_period_confirmation',confirmationScope:'recovery_frozen_historical_cut'},
+    august:{periodKey:'2026-08',paymentConfirmed:true,honorarioPaymentState:'paid',reimbursementPaymentState:'paid',paidAt:'2026-10-02',paidAtPrecision:'frozen_cut_exact_date',confirmationScope:'recovery_frozen_historical_cut'},
+    september:{periodKey:'2026-09',mode:'explicit_items_only',inferUnlisted:false},
+    liveFrom:'2026-10-01',
+    amountsInferred:false,
+    rowIdentitiesInferred:false
   },
   periodPolicies:{
     '2026-05':{
@@ -118,16 +130,17 @@ window.CX_TYA_PAYMENT_HISTORY_SOURCE_SAFE = Object.freeze({
     }
   ],
   summary:{
-    confirmedPaymentVisits:46,
+    confirmedPaymentVisits:null,
+    confirmedPaymentVisitCountRequiresLiveJoin:true,
+    confirmedPaymentScope:'frozen_cut_2025-06_through_2026-08_plus_explicit_items',
+    paidThroughPeriodKey:'2026-07',
+    augustPaidAt:'2026-10-02',
+    septemberPolicy:'explicit_items_only_no_inference',
     mayVisits:44,
     mayPaid:44,
     mayPending:0,
     mayFinancialReviewsPreserved:2,
-    juneVisits:44,
-    junePaid:2,
-    junePending:42,
-    junePaidGt:451,
-    junePaidHn:0,
+    juneExplicitPaidRows:2,
     executableBatchesCreated:0,
     currenciesMixed:false
   }
