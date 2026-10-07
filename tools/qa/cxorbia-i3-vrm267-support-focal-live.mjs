@@ -169,7 +169,7 @@ try{
   stage('shopper_visibility',liveVisible.ok&&liveVisible.count===1,{owner:'app/core/backend-bulletins.js',readback:liveVisible});
   await page.screenshot({path:OUT+'/shopper-support-created.png',fullPage:true,animations:'disabled'}).catch(()=>{});
 
-  const replay=await page.evaluate(async spec=>{try{return await window.CX.data.createSupportTicket(spec,{ackAware:true,reason:'vrm267_focal_idempotent_replay'});}catch(error){return{thrown:true,code:error?.result?.code||null,message:String(error?.message||error),result:error?.result||null};}},{asunto:subject,detalle:detail,tipo:'Plataforma',prio:'media',de:'Julissa Flores',clientRequestId});
+  const replay=await page.evaluate(async spec=>{try{return await window.CX.data.createSupportTicket(spec,{ackAware:true,reason:'support_ticket_create'});}catch(error){return{thrown:true,code:error?.result?.code||null,message:String(error?.message||error),result:error?.result||null};}},{asunto:subject,detalle:detail,tipo:'Plataforma',prio:'media',de:'Julissa Flores',clientRequestId});
   result.idempotency.replay=replay;
   const postReplay=(await tenant.collection('bulletins').where('supportSubject','==',subject).get()).docs;
   result.idempotency.duplicateCount=postReplay.length;

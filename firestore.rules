@@ -104,7 +104,7 @@ service cloud.firestore {
 
     function bulletinTargetsCurrentUser(tenantId) {
       return tenantAllowed(tenantId) && resource.data.status == 'active' && (
-        resource.data.targetAll == true ||
+        resource.data.get('targetAll', false) == true ||
         listHasValue('targetTenants', tenantId) ||
         listHasValue('targetRoles', role()) ||
         listHasValue('targetUserIds', request.auth.uid) ||
