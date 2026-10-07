@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v298.20261007",
+  "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v298",
   "frozenAt": "2026-10-07T14:47:00Z",
   "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
@@ -17383,7 +17383,7 @@
     ],
     "findingCount": 259,
     "expectedCurrentRange": "VRM-001..VRM-259",
-    "nextFindingId": "VRM-260",
+    "nextFindingId": "VRM-261",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_B1_DEV_MATERIALIZATION_REQUIRED",
