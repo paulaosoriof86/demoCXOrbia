@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.full-module-action-coverage.v1",
-  "frozenAt": "2026-10-07T19:55:00Z",
+  "frozenAt": "2026-10-07T19:59:00Z",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
   "productSourceSha": "411e1e3712e6abfd60475aef16a75aecc7399c08",
   "artifactAuthority": {
@@ -105,9 +105,9 @@
     "currentState": "ROUTES_10_10_RUN1350_AUTOMATED_PASS__VISUAL_MAPPING_DEFECT_SOURCE_FIXED_REPROOF_REQUIRED"
   },
   "noPartialHumanCheckpoint": true,
-  "nextExactAction": "RUN_ONE_HOSTING_ONLY_DEV_MATERIALIZATION_FOR_VRM268_VRM269",
+  "nextExactAction": "RETRY_ONE_HOSTING_ONLY_DEV_MATERIALIZATION_WITH_COMPLETE_CHANGED_ASSET_SET",
   "production": false,
-  "currentState": "VRM268_VRM269_SOURCE_PROOF_PASS_HOSTING_ONLY_MATERIALIZATION_REQUIRED",
+  "currentState": "VRM270_CONTROL_FIX_RETRY_HOSTING_ONLY_MATERIALIZATION_REQUIRED",
   "run1321DeepActionDiagnostic": {
     "runId": 37649334166,
     "runNumber": 1321,
@@ -330,6 +330,34 @@
       "fail": 0
     },
     "deploys": 0,
+    "production": false
+  },
+  "run1355MaterializationAdjudication": {
+    "runId": 37678228587,
+    "runNumber": 1355,
+    "jobId": 112987250483,
+    "artifactId": 11508685923,
+    "artifactDigest": "sha256:ac20ac53433fe55f49e6e6e692f52f06959fc3ed87267f3afe7d8c567d88266f",
+    "decision": "FALSE_PASS_CONTROL_ASSET_SET_INCOMPLETE",
+    "sourceSha": "411e1e3712e6abfd60475aef16a75aecc7399c08",
+    "sourceTree": "0991894ed9396c334ca62c44626f5b6f2a5e3d14",
+    "reported": {
+      "builds": 0,
+      "runtimeDeploys": 0,
+      "hostingDeploys": 0,
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/84996d2d0d724aa9",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791400510134000",
+      "runtimeRevision": "cxorbia-live-hr-dev-00274-wvg",
+      "runtimeDigest": "sha256:6daac07ef92478f18ce8eec4972eb590230ae9e76b827d41d4bc5edae9452854",
+      "hrRevision": "44c8a38a45800606ddb7db5c8ab902324bd7daf588fe8653165fd5e1b7e1a285"
+    },
+    "firstBreak": {
+      "stage": "hosting_byte_scope",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "owner": ".github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh",
+      "code": "CHANGED_FRONTEND_ASSETS_NOT_IN_ASSETS_SET"
+    },
+    "productChanged": false,
     "production": false
   }
 }

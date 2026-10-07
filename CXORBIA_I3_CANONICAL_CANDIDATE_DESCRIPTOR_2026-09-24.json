@@ -7,14 +7,14 @@
   "productSourceSha": "411e1e3712e6abfd60475aef16a75aecc7399c08",
   "productTreeAuthority": "0991894ed9396c334ca62c44626f5b6f2a5e3d14",
   "predecessorProductSourceSha": "1bd4805b33c3f9b10f06581c4c36fbbc0b3e0a04",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V319_2026-10-07.json",
-  "findingsLedgerExpectedGitBlob": "65550a824b1f36f85bfafa8460061464660e88b7",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V29.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V320_2026-10-07.json",
+  "findingsLedgerExpectedGitBlob": "5615fae793dbf14187606f4153354a6980cff815",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V30.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM268_VRM269_HOSTING_ONLY_DEV_MATERIALIZATION",
-  "nextFindingId": "VRM-270",
+  "activeBlocker": "VRM270_CONTROL_ASSET_SET_FIXED_RETRY_HOSTING_ONLY_MATERIALIZATION",
+  "nextFindingId": "VRM-271",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN_ONE_HOSTING_ONLY_DEV_MATERIALIZATION_FOR_VRM268_VRM269",
+  "exactNextAction": "RETRY_ONE_HOSTING_ONLY_DEV_MATERIALIZATION_WITH_COMPLETE_CHANGED_ASSET_SET",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -5848,6 +5848,34 @@
       "fail": 0
     },
     "deploys": 0,
+    "production": false
+  },
+  "run1355MaterializationAdjudication": {
+    "runId": 37678228587,
+    "runNumber": 1355,
+    "jobId": 112987250483,
+    "artifactId": 11508685923,
+    "artifactDigest": "sha256:ac20ac53433fe55f49e6e6e692f52f06959fc3ed87267f3afe7d8c567d88266f",
+    "decision": "FALSE_PASS_CONTROL_ASSET_SET_INCOMPLETE",
+    "sourceSha": "411e1e3712e6abfd60475aef16a75aecc7399c08",
+    "sourceTree": "0991894ed9396c334ca62c44626f5b6f2a5e3d14",
+    "reported": {
+      "builds": 0,
+      "runtimeDeploys": 0,
+      "hostingDeploys": 0,
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/84996d2d0d724aa9",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791400510134000",
+      "runtimeRevision": "cxorbia-live-hr-dev-00274-wvg",
+      "runtimeDigest": "sha256:6daac07ef92478f18ce8eec4972eb590230ae9e76b827d41d4bc5edae9452854",
+      "hrRevision": "44c8a38a45800606ddb7db5c8ab902324bd7daf588fe8653165fd5e1b7e1a285"
+    },
+    "firstBreak": {
+      "stage": "hosting_byte_scope",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "owner": ".github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh",
+      "code": "CHANGED_FRONTEND_ASSETS_NOT_IN_ASSETS_SET"
+    },
+    "productChanged": false,
     "production": false
   }
 }
