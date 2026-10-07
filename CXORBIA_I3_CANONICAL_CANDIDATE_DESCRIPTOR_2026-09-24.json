@@ -4,16 +4,16 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "ac730601bb319e50dc2c1dd7166b8d195f6747d4",
-  "productTreeAuthority": "eee84362a3b93e6814d4ca3154da6737bb24cf3d",
-  "predecessorProductSourceSha": "1b668d32341756fa8f621a8e22d1b0ef1c3884ab",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V313_2026-10-07.json",
-  "findingsLedgerExpectedGitBlob": "b6a8f705d2234d71fad65f33e1012fa6584f68e0",
+  "productSourceSha": "921de22899ad8311c8b307287605dbd04172899b",
+  "productTreeAuthority": "030a012d66be2776e71a50da52552e92ac7a134e",
+  "predecessorProductSourceSha": "ac730601bb319e50dc2c1dd7166b8d195f6747d4",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V314_2026-10-07.json",
+  "findingsLedgerExpectedGitBlob": "05f1ef053525e44702e8227be77117275fb1e2af",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V26.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM267_RULES_ONLY_DEV_MATERIALIZATION_AND_FOCAL_REPROOF",
+  "activeBlocker": "VRM267_EXACT_TARGET_RULES_MATERIALIZATION_AND_FOCAL_REPROOF",
   "nextFindingId": "VRM-268",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "DEPLOY_FIRESTORE_RULES_ONLY_AND_RUN_SINGLE_VRM267_FOCAL_ON_UNCHANGED_RUN1333_RUNTIME_HOSTING",
+  "exactNextAction": "DEPLOY_EXACT_TARGET_FIRESTORE_RULES_ONLY_AND_RERUN_SINGLE_VRM267_FOCAL",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -484,7 +484,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "eee84362a3b93e6814d4ca3154da6737bb24cf3d",
+  "productSourceTree": "030a012d66be2776e71a50da52552e92ac7a134e",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -915,8 +915,8 @@
     "production": false
   },
   "pendingMaterialization": {
-    "sourceSha": "ac730601bb319e50dc2c1dd7166b8d195f6747d4",
-    "sourceTree": "eee84362a3b93e6814d4ca3154da6737bb24cf3d",
+    "sourceSha": "921de22899ad8311c8b307287605dbd04172899b",
+    "sourceTree": "030a012d66be2776e71a50da52552e92ac7a134e",
     "layer": "firestore.rules",
     "builds": 0,
     "runtimeDeploys": 0,
@@ -3572,9 +3572,9 @@
   "shopperIdentityGovernanceLockPath": "CXORBIA_I3_SHOPPER_IDENTITY_GOVERNANCE_LOCK_2026-10-04.json",
   "queuedBlocker": "HOLD_VRM249_DEV_MATERIALIZATION_REQUIRED",
   "currentSourceProof": {
-    "decision": "PASS_VRM267_RULE_GAP_SOURCE_PROOF",
-    "sourceSha": "ac730601bb319e50dc2c1dd7166b8d195f6747d4",
-    "sourceTree": "eee84362a3b93e6814d4ca3154da6737bb24cf3d",
+    "decision": "PASS_VRM267_EXACT_TARGET_RULES_SOURCE_PROOF",
+    "sourceSha": "921de22899ad8311c8b307287605dbd04172899b",
+    "sourceTree": "030a012d66be2776e71a50da52552e92ac7a134e",
     "tests": 4,
     "pass": 4,
     "fail": 0,
@@ -5488,9 +5488,9 @@
     "production": false
   },
   "vrm267SourceProof": {
-    "decision": "PASS_VRM267_RULE_GAP_SOURCE_PROOF",
-    "sourceSha": "ac730601bb319e50dc2c1dd7166b8d195f6747d4",
-    "sourceTree": "eee84362a3b93e6814d4ca3154da6737bb24cf3d",
+    "decision": "PASS_VRM267_EXACT_TARGET_RULES_SOURCE_PROOF",
+    "sourceSha": "921de22899ad8311c8b307287605dbd04172899b",
+    "sourceTree": "030a012d66be2776e71a50da52552e92ac7a134e",
     "tests": 4,
     "pass": 4,
     "fail": 0,
@@ -5582,6 +5582,52 @@
     },
     "durableTicketCount": 1,
     "duplicateTicketCount": 1,
+    "hrWrites": 0,
+    "production": false
+  },
+  "run1339Focal": {
+    "runId": 37669681135,
+    "runNumber": 1339,
+    "jobId": 112958009549,
+    "artifactId": 11504316564,
+    "artifactDigest": "sha256:00b07a904442d756b8ba14154a091a23837e0250d6f70689c0f30eca29a12d01",
+    "decision": "HOLD_VRM267_SUPPORT_FOCAL_LIVE",
+    "rulesRelease": "projects/cxorbia-backend-dev/releases/cloud.firestore",
+    "rulesetName": "projects/cxorbia-backend-dev/rulesets/8b6baae9-1b26-4bcf-9d8d-347a20858b19",
+    "rulesUpdateTime": "2026-10-07T18:50:13.184832Z",
+    "firstBreak": {
+      "stage": "shopper_visibility",
+      "classification": "PERSISTENCE_FAILURE",
+      "owner": "firestore.rules query authorization",
+      "code": "QUERY_CANNOT_PROVE_ACTIVE_STATUS"
+    },
+    "passed": {
+      "sourceTests": "4/4",
+      "rulesCompile": true,
+      "rulesDeploy": true,
+      "shopperAuthenticated": true,
+      "cxData": true,
+      "clientScope": true,
+      "http200": true,
+      "runtime": true,
+      "operationalProvider": true,
+      "providerAck": true,
+      "durableWrite": true,
+      "idempotentReplay": true,
+      "duplicateCountOne": true,
+      "adminVisibility": true,
+      "cleanup": true,
+      "hrUnchanged": true
+    },
+    "failed": {
+      "shopperImmediate": true,
+      "shopperReload": true,
+      "shopperFreshContext": true
+    },
+    "builds": 0,
+    "runtimeDeploys": 0,
+    "hostingDeploys": 0,
+    "firestoreRulesDeploys": 1,
     "hrWrites": 0,
     "production": false
   }
