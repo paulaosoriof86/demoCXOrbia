@@ -735,9 +735,10 @@ CX.module('liquidaciones', ({data,ui})=>{
     const isPaidConfirmed=(l)=>l.paymentState==='confirmed'||l.paymentState==='payment_confirmed'||(l.estado==='pagada'&&!!l.paymentSourceRef);
     const isPendingPaymentExact=(l)=>!isPaidConfirmed(l)&&(l.estado==='conciliada_pendiente_pago'||l.liquidationState==='reconciled_source_safe'||l.paymentState==='pending_source_confirmation');
     const reconciledPendingPayment=exactLiqAll.filter(isPendingPaymentExact);
-    const loteCandidates=exactLiqAll.filter(l=>l.estado==='validada'&&!isPendingPaymentExact(l));
+    const canRecordInternalPayment=l=>!isFinancialReview(l)&&!isPaidConfirmed(l)&&Number.isFinite(Number(l.total))&&!!_liqCur(l);
+    const loteCandidates=exactLiqAll.filter(canRecordInternalPayment);
     const paidConfirmed=all.filter(isPaidConfirmed);
-    const draft=CX.finStore.draft(p.id).filter(vid=>all.some(l=>l.visitaId===vid&&l.estado==='validada'));
+    const draft=CX.finStore.draft(p.id).filter(vid=>all.some(l=>String(l.visitaId)===String(vid)&&canRecordInternalPayment(l)));
     CX.finStore._draft[p.id]=draft; // limpia ids ya no validados
     const oblig=p.countries.map(c=>{
       const ls=all.filter(l=>l.pais===c);
@@ -756,7 +757,7 @@ CX.module('liquidaciones', ({data,ui})=>{
         <td>${_liqMoney(l,l.honorario)}</td><td>${l.reembolso?_liqMoney(l,l.reembolso):'—'}</td>
         <td style="font-weight:700;color:var(--t1)">${_liqMoney(l,l.total)}</td>
         <td style="font-size:12px">${l.fechaEstimadaPago||'—'}</td>
-        <td style="text-align:right"><button class="btn btn-ghost btn-sm" data-ledit="${l.visitaId}" title="Editar liquidación" style="padding:2px 7px">✎</button></td></tr>`;};
+        <td style="text-align:right;white-space:nowrap"><button class="btn btn-ghost btn-sm" data-ldetail="${l.visitaId}" title="Ver detalle" style="padding:2px 7px">👁</button> ${canRecordInternalPayment(l)?`<button class="btn btn-soft btn-sm" data-payone="${l.visitaId}" title="Registrar pago interno">💳 Registrar pago</button> ${inD?`<button class="btn btn-ghost btn-sm" data-rm="${l.visitaId}" style="padding:2px 7px;color:var(--red)">✕ lote</button>`:`<button class="btn btn-pr btn-sm" data-add="${l.visitaId}" style="padding:2px 8px">＋ lote</button>`}`:''}</td></tr>`;};
 
     // panel del lote en construcción (carrito)
     const draftLiqs=draft.map(vid=>all.find(l=>l.visitaId===vid)).filter(Boolean);
@@ -774,7 +775,7 @@ CX.module('liquidaciones', ({data,ui})=>{
           <div>${Object.keys(porMon).map(m=>`<span style="font-family:var(--disp);font-size:17px;font-weight:800;color:var(--green);margin-right:14px">${ui.money(m,porMon[m])}</span>`).join('')}
             ${draftPending?'<div style="font-size:11px;color:var(--red);margin-top:3px">⚠ '+draftPending+' liquidación(es) sin moneda resuelta · pago bloqueado hasta revisarlas</div>':''}
             ${multiMon?'<div style="font-size:11px;color:var(--red);margin-top:3px">⚠ Hay más de una moneda. Un lote debe ser de una sola moneda; retira las de otra moneda antes de pagar.</div>':''}</div>
-          <button class="btn btn-green btn-sm" id="payDraft" ${multiMon||draftPending?'disabled':''}>💳 Pagar lote (${draft.length})</button></div>
+          <button class="btn btn-green btn-sm" id="payDraft" ${multiMon||draftPending?'disabled':''}>💳 Registrar pago interno del lote (${draft.length})</button></div>
       `:`<div class="muted" style="font-size:12.5px;padding:6px 0">Aún no has movido liquidaciones al lote. Usa <b>▶ Mover a lote</b> en cada fila validada; aquí verás el total a pagar y podrás retirar.</div>`}
     </div>`;
 
@@ -790,6 +791,11 @@ CX.module('liquidaciones', ({data,ui})=>{
       <div data-lk="paid" style="cursor:pointer">${ui.kpi('Pagadas confirmadas',paidConfirmed.length,'g')}</div>
     </div>
 
+    <div class="flex wrap" style="gap:8px;margin-bottom:10px" data-liquidation-selection>
+      <button class="btn btn-soft btn-sm" id="liqSelectAll">Seleccionar todas las pagables (${loteCandidates.length})</button>
+      <button class="btn btn-ghost btn-sm" id="liqClearSelection">Limpiar selección</button>
+      <span class="muted" style="font-size:11px;align-self:center">Solo entran filas con fuente financiera apta, monto y moneda resueltos.</span>
+    </div>
     ${cart}
 
     <div class="card card-p" style="margin-bottom:16px">
@@ -800,14 +806,16 @@ CX.module('liquidaciones', ({data,ui})=>{
 
     <div class="card card-p">
       <div class="between" style="margin-bottom:12px"><div><div class="card-t">💸 Liquidaciones operativas</div>
-        <div style="font-size:11px;color:var(--t3)">El estado avanza solo con la visita. Mueve las validadas al lote y págalas arriba.</div></div></div>
+        <div style="font-size:11px;color:var(--t3)">Selecciona liquidaciones exactas para lote o registra una individual. El registro interno no equivale a confirmación bancaria sin una fuente externa durable.</div></div></div>
       <div class="scroll-hint" style="overflow-x:auto"><table class="tbl" style="min-width:800px"><thead><tr><th style="position:sticky;left:0;background:var(--panel);z-index:2"></th><th style="position:sticky;left:96px;background:var(--panel);z-index:2">Shopper</th><th>Sucursal</th><th>Realizada</th><th>Estado</th><th>Submit.</th><th>Honorario</th><th>Reembolso</th><th>Total</th><th>Pago est.</th><th></th></tr></thead>
       <tbody>${all.map(lrow).join('')}</tbody></table></div>
       <div style="margin-top:14px">${ui.aiBox('Cada liquidación nace del avance de la visita: realizada → pend. cuestionario → validada → en lote → pagada. Mueve al lote, revisa el total a pagar, retira lo que no entra (queda como CxP del mes) y paga: se generan los egresos automáticamente.','Liquidación sincronizada')}</div>
     </div>`;
 
-    host.querySelectorAll('[data-add]').forEach(b=>b.addEventListener('click',()=>{CX.finStore.toggleDraft(p.id,b.dataset.add);}));
-    host.querySelectorAll('[data-rm]').forEach(b=>b.addEventListener('click',()=>{CX.finStore.toggleDraft(p.id,b.dataset.rm);}));
+    host.querySelectorAll('[data-add]').forEach(b=>b.addEventListener('click',()=>{CX.finStore.toggleDraft(p.id,b.dataset.add);draw();}));
+    host.querySelectorAll('[data-rm]').forEach(b=>b.addEventListener('click',()=>{CX.finStore.toggleDraft(p.id,b.dataset.rm);draw();}));
+    host.querySelector('#liqSelectAll')?.addEventListener('click',()=>{loteCandidates.forEach(l=>{if(!CX.finStore.draft(p.id).includes(l.visitaId))CX.finStore.toggleDraft(p.id,l.visitaId);});draw();});
+    host.querySelector('#liqClearSelection')?.addEventListener('click',()=>{CX.finStore.clearDraft(p.id);draw();});
     // KPIs clickeables → listado filtrado
     const lx=host.querySelector('#liqExport');
     if(lx&&CX.reportKit){
