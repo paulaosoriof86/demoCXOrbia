@@ -63,7 +63,19 @@ async function signed(member,role){
  if(errs.length)throw new Error('FUNCTIONAL_DEFECT:CLICK_PAGEERROR:'+role+':'+JSON.stringify(errs));
  return{ctx,page,authorityReadyMs};
 }
-async function nav(page,route){await page.evaluate(r=>CX.router.nav(r,{history:false}),route);await page.waitForFunction(r=>String(CX?.session?.view||'')===r,route,{timeout:45000});await page.waitForTimeout(450);await visual(page,route);}
+async function dismissOverlays(page){
+ for(let i=0;i<4;i++){
+  const ov=page.locator('.cx-ov:visible').last();
+  if(!await ov.count())break;
+  const explicit=ov.locator('[data-x],[data-x4],[data-close],button[aria-label="Cerrar"],.cx-close').last();
+  if(await explicit.count())await explicit.click({timeout:2500}).catch(()=>{});
+  else await page.keyboard.press('Escape').catch(()=>{});
+  await page.waitForTimeout(120);
+  if(await ov.count()&&await ov.isVisible().catch(()=>false))await page.keyboard.press('Escape').catch(()=>{});
+  await page.waitForTimeout(120);
+ }
+}
+async function nav(page,route){await dismissOverlays(page);await page.evaluate(r=>CX.router.nav(r,{history:false}),route);await page.waitForFunction(r=>String(CX?.session?.view||'')===r,route,{timeout:45000});await page.waitForTimeout(450);await visual(page,route);}
 async function click(page,sel){const l=page.locator(sel).first();if(!await l.count())return false;await l.click({timeout:10000});result.clickCount++;return true;}
 
 try{
