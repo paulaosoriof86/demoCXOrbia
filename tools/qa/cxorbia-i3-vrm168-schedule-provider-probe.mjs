@@ -8,7 +8,7 @@ import {getFirestore} from 'firebase-admin/firestore';
 const E=process.env,PROJECT=E.PROJECT||'cxorbia-backend-dev',TENANT=E.TENANT_ID||'tya',PROJECT_ID=E.PROJECT_ID||'cinepolis';
 const HOST=String(E.HOSTING_URL||'https://cxorbia-backend-dev.web.app').replace(/\/$/,'');
 const PERIOD_ID=E.VRM168_PERIOD_ID||'cinepolis-2026-10',SHOPPER_ID=E.VRM168_SHOPPER_ID||'shopper_gt_1440137b73';
-const UID_HINT=String(E.VRM168_UID||'').trim(),RUN=String(E.GITHUB_RUN_ID||Date.now()),OUT=E.OUT||'.tmp/vrm168-schedule-probe';
+const UID_HINT=String(E.VRM168_UID||'').trim(),RUN=String(E.GITHUB_RUN_ID||Date.now()),OUT=E.VRM168_OUT||E.OUT||'.tmp/vrm168-schedule-probe';
 fs.mkdirSync(OUT,{recursive:true}); if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
 const auth=getAuth(),db=getFirestore(),str=v=>String(v==null?'':v).trim();
 const sha=v=>crypto.createHash('sha256').update(String(v),'utf8').digest('hex');
