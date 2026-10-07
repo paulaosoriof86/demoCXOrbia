@@ -91,7 +91,7 @@
       return{ok:true};
     }
     if(actor.role==='shopper'){
-      const allowed=new Set(['visit.state.update','visit.reschedule','visit.cancel','visit.questionnaire.submit','visit.checkin.evidence','resource.read.receipt','application.create','reservation.create','reservation.delete','shopper.update']);
+      const allowed=new Set(['visit.state.update','visit.reschedule','visit.cancel','visit.questionnaire.submit','visit.checkin.evidence','resource.read.receipt','application.create','reservation.create','reservation.delete','shopper.update','support.ticket.create']);
       if(!allowed.has(command.commandType))return{ok:false,code:'COMMAND_ROLE_DENIED'};
       const selfVisit=new Set(['visit.state.update','visit.reschedule','visit.cancel','visit.questionnaire.submit','visit.checkin.evidence','resource.read.receipt']);
       const targetShopper=selfVisit.has(command.commandType)

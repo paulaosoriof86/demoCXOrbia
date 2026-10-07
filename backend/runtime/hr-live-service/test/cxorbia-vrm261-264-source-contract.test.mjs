@@ -21,10 +21,11 @@ test('VRM262 benefits receipt has an executable truthful download',()=>{
 });
 
 test('VRM263 support uses existing operational command provider and durable readback',()=>{
-  const ui=read('app/modules/soporte.js'),boundary=read('app/adapters/cxorbia-cxdata-command-boundary-v1.js'),provider=read('backend/runtime/cxorbia-operational-command-provider-v1.mjs'),rules=read('firestore.rules');
+  const ui=read('app/modules/soporte.js'),adapter=read('app/adapters/cxorbia-command-adapter-v1.js'),boundary=read('app/adapters/cxorbia-cxdata-command-boundary-v1.js'),provider=read('backend/runtime/cxorbia-operational-command-provider-v1.mjs'),rules=read('firestore.rules');
   assert.match(ui,/CX\.data\?\.createSupportTicket/);
   assert.match(ui,/await this\.hydrate\(true\)/);
   assert.doesNotMatch(ui,/CX\.backendBulletins\.createSupportTicket/);
+  assert.match(adapter,/allowed=new Set\([^\n]*support\.ticket\.create/);
   assert.match(boundary,/support\.ticket\.create/);
   assert.match(boundary,/support\.ticket\.update/);
   assert.match(provider,/'support\.ticket\.create'/);
