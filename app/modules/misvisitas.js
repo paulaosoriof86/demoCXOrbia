@@ -69,11 +69,12 @@ CX.module('misvisitas',({data,ui})=>{
   };
   const certificationState=()=>{
     let bank=null;try{bank=CX.certStore?.bank?.(p.id,window.CX_CERT_SELECTED_ID||'main')||CX.certStore?.bank?.(p.id)||null;}catch(_){}
-    const required=!!(bank&&bank.required!==false);
-    const durable=(sid&&bank&&CX.backendCertifications?.durableCurrent)?CX.backendCertifications.durableCurrent(sid,bank):null;
+    const durable=(sid&&CX.backendCertifications?.durableCurrent)?CX.backendCertifications.durableCurrent(sid,bank):null;
     const carry=(sid&&CX.backendCertifications?.carryoverDecision)?CX.backendCertifications.carryoverDecision(shopperProfile,bank,data.currentProjectId||p.projectId||''):{eligibilityGranted:false};
-    const explicit=String(shopperProfile?.certificationStatus||'').toLowerCase()==='certificada'||shopperProfile?.certified===true;
-    return {required,done:!required||!!durable||carry?.eligibilityGranted===true||explicit,bank};
+    const explicitlyNotRequired=!!(bank&&bank.required===false);
+    const done=!!durable||carry?.eligibilityGranted===true||explicitlyNotRequired;
+    const required=!explicitlyNotRequired&&!done;
+    return {required,done,bank,durable,carry};
   };
   const routeState=v=>{
     const f=facets(v),c=contract(v),certState=certificationState();
@@ -100,7 +101,7 @@ CX.module('misvisitas',({data,ui})=>{
   const visitCard=v=>{
     const kind=kindOf(v),tone={asignada:'amber',agendada:'green',realizada:'brand'}[kind],cfg=p.cuestionario||{modo:'interna'};
     let actions='';
-    if(kind==='asignada'){const route=routeState(v),certDone=route.certState.done;actions=`<button class="btn btn-ghost btn-sm" data-doc="${v.id}">${v.instructiveReadAt?'✓ Instructivo leído':'📄 Instructivo'}</button><button class="btn btn-soft btn-sm" data-cert="${v.id}" ${v.instructiveReadAt?'':'disabled title="Primero confirma la lectura del instructivo"'}>${certDone?'✓ Certificación vigente':'🏆 Certificarme'}</button><button class="btn btn-pr btn-sm" data-sched="${v.id}" ${route.scheduleReady?'':'disabled title="Completa instructivo y certificación antes de agendar"'}>📅 Agendar</button><button class="btn btn-ghost btn-sm" data-reprog="${v.id}">🔄 Reprogramar</button>${geoBtn(v)}`;}
+    if(kind==='asignada'){const route=routeState(v),certDone=route.certState.done;actions=`<button class="btn btn-ghost btn-sm" data-doc="${v.id}">${v.instructiveReadAt?'✓ Instructivo leído':'📄 Instructivo'}</button><button class="btn btn-soft btn-sm" data-cert="${v.id}" ${v.instructiveReadAt?'':'aria-disabled="true" title="Primero confirma la lectura del instructivo"'}>${certDone?'✓ Certificación vigente':'🏆 Certificarme'}</button><button class="btn ${route.scheduleReady?'btn-pr':'btn-soft'} btn-sm" data-sched="${v.id}" ${route.scheduleReady?'':'aria-disabled="true" title="Completa instructivo y certificación antes de agendar"'}>📅 Agendar</button>${geoBtn(v)}`;}
     else if(kind==='agendada')actions=`<button class="btn btn-green btn-sm" data-done="${v.id}">✅ Marcar realizada</button><button class="btn btn-ghost btn-sm" data-doc="${v.id}">📄 Instructivo</button><button class="btn btn-ghost btn-sm" data-reprog="${v.id}">🔄 Reprogramar</button><button class="btn btn-ghost btn-sm" data-cancel="${v.id}">✕ Cancelar</button>${geoBtn(v)}`;
     else if(facets(v).questionnaire)actions=`<span class="bdg bdg-g" data-questionnaire-complete="${v.id}">✓ Cuestionario completado · pendiente de revisión/submit</span><button class="btn btn-ghost btn-sm" data-doc="${v.id}">📄 Instructivo</button>`;
     else actions=`<button class="btn btn-pr btn-sm" data-quest="${v.id}">📝 ${cfg.modo==='interna'?'Llenar cuestionario':'Abrir cuestionario'}</button><button class="btn btn-ghost btn-sm" data-doc="${v.id}">📄 Instructivo</button>`;
@@ -126,12 +127,25 @@ CX.module('misvisitas',({data,ui})=>{
   const historyHTML=()=>`${ui.ph('Mis Visitas',(p?.name||'')+' · agenda, ejecuta y da seguimiento')}${tabs()}<div class="card card-p"><div class="card-h"><div class="card-t">Historial de visitas</div><span class="muted" style="font-size:11px">submitidas, liquidadas, pagadas o canceladas</span></div>${history.length?`<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Sucursal</th><th>Escenario</th><th>Fecha</th><th>Honorario</th><th>Estado</th><th>Pago</th></tr></thead><tbody>${history.map(v=>{const vc=contract(v);const pay=!vc||vc.paymentState==='no_aplica'?'<span class="muted" style="font-size:11px">—</span>':vc.paymentState==='confirmado'?ui.bdg('Pagado (confirmado)','g'):ui.bdg('Pago pendiente de confirmación','a');return`<tr><td><b>${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad||''}</div></td><td style="font-size:12px">${data.scenarioSummaryForVisit?data.scenarioSummaryForVisit(v,p):(v.escenario||'')}</td><td style="font-size:12px">${v.realizada||v.fechaPago||v.agendada||'—'}</td><td>${ui.money(v.currency,v.honorario)}</td><td>${ui.estadoBadge(v.estado)}</td><td>${pay}</td></tr>`;}).join('')}</tbody></table></div>`:ui.empty('🗒️','Aún no tienes visitas en tu historial.')}</div>`;
 
   const find=id=>mine.find(v=>String(v.id)===String(id));
-  const draw=()=>{if(!identityOk){host.innerHTML=blockedHTML();return;}host.innerHTML=view==='historial'?historyHTML():activeHTML();host.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{view=b.dataset.view;draw();}));if(view==='activas')bindActive();};
+  const consumePendingAction=()=>{
+    const req=window.CX_PENDING_SHOPPER_VISIT_ACTION;
+    if(!req||Date.now()-Number(req.requestedAt||0)>20000)return;
+    const action=String(req.action||''),visitId=String(req.visitId||'');
+    const attr={instructive:'doc',schedule:'sched',reschedule:'reprog'}[action];
+    const target=attr?[...host.querySelectorAll('[data-'+attr+']')].find(el=>String(el.dataset[attr]||'')===visitId):null;
+    delete window.CX_PENDING_SHOPPER_VISIT_ACTION;
+    if(target)setTimeout(()=>target.click(),0);else ui.toast('La acción ya no aplica al estado actual de esta visita.','warn',3200);
+  };
+  const draw=()=>{if(!identityOk){host.innerHTML=blockedHTML();return;}host.innerHTML=view==='historial'?historyHTML():activeHTML();host.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{view=b.dataset.view;draw();}));if(view==='activas'){bindActive();consumePendingAction();}};
   const bindActive=()=>{
-    host.querySelectorAll('[data-doc]').forEach(b=>b.addEventListener('click',()=>{
+    host.querySelectorAll('[data-doc]').forEach(b=>b.addEventListener('click',async()=>{
       const v=find(b.dataset.doc);if(!v)return;
-      const resources=CX.backendResources?.list?.({projectId:data.currentProjectId,periodId:data.currentPeriodId,resourceType:'project_resource'})||[];
-      const doc=resources.find(r=>(!r.visitaId||String(r.visitaId)===String(v.id))&&/instruct|manual|protocolo/i.test(String(r.n||r.name||r.title||r.tipo||'')))||null;
+      const resourceScope={projectId:data.currentProjectId,periodId:data.currentPeriodId,resourceType:'project_resource'};
+      let resources=CX.backendResources?.list?.(resourceScope)||[];
+      let doc=resources.find(r=>(!r.visitaId||String(r.visitaId)===String(v.id))&&/instruct|manual|protocolo/i.test(String(r.n||r.name||r.title||r.tipo||'')))||null;
+      if(!doc&&typeof CX.backendResources?.load==='function'){
+        try{await CX.backendResources.load(resourceScope);resources=CX.backendResources?.list?.(resourceScope)||[];doc=resources.find(r=>(!r.visitaId||String(r.visitaId)===String(v.id))&&/instruct|manual|protocolo/i.test(String(r.n||r.name||r.title||r.tipo||'')))||null;}catch(_){/* fail closed below */}
+      }
       if(!doc){ui.toast('No hay un instructivo publicado para esta visita.','warn',3600);CX.router.nav('documentos');return;}
       const body=String(doc.body||'').trim();
       ui.modal('📄 '+safe(doc.n||doc.name||'Instructivo'),`

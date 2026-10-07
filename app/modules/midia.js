@@ -56,6 +56,12 @@ CX.module('midia', ({data,role,ui})=>{
     document.querySelectorAll('[data-nav]').forEach(b=>b.addEventListener('click',()=>CX.router.nav(b.dataset.nav)));
     document.querySelectorAll('.asgDone').forEach(b=>b.addEventListener('click',()=>{CX.automations.resolverAsignacion(b.dataset.id);CX.router.nav('midia');CX.ui&&CX.ui.toast('Asignación resuelta','ok');}));
     document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>CX.router.nav(b.dataset.go)));
+    document.querySelectorAll('[data-visit-action]').forEach(b=>b.addEventListener('click',()=>{
+      const action=String(b.dataset.visitAction||''),visitId=String(b.dataset.visitId||'');
+      if(!visitId||!['schedule','instructive','reschedule'].includes(action))return;
+      window.CX_PENDING_SHOPPER_VISIT_ACTION={action,visitId,requestedAt:Date.now()};
+      CX.router.nav('misvisitas');
+    }));
     document.querySelectorAll('[data-cgo]').forEach(b=>b.addEventListener('click',()=>CX.router.nav(b.dataset.cgo)));
     document.querySelectorAll('[data-day]').forEach(c=>c.addEventListener('click',()=>{
       const its=_cgByDay[c.dataset.day]||[];
@@ -175,20 +181,27 @@ CX.module('midia', ({data,role,ui})=>{
   const nextVisit=mine[0]||null;
   const vf=nextVisit&&data.visitFacets?data.visitFacets(nextVisit):(nextVisit?.canonicalFacets||{});
   const certBank=(()=>{try{return CX.certStore?.bank?.(p.id,window.CX_CERT_SELECTED_ID||'main')||CX.certStore?.bank?.(p.id)||null;}catch(_){return null;}})();
-  const certRequired=!!(certBank&&certBank.required!==false);
-  const certDone=!certRequired||String((data.getShopper&&data.getShopper(_mySid))?.certificationStatus||'').toLowerCase()==='certificada'||!!((_mySid&&certBank&&CX.backendCertifications?.durableCurrent)&&CX.backendCertifications.durableCurrent(_mySid,certBank));
+  const certShopper=(data.getShopper&&data.getShopper(_mySid))||data.__sessionShopperProfile||null;
+  const certDurable=(_mySid&&CX.backendCertifications?.durableCurrent)?CX.backendCertifications.durableCurrent(_mySid,certBank):null;
+  const certCarry=(_mySid&&CX.backendCertifications?.carryoverDecision)?CX.backendCertifications.carryoverDecision(certShopper,certBank,data.currentProjectId||p.projectId||''):{eligibilityGranted:false};
+  const certExplicitlyNotRequired=!!(certBank&&certBank.required===false);
+  const certDone=!!certDurable||certCarry?.eligibilityGranted===true||certExplicitlyNotRequired;
   const steps=nextVisit?[
     ['Asignación confirmada',!!vf.assigned],['Instructivo leído',!!nextVisit.instructiveReadAt],['Certificación del proyecto',certDone],['Agendamiento',!!vf.scheduled],['Visita realizada',!!vf.realized],['Cuestionario completado',!!vf.questionnaire],['Submitida',!!vf.submitted],['Pago confirmado',!!vf.paymentConfirmed]
   ]:[];
+  const scheduledDate=String(nextVisit&&(nextVisit.agendada||nextVisit.scheduledDate||nextVisit.fechaAgendada)||'').trim();
+  const shopperActionButtons=nextVisit?(vf.scheduled
+    ?`<button class="btn btn-pr btn-sm" data-visit-action="reschedule" data-visit-id="${nextVisit.id}">🔄 Reprogramar</button><button class="btn btn-ghost btn-sm" data-visit-action="instructive" data-visit-id="${nextVisit.id}">${nextVisit.instructiveReadAt?'✓ Instructivo leído':'📄 Instructivo'}</button>`
+    :`<button class="btn btn-pr btn-sm" data-visit-action="schedule" data-visit-id="${nextVisit.id}">📅 Agendar</button><button class="btn btn-ghost btn-sm" data-visit-action="instructive" data-visit-id="${nextVisit.id}">${nextVisit.instructiveReadAt?'✓ Instructivo leído':'📄 Instructivo'}</button>`):'';
   return `
     ${ui.ph('Mi Día', 'Hola, '+(_shopperDisplayName.split(' ')[0]||'Shopper')+' 👋 · '+data.programBase(p)+' · periodo '+(p.periodo||p.ronda||p.name))}
     <div class="card card-p cx-shopper-visit-card" style="margin-bottom:16px">
       <div class="between cx-visit-card-head">
-        <div><div class="cx-visit-kicker">🧭 PRÓXIMA VISITA</div>${nextVisit?`<b class="cx-visit-title">${nextVisit.sucursal}</b><div class="cx-visit-location">📍 ${nextVisit.ciudad||'Ubicación pendiente'} · ${nextVisit.escenario||'Escenario operativo'} · ${p.periodo||p.ronda||p.name}</div>`:'<b class="cx-visit-title">Sin visitas activas</b>'}</div>
-        ${nextVisit?(vf.scheduled?ui.bdg('📅 Agendada','b'):ui.bdg('🧭 Pendiente de agendar','a')):''}
+        <div><div class="cx-visit-kicker">🧭 PRÓXIMA VISITA</div>${nextVisit?`<b class="cx-visit-title">${nextVisit.sucursal}</b><div class="cx-visit-location">📍 ${nextVisit.ciudad||'Ubicación pendiente'} · ${nextVisit.escenario||'Escenario operativo'} · ${p.periodo||p.ronda||p.name}${scheduledDate?' · 📅 '+scheduledDate:''}</div>`:'<b class="cx-visit-title">Sin visitas activas</b>'}</div>
+        ${nextVisit?(vf.scheduled?ui.bdg('📅 Agendada'+(scheduledDate?' · '+scheduledDate:''),'g'):ui.bdg('🧭 Pendiente de agendar','a')):''}
       </div>
       ${nextVisit?`<div class="cx-visit-payline"><span>📆 Rango ${nextVisit.rango||'—'}</span><span>💵 ${nextVisit.honorario!=null?ui.money(nextVisit.currency,nextVisit.honorario):'Honorario pendiente de fuente'}</span>${nextVisit.combo?`<span>🍿 ${typeof nextVisit.combo==='string'?nextVisit.combo:'Combo incluido'}</span>`:''}</div>
-      <div class="flex wrap cx-visit-actions"><button class="btn btn-pr btn-sm" data-cgo="misvisitas">📅 Agendar</button><button class="btn btn-ghost btn-sm" data-cgo="misvisitas">📄 Instructivo</button><button class="btn btn-ghost btn-sm" data-cgo="misvisitas">🔄 Reprogramar</button></div>`:ui.empty('🧭','Sin visitas activas')}
+      <div class="flex wrap cx-visit-actions">${shopperActionButtons}</div>`:ui.empty('🧭','Sin visitas activas')}
     </div>
     ${nextVisit?`<div class="card card-p cx-day-progress-card" style="margin-bottom:16px">
       <div class="card-h"><div><div class="cx-day-progress-kicker">🧭 TU RUTA</div><div class="card-t">Progreso de la visita</div></div><span class="muted" style="font-size:11px">${steps.filter(x=>x[1]).length}/${steps.length} completados</span></div>
