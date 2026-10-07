@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "READY_FOR_HUMAN_VISUAL_CHECKPOINT",
+  "status": "GO",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "411e1e3712e6abfd60475aef16a75aecc7399c08",
   "productTreeAuthority": "0991894ed9396c334ca62c44626f5b6f2a5e3d14",
   "predecessorProductSourceSha": "1bd4805b33c3f9b10f06581c4c36fbbc0b3e0a04",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V322_2026-10-07.json",
-  "findingsLedgerExpectedGitBlob": "745911507003fae10ff5fb1ddba82ac827ee2b86",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V323_2026-10-07.json",
+  "findingsLedgerExpectedGitBlob": "2cd5dba439d8f8eb898a7ac338919a68fd7bbfac",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V32.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -6012,5 +6012,18 @@
       "noI4": true
     }
   },
-  "humanVisualCheckpointUrl": "https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV"
+  "humanVisualCheckpointUrl": "https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV",
+  "humanVisualCheckpointState": "READY_FOR_HUMAN_VISUAL_CHECKPOINT",
+  "run1358ControlAdjudication": {
+    "runId": 37680796799,
+    "runNumber": 1358,
+    "jobId": 112995999050,
+    "classification": "MAPPING_FAILURE",
+    "productDefect": false,
+    "cause": "Canonical shell allows GO, READY_FOR_TERMINAL_CERTIFICATION, or HOLD_*; READY_FOR_HUMAN_VISUAL_CHECKPOINT is represented by I3 technical GO plus the explicit human checkpoint fields.",
+    "canonicalAuthorityGuard": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
+    "productSourceUnchanged": true,
+    "deploys": 0,
+    "production": false
+  }
 }
