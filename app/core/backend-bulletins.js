@@ -10,6 +10,9 @@ window.CX = window.CX || {};
   const cfg = CX.BACKEND || {};
   const col = cfg.collections || {};
   let loaded = false;
+  let readSetCache = new Set();
+  let readSetUserId = '';
+  let supportTicketCache = [];
 
   function emit(name, payload){ if(CX.bus) CX.bus.emit(name, payload || {}); }
   function tenantId(){ return cfg.tenantId || 'tya'; }
@@ -118,6 +121,8 @@ window.CX = window.CX || {};
     const userId = uid();
     if(!cfg.enabled || !cfg.previewMode || !window.firebase || !firebase.apps || !firebase.apps.length || !CX.notif) return [];
     const readSet = await getReadSet(userId);
+    readSetCache = readSet;
+    readSetUserId = userId;
     const docs = await queryBulletinsForUser();
     const items = docs.map(doc=>normalize(doc, readSet));
     if(items.length){
@@ -132,9 +137,35 @@ window.CX = window.CX || {};
   async function markRead(bulletinId){
     const c = readsCol();
     const userId = uid();
-    if(!c || !bulletinId || !userId) return;
+    if(!c || !bulletinId || !userId) throw new Error('BULLETIN_READ_PROVIDER_UNAVAILABLE');
     const id = userId + '_' + bulletinId;
     await c.doc(id).set({tenantId:tenantId(), bulletinId, userId, readAt:new Date().toISOString()}, {merge:true});
+    const readback = await c.doc(id).get();
+    const data = readback.exists ? (readback.data() || {}) : null;
+    if(!data || String(data.bulletinId||'')!==String(bulletinId) || String(data.userId||'')!==String(userId)) throw new Error('BULLETIN_READ_DURABLE_READBACK_FAILED');
+    if(readSetUserId!==userId){readSetCache=new Set();readSetUserId=userId;}
+    readSetCache.add(String(bulletinId));
+    emit('novedades',{source:'firestore',bulletinId:String(bulletinId),read:true});
+    return {ok:true,status:'committed',committed:true,providerAck:true,successUiAllowed:true,bulletinId:String(bulletinId),userId:String(userId)};
+  }
+
+  function isRead(bulletinId){
+    const userId=uid();
+    return !!userId && readSetUserId===userId && readSetCache.has(String(bulletinId));
+  }
+
+  function readIds(){
+    const userId=uid();
+    return userId && readSetUserId===userId ? Array.from(readSetCache) : [];
+  }
+
+  async function refreshReads(){
+    const userId=uid();
+    if(!userId)throw new Error('BULLETIN_READ_AUTH_REQUIRED');
+    readSetCache=await getReadSet(userId);
+    readSetUserId=userId;
+    emit('novedades',{source:'firestore',readCount:readSetCache.size});
+    return {ok:true,providerAck:true,readCount:readSetCache.size};
   }
 
   async function markAllRead(items){
@@ -162,6 +193,83 @@ window.CX = window.CX || {};
     const ref = payload.id ? c.doc(payload.id) : c.doc();
     await ref.set(payload, {merge:true});
     return Object.assign({id:ref.id}, payload);
+  }
+
+  function supportNormalize(doc){
+    const d=Object.assign({id:doc.id},doc.data?doc.data():doc);
+    return {
+      id:String(d.id||''),de:d.supportRequesterName||d.createdByEmail||'Usuario',rol:d.supportRequesterRole||'shopper',
+      tipo:d.supportType||'Plataforma',asunto:d.supportSubject||d.title||'Solicitud de soporte',detalle:d.supportDetail||d.body||'',
+      estado:d.supportStatus||'abierto',prio:d.supportPriority||'media',fecha:String(d.createdAt||'').slice(0,10)||new Date().toISOString().slice(0,10),
+      nota:d.supportNote||'',responsable:d.supportOwnerName||'',requesterUserId:d.supportRequesterUserId||'',requesterShopperId:d.supportRequesterShopperId||'',
+      providerAck:true,source:'firestore'
+    };
+  }
+
+  async function querySupportDocs(){
+    const c=bulletinsCol();
+    if(!c)return [];
+    const r=role(),userId=uid(),sid=shopperId(),seen=new Map(),queries=[];
+    if(['super','admin','ops','coordinador'].includes(r))queries.push(c.where('status','==','active'));
+    else{
+      if(userId)queries.push(c.where('targetUserIds','array-contains',userId));
+      if(sid)queries.push(c.where('targetShopperIds','array-contains',sid));
+    }
+    for(const q of queries){
+      try{const snap=await q.get();snap.forEach(doc=>{const d=doc.data()||{};if(d.entityType==='support_ticket'&&(d.status||'active')==='active')seen.set(doc.id,doc);});}
+      catch(e){console.warn('[CX.backend-bulletins] Consulta de soporte omitida',e);}
+    }
+    return Array.from(seen.values());
+  }
+
+  async function listSupportTickets(){
+    const docs=await querySupportDocs();
+    supportTicketCache=docs.map(supportNormalize).sort((a,b)=>String(b.fecha).localeCompare(String(a.fecha)));
+    return supportTicketCache.map(x=>Object.assign({},x));
+  }
+
+  function cachedSupportTickets(){return supportTicketCache.map(x=>Object.assign({},x));}
+
+  async function createSupportTicket(ticket){
+    ticket=ticket||{};
+    const userId=uid(),sid=shopperId();
+    if(!userId)throw new Error('SUPPORT_AUTH_REQUIRED');
+    const idem=String(ticket.idempotencyKey||('support.ticket:'+userId+':'+Date.now()));
+    const stableId=stableBulletinId(idem);
+    const saved=await createBulletin({
+      id:stableId,idempotencyKey:idem,status:'active',type:'request',priority:ticket.prio||'media',
+      title:'Nueva solicitud de soporte',body:(ticket.asunto||'Solicitud')+(ticket.detalle?(' · '+ticket.detalle):''),
+      targetRoles:['admin'],targetUserIds:[userId],targetShopperIds:sid?[sid]:[],targetProjectIds:currentProjectId()?[currentProjectId()]:[],
+      actionRoute:'soporte',entityType:'support_ticket',entityId:stableId,operational:true,
+      supportRequesterUserId:userId,supportRequesterShopperId:sid,supportRequesterName:ticket.de||currentEmail()||'Usuario',supportRequesterRole:ticket.rol||role(),
+      supportType:ticket.tipo||'Plataforma',supportSubject:ticket.asunto||'Solicitud de soporte',supportDetail:ticket.detalle||'',
+      supportStatus:'abierto',supportPriority:ticket.prio||'media',supportNote:''
+    });
+    const c=bulletinsCol(),snap=c?await c.doc(saved.id).get():null;
+    if(!snap||!snap.exists)throw new Error('SUPPORT_TICKET_DURABLE_READBACK_FAILED');
+    const durable=supportNormalize(snap);
+    supportTicketCache=[durable,...supportTicketCache.filter(x=>x.id!==durable.id)];
+    emit('support',{source:'firestore',id:durable.id});
+    return {ok:true,status:'committed',committed:true,providerAck:true,successUiAllowed:true,entityId:durable.id,ticket:durable};
+  }
+
+  async function updateSupportTicket(id,changes){
+    const c=bulletinsCol();
+    if(!c||!id)throw new Error('SUPPORT_PROVIDER_UNAVAILABLE');
+    const ref=c.doc(String(id)),before=await ref.get();
+    if(!before.exists||(before.data()||{}).entityType!=='support_ticket')throw new Error('SUPPORT_TICKET_NOT_FOUND');
+    changes=changes||{};
+    const patch={updatedAt:new Date().toISOString()};
+    if(changes.estado)patch.supportStatus=changes.estado;
+    if(Object.prototype.hasOwnProperty.call(changes,'nota'))patch.supportNote=changes.nota||'';
+    if(Object.prototype.hasOwnProperty.call(changes,'responsable'))patch.supportOwnerName=changes.responsable||'';
+    await ref.set(patch,{merge:true});
+    const after=await ref.get();
+    if(!after.exists)throw new Error('SUPPORT_TICKET_DURABLE_READBACK_FAILED');
+    const durable=supportNormalize(after);
+    supportTicketCache=[durable,...supportTicketCache.filter(x=>x.id!==durable.id)];
+    emit('support',{source:'firestore',id:durable.id});
+    return {ok:true,status:'committed',committed:true,providerAck:true,successUiAllowed:true,entityId:durable.id,ticket:durable};
   }
 
   function patchNotifWrites(){
@@ -237,7 +345,7 @@ window.CX = window.CX || {};
     setTimeout(()=>{ if(!loaded) load().catch(()=>{}); }, 2500);
   }
 
-  CX.backendBulletins = {load, markRead, markAllRead, createBulletin, pushDurable:(n)=>CX.notif?.pushDurable?.(n)};
+  CX.backendBulletins = {load, markRead, markAllRead, isRead, readIds, refreshReads, createBulletin, listSupportTickets, cachedSupportTickets, createSupportTicket, updateSupportTicket, pushDurable:(n)=>CX.notif?.pushDurable?.(n)};
 
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
   else start();

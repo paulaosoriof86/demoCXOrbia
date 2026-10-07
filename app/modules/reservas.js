@@ -155,7 +155,7 @@ CX.module('reservas', ({data,role,ui})=>{
         ${ui.ph('Reservar Visitas', p.name+' · pide las sucursales que quieres evaluar este periodo')}
         <div class="flex wrap" style="gap:8px;margin-bottom:14px">
           <select class="sel" id="rPer" style="width:auto">${periodos().map(x=>`<option ${x===per?'selected':''}>${x}</option>`).join('')}</select>
-          <button class="btn btn-pr btn-sm" id="rNew">🙋 Solicitar sucursal</button>
+          <button class="btn btn-pr btn-sm" id="rNew" ${sucs.length?'':'disabled aria-disabled="true" title="No hay sucursales disponibles para reservar en este periodo"'}>🙋 Solicitar sucursal</button>
         </div>
         <div class="grid g3" style="margin-bottom:16px">
           <div>${ui.kpi('Mis solicitudes',mine.length,'b')}</div>
@@ -167,11 +167,12 @@ CX.module('reservas', ({data,role,ui})=>{
           ${mine.length?`<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Sucursal</th><th>Ciudad</th><th>Estado</th><th></th></tr></thead><tbody>
             ${mine.map(r=>`<tr><td><b>${r.sucursal}</b></td><td style="font-size:12px">${CX.paisFlag(r.pais)} ${r.ciudad}</td><td>${ui.bdg(ESTLBL[r.estado],ESTTONE[r.estado])}</td>
               <td style="text-align:right">${r.estado==='solicitada'?`<button class="btn btn-ghost btn-sm" data-del="${r.id}" style="color:var(--red)">Cancelar</button>`:r.estado==='cruzada'?`<button class="btn btn-soft btn-sm" data-go="${r.visitaId}">Ver en Mis Visitas →</button>`:''}</td></tr>`).join('')}
-          </tbody></table></div>`:ui.empty('🙋','Aún no has solicitado sucursales este periodo. Usa "Solicitar sucursal".')}
+          </tbody></table></div>`:ui.empty('🙋',sucs.length?'Aún no has solicitado sucursales este periodo. Usa "Solicitar sucursal".':'No hay sucursales ni visitas disponibles para reservar en este periodo.')}
           <div style="margin-top:12px">${ui.aiBox('Reserva las sucursales que quieres evaluar. El equipo confirma la asignación y, cuando publica las visitas del periodo, tu solicitud se cruza automáticamente: la visita nace ya asignada a ti sin volver a postularte.','Reserva con anticipación')}</div>
         </div>`;
       host.querySelector('#rPer').addEventListener('change',e=>{per=e.target.value;draw();});
       host.querySelector('#rNew').addEventListener('click',()=>{
+        if(!sucs.length){ui.toast('No hay sucursales disponibles para reservar en este periodo','warn');return;}
         ui.modal('Solicitar sucursal · '+per,`
           <label class="lbl">Sucursal</label>
           <select class="sel" id="rsSuc" style="margin-bottom:10px">${sucs.map(s=>`<option value="${s.id}">${s.sucursal} · ${s.ciudad}${s.pais?' · '+s.pais:''}${s.executionCut?' · '+s.executionCut:''} · Disponible</option>`).join('')}</select>

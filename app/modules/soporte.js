@@ -1,27 +1,48 @@
 /* CXOrbia · Soporte (Asistente IA + Bandeja de solicitudes) */
 CX.supportStore = CX.supportStore || {
-  _t:null,
+  _t:[],
+  _hydrated:false,
+  _hydrating:null,
   TIPOS:['Plataforma','Capacitación plataforma','Capacitación personal','Técnica','Comercial','Servicio','Otra'],
-  /* P0-2 (paquete genérico 20260711): fixtures de ejemplo — solo visibles en modo demo (guard de
-     segunda capa; el shell ya bloquea el render 100% fuera de demo). */
   seed(){
     if(!(CX.dataSource ? CX.dataSource.showFixtures() : true)) return [];
     return [
-    {id:'t1',de:'Evaluador 03',rol:'shopper',tipo:'Plataforma',asunto:'No puedo subir evidencia',estado:'abierto',prio:'alta',fecha:'2026-06-22'},
-    {id:'t2',de:'Cliente Retail',rol:'cliente',tipo:'Comercial',asunto:'Solicito propuesta para 2 marcas más',estado:'abierto',prio:'media',fecha:'2026-06-21'},
-    {id:'t3',de:'Evaluador 07',rol:'shopper',tipo:'Capacitación personal',asunto:'Dudas sobre el protocolo de tiempos',estado:'en_proceso',prio:'media',fecha:'2026-06-20'},
-    {id:'t4',de:'Coordinación HN',rol:'admin',tipo:'Técnica',asunto:'Sincronizar HR externa de Honduras',estado:'resuelto',prio:'baja',fecha:'2026-06-18'},
-  ]; },
-  list(){ if(!this._t) this._t=this.seed(); return this._t; },
-  add(t){ this.list().unshift(Object.assign({id:'t'+Date.now().toString(36),estado:'abierto',prio:'media',fecha:new Date().toISOString().slice(0,10)},t));
-    CX.notif&&CX.notif.push({to:'admin',tipo:'soporte',icon:'🆘',tono:'a',titulo:'Nueva solicitud de soporte',txt:(t.de||'')+' · '+(t.asunto||''),nav:'soporte'});
-    CX.bus&&CX.bus.emit('support'); },
-  setEstado(id,e){ const t=this.list().find(x=>x.id===id); if(t){const prev=t.estado;t.estado=e;
-    /* #173 — notificar al solicitante el cambio de estado (datos vivos, sincronía real) */
-    if(prev!==e && t.rol){ const lbl={abierto:'Abierto',en_proceso:'En proceso',resuelto:'Resuelto'}[e]||e;
-      CX.notif&&CX.notif.push({to:t.rol,tipo:'soporte',icon:'🆘',tono:e==='resuelto'?'g':'b',titulo:'Tu solicitud de soporte: '+lbl,txt:(t.asunto||'')+(t.nota?' · '+t.nota:''),nav:'soporte'});
-      if(CX.automations&&CX.automations.fire)CX.automations.fire('soporte_estado',{de:t.de,rol:t.rol,asunto:t.asunto,estado:e}); }
-    CX.bus&&CX.bus.emit('support');} },
+      {id:'t1',de:'Evaluador 03',rol:'shopper',tipo:'Plataforma',asunto:'No puedo subir evidencia',estado:'abierto',prio:'alta',fecha:'2026-06-22'},
+      {id:'t2',de:'Cliente Retail',rol:'cliente',tipo:'Comercial',asunto:'Solicito propuesta para 2 marcas más',estado:'abierto',prio:'media',fecha:'2026-06-21'},
+      {id:'t3',de:'Evaluador 07',rol:'shopper',tipo:'Capacitación personal',asunto:'Dudas sobre el protocolo de tiempos',estado:'en_proceso',prio:'media',fecha:'2026-06-20'},
+      {id:'t4',de:'Coordinación HN',rol:'admin',tipo:'Técnica',asunto:'Sincronizar HR externa de Honduras',estado:'resuelto',prio:'baja',fecha:'2026-06-18'}
+    ];
+  },
+  list(){
+    if(!this._hydrated && !this._t.length && (CX.dataSource ? CX.dataSource.showFixtures() : false))this._t=this.seed();
+    return this._t;
+  },
+  async hydrate(force=false){
+    if(this._hydrating&&!force)return this._hydrating;
+    if(!CX.backendBulletins?.listSupportTickets){
+      this._hydrated=true;
+      if(!this._t.length&&(CX.dataSource ? CX.dataSource.showFixtures() : false))this._t=this.seed();
+      return this.list();
+    }
+    this._hydrating=CX.backendBulletins.listSupportTickets().then(rows=>{this._t=Array.isArray(rows)?rows:[];this._hydrated=true;this._hydrating=null;CX.bus&&CX.bus.emit('support',{source:'firestore',hydrated:true});return this._t;}).catch(error=>{this._hydrating=null;throw error;});
+    return this._hydrating;
+  },
+  async add(t){
+    if(!CX.backendBulletins?.createSupportTicket)throw new Error('SUPPORT_PROVIDER_UNAVAILABLE');
+    const authUid=String(window.firebase?.auth?.().currentUser?.uid||CX.session?.user?.id||'user');
+    const idem='support.ticket:'+authUid+':'+Date.now()+':'+Math.random().toString(36).slice(2,8);
+    const result=await CX.backendBulletins.createSupportTicket(Object.assign({},t,{idempotencyKey:idem}));
+    if(!(result?.ok===true&&result?.providerAck===true&&result?.committed===true&&result?.successUiAllowed===true))throw new Error(result?.code||'SUPPORT_PROVIDER_ACK_REQUIRED');
+    const ticket=result.ticket;this._t=[ticket,...this._t.filter(x=>x.id!==ticket.id)];this._hydrated=true;
+    CX.bus&&CX.bus.emit('support',{source:'firestore',id:ticket.id});return result;
+  },
+  async setEstado(id,e,extra={}){
+    if(!CX.backendBulletins?.updateSupportTicket)throw new Error('SUPPORT_PROVIDER_UNAVAILABLE');
+    const result=await CX.backendBulletins.updateSupportTicket(id,{estado:e,nota:extra.nota,responsable:extra.responsable});
+    if(!(result?.ok===true&&result?.providerAck===true&&result?.committed===true&&result?.successUiAllowed===true))throw new Error(result?.code||'SUPPORT_PROVIDER_ACK_REQUIRED');
+    const ticket=result.ticket;this._t=[ticket,...this._t.filter(x=>x.id!==ticket.id)];this._hydrated=true;
+    CX.bus&&CX.bus.emit('support',{source:'firestore',id:ticket.id});return result;
+  }
 };
 
 CX.module('soporte', ({data,role,ui})=>{
@@ -91,14 +112,17 @@ CX.module('soporte', ({data,role,ui})=>{
       <div class="flex" style="justify-content:space-between"><span style="font-size:11px;color:var(--t3)">También por WhatsApp o correo desde la 🔔 campanita superior</span><button class="btn btn-pr btn-sm" id="spSend">Enviar solicitud</button></div>
     </div>`;
 
-  const wireNueva=()=>{ const b=host.querySelector('#spSend'); if(b)b.addEventListener('click',()=>{
+  const wireNueva=()=>{ const b=host.querySelector('#spSend'); if(b)b.addEventListener('click',async()=>{
     const asunto=host.querySelector('#spAsunto').value.trim(); if(!asunto){ui.toast('Escribe el asunto','warn');return;}
-    CX.supportStore.add({de:(CX.session.user&&CX.session.user.name)||'Usuario',rol:role,tipo:host.querySelector('#spTipo').value,asunto,prio:host.querySelector('#spPrio').value});
-    ui.toast('Solicitud registrada · el equipo la verá en su bandeja de soporte','ok',3200); tab='ia'; draw();
+    b.disabled=true;b.textContent='Enviando…';
+    try{
+      await CX.supportStore.add({de:(CX.session.user&&CX.session.user.name)||'Usuario',rol:role,tipo:host.querySelector('#spTipo').value,asunto,detalle:host.querySelector('#spDet').value.trim(),prio:host.querySelector('#spPrio').value});
+      ui.toast('Solicitud registrada y confirmada por el proveedor','ok',3200); tab='ia'; draw();
+    }catch(_){b.disabled=false;b.textContent='Enviar solicitud';ui.toast('No hubo ACK remoto; la solicitud no se declaró registrada','warn',4200);}
   }); };
 
   const wireBandeja=()=>{
-    host.querySelectorAll('.spEst').forEach(s=>s.addEventListener('change',()=>{CX.supportStore.setEstado(s.dataset.id,s.value);ui.toast('Estado actualizado','ok');}));
+    host.querySelectorAll('.spEst').forEach(s=>s.addEventListener('change',async()=>{s.disabled=true;try{await CX.supportStore.setEstado(s.dataset.id,s.value);ui.toast('Estado confirmado por el proveedor','ok');draw();}catch(_){s.disabled=false;ui.toast('No hubo ACK remoto; el estado no se declaró actualizado','warn');}}));
     host.querySelectorAll('.spDet').forEach(b=>b.addEventListener('click',()=>{
       const t=CX.supportStore.list().find(x=>x.id===b.dataset.id);if(!t)return;
       ui.modal('🎟️ '+t.asunto,`
@@ -117,7 +141,7 @@ CX.module('soporte', ({data,role,ui})=>{
             <button class="btn btn-soft btn-sm" id="spDetResp">📌 Asignar responsable</button>
             <button class="btn btn-pr btn-sm" id="spDetSave">Guardar</button></div></div>`,
         {onMount:(ov,close)=>{
-          ov.querySelector('#spDetSave').addEventListener('click',()=>{t.nota=ov.querySelector('#spNota').value;CX.supportStore.setEstado(t.id,ov.querySelector('#spEstDet').value);close();draw();ui.toast('Ticket actualizado','ok');});
+          ov.querySelector('#spDetSave').addEventListener('click',async()=>{const btn=ov.querySelector('#spDetSave');btn.disabled=true;try{await CX.supportStore.setEstado(t.id,ov.querySelector('#spEstDet').value,{nota:ov.querySelector('#spNota').value});close();draw();ui.toast('Ticket actualizado y confirmado por el proveedor','ok');}catch(_){btn.disabled=false;ui.toast('No hubo ACK remoto; el ticket no se declaró actualizado','warn');}});
           ov.querySelector('#spDetResp')?.addEventListener('click',()=>{
             ui.modal('📌 Asignar responsable',`
               <label class="lbl">Responsable (rol)</label>
@@ -165,5 +189,6 @@ CX.module('soporte', ({data,role,ui})=>{
 
   draw();
   CX.bus.on('support',()=>{if(tab==='bandeja')draw();});
+  setTimeout(()=>CX.supportStore.hydrate().then(()=>{if(document.body.contains(host)&&tab!=='ia')draw();}).catch(()=>ui.toast('Soporte durable no disponible; no se mostraron datos locales como verdad','warn')),0);
   return host;
 });

@@ -72,6 +72,24 @@ CX.module('beneficios', ({data,ui})=>{
     document.querySelectorAll('#benKpis [data-k]').forEach(el=>el.addEventListener('click',()=>{const d=benKp[el.dataset.k];const cu=el.dataset.cur;const arr=cu?d[1].filter(l=>(l.moneda||'—')===cu):d[1];benDrill(d[0]+(cu?(' · '+cu):''),arr);}));
     const applyFilters=()=>{const st=document.querySelector('#benStatus')?.value||'',co=document.querySelector('#benCountry')?.value||'',cu=document.querySelector('#benCurrency')?.value||'';document.querySelectorAll('#benCurrentTable tbody tr[data-ben-status]').forEach(tr=>{tr.style.display=(!st||tr.dataset.benStatus===st)&&(!co||tr.dataset.benCountry===co)&&(!cu||tr.dataset.benCurrency===cu)?'':'none';});};
     ['#benStatus','#benCountry','#benCurrency'].forEach(s=>document.querySelector(s)?.addEventListener('change',applyFilters));
+    const csvCell=(value)=>{let s=String(value==null?'':value);if(/^[=+\-@]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"';};
+    document.querySelector('#benDownloadReceipt')?.addEventListener('click',()=>{
+      if(!periodRows.length){ui.toast('No hay beneficios del periodo para descargar','warn');return;}
+      const header=['Documento','Visita','Fecha realizada','País','Moneda','Honorario','Reembolso','Total','Estado liquidación','Estado de pago','Referencia de fuente'];
+      const rows=periodRows.map(l=>{const vc=data._visitas.find(x=>x.id===l.visitaId);const contract=vc&&data.visitContract?data.visitContract(vc):null;return [
+        'Resumen de beneficios CXOrbia · no sustituye comprobante bancario',l.sucursal||l.visitaId||'',l.freal||'',l.pais||'',curOfL(l)||'',
+        Number.isFinite(Number(l.honorario))?Number(l.honorario):'',Number.isFinite(Number(l.reembolso))?Number(l.reembolso):'',Number.isFinite(Number(l.total))?Number(l.total):'',
+        CX.liq.label(l.estado)?.[0]||l.estado||'',isPaid(l)?'Pago confirmado':(paymentHumanLabel(contract&&contract.paymentState)?.[0]||'Pendiente de confirmación'),
+        l.paymentSourceRef||l.reconciliationSourceRef||''
+      ];});
+      const csv='\uFEFF'+[header,...rows].map(r=>r.map(csvCell).join(',')).join('\r\n');
+      const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+      const url=URL.createObjectURL(blob),a=document.createElement('a');
+      const safe=String((p&&p.name)||'proyecto').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+      a.href=url;a.download='cxorbia-beneficios-'+safe+'-'+String(data.currentPeriodId||'periodo')+'.csv';
+      document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+      ui.toast('Comprobante de beneficios descargado desde la verdad financiera visible','ok');
+    });
   },0);
 
   return `
@@ -103,7 +121,7 @@ CX.module('beneficios', ({data,ui})=>{
     </div>
 
     <div class="card card-p" style="margin-bottom:16px">
-      <div class="card-h"><div class="card-t">Resumen del periodo seleccionado</div><button class="btn btn-ghost btn-sm">⤓ Descargar comprobante</button></div>
+      <div class="card-h"><div class="card-t">Resumen del periodo seleccionado</div><button class="btn btn-ghost btn-sm" id="benDownloadReceipt">⤓ Descargar comprobante</button></div>
       <div class="flex wrap" style="gap:8px;margin-bottom:10px"><select class="sel" id="benStatus" style="width:auto"><option value="">Todos los estados</option><option value="paid">Pagado</option><option value="pending">Pendiente</option></select><select class="sel" id="benCountry" style="width:auto"><option value="">Todos los países</option>${[...new Set(periodRows.map(x=>x.pais).filter(Boolean))].map(x=>`<option>${x}</option>`).join('')}</select><select class="sel" id="benCurrency" style="width:auto"><option value="">Todas las monedas</option>${[...new Set(periodRows.map(curOfL).filter(Boolean))].map(x=>`<option>${x}</option>`).join('')}</select></div>
       <div class="scroll-hint" aria-label="Desliza para ver más" style="overflow-x:auto"><table class="tbl" id="benCurrentTable"><thead><tr><th>Visita</th><th>Realizada</th><th>💵 Honorario</th><th>🎁 Reembolso</th><th>Total</th><th>Estado</th><th>Pago estimado</th><th>Estado de pago</th></tr></thead>
       <tbody>${periodRows.length?periodRows.map(row).join(''):'<tr><td colspan="8">'+ui.empty('💰','Sin liquidaciones en este periodo')+'</td></tr>'}</tbody></table></div>

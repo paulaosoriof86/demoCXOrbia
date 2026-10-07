@@ -3,7 +3,7 @@
    - Todos los roles: ven el historial de novedades y confirman lectura.
    El banner de "novedad sin leer" lo dispara la campanita/topbar. */
 CX.novedades = CX.novedades || {
-  _k:'cx_novedades', _rk:'cx_novedades_read',
+  _k:'cx_novedades',
   seed(){ return [
     {id:'r_070',ver:'v7.0',fecha:'2026-07-22',tipo:'Mejora',titulo:'Operación canónica, Excel enriquecido y Efectividad con fórmula',
      cuerpo:'Visitas y Postulaciones muestran el estado con la misma lógica canónica del Dashboard (sin colapsar etapas), con exportación por revisión de fuente y reasignación segura con 3 caminos de fecha. El Excel de todos los reportes incluye ahora anchos automáticos, autofiltro y una hoja de Catálogo de columnas; la Efectividad muestra su fórmula (realizadas ÷ asignadas) y queda Pendiente de fuente si no hay asignadas, sin ceros aparentes.',roles:['admin']},
@@ -29,9 +29,14 @@ CX.novedades = CX.novedades || {
   add(n){ const a=this.list(); a.unshift(Object.assign({id:'r'+Date.now().toString(36),fecha:new Date().toISOString().slice(0,10),tipo:'Nuevo',estado:'publicado',modulo:''},n)); this.save(a); },
   forRole(role){ return this.list().filter(n=>(n.estado!=='archivado')&&(n.estado!=='borrador')&&(!n.roles||n.roles.includes(role))); },
   setEstado(id,e){ const a=this.list(); const n=a.find(x=>x.id===id); if(n)n.estado=e; this.save(a); },
-  readMap(){ try{return JSON.parse(localStorage.getItem(this._rk)||'{}');}catch(e){return {};} },
-  isRead(id){ const u=(CX.session.user&&CX.session.user.name)||'anon'; const m=this.readMap(); return !!(m[u]&&m[u][id]); },
-  markRead(id){ const u=(CX.session.user&&CX.session.user.name)||'anon'; const m=this.readMap(); m[u]=m[u]||{}; m[u][id]=new Date().toISOString(); try{localStorage.setItem(this._rk,JSON.stringify(m));}catch(e){} CX.bus&&CX.bus.emit('novedades'); },
+  readMap(){ const u=(CX.session.user&&CX.session.user.name)||'anon';const ids=CX.backendBulletins?.readIds?.()||[];return {[u]:Object.fromEntries(ids.map(id=>[id,true]))}; },
+  isRead(id){ return CX.backendBulletins?.isRead?.(id)===true; },
+  async markRead(id){
+    if(!CX.backendBulletins?.markRead)throw new Error('BULLETIN_READ_PROVIDER_UNAVAILABLE');
+    const result=await CX.backendBulletins.markRead(id);
+    if(!(result?.ok===true&&result?.providerAck===true&&result?.committed===true&&result?.successUiAllowed===true))throw new Error(result?.code||'BULLETIN_READ_PROVIDER_ACK_REQUIRED');
+    CX.bus&&CX.bus.emit('novedades',{source:'firestore',id});return result;
+  },
   unread(role){ return this.forRole(role).filter(n=>!this.isRead(n.id)).length; },
 };
 
@@ -57,11 +62,11 @@ CX.module('novedades', ({role,ui})=>{
               <span style="font-size:11px;color:var(--t3)">${isAdmin?(n.roles||['todos']).join(' · '):'Publicado para ti'}</span>
               ${leido?'<span class="bdg bdg-g">✓ Leído</span>':`<button class="btn btn-soft btn-sm novRead" data-id="${n.id}">Marcar como leído</button>`}
             </div>
-            ${isAdmin?`<div style="margin-top:8px;border-top:1px solid var(--border-2);padding-top:6px" class="between"><span style="font-size:11px;color:var(--t3)">📊 Lecturas: ${Object.values(CX.novedades.readMap()).filter(u=>u[n.id]).length} · estado: ${n.estado||'publicado'} · ${n.modulo||'general'}</span><button class="btn btn-ghost btn-sm novArch" data-id="${n.id}" style="font-size:10.5px">${n.estado==='archivado'?'Republicar':'Archivar'}</button></div>`:''}
+            ${isAdmin?`<div style="margin-top:8px;border-top:1px solid var(--border-2);padding-top:6px" class="between"><span style="font-size:11px;color:var(--t3)">Lectura propia: ${leido?'confirmada':'pendiente'} · estado: ${n.estado||'publicado'} · ${n.modulo||'general'}</span><button class="btn btn-ghost btn-sm novArch" data-id="${n.id}" style="font-size:10.5px">${n.estado==='archivado'?'Republicar':'Archivar'}</button></div>`:''}
           </div>`;}).join('')||ui.empty('📣','Sin novedades por ahora.')}
       </div>`;
 
-    host.querySelectorAll('.novRead').forEach(b=>b.addEventListener('click',()=>{CX.novedades.markRead(b.dataset.id);draw();ui.toast('Marcado como leído','ok');}));
+    host.querySelectorAll('.novRead').forEach(b=>b.addEventListener('click',async()=>{b.disabled=true;try{await CX.novedades.markRead(b.dataset.id);draw();ui.toast('Lectura confirmada y guardada','ok');}catch(_){b.disabled=false;ui.toast('No hubo ACK remoto; la lectura no se declaró guardada','warn');}}));
     host.querySelectorAll('.novArch').forEach(b=>b.addEventListener('click',()=>{const n=CX.novedades.list().find(x=>x.id===b.dataset.id);CX.novedades.setEstado(b.dataset.id,n&&n.estado==='archivado'?'publicado':'archivado');draw();ui.toast('Estado actualizado','ok');}));
     host.querySelector('#novNew')?.addEventListener('click',()=>ui.modal('＋ Publicar novedad',`
       <div class="grid g2" style="gap:8px;margin-bottom:8px"><div><label class="lbl">Tipo</label><select class="sel" id="nvT"><option>Nuevo</option><option>Mejora</option><option>Aviso</option><option>Corrección</option></select></div><div><label class="lbl">Versión</label><input class="inp" id="nvV" placeholder="v6.7"></div></div>
@@ -85,5 +90,7 @@ CX.module('novedades', ({role,ui})=>{
   };
   draw();
   CX.bus.on('novedades',()=>draw());
+  CX.bus.on('notif',()=>draw());
+  CX.backendBulletins?.refreshReads?.().catch(()=>{});
   return host;
 });
