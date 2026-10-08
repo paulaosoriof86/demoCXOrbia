@@ -265,15 +265,46 @@ export function createFinanceCommandProvider({auth,db,policy,hrSnapshot=null,hrR
               const paid=status==='paid';
               // The current visit AND previous exact reconciliation must both agree before any write.
               const priorBatchId=str(v.reconciliationBatchId),priorPaymentStatus=str(v.historicalPaymentStatus).toLowerCase();
-              let priorRecRef=null;
+              let priorRecRef=null,verifiedIdentityLinkId=null,priorReconciliationShopperId=null;
               if(priorBatchId&&priorBatchId!==batchId){
                 if(!supersession||str(supersession.priorBatchId)!==priorBatchId)throw new Error('FINANCE_HISTORICAL_SUPERSESSION_REQUIRED:'+id);
                 if(priorPaymentStatus!=='pending'||v.paymentConfirmed===true||v.historicalReconciliationConfirmed===true)throw new Error('FINANCE_HISTORICAL_PRIOR_PAYMENT_NOT_PENDING:'+id);
                 priorRecRef=tenant.collection('paymentReconciliations').doc(sha(command.tenantId+'\0'+command.projectId+'\0'+id+'\0'+priorBatchId).slice(0,40));
                 const previousSnap=await tx.get(priorRecRef),previous=previousSnap.exists?(previousSnap.data()||{}):null;
                 if(!previous)throw new Error('FINANCE_HISTORICAL_SUPERSESSION_PRIOR_RECORD_MISSING:'+id);
+                priorReconciliationShopperId=str(previous.shopperId);
+                const currentShopperId=str(authoritative.shopperId);
+                if(priorReconciliationShopperId!==currentShopperId){
+                  // Cross-identity supersession is denied unless an exact provider/adjudicated
+                  // same-human link is read and validated within this transaction.
+                  const linkId=str(supersession?.identityLinkRefsByVisitId?.[id]);
+                  if(!/^irl_[a-zA-Z0-9_-]{8,96}$/.test(linkId))throw new Error('FINANCE_HISTORICAL_EXACT_IDENTITY_LINK_REQUIRED:'+id);
+                  const linkSnap=await tx.get(tenant.collection('shopperIdentityLinks').doc(linkId));
+                  const link=linkSnap.exists?(linkSnap.data()||{}):null;
+                  const state=str(link?.status||link?.state).toLowerCase(),authority=str(link?.authorityType||link?.authority?.type).toLowerCase();
+                  const scope=str(link?.projectScope||link?.scope?.projectId||link?.projectId||'*');
+                  const linkTenant=str(link?.tenantId||link?.scope?.tenantId);
+                  const system=str(link?.sourceSystem||link?.sourceNamespace||link?.sourceType||link?.sourceIdentity?.sourceSystem).toLowerCase();
+                  const reference=str(link?.authorityRef||link?.authority?.evidenceRef||link?.authority?.adjudicationId||link?.authority?.providerRef||link?.providerAckRef||link?.adjudicationId||link?.commandId||link?.idempotencyKey);
+                  const tokens=new Set(uniq([
+                    link?.canonicalShopperId,link?.canonicalId,link?.shopperId,link?.profileId,
+                    link?.sourceIdentityKey,link?.sourceSubjectId,link?.sourceId,link?.sourceKey,
+                    link?.legacyShopperId,link?.externalShopperId,
+                    ...arr(link?.sourceAliases),...arr(link?.sourceIdentityAliases),
+                    ...arr(link?.identityAliases),...arr(link?.exactAliases),...arr(link?.aliases)
+                  ]));
+                  if(!link||linkTenant!==str(command.tenantId)||!['*','tenant',str(command.projectId)].includes(scope)
+                      ||!['active','confirmed','approved','materialized'].includes(state)
+                      ||!['provider_exact','tenant_adjudication','migrated_exact'].includes(authority)
+                      ||!reference||!system.includes('hr')||link?.sourceSafe===false
+                      ||link?.periodIndependent!==true||link?.periodKey||link?.periodId||link?.periodScope
+                      ||!str(link?.canonicalShopperId||link?.canonicalId||link?.shopperId||link?.profileId)
+                      ||!tokens.has(priorReconciliationShopperId)||!tokens.has(currentShopperId))
+                    throw new Error('FINANCE_HISTORICAL_EXACT_IDENTITY_AUTHORITY_CONFLICT:'+id);
+                  verifiedIdentityLinkId=linkId;
+                }
                 if(str(previous.tenantId)!==str(command.tenantId)||str(previous.projectId)!==str(command.projectId)||str(previous.periodId)!==str(command.periodId)
-                    ||str(previous.visitId)!==id||str(previous.durableVisitId)!==str(resolved.durableVisitId)||str(previous.shopperId)!==str(authoritative.shopperId)
+                    ||str(previous.visitId)!==id||str(previous.durableVisitId)!==str(resolved.durableVisitId)
                     ||str(previous.country)!==str(amount.country)||str(previous.currency)!==str(amount.currency)
                     ||str(previous.reconciliationBatchId)!==priorBatchId||str(previous.paymentStatus)!=='pending'
                     ||str(previous.source)!=='historical_reconciliation'||previous.paymentConfirmed===true
@@ -286,15 +317,16 @@ export function createFinanceCommandProvider({auth,db,policy,hrSnapshot=null,hrR
               }
               const reconciliation={tenantId:command.tenantId,projectId:command.projectId,shopperId:str(authoritative.shopperId),visitId:id,durableVisitId:resolved.durableVisitId,durableVisitAuthority:resolved.authority,hrRowId:str(authoritative.hrRowId)||null,periodId:command.periodId,country:amount.country,currency:amount.currency,honorario:amount.honorario,honorarioSource:amount.honorarioSource,boleto:amount.boleto,combo:amount.combo,reembolso:amount.reembolso,amount:amount.total,amountStatus:amount.amountStatus,amountReviewRequired:amount.amountReviewRequired,reviewReasons:amount.reviewReasons,sourceRevision,paymentStatus:status,paymentConfirmed:paid,paymentDate:null,source:'historical_reconciliation',sourceRef,reconciliationBatchId:batchId,idempotencyKey:command.idempotencyKey,reconciledAt,reconciledBy:actor.uid,notes:notes||null};
               reconciliation.active=true;
-              if(priorRecRef)Object.assign(reconciliation,{paymentDate:str(supersession.paymentDate),supersedesBatchId:priorBatchId,supersessionAuthorityRef:str(supersession.authorityRef)});
+              if(priorRecRef)Object.assign(reconciliation,{paymentDate:str(supersession.paymentDate),supersedesBatchId:priorBatchId,supersessionAuthorityRef:str(supersession.authorityRef),
+                ...(verifiedIdentityLinkId?{supersessionIdentityLinkId:verifiedIdentityLinkId,priorReconciliationShopperId}:{} )});
               const recRef=tenant.collection('paymentReconciliations').doc(sha(command.tenantId+'\0'+command.projectId+'\0'+id+'\0'+batchId).slice(0,40));
               if((await tx.get(recRef)).exists)throw new Error('FINANCE_HISTORICAL_TARGET_EXISTS_WITHOUT_RECEIPT:'+id);
-              prepared.push({id,resolved,v,authoritative,amount,paid,reconciliation,recRef,priorRecRef});
+              prepared.push({id,resolved,v,authoritative,amount,paid,reconciliation,recRef,priorRecRef,verifiedIdentityLinkId,priorReconciliationShopperId});
             }
             for(const item of prepared){
-              const {id,resolved,v,amount,paid,reconciliation,recRef,priorRecRef}=item;
+              const {id,resolved,v,amount,paid,reconciliation,recRef,priorRecRef,verifiedIdentityLinkId}=item;
               if(priorRecRef){
-                tx.set(priorRecRef,{active:false,superseded:true,supersededAt:reconciledAt,supersededByBatchId:batchId,supersededByReconciliationId:recRef.id,supersessionAuthorityRef:str(supersession.authorityRef),supersessionPaymentDate:str(supersession.paymentDate),supersededBy:actor.uid,updatedAt:reconciledAt},{merge:true});
+                tx.set(priorRecRef,{active:false,superseded:true,supersededAt:reconciledAt,supersededByBatchId:batchId,supersededByReconciliationId:recRef.id,supersessionAuthorityRef:str(supersession.authorityRef),supersessionPaymentDate:str(supersession.paymentDate),...(verifiedIdentityLinkId?{supersessionIdentityLinkId:verifiedIdentityLinkId}:{}),supersededBy:actor.uid,updatedAt:reconciledAt},{merge:true});
                 providerWrites++;
               }
               tx.create(recRef,reconciliation);providerWrites++;

@@ -231,6 +231,58 @@ test('VRM-153 supersession completes every Firestore read before any write in tw
   assert.equal(db.get('tenants/tenant-a/projects/project-a/visits/SEP!3').historicalPaymentStatus,'paid');
 });
 
+test('VRM-153 exact same-human HR alias supersession requires transactional trusted identity link and preserves prior ID',async()=>{
+  const db=baseDb(),baseline=historicalProvider(db),orig=historicalCommand();
+  const prior=historicalCommand({idempotencyKey:'identity:old',entityId:'hist-old-id',
+    payload:{...orig.payload,paymentStatus:'pending',reconciliationBatchId:'hist-old-id'}});
+  assert.equal((await baseline.execute('token',prior)).ok,true);
+  const live={...db.get('tenants/tenant-a/projects/project-a/visits/SEP!2'),shopperId:'shopper-2'};
+  const provider=historicalProvider(db,{tenantId:'tenant-a',projectId:'project-a',visits:[live]});
+  const make=(linkRef,idempotencyKey)=>historicalCommand({idempotencyKey,entityId:'hist-new-id',
+    payload:{...orig.payload,reconciliationBatchId:'hist-new-id',
+      supersession:{priorBatchId:'hist-old-id',priorPaymentStatus:'pending',paymentDate:'2026-10-02',authorityRef:'frozen-exact-oct02',
+        identityLinkRefsByVisitId:linkRef?{'SEP!2':linkRef}:undefined}}});
+  const before=JSON.stringify([...db.s.entries()]);
+  let out=await provider.execute('token',make(null,'identity:no-link'));
+  assert.equal(out.ok,false);assert.match(out.code,/FINANCE_HISTORICAL_EXACT_IDENTITY_LINK_REQUIRED/);
+  assert.equal(JSON.stringify([...db.s.entries()]),before);
+  db.seed('tenants/tenant-a/shopperIdentityLinks/irl_exact_verified12345678',{tenantId:'tenant-a',projectScope:'project-a',status:'active',
+    sourceSystem:'hr_external',authorityType:'tenant_adjudication',authorityRef:'human-exact-same-human-approval',
+    periodIndependent:true,canonicalShopperId:'shopper-2',exactAliases:['shopper-1','shopper-2'],sourceSafe:true});
+  const paid=make('irl_exact_verified12345678','identity:trusted');
+  out=await provider.execute('token',paid);const replay=await provider.execute('token',paid);
+  assert.equal(out.ok,true);assert.equal(out.providerAck,true);
+  assert.equal(replay.ok,true);assert.equal(replay.idempotentReplay,true);assert.equal(replay.providerWrites,0);
+  const recs=[...db.s.values()].filter(v=>v?.source==='historical_reconciliation');
+  assert.equal(recs.length,2);assert.equal(recs.filter(v=>v.active!==false).length,1);
+  const old=recs.find(v=>v.reconciliationBatchId==='hist-old-id'),current=recs.find(v=>v.reconciliationBatchId==='hist-new-id');
+  assert.equal(old.shopperId,'shopper-1');assert.equal(old.superseded,true);
+  assert.equal(old.supersessionIdentityLinkId,'irl_exact_verified12345678');
+  assert.equal(current.shopperId,'shopper-2');assert.equal(current.priorReconciliationShopperId,'shopper-1');
+  assert.equal(current.supersessionIdentityLinkId,'irl_exact_verified12345678');
+  assert.equal(db.get('tenants/tenant-a/projects/project-a/visits/SEP!2').historicalPaymentStatus,'paid');
+});
+
+test('VRM-153 explicit HR alias without permitted scoped link is not financial identity proof',async()=>{
+  const db=baseDb(),p=historicalProvider(db),orig=historicalCommand();
+  assert.equal((await p.execute('token',historicalCommand({idempotencyKey:'untrusted-old',entityId:'old-a',
+    payload:{...orig.payload,paymentStatus:'pending',reconciliationBatchId:'old-a'}}))).ok,true);
+  const altered={...db.get('tenants/tenant-a/projects/project-a/visits/SEP!2'),shopperId:'shopper-2'};
+  const provider=historicalProvider(db,{tenantId:'tenant-a',projectId:'project-a',visits:[altered]});
+  const linkId='irl_untrusted_alias_12345678';
+  db.seed('tenants/tenant-a/shopperIdentityLinks/'+linkId,{tenantId:'tenant-a',projectScope:'foreign-project',status:'active',
+    sourceSystem:'hr_external',authorityType:'provider_exact',authorityRef:'some-reference',periodIndependent:true,
+    canonicalShopperId:'shopper-2',exactAliases:['shopper-1','shopper-2'],sourceSafe:true});
+  const baseline=JSON.stringify([...db.s.entries()]);
+  const attempt=historicalCommand({idempotencyKey:'untrusted-paid',entityId:'new-b',
+    payload:{...orig.payload,reconciliationBatchId:'new-b',
+      supersession:{priorBatchId:'old-a',priorPaymentStatus:'pending',paymentDate:'2026-10-02',authorityRef:'evidence',
+        identityLinkRefsByVisitId:{'SEP!2':linkId}}}});
+  const result=await provider.execute('token',attempt);
+  assert.equal(result.ok,false);assert.match(result.code,/FINANCE_HISTORICAL_EXACT_IDENTITY_AUTHORITY_CONFLICT/);
+  assert.equal(JSON.stringify([...db.s.entries()]),baseline);
+});
+
 test('VRM-151 historical reconciliation rejects non-submitted visits even when the historical month is marked paid',async()=>{
   const db=baseDb(),v=db.get('tenants/tenant-a/projects/project-a/visits/SEP!2');v.canonicalFacets={submitted:false};v.estado='cuestionario';v.submittedAt=null;db.seed('tenants/tenant-a/projects/project-a/visits/SEP!2',v);
   const p=historicalProvider(db),r=await p.execute('token',historicalCommand());
