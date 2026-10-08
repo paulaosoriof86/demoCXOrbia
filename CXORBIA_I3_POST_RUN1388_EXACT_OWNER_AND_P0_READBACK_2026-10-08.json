@@ -1,0 +1,179 @@
+{
+  "schemaVersion": "cxorbia.i3.post-run1388-exact-owner-p0-readback.v1",
+  "type": "CANONICAL_I3_CONTROL_ONLY_EVIDENCE_NON_PROMOTING",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "decision": "HOLD",
+  "cut": "2026-10-08",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadBefore": "c19129a5852ff324cfe37bccb87e3e70f113b5ec",
+  "sourceSha": "8ac7369e2e0f1e203000f80002683ec43e373590",
+  "sourceTreeSha": "8f741a6b8501c3c0b8ce694be5a74da851408ba1",
+  "production": {
+    "url": "https://tya-plataforma.web.app/",
+    "modified": false,
+    "authorization": false,
+    "state": "DO_NOT_TOUCH"
+  },
+  "sourceGovernance": {
+    "descriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+    "ledger": {
+      "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V334_2026-10-08.json",
+      "expectedBlob": "cc00db342562922836145e000c5a5534ea47c3ef",
+      "preservedVrm": 270
+    },
+    "moduleTruth": {
+      "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V38.json",
+      "expectedBlob": "0be7e36c971c5f25c8adeb56920e8c19092d7fd1",
+      "domainCount": 21
+    },
+    "observations": {
+      "oct06": {
+        "path": "RECOVERY-I3-HUMAN-VISUAL-FAIL-OBSERVATION-MAP-20261006.json",
+        "blob": "3145e068f06eb69b5976a31fa76f7f87a7e9b6bc",
+        "count": 45
+      },
+      "oct08": {
+        "path": "CXORBIA_I3_HUMAN_VISUAL_CHECKPOINT_2026-10-08_B1_B2_B3_B5_B7_B8.json",
+        "blob": "74c5cb7931e0e28f852d731e4331468f04573947",
+        "count": 18
+      }
+    },
+    "noBulkClosing": true,
+    "noOverlays": true,
+    "noReimport": true,
+    "noNewCandidate": true
+  },
+  "devMaterialization": {
+    "buildAndDeployRunId": 37844916797,
+    "runNumber": 1386,
+    "sourceSha": "8ac7369e2e0f1e203000f80002683ec43e373590",
+    "sourceTree": "8f741a6b8501c3c0b8ce694be5a74da851408ba1",
+    "runtimeRevision": "cxorbia-live-hr-dev-00278-8qj",
+    "runtimeDigest": "sha256:9bad1a1f24b83e53df20469ea7f829dda704fba1ad2b7c8e46cb99afa5014db9",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/1a5fa1ff354bd4ce",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791494031128000",
+    "hrRevision": "9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef",
+    "artifactId": 11579686099,
+    "artifactDigest": "sha256:5f59ac1bf37dbe51ac7a194bf46fd1fc7804dc813ccb02752d96c5c1e8cd5a96",
+    "production": false
+  },
+  "e2e": {
+    "runId": 37846763465,
+    "runNumber": 1388,
+    "headSha": "c19129a5852ff324cfe37bccb87e3e70f113b5ec",
+    "conclusion": "success",
+    "artifactId": 11579464549,
+    "artifactDigest": "sha256:7a14904fd6e0dfbb057567df07913c546cc8b902b245c1feb3282d0562889df3",
+    "decisions": [
+      "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+      "PASS_VRM168_PROVIDER_SCHEDULE_PATH",
+      "PASS_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL",
+      "PASS_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE",
+      "PASS_I3_ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE",
+      "PASS_PREI4_FINAL_FOCAL_FINANCE",
+      "PASS_PREI4_CERT_RES_CUMULATIVE_DEV_LIVE"
+    ],
+    "roles": [
+      "authenticated Admin",
+      "shopper Julissa",
+      "shopper Priscila",
+      "shopper Paula",
+      "representative client routing"
+    ],
+    "scope": "Representative authenticated DEV E2E only, synthetic postulations/reservations/finance/cert/resource, same artifact; not every module/flow/customer",
+    "absenceOfExactB7CancelDecision": "NEVER_EXECUTED_DEDICATED_ADMIN_APPROVE_REJECT_AND_SHOPPER_SECOND_SESSION",
+    "approval": "NOT_HUMAN_OR_GATE20_GATE21",
+    "hrWrites": 0,
+    "production": false
+  },
+  "priorityOwnerFindings": [
+    {
+      "id": "HF-20261008-07/10/11",
+      "block": "B3/B7",
+      "classification": "FUNCTIONAL_DEFECT",
+      "severity": "P0",
+      "ownerExact": [
+        "app/modules/postulaciones.js",
+        "app/modules/misvisitas.js",
+        "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+      ],
+      "sourceState": "SOURCE_FIXED_AND_MOCK_PROVIDER_PASS",
+      "sourceSha": "8ac7369e2e0f1e203000f80002683ec43e373590",
+      "sourceEvidence": "Admin approve/reject controls with reason; provider writes cancelRequest approved_pending_hr/rejected on exact visit and durable bulletin transaction; avoids external HR release without ACK",
+      "devState": "MATERIALIZED",
+      "currentArtifactE2E": "REPRESENTATIVE_PASS_ONLY_NOT_CANCELLATION_DECISION_PROVEN",
+      "missingEvidence": "DEV isolated future synthetic request by authenticated Shopper -> Admin approval and rejection -> independent Firestore receipt/outbox -> second Shopper session readback/reload, idempotent replay, cleanup and unchanged HR revision",
+      "gate": "HOLD_P0_EXACT_ACTION_REPROOF_REQUIRED"
+    },
+    {
+      "id": "HF-20261008-03",
+      "block": "B2",
+      "classification": "VISUAL_DEFECT",
+      "severity": "HUMAN_HOLD",
+      "ownerActive": "app/adapters/tya-canonical-shopper-portal-v2.js",
+      "ownerOverridden": "app/modules/operacion-extra.js",
+      "exactDynamicCause": "app/index-backend-dev.html first loads modules/operacion-extra.js and then loads adapters/tya-canonical-shopper-portal-v2.js which assigns CX.modules.miperfil=render and installs again when ready; editing operacion-extra.js alone cannot change visible Mi Perfil",
+      "currentActiveHierarchy": "overview cards -> full personal/contact/banking fields -> KPI -> visit history",
+      "expectedHuman": "KPI/resumen first layer; actionable drill for exact rows; detailed sensitive data secondary, preserve identity scoped roles and provider ACK",
+      "previousPreparedBlob": {
+        "path": "app/modules/operacion-extra.js",
+        "blob": "53bf6ef651a7d60785872926c698e22130bba64f",
+        "status": "REJECTED_UNATTACHED_WRONG_OWNER_DO_NOT_COMPOSE"
+      },
+      "sourceState": "ACTIVE_OWNER_DIAGNOSED_NO_PRODUCT_CHANGE",
+      "humanApproval": "PENDING",
+      "gate": "HOLD_B2_ACTIVE_OWNER_VISUAL"
+    },
+    {
+      "id": "HF-20261008-15/17",
+      "block": "B5/B8",
+      "classification": "MAPPING_FAILURE",
+      "severity": "P0",
+      "ownerExact": "app/adapters/tya-canonical-finance-read-model-v2.js",
+      "financialSourceOwner": "app/adapters/tya-financial-canonical-source-safe-adapter.js",
+      "exactDynamicCause": "tya-financial-canonical-source-safe-adapter.js initializes CX.data.paymentHistoryTruthForVisit with frozen historical source; tya-canonical-finance-read-model-v2.js loads afterwards and overrides finance output, but its derive() omits historical payment truth fallback when there is no exact protected financial match; thus Beneficios may show pending for a source-authorized paid historical visit",
+      "isolatedProof": {
+        "fixturePeriod": "2025-12",
+        "approvedHistoricalPaymentConfirmed": true,
+        "observedReadModelPaymentConfirmed": false,
+        "observedBenefitsPaid": false,
+        "noRealWrites": true,
+        "scope": "SOURCE_ONLY_FIXTURE_NOT_HR_LIVE"
+      },
+      "frozenContract": {
+        "throughJuly2026": "paid historically",
+        "august2026": "paid 2026-10-02",
+        "september2026": "paid only explicit evidenced rows",
+        "fromOctober2026": "live durable finance"
+      },
+      "preparedOwnerBlob": {
+        "path": "app/adapters/tya-canonical-finance-read-model-v2.js",
+        "blob": "4997010949dd8a126b058f720041fe5eeb04f1bd",
+        "status": "UNATTACHED_UNAPPROVED_SUGGESTED_DELTA_MUST_REVALIDATE"
+      },
+      "gate": "HOLD_HISTORICAL_PAYMENT_AND_AMOUNT_SOURCE_RECONCILIATION"
+    }
+  ],
+  "remainingNotErased": [
+    "B1 first meaningful render performance, HR independent revision check",
+    "B3 native camera+GPS+Storage/provider ACK and Android/iPhone fallback",
+    "B4 original bank content and recert carryover exact proof",
+    "B5 benefits visual hierarchy, receipt and individual payment support",
+    "B6 durable Admin/Shopper notification decisions",
+    "B8 September explicit paid rows + finance support and CxP/CxC no false payment",
+    "B9 one certified artifact Gate20/21 and human approval",
+    "all 270 VRM, 45+18 observations and 21 module domains"
+  ],
+  "workflowPolicy": {
+    "technicalWriter": "CODEX_ONLY_FOR_P0_PROVEN_FOCAL_IN_I3",
+    "controlOnlyReceiptPermitted": true,
+    "noProductPatchInThisCommit": true,
+    "noAlternativeBranchWorkflowMaterializer": true,
+    "noProductionDeploy": true,
+    "noAutomaticPromotionFromRepresentativePass": true
+  },
+  "nextExactAction": "CODEX_AS_SINGLE_TECHNICAL_WRITER_WHEN_AVAILABLE: using this checkpoint and frozen V334/V38, first add exact DEV synthetic two-role cancellation decision E2E inside existing I3 lane (no new workflow); then approved P0 B5 owner src-vs-cut mapping and B2 active owner visual; certify same source/artifact and obtain human signoff before Gate20/Gate21. Do not deploy product HEAD or enter I4.",
+  "authorizationNeededNow": false,
+  "authorizationNeededForI4": true
+}
