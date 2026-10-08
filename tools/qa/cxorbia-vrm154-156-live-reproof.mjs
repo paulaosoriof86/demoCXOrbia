@@ -136,7 +136,7 @@ try{
     const chips=card?[...card.querySelectorAll('.cx-scenario-chip')].map(el=>String(el.innerText||'')):[];
     const progress=card?[...card.querySelectorAll('.cx-visit-progress-step')].map(el=>({text:String(el.innerText||''),classes:String(el.className||'')})):[];
     const actions=card?[...card.querySelectorAll('.cx-visit-actions .btn')].map(el=>String(el.innerText||'')):[];
-    const temp=document.createElement('span');temp.style.color='var(--brand)';document.body.appendChild(temp);const brand=getComputedStyle(temp).color;temp.remove();
+    const temp=document.createElement('span');temp.style.color='var(--brand-dark)';document.body.appendChild(temp);const brand=getComputedStyle(temp).color;temp.remove();
     return {found:!!card,visitId:String(v.id||v.visitId||''),dims,chipCount:chips.length,chips,progressCount:progress.length,progress,actions,branchVisible:text.includes(branch),escenarioVisible:text.includes(escenario),tipoComboVisible:text.includes(tipoCombo),brandBorder:card?getComputedStyle(card).borderLeftColor:'',expectedBrand:brand,allConfiguredDimensionsVisible:!!card&&dims.length>=dimCount&&chips.length>=dimCount&&text.includes(escenario)&&text.includes(tipoCombo),visualMarkersPass:!!card&&card.classList.contains('cx-shopper-visit-card')&&progress.length>=5&&actions.length>=1&&getComputedStyle(card).borderLeftColor===brand};
   },{id:str(target.visit.id||target.visit.visitId),hrRowId:str(target.visit.hrRowId),branch:str(target.visit.sucursal),escenario:str(target.visit.escenario),tipoCombo:str(target.visit.tipoCombo),dimCount:dims.length});
   if(!scenarioCard.found||!scenarioCard.allConfiguredDimensionsVisible||!scenarioCard.visualMarkersPass)throw new Error('VISUAL_DEFECT:VRM154_155_MISVISITAS:'+JSON.stringify(scenarioCard));
@@ -158,12 +158,48 @@ try{
     const body=String(document.body?.innerText||''),hero=document.querySelector('.cx-profile-hero'),section=document.querySelector('.cx-profile-section-title');
     const temp=document.createElement('span');temp.style.color='var(--brand)';document.body.appendChild(temp);const brand=getComputedStyle(temp).color;temp.remove();
     const heroStyle=hero?getComputedStyle(hero):null;
-    return {nameVisible:expectedName?normText(body).includes(normText(expectedName)):true,hasHero:!!hero,hasSection:!!section,hasKpis:/Desempeño/i.test(body)&&/Visitas/i.test(body)&&/Realizadas/i.test(body)&&/Submitidas/i.test(body)&&/Pagadas confirmadas/i.test(body),hasHistory:/Histórico de visitas/i.test(body),heroBackground:heroStyle?.backgroundImage||'',visualMarkersPass:!!hero&&!!section&&/linear-gradient/i.test(heroStyle?.backgroundImage||'')&&/Desempeño/i.test(body)&&/Histórico de visitas/i.test(body),brand};function normText(v){return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();}
+    return {nameVisible:expectedName?normText(body).includes(normText(expectedName)):true,hasHero:!!hero,hasSection:!!section,hasKpis:/Desempeño/i.test(body)&&/Visitas/i.test(body)&&/Realizadas/i.test(body)&&/Submitidas/i.test(body)&&/Pagadas confirmadas/i.test(body),hasHistory:/Histórico de visitas/i.test(body),visitRows:[...document.querySelectorAll('tr[data-profile-visit-row]')].map(tr=>({visitId:String(tr.dataset.profileVisitRow||''),label:String(tr.querySelector('td:nth-child(3) .bdg')?.textContent||'').trim()})),heroBackground:heroStyle?.backgroundImage||'',visualMarkersPass:!!hero&&!!section&&/linear-gradient/i.test(heroStyle?.backgroundImage||'')&&/Desempeño/i.test(body)&&/Histórico de visitas/i.test(body),brand};function normText(v){return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();}
   },str(target.profile.nombre||target.profile.name));
   if(!profile.visualMarkersPass||!profile.nameVisible||!profile.hasKpis||!profile.hasHistory)throw new Error('VISUAL_DEFECT:VRM155_PROFILE:'+JSON.stringify(profile));
 
   await nav(page,'beneficios');
-  const benefits=await page.evaluate(()=>({route:String(window.CX?.session?.view||''),text:String(document.body?.innerText||'').slice(0,1200)}));
+  /* VRM-271: independent authenticated UI surfaces must show the exact same per-visit
+     financial-paid truth, without changing HR or inferring historical amounts. */
+  const benefits=await page.evaluate(profileRows=>{
+    const d=window.CX?.data||{},session=window.CX?.session?.user||{};
+    const rawSid=String(session.shopperId||'').trim(),sid=String(d.__identityMap?.[rawSid]||rawSid);
+    const visits=(typeof d.visitsForShopper==='function'?d.visitsForShopper(sid,false):[])
+      .filter(v=>v&&v.__pendingPlatformAssignmentOverlay!==true);
+    const finance=window.CX_TYA_CANONICAL_FINANCE_READ_MODEL,period=d.period?.()||null;
+    const byProfile=new Map(profileRows.map(x=>[x.visitId,x.label]));
+    const modeled=visits.map(v=>{
+      const pid=d.recordPeriodId?d.recordPeriodId(v):(v.periodId||v.projectId);
+      const scoped=(d.projects||[]).find(x=>String(x.id)===String(pid))||period;
+      const row=finance?.fromVisit?.(scoped,v)||null;
+      const paid=row?.paymentConfirmed===true&&
+        (!!String(row?.paymentSourceRef||row?.paymentRef||row?.reconciliationSourceRef||'')||row?.historicalReconciliationConfirmed===true);
+      return {id:String(v.id||v.visitId||''),paid,periodKey:String(v.periodKey||scoped?.periodKey||'')};
+    }).filter(x=>x.id);
+    const mismatches=modeled.filter(x=>{
+      const profilePaid=String(byProfile.get(x.id)||'').trim()==='Pagada';
+      return !byProfile.has(x.id)||x.paid!==profilePaid;
+    }).map(x=>({visitId:x.id,periodKey:x.periodKey,profileBadge:byProfile.get(x.id)||'MISSING',financePaid:x.paid}));
+    const body=String(document.body?.innerText||'');
+    const match=body.match(/Histórico actual:\s*(\d+)\s*pago/i);
+    return {
+      route:String(window.CX?.session?.view||''),text:body.slice(0,1200),
+      vrm271:{shopperScoped:true,financeReady:finance?.ready===true,shopperVisits:visits.length,
+        profileRows:profileRows.length,paidFromFinance:modeled.filter(x=>x.paid).length,
+        benefitsPaidOverviewCount:match?Number(match[1]):null,
+        exactVisitMismatches:mismatches,sourceRevision:String(d.previewMeta?.sourceRevision||''),
+        writes:0,production:false}
+    };
+  },profile.visitRows);
+  if(!benefits.vrm271.financeReady||benefits.vrm271.paidFromFinance<1||
+     benefits.vrm271.benefitsPaidOverviewCount!==benefits.vrm271.paidFromFinance||
+     benefits.vrm271.exactVisitMismatches.length){
+    throw new Error('MAPPING_FAILURE:VRM271_B2_B5_EXACT_SAME_SHOPPER_VISIT_FINANCE_VS_PROFILE:'+JSON.stringify(benefits.vrm271));
+  }
 
   await nav(page,'aprendizaje');
   const academy=await page.evaluate(()=>{
@@ -174,7 +210,7 @@ try{
   if(!academy.visualMarkersPass||!academy.hasIcons)throw new Error('VISUAL_DEFECT:VRM156_ACADEMY:'+JSON.stringify(academy));
 
   const own=await page.evaluate(sid=>{const d=window.CX?.data||{},v=typeof d.visitsForShopper==='function'?d.visitsForShopper(sid,false):[];return {count:v.length,unique:new Set(v.map(x=>String(x.id||x.visitId||''))).size};},target.canonicalId);
-  evidence.shopper={midia,scenarioCard,visitDetail,profile,benefits:{route:benefits.route,rendered:benefits.text.length>0},academy,ownVisits:own};
+  evidence.shopper={midia,scenarioCard,visitDetail,profile:{...profile,visitRowsCount:profile.visitRows.length,visitRows:undefined},benefits:{route:benefits.route,rendered:benefits.text.length>0,vrm271:benefits.vrm271},academy,ownVisits:own};
   await sp.ctx.close();
 
   const ap=await signed(admin,'admin'),a=ap.page;

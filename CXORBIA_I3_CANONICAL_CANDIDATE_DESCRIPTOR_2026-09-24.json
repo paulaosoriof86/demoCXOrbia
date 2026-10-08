@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED",
+  "status": "HOLD_VRM154_156_LIVE_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-271_RUN1399_EXACT_DEV_MATERIALIZED__B2_B5_HISTORICAL_PAID_E2E_AND_HUMAN_REVIEW_PENDING",
+  "activeBlocker": "VRM271_EXACT_DEV_JULISSA_B2_B5_FINANCE_VS_PROFILE_UI__VRM154_STALE_VISUAL_QA_ASSERTION",
   "nextFindingId": "VRM-272",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Without any rebuild, rerun the EXISTING I3 same-artifact authenticated Admin/Shopper/Client DEV E2E against run1399 artifact, including VRM-271 B2 Mi Perfil vs B5 Beneficios exact per-visit historically paid truth; honorarium and operation remain independently sourced, no invented payments. Preserve pending B1/B3/B4/B6/B7/B8 P0s, 271 VRM and 45+18 human observations. TinyFish prehuman and Paula explicit human block PASS before Gate20/21. No I4/production.",
+  "exactNextAction": "Use the existing I3 vrm157-dev-readback-only job on the unchanged run1399 DEV artifact. Verify role-scoped brand-dark border without product style changes and execute newly scoped VRM-271 authenticated exact-visit B2 Profile badge vs B5 Benefits finance model/overview with fixed HR revision; no build, redeploy or production. Preserve run1400 authenticated multi-role E2E PASS. If successful, continue other P0s and TinyFish pre-human/human incremental acceptance, only then Gate20/21 and I4 authorization.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -6914,5 +6914,78 @@
       "noDeploy": true
     },
     "nextGate": "SAME_ARTIFACT_LIVE_E2E_NOT_YET_PROVEN"
+  },
+  "run1400SameArtifactAndQAFailureReadback": {
+    "date": "2026-10-08",
+    "classification": "MAPPING_FAILURE",
+    "controlOnly": true,
+    "expectedParentSha": "dc00dd731d9ab3974deb62a47d94f3389079eb04",
+    "expectedParentTree": "e6a776e50bcc343c23be8b176c9516cfeea2bbaf",
+    "qaOriginalBlob": "eea5b43741c22deda09ee639e8a51bb7a28c6a3e",
+    "qaCorrectedBlob": "6155b419859a6ee1a94826c3947ba89ba82897f5",
+    "before": {
+      "status": "HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED",
+      "activeBlocker": "VRM-271_RUN1399_EXACT_DEV_MATERIALIZED__B2_B5_HISTORICAL_PAID_E2E_AND_HUMAN_REVIEW_PENDING",
+      "exactNextAction": "Without any rebuild, rerun the EXISTING I3 same-artifact authenticated Admin/Shopper/Client DEV E2E against run1399 artifact, including VRM-271 B2 Mi Perfil vs B5 Beneficios exact per-visit historically paid truth; honorarium and operation remain independently sourced, no invented payments. Preserve pending B1/B3/B4/B6/B7/B8 P0s, 271 VRM and 45+18 human observations. TinyFish prehuman and Paula explicit human block PASS before Gate20/21. No I4/production.",
+      "materializationRun": 1399
+    },
+    "after": {
+      "status": "HOLD_VRM154_156_LIVE_REPROOF_REQUIRED",
+      "activeBlocker": "VRM271_EXACT_DEV_JULISSA_B2_B5_FINANCE_VS_PROFILE_UI__VRM154_STALE_VISUAL_QA_ASSERTION",
+      "exactNextAction": "Use the existing I3 vrm157-dev-readback-only job on the unchanged run1399 DEV artifact. Verify role-scoped brand-dark border without product style changes and execute newly scoped VRM-271 authenticated exact-visit B2 Profile badge vs B5 Benefits finance model/overview with fixed HR revision; no build, redeploy or production. Preserve run1400 authenticated multi-role E2E PASS. If successful, continue other P0s and TinyFish pre-human/human incremental acceptance, only then Gate20/21 and I4 authorization."
+    },
+    "main": {
+      "runNumber": 1400,
+      "runId": 37858089125,
+      "jobId": 113587100034,
+      "decision": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+      "artifactId": 11585351399,
+      "artifactDigest": "sha256:ad15d9654611f4faccd1ed2acb792bdb2855daac92ea9bcf51a6f9b96449b58b",
+      "roles": [
+        "Admin",
+        "Shopper Julissa",
+        "Shopper Priscila",
+        "Shopper Paula",
+        "Client representative"
+      ],
+      "clickActions": 35,
+      "providerSchedule": "PASS_VRM168_PROVIDER_SCHEDULE_PATH",
+      "postulationAndReservation": "PASS_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE",
+      "finance": "PASS_PREI4_FINAL_FOCAL_FINANCE",
+      "certResources": "PASS_PREI4_CERT_RES_CUMULATIVE_DEV_LIVE",
+      "syntheticCleanup": "PASS",
+      "writesHr": 0,
+      "production": false,
+      "builds": 0,
+      "runtimeDeploys": 0,
+      "hostingDeploys": 0
+    },
+    "secondary": {
+      "runNumber": 1400,
+      "jobId": 113587100798,
+      "result": "FAIL_VRM154_156_SEALED_DEV_LIVE_REPROOF",
+      "artifactId": 11584897512,
+      "artifactDigest": "sha256:9487f915fd26fc48bd4f5069576ddf7fb840962697b9730fc3b6362de9bdbfbf",
+      "classification": "MAPPING_FAILURE",
+      "rootCause": "Shopper B3 CSS uses role-scoped --brand-dark; QA expected generic --brand; observed rgb(21,101,168), expected rgb(33,150,211)",
+      "fixScope": "QA-only test expected token + VRM271 cross-module same-visit shopper functional check",
+      "notProven": "No B3 full human pass, B2/B5 exact E2E still pending"
+    },
+    "preserved": {
+      "productSource": "12f33a00430768ab11f2041eb278d33724e69401",
+      "productTree": "ce15467895f769b6aa6ad49a2bb138709ab425fd",
+      "runtimeRevision": "cxorbia-live-hr-dev-00280-95g",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/d912c9db59002681",
+      "HRRevision": "9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef",
+      "ledgerV337": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V337_2026-10-08.json",
+      "moduleTruthV41": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V41.json",
+      "originalVrmCount": 271,
+      "originalHumanObservationsOct06": 45,
+      "originalHumanObservationsOct08": 18,
+      "domainCount": 21,
+      "productionUntouched": true,
+      "noNewBuild": true,
+      "noDeploy": true
+    }
   }
 }
