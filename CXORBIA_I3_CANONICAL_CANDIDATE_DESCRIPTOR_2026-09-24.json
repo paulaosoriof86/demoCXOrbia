@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
+  "status": "HOLD_B1_OCT07_AUTH_READONLY_VISUAL_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "8cdd461bd4b19185c007db18631a2470891a3327",
   "productTreeAuthority": "38139fcc5032f29474dd0ec5b9d33312b37a0a24",
   "predecessorProductSourceSha": "c12c44a53ce999a7deebeef9a5d6fa233753793c",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V328_2026-10-07.json",
-  "findingsLedgerExpectedGitBlob": "11809c4150b216c49da65d4ee4082c03dc412d42",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V329_2026-10-07.json",
+  "findingsLedgerExpectedGitBlob": "383e8607130c7d1da4c4ffd15b82f26f4cd3e800",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V34.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "B1_DURABLE_PENDING_DATE_EXACT_DEV_MATERIALIZATION",
+  "activeBlocker": "B1_EXACT_DEV_SOURCE8cdd_AUTH_READONLY_VISUAL_PROOF",
   "nextFindingId": "VRM-271",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "B1_HOSTING_ONLY_DEV_EXACT_SOURCE_AND_PROTECT_VISITAS_DISPONIBLES",
+  "exactNextAction": "B1_READONLY_AUTH_VISUAL_SAME_SOURCE8cdd_PAULA",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -428,19 +428,19 @@
     "production": false
   },
   "currentMaterialization": {
-    "state": "HISTORICAL_PREDECESSOR_DEV_FROM_C12c44",
+    "state": "PASS_B1_EXACT_DURABLE_DATE_INCREMENTAL_DEV_MATERIALIZATION",
     "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
-    "runId": 37712339682,
-    "runNumber": 1361,
-    "jobId": 113100970956,
-    "artifactId": 11521934816,
-    "artifactDigest": "sha256:216bbcd13de44d4ea8d35a681badf8d1397d2c4b29108cb28ecafdfecd6eef74",
-    "sourceSha": "c12c44a53ce999a7deebeef9a5d6fa233753793c",
-    "sourceTree": "de7945e328b5b8f5458479343f7e87f469d1a9bd",
+    "sourceSha": "8cdd461bd4b19185c007db18631a2470891a3327",
+    "sourceTree": "38139fcc5032f29474dd0ec5b9d33312b37a0a24",
+    "runId": 37714033454,
+    "runNumber": 1367,
+    "jobId": 113106335960,
+    "artifactId": 11522519191,
+    "artifactDigest": "sha256:0df2eb308120bd03676ab19f23d2513fd61f482b6c4e7750e40a307f5e0743c5",
     "runtimeRevision": "cxorbia-live-hr-dev-00274-wvg",
     "runtimeDigest": "sha256:6daac07ef92478f18ce8eec4972eb590230ae9e76b827d41d4bc5edae9452854",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/42871b92b5fd6982",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791422441999000",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/e62e7447c79a4bb0",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791423666896000",
     "hrRevision": "be3cf83108c40c425642d1dab17633f9ab46121b6ebc9eb78c47e8742d15364f",
     "builds": 0,
     "runtimeDeploys": 0,
@@ -449,11 +449,10 @@
     "hrWrites": 0,
     "production": false,
     "preflight": {
-      "tests": 16,
-      "pass": 16,
+      "tests": 18,
+      "pass": 18,
       "fail": 0
-    },
-    "focalHumanPass": false
+    }
   },
   "lastFocalAttempt": {
     "runId": 36198284266,
@@ -6006,7 +6005,7 @@
     }
   },
   "humanVisualCheckpointUrl": "https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV",
-  "humanVisualCheckpointState": "B1_FAIL_FOCAL_DEV_MATERIALIZATION_PENDING",
+  "humanVisualCheckpointState": "B1_EXACT_DEV_SOURCE8cdd_AUTH_VISUAL_PROOF_ACTIVE_HUMAN_PASS_PENDING",
   "run1358ControlAdjudication": {
     "runId": 37680796799,
     "runNumber": 1358,
@@ -6020,7 +6019,7 @@
     "production": false
   },
   "b1HumanFailScopedRemediation20261007": {
-    "status": "EXACT_DEV_HOSTING_PASS_AUTHENTICATED_READONLY_PENDING",
+    "status": "SUPERSEDED_SOURCE8cdd_EXACT_DEV_REVIEW_REQUIRED",
     "sourceSha": "c12c44a53ce999a7deebeef9a5d6fa233753793c",
     "sourceTree": "de7945e328b5b8f5458479343f7e87f469d1a9bd",
     "receipt": "CXORBIA_I3_B1_SHOPPER_HUMAN_FAIL_FOLLOWUP_2026-10-07.json",
@@ -6072,7 +6071,7 @@
     }
   },
   "b1ExactDurableSchedulingSourceFix20261007": {
-    "state": "SOURCE_PROOF_PASS_HOSTING_ONLY_PENDING",
+    "state": "NEW_EXACT_DEV_MATERIALIZED_AUTH_VISUAL_PROOF_REQUIRED",
     "sourceSha": "8cdd461bd4b19185c007db18631a2470891a3327",
     "treeSha": "38139fcc5032f29474dd0ec5b9d33312b37a0a24",
     "predecessor": "c12c44a53ce999a7deebeef9a5d6fa233753793c",
@@ -6111,6 +6110,33 @@
       "sourceTree": "38139fcc5032f29474dd0ec5b9d33312b37a0a24",
       "production": false,
       "deploys": 0
+    },
+    "materialization": {
+      "state": "PASS_B1_EXACT_DURABLE_DATE_INCREMENTAL_DEV_MATERIALIZATION",
+      "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+      "sourceSha": "8cdd461bd4b19185c007db18631a2470891a3327",
+      "sourceTree": "38139fcc5032f29474dd0ec5b9d33312b37a0a24",
+      "runId": 37714033454,
+      "runNumber": 1367,
+      "jobId": 113106335960,
+      "artifactId": 11522519191,
+      "artifactDigest": "sha256:0df2eb308120bd03676ab19f23d2513fd61f482b6c4e7750e40a307f5e0743c5",
+      "runtimeRevision": "cxorbia-live-hr-dev-00274-wvg",
+      "runtimeDigest": "sha256:6daac07ef92478f18ce8eec4972eb590230ae9e76b827d41d4bc5edae9452854",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/e62e7447c79a4bb0",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791423666896000",
+      "hrRevision": "be3cf83108c40c425642d1dab17633f9ab46121b6ebc9eb78c47e8742d15364f",
+      "builds": 0,
+      "runtimeDeploys": 0,
+      "hostingDeploys": 1,
+      "firestoreRulesDeploys": 0,
+      "hrWrites": 0,
+      "production": false,
+      "preflight": {
+        "tests": 18,
+        "pass": 18,
+        "fail": 0
+      }
     }
   }
 }
