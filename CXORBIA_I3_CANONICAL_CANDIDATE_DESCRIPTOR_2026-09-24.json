@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM153_RECONCILIATION_READBACK_DIAGNOSTIC_REQUIRED",
+  "status": "HOLD_VRM153_SAFE_SUPERSESSION_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "11e2af3f710783294e9160fef9472a6da6359275",
-  "productTreeAuthority": "7a74a6658760e691c437076952c7e9bcb042580a",
-  "predecessorProductSourceSha": "f407c1ae202a0201c738ff73b4e4ddba223b9a0d",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V343_2026-10-08.json",
-  "findingsLedgerExpectedGitBlob": "571e0ebd6726a0eda105ee88e364072b3dd78552",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V44.json",
+  "productSourceSha": "61ee5001cbb0561a07addc36253b188d09cb2a38",
+  "productTreeAuthority": "97a06eec95586cce76ef28207950c31dafd0a3f9",
+  "predecessorProductSourceSha": "11e2af3f710783294e9160fef9472a6da6359275",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V344_2026-10-08.json",
+  "findingsLedgerExpectedGitBlob": "8dcf1e0bc7993891a97f6404f21342b78e0c42e4",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V45.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM153_10_SHOPPER_ID_MISMATCH_EXACT_CROSSWALK_READ_ONLY_ADJUDICATION_REQUIRED",
+  "activeBlocker": "VRM153_EXACT_SAME_HUMAN_ALIAS_SOURCE_FIX_PENDING_SYNTHETIC_TEST",
   "nextFindingId": "VRM-272",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Resolve ten HR-to-historical-finance shopperId mismatches against exact scoped shopperIdentityCrosswalk and shopperIdentityLinks; never merge by name or overwrite real financial records.",
+  "exactNextAction": "Run synthetic transactional finance provider tests on source 61ee5001 and preserve read-only authoritative identity adjudication. No real writes.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -7344,6 +7344,39 @@
     "run1409ProofState": "PENDING",
     "realWrites": 0,
     "builds": 0,
+    "deploys": 0,
+    "production": false
+  },
+  "i3Vrm153Run1409ExactIdentitySourceFix": {
+    "run1409": 37862067670,
+    "runConclusion": "SUCCESS",
+    "identityReadbackArtifact": 11586690913,
+    "identityProof": {
+      "mismatches": 10,
+      "sameHumanExact": 10,
+      "ambiguous": 0,
+      "notProven": 0,
+      "source": "shopperIdentityCrosswalk + shopperIdentityLinks"
+    },
+    "oldScope": {
+      "augustGTPriorPending": 34,
+      "eligibleWithoutIdentityAlias": 24,
+      "exactSameHumanAlias": 10,
+      "missingReconciliations": 7
+    },
+    "sourceSha": "61ee5001cbb0561a07addc36253b188d09cb2a38",
+    "sourceTree": "97a06eec95586cce76ef28207950c31dafd0a3f9",
+    "predecessorSourceSha": "11e2af3f710783294e9160fef9472a6da6359275",
+    "owners": [
+      "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+      "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs"
+    ],
+    "providerOwnerBlob": "bc44c74bdfefd467982ad95395a74296fc9fc7b3",
+    "onlyAcceptIdentityMismatchIf": "link doc itself trusted, active, tenant/project scoped, period-independent, source-safe, contains both exact IDs, read inside Firestore transaction",
+    "sourceProof": "PENDING",
+    "financialWrites": 0,
+    "hrWrites": 0,
+    "bankWrites": 0,
     "deploys": 0,
     "production": false
   }
