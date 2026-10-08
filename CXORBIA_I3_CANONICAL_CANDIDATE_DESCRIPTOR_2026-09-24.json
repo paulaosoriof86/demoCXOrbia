@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "I3_B2_B5_SAME_ARTIFACT_FUNCTIONAL_E2E_AND_HUMAN_PENDING",
+  "activeBlocker": "I3_B2_PROFILE_COLLAPSED_DETAIL_QA_MAPPING_REPROOF_REQUIRED",
   "nextFindingId": "VRM-271",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run existing I3 same-artifact authenticated Admin, Julissa, Priscila, Paula, reservations, finance, resources, certifications. Ensure B2 details opened before editing. B5 historical truth remains to be validated in live context; no human request until full P0 closure.",
+  "exactNextAction": "Repeat the existing canonical run's same-artifact authenticated E2E once with corrected collapsed-details visibility mapping; keep production untouched and original B7/finance source intact.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -6695,5 +6695,19 @@
     "storageRulesDeploys": 0,
     "hrWrites": 0,
     "production": false
+  },
+  "i3Run1396SourcePreservedQaMapping": {
+    "runId": 37851170277,
+    "runNumber": 1396,
+    "classification": "MAPPING_FAILURE",
+    "observed": "VISUAL_DEFECT:PROFILE_Julissa Flores raised when QA used innerText on titles intentionally inside collapsed details",
+    "rootCause": "Browser innerText on hidden <details> returns empty text despite DOM keeping profile fields; the product explicitly preserves accessible details and KPI first hierarchy",
+    "owner": "tools/qa/cxorbia-i3-phasea-representative-live-reproof.mjs",
+    "fixedOnly": "Read profile group title via textContent so collapsed details are not mistaken for missing data. Browser flow still tests authorized identity, profile, edit and historical data",
+    "productSourceUnchanged": "3c0ea51a2626d418f0e6952bdd6a82f8b15d13e3",
+    "currentArtifactUnchanged": 11580929817,
+    "runArtifactId": 11580954825,
+    "runArtifactDigest": "sha256:aff9a7d6066fdbc45672783b66d7285c26a78265181dedcac8cdd491d56a4d59",
+    "noProduction": true
   }
 }

@@ -222,7 +222,7 @@ try{
     }
 
     await nav(page,'miperfil');
-    const profile=await page.evaluate(expectedName=>{const body=String(document.body?.innerText||''),titles=[...document.querySelectorAll('.cx-profile-group-title')].map(x=>String(x.innerText||''));return {body:body.slice(0,1600),locked:/No fue posible vincular esta sesión con tu perfil/i.test(body),grid:!!document.querySelector('.cx-profile-detail-grid'),titles,nameVisible:normLocal(body).includes(normLocal(expectedName))};function normLocal(v){return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();}},target.name);
+    const profile=await page.evaluate(expectedName=>{const body=String(document.body?.innerText||''),titles=[...document.querySelectorAll('.cx-profile-group-title')].map(x=>String(x.textContent||''));return {body:body.slice(0,1600),locked:/No fue posible vincular esta sesión con tu perfil/i.test(body),grid:!!document.querySelector('.cx-profile-detail-grid'),titles,nameVisible:normLocal(body).includes(normLocal(expectedName))};function normLocal(v){return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();}},target.name);
     if(profile.locked||!profile.grid||!profile.nameVisible||!['Identidad','Contacto','Acceso','Datos de pago'].every(k=>profile.titles.some(t=>norm(t).includes(norm(k)))))throw new Error('VISUAL_DEFECT:PROFILE_'+target.name+':'+JSON.stringify(profile));
 
     await nav(page,'misvisitas');
