@@ -36,7 +36,7 @@ test('B1/B3 visual recovery protects approved marketplace and uses accessible sh
 test('B1 human regression: exact provider date survives HR status overwrite in a separate pending display field',()=>{
   const s=read('app/adapters/tya-cumulative-read-model-v2.js');
   assert.match(s,/providerScheduleExact=!conflict/);
-  assert.match(s,/!['cancelada','archivada','disponible'].includes\(str\(pv.estado\|\|pv.status\).toLowerCase\(\)\)/);
+  assert.ok(s.includes("!['cancelada','archivada','disponible'].includes(str(pv.estado||pv.status).toLowerCase())"));
   assert.match(s,/platformSchedulePendingHr=/);
 });
 test('B1/B3 instructive and reschedule dialogs use the recovered scoped premium modal',()=>{
