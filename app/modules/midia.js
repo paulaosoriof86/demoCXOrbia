@@ -192,7 +192,11 @@ CX.module('midia', ({data,role,ui})=>{
   const platformPending=!!(nextVisit?.platformSchedulePendingHr?.status==='pending_hr'&&nextVisit?.platformSchedulePendingHr?.date);
   const scheduledDate=String(nextVisit&&(nextVisit.agendada||nextVisit.scheduledDate||nextVisit.fechaAgendada||nextVisit.platformSchedulePendingHr?.date)||'').trim();
   const scheduleDisplayActive=!!vf.scheduled||platformPending;
-  const shopperActionButtons=nextVisit?(scheduleDisplayActive
+  const pendingOperationalRequest=nextVisit?.rescheduleRequest?.status==='pending_review'||nextVisit?.cancelRequest?.status==='pending_review';
+  const pendingRequestLabel=nextVisit?.cancelRequest?.status==='pending_review'?'Cancelación solicitada · pendiente de decisión':'Reprogramación solicitada · pendiente de autorización';
+  const shopperActionButtons=nextVisit?(pendingOperationalRequest
+    ?`<span class="cx-visit-request-note" role="status">⏳ ${pendingRequestLabel}</span><button class="btn btn-ghost btn-sm" data-visit-action="instructive" data-visit-id="${nextVisit.id}">${nextVisit.instructiveReadAt?'✓ Instructivo leído':'📄 Instructivo'}</button>`
+    :scheduleDisplayActive
     ?`<button class="btn btn-pr btn-sm" data-visit-action="reschedule" data-visit-id="${nextVisit.id}">🔄 Reprogramar</button><button class="btn btn-ghost btn-sm" data-visit-action="instructive" data-visit-id="${nextVisit.id}">${nextVisit.instructiveReadAt?'✓ Instructivo leído':'📄 Instructivo'}</button>`
     :`<button class="btn btn-pr btn-sm" data-visit-action="schedule" data-visit-id="${nextVisit.id}">📅 Agendar</button><button class="btn btn-ghost btn-sm" data-visit-action="instructive" data-visit-id="${nextVisit.id}">${nextVisit.instructiveReadAt?'✓ Instructivo leído':'📄 Instructivo'}</button>`):'';
   return `

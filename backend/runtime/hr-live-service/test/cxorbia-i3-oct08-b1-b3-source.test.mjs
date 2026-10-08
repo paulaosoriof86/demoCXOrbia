@@ -47,6 +47,19 @@ test('B7 admin request queue is derived from exact visit requests',()=>{
   assert.match(s,/v\.rescheduleRequest\?\.status==='pending_review'/);
   assert.match(s,/v\.cancelRequest\?\.status==='pending_review'/);
 });
+test('B1 authorized HR singleflight overlaps Firestore with scoped identity and revision readback',()=>{
+  const s=read('app/adapters/tya-protected-auth-hr-authority-bridge-v2.js');
+  assert.match(s,/function scopedPrefetchKey\(scope,user\)/);
+  assert.match(s,/primeHrPrefetch\(\);schedule\('backend_auth_ready_restored_session'\)/);
+  assert.match(s,/const fetched=await consumeHrPrefetch\(scope\)/);
+  assert.match(s,/Date\.now\(\)-result\.receivedAt<=10000/);
+  assert.match(s,/counts:validateSnapshot\(snapshot,scope\)/);
+});
+test('B1 Mi Día does not invite duplicate reprogramming after durable pending request',()=>{
+  const s=read('app/modules/midia.js');
+  assert.match(s,/pendingOperationalRequest/);
+  assert.match(s,/pendiente de autorización/);
+});
 test('B3 checkin informational badge does not claim unconfirmed ACK',()=>{
   const s=read('app/modules/misvisitas.js');
   assert.doesNotMatch(s,/>Guardado con ACK<\/span>/);

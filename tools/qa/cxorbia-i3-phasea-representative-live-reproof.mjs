@@ -191,9 +191,11 @@ try{
         rawShopperId:raw,canonicalShopperId:canonical,identityMapValue:String(d.__identityMap?.[raw]||''),
         sessionProfile:profile?{id:String(profile.id||profile.shopperId||''),name:String(profile.nombre||profile.displayName||[profile.firstName,profile.lastName].filter(Boolean).join(' ')),visibleLogin:String(profile.visibleLogin||profile.username||profile.user||'')}:null,
         ownVisits:own.length,uniqueOwnVisits:new Set(own.map(v=>String(v.hrRowId||v.id||v.visitId||''))).size,currentVisits:current.length,activeVisits:active.length,
-        firstActive:first?{id:String(first.id||first.visitId||''),hrRowId:String(first.hrRowId||''),branch:String(first.sucursal||''),instructiveReadAt:String(first.instructiveReadAt||''),scheduled:firstFacets.scheduled===true,scheduledDate:String(first.agendada||first.scheduledDate||first.fechaAgendada||'')}:null
+        firstActive:first?{id:String(first.id||first.visitId||''),hrRowId:String(first.hrRowId||''),branch:String(first.sucursal||''),instructiveReadAt:String(first.instructiveReadAt||''),scheduled:firstFacets.scheduled===true,scheduledDate:String(first.agendada||first.scheduledDate||first.fechaAgendada||''),rescheduleRequestStatus:String(first.rescheduleRequest?.status||''),cancelRequestStatus:String(first.cancelRequest?.status||'')}:null
       };
     },{expectedId:target.profile.id,currentPeriodId:periodId});
+    evidence.representatives[target.name]={stage:'identity_verified_before_crossroute',authorityReadyMs:sp.authorityReadyMs,activeVisits:base.activeVisits,firstActive:base.firstActive?{scheduled:base.firstActive.scheduled,rescheduleRequestStatus:base.firstActive.rescheduleRequestStatus,cancelRequestStatus:base.firstActive.cancelRequestStatus}:null};
+    write(evidence);
     if(base.sessionShopperId!==target.profile.id)throw new Error('MAPPING_FAILURE:SESSION_NOT_CANONICAL:'+target.name+':'+JSON.stringify(base));
     if(base.ownVisits!==base.uniqueOwnVisits)throw new Error('MAPPING_FAILURE:DUPLICATE_OWN_VISITS:'+target.name+':'+JSON.stringify(base));
 
@@ -204,7 +206,9 @@ try{
       const acts=new Set(midia.actions.filter(a=>a.visitId===base.firstActive.id).map(a=>a.action));
       if(!acts.has('instructive'))throw new Error('FUNCTIONAL_DEFECT:MIDIA_INSTRUCTIVE_ACTION_MISSING:'+target.name+':'+JSON.stringify({base,midia}));
       if(base.firstActive.scheduled){
-        if(!acts.has('reschedule')||acts.has('schedule'))throw new Error('FUNCTIONAL_DEFECT:MIDIA_SCHEDULED_ACTION_HIERARCHY:'+target.name+':'+JSON.stringify({base,midia}));
+        const pending=base.firstActive.rescheduleRequestStatus==='pending_review'||base.firstActive.cancelRequestStatus==='pending_review';
+        if(pending){if(acts.has('schedule')||acts.has('reschedule')||!/pendiente de (decisión|autorización)/i.test(midia.text))throw new Error('FUNCTIONAL_DEFECT:MIDIA_PENDING_REQUEST_PRESENTATION:'+target.name+':'+JSON.stringify(midia));}
+        if(!pending&&(!acts.has('reschedule')||acts.has('schedule')))throw new Error('FUNCTIONAL_DEFECT:MIDIA_SCHEDULED_ACTION_HIERARCHY:'+target.name+':'+JSON.stringify({base,midia}));
         if(base.firstActive.scheduledDate&&!midia.text.includes(base.firstActive.scheduledDate))throw new Error('VISUAL_DEFECT:MIDIA_SCHEDULED_DATE_MISSING:'+target.name+':'+JSON.stringify({base,midia}));
       }else if(!acts.has('schedule')||acts.has('reschedule'))throw new Error('FUNCTIONAL_DEFECT:MIDIA_UNSCHEDULED_ACTION_HIERARCHY:'+target.name+':'+JSON.stringify({base,midia}));
     }
@@ -271,6 +275,13 @@ try{
       b1ActionExercise.instructiveModalOpened=true;
     }
     if(base.firstActive?.scheduled){
+      const hasPendingRequest=base.firstActive.rescheduleRequestStatus==='pending_review'||base.firstActive.cancelRequestStatus==='pending_review';
+      if(hasPendingRequest){
+        await nav(page,'misvisitas');
+        const note=String(await page.locator('[data-visit-card]').first().innerText());
+        if(!/pendiente de (autorización|revisión)/i.test(note))throw new Error('FUNCTIONAL_DEFECT:PENDING_REQUEST_STATUS_NOT_VISIBLE:'+target.name+':'+note.slice(0,450));
+        b1ActionExercise.pendingRequestSafelyDisplayed=true;
+      }else{
       await nav(page,'midia');
       const rp=page.locator('[data-visit-action="reschedule"][data-visit-id="'+base.firstActive.id+'"]').first();
       if(await rp.count()!==1)throw new Error('FUNCTIONAL_DEFECT:B1_REPROGRAM_CONTROL_MISSING:'+target.name);
@@ -282,6 +293,7 @@ try{
       if(!/(?:Reprogramar visita|Solicitar reprogramación)/i.test(rtext))throw new Error('FUNCTIONAL_DEFECT:B1_REPROGRAM_MODAL_NOT_OPENED:'+target.name+':'+rtext.slice(0,500));
       await page.evaluate(()=>{const visible=e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect();return s.display!=='none'&&s.visibility!=='hidden'&&r.width>0&&r.height>0;};const o=[...document.querySelectorAll('.cx-ov')].find(visible);if(!o)return;const b=[...o.querySelectorAll('button')].find(x=>/×|cerrar/i.test(String(x.innerText||x.getAttribute('aria-label')||'')));if(b)b.click();else o.remove();});
       b1ActionExercise.reprogramModalOpened=true;
+      }
     }
 
     await nav(page,'aprendizaje');
