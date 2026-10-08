@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "OCT08_B1_PARALLEL_HR_PREFETCH_EXACT_SINGLE_DEV_MATERIALIZATION",
+  "activeBlocker": "B1_AUTHENTICATED_PERFORMANCE_REPROOF_PLUS_ADMIN_SHOPPER_CROSSROLE_B3_P0_E2E_PENDING",
   "nextFindingId": "VRM-271",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3_B1_RUN1376_PASS_36_OF_36_SINGLE_EXACT_DEV_RUNTIME_HOSTING_THEN_AUTHENTICATED_PERFORMANCE_AND_CROSSROLE_E2E",
+  "exactNextAction": "I3_RUN1377_SAME_ARTIFACT_AUTHENTICATED_ADMIN_SHOPPER_E2E_WITH_PREFETCH_METRICS_AND_READBACK",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -428,26 +428,25 @@
     "production": false
   },
   "currentMaterialization": {
-    "state": "PASS_OCT08_B1_B3_EXACT_RUNTIME_HOSTING_DEV_MATERIALIZATION",
+    "state": "PASS_B1_PARALLEL_AUTH_HR_PREFETCH_EXACT_DEV_MATERIALIZATION",
     "decision": "PASS_REJECTED_PHASEA_EXACT_DEV_MATERIALIZATION",
-    "sourceSha": "e4ee267ff7f63d4847b72a659d16915c5f631be5",
-    "sourceTree": "ce41bb3dbf4eefbe266c5f7186b60f6c1bf67b29",
-    "runId": 37830944964,
-    "runNumber": 1371,
-    "jobId": 113495983066,
-    "artifactId": 11574360061,
-    "artifactUploadDigest": "sha256:5533487c61c93de9da31ff333d3ac79c12e04360fc885c000c132a41a8f33b92",
-    "runtimeRevision": "cxorbia-live-hr-dev-00275-k4q",
-    "runtimeDigest": "sha256:28e74c47b3f34c2e49c27a2e28102f9837bfc019336f5f3866d637c79453eebc",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/2dda7d073f108e7c",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791487307520000",
+    "sourceSha": "8d7a071aae2864be3a9f41f3673275d8c9250010",
+    "sourceTree": "647839b7c5fbe63c923c4f854a1aad9350fffe5f",
+    "runId": 37833931973,
+    "runNumber": 1377,
+    "jobId": 113506153385,
+    "artifactId": 11574154663,
+    "artifactDigest": "sha256:9a2ce62fbb258459d65ccbfcfbb824dccbace0f05fab6cff08c0379e6d0f5945",
+    "runtimeRevision": "cxorbia-live-hr-dev-00276-swn",
+    "runtimeDigest": "sha256:3a8589e2ec6fc8b1dd726b435604bfae66a5b090dbfd2756de07bd7d7a04a56d",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/88869a5fa97c0254",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791488718431000",
     "hrRevision": "9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef",
     "builds": 1,
     "runtimeDeploys": 1,
     "hostingDeploys": 1,
     "storageRulesDeploys": 0,
-    "production": false,
-    "artifactDigest": "sha256:5533487c61c93de9da31ff333d3ac79c12e04360fc885c000c132a41a8f33b92"
+    "production": false
   },
   "lastFocalAttempt": {
     "runId": 36198284266,
@@ -6244,7 +6243,7 @@
     "source": "8d7a071aae2864be3a9f41f3673275d8c9250010",
     "tree": "647839b7c5fbe63c923c4f854a1aad9350fffe5f",
     "predecessor": "e4ee267ff7f63d4847b72a659d16915c5f631be5",
-    "status": "SOURCE_PROVEN_PENDING_ONE_DEV_MATERIALIZATION",
+    "status": "DEV_MATERIALIZED_PENDING_E2E_AND_HUMAN",
     "measurementsBaselineMs": {
       "Julissa": 11617,
       "Priscila": 13318,
@@ -6271,6 +6270,29 @@
       "passed": 36,
       "failed": 0
     },
-    "materializationStatus": "PENDING"
+    "materializationStatus": "PENDING",
+    "materialization": {
+      "state": "PASS_B1_PARALLEL_AUTH_HR_PREFETCH_EXACT_DEV_MATERIALIZATION",
+      "decision": "PASS_REJECTED_PHASEA_EXACT_DEV_MATERIALIZATION",
+      "sourceSha": "8d7a071aae2864be3a9f41f3673275d8c9250010",
+      "sourceTree": "647839b7c5fbe63c923c4f854a1aad9350fffe5f",
+      "runId": 37833931973,
+      "runNumber": 1377,
+      "jobId": 113506153385,
+      "artifactId": 11574154663,
+      "artifactDigest": "sha256:9a2ce62fbb258459d65ccbfcfbb824dccbace0f05fab6cff08c0379e6d0f5945",
+      "runtimeRevision": "cxorbia-live-hr-dev-00276-swn",
+      "runtimeDigest": "sha256:3a8589e2ec6fc8b1dd726b435604bfae66a5b090dbfd2756de07bd7d7a04a56d",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/88869a5fa97c0254",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791488718431000",
+      "hrRevision": "9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef",
+      "builds": 1,
+      "runtimeDeploys": 1,
+      "hostingDeploys": 1,
+      "storageRulesDeploys": 0,
+      "production": false
+    },
+    "sourceProofStatus": "PASS_RUN1376_36_TESTS",
+    "e2e": "PENDING"
   }
 }

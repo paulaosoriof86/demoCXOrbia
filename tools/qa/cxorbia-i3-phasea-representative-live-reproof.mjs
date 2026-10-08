@@ -178,6 +178,9 @@ try{
     evidence.representatives[target.name]={stage:'authenticated_boot_ready',authorityReadyMs:sp.authorityReadyMs,providerWrites:0};
     write(evidence);
     console.log(JSON.stringify({metric:'authorityReadyMs',role:'shopper',principal:target.name,ms:sp.authorityReadyMs}));
+    const prefetchTrace=await sp.page.evaluate(()=>{const p=window.CX_PROTECTED_HR_PREFETCH||{};return {mode:String(p.mode||'not_started'),ready:p.ready===true,prefetchFetchMs:Number.isFinite(p.receivedAt-p.startedAt)?p.receivedAt-p.startedAt:null,queueWaitMs:Number.isFinite(p.consumedAt-p.receivedAt)?p.consumedAt-p.receivedAt:null,providerWrites:p.providerWrites||0};});
+    console.log(JSON.stringify({metric:'authenticatedHrPrefetch',role:'shopper',principal:target.name,trace:prefetchTrace}));
+    evidence.representatives[target.name].prefetchTrace=prefetchTrace;
     const base=await page.evaluate(({expectedId,currentPeriodId})=>{
       const d=window.CX?.data||{},sessionUser=window.CX?.session?.user||{},sid=String(sessionUser.shopperId||''),own=typeof d.visitsForShopper==='function'?d.visitsForShopper(expectedId,false):[];
       const current=own.filter(v=>String(d.recordPeriodId?d.recordPeriodId(v):(v.periodId||v.projectId)||'')===currentPeriodId);
