@@ -68,14 +68,77 @@ const counts={records:recs.length,uniqueVisits:persistedIds.size,paid,pending,am
  missingExactVisits:missingRows.length,unexpectedInScope:unexpectedScopeRows.length};
 const fullPass=!statusMismatches.length&&!reviewExtra.length&&!reviewMissing.length
  &&!missingRows.length&&!unexpectedScopeRows.length&&!activeHistoricalDuplicates.length
+ &&str(dry.sourceRevision)===str(hr.revision||hr.sourceRevision)
  &&counts.records===counts.expectedRecords&&counts.uniqueVisits===counts.expectedRecords
  &&paid===counts.expectedPaid&&pending===counts.expectedPending
  &&review===counts.expectedAmountReviewRequired;
-const result={schemaVersion:'cxorbia.vrm153.reconciliation-readback.v2',
+
+/* Read-only VRM-153 preflight. No command execution and no Firestore writes. */
+async function exactPreflight(row){
+  const priorScope=arr(row.otherBatches).filter(x=>str(x.paymentStatus)==='pending');
+  const isSupersession=row.expectedStatus==='paid'&&priorScope.length===1;
+  const candidates=[str(row.visitId),str(row.hrRowId)].filter((x,i,a)=>x&&a.indexOf(x)===i);
+  let snap=null;
+  for(const id of candidates){
+    const s=await project.collection('visits').doc(id).get();
+    if(s.exists){snap=s;break;}
+  }
+  const v=snap?.exists?(snap.data()||{}):{},h=hrById.get(row.visitId)||{};
+  const priorBatchId=isSupersession?str(priorScope[0].reconciliationBatchId):null;
+  const priorRecords=isSupersession?allRecon.filter(r=>str(r.visitId)===str(row.visitId)&&str(r.reconciliationBatchId)===priorBatchId):[];
+  const prior=priorRecords.length===1?priorRecords[0]:null;
+  const blockers=[];
+  if(!snap?.exists)blockers.push('CANONICAL_VISIT_DOCUMENT_NOT_FOUND');
+  if(!str(v.shopperId))blockers.push('SHOPPER_ID_NOT_DURABLE');
+  if(!h||!str(h.id||h.visitId))blockers.push('LIVE_HR_VISIT_NOT_FOUND');
+  if(isSupersession){
+    if(!prior)blockers.push('EXACT_PREVIOUS_RECONCILIATION_NOT_UNIQUE');
+    if(prior&&(
+        str(prior.tenantId)!==TENANT||str(prior.projectId)!==PROGRAM
+        ||str(prior.visitId)!==str(row.visitId)||str(prior.periodId)!==PROGRAM+'-'+str(row.period)
+        ||str(prior.durableVisitId)!==str(snap?.id)||str(prior.shopperId)!==str(h.shopperId||v.shopperId)
+        ||str(prior.country)!==str(row.country)||str(prior.paymentStatus)!=='pending'
+        ||str(prior.source)!=='historical_reconciliation'||prior.paymentConfirmed===true
+        ||prior.active===false||prior.superseded===true||str(prior.supersededByBatchId)
+      ))blockers.push('EXACT_PREVIOUS_RECONCILIATION_SCOPE_OR_STATE_CONFLICT');
+    if(str(v.reconciliationBatchId)!==priorBatchId||str(v.historicalPaymentStatus).toLowerCase()!=='pending'
+       ||v.paymentConfirmed===true||v.historicalReconciliationConfirmed===true)
+      blockers.push('DURABLE_VISIT_NOT_STILL_PENDING_IN_PREVIOUS_BATCH');
+  }else if(row.presentInOtherBatch){
+    blockers.push('UNEXPECTED_NON_SUPERSESSION_OTHER_BATCH');
+  }else if(str(v.reconciliationBatchId)||str(v.historicalPaymentStatus)||v.paymentConfirmed===true){
+    blockers.push('MISSING_RECONCILIATION_BUT_EXISTING_DURABLE_FINANCE_STATE');
+  }
+  return {visitId:str(row.visitId),period:str(row.period),country:str(row.country),
+    expectedStatus:str(row.expectedStatus),visitDocumentPresent:!!snap?.exists,durableVisitId:snap?.id||null,
+    priorBatchId,priorRecordFound:!!prior,paymentState:str(v.historicalPaymentStatus)||null,
+    eligibleForExactSupersession:isSupersession&&blockers.length===0,
+    noExistingReconciliation:!row.presentInOtherBatch,blockers};
+}
+const preflightRows=[];
+for(let start=0;start<missingRows.length;start+=8)
+  preflightRows.push(...await Promise.all(missingRows.slice(start,start+8).map(exactPreflight)));
+const oldPending=preflightRows.filter(x=>x.priorBatchId);
+const withoutReconciliation=preflightRows.filter(x=>x.noExistingReconciliation);
+const supersessionPreflight={
+  sourceRevision:str(dry.sourceRevision),liveHrRevision:str(hr.revision||hr.sourceRevision),
+  examined:preflightRows.length,previousPendingRecords:oldPending.length,
+  eligibleExactSupersessions:oldPending.filter(x=>x.eligibleForExactSupersession).length,
+  blockedExactSupersessions:oldPending.filter(x=>!x.eligibleForExactSupersession).length,
+  unrecordedExactVisits:withoutReconciliation.length,
+  unrecordedByPeriodCountry:Object.fromEntries(Object.entries(missingByPeriodCountry).filter(([key])=>!key.startsWith('2026-08|GT|paid'))),
+  readyToRequestScopedFinancialAuthorization:oldPending.length>0
+    &&oldPending.every(x=>x.eligibleForExactSupersession)
+    &&str(dry.sourceRevision)===str(hr.revision||hr.sourceRevision)
+    &&activeHistoricalDuplicates.length===0,
+  rows:preflightRows,readsOnly:true,firestoreWrites:0,bankWrites:0,hrWrites:0,production:false
+};
+
+const result={schemaVersion:'cxorbia.vrm153.reconciliation-readback.v3',
  decision:fullPass?'PASS_VRM153_RECONCILIATION_READBACK_MATCH':'HOLD_VRM153_RECONCILIATION_READBACK_MISMATCH',
  sourceRevision:str(dry.sourceRevision),hrRevision:str(hr.revision||hr.sourceRevision),
  liveHrVisitCount:arr(hr.visits).length,
- counts,missingByStatus,missingByPeriodCountry,missingRows,unexpectedScopeRows,activeHistoricalDuplicates,
+ counts,missingByStatus,missingByPeriodCountry,missingRows,unexpectedScopeRows,activeHistoricalDuplicates,supersessionPreflight,
  otherBatchMatchesForMissing:missingRows.filter(x=>x.presentInOtherBatch).length,
  statusMismatches,reviewExtra,reviewMissing,details,
  octoberRecords:recs.filter(r=>str(r.periodId)==='cinepolis-2026-10').length,

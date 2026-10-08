@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM153_SAFE_SUPERSESSION_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_VRM153_RECONCILIATION_READBACK_DIAGNOSTIC_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "11e2af3f710783294e9160fef9472a6da6359275",
   "productTreeAuthority": "7a74a6658760e691c437076952c7e9bcb042580a",
   "predecessorProductSourceSha": "f407c1ae202a0201c738ff73b4e4ddba223b9a0d",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V340_2026-10-08.json",
-  "findingsLedgerExpectedGitBlob": "bf4f3a0bcc622e18db64bda83f67353fbf667067",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V341_2026-10-08.json",
+  "findingsLedgerExpectedGitBlob": "83ea2e231eba71067b533102c4b3c2014e5c83fd",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V44.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-153_P0_SOURCE_ONLY_SUPERSESSION_PENDING_SYNTHETIC_PROOF_34_AUG_GT_7_EXACT_UNRESOLVED",
+  "activeBlocker": "VRM153_P0_PROVIDER_PREFLIGHT_34_PRIOR_PENDING_PLUS_7_UNRECORDED_NO_WRITES",
   "nextFindingId": "VRM-272",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run existing I3 VRM153 synthetic source proof on corrected sub-500KB workflow; keep 34 August GT pending as unmodified until exact approval/readback and 7 unresolved exact visits OPEN. No real Firestore/HR/bank writes.",
+  "exactNextAction": "I3: run existing VRM153 reconciliation-readback-diagnostic job with exact current HR, 41 missing row preflight and provider data; record safe eligibility and blockers. No Firestore write or DEV deploy, no production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -7273,5 +7273,20 @@
     "production": false,
     "builds": 0,
     "deploys": 0
+  },
+  "i3VRM153LiveReadOnlyPreflight": {
+    "status": "READY_TO_RUN_CONTROL_ONLY",
+    "sourceProofRun1406": 37861208434,
+    "sourceSha": "11e2af3f710783294e9160fef9472a6da6359275",
+    "sourceTree": "7a74a6658760e691c437076952c7e9bcb042580a",
+    "qaBlob": "6735672379da8caa4b74dd076ce15ee2c87b1817",
+    "workflowBlob": "95a5d43032c336f149816d5a385fd1f4a981e55c",
+    "syntheticProof19Of19": true,
+    "realFirestoreWrites": 0,
+    "hrWrites": 0,
+    "bankWrites": 0,
+    "builds": 0,
+    "deploys": 0,
+    "production": false
   }
 }

@@ -5853,8 +5853,7 @@ jobs:
         run: |
          set -Eeuo pipefail
          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HR_URL="$VRM153_HR_URL" DRY_RESULT="$VRM153_DRY_OUT/result.json" OUT="$VRM153_OUT" node tools/qa/cxorbia-vrm153-reconciliation-readback-diagnostic.mjs | tee "$VRM153_OUT/console.log"
-         test "$(jq -r '.counts.records' "$VRM153_OUT/result.json")" = "628"
-         test "$(jq -r '.counts.uniqueVisits' "$VRM153_OUT/result.json")" = "628"
+         jq -e '.sourceRevision==.hrRevision and (.supersessionPreflight.examined==.counts.missingExactVisits) and .writes==0' "$VRM153_OUT/result.json" >/dev/null
          test "$(jq -r '.octoberRecords' "$VRM153_OUT/result.json")" = "0"
          test "$(jq -r '.writes' "$VRM153_OUT/result.json")" = "0"
       - name: step
