@@ -7,13 +7,13 @@
   "productSourceSha": "11e2af3f710783294e9160fef9472a6da6359275",
   "productTreeAuthority": "7a74a6658760e691c437076952c7e9bcb042580a",
   "predecessorProductSourceSha": "f407c1ae202a0201c738ff73b4e4ddba223b9a0d",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V342_2026-10-08.json",
-  "findingsLedgerExpectedGitBlob": "6d6aaa7fcec5dd2bb284291f18e18413d22981aa",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V343_2026-10-08.json",
+  "findingsLedgerExpectedGitBlob": "571e0ebd6726a0eda105ee88e364072b3dd78552",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V44.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM153_10_EXACT_PRIOR_SCOPE_CONFLICTS_AND_7_ABSENT_RECONCILIATIONS_READONLY_ONLY",
+  "activeBlocker": "VRM153_10_SHOPPER_ID_MISMATCH_EXACT_CROSSWALK_READ_ONLY_ADJUDICATION_REQUIRED",
   "nextFindingId": "VRM-272",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run narrowed same existing read-only QA with exact independent HR response header and field-by-field diagnosis of 10 prior reconciliation conflicts; no writes.",
+  "exactNextAction": "Resolve ten HR-to-historical-finance shopperId mismatches against exact scoped shopperIdentityCrosswalk and shopperIdentityLinks; never merge by name or overwrite real financial records.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -7321,5 +7321,30 @@
     "sourceSha": "11e2af3f710783294e9160fef9472a6da6359275",
     "sourceTree": "7a74a6658760e691c437076952c7e9bcb042580a",
     "devArtifactUnchangedRun1399": true
+  },
+  "i3Vrm153Run1408ExactIdentityReadback": {
+    "runId": 37861787279,
+    "artifactId": 11586463518,
+    "workflow": "CXOrbia Recovery I3 DEV Certification",
+    "runConclusion": "SUCCESS",
+    "independentHrRevisionEqual": true,
+    "hrRevision": "9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef",
+    "expectedVisits": 643,
+    "persistedReconciliations": 602,
+    "oldPendingAugustGT": 34,
+    "eligibleStructural": 24,
+    "blockedShopperIdConflict": 10,
+    "unrecordedExact": 7,
+    "conflictCodes": {
+      "PRIOR_SHOPPER_ID_MISMATCH": 10
+    },
+    "noCountryPeriodBatchStateConflicts": true,
+    "identityOwner": "tenants/tya/shopperIdentityCrosswalk + tenants/tya/shopperIdentityLinks",
+    "nextQABlob": "3d4f6a2238260bdcac9d2cee6d335af1e1bf95db",
+    "run1409ProofState": "PENDING",
+    "realWrites": 0,
+    "builds": 0,
+    "deploys": 0,
+    "production": false
   }
 }
