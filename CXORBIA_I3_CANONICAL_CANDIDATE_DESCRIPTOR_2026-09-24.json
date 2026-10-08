@@ -6406,5 +6406,45 @@
     "originalObservationsPreserved": true,
     "phaseAApproval": false,
     "production": "DO_NOT_TOUCH"
+  },
+  "i3B7CancelDecisionOwnerDiagnostic20261008": {
+    "status": "P0_PROVEN_SOURCE_STRUCTURAL_GAP__LIVE_E2E_NOT_YET_PROVEN__FOCAL_REPAIR_REQUIRED",
+    "classification": "FUNCTIONAL_DEFECT",
+    "dateLocal": "2026-10-08",
+    "iteration": "I3",
+    "productSourceSha": "7e44f271191878b48c4aaadeaf8eb2f0a74a786c",
+    "existingHumanObservations": [
+      "HF-20261008-07",
+      "HF-20261008-10",
+      "HF-20261008-11"
+    ],
+    "originalFindingsPreserved": true,
+    "expected": "After shopper cancelRequest.status=pending_review with provider ACK, authorized Admin sees a decision surface (approve/reject with reason); provider transaction closes exact cancelRequest.status, preserves visit if rejected, cancels only after approved; durable targeted decision notification with same transaction; both roles read back exact status after refresh/reload; no available-visit duplication or false HR write.",
+    "actualAtExactSource": [
+      "app/modules/postulaciones.js:145 displays cancellationRequests pending review as read-only banner with no decision controls",
+      "app/modules/postulaciones.js:383-391 has an unrelated older Cancelar visita action scoped to posts.find(...), not pending-review cancelRequest decisions",
+      "backend/runtime/cxorbia-operational-command-provider-v1.mjs:464-481 writes pending_review for shopper but Admin branch ignores payload.decision and never writes cancelRequest.status approved/rejected",
+      "backend/runtime/cxorbia-operational-command-provider-v1.mjs:540-555 creates durable notification for decision but notification cannot establish persistent decision status alone",
+      "app/modules/misvisitas.js:128-132 only shows shopper rejection when cancelRequest.status is rejected; provider currently has no branch producing that status"
+    ],
+    "ownerExact": [
+      "app/modules/postulaciones.js",
+      "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+    ],
+    "contractTests": [
+      "backend/runtime/hr-live-service/test/cxorbia-i3-oct08-b1-b3-source.test.mjs",
+      "same-artifact Admin->Shopper E2E cancellation approval and rejection on safe future DEV fixture"
+    ],
+    "sourceRepairScope": "Implement explicit Admin approve/reject UI with reason, provider-authoritative cancelRequest transition and durable receipt/outbox, guard nonpending decision, preserve existing admin direct cancellation semantics; no HR mutation or release of availability without external contract ACK.",
+    "notProven": [
+      "Authenticated live two-role cancellation request/decision path",
+      "exact permission and HR reconciliation after decision",
+      "second-session shopper notification",
+      "Gate20/Gate21"
+    ],
+    "noProductMutationInDiagnostic": true,
+    "nextExactAction": "P0 focal in I3 on these two owners only; unit/source tests, readback of product parent/tree, DEV certification run and two-role provider ACK / reload / no-duplicate E2E; update ledger/matrix/descriptor cumulatively; do not touch production.",
+    "authority": "CXORBIA_I3_PHASE_A_FINDINGS_COVERAGE_READBACK_2026-10-08_POST_RUN1382.json",
+    "production": "DO_NOT_TOUCH"
   }
 }
