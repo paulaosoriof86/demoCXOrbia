@@ -7,7 +7,7 @@ import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';
 import {getAuth} from 'firebase-admin/auth';
 import {getFirestore} from 'firebase-admin/firestore';
 
-const E=process.env,str=v=>String(v??'').trim,arr=v=>Array.isArray(v)?v:[];
+const E=process.env,str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[];
 const host=String(E.HOSTING_URL||'https://cxorbia-backend-dev.web.app').replace(/\/$/,'');
 const project=E.PROJECT||'cxorbia-backend-dev',tenantId=E.TENANT_ID||'tya',projectId=E.PROJECT_ID||'cinepolis';
 const shopperId=E.B7_SHOPPER_ID||'shopper_gt_1440137b73',periodId=E.B7_PERIOD_ID||'cinepolis-2026-10';
