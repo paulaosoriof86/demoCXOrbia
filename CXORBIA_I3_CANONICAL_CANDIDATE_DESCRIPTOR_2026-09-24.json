@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_B1_OCT07_AUTH_READONLY_VISUAL_PROOF_REQUIRED",
+  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "c12c44a53ce999a7deebeef9a5d6fa233753793c",
-  "productTreeAuthority": "de7945e328b5b8f5458479343f7e87f469d1a9bd",
-  "predecessorProductSourceSha": "411e1e3712e6abfd60475aef16a75aecc7399c08",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V326_2026-10-07.json",
-  "findingsLedgerExpectedGitBlob": "1a13f1e1c22ac77a6570d3b3e26a471de8bb3c43",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V33.json",
+  "productSourceSha": "8cdd461bd4b19185c007db18631a2470891a3327",
+  "productTreeAuthority": "38139fcc5032f29474dd0ec5b9d33312b37a0a24",
+  "predecessorProductSourceSha": "c12c44a53ce999a7deebeef9a5d6fa233753793c",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V327_2026-10-07.json",
+  "findingsLedgerExpectedGitBlob": "1d4246adbef851534ef3ee498c746697264a1a7e",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V34.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "B1_HUMAN_FAIL_AUTH_READONLY_VISUAL_PROOF_PENDING",
+  "activeBlocker": "B1_EXACT_DURABLE_SCHEDULE_READ_MODEL_FOCAL",
   "nextFindingId": "VRM-271",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "B1_AUTHENTICATED_READONLY_UI_PROOF_NO_COMMAND_WRITES_THEN_PAULA_VISUAL_DECISION",
+  "exactNextAction": "SOURCE_PROOF_CUMULATIVE_B1_THEN_DEV_HOSTING_ONLY_THEN_EXACT_PROVIDER_SCHEDULE_READBACK_PAULA",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -428,7 +428,7 @@
     "production": false
   },
   "currentMaterialization": {
-    "state": "PASS_B1_INCREMENTAL_HOSTING_ONLY_DEV_MATERIALIZATION",
+    "state": "HISTORICAL_PREDECESSOR_DEV_FROM_C12c44",
     "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
     "runId": 37712339682,
     "runNumber": 1361,
@@ -505,7 +505,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "de7945e328b5b8f5458479343f7e87f469d1a9bd",
+  "productSourceTree": "38139fcc5032f29474dd0ec5b9d33312b37a0a24",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -2660,7 +2660,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "eee6e4cb89992ba7c325ed17d9859a73ddbf6c29",
+  "moduleTruthExpectedGitBlob": "811a0c469e8ec3eefb3b49497aa766fa1fd0543e",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -6006,7 +6006,7 @@
     }
   },
   "humanVisualCheckpointUrl": "https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV",
-  "humanVisualCheckpointState": "B1_HUMAN_FAIL_DEV_INCREMENTAL_MATERIALIZED_BUT_NOT_ACCEPTED",
+  "humanVisualCheckpointState": "B1_HUMAN_FAIL_FOCAL_SOURCE_REPROOF_PENDING",
   "run1358ControlAdjudication": {
     "runId": 37680796799,
     "runNumber": 1358,
@@ -6070,5 +6070,29 @@
       },
       "focalHumanPass": false
     }
+  },
+  "b1ExactDurableSchedulingSourceFix20261007": {
+    "state": "SOURCE_FIXED_PENDING_GATES",
+    "sourceSha": "8cdd461bd4b19185c007db18631a2470891a3327",
+    "treeSha": "38139fcc5032f29474dd0ec5b9d33312b37a0a24",
+    "predecessor": "c12c44a53ce999a7deebeef9a5d6fa233753793c",
+    "targetVisit": "OCTUBRE 26!6",
+    "providerEvidence": {
+      "status": "asignada",
+      "agendada": "2026-10-09",
+      "version": 16,
+      "hrState": "P x Agendar",
+      "readOnlyProofRunId": 37713512877
+    },
+    "rootCause": "visit reconciler restores HR-owned status to asignada while retaining exact durable schedule date; read model must project date separately, not require status agendada",
+    "changedOwners": [
+      "app/adapters/tya-cumulative-read-model-v2.js",
+      "app/modules/misvisitas.js",
+      "backend/runtime/hr-live-service/test/cxorbia-b1-transversal-shopper-actions.test.mjs"
+    ],
+    "mat": "PENDING_NEW_HOSTING_DEV",
+    "tinyFish": "ENVIRONMENT_FAILURE_SESSION_RESTORE",
+    "humanPass": false,
+    "production": false
   }
 }
