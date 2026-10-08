@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "8cdd461bd4b19185c007db18631a2470891a3327",
   "productTreeAuthority": "38139fcc5032f29474dd0ec5b9d33312b37a0a24",
   "predecessorProductSourceSha": "c12c44a53ce999a7deebeef9a5d6fa233753793c",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V327_2026-10-07.json",
-  "findingsLedgerExpectedGitBlob": "1d4246adbef851534ef3ee498c746697264a1a7e",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V328_2026-10-07.json",
+  "findingsLedgerExpectedGitBlob": "11809c4150b216c49da65d4ee4082c03dc412d42",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V34.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "B1_EXACT_DURABLE_SCHEDULE_READ_MODEL_FOCAL",
+  "activeBlocker": "B1_DURABLE_PENDING_DATE_EXACT_DEV_MATERIALIZATION",
   "nextFindingId": "VRM-271",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "SOURCE_PROOF_CUMULATIVE_B1_THEN_DEV_HOSTING_ONLY_THEN_EXACT_PROVIDER_SCHEDULE_READBACK_PAULA",
+  "exactNextAction": "B1_HOSTING_ONLY_DEV_EXACT_SOURCE_AND_PROTECT_VISITAS_DISPONIBLES",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -6006,7 +6006,7 @@
     }
   },
   "humanVisualCheckpointUrl": "https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV",
-  "humanVisualCheckpointState": "B1_HUMAN_FAIL_FOCAL_SOURCE_REPROOF_PENDING",
+  "humanVisualCheckpointState": "B1_FAIL_FOCAL_DEV_MATERIALIZATION_PENDING",
   "run1358ControlAdjudication": {
     "runId": 37680796799,
     "runNumber": 1358,
@@ -6072,7 +6072,7 @@
     }
   },
   "b1ExactDurableSchedulingSourceFix20261007": {
-    "state": "SOURCE_FIXED_PENDING_GATES",
+    "state": "SOURCE_PROOF_PASS_HOSTING_ONLY_PENDING",
     "sourceSha": "8cdd461bd4b19185c007db18631a2470891a3327",
     "treeSha": "38139fcc5032f29474dd0ec5b9d33312b37a0a24",
     "predecessor": "c12c44a53ce999a7deebeef9a5d6fa233753793c",
@@ -6093,6 +6093,24 @@
     "mat": "PENDING_NEW_HOSTING_DEV",
     "tinyFish": "ENVIRONMENT_FAILURE_SESSION_RESTORE",
     "humanPass": false,
-    "production": false
+    "production": false,
+    "proof": {
+      "runId": 37713899766,
+      "runNumber": 1366,
+      "jobId": 113105930331,
+      "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+      "tests": {
+        "phaseA": 7,
+        "vrm261to264": 4,
+        "vrm268to269": 3,
+        "b1Focal": 11,
+        "pass": 25,
+        "fail": 0
+      },
+      "sourceSha": "8cdd461bd4b19185c007db18631a2470891a3327",
+      "sourceTree": "38139fcc5032f29474dd0ec5b9d33312b37a0a24",
+      "production": false,
+      "deploys": 0
+    }
   }
 }
