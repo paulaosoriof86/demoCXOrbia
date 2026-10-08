@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
+  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "e4ee267ff7f63d4847b72a659d16915c5f631be5",
-  "productTreeAuthority": "ce41bb3dbf4eefbe266c5f7186b60f6c1bf67b29",
-  "predecessorProductSourceSha": "8cdd461bd4b19185c007db18631a2470891a3327",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V331_2026-10-08.json",
-  "findingsLedgerExpectedGitBlob": "9b71e03b6114e76882359583e704de7b23f10504",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V35.json",
+  "productSourceSha": "8d7a071aae2864be3a9f41f3673275d8c9250010",
+  "productTreeAuthority": "647839b7c5fbe63c923c4f854a1aad9350fffe5f",
+  "predecessorProductSourceSha": "e4ee267ff7f63d4847b72a659d16915c5f631be5",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V332_2026-10-08.json",
+  "findingsLedgerExpectedGitBlob": "2ae1042c7bf55db34b06e65ec6ee78055d67a831",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V36.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "OCT08_B1_B3_AUTHENTICATED_BOTH_ROLES_PROVIDER_ACK_READBACK_RELOAD_PERFORMANCE_PENDING",
+  "activeBlocker": "B1_AUTHENTICATED_PREFETCH_SOURCE_PROOF_AND_PERFORMANCE_REPROOF_PENDING",
   "nextFindingId": "VRM-271",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3_OCT08_SAME_ARTIFACT_AUTHENTICATED_ADMIN_SHOPPER_E2E_B1_STARTUP_METRICS_B3_RESCHEDULE_CANCEL_CHECKIN_NO_PRODUCTION",
+  "exactNextAction": "I3_OCT08_B1_PREFETCH_SOURCE_PROOF_THEN_SAME_CANONICAL_DEV_RUNTIME_HOSTING_MATERIALIZATION_NO_PRODUCTION",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -6239,5 +6239,28 @@
       "builds": 0,
       "deploys": 0
     }
+  },
+  "i3Oct08Perf": {
+    "source": "8d7a071aae2864be3a9f41f3673275d8c9250010",
+    "tree": "647839b7c5fbe63c923c4f854a1aad9350fffe5f",
+    "predecessor": "e4ee267ff7f63d4847b72a659d16915c5f631be5",
+    "status": "SOURCE_FIXED_PENDING_SOURCE_PROOF",
+    "measurementsBaselineMs": {
+      "Julissa": 11617,
+      "Priscila": 13318,
+      "Paula": 10275
+    },
+    "ownerPaths": [
+      "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+      "app/modules/midia.js"
+    ],
+    "tests": [
+      "backend/runtime/hr-live-service/test/cxorbia-i3-oct08-b1-b3-source.test.mjs"
+    ],
+    "pendingHuman": true,
+    "production": false,
+    "builds": 0,
+    "deploys": 0,
+    "findingsPreserved": 270
   }
 }
