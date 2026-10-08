@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM271_B2_B5_EXACT_UI_VERIFIED_JULISSA__VRM151_FINANCE_EXPECTED_EXTERNAL_HR_REVISION_TEST_REPROOF_PENDING",
+  "activeBlocker": "VRM153_NEW_SOURCE_REVISION_RECONCILIATION_COVERAGE_DIFFERENCE_41__DIAGNOSTIC_PENDING",
   "nextFindingId": "VRM-272",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Re-run ONLY existing vrm157-dev-readback-only on exact run1399 DEV artifact, including VRM271 per-visit authenticated cross-module PASS and VRM151 independently pinned HR revision 9f543e... with Oct06 August all-paid frozen cut. Preserve run1400 broad PASS, no new product source/build/deploy. Do not mark September paid except exact durable row evidence; do not claim block Human PASS.",
+  "exactNextAction": "Run existing I3 vrm157-dev-readback-only against unchanged run1399 DEV. Produce exact missing visitId readback for 41 absent reconciliation records (37 historic paid-cut and 4 pending), group by period/country and show any entries in other batches. Correct old readback false PASS to HOLD on missing coverage. No real data writes or new build/deploy. Keep VRM271 exact UI 9 visits / 7 confirmed paid / 0 mismatches PASS independently.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -7054,5 +7054,58 @@
       "productChanged": false,
       "productionTouched": false
     }
+  },
+  "run1402Vrm153CoverageDriftReadback": {
+    "date": "2026-10-08",
+    "classification": "PERSISTENCE_FAILURE",
+    "iteration": "I3",
+    "sourceRevision": "9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef",
+    "expectedParentSha": "45f977a1d0247d81aa077c0246b8199b2517c217",
+    "expectedParentTree": "7cbd8689ed6174c2c647108b6adc29a0f9e89fdb",
+    "before": {
+      "status": "HOLD_VRM154_156_LIVE_REPROOF_REQUIRED",
+      "activeBlocker": "VRM271_B2_B5_EXACT_UI_VERIFIED_JULISSA__VRM151_FINANCE_EXPECTED_EXTERNAL_HR_REVISION_TEST_REPROOF_PENDING",
+      "exactNextAction": "Re-run ONLY existing vrm157-dev-readback-only on exact run1399 DEV artifact, including VRM271 per-visit authenticated cross-module PASS and VRM151 independently pinned HR revision 9f543e... with Oct06 August all-paid frozen cut. Preserve run1400 broad PASS, no new product source/build/deploy. Do not mark September paid except exact durable row evidence; do not claim block Human PASS."
+    },
+    "after": {
+      "status": "HOLD_VRM154_156_LIVE_REPROOF_REQUIRED",
+      "activeBlocker": "VRM153_NEW_SOURCE_REVISION_RECONCILIATION_COVERAGE_DIFFERENCE_41__DIAGNOSTIC_PENDING",
+      "exactNextAction": "Run existing I3 vrm157-dev-readback-only against unchanged run1399 DEV. Produce exact missing visitId readback for 41 absent reconciliation records (37 historic paid-cut and 4 pending), group by period/country and show any entries in other batches. Correct old readback false PASS to HOLD on missing coverage. No real data writes or new build/deploy. Keep VRM271 exact UI 9 visits / 7 confirmed paid / 0 mismatches PASS independently."
+    },
+    "runId": 37859418679,
+    "runNumber": 1402,
+    "jobId": 113591397403,
+    "artifactId": 11585169040,
+    "artifactZipDigest": "sha256:09a4b467b950dfc41e5141abcd01f2e4fd9c375318ff2fe509e565b5e957f64e",
+    "dryExpected": {
+      "submitted": 643,
+      "paidCut": 599,
+      "pendingWithoutIndividualPaymentProof": 44,
+      "reviewRequired": 5,
+      "octoberTouched": 0
+    },
+    "persistedReadback": {
+      "records": 602,
+      "unique": 602,
+      "paid": 562,
+      "pending": 40,
+      "reviewRequired": 5,
+      "missingTotal": 41,
+      "missingHistoricallyPaid": 37,
+      "missingPending": 4,
+      "falsePassBecauseOnlyComparedPresentRecords": true
+    },
+    "rootCause": "EXACT_MISSING_RECONCILIATION_RECORDS_READONLY_DIAGNOSTIC_NOT_YET_COMPLETED",
+    "priorVrm153PassPreserved": "CLOSED_PROVEN_RUN856_ON_HISTORICAL_REVISION_NOT_REOPENED_RETROACTIVELY",
+    "qaPath": "tools/qa/cxorbia-vrm153-reconciliation-readback-diagnostic.mjs",
+    "qaBeforeGitBlob": "88def85046996ac682d9f0c51bf054caa9997cf6",
+    "qaAfterGitBlob": "faa3806fc3cb003ebf80e12ff3150f88219befc3",
+    "productSource": "12f33a00430768ab11f2041eb278d33724e69401",
+    "productTree": "ce15467895f769b6aa6ad49a2bb138709ab425fd",
+    "materializationRun": 1399,
+    "writes": 0,
+    "production": false,
+    "builds": 0,
+    "deploys": 0
   }
 }

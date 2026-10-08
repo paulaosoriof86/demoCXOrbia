@@ -29,6 +29,45 @@ for(const id of mismatchIds){
  const rec=recById.get(id)||{},docId=str(rec.durableVisitId||id),snap=await project.collection('visits').doc(docId).get(),v=snap.exists?(snap.data()||{}):{},h=hrById.get(id)||{};
  details.push({visitId:id,durableVisitId:docId,expectedStatus:expectedStatus.get(id)||null,persistedStatus:str(rec.paymentStatus)||null,expectedReview:expectedReview.has(id),persistedReview:persistedReview.has(id),persistedReviewReasons:arr(rec.reviewReasons),persistedAmount:rec.amount??null,firestore:{boleto:v.boleto??null,comboAmt:v.comboAmt??null,reimbursementSourceComplete:v.reimbursementSourceComplete??null,reimbursementPartial:v.reimbursementPartial??null,honorario:v.honorario??null,honorarioSource:v.honorarioSource??null},hr:{boleto:h.boleto??null,comboAmt:h.comboAmt??null,reimbursementSourceComplete:h.reimbursementSourceComplete??null,reimbursementPartial:h.reimbursementPartial??null,honorario:h.honorario??null,honorarioSource:h.honorarioSource??null}});
 }
+/* VRM-153: a partial reconciliation batch must NOT be called PASS.
+   Compare all expected visit IDs from the same live HR revision, read-only. */
+const allRecon=recSnap.docs.map(x=>({id:x.id,...(x.data()||{})}));
+const persistedIds=new Set(recs.map(r=>str(r.visitId)));
+const expectedGroupById=new Map();
+for(const g of arr(dry.grouped))for(const ref of arr(g.visitRefs))
+  expectedGroupById.set(str(ref.visitId),{period:str(g.period),country:str(g.country),hrRowId:str(ref.hrRowId)});
+const missingRows=[...expectedStatus.entries()].filter(([id])=>!persistedIds.has(id)).map(([visitId,status])=>{
+  const group=expectedGroupById.get(visitId)||{},h=hrById.get(visitId)||{};
+  const otherBatches=allRecon.filter(r=>str(r.visitId)===visitId&&!batchIds.has(str(r.reconciliationBatchId)))
+    .map(r=>({reconciliationBatchId:str(r.reconciliationBatchId),paymentStatus:str(r.paymentStatus)}));
+  return {visitId,period:group.period||'',country:group.country||'',
+    expectedStatus:status,hrRowId:group.hrRowId||str(h.hrRowId),
+    presentInOtherBatch:otherBatches.length>0,otherBatches};
+});
+const unexpectedScopeRows=recs.filter(r=>!expectedStatus.has(str(r.visitId)))
+  .map(r=>({visitId:str(r.visitId),paymentStatus:str(r.paymentStatus),reconciliationBatchId:str(r.reconciliationBatchId)}));
+const missingByStatus={paid:missingRows.filter(x=>x.expectedStatus==='paid').length,
+  pending:missingRows.filter(x=>x.expectedStatus==='pending').length};
+const missingByPeriodCountry={};
+for(const row of missingRows){const k=[row.period,row.country,row.expectedStatus].join('|');
+  missingByPeriodCountry[k]=(missingByPeriodCountry[k]||0)+1;}
 const paid=recs.filter(r=>str(r.paymentStatus)==='paid').length,pending=recs.filter(r=>str(r.paymentStatus)==='pending').length,review=persistedReview.size;
-const result={schemaVersion:'cxorbia.vrm153.reconciliation-readback.v1',decision:statusMismatches.length||reviewExtra.length||reviewMissing.length?'HOLD_VRM153_RECONCILIATION_READBACK_MISMATCH':'PASS_VRM153_RECONCILIATION_READBACK_MATCH',sourceRevision:str(dry.sourceRevision),hrRevision:str(hr.revision),counts:{records:recs.length,uniqueVisits:new Set(recs.map(r=>str(r.visitId))).size,paid,pending,amountReviewRequired:review,expectedRecords:dry.expected?.canonicalSubmitted??null,expectedPaid:dry.expected?.paid??null,expectedPending:dry.expected?.pending??null,expectedAmountReviewRequired:dry.expected?.amountReviewRequired??null},statusMismatches,reviewExtra,reviewMissing,details,octoberRecords:recs.filter(r=>str(r.periodId)==='cinepolis-2026-10').length,writes:0,hrWrites:0,bankWrites:0,financialMovementWrites:0,production:false};
+const counts={records:recs.length,uniqueVisits:persistedIds.size,paid,pending,amountReviewRequired:review,
+ expectedRecords:dry.expected?.canonicalSubmitted??null,expectedPaid:dry.expected?.paid??null,
+ expectedPending:dry.expected?.pending??null,expectedAmountReviewRequired:dry.expected?.amountReviewRequired??null,
+ missingExactVisits:missingRows.length,unexpectedInScope:unexpectedScopeRows.length};
+const fullPass=!statusMismatches.length&&!reviewExtra.length&&!reviewMissing.length
+ &&!missingRows.length&&!unexpectedScopeRows.length
+ &&counts.records===counts.expectedRecords&&counts.uniqueVisits===counts.expectedRecords
+ &&paid===counts.expectedPaid&&pending===counts.expectedPending
+ &&review===counts.expectedAmountReviewRequired;
+const result={schemaVersion:'cxorbia.vrm153.reconciliation-readback.v2',
+ decision:fullPass?'PASS_VRM153_RECONCILIATION_READBACK_MATCH':'HOLD_VRM153_RECONCILIATION_READBACK_MISMATCH',
+ sourceRevision:str(dry.sourceRevision),hrRevision:str(hr.revision||hr.sourceRevision),
+ liveHrVisitCount:arr(hr.visits).length,
+ counts,missingByStatus,missingByPeriodCountry,missingRows,unexpectedScopeRows,
+ otherBatchMatchesForMissing:missingRows.filter(x=>x.presentInOtherBatch).length,
+ statusMismatches,reviewExtra,reviewMissing,details,
+ octoberRecords:recs.filter(r=>str(r.periodId)==='cinepolis-2026-10').length,
+ writes:0,hrWrites:0,bankWrites:0,financialMovementWrites:0,production:false};
 fs.mkdirSync(OUT,{recursive:true});fs.writeFileSync(OUT+'/result.json',JSON.stringify(result,null,2)+'\n');process.stdout.write(JSON.stringify(result,null,2)+'\n');
