@@ -7379,11 +7379,11 @@ jobs:
       - name: Verify exact immutable B1 DEV artifact and nonmutating source
         run: |
          set -Eeuo pipefail
-         test "$FOCAL_SOURCE" = "c12c44a53ce999a7deebeef9a5d6fa233753793c"
+         test "$FOCAL_SOURCE" = "8cdd461bd4b19185c007db18631a2470891a3327"
          test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
          test "$(jq -r '.currentMaterialization.sourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
          test "$(jq -r '.currentMaterialization.sourceTree' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
-         test "$(jq -r '.currentMaterialization.hostingVersion' "$CANDIDATE_DESCRIPTOR")" = "sites/cxorbia-backend-dev/versions/42871b92b5fd6982"
+         test "$(jq -r '.currentMaterialization.hostingVersion' "$CANDIDATE_DESCRIPTOR")" = "sites/cxorbia-backend-dev/versions/e62e7447c79a4bb0"
          test "$(jq -r '.production' "$CANDIDATE_DESCRIPTOR")" = "DO_NOT_TOUCH"
          node --check tools/qa/cxorbia-i3-b1-oct07-authenticated-readonly.mjs
       - name: Install test browser without modifying product

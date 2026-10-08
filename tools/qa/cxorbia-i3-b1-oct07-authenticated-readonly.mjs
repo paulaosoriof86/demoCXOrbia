@@ -46,12 +46,19 @@ for(const t of targets){
   const page=await ctx.newPage();
   const errors=[];page.on('pageerror',e=>errors.push(String(e.message||e)));
   let signed=false;
-  for(let n=0;n<3&&!signed;n++){
-    await page.goto(url+'&b1boot='+Date.now(),{waitUntil:'domcontentloaded',timeout:90000});
+  const token=await auth.createCustomToken(matches[0].uid);
+  for(let n=0;n<5&&!signed;n++){
+    await page.goto(url+'&b1boot='+Date.now()+'-'+n,{waitUntil:'domcontentloaded',timeout:90000});
     await page.waitForFunction(()=>!!window.firebase?.auth?.(),null,{timeout:90000});
-    const token=await auth.createCustomToken(matches[0].uid);
-    await page.evaluate(async token=>{const fb=window.firebase;await fb.auth().setPersistence(fb.auth.Auth.Persistence.LOCAL);await fb.auth().signInWithCustomToken(token);},token);
-    signed=await page.evaluate(uid=>window.firebase.auth().currentUser?.uid===uid,matches[0].uid);
+    try{
+      await page.evaluate(async token=>{const fb=window.firebase;await fb.auth().setPersistence(fb.auth.Auth.Persistence.LOCAL);await fb.auth().signInWithCustomToken(token);},token);
+    }catch(error){
+      if(!/Execution context was destroyed|Cannot find context|Navigation|frame was detached|Target closed/i.test(String(error?.message||error)))throw error;
+    }
+    try{
+      await page.waitForFunction(uid=>String(window.firebase?.auth?.().currentUser?.uid||'')===uid,matches[0].uid,{timeout:15000});
+      signed=true;
+    }catch(_){await page.waitForTimeout(650*(n+1));}
   }
   if(!signed)throw Error('B1_AUTHENTICATED_DEV_BROWSER_NOT_READY_'+t.name);
   await page.goto('about:blank');
@@ -81,6 +88,10 @@ for(const t of targets){
   if(!view.visit||view.modalCount!==0)throw Error('B1_VISIT_OR_MODAL_INVARIANT:'+t.name+':'+JSON.stringify(view));
   if(view.locationFontPx<14||view.stepFontPx<13)throw Error('B1_MICROTYPOGRAPHY:'+t.name+':'+JSON.stringify(view));
   if(HR&&view.liveHrRevision!==HR)throw Error('B1_HR_REVISION_DRIFT_FAIL_CLOSED:'+JSON.stringify({expected:HR,observed:view.liveHrRevision}));
+  const paulaDocument=providerVisitReadback.find(x=>x.exists&&x.hrRowId==='OCTUBRE 26!6'&&x.agendada);
+  if(t.name==='Paula Osorio'&&paulaDocument&&!view.visit.hrDate){
+    if(!view.visit.pendingHR||view.visit.pendingDate!==paulaDocument.agendada)throw Error('B1_EXACT_DURABLE_DATE_NOT_PROJECTED:'+JSON.stringify({provider:paulaDocument,view}));
+  }
   const expectReschedule=view.visit.facetsScheduled||view.visit.pendingHR;
   const acts=new Set(view.buttons.map(b=>b.action));
   if(expectReschedule&&(!acts.has('reschedule')||acts.has('schedule')))throw Error('B1_PENDING_OR_CONFIRMED_SCHEDULE_BAD_CTA:'+t.name+':'+JSON.stringify(view));
