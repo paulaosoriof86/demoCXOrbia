@@ -4,12 +4,12 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "f407c1ae202a0201c738ff73b4e4ddba223b9a0d",
-  "productTreeAuthority": "fe577e47a587749ce5c7db765c5fcb66d4fbb00c",
-  "predecessorProductSourceSha": "12f33a00430768ab11f2041eb278d33724e69401",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V339_2026-10-08.json",
-  "findingsLedgerExpectedGitBlob": "89bd6439e0ec4565dc81c4359687558203df8936",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V43.json",
+  "productSourceSha": "11e2af3f710783294e9160fef9472a6da6359275",
+  "productTreeAuthority": "7a74a6658760e691c437076952c7e9bcb042580a",
+  "predecessorProductSourceSha": "f407c1ae202a0201c738ff73b4e4ddba223b9a0d",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V340_2026-10-08.json",
+  "findingsLedgerExpectedGitBlob": "bf4f3a0bcc622e18db64bda83f67353fbf667067",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V44.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3: prove new VRM-153 pending-to-paid historical supersession source in existing workflow, with synthetic database only. Preserve 34 prior August GT pending audit records, 7 unresolved visit IDs and VRM-271 focal PASS. Zero real Firestore/HR/bank writes, zero DEV/prod deploy.",
+  "exactNextAction": "Run existing I3 VRM153 synthetic source proof on corrected sub-500KB workflow; keep 34 August GT pending as unmodified until exact approval/readback and 7 unresolved exact visits OPEN. No real Firestore/HR/bank writes.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -7254,5 +7254,24 @@
     "currentDevArtifactPreservedFromRun1399": true,
     "realFirestoreWrites": 0,
     "production": false
+  },
+  "i3Vrm153WorkflowSizeCorrection20261008": {
+    "date": "2026-10-08",
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "failedRun1405": 37861029453,
+    "diagnosis": "GitHub workflow 500KB size hard-limit, 0 jobs started",
+    "originalBytes": 514240,
+    "correctedBytes": 511973,
+    "maximumBytes": 512000,
+    "workflowBlob": "b5133589eff7bd035f951f294587e84dc0e45d9e",
+    "productSourceSha": "11e2af3f710783294e9160fef9472a6da6359275",
+    "productTree": "7a74a6658760e691c437076952c7e9bcb042580a",
+    "providerBlobUnchanged": "7aba71e91986583c0f9fd758f2be1e67a1e99439",
+    "safeGate": "HOLD_VRM153_SAFE_SUPERSESSION_SOURCE_PROOF_REQUIRED",
+    "syntheticOnly": true,
+    "realFinancialWrites": 0,
+    "production": false,
+    "builds": 0,
+    "deploys": 0
   }
 }
