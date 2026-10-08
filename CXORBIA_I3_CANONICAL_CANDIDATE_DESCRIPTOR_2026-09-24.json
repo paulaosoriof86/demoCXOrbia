@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "c12c44a53ce999a7deebeef9a5d6fa233753793c",
   "productTreeAuthority": "de7945e328b5b8f5458479343f7e87f469d1a9bd",
   "predecessorProductSourceSha": "411e1e3712e6abfd60475aef16a75aecc7399c08",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V324_2026-10-07.json",
-  "findingsLedgerExpectedGitBlob": "9fd3f3cf6a1eee231ba7163403af92e85c8fc19d",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V325_2026-10-07.json",
+  "findingsLedgerExpectedGitBlob": "26f792dc1c2dbcbc4beb7f9e14a8b690105e12b0",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V33.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "B1_HUMAN_FAIL_REMEDIATION_ACTIVE",
+  "activeBlocker": "B1_HUMAN_FAIL_REMEDIATION_DEV_MATERIALIZATION",
   "nextFindingId": "VRM-271",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "B1_SOURCE_PROOF_NEW_SOURCE_THEN_HOSTING_DEV_AND_ACTION_E2E_PAULA",
+  "exactNextAction": "B1_EXACT_HOSTING_ONLY_DEV_WITH_CURRENT_RUNTIME_THEN_REPROOF",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -6001,7 +6001,7 @@
     }
   },
   "humanVisualCheckpointUrl": "https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV",
-  "humanVisualCheckpointState": "B1_HUMAN_FAIL_REMEDIATION_SOURCE_PROOF",
+  "humanVisualCheckpointState": "B1_FAIL_DEV_FIX_MATERIALIZATION_IN_PROGRESS",
   "run1358ControlAdjudication": {
     "runId": 37680796799,
     "runNumber": 1358,
@@ -6015,7 +6015,7 @@
     "production": false
   },
   "b1HumanFailScopedRemediation20261007": {
-    "status": "SOURCE_FIXED_PENDING_SOURCE_PROOF",
+    "status": "SOURCE_PROOF_PASS_DEV_MATERIALIZATION_REQUESTED",
     "sourceSha": "c12c44a53ce999a7deebeef9a5d6fa233753793c",
     "sourceTree": "de7945e328b5b8f5458479343f7e87f469d1a9bd",
     "receipt": "CXORBIA_I3_B1_SHOPPER_HUMAN_FAIL_FOLLOWUP_2026-10-07.json",
@@ -6030,6 +6030,12 @@
     "approvedByPaulaToModifyDev": true,
     "humanPass": false,
     "tinyFish": "ENVIRONMENT_FAILURE_SESSION_RESTORE",
-    "production": "DO_NOT_TOUCH"
+    "production": "DO_NOT_TOUCH",
+    "sourceProof": {
+      "runId": 37712123375,
+      "runNumber": 1360,
+      "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+      "focalB1Tests": "MANDATORY_BEFORE_HOSTING"
+    }
   }
 }
