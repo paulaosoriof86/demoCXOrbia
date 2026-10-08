@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "PAULA_B1_VISUAL_REVIEW_MODAL_DATE_CONTRAST_AND_RETURN_PASS_FAIL",
+  "exactNextAction": "I3_B1_PERFORMANCE_FOCAL_METRICS_AND_SAFE_FIRST_RENDER_PLUS_B3_REQUEST_VALIDATION_CANCEL_CHECKIN_ADMIN_NOTIFICATION_BRIDGE__P0_OWNER_PROOF__DEV_ONLY_NO_PRODUCTION",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -6144,5 +6144,21 @@
       "cause": "FIREBASE_AUTH_NETWORK_REQUEST_FAILED",
       "receiptPath": "CXORBIA_I3_B1_READONLY_BROWSER_RUN1368_ENVIRONMENT_FAILURE_2026-10-07.json"
     }
+  },
+  "latestHumanVisualCheckpoint20261008": {
+    "receiptPath": "CXORBIA_I3_HUMAN_VISUAL_CHECKPOINT_2026-10-08_B1_B2_B3_B5_B7_B8.json",
+    "receiptGitBlob": "74c5cb7931e0e28f852d731e4331468f04573947",
+    "receiptControlCommit": "b7e0f9deab2b2bcea30177cb0560679cde4148f6",
+    "observationCount": 18,
+    "surfaceHumanVisualPass": "B1_MI_DIA",
+    "B1": "HOLD_STARTUP_GT_10S",
+    "B2": "HOLD",
+    "B3": "HOLD",
+    "B5": "HOLD",
+    "B7": "HOLD",
+    "B8": "HOLD",
+    "humanFullB1Pass": false,
+    "production": "DO_NOT_TOUCH",
+    "nextExactAction": "I3_B1_PERFORMANCE_FOCAL_METRICS_AND_SAFE_FIRST_RENDER_PLUS_B3_REQUEST_VALIDATION_CANCEL_CHECKIN_ADMIN_NOTIFICATION_BRIDGE__P0_OWNER_PROOF__DEV_ONLY_NO_PRODUCTION"
   }
 }
