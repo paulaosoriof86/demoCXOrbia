@@ -65,3 +65,54 @@ test('B3 checkin informational badge does not claim unconfirmed ACK',()=>{
   assert.doesNotMatch(s,/>Guardado con ACK<\/span>/);
   assert.match(s,/latestCheckInEvidenceId/);
 });
+
+test('I3 B1 protected provider reads begin concurrently and remain scoped to the verified shopper',async()=>{
+  const source=read('backend/runtime/hr-live-service/server.mjs');
+  const begin=source.indexOf('async function protectedPlatformState(current,principal,scope,operational){');
+  const end=source.indexOf('\nfunction shopperPolicy(snapshot){',begin);
+  assert.ok(begin>0&&end>begin,'exact provider owner is present');
+  const fnBody=source.slice(begin,end);
+  assert.match(fnBody,/await Promise\.all\(\[\s*crosswalkRead,scopedReads,governanceReads,commercialRead,academyRead/);
+  const waiting=new Map();
+  const wait=(name)=>new Promise(resolve=>waiting.set(name,resolve));
+  const ref=(parts=[])=>({
+    collection(name){return ref([...parts,name]);},
+    doc(id){return ref([...parts,id]);},
+    where(field,op,value){assert.equal(field,'shopperId');assert.equal(op,'==');assert.equal(value,'shopper-test');return {get:()=>wait(parts.join('/')+':shopper')};},
+    get(){return wait(parts.join('/'));}
+  });
+  const fn=new Function('operationalSnapshot','exactHrCrosswalk','commercialTenantState','academyTenantState',fnBody+'\nreturn protectedPlatformState;')(
+    c=>structuredClone(c.snapshot),
+    ()=>wait('crosswalk'),
+    ()=>wait('commercial'),
+    ()=>wait('academy')
+  );
+  const current={revision:'rev-test',snapshot:{visits:[],shoppers:[],posts:[]}};
+  const principal={role:'shopper',shopperId:'shopper-test',db:{collection:name=>ref([name])}};
+  const operation=fn(current,principal,{tenantId:'tenant-test',projectId:'project-test'},true);
+  assert.equal(waiting.size,7,'four independent project reads + crosswalk + academy + commercial start before any response');
+  const observed=[...waiting.keys()].sort();
+  assert.ok(observed.some(x=>x.includes('projects/project-test/certifications:shopper')));
+  assert.ok(observed.some(x=>x.includes('projects/project-test/reservations:shopper')));
+  for(const [key,release] of waiting.entries()){
+    if(key==='crosswalk')release(new Map());
+    else if(key==='commercial')release({clients:[],accounts:[],contacts:[],opportunities:[],columns:[]});
+    else if(key==='academy')release({courses:[],categories:[],audit:[]});
+    else release({docs:[]});
+  }
+  const result=await operation;
+  assert.equal(result.protectedState.sourceRevision,'rev-test');
+  assert.equal(result.protectedState.certifications.length,0);
+  assert.equal(result.protectedState.reservations.length,0);
+  assert.equal(result.protectedState.crosswalkTokenCount,0);
+  assert.equal(result.protectedState.identityAuthority,'hr_exact_crosswalk');
+});
+
+test('I3 B5 benefits newest first, detailed overview KPIs and explicit row detail access',()=>{
+  const s=read('app/modules/beneficios.js');
+  assert.match(s,/dateKey\(b\)\.localeCompare\(dateKey\(a\)\)/);
+  assert.match(s,/const overviewDrills=/);
+  assert.match(s,/data-ben-overview=/);
+  assert.match(s,/cx-ben-row-action/);
+  assert.match(s,/De la liquidación más reciente a la más antigua/);
+});

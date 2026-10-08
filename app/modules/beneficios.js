@@ -16,7 +16,7 @@ CX.module('beneficios', ({data,ui})=>{
   const all=myVisits.map(v=>{try{const pid=data.recordPeriodId?data.recordPeriodId(v):(v.periodId||v.projectId);const period=data.projects.find(x=>String(x.id)===String(pid))||p;const canonicalFromVisit=window.CX_TYA_CANONICAL_FINANCE_READ_MODEL?.fromVisit;return typeof canonicalFromVisit==='function'?canonicalFromVisit(period,v):CX.liq.fromVisita(period,v);}catch(_){return null;}}).filter(Boolean);
   const currentIds=new Set(currentVisits.map(v=>v.id));
   const dateKey=l=>String(l?.freal||l?.realizada||l?.paidAt||l?.periodKey||'').trim();
-  const allSorted=all.slice().sort((a,b)=>dateKey(a).localeCompare(dateKey(b))||String(a.sucursal||'').localeCompare(String(b.sucursal||''),'es'));
+  const allSorted=all.slice().sort((a,b)=>dateKey(b).localeCompare(dateKey(a))||String(a.sucursal||'').localeCompare(String(b.sucursal||''),'es'));
   const currentLiquidations=allSorted.filter(l=>currentIds.has(l.visitaId));
   /* V177 P0-3 — SIN moneda primaria del proyecto en ninguna zona. Todo se agrupa por l.moneda.
      benefits_declares_currency_grouping_contract: groupByCurrency / porMoneda / currencyGroups. */
@@ -52,7 +52,7 @@ CX.module('beneficios', ({data,ui})=>{
        Una liquidación históricamente reconciliada como pagada no puede mostrar a la vez
        "Pagada confirmada" y "Pendiente de confirmación" por un paymentState de visita anterior. */
     const payLabel=isPaid(l)?['Pago confirmado','g']:paymentHumanLabel(vc&&vc.paymentState);
-    return `<tr data-ben-row="${String(l.visitaId||l.visitId||'')}" data-ben-country="${String(l.pais||'')}" data-ben-currency="${String(curOfL(l)||'')}" data-ben-status="${isPaid(l)?'paid':'pending'}" style="cursor:pointer" title="Abrir detalle de la liquidación"><td><b>${l.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(l.pais)} ${l.shopper||''}</div></td>
+    return `<tr data-ben-row="${String(l.visitaId||l.visitId||'')}" data-ben-country="${String(l.pais||'')}" data-ben-currency="${String(curOfL(l)||'')}" data-ben-status="${isPaid(l)?'paid':'pending'}" style="cursor:pointer" title="Abrir detalle de la liquidación"><td><b>${l.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(l.pais)} ${l.shopper||''}</div><button type="button" class="cx-ben-row-action" aria-label="Abrir detalle de liquidación">Ver detalle ›</button></td>
       <td style="font-size:12px">${l.freal||'—'}</td>
       <td style="color:var(--green);font-weight:700">${_bmoney(l,l.honorario)}</td>
       <td style="color:var(--purple);font-weight:600">${l.reembolso?_bmoney(l,l.reembolso):'—'}</td>
@@ -69,6 +69,17 @@ CX.module('beneficios', ({data,ui})=>{
     const benDrill=(title,arr)=>ui.modal(title+' · '+arr.length+' visita(s)', arr.length?`<table class="tbl"><thead><tr><th>Visita</th><th>Honorario</th><th>Reembolso</th><th>Total</th><th>Estado</th><th>Pago</th></tr></thead><tbody>${arr.map(l=>{const lb=CX.liq.label(l.estado);return `<tr><td><b style="font-size:12.5px">${l.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(l.pais)} ${l.freal||''}</div></td><td style="color:var(--green);font-weight:700">${_bmoney(l,l.honorario)}</td><td style="color:var(--purple)">${l.reembolso?_bmoney(l,l.reembolso):'—'}</td><td style="font-weight:700">${_bmoney(l,l.total)}</td><td>${ui.bdg(lb[0],lb[1])}</td><td style="font-size:11px">${l.fechaEstimadaPago||'—'}</td></tr>`;}).join('')}</tbody></table>`:ui.empty('💰','Sin visitas en esta categoría.'));
     const benKp={hon:['💵 Honorarios',resolved],reemb:['🎁 Reembolsos',resolved.filter(l=>l.reembolso>0)],cobrar:['⏳ Por cobrar',resolved.filter(l=>!isPaid(l))],pagado:['✅ Pagado',resolved.filter(l=>isPaid(l))]};
     document.querySelectorAll('[data-ben-row]').forEach(tr=>tr.addEventListener('click',()=>{const l=allSorted.find(x=>String(x.visitaId||x.visitId||'')===String(tr.dataset.benRow||''));if(l)benDrill('Detalle de '+(l.sucursal||'liquidación'),[l]);}));
+    const overviewDrills={
+      period:['Beneficios del periodo',currentLiquidations],
+      history:['Histórico de beneficios',allSorted],
+      paid:['Pagos confirmados',allSorted.filter(isPaid)],
+      pending:['Pendientes de confirmación',allSorted.filter(l=>!isPaid(l))]
+    };
+    document.querySelectorAll('[data-benefits-overview] [data-ben-overview]').forEach(el=>{
+      const open=()=>{const d=overviewDrills[el.dataset.benOverview];if(d)benDrill(d[0],d[1]);};
+      el.addEventListener('click',open);
+      el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}});
+    });
     document.querySelectorAll('#benKpis [data-k]').forEach(el=>el.addEventListener('click',()=>{const d=benKp[el.dataset.k];const cu=el.dataset.cur;const arr=cu?d[1].filter(l=>(l.moneda||'—')===cu):d[1];benDrill(d[0]+(cu?(' · '+cu):''),arr);}));
     const applyFilters=()=>{const st=document.querySelector('#benStatus')?.value||'',co=document.querySelector('#benCountry')?.value||'',cu=document.querySelector('#benCurrency')?.value||'';document.querySelectorAll('#benCurrentTable tbody tr[data-ben-status]').forEach(tr=>{tr.style.display=(!st||tr.dataset.benStatus===st)&&(!co||tr.dataset.benCountry===co)&&(!cu||tr.dataset.benCurrency===cu)?'':'none';});};
     ['#benStatus','#benCountry','#benCurrency'].forEach(s=>document.querySelector(s)?.addEventListener('change',applyFilters));
@@ -95,10 +106,10 @@ CX.module('beneficios', ({data,ui})=>{
   return `
     ${ui.ph('Mis Beneficios', (data.programBase?data.programBase(p):p.name)+' · periodo actual e histórico')}
     <div class="grid g4" style="gap:12px;margin-bottom:16px" data-benefits-overview>
-      <div class="card card-p" style="border-left:3px solid var(--brand)"><div class="card-t">💼 Beneficios del periodo</div><div class="muted" style="font-size:11.5px;margin-top:4px">Honorarios y reembolsos del periodo seleccionado.</div><div style="font-family:var(--disp);font-size:24px;font-weight:800;margin-top:10px">${currentLiquidations.length}</div></div>
-      <div class="card card-p" style="border-left:3px solid var(--purple)"><div class="card-t">🗂️ Histórico de beneficios</div><div class="muted" style="font-size:11.5px;margin-top:4px">De la liquidación más antigua a la más reciente.</div><div style="font-family:var(--disp);font-size:24px;font-weight:800;margin-top:10px">${allSorted.length}</div></div>
-      <div class="card card-p" style="border-left:3px solid var(--green)"><div class="card-t">✅ Pagos confirmados</div><div class="muted" style="font-size:11.5px;margin-top:4px">Solo con evidencia durable.</div><div style="font-family:var(--disp);font-size:24px;font-weight:800;margin-top:10px;color:var(--green)">${paidHistoricalCount}</div></div>
-      <div class="card card-p" style="border-left:3px solid var(--amber)"><div class="card-t">⏳ Pendientes de confirmación</div><div class="muted" style="font-size:11.5px;margin-top:4px">Aún requieren fuente financiera durable.</div><div style="font-family:var(--disp);font-size:24px;font-weight:800;margin-top:10px;color:var(--amber)">${pendingHistoricalCount}</div></div>
+      <div class="card card-p cx-ben-overview-card" role="button" tabindex="0" data-ben-overview="period" style="border-left:3px solid var(--brand)"><div class="card-t">💼 Beneficios del periodo</div><div class="muted" style="font-size:11.5px;margin-top:4px">Honorarios y reembolsos del periodo seleccionado.</div><div style="font-family:var(--disp);font-size:24px;font-weight:800;margin-top:10px">${currentLiquidations.length}</div></div>
+      <div class="card card-p cx-ben-overview-card" role="button" tabindex="0" data-ben-overview="history" style="border-left:3px solid var(--purple)"><div class="card-t">🗂️ Histórico de beneficios</div><div class="muted" style="font-size:11.5px;margin-top:4px">De la liquidación más reciente a la más antigua.</div><div style="font-family:var(--disp);font-size:24px;font-weight:800;margin-top:10px">${allSorted.length}</div></div>
+      <div class="card card-p cx-ben-overview-card" role="button" tabindex="0" data-ben-overview="paid" style="border-left:3px solid var(--green)"><div class="card-t">✅ Pagos confirmados</div><div class="muted" style="font-size:11.5px;margin-top:4px">Solo con evidencia durable.</div><div style="font-family:var(--disp);font-size:24px;font-weight:800;margin-top:10px;color:var(--green)">${paidHistoricalCount}</div></div>
+      <div class="card card-p cx-ben-overview-card" role="button" tabindex="0" data-ben-overview="pending" style="border-left:3px solid var(--amber)"><div class="card-t">⏳ Pendientes de confirmación</div><div class="muted" style="font-size:11.5px;margin-top:4px">Aún requieren fuente financiera durable.</div><div style="font-family:var(--disp);font-size:24px;font-weight:800;margin-top:10px;color:var(--amber)">${pendingHistoricalCount}</div></div>
     </div>
 
     <div id="benKpis">${curList.length?curList.map(cu=>{const a=byCur[cu];return `<div style="margin-bottom:10px"><div style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Moneda ${cu} · periodo seleccionado</div><div class="grid g4"><div data-k="hon" data-cur="${cu}" style="cursor:pointer">${ui.kpi('💵 Honorarios',ui.money(cu,a.hon),'g','tu ganancia en efectivo')}</div><div data-k="reemb" data-cur="${cu}" style="cursor:pointer">${ui.kpi('🎁 Reembolsos',ui.money(cu,a.reemb),'p','gastos del programa cubiertos')}</div><div data-k="cobrar" data-cur="${cu}" style="cursor:pointer">${ui.kpi('⏳ Por cobrar',ui.money(cu,a.porCobrar),'a')}</div><div data-k="pagado" data-cur="${cu}" style="cursor:pointer">${ui.kpi('✅ Pagado',ui.money(cu,a.pagado),'b','solo con pago confirmado')}</div></div></div>`;}).join(''):`<div class="muted" style="font-size:12px;padding:8px 0">Sin liquidaciones en este periodo.</div>`}</div>
@@ -106,7 +117,7 @@ CX.module('beneficios', ({data,ui})=>{
     ${pendingCurrency.length?`<div class="card card-p" style="margin:10px 0;border-left:3px solid var(--red)"><div class="flex" style="gap:8px;align-items:center;margin-bottom:4px"><span style="font-size:16px">🔒</span><b style="font-size:12.5px">Revisión · ${pendingCurrency.length} liquidación(es) sin moneda</b></div><div style="font-size:11.5px;color:var(--t2)">Estas visitas no tienen moneda resuelta en la fuente; no se incluyen en tus totales ni barras hasta que se corrijan. ${pendingCurrency.map(l=>l.sucursal||l.visitaId).join(', ')}</div></div>`:''}
     <div style="font-size:10.5px;color:var(--t3);margin-top:6px">"Pagado" solo cuenta liquidaciones con pago confirmado y referencia de fuente. Histórico actual: ${paidHistoricalCount} pago(s) confirmado(s); los demás permanecen pendientes hasta que exista evidencia durable.</div>
 
-    <div class="grid g2" style="margin-bottom:16px">
+    <div class="grid g2 cx-benefits-notes" style="margin-bottom:10px">
       <div class="card card-p" style="background:linear-gradient(135deg,#eafaf1,#f3eeff);border-color:#d7ead9">
         <div class="card-t" style="margin-bottom:6px">🎉 Tu beneficio total como evaluador</div>
         <div style="font-size:12.5px;color:var(--t2);margin-bottom:12px">No solo cobras honorarios: el programa también <b>cubre los gastos/consumos requeridos por la evaluación</b>. Beneficio percibido <b>por moneda</b> (no se suman entre sí):</div>
@@ -116,7 +127,7 @@ CX.module('beneficios', ({data,ui})=>{
         <div class="card-t" style="margin-bottom:10px">💡 Honorarios vs reembolsos · por moneda</div>
         <div style="font-size:12px;color:var(--t2);margin-bottom:12px">El <b style="color:var(--green)">honorario</b> es tu pago por evaluar. El <b style="color:var(--purple)">reembolso</b> te devuelve los gastos o consumos que el programa requiere. Cada moneda se muestra por separado (no se suman).</div>
         ${curList.length?curList.map(cu=>{const a=byCur[cu];const t=a.hon+a.reemb;return `<div style="margin-bottom:10px"><div style="font-size:11px;font-weight:700;color:var(--t2);margin-bottom:4px">Moneda ${cu}</div>${ui.bar(t?Math.round(a.hon/t*100):0,'Honorario',ui.money(cu,a.hon))}${ui.bar(t?Math.round(a.reemb/t*100):0,'Reembolso',ui.money(cu,a.reemb))}</div>`;}).join(''):'<div class="muted" style="font-size:12px">Sin liquidaciones.</div>'}
-        <div style="margin-top:12px">${ui.aiBox('El reembolso es flujo: te devuelve los gastos/consumos que el programa requiere. El honorario es tu ganancia real. Cada proyecto define sus conceptos de reembolso (genérico, no fijo).','Beneficio claro')}</div>
+        <div class="cx-ben-note-copy">El reembolso devuelve consumos exigidos para la evaluación. El honorario es el pago por tu labor. Cada proyecto define sus conceptos.</div>
       </div>
     </div>
 
@@ -126,5 +137,5 @@ CX.module('beneficios', ({data,ui})=>{
       <div class="scroll-hint" aria-label="Desliza para ver más" style="overflow-x:auto"><table class="tbl" id="benCurrentTable"><thead><tr><th>Visita</th><th>Realizada</th><th>💵 Honorario</th><th>🎁 Reembolso</th><th>Total</th><th>Estado</th><th>Pago estimado</th><th>Estado de pago</th></tr></thead>
       <tbody>${periodRows.length?periodRows.map(row).join(''):'<tr><td colspan="8">'+ui.empty('💰','Sin liquidaciones en este periodo')+'</td></tr>'}</tbody></table></div>
     </div>
-    <div class="card card-p" id="benHistoryCard"><div class="card-h"><div><div class="card-t">Histórico</div><div class="muted" style="font-size:11px;margin-top:3px">De la liquidación más antigua a la más reciente · selecciona una fila para abrir detalle</div></div><span class="muted" style="font-size:11px">Todos los periodos</span></div><div class="scroll-hint" style="overflow-x:auto"><table class="tbl"><thead><tr><th>Visita</th><th>Realizada</th><th>💵 Honorario</th><th>🎁 Reembolso</th><th>Total</th><th>Estado</th><th>Pago</th><th>Estado de pago</th></tr></thead><tbody>${allSorted.length?allSorted.map(row).join(''):'<tr><td colspan="8">'+ui.empty('💰','Sin histórico')+'</td></tr>'}</tbody></table></div></div>`;
+    <div class="card card-p" id="benHistoryCard"><div class="card-h"><div><div class="card-t">Histórico</div><div class="muted" style="font-size:11px;margin-top:3px">De la liquidación más reciente a la más antigua · selecciona una fila para abrir detalle</div></div><span class="muted" style="font-size:11px">Todos los periodos</span></div><div class="scroll-hint" style="overflow-x:auto"><table class="tbl"><thead><tr><th>Visita</th><th>Realizada</th><th>💵 Honorario</th><th>🎁 Reembolso</th><th>Total</th><th>Estado</th><th>Pago</th><th>Estado de pago</th></tr></thead><tbody>${allSorted.length?allSorted.map(row).join(''):'<tr><td colspan="8">'+ui.empty('💰','Sin histórico')+'</td></tr>'}</tbody></table></div></div>`;
 });

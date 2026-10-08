@@ -231,7 +231,36 @@ async function academyTenantState(principal,scope){
 
 async function protectedPlatformState(current,principal,scope,operational){
   const snapshot=operational?operationalSnapshot(current):JSON.parse(JSON.stringify(current.snapshot));
-  const cross=await exactHrCrosswalk(principal.db,scope);
+  /* I3 P0: independent scoped Firestore authority reads run concurrently for one verified principal. */
+  const tenantRef=principal.db.collection('tenants').doc(scope.tenantId);
+  const projectRef=tenantRef.collection('projects').doc(scope.projectId);
+  const reservationsRef=projectRef.collection('reservations');
+  const certificationsRef=projectRef.collection('certifications');
+  const recertificationsRef=projectRef.collection('certificationRecertifications');
+  const periodsRef=projectRef.collection('periods');
+  if(principal.role==='shopper'&&!principal.shopperId)throw new Error('AUTH_FAILURE:PROTECTED_RUNTIME_SHOPPER_ID_REQUIRED');
+  const emptyCollection=()=>({docs:[]});
+  const scopedReads=principal.role==='shopper'?Promise.all([
+    reservationsRef.where('shopperId','==',principal.shopperId).get(),
+    certificationsRef.where('shopperId','==',principal.shopperId).get(),
+    recertificationsRef.get(),periodsRef.get()
+  ]):['super','admin','ops','coordinador'].includes(principal.role)?Promise.all([
+    reservationsRef.get(),certificationsRef.get(),recertificationsRef.get(),periodsRef.get()
+  ]):Promise.resolve([emptyCollection(),emptyCollection(),emptyCollection(),emptyCollection()]);
+  const governanceAllowed=['super','admin'].includes(String(principal.role||'').toLowerCase());
+  const governanceReads=governanceAllowed?Promise.all([
+    tenantRef.collection('shopperIdentityReviews').get(),
+    tenantRef.collection('shopperIdentityReviewResolutions').get(),
+    tenantRef.collection('shopperTombstones').get()
+  ]):Promise.resolve([emptyCollection(),emptyCollection(),emptyCollection()]);
+  const crosswalkRead=exactHrCrosswalk(principal.db,scope);
+  const commercialRead=commercialTenantState(principal,scope);
+  const academyRead=academyTenantState(principal,scope);
+  const [cross,scoped,governance,commercial,academy]=await Promise.all([
+    crosswalkRead,scopedReads,governanceReads,commercialRead,academyRead
+  ]);
+  const [reservationSnap,certificationSnap,recertificationSnap,periodsSnap]=scoped;
+  const [identityReviewSnap,identityResolutionSnap,tombstoneSnap]=governance;
   let mappedShoppers=0,mappedVisits=0;
   for(const shopper of snapshot.shoppers||[]){
     const live=String(shopper.shopperId||shopper.id||'').trim(),canonical=cross.get(live);
@@ -241,26 +270,6 @@ async function protectedPlatformState(current,principal,scope,operational){
     const live=String(visit.shopperId||'').trim(),canonical=cross.get(live);
     if(canonical){visit.canonicalShopperId=canonical;visit.identityAuthority='hr_exact_crosswalk';mappedVisits++;}
   }
-  const tenantRef=principal.db.collection('tenants').doc(scope.tenantId);
-  const projectRef=tenantRef.collection('projects').doc(scope.projectId);
-  const reservationsRef=projectRef.collection('reservations');
-  const certificationsRef=projectRef.collection('certifications');
-  const recertificationsRef=projectRef.collection('certificationRecertifications');
-  const periodsRef=projectRef.collection('periods');
-  let reservationSnap,certificationSnap,recertificationSnap,periodsSnap;
-  if(principal.role==='shopper'){
-    if(!principal.shopperId)throw new Error('AUTH_FAILURE:PROTECTED_RUNTIME_SHOPPER_ID_REQUIRED');
-    [reservationSnap,certificationSnap,recertificationSnap,periodsSnap]=await Promise.all([
-      reservationsRef.where('shopperId','==',principal.shopperId).get(),
-      certificationsRef.where('shopperId','==',principal.shopperId).get(),
-      recertificationsRef.get(),
-      periodsRef.get()
-    ]);
-  }else if(['super','admin','ops','coordinador'].includes(principal.role)){
-    [reservationSnap,certificationSnap,recertificationSnap,periodsSnap]=await Promise.all([reservationsRef.get(),certificationsRef.get(),recertificationsRef.get(),periodsRef.get()]);
-  }else{
-    reservationSnap={docs:[]};certificationSnap={docs:[]};recertificationSnap={docs:[]};periodsSnap={docs:[]};
-  }
   const reservations=reservationSnap.docs.map(doc=>({id:doc.id,...(doc.data()||{})}));
   const certifications=certificationSnap.docs.map(doc=>({id:doc.id,...(doc.data()||{}),projectId:doc.data()?.projectId||scope.projectId}));
   const periods=periodsSnap.docs.map(doc=>({id:doc.id,...(doc.data()||{}),projectId:doc.data()?.projectId||scope.projectId}));
@@ -268,12 +277,6 @@ async function protectedPlatformState(current,principal,scope,operational){
     if(principal.role!=='shopper')return true;
     return String(row.status||'active')==='active'&&(String(row.scope)==='all'||(Array.isArray(row.targetShopperIds)&&row.targetShopperIds.map(String).includes(principal.shopperId)));
   });
-  const governanceAllowed=['super','admin'].includes(String(principal.role||'').toLowerCase());
-  const [identityReviewSnap,identityResolutionSnap,tombstoneSnap]=governanceAllowed?await Promise.all([
-    tenantRef.collection('shopperIdentityReviews').get(),
-    tenantRef.collection('shopperIdentityReviewResolutions').get(),
-    tenantRef.collection('shopperTombstones').get()
-  ]):[{docs:[]},{docs:[]},{docs:[]}];
   const rows=s=>s.docs.map(doc=>({id:doc.id,...(doc.data()||{})}));
   const projectScoped=row=>{
     const scopeId=String(row.projectScope||row.projectId||'*');
@@ -282,8 +285,6 @@ async function protectedPlatformState(current,principal,scope,operational){
   const identityReviews=rows(identityReviewSnap).filter(projectScoped);
   const identityReviewResolutions=rows(identityResolutionSnap).filter(projectScoped);
   const shopperTombstones=rows(tombstoneSnap).filter(row=>!row.projectId||String(row.projectId)===scope.projectId);
-  const commercial=await commercialTenantState(principal,scope);
-  const academy=await academyTenantState(principal,scope);
   return {snapshot,protectedState:{reservations,certifications,certificationRecertifications,periods,identityReviews,identityReviewResolutions,shopperTombstones,commercial,academy,certificationAuthority:'firestore_project_certifications_exact_identity',identityGovernanceAuthority:'firestore_tenant_shopper_identity_governance',identityAuthority:'hr_exact_crosswalk',crosswalkTokenCount:cross.size,mappedShoppers,mappedVisits,sourceRevision:current.revision}};
 }
 
