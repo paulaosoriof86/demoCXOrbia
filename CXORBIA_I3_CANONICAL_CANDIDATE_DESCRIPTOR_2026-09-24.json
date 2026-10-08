@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B7_TWO_ROLE_DECISION_LIVE_DEV_REQUIRED",
+  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "8ac7369e2e0f1e203000f80002683ec43e373590",
-  "productTreeAuthority": "8f741a6b8501c3c0b8ce694be5a74da851408ba1",
-  "predecessorProductSourceSha": "7e44f271191878b48c4aaadeaf8eb2f0a74a786c",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V334_2026-10-08.json",
-  "findingsLedgerExpectedGitBlob": "cc00db342562922836145e000c5a5534ea47c3ef",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V38.json",
+  "productSourceSha": "3c0ea51a2626d418f0e6952bdd6a82f8b15d13e3",
+  "productTreeAuthority": "1d0d8a03005d27b2a1ee795e6de6a0fccc5ef715",
+  "predecessorProductSourceSha": "8ac7369e2e0f1e203000f80002683ec43e373590",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V335_2026-10-08.json",
+  "findingsLedgerExpectedGitBlob": "42f706723455ac8f8137979a6ad537dab7db6ce7",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V39.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "B7_EXACT_SHOPPER_ADMIN_DECISION_IN_LIVE_DEV_UNPROVEN",
+  "activeBlocker": "I3_B2_B5_FOCAL_SOURCE_PROOF_REQUIRED",
   "nextFindingId": "VRM-271",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run exact B7 two authenticated roles on same DEV source/runtime/Hosting with synthetic visits; preserve HR, ACK, notification, idempotency and cleanup. Then evaluate B5 historical paid source P0 without altering amounts, B2 active owner only.",
+  "exactNextAction": "Run canonical B2/B5 source proofs (existing I3 source job including 17 Oct08 tests), then one DEV materialization and full scoped Admin/Shopper live E2E; obtain human visual approval after P0 closed. No production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -499,7 +499,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "8f741a6b8501c3c0b8ce694be5a74da851408ba1",
+  "productSourceTree": "1d0d8a03005d27b2a1ee795e6de6a0fccc5ef715",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -2654,7 +2654,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "0be7e36c971c5f25c8adeb56920e8c19092d7fd1",
+  "moduleTruthExpectedGitBlob": "9b4fbb70cfec263ab75e7eabbc13ab3fcedffa08",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -6542,5 +6542,88 @@
     ],
     "production": false,
     "humanApproval": false
+  },
+  "i3B7ExactTwoRoleLiveRun1393": {
+    "sourceSha": "8ac7369e2e0f1e203000f80002683ec43e373590",
+    "sourceTree": "8f741a6b8501c3c0b8ce694be5a74da851408ba1",
+    "runId": 37849978341,
+    "runNumber": 1393,
+    "controlSha": "90d72862719b606de636cd3585a06ac29d43cd9f",
+    "artifactId": 11581423204,
+    "artifactDigest": "sha256:14632a3f37fe26acc399465ceddfb64839c1d84cc590ec5bbd1d7cc72ae6d973",
+    "decision": "PASS_I3_B7_TWO_ROLE_DECISION_LIVE_DEV",
+    "scope": "safe synthetic DEV only",
+    "tested": [
+      "Shopper request",
+      "Admin approve -> approved_pending_hr",
+      "Admin reject -> rejected",
+      "Firestore ACK/readback",
+      "two durable targeted bulletins",
+      "idempotent replay",
+      "14 synthetic document cleanup",
+      "HR before==after"
+    ],
+    "hrRevision": "9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef",
+    "builds": 0,
+    "deploys": 0,
+    "hrWrites": 0,
+    "production": false,
+    "notProven": [
+      "full browser native controls conditional on pending request",
+      "all 21-domain human visual acceptance",
+      "mobile camera GPS",
+      "Gate20 Gate21"
+    ]
+  },
+  "i3B2B5FocalSourceSuccessor20261008": {
+    "classification": "MAPPING_FAILURE_AND_VISUAL_DEFECT_FOCAL",
+    "predecessorSourceSha": "8ac7369e2e0f1e203000f80002683ec43e373590",
+    "sourceSha": "3c0ea51a2626d418f0e6952bdd6a82f8b15d13e3",
+    "sourceTree": "1d0d8a03005d27b2a1ee795e6de6a0fccc5ef715",
+    "expectedParentSha": "90d72862719b606de636cd3585a06ac29d43cd9f",
+    "changedFiles": [
+      {
+        "path": "app/adapters/tya-canonical-finance-read-model-v2.js",
+        "blob": "4997010949dd8a126b058f720041fe5eeb04f1bd",
+        "finding": "HF-20261008-15/17",
+        "domain": "benefits"
+      },
+      {
+        "path": "app/adapters/tya-canonical-shopper-portal-v2.js",
+        "blob": "f0215e0e06fc46ea6b1bcfe2ccb96fd9e376a86e",
+        "finding": "HF-20261008-03",
+        "domain": "shoppers-mi-visitas-profile"
+      },
+      {
+        "path": "backend/runtime/hr-live-service/test/cxorbia-i3-oct08-b1-b3-source.test.mjs",
+        "blob": "f38772078eaed1529e56742279c503ad3243c6f2",
+        "finding": "SOURCE_PROOF_ONLY"
+      }
+    ],
+    "B5": {
+      "owner": "app/adapters/tya-canonical-finance-read-model-v2.js",
+      "cause": "Historical payment authority from approved frozen period policy lost in later canonical finance derive when exact match absent",
+      "state": "SOURCE_FIXED_PENDING_RUN_SOURCE_PROOF",
+      "policy": "paid through 2026-07; Aug paid 2026-10-02; Sep explicit items only; Oct onward live",
+      "amountsInferred": false,
+      "independentHRWrite": false,
+      "syntheticV8CasesPassed": 5
+    },
+    "B2": {
+      "owner": "app/adapters/tya-canonical-shopper-portal-v2.js",
+      "cause": "Active Mi Perfil overrides historical operacion-extra module; sensitive full fields preceding KPI executive hierarchy",
+      "state": "SOURCE_FIXED_PENDING_RUN_SOURCE_PROOF_AND_HUMAN",
+      "priorPreparedWrongOwner": "app/modules/operacion-extra.js",
+      "fix": "KPI ahead of sensitive details; collapsible scoped personal/contact/payment details; preserve masked values, profile write ACK and history",
+      "humanApproval": false
+    },
+    "sourceTest": "backend/runtime/hr-live-service/test/cxorbia-i3-oct08-b1-b3-source.test.mjs",
+    "production": false,
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V335_2026-10-08.json",
+    "ledgerBlob": "42f706723455ac8f8137979a6ad537dab7db6ce7",
+    "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V39.json",
+    "moduleTruthBlob": "9b4fbb70cfec263ab75e7eabbc13ab3fcedffa08",
+    "status": "SOURCE_PROOF_PENDING",
+    "inCurrentDEV": false
   }
 }
