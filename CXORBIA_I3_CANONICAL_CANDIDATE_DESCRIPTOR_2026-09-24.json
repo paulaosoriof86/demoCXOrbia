@@ -446,7 +446,8 @@
     "runtimeDeploys": 1,
     "hostingDeploys": 1,
     "storageRulesDeploys": 0,
-    "production": false
+    "production": false,
+    "artifactDigest": "sha256:5533487c61c93de9da31ff333d3ac79c12e04360fc885c000c132a41a8f33b92"
   },
   "lastFocalAttempt": {
     "runId": 36198284266,
@@ -6221,9 +6222,22 @@
       "runtimeDeploys": 1,
       "hostingDeploys": 1,
       "storageRulesDeploys": 0,
-      "production": false
+      "production": false,
+      "artifactDigest": "sha256:5533487c61c93de9da31ff333d3ac79c12e04360fc885c000c132a41a8f33b92"
     },
     "sourceProof": "PASS_RUN1370_34_34",
-    "humanMiDiaVisualPass": true
+    "humanMiDiaVisualPass": true,
+    "lastE2EAttempt": {
+      "runId": 37831566219,
+      "runNumber": 1372,
+      "jobId": 113498050178,
+      "decision": "HOLD_PRECHECK",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "reason": "materialization receipt artifactDigest field omitted in current descriptor despite exact artifactUploadDigest available",
+      "stage": "before_browser_auth_and_live_e2e",
+      "productChanged": false,
+      "builds": 0,
+      "deploys": 0
+    }
   }
 }
