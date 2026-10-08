@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "I3_B7_CANCEL_DECISION_P0_SOURCE_PROOF_REQUIRED",
+  "activeBlocker": "I3_B7_EXACT_CANCEL_DECISION_DEV_RUNTIME_AND_HOSTING_MATERIALIZATION",
   "nextFindingId": "VRM-271",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 B7 exact Admin cancel decision source proof on one candidate; if PASS, DEV runtime and Hosting exact-materialization then two-role safe ACK/readback E2E. No production.",
+  "exactNextAction": "Use single canonical workflow for one build, runtime DEV and Hosting DEV on source 8ac7369e after run1385 source proof; then same artifact B7 both roles E2E. No production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -6463,8 +6463,27 @@
     "ledgerExpectedBlob": "cc00db342562922836145e000c5a5534ea47c3ef",
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V38.json",
     "matrixExpectedBlob": "0be7e36c971c5f25c8adeb56920e8c19092d7fd1",
-    "sourceProofStatus": "PENDING_CANONICAL_WORKFLOW",
+    "sourceProofStatus": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
     "approvedByHuman": false,
-    "production": false
+    "production": false,
+    "sourceProofRunId": 37844189254,
+    "sourceProofArtifactId": 11579221462,
+    "sourceProofArtifactDigest": "sha256:4326256811bbad0a232a71fc9b283c13aa983b406f00c3ef14ec284da26fa11e",
+    "sourceProofNodeTests": {
+      "total": 40,
+      "passed": 40,
+      "failed": 0
+    },
+    "inSessionFakeProviderIntegration": {
+      "status": "PASS_FAKE_FIRESTORE_PROVIDER_INTEGRATION",
+      "scenarioCount": 4,
+      "assertionCount": 14,
+      "failedAssertions": 0,
+      "realWrites": 0,
+      "scope": "Shopper request, Admin accept/reject, bulletin target, idempotency, internal/external policy",
+      "notLiveE2E": true
+    },
+    "devMaterializationStatus": "CANONICAL_WORKFLOW_REQUESTED",
+    "expectedProductSourceSha": "8ac7369e2e0f1e203000f80002683ec43e373590"
   }
 }
