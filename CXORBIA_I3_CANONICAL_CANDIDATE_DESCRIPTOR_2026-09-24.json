@@ -2653,7 +2653,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "811a0c469e8ec3eefb3b49497aa766fa1fd0543e",
+  "moduleTruthExpectedGitBlob": "d675a11a695194fa779d59b50cf2e6bfc9bc26d9",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -6382,5 +6382,29 @@
     "status": "I3_HOLD",
     "production": "DO_NOT_TOUCH",
     "note": "User must not be sole discoverer of missing scenarios; proactive 21-domain two-role review with documented coverage and omissions"
+  },
+  "i3CoverageReadbackPostRun1382": {
+    "path": "CXORBIA_I3_PHASE_A_FINDINGS_COVERAGE_READBACK_2026-10-08_POST_RUN1382.json",
+    "status": "I3_HOLD",
+    "controlOnly": true,
+    "sourceSha": "7e44f271191878b48c4aaadeaf8eb2f0a74a786c",
+    "treeSha": "295b54908e98023cda3eda2008edd50acb2b8cda",
+    "runId": 37837306768,
+    "counts": {
+      "originalVrm": 270,
+      "originalHumanOct06": 45,
+      "originalHumanOct08": 18,
+      "phaseAModules": 21,
+      "v37Match": 13,
+      "v37SourceFixedPendingLiveHuman": 8,
+      "humanPassEntirePhaseA": false
+    },
+    "classification": "MAPPING_FAILURE_CONTROL_POINTER",
+    "moduleTruthExpectedGitBlobBefore": "811a0c469e8ec3eefb3b49497aa766fa1fd0543e",
+    "moduleTruthExpectedGitBlobAfter": "d675a11a695194fa779d59b50cf2e6bfc9bc26d9",
+    "ledgerBlob": "ed32f5723ed78289fa0d0203d222f604495db364",
+    "originalObservationsPreserved": true,
+    "phaseAApproval": false,
+    "production": "DO_NOT_TOUCH"
   }
 }
