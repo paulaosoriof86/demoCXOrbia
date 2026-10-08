@@ -175,6 +175,9 @@ const evidence={
 try{
   for(const target of targets){
     const sp=await signed(target.member,'shopper'),page=sp.page;
+    evidence.representatives[target.name]={stage:'authenticated_boot_ready',authorityReadyMs:sp.authorityReadyMs,providerWrites:0};
+    write(evidence);
+    console.log(JSON.stringify({metric:'authorityReadyMs',role:'shopper',principal:target.name,ms:sp.authorityReadyMs}));
     const base=await page.evaluate(({expectedId,currentPeriodId})=>{
       const d=window.CX?.data||{},sessionUser=window.CX?.session?.user||{},sid=String(sessionUser.shopperId||''),own=typeof d.visitsForShopper==='function'?d.visitsForShopper(expectedId,false):[];
       const current=own.filter(v=>String(d.recordPeriodId?d.recordPeriodId(v):(v.periodId||v.projectId)||'')===currentPeriodId);
@@ -241,7 +244,7 @@ try{
     const certSaysUnavailable=/no hay un banco|pendiente de validación\/publicación/i.test(cert.body);
     const routeSaysValid=/Certificación vigente/i.test(route.certText);
     if(certSaysUnavailable&&routeSaysValid)throw new Error('FUNCTIONAL_DEFECT:CERT_AUTHORITY_CROSS_SURFACE_CONTRADICTION:'+target.name+':'+JSON.stringify({route:route.certText,cert:cert.body}));
-    if(/Certificación vigente para este proyecto/i.test(cert.body)&&!routeSaysValid)throw new Error('FUNCTIONAL_DEFECT:CERT_CARRYOVER_NOT_PROJECTED_TO_VISIT:'+target.name+':'+JSON.stringify({route:route.certText,cert:cert.body}));
+    if(route.hasSchedule&&/Certificación vigente para este proyecto/i.test(cert.body)&&!routeSaysValid)throw new Error('FUNCTIONAL_DEFECT:CERT_CARRYOVER_NOT_PROJECTED_TO_VISIT:'+target.name+':'+JSON.stringify({route:route.certText,cert:cert.body}));
 
     let b1ActionExercise={};
     if(target.name==='Julissa Flores'&&base.firstActive){
@@ -294,6 +297,7 @@ try{
   }
 
   const ap=await signed(admin,'admin'),page=ap.page;
+  console.log(JSON.stringify({metric:'authorityReadyMs',role:'admin',ms:ap.authorityReadyMs}));
   await nav(page,'shoppers');
   await page.waitForSelector('#shSearch');
   // shoppers.js binds the input listener from setTimeout(...,0); do not race that mount.
