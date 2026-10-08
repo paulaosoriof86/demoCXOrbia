@@ -6723,6 +6723,75 @@ jobs:
           compression-level: 0
 
 
+
+  i3-b7-exact-two-role-live:
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_B7_TWO_ROLE_DECISION_LIVE_DEV_REQUIRED' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    env:
+      FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      B7_OUT: .tmp/i3-b7-exact-two-role-live
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Assert one certified DEV artifact and unchanged product
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$B7_OUT"
+          test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
+          test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
+          test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
+          git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          test "$(jq -r '.currentMaterialization.sourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
+          test "$(jq -r '.currentMaterialization.sourceTree' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
+          test "$(jq -r '.currentMaterialization.production' "$CANDIDATE_DESCRIPTOR")" = "false"
+          test "$(jq -r '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")" = "cxorbia-live-hr-dev-00278-8qj"
+          test "$(jq -r '.currentMaterialization.hostingVersion' "$CANDIDATE_DESCRIPTOR")" = "sites/cxorbia-backend-dev/versions/1a5fa1ff354bd4ce"
+          node --check tools/qa/cxorbia-i3-b7-cancel-two-role-focal-live.mjs
+      - name: Install existing DEV test dependencies
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
+      - name: Read back DEV runtime digest Hosting version HR revision
+        run: |
+          set -Eeuo pipefail
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$B7_OUT/runtime.json"
+          test "$(jq -r '.status.latestReadyRevisionName' "$B7_OUT/runtime.json")" = "$(jq -r '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")"
+          gcloud run revisions describe "$(jq -r '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")" --project "$PROJECT" --region "$REGION" --format=json > "$B7_OUT/revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$B7_OUT/revision.json")"
+          if [[ "$RAW" == sha256:* ]]; then DIGEST="$RAW"; else DIGEST="sha256:${RAW##*@sha256:}"; fi
+          test "$DIGEST" = "$(jq -r '.currentMaterialization.runtimeDigest' "$CANDIDATE_DESCRIPTOR")"
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$B7_OUT/hosting.json"
+          test "$(jq -r '.release.version.name' "$B7_OUT/hosting.json")" = "$(jq -r '.currentMaterialization.hostingVersion' "$CANDIDATE_DESCRIPTOR")"
+          curl -fsSL -H "Cache-Control: no-cache" "$HOSTING_URL/modules/postulaciones.js?b7=$GITHUB_RUN_ID" > "$B7_OUT/remote-postulaciones.js"
+          test "$(sha256sum "$B7_OUT/remote-postulaciones.js"|cut -d' ' -f1)" = "$(git show "$FOCAL_SOURCE:app/modules/postulaciones.js"|sha256sum|cut -d' ' -f1)"
+          curl -fsSL -H "Cache-Control: no-cache" "$HOSTING_URL/modules/misvisitas.js?b7=$GITHUB_RUN_ID" > "$B7_OUT/remote-misvisitas.js"
+          test "$(sha256sum "$B7_OUT/remote-misvisitas.js"|cut -d' ' -f1)" = "$(git show "$FOCAL_SOURCE:app/modules/misvisitas.js"|sha256sum|cut -d' ' -f1)"
+          echo "B7_EXPECTED_HR_REVISION=$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")" >> "$GITHUB_ENV"
+      - name: Two authenticated roles exact cancel decision and cleanup
+        run: |
+          set -Eeuo pipefail
+          EXPECTED_HR_REVISION="$B7_EXPECTED_HR_REVISION" B7_PERIOD_ID=cinepolis-2026-10 node tools/qa/cxorbia-i3-b7-cancel-two-role-focal-live.mjs | tee "$B7_OUT/console.log"
+          test "$(jq -r '.decision' "$B7_OUT/result.json")" = "PASS_I3_B7_TWO_ROLE_DECISION_LIVE_DEV"
+          jq -e '.providerAck==true and (.cases|length)==2 and .hrBefore==.hrAfter and (.cleanup|to_entries|all(.value==true)) and .hrWrites==0 and .production==false' "$B7_OUT/result.json" >/dev/null
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-b7-two-role-dev-${{ github.run_id }}
+          path: .tmp/i3-b7-exact-two-role-live
+          if-no-files-found: warn
+          retention-days: 30
+          compression-level: 0
+
   vrm267-support-focal-live:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM267_SUPPORT_FOCAL_LIVE_REQUIRED' }}

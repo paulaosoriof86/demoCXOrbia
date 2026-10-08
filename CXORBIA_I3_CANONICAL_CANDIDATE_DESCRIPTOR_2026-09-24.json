@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
+  "status": "HOLD_I3_B7_TWO_ROLE_DECISION_LIVE_DEV_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "I3_ENVIRONMENT_FAILURE_RUN1387_AUTH_RELOAD_BOUNDED_REPROOF",
+  "activeBlocker": "B7_EXACT_SHOPPER_ADMIN_DECISION_IN_LIVE_DEV_UNPROVEN",
   "nextFindingId": "VRM-271",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Retry exact same-artifact canonical E2E with bounded Playwright navigation recovery, no product/build/deploy changes; then B2/B5 source roots.",
+  "exactNextAction": "Run exact B7 two authenticated roles on same DEV source/runtime/Hosting with synthetic visits; preserve HR, ACK, notification, idempotency and cleanup. Then evaluate B5 historical paid source P0 without altering amounts, B2 active owner only.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -6517,5 +6517,30 @@
     "artifactUnchanged": true,
     "qaHarnessOnly": true,
     "production": false
+  },
+  "i3B7ExactTwoRoleLive20261008": {
+    "phase": "I3-E_FOCAL",
+    "qaScript": "tools/qa/cxorbia-i3-b7-cancel-two-role-focal-live.mjs",
+    "oneExistingWorkflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "status": "PENDING_CANONICAL_GITHUB_ACTION",
+    "productSourceSha": "8ac7369e2e0f1e203000f80002683ec43e373590",
+    "expectedRuntimeRevision": "cxorbia-live-hr-dev-00278-8qj",
+    "expectedHostingVersion": "sites/cxorbia-backend-dev/versions/1a5fa1ff354bd4ce",
+    "hrRevision": "9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef",
+    "roles": [
+      "shopper",
+      "admin"
+    ],
+    "tests": [
+      "provider ACK",
+      "durable readback",
+      "approve and reject exact request",
+      "targeted notifications",
+      "idempotent replay",
+      "HR same revision",
+      "delete all synthetic documents"
+    ],
+    "production": false,
+    "humanApproval": false
   }
 }
