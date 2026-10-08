@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
+  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "8d7a071aae2864be3a9f41f3673275d8c9250010",
-  "productTreeAuthority": "647839b7c5fbe63c923c4f854a1aad9350fffe5f",
-  "predecessorProductSourceSha": "e4ee267ff7f63d4847b72a659d16915c5f631be5",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V332_2026-10-08.json",
-  "findingsLedgerExpectedGitBlob": "2ae1042c7bf55db34b06e65ec6ee78055d67a831",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V36.json",
+  "productSourceSha": "7e44f271191878b48c4aaadeaf8eb2f0a74a786c",
+  "productTreeAuthority": "295b54908e98023cda3eda2008edd50acb2b8cda",
+  "predecessorProductSourceSha": "8d7a071aae2864be3a9f41f3673275d8c9250010",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V333_2026-10-08.json",
+  "findingsLedgerExpectedGitBlob": "ed32f5723ed78289fa0d0203d222f604495db364",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V37.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "B1_AUTHENTICATED_PERFORMANCE_REPROOF_PLUS_ADMIN_SHOPPER_CROSSROLE_B3_P0_E2E_PENDING",
+  "activeBlocker": "OCT08_B1_SERIAL_FIRESTORE_READS_B5_BENEFITS_HUMAN_FINDINGS_PENDING_SOURCE_PROOF",
   "nextFindingId": "VRM-271",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3_RUN1377_SAME_ARTIFACT_AUTHENTICATED_ADMIN_SHOPPER_E2E_WITH_PREFETCH_METRICS_AND_READBACK",
+  "exactNextAction": "I3_RUN1379_SAME_ARTIFACT_E2E_PASS__OCT08_B1_B5_SINGLE_SOURCE_PROOF_THEN_ONE_DEV_MATERIALIZATION_AUTH_E2E_NO_PRODUCTION",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -428,24 +428,9 @@
     "production": false
   },
   "currentMaterialization": {
-    "state": "PASS_B1_PARALLEL_AUTH_HR_PREFETCH_EXACT_DEV_MATERIALIZATION",
-    "decision": "PASS_REJECTED_PHASEA_EXACT_DEV_MATERIALIZATION",
-    "sourceSha": "8d7a071aae2864be3a9f41f3673275d8c9250010",
-    "sourceTree": "647839b7c5fbe63c923c4f854a1aad9350fffe5f",
-    "runId": 37833931973,
-    "runNumber": 1377,
-    "jobId": 113506153385,
-    "artifactId": 11574154663,
-    "artifactDigest": "sha256:9a2ce62fbb258459d65ccbfcfbb824dccbace0f05fab6cff08c0379e6d0f5945",
-    "runtimeRevision": "cxorbia-live-hr-dev-00276-swn",
-    "runtimeDigest": "sha256:3a8589e2ec6fc8b1dd726b435604bfae66a5b090dbfd2756de07bd7d7a04a56d",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/88869a5fa97c0254",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791488718431000",
-    "hrRevision": "9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef",
-    "builds": 1,
-    "runtimeDeploys": 1,
-    "hostingDeploys": 1,
-    "storageRulesDeploys": 0,
+    "state": "PENDING_EXACT_DEV_SOURCE_PROOF",
+    "sourceSha": "7e44f271191878b48c4aaadeaf8eb2f0a74a786c",
+    "sourceTree": "295b54908e98023cda3eda2008edd50acb2b8cda",
     "production": false
   },
   "lastFocalAttempt": {
@@ -2803,20 +2788,20 @@
     "production": false
   },
   "previousMaterialization": {
-    "state": "PASS_VRM221_EXACT_DEV_MATERIALIZATION",
-    "runId": 37196202414,
-    "runNumber": 1106,
-    "jobId": 111418531939,
-    "artifactId": 11301376993,
-    "artifactDigest": "sha256:685d0cb9d4e4d07b801713bac4bd1b8c0ff387fa9b319b043753f452c0dcf0a7",
-    "decision": "PASS_VRM154_156_EXACT_DEV_MATERIALIZATION",
-    "sourceSha": "16b6f494b0d5972ac0096da82568998a5e28c28d",
-    "sourceTree": "7c7d92dcd7c1a6440b2693072f4b69f3d6224926",
-    "runtimeRevision": "cxorbia-live-hr-dev-00263-hw5",
-    "runtimeDigest": "sha256:c6d244eb04f7a709c3f9da97edd6fbf8df43227612b208916ca803ec62c24241",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/c6f53fb674b7e49e",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791110673642000",
-    "hrRevision": "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305",
+    "state": "PASS_B1_PARALLEL_AUTH_HR_PREFETCH_EXACT_DEV_MATERIALIZATION",
+    "decision": "PASS_REJECTED_PHASEA_EXACT_DEV_MATERIALIZATION",
+    "sourceSha": "8d7a071aae2864be3a9f41f3673275d8c9250010",
+    "sourceTree": "647839b7c5fbe63c923c4f854a1aad9350fffe5f",
+    "runId": 37833931973,
+    "runNumber": 1377,
+    "jobId": 113506153385,
+    "artifactId": 11574154663,
+    "artifactDigest": "sha256:9a2ce62fbb258459d65ccbfcfbb824dccbace0f05fab6cff08c0379e6d0f5945",
+    "runtimeRevision": "cxorbia-live-hr-dev-00276-swn",
+    "runtimeDigest": "sha256:3a8589e2ec6fc8b1dd726b435604bfae66a5b090dbfd2756de07bd7d7a04a56d",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/88869a5fa97c0254",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791488718431000",
+    "hrRevision": "9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef",
     "builds": 1,
     "runtimeDeploys": 1,
     "hostingDeploys": 1,
@@ -6294,5 +6279,31 @@
     },
     "sourceProofStatus": "PASS_RUN1376_36_TESTS",
     "e2e": "PENDING"
+  },
+  "i3Oct08B1B5": {
+    "stage": "SOURCE_FIXED_PENDING_CANONICAL_PROOF",
+    "source": "7e44f271191878b48c4aaadeaf8eb2f0a74a786c",
+    "tree": "295b54908e98023cda3eda2008edd50acb2b8cda",
+    "predecessor": "8d7a071aae2864be3a9f41f3673275d8c9250010",
+    "priorProof": {
+      "runId": 37835288405,
+      "runNumber": 1379,
+      "decision": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF+EXHAUSTIVE_CLICK+ADMIN+FINANCE+CERT_RESOURCE",
+      "source": "8d7a071aae2864be3a9f41f3673275d8c9250010",
+      "humanPASS": false
+    },
+    "ownerFiles": [
+      "backend/runtime/hr-live-service/server.mjs",
+      "app/modules/beneficios.js",
+      "app/styles/layout.css"
+    ],
+    "tests": [
+      "backend/runtime/hr-live-service/test/cxorbia-i3-oct08-b1-b3-source.test.mjs",
+      "tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs"
+    ],
+    "newB5Sort": "NEWEST_FIRST",
+    "oldHistoricalPaidState": "PENDING_EXACT_DURABLE_RECONCILIATION",
+    "profileRedesign": "OPEN_OWNER_B2",
+    "production": false
   }
 }
