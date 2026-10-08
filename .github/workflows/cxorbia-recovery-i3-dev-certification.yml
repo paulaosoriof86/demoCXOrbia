@@ -7358,3 +7358,55 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
+
+
+  b1-oct07-authenticated-readonly-visual:
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_B1_OCT07_AUTH_READONLY_VISUAL_PROOF_REQUIRED' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    env:
+      FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      B1_VISUAL_OUT: .tmp/b1-oct07-readonly
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Verify exact immutable B1 DEV artifact and nonmutating source
+        run: |
+          set -Eeuo pipefail
+          test "$FOCAL_SOURCE" = "c12c44a53ce999a7deebeef9a5d6fa233753793c"
+          test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
+          test "$(jq -r '.currentMaterialization.sourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
+          test "$(jq -r '.currentMaterialization.sourceTree' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
+          test "$(jq -r '.currentMaterialization.hostingVersion' "$CANDIDATE_DESCRIPTOR")" = "sites/cxorbia-backend-dev/versions/42871b92b5fd6982"
+          test "$(jq -r '.production' "$CANDIDATE_DESCRIPTOR")" = '"DO_NOT_TOUCH"'
+          node --check tools/qa/cxorbia-i3-b1-oct07-authenticated-readonly.mjs
+      - name: Install test browser without modifying product
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: cxorbia-backend-dev
+      - name: B1 authenticated read-only visual state, modal and identity proof
+        run: |
+          set -Eeuo pipefail
+          export EXPECTED_HR_REVISION="$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")"
+          node tools/qa/cxorbia-i3-b1-oct07-authenticated-readonly.mjs
+          jq -e '.decision=="PASS_B1_AUTHENTICATED_READONLY_UI_FOCAL" and .production==false and .testInitiatedWrites==0 and (.targets|length)==2' "$B1_VISUAL_OUT/result.json" >/dev/null
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cxorbia-i3-b1-oct07-auth-readonly-${{ github.run_id }}
+          path: .tmp/b1-oct07-readonly
+          if-no-files-found: warn
+          retention-days: 30
+          compression-level: 0
