@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED",
+  "status": "HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-271_SOURCE_PROOF_PASS_RUN1398__ONE_EXACT_DEV_ARTIFACT_MATERIALIZATION_REQUIRED",
+  "activeBlocker": "VRM-271_RUN1399_EXACT_DEV_MATERIALIZED__B2_B5_HISTORICAL_PAID_E2E_AND_HUMAN_REVIEW_PENDING",
   "nextFindingId": "VRM-272",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run one canonical DEV build/runtime/Hosting on source 12f33a00430768ab11f2041eb278d33724e69401 from source-proof run1398; verify exact runtime digest, Hosting version and independent live HR. Then same artifact Admin/Shopper/Client E2E, B2 profile and B5 historical payments, and B3 camera+GPS+Storage exact flow before Paula human visual. I4 only after I3 GO and Paula explicit production authorization.",
+  "exactNextAction": "Without any rebuild, rerun the EXISTING I3 same-artifact authenticated Admin/Shopper/Client DEV E2E against run1399 artifact, including VRM-271 B2 Mi Perfil vs B5 Beneficios exact per-visit historically paid truth; honorarium and operation remain independently sourced, no invented payments. Preserve pending B1/B3/B4/B6/B7/B8 P0s, 271 VRM and 45+18 human observations. TinyFish prehuman and Paula explicit human block PASS before Gate20/21. No I4/production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -430,17 +430,17 @@
   "currentMaterialization": {
     "state": "PASS_REJECTED_PHASEA_EXACT_DEV_MATERIALIZATION",
     "decision": "PASS_REJECTED_PHASEA_EXACT_DEV_MATERIALIZATION",
-    "sourceSha": "3c0ea51a2626d418f0e6952bdd6a82f8b15d13e3",
-    "sourceTree": "1d0d8a03005d27b2a1ee795e6de6a0fccc5ef715",
-    "runId": 37850621055,
-    "runNumber": 1395,
-    "jobId": 113562440994,
-    "artifactId": 11580929817,
-    "artifactDigest": "sha256:fabf88ec8f934e7d07182a336d7e52d2c98396f8e436c080534a0d3497a0c7c7",
-    "runtimeRevision": "cxorbia-live-hr-dev-00279-lzb",
-    "runtimeDigest": "sha256:cf0a84d045173a4bb3b37ff09cfcc4257e5709502f008b56f82fd2879889eb60",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/c53ee146923601d9",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791496995016000",
+    "sourceSha": "12f33a00430768ab11f2041eb278d33724e69401",
+    "sourceTree": "ce15467895f769b6aa6ad49a2bb138709ab425fd",
+    "runId": 37854645391,
+    "runNumber": 1399,
+    "jobId": 113576048360,
+    "artifactId": 11584160109,
+    "artifactDigest": "sha256:6401459d0d3da800ca92d7701ce183367284eae1e7f79e3ed8b197b1769d6677",
+    "runtimeRevision": "cxorbia-live-hr-dev-00280-95g",
+    "runtimeDigest": "sha256:f43de3175e88563563ea901d68c218745838a27e9d1ddca453a4798648630e83",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/d912c9db59002681",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791499278705000",
     "hrRevision": "9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef",
     "builds": 1,
     "runtimeDeploys": 1,
@@ -6833,5 +6833,86 @@
     "humanVisual": {
       "state": "PENDING_PAULA_REVIEW_AFTER_FOCAL_LIVE_PROOF"
     }
+  },
+  "run1399MaterializationControlReadback": {
+    "date": "2026-10-08",
+    "classification": "MAPPING_FAILURE",
+    "controlOnly": true,
+    "expectedParentSha": "d21c2e90cafba8dfe1b379ea3f07452a26e22539",
+    "expectedParentTree": "5d9c61099b8fff652849e4d34a3603d9ebfe6632",
+    "originalDescriptorBlob": "232726dabe6de3d1371fd5afce0bd23d72b904d4",
+    "before": {
+      "status": "HOLD_REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED",
+      "activeBlocker": "VRM-271_SOURCE_PROOF_PASS_RUN1398__ONE_EXACT_DEV_ARTIFACT_MATERIALIZATION_REQUIRED",
+      "currentMaterialization": {
+        "state": "PASS_REJECTED_PHASEA_EXACT_DEV_MATERIALIZATION",
+        "decision": "PASS_REJECTED_PHASEA_EXACT_DEV_MATERIALIZATION",
+        "sourceSha": "3c0ea51a2626d418f0e6952bdd6a82f8b15d13e3",
+        "sourceTree": "1d0d8a03005d27b2a1ee795e6de6a0fccc5ef715",
+        "runId": 37850621055,
+        "runNumber": 1395,
+        "jobId": 113562440994,
+        "artifactId": 11580929817,
+        "artifactDigest": "sha256:fabf88ec8f934e7d07182a336d7e52d2c98396f8e436c080534a0d3497a0c7c7",
+        "runtimeRevision": "cxorbia-live-hr-dev-00279-lzb",
+        "runtimeDigest": "sha256:cf0a84d045173a4bb3b37ff09cfcc4257e5709502f008b56f82fd2879889eb60",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/c53ee146923601d9",
+        "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791496995016000",
+        "hrRevision": "9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef",
+        "builds": 1,
+        "runtimeDeploys": 1,
+        "hostingDeploys": 1,
+        "storageRulesDeploys": 0,
+        "production": false
+      },
+      "exactNextAction": "Run one canonical DEV build/runtime/Hosting on source 12f33a00430768ab11f2041eb278d33724e69401 from source-proof run1398; verify exact runtime digest, Hosting version and independent live HR. Then same artifact Admin/Shopper/Client E2E, B2 profile and B5 historical payments, and B3 camera+GPS+Storage exact flow before Paula human visual. I4 only after I3 GO and Paula explicit production authorization."
+    },
+    "after": {
+      "status": "HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED",
+      "activeBlocker": "VRM-271_RUN1399_EXACT_DEV_MATERIALIZED__B2_B5_HISTORICAL_PAID_E2E_AND_HUMAN_REVIEW_PENDING",
+      "currentMaterialization": {
+        "state": "PASS_REJECTED_PHASEA_EXACT_DEV_MATERIALIZATION",
+        "decision": "PASS_REJECTED_PHASEA_EXACT_DEV_MATERIALIZATION",
+        "sourceSha": "12f33a00430768ab11f2041eb278d33724e69401",
+        "sourceTree": "ce15467895f769b6aa6ad49a2bb138709ab425fd",
+        "runId": 37854645391,
+        "runNumber": 1399,
+        "jobId": 113576048360,
+        "artifactId": 11584160109,
+        "artifactDigest": "sha256:6401459d0d3da800ca92d7701ce183367284eae1e7f79e3ed8b197b1769d6677",
+        "runtimeRevision": "cxorbia-live-hr-dev-00280-95g",
+        "runtimeDigest": "sha256:f43de3175e88563563ea901d68c218745838a27e9d1ddca453a4798648630e83",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/d912c9db59002681",
+        "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791499278705000",
+        "hrRevision": "9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef",
+        "builds": 1,
+        "runtimeDeploys": 1,
+        "hostingDeploys": 1,
+        "storageRulesDeploys": 0,
+        "production": false
+      },
+      "exactNextAction": "Without any rebuild, rerun the EXISTING I3 same-artifact authenticated Admin/Shopper/Client DEV E2E against run1399 artifact, including VRM-271 B2 Mi Perfil vs B5 Beneficios exact per-visit historically paid truth; honorarium and operation remain independently sourced, no invented payments. Preserve pending B1/B3/B4/B6/B7/B8 P0s, 271 VRM and 45+18 human observations. TinyFish prehuman and Paula explicit human block PASS before Gate20/21. No I4/production."
+    },
+    "evidence": {
+      "githubRunId": 37854645391,
+      "githubRunConclusion": "success",
+      "artifactId": 11584160109,
+      "artifactZipSha256": "sha256:6401459d0d3da800ca92d7701ce183367284eae1e7f79e3ed8b197b1769d6677",
+      "artifactResultJsonDecision": "PASS_REJECTED_PHASEA_EXACT_DEV_MATERIALIZATION",
+      "artifactResultJsonSource": "12f33a00430768ab11f2041eb278d33724e69401",
+      "artifactResultJsonSourceTree": "ce15467895f769b6aa6ad49a2bb138709ab425fd",
+      "independentLiveHrRevision": "9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef",
+      "hostingChannelUrl": "https://cxorbia-backend-dev.web.app"
+    },
+    "preserved": {
+      "productSource": true,
+      "ledgerV337": true,
+      "moduleTruthV41": true,
+      "original45Plus18Observations": true,
+      "productionUntouched": true,
+      "noNewBuild": true,
+      "noDeploy": true
+    },
+    "nextGate": "SAME_ARTIFACT_LIVE_E2E_NOT_YET_PROVEN"
   }
 }
