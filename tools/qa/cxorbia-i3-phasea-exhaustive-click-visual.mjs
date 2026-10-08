@@ -118,6 +118,7 @@ async function waitReadyAfterReload(page,member,role){
 async function deepShopperActions(page,target,key){
   const cov={};
   await nav(page,'miperfil');
+  cov.profileSummaryOpens=await click(page,'[data-profile-jump="identity"]');
   cov.profileEditModal=await click(page,'[data-profile-edit]');
   if(cov.profileEditModal){
     await page.waitForTimeout(180);
