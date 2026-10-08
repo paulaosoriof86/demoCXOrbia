@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "cxorbia.i3.b1.envfailure.run1368.v1",
+  "kind": "TEST_ENVIRONMENT_FAILURE_NOT_PRODUCT_FAIL",
+  "dateLocal": "2026-10-07",
+  "timezone": "America/Guatemala",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlParent": "043a7e856f174631706a19d29ade16d95a7d63eb",
+  "sourceSha": "8cdd461bd4b19185c007db18631a2470891a3327",
+  "sourceTree": "38139fcc5032f29474dd0ec5b9d33312b37a0a24",
+  "materialization": {
+    "runId": 37714033454,
+    "runNumber": 1367,
+    "sourceSha": "8cdd461bd4b19185c007db18631a2470891a3327",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/e62e7447c79a4bb0",
+    "runtimeRevision": "cxorbia-live-hr-dev-00274-wvg",
+    "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+    "hrWrites": 0,
+    "production": false
+  },
+  "run": {
+    "id": 37716461514,
+    "number": 1368,
+    "jobId": 113113974175,
+    "result": "HOLD",
+    "cause": "Firebase auth/network-request-failed during browser custom-token login, before entering product",
+    "coverage": "NO_AUTHENTICATED_UI_RESULT",
+    "testInitiatedWrites": 0,
+    "production": false,
+    "link": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/37716461514"
+  },
+  "interpretation": "ENVIRONMENT_FAILURE_BROWSER_AUTH; DOES_NOT_ESTABLISH_PRODUCT_FAILURE_OR_TINYFISH_PASS",
+  "tinyFish": "ENVIRONMENT_FAILURE_SESSION_RESTORE_B1_EXCEPTION_FROZEN",
+  "human": {
+    "priorFail": "FAIL_B1_2026-10-07_PREDECESSOR_SOURCE",
+    "currentSource": "AWAITING_PAULA_REVIEW",
+    "blockLocked": false
+  },
+  "pending": [
+    "PAULA_SHORT_VISUAL_REVIEW_OF_B1_ON_EXACT_DEV_SOURCE",
+    "EXACT_DURABLE_PROVIDER_READBACK_AND_NON_MUTATING_UI_PROOF_ONCE_ENV_ACCESS_READY",
+    "B1_RECEIPT_ONLY_AFTER_EXPLICIT_PASS"
+  ],
+  "preserve": [
+    "45 original observations",
+    "9 B1-HF",
+    "270 VRM",
+    "Visitas Disponibles",
+    "Ficha de postulacion"
+  ],
+  "security": {
+    "production": "DO_NOT_TOUCH",
+    "manualHRWrites": 0,
+    "paymentWrites": 0,
+    "providerTestActions": 0
+  }
+}
