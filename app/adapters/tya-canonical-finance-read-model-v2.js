@@ -72,6 +72,19 @@
     if(f.realized)return 'pendiente_cuestionario';
     return null;
   }
+  /* Exact historical payment truth is scoped to the configured source project.
+     Financial amounts remain separate and never come from a period-paid inference. */
+  function confirmedHistoricalPayment(project,v){
+    const source=CX.data?.paymentHistorySnapshot,fn=CX.data?.paymentHistoryTruthForVisit;
+    if(!source||source.sourceSafe!==true||typeof fn!=='function')return null;
+    const root=str(project?.parentProjectId||project?.rootProjectId||project?.program||project?.id).replace(/-20\d{2}-(?:0[1-9]|1[0-2])$/,'');
+    const visitRoot=str(v?.rootProjectId||v?.program||v?.projectId).replace(/-20\d{2}-(?:0[1-9]|1[0-2])$/,'');
+    const sourceProject=str(source.projectId),tenant=str(project?.tenantId||CX.data?.tenantId||entry.tenantId);
+    if(!sourceProject||root!==sourceProject||(visitRoot&&visitRoot!==sourceProject)||(tenant&&tenant!==str(source.tenantId)))return null;
+    const truth=fn(v);
+    if(truth?.paymentConfirmed!==true||!str(truth.paymentSourceRef))return null;
+    return truth;
+  }
   function derive(project,v){
     const f=facets(v),estado=operationalState(f);if(!estado)return null;
     const honorarioKnown=v.honorarioSourceKnown===true||(v.honorarioSourceKnown!==false&&knownAmount(v.honorario));
@@ -83,6 +96,7 @@
       || ['partial','incomplete','pending_source'].includes(str(v.reimbursementSourceStatus||v.reimbursementStatus).toLowerCase());
     const visitReimbursementSourceStatus=visitReimbursementPartial?'partial':(v.reimbursementSourceStatus||v.reimbursementStatus||null);
     const exact=exactProtectedFinancialMatch(v)||(typeof CX.data.financialMatchForVisit==='function'?CX.data.financialMatchForVisit(v):null);
+    const historicalTruth=confirmedHistoricalPayment(project,v);
     if(exact){
       const merged=Object.assign({},exact,{
         visitaId:v.id||v.visitId,visitId:v.id||v.visitId,hrRowId:v.hrRowId||exact.hrRowId||null,
@@ -105,9 +119,20 @@
         paymentSourceRef:exact.paymentSourceRef||exact.reconciliationSourceRef||null,
         reconciliationSourceRef:exact.reconciliationSourceRef||null
       });
+      if(historicalTruth){
+        /* The frozen historical payment cut may follow an earlier amount reconciliation.
+           Mark paid, but do not alter any amount or invent a payment execution. */
+        Object.assign(merged,{estado:'pagada',paymentState:'confirmed',paymentConfirmed:true,pagada:true,
+          historicalReconciliationConfirmed:true,historicalPaymentStatus:'paid',
+          paymentSourceRef:merged.paymentSourceRef||historicalTruth.paymentSourceRef,
+          historicalPaymentGroupId:merged.historicalPaymentGroupId||historicalTruth.historicalPaymentGroupId||null,
+          paidAt:merged.paidAt||historicalTruth.paidAt||null,
+          paidAtPrecision:merged.paidAtPrecision||historicalTruth.paidAtPrecision||null,
+          liquidationState:'historical_payment_confirmed'});
+      }
       return merged;
     }
-    return {
+    const pending={
       visitaId:v.id||v.visitId,visitId:v.id||v.visitId,hrRowId:v.hrRowId||null,projectId:project.id,rootProjectId:rootProjectId(project),periodKey:v.periodKey||project.periodKey||null,
       shopperId:v.shopperId||null,shopper:v.shopper||null,shopperCode:v.shopperCode||null,sucursal:v.sucursal||'Visita HR',pais:v.pais||v.country||null,moneda:v.currency||v.moneda||null,loteId:null,
       honorario,honorarioSource,honorarioSourceKnown:honorarioKnown,boleto,combo,reembolso,total,estado,operationalVisitStage:f.submitted?'submitida':f.questionnaire?'cuestionario':f.realized?'realizada':'pendiente',
@@ -118,6 +143,19 @@
       reimbursementSourceComplete:v.reimbursementSourceComplete===false?false:(visitReimbursementPartial?false:v.reimbursementSourceComplete),
       canonicalFacets:Object.assign({},f),readModelVersion:'canonical-finance-v2',sourceSafe:true,imported:false,production:false
     };
+    if(historicalTruth){
+      /* Paid status follows the authorized freeze; unknown amounts remain under review. */
+      Object.assign(pending,{estado:'pagada',paymentState:'confirmed',paymentConfirmed:true,pagada:true,
+        historicalReconciliationConfirmed:true,historicalPaymentStatus:'paid',
+        paymentSourceRef:historicalTruth.paymentSourceRef,
+        historicalPaymentGroupId:historicalTruth.historicalPaymentGroupId||null,
+        paidAt:historicalTruth.paidAt||null,
+        paidAtPrecision:historicalTruth.paidAtPrecision||null,
+        liquidationState:'historical_payment_confirmed',
+        financialSourceStatus:'historical_paid_amounts_review_required',
+        reviewRequired:true,amountReviewRequired:true});
+    }
+    return pending;
   }
   CX.liq.forProject=function(data){
     const project=data.period(),visits=arr(data.visitas?.()),legacy=arr(previousForProject(data));

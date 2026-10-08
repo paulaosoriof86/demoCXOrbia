@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import vm from 'node:vm';
 import {validateVisitDateWindow,planVisitCancelDecision} from '../../cxorbia-operational-command-provider-v1.mjs';
 const read=path=>fs.readFileSync(path,'utf8');
 const visit={franjaCode:'WK',quincena:'QUINCENA 1',periodKey:'2026-10',disponibleDesde:'2026-10-01'};
@@ -152,4 +153,51 @@ test('B7 exact owner UI offers both decisions with ACK and preserves external HR
   assert.match(backend,/OPS_CANCEL_EXTERNAL_HR_ACK_REQUIRED/);
   assert.match(backend,/OPS_CANCEL_STAFF_REQUEST_IMPERSONATION_DENIED/);
   assert.match(backend,/tx\.set\(r\.bulletins\.doc\(bulletinId\)/);
+});
+
+test('B5 historical payment authority propagates to active finance read model without inventing amounts or crossing tenant/project',()=>{
+  const impl=read('app/adapters/tya-canonical-finance-read-model-v2.js');
+  const historical={paymentConfirmed:true,paymentSourceRef:'recovery-lock:historical-cut:2025-12',historicalPaymentGroupId:'hist-frozen-2025'};
+  function model(truth,opts={}){
+    const CX={data:{tenantId:'tya',paymentHistorySnapshot:{sourceSafe:true,tenantId:'tya',projectId:'cinepolis'},
+      paymentHistoryTruthForVisit:()=>truth,financialMatchForVisit:()=>opts.exact||null,__protectedVisits:[]},
+      liq:{forProject:()=>[],label:()=>['Pendiente','a']}};
+    const window={CX,CX_TYA_CUMULATIVE_READ_MODEL:{facets:v=>v.canonicalFacets||{}},
+      CX_DEV_ENTRY_CANONICAL:{canonical:true,protectedRuntime:true,tenantId:'tya',projectId:'cinepolis'}};
+    vm.runInNewContext(impl,{window,CX,URLSearchParams,location:{search:''}});
+    const v={id:'qa-2025-12',visitId:'qa-2025-12',periodKey:opts.periodKey||'2025-12',
+      projectId:opts.project||'cinepolis',pais:'GT',currency:'GTQ',honorario:60,realizada:'2025-12-12',
+      canonicalFacets:{realized:opts.realized!==false,submitted:opts.realized!==false,paymentConfirmed:false,liquidationConfirmed:false}};
+    const p={id:(opts.project||'cinepolis')+'-'+v.periodKey,periodKey:v.periodKey,
+      parentProjectId:opts.project||'cinepolis',tenantId:opts.tenant||'tya'};
+    return window.CX_TYA_CANONICAL_FINANCE_READ_MODEL.fromVisit(p,v);
+  }
+  const paid=model(historical);
+  assert.equal(paid.paymentConfirmed,true);
+  assert.equal(paid.paymentSourceRef,historical.paymentSourceRef);
+  assert.equal(paid.historicalReconciliationConfirmed,true);
+  assert.equal(paid.reviewRequired,true,'historically paid without exact financial amount remains in amount review');
+  assert.equal(paid.operationalVisitStage,'submitida','payment confirmation does not rewrite HR operational progress');
+  const missing=model(null);assert.equal(missing.paymentConfirmed,false,'no proof cannot produce paid state');
+  assert.equal(model(historical,{project:'another-project'}).paymentConfirmed,false,'tenant/project isolation');
+  assert.equal(model(historical,{tenant:'another-tenant'}).paymentConfirmed,false,'tenant isolation');
+  const exact=model(historical,{exact:{financialSourceStatus:'reconciled_exact',honorario:60,total:200,moneda:'GTQ',paymentConfirmed:false}});
+  assert.equal(exact.paymentConfirmed,true);
+  assert.equal(exact.total,200,'exact accepted amount remains unchanged');
+  assert.equal(exact.honorario,60);
+  assert.equal(model(historical,{realized:false}),null,'not-realized visits do not become payable from historical evidence alone');
+});
+test('B2 active shopper Mi Perfil owner presents KPI overview before sensitive detail and preserves exact roles/actions',()=>{
+  const src=read('app/adapters/tya-canonical-shopper-portal-v2.js');
+  assert.match(src,/CX\.modules\.miperfil=render/);
+  assert.match(src,/id="cxProfileSensitive"/);
+  assert.ok(src.indexOf('📊 Desempeño')<src.indexOf('id="cxProfileSensitive"'));
+  assert.match(src,/sensitive\.open=true/);
+  for(const k of ['all','done','submitted','paid'])assert.match(src,new RegExp('data-profile-kpi="'+k+'"'));
+  assert.match(src,/masked\(s\.dpi\|\|s\.documentId\)/);
+  assert.match(src,/masked\(s\.ctaNum\)/);
+  assert.match(src,/data-profile-visit-row/);
+  assert.match(src,/data-profile-edit/);
+  assert.match(src,/resolveSessionShopper\(data\)/);
+  assert.match(src,/CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY/);
 });
