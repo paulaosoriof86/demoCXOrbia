@@ -144,6 +144,32 @@ export function validateVisitDateWindow(v,date,{timezone='America/Guatemala',now
   if(min&&value<min)throw new Error('OPS_SCHEDULE_DATE_BEFORE_ALLOWED');
   return value;
 }
+/* I3 B7 exact cancellation decisions are source-scoped and fail closed.
+   External HR retains operational ownership until its own ACK/revision; no synthetic availability. */
+export function planVisitCancelDecision(visit,{decision,reason,actorUid,sourceMode='external',at=now()}={}){
+  const pending=visit?.cancelRequest;
+  if(str(pending?.status)!=='pending_review')throw new Error('OPS_CANCEL_REQUEST_NOT_PENDING');
+  const outcome=str(decision).toLowerCase();
+  if(!['approved','rejected'].includes(outcome))throw new Error('OPS_CANCEL_DECISION_INVALID');
+  if(!str(reason))throw new Error('OPS_CANCEL_DECISION_REASON_REQUIRED');
+  if(!str(actorUid))throw new Error('OPS_CANCEL_DECISION_ACTOR_REQUIRED');
+  const internal=str(sourceMode).toLowerCase()==='internal', approved=outcome==='approved';
+  const status=approved?(internal?'approved':'approved_pending_hr'):'rejected';
+  const patch={
+    cancelRequest:{...pending,status,decisionReason:str(reason),decidedBy:str(actorUid),decidedAt:at},
+    updatedAt:at,version:Number(visit.version||0)+1
+  };
+  if(approved&&internal){
+    Object.assign(patch,{estado:'cancelada',status:'cancelada',cancelled:true,cancelReason:pending.reason||str(reason),
+      canonicalFacets:{...(visit.canonicalFacets||{}),available:false,assigned:false,scheduled:false,cancelled:true}});
+  }
+  return patch;
+}
+function visitRouteMode(project={}){
+  const route=project.operationalSource||project.routeSource||{};
+  const mode=str(typeof route==='string'?route:route.mode||route.sourceType||route.authority).toLowerCase();
+  return mode==='internal'?'internal':'external';
+}
 function assertSchedulableDate(v,date,timezone){
   const facets=canonicalFacets(v);
   if(facets.realized===true||facets.questionnaire===true||facets.submitted===true||facets.liquidationConfirmed===true||facets.paymentConfirmed===true||facets.cancelled===true)throw new Error('OPS_VISIT_NOT_SCHEDULABLE');
@@ -268,7 +294,7 @@ async function transactionExecute(db,command,actor){
       if(p.status==='committed')return ack(command,p.entityId,{idempotentReplay:true,providerWrites:0});
     }
     const payload=clean(command.payload||{});
-    let entityId=str(command.entityId),providerWrites=0,auditEntityType=command.entityType;
+    let entityId=str(command.entityId),providerWrites=0,auditEntityType=command.entityType,notificationTargetShopperId=null;
 
     if(command.commandType==='application.create'){
       if(actor.role!=='shopper')throw new Error('OPS_APPLICATION_CREATE_SHOPPER_ONLY');
@@ -463,19 +489,40 @@ async function transactionExecute(db,command,actor){
     }
     else if(command.commandType==='visit.cancel'){
       const visitId=str(payload.visitId||entityId);if(!visitId)throw new Error('OPS_VISIT_ID_REQUIRED');entityId=visitId;
-      const resolved=await resolveVisitDocument(tx,r.visits,visitId,payload.hrRowId),vRef=resolved.ref,vSnap=resolved.snap,v=resolved.data;assertPeriod(command,v);assertVersion(command,v);
-      if(actor.role==='shopper'&&str(v.shopperId)!==actor.shopperId)throw new Error('OPS_VISIT_SHOPPER_SCOPE_DENIED');
-      if(actor.role==='shopper'||payload.requestOnly===true){
+      const resolved=await resolveVisitDocument(tx,r.visits,visitId,payload.hrRowId),vRef=resolved.ref,v=resolved.data;assertPeriod(command,v);assertVersion(command,v);
+      notificationTargetShopperId=str(v.shopperId);
+      if(actor.role==='shopper'&&notificationTargetShopperId!==actor.shopperId)throw new Error('OPS_VISIT_SHOPPER_SCOPE_DENIED');
+      if(actor.role==='shopper'){
+        if(str(payload.decision)||payload.releaseToAvailable===true)throw new Error('OPS_CANCEL_SHOPPER_DECISION_DENIED');
         if(!str(payload.reason))throw new Error('OPS_CANCEL_REASON_REQUIRED');
-        if(str(v.cancelRequest?.status)==='pending_review'||str(v.rescheduleRequest?.status)==='pending_review')throw new Error('OPS_VISIT_REQUEST_ALREADY_PENDING');
-        tx.set(vRef,{cancelRequest:{status:'pending_review',reason:str(payload.reason),requestedByShopperId:actor.shopperId,requestedAt:now()},updatedAt:now(),version:Number(v.version||0)+1},{merge:true});
+        if(str(v.cancelRequest?.status)==='pending_review'||str(v.cancelRequest?.status)==='approved_pending_hr'||str(v.rescheduleRequest?.status)==='pending_review')throw new Error('OPS_VISIT_REQUEST_ALREADY_PENDING');
+        tx.set(vRef,{cancelRequest:{status:'pending_review',reason:str(payload.reason),requestedByShopperId:actor.shopperId,requestedAt:now()},
+          updatedAt:now(),version:Number(v.version||0)+1},{merge:true});
       }else{
         if(!OPERATOR_ROLES.includes(actor.role))throw new Error('OPS_CANCEL_OPERATOR_ONLY');
-        const release=payload.releaseToAvailable===true;
-        const patch=release
-          ? {estado:'disponible',status:'disponible',cancelled:false,cancelReason:payload.reason||null,shopperId:null,shopper:null,agendada:null,assignmentSource:'platform',assignmentSyncStatus:'pending_hr',lastSyncedAt:null,canonicalFacets:{...(v.canonicalFacets||{}),available:true,assigned:false,scheduled:false,cancelled:false},updatedAt:now(),version:Number(v.version||0)+1}
-          : {estado:'cancelada',status:'cancelada',cancelled:true,cancelReason:payload.reason||null,canonicalFacets:{...(v.canonicalFacets||{}),available:false,cancelled:true},updatedAt:now(),version:Number(v.version||0)+1};
-        tx.set(vRef,patch,{merge:true});
+        if(payload.requestOnly===true)throw new Error('OPS_CANCEL_STAFF_REQUEST_IMPERSONATION_DENIED');
+        const projectSnap=await tx.get(r.project),projectData=projectSnap.exists?(projectSnap.data()||{}):{},sourceMode=visitRouteMode(projectData);
+        const decision=str(payload.decision).toLowerCase();
+        if(decision){
+          if(payload.releaseToAvailable===true)throw new Error('OPS_CANCEL_DECISION_CANNOT_AUTO_RELEASE');
+          const patch=planVisitCancelDecision(v,{decision,reason:payload.reason,actorUid:actor.uid,sourceMode});
+          tx.set(vRef,patch,{merge:true});
+        }else{
+          /* Existing direct Admin cancellation is only safe for an internal-owned route.
+             For external/provider HR the pending approval must await independent HR ACK. */
+          if(['pending_review','approved_pending_hr'].includes(str(v.cancelRequest?.status)))throw new Error('OPS_CANCEL_DECISION_OR_HR_ACK_REQUIRED');
+          if(sourceMode!=='internal')throw new Error('OPS_CANCEL_EXTERNAL_HR_ACK_REQUIRED');
+          if(!str(payload.reason))throw new Error('OPS_CANCEL_REASON_REQUIRED');
+          const release=payload.releaseToAvailable===true;
+          const patch=release
+            ? {estado:'disponible',status:'disponible',cancelled:false,cancelReason:str(payload.reason),shopperId:null,shopper:null,agendada:null,
+               assignmentSource:'platform',assignmentSyncStatus:'pending_hr',lastSyncedAt:null,
+               canonicalFacets:{...(v.canonicalFacets||{}),available:true,assigned:false,scheduled:false,cancelled:false},
+               updatedAt:now(),version:Number(v.version||0)+1}
+            : {estado:'cancelada',status:'cancelada',cancelled:true,cancelReason:str(payload.reason),
+               canonicalFacets:{...(v.canonicalFacets||{}),available:false,cancelled:true},updatedAt:now(),version:Number(v.version||0)+1};
+          tx.set(vRef,patch,{merge:true});
+        }
       }
       providerWrites++;auditEntityType='visit';
     }
@@ -541,7 +588,7 @@ async function transactionExecute(db,command,actor){
     if(command.commandType==='visit.reschedule'||command.commandType==='visit.cancel'){
       const requested=actor.role==='shopper'||payload.requestedByShopper===true||payload.requestOnly===true;
       const kind=command.commandType==='visit.reschedule'?'reprog':'cancel';
-      const targetShopper=str(payload.shopperId||actor.shopperId);
+      const targetShopper=str(notificationTargetShopperId||payload.shopperId||actor.shopperId);
       const outcome=str(payload.decision||'approved').toLowerCase();
       const bulletinId='visit-request-'+receiptId(command);
       const title=requested?(kind==='reprog'?'Solicitud de reprogramación':'Solicitud de cancelación'):(outcome==='rejected'?'Solicitud no autorizada':'Solicitud revisada');

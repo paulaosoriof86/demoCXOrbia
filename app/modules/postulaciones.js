@@ -26,6 +26,7 @@ CX.module('postulaciones', ({data,ui})=>{
   const requestVisits=new Set(requestByVisit.map(v=>String(v.visitaId)));
   const reprog=[...requestByVisit,...activePosts.filter(x=>x.reprog&&!requestVisits.has(String(x.visitaId||x.visitId||'')))];
   const cancellationRequests=operationalAssignments.filter(v=>v.cancelRequest?.status==='pending_review');
+  const cancellationHrPending=operationalAssignments.filter(v=>v.cancelRequest?.status==='approved_pending_hr');
   const findReprogram=id=>reprog.find(x=>String(x.id)===String(id))||posts.find(x=>String(x.id)===String(id));
   const agendadas=operationalAssignments.filter(v=>{const f=data.visitFacets?data.visitFacets(v):null;return f?f.scheduled===true&&f.realized!==true:!!(v.agendada&&!v.realizada);});
   const requestTargets=(()=>{const byVisitShopper=new Map();activePosts.filter(x=>x.shopperId&&x.visitaId).forEach(x=>byVisitShopper.set(String(x.visitaId)+'::'+String(x.shopperId),Object.assign({},x,{__requestId:'post:'+String(x.id)})));operationalAssignments.filter(v=>v.shopperId).forEach(v=>{const key=String(v.id||v.visitId)+'::'+String(v.shopperId);if(!byVisitShopper.has(key))byVisitShopper.set(key,{__requestId:'visit:'+String(v.id||v.visitId),id:String(v.id||v.visitId),visitaId:String(v.id||v.visitId),visitId:String(v.id||v.visitId),shopperId:String(v.shopperId),shopper:v.shopper||'',sucursal:v.sucursal||'',ciudad:v.ciudad||'',pais:v.pais||'',projectId:data.currentProjectId,periodId:data.currentPeriodId,sourceType:'operational_assignment'});});return [...byVisitShopper.values()];})();
@@ -142,7 +143,8 @@ CX.module('postulaciones', ({data,ui})=>{
       <div class="flex" style="flex-wrap:wrap;gap:4px"><button class="btn btn-ghost btn-sm" data-revpost="${x.id}">👁 Revisar reprog.</button><button class="btn btn-green btn-sm" data-authfecha="${x.id}">✅ Nueva fecha</button><button class="btn btn-ghost btn-sm" data-keepfecha="${x.id}">Conservar anterior</button></div>
     </div>`).join('')}</div>`:''}
 
-  ${cancellationRequests.length?'<div class="card card-p" style="border-left:3px solid var(--amber);margin-bottom:14px"><div class="card-t">⚠️ Solicitudes de cancelación pendientes · '+cancellationRequests.length+'</div>'+cancellationRequests.map(v=>'<div class="cx-visit-request-note"><b>'+safe(v.shopper||v.shopperId)+'</b> · '+safe(v.sucursal)+' · Motivo: '+safe(v.cancelRequest.reason||'Sin motivo')+' · <b>Pendiente de decisión administrativa</b>. La HR conserva la asignación.</div>').join('')+'</div>':''}
+  ${cancellationRequests.length?'<div class="card card-p" style="border-left:3px solid var(--amber);margin-bottom:14px"><div class="card-t">⚠️ Solicitudes de cancelación pendientes · '+cancellationRequests.length+'</div>'+cancellationRequests.map(v=>'<div class="cx-visit-request-note"><b>'+safe(v.shopper||v.shopperId)+'</b> · '+safe(v.sucursal)+' · Motivo: '+safe(v.cancelRequest.reason||'Sin motivo')+'<div class="flex wrap" style="gap:8px;margin-top:8px"><button class="btn btn-green btn-sm" data-cancel-review="approved" data-vid="'+String(v.id||v.visitId).replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'">Aprobar solicitud</button><button class="btn btn-ghost btn-sm" data-cancel-review="rejected" data-vid="'+String(v.id||v.visitId).replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'">Rechazar solicitud</button></div></div>').join('')+'</div>':''}
+  ${cancellationHrPending.length?'<div class="card card-p" style="border-left:3px solid var(--amber);margin-bottom:14px"><div class="card-t">Cancelaciones autorizadas · pendientes de confirmación HR · '+cancellationHrPending.length+'</div>'+cancellationHrPending.map(v=>'<div class="cx-visit-request-note"><b>'+safe(v.shopper||v.shopperId)+'</b> · '+safe(v.sucursal)+' · La visita no se liberará hasta que la HR externa confirme el cambio.</div>').join('')+'</div>':''}
   <div id="pGroups">${groupHTML}</div>
   <div class="card card-p" style="margin-bottom:14px">
     <div class="card-h"><div class="card-t">Asignaciones vigentes · ${operationalAssignments.length}</div><span class="muted" style="font-size:11px">HR / Hoja de Ruta + plataforma</span></div>
@@ -308,6 +310,45 @@ CX.module('postulaciones', ({data,ui})=>{
        DESDE EL PRIMER RENDER, cualquier postulación de un periodo distinto al activo salvo que el
        usuario marque "Ver históricas" explícitamente. */
     search();
+    /* B7: explicit authorized Admin decision on the exact durable visit.cancelRequest.
+       An approval of external HR is pending its ACK, never an immediate available visit. */
+    document.querySelectorAll('[data-cancel-review]').forEach(b=>b.addEventListener('click',()=>{
+      const id=String(b.dataset.vid||''),decision=b.dataset.cancelReview;
+      const v=cancellationRequests.find(x=>String(x.id||x.visitId)===id);
+      if(!v||!['approved','rejected'].includes(decision))return;
+      if(!CX.permissions.gate('visit.cancel',{projectId:data.currentProjectId,pais:v.pais},ui))return;
+      const approving=decision==='approved';
+      ui.modal(approving?'Autorizar solicitud de cancelación':'Rechazar solicitud de cancelación',
+        '<p style="font-size:12.5px;color:var(--t2);margin-bottom:12px"><b>'+safe(v.shopper||v.shopperId)+'</b> · '+safe(v.sucursal)+
+        '</p><div class="cx-visit-request-note">Motivo del shopper: '+safe(v.cancelRequest.reason||'—')+'</div>'+
+        '<p style="font-size:12px;color:var(--t2);margin:12px 0">'+(approving
+          ?'Si la HR es externa, la aprobación quedará pendiente de su confirmación y la visita seguirá asignada mientras tanto.'
+          :'La visita conservará su asignación y fecha vigente.')+'</p>'+
+        '<label class="lbl" for="cxCancelAdminReason">Motivo de la decisión (obligatorio)</label>'+
+        '<textarea class="inp" id="cxCancelAdminReason" maxlength="500" rows="3"></textarea>'+
+        '<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px">'+
+        '<button class="btn btn-ghost" id="cxCancelAdminBack">Volver</button>'+
+        '<button class="btn btn-pr" id="cxCancelAdminDecide">'+(approving?'Autorizar':'Rechazar')+'</button></div>',
+        {premium:true,replaceExisting:true,dismissOnBackdrop:false,onMount:(ov,close)=>{
+          ov.querySelector('#cxCancelAdminBack').addEventListener('click',close);
+          ov.querySelector('#cxCancelAdminDecide').addEventListener('click',async()=>{
+            const btn=ov.querySelector('#cxCancelAdminDecide'),reason=ov.querySelector('#cxCancelAdminReason').value.trim();
+            if(!reason){ui.toast('Indica el motivo de la decisión.','warn',3800);return;}
+            btn.disabled=true;btn.textContent='Guardando decisión…';
+            let result=null;
+            try{result=await data.requestVisitCancel(id,{ackAware:true,requestOnly:false,decision,reason});}catch(_){}
+            const ack=!!(result?.ok===true&&result?.status==='committed'&&result?.providerAck===true&&result?.successUiAllowed===true);
+            if(!ack){btn.disabled=false;btn.textContent=approving?'Autorizar':'Rechazar';ui.toast('No se confirmó la decisión en el servidor.','warn',4200);return;}
+            let observed=null;
+            try{await CX.backend?.refresh?.();await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('admin_cancel_decision_committed');observed=data.visitas().find(x=>String(x.id||x.visitId)===id);}catch(_){}
+            const status=String(observed?.cancelRequest?.status||'');
+            close();CX.router.nav('postulaciones',{history:false});
+            if(status==='rejected'||status==='approved'||status==='approved_pending_hr'){
+              ui.toast(status==='approved_pending_hr'?'Cancelación autorizada · pendiente HR':'Decisión registrada y confirmada.','ok',4200);
+            }else ui.toast('Decisión registrada con ACK remoto. Actualizando el seguimiento visible.','warn',4400);
+          });
+        }});
+    }));
     /* botones de reprogramación (revisar / autorizar nueva fecha / conservar anterior) */
     document.querySelectorAll('[data-revpost]').forEach(b=>b.addEventListener('click',()=>{const x=findReprogram(b.dataset.revpost);ui.modal('Revisar solicitud de reprogramación · '+(x&&x.shopper||''),`<p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Fecha actual: <b>${x&&x.fechaActual||'—'}</b> · Fecha propuesta: <b>${x&&x.fechaProp||'—'}</b></p><div style="background:var(--amber-bg);border-radius:9px;padding:9px 12px;font-size:12px;color:#8a5b00">Usa "Autorizar nueva fecha" para aprobar la reprogramación o "Conservar anterior" para mantener la fecha actual.</div>`);}));
     document.querySelectorAll('[data-authfecha]').forEach(b=>b.addEventListener('click',async()=>{const x=findReprogram(b.dataset.authfecha);if(!x||!x.fechaProp)return;if(!CX.permissions.gate('visit.reassign',{projectId:x.rootProjectId||x.projectId,pais:x.pais},ui))return;const prev=b.textContent;b.disabled=true;b.textContent='Confirmando…';let r=null;try{r=await data.requestVisitReschedule(x.visitaId,x.fechaProp,{ackAware:true,decision:'approved',reason:'admin_reprogram_approve'});}catch(_){r=null;}const ok=r&&r.ok===true&&r.status==='committed'&&r.providerAck===true&&r.successUiAllowed===true;if(!ok){b.disabled=false;b.textContent=prev;ui.toast('Reprogramación no ejecutada: no fue posible confirmar el cambio.','warn',4200);return;}/* Server command atomically publishes the durable shopper decision notification. */ui.toast('Nueva fecha guardada correctamente','ok',3600);}));

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {validateVisitDateWindow} from '../../cxorbia-operational-command-provider-v1.mjs';
+import {validateVisitDateWindow,planVisitCancelDecision} from '../../cxorbia-operational-command-provider-v1.mjs';
 const read=path=>fs.readFileSync(path,'utf8');
 const visit={franjaCode:'WK',quincena:'QUINCENA 1',periodKey:'2026-10',disponibleDesde:'2026-10-01'};
 const options={timezone:'America/Guatemala',nowDate:'2026-10-08'};
@@ -115,4 +115,41 @@ test('I3 B5 benefits newest first, detailed overview KPIs and explicit row detai
   assert.match(s,/data-ben-overview=/);
   assert.match(s,/cx-ben-row-action/);
   assert.match(s,/De la liquidación más reciente a la más antigua/);
+});
+
+test('B7 cancellation decision is atomic, HR-safe and retains request lineage',()=>{
+  const original={id:'v1',shopperId:'shopper-1',estado:'asignada',agendada:'2026-10-09',version:4,
+    canonicalFacets:{assigned:true,available:false},cancelRequest:{status:'pending_review',reason:'No puedo asistir',requestedByShopperId:'shopper-1',requestedAt:'t0'}};
+  const opts={reason:'Revisado por coordinación',actorUid:'admin-1',at:'2026-10-08T21:00:00Z'};
+  const approved=planVisitCancelDecision(original,{...opts,decision:'approved',sourceMode:'external'});
+  assert.equal(approved.cancelRequest.status,'approved_pending_hr');
+  assert.equal(approved.cancelRequest.requestedByShopperId,'shopper-1');
+  assert.equal(approved.cancelRequest.reason,'No puedo asistir');
+  assert.equal(approved.cancelRequest.decidedBy,'admin-1');
+  assert.equal(approved.version,5);
+  assert.equal(approved.estado,undefined,'external HR-managed state must not be overwritten');
+  assert.equal(approved.shopperId,undefined,'external HR owner must remain assigned');
+  const rejected=planVisitCancelDecision(original,{...opts,decision:'rejected',sourceMode:'external'});
+  assert.equal(rejected.cancelRequest.status,'rejected');
+  assert.equal(rejected.estado,undefined,'reject does not mutate visit state');
+  const internal=planVisitCancelDecision(original,{...opts,decision:'approved',sourceMode:'internal'});
+  assert.equal(internal.cancelRequest.status,'approved');
+  assert.equal(internal.estado,'cancelada');
+  assert.equal(internal.canonicalFacets.available,false);
+  assert.equal(internal.canonicalFacets.cancelled,true);
+  assert.throws(()=>planVisitCancelDecision(original,{...opts,decision:'invalid'}),/OPS_CANCEL_DECISION_INVALID/);
+  assert.throws(()=>planVisitCancelDecision(original,{...opts,decision:'approved',reason:''}),/OPS_CANCEL_DECISION_REASON_REQUIRED/);
+  assert.throws(()=>planVisitCancelDecision({...original,cancelRequest:{status:'approved'}},{...opts,decision:'approved'}),/OPS_CANCEL_REQUEST_NOT_PENDING/);
+});
+test('B7 exact owner UI offers both decisions with ACK and preserves external HR availability',()=>{
+  const admin=read('app/modules/postulaciones.js'),shopper=read('app/modules/misvisitas.js'),backend=read('backend/runtime/cxorbia-operational-command-provider-v1.mjs');
+  assert.match(admin,/data-cancel-review="approved"/);
+  assert.match(admin,/data-cancel-review="rejected"/);
+  assert.match(admin,/cxCancelAdminReason/);
+  assert.match(admin,/requestVisitCancel\(id,\{ackAware:true,requestOnly:false,decision,reason\}\)/);
+  assert.match(shopper,/cancelAwaitingHr/);
+  assert.match(shopper,/pendiente de confirmación HR/);
+  assert.match(backend,/OPS_CANCEL_EXTERNAL_HR_ACK_REQUIRED/);
+  assert.match(backend,/OPS_CANCEL_STAFF_REQUEST_IMPERSONATION_DENIED/);
+  assert.match(backend,/tx\.set\(r\.bulletins\.doc\(bulletinId\)/);
 });
