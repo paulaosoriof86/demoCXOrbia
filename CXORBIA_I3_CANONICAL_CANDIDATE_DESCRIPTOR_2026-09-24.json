@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "OCT08_B1_STARTUP_AND_B3_DURABLE_REQUEST_P0_SOURCE_PROOF_REQUIRED",
+  "activeBlocker": "OCT08_B1_B3_ONE_EXISTING_CANONICAL_WORKFLOW_RUNTIME_HOSTING_DEV_MATERIALIZATION_REQUIRED",
   "nextFindingId": "VRM-271",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3_OCT08_SOURCE_PROOF_THEN_ONE_DEV_RUNTIME_AND_HOSTING_MATERIALIZATION_ON_SAME_SOURCE_NO_PRODUCTION",
+  "exactNextAction": "I3_OCT08_SAME_SOURCE_ONE_RUNTIME_PLUS_HOSTING_DEV_MATERIALIZATION_THEN_EXACT_AUTHENTICATED_E2E_AND_VISUAL",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -6162,7 +6162,7 @@
     "nextExactAction": "I3_B1_PERFORMANCE_FOCAL_METRICS_AND_SAFE_FIRST_RENDER_PLUS_B3_REQUEST_VALIDATION_CANCEL_CHECKIN_ADMIN_NOTIFICATION_BRIDGE__P0_OWNER_PROOF__DEV_ONLY_NO_PRODUCTION"
   },
   "i3Oct08Focal": {
-    "state": "SOURCE_FIXED_PENDING_CANONICAL_SOURCE_PROOF",
+    "state": "SOURCE_PROVEN_DEV_RUNTIME_HOSTING_MATERIALIZATION_REQUIRED",
     "sourceSha": "e4ee267ff7f63d4847b72a659d16915c5f631be5",
     "sourceTree": "ce41bb3dbf4eefbe266c5f7186b60f6c1bf67b29",
     "predecessor": "8cdd461bd4b19185c007db18631a2470891a3327",
@@ -6194,6 +6194,19 @@
     "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V331_2026-10-08.json",
     "ledgerGitBlob": "9b71e03b6114e76882359583e704de7b23f10504",
     "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V35.json",
-    "matrixGitBlob": "b66d3c609c975d56068562d797b138f25a5a6ec5"
+    "matrixGitBlob": "b66d3c609c975d56068562d797b138f25a5a6ec5",
+    "proof": {
+      "runId": 37830733448,
+      "runNumber": 1370,
+      "jobId": 113495339399,
+      "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+      "tests": 34,
+      "pass": 34,
+      "fail": 0,
+      "production": false
+    },
+    "selectedExistingMaterializationLane": "vrm154-156-dev-materialization",
+    "sourceProofDate": "2026-10-08",
+    "devStatus": "NOT_YET_MATERIALIZED"
   }
 }
