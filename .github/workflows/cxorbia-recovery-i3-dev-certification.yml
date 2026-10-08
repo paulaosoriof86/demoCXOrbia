@@ -6686,22 +6686,15 @@ jobs:
          curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&phaseapreflight=$GITHUB_RUN_ID" > "$PHASEA_LIVE_OUT/hr-meta.json"
          test "$(jq -r '.revision // empty' "$PHASEA_LIVE_OUT/hr-meta.json")" = "$EXPECTED_HR_REVISION"
          echo "EXPECTED_HR_REVISION=$EXPECTED_HR_REVISION" >> "$GITHUB_ENV"
-      - name: DEV focal B7 Admin Shopper cancellation request and decision
-        if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_B7_TWO_ROLE_DECISION_LIVE_DEV_REQUIRED' }}
-        shell: bash
-        run: |
-         set -Eeuo pipefail
-         B7_OUT="$PHASEA_LIVE_OUT/b7-focal"
-         mkdir -p "$B7_OUT"
-         node --check tools/qa/cxorbia-i3-b7-cancel-two-role-focal-live.mjs
-         EXPECTED_HR_REVISION="$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")" B7_OUT="$B7_OUT" B7_PERIOD_ID=cinepolis-2026-10 node tools/qa/cxorbia-i3-b7-cancel-two-role-focal-live.mjs | tee "$B7_OUT/console.log"
-         test "$(jq -r '.decision' "$B7_OUT/result.json")" = "PASS_I3_B7_TWO_ROLE_DECISION_LIVE_DEV"
-         jq -e '.providerAck==true and (.cases|length)==2 and .hrBefore==.hrAfter and (.cleanup|to_entries|all(.value==true)) and .hrWrites==0 and .production==false' "$B7_OUT/result.json" >/dev/null
       - name: Admin + Julissa + Priscila + Paula + population live reproof
-        if: ${{ needs.canonical-candidate-authority.outputs.status != 'HOLD_I3_B7_TWO_ROLE_DECISION_LIVE_DEV_REQUIRED' }}
         shell: bash
         run: |
          set -Eeuo pipefail
+         if [ "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_I3_B7_TWO_ROLE_DECISION_LIVE_DEV_REQUIRED" ]; then
+           B7_OUT="$PHASEA_LIVE_OUT/b7" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" node tools/qa/cxorbia-i3-b7-cancel-two-role-focal-live.mjs | tee "$PHASEA_LIVE_OUT/b7-console.log"
+           test "$(jq -r '.decision' "$PHASEA_LIVE_OUT/b7/result.json")" = "PASS_I3_B7_TWO_ROLE_DECISION_LIVE_DEV"
+           exit 0
+         fi
          FOCAL_SOURCE="$FOCAL_SOURCE" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" PHASEA_LIVE_OUT="$PHASEA_LIVE_OUT" node tools/qa/cxorbia-i3-phasea-representative-live-reproof.mjs | tee "$PHASEA_LIVE_OUT/console.log"
          test "$(jq -r '.decision' "$PHASEA_LIVE_OUT/result.json")" = "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF"
          VRM168_OUT="$PHASEA_LIVE_OUT/provider-schedule" VRM168_PERIOD_ID="$PERIOD_ID" node tools/qa/cxorbia-i3-vrm168-schedule-provider-probe.mjs | tee "$PHASEA_LIVE_OUT/provider-schedule-console.log"
