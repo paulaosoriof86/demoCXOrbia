@@ -7,9 +7,9 @@
   "productSourceSha": "e4ee267ff7f63d4847b72a659d16915c5f631be5",
   "productTreeAuthority": "ce41bb3dbf4eefbe266c5f7186b60f6c1bf67b29",
   "predecessorProductSourceSha": "8cdd461bd4b19185c007db18631a2470891a3327",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V330_2026-10-07.json",
-  "findingsLedgerExpectedGitBlob": "498fec2eb4d0888ff04f381f2eedefdbba56d2e6",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V34.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V331_2026-10-08.json",
+  "findingsLedgerExpectedGitBlob": "9b71e03b6114e76882359583e704de7b23f10504",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V35.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
@@ -6190,6 +6190,10 @@
     "hostingDeploys": 0,
     "runtimeDeploys": 0,
     "requiresBothRuntimeAndHostingMaterialization": true,
-    "sourcePreviewNotCertified": true
+    "sourcePreviewNotCertified": true,
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V331_2026-10-08.json",
+    "ledgerGitBlob": "9b71e03b6114e76882359583e704de7b23f10504",
+    "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V35.json",
+    "matrixGitBlob": "b66d3c609c975d56068562d797b138f25a5a6ec5"
   }
 }
