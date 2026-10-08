@@ -201,3 +201,44 @@ test('B2 active shopper Mi Perfil owner presents KPI overview before sensitive d
   assert.match(src,/resolveSessionShopper\(data\)/);
   assert.match(src,/CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY/);
 });
+
+test('B5/B2 Mi Perfil paid KPI, tab, history label match exactly the authorized financial source',()=>{
+  const financeSource=read('app/adapters/tya-canonical-finance-read-model-v2.js');
+  const shopperSource=read('app/adapters/tya-canonical-shopper-portal-v2.js');
+  function profile(mode){
+    const period={id:mode==='other_project'?'other-2025-12':'cinepolis-2025-12',
+      parentProjectId:mode==='other_project'?'other':'cinepolis',tenantId:'tya',periodKey:'2025-12'};
+    const v={id:'qa-hist-payment',visitId:'qa-hist-payment',periodKey:'2025-12',periodId:period.id,
+      projectId:period.parentProjectId,shopperId:'qa-shopper',sucursal:'QA Historical Visit',pais:'GT',
+      currency:'GTQ',honorario:60,realizada:mode==='not_realized'?'':'2025-12-05',
+      canonicalFacets:{realized:mode!=='not_realized',submitted:true,paymentConfirmed:false,assigned:true}};
+    const CX={modules:{},session:{user:{shopperId:'qa-shopper'}},
+      backendAuth:{context:()=>({authenticated:true,shopperId:'qa-shopper'})},
+      data:{tenantId:'tya',__identityMap:{},shoppers:[{id:'qa-shopper',nombre:'QA Shopper',pais:'GT'}],
+        projects:[period],__protectedVisits:[],paymentHistorySnapshot:{sourceSafe:true,tenantId:'tya',projectId:'cinepolis'},
+        paymentHistoryTruthForVisit:()=>mode==='no_payment_source'?null:{paymentConfirmed:true,paymentSourceRef:'recovery-lock:historical-cut:2025-12'},
+        financialMatchForVisit:()=>null,visitFacets:r=>r.canonicalFacets,
+        visitsForShopper:()=>[v],shopperHistoryVisits:()=>[v],
+        getShopper:()=>({id:'qa-shopper',nombre:'QA Shopper',pais:'GT'}),
+        shopperStats:()=>({total:1,realizadas:1,submitted:1,paymentConfirmed:0}),
+        currentPeriodId:period.id,recordPeriodId:r=>r.periodId},
+      liq:{forProject:()=>[],label:()=>['Pendiente','a']}};
+    const win={CX,CX_DEV_ENTRY_CANONICAL:{canonical:true,protectedRuntime:true,tenantId:'tya',projectId:'cinepolis'},
+      CX_TYA_CUMULATIVE_READ_MODEL:{facets:r=>r.canonicalFacets},
+      CX_PROTECTED_AUTH_HR_AUTHORITY:{applied:true},addEventListener(){}};
+    const document={addEventListener(){}};
+    const ui={el:()=>({innerHTML:'',querySelectorAll:()=>[],querySelector:()=>null}),
+      ph:()=>'<h2>Mi Perfil</h2>',bdg:x=>'<span>'+x+'</span>',empty:(_,x)=>x,
+      kpi:(label,num)=>'<b>'+label+': '+num+'</b>',money:(c,n)=>c+' '+n};
+    vm.runInNewContext(financeSource,{window:win,CX,URLSearchParams,location:{search:''}});
+    vm.runInNewContext(shopperSource,{window:win,document,CX,setTimeout:()=>{}});
+    return CX.modules.miperfil({data:CX.data,ui}).innerHTML;
+  }
+  const historical=profile('historical_paid');
+  assert.match(historical,/Pagadas confirmadas: 1/);
+  assert.match(historical,/Pagadas 1/);
+  assert.match(historical,/>Pagada<\/span>/);
+  assert.match(profile('no_payment_source'),/Pagadas confirmadas: 0/);
+  assert.match(profile('other_project'),/Pagadas confirmadas: 0/);
+  assert.match(profile('not_realized'),/Pagadas confirmadas: 0/);
+});
