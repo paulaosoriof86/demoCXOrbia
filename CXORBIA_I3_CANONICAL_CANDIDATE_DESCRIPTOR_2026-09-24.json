@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "GO",
+  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "411e1e3712e6abfd60475aef16a75aecc7399c08",
-  "productTreeAuthority": "0991894ed9396c334ca62c44626f5b6f2a5e3d14",
-  "predecessorProductSourceSha": "1bd4805b33c3f9b10f06581c4c36fbbc0b3e0a04",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V323_2026-10-07.json",
-  "findingsLedgerExpectedGitBlob": "2cd5dba439d8f8eb898a7ac338919a68fd7bbfac",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V32.json",
+  "productSourceSha": "c12c44a53ce999a7deebeef9a5d6fa233753793c",
+  "productTreeAuthority": "de7945e328b5b8f5458479343f7e87f469d1a9bd",
+  "predecessorProductSourceSha": "411e1e3712e6abfd60475aef16a75aecc7399c08",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V324_2026-10-07.json",
+  "findingsLedgerExpectedGitBlob": "9fd3f3cf6a1eee231ba7163403af92e85c8fc19d",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V33.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "PAULA_HUMAN_VISUAL_CHECKPOINT_REQUIRED_BEFORE_I4",
+  "activeBlocker": "B1_HUMAN_FAIL_REMEDIATION_ACTIVE",
   "nextFindingId": "VRM-271",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "PAULA_VISUALIZES_THE_EXACT_RUN1356_DEV_ARTIFACT_AND_ACCEPTS_OR_REJECTS;_DO_NOT_ENTER_I4_WITHOUT_EXPLICIT_AUTHORIZATION",
+  "exactNextAction": "B1_SOURCE_PROOF_NEW_SOURCE_THEN_HOSTING_DEV_AND_ACTION_E2E_PAULA",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -501,7 +501,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "c0b97289acbc0ba6600c6f3aff1a614cef9deafd",
+  "productSourceTree": "de7945e328b5b8f5458479343f7e87f469d1a9bd",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -2656,7 +2656,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "d40ceafe6ef567333309dcf98e54a7c4fa5dfe4a",
+  "moduleTruthExpectedGitBlob": "eee6e4cb89992ba7c325ed17d9859a73ddbf6c29",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -3417,19 +3417,7 @@
     "humanVisualAccepted": false,
     "production": false
   },
-  "humanVisualDecision": {
-    "state": "REJECTED_2026-10-06",
-    "reviewer": "Paula",
-    "sourceSha": "be4e54e92285cef24f4b4c5442383a8076df6664",
-    "sourceTree": "53061fa8d5faae8f0213840ff9d12d4a710508a3",
-    "materializationRunId": 37406898804,
-    "sameArtifactReproofRunId": 37409319996,
-    "observationCount": 45,
-    "screenshotCount": 17,
-    "observationMap": "RECOVERY-I3-HUMAN-VISUAL-FAIL-OBSERVATION-MAP-20261006.json",
-    "conclusion": "Exact DEV source/artifact synchronization is proven, but human functional/visual acceptance failed. Recover approved frontend authority plus later P0-proven deltas in one successor.",
-    "production": false
-  },
+  "humanVisualDecision": "FAIL_B1_2026_10_07",
   "adminAdministrationMatrixPath": "CXORBIA_I3_ADMIN_FULL_ADMINISTRATION_MATRIX_2026-10-03_V6.json",
   "acceptanceIntegrity": {
     "state": "FAIL_CLOSED_GUARD_ACTIVE",
@@ -5869,8 +5857,8 @@
     "hrWrites": 0,
     "production": false
   },
-  "i3TechnicalState": "GO",
-  "i4State": "BLOCKED_PENDING_PAULA_EXPLICIT_AUTHORIZATION",
+  "i3TechnicalState": "PREVIOUS_RUN1357_TECHNICAL_PASS_SUPERSEDED_BY_B1_HUMAN_FAIL",
+  "i4State": "BLOCKED",
   "finalSameArtifactCertification": {
     "decision": "PASS_I3_PHASEA_FINAL_SAME_ARTIFACT_FUNCTIONAL_VISUAL_CERTIFICATION",
     "runId": 37679004913,
@@ -6013,7 +6001,7 @@
     }
   },
   "humanVisualCheckpointUrl": "https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV",
-  "humanVisualCheckpointState": "READY_FOR_HUMAN_VISUAL_CHECKPOINT",
+  "humanVisualCheckpointState": "B1_HUMAN_FAIL_REMEDIATION_SOURCE_PROOF",
   "run1358ControlAdjudication": {
     "runId": 37680796799,
     "runNumber": 1358,
@@ -6025,5 +6013,23 @@
     "productSourceUnchanged": true,
     "deploys": 0,
     "production": false
+  },
+  "b1HumanFailScopedRemediation20261007": {
+    "status": "SOURCE_FIXED_PENDING_SOURCE_PROOF",
+    "sourceSha": "c12c44a53ce999a7deebeef9a5d6fa233753793c",
+    "sourceTree": "de7945e328b5b8f5458479343f7e87f469d1a9bd",
+    "receipt": "CXORBIA_I3_B1_SHOPPER_HUMAN_FAIL_FOLLOWUP_2026-10-07.json",
+    "ownerPaths": [
+      "app/core/ui.js",
+      "app/core/router.js",
+      "app/adapters/tya-cumulative-read-model-v2.js",
+      "app/modules/midia.js",
+      "app/modules/misvisitas.js",
+      "app/styles/layout.css"
+    ],
+    "approvedByPaulaToModifyDev": true,
+    "humanPass": false,
+    "tinyFish": "ENVIRONMENT_FAILURE_SESSION_RESTORE",
+    "production": "DO_NOT_TOUCH"
   }
 }
