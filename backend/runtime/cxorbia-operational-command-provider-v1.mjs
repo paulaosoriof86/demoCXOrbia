@@ -126,12 +126,28 @@ function tenantDateKey(timezone='America/Guatemala'){
   const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:timezone,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).filter(x=>x.type!=='literal').map(x=>[x.type,x.value]));
   return `${parts.year}-${parts.month}-${parts.day}`;
 }
-function assertSchedulableDate(v,date,timezone){
-  const value=str(date);if(!/^20\d{2}-[01]\d-[0-3]\d$/.test(value))throw new Error('OPS_SCHEDULE_DATE_REQUIRED');
-  const facets=canonicalFacets(v);if(facets.realized===true||facets.questionnaire===true||facets.submitted===true||facets.liquidationConfirmed===true||facets.paymentConfirmed===true||facets.cancelled===true)throw new Error('OPS_VISIT_NOT_SCHEDULABLE');
-  const min=[tenantDateKey(timezone),str(v?.disponibleDesde||v?.availableFrom)].filter(Boolean).sort().at(-1);
+/* Recovery I3 B3: date windows derive from the exact visit, not global project literals. */
+export function validateVisitDateWindow(v,date,{timezone='America/Guatemala',nowDate=null}={}){
+  const value=str(date);
+  if(!/^20\d{2}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\d|3[01])$/.test(value))throw new Error('OPS_SCHEDULE_DATE_REQUIRED');
+  const actual=new Date(value+'T00:00:00Z');
+  if(!Number.isFinite(actual.getTime())||actual.toISOString().slice(0,10)!==value)throw new Error('OPS_SCHEDULE_INVALID_CALENDAR_DATE');
+  const period=str(v?.periodKey||v?.measurementPeriodId||v?.periodo||v?.periodId).match(/20\d{2}-(?:0[1-9]|1[0-2])/);
+  const q=str(v?.quincena||v?.executionCut).toUpperCase();
+  if(period&&value.slice(0,7)!==period[0])throw new Error('OPS_SCHEDULE_MONTH_MISMATCH');
+  if(/^(1Q|Q1|QUINCENA\s*1|PRIMERA QUINCENA)$/.test(q)&&Number(value.slice(8,10))>15)throw new Error('OPS_SCHEDULE_QUINCENA_RANGE');
+  if(/^(2Q|Q2|QUINCENA\s*2|SEGUNDA QUINCENA)$/.test(q)&&Number(value.slice(8,10))<16)throw new Error('OPS_SCHEDULE_QUINCENA_RANGE');
+  const code=str(v?.franjaCode||v?.franja).toUpperCase(),weekend=[0,6].includes(actual.getUTCDay());
+  if((code==='WK'||code==='SEMANA'||code==='ENTRE SEMANA')&&weekend)throw new Error('OPS_SCHEDULE_WEEKDAY_REQUIRED');
+  if((code==='WKND'||code==='FIN DE SEMANA'||code==='WEEKEND')&&!weekend)throw new Error('OPS_SCHEDULE_WEEKEND_REQUIRED');
+  const min=[str(nowDate||tenantDateKey(timezone)),str(v?.disponibleDesde||v?.availableFrom).slice(0,10)].filter(Boolean).sort().at(-1);
   if(min&&value<min)throw new Error('OPS_SCHEDULE_DATE_BEFORE_ALLOWED');
   return value;
+}
+function assertSchedulableDate(v,date,timezone){
+  const facets=canonicalFacets(v);
+  if(facets.realized===true||facets.questionnaire===true||facets.submitted===true||facets.liquidationConfirmed===true||facets.paymentConfirmed===true||facets.cancelled===true)throw new Error('OPS_VISIT_NOT_SCHEDULABLE');
+  return validateVisitDateWindow(v,date,{timezone});
 }
 function projectScope(snapshot){
   return {
@@ -431,7 +447,9 @@ async function transactionExecute(db,command,actor){
       if(shopperRequest){
         if(!newDate)throw new Error('OPS_RESCHEDULE_DATE_REQUIRED');
         const validatedDate=assertSchedulableDate(v,newDate,timezone);
-        tx.set(vRef,{rescheduleRequest:{status:'pending_review',newDate:validatedDate,reason:payload.reason||null,requestedByShopperId:actor.shopperId,requestedAt:now()},updatedAt:now(),version:Number(v.version||0)+1},{merge:true});
+        if(!str(payload.reason))throw new Error('OPS_RESCHEDULE_REASON_REQUIRED');
+        if(str(v.rescheduleRequest?.status)==='pending_review'||str(v.cancelRequest?.status)==='pending_review')throw new Error('OPS_VISIT_REQUEST_ALREADY_PENDING');
+        tx.set(vRef,{rescheduleRequest:{status:'pending_review',newDate:validatedDate,reason:str(payload.reason),requestedByShopperId:actor.shopperId,requestedAt:now()},updatedAt:now(),version:Number(v.version||0)+1},{merge:true});
       }else{
         if(!OPERATOR_ROLES.includes(actor.role))throw new Error('OPS_RESCHEDULE_OPERATOR_ONLY');
         const decision=str(payload.decision||'approved').toLowerCase();if(!['approved','rejected'].includes(decision))throw new Error('OPS_RESCHEDULE_DECISION_INVALID');
@@ -448,7 +466,9 @@ async function transactionExecute(db,command,actor){
       const resolved=await resolveVisitDocument(tx,r.visits,visitId,payload.hrRowId),vRef=resolved.ref,vSnap=resolved.snap,v=resolved.data;assertPeriod(command,v);assertVersion(command,v);
       if(actor.role==='shopper'&&str(v.shopperId)!==actor.shopperId)throw new Error('OPS_VISIT_SHOPPER_SCOPE_DENIED');
       if(actor.role==='shopper'||payload.requestOnly===true){
-        tx.set(vRef,{cancelRequest:{status:'pending_review',reason:payload.reason||null,requestedByShopperId:actor.shopperId,requestedAt:now()},updatedAt:now(),version:Number(v.version||0)+1},{merge:true});
+        if(!str(payload.reason))throw new Error('OPS_CANCEL_REASON_REQUIRED');
+        if(str(v.cancelRequest?.status)==='pending_review'||str(v.rescheduleRequest?.status)==='pending_review')throw new Error('OPS_VISIT_REQUEST_ALREADY_PENDING');
+        tx.set(vRef,{cancelRequest:{status:'pending_review',reason:str(payload.reason),requestedByShopperId:actor.shopperId,requestedAt:now()},updatedAt:now(),version:Number(v.version||0)+1},{merge:true});
       }else{
         if(!OPERATOR_ROLES.includes(actor.role))throw new Error('OPS_CANCEL_OPERATOR_ONLY');
         const release=payload.releaseToAvailable===true;
@@ -471,6 +491,9 @@ async function transactionExecute(db,command,actor){
       if(!visitId||!evidenceId||!storagePath||!checksum||!mimeType||payload.storageProviderAck!==true)throw new Error('OPS_CHECKIN_EVIDENCE_REQUIRED');entityId=visitId;
       const resolved=await resolveVisitDocument(tx,r.visits,visitId,payload.hrRowId),vRef=resolved.ref,v=resolved.data;assertPeriod(command,v);assertVersion(command,v);
       if(actor.role!=='shopper'||str(v.shopperId)!==actor.shopperId)throw new Error('OPS_CHECKIN_SHOPPER_SCOPE_DENIED');
+      const confirmedDate=str(v.agendada||v.scheduledDate||v.fechaAgendada).slice(0,10);
+      if(!/^20\d{2}-[01]\d-[0-3]\d$/.test(confirmedDate))throw new Error('OPS_CHECKIN_SCHEDULE_REQUIRED');
+      if(tenantDateKey(str(v.timeZone||v.timezone||'America/Guatemala'))<confirmedDate)throw new Error('OPS_CHECKIN_BEFORE_AGENDA_DATE');
       if(!/^image\//i.test(mimeType)||!Number.isFinite(Number(payload.size))||Number(payload.size)<=0||Number(payload.size)>15*1024*1024)throw new Error('OPS_CHECKIN_IMAGE_INVALID');
       const lat=Number(payload.lat),lon=Number(payload.lon),accuracy=Number(payload.accuracy||0);
       if(!Number.isFinite(lat)||lat<-90||lat>90||!Number.isFinite(lon)||lon<-180||lon>180||!Number.isFinite(accuracy)||accuracy<0)throw new Error('OPS_CHECKIN_GPS_INVALID');
@@ -514,6 +537,23 @@ async function transactionExecute(db,command,actor){
       auditEntityType='visit';
     }
 
+    /* Durable, idempotent notification in the SAME Firestore command transaction. */
+    if(command.commandType==='visit.reschedule'||command.commandType==='visit.cancel'){
+      const requested=actor.role==='shopper'||payload.requestedByShopper===true||payload.requestOnly===true;
+      const kind=command.commandType==='visit.reschedule'?'reprog':'cancel';
+      const targetShopper=str(payload.shopperId||actor.shopperId);
+      const outcome=str(payload.decision||'approved').toLowerCase();
+      const bulletinId='visit-request-'+receiptId(command);
+      const title=requested?(kind==='reprog'?'Solicitud de reprogramación':'Solicitud de cancelación'):(outcome==='rejected'?'Solicitud no autorizada':'Solicitud revisada');
+      const body=requested?('Solicitud registrada para visita '+entityId+' · '+(str(payload.newDate)||str(payload.reason))):('Decisión '+(outcome==='rejected'?'rechazada':'aprobada')+' para visita '+entityId+'. Revisa el estado en Mis Visitas.');
+      tx.set(r.bulletins.doc(bulletinId),{id:bulletinId,tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,status:'active',
+        toRole:requested?'admin':'shopper',targetRoles:requested?['admin']:['shopper'],
+        targetProjectIds:[command.projectId],targetShopperIds:requested?[]:[targetShopper].filter(Boolean),
+        entityType:'visit',entityId,operational:true,eventKey:'durable_'+kind+'_request_decision',
+        idempotencyKey:command.idempotencyKey,type:kind,title,body,priority:'high',actionRoute:requested?'postulaciones':'misvisitas',
+        createdAt:now(),source:'cxorbia-operational-command-provider-v1'}, {merge:false});
+      providerWrites++;
+    }
     tx.set(r.receipt,{status:'committed',commandDigest:digest,entityId,commandType:command.commandType,providerAck:true,actorUid:actor.uid,updatedAt:now()});providerWrites++;
     tx.set(r.audit,{tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,entityId,entityType:auditEntityType,commandType:command.commandType,actorUid:actor.uid,actorRole:actor.role,idempotencyKey:command.idempotencyKey,reason:command.audit?.reason||null,createdAt:now()},{merge:false});providerWrites++;
     return ack(command,entityId,{providerWrites});

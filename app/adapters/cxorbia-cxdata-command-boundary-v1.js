@@ -303,7 +303,7 @@
       return execute(cmd,meta);
     };
     D.requestVisitCancel=function(visitId,meta){
-      meta=commandMeta(meta);const v=visit(visitId);const cmd=buildBase('visit.cancel','visit',visitId,{visitId,hrRowId:v?.hrRowId||null,shopperId:v?.shopperId||ctx().shopperId||null,reason:meta.reason||null,requestOnly:meta.requestOnly===true,releaseToAvailable:meta.releaseToAvailable===true},versionOf(v),Object.assign({permission:'visit.cancel'},meta));
+      meta=commandMeta(meta);const v=visit(visitId);const cmd=buildBase('visit.cancel','visit',visitId,{visitId,hrRowId:v?.hrRowId||null,shopperId:v?.shopperId||ctx().shopperId||null,reason:meta.reason||null,requestOnly:meta.requestOnly===true,decision:meta.decision||null,releaseToAvailable:meta.releaseToAvailable===true},versionOf(v),Object.assign({permission:'visit.cancel'},meta));
       return execute(cmd,meta);
     };
     D.submitQuestionnaire=function(visitId,result,meta){

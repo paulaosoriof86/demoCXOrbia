@@ -533,3 +533,10 @@ body.role-shopper .cx-visit-date-summary b{font-weight:800}
   .cx-modal-premium-workflow .cx-modal-h,.cx-modal-premium-workflow .cx-modal-b{padding:16px}
   .cx-modal-premium-workflow .cx-schedule-modal-actions .btn{width:100%;justify-content:center}
 }
+
+/* I3 B3 precise compact visit surface; Mi Día uses a distinct card without data-visit-card. */
+body.role-shopper .cx-shopper-visit-card[data-visit-card]{padding:16px 20px}
+body.role-shopper .cx-shopper-visit-card[data-visit-card] .cx-visit-payline{padding:6px 0 7px}
+body.role-shopper .cx-shopper-visit-card[data-visit-card] .cx-visit-actions{margin:9px 0}
+.cx-visit-request-note{margin:9px 0;padding:10px 13px;background:#fff5df;border:1px solid #e1bd72;border-radius:10px;color:#644811;font-size:13px;line-height:1.5}
+.cx-cancel-warning{background:#fff2ee;border:1px solid #edb5a5;color:#6c3025;padding:13px 15px;border-radius:10px;line-height:1.6}

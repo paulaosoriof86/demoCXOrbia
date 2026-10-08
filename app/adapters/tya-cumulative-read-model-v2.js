@@ -265,6 +265,15 @@
         }else if(providerScheduleExact&&bf.scheduled&&hrScheduleDate&&hrScheduleDate!==providerScheduleDate){
           out.scheduleReviewRequired=true;out.scheduleReviewReason='hr_platform_date_conflict';
         }
+        /* B3 2026-10-08: exact durable shopper requests remain distinct from HR-owned status. */
+        if(!conflict&&!!canonical&&durableCanonical===canonical){
+          for(const field of ['rescheduleRequest','cancelRequest']){
+            const request=pv[field];
+            if(request&&typeof request==='object'&&
+               ['pending_review','approved','approved_pending_hr','rejected'].includes(str(request.status).toLowerCase())&&
+               (!request.requestedByShopperId||str(request.requestedByShopperId)===canonical))out[field]=clone(request);
+          }
+        }
         const platformAssigned=hasPendingPlatform&&!conflict&&durableCanonical&&(!liveId||durableCanonical===canonical);
         out.canonicalFacets=Object.assign({},base.canonicalFacets||{},bf,{
           assigned:bf.assigned||platformAssigned,
