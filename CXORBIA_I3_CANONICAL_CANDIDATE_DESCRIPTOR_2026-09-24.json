@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
+  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "3c0ea51a2626d418f0e6952bdd6a82f8b15d13e3",
-  "productTreeAuthority": "1d0d8a03005d27b2a1ee795e6de6a0fccc5ef715",
-  "predecessorProductSourceSha": "8ac7369e2e0f1e203000f80002683ec43e373590",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V336_2026-10-08.json",
-  "findingsLedgerExpectedGitBlob": "cb6e4b7933c5963ba3c9d4a0cfad3f4a96678c64",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V40.json",
+  "productSourceSha": "12f33a00430768ab11f2041eb278d33724e69401",
+  "productTreeAuthority": "ce15467895f769b6aa6ad49a2bb138709ab425fd",
+  "predecessorProductSourceSha": "3c0ea51a2626d418f0e6952bdd6a82f8b15d13e3",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V337_2026-10-08.json",
+  "findingsLedgerExpectedGitBlob": "f8d068987d5076dffd6bfb618a89ca540a82b918",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V41.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "I3_B2_PROFILE_COLLAPSED_DETAIL_QA_MAPPING_REPROOF_REQUIRED",
-  "nextFindingId": "VRM-271",
+  "activeBlocker": "VRM-271_CANONICAL_PROFILE_FINANCIAL_PAID_CROSS_MODULE_SOURCE_PROOF_REQUIRED",
+  "nextFindingId": "VRM-272",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Repeat the existing canonical run's same-artifact authenticated E2E once with corrected collapsed-details visibility mapping; keep production untouched and original B7/finance source intact.",
+  "exactNextAction": "Run existing canonical source-proof on VRM271 exact owner + test, then single DEV build and same-artifact authentication/click; no I4 and no production",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -498,7 +498,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "1d0d8a03005d27b2a1ee795e6de6a0fccc5ef715",
+  "productSourceTree": "ce15467895f769b6aa6ad49a2bb138709ab425fd",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -2653,7 +2653,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "62bb3106ede1cfe14900aef450cf77dfb87b482d",
+  "moduleTruthExpectedGitBlob": "7c9bc915d89fd3a7e3ef0f3716a31650bdd79c47",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -6709,5 +6709,97 @@
     "runArtifactId": 11580954825,
     "runArtifactDigest": "sha256:aff9a7d6066fdbc45672783b66d7285c26a78265181dedcac8cdd491d56a4d59",
     "noProduction": true
+  },
+  "i3Run1397RepresentativeSameArtifact": {
+    "runId": 37851524628,
+    "runNumber": 1397,
+    "jobId": 113565397585,
+    "artifactId": 11581824665,
+    "artifactDigest": "sha256:753938fe024af55a09a5e5e5d1c5d6b0070c7a06c4b1eb4fd7eee12b8412fa3a",
+    "sourceSha": "3c0ea51a2626d418f0e6952bdd6a82f8b15d13e3",
+    "sourceTree": "1d0d8a03005d27b2a1ee795e6de6a0fccc5ef715",
+    "decisions": [
+      "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+      "PASS_VRM168_PROVIDER_SCHEDULE_PATH",
+      "PASS_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL",
+      "PASS_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE",
+      "PASS_I3_ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE",
+      "PASS_PREI4_FINAL_FOCAL_FINANCE",
+      "PASS_PREI4_CERT_RES_CUMULATIVE_DEV_LIVE"
+    ],
+    "roles": [
+      "Admin",
+      "Julissa",
+      "Priscila",
+      "Paula",
+      "Client"
+    ],
+    "hrRevision": "9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef",
+    "productMutated": false,
+    "production": false,
+    "scope": "REPRESENTATIVE_SAME_ARTIFACT_ONLY_NOT_HUMAN_ACCEPTANCE"
+  },
+  "i3VRM271CrossModuleHistoricalPaidProfile": {
+    "id": "VRM-271",
+    "firstObservedAt": "2026-10-08_POST_RUN1395_B2_B5_CROSS_MODULE_FOCAL",
+    "classification": "MAPPING_FAILURE",
+    "severity": "P0",
+    "title": "Mi Perfil historical paid KPIs and visit badges diverge from Beneficios canonical payment authority",
+    "state": "SOURCE_FIXED_PENDING_CANONICAL_SOURCE_PROOF_AND_DEV_E2E",
+    "rootCauseStatus": "PROVEN_BY_REPRODUCIBLE_SOURCE_FIXTURE",
+    "rootCause": "active app/adapters/tya-canonical-shopper-portal-v2.js uses data.shopperStats and HR-owned visitFacets.paymentConfirmed to count and label payments; app/adapters/tya-canonical-finance-read-model-v2.js now correctly recognizes authorized frozen historical payments independently, so profile shows 0 and Submitida for a financially paid visit",
+    "observed": {
+      "fixturePeriod": "2025-12",
+      "sourcePaymentConfirmed": true,
+      "financePaymentConfirmed": true,
+      "profilePaymentConfirmedKpiBefore": 0,
+      "profileVisitBadgeBefore": "Submitida",
+      "realUserDataUsed": false
+    },
+    "expected": "Mi Perfil KPIs, tabs and historical visit row badges must match the same verified financial authority used by Beneficios, without changing HR visit operational facets, inferring amount, or mixing tenants/projects.",
+    "owner": [
+      "app/adapters/tya-canonical-shopper-portal-v2.js"
+    ],
+    "relatedFindings": [
+      "VRM-174",
+      "VRM-257",
+      "HF-20261008-03",
+      "HF-20261008-15",
+      "HF-20261008-17"
+    ],
+    "fix": {
+      "sourceSha": "12f33a00430768ab11f2041eb278d33724e69401",
+      "sourceTree": "ce15467895f769b6aa6ad49a2bb138709ab425fd",
+      "ownerBlob": "a24c60b1ce778ca9566e57e7eb441696906920c7",
+      "testBlob": "6d6b9f8e1095fec42914c9510de5a57c39740de5",
+      "testPath": "backend/runtime/hr-live-service/test/cxorbia-i3-oct08-b1-b3-source.test.mjs",
+      "noGlobalHRFacetMutation": true,
+      "tenantAndPeriodSourceScoping": true,
+      "noPaymentExecution": true,
+      "role": "Shopper exact canonical profile",
+      "production": false
+    },
+    "isolatedProof": {
+      "decision": "PASS_FOCAL_B2_B5_CROSS_MODULE_MOCK_E2E",
+      "cases": [
+        "historical paid => profile 1 and Pagada",
+        "no paid proof => 0 and Submitida",
+        "wrong project => 0 and Submitida",
+        "not realized => not paid"
+      ],
+      "fails": 0,
+      "writes": 0
+    },
+    "acceptance": {
+      "sourceProof": "PENDING",
+      "sameArtifactE2E": "PENDING",
+      "humanVisual": "PENDING",
+      "guard": "A source test alone does NOT mark this finding closed"
+    },
+    "blocking": true,
+    "production": false,
+    "frozenAsFinding": "VRM-271",
+    "status": "SOURCE_FIXED_PENDING_CI_DEV_AND_HUMAN",
+    "inCurrentDev": false
   }
 }
