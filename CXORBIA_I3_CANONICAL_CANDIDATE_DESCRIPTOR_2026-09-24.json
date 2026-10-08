@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_B1_PAULA_VISUAL_REVIEW_PENDING",
+  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "8cdd461bd4b19185c007db18631a2470891a3327",
-  "productTreeAuthority": "38139fcc5032f29474dd0ec5b9d33312b37a0a24",
-  "predecessorProductSourceSha": "c12c44a53ce999a7deebeef9a5d6fa233753793c",
+  "productSourceSha": "e4ee267ff7f63d4847b72a659d16915c5f631be5",
+  "productTreeAuthority": "ce41bb3dbf4eefbe266c5f7186b60f6c1bf67b29",
+  "predecessorProductSourceSha": "8cdd461bd4b19185c007db18631a2470891a3327",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V330_2026-10-07.json",
   "findingsLedgerExpectedGitBlob": "498fec2eb4d0888ff04f381f2eedefdbba56d2e6",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261007-V34.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "B1_PREVIOUS_FAIL_NEW_SOURCE_MATERIALIZED_AUTH_BROWSER_ENV_FAILURE",
+  "activeBlocker": "OCT08_B1_STARTUP_AND_B3_DURABLE_REQUEST_P0_SOURCE_PROOF_REQUIRED",
   "nextFindingId": "VRM-271",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3_B1_PERFORMANCE_FOCAL_METRICS_AND_SAFE_FIRST_RENDER_PLUS_B3_REQUEST_VALIDATION_CANCEL_CHECKIN_ADMIN_NOTIFICATION_BRIDGE__P0_OWNER_PROOF__DEV_ONLY_NO_PRODUCTION",
+  "exactNextAction": "I3_OCT08_SOURCE_PROOF_THEN_ONE_DEV_RUNTIME_AND_HOSTING_MATERIALIZATION_ON_SAME_SOURCE_NO_PRODUCTION",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -6160,5 +6160,36 @@
     "humanFullB1Pass": false,
     "production": "DO_NOT_TOUCH",
     "nextExactAction": "I3_B1_PERFORMANCE_FOCAL_METRICS_AND_SAFE_FIRST_RENDER_PLUS_B3_REQUEST_VALIDATION_CANCEL_CHECKIN_ADMIN_NOTIFICATION_BRIDGE__P0_OWNER_PROOF__DEV_ONLY_NO_PRODUCTION"
+  },
+  "i3Oct08Focal": {
+    "state": "SOURCE_FIXED_PENDING_CANONICAL_SOURCE_PROOF",
+    "sourceSha": "e4ee267ff7f63d4847b72a659d16915c5f631be5",
+    "sourceTree": "ce41bb3dbf4eefbe266c5f7186b60f6c1bf67b29",
+    "predecessor": "8cdd461bd4b19185c007db18631a2470891a3327",
+    "sourceScope": [
+      "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+      "app/adapters/tya-cumulative-read-model-v2.js",
+      "app/modules/misvisitas.js",
+      "app/modules/postulaciones.js",
+      "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+      "app/styles/layout.css",
+      "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
+    ],
+    "tests": [
+      "backend/runtime/hr-live-service/test/cxorbia-i3-oct08-b1-b3-source.test.mjs"
+    ],
+    "staticDateWindowCasesPass": 7,
+    "staticDateWindowCasesFail": 0,
+    "humanMiDiaVisualPassFromPriorSource": true,
+    "fullB1Locked": false,
+    "b3HumanPass": false,
+    "b7HumanPass": false,
+    "production": false,
+    "hrWrites": 0,
+    "paymentWrites": 0,
+    "hostingDeploys": 0,
+    "runtimeDeploys": 0,
+    "requiresBothRuntimeAndHostingMaterialization": true,
+    "sourcePreviewNotCertified": true
   }
 }
