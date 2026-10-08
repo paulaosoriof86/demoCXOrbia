@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "3c0ea51a2626d418f0e6952bdd6a82f8b15d13e3",
   "productTreeAuthority": "1d0d8a03005d27b2a1ee795e6de6a0fccc5ef715",
   "predecessorProductSourceSha": "8ac7369e2e0f1e203000f80002683ec43e373590",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V335_2026-10-08.json",
-  "findingsLedgerExpectedGitBlob": "42f706723455ac8f8137979a6ad537dab7db6ce7",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V39.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V336_2026-10-08.json",
+  "findingsLedgerExpectedGitBlob": "cb6e4b7933c5963ba3c9d4a0cfad3f4a96678c64",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V40.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "I3_B2_B5_FOCAL_SOURCE_PROOF_REQUIRED",
+  "activeBlocker": "I3_B2_B5_ONE_CANONICAL_DEV_MATERIALIZATION_REQUIRED",
   "nextFindingId": "VRM-271",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run canonical B2/B5 source proofs (existing I3 source job including 17 Oct08 tests), then one DEV materialization and full scoped Admin/Shopper live E2E; obtain human visual approval after P0 closed. No production.",
+  "exactNextAction": "Run one existing I3 DEV materialization on exact approved source 3c0ea51; then B2/B5 exact same-artifact visual and historical finance E2E. Do not ask Paula for partial visual approval. No production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2654,7 +2654,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "9b4fbb70cfec263ab75e7eabbc13ab3fcedffa08",
+  "moduleTruthExpectedGitBlob": "62bb3106ede1cfe14900aef450cf77dfb87b482d",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -6624,6 +6624,32 @@
     "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V39.json",
     "moduleTruthBlob": "9b4fbb70cfec263ab75e7eabbc13ab3fcedffa08",
     "status": "SOURCE_PROOF_PENDING",
-    "inCurrentDEV": false
+    "inCurrentDEV": false,
+    "sourceProofStatus": "PASS_RUN1394",
+    "sourceProofRunId": 37850441735,
+    "sourceProofArtifactId": 11581498160,
+    "sourceProofArtifactDigest": "sha256:0a9cb912bc823242e2b91e5a1972e52e08d38f4435f12e00d0facec261d0f449",
+    "devMaterializationStatus": "PENDING_ONE_DEV_BUILD_RUNTIME_HOSTING"
+  },
+  "i3B2B5FocalSourceProofRun1394": {
+    "runId": 37850441735,
+    "runNumber": 1394,
+    "jobId": 113561804908,
+    "artifactId": 11581498160,
+    "artifactDigest": "sha256:0a9cb912bc823242e2b91e5a1972e52e08d38f4435f12e00d0facec261d0f449",
+    "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "sourceSha": "3c0ea51a2626d418f0e6952bdd6a82f8b15d13e3",
+    "sourceTree": "1d0d8a03005d27b2a1ee795e6de6a0fccc5ef715",
+    "tests": 42,
+    "passed": 42,
+    "failed": 0,
+    "scope": [
+      "B2 exact active Mi Perfil owner",
+      "B5 historical paid source truth with tenant/project isolation",
+      "B7 cancellation regressions",
+      "existing I3 source contracts"
+    ],
+    "devMaterialized": false,
+    "production": false
   }
 }
