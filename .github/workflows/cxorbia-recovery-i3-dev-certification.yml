@@ -6698,7 +6698,7 @@ jobs:
          test "$(jq -r '.decision' "$B7_OUT/result.json")" = "PASS_I3_B7_TWO_ROLE_DECISION_LIVE_DEV"
          jq -e '.providerAck==true and (.cases|length)==2 and .hrBefore==.hrAfter and (.cleanup|to_entries|all(.value==true)) and .hrWrites==0 and .production==false' "$B7_OUT/result.json" >/dev/null
       - name: Admin + Julissa + Priscila + Paula + population live reproof
-        if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_B7_TWO_ROLE_DECISION_LIVE_DEV_REQUIRED' == false }}
+        if: ${{ needs.canonical-candidate-authority.outputs.status != 'HOLD_I3_B7_TWO_ROLE_DECISION_LIVE_DEV_REQUIRED' }}
         shell: bash
         run: |
          set -Eeuo pipefail
