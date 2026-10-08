@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM271_EXACT_DEV_JULISSA_B2_B5_FINANCE_VS_PROFILE_UI__VRM154_STALE_VISUAL_QA_ASSERTION",
+  "activeBlocker": "VRM271_B2_B5_EXACT_UI_VERIFIED_JULISSA__VRM151_FINANCE_EXPECTED_EXTERNAL_HR_REVISION_TEST_REPROOF_PENDING",
   "nextFindingId": "VRM-272",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Use the existing I3 vrm157-dev-readback-only job on the unchanged run1399 DEV artifact. Verify role-scoped brand-dark border without product style changes and execute newly scoped VRM-271 authenticated exact-visit B2 Profile badge vs B5 Benefits finance model/overview with fixed HR revision; no build, redeploy or production. Preserve run1400 authenticated multi-role E2E PASS. If successful, continue other P0s and TinyFish pre-human/human incremental acceptance, only then Gate20/21 and I4 authorization.",
+  "exactNextAction": "Re-run ONLY existing vrm157-dev-readback-only on exact run1399 DEV artifact, including VRM271 per-visit authenticated cross-module PASS and VRM151 independently pinned HR revision 9f543e... with Oct06 August all-paid frozen cut. Preserve run1400 broad PASS, no new product source/build/deploy. Do not mark September paid except exact durable row evidence; do not claim block Human PASS.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -6986,6 +6986,73 @@
       "productionUntouched": true,
       "noNewBuild": true,
       "noDeploy": true
+    }
+  },
+  "run1401Vrm271AndFinancialFixtureReadback": {
+    "date": "2026-10-08",
+    "classification": "MAPPING_FAILURE",
+    "controlOnly": true,
+    "expectedParentSha": "afb85b3e50d4116e74137907fca5bf00bb97933d",
+    "expectedParentTree": "c8b64f2e4b463664adf63c852cbc36982c0913c6",
+    "qaOriginalBlob": "a85e987d23454d16b6410ef54cf127aa52806490",
+    "qaCorrectedBlob": "21d926c7464f0708ce253c7557abb67fe686acba",
+    "before": {
+      "status": "HOLD_VRM154_156_LIVE_REPROOF_REQUIRED",
+      "activeBlocker": "VRM271_EXACT_DEV_JULISSA_B2_B5_FINANCE_VS_PROFILE_UI__VRM154_STALE_VISUAL_QA_ASSERTION",
+      "exactNextAction": "Use the existing I3 vrm157-dev-readback-only job on the unchanged run1399 DEV artifact. Verify role-scoped brand-dark border without product style changes and execute newly scoped VRM-271 authenticated exact-visit B2 Profile badge vs B5 Benefits finance model/overview with fixed HR revision; no build, redeploy or production. Preserve run1400 authenticated multi-role E2E PASS. If successful, continue other P0s and TinyFish pre-human/human incremental acceptance, only then Gate20/21 and I4 authorization."
+    },
+    "after": {
+      "status": "HOLD_VRM154_156_LIVE_REPROOF_REQUIRED",
+      "activeBlocker": "VRM271_B2_B5_EXACT_UI_VERIFIED_JULISSA__VRM151_FINANCE_EXPECTED_EXTERNAL_HR_REVISION_TEST_REPROOF_PENDING",
+      "exactNextAction": "Re-run ONLY existing vrm157-dev-readback-only on exact run1399 DEV artifact, including VRM271 per-visit authenticated cross-module PASS and VRM151 independently pinned HR revision 9f543e... with Oct06 August all-paid frozen cut. Preserve run1400 broad PASS, no new product source/build/deploy. Do not mark September paid except exact durable row evidence; do not claim block Human PASS."
+    },
+    "vrm271": {
+      "runNumber": 1401,
+      "runId": 37858997840,
+      "jobId": 113590043866,
+      "artifactId": 11585252764,
+      "globalRun": "FAIL_DUE_LATER_VRM151_STALE_QA",
+      "focalDecision": "PASS_AUTHENTICATED_CROSS_MODULE_EXACT_VISIT_ASSERTIONS",
+      "shopperIdentity": "shopper_gt_0c198c1055",
+      "totalVisitIds": 9,
+      "financePaidWithSource": 7,
+      "profilePaidMatched": 7,
+      "benefitsHistoricalOverviewPaid": 7,
+      "exactMismatches": 0,
+      "writes": 0,
+      "production": false
+    },
+    "financeFixture": {
+      "runNumber": 1401,
+      "rootCause": "Current external HR revision is not frozen in VRM151 expected fixture; historical August GT pending QA policy contradicts Oct06 frozen August-all-paid contract.",
+      "currentHrRevision": "9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef",
+      "legacyOnlyRevisions": [
+        "27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732",
+        "f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305"
+      ],
+      "independentDirectExternalHrByPeriodCut": {
+        "externalVisits": 748,
+        "submittedThroughSeptember": 643,
+        "submittedHistoricallyPaidThroughAugust": 599,
+        "septemberSubmittedNotClaimedPaidWithoutExactRows": 44,
+        "excludedNotSubmitted": 61,
+        "amountReviewRequiredByExternalBoletoCombo": 5,
+        "octoberTouched": 0
+      },
+      "newRevisionExpectedPinned": true,
+      "sourceIndependentOfMergedLocalAggregate": true,
+      "notProven": "No September row-specific payment receipts inferred or added",
+      "providerWrites": 0
+    },
+    "preserved": {
+      "sourceSha": "12f33a00430768ab11f2041eb278d33724e69401",
+      "sourceTree": "ce15467895f769b6aa6ad49a2bb138709ab425fd",
+      "materialization": 1399,
+      "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V337_2026-10-08.json",
+      "moduleTruth": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V41.json",
+      "humanPass": false,
+      "productChanged": false,
+      "productionTouched": false
     }
   }
 }

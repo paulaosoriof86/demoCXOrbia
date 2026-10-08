@@ -14,17 +14,25 @@ const db=getFirestore(),projectRef=db.collection('tenants').doc(tenantId).collec
 
 const ym=v=>{const m=str(v).match(/(20\d{2})[-_/](0[1-9]|1[0-2])/);return m?m[1]+'-'+m[2]:'';};
 const country=v=>{const x=str(v).toUpperCase();if(x==='GT'||x.includes('GUATEMALA'))return 'GT';if(x==='HN'||x.includes('HONDURAS'))return 'HN';return '';};
-const paymentStatusFor=(period,c)=>{
+/* Historical approval receipts retain their original source-revision scope.
+   From the Phase A completion lock (2026-10-06), Aug GT/HN were confirmed paid
+   on Oct 02. New HR revisions require independent external-revision readback. */
+const FROZEN_PHASE_A_REVISION='9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef';
+const paymentStatusFor=(period,c,sourceRevision)=>{
   if(!period||!c)return '';
   if(period<='2026-07')return 'paid';
-  if(period==='2026-08')return c==='HN'?'paid':c==='GT'?'pending':'';
+  if(period==='2026-08'){
+    if(sourceRevision===FROZEN_PHASE_A_REVISION)return ['GT','HN'].includes(c)?'paid':'';
+    return c==='HN'?'paid':c==='GT'?'pending':'';
+  }
   if(period==='2026-09')return ['GT','HN'].includes(c)?'pending':'';
   return '';
 };
 const submitted=v=>v?.canonicalFacets?.submitted===true||!!v?.submittedAt||v?.submit===true||['submitida','liquidada','pagada'].includes(str(v?.estado||v?.status).toLowerCase())||str(v?.canonicalState).toLowerCase()==='submitted_complete';
 const EXPECTED_BY_REVISION=Object.freeze({
   '27996d9caa7ee95be1fed935143e89c442e7abe54423392ad2b29971ac6b4732':Object.freeze({canonicalSubmitted:628,paid:562,pending:66,amountReviewRequired:5,octoberTouched:0}),
-  'f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305':Object.freeze({canonicalSubmitted:636,paid:562,pending:74,amountReviewRequired:5,octoberTouched:0})
+  'f77e740a8f8c92f48ded256276e03c15594711ce57204381b672d61c19aa9305':Object.freeze({canonicalSubmitted:636,paid:562,pending:74,amountReviewRequired:5,octoberTouched:0}),
+  '9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef':Object.freeze({canonicalSubmitted:643,paid:599,pending:44,amountReviewRequired:5,octoberTouched:0})
 });
 
 const [projectSnap,fireSnap,hrRes]=await Promise.all([
@@ -42,7 +50,7 @@ const configured=(c,key)=>{const map=project?.[key]||project?.financial?.[key]||
 
 const canonical=[],excluded=[],ambiguous=[],seen=new Set();
 for(const hv of hr.visits||[]){
-  const period=ym(hv.periodKey||hv.periodId||hv.periodo),c=country(hv.pais||hv.country),paymentStatus=paymentStatusFor(period,c);
+  const period=ym(hv.periodKey||hv.periodId||hv.periodo),c=country(hv.pais||hv.country),paymentStatus=paymentStatusFor(period,c,sourceRevision);
   if(!paymentStatus)continue;
   const liveId=str(hv.id||hv.visitId),hrRowId=str(hv.hrRowId),dups=byHrRow.get(hrRowId)||[];
   let dv=byDoc.get(liveId)||null,authority='live_hr_visit_id_equals_firestore_doc_id';
