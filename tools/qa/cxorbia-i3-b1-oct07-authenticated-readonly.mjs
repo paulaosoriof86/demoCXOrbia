@@ -24,7 +24,17 @@ const auth=getAuth();
 const db=getFirestore();
 const tenant=db.collection('tenants').doc('tya');
 const userDocs=(await tenant.collection('users').get()).docs.map(d=>({uid:d.id,...d.data()}));
-const result={schemaVersion:'cxorbia.i3.b1.oct07.live-auth-readonly.v1',decision:'HOLD',sourceSha:SOURCE,sourceTree:TREE,expectedHrRevision:HR,scope:'B1_ONLY',testInitiatedWrites:0,externalActions:0,production:false,targets:[],errors:[],screenshots:[],tinyFish:'ENVIRONMENT_FAILURE_SESSION_RESTORE_B1_EXCEPTION'};
+/* Exact read-only provider documents for Paula's HR-linked visit. Never request writes. */
+const visitsColl=tenant.collection('projects').doc('cinepolis').collection('visits');
+const exactVisitKeys=['OCTUBRE 26!6','hr_2026-10_gt_6_7cf9d422f8'];
+const exactVisitDocs=await Promise.all(exactVisitKeys.map(async key=>({key,snap:await visitsColl.doc(key).get()})));
+const providerVisitReadback=exactVisitDocs.map(({key,snap})=>{const v=snap.exists?snap.data()||{}:{};
+  return {docKey:key,exists:snap.exists,hrRowId:String(v.hrRowId||''),visitId:String(v.visitId||v.id||''),
+    status:String(v.estado||v.status||''),agendada:String(v.agendada||v.scheduledDate||''),
+    assignmentSyncStatus:String(v.assignmentSyncStatus||''),lastSyncedAt:String(v.lastSyncedAt||''),
+    version:Number(v.version||0),hasRescheduleRequest:!!v.rescheduleRequest};
+});
+const result={schemaVersion:'cxorbia.i3.b1.oct07.live-auth-readonly.v2',decision:'HOLD',sourceSha:SOURCE,sourceTree:TREE,expectedHrRevision:HR,scope:'B1_ONLY',providerVisitReadback,testInitiatedWrites:0,externalActions:0,production:false,targets:[],errors:[],screenshots:[],tinyFish:'ENVIRONMENT_FAILURE_SESSION_RESTORE_B1_EXCEPTION'};
 const normalize=x=>String(x||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 const url=ROOT+'/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV';
 const browser=await chromium.launch({headless:true});
@@ -95,7 +105,9 @@ for(const t of targets){
     await page.locator('.cx-ov:visible [data-x]').last().click();
     await page.waitForFunction(()=>document.querySelectorAll('.cx-ov').length===0,null,{timeout:10000});
   }
-  await page.evaluate(()=>window.CX.router.nav('midia',{history:false}));
+  try{await page.evaluate(()=>window.CX.router.nav('midia',{history:false}));}
+  catch(error){if(!/Execution context was destroyed/i.test(String(error?.message||error)))throw error;}
+  await page.waitForFunction(()=>document.querySelectorAll('.cx-ov').length===0,null,{timeout:20000});
   if(await page.locator('.cx-ov').count()!==0)throw Error('B1_ROUTE_LEAKS_MODAL:'+t.name);
   if(errors.length)throw Error('B1_CLIENT_JS_ERRORS:'+t.name+':'+JSON.stringify(errors.slice(0,3)));
   result.targets.push({name:t.name,syncMs,view,modal,actionExercised:action+' NON_MUTATING_ONLY',activeOwnerStable:true});
@@ -104,5 +116,5 @@ for(const t of targets){
 result.decision='PASS_B1_AUTHENTICATED_READONLY_UI_FOCAL';
 }catch(e){result.decision='HOLD_B1_AUTHENTICATED_READONLY_UI_FOCAL';result.errors.push(String(e?.message||e));}
 finally{await browser.close();fs.writeFileSync(path.join(OUT,'result.json'),JSON.stringify(result,null,2)+'\n');}
-console.log(JSON.stringify({decision:result.decision,sourceSha:SOURCE,sourceTree:TREE,scope:result.scope,targets:result.targets.map(t=>({name:t.name,syncMs:t.syncMs,scheduled:t.view.visit?.facetsScheduled,pendingHR:t.view.visit?.pendingHR,modal:t.modal})),errors:result.errors,screenshots:result.screenshots,testInitiatedWrites:0,production:false}));
+console.log(JSON.stringify({decision:result.decision,sourceSha:SOURCE,sourceTree:TREE,scope:result.scope,targets:result.targets.map(t=>({name:t.name,syncMs:t.syncMs,scheduled:t.view.visit?.facetsScheduled,pendingHR:t.view.visit?.pendingHR,modal:t.modal})),errors:result.errors,providerVisitReadback:result.providerVisitReadback,screenshots:result.screenshots,testInitiatedWrites:0,production:false}));
 if(!result.decision.startsWith('PASS_'))process.exitCode=2;
