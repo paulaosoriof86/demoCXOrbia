@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM154_156_LIVE_REPROOF_REQUIRED",
+  "status": "HOLD_VRM153_PROVIDER_PERSISTENCE_SUPERSESSION_P0_OWNER_PROVEN",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "12f33a00430768ab11f2041eb278d33724e69401",
   "productTreeAuthority": "ce15467895f769b6aa6ad49a2bb138709ab425fd",
   "predecessorProductSourceSha": "3c0ea51a2626d418f0e6952bdd6a82f8b15d13e3",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V337_2026-10-08.json",
-  "findingsLedgerExpectedGitBlob": "f8d068987d5076dffd6bfb618a89ca540a82b918",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V41.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V338_2026-10-08.json",
+  "findingsLedgerExpectedGitBlob": "e0e73d6737f754696ca6978125438c94f1bf3ad1",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V42.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM153_NEW_SOURCE_REVISION_RECONCILIATION_COVERAGE_DIFFERENCE_41__DIAGNOSTIC_PENDING",
+  "activeBlocker": "VRM-153_CURRENT_HR_FROZEN_AUGUST_PAID_RECONCILIATION_SUPERSESSION_P0",
   "nextFindingId": "VRM-272",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run existing I3 vrm157-dev-readback-only against unchanged run1399 DEV. Produce exact missing visitId readback for 41 absent reconciliation records (37 historic paid-cut and 4 pending), group by period/country and show any entries in other batches. Correct old readback false PASS to HOLD on missing coverage. No real data writes or new build/deploy. Keep VRM271 exact UI 9 visits / 7 confirmed paid / 0 mismatches PASS independently.",
+  "exactNextAction": "I3 OWNER_PROVEN: inspect backend/runtime/cxorbia-finance-command-provider-v1.mjs finance.historical.reconcile; prove safe supersession of 34 August GT pending batch vs paid frozen Oct02, classify 7 genuinely unrecorded rows, source-only P0 patch with regression; NO real Firestore/HR write or deploy before safe contract/readback; preserve VRM271 focal PASS and human pending.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2653,7 +2653,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "7c9bc915d89fd3a7e3ef0f3716a31650bdd79c47",
+  "moduleTruthExpectedGitBlob": "d4175b82f2518e9c44989bc1e07edfaf845d825b",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -7107,5 +7107,138 @@
     "production": false,
     "builds": 0,
     "deploys": 0
+  },
+  "run1403V338TruthFreeze": {
+    "date": "2026-10-08",
+    "classification": "PERSISTENCE_FAILURE",
+    "expectedParentSha": "cedda28d9795cbc612200e4296a88cd281523a96",
+    "expectedParentTree": "7601aa05366c212eb1a2179460622b6b81354b3b",
+    "originalDescriptorGitBlob": "196e11744dc02c971c1f4ece35fd8222ace2e2e7",
+    "before": {
+      "status": "HOLD_VRM154_156_LIVE_REPROOF_REQUIRED",
+      "activeBlocker": "VRM153_NEW_SOURCE_REVISION_RECONCILIATION_COVERAGE_DIFFERENCE_41__DIAGNOSTIC_PENDING",
+      "exactNextAction": "Run existing I3 vrm157-dev-readback-only against unchanged run1399 DEV. Produce exact missing visitId readback for 41 absent reconciliation records (37 historic paid-cut and 4 pending), group by period/country and show any entries in other batches. Correct old readback false PASS to HOLD on missing coverage. No real data writes or new build/deploy. Keep VRM271 exact UI 9 visits / 7 confirmed paid / 0 mismatches PASS independently.",
+      "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V337_2026-10-08.json",
+      "findingsLedgerExpectedGitBlob": "f8d068987d5076dffd6bfb618a89ca540a82b918",
+      "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V41.json",
+      "moduleTruthExpectedGitBlob": "7c9bc915d89fd3a7e3ef0f3716a31650bdd79c47"
+    },
+    "after": {
+      "status": "HOLD_VRM153_PROVIDER_PERSISTENCE_SUPERSESSION_P0_OWNER_PROVEN",
+      "activeBlocker": "VRM-153_CURRENT_HR_FROZEN_AUGUST_PAID_RECONCILIATION_SUPERSESSION_P0",
+      "exactNextAction": "I3 OWNER_PROVEN: inspect backend/runtime/cxorbia-finance-command-provider-v1.mjs finance.historical.reconcile; prove safe supersession of 34 August GT pending batch vs paid frozen Oct02, classify 7 genuinely unrecorded rows, source-only P0 patch with regression; NO real Firestore/HR write or deploy before safe contract/readback; preserve VRM271 focal PASS and human pending.",
+      "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V338_2026-10-08.json",
+      "findingsLedgerExpectedGitBlob": "e0e73d6737f754696ca6978125438c94f1bf3ad1",
+      "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V42.json",
+      "moduleTruthExpectedGitBlob": "d4175b82f2518e9c44989bc1e07edfaf845d825b"
+    },
+    "evidence": {
+      "type": "EXACT_CURRENT_REVISION_RECONCILIATION_SCOPE_DRIFT",
+      "classification": "PERSISTENCE_FAILURE",
+      "iteration": "I3",
+      "date": "2026-10-08",
+      "sourceSha": "12f33a00430768ab11f2041eb278d33724e69401",
+      "sourceTree": "ce15467895f769b6aa6ad49a2bb138709ab425fd",
+      "externalHrRevision": "9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef",
+      "run1399": {
+        "runId": 37854645391,
+        "sourceSha": "12f33a00430768ab11f2041eb278d33724e69401",
+        "tree": "ce15467895f769b6aa6ad49a2bb138709ab425fd",
+        "materializationArtifactId": 11584160109,
+        "runtimeRevision": "cxorbia-live-hr-dev-00280-95g",
+        "hostingVersion": "sites/cxorbia-backend-dev/versions/d912c9db59002681"
+      },
+      "run1400": {
+        "runId": 37858089125,
+        "mainRepresentativeSameArtifactE2E": "PASS",
+        "mainEvidenceArtifactId": 11585351399,
+        "jobGlobal": "FAIL_STALE_SECONDARY_QA"
+      },
+      "run1401": {
+        "runId": 37858997840,
+        "focalVrm271DevUI": "PASS",
+        "shopperVisitIds": 9,
+        "financialPaid": 7,
+        "profilePaid": 7,
+        "benefitsOverviewPaid": 7,
+        "exactMismatches": 0,
+        "artifactId": 11585252764
+      },
+      "run1402": {
+        "runId": 37859418679,
+        "financialDry": "PASS_CURRENT_EXTERNAL_HR_EXACT",
+        "expected": {
+          "submitted": 643,
+          "historicallyPaidThroughAugust": 599,
+          "septemberUnconfirmedWithoutIndividualProof": 44,
+          "amountReviewRequired": 5
+        },
+        "persistedReadback": {
+          "records": 602,
+          "paid": 562,
+          "pending": 40
+        },
+        "artifactId": 11585169040
+      },
+      "run1403": {
+        "runId": 37859807926,
+        "readbackDecision": "HOLD_VRM153_RECONCILIATION_READBACK_MISMATCH",
+        "artifactId": 11585751843,
+        "artifactDigest": "sha256:9dc0e5a62d0f39efa7cf462d8fe75347891417d3ed2482ec420882ed7a41a020",
+        "missingScopeCount": 41,
+        "badPriorBatch": {
+          "period": "2026-08",
+          "country": "GT",
+          "n": 34,
+          "priorReconciliationBatchId": "hist-cinepolis-2026-08-pending-scope-v1",
+          "persistedPriorStatus": "pending",
+          "frozenAuthorizedStatus": "paid",
+          "historicalPaidDate": "2026-10-02"
+        },
+        "absentExactReconciliation": {
+          "augustHN": 3,
+          "septemberGT": 3,
+          "septemberHN": 1,
+          "total": 7
+        },
+        "priorHistoricalRecordsInScope": 602,
+        "otherBatchMatches": 34,
+        "sourceSameRevision": true,
+        "production": false,
+        "writes": 0,
+        "financialWrites": 0,
+        "hrWrites": 0
+      },
+      "exactPersistedOwner": {
+        "providerFile": "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+        "providerStatement": "finance.historical.reconcile uses reconciliationBatchId to derive Firestore record identity and writes visit paymentState within transactional ACK",
+        "collection": "tenants/{tenantId}/paymentReconciliations",
+        "qaOwner": "tools/qa/cxorbia-vrm153-reconciliation-readback-diagnostic.mjs"
+      },
+      "safeStop": "NO_REAL_PAYMENT_OR_HR_OR_FIRESTORE_WRITE_AUTHORIZED; no duplicate payment, backfill, raw mutation, or historical reimport",
+      "controls": {
+        "productChanged": false,
+        "productionTouched": false,
+        "newBuild": false,
+        "newDeploy": false,
+        "newBranch": false
+      }
+    },
+    "previousLedgerBlob": "f8d068987d5076dffd6bfb618a89ca540a82b918",
+    "previousMatrixBlob": "7c9bc915d89fd3a7e3ef0f3716a31650bdd79c47",
+    "preserved": {
+      "findings": 271,
+      "modules": 21,
+      "modulesMatch": 13,
+      "modulesPending": 8,
+      "prior45HumanObservations": true,
+      "additional18HumanObservations": true,
+      "productSource": "12f33a00430768ab11f2041eb278d33724e69401",
+      "productTree": "ce15467895f769b6aa6ad49a2bb138709ab425fd",
+      "materializationRun1399": true,
+      "production": false,
+      "builds": 0,
+      "deploys": 0
+    }
   }
 }
