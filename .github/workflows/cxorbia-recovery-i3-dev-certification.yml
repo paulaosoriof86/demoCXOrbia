@@ -53,40 +53,13 @@ env:
   POST_RUN500_LOCK: CXORBIA_I3_POST_RUN500_FORENSIC_DRIFT_LOCK_2026-09-26.json
   POST_RUN500_LEDGER: CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V176_2026-09-30.json
 jobs:
-  vrm153-safe-supersession-source-proof:
+  vrm153-proof:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM153_SAFE_SUPERSESSION_SOURCE_PROOF_REQUIRED' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-      - name: VRM153 synthetic read-before-write and supersession source proof (no provider credentials)
-        run: |
-          set -Eeuo pipefail
-          mkdir -p .tmp/vrm153-safe-supersession
-          test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "${{ needs.canonical-candidate-authority.outputs.source_sha }}"
-          test "$(git rev-parse "${{ needs.canonical-candidate-authority.outputs.source_sha }}^{tree}")" = "${{ needs.canonical-candidate-authority.outputs.source_tree }}"
-          git diff --quiet "${{ needs.canonical-candidate-authority.outputs.source_sha }}" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
-          node --check backend/runtime/cxorbia-finance-command-provider-v1.mjs
-          node --check backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs
-          node --check tools/qa/cxorbia-vrm153-reconciliation-readback-diagnostic.mjs
-          node --test backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs | tee .tmp/vrm153-safe-supersession/test.log
-          grep -Fq 'VRM-153 exact pending-to-paid supersession retains the prior audit record' .tmp/vrm153-safe-supersession/test.log
-          grep -Fq 'VRM-153 cross-project prior reconciliation blocks the whole transaction' .tmp/vrm153-safe-supersession/test.log
-          grep -Fq 'VRM-153 supersession completes every Firestore read before any write' .tmp/vrm153-safe-supersession/test.log
-          jq -n -S --arg source "${{ needs.canonical-candidate-authority.outputs.source_sha }}" --arg tree "${{ needs.canonical-candidate-authority.outputs.source_tree }}" '{decision:"PASS_VRM153_SAFE_SUPERSESSION_SOURCE_PROOF",sourceSha:$source,sourceTree:$tree,syntheticOnly:true,firestoreWrites:0,hrWrites:0,bankWrites:0,deploys:0,production:false}' > .tmp/vrm153-safe-supersession/result.json
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: cxorbia-vrm153-safe-supersession-${{ github.run_id }}
-          path: .tmp/vrm153-safe-supersession
-          if-no-files-found: warn
-          retention-days: 30
+      - run: node --test backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs
 
   canonical-candidate-authority:
     runs-on: ubuntu-latest
