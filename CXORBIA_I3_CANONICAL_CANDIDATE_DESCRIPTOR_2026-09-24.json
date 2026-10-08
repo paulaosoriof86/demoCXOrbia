@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "I3_B7_SAME_ARTIFACT_TWO_ROLE_REQUEST_DECISION_LIVE_REPROOF_REQUIRED",
+  "activeBlocker": "I3_ENVIRONMENT_FAILURE_RUN1387_AUTH_RELOAD_BOUNDED_REPROOF",
   "nextFindingId": "VRM-271",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run existing canonical same-artifact authenticated Admin/Shopper/Client/Finance/Cert regression. B7 exact cancellation decision cross-role E2E still untested; do not promote I3 on representative PASS.",
+  "exactNextAction": "Retry exact same-artifact canonical E2E with bounded Playwright navigation recovery, no product/build/deploy changes; then B2/B5 source roots.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -6491,5 +6491,31 @@
     "devMaterializationDecision": "PASS_REJECTED_PHASEA_EXACT_DEV_MATERIALIZATION",
     "liveE2EStatus": "PENDING_CANONICAL_RUN_PLUS_EXACT_B7_DECISION_TEST",
     "humanApproval": false
+  },
+  "i3Run1387EnvironmentalFailure": {
+    "runId": 37845721312,
+    "runNumber": 1387,
+    "artifactId": 11579542894,
+    "artifactDigest": "sha256:494d3f271b29114e57122dc09cc69e2ac5f8d79b298b8ae162cc1055f6473f33",
+    "firstBreak": "POST_BROWSER_AUTH_OBSERVER_TRANSIENT",
+    "detail": "Playwright page.reload ERR_ABORTED and frame detached after Auth observer succeeded",
+    "classification": "ENVIRONMENT_FAILURE",
+    "beforeBreak": {
+      "representative": "PASS",
+      "exhaustiveClickVisual": "PASS",
+      "scheduleProvider": "PASS",
+      "postulationCreateAck": true,
+      "postulationStandbyAck": true,
+      "postulationRejectAck": true
+    },
+    "cleanup": {
+      "fallbackDirectDelete": true,
+      "syntheticPostulationId": "qa-i3-app-37845721312"
+    },
+    "productDefect": false,
+    "productSourceUnchanged": true,
+    "artifactUnchanged": true,
+    "qaHarnessOnly": true,
+    "production": false
   }
 }

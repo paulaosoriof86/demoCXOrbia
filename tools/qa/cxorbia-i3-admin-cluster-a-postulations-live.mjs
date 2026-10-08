@@ -66,6 +66,26 @@ async function browserAdminSignIn(page,uid){
   err.vrm248Attempts=attempts;
   throw err;
 }
+/* Run1387 environment-only: avoid Playwright ERR_ABORTED post-auth reload races.
+   Bounded navigation recovery does not assert functional success. */
+async function safeProtectedReload(page,phase){
+  for(let attempt=1;attempt<=3;attempt++){
+    try{
+      await page.reload({waitUntil:'domcontentloaded',timeout:90000});
+      return attempt;
+    }catch(error){
+      const message=str(error?.message||error);
+      if(!/ERR_ABORTED|frame was detached|Execution context was destroyed|navigation.*interrupted|ERR_NETWORK_CHANGED/i.test(message)||attempt===3)throw error;
+      try{
+        await page.waitForLoadState('domcontentloaded',{timeout:25000});
+        const ok=await page.evaluate(()=>['interactive','complete'].includes(document.readyState)&&location.href.startsWith(location.origin+'/')).catch(()=>false);
+        if(ok)return attempt;
+      }catch(_){}
+      await sleep(900*attempt);
+    }
+  }
+  throw Error('ENVIRONMENT_FAILURE:'+phase+'_RELOAD_EXHAUSTED');
+}
 let adminToken='',shopperToken='',selected=null,created=false,browser=null;
 try{
   need(/^[a-f0-9]{64}$/.test(EXPECTED_HR),'SOURCE_FAILURE','POST_EXPECTED_HR_REQUIRED');
@@ -106,7 +126,7 @@ try{
   await page.goto(ROOT+'/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId='+encodeURIComponent(PROGRAM)+'&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV',{waitUntil:'domcontentloaded',timeout:90000});
   const authObserver=await browserAdminSignIn(page,staff.id);
   result.browser.authObserver={pass:true,attempt:authObserver.attempt,retries:Math.max(0,authObserver.attempt-1)};
-  await page.reload({waitUntil:'domcontentloaded',timeout:90000});
+  result.browser.postAuthReloadAttempt=await safeProtectedReload(page,'post_auth');
   await page.waitForFunction(({TENANT,PROGRAM})=>{const c=window.CX?.backendAuth?.context?.()||{};return c.authenticated===true&&c.tenantId===TENANT&&['super','admin'].includes(String(c.role||''))&&(c.role==='super'||(Array.isArray(c.projectIds)&&c.projectIds.map(String).includes(PROGRAM)))&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true;},{TENANT,PROGRAM},{timeout:120000});
   await page.evaluate(()=>window.CX?.router?.nav?.('postulaciones'));
   await page.waitForTimeout(1000);
@@ -118,7 +138,7 @@ try{
   const d1=await send(adminToken,del);need(d1.ok&&d1.body?.providerAck===true,'PERSISTENCE_FAILURE','POST_DELETE_ACK',{d1});created=false;
   const d2=await send(adminToken,del);need(d2.ok&&d2.body?.providerAck===true&&d2.body?.idempotentReplay===true&&Number(d2.body?.providerWrites||0)===0,'PERSISTENCE_FAILURE','POST_DELETE_REPLAY',{d2});
   snap=await project.collection('postulations').doc(APP_ID).get();need(!snap.exists,'PERSISTENCE_FAILURE','POST_DELETE_READBACK');
-  await page.reload({waitUntil:'domcontentloaded',timeout:90000});
+  result.browser.postDeleteReloadAttempt=await safeProtectedReload(page,'post_delete');
   await page.waitForFunction(({TENANT})=>window.CX?.backendAuth?.context?.()?.authenticated===true&&window.CX?.backendAuth?.context?.()?.tenantId===TENANT&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,{TENANT},{timeout:120000});
   await page.evaluate(()=>window.CX?.router?.nav?.('postulaciones'));await page.waitForTimeout(1000);
   const afterVisible=await page.evaluate(id=>Array.isArray(window.CX?.data?._posts)&&window.CX.data._posts.some(p=>String(p?.id||p?.applicationId||p?.postulationId||'')===id),APP_ID);
@@ -186,7 +206,7 @@ try{
   }
   const rDelete=rbase('reservation.delete',RSV_ID,rPeriodId,'qa-rsv-delete-'+RUN,3,{reason:'QA bounded lifecycle cleanup'});const rd1=await send(adminToken,rDelete);need(rd1.ok&&rd1.body?.providerAck===true,'PERSISTENCE_FAILURE','RSV_DELETE_ACK',{rd1});const rd2=await send(adminToken,rDelete);need(rd2.ok&&rd2.body?.idempotentReplay===true&&Number(rd2.body?.providerWrites||0)===0,'PERSISTENCE_FAILURE','RSV_DELETE_REPLAY',{rd2});
   rsnap=await project.collection('reservations').doc(RSV_ID).get();need(!rsnap.exists,'PERSISTENCE_FAILURE','RSV_DELETE_READBACK');
-  await page.reload({waitUntil:'domcontentloaded',timeout:90000});await page.waitForFunction(({TENANT})=>window.CX?.backendAuth?.context?.()?.authenticated===true&&window.CX?.backendAuth?.context?.()?.tenantId===TENANT&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,{TENANT},{timeout:120000});await page.evaluate(()=>window.CX?.router?.nav?.('reservas'));await page.waitForTimeout(750);
+  result.browser.reservationReloadAttempt=await safeProtectedReload(page,'reservation');await page.waitForFunction(({TENANT})=>window.CX?.backendAuth?.context?.()?.authenticated===true&&window.CX?.backendAuth?.context?.()?.tenantId===TENANT&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,{TENANT},{timeout:120000});await page.evaluate(()=>window.CX?.router?.nav?.('reservas'));await page.waitForTimeout(750);
   const rAfter=await page.evaluate(({id,periodId})=>{const rows=typeof window.CX?.reservas?.list==='function'?window.CX.reservas.list(periodId):(Array.isArray(window.CX?.data?.__protectedReservations)?window.CX.data.__protectedReservations:[]);return rows.some(r=>String(r?.id||r?.reservationId||'')===id);},{id:RSV_ID,periodId:rPeriodId});need(rAfter===false,'FUNCTIONAL_DEFECT','RSV_REAPPEARED_AFTER_DELETE');
   const rVisitAfterSnap=await rVisitRef.get(),rVisitAfter=rVisitAfterSnap.data()||{},visitUnchanged=str(rVisitAfter.shopperId)===str(rVisitBefore.shopperId)&&str(rVisitAfter.estado||rVisitAfter.status)===str(rVisitBefore.estado||rVisitBefore.status)&&Number(rVisitAfter.version||0)===Number(rVisitBefore.version||0);need(visitUnchanged,'PERSISTENCE_FAILURE','RSV_VISIT_MUTATED_WITHOUT_CROSS');
   const rResidue=(await docs(project.collection('reservations'))).filter(r=>str(r.id||r.reservationId)===RSV_ID).length;need(rResidue===0,'PERSISTENCE_FAILURE','RSV_QA_RESIDUE',{rResidue});

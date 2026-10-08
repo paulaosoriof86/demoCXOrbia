@@ -6630,6 +6630,7 @@ jobs:
          git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
          node --check tools/qa/cxorbia-i3-phasea-representative-live-reproof.mjs
          node --check tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs
+         node --check tools/qa/cxorbia-i3-admin-cluster-a-postulations-live.mjs
       - name: Install live proof dependencies
         run: |
          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
