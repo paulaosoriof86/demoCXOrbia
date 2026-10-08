@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
+  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "7e44f271191878b48c4aaadeaf8eb2f0a74a786c",
-  "productTreeAuthority": "295b54908e98023cda3eda2008edd50acb2b8cda",
-  "predecessorProductSourceSha": "8d7a071aae2864be3a9f41f3673275d8c9250010",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V333_2026-10-08.json",
-  "findingsLedgerExpectedGitBlob": "ed32f5723ed78289fa0d0203d222f604495db364",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V37.json",
+  "productSourceSha": "8ac7369e2e0f1e203000f80002683ec43e373590",
+  "productTreeAuthority": "8f741a6b8501c3c0b8ce694be5a74da851408ba1",
+  "predecessorProductSourceSha": "7e44f271191878b48c4aaadeaf8eb2f0a74a786c",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V334_2026-10-08.json",
+  "findingsLedgerExpectedGitBlob": "cc00db342562922836145e000c5a5534ea47c3ef",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V38.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "B1_RUNTIME_TIMING_B2_PROFILE_B5_BENEFITS_B3_REQUESTS_ADMIN_SHOPPER_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED",
+  "activeBlocker": "I3_B7_CANCEL_DECISION_P0_SOURCE_PROOF_REQUIRED",
   "nextFindingId": "VRM-271",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3_POST_RUN1382_EXACT_ARTIFACT_PASS_READBACK_AND_270_VRM_45_HV06_18_HF08_21_DOMAIN_PROACTIVE_BOTH_ROLE_COVERAGE_WITH_B2_B3_B5_B7_B8_OPEN_UNTIL_EVIDENCED",
+  "exactNextAction": "I3 B7 exact Admin cancel decision source proof on one candidate; if PASS, DEV runtime and Hosting exact-materialization then two-role safe ACK/readback E2E. No production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -498,7 +498,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "38139fcc5032f29474dd0ec5b9d33312b37a0a24",
+  "productSourceTree": "8f741a6b8501c3c0b8ce694be5a74da851408ba1",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -2653,7 +2653,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "d675a11a695194fa779d59b50cf2e6bfc9bc26d9",
+  "moduleTruthExpectedGitBlob": "0be7e36c971c5f25c8adeb56920e8c19092d7fd1",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -6446,5 +6446,25 @@
     "nextExactAction": "P0 focal in I3 on these two owners only; unit/source tests, readback of product parent/tree, DEV certification run and two-role provider ACK / reload / no-duplicate E2E; update ledger/matrix/descriptor cumulatively; do not touch production.",
     "authority": "CXORBIA_I3_PHASE_A_FINDINGS_COVERAGE_READBACK_2026-10-08_POST_RUN1382.json",
     "production": "DO_NOT_TOUCH"
+  },
+  "i3B7CancelDecisionSourceSuccessor20261008": {
+    "sourceSha": "8ac7369e2e0f1e203000f80002683ec43e373590",
+    "sourceTree": "8f741a6b8501c3c0b8ce694be5a74da851408ba1",
+    "predecessorProductSourceSha": "7e44f271191878b48c4aaadeaf8eb2f0a74a786c",
+    "parentControlSha": "27a0a163f951f34c4bb821fb62d1cb94af912f92",
+    "commitAlreadyCreated": true,
+    "changedOwnerBlobs": {
+      "backend/runtime/cxorbia-operational-command-provider-v1.mjs": "9b6f4a1673974976c7de045f46545c659f53e9e8",
+      "app/modules/postulaciones.js": "46ace903ec6aa8dd92dd17dc36fb8ce53651d45e",
+      "app/modules/misvisitas.js": "1abca0df4174139958e59d8de8448e9ef913512e",
+      "backend/runtime/hr-live-service/test/cxorbia-i3-oct08-b1-b3-source.test.mjs": "c7d6ac71982ee8c94872a46dbd0c4dc5cea1d12a"
+    },
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V334_2026-10-08.json",
+    "ledgerExpectedBlob": "cc00db342562922836145e000c5a5534ea47c3ef",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V38.json",
+    "matrixExpectedBlob": "0be7e36c971c5f25c8adeb56920e8c19092d7fd1",
+    "sourceProofStatus": "PENDING_CANONICAL_WORKFLOW",
+    "approvedByHuman": false,
+    "production": false
   }
 }
