@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM153_PROVIDER_PERSISTENCE_SUPERSESSION_P0_OWNER_PROVEN",
+  "status": "HOLD_VRM153_SAFE_SUPERSESSION_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "12f33a00430768ab11f2041eb278d33724e69401",
-  "productTreeAuthority": "ce15467895f769b6aa6ad49a2bb138709ab425fd",
-  "predecessorProductSourceSha": "3c0ea51a2626d418f0e6952bdd6a82f8b15d13e3",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V338_2026-10-08.json",
-  "findingsLedgerExpectedGitBlob": "e0e73d6737f754696ca6978125438c94f1bf3ad1",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V42.json",
+  "productSourceSha": "f407c1ae202a0201c738ff73b4e4ddba223b9a0d",
+  "productTreeAuthority": "fe577e47a587749ce5c7db765c5fcb66d4fbb00c",
+  "predecessorProductSourceSha": "12f33a00430768ab11f2041eb278d33724e69401",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V339_2026-10-08.json",
+  "findingsLedgerExpectedGitBlob": "89bd6439e0ec4565dc81c4359687558203df8936",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V43.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-153_CURRENT_HR_FROZEN_AUGUST_PAID_RECONCILIATION_SUPERSESSION_P0",
+  "activeBlocker": "VRM-153_P0_SOURCE_ONLY_SUPERSESSION_PENDING_SYNTHETIC_PROOF_34_AUG_GT_7_EXACT_UNRESOLVED",
   "nextFindingId": "VRM-272",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 OWNER_PROVEN: inspect backend/runtime/cxorbia-finance-command-provider-v1.mjs finance.historical.reconcile; prove safe supersession of 34 August GT pending batch vs paid frozen Oct02, classify 7 genuinely unrecorded rows, source-only P0 patch with regression; NO real Firestore/HR write or deploy before safe contract/readback; preserve VRM271 focal PASS and human pending.",
+  "exactNextAction": "I3: prove new VRM-153 pending-to-paid historical supersession source in existing workflow, with synthetic database only. Preserve 34 prior August GT pending audit records, 7 unresolved visit IDs and VRM-271 focal PASS. Zero real Firestore/HR/bank writes, zero DEV/prod deploy.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -7240,5 +7240,19 @@
       "builds": 0,
       "deploys": 0
     }
+  },
+  "i3VRM153SafeSupersessionSource20261008": {
+    "sourceSha": "f407c1ae202a0201c738ff73b4e4ddba223b9a0d",
+    "sourceTree": "fe577e47a587749ce5c7db765c5fcb66d4fbb00c",
+    "previousSource": "12f33a00430768ab11f2041eb278d33724e69401",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V339_2026-10-08.json",
+    "ledgerBlob": "89bd6439e0ec4565dc81c4359687558203df8936",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V43.json",
+    "matrixBlob": "60e5a738c3605cf31ef833bb7e3e0c39c68f00ae",
+    "sourceProof": "PENDING_EXISTING_I3_WORKFLOW",
+    "financialFixtureOnly": true,
+    "currentDevArtifactPreservedFromRun1399": true,
+    "realFirestoreWrites": 0,
+    "production": false
   }
 }
