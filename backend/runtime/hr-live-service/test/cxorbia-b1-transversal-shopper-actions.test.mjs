@@ -32,3 +32,16 @@ test('B1/B3 visual recovery protects approved marketplace and uses accessible sh
   assert.match(css,/body\.role-shopper \.cx-day-progress-step span\{font-size:13px/);
   assert.match(css,/\.cx-modal-premium-workflow\{width:min\(640px/);
 });
+
+test('B1 human regression: exact provider date survives HR status overwrite in a separate pending display field',()=>{
+  const s=read('app/adapters/tya-cumulative-read-model-v2.js');
+  assert.match(s,/providerScheduleExact=!conflict/);
+  assert.match(s,/!['cancelada','archivada','disponible'].includes\(str\(pv.estado\|\|pv.status\).toLowerCase\(\)\)/);
+  assert.match(s,/platformSchedulePendingHr=/);
+});
+test('B1/B3 instructive and reschedule dialogs use the recovered scoped premium modal',()=>{
+  const s=read('app/modules/misvisitas.js');
+  assert.match(s,/ui.modal\('🔄 Solicitar reprogramación'/);
+  assert.match(s,/premium:true,replaceExisting:true,dismissOnBackdrop:false,onMount:/);
+  assert.match(s,/Recurso del proyecto/);
+});

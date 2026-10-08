@@ -254,9 +254,12 @@
            pending-HR presentation evidence, never as a fabricated HR date. */
         const providerScheduleDate=str(pv.agendada||pv.scheduledDate||pv.fechaAgendada);
         const hrScheduleDate=str(base.agendada||base.scheduledDate||base.fechaAgendada);
+        /* An HR reconciliation can restore estado='asignada' on the exact provider doc
+           while retaining its ACK-confirmed agendada date. Never require estado='agendada'
+           to project that separately labelled, still-pending-HR date. */
         const providerScheduleExact=!conflict&&!!canonical&&durableCanonical===canonical&&
           /^20\d{2}-[01]\d-[0-3]\d$/.test(providerScheduleDate)&&
-          str(pv.estado||pv.status).toLowerCase()==='agendada';
+          !['cancelada','archivada','disponible'].includes(str(pv.estado||pv.status).toLowerCase());
         if(providerScheduleExact&&!bf.scheduled){
           out.platformSchedulePendingHr={date:providerScheduleDate,status:'pending_hr',source:'exact_durable_visit',visitKey:key};
         }else if(providerScheduleExact&&bf.scheduled&&hrScheduleDate&&hrScheduleDate!==providerScheduleDate){
