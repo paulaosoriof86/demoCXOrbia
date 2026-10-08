@@ -234,6 +234,14 @@ export function createFinanceCommandProvider({auth,db,policy,hrSnapshot=null,hrR
             if(!sourceRevision)throw new Error('FINANCE_HISTORICAL_HR_REVISION_REQUIRED');
             if(!authoritativeHrRevision||!historicalAuthority.snapshot)throw new Error('FINANCE_HISTORICAL_HR_AUTHORITY_MISSING');
             if(sourceRevision!==authoritativeHrRevision)throw new Error('FINANCE_HISTORICAL_HR_REVISION_MISMATCH');
+            // Supersession is explicit historical record authority, not a bank/payment action.
+            const supersession=command.payload?.supersession??null;
+            if(supersession!==null){
+              const day=str(supersession?.paymentDate),parsed=Date.parse(day+'T00:00:00.000Z');
+              if(status!=='paid'||str(supersession?.priorPaymentStatus).toLowerCase()!=='pending')throw new Error('FINANCE_HISTORICAL_SUPERSESSION_TRANSITION_DENIED');
+              if(!str(supersession?.priorBatchId)||str(supersession?.priorBatchId)===batchId||!str(supersession?.authorityRef))throw new Error('FINANCE_HISTORICAL_SUPERSESSION_PROOF_REQUIRED');
+              if(!/^\d{4}-\d{2}-\d{2}$/.test(day)||!Number.isFinite(parsed)||new Date(parsed).toISOString().slice(0,10)!==day||day>today())throw new Error('FINANCE_HISTORICAL_SUPERSESSION_DATE_INVALID');
+            }
             const notes=str(command.payload?.notes),reconciledAt=now();
             const projectSnap=await tx.get(project),projectData=projectSnap.exists?(projectSnap.data()||{}):{};
             let providerWrites=0,reconciled=0,amountReviewRequired=0;const detail=[],prepared=[];
@@ -255,17 +263,45 @@ export function createFinanceCommandProvider({auth,db,policy,hrSnapshot=null,hrR
               if(!amount.ok)throw new Error('FINANCE_HISTORICAL_SOURCE_INCOMPLETE:'+id+':'+amount.reason);
               if(amount.amountReviewRequired)amountReviewRequired++;
               const paid=status==='paid';
+              // The current visit AND previous exact reconciliation must both agree before any write.
+              const priorBatchId=str(v.reconciliationBatchId),priorPaymentStatus=str(v.historicalPaymentStatus).toLowerCase();
+              let priorRecRef=null;
+              if(priorBatchId&&priorBatchId!==batchId){
+                if(!supersession||str(supersession.priorBatchId)!==priorBatchId)throw new Error('FINANCE_HISTORICAL_SUPERSESSION_REQUIRED:'+id);
+                if(priorPaymentStatus!=='pending'||v.paymentConfirmed===true||v.historicalReconciliationConfirmed===true)throw new Error('FINANCE_HISTORICAL_PRIOR_PAYMENT_NOT_PENDING:'+id);
+                priorRecRef=tenant.collection('paymentReconciliations').doc(sha(command.tenantId+'\0'+command.projectId+'\0'+id+'\0'+priorBatchId).slice(0,40));
+                const previousSnap=await tx.get(priorRecRef),previous=previousSnap.exists?(previousSnap.data()||{}):null;
+                if(!previous)throw new Error('FINANCE_HISTORICAL_SUPERSESSION_PRIOR_RECORD_MISSING:'+id);
+                if(str(previous.tenantId)!==str(command.tenantId)||str(previous.projectId)!==str(command.projectId)||str(previous.periodId)!==str(command.periodId)
+                    ||str(previous.visitId)!==id||str(previous.durableVisitId)!==str(resolved.durableVisitId)||str(previous.shopperId)!==str(authoritative.shopperId)
+                    ||str(previous.country)!==str(amount.country)||str(previous.currency)!==str(amount.currency)
+                    ||str(previous.reconciliationBatchId)!==priorBatchId||str(previous.paymentStatus)!=='pending'
+                    ||str(previous.source)!=='historical_reconciliation'||previous.paymentConfirmed===true
+                    ||previous.active===false||previous.superseded===true||str(previous.supersededByBatchId))
+                  throw new Error('FINANCE_HISTORICAL_SUPERSESSION_PRIOR_CONFLICT:'+id);
+              }else if(supersession){
+                throw new Error('FINANCE_HISTORICAL_SUPERSESSION_ORPHAN:'+id);
+              }else if(priorBatchId||priorPaymentStatus||v.paymentConfirmed===true||v.historicalReconciliationConfirmed===true){
+                throw new Error('FINANCE_HISTORICAL_EXISTING_PAYMENT_REQUIRES_RECEIPT:'+id);
+              }
               const reconciliation={tenantId:command.tenantId,projectId:command.projectId,shopperId:str(authoritative.shopperId),visitId:id,durableVisitId:resolved.durableVisitId,durableVisitAuthority:resolved.authority,hrRowId:str(authoritative.hrRowId)||null,periodId:command.periodId,country:amount.country,currency:amount.currency,honorario:amount.honorario,honorarioSource:amount.honorarioSource,boleto:amount.boleto,combo:amount.combo,reembolso:amount.reembolso,amount:amount.total,amountStatus:amount.amountStatus,amountReviewRequired:amount.amountReviewRequired,reviewReasons:amount.reviewReasons,sourceRevision,paymentStatus:status,paymentConfirmed:paid,paymentDate:null,source:'historical_reconciliation',sourceRef,reconciliationBatchId:batchId,idempotencyKey:command.idempotencyKey,reconciledAt,reconciledBy:actor.uid,notes:notes||null};
+              reconciliation.active=true;
+              if(priorRecRef)Object.assign(reconciliation,{paymentDate:str(supersession.paymentDate),supersedesBatchId:priorBatchId,supersessionAuthorityRef:str(supersession.authorityRef)});
               const recRef=tenant.collection('paymentReconciliations').doc(sha(command.tenantId+'\0'+command.projectId+'\0'+id+'\0'+batchId).slice(0,40));
-              prepared.push({id,resolved,v,authoritative,amount,paid,reconciliation,recRef});
+              if((await tx.get(recRef)).exists)throw new Error('FINANCE_HISTORICAL_TARGET_EXISTS_WITHOUT_RECEIPT:'+id);
+              prepared.push({id,resolved,v,authoritative,amount,paid,reconciliation,recRef,priorRecRef});
             }
             for(const item of prepared){
-              const {id,resolved,v,amount,paid,reconciliation,recRef}=item;
-              tx.set(recRef,reconciliation,{merge:false});providerWrites++;
-              tx.set(resolved.ref,{paymentState:paid?'historically_reconciled_paid':'historically_reconciled_pending',paymentConfirmed:paid,historicalReconciliationConfirmed:paid,historicalPaymentStatus:status,historicalPaymentAmount:amount.total,historicalPaymentAmountStatus:amount.amountStatus,historicalPaymentAmountReviewRequired:amount.amountReviewRequired,historicalPaymentReviewReasons:amount.reviewReasons,reconciliationSourceRef:sourceRef,reconciliationSourceRevision:sourceRevision,reconciliationBatchId:batchId,reconciledAt,updatedAt:reconciledAt,version:Number(v.version||0)+1},{merge:true});providerWrites++;
+              const {id,resolved,v,amount,paid,reconciliation,recRef,priorRecRef}=item;
+              if(priorRecRef){
+                tx.set(priorRecRef,{active:false,superseded:true,supersededAt:reconciledAt,supersededByBatchId:batchId,supersededByReconciliationId:recRef.id,supersessionAuthorityRef:str(supersession.authorityRef),supersessionPaymentDate:str(supersession.paymentDate),supersededBy:actor.uid,updatedAt:reconciledAt},{merge:true});
+                providerWrites++;
+              }
+              tx.create(recRef,reconciliation);providerWrites++;
+              tx.set(resolved.ref,{paymentState:paid?'historically_reconciled_paid':'historically_reconciled_pending',paymentConfirmed:paid,historicalReconciliationConfirmed:paid,historicalPaymentStatus:status,historicalPaymentAmount:amount.total,historicalPaymentAmountStatus:amount.amountStatus,historicalPaymentAmountReviewRequired:amount.amountReviewRequired,historicalPaymentReviewReasons:amount.reviewReasons,reconciliationSourceRef:sourceRef,reconciliationSourceRevision:sourceRevision,reconciliationBatchId:batchId,...(priorRecRef?{historicalPaymentDate:str(supersession.paymentDate)}:{}),reconciledAt,updatedAt:reconciledAt,version:Number(v.version||0)+1},{merge:true});providerWrites++;
               reconciled++;detail.push({visitId:id,status,amount:amount.total,amountStatus:amount.amountStatus,amountReviewRequired:amount.amountReviewRequired,reviewReasons:amount.reviewReasons,country:reconciliation.country,currency:reconciliation.currency});
             }
-            const summary={status:'committed',commandDigest:digest,commandType:command.commandType,tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,actorUid:actor.uid,reconciled,amountReviewRequired,reconciliationBatchId:batchId,sourceRef,sourceRevision,detail,externalPaymentConfirmed:false,externalPaymentWrites:0,bankWrites:0,hrWrites:0,updatedAt:reconciledAt};
+            const summary={status:'committed',commandDigest:digest,commandType:command.commandType,tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,actorUid:actor.uid,reconciled,amountReviewRequired,supersededReconciliations:prepared.filter(x=>x.priorRecRef).length,reconciliationBatchId:batchId,sourceRef,sourceRevision,detail,externalPaymentConfirmed:false,externalPaymentWrites:0,bankWrites:0,hrWrites:0,updatedAt:reconciledAt};
             tx.set(audit,{...summary,auditType:'finance.historical.reconcile',idempotencyKey:command.idempotencyKey},{merge:false});providerWrites++;
             tx.set(receipt,{...summary,providerAck:true,providerWrites:providerWrites+1,entityId:batchId},{merge:false});providerWrites++;
             return ack(command,{entityType:'historicalPaymentReconciliation',entityId:batchId,reconciled,amountReviewRequired,reconciliationBatchId:batchId,sourceRef,sourceRevision,detail,idempotentReplay:false,providerWrites,hrWrites:0});

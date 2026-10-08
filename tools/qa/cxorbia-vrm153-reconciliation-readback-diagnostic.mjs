@@ -32,6 +32,16 @@ for(const id of mismatchIds){
 /* VRM-153: a partial reconciliation batch must NOT be called PASS.
    Compare all expected visit IDs from the same live HR revision, read-only. */
 const allRecon=recSnap.docs.map(x=>({id:x.id,...(x.data()||{})}));
+const activeByVisit=new Map();
+for(const rec of allRecon){
+  const id=str(rec.visitId);
+  if(!expectedStatus.has(id)||str(rec.tenantId)!==TENANT||str(rec.projectId)!==PROGRAM
+     ||str(rec.source)!=='historical_reconciliation'||rec.active===false||rec.superseded===true)continue;
+  if(!activeByVisit.has(id))activeByVisit.set(id,[]);
+  activeByVisit.get(id).push(str(rec.reconciliationBatchId));
+}
+const activeHistoricalDuplicates=[...activeByVisit].filter(([,batches])=>batches.length>1)
+  .map(([visitId,batches])=>({visitId,batches}));
 const persistedIds=new Set(recs.map(r=>str(r.visitId)));
 const expectedGroupById=new Map();
 for(const g of arr(dry.grouped))for(const ref of arr(g.visitRefs))
@@ -57,7 +67,7 @@ const counts={records:recs.length,uniqueVisits:persistedIds.size,paid,pending,am
  expectedPending:dry.expected?.pending??null,expectedAmountReviewRequired:dry.expected?.amountReviewRequired??null,
  missingExactVisits:missingRows.length,unexpectedInScope:unexpectedScopeRows.length};
 const fullPass=!statusMismatches.length&&!reviewExtra.length&&!reviewMissing.length
- &&!missingRows.length&&!unexpectedScopeRows.length
+ &&!missingRows.length&&!unexpectedScopeRows.length&&!activeHistoricalDuplicates.length
  &&counts.records===counts.expectedRecords&&counts.uniqueVisits===counts.expectedRecords
  &&paid===counts.expectedPaid&&pending===counts.expectedPending
  &&review===counts.expectedAmountReviewRequired;
@@ -65,7 +75,7 @@ const result={schemaVersion:'cxorbia.vrm153.reconciliation-readback.v2',
  decision:fullPass?'PASS_VRM153_RECONCILIATION_READBACK_MATCH':'HOLD_VRM153_RECONCILIATION_READBACK_MISMATCH',
  sourceRevision:str(dry.sourceRevision),hrRevision:str(hr.revision||hr.sourceRevision),
  liveHrVisitCount:arr(hr.visits).length,
- counts,missingByStatus,missingByPeriodCountry,missingRows,unexpectedScopeRows,
+ counts,missingByStatus,missingByPeriodCountry,missingRows,unexpectedScopeRows,activeHistoricalDuplicates,
  otherBatchMatchesForMissing:missingRows.filter(x=>x.presentInOtherBatch).length,
  statusMismatches,reviewExtra,reviewMissing,details,
  octoberRecords:recs.filter(r=>str(r.periodId)==='cinepolis-2026-10').length,
