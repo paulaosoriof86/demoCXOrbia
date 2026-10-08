@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-271_CANONICAL_PROFILE_FINANCIAL_PAID_CROSS_MODULE_SOURCE_PROOF_REQUIRED",
+  "activeBlocker": "VRM-271_SOURCE_PROOF_PASS_RUN1398__ONE_EXACT_DEV_ARTIFACT_MATERIALIZATION_REQUIRED",
   "nextFindingId": "VRM-272",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run existing canonical source-proof on VRM271 exact owner + test, then single DEV build and same-artifact authentication/click; no I4 and no production",
+  "exactNextAction": "Run one canonical DEV build/runtime/Hosting on source 12f33a00430768ab11f2041eb278d33724e69401 from source-proof run1398; verify exact runtime digest, Hosting version and independent live HR. Then same artifact Admin/Shopper/Client E2E, B2 profile and B5 historical payments, and B3 camera+GPS+Storage exact flow before Paula human visual. I4 only after I3 GO and Paula explicit production authorization.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -6797,9 +6797,41 @@
       "guard": "A source test alone does NOT mark this finding closed"
     },
     "blocking": true,
-    "production": false,
+    "production": "DO_NOT_TOUCH",
     "frozenAsFinding": "VRM-271",
     "status": "SOURCE_FIXED_PENDING_CI_DEV_AND_HUMAN",
-    "inCurrentDev": false
+    "inCurrentDev": false,
+    "sourceProof": {
+      "state": "PASS",
+      "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+      "runId": 37852683494,
+      "runNumber": 1398,
+      "artifactId": 11582532798,
+      "artifactDigest": "sha256:783fabfd59ebf7844810f4359d88af7cdb141dfb8b845b106afb99a0d8339cc4",
+      "sourceSha": "12f33a00430768ab11f2041eb278d33724e69401",
+      "sourceTree": "ce15467895f769b6aa6ad49a2bb138709ab425fd",
+      "verifiedAt": "2026-10-08T22:19:31Z",
+      "testGroups": [
+        7,
+        4,
+        3,
+        11,
+        18
+      ],
+      "failedTests": 0
+    },
+    "devMaterialization": {
+      "state": "PENDING_CANONICAL_RUN",
+      "expectedSourceSha": "12f33a00430768ab11f2041eb278d33724e69401",
+      "expectedSourceTree": "ce15467895f769b6aa6ad49a2bb138709ab425fd",
+      "parallelCandidates": 0,
+      "production": false
+    },
+    "sameArtifactE2E": {
+      "state": "PENDING"
+    },
+    "humanVisual": {
+      "state": "PENDING_PAULA_REVIEW_AFTER_FOCAL_LIVE_PROOF"
+    }
   }
 }
