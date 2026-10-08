@@ -59,7 +59,7 @@ CX.module('midia', ({data,role,ui})=>{
     document.querySelectorAll('[data-visit-action]').forEach(b=>b.addEventListener('click',()=>{
       const action=String(b.dataset.visitAction||''),visitId=String(b.dataset.visitId||'');
       if(!visitId||!['schedule','instructive','reschedule'].includes(action))return;
-      window.CX_PENDING_SHOPPER_VISIT_ACTION={action,visitId,requestedAt:Date.now()};
+      window.CX_PENDING_SHOPPER_VISIT_ACTION={action,visitId,returnView:CX.session.view||'midia',requestedAt:Date.now()};
       CX.router.nav('misvisitas');
     }));
     document.querySelectorAll('[data-cgo]').forEach(b=>b.addEventListener('click',()=>CX.router.nav(b.dataset.cgo)));
@@ -189,8 +189,10 @@ CX.module('midia', ({data,role,ui})=>{
   const steps=nextVisit?[
     ['Asignación confirmada',!!vf.assigned],['Instructivo leído',!!nextVisit.instructiveReadAt],['Certificación del proyecto',certDone],['Agendamiento',!!vf.scheduled],['Visita realizada',!!vf.realized],['Cuestionario completado',!!vf.questionnaire],['Submitida',!!vf.submitted],['Pago confirmado',!!vf.paymentConfirmed]
   ]:[];
-  const scheduledDate=String(nextVisit&&(nextVisit.agendada||nextVisit.scheduledDate||nextVisit.fechaAgendada)||'').trim();
-  const shopperActionButtons=nextVisit?(vf.scheduled
+  const platformPending=!!(nextVisit?.platformSchedulePendingHr?.status==='pending_hr'&&nextVisit?.platformSchedulePendingHr?.date);
+  const scheduledDate=String(nextVisit&&(nextVisit.agendada||nextVisit.scheduledDate||nextVisit.fechaAgendada||nextVisit.platformSchedulePendingHr?.date)||'').trim();
+  const scheduleDisplayActive=!!vf.scheduled||platformPending;
+  const shopperActionButtons=nextVisit?(scheduleDisplayActive
     ?`<button class="btn btn-pr btn-sm" data-visit-action="reschedule" data-visit-id="${nextVisit.id}">🔄 Reprogramar</button><button class="btn btn-ghost btn-sm" data-visit-action="instructive" data-visit-id="${nextVisit.id}">${nextVisit.instructiveReadAt?'✓ Instructivo leído':'📄 Instructivo'}</button>`
     :`<button class="btn btn-pr btn-sm" data-visit-action="schedule" data-visit-id="${nextVisit.id}">📅 Agendar</button><button class="btn btn-ghost btn-sm" data-visit-action="instructive" data-visit-id="${nextVisit.id}">${nextVisit.instructiveReadAt?'✓ Instructivo leído':'📄 Instructivo'}</button>`):'';
   return `
@@ -198,9 +200,10 @@ CX.module('midia', ({data,role,ui})=>{
     <div class="card card-p cx-shopper-visit-card" style="margin-bottom:16px">
       <div class="between cx-visit-card-head">
         <div><div class="cx-visit-kicker">🧭 PRÓXIMA VISITA</div>${nextVisit?`<b class="cx-visit-title">${nextVisit.sucursal}</b><div class="cx-visit-location">📍 ${nextVisit.ciudad||'Ubicación pendiente'} · ${nextVisit.escenario||'Escenario operativo'} · ${p.periodo||p.ronda||p.name}${scheduledDate?' · 📅 '+scheduledDate:''}</div>`:'<b class="cx-visit-title">Sin visitas activas</b>'}</div>
-        ${nextVisit?(vf.scheduled?ui.bdg('📅 Agendada'+(scheduledDate?' · '+scheduledDate:''),'g'):ui.bdg('🧭 Pendiente de agendar','a')):''}
+        ${nextVisit?(vf.scheduled?ui.bdg('📅 Agendada'+(scheduledDate?' · '+scheduledDate:''),'g'):platformPending?ui.bdg('📅 Registrada · pendiente HR'+(scheduledDate?' · '+scheduledDate:''),'a'):ui.bdg('🧭 Pendiente de agendar','a')):''}
       </div>
       ${nextVisit?`<div class="cx-visit-payline"><span>📆 Rango ${nextVisit.rango||'—'}</span><span>💵 ${nextVisit.honorario!=null?ui.money(nextVisit.currency,nextVisit.honorario):'Honorario pendiente de fuente'}</span>${nextVisit.combo?`<span>🍿 ${typeof nextVisit.combo==='string'?nextVisit.combo:'Combo incluido'}</span>`:''}</div>
+      ${platformPending?'<div class="cx-platform-sync-note">📅 Fecha registrada en CXOrbia · pendiente de reflejarse en la HR externa. No se cuenta como agenda confirmada por HR.</div>':''}
       <div class="flex wrap cx-visit-actions">${shopperActionButtons}</div>`:ui.empty('🧭','Sin visitas activas')}
     </div>
     ${nextVisit?`<div class="card card-p cx-day-progress-card" style="margin-bottom:16px">

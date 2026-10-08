@@ -480,3 +480,56 @@ body.role-shopper .ph-t{font-size:22px}
 .cx-profile-field>b,.cx-profile-field>div{font-size:13px;color:var(--t1);font-weight:700;line-height:1.35;min-width:0}
 .cx-profile-break{overflow-wrap:anywhere}
 @media(max-width:760px){.cx-profile-detail-grid{grid-template-columns:1fr}.cx-profile-field{grid-template-columns:1fr}}
+
+
+/* Recovery B1/B3 — scoped CXOrbia approved visual direction (marketplace/ficha untouched). */
+body.role-shopper .cx-shopper-visit-card{
+  border:1px solid #b5d8ef;border-left:5px solid var(--brand-dark);
+  background:linear-gradient(145deg,#ffffff 0%,#f0f8ff 100%);
+  box-shadow:0 12px 28px rgba(19,72,111,.12),0 3px 7px rgba(19,72,111,.06);
+  border-radius:17px;
+}
+body.role-shopper .cx-visit-kicker{font-size:13px;letter-spacing:.045em;font-weight:800;color:#15598e;margin-bottom:7px}
+body.role-shopper .cx-visit-title{font-size:20px;line-height:1.34;font-weight:800;color:#15344f}
+body.role-shopper .cx-visit-location{font-size:14px;line-height:1.5;font-weight:600;color:#35536d;margin-top:7px}
+body.role-shopper .cx-visit-payline{font-size:14px;line-height:1.55;color:#304e68;gap:14px;border-bottom-color:#c7ddec}
+body.role-shopper .cx-visit-progress{padding-top:10px;gap:9px}
+body.role-shopper .cx-visit-progress-step{font-size:13px;line-height:1.45;min-height:37px;padding:8px 12px;border-color:#c3d7e6}
+body.role-shopper .cx-visit-progress-step.is-next{background:#f2f6fc;color:#46617a}
+body.role-shopper .cx-visit-actions .btn{font-size:14px;min-height:39px;padding:9px 15px}
+body.role-shopper .cx-visit-actions .btn-ghost{border-color:#adcadc;color:#1f4f75;background:#f9fcff}
+body.role-shopper .cx-day-progress-card{background:linear-gradient(145deg,#e9f5ff,#ffffff 75%);border:1px solid #b5d8ef;box-shadow:0 12px 28px rgba(19,72,111,.10)}
+body.role-shopper .cx-day-progress-kicker{font-size:13px;color:#15598e}
+body.role-shopper .cx-day-progress-step{min-height:92px;background:#fff;box-shadow:0 3px 9px rgba(19,72,111,.06);border-color:#bbd4e5}
+body.role-shopper .cx-day-progress-step b{font-size:15px;line-height:1.35}
+body.role-shopper .cx-day-progress-step span{font-size:13px;color:#43617a;line-height:1.4}
+body.role-shopper .cx-day-progress-step.is-done{background:linear-gradient(135deg,#e3f7ec,#f7fffa);border-color:#97d8b4}
+body.role-shopper .cx-day-progress-step.is-next{background:linear-gradient(135deg,#f4f8fc,#fff)}
+body.role-shopper .cx-day-progress-step .cx-day-progress-icon{flex-shrink:0;width:36px;height:36px;font-size:17px}
+body.role-shopper .cx-scenario-chip{background:linear-gradient(135deg,#e4f2ff,#f7fbff);border-color:#bfd8ed}
+body.role-shopper .cx-scenario-chip b{font-size:12px;color:#15598e}
+body.role-shopper .cx-scenario-chip small{font-size:14px}
+body.role-shopper .cx-visit-date-summary,body.role-shopper .cx-platform-sync-note{padding:11px 14px;margin:9px 0 11px;border-radius:11px;font-size:14px;font-weight:600;line-height:1.55}
+body.role-shopper .cx-visit-date-summary{background:#e2f2ff;color:#124d7a;border:1px solid #a7cfe9}
+body.role-shopper .cx-platform-sync-note{background:#fff0cf;color:#795018;border:1px solid #e6c77d}
+body.role-shopper .cx-visit-date-summary b{font-weight:800}
+.cx-ov:has(.cx-modal-premium-workflow){overflow-y:auto;overscroll-behavior:contain;align-items:center;padding:clamp(10px,3vw,26px)}
+.cx-modal-premium-workflow{width:min(640px,calc(100vw - 28px));max-height:calc(100dvh - 38px);overflow:auto;overscroll-behavior:contain;border:1px solid #9ac7e1;border-radius:20px;box-shadow:0 24px 80px rgba(6,32,59,.27),0 6px 14px rgba(6,32,59,.13)}
+.cx-modal-premium-workflow .cx-modal-h{padding:19px 24px;background:linear-gradient(125deg,#dcefff,#f7fbff);border-bottom:1px solid #b8d7eb}
+.cx-modal-premium-workflow .cx-modal-h .card-t{font-size:19px!important;font-weight:800;color:#163d60}
+.cx-modal-premium-workflow .cx-modal-b{padding:24px}
+.cx-modal-premium-workflow .cx-schedule-modal-intro{display:grid;gap:5px;padding:16px 18px;margin-bottom:15px;background:linear-gradient(130deg,#e5f3ff,#f9fcff);border:1px solid #b0d0e8;border-radius:12px}
+.cx-modal-premium-workflow .cx-schedule-modal-intro b{font-size:18px;color:#153e61}
+.cx-modal-premium-workflow .cx-schedule-modal-intro span{font-size:14px;line-height:1.5;color:#365773}
+.cx-modal-premium-workflow .cx-schedule-modal-instructions{font-size:15px;line-height:1.65;color:#2f4b65;margin-bottom:16px}
+.cx-modal-premium-workflow .lbl{font-size:13px;color:#244b6d;margin-bottom:9px}
+.cx-modal-premium-workflow .inp{font-size:16px;min-height:47px;border-color:#9bbfdb;color:#15344f;background:#fff}
+.cx-modal-premium-workflow .cx-schedule-modal-actions{display:flex;justify-content:flex-end;margin-top:22px}
+.cx-modal-premium-workflow .cx-schedule-modal-actions .btn{font-size:15px;min-height:44px}
+.cx-modal-premium-workflow button[aria-busy="true"]{cursor:wait;opacity:.83}
+@media(max-width:640px){
+  body.role-shopper .cx-day-progress-grid{grid-template-columns:1fr}
+  .cx-modal-premium-workflow{width:calc(100vw - 20px);max-height:calc(100dvh - 24px)}
+  .cx-modal-premium-workflow .cx-modal-h,.cx-modal-premium-workflow .cx-modal-b{padding:16px}
+  .cx-modal-premium-workflow .cx-schedule-modal-actions .btn{width:100%;justify-content:center}
+}

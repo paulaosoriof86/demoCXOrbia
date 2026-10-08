@@ -125,23 +125,38 @@ CX.ui = {
 
   /* modal */
   modal(title, bodyHTML, opts={}){
+    if(opts.replaceExisting===true&&typeof this.closeAllModals==='function')this.closeAllModals();
     const ov=document.createElement('div');ov.className='cx-ov';
-    const cls='cx-modal'+(opts.full?' cx-modal-full':opts.wide?' cx-modal-wide':'');
+    const cls='cx-modal'+(opts.full?' cx-modal-full':opts.wide?' cx-modal-wide':'')+(opts.premium?' cx-modal-premium-workflow':'');
     ov.setAttribute('role','dialog'); ov.setAttribute('aria-modal','true'); ov.setAttribute('aria-label',title.replace(/<[^>]*>/g,''));
     ov.innerHTML=`<div class="${cls}"><div class="cx-modal-h"><div class="card-t" style="font-size:16px">${title}</div>
       <button class="btn btn-ghost btn-icon" data-x aria-label="Cerrar">✕</button></div><div class="cx-modal-b">${bodyHTML}</div></div>`;
     document.body.appendChild(ov);
-    const close=()=>{ ov.remove(); document.removeEventListener('keydown',onKey); if(prevFocus&&prevFocus.focus) prevFocus.focus(); };
     const prevFocus=document.activeElement;
+    const closers=this._modalClosers||(this._modalClosers=new Set());
+    if(closers.size===0){this._modalPreviousOverflow=document.body.style.overflow;document.body.style.overflow='hidden';}
+    let closed=false;
+    const close=()=>{
+      if(closed)return;closed=true;ov.remove();document.removeEventListener('keydown',onKey);closers.delete(close);
+      if(closers.size===0)document.body.style.overflow=this._modalPreviousOverflow||'';
+      if(prevFocus?.isConnected&&prevFocus.focus)prevFocus.focus();
+    };
+    closers.add(close);
     /* ítem 14 (accesibilidad — paquete genérico 20260711): Escape cierra el modal, y el foco
        inicial va al primer elemento enfocable dentro de él en vez de quedarse en el fondo. */
-    const onKey=(e)=>{ if(e.key==='Escape'&&opts.dismissOnEscape!==false) close(); };
+    const onKey=e=>{const open=[...document.querySelectorAll('.cx-ov')];if(e.key==='Escape'&&opts.dismissOnEscape!==false&&open.at(-1)===ov)close();};
     document.addEventListener('keydown',onKey);
     ov.addEventListener('click',e=>{if(e.target===ov&&opts.dismissOnBackdrop!==false)close();});
     ov.querySelector('[data-x]').addEventListener('click',close);
     if(opts.onMount)opts.onMount(ov,close);
-    setTimeout(()=>{ const f=ov.querySelector('input,select,textarea,button:not([data-x])'); if(f&&f.focus) f.focus(); },30);
+    setTimeout(()=>{if(!ov.isConnected)return;const f=ov.querySelector('input,select,textarea,button:not([data-x])');if(f&&f.focus)f.focus();},30);
     return close;
+  },
+
+  closeAllModals(){
+    for(const close of [...(this._modalClosers||[])].reverse()){try{close();}catch(_){}}
+    document.querySelectorAll('.cx-ov').forEach(ov=>ov.remove());
+    if(!this._modalClosers?.size&&this._modalPreviousOverflow!==undefined)document.body.style.overflow=this._modalPreviousOverflow||'';
   },
 
   /* status → badge tone for visits */

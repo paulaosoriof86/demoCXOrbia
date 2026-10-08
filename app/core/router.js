@@ -310,6 +310,8 @@ CX.router = {
        superadmin explícito (session.effectiveRole()==='super'), nunca para admin/ops/coordinador/
        aliado — sin entrada en el menú (ruta no comercial, ver buildRail). */
     if(m.superOnly && !CX.session.hasTechAccess()) return;
+    /* Recovery B1: a route transition must not retain modal overlays from the previous screen. */
+    try{CX.ui?.closeAllModals?.();}catch(_){}
     CX.session.view=id; CX.session.save();
     document.querySelectorAll('.nav-i').forEach(n=>n.classList.toggle('active',n.dataset.id===id));
     document.body.classList.remove('nav-open');

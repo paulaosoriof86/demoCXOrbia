@@ -14,11 +14,12 @@ CX.module('misvisitas',({data,ui})=>{
   const scenarioDims=v=>data.scenarioDimensionsForVisit?data.scenarioDimensionsForVisit(v,p):[];
   const scenarioHTML=v=>{const dims=scenarioDims(v);return dims.length?'<div class="cx-scenario-grid">'+dims.map(x=>'<div class="cx-scenario-chip"><span class="cx-scenario-icon">'+x.icon+'</span><span><b>'+x.label+'</b><small>'+x.value+'</small></span></div>').join('')+'</div>':'';};
   const isCancelled=(v,f)=>f.cancelled===true||v.estado==='cancelada'||v.cancelled===true;
+  const pendingSchedule=v=>v?.platformSchedulePendingHr?.status==='pending_hr'&&/^20\d{2}-[01]\d-[0-3]\d$/.test(String(v.platformSchedulePendingHr.date||''));
   const periodIdOf=v=>data.recordPeriodId?data.recordPeriodId(v):(v&&(v.periodId||v.projectId));
   const currentPeriodId=String(data.currentPeriodId||'');
   const isCurrentPeriod=v=>String(periodIdOf(v)||'')===currentPeriodId;
-  const assigned=mine.filter(v=>{const f=facets(v);return isCurrentPeriod(v)&&f.assigned&&!f.scheduled&&!f.realized&&!isCancelled(v,f);});
-  const scheduled=mine.filter(v=>{const f=facets(v);return isCurrentPeriod(v)&&f.scheduled&&!f.realized&&!isCancelled(v,f);});
+  const assigned=mine.filter(v=>{const f=facets(v);return isCurrentPeriod(v)&&f.assigned&&!f.scheduled&&!pendingSchedule(v)&&!f.realized&&!isCancelled(v,f);});
+  const scheduled=mine.filter(v=>{const f=facets(v);return isCurrentPeriod(v)&&(f.scheduled||pendingSchedule(v))&&!f.realized&&!isCancelled(v,f);});
   const realized=mine.filter(v=>{const f=facets(v);return isCurrentPeriod(v)&&f.realized&&!f.submitted&&!isCancelled(v,f);});
   const history=mine.filter(v=>{const f=facets(v),c=contract(v);return !isCurrentPeriod(v)||f.submitted||isCancelled(v,f)||c.liquidationState==='confirmado'||c.paymentState==='confirmado'||v.estado==='liquidada';});
   const activeCount=assigned.length+scheduled.length+realized.length;
@@ -39,26 +40,29 @@ CX.module('misvisitas',({data,ui})=>{
   const pendingApps=currentApps.filter(x=>postState(x)==='pendiente');
   const safe=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   let view='activas';
+  let scheduleReturnView='misvisitas';
   const host=ui.el('div');
   const projectTimezone=String(p?.timeZone||p?.timezone||data?.ctx?.()?.timeZone||'America/Guatemala');
   const today=()=>{const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:projectTimezone,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).filter(x=>x.type!=='literal').map(x=>[x.type,x.value]));return parts.year+'-'+parts.month+'-'+parts.day;};
-  const scheduledDateOf=v=>String(v?.agendada||v?.scheduledDate||v?.fechaAgendada||'').slice(0,10);
-  const canCompleteVisit=v=>{const d=scheduledDateOf(v);return !!d&&today()>=d;};
+  const scheduledDateOf=v=>String(v?.agendada||v?.scheduledDate||v?.fechaAgendada||v?.platformSchedulePendingHr?.date||'').slice(0,10);
+  const canCompleteVisit=v=>{const d=scheduledDateOf(v);return !!facets(v).scheduled&&!!d&&today()>=d;};
   const committed=r=>r?.ok===true&&r?.status==='committed'&&r?.providerAck===true&&r?.successUiAllowed===true;
   const commandMessage=r=>r?.code==='COMMAND_WRITES_DISABLED'
     ?'La acción está preparada, pero las escrituras reales siguen cerradas por gate. No se modificó la visita.'
     :'La acción no pudo confirmarse. No se modificó la visita.';
   const withCommand=async(btn,fn,onSuccess)=>{
-    const prev=btn.textContent;btn.disabled=true;
+    if(btn.dataset.cxCommandBusy==='true')return false;
+    const prev=btn.textContent;btn.disabled=true;btn.dataset.cxCommandBusy='true';btn.setAttribute('aria-busy','true');btn.textContent='⏳ Guardando…';
     try{
       const r=await fn();
       if(!committed(r)){ui.toast(commandMessage(r),'warn',4200);return false;}
+      btn.textContent='⏳ Actualizando información…';
       try{await CX.backend?.refresh?.();}catch(_){}
       try{await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('shopper_visit_command_committed');}catch(_){}
       if(onSuccess)await onSuccess(r);
       return true;
     }catch(_){ui.toast('No fue posible confirmar la acción. No se aplicó un cambio local.','err',4200);return false;}
-    finally{btn.disabled=false;btn.textContent=prev;}
+    finally{delete btn.dataset.cxCommandBusy;btn.removeAttribute('aria-busy');btn.disabled=false;btn.textContent=prev;}
   };
 
   const stageOf=v=>{
@@ -67,7 +71,7 @@ CX.module('misvisitas',({data,ui})=>{
     if(f.submitted)return'submit';
     if(f.questionnaire)return'cuestionario';
     if(f.realized)return'realizada';
-    if(f.scheduled)return'agendada';
+    if(f.scheduled||pendingSchedule(v))return'agendada';
     return'asignada';
   };
   const certificationState=()=>{
@@ -85,7 +89,7 @@ CX.module('misvisitas',({data,ui})=>{
       {key:'asignada',label:'Asignada',done:!!f.assigned},
       {key:'instructivo',label:'Instructivo y documentos',done:!!v.instructiveReadAt},
       {key:'certificacion',label:'Certificación del proyecto',done:certState.done,note:certState.required?'':'No requerida'},
-      {key:'agendada',label:'Visita agendada',done:!!f.scheduled},
+      {key:'agendada',label:pendingSchedule(v)?'Fecha registrada · pendiente HR':'Visita agendada',done:!!f.scheduled},
       {key:'realizada',label:'Visita realizada',done:!!f.realized},
       {key:'cuestionario',label:'Cuestionario',done:!!f.questionnaire},
       {key:'revision',label:'Revisión',done:!!(v.reviewedAt||v.reviewCompletedAt||['approved','revisada','reviewed'].includes(String(v.reviewStatus||v.revisionEstado||'').toLowerCase())||f.submitted)},
@@ -100,7 +104,7 @@ CX.module('misvisitas',({data,ui})=>{
   const geoBtn=v=>{if(!geoOn||!v)return'';return v.checkInStatus==='confirmed'&&v.latestCheckInEvidenceId
     ?`<button class="btn btn-soft btn-sm" data-geo="${v.id}" title="Evidencia confirmada y asociada a esta visita">✅ Check-in confirmado</button>`
     :`<button class="btn btn-green btn-sm" data-geo="${v.id}">📍 Check-in geolocalizado</button>`;};
-  const kindOf=v=>{const f=facets(v);return f.realized?'realizada':f.scheduled?'agendada':'asignada';};
+  const kindOf=v=>{const f=facets(v);return f.realized?'realizada':(f.scheduled||pendingSchedule(v))?'agendada':'asignada';};
   const visitCard=v=>{
     const kind=kindOf(v),tone={asignada:'amber',agendada:'green',realizada:'brand'}[kind],cfg=p.cuestionario||{modo:'interna'};
     let actions='';
@@ -108,9 +112,9 @@ CX.module('misvisitas',({data,ui})=>{
     else if(kind==='agendada'){const ready=canCompleteVisit(v),date=scheduledDateOf(v);actions=`<button class="btn ${ready?'btn-green':'btn-soft'} btn-sm" data-done="${v.id}" ${ready?'':'aria-disabled="true" title="Se habilita el día de la visita"'}>${ready?'✅ Marcar realizada':'🕒 Disponible el '+(date||'día de la visita')}</button><button class="btn btn-ghost btn-sm" data-doc="${v.id}">📄 Instructivo</button><button class="btn btn-ghost btn-sm" data-reprog="${v.id}">🔄 Reprogramar</button><button class="btn btn-ghost btn-sm" data-cancel="${v.id}">✕ Cancelar</button>${geoBtn(v)}`;}
     else if(facets(v).questionnaire)actions=`<span class="bdg bdg-g" data-questionnaire-complete="${v.id}">✓ Cuestionario completado · pendiente de revisión/submit</span><button class="btn btn-ghost btn-sm" data-doc="${v.id}">📄 Instructivo</button>`;
     else actions=`<button class="btn btn-pr btn-sm" data-quest="${v.id}">📝 ${cfg.modo==='interna'?'Llenar cuestionario':'Abrir cuestionario'}</button><button class="btn btn-ghost btn-sm" data-doc="${v.id}">📄 Instructivo</button>`;
-    const badge=kind==='agendada'?ui.bdg('📅 Agendada '+(v.agendada||''),'g'):kind==='asignada'?ui.bdg('🧭 Asignada · por agendar','b'):ui.bdg(facets(v).questionnaire?'📝 Cuestionario · pendiente de revisión':'🎬 Realizada · pendiente de cuestionario','b');
+    const badge=pendingSchedule(v)?ui.bdg('📅 Registrada en CXOrbia · pendiente HR · '+scheduledDateOf(v),'a'):kind==='agendada'?ui.bdg('📅 Agendada '+scheduledDateOf(v),'g'):kind==='asignada'?ui.bdg('🧭 Asignada · por agendar','b'):ui.bdg(facets(v).questionnaire?'📝 Cuestionario · pendiente de revisión':'🎬 Realizada · pendiente de cuestionario','b');
     const progress=flowSteps(v).map(s=>`<span class="cx-visit-progress-step ${s.state==='done'?'is-done':s.state==='now'?'is-now':'is-next'}">${s.state==='done'?'✅':s.state==='now'?'▶️':'⏳'} <span>${s.label}</span></span>`).join('');
-    return `<div class="card card-p cx-shopper-visit-card" data-visit-card="${v.id}"><div class="between cx-visit-card-head"><div><div class="cx-visit-kicker">🎬 Tu visita</div><b class="cx-visit-title">${v.sucursal}</b><div class="cx-visit-location">📍 ${v.ciudad||''} ${v.pais?'· '+CX.paisFlag(v.pais)+' '+v.pais:''}</div></div>${badge}</div>${scenarioHTML(v)}<div class="cx-visit-payline"><span>💼 Honorario: <b>${ui.money(v.currency,v.honorario)}</b></span>${(v.reembolso||v.comboAmt||v.boleto)?'<span>🧾 Reembolso incluido</span>':''}</div><div class="flex wrap cx-visit-actions">${actions}</div><div class="cx-visit-progress">${progress}</div></div>`;
+    return `<div class="card card-p cx-shopper-visit-card" data-visit-card="${v.id}"><div class="between cx-visit-card-head"><div><div class="cx-visit-kicker">🎬 Tu visita</div><b class="cx-visit-title">${v.sucursal}</b><div class="cx-visit-location">📍 ${v.ciudad||''} ${v.pais?'· '+CX.paisFlag(v.pais)+' '+v.pais:''}</div></div>${badge}</div>${scenarioHTML(v)}<div class="cx-visit-payline"><span>💼 Honorario: <b>${ui.money(v.currency,v.honorario)}</b></span>${(v.reembolso||v.comboAmt||v.boleto)?'<span>🧾 Reembolso incluido</span>':''}</div>${scheduledDateOf(v)?`<div class="cx-visit-date-summary">📅 ${pendingSchedule(v)?'Fecha registrada · pendiente de sincronización HR':'Fecha agendada'}: <b>${scheduledDateOf(v)}</b></div>`:''}<div class="flex wrap cx-visit-actions">${actions}</div><div class="cx-visit-progress">${progress}</div></div>`;
   };
   const blockedHTML=()=>`${ui.ph('Mis Visitas',p?.name||'')}<div class="card card-p" style="border-left:3px solid var(--red)"><div class="flex" style="gap:8px;align-items:center;margin-bottom:6px"><span style="font-size:20px">🔒</span><b>Identidad de evaluador no verificable</b></div><div style="font-size:12.5px;color:var(--t2)">No pudimos verificar tu perfil de evaluador en esta sesión. Por seguridad no se muestran ni se modifican visitas.</div></div>`;
   const tabs=()=>`<div class="flex" style="margin-bottom:14px;gap:8px;flex-wrap:wrap"><button class="btn btn-sm ${view==='activas'?'btn-pr':'btn-ghost'}" data-view="activas">Activas ${activeCount}</button><button class="btn btn-sm ${view==='historial'?'btn-pr':'btn-ghost'}" data-view="historial">Historial ${history.length}</button><span class="bdg ${currentApps.length?'bdg-a':'bdg-n'}">Postulaciones ${currentApps.length}</span></div>`;
@@ -134,6 +138,7 @@ CX.module('misvisitas',({data,ui})=>{
     const req=window.CX_PENDING_SHOPPER_VISIT_ACTION;
     if(!req||Date.now()-Number(req.requestedAt||0)>20000)return;
     const action=String(req.action||''),visitId=String(req.visitId||'');
+    if(action==='schedule'&&req.returnView==='midia')scheduleReturnView='midia';
     const attr={instructive:'doc',schedule:'sched',reschedule:'reprog'}[action];
     const target=attr?[...host.querySelectorAll('[data-'+attr+']')].find(el=>String(el.dataset[attr]||'')===visitId):null;
     delete window.CX_PENDING_SHOPPER_VISIT_ACTION;
@@ -197,7 +202,21 @@ CX.module('misvisitas',({data,ui})=>{
         });
       },dismissOnBackdrop:false});
     }));
-    host.querySelectorAll('[data-sched]').forEach(b=>b.addEventListener('click',()=>{const v=find(b.dataset.sched);if(!v)return;if(!routeState(v).scheduleReady){ui.toast('Completa primero el instructivo y la certificación requerida.','warn',3600);return;}const minDate=(v.disponibleDesde&&v.disponibleDesde>today())?v.disponibleDesde:today();const proposed=String(v.proposedScheduleDate||v.approvedProposedDate||'');const defaultDate=(/^20\d{2}-[01]\d-[0-3]\d$/.test(proposed)&&proposed>=minDate)?proposed:minDate;ui.modal('Agendar visita',`<p style="font-size:13px;color:var(--t2);margin-bottom:10px">Elige una fecha dentro del rango y la franja <b>${v.franja||''}</b>.</p><label class="lbl">Fecha</label><input class="inp" id="schD" type="date" min="${minDate}" value="${defaultDate}" style="margin-bottom:14px"><div style="text-align:right;margin-top:16px"><button class="btn btn-pr btn-sm" id="schOk">Confirmar agenda</button></div>`,{onMount:(ov,close)=>ov.querySelector('#schOk').addEventListener('click',async()=>{const btn=ov.querySelector('#schOk'),f=ov.querySelector('#schD').value||defaultDate;if(f<minDate){ui.toast('La fecha no puede ser anterior a la disponibilidad vigente','warn');return;}await withCommand(btn,()=>data.setVisitState(v.id,'agendada','agendada',f,{ackAware:true,permission:'visit.schedule',reason:'shopper-schedule'}),async()=>{close();CX.automations&&CX.automations.fire('agenda',{shopper:v.shopper||CX.session.user.name,sucursal:v.sucursal,fecha:f});CX.notif&&CX.notif.push({to:'admin',tipo:'agenda',icon:'📅',tono:'b',titulo:'Visita agendada',txt:(v.shopper||CX.session.user.name)+' · '+v.sucursal+' · '+f,nav:'postulaciones'});ui.toast('Visita agendada correctamente','ok');});})});}));
+    host.querySelectorAll('[data-sched]').forEach(b=>b.addEventListener('click',()=>{
+      const v=find(b.dataset.sched);if(!v)return;
+      if(!routeState(v).scheduleReady){ui.toast('Completa primero el instructivo y la certificación requerida.','warn',3600);return;}
+      const minDate=(v.disponibleDesde&&v.disponibleDesde>today())?v.disponibleDesde:today();
+      const proposed=String(v.proposedScheduleDate||v.approvedProposedDate||'');
+      const defaultDate=(/^20\d{2}-[01]\d-[0-3]\d$/.test(proposed)&&proposed>=minDate)?proposed:minDate;
+      ui.modal('📅 Agendar visita',`<div class="cx-schedule-modal-intro"><b>${safe(v.sucursal)}</b><span>${safe(p?.periodo||p?.ronda||p?.name||'Periodo actual')} · ${safe(v.ciudad||'')} · ${safe(v.franja||'Franja pendiente')}</span></div><p class="cx-schedule-modal-instructions">Elige una fecha dentro del rango y la franja indicada. Se comprobará el registro en CXOrbia; la confirmación de la HR externa se mostrará por separado.</p><label class="lbl" for="schD">Fecha propuesta</label><input class="inp" id="schD" type="date" min="${minDate}" value="${defaultDate}"><div class="cx-schedule-modal-actions"><button class="btn btn-pr" id="schOk">Confirmar agenda</button></div>`,{premium:true,replaceExisting:true,dismissOnBackdrop:false,onMount:(ov,close)=>ov.querySelector('#schOk').addEventListener('click',async()=>{
+        const btn=ov.querySelector('#schOk'),f=ov.querySelector('#schD').value||defaultDate;
+        if(f<minDate){ui.toast('La fecha no puede ser anterior a la disponibilidad vigente','warn');return;}
+        await withCommand(btn,()=>data.setVisitState(v.id,'agendada','agendada',f,{ackAware:true,permission:'visit.schedule',reason:'shopper-schedule'}),async()=>{
+          close();ui.toast('Fecha guardada en CXOrbia. Si HR aún no la refleja, se mostrará pendiente de sincronización.','ok',4400);
+          CX.router.nav(scheduleReturnView==='midia'?'midia':'misvisitas');
+        });
+      })});
+    }));
     host.querySelectorAll('[data-done]').forEach(b=>b.addEventListener('click',()=>{const v=find(b.dataset.done);if(!v)return;if(!canCompleteVisit(v)){ui.toast('Podrás marcar la visita como realizada a partir del '+(scheduledDateOf(v)||'día agendado')+'.','warn',3600);return;}const minDate=scheduledDateOf(v),maxDate=today();ui.modal('Marcar visita realizada',`<label class="lbl">Fecha de realización</label><input class="inp" id="doneD" type="date" min="${minDate}" max="${maxDate}" value="${maxDate}" style="margin-bottom:14px"><div style="text-align:right"><button class="btn btn-green btn-sm" id="doneOk">Confirmar realizada</button></div>`,{onMount:(ov,close)=>ov.querySelector('#doneOk').addEventListener('click',async()=>{const btn=ov.querySelector('#doneOk'),f=ov.querySelector('#doneD').value||maxDate;if(f<minDate||f>maxDate){ui.toast('La fecha de realización debe estar entre la fecha agendada y hoy.','warn');return;}await withCommand(btn,()=>data.setVisitState(v.id,'realizada','realizada',f,{ackAware:true,permission:'visit.complete',reason:'shopper-complete'}),async()=>{close();CX.automations&&CX.automations.fire('realizada',{shopper:v.shopper||CX.session.user.name,sucursal:v.sucursal});CX.notif&&CX.notif.push({to:'admin',tipo:'realizada',icon:'✅',tono:'g',titulo:'Visita realizada',txt:(v.shopper||CX.session.user.name)+' · '+v.sucursal,nav:'postulaciones'});ui.toast('Visita realizada correctamente','ok');});})});}));
     host.querySelectorAll('[data-reprog]').forEach(b=>b.addEventListener('click',()=>{const v=find(b.dataset.reprog);if(!v)return;ui.modal('Solicitar reprogramación',`<p style="font-size:13px;color:var(--t2);margin-bottom:10px">La solicitud se autoriza desde Gestión de Postulaciones.</p><label class="lbl">Nueva fecha propuesta</label><input class="inp" id="rpD" type="date" style="margin-bottom:10px"><label class="lbl">Motivo</label><textarea class="inp" id="rpM" rows="2" style="margin-bottom:14px"></textarea><div style="text-align:right"><button class="btn btn-pr btn-sm" id="rpOk">Enviar solicitud</button></div>`,{onMount:(ov,close)=>ov.querySelector('#rpOk').addEventListener('click',async()=>{const btn=ov.querySelector('#rpOk'),f=ov.querySelector('#rpD').value,m=ov.querySelector('#rpM').value||'';await withCommand(btn,()=>data.requestVisitReschedule(v.id,f,{ackAware:true,requestedByShopper:true,reason:m||'shopper-reschedule-request'}),async()=>{close();CX.automations&&CX.automations.fire('reprog',{shopper:v.shopper||CX.session.user.name,sucursal:v.sucursal,fecha:f});ui.toast('Solicitud de reprogramación confirmada','ok');});})});}));
     host.querySelectorAll('[data-cancel]').forEach(b=>b.addEventListener('click',async()=>{const v=find(b.dataset.cancel);if(!v)return;await withCommand(b,()=>data.requestVisitCancel(v.id,{ackAware:true,requestOnly:true,reason:'shopper-cancel-request'}),async()=>{CX.notif&&CX.notif.push({to:'admin',tipo:'cancel',icon:'⚠',tono:'r',titulo:'Solicitud de cancelación',txt:v.sucursal,nav:'postulaciones'});ui.toast('Solicitud de cancelación enviada correctamente','ok');});}));

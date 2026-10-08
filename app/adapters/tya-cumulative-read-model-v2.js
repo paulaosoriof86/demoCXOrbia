@@ -249,6 +249,19 @@
           out.assignmentSyncStatus=out.assignmentSyncStatus||'pending_hr';
           out.lastSyncedAt=out.lastSyncedAt||pv.lastSyncedAt||null;
         }
+        /* Provider-confirmed scheduling can precede the external HR update. HR remains the
+           canonical KPI authority; expose the exact Firestore date as separately labelled
+           pending-HR presentation evidence, never as a fabricated HR date. */
+        const providerScheduleDate=str(pv.agendada||pv.scheduledDate||pv.fechaAgendada);
+        const hrScheduleDate=str(base.agendada||base.scheduledDate||base.fechaAgendada);
+        const providerScheduleExact=!conflict&&!!canonical&&durableCanonical===canonical&&
+          /^20\d{2}-[01]\d-[0-3]\d$/.test(providerScheduleDate)&&
+          str(pv.estado||pv.status).toLowerCase()==='agendada';
+        if(providerScheduleExact&&!bf.scheduled){
+          out.platformSchedulePendingHr={date:providerScheduleDate,status:'pending_hr',source:'exact_durable_visit',visitKey:key};
+        }else if(providerScheduleExact&&bf.scheduled&&hrScheduleDate&&hrScheduleDate!==providerScheduleDate){
+          out.scheduleReviewRequired=true;out.scheduleReviewReason='hr_platform_date_conflict';
+        }
         const platformAssigned=hasPendingPlatform&&!conflict&&durableCanonical&&(!liveId||durableCanonical===canonical);
         out.canonicalFacets=Object.assign({},base.canonicalFacets||{},bf,{
           assigned:bf.assigned||platformAssigned,
