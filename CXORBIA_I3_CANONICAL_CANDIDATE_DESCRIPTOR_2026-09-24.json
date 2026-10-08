@@ -7,13 +7,13 @@
   "productSourceSha": "11e2af3f710783294e9160fef9472a6da6359275",
   "productTreeAuthority": "7a74a6658760e691c437076952c7e9bcb042580a",
   "predecessorProductSourceSha": "f407c1ae202a0201c738ff73b4e4ddba223b9a0d",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V341_2026-10-08.json",
-  "findingsLedgerExpectedGitBlob": "83ea2e231eba71067b533102c4b3c2014e5c83fd",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V342_2026-10-08.json",
+  "findingsLedgerExpectedGitBlob": "6d6aaa7fcec5dd2bb284291f18e18413d22981aa",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V44.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM153_P0_PROVIDER_PREFLIGHT_34_PRIOR_PENDING_PLUS_7_UNRECORDED_NO_WRITES",
+  "activeBlocker": "VRM153_10_EXACT_PRIOR_SCOPE_CONFLICTS_AND_7_ABSENT_RECONCILIATIONS_READONLY_ONLY",
   "nextFindingId": "VRM-272",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3: run existing VRM153 reconciliation-readback-diagnostic job with exact current HR, 41 missing row preflight and provider data; record safe eligibility and blockers. No Firestore write or DEV deploy, no production.",
+  "exactNextAction": "Run narrowed same existing read-only QA with exact independent HR response header and field-by-field diagnosis of 10 prior reconciliation conflicts; no writes.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -7288,5 +7288,38 @@
     "builds": 0,
     "deploys": 0,
     "production": false
+  },
+  "i3VRM153Run1407Preflight": {
+    "runId": 37861544703,
+    "artifactId": 11586463021,
+    "runDecision": "HOLD_VRM153_RECONCILIATION_READBACK_MISMATCH",
+    "expected": {
+      "records": 643,
+      "paid": 599,
+      "pending": 44
+    },
+    "observed": {
+      "records": 602,
+      "paid": 562,
+      "pending": 40
+    },
+    "missing": 41,
+    "priorPendingAugustGT": 34,
+    "priorPendingExactEligible": 24,
+    "priorPendingExactConflict": 10,
+    "otherAbsent": {
+      "augustHN": 3,
+      "septemberGT": 3,
+      "septemberHN": 1,
+      "total": 7
+    },
+    "qaControlFailure": "HR JSON route excludes revision field; independent X-CXOrbia-Source-Revision HTTP header required",
+    "issueClassification": "PERSISTENCE_FAILURE_WITH_MAPPING_FAILURE_IN_QA_REVISION",
+    "latestQaBlob": "b4d1869565ca551e27fba535109211cdeea42b67",
+    "realWrites": 0,
+    "production": false,
+    "sourceSha": "11e2af3f710783294e9160fef9472a6da6359275",
+    "sourceTree": "7a74a6658760e691c437076952c7e9bcb042580a",
+    "devArtifactUnchangedRun1399": true
   }
 }
