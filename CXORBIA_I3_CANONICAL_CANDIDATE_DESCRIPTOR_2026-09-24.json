@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_GT_E2E",
+  "status": "HOLD_I3_B2_SIGNED_ACK_RELOAD_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "I3_GT_REPRESENTATIVE_SAME_ARTIFACT_E2E_REQUIRED_AFTER_HN_RUN1444_PASS",
+  "activeBlocker": "I3_B2_SIGNED_DISPLAY_ONLY_PROVIDER_ACK_RELOAD_AND_GT_SIX_HISTORICAL_IDENTITY_HOLD",
   "nextFindingId": "VRM-275",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run existing Phase A representative same-artifact GT/Admin live reproof for Julissa, Priscila and Paula on unchanged DEV product source and verified current HR revision. Stop before scheduling/finance/postulations/provider-write probes. Preserve HN run1444 PASS; classify new FAIL under exact owner. I3 HOLD.",
+  "exactNextAction": "After confirmed same-artifact GT representative E2E PASS run 1446 and HN PASS run 1444, next focal I3 action is B2 shopper profile signed display-only provider ACK, remote readback and reload with exact owner, while keeping six GT protected crosswalk cases and human approvals open. No new artifact or production. Only P0_PROVEN owner writes.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
