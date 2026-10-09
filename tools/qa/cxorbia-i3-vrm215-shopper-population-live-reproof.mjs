@@ -15,6 +15,8 @@ const ROOT=String(process.env.HOSTING_URL||'https://cxorbia-backend-dev.web.app'
 const EXPECTED_HR=String(process.env.EXPECTED_HR_REVISION||'').trim();
 const OUT=String(process.env.VRM215_OUT||'.tmp/i3-vrm215-shopper-population').trim();
 const TARGET_HN_SHOPPER=String(process.env.VRM215_TARGET_HN_SHOPPER||'shopper_hn_1691aecc2c').trim();
+const PROOF_MODE=String(process.env.VRM215_PROOF_MODE||'ALL_ACTIVE_SHOPPERS').trim().toUpperCase();
+const HN_TARGET_ONLY=PROOF_MODE==='HN_TARGET';
 const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[],uniq=v=>[...new Set(arr(v).map(str).filter(Boolean))];
 const sha=v=>crypto.createHash('sha256').update(String(v),'utf8').digest('hex'),norm=v=>str(v).toLowerCase();
 const internalEmail=login=>sha(TENANT+'\0shopper\0'+norm(login)).slice(0,48)+'@auth.cxorbia.invalid';
@@ -25,7 +27,7 @@ const visitKey=v=>str(v.hrRowId||v.visitKey||v.id||v.visitId);
 const REQUIRED_MODULES=['midia','miperfil','misvisitas','aprendizaje','cert','beneficios'];
 
 fs.mkdirSync(OUT,{recursive:true});
-const result={schemaVersion:'cxorbia.i3.vrm215.shopper-population.v2',decision:'HOLD',tenantId:TENANT,projectId:PROGRAM,expectedHrRevision:EXPECTED_HR,targetHnShopperId:TARGET_HN_SHOPPER,hnTarget:null,membershipUniverseCount:0,reviewOnlyExcludedCount:0,reviewOnlyPass:false,reviewOnlyExcluded:[],populationCount:0,loginPass:0,selfScopePass:0,routeContractPass:0,population:[],errors:[],writes:0,production:false};
+const result={schemaVersion:'cxorbia.i3.vrm215.shopper-population.v2',decision:'HOLD',proofMode:PROOF_MODE,tenantId:TENANT,projectId:PROGRAM,expectedHrRevision:EXPECTED_HR,targetHnShopperId:TARGET_HN_SHOPPER,hnTarget:null,membershipUniverseCount:0,reviewOnlyExcludedCount:0,reviewOnlyPass:false,reviewOnlyExcluded:[],authEligiblePopulationCount:0,populationCount:0,loginPass:0,selfScopePass:0,routeContractPass:0,population:[],errors:[],writes:0,production:false};
 const save=()=>fs.writeFileSync(OUT+'/result.json',JSON.stringify(result,null,2)+'\n','utf8');
 save();
 if(!/^[a-f0-9]{64}$/.test(EXPECTED_HR))throw new Error('SOURCE_FAILURE:VRM215_HR_REVISION_REQUIRED');
@@ -56,6 +58,7 @@ for(const m of memberUniverse){
   else members.push(m);
 }
 result.reviewOnlyExcludedCount=reviewOnlyCandidates.length;
+result.authEligiblePopulationCount=members.length;
 result.populationCount=members.length;
 if(result.reviewOnlyExcludedCount!==1)result.errors.push({scope:'review-only',code:'REVIEW_ONLY_CARDINALITY_DRIFT',expected:1,observed:result.reviewOnlyExcludedCount});
 if(!members.length)result.errors.push({scope:'population',code:'NO_ACTIVE_ELIGIBLE_SHOPPERS'});
@@ -136,21 +139,24 @@ for(const p of profiles){const target=str(p.supersededByShopperId||p.canonicalSh
 for(const c of crosswalk){const target=str(c.shopperId||c.canonicalShopperId);if(c.id!==target&&target&&activeIds.has(target))aliasIds.add(c.id);}
 const ownerFields=['shopperId','assignedShopperId','assignedToShopperId','auditorId','profileId','applicantShopperId','ownerShopperId','targetShopperId','beneficiaryShopperId','liquidationShopperId','reservationShopperId'],arrayFields=['shopperIds','candidateShopperIds'];
 const defs=[['tenant','paymentReconciliations'],['tenant','reviewQueue'],['project','certifications'],['project','liquidations'],['project','postulations'],['project','reservations']];
-let residual=0;
-for(const [scope,name] of defs){const rows=await docs(scope==='tenant'?tenant.collection(name):project.collection(name));for(const d of rows){const hit=ownerFields.some(k=>aliasIds.has(str(d[k])))||arrayFields.some(k=>arr(d[k]).some(v=>aliasIds.has(str(v))));if(hit){residual++;result.errors.push({scope:'alias-reference',code:'SUPERSEDED_ALIAS_OPERATIONAL_REFERENCE',collection:name,id:d.id});}}}
-result.supersededAliasCount=aliasIds.size;result.aliasOperationalResiduals=residual;result.visitAliasSemantics='VALIDATED_BY_VRM217_219_ROOT_DIAGNOSTIC';
+let residual=0,paymentResidual=0;
+for(const [scope,name] of defs){const rows=await docs(scope==='tenant'?tenant.collection(name):project.collection(name));for(const d of rows){const hit=ownerFields.some(k=>aliasIds.has(str(d[k])))||arrayFields.some(k=>arr(d[k]).some(v=>aliasIds.has(str(v))));if(hit){if(name==='paymentReconciliations')paymentResidual++;else{residual++;result.errors.push({scope:'alias-reference',code:'SUPERSEDED_ALIAS_OPERATIONAL_REFERENCE',collection:name,id:d.id});}}}}
+result.supersededAliasCount=aliasIds.size;result.aliasOperationalResiduals=residual;result.aliasPaymentResiduals=paymentResidual;result.visitAliasSemantics='VALIDATED_BY_VRM217_219_ROOT_DIAGNOSTIC';
 
 let browser=null;
 try{
   browser=await chromium.launch({headless:true,args:['--no-sandbox','--disable-setuid-sandbox','--disable-dev-shm-usage']});
   const baseUrl=ROOT+'/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId='+encodeURIComponent(PROGRAM)+'&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV';
   const concurrency=Math.max(1,Math.min(8,Number(process.env.VRM215_CONCURRENCY||6)));
+  const browserRows=HN_TARGET_ONLY?runtimeRows.filter(row=>row.shopperId===TARGET_HN_SHOPPER):runtimeRows;
+  if(HN_TARGET_ONLY&&browserRows.length!==1)result.errors.push({scope:'hn-target',shopperId:TARGET_HN_SHOPPER,code:'HN_TARGET_RUNTIME_ROW_NOT_EXACTLY_ONE',count:browserRows.length});
+  result.populationCount=browserRows.length;
   let nextRow=0;
   const worker=async()=>{
     while(true){
       const rowIndex=nextRow++;
-      if(rowIndex>=runtimeRows.length)return;
-      const row=runtimeRows[rowIndex];
+      if(rowIndex>=browserRows.length)return;
+      const row=browserRows[rowIndex];
     const item={shopperId:row.shopperId,visibleLogin:row.visibleLogin,staticPass:row.staticPass,loginPass:false,selfScopePass:false,routeContractPass:false,ownVisits:null,error:null};
     if(!row.staticPass||!row.email||!row.password){result.population.push(item);save();continue;}
     let context=null;
@@ -190,15 +196,17 @@ try{
       result.population.push(item);save();
     }
   };
-  await Promise.all(Array.from({length:Math.min(concurrency,Math.max(1,runtimeRows.length))},()=>worker()));
+  await Promise.all(Array.from({length:Math.min(concurrency,Math.max(1,browserRows.length))},()=>worker()));
   result.population.sort((a,b)=>str(a.shopperId).localeCompare(str(b.shopperId)));
   save();
 }finally{try{if(browser)await browser.close();}catch{}}
 
-result.staticPass=runtimeRows.filter(x=>x.staticPass).length;result.populationCount=runtimeRows.length;
+const evaluatedRows=HN_TARGET_ONLY?runtimeRows.filter(row=>row.shopperId===TARGET_HN_SHOPPER):runtimeRows;
+result.staticPass=evaluatedRows.filter(x=>x.staticPass).length;result.populationCount=evaluatedRows.length;
 result.hrAssignmentsPass=assigned===resolvedAssigned;result.identityPass=result.staticPass===result.populationCount&&residual===0&&result.reviewOnlyPass===true;
 result.authPass=result.loginPass===result.populationCount;result.selfScopePopulationPass=result.selfScopePass===result.populationCount;result.routePopulationPass=result.routeContractPass===result.populationCount;
 result.hnTargetPass=result.hnTarget?.pass===true;
 if(!result.hnTarget)result.errors.push({scope:'hn-target',shopperId:TARGET_HN_SHOPPER,code:'HN_TARGET_NOT_IN_AUTH_ELIGIBLE_POPULATION'});
-result.decision=result.errors.length===0&&result.populationCount>0&&result.authPass&&result.selfScopePopulationPass&&result.routePopulationPass&&result.hrAssignmentsPass&&result.hnTargetPass?'PASS_VRM215_ALL_ACTIVE_SHOPPERS':'FAIL_VRM215_ALL_ACTIVE_SHOPPERS';
-save();console.log(JSON.stringify(result,null,2));if(result.decision!=='PASS_VRM215_ALL_ACTIVE_SHOPPERS')process.exitCode=2;
+if(HN_TARGET_ONLY)result.decision=result.errors.length===0&&result.populationCount===1&&result.authPass&&result.selfScopePopulationPass&&result.routePopulationPass&&result.hrAssignmentsPass&&result.hnTargetPass?'PASS_VRM215_HN_TARGET_EXACT_SHOPPER_READINESS':'FAIL_VRM215_HN_TARGET_EXACT_SHOPPER_READINESS';
+else result.decision=result.errors.length===0&&result.populationCount>0&&result.authPass&&result.selfScopePopulationPass&&result.routePopulationPass&&result.hrAssignmentsPass&&result.hnTargetPass?'PASS_VRM215_ALL_ACTIVE_SHOPPERS':'FAIL_VRM215_ALL_ACTIVE_SHOPPERS';
+save();console.log(JSON.stringify(result,null,2));if(!String(result.decision).startsWith('PASS_'))process.exitCode=2;

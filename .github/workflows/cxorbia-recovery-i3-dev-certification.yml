@@ -6892,6 +6892,7 @@ jobs:
       FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
       VRM215_OUT: .tmp/i3-vrm215-shopper-population
       VRM215_CONCURRENCY: '6'
+      VRM215_PROOF_MODE: HN_TARGET
     steps:
       - uses: actions/checkout@v4
         with:
@@ -6957,21 +6958,40 @@ jobs:
          test "$(jq '[.operationalAliasReferences.certifications, .operationalAliasReferences.liquidations, .operationalAliasReferences.postulations, .operationalAliasReferences.reservations] | add' "$ROOT_OUT/result.json")" = "0"
          test "$(jq -r '.writes' "$ROOT_OUT/result.json")" = "0"
          test "$(jq -r '.production' "$ROOT_OUT/result.json")" = "false"
-      - name: Prove every auth-eligible shopper
+      - name: Prove HN exact shopper readiness
         shell: bash
         run: |
          set -Eeuo pipefail
-         PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" VRM215_OUT="$VRM215_OUT" VRM215_CONCURRENCY="$VRM215_CONCURRENCY" node tools/qa/cxorbia-i3-vrm215-shopper-population-live-reproof.mjs | tee "$VRM215_OUT/console.log"
-         test "$(jq -r '.decision' "$VRM215_OUT/result.json")" = "PASS_VRM215_ALL_ACTIVE_SHOPPERS"
+         PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" VRM215_OUT="$VRM215_OUT" VRM215_CONCURRENCY="$VRM215_CONCURRENCY" VRM215_PROOF_MODE="$VRM215_PROOF_MODE" node tools/qa/cxorbia-i3-vrm215-shopper-population-live-reproof.mjs | tee "$VRM215_OUT/console.log"
+         test "$(jq -r '.decision' "$VRM215_OUT/result.json")" = "PASS_VRM215_HN_TARGET_EXACT_SHOPPER_READINESS"
+         test "$(jq -r '.proofMode' "$VRM215_OUT/result.json")" = "HN_TARGET"
          test "$(jq -r '.membershipUniverseCount' "$VRM215_OUT/result.json")" = "379"
          test "$(jq -r '.reviewOnlyExcludedCount' "$VRM215_OUT/result.json")" = "1"
          test "$(jq -r '.reviewOnlyPass' "$VRM215_OUT/result.json")" = "true"
-         test "$(jq -r '.populationCount' "$VRM215_OUT/result.json")" = "378"
+         test "$(jq -r '.authEligiblePopulationCount' "$VRM215_OUT/result.json")" = "378"
+         test "$(jq -r '.populationCount' "$VRM215_OUT/result.json")" = "1"
          test "$(jq -r '.loginPass' "$VRM215_OUT/result.json")" = "$(jq -r '.populationCount' "$VRM215_OUT/result.json")"
          test "$(jq -r '.selfScopePass' "$VRM215_OUT/result.json")" = "$(jq -r '.populationCount' "$VRM215_OUT/result.json")"
          test "$(jq -r '.routeContractPass' "$VRM215_OUT/result.json")" = "$(jq -r '.populationCount' "$VRM215_OUT/result.json")"
          test "$(jq -r '.aliasOperationalResiduals' "$VRM215_OUT/result.json")" = "0"
+         test "$(jq -r '.aliasPaymentResiduals' "$VRM215_OUT/result.json")" = "11"
          test "$(jq -r '.hrAssignmentsPass' "$VRM215_OUT/result.json")" = "true"
+         test "$(jq -r '.hnTargetPass' "$VRM215_OUT/result.json")" = "true"
+         test "$(jq -r '.hnTarget.shopperId' "$VRM215_OUT/result.json")" = "shopper_hn_1691aecc2c"
+         test "$(jq -r '.hnTarget.proof.authority.rawShopperId' "$VRM215_OUT/result.json")" = "shopper_hn_1691aecc2c"
+         test "$(jq -r '.hnTarget.proof.authority.canonicalShopperId' "$VRM215_OUT/result.json")" = "shopper_hn_1691aecc2c"
+         test "$(jq -r '.hnTarget.proof.authority.shopperCountry' "$VRM215_OUT/result.json")" = "HN"
+         test "$(jq -r '.hnTarget.proof.authority.exactSessionShopperReady' "$VRM215_OUT/result.json")" = "true"
+         test "$(jq -r '.hnTarget.proof.authority.shopperPrincipalClaimsVerified' "$VRM215_OUT/result.json")" = "true"
+         test "$(jq -r '.hnTarget.proof.authority.ownVisits' "$VRM215_OUT/result.json")" = "16"
+         test "$(jq -r '.hnTarget.proof.currentPeriodAuthorized' "$VRM215_OUT/result.json")" = "true"
+         test "$(jq -r '.hnTarget.proof.ownVisits' "$VRM215_OUT/result.json")" = "16"
+         test "$(jq -r '.hnTarget.proof.countries | join(",")' "$VRM215_OUT/result.json")" = "HN"
+         test "$(jq -r '.hnTarget.proof.octoberVisit.hrRowId' "$VRM215_OUT/result.json")" = "OCTUBRE 26 HN!2"
+         test "$(jq -r '.hnTarget.proof.octoberVisit.country' "$VRM215_OUT/result.json")" = "HN"
+         test "$(jq -r '.hnTarget.proof.octoberVisit.periodKey' "$VRM215_OUT/result.json")" = "2026-10"
+         test "$(jq -r '.hnTarget.proof.octoberVisit.assigned' "$VRM215_OUT/result.json")" = "true"
+         test "$(jq -r '.hnTarget.proof.octoberVisit.scheduled' "$VRM215_OUT/result.json")" = "true"
          test "$(jq -r '.writes' "$VRM215_OUT/result.json")" = "0"
          test "$(jq -r '.production' "$VRM215_OUT/result.json")" = "false"
       - if: always()
