@@ -283,6 +283,33 @@ test('VRM-153 explicit HR alias without permitted scoped link is not financial i
   assert.equal(JSON.stringify([...db.s.entries()]),baseline);
 });
 
+test('VRM-153 initial exact historically-paid August row preserves authorized October 2 payment date without bank transfer',async()=>{
+  const db=baseDb(),p=historicalProvider(db),base=historicalCommand();
+  const command=historicalCommand({idempotencyKey:'vrm153:aug-hn:paid-date',
+    payload:{...base.payload,reconciliationBatchId:'hist-aug-hn-approved',historicalPaymentDate:'2026-10-02',
+      historicalPaymentAuthorityRef:'paula-authorized-august-2026-10-08'}});
+  const out=await p.execute('token',command),replay=await p.execute('token',command);
+  assert.equal(out.ok,true);assert.equal(out.bankWrites,0);assert.equal(out.hrWrites,0);
+  assert.equal(replay.idempotentReplay,true);assert.equal(replay.providerWrites,0);
+  const rec=[...db.s.values()].find(x=>x?.reconciliationBatchId==='hist-aug-hn-approved'&&x.source==='historical_reconciliation');
+  assert.equal(rec.paymentStatus,'paid');assert.equal(rec.paymentDate,'2026-10-02');
+  assert.equal(rec.historicalPaymentAuthorityRef,'paula-authorized-august-2026-10-08');
+  assert.equal(db.get('tenants/tenant-a/projects/project-a/visits/SEP!2').historicalPaymentDate,'2026-10-02');
+});
+test('VRM-153 historical payment date rejects pending, future date, missing source authority without writes',async()=>{
+  const db=baseDb(),p=historicalProvider(db),base=historicalCommand();
+  const before=JSON.stringify([...db.s.entries()]);
+  for(const change of [
+    {paymentStatus:'pending',historicalPaymentDate:'2026-10-02',historicalPaymentAuthorityRef:'approval'},
+    {paymentStatus:'paid',historicalPaymentDate:'2030-01-01',historicalPaymentAuthorityRef:'approval'},
+    {paymentStatus:'paid',historicalPaymentDate:'2026-10-02',historicalPaymentAuthorityRef:''}
+  ]){
+    const out=await p.execute('token',historicalCommand({idempotencyKey:'vrm153:reject:'+JSON.stringify(change),payload:{...base.payload,...change}}));
+    assert.equal(out.ok,false);assert.match(out.code,/FINANCE_HISTORICAL_INITIAL_PAYMENT_DATE_/);
+    assert.equal(JSON.stringify([...db.s.entries()]),before);
+  }
+});
+
 test('VRM-151 historical reconciliation rejects non-submitted visits even when the historical month is marked paid',async()=>{
   const db=baseDb(),v=db.get('tenants/tenant-a/projects/project-a/visits/SEP!2');v.canonicalFacets={submitted:false};v.estado='cuestionario';v.submittedAt=null;db.seed('tenants/tenant-a/projects/project-a/visits/SEP!2',v);
   const p=historicalProvider(db),r=await p.execute('token',historicalCommand());
