@@ -6940,19 +6940,15 @@ jobs:
          TOKEN="$(gcloud auth print-access-token)"
          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$VRM215_OUT/hosting.json"
          test "$(jq -r '.release.version.name' "$VRM215_OUT/hosting.json")" = "$EXPECTED_HOSTING_VERSION"
-         curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm215=$GITHUB_RUN_ID" > "$VRM215_OUT/hr-meta.json"
-         OBSERVED_HR_REVISION="$(jq -r '.revision' "$VRM215_OUT/hr-meta.json")"
-         if [ "$OBSERVED_HR_REVISION" != "$EXPECTED_HR_REVISION" ]; then
-           test "$(jq -r '.shopperReconciliation.sourceRevision' "$VRM215_OUT/hr-meta.json")" = "$EXPECTED_HR_REVISION"
-           test "$(jq -r '.sourceSafe' "$VRM215_OUT/hr-meta.json")" = "true"
-           test "$(jq -r '.visits' "$VRM215_OUT/hr-meta.json")" = "748"
-           test "$(jq -r '.periods' "$VRM215_OUT/hr-meta.json")" = "17"
-           test "$(jq -r '.writes' "$VRM215_OUT/hr-meta.json")" = "false"
-           test "$(jq -r '.hrWrites' "$VRM215_OUT/hr-meta.json")" = "false"
-           test "$(jq -r '.imports' "$VRM215_OUT/hr-meta.json")" = "false"
-           test "$(jq -r '.production' "$VRM215_OUT/hr-meta.json")" = "false"
-         fi
-         echo "EXPECTED_HR_REVISION=$OBSERVED_HR_REVISION" >> "$GITHUB_ENV"
+         for n in 1 2; do curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm215=$GITHUB_RUN_ID&read=$n" > "$VRM215_OUT/hr-meta-$n.json"; done
+         cp "$VRM215_OUT/hr-meta-1.json" "$VRM215_OUT/hr-meta.json"
+         LIVE_HR_REVISION="$(jq -r '.revision' "$VRM215_OUT/hr-meta-1.json")"
+         test "$LIVE_HR_REVISION" = "$(jq -r '.revision' "$VRM215_OUT/hr-meta-2.json")"
+         test "$LIVE_HR_REVISION" = "$(jq -r '.shopperReconciliation.sourceRevision' "$VRM215_OUT/hr-meta-1.json")"
+         test "$LIVE_HR_REVISION" = "$(jq -r '.shopperReconciliation.sourceRevision' "$VRM215_OUT/hr-meta-2.json")"
+         jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .shopperReconciliation.providerAck==true and .visitReconciliation.providerAck==true and .refreshError==null and .visits==748 and .periods==17 and .writes==false and .hrWrites==false and .imports==false and .production==false' "$VRM215_OUT/hr-meta-1.json" >/dev/null
+         jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .shopperReconciliation.providerAck==true and .visitReconciliation.providerAck==true and .refreshError==null and .writes==false and .hrWrites==false and .imports==false and .production==false' "$VRM215_OUT/hr-meta-2.json" >/dev/null
+         echo "EXPECTED_HR_REVISION=$LIVE_HR_REVISION" >> "$GITHUB_ENV"
       - name: Prove canonical root semantics after VRM243
         shell: bash
         run: |
