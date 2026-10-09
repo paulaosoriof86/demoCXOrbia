@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED",
+  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "4050e8afc952183131d48600b84260024ed78ac5",
-  "productTreeAuthority": "c3a58c3425d35a43c013de555d4e7f13fac7639b",
-  "predecessorProductSourceSha": "d9915f330a8d6e5fc2b4f2019872a4b03eaf7ced",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V350_2026-10-08.json",
-  "findingsLedgerExpectedGitBlob": "3b700b77083f23422afd59d40a35376538cff72f",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V49.json",
+  "productSourceSha": "9b87e479a1fb9825a22abf935eebff171ed720c4",
+  "productTreeAuthority": "f2a384386e22028ffc4bf830adb1ec7e11e19696",
+  "predecessorProductSourceSha": "4050e8afc952183131d48600b84260024ed78ac5",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V351_2026-10-08.json",
+  "findingsLedgerExpectedGitBlob": "13bd014cef475735b6d27112a5f6fc7cfee2b6f2",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V50.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "RUN1424_FULL_HUMAN_HOLD_SIX_GT_MAPPED_WITHOUT_TENANT_ADJUDICATION_AND_HN_LOGIN_FAIL",
-  "nextFindingId": "VRM-273",
+  "activeBlocker": "VRM-273_B2_SELF_DISPLAY_SOURCE_ONLY_PENDING_EXACT_SOURCE_PROOF__SIX_GT_IDENTITY_HN_LOGIN_AND_HUMAN_VISUAL_HOLD_PRESERVED",
+  "nextFindingId": "VRM-274",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Resolve six exact HR identity aliases by source/target/profile/tenant adjudication; do not auto-merge. Separately prove HN signed-claims login/boot. Fix P0 B2 editable display name without HR/Auth owner change. Same DEV source and 45+18 human findings, Gate20/21 only after I3 PASS. No I4.",
+  "exactNextAction": "Run existing I3 Phase A source-proof only for 9b87e479. On PASS, capture exact source tests including validator; then close exact B2 provider E2E and the six GT crosswalk/HN cases before DEV materialization or I4. Do not rerun VRM153 DEV finance writes.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2653,7 +2653,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "0e3d6c5523c81e40a49889a208fbbc167876bf7e",
+  "moduleTruthExpectedGitBlob": "edffba08b96cf6587a43a5c3598621c6acd76859",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -7796,5 +7796,20 @@
     "hnHistoryVisibleLogin": "FAIL",
     "sourceUnchanged": true,
     "production": false
-  }
+  },
+  "i3B2SelfDisplayNewSource": {
+    "findingId": "VRM-273",
+    "linkedObservation": "HF-20261008-03",
+    "source": "9b87e479a1fb9825a22abf935eebff171ed720c4",
+    "tree": "f2a384386e22028ffc4bf830adb1ec7e11e19696",
+    "predecessorSource": "4050e8afc952183131d48600b84260024ed78ac5",
+    "sourceFixSha": "1a45b8fd1eb3fa9801d163c977aa2e35e8f1cdc7",
+    "testSha": "9b87e479a1fb9825a22abf935eebff171ed720c4",
+    "sourceProof": "PENDING",
+    "devArtifactForNewSource": "NOT_MATERIALIZED",
+    "human": "PENDING",
+    "producedFromOriginalCandidate": true,
+    "production": false
+  },
+  "currentMaterializationIsPredecessorOnly": true
 }
