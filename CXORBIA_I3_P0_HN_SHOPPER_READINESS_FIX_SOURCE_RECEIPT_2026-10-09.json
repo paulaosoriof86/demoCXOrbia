@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "cxorbia.i3.p0-hn-shopper-readiness-fix-source-receipt.v1",
+  "dateLocal": "2026-10-09",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "state": "HOLD",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "production": "DO_NOT_TOUCH",
+  "initialControlHead": "95ad4146e47958cdd93a89d3ef2a6388a6c07d16",
+  "initialControlTree": "1e0750f4fab7f0b6c6bfd53403fe112cd2025320",
+  "predecessorProductSourceSha": "9b87e479a1fb9825a22abf935eebff171ed720c4",
+  "predecessorProductTree": "f2a384386e22028ffc4bf830adb1ec7e11e19696",
+  "successorProductSourceSha": "797050085d1e3347b6d56322f003a3a293790710",
+  "successorProductTree": "607196f740203d538df8e22e424874fe547b3d59",
+  "classification": "FUNCTIONAL_DEFECT",
+  "finding": "P0_PROVEN_HN_SHOPPER_READINESS_GATE",
+  "sourceAuthority": "CXORBIA_I3_P0_PROVEN_HN_SHOPPER_READINESS_GATE_2026-10-09.json",
+  "rootCause": "The protected HR authority and C6 human runtime readiness predicate accepted general HR composition for an authenticated shopper before exact Firebase principal, signed claims, membership, canonical shopper profile, country and authorized periods were all proven for the current session.",
+  "changedFiles": [
+    "app/adapters/tya-c6-unified-human-runtime-v1.js",
+    "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+    "backend/runtime/hr-live-service/test/cxorbia-b1-canonical-visible-identity.test.mjs"
+  ],
+  "behavior": {
+    "shopperGeneralHrAloneReady": false,
+    "requiresCurrentUidClaimsMembership": true,
+    "requiresExactSessionShopperProfile": true,
+    "requiresCountry": true,
+    "requiresAuthorizedPeriods": true,
+    "ambiguousIdentityBlocks": true,
+    "previousSessionProfileClearedBeforeShopperReconcile": true,
+    "adminClientUnaffectedByShopperExactProfileGate": true,
+    "globalCountryScopeGranted": false,
+    "fuzzyMatching": false,
+    "hrWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "storageWrites": 0,
+    "productionWrites": 0
+  },
+  "localSourceProof": [
+    {
+      "command": "node --check app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+      "result": "PASS"
+    },
+    {
+      "command": "node --check app/adapters/tya-c6-unified-human-runtime-v1.js",
+      "result": "PASS"
+    },
+    {
+      "command": "node --check RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs",
+      "result": "PASS"
+    },
+    {
+      "command": "node --test backend/runtime/hr-live-service/test/cxorbia-b1-canonical-visible-identity.test.mjs",
+      "tests": 7,
+      "pass": 7,
+      "fail": 0
+    },
+    {
+      "command": "node --test backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-ui-cleanup.test.mjs backend/runtime/hr-live-service/test/cxorbia-i3-phasea-completion-source-contract.test.mjs backend/runtime/hr-live-service/test/cxorbia-i3-oct08-b1-b3-source.test.mjs",
+      "tests": 44,
+      "pass": 44,
+      "fail": 0
+    }
+  ],
+  "devMaterialization": {
+    "executed": false,
+    "reason": "Source fix committed and locally source-proven; DEV materialization and authenticated live HN E2E require the canonical CI/DEV lane on the successor source. Production remains untouched."
+  },
+  "hnExactLiveE2E": {
+    "executed": false,
+    "reason": "No post-commit DEV artifact exists yet for successorProductSourceSha; do not declare closed from local/source-only proof."
+  },
+  "gtRegressions": {
+    "julissa": "SOURCE_GATED_NO_LIVE_E2E_YET",
+    "priscila": "SOURCE_GATED_NO_LIVE_E2E_YET",
+    "paulaOsorio": "SOURCE_GATED_NO_LIVE_E2E_YET",
+    "sixHistoricalCrosswalkCases": "PRESERVED_HOLD_NO_AUTOMERGE"
+  },
+  "i3FinalState": "HOLD",
+  "remainingBlockers": [
+    "post-commit canonical DEV materialization not yet run",
+    "authenticated HN exact-principal live E2E not yet run on successor artifact",
+    "GT six protected crosswalk adjudication remains open",
+    "B2 signed display-only provider ACK and reload remains pending",
+    "human visual B1-B8 approvals remain pending"
+  ],
+  "nextExactAction": "Run the existing canonical I3 DEV materialization/source proof lane once for successorProductSourceSha, then execute focused authenticated HN E2E and GT Julissa/Priscila/Paula regressions on that exact artifact. Keep I3 HOLD until live readback passes."
+}
