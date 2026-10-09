@@ -1,0 +1,176 @@
+{
+  "schemaVersion": "cxorbia.i3.run1441.hn.live-hr-pin.after-receipt.v1",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "state": "HOLD",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "beforeHead": "768fd094cbcc342f96818b194f61044cbf61bbf3",
+  "beforeTree": "a94ddaab570e63be11944a4808c1e38eef2add6e",
+  "workflowFixHead": "e5c029c9a2c7c037e258de5ef96e2ae7fc928470",
+  "workflowFixTree": "bac9bd711418ef1acad178bb4796eab02c0df0ea",
+  "productSourceSha": "797050085d1e3347b6d56322f003a3a293790710",
+  "productTree": "607196f740203d538df8e22e424874fe547b3d59",
+  "productFilesModified": [],
+  "controlFilesModified": [
+    ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+  ],
+  "receiptFilesModified": [
+    "CXORBIA_I3_RUN1441_HN_LIVE_HR_PIN_AFTER_RECEIPT_2026-10-09.json"
+  ],
+  "authorizedScopeApplied": {
+    "job": "vrm215-shopper-population-reproof",
+    "step": "Verify immutable DEV fingerprints",
+    "change": "Preserve currentMaterialization.hrRevision as historical materialization receipt and pin the run to the current live HR revision only after two stable source-safe meta reads whose aggregate revision matches shopperReconciliation.sourceRevision.",
+    "adaptersModified": false,
+    "hrExternalWrites": 0,
+    "authWrites": 0,
+    "firestoreWritesByCodex": 0,
+    "productionWrites": 0,
+    "rebuilds": 0,
+    "redeploys": 0
+  },
+  "currentMaterializationPreserved": {
+    "runId": 37958395380,
+    "runNumber": 1431,
+    "artifactId": 11630071023,
+    "artifactDigest": "sha256:42445d6e62ce0bab1e95fdb86b592d422a2cee5db221e1c4c3abfece281503ee",
+    "runtimeRevision": "cxorbia-live-hr-dev-00283-kc5",
+    "runtimeDigest": "sha256:3bdb7ca745abcc51ae8a93aa9e4a83c631af58eb891c0c34b644d578969e586a",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/0609acbc6f0dace6",
+    "historicalMaterializationHrRevision": "9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef",
+    "rewritten": false
+  },
+  "localValidation": {
+    "workflowBytes": 511926,
+    "actionlint": "PASS",
+    "nodeCheck": [
+      "tools/qa/cxorbia-i3-vrm215-shopper-population-live-reproof.mjs PASS",
+      "tools/qa/cxorbia-i3-vrm217-219-population-root-diagnostic.mjs PASS"
+    ]
+  },
+  "githubRun": {
+    "runId": 37972685971,
+    "runNumber": 1441,
+    "event": "workflow_dispatch",
+    "headSha": "e5c029c9a2c7c037e258de5ef96e2ae7fc928470",
+    "url": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/37972685971",
+    "jobId": 113963175784,
+    "jobName": "vrm215-shopper-population-reproof",
+    "jobUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/37972685971/job/113963175784",
+    "artifactId": 11637526311,
+    "artifactDigest": "sha256:54ba6ba9a75d596bf690ff38060778116e6ebce9cd5dee890b40f37fe208ddea",
+    "artifactUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/37972685971/artifacts/11637526311",
+    "conclusion": "failure"
+  },
+  "devReadback": {
+    "runtimeRevision": "cxorbia-live-hr-dev-00283-kc5",
+    "runtimeDigest": "sha256:3bdb7ca745abcc51ae8a93aa9e4a83c631af58eb891c0c34b644d578969e586a",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/0609acbc6f0dace6",
+    "liveHrRevisionPinned": "abe41d26a5729e48d92c7754217abd5111f1eacf9fecec5ad53ed25973d25b0c",
+    "liveHrRevisionSecondRead": "abe41d26a5729e48d92c7754217abd5111f1eacf9fecec5ad53ed25973d25b0c",
+    "shopperReconciliationSourceRevision": "abe41d26a5729e48d92c7754217abd5111f1eacf9fecec5ad53ed25973d25b0c",
+    "visitReconciliationSourceRevision": "abe41d26a5729e48d92c7754217abd5111f1eacf9fecec5ad53ed25973d25b0c",
+    "sourceSafe": true,
+    "shopperReconciliationProviderAck": true,
+    "visitReconciliationProviderAck": true,
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "visits": 748,
+    "periods": 17,
+    "writes": false,
+    "hrWrites": false,
+    "imports": false,
+    "production": false
+  },
+  "rootDiagnostic": {
+    "decision": "PASS_VRM217_219_POPULATION_ROOT_DIAGNOSTIC",
+    "hrAssignmentsAssigned": 736,
+    "hrAssignmentsUnresolved": 0,
+    "ambiguousAuthorityGroups": 0,
+    "aliasOperationalResiduals": 0,
+    "aliasPaymentResiduals": 11,
+    "writes": 0,
+    "production": false,
+    "hrRevision": "abe41d26a5729e48d92c7754217abd5111f1eacf9fecec5ad53ed25973d25b0c",
+    "previousUnresolvedShopper": {
+      "shopperId": "shopper_hn_c6671aaeee",
+      "rowId": "OCTUBRE 26 HN!3",
+      "stillUnresolved": false
+    }
+  },
+  "hnExactShopperReadiness": {
+    "harnessDecision": "PASS_VRM215_HN_TARGET_EXACT_SHOPPER_READINESS",
+    "jobStepConclusion": "failure",
+    "failureOwner": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml::Prove HN exact shopper readiness shell assertions",
+    "failureClassification": "RELEASE_COMPOSITION_FAILURE_STALE_POPULATION_CARDINALITY_ASSERTION",
+    "failureMechanism": "The harness result passes for HN exact shopper readiness, but the workflow shell still asserts membershipUniverseCount=379 and authEligiblePopulationCount=378. Live reconciled HR now returns membershipUniverseCount=381 and authEligiblePopulationCount=380, so the shell exits before the job can conclude PASS.",
+    "actualPopulationCardinality": {
+      "membershipUniverseCount": 381,
+      "reviewOnlyExcludedCount": 1,
+      "authEligiblePopulationCount": 380,
+      "populationCount": 1
+    },
+    "expectedByStaleShell": {
+      "membershipUniverseCount": 379,
+      "reviewOnlyExcludedCount": 1,
+      "authEligiblePopulationCount": 378,
+      "populationCount": 1
+    },
+    "targetShopper": {
+      "shopperId": "shopper_hn_1691aecc2c",
+      "visibleLogin": "wilson.lanza.5395",
+      "actorUid": "cx-sh-7c122596c78059e7a9c9333f6055",
+      "rawShopperId": "shopper_hn_1691aecc2c",
+      "canonicalShopperId": "shopper_hn_1691aecc2c",
+      "country": "HN",
+      "exactSessionShopperReady": true,
+      "shopperPrincipalClaimsVerified": true,
+      "ownVisits": 16,
+      "authorizedPeriods": 13,
+      "authorizedPeriodIds": [
+        "cinepolis-2025-09",
+        "cinepolis-2025-10",
+        "cinepolis-2025-11",
+        "cinepolis-2025-12",
+        "cinepolis-2026-01",
+        "cinepolis-2026-02",
+        "cinepolis-2026-03",
+        "cinepolis-2026-04",
+        "cinepolis-2026-05",
+        "cinepolis-2026-06",
+        "cinepolis-2026-08",
+        "cinepolis-2026-09",
+        "cinepolis-2026-10"
+      ],
+      "currentPeriodId": "cinepolis-2026-10",
+      "currentPeriodAuthorized": true,
+      "octoberVisit": {
+        "id": "hr_2026-10_hn_2_e8f397f0d8",
+        "hrRowId": "OCTUBRE 26 HN!2",
+        "periodKey": "2026-10",
+        "periodId": "cinepolis-2026-10",
+        "country": "HN",
+        "state": "agendada",
+        "scheduled": true,
+        "assigned": true,
+        "branch": "C. Las Cascadas Honduras"
+      }
+    },
+    "identityPass": true,
+    "authPass": true,
+    "selfScopePopulationPass": true,
+    "routePopulationPass": true,
+    "hrAssignmentsPass": true,
+    "hnTargetPass": true,
+    "writes": 0,
+    "production": false
+  },
+  "gtRegressions": {
+    "executed": false,
+    "reason": "Not executed after run1441 because the authorized focal job ended with failure at a stale shell cardinality assertion and this pass was scoped to the HR preflight correction only."
+  },
+  "finalClassification": "HOLD_RELEASE_COMPOSITION_FAILURE_STALE_POPULATION_CARDINALITY_ASSERTION_AFTER_HN_HARNESS_PASS",
+  "nextExactActionRequiresAuthorization": "Update only the vrm215-shopper-population-reproof HN shell cardinality assertions so they are derived from the same pinned live HR/root diagnostic or from internally consistent result fields, then re-run the same existing DEV job on the unchanged materialized artifact. After job-level PASS, execute the authorized GT regressions for Julissa, Priscila and Paula on the same artifact.",
+  "i4Authorized": false,
+  "productionAuthorized": false
+}
