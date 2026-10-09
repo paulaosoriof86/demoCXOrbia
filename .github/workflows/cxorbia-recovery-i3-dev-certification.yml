@@ -6646,7 +6646,6 @@ jobs:
          test -n "$EXPECTED_RUNTIME_REVISION"
          [[ "$EXPECTED_RUNTIME_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
          test -n "$EXPECTED_HOSTING_VERSION"
-         [[ "$EXPECTED_HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$P/runtime.json"
          test "$(jq -r '.status.latestReadyRevisionName // empty' "$P/runtime.json")" = "$EXPECTED_RUNTIME_REVISION"
          gcloud run revisions describe "$EXPECTED_RUNTIME_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$P/runtime-revision.json"
@@ -6659,6 +6658,7 @@ jobs:
          for n in 1 2; do curl -fsS --retry 8 "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&phaseapreflight=$GITHUB_RUN_ID&read=$n" > "$P/hr-meta-$n.json"; done
          jq -se --arg t "$TENANT_ID" --arg p "$PROJECT_ID" '.[0].revision==.[1].revision and all(.[]; .ok==true and .revisionStable==true and .sourceSafe==true and .shopperReconciliation.providerAck==true and .visitReconciliation.providerAck==true and .shopperReconciliation.tenantId==$t and .shopperReconciliation.projectId==$p and .shopperReconciliation.sourceRevision==.revision and .visitReconciliation.sourceRevision==.revision and .writes==false and .hrWrites==false and .imports==false and .production==false)' "$P/hr-meta-1.json" "$P/hr-meta-2.json" >/dev/null
          EXPECTED_HR_REVISION="$(jq -r .revision "$P/hr-meta-1.json")"
+         [[ "$EXPECTED_HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
          echo "EXPECTED_HR_REVISION=$EXPECTED_HR_REVISION" >> "$GITHUB_ENV"
       - name: Admin + Julissa + Priscila + Paula + population live reproof
         shell: bash

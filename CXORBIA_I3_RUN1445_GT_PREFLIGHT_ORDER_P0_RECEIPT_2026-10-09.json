@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "cxorbia.i3.gt.run1445.control-order-fixed.v1",
+  "state": "HOLD",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "expectedParentSha": "fc37f254c7cbc2b135b8de66501c62bbdee0d67a",
+  "classification": "RELEASE_COMPOSITION_FAILURE",
+  "failedRun": 37986465005,
+  "failedJob": 114009657393,
+  "failure": "EXPECTED_HR_REVISION: unbound variable in preflight SHA check before live revision assignment",
+  "owner": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml::phasea-representative-same-artifact-live-reproof::Verify unchanged exact DEV artifact from current receipt",
+  "fix": "Move existing SHA64 validation of EXPECTED_HR_REVISION immediately after assignment from verified live HR metadata; no validation removed or weakened",
+  "productSourceSha": "797050085d1e3347b6d56322f003a3a293790710",
+  "productFilesChanged": 0,
+  "existingDevArtifactUnchanged": true,
+  "noProduction": true,
+  "workflowBytes": 511890,
+  "expectedNext": "Single existing GT CI job on same DEV artifact; verify before/after; if E2E GT fails stop under true exact functional/mapping/visual owner; I3 HOLD"
+}
