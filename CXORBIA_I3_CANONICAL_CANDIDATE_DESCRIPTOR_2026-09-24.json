@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM153_SAFE_SUPERSESSION_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_VRM153_AUTHORIZED_SCOPED_DEV_RECONCILIATION",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "d9915f330a8d6e5fc2b4f2019872a4b03eaf7ced",
   "productTreeAuthority": "edf38a46ee4630d2bf0f31520cecc1c77f3b9835",
   "predecessorProductSourceSha": "61ee5001cbb0561a07addc36253b188d09cb2a38",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V347_2026-10-08.json",
-  "findingsLedgerExpectedGitBlob": "95c2a707edbfc94a80655e8c85700d0518e40b9a",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V348_2026-10-08.json",
+  "findingsLedgerExpectedGitBlob": "736c883c6c7f66f78fe68e37a01d8ca3ad78d526",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V47.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM153_41_SCOPE_AUTHORIZED_DATE_SOURCE_PROOF_REQUIRED",
+  "activeBlocker": "VRM153_DEV_HISTORICAL_41_AUTHORIZED_FIRESTORE_PROVIDER_EXECUTION_PENDING_ACK",
   "nextFindingId": "VRM-272",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Prove 23 synthetic provider tests including authorized historical paidDate before scoped 34+3+4 DEV Firestore reconciliation; no production or bank writes.",
+  "exactNextAction": "Run existing canonical I3 VRM153 durable-repair job only for approved 34 August GT, 3 August HN paid 02-Oct and 4 September pending. Verify external HR revision/owner/ACK/idempotent replay/readback; stop on drift and never touch production or HR.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -7486,5 +7486,73 @@
     },
     "nextAction": "RUN_EXISTING_I3_SOURCE_PROOF_BEFORE_APPLY",
     "realWrites": 0
+  },
+  "i3VRM153PaulaAuthorizedExecutionDispatch": {
+    "authorization": {
+      "authorizedAtLocal": "2026-10-08",
+      "channel": "Paula explicit chat authorization after presented scope",
+      "approved": "DEV Firestore only: 34 August GT pending->paid supersession preserving prior audit, 3 August HN historical paid dated October 2 2026, 4 September pending (unless exact paid evidence, not included)",
+      "exactScope": {
+        "tenantId": "tya",
+        "projectId": "cinepolis",
+        "augustGT": 34,
+        "augustHN": 3,
+        "septemberGT": 3,
+        "septemberHN": 1,
+        "total": 41
+      },
+      "provenance": {
+        "hrRevision": "9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef",
+        "preflightRun1411": 37862607078,
+        "sourceTestsRun1410": 37862415957
+      },
+      "exclusions": [
+        "no production",
+        "no bank transfers",
+        "no HR writes",
+        "no payment provider writes",
+        "no changes to September paid without exact evidence",
+        "no mass reimport",
+        "no unrelated financial entries"
+      ],
+      "newDateSource": {
+        "sha": "d9915f330a8d6e5fc2b4f2019872a4b03eaf7ced",
+        "tree": "edf38a46ee4630d2bf0f31520cecc1c77f3b9835",
+        "ownerBlob": "ae8b0c293fe5403f3ceaa2517b53e279e06209f3",
+        "ownerTestBlob": "971833a90908c549e81bb53d6a7ccd26aacba1c7",
+        "priorSource": "61ee5001cbb0561a07addc36253b188d09cb2a38",
+        "proof": "PENDING"
+      },
+      "nextAction": "RUN_EXISTING_I3_SOURCE_PROOF_BEFORE_APPLY",
+      "realWrites": 0
+    },
+    "preflightRun1411": 37862607078,
+    "sourceProofRun1413": {
+      "runId": 37866478830,
+      "tests": 23,
+      "pass": 23,
+      "fail": 0,
+      "sourceSha": "d9915f330a8d6e5fc2b4f2019872a4b03eaf7ced",
+      "sourceTree": "edf38a46ee4630d2bf0f31520cecc1c77f3b9835"
+    },
+    "singleExecutableJob": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml#vrm153-durable-repair",
+    "workflowBlob": "67db0ceec6da47c0e358c5f1b55fe90a674c6950",
+    "runnerPath": "tools/qa/cxorbia-vrm153-paula-authorized-dev-41.mjs",
+    "runnerBlob": "695f292fea8a7faf3ebd342ca6f97167b76d59a8",
+    "noNewWorkflow": true,
+    "noBuild": true,
+    "noDeploy": true,
+    "realFinancialWritesSoFar": 0,
+    "expectedFinal": {
+      "selectedRecords": 643,
+      "paid": 599,
+      "pending": 44,
+      "amountReviewRequired": 5,
+      "augustGTsuperseded": 34,
+      "augustHNnewPaid": 3,
+      "septemberNewPending": 4
+    },
+    "state": "EXECUTION_PENDING_ACK",
+    "production": false
   }
 }

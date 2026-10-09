@@ -6330,80 +6330,47 @@ jobs:
           compression-level: 0
   vrm153-durable-repair:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM153_DURABLE_REPAIR_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM153_AUTHORIZED_SCOPED_DEV_RECONCILIATION' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 40
     env:
-      FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
-      FOCAL_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
-      REPAIR_OUT: .tmp/vrm153-durable-repair
-      DRY_OUT: .tmp/vrm153-durable-repair/dry
-      DRY_HR_URL: https://cxorbia-backend-dev.web.app/api/tya/cinepolis/hr-live?format=json&vrm153=repair-${{ github.run_id }}
+      VRM_OUT: .tmp/vrm153-paula-authorized-dev-41
+      VRM_HR_URL: https://cxorbia-backend-dev.web.app/api/tya/cinepolis/hr-live?format=json&vrm153=paula
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+        with: {fetch-depth: 0}
       - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-      - name: step
+        with: {node-version: '24'}
+      - name: Verify exact source, 23 synthetic provider tests and no drift
         run: |
-         set -Eeuo pipefail
-         mkdir -p "$DRY_OUT"
-         test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
-         test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
-         test "$(jq -r '.currentMaterialization.sourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
-         test "$(jq -r '.currentMaterialization.sourceTree' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
-         test "$(jq -r '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")" = "cxorbia-live-hr-dev-00247-4cf"
-         test "$(jq -r '.currentMaterialization.hostingVersion' "$CANDIDATE_DESCRIPTOR")" = "sites/cxorbia-backend-dev/versions/09c4173f2d6525f4"
-         git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
-         node --check tools/qa/cxorbia-vrm151-final-canonical-dry-run.mjs
-         node --check tools/qa/cxorbia-vrm153-durable-repair-live.mjs
-      - name: step
-        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
-      - name: step
-        uses: google-github-actions/auth@v2
+          set -Eeuo pipefail
+          mkdir -p "$VRM_OUT"/{dry,before,after}
+          SOURCE="$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")"
+          test "$SOURCE" = "d9915f330a8d6e5fc2b4f2019872a4b03eaf7ced"
+          test "$(git rev-parse "$SOURCE^{tree}")" = "edf38a46ee4630d2bf0f31520cecc1c77f3b9835"
+          git diff --quiet "$SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          node --check tools/qa/cxorbia-vrm153-paula-authorized-dev-41.mjs
+          node --test backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs | tee "$VRM_OUT/source-tests.log"
+          grep -Fq '# pass 23' "$VRM_OUT/source-tests.log"
+          grep -Fq '# fail 0' "$VRM_OUT/source-tests.log"
+      - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
+      - uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-      - name: step
+      - name: Scope-only financial reconcile in DEV with independent HR and Firestore readback
         run: |
-         set -Eeuo pipefail
-         PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HR_URL="$DRY_HR_URL" OUT="$DRY_OUT" node tools/qa/cxorbia-vrm151-final-canonical-dry-run.mjs > "$DRY_OUT/console.log"
-         test "$(jq -r '.decision' "$DRY_OUT/result.json")" = "PASS_VRM151_FINAL_CANONICAL_HISTORICAL_DRY_RUN"
-         test "$(jq -r '.observed.canonicalSubmitted' "$DRY_OUT/result.json")" = "628"
-         test "$(jq -r '.observed.paid' "$DRY_OUT/result.json")" = "562"
-         test "$(jq -r '.observed.pending' "$DRY_OUT/result.json")" = "66"
-         test "$(jq -r '.observed.amountReviewRequired' "$DRY_OUT/result.json")" = "5"
-         test "$(jq -r '.observed.octoberTouched' "$DRY_OUT/result.json")" = "0"
-         test "$(jq -r '.observed.ambiguous' "$DRY_OUT/result.json")" = "0"
-         test "$(jq -r '.writes' "$DRY_OUT/result.json")" = "0"
-         test "$(jq -r '.hrWrites' "$DRY_OUT/result.json")" = "0"
-         test "$(jq -r '.bankWrites' "$DRY_OUT/result.json")" = "0"
-         test "$(jq -r '.financialMovementWrites' "$DRY_OUT/result.json")" = "0"
-      - name: step
-        run: |
-         set -Eeuo pipefail
-         PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" SOURCE_SHA="$FOCAL_SOURCE" SOURCE_TREE="$FOCAL_TREE" DRY_RESULT="$DRY_OUT/result.json" OUT="$REPAIR_OUT" node tools/qa/cxorbia-vrm153-durable-repair-live.mjs | tee "$REPAIR_OUT/console.log"
-         test "$(jq -r '.decision' "$REPAIR_OUT/result.json")" = "PASS_VRM153_DURABLE_HISTORICAL_REPAIR"
-         test "$(jq -r '.observed.canonicalSubmitted' "$REPAIR_OUT/result.json")" = "628"
-         test "$(jq -r '.observed.paid' "$REPAIR_OUT/result.json")" = "562"
-         test "$(jq -r '.observed.pending' "$REPAIR_OUT/result.json")" = "66"
-         test "$(jq -r '.observed.amountReviewRequired' "$REPAIR_OUT/result.json")" = "5"
-         test "$(jq -r '.observed.octoberTouched' "$REPAIR_OUT/result.json")" = "0"
-         test "$(jq -r '.observed.reconciliationRecords' "$REPAIR_OUT/result.json")" = "628"
-         test "$(jq -r '.providerAck' "$REPAIR_OUT/result.json")" = "true"
-         test "$(jq -r '.durableReadback' "$REPAIR_OUT/result.json")" = "true"
-         test "$(jq -r '.idempotentReplay' "$REPAIR_OUT/result.json")" = "true"
-         test "$(jq -r '.financialMovementWrites' "$REPAIR_OUT/result.json")" = "0"
-         test "$(jq -r '.bankWrites' "$REPAIR_OUT/result.json")" = "0"
-         test "$(jq -r '.hrWrites' "$REPAIR_OUT/result.json")" = "0"
-         test "$(jq -r '.externalPaymentWrites' "$REPAIR_OUT/result.json")" = "0"
-         test "$(jq -r '.production' "$REPAIR_OUT/result.json")" = "false"
-      - if: always()
-        uses: actions/upload-artifact@v4
+          set -Eeuo pipefail
+          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HR_URL="$VRM_HR_URL" OUT="$VRM_OUT/dry" node tools/qa/cxorbia-vrm151-final-canonical-dry-run.mjs > "$VRM_OUT/dry/console.log"
+          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HR_URL="$VRM_HR_URL" DRY_RESULT="$VRM_OUT/dry/result.json" OUT="$VRM_OUT/before" node tools/qa/cxorbia-vrm153-reconciliation-readback-diagnostic.mjs > "$VRM_OUT/before/console.log"
+          PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" DRY_RESULT="$VRM_OUT/dry/result.json" PREFLIGHT_RESULT="$VRM_OUT/before/result.json" OUT="$VRM_OUT" node tools/qa/cxorbia-vrm153-paula-authorized-dev-41.mjs
+          jq -e '.decision=="PASS_VRM153_PAULA_AUTHORIZED_DEV_41_DURABLE_RECONCILIATION" and .observed.visitsReconciled==41 and .observed.paid==599 and .observed.pending==44 and .idempotentReplay==true and .bankWrites==0 and .hrWrites==0 and .production==false' "$VRM_OUT/result.json" >/dev/null
+          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HR_URL="$VRM_HR_URL" DRY_RESULT="$VRM_OUT/dry/result.json" OUT="$VRM_OUT/after" node tools/qa/cxorbia-vrm153-reconciliation-readback-diagnostic.mjs > "$VRM_OUT/after/console.log"
+          jq -e '.decision=="PASS_VRM153_RECONCILIATION_READBACK_MATCH" and .counts.records==643 and .counts.uniqueVisits==643 and .counts.paid==599 and .counts.pending==44 and .counts.amountReviewRequired==5 and .sourceRevision==.hrRevision and .writes==0' "$VRM_OUT/after/result.json" >/dev/null
+      - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: cxorbia-vrm153-durable-repair-${{ github.run_id }}
-          path: .tmp/vrm153-durable-repair
+          name: cxorbia-vrm153-paula-authorized-dev-41-${{ github.run_id }}
+          path: .tmp/vrm153-paula-authorized-dev-41
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
