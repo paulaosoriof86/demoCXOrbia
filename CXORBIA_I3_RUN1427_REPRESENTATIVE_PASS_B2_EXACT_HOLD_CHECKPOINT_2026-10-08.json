@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "cxorbia.i3.run1427.representative-pass-b2-hold.v1",
+  "iteration": "I3",
+  "beforeControlHead": "448ceab1ee6c3d0197ad8d6e6c067a4a8e9b28d6",
+  "sourceSha": "9b87e479a1fb9825a22abf935eebff171ed720c4",
+  "sourceTree": "f2a384386e22028ffc4bf830adb1ec7e11e19696",
+  "devRun1426": {
+    "state": "PASS_REJECTED_PHASEA_EXACT_DEV_MATERIALIZATION",
+    "decision": "PASS_REJECTED_PHASEA_EXACT_DEV_MATERIALIZATION",
+    "sourceSha": "9b87e479a1fb9825a22abf935eebff171ed720c4",
+    "sourceTree": "f2a384386e22028ffc4bf830adb1ec7e11e19696",
+    "runId": 37887430592,
+    "runNumber": 1426,
+    "jobId": 113680533982,
+    "artifactId": 11596389015,
+    "artifactDigest": "sha256:961e3bac8b3fe96aadf9ef1ab0c4785b5cac25438cf33c9f06d45ba692dae383",
+    "runtimeRevision": "cxorbia-live-hr-dev-00283-kc5",
+    "runtimeDigest": "sha256:3bdb7ca745abcc51ae8a93aa9e4a83c631af58eb891c0c34b644d578969e586a",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/1abb0e5f2efa8cc2",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791522902099000",
+    "hrRevision": "9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "storageRulesDeploys": 0,
+    "production": false
+  },
+  "representativeProof": {
+    "sourceSha": "9b87e479a1fb9825a22abf935eebff171ed720c4",
+    "runId": 37887983716,
+    "runNumber": 1427,
+    "materializationRun": 1426,
+    "decision": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+    "clicksDecision": "PASS_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL",
+    "clicks": 35,
+    "actionFindings": 0,
+    "screenshots": 108,
+    "coverage": {
+      "admin": 34,
+      "shopper": 12,
+      "client": 10
+    },
+    "adminPostulations": "PASS",
+    "adminReservations": "PASS",
+    "finance": "PASS",
+    "certResources": "PASS",
+    "artifactId": 11597432076,
+    "artifactDigest": "sha256:f725d3ba56b199a3bd58fc5cef52fe7202b368c8972cef50b2c44de521799710",
+    "freshHRRevision": "9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef",
+    "writes": {
+      "auth": 0,
+      "hr": 0,
+      "provider": 0
+    },
+    "deploys": 0,
+    "production": false,
+    "exactB2EditAck": "PENDING",
+    "humanAcceptance": "PENDING",
+    "sixGT_HN": "PENDING"
+  },
+  "matrix": {
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V53.json",
+    "blob": "4b1b7619e201b28b72c9a127d014e7fcb7b8b3bb",
+    "domains": 21
+  },
+  "ledger": {
+    "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V354_2026-10-08.json",
+    "blob": "b7ffe29120bc7a4b6f416abdaec9b096d3467656",
+    "findings": 273
+  },
+  "productFilesChanged": 0,
+  "builds": 0,
+  "deploys": 0,
+  "hrWrites": 0,
+  "production": false,
+  "B2Ack": "PENDING",
+  "human": "PENDING",
+  "unresolvedGT6": "OPEN",
+  "unresolvedHNLogin": "OPEN",
+  "I3": "HOLD",
+  "nextAction": "I3 B2 precise signed Shopper display-only update with ACK and persistence after reload in isolated DEV, compare HR original unchanged. Run TinyFish visual when signed-in browser profile available; then Paula B2 acceptance. Six GT and HN exact identity owner must be diagnosed separately; no global rebuild, I4 or production."
+}

@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF_REQUIRED",
+  "status": "HOLD_I3_B2_EXACT_DISPLAY_WRITE_ACK_AND_HUMAN_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "9b87e479a1fb9825a22abf935eebff171ed720c4",
   "productTreeAuthority": "f2a384386e22028ffc4bf830adb1ec7e11e19696",
   "predecessorProductSourceSha": "4050e8afc952183131d48600b84260024ed78ac5",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V353_2026-10-08.json",
-  "findingsLedgerExpectedGitBlob": "adf7075d4d5fa773a5d2292739088d9ad57ce9d4",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V52.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V354_2026-10-08.json",
+  "findingsLedgerExpectedGitBlob": "b7ffe29120bc7a4b6f416abdaec9b096d3467656",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V53.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-273_RUN1426_DEV_MATERIALIZED__B2_EXACT_USER_E2E_AND_PAULA_VISUAL_PENDING__SIX_GT_HN_IDENTITY_HOLD_UNCHANGED",
+  "activeBlocker": "VRM273_RUN1425_SOURCE_PASS_RUN1426_EXACT_DEV_RUN1427_REPRESENTATIVE_PASS__B2_AUTH_WRITE_AND_VISUAL_HOLD__SIX_GT_HN_P0_UNRESOLVED",
   "nextFindingId": "VRM-274",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run ONLY existing I3 phasea-representative-same-artifact-live-reproof against immutable run1426 DEV source 9b87. Readback Admin/Shopper/Client and no regressions. Then B2 exact mock-provider ACK/reload/TinyFish/Paula human acceptance; six GT and HN separately with exact source adjudication. No build/redeploy, finance writes, HR writes or production.",
+  "exactNextAction": "I3 B2 precise signed Shopper display-only update with ACK and persistence after reload in isolated DEV, compare HR original unchanged. Run TinyFish visual when signed-in browser profile available; then Paula B2 acceptance. Six GT and HN exact identity owner must be diagnosed separately; no global rebuild, I4 or production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2653,7 +2653,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "129672250fb50ae9a430be9ff459b99ebd67aa4d",
+  "moduleTruthExpectedGitBlob": "4b1b7619e201b28b72c9a127d014e7fcb7b8b3bb",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -7809,7 +7809,9 @@
     "devArtifactForNewSource": "RUN1426_PASS",
     "human": "PENDING",
     "producedFromOriginalCandidate": true,
-    "production": false
+    "production": false,
+    "representativeSameArtifact": "PASS_RUN1427",
+    "exactB2Ack": "PENDING"
   },
   "currentMaterializationIsPredecessorOnly": false,
   "i3B2Run1425SourceProof": {
@@ -7850,5 +7852,38 @@
     "humanVisual": "PENDING",
     "gate20": "PENDING",
     "gate21": "PENDING"
+  },
+  "i3B2Run1427SameArtifactReadback": {
+    "sourceSha": "9b87e479a1fb9825a22abf935eebff171ed720c4",
+    "runId": 37887983716,
+    "runNumber": 1427,
+    "materializationRun": 1426,
+    "decision": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+    "clicksDecision": "PASS_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL",
+    "clicks": 35,
+    "actionFindings": 0,
+    "screenshots": 108,
+    "coverage": {
+      "admin": 34,
+      "shopper": 12,
+      "client": 10
+    },
+    "adminPostulations": "PASS",
+    "adminReservations": "PASS",
+    "finance": "PASS",
+    "certResources": "PASS",
+    "artifactId": 11597432076,
+    "artifactDigest": "sha256:f725d3ba56b199a3bd58fc5cef52fe7202b368c8972cef50b2c44de521799710",
+    "freshHRRevision": "9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef",
+    "writes": {
+      "auth": 0,
+      "hr": 0,
+      "provider": 0
+    },
+    "deploys": 0,
+    "production": false,
+    "exactB2EditAck": "PENDING",
+    "humanAcceptance": "PENDING",
+    "sixGT_HN": "PENDING"
   }
 }
