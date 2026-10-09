@@ -7,8 +7,8 @@
   "productSourceSha": "d9915f330a8d6e5fc2b4f2019872a4b03eaf7ced",
   "productTreeAuthority": "edf38a46ee4630d2bf0f31520cecc1c77f3b9835",
   "predecessorProductSourceSha": "61ee5001cbb0561a07addc36253b188d09cb2a38",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V348_2026-10-08.json",
-  "findingsLedgerExpectedGitBlob": "736c883c6c7f66f78fe68e37a01d8ca3ad78d526",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V349_2026-10-08.json",
+  "findingsLedgerExpectedGitBlob": "795e2c3fdb580ba9e1e54df9bccd4b05c7e09f74",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V47.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run existing canonical I3 VRM153 durable-repair job only for approved 34 August GT, 3 August HN paid 02-Oct and 4 September pending. Verify external HR revision/owner/ACK/idempotent replay/readback; stop on drift and never touch production or HR.",
+  "exactNextAction": "Retry existing I3 authorized DEV 41 finance command with source-proof exit code guard; inspect provider ACK and readback. 0 writes occurred run1414.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -7554,5 +7554,23 @@
     },
     "state": "EXECUTION_PENDING_ACK",
     "production": false
+  },
+  "i3Vrm153Run1414QaControlCorrection": {
+    "runId": 37866995480,
+    "classification": "MAPPING_FAILURE",
+    "rootCause": "Node.js v24 test reporter uses 'ℹ pass 23' instead of literal '# pass 23'; source tests passed but stale grep returned exit 1",
+    "confirmedTests": {
+      "tests": 23,
+      "pass": 23,
+      "fail": 0
+    },
+    "firstFailedStep": "Verify exact source, 23 synthetic provider tests and no drift",
+    "firebaseAuthStepReached": false,
+    "devFinancialWrites": 0,
+    "production": false,
+    "workflowBefore": "67db0ceec6da47c0e358c5f1b55fe90a674c6950",
+    "workflowAfter": "70b5680d3b5cc104b9863f510df0325575bb2256",
+    "fix": "remove presentation-dependent grep; node --test exit code and set -Eeuo pipefail are authoritative",
+    "next": "retrigger exact authorized 41 DEV action; do not reimport or widen scope"
   }
 }

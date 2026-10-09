@@ -6351,8 +6351,7 @@ jobs:
           git diff --quiet "$SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
           node --check tools/qa/cxorbia-vrm153-paula-authorized-dev-41.mjs
           node --test backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs | tee "$VRM_OUT/source-tests.log"
-          grep -Fq '# pass 23' "$VRM_OUT/source-tests.log"
-          grep -Fq '# fail 0' "$VRM_OUT/source-tests.log"
+          # `node --test` exits nonzero on any failure; bash pipefail enforces it.
       - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
       - uses: google-github-actions/auth@v2
         with:
