@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "9b87e479a1fb9825a22abf935eebff171ed720c4",
   "productTreeAuthority": "f2a384386e22028ffc4bf830adb1ec7e11e19696",
   "predecessorProductSourceSha": "4050e8afc952183131d48600b84260024ed78ac5",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V351_2026-10-08.json",
-  "findingsLedgerExpectedGitBlob": "13bd014cef475735b6d27112a5f6fc7cfee2b6f2",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V50.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V352_2026-10-08.json",
+  "findingsLedgerExpectedGitBlob": "bb45b1905cc089aa609f20c8e0091484f3bf2cfc",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V51.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-273_B2_SELF_DISPLAY_SOURCE_ONLY_PENDING_EXACT_SOURCE_PROOF__SIX_GT_IDENTITY_HN_LOGIN_AND_HUMAN_VISUAL_HOLD_PRESERVED",
+  "activeBlocker": "VRM-273_SOURCE_PROOF_PASS_RUN1425__ONE_EXACT_DEV_ARTIFACT_BUILD_RUNTIME_HOSTING_REQUIRED__GT_SIX_IDS_HN_HUMAN_PENDING_PRESERVED",
   "nextFindingId": "VRM-274",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run existing I3 Phase A source-proof only for 9b87e479. On PASS, capture exact source tests including validator; then close exact B2 provider E2E and the six GT crosswalk/HN cases before DEV materialization or I4. Do not rerun VRM153 DEV finance writes.",
+  "exactNextAction": "Use existing I3 vrm154-156-dev-materialization once for source 9b87e479, record Cloud Run runtime + Hosting + HR revision. No repeat VRM153 financial data writes, no legacy/production deploy. Then single-artifact B2/identity real E2E.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -928,7 +928,16 @@
     "hrWrites": 0,
     "production": false
   },
-  "pendingMaterialization": null,
+  "pendingMaterialization": {
+    "sourceSha": "9b87e479a1fb9825a22abf935eebff171ed720c4",
+    "sourceTree": "f2a384386e22028ffc4bf830adb1ec7e11e19696",
+    "existingLane": "vrm154-156-dev-materialization",
+    "stage": "ONE_DEV_BUILD_RUNTIME_AND_HOSTING_PENDING",
+    "production": false,
+    "buildsPlanned": 1,
+    "runtimeDevPlanned": 1,
+    "hostingDevPlanned": 1
+  },
   "lastVrm080Proof": {
     "runId": 36333245670,
     "runNumber": 525,
@@ -2653,7 +2662,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "edffba08b96cf6587a43a5c3598621c6acd76859",
+  "moduleTruthExpectedGitBlob": "13a581c691b3469bcfd4430c2f47aae95226470c",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -7811,5 +7820,18 @@
     "producedFromOriginalCandidate": true,
     "production": false
   },
-  "currentMaterializationIsPredecessorOnly": true
+  "currentMaterializationIsPredecessorOnly": true,
+  "i3B2Run1425SourceProof": {
+    "runId": 37887175242,
+    "runNumber": 1425,
+    "artifactId": 11597315360,
+    "artifactDigest": "sha256:317e84ec4be1afd3a425f38cebda86174486a67287e10baa065a526ee7d8e538",
+    "sourceSha": "9b87e479a1fb9825a22abf935eebff171ed720c4",
+    "sourceTree": "f2a384386e22028ffc4bf830adb1ec7e11e19696",
+    "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "tests": 44,
+    "pass": 44,
+    "fail": 0,
+    "scope": "SOURCE_ONLY_NO_DEV_OR_HUMAN"
+  }
 }

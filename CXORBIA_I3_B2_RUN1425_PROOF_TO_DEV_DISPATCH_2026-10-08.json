@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "cxorbia.i3.b2.run1425-source-proof-to-dev-dispatch.v1",
+  "iteration": "I3",
+  "controlBeforeRef": "7f71df0947f83f8f9fa519337c46227d7dd4f908",
+  "sourceSha": "9b87e479a1fb9825a22abf935eebff171ed720c4",
+  "sourceTree": "f2a384386e22028ffc4bf830adb1ec7e11e19696",
+  "sourceProof": {
+    "runId": 37887175242,
+    "tests": 44,
+    "pass": 44,
+    "fail": 0,
+    "artifactId": 11597315360,
+    "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF"
+  },
+  "nextJob": "vrm154-156-dev-materialization",
+  "matrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V51.json",
+  "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V352_2026-10-08.json",
+  "previousMaterializationRun1421": "PRESERVED_AS_PREDECESSOR_ONLY",
+  "newBuildPlanned": 1,
+  "newRuntimeDevPlanned": 1,
+  "newHostingDevPlanned": 1,
+  "realHrWritesAuthorized": false,
+  "production": "DO_NOT_TOUCH",
+  "I3": "HOLD",
+  "human": "PENDING",
+  "nextAction": "Use existing I3 vrm154-156-dev-materialization once for source 9b87e479, record Cloud Run runtime + Hosting + HR revision. No repeat VRM153 financial data writes, no legacy/production deploy. Then single-artifact B2/identity real E2E."
+}
