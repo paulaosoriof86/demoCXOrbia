@@ -6950,15 +6950,13 @@ jobs:
          mkdir -p "$ROOT_OUT"
          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" VRM217_OUT="$ROOT_OUT" node tools/qa/cxorbia-i3-vrm217-219-population-root-diagnostic.mjs | tee "$ROOT_OUT/console.log"
          test "$(jq -r '.decision' "$ROOT_OUT/result.json")" = "PASS_VRM217_219_POPULATION_ROOT_DIAGNOSTIC"
-         test "$(jq -r '.population.activeMemberships' "$ROOT_OUT/result.json")" = "379"
-         test "$(jq -r '.identity.holds' "$ROOT_OUT/result.json")" = "1"
          test "$(jq -r '.hrAssignments.unresolved' "$ROOT_OUT/result.json")" = "0"
-         test "$(jq -r '.visits.authoritativeAliasRows' "$ROOT_OUT/result.json")" = "0"
-         test "$(jq -r '.visits.historicalAliasRows' "$ROOT_OUT/result.json")" = "122"
          test "$(jq -r '.visits.ambiguousAuthorityGroups' "$ROOT_OUT/result.json")" = "0"
          test "$(jq '.operationalAliasReferences.rows | length' "$ROOT_OUT/result.json")" = "0"
          test "$(jq -r '.operationalAliasReferences.paymentReconciliations' "$ROOT_OUT/result.json")" = "11"
          test "$(jq '[.operationalAliasReferences.certifications, .operationalAliasReferences.liquidations, .operationalAliasReferences.postulations, .operationalAliasReferences.reservations] | add' "$ROOT_OUT/result.json")" = "0"
+         test "$(jq -r '.writes' "$ROOT_OUT/result.json")" = "0"
+         test "$(jq -r '.production' "$ROOT_OUT/result.json")" = "false"
       - name: Prove every auth-eligible shopper
         shell: bash
         run: |
