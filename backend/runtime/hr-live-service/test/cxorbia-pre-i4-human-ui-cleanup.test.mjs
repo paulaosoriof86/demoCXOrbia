@@ -96,6 +96,20 @@ test('PRE-I4 VRM-041 approved postulation never renders an undefined approval ac
   assert.match(s,/Aprobación registrada/);
 });
 
+test('VRM-157 Clientes renders explicit human fallbacks instead of undefined values',()=>{
+  const s=read('app/modules/clientes.js');
+  assert.match(s,/const countryLabel=c=>c&&c\.pais\?CX\.paisLabel\(c\.pais\):'—'/);
+  assert.match(s,/const stateLabel=c=>c&&c\.estado\?c\.estado:'Sin estado'/);
+  assert.doesNotMatch(s,/\$\{CX\.paisLabel\(c\.pais\)\}/);
+  assert.doesNotMatch(s,/\$\{ui\.bdg\(c\.estado,/);
+});
+
+test('VRM-157 visible shopper auth accepts a session that settled during a retry',()=>{
+  const s=read('.github/control/RECOVERY-I3-BROWSER-AUTH-LIFECYCLE-20260919.mjs');
+  assert.match(s,/persistedUid && \(!expectedUid \|\| persistedUid === String\(expectedUid\)\).*finishAuthenticatedSession/s);
+  assert.match(s,/return await finishAuthenticatedSession\(\)/);
+});
+
 test('PRE-I4 VRM-034 human acceptance is read-only for reservations',()=>{
   const s=read('RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs');
   assert.doesNotMatch(s,/CX\.reservas\.reservar\(/);

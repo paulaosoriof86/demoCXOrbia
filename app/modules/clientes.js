@@ -78,17 +78,19 @@ CX.module('clientes', ({data,ui})=>{
   const estadoTone={Activo:'g',Prospecto:'a',Inactivo:'n',Pausado:'a'};
   const list=()=>data.clients;
   const planLabel=(k)=>(CX.PLANS[k]&&CX.PLANS[k].label)||k||'—';
+  const countryLabel=c=>c&&c.pais?CX.paisLabel(c.pais):'—';
+  const stateLabel=c=>c&&c.estado?c.estado:'Sin estado';
 
   const row=(c)=>{ const projs=data.projectsForClient(c.id); const st=data.clientStats?data.clientStats(c.id):{visitas:0,cumpl:0,score:0};
     return `<tr data-cid="${c.id}" style="cursor:pointer">
       <td><div class="flex"><div class="rail-av" style="width:30px;height:30px;font-size:11px;background:linear-gradient(135deg,var(--brand),var(--brand-dark))">${(c.name||'?').split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase()}</div>
         <div><b>${c.name}</b><div style="font-size:11px;color:var(--t3)">${c.industry||'—'}</div></div></div></td>
-      <td style="font-size:12px">${CX.paisLabel(c.pais)}</td>
+      <td style="font-size:12px">${countryLabel(c)}</td>
       <td style="font-size:12px">${projs.length}</td>
       <td style="font-size:12px">${st.visitas||0}</td>
       <td>${ui.bdg((st.cumpl||0)+'%',(st.cumpl||0)>=80?'g':(st.cumpl||0)>=50?'a':'r')}</td>
       <td>${st.score?ui.bdg(st.score+'/100','p'):'<span class="muted">—</span>'}</td>
-      <td>${ui.bdg(c.estado,estadoTone[c.estado]||'n')}</td>
+      <td>${ui.bdg(stateLabel(c),estadoTone[c.estado]||'n')}</td>
     </tr>`; };
 
   /* drill genérico para KPIs */
@@ -99,9 +101,9 @@ CX.module('clientes', ({data,ui})=>{
     <div style="text-align:right;font-size:11.5px;color:var(--t2)">${ct.email||''}<br>${ct.whatsapp||''}</div></div>`;
 
   const editForm=(c)=>{
-    const paisOpts=CX.COUNTRIES.map(co=>`<option value="${co.c}" ${co.c===c.pais?'selected':''}>${CX.paisFlag(co.c)} ${co.n}</option>`).join('');
+    const paisOpts=(c.pais?'':`<option value="" selected>Sin país definido</option>`)+CX.COUNTRIES.map(co=>`<option value="${co.c}" ${co.c===c.pais?'selected':''}>${CX.paisFlag(co.c)} ${co.n}</option>`).join('');
     const planOpts=Object.keys(CX.PLANS).map(k=>`<option value="${k}" ${k===c.plan?'selected':''}>${CX.PLANS[k].label}</option>`).join('');
-    const estOpts=['Activo','Prospecto','Pausado','Inactivo'].map(e=>`<option ${e===c.estado?'selected':''}>${e}</option>`).join('');
+    const estOpts=(c.estado?'':`<option value="" selected>Sin estado</option>`)+['Activo','Prospecto','Pausado','Inactivo'].map(e=>`<option ${e===c.estado?'selected':''}>${e}</option>`).join('');
     return `<div class="grid g2" style="gap:12px 14px">
       <div style="grid-column:1/3"><label class="lbl">Nombre del cliente</label><input class="inp" id="cl_name" value="${c.name||''}"></div>
       <div style="grid-column:1/3"><label class="lbl">Industria / rubro</label><select class="sel" id="cl_ind">${CX.RUBROS.map(r=>`<option ${r===c.industry?'selected':''}>${r}</option>`).join('')}${CX.RUBROS.includes(c.industry)?'':`<option selected>${c.industry||''}</option>`}</select></div>
@@ -129,8 +131,8 @@ CX.module('clientes', ({data,ui})=>{
     ui.modal(c.name, `
       <div class="between" style="margin-bottom:14px;flex-wrap:wrap;gap:10px">
         <div><div class="card-t" style="font-size:16px">${c.name}</div>
-          <div style="font-size:12px;color:var(--t3)">${c.industry||'—'} · ${CX.paisLabel(c.pais)}</div>
-          <div class="flex" style="gap:6px;margin-top:6px">${ui.bdg(c.estado,estadoTone[c.estado]||'n')} ${ui.bdg(planLabel(c.plan),'b')} <span style="font-size:11px;color:var(--t3)">cliente desde ${c.desde||'—'}</span></div></div>
+          <div style="font-size:12px;color:var(--t3)">${c.industry||'—'} · ${countryLabel(c)}</div>
+          <div class="flex" style="gap:6px;margin-top:6px">${ui.bdg(stateLabel(c),estadoTone[c.estado]||'n')} ${ui.bdg(planLabel(c.plan),'b')} <span style="font-size:11px;color:var(--t3)">cliente desde ${c.desde||'—'}</span></div></div>
         <button class="btn btn-soft btn-sm" id="cl_edit">✎ Editar</button>
       </div>
       <div class="card-t" style="font-size:13px;margin-bottom:8px">📊 Desempeño histórico (todos sus proyectos)</div>
@@ -217,7 +219,7 @@ CX.module('clientes', ({data,ui})=>{
     }));
     const s=document.getElementById('clSearch');
     s&&s.addEventListener('input',()=>{ const q=s.value.toLowerCase().trim();
-      const f=L.filter(c=>!q||[c.name,c.industry,CX.paisName(c.pais)].join(' ').toLowerCase().includes(q));
+      const f=L.filter(c=>!q||[c.name,c.industry,c.pais?CX.paisName(c.pais):''].join(' ').toLowerCase().includes(q));
       document.getElementById('clBody').innerHTML=f.map(row).join('');
       document.querySelectorAll('#clBody [data-cid]').forEach(tr=>tr.addEventListener('click',()=>{const c=data.getClient(tr.dataset.cid);if(c)detail(c);}));
     });

@@ -66,6 +66,51 @@ test('PRE-I4 VRM-044 exact platform_created authority presents only the scoped p
   assert.equal(out.diagnostics.platformOnlyPresentationProjectScoped,true);
 });
 
+test('VRM-157 exact platform shopper never exposes a technical id as its human name',()=>{
+  const api=readModel();
+  const hr={currentProjectId:'cinepolis',currentPeriodId:'cinepolis-2026-10',sourceRevision:'rev-vrm157',projects:[],shoppers:[],visits:[],posts:[]};
+  const protectedPayload={shoppers:[{
+    id:'TYA_GT_TECHNICAL',shopperId:'TYA_GT_TECHNICAL',nombre:'TYA_GT_TECHNICAL',username:'technical.login',projectIds:['cinepolis'],
+    __providerExactIdentityLink:true,__providerIdentityAuthorityType:'platform_created'
+  }],visits:[],certifications:[],liquidations:[],postulations:[],applications:[]};
+  const out=api.compose({hr,protectedPayload}),row=out.shoppers[0];
+  assert.equal(row.id,'TYA_GT_TECHNICAL');
+  assert.equal(row.nombre,'Identidad pendiente de revisión');
+  assert.equal(row.displayNameReviewRequired,true);
+  assert.equal(row.identityReviewRequired===true,false);
+});
+
+test('VRM-157 distinct live HR humans are not collapsed by a stale profile alias',()=>{
+  const api=readModel();
+  const hr={currentProjectId:'cinepolis',currentPeriodId:'cinepolis-2026-10',sourceRevision:'rev-vrm157',projects:[],visits:[],posts:[],shoppers:[
+    {shopperId:'shopper_gt_first',nombre:'Erick',pais:'GT'},
+    {shopperId:'shopper_gt_second',nombre:'Erick Gómez',pais:'GT'}
+  ]};
+  const protectedPayload={shoppers:[{
+    id:'shopper_gt_second',shopperId:'shopper_gt_second',nombre:'Erick Gómez',username:'erick.gomez',identityAliases:['shopper_gt_first'],projectIds:['cinepolis']
+  }],visits:[],certifications:[],liquidations:[],postulations:[],applications:[]};
+  const out=api.compose({hr,protectedPayload});
+  assert.equal(JSON.stringify(out.shoppers.map(x=>x.id)),JSON.stringify(['shopper_gt_first','shopper_gt_second']));
+  assert.equal(JSON.stringify(out.shoppers.map(x=>x.nombre)),JSON.stringify(['Erick','Erick Gómez']));
+  assert.equal(out.diagnostics.suppressedDistinctHrIdentityCrosswalks.some(x=>x.liveShopperId==='shopper_gt_first'&&x.durableShopperId==='shopper_gt_second'),true);
+});
+
+test('VRM-157 tenant adjudication may still merge two proven aliases of the same human',()=>{
+  const api=readModel();
+  const hr={currentProjectId:'cinepolis',currentPeriodId:'cinepolis-2026-10',sourceRevision:'rev-vrm157',projects:[],visits:[],posts:[],shoppers:[
+    {shopperId:'shopper_gt_alias',nombre:'Julissa',pais:'GT'},
+    {shopperId:'shopper_gt_canonical',nombre:'Julissa Flores',pais:'GT'}
+  ]};
+  const protectedPayload={shoppers:[{
+    id:'shopper_gt_canonical',shopperId:'shopper_gt_canonical',nombre:'Julissa Flores',username:'julissa.flores',identityAliases:['shopper_gt_alias'],projectIds:['cinepolis'],
+    identityAuthority:'tenant_adjudication',identityAuthorityRef:'approved-human-review'
+  }],visits:[],certifications:[],liquidations:[],postulations:[],applications:[]};
+  const out=api.compose({hr,protectedPayload});
+  assert.equal(out.shoppers.length,1);
+  assert.equal(out.shoppers[0].id,'shopper_gt_canonical');
+  assert.equal(out.shoppers[0].nombre,'Julissa Flores');
+});
+
 test('PRE-I4 VRM-040 top-level live outOfRange remains true even when estado is another operational stage',()=>{
   const api=readModel();
   assert.equal(api.facets({estado:'agendada',outOfRange:true}).outOfRange,true);

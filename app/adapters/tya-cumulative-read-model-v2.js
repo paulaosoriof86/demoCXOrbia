@@ -202,6 +202,17 @@
     const profilesById=uniqueIndex(profiles,p=>p.id),profilesByAlias=new Map();
     for(const p of profiles){for(const alias of arr(p.exactAliases)){if(!profilesByAlias.has(alias))profilesByAlias.set(alias,[]);profilesByAlias.get(alias).push(p);}}
     const liveToCanonical=new Map(),identityConflicts=[];
+    const addIdentityCandidate=(candidates,liveId,candidate,authority)=>{
+      candidate=str(candidate);liveId=str(liveId);if(!candidate)return;
+      const candidateProfile=onlyUnique(profilesById,candidate);
+      const tenantAdjudicated=candidateProfile&&lower(candidateProfile.identityAuthority)==='tenant_adjudication'&&!!str(candidateProfile.identityAuthorityRef);
+      const distinctKnownHrIdentities=liveId&&candidate!==liveId&&baseShopperIds.has(liveId)&&baseShopperIds.has(candidate);
+      if(distinctKnownHrIdentities&&!tenantAdjudicated){
+        suppressedDistinctHrIdentityCrosswalks.push({liveShopperId:liveId,durableShopperId:candidate,reason:'distinct_live_hr_identities_must_not_crosswalk',authority});
+        return;
+      }
+      candidates.add(candidate);
+    };
     // VRM-168: promote exact visit-derived identity relations even when the transient
     // operational shopper id is absent from baseShoppers. Conflicts remain review-only.
     for(const [liveId,canonicalSet] of relation.entries()){
@@ -217,10 +228,10 @@
         continue;
       }
       const candidates=new Set();
-      const direct=onlyUnique(profilesById,liveId);if(direct)candidates.add(str(direct.id));
-      const alias=onlyUnique(profilesByAlias,liveId);if(alias)candidates.add(str(alias.id));
+      const direct=onlyUnique(profilesById,liveId);if(direct)addIdentityCandidate(candidates,liveId,direct.id,'direct_profile_id');
+      const alias=onlyUnique(profilesByAlias,liveId);if(alias)addIdentityCandidate(candidates,liveId,alias.id,'profile_exact_alias');
       const contractResolution=canonicalProfileIndex?.resolve?.(s);
-      if(contractResolution?.ok)candidates.add(str(contractResolution.canonicalId));
+      if(contractResolution?.ok)addIdentityCandidate(candidates,liveId,contractResolution.canonicalId,'canonical_profile_index');
       else if(contractResolution?.candidates?.length>1)identityConflicts.push({liveShopperId:liveId,candidates:contractResolution.candidates,reason:'ambiguous_exact_technical_anchor'});
       const rel=relation.get(liveId);if(rel&&rel.size===1)candidates.add([...rel][0]);
       if(candidates.size===1)liveToCanonical.set(liveId,[...candidates][0]);
@@ -331,6 +342,12 @@
       const trustedExact=p.__providerExactIdentityLink===true&&trustedPlatformAuthorities.has(authority);
       if(!pid||!projectScoped||!trustedExact)continue;
       const row=clone(p);row.id=pid;row.shopperId=pid;row.code=row.code||row.username||row.user||row.legacyShopperId||'';
+      const platformDisplayName=normalizedName(row);
+      if(technicalIdentityLabel(platformDisplayName,pid)){
+        row.nombre='Identidad pendiente de revisión';
+        row.displayNameReviewRequired=true;
+        row.displayNameReviewReason='human_display_name_unresolved';
+      }
       row.__fullProfilePlatformOnly=true;row.__authorizedExactPlatformIdentity=true;
       if(!shopperByCanonical.has(pid))shopperByCanonical.set(pid,row);
       platformOnlyPresentedIds.add(pid);
