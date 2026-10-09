@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM153_DEV_DURABLE_41_PASS_PENDING_BLOCK_E2E_AND_HUMAN",
+  "status": "HOLD_REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "PHASE_A_I3_8_MODULE_PENDING_CERTIFICATION_HUMAN_B2_B5_B8_AND_OTHERS",
+  "activeBlocker": "CURRENT_D9915F_SOURCE_NOT_YET_MATERIALIZED__ONE_CANONICAL_DEV_MATERIALIZATION_REQUIRED",
   "nextFindingId": "VRM-272",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Materialize current cumulative source once to DEV using existing I3 lane, run authenticated Admin+Shopper B2/B5/B8 finance E2E and TinyFish, obtain Paula incremental visual acceptance before Gate20/Gate21",
+  "exactNextAction": "Run the existing I3 vrm154-156-dev-materialization job exactly once for product source d9915f330a8d6e5fc2b4f2019872a4b03eaf7ced/tree edf38a46ee4630d2bf0f31520cecc1c77f3b9835; verify runtime revision/digest, Hosting version/release, exact served bytes and independent HR revision; no repeat VRM-153 writes and no production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -7591,5 +7591,16 @@
     "hrWrites": 0,
     "production": false,
     "jobDisableReason": "status no longer matches one-time authorized finance write job"
+  },
+  "i3CurrentSourceDevMaterializationDispatch20261008": {
+    "state": "DISPATCHED_PENDING_CANONICAL_WORKFLOW_READBACK",
+    "expectedControlParent": "3283102f062a60f3965c16f51902c9f6c66f9210",
+    "productSourceSha": "d9915f330a8d6e5fc2b4f2019872a4b03eaf7ced",
+    "productSourceTree": "edf38a46ee4630d2bf0f31520cecc1c77f3b9835",
+    "priorMaterializedSourceSha": "12f33a00430768ab11f2041eb278d33724e69401",
+    "selectedExistingLane": "vrm154-156-dev-materialization",
+    "authorizedScope": "ONE_DEV_BUILD_ONE_RUNTIME_DEV_DEPLOY_ONE_HOSTING_DEV_DEPLOY",
+    "vrm153RealDev41RepeatForbidden": true,
+    "production": false
   }
 }
