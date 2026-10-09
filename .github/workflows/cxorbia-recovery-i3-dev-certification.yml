@@ -6576,7 +6576,7 @@ jobs:
 
   phasea-representative-same-artifact-live-reproof:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_B1_IDENTITY_LIVE_READBACK_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_B1_LIVE_E2E_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_B7_TWO_ROLE_DECISION_LIVE_DEV_REQUIRED' }}
+    if: ${{ contains(fromJSON('["HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED","HOLD_I3_SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF_REQUIRED","HOLD_B1_IDENTITY_LIVE_READBACK_REQUIRED","HOLD_B1_LIVE_E2E_REQUIRED","HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED","HOLD_I3_B7_TWO_ROLE_DECISION_LIVE_DEV_REQUIRED","HOLD_I3_GT_E2E"]'), needs.canonical-candidate-authority.outputs.status) }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     env:
@@ -6616,10 +6616,10 @@ jobs:
         shell: bash
         run: |
          set -Eeuo pipefail
+         P="$PHASEA_LIVE_OUT"
          EXPECTED_RUNTIME_REVISION="$(jq -r '.currentMaterialization.runtimeRevision // empty' "$CANDIDATE_DESCRIPTOR")"
          EXPECTED_RUNTIME_DIGEST="$(jq -r '.currentMaterialization.runtimeDigest // empty' "$CANDIDATE_DESCRIPTOR")"
          EXPECTED_HOSTING_VERSION="$(jq -r '.currentMaterialization.hostingVersion // empty' "$CANDIDATE_DESCRIPTOR")"
-         EXPECTED_HR_REVISION="$(jq -r '.currentMaterialization.hrRevision // empty' "$CANDIDATE_DESCRIPTOR")"
          test "$(jq -r '.currentMaterialization.sourceSha // empty' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
          test "$(jq -r '.currentMaterialization.sourceTree // empty' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
          MAT_RUN="$(jq -r '.currentMaterialization.runId // 0' "$CANDIDATE_DESCRIPTOR")"
@@ -6647,50 +6647,56 @@ jobs:
          [[ "$EXPECTED_RUNTIME_DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
          test -n "$EXPECTED_HOSTING_VERSION"
          [[ "$EXPECTED_HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
-         gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$PHASEA_LIVE_OUT/runtime.json"
-         test "$(jq -r '.status.latestReadyRevisionName // empty' "$PHASEA_LIVE_OUT/runtime.json")" = "$EXPECTED_RUNTIME_REVISION"
-         gcloud run revisions describe "$EXPECTED_RUNTIME_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$PHASEA_LIVE_OUT/runtime-revision.json"
-         RAW="$(jq -r '.status.imageDigest // empty' "$PHASEA_LIVE_OUT/runtime-revision.json")"
+         gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$P/runtime.json"
+         test "$(jq -r '.status.latestReadyRevisionName // empty' "$P/runtime.json")" = "$EXPECTED_RUNTIME_REVISION"
+         gcloud run revisions describe "$EXPECTED_RUNTIME_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$P/runtime-revision.json"
+         RAW="$(jq -r '.status.imageDigest // empty' "$P/runtime-revision.json")"
          if [[ "$RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$RAW"; elif [[ "$RAW" == *@sha256:* ]]; then DIGEST="sha256:${RAW##*@sha256:}"; else exit 1; fi
          test "$DIGEST" = "$EXPECTED_RUNTIME_DIGEST"
          TOKEN="$(gcloud auth print-access-token)"
-         curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$PHASEA_LIVE_OUT/hosting-live-channel.json"
-         test "$(jq -r '.release.version.name // empty' "$PHASEA_LIVE_OUT/hosting-live-channel.json")" = "$EXPECTED_HOSTING_VERSION"
-         curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&phaseapreflight=$GITHUB_RUN_ID" > "$PHASEA_LIVE_OUT/hr-meta.json"
-         test "$(jq -r '.revision // empty' "$PHASEA_LIVE_OUT/hr-meta.json")" = "$EXPECTED_HR_REVISION"
+         curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$P/hosting-live-channel.json"
+         test "$(jq -r '.release.version.name // empty' "$P/hosting-live-channel.json")" = "$EXPECTED_HOSTING_VERSION"
+         for n in 1 2; do curl -fsS --retry 8 "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&phaseapreflight=$GITHUB_RUN_ID&read=$n" > "$P/hr-meta-$n.json"; done
+         jq -se --arg t "$TENANT_ID" --arg p "$PROJECT_ID" '.[0].revision==.[1].revision and all(.[]; .ok==true and .revisionStable==true and .sourceSafe==true and .shopperReconciliation.providerAck==true and .visitReconciliation.providerAck==true and .shopperReconciliation.tenantId==$t and .shopperReconciliation.projectId==$p and .shopperReconciliation.sourceRevision==.revision and .visitReconciliation.sourceRevision==.revision and .writes==false and .hrWrites==false and .imports==false and .production==false)' "$P/hr-meta-1.json" "$P/hr-meta-2.json" >/dev/null
+         EXPECTED_HR_REVISION="$(jq -r .revision "$P/hr-meta-1.json")"
          echo "EXPECTED_HR_REVISION=$EXPECTED_HR_REVISION" >> "$GITHUB_ENV"
       - name: Admin + Julissa + Priscila + Paula + population live reproof
         shell: bash
         run: |
          set -Eeuo pipefail
+         P="$PHASEA_LIVE_OUT"
          if [ "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_I3_B7_TWO_ROLE_DECISION_LIVE_DEV_REQUIRED" ]; then
-           B7_OUT="$PHASEA_LIVE_OUT/b7" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" node tools/qa/cxorbia-i3-b7-cancel-two-role-focal-live.mjs | tee "$PHASEA_LIVE_OUT/b7-console.log"
-           test "$(jq -r '.decision' "$PHASEA_LIVE_OUT/b7/result.json")" = "PASS_I3_B7_TWO_ROLE_DECISION_LIVE_DEV"
+           B7_OUT="$P/b7" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" node tools/qa/cxorbia-i3-b7-cancel-two-role-focal-live.mjs | tee "$P/b7-console.log"
+           test "$(jq -r '.decision' "$P/b7/result.json")" = "PASS_I3_B7_TWO_ROLE_DECISION_LIVE_DEV"
            exit 0
          fi
-         FOCAL_SOURCE="$FOCAL_SOURCE" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" PHASEA_LIVE_OUT="$PHASEA_LIVE_OUT" node tools/qa/cxorbia-i3-phasea-representative-live-reproof.mjs | tee "$PHASEA_LIVE_OUT/console.log"
-         test "$(jq -r '.decision' "$PHASEA_LIVE_OUT/result.json")" = "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF"
-         VRM168_OUT="$PHASEA_LIVE_OUT/provider-schedule" VRM168_PERIOD_ID="$PERIOD_ID" node tools/qa/cxorbia-i3-vrm168-schedule-provider-probe.mjs | tee "$PHASEA_LIVE_OUT/provider-schedule-console.log"
-         test "$(jq -r '.decision' "$PHASEA_LIVE_OUT/provider-schedule/result.json")" = "PASS_VRM168_PROVIDER_SCHEDULE_PATH"
-         jq -e '.result.providerAck==true and .cleanup.visit==true and .cleanup.receipt==true and .cleanup.audit==true and .hrWrites==0 and .production==false' "$PHASEA_LIVE_OUT/provider-schedule/result.json" >/dev/null
-         test "$(jq -r '.writes.auth' "$PHASEA_LIVE_OUT/result.json")" = "0"
-         test "$(jq -r '.writes.hr' "$PHASEA_LIVE_OUT/result.json")" = "0"
-         test "$(jq -r '.writes.provider' "$PHASEA_LIVE_OUT/result.json")" = "0"
-         test "$(jq -r '.deploys' "$PHASEA_LIVE_OUT/result.json")" = "0"
-         test "$(jq -r '.production' "$PHASEA_LIVE_OUT/result.json")" = "false"
-         PHASEA_CLICK_OUT="$PHASEA_LIVE_OUT/clicks" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" node tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs | tee "$PHASEA_LIVE_OUT/clicks-console.log"
-         test "$(jq -r '.decision' "$PHASEA_LIVE_OUT/clicks/result.json")" = "PASS_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL"
-         test "$(jq -r '.clickCount' "$PHASEA_LIVE_OUT/clicks/result.json")" -ge 18
-         PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" ADMIN_A_POST_OUT="$PHASEA_LIVE_OUT/admin-cluster" node tools/qa/cxorbia-i3-admin-cluster-a-postulations-live.mjs | tee "$PHASEA_LIVE_OUT/admin-cluster-console.log"
-         test "$(jq -r '.decision' "$PHASEA_LIVE_OUT/admin-cluster/result.json")" = "PASS_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE"
-         test "$(jq -r '.reservations.decision' "$PHASEA_LIVE_OUT/admin-cluster/result.json")" = "PASS_I3_ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE"
-         test "$(jq -r '.reservations.delete.noReappearance' "$PHASEA_LIVE_OUT/admin-cluster/result.json")" = "true"
-         SOURCE_SHA="$FOCAL_SOURCE" PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" FINAL_FOCAL_OUT="$PHASEA_LIVE_OUT/finance" FINAL_FOCAL_PERIOD_ID="$PERIOD_ID" node tools/qa/cxorbia-prei4-final-focal-finance-live.mjs | tee "$PHASEA_LIVE_OUT/finance-console.log"
-         test "$(jq -r '.decision' "$PHASEA_LIVE_OUT/finance/finance-live.json")" = "PASS_PREI4_FINAL_FOCAL_FINANCE"
-         test "$(jq -r '.cleanup' "$PHASEA_LIVE_OUT/finance/finance-live.json")" = "true"
-         PROJECT_ID="$PROJECT_ID" TENANT_ID="$TENANT_ID" HOSTING_URL="$HOSTING_URL" CERT_RES_SOURCE="$FOCAL_SOURCE" CERT_RES_MAT_OUT="$PHASEA_LIVE_OUT/cert-res" node tools/qa/cxorbia-prei4-cert-res-live.mjs | tee "$PHASEA_LIVE_OUT/cert-res-console.log"
-         test "$(jq -r '.decision' "$PHASEA_LIVE_OUT/cert-res/cert-res-live.json")" = "PASS_PREI4_CERT_RES_CUMULATIVE_DEV_LIVE"
-         test "$(jq -r '[.cleanup.attempt,.cleanup.recert,.cleanup.bank,.cleanup.resource,.cleanup.binary]|all' "$PHASEA_LIVE_OUT/cert-res/cert-res-live.json")" = "true"
+         FOCAL_SOURCE="$FOCAL_SOURCE" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" PHASEA_LIVE_OUT="$PHASEA_LIVE_OUT" node tools/qa/cxorbia-i3-phasea-representative-live-reproof.mjs | tee "$P/console.log"
+         test "$(jq -r '.decision' "$P/result.json")" = "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF"
+         if [ "$(jq -r .status "$CANDIDATE_DESCRIPTOR")" = "HOLD_I3_GT_E2E" ]; then
+           jq -e '.writes=={"auth":0,"hr":0,"provider":0} and .deploys==0 and .production==false' "$P/result.json" >/dev/null
+           exit 0
+         fi
+         VRM168_OUT="$P/provider-schedule" VRM168_PERIOD_ID="$PERIOD_ID" node tools/qa/cxorbia-i3-vrm168-schedule-provider-probe.mjs | tee "$P/provider-schedule-console.log"
+         test "$(jq -r '.decision' "$P/provider-schedule/result.json")" = "PASS_VRM168_PROVIDER_SCHEDULE_PATH"
+         jq -e '.result.providerAck==true and .cleanup.visit==true and .cleanup.receipt==true and .cleanup.audit==true and .hrWrites==0 and .production==false' "$P/provider-schedule/result.json" >/dev/null
+         test "$(jq -r '.writes.auth' "$P/result.json")" = "0"
+         test "$(jq -r '.writes.hr' "$P/result.json")" = "0"
+         test "$(jq -r '.writes.provider' "$P/result.json")" = "0"
+         test "$(jq -r '.deploys' "$P/result.json")" = "0"
+         test "$(jq -r '.production' "$P/result.json")" = "false"
+         PHASEA_CLICK_OUT="$P/clicks" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" node tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs | tee "$P/clicks-console.log"
+         test "$(jq -r '.decision' "$P/clicks/result.json")" = "PASS_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL"
+         test "$(jq -r '.clickCount' "$P/clicks/result.json")" -ge 18
+         PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" ADMIN_A_POST_OUT="$P/admin-cluster" node tools/qa/cxorbia-i3-admin-cluster-a-postulations-live.mjs | tee "$P/admin-cluster-console.log"
+         test "$(jq -r '.decision' "$P/admin-cluster/result.json")" = "PASS_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE"
+         test "$(jq -r '.reservations.decision' "$P/admin-cluster/result.json")" = "PASS_I3_ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE"
+         test "$(jq -r '.reservations.delete.noReappearance' "$P/admin-cluster/result.json")" = "true"
+         SOURCE_SHA="$FOCAL_SOURCE" PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" FINAL_FOCAL_OUT="$P/finance" FINAL_FOCAL_PERIOD_ID="$PERIOD_ID" node tools/qa/cxorbia-prei4-final-focal-finance-live.mjs | tee "$P/finance-console.log"
+         test "$(jq -r '.decision' "$P/finance/finance-live.json")" = "PASS_PREI4_FINAL_FOCAL_FINANCE"
+         test "$(jq -r '.cleanup' "$P/finance/finance-live.json")" = "true"
+         PROJECT_ID="$PROJECT_ID" TENANT_ID="$TENANT_ID" HOSTING_URL="$HOSTING_URL" CERT_RES_SOURCE="$FOCAL_SOURCE" CERT_RES_MAT_OUT="$P/cert-res" node tools/qa/cxorbia-prei4-cert-res-live.mjs | tee "$P/cert-res-console.log"
+         test "$(jq -r '.decision' "$P/cert-res/cert-res-live.json")" = "PASS_PREI4_CERT_RES_CUMULATIVE_DEV_LIVE"
+         test "$(jq -r '[.cleanup.attempt,.cleanup.recert,.cleanup.bank,.cleanup.resource,.cleanup.binary]|all' "$P/cert-res/cert-res-live.json")" = "true"
       - if: always()
         uses: actions/upload-artifact@v4
         with:

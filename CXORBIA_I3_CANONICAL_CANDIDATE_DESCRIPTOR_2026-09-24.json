@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM215_SHOPPER_POPULATION_REPROOF_REQUIRED",
+  "status": "HOLD_I3_GT_E2E",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM274_DEV_MATERIALIZED_HN_EXACT_POPULATION_E2E_REQUIRED",
+  "activeBlocker": "I3_GT_REPRESENTATIVE_SAME_ARTIFACT_E2E_REQUIRED_AFTER_HN_RUN1444_PASS",
   "nextFindingId": "VRM-275",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run existing VRM215 shopper population live reproof on current materialized DEV artifact, including explicit HN target shopper_hn_1691aecc2c exact principal/country/period/visit assertion. Keep I3 HOLD; no production, no I4, no HR/Auth/Firestore writes.",
+  "exactNextAction": "Run existing Phase A representative same-artifact GT/Admin live reproof for Julissa, Priscila and Paula on unchanged DEV product source and verified current HR revision. Stop before scheduling/finance/postulations/provider-write probes. Preserve HN run1444 PASS; classify new FAIL under exact owner. I3 HOLD.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
