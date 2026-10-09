@@ -3,7 +3,7 @@ set -Eeuo pipefail
 MODE="${1:-}"
 OUT=".tmp/i3-phasea-completion"
 ROOT="https://cxorbia-backend-dev.web.app"
-ASSETS=(modules/beneficios.js modules/dashboard.js modules/postulaciones.js modules/finanzas.js modules/cert.js modules/misvisitas.js modules/reservas.js modules/soporte.js modules/novedades.js core/backend-bulletins.js adapters/cxorbia-command-adapter-v1.js adapters/cxorbia-cxdata-command-boundary-v1.js adapters/tya-canonical-shopper-portal-v2.js adapters/tya-c6-domain-consistency-bridge.js adapters/tya-canonical-reservations-guard-v2.js data/tya-payment-history-source-safe.js adapters/tya-financial-canonical-source-safe-adapter.js styles/layout.css core/cliente-data.js modules/cliente.js core/ui.js core/router.js adapters/tya-cumulative-read-model-v2.js modules/midia.js modules/visitas.js modules/visita-detalle.js styles/theme.css index-backend-dev.html)
+ASSETS=(modules/beneficios.js modules/dashboard.js modules/postulaciones.js modules/finanzas.js modules/cert.js modules/misvisitas.js modules/reservas.js modules/soporte.js modules/novedades.js core/backend-bulletins.js adapters/cxorbia-command-adapter-v1.js adapters/cxorbia-cxdata-command-boundary-v1.js adapters/tya-canonical-shopper-portal-v2.js adapters/tya-c6-domain-consistency-bridge.js adapters/tya-protected-auth-hr-authority-bridge-v2.js adapters/tya-c6-unified-human-runtime-v1.js adapters/tya-canonical-reservations-guard-v2.js data/tya-payment-history-source-safe.js adapters/tya-financial-canonical-source-safe-adapter.js styles/layout.css core/cliente-data.js modules/cliente.js core/ui.js core/router.js adapters/tya-cumulative-read-model-v2.js modules/midia.js modules/visitas.js modules/visita-detalle.js styles/theme.css index-backend-dev.html)
 case "$MODE" in
 source-proof)
   test "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED"
@@ -11,7 +11,7 @@ source-proof)
   test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
   test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
   git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
-  for f in app/modules/beneficios.js app/modules/dashboard.js app/modules/postulaciones.js app/modules/finanzas.js app/modules/cert.js app/modules/misvisitas.js app/adapters/tya-canonical-shopper-portal-v2.js app/adapters/tya-c6-domain-consistency-bridge.js app/adapters/tya-canonical-reservations-guard-v2.js app/adapters/tya-financial-canonical-source-safe-adapter.js; do node --check "$f"; done
+  for f in app/modules/beneficios.js app/modules/dashboard.js app/modules/postulaciones.js app/modules/finanzas.js app/modules/cert.js app/modules/misvisitas.js app/adapters/tya-canonical-shopper-portal-v2.js app/adapters/tya-c6-domain-consistency-bridge.js app/adapters/tya-protected-auth-hr-authority-bridge-v2.js app/adapters/tya-c6-unified-human-runtime-v1.js app/adapters/tya-canonical-reservations-guard-v2.js app/adapters/tya-financial-canonical-source-safe-adapter.js; do node --check "$f"; done
   grep -Fq "data-dashboard-actions" app/modules/dashboard.js
   grep -Fq "c6PrimarySurfacePreserved" app/adapters/tya-c6-domain-consistency-bridge.js
   grep -Fq "canonicalBaseSucursales" app/adapters/tya-canonical-reservations-guard-v2.js
