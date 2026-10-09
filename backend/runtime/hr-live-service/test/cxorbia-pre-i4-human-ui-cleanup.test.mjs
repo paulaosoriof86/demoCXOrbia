@@ -106,8 +106,16 @@ test('VRM-157 Clientes renders explicit human fallbacks instead of undefined val
 
 test('VRM-157 visible shopper auth accepts a session that settled during a retry',()=>{
   const s=read('.github/control/RECOVERY-I3-BROWSER-AUTH-LIFECYCLE-20260919.mjs');
-  assert.match(s,/persistedUid && \(!expectedUid \|\| persistedUid === String\(expectedUid\)\).*finishAuthenticatedSession/s);
+  assert.match(s,/if \(persistedUid\) return await finishAuthenticatedSession\(\)/);
+  assert.match(s,/VISIBLE_LOGIN_PRINCIPAL_CLAIMS_MISMATCH/);
   assert.match(s,/return await finishAuthenticatedSession\(\)/);
+});
+
+test('VRM-272 human name gate prefers an exact live HR row before a stale mapped alias',()=>{
+  const s=read('RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs');
+  const exact=s.indexOf("const exactDirect=list.filter(x=>rowId(x)===id)");
+  const mapped=s.indexOf("const direct=list.filter(x=>rowId(x)===mapped)");
+  assert.ok(exact>=0&&mapped>exact);
 });
 
 test('PRE-I4 VRM-034 human acceptance is read-only for reservations',()=>{

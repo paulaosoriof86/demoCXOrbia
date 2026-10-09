@@ -8,12 +8,12 @@
   "productTreeAuthority": "c3a58c3425d35a43c013de555d4e7f13fac7639b",
   "predecessorProductSourceSha": "d9915f330a8d6e5fc2b4f2019872a4b03eaf7ced",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V350_2026-10-08.json",
-  "findingsLedgerExpectedGitBlob": "737174a1078a161c777202d323306ff24a603496",
+  "findingsLedgerExpectedGitBlob": "3b700b77083f23422afd59d40a35376538cff72f",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V48.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-272_RUN1421_EXACT_DEV_MATERIALIZED__ONE_SAME_ARTIFACT_AUTHENTICATED_LIVE_REPROOF_REQUIRED",
+  "activeBlocker": "VRM-272_RUN1422_PRODUCT_FIXES_PASS__TWO_CONTROL_FALSE_NEGATIVES_FIXED__SAME_ARTIFACT_REPROOF_REQUIRED",
   "nextFindingId": "VRM-273",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run existing I3 vrm157-dev-readback-only against the unchanged run1421 DEV artifact: verify exact runtime, Hosting and served bytes, independent HR revision, authenticated Admin+Shopper+Client broad E2E, B2 profile, B5 benefits, B8 finance and VRM-272 human acceptance. No build, no redeploy, no VRM-153 repeat and no production.",
+  "exactNextAction": "Re-run only existing I3 same-artifact readback against unchanged run1421 DEV artifact after the run1422 control-only corrections: prefer an exact rendered live-HR row before a stale mapped alias in the human gate, and accept a persisted visible-login session only after exact signed tenant/project/shopper claims validation. No product change, build, redeploy, VRM-153 repeat or production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -7740,6 +7740,50 @@
     "runtimeDeploys": 1,
     "hostingDeploys": 1,
     "storageRulesDeploys": 0,
+    "vrm153Repeat": false,
+    "production": false
+  },
+  "i3Run1422SameArtifactReadback": {
+    "runId": 37872672308,
+    "runNumber": 1422,
+    "conclusion": "failure",
+    "representativeJobId": 113634129105,
+    "representativeConclusion": "success",
+    "representativeArtifactId": 11591865091,
+    "representativeArtifactDigest": "sha256:10fc041297cd5afb3c55f3465829d2fd31c09291e018bebec7b8e409bbb390c2",
+    "vrm157JobId": 113634129842,
+    "vrm157Conclusion": "failure",
+    "vrm157ArtifactId": 11592060378,
+    "vrm157ArtifactDigest": "sha256:a5e0407cb256387b38e707a044814e1b829166527134836b5d6b954e5c364b2c",
+    "humanDecision": "HOLD_I3_HUMAN_LIVE_ACCEPTANCE",
+    "resolvedByProduct": {
+      "technicalPrimaryNames": 0,
+      "visibleUndefinedNull": 0,
+      "hrShoppers": 201,
+      "expectedCanonicalHrShoppers": 201,
+      "platformOnly": 2,
+      "duplicateShopperIds": 0,
+      "runtimeOutOfRange": 2,
+      "expectedOutOfRange": 2
+    },
+    "remainingControlFalseNegatives": [
+      "HUMAN_GATE_STALE_ALIAS_SELECTED_BEFORE_EXACT_LIVE_HR_ROW",
+      "VISIBLE_LOGIN_UID_EQUALITY_USED_BEFORE_EXACT_SIGNED_SHOPPER_CLAIMS"
+    ],
+    "controlFix": {
+      "files": [
+        ".github/control/RECOVERY-I3-BROWSER-AUTH-LIFECYCLE-20260919.mjs",
+        "RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs",
+        "backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-ui-cleanup.test.mjs"
+      ],
+      "focalTests": 24,
+      "pass": 24,
+      "fail": 0,
+      "productFilesChanged": 0
+    },
+    "builds": 0,
+    "runtimeDeploys": 0,
+    "hostingDeploys": 0,
     "vrm153Repeat": false,
     "production": false
   }

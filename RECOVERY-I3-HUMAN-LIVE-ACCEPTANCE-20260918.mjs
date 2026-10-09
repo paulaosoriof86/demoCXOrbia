@@ -165,7 +165,13 @@ const summary=await p.evaluate(({projectId,hrNameRows,unresolvedIdentityIds,expe
  const identityMap=d.__identityMap&&typeof d.__identityMap==='object'?d.__identityMap:{};
  const rowFor=id=>{
    id=String(id||'');const mapped=String(identityMap[id]||id),rowId=x=>String(x?.id||x?.shopperId||'');
-   const direct=list.filter(x=>rowId(x)===mapped||(!identityMap[id]&&rowId(x)===id));
+   // Prefer an exact rendered live-HR row. A stale alias may still remain in the
+   // diagnostic identity map even though the composer correctly kept two live
+   // humans separate. Only fall through to the canonical row when no direct row
+   // exists (the expected tenant-adjudicated collapse case).
+   const exactDirect=list.filter(x=>rowId(x)===id);
+   if(exactDirect.length===1)return exactDirect[0];if(exactDirect.length>1)return null;
+   const direct=list.filter(x=>rowId(x)===mapped);
    if(direct.length===1)return direct[0];if(direct.length>1)return null;
    const aliases=list.filter(x=>{
      const exact=Array.isArray(x?.exactAliases)&&x.exactAliases.map(String).includes(id);

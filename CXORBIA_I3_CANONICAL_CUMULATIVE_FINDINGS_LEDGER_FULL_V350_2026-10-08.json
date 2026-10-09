@@ -18880,7 +18880,7 @@
       ],
       "severity": "P0",
       "title": "Run1418 exposed stale identity alias collapse, undefined Client labels, and an authenticated shopper retry false negative",
-      "state": "EXACT_DEV_MATERIALIZED_SAME_ARTIFACT_REPROOF_REQUIRED",
+      "state": "PRODUCT_FIXES_PASS_CONTROL_FALSE_NEGATIVES_FIXED_SAME_ARTIFACT_REPROOF_REQUIRED",
       "rootCauseStatus": "PROVEN_BY_RUN1418_AND_FOCAL_REGRESSION",
       "observed": {
         "runId": 37869164559,
@@ -18915,9 +18915,28 @@
       "acceptance": {
         "sourceProof": "PASS_LOCAL_FOCAL_23_OF_23",
         "devMaterialization": "PASS_RUN1421_EXACT_DEV_1_BUILD_1_RUNTIME_1_HOSTING",
-        "sameArtifactE2E": "PENDING",
+        "sameArtifactE2E": "REPRESENTATIVE_PASS_RUN1422_FULL_HUMAN_CONTROL_REPROOF_REQUIRED",
         "humanVisual": "PENDING",
         "guard": "Source proof alone does not close this finding"
+      },
+      "run1422ControlCorrection": {
+        "runId": 37872672308,
+        "representativePass": true,
+        "technicalPrimaryNames": 0,
+        "visibleUndefinedNull": 0,
+        "hrPopulationFormulaPass": true,
+        "controlFalseNegatives": [
+          "stale alias selected before exact live HR row",
+          "UID equality checked before exact signed shopper claims"
+        ],
+        "controlFilesChanged": 3,
+        "productFilesChanged": 0,
+        "focalTests": 24,
+        "focalPass": 24,
+        "focalFail": 0,
+        "builds": 0,
+        "deploys": 0,
+        "production": false
       },
       "blocking": true,
       "production": false

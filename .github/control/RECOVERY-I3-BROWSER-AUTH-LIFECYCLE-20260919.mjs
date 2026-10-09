@@ -127,7 +127,11 @@ export async function settleVisibleShopperAuth({ page, expectedUid, rawShopperId
     try {
       await cleanNavigate(page, baseUrl, attempt);
       const persistedUid = await page.evaluate(() => String(window.firebase?.auth?.().currentUser?.uid || '')).catch(() => '');
-      if (persistedUid && (!expectedUid || persistedUid === String(expectedUid))) return await finishAuthenticatedSession();
+      // A visible credential may legitimately resolve to the active canonical Auth
+      // principal instead of the membership row enumerated before login.  The
+      // authoritative safety check is the signed token's exact tenant/project/
+      // shopper claims inside finishAuthenticatedSession, not UID equality here.
+      if (persistedUid) return await finishAuthenticatedSession();
       await page.waitForFunction(() =>
         typeof window.CX?.backendAuth?.selectedRole === 'function' &&
         !!document.querySelector('.role-btn[data-role="shopper"]') &&
