@@ -39,3 +39,41 @@ test('B1 preserves active-period and exact-assignment filters',()=>{
   assert.match(s,/recordPeriodId===String\(data\.currentPeriodId/);
   assert.match(s,/f\.assigned===true&&f\.realized!==true&&f\.cancelled!==true/);
 });
+
+test('I3 P0 HN shopper readiness fails closed until exact HR profile country and periods resolve',()=>{
+  const gate=read('app/adapters/tya-c6-unified-human-runtime-v1.js');
+  const bridge=read('app/adapters/tya-protected-auth-hr-authority-bridge-v2.js');
+  assert.match(gate,/exactSessionShopperReady===true/);
+  assert.match(gate,/shopperPrincipalClaimsVerified===true/);
+  assert.match(gate,/Number\(authority\.authorizedPeriods\|\|0\)>0/);
+  assert.match(gate,/arr\(authority\.authorizedPeriodIds\)\.length>0/);
+  assert.match(bridge,/SHOPPER_EXACT_HR_PROFILE_COUNTRY_PERIOD_REQUIRED/);
+  assert.match(bridge,/shopperReadiness\(profileInfo,result,CX\.data,claims\)/);
+  assert.match(bridge,/shopperCountry:shopperReady\.country/);
+  assert.match(bridge,/authorizedPeriodIds:clone\(shopperReady\.authorizedPeriodIds\|\|\[\]\)/);
+  assert.doesNotMatch(bridge,/applied:true,version:'v2-dynamic-live-source-session-profile-preserved',reason/);
+});
+
+test('I3 P0 HN protected authority is bound to current UID claims membership tenant project and shopper',()=>{
+  const bridge=read('app/adapters/tya-protected-auth-hr-authority-bridge-v2.js');
+  const gate=read('app/adapters/tya-c6-unified-human-runtime-v1.js');
+  assert.match(bridge,/function principalUid\(\)/);
+  assert.match(bridge,/getIdTokenResult\(false\)/);
+  assert.match(bridge,/SHOPPER_PRINCIPAL_CLAIMS_MEMBERSHIP_MISMATCH/);
+  assert.match(bridge,/str\(claims\?\.uid\)===uid/);
+  assert.match(bridge,/str\(state\?\.actorUid\)===uid/);
+  assert.match(bridge,/CX\.data\.__sessionShopperProfile=null/);
+  assert.match(bridge,/str\(s\.actorUid\)===principalUid\(\)/);
+  assert.match(bridge,/str\(s\.projectId\)===scope\.projectId/);
+  assert.match(gate,/str\(authority\.actorUid\)===uid/);
+  assert.match(gate,/str\(authority\.rawShopperId\)===str\(ctx\.shopperId\)/);
+});
+
+test('I3 P0 HN exact identity ambiguity is blocked without fuzzy merge or global GT HN scope',()=>{
+  const bridge=read('app/adapters/tya-protected-auth-hr-authority-bridge-v2.js');
+  assert.match(bridge,/ambiguous_exact_identity/);
+  assert.match(bridge,/no_exact_identity/);
+  assert.match(bridge,/byId\.size!==1/);
+  assert.doesNotMatch(bridge,/scopePaises:\s*\['GT','HN'\]|scopePaises:\s*\["GT","HN"\]/);
+  assert.doesNotMatch(bridge,/fuzzy|similarity|levenshtein/i);
+});

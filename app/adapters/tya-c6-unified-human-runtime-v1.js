@@ -318,11 +318,30 @@
     const authority=window.CX_PROTECTED_AUTH_HR_AUTHORITY;
     const data=CX.data||{};
     const periodId=str(data.currentPeriodId),projectId=str(data.currentProjectId);
-    return !!(authority?.applied===true
+    let ctx=null,uid='';
+    try{ctx=CX.backendAuth?.context?.()||CX.backend?.authContext?.()||null;}catch(_){ctx=null;}
+    try{uid=str(window.firebase?.auth?.().currentUser?.uid);}catch(_){uid='';}
+    const baseReady=!!(authority?.applied===true
       && arr(data.projects).length>0
       && arr(data._visitas).length>0
       && periodId
-      && periodId!==projectId);
+      && periodId!==projectId
+      && (!str(authority.tenantId)||str(authority.tenantId)===str(ctx?.tenantId))
+      && (!str(authority.projectId)||str(authority.projectId)===projectId));
+    if(!baseReady)return false;
+    if(str(ctx?.role)!=='shopper')return true;
+    return !!(ctx?.authenticated===true
+      && uid
+      && str(authority.actorUid)===uid
+      && str(authority.authNamespace)==='shopper'
+      && str(authority.rawShopperId)===str(ctx.shopperId)
+      && authority.exactSessionShopperReady===true
+      && authority.shopperPrincipalClaimsVerified===true
+      && str(authority.canonicalShopperId)
+      && str(authority.shopperCountry)
+      && Number(authority.ownVisits||0)>0
+      && Number(authority.authorizedPeriods||0)>0
+      && arr(authority.authorizedPeriodIds).length>0);
   }
 
   function requestHumanAuthority(reason){
