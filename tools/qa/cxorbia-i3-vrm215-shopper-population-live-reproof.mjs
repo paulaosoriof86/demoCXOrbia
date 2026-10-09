@@ -14,6 +14,7 @@ const PROGRAM=String(process.env.PROJECT_ID||'cinepolis').trim();
 const ROOT=String(process.env.HOSTING_URL||'https://cxorbia-backend-dev.web.app').replace(/\/$/,'');
 const EXPECTED_HR=String(process.env.EXPECTED_HR_REVISION||'').trim();
 const OUT=String(process.env.VRM215_OUT||'.tmp/i3-vrm215-shopper-population').trim();
+const TARGET_HN_SHOPPER=String(process.env.VRM215_TARGET_HN_SHOPPER||'shopper_hn_1691aecc2c').trim();
 const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[],uniq=v=>[...new Set(arr(v).map(str).filter(Boolean))];
 const sha=v=>crypto.createHash('sha256').update(String(v),'utf8').digest('hex'),norm=v=>str(v).toLowerCase();
 const internalEmail=login=>sha(TENANT+'\0shopper\0'+norm(login)).slice(0,48)+'@auth.cxorbia.invalid';
@@ -24,7 +25,7 @@ const visitKey=v=>str(v.hrRowId||v.visitKey||v.id||v.visitId);
 const REQUIRED_MODULES=['midia','miperfil','misvisitas','aprendizaje','cert','beneficios'];
 
 fs.mkdirSync(OUT,{recursive:true});
-const result={schemaVersion:'cxorbia.i3.vrm215.shopper-population.v2',decision:'HOLD',tenantId:TENANT,projectId:PROGRAM,expectedHrRevision:EXPECTED_HR,membershipUniverseCount:0,reviewOnlyExcludedCount:0,reviewOnlyPass:false,reviewOnlyExcluded:[],populationCount:0,loginPass:0,selfScopePass:0,routeContractPass:0,population:[],errors:[],writes:0,production:false};
+const result={schemaVersion:'cxorbia.i3.vrm215.shopper-population.v2',decision:'HOLD',tenantId:TENANT,projectId:PROGRAM,expectedHrRevision:EXPECTED_HR,targetHnShopperId:TARGET_HN_SHOPPER,hnTarget:null,membershipUniverseCount:0,reviewOnlyExcludedCount:0,reviewOnlyPass:false,reviewOnlyExcluded:[],populationCount:0,loginPass:0,selfScopePass:0,routeContractPass:0,population:[],errors:[],writes:0,production:false};
 const save=()=>fs.writeFileSync(OUT+'/result.json',JSON.stringify(result,null,2)+'\n','utf8');
 save();
 if(!/^[a-f0-9]{64}$/.test(EXPECTED_HR))throw new Error('SOURCE_FAILURE:VRM215_HR_REVISION_REQUIRED');
@@ -161,10 +162,26 @@ try{
       await page.evaluate(async ({email,password})=>{await window.firebase.auth().setPersistence(window.firebase.auth.Auth.Persistence.LOCAL);await window.firebase.auth().signInWithEmailAndPassword(email,password);},{email:row.email,password:row.password});
       await page.reload({waitUntil:'domcontentloaded',timeout:60000});
       await page.waitForFunction(sid=>{const c=window.CX?.backendAuth?.context?.()||{};return c.authenticated===true&&String(c.role||'')==='shopper'&&String(c.authNamespace||'')==='shopper'&&String(c.shopperId||'')===sid&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&!!window.CX?.data?.__sessionShopperProfile;},row.shopperId,{timeout:120000});
-      const proof=await page.evaluate(({sid,required})=>{const c=window.CX?.backendAuth?.context?.()||{},d=window.CX?.data||{},p=d.__sessionShopperProfile||{},pid=String(p.id||p.shopperId||''),visits=typeof d.visitsForShopper==='function'?d.visitsForShopper(sid,false):[],badVisits=visits.filter(v=>{const x=String(v?.shopperId||'');return x&&x!==sid;}).length,modules=Object.fromEntries(required.map(id=>[id,!!window.CX?.MODULES?.[id]&&window.CX.moduleEnabled?.(id)===true&&window.CX.roleCanAccess?.('shopper',id)===true&&window.CX.moduleVisibleForProfile?.(id,'shopper')===true]));return{ctxShopperId:String(c.shopperId||''),profileId:pid,ownVisits:visits.length,badVisits,authorityOwnVisits:Number(window.CX_PROTECTED_AUTH_HR_AUTHORITY?.ownVisits??-1),modules};},{sid:row.shopperId,required:REQUIRED_MODULES});
+      const proof=await page.evaluate(({sid,required,targetHn})=>{const c=window.CX?.backendAuth?.context?.()||{},d=window.CX?.data||{},p=d.__sessionShopperProfile||{},pid=String(p.id||p.shopperId||''),visits=typeof d.visitsForShopper==='function'?d.visitsForShopper(sid,false):[],badVisits=visits.filter(v=>{const x=String(v?.shopperId||'');return x&&x!==sid;}).length,modules=Object.fromEntries(required.map(id=>[id,!!window.CX?.MODULES?.[id]&&window.CX.moduleEnabled?.(id)===true&&window.CX.roleCanAccess?.('shopper',id)===true&&window.CX.moduleVisibleForProfile?.(id,'shopper')===true]));
+        const a=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{},currentPeriodId=String(d.currentPeriodId||''),authorizedPeriodIds=(Array.isArray(a.authorizedPeriodIds)?a.authorizedPeriodIds:[]).map(String),countries=[...new Set(visits.map(v=>String(v?.pais||v?.country||'')).filter(Boolean))];
+        let hnProof=null;
+        if(sid===targetHn){
+          const oct=visits.find(v=>String(v?.hrRowId||'')==='OCTUBRE 26 HN!2')||visits.find(v=>String(v?.periodKey||'')==='2026-10'&&String(v?.pais||v?.country||'')==='HN')||null;
+          const facets=oct?(d.visitFacets?.(oct)||oct.canonicalFacets||{}):{};
+          hnProof={shopperId:sid,authority:{actorUid:String(a.actorUid||''),rawShopperId:String(a.rawShopperId||''),canonicalShopperId:String(a.canonicalShopperId||''),shopperCountry:String(a.shopperCountry||''),exactSessionShopperReady:a.exactSessionShopperReady===true,shopperPrincipalClaimsVerified:a.shopperPrincipalClaimsVerified===true,ownVisits:Number(a.ownVisits??-1),authorizedPeriods:Number(a.authorizedPeriods??-1),authorizedPeriodIds},profile:{id:pid,country:String(p.pais||p.country||'')},currentPeriodId,currentPeriodAuthorized:authorizedPeriodIds.includes(currentPeriodId),ownVisits:visits.length,countries,octoberVisit:oct?{id:String(oct.id||oct.visitId||''),hrRowId:String(oct.hrRowId||''),periodKey:String(oct.periodKey||''),periodId:String(oct.periodId||oct.projectId||''),country:String(oct.pais||oct.country||''),state:String(oct.estado||oct.status||''),scheduled:facets.scheduled===true,assigned:facets.assigned===true,branch:String(oct.sucursal||'')}:null};
+        }
+        return{ctxShopperId:String(c.shopperId||''),profileId:pid,ownVisits:visits.length,badVisits,authorityOwnVisits:Number(a.ownVisits??-1),modules,hnProof};},{sid:row.shopperId,required:REQUIRED_MODULES,targetHn:TARGET_HN_SHOPPER});
       item.loginPass=true;item.ownVisits=proof.ownVisits;
       item.selfScopePass=proof.ctxShopperId===row.shopperId&&proof.profileId===row.shopperId&&proof.badVisits===0&&proof.authorityOwnVisits===proof.ownVisits;
       item.routeContractPass=REQUIRED_MODULES.every(id=>proof.modules[id]===true);
+      if(row.shopperId===TARGET_HN_SHOPPER){
+        item.hnProof=proof.hnProof;
+        const hn=proof.hnProof||{};
+        const oct=hn.octoberVisit||{};
+        const hnPass=hn.authority?.actorUid===row.uid&&hn.authority?.rawShopperId===TARGET_HN_SHOPPER&&hn.authority?.canonicalShopperId===TARGET_HN_SHOPPER&&hn.authority?.shopperCountry==='HN'&&hn.authority?.exactSessionShopperReady===true&&hn.authority?.shopperPrincipalClaimsVerified===true&&hn.authority?.ownVisits===16&&hn.authority?.authorizedPeriods>0&&hn.currentPeriodAuthorized===true&&hn.ownVisits===16&&Array.isArray(hn.countries)&&hn.countries.length===1&&hn.countries[0]==='HN'&&oct.hrRowId==='OCTUBRE 26 HN!2'&&oct.country==='HN'&&oct.periodKey==='2026-10'&&oct.scheduled===true&&oct.assigned===true&&['agendada','scheduled'].includes(String(oct.state||'').toLowerCase());
+        result.hnTarget={shopperId:TARGET_HN_SHOPPER,uid:row.uid,pass:hnPass,proof:hn};
+        if(!hnPass)result.errors.push({scope:'hn-target',shopperId:TARGET_HN_SHOPPER,code:'HN_EXACT_PRINCIPAL_COUNTRY_PERIOD_VISIT_FAILED',proof:hn});
+      }
       result.loginPass++;
       if(item.selfScopePass)result.selfScopePass++;else result.errors.push({scope:'browser-self-scope',shopperId:row.shopperId,code:'SELF_SCOPE_FAILED'});
       if(item.routeContractPass)result.routeContractPass++;else result.errors.push({scope:'browser-routes',shopperId:row.shopperId,code:'REQUIRED_SHOPPER_MODULES_NOT_AVAILABLE',modules:proof.modules});
@@ -181,5 +198,7 @@ try{
 result.staticPass=runtimeRows.filter(x=>x.staticPass).length;result.populationCount=runtimeRows.length;
 result.hrAssignmentsPass=assigned===resolvedAssigned;result.identityPass=result.staticPass===result.populationCount&&residual===0&&result.reviewOnlyPass===true;
 result.authPass=result.loginPass===result.populationCount;result.selfScopePopulationPass=result.selfScopePass===result.populationCount;result.routePopulationPass=result.routeContractPass===result.populationCount;
-result.decision=result.errors.length===0&&result.populationCount>0&&result.authPass&&result.selfScopePopulationPass&&result.routePopulationPass&&result.hrAssignmentsPass?'PASS_VRM215_ALL_ACTIVE_SHOPPERS':'FAIL_VRM215_ALL_ACTIVE_SHOPPERS';
+result.hnTargetPass=result.hnTarget?.pass===true;
+if(!result.hnTarget)result.errors.push({scope:'hn-target',shopperId:TARGET_HN_SHOPPER,code:'HN_TARGET_NOT_IN_AUTH_ELIGIBLE_POPULATION'});
+result.decision=result.errors.length===0&&result.populationCount>0&&result.authPass&&result.selfScopePopulationPass&&result.routePopulationPass&&result.hrAssignmentsPass&&result.hnTargetPass?'PASS_VRM215_ALL_ACTIVE_SHOPPERS':'FAIL_VRM215_ALL_ACTIVE_SHOPPERS';
 save();console.log(JSON.stringify(result,null,2));if(result.decision!=='PASS_VRM215_ALL_ACTIVE_SHOPPERS')process.exitCode=2;

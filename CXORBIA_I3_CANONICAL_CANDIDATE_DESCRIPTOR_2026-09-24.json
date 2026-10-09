@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
+  "status": "HOLD_VRM215_SHOPPER_POPULATION_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "797050085d1e3347b6d56322f003a3a293790710",
   "productTreeAuthority": "607196f740203d538df8e22e424874fe547b3d59",
   "predecessorProductSourceSha": "9b87e479a1fb9825a22abf935eebff171ed720c4",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V356_2026-10-09.json",
-  "findingsLedgerExpectedGitBlob": "a41ac7435ee2233582974bbde1071ecc5c8f79bd",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V357_2026-10-09.json",
+  "findingsLedgerExpectedGitBlob": "f4125e9be4ce3a33cd813756e7510d8c50483c75",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261009-V54.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM274_P0_HN_SHOPPER_READINESS_SOURCE_PROVEN_DEV_MATERIALIZATION_REQUIRED",
+  "activeBlocker": "VRM274_DEV_MATERIALIZED_HN_EXACT_POPULATION_E2E_REQUIRED",
   "nextFindingId": "VRM-275",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Use existing I3 Phase A cumulative DEV materialization lane exactly once for VRM-274 source 797050085d1e3347b6d56322f003a3a293790710, then authenticate exact HN shopper and GT regressions against that artifact. Keep I3 HOLD; no production, no I4, no HR/Auth/Firestore writes.",
+  "exactNextAction": "Run existing VRM215 shopper population live reproof on current materialized DEV artifact, including explicit HN target shopper_hn_1691aecc2c exact principal/country/period/visit assertion. Keep I3 HOLD; no production, no I4, no HR/Auth/Firestore writes.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -444,24 +444,24 @@
     "production": false
   },
   "currentMaterialization": {
-    "state": "PASS_REJECTED_PHASEA_EXACT_DEV_MATERIALIZATION",
-    "decision": "PASS_REJECTED_PHASEA_EXACT_DEV_MATERIALIZATION",
-    "sourceSha": "9b87e479a1fb9825a22abf935eebff171ed720c4",
-    "sourceTree": "f2a384386e22028ffc4bf830adb1ec7e11e19696",
-    "runId": 37887430592,
-    "runNumber": 1426,
-    "jobId": 113680533982,
-    "artifactId": 11596389015,
-    "artifactDigest": "sha256:961e3bac8b3fe96aadf9ef1ab0c4785b5cac25438cf33c9f06d45ba692dae383",
+    "state": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+    "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+    "sourceSha": "797050085d1e3347b6d56322f003a3a293790710",
+    "sourceTree": "607196f740203d538df8e22e424874fe547b3d59",
+    "runId": 37958395380,
+    "runNumber": 1431,
+    "jobId": 113914768834,
+    "artifactId": 11630071023,
+    "artifactDigest": "sha256:42445d6e62ce0bab1e95fdb86b592d422a2cee5db221e1c4c3abfece281503ee",
     "runtimeRevision": "cxorbia-live-hr-dev-00283-kc5",
     "runtimeDigest": "sha256:3bdb7ca745abcc51ae8a93aa9e4a83c631af58eb891c0c34b644d578969e586a",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/1abb0e5f2efa8cc2",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791522902099000",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/0609acbc6f0dace6",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791562913773000",
     "hrRevision": "9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef",
-    "builds": 1,
-    "runtimeDeploys": 1,
+    "builds": 0,
+    "runtimeDeploys": 0,
     "hostingDeploys": 1,
-    "storageRulesDeploys": 0,
+    "hrWrites": 0,
     "production": false
   },
   "lastFocalAttempt": {
@@ -944,13 +944,7 @@
     "hrWrites": 0,
     "production": false
   },
-  "pendingMaterialization": {
-    "state": "REQUIRED_AFTER_SOURCE_PROOF_PASS",
-    "sourceSha": "797050085d1e3347b6d56322f003a3a293790710",
-    "sourceTree": "607196f740203d538df8e22e424874fe547b3d59",
-    "requiredLane": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
-    "production": false
-  },
+  "pendingMaterialization": null,
   "lastVrm080Proof": {
     "runId": 36333245670,
     "runNumber": 525,
@@ -7891,5 +7885,34 @@
     "exactB2EditAck": "PENDING",
     "humanAcceptance": "PENDING",
     "sixGT_HN": "PENDING"
+  },
+  "lastDevMaterialization": {
+    "state": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+    "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+    "sourceSha": "797050085d1e3347b6d56322f003a3a293790710",
+    "sourceTree": "607196f740203d538df8e22e424874fe547b3d59",
+    "runId": 37958395380,
+    "runNumber": 1431,
+    "jobId": 113914768834,
+    "artifactId": 11630071023,
+    "artifactDigest": "sha256:42445d6e62ce0bab1e95fdb86b592d422a2cee5db221e1c4c3abfece281503ee",
+    "runtimeRevision": "cxorbia-live-hr-dev-00283-kc5",
+    "runtimeDigest": "sha256:3bdb7ca745abcc51ae8a93aa9e4a83c631af58eb891c0c34b644d578969e586a",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/0609acbc6f0dace6",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791562913773000",
+    "hrRevision": "9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef",
+    "builds": 0,
+    "runtimeDeploys": 0,
+    "hostingDeploys": 1,
+    "hrWrites": 0,
+    "production": false
+  },
+  "lastHnExactE2E": {
+    "status": "PENDING_VRM215",
+    "targetShopperId": "shopper_hn_1691aecc2c",
+    "expectedCountry": "HN",
+    "expectedOwnVisits": 16,
+    "expectedOctoberHrRowId": "OCTUBRE 26 HN!2",
+    "expectedOctoberState": "agendada"
   }
 }
