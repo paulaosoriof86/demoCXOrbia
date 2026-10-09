@@ -1155,7 +1155,7 @@ async function durableProfileUpdate({auth,db,command,shopperId,actor}){
     const currentCredential=shopperCredentialRule(profile);
     const first=str(pub.displayFirstName??profile.displayFirstName??currentCredential.firstName);
     const last=str(pub.displayLastName??profile.displayLastName??currentCredential.lastName);
-    if(!first||!last||first.length>80||last.length>100||/[<>\\u0000-\\u001f\\u007f]/.test(first+last))
+    if(!first||!last||first.length>80||last.length>100||/[<>\u0000-\u001f\u007f]/.test(first+last))
       throw new Error('SHOPPER_SELF_DISPLAY_NAME_INVALID');
     pub.displayFirstName=first;pub.displayLastName=last;
   }
