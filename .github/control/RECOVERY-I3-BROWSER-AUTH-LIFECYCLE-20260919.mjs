@@ -127,11 +127,31 @@ export async function settleVisibleShopperAuth({ page, expectedUid, rawShopperId
     try {
       await cleanNavigate(page, baseUrl, attempt);
       const persistedUid = await page.evaluate(() => String(window.firebase?.auth?.().currentUser?.uid || '')).catch(() => '');
-      // A visible credential may legitimately resolve to the active canonical Auth
-      // principal instead of the membership row enumerated before login.  The
-      // authoritative safety check is the signed token's exact tenant/project/
-      // shopper claims inside finishAuthenticatedSession, not UID equality here.
-      if (persistedUid) return await finishAuthenticatedSession();
+      // A previous browser session is reusable ONLY when its signed claims match
+      // this exact tenant, project and raw/canonical Shopper identity. A persisted
+      // UID alone is not authorization: retry with another shopper must sign out
+      // BEFORE waiting for the previous context (VRM-272 / run1423).
+      let persistedClaimsMatch = false;
+      if (persistedUid) {
+        persistedClaimsMatch = await page.evaluate(async ({ tenantId, projectId, rawShopperId, canonicalShopperId }) => {
+          const user = window.firebase?.auth?.().currentUser || null;
+          if (!user) return false;
+          const token = await user.getIdTokenResult();
+          const claims = token?.claims || {};
+          const sid = String(claims.shopperId || '');
+          const ps = Array.isArray(claims.projectIds) ? claims.projectIds.map(String) : [];
+          return String(claims.role || '').toLowerCase() === 'shopper' &&
+            String(claims.tenantId || '') === tenantId &&
+            (ps.length === 0 || ps.includes(projectId)) &&
+            (sid === String(rawShopperId || '') || sid === String(canonicalShopperId || ''));
+        }, { tenantId, projectId, rawShopperId, canonicalShopperId }).catch(() => false);
+      }
+      if (persistedUid && persistedClaimsMatch) return await finishAuthenticatedSession();
+      if (persistedUid && !persistedClaimsMatch) {
+        await page.evaluate(async () => {
+          try { await window.firebase.auth().signOut(); } catch (_) {}
+        });
+      }
       await page.waitForFunction(() =>
         typeof window.CX?.backendAuth?.selectedRole === 'function' &&
         !!document.querySelector('.role-btn[data-role="shopper"]') &&

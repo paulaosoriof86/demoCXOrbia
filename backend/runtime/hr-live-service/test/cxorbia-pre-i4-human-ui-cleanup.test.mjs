@@ -106,7 +106,11 @@ test('VRM-157 Clientes renders explicit human fallbacks instead of undefined val
 
 test('VRM-157 visible shopper auth accepts a session that settled during a retry',()=>{
   const s=read('.github/control/RECOVERY-I3-BROWSER-AUTH-LIFECYCLE-20260919.mjs');
-  assert.match(s,/if \(persistedUid\) return await finishAuthenticatedSession\(\)/);
+  assert.match(s,/if \(persistedUid && persistedClaimsMatch\) return await finishAuthenticatedSession\(\)/);
+  assert.doesNotMatch(s,/if \(persistedUid\) return await finishAuthenticatedSession\(\)/);
+  assert.match(s,/persistedClaimsMatch = await page\.evaluate/);
+  assert.match(s,/if \(persistedUid && !persistedClaimsMatch\)/);
+  assert.match(s,/await window\.firebase\.auth\(\)\.signOut\(\)/);
   assert.match(s,/VISIBLE_LOGIN_PRINCIPAL_CLAIMS_MISMATCH/);
   assert.match(s,/return await finishAuthenticatedSession\(\)/);
 });
@@ -125,3 +129,22 @@ test('PRE-I4 VRM-034 human acceptance is read-only for reservations',()=>{
   assert.match(s,/QA_RESERVATION_RESIDUE_VISIBLE/);
 });
 
+
+test('VRM-273 human name mismatch diagnostic provides IDs and owner provenance but never publishes real HR names',()=>{
+  const s=read('RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs');
+  assert.match(s,/const nameMismatchDetails=hrNameRows\.map/);
+  assert.match(s,/lookupAuthority:direct\.length===1/);
+  assert.match(s,/nameMismatches,nameMismatchDetails,tenantAdjudicationOverrides/);
+  assert.doesNotMatch(s,/sourceName:\s*h\.name|renderedName:\s*row/);
+});
+
+test('VRM-273 HOLD guard reports stale module source and historic ledger without pretending terminal readiness',()=>{
+  const g=read('tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs');
+  const descriptor=JSON.parse(read('CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json'));
+  const matrix=JSON.parse(read(descriptor.moduleTruthPath));
+  assert.notEqual(matrix.productSource.sha,descriptor.productSourceSha);
+  assert.match(g,/moduleTruthReadback/);
+  assert.match(g,/workflowLedgerReadback/);
+  assert.match(g,/proofScope:'CANONICAL_SOURCE_LINEAGE_ONLY_NOT_MODULE_OR_ARTIFACT_CERTIFICATION'/);
+  assert.match(g,/TERMINAL_AUTHORITIES_NOT_CONVERGED/);
+});

@@ -184,10 +184,25 @@ const summary=await p.evaluate(({projectId,hrNameRows,unresolvedIdentityIds,expe
  const expectedCanonicalHrIds=new Set(allHrIds.map(id=>String(identityMap[id]||id)));
  const technicalPrimaryNames=list.filter(x=>{const n=String(x?.nombre||x?.name||'').trim(),id=String(x?.id||x?.shopperId||'').trim();return /^shopper_(?:gt|hn|sv|ni)_[a-z0-9]+$/i.test(n)||/^shp[-_][a-z0-9]+$/i.test(n)||(id&&n===id)}).length;
  const tenantAdjudicationOverrides=[];
- const nameMismatches=hrNameRows.map(h=>{const row=rowFor(h.id);if(!row)return h.id;const mapped=String(identityMap[h.id]||h.id),adjudicated=String(tenantAdjudications?.[h.id]||''),rowId=String(row?.id||row?.shopperId||'');const exactTenantOverride=!!adjudicated&&mapped===adjudicated&&rowId===adjudicated;if(exactTenantOverride){tenantAdjudicationOverrides.push({sourceId:h.id,canonicalId:adjudicated});return null;}return norm(row?.nombre||row?.name)!==norm(h.name)?h.id:null}).filter(Boolean);
+ // Diagnostic provenance is intentionally name-free: this public GitHub Actions
+ // artifact may not publish real shopper names. Never use name-only comparison
+ // to merge identities; report exact IDs and authority evidence for adjudication.
+ const nameMismatchDetails=hrNameRows.map(h=>{
+   const row=rowFor(h.id),mapped=String(identityMap[h.id]||h.id),adjudicated=String(tenantAdjudications?.[h.id]||'');
+   const rowId=String(row?.id||row?.shopperId||''),direct=list.filter(x=>String(x?.id||x?.shopperId||'')===String(h.id));
+   const exactTenantOverride=!!row&&!!adjudicated&&mapped===adjudicated&&rowId===adjudicated;
+   if(exactTenantOverride){tenantAdjudicationOverrides.push({sourceId:h.id,canonicalId:adjudicated});return null;}
+   if(row&&norm(row?.nombre||row?.name)===norm(h.name))return null;
+   return{sourceShopperId:String(h.id),renderedShopperId:rowId||null,mappedShopperId:mapped,
+     lookupAuthority:direct.length===1?'exact_live_id':(rowId===mapped?'mapped_canonical_id':'alias_or_missing'),
+     exactDirectCount:direct.length,approvedTenantAdjudicationPresent:!!adjudicated,
+     approvedTenantAdjudicationTarget:adjudicated||null,renderedRowExists:!!row,
+     classification:'MAPPING_FAILURE_REQUIRES_EXACT_OWNER_PROOF'};
+ }).filter(Boolean);
+ const nameMismatches=nameMismatchDetails.map(x=>x.sourceShopperId);
  const unresolvedReviewMismatches=unresolvedIdentityIds.map(id=>{const row=rowFor(id);return !row||row?.identityReviewRequired!==true||String(row?.identityReviewReason||'')!=='human_display_name_unresolved'||String(row?.nombre||row?.name||'')!=='Identidad pendiente de revisión'?id:null}).filter(Boolean);
  const runtimeOutOfRange=(typeof d.visitas==='function'?d.visitas():[]).filter(v=>typeof d.visitFacets==='function'?(d.visitFacets(v)?.outOfRange===true):v?.outOfRange===true).length;
- return{visits:d._visitas?.length||0,shoppers:list.length,hrShoppers:nonPlatform.length,expectedCanonicalHrShoppers:expectedCanonicalHrIds.size,rawHrReferences:allHrIds.length,platformOnly:platform.length,platformBadFlags:badFlags,platformCrossProject:crossProject,duplicateShopperIds:ids.length-new Set(ids).size,periods:d.projects?.length||0,project:String(d.currentProjectId||''),revision:String(d.previewMeta?.sourceRevision||''),protectedNames:list.filter(x=>/shopper protegido/i.test(String(x?.nombre||x?.name||''))).length,realNames:list.filter(x=>String(x?.nombre||x?.name||'').trim()&&!/shopper protegido/i.test(String(x?.nombre||x?.name||''))).length,technicalPrimaryNames,nameMismatches,tenantAdjudicationOverrides,unresolvedAuthorityCount:unresolvedIdentityIds.length,unresolvedReviewMismatches,runtimeOutOfRange,expectedOutOfRange};
+ return{visits:d._visitas?.length||0,shoppers:list.length,hrShoppers:nonPlatform.length,expectedCanonicalHrShoppers:expectedCanonicalHrIds.size,rawHrReferences:allHrIds.length,platformOnly:platform.length,platformBadFlags:badFlags,platformCrossProject:crossProject,duplicateShopperIds:ids.length-new Set(ids).size,periods:d.projects?.length||0,project:String(d.currentProjectId||''),revision:String(d.previewMeta?.sourceRevision||''),protectedNames:list.filter(x=>/shopper protegido/i.test(String(x?.nombre||x?.name||''))).length,realNames:list.filter(x=>String(x?.nombre||x?.name||'').trim()&&!/shopper protegido/i.test(String(x?.nombre||x?.name||''))).length,technicalPrimaryNames,nameMismatches,nameMismatchDetails,tenantAdjudicationOverrides,unresolvedAuthorityCount:unresolvedIdentityIds.length,unresolvedReviewMismatches,runtimeOutOfRange,expectedOutOfRange};
 },{projectId:PROJ,hrNameRows,unresolvedIdentityIds,expectedOutOfRange,tenantAdjudications});
 if(summary.revision!==PINNED_REV)issues.push({classification:'RELEASE_COMPOSITION_FAILURE',code:'ADMIN_HR_REVISION_MISMATCH',expectedRevision:PINNED_REV,actualRevision:summary.revision});
 if(summary.visits!==visits.length||summary.hrShoppers!==summary.expectedCanonicalHrShoppers||summary.shoppers!==summary.expectedCanonicalHrShoppers+summary.platformOnly||summary.platformBadFlags!==0||summary.platformCrossProject!==0||summary.duplicateShopperIds!==0||summary.periods!==periods.length||summary.project!==PROJ)issues.push({classification:'MAPPING_FAILURE',code:'ADMIN_COMPOSED_SHOPPER_CONTRACT_MISMATCH',summary,expected:{visits:visits.length,rawHrReferences:shoppers.length,canonicalHrShoppers:summary.expectedCanonicalHrShoppers,totalFormula:'canonicalHrShoppers+platformOnly',platformBadFlags:0,platformCrossProject:0,duplicateShopperIds:0,periods:periods.length,project:PROJ}});

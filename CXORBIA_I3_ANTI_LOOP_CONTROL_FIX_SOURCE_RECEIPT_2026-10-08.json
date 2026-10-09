@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "cxorbia.i3.anti-loop.control-fix.source-receipt.v1",
+  "parentHead": "15c6016853342d0a014f7c0c1e2b99c2fdbaa009",
+  "classification": [
+    "RELEASE_COMPOSITION_FAILURE",
+    "AUTH_FAILURE_CONTROL_RETRY",
+    "MAPPING_FAILURE_DIAGNOSTIC"
+  ],
+  "scope": "CONTROL_ONLY_I3",
+  "changedPaths": [
+    ".github/control/RECOVERY-I3-BROWSER-AUTH-LIFECYCLE-20260919.mjs",
+    "RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs",
+    "tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-ui-cleanup.test.mjs"
+  ],
+  "productSourceUnchanged": "4050e8afc952183131d48600b84260024ed78ac5",
+  "lastMaterializedDevRun": 1421,
+  "prod": "DO_NOT_TOUCH",
+  "actions": {
+    "auth": "reuse browser session only after exact signed shopper/tenant/project claims; wrong session signed out in QA",
+    "human": "name-free exact ID and authority provenance for six mismatches; no merge or name coercion",
+    "guard": "always show current matrix/registry/workflow pointer freshness in HOLD; promotion requires current source and 21 unique domains; terminal requires full convergence",
+    "tests": "2 new source contract cases, prior VRM-157 control assertion updated"
+  },
+  "evidenceBefore": {
+    "run1423": "37874291922",
+    "gtSixMismatchIds": [
+      "shopper_gt_3106d9d44b",
+      "shopper_gt_3426ec3ff3",
+      "shopper_gt_5f3d6952c5",
+      "shopper_gt_d5ebad6b6c",
+      "shopper_gt_f65cbc6391",
+      "shopper_gt_fc5d6fb927"
+    ],
+    "hnLogin": "AUTH_FAILURE: HISTORY_SHOPPER_VISIBLE_LOGIN_OR_BOOT_FAIL",
+    "matrixSource": "d9915f330a8d6e5fc2b4f2019872a4b03eaf7ced"
+  },
+  "testStatus": "SOURCE_PATCH_GUARDS_VERIFIED_NOT_YET_CI_OR_LIVE_PROVEN",
+  "humanReview": "PENDING",
+  "productionWrites": 0,
+  "realIdentityWrites": 0,
+  "financeWrites": 0,
+  "hrWrites": 0,
+  "notes": "No closure or GO until CI readback and exact DEV E2E; 6 aliases require exact adjudication."
+}

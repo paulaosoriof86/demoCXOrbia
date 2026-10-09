@@ -44,14 +44,37 @@ const next='VRM-'+String(ids.length+1).padStart(3,'0');
 if(l.governance?.nextFindingId!==next||d.nextFindingId!==next)fail('MAPPING_FAILURE:NEXT_FINDING_ID',JSON.stringify({ledger:l.governance?.nextFindingId,descriptor:d.nextFindingId,expected:next}));
 if(l.canonicalFunctionalCandidate?.sourceSha!==d.productSourceSha)fail('RELEASE_COMPOSITION_FAILURE:LEDGER_DESCRIPTOR_SOURCE_MISMATCH');
 
+// Always read the same descriptor-selected module matrix, including during HOLD.
+// A passing lineage guard is NOT a 21-module, visual, E2E or artifact certificate.
+const moduleTruthPath=String(d.moduleTruthPath||'');
+if(!moduleTruthPath)fail('RELEASE_COMPOSITION_FAILURE:MODULE_TRUTH_POINTER_EMPTY');
+const mt=readJson(moduleTruthPath);
+const mtSource=String(mt?.productSource?.sha||mt?.productSourceSha||'');
+const modules=Array.isArray(mt?.modules)?mt.modules:[];
+const domains=modules.map(x=>String(x?.domain||'')).filter(Boolean);
+const moduleTruthReadback={
+  path:moduleTruthPath,sourceSha:mtSource,expectedSourceSha:d.productSourceSha,
+  sourceAligned:mtSource===d.productSourceSha,
+  domainCount:modules.length,uniqueDomainCount:new Set(domains).size,
+  phaseAComplete:mt?.phaseAComplete===true,allModulesMatch:mt?.allModulesMatch===true,
+  scope:'CONTROL_DIAGNOSTIC_ONLY_NOT_CERTIFICATION'
+};
+const moduleRegistryPath=String(d.moduleAuthorityRegistryPath||'');
+const moduleRegistry=moduleRegistryPath?readJson(moduleRegistryPath):null;
+const moduleRegistryReadback={path:moduleRegistryPath,
+  domainCount:Array.isArray(moduleRegistry?.modules)?moduleRegistry.modules.length:0,
+  targetDomainCount:modules.length,
+  coverageAligned:Array.isArray(moduleRegistry?.modules)&&moduleRegistry.modules.length===modules.length
+};
+const terminalLike=String(d.status||'')==='GO'||String(d.status||'')==='READY_FOR_TERMINAL_CERTIFICATION';
 const promotionLike=/READY_FOR_|PENDING_PAULA_VISUAL_ACCEPTANCE|PAULA_HUMAN_VISUAL_APPROVAL|HOLD_HUMAN_VISUAL_CHECKPOINT_REQUIRED|READY_FOR_TERMINAL_CERTIFICATION/.test(String(d.status||'')+' '+String(d.activeBlocker||''))
   && !/REJECTION|REMEDIATION|CONTROL_PLANE_REMEDIATION/.test(String(d.status||'')+' '+String(d.activeBlocker||''));
 if(promotionLike){
   const scope=d.visualCheckpointScope;
   if(!scope||!Array.isArray(scope.findingIds)||!scope.findingIds.length||!Array.isArray(scope.modules)||!scope.modules.length)fail('RELEASE_COMPOSITION_FAILURE:VISUAL_CHECKPOINT_SCOPE_REQUIRED');
-  const mt=readJson(String(d.moduleTruthPath||'RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json'));
-  const mtSource=String(mt?.productSource?.sha||mt?.productSourceSha||'');
-  if(mtSource!==d.productSourceSha)fail('RELEASE_COMPOSITION_FAILURE:STALE_MODULE_TRUTH_FOR_PROMOTION',JSON.stringify({matrixSource:mtSource,productSource:d.productSourceSha}));
+  if(!moduleTruthReadback.sourceAligned)fail('RELEASE_COMPOSITION_FAILURE:STALE_MODULE_TRUTH_FOR_PROMOTION',JSON.stringify({matrixSource:mtSource,productSource:d.productSourceSha}));
+  if(moduleTruthReadback.domainCount!==21||moduleTruthReadback.uniqueDomainCount!==21)
+    fail('RELEASE_COMPOSITION_FAILURE:MODULE_TRUTH_DOMAIN_COVERAGE',JSON.stringify(moduleTruthReadback));
   const liveClosed=/^(?:CLOSED|CLOSED_PROVEN|FIXED_PROVEN(?:_RUN\d+|_DURABLE)?|PASS_PROVEN(?:_RUN\d+)?|NOT_APPLICABLE_WITH_EVIDENCE|ALREADY_PROVEN_NO_DRIFT)/;
   for(const id of scope.findingIds){
     const finding=l.findings?.[id];
@@ -67,6 +90,13 @@ if(promotionLike){
 }
 
 const wf=fs.readFileSync(WORKFLOW,'utf8');
+const workflowLedgerPointer=String((wf.match(/^\s*FINDINGS_LEDGER:\s*(\S+)/m)||[])[1]||'');
+const workflowLedgerReadback={declaredPath:workflowLedgerPointer,descriptorPath:LEDGER,
+  aligned:!workflowLedgerPointer||workflowLedgerPointer===LEDGER,scope:'HISTORICAL_ENV_POINTER_NOT_RELEASE_AUTHORITY'};
+if(terminalLike&&(!moduleTruthReadback.sourceAligned||!moduleTruthReadback.phaseAComplete||
+   !moduleTruthReadback.allModulesMatch||!moduleRegistryReadback.coverageAligned||!workflowLedgerReadback.aligned))
+  fail('RELEASE_COMPOSITION_FAILURE:TERMINAL_AUTHORITIES_NOT_CONVERGED',
+    JSON.stringify({moduleTruthReadback,moduleRegistryReadback,workflowLedgerReadback}));
 if(/^\s*I3_CERTIFICATION_SOURCE_SHA:\s*[a-f0-9]{40}\s*$/m.test(wf))fail('RELEASE_COMPOSITION_FAILURE:TOP_LEVEL_LEGACY_PRODUCT_SOURCE_AUTHORITY');
 if(/^\s*I3_CERTIFICATION_SOURCE_TREE:\s*[a-f0-9]{40}\s*$/m.test(wf))fail('RELEASE_COMPOSITION_FAILURE:TOP_LEVEL_LEGACY_PRODUCT_TREE_AUTHORITY');
 
@@ -110,6 +140,10 @@ const result={
   nextFindingId:next,
   postCandidateProductDrift:false,
   historicalSourceSpecificJobsDisabled:historicalDisabled.length,
+  proofScope:'CANONICAL_SOURCE_LINEAGE_ONLY_NOT_MODULE_OR_ARTIFACT_CERTIFICATION',
+  moduleTruthReadback,moduleRegistryReadback,workflowLedgerReadback,
+  terminalReleaseEligible:terminalLike&&moduleTruthReadback.sourceAligned&&moduleTruthReadback.phaseAComplete&&
+    moduleTruthReadback.allModulesMatch&&moduleRegistryReadback.coverageAligned&&workflowLedgerReadback.aligned,
   production:false
 };
 process.stdout.write(JSON.stringify(result,null,2)+'\n');
