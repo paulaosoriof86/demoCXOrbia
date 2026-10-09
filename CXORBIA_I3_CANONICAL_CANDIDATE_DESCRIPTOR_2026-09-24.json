@@ -1,20 +1,20 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B2_EXACT_DISPLAY_WRITE_ACK_AND_HUMAN_REQUIRED",
+  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "9b87e479a1fb9825a22abf935eebff171ed720c4",
-  "productTreeAuthority": "f2a384386e22028ffc4bf830adb1ec7e11e19696",
-  "predecessorProductSourceSha": "4050e8afc952183131d48600b84260024ed78ac5",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V354_2026-10-08.json",
-  "findingsLedgerExpectedGitBlob": "b7ffe29120bc7a4b6f416abdaec9b096d3467656",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V53.json",
+  "productSourceSha": "797050085d1e3347b6d56322f003a3a293790710",
+  "productTreeAuthority": "607196f740203d538df8e22e424874fe547b3d59",
+  "predecessorProductSourceSha": "9b87e479a1fb9825a22abf935eebff171ed720c4",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V355_2026-10-09.json",
+  "findingsLedgerExpectedGitBlob": "5118d2414be0c2f460e070e1eab0a0925667c736",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261009-V54.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM273_RUN1425_SOURCE_PASS_RUN1426_EXACT_DEV_RUN1427_REPRESENTATIVE_PASS__B2_AUTH_WRITE_AND_VISUAL_HOLD__SIX_GT_HN_P0_UNRESOLVED",
-  "nextFindingId": "VRM-274",
+  "activeBlocker": "VRM274_P0_HN_SHOPPER_READINESS_EXACT_PRINCIPAL_GATE_SOURCE_PROOF_REQUIRED",
+  "nextFindingId": "VRM-275",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
     "controlHeadMayAdvanceWithoutProductSourceChange": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 B2 precise signed Shopper display-only update with ACK and persistence after reload in isolated DEV, compare HR original unchanged. Run TinyFish visual when signed-in browser profile available; then Paula B2 acceptance. Six GT and HN exact identity owner must be diagnosed separately; no global rebuild, I4 or production.",
+  "exactNextAction": "Run canonical I3 Phase A cumulative source proof for VRM-274 source 797050085d1e3347b6d56322f003a3a293790710. If PASS, advance through the existing single DEV materialization/readback lane and authenticated HN plus GT regression E2E. Keep I3 HOLD; no production, no I4, no HR/Auth/Firestore writes.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -42,33 +42,49 @@
     "state": "VRM214_FOUR_IDENTITY_MIRAFLORES_READ_ONLY_REQUIRED"
   },
   "lastSourceFix": {
-    "observedAt": "2026-10-07T19:50:00Z",
-    "sourceSha": "411e1e3712e6abfd60475aef16a75aecc7399c08",
-    "sourceTree": "0991894ed9396c334ca62c44626f5b6f2a5e3d14",
-    "predecessorSha": "1bd4805b33c3f9b10f06581c4c36fbbc0b3e0a04",
-    "classification": "MAPPING_FAILURE_AND_RELEASE_COMPOSITION_FAILURE",
-    "findingIds": [
-      "VRM-268",
-      "VRM-269"
+    "observedAt": "2026-10-09T00:00:00-06:00",
+    "findingId": "VRM-274",
+    "productSourceSha": "797050085d1e3347b6d56322f003a3a293790710",
+    "productTreeAuthority": "607196f740203d538df8e22e424874fe547b3d59",
+    "predecessorProductSourceSha": "9b87e479a1fb9825a22abf935eebff171ed720c4",
+    "receiptPath": "CXORBIA_I3_P0_HN_SHOPPER_READINESS_FIX_SOURCE_RECEIPT_2026-10-09.json",
+    "scope": "HN shopper exact principal readiness gate",
+    "productFiles": [
+      "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+      "app/adapters/tya-c6-unified-human-runtime-v1.js"
     ],
-    "productFilesChanged": [
-      "app/core/cliente-data.js",
-      "app/modules/cliente.js",
-      "app/index-backend-dev.html"
-    ],
-    "behavior": "restore exact period/project client operations and remove visible technical entrypoint token",
-    "sourceContractTest": "backend/runtime/hr-live-service/test/cxorbia-vrm268-269-source-contract.test.mjs",
-    "localSourceProof": {
-      "tests": 3,
-      "pass": 3,
-      "fail": 0,
-      "relatedRegression": {
-        "tests": 38,
-        "pass": 38,
-        "fail": 0
-      }
-    },
-    "production": false
+    "canonicalSourceProof": "PENDING",
+    "devMaterialization": "PENDING",
+    "production": false,
+    "previousDescriptorLastSourceFix": {
+      "observedAt": "2026-10-07T19:50:00Z",
+      "sourceSha": "411e1e3712e6abfd60475aef16a75aecc7399c08",
+      "sourceTree": "0991894ed9396c334ca62c44626f5b6f2a5e3d14",
+      "predecessorSha": "1bd4805b33c3f9b10f06581c4c36fbbc0b3e0a04",
+      "classification": "MAPPING_FAILURE_AND_RELEASE_COMPOSITION_FAILURE",
+      "findingIds": [
+        "VRM-268",
+        "VRM-269"
+      ],
+      "productFilesChanged": [
+        "app/core/cliente-data.js",
+        "app/modules/cliente.js",
+        "app/index-backend-dev.html"
+      ],
+      "behavior": "restore exact period/project client operations and remove visible technical entrypoint token",
+      "sourceContractTest": "backend/runtime/hr-live-service/test/cxorbia-vrm268-269-source-contract.test.mjs",
+      "localSourceProof": {
+        "tests": 3,
+        "pass": 3,
+        "fail": 0,
+        "relatedRegression": {
+          "tests": 38,
+          "pass": 38,
+          "fail": 0
+        }
+      },
+      "production": false
+    }
   },
   "preterminalRequest": {
     "revision": 3,
@@ -928,7 +944,13 @@
     "hrWrites": 0,
     "production": false
   },
-  "pendingMaterialization": null,
+  "pendingMaterialization": {
+    "state": "PENDING_AFTER_SOURCE_PROOF",
+    "sourceSha": "797050085d1e3347b6d56322f003a3a293790710",
+    "sourceTree": "607196f740203d538df8e22e424874fe547b3d59",
+    "requiredLane": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED_AFTER_SOURCE_PASS",
+    "production": false
+  },
   "lastVrm080Proof": {
     "runId": 36333245670,
     "runNumber": 525,
