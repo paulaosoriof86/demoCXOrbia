@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM153_RECONCILIATION_READBACK_DIAGNOSTIC_REQUIRED",
+  "status": "HOLD_VRM153_SCOPED_REAL_FINANCE_APPROVAL_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "61ee5001cbb0561a07addc36253b188d09cb2a38",
   "productTreeAuthority": "97a06eec95586cce76ef28207950c31dafd0a3f9",
   "predecessorProductSourceSha": "11e2af3f710783294e9160fef9472a6da6359275",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V345_2026-10-08.json",
-  "findingsLedgerExpectedGitBlob": "ef55f9c657ad9926329c280360d4d9d3653bfcdd",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V346_2026-10-08.json",
+  "findingsLedgerExpectedGitBlob": "a0f51f7a1886bb7d04449257c151b183c177514b",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V46.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM153_34_AUGUST_GT_EXACT_LINK_PREFLIGHT_7_ABSENT_SAFETY",
+  "activeBlocker": "VRM153_34_AUGUST_GT_AND_7_UNRECORDED_REAL_FINANCIAL_STATE_CHANGE_REQUIRES_PAULA_APPROVAL",
   "nextFindingId": "VRM-272",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Re-run exact independent HR+Firestore 34 August GT preflight with transactional identity link contract; preserve 7 absent reconciliations as distinct scope. No actual financial writes until explicit approval.",
+  "exactNextAction": "Obtain Paula explicit authorization only for exact DEV Firestore historical reconciliation correction for 34 August GT (Oct 2 paid) + 3 August HN (Oct 2 paid) + 4 September visits (pending unless exact paid evidence), no HR/bank/payments/production writes; then use source-only proven provider and idempotent ACK/readback.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -7404,5 +7404,49 @@
     "realWrites": 0,
     "deploys": 0,
     "production": false
+  },
+  "i3Vrm153ExactScopedApprovalReadiness": {
+    "runId": 37862607078,
+    "runNumber": 1411,
+    "workflowConclusion": "SUCCESS",
+    "artifactId": 11587330172,
+    "artifactDigest": "sha256:98bce1a279680ee03d600aead191cd053c242f6daff3204d4066f6252724efdd",
+    "productSourceSha": "61ee5001cbb0561a07addc36253b188d09cb2a38",
+    "productTree": "97a06eec95586cce76ef28207950c31dafd0a3f9",
+    "externalHrRevision": "9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef",
+    "independentRevisionEqual": true,
+    "sourceTests": {
+      "run1410": 37862415957,
+      "passed": 21,
+      "failed": 0
+    },
+    "persistedReconciliations": 602,
+    "expectedReconciliations": 643,
+    "missingExact": 41,
+    "approvedHistoricalAugustGT": {
+      "priorPending": 34,
+      "directEligible": 24,
+      "sameHumanExactIdentityLink": 10,
+      "unprovenIdentity": 0,
+      "ambiguous": 0,
+      "transactionalIdentityLinkRefs": 10,
+      "priorAuditPreserved": true,
+      "paymentDate": "2026-10-02"
+    },
+    "absentReconciliations": {
+      "augustHNpaid": 3,
+      "septemberGTpendingByCurrentHR": 3,
+      "septemberHNpendingByCurrentHR": 1
+    },
+    "realDataWritesExecuted": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "bankWrites": 0,
+    "externalPayments": 0,
+    "builds": 0,
+    "deploys": 0,
+    "production": false,
+    "decision": "TECHNICALLY_READY_FOR_EXPLICIT_SCOPED_REAL_FINANCIAL_DATA_AUTHORIZATION_I3_STILL_HOLD",
+    "scopeSafety": "Never infer September paid rows, never overwrite old prior audit record, no duplicate active per visit, independent HR exact revision and transaction ACK required."
   }
 }
