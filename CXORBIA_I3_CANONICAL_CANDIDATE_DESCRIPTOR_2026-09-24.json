@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM153_AUTHORIZED_SCOPED_DEV_RECONCILIATION",
+  "status": "HOLD_VRM153_DEV_DURABLE_41_PASS_PENDING_BLOCK_E2E_AND_HUMAN",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "d9915f330a8d6e5fc2b4f2019872a4b03eaf7ced",
   "productTreeAuthority": "edf38a46ee4630d2bf0f31520cecc1c77f3b9835",
   "predecessorProductSourceSha": "61ee5001cbb0561a07addc36253b188d09cb2a38",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V349_2026-10-08.json",
-  "findingsLedgerExpectedGitBlob": "795e2c3fdb580ba9e1e54df9bccd4b05c7e09f74",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V47.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V350_2026-10-08.json",
+  "findingsLedgerExpectedGitBlob": "83b773fc70c86fa1bbc3006e3057ee9db9e0c1dd",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V48.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM153_DEV_HISTORICAL_41_AUTHORIZED_FIRESTORE_PROVIDER_EXECUTION_PENDING_ACK",
+  "activeBlocker": "PHASE_A_I3_8_MODULE_PENDING_CERTIFICATION_HUMAN_B2_B5_B8_AND_OTHERS",
   "nextFindingId": "VRM-272",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Retry existing I3 authorized DEV 41 finance command with source-proof exit code guard; inspect provider ACK and readback. 0 writes occurred run1414.",
+  "exactNextAction": "Materialize current cumulative source once to DEV using existing I3 lane, run authenticated Admin+Shopper B2/B5/B8 finance E2E and TinyFish, obtain Paula incremental visual acceptance before Gate20/Gate21",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -7572,5 +7572,24 @@
     "workflowAfter": "70b5680d3b5cc104b9863f510df0325575bb2256",
     "fix": "remove presentation-dependent grep; node --test exit code and set -Eeuo pipefail are authoritative",
     "next": "retrigger exact authorized 41 DEV action; do not reimport or widen scope"
+  },
+  "i3Vrm153Run1415PaulaAuthorizedDevReceipt": {
+    "receiptPath": "CXORBIA_I3_VRM153_PAULA_AUTHORIZED_DEV_41_DURABLE_RECEIPT_2026-10-08.json",
+    "receiptGitBlob": "b6e65d3ed4ee0e5de304e0856930a3d91de4cd84",
+    "runId": 37867180444,
+    "artifactId": 11589185208,
+    "pass": true,
+    "durablyReconciled": 41,
+    "postRecords": 643,
+    "paid": 599,
+    "pending": 44,
+    "missing": 0,
+    "realWritesScopedToDev": true,
+    "financialMovementsBefore": 0,
+    "financialMovementsAfter": 0,
+    "bankWrites": 0,
+    "hrWrites": 0,
+    "production": false,
+    "jobDisableReason": "status no longer matches one-time authorized finance write job"
   }
 }

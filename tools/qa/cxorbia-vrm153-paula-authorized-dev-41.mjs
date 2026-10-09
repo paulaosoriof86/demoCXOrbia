@@ -39,7 +39,7 @@ function save(stage,extra={}){
   schemaVersion:'cxorbia.i3.vrm153.paula-authorized-dev-41.v1',
   stage,scope:{tenantId:TENANT,projectId:PROGRAM},approval:APPROVAL,
   sourceSha:SOURCE,sourceTree:SOURCE_TREE,hrRevision:FROZEN_REVISION,
-  receipts,realCommitCount:receipts.filter(x=>x.idempotentReplay!==true).length,
+  receipts,initialCommittedGroups:receipts.length,
   production:false,...extra
  },null,2)+'\n');
 }
