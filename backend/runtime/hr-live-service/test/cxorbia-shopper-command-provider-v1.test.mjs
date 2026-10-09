@@ -1022,3 +1022,45 @@ test('VRM-227 same-human merge durably closes matching active identity review an
   const replay=await p.execute('staff-token',command);
   assert.equal(replay.ok,true);assert.equal(replay.idempotentReplay,true);assert.equal(replay.providerWrites,0);
 });
+
+
+test('I3 B2 signed shopper display-only provider ACK and fresh read-model rehydrate',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),id='shopper_gt_b2_fixture',uid=stableShopperUid('tenant-a',id),pp=paths(id);
+  const claims={tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:id,projectIds:['project-a']};
+  auth.seed({uid,email:internalEmailTest('tenant-a','lucia.prueba'),disabled:false,customClaims:claims});
+  auth.verifyIdToken=async token=>{if(token!=='signed-b2-fixture')throw Error('B2_UNSIGNED');return {uid,...claims};};
+  db.seed(pp.profile,{id,shopperId:id,tenantId:'tenant-a',projectIds:['project-a'],sourceType:'hr_external',nombre:'Lucia Prueba',firstName:'Lucia',lastName:'Prueba',pais:'GT',country:'GT',shopperCode:'HR-B2',visibleLogin:'lucia.prueba',username:'lucia.prueba',user:'lucia.prueba',credentialRuleVersion:CREDENTIAL_RULE_VERSION,hrSourceRevision:'rev-b2'});
+  db.seed(pp.users+'/'+uid,{active:true,tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:id,projectIds:['project-a'],visibleLogin:'lucia.prueba',credentialRuleVersion:CREDENTIAL_RULE_VERSION});
+  db.seed(pp.cross,{tenantId:'tenant-a',shopperId:id,sourceStableKey:id,projectIds:['project-a'],sourceType:'hr_external',providerUidFingerprint:providerUidFingerprint(uid)});
+  const p=provider(auth,db),original=db.get(pp.profile);
+  const command={version:'cxorbia-command-adapter-v1',commandType:'shopper.update',entityType:'shopper',entityId:id,tenantId:'tenant-a',projectId:'project-a',periodId:'project-a-2026-10',expectedVersion:'source-current',idempotencyKey:'b2-display-exact-fixture',actor:{actorId:uid,role:'shopper',shopperId:id,projectIds:['project-a']},authorization:{providerEnforcementRequired:true,permission:'shopper.self.update'},payload:{shopperId:id,patch:{displayFirstName:'Luci',displayLastName:'Corregida'},protectedPatch:{}}};
+  const ack=await p.execute('signed-b2-fixture',command);
+  assert.equal(ack.ok,true);assert.equal(ack.status,'committed');assert.equal(ack.providerAck,true);assert.equal(ack.successUiAllowed,true);assert.equal(ack.profileUpdated,true);assert.equal(ack.selfScoped,true);
+  const fresh=(await db.collection('tenants').doc('tenant-a').collection('shoppers').doc(id).get()).data();
+  for(const k of ['nombre','firstName','lastName','pais','country','shopperCode','shopperId','hrSourceRevision'])assert.equal(fresh[k],original[k],'HR-managed drift: '+k);
+  assert.equal(fresh.displayFirstName,'Luci');assert.equal(fresh.displayLastName,'Corregida');
+  assert.equal(fresh.displayNameAuthority,'shopper_self_profile');assert.equal(fresh.displayNameActorUid,uid);assert.ok(fresh.displayNameUpdatedAt);
+  assert.equal(db.get(pp.users+'/'+uid).visibleLogin,'lucia.prueba');
+  assert.deepEqual((await auth.getUser(uid)).customClaims,claims);
+  assert.equal((await auth.getUser(uid)).email,internalEmailTest('tenant-a','lucia.prueba'));
+  assert.equal(auth.updated,0);assert.equal(auth.claimWrites,0);
+  const replay=await p.execute('signed-b2-fixture',command);
+  assert.equal(replay.ok,true);assert.equal(replay.idempotentReplay,true);assert.equal(replay.providerAck,true);assert.equal(replay.providerWrites,0);
+  const fs=await import('node:fs'),vm=await import('node:vm'),{fileURLToPath}=await import('node:url');
+  const ctx={console};ctx.globalThis=ctx;
+  vm.runInNewContext(fs.readFileSync(fileURLToPath(new URL('../../../../app/adapters/tya-cumulative-read-model-v2.js',import.meta.url)),'utf8'),ctx);
+  const hr={currentProjectId:'project-a',currentPeriodId:'project-a-2026-10',sourceRevision:'rev-b2',projects:[{id:'project-a-2026-10',projectId:'project-a',periodKey:'2026-10'}],shoppers:[{shopperId:id,nombre:'Lucia Prueba',pais:'GT',projectIds:['project-a']}],visits:[{id:'b2-visit',visitId:'b2-visit',hrRowId:'QA-B2!2',projectId:'project-a',periodId:'project-a-2026-10',periodKey:'2026-10',shopperId:id,shopper:'Lucia Prueba',pais:'GT',estado:'agendada'}],posts:[]};
+  const compose=profile=>ctx.CX_TYA_CUMULATIVE_READ_MODEL.compose({hr,protectedPayload:{shoppers:[profile],visits:[],posts:[]}});
+  assert.equal(compose(original).shoppers[0].nombre,'Lucia Prueba');
+  const after=compose((await db.collection('tenants').doc('tenant-a').collection('shoppers').doc(id).get()).data());
+  assert.equal(after.shoppers[0].nombre,'Luci Corregida');assert.equal(after.shoppers[0].__selfDisplayNameVerified,true);assert.equal(after.shoppers[0].__hrOriginalDisplayName,'Lucia Prueba');
+  assert.equal(after.diagnostics.duplicateVisitKeys,0);assert.equal(after.diagnostics.duplicateShopperIds,0);
+  assert.equal(hr.shoppers[0].nombre,'Lucia Prueba');
+  const badHr={...command,idempotencyKey:'b2-hr-denied',payload:{shopperId:id,patch:{nombre:'NO-HR-MUTATION'},protectedPatch:{}}};
+  const deniedHr=await p.execute('signed-b2-fixture',badHr);
+  assert.equal(deniedHr.ok,false);assert.equal(deniedHr.providerAck,false);
+  const other='shopper_gt_b2_other',badOther={...command,entityId:other,idempotencyKey:'b2-owner-denied',payload:{shopperId:other,patch:{displayFirstName:'Invalido'},protectedPatch:{}}};
+  const deniedOther=await p.execute('signed-b2-fixture',badOther);
+  assert.equal(deniedOther.ok,false);assert.equal(deniedOther.providerAck,false);
+  assert.equal(db.get(pp.profile).nombre,'Lucia Prueba');assert.equal(db.get(pp.profile).displayFirstName,'Luci');
+});
