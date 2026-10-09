@@ -320,7 +320,14 @@
       const canonicalAlias=str(base.canonicalShopperId)&&str(base.canonicalShopperId)===canonical&&liveId!==canonical;
       const tenantAdjudicatedProfile=p&&lower(p.identityAuthority)==='tenant_adjudication'&&!!str(p.identityAuthorityRef);
       const canonicalProfileName=canonicalAlias&&tenantAdjudicatedProfile&&profileDisplayName&&!technicalIdentityLabel(profileDisplayName,canonical)?profileDisplayName:'';
-      const humanDisplayName=canonicalProfileName||(hrDisplayName&&!technicalIdentityLabel(hrDisplayName,liveId)?hrDisplayName:(profileDisplayName&&!technicalIdentityLabel(profileDisplayName,canonical)?profileDisplayName:''));
+      // Shopper display correction does not merge identities or alter external HR.
+      const verifiedDisplay=!!p&&str(p.id)===canonical&&str(p.shopperId||p.id)===canonical&&
+        str(p.displayNameAuthority)==='shopper_self_profile'&&!!str(p.displayNameUpdatedAt)&&
+        !!str(p.displayNameActorUid)&&!!str(p.displayFirstName)&&!!str(p.displayLastName);
+      const selfDisplayName=verifiedDisplay?[str(p.displayFirstName),str(p.displayLastName)].join(' '):'';
+      const humanDisplayName=selfDisplayName||canonicalProfileName||(hrDisplayName&&!technicalIdentityLabel(hrDisplayName,liveId)?hrDisplayName:(profileDisplayName&&!technicalIdentityLabel(profileDisplayName,canonical)?profileDisplayName:''));
+      row.__hrOriginalDisplayName=hrDisplayName||null;
+      row.__selfDisplayNameVerified=verifiedDisplay;
       row.nombre=humanDisplayName||'Identidad pendiente de revisión';row.code=base.code||row.code||row.username||row.user||row.legacyShopperId||'';
       if(!humanDisplayName){row.identityReviewRequired=true;row.identityReviewReason=row.identityReviewReason||'human_display_name_unresolved';}
       row.sourceSafe=p?false:base.sourceSafe;row.piiProtected=p?false:base.piiProtected;row.__canonicalIdentityOverlay=!!p;

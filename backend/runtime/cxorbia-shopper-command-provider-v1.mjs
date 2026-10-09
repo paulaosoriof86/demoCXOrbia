@@ -29,10 +29,10 @@ const receiptId=command=>sha(`${command.tenantId}\0${command.projectId}\0${comma
 const platformIdentitySourceKey=(tenantId,shopperId)=>`platform:${str(tenantId)}:${str(shopperId)}`;
 const platformIdentityLinkId=(tenantId,sourceIdentityKey,shopperId)=>`irl_${sha(`${str(tenantId)}\0platform\0*\0${str(sourceIdentityKey)}\0${str(shopperId)}`).slice(0,32)}`;
 const RAW_SECRET_KEY=/^(?:password|pass|newpassword|temporarypassword|credential|credentialvalue|secret|token|resettoken)$/i;
-const PUBLIC_PROFILE_FIELDS=Object.freeze(['firstName','lastName','nombre','email','whatsapp','phone','pais','country','depto','ciudad','sexo','edad','estado','sourceRef','sourceType','perfilCompleto','honorarioPref','createdVia']);
+const PUBLIC_PROFILE_FIELDS=Object.freeze(['firstName','lastName','nombre','displayFirstName','displayLastName','email','whatsapp','phone','pais','country','depto','ciudad','sexo','edad','estado','sourceRef','sourceType','perfilCompleto','honorarioPref','createdVia']);
 const PROTECTED_PROFILE_FIELDS=Object.freeze(['dpi','documentId','banco','ctaTipo','ctaNum','ctaTitular','ctaMoneda','cuentaPago','ndaStatus']);
 const HR_MANAGED_PROFILE_FIELDS=Object.freeze(['nombre','firstName','lastName','pais','country','shopperCode']);
-const SELF_MANAGED_PUBLIC_FIELDS=Object.freeze(['email','whatsapp','phone','depto','ciudad','sexo','edad']);
+const SELF_MANAGED_PUBLIC_FIELDS=Object.freeze(['displayFirstName','displayLastName','email','whatsapp','phone','depto','ciudad','sexo','edad']);
 const SELF_MANAGED_PROTECTED_FIELDS=Object.freeze(['dpi','documentId','banco','ctaTipo','ctaNum','ctaTitular','ctaMoneda','cuentaPago','ndaStatus']);
 
 export const providerUidFingerprint=uid=>sha(`cxorbia-provider-uid-v1\0${str(uid)}`);
@@ -1150,8 +1150,23 @@ async function durableProfileUpdate({auth,db,command,shopperId,actor}){
   const prot=selfScoped?pick(rawProt,SELF_MANAGED_PROTECTED_FIELDS):rawProt;
   const changed=changedHrManagedFields(profile,pub);
   if(changed.length)throw new Error(`SHOPPER_HR_MANAGED_FIELDS_IMMUTABLE:${changed.join(',')}`);
+  const wantsDisplayChange=selfScoped&&(pub.displayFirstName!==undefined||pub.displayLastName!==undefined);
+  if(wantsDisplayChange){
+    const currentCredential=shopperCredentialRule(profile);
+    const first=str(pub.displayFirstName??profile.displayFirstName??currentCredential.firstName);
+    const last=str(pub.displayLastName??profile.displayLastName??currentCredential.lastName);
+    if(!first||!last||first.length>80||last.length>100||/[<>\\u0000-\\u001f\\u007f]/.test(first+last))
+      throw new Error('SHOPPER_SELF_DISPLAY_NAME_INVALID');
+    pub.displayFirstName=first;pub.displayLastName=last;
+  }
   const merged={...profile,...pub,...prot};
   const patch=clean({...pub,...prot,updatedAt:now()});
+  if(wantsDisplayChange){
+    // Server-issued separate display authority; never change HR-managed identity.
+    patch.displayNameAuthority='shopper_self_profile';
+    patch.displayNameActorUid=uid;
+    patch.displayNameUpdatedAt=now();
+  }
   if(selfScoped){
     patch.selfManagedFields=uniq([...(profile.selfManagedFields||[]),...Object.keys(pub),...Object.keys(prot)]);
     patch.selfManagedUpdatedAt=now();

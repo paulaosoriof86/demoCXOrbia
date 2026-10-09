@@ -99,7 +99,9 @@
       return host;
     }
     const s=identity.row,shopperKey=str(s.id||s.shopperId||identity.canonical),profileEmail=str(s.email||s.correo||s.mail),email=profileEmail||authenticatedEmail(),credential=currentSessionCredential(),rule=shopperCredentialRule(s);
-    const username=rule.ok?rule.login:str(s.username||s.user||credential.username),firstName=rule.ok?rule.firstName:str(s.firstName||s.nombre),lastName=rule.ok?rule.lastName:str(s.lastName||s.apellido);
+    const username=rule.ok?rule.login:str(s.username||s.user||credential.username),
+      firstName=s.__selfDisplayNameVerified===true?str(s.displayFirstName):(rule.ok?rule.firstName:str(s.firstName||s.nombre)),
+      lastName=s.__selfDisplayNameVerified===true?str(s.displayLastName):(rule.ok?rule.lastName:str(s.lastName||s.apellido));
     const masked=(v)=>{const x=str(v);if(!x)return '— sin dato';if(x.length<=4)return '••••';return x.slice(0,2)+'••••'+x.slice(-2);};
     const historySource=typeof data.shopperHistoryVisits==='function'?data.shopperHistoryVisits(shopperKey,false):data.visitsForShopper(shopperKey,false).filter(v=>v&&v.__pendingPlatformAssignmentOverlay!==true);
     /* Finance-paid and HR-operational are distinct authorities. Profile's paid KPI/history
@@ -174,8 +176,10 @@
       host.querySelectorAll('[data-profile-kpi]').forEach(k=>k.addEventListener('click',()=>{const key=k.dataset.profileKpi,list=key==='done'?done:key==='submitted'?submitted:key==='paid'?paid:visits;ui.modal((key==='done'?'Visitas realizadas':key==='submitted'?'Visitas submitidas':key==='paid'?'Pagos confirmados':'Histórico de visitas')+' · ' +list.length,rows(list,ui,verifiedPaidByFinance));}));
       const editProfile=host.querySelector('[data-profile-edit]');
       editProfile?.addEventListener('click',()=>ui.modal('Editar mis datos',`
-        <div style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Los datos de identidad y país vinculados al proyecto se mantienen protegidos. Aquí puedes actualizar tus datos personales, de contacto y de pago.</div>
+        <div style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Puedes corregir el nombre visible sin alterar la identidad HR, tus visitas ni tu usuario de ingreso.</div>
         <div class="grid g2" style="gap:10px 12px">
+          <div><label class="lbl">Nombre visible</label><input class="inp" id="sp_display_first" maxlength="80" value="${esc(firstName)}"></div>
+          <div><label class="lbl">Apellido visible</label><input class="inp" id="sp_display_last" maxlength="100" value="${esc(lastName)}"></div>
           <div><label class="lbl">WhatsApp</label><input class="inp" id="sp_wa" value="${esc(s.whatsapp||s.phone||'')}"></div>
           <div><label class="lbl">Correo</label><input class="inp" id="sp_mail" value="${esc(email||'')}"></div>
           <div><label class="lbl">Departamento / Región</label><input class="inp" id="sp_depto" value="${esc(s.depto||'')}"></div>
@@ -200,6 +204,15 @@
             dpi:val('#sp_dpi'),documentId:val('#sp_dpi'),banco:val('#sp_banco'),ctaTipo:val('#sp_ctatipo'),
             ctaNum:val('#sp_ctanum'),ctaTitular:val('#sp_ctatit'),ctaMoneda:val('#sp_ctamon')
           };
+          const proposedFirst=val('#sp_display_first'),proposedLast=val('#sp_display_last');
+          if(proposedFirst!==str(firstName)||proposedLast!==str(lastName)){
+            if(!proposedFirst||!proposedLast){
+              if(CX.ui?.toast)CX.ui.toast('Ingresa nombre y apellido para corregir el perfil.','warn',3500);
+              return;
+            }
+            patch.displayFirstName=proposedFirst;
+            patch.displayLastName=proposedLast;
+          }
           patch.cuentaPago=[patch.banco,patch.ctaNum,patch.ctaTitular].filter(Boolean).join(' · ');
           patch.__commandMeta={ackAware:true,reason:'shopper-self-profile-update'};
           btn.disabled=true;btn.textContent='Guardando…';

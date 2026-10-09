@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "cxorbia.i3.b2.self-display.proven-owner-source.v1",
+  "iteration": "I3",
+  "parentSource": "4050e8afc952183131d48600b84260024ed78ac5",
+  "parentControlHead": "f466767c86984c33a768d4ddc72ae91a1c16f93c",
+  "classification": "FUNCTIONAL_DEFECT",
+  "finding": "HF-20261008-03",
+  "sourceOnly": true,
+  "p0OwnerPaths": [
+    "app/adapters/cxorbia-shopper-admin-command-contract-v1.js",
+    "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+    "app/adapters/tya-cumulative-read-model-v2.js",
+    "app/adapters/tya-canonical-shopper-portal-v2.js",
+    "RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-pre-i4-human-ui-cleanup.test.mjs"
+  ],
+  "protected": {
+    "externalHR": true,
+    "shopperId": true,
+    "authUID": true,
+    "loginCredentials": true,
+    "tenantProjectScope": true,
+    "noMerge": true
+  },
+  "review": "PENDING_SOURCE_CI_DEV_HUMAN",
+  "production": "DO_NOT_TOUCH"
+}

@@ -16,7 +16,7 @@
   const arr=v=>Array.isArray(v)?v:[];
   const uniq=v=>[...new Set(arr(v).map(str).filter(Boolean))];
   const exactKeys=()=>Array.isArray(root.CX_EXACT_IDENTITY_CONTRACT?.technicalKeys)?root.CX_EXACT_IDENTITY_CONTRACT.technicalKeys.slice():['shopperId','legacyShopperId','legacyId','externalShopperId','externalId','sourceId','sourceKey','hrRowId','personId','profileId','shopperDocId'];
-  const PUBLIC_PROFILE_FIELDS=['firstName','lastName','nombre','email','whatsapp','pais','country','depto','ciudad','sexo','edad','estado','sourceRef','sourceType','perfilCompleto','honorarioPref','createdVia'];
+  const PUBLIC_PROFILE_FIELDS=['firstName','lastName','nombre','displayFirstName','displayLastName','email','whatsapp','pais','country','depto','ciudad','sexo','edad','estado','sourceRef','sourceType','perfilCompleto','honorarioPref','createdVia'];
   const PROTECTED_PROFILE_FIELDS=['dpi','documentId','banco','ctaTipo','ctaNum','ctaTitular','ctaMoneda','cuentaPago','ndaStatus'];
 
   function pick(input,keys){const out={};keys.forEach(key=>{if(input&&input[key]!==undefined)out[key]=input[key];});return out;}

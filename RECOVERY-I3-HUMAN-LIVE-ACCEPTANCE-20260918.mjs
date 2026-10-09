@@ -192,6 +192,8 @@ const summary=await p.evaluate(({projectId,hrNameRows,unresolvedIdentityIds,expe
    const rowId=String(row?.id||row?.shopperId||''),direct=list.filter(x=>String(x?.id||x?.shopperId||'')===String(h.id));
    const exactTenantOverride=!!row&&!!adjudicated&&mapped===adjudicated&&rowId===adjudicated;
    if(exactTenantOverride){tenantAdjudicationOverrides.push({sourceId:h.id,canonicalId:adjudicated});return null;}
+   const selfDisplayProof=row?.__selfDisplayNameVerified===true&&row?.displayNameAuthority==='shopper_self_profile'&&norm(row?.__hrOriginalDisplayName)===norm(h.name);
+   if(selfDisplayProof)return null;
    if(row&&norm(row?.nombre||row?.name)===norm(h.name))return null;
    return{sourceShopperId:String(h.id),renderedShopperId:rowId||null,mappedShopperId:mapped,
      lookupAuthority:direct.length===1?'exact_live_id':(rowId===mapped?'mapped_canonical_id':'alias_or_missing'),

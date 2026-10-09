@@ -152,3 +152,23 @@ test('I3 2026-10-08 HOLD guard reports stale module source and historic ledger w
   assert.match(g,/sourceBlobs=new Map/);
   assert.match(g,/frozenHistoricalBaselineNotFinalAuthority:true/);
 });
+
+test('I3 B2 self-display authority preserves HR and Auth ownership',()=>{
+  const provider=read('backend/runtime/cxorbia-shopper-command-provider-v1.mjs');
+  const contract=read('app/adapters/cxorbia-shopper-admin-command-contract-v1.js');
+  const model=read('app/adapters/tya-cumulative-read-model-v2.js');
+  const portal=read('app/adapters/tya-canonical-shopper-portal-v2.js');
+  const oracle=read('RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs');
+  assert.match(provider,/displayNameAuthority='shopper_self_profile'/);
+  assert.match(provider,/SHOPPER_SELF_DISPLAY_NAME_INVALID/);
+  assert.match(provider,/SHOPPER_HR_MANAGED_FIELDS_IMMUTABLE/);
+  assert.match(provider,/displayNameActorUid=uid/);
+  assert.match(contract,/displayFirstName','displayLastName/);
+  assert.match(model,/__hrOriginalDisplayName=hrDisplayName/);
+  assert.match(model,/__selfDisplayNameVerified=verifiedDisplay/);
+  assert.match(portal,/id="sp_display_first"/);
+  assert.match(portal,/id="sp_display_last"/);
+  assert.match(portal,/patch.displayFirstName=proposedFirst/);
+  assert.match(oracle,/selfDisplayProof=row\?\.__selfDisplayNameVerified/);
+  assert.doesNotMatch(portal,/patch\.nombre=proposedFirst/);
+});
