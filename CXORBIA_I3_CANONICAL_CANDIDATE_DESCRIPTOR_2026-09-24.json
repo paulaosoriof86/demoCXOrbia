@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM153_SCOPED_REAL_FINANCE_APPROVAL_REQUIRED",
+  "status": "HOLD_VRM153_SAFE_SUPERSESSION_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "61ee5001cbb0561a07addc36253b188d09cb2a38",
-  "productTreeAuthority": "97a06eec95586cce76ef28207950c31dafd0a3f9",
-  "predecessorProductSourceSha": "11e2af3f710783294e9160fef9472a6da6359275",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V346_2026-10-08.json",
-  "findingsLedgerExpectedGitBlob": "a0f51f7a1886bb7d04449257c151b183c177514b",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V46.json",
+  "productSourceSha": "d9915f330a8d6e5fc2b4f2019872a4b03eaf7ced",
+  "productTreeAuthority": "edf38a46ee4630d2bf0f31520cecc1c77f3b9835",
+  "predecessorProductSourceSha": "61ee5001cbb0561a07addc36253b188d09cb2a38",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V347_2026-10-08.json",
+  "findingsLedgerExpectedGitBlob": "95c2a707edbfc94a80655e8c85700d0518e40b9a",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V47.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM153_34_AUGUST_GT_AND_7_UNRECORDED_REAL_FINANCIAL_STATE_CHANGE_REQUIRES_PAULA_APPROVAL",
+  "activeBlocker": "VRM153_41_SCOPE_AUTHORIZED_DATE_SOURCE_PROOF_REQUIRED",
   "nextFindingId": "VRM-272",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Obtain Paula explicit authorization only for exact DEV Firestore historical reconciliation correction for 34 August GT (Oct 2 paid) + 3 August HN (Oct 2 paid) + 4 September visits (pending unless exact paid evidence), no HR/bank/payments/production writes; then use source-only proven provider and idempotent ACK/readback.",
+  "exactNextAction": "Prove 23 synthetic provider tests including authorized historical paidDate before scoped 34+3+4 DEV Firestore reconciliation; no production or bank writes.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -7448,5 +7448,43 @@
     "production": false,
     "decision": "TECHNICALLY_READY_FOR_EXPLICIT_SCOPED_REAL_FINANCIAL_DATA_AUTHORIZATION_I3_STILL_HOLD",
     "scopeSafety": "Never infer September paid rows, never overwrite old prior audit record, no duplicate active per visit, independent HR exact revision and transaction ACK required."
+  },
+  "i3Vrm153PaulaScopedRealDevAuthorization": {
+    "authorizedAtLocal": "2026-10-08",
+    "channel": "Paula explicit chat authorization after presented scope",
+    "approved": "DEV Firestore only: 34 August GT pending->paid supersession preserving prior audit, 3 August HN historical paid dated October 2 2026, 4 September pending (unless exact paid evidence, not included)",
+    "exactScope": {
+      "tenantId": "tya",
+      "projectId": "cinepolis",
+      "augustGT": 34,
+      "augustHN": 3,
+      "septemberGT": 3,
+      "septemberHN": 1,
+      "total": 41
+    },
+    "provenance": {
+      "hrRevision": "9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef",
+      "preflightRun1411": 37862607078,
+      "sourceTestsRun1410": 37862415957
+    },
+    "exclusions": [
+      "no production",
+      "no bank transfers",
+      "no HR writes",
+      "no payment provider writes",
+      "no changes to September paid without exact evidence",
+      "no mass reimport",
+      "no unrelated financial entries"
+    ],
+    "newDateSource": {
+      "sha": "d9915f330a8d6e5fc2b4f2019872a4b03eaf7ced",
+      "tree": "edf38a46ee4630d2bf0f31520cecc1c77f3b9835",
+      "ownerBlob": "ae8b0c293fe5403f3ceaa2517b53e279e06209f3",
+      "ownerTestBlob": "971833a90908c549e81bb53d6a7ccd26aacba1c7",
+      "priorSource": "61ee5001cbb0561a07addc36253b188d09cb2a38",
+      "proof": "PENDING"
+    },
+    "nextAction": "RUN_EXISTING_I3_SOURCE_PROOF_BEFORE_APPLY",
+    "realWrites": 0
   }
 }
