@@ -1,0 +1,182 @@
+{
+  "schemaVersion": "cxorbia.i3.run1444.release-composition-control.after-receipt.v1",
+  "createdAt": "2026-10-09T19:55:00-06:00",
+  "scope": {
+    "iteration": "I3",
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "authorizedChange": "Replace stale fixed HN population cardinality assertions in vrm215-shopper-population-reproof with dynamic invariants tied to the independent root diagnostic.",
+    "productCodeChanged": false,
+    "devRebuild": false,
+    "devRedeploy": false,
+    "productionTouched": false
+  },
+  "git": {
+    "repository": "paulaosoriof86/demoCXOrbia",
+    "branch": "recovery/cxorbia-phase-a-20260831",
+    "headBefore": "d5504fcb74ed8f82a67386d9f3ca570b471f9b0e",
+    "treeBefore": "f73c82cd99ed90c2a0edccbbbf01fd9c02648fc0",
+    "controlCommit": "0416b4490424553d86d22489dc0fe5ba03b31b37",
+    "controlTree": "46fa00cb0eee05acc01068e7ca3da6679c34f71f",
+    "productSourceImmutable": "797050085d1e3347b6d56322f003a3a293790710",
+    "productTreeImmutable": "607196f740203d538df8e22e424874fe547b3d59",
+    "modifiedFiles": [
+      ".github/workflows/cxorbia-recovery-i3-dev-certification.yml"
+    ],
+    "diffSummary": {
+      "filesChanged": 1,
+      "insertions": 20,
+      "deletions": 16,
+      "exactChange": "The Prove HN exact shopper readiness step now aliases result.json and root/result.json, verifies both consume the pinned HR revision, requires membershipUniverseCount to match root population.activeMemberships and population.activeCanonicalIds, and requires authEligiblePopulationCount + reviewOnlyExcludedCount to equal membershipUniverseCount. Existing HN login, self-scope, route, review-only, alias residual, HR assignment, zero-write and non-production assertions remain active."
+    }
+  },
+  "validationBeforeDispatch": {
+    "workflowSizeBytes": 511959,
+    "workflowSizeLimitBytes": 512000,
+    "actionlint": "PASS",
+    "nodeSyntax": {
+      "tools/qa/cxorbia-i3-vrm215-shopper-population-live-reproof.mjs": "PASS",
+      "tools/qa/cxorbia-i3-vrm217-219-population-root-diagnostic.mjs": "PASS"
+    }
+  },
+  "devArtifactReadback": {
+    "materializationRun": "37958395380",
+    "artifactSha256": "42445d6e62ce0bab1e95fdb86b592d422a2cee5db221e1c4c3abfece281503ee",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/0609acbc6f0dace6",
+    "runtimeRevision": "cxorbia-live-hr-dev-00283-kc5",
+    "runtimeDigest": "sha256:3bdb7ca745abcc51ae8a93aa9e4a83c631af58eb891c0c34b644d578969e586a",
+    "hostingUrl": "https://cxorbia-backend-dev.web.app",
+    "productionUrlExcluded": "https://tya-plataforma.web.app/"
+  },
+  "hnFocalRun": {
+    "workflowRun": "37979785997",
+    "workflowRunUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/37979785997",
+    "event": "workflow_dispatch",
+    "headSha": "0416b4490424553d86d22489dc0fe5ba03b31b37",
+    "job": {
+      "name": "vrm215-shopper-population-reproof",
+      "id": "113987155144",
+      "conclusion": "success"
+    },
+    "artifact": {
+      "name": "cxorbia-vrm215-shopper-population-37979785997",
+      "id": "11640841309",
+      "digest": "sha256:e322acec51da54eb1faac981940f44956a6bb00d46fbf2882100be260b2a81a6"
+    },
+    "hrRevisionPinned": "abe41d26a5729e48d92c7754217abd5111f1eacf9fecec5ad53ed25973d25b0c",
+    "hrMeta": {
+      "ok": true,
+      "revisionStable": true,
+      "sourceSafe": true,
+      "visits": 748,
+      "periods": 17,
+      "writes": false,
+      "hrWrites": false,
+      "imports": false,
+      "production": false
+    },
+    "rootDiagnostic": {
+      "decision": "PASS_VRM217_219_POPULATION_ROOT_DIAGNOSTIC",
+      "hrRevision": "abe41d26a5729e48d92c7754217abd5111f1eacf9fecec5ad53ed25973d25b0c",
+      "population": {
+        "activeMemberships": 381,
+        "activeCanonicalIds": 381,
+        "memberRows": 381
+      },
+      "hrAssignments": {
+        "assigned": 736,
+        "unresolved": 0,
+        "rows": []
+      },
+      "writes": 0,
+      "production": false
+    },
+    "hnHarness": {
+      "decision": "PASS_VRM215_HN_TARGET_EXACT_SHOPPER_READINESS",
+      "proofMode": "HN_TARGET",
+      "targetShopperId": "shopper_hn_1691aecc2c",
+      "uid": "cx-sh-7c122596c78059e7a9c9333f6055",
+      "visibleLogin": "wilson.lanza.5395",
+      "country": "HN",
+      "ownVisits": 16,
+      "authorizedPeriods": 13,
+      "currentPeriodId": "cinepolis-2026-10",
+      "currentPeriodAuthorized": true,
+      "octoberVisit": {
+        "id": "hr_2026-10_hn_2_e8f397f0d8",
+        "hrRowId": "OCTUBRE 26 HN!2",
+        "country": "HN",
+        "state": "agendada",
+        "scheduled": true,
+        "assigned": true,
+        "branch": "C. Las Cascadas Honduras"
+      },
+      "populationCount": 1,
+      "loginPass": 1,
+      "selfScopePass": 1,
+      "routeContractPass": 1,
+      "hrAssignmentsPass": true,
+      "identityPass": true,
+      "authPass": true,
+      "selfScopePopulationPass": true,
+      "routePopulationPass": true,
+      "hnTargetPass": true,
+      "writes": 0,
+      "production": false
+    },
+    "releaseCompositionInvariants": {
+      "membershipUniverseEqualsRootActiveMemberships": true,
+      "membershipUniverseEqualsRootActiveCanonicalIds": true,
+      "authEligiblePlusReviewOnlyEqualsMembershipUniverse": true,
+      "membershipUniverseCount": 381,
+      "authEligiblePopulationCount": 380,
+      "reviewOnlyExcludedCount": 1,
+      "reviewOnlyPass": true
+    }
+  },
+  "gtRegressionAttempt": {
+    "requiredAfterHnPass": true,
+    "existingJob": "phasea-representative-same-artifact-live-reproof",
+    "rerunAttemptJobId": "113989505039",
+    "rerunAttemptConclusion": "skipped",
+    "reason": "The existing workflow job is present but remains gated by its own job-level condition and does not execute under the current descriptor status. Local execution was also blocked because Application Default Credentials are not configured in this workstation context.",
+    "localCredentialCheck": "ADC_FAIL",
+    "executed": false,
+    "passDeclared": false,
+    "targetsNotExecuted": [
+      "Julissa Flores",
+      "Priscila Lopez",
+      "Paula Osorio"
+    ],
+    "owner": "workflow gating / CI credential route for existing GT representative regression",
+    "classification": "EXECUTION_BLOCKED",
+    "notes": "No product, HR, Firestore, Auth, Storage, provider, descriptor or materialization change was made to force this regression."
+  },
+  "supersededRuns": [
+    {
+      "run": "37979708168",
+      "number": 1442,
+      "status": "cancelled",
+      "note": "Push-triggered run cancelled before being used as focal proof."
+    },
+    {
+      "run": "37979712680",
+      "number": 1443,
+      "status": "cancelled",
+      "note": "Extra manual dispatch cancelled to preserve a single focal proof path."
+    }
+  ],
+  "result": {
+    "hnReleaseCompositionControl": "PASS",
+    "hnExactShopperReadiness": "PASS",
+    "gtRepresentativeRegression": "NOT_EXECUTED_BLOCKED_BY_EXISTING_JOB_GATE",
+    "i3Status": "HOLD",
+    "goLiveStatus": "NO_GO_FOR_I4",
+    "remainingBlockers": [
+      "GT representative authenticated regressions for Julissa, Priscila and Paula did not execute after HN PASS because the existing job remained skipped and local ADC was unavailable.",
+      "B2 ACK/persistence remains pending.",
+      "Six historical GT identity discrepancies remain pending on the protected exact-read path.",
+      "Human incremental acceptance and modular matrix closure remain pending."
+    ],
+    "nextAction": "Authorize the existing GT representative regression job to run under the current I3 descriptor state, or provide an existing CI/DEV credential route that can execute tools/qa/cxorbia-i3-phasea-representative-live-reproof.mjs against the same DEV artifact and pinned HR revision without product rebuild or redeploy."
+  }
+}
