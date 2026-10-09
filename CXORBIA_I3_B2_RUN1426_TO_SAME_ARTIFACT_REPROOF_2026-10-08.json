@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "cxorbia.i3.b2.run1426.dev-materialization-to-reproof.v1",
+  "iteration": "I3",
+  "controlBeforeHead": "ddc553cb89c2dbd53de0afdacd183d5853eb7887",
+  "productSourceSha": "9b87e479a1fb9825a22abf935eebff171ed720c4",
+  "tree": "f2a384386e22028ffc4bf830adb1ec7e11e19696",
+  "devReceipt": {
+    "state": "PASS_REJECTED_PHASEA_EXACT_DEV_MATERIALIZATION",
+    "decision": "PASS_REJECTED_PHASEA_EXACT_DEV_MATERIALIZATION",
+    "sourceSha": "9b87e479a1fb9825a22abf935eebff171ed720c4",
+    "sourceTree": "f2a384386e22028ffc4bf830adb1ec7e11e19696",
+    "runId": 37887430592,
+    "runNumber": 1426,
+    "jobId": 113680533982,
+    "artifactId": 11596389015,
+    "artifactDigest": "sha256:961e3bac8b3fe96aadf9ef1ab0c4785b5cac25438cf33c9f06d45ba692dae383",
+    "runtimeRevision": "cxorbia-live-hr-dev-00283-kc5",
+    "runtimeDigest": "sha256:3bdb7ca745abcc51ae8a93aa9e4a83c631af58eb891c0c34b644d578969e586a",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/1abb0e5f2efa8cc2",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791522902099000",
+    "hrRevision": "9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "storageRulesDeploys": 0,
+    "production": false
+  },
+  "sourceProofRun1425": {
+    "runId": 37887175242,
+    "tests": 44,
+    "passed": 44,
+    "failed": 0
+  },
+  "matrix": {
+    "path": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V52.json",
+    "blob": "129672250fb50ae9a430be9ff459b99ebd67aa4d",
+    "modules": 21,
+    "owners": 95,
+    "files": 148
+  },
+  "ledger": {
+    "path": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V353_2026-10-08.json",
+    "blob": "adf7075d4d5fa773a5d2292739088d9ad57ce9d4",
+    "findings": 273,
+    "next": "VRM-274"
+  },
+  "nextJob": "phasea-representative-same-artifact-live-reproof",
+  "materializationRepeats": 0,
+  "paulaHuman": "PENDING",
+  "noNewProductChange": true,
+  "hrWrites": 0,
+  "financeWrites": 0,
+  "production": false,
+  "nextAction": "Run ONLY existing I3 phasea-representative-same-artifact-live-reproof against immutable run1426 DEV source 9b87. Readback Admin/Shopper/Client and no regressions. Then B2 exact mock-provider ACK/reload/TinyFish/Paula human acceptance; six GT and HN separately with exact source adjudication. No build/redeploy, finance writes, HR writes or production."
+}
