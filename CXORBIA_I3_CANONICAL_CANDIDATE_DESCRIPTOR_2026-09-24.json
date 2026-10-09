@@ -9,11 +9,11 @@
   "predecessorProductSourceSha": "d9915f330a8d6e5fc2b4f2019872a4b03eaf7ced",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V350_2026-10-08.json",
   "findingsLedgerExpectedGitBlob": "3b700b77083f23422afd59d40a35376538cff72f",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V48.json",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V49.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-272_RUN1422_PRODUCT_FIXES_PASS__TWO_CONTROL_FALSE_NEGATIVES_FIXED__SAME_ARTIFACT_REPROOF_REQUIRED",
+  "activeBlocker": "RUN1424_FULL_HUMAN_HOLD_SIX_GT_MAPPED_WITHOUT_TENANT_ADJUDICATION_AND_HN_LOGIN_FAIL",
   "nextFindingId": "VRM-273",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Re-run only existing I3 same-artifact readback against unchanged run1421 DEV artifact after the run1422 control-only corrections: prefer an exact rendered live-HR row before a stale mapped alias in the human gate, and accept a persisted visible-login session only after exact signed tenant/project/shopper claims validation. No product change, build, redeploy, VRM-153 repeat or production.",
+  "exactNextAction": "Resolve six exact HR identity aliases by source/target/profile/tenant adjudication; do not auto-merge. Separately prove HN signed-claims login/boot. Fix P0 B2 editable display name without HR/Auth owner change. Same DEV source and 45+18 human findings, Gate20/21 only after I3 PASS. No I4.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2653,7 +2653,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "d4175b82f2518e9c44989bc1e07edfaf845d825b",
+  "moduleTruthExpectedGitBlob": "0e3d6c5523c81e40a49889a208fbbc167876bf7e",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -7785,6 +7785,16 @@
     "runtimeDeploys": 0,
     "hostingDeploys": 0,
     "vrm153Repeat": false,
+    "production": false
+  },
+  "run1424ControlReadback": {
+    "runId": 37879459116,
+    "conclusion": "failure",
+    "representative": "PASS",
+    "human": "HOLD",
+    "gtIdentityMappings": 6,
+    "hnHistoryVisibleLogin": "FAIL",
+    "sourceUnchanged": true,
     "production": false
   }
 }

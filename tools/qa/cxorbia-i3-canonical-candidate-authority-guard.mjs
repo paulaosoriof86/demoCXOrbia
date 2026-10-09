@@ -61,10 +61,25 @@ const moduleTruthReadback={
 };
 const moduleRegistryPath=String(d.moduleAuthorityRegistryPath||'');
 const moduleRegistry=moduleRegistryPath?readJson(moduleRegistryPath):null;
-const moduleRegistryReadback={path:moduleRegistryPath,
-  domainCount:Array.isArray(moduleRegistry?.modules)?moduleRegistry.modules.length:0,
-  targetDomainCount:modules.length,
-  coverageAligned:Array.isArray(moduleRegistry?.modules)&&moduleRegistry.modules.length===modules.length
+const registryDomains=Array.isArray(moduleRegistry?.modules)?moduleRegistry.modules.map(x=>String(x?.domain||'')):[];
+const moduleRegistryReadback={
+  path:moduleRegistryPath,domainCount:registryDomains.length,targetDomainCount:modules.length,
+  coverageAligned:registryDomains.length===modules.length,
+  historicalSubsetValid:registryDomains.every(x=>domains.includes(x)),
+  frozenHistoricalBaselineNotFinalAuthority:true
+};
+// Check every Phase A owner and source inventory blob against the exact product tree.
+const sourceTreeLines=git('ls-tree','-r',d.productSourceSha,'--','app','backend','firebase.json','.firebaserc','firestore.rules','storage.rules');
+const sourceBlobs=new Map(sourceTreeLines.split('\n').map(line=>line.match(/^[0-7]{6} blob ([a-f0-9]{40})\t(.+)$/)).filter(Boolean).map(x=>[x[2],x[1]]));
+const ownerPaths=[...new Set(modules.flatMap(x=>Array.isArray(x.owners)?x.owners:[]))];
+const sourceInventory=Array.isArray(mt.sourceFiles)?mt.sourceFiles:[];
+const mismatchedOwners=modules.flatMap(x=>(x.owners||[]).filter(p=>sourceBlobs.get(p)!==String(x.currentOwnerBlobs?.[p]||'')).map(p=>({path:p,domain:x.domain})));
+const mismatchedSourceFiles=sourceInventory.filter(x=>sourceBlobs.get(x.path)!==String(x.currentBlob||'')).map(x=>x.path);
+const moduleBlobReadback={
+  sourceSha:d.productSourceSha,domainCount:modules.length,ownerCount:ownerPaths.length,
+  sourceFileCount:sourceInventory.length,ownerMismatches:mismatchedOwners,sourceFileMismatches:mismatchedSourceFiles,
+  pass:mismatchedOwners.length===0&&mismatchedSourceFiles.length===0&&ownerPaths.length>=21&&sourceInventory.length>=21,
+  scope:'EXACT_SOURCE_GIT_BLOBS_ONLY_NO_HUMAN_VISUAL_OR_PROVIDER_E2E'
 };
 const terminalLike=String(d.status||'')==='GO'||String(d.status||'')==='READY_FOR_TERMINAL_CERTIFICATION';
 const promotionLike=/READY_FOR_|PENDING_PAULA_VISUAL_ACCEPTANCE|PAULA_HUMAN_VISUAL_APPROVAL|HOLD_HUMAN_VISUAL_CHECKPOINT_REQUIRED|READY_FOR_TERMINAL_CERTIFICATION/.test(String(d.status||'')+' '+String(d.activeBlocker||''))
@@ -75,6 +90,8 @@ if(promotionLike){
   if(!moduleTruthReadback.sourceAligned)fail('RELEASE_COMPOSITION_FAILURE:STALE_MODULE_TRUTH_FOR_PROMOTION',JSON.stringify({matrixSource:mtSource,productSource:d.productSourceSha}));
   if(moduleTruthReadback.domainCount!==21||moduleTruthReadback.uniqueDomainCount!==21)
     fail('RELEASE_COMPOSITION_FAILURE:MODULE_TRUTH_DOMAIN_COVERAGE',JSON.stringify(moduleTruthReadback));
+  if(!moduleBlobReadback.pass)
+    fail('RELEASE_COMPOSITION_FAILURE:SOURCE_MODULE_BLOB_DRIFT',JSON.stringify(moduleBlobReadback));
   const liveClosed=/^(?:CLOSED|CLOSED_PROVEN|FIXED_PROVEN(?:_RUN\d+|_DURABLE)?|PASS_PROVEN(?:_RUN\d+)?|NOT_APPLICABLE_WITH_EVIDENCE|ALREADY_PROVEN_NO_DRIFT)/;
   for(const id of scope.findingIds){
     const finding=l.findings?.[id];
@@ -91,12 +108,18 @@ if(promotionLike){
 
 const wf=fs.readFileSync(WORKFLOW,'utf8');
 const workflowLedgerPointer=String((wf.match(/^\s*FINDINGS_LEDGER:\s*(\S+)/m)||[])[1]||'');
-const workflowLedgerReadback={declaredPath:workflowLedgerPointer,descriptorPath:LEDGER,
-  aligned:!workflowLedgerPointer||workflowLedgerPointer===LEDGER,scope:'HISTORICAL_ENV_POINTER_NOT_RELEASE_AUTHORITY'};
+const legacyWorkflowLedgerActive=wf.includes('$FINDINGS_LEDGER')||wf.includes('env.FINDINGS_LEDGER');
+const workflowLedgerReadback={
+  declaredPath:workflowLedgerPointer,descriptorPath:LEDGER,
+  aligned:!workflowLedgerPointer||workflowLedgerPointer===LEDGER,
+  activelyConsumed:legacyWorkflowLedgerActive,scope:'HISTORICAL_ENV_POINTER_NOT_RELEASE_AUTHORITY'
+};
 if(terminalLike&&(!moduleTruthReadback.sourceAligned||!moduleTruthReadback.phaseAComplete||
-   !moduleTruthReadback.allModulesMatch||!moduleRegistryReadback.coverageAligned||!workflowLedgerReadback.aligned))
+   !moduleTruthReadback.allModulesMatch||!moduleBlobReadback.pass||
+   !moduleRegistryReadback.historicalSubsetValid||
+   (legacyWorkflowLedgerActive&&!workflowLedgerReadback.aligned)))
   fail('RELEASE_COMPOSITION_FAILURE:TERMINAL_AUTHORITIES_NOT_CONVERGED',
-    JSON.stringify({moduleTruthReadback,moduleRegistryReadback,workflowLedgerReadback}));
+    JSON.stringify({moduleTruthReadback,moduleRegistryReadback,moduleBlobReadback,workflowLedgerReadback}));
 if(/^\s*I3_CERTIFICATION_SOURCE_SHA:\s*[a-f0-9]{40}\s*$/m.test(wf))fail('RELEASE_COMPOSITION_FAILURE:TOP_LEVEL_LEGACY_PRODUCT_SOURCE_AUTHORITY');
 if(/^\s*I3_CERTIFICATION_SOURCE_TREE:\s*[a-f0-9]{40}\s*$/m.test(wf))fail('RELEASE_COMPOSITION_FAILURE:TOP_LEVEL_LEGACY_PRODUCT_TREE_AUTHORITY');
 
@@ -141,9 +164,10 @@ const result={
   postCandidateProductDrift:false,
   historicalSourceSpecificJobsDisabled:historicalDisabled.length,
   proofScope:'CANONICAL_SOURCE_LINEAGE_ONLY_NOT_MODULE_OR_ARTIFACT_CERTIFICATION',
-  moduleTruthReadback,moduleRegistryReadback,workflowLedgerReadback,
+  moduleTruthReadback,moduleRegistryReadback,moduleBlobReadback,workflowLedgerReadback,
   terminalReleaseEligible:terminalLike&&moduleTruthReadback.sourceAligned&&moduleTruthReadback.phaseAComplete&&
-    moduleTruthReadback.allModulesMatch&&moduleRegistryReadback.coverageAligned&&workflowLedgerReadback.aligned,
+    moduleTruthReadback.allModulesMatch&&moduleBlobReadback.pass&&moduleRegistryReadback.historicalSubsetValid&&
+    (!legacyWorkflowLedgerActive||workflowLedgerReadback.aligned),
   production:false
 };
 process.stdout.write(JSON.stringify(result,null,2)+'\n');
