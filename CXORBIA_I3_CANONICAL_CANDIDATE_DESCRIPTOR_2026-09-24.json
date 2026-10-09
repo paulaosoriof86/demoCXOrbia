@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "797050085d1e3347b6d56322f003a3a293790710",
   "productTreeAuthority": "607196f740203d538df8e22e424874fe547b3d59",
   "predecessorProductSourceSha": "9b87e479a1fb9825a22abf935eebff171ed720c4",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V355_2026-10-09.json",
-  "findingsLedgerExpectedGitBlob": "5118d2414be0c2f460e070e1eab0a0925667c736",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V356_2026-10-09.json",
+  "findingsLedgerExpectedGitBlob": "a41ac7435ee2233582974bbde1071ecc5c8f79bd",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261009-V54.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM274_P0_HN_SHOPPER_READINESS_EXACT_PRINCIPAL_GATE_SOURCE_PROOF_REQUIRED",
+  "activeBlocker": "VRM274_P0_HN_SHOPPER_READINESS_SOURCE_PROVEN_DEV_MATERIALIZATION_REQUIRED",
   "nextFindingId": "VRM-275",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run canonical I3 Phase A cumulative source proof for VRM-274 source 797050085d1e3347b6d56322f003a3a293790710. If PASS, advance through the existing single DEV materialization/readback lane and authenticated HN plus GT regression E2E. Keep I3 HOLD; no production, no I4, no HR/Auth/Firestore writes.",
+  "exactNextAction": "Use existing I3 Phase A cumulative DEV materialization lane exactly once for VRM-274 source 797050085d1e3347b6d56322f003a3a293790710, then authenticate exact HN shopper and GT regressions against that artifact. Keep I3 HOLD; no production, no I4, no HR/Auth/Firestore writes.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -945,10 +945,10 @@
     "production": false
   },
   "pendingMaterialization": {
-    "state": "PENDING_AFTER_SOURCE_PROOF",
+    "state": "REQUIRED_AFTER_SOURCE_PROOF_PASS",
     "sourceSha": "797050085d1e3347b6d56322f003a3a293790710",
     "sourceTree": "607196f740203d538df8e22e424874fe547b3d59",
-    "requiredLane": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED_AFTER_SOURCE_PASS",
+    "requiredLane": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
     "production": false
   },
   "lastVrm080Proof": {
@@ -5799,31 +5799,15 @@
     "production": false
   },
   "lastSourceProof": {
+    "runId": 37958199426,
+    "runNumber": 1430,
+    "jobId": 113914112534,
     "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
-    "runId": 37678003445,
-    "runNumber": 1354,
-    "jobId": 112986496678,
-    "artifactId": 11507384937,
-    "artifactDigest": "sha256:54cb3b8e45013907cf6bded97fd48aef6329d7429d1999bd14969b9790237807",
-    "sourceSha": "411e1e3712e6abfd60475aef16a75aecc7399c08",
-    "sourceTree": "0991894ed9396c334ca62c44626f5b6f2a5e3d14",
-    "phaseAContract": {
-      "tests": 7,
-      "pass": 7,
-      "fail": 0
-    },
-    "vrm261to264Contract": {
-      "tests": 4,
-      "pass": 4,
-      "fail": 0
-    },
-    "vrm268to269Contract": {
-      "tests": 3,
-      "pass": 3,
-      "fail": 0
-    },
+    "sourceSha": "797050085d1e3347b6d56322f003a3a293790710",
+    "sourceTree": "607196f740203d538df8e22e424874fe547b3d59",
     "deploys": 0,
-    "production": false
+    "production": false,
+    "controlHeadSha": "87ed7c96d2ccab6e51ca93ce9b5d6f9f3fdeb8a7"
   },
   "run1355MaterializationAdjudication": {
     "runId": 37678228587,
