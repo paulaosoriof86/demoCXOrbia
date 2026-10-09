@@ -167,7 +167,7 @@ for(const doc of crossSnap.docs){
   for(const token of [doc.id,v.sourceStableKey,v.sourceShopperId,c])addIdentity(token,c,'HR_EXTERNAL_EXACT_CROSSWALK',doc.id);
 }
 const validLinkStatuses=new Set(['active','confirmed','approved','materialized']);
-const validAuthorities=new Set(['provider_exact','tenant_adjudication','migrated_exact','platform_created']);
+const validAuthorities=new Set(['provider_exact','tenant_adjudication','migrated_exact']);
 for(const doc of linksSnap.docs){
   const v=doc.data()||{},canonical=str(v.canonicalShopperId||v.canonicalId||v.shopperId||v.profileId);
   const state=str(v.status||v.state).toLowerCase(),authority=str(v.authorityType||v.authority?.type).toLowerCase();
@@ -175,7 +175,7 @@ for(const doc of linksSnap.docs){
   const scope=str(v.projectScope||v.scope?.projectId||v.projectId||'*');
   const system=str(v.sourceSystem||v.sourceNamespace||v.sourceType||v.sourceIdentity?.sourceSystem).toLowerCase();
   if(str(v.tenantId||v.scope?.tenantId)!==TENANT||!canonical||!validLinkStatuses.has(state)||!validAuthorities.has(authority)||!authorityRef||!system.includes('hr'))continue;
-  if(v.periodKey||v.periodId||v.periodScope||!['*','tenant',PROGRAM].includes(scope))continue;
+  if(v.periodIndependent!==true||v.sourceSafe===false||v.periodKey||v.periodId||v.periodScope||!['*','tenant',PROGRAM].includes(scope))continue;
   const tokens=[canonical,v.sourceIdentityKey,v.sourceSubjectId,v.sourceId,v.sourceKey,v.legacyShopperId,v.externalShopperId,
     ...(arr(v.exactAliases)),...(arr(v.identityAliases)),...(arr(v.sourceAliases)),...(arr(v.sourceIdentityAliases)),...(arr(v.aliases))];
   exactLinkCounts.providerLink++;
@@ -190,26 +190,40 @@ for(const row of preflightRows.filter(r=>r.blockers?.includes('PRIOR_SHOPPER_ID_
   const liveTargets=[...new Set((exactIdentityTokens.get(liveId)||[]).map(v=>v.canonical))];
   const shared=priorTargets.filter(x=>liveTargets.includes(x));
   const contradictions=priorTargets.length>1||liveTargets.length>1||shared.length>1;
+  const eligibleLinkRefs=[...new Set((exactIdentityTokens.get(priorId)||[]).filter(v=>v.kind==='AUTHORIZED_EXACT_IDENTITY_LINK')
+    .map(v=>v.ref).filter(ref=>(exactIdentityTokens.get(liveId)||[]).some(v=>v.kind==='AUTHORIZED_EXACT_IDENTITY_LINK'&&v.ref===ref)))];
   const decision=contradictions?'AMBIGUOUS_EXACT_CROSSWALK'
-    :shared.length===1?'PROVIDER_EXACT_SAME_HUMAN'
-    :'EXACT_CROSSWALK_NOT_PROVEN';
+    :shared.length===1&&eligibleLinkRefs.length>0?'PROVIDER_EXACT_SAME_HUMAN'
+    :'EXACT_PROVIDER_LINK_NOT_PROVEN';
   comparablePairs.push({visitId:row.visitId,decision,
     priorTokenAuthoritative:priorTargets.length===1,liveTokenAuthoritative:liveTargets.length===1,
+    verifiedTransactionalIdentityLinkId:decision==='PROVIDER_EXACT_SAME_HUMAN'?eligibleLinkRefs[0]:null,
+    verifiedLinkCount:eligibleLinkRefs.length,
     priorLinkKinds:[...new Set((exactIdentityTokens.get(priorId)||[]).map(v=>v.kind))],
     liveLinkKinds:[...new Set((exactIdentityTokens.get(liveId)||[]).map(v=>v.kind))],
     commonEvidenceRefs:[...new Set((exactIdentityTokens.get(priorId)||[]).map(v=>v.ref).filter(ref=>(exactIdentityTokens.get(liveId)||[]).some(v=>v.ref===ref)))],
     namesUsed:false,fuzzyMatchUsed:false});
 }
+const safeIdentityLinkRefsByVisitId=Object.fromEntries(comparablePairs
+  .filter(x=>x.decision==='PROVIDER_EXACT_SAME_HUMAN')
+  .map(x=>[x.visitId,x.verifiedTransactionalIdentityLinkId]));
+supersessionPreflight.identityVerifiedExact=Object.keys(safeIdentityLinkRefsByVisitId).length;
+supersessionPreflight.readyToRequestScopedFinancialAuthorization=
+  supersessionPreflight.previousPendingRecords===34
+  &&supersessionPreflight.eligibleExactSupersessions+Object.keys(safeIdentityLinkRefsByVisitId).length===34
+  &&supersessionPreflight.unrecordedExactVisits===7
+  &&str(dry.sourceRevision)===hrRevision&&!activeHistoricalDuplicates.length
+  &&comparablePairs.every(x=>x.decision==='PROVIDER_EXACT_SAME_HUMAN');
 const exactIdentityAdjudication={
   priorShopperIdMismatches:comparablePairs.length,
   counts:{sameHumanExact:comparablePairs.filter(x=>x.decision==='PROVIDER_EXACT_SAME_HUMAN').length,
     ambiguous:comparablePairs.filter(x=>x.decision==='AMBIGUOUS_EXACT_CROSSWALK').length,
-    notProven:comparablePairs.filter(x=>x.decision==='EXACT_CROSSWALK_NOT_PROVEN').length},
-  scannedAuthorityCount:exactLinkCounts,rows:comparablePairs,
+    notProven:comparablePairs.filter(x=>x.decision==='EXACT_PROVIDER_LINK_NOT_PROVEN').length},
+  scannedAuthorityCount:exactLinkCounts,safeIdentityLinkRefsByVisitId,rows:comparablePairs,
   identityMerged:false,realWrites:0,production:false
 };
 
-const result={schemaVersion:'cxorbia.vrm153.reconciliation-readback.v4',
+const result={schemaVersion:'cxorbia.vrm153.reconciliation-readback.v5',
  decision:fullPass?'PASS_VRM153_RECONCILIATION_READBACK_MATCH':'HOLD_VRM153_RECONCILIATION_READBACK_MISMATCH',
  sourceRevision:str(dry.sourceRevision),hrRevision,
  liveHrVisitCount:arr(hr.visits).length,

@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_VRM153_SAFE_SUPERSESSION_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_VRM153_RECONCILIATION_READBACK_DIAGNOSTIC_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "61ee5001cbb0561a07addc36253b188d09cb2a38",
   "productTreeAuthority": "97a06eec95586cce76ef28207950c31dafd0a3f9",
   "predecessorProductSourceSha": "11e2af3f710783294e9160fef9472a6da6359275",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V344_2026-10-08.json",
-  "findingsLedgerExpectedGitBlob": "8dcf1e0bc7993891a97f6404f21342b78e0c42e4",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V45.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V345_2026-10-08.json",
+  "findingsLedgerExpectedGitBlob": "ef55f9c657ad9926329c280360d4d9d3653bfcdd",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261008-V46.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM153_EXACT_SAME_HUMAN_ALIAS_SOURCE_FIX_PENDING_SYNTHETIC_TEST",
+  "activeBlocker": "VRM153_34_AUGUST_GT_EXACT_LINK_PREFLIGHT_7_ABSENT_SAFETY",
   "nextFindingId": "VRM-272",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run synthetic transactional finance provider tests on source 61ee5001 and preserve read-only authoritative identity adjudication. No real writes.",
+  "exactNextAction": "Re-run exact independent HR+Firestore 34 August GT preflight with transactional identity link contract; preserve 7 absent reconciliations as distinct scope. No actual financial writes until explicit approval.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -7377,6 +7377,31 @@
     "financialWrites": 0,
     "hrWrites": 0,
     "bankWrites": 0,
+    "deploys": 0,
+    "production": false
+  },
+  "i3Vrm153Run1410SourceProofAndLivePreflight": {
+    "runId": 37862415957,
+    "runNumber": 1410,
+    "conclusion": "SUCCESS",
+    "totalTests": 21,
+    "passed": 21,
+    "failed": 0,
+    "sourceSha": "61ee5001cbb0561a07addc36253b188d09cb2a38",
+    "sourceTree": "97a06eec95586cce76ef28207950c31dafd0a3f9",
+    "previousHRRevision": "9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef",
+    "validated": [
+      "pending_to_paid_exact_authority",
+      "provider_transaction_read_before_write",
+      "reject_cross_tenant_project",
+      "reject_unapproved_proof",
+      "reject_future_date",
+      "reject_missing_untrusted_alias",
+      "idempotent_replay"
+    ],
+    "readyForRealFinancialMutation": false,
+    "liveIdentityQAFullContractBlob": "7201c51cb5eac023ffc0b0945c71bc853fd310e6",
+    "realWrites": 0,
     "deploys": 0,
     "production": false
   }
