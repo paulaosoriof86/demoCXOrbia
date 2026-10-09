@@ -6952,7 +6952,7 @@ jobs:
          test "$(jq -r '.decision' "$ROOT_OUT/result.json")" = "PASS_VRM217_219_POPULATION_ROOT_DIAGNOSTIC"
          test "$(jq -r '.hrAssignments.unresolved' "$ROOT_OUT/result.json")" = "0"
          test "$(jq -r '.visits.ambiguousAuthorityGroups' "$ROOT_OUT/result.json")" = "0"
-         test "$(jq '.operationalAliasReferences.rows | length' "$ROOT_OUT/result.json")" = "0"
+         test "$(jq '[.operationalAliasReferences.rows[]? | select(.collection != "paymentReconciliations")] | length' "$ROOT_OUT/result.json")" = "0"
          test "$(jq -r '.operationalAliasReferences.paymentReconciliations' "$ROOT_OUT/result.json")" = "11"
          test "$(jq '[.operationalAliasReferences.certifications, .operationalAliasReferences.liquidations, .operationalAliasReferences.postulations, .operationalAliasReferences.reservations] | add' "$ROOT_OUT/result.json")" = "0"
          test "$(jq -r '.writes' "$ROOT_OUT/result.json")" = "0"
