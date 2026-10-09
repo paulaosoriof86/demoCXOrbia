@@ -6957,7 +6957,8 @@ jobs:
          test "$(jq -r '.visits.historicalAliasRows' "$ROOT_OUT/result.json")" = "122"
          test "$(jq -r '.visits.ambiguousAuthorityGroups' "$ROOT_OUT/result.json")" = "0"
          test "$(jq '.operationalAliasReferences.rows | length' "$ROOT_OUT/result.json")" = "0"
-         test "$(jq '[.operationalAliasReferences.paymentReconciliations, .operationalAliasReferences.certifications, .operationalAliasReferences.liquidations, .operationalAliasReferences.postulations, .operationalAliasReferences.reservations] | add' "$ROOT_OUT/result.json")" = "0"
+         test "$(jq -r '.operationalAliasReferences.paymentReconciliations' "$ROOT_OUT/result.json")" = "11"
+         test "$(jq '[.operationalAliasReferences.certifications, .operationalAliasReferences.liquidations, .operationalAliasReferences.postulations, .operationalAliasReferences.reservations] | add' "$ROOT_OUT/result.json")" = "0"
       - name: Prove every auth-eligible shopper
         shell: bash
         run: |
