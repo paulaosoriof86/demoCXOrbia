@@ -51,3 +51,21 @@ test('admin shopper source exposes banking/profile workflow with provider ACK go
   const s=read('app/modules/shoppers.js');
   assert.match(s,/banco|ctaNum/);assert.match(s,/profile_completion_requested/);assert.match(s,/providerAck/);assert.match(s,/idempotentReplay|idempotency/);
 });
+
+test('B2 self-display name validation uses real Unicode escapes and preserves HR identity',()=>{
+  const src=read('backend/runtime/cxorbia-shopper-command-provider-v1.mjs');
+  const start=src.indexOf('const wantsDisplayChange='),end=src.indexOf('const merged=',start);
+  assert.ok(start>=0&&end>start,'provider B2 exact owner required');
+  const guard=src.slice(start,end);
+  const match=guard.match(/\/\[<>\S+?\]\/\.test\(first\+last\)/);
+  assert.ok(match,'exact display validation expression required');
+  const sourceRegex=match[0].slice(0,match[0].indexOf('.test'));
+  const rejects=new Function('return '+sourceRegex)();
+  assert.equal(rejects.test('AnaCorregida'),false,'valid name must not be rejected');
+  assert.equal(rejects.test('LucíaPérez'),false,'accented names must be allowed');
+  assert.equal(rejects.test('Ana<Corregida'),true,'HTML delimiters rejected');
+  assert.equal(rejects.test('Ana\nCorregida'),true,'control characters rejected');
+  assert.match(src,/SHOPPER_HR_MANAGED_FIELDS_IMMUTABLE/);
+  assert.match(src,/displayNameActorUid=uid/);
+  assert.match(src,/displayNameAuthority='shopper_self_profile'/);
+});
