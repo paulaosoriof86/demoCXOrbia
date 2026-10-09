@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "d9915f330a8d6e5fc2b4f2019872a4b03eaf7ced",
-    "sourceTree": "edf38a46ee4630d2bf0f31520cecc1c77f3b9835",
-    "predecessorSha": "61ee5001cbb0561a07addc36253b188d09cb2a38",
+    "sourceSha": "4050e8afc952183131d48600b84260024ed78ac5",
+    "sourceTree": "c3a58c3425d35a43c013de555d4e7f13fac7639b",
+    "predecessorSha": "d9915f330a8d6e5fc2b4f2019872a4b03eaf7ced",
     "production": false,
-    "state": "VRM153_SUPERSESSION_SOURCE_ONLY_PENDING_PROOF",
+    "state": "VRM272_SOURCE_FIXED_DEV_MATERIALIZATION_REQUIRED",
     "proof": {
       "state": "PASS_VRM249_SOURCE_REPROOF_AND_EXACT_DEV_MATERIALIZATION",
       "accumulatedSourceProofs": [
@@ -18869,6 +18869,58 @@
         "humanApproved": false,
         "fullClosure": false
       }
+    },
+    "VRM-272": {
+      "id": "VRM-272",
+      "firstObservedAt": "2026-10-09_RUN1418_SAME_ARTIFACT_HUMAN_LIVE_ACCEPTANCE",
+      "classification": "MAPPING_FAILURE",
+      "secondaryClassifications": [
+        "VISUAL_DEFECT",
+        "ENVIRONMENT_FAILURE_CONTROL_HELPER"
+      ],
+      "severity": "P0",
+      "title": "Run1418 exposed stale identity alias collapse, undefined Client labels, and an authenticated shopper retry false negative",
+      "state": "SOURCE_FIXED_DEV_MATERIALIZATION_REQUIRED",
+      "rootCauseStatus": "PROVEN_BY_RUN1418_AND_FOCAL_REGRESSION",
+      "observed": {
+        "runId": 37869164559,
+        "representativeJobPassed": true,
+        "representativeB2B5B8Passed": true,
+        "staleAliasIdentityMerges": 6,
+        "unresolvedTechnicalPrimaryNames": 1,
+        "visibleUndefinedNull": 1,
+        "shopperAuthRetryFalseNegative": 1,
+        "builds": 0,
+        "deploys": 0,
+        "hrWrites": 0,
+        "production": false
+      },
+      "expected": "Distinct live HR people remain distinct unless exact tenant adjudication proves otherwise; unresolved platform labels and missing Client fields render human-safe text; a retry may reuse the exact expected authenticated shopper session.",
+      "owner": [
+        "app/adapters/tya-cumulative-read-model-v2.js",
+        "app/modules/clientes.js",
+        ".github/control/RECOVERY-I3-BROWSER-AUTH-LIFECYCLE-20260919.mjs"
+      ],
+      "fix": {
+        "sourceSha": "4050e8afc952183131d48600b84260024ed78ac5",
+        "sourceTree": "c3a58c3425d35a43c013de555d4e7f13fac7639b",
+        "predecessorSha": "d9915f330a8d6e5fc2b4f2019872a4b03eaf7ced",
+        "focalTests": 23,
+        "focalPass": 23,
+        "focalFail": 0,
+        "fullSuite": "BASELINE_EQUIVALENT_NO_NEW_FAILURES",
+        "vrm153Repeat": false,
+        "production": false
+      },
+      "acceptance": {
+        "sourceProof": "PASS_LOCAL_FOCAL_23_OF_23",
+        "devMaterialization": "PENDING",
+        "sameArtifactE2E": "PENDING",
+        "humanVisual": "PENDING",
+        "guard": "Source proof alone does not close this finding"
+      },
+      "blocking": true,
+      "production": false
     }
   },
   "latestEvidenceOverrides": {
@@ -19557,11 +19609,12 @@
       "VRM-268",
       "VRM-269",
       "VRM-270",
-      "VRM-271"
+      "VRM-271",
+      "VRM-272"
     ],
-    "findingCount": 271,
-    "expectedCurrentRange": "VRM-001..VRM-271",
-    "nextFindingId": "VRM-272",
+    "findingCount": 272,
+    "expectedCurrentRange": "VRM-001..VRM-272",
+    "nextFindingId": "VRM-273",
     "appendOnly": true,
     "omissionNeverCloses": true,
     "terminalState": "HOLD_I3_REMAINING_E2E_HUMAN_GATE_AFTER_VRM153_DEV_DURABLE_PASS",
@@ -19579,8 +19632,8 @@
     "userReportedRequirementsFrozenAt": "2026-09-30T20:18:00-06:00",
     "userReviewComplete": true,
     "userReviewEvidence": "19 screenshots plus complete Shopper/Admin observations supplied 2026-10-02",
-    "currentProductSourceSha": "d9915f330a8d6e5fc2b4f2019872a4b03eaf7ced",
-    "currentProductSourceTree": "edf38a46ee4630d2bf0f31520cecc1c77f3b9835",
+    "currentProductSourceSha": "4050e8afc952183131d48600b84260024ed78ac5",
+    "currentProductSourceTree": "c3a58c3425d35a43c013de555d4e7f13fac7639b",
     "currentMaterialization": {
       "state": "PASS_VRM267_HOSTING_RULES_DEV_MATERIALIZATION",
       "decision": "PASS_VRM267_HOSTING_RULES_DEV_MATERIALIZATION_READBACK_RUN1348",
@@ -19885,7 +19938,7 @@
     "hostingVersion": "sites/cxorbia-backend-dev/versions/74e0f30a90df1676",
     "production": false
   },
-  "nextFindingId": "VRM-271",
+  "nextFindingId": "VRM-273",
   "lastControlFailure": {
     "id": "RUN1238_NEXT_FINDING_ID_GOVERNANCE_DESYNC",
     "classification": "MAPPING_FAILURE",
