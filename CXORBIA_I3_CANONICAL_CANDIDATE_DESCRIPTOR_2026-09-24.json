@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "B1_AUTHORIZED_FIRESTORE_PARALLEL_READS_SOURCE_PROOF__NEXT_DEV_NO_RELOAD_E2E__B2_ACK_PENDING",
+  "activeBlocker": "B1_FIRST_CREDENTIAL_ENTRY_SOURCE_PROOF_PASS_DEV_HOSTING_PROOF_PENDING__B2_REMOTE_ACK_OPEN",
   "nextFindingId": "VRM-275",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Execute canonical I3 source-proof for new product source f2a50044; then Hosting-only DEV materialization with explicit asset readback core/backend-firebase.js, then fresh first login without reload for two shoppers and admin. Preserve B2 and six GT cases.",
+  "exactNextAction": "Execute existing cumulative DEV materialization for product f2a50044 and verify served core/backend-firebase.js exact blob SHA; no runtime build required. Then true first login without reload E2E and human B1 approval decision.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -7949,8 +7949,11 @@
     "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V358_2026-10-10.json",
     "ledgerBlob": "7adaef3bce3a0e7a1a10670c7f51278bacc39dc9",
     "humanPass": false,
-    "stage": "CANONICAL_SOURCE_PROOF_DISPATCH",
+    "stage": "DEV_HOSTING_ONLY_EXACT_SOURCE_MATERIALIZATION",
     "assetReadbackOwner": "core/backend-firebase.js",
-    "sourceProof": "PENDING"
+    "sourceProof": "PASS_RUN1453",
+    "sourceProofRunId": 38063884721,
+    "sourceProofJobId": 114247561813,
+    "providerWrites": 0
   }
 }
