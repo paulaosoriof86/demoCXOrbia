@@ -7,8 +7,8 @@
   "productSourceSha": "f2a50044ca5b4bac5053f5a88de041fd5c7f72f9",
   "productTreeAuthority": "4d9054d5fb394579e35b32415584e5dd1b87ffd2",
   "predecessorProductSourceSha": "797050085d1e3347b6d56322f003a3a293790710",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V357_2026-10-09.json",
-  "findingsLedgerExpectedGitBlob": "f4125e9be4ce3a33cd813756e7510d8c50483c75",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V358_2026-10-10.json",
+  "findingsLedgerExpectedGitBlob": "7adaef3bce3a0e7a1a10670c7f51278bacc39dc9",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261010-V55.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -7945,6 +7945,9 @@
     "review": "FAIL_COLD_LOGIN",
     "firstEntryLiveE2E": "PENDING",
     "tinyFish": "NOT_RERUN",
-    "production": false
+    "production": false,
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V358_2026-10-10.json",
+    "ledgerBlob": "7adaef3bce3a0e7a1a10670c7f51278bacc39dc9",
+    "humanPass": false
   }
 }
