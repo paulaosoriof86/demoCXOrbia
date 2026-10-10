@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "cxorbia.i3.b1.run1459.cold-auth.qa-diagnostic.v1",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "state": "HOLD",
+  "source": "f2a50044ca5b4bac5053f5a88de041fd5c7f72f9",
+  "tree": "4d9054d5fb394579e35b32415584e5dd1b87ffd2",
+  "controlBefore": "5ee908bb2577a32afab69c50dfdcadeb00dfaf10",
+  "dev": {
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/ab9a6c808233d128",
+    "runtimeRevision": "cxorbia-live-hr-dev-00283-kc5",
+    "hrRevision": "abe41d26a5729e48d92c7754217abd5111f1eacf9fecec5ad53ed25973d25b0c"
+  },
+  "evidence": [
+    {
+      "run": 38072110014,
+      "no": 1457,
+      "attempts": 2,
+      "result": "FAIL",
+      "error": "auth/network-request-failed",
+      "classification": "ENVIRONMENT_FAILURE"
+    },
+    {
+      "run": 38072449783,
+      "no": 1458,
+      "result": "FAIL",
+      "error": "QA_EXPECTED_REPROGRAM_CTA_DESPITE_PENDING_REVIEW",
+      "classification": "SOURCE_FAILURE_QA_EXPECTATION"
+    },
+    {
+      "run": 38072731765,
+      "no": 1459,
+      "job": 114273388778,
+      "result": "FAIL",
+      "firstAuthNoReloadReady": false,
+      "initialWaitMs": 12003,
+      "bootAttempts": 15,
+      "warmIdentityReadback": true,
+      "error": "Firebase App [DEFAULT] not created",
+      "classification": "SOURCE_FAILURE_QA_DESIGN_AND_ENVIRONMENT_UNADJUDICATED"
+    }
+  ],
+  "provenQAMismatch": {
+    "sourceOwner": "app/core/backend-browser-auth.js",
+    "ownerBlob": "fa78d47b32430d0ce1ae28581d2e16265d44960c",
+    "qaOwner": "tools/qa/cxorbia-i3-b1-oct07-authenticated-readonly.mjs",
+    "qaBlob": "34b2d1c786c14c420d307a8b7f8a612ef0417d67",
+    "reason": "QA injects direct Firebase signInWithCustomToken while first interactive backend auth awaits waitForInteractive; QA does not call CX.backendAuth.signIn which resolves readyPromise. Warm reload reads already signed-in identity. Thus QA first-auth transition cannot certify actual user-password flow.",
+    "additionalFinding": "QA accesses firebase.auth before explicit firebase.apps.length readiness; exact causal owner of observed no-app page error not proven.",
+    "realHumanFinding": "HF-20261008-01 remains unresolved: actual first user-password login >50 s, reload ~5 s."
+  },
+  "locks": {
+    "B1HumanPass": false,
+    "B1Certified": false,
+    "B2SignedACK": false,
+    "B7Provider409Open": true,
+    "artifactCertifiedForProduction": false,
+    "production": "DO_NOT_TOUCH"
+  },
+  "nextExactAction": "Stop treating direct-token initial session as human login E2E. Obtain credential-authorized real visible login evidence in scoped private DEV browser without asking for a password in chat; measure submit→auth→Firestore→HR→first useful render and follow proven owner only. Independently read-only adjudicate B7 provider 409 against exact HR visit and durable visit fields.",
+  "safety": {
+    "productFilesChanged": 0,
+    "authWrites": 0,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "storageWrites": 0,
+    "productionWrites": 0
+  }
+}

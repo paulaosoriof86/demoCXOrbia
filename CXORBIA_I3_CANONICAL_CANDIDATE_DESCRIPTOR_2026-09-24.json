@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_B1_OCT07_AUTH_READONLY_VISUAL_PROOF_REQUIRED",
+  "status": "HOLD_I3_B1_REAL_CREDENTIAL_FIRST_LOGIN_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "f2a50044ca5b4bac5053f5a88de041fd5c7f72f9",
   "productTreeAuthority": "4d9054d5fb394579e35b32415584e5dd1b87ffd2",
   "predecessorProductSourceSha": "797050085d1e3347b6d56322f003a3a293790710",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V363_2026-10-10.json",
-  "findingsLedgerExpectedGitBlob": "9096ea1b8eb6403305dd8a894bcdb09802b7371f",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V364_2026-10-10.json",
+  "findingsLedgerExpectedGitBlob": "dd07d0f841ec2e128a82a0abc17928b2c60fb8aa",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261010-V55.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "B1_INITIAL_AUTH_NO_RELOAD_DIAGNOSTIC_PENDING__HUMAN_FIRST_PASSWORD_LOGIN_GT50S_UNRESOLVED__B7_RESERVATION_FUTURE_WINDOW_409__B2_REMOTE_ACK_PENDING",
+  "activeBlocker": "B1_FIRST_PASSWORD_LOGIN_GT50S_OPEN__RUN1459_CUSTOM_TOKEN_QA_NOT_REPRESENTATIVE__B2_ACK_PENDING__B7_RESERVATION_409",
   "nextFindingId": "VRM-275",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Re-run exact B1 nonmutating QA only after updating pending-review suppression expectation; preserve first-auth no-reload diagnostic, real password proof pending, and B7 provider HTTP409 hold. No production.",
+  "exactNextAction": "Stop treating direct-token initial session as human login E2E. Obtain credential-authorized real visible login evidence in scoped private DEV browser without asking for a password in chat; measure submit→auth→Firestore→HR→first useful render and follow proven owner only. Independently read-only adjudicate B7 provider 409 against exact HR visit and durable visit fields.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -7941,7 +7941,7 @@
     "treeSha": "4d9054d5fb394579e35b32415584e5dd1b87ffd2",
     "sourceBlob": "f116593d8c4606e86cac2e39dcc1213109a28a71",
     "testPath": "tools/qa/cxorbia-i3-b1-cold-login-parallel-source.test.mjs",
-    "receiptPath": "CXORBIA_I3_B1_COLD_LOGIN_FIRST_ENTRY_FAIL_AND_SOURCE_FIX_RECEIPT_2026-10-10.json",
+    "receiptPath": "CXORBIA_I3_B1_RUN1459_COLD_AUTH_QA_DIAGNOSTIC_RECEIPT_2026-10-10.json",
     "receiptBlob": "cd07524a0b946f647ded8356eaf5d7969b872ebc",
     "priorHumanObservation": "HF-20261008-01",
     "review": "FAIL_COLD_LOGIN",
@@ -7996,6 +7996,14 @@
       "sourceChanged": false,
       "providerAuthConnected": true,
       "exactPaulaIdentityAndHr": true
+    },
+    "run1459": {
+      "result": "FAIL_QA_CUSTOM_TOKEN_BYPASSES_INTERACTIVE_RESOLVER",
+      "runId": 38072731765,
+      "jobId": 114273388778,
+      "noReloadResult": "NOT_PROVEN",
+      "realPasswordLogin": "PENDING",
+      "humanPass": false
     }
   },
   "b1PostDevRegression20261010": {
