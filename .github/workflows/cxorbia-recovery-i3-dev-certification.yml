@@ -167,7 +167,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
   vrm143-151-dev-materialization:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM143_151_DEV_MATERIALIZATION_REQUIRED' }}
@@ -288,7 +287,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
   vrm151-historical-dry-run:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM151_HISTORICAL_DRY_RUN_REQUIRED' }}
@@ -346,7 +344,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
   vrm151-historical-amount-diagnostic:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM151_HISTORICAL_AMOUNT_DIAGNOSTIC_REQUIRED' }}
@@ -396,7 +393,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
   vrm151-canonical-owner-diagnostic:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM151_CANONICAL_VISIT_OWNER_DIAGNOSTIC_REQUIRED' }}
@@ -447,7 +443,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
   vrm151-seven-exceptions-diagnostic:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM151_SEVEN_REIMBURSEMENT_EXCEPTIONS_DIAGNOSTIC_REQUIRED' }}
@@ -500,7 +495,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
   vrm151-payment-eligibility-diagnostic:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM151_PAYMENT_ELIGIBILITY_DIAGNOSTIC_REQUIRED' }}
@@ -546,7 +540,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
   vrm151-provider-source-reproof:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM151_PROVIDER_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM151_ROUTER_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM151_CANONICAL_OWNER_SOURCE_REPROOF_REQUIRED' }}
@@ -614,7 +607,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
   vrm151-runtime-only-dev-materialization:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM151_RUNTIME_ONLY_DEV_MATERIALIZATION_REQUIRED' }}
@@ -716,7 +708,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
   vrm151-final-canonical-dry-run:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM151_FINAL_CANONICAL_DRY_RUN_REQUIRED' }}
@@ -779,7 +770,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
   prei4-admin-008-mapping-reproof:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_008_HR_MAPPING_REPROOF_REQUIRED' }}
@@ -1568,7 +1558,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
   vrm085-postulation-sync-diagnostic:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-085-diagnostic]') }}
@@ -2963,7 +2952,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
   v70-vrm069-operational-visit-key-runtime:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM069_RUNTIME_MATERIALIZATION_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v70-vrm069-runtime]') }}
@@ -5292,7 +5280,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
   pre-i4-cert-res-credential-route-diagnostic:
     if: contains(github.event.head_commit.message, '[prei4-cert-res-credential-route]')
     runs-on: ubuntu-latest
@@ -5321,7 +5308,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
   pre-i4-cert-res-provider-activate:
     if: contains(github.event.head_commit.message, '[prei4-cert-res-provider-activate]')
     runs-on: ubuntu-latest
@@ -5350,7 +5336,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
   pre-i4-cert-res-runtime-readiness:
     if: contains(github.event.head_commit.message, '[prei4-cert-res-runtime-readiness]')
     runs-on: ubuntu-latest
@@ -5379,7 +5364,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
   pre-i4-cert-res-source-contract:
     if: contains(github.event.head_commit.message, '[prei4-cert-res-source]')
     runs-on: ubuntu-latest
@@ -5461,7 +5445,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
   pre-i4-cert-res-dev-materialization:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CERT_RES_REMEDIATION_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-cert-res-materialize]') }}
@@ -5606,7 +5589,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
   pre-i4-cert-res-live-resume:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CERT_RES_REMEDIATION_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-cert-res-live-resume]') }}
@@ -6200,7 +6182,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
   vrm157-dev-readback-only:
     needs: [canonical-candidate-authority, vrm185-admin-live-adjudication]
     if: ${{ always() && needs.canonical-candidate-authority.result == 'success' && (needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM157_DEV_READBACK_ONLY_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM154_156_LIVE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_HUMAN_VISUAL_REMEDIATION_DIAGNOSTIC_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_V190_LIVE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED') && (needs.canonical-candidate-authority.outputs.status != 'HOLD_V190_LIVE_REPROOF_REQUIRED' || needs.vrm185-admin-live-adjudication.result == 'success') }}
@@ -6353,7 +6334,6 @@ jobs:
           git diff --quiet "$SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
           node --check tools/qa/cxorbia-vrm153-paula-authorized-dev-41.mjs
           node --test backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs | tee "$VRM_OUT/source-tests.log"
-          # `node --test` exits nonzero on any failure; bash pipefail enforces it.
       - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
       - uses: google-github-actions/auth@v2
         with:
@@ -6375,7 +6355,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
   vrm185-paula-identity-topology-readonly:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM185_PAULA_IDENTITY_TOPOLOGY_DIAGNOSTIC_REQUIRED' }}
@@ -6433,7 +6412,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
   vrm185-global-identity-consolidation-plan:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM185_GLOBAL_IDENTITY_CONSOLIDATION_PLAN_REQUIRED' }}
@@ -6476,7 +6454,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
   vrm185-admin-provider-source-test:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM185_ADMIN_PROVIDER_SOURCE_TEST_REQUIRED' }}
@@ -6802,7 +6779,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
   julissa-identity-adjudication-write:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_JULISSA_IDENTITY_ADJUDICATION_REQUIRED' }}
@@ -7005,7 +6981,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
   vrm217-durable-credential-sweep:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM217_DURABLE_CREDENTIAL_SWEEP_REQUIRED' }}
@@ -7189,7 +7164,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
   vrm226-human-identity-topology:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM226_USER_CONFIRMED_IDENTITY_TOPOLOGY_DIAGNOSTIC' }}
@@ -7332,7 +7306,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
   vrm249-reservations-read-model-source-reproof:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM249_SOURCE_REPROOF_REQUIRED' }}
