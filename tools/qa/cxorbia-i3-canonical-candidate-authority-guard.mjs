@@ -69,7 +69,7 @@ const moduleRegistryReadback={
   frozenHistoricalBaselineNotFinalAuthority:true
 };
 // Check every Phase A owner and source inventory blob against the exact product tree.
-const sourceTreeLines=git('ls-tree','-r',d.productSourceSha,'--','app','backend','firebase.json','.firebaserc','firestore.rules','storage.rules');
+const sourceTreeLines=git('ls-tree','-r',d.productSourceSha,'--','app','backend','tools','firebase.json','.firebaserc','firestore.rules','storage.rules');
 const sourceBlobs=new Map(sourceTreeLines.split('\n').map(line=>line.match(/^[0-7]{6} blob ([a-f0-9]{40})\t(.+)$/)).filter(Boolean).map(x=>[x[2],x[1]]));
 const ownerPaths=[...new Set(modules.flatMap(x=>Array.isArray(x.owners)?x.owners:[]))];
 const sourceInventory=Array.isArray(mt.sourceFiles)?mt.sourceFiles:[];
