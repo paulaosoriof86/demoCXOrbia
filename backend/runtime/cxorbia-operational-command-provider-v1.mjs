@@ -276,7 +276,14 @@ async function reconcileVisitDoc({db,policy,candidate,sourceRevision}){
     const basePatch=clean({
       periodId:candidate.periodId,rootProjectId:projectId,hrRowId:candidate.hrRowId,sourceTab:candidate.sourceTab,sourceRow:candidate.sourceRow,sourceCoord:candidate.sourceCoord,hrSourceRevision:sourceRevision
     });
-    const desired=clean({...basePatch,estado:candidate.estado,status:candidate.status,shopperId:candidate.shopperId||null,assignmentSource:candidate.assignmentSource||null,assignmentSyncStatus:candidate.assignmentSyncStatus||null,canonicalFacets:candidate.canonicalFacets});
+    // External HR remains authoritative for reservation dates on existing durable visits.
+    // Explicit null clears stale future-window fields when HR no longer provides them.
+    const hrTemporal=clean({
+      periodKey:str(candidate.periodKey)||null,
+      disponibleDesde:str(candidate.disponibleDesde||candidate.availableFrom)||null,
+      availableFrom:str(candidate.availableFrom||candidate.disponibleDesde)||null
+    });
+    const desired=clean({...basePatch,...hrTemporal,estado:candidate.estado,status:candidate.status,shopperId:candidate.shopperId||null,assignmentSource:candidate.assignmentSource||null,assignmentSyncStatus:candidate.assignmentSyncStatus||null,canonicalFacets:candidate.canonicalFacets});
     const same=Object.entries(desired).every(([key,value])=>JSON.stringify(stable(existing[key]))===JSON.stringify(stable(value)));
     if(same)return {providerWrites:0,created:false,idempotentReplay:true};
     tx.set(visitRef,{...desired,updatedAt:now(),version:Number(existing.version||0)+1},{merge:true});
