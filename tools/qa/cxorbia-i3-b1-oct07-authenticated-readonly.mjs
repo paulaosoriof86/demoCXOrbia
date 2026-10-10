@@ -53,14 +53,20 @@ for(const t of targets){
     try{
       await page.evaluate(async token=>{const fb=window.firebase;await fb.auth().setPersistence(fb.auth.Auth.Persistence.LOCAL);await fb.auth().signInWithCustomToken(token);},token);
     }catch(error){
-      if(!/Execution context was destroyed|Cannot find context|Navigation|frame was detached|Target closed/i.test(String(error?.message||error)))throw error;
+      const message=String(error?.message||error);
+      const transientAuthNetwork=/auth\/network-request-failed|network AuthError/i.test(message);
+      if(transientAuthNetwork){
+        result.authProviderNetworkRetries=(result.authProviderNetworkRetries||0)+1;
+      }else if(!/Execution context was destroyed|Cannot find context|Navigation|frame was detached|Target closed/i.test(message)){
+        throw error;
+      }
     }
     try{
       await page.waitForFunction(uid=>String(window.firebase?.auth?.().currentUser?.uid||'')===uid,matches[0].uid,{timeout:15000});
       signed=true;
     }catch(_){await page.waitForTimeout(650*(n+1));}
   }
-  if(!signed)throw Error('B1_AUTHENTICATED_DEV_BROWSER_NOT_READY_'+t.name);
+  if(!signed)throw Error((result.authProviderNetworkRetries?'ENVIRONMENT_FAILURE:B1_QA_AUTH_PROVIDER_NETWORK_UNAVAILABLE:':'B1_AUTHENTICATED_DEV_BROWSER_NOT_READY_')+t.name);
   /* Diagnostic only: programmatic custom-token sign-in is NOT the real visible
      password form. Observe initial transition before historical reload proof. */
   const freshTransitionStart=Date.now();let noReloadReady=false;

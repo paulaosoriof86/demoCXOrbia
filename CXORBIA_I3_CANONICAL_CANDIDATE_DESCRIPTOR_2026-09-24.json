@@ -7,8 +7,8 @@
   "productSourceSha": "f2a50044ca5b4bac5053f5a88de041fd5c7f72f9",
   "productTreeAuthority": "4d9054d5fb394579e35b32415584e5dd1b87ffd2",
   "predecessorProductSourceSha": "797050085d1e3347b6d56322f003a3a293790710",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V361_2026-10-10.json",
-  "findingsLedgerExpectedGitBlob": "8313b5ba58fde6698f0e8310239705c60d3fe1b2",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V362_2026-10-10.json",
+  "findingsLedgerExpectedGitBlob": "7c52018789ff79537cbacc6fe423f510205bc9f9",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261010-V55.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run existing B1 scoped DEV authentication diagnostic without reload using sanctioned QA custom token and warm identity cross-check. Diagnose phase, then prove real visible credential entry separately without bypass; no product, HR, Auth account or production writes.",
+  "exactNextAction": "One bounded QA source readback/retry on existing B1 job for transient Firebase Auth network failure, with no password changes; if still unavailable freeze ENVIRONMENT_FAILURE and seek authorized real form evidence. Preserve B7 provider 409 and B2 ACK.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -7951,7 +7951,7 @@
     "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V359_2026-10-10.json",
     "ledgerBlob": "0dcc3d5a1f1b259e6f959c0d3e9c629cfa674c3a",
     "humanPass": false,
-    "stage": "INITIAL_CUSTOM_TOKEN_NO_RELOAD_DIAGNOSTIC_PLUS_EXACT_WARM_E2E",
+    "stage": "AUTH_NETWORK_TRANSIENT_QA_BOUND_RETRY_ONLY",
     "assetReadbackOwner": "core/backend-firebase.js",
     "sourceProof": "PASS_RUN1453",
     "sourceProofRunId": 38063884721,
@@ -7981,7 +7981,16 @@
     },
     "freshAuthMethod": "PROGRAMMATIC_QA_TOKEN_NOT_HUMAN_PASSWORD",
     "firstEntryRealPasswordProof": "PENDING",
-    "runDispatch": "CANONICAL_B1_EXISTING_QA_JOB"
+    "runDispatch": "CANONICAL_B1_EXISTING_QA_JOB",
+    "firstAuthRun": 38072110014,
+    "firstAuthJobIds": [
+      114271514555,
+      114271882498
+    ],
+    "observed": "auth/network-request-failed before authority boot",
+    "classification": "ENVIRONMENT_FAILURE",
+    "testOwnerOnly": true,
+    "firstRealPasswordProof": "PENDING"
   },
   "b1PostDevRegression20261010": {
     "status": "REPRESENTATIVE_SHOPPER_ADMIN_E2E_PASS__RESERVATION_FIXTURE_MAPPING_FAIL",
