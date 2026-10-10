@@ -7,13 +7,13 @@
   "productSourceSha": "aa435fa9e0bfee37c118747637a266581b853fe8",
   "productTreeAuthority": "b71fd011706686f40e75f8313045d950a2916e5a",
   "predecessorProductSourceSha": "f2a50044ca5b4bac5053f5a88de041fd5c7f72f9",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V365_2026-10-10.json",
-  "findingsLedgerExpectedGitBlob": "8a39d8d7c5d6f908bbf3f4a79cea574a25db515d",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261010-V56.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V366_2026-10-10.json",
+  "findingsLedgerExpectedGitBlob": "fdb3662c5ceb21831fa80776e021b555a35d59f6",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261010-V57.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "B1_FIRST_PASSWORD_LOGIN_NOT_PROVEN__B7_TEMPORAL_SOURCE_FIXED_PENDING_TEST_AND_LIVE_READBACK__B2_ACK_PENDING",
+  "activeBlocker": "B1_REAL_PASSWORD_COLD_LOGIN_NOT_PROVEN__B7_SOURCE_PROVEN_PENDING_EXACT_HR_DURABLE_VISIT_AND_DEV_E2E__B2_ACK_PENDING",
   "nextFindingId": "VRM-275",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -2687,7 +2687,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "2267ec85af54f4fe1144ad4c04a0ad6eaca3ad46",
+  "moduleTruthExpectedGitBlob": "ca64d894a63c04b4f22f7c09398dbf0f0827af09",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -8048,10 +8048,36 @@
     "ownerBlobAfter": "685be9198da4a16d24450dd59abe44323c0b88dd",
     "testPath": "backend/runtime/hr-live-service/test/cxorbia-i3-b7-temporal-reconcile.test.mjs",
     "testBlob": "7d34c4e0f9f863c1b754f8f16eff520250a37d5e",
-    "sourceProof": "PENDING_EXISTING_CANONICAL_GATE",
-    "devMaterialization": "NOT_PERFORMED",
+    "sourceProof": {
+      "runId": 38084242939,
+      "runNumber": 1462,
+      "jobId": 114307272090,
+      "conclusion": "success",
+      "decision": "PASS_I3_SINGLE_CANONICAL_CANDIDATE_AUTHORITY",
+      "existingShopperProviderTests": {
+        "total": 40,
+        "pass": 40,
+        "fail": 0
+      },
+      "b1SourceTests": {
+        "total": 4,
+        "pass": 4,
+        "fail": 0
+      },
+      "b7SourceTests": {
+        "total": 2,
+        "pass": 2,
+        "fail": 0
+      },
+      "scope": "SOURCE_ONLY_FAKE_PROVIDER_NO_LIVE_HR_NO_PRODUCTION",
+      "sourceSha": "aa435fa9e0bfee37c118747637a266581b853fe8",
+      "sourceTree": "b71fd011706686f40e75f8313045d950a2916e5a",
+      "controlParent": "7f506fc9f492c881437321d29eb420b434225f55"
+    },
+    "devMaterialization": "PENDING",
     "actual409ExactVisit": "NOT_YET_READBACK",
     "humanPass": false,
-    "production": false
+    "production": false,
+    "liveExactVisit": "PENDING"
   }
 }
