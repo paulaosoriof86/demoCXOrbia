@@ -103,6 +103,7 @@ jobs:
          echo "source_tree=$TREE" >> "$GITHUB_OUTPUT"
          echo "status=$STATUS" >> "$GITHUB_OUTPUT"
          node --test backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs
+         node --test tools/qa/cxorbia-i3-b1-cold-login-parallel-source.test.mjs
   vrm143-151-source-reproof:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM143_151_SOURCE_REPROOF_REQUIRED' }}
