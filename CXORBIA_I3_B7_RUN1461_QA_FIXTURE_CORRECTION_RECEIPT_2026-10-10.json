@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "cxorbia.i3.b7.run1461.qa-fake-db-fix.20261010.v1",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "state": "HOLD",
+  "priorRun": {
+    "id": 38084165408,
+    "runNumber": 1461,
+    "jobId": 114307038483,
+    "canonicalAuthorityGuard": "PASS",
+    "newB7Tests": {
+      "total": 2,
+      "pass": 0,
+      "fail": 2,
+      "error": "OPS_ACTOR_DENIED",
+      "reason": "FakeDb Ref omitted get(); exactActor could not load authorized fake tenant membership; tests never reached reservation future window"
+    }
+  },
+  "classification": "SOURCE_FAILURE",
+  "scope": "QA_FIXTURE_ONLY",
+  "qaFile": "backend/runtime/hr-live-service/test/cxorbia-i3-b7-temporal-reconcile.test.mjs",
+  "oldBlob": "7d34c4e0f9f863c1b754f8f16eff520250a37d5e",
+  "before": "class Ref supported collection and doc, not Firestore .get() on an actor membership document",
+  "after": "Fake Ref.get() returns fixture snapshot with exists and data and does not access real Firestore",
+  "productSourceSha": "aa435fa9e0bfee37c118747637a266581b853fe8",
+  "productTreeSha": "b71fd011706686f40e75f8313045d950a2916e5a",
+  "canonicalLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V365_2026-10-10.json",
+  "canonicalMatrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261010-V56.json",
+  "production": "DO_NOT_TOUCH",
+  "authWrites": 0,
+  "hrWrites": 0,
+  "firestoreWrites": 0,
+  "devDeploys": 0,
+  "nextExactAction": "Read back QA change, let existing canonical-candidate-authority rerun focused test; do not treat as cold password login nor DEV E2E; B7 exact HR visit readback still pending."
+}

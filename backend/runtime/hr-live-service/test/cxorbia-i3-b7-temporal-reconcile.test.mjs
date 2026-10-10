@@ -8,6 +8,7 @@ class Ref {
   constructor(db,path){this.db=db;this.path=path;this.id=path.split('/').at(-1);}
   collection(n){return new Ref(this.db,this.path+'/'+n);}
   doc(n){return new Ref(this.db,this.path+'/'+n);}
+  async get(){return {exists:this.db.rows.has(this.path),data:()=>clone(this.db.rows.get(this.path))};}
 }
 class FakeDb {
   constructor(){this.rows=new Map();}
