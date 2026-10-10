@@ -169,7 +169,9 @@ try{
     await project.collection('visits').doc(id).create({...rVisit,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()});
     syntheticVisitCreated=true;fixtureSafetyMode='synthetic_future_dev_visit';
   }
-  need(reservationFutureEligible(rVisit,projectData),'SOURCE_FAILURE','RSV_FIXTURE_NOT_FUTURE_ELIGIBLE',{fixtureSafetyMode,liveFutureEligible});
+  // Live candidates are selected against exact authoritative HR fields; a Firestore projection may omit HR-managed date columns.
+  const rVisitAuthority=syntheticVisitCreated?rVisit:reservationAuthorityVisit(rVisit);
+  need(!!rVisitAuthority&&reservationFutureEligible(rVisitAuthority,projectData),'SOURCE_FAILURE','RSV_FIXTURE_NOT_FUTURE_ELIGIBLE',{fixtureSafetyMode,liveFutureEligible,authoritySource:syntheticVisitCreated?'isolated_dev_fixture':'exact_hr_row'});
   result.reservations={fixtureSafetyMode,liveFutureEligible,visitMutationAllowed:false,crossAllowed:false,syntheticVisitCreated};
   const rVisitId=str(rVisit.visitId||rVisit.id),rHrRowId=str(rVisit.hrRowId),rPeriodId=str(rVisit.periodId),rPeriodo=str(rVisit.periodKey||rVisit.periodo||rPeriodId.replace(new RegExp('^'+PROGRAM+'-'),'')),rBranch=branchKey(rVisit),shopperB=str(secondMember.shopperId);
   need(rBranch,'SOURCE_FAILURE','RSV_BRANCH_KEY_REQUIRED');

@@ -7,13 +7,13 @@
   "productSourceSha": "f2a50044ca5b4bac5053f5a88de041fd5c7f72f9",
   "productTreeAuthority": "4d9054d5fb394579e35b32415584e5dd1b87ffd2",
   "predecessorProductSourceSha": "797050085d1e3347b6d56322f003a3a293790710",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V359_2026-10-10.json",
-  "findingsLedgerExpectedGitBlob": "0dcc3d5a1f1b259e6f959c0d3e9c629cfa674c3a",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V360_2026-10-10.json",
+  "findingsLedgerExpectedGitBlob": "7184cf7ae9856fd785bbebf65231fbc831213be8",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261010-V55.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "B1_NEW_SOURCE_DEV_MATERIALIZED__SAME_ARTIFACT_REGRESSION_AND_COLD_LOGIN_NO_RELOAD_PENDING__B2_ACK_PENDING",
+  "activeBlocker": "B1_FIRST_CREDENTIAL_COLD_LOGIN_HUMAN_FAIL__RUN1455_REPRESENTATIVE_PASS_RESERVATION_QA_MAPPING_FAIL_FIXED_PENDING_RERUN__B2_ACK_PENDING",
   "nextFindingId": "VRM-275",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run existing same-artifact GT shopper + Admin E2E over materialized source and exact HR. Do NOT treat reloaded-token QA as first credential login proof; then first-login timing with controlled permitted browser or Paula B1 PASS/FAIL; preserve B2 ACK and pending blocks. No production.",
+  "exactNextAction": "Focal QA correction of reservation eligibility using same exact live HR authority; rerun same-artifact representative CI. First human password login without browser reload is separately pending; B1 remains human FAIL. No production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -7979,5 +7979,37 @@
       "production": false,
       "assetSourceVerified": "app/core/backend-firebase.js"
     }
+  },
+  "b1PostDevRegression20261010": {
+    "status": "REPRESENTATIVE_SHOPPER_ADMIN_E2E_PASS__RESERVATION_FIXTURE_MAPPING_FAIL",
+    "runId": 38064216444,
+    "runNo": 1455,
+    "jobId": 114248508612,
+    "sourceSha": "f2a50044ca5b4bac5053f5a88de041fd5c7f72f9",
+    "devVersion": "sites/cxorbia-backend-dev/versions/ab9a6c808233d128",
+    "hrRevision": "abe41d26a5729e48d92c7754217abd5111f1eacf9fecec5ad53ed25973d25b0c",
+    "warmMs": {
+      "Julissa": 7425,
+      "Priscila": 6698,
+      "Paula": 7667,
+      "Admin": 9398
+    },
+    "failure": {
+      "classification": "SOURCE_FAILURE",
+      "code": "RSV_FIXTURE_NOT_FUTURE_ELIGIBLE",
+      "fixtureMode": "future_hr_eligible",
+      "liveFutureEligible": 1,
+      "cause": "QA validated future window from projected Firestore row instead of the exact HR authority used for candidate selection",
+      "owner": "tools/qa/cxorbia-i3-admin-cluster-a-postulations-live.mjs"
+    },
+    "controlCorrection": {
+      "QAonly": true,
+      "productSourceUnchanged": true,
+      "changedFile": "tools/qa/cxorbia-i3-admin-cluster-a-postulations-live.mjs",
+      "proof": "PENDING_CI",
+      "production": false
+    },
+    "coldFirstCredentialLogin": "NOT_PROVEN",
+    "humanApproval": "FAIL"
   }
 }
