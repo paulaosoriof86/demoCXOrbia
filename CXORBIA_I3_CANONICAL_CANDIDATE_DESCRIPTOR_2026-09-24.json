@@ -4,16 +4,16 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "f2a50044ca5b4bac5053f5a88de041fd5c7f72f9",
-  "productTreeAuthority": "4d9054d5fb394579e35b32415584e5dd1b87ffd2",
-  "predecessorProductSourceSha": "797050085d1e3347b6d56322f003a3a293790710",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V364_2026-10-10.json",
-  "findingsLedgerExpectedGitBlob": "dd07d0f841ec2e128a82a0abc17928b2c60fb8aa",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261010-V55.json",
+  "productSourceSha": "aa435fa9e0bfee37c118747637a266581b853fe8",
+  "productTreeAuthority": "b71fd011706686f40e75f8313045d950a2916e5a",
+  "predecessorProductSourceSha": "f2a50044ca5b4bac5053f5a88de041fd5c7f72f9",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V365_2026-10-10.json",
+  "findingsLedgerExpectedGitBlob": "8a39d8d7c5d6f908bbf3f4a79cea574a25db515d",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261010-V56.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "B1_FIRST_PASSWORD_LOGIN_GT50S_OPEN__RUN1459_CUSTOM_TOKEN_QA_NOT_REPRESENTATIVE__B2_ACK_PENDING__B7_RESERVATION_409",
+  "activeBlocker": "B1_FIRST_PASSWORD_LOGIN_NOT_PROVEN__B7_TEMPORAL_SOURCE_FIXED_PENDING_TEST_AND_LIVE_READBACK__B2_ACK_PENDING",
   "nextFindingId": "VRM-275",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -2687,7 +2687,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "ec35dcb3c7017c1e12a7e11af5834dc9eb14ebd3",
+  "moduleTruthExpectedGitBlob": "2267ec85af54f4fe1144ad4c04a0ad6eaca3ad46",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -8037,5 +8037,21 @@
     },
     "coldFirstCredentialLogin": "NOT_PROVEN",
     "humanApproval": "FAIL"
+  },
+  "i3B7TemporalReconciliation20261010": {
+    "classification": "MAPPING_FAILURE",
+    "owner": "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+    "sourceBefore": "f2a50044ca5b4bac5053f5a88de041fd5c7f72f9",
+    "sourceAfter": "aa435fa9e0bfee37c118747637a266581b853fe8",
+    "sourceTree": "b71fd011706686f40e75f8313045d950a2916e5a",
+    "ownerBlobBefore": "9b6f4a1673974976c7de045f46545c659f53e9e8",
+    "ownerBlobAfter": "685be9198da4a16d24450dd59abe44323c0b88dd",
+    "testPath": "backend/runtime/hr-live-service/test/cxorbia-i3-b7-temporal-reconcile.test.mjs",
+    "testBlob": "7d34c4e0f9f863c1b754f8f16eff520250a37d5e",
+    "sourceProof": "PENDING_EXISTING_CANONICAL_GATE",
+    "devMaterialization": "NOT_PERFORMED",
+    "actual409ExactVisit": "NOT_YET_READBACK",
+    "humanPass": false,
+    "production": false
   }
 }
