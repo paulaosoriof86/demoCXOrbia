@@ -313,14 +313,16 @@ window.CX = window.CX || {};
       {label:'available-status', q:subCol(projectId, 'visits').where('status','==','disponible')},
       {label:'available-legacy', q:subCol(projectId, 'visits').where('estado','==','disponible')},
     ];
-    for(const item of queries){
-      try{
-        const rows = await getAll(item.q);
-        rows.forEach(function(v){ merged.set(v.id || v.visitId, v); });
-      }catch(e){
+    // The three project-scoped reads are independent. Promise.all preserves the
+    // original query priority so duplicate IDs retain the same last-write row.
+    const buckets = await Promise.all(queries.map(async function(item){
+      try{ return await getAll(item.q); }
+      catch(e){
         warn('Lectura shopper '+item.label+' bloqueada en '+projectId, e && e.message ? e.message : e);
+        return [];
       }
-    }
+    }));
+    buckets.forEach(function(rows){ rows.forEach(function(v){ merged.set(v.id || v.visitId, v); }); });
     return Array.from(merged.values());
   }
 
@@ -381,13 +383,16 @@ window.CX = window.CX || {};
   async function loadProjectData(project, shoppersById, ctx){
     const projectId = project.id;
     const periodId = project.periodId || projectId;
+    // These reads share the already-authorized principal and project scope; none
+    // depends on visit normalization. Join before mapping posts to visit IDs.
+    const pendingPosts = isClient(ctx) ? Promise.resolve([]) : loadPostsForPrincipal(projectId, ctx);
+    const pendingReservations = isClient(ctx) ? Promise.resolve([]) : loadReservationsForPrincipal(projectId, ctx);
     const visitsRawAll = isShopper(ctx) ? await loadShopperVisits(projectId, ctx.shopperId) : await getAll(subCol(projectId, 'visits'));
     const visitsRaw = preserveDurableVisits(visitsRawAll);
     const visitsById = {};
     const visits = visitsRaw.map(function(v){ return normalizeVisit(v, projectId, periodId); });
     visits.forEach(function(v){ v.projectId = v.projectId || projectId; visitsById[v.id] = v; visitsById[v.visitId] = v; });
-    const rawPosts = isClient(ctx) ? [] : await loadPostsForPrincipal(projectId, ctx);
-    const reservations = isClient(ctx) ? [] : await loadReservationsForPrincipal(projectId, ctx);
+    const [rawPosts, reservations] = await Promise.all([pendingPosts, pendingReservations]);
     const posts = [];
     rawPosts.forEach(function(x){
       const item = normalizeApplication(x, projectId, periodId, visitsById, shoppersById);
@@ -403,11 +408,14 @@ window.CX = window.CX || {};
     const result = await Promise.all([loadAuthorizedProjects(ctx), loadAuthorizedShoppers(ctx)]);
     const allProjects = result[0].map(normalizeProject);
     const activeProjects = resolveActiveProjects(allProjects);
-    const periods = await loadCanonicalPeriods(activeProjects);
     const shoppers = result[1].filter(function(s){return s&&s.identityQuarantined!==true&&s.excludedFromCanonicalReadModel!==true;}).map(normalizeShopper);
     const shoppersById = {};
     shoppers.forEach(function(s){ shoppersById[s.id] = s; shoppersById[s.shopperId] = s; });
-    const perProject = await Promise.all(activeProjects.map(function(p){ return loadProjectData(p, shoppersById, ctx); }));
+    // Canonical period reads and authorized project records are independent.
+    const [periods, perProject] = await Promise.all([
+      loadCanonicalPeriods(activeProjects),
+      Promise.all(activeProjects.map(function(p){ return loadProjectData(p, shoppersById, ctx); }))
+    ]);
     const visits = [];
     const posts = [];
     const reservations = [];
