@@ -101,9 +101,9 @@ for(const t of targets){
     const step=document.querySelector('.cx-day-progress-card .cx-day-progress-step span');
     const label=document.querySelector('.cx-shopper-visit-card .bdg');
     const buttons=[...document.querySelectorAll('[data-visit-action]')].map(b=>({action:b.dataset.visitAction,visitId:b.dataset.visitId||'',visible:b.getBoundingClientRect().width>0}));
-    return {role:window.CX.session.role,name:profile.name,period:d.currentPeriodId,branchVisible:document.body.innerText.includes(branch),liveHrRevision:d.previewMeta?.sourceRevision||null,visit:active?{key:active.hrRowId||active.id,hrDate:active.agendada||null,pendingDate:active.platformSchedulePendingHr?.date||null,pendingHR:active.platformSchedulePendingHr?.status==='pending_hr',facetsScheduled:facets.scheduled===true}:null,
+    return {role:window.CX.session.role,name:profile.name,period:d.currentPeriodId,branchVisible:document.body.innerText.includes(branch),liveHrRevision:d.previewMeta?.sourceRevision||null,visit:active?{key:active.hrRowId||active.id,hrDate:active.agendada||null,pendingDate:active.platformSchedulePendingHr?.date||null,pendingHR:active.platformSchedulePendingHr?.status==='pending_hr',facetsScheduled:facets.scheduled===true,pendingOperationalRequest:active.rescheduleRequest?.status==='pending_review'||active.cancelRequest?.status==='pending_review'}:null,
       locationFontPx:loc?parseFloat(getComputedStyle(loc).fontSize):null,stepFontPx:step?parseFloat(getComputedStyle(step).fontSize):null,
-      modalCount:document.querySelectorAll('.cx-ov').length,badge:label?.innerText||'',buttons};
+      modalCount:document.querySelectorAll('.cx-ov').length,badge:label?.innerText||'',pendingRequestNote:!!document.querySelector('.cx-visit-request-note'),buttons};
   },{branch:t.branch,sid:t.sid});
   if(view.role!=='shopper'||!normalize(view.name).includes(normalize(t.name))||!view.branchVisible)throw Error('B1_WRONG_SHOPPER_OR_BRANCH:'+t.name+':'+JSON.stringify(view));
   if(!view.visit||view.modalCount!==0)throw Error('B1_VISIT_OR_MODAL_INVARIANT:'+t.name+':'+JSON.stringify(view));
@@ -113,40 +113,46 @@ for(const t of targets){
   if(t.name==='Paula Osorio'&&paulaDocument&&!view.visit.hrDate){
     if(!view.visit.pendingHR||view.visit.pendingDate!==paulaDocument.agendada)throw Error('B1_EXACT_DURABLE_DATE_NOT_PROJECTED:'+JSON.stringify({provider:paulaDocument,view}));
   }
-  const expectReschedule=view.visit.facetsScheduled||view.visit.pendingHR;
+  const pendingRequest=view.visit.pendingOperationalRequest===true;
+  const expectReschedule=!pendingRequest&&(view.visit.facetsScheduled||view.visit.pendingHR);
   const acts=new Set(view.buttons.map(b=>b.action));
-  if(expectReschedule&&(!acts.has('reschedule')||acts.has('schedule')))throw Error('B1_PENDING_OR_CONFIRMED_SCHEDULE_BAD_CTA:'+t.name+':'+JSON.stringify(view));
-  if(!expectReschedule&&(!acts.has('schedule')||acts.has('reschedule')))throw Error('B1_UNSCHEDULED_BAD_CTA:'+t.name+':'+JSON.stringify(view));
+  if(pendingRequest&&(acts.has('reschedule')||acts.has('schedule')||!documentedPending(view)))throw Error('B1_PENDING_REQUEST_MUST_SUPPRESS_DUPLICATE_CTA:'+t.name+':'+JSON.stringify(view));
+  if(!pendingRequest&&expectReschedule&&(!acts.has('reschedule')||acts.has('schedule')))throw Error('B1_PENDING_OR_CONFIRMED_SCHEDULE_BAD_CTA:'+t.name+':'+JSON.stringify(view));
+  if(!pendingRequest&&!expectReschedule&&(!acts.has('schedule')||acts.has('reschedule')))throw Error('B1_UNSCHEDULED_BAD_CTA:'+t.name+':'+JSON.stringify(view));
+  function documentedPending(v){return v.pendingRequestNote===true;}
   if(view.visit.pendingHR&&(!view.badge.includes('pendiente HR')||!view.visit.pendingDate))throw Error('B1_PROVIDER_SCHEDULE_NOT_EXPLAINED:'+t.name+':'+JSON.stringify(view));
   const imageName='b1-'+t.name.toLowerCase().replace(/\s+/g,'-')+'-midia.png';
   await page.screenshot({path:path.join(OUT,imageName),fullPage:false});
   result.screenshots.push(imageName);
-  const action=expectReschedule?'reschedule':'schedule';
-  const ctl=page.locator('[data-visit-action="'+action+'"]').first();
-  await ctl.click();
-  await page.waitForFunction(()=>window.CX?.session?.view==='misvisitas',null,{timeout:20000});
-  await page.waitForTimeout(700);
-  const modal=await page.evaluate(()=>{
-    const ovs=[...document.querySelectorAll('.cx-ov')].filter(x=>{const b=x.getBoundingClientRect();return b.width>0&&b.height>0;});
-    const e=ovs.at(-1),dialog=e?.querySelector('.cx-modal')||null,r=dialog?.getBoundingClientRect();
-    return {count:ovs.length,title:dialog?.querySelector('.cx-modal-h')?.innerText||'',premium:!!dialog?.classList.contains('cx-modal-premium-workflow'),
-      inViewport:!dialog||!!r&&(r.left>=0&&r.right<=innerWidth+2&&r.top>=-2&&r.bottom<=innerHeight+2),height:r?.height||null};
-  });
-  if(modal.count>1||!modal.inViewport)throw Error('B1_MODAL_STACK_OR_VIEWPORT:'+t.name+':'+JSON.stringify(modal));
-  if(modal.count===1){
-    await page.locator('.cx-ov:visible [data-x]').last().click();
-    await page.waitForFunction(()=>document.querySelectorAll('.cx-ov').length===0,null,{timeout:10000});
+  const action=pendingRequest?null:(expectReschedule?'reschedule':'schedule');
+  let modal={count:0,inViewport:true,notApplicableReason:'PENDING_REQUEST_NO_DUPLICATE_ACTION'};
+  if(action){
+    const ctl=page.locator('[data-visit-action="'+action+'"]').first();
+    await ctl.click();
+    await page.waitForFunction(()=>window.CX?.session?.view==='misvisitas',null,{timeout:20000});
+    await page.waitForTimeout(700);
+    modal=await page.evaluate(()=>{
+      const ovs=[...document.querySelectorAll('.cx-ov')].filter(x=>{const b=x.getBoundingClientRect();return b.width>0&&b.height>0;});
+      const e=ovs.at(-1),dialog=e?.querySelector('.cx-modal')||null,r=dialog?.getBoundingClientRect();
+      return {count:ovs.length,title:dialog?.querySelector('.cx-modal-h')?.innerText||'',premium:!!dialog?.classList.contains('cx-modal-premium-workflow'),
+        inViewport:!dialog||!!r&&(r.left>=0&&r.right<=innerWidth+2&&r.top>=-2&&r.bottom<=innerHeight+2),height:r?.height||null};
+    });
+    if(modal.count>1||!modal.inViewport)throw Error('B1_MODAL_STACK_OR_VIEWPORT:'+t.name+':'+JSON.stringify(modal));
+    if(modal.count===1){
+      await page.locator('.cx-ov:visible [data-x]').last().click();
+      await page.waitForFunction(()=>document.querySelectorAll('.cx-ov').length===0,null,{timeout:10000});
+    }
   }
   try{await page.evaluate(()=>window.CX.router.nav('midia',{history:false}));}
   catch(error){if(!/Execution context was destroyed/i.test(String(error?.message||error)))throw error;}
   await page.waitForFunction(()=>document.querySelectorAll('.cx-ov').length===0,null,{timeout:20000});
   if(await page.locator('.cx-ov').count()!==0)throw Error('B1_ROUTE_LEAKS_MODAL:'+t.name);
   if(errors.length)throw Error('B1_CLIENT_JS_ERRORS:'+t.name+':'+JSON.stringify(errors.slice(0,3)));
-  result.targets.push({name:t.name,syncMs,view,modal,actionExercised:action+' NON_MUTATING_ONLY',activeOwnerStable:true});
+  result.targets.push({name:t.name,syncMs,view,modal,actionExercised:action?action+' NON_MUTATING_ONLY':'NOT_APPLICABLE_PENDING_REQUEST_NO_SECOND_COMMAND',activeOwnerStable:true});
   await ctx.close();
 }
 result.decision='PASS_B1_AUTHENTICATED_READONLY_UI_FOCAL';
 }catch(e){result.decision='HOLD_B1_AUTHENTICATED_READONLY_UI_FOCAL';result.errors.push(String(e?.message||e));}
 finally{await browser.close();fs.writeFileSync(path.join(OUT,'result.json'),JSON.stringify(result,null,2)+'\n');}
-console.log(JSON.stringify({decision:result.decision,sourceSha:SOURCE,sourceTree:TREE,scope:result.scope,targets:result.targets.map(t=>({name:t.name,syncMs:t.syncMs,scheduled:t.view.visit?.facetsScheduled,pendingHR:t.view.visit?.pendingHR,modal:t.modal})),errors:result.errors,providerVisitReadback:result.providerVisitReadback,screenshots:result.screenshots,testInitiatedWrites:0,production:false}));
+console.log(JSON.stringify({decision:result.decision,sourceSha:SOURCE,sourceTree:TREE,scope:result.scope,targets:result.targets.map(t=>({name:t.name,syncMs:t.syncMs,scheduled:t.view.visit?.facetsScheduled,pendingHR:t.view.visit?.pendingHR,pendingOperationalRequest:t.view.visit?.pendingOperationalRequest,modal:t.modal})),freshAuthTransitions:result.freshAuthTransitions,authProviderNetworkRetries:result.authProviderNetworkRetries||0,errors:result.errors,providerVisitReadback:result.providerVisitReadback,screenshots:result.screenshots,testInitiatedWrites:0,production:false}));
 if(!result.decision.startsWith('PASS_'))process.exitCode=2;

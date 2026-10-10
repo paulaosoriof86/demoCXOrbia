@@ -7,8 +7,8 @@
   "productSourceSha": "f2a50044ca5b4bac5053f5a88de041fd5c7f72f9",
   "productTreeAuthority": "4d9054d5fb394579e35b32415584e5dd1b87ffd2",
   "predecessorProductSourceSha": "797050085d1e3347b6d56322f003a3a293790710",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V362_2026-10-10.json",
-  "findingsLedgerExpectedGitBlob": "7c52018789ff79537cbacc6fe423f510205bc9f9",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V363_2026-10-10.json",
+  "findingsLedgerExpectedGitBlob": "9096ea1b8eb6403305dd8a894bcdb09802b7371f",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261010-V55.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "One bounded QA source readback/retry on existing B1 job for transient Firebase Auth network failure, with no password changes; if still unavailable freeze ENVIRONMENT_FAILURE and seek authorized real form evidence. Preserve B7 provider 409 and B2 ACK.",
+  "exactNextAction": "Re-run exact B1 nonmutating QA only after updating pending-review suppression expectation; preserve first-auth no-reload diagnostic, real password proof pending, and B7 provider HTTP409 hold. No production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -7951,7 +7951,7 @@
     "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V359_2026-10-10.json",
     "ledgerBlob": "0dcc3d5a1f1b259e6f959c0d3e9c629cfa674c3a",
     "humanPass": false,
-    "stage": "AUTH_NETWORK_TRANSIENT_QA_BOUND_RETRY_ONLY",
+    "stage": "NO_RELOAD_DIAGNOSTIC_AND_PENDING_REQUEST_QA_CONTRACT_REPROOF",
     "assetReadbackOwner": "core/backend-firebase.js",
     "sourceProof": "PASS_RUN1453",
     "sourceProofRunId": 38063884721,
@@ -7990,7 +7990,13 @@
     "observed": "auth/network-request-failed before authority boot",
     "classification": "ENVIRONMENT_FAILURE",
     "testOwnerOnly": true,
-    "firstRealPasswordProof": "PENDING"
+    "firstRealPasswordProof": "PENDING",
+    "run1458": {
+      "decision": "HOLD_QA_OUTDATED_ACTION_EXPECTATION",
+      "sourceChanged": false,
+      "providerAuthConnected": true,
+      "exactPaulaIdentityAndHr": true
+    }
   },
   "b1PostDevRegression20261010": {
     "status": "REPRESENTATIVE_SHOPPER_ADMIN_E2E_PASS__RESERVATION_FIXTURE_MAPPING_FAIL",
