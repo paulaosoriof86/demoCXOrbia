@@ -34,7 +34,7 @@ const providerVisitReadback=exactVisitDocs.map(({key,snap})=>{const v=snap.exist
     assignmentSyncStatus:String(v.assignmentSyncStatus||''),lastSyncedAt:String(v.lastSyncedAt||''),
     version:Number(v.version||0),hasRescheduleRequest:!!v.rescheduleRequest};
 });
-const result={schemaVersion:'cxorbia.i3.b1.oct07.live-auth-readonly.v2',decision:'HOLD',sourceSha:SOURCE,sourceTree:TREE,expectedHrRevision:HR,scope:'B1_ONLY',providerVisitReadback,testInitiatedWrites:0,externalActions:0,production:false,targets:[],errors:[],screenshots:[],tinyFish:'ENVIRONMENT_FAILURE_SESSION_RESTORE_B1_EXCEPTION'};
+const result={schemaVersion:'cxorbia.i3.b1.oct07.live-auth-readonly.v2',decision:'HOLD',sourceSha:SOURCE,sourceTree:TREE,expectedHrRevision:HR,scope:'B1_ONLY',providerVisitReadback,testInitiatedWrites:0,externalActions:0,production:false,targets:[],freshAuthTransitions:[],errors:[],screenshots:[],tinyFish:'ENVIRONMENT_FAILURE_SESSION_RESTORE_B1_EXCEPTION'};
 const normalize=x=>String(x||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
 const url=ROOT+'/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV';
 const browser=await chromium.launch({headless:true});
@@ -61,6 +61,21 @@ for(const t of targets){
     }catch(_){await page.waitForTimeout(650*(n+1));}
   }
   if(!signed)throw Error('B1_AUTHENTICATED_DEV_BROWSER_NOT_READY_'+t.name);
+  /* Diagnostic only: programmatic custom-token sign-in is NOT the real visible
+     password form. Observe initial transition before historical reload proof. */
+  const freshTransitionStart=Date.now();let noReloadReady=false;
+  try{
+    await page.waitForFunction(expected=>{
+      const c=window.CX?.backendAuth?.context?.()||{},g=window.CX_C6_HR_AUTHORITY_GATE||{},a=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{};
+      return c.authenticated===true&&String(c.shopperId||'')===expected&&g.ready===true&&a.applied===true;
+    },t.sid,{timeout:12000,polling:300});
+    noReloadReady=true;
+  }catch(_){}
+  const firstAuthState=await page.evaluate(()=>{
+    const c=window.CX?.backendAuth?.context?.()||{},g=window.CX_C6_HR_AUTHORITY_GATE||{},a=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{},b=window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE||{};
+    return {contextReady:c.authenticated===true,authorityReady:g.ready===true,authorityBlocked:g.blocked===true,hrApplied:a.applied===true,bootAttempts:Number(b.attempts||0),bootExhausted:b.exhausted===true,reason:String(b.reason||g.reason||''),errorKind:String(a.error||b.lastAuthorityError||'').slice(0,160),pendingGate:!!document.querySelector('[data-cx-human-authority-gate="pending"]')};
+  });
+  result.freshAuthTransitions.push({name:t.name,authMethod:'QA_CUSTOM_TOKEN_WITHOUT_PASSWORD_FORM',pageReloadBeforeObservation:false,noReloadReady,diagnosticWaitMs:Date.now()-freshTransitionStart,firstAuthState,notProofOfRealPasswordLogin:true});
   await page.goto('about:blank');
   const start=Date.now();
   await page.goto(url+'&b1vis='+Date.now(),{waitUntil:'domcontentloaded',timeout:90000});

@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
+  "status": "HOLD_B1_OCT07_AUTH_READONLY_VISUAL_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "f2a50044ca5b4bac5053f5a88de041fd5c7f72f9",
   "productTreeAuthority": "4d9054d5fb394579e35b32415584e5dd1b87ffd2",
   "predecessorProductSourceSha": "797050085d1e3347b6d56322f003a3a293790710",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V360_2026-10-10.json",
-  "findingsLedgerExpectedGitBlob": "7184cf7ae9856fd785bbebf65231fbc831213be8",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V361_2026-10-10.json",
+  "findingsLedgerExpectedGitBlob": "8313b5ba58fde6698f0e8310239705c60d3fe1b2",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261010-V55.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "B1_FIRST_CREDENTIAL_COLD_LOGIN_HUMAN_FAIL__RUN1455_REPRESENTATIVE_PASS_RESERVATION_QA_MAPPING_FAIL_FIXED_PENDING_RERUN__B2_ACK_PENDING",
+  "activeBlocker": "B1_INITIAL_AUTH_NO_RELOAD_DIAGNOSTIC_PENDING__HUMAN_FIRST_PASSWORD_LOGIN_GT50S_UNRESOLVED__B7_RESERVATION_FUTURE_WINDOW_409__B2_REMOTE_ACK_PENDING",
   "nextFindingId": "VRM-275",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Focal QA correction of reservation eligibility using same exact live HR authority; rerun same-artifact representative CI. First human password login without browser reload is separately pending; B1 remains human FAIL. No production.",
+  "exactNextAction": "Run existing B1 scoped DEV authentication diagnostic without reload using sanctioned QA custom token and warm identity cross-check. Diagnose phase, then prove real visible credential entry separately without bypass; no product, HR, Auth account or production writes.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -7951,7 +7951,7 @@
     "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V359_2026-10-10.json",
     "ledgerBlob": "0dcc3d5a1f1b259e6f959c0d3e9c629cfa674c3a",
     "humanPass": false,
-    "stage": "DEV_MATERIALIZED_PENDING_SAME_ARTIFACT_E2E",
+    "stage": "INITIAL_CUSTOM_TOKEN_NO_RELOAD_DIAGNOSTIC_PLUS_EXACT_WARM_E2E",
     "assetReadbackOwner": "core/backend-firebase.js",
     "sourceProof": "PASS_RUN1453",
     "sourceProofRunId": 38063884721,
@@ -7978,7 +7978,10 @@
       "hrWrites": 0,
       "production": false,
       "assetSourceVerified": "app/core/backend-firebase.js"
-    }
+    },
+    "freshAuthMethod": "PROGRAMMATIC_QA_TOKEN_NOT_HUMAN_PASSWORD",
+    "firstEntryRealPasswordProof": "PENDING",
+    "runDispatch": "CANONICAL_B1_EXISTING_QA_JOB"
   },
   "b1PostDevRegression20261010": {
     "status": "REPRESENTATIVE_SHOPPER_ADMIN_E2E_PASS__RESERVATION_FIXTURE_MAPPING_FAIL",
