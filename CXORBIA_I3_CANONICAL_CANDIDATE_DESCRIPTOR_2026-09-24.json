@@ -7,8 +7,8 @@
   "productSourceSha": "100ce7cd0d9328c8c11e6e728d5a7b34411f4fa4",
   "productTreeAuthority": "8bf1757815e76c89c8f08623a4f9e57dfd939618",
   "predecessorProductSourceSha": "aa435fa9e0bfee37c118747637a266581b853fe8",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V366_2026-10-10.json",
-  "findingsLedgerExpectedGitBlob": "fdb3662c5ceb21831fa80776e021b555a35d59f6",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V367_2026-10-11.json",
+  "findingsLedgerExpectedGitBlob": "30ee30ffc8d4a2f3664cf684670b99ab4c7a41b5",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261010-V57.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -8108,6 +8108,8 @@
       "P0-B Dashboard direct contextual modal owner",
       "B7 exact reservations HR 409 same-revision reproproof"
     ],
-    "production": "DO_NOT_TOUCH"
+    "production": "DO_NOT_TOUCH",
+    "ledgerSuccessor": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V367_2026-10-11.json",
+    "ledgerSourceProof": "PENDING_RUN"
   }
 }
