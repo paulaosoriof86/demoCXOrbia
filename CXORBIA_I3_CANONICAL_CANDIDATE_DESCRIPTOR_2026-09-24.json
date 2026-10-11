@@ -4,9 +4,9 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "aa435fa9e0bfee37c118747637a266581b853fe8",
-  "productTreeAuthority": "b71fd011706686f40e75f8313045d950a2916e5a",
-  "predecessorProductSourceSha": "f2a50044ca5b4bac5053f5a88de041fd5c7f72f9",
+  "productSourceSha": "100ce7cd0d9328c8c11e6e728d5a7b34411f4fa4",
+  "productTreeAuthority": "8bf1757815e76c89c8f08623a4f9e57dfd939618",
+  "predecessorProductSourceSha": "aa435fa9e0bfee37c118747637a266581b853fe8",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V366_2026-10-10.json",
   "findingsLedgerExpectedGitBlob": "fdb3662c5ceb21831fa80776e021b555a35d59f6",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261010-V57.json",
@@ -8088,5 +8088,26 @@
     "registrySha256": "de24bd064b7ceef22384a141cfd9652874623103f5d4e998d7cfa0480c17fabb",
     "override": "GUIDED_VISUAL_APPROVAL_CADENCE_ONLY",
     "production": false
+  },
+  "b7AdminFocalSourceFix20261011": {
+    "sourceSha": "100ce7cd0d9328c8c11e6e728d5a7b34411f4fa4",
+    "sourceTree": "8bf1757815e76c89c8f08623a4f9e57dfd939618",
+    "predecessorSourceSha": "aa435fa9e0bfee37c118747637a266581b853fe8",
+    "controlHeadBefore": "e81996ff34eed9cdca657dac829f1b0888d61135",
+    "fixedOwners": [
+      "app/modules/dashboard.js::bdSave",
+      "app/modules/postulaciones.js::aprAdjust",
+      "app/modules/postulaciones.js::pending-date-count"
+    ],
+    "sourceReadback": "PASS_COMMIT_PARENT_TREE_BLOBS",
+    "sourceExecutionTests": "PENDING",
+    "devMaterialization": "PENDING",
+    "adminShopperE2E": "PENDING",
+    "humanVisual": "PENDING",
+    "remainingP0": [
+      "P0-B Dashboard direct contextual modal owner",
+      "B7 exact reservations HR 409 same-revision reproproof"
+    ],
+    "production": "DO_NOT_TOUCH"
   }
 }
