@@ -511,16 +511,20 @@ CX.module('postulaciones', ({data,ui})=>{
       ui.modal('Gestión de agendamientos',`
         <p style="font-size:12.5px;color:var(--t2);margin-bottom:14px">Separa las fechas enviadas por shoppers de las referencias HR y de las propuestas al postularse.</p>
         <div style="background:var(--green-bg);border-radius:10px;padding:12px 14px;margin-bottom:14px">
-          <div style="font-size:12px;font-weight:700;color:var(--green)">⌛ Fechas pendientes de autorización <span class="bdg bdg-n">0</span></div>
-          <div style="font-size:12px;color:var(--t3);margin-top:4px">No hay fechas nuevas pendientes de autorización.</div></div>
+          <div style="font-size:12px;font-weight:700;color:var(--green)">⌛ Fechas pendientes de autorización <span class="bdg bdg-n">${requestByVisit.length}</span></div>
+          <div style="font-size:12px;color:var(--t3);margin-top:4px">${requestByVisit.length?'Hay '+requestByVisit.length+' solicitud(es) de reprogramación con estado pendiente de revisión. Revísalas en la sección de solicitudes, sin mezclar fechas HR ni propuestas iniciales.':'No hay fechas nuevas pendientes de autorización.'}</div></div>
         <div style="font-size:12px;font-weight:700;color:var(--t1);margin-bottom:9px">✅ Agendas autorizadas desde la plataforma <span class="bdg bdg-g">${agendadas.length}</span></div>
         ${rows||ui.empty('🗓️','Sin agendas')}
         <div style="margin-top:8px">${ui.aiBox('Estas fechas provienen de HR o de una postulación aprobada; se reflejan para coordinación y shopper sin contarse como pendientes.','Referencias')}</div>`,
-      {onMount:(ov,close)=>ov.querySelectorAll('.aprAdjust').forEach(b=>b.addEventListener('click',()=>{
-        const sh=b.dataset.sh;
-        CX.notif&&CX.notif.push({to:'shopper',tipo:'ajuste',icon:'🗓️',tono:'a',titulo:'El equipo solicita ajustar tu agenda',txt:sh+' · revisa la fecha de tu visita en Mis Visitas',nav:'misvisitas'});
-        if(CX.automations&&CX.automations.fire)CX.automations.fire('reprog',{shopper:sh});
-        close();ui.toast('Ajuste solicitado a '+sh+' · notificación preparada (Mi Día + WhatsApp fallback) · pendiente confirmación','ok',3500);
+      {onMount:(ov,close)=>ov.querySelectorAll('.aprAdjust').forEach(b=>b.addEventListener('click',async()=>{
+        const visit=agendadas.find(v=>String(v.id||v.visitId)===String(b.dataset.vid||''));
+        if(!visit?.shopperId||!visit?.id||typeof CX.notif?.pushDurable!=='function'){ui.toast('No se solicitó el ajuste: falta identidad exacta o notificación durable.','warn',4200);return;}
+        const before=b.textContent;b.disabled=true;b.textContent='Confirmando…';
+        try{
+          const ack=await CX.notif.pushDurable({to:'shopper',shopperId:String(visit.shopperId),targetShopperIds:[String(visit.shopperId)],tipo:'ajuste',icon:'🗓️',tono:'a',titulo:'El equipo solicita ajustar tu agenda',txt:(visit.sucursal||'Visita')+' · revisa la fecha de tu visita en Mis Visitas',nav:'misvisitas',accion:'confirmar_fecha',entityType:'visit',entityId:String(visit.id),eventKey:'admin_agenda_adjust',operational:true,idempotencyKey:['admin-agenda-adjust',data.currentProjectId,data.currentPeriodId,visit.id,visit.shopperId,visit.agendada||''].join(':')});
+          if(!(ack?.ok===true&&ack?.providerAck===true))throw new Error('AGENDA_ADJUST_ACK_REQUIRED');
+          close();ui.toast('Solicitud de ajuste registrada con confirmación remota para '+displayShopper(visit),'ok',3500);
+        }catch(_){b.disabled=false;b.textContent=before;ui.toast('Ajuste no confirmado: no se notificó como enviado.','warn',4200);}
       }))});
     });
     const pendingHandoff=window.CX_PENDING_ADMIN_OPERATION_ACTION;

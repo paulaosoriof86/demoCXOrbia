@@ -355,7 +355,23 @@ CX.module('dashboard', ({data,ui})=>{
         </div>
       `,{onMount:(ov,close)=>{
         const rev=ov.querySelector('#bdRev');if(rev)rev.addEventListener('click',()=>{close();CX.revisionAdmin&&CX.revisionAdmin(data,p,v,ui);});
-        ov.querySelector('#bdSave').addEventListener('click',()=>{v.estado=ov.querySelector('#bdEst').value;const f=ov.querySelector('#bdFec').value;if(f)v.agendada=f;CX.bus&&CX.bus.emit('visit-flow');CX.automations&&CX.automations.logAction&&CX.automations.logAction('Editó visita',v.id,v.sucursal+' → '+v.estado);close();CX.router.nav('dashboard');ui.toast('Visita actualizada','ok');});
+        ov.querySelector('#bdSave').addEventListener('click',async()=>{
+          const nextEstado=ov.querySelector('#bdEst').value,fecha=ov.querySelector('#bdFec').value;
+          const btn=ov.querySelector('#bdSave');
+          if(typeof data.setVisitState!=='function'||!v.id){ui.toast('No se puede guardar: falta el contrato canónico de la visita.','warn',4200);return;}
+          if(!fecha&&v.agendada){ui.toast('Para retirar una fecha existente utiliza la acción de agendamiento o reprogramación.','warn',4200);return;}
+          btn.disabled=true;btn.textContent='Confirmando…';
+          try{
+            const result=await data.setVisitState(v.id,nextEstado,fecha?'agendada':null,fecha||null,{ackAware:true,reason:'dashboard-visit-detail-save'});
+            if(!(result?.ok===true&&result?.status==='committed'&&result?.providerAck===true&&result?.successUiAllowed===true))throw new Error(result?.code||'VISIT_WRITE_ACK_REQUIRED');
+            let observed=null;
+            try{await CX.backend?.refresh?.();await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('dashboard_visit_saved');observed=(data.visitas?.()||[]).find(x=>String(x.id||x.visitId)===String(v.id)||String(x.hrRowId||'')===String(v.hrRowId||'__no_hr_row__'));}catch(_){}
+            close();CX.router.nav('dashboard');
+            if(!observed||String(observed.estado||'')!==String(nextEstado)||(fecha&&String(observed.agendada||'').slice(0,10)!==fecha)){ui.toast('Cambio confirmado por el proveedor; lectura posterior pendiente de sincronización.','warn',4400);return;}
+            CX.automations?.logAction?.('Editó visita con ACK',v.id,v.sucursal+' → '+nextEstado);
+            ui.toast('Visita actualizada y verificada','ok');
+          }catch(_){btn.disabled=false;btn.textContent='Guardar';ui.toast('Cambio no confirmado: no se modificó la visita desde esta pantalla.','warn',4200);}
+        });
         /* Bloque 9 (corrección V103, 20260711): bug real — este botón hacía hard-delete real
            (splice() sobre data._visitas, desaparición física, solo un confirm() del navegador,
            sin permiso, sin motivo, sin auditRef, sin conservar sourceRef). Una visita con origen
