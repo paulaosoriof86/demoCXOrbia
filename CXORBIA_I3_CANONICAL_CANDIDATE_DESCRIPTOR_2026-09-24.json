@@ -8079,5 +8079,14 @@
     "humanPass": false,
     "production": false,
     "liveExactVisit": "PENDING"
+  },
+  "deliveryFreeze20261011": {
+    "state": "FROZEN_CONTROL_ONLY",
+    "addendumPath": "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-10-11_ENTREGAS_POR_BLOQUE_ANTI_BUCLE_FROZEN.md",
+    "addendumSha256": "ec3342c5b01626cb00f165ac6161729d4c8c130ecf989771ffec614ac17aee71",
+    "registryPath": "CXORBIA_I3_ENTREGAS_BLOQUES_Y_P0_2026-10-11.json",
+    "registrySha256": "de24bd064b7ceef22384a141cfd9652874623103f5d4e998d7cfa0480c17fabb",
+    "override": "GUIDED_VISUAL_APPROVAL_CADENCE_ONLY",
+    "production": false
   }
 }
