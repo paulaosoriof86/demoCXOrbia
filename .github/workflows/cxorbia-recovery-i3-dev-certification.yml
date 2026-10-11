@@ -6143,7 +6143,7 @@ jobs:
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
       - uses: google-github-actions/setup-gcloud@v2
-      - name: Verify exact sealed DEV materialization before identity write
+      - name: Verify sealed DEV materialization
         run: |
          set -Eeuo pipefail
          EXPECTED_RUNTIME_REVISION="$(jq -r '.currentMaterialization.runtimeRevision // empty' "$CANDIDATE_DESCRIPTOR")"
@@ -6328,7 +6328,7 @@ jobs:
         with: {fetch-depth: 0}
       - uses: actions/setup-node@v4
         with: {node-version: '24'}
-      - name: Verify exact source, 23 synthetic provider tests and no drift
+      - name: Verify finance source and tests
         run: |
           set -Eeuo pipefail
           mkdir -p "$VRM_OUT"/{dry,before,after}
@@ -6342,7 +6342,7 @@ jobs:
       - uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-      - name: Scope-only financial reconcile in DEV with independent HR and Firestore readback
+      - name: DEV finance HR/Firestore readback
         run: |
           set -Eeuo pipefail
           PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HR_URL="$VRM_HR_URL" OUT="$VRM_OUT/dry" node tools/qa/cxorbia-vrm151-final-canonical-dry-run.mjs > "$VRM_OUT/dry/console.log"
@@ -6839,7 +6839,7 @@ jobs:
          curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm214preflight=$GITHUB_RUN_ID" > "$JULISSA_WRITE_OUT/hr-meta.json"
          test "$(jq -r '.revision' "$JULISSA_WRITE_OUT/hr-meta.json")" = "$EXPECTED_HR_REVISION"
          echo "EXPECTED_HR_REVISION=$EXPECTED_HR_REVISION" >> "$GITHUB_ENV"
-      - name: One provider-backed Julissa adjudication plus replay and readback
+      - name: Julissa adjudication readback
         shell: bash
         run: |
          set -Eeuo pipefail
@@ -7354,7 +7354,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Verify exact immutable B1 DEV artifact and nonmutating source
+      - name: Verify B1 DEV artifact
         run: |
          set -Eeuo pipefail
          test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
@@ -7372,7 +7372,7 @@ jobs:
       - uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: cxorbia-backend-dev
-      - name: B1 authenticated read-only visual state, modal and identity proof
+      - name: B1 visual identity proof
         run: |
          set -Eeuo pipefail
          export EXPECTED_HR_REVISION="$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")"
