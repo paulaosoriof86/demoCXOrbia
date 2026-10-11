@@ -105,6 +105,9 @@ jobs:
          node --test backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs
          node --test tools/qa/cxorbia-i3-b1-cold-login-parallel-source.test.mjs
          node --test backend/runtime/hr-live-service/test/cxorbia-i3-b7-temporal-reconcile.test.mjs
+         node --check app/modules/dashboard.js
+         node --check app/modules/postulaciones.js
+         node --test backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs
   vrm143-151-source-reproof:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM143_151_SOURCE_REPROOF_REQUIRED' }}
