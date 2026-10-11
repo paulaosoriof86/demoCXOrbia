@@ -8111,5 +8111,15 @@
     "production": "DO_NOT_TOUCH",
     "ledgerSuccessor": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V367_2026-10-11.json",
     "ledgerSourceProof": "PENDING_RUN"
+  },
+  "i3B7B8QaReceipt20261011": {
+    "path": "CXORBIA_I3_B7_B8_SOURCE_QA_READBACK_2026-10-11.json",
+    "ciRunId": 38184234170,
+    "jobId": 114603029539,
+    "sourceTestsPass": 69,
+    "sourceTestsFail": 0,
+    "jsSyntaxChecksPass": 2,
+    "fullI3Gate": "HOLD",
+    "sourceSha": "100ce7cd0d9328c8c11e6e728d5a7b34411f4fa4"
   }
 }
