@@ -8204,5 +8204,14 @@
     "hrWrites": 0,
     "production": false,
     "assetSourceVerified": "app/core/backend-firebase.js"
+  },
+  "i3B7HrAckPreflight20261011": {
+    "status": "FIXED_QA_WAIT_PENDING_RUN",
+    "classification": "MAPPING_FAILURE",
+    "diagnosticRun": 38198944951,
+    "receiptPath": "CXORBIA_I3_HR_ACK_E2E_PREFLIGHT_2026-10-11.json",
+    "qaOwner": "tools/qa/cxorbia-i3-hr-ack-exact-same-revision.mjs",
+    "productSourceUnchanged": true,
+    "devArtifactUnchanged": true
   }
 }
