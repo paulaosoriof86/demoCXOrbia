@@ -257,7 +257,32 @@ try{
   await globalControlInventory(page,'shopper');for(const rid of FULL_SCOPE.roles.shopper)await inventoryRoute(page,'shopper',rid,key);if(key==='julissa-flores')await deepShopperActions(page,t,key);result.shopper[pname(t.profile)]=e;await ctx.close();
  }
  const {ctx,page}=await signed(admin,'admin'),a={};
- await nav(page,'dashboard');a.dashboardSelect=await click(page,'.bdSel');if(a.dashboardSelect&&!/[1-9]/.test(await page.locator('#bdSelectedCount').innerText()))throw new Error('FUNCTIONAL_DEFECT:DASHBOARD_SELECTION_COUNT');a.dashboardContext=await click(page,'.bdCtx');if(!a.dashboardContext)a.dashboardContext=await click(page,'#bdBulkRequest');if(a.dashboardContext){await page.waitForTimeout(700);const view=await page.evaluate(()=>String(CX?.session?.view||''));if(view!=='postulaciones'||!/Pedir acción al shopper/i.test(await overlay(page)))throw new Error('FUNCTIONAL_DEFECT:DASHBOARD_HANDOFF');}await shot(page,'admin-dashboard');
+ await nav(page,'dashboard');
+ a.dashboardSelect=await click(page,'.bdSel');
+ if(a.dashboardSelect&&!/[1-9]/.test(await page.locator('#bdSelectedCount').innerText()))throw new Error('FUNCTIONAL_DEFECT:DASHBOARD_SELECTION_COUNT');
+ a.dashboardContext=await click(page,'.bdCtx');
+ if(!a.dashboardContext)a.dashboardContext=await click(page,'#bdBulkRequest');
+ if(a.dashboardContext){
+   await page.waitForTimeout(450);
+   const view=await page.evaluate(()=>String(CX?.session?.view||''));
+   if(view!=='dashboard')throw new Error('FUNCTIONAL_DEFECT:DASHBOARD_DIRECT_ACTION_LEFT_SURFACE:'+view);
+   const ov=page.locator('.cx-ov:visible').last();
+   const options=await ov.locator('[data-cx-admin-action]').evaluateAll(nodes=>nodes.map(n=>String(n.dataset.cxAdminAction||'')));
+   const allowed=new Set(['request','agenda','assign','reassign','cancel','approveCancel','rejectCancel']);
+   if(options.length){
+     if(options.some(x=>!allowed.has(x)))throw new Error('FUNCTIONAL_DEFECT:DASHBOARD_CONTEXT_UNKNOWN_ACTION:'+options.join(','));
+     const chosen=options.includes('request')?'request':options.includes('assign')?'assign':options.includes('agenda')?'agenda':options[0];
+     await ov.locator('[data-cx-admin-action="'+chosen+'"]').first().click();
+     await page.waitForTimeout(300);
+     if(await page.evaluate(()=>String(CX?.session?.view||''))!=='dashboard')throw new Error('FUNCTIONAL_DEFECT:DASHBOARD_CONTEXT_ACTION_NAVIGATED');
+     const next=page.locator('.cx-ov:visible').last();
+     const selector=chosen==='request'?'#rqSend':chosen==='assign'||chosen==='reassign'?'#cxDashShopper':chosen==='cancel'||chosen==='approveCancel'||chosen==='rejectCancel'?'#cxDashCancelOk':null;
+     if(selector&&!(await next.locator(selector).count()))throw new Error('FUNCTIONAL_DEFECT:DASHBOARD_CONTEXT_MODAL_MISSING:'+chosen);
+     if(chosen==='agenda'&&!/Gestión de agendamientos/i.test(await overlay(page)))throw new Error('FUNCTIONAL_DEFECT:DASHBOARD_AGENDA_MODAL_MISSING');
+     a.dashboardDirectAction=chosen;
+   }else if(!(await ov.locator('#rqSend').count()))throw new Error('FUNCTIONAL_DEFECT:DASHBOARD_DIRECT_CONTEXT_MODAL_MISSING');
+ }
+ await shot(page,'admin-dashboard');
  await nav(page,'postulaciones');a.requestShopper=await click(page,'#reqShopper');if(a.requestShopper){await page.waitForTimeout(250);const opts=await page.locator('.cx-ov:visible #rqSh option').allInnerTexts().catch(()=>[]);if(!opts.some(x=>/asignación vigente/i.test(x)))throw new Error('FUNCTIONAL_DEFECT:ADMIN_REQUEST_HR_TARGETS');}await shot(page,'admin-postulations');
  await nav(page,'shoppers');a.shopperProfile=await click(page,'#shBody [data-sid]');if(a.shopperProfile&&!/banco|pago|cuenta|perfil/i.test(await overlay(page)))throw new Error('VISUAL_DEFECT:ADMIN_SHOPPER_PROFILE_BANKING');await shot(page,'admin-shopper-profile');
  const finPeriod=await page.evaluate(()=>{const d=CX.data,orig=d.currentPeriodId;for(const p of (d.projects||[]).slice().reverse()){try{d.setProject(p.id);if((CX.liq?.forProject?.(d)||[]).length)return{id:p.id,orig};}catch(_){}}d.setProject(orig);return{id:orig,orig};});

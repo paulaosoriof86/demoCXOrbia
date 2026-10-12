@@ -8213,5 +8213,15 @@
     "qaOwner": "tools/qa/cxorbia-i3-hr-ack-exact-same-revision.mjs",
     "productSourceUnchanged": true,
     "devArtifactUnchanged": true
+  },
+  "i3B7DashboardContextQa20261011": {
+    "status": "QA_EXPECTATION_FIXED_PENDING_REPROOF",
+    "failedRunId": 38199351423,
+    "failedStep": "DASHBOARD_HANDOFF_OLD_BEHAVIOR",
+    "receiptPath": "CXORBIA_I3_DASHBOARD_DIRECT_MODAL_RUN1477_QA_MISMATCH_2026-10-11.json",
+    "qaFile": "tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs",
+    "qaBlob": "bec4c5998ba689d3d635359b816d203e9858ae6b",
+    "productSourceUnchanged": true,
+    "devArtifactUnchanged": true
   }
 }
