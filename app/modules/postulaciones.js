@@ -281,6 +281,45 @@ CX.module('postulaciones', ({data,ui})=>{
       ${items.map(card).join('')}</div>`;
   }).join('');
 
+
+  /* HF-20261012-15: reuse approved branch-grouped cards for operational assignments,
+     keeping HR assignments distinct from durable platform postulations. */
+  const assignmentGroupHTML=(()=>{
+    const escapeAssignment=(value)=>safe(value).replace(/[&<>"']/g,ch=>({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[ch]));
+    const byBranch=new Map();
+    operationalAssignments.forEach(v=>{
+      const country=String(v.pais||''), branch=String(v.sucursal||'Sucursal no informada');
+      const key=JSON.stringify([country,branch]);
+      if(!byBranch.has(key))byBranch.set(key,{country,branch,visits:[]});
+      byBranch.get(key).visits.push(v);
+    });
+    const groups=Array.from(byBranch.values()).sort((a,b)=>
+      a.country.localeCompare(b.country,'es')||a.branch.localeCompare(b.branch,'es'));
+    if(!groups.length)return ui.empty('🗂️','Sin asignaciones vigentes en este periodo');
+    return groups.map(({country,branch,visits})=>`<div class="card card-p poAssignmentGroup" data-cx-assignment-group style="margin-bottom:12px">
+      <div class="between wrap" style="gap:8px;margin-bottom:10px">
+        <div style="font-size:12px;font-weight:700;color:var(--brand-dark);text-transform:uppercase;letter-spacing:.4px">📍 ${escapeAssignment(branch)} · ${escapeAssignment(country)}</div>
+        <span class="muted" style="font-size:11px">${visits.length} asignación(es) · ${visits.filter(v=>String(v.assignmentSource||'').toLowerCase()==='platform').length} de plataforma · ${visits.filter(v=>String(v.assignmentSource||'').toLowerCase()!=='platform').length} de HR</span>
+      </div>
+      ${visits.map(v=>`<article class="poAssignmentCard" data-cx-assignment-card data-visit-ref="${escapeAssignment(v.id||v.visitId)}" style="background:var(--panel);border:1px solid var(--border);border-radius:11px;padding:12px 14px;margin-bottom:9px">
+        <div class="between wrap" style="align-items:flex-start;gap:10px">
+          <div style="flex:1;min-width:190px">
+            <div class="flex wrap" style="gap:6px;align-items:center;margin-bottom:7px">
+              ${ui.bdg(assignmentOrigin(v),String(v.assignmentSource||'').toLowerCase()==='platform'?'b':'n')}
+              ${ui.bdg(assignmentState(v),data.visitFacets?.(v)?.realized?'g':data.visitFacets?.(v)?.scheduled?'b':'a')}
+            </div>
+            <div style="font-size:13.5px;font-weight:700;color:var(--t1)">${escapeAssignment(v.shopper||displayShopper({shopperId:v.shopperId,shopper:v.shopper}))}</div>
+            <div style="font-size:12px;color:var(--t2);margin-top:4px">${escapeAssignment(v.ciudad)} · ${escapeAssignment(v.pais)}${v.escenario?' · '+escapeAssignment(v.escenario):''}</div>
+            <div style="font-size:12px;color:var(--t2);margin-top:6px">Agenda: <b style="color:var(--t1)">${escapeAssignment(v.agendada||'Pendiente')}</b></div>
+          </div>
+          <button class="btn btn-soft btn-sm poAssignedManage" data-visit-id="${escapeAssignment(v.id||v.visitId)}" title="Abrir acciones autorizadas para esta asignación">Gestionar →</button>
+        </div>
+      </article>`).join('')}
+    </div>`).join('');
+  })();
+
   const html=`
   <div class="between" style="margin-bottom:6px">
     <div>${ui.ph('Gestión de Postulaciones y Asignaciones', `${c('pendiente')} postulaciones pendientes · ${operationalAssignments.length} asignaciones vigentes · ${reprog.length} reprogramación(es) · ${cancellationRequests.length} cancelación(es) pendientes · ${agendadas.length} agendamientos`)}</div>
@@ -323,10 +362,12 @@ CX.module('postulaciones', ({data,ui})=>{
   ${cancellationRequests.length?'<div class="card card-p" style="border-left:3px solid var(--amber);margin-bottom:14px"><div class="card-t">⚠️ Solicitudes de cancelación pendientes · '+cancellationRequests.length+'</div>'+cancellationRequests.map(v=>'<div class="cx-visit-request-note"><b>'+safe(v.shopper||v.shopperId)+'</b> · '+safe(v.sucursal)+' · Motivo: '+safe(v.cancelRequest.reason||'Sin motivo')+'<div class="flex wrap" style="gap:8px;margin-top:8px"><button class="btn btn-green btn-sm" data-cancel-review="approved" data-vid="'+String(v.id||v.visitId).replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'">Aprobar solicitud</button><button class="btn btn-ghost btn-sm" data-cancel-review="rejected" data-vid="'+String(v.id||v.visitId).replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'">Rechazar solicitud</button></div></div>').join('')+'</div>':''}
   ${cancellationHrPending.length?'<div class="card card-p" style="border-left:3px solid var(--amber);margin-bottom:14px"><div class="card-t">Cancelaciones autorizadas · pendientes de confirmación HR · '+cancellationHrPending.length+'</div>'+cancellationHrPending.map(v=>'<div class="cx-visit-request-note"><b>'+safe(v.shopper||v.shopperId)+'</b> · '+safe(v.sucursal)+' · La visita no se liberará hasta que la HR externa confirme el cambio.</div>').join('')+'</div>':''}
   <div id="pGroups">${groupHTML}</div>
-  <div class="card card-p" style="margin-bottom:14px">
-    <div class="card-h"><div class="card-t">Asignaciones vigentes · ${operationalAssignments.length}</div><span class="muted" style="font-size:11px">HR / Hoja de Ruta + plataforma</span></div>
-    <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Shopper</th><th>Sucursal</th><th>Origen</th><th>Estado</th><th>Agenda</th><th>Acciones</th></tr></thead><tbody>${operationalAssignments.length?operationalAssignments.map(v=>`<tr><td><b>${safe(v.shopper||displayShopper({shopperId:v.shopperId,shopper:v.shopper}))}</b></td><td>${safe(v.sucursal)}<div style="font-size:10px;color:var(--t3)">${safe(v.escenario)} · ${safe(v.ciudad)}</div></td><td>${ui.bdg(assignmentOrigin(v),String(v.assignmentSource||"").toLowerCase()==="platform"?"b":"n")}</td><td>${ui.bdg(assignmentState(v),data.visitFacets?.(v)?.realized?"g":data.visitFacets?.(v)?.scheduled?"b":"a")}</td><td style="font-size:12px">${safe(v.agendada||"Pendiente")}</td><td style="text-align:right;white-space:nowrap"><button class="btn btn-soft btn-sm poAssignedManage" data-visit-id="${String(v.id||v.visitId||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;")}" title="Abrir acciones autorizadas para esta asignación">Gestionar →</button></td></tr>`).join(""):`<tr><td colspan="6">${ui.empty("🗂️","Sin asignaciones vigentes en este periodo")}</td></tr>`}</tbody></table></div>
-  </div>
+  <section class="poAssignedSection" data-cx-assignments aria-label="Asignaciones vigentes">
+    <div class="between wrap" style="gap:10px;margin:16px 0 10px">
+      <div><div class="card-t" style="font-size:15px">Asignaciones vigentes · ${operationalAssignments.length}</div><div class="muted" style="font-size:11px;margin-top:3px">Fichas por sucursal · origen HR / Hoja de Ruta o plataforma</div></div>
+    </div>
+    <div id="poAssignedGroups">${assignmentGroupHTML}</div>
+  </section>
   <div class="card card-p">${ui.aiBox('Postulaciones y asignaciones son ciclos distintos pero relacionados. Una asignación puede venir de HR o de la plataforma y nunca se fabrica una postulación para explicarla.','Gestión operacional')}</div>`;
 
   setTimeout(()=>{
