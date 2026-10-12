@@ -4,12 +4,12 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "6814d1335ff7490976bf77164cee5b45333f1e50",
-  "productTreeAuthority": "611f3baf1594765db71688065157142a7dfe7d12",
-  "predecessorProductSourceSha": "cf24832381ec966d8d2ea2f1e95e432056f59e38",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V370_2026-10-12.json",
-  "findingsLedgerExpectedGitBlob": "6f21f6bceb745380842f93c29d64dd2444b5cc34",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261011-V59.json",
+  "productSourceSha": "b1f45e2a8b5abaee1a082d3315f6d52473c22d9e",
+  "productTreeAuthority": "331a1ec854dde23dcddeeaa22bb0052953c48cad",
+  "predecessorProductSourceSha": "6814d1335ff7490976bf77164cee5b45333f1e50",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V371_2026-10-12.json",
+  "findingsLedgerExpectedGitBlob": "93aa4d9908446f268c0a992c4dcc75663902420f",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261012-V60.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
@@ -2694,7 +2694,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "31675f3bde7f6b9ce31630a89598a469d3a20ba2",
+  "moduleTruthExpectedGitBlob": "a1d76dd065acfad1abc2f1f2166686d46df93b0a",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -8267,5 +8267,51 @@
     "codeWriter": "Codex only",
     "executionState": "NOT_EXECUTED",
     "owner": "P0_PROVEN_EXACT"
+  },
+  "i3B7HF15SourceSuccessor": {
+    "schemaVersion": "cxorbia.i3.b7.hf15.assignment-per-row-source-receipt.v1",
+    "date": "2026-10-12",
+    "iteration": "I3",
+    "state": "SOURCE_FIXED_PARTIAL_PENDING_CI_DEV_HUMAN",
+    "productSourceSha": "b1f45e2a8b5abaee1a082d3315f6d52473c22d9e",
+    "productTree": "331a1ec854dde23dcddeeaa22bb0052953c48cad",
+    "sourcePreviousSha": "6814d1335ff7490976bf77164cee5b45333f1e50",
+    "previousSourceTree": "611f3baf1594765db71688065157142a7dfe7d12",
+    "sourceFixCommit": "b1f45e2a8b5abaee1a082d3315f6d52473c22d9e",
+    "testCommit": "a433caa5802901779b93c6ca232f045cc61c5dd6",
+    "owner": "app/modules/postulaciones.js",
+    "beforeBlob": "fdc38253cfe449f8f49f2d4a22726a654ce45faf",
+    "afterBlob": "c1dfd826090d33b6269136d1e6110ae6e845832e",
+    "newTestPath": "tools/qa/cxorbia-i3-b7-hf15-assignment-actions-source.test.mjs",
+    "newTestBlob": "765a6448680ba9eeced04495efab167e01929976",
+    "tests": {
+      "syntax": "PASS",
+      "sourceGuardPass": 3,
+      "sourceGuardFail": 0,
+      "isolatedClickDispatch": "PASS",
+      "liveAdminE2E": "NOT_RUN",
+      "liveShopperE2E": "NOT_RUN",
+      "humanApproval": "NOT_GRANTED",
+      "devMaterialization": "NOT_PERFORMED"
+    },
+    "changeSurface": "Operational assignment table gains Acciones / Gestionar button invoking existing adminPostulacionesActions.openContext with exact visitId; all other modules unchanged",
+    "blocked": [
+      "HF-20261012-13 WhatsApp row fake prepared toast",
+      "HF-20261012-15 visual frontend recovery rest",
+      "HF-20261012-16 exact badge drift",
+      "HF-20261012-17 KPI exact revision parity",
+      "B2 owner handoff pending",
+      "B8 eight financial observations HOLD"
+    ],
+    "immutableRules": [
+      "No synthetic postulation for HR assignment",
+      "No HR write",
+      "No changes to auth/finance or legacy",
+      "No production deployment",
+      "No I3 GO from source-only tests"
+    ],
+    "production": "DO_NOT_TOUCH",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V371_2026-10-12.json",
+    "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261012-V60.json"
   }
 }
