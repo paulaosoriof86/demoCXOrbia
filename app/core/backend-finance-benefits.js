@@ -104,6 +104,15 @@ window.CX = window.CX || {};
     return {items:snap.docs.map(docData), status:'ok'};
   }
 
+  async function getFinanceBudgets(input){
+    input=input||{};
+    if(!input.projectId||!input.periodId)throw new Error('FINANCE_BUDGET_READ_SCOPE_REQUIRED');
+    let q=col(input,'financeBudgets').where('projectId','==',input.projectId).where('periodId','==',input.periodId);
+    const snap=await q.get();
+    const items=snap.docs.map(docData).filter(x=>x.status==='active');
+    return {items,status:'ok',projectId:input.projectId,periodId:input.periodId};
+  }
+
   async function getPaymentLots(input){
     input = input || {};
     let q = col(input, 'paymentLots');
@@ -143,6 +152,7 @@ window.CX = window.CX || {};
     getShopperBenefitsAdmin(input){ return safeCall('getShopperBenefitsAdmin', getShopperBenefitsAdmin, input); },
     getFinancialMovements(input){ return safeCall('getFinancialMovements', getFinancialMovements, input); },
     getFinanceAccounts(input){ return safeCall('getFinanceAccounts', getFinanceAccounts, input); },
+    getFinanceBudgets(input){ return safeCall('getFinanceBudgets', getFinanceBudgets, input); },
     getPaymentLots(input){ return safeCall('getPaymentLots', getPaymentLots, input); },
     suggestReconciliations(input){ return safeCall('suggestReconciliations', suggestReconciliations, input); },
   });

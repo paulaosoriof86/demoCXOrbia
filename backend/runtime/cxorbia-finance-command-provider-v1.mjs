@@ -7,7 +7,7 @@
 import crypto from 'node:crypto';
 
 export const VERSION='cxorbia-finance-command-provider-v1';
-export const COMMAND_TYPES=Object.freeze(['finance.reconcile.visit','finance.historical.reconcile','finance.payment.batch','finance.movement.create','finance.account.create','finance.account.apply']);
+export const COMMAND_TYPES=Object.freeze(['finance.reconcile.visit','finance.historical.reconcile','finance.payment.batch','finance.movement.create','finance.account.create','finance.account.apply','finance.budget.save','finance.budget.delete']);
 export const OPERATOR_ROLES=Object.freeze(['super','admin']);
 
 const str=v=>String(v==null?'':v).trim();
@@ -56,7 +56,9 @@ function validateCommand(command={}){
     'finance.payment.batch':'paymentBatch',
     'finance.movement.create':'financialMovement',
     'finance.account.create':'financeAccount',
-    'finance.account.apply':'financeAccount'
+    'finance.account.apply':'financeAccount',
+    'finance.budget.save':'financeBudget',
+    'finance.budget.delete':'financeBudget'
   };
   const permissionByType={
     'finance.reconcile.visit':'finance.reconcile',
@@ -64,7 +66,9 @@ function validateCommand(command={}){
     'finance.payment.batch':'finance.markPaid',
     'finance.movement.create':'finance.movement.write',
     'finance.account.create':'finance.account.write',
-    'finance.account.apply':'finance.account.apply'
+    'finance.account.apply':'finance.account.apply',
+    'finance.budget.save':'finance.budget.write',
+    'finance.budget.delete':'finance.budget.delete'
   };
   if(command.version!=='cxorbia-command-adapter-v1')errors.push('FINANCE_COMMAND_VERSION_INVALID');
   if(!COMMAND_TYPES.includes(type))errors.push('FINANCE_COMMAND_TYPE_INVALID');
@@ -78,6 +82,7 @@ function validateCommand(command={}){
   if(type==='finance.historical.reconcile'&&!['paid','pending'].includes(str(command.payload?.paymentStatus).toLowerCase()))errors.push('FINANCE_HISTORICAL_STATUS_INVALID');
   if(type==='finance.payment.batch'&&!uniq(command.payload?.visitIds).length)errors.push('FINANCE_VISIT_IDS_REQUIRED');
   if(type==='finance.account.apply'&&!str(command.entityId||command.payload?.accountId))errors.push('FINANCE_ACCOUNT_ID_REQUIRED');
+  if(type==='finance.budget.delete'&&!str(command.entityId))errors.push('FINANCE_BUDGET_ID_REQUIRED');
   return {ok:errors.length===0,errors};
 }
 
@@ -346,6 +351,59 @@ export function createFinanceCommandProvider({auth,db,policy,hrSnapshot=null,hrR
             tx.set(audit,{...summary,auditType:'finance.historical.reconcile',idempotencyKey:command.idempotencyKey},{merge:false});providerWrites++;
             tx.set(receipt,{...summary,providerAck:true,providerWrites:providerWrites+1,entityId:batchId},{merge:false});providerWrites++;
             return ack(command,{entityType:'historicalPaymentReconciliation',entityId:batchId,reconciled,amountReviewRequired,reconciliationBatchId:batchId,sourceRef,sourceRevision,detail,idempotentReplay:false,providerWrites,hrWrites:0});
+          }
+          if(['finance.budget.save','finance.budget.delete'].includes(command.commandType)){
+            const prior=await tx.get(receipt);
+            if(prior.exists){
+              const previous=prior.data()||{};
+              if(str(previous.commandDigest)!==digest)throw new Error('FINANCE_IDEMPOTENCY_REUSE_DIFFERENT_PAYLOAD');
+              if(previous.status==='committed')return ack(command,{entityType:'financeBudget',entityId:previous.entityId,budget:previous.entity||null,idempotentReplay:true,providerWrites:0});
+            }
+            const removing=command.commandType==='finance.budget.delete',payload=command.payload||{};
+            const projectSnap=await tx.get(project),config=projectSnap.exists?(projectSnap.data()||{}):{};
+            const country=str(payload.country||payload.pais),currency=str(payload.currency||payload.moneda),concept=str(payload.concept||payload.concepto);
+            const configuredCurrencies=config.currency||config.currencies||{};
+            const configuredCountries=uniq(config.countries||config.paises||Object.keys(configuredCurrencies));
+            const expectedConfiguredCurrency=str(configuredCurrencies[country]);
+            const budgetId=str(command.entityId)||(removing?'':('bud-'+sha([command.tenantId,command.projectId,command.periodId,country,currency,concept.toLowerCase(),command.idempotencyKey].join('\0')).slice(0,32)));
+            if(!budgetId)throw new Error('FINANCE_BUDGET_ID_REQUIRED');
+            const budgetRef=tenant.collection('financeBudgets').doc(budgetId),snap=await tx.get(budgetRef),existing=snap.exists?(snap.data()||{}):{};
+            if(removing||snap.exists){
+              if(!snap.exists)throw new Error('FINANCE_BUDGET_MISSING');
+              if(str(existing.tenantId)!==str(command.tenantId)||str(existing.projectId)!==str(command.projectId)||str(existing.periodId)!==str(command.periodId))
+                throw new Error('FINANCE_BUDGET_SCOPE_CONFLICT');
+              if(str(existing.status)==='deleted')throw new Error('FINANCE_BUDGET_ALREADY_DELETED');
+            }
+            if(str(command.expectedVersion)!==(snap.exists?str(versionOf(existing)):'absent'))
+              throw new Error('FINANCE_BUDGET_EXPECTED_VERSION_CONFLICT');
+            let budget;
+            const stamp=now();
+            if(removing){
+              budget={...existing,status:'deleted',deletedAt:stamp,deletedBy:actor.uid,version:Number(existing.version||0)+1,updatedAt:stamp};
+            }else{
+              if(!country||!currency||!configuredCountries.length||!configuredCountries.includes(country)||!expectedConfiguredCurrency)
+                throw new Error('FINANCE_BUDGET_COUNTRY_CURRENCY_CONFIG_REQUIRED');
+              if(expectedConfiguredCurrency!==currency)throw new Error('FINANCE_BUDGET_CURRENCY_SCOPE_CONFLICT');
+              if(!concept||concept.length>120||/[<>\u0000-\u001f\u007f]/.test(concept))throw new Error('FINANCE_BUDGET_CONCEPT_INVALID');
+              const amount=Number(payload.amount??payload.monto);
+              if(payload.amount==null&&payload.monto==null||!Number.isFinite(amount)||amount<0)
+                throw new Error('FINANCE_BUDGET_AMOUNT_INVALID');
+              if(snap.exists&&(str(existing.country)!==country||str(existing.currency)!==currency))
+                throw new Error('FINANCE_BUDGET_COUNTRY_CURRENCY_IMMUTABLE');
+              budget={id:budgetId,tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,
+                country,pais:country,currency,moneda:currency,concept,concepto:concept,amount,monto:amount,
+                status:'active',sourceType:'admin_budget_plan',bankPaymentConfirmed:false,
+                version:Number(existing.version||0)+1,createdBy:str(existing.createdBy||actor.uid),
+                createdAt:str(existing.createdAt||stamp),updatedBy:actor.uid,updatedAt:stamp};
+            }
+            tx.set(budgetRef,budget,{merge:false});
+            tx.set(audit,{tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,
+              entityType:'financeBudget',entityId:budgetId,commandType:command.commandType,actorUid:actor.uid,
+              actorRole:actor.role,idempotencyKey:command.idempotencyKey,versionBefore:Number(existing.version||0),
+              versionAfter:budget.version,country:budget.country,currency:budget.currency,amount:budget.amount,
+              status:budget.status,createdAt:stamp},{merge:false});
+            tx.set(receipt,{status:'committed',commandDigest:digest,entityId:budgetId,entity:budget,commandType:command.commandType,providerAck:true,actorUid:actor.uid,updatedAt:stamp},{merge:false});
+            return ack(command,{entityType:'financeBudget',entityId:budgetId,budget,providerWrites:3,idempotentReplay:false,hrWrites:0,externalPaymentWrites:0,bankWrites:0});
           }
           if(command.commandType==='finance.movement.create'){
             const prior=await tx.get(receipt);

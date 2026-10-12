@@ -132,9 +132,21 @@ CX.fin = {
     const scopeRow=(r)=>r&&String(r.projectId||canonicalProjectId)===canonicalProjectId&&String(r.periodId||canonicalPeriodId)===String(canonicalPeriodId);
     const movementAmount=(r)=>Number.isFinite(Number(r.amount))?Number(r.amount):Math.abs(Number(r.monto||0));
     const accountBalance=(r)=>Number.isFinite(Number(r.balance))?Number(r.balance):Number(r.saldo||0);
-    const budgetKey=tenantId+'::'+p.id+'::'+canonicalPeriodId;
-    const presStore=CX.finStore.pres(p.id, canonicalPeriodId); // periodo explícito desde el contexto data
-    const unassignedBudgetTotal=Object.values(presStore).reduce((a,b)=>a+(+b||0),0);
+    const budgetKey=tenantId+'::'+canonicalProjectId+'::'+canonicalPeriodId;
+    const protectedBudget=CX.BACKEND?.enabled===true && !(CX.dataSource?.showFixtures?.()===true);
+    const budgetRows=(Array.isArray(data.__financeBudgets)?data.__financeBudgets:(Array.isArray(CX.data?.__financeBudgets)?CX.data.__financeBudgets:[]))
+      .filter(r=>r&&String(r.projectId)===canonicalProjectId&&String(r.periodId)===String(canonicalPeriodId)&&r.status==='active');
+    // A planned budget is not a confirmed expense or payment; never add GT/HN currencies together.
+    const plannedBudgetByCurrency={};
+    if(protectedBudget)for(const r of budgetRows){
+      const country=String(r.country||r.pais||''),currency=String(r.currency||r.moneda||'');
+      if(!country||!currency||!Number.isFinite(Number(r.amount)))continue;
+      const key=country+'::'+currency;
+      plannedBudgetByCurrency[key]=(plannedBudgetByCurrency[key]||0)+Number(r.amount);
+    }
+    // Legacy in-memory budget is demo-only, never the protected operational authority.
+    const presStore=protectedBudget?{}:CX.finStore.pres(p.id,canonicalPeriodId);
+    const unassignedBudgetTotal=protectedBudget?0:Object.values(presStore).reduce((a,b)=>a+(+b||0),0);
     p.countries.forEach(c=>{
       const cur=p.currency[c];
       const countryRows=allLiq.filter(l=>l&&l.pais===c&&((l.moneda||cur)===cur));
@@ -192,7 +204,8 @@ CX.fin = {
         margenPct: incomeInfo.known&&ingreso?Math.round(margen/ingreso*100):null};
     });
     /* presupuesto sin asignación: entidad ÚNICA fuera del mapa por país (no imputado al margen) */
-    Object.defineProperty(out,'__unassignedBudget',{enumerable:false,value:{budgetKey,tenantId,projectId:p.id,periodId:canonicalPeriodId,total:unassignedBudgetTotal,assigned:false}});
+    Object.defineProperty(out,'__unassignedBudget',{enumerable:false,value:{budgetKey,tenantId,projectId:canonicalProjectId,periodId:canonicalPeriodId,total:unassignedBudgetTotal,assigned:false}});
+    Object.defineProperty(out,'__plannedBudgetByCountryCurrency',{enumerable:false,value:plannedBudgetByCurrency});
     Object.defineProperty(out,'__reviewQueue',{enumerable:false,value:reviewQueue});
     return out;
   },

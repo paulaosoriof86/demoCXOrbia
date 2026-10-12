@@ -279,6 +279,12 @@ service cloud.firestore {
         allow create, update, delete: if false;
       }
 
+      // I3 HF26: budget is a provider-owned plan, not a movement or bank/payment event.
+      match /financeBudgets/{budgetId} {
+        allow read: if tenantAllowed(tenantId) && isOperator();
+        allow create, update, delete: if false;
+      }
+
       match /financeAccounts/{accountId} {
         allow read: if tenantAllowed(tenantId) && isOperator();
         allow create, update, delete: if false;

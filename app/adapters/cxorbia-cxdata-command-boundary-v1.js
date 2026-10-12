@@ -255,6 +255,25 @@
       const cmd=buildBase('finance.account.apply','financeAccount',accountId,payload,versionOf(current),Object.assign({permission:'finance.account.apply'},meta));
       return execute(cmd,meta);
     };
+    D.saveFinanceBudget=function(rec,meta){
+      rec=rec||{};meta=commandMeta(meta||rec.__commandMeta);
+      const input=Object.assign({},rec);delete input.__commandMeta;
+      const id=str(input.id||input.budgetId);delete input.id;delete input.budgetId;
+      const current=id?(Array.isArray(D.__financeBudgets)?D.__financeBudgets:[]).find(x=>str(x.id)===id):null;
+      const expected=id?versionOf(current):'absent';
+      const cmd=buildBase('finance.budget.save','financeBudget',id||null,input,expected,Object.assign({permission:'finance.budget.write'},meta));
+      return execute(cmd,meta);
+    };
+    D.deleteFinanceBudget=function(budgetId,meta){
+      meta=commandMeta(meta);const id=str(budgetId);
+      const current=(Array.isArray(D.__financeBudgets)?D.__financeBudgets:[]).find(x=>str(x.id)===id);
+      if(!current){
+        const blocked=CX.commandAdapter?.blocked?.({commandType:'finance.budget.delete',entityType:'financeBudget'},'FINANCE_BUDGET_SOURCE_READ_REQUIRED')||{ok:false,status:'blocked',code:'FINANCE_BUDGET_SOURCE_READ_REQUIRED'};
+        return meta.ackAware?Promise.resolve(surfaceBlocked(blocked)):legacyFailClosed(blocked);
+      }
+      const cmd=buildBase('finance.budget.delete','financeBudget',id,{budgetId:id},versionOf(current),Object.assign({permission:'finance.budget.delete'},meta));
+      return execute(cmd,meta);
+    };
     D.createSupportTicket=function(rec,meta){
       rec=rec||{};meta=commandMeta(meta);const c=ctx();
       const payload={subject:str(rec.asunto||rec.subject),detail:str(rec.detalle||rec.detail),supportType:str(rec.tipo||rec.supportType||'Plataforma'),priority:str(rec.prio||rec.priority||'media'),requesterName:str(rec.de||rec.requesterName),clientRequestId:str(rec.clientRequestId)};

@@ -364,3 +364,75 @@ test('ADMIN-004 unified human runtime preserves canonical project-country honora
   const unknown=src.indexOf("return 'hr_unknown'");
   assert.ok(known>=0&&unknown>=0&&known<unknown,'known project-country fallback must be resolved before HR-operational unknown fallback');
 });
+
+
+test('HF-20261012-26 durable budget create, readback, update, delete and exact idempotency without bank truth',async()=>{
+  const db=baseDb(),p=createFinanceCommandProvider({auth:new Auth(),db,policy});
+  const save={version:'cxorbia-command-adapter-v1',commandType:'finance.budget.save',entityType:'financeBudget',
+    tenantId:'tenant-a',projectId:'project-a',periodId:'project-a-2026-10',entityId:null,
+    idempotencyKey:'hf26-budget-create-01',expectedVersion:'absent',
+    authorization:{providerEnforcementRequired:true,permission:'finance.budget.write'},
+    payload:{clientRequestId:'budget-form-01',country:'GT',currency:'Q',concept:'Transporte',amount:200}};
+  assert.equal(commandProviderKind('finance.budget.save'),'finance');
+  assert.equal(commandProviderKind('finance.budget.delete'),'finance');
+  const initial=await p.execute('token',save);
+  assert.equal(initial.ok,true);assert.equal(initial.committed,true);assert.equal(initial.providerAck,true);
+  assert.equal(initial.externalPaymentConfirmed,false);assert.equal(initial.bankWrites,0);
+  const id=initial.entityId,path='tenants/tenant-a/financeBudgets/'+id;
+  const first=await db.collection('tenants').doc('tenant-a').collection('financeBudgets').doc(id).get();
+  assert.equal(first.exists,true);assert.equal(first.data().status,'active');assert.equal(first.data().version,1);
+  assert.equal(first.data().country,'GT');assert.equal(first.data().currency,'Q');assert.equal(first.data().amount,200);
+  const replay=await p.execute('token',save);
+  assert.equal(replay.ok,true);assert.equal(replay.idempotentReplay,true);assert.equal(replay.providerWrites,0);
+  assert.equal(db.get(path).amount,200);
+  const edit={...save,entityId:id,idempotencyKey:'hf26-budget-edit-01',expectedVersion:1,
+    payload:{country:'GT',currency:'Q',concept:'Transporte mensual',amount:225}};
+  const updated=await p.execute('token',edit);
+  assert.equal(updated.ok,true);assert.equal(updated.budget.amount,225);assert.equal(updated.budget.version,2);
+  assert.equal(db.get(path).concept,'Transporte mensual');
+  const stale=await p.execute('token',{...edit,idempotencyKey:'hf26-budget-edit-stale',payload:{...edit.payload,amount:999}});
+  assert.equal(stale.ok,false);assert.equal(stale.code,'FINANCE_BUDGET_EXPECTED_VERSION_CONFLICT');
+  const remove={...save,commandType:'finance.budget.delete',entityId:id,idempotencyKey:'hf26-budget-delete-01',
+    expectedVersion:2,authorization:{providerEnforcementRequired:true,permission:'finance.budget.delete'},payload:{budgetId:id}};
+  const removed=await p.execute('token',remove);
+  assert.equal(removed.ok,true);assert.equal(removed.budget.status,'deleted');assert.equal(db.get(path).status,'deleted');
+  assert.equal(db.get(path).version,3);
+  const rerun=await p.execute('token',remove);assert.equal(rerun.ok,true);assert.equal(rerun.idempotentReplay,true);
+  // New user intent after soft delete yields a new audited budget document; none resurrects automatically.
+  const another=await p.execute('token',{...save,idempotencyKey:'hf26-budget-recreate-intent-02',payload:{...save.payload,clientRequestId:'budget-form-02'}});
+  assert.equal(another.ok,true);assert.notEqual(another.entityId,id);
+  assert.equal(db.get(path).status,'deleted');assert.equal(db.get('tenants/tenant-a/financeBudgets/'+another.entityId).status,'active');
+  assert.equal(db.get('tenants/tenant-a/financialMovements/mov-1'),undefined);
+});
+
+test('HF-20261012-26 budget fail-closed country, currency, role, scope, amount, and no client writes',async()=>{
+  const db=baseDb(),p=createFinanceCommandProvider({auth:new Auth(),db,policy});
+  const base={version:'cxorbia-command-adapter-v1',commandType:'finance.budget.save',entityType:'financeBudget',
+    tenantId:'tenant-a',projectId:'project-a',periodId:'project-a-2026-10',entityId:null,
+    idempotencyKey:'hf26-deny-default',expectedVersion:'absent',
+    authorization:{providerEnforcementRequired:true,permission:'finance.budget.write'},payload:{country:'GT',currency:'Q',concept:'Prueba',amount:10}};
+  for(const [kind,payload,code] of [
+    ['wrong-currency',{...base.payload,currency:'L'},'FINANCE_BUDGET_CURRENCY_SCOPE_CONFLICT'],
+    ['missing-country',{...base.payload,country:''},'FINANCE_BUDGET_COUNTRY_CURRENCY_CONFIG_REQUIRED'],
+    ['negative',{...base.payload,amount:-10},'FINANCE_BUDGET_AMOUNT_INVALID'],
+    ['invalid',{...base.payload,concept:'<iframe>'},'FINANCE_BUDGET_CONCEPT_INVALID']
+  ]){
+    const result=await p.execute('token',{...base,idempotencyKey:'hf26-deny-'+kind,payload});
+    assert.equal(result.ok,false);assert.equal(result.providerWrites,0);assert.match(result.code,new RegExp(code));
+  }
+  const forbidden=await p.execute('token',{...base,idempotencyKey:'hf26-permission-wrong',
+    authorization:{providerEnforcementRequired:true,permission:'finance.movement.write'}});
+  assert.equal(forbidden.ok,false);assert.equal(forbidden.providerWrites,0);
+  const outOfScope=await p.execute('token',{...base,projectId:'project-b',idempotencyKey:'hf26-scope-denied'});
+  assert.equal(outOfScope.ok,false);assert.equal(outOfScope.providerWrites,0);
+  assert.equal([...db.s.keys()].some(x=>x.includes('/financeBudgets/')),false);
+  const rules=fs.readFileSync('firestore.rules','utf8');
+  assert.match(rules,/match \/financeBudgets\/\{budgetId\}/);
+  assert.match(rules,/allow create, update, delete: if false;/);
+  const module=fs.readFileSync('app/modules/finanzas.js','utf8');
+  assert.match(module,/data\.saveFinanceBudget/);
+  assert.match(module,/data\.deleteFinanceBudget/);
+  assert.match(module,/getFinanceBudgets/);
+  assert.match(module,/FINANCE_BUDGET_READBACK_MISMATCH/);
+  assert.doesNotMatch(module,/CX\.finStore\.setPres\(p\.id,k/);
+});

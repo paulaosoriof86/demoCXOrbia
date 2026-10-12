@@ -266,25 +266,31 @@ CX.module('movimientos', ({data,ui})=>{
   const connectedFinance=()=>CX.BACKEND?.enabled===true&&!_showFixtures;
   let durableMovements=Array.isArray(data.__financialMovements)?data.__financialMovements:[];
   let durableAccounts=Array.isArray(data.__financeAccounts)?data.__financeAccounts:[];
+  let durableBudgets=Array.isArray(data.__financeBudgets)?data.__financeBudgets:[];
   const accountKind=(kind)=>durableAccounts.filter(r=>String(r.kind||'').toLowerCase()===kind&&String(r.status||'open')!=='closed');
   const refreshDurableFinance=async(force=false)=>{
     if(!connectedFinance()||scope==='global')return false;
-    const key=canonicalProjectId()+'::'+canonicalPeriodId;
+    const tenantScope=typeof data.tenantId==='function'?data.tenantId():(data.tenantId||CX.BACKEND?.tenantId||'');
+    const key=String(tenantScope)+'::'+canonicalProjectId()+'::'+canonicalPeriodId;
     if(!force&&data.__financeProjectionKey===key&&data.__financeProjectionLoaded===true){
       durableMovements=Array.isArray(data.__financialMovements)?data.__financialMovements:[];
       durableAccounts=Array.isArray(data.__financeAccounts)?data.__financeAccounts:[];
+      durableBudgets=Array.isArray(data.__financeBudgets)?data.__financeBudgets:[];
       return true;
     }
-    if(typeof data.getFinancialMovements!=='function'||typeof data.getFinanceAccounts!=='function')return false;
-    const [mov,acc]=await Promise.all([
+    if(typeof data.getFinancialMovements!=='function'||typeof data.getFinanceAccounts!=='function'||typeof data.getFinanceBudgets!=='function')return false;
+    const [mov,acc,bud]=await Promise.all([
       data.getFinancialMovements({projectId:canonicalProjectId(),periodId:canonicalPeriodId}),
-      data.getFinanceAccounts({projectId:canonicalProjectId(),periodId:canonicalPeriodId})
+      data.getFinanceAccounts({projectId:canonicalProjectId(),periodId:canonicalPeriodId}),
+      data.getFinanceBudgets({projectId:canonicalProjectId(),periodId:canonicalPeriodId})
     ]);
-    if(mov?.status!=='ok'||acc?.status!=='ok')return false;
+    if(mov?.status!=='ok'||acc?.status!=='ok'||bud?.status!=='ok')return false;
     durableMovements=Array.isArray(mov.items)?mov.items:[];
     durableAccounts=Array.isArray(acc.items)?acc.items:[];
+    durableBudgets=Array.isArray(bud.items)?bud.items:[];
     data.__financialMovements=durableMovements;
     data.__financeAccounts=durableAccounts;
+    data.__financeBudgets=durableBudgets;
     data.__financeProjectionLoaded=true;
     data.__financeProjectionKey=key;
     try{CX.bus?.emit?.('finance-durable-ready',{projectId:canonicalProjectId(),periodId:canonicalPeriodId});}catch(_){}
@@ -391,7 +397,7 @@ CX.module('movimientos', ({data,ui})=>{
       <div class="card card-p" id="presMesCard">
         <div class="between" style="margin-bottom:8px"><div class="card-t">📋 Presupuesto mensual <span class="bdg bdg-b">${per}</span></div><button class="btn btn-soft btn-sm" id="addPresMes">＋ Rubro</button></div>
         <div id="presMesList"></div>
-        <div style="font-size:11px;color:var(--t3);margin-top:8px">Es <b>mensual</b> y queda ligado al periodo canónico. El presupuesto es <b>planeado</b>: sin país/moneda asignada se muestra <b>sin moneda</b> y no afecta el margen.</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:8px">Presupuesto planificado por país y moneda, ligado al período canónico. No constituye gasto, pago ni margen realizado. Requiere confirmación remota.</div>
       </div>
       <div class="card card-p" id="finCard">
         <div class="between" style="margin-bottom:8px"><div class="card-t">🏦 Financiamientos</div><button class="btn btn-soft btn-sm" id="addFin">＋ Financiamiento</button></div>
@@ -435,18 +441,84 @@ CX.module('movimientos', ({data,ui})=>{
     }
     const ps=host.querySelector('#perSel'); if(ps)ps.addEventListener('change',()=>{CX.fin.setCanonPeriod(ps.value);CX.router.nav('movimientos');});
 
-    // ---- presupuesto mensual (period-keyed) ----
+    // ---- presupuesto mensual (provider-backed, no browser memory authority) ----
+    const budgetItems=connectedFinance()&&!isG?durableBudgets.filter(r=>
+      String(r.projectId)===canonicalProjectId()&&String(r.periodId)===String(canonicalPeriodId)&&r.status==='active'):[];
+    const budgetEsc=v=>String(v==null?'':v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
     const pml=host.querySelector('#presMesList');
-    if(pml){ const store=CX.finStore.pres(p.id,canonicalPeriodId); const ks=Object.keys(store); const tot=ks.reduce((a,k)=>a+(+store[k]||0),0);
-      pml.innerHTML=(ks.length?ks.map(k=>`<div class="between" style="padding:6px 0;border-bottom:1px solid var(--border-2)"><span style="font-size:12.5px">${k}</span><div class="flex" style="gap:8px"><b style="font-size:12.5px">${(+store[k]).toLocaleString()} <span class="muted" style="font-weight:500">sin moneda asignada</span></b><button class="btn btn-ghost btn-sm" data-delpm="${k}" style="color:var(--red);padding:2px 7px">✕</button></div></div>`).join(''):'<div class="muted" style="font-size:12px;padding:6px 0">Sin rubros este mes</div>')+`<div class="between" style="padding:8px 0 0;font-weight:700"><span style="font-size:12.5px">Total planeado</span><b>${tot.toLocaleString()} <span class="muted" style="font-weight:500">pendiente de asignación</span></b></div>`;
-      pml.querySelectorAll('[data-delpm]').forEach(b=>b.addEventListener('click',()=>{CX.finStore.delPres(p.id,b.dataset.delpm,canonicalPeriodId);draw();}));
+    const validCurrencies=budgetItems.filter(r=>r.country&&r.currency&&Number.isFinite(Number(r.amount)));
+    if(pml){
+      if(!connectedFinance()||isG){
+        pml.innerHTML='<div class="muted" style="font-size:12px;padding:8px">El presupuesto durable solo está disponible dentro de un proyecto con sesión autorizada. No se guardan borradores en memoria.</div>';
+      }else{
+        const totals=new Map();
+        validCurrencies.forEach(r=>totals.set(r.currency,(totals.get(r.currency)||0)+Number(r.amount)));
+        pml.innerHTML=(!validCurrencies.length?'<div class="muted" style="font-size:12px;padding:8px">Sin presupuestos remotos confirmados para este período.</div>':
+          validCurrencies.map(r=>'<div class="between" style="padding:8px 0;border-bottom:1px solid var(--border-2)">'+
+          '<div><b style="font-size:12.5px">'+budgetEsc(r.concept||r.concepto)+'</b><div class="muted" style="font-size:11px">'+budgetEsc(r.country||r.pais)+' · presupuesto planificado, no pagado</div></div>'+
+          '<div class="flex wrap" style="gap:6px"><b style="font-size:12px">'+budgetEsc(r.currency)+' '+Number(r.amount).toLocaleString()+'</b>'+
+          '<button type="button" class="btn btn-soft btn-sm" data-editbudget="'+budgetEsc(r.id)+'">Editar</button>'+
+          '<button type="button" class="btn btn-ghost btn-sm" data-delbudget="'+budgetEsc(r.id)+'">Eliminar</button></div></div>').join(''))+
+          [...totals].map(([currency,total])=>'<div class="between" style="padding:8px 0"><b style="font-size:12px">Total planeado · '+budgetEsc(currency)+'</b><b>'+budgetEsc(currency)+' '+total.toLocaleString()+'</b></div>').join('');
+      }
+    }
+    const openBudgetModal=(existing)=>{
+      if(!connectedFinance()||isG){ui.toast('Necesitas un proyecto con persistencia financiera protegida.','warn');return;}
+      const countries=Array.isArray(p.countries)?p.countries.map(String).filter(Boolean):[];
+      const currencyMap=p.currency||{};
+      const eligible=countries.filter(c=>String(currencyMap[c]||''));
+      if(!eligible.length){ui.toast('Configura país y moneda del proyecto antes de crear un presupuesto.','warn');return;}
+      const createRequestId=existing?null:('budget-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2));
+      const chosen=existing?String(existing.country):eligible[0];
+      if(!eligible.includes(chosen)){ui.toast('País o moneda sin configuración vigente.','warn');return;}
+      const opts=eligible.map(c=>'<option value="'+budgetEsc(c)+'" '+(c===chosen?'selected':'')+'>'+budgetEsc(c)+'</option>').join('');
+      const body='<label class="lbl">Concepto</label><input class="inp" id="budgetConcept" maxlength="120" value="'+budgetEsc(existing?.concept||existing?.concepto||'')+'" placeholder="Ej. Coordinación, Transporte" style="margin-bottom:10px">'+
+        '<label class="lbl">País</label><select class="sel" id="budgetCountry" '+(existing?'disabled':'')+'>'+opts+'</select>'+
+        '<div class="muted" id="budgetCurrency" style="font-size:12px;margin:8px 0">Moneda '+budgetEsc(currencyMap[chosen])+'</div>'+
+        '<label class="lbl">Monto planeado</label><input class="inp" id="budgetAmount" type="number" min="0" step="0.01" value="'+(existing?Number(existing.amount):'')+'" style="margin-bottom:8px">'+
+        '<div class="muted" style="font-size:11px;margin-bottom:12px">Este presupuesto es un plan, no un gasto ni un pago confirmado.</div>'+
+        '<div style="text-align:right"><button class="btn btn-pr btn-sm" id="budgetSave">Guardar con confirmación</button></div>';
+      ui.modal((existing?'Editar presupuesto':'Nuevo rubro de presupuesto')+' · '+per,body,{onMount:(ov,close)=>{
+        const countryEl=ov.querySelector('#budgetCountry'),moneyEl=ov.querySelector('#budgetCurrency'),save=ov.querySelector('#budgetSave');
+        countryEl.addEventListener('change',()=>{moneyEl.textContent='Moneda '+String(currencyMap[countryEl.value]||'sin configuración');});
+        save.addEventListener('click',async()=>{
+          const country=countryEl.value,currency=String(currencyMap[country]||''),concept=String(ov.querySelector('#budgetConcept').value||'').trim(),raw=ov.querySelector('#budgetAmount').value,amount=Number(raw);
+          if(!eligible.includes(country)||!currency||!concept||concept.length>120||raw===''||!Number.isFinite(amount)||amount<0){ui.toast('Revisa concepto, país, moneda y monto.','warn');return;}
+          save.disabled=true;save.textContent='Guardando…';
+          try{
+            if(typeof data.saveFinanceBudget!=='function')throw new Error('FINANCE_BUDGET_COMMAND_UNAVAILABLE');
+            const ack=await data.saveFinanceBudget({...(existing?{id:existing.id}:{clientRequestId:createRequestId}),country,currency,concept,amount},{ackAware:true,reason:'admin-monthly-finance-budget'});
+            if(!commandOk(ack))throw new Error(String(ack?.code||'FINANCE_BUDGET_ACK_REQUIRED'));
+            if(!await refreshDurableFinance(true))throw new Error('FINANCE_BUDGET_READBACK_UNAVAILABLE');
+            const verified=durableBudgets.find(r=>String(r.id)===String(ack.entityId));
+            if(!verified||verified.status!=='active'||Number(verified.amount)!==amount||String(verified.country)!==country||String(verified.currency)!==currency)
+              throw new Error('FINANCE_BUDGET_READBACK_MISMATCH');
+            close();draw();ui.toast('Presupuesto guardado y confirmado en fuente remota.','ok');
+          }catch(e){ui.toast('No se confirmó el presupuesto · '+String(e?.message||e),'err');save.disabled=false;save.textContent='Guardar con confirmación';}
+        });
+      }});
+    };
+    if(pml){
+      pml.querySelectorAll('[data-editbudget]').forEach(b=>b.addEventListener('click',()=>{
+        const existing=budgetItems.find(r=>String(r.id)===String(b.dataset.editbudget));
+        if(existing)openBudgetModal(existing);
+      }));
+      pml.querySelectorAll('[data-delbudget]').forEach(b=>b.addEventListener('click',async()=>{
+        const id=String(b.dataset.delbudget||'');
+        if(!budgetItems.some(r=>String(r.id)===id))return;
+        if(!confirm('¿Eliminar este rubro de presupuesto? Quedará su auditoría en la fuente remota.'))return;
+        b.disabled=true;
+        try{
+          const ack=await data.deleteFinanceBudget(id,{ackAware:true,reason:'admin-monthly-finance-budget-delete'});
+          if(!commandOk(ack))throw new Error(String(ack?.code||'FINANCE_BUDGET_DELETE_ACK_REQUIRED'));
+          if(!await refreshDurableFinance(true))throw new Error('FINANCE_BUDGET_READBACK_UNAVAILABLE');
+          if(durableBudgets.some(r=>String(r.id)===id))throw new Error('FINANCE_BUDGET_DELETE_READBACK_MISMATCH');
+          draw();ui.toast('Presupuesto eliminado con confirmación remota.','ok');
+        }catch(e){ui.toast('No se confirmó la eliminación · '+String(e?.message||e),'err');b.disabled=false;}
+      }));
     }
     const apm=host.querySelector('#addPresMes');
-    if(apm)apm.addEventListener('click',()=>ui.modal('Nuevo rubro de presupuesto · '+per,`
-      <label class="lbl">Concepto</label><input class="inp" id="pmK" placeholder="Ej. Coordinación, Transporte" style="margin-bottom:10px">
-      <label class="lbl">Monto planeado</label><input class="inp" id="pmV" type="number" style="margin-bottom:6px"><div style="font-size:11px;color:var(--t3);margin-bottom:14px">Sin moneda asignada hasta definir país/moneda del rubro.</div>
-      <div style="text-align:right"><button class="btn btn-pr btn-sm" id="pmSave">Agregar</button></div>
-    `,{onMount:(ov,close)=>{ov.querySelector('#pmSave').addEventListener('click',()=>{const k=(ov.querySelector('#pmK').value||'').trim();if(!k){ui.toast('Escribe el concepto','warn');return;}CX.finStore.setPres(p.id,k,+ov.querySelector('#pmV').value||0,canonicalPeriodId);close();draw();ui.toast('Rubro agregado al presupuesto','ok');});}}));
+    if(apm)apm.addEventListener('click',()=>openBudgetModal(null));
 
     // ---- financiamientos ----
     const fl=host.querySelector('#finList');
