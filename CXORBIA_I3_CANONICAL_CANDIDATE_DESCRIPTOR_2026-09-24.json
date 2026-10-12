@@ -8417,5 +8417,17 @@
       "B8 eight financial human observations including memory-only budget"
     ],
     "production": "DO_NOT_TOUCH"
+  },
+  "i3B7HF13HF15CanonicalSourceQaRun1489": {
+    "path": "CXORBIA_I3_B7_HF13_HF15_RUN1489_SOURCE_QA_PROOF_2026-10-12.json",
+    "runId": 38310927011,
+    "runNumber": 1489,
+    "source": "8aee6b1d9c131f435ba11c80567ea9686ceaf5cb",
+    "sourceTree": "bf3986a5b5fe03cd0cf8074597a0bdc4a6bd73e1",
+    "scope": "SOURCE_ONLY_82_PASS_ZERO_FAIL_29_DOWNSTREAM_SKIPPED",
+    "state": "SOURCE_QA_PASS__DEV_HUMAN_HOLD",
+    "devMaterialized": false,
+    "humanPass": false,
+    "production": false
   }
 }
