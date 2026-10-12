@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "cxorbia.i3.b7.run1495.source-and-hr-parity.pass.v1",
+  "date": "2026-10-12",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "status": "SOURCE_QA_PASS_HF16_HF17__DEV_E2E_HUMAN_HOLD",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "sourceSha": "3bab1de181175612ed111a05ee1266f71342953c",
+  "sourceTree": "e30ff25c00581404fe983a82f1b4bc3335443f55",
+  "controlHeadAtRun": "e338bc54dfd3b0a9bd234bc5fa0410c90ccee5a2",
+  "canonicalWorkflow": {
+    "runId": 38312853613,
+    "runNumber": 1495,
+    "head": "e338bc54dfd3b0a9bd234bc5fa0410c90ccee5a2",
+    "status": "completed",
+    "conclusion": "success",
+    "job": "canonical-candidate-authority",
+    "jobId": 115022462904,
+    "totalJobs": 30,
+    "jobsSuccess": 1,
+    "jobsSkipped": 29,
+    "tests": {
+      "shopperProvider": 40,
+      "b1Source": 4,
+      "b7Temporal": 6,
+      "b8FinanceProvider": 23,
+      "hf13Whatsapp": 4,
+      "hf15Cards": 5,
+      "hf16And17Source": 4,
+      "total": 86,
+      "failed": 0
+    }
+  },
+  "hrExternal": {
+    "sourceRevision": "c7c03bbf6578843a30cb29a3d31c3876418cb437889ae53f3336ab5f2e1a2994",
+    "period": "2026-10",
+    "totalVisits": 44,
+    "scheduledCumulative": 24,
+    "scheduledActive": 18,
+    "scheduledAlreadyRealized": 6,
+    "byCountry": {
+      "GT": {
+        "total": 34,
+        "cumulative": 18,
+        "active": 14,
+        "realizedScheduled": 4
+      },
+      "HN": {
+        "total": 10,
+        "cumulative": 6,
+        "active": 4,
+        "realizedScheduled": 2
+      }
+    },
+    "exactRowsIn": "CXORBIA_I3_B7_HF16_HF17_EXACT_OCTOBER_HR_PARITY_AND_LABEL_FIX_2026-10-12.json"
+  },
+  "sourceChanged": [
+    "app/modules/postulaciones.js",
+    "app/modules/dashboard.js"
+  ],
+  "semanticChanges": "HF16 canonical pending parity, HF17 label clarification only; no hardcoded count or modified HR/provider",
+  "productDeployedInDev": false,
+  "production": "DO_NOT_TOUCH",
+  "i3": "HOLD",
+  "gate20": "NOT_RUN",
+  "gate21": "NOT_RUN",
+  "humanApproval": "PENDING",
+  "b2": "HOLD",
+  "b8": "HOLD_8_HUMAN_FINDINGS",
+  "nextExactAction": "Close B2 exact identity P0 and B8 finance persistence P0 using frozen owners; recover B7 remainder and execute approved DEV same-artifact Admin/Shopper E2E and human review. Do not authorize I4."
+}

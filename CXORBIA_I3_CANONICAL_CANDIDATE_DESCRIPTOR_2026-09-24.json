@@ -8637,5 +8637,16 @@
     ],
     "nextExactAction": "Run canonical source-only proof under updated source. Then protected same-revision Admin read model exact B7 badge and agendamientos, single DEV materialization and E2E before human acceptance; B2/B8 P0 remain.",
     "production": "DO_NOT_TOUCH"
+  },
+  "i3B7HF16HF17Run1495SourceProof": {
+    "receiptPath": "CXORBIA_I3_B7_RUN1495_SOURCE_QA_AND_EXACT_HR_PARITY_RECEIPT_2026-10-12.json",
+    "runId": 38312853613,
+    "sourceSha": "3bab1de181175612ed111a05ee1266f71342953c",
+    "sourceTree": "e30ff25c00581404fe983a82f1b4bc3335443f55",
+    "sourceTestPass": 86,
+    "failed": 0,
+    "downstreamSkipped": 29,
+    "status": "SOURCE_QA_PASS_HF16_HF17__DEV_E2E_HUMAN_HOLD",
+    "production": false
   }
 }
