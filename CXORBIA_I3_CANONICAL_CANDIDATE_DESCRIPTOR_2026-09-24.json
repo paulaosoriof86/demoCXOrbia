@@ -4,12 +4,12 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "cdb68455f663a9332b08d14ac6d5f0eeaa99972d",
-  "productTreeAuthority": "18f407150024383373798b0de490c95f01b3ebaf",
-  "predecessorProductSourceSha": "8aee6b1d9c131f435ba11c80567ea9686ceaf5cb",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V374_2026-10-12.json",
-  "findingsLedgerExpectedGitBlob": "35bc5bf02008a8722e581b435a816f11324724e6",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261012-V63.json",
+  "productSourceSha": "3bab1de181175612ed111a05ee1266f71342953c",
+  "productTreeAuthority": "e30ff25c00581404fe983a82f1b4bc3335443f55",
+  "predecessorProductSourceSha": "cdb68455f663a9332b08d14ac6d5f0eeaa99972d",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V375_2026-10-12.json",
+  "findingsLedgerExpectedGitBlob": "1445e1cb928983d7374e739f227d7be021874569",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261012-V64.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
@@ -2694,7 +2694,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "43b29b2a60f8b9b338dfb3ebb4193d2e80e1b2d7",
+  "moduleTruthExpectedGitBlob": "54e035df01f4939fa609f1c71c0f953dcc560a2c",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -8506,6 +8506,136 @@
       "No real data writes, no production, no new workflow/branch/candidate"
     ],
     "nextAction": "Execute existing canonical source guard with HF16 test; obtain authorized exact same-revision HR visit row readback for HF17, not infer 6 realized; then same-artifact DEV Admin/Shopper E2E for B7 and user visual approval.",
+    "production": "DO_NOT_TOUCH"
+  },
+  "i3B7Oct12HF16HF17ExactParity": {
+    "schemaVersion": "cxorbia.i3.b7.hf16-hf17.october-exact-revision-parity.v1",
+    "iteration": "I3_FUNCTIONAL_CLOSURE",
+    "date": "2026-10-12",
+    "status": "SOURCE_FIXED_LABELS_HF16_HF17__DEV_E2E_HUMAN_HOLD",
+    "repository": "paulaosoriof86/demoCXOrbia",
+    "branch": "recovery/cxorbia-phase-a-20260831",
+    "sourceSha": "3bab1de181175612ed111a05ee1266f71342953c",
+    "sourceTree": "e30ff25c00581404fe983a82f1b4bc3335443f55",
+    "predecessorSource": "cdb68455f663a9332b08d14ac6d5f0eeaa99972d",
+    "externalHR": {
+      "url": "https://cxorbia-backend-dev.web.app/api/tya/cinepolis/hr-live?format=json",
+      "readOnly": true,
+      "maskedPublicSnapshot": true,
+      "sourceRevision": "c7c03bbf6578843a30cb29a3d31c3876418cb437889ae53f3336ab5f2e1a2994",
+      "sourceReadAt": "2026-10-12T21:44:55.764Z",
+      "tenantId": "tya",
+      "projectId": "cinepolis",
+      "periodKey": "2026-10",
+      "periodId": "cinepolis-2026-10",
+      "visits": 44,
+      "byCountry": {
+        "GT": {
+          "visits": 34,
+          "cumulativeScheduled": 18,
+          "activeScheduled": 14,
+          "alreadyRealizedScheduled": 4
+        },
+        "HN": {
+          "visits": 10,
+          "cumulativeScheduled": 6,
+          "activeScheduled": 4,
+          "alreadyRealizedScheduled": 2
+        }
+      },
+      "totals": {
+        "visits": 44,
+        "cumulativeScheduled": 24,
+        "activeScheduled": 18,
+        "alreadyRealizedScheduled": 6
+      },
+      "exactDifferenceReferences": [
+        {
+          "visitId": "hr_2026-10_gt_4_b68c02a8ca",
+          "hrRowId": "OCTUBRE 26!4",
+          "country": "GT"
+        },
+        {
+          "visitId": "hr_2026-10_gt_5_f16457f07c",
+          "hrRowId": "OCTUBRE 26!5",
+          "country": "GT"
+        },
+        {
+          "visitId": "hr_2026-10_gt_16_083c3bfe16",
+          "hrRowId": "OCTUBRE 26!16",
+          "country": "GT"
+        },
+        {
+          "visitId": "hr_2026-10_gt_17_4d2c261509",
+          "hrRowId": "OCTUBRE 26!17",
+          "country": "GT"
+        },
+        {
+          "visitId": "hr_2026-10_hn_2_e8f397f0d8",
+          "hrRowId": "OCTUBRE 26 HN!2",
+          "country": "HN"
+        },
+        {
+          "visitId": "hr_2026-10_hn_4_ce6deee4ef",
+          "hrRowId": "OCTUBRE 26 HN!4",
+          "country": "HN"
+        }
+      ],
+      "noRowIdentityNamesReadbackClaim": true,
+      "protectedFirestorePlatformParity": "NOT_PROVEN"
+    },
+    "hf16": {
+      "finding": "HF-20261012-16",
+      "classification": "MAPPING_FAILURE",
+      "sourceFix": "Use data.activePosts() in Postulaciones and normalize estado||status like data.kpis().postPend",
+      "owner": "app/modules/postulaciones.js",
+      "sourceCommit": "cdb68455f663a9332b08d14ac6d5f0eeaa99972d",
+      "sourceTestResult": {
+        "runId": 38312186363,
+        "runNumber": 1493,
+        "sourceTests": 4,
+        "sourceTestsPass": 4,
+        "sourceTestsFail": 0
+      },
+      "liveBadge0vs10AfterFix": "NOT_RETESTED",
+      "humanAcceptance": "HOLD"
+    },
+    "hf17": {
+      "finding": "HF-20261012-17",
+      "classification": "MAPPING_FAILURE",
+      "cause": "The Dashboard country-stage Agend. measures cumulative scheduled (includes visits already realized); Postulaciones Agendamientos measures active scheduled excluding realized. The six-visit difference is exactly the six already-realized scheduled visits in independent external HR revision.",
+      "dashboardBeforeLabel": "Agend.",
+      "dashboardAfterLabel": "Con fecha",
+      "postulationsBeforeLabel": "Agendamientos",
+      "postulationsAfterLabel": "Agendamientos activos",
+      "sourceOwnerBlobs": {
+        "app/modules/dashboard.js": "f32c27e4129bddf5cca7f11709aa5d7761d6243f",
+        "app/modules/postulaciones.js": "53f875ed88094870cf2d80d2afa42331111d803a"
+      },
+      "logicModified": false,
+      "countersHardcoded": false,
+      "exactRevisionRowParity": true,
+      "sameArtifactRuntimeReadback": "NOT_RUN",
+      "humanAcceptance": "HOLD"
+    },
+    "tests": {
+      "path": "tools/qa/cxorbia-i3-b7-hf16-pending-count-parity-source.test.mjs",
+      "blob": "ae4fd234b976dc0fc3311d176c57489768dc9610",
+      "preCommitSourceSyntax": "PASS",
+      "CI_afterLabelFix": "PENDING",
+      "expected": "All 4 source tests remain PASS; compare no numbers hardcoded, source semantics unchanged"
+    },
+    "preserve": [
+      "GT/HN and country scope untouched",
+      "No HR writes, no Firestore/Auth/Storage writes",
+      "No scheduled facet/cohort formula changed",
+      "No real payout/finance changes",
+      "B2 identity pending",
+      "B8 8 financial human findings pending",
+      "No materialization DEV",
+      "Production DO_NOT_TOUCH"
+    ],
+    "nextExactAction": "Run canonical source-only proof under updated source. Then protected same-revision Admin read model exact B7 badge and agendamientos, single DEV materialization and E2E before human acceptance; B2/B8 P0 remain.",
     "production": "DO_NOT_TOUCH"
   }
 }
