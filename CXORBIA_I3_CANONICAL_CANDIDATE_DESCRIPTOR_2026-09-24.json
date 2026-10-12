@@ -4,12 +4,12 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "100ce7cd0d9328c8c11e6e728d5a7b34411f4fa4",
-  "productTreeAuthority": "8bf1757815e76c89c8f08623a4f9e57dfd939618",
-  "predecessorProductSourceSha": "aa435fa9e0bfee37c118747637a266581b853fe8",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V367_2026-10-11.json",
-  "findingsLedgerExpectedGitBlob": "30ee30ffc8d4a2f3664cf684670b99ab4c7a41b5",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261010-V57.json",
+  "productSourceSha": "cf24832381ec966d8d2ea2f1e95e432056f59e38",
+  "productTreeAuthority": "b14710a1ad8185846fbca4c62e7c823baee8ed8c",
+  "predecessorProductSourceSha": "100ce7cd0d9328c8c11e6e728d5a7b34411f4fa4",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V368_2026-10-11.json",
+  "findingsLedgerExpectedGitBlob": "da612bfa363d85d1ebf29bec8efbb09ff6d4bc4c",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261011-V58.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
@@ -2687,7 +2687,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "ca64d894a63c04b4f22f7c09398dbf0f0827af09",
+  "moduleTruthExpectedGitBlob": "e5f1c749be6d06746e49254011f14d6d056c3ccc",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -8121,5 +8121,14 @@
     "jsSyntaxChecksPass": 2,
     "fullI3Gate": "HOLD",
     "sourceSha": "100ce7cd0d9328c8c11e6e728d5a7b34411f4fa4"
+  },
+  "i3B7DashboardDirectModal20261011": {
+    "sourceSha": "cf24832381ec966d8d2ea2f1e95e432056f59e38",
+    "sourceTree": "b14710a1ad8185846fbca4c62e7c823baee8ed8c",
+    "sourceProof": "PENDING_RUN",
+    "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261011-V58.json",
+    "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V368_2026-10-11.json",
+    "testPath": "backend/runtime/hr-live-service/test/cxorbia-i3-b7-temporal-reconcile.test.mjs",
+    "production": "DO_NOT_TOUCH"
   }
 }
