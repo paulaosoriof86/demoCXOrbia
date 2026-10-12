@@ -8233,5 +8233,15 @@
     "p0": "REAL_PASSWORD_B1_AND_MODULE_TRUTH_FINAL_AND_RESERVATION_POLICY",
     "humanCheckpoint": "B7_FIRST_THEN_B8",
     "production": "DO_NOT_TOUCH"
+  },
+  "i3HumanFocalVisualCheckpoint20261012": {
+    "receiptPath": "CXORBIA_I3_HUMAN_FOCAL_VISUAL_CHECKPOINT_2026-10-12.json",
+    "status": "HOLD_HUMAN_VISUAL_P0",
+    "sourceSha": "6814d1335ff7490976bf77164cee5b45333f1e50",
+    "findings": 30,
+    "carryforwardLedger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V369_2026-10-11.json",
+    "humanApprovedModules": "NOT_FULLY_APPROVED",
+    "next": "P0_OWNER_PROOF_CORRECTION_WITHOUT_REGRESSION",
+    "production": "DO_NOT_TOUCH"
   }
 }
