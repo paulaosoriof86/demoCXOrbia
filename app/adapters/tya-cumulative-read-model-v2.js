@@ -321,13 +321,16 @@
       const tenantAdjudicatedProfile=p&&lower(p.identityAuthority)==='tenant_adjudication'&&!!str(p.identityAuthorityRef);
       const canonicalProfileName=canonicalAlias&&tenantAdjudicatedProfile&&profileDisplayName&&!technicalIdentityLabel(profileDisplayName,canonical)?profileDisplayName:'';
       // Shopper display correction does not merge identities or alter external HR.
+      const displayAuthority=str(p?.displayNameAuthority);
       const verifiedDisplay=!!p&&str(p.id)===canonical&&str(p.shopperId||p.id)===canonical&&
-        str(p.displayNameAuthority)==='shopper_self_profile'&&!!str(p.displayNameUpdatedAt)&&
+        ['shopper_self_profile','staff_authorized_profile'].includes(displayAuthority)&&!!str(p.displayNameUpdatedAt)&&
         !!str(p.displayNameActorUid)&&!!str(p.displayFirstName)&&!!str(p.displayLastName);
       const selfDisplayName=verifiedDisplay?[str(p.displayFirstName),str(p.displayLastName)].join(' '):'';
       const humanDisplayName=selfDisplayName||canonicalProfileName||(hrDisplayName&&!technicalIdentityLabel(hrDisplayName,liveId)?hrDisplayName:(profileDisplayName&&!technicalIdentityLabel(profileDisplayName,canonical)?profileDisplayName:''));
       row.__hrOriginalDisplayName=hrDisplayName||null;
-      row.__selfDisplayNameVerified=verifiedDisplay;
+      row.__selfDisplayNameVerified=verifiedDisplay&&displayAuthority==='shopper_self_profile';
+      row.__staffDisplayNameVerified=verifiedDisplay&&displayAuthority==='staff_authorized_profile';
+      row.__verifiedDisplayName=verifiedDisplay;
       row.nombre=humanDisplayName||'Identidad pendiente de revisión';row.code=base.code||row.code||row.username||row.user||row.legacyShopperId||'';
       if(!humanDisplayName){row.identityReviewRequired=true;row.identityReviewReason=row.identityReviewReason||'human_display_name_unresolved';}
       row.sourceSafe=p?false:base.sourceSafe;row.piiProtected=p?false:base.piiProtected;row.__canonicalIdentityOverlay=!!p;
@@ -349,7 +352,14 @@
       const trustedExact=p.__providerExactIdentityLink===true&&trustedPlatformAuthorities.has(authority);
       if(!pid||!projectScoped||!trustedExact)continue;
       const row=clone(p);row.id=pid;row.shopperId=pid;row.code=row.code||row.username||row.user||row.legacyShopperId||'';
-      const platformDisplayName=normalizedName(row);
+      const authorizedDisplay=['shopper_self_profile','staff_authorized_profile'].includes(str(row.displayNameAuthority))&&
+        !!str(row.displayNameUpdatedAt)&&!!str(row.displayNameActorUid)&&
+        !!str(row.displayFirstName)&&!!str(row.displayLastName);
+      const platformDisplayName=authorizedDisplay?[str(row.displayFirstName),str(row.displayLastName)].join(' '):normalizedName(row);
+      row.__verifiedDisplayName=authorizedDisplay;
+      row.__selfDisplayNameVerified=authorizedDisplay&&str(row.displayNameAuthority)==='shopper_self_profile';
+      row.__staffDisplayNameVerified=authorizedDisplay&&str(row.displayNameAuthority)==='staff_authorized_profile';
+      if(authorizedDisplay)row.nombre=platformDisplayName;
       if(technicalIdentityLabel(platformDisplayName,pid)){
         row.nombre='Identidad pendiente de revisión';
         row.displayNameReviewRequired=true;

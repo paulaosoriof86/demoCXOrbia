@@ -1150,21 +1150,24 @@ async function durableProfileUpdate({auth,db,command,shopperId,actor}){
   const prot=selfScoped?pick(rawProt,SELF_MANAGED_PROTECTED_FIELDS):rawProt;
   const changed=changedHrManagedFields(profile,pub);
   if(changed.length)throw new Error(`SHOPPER_HR_MANAGED_FIELDS_IMMUTABLE:${changed.join(',')}`);
-  const wantsDisplayChange=selfScoped&&(pub.displayFirstName!==undefined||pub.displayLastName!==undefined);
+  const wantsDisplayChange=pub.displayFirstName!==undefined||pub.displayLastName!==undefined;
+  const staffDisplayCorrection=!selfScoped&&wantsDisplayChange;
+  if(staffDisplayCorrection&&(!OPERATOR_ROLES.includes(str(actor.role))||str(command.authorization?.permission)!=='shopper.update'))
+    throw new Error('SHOPPER_ADMIN_DISPLAY_NAME_PERMISSION_REQUIRED');
   if(wantsDisplayChange){
     const currentCredential=shopperCredentialRule(profile);
     const first=str(pub.displayFirstName??profile.displayFirstName??currentCredential.firstName);
     const last=str(pub.displayLastName??profile.displayLastName??currentCredential.lastName);
     if(!first||!last||first.length>80||last.length>100||/[<>\u0000-\u001f\u007f]/.test(first+last))
-      throw new Error('SHOPPER_SELF_DISPLAY_NAME_INVALID');
+      throw new Error(selfScoped?'SHOPPER_SELF_DISPLAY_NAME_INVALID':'SHOPPER_ADMIN_DISPLAY_NAME_INVALID');
     pub.displayFirstName=first;pub.displayLastName=last;
   }
   const merged={...profile,...pub,...prot};
   const patch=clean({...pub,...prot,updatedAt:now()});
   if(wantsDisplayChange){
     // Server-issued separate display authority; never change HR-managed identity.
-    patch.displayNameAuthority='shopper_self_profile';
-    patch.displayNameActorUid=uid;
+    patch.displayNameAuthority=selfScoped?'shopper_self_profile':'staff_authorized_profile';
+    patch.displayNameActorUid=selfScoped?uid:actor.uid;
     patch.displayNameUpdatedAt=now();
   }
   if(selfScoped){
@@ -1183,22 +1186,33 @@ async function durableProfileUpdate({auth,db,command,shopperId,actor}){
     str(profile.credentialRuleVersion)!==CREDENTIAL_RULE_VERSION||
     str(member.credentialRuleVersion)!==CREDENTIAL_RULE_VERSION||
     str(user.email).toLowerCase()!==expectedEmail.toLowerCase();
+  if(staffDisplayCorrection&&loginChanged)
+    throw new Error('SHOPPER_ADMIN_DISPLAY_NAME_CREDENTIAL_IDENTITY_REQUIRES_SEPARATE_REPAIR');
   if(loginChanged){
     if(!auth?.updateUser)throw new Error('SHOPPER_CREDENTIAL_AUTH_UPDATE_UNAVAILABLE');
     const collision=await safeAuthByEmail(auth,expectedEmail);
     if(collision&&collision.uid!==uid)throw new Error('SHOPPER_VISIBLE_LOGIN_COLLISION');
     await auth.updateUser(uid,{email:expectedEmail,password:credential.password,disabled:false});
   }
-  patch.firstName=credential.firstName;
-  patch.lastName=credential.lastName;
-  patch.visibleLogin=credential.login;
-  patch.username=credential.login;
-  patch.user=credential.login;
-  patch.credentialRuleVersion=CREDENTIAL_RULE_VERSION;
+  if(!staffDisplayCorrection){
+    patch.firstName=credential.firstName;
+    patch.lastName=credential.lastName;
+    patch.visibleLogin=credential.login;
+    patch.username=credential.login;
+    patch.user=credential.login;
+    patch.credentialRuleVersion=CREDENTIAL_RULE_VERSION;
+  }
   await Promise.all([
     profileRef.set(patch,{merge:true}),
     users.doc(uid).set({visibleLogin:credential.login,credentialRuleVersion:CREDENTIAL_RULE_VERSION,credentialState:'enrolled',updatedAt:now()},{merge:true})
   ]);
+  if(staffDisplayCorrection){
+    const verified=await profileRef.get(),read=verified.exists?(verified.data()||{}):{};
+    if(str(read.displayNameAuthority)!=='staff_authorized_profile'||str(read.displayNameActorUid)!==str(actor.uid)||
+      str(read.displayFirstName)!==str(pub.displayFirstName)||str(read.displayLastName)!==str(pub.displayLastName)||
+      str(read.shopperId||shopperId)!==shopperId||str(read.tenantId||tenantId)!==tenantId)
+      throw new Error('SHOPPER_ADMIN_DISPLAY_NAME_READBACK_MISMATCH');
+  }
   return {uid,providerWrites:loginChanged?3:2,profileUpdated:true,credentialNormalized:loginChanged,visibleLogin:credential.login};
 }
 

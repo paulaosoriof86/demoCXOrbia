@@ -100,8 +100,8 @@
     }
     const s=identity.row,shopperKey=str(s.id||s.shopperId||identity.canonical),profileEmail=str(s.email||s.correo||s.mail),email=profileEmail||authenticatedEmail(),credential=currentSessionCredential(),rule=shopperCredentialRule(s);
     const username=rule.ok?rule.login:str(s.username||s.user||credential.username),
-      firstName=s.__selfDisplayNameVerified===true?str(s.displayFirstName):(rule.ok?rule.firstName:str(s.firstName||s.nombre)),
-      lastName=s.__selfDisplayNameVerified===true?str(s.displayLastName):(rule.ok?rule.lastName:str(s.lastName||s.apellido));
+      firstName=(s.__verifiedDisplayName===true||s.__selfDisplayNameVerified===true)?str(s.displayFirstName):(rule.ok?rule.firstName:str(s.firstName||s.nombre)),
+      lastName=(s.__verifiedDisplayName===true||s.__selfDisplayNameVerified===true)?str(s.displayLastName):(rule.ok?rule.lastName:str(s.lastName||s.apellido));
     const masked=(v)=>{const x=str(v);if(!x)return '— sin dato';if(x.length<=4)return '••••';return x.slice(0,2)+'••••'+x.slice(-2);};
     const historySource=typeof data.shopperHistoryVisits==='function'?data.shopperHistoryVisits(shopperKey,false):data.visitsForShopper(shopperKey,false).filter(v=>v&&v.__pendingPlatformAssignmentOverlay!==true);
     /* Finance-paid and HR-operational are distinct authorities. Profile's paid KPI/history

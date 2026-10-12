@@ -347,9 +347,11 @@ CX.module('shoppers', ({data,ui})=>{
     const ids={pais:'ed_pais',depto:'ed_depto',ciudad:'ed_ciudad'};
     return `
     <div class="grid g2" style="gap:12px 14px">
-      <div><label class="lbl">Primer nombre</label><input class="inp" id="ed_first" value="${s.firstName||''}"></div>
-      <div><label class="lbl">Primer apellido</label><input class="inp" id="ed_last" value="${s.lastName||''}"></div>
+      <div><label class="lbl">Nombre visible</label><input class="inp" id="ed_first" maxlength="80" value="${esc(s.__verifiedDisplayName?s.displayFirstName:(s.firstName||''))}"></div>
+      <div><label class="lbl">Apellido visible</label><input class="inp" id="ed_last" maxlength="100" value="${esc(s.__verifiedDisplayName?s.displayLastName:(s.lastName||''))}"></div>
+      <div style="grid-column:1/-1;font-size:12px;color:var(--t2)">Corregir el nombre visible no cambia la identidad de la Hoja de Ruta ni el usuario de ingreso.</div>
       ${CX.geo.fieldsHTML(ids,{pais:s.pais,depto:s.depto,ciudad:s.ciudad})}
+      ${String(s.sourceType||'')==='hr_external'?'<div style="grid-column:1/-1;font-size:12px;color:var(--t2)">El país lo determina la Hoja de Ruta externa; cualquier cambio debe realizarse en su fuente autorizada.</div>':''}
       <div><label class="lbl">WhatsApp</label><input class="inp" id="ed_wa" value="${s.whatsapp||''}"></div>
       <div><label class="lbl">Correo</label><input class="inp" id="ed_mail" value="${s.email||''}"></div>
       <div><label class="lbl">Edad</label><input class="inp" id="ed_edad" type="number" min="16" max="99" value="${s.edad||''}"></div>
@@ -470,14 +472,22 @@ CX.module('shoppers', ({data,ui})=>{
         host.innerHTML=editFields(s);
         const ids={pais:'ed_pais',depto:'ed_depto',ciudad:'ed_ciudad'};
         CX.geo.wire(host,ids,{pais:s.pais,depto:s.depto,ciudad:s.ciudad});
+        if(String(s.sourceType||'')==='hr_external'&&host.querySelector('#ed_pais'))host.querySelector('#ed_pais').disabled=true;
         host.querySelector('[data-cancel]').addEventListener('click',readView);
         host.querySelector('#ed_save').addEventListener('click',async e=>{
           const btn=e.currentTarget;
           const geo=CX.geo.read(host,ids);
+          const displayFirst=(host.querySelector('#ed_first').value||'').trim(),displayLast=(host.querySelector('#ed_last').value||'').trim();
+          const currentFirst=String(s.__verifiedDisplayName?s.displayFirstName:(s.firstName||'')).trim();
+          const currentLast=String(s.__verifiedDisplayName?s.displayLastName:(s.lastName||'')).trim();
+          if(String(s.sourceType||'')==='hr_external'&&String(geo.pais||'')!==String(s.pais||'')){
+            CX.ui.toast('El país proviene de la Hoja de Ruta y no se puede editar desde el perfil.','warn');return;
+          }
+          if((displayFirst!==currentFirst||displayLast!==currentLast)&&(!displayFirst||!displayLast)){
+            CX.ui.toast('Ingresa nombre y apellido visibles completos.','warn');return;
+          }
           const patch={
-            firstName:(host.querySelector('#ed_first').value||'').trim(),
-            lastName:(host.querySelector('#ed_last').value||'').trim(),
-            pais:geo.pais, depto:geo.depto, ciudad:geo.ciudad,
+            depto:geo.depto, ciudad:geo.ciudad,
             whatsapp:(host.querySelector('#ed_wa').value||'').trim(),
             email:(host.querySelector('#ed_mail').value||'').trim(),
             edad:(host.querySelector('#ed_edad').value||'').trim(),
@@ -491,6 +501,11 @@ CX.module('shoppers', ({data,ui})=>{
             estado:host.querySelector('#ed_estado').value,
             honorarioPref:host.querySelector('#ed_hon').value,
           };
+          if(displayFirst!==currentFirst||displayLast!==currentLast){
+            patch.displayFirstName=displayFirst;
+            patch.displayLastName=displayLast;
+          }
+          if(String(s.sourceType||'')!=='hr_external'&&String(geo.pais||'')!==String(s.pais||''))patch.pais=geo.pais;
           patch.cuentaPago=[patch.banco,patch.ctaNum,patch.ctaTitular].filter(Boolean).join(' · ');
           patch.perfilCompleto=data.shopperProfileComplete(Object.assign({},s,patch));
           patch.__commandMeta={ackAware:true,reason:'admin-shopper-profile-update'};

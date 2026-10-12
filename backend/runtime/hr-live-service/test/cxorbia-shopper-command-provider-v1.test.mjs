@@ -1082,3 +1082,59 @@ test('HF-20261012-02 newest-first profile history with stable identity tie-break
   assert.equal(visits[0].id,'gt-old','Source visit rows must not be mutated');
   assert.match(source,/paid=visits\.filter\(verifiedPaidByFinance\)/,'Paid-status authority remains verified financial source');
 });
+
+
+test('HF-20261012-04 Admin display correction has exact staff authority, provider ACK, readback, replay and HR/Auth isolation',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),id='shopper_gt_b2_admin_fixture',uid=stableShopperUid('tenant-a',id),pp=paths(id);
+  const claims={tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:id,projectIds:['project-a']};
+  auth.seed({uid,email:internalEmailTest('tenant-a','maria.prueba'),disabled:false,customClaims:claims});
+  db.seed(pp.users+'/admin-1',{active:true,tenantId:'tenant-a',role:'super',authNamespace:'staff',projectIds:['project-a']});
+  db.seed(pp.users+'/'+uid,{active:true,tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:id,projectIds:['project-a'],visibleLogin:'maria.prueba',credentialRuleVersion:CREDENTIAL_RULE_VERSION});
+  db.seed(pp.cross,{tenantId:'tenant-a',shopperId:id,sourceStableKey:id,projectIds:['project-a'],sourceType:'hr_external',providerUidFingerprint:providerUidFingerprint(uid)});
+  db.seed(pp.profile,{id,shopperId:id,tenantId:'tenant-a',projectIds:['project-a'],sourceType:'hr_external',nombre:'Maria Prueba',firstName:'Maria',lastName:'Prueba',pais:'GT',country:'GT',shopperCode:'HR-B2-ADMIN',visibleLogin:'maria.prueba',username:'maria.prueba',user:'maria.prueba',credentialRuleVersion:CREDENTIAL_RULE_VERSION,hrSourceRevision:'rev-gt-exact'});
+  const original=db.get(pp.profile),p=provider(auth,db);
+  const command={version:'cxorbia-command-adapter-v1',commandType:'shopper.update',entityType:'shopper',entityId:id,tenantId:'tenant-a',projectId:'project-a',periodId:'project-a-2026-10',expectedVersion:'source-current',idempotencyKey:'hf04-admin-display-1',authorization:{providerEnforcementRequired:true,permission:'shopper.update'},payload:{shopperId:id,patch:{displayFirstName:'María',displayLastName:'Corregida'},protectedPatch:{}}};
+  const first=await p.execute('staff-token',command);
+  assert.equal(first.ok,true);assert.equal(first.providerAck,true);assert.equal(first.committed,true);assert.equal(first.profileUpdated,true);assert.equal(first.selfScoped,false);
+  const fresh=(await db.collection('tenants').doc('tenant-a').collection('shoppers').doc(id).get()).data();
+  for(const k of ['nombre','firstName','lastName','pais','country','shopperCode','shopperId','hrSourceRevision','visibleLogin','username','user'])assert.equal(fresh[k],original[k],'HR/Auth field changed: '+k);
+  assert.equal(fresh.displayNameAuthority,'staff_authorized_profile');assert.equal(fresh.displayNameActorUid,'admin-1');
+  assert.equal(fresh.displayFirstName,'María');assert.equal(fresh.displayLastName,'Corregida');
+  assert.ok(fresh.displayNameUpdatedAt);assert.equal(auth.updated,0);assert.equal(auth.claimWrites,0);
+  assert.equal((await auth.getUser(uid)).email,internalEmailTest('tenant-a','maria.prueba'));
+  assert.deepEqual((await auth.getUser(uid)).customClaims,claims);
+  const repeat=await p.execute('staff-token',command);
+  assert.equal(repeat.ok,true);assert.equal(repeat.idempotentReplay,true);assert.equal(repeat.providerWrites,0);
+  const fs=await import('node:fs'),vm=await import('node:vm'),{fileURLToPath}=await import('node:url');
+  const ctx={console};ctx.globalThis=ctx;
+  vm.runInNewContext(fs.readFileSync(fileURLToPath(new URL('../../../../app/adapters/tya-cumulative-read-model-v2.js',import.meta.url)),'utf8'),ctx);
+  const hr={currentProjectId:'project-a',currentPeriodId:'project-a-2026-10',sourceRevision:'rev-gt-exact',projects:[{id:'project-a-2026-10',projectId:'project-a',periodKey:'2026-10'}],shoppers:[{shopperId:id,nombre:'Maria Prueba',pais:'GT',projectIds:['project-a']}],visits:[{id:'visit-hf04',visitId:'visit-hf04',hrRowId:'GT!14',shopperId:id,projectId:'project-a',periodId:'project-a-2026-10',periodKey:'2026-10',pais:'GT',estado:'agendada'}],posts:[]};
+  const composed=ctx.CX_TYA_CUMULATIVE_READ_MODEL.compose({hr,protectedPayload:{shoppers:[fresh],visits:[],posts:[]}});
+  assert.equal(composed.shoppers[0].nombre,'María Corregida');
+  assert.equal(composed.shoppers[0].__verifiedDisplayName,true);assert.equal(composed.shoppers[0].__staffDisplayNameVerified,true);
+  assert.equal(composed.shoppers[0].__selfDisplayNameVerified,false);assert.equal(composed.shoppers[0].__hrOriginalDisplayName,'Maria Prueba');
+  assert.equal(composed.diagnostics.duplicateVisitKeys,0);assert.equal(composed.diagnostics.duplicateShopperIds,0);
+  assert.equal(hr.shoppers[0].nombre,'Maria Prueba');
+  for(const [suffix,patch,reason] of [
+    ['hr',{firstName:'Cambiada',displayFirstName:'Otro',displayLastName:'Nombre'},'SHOPPER_HR_MANAGED_FIELDS_IMMUTABLE'],
+    ['bad',{displayFirstName:'<x>',displayLastName:'Nombre'},'SHOPPER_ADMIN_DISPLAY_NAME_INVALID']
+  ]){
+    const blocked=await p.execute('staff-token',{...command,idempotencyKey:'hf04-'+suffix,payload:{shopperId:id,patch,protectedPatch:{}}});
+    assert.equal(blocked.ok,false);assert.equal(blocked.providerAck,false);assert.match(blocked.code,new RegExp(reason));
+    assert.equal(db.get(pp.profile).displayFirstName,'María');
+  }
+  const wrongPermission=await p.execute('staff-token',{...command,idempotencyKey:'hf04-no-staff-perm',authorization:{providerEnforcementRequired:true,permission:'shopper.self.update'}});
+  assert.equal(wrongPermission.ok,false);assert.equal(wrongPermission.providerWrites,0);
+});
+
+test('HF-20261012-04 Admin UI and Shopper portal consume signed display authority without HR/name/login patch',async()=>{
+  const {readFileSync}=await import('node:fs');
+  const admin=readFileSync('app/modules/shoppers.js','utf8');
+  const portal=readFileSync('app/adapters/tya-canonical-shopper-portal-v2.js','utf8');
+  assert.match(admin,/patch\.displayFirstName=displayFirst/);
+  assert.match(admin,/patch\.displayLastName=displayLast/);
+  assert.match(admin,/String\(s\.sourceType\|\|''\)!=='hr_external'/);
+  assert.match(admin,/if\(String\(s\.sourceType\|\|''\)==='hr_external'&&host\.querySelector\('#ed_pais'\)\)/);
+  assert.match(portal,/s\.__verifiedDisplayName===true/);
+  assert.match(portal,/s\.__selfDisplayNameVerified===true/);
+});
