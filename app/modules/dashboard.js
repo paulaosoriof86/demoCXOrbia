@@ -314,7 +314,13 @@ CX.module('dashboard', ({data,ui})=>{
     board.querySelectorAll('.bdSel').forEach(x=>x.addEventListener('change',refreshBoardSelection));
     board.querySelector('#bdAll')?.addEventListener('change',e=>{board.querySelectorAll('.bdSel').forEach(x=>{const tr=x.closest('tr');x.checked=e.target.checked&&(!tr||tr.offsetParent!==null);});refreshBoardSelection();});
     const requireSelected=()=>{const ids=boardSelected();if(!ids.length)ui.toast('Selecciona al menos una visita','warn');return ids;};
-    const handoff=(kind,ids)=>{if(!ids.length)return;window.CX_PENDING_ADMIN_OPERATION_ACTION={kind,visitIds:ids,requestedAt:Date.now(),source:'dashboard-operation'};CX.router.nav('postulaciones');};
+    const handoff=(kind,ids)=>{
+      if(!ids.length)return;
+      const owner=CX.adminPostulacionesActions;
+      if(!owner){ui.toast('Acción no disponible: falta el propietario de Postulaciones.','warn',4200);return;}
+      if(kind==='agenda')return owner.openAgenda({data,ui,visitIds:ids});
+      return owner.openRequest({data,ui,visitIds:ids,defaultType:kind==='schedule'?'agendar':kind==='reschedule'?'reprog':'confirmar'});
+    };
     board.querySelector('#bdBulkRequest')?.addEventListener('click',()=>handoff('request',requireSelected()));
     board.querySelector('#bdBulkAgenda')?.addEventListener('click',()=>handoff('agenda',requireSelected()));
     board.querySelector('#bdBulkWa')?.addEventListener('click',()=>{const ids=requireSelected();if(!ids.length)return;let opened=0;ids.forEach(id=>{const v=all.find(x=>String(x.id)===String(id));const wa=v&&(v.shopperWa||v.whatsapp||'');if(!v?.shopper||!wa)return;const msg=encodeURIComponent('Hola '+v.shopper+', sobre tu visita en '+v.sucursal+'.');window.open('https://wa.me/'+String(wa).replace(/[^0-9]/g,'')+'?text='+msg,'_blank');opened++;});ui.toast(opened?'WhatsApp preparado para '+opened+' shopper(s)':'Las visitas seleccionadas no tienen WhatsApp disponible',opened?'ok':'warn');});

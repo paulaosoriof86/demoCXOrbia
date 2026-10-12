@@ -1,4 +1,103 @@
 /* CXOrbia · Postulaciones (admin) — full fidelity */
+/* B7 — Modal propietario de Postulaciones, reutilizado desde Dashboard sin navegación. */
+CX.adminPostulacionesActions=CX.adminPostulacionesActions||{};
+CX.adminPostulacionesActions.openRequest=({data,ui,visitIds=[],defaultType='confirmar'})=>{
+  const ids=new Set(visitIds.map(String).filter(Boolean));
+  const posts=(data._posts||[]).filter(x=>data.inScope(x.pais)&&x?._archived!==true&&x?.active!==false&&x?.postulationLifecycle!=='transitioned_to_assignment'&&(!data.currentPeriodId||String(data.recordPeriodId?.(x)||x.periodId||'')===String(data.currentPeriodId)));
+  const targetMap=new Map();
+  posts.filter(x=>x.shopperId&&x.visitaId).forEach(x=>{
+    const key=String(x.visitaId)+'::'+String(x.shopperId);
+    targetMap.set(key,Object.assign({},x,{__requestId:'post:'+String(x.id)}));
+  });
+  (data.visitas?.()||[]).filter(v=>v.shopperId&&v.cancelRequest?.status!=='approved').forEach(v=>{
+    const id=String(v.id||v.visitId),key=id+'::'+String(v.shopperId);
+    if(!targetMap.has(key))targetMap.set(key,{__requestId:'visit:'+id,visitaId:id,visitId:id,shopperId:String(v.shopperId),shopper:v.shopper||'',sucursal:v.sucursal||'',sourceType:'operational_assignment'});
+  });
+  const targets=[...targetMap.values()].filter(x=>!ids.size||ids.has(String(x.visitaId||x.visitId)));
+  if(!targets.length){ui.toast('No hay shoppers con identidad y visita exactas para las seleccionadas.','warn',4200);return false;}
+  const displayShopper=x=>{const s=data.getShopper?.(x.shopperId);const raw=String(x.shopper||'').trim();return s?.nombre||(raw&&!/^shopper_/i.test(raw)?raw:'Identidad pendiente de resolver');};
+      ui.modal('📤 Pedir acción al shopper',`
+        <p style="font-size:12.5px;color:var(--t2);margin-bottom:14px">El equipo puede <b>solicitar</b> al shopper (no solo gestionar lo que él pide). La solicitud se registra en la experiencia interna del shopper. WhatsApp solo se considera enviado cuando exista ACK del proveedor de mensajería.</p>
+        <label class="lbl">Shopper</label>
+        <select class="sel" id="rqSh" style="margin-bottom:12px">${targets.slice(0,100).map(x=>`<option value="${x.__requestId}">${displayShopper(x)} · ${x.sucursal} · ${x.sourceType==='operational_assignment'?'asignación vigente':'postulación'}</option>`).join('')}</select>
+        <label class="lbl">Solicitud</label>
+        <select class="sel" id="rqTipo" style="margin-bottom:12px">
+          <option value="confirmar">Confirmar fecha propuesta</option>
+          <option value="cambio">Pedir cambio de fecha</option>
+          <option value="reprog">Solicitar reprogramación</option>
+          <option value="agendar">Recordar que agende</option>
+          <option value="cuestionario">Solicitar cuestionario</option>
+        </select>
+        <label class="lbl">Nota (opcional)</label>
+        <textarea class="inp" id="rqNota" rows="2" placeholder="Detalle para el shopper…" style="margin-bottom:14px"></textarea>
+        <div class="flex" style="justify-content:flex-end;gap:8px"><button class="btn btn-ghost btn-sm" data-x4>Cancelar</button><button class="btn btn-pr btn-sm" id="rqSend">📲 Enviar solicitud</button></div>
+      `,{onMount:(ov,close)=>{
+        ov.querySelector('[data-x4]').addEventListener('click',close);
+        if(['confirmar','cambio','reprog','agendar','cuestionario'].includes(defaultType))ov.querySelector('#rqTipo').value=defaultType;
+        ov.querySelector('#rqSend').addEventListener('click',async()=>{
+          const tipo=ov.querySelector('#rqTipo').value,post=targets.find(x=>String(x.__requestId)===String(ov.querySelector('#rqSh').value));
+          if(!post?.shopperId||!post?.visitaId||typeof CX.notif?.pushDurable!=='function'){ui.toast('Solicitud no enviada: falta identidad exacta o persistencia durable.','warn',4200);return;}
+          const map={confirmar:['📅','El equipo pide confirmar fecha','confirmar_fecha'],cambio:['📅','El equipo pide cambio de fecha','confirmar_fecha'],reprog:['🔄','El equipo solicita reprogramación',''],agendar:['📅','Recordatorio: agenda tu visita',''],cuestionario:['📝','El equipo solicita completar el cuestionario','']};
+          const m=map[tipo],btn=ov.querySelector('#rqSend');btn.disabled=true;btn.textContent='Confirmando…';
+          try{
+            const ack=await CX.notif.pushDurable({to:'shopper',shopperId:String(post.shopperId),targetShopperIds:[String(post.shopperId)],tipo,icon:m[0],tono:'a',titulo:m[1],txt:(ov.querySelector('#rqNota').value||'').trim()||((post.sucursal||'Visita')+' · responde desde Mis Visitas'),nav:'misvisitas',accion:m[2]||undefined,entityType:'visit',entityId:String(post.visitaId),eventKey:'admin_request_'+tipo,operational:true,idempotencyKey:['admin-request',data.currentProjectId,data.currentPeriodId,post.visitaId,post.shopperId,tipo].join(':')});
+            if(!(ack?.ok===true&&ack?.providerAck===true))throw new Error('REQUEST_ACK_REQUIRED');
+            close();ui.toast('Solicitud guardada y dirigida a '+displayShopper(post),'ok',3500);
+          }catch(_){btn.disabled=false;btn.textContent='📲 Enviar solicitud';ui.toast('Solicitud no enviada: no hubo confirmación durable.','warn',4200);}
+        });
+      }});
+  return true;
+};
+CX.adminPostulacionesActions.openAgenda=({data,ui,visitIds=[]})=>{
+  const ids=new Set(visitIds.map(String).filter(Boolean));
+  const visits=(data.visitas?.()||[]).filter(v=>v.shopperId&&(!ids.size||ids.has(String(v.id||v.visitId))));
+  const requestByVisit=visits.filter(v=>v.rescheduleRequest?.status==='pending_review');
+  const agendadas=visits.filter(v=>{const f=data.visitFacets?.(v);return f?f.scheduled===true&&f.realized!==true:!!(v.agendada&&!v.realizada);});
+  const displayShopper=v=>data.getShopper?.(v.shopperId)?.nombre||v.shopper||'Shopper';
+  const pendingRows=requestByVisit.map(v=>`<div class="between" style="gap:8px;padding:9px 11px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px">
+    <div><b>${displayShopper(v)}</b> · ${v.sucursal||''}<div class="muted" style="font-size:11px">Fecha solicitada: ${v.rescheduleRequest.newDate||'—'} · ${v.pais||''}</div></div>
+    <div class="flex wrap" style="gap:6px"><button class="btn btn-soft btn-sm" data-date-decision="approved" data-vid="${v.id}">Autorizar</button><button class="btn btn-ghost btn-sm" data-date-decision="rejected" data-vid="${v.id}">Conservar anterior</button></div>
+  </div>`).join('');
+      const rows=agendadas.map(v=>`<div class="between" style="padding:9px 11px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px">
+        <div><b style="font-size:13px">${v.shopper}</b> · ${v.sucursal}<div style="font-size:11px;color:var(--t3)">📅 ${v.agendada} · ${v.franjaCode} · autorizada por Coordinación</div></div>
+        <button class="btn btn-ghost btn-sm aprAdjust" data-vid="${v.id}" data-sh="${v.shopper}">🗓️ Solicitar ajuste</button></div>`).join('');
+      ui.modal('Gestión de agendamientos',`
+        <p style="font-size:12.5px;color:var(--t2);margin-bottom:14px">Separa las fechas enviadas por shoppers de las referencias HR y de las propuestas al postularse.</p>
+        <div style="background:var(--green-bg);border-radius:10px;padding:12px 14px;margin-bottom:14px">
+          <div style="font-size:12px;font-weight:700;color:var(--green)">⌛ Fechas pendientes de autorización <span class="bdg bdg-n">${requestByVisit.length}</span></div>
+          <div style="font-size:12px;color:var(--t3);margin-top:4px">${requestByVisit.length?'Hay '+requestByVisit.length+' solicitud(es) de reprogramación con estado pendiente de revisión. Revísalas en la sección de solicitudes, sin mezclar fechas HR ni propuestas iniciales.':'No hay fechas nuevas pendientes de autorización.'}</div></div>
+        <div style="font-size:12px;font-weight:700;color:var(--t1);margin-bottom:9px">✅ Agendas autorizadas desde la plataforma <span class="bdg bdg-g">${agendadas.length}</span></div>
+        ${pendingRows}
+        ${rows||ui.empty('🗓️','Sin agendas')}
+        <div style="margin-top:8px">${ui.aiBox('Estas fechas provienen de HR o de una postulación aprobada; se reflejan para coordinación y shopper sin contarse como pendientes.','Referencias')}</div>`,
+      {onMount:(ov,close)=>{ov.querySelectorAll('.aprAdjust').forEach(b=>b.addEventListener('click',async()=>{
+        const visit=agendadas.find(v=>String(v.id||v.visitId)===String(b.dataset.vid||''));
+        if(!visit?.shopperId||!visit?.id||typeof CX.notif?.pushDurable!=='function'){ui.toast('No se solicitó el ajuste: falta identidad exacta o notificación durable.','warn',4200);return;}
+        const before=b.textContent;b.disabled=true;b.textContent='Confirmando…';
+        try{
+          const ack=await CX.notif.pushDurable({to:'shopper',shopperId:String(visit.shopperId),targetShopperIds:[String(visit.shopperId)],tipo:'ajuste',icon:'🗓️',tono:'a',titulo:'El equipo solicita ajustar tu agenda',txt:(visit.sucursal||'Visita')+' · revisa la fecha de tu visita en Mis Visitas',nav:'misvisitas',accion:'confirmar_fecha',entityType:'visit',entityId:String(visit.id),eventKey:'admin_agenda_adjust',operational:true,idempotencyKey:['admin-agenda-adjust',data.currentProjectId,data.currentPeriodId,visit.id,visit.shopperId,visit.agendada||''].join(':')});
+          if(!(ack?.ok===true&&ack?.providerAck===true))throw new Error('AGENDA_ADJUST_ACK_REQUIRED');
+          close();ui.toast('Solicitud de ajuste registrada con confirmación remota para '+displayShopper(visit),'ok',3500);
+        }catch(_){b.disabled=false;b.textContent=before;ui.toast('Ajuste no confirmado: no se notificó como enviado.','warn',4200);}
+      }));
+      ov.querySelectorAll('[data-date-decision]').forEach(b=>b.addEventListener('click',async()=>{
+        const visit=requestByVisit.find(v=>String(v.id||v.visitId)===String(b.dataset.vid||''));
+        const decision=String(b.dataset.dateDecision||'');
+        if(!visit||!['approved','rejected'].includes(decision))return;
+        if(!CX.permissions?.gate?.('visit.reassign',{projectId:data.currentProjectId,pais:visit.pais},ui))return;
+        const prior=b.textContent;b.disabled=true;b.textContent='Confirmando…';
+        try{
+          const r=await data.requestVisitReschedule(visit.id,decision==='approved'?visit.rescheduleRequest.newDate:null,{ackAware:true,decision,reason:'admin_agenda_decision_dashboard'});
+          if(!(r?.ok===true&&r?.status==='committed'&&r?.providerAck===true&&r?.successUiAllowed===true))throw new Error('SCHEDULE_DECISION_ACK_REQUIRED');
+          try{await CX.backend?.refresh?.();await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('admin_schedule_decision_committed');}catch(_){}
+          close();ui.toast(decision==='approved'?'Fecha autorizada con confirmación remota':'Fecha anterior conservada con confirmación remota','ok',3600);
+        }catch(_){b.disabled=false;b.textContent=prior;ui.toast('Decisión no confirmada por el proveedor.','warn',4200);}
+      }));
+      }});
+
+  return true;
+};
+
 CX.module('postulaciones', ({data,ui})=>{
   const p=data.period(), posts=data._posts.filter(x=>data.inScope(x.pais));
   const projName=(id)=>{const pg=data.programs?.().find(x=>x.key===id);if(pg)return pg.name;const pr=data.projects.find(x=>x.id===id);return pr?(data.programBase?data.programBase(pr):pr.name):(id||'');};
@@ -473,71 +572,8 @@ CX.module('postulaciones', ({data,ui})=>{
       }});
     });
     const reqBtn=document.getElementById('reqShopper');
-    if(reqBtn)reqBtn.addEventListener('click',()=>{
-      ui.modal('📤 Pedir acción al shopper',`
-        <p style="font-size:12.5px;color:var(--t2);margin-bottom:14px">El equipo puede <b>solicitar</b> al shopper (no solo gestionar lo que él pide). La solicitud se registra en la experiencia interna del shopper. WhatsApp solo se considera enviado cuando exista ACK del proveedor de mensajería.</p>
-        <label class="lbl">Shopper</label>
-        <select class="sel" id="rqSh" style="margin-bottom:12px">${requestTargets.slice(0,100).map(x=>`<option value="${x.__requestId}">${displayShopper(x)} · ${x.sucursal} · ${x.sourceType==='operational_assignment'?'asignación vigente':'postulación'}</option>`).join('')}</select>
-        <label class="lbl">Solicitud</label>
-        <select class="sel" id="rqTipo" style="margin-bottom:12px">
-          <option value="confirmar">Confirmar fecha propuesta</option>
-          <option value="cambio">Pedir cambio de fecha</option>
-          <option value="reprog">Solicitar reprogramación</option>
-          <option value="agendar">Recordar que agende</option>
-          <option value="cuestionario">Solicitar cuestionario</option>
-        </select>
-        <label class="lbl">Nota (opcional)</label>
-        <textarea class="inp" id="rqNota" rows="2" placeholder="Detalle para el shopper…" style="margin-bottom:14px"></textarea>
-        <div class="flex" style="justify-content:flex-end;gap:8px"><button class="btn btn-ghost btn-sm" data-x4>Cancelar</button><button class="btn btn-pr btn-sm" id="rqSend">📲 Enviar solicitud</button></div>
-      `,{onMount:(ov,close)=>{
-        ov.querySelector('[data-x4]').addEventListener('click',close);
-        ov.querySelector('#rqSend').addEventListener('click',async()=>{
-          const tipo=ov.querySelector('#rqTipo').value,post=requestTargets.find(x=>String(x.__requestId)===String(ov.querySelector('#rqSh').value));
-          if(!post?.shopperId||!post?.visitaId||typeof CX.notif?.pushDurable!=='function'){ui.toast('Solicitud no enviada: falta identidad exacta o persistencia durable.','warn',4200);return;}
-          const map={confirmar:['📅','El equipo pide confirmar fecha','confirmar_fecha'],cambio:['📅','El equipo pide cambio de fecha','confirmar_fecha'],reprog:['🔄','El equipo solicita reprogramación',''],agendar:['📅','Recordatorio: agenda tu visita',''],cuestionario:['📝','El equipo solicita completar el cuestionario','']};
-          const m=map[tipo],btn=ov.querySelector('#rqSend');btn.disabled=true;btn.textContent='Confirmando…';
-          try{
-            const ack=await CX.notif.pushDurable({to:'shopper',shopperId:String(post.shopperId),targetShopperIds:[String(post.shopperId)],tipo,icon:m[0],tono:'a',titulo:m[1],txt:(ov.querySelector('#rqNota').value||'').trim()||((post.sucursal||'Visita')+' · responde desde Mis Visitas'),nav:'misvisitas',accion:m[2]||undefined,entityType:'visit',entityId:String(post.visitaId),eventKey:'admin_request_'+tipo,operational:true,idempotencyKey:['admin-request',data.currentProjectId,data.currentPeriodId,post.visitaId,post.shopperId,tipo].join(':')});
-            if(!(ack?.ok===true&&ack?.providerAck===true))throw new Error('REQUEST_ACK_REQUIRED');
-            close();ui.toast('Solicitud guardada y dirigida a '+displayShopper(post),'ok',3500);
-          }catch(_){btn.disabled=false;btn.textContent='📲 Enviar solicitud';ui.toast('Solicitud no enviada: no hubo confirmación durable.','warn',4200);}
-        });
-      }});
-    });
-    document.getElementById('openAgenda').addEventListener('click',()=>{
-      const rows=agendadas.map(v=>`<div class="between" style="padding:9px 11px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px">
-        <div><b style="font-size:13px">${v.shopper}</b> · ${v.sucursal}<div style="font-size:11px;color:var(--t3)">📅 ${v.agendada} · ${v.franjaCode} · autorizada por Coordinación</div></div>
-        <button class="btn btn-ghost btn-sm aprAdjust" data-vid="${v.id}" data-sh="${v.shopper}">🗓️ Solicitar ajuste</button></div>`).join('');
-      ui.modal('Gestión de agendamientos',`
-        <p style="font-size:12.5px;color:var(--t2);margin-bottom:14px">Separa las fechas enviadas por shoppers de las referencias HR y de las propuestas al postularse.</p>
-        <div style="background:var(--green-bg);border-radius:10px;padding:12px 14px;margin-bottom:14px">
-          <div style="font-size:12px;font-weight:700;color:var(--green)">⌛ Fechas pendientes de autorización <span class="bdg bdg-n">${requestByVisit.length}</span></div>
-          <div style="font-size:12px;color:var(--t3);margin-top:4px">${requestByVisit.length?'Hay '+requestByVisit.length+' solicitud(es) de reprogramación con estado pendiente de revisión. Revísalas en la sección de solicitudes, sin mezclar fechas HR ni propuestas iniciales.':'No hay fechas nuevas pendientes de autorización.'}</div></div>
-        <div style="font-size:12px;font-weight:700;color:var(--t1);margin-bottom:9px">✅ Agendas autorizadas desde la plataforma <span class="bdg bdg-g">${agendadas.length}</span></div>
-        ${rows||ui.empty('🗓️','Sin agendas')}
-        <div style="margin-top:8px">${ui.aiBox('Estas fechas provienen de HR o de una postulación aprobada; se reflejan para coordinación y shopper sin contarse como pendientes.','Referencias')}</div>`,
-      {onMount:(ov,close)=>ov.querySelectorAll('.aprAdjust').forEach(b=>b.addEventListener('click',async()=>{
-        const visit=agendadas.find(v=>String(v.id||v.visitId)===String(b.dataset.vid||''));
-        if(!visit?.shopperId||!visit?.id||typeof CX.notif?.pushDurable!=='function'){ui.toast('No se solicitó el ajuste: falta identidad exacta o notificación durable.','warn',4200);return;}
-        const before=b.textContent;b.disabled=true;b.textContent='Confirmando…';
-        try{
-          const ack=await CX.notif.pushDurable({to:'shopper',shopperId:String(visit.shopperId),targetShopperIds:[String(visit.shopperId)],tipo:'ajuste',icon:'🗓️',tono:'a',titulo:'El equipo solicita ajustar tu agenda',txt:(visit.sucursal||'Visita')+' · revisa la fecha de tu visita en Mis Visitas',nav:'misvisitas',accion:'confirmar_fecha',entityType:'visit',entityId:String(visit.id),eventKey:'admin_agenda_adjust',operational:true,idempotencyKey:['admin-agenda-adjust',data.currentProjectId,data.currentPeriodId,visit.id,visit.shopperId,visit.agendada||''].join(':')});
-          if(!(ack?.ok===true&&ack?.providerAck===true))throw new Error('AGENDA_ADJUST_ACK_REQUIRED');
-          close();ui.toast('Solicitud de ajuste registrada con confirmación remota para '+displayShopper(visit),'ok',3500);
-        }catch(_){b.disabled=false;b.textContent=before;ui.toast('Ajuste no confirmado: no se notificó como enviado.','warn',4200);}
-      }))});
-    });
-    const pendingHandoff=window.CX_PENDING_ADMIN_OPERATION_ACTION;
-    if(pendingHandoff&&Date.now()-Number(pendingHandoff.requestedAt||0)<20000){
-      delete window.CX_PENDING_ADMIN_OPERATION_ACTION;
-      const ids=Array.isArray(pendingHandoff.visitIds)?pendingHandoff.visitIds.map(String):[];
-      const kind=String(pendingHandoff.kind||'');
-      if(kind==='agenda'){document.getElementById('openAgenda')?.click();}
-      else if(['request','schedule','reschedule'].includes(kind)){
-        reqBtn?.click();
-        setTimeout(()=>{const ovs=[...document.querySelectorAll('.cx-ov')].filter(el=>{const st=getComputedStyle(el),r=el.getBoundingClientRect();return st.display!=='none'&&st.visibility!=='hidden'&&r.width>0&&r.height>0;});const ov=ovs.at(-1);if(!ov)return;const target=requestTargets.find(x=>ids.includes(String(x.visitaId||x.visitId||'')));if(target){const sel=ov.querySelector('#rqSh');if(sel){sel.value=target.__requestId;sel.dispatchEvent(new Event('change',{bubbles:true}));}}const type=ov.querySelector('#rqTipo');if(type){if(kind==='schedule')type.value='agendar';if(kind==='reschedule')type.value='reprog';}},0);
-      }
-    }
+    if(reqBtn)reqBtn.addEventListener('click',()=>CX.adminPostulacionesActions.openRequest({data,ui}));
+    document.getElementById('openAgenda')?.addEventListener('click',()=>CX.adminPostulacionesActions.openAgenda({data,ui}));
   },0);
   return html;
 });

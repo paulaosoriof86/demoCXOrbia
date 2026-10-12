@@ -72,3 +72,57 @@ test('I3 B7: removal of HR future fields invalidates stale window, never fabrica
   assert.equal(rejected.code,'OPS_RESERVATION_FUTURE_WINDOW_REQUIRED');
   assert.equal(rejected.providerAck,false);assert.equal(rejected.providerWrites,0);
 });
+test('I3 B7 dashboard and postulations share the same scoped direct request modal',async()=>{
+  const fs=await import('node:fs'),vm=await import('node:vm');
+  const cx={module(){},notif:{pushDurable:async payload=>{sent.push(payload);return {ok:true,providerAck:true};}}};
+  const sent=[],modalCalls=[],notices=[],events={};
+  const win={CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY:async()=>({ok:true})};
+  vm.runInNewContext(fs.readFileSync('app/modules/postulaciones.js','utf8'),{CX:cx,window:win,setTimeout:()=>{}},{timeout:5000});
+  const visits=[
+    {id:'visit-a',shopperId:'shopper-a',shopper:'Alice',sucursal:'Sucursal A',pais:'GT',estado:'asignada'},
+    {id:'visit-b',shopperId:'shopper-b',shopper:'Bob',sucursal:'Sucursal B',pais:'HN',estado:'asignada'}
+  ];
+  const data={_posts:[],visitas:()=>visits,inScope:()=>true,currentProjectId:'project-a',currentPeriodId:'period-a',getShopper:()=>null};
+  const ui={modal:(name,body,opts)=>modalCalls.push({name,body,opts}),toast:(...a)=>notices.push(a),empty:()=>'',aiBox:()=>''};
+  const owner=cx.adminPostulacionesActions;
+  assert.equal(typeof owner.openRequest,'function');
+  assert.equal(typeof owner.openAgenda,'function');
+  assert.equal(owner.openRequest({data,ui,visitIds:['visit-a'],defaultType:'agendar'}),true);
+  assert.match(modalCalls[0].body,/Sucursal A/);
+  assert.doesNotMatch(modalCalls[0].body,/Sucursal B/);
+  const fake=(value='')=>({value,addEventListener:(name,cb)=>{events[name]=cb;},disabled:false,textContent:''});
+  const items={'#rqTipo':fake(), '#rqSh':fake('visit:visit-a'),'#rqNota':fake(''), '#rqSend':fake()};
+  const ov={querySelector:key=>items[key]||fake()};
+  modalCalls[0].opts.onMount(ov,()=>{});
+  assert.equal(items['#rqTipo'].value,'agendar');
+  await events.click();
+  assert.equal(sent.length,1);
+  assert.equal(sent[0].shopperId,'shopper-a');
+  assert.equal(sent[0].entityId,'visit-a');
+  assert.equal(sent[0].eventKey,'admin_request_agendar');
+  const dash=fs.readFileSync('app/modules/dashboard.js','utf8');
+  assert.match(dash,/owner\.openRequest\(\{data,ui,visitIds:ids/);
+  assert.match(dash,/owner\.openAgenda\(\{data,ui,visitIds:ids/);
+  assert.doesNotMatch(dash,/CX_PENDING_ADMIN_OPERATION_ACTION/);
+});
+
+test('I3 B7 shared agenda modal reviews exact durable pending date with provider ACK',async()=>{
+  const fs=await import('node:fs'),vm=await import('node:vm');
+  const actions=[],toast=[],shown=[];
+  const cx={module(){},permissions:{gate:()=>true},backend:{refresh:async()=>{}},notif:{pushDurable:async()=>({ok:true,providerAck:true})}};
+  vm.runInNewContext(fs.readFileSync('app/modules/postulaciones.js','utf8'),{CX:cx,window:{},setTimeout:()=>{}},{timeout:5000});
+  const records=[
+    {id:'visit-c',shopperId:'shopper-c',shopper:'Carlos',sucursal:'Centro C',pais:'GT',agendada:'2026-10-17',rescheduleRequest:{status:'pending_review',newDate:'2026-10-18'}},
+    {id:'visit-d',shopperId:'shopper-d',shopper:'Diana',sucursal:'Centro D',pais:'HN',agendada:'2026-10-17',rescheduleRequest:{status:'pending_review',newDate:'2026-10-19'}}
+  ];
+  const data={visitas:()=>records,visitFacets:()=>({scheduled:true,realized:false}),currentProjectId:'project-a',currentPeriodId:'period-a',requestVisitReschedule:async(...args)=>{actions.push(args);return {ok:true,status:'committed',providerAck:true,successUiAllowed:true};}};
+  const ui={modal:(...args)=>shown.push(args),toast:(...args)=>toast.push(args),empty:()=>'',aiBox:()=>''};
+  const ok=cx.adminPostulacionesActions.openAgenda({data,ui,visitIds:['visit-c']});
+  assert.equal(ok,true);assert.match(shown[0][1],/Centro C/);assert.doesNotMatch(shown[0][1],/Centro D/);
+  assert.match(shown[0][1],/Fechas pendientes de autorización/);assert.match(shown[0][1],/data-date-decision="approved"/);
+  const approval={dataset:{vid:'visit-c',dateDecision:'approved'},textContent:'Autorizar',disabled:false,addEventListener:(_event,cb)=>approval.click=cb};
+  shown[0][2].onMount({querySelectorAll:selector=>selector==='[data-date-decision]'?[approval]:[]},()=>{});
+  await approval.click();assert.equal(actions.length,1);
+  assert.equal(actions[0][0],'visit-c');assert.equal(actions[0][1],'2026-10-18');assert.equal(actions[0][2].ackAware,true);
+  assert.equal(actions[0][2].decision,'approved');
+});
