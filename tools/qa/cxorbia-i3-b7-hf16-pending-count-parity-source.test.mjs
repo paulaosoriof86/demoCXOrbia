@@ -39,4 +39,7 @@ test('HF17 retains cumulative stage and active-agenda distinction until exact HR
   assert.match(dashboardSource,/scheduled=n\(x=>f\(x\)\.scheduled&&!f\(x\)\.cancelled\)/);
   assert.match(src,/const agendadas=operationalAssignments\.filter\(v=>\{const f=data\.visitFacets/);
   assert.match(src,/f\?f\.scheduled===true&&f\.realized!==true/);
+  assert.match(dashboardSource,/\$\{cell\('Con fecha',f\.agend,'amber','agend'\)\}/);
+  assert.match(src,/ui\.kpi\('Agendamientos activos',agendadas\.length,'n'\)/);
+  assert.match(src,/Agendamientos pendientes de realizar/);
 });

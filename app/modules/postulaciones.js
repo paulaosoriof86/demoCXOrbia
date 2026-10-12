@@ -323,7 +323,7 @@ CX.module('postulaciones', ({data,ui})=>{
 
   const html=`
   <div class="between" style="margin-bottom:6px">
-    <div>${ui.ph('Gestión de Postulaciones y Asignaciones', `${c('pendiente')} postulaciones pendientes · ${operationalAssignments.length} asignaciones vigentes · ${reprog.length} reprogramación(es) · ${cancellationRequests.length} cancelación(es) pendientes · ${agendadas.length} agendamientos`)}</div>
+    <div>${ui.ph('Gestión de Postulaciones y Asignaciones', `${c('pendiente')} postulaciones pendientes · ${operationalAssignments.length} asignaciones vigentes · ${reprog.length} reprogramación(es) · ${cancellationRequests.length} cancelación(es) pendientes · ${agendadas.length} agendamientos pendientes de realizar`)}</div>
     <div class="flex"><span class="bdg bdg-b">Gestión activa</span><span class="bdg bdg-b">${p.name}</span></div>
   </div>
 
@@ -349,7 +349,7 @@ CX.module('postulaciones', ({data,ui})=>{
     <div data-k="reprog" style="cursor:pointer">${ui.kpi('Reprogramaciones',reprog.length,'r')}</div>
     <div data-k="aprob" style="cursor:pointer">${ui.kpi('Aprobadas',c('aprobada'),'g')}</div>
     <div data-k="todas" style="cursor:pointer">${ui.kpi('Todas',activePosts.length,'b')}</div>
-    <div data-k="agenda" style="cursor:pointer">${ui.kpi('Agendamientos',agendadas.length,'n')}</div>
+    <div data-k="agenda" style="cursor:pointer">${ui.kpi('Agendamientos activos',agendadas.length,'n')}</div>
   </div>
 
   ${reprog.length?`<div class="card card-p" style="border-left:3px solid var(--amber);margin-bottom:16px">
@@ -418,7 +418,7 @@ CX.module('postulaciones', ({data,ui})=>{
       reprog:['Reprogramaciones',reprog],
       aprob:['Postulaciones aprobadas',activePosts.filter(x=>x.estado==='aprobada')],
       todas:['Todas las postulaciones',activePosts],
-      agenda:['Agendamientos autorizados',agendadas.map(v=>({shopper:v.shopper,shopperCode:v.shopperCode||'',sucursal:v.sucursal,ciudad:v.ciudad,pais:v.pais,estado:v.estado,currency:v.currency,honorario:v.honorario}))],
+      agenda:['Agendamientos pendientes de realizar',agendadas.map(v=>({shopper:v.shopper,shopperCode:v.shopperCode||'',sucursal:v.sucursal,ciudad:v.ciudad,pais:v.pais,estado:v.estado,currency:v.currency,honorario:v.honorario}))],
     };
     document.querySelectorAll('#poKpis [data-k]').forEach(el=>el.addEventListener('click',()=>{const d=poKp[el.dataset.k];poList(d[0],d[1]);}));
     const gestor=()=>(CX.session.user&&CX.session.user.name)||'Equipo';

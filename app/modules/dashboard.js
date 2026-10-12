@@ -138,7 +138,7 @@ CX.module('dashboard', ({data,ui})=>{
     return `<div style="margin-bottom:12px">
       <div style="font-size:11px;font-weight:700;color:var(--t2);margin-bottom:8px">${CX.paisLabel(c)} (${f.total})</div>
       <div class="flex wrap" style="gap:8px">
-        ${cell('Total',[f.total,100],'brand','total')}${cell('Asign.',f.asign,'brand','asign')}${cell('Agend.',f.agend,'amber','agend')}
+        ${cell('Total',[f.total,100],'brand','total')}${cell('Asign.',f.asign,'brand','asign')}${cell('Con fecha',f.agend,'amber','agend')}
         ${cell('Sin agend.',f.sinAgend,'amber','sinagend')}${cell('Sin asign.',f.sinAsign,'red','sinasign')}${cell('Real.',f.real,'green','real')}
         ${cell('Cuest.',f.cuest,'purple','cuest')}${cell('Submit.',f.submit,'teal','submit')}${cell('Liq.',f.liq,'green','liq')}
       </div></div>`;
