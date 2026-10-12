@@ -5981,7 +5981,7 @@ jobs:
          test "$(jq -r '[.assertions[]|select(.name=="vrm168_existing_hr_identity_preserves_conflict_review")][0].ok' "$FOCAL_OUT/vrm258-canonical-read-model.json")" = "true"
   vrm154-156-dev-materialization:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM154_156_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_V190_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM216_SHARED_IDEMPOTENCY_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM217_219_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM221_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM227_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM249_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM174_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM256_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM257_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM258_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM259_DEV_MATERIALIZATION_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM154_156_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_V190_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM216_SHARED_IDEMPOTENCY_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM217_219_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM221_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM227_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM249_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM174_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM256_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM257_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM258_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM259_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_B7_CONTEXT_DEV_MATERIALIZATION_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
@@ -7067,7 +7067,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Preflight exact Run1079 artifact and bounded repair owner
+      - name: Run1079 preflight
         run: |
          set -Eeuo pipefail
          mkdir -p "$VRM219_OUT" "$VRM219_INPUT"
@@ -7081,7 +7081,7 @@ jobs:
          test "$(jq -r '.currentMaterialization.artifactId' "$CANDIDATE_DESCRIPTOR")" = "11297569172"
          node --check tools/qa/cxorbia-i3-vrm219-exact-alias-remap.mjs
          node --check tools/qa/cxorbia-i3-vrm217-219-population-root-diagnostic.mjs
-      - name: Download exact trusted Run1083 population mapping
+      - name: Run1083 mapping
         uses: actions/download-artifact@v4
         with:
           name: cxorbia-vrm217-219-population-root-37190025557
@@ -7115,7 +7115,7 @@ jobs:
       - uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT }}
-      - name: Verify unchanged DEV materialization and HR
+      - name: Verify DEV and HR
         run: |
          set -Eeuo pipefail
          EXPECTED_RUNTIME="$(jq -r '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")"
@@ -7187,7 +7187,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Verify immutable VRM-221 DEV artifact and diagnostic source
+      - name: Verify VRM221 artifact
         shell: bash
         run: |
          set -Eeuo pipefail
@@ -7283,7 +7283,7 @@ jobs:
          curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&adminapost=$GITHUB_RUN_ID" > "$ADMIN_A_POST_OUT/hr-meta.json"
          test "$(jq -r '.revision' "$ADMIN_A_POST_OUT/hr-meta.json")" = "$EXPECTED_HR"
          echo "EXPECTED_HR_REVISION=$EXPECTED_HR" >> "$GITHUB_ENV"
-      - name: Postulations create transition delete reload lifecycle
+      - name: Postulations lifecycle
         shell: bash
         run: |
          set -Eeuo pipefail

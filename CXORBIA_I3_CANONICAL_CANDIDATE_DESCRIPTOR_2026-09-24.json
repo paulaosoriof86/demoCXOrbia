@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B1_REAL_CREDENTIAL_FIRST_LOGIN_REQUIRED",
+  "status": "HOLD_I3_B7_CONTEXT_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8134,11 +8134,15 @@
   "i3B7DashboardContextActions20261011": {
     "sourceSha": "6814d1335ff7490976bf77164cee5b45333f1e50",
     "sourceTree": "611f3baf1594765db71688065157142a7dfe7d12",
-    "sourceProof": "PENDING_CI",
+    "sourceProof": "PASS_RUN1474_73_TESTS",
     "expectedFocalTests": 6,
     "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V369_2026-10-11.json",
     "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261011-V59.json",
     "devE2E": "PENDING",
-    "production": "DO_NOT_TOUCH"
+    "production": "DO_NOT_TOUCH",
+    "sourceProofRunId": 38198463602,
+    "dispatchStatusBefore": "HOLD_I3_B1_REAL_CREDENTIAL_FIRST_LOGIN_REQUIRED",
+    "dispatchStatus": "HOLD_I3_B7_CONTEXT_DEV_MATERIALIZATION_REQUIRED",
+    "runtimeHostingPolicy": "EXISTING_ONE_BUILD_ONE_RUNTIME_DEV_ONE_HOSTING_DEV; NO_PRODUCTION"
   }
 }
