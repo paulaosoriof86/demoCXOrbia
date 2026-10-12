@@ -47,7 +47,7 @@ test('HF15: source-provided text is HTML-escaped and no posts are synthesized',(
   assert.doesNotMatch(html,/<script>|<img src=x>/);
   assert.match(html,/&lt;img src=x&gt;/);
   assert.match(html,/&lt;script&gt;Bad&lt;\/script&gt;/);
-  assert.match(source,/const activePosts=posts\.filter/);
+  assert.match(source,/const activePosts=typeof data\.activePosts==='function'\?data\.activePosts\(\):/);
   assert.match(source,/postulationLifecycle!=='transitioned_to_assignment'/);
   assert.match(source,/id="pGroups"/);
 });
