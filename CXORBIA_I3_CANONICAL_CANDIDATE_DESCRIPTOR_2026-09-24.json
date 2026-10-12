@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
+  "status": "HOLD_I3_HUMAN_VISUAL_P0_FIX_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "6814d1335ff7490976bf77164cee5b45333f1e50",
   "productTreeAuthority": "611f3baf1594765db71688065157142a7dfe7d12",
   "predecessorProductSourceSha": "cf24832381ec966d8d2ea2f1e95e432056f59e38",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V369_2026-10-11.json",
-  "findingsLedgerExpectedGitBlob": "193af29b8c2004e49069a6326a12c8e5160db3a2",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V370_2026-10-12.json",
+  "findingsLedgerExpectedGitBlob": "6f21f6bceb745380842f93c29d64dd2444b5cc34",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261011-V59.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "B1_REAL_PASSWORD_COLD_LOGIN_NOT_PROVEN__B7_SOURCE_PROVEN_PENDING_EXACT_HR_DURABLE_VISIT_AND_DEV_E2E__B2_ACK_PENDING",
+  "activeBlocker": "OCT12_HUMAN_P0_B2_IDENTITY__B7_APPROVED_UI__B4_CERT_AI__B8_DURABLE_FINANCE__B1_COLD_LOGIN",
   "nextFindingId": "VRM-275",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -8243,5 +8243,29 @@
     "humanApprovedModules": "NOT_FULLY_APPROVED",
     "next": "P0_OWNER_PROOF_CORRECTION_WITHOUT_REGRESSION",
     "production": "DO_NOT_TOUCH"
+  },
+  "i3HumanMonotonicLock20261012": {
+    "path": "CXORBIA_I3_HUMAN_MONOTONIC_ISSUE_LOCK_2026-10-12.json",
+    "gitBlob": "7b487340d6e40afc65c5f9a8dea6363a5cf8773b",
+    "ledger": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V370_2026-10-12.json",
+    "ledgerGitBlob": "6f21f6bceb745380842f93c29d64dd2444b5cc34",
+    "Human06": 45,
+    "Human08": 18,
+    "Human12": 30,
+    "PriorVRM": 274,
+    "sourceUnchanged": true
+  },
+  "i3DeliveryBlocksLatest20261012": {
+    "path": "CXORBIA_I3_ENTREGAS_BLOQUES_Y_P0_2026-10-12.json",
+    "gitBlob": "fe4617e6fc80f59fe25a880741418b5174a0a67d",
+    "blocks": 9,
+    "status": "HOLD"
+  },
+  "i3B2CodeWriterHandoff20261012": {
+    "path": "CXORBIA_I3_B2_P0_PROVEN_OWNER_CODEX_HANDOFF_2026-10-12.md",
+    "gitBlob": "e3ee62712a57e99570f95ca2985c7cd79c03096a",
+    "codeWriter": "Codex only",
+    "executionState": "NOT_EXECUTED",
+    "owner": "P0_PROVEN_EXACT"
   }
 }
