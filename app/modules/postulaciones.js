@@ -189,8 +189,9 @@ CX.module('postulaciones', ({data,ui})=>{
   /* R19 P0-1: los KPIs superiores deben coincidir con el periodo activo por defecto (mismo
      criterio que el listado abajo) — nunca contar postulaciones de otros periodos salvo que se
      pida explícitamente "Ver históricas". */
-  const activePosts=posts.filter(x=>periodIdOf(x)===data.currentPeriodId&&x?._archived!==true&&x?.active!==false&&x?.postulationLifecycle!=='transitioned_to_assignment');
-  const c=(s)=>activePosts.filter(x=>x.estado===s).length;
+  /* HF-20261012-16: same active postulation authority as sidebar/data.kpis. */
+  const activePosts=typeof data.activePosts==='function'?data.activePosts():posts.filter(x=>periodIdOf(x)===data.currentPeriodId&&x?._archived!==true&&x?.active!==false&&x?.postulationLifecycle!=='transitioned_to_assignment');
+  const c=(s)=>activePosts.filter(x=>String(x.estado||x.status||'').toLowerCase()===String(s).toLowerCase()).length;
   /* VRM-259: Postulaciones is the canonical owner of the visible pending count while this
      route is rendered. The rail can have been built before the final protected-HR composition,
      so synchronize its badge after this render commits instead of leaving a stale bootstrap count. */
