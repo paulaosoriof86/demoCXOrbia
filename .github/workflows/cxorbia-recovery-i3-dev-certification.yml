@@ -110,6 +110,7 @@ jobs:
          node --test backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs
          node --test tools/qa/cxorbia-i3-b7-hf13-whatsapp-draft-source.test.mjs
          node --test tools/qa/cxorbia-i3-b7-hf15-assignment-actions-source.test.mjs
+         node --test tools/qa/cxorbia-i3-b7-hf16-pending-count-parity-source.test.mjs
   vrm143-151-source-reproof:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM143_151_SOURCE_REPROOF_REQUIRED' }}

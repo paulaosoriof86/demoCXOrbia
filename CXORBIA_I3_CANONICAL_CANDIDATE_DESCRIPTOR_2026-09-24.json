@@ -4,12 +4,12 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "8aee6b1d9c131f435ba11c80567ea9686ceaf5cb",
-  "productTreeAuthority": "bf3986a5b5fe03cd0cf8074597a0bdc4a6bd73e1",
-  "predecessorProductSourceSha": "782817615073f163358e1b52808d8ff45c6950c2",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V373_2026-10-12.json",
-  "findingsLedgerExpectedGitBlob": "ce8c293fa22de58dd9b283b5562e46c0a61b11a0",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261012-V62.json",
+  "productSourceSha": "cdb68455f663a9332b08d14ac6d5f0eeaa99972d",
+  "productTreeAuthority": "18f407150024383373798b0de490c95f01b3ebaf",
+  "predecessorProductSourceSha": "8aee6b1d9c131f435ba11c80567ea9686ceaf5cb",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V374_2026-10-12.json",
+  "findingsLedgerExpectedGitBlob": "35bc5bf02008a8722e581b435a816f11324724e6",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261012-V63.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
@@ -2694,7 +2694,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "105e0570f12d012bb724053701275d0985694f13",
+  "moduleTruthExpectedGitBlob": "43b29b2a60f8b9b338dfb3ebb4193d2e80e1b2d7",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -8429,5 +8429,83 @@
     "devMaterialized": false,
     "humanPass": false,
     "production": false
+  },
+  "i3B7HF16HF17Parity": {
+    "schemaVersion": "cxorbia.i3.b7.hf16-hf17.exact-hr-causal-proof.v1",
+    "date": "2026-10-12",
+    "iteration": "I3_FUNCTIONAL_CLOSURE",
+    "status": "HF16_SOURCE_FIXED_QA_LOCAL_PASS__HF17_EXACT_ROW_PROOF_PENDING",
+    "repo": "paulaosoriof86/demoCXOrbia",
+    "branch": "recovery/cxorbia-phase-a-20260831",
+    "sourceSha": "cdb68455f663a9332b08d14ac6d5f0eeaa99972d",
+    "sourceTree": "18f407150024383373798b0de490c95f01b3ebaf",
+    "predecessorSource": "8aee6b1d9c131f435ba11c80567ea9686ceaf5cb",
+    "hrReadOnly": {
+      "endpoint": "https://cxorbia-backend-dev.web.app/api/tya/cinepolis/hr-live?format=meta",
+      "sourceRevision": "c7c03bbf6578843a30cb29a3d31c3876418cb437889ae53f3336ab5f2e1a2994",
+      "revisionStable": true,
+      "sourceReadAt": "2026-10-12T21:38:35.964Z",
+      "generatedAt": "2026-10-12T21:38:33.078Z",
+      "visits": 748,
+      "periods": 17,
+      "latestPeriodKey": "2026-10",
+      "sourceSafe": true,
+      "readOnly": true,
+      "providerWritesNotPerformedInThisRead": true,
+      "doesNotIncludeRowLevelCounts": true
+    },
+    "hf16": {
+      "finding": "HF-20261012-16",
+      "classification": "MAPPING_FAILURE",
+      "cause": "Module c(s) checked x.estado===s while rail data.kpis().postPend used activePosts() and lower-case estado||status; sidebar can overwrite module count after navigation/HR hydration",
+      "owner": "app/modules/postulaciones.js",
+      "beforeBlob": "95caeb16aa9214d8795289e92b4a15a2275e435a",
+      "afterBlob": "7ae0266db3af6d8a620656384f1a4f2cba8496a0",
+      "proof": "SOURCE_CASE_STATUS_FALLBACK_DIFFERENCE_REPRODUCED_BY_FIXTURE",
+      "sourceTests": {
+        "path": "tools/qa/cxorbia-i3-b7-hf16-pending-count-parity-source.test.mjs",
+        "blob": "802ac25fb9215871c44fce8357e877c7310c7cfc",
+        "pass": 4,
+        "fail": 0,
+        "execution": "isolated JavaScript fixture"
+      },
+      "observedHumanDifference": {
+        "badge": 10,
+        "modulePending": 0
+      },
+      "rowExactCause": "NOT_PROVEN_FROM_HR_METADATA",
+      "sameArtifactE2E": "NOT_RUN",
+      "humanDecision": "HOLD"
+    },
+    "hf17": {
+      "finding": "HF-20261012-17",
+      "classification": "MAPPING_FAILURE",
+      "observedHumanDifference": {
+        "dashboardStageGT": 18,
+        "dashboardStageHN": 6,
+        "dashboardStageTotal": 24,
+        "postulationsScheduled": 18
+      },
+      "sourceOwner": {
+        "dashboard": "app/modules/dashboard.js::phaseFlow",
+        "postulations": "app/modules/postulaciones.js::agendadas",
+        "canonical": "app/core/data.js::visitBucketFns.agendadas"
+      },
+      "sourceSemanticComparison": "Dashboard phaseFlow scheduled=scheduled&&!cancelled (cumulative). Postulaciones agendadas uses assigned/scheduled&&!realized (active), like data.visitBucketFns.agendadas. Neither value can be certified against other without same exact HR row identities, lifecycle and sourceRevision.",
+      "decision": "NO_CODE_CHANGE_TO_HF17_CUMULATIVE_FLOW",
+      "hrRowParity": "NOT_PROVEN",
+      "pendingEvidence": "Exact same sourceRevision and period/GT/HN effective-scope list of visitId,hrRowId, canonical scheduled/realized/cancelled, assignment state for Dashboard phaseFlow vs Postulaciones; prove whether 6 realized scheduled or other mismatch",
+      "humanDecision": "HOLD"
+    },
+    "preserve": [
+      "VRM-259 previous PASS; reopen only on exact drift",
+      "Postulation durable create/approve/delete/no-reappear, HR origin split",
+      "Dashboard historical cumulative phases and source KPIs",
+      "B2 identity P0 unresolved",
+      "B8 eight finance HF unresolved",
+      "No real data writes, no production, no new workflow/branch/candidate"
+    ],
+    "nextAction": "Execute existing canonical source guard with HF16 test; obtain authorized exact same-revision HR visit row readback for HF17, not infer 6 realized; then same-artifact DEV Admin/Shopper E2E for B7 and user visual approval.",
+    "production": "DO_NOT_TOUCH"
   }
 }
