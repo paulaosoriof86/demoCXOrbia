@@ -120,7 +120,7 @@
           !!str(exact.paymentSourceRef||exact.reconciliationSourceRef);
       }catch(_){return false;}
     };
-    const visits=historySource.slice().sort((a,b)=>str(a.realizada||a.cuestFecha||a.submittedAt||a.agendada||periodOf(data,a)).localeCompare(str(b.realizada||b.cuestFecha||b.submittedAt||b.agendada||periodOf(data,b))));
+    const visits=historySource.slice().sort((a,b)=>str(b.realizada||b.cuestFecha||b.submittedAt||b.agendada||periodOf(data,b)).localeCompare(str(a.realizada||a.cuestFecha||a.submittedAt||a.agendada||periodOf(data,a)))||str(b.visitId||b.id||b.hrRowId).localeCompare(str(a.visitId||a.id||a.hrRowId)));
     const st=data.shopperStats(shopperKey),cs=cert(s),historicalEvidence=certEvidence(s);
     const active=visits.filter(v=>{const f=facets(v);return String(periodOf(data,v)||'')===String(data.currentPeriodId||'')&&f.assigned&&!f.liquidationConfirmed&&!verifiedPaidByFinance(v)&&!f.cancelled;});
     const done=visits.filter(v=>facets(v).realized),submitted=visits.filter(v=>facets(v).submitted),paid=visits.filter(verifiedPaidByFinance);

@@ -1064,3 +1064,21 @@ test('I3 B2 signed shopper display-only provider ACK and fresh read-model rehydr
   assert.equal(deniedOther.ok,false);assert.equal(deniedOther.providerAck,false);
   assert.equal(db.get(pp.profile).nombre,'Lucia Prueba');assert.equal(db.get(pp.profile).displayFirstName,'Luci');
 });
+
+test('HF-20261012-02 newest-first profile history with stable identity tie-break',async()=>{
+  const {readFileSync}=await import('node:fs');
+  const source=readFileSync('app/adapters/tya-canonical-shopper-portal-v2.js','utf8');
+  const expression=source.match(/const visits=historySource\.slice\(\)\.sort\(\(a,b\)=>([^;]+)\);/);
+  assert.ok(expression,'Mi Perfil must have a direct canonical history comparator');
+  const compare=new Function('a','b','str','periodOf','data','return '+expression[1]);
+  const visits=[
+    {id:'gt-old',agendada:'2026-08-01',pais:'GT'},
+    {id:'hn-recent',agendada:'2026-10-10',pais:'HN'},
+    {id:'gt-recent-b',agendada:'2026-10-10',pais:'GT'},
+    {id:'gt-mid',realizada:'2026-09-01',pais:'GT'}
+  ];
+  const ordered=visits.slice().sort((a,b)=>compare(a,b,v=>String(v==null?'':v).trim(),()=>'',{}));
+  assert.deepEqual(ordered.map(v=>v.id),['hn-recent','gt-recent-b','gt-mid','gt-old']);
+  assert.equal(visits[0].id,'gt-old','Source visit rows must not be mutated');
+  assert.match(source,/paid=visits\.filter\(verifiedPaidByFinance\)/,'Paid-status authority remains verified financial source');
+});
