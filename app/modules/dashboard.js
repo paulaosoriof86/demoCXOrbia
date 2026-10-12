@@ -11,6 +11,32 @@ CX.module('dashboard', ({data,ui})=>{
      activos, sin haber desaparecido físicamente de data._visitas (sigue accesible por su id/
      sourceRef para auditoría). */
   const pool=()=>(ALL?data._visitas.filter(v=>data.inScope(v.pais)):data.visitas()).filter(v=>!v._archived);
+  /* HF-20261012-13: an individual action opens a MANUAL draft, never records a sent event.
+     Use only an already-authorized recipient on the exact visit. An international phone
+     is required: never guess a country calling code from a project/tenant default. */
+  const normalizeWaRecipient=(raw)=>{
+    const input=String(raw??'').trim();
+    if(!/^\+?[\d\s().-]+$/.test(input))return null;
+    const digits=input.replace(/\D/g,'');
+    return /^[1-9]\d{8,14}$/.test(digits)?digits:null;
+  };
+  const openExactWaDraft=(visit,body)=>{
+    const recipient=normalizeWaRecipient(visit?.shopperWa||visit?.whatsapp);
+    if(!visit?.shopper||!recipient){
+      ui.toast('No hay WhatsApp internacional válido para esta visita. Verifica el contacto autorizado, incluido el código de país.','warn',4200);
+      return false;
+    }
+    const url='https://wa.me/'+recipient+'?text='+encodeURIComponent(String(body||''));
+    const opened=window.open(url,'_blank');
+    if(!opened){
+      ui.toast('El navegador no abrió WhatsApp. Permite las ventanas emergentes para preparar el borrador.','warn',4200);
+      return false;
+    }
+    try{opened.opener=null;}catch(_){}
+    ui.toast('Borrador de WhatsApp abierto; el envío debe realizarse y confirmarse en WhatsApp.','ok',4000);
+    return true;
+  };
+  /* END HF-20261012-13 exact manual draft helper */
   const hrPool=()=>{
     const rows=Array.isArray(data.__liveHrVisits)?data.__liveHrVisits:[];
     const active=String(data.currentPeriodId||'');
@@ -89,7 +115,10 @@ CX.module('dashboard', ({data,ui})=>{
         const hasHook=!!(CX.automations&&CX.automations.hook&&CX.automations.hook());
         ids.forEach(id=>{const v=vget(id);if(hasHook){CX.automations&&CX.automations._pushLog({fecha:new Date().toISOString().slice(0,16).replace('T',' '),canal:'whatsapp',evento:'recordatorio',titulo:'Recordatorio',txt:(v.shopper||'')+' · '+v.sucursal,hook:CX.automations.hook()});}else{const wa=(v.shopperWa||v.whatsapp||'');const msg=encodeURIComponent('Hola '+(v.shopper||'Evaluador')+', recordatorio: tu visita en '+v.sucursal+'. Por favor confírmanos.');if(wa){window.open('https://wa.me/'+wa.replace(/[^0-9]/g,'')+'?text='+msg,'_blank');}else{ui.toast('Sin número WA para '+(v.shopper||'el shopper')+' — agrégalo en su perfil','warn',2500);}}});
         ui.toast(hasHook?'WhatsApp preparado vía Make ('+ids.length+') · se envía cuando la conexión esté activa':'WhatsApp Web abierto para '+ids.length+' shopper(s)','ok',3200); };
-      ov.querySelectorAll('.drWa').forEach(b=>b.addEventListener('click',()=>sendWa([b.dataset.vid])));
+      ov.querySelectorAll('.drWa').forEach(b=>b.addEventListener('click',()=>{
+        const v=vget(b.dataset.vid);
+        openExactWaDraft(v,'Hola '+(v.shopper||'Evaluador')+', recordatorio: tu visita en '+(v.sucursal||'la sucursal')+'. Por favor confírmanos.');
+      }));
       ov.querySelectorAll('.drMail').forEach(b=>b.addEventListener('click',()=>ui.toast('Borrador de correo preparado para '+(vget(b.dataset.vid).shopper||'shopper')+' (envío pendiente de conexión con Outlookiente)','ok')));
       const ws=ov.querySelector('#drWaSel'); if(ws)ws.addEventListener('click',()=>sendWa(sel()));
       const msel=ov.querySelector('#drMailSel'); if(msel)msel.addEventListener('click',()=>{const n=sel().length;if(!n){ui.toast('Selecciona al menos uno','warn');return;}ui.toast('Correo preparado para '+n+' shopper(s) · envío por backend/Outlook pendiente','ok');});
@@ -332,7 +361,10 @@ CX.module('dashboard', ({data,ui})=>{
       CX.router.nav('visitas');
       setTimeout(()=>{ if(vid){const row=document.querySelector(`[data-vid="${vid}"]`);if(row){row.style.outline='2px solid var(--brand)';row.style.borderRadius='8px';setTimeout(()=>row.style.outline='',2000);row.scrollIntoView&&row.scrollIntoView({block:'center'});}} },300);
     }));
-    board.querySelectorAll('[data-wa]').forEach(b=>b.addEventListener('click',()=>{CX.automations&&CX.automations._pushLog({fecha:new Date().toISOString().slice(0,16).replace('T',' '),canal:'whatsapp',evento:'recordatorio',titulo:'Recordatorio manual',txt:decodeURIComponent(b.dataset.wa),hook:CX.automations.hook()||'(Make sin configurar)'});ui.toast('WhatsApp preparado · envío real pendiente backend/Make: '+decodeURIComponent(b.dataset.wa).slice(0,40)+'…','ok');}));
+    board.querySelectorAll('[data-wa]').forEach(b=>b.addEventListener('click',()=>{
+      const v=all.find(x=>String(x.id)===String(b.dataset.vid));
+      openExactWaDraft(v,'Hola '+(v?.shopper||'Evaluador')+', sobre tu visita en '+(v?.sucursal||'la sucursal')+'.');
+    }));
     board.querySelectorAll('[data-mail]').forEach(b=>b.addEventListener('click',()=>ui.toast('Borrador de correo preparado (envío pendiente de conexión con Outlook)','ok')));
     board.querySelectorAll('[data-bulk]').forEach(b=>b.addEventListener('click',()=>ui.toast('Recordatorio masivo preparado (WhatsApp + correo) · se envía cuando la conexión esté activa (pendienteend)','ok',3200)));
     /* #226 — subsecciones contraíbles */
@@ -405,7 +437,7 @@ CX.module('dashboard', ({data,ui})=>{
             c2();close();CX.router.nav('dashboard');ui.toast('Visita archivada (recuperable) · auditado','');
           });}});
         });
-        const wa=ov.querySelector('#bdWa');if(wa)wa.addEventListener('click',()=>{const msg=encodeURIComponent('Hola '+(v.shopper||'')+', sobre tu visita en '+v.sucursal);window.open('https://wa.me/?text='+msg,'_blank');});
+        const wa=ov.querySelector('#bdWa');if(wa)wa.addEventListener('click',()=>openExactWaDraft(v,'Hola '+(v.shopper||'Evaluador')+', sobre tu visita en '+(v.sucursal||'la sucursal')+'.'));
       }});
     }));
 
