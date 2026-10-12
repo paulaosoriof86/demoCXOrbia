@@ -261,7 +261,7 @@ CX.module('dashboard', ({data,ui})=>{
     const waBtn=(v,msg)=>`<button class="btn btn-soft btn-sm" data-wa='${encodeURIComponent((v.shopper||'Shopper')+': '+msg)}' title="WhatsApp">📲</button>`;
     const mailBtn=(v,msg)=>`<button class="btn btn-ghost btn-sm" data-mail='${encodeURIComponent(msg)}' title="Correo">✉️</button>`;
     const goBtn=v=>`<button class="btn btn-ghost btn-sm" data-goseco data-vid="${v.id}" title="Ir a Visitas">↗</button>`;
-    const contextBtn=v=>{const f=data.visitFacets?.(v)||{};if(f.scheduled)return `<button class="btn btn-soft btn-sm bdCtx" data-kind="reschedule" data-vid="${v.id}" title="Gestionar reprogramación">🔄</button>`;if(f.assigned&&!f.realized)return `<button class="btn btn-soft btn-sm bdCtx" data-kind="schedule" data-vid="${v.id}" title="Gestionar agendamiento">🗓️</button>`;return '';};
+    const contextBtn=v=>`<button class="btn btn-soft btn-sm bdCtx" data-kind="actions" data-vid="${v.id}" title="Acciones por estado de la visita">⚙️</button>`;
     const requestBtn=v=>v.shopper?`<button class="btn btn-soft btn-sm bdCtx" data-kind="request" data-vid="${v.id}" title="Pedir acción al shopper">📤</button>`:'';
     const boardRow=(v,extra,extraLbl)=>`<tr data-board-row="${v.id}">
       <td style="width:30px;text-align:center"><input type="checkbox" class="bdSel" data-vid="${v.id}" aria-label="Seleccionar ${v.sucursal}"></td>
@@ -318,6 +318,7 @@ CX.module('dashboard', ({data,ui})=>{
       if(!ids.length)return;
       const owner=CX.adminPostulacionesActions;
       if(!owner){ui.toast('Acción no disponible: falta el propietario de Postulaciones.','warn',4200);return;}
+      if(kind==='actions')return owner.openContext({data,ui,visitId:ids[0]});
       if(kind==='agenda')return owner.openAgenda({data,ui,visitIds:ids});
       return owner.openRequest({data,ui,visitIds:ids,defaultType:kind==='schedule'?'agendar':kind==='reschedule'?'reprog':'confirmar'});
     };

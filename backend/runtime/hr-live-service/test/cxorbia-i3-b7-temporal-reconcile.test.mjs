@@ -126,3 +126,44 @@ test('I3 B7 shared agenda modal reviews exact durable pending date with provider
   assert.equal(actions[0][0],'visit-c');assert.equal(actions[0][1],'2026-10-18');assert.equal(actions[0][2].ackAware,true);
   assert.equal(actions[0][2].decision,'approved');
 });
+
+test('I3 B7 direct contextual menu uses existing Postulaciones owner, scoped assignment and ACK',async()=>{
+  const fs=await import('node:fs'),vm=await import('node:vm');
+  const log=[],dialogs=[];
+  const cx={module(){},permissions:{gate:()=>true},backend:{refresh:async()=>{}},notif:{pushDurable:async()=>({ok:true,providerAck:true})}};
+  vm.runInNewContext(fs.readFileSync('app/modules/postulaciones.js','utf8'),{CX:cx,window:{},setTimeout:()=>{}},{timeout:5000});
+  const v={id:'v-active',shopperId:null,sucursal:'Sucursal Activa',pais:'GT',estado:'disponible'};
+  const data={visitas:()=>[v],visitFacets:()=>({available:true}),inScope:()=>true,shoppers:[{id:'s-1',nombre:'Shopper Uno',pais:'GT',projectIds:['p-1']},{id:'s-2',nombre:'Shopper Dos',pais:'HN',projectIds:['p-1']}],currentProjectId:'p-1',currentPeriodId:'period-1',assignVisit:async(...args)=>{log.push(args);return{ok:true,status:'committed',providerAck:true,successUiAllowed:true}}};
+  const ui={modal:(...args)=>dialogs.push(args),toast:()=>{}};
+  const owner=cx.adminPostulacionesActions;
+  assert.equal(typeof owner.openContext,'function');
+  assert.equal(owner.openContext({data,ui,visitId:v.id}),true);
+  assert.match(dialogs[0][1],/Asignar shopper/);
+  assert.doesNotMatch(dialogs[0][1],/Reasignar visita/);
+  const button={dataset:{cxAdminAction:'assign'},addEventListener:(_name,cb)=>button.click=cb};
+  dialogs[0][2].onMount({querySelectorAll:()=>[button]},()=>{});
+  button.click();
+  assert.equal(dialogs.length,2);
+  assert.match(dialogs[1][1],/Shopper Uno/);assert.doesNotMatch(dialogs[1][1],/Shopper Dos/);
+  const items={'#cxDashShopper':{value:'s-1'},'#cxDashAssignOk':{disabled:false,textContent:'Confirmar',addEventListener:(_name,cb)=>items['#cxDashAssignOk'].click=cb}};
+  dialogs[1][2].onMount({querySelector:key=>items[key]},()=>{});
+  await items['#cxDashAssignOk'].click();
+  assert.equal(log.length,1);assert.equal(log[0][0],'v-active');assert.equal(log[0][1],'s-1');assert.equal(log[0][2].ackAware,true);
+  assert.equal(log[0][2].assignmentSource,'platform');
+});
+test('I3 B7 cancellation modal fails closed before remote ACK',async()=>{
+  const fs=await import('node:fs'),vm=await import('node:vm');
+  const requests=[],dialogs=[],messages=[];
+  const cx={module(){},permissions:{gate:()=>true},backend:{refresh:async()=>{}}};
+  vm.runInNewContext(fs.readFileSync('app/modules/postulaciones.js','utf8'),{CX:cx,window:{},setTimeout:()=>{}},{timeout:5000});
+  const v={id:'v-cancel',shopperId:'s-cancel',sucursal:'Centro',pais:'GT',cancelRequest:{status:'pending_review',reason:'No puedo asistir'}};
+  const data={visitas:()=>[v],currentProjectId:'p-1',requestVisitCancel:async(...args)=>{requests.push(args);return{ok:false,providerAck:false,status:'blocked'}}};
+  const ui={modal:(...args)=>dialogs.push(args),toast:(...args)=>messages.push(args)};
+  assert.equal(cx.adminPostulacionesActions.openCancellation({data,ui,visitId:v.id,decision:'approved'}),true);
+  const items={'#cxDashCancelReason':{value:'Revisado y autorizado'},'#cxDashCancelOk':{disabled:false,textContent:'Confirmar',addEventListener:(_name,cb)=>items['#cxDashCancelOk'].click=cb}};
+  let closed=false;dialogs[0][2].onMount({querySelector:key=>items[key]},()=>{closed=true});
+  await items['#cxDashCancelOk'].click();
+  assert.equal(closed,false);assert.equal(requests.length,1);assert.equal(requests[0][0],v.id);
+  assert.equal(requests[0][1].decision,'approved');assert.equal(requests[0][1].ackAware,true);
+  assert.equal(messages.at(-1)[1],'warn');
+});

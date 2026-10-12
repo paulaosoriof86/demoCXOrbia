@@ -98,6 +98,84 @@ CX.adminPostulacionesActions.openAgenda=({data,ui,visitIds=[]})=>{
   return true;
 };
 
+
+CX.adminPostulacionesActions.openContext=({data,ui,visitId})=>{
+  const v=(data.visitas?.()||[]).find(x=>String(x.id||x.visitId)===String(visitId));
+  if(!v){ui.toast('Visita no disponible en el período actual.','warn');return false;}
+  const facets=data.visitFacets?.(v)||{}, owner=CX.adminPostulacionesActions;
+  const actions=[];
+  if(v.shopperId){
+    actions.push(['request','Pedir agendamiento o cuestionario'],['agenda','Gestionar agenda'],['reassign','Reasignar visita'],['cancel','Cancelar visita']);
+  }else if(facets.available||v.estado==='disponible')actions.push(['assign','Asignar shopper']);
+  if(v.rescheduleRequest?.status==='pending_review'&&!actions.some(a=>a[0]==='agenda'))actions.push(['agenda','Revisar fecha solicitada']);
+  if(v.cancelRequest?.status==='pending_review')actions.push(['approveCancel','Autorizar cancelación'],['rejectCancel','Rechazar cancelación']);
+  if(!actions.length){ui.toast('No hay acciones disponibles para el estado actual.','warn');return false;}
+  const safe=x=>String(x??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const buttons=actions.map(([key,label])=>'<button class="btn btn-soft btn-sm" data-cx-admin-action="'+key+'">'+label+'</button>').join(' ');
+  ui.modal('Acciones · '+safe(v.sucursal),'<p class="muted" style="font-size:12px">'+safe(v.pais)+' · '+safe(v.estado)+' · '+safe(v.shopper||'Sin asignar')+'</p><div class="flex wrap" style="gap:8px">'+buttons+'</div>',{
+    onMount:(ov,close)=>ov.querySelectorAll('[data-cx-admin-action]').forEach(btn=>btn.addEventListener('click',()=>{
+      const action=btn.dataset.cxAdminAction;close();
+      if(action==='request')owner.openRequest({data,ui,visitIds:[String(v.id)]});
+      else if(action==='agenda')owner.openAgenda({data,ui,visitIds:[String(v.id)]});
+      else if(action==='assign'||action==='reassign')owner.openAssign({data,ui,visitId:v.id,reassign:action==='reassign'});
+      else if(action==='cancel')owner.openCancellation({data,ui,visitId:v.id});
+      else if(action==='approveCancel'||action==='rejectCancel')owner.openCancellation({data,ui,visitId:v.id,decision:action==='approveCancel'?'approved':'rejected'});
+    }))
+  });
+  return true;
+};
+CX.adminPostulacionesActions.openAssign=({data,ui,visitId,reassign=false})=>{
+  const v=(data.visitas?.()||[]).find(x=>String(x.id||x.visitId)===String(visitId));
+  if(!v){ui.toast('Visita no disponible.','warn');return false;}
+  const permission=reassign?'visit.reassign':'visit.assign';
+  if(!CX.permissions?.gate?.(permission,{projectId:data.currentProjectId,pais:v.pais},ui))return false;
+  const candidates=(data.shoppers||[]).filter(s=>s?.id&&String(s.id)!==String(v.shopperId||'')&&(!v.pais||String(s.pais||s.country)===String(v.pais))&&(!data.inScope||data.inScope(s.pais||s.country))&&(!Array.isArray(s.projectIds)||!s.projectIds.length||s.projectIds.map(String).includes(String(data.currentProjectId)))&&data.shopperDataLevel?.(s)!=='protected_reference');
+  if(!candidates.length){ui.toast('No hay shoppers elegibles para esta visita.','warn');return false;}
+  const safe=x=>String(x??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const options=candidates.map(s=>'<option value="'+safe(s.id)+'">'+safe(s.nombre||s.code||s.id)+' · '+safe(s.pais||s.country)+'</option>').join('');
+  const dateInputs=reassign?'<label class="lbl">Decisión de fecha</label><select class="sel" id="cxDashDateMode"><option value="keep">Conservar fecha vigente</option><option value="pending">Pendiente por agendar</option><option value="change">Cambiar fecha</option></select><input class="inp" id="cxDashDate" type="date" value="'+safe(v.agendada||'')+'" style="margin-top:8px"><input class="inp" id="cxDashFranja" placeholder="Franja (si cambia)" style="margin-top:8px">':'';
+  ui.modal((reassign?'Reasignar':'Asignar')+' visita · '+safe(v.sucursal),'<label class="lbl">Shopper elegible</label><select class="sel" id="cxDashShopper"><option value="">Seleccionar…</option>'+options+'</select>'+dateInputs+'<div style="text-align:right;margin-top:14px"><button class="btn btn-pr btn-sm" id="cxDashAssignOk">Confirmar</button></div>',{
+    onMount:(ov,close)=>ov.querySelector('#cxDashAssignOk').addEventListener('click',async()=>{
+      const sid=ov.querySelector('#cxDashShopper').value;
+      if(!sid||!candidates.some(s=>String(s.id)===String(sid))){ui.toast('Selecciona un shopper elegible.','warn');return;}
+      const mode=reassign?ov.querySelector('#cxDashDateMode').value:'keep';
+      const date=reassign&&mode==='change'?ov.querySelector('#cxDashDate').value:null;
+      if(reassign&&mode==='change'&&!date){ui.toast('Selecciona la nueva fecha.','warn');return;}
+      if(!CX.permissions?.gate?.(permission,{projectId:data.currentProjectId,pais:v.pais},ui))return;
+      const btn=ov.querySelector('#cxDashAssignOk');btn.disabled=true;btn.textContent='Confirmando…';
+      try{
+        const ack=await data.assignVisit(v.id,sid,{ackAware:true,reassign,assignmentSource:'platform',scheduleDecision:mode,scheduledDate:date,franjaCode:reassign&&mode==='change'?ov.querySelector('#cxDashFranja').value:null,reason:'dashboard_admin_assignment'});
+        if(!(ack?.ok===true&&ack?.status==='committed'&&ack?.providerAck===true&&ack?.successUiAllowed===true))throw Error('ASSIGN_PROVIDER_ACK_REQUIRED');
+        try{await CX.backend?.refresh?.();await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('dashboard_assign_committed');}catch(_){}
+        close();ui.toast('Asignación confirmada por el proveedor','ok');
+      }catch(_){btn.disabled=false;btn.textContent='Confirmar';ui.toast('Asignación no confirmada.','warn',4200);}
+    })
+  });
+  return true;
+};
+CX.adminPostulacionesActions.openCancellation=({data,ui,visitId,decision=null})=>{
+  const v=(data.visitas?.()||[]).find(x=>String(x.id||x.visitId)===String(visitId));
+  if(!v||decision&&!['approved','rejected'].includes(decision))return false;
+  if(decision&&v.cancelRequest?.status!=='pending_review'){ui.toast('La solicitud ya no está pendiente.','warn');return false;}
+  if(!CX.permissions?.gate?.('visit.cancel',{projectId:data.currentProjectId,pais:v.pais},ui))return false;
+  const safe=x=>String(x??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  ui.modal(decision?'Decidir cancelación · '+safe(v.sucursal):'Cancelar visita · '+safe(v.sucursal),'<p class="muted" style="font-size:12px">'+safe(decision?v.cancelRequest?.reason||'':v.shopper||'')+'</p><label class="lbl">Motivo obligatorio</label><textarea class="inp" id="cxDashCancelReason" rows="3"></textarea><div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" id="cxDashCancelOk">Confirmar</button></div>',{
+    onMount:(ov,close)=>ov.querySelector('#cxDashCancelOk').addEventListener('click',async()=>{
+      const reason=String(ov.querySelector('#cxDashCancelReason').value||'').trim();
+      if(!reason){ui.toast('Indica el motivo.','warn');return;}
+      if(!CX.permissions?.gate?.('visit.cancel',{projectId:data.currentProjectId,pais:v.pais},ui))return;
+      const btn=ov.querySelector('#cxDashCancelOk');btn.disabled=true;btn.textContent='Confirmando…';
+      try{
+        const ack=await data.requestVisitCancel(v.id,decision?{ackAware:true,requestOnly:false,decision,reason}:{ackAware:true,releaseToAvailable:true,reason});
+        if(!(ack?.ok===true&&ack?.status==='committed'&&ack?.providerAck===true&&ack?.successUiAllowed===true))throw Error('CANCEL_PROVIDER_ACK_REQUIRED');
+        try{await CX.backend?.refresh?.();await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('dashboard_cancel_committed');}catch(_){}
+        close();ui.toast('Decisión confirmada; si HR externa aplica, sincronización pendiente de ACK HR.','ok',4200);
+      }catch(_){btn.disabled=false;btn.textContent='Confirmar';ui.toast('Decisión no confirmada por el proveedor.','warn',4200);}
+    })
+  });
+  return true;
+};
+
 CX.module('postulaciones', ({data,ui})=>{
   const p=data.period(), posts=data._posts.filter(x=>data.inScope(x.pais));
   const projName=(id)=>{const pg=data.programs?.().find(x=>x.key===id);if(pg)return pg.name;const pr=data.projects.find(x=>x.id===id);return pr?(data.programBase?data.programBase(pr):pr.name):(id||'');};
