@@ -436,3 +436,50 @@ test('HF-20261012-26 budget fail-closed country, currency, role, scope, amount, 
   assert.match(module,/FINANCE_BUDGET_READBACK_MISMATCH/);
   assert.doesNotMatch(module,/CX\.finStore\.setPres\(p\.id,k/);
 });
+
+
+test('HF-20261012-22 provider diagnostic returns remote error codes without exposing raw exception/Pll',async()=>{
+  const uiSource=fs.readFileSync('app/modules/finanzas.js','utf8');
+  const from=uiSource.indexOf('function cxFinanceReconcileFailure(');
+  const to=uiSource.indexOf('function _fin(data)',from);
+  assert.ok(from>=0&&to>from,'Scoped finance diagnostic helper missing');
+  const CX={backend:{refresh:async()=>{}}};
+  const methods=new Function('CX',uiSource.slice(from,to)+';return {cxFinanceReconcileFailure,cxFinanceReconcileWithProof,cxFinanceExactReconcileReadback};')(CX);
+  assert.deepEqual(methods.cxFinanceReconcileFailure({code:'FINANCE_VISIT_NOT_SUBMITTED',status:'blocked'},null),
+    {code:'FINANCE_VISIT_NOT_SUBMITTED',httpStatus:null,committed:false});
+  assert.equal(methods.cxFinanceReconcileFailure({code:'COMMAND_TRANSPORT_ERROR'},null).code,'COMMAND_TRANSPORT_ERROR');
+  assert.equal(methods.cxFinanceReconcileFailure({code:'unsafe <script> secret=abcd'},null).code,'FINANCE_RECONCILE_ERROR_UNCLASSIFIED');
+  assert.equal(methods.cxFinanceReconcileFailure({code:'FINANCE_RECONCILIATION_SOURCE_INCOMPLETE:unknown_honorario',httpStatus:409},null).httpStatus,409);
+  assert.match(uiSource,/data-fin-reconcile-diagnostic/);
+  assert.match(uiSource,/showDiagnostic\(result\.code/);
+  assert.match(uiSource,/admin-finance-liquidation-detail-reconcile/);
+  const blocked=await methods.cxFinanceReconcileWithProof({
+    reconcileFinanceVisit:async()=>({ok:false,status:'blocked',code:'FINANCE_PERIOD_SCOPE_CONFLICT',providerAck:false})
+  },'visit-1','admin-finance-reconcile');
+  assert.deepEqual(blocked,{ok:false,code:'FINANCE_PERIOD_SCOPE_CONFLICT',httpStatus:null,providerAck:false});
+});
+
+test('HF-20261012-22 ACK never shown as full reconciliation until unique exact protected readback',async()=>{
+  const uiSource=fs.readFileSync('app/modules/finanzas.js','utf8');
+  const from=uiSource.indexOf('function cxFinanceReconcileFailure('),to=uiSource.indexOf('function _fin(data)',from);
+  let refreshCalls=0,uiSuccess=0;
+  const CX={backend:{refresh:async()=>{refreshCalls++;}}};
+  const methods=new Function('CX',uiSource.slice(from,to)+';return {cxFinanceReconcileWithProof};')(CX);
+  const data={currentPeriodId:'project-a-2026-10',
+    __protectedVisits:[],
+    reconcileFinanceVisit:async()=>({ok:true,status:'committed',providerAck:true,successUiAllowed:true})};
+  const unresolved=await methods.cxFinanceReconcileWithProof(data,'live-visit-1','unit-hf22');
+  assert.equal(unresolved.ok,false);
+  assert.equal(unresolved.providerAck,true);
+  assert.equal(unresolved.code,'FINANCE_RECONCILE_READBACK_UNAVAILABLE');
+  assert.equal(refreshCalls,1);
+  data.__protectedVisits=[{__docId:'live-visit-1',financialSourceStatus:'reconciled_exact',
+    financialMatch:{status:'reconciled_exact',sourceRevision:'rev-hr-202610',country:'GT',currency:'Q'}}];
+  const ok=await methods.cxFinanceReconcileWithProof(data,'live-visit-1','unit-hf22');
+  assert.equal(ok.ok,true);assert.equal(ok.providerAck,true);
+  assert.equal(ok.readback.sourceRevision,'rev-hr-202610');assert.equal(ok.readback.country,'GT');
+  data.__protectedVisits.push({...data.__protectedVisits[0]});
+  const duplicate=await methods.cxFinanceReconcileWithProof(data,'live-visit-1','unit-hf22');
+  assert.equal(duplicate.ok,false);assert.equal(duplicate.code,'FINANCE_RECONCILE_READBACK_AMBIGUOUS');assert.equal(duplicate.providerAck,true);
+  assert.equal(uiSuccess,0);
+});

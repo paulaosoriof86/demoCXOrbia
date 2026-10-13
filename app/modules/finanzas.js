@@ -11,6 +11,48 @@ const FINANCE_CURRENCY_GROUPING_CONTRACT='group_by_moneda_never_first_country'; 
 /* reimbursement_requires_confirmed_source_contract: sin reimbursementSource/reembolsoConfirmado
    (reimbursementConfirmed) NO se muestra reembolso conciliado; si no hay, Pendiente de fuente. */
 const REIMBURSEMENT_REQUIRES_CONFIRMED_SOURCE_CONTRACT='reimbursementSource_reembolsoConfirmado_required';
+
+/* HF-20261012-22: present sanitized provider decision, never an invented reconciliation.
+   This display-only diagnostic is NOT a payment, an HR write or persisted financial truth. */
+function cxFinanceReconcileFailure(result,error){
+  const candidates=[result?.code,result?.reason,result?.error?.code,error?.code,error?.message];
+  const raw=candidates.map(v=>String(v==null?'':v).trim()).find(Boolean)||'FINANCE_RECONCILE_RESPONSE_UNAVAILABLE';
+  const safe=/^(?:FINANCE|COMMAND|AUTH|SHOPPER|PROVIDER)_[A-Z0-9_]+(?::[A-Za-z0-9_.-]{1,80})?$/.test(raw);
+  const code=safe?raw:'FINANCE_RECONCILE_ERROR_UNCLASSIFIED';
+  const statusValue=Number(result?.httpStatus??result?.statusCode??error?.statusCode);
+  const httpStatus=Number.isInteger(statusValue)&&statusValue>=400&&statusValue<=599?statusValue:null;
+  return {code,httpStatus,committed:result?.providerAck===true&&result?.status==='committed'};
+}
+function cxFinanceExactReconcileReadback(data,visitId){
+  const id=String(visitId||'').trim();
+  const candidates=Array.isArray(data?.__protectedVisits)?data.__protectedVisits:[];
+  const direct=candidates.filter(x=>String(x?.__docId||'')===id);
+  const active=direct.length?direct:candidates.filter(x=>
+    String(x?.visitId||'')===id||String(x?.id||'')===id);
+  if(active.length!==1)return {ok:false,code:active.length>1?'FINANCE_RECONCILE_READBACK_AMBIGUOUS':'FINANCE_RECONCILE_READBACK_UNAVAILABLE'};
+  const row=active[0],match=row?.financialMatch||{};
+  if(String(row.financialSourceStatus||'')!=='reconciled_exact'||String(match.status||'')!=='reconciled_exact')
+    return {ok:false,code:'FINANCE_RECONCILE_READBACK_PENDING'};
+  return {ok:true,code:'FINANCE_RECONCILE_READBACK_MATCH',visitId:id,
+    sourceRevision:String(match.sourceRevision||row.hrSourceRevision||row.sourceRevision||''),
+    currency:String(match.currency||match.moneda||''),country:String(match.country||match.pais||'')};
+}
+async function cxFinanceReconcileWithProof(data,visitId,reason){
+  if(typeof data?.reconcileFinanceVisit!=='function')
+    return {ok:false,code:'FINANCE_RECONCILE_COMMAND_UNAVAILABLE',providerAck:false};
+  const r=await data.reconcileFinanceVisit(visitId,{ackAware:true,reason});
+  if(!(r?.ok===true&&r?.status==='committed'&&r?.providerAck===true&&r?.successUiAllowed===true))
+    return {ok:false,code:cxFinanceReconcileFailure(r,null).code,httpStatus:cxFinanceReconcileFailure(r,null).httpStatus,providerAck:false};
+  if(typeof CX.backend?.refresh!=='function')
+    return {ok:false,code:'FINANCE_RECONCILE_ACK_READBACK_PENDING',providerAck:true};
+  try{await CX.backend.refresh();}catch(_){
+    return {ok:false,code:'FINANCE_RECONCILE_ACK_READBACK_PENDING',providerAck:true};
+  }
+  const readback=cxFinanceExactReconcileReadback(data,visitId);
+  return readback.ok?{ok:true,code:'FINANCE_RECONCILE_CONFIRMED',providerAck:true,readback}
+    :{ok:false,code:readback.code,providerAck:true};
+}
+
 /* finance_review_queue_exposes_financialSourceStatus: la bandeja muestra el valor real de
    financialSourceStatus y filtra por reviewRequired/liquidationState/paymentState. */
 const FINANCE_REVIEW_QUEUE_CONTRACT=['reviewRequired','financialSourceStatus','liquidationState','paymentState'];
@@ -112,7 +154,7 @@ CX.module('financiero', ({data,ui})=>{
       <div class="card-h"><div class="card-t">🔐 Revisiones financieras</div><span class="bdg bdg-r">${revs.length} pendientes</span></div>
       <div style="font-size:11.5px;color:var(--t2);margin-bottom:10px">Estos registros necesitan completar o conciliar su información antes de incluirlos en un lote o confirmar un pago.</div>
       <div class="scroll-hint" aria-label="Desliza para ver más" style="overflow-x:auto"><table class="tbl"><thead><tr><th>País</th><th>Moneda</th><th>Sucursal / visita</th><th>Shopper</th><th>Estado de información</th><th>Motivo</th><th>Campos faltantes</th><th>Revisión</th><th>Trazabilidad</th></tr></thead><tbody>
-      ${revs.map(r=>`<tr><td><b>${r.l.pais?CX.paisLabel(r.l.pais):'<span class="muted">—</span>'}</b></td><td>${r.l.moneda||'<span class="muted">—</span>'}</td><td style="font-size:12px">${r.l.sucursal||'—'}</td><td style="font-size:12px">${r.l.shopper||'—'}</td><td>${ui.bdg(sourceLabel(r.financialSourceStatus),'a')}</td><td style="font-size:11.5px">${r.motivo}</td><td style="font-size:11.5px">${r.faltan.length?r.faltan.join(', '):'—'}</td><td><button class="btn btn-pr btn-sm" data-fin-reconcile="${r.l.visitaId||''}" ${r.l.visitaId?'':'disabled'}>Conciliar</button></td><td><details><summary style="cursor:pointer;font-size:11px">Ver contexto</summary><div style="font-size:10px;color:var(--t3);margin-top:5px">Estado de la información: ${sourceLabel(r.financialSourceStatus)}<br>Motivo: ${r.motivo||'Revisión requerida'}</div></details></td></tr>`).join('')}
+      ${revs.map(r=>`<tr><td><b>${r.l.pais?CX.paisLabel(r.l.pais):'<span class="muted">—</span>'}</b></td><td>${r.l.moneda||'<span class="muted">—</span>'}</td><td style="font-size:12px">${r.l.sucursal||'—'}</td><td style="font-size:12px">${r.l.shopper||'—'}</td><td>${ui.bdg(sourceLabel(r.financialSourceStatus),'a')}</td><td style="font-size:11.5px">${r.motivo}</td><td style="font-size:11.5px">${r.faltan.length?r.faltan.join(', '):'—'}</td><td><button class="btn btn-pr btn-sm" data-fin-reconcile="${r.l.visitaId||''}" ${r.l.visitaId?'':'disabled'}>Conciliar</button><div data-fin-reconcile-diagnostic style="font-size:10.5px;color:var(--t2);margin-top:5px;overflow-wrap:anywhere" role="status"></div></td><td><details><summary style="cursor:pointer;font-size:11px">Ver contexto</summary><div style="font-size:10px;color:var(--t3);margin-top:5px">Estado de la información: ${sourceLabel(r.financialSourceStatus)}<br>Motivo: ${r.motivo||'Revisión requerida'}</div></details></td></tr>`).join('')}
       </tbody></table></div>
       <div style="margin-top:10px;font-size:11px;color:var(--t3)">🔒 Pago y lote permanecen bloqueados hasta completar la información requerida.</div>
     </div>`;
@@ -713,17 +755,26 @@ CX.module('movimientos', ({data,ui})=>{
     }));
 
     host.querySelectorAll('[data-fin-reconcile]').forEach(btn=>btn.addEventListener('click',async()=>{
-      const visitId=btn.dataset.finReconcile;
-      if(!visitId||typeof data.reconcileFinanceVisit!=='function'){ui.toast('Conciliación no disponible: falta proveedor durable.','err');return;}
+      const visitId=String(btn.dataset.finReconcile||'');
+      if(!visitId){ui.toast('Falta el ID exacto de la visita. No se ejecutó una conciliación.','err');return;}
       const prior=btn.textContent;btn.disabled=true;btn.textContent='Conciliando…';
+      const resultLabel=btn.closest('tr')?.querySelector('[data-fin-reconcile-diagnostic]');
+      const showDiagnostic=(code,status)=>{if(resultLabel)resultLabel.textContent=status+' · '+code+' · visita '+visitId+' · período '+String(data.currentPeriodId||'sin período');};
       try{
-        const r=await data.reconcileFinanceVisit(visitId,{ackAware:true,reason:'admin-finance-reconcile'});
-        if(!(r?.ok===true&&r?.status==='committed'&&r?.providerAck===true&&r?.successUiAllowed===true))throw new Error(r?.code||'FINANCE_RECONCILE_ACK_REQUIRED');
-        try{if(CX.backend?.refresh)await CX.backend.refresh();}catch(_){}
-        ui.toast('Conciliación financiera confirmada · lista para revisión de lote','ok',4200);
+        const result=await cxFinanceReconcileWithProof(data,visitId,'admin-finance-reconcile');
+        if(!result.ok){
+          const label=result.providerAck===true?'ACK registrado; lectura protegida pendiente':'Proveedor rechazó la conciliación';
+          showDiagnostic(result.code,result.providerAck===true?'ACK pendiente de lectura':'Sin ACK');
+          ui.toast(label+' · '+result.code,'warn',6500);
+          return;
+        }
+        showDiagnostic('FINANCE_RECONCILE_CONFIRMED','ACK y lectura protegida');
+        ui.toast('Conciliación confirmada con ACK y lectura protegida','ok',4200);
         draw();
       }catch(error){
-        ui.toast('No se concilió: la fuente financiera sigue incompleta o no hubo ACK durable.','warn',4800);
+        const diagnostic=cxFinanceReconcileFailure(null,error);
+        showDiagnostic(diagnostic.code,'Sin confirmación');
+        ui.toast('Conciliación no confirmada · '+diagnostic.code,'warn',6500);
       }finally{
         if(btn.isConnected){btn.disabled=false;btn.textContent=prior;}
       }
@@ -931,7 +982,7 @@ CX.module('liquidaciones', ({data,ui})=>{
           ${canRecordInternalPayment(l)?'<button class="btn btn-green btn-sm" id="liqDetailPay">Registrar pago interno</button>':''}
         </div>`,
       {onMount:(ov,close)=>{
-        ov.querySelector('#liqDetailReconcile')?.addEventListener('click',async()=>{const btn=ov.querySelector('#liqDetailReconcile');btn.disabled=true;btn.textContent='Conciliando…';try{const r=await data.reconcileFinanceVisit(l.visitaId,{ackAware:true,reason:'admin-finance-liquidation-detail-reconcile'});if(!(r?.ok===true&&r?.status==='committed'&&r?.providerAck===true&&r?.successUiAllowed===true))throw new Error(r?.code||'FINANCE_RECONCILE_ACK_REQUIRED');close();try{await CX.backend?.refresh?.();}catch(_){}draw();ui.toast('Conciliación financiera confirmada','ok');}catch(_){btn.disabled=false;btn.textContent='Conciliar fuente';ui.toast('No se concilió: falta fuente financiera exacta o ACK durable.','warn',4200);}});
+        ov.querySelector('#liqDetailReconcile')?.addEventListener('click',async()=>{const btn=ov.querySelector('#liqDetailReconcile');btn.disabled=true;btn.textContent='Conciliando…';try{const r=await cxFinanceReconcileWithProof(data,l.visitaId,'admin-finance-liquidation-detail-reconcile');if(!r.ok){ui.toast((r.providerAck===true?'ACK registrado; lectura pendiente':'Conciliación rechazada')+' · '+r.code,'warn',6500);return;}close();draw();ui.toast('Conciliación confirmada con ACK y lectura protegida','ok');}catch(error){const diag=cxFinanceReconcileFailure(null,error);ui.toast('Conciliación no confirmada · '+diag.code,'warn',6500);}finally{if(btn.isConnected){btn.disabled=false;btn.textContent='Conciliar fuente';}}});
         ov.querySelector('#liqDetailPay')?.addEventListener('click',()=>{close();host.querySelector('[data-payone="'+l.visitaId+'"]')?.click();});
       }});
     }));
