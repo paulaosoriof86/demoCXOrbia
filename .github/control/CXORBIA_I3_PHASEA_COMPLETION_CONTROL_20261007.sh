@@ -54,7 +54,7 @@ materialize)
   test "$SERVICE" = "cxorbia-live-hr-dev"
   test "$HOSTING_SITE" = "cxorbia-backend-dev"
   test "$FIREBASE_HOSTING_TARGET" = "cxorbia-dev"
-  (cd "$OUT" && sha256sum -c cxorbia-phasea-source.tar.sha256)
+  sha256sum -c "$OUT/cxorbia-phasea-source.tar.sha256"
   IMAGE_URI="gcr.io/$PROJECT/$SERVICE:i3-phasea-$(printf '%s' "$PHASEA_SOURCE"|cut -c1-12)-$GITHUB_RUN_ID"
   gcloud builds submit "$PHASEA_SOURCE_DIR" --project "$PROJECT" --config "$PHASEA_SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE_URI" --quiet
   gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$IMAGE_URI" --min-instances=1 --max-instances=1 --update-env-vars "$LEGAL_ENABLE_NAME=$LEGAL_ENABLE_VALUE,$LEGAL_GATE_NAME=$LEGAL_GATE_VALUE,$I3_HR_CACHE_PIN_NAME=$I3_HR_CACHE_PIN_VALUE" --quiet
@@ -84,7 +84,7 @@ materialize)
   ;;
 
 proof)
-  (cd "$OUT" && sha256sum -c cxorbia-phasea-source.tar.sha256)
+  sha256sum -c "$OUT/cxorbia-phasea-source.tar.sha256"
   gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$OUT/runtime-final.json"
   test "$(jq -r '.status.latestReadyRevisionName // empty' "$OUT/runtime-final.json")" = "$PHASEA_RUNTIME"
   jq -r '[.source.files[] | select(.name=="firestore.rules") | .content][0] // empty' "$OUT/firestore-ruleset.json" > "$OUT/firestore-remote.rules"

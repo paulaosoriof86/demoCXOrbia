@@ -84,3 +84,10 @@ test('I3 Phase A existing DEV runner has one artifact, runtime build, rules and 
   assert.match(w,/\[i3-phasea-dev-materialize\]/);
   assert.doesNotMatch(s,/tya-plataforma\.web\.app/);
 });
+
+test('I3 Phase A exact source TAR is verified from repository workdir without duplicated output prefix',()=>{
+  const runner=read('.github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh');
+  assert.match(runner,/sha256sum "\$OUT\/cxorbia-phasea-source\.tar" > "\$OUT\/cxorbia-phasea-source\.tar\.sha256"/);
+  assert.equal((runner.match(/sha256sum -c "\$OUT\/cxorbia-phasea-source\.tar\.sha256"/g)||[]).length,2);
+  assert.doesNotMatch(runner,/\(cd "\$OUT" && sha256sum -c cxorbia-phasea-source\.tar\.sha256\)/);
+});
