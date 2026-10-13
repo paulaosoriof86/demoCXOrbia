@@ -111,6 +111,8 @@ jobs:
          node --test tools/qa/cxorbia-i3-b7-hf13-whatsapp-draft-source.test.mjs
          node --test tools/qa/cxorbia-i3-b7-hf15-assignment-actions-source.test.mjs
          node --test tools/qa/cxorbia-i3-b7-hf16-pending-count-parity-source.test.mjs
+         bash -n .github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh
+         node --test backend/runtime/hr-live-service/test/cxorbia-i3-phasea-completion-source-contract.test.mjs
   vrm143-151-source-reproof:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM143_151_SOURCE_REPROOF_REQUIRED' }}
@@ -6539,7 +6541,7 @@ jobs:
 
   b1-canonical-visible-identity-dev-materialization:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-phasea-dev-materialize]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env: {PHASEA_SOURCE: "${{ needs.canonical-candidate-authority.outputs.source_sha }}", PHASEA_TREE: "${{ needs.canonical-candidate-authority.outputs.source_tree }}"}

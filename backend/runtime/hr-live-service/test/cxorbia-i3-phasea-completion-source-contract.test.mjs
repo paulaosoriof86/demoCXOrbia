@@ -69,3 +69,18 @@ test('B2 self-display name validation uses real Unicode escapes and preserves HR
   assert.match(src,/displayNameActorUid=uid/);
   assert.match(src,/displayNameAuthority='shopper_self_profile'/);
 });
+
+test('I3 Phase A existing DEV runner has one artifact, runtime build, rules and hosting in one guarded lane',()=>{
+  const s=read('.github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh');
+  const w=read('.github/workflows/cxorbia-recovery-i3-dev-certification.yml');
+  assert.match(s,/gcloud builds submit "\$PHASEA_SOURCE_DIR"/);
+  assert.match(s,/gcloud run services update "\$SERVICE"/);
+  assert.match(s,/--only "firestore:rules,hosting:\$FIREBASE_HOSTING_TARGET"/);
+  assert.match(s,/firebaserules\.googleapis\.com/);
+  assert.match(s,/moduleBlobReadback\.pass==true/);
+  assert.match(s,/cxorbia-phasea-source\.tar/);
+  assert.match(s,/core\/automations\.js modules\/automatizaciones\.js core\/backend-cxdata-finance-read\.js/);
+  assert.match(s,/builds:1,runtimeDeploys:1,hostingDeploys:1,firestoreRulesDeploys:1/);
+  assert.match(w,/\[i3-phasea-dev-materialize\]/);
+  assert.doesNotMatch(s,/tya-plataforma\.web\.app/);
+});
