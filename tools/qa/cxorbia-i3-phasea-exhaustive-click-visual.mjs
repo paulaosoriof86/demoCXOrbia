@@ -283,7 +283,22 @@ try{
    }else if(!(await ov.locator('#rqSend').count()))throw new Error('FUNCTIONAL_DEFECT:DASHBOARD_DIRECT_CONTEXT_MODAL_MISSING');
  }
  await shot(page,'admin-dashboard');
- await nav(page,'postulaciones');a.requestShopper=await click(page,'#reqShopper');if(a.requestShopper){await page.waitForTimeout(250);const opts=await page.locator('.cx-ov:visible #rqSh option').allInnerTexts().catch(()=>[]);if(!opts.some(x=>/asignación vigente/i.test(x)))throw new Error('FUNCTIONAL_DEFECT:ADMIN_REQUEST_HR_TARGETS');}await shot(page,'admin-postulations');
+ await nav(page,'postulaciones');
+ /* I3 VRM-259 read-only hydrated badge parity: preserve current DEV artifact; no mutation. */
+ const postulationBadgeProbe=async(label)=>page.evaluate(label=>{
+   const data=window.CX?.data,active=typeof data?.activePosts==='function'?data.activePosts():null;
+   const expected=Number(data?.kpis?.()?.postPend||0),badge=document.querySelector('#nav-postulaciones .n-badge');
+   const text=badge?String(badge.textContent||'').trim():'',visible=!!badge&&getComputedStyle(badge).display!=='none';
+   const observed=text&&visible?Number(text):0;
+   const activePending=Array.isArray(active)?active.filter(p=>String(p?.estado||p?.status||'').toLowerCase()==='pendiente').length:null;
+   return {label,route:String(window.CX?.session?.view||''),periodId:String(data?.currentPeriodId||''),expected,observed,rawBadge:text,visible,activePending,activeCount:Array.isArray(active)?active.length:null,match:!!badge&&Number.isFinite(observed)&&observed===expected&&(activePending===null||activePending===expected)};
+ },label);
+ a.postulationBadgeParity={afterNavigation:await postulationBadgeProbe('after_navigation_450ms')};
+ await page.waitForTimeout(900);
+ a.postulationBadgeParity.afterSettled=await postulationBadgeProbe('after_settled_1350ms');
+ if(!a.postulationBadgeParity.afterSettled.match)
+   finding('FUNCTIONAL_DEFECT','VRM259_POSTULATION_BADGE_HYDRATED_PARITY',a.postulationBadgeParity);
+ a.requestShopper=await click(page,'#reqShopper');if(a.requestShopper){await page.waitForTimeout(250);const opts=await page.locator('.cx-ov:visible #rqSh option').allInnerTexts().catch(()=>[]);if(!opts.some(x=>/asignación vigente/i.test(x)))throw new Error('FUNCTIONAL_DEFECT:ADMIN_REQUEST_HR_TARGETS');}await shot(page,'admin-postulations');
  await nav(page,'shoppers');a.shopperProfile=await click(page,'#shBody [data-sid]');if(a.shopperProfile&&!/banco|pago|cuenta|perfil/i.test(await overlay(page)))throw new Error('VISUAL_DEFECT:ADMIN_SHOPPER_PROFILE_BANKING');await shot(page,'admin-shopper-profile');
  const finPeriod=await page.evaluate(()=>{const d=CX.data,orig=d.currentPeriodId;for(const p of (d.projects||[]).slice().reverse()){try{d.setProject(p.id);if((CX.liq?.forProject?.(d)||[]).length)return{id:p.id,orig};}catch(_){}}d.setProject(orig);return{id:orig,orig};});
  await nav(page,'liquidaciones');a.liqSelectAll=await click(page,'#liqSelectAll');a.liqDetail=await click(page,'[data-ldetail]');if(a.liqDetail){await page.waitForTimeout(250);if(!/Detalle financiero/i.test(await overlay(page)))throw new Error('FUNCTIONAL_DEFECT:LIQ_DETAIL_MODAL');}await nav(page,'liquidaciones');a.individualPay=await click(page,'[data-payone]');if(a.individualPay){await page.waitForTimeout(250);if(!await page.locator('.cx-ov:visible #onePaySupport').count())throw new Error('FUNCTIONAL_DEFECT:INDIVIDUAL_PAYMENT_SUPPORT_UI');}await nav(page,'liquidaciones');await click(page,'#liqSelectAll');const pay=page.locator('#payDraft');if(await pay.count()&&await pay.isEnabled()){await pay.click();result.clickCount++;a.batchPay=true;await page.waitForTimeout(250);if(!await page.locator('.cx-ov:visible #batchPaySupport').count())throw new Error('FUNCTIONAL_DEFECT:BATCH_PAYMENT_SUPPORT_UI');}else a.batchPay=false;await shot(page,'admin-liquidations');
