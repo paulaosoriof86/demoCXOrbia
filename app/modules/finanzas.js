@@ -14,6 +14,20 @@ const REIMBURSEMENT_REQUIRES_CONFIRMED_SOURCE_CONTRACT='reimbursementSource_reem
 
 /* HF-20261012-22: present sanitized provider decision, never an invented reconciliation.
    This display-only diagnostic is NOT a payment, an HR write or persisted financial truth. */
+function cxFinanceReviewState(l,missingFields=[]){
+  const missing=Array.isArray(missingFields)?missingFields.filter(Boolean):[];
+  const source=String(l?.financialSourceStatus||'');
+  const exact=source==='reconciled_exact'||l?.financialMatch?.status==='reconciled_exact';
+  const hasCurrency=Boolean(String(l?.moneda||l?.currency||'').trim());
+  const hasAmount=l?.total!==null&&l?.total!==undefined&&l?.total!==''&&Number.isFinite(Number(l.total));
+  const sourceComplete=missing.length===0&&hasCurrency&&hasAmount;
+  const recorded=String(l?.paymentState||'')==='platform_recorded_pending_external_reconciliation';
+  const paid=Boolean(l?.paymentConfirmed===true&&l?.externalPaymentConfirmed===true&&String(l?.paymentSourceRef||'').trim());
+  const state=!sourceComplete?'Datos incompletos':exact?'Conciliación exacta':'Requiere conciliar';
+  const obligation=exact&&sourceComplete?'Fuente apta · obligación por revisar':'Obligación no cuantificable aún';
+  const payment=paid?'Pago externo confirmado por fuente':recorded?'Registro interno · falta confirmación externa':'Sin pago confirmado';
+  return {state,obligation,payment,sourceComplete,exact,recorded,paid};
+}
 function cxFinanceReconcileFailure(result,error){
   const candidates=[result?.code,result?.reason,result?.error?.code,error?.code,error?.message];
   const raw=candidates.map(v=>String(v==null?'':v).trim()).find(Boolean)||'FINANCE_RECONCILE_RESPONSE_UNAVAILABLE';
@@ -147,14 +161,14 @@ CX.module('financiero', ({data,ui})=>{
       const contractHit=isReviewByContract(l);
       const financialSourceStatus = l.financialSourceStatus || (faltan.length?'incomplete_fields':(contractHit?'pending_or_review':'complete'));
       const motivo = l.reviewRequired?'Revisión requerida por fuente':(l.liquidationState==='pending_financial_source'?'Liquidación pendiente de fuente financiera':(l.paymentState==='pending_source_confirmation'?'Pago pendiente de confirmación de fuente':(faltan.length?'Fuente financiera incompleta':'Pendiente de revisión')));
-      return {l,faltan,financialSourceStatus,motivo,include:(contractHit||faltan.length>0)}; }).filter(r=>r.include);
-    const sourceLabel=s=>s==='incomplete_fields'?'Datos incompletos':s==='complete'?'Información completa':'Pendiente de conciliación';
+      return {l,faltan,financialSourceStatus,motivo,reviewState:cxFinanceReviewState(l,faltan),include:(contractHit||faltan.length>0)}; }).filter(r=>r.include);
+    const sourceLabel=s=>s==='incomplete_fields'?'Datos incompletos':s==='complete'?'Información completa':s==='reconciled_exact'?'Conciliación exacta':s==='pending_financial_source'?'Fuente pendiente':'Pendiente de conciliación';
     if(!revs.length) return `<div class="card card-p" style="margin-bottom:16px"><div class="card-h"><div class="card-t">🔐 Revisiones financieras</div><span class="bdg bdg-g">0 pendientes</span></div><div style="font-size:12px;color:var(--t3)">No hay registros pendientes de revisión financiera en este periodo.</div></div>`;
     return `<div class="card card-p" style="margin-bottom:16px;border-color:#f3d9d9">
       <div class="card-h"><div class="card-t">🔐 Revisiones financieras</div><span class="bdg bdg-r">${revs.length} pendientes</span></div>
       <div style="font-size:11.5px;color:var(--t2);margin-bottom:10px">Estos registros necesitan completar o conciliar su información antes de incluirlos en un lote o confirmar un pago.</div>
-      <div class="scroll-hint" aria-label="Desliza para ver más" style="overflow-x:auto"><table class="tbl"><thead><tr><th>País</th><th>Moneda</th><th>Sucursal / visita</th><th>Shopper</th><th>Estado de información</th><th>Motivo</th><th>Campos faltantes</th><th>Revisión</th><th>Trazabilidad</th></tr></thead><tbody>
-      ${revs.map(r=>`<tr><td><b>${r.l.pais?CX.paisLabel(r.l.pais):'<span class="muted">—</span>'}</b></td><td>${r.l.moneda||'<span class="muted">—</span>'}</td><td style="font-size:12px">${r.l.sucursal||'—'}</td><td style="font-size:12px">${r.l.shopper||'—'}</td><td>${ui.bdg(sourceLabel(r.financialSourceStatus),'a')}</td><td style="font-size:11.5px">${r.motivo}</td><td style="font-size:11.5px">${r.faltan.length?r.faltan.join(', '):'—'}</td><td><button class="btn btn-pr btn-sm" data-fin-reconcile="${r.l.visitaId||''}" ${r.l.visitaId?'':'disabled'}>Conciliar</button><div data-fin-reconcile-diagnostic style="font-size:10.5px;color:var(--t2);margin-top:5px;overflow-wrap:anywhere" role="status"></div></td><td><details><summary style="cursor:pointer;font-size:11px">Ver contexto</summary><div style="font-size:10px;color:var(--t3);margin-top:5px">Estado de la información: ${sourceLabel(r.financialSourceStatus)}<br>Motivo: ${r.motivo||'Revisión requerida'}</div></details></td></tr>`).join('')}
+      <div class="scroll-hint" aria-label="Desliza para ver más" style="overflow-x:auto"><table class="tbl"><thead><tr><th>País</th><th>Moneda</th><th>Sucursal / visita</th><th>Shopper</th><th>Estado de información</th><th>Obligación</th><th>Pago</th><th>Motivo</th><th>Campos faltantes</th><th>Revisión</th><th>Trazabilidad</th></tr></thead><tbody>
+      ${revs.map(r=>`<tr><td><b>${r.l.pais?CX.paisLabel(r.l.pais):'<span class="muted">—</span>'}</b></td><td>${r.l.moneda||'<span class="muted">—</span>'}</td><td style="font-size:12px">${r.l.sucursal||'—'}</td><td style="font-size:12px">${r.l.shopper||'—'}</td><td>${ui.bdg(r.reviewState.state,'a')}</td><td style="font-size:11px">${r.reviewState.obligation}</td><td style="font-size:11px">${r.reviewState.payment}</td><td style="font-size:11.5px">${r.motivo}</td><td style="font-size:11.5px">${r.faltan.length?r.faltan.join(', '):'—'}</td><td><button class="btn btn-pr btn-sm" data-fin-reconcile="${r.l.visitaId||''}" ${r.l.visitaId?'':'disabled'}>Conciliar</button><div data-fin-reconcile-diagnostic style="font-size:10.5px;color:var(--t2);margin-top:5px;overflow-wrap:anywhere" role="status"></div></td><td><details><summary style="cursor:pointer;font-size:11px">Ver contexto</summary><div style="font-size:10px;color:var(--t3);margin-top:5px">Estado de la información: ${sourceLabel(r.financialSourceStatus)}<br>Motivo: ${r.motivo||'Revisión requerida'}</div></details></td></tr>`).join('')}
       </tbody></table></div>
       <div style="margin-top:10px;font-size:11px;color:var(--t3)">🔒 Pago y lote permanecen bloqueados hasta completar la información requerida.</div>
     </div>`;

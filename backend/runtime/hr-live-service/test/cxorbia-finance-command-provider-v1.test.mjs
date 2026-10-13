@@ -483,3 +483,31 @@ test('HF-20261012-22 ACK never shown as full reconciliation until unique exact p
   assert.equal(duplicate.ok,false);assert.equal(duplicate.code,'FINANCE_RECONCILE_READBACK_AMBIGUOUS');assert.equal(duplicate.providerAck,true);
   assert.equal(uiSuccess,0);
 });
+
+test('HF-20261012-23 independent source, obligation, internal ledger and external paid states',()=>{
+  const source=fs.readFileSync('app/modules/finanzas.js','utf8');
+  const start=source.indexOf('function cxFinanceReviewState('),end=source.indexOf('function cxFinanceReconcileFailure(',start);
+  assert.ok(start>=0&&end>start,'exact financial review stage owner');
+  const classify=new Function(source.slice(start,end)+'return cxFinanceReviewState;')();
+  const blocked=classify({financialSourceStatus:'pending_or_review',moneda:'Q',total:null},['monto total']);
+  assert.equal(blocked.sourceComplete,false);
+  assert.equal(blocked.state,'Datos incompletos');
+  assert.equal(blocked.obligation,'Obligación no cuantificable aún');
+  assert.equal(blocked.payment,'Sin pago confirmado');
+  const pending=classify({financialSourceStatus:'pending_financial_source',moneda:'L',total:100},[]);
+  assert.equal(pending.state,'Requiere conciliar');assert.equal(pending.paid,false);
+  const reconciled=classify({financialSourceStatus:'reconciled_exact',moneda:'Q',total:200,paymentState:'not_scheduled'},[]);
+  assert.equal(reconciled.exact,true);assert.equal(reconciled.payment,'Sin pago confirmado');
+  assert.equal(reconciled.obligation,'Fuente apta · obligación por revisar');
+  const platform=classify({financialSourceStatus:'reconciled_exact',moneda:'Q',total:200,paymentState:'platform_recorded_pending_external_reconciliation',paymentConfirmed:true},[]);
+  assert.equal(platform.recorded,true);assert.equal(platform.paid,false);
+  assert.equal(platform.payment,'Registro interno · falta confirmación externa');
+  const externallyConfirmed=classify({financialSourceStatus:'reconciled_exact',moneda:'L',total:200,paymentConfirmed:true,externalPaymentConfirmed:true,paymentSourceRef:'bank-source-confirmed'},[]);
+  assert.equal(externallyConfirmed.paid,true);assert.equal(externallyConfirmed.payment,'Pago externo confirmado por fuente');
+  const notPaidFromInternal=classify({financialSourceStatus:'reconciled_exact',moneda:'Q',total:250,paymentConfirmed:true,externalPaymentConfirmed:false,paymentSourceRef:'platform-receipt-only'},[]);
+  assert.equal(notPaidFromInternal.paid,false);
+  assert.match(source,/<th>Obligación<\/th><th>Pago<\/th>/);
+  assert.match(source,/r\.reviewState\.obligation/);
+  assert.match(source,/r\.reviewState\.payment/);
+});
+
