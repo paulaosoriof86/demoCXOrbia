@@ -440,12 +440,28 @@ CX.module('movimientos', ({data,ui})=>{
         })()}
         <div style="font-size:11px;color:var(--t3);margin-top:8px">Los <b>financiamientos</b> no son utilidad: se suman a CxP hasta devolverse.</div>
       </div>
-      <div class="card card-p"><div class="card-h"><div class="card-t">Cuentas por pagar</div></div>
+      <div class="card card-p" id="cxpMonthCard"><div class="card-h"><div class="card-t">Cuentas por pagar · ${per}</div><span class="muted" style="font-size:11px">Vista mensual · ${cxpAccounts.length} cuentas</span></div>
         ${cxpAccounts.length?`<input class="inp" id="cxpFind" placeholder="🔍 Buscar concepto/beneficiario…" style="margin-bottom:8px;padding:5px 9px;font-size:12px">`:''}
         <div id="cxpBody">${cxpAccounts.length?cxpAccounts.map(r=>`<div class="between cxpRow" style="padding:7px 0;border-bottom:1px solid var(--border-2)"><div style="cursor:pointer" data-cxdet="cxp:${r.id}"><b style="font-size:12px">${r.concepto}</b><div style="font-size:10px;color:var(--t3)">${r.pais||'<span class="bdg bdg-n" style="font-size:9px">Pendiente de moneda</span>'} · ${r.estado||'pendiente'} · saldo ↗ ver detalle</div></div><div class="flex" style="gap:8px"><b style="font-size:12.5px;color:var(--amber)">${r.pais&&p.currency[r.pais]?ui.money(p.currency[r.pais],r.saldo||0):(r.moneda?ui.money(r.moneda,r.saldo||0):'Pendiente de moneda')}</b>${currencyOf(r)!==PENDING_CURRENCY?`<button class="btn btn-soft btn-sm" data-abono="${r.id}">Abonar</button>`:ui.bdg('Revisión · sin moneda','r')}</div></div>`).join(''):''}
-        ${derivedLiqCxps.length?`<div style="font-size:10.5px;font-weight:700;color:var(--t3);text-transform:uppercase;margin:8px 0 4px">CxP derivada de liquidaciones exactas</div>${derivedLiqCxps.slice(0,8).map(l=>`<div class="between cxpRow" style="padding:7px 0;border-bottom:1px solid var(--border-2)"><div><b style="font-size:12px">Liquidación pendiente · ${l.shopper||'Shopper'}</b><div style="font-size:10px;color:var(--t3)">${l.pais||''} · ${l.estado||'conciliada_pendiente_pago'} · fuente exacta, pago pendiente</div></div><b style="font-size:12.5px;color:var(--amber)">${ui.money(currencyOf(l),l.total||0)}</b></div>`).join('')}${derivedLiqCxps.length>8?`<div class="muted" style="font-size:11px;padding:5px 0">+${derivedLiqCxps.length-8} liquidación(es) exacta(s) adicionales</div>`:''}`:''}
+        ${derivedLiqCxps.length?`<div style="font-size:10.5px;font-weight:700;color:var(--t3);text-transform:uppercase;margin:8px 0 4px">CxP derivada de liquidaciones exactas</div>${derivedLiqCxps.map(l=>`<div class="between cxpRow" style="padding:7px 0;border-bottom:1px solid var(--border-2)"><div><b style="font-size:12px">Liquidación pendiente · ${l.shopper||'Shopper'}</b><div style="font-size:10px;color:var(--t3)">${l.pais||''} · ${l.estado||'conciliada_pendiente_pago'} · fuente exacta, pago pendiente</div></div><b style="font-size:12.5px;color:var(--amber)">${ui.money(currencyOf(l),l.total||0)}</b></div>`).join('')}`:''}
         ${derivedLiqReviews.length?`<div style="font-size:11px;color:var(--red);margin-top:8px">🔒 ${derivedLiqReviews.length} liquidación(es) en revisión financiera visibles, excluidas de CxP pagable.</div>`:''}
         ${!cxpAccounts.length&&!derivedLiqCxps.length?'<div class="muted" style="font-size:12px;padding:8px 0">Sin CxP registradas ni liquidaciones exactas por pagar. Útil al importar saldos iniciales.</div>':''}</div>
+      </div>
+    </div>
+
+
+    <div class="card card-p" id="cxcMonthCard" style="margin-bottom:16px">
+      <div class="card-h"><div class="card-t">Cuentas por cobrar · ${per}</div><span class="muted" style="font-size:11px">Vista mensual · ${cxcAccounts.length} cuentas</span></div>
+      <div style="font-size:11.5px;color:var(--t2);margin-bottom:10px">Las cuentas se consultan desde el mismo registro financiero del proyecto. Un cobro interno no acredita recepción bancaria externa.</div>
+      ${cxcAccounts.length?'<input class="inp" id="cxcFind" placeholder="Buscar cuenta por cobrar de este período" style="margin-bottom:8px;padding:6px 9px;font-size:12px">':''}
+      <div id="cxcBody" style="max-height:440px;overflow-y:auto">
+        ${cxcAccounts.length?cxcAccounts.map(r=>`<div class="between cxcRow" style="padding:8px 0;border-bottom:1px solid var(--border-2);gap:10px;flex-wrap:wrap">
+          <div><button class="btn btn-ghost btn-sm" type="button" data-cxdet="cxc:${r.id}">Detalle</button> <b style="font-size:12.5px">${r.concepto||'Cuenta por cobrar'}</b>
+          <div class="muted" style="font-size:11px">${r.pais||r.country||'País pendiente'} · ${r.status||r.estado||'pendiente'} · vence ${r.vence||r.dueDate||'sin fecha'}</div></div>
+          <div class="flex wrap" style="gap:8px;align-items:center">
+            <b style="font-size:13px">${currencyOf(r)===PENDING_CURRENCY?'Moneda pendiente':ui.money(curOfRow(r),Number(r.balance??r.saldo)||0)}</b>
+            ${currencyOf(r)!==PENDING_CURRENCY?`<button type="button" class="btn btn-soft btn-sm" data-cxc-apply="${r.id}">Registrar cobro interno</button>`:ui.bdg('Revisión · sin moneda','a')}
+          </div></div>`).join(''):'<div class="muted" style="font-size:12px">Sin cuentas por cobrar activas en este período.</div>'}
       </div>
     </div>
 
@@ -610,13 +626,29 @@ CX.module('movimientos', ({data,ui})=>{
         const amount=Math.abs(+ov.querySelector('#fnM').value||0),country=ov.querySelector('#fnP').value,fuente=(ov.querySelector('#fnF').value||'').trim(),concepto=(ov.querySelector('#fnC').value||'').trim()||'Financiamiento';
         if(!amount){ui.toast('Ingresa un monto mayor a cero','warn');return;}
         const btn=ov.querySelector('#fnSave');btn.disabled=true;try{if(connectedFinance()){const ack=await data.createFinancialMovement({tipo:'ingreso',tipoIngreso:'financiamiento',cat:concepto,concepto,beneficiario:fuente,pais:country,country,moneda:fnCur(),currency:fnCur(),monto:amount,amount,fecha:new Date().toISOString().slice(0,10),desc:fuente?('Fuente: '+fuente):concepto},{ackAware:true,reason:'admin-financing-create'});if(!(ack?.ok&&ack?.providerAck))throw new Error('FINANCE_MOVEMENT_ACK_REQUIRED');await refreshDurableFinance(true);}else CX.finStore.addFinanciamiento(p.id,{fuente,concepto,monto:amount,pais:country,moneda:fnCur()});close();draw();ui.toast('Financiamiento confirmado · flujo no operativo + CxP vinculada','ok',3600);}catch(_){btn.disabled=false;ui.toast('No se registró el financiamiento: faltó confirmación durable.','err');}});}}));
+    const cxcF=host.querySelector('#cxcFind');
+    if(cxcF)cxcF.addEventListener('input',()=>{const q=cxcF.value.toLowerCase();host.querySelectorAll('#cxcBody .cxcRow').forEach(row=>{row.style.display=row.textContent.toLowerCase().includes(q)?'':'none';});});
     const cxpF=host.querySelector('#cxpFind');
     if(cxpF)cxpF.addEventListener('input',()=>{const q=cxpF.value.toLowerCase();host.querySelectorAll('#cxpBody .cxpRow').forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(q)?'':'none';});});
     host.querySelectorAll('[data-delm]').forEach(b=>b.addEventListener('click',()=>{if(connectedFinance()){ui.toast('El movimiento durable no se elimina localmente. Usa un ajuste/contramovimiento auditado.','warn',4200);return;}CX.finStore.delMov(pid(),b.dataset.delm);draw();ui.toast('Movimiento eliminado','');}));
     host.querySelectorAll('[data-cxdet]').forEach(el=>el.addEventListener('click',()=>{
       const [kind,id]=el.dataset.cxdet.split(':');
       const arr=kind==='cxc'?cxcAccounts:cxpAccounts;
+
       const r=arr.find(x=>x.id===id); if(!r)return;
+      if(connectedFinance()){
+        const safe=v=>String(v==null?'':v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+        ui.modal((kind==='cxc'?'Cuenta por cobrar':'Cuenta por pagar')+' · '+safe(r.concepto||r.id),`
+          <div style="font-size:12.5px;line-height:1.9">
+            <div><b>Proyecto y período:</b> ${safe(canonicalProjectId())} · ${safe(canonicalPeriodId)}</div>
+            <div><b>País / moneda:</b> ${safe(r.country||r.pais||'sin país')} · ${safe(r.currency||r.moneda||'sin moneda')}</div>
+            <div><b>Saldo de fuente:</b> ${currencyOf(r)===PENDING_CURRENCY?'Pendiente de moneda':ui.money(curOfRow(r),Number(r.balance??r.saldo)||0)}</div>
+            <div><b>Estado:</b> ${safe(r.status||'open')} · <b>Origen:</b> ${safe(r.origin||'desconocido')}</div>
+            <div><b>Referencia:</b> ${safe(r.sourceRef||'pendiente')}</div>
+          </div>
+          <div style="font-size:12px;color:var(--t2);margin-top:12px">No se puede editar o eliminar directamente una cuenta protegida desde el navegador. Usa un abono o cobro registrado mediante proveedor y lectura confirmada, o solicita una corrección de origen autorizada.</div>`);
+        return;
+      }
       const estados=kind==='cxc'?['pendiente','parcial','cobrada','incobrable']:['pendiente','parcial','pagada','programada'];
       ui.modal((kind==='cxc'?'⏳ Cuenta por cobrar':'💸 Cuenta por pagar')+' · '+r.concepto,`
         <div style="font-size:12.5px;line-height:1.9;color:var(--t2);margin-bottom:12px">
@@ -758,6 +790,35 @@ CX.module('movimientos', ({data,ui})=>{
         if(k==='cxc')CX.finStore.addCxc(pid(),r);else CX.finStore.addCxp(pid(),r);close();draw();ui.toast('Cuenta por '+(k==='cxc'?'cobrar':'pagar')+' registrada','ok');});}});
     }));
 
+    host.querySelectorAll('[data-cxc-apply]').forEach(btn=>btn.addEventListener('click',()=>{
+      const rec=cxcAccounts.find(x=>String(x.id)===String(btn.dataset.cxcApply||''));
+      if(!rec||!connectedFinance()||scope==='global'){ui.toast('Cobro no disponible sin fuente financiera protegida.','warn');return;}
+      const current=Number(rec.balance??rec.saldo),currency=currencyOf(rec);
+      if(!Number.isFinite(current)||current<=0||currency===PENDING_CURRENCY){ui.toast('Cuenta sin saldo o moneda resueltos.','warn');return;}
+      ui.modal('Registrar cobro interno · '+(rec.concepto||'CxC'),`
+        <div style="font-size:12px;color:var(--t2);margin-bottom:12px">Saldo de fuente: ${ui.money(curOfRow(rec),current)}. El registro interno no acredita recepción bancaria sin fuente externa.</div>
+        <label class="lbl">Monto del cobro (${curOfRow(rec)})</label><input class="inp" id="cxcApplyAmount" type="number" min="0.01" max="${current}" step="0.01" value="${current}">
+        <div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" id="cxcApplySave">Registrar con ACK</button></div>
+      `,{onMount:(ov,close)=>{const save=ov.querySelector('#cxcApplySave');save.addEventListener('click',async()=>{
+        const raw=ov.querySelector('#cxcApplyAmount').value,amount=Number(raw);
+        if(raw===''||!Number.isFinite(amount)||amount<=0||amount>current){ui.toast('El cobro debe ser positivo y no superar el saldo confirmado.','warn');return;}
+        save.disabled=true;save.textContent='Registrando…';let committed=false;
+        try{
+          if(typeof data.applyFinanceAccount!=='function')throw new Error('FINANCE_ACCOUNT_PROVIDER_UNAVAILABLE');
+          const ack=await data.applyFinanceAccount(rec.id,amount,{ackAware:true,fecha:new Date().toISOString().slice(0,10),desc:'Cobro interno CxC'});
+          if(!(ack?.ok===true&&ack?.status==='committed'&&ack?.providerAck===true))throw new Error(String(ack?.code||'FINANCE_ACCOUNT_ACK_REQUIRED'));
+          committed=true;
+          if(!await refreshDurableFinance(true))throw new Error('FINANCE_ACCOUNT_READBACK_UNAVAILABLE');
+          const read=durableAccounts.find(x=>String(x.id)===String(rec.id));
+          if(!read||Math.abs(Number(read.balance??read.saldo)-Math.max(0,current-amount))>0.01)throw new Error('FINANCE_ACCOUNT_READBACK_MISMATCH');
+          close();draw();ui.toast('Cobro interno registrado con ACK y lectura protegida. Confirmación bancaria independiente.','ok',5000);
+        }catch(error){
+          ui.toast((committed?'ACK registrado; lectura de saldo pendiente':'Cobro no registrado')+' · '+String(error?.message||'FINANCE_ACCOUNT_ERROR'),'warn',5500);
+          save.disabled=false;save.textContent='Registrar con ACK';
+        }
+      });}});
+    }));
+
     host.querySelectorAll('[data-abono]').forEach(b=>b.addEventListener('click',()=>{
       const r=(connectedFinance()?cxpAccounts:CX.finStore.cxp(pid())).find(x=>x.id===b.dataset.abono);
       if(!r||currencyOf(r)===PENDING_CURRENCY){ui.toast('Cuenta sin moneda resuelta: resuélvela en “ver detalle” antes de abonar','warn');return;} /* R31: abono fail-closed */
@@ -765,7 +826,27 @@ CX.module('movimientos', ({data,ui})=>{
         <div style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Saldo actual: <b>${r.pais?ui.money(curOfRow(r),Number(r.balance??r.saldo)||0):'Pendiente de moneda'}</b></div>
         <label class="lbl">Monto del abono (${curOfRow(r)})</label><input class="inp" id="abMonto" type="number" value="${Number(r.balance??r.saldo)||0}" style="margin-bottom:14px">
         <div style="text-align:right"><button class="btn btn-green btn-sm" id="abSave">Registrar abono</button></div>
-      `,{onMount:(ov,close)=>{ov.querySelector('#abSave').addEventListener('click',async()=>{const amount=Math.abs(+ov.querySelector('#abMonto').value||0);if(!amount){ui.toast('Ingresa un monto mayor a cero','warn');return;}const btn=ov.querySelector('#abSave');btn.disabled=true;try{if(connectedFinance()){const ack=await data.applyFinanceAccount(r.id,amount,{ackAware:true,fecha:new Date().toISOString().slice(0,10),desc:'Abono CxP'});if(!(ack?.ok&&ack?.providerAck))throw new Error('FINANCE_ACCOUNT_ACK_REQUIRED');await refreshDurableFinance(true);}else CX.finStore.abonarCxp(pid(),r.id,amount);close();draw();ui.toast('Abono confirmado · CxP reducida','ok');}catch(_){btn.disabled=false;ui.toast('No se registró el abono: faltó confirmación durable.','err');}});}});
+      `,{onMount:(ov,close)=>{ov.querySelector('#abSave').addEventListener('click',async()=>{
+        const raw=ov.querySelector('#abMonto').value,amount=Number(raw),before=Number(r.balance??r.saldo);
+        if(raw===''||!Number.isFinite(amount)||amount<=0||!Number.isFinite(before)||amount>before){
+          ui.toast('Abono inválido: confirma un monto positivo que no supere el saldo.','warn');return;
+        }
+        const btn=ov.querySelector('#abSave');btn.disabled=true;let committed=false;
+        try{
+          if(connectedFinance()){
+            const ack=await data.applyFinanceAccount(r.id,amount,{ackAware:true,fecha:new Date().toISOString().slice(0,10),desc:'Abono interno CxP'});
+            if(!(ack?.ok===true&&ack?.status==='committed'&&ack?.providerAck===true))throw new Error(String(ack?.code||'FINANCE_ACCOUNT_ACK_REQUIRED'));
+            committed=true;
+            if(!await refreshDurableFinance(true))throw new Error('FINANCE_ACCOUNT_READBACK_UNAVAILABLE');
+            const read=durableAccounts.find(row=>String(row.id)===String(r.id));
+            if(!read||Math.abs(Number(read.balance??read.saldo)-Math.max(0,before-amount))>0.01)throw new Error('FINANCE_ACCOUNT_READBACK_MISMATCH');
+          }else CX.finStore.abonarCxp(pid(),r.id,amount);
+          close();draw();ui.toast(connectedFinance()?'Abono interno registrado con ACK y lectura protegida. Confirmación externa pendiente.':'Abono registrado en modo demostración','ok',5000);
+        }catch(error){
+          btn.disabled=false;
+          ui.toast((committed?'ACK registrado; lectura pendiente':'Abono no registrado')+' · '+String(error?.message||'FINANCE_ACCOUNT_ERROR'),'warn',5500);
+        }
+      });}});
     }));
 
     host.querySelectorAll('[data-fin-reconcile]').forEach(btn=>btn.addEventListener('click',async()=>{

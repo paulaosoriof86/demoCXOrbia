@@ -511,3 +511,42 @@ test('HF-20261012-23 independent source, obligation, internal ledger and externa
   assert.match(source,/r\.reviewState\.payment/);
 });
 
+
+test('HF-20261012-25 monthly CxP CxC provider ledger, client protections and UI readback',async()=>{
+  const src=fs.readFileSync('app/modules/finanzas.js','utf8');
+  assert.match(src,/id="cxpMonthCard"/);
+  assert.match(src,/id="cxcMonthCard"/);
+  assert.match(src,/data-cxc-apply/);
+  assert.match(src,/data\.applyFinanceAccount\(rec\.id,amount/);
+  assert.match(src,/data\.applyFinanceAccount\(r\.id,amount/);
+  assert.match(src,/FINANCE_ACCOUNT_READBACK_MISMATCH/);
+  assert.match(src,/No se puede editar o eliminar directamente una cuenta protegida/);
+  assert.doesNotMatch(src,/derivedLiqCxps\.slice\(0,8\)/);
+  assert.match(src,/if\(connectedFinance\(\)\)\{\s*const safe=v=>/);
+  assert.match(src,/return;\s*\}\s*const estados=kind==='cxc'/);
+  assert.match(src,/data-cxdet="cxc:/);
+});
+
+test('HF-20261012-25 CxC internal collection uses existing durable finance.account.apply with no bank claim',async()=>{
+  const db=baseDb(),p=createFinanceCommandProvider({auth:new Auth(),db,policy}),id='account-cxc-oct';
+  const accountPath='tenants/tenant-a/financeAccounts/'+id;
+  db.seed(accountPath,{id,tenantId:'tenant-a',projectId:'project-a',periodId:'project-a-2026-10',kind:'cxc',
+    country:'GT',pais:'GT',currency:'Q',moneda:'Q',concepto:'Cobro cliente',balance:75,saldo:75,monto:75,version:1,status:'open'});
+  const cmd={version:'cxorbia-command-adapter-v1',commandType:'finance.account.apply',entityType:'financeAccount',
+    tenantId:'tenant-a',projectId:'project-a',periodId:'project-a-2026-10',entityId:id,
+    idempotencyKey:'hf25-internal-cxc-collect',expectedVersion:1,
+    authorization:{providerEnforcementRequired:true,permission:'finance.account.apply'},
+    payload:{accountId:id,amount:25,fecha:'2026-10-13',desc:'Cobro interno de prueba'}};
+  const first=await p.execute('token',cmd);
+  assert.equal(first.ok,true);assert.equal(first.providerAck,true);assert.equal(first.status,'committed');
+  assert.equal(first.externalPaymentConfirmed,false);assert.equal(first.bankWrites,0);
+  assert.equal(db.get(accountPath).balance,50);assert.equal(db.get(accountPath).version,2);
+  const mov=first.movement;assert.equal(mov.tipo,'ingreso');assert.equal(mov.tipoIngreso,'cobro_cxc');
+  assert.equal(mov.cashCollection,true);assert.equal(mov.revenueRecognized,false);
+  assert.equal(mov.currency,'Q');assert.equal(mov.country,'GT');
+  const replay=await p.execute('token',cmd);assert.equal(replay.ok,true);assert.equal(replay.idempotentReplay,true);
+  assert.equal(replay.providerWrites,0);assert.equal(db.get(accountPath).balance,50);
+  const wrong=await p.execute('token',{...cmd,idempotencyKey:'hf25-overdraw',expectedVersion:2,payload:{...cmd.payload,amount:100}});
+  assert.equal(wrong.ok,false);assert.match(wrong.code,/FINANCE_ACCOUNT_APPLY_AMOUNT_INVALID/);
+  assert.equal(db.get(accountPath).balance,50);
+});
