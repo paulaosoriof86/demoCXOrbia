@@ -394,6 +394,21 @@ test('HF-20261012-27 UI exposes one liquidation eligibility owner for row action
   assert.match(source,/data-blockreason/);
 });
 
+test('HF-20261012-21 finance dashboard exposes compact KPI hierarchy and five financial states without mixing country currencies',()=>{
+  const source=fs.readFileSync('app/modules/finanzas.js','utf8');
+  assert.match(source,/function cxFinanceKpiValue\(/);
+  assert.match(source,/function cxFinancePaymentKpiValue\(/);
+  assert.match(source,/data-fin-state="confirmed_value"/);
+  assert.match(source,/data-fin-state="pending_source"/);
+  assert.match(source,/data-fin-state="obligation_unpaid"/);
+  assert.match(source,/data-fin-state="internal_pending_external"/);
+  assert.match(source,/data-fin-state="external_confirmed"/);
+  assert.match(source,/data-fin-country=/);
+  assert.match(source,/data-fin-currency=/);
+  assert.match(source,/GTQ\/HNL/);
+  assert.doesNotMatch(source,/moneyOrPending=\(d,n,label='Pendiente de fuente\/configuración'\)=>Number\.isFinite\(n\)\?\(d\.cur\+' '\+n\.toLocaleString\(\)\):label/);
+});
+
 
 test('ADMIN-004 project.update boundary sends the canonical current version in the provider payload',()=>{
   const src=fs.readFileSync(new URL('../../../../app/adapters/cxorbia-cxdata-command-boundary-v1.js',import.meta.url),'utf8');

@@ -115,6 +115,54 @@ function _fin(data){
 }
 const _m=(cur,n)=>`${cur} ${Number(n).toLocaleString('es-GT')}`;
 
+function cxFinanceCurrencyLabel(cur){
+  const c=String(cur||'').trim();
+  if(c==='Q')return 'GTQ';
+  if(c==='L')return 'HNL';
+  return c||'moneda pendiente';
+}
+function cxFinanceKpiValue(d,n,{state='confirmed_value',detail='Fuente confirmada',pendingDetail='Fuente/configuración pendiente',tone='var(--t1)'}={}){
+  const cur=String(d?.cur||'').trim();
+  const curLabel=cxFinanceCurrencyLabel(cur); // GTQ/HNL permanecen separados por país; no se agregan monedas.
+  if(!Number.isFinite(n)){
+    return `<span class="fin-kpi-value fin-kpi-value--pending" data-fin-state="pending_source" title="${pendingDetail}" style="display:flex;flex-direction:column;gap:2px;min-width:0">
+      <b style="font-size:14px;line-height:1.15;color:var(--amber);white-space:nowrap">Pendiente</b>
+      <small style="font-size:10.5px;line-height:1.2;color:var(--t3);font-weight:600;overflow-wrap:anywhere">${pendingDetail}</small>
+    </span>`;
+  }
+  if(state==='obligation_unpaid'){
+    return `<span class="fin-kpi-value fin-kpi-value--obligation" data-fin-state="obligation_unpaid" title="${detail}" style="display:flex;flex-direction:column;gap:2px;min-width:0">
+      <b style="font-size:15px;line-height:1.15;color:var(--red);white-space:nowrap">${cur} ${Number(n).toLocaleString('es-GT')}</b>
+      <small style="font-size:10.5px;line-height:1.2;color:var(--t3);font-weight:600">${curLabel} · obligación registrada</small>
+    </span>`;
+  }
+  return `<span class="fin-kpi-value fin-kpi-value--confirmed" data-fin-state="confirmed_value" title="${detail}" style="display:flex;flex-direction:column;gap:2px;min-width:0">
+    <b style="font-size:15px;line-height:1.15;color:${tone};white-space:nowrap">${cur} ${Number(n).toLocaleString('es-GT')}</b>
+    <small style="font-size:10.5px;line-height:1.2;color:var(--t3);font-weight:600">${curLabel} · ${detail}</small>
+  </span>`;
+}
+function cxFinancePaymentKpiValue(d){
+  const paid=Number.isFinite(d?.honorarioPagado)?d.honorarioPagado:null;
+  const confirmed=Number(d?.pagosConfirmados||0)>0&&paid!==null;
+  const internal=Number(d?.pagosInternosPendientes||d?.registrosInternosPendientes||0)>0;
+  if(confirmed){
+    return `<span class="fin-kpi-value fin-kpi-value--paid" data-fin-state="external_confirmed" title="Pago externamente confirmado por fuente" style="display:flex;flex-direction:column;gap:2px;min-width:0">
+      <b style="font-size:15px;line-height:1.15;color:var(--green);white-space:nowrap">${d.cur} ${Number(paid).toLocaleString('es-GT')}</b>
+      <small style="font-size:10.5px;line-height:1.2;color:var(--t3);font-weight:600">${d.pagosConfirmados} pago(s) confirmado(s)</small>
+    </span>`;
+  }
+  if(internal){
+    return `<span class="fin-kpi-value fin-kpi-value--internal" data-fin-state="internal_pending_external" title="Registro interno de pago sin confirmación bancaria" style="display:flex;flex-direction:column;gap:2px;min-width:0">
+      <b style="font-size:14px;line-height:1.15;color:var(--brand);white-space:nowrap">Registrado</b>
+      <small style="font-size:10.5px;line-height:1.2;color:var(--t3);font-weight:600">pendiente confirmación bancaria</small>
+    </span>`;
+  }
+  return `<span class="fin-kpi-value fin-kpi-value--pending" data-fin-state="pending_source" title="Sin pagos confirmados en la fuente" style="display:flex;flex-direction:column;gap:2px;min-width:0">
+    <b style="font-size:14px;line-height:1.15;color:var(--t2);white-space:nowrap">Sin confirmar</b>
+    <small style="font-size:10.5px;line-height:1.2;color:var(--t3);font-weight:600">sin fuente bancaria externa</small>
+  </span>`;
+}
+
 CX.module('financiero', ({data,ui})=>{
   const p=data.period();
   const fp=CX.fin.porPais(data);
@@ -124,25 +172,25 @@ CX.module('financiero', ({data,ui})=>{
   const finCurPeriod=()=>{const cur=CX.fin.canonPeriods().find(x=>x.id===CX.fin.canonCurrentId());return cur?cur.label:'';};
   const modelLbl = p.modelo==='delegado' ? 'Delegado (franquicia)' : 'Facturado directamente';
 
-  const moneyOrPending=(d,n,label='Pendiente de fuente/configuración')=>Number.isFinite(n)?(d.cur+' '+n.toLocaleString()):label;
-  const tile=(c)=>{const d=fp[c];return `<div class="card card-p">
-    <div class="between" style="margin-bottom:10px"><div class="card-t finDrill" data-c="${c}" style="cursor:pointer">${CX.paisLabel(c)} <span class="muted" style="font-weight:500">(${d.cur})</span> <span style="font-size:11px;color:var(--brand)">ver visitas →</span></div>${Number.isFinite(d.margenPct)?ui.bdg(d.margenPct+'% margen',d.margenPct>=30?'g':'a'):ui.bdg('Margen · pendiente de fuente','n')}</div>
-    <div class="grid g2" style="gap:8px" class="finTileK" data-c="${c}" style="cursor:pointer">
-      <div class="finDrill" data-c="${c}" style="cursor:pointer">${ui.kpi('Ingresos',moneyOrPending(d,d.ingreso),'g',d.incomeSourceKnown?'Fuente configurada':'Pendiente de fuente/configuración')}</div>
-      <div class="finDrill" data-c="${c}" style="cursor:pointer">${ui.kpi('Honorarios devengados',moneyOrPending(d,d.honorarioDevengado,'Pendiente de fuente'),'r',Number.isFinite(d.honorarioDevengado)?'obligación · no implica pago':'Tarifa/honorario no disponible en HR ni configuración')}</div>
-      <div class="finDrill" data-c="${c}" style="cursor:pointer">${p.modelo==='directo'?ui.kpi('ISR ('+(p.isr||0)+'%)',moneyOrPending(d,d.isr),'a'):ui.kpi('Reembolsos',d.cur+' '+d.reemb.toLocaleString(),'n',d.reimbursementPartial?'Total conocido · parcial / pendiente de fuente':'Obligación operacional conocida')}</div>
-      <div class="finDrill" data-c="${c}" style="cursor:pointer">${p.modelo==='directo'?ui.kpi('Regalías ('+(p.regalias||0)+'%)',moneyOrPending(d,d.regal),'p'):ui.kpi('Por pagar',moneyOrPending(d,d.cxp,'Pendiente de fuente'),'a')}</div>
+  const moneyOrPending=(d,n,label='Fuente/configuración pendiente')=>cxFinanceKpiValue(d,n,{pendingDetail:label});
+  const tile=(c)=>{const d=fp[c];return `<div class="card card-p" data-fin-country="${c}" data-fin-currency="${cxFinanceCurrencyLabel(d.cur)}">
+    <div class="between" style="margin-bottom:10px;gap:10px"><div class="card-t finDrill" data-c="${c}" style="cursor:pointer;font-size:13px;line-height:1.25">${CX.paisLabel(c)} <span class="muted" style="font-weight:600">(${cxFinanceCurrencyLabel(d.cur)})</span> <span style="font-size:10.5px;color:var(--brand);white-space:nowrap">ver visitas →</span></div>${Number.isFinite(d.margenPct)?ui.bdg(d.margenPct+'% margen',d.margenPct>=30?'g':'a'):ui.bdg('Margen · pendiente','n')}</div>
+    <div class="grid g2 finTileK" style="gap:8px">
+      <div class="finDrill" data-c="${c}" style="cursor:pointer">${ui.kpi('Ingresos',cxFinanceKpiValue(d,d.ingreso,{detail:'fuente configurada',pendingDetail:'fuente de ingreso pendiente',tone:'var(--green)'}),'g',d.incomeSourceKnown?'Fuente configurada':'Pendiente de fuente/configuración')}</div>
+      <div class="finDrill" data-c="${c}" style="cursor:pointer">${ui.kpi('Honorarios devengados',cxFinanceKpiValue(d,d.honorarioDevengado,{state:'obligation_unpaid',detail:'obligación registrada no pagada',pendingDetail:'tarifa/honorario pendiente'}),'r',Number.isFinite(d.honorarioDevengado)?'Obligación registrada · no implica pago':'Tarifa/honorario no disponible en HR ni configuración')}</div>
+      <div class="finDrill" data-c="${c}" style="cursor:pointer">${p.modelo==='directo'?ui.kpi('ISR ('+(p.isr||0)+'%)',cxFinanceKpiValue(d,d.isr,{state:'obligation_unpaid',detail:'obligación tributaria registrada',pendingDetail:'base de ISR pendiente'}),'a'):ui.kpi('Reembolsos',cxFinanceKpiValue(d,d.reemb,{detail:d.reimbursementPartial?'total conocido parcial':'obligación operacional conocida',pendingDetail:'fuente de reembolso pendiente'}),'n',d.reimbursementPartial?'Total conocido · parcial / pendiente de fuente':'Obligación operacional conocida')}</div>
+      <div class="finDrill" data-c="${c}" style="cursor:pointer">${p.modelo==='directo'?ui.kpi('Regalías ('+(p.regalias||0)+'%)',cxFinanceKpiValue(d,d.regal,{state:'obligation_unpaid',detail:'obligación registrada',pendingDetail:'base de regalías pendiente'}),'p'):ui.kpi('Por pagar',cxFinanceKpiValue(d,d.cxp,{state:'obligation_unpaid',detail:'obligación registrada no pagada',pendingDetail:'fuente CxP pendiente'}),'a')}</div>
     </div>
     <div class="grid g2" style="gap:8px;margin-top:8px">
-      <div>${ui.kpi('Honorario por pagar',moneyOrPending(d,d.honorarioPorPagar,'Pendiente de fuente'),'a')}</div>
-      <div>${ui.kpi('Honorario pagado',Number.isFinite(d.honorarioPagado)?(d.cur+' '+d.honorarioPagado.toLocaleString()):'Pendiente de fuente',d.pagosConfirmados?'g':'n',d.pagosConfirmados?(d.pagosConfirmados+' pago(s) confirmado(s)'):'Sin pagos confirmados en la fuente')}</div>
+      <div>${ui.kpi('Honorario por pagar',cxFinanceKpiValue(d,d.honorarioPorPagar,{state:'obligation_unpaid',detail:'obligación registrada no pagada',pendingDetail:'fuente de honorario pendiente'}),'a')}</div>
+      <div>${ui.kpi('Honorario pagado',cxFinancePaymentKpiValue(d),d.pagosConfirmados?'g':'n',d.pagosConfirmados?(d.pagosConfirmados+' pago(s) confirmado(s)'):'Sin pagos confirmados en la fuente')}</div>
     </div>
-    <div class="between" style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border-2)">
+    <div class="between" style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border-2);gap:10px">
       <span style="font-size:12px;color:var(--t2)">Margen neto</span>
-      <b style="font-family:var(--disp);font-size:18px;color:${Number.isFinite(d.margen)?(d.margen>=0?'var(--green)':'var(--red)'):'var(--t3)'}">${moneyOrPending(d,d.margen)}</b></div>
+      <span style="text-align:right">${cxFinanceKpiValue(d,d.margen,{detail:'margen calculado por país',pendingDetail:'ingreso/costos pendientes',tone:Number.isFinite(d.margen)?(d.margen>=0?'var(--green)':'var(--red)'):'var(--t3)'})}</span></div>
     <div class="flex" style="gap:14px;margin-top:8px;font-size:11px;color:var(--t3)">
-      <span>Por cobrar: <b style="color:var(--t2)">${moneyOrPending(d,d.cxc)}</b></span>
-      <span>Por pagar: <b style="color:var(--t2)">${moneyOrPending(d,d.cxp,'Pendiente de fuente')}</b></span>
+      <span>Por cobrar: <b style="color:var(--t2)">${Number.isFinite(d.cxc)?(d.cur+' '+d.cxc.toLocaleString('es-GT')):'Pendiente'}</b></span>
+      <span>Por pagar: <b style="color:var(--t2)">${Number.isFinite(d.cxp)?(d.cur+' '+d.cxp.toLocaleString('es-GT')):'Pendiente'}</b></span>
       <span>Gastos fijos: <b style="color:var(--t2)" title="Presupuesto sin distribución por país/moneda confirmada — ver tarjeta de presupuesto pendiente">Pendiente de asignación</b></span></div>
   </div>`;};
 
