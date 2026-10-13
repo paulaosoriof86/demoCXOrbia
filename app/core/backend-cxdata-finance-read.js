@@ -8,7 +8,7 @@ window.CX = window.CX || {};
   async function call(method, input){
     const b = CX.backendFinanceBenefits;
     if(!b || typeof b[method] !== 'function'){
-      return Object.assign(empty(), {warning:'finance-bridge-not-ready'});
+      return Object.assign(empty(), {status:'blocked',ok:false,code:'FINANCE_READ_PROVIDER_UNAVAILABLE',warning:'finance-bridge-not-ready'});
     }
     return b[method](input || {});
   }

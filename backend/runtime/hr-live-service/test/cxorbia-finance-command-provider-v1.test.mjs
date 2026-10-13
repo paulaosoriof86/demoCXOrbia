@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import vm from 'node:vm';
 import {createFinanceCommandProvider} from '../../cxorbia-finance-command-provider-v1.mjs';
 import {commandProviderKind} from '../cxorbia-command-runtime-v1.mjs';
 
@@ -634,4 +635,48 @@ test('HF-20261012-25 CxC internal collection uses existing durable finance.accou
   const wrong=await p.execute('token',{...cmd,idempotencyKey:'hf25-overdraw',expectedVersion:2,payload:{...cmd.payload,amount:100}});
   assert.equal(wrong.ok,false);assert.match(wrong.code,/FINANCE_ACCOUNT_APPLY_AMOUNT_INVALID/);
   assert.equal(db.get(accountPath).balance,50);
+});
+
+test('HF24 missing finance read provider fails closed instead of returning successful empty finances',async()=>{
+  const source=fs.readFileSync(new URL('../../../../app/core/backend-cxdata-finance-read.js',import.meta.url),'utf8');
+  const CX={BACKEND:{enabled:true},data:{},bus:{emit(){}}};
+  const ctx={CX,window:{CX},document:{readyState:'complete'},Promise,console};
+  vm.runInNewContext(source,ctx);
+  const inputs={projectId:'project-a',periodId:'project-a-2026-10'};
+  for(const name of ['getFinancialMovements','getFinanceAccounts','getFinanceBudgets']){
+    const result=await CX.data[name](inputs);
+    assert.equal(result.status,'blocked',name+' must never fake status ok');
+    assert.equal(result.ok,false);
+    assert.equal(result.code,'FINANCE_READ_PROVIDER_UNAVAILABLE');
+    assert.equal(result.items.length,0);
+  }
+  CX.backendFinanceBenefits={
+    getFinancialMovements:async()=>({items:[{id:'mov-a'}],status:'ok'}),
+    getFinanceAccounts:async()=>({items:[],status:'ok'}),
+    getFinanceBudgets:async()=>({items:[],status:'ok'})
+  };
+  const live=await CX.data.getFinancialMovements(inputs);
+  assert.equal(live.status,'ok');assert.equal(live.items[0].id,'mov-a');
+});
+
+test('HF24 finance creation requires unique tenant scoped remote readback after provider ACK',()=>{
+  const s=fs.readFileSync(new URL('../../../../app/modules/finanzas.js',import.meta.url),'utf8');
+  const begin=s.indexOf('function cxFinanceCreatedReadback('),end=s.indexOf('/* END HF24 exact finance create readback */',begin);
+  assert.ok(begin>0&&end>begin);
+  const check=new Function(s.slice(begin,end)+'return cxFinanceCreatedReadback;')();
+  const ack={ok:true,providerAck:true,entityId:'a-1',tenantId:'tenant-a',projectId:'project-a',periodId:'project-a-2026-10'};
+  const row={id:'a-1',tenantId:'tenant-a',projectId:'project-a',periodId:'project-a-2026-10',pais:'GT',currency:'Q',monto:125,kind:'cxc'};
+  const match={country:'GT',currency:'Q',amount:125,kind:'cxc'};
+  assert.equal(check(ack,[row],match),true);
+  assert.equal(check(ack,[],match),false);
+  assert.equal(check({...ack,providerAck:false},[row],match),false);
+  assert.equal(check(ack,[row,row],match),false);
+  assert.equal(check(ack,[{...row,periodId:'project-a-2026-09'}],match),false);
+  assert.equal(check(ack,[{...row,currency:'L'}],match),false);
+  assert.equal(check(ack,[{...row,monto:250}],match),false);
+  assert.match(s,/FINANCE_MOVEMENT_READBACK_UNAVAILABLE/);
+  assert.match(s,/FINANCE_MOVEMENT_READBACK_MISMATCH/);
+  assert.match(s,/FINANCE_ACCOUNT_READBACK_UNAVAILABLE/);
+  assert.match(s,/FINANCE_ACCOUNT_READBACK_MISMATCH/);
+  assert.match(s,/Verifica antes de repetir/);
 });

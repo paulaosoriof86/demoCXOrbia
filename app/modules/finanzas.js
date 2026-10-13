@@ -95,6 +95,19 @@ async function cxFinanceReconcileWithProof(data,visitId,reason){
     :{ok:false,code:readback.code,providerAck:true};
 }
 
+/* HF24: provider ACK never equals independently proved financial readback. */
+function cxFinanceCreatedReadback(ack,items,expected){
+  if(ack?.ok!==true||ack?.providerAck!==true||!ack?.entityId||!Array.isArray(items))return false;
+  const matches=items.filter(x=>String(x?.id||'')===String(ack.entityId));
+  if(matches.length!==1)return false;
+  const row=matches[0],str=x=>String(x==null?'':x);
+  return str(row.tenantId)===str(ack.tenantId)&&str(row.projectId)===str(ack.projectId)&&str(row.periodId)===str(ack.periodId)
+    &&str(row.pais||row.country)===str(expected.country)&&str(row.moneda||row.currency)===str(expected.currency)
+    &&Number(row.amount??row.originalAmount??row.monto)===Number(expected.amount)
+    &&(!expected.kind||str(row.kind)===str(expected.kind));
+}
+/* END HF24 exact finance create readback */
+
 /* finance_review_queue_exposes_financialSourceStatus: la bandeja muestra el valor real de
    financialSourceStatus y filtra por reviewRequired/liquidationState/paymentState. */
 const FINANCE_REVIEW_QUEUE_CONTRACT=['reviewRequired','financialSourceStatus','liquidationState','paymentState'];
@@ -794,12 +807,19 @@ CX.module('movimientos', ({data,ui})=>{
         if(esIng)rec.tipoIngreso=ov.querySelector('#mvTipo').value; else rec.tipoEgreso=ov.querySelector('#mvTipo').value;
         if(connectedFinance()){
           if(scope==='global'||typeof data.createFinancialMovement!=='function'){ui.toast('Este alcance aún no tiene persistencia financiera durable habilitada.','warn');return;}
-          const btn=ov.querySelector('#mvSave'),prior=btn.textContent;btn.disabled=true;btn.textContent='Registrando…';
+          const btn=ov.querySelector('#mvSave'),prior=btn.textContent;btn.disabled=true;btn.textContent='Registrando…';let committed=false;
           try{
             const r=await data.createFinancialMovement(rec,{ackAware:true,reason:'admin-finance-movement-create'});
             if(!(r?.ok===true&&r?.status==='committed'&&r?.providerAck===true&&r?.successUiAllowed===true))throw new Error(r?.code||'FINANCE_MOVEMENT_ACK_REQUIRED');
-            await refreshDurableFinance(true);close();draw();ui.toast('Movimiento registrado y confirmado en la fuente financiera','ok');
-          }catch(error){btn.disabled=false;btn.textContent=prior;ui.toast('No se registró el movimiento: faltó confirmación durable.','err');}
+            committed=true;
+            if(!await refreshDurableFinance(true))throw new Error('FINANCE_MOVEMENT_READBACK_UNAVAILABLE');
+            if(!cxFinanceCreatedReadback(r,durableMovements,{country:rec.country,currency:rec.currency,amount:rec.amount}))
+              throw new Error('FINANCE_MOVEMENT_READBACK_MISMATCH');
+            close();draw();ui.toast('Movimiento registrado con ACK y lectura remota coincidente','ok');
+          }catch(error){
+            if(committed){btn.textContent='ACK registrado · relectura pendiente';ui.toast('Movimiento recibido por el proveedor; lectura pendiente. Verifica antes de repetir.','warn',5300);}
+            else {btn.disabled=false;btn.textContent=prior;ui.toast('Movimiento no confirmado por el proveedor.','err');}
+          }
           return;
         }
         CX.finStore.addMov(pid(),rec);close();draw();ui.toast('Movimiento registrado','ok');});}});
@@ -855,12 +875,19 @@ CX.module('movimientos', ({data,ui})=>{
         if(!r.amount||r.amount<=0){ui.toast('Ingresa un monto mayor a cero','warn');return;}
         if(connectedFinance()){
           if(scope==='global'||typeof data.createFinanceAccount!=='function'){ui.toast('Este alcance aún no tiene persistencia financiera durable habilitada.','warn');return;}
-          const btn=ov.querySelector('#ctSave'),prior=btn.textContent;btn.disabled=true;btn.textContent='Registrando…';
+          const btn=ov.querySelector('#ctSave'),prior=btn.textContent;btn.disabled=true;btn.textContent='Registrando…';let committed=false;
           try{
             const ack=await data.createFinanceAccount(k,r,{ackAware:true,reason:'admin-finance-account-create'});
             if(!(ack?.ok===true&&ack?.status==='committed'&&ack?.providerAck===true&&ack?.successUiAllowed===true))throw new Error(ack?.code||'FINANCE_ACCOUNT_ACK_REQUIRED');
-            await refreshDurableFinance(true);close();draw();ui.toast('Cuenta por '+(k==='cxc'?'cobrar':'pagar')+' registrada y confirmada','ok');
-          }catch(error){btn.disabled=false;btn.textContent=prior;ui.toast('No se registró la cuenta: faltó confirmación durable.','err');}
+            committed=true;
+            if(!await refreshDurableFinance(true))throw new Error('FINANCE_ACCOUNT_READBACK_UNAVAILABLE');
+            if(!cxFinanceCreatedReadback(ack,durableAccounts,{country:r.country,currency:r.currency,amount:r.amount,kind:k}))
+              throw new Error('FINANCE_ACCOUNT_READBACK_MISMATCH');
+            close();draw();ui.toast('Cuenta por '+(k==='cxc'?'cobrar':'pagar')+' registrada con ACK y lectura remota coincidente','ok');
+          }catch(error){
+            if(committed){btn.textContent='ACK registrado · relectura pendiente';ui.toast('Cuenta recibida por el proveedor; lectura pendiente. Verifica antes de repetir.','warn',5300);}
+            else {btn.disabled=false;btn.textContent=prior;ui.toast('Cuenta no confirmada por el proveedor.','err');}
+          }
           return;
         }
         if(k==='cxc')CX.finStore.addCxc(pid(),r);else CX.finStore.addCxp(pid(),r);close();draw();ui.toast('Cuenta por '+(k==='cxc'?'cobrar':'pagar')+' registrada','ok');});}});
