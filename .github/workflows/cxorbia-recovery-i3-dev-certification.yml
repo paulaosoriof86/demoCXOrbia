@@ -6541,7 +6541,7 @@ jobs:
 
   b1-canonical-visible-identity-dev-materialization:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-phasea-dev-materialize]') }}
+    if: ${{ github.event_name == 'push' && ((needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED' && contains(github.event.head_commit.message, '[i3-phasea-dev-materialize]')) || (needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_PHASEA_CUMULATIVE_DEV_READBACK_ONLY_REQUIRED' && contains(github.event.head_commit.message, '[i3-phasea-dev-readback]'))) }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env: {PHASEA_SOURCE: "${{ needs.canonical-candidate-authority.outputs.source_sha }}", PHASEA_TREE: "${{ needs.canonical-candidate-authority.outputs.source_tree }}"}
@@ -6556,7 +6556,10 @@ jobs:
         with: {credentials_json: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}"}
       - uses: google-github-actions/setup-gcloud@v2
         with: {project_id: "${{ env.PROJECT }}"}
-      - run: bash .github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh materialize
+      - if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED' }}
+        run: bash .github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh materialize
+      - if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_PHASEA_CUMULATIVE_DEV_READBACK_ONLY_REQUIRED' }}
+        run: bash .github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh readback
       - run: bash .github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh proof
       - uses: actions/upload-artifact@v4
         if: always()

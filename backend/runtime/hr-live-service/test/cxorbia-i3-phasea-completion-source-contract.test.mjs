@@ -91,3 +91,16 @@ test('I3 Phase A exact source TAR is verified from repository workdir without du
   assert.equal((runner.match(/sha256sum -c "\$OUT\/cxorbia-phasea-source\.tar\.sha256"/g)||[]).length,2);
   assert.doesNotMatch(runner,/\(cd "\$OUT" && sha256sum -c cxorbia-phasea-source\.tar\.sha256\)/);
 });
+
+test('I3 DEV previously-published artifact uses same job in readback-only mode with no extra build',()=>{
+  const runner=read('.github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh');
+  const workflow=read('.github/workflows/cxorbia-recovery-i3-dev-certification.yml');
+  assert.match(runner,/^readback\)$/m);
+  assert.match(runner,/gcloud builds describe "\$BUILD"/);
+  assert.match(runner,/test "\$DIGEST" = "\$EXPECTED_DIGEST"/);
+  assert.match(runner,/\.i3PhaseADevReadbackTarget\.production/);
+  assert.match(runner,/jq -j '\[\.source\.files\[\] \| select\(\.name=="firestore\.rules"\) \| \.content\]\[0\] \/\/ empty'/);
+  assert.match(workflow,/\[i3-phasea-dev-readback\]/);
+  assert.match(workflow,/HOLD_I3_PHASEA_CUMULATIVE_DEV_READBACK_ONLY_REQUIRED' \}\}\n        run: bash \.github\/control\/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007\.sh readback/);
+  assert.doesNotMatch(workflow,/run: bash \.github\/control\/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007\.sh materialize\n      - run: bash/);
+});
