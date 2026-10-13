@@ -6541,7 +6541,7 @@ jobs:
 
   b1-canonical-visible-identity-dev-materialization:
     needs: canonical-candidate-authority
-    if: ${{ github.event_name == 'push' && ((needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED' && contains(github.event.head_commit.message, '[i3-phasea-dev-materialize]')) || (needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_PHASEA_CUMULATIVE_DEV_READBACK_ONLY_REQUIRED' && contains(github.event.head_commit.message, '[i3-phasea-dev-readback]'))) }}
+    if: ${{ github.event_name == 'push' && needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED' && contains(github.event.head_commit.message, '[i3-phasea-dev-materialize]') || github.event_name == 'push' && needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_PHASEA_CUMULATIVE_DEV_READBACK_ONLY_REQUIRED' && contains(github.event.head_commit.message, '[i3-phasea-dev-readback]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env: {PHASEA_SOURCE: "${{ needs.canonical-candidate-authority.outputs.source_sha }}", PHASEA_TREE: "${{ needs.canonical-candidate-authority.outputs.source_tree }}"}
