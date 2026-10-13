@@ -5,6 +5,7 @@ const src=readFileSync('app/modules/postulaciones.js','utf8');
 const dataSource=readFileSync('app/core/data.js','utf8');
 const routerSource=readFileSync('app/core/router.js','utf8');
 const dashboardSource=readFileSync('app/modules/dashboard.js','utf8');
+const consistencyBridge=readFileSync('app/adapters/tya-c6-domain-consistency-bridge.js','utf8');
 
 const input=[
   {id:'status',status:'pendiente',periodId:'oct',pais:'GT'},
@@ -42,4 +43,12 @@ test('HF17 retains cumulative stage and active-agenda distinction until exact HR
   assert.match(dashboardSource,/\$\{cell\('Con fecha',f\.agend,'amber','agend'\)\}/);
   assert.match(src,/ui\.kpi\('Agendamientos activos',agendadas\.length,'n'\)/);
   assert.match(src,/Agendamientos pendientes de realizar/);
+});
+
+test('VRM259 late consistency bridge cannot override period scoped canonical pending count',()=>{
+  assert.match(consistencyBridge,/postPend:typeof this\.activePosts==='function'\?this\.activePosts\(\)\.filter/);
+  assert.doesNotMatch(consistencyBridge,/postPend:arr\(this\._posts\)\.filter/);
+  const activePending=active().filter(p=>String(p.estado||p.status||'').toLowerCase()==='pendiente').length;
+  assert.equal(activePending,2);
+  assert.notEqual(input.filter(p=>String(p.estado||p.status||'').toLowerCase()==='pendiente'&&!p._archived).length,activePending);
 });
