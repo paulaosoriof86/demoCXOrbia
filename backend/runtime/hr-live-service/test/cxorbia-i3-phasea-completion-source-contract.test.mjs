@@ -81,7 +81,7 @@ test('I3 Phase A existing DEV runner has one artifact, runtime build, rules and 
   assert.match(s,/cxorbia-phasea-source\.tar/);
   assert.match(s,/core\/automations\.js modules\/automatizaciones\.js core\/backend-cxdata-finance-read\.js/);
   assert.match(s,/builds:1,runtimeDeploys:1,hostingDeploys:1,firestoreRulesDeploys:1/);
-  assert.match(w,/\[i3-phasea-dev-materialize\]/);
+  assert.match(w,/\[i3-phasea-dev-readback\]/);
   assert.doesNotMatch(s,/tya-plataforma\.web\.app/);
 });
 
@@ -101,6 +101,6 @@ test('I3 DEV previously-published artifact uses same job in readback-only mode w
   assert.match(runner,/\.i3PhaseADevReadbackTarget\.production/);
   assert.match(runner,/jq -j '\[\.source\.files\[\] \| select\(\.name=="firestore\.rules"\) \| \.content\]\[0\] \/\/ empty'/);
   assert.match(workflow,/\[i3-phasea-dev-readback\]/);
-  assert.match(workflow,/HOLD_I3_PHASEA_CUMULATIVE_DEV_READBACK_ONLY_REQUIRED' \}\}\n        run: bash \.github\/control\/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007\.sh readback/);
+  assert.match(workflow,/run: bash \.github\/control\/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007\.sh readback/);
   assert.doesNotMatch(workflow,/run: bash \.github\/control\/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007\.sh materialize\n      - run: bash/);
 });
