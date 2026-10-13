@@ -145,6 +145,21 @@ function amountOf(v){
   if(total===null||total<0)return {ok:false,reason:'Monto financiero conciliado inválido'};
   return {ok:true,total};
 }
+function paymentDuplicateOf(v){
+  const state=str(v?.estado||v?.status).toLowerCase();
+  const internalRecorded=str(v?.paymentState).toLowerCase()==='platform_recorded_pending_external_reconciliation'||state==='liquidada'||Boolean(str(v?.loteId));
+  const externalPaid=['confirmed','payment_confirmed'].includes(str(v?.paymentState).toLowerCase())||Boolean(v?.paymentConfirmed===true&&v?.externalPaymentConfirmed===true&&str(v?.paymentSourceRef||v?.paymentRef));
+  if(externalPaid)return {ok:false,reason:'Pago externo confirmado; duplicado bloqueado'};
+  if(internalRecorded)return {ok:false,reason:'Registro interno previo; duplicado bloqueado'};
+  return {ok:true};
+}
+function paymentOperationalEligibilityOf(v){
+  const state=str(v?.estado||v?.status).toLowerCase();
+  const submitted=v?.submit===true||v?.submitted===true||v?.canonicalFacets?.submitted===true||Boolean(str(v?.submittedAt||v?.submitAt));
+  const operationalReady=state==='validada'||(state==='cuestionario'&&submitted);
+  if(!operationalReady)return {ok:false,reason:'Estado operativo validado requerido'};
+  return {ok:true};
+}
 function historicalFinanceAmount(v,project){
   const country=str(v?.pais||v?.country);
   if(!country)return {ok:false,reason:'País ausente'};
@@ -509,9 +524,10 @@ export function createFinanceCommandProvider({auth,db,policy,hrSnapshot=null,hrR
             const v=snap.data()||{};expectedPairs.push([id,versionOf(v)]);
             if(str(v.tenantId||command.tenantId)!==str(command.tenantId)||str(v.projectId||command.projectId)!==str(command.projectId)){reviewRequired.push({id,motivo:'Proyecto/tenant no coincide con el alcance'});continue;}
             if(str(v.periodId)!==str(command.periodId)){reviewRequired.push({id,motivo:'Periodo no coincide con el alcance activo'});continue;}
-            if(str(v.estado||v.status).toLowerCase()==='liquidada'||str(v.loteId)){reviewRequired.push({id,motivo:'Visita ya marcada como liquidada; no se sobrescribe'});continue;}
+            const duplicate=paymentDuplicateOf(v);if(!duplicate.ok){reviewRequired.push({id,motivo:duplicate.reason});continue;}
             const pais=str(v.pais||v.country),currency=str(v.currency||v.moneda);if(!pais){reviewRequired.push({id,motivo:'País ausente'});continue;}if(!currency){reviewRequired.push({id,motivo:'Moneda ausente'});continue;}
             const amount=amountOf(v);if(!amount.ok){reviewRequired.push({id,motivo:amount.reason});continue;}
+            const eligibility=paymentOperationalEligibilityOf(v);if(!eligibility.ok){reviewRequired.push({id,motivo:eligibility.reason});continue;}
             valid.push({id,ref:resolved.ref,v,pais,currency,total:amount.total});
           }
           if(str(command.expectedVersion)!==clientHash(expectedPairs))throw new Error('FINANCE_EXPECTED_VERSION_CONFLICT');

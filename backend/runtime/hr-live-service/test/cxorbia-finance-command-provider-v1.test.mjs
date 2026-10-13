@@ -324,6 +324,76 @@ test('ADMIN-004 missing config fails closed and payment batch rejects unreconcil
   const pay=await p.execute('token',command('finance.payment.batch'));assert.equal(pay.ok,true);assert.equal(pay.pagadas,0);assert.equal(pay.reviewRequired.length,1);assert.match(pay.reviewRequired[0].motivo,/Conciliación financiera exacta requerida/);
 });
 
+test('HF-20261012-27 payment batch rejects financially exact visits until operational state is submitted/validated',async()=>{
+  for(const state of ['realizada','cuestionario']){
+    const db=baseDb(),v=db.get('tenants/tenant-a/projects/project-a/visits/SEP!2');
+    v.estado=state;v.submit=false;v.financialSourceStatus='reconciled_exact';
+    v.canonicalFacets={submitted:false};v.submittedAt=null;
+    v.financialMatch={status:'reconciled_exact',total:195,country:'GT',currency:'Q'};
+    db.seed('tenants/tenant-a/projects/project-a/visits/SEP!2',v);
+    const p=createFinanceCommandProvider({auth:new Auth(),db,policy});
+    const pay=await p.execute('token',command('finance.payment.batch',{idempotencyKey:'hf27-block-state:'+state}));
+    assert.equal(pay.ok,true);
+    assert.equal(pay.pagadas,0);
+    assert.equal(pay.reviewRequired.length,1);
+    assert.match(pay.reviewRequired[0].motivo,/Estado operativo validado requerido/);
+    assert.equal(db.get('tenants/tenant-a/projects/project-a/visits/SEP!2').paymentState,undefined);
+  }
+});
+
+test('HF-20261012-27 payment batch rejects internal duplicate and external payment duplicates',async()=>{
+  for(const patch of [
+    {paymentState:'platform_recorded_pending_external_reconciliation',externalPaymentConfirmed:false,paymentSourceRef:null},
+    {paymentState:'payment_confirmed',paymentConfirmed:true,externalPaymentConfirmed:true,paymentSourceRef:'bank-confirmed:1'}
+  ]){
+    const db=baseDb(),v=db.get('tenants/tenant-a/projects/project-a/visits/SEP!2');
+    Object.assign(v,{estado:'cuestionario',submit:true,financialSourceStatus:'reconciled_exact',financialMatch:{status:'reconciled_exact',total:195,country:'GT',currency:'Q'}},patch);
+    db.seed('tenants/tenant-a/projects/project-a/visits/SEP!2',v);
+    const p=createFinanceCommandProvider({auth:new Auth(),db,policy});
+    const pay=await p.execute('token',command('finance.payment.batch',{idempotencyKey:'hf27-block-duplicate:'+String(patch.paymentState)}));
+    assert.equal(pay.ok,true);
+    assert.equal(pay.pagadas,0);
+    assert.equal(pay.reviewRequired.length,1);
+    assert.match(pay.reviewRequired[0].motivo,/pago|confirmado|duplic/i);
+    assert.equal(db.get('tenants/tenant-a/projects/project-a/visits/SEP!2').lastPaymentCommandId,undefined);
+  }
+});
+
+test('HF-20261012-27 payment batch records only selected eligible visits, separates currencies and is idempotent',async()=>{
+  const db=baseDb(),first=db.get('tenants/tenant-a/projects/project-a/visits/SEP!2');
+  Object.assign(first,{estado:'cuestionario',submit:true,canonicalFacets:{submitted:true},financialSourceStatus:'reconciled_exact',
+    financialMatch:{status:'reconciled_exact',total:195,country:'GT',currency:'Q'}});
+  db.seed('tenants/tenant-a/projects/project-a/visits/SEP!2',first);
+  db.seed('tenants/tenant-a/projects/project-a/visits/SEP!3',{id:'SEP!3',visitId:'SEP!3',tenantId:'tenant-a',projectId:'project-a',periodId:'project-a-2026-09',hrRowId:'SEP!3',
+    shopperId:'shopper-2',shopper:'Shopper HN',sucursal:'HN 1',pais:'HN',currency:'L',estado:'cuestionario',submit:true,canonicalFacets:{submitted:true},
+    financialSourceStatus:'reconciled_exact',financialMatch:{status:'reconciled_exact',total:300,country:'HN',currency:'L'},version:4});
+  db.seed('tenants/tenant-a/projects/project-a/visits/SEP!4',{id:'SEP!4',visitId:'SEP!4',tenantId:'tenant-a',projectId:'project-a',periodId:'project-a-2026-09',hrRowId:'SEP!4',
+    shopperId:'shopper-3',pais:'GT',currency:'Q',estado:'cuestionario',submit:true,canonicalFacets:{submitted:true},
+    financialSourceStatus:'reconciled_exact',financialMatch:{status:'reconciled_exact',total:100,country:'GT',currency:'Q'},version:5});
+  const cmd=command('finance.payment.batch',{idempotencyKey:'hf27-selected-multicurrency',expectedVersion:clientHashTest([['live-visit-1',3],['live-visit-2',4]]),
+    payload:{visitIds:['live-visit-1','live-visit-2'],visitRefs:[{visitId:'live-visit-1',hrRowId:'SEP!2'},{visitId:'live-visit-2',hrRowId:'SEP!3'}],fechaPago:'2026-10-13',referencia:'hf27-internal'}});
+  const p=createFinanceCommandProvider({auth:new Auth(),db,policy});
+  const firstAck=await p.execute('token',cmd),replay=await p.execute('token',cmd);
+  assert.equal(firstAck.ok,true);assert.equal(firstAck.providerAck,true);assert.equal(firstAck.pagadas,2);
+  assert.equal(firstAck.loteIds.length,2);
+  assert.equal(firstAck.externalPaymentConfirmed,false);assert.equal(firstAck.bankWrites,0);
+  assert.equal(replay.ok,true);assert.equal(replay.idempotentReplay,true);assert.equal(replay.providerWrites,0);
+  assert.equal(db.get('tenants/tenant-a/projects/project-a/visits/SEP!2').paymentState,'platform_recorded_pending_external_reconciliation');
+  assert.equal(db.get('tenants/tenant-a/projects/project-a/visits/SEP!3').paymentState,'platform_recorded_pending_external_reconciliation');
+  assert.equal(db.get('tenants/tenant-a/projects/project-a/visits/SEP!2').paymentSourceRef,null);
+  assert.equal(db.get('tenants/tenant-a/projects/project-a/visits/SEP!4').paymentState,undefined);
+});
+
+test('HF-20261012-27 UI exposes one liquidation eligibility owner for row actions, detail and selection',()=>{
+  const source=fs.readFileSync('app/modules/finanzas.js','utf8');
+  assert.match(source,/function cxFinanceLiquidationEligibility\(/);
+  assert.match(source,/Estado operativo validado requerido/);
+  assert.match(source,/Registro interno previo/);
+  assert.match(source,/Pago externo confirmado/);
+  assert.match(source,/canRecordInternalPayment=l=>cxFinanceLiquidationEligibility\(l,/);
+  assert.match(source,/data-blockreason/);
+});
+
 
 test('ADMIN-004 project.update boundary sends the canonical current version in the provider payload',()=>{
   const src=fs.readFileSync(new URL('../../../../app/adapters/cxorbia-cxdata-command-boundary-v1.js',import.meta.url),'utf8');
