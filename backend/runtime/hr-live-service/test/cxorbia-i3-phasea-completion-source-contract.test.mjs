@@ -41,7 +41,7 @@ test('frozen historical payment cut is explicit and September remains non-inferr
 
 test('admin dashboard/postulations and reservation source expose real interaction owners',()=>{
   const d=read('app/modules/dashboard.js'),p=read('app/modules/postulaciones.js'),r=read('app/modules/reservas.js'),c=read('app/adapters/cxorbia-cxdata-command-boundary-v1.js');
-  assert.match(d,/class="bdSel"/);assert.match(d,/bdBulkRequest/);assert.match(d,/bdBulkAgenda/);assert.match(d,/CX_PENDING_ADMIN_OPERATION_ACTION/);
+  assert.match(d,/class="bdSel"/);assert.match(d,/bdBulkRequest/);assert.match(d,/bdBulkAgenda/);assert.match(d,/CX\.adminPostulacionesActions/);assert.match(d,/handoff\('request',requireSelected\(\)\)/);
   assert.match(p,/const requestTargets=/);assert.match(p,/sourceType:'operational_assignment'/);assert.match(p,/pushDurable/);
   assert.match(r,/createReservation/);assert.match(r,/setReservationStatus/);assert.match(r,/deleteReservation/);assert.match(r,/future_only/);
   assert.match(c,/reservation\.create/);assert.match(c,/reservation\.status\.update/);assert.match(c,/reservation\.delete/);
@@ -66,8 +66,8 @@ test('B2 self-display name validation uses real Unicode escapes and preserves HR
   assert.equal(rejects.test('Ana<Corregida'),true,'HTML delimiters rejected');
   assert.equal(rejects.test('Ana\nCorregida'),true,'control characters rejected');
   assert.match(src,/SHOPPER_HR_MANAGED_FIELDS_IMMUTABLE/);
-  assert.match(src,/displayNameActorUid=uid/);
-  assert.match(src,/displayNameAuthority='shopper_self_profile'/);
+  assert.match(src,/patch\.displayNameActorUid=selfScoped\?uid:actor\.uid/);
+  assert.match(src,/patch\.displayNameAuthority=selfScoped\?'shopper_self_profile':'staff_authorized_profile'/);
 });
 
 test('I3 Phase A existing DEV runner has one artifact, runtime build, rules and hosting in one guarded lane',()=>{
