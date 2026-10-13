@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "cxorbia.i3.run1537.vrm259.same-artifact.v1",
+  "date": "2026-10-13",
+  "iteration": "I3",
+  "decision": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+  "sourceSha": "53150fc84b9b345d8bd30a48cd1f2d2e4487c478",
+  "sourceTree": "04b20202bb4009a94b50087fd7fc4cefbfa0a7ad",
+  "dev": {
+    "run": 38473661604,
+    "artifactId": 11852638788,
+    "runtimeRevision": "cxorbia-live-hr-dev-00286-jb4",
+    "runtimeDigest": "sha256:b7114351c830bcb34fa8323f34f0e6a98f3dd03b20045f26bdd18f251d6f30a4",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/bc6db64a0a0182fe"
+  },
+  "sameArtifactE2E": {
+    "run": 38474329808,
+    "jobId": 115561291696,
+    "evidenceArtifactId": 11853074141,
+    "evidenceZipSha256": "a8898ea5187096b5fd5a80fcb7d9931e597548e0992ac4bdff79dfbb93294b25",
+    "hrRevision": "2e3b2aaff2b1ac7a9323c9a69a16d2ad97beb25648c642e1464d72e36917ad70",
+    "decisions": [
+      "PASS_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL",
+      "PASS_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE",
+      "PASS_I3_ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE",
+      "PASS_VRM168_PROVIDER_SCHEDULE_PATH",
+      "PASS_PREI4_FINAL_FOCAL_FINANCE",
+      "PASS_PREI4_CERT_RES_CUMULATIVE_DEV_LIVE"
+    ],
+    "badge": {
+      "period": "cinepolis-2026-10",
+      "after450ms": {
+        "kpi": 0,
+        "active": 0,
+        "badge": 0,
+        "match": true
+      },
+      "after1350ms": {
+        "kpi": 0,
+        "active": 0,
+        "badge": 0,
+        "match": true
+      }
+    },
+    "population": {
+      "currentHrVisits": 44,
+      "assignedHrVisits": 41,
+      "duplicateActivePrincipals": 0,
+      "unresolvedMemberships": 0
+    },
+    "cleanup": {
+      "postulationsAndReservations": true,
+      "finance": true,
+      "schedule": true
+    },
+    "production": false,
+    "builds": 0,
+    "deploys": 0
+  },
+  "humanB7": {
+    "readyToReview": true,
+    "visualPass": false,
+    "role": "Admin",
+    "project": "Cinépolis",
+    "period": "Octubre 2026",
+    "devUrl": "https://cxorbia-backend-dev.web.app/",
+    "routes": [
+      "Dashboard Operativo",
+      "Gestión de Postulaciones",
+      "Reservas & Asignación"
+    ]
+  },
+  "remainingP0": [
+    "HF22 remote rejection codes",
+    "HF24 independent scoped country currency period readbacks",
+    "HF28 two Admin tenant-shared persistence",
+    "remaining B1-B9 human and functional closure"
+  ],
+  "i3": "HOLD",
+  "gate20": "PENDING",
+  "gate21": "PENDING",
+  "i4": "BLOCKED",
+  "production": "DO_NOT_TOUCH"
+}
