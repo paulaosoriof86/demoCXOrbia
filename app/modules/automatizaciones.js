@@ -6,6 +6,7 @@ CX.module('automatizaciones', ({data,ui})=>{
 
   const draw=()=>{
     const list=A.list(), hookStatus=A.hookStatus(), log=A.log(), aic=AI.cfg();
+    const remote=A.configStatus();
     const scan=A.scanPendientes();
 
     const autoRow=(a)=>`<tr>
@@ -20,6 +21,7 @@ CX.module('automatizaciones', ({data,ui})=>{
 
     host.innerHTML=`
     ${ui.ph('Automatizaciones & Integraciones', 'Conecta eventos de la operación con tu orquestador de automatizaciones, WhatsApp, correo/Outlook y Sheets · IA opcional')}
+    ${CX.BACKEND?.enabled===true?`<div class="card card-p" role="status" style="margin-bottom:12px;font-size:12px">${remote.ready?'Plantillas compartidas del tenant · confirmadas por Firestore':'Configuración remota no disponible · '+String(remote.error||'cargando').replace(/[<>&]/g,'')}</div>`:'<div class="muted" style="font-size:11px">Preferencias locales de demostración · no compartidas</div>'}
     <div class="card card-p" style="margin-bottom:14px;background:var(--brand-light);border-color:#cfe6f7">
       <div style="font-size:12.5px;color:var(--brand-dark)">Cada evento del flujo puede disparar una <b>conexión con tu orquestador de automatizaciones</b>, un WhatsApp, un correo (Outlook/Gmail) o una fila en Sheets. Ejemplos mostrados con datos <b>anonimizados</b> (industria: red de farmacias).</div>
       <div style="font-size:11px;color:#92400e;margin-top:8px">🔒 <b>Pendiente de activación por tenant.</b> En el prototipo, los eventos solo se registran en el log local (simulación). El envío real, los envíos de WhatsApp/correo y las llamadas de IA se ejecutan desde el sistema central, no desde el navegador.</div>
@@ -86,10 +88,33 @@ CX.module('automatizaciones', ({data,ui})=>{
   };
 
   const bind=()=>{
-    host.querySelectorAll('.autoTog').forEach(c=>c.addEventListener('change',()=>{if(!CX.permissions.gate('automation.configure',CX.permissions.ctx(),ui)){c.checked=!c.checked;return;}A.update(c.dataset.id,{activa:c.checked});ui.toast('Automatización '+(c.checked?'activada':'desactivada'),'ok');}));
-    host.querySelectorAll('.autoCanal').forEach(s=>s.addEventListener('change',()=>{if(!CX.permissions.gate('automation.configure',CX.permissions.ctx(),ui)){draw();return;}A.update(s.dataset.id,{canal:s.value});}));
-    host.querySelectorAll('.autoTpl').forEach(i=>i.addEventListener('change',()=>{if(!CX.permissions.gate('automation.configure',CX.permissions.ctx(),ui)){draw();return;}A.update(i.dataset.id,{plantilla:i.value});}));
-    host.querySelector('#hookSave').addEventListener('click',()=>{if(!CX.permissions.gate('automation.configure',CX.permissions.ctx(),ui))return;const on=host.querySelector('#hookReady').checked;A.setHookRequested(on);ui.toast(on?'Marcado como listo para conectar (vista previa) · sin credencial real guardada · pendiente de activación':'Preferencia retirada','ok');draw();});
+    const saveRemote=async(control,operation)=>{
+      control.disabled=true;
+      try{
+        const result=await operation();
+        if(CX.BACKEND?.enabled===true&&!((result?.ok===true)&&(result?.providerAck===true)&&(result?.readback===true)))
+          throw new Error('AUTOMATION_ACK_READBACK_REQUIRED');
+        ui.toast(CX.BACKEND?.enabled===true?'Preferencia guardada y verificada en el tenant':'Preferencia de demostración local','ok');
+      }catch(error){ui.toast('No se confirmó el guardado remoto · '+String(error?.message||'AUTOMATION_WRITE_FAILED').replace(/[<>&]/g,''),'err',4800);}
+      finally{draw();}
+    };
+    host.querySelectorAll('.autoTog').forEach(c=>c.addEventListener('change',()=>{
+      if(!CX.permissions.gate('automation.configure',CX.permissions.ctx(),ui)){draw();return;}
+      saveRemote(c,()=>A.update(c.dataset.id,{activa:c.checked}));
+    }));
+    host.querySelectorAll('.autoCanal').forEach(s=>s.addEventListener('change',()=>{
+      if(!CX.permissions.gate('automation.configure',CX.permissions.ctx(),ui)){draw();return;}
+      saveRemote(s,()=>A.update(s.dataset.id,{canal:s.value}));
+    }));
+    host.querySelectorAll('.autoTpl').forEach(i=>i.addEventListener('change',()=>{
+      if(!CX.permissions.gate('automation.configure',CX.permissions.ctx(),ui)){draw();return;}
+      saveRemote(i,()=>A.update(i.dataset.id,{plantilla:i.value}));
+    }));
+    host.querySelector('#hookSave').addEventListener('click',()=>{
+      if(!CX.permissions.gate('automation.configure',CX.permissions.ctx(),ui))return;
+      const button=host.querySelector('#hookSave'),wants=host.querySelector('#hookReady').checked;
+      saveRemote(button,()=>A.setHookRequested(wants));
+    });
     host.querySelector('#hookTest').addEventListener('click',()=>{if(!CX.permissions.gate('integration.test',CX.permissions.ctx(),ui))return;const requested=A.hookRequested();A._pushLog({fecha:new Date().toISOString().slice(0,16).replace('T',' '),canal:'sheet',evento:'test',titulo:'Disparo de prueba (local)',txt:'Datos de evento de prueba preparados · envío real pendiente de activación',estado:requested?'pending_backend':'not_requested'});draw();ui.toast(requested?'Disparo simulado (vista previa) · envío real pendiente de activación':'Marca la preferencia de conexión primero','ok');});
     host.querySelectorAll('[data-int]').forEach(b=>b.addEventListener('click',()=>{if(!CX.permissions.gate('integration.configure',CX.permissions.ctx(),ui))return;if(b.dataset.int==='Outlook / M365'){AI.save({_outlook:true});ui.toast('Outlook preparado (demo) · conexión real de correo y calendario pendiente de activación','ok');draw();}else ui.toast(b.dataset.int+': preparado (demo) · conexión real pendiente de activación','ok');}));
     host.querySelector('#scanBtn').addEventListener('click',()=>{const r=A.notifyPendientes();ui.toast(r.alertas+' alerta(s) de visitas atrasadas preparadas · pendiente de confirmación/autorización','ok',3200);draw();});
@@ -108,5 +133,8 @@ CX.module('automatizaciones', ({data,ui})=>{
   };
 
   draw();
+  if(CX.BACKEND?.enabled===true){
+    A.loadConfig().then(()=>draw()).catch(()=>draw());
+  }
   return host;
 });

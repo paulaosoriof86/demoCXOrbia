@@ -266,5 +266,152 @@ window.CX = window.CX || {};
       return {alertas:n, ...s};
     },
   };
+
+  /* HF-20261012-28 — provider-backed tenant template settings.
+     Firebase remote transaction is the sole connected-mode authority; never assert
+     WhatsApp/email delivery without a separately activated provider receipt. */
+  (function installDurableTenantTemplates(A){
+    const original={
+      list:A.list.bind(A),save:A.save.bind(A),update:A.update.bind(A),
+      reset:A.reset.bind(A),hookRequested:A.hookRequested.bind(A),
+      setHookRequested:A.setHookRequested.bind(A)
+    };
+    const status={};
+    const connected=()=>!!(CX.BACKEND&&CX.BACKEND.enabled===true);
+    const scope=()=>{
+      const tenant=String((CX.BACKEND&&CX.BACKEND.tenantId)||(CX.backend&&typeof CX.backend.tenantId==='function'&&CX.backend.tenantId())||'').trim();
+      if(!tenant)throw new Error('AUTOMATION_TENANT_REQUIRED');
+      return tenant;
+    };
+    const rows=(items)=>{
+      if(!Array.isArray(items))throw new Error('AUTOMATION_REMOTE_TEMPLATES_INVALID');
+      const allowed=new Map(defaults().map(a=>[a.id,a]));
+      const byId=new Map();
+      for(const row of items){
+        if(!row||!allowed.has(row.id)||byId.has(row.id))throw new Error('AUTOMATION_REMOTE_TEMPLATE_ID_INVALID');
+        const base=allowed.get(row.id),channel=String(row.canal||'');
+        if(typeof row.activa!=='boolean'||!Object.prototype.hasOwnProperty.call(A.CANALES,channel)||
+           typeof row.plantilla!=='string'||row.plantilla.length>2000)
+          throw new Error('AUTOMATION_REMOTE_TEMPLATE_FIELDS_INVALID');
+        byId.set(row.id,{...base,activa:row.activa,canal:channel,plantilla:row.plantilla});
+      }
+      return defaults().map(a=>byId.get(a.id)||a);
+    };
+    const provider=()=>{
+      if(!window.firebase||!firebase.apps||!firebase.apps.length)throw new Error('AUTOMATION_FIREBASE_NOT_READY');
+      const app=firebase.app(),auth=typeof app.auth==='function'?app.auth():firebase.auth();
+      if(!auth.currentUser||!auth.currentUser.uid)throw new Error('AUTOMATION_AUTH_REQUIRED');
+      const db=typeof app.firestore==='function'?app.firestore():firebase.firestore();
+      if(!db||typeof db.runTransaction!=='function')throw new Error('AUTOMATION_FIRESTORE_NOT_READY');
+      const tenant=scope(),ref=db.collection('tenants').doc(tenant).collection('automations').doc('tenant-event-templates');
+      return {db,ref,tenant,uid:auth.currentUser.uid};
+    };
+    const applyRemote=(tenant,snap)=>{
+      const doc=snap.exists?snap.data():null;
+      if(doc&&String(doc.tenantId)!==tenant)throw new Error('AUTOMATION_REMOTE_TENANT_MISMATCH');
+      const state={
+        ready:true,version:doc?Number(doc.version||0):0,
+        templates:doc?rows(doc.templates):defaults(),
+        hookRequested:doc?doc.hookRequested===true:false,
+        error:null
+      };
+      if(!Number.isSafeInteger(state.version)||state.version<0)throw new Error('AUTOMATION_REMOTE_VERSION_INVALID');
+      status[tenant]=state;
+      return state;
+    };
+    A.configStatus=function(){
+      if(!connected())return {ready:true,preview:true};
+      const tenant=scope(),s=status[tenant];
+      return s&&s.ready?{ready:true,version:s.version,tenantId:tenant,provider:'firestore'}:
+        {ready:false,tenantId:tenant,error:s&&s.error||'AUTOMATION_REMOTE_READ_REQUIRED'};
+    };
+    A.loadConfig=async function(force){
+      if(!connected())return {ok:true,preview:true};
+      const tenant=scope(),s=status[tenant];
+      if(s&&s.ready&&!force)return {ok:true,providerReadback:true,version:s.version};
+      if(s&&s.pending)return s.pending;
+      const task=(async()=>{
+        try{
+          const p=provider();
+          const snap=await p.ref.get({source:'server'});
+          const state=applyRemote(p.tenant,snap);
+          CX.bus&&CX.bus.emit('automations');
+          return {ok:true,providerReadback:true,version:state.version};
+        }catch(error){
+          status[tenant]={ready:false,error:String(error&&error.message||'AUTOMATION_REMOTE_READ_FAILED')};
+          return {ok:false,providerReadback:false,code:status[tenant].error};
+        }
+      })();
+      status[tenant]={ready:false,pending:task};
+      return task;
+    };
+    A.list=function(){
+      if(!connected())return original.list();
+      const s=status[scope()];
+      return s&&s.ready?s.templates.map(x=>({...x})):[];
+    };
+    A.save=function(list){
+      if(!connected())return original.save(list);
+      throw new Error('AUTOMATION_CONNECTED_BULK_LOCAL_SAVE_DENIED');
+    };
+    A.update=async function(id,patch){
+      if(!connected())return original.update(id,patch);
+      if(!patch||Object.keys(patch).some(k=>!['activa','canal','plantilla'].includes(k)))
+        throw new Error('AUTOMATION_PATCH_INVALID');
+      return A._commitRemote({id:String(id||''),patch});
+    };
+    A.hookRequested=function(){
+      if(!connected())return original.hookRequested();
+      const s=status[scope()];return !!(s&&s.ready&&s.hookRequested);
+    };
+    A.setHookRequested=async function(wants){
+      if(!connected())return original.setHookRequested(wants);
+      return A._commitRemote({hookRequested:wants===true});
+    };
+    A.reset=function(){
+      if(!connected())return original.reset();
+      throw new Error('AUTOMATION_CONNECTED_RESET_REQUIRES_AUTHORIZED_COMMAND');
+    };
+    A._commitRemote=async function(change){
+      const p=provider(),prior=status[p.tenant];
+      if(!prior||!prior.ready)throw new Error('AUTOMATION_REMOTE_READ_REQUIRED');
+      const operationId='automation:'+String(Date.now())+':'+String(crypto&&crypto.randomUUID?crypto.randomUUID():Math.random());
+      let expectedVersion=prior.version;
+      try{
+        const committed=await p.db.runTransaction(async tx=>{
+          const snap=await tx.get(p.ref),source=snap.exists?snap.data():null;
+          const version=source?Number(source.version||0):0;
+          if(!Number.isSafeInteger(version)||version!==expectedVersion)throw new Error('AUTOMATION_VERSION_CONFLICT');
+          const current=source?rows(source.templates):defaults();
+          let updated=current,requested=source?source.hookRequested===true:false;
+          if(change.id){
+            const base=current.find(a=>a.id===change.id);
+            if(!base)throw new Error('AUTOMATION_ID_NOT_FOUND');
+            updated=current.map(a=>a.id===change.id?{...a,...change.patch}:a);
+            updated=rows(updated);
+          }
+          if(Object.prototype.hasOwnProperty.call(change,'hookRequested'))requested=change.hookRequested===true;
+          const next={
+            tenantId:p.tenant,templates:updated.map(a=>({id:a.id,activa:a.activa,canal:a.canal,plantilla:a.plantilla})),
+            hookRequested:requested,version:version+1,lastOperationId:operationId,
+            updatedBy:p.uid,updatedAt:new Date().toISOString(),providerChannelActive:false
+          };
+          tx.set(p.ref,next,{merge:true});
+          return next;
+        });
+        const check=await p.ref.get({source:'server'});
+        const actual=check.exists?check.data():null;
+        if(!actual||actual.lastOperationId!==operationId||Number(actual.version)!==committed.version)
+          throw new Error('AUTOMATION_ACK_READBACK_MISMATCH');
+        const current=applyRemote(p.tenant,check);
+        CX.bus&&CX.bus.emit('automations');
+        return {ok:true,providerAck:true,readback:true,version:current.version,externalSent:false};
+      }catch(error){
+        status[p.tenant]={ready:false,error:String(error&&error.message||'AUTOMATION_REMOTE_WRITE_FAILED')};
+        throw error;
+      }
+    };
+  })(CX.automations);
+
   CX.automations._purgeLegacySecrets();
 })();
