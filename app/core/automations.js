@@ -289,7 +289,7 @@ window.CX = window.CX || {};
       const byId=new Map();
       for(const row of items){
         if(!row||!allowed.has(row.id)||byId.has(row.id))throw new Error('AUTOMATION_REMOTE_TEMPLATE_ID_INVALID');
-        const base=allowed.get(row.id),channel=String(row.canal||'');
+        const base=allowed.get(row.id),channel=String(row.canal||'')==='whatsapp'?'whatsapp_web':String(row.canal||'');
         if(typeof row.activa!=='boolean'||!Object.prototype.hasOwnProperty.call(A.CANALES,channel)||
            typeof row.plantilla!=='string'||row.plantilla.length>2000)
           throw new Error('AUTOMATION_REMOTE_TEMPLATE_FIELDS_INVALID');
