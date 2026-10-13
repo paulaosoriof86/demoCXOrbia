@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_VRM259_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM259_REOPENED_RUN1534_UNSCOPED_LATE_BRIDGE_KPI_OWNER__SOURCE_PROOF_AND_EXACT_DEV_PENDING",
+  "activeBlocker": "VRM259_SOURCE_QA_PASS_RUN1535__ONE_FOCAL_DEV_MATERIALIZATION_REQUIRED",
   "nextFindingId": "VRM-275",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run existing I3 source proof on exact VRM259 successor; after PASS and module manifest reconciliation, perform one P0-justified DEV materialization; then same-artifact Admin B7 badge/nav E2E and preserve remaining B1-B9/HF22/HF24/HF28; human visual only after focal PASS; I4 authorization required.",
+  "exactNextAction": "Reuse existing canonical I3 vrm154-156-dev-materialization job exactly once for source 53150fc84b9b345d8bd30a48cd1f2d2e4487c478; after SHA/runtime/Hosting readback perform VRM259 Admin badge source-scoped live E2E; preserve HF22 HF24 HF28 B1-B9, no I4.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -8971,10 +8971,17 @@
     "ledgerBlob": "fd2e64b7ff34fdecd30ea08e18814c7d065d96ab",
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261013-V86.json",
     "matrixBlob": "8e059e28eb2412f724145f3fe47181eed153b05e",
-    "stage": "SOURCE_FIXED_PENDING_PROOF",
+    "stage": "SOURCE_PROVEN_PASS_RUN1535__DEV_MATERIALIZATION_REQUIRED",
     "devArtifactStillFrom": "3a05a12a0cb7ae708e75545165b6b31f6ad1b285",
     "buildsAfterFix": 0,
     "deploysAfterFix": 0,
-    "production": false
+    "production": false,
+    "sourceProofRunId": 38473298296,
+    "sourceProofJobs": {
+      "canonicalCandidateAuthority": 115557617471,
+      "phaseaSourceProof": 115557728322
+    },
+    "sourceProof": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "devAuthorizationBasis": "P0_PROVEN_VRM259__SAME_CANDIDATE_NEW_SOURCE_OLD_DEV_ARTIFACT_CANNOT_PROVE_FIX"
   }
 }
