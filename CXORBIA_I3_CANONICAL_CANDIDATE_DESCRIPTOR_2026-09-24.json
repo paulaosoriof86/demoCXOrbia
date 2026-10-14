@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B7_NOTIFICATION_VISIBILITY_PASS_VRM134_LATENCY_B8_SHOPPER_HUMAN_PENDING",
+  "status": "HOLD_I3_VRM134_SOURCE_FIXED_QA_DEV_BEFORE_AFTER_PENDING_B8_SHOPPER_HUMAN",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "525f6cd6dddc22a3a7ff1bc12b03b07a98b1561e",
-  "productTreeAuthority": "7aa467413c1ee19c3f0eeda233d7b9722f923886",
-  "predecessorProductSourceSha": "1708b794779978ee7356124553c488195b3b3161",
+  "productSourceSha": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
+  "productTreeAuthority": "a821c66a92957eae5c62e331420d7f736eb6aab7",
+  "predecessorProductSourceSha": "525f6cd6dddc22a3a7ff1bc12b03b07a98b1561e",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V424_2026-10-14.json",
-  "findingsLedgerExpectedGitBlob": "fcc4f90b4784e0def01e466bb059671e1428cf72",
+  "findingsLedgerExpectedGitBlob": "91746223e97ec8ca61eac3fe06a62725c1b8fd76",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V114.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-134_REFRESH_LATENCY_PLUS_B7_B8_SHOPPER_HUMAN_VISUAL_AND_E2E_PENDING",
+  "activeBlocker": "VRM-134_LATENCY_BEFORE_AFTER_DEV_PENDING_PLUS_B8_SHOPPER_HUMAN_GATE20_GATE21",
   "nextFindingId": "VRM-275",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run existing GT read-only browser exact-artifact QA with added targeted assertion that already existing Cinépolis October visit bulletin(s) addressed to canonical Shopper appear in authenticated CX.notif and Tablon. Do not inject messages, mark read, modify real visit, deploy, or treat zero source bulletins as delivery PASS. Preserve human HOLD.",
+  "exactNextAction": "Run existing I3 source QA (cxorbia-vrm134-runtime-latency.test.mjs + existing Phase A regression), then one controlled DEV materialization and exact before/after HR/auth/Firestore timing under same HR revision. Keep VRM-134 OPEN until material improvement and fresh HR E2E. B8/Shopper/B7 read-only in parallel; no production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -9973,6 +9973,35 @@
     "scope": "B7 bell+Tablon+Mi Dia and B3 compact Shopper",
     "readiness": "READY_FOR_FOCAL_HUMAN_REVIEW_NOT_GATE20",
     "human": "PENDING",
+    "production": false
+  },
+  "vrm134Oct14SourceChange": {
+    "classification": "ENVIRONMENT_FAILURE",
+    "status": "SOURCE_FIXED_PENDING_CI_DEV_E2E",
+    "predecessorProductSourceSha": "525f6cd6dddc22a3a7ff1bc12b03b07a98b1561e",
+    "productSourceSha": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
+    "productTree": "a821c66a92957eae5c62e331420d7f736eb6aab7",
+    "changedProductFiles": [
+      "backend/runtime/hr-live-service/server.mjs",
+      "backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs"
+    ],
+    "sourceOwnerBlob": "c1c3ebd5edc5464ccf53ade370b9c56cfe4d102f",
+    "qaBlob": "cd56b75751a5a8e768e620fad7e07701cf069822",
+    "contract": "parallel protected principal+HR, no security bypass, measured refresh stages and protected timing, keep TTL=5000, no stale current",
+    "beforeRun1600": 38624953193,
+    "beforeHrFetchMs": {
+      "julissa": 5517,
+      "priscila": 6289,
+      "paula": 5550
+    },
+    "beforeAuthorityReadyMs": {
+      "julissa": 6857,
+      "priscila": 7884,
+      "paula": 7098,
+      "admin": 8495
+    },
+    "afterMs": "PENDING",
+    "devPublished": false,
     "production": false
   }
 }
