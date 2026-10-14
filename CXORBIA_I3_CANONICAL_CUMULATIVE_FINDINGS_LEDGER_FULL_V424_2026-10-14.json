@@ -6507,7 +6507,7 @@
       "classification": "ENVIRONMENT_FAILURE",
       "severity": "P0",
       "title": "Live-data refresh and post-write recomposition repeatedly block the user for materially too long",
-      "state": "SOURCE_FIXED_VRM134_RUNTIME_PARALLEL_AUTH_HR_PENDING_QA_DEV_BEFORE_AFTER",
+      "state": "SOURCE_QA_PASS_RUN1604_DEV_MATERIALIZATION_REQUESTED",
       "rootCause": "The HR authority bridge forces/re-schedules whole authority recomposition on backend-ready, backend.refresh, window focus and visibility restore; backend.refresh first reloads Firestore and marks HR authority unapplied. Several modules also force document reload. A fresh HR provider read measured about 3.8s, so the much longer repeated visible wait is orchestration/recomposition and redundant refresh work, not simply HR source latency.",
       "priorEvidenceLinks": [
         "VRM-060 historical live login readiness 2.9s shopper / 7.3s admin",
@@ -6615,8 +6615,8 @@
         },
         "provenCodeCause": "protected endpoint awaited buildSnapshot refresh before calling verifiedProtectedPrincipal; cache TTL 5000 and six sequential source-safe subprocesses; single-flight already exists",
         "change": "overlap verified principal with fresh HR read; exact per-stage runtime timing; no TTL/freshness/security relaxation",
-        "sourceTests": "PENDING_CI",
-        "devMaterialization": "NOT_DEPLOYED",
+        "sourceTests": "PASS_RUN1604_4_OF_4",
+        "devMaterialization": "REQUESTED_SINGLE_EXISTING_DEV_LANE",
         "livePerfBeforeAfter": "PENDING",
         "human": "PENDING",
         "closure": "OPEN",
@@ -6626,7 +6626,8 @@
           "code": "RELEASE_COMPOSITION_FAILURE",
           "rootCause": "Detached source commit object not reachable via branch checkout; source+HEAD product blobs matched; use existing branch control commit with source SHA second parent.",
           "productCodeChanged": false
-        }
+        },
+        "sourceQaRunId": 38630245617
       }
     },
     "VRM-135": {
@@ -19839,7 +19840,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "VRM134 focal source QA, preserve all 274 findings; then DEV runtime same-artifact before/after, HR fresh checks and B7/B8/Shopper queued.",
+  "exactNextAction": "I3 VRM-134 controlled DEV materialization source 4d462494..., then same-artifact timing and independent HR provider readiness E2E. No production.",
   "supersedesGitBlob": "98d6566a240a8256a1441328b2da4af1c25fac6f",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -29091,6 +29092,7 @@
     "testBlob": "cd56b75751a5a8e768e620fad7e07701cf069822",
     "state": "SOURCE_FIXED_NO_LIVE_PASS",
     "production": false,
-    "lineageRepair": "MERGE_COMMIT_ANCHOR_SECOND_PARENT_PENDING_READBACK"
+    "lineageRepair": "MERGE_COMMIT_ANCHOR_SECOND_PARENT_PENDING_READBACK",
+    "sourceQaRunId": 38630245617
   }
 }

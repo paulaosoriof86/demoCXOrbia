@@ -388,8 +388,8 @@
         "Cliente"
       ],
       "contractFunctional": "HR/Disponibles/Sync/KPIs",
-      "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN",
-      "actionRequired": "VRM134_SOURCE_QA_PLUS_SAME_ARTIFACT_HR_AUTH_TIMING_BEFORE_AFTER",
+      "classification": "SOURCE_FIXED_QA_PASS_PENDING_DEV_E2E_HUMAN",
+      "actionRequired": "VRM134_DEV_SINGLE_MATERIALIZATION_AND_FRESH_PROVIDER_AUTH_TIMING",
       "preI4SuccessorCommits": [
         "e0bed18b62174544615dc55aa70dd4a1509692d7",
         "ab05415eb965404e1a6594df8533b8e0190aa0f7",
@@ -10075,8 +10075,8 @@
       "backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs": "cd56b75751a5a8e768e620fad7e07701cf069822"
     },
     "beforeRun1600": 38624953193,
-    "sourceProof": "PENDING",
-    "devMaterialization": "PENDING",
+    "sourceProof": "PASS_RUN1604_FOCAL_4_OF_4",
+    "devMaterialization": "REQUESTED_EXISTING_DEV_LANE",
     "livePerf": "PENDING",
     "closure": "OPEN",
     "lineageClosure": "SECOND_PARENT_OF_CONTROL_COMMIT_PENDING"

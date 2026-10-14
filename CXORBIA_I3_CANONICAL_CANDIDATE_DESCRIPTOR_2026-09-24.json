@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM134_SOURCE_FIXED_QA_DEV_BEFORE_AFTER_PENDING_B8_SHOPPER_HUMAN",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "a821c66a92957eae5c62e331420d7f736eb6aab7",
   "predecessorProductSourceSha": "525f6cd6dddc22a3a7ff1bc12b03b07a98b1561e",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V424_2026-10-14.json",
-  "findingsLedgerExpectedGitBlob": "1466bc97b872993ca8a5c592567046a60da2e1fa",
+  "findingsLedgerExpectedGitBlob": "c5b7bf893f3c460ae342bd029411f53b80464bcc",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V114.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-134_LATENCY_BEFORE_AFTER_DEV_PENDING_PLUS_B8_SHOPPER_HUMAN_GATE20_GATE21",
+  "activeBlocker": "VRM-134_SOURCE_QA_PASS_RUN1604_DEV_LATENCY_BEFORE_AFTER_E2E_PENDING_B8_SHOPPER_HUMAN",
   "nextFindingId": "VRM-275",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run existing I3 source QA (cxorbia-vrm134-runtime-latency.test.mjs + existing Phase A regression), then one controlled DEV materialization and exact before/after HR/auth/Firestore timing under same HR revision. Keep VRM-134 OPEN until material improvement and fresh HR E2E. B8/Shopper/B7 read-only in parallel; no production.",
+  "exactNextAction": "Execute only existing Phase A DEV materialization for source 4d4624940ce09c86ec04a3ee59e44ffd40bde612, read back runtime/Hosting/Rules/HR exact; then same-artifact three shoppers+Admin cold/refresh timing. I3 HOLD, I4 BLOCKED.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -9977,7 +9977,7 @@
   },
   "vrm134Oct14SourceChange": {
     "classification": "ENVIRONMENT_FAILURE",
-    "status": "SOURCE_FIXED_PENDING_CI_DEV_E2E",
+    "status": "SOURCE_QA_PASS_RUN1604_DEV_MATERIALIZATION_REQUESTED",
     "predecessorProductSourceSha": "525f6cd6dddc22a3a7ff1bc12b03b07a98b1561e",
     "productSourceSha": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
     "productTree": "a821c66a92957eae5c62e331420d7f736eb6aab7",
@@ -10003,8 +10003,16 @@
     "afterMs": "PENDING",
     "devPublished": false,
     "production": false,
-    "sourceAncestryRepair": "SECOND_PARENT_OF_CONTROL_HEAD_TO_BE_VERIFIED",
+    "sourceAncestryRepair": "PASS_SECOND_PARENT_CONTROL_COMMIT_47510b949fbf62fa9016b1a5fdaffaf2197acc6f",
     "firstAttemptRun": 38629825653,
-    "firstAttemptFailure": "RELEASE_COMPOSITION_FAILURE:UNREACHABLE_SOURCE_COMMIT_FROM_CHECKOUT; no product code failure"
+    "firstAttemptFailure": "RELEASE_COMPOSITION_FAILURE:UNREACHABLE_SOURCE_COMMIT_FROM_CHECKOUT; no product code failure",
+    "sourceTests": {
+      "runId": 38630245617,
+      "jobId": 116079722616,
+      "focusedTests": 4,
+      "pass": 4,
+      "fail": 0,
+      "stage": "SOURCE_PROVEN"
+    }
   }
 }
