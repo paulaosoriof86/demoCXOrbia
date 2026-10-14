@@ -317,6 +317,53 @@ try{
  a.postulationBadgeParity.afterSettled=await postulationBadgeProbe('after_settled_1350ms');
  if(!a.postulationBadgeParity.afterSettled.match)
    finding('FUNCTIONAL_DEFECT','VRM259_POSTULATION_BADGE_HYDRATED_PARITY',a.postulationBadgeParity);
+
+ /* I3 B7: independent HR revision vs current protected Admin KPI counters and actions. */
+ const hrOct=arr(snap.visits).filter(v=>str(v.periodKey)===periodKey);
+ const hrCount=(fn)=>hrOct.filter(fn).length;
+ const hrAssigned=hrCount(v=>v.canonicalFacets?.assigned===true&&v.canonicalFacets?.cancelled!==true);
+ const hrAgenda=hrCount(v=>v.canonicalFacets?.scheduled===true&&v.canonicalFacets?.realized!==true&&v.canonicalFacets?.cancelled!==true);
+ const kpi=await page.evaluate(()=>{
+   const d=window.CX?.data||{},v=typeof d.visitas==='function'?d.visitas():[],f=x=>d.visitFacets?.(x)||x.canonicalFacets||{};
+   const assigned=v.filter(x=>f(x).assigned===true&&f(x).cancelled!==true),posts=typeof d.activePosts==='function'?d.activePosts():[];
+   const countState=s=>posts.filter(x=>String(x.estado||x.status||'').toLowerCase()===s).length;
+   const expected={pend:countState('pendiente'),aprob:countState('aprobada'),todas:posts.length,assign:assigned.length,
+     reprog:assigned.filter(x=>x.rescheduleRequest?.status==='pending_review').length,
+     cancel:assigned.filter(x=>x.cancelRequest?.status==='pending_review').length,
+     agenda:assigned.filter(x=>f(x).scheduled===true&&f(x).realized!==true).length};
+   const cards=Array.from(document.querySelectorAll('#poKpis [data-k]')).map(x=>({id:x.dataset.k,count:Number(x.querySelector('.k-v')?.textContent||NaN),visible:x.getBoundingClientRect().width>0}));
+   return {revision:String(d.previewMeta?.sourceRevision||''),periodId:String(d.currentPeriodId||''),visits:v.length,expected,cards};
+ });
+ a.b7KpiEvidence={hrRevision:revision,hrTotal:hrOct.length,hrAssigned,hrAgenda,protected:kpi};
+ if(kpi.revision!==revision||kpi.periodId!==periodId||kpi.visits!==hrOct.length||kpi.expected.assign!==hrAssigned||kpi.expected.agenda!==hrAgenda)
+   throw new Error('MAPPING_FAILURE:B7_SAME_HR_REVISION_COUNTS:'+JSON.stringify(a.b7KpiEvidence));
+ const keys=['pend','assign','reprog','cancel','agenda','aprob','todas'];
+ if(kpi.cards.length!==7||kpi.cards.some(x=>!keys.includes(x.id)||!x.visible||!Number.isFinite(x.count)||x.count!==kpi.expected[x.id]))
+   throw new Error('FUNCTIONAL_DEFECT:B7_ACTIONABLE_KPI_COUNTERS:'+JSON.stringify(a.b7KpiEvidence));
+ a.b7KpiActions={};
+ for(const key of ['assign','reprog','cancel','agenda']){
+   await page.locator('#poKpis [data-k="'+key+'"]').click({timeout:10000});result.clickCount++;
+   const modal=page.locator('.cx-ov:visible').last();
+   if(!await modal.count())throw new Error('FUNCTIONAL_DEFECT:B7_KPI_MODAL_MISSING:'+key);
+   const n=await modal.locator('[data-po-kpi-action="'+key+'"]').count();
+   a.b7KpiActions[key]={expected:kpi.expected[key],buttons:n};
+   if(n!==kpi.expected[key])throw new Error('FUNCTIONAL_DEFECT:B7_KPI_ACTION_COUNT:'+key+':'+n);
+   if(n>0&&(key==='assign'||key==='agenda'||key==='reprog')){
+      await modal.locator('[data-po-kpi-action="'+key+'"]').first().click({timeout:10000});result.clickCount++;
+      if(!/Acciones|Gestión de agendamientos/i.test(await overlay(page)))throw new Error('FUNCTIONAL_DEFECT:B7_KPI_OWNER_MODAL:'+key);
+      a.b7KpiActions[key].ownerOpen=true;
+   }
+   await dismissOverlays(page);
+ }
+ const originalSize=page.viewportSize()||{width:1440,height:980};a.b7Responsive={};
+ for(const width of [390,320]){
+   await page.setViewportSize({width,height:900});
+   const sizes=await page.locator('#poKpis [data-k]').evaluateAll(nodes=>nodes.map(x=>({w:x.getBoundingClientRect().width,scroll:x.scrollWidth,client:x.clientWidth})));
+   a.b7Responsive[width]={count:sizes.length,pass:sizes.length===7&&sizes.every(x=>x.w>0&&x.scroll<=x.client+3)};
+   if(!a.b7Responsive[width].pass)throw new Error('VISUAL_DEFECT:B7_KPI_RESPONSIVE:'+width+':'+JSON.stringify(sizes));
+   await shot(page,'admin-b7-kpi-'+width);
+ }
+ await page.setViewportSize(originalSize);
  a.requestShopper=await click(page,'#reqShopper');if(a.requestShopper){await page.waitForTimeout(250);const opts=await page.locator('.cx-ov:visible #rqSh option').allInnerTexts().catch(()=>[]);if(!opts.some(x=>/asignación vigente/i.test(x)))throw new Error('FUNCTIONAL_DEFECT:ADMIN_REQUEST_HR_TARGETS');}await shot(page,'admin-postulations');
  await nav(page,'shoppers');a.shopperProfile=await click(page,'#shBody [data-sid]');if(a.shopperProfile&&!/banco|pago|cuenta|perfil/i.test(await overlay(page)))throw new Error('VISUAL_DEFECT:ADMIN_SHOPPER_PROFILE_BANKING');await shot(page,'admin-shopper-profile');
  const finPeriod=await page.evaluate(()=>{const d=CX.data,orig=d.currentPeriodId;for(const p of (d.projects||[]).slice().reverse()){try{d.setProject(p.id);if((CX.liq?.forProject?.(d)||[]).length)return{id:p.id,orig};}catch(_){}}d.setProject(orig);return{id:orig,orig};});
