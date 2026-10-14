@@ -48,6 +48,13 @@ CX.adminPostulacionesActions.openRequest=({data,ui,visitIds=[],defaultType='conf
       }});
   return true;
 };
+/* I3 B7: provider failure diagnostics must not be erased by the UI. */
+CX.adminPostulacionesActions.rescheduleFailure=(result,error)=>{
+  const raw=String(result?.code||result?.reason||error?.code||error?.message||'OPS_RESCHEDULE_UNCONFIRMED').trim();
+  const code=/^(OPS|AUTH|COMMAND|PROVIDER)_[A-Z0-9_]+$/.test(raw)?raw:'OPS_RESCHEDULE_UNCONFIRMED';
+  const human=code.includes('DATE')?'La fecha no cumple las reglas del proyecto.':code.includes('PERIOD')?'La visita pertenece a otro período.':code.includes('SCOPE')||code.includes('ROLE')||code.includes('AUTH')||code.includes('OPERATOR_ONLY')?'No tienes autorización para decidir sobre esta visita.':code.includes('VERSION')?'La visita cambió; actualiza la pantalla antes de decidir.':code==='OPS_VISIT_REQUEST_ALREADY_PENDING'?'Existe otra solicitud pendiente.':'El servidor no confirmó la decisión.';
+  return {code,message:human};
+};
 CX.adminPostulacionesActions.openAgenda=({data,ui,visitIds=[]})=>{
   const ids=new Set(visitIds.map(String).filter(Boolean));
   const visits=(data.visitas?.()||[]).filter(v=>v.shopperId&&(!ids.size||ids.has(String(v.id||v.visitId))));
@@ -88,10 +95,13 @@ CX.adminPostulacionesActions.openAgenda=({data,ui,visitIds=[]})=>{
         const prior=b.textContent;b.disabled=true;b.textContent='Confirmando…';
         try{
           const r=await data.requestVisitReschedule(visit.id,decision==='approved'?visit.rescheduleRequest.newDate:null,{ackAware:true,decision,reason:'admin_agenda_decision_dashboard'});
-          if(!(r?.ok===true&&r?.status==='committed'&&r?.providerAck===true&&r?.successUiAllowed===true))throw new Error('SCHEDULE_DECISION_ACK_REQUIRED');
+          if(!(r?.ok===true&&r?.status==='committed'&&r?.providerAck===true&&r?.successUiAllowed===true)){
+            const diagnostic=CX.adminPostulacionesActions.rescheduleFailure(r,null);
+            b.dataset.providerResultCode=diagnostic.code;b.disabled=false;b.textContent=prior;ui.toast(diagnostic.message,'warn',4800);return;
+          }
           try{await CX.backend?.refresh?.();await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('admin_schedule_decision_committed');}catch(_){}
           close();ui.toast(decision==='approved'?'Fecha autorizada con confirmación remota':'Fecha anterior conservada con confirmación remota','ok',3600);
-        }catch(_){b.disabled=false;b.textContent=prior;ui.toast('Decisión no confirmada por el proveedor.','warn',4200);}
+        }catch(error){const diagnostic=CX.adminPostulacionesActions.rescheduleFailure(null,error);b.dataset.providerResultCode=diagnostic.code;b.disabled=false;b.textContent=prior;ui.toast(diagnostic.message,'warn',4800);}
       }));
       }});
 
@@ -594,8 +604,48 @@ CX.module('postulaciones', ({data,ui})=>{
     }));
     /* botones de reprogramación (revisar / autorizar nueva fecha / conservar anterior) */
     document.querySelectorAll('[data-revpost]').forEach(b=>b.addEventListener('click',()=>{const x=findReprogram(b.dataset.revpost);ui.modal('Revisar solicitud de reprogramación · '+(x&&x.shopper||''),`<p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Fecha actual: <b>${x&&x.fechaActual||'—'}</b> · Fecha propuesta: <b>${x&&x.fechaProp||'—'}</b></p><div style="background:var(--amber-bg);border-radius:9px;padding:9px 12px;font-size:12px;color:#8a5b00">Usa "Autorizar nueva fecha" para aprobar la reprogramación o "Conservar anterior" para mantener la fecha actual.</div>`);}));
-    document.querySelectorAll('[data-authfecha]').forEach(b=>b.addEventListener('click',async()=>{const x=findReprogram(b.dataset.authfecha);if(!x||!x.fechaProp)return;if(!CX.permissions.gate('visit.reassign',{projectId:x.rootProjectId||x.projectId,pais:x.pais},ui))return;const prev=b.textContent;b.disabled=true;b.textContent='Confirmando…';let r=null;try{r=await data.requestVisitReschedule(x.visitaId,x.fechaProp,{ackAware:true,decision:'approved',reason:'admin_reprogram_approve'});}catch(_){r=null;}const ok=r&&r.ok===true&&r.status==='committed'&&r.providerAck===true&&r.successUiAllowed===true;if(!ok){b.disabled=false;b.textContent=prev;ui.toast('Reprogramación no ejecutada: no fue posible confirmar el cambio.','warn',4200);return;}/* Server command atomically publishes the durable shopper decision notification. */ui.toast('Nueva fecha guardada correctamente','ok',3600);}));
-    document.querySelectorAll('[data-keepfecha]').forEach(b=>b.addEventListener('click',async()=>{const x=findReprogram(b.dataset.keepfecha);if(!x)return;const prev=b.textContent;b.disabled=true;b.textContent='Confirmando…';let r=null;try{r=await data.requestVisitReschedule(x.visitaId,null,{ackAware:true,decision:'rejected',reason:'admin_reprogram_reject'});}catch(_){r=null;}const ok=r&&r.ok===true&&r.status==='committed'&&r.providerAck===true&&r.successUiAllowed===true;if(!ok){b.disabled=false;b.textContent=prev;ui.toast('Decisión no ejecutada: no fue posible confirmar el cambio.','warn',4200);return;}/* Server command atomically publishes the durable shopper decision notification. */ui.toast('Fecha original conservada · decisión guardada correctamente','ok');}));
+    document.querySelectorAll('[data-authfecha]').forEach(b=>b.addEventListener('click',async()=>{
+      const x=findReprogram(b.dataset.authfecha);
+      if(!x||!x.fechaProp)return;
+      if(!CX.permissions.gate('visit.reassign',{projectId:x.rootProjectId||x.projectId,pais:x.pais},ui))return;
+      const before=b.textContent;b.disabled=true;b.textContent='Confirmando…';
+      let result=null,error=null;
+      try{result=await data.requestVisitReschedule(x.visitaId,x.fechaProp,{ackAware:true,decision:'approved',reason:'admin_reprogram_approved'});}catch(caught){error=caught;}
+      if(!(result?.ok===true&&result?.status==='committed'&&result?.providerAck===true&&result?.successUiAllowed===true)){
+        const diagnostic=CX.adminPostulacionesActions.rescheduleFailure(result,error);
+        b.dataset.providerResultCode=diagnostic.code;b.disabled=false;b.textContent=before;ui.toast(diagnostic.message,'warn',4800);return;
+      }
+      let readback=false;
+      try{
+        await CX.backend?.refresh?.();
+        await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('admin_reschedule_decision_committed');
+        const exact=(data.visitas()||[]).find(v=>String(v.id||v.visitId)===String(x.visitaId));
+        readback=String(exact?.rescheduleRequest?.status||'')==='approved';
+      }catch(_){}
+      if(readback){CX.router.nav('postulaciones',{history:false});ui.toast('Nueva fecha autorizada · confirmada y releída.','ok',3600);}
+      else{b.disabled=false;b.textContent=before;ui.toast('Decisión aceptada por el servidor; la actualización visible sigue pendiente.','warn',4800);}
+    }));
+    document.querySelectorAll('[data-keepfecha]').forEach(b=>b.addEventListener('click',async()=>{
+      const x=findReprogram(b.dataset.keepfecha);
+      if(!x)return;
+      if(!CX.permissions.gate('visit.reassign',{projectId:x.rootProjectId||x.projectId,pais:x.pais},ui))return;
+      const before=b.textContent;b.disabled=true;b.textContent='Confirmando…';
+      let result=null,error=null;
+      try{result=await data.requestVisitReschedule(x.visitaId,null,{ackAware:true,decision:'rejected',reason:'admin_reprogram_rejected'});}catch(caught){error=caught;}
+      if(!(result?.ok===true&&result?.status==='committed'&&result?.providerAck===true&&result?.successUiAllowed===true)){
+        const diagnostic=CX.adminPostulacionesActions.rescheduleFailure(result,error);
+        b.dataset.providerResultCode=diagnostic.code;b.disabled=false;b.textContent=before;ui.toast(diagnostic.message,'warn',4800);return;
+      }
+      let readback=false;
+      try{
+        await CX.backend?.refresh?.();
+        await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('admin_reschedule_decision_committed');
+        const exact=(data.visitas()||[]).find(v=>String(v.id||v.visitId)===String(x.visitaId));
+        readback=String(exact?.rescheduleRequest?.status||'')==='rejected';
+      }catch(_){}
+      if(readback){CX.router.nav('postulaciones',{history:false});ui.toast('Fecha anterior conservada · confirmada y releída.','ok',3600);}
+      else{b.disabled=false;b.textContent=before;ui.toast('Decisión aceptada por el servidor; la actualización visible sigue pendiente.','warn',4800);}
+    }));
 
     /* editar fecha/franja de la visita de una postulación */
     document.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>{ const x=posts.find(z=>z.id===b.dataset.edit); if(!x)return;

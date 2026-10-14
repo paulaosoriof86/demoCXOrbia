@@ -86,3 +86,11 @@ test('HF28 connected automation templates use tenant Firestore ACK/readback and 
   assert.equal(A.hookRequested(),false);
   assert.ok(notifies>0);assert.ok(paths.length>=4);
 });
+
+test('B7 mass WhatsApp paths reuse exact recipient helper and never declare delivery',()=>{
+  assert.ok(source.includes('const sendWa=ids=>'));
+  assert.ok(source.includes("board.querySelector('#bdBulkWa')"));
+  assert.ok(source.includes("board.querySelectorAll('[data-bulk]')"));
+  assert.ok(source.includes("openExactWaDraft({shopper:s.nombre"));
+  assert.ok(!source.includes('Recordatorio masivo preparado'));
+});

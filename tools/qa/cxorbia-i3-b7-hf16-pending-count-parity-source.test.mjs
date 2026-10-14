@@ -69,3 +69,12 @@ test('HUMAN 2026-10-13: shared contrast and type sizes are protected in actual s
   assert.match(style,/\.btn-sm\{[^\n]*font-size:13px/);
   assert.match(style,/\.poQuickActions/);
 });
+
+test('B7 reschedule rejection survives error and ACK needs exact refreshed visit',()=>{
+  assert.ok(src.includes('CX.adminPostulacionesActions.rescheduleFailure='));
+  assert.ok(src.includes('b.dataset.providerResultCode=diagnostic.code'));
+  assert.ok(src.includes('result?.providerAck===true'));
+  assert.ok(src.includes('CX.backend?.refresh?.()'));
+  assert.ok(src.includes('readback=String(exact?.rescheduleRequest?.status'));
+  assert.ok(!src.includes("ui.toast('Nueva fecha guardada correctamente'"));
+});

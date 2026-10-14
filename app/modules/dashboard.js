@@ -111,10 +111,11 @@ CX.module('dashboard', ({data,ui})=>{
       const all=ov.querySelector('#drAll'); if(all)all.addEventListener('change',()=>{ov.querySelectorAll('.drSel:not(:disabled)').forEach(c=>c.checked=all.checked);upd();});
       ov.querySelectorAll('.drSel').forEach(c=>c.addEventListener('change',upd));
       const vget=(id)=>pool().find(x=>x.id===id)||{};
-      const sendWa=(ids)=>{ if(!ids.length){ui.toast('Selecciona al menos un shopper','warn');return;}
-        const hasHook=!!(CX.automations&&CX.automations.hook&&CX.automations.hook());
-        ids.forEach(id=>{const v=vget(id);if(hasHook){CX.automations&&CX.automations._pushLog({fecha:new Date().toISOString().slice(0,16).replace('T',' '),canal:'whatsapp',evento:'recordatorio',titulo:'Recordatorio',txt:(v.shopper||'')+' · '+v.sucursal,hook:CX.automations.hook()});}else{const wa=(v.shopperWa||v.whatsapp||'');const msg=encodeURIComponent('Hola '+(v.shopper||'Evaluador')+', recordatorio: tu visita en '+v.sucursal+'. Por favor confírmanos.');if(wa){window.open('https://wa.me/'+wa.replace(/[^0-9]/g,'')+'?text='+msg,'_blank');}else{ui.toast('Sin número WA para '+(v.shopper||'el shopper')+' — agrégalo en su perfil','warn',2500);}}});
-        ui.toast(hasHook?'WhatsApp preparado vía Make ('+ids.length+') · se envía cuando la conexión esté activa':'WhatsApp Web abierto para '+ids.length+' shopper(s)','ok',3200); };
+      const sendWa=ids=>{
+        if(!ids.length){ui.toast('Selecciona un shopper','warn');return;}
+        let opened=0;for(const id of ids){const v=vget(id);if(openExactWaDraft(v,'Hola '+(v.shopper||'Evaluador')+', recordatorio de tu visita en '+(v.sucursal||'la sucursal')+'.'))opened++;}
+        ui.toast(opened?opened+' borrador(es) abierto(s); envío manual pendiente en WhatsApp.':'No se abrió ningún borrador; revisa contacto y ventanas emergentes.',opened?'ok':'warn',4500);
+      };
       ov.querySelectorAll('.drWa').forEach(b=>b.addEventListener('click',()=>{
         const v=vget(b.dataset.vid);
         openExactWaDraft(v,'Hola '+(v.shopper||'Evaluador')+', recordatorio: tu visita en '+(v.sucursal||'la sucursal')+'. Por favor confírmanos.');
@@ -353,7 +354,11 @@ CX.module('dashboard', ({data,ui})=>{
     };
     board.querySelector('#bdBulkRequest')?.addEventListener('click',()=>handoff('request',requireSelected()));
     board.querySelector('#bdBulkAgenda')?.addEventListener('click',()=>handoff('agenda',requireSelected()));
-    board.querySelector('#bdBulkWa')?.addEventListener('click',()=>{const ids=requireSelected();if(!ids.length)return;let opened=0;ids.forEach(id=>{const v=all.find(x=>String(x.id)===String(id));const wa=v&&(v.shopperWa||v.whatsapp||'');if(!v?.shopper||!wa)return;const msg=encodeURIComponent('Hola '+v.shopper+', sobre tu visita en '+v.sucursal+'.');window.open('https://wa.me/'+String(wa).replace(/[^0-9]/g,'')+'?text='+msg,'_blank');opened++;});ui.toast(opened?'WhatsApp preparado para '+opened+' shopper(s)':'Las visitas seleccionadas no tienen WhatsApp disponible',opened?'ok':'warn');});
+    board.querySelector('#bdBulkWa')?.addEventListener('click',()=>{
+      const ids=requireSelected();if(!ids.length)return;
+      let opened=0;for(const id of ids){const v=all.find(x=>String(x.id)===String(id));if(openExactWaDraft(v,'Hola '+(v?.shopper||'Evaluador')+', sobre tu visita en '+(v?.sucursal||'la sucursal')+'.'))opened++;}
+      ui.toast(opened?opened+' borrador(es) abiertos; envío manual pendiente.':'No se abrió WhatsApp. Revisa destinatarios y ventanas emergentes.',opened?'ok':'warn',4500);
+    });
     board.querySelector('#bdBulkMail')?.addEventListener('click',()=>{const ids=requireSelected();if(ids.length)ui.toast('Correo preparado para '+ids.length+' visita(s) · envío sujeto al proveedor conectado','ok');});
     board.querySelectorAll('.bdCtx').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();handoff(String(b.dataset.kind||''),[String(b.dataset.vid||'')]);}));
     board.querySelectorAll('[data-goseco]').forEach(b=>b.addEventListener('click',()=>{
@@ -366,7 +371,13 @@ CX.module('dashboard', ({data,ui})=>{
       openExactWaDraft(v,'Hola '+(v?.shopper||'Evaluador')+', sobre tu visita en '+(v?.sucursal||'la sucursal')+'.');
     }));
     board.querySelectorAll('[data-mail]').forEach(b=>b.addEventListener('click',()=>ui.toast('Borrador de correo preparado (envío pendiente de conexión con Outlook)','ok')));
-    board.querySelectorAll('[data-bulk]').forEach(b=>b.addEventListener('click',()=>ui.toast('Recordatorio masivo preparado (WhatsApp + correo) · se envía cuando la conexión esté activa (pendienteend)','ok',3200)));
+    board.querySelectorAll('[data-bulk]').forEach(btn=>btn.addEventListener('click',event=>{
+      event.stopPropagation();
+      const group=btn.closest('[data-bk]'),pane=group&&board.querySelector('#'+group.dataset.bk);
+      const rows=pane?[...pane.querySelectorAll('tr[data-board-row]')]:[];
+      let opened=0;for(const row of rows){const v=all.find(x=>String(x.id)===String(row.dataset.boardRow));if(openExactWaDraft(v,decodeURIComponent(btn.dataset.bulk||'Recordatorio de tu visita')))opened++;}
+      ui.toast(opened?opened+' borrador(es) abiertos; confirma envío manual en WhatsApp.':'No se abrió ningún WhatsApp ni se envió correo.',opened?'ok':'warn',4500);
+    }));
     /* #226 — subsecciones contraíbles */
     board.querySelectorAll('.bd-toggle').forEach(h=>h.addEventListener('click',(e)=>{
       if(e.target.closest('[data-bulk]'))return;
@@ -456,7 +467,10 @@ CX.module('dashboard', ({data,ui})=>{
            — a diferencia de los demás botones de WhatsApp del dashboard (que sí revisan
            CX.automations.hook() antes de mencionar Make), este quedaba residual claim
            incondicional de envío automatizado. Ahora usa el mismo criterio que el resto. */
-        ov.querySelector('#pmWa').addEventListener('click',()=>{close();const hasHook=!!(CX.automations&&CX.automations.hook&&CX.automations.hook());ui.toast(hasHook?('WhatsApp a '+s.nombre+' preparado vía Make · se envía cuando el gate esté activo'):('WhatsApp Web abierto para '+s.nombre),'ok');});
+        ov.querySelector('#pmWa').addEventListener('click',()=>{
+          const ok=openExactWaDraft({shopper:s.nombre,shopperWa:s.whatsapp||s.phone||s.telefono||''},'Hola '+(s.nombre||'Evaluador')+', nos comunicamos por tu participación como shopper.');
+          if(ok)close();
+        });
         const histModal=(f,t)=>{const arr=hist.filter(f);ui.modal(t+' · '+s.nombre,arr.length?`<table class="tbl"><thead><tr><th>Sucursal</th><th>Escenario</th><th>Fecha</th><th>Estado</th></tr></thead><tbody>${arr.map(v=>`<tr><td><b>${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad}</div></td><td style="font-size:12px">${v.escenario||''}</td><td style="font-size:12px">${v.realizada||v.agendada||'—'}</td><td>${ui.estadoBadge(v.estado)}</td></tr>`).join('')}</tbody></table>`:ui.empty('🗒️','Sin visitas en esta categoría.'));};
         ov.querySelectorAll('[data-ph]').forEach(el=>el.addEventListener('click',()=>{const kk=el.dataset.ph;if(kk==='all')histModal(()=>true,'Todas las visitas');else if(kk==='real')histModal(v=>['realizada','cuestionario','liquidada'].includes(v.estado),'Realizadas');else if(kk==='liq')histModal(v=>v.estado==='liquidada','Liquidadas');else histModal(v=>['asignada','agendada'].includes(v.estado),'En curso');}));
       }});
