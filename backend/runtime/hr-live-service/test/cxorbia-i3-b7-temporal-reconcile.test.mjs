@@ -167,3 +167,14 @@ test('I3 B7 cancellation modal fails closed before remote ACK',async()=>{
   assert.equal(requests[0][1].decision,'approved');assert.equal(requests[0][1].ackAware,true);
   assert.equal(messages.at(-1)[1],'warn');
 });
+
+test('I3 B7 filter applies search to both posts and HR assignments and closes stale KPI modals',()=>{
+ const src=fs.readFileSync('app/modules/postulaciones.js','utf8');
+ assert.match(src,/document\.querySelectorAll\('#poAssignedGroups \[data-cx-assignment-card\]'\)/);
+ assert.match(src,/document\.querySelectorAll\('#poAssignedGroups \[data-cx-assignment-group\]'\)/);
+ assert.match(src,/searchable\.includes\(q\)/);
+ assert.match(src,/projectOk&&countryOk&&stateOk/);
+ assert.match(src,/\{replaceExisting:true,onMount:\(ov,close\)=>ov\.querySelectorAll\('\.poRowGest'\)/);
+ assert.match(src,/Sin solicitudes vigentes en esta categoría\.'\),\{replaceExisting:true,onMount:/);
+ assert.match(src,/document\.querySelectorAll\('#pGroups \[data-pid\]'\)/);
+});
