@@ -866,7 +866,7 @@
         "Cliente"
       ],
       "contractFunctional": "País/moneda/Persistencia/ACK",
-      "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN",
+      "classification": "SOURCE_FIXED_QA_PASS_PENDING_DEV_E2E_HUMAN",
       "actionRequired": "HF25_SOURCE_QA_NO_FALSE_BANK_PAYMENT__HF22_HF24_HF28_EXACT_DEV_E2E_AND_VISUAL",
       "preI4SuccessorCommits": [
         "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
@@ -10166,11 +10166,23 @@
     "predecessorSource": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
     "sourceSha": "baebd9bee00acebf949d5bb5d68857a37b180e72",
     "sourceTree": "9a48697095fa99907099c2ded83e0069ddfe7fda",
-    "state": "SOURCE_FIXED_PENDING_CI_NOT_MATERIALIZED",
+    "state": "SOURCE_QA_PASS_RUN1608_PENDING_DEV_E2E",
     "lastPublishedDevSource": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
     "visualReviewOnUnchangedDev": true,
     "requiredValidation": "Existing finance 37+ regression tests plus new HF25 copy assertion; subsequent same-artifact provider/readback for B8.",
     "noExternalPayments": true,
-    "production": false
+    "production": false,
+    "proof": {
+      "runId": 38637293247,
+      "runNumber": 1608,
+      "jobId": 116103595572,
+      "status": "PASS_CANONICAL_SOURCE_QA_38_FINANCE_TESTS_0_FAIL",
+      "qaOwner": "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs",
+      "feature": "HF25 internal CxP no bank confirmed claim",
+      "deployed": false,
+      "devCurrentPredecessorSource": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
+      "human": "PENDING",
+      "production": false
+    }
   }
 }

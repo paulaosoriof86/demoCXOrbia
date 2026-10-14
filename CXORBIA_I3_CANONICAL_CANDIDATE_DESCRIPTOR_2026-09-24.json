@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B8_HF25_SOURCE_FIXED_QA_PENDING_DEV_PREDECESSOR_VISUAL",
+  "status": "HOLD_I3_B8_HF25_SOURCE_QA_PASS_PENDING_DEV_PREDECESSOR_VISUAL",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "9a48697095fa99907099c2ded83e0069ddfe7fda",
   "predecessorProductSourceSha": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V424_2026-10-14.json",
-  "findingsLedgerExpectedGitBlob": "b40755292d1bea4284e831e6cfe504fa8b4945db",
+  "findingsLedgerExpectedGitBlob": "e96923e1a6b1c5aa7b0a2c6d0fc5259d6ffa7491",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V114.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "B8_HF25_SOURCE_QA_PENDING_AND_HF22_HF24_HF28_LIVE_PENDING_VRM134_PERF_OPEN",
+  "activeBlocker": "B8_HF22_HF24_HF28_LIVE_OPEN_HF25_NOT_DEPLOYED_VRM134_PERF_OPEN_HUMAN_PENDING",
   "nextFindingId": "VRM-275",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -10103,11 +10103,23 @@
     "predecessorSource": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
     "sourceSha": "baebd9bee00acebf949d5bb5d68857a37b180e72",
     "sourceTree": "9a48697095fa99907099c2ded83e0069ddfe7fda",
-    "state": "SOURCE_FIXED_PENDING_CI_NOT_MATERIALIZED",
+    "state": "SOURCE_QA_PASS_RUN1608_PENDING_DEV_HUMAN",
     "lastPublishedDevSource": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
     "visualReviewOnUnchangedDev": true,
     "requiredValidation": "Existing finance 37+ regression tests plus new HF25 copy assertion; subsequent same-artifact provider/readback for B8.",
     "noExternalPayments": true,
-    "production": false
+    "production": false,
+    "proof": {
+      "runId": 38637293247,
+      "runNumber": 1608,
+      "jobId": 116103595572,
+      "status": "PASS_CANONICAL_SOURCE_QA_38_FINANCE_TESTS_0_FAIL",
+      "qaOwner": "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs",
+      "feature": "HF25 internal CxP no bank confirmed claim",
+      "deployed": false,
+      "devCurrentPredecessorSource": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
+      "human": "PENDING",
+      "production": false
+    }
   }
 }
