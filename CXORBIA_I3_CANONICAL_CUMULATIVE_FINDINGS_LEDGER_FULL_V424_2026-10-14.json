@@ -14,9 +14,9 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "f3c2b12b73f9d6373280ea1e9b387ca1da695853",
-    "sourceTree": "f55c814931bd7989bdc3b2e5b40682753d602217",
-    "predecessorSha": "baebd9bee00acebf949d5bb5d68857a37b180e72",
+    "sourceSha": "a4ad9571e9f3b4d9ba0c3816779500c0374cb291",
+    "sourceTree": "bb0ce4defc06b464dabc891108716d0885043b0a",
+    "predecessorSha": "f3c2b12b73f9d6373280ea1e9b387ca1da695853",
     "production": false,
     "state": "VRM134_SOURCE_FIXED_PENDING_QA_DEV_E2E",
     "proof": {
@@ -19888,7 +19888,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Existing canonical I3 QA must pass B8 budget safe ACK and canonical project catalog; then B7 modal/filter owner targeted fix, no unapproved DEV deploy while Paula reviews RUN1605. B8 HF22/HF24/HF28 E2E still OPEN.",
+  "exactNextAction": "Run existing I3 canonical source QA for B7 owner, then only one cumulative DEV materialization after source-proven B8/B7 candidates; repeat exact same-artifact E2E including filter Oakland, KPI nested close, budget provider readback; preserve no production.",
   "supersedesGitBlob": "98d6566a240a8256a1441328b2da4af1c25fac6f",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -29317,5 +29317,29 @@
       "R16",
       "R17"
     ]
+  },
+  "i3Oct14PostulationsFilterModalProof": {
+    "sourceFrom": "f3c2b12b73f9d6373280ea1e9b387ca1da695853",
+    "sourceTo": "a4ad9571e9f3b4d9ba0c3816779500c0374cb291",
+    "sourceTree": "bb0ce4defc06b464dabc891108716d0885043b0a",
+    "owner": "app/modules/postulaciones.js",
+    "ownerBlob": "79dacc10683261cda1a6b9ea55946dbc6231c08f",
+    "qa": "backend/runtime/hr-live-service/test/cxorbia-i3-b7-temporal-reconcile.test.mjs",
+    "qaBlob": "46fc7b8caef9d5eab0596667e9c9a2978ef73f61",
+    "classification": [
+      "FUNCTIONAL_DEFECT",
+      "VISUAL_DEFECT"
+    ],
+    "rootCauses": [
+      "search() only visited #pGroups [data-pid] and never #poAssignedGroups",
+      "KPI ui.modal opened repeatedly without replaceExisting"
+    ],
+    "changes": [
+      "active assignment row/group predicate scoped by visible search/project/country/state",
+      "KPI open replaces previous active modal only; nested operational transitions already call close"
+    ],
+    "state": "SOURCE_FIXED_PENDING_QA",
+    "dev": "NOT_DEPLOYED",
+    "production": false
   }
 }

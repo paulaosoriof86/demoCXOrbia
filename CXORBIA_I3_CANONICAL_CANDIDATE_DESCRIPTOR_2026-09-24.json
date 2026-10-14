@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B8_BUDGET_PROJECT_CATALOG_SOURCE_FIXED_QA_PENDING",
+  "status": "HOLD_I3_B7_B8_P0_SOURCE_QA_PENDING_DEV_VISUAL",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "f3c2b12b73f9d6373280ea1e9b387ca1da695853",
-  "productTreeAuthority": "f55c814931bd7989bdc3b2e5b40682753d602217",
-  "predecessorProductSourceSha": "baebd9bee00acebf949d5bb5d68857a37b180e72",
+  "productSourceSha": "a4ad9571e9f3b4d9ba0c3816779500c0374cb291",
+  "productTreeAuthority": "bb0ce4defc06b464dabc891108716d0885043b0a",
+  "predecessorProductSourceSha": "f3c2b12b73f9d6373280ea1e9b387ca1da695853",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V424_2026-10-14.json",
-  "findingsLedgerExpectedGitBlob": "e1c8fc32fdbf27004d925ee509b1397eca4003b4",
+  "findingsLedgerExpectedGitBlob": "d462b768b52d806f1685fc5a5ebc4f2d1f63e584",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V114.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "B8_BUDGET_SOURCE_QA_AND_HUMAN_VISUAL_UNCLOSED_VRM134_HOLD",
+  "activeBlocker": "B7_FILTER_MODAL_SOURCE_QA_PENDING_PLUS_B8_HF22_HF24_HF28_VRM134_PERF",
   "nextFindingId": "VRM-275",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Existing canonical I3 QA must pass B8 budget safe ACK and canonical project catalog; then B7 modal/filter owner targeted fix, no unapproved DEV deploy while Paula reviews RUN1605. B8 HF22/HF24/HF28 E2E still OPEN.",
+  "exactNextAction": "Run existing I3 canonical source QA for B7 owner, then only one cumulative DEV materialization after source-proven B8/B7 candidates; repeat exact same-artifact E2E including filter Oakland, KPI nested close, budget provider readback; preserve no production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -10155,5 +10155,29 @@
       "R16",
       "R17"
     ]
+  },
+  "i3Oct14PostulationsFilterModalProof": {
+    "sourceFrom": "f3c2b12b73f9d6373280ea1e9b387ca1da695853",
+    "sourceTo": "a4ad9571e9f3b4d9ba0c3816779500c0374cb291",
+    "sourceTree": "bb0ce4defc06b464dabc891108716d0885043b0a",
+    "owner": "app/modules/postulaciones.js",
+    "ownerBlob": "79dacc10683261cda1a6b9ea55946dbc6231c08f",
+    "qa": "backend/runtime/hr-live-service/test/cxorbia-i3-b7-temporal-reconcile.test.mjs",
+    "qaBlob": "46fc7b8caef9d5eab0596667e9c9a2978ef73f61",
+    "classification": [
+      "FUNCTIONAL_DEFECT",
+      "VISUAL_DEFECT"
+    ],
+    "rootCauses": [
+      "search() only visited #pGroups [data-pid] and never #poAssignedGroups",
+      "KPI ui.modal opened repeatedly without replaceExisting"
+    ],
+    "changes": [
+      "active assignment row/group predicate scoped by visible search/project/country/state",
+      "KPI open replaces previous active modal only; nested operational transitions already call close"
+    ],
+    "state": "SOURCE_FIXED_PENDING_QA",
+    "dev": "NOT_DEPLOYED",
+    "production": false
   }
 }

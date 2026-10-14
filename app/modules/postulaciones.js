@@ -559,7 +559,7 @@ CX.module('postulaciones', ({data,ui})=>{
       CX.adminPostulacionesActions?.openContext?.({data,ui,visitId});
     }));
     const poList=(title,arr)=>ui.modal(title+' ('+arr.length+')', arr.length?`<table class="tbl"><thead><tr><th>Shopper</th><th>Sucursal</th><th>Estado</th><th>Honorario</th><th></th></tr></thead><tbody>${arr.map(x=>`<tr><td><b style="font-size:12.5px">${x.shopper}</b><div style="font-size:10px;color:var(--t3)">${x.shopperCode}</div></td><td style="font-size:12px">${x.sucursal}<div style="font-size:10px;color:var(--t3)">${CX.paisFlag(x.pais)} ${x.ciudad}</div></td><td>${estTag(x.estado)}</td><td style="font-size:12px;color:var(--green)">${x.honorario!=null?x.currency+' '+x.honorario:'<span class="muted">Pendiente de fuente</span>'}</td><td style="text-align:right">${x.id?`<button class="btn btn-ghost btn-sm poRowGest" data-pid="${x.id}" style="padding:2px 9px;font-size:11px">Gestionar →</button>`:''}</td></tr>`).join('')}</tbody></table>`:ui.empty('📭','Sin elementos en esta categoría.'),
-      {onMount:(ov,close)=>ov.querySelectorAll('.poRowGest').forEach(b=>b.addEventListener('click',()=>{const x=posts.find(z=>z.id===b.dataset.pid);if(x){close();postDetalle(x);}}))});
+      {replaceExisting:true,onMount:(ov,close)=>ov.querySelectorAll('.poRowGest').forEach(b=>b.addEventListener('click',()=>{const x=posts.find(z=>z.id===b.dataset.pid);if(x){close();postDetalle(x);}}))});
     /* B7: functional owner of each operational KPI. No synthetic postulation
        and no new provider write. The existing authorized visit-action handlers own decisions. */
     const openOperationalKpi=(title,rows,kind)=>{
@@ -576,7 +576,7 @@ CX.module('postulaciones', ({data,ui})=>{
       }).filter(Boolean).join('');
       ui.modal(title+' ('+rows.length+')',tableRows
         ?'<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Shopper</th><th>Sucursal</th><th>Estado</th><th>Acción</th></tr></thead><tbody>'+tableRows+'</tbody></table></div>'
-        :ui.empty('🗂️','Sin solicitudes vigentes en esta categoría.'),{onMount:(ov,close)=>{
+        :ui.empty('🗂️','Sin solicitudes vigentes en esta categoría.'),{replaceExisting:true,onMount:(ov,close)=>{
         ov.querySelectorAll('[data-po-kpi-action]').forEach(b=>b.addEventListener('click',()=>{
           const id=String(b.dataset.visitId||''),action=String(b.dataset.poKpiAction||'');
           const visit=operationalAssignments.find(x=>String(x.id||x.visitId)===id);
@@ -721,8 +721,24 @@ CX.module('postulaciones', ({data,ui})=>{
       document.querySelectorAll('#pGroups [data-pid]').forEach(el=>{const x=posts.find(z=>z.id===el.dataset.pid);
         const lifecycleOk=hist||(x?._archived!==true&&x?.active!==false&&x?.postulationLifecycle!=='transitioned_to_assignment');
         const ok=lifecycleOk&&(hist||periodIdOf(x)===data.currentPeriodId)&&(!q||(displayShopper(x)+' '+displayCode(x)+' '+x.sucursal).toLowerCase().includes(q))&&(!fpr||x.projectId===fpr)&&(!fp||x.pais===fp)&&(!fe||x.estado===fe);el.style.display=ok?'':'none';});
-      // ocultar grupos sin tarjetas visibles
-      document.querySelectorAll('#pGroups .card').forEach(g=>{const any=[...g.querySelectorAll('[data-pid]')].some(el=>el.style.display!=='none');g.style.display=any?'':'none';});};
+      // Postulaciones y asignaciones son superficies distintas: el filtro cubre ambas.
+      document.querySelectorAll('#pGroups .card').forEach(g=>{const any=[...g.querySelectorAll('[data-pid]')].some(el=>el.style.display!=='none');g.style.display=any?'':'none';});
+      document.querySelectorAll('#poAssignedGroups [data-cx-assignment-card]').forEach(el=>{
+        const visit=operationalAssignments.find(v=>String(v.id||v.visitId)===String(el.dataset.visitRef||''));
+        if(!visit){el.style.display='none';return;}
+        const searchable=[visit.shopper,visit.shopperCode,visit.sucursal,visit.ciudad,visit.pais,visit.escenario,visit.code].map(x=>String(x||'')).join(' ').toLowerCase();
+        const projectIds=[visit.rootProjectId,visit.projectId,data.currentProjectId].map(x=>String(x||'')).filter(Boolean);
+        const matches=!q||searchable.includes(q);
+        const projectOk=!fpr||projectIds.includes(String(fpr));
+        const countryOk=!fp||String(visit.pais||'')===String(fp);
+        const stateOk=!fe||String(visit.estado||visit.status||'').toLowerCase()===String(fe).toLowerCase();
+        el.style.display=matches&&projectOk&&countryOk&&stateOk?'':'none';
+      });
+      document.querySelectorAll('#poAssignedGroups [data-cx-assignment-group]').forEach(group=>{
+        const any=[...group.querySelectorAll('[data-cx-assignment-card]')].some(el=>el.style.display!=='none');
+        group.style.display=any?'':'none';
+      });
+    };
     ['pSearch','pProj','pPais','pEst','pHist'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',search);});
     /* R19 P0-1 (20260715): "Postulaciones solo debe mostrar el periodo activo" — el checkbox
        "Ver históricas" ya existía en el markup pero nunca estaba conectado a ningún filtro (todas

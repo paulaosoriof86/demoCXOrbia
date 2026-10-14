@@ -103,10 +103,10 @@
     }
   },
   "productSource": {
-    "sha": "f3c2b12b73f9d6373280ea1e9b387ca1da695853",
-    "treeSha": "f55c814931bd7989bdc3b2e5b40682753d602217",
-    "predecessorProductSourceSha": "baebd9bee00acebf949d5bb5d68857a37b180e72",
-    "message": "fix(i3/b8): budget ack and project destination unique",
+    "sha": "a4ad9571e9f3b4d9ba0c3816779500c0374cb291",
+    "treeSha": "bb0ce4defc06b464dabc891108716d0885043b0a",
+    "predecessorProductSourceSha": "f3c2b12b73f9d6373280ea1e9b387ca1da695853",
+    "message": "fix(i3/b7): assignment filters and KPI modal stacks",
     "authorityState": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN"
   },
   "controlHeadAtConstruction": "e1ea87a4f91744211f3e3f93b3a563549bdda69c",
@@ -1678,8 +1678,8 @@
         "Cliente"
       ],
       "contractFunctional": "Disponibles/Asignación/Postulación/Eliminación/Decisión/Persistencia",
-      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_LIVE_E2E_PASS_HUMAN_PENDING",
-      "actionRequired": "RUN1563_B7_EXPIRED_DATE_AND_SEVEN_KPI_PASS__HUMAN_VISUAL_PENDING__B7_RESERVATIONS_HUMAN_OPEN",
+      "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN",
+      "actionRequired": "B7_GESTION_FILTER_ASSIGNMENTS_AND_SINGLE_KPI_MODAL_QA",
       "preI4SuccessorCommits": [
         "275a9893532e9fa11efcbafccd34bb93919d7d64"
       ],
@@ -1706,7 +1706,7 @@
         "app/modules/visitas.js": "86c958c62c04d29c71b23c4e1401901ee8858138",
         "app/modules/visita-detalle.js": "1f2178bbfa2c6aeb2b11f78b645f4922cfc32876",
         "app/modules/revision-admin.js": "41fcea495c1e23e7ecee43a637b45002124ea3c9",
-        "app/modules/postulaciones.js": "ca6c51569e3c2c93f703b20edf6d59b503e8505a",
+        "app/modules/postulaciones.js": "79dacc10683261cda1a6b9ea55946dbc6231c08f",
         "app/modules/reservas.js": "37e4305161c93cbdae0fd5cbe20a55216f59206b"
       },
       "sourceStaticReproof": {
@@ -4255,10 +4255,10 @@
       "f9ApprovedBlob": "f38593885c245841710934971dd335ee5eddf1da",
       "latestApprovedSource": "275a9893532e9fa11efcbafccd34bb93919d7d64",
       "latestApprovedBlob": "8850888042126f1efb51494db4de61066ee68ca3",
-      "currentBlob": "ca6c51569e3c2c93f703b20edf6d59b503e8505a",
+      "currentBlob": "79dacc10683261cda1a6b9ea55946dbc6231c08f",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+      "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "fc1bf4e962b04fe8bd06f599cf7404aac5f34f72",
       "latestApprovedAuthority": "PRE_I4_PROVEN_SUCCESSOR__RUN333",
@@ -10218,5 +10218,29 @@
       "R16",
       "R17"
     ]
+  },
+  "i3Oct14PostulationsFilterModalProof": {
+    "sourceFrom": "f3c2b12b73f9d6373280ea1e9b387ca1da695853",
+    "sourceTo": "a4ad9571e9f3b4d9ba0c3816779500c0374cb291",
+    "sourceTree": "bb0ce4defc06b464dabc891108716d0885043b0a",
+    "owner": "app/modules/postulaciones.js",
+    "ownerBlob": "79dacc10683261cda1a6b9ea55946dbc6231c08f",
+    "qa": "backend/runtime/hr-live-service/test/cxorbia-i3-b7-temporal-reconcile.test.mjs",
+    "qaBlob": "46fc7b8caef9d5eab0596667e9c9a2978ef73f61",
+    "classification": [
+      "FUNCTIONAL_DEFECT",
+      "VISUAL_DEFECT"
+    ],
+    "rootCauses": [
+      "search() only visited #pGroups [data-pid] and never #poAssignedGroups",
+      "KPI ui.modal opened repeatedly without replaceExisting"
+    ],
+    "changes": [
+      "active assignment row/group predicate scoped by visible search/project/country/state",
+      "KPI open replaces previous active modal only; nested operational transitions already call close"
+    ],
+    "state": "SOURCE_FIXED_PENDING_QA",
+    "dev": "NOT_DEPLOYED",
+    "production": false
   }
 }
