@@ -265,6 +265,34 @@ try{
               entityFound:matched.filter(x=>(cx.data?._visitas||[]).some(v=>[v.id,v.visitId,v.hrRowId].map(String).includes(String(x.entityId)))).length};
           },ids);
           notificationReadback.feedDiagnostic=feedDiagnostic;
+          const queryDiagnostic=await page.evaluate(async list=>{
+            const cx=window.CX||{},sid=String(cx.backendAuth?.context?.()?.shopperId||cx.session?.user?.shopperId||'');
+            const result={reloadedCount:null,direct:[],scopedQuery:null,shopperIdPresent:!!sid};
+            try{
+              await cx.backendBulletins?.load?.();
+              result.reloadedCount=Number(window.CX_BACKEND_BULLETINS_STATUS?.count??-1);
+            }catch(e){result.reloadError=String(e?.code||e?.message||'READ_ERROR').slice(0,130);}
+            const db=window.firebase?.apps?.length?window.firebase.firestore():null;
+            if(!db)return {...result,dbAvailable:false};
+            const col=db.collection('tenants').doc('tya').collection('bulletins');
+            for(const id of list.slice(0,2)){
+              try{
+                const snap=await col.doc(id).get({source:'server'});
+                const d=snap.exists?(snap.data()||{}):null;
+                result.direct.push({ok:true,exists:!!d,active:d?.status==='active',role:d?.toRole==='shopper',
+                  targeted:(d?.targetShopperIds||[]).map(String).includes(sid)});
+              }catch(e){result.direct.push({ok:false,code:String(e?.code||e?.message||'DOC_READ_FAIL').slice(0,140)});}
+            }
+            if(sid){
+              try{
+                const q=await col.where('targetShopperIds','array-contains',sid).get({source:'server'});
+                result.scopedQuery={ok:true,count:q.size,expectedMatched:q.docs.filter(d=>list.includes(d.id)).length};
+              }catch(e){result.scopedQuery={ok:false,code:String(e?.code||e?.message||'QUERY_FAIL').slice(0,140)};}
+            }
+            return result;
+          },ids);
+          notificationReadback.queryDiagnostic=queryDiagnostic;
+
           evidence.b7ShopperNotificationDiagnostic=notificationReadback;
           write(evidence);
           throw new Error('FUNCTIONAL_DEFECT:B7_SHOPPER_BULLETIN_NOT_VISIBLE:'+JSON.stringify(notificationReadback));
