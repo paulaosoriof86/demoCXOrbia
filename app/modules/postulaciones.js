@@ -55,6 +55,20 @@ CX.adminPostulacionesActions.rescheduleFailure=(result,error)=>{
   const human=code.includes('DATE')?'La fecha no cumple las reglas del proyecto.':code.includes('PERIOD')?'La visita pertenece a otro período.':code.includes('SCOPE')||code.includes('ROLE')||code.includes('AUTH')||code.includes('OPERATOR_ONLY')?'No tienes autorización para decidir sobre esta visita.':code.includes('VERSION')?'La visita cambió; actualiza la pantalla antes de decidir.':code==='OPS_VISIT_REQUEST_ALREADY_PENDING'?'Existe otra solicitud pendiente.':'El servidor no confirmó la decisión.';
   return {code,message:human};
 };
+/* B7 P0: manual WhatsApp draft only, never a provider send acknowledgment. */
+CX.adminPostulacionesActions.openWaDraft=({ui,shopper,phone,body})=>{
+  const input=String(phone??'').trim();
+  const digits=/^\+?[\d\s().-]+$/.test(input)?input.replace(/\D/g,''):'';
+  if(!String(shopper||'').trim()||!(/^[1-9]\d{8,14}$/.test(digits))){
+    ui.toast('No hay un WhatsApp internacional válido para este shopper. Verifica el número autorizado con código de país.','warn',4200);
+    return false;
+  }
+  const opened=window.open('https://wa.me/'+digits+'?text='+encodeURIComponent(String(body||'')),'_blank');
+  if(!opened){ui.toast('El navegador bloqueó WhatsApp. Permite ventanas emergentes para abrir el borrador.','warn',4200);return false;}
+  try{opened.opener=null;}catch(_){}
+  ui.toast('Borrador de WhatsApp abierto; el envío debe realizarse y confirmarse en WhatsApp.','ok',4200);
+  return true;
+};
 CX.adminPostulacionesActions.openAgenda=({data,ui,visitIds=[]})=>{
   const ids=new Set(visitIds.map(String).filter(Boolean));
   const visits=(data.visitas?.()||[]).filter(v=>v.shopperId&&(!ids.size||ids.has(String(v.id||v.visitId))));
@@ -99,8 +113,20 @@ CX.adminPostulacionesActions.openAgenda=({data,ui,visitIds=[]})=>{
             const diagnostic=CX.adminPostulacionesActions.rescheduleFailure(r,null);
             b.dataset.providerResultCode=diagnostic.code;b.disabled=false;b.textContent=prior;ui.toast(diagnostic.message,'warn',4800);return;
           }
-          try{await CX.backend?.refresh?.();await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('admin_schedule_decision_committed');}catch(_){}
-          close();ui.toast(decision==='approved'?'Fecha autorizada con confirmación remota':'Fecha anterior conservada con confirmación remota','ok',3600);
+          let observed=null;
+          try{
+            await CX.backend?.refresh?.();
+            await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('admin_schedule_decision_committed');
+            observed=(data.visitas?.()||[]).find(x=>String(x.id||x.visitId)===String(visit.id||visit.visitId)||String(x.hrRowId||'')===String(visit.hrRowId||'__missing__'));
+          }catch(_){}
+          const readback=String(observed?.rescheduleRequest?.status||'')===decision
+            &&(decision==='rejected'||String(observed?.agendada||'').slice(0,10)===String(visit.rescheduleRequest.newDate||'').slice(0,10));
+          if(!readback){
+            b.disabled=false;b.textContent=prior;
+            ui.toast('El proveedor confirmó la decisión, pero la visita todavía no refleja la fecha. Actualiza antes de continuar.','warn',4800);
+            return;
+          }
+          close();ui.toast(decision==='approved'?'Fecha autorizada, confirmada y releída.':'Fecha anterior conservada, confirmada y releída.','ok',3600);
         }catch(error){const diagnostic=CX.adminPostulacionesActions.rescheduleFailure(null,error);b.dataset.providerResultCode=diagnostic.code;b.disabled=false;b.textContent=prior;ui.toast(diagnostic.message,'warn',4800);}
       }));
       }});
@@ -501,7 +527,7 @@ CX.module('postulaciones', ({data,ui})=>{
         <div class="flex" style="justify-content:flex-end;gap:8px"><button class="btn btn-soft btn-sm" id="pmWa">📲 WhatsApp</button><button class="btn btn-pr btn-sm" id="pmGo">Ver perfil completo →</button></div>
       `,{onMount:(ov,close)=>{
         ov.querySelector('#pmGo').addEventListener('click',()=>{close();CX.session._focusShopper=s.id;CX.router.nav('shoppers');});
-        ov.querySelector('#pmWa').addEventListener('click',()=>{close();ui.toast('WhatsApp a '+s.nombre+' preparado (vista previa) · envío pendiente de activación','ok');});
+        ov.querySelector('#pmWa').addEventListener('click',()=>{if(CX.adminPostulacionesActions.openWaDraft({ui,shopper:s.nombre,phone:s.whatsapp||s.phone,body:'Hola '+s.nombre+', sobre tus visitas.'}))close();});
         const histModal=(filter,title)=>{ const arr=hist.filter(filter);
           ui.modal(title+' · '+s.nombre, arr.length?`<table class="tbl"><thead><tr><th>Sucursal</th><th>Escenario</th><th>Fecha</th><th>Estado</th></tr></thead><tbody>${arr.map(v=>`<tr><td><b>${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad}</div></td><td style="font-size:12px">${v.escenario||''}</td><td style="font-size:12px">${v.realizada||v.agendada||'—'}</td><td>${ui.estadoBadge(v.estado)}</td></tr>`).join('')}</tbody></table>`:ui.empty('🗒️','Sin visitas en esta categoría.')); };
         ov.querySelectorAll('[data-ph]').forEach(el=>el.addEventListener('click',()=>{const k=el.dataset.ph; if(k==='all')histModal(()=>true,'Historial completo'); else if(k==='real')histModal(v=>['realizada','cuestionario','liquidada'].includes(v.estado),'Realizadas'); else histModal(v=>v.estado==='liquidada','Liquidadas');}));
@@ -529,7 +555,7 @@ CX.module('postulaciones', ({data,ui})=>{
         </div>
       `,{onMount:(ov,close)=>{
         ov.querySelector('#pdPerfil')&&ov.querySelector('#pdPerfil').addEventListener('click',()=>{close();profileModal(x.shopperId);});
-        ov.querySelector('#pdWa')&&ov.querySelector('#pdWa').addEventListener('click',()=>{const msg=encodeURIComponent('Hola '+(x.shopper||'')+', sobre tu visita en '+x.sucursal);window.open('https://wa.me/'+(x.phone||'').replace(/[^0-9]/g,'')+'?text='+msg,'_blank');});
+        ov.querySelector('#pdWa')&&ov.querySelector('#pdWa').addEventListener('click',()=>{const shopper=data.getShopper?.(x.shopperId);CX.adminPostulacionesActions.openWaDraft({ui,shopper:x.shopper||shopper?.nombre,phone:shopper?.whatsapp||shopper?.phone||x.phone,body:'Hola '+(x.shopper||shopper?.nombre||'')+', sobre tu visita en '+x.sucursal+'.'});});
         ov.querySelector('#pdAp')&&ov.querySelector('#pdAp').addEventListener('click',async()=>{await approveDurable(x,ov.querySelector('#pdAp'),close);});
         ov.querySelector('#pdRj')&&ov.querySelector('#pdRj').addEventListener('click',async()=>{if(await applicationStatusDurable(x,'rechazada',ov.querySelector('#pdRj'),'✕ Rechazada','red','Postulación rechazada'))close();});
       }});
@@ -603,7 +629,11 @@ CX.module('postulaciones', ({data,ui})=>{
         }});
     }));
     /* botones de reprogramación (revisar / autorizar nueva fecha / conservar anterior) */
-    document.querySelectorAll('[data-revpost]').forEach(b=>b.addEventListener('click',()=>{const x=findReprogram(b.dataset.revpost);ui.modal('Revisar solicitud de reprogramación · '+(x&&x.shopper||''),`<p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Fecha actual: <b>${x&&x.fechaActual||'—'}</b> · Fecha propuesta: <b>${x&&x.fechaProp||'—'}</b></p><div style="background:var(--amber-bg);border-radius:9px;padding:9px 12px;font-size:12px;color:#8a5b00">Usa "Autorizar nueva fecha" para aprobar la reprogramación o "Conservar anterior" para mantener la fecha actual.</div>`);}));
+    document.querySelectorAll('[data-revpost]').forEach(b=>b.addEventListener('click',()=>{
+      const x=findReprogram(b.dataset.revpost);
+      if(!x?.visitaId){ui.toast('No hay una visita exacta para revisar la reprogramación.','warn',4200);return;}
+      CX.adminPostulacionesActions.openAgenda({data,ui,visitIds:[String(x.visitaId)]});
+    }));
     document.querySelectorAll('[data-authfecha]').forEach(b=>b.addEventListener('click',async()=>{
       const x=findReprogram(b.dataset.authfecha);
       if(!x||!x.fechaProp)return;

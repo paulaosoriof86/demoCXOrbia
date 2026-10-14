@@ -94,3 +94,34 @@ test('B7 mass WhatsApp paths reuse exact recipient helper and never declare deli
   assert.ok(source.includes("openExactWaDraft({shopper:s.nombre"));
   assert.ok(!source.includes('Recordatorio masivo preparado'));
 });
+
+
+test('B7 Postulaciones WhatsApp uses validated international number, opens only a manual draft and never claims sent',()=>{
+  const postSource=readFileSync(new URL('../../app/modules/postulaciones.js',import.meta.url),'utf8');
+  const messages=[],opened=[];
+  const CX={adminPostulacionesActions:{},module:()=>{}};
+  const window={open:(url,target)=>{opened.push({url,target});return {opener:{}};}};
+  vm.runInNewContext(postSource,{CX,window,setTimeout:()=>{}});
+  const ui={toast:(message,level)=>messages.push({message,level})};
+  const owner=CX.adminPostulacionesActions;
+  assert.equal(owner.openWaDraft({ui,shopper:'María',phone:'+502 5555 1234',body:'Hola María'}),true);
+  assert.equal(opened[0].url,'https://wa.me/50255551234?text='+encodeURIComponent('Hola María'));
+  assert.match(messages[0].message,/envío debe realizarse y confirmarse/);
+  assert.equal(owner.openWaDraft({ui,shopper:'María',phone:'55551234',body:'Hola'}),false);
+  assert.equal(opened.length,1);
+  assert.equal(owner.openWaDraft({ui,shopper:'María',phone:'+502 abc',body:'Hola'}),false);
+  assert.equal(opened.length,1);
+  window.open=()=>null;
+  assert.equal(owner.openWaDraft({ui,shopper:'María',phone:'+502 5555 1234',body:'Hola'}),false);
+  assert.ok(!messages.some(x=>/mensaje enviado|envío confirmado/i.test(x.message)));
+  assert.match(postSource,/querySelector\('#pmWa'\)[\s\S]*?openWaDraft/);
+  assert.match(postSource,/querySelector\('#pdWa'\)[\s\S]*?openWaDraft/);
+});
+test('B7 review of real pending reschedule opens the existing decision owner and requires same visit readback',()=>{
+  const postSource=readFileSync(new URL('../../app/modules/postulaciones.js',import.meta.url),'utf8');
+  assert.match(postSource,/querySelectorAll\('\[data-revpost\]'\)[\s\S]*?openAgenda\(\{data,ui,visitIds:\[String\(x.visitaId\)\]\}\)/);
+  assert.match(postSource,/const readback=String\(observed\?\.rescheduleRequest\?\.status/);
+  assert.match(postSource,/decision==='rejected'\|\|String\(observed\?\.agendada/);
+  assert.match(postSource,/if\(!readback\)/);
+  assert.doesNotMatch(postSource,/ui\.modal\('Revisar solicitud de reprogramación/);
+});
