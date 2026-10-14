@@ -181,6 +181,23 @@ try{
     const prefetchTrace=await sp.page.evaluate(()=>{const p=window.CX_PROTECTED_HR_PREFETCH||{};return {mode:String(p.mode||'not_started'),ready:p.ready===true,prefetchFetchMs:Number.isFinite(p.receivedAt-p.startedAt)?p.receivedAt-p.startedAt:null,queueWaitMs:Number.isFinite(p.consumedAt-p.receivedAt)?p.consumedAt-p.receivedAt:null,providerWrites:p.providerWrites||0};});
     console.log(JSON.stringify({metric:'authenticatedHrPrefetch',role:'shopper',principal:target.name,trace:prefetchTrace}));
     evidence.representatives[target.name].prefetchTrace=prefetchTrace;
+    const speedTrace=await page.evaluate(()=>{
+      const nav=performance.getEntriesByType('navigation')[0]||null;
+      const hr=performance.getEntriesByType('resource')
+        .filter(x=>String(x.name).includes('/hr-live'))
+        .map(x=>({durationMs:Math.round(x.duration),waitForFirstByteMs:Math.round(x.responseStart-x.startTime),transferSize:x.transferSize||null}))
+        .slice(-6);
+      const boot=window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE||{};
+      const pre=window.CX_PROTECTED_HR_PREFETCH||{};
+      return {navigationDomInteractiveMs:nav?Math.round(nav.domInteractive):null,
+        hrFetches:hr,hrFetchCount:hr.length,bootAttempts:Number(boot.attempts||0),
+        prefetchedMs:Number.isFinite(pre.receivedAt-pre.startedAt)?Math.round(pre.receivedAt-pre.startedAt):null,
+        prefetchedQueueMs:Number.isFinite(pre.consumedAt-pre.receivedAt)?Math.round(pre.consumedAt-pre.receivedAt):null,
+        refreshPollConfiguredMs:Number(window.CX_TYA_LIVE_POLL_MS||0),role:String(window.CX?.session?.role||'')};
+    });
+    console.log(JSON.stringify({metric:'shopperColdAuthorityTiming',role:'shopper',principal:target.name,
+      authorityReadyMs:sp.authorityReadyMs,speedTrace}));
+    evidence.representatives[target.name].speedTrace=speedTrace;
     const base=await page.evaluate(({expectedId,currentPeriodId})=>{
       const d=window.CX?.data||{},sessionUser=window.CX?.session?.user||{},sid=String(sessionUser.shopperId||''),own=typeof d.visitsForShopper==='function'?d.visitsForShopper(expectedId,false):[];
       const current=own.filter(v=>String(d.recordPeriodId?d.recordPeriodId(v):(v.periodId||v.projectId)||'')===currentPeriodId);
@@ -197,7 +214,7 @@ try{
         firstActive:first?{id:String(first.id||first.visitId||''),hrRowId:String(first.hrRowId||''),branch:String(first.sucursal||''),instructiveReadAt:String(first.instructiveReadAt||''),scheduled:firstFacets.scheduled===true,scheduledDate:String(first.agendada||first.scheduledDate||first.fechaAgendada||''),rescheduleRequestStatus:String(first.rescheduleRequest?.status||''),cancelRequestStatus:String(first.cancelRequest?.status||'')}:null
       };
     },{expectedId:target.profile.id,currentPeriodId:periodId});
-    evidence.representatives[target.name]={stage:'identity_verified_before_crossroute',authorityReadyMs:sp.authorityReadyMs,activeVisits:base.activeVisits,firstActive:base.firstActive?{scheduled:base.firstActive.scheduled,rescheduleRequestStatus:base.firstActive.rescheduleRequestStatus,cancelRequestStatus:base.firstActive.cancelRequestStatus}:null};
+    evidence.representatives[target.name]={stage:'identity_verified_before_crossroute',authorityReadyMs:sp.authorityReadyMs,speedTrace,prefetchTrace,activeVisits:base.activeVisits,firstActive:base.firstActive?{scheduled:base.firstActive.scheduled,rescheduleRequestStatus:base.firstActive.rescheduleRequestStatus,cancelRequestStatus:base.firstActive.cancelRequestStatus}:null};
     write(evidence);
     if(base.sessionShopperId!==target.profile.id)throw new Error('MAPPING_FAILURE:SESSION_NOT_CANONICAL:'+target.name+':'+JSON.stringify(base));
     if(base.ownVisits!==base.uniqueOwnVisits)throw new Error('MAPPING_FAILURE:DUPLICATE_OWN_VISITS:'+target.name+':'+JSON.stringify(base));
