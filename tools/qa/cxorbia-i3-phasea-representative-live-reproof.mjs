@@ -254,8 +254,21 @@ try{
           remoteExpected:ids.length,matched:shop.matched,tablonMatched,shownOnMiDia:shop.shownOnMiDia,
           initialFeedCount:initial.count,hydratedFeedLoaded:shop.loaded,
           state:shop.matched===ids.length&&tablonMatched===ids.length?'PASS_INDEPENDENT_SHOPPER_UI':'FAIL_SHOPPER_DELIVERY'};
-        if(notificationReadback.state!=='PASS_INDEPENDENT_SHOPPER_UI')
+        if(notificationReadback.state!=='PASS_INDEPENDENT_SHOPPER_UI'){
+          const feedDiagnostic=await page.evaluate(list=>{
+            const cx=window.CX||{},items=cx.notif?._items||[],matched=items.filter(x=>list.includes(String(x.id))),
+              state=window.CX_BACKEND_BULLETINS_STATUS||{};
+            return {backendCount:Number(state.count??-1),rawFeedCount:items.length,
+              rawMatched:matched.length,filteredMatched:cx.notif?.for?.('shopper')?.filter(x=>list.includes(String(x.id))).length||0,
+              roleMatched:matched.filter(x=>cx.notif?._validForRole?.(x,'shopper')).length,
+              activeMatched:matched.filter(x=>cx.notif?._activeForRole?.(x)).length,
+              entityFound:matched.filter(x=>(cx.data?._visitas||[]).some(v=>[v.id,v.visitId,v.hrRowId].map(String).includes(String(x.entityId)))).length};
+          },ids);
+          notificationReadback.feedDiagnostic=feedDiagnostic;
+          evidence.b7ShopperNotificationDiagnostic=notificationReadback;
+          write(evidence);
           throw new Error('FUNCTIONAL_DEFECT:B7_SHOPPER_BULLETIN_NOT_VISIBLE:'+JSON.stringify(notificationReadback));
+        }
       }
     }
     await nav(page,'miperfil');
