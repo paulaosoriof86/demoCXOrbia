@@ -4,12 +4,12 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "4e03ae244e67d462aef0826d6d948b98f58fcbc7",
-  "productTreeAuthority": "31c610153e263555d3c58ef284e87d8dde153a40",
-  "predecessorProductSourceSha": "b344bc1ba79fe9216648f05fe9e64664b26c2a44",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V418_2026-10-14.json",
-  "findingsLedgerExpectedGitBlob": "62649b97344845ef04315f30cb275bf0bbb2d60b",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V108.json",
+  "productSourceSha": "1708b794779978ee7356124553c488195b3b3161",
+  "productTreeAuthority": "45660e8353cb63d1e8c1adfceebd4c5990ea7303",
+  "predecessorProductSourceSha": "4e03ae244e67d462aef0826d6d948b98f58fcbc7",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V419_2026-10-14.json",
+  "findingsLedgerExpectedGitBlob": "a69821ead625d17211d8096c5c780a57ff288a88",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V109.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
@@ -577,7 +577,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "31c610153e263555d3c58ef284e87d8dde153a40",
+  "productSourceTree": "45660e8353cb63d1e8c1adfceebd4c5990ea7303",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -2732,7 +2732,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "5355724a14900da8a39b69d28454169fed9cc367",
+  "moduleTruthExpectedGitBlob": "4278f874f70443ffdb21bb76069e9992d74a7156",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -9831,5 +9831,13 @@
     "devMaterialized": false,
     "production": false,
     "controlGuardAlignment": "UPDATED"
+  },
+  "i3Oct14B7RulesSourcePatch": {
+    "sourceSha": "1708b794779978ee7356124553c488195b3b3161",
+    "sourceTree": "45660e8353cb63d1e8c1adfceebd4c5990ea7303",
+    "rulesBlob": "807b97688d2b74732be0e56c5464e932c47e7b41",
+    "sourceState": "PENDING_RULES_SEMANTIC_AND_DEV",
+    "liveRuleDeploy": false,
+    "prod": false
   }
 }
