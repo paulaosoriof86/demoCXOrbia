@@ -364,6 +364,45 @@ try{
    await shot(page,'admin-b7-kpi-'+width);
  }
  await page.setViewportSize(originalSize);
+
+ /* B7 expired-proposal read-only browser acceptance: this is independent of provider
+    fake fixtures and never submits a write. The served Admin route must prevent
+    confirming a stale proposal and show a usable alternative. */
+ const expiredProof=await page.evaluate(()=>{
+   const d=window.CX?.data||{},vis=typeof d.visitas==='function'?d.visitas():[],
+   records=Array.isArray(d.__backendAllProjectRecords)?d.__backendAllProjectRecords:[],
+   cfg=records.find(p=>String(p.id||p.projectId)===String(d.currentProjectId))||d.period?.()||{},
+   zone=String(cfg.timeZone||cfg.timezone||'America/Guatemala');
+   const fmt=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:zone,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).filter(x=>x.type!=='literal').map(x=>[x.type,x.value]));
+   const today=fmt.year+'-'+fmt.month+'-'+fmt.day;
+   const pending=vis.filter(v=>v.rescheduleRequest?.status==='pending_review').map(v=>({
+     id:String(v.id||v.visitId||''),proposed:String(v.rescheduleRequest.newDate||'').slice(0,10),
+     current:String(v.agendada||'').slice(0,10),period:String(v.periodId||'')
+   }));
+   return {today,zone,pendingCount:pending.length,expired:pending.filter(v=>v.proposed&&v.proposed<today)};
+ });
+ a.b7ExpiredProposal={...expiredProof,decision:'PENDING_BROWSER_ASSERTIONS'};
+ if(expiredProof.expired.length){
+   const visit=expiredProof.expired[0],reviewId='visit-request:'+visit.id;
+   const review=page.locator('[data-revpost]').filter({visible:true});
+   const button=page.locator('[data-revpost="'+reviewId.replace(/"/g,'\\"')+'"]').first();
+   if(!await button.count())throw new Error('FUNCTIONAL_DEFECT:B7_EXPIRED_REVIEW_NOT_VISIBLE:'+visit.id);
+   const approve=page.locator('[data-authfecha="'+reviewId.replace(/"/g,'\\"')+'"]');
+   const renew=page.locator('[data-reprog-renew="'+reviewId.replace(/"/g,'\\"')+'"]');
+   if(await approve.count()||!await renew.count())
+     throw new Error('FUNCTIONAL_DEFECT:B7_EXPIRED_MAIN_ACTION_INCORRECT:'+visit.id);
+   await button.click({timeout:12000});result.clickCount++;
+   const modal=page.locator('.cx-ov:visible').last();
+   if(!(await modal.count())||await modal.locator('[data-date-decision="approved"]').count())
+     throw new Error('FUNCTIONAL_DEFECT:B7_EXPIRED_APPROVAL_EXPOSED:'+visit.id);
+   if(!await modal.locator('[data-date-renew]').count()||!await modal.locator('[data-date-decision="rejected"]').count())
+     throw new Error('FUNCTIONAL_DEFECT:B7_EXPIRED_ALTERNATIVES_MISSING:'+visit.id);
+   a.b7ExpiredProposal.decision='PASS_EXPIRED_APPROVAL_BLOCKED_AND_ALTERNATIVES_VISIBLE';
+   await shot(page,'admin-b7-expired-proposal-guard');
+   await dismissOverlays(page);
+ }else{
+   a.b7ExpiredProposal.decision='NOT_APPLICABLE_CURRENT_FIXTURE_NO_EXPIRED_REQUEST';
+ }
  a.requestShopper=await click(page,'#reqShopper');if(a.requestShopper){await page.waitForTimeout(250);const opts=await page.locator('.cx-ov:visible #rqSh option').allInnerTexts().catch(()=>[]);if(!opts.some(x=>/asignación vigente/i.test(x)))throw new Error('FUNCTIONAL_DEFECT:ADMIN_REQUEST_HR_TARGETS');}await shot(page,'admin-postulations');
  await nav(page,'shoppers');a.shopperProfile=await click(page,'#shBody [data-sid]');if(a.shopperProfile&&!/banco|pago|cuenta|perfil/i.test(await overlay(page)))throw new Error('VISUAL_DEFECT:ADMIN_SHOPPER_PROFILE_BANKING');await shot(page,'admin-shopper-profile');
  const finPeriod=await page.evaluate(()=>{const d=CX.data,orig=d.currentPeriodId;for(const p of (d.projects||[]).slice().reverse()){try{d.setProject(p.id);if((CX.liq?.forProject?.(d)||[]).length)return{id:p.id,orig};}catch(_){}}d.setProject(orig);return{id:orig,orig};});
