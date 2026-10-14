@@ -50,6 +50,7 @@ let lastRefreshError=null;
 let lastRefreshStartedAt=null;
 let lastRefreshFinishedAt=null;
 let lastRefreshDurationMs=null;
+let lastRefreshStagesMs=null;
 let lastShopperReconciliation=null;
 let lastShopperReconciledRevision=null;
 let lastVisitReconciliation=null;
@@ -398,16 +399,24 @@ async function refreshSnapshot(){
       CXORBIA_HR_TAB_REGISTRY_EVIDENCE:registryEvidence,
       CXORBIA_HR_OPERATIONAL_IDENTITY_OUT:identityFile
     };
+    const stagesMs={};
+    const timedNode=async(label,args)=>{
+      const startedAt=Date.now();
+      try{return await runNode(args,env);}finally{stagesMs[label]=Date.now()-startedAt;}
+    };
     try{
-      await runNode(['tools/hr-source/tya-live-provider-registry-identity-dev.mjs'],env);
-      await runNode(['tools/hr-source/tya-build-live-hr-source-safe-r20.mjs'],env);
-      await runNode(['tools/hr-source/tya-enforce-live-tab-registry.mjs'],env);
-      await runNode(['tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs','--input',payload,'--out',payload,'--report-dir',path.join(dir,'canonical')],env);
-      await runNode(['tools/hr-source/tya-reapply-canonical-state-r20.mjs','--input',payload,'--out',payload,'--report-dir',path.join(dir,'state')],env);
-      await runNode(['tools/qa/tya-live-hr-read-probe-gate.mjs','--payload',payload,'--out',path.join(dir,'probe'),'--max-age-seconds','600'],env);
+      await timedNode('registryIdentity',['tools/hr-source/tya-live-provider-registry-identity-dev.mjs']);
+      await timedNode('liveProviderRead',['tools/hr-source/tya-build-live-hr-source-safe-r20.mjs']);
+      await timedNode('tabRegistryGuard',['tools/hr-source/tya-enforce-live-tab-registry.mjs']);
+      await timedNode('canonicalize',['tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs','--input',payload,'--out',payload,'--report-dir',path.join(dir,'canonical')]);
+      await timedNode('reapplyState',['tools/hr-source/tya-reapply-canonical-state-r20.mjs','--input',payload,'--out',payload,'--report-dir',path.join(dir,'state')]);
+      await timedNode('freshSourceProbe',['tools/qa/tya-live-hr-read-probe-gate.mjs','--payload',payload,'--out',path.join(dir,'probe'),'--max-age-seconds','600']);
       const parsed=parseSnapshot(payload);
+      const durableStartedAt=Date.now();
       const configured=await withDurableProjectConfig(parsed);
+      stagesMs.durableProjectConfig=Date.now()-durableStartedAt;
       const next=materialize(configured,'runtime_refresh',parseIdentity(identityFile));
+      lastRefreshStagesMs={...stagesMs};
       /* Recovery P0: publish the fresh HR read before durable Firestore reconciliation. */
       cache=next;
       lastRefreshError=null;
@@ -442,6 +451,24 @@ async function buildSnapshot({forceFresh=false}={}){
   return inFlight||refreshSnapshot();
 }
 
+async function resolveHrAndProtectedPrincipal(req,scope,forceFresh,protectedRequested){
+  const startedAt=Date.now();
+  const hrStartedAt=Date.now();
+  const hrTask=buildSnapshot({forceFresh}).then(current=>({current,hrWaitMs:Date.now()-hrStartedAt}));
+  if(!protectedRequested){
+    const hr=await hrTask;
+    return {current:hr.current,principal:null,timing:{hrWaitMs:hr.hrWaitMs}};
+  }
+  /* Verified identity and HR refresh are independent reads: overlap, never bypass either. */
+  const principalStartedAt=Date.now();
+  const principalTask=verifiedProtectedPrincipal(req,scope).then(principal=>({principal,principalVerifyMs:Date.now()-principalStartedAt}));
+  const [hr,identity]=await Promise.all([hrTask,principalTask]);
+  return {
+    current:hr.current,principal:identity.principal,
+    timing:{hrWaitMs:hr.hrWaitMs,principalVerifyMs:identity.principalVerifyMs,parallelWaitMs:Date.now()-startedAt}
+  };
+}
+
 function runtimeMeta(current){
   return {
     revision:current.revision,
@@ -462,6 +489,7 @@ function runtimeMeta(current){
     refreshStartedAt:lastRefreshStartedAt,
     refreshFinishedAt:lastRefreshFinishedAt,
     refreshDurationMs:lastRefreshDurationMs,
+    refreshStagesMs:lastRefreshStagesMs,
     refreshError:lastRefreshError,
     shopperReconciliation:lastShopperReconciliation,
     visitReconciliation:lastVisitReconciliation,
@@ -530,20 +558,22 @@ const server=http.createServer(async(req,res)=>{
   if(!requestedScope)return sendJson(res,404,{ok:false,error:'not_found'});
   if(await maybeHandleDevVisualRequest(req,res,url,{sendJson}))return;
   try{
+    const protectedRequestStartedAt=Date.now();
     const forceFresh=url.searchParams.get('fresh')==='1';
-    const current=await buildSnapshot({forceFresh});
+    const protectedRequested=url.searchParams.get('protectedState')==='1';
+    const {current,principal,timing}=await resolveHrAndProtectedPrincipal(req,requestedScope,forceFresh,protectedRequested);
     const actualScope=snapshotScope(current.snapshot);
     if(actualScope.tenantId!==requestedScope.tenantId||actualScope.projectId!==requestedScope.projectId){
       return sendJson(res,409,{ok:false,error:'hr_scope_mismatch',requested:{tenantId:requestedScope.tenantId,projectId:requestedScope.projectId},source:{tenantId:actualScope.tenantId,projectId:actualScope.projectId},writes:false,hrWrites:false,production:false});
     }
     const format=url.searchParams.get('format')||'json';
     const operational=DEV_OPERATIONAL_NAMES&&url.searchParams.get('view')==='operational-names'&&url.searchParams.get('cxOperationalPreview')===DEV_OPERATIONAL_TOKEN;
-    const protectedRequested=url.searchParams.get('protectedState')==='1';
     const meta={...runtimeMeta(current),tenantId:requestedScope.tenantId,projectId:requestedScope.projectId,legacyRoute:requestedScope.legacy===true};
     let snapshot,protectedState=null;
     if(protectedRequested){
-      const principal=await verifiedProtectedPrincipal(req,requestedScope);
+      const protectedStateStartedAt=Date.now();
       const protectedView=await protectedPlatformState(current,principal,requestedScope,operational);
+      meta.protectedTiming={...timing,protectedStateMs:Date.now()-protectedStateStartedAt,totalProtectedRequestMs:Date.now()-protectedRequestStartedAt};
       snapshot=protectedView.snapshot;protectedState=protectedView.protectedState;
     }else snapshot=operational?operationalSnapshot(current):current.snapshot;
     const json=(operational||protectedRequested)?JSON.stringify(snapshot):current.json;
