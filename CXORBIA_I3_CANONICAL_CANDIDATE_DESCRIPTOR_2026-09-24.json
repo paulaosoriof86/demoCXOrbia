@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_OCT14_B7_B8_SOURCE_QA_PASS_REMAINDER_P0_OPEN",
+  "status": "HOLD_I3_B7_R01_SOURCE_FIXED_QA_PENDING_OTHER_25_HUMAN_P0_OPEN",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "3faf933f53cbf7e234b7e5389eaf0e12f8172620",
-  "productTreeAuthority": "abf44bd60ce9c5104c64c03d73c9fd01fad4fdaa",
-  "predecessorProductSourceSha": "a4ad9571e9f3b4d9ba0c3816779500c0374cb291",
+  "productSourceSha": "fa76e05d8b60dd7f2102de4dd3d67d43c3d0bacb",
+  "productTreeAuthority": "47ea0705a464369aae9fcbdfcb9d0f8032bef4d3",
+  "predecessorProductSourceSha": "3faf933f53cbf7e234b7e5389eaf0e12f8172620",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V424_2026-10-14.json",
-  "findingsLedgerExpectedGitBlob": "b2651071f33c38f3e7a830f127ac05115ca8f861",
+  "findingsLedgerExpectedGitBlob": "4af682983245eeab55d10452b0d0f08c38a9a721",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V114.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "P0_AUTH_IDENTITY_MERGE_CERT_AI_CANCEL_PROVIDER_WA_INDIVIDUAL_FINANCE_SOURCE_CONFIG_VRM134_PERF",
+  "activeBlocker": "R01_WA_EXACT_OWNER_SOURCE_QA_PENDING_R03_AUTH_R07_CANCEL_R08_CERT_R10_15_FINANCE_R20_LATENCY",
   "nextFindingId": "VRM-275",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Within same I3 read-only root-cause owners of R01 WA phone profile vs HR visit, R03 identity MULTIPLE_PASSWORD_PROOF_PRINCIPALS and R08 Vertex response non-JSON; preserve 25 frozen findings and approved source. Then P0_PROVEN owner patches, one cumulative DEV publication with same-artifact Admin/Shopper live, B8 remittance/payables finance configuration; Gate20/21 held.",
+  "exactNextAction": "Run existing I3 source QA for R01 exact-contact fallback, then authenticated two-role same-visit DEV readback. Separately diagnose R03 two password principals and R08 Vertex non-JSON without loosening security or inventing response; preserve all frozen R01-R25 and earlier 274 findings.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -10208,5 +10208,23 @@
       "humanAccepted": false,
       "production": false
     }
+  },
+  "i3Oct14R01WhatsAppExactOwner": {
+    "id": "R01",
+    "classification": "FUNCTIONAL_DEFECT",
+    "owner": "app/modules/dashboard.js",
+    "ownerBlob": "267933eac3015b2043e5b3b9f83b921db7d082f3",
+    "qaOwner": "tools/qa/cxorbia-i3-b7-hf13-whatsapp-draft-source.test.mjs",
+    "qaBlob": "cbdb9d39ac0eae9a4bf90e90fa5c632b6de7bfcc",
+    "previousSource": "3faf933f53cbf7e234b7e5389eaf0e12f8172620",
+    "productSourceSha": "fa76e05d8b60dd7f2102de4dd3d67d43c3d0bacb",
+    "productTree": "47ea0705a464369aae9fcbdfcb9d0f8032bef4d3",
+    "rootCause": "Individual Dashboard WA resolver read only visit.shopperWa/visit.whatsapp, while authorized canonical shopper profile may have a valid international number.",
+    "fix": "Exact shopperId/canonicalShopperId equality lookup, forbid ambiguous differing international phones, no fuzzy name/country guess, manual wa.me only.",
+    "sourceQa": "PENDING_CI",
+    "dev": "NOT_DEPLOYED",
+    "liveSameVisitPhoneReadback": "PENDING",
+    "priorDevSource": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
+    "production": false
   }
 }

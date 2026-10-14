@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 
 const source=readFileSync(new URL('../../app/modules/dashboard.js',import.meta.url),'utf8');
-function harness(){
+function harness(data={}){
   const start=source.indexOf('  const normalizeWaRecipient=(raw)=>{');
   const end=source.indexOf('  /* END HF-20261012-13 exact manual draft helper */',start);
   assert.ok(start>0&&end>start);
@@ -13,8 +13,8 @@ function harness(){
     window:{open:(url,target)=>{opened.push({url,target});return {opener:{}};}},
     ui:{toast:(message,level)=>toasts.push({message,level})}
   };
-  const h=new Function('window','ui',fragment+' return {normalizeWaRecipient,openExactWaDraft};');
-  return {h:h(environment.window,environment.ui),toasts,opened,environment};
+  const h=new Function('window','ui','data',fragment+' return {normalizeWaRecipient,openExactWaDraft};');
+  return {h:h(environment.window,environment.ui,data),toasts,opened,environment};
 }
 test('HF13 valid international number opens wa.me with encoded draft, not sent',()=>{
   const s=harness();
@@ -124,4 +124,22 @@ test('B7 review of real pending reschedule opens the existing decision owner and
   assert.match(postSource,/decision==='rejected'\|\|String\(observed\?\.agendada/);
   assert.match(postSource,/if\(!readback\)/);
   assert.doesNotMatch(postSource,/ui\.modal\('Revisar solicitud de reprogramación/);
+});
+
+test('R01 Dashboard individual WhatsApp uses only the exact authorized shopper profile when the visit phone is absent',()=>{
+  const s=harness({getShopper:id=>id==='shopper-a'?{id,whatsapp:'+502 5511 2233'}:null});
+  assert.equal(s.h.openExactWaDraft({shopperId:'shopper-a',shopper:'Ana',sucursal:'Sala A'},'Hola Ana'),true);
+  assert.equal(s.opened[0].url,'https://wa.me/50255112233?text=Hola%20Ana');
+});
+test('R01 never guesses identity by name and rejects conflicting exact phone sources',()=>{
+  const s=harness({getShopper:id=>id==='shopper-a'?{id,whatsapp:'+504 9988 7766'}:null});
+  assert.equal(s.h.openExactWaDraft({shopper:'Ana',shopperId:'unknown'},'Hola'),false);
+  assert.equal(s.h.openExactWaDraft({shopper:'Ana',shopperId:'shopper-a',shopperWa:'+502 5511 2233'},'Hola'),false);
+  assert.equal(s.opened.length,0);
+});
+test('R01 rejects a getShopper mismatch or a local-only phone even if the visible name matches',()=>{
+  const s=harness({getShopper:()=>({id:'other-shopper',whatsapp:'+502 5511 2233'}),shoppers:[]});
+  assert.equal(s.h.openExactWaDraft({shopper:'Ana',shopperId:'shopper-a'},'Hola'),false);
+  const noInternational=harness({getShopper:()=>({id:'shopper-a',whatsapp:'55112233'})});
+  assert.equal(noInternational.h.openExactWaDraft({shopper:'Ana',shopperId:'shopper-a'},'Hola'),false);
 });

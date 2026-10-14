@@ -103,10 +103,10 @@
     }
   },
   "productSource": {
-    "sha": "3faf933f53cbf7e234b7e5389eaf0e12f8172620",
-    "treeSha": "abf44bd60ce9c5104c64c03d73c9fd01fad4fdaa",
-    "predecessorProductSourceSha": "a4ad9571e9f3b4d9ba0c3816779500c0374cb291",
-    "message": "fix(i3/b7): assignment filters and KPI modal stacks",
+    "sha": "fa76e05d8b60dd7f2102de4dd3d67d43c3d0bacb",
+    "treeSha": "47ea0705a464369aae9fcbdfcb9d0f8032bef4d3",
+    "predecessorProductSourceSha": "3faf933f53cbf7e234b7e5389eaf0e12f8172620",
+    "message": "fix(i3/b7-r01): exact shopper-id WA fallback to authorized profile",
     "authorityState": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN"
   },
   "controlHeadAtConstruction": "e1ea87a4f91744211f3e3f93b3a563549bdda69c",
@@ -650,8 +650,8 @@
         "Cliente"
       ],
       "contractFunctional": "Operación/HR/Visual",
-      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
-      "actionRequired": "B7_RUN1545_SOURCE_PASS_RUN1546_DEV_PASS_SAME_ARTIFACT_LIVE_ACTION_AND_HUMAN_PENDING",
+      "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN",
+      "actionRequired": "R01_WA_EXACT_CONTACT_SOURCE_QA_PLUS_BROWSER_SAME_VISIT",
       "preI4SuccessorCommits": [
         "feea6ae6b00d36349ae66e43e034bc0b25516cfd"
       ],
@@ -674,7 +674,7 @@
       "currentCandidateSource": "2e360504f8b52b85dda217576fc85cdec68ab41d",
       "currentCandidateTree": "d73951eab853d66b6e150212cba87309feaf7351",
       "currentOwnerBlobs": {
-        "app/modules/dashboard.js": "15d74926b8e68435b9b317ca1b98ad43bd344213",
+        "app/modules/dashboard.js": "267933eac3015b2043e5b3b9f83b921db7d082f3",
         "app/modules/midia.js": "fc970855906a86e0a956091411897fcafdc0ffd7"
       },
       "sourceStaticReproof": {
@@ -3958,10 +3958,10 @@
       "f9ApprovedBlob": "e879fc3f1dd5a7486762b197346cadd086e1d99d",
       "latestApprovedSource": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
       "latestApprovedBlob": "0b411b4de9c23dd2b944302f302d2a6b3e503b67",
-      "currentBlob": "15d74926b8e68435b9b317ca1b98ad43bd344213",
+      "currentBlob": "267933eac3015b2043e5b3b9f83b921db7d082f3",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+      "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "e879fc3f1dd5a7486762b197346cadd086e1d99d",
       "latestApprovedAuthority": "PRE_I4_PROVEN_SUCCESSOR__RUN333",
@@ -3982,7 +3982,7 @@
       },
       "currentCumulativeSource": "f2a50044ca5b4bac5053f5a88de041fd5c7f72f9",
       "currentLoadOrder": 78,
-      "previousMatrixCurrentBlob": "4d97a31d6432bb73ecfe5220b9b4f064ac415d29",
+      "previousMatrixCurrentBlob": "15d74926b8e68435b9b317ca1b98ad43bd344213",
       "byteAuthorityReadback": "EXACT_GIT_TREE_SOURCE_ONLY_MATCH_OWNER_V83"
     },
     {
@@ -10271,5 +10271,23 @@
       "humanAccepted": false,
       "production": false
     }
+  },
+  "i3Oct14R01WhatsAppExactOwner": {
+    "id": "R01",
+    "classification": "FUNCTIONAL_DEFECT",
+    "owner": "app/modules/dashboard.js",
+    "ownerBlob": "267933eac3015b2043e5b3b9f83b921db7d082f3",
+    "qaOwner": "tools/qa/cxorbia-i3-b7-hf13-whatsapp-draft-source.test.mjs",
+    "qaBlob": "cbdb9d39ac0eae9a4bf90e90fa5c632b6de7bfcc",
+    "previousSource": "3faf933f53cbf7e234b7e5389eaf0e12f8172620",
+    "productSourceSha": "fa76e05d8b60dd7f2102de4dd3d67d43c3d0bacb",
+    "productTree": "47ea0705a464369aae9fcbdfcb9d0f8032bef4d3",
+    "rootCause": "Individual Dashboard WA resolver read only visit.shopperWa/visit.whatsapp, while authorized canonical shopper profile may have a valid international number.",
+    "fix": "Exact shopperId/canonicalShopperId equality lookup, forbid ambiguous differing international phones, no fuzzy name/country guess, manual wa.me only.",
+    "sourceQa": "PENDING_CI",
+    "dev": "NOT_DEPLOYED",
+    "liveSameVisitPhoneReadback": "PENDING",
+    "priorDevSource": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
+    "production": false
   }
 }

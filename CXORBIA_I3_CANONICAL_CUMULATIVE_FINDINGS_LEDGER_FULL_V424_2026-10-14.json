@@ -14,9 +14,9 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "3faf933f53cbf7e234b7e5389eaf0e12f8172620",
-    "sourceTree": "abf44bd60ce9c5104c64c03d73c9fd01fad4fdaa",
-    "predecessorSha": "a4ad9571e9f3b4d9ba0c3816779500c0374cb291",
+    "sourceSha": "fa76e05d8b60dd7f2102de4dd3d67d43c3d0bacb",
+    "sourceTree": "47ea0705a464369aae9fcbdfcb9d0f8032bef4d3",
+    "predecessorSha": "3faf933f53cbf7e234b7e5389eaf0e12f8172620",
     "production": false,
     "state": "VRM134_SOURCE_FIXED_PENDING_QA_DEV_E2E",
     "proof": {
@@ -19888,7 +19888,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Within same I3 read-only root-cause owners of R01 WA phone profile vs HR visit, R03 identity MULTIPLE_PASSWORD_PROOF_PRINCIPALS and R08 Vertex response non-JSON; preserve 25 frozen findings and approved source. Then P0_PROVEN owner patches, one cumulative DEV publication with same-artifact Admin/Shopper live, B8 remittance/payables finance configuration; Gate20/21 held.",
+  "exactNextAction": "Run existing I3 source QA for R01 exact-contact fallback, then authenticated two-role same-visit DEV readback. Separately diagnose R03 two password principals and R08 Vertex non-JSON without loosening security or inventing response; preserve all frozen R01-R25 and earlier 274 findings.",
   "supersedesGitBlob": "98d6566a240a8256a1441328b2da4af1c25fac6f",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -29370,5 +29370,23 @@
       "humanAccepted": false,
       "production": false
     }
+  },
+  "i3Oct14R01WhatsAppExactOwner": {
+    "id": "R01",
+    "classification": "FUNCTIONAL_DEFECT",
+    "owner": "app/modules/dashboard.js",
+    "ownerBlob": "267933eac3015b2043e5b3b9f83b921db7d082f3",
+    "qaOwner": "tools/qa/cxorbia-i3-b7-hf13-whatsapp-draft-source.test.mjs",
+    "qaBlob": "cbdb9d39ac0eae9a4bf90e90fa5c632b6de7bfcc",
+    "previousSource": "3faf933f53cbf7e234b7e5389eaf0e12f8172620",
+    "productSourceSha": "fa76e05d8b60dd7f2102de4dd3d67d43c3d0bacb",
+    "productTree": "47ea0705a464369aae9fcbdfcb9d0f8032bef4d3",
+    "rootCause": "Individual Dashboard WA resolver read only visit.shopperWa/visit.whatsapp, while authorized canonical shopper profile may have a valid international number.",
+    "fix": "Exact shopperId/canonicalShopperId equality lookup, forbid ambiguous differing international phones, no fuzzy name/country guess, manual wa.me only.",
+    "sourceQa": "PENDING_CI",
+    "dev": "NOT_DEPLOYED",
+    "liveSameVisitPhoneReadback": "PENDING",
+    "priorDevSource": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
+    "production": false
   }
 }
