@@ -125,10 +125,11 @@ window.CX = window.CX || {};
     readSetUserId = userId;
     const docs = await queryBulletinsForUser();
     const items = docs.map(doc=>normalize(doc, readSet));
-    if(items.length){
-      CX.notif._items = items.concat((CX.notif._items || []).filter(x=>x.source !== 'firestore'));
-      emit('notif', {source:'firestore', count:items.length});
-    }
+    /* Replace the previous authenticated Firestore feed even when the current result is empty.
+       Never keep previous-session notices as if they belonged to the current principal. */
+    if(uid()!==userId) return [];
+    CX.notif._items = items.concat((CX.notif._items || []).filter(x=>x.source !== 'firestore'));
+    emit('notif', {source:'firestore', count:items.length});
     loaded = true;
     window.CX_BACKEND_BULLETINS_STATUS = {source:'firestore', count:items.length, role:role(), email:currentEmail(), at:new Date().toISOString()};
     return items;
@@ -286,9 +287,26 @@ window.CX = window.CX || {};
         actionRoute:n.nav||'',action:n.accion||n.action||null,entityType:n.entityType||null,entityId:n.entityId||null,eventKey:n.eventKey||null,
         operational:n.operational===true,idempotencyKey:n.idempotencyKey,targetLabel:n.targetLabel||''
       });
-      const item=normalize(saved,new Set());
+      /* Firestore set() is not by itself recipient-delivery proof. Require an independent
+         server readback of the exact tenant/project/target before reporting confirmation. */
+      const bulletinRef=bulletinsCol()?.doc(saved.id);
+      if(!bulletinRef)throw new Error('NOTIFICATION_DURABLE_READBACK_UNAVAILABLE');
+      const verified=await bulletinRef.get({source:'server'});
+      const persisted=verified.exists?(verified.data()||{}):null;
+      if(!persisted||
+         String(persisted.tenantId||'')!==String(tenantId())||
+         String(persisted.idempotencyKey||'')!==String(n.idempotencyKey)||
+         String(persisted.entityType||'')!==String(n.entityType||'')||
+         String(persisted.entityId||'')!==String(n.entityId||'')||
+         (sid&&!Array.isArray(persisted.targetShopperIds))||
+         (sid&&!persisted.targetShopperIds.map(String).includes(sid))||
+         (currentProjectId()&&!Array.isArray(persisted.targetProjectIds))||
+         (currentProjectId()&&!persisted.targetProjectIds.map(String).includes(String(currentProjectId())))){
+        throw new Error('NOTIFICATION_DURABLE_READBACK_SCOPE_MISMATCH');
+      }
+      const item=normalize(verified,new Set());
       originalPush.call(this,item);
-      return {ok:true,status:'committed',committed:true,providerAck:true,successUiAllowed:true,entityId:saved.id,item};
+      return {ok:true,status:'committed',committed:true,providerAck:true,readback:true,successUiAllowed:true,entityId:saved.id,item};
     };
 
     CX.notif.__backendBulletinsWrapped = true;
@@ -301,6 +319,10 @@ window.CX = window.CX || {};
       CX.bus.on('backend-ready', ()=>load().catch(e=>console.warn('[CX.backend-bulletins] load falló', e)));
       CX.bus.on('backend-auth-ready', ()=>setTimeout(()=>load().catch(()=>{}), 800));
     }
+    /* The role-scoped notification feed must be refreshed after exact HR/Shopper identity
+       hydration; an early auth-only read must not be the last read of the session. */
+    window.addEventListener('cx:protected-auth-hr-authority-ready',()=>load().catch(e=>console.warn('[CX.backend-bulletins] authority readback failed',e)));
+    window.addEventListener('focus',()=>{if(uid())load().catch(e=>console.warn('[CX.backend-bulletins] resume readback failed',e));});
     setTimeout(()=>{ if(!loaded) load().catch(()=>{}); }, 2500);
   }
 
