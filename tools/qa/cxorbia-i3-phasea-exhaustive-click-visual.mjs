@@ -35,7 +35,26 @@ const result={schemaVersion:'cxorbia.i3.phasea.exhaustive-click-visual.v3',decis
 const finding=(classification,code,detail={})=>result.actionFindings.push({classification,code,...detail});
 const shot=async(page,name)=>{const file=name+'.png';try{await page.screenshot({path:OUT+'/'+file,fullPage:true,timeout:15000,animations:'disabled'});}catch(first){try{await page.screenshot({path:OUT+'/'+file,fullPage:false,timeout:15000,animations:'disabled'});}catch(second){throw new Error('ENVIRONMENT_FAILURE:CLICK_SCREENSHOT:'+name+':'+str(second?.message||first?.message||second||first));}}result.screenshots.push(file);};
 const overlay=async page=>page.locator('.cx-ov:visible').last().innerText().catch(()=>'');
-const visual=async(page,label)=>{const v=await page.evaluate(()=>{const t=String(document.body?.innerText||'');return{technical:/AUTH_READY|CLAIMS_READY|HRROWID|FINANCIALSOURCESTATUS|sourceSafe\s*[:=]|providerAck\s*[:=]|máquina canónica HR/i.test(t),blocked:t.includes('Fuente de datos no disponible'),body:t.slice(0,5000)};});if(v.technical||v.blocked)throw new Error('VISUAL_DEFECT:'+label+':'+JSON.stringify({technical:v.technical,blocked:v.blocked}));return v;};
+const visual=async(page,label)=>{const v=await page.evaluate(()=>{const t=String(document.body?.innerText||'');return{technical:/AUTH_READY|CLAIMS_READY|HRROWID|FINANCIALSOURCESTATUS|sourceSafe\s*[:=]|providerAck\s*[:=]|máquina canónica HR/i.test(t),blocked:t.includes('Fuente de datos no disponible'),body:t.slice(0,5000)};});if(v.technical||v.blocked)throw new Error('VISUAL_DEFECT:'+label+':'+JSON.stringify({technical:v.technical,blocked:v.blocked}));/* Human visual acceptance guard: rendered styles and per-assignment quick actions
+   are mandatory and fail closed even when route navigation + clicks pass. */
+if(['dashboard','postulaciones','reservas','financiero','movimientos','liquidaciones','miperfil','misvisitas','beneficios'].includes(label)){
+ const metrics=await page.evaluate(()=>{
+   const root=document.querySelector('#view')||document,style=getComputedStyle(document.documentElement);
+   const visible=e=>{const r=e.getBoundingClientRect(),s=getComputedStyle(e);return r.width>0&&r.height>0&&s.display!=='none'&&s.visibility!=='hidden';};
+   const minFont=sel=>{const xs=[...root.querySelectorAll(sel)].filter(visible);return {count:xs.length,minPx:xs.length?Math.min(...xs.map(e=>parseFloat(getComputedStyle(e).fontSize)||0)):null};};
+   const hex=style.getPropertyValue('--t3').trim(),h=hex.match(/^#([0-9a-f]{6})$/i);
+   const rgb=h?h[1].match(/../g).map(c=>parseInt(c,16)/255):null;
+   const l=rgb?rgb.map(x=>x<=.04045?x/12.92:Math.pow((x+.055)/1.055,2.4)).reduce((acc,x,i)=>acc+x*[.2126,.7152,.0722][i],0):null;
+   const cards=[...root.querySelectorAll('[data-cx-assignment-card]')].filter(visible);
+   return {mutedContrastOnWhite:l===null?null:1.05/(l+.05),tableHeaders:minFont('table.tbl th'),labels:minFont('.lbl'),quickActionCards:cards.length,missingQuickActions:cards.filter(c=>!c.querySelector('[data-cx-po-action="request"]')||!c.querySelector('[data-cx-po-action="agenda"],[data-cx-po-action="agenda-review"]')||!c.querySelector('[data-cx-po-action="reassign"]')||!c.querySelector('[data-cx-po-action="cancel"]')).length};
+ });
+ result.visualAcceptanceEvidence??={};result.visualAcceptanceEvidence[label]=metrics;
+ if(metrics.mutedContrastOnWhite!==null&&metrics.mutedContrastOnWhite<4.5)finding('VISUAL_DEFECT','HUMAN_OCT13_TEXT_CONTRAST_FAIL',{route:label,observed:metrics.mutedContrastOnWhite,required:4.5});
+ if(metrics.tableHeaders.count&&metrics.tableHeaders.minPx<12.5)finding('VISUAL_DEFECT','HUMAN_OCT13_TABLE_FONT_FAIL',{route:label,observed:metrics.tableHeaders.minPx,required:12.5});
+ if(metrics.labels.count&&metrics.labels.minPx<12.5)finding('VISUAL_DEFECT','HUMAN_OCT13_LABEL_FONT_FAIL',{route:label,observed:metrics.labels.minPx,required:12.5});
+ if(label==='postulaciones'&&metrics.missingQuickActions>0)finding('VISUAL_DEFECT','HUMAN_OCT13_ASSIGNMENT_ACTIONS_MISSING',{totalCards:metrics.quickActionCards,missing:metrics.missingQuickActions});
+}
+return v;};
 async function signed(member,role){
  const ctx=await browser.newContext({viewport:{width:1440,height:980}});
  const page=await ctx.newPage(),errs=[];

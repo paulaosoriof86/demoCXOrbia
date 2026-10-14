@@ -315,7 +315,13 @@ CX.module('postulaciones', ({data,ui})=>{
             <div style="font-size:12px;color:var(--t2);margin-top:4px">${escapeAssignment(v.ciudad)} · ${escapeAssignment(v.pais)}${v.escenario?' · '+escapeAssignment(v.escenario):''}</div>
             <div style="font-size:12px;color:var(--t2);margin-top:6px">Agenda: <b style="color:var(--t1)">${escapeAssignment(v.agendada||'Pendiente')}</b></div>
           </div>
-          <button class="btn btn-soft btn-sm poAssignedManage" data-visit-id="${escapeAssignment(v.id||v.visitId)}" title="Abrir acciones autorizadas para esta asignación">Gestionar →</button>
+          <div class="poQuickActions" aria-label="Acciones de la visita">
+            <button class="btn btn-pr btn-sm" data-cx-po-action="request" data-visit-id="${escapeAssignment(v.id||v.visitId)}" title="Solicitar agendamiento o cuestionario">📤 Pedir acción</button>
+            <button class="btn btn-soft btn-sm" data-cx-po-action="${v.rescheduleRequest?.status==='pending_review'?'agenda-review':'agenda'}" data-visit-id="${escapeAssignment(v.id||v.visitId)}" title="Gestionar agenda y solicitudes pendientes">${v.rescheduleRequest?.status==='pending_review'?'🗓️ Revisar fecha':'🗓️ Agenda'}</button>
+            <button class="btn btn-soft btn-sm" data-cx-po-action="reassign" data-visit-id="${escapeAssignment(v.id||v.visitId)}" title="Reasignar con comprobación del proveedor">🔄 Reasignar</button>
+            <button class="btn btn-sm" data-cx-po-action="cancel" data-visit-id="${escapeAssignment(v.id||v.visitId)}" title="Solicitar cancelación autorizada">✕ Cancelar</button>
+            <button class="btn btn-ghost btn-sm poAssignedManage" data-visit-id="${escapeAssignment(v.id||v.visitId)}" title="Ver todas las acciones">⋯ Más</button>
+          </div>
         </div>
       </article>`).join('')}
     </div>`).join('');
@@ -406,6 +412,17 @@ CX.module('postulaciones', ({data,ui})=>{
     }
     /* HF-20261012-15: recover per-assignment actions by invoking the same scoped
        Postulaciones owner used by Dashboard. Never synthesize a postulation or write HR. */
+    /* I3 B7: quick action controls reuse one approved owner/provider boundary,
+       never perform local mutation or invent durable postulations. */
+    document.querySelectorAll('[data-cx-po-action]').forEach(b=>b.addEventListener('click',()=>{
+      const visitId=String(b.dataset.visitId||''),action=String(b.dataset.cxPoAction||'');
+      if(!visitId)return;
+      const api=CX.adminPostulacionesActions;
+      if(action==='request')api?.openRequest?.({data,ui,visitIds:[visitId]});
+      else if(action==='agenda'||action==='agenda-review')api?.openAgenda?.({data,ui,visitIds:[visitId]});
+      else if(action==='reassign')api?.openAssign?.({data,ui,visitId,reassign:true});
+      else if(action==='cancel')api?.openCancellation?.({data,ui,visitId});
+    }));
     document.querySelectorAll('.poAssignedManage').forEach(b=>b.addEventListener('click',()=>{
       const visitId=String(b.dataset.visitId||'');
       if(!visitId)return;

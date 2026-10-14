@@ -52,3 +52,20 @@ test('VRM259 late consistency bridge cannot override period scoped canonical pen
   assert.equal(activePending,2);
   assert.notEqual(input.filter(p=>String(p.estado||p.status||'').toLowerCase()==='pendiente'&&!p._archived).length,activePending);
 });
+
+test('HUMAN 2026-10-13: assigned visits expose approved quick actions, no single generic Manage bottleneck',()=>{
+  for(const action of ['request','agenda','reassign','cancel'])assert.match(src,new RegExp('data-cx-po-action="[^"]*'+action+''));
+  assert.match(src,/document\.querySelectorAll\('\[data-cx-po-action\]'\)/);
+  assert.match(src,/openRequest\?/);
+  assert.match(src,/openAgenda\?/);
+  assert.match(src,/openAssign\?/);
+  assert.match(src,/openCancellation\?/);
+});
+test('HUMAN 2026-10-13: shared contrast and type sizes are protected in actual source',()=>{
+  const style=readFileSync('app/styles/theme.css','utf8');
+  assert.match(style,/--t3:#53657e/);
+  assert.match(style,/\.tbl th\{[^\n]*font-size:12\.5px/);
+  assert.match(style,/\.lbl\{font-size:12\.5px/);
+  assert.match(style,/\.btn-sm\{[^\n]*font-size:13px/);
+  assert.match(style,/\.poQuickActions/);
+});
