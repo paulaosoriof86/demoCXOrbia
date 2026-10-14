@@ -8,7 +8,7 @@
   "productTreeAuthority": "9a48697095fa99907099c2ded83e0069ddfe7fda",
   "predecessorProductSourceSha": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V424_2026-10-14.json",
-  "findingsLedgerExpectedGitBlob": "e96923e1a6b1c5aa7b0a2c6d0fc5259d6ffa7491",
+  "findingsLedgerExpectedGitBlob": "1fc1a03360f83daf13e1c3e8758fa70eba91671a",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V114.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -10121,5 +10121,13 @@
       "human": "PENDING",
       "production": false
     }
+  },
+  "i3Oct14HumanVisualRoundUser20Screenshots": {
+    "path": "CXORBIA_I3_HUMAN_REVIEW_20261014_P0_CUMULATIVE_FROZEN.json",
+    "blob": "dbff4bfb8d9e4ad039bdc9d2dc81016955a82711",
+    "findingsCount": 25,
+    "sourceAtReview": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
+    "status": "HOLD_P0_HUMAN_OBSERVED",
+    "nextExactAction": "I3 B8 single owner app/modules/finanzas.js P0 budget commandOk undefined + duplicate project options source fix and focal QA, update cumulative ledger/matrix/descriptor; then B7 filters/modal and authenticated E2E in existing DEV lane; do not deploy until source QA and incremental cumulative materialization ready."
   }
 }

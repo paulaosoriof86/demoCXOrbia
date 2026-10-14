@@ -1,0 +1,377 @@
+{
+  "schemaVersion": "cxorbia.i3.human.review.20261014.persistent.v1",
+  "observedAt": "2026-10-14",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "decision": "HOLD_I4_BLOCKED",
+  "authority": {
+    "repository": "paulaosoriof86/demoCXOrbia",
+    "branch": "recovery/cxorbia-phase-a-20260831",
+    "headAtFreeze": "0d9ca08f1bc094b342f0cdb6e1fddb1a42a7d369",
+    "productSourceSha": "baebd9bee00acebf949d5bb5d68857a37b180e72",
+    "productTreeSha": "9a48697095fa99907099c2ded83e0069ddfe7fda",
+    "devRun": 38630731956,
+    "devHosting": "sites/cxorbia-backend-dev/versions/0b20ba1c5df7295f",
+    "devRuntime": "cxorbia-live-hr-dev-00294-ftx",
+    "hrRevisionAtRun1606": "2e3b2aaff2b1ac7a9323c9a69a16d2ad97beb25648c642e1464d72e36917ad70",
+    "production": "DO_NOT_TOUCH"
+  },
+  "userVisualEvidence": {
+    "screenshots": 20,
+    "reviewPeriod": "Cinépolis OCT 2026",
+    "roles": [
+      "Admin",
+      "Shopper César",
+      "Shopper Paula"
+    ],
+    "origin": "user supplied 20 screenshots 14-10-2026",
+    "userScreenshotsNotStoredInGithub": true,
+    "noFabricatedPass": true
+  },
+  "categories": [
+    {
+      "id": "R01",
+      "module": "Dashboard Operativo",
+      "observed": "WhatsApp individual invalid, masivo opens",
+      "classification": "FUNCTIONAL_DEFECT",
+      "ownerCandidate": "app/modules/dashboard.js",
+      "acceptance": "compare authorized exact shopper contact on individual versus bulk and prove manual wa.me draft; never claim dispatch",
+      "severity": "P0",
+      "scope": "same I3 single cumulative candidate",
+      "status": "HUMAN_REPORTED_PENDING_OWNER_PROOF",
+      "newLedgerVRM": false
+    },
+    {
+      "id": "R02",
+      "module": "Shoppers",
+      "observed": "Sin dato status/honorario unclear",
+      "classification": "VISUAL_DEFECT",
+      "ownerCandidate": "app/modules/shoppers.js",
+      "acceptance": "explain missing HR-authoritative state/honorarium without inventing values",
+      "severity": "P1",
+      "scope": "same I3 single cumulative candidate",
+      "status": "HUMAN_REPORTED_PENDING_OWNER_PROOF",
+      "newLedgerVRM": false
+    },
+    {
+      "id": "R03",
+      "module": "Shoppers",
+      "observed": "Merge fails MULTIPLE_PASSWORD_PROOF_PRINCIPALS for José Sarat",
+      "classification": "AUTH_FAILURE",
+      "ownerCandidate": "backend shopper identity provider",
+      "acceptance": "read exact UID/password-principal topology and authorized canonical keeper, no unsafe credential merge",
+      "severity": "P0",
+      "scope": "same I3 single cumulative candidate",
+      "status": "HUMAN_REPORTED_PENDING_OWNER_PROOF",
+      "newLedgerVRM": false
+    },
+    {
+      "id": "R04",
+      "module": "Shoppers",
+      "observed": "Scoring criteria contract draft_documental_no_runtime",
+      "classification": "FUNCTIONAL_DEFECT",
+      "ownerCandidate": "app/modules/shoppers.js; scoring contract",
+      "acceptance": "phase A scoring activation only after durable event eligibility and rule source approval; explain preview before enabling",
+      "severity": "P1",
+      "scope": "same I3 single cumulative candidate",
+      "status": "HUMAN_REPORTED_PENDING_OWNER_PROOF",
+      "newLedgerVRM": false
+    },
+    {
+      "id": "R05",
+      "module": "Postulaciones",
+      "observed": "Seven stacked modal X closes",
+      "classification": "VISUAL_DEFECT",
+      "ownerCandidate": "app/modules/postulaciones.js;app/core/ui.js",
+      "acceptance": "one active management modal at a time; nested modal transition should close parent only where appropriate",
+      "severity": "P0",
+      "scope": "same I3 single cumulative candidate",
+      "status": "HUMAN_REPORTED_PENDING_OWNER_PROOF",
+      "newLedgerVRM": false
+    },
+    {
+      "id": "R06",
+      "module": "Postulaciones",
+      "observed": "search Oakland does not filter assignments",
+      "classification": "FUNCTIONAL_DEFECT",
+      "ownerCandidate": "app/modules/postulaciones.js",
+      "acceptance": "search/project/country/status filters apply to assignmentGroupHTML and posts; count and visibility consistent",
+      "severity": "P0",
+      "scope": "same I3 single cumulative candidate",
+      "status": "HUMAN_REPORTED_PENDING_OWNER_PROOF",
+      "newLedgerVRM": false
+    },
+    {
+      "id": "R07",
+      "module": "Postulaciones",
+      "observed": "cancel request provider denied no confirmed decision",
+      "classification": "FUNCTIONAL_DEFECT",
+      "ownerCandidate": "app/modules/postulaciones.js; operational command provider",
+      "acceptance": "exact visit/status/period/permission ACK and independent readback; preserve HR-managed authority",
+      "severity": "P0",
+      "scope": "same I3 single cumulative candidate",
+      "status": "HUMAN_REPORTED_PENDING_OWNER_PROOF",
+      "newLedgerVRM": false
+    },
+    {
+      "id": "R08",
+      "module": "Certificaciones",
+      "observed": "AI_PROVIDER_RESPONSE_NOT_JSON after instructive PDF",
+      "classification": "PROVIDER_FAILURE",
+      "ownerCandidate": "backend/runtime/hr-live-service/certification-runtime.mjs",
+      "acceptance": "capture safe provider finishReason/text-mime diagnostics, bounded valid schema retry under original source; no invented questions",
+      "severity": "P0",
+      "scope": "same I3 single cumulative candidate",
+      "status": "HUMAN_REPORTED_PENDING_OWNER_PROOF",
+      "newLedgerVRM": false
+    },
+    {
+      "id": "R09",
+      "module": "Finanzas",
+      "observed": "Technical enums/diagnostics visible in liquidations and modals",
+      "classification": "VISUAL_DEFECT",
+      "ownerCandidate": "app/modules/finanzas.js;app/core/ui.js",
+      "acceptance": "human labels and technical diagnostics only in authorized panel",
+      "severity": "P0",
+      "scope": "same I3 single cumulative candidate",
+      "status": "HUMAN_REPORTED_PENDING_OWNER_PROOF",
+      "newLedgerVRM": false
+    },
+    {
+      "id": "R10",
+      "module": "Finanzas",
+      "observed": "Net margin no contract revenue base for USD17 GT and USD20 HN Cinépolis per visit",
+      "classification": "MAPPING_FAILURE",
+      "ownerCandidate": "per-project durable finance config; canonical finance read model",
+      "acceptance": "project-country-specific USD fee config and real fx/date; separate parent receipt, shopper obligations, reimbursements, margins; no global hardcode",
+      "severity": "P0",
+      "scope": "same I3 single cumulative candidate",
+      "status": "HUMAN_REPORTED_PENDING_OWNER_PROOF",
+      "newLedgerVRM": false
+    },
+    {
+      "id": "R11",
+      "module": "Finanzas",
+      "observed": "Concilia blocked FINANCE_VISIT_NOT_SUBMITTED for visit still pending submit",
+      "classification": "FUNCTIONAL_DEFECT",
+      "ownerCandidate": "app/modules/finanzas.js",
+      "acceptance": "show eligibility/blocked reason proactively and readable, no false bank status; prove exact provider failures",
+      "severity": "P0",
+      "scope": "same I3 single cumulative candidate",
+      "status": "HUMAN_REPORTED_PENDING_OWNER_PROOF",
+      "newLedgerVRM": false
+    },
+    {
+      "id": "R12",
+      "module": "Finanzas",
+      "observed": "Recorded income not reflected in dashboard while movements shows Q7300",
+      "classification": "MAPPING_FAILURE",
+      "ownerCandidate": "app/modules/finanzas.js; canonical finance read model",
+      "acceptance": "verify revenue type remesa/anticipo vs recognized income, same tenant/project/period/currency and readback; no forced account inflation",
+      "severity": "P0",
+      "scope": "same I3 single cumulative candidate",
+      "status": "HUMAN_REPORTED_PENDING_OWNER_PROOF",
+      "newLedgerVRM": false
+    },
+    {
+      "id": "R13",
+      "module": "Finanzas",
+      "observed": "August GT all and Sep selected paid; Sep HN all paid — durable batches missing",
+      "classification": "PERSISTENCE_FAILURE",
+      "ownerCandidate": "finance provider; ledger reconciliation",
+      "acceptance": "reconstruct only exact frozen paid subsets with provider receipts source revision, no re-payment or guess",
+      "severity": "P0",
+      "scope": "same I3 single cumulative candidate",
+      "status": "HUMAN_REPORTED_PENDING_OWNER_PROOF",
+      "newLedgerVRM": false
+    },
+    {
+      "id": "R14",
+      "module": "Finanzas",
+      "observed": "CxP Sep unpaid + Oct valid unpaid missing; CxC needs proper own rights",
+      "classification": "MAPPING_FAILURE",
+      "ownerCandidate": "finance read model; app/modules/finanzas.js",
+      "acceptance": "derive payable eligibility from submitted/validated plus historical payment proofs; CxC separate main-client rights; no unverified amounts",
+      "severity": "P0",
+      "scope": "same I3 single cumulative candidate",
+      "status": "HUMAN_REPORTED_PENDING_OWNER_PROOF",
+      "newLedgerVRM": false
+    },
+    {
+      "id": "R15",
+      "module": "Finanzas",
+      "observed": "Honorarios devengados conflates parent receivable with shopper earned obligations",
+      "classification": "MAPPING_FAILURE",
+      "ownerCandidate": "project finance config and app/modules/finanzas.js",
+      "acceptance": "separate commissions from T&A parent USD per visit, shopper honoraria accrued/payable/paid and reimbursements",
+      "severity": "P0",
+      "scope": "same I3 single cumulative candidate",
+      "status": "HUMAN_REPORTED_PENDING_OWNER_PROOF",
+      "newLedgerVRM": false
+    },
+    {
+      "id": "R16",
+      "module": "Finanzas",
+      "observed": "Cinépolis repeated many times as destination project",
+      "classification": "FUNCTIONAL_DEFECT",
+      "ownerCandidate": "app/modules/finanzas.js",
+      "acceptance": "dedupe canonical root project ids; preserve current period scope",
+      "severity": "P0",
+      "scope": "same I3 single cumulative candidate",
+      "status": "HUMAN_REPORTED_PENDING_OWNER_PROOF",
+      "newLedgerVRM": false
+    },
+    {
+      "id": "R17",
+      "module": "Finanzas",
+      "observed": "commandOk is not defined prevents budget persist",
+      "classification": "FUNCTIONAL_DEFECT",
+      "ownerCandidate": "app/modules/finanzas.js",
+      "acceptance": "define safe ACK predicate scoped, guard readback, two Admin sessions, no false success",
+      "severity": "P0",
+      "scope": "same I3 single cumulative candidate",
+      "status": "HUMAN_REPORTED_PENDING_OWNER_PROOF",
+      "newLedgerVRM": false
+    },
+    {
+      "id": "R18",
+      "module": "Finanzas",
+      "observed": "Several cards/tables lack contrast; modal nested scroll/overflow and label source statuses",
+      "classification": "VISUAL_DEFECT",
+      "ownerCandidate": "app/styles/layout.css;app/modules/finanzas.js",
+      "acceptance": "approved contrast, readable tables, sticky columns and human labels across Phase A without broad redesign",
+      "severity": "P1",
+      "scope": "same I3 single cumulative candidate",
+      "status": "HUMAN_REPORTED_PENDING_OWNER_PROOF",
+      "newLedgerVRM": false
+    },
+    {
+      "id": "R19",
+      "module": "Operación",
+      "observed": "Grouping only mall; request shopper/date ordering and platform applications priority",
+      "classification": "FUNCTIONAL_DEFECT",
+      "ownerCandidate": "app/modules/dashboard.js;app/modules/postulaciones.js",
+      "acceptance": "select grouping by mall/shopper/status/date with exact scoped totals and chronological platform applications",
+      "severity": "P1",
+      "scope": "same I3 single cumulative candidate",
+      "status": "HUMAN_REPORTED_PENDING_OWNER_PROOF",
+      "newLedgerVRM": false
+    },
+    {
+      "id": "R20",
+      "module": "Shopper",
+      "observed": "Logout/login role switch takes long and manual reload to sync",
+      "classification": "ENVIRONMENT_FAILURE",
+      "ownerCandidate": "HR authority bridge; backend session lifecycle",
+      "acceptance": "cold switch timings two principals, no reused stale previous user, route preserved, no reload",
+      "severity": "P0",
+      "scope": "same I3 single cumulative candidate",
+      "status": "HUMAN_REPORTED_PENDING_OWNER_PROOF",
+      "newLedgerVRM": false
+    },
+    {
+      "id": "R21",
+      "module": "Shopper",
+      "observed": "Mis Visitas not consistently oldest-first chronological",
+      "classification": "FUNCTIONAL_DEFECT",
+      "ownerCandidate": "app/modules/misvisitas.js",
+      "acceptance": "stable true visit event dates sorted ascending independent of HR input order",
+      "severity": "P1",
+      "scope": "same I3 single cumulative candidate",
+      "status": "HUMAN_REPORTED_PENDING_OWNER_PROOF",
+      "newLedgerVRM": false
+    },
+    {
+      "id": "R22",
+      "module": "Shopper",
+      "observed": "Notification text raw visitIds, action sends wrong route; unread persists",
+      "classification": "FUNCTIONAL_DEFECT",
+      "ownerCandidate": "app/modules/midia.js; backend-bulletins",
+      "acceptance": "notification recipient/action exact, route to visit with focus and markRead durable; read versus unresolved distinction",
+      "severity": "P0",
+      "scope": "same I3 single cumulative candidate",
+      "status": "HUMAN_REPORTED_PENDING_OWNER_PROOF",
+      "newLedgerVRM": false
+    },
+    {
+      "id": "R23",
+      "module": "Operación",
+      "observed": "HR GT/HN counts screenshot 42 assignments vs RUN1606 41",
+      "classification": "MAPPING_FAILURE",
+      "ownerCandidate": "app/adapters/tya-cumulative-read-model-v2.js",
+      "acceptance": "compare exact revision/time/session, no mismatch claim without same HR revision",
+      "severity": "P0",
+      "scope": "same I3 single cumulative candidate",
+      "status": "HUMAN_REPORTED_PENDING_OWNER_PROOF",
+      "newLedgerVRM": false
+    },
+    {
+      "id": "R24",
+      "module": "Finanzas",
+      "observed": "Potential config, templates, route document visibility questions",
+      "classification": "FUNCTIONAL_DEFECT",
+      "ownerCandidate": "project wizard; app/core/automations.js",
+      "acceptance": "verify per-project configurable routeSource/finance tariffs; templates via Automatizaciones tenant scoped; embedded HR view P1 if no Phase A contract",
+      "severity": "P1",
+      "scope": "same I3 single cumulative candidate",
+      "status": "HUMAN_REPORTED_PENDING_OWNER_PROOF",
+      "newLedgerVRM": false
+    },
+    {
+      "id": "R25",
+      "module": "Shopper",
+      "observed": "César/Paula received notices and compact visit cards improved",
+      "classification": "VISUAL_DEFECT",
+      "ownerCandidate": "app/modules/midia.js;app/modules/misvisitas.js",
+      "acceptance": "PRESERVE existing working delivery and compact cards; re-open only if reproducible drift",
+      "severity": "PRESERVE",
+      "scope": "same I3 single cumulative candidate",
+      "status": "PROVEN_BEHAVIOR_PRESERVE",
+      "newLedgerVRM": false
+    }
+  ],
+  "conservation": {
+    "priorFindings": 274,
+    "existingNextId": "VRM-275",
+    "unresolvedHistoricalsPreserved": true,
+    "noNewRecoveryIteration": true,
+    "noParallelBranch": true,
+    "noOverlay": true,
+    "noNewFirebase": true,
+    "noReimport": true,
+    "noProduction": true,
+    "phaseA21DomainsPreserved": true
+  },
+  "contracts": {
+    "cinepolisOnlyParentFee": {
+      "GT": {
+        "value": 17,
+        "currency": "USD",
+        "unit": "per_eligible_visit"
+      },
+      "HN": {
+        "value": 20,
+        "currency": "USD",
+        "unit": "per_eligible_visit"
+      }
+    },
+    "parentAndShopperHonorariaSeparate": true,
+    "fxAuthorityRequired": true,
+    "noGlobalDefaultHardcodes": true,
+    "batchesHistorical": {
+      "GT": "Aug full paid; Sep partial paid—exact visit IDs required from durable bank/provider evidence",
+      "HN": "Sep full paid—source revision and batch receipts required"
+    },
+    "externalHrEmbedded": "P1_POST_GO_LIVE_UNLESS_PREVIOUS_PHASE_A_P0_PROVEN"
+  },
+  "knownCodeOwnerFindings": {
+    "budgetCommandOkUndefined": "PROVEN_SOURCE_FUNCTIONAL_DEFECT",
+    "financialProjectOptionsDuplicated": "PROVEN_SOURCE_FUNCTIONAL_DEFECT",
+    "filterOnlyPostsNotAssignments": "PROVEN_SOURCE_FUNCTIONAL_DEFECT",
+    "modalStacking": "PROVEN_SOURCE_MODAL_STACKING_RISK",
+    "waIndividual": "PROVEN_BROWSER_FAILURE_READBACK_OWNER_PENDING",
+    "certResponseNonJson": "PROVIDER_FAILURE_CAPTURE_EXACT_PAYLOAD_SHAPE_PENDING",
+    "identityMerge": "AUTH_FAILURE_SECURITY_DENIAL_PRESERVE"
+  },
+  "nextExactAction": "I3 B8 single owner app/modules/finanzas.js P0 budget commandOk undefined + duplicate project options source fix and focal QA, update cumulative ledger/matrix/descriptor; then B7 filters/modal and authenticated E2E in existing DEV lane; do not deploy until source QA and incremental cumulative materialization ready.",
+  "noRealPaymentWrites": true
+}
