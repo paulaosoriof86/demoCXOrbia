@@ -18,8 +18,8 @@ fs.mkdirSync(out,{recursive:true});
 if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:project});
 const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(tenantId),projectRef=tenant.collection('projects').doc(projectId);
 const hash=x=>crypto.createHash('sha256').update(String(x),'utf8').digest('hex');
-const result={schemaVersion:'cxorbia.i3.b7.exact-two-role-live.v1',decision:'HOLD',classification:null,sourceSha,periodId,
-  hrRevisionExpected:expectedHr,hrBefore:null,hrAfter:null,providerAck:false,cases:[],cleanup:{visits:true,receipts:true,audits:true,bulletins:true},
+const result={schemaVersion:'cxorbia.i3.b7.exact-two-role-live.v2',decision:'HOLD',classification:null,sourceSha,periodId,
+  hrRevisionExpected:expectedHr,hrBefore:null,hrAfter:null,providerAck:false,cases:[],rescheduleCases:[],cleanup:{visits:true,receipts:true,audits:true,bulletins:true},
   cleanupCount:0,production:false,hrWrites:0,paymentWrites:0,builds:0,deploys:0};
 const save=()=>fs.writeFileSync(out+'/result.json',JSON.stringify(result,null,2)+'\n');
 const requireOk=(v,category,code)=>{if(!v)throw new Error(category+':'+code)};
@@ -97,6 +97,50 @@ async function exercise(decision,shopperToken,adminToken){
  requireOk((await ref.get()).data().version===row.version,'PERSISTENCE_FAILURE','REPLAY_VERSION_DRIFT_'+decision);
  return {decision,status:row.cancelRequest.status,providerAck:true,readback:true,notification:true,idempotentReplay:true,hrStatePreserved:true,available:false};
 }
+
+/* I3 B7: same DEV two-role fixture tests actual reschedule approve/reject without external HR writes. */
+async function exerciseReschedule(decision,shopperToken,adminToken){
+ const visitId='QA_I3_B7_RESCHEDULE_'+decision+'_'+runId,ref=projectRef.collection('visits').doc(visitId);
+ const originalDate='2026-10-18',newDate='2026-10-22';
+ const asReschedule=(version,key,payload)=>{
+  const c=cmd(visitId,version,key,payload);
+  c.commandType='visit.reschedule';c.authorization.permission='visit.reschedule';
+  return c;
+ };
+ const request=asReschedule(1,'qa-i3-b7-rs-'+runId+'-'+decision+'-req',
+  {requestedByShopper:true,newDate,reason:'QA reprogramar '+decision});
+ const decide=asReschedule(2,'qa-i3-b7-rs-'+runId+'-'+decision+'-dec',
+  {decision,newDate:decision==='approved'?newDate:null,reason:'QA decisión '+decision});
+ add(ref,'visits');
+ for(const c of [request,decide]){add(receipt(c),'receipts');add(audit(c),'audits');add(bulletin(c),'bulletins');}
+ requireOk(!(await ref.get()).exists,'SOURCE_FAILURE','RESCHEDULE_QA_COLLISION');
+ await ref.create({id:visitId,visitId,hrRowId:visitId,tenantId,projectId,periodId,periodKey:'2026-10',
+  shopperId,estado:'agendada',status:'agendada',agendada:originalDate,quincena:'2Q',disponibleDesde:'2026-10-01',
+  sucursal:'QA B7 REPROGRAMACION',pais:'GT',assignmentSource:'platform',assignmentSyncStatus:'synced',
+  qaSynthetic:true,qaRunId:runId,version:1,
+  canonicalFacets:{available:false,assigned:true,scheduled:true,realized:false,submitted:false,paymentConfirmed:false,cancelled:false}});
+ const requestAck=await invoke(shopperToken,request);
+ requireOk(requestAck.ok===true&&requestAck.providerAck===true&&requestAck.status==='committed','PERSISTENCE_FAILURE','RESCHEDULE_REQUEST_ACK_'+decision+':'+str(requestAck.code));
+ let state=(await ref.get()).data();
+ requireOk(state.rescheduleRequest?.status==='pending_review'&&state.rescheduleRequest?.newDate===newDate&&state.agendada===originalDate,
+  'PERSISTENCE_FAILURE','RESCHEDULE_SHOPPER_READBACK_'+decision);
+ const decisionAck=await invoke(adminToken,decide);
+ requireOk(decisionAck.ok===true&&decisionAck.providerAck===true&&decisionAck.status==='committed'&&decisionAck.successUiAllowed===true,
+  'PERSISTENCE_FAILURE','RESCHEDULE_ADMIN_ACK_'+decision+':'+str(decisionAck.code));
+ state=(await ref.get()).data();
+ requireOk(state.rescheduleRequest?.status===decision,'PERSISTENCE_FAILURE','RESCHEDULE_ADMIN_READBACK_'+decision+':'+str(state.rescheduleRequest?.status));
+ requireOk(state.agendada===(decision==='approved'?newDate:originalDate)&&state.shopperId===shopperId
+  &&state.canonicalFacets?.available===false,'MAPPING_FAILURE','RESCHEDULE_DATE_SCOPE_'+decision);
+ const [r1,r2,a1,a2,n1,n2]=await Promise.all([receipt(request).get(),receipt(decide).get(),audit(request).get(),audit(decide).get(),bulletin(request).get(),bulletin(decide).get()]);
+ requireOk(r1.exists&&r2.exists&&a1.exists&&a2.exists&&n1.exists&&n2.exists,'PERSISTENCE_FAILURE','RESCHEDULE_RECEIPT_AUDIT_NOTIFICATION_'+decision);
+ requireOk(n1.data().toRole==='admin'&&n2.data().toRole==='shopper'&&arr(n2.data().targetShopperIds).includes(shopperId),
+  'MAPPING_FAILURE','RESCHEDULE_NOTICE_OWNER_'+decision);
+ const replay=await invoke(adminToken,decide);
+ requireOk(replay.ok===true&&replay.providerAck===true&&replay.idempotentReplay===true&&Number(replay.providerWrites||0)===0,
+  'PERSISTENCE_FAILURE','RESCHEDULE_REPLAY_'+decision);
+ requireOk((await ref.get()).data().version===state.version,'PERSISTENCE_FAILURE','RESCHEDULE_REPLAY_CHANGED_VERSION_'+decision);
+ return {decision,status:state.rescheduleRequest.status,date:state.agendada,providerAck:true,readback:true,idempotentReplay:true,notification:true,shopperIdMatched:true,hrStatePreserved:true,available:false};
+}
 let failure=null;
 try{
  result.hrBefore=await hrRevision();
@@ -118,6 +162,8 @@ try{
  requireOk(['admin','super'].includes(str(adminAuth.claims.role))&&adminAuth.claims.authNamespace==='staff','AUTH_FAILURE','ADMIN_CLAIMS');
  result.cases.push(await exercise('approved',shopAuth.token,adminAuth.token));
  result.cases.push(await exercise('rejected',shopAuth.token,adminAuth.token));
+ result.rescheduleCases.push(await exerciseReschedule('approved',shopAuth.token,adminAuth.token));
+ result.rescheduleCases.push(await exerciseReschedule('rejected',shopAuth.token,adminAuth.token));
  result.providerAck=true;
  result.hrAfter=await hrRevision();
  requireOk(result.hrAfter===expectedHr,'PROVIDER_FAILURE','HR_REVISION_AFTER_DRIFT');
@@ -131,7 +177,7 @@ try{
  }
 }
 result.cleanupCount=todo.length;
-result.decision=(!failure&&result.providerAck&&result.cases.length===2&&result.hrAfter===expectedHr&&Object.values(result.cleanup).every(Boolean))
+result.decision=(!failure&&result.providerAck&&result.cases.length===2&&result.rescheduleCases.length===2&&result.hrAfter===expectedHr&&Object.values(result.cleanup).every(Boolean))
   ?'PASS_I3_B7_TWO_ROLE_DECISION_LIVE_DEV':'HOLD_I3_B7_TWO_ROLE_DECISION_LIVE_DEV';
 save();console.log(JSON.stringify(result,null,2));
 if(result.decision!=='PASS_I3_B7_TWO_ROLE_DECISION_LIVE_DEV')process.exitCode=2;
