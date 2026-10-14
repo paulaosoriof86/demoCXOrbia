@@ -650,7 +650,7 @@
         "Cliente"
       ],
       "contractFunctional": "Operación/HR/Visual",
-      "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN",
+      "classification": "SOURCE_FIXED_QA_PASS_PENDING_DEV_E2E_HUMAN",
       "actionRequired": "R01_WA_EXACT_CONTACT_SOURCE_QA_PLUS_BROWSER_SAME_VISIT",
       "preI4SuccessorCommits": [
         "feea6ae6b00d36349ae66e43e034bc0b25516cfd"
@@ -10284,7 +10284,20 @@
     "productTree": "47ea0705a464369aae9fcbdfcb9d0f8032bef4d3",
     "rootCause": "Individual Dashboard WA resolver read only visit.shopperWa/visit.whatsapp, while authorized canonical shopper profile may have a valid international number.",
     "fix": "Exact shopperId/canonicalShopperId equality lookup, forbid ambiguous differing international phones, no fuzzy name/country guess, manual wa.me only.",
-    "sourceQa": "PENDING_CI",
+    "sourceQa": {
+      "finding": "R01",
+      "runId": 38650520211,
+      "runNumber": 1615,
+      "jobId": 116147874377,
+      "sourceSha": "fa76e05d8b60dd7f2102de4dd3d67d43c3d0bacb",
+      "decision": "PASS_CANONICAL_SOURCE_AUTHORITY_AND_R01_HF13_WA_QA",
+      "focusedTestCount": 11,
+      "passed": 11,
+      "failed": 0,
+      "liveSameVisit": "PENDING",
+      "devPublished": false,
+      "production": false
+    },
     "dev": "NOT_DEPLOYED",
     "liveSameVisitPhoneReadback": "PENDING",
     "priorDevSource": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",

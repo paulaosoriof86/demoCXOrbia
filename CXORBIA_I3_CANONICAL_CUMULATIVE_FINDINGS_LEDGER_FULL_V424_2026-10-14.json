@@ -19888,7 +19888,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Run existing I3 source QA for R01 exact-contact fallback, then authenticated two-role same-visit DEV readback. Separately diagnose R03 two password principals and R08 Vertex non-JSON without loosening security or inventing response; preserve all frozen R01-R25 and earlier 274 findings.",
+  "exactNextAction": "READ_ONLY root proof R03 exact password-principal UID topology, R08 Vertex response finishReason/content format and R07 cancellation provider ACK code; run focal source QA then one cumulative DEV promotion only after all P0 proven. R01 11/11 source QA PASS but not DEV. Preserve 25 frozen R01-R25 and 274 ledger entries; no production.",
   "supersedesGitBlob": "98d6566a240a8256a1441328b2da4af1c25fac6f",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -29383,7 +29383,20 @@
     "productTree": "47ea0705a464369aae9fcbdfcb9d0f8032bef4d3",
     "rootCause": "Individual Dashboard WA resolver read only visit.shopperWa/visit.whatsapp, while authorized canonical shopper profile may have a valid international number.",
     "fix": "Exact shopperId/canonicalShopperId equality lookup, forbid ambiguous differing international phones, no fuzzy name/country guess, manual wa.me only.",
-    "sourceQa": "PENDING_CI",
+    "sourceQa": {
+      "finding": "R01",
+      "runId": 38650520211,
+      "runNumber": 1615,
+      "jobId": 116147874377,
+      "sourceSha": "fa76e05d8b60dd7f2102de4dd3d67d43c3d0bacb",
+      "decision": "PASS_CANONICAL_SOURCE_AUTHORITY_AND_R01_HF13_WA_QA",
+      "focusedTestCount": 11,
+      "passed": 11,
+      "failed": 0,
+      "liveSameVisit": "PENDING",
+      "devPublished": false,
+      "production": false
+    },
     "dev": "NOT_DEPLOYED",
     "liveSameVisitPhoneReadback": "PENDING",
     "priorDevSource": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
