@@ -1,15 +1,15 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_GT_E2E",
+  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "1708b794779978ee7356124553c488195b3b3161",
-  "productTreeAuthority": "45660e8353cb63d1e8c1adfceebd4c5990ea7303",
-  "predecessorProductSourceSha": "4e03ae244e67d462aef0826d6d948b98f58fcbc7",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V419_2026-10-14.json",
-  "findingsLedgerExpectedGitBlob": "a69821ead625d17211d8096c5c780a57ff288a88",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V109.json",
+  "productSourceSha": "525f6cd6dddc22a3a7ff1bc12b03b07a98b1561e",
+  "productTreeAuthority": "7aa467413c1ee19c3f0eeda233d7b9722f923886",
+  "predecessorProductSourceSha": "1708b794779978ee7356124553c488195b3b3161",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V420_2026-10-14.json",
+  "findingsLedgerExpectedGitBlob": "8ba94a8f478c337a757da7928b2879c4c9d4d64d",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V110.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
@@ -577,7 +577,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "45660e8353cb63d1e8c1adfceebd4c5990ea7303",
+  "productSourceTree": "7aa467413c1ee19c3f0eeda233d7b9722f923886",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -2732,7 +2732,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "4278f874f70443ffdb21bb76069e9992d74a7156",
+  "moduleTruthExpectedGitBlob": "14c1ec9a9b5bb06d1c536bc4c75bd820631e601f",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -9833,11 +9833,22 @@
     "controlGuardAlignment": "UPDATED"
   },
   "i3Oct14B7RulesSourcePatch": {
-    "sourceSha": "1708b794779978ee7356124553c488195b3b3161",
-    "sourceTree": "45660e8353cb63d1e8c1adfceebd4c5990ea7303",
-    "rulesBlob": "807b97688d2b74732be0e56c5464e932c47e7b41",
-    "sourceState": "PENDING_RULES_SEMANTIC_AND_DEV",
+    "sourceSha": "525f6cd6dddc22a3a7ff1bc12b03b07a98b1561e",
+    "sourceTree": "7aa467413c1ee19c3f0eeda233d7b9722f923886",
+    "rulesBlob": "69cd9fef6dc3cc46c1bc2723bc289d6cb7b574e2",
+    "sourceState": "FOCAL_FIRESTORE_EMULATOR_PROOF_REQUIRED",
     "liveRuleDeploy": false,
     "prod": false
+  },
+  "i3Oct14SourceProofGate": {
+    "workflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "job": "phasea-rejected-checkpoint-source-proof",
+    "test": "tools/qa/cxorbia-i3-b7-exact-notification-firestore-rules.test.mjs",
+    "positive": 3,
+    "negative": 3,
+    "announcementOperator": 1,
+    "noSecrets": true,
+    "devDeploys": 0,
+    "production": false
   }
 }

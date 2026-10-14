@@ -37,15 +37,15 @@ test('VRM263 support uses existing operational command provider and durable read
   assert.match(rules,/resource\.data\.get\('targetAll', false\) == true/);
   assert.doesNotMatch(rules,/resource\.data\.targetAll == true/);
   assert.doesNotMatch(rules,/return tenantAllowed\(tenantId\) && resource\.data\.status == 'active' && \(/);
-  assert.match(rules,/resource\.data\.targetUserIds is list && request\.auth\.uid in resource\.data\.targetUserIds/);
-  assert.match(rules,/resource\.data\.targetShopperIds is list && isShopperRole\(\) && shopperId\(\) != '' && resource\.data\.targetShopperIds\.hasAny\(\[shopperId\(\)\]\)/);
+  assert.match(rules,/resource\\.data\\.get\\('targetUserIds', \[\]\\)\\.hasAny\\(\\[request\\.auth\\.uid\\]\\)/);
+  assert.match(rules,/isShopperRole\\(\\) && shopperId\\(\\) != ''/);\n  assert.match(rules,/resource\\.data\\.get\\('targetShopperIds', \\[\\]\\)\\.hasAny\\(\\[shopperId\\(\\)\\]\\)/);\n  assert.match(rules,/!bulletinHasExactRecipients\\(\\)/);
   assert.doesNotMatch(rules,/listHasValue\('targetUserIds'/);
   assert.doesNotMatch(rules,/listHasValue\('targetShopperIds'/);
   assert.match(bridge,/where\('targetShopperIds','array-contains',sid\)/);
   assert.match(bridge,/where\('supportRequesterUserId','==',userId\)/);
   assert.match(bridge,/where\('supportRequesterShopperId','==',sid\)/);
-  assert.match(rules,/resource\.data\.supportRequesterUserId == request\.auth\.uid/);
-  assert.match(rules,/resource\.data\.supportRequesterShopperId == shopperId\(\)/);
+  assert.match(rules,/resource\\.data\\.get\\('supportRequesterUserId', ''\\) == request\\.auth\\.uid/);
+  assert.match(rules,/resource\\.data\\.get\\('supportRequesterShopperId', ''\\) == shopperId\\(\\)/);
 });
 
 test('VRM264 novedades read state is bulletinReads durable authority, not localStorage',()=>{
