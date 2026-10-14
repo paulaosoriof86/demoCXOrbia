@@ -1,4 +1,5 @@
 import test from 'node:test';
+import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import {createOperationalCommandProvider} from '../../cxorbia-operational-command-provider-v1.mjs';
 

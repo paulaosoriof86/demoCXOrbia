@@ -103,9 +103,9 @@
     }
   },
   "productSource": {
-    "sha": "a4ad9571e9f3b4d9ba0c3816779500c0374cb291",
-    "treeSha": "bb0ce4defc06b464dabc891108716d0885043b0a",
-    "predecessorProductSourceSha": "f3c2b12b73f9d6373280ea1e9b387ca1da695853",
+    "sha": "3faf933f53cbf7e234b7e5389eaf0e12f8172620",
+    "treeSha": "abf44bd60ce9c5104c64c03d73c9fd01fad4fdaa",
+    "predecessorProductSourceSha": "a4ad9571e9f3b4d9ba0c3816779500c0374cb291",
     "message": "fix(i3/b7): assignment filters and KPI modal stacks",
     "authorityState": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN"
   },
@@ -10221,12 +10221,12 @@
   },
   "i3Oct14PostulationsFilterModalProof": {
     "sourceFrom": "f3c2b12b73f9d6373280ea1e9b387ca1da695853",
-    "sourceTo": "a4ad9571e9f3b4d9ba0c3816779500c0374cb291",
-    "sourceTree": "bb0ce4defc06b464dabc891108716d0885043b0a",
+    "sourceTo": "3faf933f53cbf7e234b7e5389eaf0e12f8172620",
+    "sourceTree": "abf44bd60ce9c5104c64c03d73c9fd01fad4fdaa",
     "owner": "app/modules/postulaciones.js",
     "ownerBlob": "79dacc10683261cda1a6b9ea55946dbc6231c08f",
     "qa": "backend/runtime/hr-live-service/test/cxorbia-i3-b7-temporal-reconcile.test.mjs",
-    "qaBlob": "46fc7b8caef9d5eab0596667e9c9a2978ef73f61",
+    "qaBlob": "10c128b53ba2996d11aa27f95ffab9c019da4eda",
     "classification": [
       "FUNCTIONAL_DEFECT",
       "VISUAL_DEFECT"
@@ -10241,6 +10241,13 @@
     ],
     "state": "SOURCE_FIXED_PENDING_QA",
     "dev": "NOT_DEPLOYED",
-    "production": false
+    "production": false,
+    "firstRun1612": {
+      "runId": 38646571481,
+      "classification": "FUNCTIONAL_DEFECT",
+      "scope": "TEST_ONLY_FAILURE_MISSING_FS_IMPORT",
+      "otherSixTestsPass": true
+    },
+    "testFix": "Added node:fs import; no new operational code"
   }
 }
