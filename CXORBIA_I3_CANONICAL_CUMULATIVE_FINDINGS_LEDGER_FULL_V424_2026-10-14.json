@@ -6507,7 +6507,7 @@
       "classification": "ENVIRONMENT_FAILURE",
       "severity": "P0",
       "title": "Live-data refresh and post-write recomposition repeatedly block the user for materially too long",
-      "state": "SOURCE_QA_PASS_RUN1604_DEV_MATERIALIZATION_REQUESTED",
+      "state": "DEV_MATERIALIZED_RUN1605_PENDING_SAME_ARTIFACT_PERFORMANCE_E2E",
       "rootCause": "The HR authority bridge forces/re-schedules whole authority recomposition on backend-ready, backend.refresh, window focus and visibility restore; backend.refresh first reloads Firestore and marks HR authority unapplied. Several modules also force document reload. A fresh HR provider read measured about 3.8s, so the much longer repeated visible wait is orchestration/recomposition and redundant refresh work, not simply HR source latency.",
       "priorEvidenceLinks": [
         "VRM-060 historical live login readiness 2.9s shopper / 7.3s admin",
@@ -6616,8 +6616,8 @@
         "provenCodeCause": "protected endpoint awaited buildSnapshot refresh before calling verifiedProtectedPrincipal; cache TTL 5000 and six sequential source-safe subprocesses; single-flight already exists",
         "change": "overlap verified principal with fresh HR read; exact per-stage runtime timing; no TTL/freshness/security relaxation",
         "sourceTests": "PASS_RUN1604_4_OF_4",
-        "devMaterialization": "REQUESTED_SINGLE_EXISTING_DEV_LANE",
-        "livePerfBeforeAfter": "PENDING",
+        "devMaterialization": "PASS_RUN1605",
+        "livePerfBeforeAfter": "AFTER_PENDING_RUN1606",
         "human": "PENDING",
         "closure": "OPEN",
         "production": false,
@@ -6627,7 +6627,8 @@
           "rootCause": "Detached source commit object not reachable via branch checkout; source+HEAD product blobs matched; use existing branch control commit with source SHA second parent.",
           "productCodeChanged": false
         },
-        "sourceQaRunId": 38630245617
+        "sourceQaRunId": 38630245617,
+        "devRuntimeRevision": "cxorbia-live-hr-dev-00294-ftx"
       }
     },
     "VRM-135": {
@@ -19840,7 +19841,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "I3 VRM-134 controlled DEV materialization source 4d462494..., then same-artifact timing and independent HR provider readiness E2E. No production.",
+  "exactNextAction": "Execute existing same-artifact Admin+Julissa+Priscila+Paula live reproof on unchanged RUN1605 DEV, record fresh HR/auth/Firestore timing and AFTER vs RUN1600 BEFORE; no rebuild/deploy; preserve VRM-134 OPEN pending material improvement and no regression.",
   "supersedesGitBlob": "98d6566a240a8256a1441328b2da4af1c25fac6f",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -20979,25 +20980,34 @@
     }
   ],
   "currentMaterialization": {
-    "state": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
     "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
-    "sourceSha": "797050085d1e3347b6d56322f003a3a293790710",
-    "sourceTree": "607196f740203d538df8e22e424874fe547b3d59",
-    "runId": 37958395380,
-    "runNumber": 1431,
-    "jobId": 113914768834,
-    "artifactId": 11630071023,
-    "artifactDigest": "sha256:42445d6e62ce0bab1e95fdb86b592d422a2cee5db221e1c4c3abfece281503ee",
-    "runtimeRevision": "cxorbia-live-hr-dev-00283-kc5",
-    "runtimeDigest": "sha256:3bdb7ca745abcc51ae8a93aa9e4a83c631af58eb891c0c34b644d578969e586a",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/0609acbc6f0dace6",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791562913773000",
-    "hrRevision": "9f543e12c27ac76be6add2d8abadca61c238f1d787ca5f073b5b0496f1e172ef",
-    "builds": 0,
-    "runtimeDeploys": 0,
+    "sourceSha": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
+    "sourceTree": "a821c66a92957eae5c62e331420d7f736eb6aab7",
+    "runId": 38630731956,
+    "runNumber": 1605,
+    "jobId": 116081537125,
+    "artifactId": 11926630664,
+    "artifactDigest": "sha256:38c000b371972fad1276fec767f6367559e36e76431d4c26fb93df03c702e9ac",
+    "artifactDigestType": "GitHub workflow evidence ZIP; NOT final I4 TAR",
+    "sourceArtifactDigest": "sha256:b92bd5f6ec7ce156f2d970233778414304891479a06224ad4ca30da3dd239afb",
+    "sourceArtifactType": "exact product source TAR SHA-256",
+    "runtimeRevision": "cxorbia-live-hr-dev-00294-ftx",
+    "runtimeDigest": "sha256:e91c6593c5e1e90e8810f911b0c7074fe86d9ffc26410fb7bd978486ff88106a",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/0b20ba1c5df7295f",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1792009245815000",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/e9070ca6-234c-4a16-acf2-5ab3372eadb3",
+    "hrRevision": "2e3b2aaff2b1ac7a9323c9a69a16d2ad97beb25648c642e1464d72e36917ad70",
+    "builds": 1,
+    "runtimeDeploys": 1,
     "hostingDeploys": 1,
+    "firestoreRulesDeploys": 1,
     "hrWrites": 0,
-    "production": false
+    "production": false,
+    "sourceProofRunId": 38630245617,
+    "sameArtifactLive": "PENDING",
+    "humanAcceptance": "PENDING",
+    "gate20": "PENDING",
+    "gate21": "PENDING"
   },
   "lastModuleTruthProof": {
     "runId": 36451085968,
@@ -29093,6 +29103,36 @@
     "state": "SOURCE_FIXED_NO_LIVE_PASS",
     "production": false,
     "lineageRepair": "MERGE_COMMIT_ANCHOR_SECOND_PARENT_PENDING_READBACK",
-    "sourceQaRunId": 38630245617
+    "sourceQaRunId": 38630245617,
+    "materializationReceipt": {
+      "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+      "sourceSha": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
+      "sourceTree": "a821c66a92957eae5c62e331420d7f736eb6aab7",
+      "runId": 38630731956,
+      "runNumber": 1605,
+      "jobId": 116081537125,
+      "artifactId": 11926630664,
+      "artifactDigest": "sha256:38c000b371972fad1276fec767f6367559e36e76431d4c26fb93df03c702e9ac",
+      "artifactDigestType": "GitHub workflow evidence ZIP; NOT final I4 TAR",
+      "sourceArtifactDigest": "sha256:b92bd5f6ec7ce156f2d970233778414304891479a06224ad4ca30da3dd239afb",
+      "sourceArtifactType": "exact product source TAR SHA-256",
+      "runtimeRevision": "cxorbia-live-hr-dev-00294-ftx",
+      "runtimeDigest": "sha256:e91c6593c5e1e90e8810f911b0c7074fe86d9ffc26410fb7bd978486ff88106a",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/0b20ba1c5df7295f",
+      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1792009245815000",
+      "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/e9070ca6-234c-4a16-acf2-5ab3372eadb3",
+      "hrRevision": "2e3b2aaff2b1ac7a9323c9a69a16d2ad97beb25648c642e1464d72e36917ad70",
+      "builds": 1,
+      "runtimeDeploys": 1,
+      "hostingDeploys": 1,
+      "firestoreRulesDeploys": 1,
+      "hrWrites": 0,
+      "production": false,
+      "sourceProofRunId": 38630245617,
+      "sameArtifactLive": "PENDING",
+      "humanAcceptance": "PENDING",
+      "gate20": "PENDING",
+      "gate21": "PENDING"
+    }
   }
 }
