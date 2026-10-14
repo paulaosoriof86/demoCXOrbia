@@ -10083,10 +10083,72 @@
     "beforeRun1600": 38624953193,
     "sourceProof": "PASS_RUN1604_FOCAL_4_OF_4",
     "devMaterialization": "PASS_RUN1605",
-    "livePerf": "PENDING_SAME_ARTIFACT",
+    "livePerf": "HOLD_RUN1606_MIXED_SPEED",
     "closure": "OPEN",
     "lineageClosure": "SECOND_PARENT_OF_CONTROL_COMMIT_PENDING",
     "runtimeRevision": "cxorbia-live-hr-dev-00294-ftx",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/0b20ba1c5df7295f"
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/0b20ba1c5df7295f",
+    "run1606": {
+      "runId": 38631543465,
+      "runNumber": 1606,
+      "jobId": 116084271046,
+      "decision": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+      "sourceSha": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
+      "sourceTree": "a821c66a92957eae5c62e331420d7f736eb6aab7",
+      "materializationRunId": 38630731956,
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/0b20ba1c5df7295f",
+      "runtimeRevision": "cxorbia-live-hr-dev-00294-ftx",
+      "hrRevision": "2e3b2aaff2b1ac7a9323c9a69a16d2ad97beb25648c642e1464d72e36917ad70",
+      "authorityReadyMs": {
+        "julissa": 7011,
+        "priscila": 6833,
+        "paula": 6912,
+        "admin": 9856
+      },
+      "previousAuthorityReadyMs": {
+        "julissa": 6857,
+        "priscila": 7884,
+        "paula": 7098,
+        "admin": 8495
+      },
+      "deltaMs": {
+        "julissa": 154,
+        "priscila": -1051,
+        "paula": -186,
+        "admin": 1361
+      },
+      "hrFetchMs": {
+        "julissa": 5636,
+        "priscila": 5453,
+        "paula": 5531
+      },
+      "hrFetchCountPerShopper": 1,
+      "performanceDecision": "HOLD_VRM134_NO_CONSISTENT_MATERIAL_SPEED_IMPROVEMENT",
+      "technical": [
+        "PASS_HR_EXACT_REVISION_DURABLE_ACK",
+        "PASS_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL",
+        "PASS_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE",
+        "PASS_PREI4_FINAL_FOCAL_FINANCE",
+        "PASS_PREI4_CERT_RES_CUMULATIVE_DEV_LIVE"
+      ],
+      "human": "PENDING",
+      "gate20": "PENDING",
+      "gate21": "PENDING",
+      "production": false
+    }
+  },
+  "i3Oct14VisualDelivery": {
+    "path": "CXORBIA_I3_HUMAN_VISUAL_DELIVERY_RUN1606_2026-10-14.md",
+    "sourceSha": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/0b20ba1c5df7295f",
+    "decision": "READY_FOR_FOCAL_B7_B3_HUMAN_REVIEW_NOT_GATE20"
+  },
+  "i3Oct14B8OpenContract": {
+    "hf22": "PENDING_SIX_LIVE_CODES",
+    "hf24": "PENDING_EXHAUSTIVE_INDEPENDENT_READBACK",
+    "hf28": "PENDING_TWO_ADMIN_SESSIONS",
+    "run1606Finance": "PASS_FOCAL_MOVEMENTS_ACCOUNTS_ONLY",
+    "noBankPayment": true,
+    "production": false
   }
 }

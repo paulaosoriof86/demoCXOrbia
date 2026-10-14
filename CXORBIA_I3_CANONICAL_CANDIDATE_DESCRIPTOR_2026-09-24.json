@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
+  "status": "HOLD_I3_VRM134_PERF_B8_SHOPPER_HUMAN_PENDING",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "a821c66a92957eae5c62e331420d7f736eb6aab7",
   "predecessorProductSourceSha": "525f6cd6dddc22a3a7ff1bc12b03b07a98b1561e",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V424_2026-10-14.json",
-  "findingsLedgerExpectedGitBlob": "9d1297ce2c0da89d2c5325af68a9872142293d8d",
+  "findingsLedgerExpectedGitBlob": "3da8ef8c5feb67eb217ea5419de13dc4b8023bd8",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V114.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-134_DEV_PUBLISHED_EXACT_AFTER_PERFORMANCE_E2E_PENDING_B8_SHOPPER_HUMAN",
+  "activeBlocker": "VRM-134_LIVE_E2E_PASS_PERF_HOLD_B8_HF22_HF24_HF28_SHOPPER_HUMAN",
   "nextFindingId": "VRM-275",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Execute existing same-artifact Admin+Julissa+Priscila+Paula live reproof on unchanged RUN1605 DEV, record fresh HR/auth/Firestore timing and AFTER vs RUN1600 BEFORE; no rebuild/deploy; preserve VRM-134 OPEN pending material improvement and no regression.",
+  "exactNextAction": "B8 HF22 six real provider code readbacks (no bank writes) + HF24/HF28 independent durable readback in exact RUN1605 DEV, preserve VRM134 performance OPEN; finish technical gate before new B8 human visual review. No production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -528,7 +528,7 @@
     "hrWrites": 0,
     "production": false,
     "sourceProofRunId": 38630245617,
-    "sameArtifactLive": "PENDING",
+    "sameArtifactLive": "PASS_RUN1606_FUNC_PERF_HOLD",
     "humanAcceptance": "PENDING",
     "gate20": "PENDING",
     "gate21": "PENDING"
@@ -9980,7 +9980,7 @@
   },
   "vrm134Oct14SourceChange": {
     "classification": "ENVIRONMENT_FAILURE",
-    "status": "DEV_MATERIALIZED_RUN1605_PENDING_SAME_ARTIFACT_E2E",
+    "status": "DEV_RUN1605_LIVE_RUN1606_PASS_PERF_NOT_PASS",
     "predecessorProductSourceSha": "525f6cd6dddc22a3a7ff1bc12b03b07a98b1561e",
     "productSourceSha": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
     "productTree": "a821c66a92957eae5c62e331420d7f736eb6aab7",
@@ -10003,7 +10003,12 @@
       "paula": 7098,
       "admin": 8495
     },
-    "afterMs": "PENDING",
+    "afterMs": {
+      "julissa": 7011,
+      "priscila": 6833,
+      "paula": 6912,
+      "admin": 9856
+    },
     "devPublished": true,
     "production": false,
     "sourceAncestryRepair": "PASS_SECOND_PARENT_CONTROL_COMMIT_47510b949fbf62fa9016b1a5fdaffaf2197acc6f",
@@ -10019,6 +10024,68 @@
     },
     "devMaterializationRun": 38630731956,
     "devRuntimeRevision": "cxorbia-live-hr-dev-00294-ftx",
-    "devHostingVersion": "sites/cxorbia-backend-dev/versions/0b20ba1c5df7295f"
+    "devHostingVersion": "sites/cxorbia-backend-dev/versions/0b20ba1c5df7295f",
+    "deltaMs": {
+      "julissa": 154,
+      "priscila": -1051,
+      "paula": -186,
+      "admin": 1361
+    },
+    "performanceDecision": "HOLD_VRM134_NO_CONSISTENT_MATERIAL_SPEED_IMPROVEMENT",
+    "sameArtifactRun": 38631543465
+  },
+  "i3Oct14Run1606SameArtifact": {
+    "runId": 38631543465,
+    "runNumber": 1606,
+    "jobId": 116084271046,
+    "decision": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+    "sourceSha": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
+    "sourceTree": "a821c66a92957eae5c62e331420d7f736eb6aab7",
+    "materializationRunId": 38630731956,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/0b20ba1c5df7295f",
+    "runtimeRevision": "cxorbia-live-hr-dev-00294-ftx",
+    "hrRevision": "2e3b2aaff2b1ac7a9323c9a69a16d2ad97beb25648c642e1464d72e36917ad70",
+    "authorityReadyMs": {
+      "julissa": 7011,
+      "priscila": 6833,
+      "paula": 6912,
+      "admin": 9856
+    },
+    "previousAuthorityReadyMs": {
+      "julissa": 6857,
+      "priscila": 7884,
+      "paula": 7098,
+      "admin": 8495
+    },
+    "deltaMs": {
+      "julissa": 154,
+      "priscila": -1051,
+      "paula": -186,
+      "admin": 1361
+    },
+    "hrFetchMs": {
+      "julissa": 5636,
+      "priscila": 5453,
+      "paula": 5531
+    },
+    "hrFetchCountPerShopper": 1,
+    "performanceDecision": "HOLD_VRM134_NO_CONSISTENT_MATERIAL_SPEED_IMPROVEMENT",
+    "technical": [
+      "PASS_HR_EXACT_REVISION_DURABLE_ACK",
+      "PASS_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL",
+      "PASS_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE",
+      "PASS_PREI4_FINAL_FOCAL_FINANCE",
+      "PASS_PREI4_CERT_RES_CUMULATIVE_DEV_LIVE"
+    ],
+    "human": "PENDING",
+    "gate20": "PENDING",
+    "gate21": "PENDING",
+    "production": false
+  },
+  "i3Oct14HumanReviewDelivery": {
+    "path": "CXORBIA_I3_HUMAN_VISUAL_DELIVERY_RUN1606_2026-10-14.md",
+    "scope": "B7/B3 four read-only screens on RUN1605 same DEV",
+    "status": "AVAILABLE_HUMAN_PENDING",
+    "referenceSource": "4d4624940ce09c86ec04a3ee59e44ffd40bde612"
   }
 }

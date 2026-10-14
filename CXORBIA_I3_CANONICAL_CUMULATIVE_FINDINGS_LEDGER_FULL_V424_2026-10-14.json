@@ -6507,7 +6507,7 @@
       "classification": "ENVIRONMENT_FAILURE",
       "severity": "P0",
       "title": "Live-data refresh and post-write recomposition repeatedly block the user for materially too long",
-      "state": "DEV_MATERIALIZED_RUN1605_PENDING_SAME_ARTIFACT_PERFORMANCE_E2E",
+      "state": "LIVE_E2E_PASS_PERFORMANCE_P0_OPEN_RUN1606",
       "rootCause": "The HR authority bridge forces/re-schedules whole authority recomposition on backend-ready, backend.refresh, window focus and visibility restore; backend.refresh first reloads Firestore and marks HR authority unapplied. Several modules also force document reload. A fresh HR provider read measured about 3.8s, so the much longer repeated visible wait is orchestration/recomposition and redundant refresh work, not simply HR source latency.",
       "priorEvidenceLinks": [
         "VRM-060 historical live login readiness 2.9s shopper / 7.3s admin",
@@ -6617,9 +6617,56 @@
         "change": "overlap verified principal with fresh HR read; exact per-stage runtime timing; no TTL/freshness/security relaxation",
         "sourceTests": "PASS_RUN1604_4_OF_4",
         "devMaterialization": "PASS_RUN1605",
-        "livePerfBeforeAfter": "AFTER_PENDING_RUN1606",
+        "livePerfBeforeAfter": {
+          "runId": 38631543465,
+          "runNumber": 1606,
+          "jobId": 116084271046,
+          "decision": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+          "sourceSha": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
+          "sourceTree": "a821c66a92957eae5c62e331420d7f736eb6aab7",
+          "materializationRunId": 38630731956,
+          "hostingVersion": "sites/cxorbia-backend-dev/versions/0b20ba1c5df7295f",
+          "runtimeRevision": "cxorbia-live-hr-dev-00294-ftx",
+          "hrRevision": "2e3b2aaff2b1ac7a9323c9a69a16d2ad97beb25648c642e1464d72e36917ad70",
+          "authorityReadyMs": {
+            "julissa": 7011,
+            "priscila": 6833,
+            "paula": 6912,
+            "admin": 9856
+          },
+          "previousAuthorityReadyMs": {
+            "julissa": 6857,
+            "priscila": 7884,
+            "paula": 7098,
+            "admin": 8495
+          },
+          "deltaMs": {
+            "julissa": 154,
+            "priscila": -1051,
+            "paula": -186,
+            "admin": 1361
+          },
+          "hrFetchMs": {
+            "julissa": 5636,
+            "priscila": 5453,
+            "paula": 5531
+          },
+          "hrFetchCountPerShopper": 1,
+          "performanceDecision": "HOLD_VRM134_NO_CONSISTENT_MATERIAL_SPEED_IMPROVEMENT",
+          "technical": [
+            "PASS_HR_EXACT_REVISION_DURABLE_ACK",
+            "PASS_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL",
+            "PASS_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE",
+            "PASS_PREI4_FINAL_FOCAL_FINANCE",
+            "PASS_PREI4_CERT_RES_CUMULATIVE_DEV_LIVE"
+          ],
+          "human": "PENDING",
+          "gate20": "PENDING",
+          "gate21": "PENDING",
+          "production": false
+        },
         "human": "PENDING",
-        "closure": "OPEN",
+        "closure": "OPEN_PERFORMANCE_MIXED",
         "production": false,
         "ciFirstAttempt": {
           "run": 38629825653,
@@ -19841,7 +19888,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Execute existing same-artifact Admin+Julissa+Priscila+Paula live reproof on unchanged RUN1605 DEV, record fresh HR/auth/Firestore timing and AFTER vs RUN1600 BEFORE; no rebuild/deploy; preserve VRM-134 OPEN pending material improvement and no regression.",
+  "exactNextAction": "B8 HF22 six real provider code readbacks (no bank writes) + HF24/HF28 independent durable readback in exact RUN1605 DEV, preserve VRM134 performance OPEN; finish technical gate before new B8 human visual review. No production.",
   "supersedesGitBlob": "98d6566a240a8256a1441328b2da4af1c25fac6f",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -29134,5 +29181,68 @@
       "gate20": "PENDING",
       "gate21": "PENDING"
     }
+  },
+  "i3Oct14Run1606SameArtifact": {
+    "runId": 38631543465,
+    "runNumber": 1606,
+    "jobId": 116084271046,
+    "decision": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+    "sourceSha": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
+    "sourceTree": "a821c66a92957eae5c62e331420d7f736eb6aab7",
+    "materializationRunId": 38630731956,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/0b20ba1c5df7295f",
+    "runtimeRevision": "cxorbia-live-hr-dev-00294-ftx",
+    "hrRevision": "2e3b2aaff2b1ac7a9323c9a69a16d2ad97beb25648c642e1464d72e36917ad70",
+    "authorityReadyMs": {
+      "julissa": 7011,
+      "priscila": 6833,
+      "paula": 6912,
+      "admin": 9856
+    },
+    "previousAuthorityReadyMs": {
+      "julissa": 6857,
+      "priscila": 7884,
+      "paula": 7098,
+      "admin": 8495
+    },
+    "deltaMs": {
+      "julissa": 154,
+      "priscila": -1051,
+      "paula": -186,
+      "admin": 1361
+    },
+    "hrFetchMs": {
+      "julissa": 5636,
+      "priscila": 5453,
+      "paula": 5531
+    },
+    "hrFetchCountPerShopper": 1,
+    "performanceDecision": "HOLD_VRM134_NO_CONSISTENT_MATERIAL_SPEED_IMPROVEMENT",
+    "technical": [
+      "PASS_HR_EXACT_REVISION_DURABLE_ACK",
+      "PASS_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL",
+      "PASS_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE",
+      "PASS_PREI4_FINAL_FOCAL_FINANCE",
+      "PASS_PREI4_CERT_RES_CUMULATIVE_DEV_LIVE"
+    ],
+    "human": "PENDING",
+    "gate20": "PENDING",
+    "gate21": "PENDING",
+    "production": false
+  },
+  "i3Oct14HumanReviewDelivery": {
+    "path": "CXORBIA_I3_HUMAN_VISUAL_DELIVERY_RUN1606_2026-10-14.md",
+    "state": "DELIVERED_FOR_VISUAL_REVIEW_NOT_HUMAN_APPROVED",
+    "sourceSha": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/0b20ba1c5df7295f"
+  },
+  "i3Oct14B8NextFront": {
+    "priorFinanceRun1606": "PASS_PREI4_FINAL_FOCAL_FINANCE",
+    "hf22SixRemoteCodes": "OPEN_REMOTE_EXACT_PROOF",
+    "hf24IndependentReadback": "PARTIAL_RUN1606_MOVEMENTS_ACCOUNTS_ONLY",
+    "hf28TwoAdminSessions": "OPEN",
+    "completeLiveFinance": "HOLD",
+    "humanFinance": "PENDING",
+    "production": false
   }
 }
