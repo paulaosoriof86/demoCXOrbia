@@ -78,3 +78,23 @@ test('B7 reschedule rejection survives error and ACK needs exact refreshed visit
   assert.ok(src.includes('readback=String(exact?.rescheduleRequest?.status'));
   assert.ok(!src.includes("ui.toast('Nueva fecha guardada correctamente'"));
 });
+
+test('B7 actionable 7-KPI owner derives each operational count from current visit and durable request, never post.reprog',()=>{
+  assert.match(src,/const reprog=requestByVisit;/);
+  assert.doesNotMatch(src,/activePosts\.filter\(x=>x\.reprog/);
+  assert.match(src,/const operationalAssignments=data\.visitas\(\)\.filter/);
+  assert.match(src,/const cancellationRequests=operationalAssignments\.filter/);
+  assert.match(src,/const agendadas=operationalAssignments\.filter/);
+  for(const key of ['pend','assign','reprog','cancel','agenda','aprob','todas'])
+    assert.match(src,new RegExp('data-k="'+key+'"'));
+  assert.match(src,/repeat\(auto-fit,minmax\(155px,1fr\)\)/);
+});
+test('B7 KPI drilldown delegates to existing role-scoped provider owners, not a generic postulation modal',()=>{
+  assert.match(src,/const openOperationalKpi=\(title,rows,kind\)=>/);
+  assert.match(src,/openAgenda\?\.\(\{data,ui,visitIds:\[id\]\}\)/);
+  assert.match(src,/openContext\?\.\(\{data,ui,visitId:id\}\)/);
+  assert.match(src,/data-po-cancel-outcome/);
+  assert.match(src,/btn\.click\(\)/);
+  assert.match(src,/if\(operationalKpis\[key\]\)/);
+  assert.doesNotMatch(src,/reprog:\['Reprogramaciones',reprog\]/);
+});

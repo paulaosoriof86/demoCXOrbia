@@ -237,8 +237,9 @@ CX.module('postulaciones', ({data,ui})=>{
   /* Durable shopper requests live on visits, not in postulation.reprog. Never invent a postulation. */
   const requestByVisit=operationalAssignments.filter(v=>v.rescheduleRequest?.status==='pending_review')
     .map(v=>({id:'visit-request:'+String(v.id||v.visitId),__fromVisitRequest:true,visitaId:String(v.id||v.visitId),shopperId:String(v.shopperId||''),shopper:v.shopper||'',sucursal:v.sucursal||'',ciudad:v.ciudad||'',pais:v.pais||'',projectId:data.currentProjectId,rootProjectId:data.currentProjectId,periodId:data.currentPeriodId,fechaActual:v.agendada||v.platformSchedulePendingHr?.date||'',fechaProp:String(v.rescheduleRequest.newDate||''),franjaCode:v.franjaCode||'',reason:String(v.rescheduleRequest.reason||'')}));
-  const requestVisits=new Set(requestByVisit.map(v=>String(v.visitaId)));
-  const reprog=[...requestByVisit,...activePosts.filter(x=>x.reprog&&!requestVisits.has(String(x.visitaId||x.visitId||'')))];
+  /* B7: only pending durable visit requests are actionable. Historical post.reprog
+     flags have no request status/provider ACK and cannot inflate this counter. */
+  const reprog=requestByVisit;
   const cancellationRequests=operationalAssignments.filter(v=>v.cancelRequest?.status==='pending_review');
   const cancellationHrPending=operationalAssignments.filter(v=>v.cancelRequest?.status==='approved_pending_hr');
   const findReprogram=id=>reprog.find(x=>String(x.id)===String(id))||posts.find(x=>String(x.id)===String(id));
@@ -386,12 +387,14 @@ CX.module('postulaciones', ({data,ui})=>{
     <label class="flex" style="font-size:12px;color:var(--t2);gap:6px"><input type="checkbox" id="pHist"> Ver históricas</label>
   </div>
 
-  <div class="grid" style="grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:16px" id="poKpis">
-    <div data-k="pend" style="cursor:pointer">${ui.kpi('Pendientes',c('pendiente'),'a')}</div>
-    <div data-k="reprog" style="cursor:pointer">${ui.kpi('Reprogramaciones',reprog.length,'r')}</div>
-    <div data-k="aprob" style="cursor:pointer">${ui.kpi('Aprobadas',c('aprobada'),'g')}</div>
-    <div data-k="todas" style="cursor:pointer">${ui.kpi('Todas',activePosts.length,'b')}</div>
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:11px;margin-bottom:16px" id="poKpis">
+    <div data-k="pend" style="cursor:pointer">${ui.kpi('Postulaciones pendientes',c('pendiente'),'a')}</div>
+    <div data-k="assign" style="cursor:pointer">${ui.kpi('Asignaciones vigentes',operationalAssignments.length,'b')}</div>
+    <div data-k="reprog" style="cursor:pointer">${ui.kpi('Reprogramaciones pendientes',reprog.length,'r')}</div>
+    <div data-k="cancel" style="cursor:pointer">${ui.kpi('Cancelaciones pendientes',cancellationRequests.length,'a')}</div>
     <div data-k="agenda" style="cursor:pointer">${ui.kpi('Agendamientos activos',agendadas.length,'n')}</div>
+    <div data-k="aprob" style="cursor:pointer">${ui.kpi('Postulaciones aprobadas',c('aprobada'),'g')}</div>
+    <div data-k="todas" style="cursor:pointer">${ui.kpi('Todas las postulaciones',activePosts.length,'b')}</div>
   </div>
 
   ${reprog.length?`<div class="card card-p" style="border-left:3px solid var(--amber);margin-bottom:16px">
@@ -466,14 +469,61 @@ CX.module('postulaciones', ({data,ui})=>{
     }));
     const poList=(title,arr)=>ui.modal(title+' ('+arr.length+')', arr.length?`<table class="tbl"><thead><tr><th>Shopper</th><th>Sucursal</th><th>Estado</th><th>Honorario</th><th></th></tr></thead><tbody>${arr.map(x=>`<tr><td><b style="font-size:12.5px">${x.shopper}</b><div style="font-size:10px;color:var(--t3)">${x.shopperCode}</div></td><td style="font-size:12px">${x.sucursal}<div style="font-size:10px;color:var(--t3)">${CX.paisFlag(x.pais)} ${x.ciudad}</div></td><td>${estTag(x.estado)}</td><td style="font-size:12px;color:var(--green)">${x.honorario!=null?x.currency+' '+x.honorario:'<span class="muted">Pendiente de fuente</span>'}</td><td style="text-align:right">${x.id?`<button class="btn btn-ghost btn-sm poRowGest" data-pid="${x.id}" style="padding:2px 9px;font-size:11px">Gestionar →</button>`:''}</td></tr>`).join('')}</tbody></table>`:ui.empty('📭','Sin elementos en esta categoría.'),
       {onMount:(ov,close)=>ov.querySelectorAll('.poRowGest').forEach(b=>b.addEventListener('click',()=>{const x=posts.find(z=>z.id===b.dataset.pid);if(x){close();postDetalle(x);}}))});
-    const poKp={
-      pend:['Postulaciones pendientes',activePosts.filter(x=>x.estado==='pendiente')],
-      reprog:['Reprogramaciones',reprog],
-      aprob:['Postulaciones aprobadas',activePosts.filter(x=>x.estado==='aprobada')],
-      todas:['Todas las postulaciones',activePosts],
-      agenda:['Agendamientos pendientes de realizar',agendadas.map(v=>({shopper:v.shopper,shopperCode:v.shopperCode||'',sucursal:v.sucursal,ciudad:v.ciudad,pais:v.pais,estado:v.estado,currency:v.currency,honorario:v.honorario}))],
+    /* B7: functional owner of each operational KPI. No synthetic postulation
+       and no new provider write. The existing authorized visit-action handlers own decisions. */
+    const openOperationalKpi=(title,rows,kind)=>{
+      const escapeText=(v)=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+      const actionLabel={assign:'Gestionar visita',reprog:'Revisar fecha',cancel:'Revisar cancelación',agenda:'Gestionar agenda'}[kind];
+      const tableRows=rows.map(v=>{
+        const id=String(v.visitaId||v.visitId||v.id||'');
+        const visit=operationalAssignments.find(x=>String(x.id||x.visitId)===id);
+        if(!visit)return'';
+        const status=kind==='reprog'?'Pendiente de autorización':kind==='cancel'?'Cancelación pendiente':assignmentState(visit);
+        return '<tr><td><b>'+escapeText(visit.shopper||visit.shopperId||'Identidad protegida')+'</b></td>'
+          +'<td>'+escapeText(visit.sucursal||'—')+'<div class="muted">'+escapeText(visit.pais||'')+' · '+escapeText(visit.ciudad||'')+'</div></td>'
+          +'<td>'+escapeText(status)+'</td><td><button class="btn btn-pr btn-sm" data-po-kpi-action="'+kind+'" data-visit-id="'+escapeText(id)+'">'+actionLabel+'</button></td></tr>';
+      }).filter(Boolean).join('');
+      ui.modal(title+' ('+rows.length+')',tableRows
+        ?'<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Shopper</th><th>Sucursal</th><th>Estado</th><th>Acción</th></tr></thead><tbody>'+tableRows+'</tbody></table></div>'
+        :ui.empty('🗂️','Sin solicitudes vigentes en esta categoría.'),{onMount:(ov,close)=>{
+        ov.querySelectorAll('[data-po-kpi-action]').forEach(b=>b.addEventListener('click',()=>{
+          const id=String(b.dataset.visitId||''),action=String(b.dataset.poKpiAction||'');
+          const visit=operationalAssignments.find(x=>String(x.id||x.visitId)===id);
+          if(!visit)return;
+          close();
+          if(action==='assign')CX.adminPostulacionesActions?.openContext?.({data,ui,visitId:id});
+          else if(action==='reprog'||action==='agenda')CX.adminPostulacionesActions?.openAgenda?.({data,ui,visitIds:[id]});
+          else if(action==='cancel'){
+            const buttons=[...document.querySelectorAll('[data-cancel-review]')].filter(x=>String(x.dataset.vid||'')===id);
+            if(!buttons.length){ui.toast('La solicitud ya no está disponible para decidir. Actualiza la vista.','warn',4200);return;}
+            ui.modal('Decidir cancelación · '+escapeText(visit.sucursal),'<p>Selecciona la decisión autorizada para esta solicitud.</p><div class="flex wrap" style="gap:8px"><button class="btn btn-green" data-po-cancel-outcome="approved">Autorizar</button><button class="btn btn-soft" data-po-cancel-outcome="rejected">Rechazar</button></div>',{onMount:(dialog,closeDecision)=>{
+              dialog.querySelectorAll('[data-po-cancel-outcome]').forEach(choice=>choice.addEventListener('click',()=>{
+                const btn=buttons.find(x=>x.dataset.cancelReview===choice.dataset.poCancelOutcome);
+                if(!btn)return;
+                closeDecision();btn.click();
+              }));
+            }});
+          }
+        }));
+      }});
     };
-    document.querySelectorAll('#poKpis [data-k]').forEach(el=>el.addEventListener('click',()=>{const d=poKp[el.dataset.k];poList(d[0],d[1]);}));
+    const inPostState=state=>activePosts.filter(x=>String(x.estado||x.status||'').toLowerCase()===state);
+    const poKp={
+      pend:['Postulaciones pendientes',inPostState('pendiente')],
+      aprob:['Postulaciones aprobadas',inPostState('aprobada')],
+      todas:['Todas las postulaciones',activePosts],
+    };
+    const operationalKpis={
+      assign:['Asignaciones vigentes',operationalAssignments],
+      reprog:['Reprogramaciones pendientes',reprog],
+      cancel:['Cancelaciones pendientes',cancellationRequests],
+      agenda:['Agendamientos pendientes de realizar',agendadas]
+    };
+    document.querySelectorAll('#poKpis [data-k]').forEach(el=>el.addEventListener('click',()=>{
+      const key=String(el.dataset.k||'');
+      if(operationalKpis[key]){const [title,rows]=operationalKpis[key];openOperationalKpi(title,rows,key);return;}
+      const spec=poKp[key];if(spec)poList(spec[0],spec[1]);
+    }));
     const gestor=()=>(CX.session.user&&CX.session.user.name)||'Equipo';
     const act=(id,label,tone,extra)=>{
       const el=document.querySelector(`[data-pid="${id}"]`);
