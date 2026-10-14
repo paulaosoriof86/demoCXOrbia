@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_GT_E2E",
+  "status": "HOLD_I3_B7_NOTIFICATION_VISIBILITY_PASS_VRM134_LATENCY_B8_SHOPPER_HUMAN_PENDING",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "525f6cd6dddc22a3a7ff1bc12b03b07a98b1561e",
   "productTreeAuthority": "7aa467413c1ee19c3f0eeda233d7b9722f923886",
   "predecessorProductSourceSha": "1708b794779978ee7356124553c488195b3b3161",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V423_2026-10-14.json",
-  "findingsLedgerExpectedGitBlob": "a6a1c19f0590288da8e25aff84716c7ce3f46255",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V113.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V424_2026-10-14.json",
+  "findingsLedgerExpectedGitBlob": "fcc4f90b4784e0def01e466bb059671e1428cf72",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V114.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "B7_SHOPPER_NOTIFICATION_SAME_ARTIFACT_E2E_PLUS_VRM134_LATENCY_AND_B3_HUMAN",
+  "activeBlocker": "VRM-134_REFRESH_LATENCY_PLUS_B7_B8_SHOPPER_HUMAN_VISUAL_AND_E2E_PENDING",
   "nextFindingId": "VRM-275",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -527,7 +527,7 @@
     "hrWrites": 0,
     "production": false,
     "sourceProofRunId": 38613513742,
-    "sameArtifactLive": "PENDING",
+    "sameArtifactLive": "PASS_RUN1600_B7_NOTIFICATION",
     "humanAcceptance": "PENDING"
   },
   "lastFocalAttempt": {
@@ -2735,7 +2735,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "a815c96584bf200acc78d81ba94b33ba5f866c63",
+  "moduleTruthExpectedGitBlob": "b02ed7a70ba1b2730f7f9d0416a34961dd9757af",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -9917,5 +9917,62 @@
     "sourceProofRunId": 38613513742,
     "sameArtifactLive": "PENDING",
     "humanAcceptance": "PENDING"
+  },
+  "i3Oct14Run1600SameArtifact": {
+    "decision": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+    "runId": 38624953193,
+    "runNumber": 1600,
+    "jobId": 116061734292,
+    "artifactId": 11923917030,
+    "artifactDigest": "sha256:f6b40e03630fb44f4fe75c20bd86f3c0c43342c31b382fab0fa08e702852762d",
+    "sourceSha": "525f6cd6dddc22a3a7ff1bc12b03b07a98b1561e",
+    "sourceTree": "7aa467413c1ee19c3f0eeda233d7b9722f923886",
+    "materializationRunId": 38624087570,
+    "runtimeRevision": "cxorbia-live-hr-dev-00293-vft",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/258d18435b3c0128",
+    "hrRevision": "2e3b2aaff2b1ac7a9323c9a69a16d2ad97beb25648c642e1464d72e36917ad70",
+    "projectId": "cinepolis",
+    "periodId": "cinepolis-2026-10",
+    "roles": [
+      "Admin",
+      "Shopper Julissa",
+      "Shopper Priscila",
+      "Shopper Paula"
+    ],
+    "paulaOperationalBulletin": {
+      "remoteExpected": 1,
+      "shopperFeedMatched": 1,
+      "tablonMatched": 1,
+      "miDiaMatched": 1,
+      "hydratedFeedLoaded": true,
+      "state": "PASS_INDEPENDENT_SHOPPER_UI"
+    },
+    "latencyMs": {
+      "julissa": 6857,
+      "priscila": 7884,
+      "paula": 7098,
+      "admin": 8495
+    },
+    "hrFetchMs": {
+      "julissa": 5517,
+      "priscila": 6289,
+      "paula": 5550
+    },
+    "hrFetchCountPerShopper": 1,
+    "devBuilds": 0,
+    "devDeploys": 0,
+    "testInitiatedWrites": 0,
+    "production": false,
+    "humanAcceptance": "PENDING",
+    "gate20": "PENDING",
+    "gate21": "PENDING"
+  },
+  "i3Oct14Run1600HumanFocalRoute": {
+    "path": "CXORBIA_I3_B7_B3_FOCAL_HUMAN_REVIEW_ROUTE_RUN1600_2026-10-14.md",
+    "blob": "a93fee6b79bad434b3dbb79a1d14fef8b85c6e9f",
+    "scope": "B7 bell+Tablon+Mi Dia and B3 compact Shopper",
+    "readiness": "READY_FOR_FOCAL_HUMAN_REVIEW_NOT_GATE20",
+    "human": "PENDING",
+    "production": false
   }
 }
