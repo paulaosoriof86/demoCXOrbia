@@ -1,6 +1,14 @@
 /* CXOrbia · Postulaciones (admin) — full fidelity */
 /* B7 — Modal propietario de Postulaciones, reutilizado desde Dashboard sin navegación. */
 CX.adminPostulacionesActions=CX.adminPostulacionesActions||{};
+/* B7 reason: keep provider value intact, convert only presentation to human text. */
+CX.adminPostulacionesActions.cancelReasonForUi=(request)=>{
+  const raw=String(request?.reason||'').trim();
+  if(raw==='shopper-cancel-request')return 'El shopper solicitó cancelar la visita. No hay un motivo adicional registrado.';
+  if(!raw)return 'El shopper no indicó un motivo.';
+  if(/^[a-z][a-z0-9]*(?:[-_][a-z0-9]+){2,}$/i.test(raw))return 'La solicitud no contiene un motivo legible. Solicita aclaración al shopper.';
+  return raw;
+};
 CX.adminPostulacionesActions.openRequest=({data,ui,visitIds=[],defaultType='confirmar'})=>{
   const ids=new Set(visitIds.map(String).filter(Boolean));
   const posts=(data._posts||[]).filter(x=>data.inScope(x.pais)&&x?._archived!==true&&x?.active!==false&&x?.postulationLifecycle!=='transitioned_to_assignment'&&(!data.currentPeriodId||String(data.recordPeriodId?.(x)||x.periodId||'')===String(data.currentPeriodId)));
@@ -115,7 +123,7 @@ CX.adminPostulacionesActions.openAgenda=({data,ui,visitIds=[]})=>{
         <div style="font-size:12px;font-weight:700;color:var(--t1);margin-bottom:9px">✅ Agendas autorizadas desde la plataforma <span class="bdg bdg-g">${agendadas.length}</span></div>
         ${pendingRows}
         ${rows||ui.empty('🗓️','Sin agendas')}
-        <div style="margin-top:8px">${ui.aiBox('Estas fechas provienen de HR o de una postulación aprobada; se reflejan para coordinación y shopper sin contarse como pendientes.','Referencias')}</div>`,
+        <div style="margin-top:8px">${'<p class="muted" style="font-size:12px;margin-top:12px">La fecha vigente se conserva hasta que una nueva fecha sea autorizada.</p>'}</div>`,
       {onMount:(ov,close)=>{ov.querySelectorAll('.aprAdjust').forEach(b=>b.addEventListener('click',async()=>{
         const visit=agendadas.find(v=>String(v.id||v.visitId)===String(b.dataset.vid||''));
         if(!visit?.shopperId||!visit?.id||typeof CX.notif?.pushDurable!=='function'){ui.toast('No se solicitó el ajuste: falta identidad exacta o notificación durable.','warn',4200);return;}
@@ -229,7 +237,7 @@ CX.adminPostulacionesActions.openCancellation=({data,ui,visitId,decision=null})=
   if(decision&&v.cancelRequest?.status!=='pending_review'){ui.toast('La solicitud ya no está pendiente.','warn');return false;}
   if(!CX.permissions?.gate?.('visit.cancel',{projectId:data.currentProjectId,pais:v.pais},ui))return false;
   const safe=x=>String(x??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-  ui.modal(decision?'Decidir cancelación · '+safe(v.sucursal):'Cancelar visita · '+safe(v.sucursal),'<p class="muted" style="font-size:12px">'+safe(decision?v.cancelRequest?.reason||'':v.shopper||'')+'</p><label class="lbl">Motivo obligatorio</label><textarea class="inp" id="cxDashCancelReason" rows="3"></textarea><div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" id="cxDashCancelOk">Confirmar</button></div>',{
+  ui.modal(decision?'Decidir cancelación · '+safe(v.sucursal):'Cancelar visita · '+safe(v.sucursal),'<p class="muted" style="font-size:12px">'+safe(decision?CX.adminPostulacionesActions.cancelReasonForUi(v.cancelRequest):v.shopper||'')+'</p><label class="lbl">Motivo obligatorio</label><textarea class="inp" id="cxDashCancelReason" rows="3"></textarea><div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" id="cxDashCancelOk">Confirmar</button></div>',{
     onMount:(ov,close)=>ov.querySelector('#cxDashCancelOk').addEventListener('click',async()=>{
       const reason=String(ov.querySelector('#cxDashCancelReason').value||'').trim();
       if(!reason){ui.toast('Indica el motivo.','warn');return;}
@@ -439,7 +447,7 @@ CX.module('postulaciones', ({data,ui})=>{
       <div class="flex" style="flex-wrap:wrap;gap:4px"><button class="btn btn-ghost btn-sm" data-revpost="${x.id}">👁 Revisar reprog.</button>${CX.adminPostulacionesActions.rescheduleReadiness(x,data).eligible?'<button class="btn btn-green btn-sm" data-authfecha="'+x.id+'">✅ Nueva fecha</button>':'<button class="btn btn-soft btn-sm" disabled>Fecha vencida</button><button class="btn btn-pr btn-sm" data-reprog-renew="'+x.id+'">📅 Pedir otra fecha</button>'}<button class="btn btn-ghost btn-sm" data-keepfecha="${x.id}">Conservar anterior</button></div>
     </div>`).join('')}</div>`:''}
 
-  ${cancellationRequests.length?'<div class="card card-p" style="border-left:3px solid var(--amber);margin-bottom:14px"><div class="card-t">⚠️ Solicitudes de cancelación pendientes · '+cancellationRequests.length+'</div>'+cancellationRequests.map(v=>'<div class="cx-visit-request-note"><b>'+safe(v.shopper||v.shopperId)+'</b> · '+safe(v.sucursal)+' · Motivo: '+safe(v.cancelRequest.reason||'Sin motivo')+'<div class="flex wrap" style="gap:8px;margin-top:8px"><button class="btn btn-green btn-sm" data-cancel-review="approved" data-vid="'+String(v.id||v.visitId).replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'">Aprobar solicitud</button><button class="btn btn-ghost btn-sm" data-cancel-review="rejected" data-vid="'+String(v.id||v.visitId).replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'">Rechazar solicitud</button></div></div>').join('')+'</div>':''}
+  ${cancellationRequests.length?'<div class="card card-p" style="border-left:3px solid var(--amber);margin-bottom:14px"><div class="card-t">⚠️ Solicitudes de cancelación pendientes · '+cancellationRequests.length+'</div>'+cancellationRequests.map(v=>'<div class="cx-visit-request-note"><b>'+safe(v.shopper||v.shopperId)+'</b> · '+safe(v.sucursal)+' · Motivo: '+safe(CX.adminPostulacionesActions.cancelReasonForUi(v.cancelRequest))+'<div class="flex wrap" style="gap:8px;margin-top:8px"><button class="btn btn-green btn-sm" data-cancel-review="approved" data-vid="'+String(v.id||v.visitId).replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'">Aprobar solicitud</button><button class="btn btn-ghost btn-sm" data-cancel-review="rejected" data-vid="'+String(v.id||v.visitId).replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'">Rechazar solicitud</button></div></div>').join('')+'</div>':''}
   ${cancellationHrPending.length?'<div class="card card-p" style="border-left:3px solid var(--amber);margin-bottom:14px"><div class="card-t">Cancelaciones autorizadas · pendientes de confirmación HR · '+cancellationHrPending.length+'</div>'+cancellationHrPending.map(v=>'<div class="cx-visit-request-note"><b>'+safe(v.shopper||v.shopperId)+'</b> · '+safe(v.sucursal)+' · La visita no se liberará hasta que la HR externa confirme el cambio.</div>').join('')+'</div>':''}
   <div id="pGroups">${groupHTML}</div>
   <section class="poAssignedSection" data-cx-assignments aria-label="Asignaciones vigentes">
@@ -448,7 +456,7 @@ CX.module('postulaciones', ({data,ui})=>{
     </div>
     <div id="poAssignedGroups">${assignmentGroupHTML}</div>
   </section>
-  <div class="card card-p">${ui.aiBox('Postulaciones y asignaciones son ciclos distintos pero relacionados. Una asignación puede venir de HR o de la plataforma y nunca se fabrica una postulación para explicarla.','Gestión operacional')}</div>`;
+  `;
 
   setTimeout(()=>{
     /* CORTE 2A — Exportar Postulaciones: solo periodo activo + alcance filtrado visible,
@@ -683,7 +691,7 @@ CX.module('postulaciones', ({data,ui})=>{
       const approving=decision==='approved';
       ui.modal(approving?'Autorizar solicitud de cancelación':'Rechazar solicitud de cancelación',
         '<p style="font-size:12.5px;color:var(--t2);margin-bottom:12px"><b>'+safe(v.shopper||v.shopperId)+'</b> · '+safe(v.sucursal)+
-        '</p><div class="cx-visit-request-note">Motivo del shopper: '+safe(v.cancelRequest.reason||'—')+'</div>'+
+        '</p><div class="cx-visit-request-note">Motivo del shopper: '+safe(CX.adminPostulacionesActions.cancelReasonForUi(v.cancelRequest))+'</div>'+
         '<p style="font-size:12px;color:var(--t2);margin:12px 0">'+(approving
           ?'Si la HR es externa, la aprobación quedará pendiente de su confirmación y la visita seguirá asignada mientras tanto.'
           :'La visita conservará su asignación y fecha vigente.')+'</p>'+
