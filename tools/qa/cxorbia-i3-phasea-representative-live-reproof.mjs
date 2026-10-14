@@ -373,11 +373,35 @@ try{
   });
   if((post.pending?String(post.pending):'')!==post.badgeText||!post.headerPending||!post.headerAssignments)throw new Error('MAPPING_FAILURE:POSTULATIONS_COUNT_DESYNC:'+JSON.stringify(post));
 
+  /* B7 human action/read-only proof: open the real pending request modal, never submit. */
+  const pendingReplacementCount=await page.evaluate(()=>(window.CX?.data?.visitas?.()||[])
+    .filter(v=>v.rescheduleRequest?.status==='pending_review').length);
+  let replacementModal={required:pendingReplacementCount>0,opened:false,reasonField:false,cancelledWithoutMutation:false};
+  if(pendingReplacementCount>0){
+    const trigger=page.locator('[data-reprog-renew]').first();
+    if(await trigger.count()!==1)throw new Error('FUNCTIONAL_DEFECT:B7_REPLACEMENT_DATE_ACTION_MISSING');
+    await trigger.click();
+    await page.locator('#cxReplacementReason').waitFor({state:'visible',timeout:12000});
+    replacementModal=await page.evaluate(()=>{
+      const field=document.querySelector('#cxReplacementReason'),back=document.querySelector('#cxReplacementBack'),confirm=document.querySelector('#cxReplacementConfirm');
+      const text=String(document.body?.innerText||'');
+      return {required:true,opened:!!(field&&back&&confirm),reasonField:!!field,
+        currentDateExplained:/fecha vigente/i.test(text),
+        newDateInstruction:/Pedir una nueva fecha|Solicitar nueva fecha/i.test(text),
+        cancelledWithoutMutation:false};
+    });
+    if(!replacementModal.opened||!replacementModal.currentDateExplained||!replacementModal.newDateInstruction)
+      throw new Error('VISUAL_DEFECT:B7_REPLACEMENT_MODAL_INCOMPLETE:'+JSON.stringify(replacementModal));
+    await page.locator('#cxReplacementBack').click();
+    replacementModal.cancelledWithoutMutation=await page.locator('#cxReplacementReason').count()===0;
+    if(!replacementModal.cancelledWithoutMutation)throw new Error('FUNCTIONAL_DEFECT:B7_REPLACEMENT_MODAL_CLOSE');
+  }
+
   await nav(page,'visitas');
   const visitAdmin=await page.evaluate(()=>{const d=window.CX?.data||{},v=typeof d.visitas==='function'?d.visitas():[];return {count:v.length,assigned:v.filter(x=>d.visitFacets?.(x)?.assigned===true).length,unique:new Set(v.map(x=>String(x.hrRowId||x.id||x.visitId||''))).size};});
   if(visitAdmin.count!==currentHrVisits.length||visitAdmin.unique!==visitAdmin.count)throw new Error('MAPPING_FAILURE:ADMIN_VISIT_HR_PARITY:'+JSON.stringify({visitAdmin,hr:currentHrVisits.length}));
 
-  evidence.admin={uid:admin.id,shopperAdmin,modal:{manualMerge:modal.manualMerge,instructProfile:modal.instructProfile},postulations:post,visits:visitAdmin};
+  evidence.admin={uid:admin.id,shopperAdmin,modal:{manualMerge:modal.manualMerge,instructProfile:modal.instructProfile},postulations:post,replacementModal,visits:visitAdmin};
   await ap.ctx.close();
 
   evidence.decision='PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF';
