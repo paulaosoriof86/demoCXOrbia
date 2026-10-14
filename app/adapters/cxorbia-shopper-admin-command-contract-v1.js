@@ -68,13 +68,14 @@
     if(!canonicalShopperId)errors.push('missing-canonicalShopperId');
     if(!aliasShopperIds.length)errors.push('missing-aliasShopperIds');
     if(input.humanConfirmed!==true)errors.push('human-confirmation-required');
+    if(input.keeperShopperId&&input.keeperAccessConfirmed!==true)errors.push('keeper-access-confirmation-required');
     return {ok:errors.length===0,errors,command:{
       commandType:'shopper.identity.adjudicate',entityType:'shopper',entityId:canonicalShopperId||null,
       tenantId:str(input.tenantId),projectId:str(input.projectId||uniq(input.projectIds)[0]),periodId:str(input.periodId),
       actor:{actorId:str(input.actorId||''),role:str(input.actorRole),projectIds:uniq(input.projectIds)},
       expectedVersion:input.expectedVersion==null?'provider-current':input.expectedVersion,
       idempotencyKey:str(input.idempotencyKey),
-      payload:{canonicalShopperId,aliasShopperIds,humanConfirmed:true,reason:str(input.reason||'admin_confirmed_same_human'),periodIndependent:true,fuzzyMatching:false,preserveHistoricalVisitRows:input.preserveHistoricalVisitRows===true,authoritativeVisitIds:uniq(input.authoritativeVisitIds)},
+      payload:{canonicalShopperId,aliasShopperIds,humanConfirmed:true,keeperShopperId:str(input.keeperShopperId),keeperAccessConfirmed:input.keeperAccessConfirmed===true,reason:str(input.reason||'admin_confirmed_same_human'),periodIndependent:true,fuzzyMatching:false,preserveHistoricalVisitRows:input.preserveHistoricalVisitRows===true,authoritativeVisitIds:uniq(input.authoritativeVisitIds)},
       source:'admin-shopper-identity-adjudication',
       authorization:{providerEnforcementRequired:true,permission:'shopper.identity.adjudicate',humanAdjudicationRequired:true}
     }};

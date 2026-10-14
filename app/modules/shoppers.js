@@ -205,6 +205,9 @@ CX.module('shoppers', ({data,ui})=>{
       <label class="lbl">Ficha canónica que se conservará</label>
       <select class="sel" id="idCanonical" style="margin-bottom:12px"><option value="">Selecciona la ficha canónica</option>${candidates.filter(x=>canonicalOptions.includes(x.id)).map(x=>`<option value="${esc(x.id)}">${esc(x.row?.nombre||x.id)} · ${Number.isFinite(x.row?.visitas)?x.row.visitas:'—'} visita(s)</option>`).join('')}</select>
       <div class="card card-p" style="margin-bottom:12px">${candidates.map(x=>`<div class="between" style="padding:7px 0;border-bottom:1px solid var(--border-2)"><div><b>${esc(x.row?.nombre||x.id)}</b><div style="font-size:10.5px;color:var(--t3)">${esc(x.row?.ciudad||'—')} · ${esc(CX.paisName(x.row?.pais)||x.row?.pais||'—')}</div></div><div style="font-size:12px">${Number.isFinite(x.row?.visitas)?x.row.visitas:'—'} visita(s)</div></div>`).join('')}</div>
+      <label class="lbl">Cuenta de acceso que debe conservarse</label>
+      <select class="sel" id="idKeeper" style="margin-bottom:12px"><option value="">Mantener selección automática solo si es inequívoca</option>${candidates.map(x=>`<option value="${esc(x.id)}">${esc(x.row?.visibleLogin||x.row?.username||x.row?.user||x.row?.nombre||x.id)} · ${esc(x.id)}</option>`).join('')}</select>
+      <div class="muted" style="font-size:11px;margin-bottom:10px">Si varias cuentas tienen contraseña, selecciona la cuenta comprobada que debe seguir ingresando. No se fusionarán accesos ambiguos.</div>
       <label class="flex" style="gap:8px;font-size:12px;color:var(--t1);margin-bottom:14px"><input type="checkbox" id="idConfirm"> Verifiqué la evidencia exacta y confirmo que las identidades seleccionadas corresponden a la misma persona.</label>
       <div style="text-align:right"><button class="btn btn-pr btn-sm" id="idResolve">Confirmar identidad canónica</button></div>
     `,{onMount:(ov,close)=>{
@@ -213,10 +216,11 @@ CX.module('shoppers', ({data,ui})=>{
         if(!canonical){ui.toast('Selecciona primero la ficha canónica','warn');return;}
         if(!confirmed){ui.toast('Debes confirmar la verificación de identidad antes de continuar','warn');return;}
         const aliases=reason==='exact_profile_alias_requires_admin_resolution'?candidateIds.filter(id=>id!==canonical):[liveId].filter(id=>id&&id!==canonical);
+        const keeperShopperId=String(ov.querySelector('#idKeeper').value||'');
         if(!aliases.length){ui.toast('No existe una identidad alias distinta para consolidar','warn');return;}
         btn.disabled=true;btn.textContent='Confirmando…';
         try{
-          const result=await data.adjudicateShopperIdentity(canonical,aliases,{ackAware:true,reason:'admin_exact_identity_human_adjudication'});
+          const result=await data.adjudicateShopperIdentity(canonical,aliases,{ackAware:true,reason:'admin_exact_identity_human_adjudication',keeperShopperId,keeperAccessConfirmed:!!keeperShopperId});
           if(!commandOk(result)||result.identityConsolidated!==true)throw new Error(commandError(result)||'La consolidación durable no fue confirmada por el proveedor');
           close();ui.toast('Identidad canónica consolidada y guardada','ok',3600);
           try{await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('admin_identity_adjudication_refresh');}catch(_){}
@@ -236,30 +240,33 @@ CX.module('shoppers', ({data,ui})=>{
       </div>
       <div id="manualCompare" class="card card-p" style="margin-bottom:12px;display:none"></div>
       <label class="lbl">Ficha canónica que se conservará</label><select class="sel" id="manualCanonical" style="margin-bottom:12px" disabled><option value="">Selecciona primero las fichas relacionadas</option></select>
+      <label class="lbl">Cuenta de acceso que se conservará</label>
+      <select class="sel" id="manualKeeper" style="margin-bottom:12px" disabled><option value="">Selecciona primero las fichas</option></select>
       <label class="flex" style="gap:8px;font-size:12px;color:var(--t1);margin-bottom:14px"><input type="checkbox" id="manualConfirm"> Confirmo que todas las fichas seleccionadas corresponden a la misma persona y autorizo consolidar histórico, asignaciones, acceso, certificaciones, postulaciones, reservas, liquidaciones y perfil en una identidad canónica.</label>
       <div style="text-align:right"><button class="btn btn-pr btn-sm" id="manualResolve">Consolidar identidades</button></div>
     `,{onMount:(ov,close)=>{
-      const aliasSel=ov.querySelector('#manualAliases'),canonicalSel=ov.querySelector('#manualCanonical'),compare=ov.querySelector('#manualCompare');
+      const aliasSel=ov.querySelector('#manualAliases'),canonicalSel=ov.querySelector('#manualCanonical'),keeperSel=ov.querySelector('#manualKeeper'),compare=ov.querySelector('#manualCompare');
       const selectedRows=()=>[...aliasSel.selectedOptions].map(o=>data.getShopper(o.value)).filter(Boolean);
       const refresh=()=>{
         const selected=selectedRows();
-        if(!selected.length){compare.style.display='none';canonicalSel.disabled=true;canonicalSel.innerHTML='<option value="">Selecciona primero las fichas relacionadas</option>';return;}
+        if(!selected.length){compare.style.display='none';canonicalSel.disabled=true;canonicalSel.innerHTML='<option value="">Selecciona primero las fichas relacionadas</option>';keeperSel.disabled=true;keeperSel.innerHTML='<option value="">Selecciona primero las fichas relacionadas</option>';return;}
         const rows=[s,...selected];
         compare.style.display='block';
         compare.innerHTML=`<div style="font-weight:800;margin-bottom:8px">Comparación antes de consolidar</div><div style="display:grid;gap:8px">${rows.map(x=>`<div class="between" style="gap:12px;border-top:1px solid var(--border-2);padding-top:7px"><div><b>${esc(x.nombre||x.id)}</b><div style="font-size:10.5px;color:var(--t3)">${esc(x.id)} · ${esc(x.ciudad||'—')}</div></div><div style="font-size:11px;text-align:right">WhatsApp ${esc(x.whatsapp||x.phone||'—')}<br>${kpiVisitsForActiveProject(x.id).length} visita(s)</div></div>`).join('')}</div>`;
         canonicalSel.disabled=false;
         canonicalSel.innerHTML='<option value="">Selecciona la ficha canónica</option>'+rows.map(x=>`<option value="${esc(x.id)}">${esc(x.nombre||x.id)} · ${esc(x.id)}</option>`).join('');
+        keeperSel.disabled=false;keeperSel.innerHTML='<option value="">Automática solo si no hay ambigüedad</option>'+rows.map(x=>`<option value="${esc(x.id)}">${esc(x.visibleLogin||x.username||x.user||x.nombre||x.id)} · ${esc(x.id)}</option>`).join('');
       };
       aliasSel.addEventListener('change',refresh);
       ov.querySelector('#manualResolve').addEventListener('click',async e=>{
         const selected=selectedRows(),canonical=String(canonicalSel.value||''),confirmed=ov.querySelector('#manualConfirm').checked;
         if(!selected.length||!canonical){ui.toast('Selecciona al menos una ficha relacionada y la identidad canónica.','warn');return;}
         if(!confirmed){ui.toast('Confirma explícitamente que todas las fichas corresponden a la misma persona.','warn');return;}
-        const allIds=[String(s.id),...selected.map(x=>String(x.id))],aliases=allIds.filter(id=>id!==canonical);
+        const allIds=[String(s.id),...selected.map(x=>String(x.id))],aliases=allIds.filter(id=>id!==canonical),keeperShopperId=String(keeperSel.value||'');
         if(!aliases.length){ui.toast('La consolidación requiere al menos una ficha alias.','warn');return;}
         const btn=e.currentTarget;btn.disabled=true;btn.textContent='Consolidando…';
         try{
-          const result=await data.adjudicateShopperIdentity(canonical,aliases,{ackAware:true,reason:'admin_manual_same_human_confirmation'});
+          const result=await data.adjudicateShopperIdentity(canonical,aliases,{ackAware:true,reason:'admin_manual_same_human_confirmation',keeperShopperId,keeperAccessConfirmed:!!keeperShopperId});
           if(!commandOk(result)||result.identityConsolidated!==true)throw new Error(commandError(result)||'IDENTITY_CONSOLIDATION_NOT_CONFIRMED');
           close();ui.toast('Identidades consolidadas y verificadas por el proveedor.','ok',4200);
           try{await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('admin_manual_identity_adjudication');}catch(_){}
@@ -270,10 +277,10 @@ CX.module('shoppers', ({data,ui})=>{
   };
   const mergeSelectedIdentities=()=>{
     const rows=selectedRows();if(rows.length<2){ui.toast('Selecciona al menos dos fichas para fusionar.','warn');return;}
-    ui.modal('Fusionar identidades',`<div style="font-size:12.5px;color:var(--t2);line-height:1.6;margin-bottom:12px">Confirma únicamente si todas las fichas seleccionadas corresponden a la misma persona. La plataforma no fusiona por nombre o similitud.</div>${dependencyPreviewHtml(rows)}<label class="lbl">Ficha canónica que se conservará</label><select class="sel" id="bulkCanonical" style="margin-bottom:12px"><option value="">Selecciona la ficha canónica</option>${rows.map(x=>`<option value="${esc(x.id)}">${esc(x.nombre||'Perfil sin nombre')} · ${esc(x.ciudad||CX.paisName(x.pais)||'—')}</option>`).join('')}</select><label class="flex" style="gap:8px;font-size:12px;color:var(--t1);margin-bottom:14px"><input type="checkbox" id="bulkMergeConfirm"> Confirmo que corresponden a la misma persona y autorizo consolidar acceso, histórico y referencias.</label><div style="text-align:right"><button class="btn btn-pr btn-sm" id="bulkMergeCommit">Fusionar identidades</button></div>`,{onMount:(ov,close)=>ov.querySelector('#bulkMergeCommit').addEventListener('click',async e=>{
+    ui.modal('Fusionar identidades',`<div style="font-size:12.5px;color:var(--t2);line-height:1.6;margin-bottom:12px">Confirma únicamente si todas las fichas seleccionadas corresponden a la misma persona. La plataforma no fusiona por nombre o similitud.</div>${dependencyPreviewHtml(rows)}<label class="lbl">Ficha canónica que se conservará</label><select class="sel" id="bulkCanonical" style="margin-bottom:12px"><option value="">Selecciona la ficha canónica</option>${rows.map(x=>`<option value="${esc(x.id)}">${esc(x.nombre||'Perfil sin nombre')} · ${esc(x.ciudad||CX.paisName(x.pais)||'—')}</option>`).join('')}</select><label class="lbl">Cuenta de acceso que se conservará</label><select class="sel" id="bulkKeeper" style="margin-bottom:12px"><option value="">Automática solo si no hay ambigüedad</option>${rows.map(x=>`<option value="${esc(x.id)}">${esc(x.visibleLogin||x.username||x.user||x.nombre||x.id)} · ${esc(x.id)}</option>`).join('')}</select><label class="flex" style="gap:8px;font-size:12px;color:var(--t1);margin-bottom:14px"><input type="checkbox" id="bulkMergeConfirm"> Confirmo que corresponden a la misma persona y autorizo consolidar acceso, histórico y referencias.</label><div style="text-align:right"><button class="btn btn-pr btn-sm" id="bulkMergeCommit">Fusionar identidades</button></div>`,{onMount:(ov,close)=>ov.querySelector('#bulkMergeCommit').addEventListener('click',async e=>{
       const canonical=String(ov.querySelector('#bulkCanonical').value||''),confirmed=ov.querySelector('#bulkMergeConfirm').checked;if(!canonical){ui.toast('Selecciona la ficha canónica.','warn');return;}if(!confirmed){ui.toast('Confirma que las fichas corresponden a la misma persona.','warn');return;}
-      const aliases=rows.map(x=>String(x.id)).filter(id=>id!==canonical),btn=e.currentTarget;btn.disabled=true;btn.textContent='Fusionando…';
-      try{const result=await data.adjudicateShopperIdentity(canonical,aliases,{ackAware:true,reason:'admin_list_multi_select_same_human'});if(!commandOk(result)||result.identityConsolidated!==true)throw new Error(commandError(result)||'IDENTITY_CONSOLIDATION_NOT_CONFIRMED');selectedShopperIds.clear();close();ui.toast('Identidades fusionadas y confirmadas por el proveedor.','ok',4200);await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('admin_bulk_identity_merge');CX.router.nav('shoppers');}catch(error){btn.disabled=false;btn.textContent='Fusionar identidades';ui.toast('No se aplicó la fusión · '+String(error?.message||error),'err',5200);}
+      const aliases=rows.map(x=>String(x.id)).filter(id=>id!==canonical),keeperShopperId=String(ov.querySelector('#bulkKeeper').value||''),btn=e.currentTarget;btn.disabled=true;btn.textContent='Fusionando…';
+      try{const result=await data.adjudicateShopperIdentity(canonical,aliases,{ackAware:true,reason:'admin_list_multi_select_same_human',keeperShopperId,keeperAccessConfirmed:!!keeperShopperId});if(!commandOk(result)||result.identityConsolidated!==true)throw new Error(commandError(result)||'IDENTITY_CONSOLIDATION_NOT_CONFIRMED');selectedShopperIds.clear();close();ui.toast('Identidades fusionadas y confirmadas por el proveedor.','ok',4200);await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('admin_bulk_identity_merge');CX.router.nav('shoppers');}catch(error){btn.disabled=false;btn.textContent='Fusionar identidades';ui.toast('No se aplicó la fusión · '+String(error?.message||error),'err',5200);}
     })});
   };
   const keepSelectedSeparate=()=>{
