@@ -102,21 +102,35 @@ service cloud.firestore {
       return resource.data[fieldName] is list && value != '' && value in resource.data[fieldName];
     }
 
+    // A bulletin explicitly addressed to one or more principals cannot be
+    // converted into a project/role-wide announcement by its display metadata.
+    function bulletinHasExactRecipients() {
+      return (resource.data.get('targetShopperIds', []) is list &&
+              resource.data.get('targetShopperIds', []).size() > 0) ||
+             (resource.data.get('targetUserIds', []) is list &&
+              resource.data.get('targetUserIds', []).size() > 0);
+    }
+
     function bulletinTargetsCurrentUser(tenantId) {
       return tenantAllowed(tenantId) && (
-        resource.data.get('targetAll', false) == true ||
-        listHasValue('targetTenants', tenantId) ||
-        listHasValue('targetRoles', role()) ||
-        (resource.data.targetUserIds is list && request.auth.uid in resource.data.targetUserIds) ||
-        (resource.data.targetShopperIds is list && isShopperRole() && shopperId() != '' && resource.data.targetShopperIds.hasAny([shopperId()])) ||
-        resource.data.supportRequesterUserId == request.auth.uid ||
-        (shopperId() != '' && resource.data.supportRequesterShopperId == shopperId()) ||
-        (resource.data.targetProjectIds is list && request.auth.token.projectIds is list && resource.data.targetProjectIds.hasAny(request.auth.token.projectIds)) ||
-        listHasValue('targetCountries', country())
+        (isShopperRole() && shopperId() != '' &&
+         resource.data.get('targetShopperIds', []).hasAny([shopperId()])) ||
+        resource.data.get('targetUserIds', []).hasAny([request.auth.uid]) ||
+        resource.data.get('supportRequesterUserId', '') == request.auth.uid ||
+        (shopperId() != '' && resource.data.get('supportRequesterShopperId', '') == shopperId()) ||
+        (!bulletinHasExactRecipients() && (
+          resource.data.get('targetAll', false) == true ||
+          listHasValue('targetTenants', tenantId) ||
+          listHasValue('targetRoles', role()) ||
+          (resource.data.get('targetProjectIds', []) is list &&
+           request.auth.token.projectIds is list &&
+           resource.data.get('targetProjectIds', []).hasAny(request.auth.token.projectIds)) ||
+          listHasValue('targetCountries', country())
+        ))
       );
     }
 
-    function isAvailableVisitForShopper(projectId) {
+        function isAvailableVisitForShopper(projectId) {
       return isShopperRole() && projectAssigned(projectId) && (
         (resource.data.status is string && resource.data.status == 'disponible') ||
         (resource.data.estado is string && resource.data.estado == 'disponible')
