@@ -1,3 +1,4 @@
+import './cxorbia-i3-b7-replacement-date-ack-readback-source-20261014.test.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
