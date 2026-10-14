@@ -474,6 +474,9 @@ async function transactionExecute(db,command,actor){
     else if(command.commandType==='visit.reschedule'){
       const visitId=str(payload.visitId||entityId);if(!visitId)throw new Error('OPS_VISIT_ID_REQUIRED');entityId=visitId;
       const resolved=await resolveVisitDocument(tx,r.visits,visitId,payload.hrRowId),vRef=resolved.ref,vSnap=resolved.snap,v=resolved.data;assertPeriod(command,v);assertVersion(command,v);
+      /* B7: server notification must target the assigned shopper, not the Admin actor. */
+      notificationTargetShopperId=str(v.shopperId);
+      if(!notificationTargetShopperId)throw new Error('OPS_RESCHEDULE_SHOPPER_TARGET_REQUIRED');
       if(actor.role==='shopper'&&str(v.shopperId)!==actor.shopperId)throw new Error('OPS_VISIT_SHOPPER_SCOPE_DENIED');
       const newDate=str(payload.newDate),shopperRequest=actor.role==='shopper'||payload.requestedByShopper===true;
       const projectSnap=await tx.get(r.project),projectData=projectSnap.exists?(projectSnap.data()||{}):{},timezone=str(projectData.timeZone||projectData.timezone||'America/Guatemala');
