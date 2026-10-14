@@ -38,9 +38,10 @@ test('VRM263 support uses existing operational command provider and durable read
   assert.doesNotMatch(rules,/resource\.data\.targetAll == true/);
   assert.doesNotMatch(rules,/return tenantAllowed\(tenantId\) && resource\.data\.status == 'active' && \(/);
   assert.match(rules,/resource\.data\.targetUserIds is list && request\.auth\.uid in resource\.data\.targetUserIds/);
-  assert.match(rules,/resource\.data\.targetShopperIds is list && shopperId\(\) != '' && shopperId\(\) in resource\.data\.targetShopperIds/);
+  assert.match(rules,/resource\.data\.targetShopperIds is list && isShopperRole\(\) && shopperId\(\) != '' && resource\.data\.targetShopperIds\.hasAny\(\[shopperId\(\)\]\)/);
   assert.doesNotMatch(rules,/listHasValue\('targetUserIds'/);
   assert.doesNotMatch(rules,/listHasValue\('targetShopperIds'/);
+  assert.match(bridge,/where\('targetShopperIds','array-contains',sid\)/);
   assert.match(bridge,/where\('supportRequesterUserId','==',userId\)/);
   assert.match(bridge,/where\('supportRequesterShopperId','==',sid\)/);
   assert.match(rules,/resource\.data\.supportRequesterUserId == request\.auth\.uid/);

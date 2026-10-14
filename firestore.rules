@@ -108,7 +108,7 @@ service cloud.firestore {
         listHasValue('targetTenants', tenantId) ||
         listHasValue('targetRoles', role()) ||
         (resource.data.targetUserIds is list && request.auth.uid in resource.data.targetUserIds) ||
-        (resource.data.targetShopperIds is list && shopperId() != '' && shopperId() in resource.data.targetShopperIds) ||
+        (resource.data.targetShopperIds is list && isShopperRole() && shopperId() != '' && resource.data.targetShopperIds.hasAny([shopperId()])) ||
         resource.data.supportRequesterUserId == request.auth.uid ||
         (shopperId() != '' && resource.data.supportRequesterShopperId == shopperId()) ||
         (resource.data.targetProjectIds is list && request.auth.token.projectIds is list && resource.data.targetProjectIds.hasAny(request.auth.token.projectIds)) ||
