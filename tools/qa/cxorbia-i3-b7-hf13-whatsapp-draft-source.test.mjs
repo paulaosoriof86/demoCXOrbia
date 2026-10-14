@@ -119,7 +119,7 @@ test('B7 Postulaciones WhatsApp uses validated international number, opens only 
 });
 test('B7 review of real pending reschedule opens the existing decision owner and requires same visit readback',()=>{
   const postSource=readFileSync(new URL('../../app/modules/postulaciones.js',import.meta.url),'utf8');
-  assert.match(postSource,/querySelectorAll\('\[data-revpost\]'\)[\s\S]*?openAgenda\(\{data,ui,visitIds:\[String\(x.visitaId\)\]\}\)/);
+  assert.match(postSource,/querySelectorAll\('\[data-revpost\]'\)[\s\S]*?const visitId=String\(x\?\.visitaId\|\|x\?\.visitId\|\|x\?\.id\|\|''\);[\s\S]*?openAgenda\(\{data,ui,visitIds:\[visitId\]\}\)/);
   assert.match(postSource,/const readback=String\(observed\?\.rescheduleRequest\?\.status/);
   assert.match(postSource,/decision==='rejected'\|\|String\(observed\?\.agendada/);
   assert.match(postSource,/if\(!readback\)/);
