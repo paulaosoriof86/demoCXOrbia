@@ -17,6 +17,12 @@ source-proof)
   grep -Fq "canonicalBaseSucursales" app/adapters/tya-canonical-reservations-guard-v2.js
   node --test backend/runtime/hr-live-service/test/cxorbia-i3-phasea-completion-source-contract.test.mjs | tee /tmp/i3-phasea-completion-source-test.log
   node --test backend/runtime/hr-live-service/test/cxorbia-vrm261-264-source-contract.test.mjs | tee /tmp/i3-vrm261-264-source-test.log
+  # B7: independent Firestore emulator gate; no DEV/production writes.
+  node --check tools/qa/cxorbia-i3-b7-exact-notification-firestore-rules.test.mjs
+  npm install --no-save --ignore-scripts --package-lock=false firebase@12.4.0 @firebase/rules-unit-testing@6.0.0 firebase-tools@latest >/dev/null 2>&1
+  if [ -n "${JAVA_HOME_21_X64:-}" ]; then export JAVA_HOME="$JAVA_HOME_21_X64"; export PATH="$JAVA_HOME/bin:$PATH"; fi
+  node -e "require('fs').writeFileSync('firebase.i3-b7-emulator.json', JSON.stringify({firestore:{rules:'firestore.rules'},emulators:{firestore:{port:8080}}}))"
+  ./node_modules/.bin/firebase emulators:exec --config firebase.i3-b7-emulator.json --project demo-cxorbia-b7-ruleproof --only firestore "node --test tools/qa/cxorbia-i3-b7-exact-notification-firestore-rules.test.mjs" | tee /tmp/i3-b7-emulator-proof.log
   node --test backend/runtime/hr-live-service/test/cxorbia-vrm268-269-source-contract.test.mjs | tee /tmp/i3-vrm268-269-source-test.log
   node --test backend/runtime/hr-live-service/test/cxorbia-b1-transversal-shopper-actions.test.mjs | tee /tmp/i3-b1-oct07-source-test.log
   node --test backend/runtime/hr-live-service/test/cxorbia-i3-oct08-b1-b3-source.test.mjs | tee /tmp/i3-oct08-b1-b3-source-test.log

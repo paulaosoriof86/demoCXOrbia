@@ -6524,15 +6524,6 @@ jobs:
       - uses: actions/setup-node@v4
         with: {node-version: '24'}
       - run: bash .github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh source-proof
-      - uses: actions/setup-java@v4
-        with: {distribution: temurin, java-version: '21'}
-      - name: B7 exact Shopper notification Rules isolation (emulator only)
-        run: |
-          set -Eeuo pipefail
-          node --check tools/qa/cxorbia-i3-b7-exact-notification-firestore-rules.test.mjs
-          npm install --no-save --ignore-scripts --package-lock=false firebase@12.4.0 @firebase/rules-unit-testing@6.0.0 firebase-tools@latest >/dev/null 2>&1
-          node -e "require('fs').writeFileSync('firebase.i3-b7-emulator.json', JSON.stringify({firestore:{rules:'firestore.rules'},emulators:{firestore:{port:8080}}}))"
-          ./node_modules/.bin/firebase emulators:exec --config firebase.i3-b7-emulator.json --project demo-cxorbia-b7-ruleproof --only firestore "node --test tools/qa/cxorbia-i3-b7-exact-notification-firestore-rules.test.mjs"
       - uses: actions/upload-artifact@v4
         if: always()
         with: {name: "cxorbia-i3-phasea-source-proof-${{ github.run_id }}", path: /tmp/i3-phasea-completion-source-proof.json, if-no-files-found: warn, retention-days: 30, compression-level: 0}
