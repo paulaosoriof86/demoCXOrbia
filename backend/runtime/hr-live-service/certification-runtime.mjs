@@ -134,7 +134,18 @@ async function resolveAiSetting(db,scope){
   if(!/^[a-z0-9-]+$/i.test(location))throw new Error('AI_LOCATION_INVALID');
   return {id:setting.id,provider:'vertex-ai',model,location};
 }
-function normalizeGeneratedQuestions(raw,count){
+export function vertexCertificationSafeDiagnostic(payload={},httpStatus=0,responseContentType=''){
+  const candidate=arr(payload?.candidates)[0]||{},parts=arr(candidate?.content?.parts);
+  const finishReason=str(candidate.finishReason||'UNSPECIFIED').replace(/[^a-zA-Z0-9_]/g,'').slice(0,50);
+  const contentTypes=parts.map(p=>str(p?.inlineData?.mimeType)).filter(x=>/^[a-z]+\/[a-z0-9.+-]+$/i.test(x)).slice(0,4);
+  const used=Number(payload?.usageMetadata?.candidatesTokenCount);
+  return {httpStatus:Number(httpStatus)||0,finishReason,candidateCount:arr(payload?.candidates).length,
+    responseMimeType:'application/json',transportMimeType:str(responseContentType).split(';')[0].toLowerCase()==='application/json'?'application/json':'other',
+    contentRole:str(candidate?.content?.role).slice(0,20),partCount:parts.length,textPartCount:parts.filter(p=>typeof p?.text==='string').length,
+    textChars:parts.reduce((n,p)=>n+(typeof p?.text==='string'?p.text.length:0),0),inlineMimeTypes:contentTypes,
+    outputTokens:Number.isFinite(used)&&used>=0?used:null,groundingTextLogged:false};
+}
+export function normalizeGeneratedQuestions(raw,count){
   let parsed;
   try{parsed=JSON.parse(str(raw).replace(/^\x60\x60\x60json\s*|\x60\x60\x60\s*$/g,'').trim());}catch(_){throw new Error('AI_PROVIDER_RESPONSE_NOT_JSON');}
   const questions=arr(Array.isArray(parsed)?parsed:parsed?.preguntas).slice(0,count).map(q=>({
@@ -163,9 +174,19 @@ async function generateBank(db,scope,body){
   const endpoint='https://'+setting.location+'-aiplatform.googleapis.com/v1/projects/'+encodeURIComponent(project)+'/locations/'+encodeURIComponent(setting.location)+'/publishers/google/models/'+encodeURIComponent(setting.model)+':generateContent';
   const response=await fetch(endpoint,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:{temperature:0.15,maxOutputTokens:5000,responseMimeType:'application/json'}})});
   const payload=await response.json().catch(()=>({}));
-  if(!response.ok)throw new Error('AI_PROVIDER_HTTP_'+response.status+':'+str(payload?.error?.message).slice(0,300));
+  const diagnostic=vertexCertificationSafeDiagnostic(payload,response.status,response.headers?.get?.('content-type'));
+  if(!response.ok){
+    console.warn('CXORBIA_CERT_VERTEX_SAFE_DIAGNOSTIC '+JSON.stringify({...diagnostic,code:'AI_PROVIDER_HTTP_ERROR'}));
+    throw new Error('AI_PROVIDER_HTTP_'+response.status+':'+str(payload?.error?.message).slice(0,300));
+  }
   const raw=arr(payload?.candidates?.[0]?.content?.parts).map(p=>str(p?.text)).join('\n');
-  const preguntas=normalizeGeneratedQuestions(raw,questionCount),contentRevision=sha({preguntas,gate});
+  let preguntas;
+  try{preguntas=normalizeGeneratedQuestions(raw,questionCount);}
+  catch(error){
+    console.warn('CXORBIA_CERT_VERTEX_SAFE_DIAGNOSTIC '+JSON.stringify({...diagnostic,code:str(error?.message).split(':')[0]}));
+    throw error;
+  }
+  const contentRevision=sha({preguntas,gate});
   return {providerAck:true,provider:setting.provider,model:setting.model,location:setting.location,settingId:setting.id,preguntas,requestedQuestionCount:questionCount,gate,contentRevision};
 }
 function requestId(req,body){return cleanKey(req.headers['idempotency-key']||body.idempotencyKey);}

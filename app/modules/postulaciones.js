@@ -280,6 +280,28 @@ CX.adminPostulacionesActions.openAssign=({data,ui,visitId,reassign=false})=>{
   });
   return true;
 };
+CX.adminPostulacionesActions.cancelProviderFailure=(result,error)=>{
+  const raw=String(result?.code||result?.error?.code||error?.code||error?.message||'CANCEL_PROVIDER_UNCONFIRMED');
+  const code=/^[A-Z][A-Z0-9_:]{2,90}$/.test(raw)?raw:'CANCEL_PROVIDER_UNCONFIRMED';
+  const labels={
+    OPS_CANCEL_REQUEST_NOT_PENDING:'La solicitud ya fue resuelta o cambió de estado. Actualiza la visita.',
+    OPS_CANCEL_EXTERNAL_HR_ACK_REQUIRED:'La visita depende de Hoja de Ruta externa y no puede liberarse sin su confirmación.',
+    OPS_CANCEL_DECISION_OR_HR_ACK_REQUIRED:'La decisión está pendiente de confirmación de la Hoja de Ruta externa.',
+    OPS_CANCEL_OPERATOR_ONLY:'Tu cuenta no tiene autorización para decidir esta solicitud.',
+    OPS_VISIT_PERIOD_MISMATCH:'La visita pertenece a otro período. Verifica el período seleccionado.',
+    CANCEL_READBACK_NOT_CONFIRMED:'El proveedor aceptó la decisión, pero no se confirmó el estado actualizado. Actualiza antes de volver a intentar.',
+    CANCEL_READBACK_REFRESH_UNAVAILABLE:'No fue posible consultar el estado remoto actualizado. No se mostrará éxito sin comprobarlo.'
+  };
+  return {code,message:labels[code]||'No se confirmó la cancelación con el proveedor. La visita debe revisarse antes de repetir la acción.'};
+};
+CX.adminPostulacionesActions.cancelDecisionReadback=(observed,original,decision)=>{
+  if(!observed||String(observed.id||observed.visitId)!==String(original?.id||original?.visitId))return false;
+  if(original?.hrRowId&&String(observed.hrRowId||'')!==String(original.hrRowId))return false;
+  const state=String(observed.cancelRequest?.status||'');
+  if(decision==='rejected')return state==='rejected'&&String(observed.shopperId||'')===String(original.shopperId||'');
+  if(decision==='approved')return ['approved','approved_pending_hr'].includes(state)&&String(observed.shopperId||'')===String(original.shopperId||'');
+  return String(observed.estado||observed.status||'').toLowerCase()==='disponible'&&!String(observed.shopperId||'');
+};
 CX.adminPostulacionesActions.openCancellation=({data,ui,visitId,decision=null})=>{
   const v=(data.visitas?.()||[]).find(x=>String(x.id||x.visitId)===String(visitId));
   if(!v||decision&&!['approved','rejected'].includes(decision))return false;
@@ -292,12 +314,21 @@ CX.adminPostulacionesActions.openCancellation=({data,ui,visitId,decision=null})=
       if(!reason){ui.toast('Indica el motivo.','warn');return;}
       if(!CX.permissions?.gate?.('visit.cancel',{projectId:data.currentProjectId,pais:v.pais},ui))return;
       const btn=ov.querySelector('#cxDashCancelOk');btn.disabled=true;btn.textContent='Confirmando…';
+      let providerResult=null;
       try{
-        const ack=await data.requestVisitCancel(v.id,decision?{ackAware:true,requestOnly:false,decision,reason}:{ackAware:true,releaseToAvailable:true,reason});
-        if(!(ack?.ok===true&&ack?.status==='committed'&&ack?.providerAck===true&&ack?.successUiAllowed===true))throw Error('CANCEL_PROVIDER_ACK_REQUIRED');
-        try{await CX.backend?.refresh?.();await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('dashboard_cancel_committed');}catch(_){}
-        close();ui.toast('Decisión confirmada; si HR externa aplica, sincronización pendiente de ACK HR.','ok',4200);
-      }catch(_){btn.disabled=false;btn.textContent='Confirmar';ui.toast('Decisión no confirmada por el proveedor.','warn',4200);}
+        providerResult=await data.requestVisitCancel(v.id,decision?{ackAware:true,requestOnly:false,decision,reason}:{ackAware:true,releaseToAvailable:true,reason});
+        if(!(providerResult?.ok===true&&providerResult?.status==='committed'&&providerResult?.providerAck===true&&providerResult?.successUiAllowed===true))throw Object.assign(new Error('CANCEL_PROVIDER_ACK_REQUIRED'),{code:providerResult?.code||'CANCEL_PROVIDER_ACK_REQUIRED'});
+        if(typeof CX.backend?.refresh!=='function')throw Object.assign(new Error('CANCEL_READBACK_REFRESH_UNAVAILABLE'),{code:'CANCEL_READBACK_REFRESH_UNAVAILABLE'});
+        await CX.backend.refresh();
+        await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('dashboard_cancel_committed');
+        const observed=(data.visitas?.()||[]).find(x=>String(x.id||x.visitId)===String(v.id||v.visitId)&&(!v.hrRowId||String(x.hrRowId||'')===String(v.hrRowId)));
+        if(!CX.adminPostulacionesActions.cancelDecisionReadback(observed,v,decision))throw Object.assign(new Error('CANCEL_READBACK_NOT_CONFIRMED'),{code:'CANCEL_READBACK_NOT_CONFIRMED'});
+        close();ui.toast(decision==='rejected'?'Solicitud rechazada y estado actualizado confirmado.':decision==='approved'?'Solicitud aprobada; si HR es externa, falta su confirmación para liberar la visita.':'Visita liberada y estado actualizado confirmado.','ok',4200);
+      }catch(error){
+        const diag=CX.adminPostulacionesActions.cancelProviderFailure(providerResult,error);
+        btn.dataset.providerResultCode=diag.code;
+        btn.disabled=false;btn.textContent='Confirmar';ui.toast(diag.message,'warn',5200);
+      }
     })
   });
   return true;

@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "cxorbia.i3.r07.r08.cumulative.source.delta.20261014.v1",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "status": "SOURCE_FIXED_PENDING_NEW_QA_AND_DEV_E2E",
+  "sourcePredecessor": "fa76e05d8b60dd7f2102de4dd3d67d43c3d0bacb",
+  "sourceSha": "71f6ba18ae591e161e8393106e354f7915703a56",
+  "sourceTree": "486018cd1a73d1c76b50991b1a3a85b95a451100",
+  "controlParent": "9571e8c927f8e05d7149ea25acb783c5ae10cfb2",
+  "findingsAffected": [
+    "R07",
+    "R08"
+  ],
+  "ownerBlobs": {
+    "app/modules/postulaciones.js": "b243e4ec9adac9cc063147d3d7d2df19d41eb4a7",
+    "backend/runtime/hr-live-service/certification-runtime.mjs": "bf9247bb2369b26d67909d29a5d4ce2c64765af5"
+  },
+  "testOwners": {
+    "tools/qa/cxorbia-i3-r07-cancel-ack-readback-source-20261014.test.mjs": "eaaf44de273d907dd44bcf32c18f7e04c40f9a33",
+    "backend/runtime/hr-live-service/test/cxorbia-i3-r08-vertex-safe-diagnostic.test.mjs": "ca1a4adf282b15492f98ed09dcb1cfb8f0182c03"
+  },
+  "sourceReadback": {
+    "syntaxPostulaciones": "PASS",
+    "syntaxCertification": "PASS",
+    "nodeFocalUnit": "PENDING_GITHUB_CI_RUN",
+    "liveProvider": "NOT_RUN_NO_AUTHENTICATED_ACCESS",
+    "hrRevision": "2e3b2aaff2b1ac7a9323c9a69a16d2ad97beb25648c642e1464d72e36917ad70"
+  },
+  "r07": {
+    "before": "UI masked provider failures and claimed success after ACK without independent state read",
+    "after": "Safe code for diagnosis (not raw user UI) and strict same-visit, same-HR-row, shopper-bound post-refresh readback before success",
+    "sourceState": "SOURCE_FIXED_PENDING_CI_DEV_E2E",
+    "providerOriginalDenial": "UNKNOWN_REQUIRES_SAFE_LIVE_READ",
+    "noHrWrites": true
+  },
+  "r08": {
+    "before": "AI_PROVIDER_RESPONSE_NOT_JSON lacked finishReason/MIME/shape diagnostics",
+    "after": "Redacted Vertex status/finishReason/shape/token counts emitted on provider or parser failure; original 15-question grounded fail-closed contract unchanged",
+    "sourceState": "SAFE_DIAGNOSTIC_INSTRUMENTATION_PENDING_CI_VERTEX_REAL_PROOF",
+    "doNotLog": [
+      "PDF",
+      "instructions",
+      "prompt",
+      "raw answer",
+      "access tokens"
+    ],
+    "noSyntheticQuestions": true
+  },
+  "otherOpen": {
+    "R03": "ADMIN_AUTH_KEEPER_CONTRACT_FROZEN_IMPLEMENTATION_PENDING",
+    "VRM134": "OPEN_PERFORMANCE",
+    "HF22HF24HF28": "OPEN_FINANCE_E2E",
+    "R22": "OPEN_NOTIFICATIONS",
+    "humanR01R25": "PRESERVED_IN_FROZEN_REVIEW",
+    "R01": "SOURCE_QA_PASS_PENDING_DEV"
+  },
+  "lastDev": {
+    "run": 1605,
+    "source": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
+    "hosting": "sites/cxorbia-backend-dev/versions/0b20ba1c5df7295f",
+    "runtime": "cxorbia-live-hr-dev-00294-ftx"
+  },
+  "production": "DO_NOT_TOUCH",
+  "devDeploys": 0,
+  "hrWrites": 0,
+  "bankWrites": 0,
+  "next": "Validate new R07/R08 source tests in canonical CI, then root-proof R03 keeper / Vertex real failure / R07 exact provider code; only one cumulative DEV materialization after all P0 source proofs and then two-role E2E."
+}

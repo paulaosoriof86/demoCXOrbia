@@ -115,6 +115,8 @@ jobs:
          node --test tools/qa/cxorbia-i3-b7-reschedule-bulletin-target-source-20261014.test.mjs
          node --test backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs
          node --test tools/qa/cxorbia-i3-b7-hf13-whatsapp-draft-source.test.mjs
+         node --test tools/qa/cxorbia-i3-r07-cancel-ack-readback-source-20261014.test.mjs
+         node --test backend/runtime/hr-live-service/test/cxorbia-i3-r08-vertex-safe-diagnostic.test.mjs
          node --test tools/qa/cxorbia-i3-b7-hf15-assignment-actions-source.test.mjs
          node --test tools/qa/cxorbia-i3-b7-hf16-pending-count-parity-source.test.mjs
          bash -n .github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh
