@@ -12,6 +12,11 @@ const FINANCE_CURRENCY_GROUPING_CONTRACT='group_by_moneda_never_first_country'; 
    (reimbursementConfirmed) NO se muestra reembolso conciliado; si no hay, Pendiente de fuente. */
 const REIMBURSEMENT_REQUIRES_CONFIRMED_SOURCE_CONTRACT='reimbursementSource_reembolsoConfirmado_required';
 
+/* I3 B8: an internal budget ACK is not merely any truthy response.
+   All budget writes must have remote commit plus provider acknowledgement. */
+function cxFinanceCommandCommitted(result){
+  return result?.ok===true&&result?.status==='committed'&&result?.providerAck===true&&result?.successUiAllowed===true;
+}
 /* HF-20261012-22: present sanitized provider decision, never an invented reconciliation.
    This display-only diagnostic is NOT a payment, an HR write or persisted financial truth. */
 function cxFinanceReviewState(l,missingFields=[]){
@@ -649,7 +654,7 @@ CX.module('movimientos', ({data,ui})=>{
           try{
             if(typeof data.saveFinanceBudget!=='function')throw new Error('FINANCE_BUDGET_COMMAND_UNAVAILABLE');
             const ack=await data.saveFinanceBudget({...(existing?{id:existing.id}:{clientRequestId:createRequestId}),country,currency,concept,amount},{ackAware:true,reason:'admin-monthly-finance-budget'});
-            if(!commandOk(ack))throw new Error(String(ack?.code||'FINANCE_BUDGET_ACK_REQUIRED'));
+            if(!cxFinanceCommandCommitted(ack))throw new Error(String(ack?.code||'FINANCE_BUDGET_ACK_REQUIRED'));
             if(!await refreshDurableFinance(true))throw new Error('FINANCE_BUDGET_READBACK_UNAVAILABLE');
             const verified=durableBudgets.find(r=>String(r.id)===String(ack.entityId));
             if(!verified||verified.status!=='active'||Number(verified.amount)!==amount||String(verified.country)!==country||String(verified.currency)!==currency)
@@ -671,7 +676,7 @@ CX.module('movimientos', ({data,ui})=>{
         b.disabled=true;
         try{
           const ack=await data.deleteFinanceBudget(id,{ackAware:true,reason:'admin-monthly-finance-budget-delete'});
-          if(!commandOk(ack))throw new Error(String(ack?.code||'FINANCE_BUDGET_DELETE_ACK_REQUIRED'));
+          if(!cxFinanceCommandCommitted(ack))throw new Error(String(ack?.code||'FINANCE_BUDGET_DELETE_ACK_REQUIRED'));
           if(!await refreshDurableFinance(true))throw new Error('FINANCE_BUDGET_READBACK_UNAVAILABLE');
           if(durableBudgets.some(r=>String(r.id)===id))throw new Error('FINANCE_BUDGET_DELETE_READBACK_MISMATCH');
           draw();ui.toast('Presupuesto eliminado con confirmación remota.','ok');
@@ -791,7 +796,7 @@ CX.module('movimientos', ({data,ui})=>{
           <div><label class="lbl">Fecha (admite histórico)</label><input class="inp" id="mvFecha" type="date" value="${new Date().toISOString().slice(0,10)}"></div>
           <div><label class="lbl">Estado</label><select class="sel" id="mvEstado">${(esIng?['Conciliado','Pendiente (CxC)','Por conciliar']:['Pagado','Programado']).map(s=>`<option>${s}</option>`).join('')}</select></div>
           <div><label class="lbl">${esIng?'Pagador / fuente':'Beneficiario'}</label><input class="inp" id="mvBenef" placeholder="${esIng?'Quién paga (cliente/casa matriz)':'A quién se paga (shopper/proveedor)'}"></div>
-          <div><label class="lbl">Proyecto destino</label><select class="sel" id="mvProy"><option value="">— sin proyecto —</option>${(data.projects||[]).map(pr=>`<option value="${pr.id}" ${pr.id===pid()?'selected':''}>${pr.name}</option>`).join('')}</select></div>
+          <div><label class="lbl">Proyecto destino</label><select class="sel" id="mvProy"><option value="">— sin proyecto —</option>${(typeof data.programs==='function'?data.programs():[]).map(program=>`<option value="${program.key}" ${program.key===canonicalProjectId()?'selected':''}>${program.name}</option>`).join('')}</select></div>
           <div style="grid-column:1/3"><label class="lbl">Descripción</label><input class="inp" id="mvDesc" placeholder="Opcional"></div>
         </div>
         <div style="text-align:right;margin-top:14px"><button class="btn btn-pr btn-sm" id="mvSave">Registrar</button></div>

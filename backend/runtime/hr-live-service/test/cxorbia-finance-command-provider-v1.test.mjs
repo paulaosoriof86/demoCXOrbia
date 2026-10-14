@@ -692,3 +692,26 @@ test('HF-20261012-25 B8 CxP internal abono never announces a confirmed external 
   const provider=fs.readFileSync('backend/runtime/cxorbia-finance-command-provider-v1.mjs','utf8');
   assert.match(provider,/externalPaymentConfirmed:false/);
 });
+
+test('I3 B8 budget safe provider ACK and canonical destination projects',()=>{
+  const s=fs.readFileSync('app/modules/finanzas.js','utf8');
+  const begin=s.indexOf('function cxFinanceCommandCommitted('),end=s.indexOf('/* HF-20261012-22:',begin);
+  assert.ok(begin>=0&&end>begin,'the budget provider predicate must be in scope');
+  const ack=new Function(s.slice(begin,end)+'return cxFinanceCommandCommitted;')();
+  assert.equal(ack({ok:true,status:'committed',providerAck:true,successUiAllowed:true}),true);
+  for(const r of [
+    null,{ok:true,status:'committed',providerAck:false,successUiAllowed:true},
+    {ok:true,status:'pending',providerAck:true,successUiAllowed:true},
+    {ok:true,status:'committed',providerAck:true,successUiAllowed:false},
+    {ok:false,status:'committed',providerAck:true,successUiAllowed:true}
+  ])assert.equal(ack(r),false,'no budget UI success without remote ACK');
+  assert.match(s,/if\(!cxFinanceCommandCommitted\(ack\)\)throw new Error\(String\(ack\?\.code\|\|'FINANCE_BUDGET_ACK_REQUIRED'\)\)/);
+  assert.match(s,/if\(!cxFinanceCommandCommitted\(ack\)\)throw new Error\(String\(ack\?\.code\|\|'FINANCE_BUDGET_DELETE_ACK_REQUIRED'\)\)/);
+  assert.match(s,/if\(!await refreshDurableFinance\(true\)\)throw new Error\('FINANCE_BUDGET_READBACK_UNAVAILABLE'\)/);
+  assert.match(s,/typeof data\.programs==='function'\?data\.programs\(\):\[\]/);
+  assert.match(s,/program\.key===canonicalProjectId\(\)/);
+  assert.doesNotMatch(s,/\(data\.projects\|\|\[\]\)\.map\(pr=>`<option value=/);
+  const actual=[{id:'cinepolis-2026-09',program:'cinepolis',name:'Cinépolis'},{id:'cinepolis-2026-10',program:'cinepolis',name:'Cinépolis'},{id:'otro-2026-10',program:'otro',name:'Otro'}];
+  const distinct=[...new Map(actual.map(row=>[row.program,row.name])).entries()];
+  assert.deepEqual(distinct,[['cinepolis','Cinépolis'],['otro','Otro']]);
+});
