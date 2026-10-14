@@ -20,8 +20,25 @@ CX.module('dashboard', ({data,ui})=>{
     const digits=input.replace(/\D/g,'');
     return /^[1-9]\d{8,14}$/.test(digits)?digits:null;
   };
+  /* R01: a visit may omit the phone although its exact authorized shopper profile
+     contains it. Never match by display name or invent an international prefix. */
+  const exactAuthorizedProfileWa=(visit)=>{
+    const ids=[visit?.shopperId,visit?.canonicalShopperId].map(x=>String(x||'').trim()).filter(Boolean);
+    const phones=new Set();
+    for(const id of new Set(ids)){
+      const candidate=typeof data.getShopper==='function'?data.getShopper(id):null;
+      const row=candidate&&String(candidate.id||candidate.shopperId||'')===id
+        ?candidate:(Array.isArray(data.shoppers)?data.shoppers:[]).find(x=>String(x?.id||x?.shopperId||'')===id);
+      if(!row)continue;
+      const normalized=normalizeWaRecipient(row.whatsapp||row.phone||row.telefono);
+      if(normalized)phones.add(normalized);
+    }
+    return phones.size===1?[...phones][0]:null;
+  };
   const openExactWaDraft=(visit,body)=>{
-    const recipient=normalizeWaRecipient(visit?.shopperWa||visit?.whatsapp);
+    const direct=normalizeWaRecipient(visit?.shopperWa||visit?.whatsapp);
+    const exactProfile=exactAuthorizedProfileWa(visit);
+    const recipient=direct&&exactProfile&&direct!==exactProfile?null:(direct||exactProfile);
     if(!visit?.shopper||!recipient){
       ui.toast('No hay WhatsApp internacional válido para esta visita. Verifica el contacto autorizado, incluido el código de país.','warn',4200);
       return false;
