@@ -98,3 +98,20 @@ test('B7 KPI drilldown delegates to existing role-scoped provider owners, not a 
   assert.match(src,/if\(operationalKpis\[key\]\)/);
   assert.doesNotMatch(src,/reprog:\['Reprogramaciones',reprog\]/);
 });
+
+test('B7 expired shopper proposal is blocked in both Admin entrypoints without attempting provider approval',()=>{
+  const vm=requireNoopVm();
+  assert.equal(vm.adminPostulacionesActions.rescheduleReadiness({rescheduleRequest:{newDate:'2026-10-10'}},{period:()=>({timeZone:'America/Guatemala'})},new Date('2026-10-14T12:00:00Z')).eligible,false);
+  assert.equal(vm.adminPostulacionesActions.rescheduleReadiness({rescheduleRequest:{newDate:'2026-10-22'}},{period:()=>({timeZone:'America/Guatemala'})},new Date('2026-10-14T12:00:00Z')).eligible,true);
+  assert.match(src,/data-date-renew/);
+  assert.match(src,/data-reprog-renew/);
+  assert.match(src,/const readiness=CX\.adminPostulacionesActions\.rescheduleReadiness\(visit,data\)/);
+  assert.match(src,/const readiness=CX\.adminPostulacionesActions\.rescheduleReadiness\(x,data\)/);
+});
+function requireNoopVm(){
+  const source=src;
+  const instance={adminPostulacionesActions:{},module:()=>{}};
+  const run=new Function('CX','window','document','setTimeout',source);
+  run(instance,{},null,()=>{});
+  return instance;
+}

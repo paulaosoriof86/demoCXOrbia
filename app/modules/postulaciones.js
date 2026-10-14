@@ -69,16 +69,41 @@ CX.adminPostulacionesActions.openWaDraft=({ui,shopper,phone,body})=>{
   ui.toast('Borrador de WhatsApp abierto; el envío debe realizarse y confirmarse en WhatsApp.','ok',4200);
   return true;
 };
+
+/* I3 B7: conservative provider-boundary precheck. Never approve an expired
+   proposed day; provider remains authority for quincena, eligibility and ACK. */
+CX.adminPostulacionesActions.rescheduleReadiness=(visit,data,clock=new Date())=>{
+  const proposed=String(visit?.rescheduleRequest?.newDate||visit?.fechaProp||'').slice(0,10);
+  const cfg=(data?.__backendAllProjectRecords||[]).find(p=>String(p.id||p.projectId)===String(data.currentProjectId))||data?.period?.()||{};
+  const zone=String(cfg.timeZone||cfg.timezone||Intl.DateTimeFormat().resolvedOptions().timeZone||'UTC');
+  let today='';
+  try{
+    const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:zone,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(clock).filter(p=>p.type!=='literal').map(p=>[p.type,p.value]));
+    today=parts.year+'-'+parts.month+'-'+parts.day;
+  }catch(_){return {eligible:false,reason:'No se pudo comprobar la zona horaria del proyecto.'};}
+  const available=String(visit?.disponibleDesde||visit?.availableFrom||'').slice(0,10);
+  const minimum=[today,available].filter(v=>/^20\d{2}-\d{2}-\d{2}$/.test(v)).sort().at(-1)||today;
+  if(!/^20\d{2}-\d{2}-\d{2}$/.test(proposed))return {eligible:false,reason:'La propuesta no tiene una fecha válida.'};
+  if(proposed<minimum)return {eligible:false,reason:'La fecha propuesta '+proposed+' ya no es autorizable. Solicita otra fecha al shopper o conserva la anterior.',minimum,proposed};
+  return {eligible:true,minimum,proposed};
+};
 CX.adminPostulacionesActions.openAgenda=({data,ui,visitIds=[]})=>{
   const ids=new Set(visitIds.map(String).filter(Boolean));
   const visits=(data.visitas?.()||[]).filter(v=>v.shopperId&&(!ids.size||ids.has(String(v.id||v.visitId))));
   const requestByVisit=visits.filter(v=>v.rescheduleRequest?.status==='pending_review');
   const agendadas=visits.filter(v=>{const f=data.visitFacets?.(v);return f?f.scheduled===true&&f.realized!==true:!!(v.agendada&&!v.realizada);});
   const displayShopper=v=>data.getShopper?.(v.shopperId)?.nombre||v.shopper||'Shopper';
-  const pendingRows=requestByVisit.map(v=>`<div class="between" style="gap:8px;padding:9px 11px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px">
-    <div><b>${displayShopper(v)}</b> · ${v.sucursal||''}<div class="muted" style="font-size:11px">Fecha solicitada: ${v.rescheduleRequest.newDate||'—'} · ${v.pais||''}</div></div>
-    <div class="flex wrap" style="gap:6px"><button class="btn btn-soft btn-sm" data-date-decision="approved" data-vid="${v.id}">Autorizar</button><button class="btn btn-ghost btn-sm" data-date-decision="rejected" data-vid="${v.id}">Conservar anterior</button></div>
-  </div>`).join('');
+  const pendingRows=requestByVisit.map(v=>{
+    const eligible=CX.adminPostulacionesActions.rescheduleReadiness(v,data);
+    return `<div class="between wrap" style="gap:8px;padding:9px 11px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px">
+      <div><b>${displayShopper(v)}</b> · ${v.sucursal||''}<div class="muted" style="font-size:12px">Fecha solicitada: ${v.rescheduleRequest.newDate||'—'} · ${v.pais||''}</div>
+        ${!eligible.eligible?'<div style="font-size:12px;color:var(--red);margin-top:5px">'+eligible.reason+'</div>':''}</div>
+      <div class="flex wrap" style="gap:6px">
+        ${eligible.eligible?'<button class="btn btn-soft btn-sm" data-date-decision="approved" data-vid="'+v.id+'">Autorizar nueva fecha</button>':'<button class="btn btn-soft btn-sm" disabled title="La fecha propuesta está vencida">Fecha no autorizable</button><button class="btn btn-pr btn-sm" data-date-renew="'+v.id+'">Pedir nueva fecha</button>'}
+        <button class="btn btn-ghost btn-sm" data-date-decision="rejected" data-vid="${v.id}">Conservar anterior</button>
+      </div>
+    </div>`;
+  }).join('');
       const rows=agendadas.map(v=>`<div class="between" style="padding:9px 11px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px">
         <div><b style="font-size:13px">${v.shopper}</b> · ${v.sucursal}<div style="font-size:11px;color:var(--t3)">📅 ${v.agendada} · ${v.franjaCode} · autorizada por Coordinación</div></div>
         <button class="btn btn-ghost btn-sm aprAdjust" data-vid="${v.id}" data-sh="${v.shopper}">🗓️ Solicitar ajuste</button></div>`).join('');
@@ -101,10 +126,19 @@ CX.adminPostulacionesActions.openAgenda=({data,ui,visitIds=[]})=>{
           close();ui.toast('Solicitud de ajuste registrada con confirmación remota para '+displayShopper(visit),'ok',3500);
         }catch(_){b.disabled=false;b.textContent=before;ui.toast('Ajuste no confirmado: no se notificó como enviado.','warn',4200);}
       }));
+      ov.querySelectorAll('[data-date-renew]').forEach(b=>b.addEventListener('click',()=>{
+        const visit=requestByVisit.find(v=>String(v.id||v.visitId)===String(b.dataset.dateRenew||''));
+        if(!visit||!CX.permissions?.gate?.('visit.reassign',{projectId:data.currentProjectId,pais:visit.pais},ui))return;
+        close();CX.adminPostulacionesActions.openRequest({data,ui,visitIds:[String(visit.id||visit.visitId)],defaultType:'cambio'});
+      }));
       ov.querySelectorAll('[data-date-decision]').forEach(b=>b.addEventListener('click',async()=>{
         const visit=requestByVisit.find(v=>String(v.id||v.visitId)===String(b.dataset.vid||''));
         const decision=String(b.dataset.dateDecision||'');
         if(!visit||!['approved','rejected'].includes(decision))return;
+        if(decision==='approved'){
+          const readiness=CX.adminPostulacionesActions.rescheduleReadiness(visit,data);
+          if(!readiness.eligible){ui.toast(readiness.reason,'warn',4800);return;}
+        }
         if(!CX.permissions?.gate?.('visit.reassign',{projectId:data.currentProjectId,pais:visit.pais},ui))return;
         const prior=b.textContent;b.disabled=true;b.textContent='Confirmando…';
         try{
@@ -402,7 +436,7 @@ CX.module('postulaciones', ({data,ui})=>{
     ${reprog.map(x=>`<div class="between wrap" style="gap:12px;padding:10px 0;border-bottom:1px solid var(--border-2)">
       <div><b style="font-size:13px">${x.shopper}</b> · <span style="font-size:12px;color:var(--t2)">${x.sucursal}</span>
       <div style="font-size:11px;color:var(--t3)">Fecha vigente: ${safe(x.fechaActual)} → Propuesta: ${safe(x.fechaProp)} · ${safe(x.reason||'Pendiente de revisión')}</div></div>
-      <div class="flex" style="flex-wrap:wrap;gap:4px"><button class="btn btn-ghost btn-sm" data-revpost="${x.id}">👁 Revisar reprog.</button><button class="btn btn-green btn-sm" data-authfecha="${x.id}">✅ Nueva fecha</button><button class="btn btn-ghost btn-sm" data-keepfecha="${x.id}">Conservar anterior</button></div>
+      <div class="flex" style="flex-wrap:wrap;gap:4px"><button class="btn btn-ghost btn-sm" data-revpost="${x.id}">👁 Revisar reprog.</button>${CX.adminPostulacionesActions.rescheduleReadiness(x,data).eligible?'<button class="btn btn-green btn-sm" data-authfecha="'+x.id+'">✅ Nueva fecha</button>':'<button class="btn btn-soft btn-sm" disabled>Fecha vencida</button><button class="btn btn-pr btn-sm" data-reprog-renew="'+x.id+'">📅 Pedir otra fecha</button>'}<button class="btn btn-ghost btn-sm" data-keepfecha="${x.id}">Conservar anterior</button></div>
     </div>`).join('')}</div>`:''}
 
   ${cancellationRequests.length?'<div class="card card-p" style="border-left:3px solid var(--amber);margin-bottom:14px"><div class="card-t">⚠️ Solicitudes de cancelación pendientes · '+cancellationRequests.length+'</div>'+cancellationRequests.map(v=>'<div class="cx-visit-request-note"><b>'+safe(v.shopper||v.shopperId)+'</b> · '+safe(v.sucursal)+' · Motivo: '+safe(v.cancelRequest.reason||'Sin motivo')+'<div class="flex wrap" style="gap:8px;margin-top:8px"><button class="btn btn-green btn-sm" data-cancel-review="approved" data-vid="'+String(v.id||v.visitId).replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'">Aprobar solicitud</button><button class="btn btn-ghost btn-sm" data-cancel-review="rejected" data-vid="'+String(v.id||v.visitId).replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'">Rechazar solicitud</button></div></div>').join('')+'</div>':''}
@@ -684,9 +718,16 @@ CX.module('postulaciones', ({data,ui})=>{
       if(!x?.visitaId){ui.toast('No hay una visita exacta para revisar la reprogramación.','warn',4200);return;}
       CX.adminPostulacionesActions.openAgenda({data,ui,visitIds:[String(x.visitaId)]});
     }));
+    document.querySelectorAll('[data-reprog-renew]').forEach(b=>b.addEventListener('click',()=>{
+      const x=findReprogram(b.dataset.reprogRenew);
+      if(!x?.visitaId||!CX.permissions.gate('visit.reassign',{projectId:x.rootProjectId||x.projectId,pais:x.pais},ui))return;
+      CX.adminPostulacionesActions.openRequest({data,ui,visitIds:[String(x.visitaId)],defaultType:'cambio'});
+    }));
     document.querySelectorAll('[data-authfecha]').forEach(b=>b.addEventListener('click',async()=>{
       const x=findReprogram(b.dataset.authfecha);
       if(!x||!x.fechaProp)return;
+      const readiness=CX.adminPostulacionesActions.rescheduleReadiness(x,data);
+      if(!readiness.eligible){ui.toast(readiness.reason,'warn',4800);return;}
       if(!CX.permissions.gate('visit.reassign',{projectId:x.rootProjectId||x.projectId,pais:x.pais},ui))return;
       const before=b.textContent;b.disabled=true;b.textContent='Confirmando…';
       let result=null,error=null;
