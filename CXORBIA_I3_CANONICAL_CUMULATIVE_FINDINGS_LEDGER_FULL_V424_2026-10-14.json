@@ -19888,7 +19888,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "Run existing I3 canonical source QA for B7 owner, then only one cumulative DEV materialization after source-proven B8/B7 candidates; repeat exact same-artifact E2E including filter Oakland, KPI nested close, budget provider readback; preserve no production.",
+  "exactNextAction": "Within same I3 read-only root-cause owners of R01 WA phone profile vs HR visit, R03 identity MULTIPLE_PASSWORD_PROOF_PRINCIPALS and R08 Vertex response non-JSON; preserve 25 frozen findings and approved source. Then P0_PROVEN owner patches, one cumulative DEV publication with same-artifact Admin/Shopper live, B8 remittance/payables finance configuration; Gate20/21 held.",
   "supersedesGitBlob": "98d6566a240a8256a1441328b2da4af1c25fac6f",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -29316,7 +29316,18 @@
       "VRM-132",
       "R16",
       "R17"
-    ]
+    ],
+    "qaResult": {
+      "runId": 38647140908,
+      "runNumber": 1613,
+      "jobId": 116136689860,
+      "decision": "PASS_SOURCE_QA_B7_7_OF_7_AND_FINANCE_39_OF_39_0_FAIL",
+      "sourceSha": "3faf933f53cbf7e234b7e5389eaf0e12f8172620",
+      "devMaterialized": false,
+      "liveFunctional": false,
+      "humanAccepted": false,
+      "production": false
+    }
   },
   "i3Oct14PostulationsFilterModalProof": {
     "sourceFrom": "f3c2b12b73f9d6373280ea1e9b387ca1da695853",
@@ -29347,6 +29358,17 @@
       "scope": "TEST_ONLY_FAILURE_MISSING_FS_IMPORT",
       "otherSixTestsPass": true
     },
-    "testFix": "Added node:fs import; no new operational code"
+    "testFix": "Added node:fs import; no new operational code",
+    "qaResult": {
+      "runId": 38647140908,
+      "runNumber": 1613,
+      "jobId": 116136689860,
+      "decision": "PASS_SOURCE_QA_B7_7_OF_7_AND_FINANCE_39_OF_39_0_FAIL",
+      "sourceSha": "3faf933f53cbf7e234b7e5389eaf0e12f8172620",
+      "devMaterialized": false,
+      "liveFunctional": false,
+      "humanAccepted": false,
+      "production": false
+    }
   }
 }

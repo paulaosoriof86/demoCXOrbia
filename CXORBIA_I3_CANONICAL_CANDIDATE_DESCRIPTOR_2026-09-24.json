@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B7_FILTER_MODAL_TEST_IMPORT_CORRECTED_REPROOF_PENDING",
+  "status": "HOLD_I3_OCT14_B7_B8_SOURCE_QA_PASS_REMAINDER_P0_OPEN",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "abf44bd60ce9c5104c64c03d73c9fd01fad4fdaa",
   "predecessorProductSourceSha": "a4ad9571e9f3b4d9ba0c3816779500c0374cb291",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V424_2026-10-14.json",
-  "findingsLedgerExpectedGitBlob": "ad3c21d611ec8be9bb14e5cc9aa49cab715f6f74",
+  "findingsLedgerExpectedGitBlob": "b2651071f33c38f3e7a830f127ac05115ca8f861",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V114.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "B7_TEST_REPROOF_PLUS_EXISTING_VRM134_B8",
+  "activeBlocker": "P0_AUTH_IDENTITY_MERGE_CERT_AI_CANCEL_PROVIDER_WA_INDIVIDUAL_FINANCE_SOURCE_CONFIG_VRM134_PERF",
   "nextFindingId": "VRM-275",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run existing I3 canonical source QA for B7 owner, then only one cumulative DEV materialization after source-proven B8/B7 candidates; repeat exact same-artifact E2E including filter Oakland, KPI nested close, budget provider readback; preserve no production.",
+  "exactNextAction": "Within same I3 read-only root-cause owners of R01 WA phone profile vs HR visit, R03 identity MULTIPLE_PASSWORD_PROOF_PRINCIPALS and R08 Vertex response non-JSON; preserve 25 frozen findings and approved source. Then P0_PROVEN owner patches, one cumulative DEV publication with same-artifact Admin/Shopper live, B8 remittance/payables finance configuration; Gate20/21 held.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -10154,7 +10154,18 @@
       "VRM-132",
       "R16",
       "R17"
-    ]
+    ],
+    "qaResult": {
+      "runId": 38647140908,
+      "runNumber": 1613,
+      "jobId": 116136689860,
+      "decision": "PASS_SOURCE_QA_B7_7_OF_7_AND_FINANCE_39_OF_39_0_FAIL",
+      "sourceSha": "3faf933f53cbf7e234b7e5389eaf0e12f8172620",
+      "devMaterialized": false,
+      "liveFunctional": false,
+      "humanAccepted": false,
+      "production": false
+    }
   },
   "i3Oct14PostulationsFilterModalProof": {
     "sourceFrom": "f3c2b12b73f9d6373280ea1e9b387ca1da695853",
@@ -10185,6 +10196,17 @@
       "scope": "TEST_ONLY_FAILURE_MISSING_FS_IMPORT",
       "otherSixTestsPass": true
     },
-    "testFix": "Added node:fs import; no new operational code"
+    "testFix": "Added node:fs import; no new operational code",
+    "qaResult": {
+      "runId": 38647140908,
+      "runNumber": 1613,
+      "jobId": 116136689860,
+      "decision": "PASS_SOURCE_QA_B7_7_OF_7_AND_FINANCE_39_OF_39_0_FAIL",
+      "sourceSha": "3faf933f53cbf7e234b7e5389eaf0e12f8172620",
+      "devMaterialized": false,
+      "liveFunctional": false,
+      "humanAccepted": false,
+      "production": false
+    }
   }
 }
