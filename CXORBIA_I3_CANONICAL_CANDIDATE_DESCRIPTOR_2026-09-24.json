@@ -7,13 +7,13 @@
   "productSourceSha": "525f6cd6dddc22a3a7ff1bc12b03b07a98b1561e",
   "productTreeAuthority": "7aa467413c1ee19c3f0eeda233d7b9722f923886",
   "predecessorProductSourceSha": "1708b794779978ee7356124553c488195b3b3161",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V421_2026-10-14.json",
-  "findingsLedgerExpectedGitBlob": "b371ebdcf023ce7dd4da4d981f6c354d78e389c4",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V111.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V422_2026-10-14.json",
+  "findingsLedgerExpectedGitBlob": "d862f39078777ffb6df4fc7a106bce8ae544548d",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V112.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "B7_SECURITY_SOURCE_PROVEN_B3_COMPACT_AND_VRM134_PENDING_ONE_DEV_MATERIALIZATION",
+  "activeBlocker": "B7_SOURCE_EMULATOR_PASS_DEV_MATERIALIZATION_NOT_EXECUTED_WORKFLOW_SELECTOR_INVALID_1595_1596",
   "nextFindingId": "VRM-275",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -2732,7 +2732,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "27dd5c73370748ae416dcb9ed0a201c1b0fb3f28",
+  "moduleTruthExpectedGitBlob": "1e6385e396fc6d75921bae0faaf479f3416ef9d3",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -9869,6 +9869,22 @@
     "project": "cxorbia-backend-dev",
     "production": false,
     "hrWrites": 0,
-    "emulatorSourceProofRun": 38613513742
+    "emulatorSourceProofRun": 38613513742,
+    "state": "BLOCKED_NO_DEPLOY_EXISTING_WORKFLOW_MODIFICATION_REJECTED",
+    "attempts": [
+      {
+        "runId": 38614000819,
+        "runNumber": 1595,
+        "result": "WORKFLOW_VALIDATION_FAILURE_ZERO_JOBS"
+      },
+      {
+        "runId": 38614211673,
+        "runNumber": 1596,
+        "result": "WORKFLOW_VALIDATION_FAILURE_ZERO_JOBS"
+      }
+    ],
+    "workflowRestored": true,
+    "sourceProof": 38613513742,
+    "devDeploys": 0
   }
 }

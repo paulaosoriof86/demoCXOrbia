@@ -6546,7 +6546,7 @@ jobs:
 
   b1-canonical-visible-identity-dev-materialization:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-phasea-dev-materialize]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_PHASEA_CUMULATIVE_DEV_READBACK_ONLY_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-phasea-dev-readback]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env: {PHASEA_SOURCE: "${{ needs.canonical-candidate-authority.outputs.source_sha }}", PHASEA_TREE: "${{ needs.canonical-candidate-authority.outputs.source_tree }}"}
@@ -6555,19 +6555,12 @@ jobs:
         with: {fetch-depth: 0}
       - uses: actions/setup-node@v4
         with: {node-version: '24'}
-      - run: npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest >/dev/null 2>&1
       - run: bash .github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh preflight
       - uses: google-github-actions/auth@v2
         with: {credentials_json: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}"}
       - uses: google-github-actions/setup-gcloud@v2
         with: {project_id: "${{ env.PROJECT }}"}
-      - run: |
-          set -Eeuo pipefail
-          if [ "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED" ]; then
-            bash .github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh materialize
-          else
-            bash .github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh readback
-          fi
+      - run: bash .github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh readback
       - run: bash .github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh proof
       - uses: actions/upload-artifact@v4
         if: always()
