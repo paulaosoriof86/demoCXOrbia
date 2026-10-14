@@ -680,3 +680,15 @@ test('HF24 finance creation requires unique tenant scoped remote readback after 
   assert.match(s,/FINANCE_ACCOUNT_READBACK_MISMATCH/);
   assert.match(s,/Verifica antes de repetir/);
 });
+
+test('HF-20261012-25 B8 CxP internal abono never announces a confirmed external payment',()=>{
+  const s=fs.readFileSync('app/modules/finanzas.js','utf8');
+  assert.match(s,/Registrar abonos internos seleccionados/);
+  assert.match(s,/confirmación bancaria\/externa pendiente/);
+  assert.match(s,/Se actualizaron .* CxP en vista de demostración, sin confirmación durable/);
+  assert.doesNotMatch(s,/CxP pagada\(s\) y confirmada\(s\)/);
+  assert.match(s,/data\.applyFinanceAccount\(id,amount,\{ackAware:true/);
+  assert.match(s,/if\(!\(ack\?\.ok&&ack\?\.providerAck\)\)throw new Error\('FINANCE_ACCOUNT_ACK_REQUIRED'\)/);
+  const provider=fs.readFileSync('backend/runtime/cxorbia-finance-command-provider-v1.mjs','utf8');
+  assert.match(provider,/externalPaymentConfirmed:false/);
+});

@@ -14,9 +14,9 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
-    "sourceTree": "a821c66a92957eae5c62e331420d7f736eb6aab7",
-    "predecessorSha": "525f6cd6dddc22a3a7ff1bc12b03b07a98b1561e",
+    "sourceSha": "baebd9bee00acebf949d5bb5d68857a37b180e72",
+    "sourceTree": "9a48697095fa99907099c2ded83e0069ddfe7fda",
+    "predecessorSha": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
     "production": false,
     "state": "VRM134_SOURCE_FIXED_PENDING_QA_DEV_E2E",
     "proof": {
@@ -19888,7 +19888,7 @@
     "noNewBranch": true,
     "production": false
   },
-  "exactNextAction": "B8 HF22 six real provider code readbacks (no bank writes) + HF24/HF28 independent durable readback in exact RUN1605 DEV, preserve VRM134 performance OPEN; finish technical gate before new B8 human visual review. No production.",
+  "exactNextAction": "Run existing canonical I3 source QA incl new HF25 CxP copy test, validate owner blobs and stay DEV predecessor RUN1605 for Paula B7/B3 visual review; then focal B8 HF22 six remote codes+HF24/28 exact authenticated provider tests, one subsequent cumulative DEV promotion only when readiness proven. VRM134 P0 OPEN.",
   "supersedesGitBlob": "98d6566a240a8256a1441328b2da4af1c25fac6f",
   "preterminalAuthorityCorrection": {
     "reason": "Run368 path-bound Module Truth exposed source fixes not explicitly attached to findings. This correction records their exact source authority without promoting terminal PASS.",
@@ -29243,6 +29243,33 @@
     "hf28TwoAdminSessions": "OPEN",
     "completeLiveFinance": "HOLD",
     "humanFinance": "PENDING",
+    "production": false,
+    "hf25FalseBankConfirmation": "SOURCE_FIXED_PENDING_CI_SOURCE_ONLY",
+    "qaFile": "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs",
+    "underlyingProvider": "finance.account.apply",
+    "notNewFinding": true,
+    "devRemains": "RUN1605_PREDECESSOR"
+  },
+  "i3Oct14B8HF25FalsePaidUiFix": {
+    "linkedExisting": "HF-20261012-25 / HF-20261012-23",
+    "classification": "FUNCTIONAL_DEFECT",
+    "severity": "P0",
+    "exactOwner": "app/modules/finanzas.js",
+    "priorOwnerBlob": "accfe364f37c7d4ddcdcd6ec1fa2991c8d3852ee",
+    "currentOwnerBlob": "ec92955e8de43cb5cbb59a2e990eb89683f7ee72",
+    "qaOwner": "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs",
+    "priorQaBlob": "cce820b098833420ab4b2d19e80015c499bb974d",
+    "qaBlob": "102c38a938522ecbb6726e3d8b83a6e46066e46a",
+    "causalEvidence": "CxP modal called internal finance.account.apply with providerAck and externalPaymentConfirmed:false, but UI stated 'CxP pagada(s) y confirmada(s)' incorrectly.",
+    "fix": "Human copy describes provider-backed internal abono without bank confirmation, separate demo-only copy; action label clarifies internal nature.",
+    "predecessorSource": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
+    "sourceSha": "baebd9bee00acebf949d5bb5d68857a37b180e72",
+    "sourceTree": "9a48697095fa99907099c2ded83e0069ddfe7fda",
+    "state": "SOURCE_FIXED_PENDING_CI_NOT_MATERIALIZED",
+    "lastPublishedDevSource": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
+    "visualReviewOnUnchangedDev": true,
+    "requiredValidation": "Existing finance 37+ regression tests plus new HF25 copy assertion; subsequent same-artifact provider/readback for B8.",
+    "noExternalPayments": true,
     "production": false
   }
 }

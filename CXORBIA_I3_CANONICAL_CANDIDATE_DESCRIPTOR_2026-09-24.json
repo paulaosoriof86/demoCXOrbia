@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_VRM134_PERF_B8_SHOPPER_HUMAN_PENDING",
+  "status": "HOLD_I3_B8_HF25_SOURCE_FIXED_QA_PENDING_DEV_PREDECESSOR_VISUAL",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
-  "productTreeAuthority": "a821c66a92957eae5c62e331420d7f736eb6aab7",
-  "predecessorProductSourceSha": "525f6cd6dddc22a3a7ff1bc12b03b07a98b1561e",
+  "productSourceSha": "baebd9bee00acebf949d5bb5d68857a37b180e72",
+  "productTreeAuthority": "9a48697095fa99907099c2ded83e0069ddfe7fda",
+  "predecessorProductSourceSha": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V424_2026-10-14.json",
-  "findingsLedgerExpectedGitBlob": "3da8ef8c5feb67eb217ea5419de13dc4b8023bd8",
+  "findingsLedgerExpectedGitBlob": "b40755292d1bea4284e831e6cfe504fa8b4945db",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V114.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "VRM-134_LIVE_E2E_PASS_PERF_HOLD_B8_HF22_HF24_HF28_SHOPPER_HUMAN",
+  "activeBlocker": "B8_HF25_SOURCE_QA_PENDING_AND_HF22_HF24_HF28_LIVE_PENDING_VRM134_PERF_OPEN",
   "nextFindingId": "VRM-275",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "B8 HF22 six real provider code readbacks (no bank writes) + HF24/HF28 independent durable readback in exact RUN1605 DEV, preserve VRM134 performance OPEN; finish technical gate before new B8 human visual review. No production.",
+  "exactNextAction": "Run existing canonical I3 source QA incl new HF25 CxP copy test, validate owner blobs and stay DEV predecessor RUN1605 for Paula B7/B3 visual review; then focal B8 HF22 six remote codes+HF24/28 exact authenticated provider tests, one subsequent cumulative DEV promotion only when readiness proven. VRM134 P0 OPEN.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -7882,7 +7882,7 @@
     "representativeSameArtifact": "PASS_RUN1427",
     "exactB2Ack": "PENDING"
   },
-  "currentMaterializationIsPredecessorOnly": false,
+  "currentMaterializationIsPredecessorOnly": true,
   "i3B2Run1425SourceProof": {
     "runId": 37887175242,
     "runNumber": 1425,
@@ -10087,5 +10087,27 @@
     "scope": "B7/B3 four read-only screens on RUN1605 same DEV",
     "status": "AVAILABLE_HUMAN_PENDING",
     "referenceSource": "4d4624940ce09c86ec04a3ee59e44ffd40bde612"
+  },
+  "i3Oct14B8HF25FalsePaidUiFix": {
+    "linkedExisting": "HF-20261012-25 / HF-20261012-23",
+    "classification": "FUNCTIONAL_DEFECT",
+    "severity": "P0",
+    "exactOwner": "app/modules/finanzas.js",
+    "priorOwnerBlob": "accfe364f37c7d4ddcdcd6ec1fa2991c8d3852ee",
+    "currentOwnerBlob": "ec92955e8de43cb5cbb59a2e990eb89683f7ee72",
+    "qaOwner": "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs",
+    "priorQaBlob": "cce820b098833420ab4b2d19e80015c499bb974d",
+    "qaBlob": "102c38a938522ecbb6726e3d8b83a6e46066e46a",
+    "causalEvidence": "CxP modal called internal finance.account.apply with providerAck and externalPaymentConfirmed:false, but UI stated 'CxP pagada(s) y confirmada(s)' incorrectly.",
+    "fix": "Human copy describes provider-backed internal abono without bank confirmation, separate demo-only copy; action label clarifies internal nature.",
+    "predecessorSource": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
+    "sourceSha": "baebd9bee00acebf949d5bb5d68857a37b180e72",
+    "sourceTree": "9a48697095fa99907099c2ded83e0069ddfe7fda",
+    "state": "SOURCE_FIXED_PENDING_CI_NOT_MATERIALIZED",
+    "lastPublishedDevSource": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
+    "visualReviewOnUnchangedDev": true,
+    "requiredValidation": "Existing finance 37+ regression tests plus new HF25 copy assertion; subsequent same-artifact provider/readback for B8.",
+    "noExternalPayments": true,
+    "production": false
   }
 }

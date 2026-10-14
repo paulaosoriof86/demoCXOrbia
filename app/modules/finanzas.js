@@ -1220,16 +1220,16 @@ CX.module('liquidaciones', ({data,ui})=>{
         <b style="color:var(--amber)">${(r.pais&&p.currency&&p.currency[r.pais])?ui.money(p.currency[r.pais],r.saldo||0):(r.moneda?ui.money(r.moneda,r.saldo||0):'Pendiente de moneda')}</b></label>`).join('')
         : ui.empty('📭','No hay liquidaciones diferidas (CxP) pendientes.');
       ui.modal('Incluir CxP de meses anteriores',`
-        <p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Estas son liquidaciones <b>diferidas</b> en cierres anteriores. Selecciona cuáles pagar ahora: se generará el egreso y se saldará la cuenta por pagar.</p>
+        <p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Estas son liquidaciones <b>diferidas</b> de cierres anteriores. Selecciona cuáles registrar como abonos internos: se actualizará el saldo de la cuenta por pagar, pero el registro no confirma una transferencia bancaria.</p>
         ${rows}
         ${cxpsPend.length?`<div style="font-size:11px;color:var(--red);margin:6px 0">🔒 ${cxpsPend.length} CxP con Pendiente de moneda · en revisión, no pagables hasta asignar país/moneda</div>`:''}
-        <div style="text-align:right;margin-top:8px"><button class="btn btn-green btn-sm" id="payCxp" ${cxps.length?'':'disabled'}>Pagar seleccionadas</button></div>
+        <div style="text-align:right;margin-top:8px"><button class="btn btn-green btn-sm" id="payCxp" ${cxps.length?'':'disabled'}>Registrar abonos internos seleccionados</button></div>
       `,{onMount:(ov,close)=>{const b=ov.querySelector('#payCxp'); if(b)b.addEventListener('click',async()=>{
         const ids=[...ov.querySelectorAll('.cxpChk:checked')].map(c=>c.dataset.id); let n=0; let blocked=0;b.disabled=true;
         try{
           for(const id of ids){const r=cxpSource.find(x=>x.id===id);if(!r)continue;if(currencyOf(r)===PENDING_CURRENCY){blocked++;continue;}const amount=Number(r.balance??r.saldo)||0;if(connectedFinance()){const ack=await data.applyFinanceAccount(id,amount,{ackAware:true,fecha:new Date().toISOString().slice(0,10),desc:'Pago CxP diferida'});if(!(ack?.ok&&ack?.providerAck))throw new Error('FINANCE_ACCOUNT_ACK_REQUIRED');}else CX.finStore.abonarCxp(p.id,id,amount);n++;}
           if(connectedFinance())await refreshDurableFinance(true);
-          close();draw();ui.toast(n+' CxP pagada(s) y confirmada(s)'+(blocked?(' · '+blocked+' bloqueada(s) sin moneda'):''),blocked?'warn':'ok',4000);
+          close();draw();ui.toast((connectedFinance()?('Se registraron internamente '+n+' abono(s) de CxP; confirmación bancaria/externa pendiente.'):('Se actualizaron '+n+' CxP en vista de demostración, sin confirmación durable.'))+(blocked?(' · '+blocked+' bloqueada(s) sin moneda'):''),blocked?'warn':'ok',4500);
         }catch(_){b.disabled=false;ui.toast('No se completó el pago de CxP: faltó confirmación durable.','err',4200);}
       });}});
     });
