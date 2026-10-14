@@ -5742,10 +5742,10 @@
       "f9ApprovedBlob": null,
       "latestApprovedSource": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
       "latestApprovedBlob": "245157d6812321bec99d1d3d2d4e03261b4f21fa",
-      "currentBlob": "226e70b799d4d46700db7093b8a71732bb2bbed7",
+      "currentBlob": "c1c3ebd5edc5464ccf53ade370b9c56cfe4d102f",
       "loadTarget": "runtime-service",
       "phaseAAuthority": true,
-      "classification": "SOURCE_FIXED_PENDING_DEV_E2E_HUMAN",
+      "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN",
       "atomicDisposition": "FOCAL_FIX",
       "latestApprovedAuthority": "PRE_I4_PROVEN_SUCCESSOR__RUN333",
       "approvedSourceCommit": "f5d7113547df0c69d5d49bad3951dbd793684788",
@@ -10078,6 +10078,7 @@
     "sourceProof": "PENDING",
     "devMaterialization": "PENDING",
     "livePerf": "PENDING",
-    "closure": "OPEN"
+    "closure": "OPEN",
+    "lineageClosure": "SECOND_PARENT_OF_CONTROL_COMMIT_PENDING"
   }
 }

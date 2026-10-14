@@ -6620,7 +6620,13 @@
         "livePerfBeforeAfter": "PENDING",
         "human": "PENDING",
         "closure": "OPEN",
-        "production": false
+        "production": false,
+        "ciFirstAttempt": {
+          "run": 38629825653,
+          "code": "RELEASE_COMPOSITION_FAILURE",
+          "rootCause": "Detached source commit object not reachable via branch checkout; source+HEAD product blobs matched; use existing branch control commit with source SHA second parent.",
+          "productCodeChanged": false
+        }
       }
     },
     "VRM-135": {
@@ -29084,6 +29090,7 @@
     "serverBlob": "c1c3ebd5edc5464ccf53ade370b9c56cfe4d102f",
     "testBlob": "cd56b75751a5a8e768e620fad7e07701cf069822",
     "state": "SOURCE_FIXED_NO_LIVE_PASS",
-    "production": false
+    "production": false,
+    "lineageRepair": "MERGE_COMMIT_ANCHOR_SECOND_PARENT_PENDING_READBACK"
   }
 }

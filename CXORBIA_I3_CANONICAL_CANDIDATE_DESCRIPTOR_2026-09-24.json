@@ -8,7 +8,7 @@
   "productTreeAuthority": "a821c66a92957eae5c62e331420d7f736eb6aab7",
   "predecessorProductSourceSha": "525f6cd6dddc22a3a7ff1bc12b03b07a98b1561e",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V424_2026-10-14.json",
-  "findingsLedgerExpectedGitBlob": "91746223e97ec8ca61eac3fe06a62725c1b8fd76",
+  "findingsLedgerExpectedGitBlob": "1466bc97b872993ca8a5c592567046a60da2e1fa",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V114.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -10002,6 +10002,9 @@
     },
     "afterMs": "PENDING",
     "devPublished": false,
-    "production": false
+    "production": false,
+    "sourceAncestryRepair": "SECOND_PARENT_OF_CONTROL_HEAD_TO_BE_VERIFIED",
+    "firstAttemptRun": 38629825653,
+    "firstAttemptFailure": "RELEASE_COMPOSITION_FAILURE:UNREACHABLE_SOURCE_COMMIT_FROM_CHECKOUT; no product code failure"
   }
 }
