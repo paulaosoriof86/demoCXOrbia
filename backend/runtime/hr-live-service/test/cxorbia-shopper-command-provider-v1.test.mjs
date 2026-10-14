@@ -864,6 +864,14 @@ test('VRM-185 / admin identity adjudication fails closed when multiple principal
   const result=await p.execute('staff-token',command);
   assert.equal(result.ok,false);assert.equal(result.providerWrites,0);assert.equal(result.code,'SHOPPER_IDENTITY_MULTIPLE_PASSWORD_PROOF_PRINCIPALS');
   assert.equal((await auth.getUser('dual-current')).disabled,false);assert.equal((await auth.getUser('dual-legacy')).disabled,false);
+  const invalid=await p.execute('staff-token',{...command,idempotencyKey:'vrm185-out-of-scope',payload:{...command.payload,keeperShopperId:'unknown-person',keeperAccessConfirmed:true}});
+  assert.equal(invalid.ok,false);assert.equal(invalid.providerWrites,0);
+  const chosen=await p.execute('staff-token',{...command,idempotencyKey:'vrm185-human-keeper-choice',payload:{...command.payload,keeperShopperId:alias,keeperAccessConfirmed:true}});
+  assert.equal(chosen.ok,true,'R03_CHOOSER='+JSON.stringify(chosen));
+  assert.equal(chosen.identityConsolidated,true);assert.equal((await auth.getUser('dual-legacy')).disabled,false);
+  assert.equal((await auth.getUser('dual-legacy')).customClaims.shopperId,canonical);
+  assert.equal((await auth.getUser('dual-current')).disabled,true);
+  assert.equal(db.get('tenants/tenant-a/users/dual-legacy').shopperId,canonical);
 });
 
 

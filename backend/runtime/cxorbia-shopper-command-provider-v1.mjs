@@ -1010,14 +1010,25 @@ async function durableIdentityAdjudication({auth,db,command,actor,canonicalShopp
     principalRows.push({identityId,doc,ref:users.doc(doc.id),member,user,profile:profilesById.get(identityId)||{},strongProof:adjudicationStrongCredentialProof(member,profilesById.get(identityId)||{})});
   }
   const strong=principalRows.filter(x=>x.strongProof);
+  const adminKeeperId=str(command.payload?.keeperShopperId);
+  if(adminKeeperId&&(!identitySet.has(adminKeeperId)||command.payload?.keeperAccessConfirmed!==true))throw new Error('SHOPPER_IDENTITY_ADMIN_KEEPER_SELECTION_INVALID');
   let keeper=null;
   if(strong.length>1){
     const canonicalCredential=shopperCredentialRule(canonical);
     const desiredLogin=canonicalCredential?.ok?str(canonicalCredential.login).toLowerCase():'';
     const canonicalLoginStrong=desiredLogin?strong.filter(x=>str(x.member?.visibleLogin||x.profile?.visibleLogin||x.profile?.username||x.profile?.user).toLowerCase()===desiredLogin):[];
-    if(canonicalLoginStrong.length!==1)throw new Error('SHOPPER_IDENTITY_MULTIPLE_PASSWORD_PROOF_PRINCIPALS');
-    keeper=canonicalLoginStrong[0];
-  }else if(strong.length===1)keeper=strong[0];
+    if(adminKeeperId){
+      const selected=strong.filter(x=>x.identityId===adminKeeperId);
+      if(selected.length!==1)throw new Error('SHOPPER_IDENTITY_ADMIN_KEEPER_NOT_VERIFIED');
+      keeper=selected[0]; // Selected exact identity has one active UID, verified Auth claims and strong password proof.
+    }else{
+      if(canonicalLoginStrong.length!==1)throw new Error('SHOPPER_IDENTITY_MULTIPLE_PASSWORD_PROOF_PRINCIPALS');
+      keeper=canonicalLoginStrong[0]; // Retain historical PASS when exact canonical login has one keeper.
+    }
+  }else if(strong.length===1){
+    if(adminKeeperId&&strong[0].identityId!==adminKeeperId)throw new Error('SHOPPER_IDENTITY_ADMIN_KEEPER_NOT_VERIFIED');
+    keeper=strong[0];
+  }else if(adminKeeperId)throw new Error('SHOPPER_IDENTITY_ADMIN_KEEPER_NOT_VERIFIED');
   else{
     if(principalRows.length>1)throw new Error('SHOPPER_IDENTITY_KEEPER_AMBIGUOUS');
     keeper=principalRows[0]||null;
