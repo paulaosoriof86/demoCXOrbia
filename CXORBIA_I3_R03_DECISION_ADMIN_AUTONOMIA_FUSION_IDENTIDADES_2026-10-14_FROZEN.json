@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "cxorbia.i3.r03.admin-autonomy-decision.v1",
+  "dateLocal": "2026-10-14",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "state": "FROZEN_BUSINESS_DECISION_IMPLEMENTATION_PENDING",
+  "i3": "HOLD",
+  "i4": "BLOCKED",
+  "production": "DO_NOT_TOUCH",
+  "authority": {
+    "repo": "paulaosoriof86/demoCXOrbia",
+    "branch": "recovery/cxorbia-phase-a-20260831",
+    "observedHead": "a579567fe17b7eb3396b4a31a746345d18f1d20f",
+    "productSource": "fa76e05d8b60dd7f2102de4dd3d67d43c3d0bacb",
+    "relatedFrozenReview": "CXORBIA_I3_HUMAN_REVIEW_20261014_P0_CUMULATIVE_FROZEN.json",
+    "findingId": "R03",
+    "priorFindingCount": 274
+  },
+  "humanDecision": "La Administradora con atribución autorizada tiene autonomía de adjudicar que las fichas representan a la misma persona y decidir la ficha canónica y la cuenta de acceso que permanece activa.",
+  "before": {
+    "uiChoosesCanonicalProfile": true,
+    "uiChoosesAccessKeeper": false,
+    "providerAutoselectsKeeperByCredentialVisibleLogin": true,
+    "reproducibleError": "SHOPPER_IDENTITY_MULTIPLE_PASSWORD_PROOF_PRINCIPALS",
+    "proofOwner": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+    "classification": "AUTH_FAILURE"
+  },
+  "afterContract": {
+    "humanAuthority": "Operador de rol admin/super del tenant/proyecto confirma explícitamente misma persona, selecciona registros y elige identidad canónica y cuenta Auth verificada que permanecerá activa.",
+    "keepAndMerge": "Preservar histórico, visitas, postulaciones, reservas, certificaciones, liquidaciones, perfil, reglas de país/proyecto; registrar alias exactos y trazabilidad.",
+    "credentialSemantics": "La cuenta Auth retenida debe seguir autenticando mediante su propio acceso verificado; los demás principales solo se deshabilitan tras confirmación y transacción exitosa; rollback si falla.",
+    "preflight": "Preview de dependencias y de múltiples cuentas Auth sin mostrar secretos; impedir selección de UID inexistente, fuera de tenant/proyecto o sin prueba verificable; autorización del actor y consentimiento registrados.",
+    "noAutomaticInference": "Nunca fusionar automáticamente por nombre, teléfono, email o similitud; la evidencia humana es la decisión que autoriza la fusión.",
+    "postWrite": "ACK remoto, readback independiente de un único login y membership canónicos, antigua cuenta deshabilitada, no duplicados, HR externa sin writes, idempotencia, auditoría y posibilidad de recuperación segura.",
+    "uiCopy": "Etiquetas humanas, mensaje de selección de acceso cuando hay múltiples principales; nunca mostrar el código crudo al Admin.",
+    "tests": "Fixture R03 con dos principales con prueba de contraseña, selección humana de cuenta retenida, UID exacto y acceso shopper, historial conservado; test negativo sin confirmación, fuera de scope, keeper inválido y rollback."
+  },
+  "singleWriterPolicy": "Un solo owner package focal sobre rama/candidata existente, sin overlay ni rama nueva; readback de SHA/tree tras cada write.",
+  "codeOwners": [
+    "app/modules/shoppers.js",
+    "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+    "app/adapters/cxorbia-shopper-admin-command-contract-v1.js",
+    "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+    "backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs"
+  ],
+  "implementationStatus": "NOT_EXECUTED_IN_THIS_DECISION_FILE",
+  "devPublished": false,
+  "liveE2E": false,
+  "humanAcceptance": false,
+  "gate20": false,
+  "gate21": false,
+  "nextExactAction": "Implementar selección de keeper Auth por administradora dentro de R03 con provider checks, pruebas sintéticas de dos principales y readback de un solo acceso; publicar únicamente DEV cuando fuente acumulativa y pruebas focales pasen. Mantener los demás hallazgos R01-R25 y 274 registros del ledger sin cambio."
+}
