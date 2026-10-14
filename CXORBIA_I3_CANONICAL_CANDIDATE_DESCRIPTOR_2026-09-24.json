@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B8_HF25_SOURCE_QA_PASS_PENDING_DEV_PREDECESSOR_VISUAL",
+  "status": "HOLD_I3_B8_BUDGET_PROJECT_CATALOG_SOURCE_FIXED_QA_PENDING",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "baebd9bee00acebf949d5bb5d68857a37b180e72",
-  "productTreeAuthority": "9a48697095fa99907099c2ded83e0069ddfe7fda",
-  "predecessorProductSourceSha": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
+  "productSourceSha": "f3c2b12b73f9d6373280ea1e9b387ca1da695853",
+  "productTreeAuthority": "f55c814931bd7989bdc3b2e5b40682753d602217",
+  "predecessorProductSourceSha": "baebd9bee00acebf949d5bb5d68857a37b180e72",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V424_2026-10-14.json",
-  "findingsLedgerExpectedGitBlob": "1fc1a03360f83daf13e1c3e8758fa70eba91671a",
+  "findingsLedgerExpectedGitBlob": "e1c8fc32fdbf27004d925ee509b1397eca4003b4",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V114.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "B8_HF22_HF24_HF28_LIVE_OPEN_HF25_NOT_DEPLOYED_VRM134_PERF_OPEN_HUMAN_PENDING",
+  "activeBlocker": "B8_BUDGET_SOURCE_QA_AND_HUMAN_VISUAL_UNCLOSED_VRM134_HOLD",
   "nextFindingId": "VRM-275",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run existing canonical I3 source QA incl new HF25 CxP copy test, validate owner blobs and stay DEV predecessor RUN1605 for Paula B7/B3 visual review; then focal B8 HF22 six remote codes+HF24/28 exact authenticated provider tests, one subsequent cumulative DEV promotion only when readiness proven. VRM134 P0 OPEN.",
+  "exactNextAction": "Existing canonical I3 QA must pass B8 budget safe ACK and canonical project catalog; then B7 modal/filter owner targeted fix, no unapproved DEV deploy while Paula reviews RUN1605. B8 HF22/HF24/HF28 E2E still OPEN.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -10129,5 +10129,31 @@
     "sourceAtReview": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
     "status": "HOLD_P0_HUMAN_OBSERVED",
     "nextExactAction": "I3 B8 single owner app/modules/finanzas.js P0 budget commandOk undefined + duplicate project options source fix and focal QA, update cumulative ledger/matrix/descriptor; then B7 filters/modal and authenticated E2E in existing DEV lane; do not deploy until source QA and incremental cumulative materialization ready."
+  },
+  "i3Oct14BudgetCatalogProof": {
+    "owner": "app/modules/finanzas.js",
+    "qa": "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs",
+    "sourceFrom": "baebd9bee00acebf949d5bb5d68857a37b180e72",
+    "sourceTo": "f3c2b12b73f9d6373280ea1e9b387ca1da695853",
+    "tree": "f55c814931bd7989bdc3b2e5b40682753d602217",
+    "blob": "14617ba0ccd948d2eb5db4c2fbb9085be353ec11",
+    "qaBlob": "bfcb80485f13af3177dd3d533dc6cf8f0b9985e5",
+    "classification": "FUNCTIONAL_DEFECT",
+    "screenshotEvidence": [
+      "commandOk is not defined",
+      "Cinépolis repeated in project selector"
+    ],
+    "scope": "budget save/delete and destination project catalog only",
+    "localHelperProof": "PASS_SYNTHETIC",
+    "sourceQa": "PENDING_RUN",
+    "dev": "NOT_DEPLOYED",
+    "production": false,
+    "releasePolicy": "single cumulative source; no unsafe cross-project write",
+    "existingFindingsLinked": [
+      "HF-20261012-26",
+      "VRM-132",
+      "R16",
+      "R17"
+    ]
   }
 }

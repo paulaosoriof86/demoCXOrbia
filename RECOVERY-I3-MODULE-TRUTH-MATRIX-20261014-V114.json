@@ -103,10 +103,10 @@
     }
   },
   "productSource": {
-    "sha": "baebd9bee00acebf949d5bb5d68857a37b180e72",
-    "treeSha": "9a48697095fa99907099c2ded83e0069ddfe7fda",
-    "predecessorProductSourceSha": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
-    "message": "fix(i3/b8-hf25): no external payment claim from internal CxP abono",
+    "sha": "f3c2b12b73f9d6373280ea1e9b387ca1da695853",
+    "treeSha": "f55c814931bd7989bdc3b2e5b40682753d602217",
+    "predecessorProductSourceSha": "baebd9bee00acebf949d5bb5d68857a37b180e72",
+    "message": "fix(i3/b8): budget ack and project destination unique",
     "authorityState": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN"
   },
   "controlHeadAtConstruction": "e1ea87a4f91744211f3e3f93b3a563549bdda69c",
@@ -866,7 +866,7 @@
         "Cliente"
       ],
       "contractFunctional": "País/moneda/Persistencia/ACK",
-      "classification": "SOURCE_FIXED_QA_PASS_PENDING_DEV_E2E_HUMAN",
+      "classification": "SOURCE_FIXED_PENDING_SOURCE_QA_DEV_HUMAN",
       "actionRequired": "HF25_SOURCE_QA_NO_FALSE_BANK_PAYMENT__HF22_HF24_HF28_EXACT_DEV_E2E_AND_VISUAL",
       "preI4SuccessorCommits": [
         "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
@@ -892,7 +892,7 @@
         "app/core/finanzas-core.js": "6276d86f8e3ddbfc84d41fc1903f968d92291527",
         "app/core/liquidacion.js": "b3f4d3fd387ad5dde454d115a7a3a8235fbfaaa3",
         "app/core/costos.js": "7f0c4547a68b8bafebae0652b8de5c8e27114a0c",
-        "app/modules/finanzas.js": "ec92955e8de43cb5cbb59a2e990eb89683f7ee72",
+        "app/modules/finanzas.js": "14617ba0ccd948d2eb5db4c2fbb9085be353ec11",
         "backend/runtime/cxorbia-finance-command-provider-v1.mjs": "180c6fd99c3d73045335d6e1d0cb3bb135af0a35",
         "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs": "cce820b098833420ab4b2d19e80015c499bb974d"
       },
@@ -4576,10 +4576,10 @@
       "f9ApprovedBlob": "623fab9ba1e06c39f83beda610bb771e23910a07",
       "latestApprovedSource": "4aeb41ca6dffb6e5b8324ca50531587539f5058e",
       "latestApprovedBlob": "130540d548f09aec0a6596cc616328036d677269",
-      "currentBlob": "ec92955e8de43cb5cbb59a2e990eb89683f7ee72",
+      "currentBlob": "14617ba0ccd948d2eb5db4c2fbb9085be353ec11",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN",
+      "classification": "SOURCE_FIXED_PENDING_SOURCE_QA_DEV_E2E",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "5af9e5d28833524cabba132834738e8acce55e0b",
       "latestApprovedAuthority": "PRE_I4_PROVEN_SUCCESSOR__RUN333",
@@ -10192,5 +10192,31 @@
     "sourceAtReview": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
     "status": "HOLD_P0_HUMAN_OBSERVED",
     "nextExactAction": "I3 B8 single owner app/modules/finanzas.js P0 budget commandOk undefined + duplicate project options source fix and focal QA, update cumulative ledger/matrix/descriptor; then B7 filters/modal and authenticated E2E in existing DEV lane; do not deploy until source QA and incremental cumulative materialization ready."
+  },
+  "i3Oct14BudgetCatalogProof": {
+    "owner": "app/modules/finanzas.js",
+    "qa": "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs",
+    "sourceFrom": "baebd9bee00acebf949d5bb5d68857a37b180e72",
+    "sourceTo": "f3c2b12b73f9d6373280ea1e9b387ca1da695853",
+    "tree": "f55c814931bd7989bdc3b2e5b40682753d602217",
+    "blob": "14617ba0ccd948d2eb5db4c2fbb9085be353ec11",
+    "qaBlob": "bfcb80485f13af3177dd3d533dc6cf8f0b9985e5",
+    "classification": "FUNCTIONAL_DEFECT",
+    "screenshotEvidence": [
+      "commandOk is not defined",
+      "Cinépolis repeated in project selector"
+    ],
+    "scope": "budget save/delete and destination project catalog only",
+    "localHelperProof": "PASS_SYNTHETIC",
+    "sourceQa": "PENDING_RUN",
+    "dev": "NOT_DEPLOYED",
+    "production": false,
+    "releasePolicy": "single cumulative source; no unsafe cross-project write",
+    "existingFindingsLinked": [
+      "HF-20261012-26",
+      "VRM-132",
+      "R16",
+      "R17"
+    ]
   }
 }
