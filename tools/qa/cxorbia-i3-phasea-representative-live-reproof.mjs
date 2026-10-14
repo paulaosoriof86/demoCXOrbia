@@ -292,6 +292,53 @@ try{
             return result;
           },ids);
           notificationReadback.queryDiagnostic=queryDiagnostic;
+          /* READ-ONLY exact-claims, constrained-query and deployed Firestore Rules check.
+             Diagnostic never changes Auth, rules, HR, Firestore or product source. */
+          notificationReadback.authQueryDiagnostic=await page.evaluate(async expectedSid=>{
+            const user=window.firebase?.auth?.().currentUser||null;
+            const claims=(await user?.getIdTokenResult?.(false))?.claims||{};
+            const out={
+              principalAuthenticated:!!user,role:String(claims.role||''),
+              tenantAllowed:claims.tenantId==='tya'||(Array.isArray(claims.tenants)&&claims.tenants.includes('tya')),
+              exactShopperIdMatch:String(claims.shopperId||'')===expectedSid,
+              projectAssigned:Array.isArray(claims.projectIds)&&claims.projectIds.includes('cinepolis'),
+              statusAndExactShopperQuery:null
+            };
+            try{
+              const col=window.firebase.firestore().collection('tenants').doc('tya').collection('bulletins');
+              const result=await col.where('targetShopperIds','array-contains',expectedSid).where('status','==','active').get({source:'server'});
+              out.statusAndExactShopperQuery={ok:true,count:result.size};
+            }catch(e){out.statusAndExactShopperQuery={ok:false,code:String(e?.code||e?.message||'QUERY_FAILURE').slice(0,130)};}
+            return out;
+          },target.profile.id).catch(e=>({probeError:String(e?.code||e?.message||'AUTH_PROBE_FAILED').slice(0,130)}));
+          try{
+            const {execFileSync}=await import('node:child_process');
+            const {createHash}=await import('node:crypto');
+            const token=execFileSync('gcloud',['auth','print-access-token'],{encoding:'utf8',timeout:12000}).trim();
+            const endpoint='https://firebaserules.googleapis.com/v1/';
+            const releaseResponse=await fetch(endpoint+'projects/cxorbia-backend-dev/releases/cloud.firestore',{
+              headers:{Authorization:'Bearer '+token},signal:AbortSignal.timeout(15000)
+            });
+            if(!releaseResponse.ok)throw new Error('RULES_RELEASE_HTTP_'+releaseResponse.status);
+            const release=await releaseResponse.json();
+            const rulesetName=String(release.rulesetName||'');
+            if(!/^projects\/cxorbia-backend-dev\/rulesets\//.test(rulesetName))throw new Error('RULESET_NAME_INVALID');
+            const liveResponse=await fetch(endpoint+rulesetName,{
+              headers:{Authorization:'Bearer '+token},signal:AbortSignal.timeout(15000)
+            });
+            if(!liveResponse.ok)throw new Error('RULESET_HTTP_'+liveResponse.status);
+            const ruleset=await liveResponse.json();
+            const source=(ruleset.source?.files||[]).find(f=>String(f.name||'').endsWith('firestore.rules'))||(ruleset.source?.files||[])[0];
+            if(!source||typeof source.content!=='string')throw new Error('RULESET_SOURCE_MISSING');
+            const hash=x=>createHash('sha256').update(x).digest('hex');
+            const local=hash(fs.readFileSync('firestore.rules','utf8'));
+            const historic=hash(execFileSync('git',['show','2f924e6e2057adef9c0c6be8259d564e15c43573:firestore.rules'],{encoding:'utf8',timeout:12000}));
+            const live=hash(source.content);
+            notificationReadback.liveRulesDiagnostic={
+              releaseName:String(release.name||''),rulesetName,liveSha256:live,sourceSha256:local,
+              historicSha256:historic,matchesCurrentSource:live===local,matchesHistoricRules:live===historic
+            };
+          }catch(e){notificationReadback.liveRulesDiagnostic={ok:false,code:String(e?.code||e?.message||'RULES_READBACK_UNAVAILABLE').slice(0,180)};}
 
           evidence.b7ShopperNotificationDiagnostic=notificationReadback;
           write(evidence);
