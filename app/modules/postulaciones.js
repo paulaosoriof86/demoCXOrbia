@@ -326,7 +326,7 @@ CX.adminPostulacionesActions.openCancellation=({data,ui,visitId,decision=null})=
         close();ui.toast(decision==='rejected'?'Solicitud rechazada y estado actualizado confirmado.':decision==='approved'?'Solicitud aprobada; si HR es externa, falta su confirmación para liberar la visita.':'Visita liberada y estado actualizado confirmado.','ok',4200);
       }catch(error){
         const diag=CX.adminPostulacionesActions.cancelProviderFailure(providerResult,error);
-        btn.dataset.providerResultCode=diag.code;
+        if(btn.dataset)btn.dataset.providerResultCode=diag.code;
         btn.disabled=false;btn.textContent='Confirmar';ui.toast(diag.message,'warn',5200);
       }
     })
