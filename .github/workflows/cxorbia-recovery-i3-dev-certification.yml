@@ -135,8 +135,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: step
-        run: |
+      - run: |
          set -Eeuo pipefail
          mkdir -p "$FOCAL_OUT"
          test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
@@ -147,8 +146,7 @@ jobs:
          git show "$FOCAL_SOURCE:backend/runtime/hr-live-service/Dockerfile" | grep -Fq 'COPY backend/runtime/cxorbia-commercial-command-provider-v1.mjs ./backend/runtime/cxorbia-commercial-command-provider-v1.mjs'
          git show "$FOCAL_SOURCE:backend/runtime/hr-live-service/Dockerfile" | grep -Fq 'COPY backend/runtime/cxorbia-academy-command-provider-v1.mjs ./backend/runtime/cxorbia-academy-command-provider-v1.mjs'
          jq -n -S --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" '{decision:"PASS_VRM143_151_SINGLE_SOURCE",sourceSha:$source,sourceTree:$tree,production:false}' > "$FOCAL_OUT/authority.json"
-      - name: step
-        run: |
+      - run: |
          set -Eeuo pipefail
          node --check app/core/notif.js
          node --check app/modules/midia.js
@@ -164,8 +162,7 @@ jobs:
          node --check backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs
          node --check backend/runtime/cxorbia-finance-command-provider-v1.mjs
          node --check backend/runtime/hr-live-service/certification-runtime.mjs
-      - name: step
-        run: |
+      - run: |
          set -Eeuo pipefail
          node tools/qa/cxorbia-vrm143-151-source-reproof.mjs | tee "$FOCAL_OUT/result.json"
          test "$(jq -r '.decision' "$FOCAL_OUT/result.json")" = "PASS_VRM143_151_FOCAL_SOURCE_REPROOF"
@@ -198,8 +195,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: step
-        run: |
+      - run: |
          set -Eeuo pipefail
          mkdir -p "$FOCAL_OUT"
          test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
@@ -209,8 +205,7 @@ jobs:
          git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
          node tools/qa/cxorbia-vrm143-151-source-reproof.mjs | tee "$FOCAL_OUT/source-reproof.json"
          test "$(jq -r '.decision' "$FOCAL_OUT/source-reproof.json")" = "PASS_VRM143_151_FOCAL_SOURCE_REPROOF"
-      - name: step
-        run: |
+      - run: |
          npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
          npx playwright install chromium >/dev/null 2>&1
       - name: step
@@ -221,8 +216,7 @@ jobs:
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT }}
-      - name: step
-        run: |
+      - run: |
          set -Eeuo pipefail
          SOURCE_DIR="$RUNNER_TEMP/cxorbia-vrm143-151-source"
          rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"
@@ -230,15 +224,13 @@ jobs:
          test -f "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml"
          test -f "$SOURCE_DIR/firebase.json"
          echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
-      - name: step
-        run: |
+      - run: |
          set -Eeuo pipefail
          IMAGE_URI="gcr.io/${PROJECT}/${SERVICE}:i3-vrm143-151-${FOCAL_SOURCE:0:12}-${GITHUB_RUN_ID}"
          echo "$IMAGE_URI" > "$FOCAL_OUT/image-uri.txt"
          gcloud builds submit "$SOURCE_DIR" --project "$PROJECT" --config "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE_URI" --quiet
          jq -n -S --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg image "$IMAGE_URI" '{decision:"PASS_VRM143_151_ONE_BUILD",sourceSha:$source,sourceTree:$tree,imageTag:$image,builds:1,production:false}' > "$FOCAL_OUT/build.json"
-      - name: step
-        run: |
+      - run: |
          set -Eeuo pipefail
          IMAGE_URI="$(cat "$FOCAL_OUT/image-uri.txt")"
          gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$IMAGE_URI" --min-instances=1 --max-instances=1 --update-env-vars "$LEGAL_ENABLE_NAME=$LEGAL_ENABLE_VALUE,$LEGAL_GATE_NAME=$LEGAL_GATE_VALUE,$I3_HR_CACHE_PIN_NAME=$I3_HR_CACHE_PIN_VALUE" --quiet
@@ -253,8 +245,7 @@ jobs:
          jq -e '.ok==true and .production==false and .hrWrites==false' "$FOCAL_OUT/health.json" >/dev/null
          echo "DEV_REVISION=$DEV_REVISION" >> "$GITHUB_ENV"
          echo "RUNTIME_DIGEST=$DIGEST" >> "$GITHUB_ENV"
-      - name: step
-        run: |
+      - run: |
          set -Eeuo pipefail
          cd "$SOURCE_DIR"
          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "storage,hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$FOCAL_OUT/hosting-deploy.log"
@@ -273,8 +264,7 @@ jobs:
          done
          echo "HOSTING_RELEASE_NAME=$HOSTING_RELEASE_NAME" >> "$GITHUB_ENV"
          echo "HOSTING_VERSION_NAME=$HOSTING_VERSION_NAME" >> "$GITHUB_ENV"
-      - name: step
-        run: |
+      - run: |
          set -Eeuo pipefail
          curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm143151=$GITHUB_RUN_ID" > "$FOCAL_OUT/hr-meta.json"
          HR_REVISION="$(jq -r '.revision // empty' "$FOCAL_OUT/hr-meta.json")"
@@ -282,14 +272,12 @@ jobs:
          test "$HR_REVISION" = "$EXPECTED_HR_REVISION"
          jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .hrWrites==false and .production==false' "$FOCAL_OUT/hr-meta.json" >/dev/null
          echo "HR_REVISION=$HR_REVISION" >> "$GITHUB_ENV"
-      - name: step
-        run: |
+      - run: |
          set -Eeuo pipefail
          PROJECT_ID="$PROJECT_ID" TENANT_ID="$TENANT_ID" HOSTING_URL="$HOSTING_URL" CERT_RES_SOURCE="$FOCAL_SOURCE" CERT_RES_MAT_OUT="$FOCAL_OUT" node tools/qa/cxorbia-prei4-cert-res-live.mjs | tee "$FOCAL_OUT/cert-res-live-console.log"
          test "$(jq -r '.decision' "$FOCAL_OUT/cert-res-live.json")" = "PASS_PREI4_CERT_RES_CUMULATIVE_DEV_LIVE"
          test "$(jq -r '.cleanup.attempt and .cleanup.recert and .cleanup.bank and .cleanup.resource and .cleanup.binary' "$FOCAL_OUT/cert-res-live.json")" = "true"
-      - name: step
-        run: |
+      - run: |
          set -Eeuo pipefail
          jq -n -S --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" --arg runtime "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg hosting "$HOSTING_VERSION_NAME" --arg hostingRelease "$HOSTING_RELEASE_NAME" --arg hr "$HR_REVISION" '{decision:"PASS_VRM143_151_EXACT_DEV_MATERIALIZATION",sourceSha:$source,sourceTree:$tree,runtimeRevision:$runtime,runtimeDigest:$digest,hostingVersion:$hosting,hostingRelease:$hostingRelease,hrRevision:$hr,builds:1,runtimeDeploys:1,hostingDeploys:1,hrWrites:0,production:false}' > "$FOCAL_OUT/result.json"
       - name: step
@@ -318,8 +306,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: step
-        run: |
+      - run: |
          set -Eeuo pipefail
          mkdir -p "$DRY_OUT"
          test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
@@ -329,14 +316,12 @@ jobs:
          test "$(jq -r '.currentMaterialization.production' "$CANDIDATE_DESCRIPTOR")" = "false"
          git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
          node --check tools/qa/cxorbia-vrm151-historical-reconciliation-dry-run.mjs
-      - name: step
-        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
+      - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
       - name: step
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-      - name: step
-        run: |
+      - run: |
          set -Eeuo pipefail
          set +e
          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" node tools/qa/cxorbia-vrm151-historical-reconciliation-dry-run.mjs > "$DRY_OUT/result.json"
@@ -375,8 +360,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: step
-        run: |
+      - run: |
          set -Eeuo pipefail
          mkdir -p "$DIAG_OUT"
          test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
@@ -385,14 +369,12 @@ jobs:
          test "$(jq -r '.currentMaterialization.sourceTree' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
          git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
          node --check tools/qa/cxorbia-vrm151-historical-amount-diagnostic.mjs
-      - name: step
-        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
+      - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
       - name: step
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-      - name: step
-        run: |
+      - run: |
          set -Eeuo pipefail
          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" node tools/qa/cxorbia-vrm151-historical-amount-diagnostic.mjs | tee "$DIAG_OUT/result.json"
          test "$(jq -r '.writes' "$DIAG_OUT/result.json")" = "0"
@@ -425,8 +407,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: step
-        run: |
+      - run: |
          set -Eeuo pipefail
          mkdir -p "$OWNER_OUT"
          test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
@@ -435,14 +416,12 @@ jobs:
          test "$(jq -r '.currentMaterialization.sourceTree' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
          git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
          node --check tools/qa/cxorbia-vrm151-canonical-owner-diagnostic.mjs
-      - name: step
-        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
+      - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
       - name: step
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-      - name: step
-        run: |
+      - run: |
          set -Eeuo pipefail
          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HR_URL="$OWNER_HR_URL" OUT="$OWNER_OUT" node tools/qa/cxorbia-vrm151-canonical-owner-diagnostic.mjs | tee "$OWNER_OUT/console.log"
          test "$(jq -r '.writes' "$OWNER_OUT/result.json")" = "0"
@@ -475,8 +454,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: step
-        run: |
+      - run: |
          set -Eeuo pipefail
          mkdir -p "$EXC_OUT"
          test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
@@ -485,14 +463,12 @@ jobs:
          test "$(jq -r '.currentMaterialization.sourceTree' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
          git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
          node --check tools/qa/cxorbia-vrm151-seven-exceptions-diagnostic.mjs
-      - name: step
-        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
+      - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
       - name: step
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-      - name: step
-        run: |
+      - run: |
          set -Eeuo pipefail
          PROJECT="$PROJECT" HR_URL="$EXC_HR_URL" OUT="$EXC_OUT" node tools/qa/cxorbia-vrm151-seven-exceptions-diagnostic.mjs | tee "$EXC_OUT/console.log"
          test "$(jq -r '.decision' "$EXC_OUT/result.json")" = "PASS_VRM151_SEVEN_REIMBURSEMENT_EXCEPTIONS_READ_ONLY"
@@ -527,8 +503,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: step
-        run: |
+      - run: |
          set -Eeuo pipefail
          mkdir -p "$ELIG_OUT"
          test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
@@ -537,8 +512,7 @@ jobs:
          test "$(jq -r '.currentMaterialization.sourceTree' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
          git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
          node --check tools/qa/cxorbia-vrm151-payment-eligibility-diagnostic.mjs
-      - name: step
-        run: |
+      - run: |
          set -Eeuo pipefail
          HR_URL="$ELIG_HR_URL" OUT="$ELIG_OUT" node tools/qa/cxorbia-vrm151-payment-eligibility-diagnostic.mjs | tee "$ELIG_OUT/console.log"
          test "$(jq -r '.decision' "$ELIG_OUT/result.json")" = "PASS_VRM151_HISTORICAL_PAYMENT_ELIGIBILITY_READ_ONLY"
@@ -571,8 +545,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: step
-        run: |
+      - run: |
          set -Eeuo pipefail
          mkdir -p "$VRM151_OUT"
          test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_SOURCE"
@@ -581,8 +554,7 @@ jobs:
          git merge-base --is-ancestor "$FOCAL_SOURCE" HEAD
          git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
          node --check backend/runtime/cxorbia-finance-command-provider-v1.mjs
-      - name: step
-        run: |
+      - run: |
          set -Eeuo pipefail
          node --test backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs | tee "$VRM151_OUT/tests.log"
          grep -Fq "VRM-151 historical reconciliation uses canonical submitted visit" "$VRM151_OUT/tests.log"
@@ -6546,7 +6518,7 @@ jobs:
 
   b1-canonical-visible-identity-dev-materialization:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED' && contains(github.event.head_commit.message, '[i3-phasea-dev-materialize]') }}
+    if: ${{ contains(github.event.head_commit.message, '[i3-phasea-dev-readback]') || contains(github.event.head_commit.message, '[i3-phasea-dev-materialize]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env: {PHASEA_SOURCE: "${{ needs.canonical-candidate-authority.outputs.source_sha }}", PHASEA_TREE: "${{ needs.canonical-candidate-authority.outputs.source_tree }}"}
@@ -6560,7 +6532,10 @@ jobs:
         with: {credentials_json: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}"}
       - uses: google-github-actions/setup-gcloud@v2
         with: {project_id: "${{ env.PROJECT }}"}
+      - run: bash .github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh readback
+        if: ${{ contains(github.event.head_commit.message, '[i3-phasea-dev-readback]') }}
       - run: bash .github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh materialize
+        if: ${{ contains(github.event.head_commit.message, '[i3-phasea-dev-materialize]') }}
       - run: bash .github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh proof
       - uses: actions/upload-artifact@v4
         if: always()
