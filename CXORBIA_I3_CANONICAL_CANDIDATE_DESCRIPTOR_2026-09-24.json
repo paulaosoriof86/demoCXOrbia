@@ -8,7 +8,7 @@
   "productTreeAuthority": "31c610153e263555d3c58ef284e87d8dde153a40",
   "predecessorProductSourceSha": "b344bc1ba79fe9216648f05fe9e64664b26c2a44",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V418_2026-10-14.json",
-  "findingsLedgerExpectedGitBlob": "36fddb72e6129643d29bb89788a77abbcc15f48b",
+  "findingsLedgerExpectedGitBlob": "62649b97344845ef04315f30cb275bf0bbb2d60b",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V108.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -2732,7 +2732,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "4090a61de80d1f6b33a8ed209fe5f0e82477d1e5",
+  "moduleTruthExpectedGitBlob": "5355724a14900da8a39b69d28454169fed9cc367",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -9816,9 +9816,9 @@
     "sourceTree": "31c610153e263555d3c58ef284e87d8dde153a40",
     "cssBlob": "7655824dcc0074c67d97399a0cb14c773dbdfdaf",
     "ledgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V418_2026-10-14.json",
-    "ledgerBlob": "36fddb72e6129643d29bb89788a77abbcc15f48b",
+    "ledgerBlob": "62649b97344845ef04315f30cb275bf0bbb2d60b",
     "matrixPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V108.json",
-    "matrixBlob": "4090a61de80d1f6b33a8ed209fe5f0e82477d1e5",
+    "matrixBlob": "5355724a14900da8a39b69d28454169fed9cc367",
     "perfQaBlob": "28549c3297e28302de511d67d27724f5f7c85b91",
     "scope": [
       "B3 compact cards",
@@ -9829,6 +9829,7 @@
     "latencyP0": "OPEN",
     "visualHuman": "PENDING",
     "devMaterialized": false,
-    "production": false
+    "production": false,
+    "controlGuardAlignment": "UPDATED"
   }
 }

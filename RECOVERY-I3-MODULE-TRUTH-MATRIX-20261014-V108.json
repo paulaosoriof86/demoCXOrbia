@@ -5472,7 +5472,7 @@
       "f9ApprovedBlob": "91b3d308e1a51be7a470f0f12b32382c1043058f",
       "latestApprovedSource": "4aeb41ca6dffb6e5b8324ca50531587539f5058e",
       "latestApprovedBlob": "808121cbe6b059e9b3cf3e15560ddc11e8000b94",
-      "currentBlob": "c5c242a32ab866f473e7a25468d03f653efd7b9b",
+      "currentBlob": "7655824dcc0074c67d97399a0cb14c773dbdfdaf",
       "loadTarget": "browser-style",
       "phaseAAuthority": true,
       "classification": "SOURCE_FIXED_PENDING_DEV_E2E_HUMAN",
@@ -5484,7 +5484,7 @@
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
       "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP",
+      "approvalDisposition": "SOURCE_CHANGE_P0_HUMAN_REQUESTED_PENDING_DEV_VISUAL",
       "preI4PriorMatrixBlob": "91b3d308e1a51be7a470f0f12b32382c1043058f",
       "preI4SuccessorMessage": "fix(pre-i4): clean shopper finance shell human lane",
       "preI4ProvenBy": {
@@ -9970,7 +9970,8 @@
     "previousOwnerBlob": "c5c242a32ab866f473e7a25468d03f653efd7b9b",
     "state": "SOURCE_ONLY_NOT_DEV_MATERIALIZED",
     "human": "PENDING",
-    "linkedFinding": "VRM-155"
+    "linkedFinding": "VRM-155",
+    "sourceFileEntryUpdated": true
   },
   "i3Oct14LatencyAndNotifications": {
     "vrm134": "OPEN_REPRODUCIBLE_SYNC_LATENCY",

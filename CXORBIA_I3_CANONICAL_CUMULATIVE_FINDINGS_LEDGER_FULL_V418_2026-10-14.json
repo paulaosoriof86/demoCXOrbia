@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "b344bc1ba79fe9216648f05fe9e64664b26c2a44",
-    "sourceTree": "ee5c50c4e73f3fcf581435e81a68229409b30f58",
-    "predecessorSha": "82d9c9c2fd8d27260bd39a56cc1a0fcb8c2d006b",
+    "sourceSha": "4e03ae244e67d462aef0826d6d948b98f58fcbc7",
+    "sourceTree": "31c610153e263555d3c58ef284e87d8dde153a40",
+    "predecessorSha": "b344bc1ba79fe9216648f05fe9e64664b26c2a44",
     "production": false,
-    "state": "SOURCE_PATCH_PENDING_QA_DEV_E2E_HUMAN",
+    "state": "SOURCE_ONLY_B3_COMPACT_PENDING_QA_DEV_HUMAN",
     "proof": {
       "status": "SOURCE_QA_PASS_RUN1517",
       "scope": "HF24 bridge blocked on missing provider, and movements/accounts exact readback after ACK; no live finance writes",
