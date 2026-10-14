@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "525f6cd6dddc22a3a7ff1bc12b03b07a98b1561e",
   "productTreeAuthority": "7aa467413c1ee19c3f0eeda233d7b9722f923886",
   "predecessorProductSourceSha": "1708b794779978ee7356124553c488195b3b3161",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V420_2026-10-14.json",
-  "findingsLedgerExpectedGitBlob": "8ba94a8f478c337a757da7928b2879c4c9d4d64d",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V110.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V421_2026-10-14.json",
+  "findingsLedgerExpectedGitBlob": "b371ebdcf023ce7dd4da4d981f6c354d78e389c4",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V111.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "OCT14_B7_EXISTING_SHOPPER_BULLETIN_FIRESTORE_VS_COLD_BROWSER_VISIBILITY_REPROOF",
+  "activeBlocker": "B7_SECURITY_SOURCE_PROVEN_B3_COMPACT_AND_VRM134_PENDING_ONE_DEV_MATERIALIZATION",
   "nextFindingId": "VRM-275",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -2732,7 +2732,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "14c1ec9a9b5bb06d1c536bc4c75bd820631e601f",
+  "moduleTruthExpectedGitBlob": "27dd5c73370748ae416dcb9ed0a201c1b0fb3f28",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -9836,9 +9836,11 @@
     "sourceSha": "525f6cd6dddc22a3a7ff1bc12b03b07a98b1561e",
     "sourceTree": "7aa467413c1ee19c3f0eeda233d7b9722f923886",
     "rulesBlob": "69cd9fef6dc3cc46c1bc2723bc289d6cb7b574e2",
-    "sourceState": "FOCAL_FIRESTORE_EMULATOR_PROOF_REQUIRED",
+    "sourceState": "PASS_EMULATOR_7_OF_7_READY_FOR_ONE_DEV_MATERIALIZATION",
     "liveRuleDeploy": false,
-    "prod": false
+    "prod": false,
+    "emulatorRunId": 38613513742,
+    "emulatorJobId": 116022742677
   },
   "i3Oct14SourceProofGate": {
     "workflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
@@ -9850,5 +9852,23 @@
     "noSecrets": true,
     "devDeploys": 0,
     "production": false
+  },
+  "i3Oct14SingleDevMaterializationRequest": {
+    "sourceSha": "525f6cd6dddc22a3a7ff1bc12b03b07a98b1561e",
+    "sourceTree": "7aa467413c1ee19c3f0eeda233d7b9722f923886",
+    "workflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "existingJob": "b1-canonical-visible-identity-dev-materialization",
+    "existingScript": ".github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh",
+    "trigger": "[i3-phasea-dev-materialize]",
+    "allow": {
+      "builds": 1,
+      "runtimeDeploys": 1,
+      "hostingDeploys": 1,
+      "firestoreRulesDeploys": 1
+    },
+    "project": "cxorbia-backend-dev",
+    "production": false,
+    "hrWrites": 0,
+    "emulatorSourceProofRun": 38613513742
   }
 }
