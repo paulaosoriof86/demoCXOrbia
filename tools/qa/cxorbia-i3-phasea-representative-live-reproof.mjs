@@ -221,6 +221,43 @@ try{
       if(!norm(midia.text).includes(norm('Hola, Julissa'))||norm(midia.text).includes(norm('Hola, Paula')))throw new Error('VISUAL_DEFECT:B1_MIDIA_GREETING:'+JSON.stringify(midia));
     }
 
+    /* B7: compare existing remote operational notices with a real authenticated Shopper
+       UI after identity/HR hydration. Read only: no test bulletin and no markRead write. */
+    let notificationReadback={scope:'existing_current_period_visit_bulletins',remoteExpected:0,matched:0,tablonMatched:0,state:'NO_MATCHING_REMOTE_EVENT'};
+    if(target.name==='Paula Osorio'){
+      const visitKeys=new Set([...(base.firstActive?[base.firstActive.id,base.firstActive.hrRowId]:[])].map(str).filter(Boolean));
+      const snapshot=await tenant.collection('bulletins').where('targetShopperIds','array-contains',target.profile.id).get();
+      const notices=snapshot.docs.map(x=>({id:x.id,...(x.data()||{})})).filter(x=>
+        x.status==='active'&&x.toRole==='shopper'&&str(x.tenantId)===tenantId&&str(x.projectId)===projectId&&
+        str(x.periodId)===periodId&&x.entityType==='visit'&&visitKeys.has(str(x.entityId))&&
+        arr(x.targetShopperIds).map(str).includes(target.profile.id));
+      const ids=notices.map(x=>x.id);
+      if(ids.length){
+        const initial=await page.evaluate(()=>({count:window.CX?.notif?.for?.('shopper')?.length||0,
+          loaded:window.CX_BACKEND_BULLETINS_STATUS?.source==='firestore'}));
+        await page.waitForFunction(list=>{
+          const items=window.CX?.notif?.for?.('shopper')||[];
+          return list.every(id=>items.some(n=>String(n.id)===id&&n.source==='firestore'));
+        },ids,{timeout:16000}).catch(()=>{});
+        const shop=await page.evaluate(list=>{
+          const visible=window.CX?.notif?.for?.('shopper')||[];
+          const ids=visible.map(n=>String(n.id));
+          return {matched:list.filter(id=>ids.includes(id)).length,loaded:window.CX_BACKEND_BULLETINS_STATUS?.source==='firestore',
+            shownOnMiDia:list.filter(id=>[...document.querySelectorAll('[data-ngo]')].some(e=>e.dataset.ngo===id)).length};
+        },ids);
+        await nav(page,'tablon');
+        const tablonMatched=await page.evaluate(list=>{
+          const visible=[...document.querySelectorAll('[data-n]')].map(x=>String(x.dataset.n||''));
+          return list.filter(id=>visible.includes(id)).length;
+        },ids);
+        notificationReadback={scope:'existing_current_period_visit_bulletins',
+          remoteExpected:ids.length,matched:shop.matched,tablonMatched,shownOnMiDia:shop.shownOnMiDia,
+          initialFeedCount:initial.count,hydratedFeedLoaded:shop.loaded,
+          state:shop.matched===ids.length&&tablonMatched===ids.length?'PASS_INDEPENDENT_SHOPPER_UI':'FAIL_SHOPPER_DELIVERY'};
+        if(notificationReadback.state!=='PASS_INDEPENDENT_SHOPPER_UI')
+          throw new Error('FUNCTIONAL_DEFECT:B7_SHOPPER_BULLETIN_NOT_VISIBLE:'+JSON.stringify(notificationReadback));
+      }
+    }
     await nav(page,'miperfil');
     const profile=await page.evaluate(expectedName=>{const body=String(document.body?.innerText||''),titles=[...document.querySelectorAll('.cx-profile-group-title')].map(x=>String(x.textContent||''));return {body:body.slice(0,1600),locked:/No fue posible vincular esta sesión con tu perfil/i.test(body),grid:!!document.querySelector('.cx-profile-detail-grid'),titles,nameVisible:normLocal(body).includes(normLocal(expectedName))};function normLocal(v){return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();}},target.name);
     if(profile.locked||!profile.grid||!profile.nameVisible||!['Identidad','Contacto','Acceso','Datos de pago'].every(k=>profile.titles.some(t=>norm(t).includes(norm(k)))))throw new Error('VISUAL_DEFECT:PROFILE_'+target.name+':'+JSON.stringify(profile));
@@ -307,7 +344,7 @@ try{
     const benefits=await page.evaluate(()=>{const rows=[...document.querySelectorAll('tbody tr')].map(tr=>({text:String(tr.innerText||'').replace(/\s+/g,' ').trim(),status:String(tr.dataset.benStatus||'')}));const old=rows.filter(r=>{const m=r.text.match(/20\d{2}-\d{2}-\d{2}/);return m&&m[0]<='2026-05-31';});const oldPaid=old.filter(r=>r.status==='paid');const paidContradictions=oldPaid.filter(r=>/Pendiente de confirmación/i.test(r.text));return {rows:rows.length,oldRows:old.length,oldPaid:oldPaid.length,paidContradictions:paidContradictions.map(r=>r.text),body:String(document.body?.innerText||'').slice(0,1800)};});
     if(target.name==='Paula Osorio'&&(benefits.oldRows<1||benefits.oldPaid<1||benefits.paidContradictions.length))throw new Error('FUNCTIONAL_DEFECT:PAULA_HISTORICAL_PAYMENT_DISPLAY:'+JSON.stringify(benefits));
 
-    evidence.representatives[target.name]={shopperId:target.profile.id,uid:target.member.id,selectionAuthority:target.selectionAuthority,independentSameDisplayNamePrincipals:target.independentSameDisplayNamePrincipals,missingProfileFields:target.missing,authorityReadyMs:sp.authorityReadyMs,base,midia:{noActive:midia.noActive,branchVisible:midia.branchVisible,railUser:midia.railUser,heading:midia.heading,actions:midia.actions,progress:midia.progress},profile:{grid:profile.grid,titles:profile.titles,nameVisible:profile.nameVisible},route,cert:{rendered:cert.rendered,unavailable:certSaysUnavailable,routeSaysValid},b1ActionExercise,academy,benefits:{rows:benefits.rows,oldRows:benefits.oldRows,oldPaid:benefits.oldPaid,paidContradictionCount:benefits.paidContradictions.length}};
+    evidence.representatives[target.name]={notificationReadback,shopperId:target.profile.id,uid:target.member.id,selectionAuthority:target.selectionAuthority,independentSameDisplayNamePrincipals:target.independentSameDisplayNamePrincipals,missingProfileFields:target.missing,authorityReadyMs:sp.authorityReadyMs,base,midia:{noActive:midia.noActive,branchVisible:midia.branchVisible,railUser:midia.railUser,heading:midia.heading,actions:midia.actions,progress:midia.progress},profile:{grid:profile.grid,titles:profile.titles,nameVisible:profile.nameVisible},route,cert:{rendered:cert.rendered,unavailable:certSaysUnavailable,routeSaysValid},b1ActionExercise,academy,benefits:{rows:benefits.rows,oldRows:benefits.oldRows,oldPaid:benefits.oldPaid,paidContradictionCount:benefits.paidContradictions.length}};
     await sp.ctx.close();
   }
 
