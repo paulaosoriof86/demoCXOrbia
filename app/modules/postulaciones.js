@@ -9,6 +9,55 @@ CX.adminPostulacionesActions.cancelReasonForUi=(request)=>{
   if(/^[a-z][a-z0-9]*(?:[-_][a-z0-9]+){2,}$/i.test(raw))return 'La solicitud no contiene un motivo legible. Solicita aclaración al shopper.';
   return raw;
 };
+/* B7 P0: asking for another date must close the expired pending request remotely
+   before a shopper can submit a replacement. The original HR date stays unchanged. */
+CX.adminPostulacionesActions.requestReplacementDate=({data,ui,visitId})=>{
+  const id=String(visitId||'');
+  const visit=(data.visitas?.()||[]).find(x=>String(x.id||x.visitId)===id);
+  if(!visit||visit.rescheduleRequest?.status!=='pending_review'){
+    ui.toast('La solicitud ya no está pendiente. Actualiza Gestión de Postulaciones.','warn',4200);
+    return false;
+  }
+  if(!CX.permissions?.gate?.('visit.reassign',{projectId:data.currentProjectId,pais:visit.pais},ui))return false;
+  const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const previousDate=String(visit.agendada||visit.scheduledDate||'').slice(0,10);
+  ui.modal('🔄 Pedir una nueva fecha',
+    '<p>La fecha solicitada para <b>'+esc(visit.sucursal||'esta visita')+'</b> no será autorizada. La fecha vigente <b>'+esc(previousDate||'registrada')+'</b> se conserva mientras el shopper propone otra.</p>'+
+    '<label class="lbl" for="cxReplacementReason">Indicación para el shopper (obligatoria)</label>'+
+    '<textarea class="inp" id="cxReplacementReason" rows="3" maxlength="500" placeholder="Explica por qué necesitas otra fecha."></textarea>'+
+    '<div class="flex wrap" style="justify-content:flex-end;gap:8px;margin-top:12px"><button class="btn btn-ghost" id="cxReplacementBack">Volver</button><button class="btn btn-pr" id="cxReplacementConfirm">Solicitar nueva fecha</button></div>',
+    {premium:true,replaceExisting:true,dismissOnBackdrop:false,onMount:(ov,close)=>{
+      ov.querySelector('#cxReplacementBack').addEventListener('click',close);
+      ov.querySelector('#cxReplacementConfirm').addEventListener('click',async()=>{
+        const btn=ov.querySelector('#cxReplacementConfirm');
+        const reason=String(ov.querySelector('#cxReplacementReason').value||'').trim();
+        if(!reason){ui.toast('Escribe la indicación para solicitar otra fecha.','warn',4000);return;}
+        btn.disabled=true;btn.textContent='Verificando con el servidor…';
+        let result=null,error=null;
+        try{result=await data.requestVisitReschedule(id,null,{ackAware:true,decision:'rejected',reason});}catch(caught){error=caught;}
+        if(!(result?.ok===true&&result?.status==='committed'&&result?.providerAck===true&&result?.successUiAllowed===true)){
+          const diagnostic=CX.adminPostulacionesActions.rescheduleFailure(result,error);
+          btn.dataset.providerResultCode=diagnostic.code;btn.disabled=false;btn.textContent='Solicitar nueva fecha';ui.toast(diagnostic.message,'warn',4400);return;
+        }
+        let observed=null;
+        try{
+          await CX.backend?.refresh?.();
+          await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('admin_replacement_date_rejected_old_proposal');
+          observed=(data.visitas?.()||[]).find(v=>String(v.id||v.visitId)===id);
+        }catch(_){}
+        const preserved=!previousDate||String(observed?.agendada||observed?.scheduledDate||'').slice(0,10)===previousDate;
+        if(observed?.rescheduleRequest?.status!=='rejected'||!preserved){
+          btn.disabled=false;btn.textContent='Solicitar nueva fecha';
+          ui.toast('Decisión recibida por el servidor; falta confirmar su actualización visible. No se marcará como terminada.','warn',4800);
+          return;
+        }
+        close();
+        CX.router?.nav?.('postulaciones',{history:false});
+        ui.toast('Fecha anterior conservada. La solicitud vencida quedó cerrada y el shopper puede proponer otra fecha.','ok',4300);
+      });
+    }});
+  return true;
+};
 CX.adminPostulacionesActions.openRequest=({data,ui,visitIds=[],defaultType='confirmar'})=>{
   const ids=new Set(visitIds.map(String).filter(Boolean));
   const posts=(data._posts||[]).filter(x=>data.inScope(x.pais)&&x?._archived!==true&&x?.active!==false&&x?.postulationLifecycle!=='transitioned_to_assignment'&&(!data.currentPeriodId||String(data.recordPeriodId?.(x)||x.periodId||'')===String(data.currentPeriodId)));
@@ -136,8 +185,8 @@ CX.adminPostulacionesActions.openAgenda=({data,ui,visitIds=[]})=>{
       }));
       ov.querySelectorAll('[data-date-renew]').forEach(b=>b.addEventListener('click',()=>{
         const visit=requestByVisit.find(v=>String(v.id||v.visitId)===String(b.dataset.dateRenew||''));
-        if(!visit||!CX.permissions?.gate?.('visit.reassign',{projectId:data.currentProjectId,pais:visit.pais},ui))return;
-        close();CX.adminPostulacionesActions.openRequest({data,ui,visitIds:[String(visit.id||visit.visitId)],defaultType:'cambio'});
+        if(!visit)return;
+        close();CX.adminPostulacionesActions.requestReplacementDate({data,ui,visitId:String(visit.id||visit.visitId)});
       }));
       ov.querySelectorAll('[data-date-decision]').forEach(b=>b.addEventListener('click',async()=>{
         const visit=requestByVisit.find(v=>String(v.id||v.visitId)===String(b.dataset.vid||''));
@@ -723,13 +772,15 @@ CX.module('postulaciones', ({data,ui})=>{
     /* botones de reprogramación (revisar / autorizar nueva fecha / conservar anterior) */
     document.querySelectorAll('[data-revpost]').forEach(b=>b.addEventListener('click',()=>{
       const x=findReprogram(b.dataset.revpost);
-      if(!x?.visitaId){ui.toast('No hay una visita exacta para revisar la reprogramación.','warn',4200);return;}
-      CX.adminPostulacionesActions.openAgenda({data,ui,visitIds:[String(x.visitaId)]});
+      const visitId=String(x?.visitaId||x?.visitId||x?.id||'');
+      if(!visitId){ui.toast('No hay una visita exacta para revisar la reprogramación.','warn',4200);return;}
+      CX.adminPostulacionesActions.openAgenda({data,ui,visitIds:[visitId]});
     }));
     document.querySelectorAll('[data-reprog-renew]').forEach(b=>b.addEventListener('click',()=>{
       const x=findReprogram(b.dataset.reprogRenew);
-      if(!x?.visitaId||!CX.permissions.gate('visit.reassign',{projectId:x.rootProjectId||x.projectId,pais:x.pais},ui))return;
-      CX.adminPostulacionesActions.openRequest({data,ui,visitIds:[String(x.visitaId)],defaultType:'cambio'});
+      const visitId=String(x?.visitaId||x?.visitId||x?.id||'');
+      if(!visitId)return;
+      CX.adminPostulacionesActions.requestReplacementDate({data,ui,visitId});
     }));
     document.querySelectorAll('[data-authfecha]').forEach(b=>b.addEventListener('click',async()=>{
       const x=findReprogram(b.dataset.authfecha);
