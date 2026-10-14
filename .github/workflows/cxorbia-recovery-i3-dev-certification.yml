@@ -110,6 +110,8 @@ jobs:
          node --test tools/qa/cxorbia-i3-b7-cancel-reason-human-source-20261014.test.mjs
          node --check app/core/backend-bulletins.js
          node --test tools/qa/cxorbia-i3-b7-notif-readback-source-20261014.test.mjs
+         node --check backend/runtime/cxorbia-operational-command-provider-v1.mjs
+         node --test tools/qa/cxorbia-i3-b7-reschedule-bulletin-target-source-20261014.test.mjs
          node --test backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs
          node --test tools/qa/cxorbia-i3-b7-hf13-whatsapp-draft-source.test.mjs
          node --test tools/qa/cxorbia-i3-b7-hf15-assignment-actions-source.test.mjs
