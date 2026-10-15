@@ -6643,6 +6643,19 @@ jobs:
          set -Eeuo pipefail
          P="$PHASEA_LIVE_OUT"
          if [ "$(jq -r .activeBlocker "$CANDIDATE_DESCRIPTOR")" = "R20_SINGLE_CREDENTIAL_READONLY_REQUIRED" ]; then node tools/qa/cxorbia-i3-r20-ordinary-password-single-readonly.mjs; exit 0; fi
+         if [ "$(jq -r .activeBlocker "$CANDIDATE_DESCRIPTOR")" = "R23_SAME_REVISION_READONLY_REQUIRED" ]; then
+           node --check tools/qa/cxorbia-i3-r23-independent-hr-kpi-readonly.mjs
+           for COUNTRY in GT HN; do
+             R23_DIR="$P/r23/$COUNTRY"
+             mkdir -p "$R23_DIR"
+             R23_COUNTRY="$COUNTRY" OUT="$R23_DIR" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" FOCAL_SOURCE="$FOCAL_SOURCE" HOSTING_URL="$HOSTING_URL" node tools/qa/cxorbia-i3-r23-independent-hr-kpi-readonly.mjs | tee "$R23_DIR/console.log"
+             test "$(jq -r .decision "$R23_DIR/r23-external-hr-kpis-same-revision.json")" = "PASS_R23_KPIS_SAME_EXTERNAL_HR_REVISION"
+             test "$(jq -r .externalRevision "$R23_DIR/r23-external-hr-kpis-same-revision.json")" = "$EXPECTED_HR_REVISION"
+             test "$(jq -r .readbackRevision "$R23_DIR/r23-external-hr-kpis-same-revision.json")" = "$EXPECTED_HR_REVISION"
+             jq -e '.readOnly==true and .production==false and .providerWrites==0 and .authWrites==0 and .firestoreWrites==0 and .hrWrites==0 and .financeWrites==0 and .sameRevision==true and .kpisExact==true and .comparisonIndependentFromBrowserReadModel==true' "$R23_DIR/r23-external-hr-kpis-same-revision.json" >/dev/null
+           done
+           exit 0
+         fi
          if [ "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_I3_B7_TWO_ROLE_DECISION_LIVE_DEV_REQUIRED" ]; then
            B7_OUT="$P/b7" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" node tools/qa/cxorbia-i3-b7-cancel-two-role-focal-live.mjs | tee "$P/b7-console.log"
            test "$(jq -r '.decision' "$P/b7/result.json")" = "PASS_I3_B7_TWO_ROLE_DECISION_LIVE_DEV"
