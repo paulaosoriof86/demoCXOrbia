@@ -8,7 +8,7 @@ test('R22 role and exact shopper visit select action without fuzzy fallback',()=
  const match=top.match(/  _noticeTarget\(n\)\{([\s\S]*?)\n  \},\n  _noticeText/);
  assert.ok(match);
  const fn=vm.runInNewContext('(function(n){'+match[1]+'\n})',{
-    CX:{backendAuth:{context:()=>({shopperId:'s1'})},session:{user:{shopperId:'s1'}},data:{_visitas:[{id:'v1',shopperId:'s1'},{id:'v2',shopperId:'s2'}]}}
+    CX:{backendAuth:{context:()=>({authenticated:true,role:'shopper',shopperId:'s1',projectIds:['cinepolis']})},session:{user:{shopperId:'s1'}},data:{currentProjectId:'cinepolis',__identityMap:{},_visitas:[{id:'v1',shopperId:'s1',projectId:'cinepolis'},{id:'v2',shopperId:'s2',projectId:'cinepolis'}]}}
  });
  const shopper={role:()=> 'shopper'};
  assert.deepEqual(JSON.parse(JSON.stringify(fn.call(shopper,{tipo:'cuestionario',entityType:'visit',entityId:'v1',nav:'misvisitas'}))),{nav:'misvisitas',visitId:'v1',action:'questionnaire'});
