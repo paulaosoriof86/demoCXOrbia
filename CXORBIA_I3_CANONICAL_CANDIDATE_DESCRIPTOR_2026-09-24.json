@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_POST_R01_FOCAL_LIVE_PASS_OTHER_P0_PENDING",
+  "status": "HOLD_I3_R20_SINGLE_CREDENTIAL_READONLY_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "e93201ce9039aa20a6d993bf5dc0b9db866d0eac",
   "predecessorProductSourceSha": "52de067d105ee5711859a03c00a6b77ff551224f",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V441_2026-10-14.json",
-  "findingsLedgerExpectedGitBlob": "1781feb26398b82c621b265e7e898aad49042329",
+  "findingsLedgerExpectedGitBlob": "f896e64eec565cf027065652222794bcc17b2751",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V119.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "R20_REAL_PASSWORD_R03_IDENTITY_R07_HR_CANCEL_R08_REAL_15Q_R09_TO_R17_FINANCE_R22_NOTIFICATIONS_R23_HR_KPI_HUMAN_GATE20_GATE21",
+  "activeBlocker": "R20_EXACT_ORDINARY_PASSWORD_TEST_PENDING_OTHER_OPEN_P0_PRESERVED",
   "nextFindingId": "VRM-275",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Close next P0 using existing I3 lane only: R20 ordinary password login and session restore without custom token or destructive credential change, then R07 cancellation external HR ACK/readback, R08 authentic 15-question instructive, finance real reconciliation including Q7300, R22 read/reload and R23 independent HR KPI. No DEV rebuild absent approved source delta, no I4 before human/Gate20/Gate21.",
+  "exactNextAction": "Execute one existing-workflow READ-ONLY ordinary login R20 on current DEV without guessing or modifying credentials; reconcile result, preserving 274 findings and RUN1680-1683. If no exact credential, HOLD with necessary authorized IAM/credential remedy. Other R03/R07/R08/R09-R17/R22/R23/HUMAN/G20/G21 remain.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2740,7 +2740,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "2fc16df1569e1a7109d627f920ab769ecd6a80e3",
+  "moduleTruthExpectedGitBlob": "ce3cc3413faae62c738fc1f49674c31108afcded",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -11188,5 +11188,22 @@
     "gate20": "PENDING",
     "gate21": "PENDING",
     "production": false
+  },
+  "i3Oct15R20SingleCredentialProofRequest": {
+    "iteration": "I3_FUNCTIONAL_CLOSURE",
+    "classification": "AUTH_FAILURE_UNPROVEN_ORDINARY_PASSWORD_FLOW",
+    "scope": "R20_FIRST_PASSWORD_LOGIN_SINGLE_EXISTING_AUTHORIZED_CREDENTIAL_READ_ONLY",
+    "productSourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
+    "sourceTree": "e93201ce9039aa20a6d993bf5dc0b9db866d0eac",
+    "productChanges": 0,
+    "devDeploys": 0,
+    "production": false,
+    "qaScript": "tools/qa/cxorbia-i3-r20-ordinary-password-single-readonly.mjs",
+    "qaScriptBlob": "fa4fd604c9c0eda52d1492c41de57a4398da365a",
+    "workflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "workflowBlob": "ac2cb6ffd768f638a97cca03bd692167ff80641f",
+    "safety": "no password guessing; no resets; max 1 ordinary-browser password attempt; no raw credentials exported; fail closed",
+    "expectedDecision": "PASS_R20_ORDINARY_PASSWORD_FIRST_LOGIN_FOCAL_OR_SCOPED_HOLD",
+    "knownLimitations": "session restoration/relogin and representative multi-country/population remain pending even after first-login PASS"
   }
 }

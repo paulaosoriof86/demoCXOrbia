@@ -11057,5 +11057,22 @@
     "gate20": "PENDING",
     "gate21": "PENDING",
     "production": false
+  },
+  "i3Oct15R20SingleCredentialProofRequest": {
+    "iteration": "I3_FUNCTIONAL_CLOSURE",
+    "classification": "AUTH_FAILURE_UNPROVEN_ORDINARY_PASSWORD_FLOW",
+    "scope": "R20_FIRST_PASSWORD_LOGIN_SINGLE_EXISTING_AUTHORIZED_CREDENTIAL_READ_ONLY",
+    "productSourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
+    "sourceTree": "e93201ce9039aa20a6d993bf5dc0b9db866d0eac",
+    "productChanges": 0,
+    "devDeploys": 0,
+    "production": false,
+    "qaScript": "tools/qa/cxorbia-i3-r20-ordinary-password-single-readonly.mjs",
+    "qaScriptBlob": "fa4fd604c9c0eda52d1492c41de57a4398da365a",
+    "workflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "workflowBlob": "ac2cb6ffd768f638a97cca03bd692167ff80641f",
+    "safety": "no password guessing; no resets; max 1 ordinary-browser password attempt; no raw credentials exported; fail closed",
+    "expectedDecision": "PASS_R20_ORDINARY_PASSWORD_FIRST_LOGIN_FOCAL_OR_SCOPED_HOLD",
+    "knownLimitations": "session restoration/relogin and representative multi-country/population remain pending even after first-login PASS"
   }
 }

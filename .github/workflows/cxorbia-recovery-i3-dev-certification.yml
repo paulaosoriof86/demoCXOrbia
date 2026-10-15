@@ -7381,3 +7381,68 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
           compression-level: 0
+
+  r20-exact-password-single-credential-readonly:
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_R20_SINGLE_CREDENTIAL_READONLY_REQUIRED' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    env:
+      R20_SOURCE_SHA: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      R20_SAFE_OUT: .tmp/i3-r20-single-credential
+      R20_HOSTING_URL: https://cxorbia-backend-dev.web.app
+      R20_AUTHORIZED_TEST_LOGIN: ${{ secrets.CXORBIA_R20_AUTHORIZED_TEST_LOGIN }}
+      R20_AUTHORIZED_TEST_PASSWORD: ${{ secrets.CXORBIA_R20_AUTHORIZED_TEST_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Verify unchanged candidate and R20 script
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$R20_SAFE_OUT"
+          test "$(jq -r .productSourceSha "$CANDIDATE_DESCRIPTOR")" = "$R20_SOURCE_SHA"
+          test "$(jq -r .currentMaterialization.sourceSha "$CANDIDATE_DESCRIPTOR")" = "$R20_SOURCE_SHA"
+          test "$(jq -r .status "$CANDIDATE_DESCRIPTOR")" = "HOLD_I3_R20_SINGLE_CREDENTIAL_READONLY_REQUIRED"
+          git diff --quiet "$R20_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          node --check tools/qa/cxorbia-i3-r20-ordinary-password-single-readonly.mjs
+          node --check tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs
+          node tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs > "$R20_SAFE_OUT/real-login-source-qa.json"
+          test "$(jq -r .decision "$R20_SAFE_OUT/real-login-source-qa.json")" = "PASS_P0_REAL_SHOPPER_AUTH_E2E_SOURCE"
+      - name: Install scoped proof dependencies
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - uses: google-github-actions/setup-gcloud@v2
+      - name: Exact DEV fingerprint and bounded ordinary-login attempt
+        run: |
+          set -Eeuo pipefail
+          EXPECTED_REV="$(jq -r .currentMaterialization.runtimeRevision "$CANDIDATE_DESCRIPTOR")"
+          EXPECTED_DIGEST="$(jq -r .currentMaterialization.runtimeDigest "$CANDIDATE_DESCRIPTOR")"
+          EXPECTED_HOST="$(jq -r .currentMaterialization.hostingVersion "$CANDIDATE_DESCRIPTOR")"
+          EXPECTED_HR="$(jq -r .currentMaterialization.hrRevision "$CANDIDATE_DESCRIPTOR")"
+          test "$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(status.latestReadyRevisionName)')" = "$EXPECTED_REV"
+          gcloud run revisions describe "$EXPECTED_REV" --project "$PROJECT" --region "$REGION" --format=json > "$R20_SAFE_OUT/revision.json"
+          RAW="$(jq -r .status.imageDigest "$R20_SAFE_OUT/revision.json")"
+          case "$RAW" in sha256:*) DIGEST="$RAW";; *@sha256:*) DIGEST="sha256:$(printf '%s' "$RAW"|sed 's/.*@sha256://')";; *) exit 1;; esac
+          test "$DIGEST" = "$EXPECTED_DIGEST"
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$R20_SAFE_OUT/hosting.json"
+          test "$(jq -r .release.version.name "$R20_SAFE_OUT/hosting.json")" = "$EXPECTED_HOST"
+          curl -fsS -H 'Cache-Control: no-cache' "$R20_HOSTING_URL/api/tya/cinepolis/hr-live?format=meta&r20=$GITHUB_RUN_ID" > "$R20_SAFE_OUT/hr-meta.json"
+          test "$(jq -r .revision "$R20_SAFE_OUT/hr-meta.json")" = "$EXPECTED_HR"
+          node tools/qa/cxorbia-i3-r20-ordinary-password-single-readonly.mjs
+          jq -e '.sourceSha == env.R20_SOURCE_SHA and .authWrites == 0 and .passwordChanges == 0 and .customTokensUsed == 0 and .loginAttempts <= 1 and .production == false' "$R20_SAFE_OUT/result.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cxorbia-i3-r20-single-credential-readonly-${{ github.run_id }}
+          path: |
+            .tmp/i3-r20-single-credential/result.json
+            .tmp/i3-r20-single-credential/real-login-source-qa.json
+          if-no-files-found: warn
+          retention-days: 21
