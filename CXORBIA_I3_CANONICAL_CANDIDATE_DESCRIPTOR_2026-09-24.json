@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_OPEN_P0_TERMINAL_E2E_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "R22 new human-text source QA -> guarded exact same-candidate DEV materialization -> multi-surface two-Shopper live E2E; in parallel R08 authentic approved instruction and Vertex exact15, R09-R17 bank independent evidence, R07 external HR ACK. Incremental Paula visual review only for demonstrated DEV E2E blocks; I4 blocked.",
+  "exactNextAction": "Materialize EXACT R22 cumulative source once in existing Phase A DEV lane and independently readback Hosting/Runtime/HR; then two Shopper notification presentation/live ACK/navigation E2E. Parallel R08 and R09-R17 remain on their own owners; R07 external HR ACK HOLD. Visual acceptance can be incremental per verified block.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -11640,6 +11640,16 @@
       "sourceOwnerFail": 0,
       "productSourceSha": "80ada5c4f8bf6301345f5053541e74178287326b",
       "production": false
+    },
+    "devRequest": {
+      "sourceQaRun": 1723,
+      "runId": 38776633741,
+      "sourceSha": "80ada5c4f8bf6301345f5053541e74178287326b",
+      "sourceTree": "fb914a617c250eeae5fb287f7910022bb60f09da",
+      "oneDeterministicBuild": true,
+      "devOnly": true,
+      "production": false,
+      "approvedReviewMode": "INCREMENTAL_BLOCK_VISUAL_ON_VERIFIED_DEV"
     }
   }
 }
