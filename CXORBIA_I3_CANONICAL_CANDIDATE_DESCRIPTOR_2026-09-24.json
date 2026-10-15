@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_OPEN_P0_TERMINAL_E2E_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "R07_HR_ACK__R08_VERTEX_15_SOURCE__R22_TECHNICAL_BODIES_AND_NEW_READ_ACK__FINANCE_677_HISTORICAL_BATCH",
+  "activeBlocker": "R08_FINANCE_PROVENANCE_READONLY_REQUIRED",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Do not rerun R20 or R23. R08: exact source current approval + Vertex real 15 questions pending_review; R22: Codex-only focal safe technical-body presentation + fresh click ACK/read-after-reload; finance: exact 677 historical reconciliation authoritative source and unpaid/batch reviews without inferring external transfer; R07 remains external HR ACK pending. No human review until unified P0 E2E.",
+  "exactNextAction": "R08 and finance exact metadata proof in one existing I3 read-only DEV job: authorized instruction pointer and publication state, 15 question bank readiness; 677 financial reconciliation status and external proof by country/currency, no real payment; preserve R22 RUN1713 partial PASS.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -11552,5 +11552,14 @@
       "devDeploys": 0,
       "production": false
     }
+  },
+  "r08FinanceReadOnlyRequest": {
+    "runPurpose": "R08_FINANCE_EXACT_SOURCE_P0",
+    "sourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
+    "qa": "tools/qa/cxorbia-i3-r08-finance-provenance-readonly.mjs",
+    "artifactRun": 1681,
+    "cloudRuntimeUnchanged": true,
+    "writes": 0,
+    "production": false
   }
 }
