@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_OTHER_P0_TERMINAL_E2E_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "R07_EXTERNAL_HR_ACK_NOT_PROVEN__R08_R09_R17_R22_OPEN",
+  "activeBlocker": "R08_R22_FINANCE_READONLY_REQUIRED",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "R07 lacks a live externally ACKed cancellation release case; preserve HOLD, no speculative HR writes. Progress R08 genuine grounded 15-question Vertex human review, R22 durable read/reload isolation, finance R09-R17; one terminal same-artifact human review then Gate20/21. I4 blocked.",
+  "exactNextAction": "Run one existing I3 DEV authority and read-only metadata preflight for R08 authentic Vertex source, R22 durable notice isolation and R09-R17 financial records; classify owner deltas without changing product or providers; then focal E2E only on demonstrated gaps.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -11402,5 +11402,24 @@
     "externalAckReleaseProven": false,
     "sourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
     "noProduction": true
+  },
+  "parallelP0ReadOnly20261015": {
+    "mode": "EXISTING_I3_SINGLE_READONLY_JOB",
+    "targetSourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
+    "priorPreserved": [
+      "R20_PASSWORD_E2E_PASS",
+      "R23_GT_HN_KPI_PASS",
+      "R07_HR_READONLY_HOLD"
+    ],
+    "scope": [
+      "R08",
+      "R22",
+      "R09-R17"
+    ],
+    "providerWrites": 0,
+    "hrWrites": 0,
+    "authWrites": 0,
+    "financeWrites": 0,
+    "production": false
   }
 }

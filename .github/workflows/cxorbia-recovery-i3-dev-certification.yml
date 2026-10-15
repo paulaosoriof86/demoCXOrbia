@@ -6643,7 +6643,7 @@ jobs:
          set -Eeuo pipefail
          P="$PHASEA_LIVE_OUT"
          if [ "$(jq -r .activeBlocker "$CANDIDATE_DESCRIPTOR")" = "R20_SINGLE_CREDENTIAL_READONLY_REQUIRED" ]; then node tools/qa/cxorbia-i3-r20-ordinary-password-single-readonly.mjs; exit 0; fi
-         if [ "$(jq -r .activeBlocker "$CANDIDATE_DESCRIPTOR")" = "R07_EXTERNAL_HR_READONLY_REQUIRED" ]; then node --check tools/qa/cxorbia-i3-r07-external-hr-cancel-readonly.mjs; R07_OUT="$P/r07" node tools/qa/cxorbia-i3-r07-external-hr-cancel-readonly.mjs; exit 0; fi
+         if [ "$(jq -r .activeBlocker "$CANDIDATE_DESCRIPTOR")" = "R08_R22_FINANCE_READONLY_REQUIRED" ]; then node --check tools/qa/cxorbia-i3-r08-r22-finance-readonly.mjs; P0_FOCAL_OUT="$P/p0-readonly" node tools/qa/cxorbia-i3-r08-r22-finance-readonly.mjs; exit 0; fi
          if [ "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_I3_B7_TWO_ROLE_DECISION_LIVE_DEV_REQUIRED" ]; then
            B7_OUT="$P/b7" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" node tools/qa/cxorbia-i3-b7-cancel-two-role-focal-live.mjs | tee "$P/b7-console.log"
            test "$(jq -r '.decision' "$P/b7/result.json")" = "PASS_I3_B7_TWO_ROLE_DECISION_LIVE_DEV"
