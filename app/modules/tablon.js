@@ -28,7 +28,7 @@ CX.module('tablon', ({role,ui})=>{
           <div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--t1)">${n.titulo} ${n.leida?'':'<span class="bdg bdg-r" style="font-size:9px;padding:1px 6px">nuevo</span>'}</div>
             <div style="font-size:12px;color:var(--t2)">${noticeText(n)}</div><div style="font-size:10.5px;color:var(--t3);margin-top:2px">${n.fecha}</div></div>
           <div class="flex" style="gap:6px">
-            ${n.accion==='confirmar_fecha'?`<button class="btn btn-green btn-sm" data-conf="${n.id}">Confirmar</button><button class="btn btn-ghost btn-sm" data-prop="${n.id}">Proponer otra</button>`
+            ${role==='shopper'&&n.accion==='confirmar_fecha'?`<button class="btn btn-green btn-sm" data-conf="${n.id}">Confirmar</button><button class="btn btn-ghost btn-sm" data-prop="${n.id}">Proponer otra</button>`
               :`<button class="btn btn-soft btn-sm" data-go="${n.id}">Ver →</button>`}
           </div></div>`).join(''):ui.empty('🔔','Sin novedades')}
         <div style="margin-top:8px">${ui.aiBox('Centraliza lo que pasa. Desde admin puedes crear notificaciones para el equipo y shoppers con formato, emojis y video.','Un solo canal, trazable')}</div>
@@ -61,8 +61,32 @@ CX.module('tablon', ({role,ui})=>{
       openNoticeTarget(n);
       draw();
     }));
-    host.querySelectorAll('[data-conf]').forEach(b=>b.addEventListener('click',(e)=>{e.stopPropagation();CX.notif.markRead(b.dataset.conf);CX.notif.push({to:'admin',tipo:'confirmada',icon:'✅',tono:'g',titulo:'Fecha confirmada',txt:'El shopper confirmó la fecha propuesta',nav:'postulaciones'});ui.toast('Fecha confirmada · equipo notificado','ok');draw();}));
-    host.querySelectorAll('[data-prop]').forEach(b=>b.addEventListener('click',(e)=>{e.stopPropagation();ui.modal('Proponer otra fecha',`<label class="lbl">Nueva fecha</label><input class="inp" type="date" style="margin-bottom:14px"><div style="text-align:right"><button class="btn btn-pr btn-sm" id="propOk">Enviar propuesta</button></div>`,{onMount:(ov,close)=>{ov.querySelector('#propOk').addEventListener('click',()=>{CX.notif.markRead(b.dataset.prop);CX.notif.push({to:'admin',tipo:'reprog',icon:'🔄',tono:'a',titulo:'Nueva fecha propuesta por shopper',txt:'Requiere autorización del equipo',nav:'postulaciones'});close();ui.toast('Propuesta enviada · pendiente de autorización','ok');draw();});}});}));
+    // R22/P0: these actions must enter the visit's provider-backed owner.
+    // A notification or a local toast is never confirmation of HR scheduling.
+    const beginVisitAction=async(noticeId,requestedAction)=>{
+      const notice=feed.find(n=>String(n.id)===String(noticeId));
+      if(role!=='shopper'||!notice){ui.toast('No se confirmó la acción: falta una sesión válida.','warn');return;}
+      const exact=noticeTarget(notice);
+      if(exact.nav!=='misvisitas'||!exact.visitId){
+        ui.toast('No se encontró una visita autorizada para esta solicitud. Consulta con Coordinación.','warn',4200);
+        return;
+      }
+      try{
+        const ack=await CX.notif.markRead(notice.id);
+        if(notice.source==='firestore'&&ack?.providerAck!==true)
+          ui.toast('No se confirmó la lectura remota. La fecha todavía no se ha modificado.','warn',4200);
+      }catch(_){ui.toast('No se confirmó la lectura remota. La fecha todavía no se ha modificado.','warn',4200);}
+      window.CX_PENDING_SHOPPER_VISIT_ACTION={
+        action:requestedAction,visitId:exact.visitId,requestedAt:Date.now(),returnView:'tablon'
+      };
+      CX.router.nav('misvisitas');
+    };
+    host.querySelectorAll('[data-conf]').forEach(b=>b.addEventListener('click',e=>{
+      e.stopPropagation();beginVisitAction(b.dataset.conf,'schedule');
+    }));
+    host.querySelectorAll('[data-prop]').forEach(b=>b.addEventListener('click',e=>{
+      e.stopPropagation();beginVisitAction(b.dataset.prop,'reschedule');
+    }));
 
     // Crear notificación (admin)
     const crearBtn=host.querySelector('#crearNotif');
