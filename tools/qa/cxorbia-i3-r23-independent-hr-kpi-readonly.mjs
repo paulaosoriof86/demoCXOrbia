@@ -44,8 +44,27 @@ function finish(decision,extra={},code=1){const out={decision,scope:'R23_SAME_RE
 const ensure=(ok,decision,extra={})=>{if(!ok)finish(decision,extra);};
 async function allDocs(ref){const s=await ref.get();return s.docs.map(d=>({id:d.id,...(d.data()||{})}));}
 async function jsonFetch(url){const r=await fetch(url,{cache:'no-store',headers:{'Cache-Control':'no-cache, no-store','Pragma':'no-cache'}});const b=await r.json().catch(()=>null);return {response:r,body:b};}
+/* Independent provider-side HR expected KPI: canonical facets are read from the
+ * separately fetched HR snapshot, never copied from the browser KPI/read model.
+ * Where source facets are absent, use approved raw HR dates/states semantics. */
 const state=v=>str(v?.estado||v?.status).toLowerCase();
-const stats=vs=>({total:vs.length,realizadas:vs.filter(v=>['realizada','cuestionario','liquidada'].includes(state(v))).length,liquidadas:vs.filter(v=>state(v)==='liquidada'||v?.liquidada===true).length,enCurso:vs.filter(v=>['asignada','agendada','postulada'].includes(state(v))).length});
+const externalFacets=v=>{
+  const c=v?.canonicalFacets||{};
+  const e=state(v),rawAssigned=!!str(v?.shopperId),
+    rawRealized=!!v?.realizada||['realizada','cuestionario','liquidada'].includes(e),
+    rawLiquidated=v?.liquidationConfirmed===true||['confirmed','liquidated','liquidada'].includes(str(v?.liquidationState).toLowerCase())||['liquidada','pagada'].includes(e),
+    rawCancelled=!!v?._archived||['cancelada','cancelled','archivada'].includes(e);
+  const bool=(key,fallback)=>typeof c[key]==='boolean'?c[key]:fallback;
+  return {assigned:bool('assigned',rawAssigned),realized:bool('realized',rawRealized),
+    liquidationConfirmed:bool('liquidationConfirmed',rawLiquidated),
+    cancelled:bool('cancelled',rawCancelled)};
+};
+const stats=vs=>{
+  const f=vs.map(externalFacets);
+  return {total:vs.length,realizadas:f.filter(x=>x.realized&&!x.cancelled).length,
+    liquidadas:f.filter(x=>x.liquidationConfirmed&&!x.cancelled).length,
+    enCurso:f.filter(x=>x.assigned&&!x.realized&&!x.cancelled).length};
+};
 
 const tenantId='tya',rootProjectId='cinepolis';
 if(!['GT','HN'].includes(COUNTRY)||!/^[0-9a-f]{64}$/.test(EXPECTED_REVISION)||!/^[0-9a-f]{40}$/.test(EXPECTED_SOURCE)){
