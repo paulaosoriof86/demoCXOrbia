@@ -103,11 +103,11 @@
     }
   },
   "productSource": {
-    "sha": "1f4174724b0ec028b6a2d9d429509148e6e63b62",
-    "treeSha": "fe05e9a24270e99cb1f7680bdf001db988932cbb",
-    "predecessorProductSourceSha": "13173ce31a12dcca53ef2dbe11820463b0009f0f",
-    "message": "fix(i3/r22): stop false Tablon date confirmations, route to exact provider-backed visit",
-    "authorityState": "SOURCE_FIXED_BILLING_ENVIRONMENT_HOLD"
+    "sha": "52de067d105ee5711859a03c00a6b77ff551224f",
+    "treeSha": "46fcbffc0efa084d1a1f1969be50bd0ae93a408a",
+    "predecessorProductSourceSha": "1f4174724b0ec028b6a2d9d429509148e6e63b62",
+    "message": "fix(i3/r20): prevent PWA controllerchange from aborting cross-role authentication",
+    "authorityState": "R20_SOURCE_FIXED_PENDING_CI_DEV"
   },
   "controlHeadAtConstruction": "516f26ee75b644ad10d3a1d6093f24b91d347736",
   "phaseAComplete": false,
@@ -176,8 +176,8 @@
         "Cliente"
       ],
       "contractFunctional": "Release/Visual/Security",
-      "classification": "SOURCE_FIXED_PENDING_DEV_E2E_HUMAN",
-      "actionRequired": "B3_SHOPPER_MIS_VISITAS_CARD_COMPACT_QA_BROWSER_HUMAN_AND_B7_NOTIFICATIONS_VRM134_LATENCY",
+      "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN",
+      "actionRequired": "R20_SERVICE_WORKER_NO_AUTH_ABORT_SOURCE_CI_AND_REAL_SHOPPER_LOGIN",
       "preI4SuccessorCommits": [
         "4a0d1bd977a1b50586b0d94e17583123f8ba3b76",
         "4aeb41ca6dffb6e5b8324ca50531587539f5058e"
@@ -191,7 +191,7 @@
       "currentCandidateSource": "2e360504f8b52b85dda217576fc85cdec68ab41d",
       "currentCandidateTree": "d73951eab853d66b6e150212cba87309feaf7351",
       "currentOwnerBlobs": {
-        "app/app.js": "174aaafa15e5a7f91391db5a99df9fb468132d71",
+        "app/app.js": "8a55642818971d0dc92d785090b222055092faa8",
         "app/index-backend-dev.html": "feb042fe522b034f9ae376c313ef767451a0cf88",
         "app/core/build-lock.js": "068b28bce919c2a4f357eb4c21f85fede06a0c5d",
         "app/styles/theme.css": "d5e00eb19e5188760b6aa9dd2d2e41948c029492",
@@ -5422,10 +5422,10 @@
       "f9ApprovedBlob": "2043d33dee611adacebc947c8423ed1739c1a8da",
       "latestApprovedSource": "4a0d1bd977a1b50586b0d94e17583123f8ba3b76",
       "latestApprovedBlob": "1e1848e1cedf11ef7dfc329f85871b20a6f9e13d",
-      "currentBlob": "174aaafa15e5a7f91391db5a99df9fb468132d71",
+      "currentBlob": "8a55642818971d0dc92d785090b222055092faa8",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH",
+      "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "2043d33dee611adacebc947c8423ed1739c1a8da",
       "latestApprovedAuthority": "PRE_I4_PROVEN_SUCCESSOR__RUN333",
@@ -5447,7 +5447,29 @@
       "currentCumulativeSource": "f2a50044ca5b4bac5053f5a88de041fd5c7f72f9",
       "currentLoadOrder": 127,
       "previousMatrixCurrentBlob": "174aaafa15e5a7f91391db5a99df9fb468132d71",
-      "byteAuthorityReadback": "EXACT_GIT_TREE_SOURCE_ONLY"
+      "byteAuthorityReadback": "EXACT_GIT_TREE_SOURCE_ONLY",
+      "r20PwaRootCause": {
+        "findingId": "R20",
+        "classification": "FUNCTIONAL_DEFECT",
+        "rootCause": "Unconditional app/app.js serviceWorker controllerchange location.reload interrupted Firebase custom-token HTTP request; RUN1675 record showed firebase_custom_token ABORTED after top-level navigation",
+        "runId": 38703885353,
+        "artifactId": 11957383315,
+        "owner": "app/app.js",
+        "predecessorBlob": "174aaafa15e5a7f91391db5a99df9fb468132d71",
+        "successorBlob": "8a55642818971d0dc92d785090b222055092faa8",
+        "sourceSha": "52de067d105ee5711859a03c00a6b77ff551224f",
+        "sourceTree": "46fcbffc0efa084d1a1f1969be50bd0ae93a408a",
+        "qaPath": "tools/qa/cxorbia-i3-r20-pwa-auth-no-interrupt.test.mjs",
+        "qaBlob": "777c51468f870f7b216abe3e0f375685c73004f6",
+        "behavior": "defer automatic service worker controllerchange reload; preserve coherent JS document during login or provider write; runtime executable paths remain network-only",
+        "testCount": 5,
+        "sourceQA": "PENDING_CANONICAL_CI",
+        "dev": "PREDECESSOR_MATERIALIZED_NOT_CURRENT",
+        "passwordReal": "PENDING",
+        "production": false,
+        "hrWrites": 0,
+        "authWrites": 0
+      }
     },
     {
       "path": "app/adapters/cxorbia-project-operational-source-v1.js",
@@ -7580,7 +7602,7 @@
     "production": false
   },
   "supersedesMatrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V113.json",
-  "supersedesGitBlob": "a57e4cdf87fc860b1ea374f7e099a7398f2432df",
+  "supersedesGitBlob": "802e885427fe61b40f906bf2090904b8cd82a63f",
   "currentSourceReproof": {
     "runId": 37159003511,
     "runNumber": 1014,
@@ -10792,5 +10814,27 @@
     "humanAcceptance": "PENDING",
     "gate20": "PENDING",
     "gate21": "PENDING"
+  },
+  "i3Oct15R20PwaNoInterruptSuccessor": {
+    "findingId": "R20",
+    "classification": "FUNCTIONAL_DEFECT",
+    "rootCause": "Unconditional app/app.js serviceWorker controllerchange location.reload interrupted Firebase custom-token HTTP request; RUN1675 record showed firebase_custom_token ABORTED after top-level navigation",
+    "runId": 38703885353,
+    "artifactId": 11957383315,
+    "owner": "app/app.js",
+    "predecessorBlob": "174aaafa15e5a7f91391db5a99df9fb468132d71",
+    "successorBlob": "8a55642818971d0dc92d785090b222055092faa8",
+    "sourceSha": "52de067d105ee5711859a03c00a6b77ff551224f",
+    "sourceTree": "46fcbffc0efa084d1a1f1969be50bd0ae93a408a",
+    "qaPath": "tools/qa/cxorbia-i3-r20-pwa-auth-no-interrupt.test.mjs",
+    "qaBlob": "777c51468f870f7b216abe3e0f375685c73004f6",
+    "behavior": "defer automatic service worker controllerchange reload; preserve coherent JS document during login or provider write; runtime executable paths remain network-only",
+    "testCount": 5,
+    "sourceQA": "PENDING_CANONICAL_CI",
+    "dev": "PREDECESSOR_MATERIALIZED_NOT_CURRENT",
+    "passwordReal": "PENDING",
+    "production": false,
+    "hrWrites": 0,
+    "authWrites": 0
   }
 }

@@ -79,6 +79,7 @@ jobs:
          mkdir -p .tmp/canonical-candidate-authority
          node --test tools/qa/cxorbia-i3-r22-alias-notice-scope-transversal.test.mjs
          node --test tools/qa/cxorbia-i3-r22-tablon-provider-ack-source.test.mjs
+         node --test tools/qa/cxorbia-i3-r20-pwa-auth-no-interrupt.test.mjs
          node tools/qa/cxorbia-i3-canonical-candidate-authority-guard.mjs | tee .tmp/canonical-candidate-authority/result.json
          SOURCE="$(jq -r '.productSourceSha' .tmp/canonical-candidate-authority/result.json)"
          TREE="$(jq -r '.productSourceTree' .tmp/canonical-candidate-authority/result.json)"

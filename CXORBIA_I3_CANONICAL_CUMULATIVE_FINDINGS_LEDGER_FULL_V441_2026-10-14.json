@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-cumulative-findings-ledger.full.v441",
   "frozenAt": "2026-10-12",
-  "status": "HOLD_I3_RUN1674_DEV_MATERIALIZED_E2E_PENDING",
+  "status": "HOLD_I3_R20_PWA_SOURCE_QA_PENDING",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "microblockId": "I3-P0-HN-SHOPPER-READINESS-EXACT-PRINCIPAL-GATE",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "1f4174724b0ec028b6a2d9d429509148e6e63b62",
-    "sourceTree": "fe05e9a24270e99cb1f7680bdf001db988932cbb",
-    "predecessorSha": "13173ce31a12dcca53ef2dbe11820463b0009f0f",
+    "sourceSha": "52de067d105ee5711859a03c00a6b77ff551224f",
+    "sourceTree": "46fcbffc0efa084d1a1f1969be50bd0ae93a408a",
+    "predecessorSha": "1f4174724b0ec028b6a2d9d429509148e6e63b62",
     "production": false,
-    "state": "DEV_MATERIALIZED_PENDING_LIVE_E2E",
+    "state": "R20_PWA_OWNER_SOURCE_FIXED_PENDING_CI_DEV",
     "proof": {
       "status": "SOURCE_QA_PASS_RUN1517",
       "scope": "HF24 bridge blocked on missing provider, and movements/accounts exact readback after ACK; no live finance writes",
@@ -29986,5 +29986,27 @@
     "humanAcceptance": "PENDING",
     "gate20": "PENDING",
     "gate21": "PENDING"
+  },
+  "i3Oct15R20PwaNoInterruptSuccessor": {
+    "findingId": "R20",
+    "classification": "FUNCTIONAL_DEFECT",
+    "rootCause": "Unconditional app/app.js serviceWorker controllerchange location.reload interrupted Firebase custom-token HTTP request; RUN1675 record showed firebase_custom_token ABORTED after top-level navigation",
+    "runId": 38703885353,
+    "artifactId": 11957383315,
+    "owner": "app/app.js",
+    "predecessorBlob": "174aaafa15e5a7f91391db5a99df9fb468132d71",
+    "successorBlob": "8a55642818971d0dc92d785090b222055092faa8",
+    "sourceSha": "52de067d105ee5711859a03c00a6b77ff551224f",
+    "sourceTree": "46fcbffc0efa084d1a1f1969be50bd0ae93a408a",
+    "qaPath": "tools/qa/cxorbia-i3-r20-pwa-auth-no-interrupt.test.mjs",
+    "qaBlob": "777c51468f870f7b216abe3e0f375685c73004f6",
+    "behavior": "defer automatic service worker controllerchange reload; preserve coherent JS document during login or provider write; runtime executable paths remain network-only",
+    "testCount": 5,
+    "sourceQA": "PENDING_CANONICAL_CI",
+    "dev": "PREDECESSOR_MATERIALIZED_NOT_CURRENT",
+    "passwordReal": "PENDING",
+    "production": false,
+    "hrWrites": 0,
+    "authWrites": 0
   }
 }
