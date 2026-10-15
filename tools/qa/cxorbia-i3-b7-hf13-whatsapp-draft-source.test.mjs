@@ -150,3 +150,12 @@ test('R01 individual KPI WhatsApp resolves the exact rendered HR drill row, not 
  assert.doesNotMatch(source,/const vget=\(id\)=>pool\(\)\.find/);
  assert.match(source,/querySelectorAll\('\.drWa'\)[\s\S]*?const v=vget\(b\.dataset\.vid\)/);
 });
+
+test('R01 individual Dashboard WhatsApp button preserves exact visit ID for its click handler',()=>{
+  const template=source.match(/const waBtn=\(v,msg\)=>(`[^\n]+`);/);
+  assert.ok(template,'individual WhatsApp button template exists');
+  assert.ok(template[1].includes('data-vid="${v.id}"'),'row must carry the exact rendered visit ID');
+  assert.ok(template[1].includes('data-wa='),'button remains scoped to WhatsApp');
+  assert.match(source,/querySelectorAll\('\[data-wa\]'\)[\s\S]*?const v=all\.find\(x=>String\(x\.id\)===String\(b\.dataset\.vid\)\)/);
+  assert.match(source,/openExactWaDraft\(v,'Hola '/);
+});

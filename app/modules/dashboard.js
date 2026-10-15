@@ -306,7 +306,7 @@ CX.module('dashboard', ({data,ui})=>{
   setTimeout(()=>{
     /* ---- Tablero de estado operativo (genérico, estilo HR) ---- */
     const fmtD=(d)=>d||'—';
-    const waBtn=(v,msg)=>`<button class="btn btn-soft btn-sm" data-wa='${encodeURIComponent((v.shopper||'Shopper')+': '+msg)}' title="WhatsApp">📲</button>`;
+    const waBtn=(v,msg)=>`<button class="btn btn-soft btn-sm" data-vid="${v.id}" data-wa='${encodeURIComponent((v.shopper||'Shopper')+': '+msg)}' title="WhatsApp">📲</button>`;
     const mailBtn=(v,msg)=>`<button class="btn btn-ghost btn-sm" data-mail='${encodeURIComponent(msg)}' title="Correo">✉️</button>`;
     const goBtn=v=>`<button class="btn btn-ghost btn-sm" data-goseco data-vid="${v.id}" title="Ir a Visitas">↗</button>`;
     const contextBtn=v=>`<button class="btn btn-soft btn-sm bdCtx" data-kind="actions" data-vid="${v.id}" title="Acciones por estado de la visita">⚙️</button>`;
