@@ -10,6 +10,27 @@ CX.topbar = {
   _open:false,
   role(){ return (CX.session && CX.session.role) || 'admin'; },
 
+  /* R22: resolve the exact, authorized shopper visit; never navigate by display name. */
+  _noticeTarget(n){
+    const fallback={nav:String(n?.nav||''),visitId:'',action:''};
+    if(this.role()!=='shopper'||String(n?.entityType||'')!=='visit'||!n?.entityId)return fallback;
+    const sid=String(CX.backendAuth?.context?.()?.shopperId||CX.session?.user?.shopperId||'');
+    if(!sid)return fallback;
+    const found=(CX.data?._visitas||[]).find(v=>
+      [v?.id,v?.visitId,v?.hrRowId].some(id=>String(id||'')===String(n.entityId))&&
+      String(v?.shopperId||'')===sid);
+    if(!found)return {nav:'misvisitas',visitId:'',action:''};
+    const kind=String(n?.tipo||'').toLowerCase(),op=String(n?.accion||'').toLowerCase();
+    const action=/cuestionario|questionnaire/.test(kind+' '+op)?'questionnaire'
+      :/reprog|cambio|ajuste/.test(kind+' '+op)?'reschedule'
+      :/agenda|confirmar|pide_fecha/.test(kind+' '+op)?'schedule':'focus';
+    return {nav:'misvisitas',visitId:String(found.id||found.visitId||''),action};
+  },
+  _noticeText(n){
+    const raw=String(n?.txt||'').replace(/\bhr_20\d{2}[-_][\w-]+\b/gi,'la visita indicada');
+    return raw.replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  },
+
   /* logo del cliente (white-label) en el topbar blanco — NO reemplaza a CXOrbia del sidebar */
   renderLogo(){
     const el=document.getElementById('tbClientLogo'); if(!el)return;
@@ -47,7 +68,7 @@ CX.topbar = {
           <div class="tb-noti-ic" style="background:var(--${CX.notif.toneVar(n.tono)}-bg)">${n.icon||'🔔'}</div>
           <div style="flex:1;min-width:0">
             <div class="tb-noti-t">${n.titulo}</div>
-            <div class="tb-noti-x">${n.txt||''}</div>
+            <div class="tb-noti-x">${this._noticeText(n)}</div>
             <div class="tb-noti-f">${n.fecha||''}</div>
           </div>
           ${n.leida?'':'<span class="tb-noti-dot"></span>'}
@@ -55,11 +76,31 @@ CX.topbar = {
       </div>
       <div class="tb-pop-f"><button class="btn btn-ghost btn-sm" id="tbOpenTablon">Ver tablón completo →</button></div>`;
 
-    el.querySelector('#tbReadAll').addEventListener('click',(e)=>{e.stopPropagation();CX.notif.markAllRead(this.role());this.render();});
+    el.querySelector('#tbReadAll').addEventListener('click',async(e)=>{
+      e.stopPropagation();
+      const control=e.currentTarget;control.disabled=true;
+      try{
+        const before=items.filter(n=>n.source==='firestore'&&!n.leida);
+        const ack=await Promise.resolve(CX.notif.markAllRead(this.role()));
+        if(before.length&&ack?.providerAck!==true)CX.ui?.toast?.('No se confirmó la lectura remota. Puedes intentarlo nuevamente.','warn',4200);
+      }catch(_){CX.ui?.toast?.('No fue posible confirmar la lectura.','warn',4200);}
+      finally{control.disabled=false;this.render();}
+    });
     const ot=el.querySelector('#tbOpenTablon'); if(ot)ot.addEventListener('click',()=>{this.close();CX.router.nav('tablon');});
-    el.querySelectorAll('[data-nid]').forEach(row=>row.addEventListener('click',()=>{
-      CX.notif.markRead(row.dataset.nid);
-      if(row.dataset.nav){ this.close(); CX.router.nav(row.dataset.nav); } else this.render();
+    el.querySelectorAll('[data-nid]').forEach(row=>row.addEventListener('click',async()=>{
+      if(row.dataset.busy==='true')return;row.dataset.busy='true';
+      const notice=items.find(n=>String(n.id)===String(row.dataset.nid));
+      if(!notice)return;
+      const target=this._noticeTarget(notice);
+      try{
+        const ack=await Promise.resolve(CX.notif.markRead(notice.id));
+        if(notice.source==='firestore'&&ack?.providerAck!==true)
+          CX.ui?.toast?.('La notificación sigue sin marcarse como leída: no hubo confirmación remota.','warn',4200);
+      }catch(_){CX.ui?.toast?.('No se confirmó la lectura remota.','warn',4200);}
+      this.close();
+      if(target.visitId&&target.action)
+        window.CX_PENDING_SHOPPER_VISIT_ACTION={action:target.action,visitId:target.visitId,requestedAt:Date.now()};
+      if(target.nav)CX.router.nav(target.nav,{history:false});else this.render();
     }));
     return el;
   },

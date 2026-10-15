@@ -169,7 +169,13 @@ CX.module('misvisitas',({data,ui})=>{
     if(!req||Date.now()-Number(req.requestedAt||0)>20000)return;
     const action=String(req.action||''),visitId=String(req.visitId||'');
     if(action==='schedule'&&req.returnView==='midia')scheduleReturnView='midia';
-    const attr={instructive:'doc',schedule:'sched',reschedule:'reprog'}[action];
+    const attr={instructive:'doc',schedule:'sched',reschedule:'reprog',questionnaire:'quest'}[action];
+    if(action==='focus'){
+      const card=[...host.querySelectorAll('[data-visit-card],[data-history-visit]')].find(el=>String(el.dataset.visitCard||el.dataset.historyVisit||'')===visitId);
+      delete window.CX_PENDING_SHOPPER_VISIT_ACTION;
+      if(card){card.scrollIntoView({block:'center',behavior:'smooth'});return;}
+      ui.toast('Esta visita ya no aparece activa en el período actual. Revisa tu historial o consulta con Coordinación.','warn',4200);return;
+    }
     const target=attr?[...host.querySelectorAll('[data-'+attr+']')].find(el=>String(el.dataset[attr]||'')===visitId):null;
     delete window.CX_PENDING_SHOPPER_VISIT_ACTION;
     if(target)setTimeout(()=>target.click(),0);else ui.toast('La acción ya no aplica al estado actual de esta visita.','warn',3200);
