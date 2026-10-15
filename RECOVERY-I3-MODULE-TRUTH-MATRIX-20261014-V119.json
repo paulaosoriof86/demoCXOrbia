@@ -11196,5 +11196,18 @@
     "domains": 21,
     "match": 9,
     "nonTerminal": 12
+  },
+  "i3Oct15Run1704R23GT_HNSameHrRevision": {
+    "decision": "PASS_R23_GT_HN_SAME_EXTERNAL_HR_REVISION",
+    "scope": "ONE_EXACT_AUTHORIZED_ADMIN_BROWSER_KPI_SHOPPER_CASE_PER_COUNTRY_SAME_REVISION",
+    "runId": 38760383569,
+    "artifactId": 11985865235,
+    "hrRevision": "1959278f639f0132110b58b080908a9da8d949ed824ffc044e98ded67fb3fbe8",
+    "sourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
+    "domainsRetained": 21,
+    "matchRetained": 9,
+    "allModulesMatch": false,
+    "phaseAComplete": false,
+    "noProductChange": true
   }
 }

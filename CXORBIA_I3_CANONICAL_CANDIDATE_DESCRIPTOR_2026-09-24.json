@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
+  "status": "HOLD_I3_OTHER_P0_TERMINAL_E2E_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "e93201ce9039aa20a6d993bf5dc0b9db866d0eac",
   "predecessorProductSourceSha": "52de067d105ee5711859a03c00a6b77ff551224f",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V441_2026-10-14.json",
-  "findingsLedgerExpectedGitBlob": "d277108f9ee5cc766f34cc0e599b85b5cb488386",
+  "findingsLedgerExpectedGitBlob": "63f598186949753bb812aba826cd3a8e6e93f9b7",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V119.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "R23_SAME_REVISION_READONLY_REQUIRED",
+  "activeBlocker": "R07_R08_R09_R17_R22_TERMINAL_READBACK_PENDING",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run R23 independent GT/HN admin browser KPI versus exact same external HR revision on existing DEV artifact; no build, no provider mutation, no old Gate13 lock assumption. Classify any scoped HOLD by owner only; restore descriptor to remaining P0 after readback.",
+  "exactNextAction": "R07 exact external HR cancellation with provider ACK, independent readback, reload and availability; reuse existing source-only tests and DEV exact artifact. Other R08/finance/R22 open. No R20/R23 repeat without reproducible drift. I4 blocked.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -11331,5 +11331,46 @@
     "devDeploys": 0,
     "production": false,
     "expected": "PASS_GT_AND_HN_SAME_HR_REVISION_OR_SCOPED_HOLD"
+  },
+  "r23SameExternalHrKpiProof": {
+    "runId": 38760383569,
+    "runNumber": 1704,
+    "artifactId": 11985865235,
+    "decision": "PASS_R23_GT_HN_SAME_EXTERNAL_HR_REVISION",
+    "hrRevision": "1959278f639f0132110b58b080908a9da8d949ed824ffc044e98ded67fb3fbe8",
+    "scope": "ONE_EXACT_AUTHORIZED_ADMIN_BROWSER_KPI_SHOPPER_CASE_PER_COUNTRY_SAME_REVISION",
+    "samples": {
+      "GT": {
+        "hrExternal": {
+          "total": 12,
+          "realizadas": 12,
+          "liquidadas": 0,
+          "enCurso": 0
+        },
+        "browser": {
+          "total": 12,
+          "realizadas": 12,
+          "liquidadas": 0,
+          "enCurso": 0
+        }
+      },
+      "HN": {
+        "hrExternal": {
+          "total": 3,
+          "realizadas": 3,
+          "liquidadas": 0,
+          "enCurso": 0
+        },
+        "browser": {
+          "total": 3,
+          "realizadas": 3,
+          "liquidadas": 0,
+          "enCurso": 0
+        }
+      }
+    },
+    "productSourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
+    "providerWrites": 0,
+    "production": false
   }
 }

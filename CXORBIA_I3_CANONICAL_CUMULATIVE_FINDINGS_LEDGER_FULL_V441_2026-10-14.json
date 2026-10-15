@@ -30364,5 +30364,92 @@
       "GATE21"
     ],
     "next": "Close R07 independent HR cancel ACK, R08 grounded Vertex 15-question E2E, R09-R17 finance, R22 read-after-reload isolation, R23 independent same revision HR KPI; then human checkpoint."
+  },
+  "i3Oct15Run1704R23GT_HNSameHrRevision": {
+    "iteration": "I3_FUNCTIONAL_CLOSURE",
+    "date": "2026-10-15",
+    "classification": "MAPPING_FAILURE_QA_EXPECTED_KPI_STATUS_ONLY",
+    "runId": 38760383569,
+    "runNumber": 1704,
+    "decision": "PASS_R23_GT_HN_SAME_EXTERNAL_HR_REVISION",
+    "artifactId": 11985865235,
+    "sourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
+    "sourceTree": "e93201ce9039aa20a6d993bf5dc0b9db866d0eac",
+    "run1681ExactDev": true,
+    "runtimeRevision": "cxorbia-live-hr-dev-00304-wwc",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/69c811435fa7b66d",
+    "hrRevision": "1959278f639f0132110b58b080908a9da8d949ed824ffc044e98ded67fb3fbe8",
+    "qaOwner": "tools/qa/cxorbia-i3-r23-independent-hr-kpi-readonly.mjs",
+    "before": {
+      "GT": {
+        "expected": {
+          "total": 12,
+          "realizadas": 3,
+          "liquidadas": 0,
+          "enCurso": 0
+        },
+        "browser": {
+          "total": 12,
+          "realizadas": 12,
+          "liquidadas": 0,
+          "enCurso": 0
+        }
+      },
+      "reason": "QA expected interpreted only raw visit status and ignored canonical facets/realization date; original semantic mismatch not proved product bug"
+    },
+    "after": {
+      "GT": {
+        "hrExternal": {
+          "total": 12,
+          "realizadas": 12,
+          "liquidadas": 0,
+          "enCurso": 0
+        },
+        "browser": {
+          "total": 12,
+          "realizadas": 12,
+          "liquidadas": 0,
+          "enCurso": 0
+        }
+      },
+      "HN": {
+        "hrExternal": {
+          "total": 3,
+          "realizadas": 3,
+          "liquidadas": 0,
+          "enCurso": 0
+        },
+        "browser": {
+          "total": 3,
+          "realizadas": 3,
+          "liquidadas": 0,
+          "enCurso": 0
+        }
+      }
+    },
+    "proof": {
+      "twoCountrySamples": true,
+      "threeWaySameRevision": true,
+      "independentExternalHttpRead": true,
+      "sourceSafeProviderRevision": true,
+      "readOnly": true,
+      "hrWrites": 0,
+      "authWrites": 0,
+      "firestoreWrites": 0,
+      "financeWrites": 0,
+      "productBuilds": 0,
+      "devDeploys": 0,
+      "production": false
+    },
+    "scope": "ONE_EXACT_AUTHORIZED_ADMIN_BROWSER_KPI_SHOPPER_CASE_PER_COUNTRY_SAME_REVISION",
+    "doesNotClaim": [
+      "ALL_SHOPPERS_POPULATION_EXHAUSTIVE",
+      "ALL_21_MODULES_MATCH",
+      "HUMAN_ACCEPTANCE",
+      "GATE20",
+      "GATE21",
+      "I3_GO"
+    ],
+    "nextExactAction": "R07 cancellation HR provider ACK/readback/reload and availability; then R22 notification persistence, R08 Vertex 15 grounded, finance R09-R17, module convergence/human/G20/G21."
   }
 }
