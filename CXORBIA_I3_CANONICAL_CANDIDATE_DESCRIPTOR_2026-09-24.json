@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
+  "status": "HOLD_I3_R20_POST_PREAUTH_PROVIDER_DIAGNOSTIC_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "e93201ce9039aa20a6d993bf5dc0b9db866d0eac",
   "predecessorProductSourceSha": "52de067d105ee5711859a03c00a6b77ff551224f",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V441_2026-10-14.json",
-  "findingsLedgerExpectedGitBlob": "11ea31fb1787a0648a9b38c72919d2885556b072",
+  "findingsLedgerExpectedGitBlob": "fd3a7eaa5a377d3be182f920dc7467a13cab9170",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V119.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "R20_SINGLE_CREDENTIAL_READONLY_REQUIRED",
+  "activeBlocker": "R20_ORDINARY_PASSWORD_POSTSUBMIT_AND_AUTH_CREDENTIAL_PROVENANCE_UNPROVEN",
   "nextFindingId": "VRM-275",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Repeat existing I3 R20 same-artifact READ-ONLY job selecting the first SHA256-sorted independently exact authorized account. One password login attempt maximum, no guessed passwords, no resets, no product build. Reconcile first-login result and keep R20 session restoration/population open until proven.",
+  "exactNextAction": "R20: retain RUN1689 pre-auth browser PASS. Establish exact non-destructive approved credential and which stage caused RUN1686 browser failure without attempting guessed passwords; only after cause adjudication run one authorized password E2E with session restore/logout/relogin. Meanwhile progress independent read-only P0 validation (R07 R22 R23 and finance). No extra source build/DEV deploy/I4.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2740,7 +2740,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "840ff94e50822e3d88c65efd0946013672001297",
+  "moduleTruthExpectedGitBlob": "79b66315bffe520bec6cb0393810814ee37e5f19",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -11245,5 +11245,36 @@
     "classification": "MAPPING_FAILURE_TEST_ACCOUNT_SELECTION",
     "scope": "R20_REAL_LOGIN_ONLY",
     "production": false
+  },
+  "i3Oct15Run1689R20PreauthReadOnly": {
+    "iteration": "I3_FUNCTIONAL_CLOSURE",
+    "runId": 38718476086,
+    "runNumber": 1689,
+    "runStatus": "SUCCESS",
+    "decision": "PASS_R20_PREAUTH_BROWSER_UI_READONLY_NOT_PASSWORD_E2E",
+    "sourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
+    "runtimeRevision": "cxorbia-live-hr-dev-00304-wwc",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/69c811435fa7b66d",
+    "artifactId": 11963842088,
+    "entryHttp": 200,
+    "canonicalEntry": true,
+    "shopperRoleSelectable": true,
+    "usernameField": true,
+    "passwordField": true,
+    "usernameAutocomplete": "username",
+    "passwordAutocomplete": "current-password",
+    "buttonSubmit": true,
+    "preAuthHrAuthorityApplied": false,
+    "pageErrorTypes": [],
+    "loginAttempts": 0,
+    "credentialsEntered": 0,
+    "authWrites": 0,
+    "hrWrites": 0,
+    "providerWrites": 0,
+    "deploys": 0,
+    "production": false,
+    "limitation": "Password sign-in, session restore, logout/re-login, population scope not tested.",
+    "precedingRun1686": "HOLD_R20_ORDINARY_PASSWORD_BROWSER_FAILED_ONE_ATTEMPT_ERROR_STAGE_UNRECORDED",
+    "nextExactAction": "No password retries. Diagnose ordinary password test stage/approved credential provenance and compare UI-to-auth provider path without changing real credentials. Then one authorized exact credential E2E and session restoration. Preserve all accepted PASS."
   }
 }
