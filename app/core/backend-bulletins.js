@@ -141,7 +141,7 @@ window.CX = window.CX || {};
     if(!c || !bulletinId || !userId) throw new Error('BULLETIN_READ_PROVIDER_UNAVAILABLE');
     const id = userId + '_' + bulletinId;
     await c.doc(id).set({tenantId:tenantId(), bulletinId, userId, readAt:new Date().toISOString()}, {merge:true});
-    const readback = await c.doc(id).get();
+    const readback = await c.doc(id).get({source:'server'});
     const data = readback.exists ? (readback.data() || {}) : null;
     if(!data || String(data.bulletinId||'')!==String(bulletinId) || String(data.userId||'')!==String(userId)) throw new Error('BULLETIN_READ_DURABLE_READBACK_FAILED');
     if(readSetUserId!==userId){readSetCache=new Set();readSetUserId=userId;}
@@ -238,17 +238,28 @@ window.CX = window.CX || {};
     const originalMarkAllRead = CX.notif.markAllRead;
     const originalPush = CX.notif.push;
 
+    /* R22: provider/server ACK precedes local read presentation.
+       On failure the notification remains unread and can be retried safely. */
     CX.notif.markRead = function(id){
-      const result = originalMarkRead.call(this, id);
-      markRead(id).catch(e=>console.warn('[CX.backend-bulletins] markRead no persistido', e));
-      return result;
+      return markRead(id).then(ack=>{
+        if(!(ack?.ok===true&&ack?.providerAck===true&&ack?.successUiAllowed===true))return {ok:false,status:'blocked',providerAck:false,successUiAllowed:false};
+        originalMarkRead.call(this,id);
+        return ack;
+      }).catch(error=>{
+        console.warn('[CX.backend-bulletins] markRead no persistido',String(error?.code||'BULLETIN_READ_PROVIDER_UNCONFIRMED'));
+        return {ok:false,status:'blocked',providerAck:false,successUiAllowed:false};
+      });
     };
 
     CX.notif.markAllRead = function(roleArg){
       const before = this.for ? this.for(roleArg) : this._items;
-      const result = originalMarkAllRead.call(this, roleArg);
-      markAllRead(before).catch(e=>console.warn('[CX.backend-bulletins] markAllRead no persistido', e));
-      return result;
+      return markAllRead(before).then(()=>{
+        originalMarkAllRead.call(this,roleArg);
+        return {ok:true,status:'committed',providerAck:true,successUiAllowed:true};
+      }).catch(error=>{
+        console.warn('[CX.backend-bulletins] markAllRead no persistido',String(error?.code||'BULLETIN_READ_PROVIDER_UNCONFIRMED'));
+        return {ok:false,status:'blocked',providerAck:false,successUiAllowed:false};
+      });
     };
 
     CX.notif.push = function(n){

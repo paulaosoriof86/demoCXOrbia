@@ -52,7 +52,13 @@ CX.module('midia', ({data,role,ui})=>{
     </div>`;
   };
   const bindNotif=()=>{setTimeout(()=>{
-    document.querySelectorAll('[data-ngo]').forEach(b=>b.addEventListener('click',()=>{const n=CX.notif.for(role).find(x=>x.id===b.dataset.ngo);CX.notif.markRead(n.id);CX.router.nav(n.nav||'tablon');}));
+    document.querySelectorAll('[data-ngo]').forEach(b=>b.addEventListener('click',async()=>{
+      const n=CX.notif.for(role).find(x=>x.id===b.dataset.ngo);if(!n)return;
+      const ack=await CX.notif.markRead(n.id);
+      if(ack?.providerAck===false)ui.toast('No se confirmó la lectura; la notificación permanece sin leer.','warn',4200);
+      const route=role==='shopper'&&n.entityType==='visit'?'misvisitas':n.nav||'tablon';
+      CX.router.nav(route);
+    }));
     document.querySelectorAll('[data-nav]').forEach(b=>b.addEventListener('click',()=>CX.router.nav(b.dataset.nav)));
     document.querySelectorAll('.asgDone').forEach(b=>b.addEventListener('click',()=>{CX.automations.resolverAsignacion(b.dataset.id);CX.router.nav('midia');CX.ui&&CX.ui.toast('Asignación resuelta','ok');}));
     document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>CX.router.nav(b.dataset.go)));
