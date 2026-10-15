@@ -303,6 +303,46 @@ try{
  }
  await shot(page,'admin-dashboard');
  await nav(page,'postulaciones');
+
+ /* R05 + R06 same-artifact browser E2E (read only; no command submits). */
+ const poSearch=page.locator('#pSearch');
+ if(!(await poSearch.count()))throw new Error('FUNCTIONAL_DEFECT:R06_POSTULATION_SEARCH_MISSING');
+ const assignmentCount=await page.locator('#poAssignedGroups [data-cx-assignment-card]').count();
+ await poSearch.fill('Oakland');
+ const oakland=await page.evaluate(()=>{
+  const data=window.CX?.data||{},visits=typeof data.visitas==='function'?data.visitas():[];
+  const cards=[...document.querySelectorAll('#poAssignedGroups [data-cx-assignment-card]')];
+  const visible=cards.filter(x=>x.style.display!=='none');
+  const invalid=visible.filter(el=>{
+    const v=visits.find(x=>String(x.id||x.visitId)===String(el.dataset.visitRef||''))||{};
+    return ![v.shopper,v.shopperCode,v.sucursal,v.ciudad,v.pais,v.escenario,v.code].map(String).join(' ').toLowerCase().includes('oakland');
+  });
+  return {total:cards.length,visible:visible.length,invalid:invalid.length,hasOakland:visible.length>0};
+ });
+ if(oakland.invalid)throw new Error('FUNCTIONAL_DEFECT:R06_OAKLAND_FILTER:'+JSON.stringify(oakland));
+ await poSearch.fill('R06_UNMATCHABLE_CXORBIA_NONCE');
+ const nonmatching=await page.locator('#poAssignedGroups [data-cx-assignment-card]:visible').count();
+ if(nonmatching)throw new Error('FUNCTIONAL_DEFECT:R06_NONMATCHING_CARD_VISIBLE');
+ await poSearch.fill('');
+ const restored=await page.locator('#poAssignedGroups [data-cx-assignment-card]:visible').count();
+ if(restored!==assignmentCount)throw new Error('FUNCTIONAL_DEFECT:R06_FILTER_RESET_CARD_LOSS');
+ a.r06Browser={oakland,nonmatching,restored,decision:'PASS_EXACT_ASSIGNMENT_FILTER'};
+
+ const agenda=page.locator('#poAssignedGroups [data-cx-po-action="agenda"],#poAssignedGroups [data-cx-po-action="agenda-review"]');
+ if(!(await agenda.count()))throw new Error('FUNCTIONAL_DEFECT:R05_NO_EXACT_ASSIGNMENT_ACTION');
+ await agenda.first().click();result.clickCount++;
+ const firstModalCount=await page.locator('.cx-ov:visible').count();
+ if(firstModalCount!==1)throw new Error('VISUAL_DEFECT:R05_FIRST_DIALOG_STACK:'+firstModalCount);
+ await page.evaluate(()=>{
+   const b=document.querySelector('#poAssignedGroups [data-cx-po-action="agenda"],#poAssignedGroups [data-cx-po-action="agenda-review"]');
+   if(!b)throw new Error('R05_DIALOG_OWNER_LOST');b.click();
+ });
+ result.clickCount++;
+ await page.waitForTimeout(180);
+ const secondModalCount=await page.locator('.cx-ov:visible').count();
+ if(secondModalCount!==1)throw new Error('VISUAL_DEFECT:R05_STACKED_DIALOGS:'+secondModalCount);
+ a.r05Browser={firstModalCount,secondModalCount,decision:'PASS_SINGLE_ACTIVE_POSTULACIONES_MODAL'};
+ await dismissOverlays(page);
  /* I3 VRM-259 read-only hydrated badge parity: preserve current DEV artifact; no mutation. */
  const postulationBadgeProbe=async(label)=>page.evaluate(label=>{
    const data=window.CX?.data,active=typeof data?.activePosts==='function'?data.activePosts():null;
