@@ -104,3 +104,5 @@ test('I3 DEV previously-published artifact uses same job in readback-only mode w
   assert.match(workflow,/run: bash \.github\/control\/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007\.sh readback/);
   assert.doesNotMatch(workflow,/run: bash \.github\/control\/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007\.sh materialize\n      - run: bash/);
 });
+
+import '../../../../tools/qa/cxorbia-i3-r22-notification-route-ack-source.test.mjs';

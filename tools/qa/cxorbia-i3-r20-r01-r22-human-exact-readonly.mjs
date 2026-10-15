@@ -43,6 +43,32 @@ receipt.stiven={visibleLogin:'stiven.lopez',membershipCandidates:exactCandidates
 const waHr=hrVisits.filter(v=>norm(v.sucursal).includes('miraflores')||norm(v.sucursal).includes('oakland'));
 const waSamples=waHr.slice(0,12).map(v=>{const id=str(v.shopperId),hrp=hrShoppers.find(x=>str(x.id||x.shopperId)===id),pr=profileMap.get(id)||null;return {branchBucket:norm(v.sucursal).includes('miraflores')?'miraflores':'oakland',visitCountry:str(v.pais||v.country),shopperIdentityPresent:!!id,hrProfileExact:!!hrp,firestoreProfileExact:!!pr,visitPhone:phones(v),hrProfilePhone:phones(hrp),firestoreProfilePhone:phones(pr)};});
 receipt.whatsapp={visitSamples:waSamples.length,rows:waSamples,disposition:'SOURCE_DIAGNOSTIC_ONLY_NO_PHONE_GUESSED'};
+
+/* Exact Stiven DEV authority smoke. Auth token verifies protected session, NOT password entry. */
+receipt.stiven.browser={decision:'NOT_RUN',credentialEntry:'NOT_TESTED'};
+if(exactCandidates.length===1&&basePrincipal?.uid===exactCandidates[0].id&&authReviews[0]?.claimMatch===true){
+ const {chromium}=await import('playwright'),browser=await chromium.launch({headless:true});
+ const ctx=await browser.newContext({viewport:{width:1280,height:900}}),page=await ctx.newPage(),started=Date.now();
+ try{
+  const url=HOST+'/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId='+PROGRAM+'&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&stivenProof='+Date.now();
+  await page.goto(url,{waitUntil:'domcontentloaded',timeout:60000});
+  await page.waitForFunction(()=>!!window.firebase?.auth&&window.firebase?.apps?.length>0,null,{timeout:60000});
+  const token=await auth.createCustomToken(basePrincipal.uid);
+  await page.evaluate(async jwt=>{const f=window.firebase;await f.auth().setPersistence(f.auth.Auth.Persistence.LOCAL);await f.auth().signInWithCustomToken(jwt);},token);
+  await page.goto('about:blank');
+  await page.goto(url+'&session='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
+  await page.waitForFunction(rev=>{
+   const c=window.CX?.backendAuth?.context?.()||{},g=window.CX_C6_HR_AUTHORITY_GATE||{};
+   return c.authenticated===true&&c.role==='shopper'&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&g.ready===true&&g.blocked!==true&&String(window.CX?.data?.previewMeta?.sourceRevision||'')===rev;
+  },REV,{timeout:65000});
+  const state=await page.evaluate(()=>({role:String(window.CX?.backendAuth?.context?.()?.role||''),view:String(window.CX?.session?.view||''),gateReady:window.CX_C6_HR_AUTHORITY_GATE?.ready===true}));
+  receipt.stiven.browser={decision:'PASS_EXACT_STIVEN_DEV_AUTHORITY',elapsedMs:Date.now()-started,...state,credentialEntry:'NOT_TESTED_CUSTOM_TOKEN_ONLY'};
+ }catch(error){
+  const state=await page.evaluate(()=>({gateReady:window.CX_C6_HR_AUTHORITY_GATE?.ready===true,blocked:window.CX_C6_HR_AUTHORITY_GATE?.blocked===true,reason:String(window.CX_C6_HR_AUTHORITY_GATE?.reason||''),bootExhausted:window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE?.exhausted===true})).catch(()=>({}));
+  receipt.stiven.browser={decision:'HOLD_EXACT_STIVEN_DEV_AUTHORITY',elapsedMs:Date.now()-started,errorKind:String(error?.name||'ERROR').replace(/[^a-z_]/gi,'').slice(0,24),...state,credentialEntry:'NOT_TESTED_CUSTOM_TOKEN_ONLY'};
+ }finally{await ctx.close().catch(()=>{});await browser.close().catch(()=>{});}
+}else receipt.stiven.browser={decision:'HOLD_STIVEN_EXACT_AUTH_PRECONDITIONS',credentialEntry:'NOT_TESTED'};
+
 const readsRows=reads.docs.map(doc=>doc.data()||{}),bullRows=bulletins.docs.map(doc=>({id:doc.id,...doc.data()}));
 for(const [label,name] of [['priscila','priscila lopez'],['paula','paula osorio']]){
  const candidates=local.filter(p=>norm(p.nombre||p.displayName||[p.firstName,p.lastName].filter(Boolean).join(' '))===name);
