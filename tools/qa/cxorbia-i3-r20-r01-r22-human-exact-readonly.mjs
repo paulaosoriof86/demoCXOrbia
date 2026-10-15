@@ -1,0 +1,56 @@
+#!/usr/bin/env node
+/* I3 human P0 focal: exact Auth + HR + WhatsApp + notification READ ONLY. */
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';
+import {getAuth} from 'firebase-admin/auth';
+import {getFirestore} from 'firebase-admin/firestore';
+const OUT=String(process.env.PHASEA_LIVE_OUT||'.tmp/phasea-representative-live');
+const REV=String(process.env.EXPECTED_HR_REVISION||'');
+const HOST=String(process.env.HOSTING_URL||'https://cxorbia-backend-dev.web.app').replace(/\/$/,'');
+const PROJECT='cxorbia-backend-dev',TENANT='tya',PROGRAM='cinepolis';
+const str=v=>String(v??'').trim(),norm=v=>str(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(),arr=v=>Array.isArray(v)?v:[],sha=v=>crypto.createHash('sha256').update(String(v)).digest('hex'),fp=v=>v?sha(v).slice(0,18):null;
+const receipt={schemaVersion:'cxorbia.i3.r20-r01-r22.human-exact-live-readonly.v1',decision:'HOLD',revisionExpected:REV,source:'FIREBASE_AUTH_FIRESTORE_HR_SAME_REVISION',writes:0,hrWrites:0,authWrites:0,production:false,stiven:{},whatsapp:{},notifications:{}};
+fs.mkdirSync(OUT,{recursive:true});
+const save=()=>fs.writeFileSync(OUT+'/r20-r01-r22-focal-readonly.json',JSON.stringify(receipt,null,2)+'\n');
+save();
+if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
+const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(TENANT);
+const [metaResponse,hrResponse,users,profiles,crosswalk,bulletins,reads]=await Promise.all([
+ fetch(HOST+'/api/'+TENANT+'/'+PROGRAM+'/hr-live?format=meta&r20='+Date.now(),{headers:{'cache-control':'no-cache'}}),
+ fetch(HOST+'/api/'+TENANT+'/'+PROGRAM+'/hr-live?format=json&view=operational-names&r20='+Date.now(),{headers:{'cache-control':'no-cache'}}),
+ tenant.collection('users').get(),tenant.collection('shoppers').get(),tenant.collection('shopperIdentityCrosswalk').get(),tenant.collection('bulletins').get(),tenant.collection('bulletinReads').get()
+]);
+if(!metaResponse.ok||!hrResponse.ok)throw Error('PROVIDER_FAILURE:R20_FOCAL_HR_HTTP');
+const meta=await metaResponse.json(),body=await hrResponse.json(),hr=body.snapshot||body.data||body,revision=str(meta.revision||hr.sourceRevision);
+if(revision!==REV)throw Error('SOURCE_FAILURE:R20_FOCAL_HR_REVISION_MISMATCH');
+const members=users.docs.map(doc=>({id:doc.id,...doc.data()})),local=profiles.docs.map(doc=>({id:doc.id,...doc.data()})),cr=crosswalk.docs.map(doc=>({id:doc.id,...doc.data()}));
+const hrShoppers=arr(hr.shoppers),hrVisits=arr(hr.visits);
+const profileMap=new Map(local.map(p=>[p.id,p]));
+const full=(v)=>{const a=str(v);return /^\+?[\d ().-]+$/.test(a)&&/^[1-9]\d{8,14}$/.test(a.replace(/\D/g,''));};
+const phones=row=>{const fields=['whatsapp','phone','telefono','shopperWa'];const a=fields.map(k=>str(row?.[k])).filter(Boolean);return {fieldCount:a.length,validInternational:a.filter(full).length,localEightDigit:a.filter(v=>/^\d{8}$/.test(v.replace(/\D/g,''))).length,maskedOrOther:a.filter(v=>!full(v)&&!/^\d{8}$/.test(v.replace(/\D/g,''))).length};};
+const exactCandidates=members.filter(m=>['stiven.lopez'].includes(norm(m.visibleLogin||m.username||m.user||m.login))&&norm(m.role)==='shopper');
+const byLoginEmail=sha(TENANT+'\0shopper\0stiven.lopez').slice(0,48)+'@auth.cxorbia.invalid';
+let basePrincipal=null;try{basePrincipal=await auth.getUserByEmail(byLoginEmail);}catch(e){if(str(e?.code)!=='auth/user-not-found')throw e;}
+const authReviews=[];for(const m of exactCandidates){const p=profileMap.get(str(m.shopperId));let u=null;try{u=await auth.getUser(m.id);}catch(e){if(str(e?.code)!=='auth/user-not-found')throw e;}
+ const cc=u?.customClaims||{},aliases=new Set([m.shopperId,p?.legacyShopperId,p?.sourceShopperId,...arr(p?.sourceShopperIds),...arr(p?.legacyLiveShopperIds)].map(str).filter(Boolean));
+ const matchingCross=cr.filter(x=>aliases.has(str(x.id||x.sourceStableKey))||str(x.shopperId)===str(m.shopperId));
+ const hrMatches=hrShoppers.filter(x=>aliases.has(str(x.id||x.shopperId)));
+ const ownVisits=hrVisits.filter(x=>aliases.has(str(x.shopperId||x.assignedShopperId)));
+ authReviews.push({principalFingerprint:fp(m.id),active:m.active===true,disabled:u?.disabled===true,authExists:!!u,role:norm(m.role),namespace:norm(m.authNamespace),claimMatch:!!u&&str(cc.tenantId)===TENANT&&norm(cc.role)==='shopper'&&norm(cc.authNamespace)==='shopper'&&str(cc.shopperId)===str(m.shopperId)&&arr(cc.projectIds).map(str).includes(PROGRAM),membershipScope:arr(m.projectIds).map(str).includes(PROGRAM),shopperFingerprint:fp(m.shopperId),profileExists:!!p,profileCountry:!!str(p?.pais||p?.country),hrDirectMatch:hrMatches.length,matchingCrosswalk:matchingCross.length,hrAssignedVisits:ownVisits.length,profileContact:phones(p)});
+}
+receipt.stiven={visibleLogin:'stiven.lopez',membershipCandidates:exactCandidates.length,authByLoginExists:!!basePrincipal,authByLoginFingerprint:fp(basePrincipal?.uid),authCandidates:authReviews};
+const waHr=hrVisits.filter(v=>norm(v.sucursal).includes('miraflores')||norm(v.sucursal).includes('oakland'));
+const waSamples=waHr.slice(0,12).map(v=>{const id=str(v.shopperId),hrp=hrShoppers.find(x=>str(x.id||x.shopperId)===id),pr=profileMap.get(id)||null;return {branchBucket:norm(v.sucursal).includes('miraflores')?'miraflores':'oakland',visitCountry:str(v.pais||v.country),shopperIdentityPresent:!!id,hrProfileExact:!!hrp,firestoreProfileExact:!!pr,visitPhone:phones(v),hrProfilePhone:phones(hrp),firestoreProfilePhone:phones(pr)};});
+receipt.whatsapp={visitSamples:waSamples.length,rows:waSamples,disposition:'SOURCE_DIAGNOSTIC_ONLY_NO_PHONE_GUESSED'};
+const readsRows=reads.docs.map(doc=>doc.data()||{}),bullRows=bulletins.docs.map(doc=>({id:doc.id,...doc.data()}));
+for(const [label,name] of [['priscila','priscila lopez'],['paula','paula osorio']]){
+ const candidates=local.filter(p=>norm(p.nombre||p.displayName||[p.firstName,p.lastName].filter(Boolean).join(' '))===name);
+ const ids=new Set(candidates.map(x=>str(x.id)));
+ const principals=members.filter(u=>ids.has(str(u.shopperId))&&u.active===true&&norm(u.role)==='shopper');
+ const bulletinRows=bullRows.filter(b=>arr(b.targetShopperIds).map(str).some(x=>ids.has(x)));
+ receipt.notifications[label]={profileCount:candidates.length,memberCount:principals.length,targetedBulletinCount:bulletinRows.length,withExactEntity:bulletinRows.filter(b=>str(b.entityId)&&str(b.entityType)).length,withActionRoute:bulletinRows.filter(b=>str(b.actionRoute||b.nav)).length,withTechnicalVisitIdBody:bulletinRows.filter(b=>/hr_20\d{2}[-_]/i.test(str(b.body||b.text))).length,readReceipts:readsRows.filter(row=>principals.some(p=>str(row.userId)===p.id)&&bulletinRows.some(b=>b.id===str(row.bulletinId))).length};
+}
+receipt.decision='PASS_R20_R01_R22_READ_ONLY_EXACT_DIAGNOSTIC';
+save();
+console.log(JSON.stringify(receipt,null,2));
