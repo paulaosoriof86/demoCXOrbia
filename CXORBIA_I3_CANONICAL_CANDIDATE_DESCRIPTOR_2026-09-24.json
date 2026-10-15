@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_OTHER_P0_TERMINAL_E2E_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "R07_EXTERNAL_HR_ACK__R08_VERTEX_15__R22_READ_RELOAD__FINANCE_HISTORICAL_BATCH",
+  "activeBlocker": "R22_FINANCE_DEEP_READONLY_REQUIRED",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "R08: resolve genuine approved instruction source and current certification bank count, run one Vertex 15-question exact provider E2E with pending-review human checkpoint; R22 same-user read ACK persists after reload, exact routes; finance exact historical ledger/backing provider and batch support proof; do not ask Paula for visual review before comprehensive P0 E2E.",
+  "exactNextAction": "Same DEV artifact read-only R22 two existing shoppers: exact visible feed, existing read receipts persist after reload, no cross-user leak; parallel finance inventory from reconciliations, batches, liquidations and HR durable visits. Preserve R08 Vertex pending genuine source and GT/HN; no production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -11471,5 +11471,23 @@
       "financeWrites": 0,
       "deploys": 0
     }
+  },
+  "i3Oct15R22FinanceFocalRequest": {
+    "sourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
+    "phase": "I3",
+    "mode": "EXISTING_I3_SINGLE_READONLY_JOB",
+    "script": "tools/qa/cxorbia-i3-r22-finance-authority-readonly.mjs",
+    "shoppers": 2,
+    "readOnly": true,
+    "financialCollections": [
+      "paymentReconciliations",
+      "paymentBatches",
+      "liquidations",
+      "financialMovements",
+      "financeAccounts",
+      "projects/{projectId}/visits"
+    ],
+    "noMutations": true,
+    "noProduction": true
   }
 }

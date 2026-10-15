@@ -109,7 +109,7 @@ try{
       const sid=String(window.CX?.backendAuth?.context?.()?.shopperId||'');
       return {ownerExact:window.CX?.backendAuth?.context?.()?.authenticated===true,
        items:entries.map(x=>({id:String(x.id||''),leida:x.leida===true,targets:Array.isArray(x.targetShopperIds)?x.targetShopperIds.map(String):[],
-         visitNotice:x.entityType==='visit',nav:String(x.nav||''),technical:/hr_20\\d{2}[-_]/i.test(String(x.txt||''))})),
+         visitNotice:x.entityType==='visit',nav:String(x.nav||''),technical:/hr_20\d{2}[-_]/i.test(String(x.txt||''))})),
        sid,
        sourceReady:window.CX_BACKEND_BULLETINS_STATUS?.source==='firestore'};
     });
