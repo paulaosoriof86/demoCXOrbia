@@ -1,8 +1,8 @@
+#!/usr/bin/env node
 /* R23 focal, project-scoped QA successor to existing Gate14; independent external HR read + Admin browser KPI, same revision.
  * Uses authorized DEV Admin custom token solely to read KPIs. Does NOT replace ordinary Shopper password R20 proof.
  * All mutations forbidden. No production. Single existing I3 workflow only.
  */
-#!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
