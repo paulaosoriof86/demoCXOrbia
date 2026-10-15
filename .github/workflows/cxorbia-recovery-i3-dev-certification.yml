@@ -120,6 +120,7 @@ jobs:
          node --test backend/runtime/hr-live-service/test/cxorbia-i3-r08-vertex-safe-diagnostic.test.mjs
          node --test tools/qa/cxorbia-i3-b7-hf15-assignment-actions-source.test.mjs
          node --test tools/qa/cxorbia-i3-b7-hf16-pending-count-parity-source.test.mjs
+         node --test tools/qa/cxorbia-i3-r05-r06-postulaciones-owner-source.test.mjs
          bash -n .github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh
          node --test backend/runtime/hr-live-service/test/cxorbia-i3-phasea-completion-source-contract.test.mjs
   vrm143-151-source-reproof:
