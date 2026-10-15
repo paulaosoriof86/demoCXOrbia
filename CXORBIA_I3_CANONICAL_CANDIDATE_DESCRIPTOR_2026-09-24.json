@@ -8,12 +8,12 @@
   "productTreeAuthority": "46fcbffc0efa084d1a1f1969be50bd0ae93a408a",
   "predecessorProductSourceSha": "1f4174724b0ec028b6a2d9d429509148e6e63b62",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V441_2026-10-14.json",
-  "findingsLedgerExpectedGitBlob": "00249ca5c84c596de3a61a193dcb945af91cf5ae",
+  "findingsLedgerExpectedGitBlob": "dda3a227b458133e660707de6d44777d7293e31a",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V119.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "R20_BROWSER_TRUE_AUTH_PASSWORD_PENDING_R01_WA_R03_IDENTITY_R07_CANCEL_R08_AI15_R09_17_FINANCE_R22_R23_HR_KPI",
+  "activeBlocker": "R20_REAL_PASSWORD_NOT_TESTED_R01_DRAFT_NOT_OPENED_R03_IDENTITY_ADJUDICATION_REMAINS_R07_HR_CANCEL_ACK_R08_REAL_15_QUESTIONS_R09_R17_FINANCE_HISTORICAL_R22_EACH_NOTICE_READ_AFTER_RELOAD_R23_HR_KPI_INDEPENDENT_SCOPE_HUMAN_ACCEPTANCE_GATE20_GATE21",
   "nextFindingId": "VRM-275",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN1677 immutable DEV exact-source build PASS; now run same-artifact representative live E2E including corrected R20 service worker proof + R01 WA + R22 notification and Admin/Shopper flows, without rebuild; then close pending P0 and one human checkpoint; production DO_NOT_TOUCH",
+  "exactNextAction": "I3: preserve RUN1678 attempt2 same-artifact PASS. Close individually R20 real password login across authorized population; R01 manual WA draft exact authorized recipient; R22 durable read navigation reload; R07 HR cancel ACK; R08 exact real 15-question grounded human review; R09-R17 historical GT/HN finance and Q7300, R03 identity; independent exact HR KPI and final single human acceptance. No new build/deploy without proven P0 code delta; I4 DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -530,7 +530,7 @@
     "financeWrites": 0,
     "production": false,
     "sourceProofRunId": 38705124046,
-    "sameArtifactLive": "PENDING",
+    "sameArtifactLive": "PASS_REPRESENTATIVE_RUN1678_ATTEMPT2_SCOPE_ONLY",
     "humanAcceptance": "PENDING",
     "gate20": "PENDING",
     "gate21": "PENDING"
@@ -2740,7 +2740,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "76655f1c87073bc8606b20e1b488d7041aacaaed",
+  "moduleTruthExpectedGitBlob": "942d3a96bb1e7c329a96e5d3abd9e68a725e6f63",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -10970,5 +10970,100 @@
     "humanAcceptance": "PENDING",
     "gate20": "PENDING",
     "gate21": "PENDING"
+  },
+  "i3Oct15Run1678Attempt2SameArtifactLive": {
+    "iteration": "I3_FUNCTIONAL_CLOSURE",
+    "decision": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+    "runId": 38706013094,
+    "attempt": 2,
+    "controlHead": "e556e839f037e4618b3db2831f1a9f310388bcb2",
+    "scope": "REPRESENTATIVE_AND_POPULATION_FOCAL_NOT_FULL_I3_TERMINAL",
+    "sourceSha": "52de067d105ee5711859a03c00a6b77ff551224f",
+    "sourceTree": "46fcbffc0efa084d1a1f1969be50bd0ae93a408a",
+    "artifactId": 11958689256,
+    "artifactName": "cxorbia-phasea-representative-live-38706013094",
+    "artifactSha256": "332e2eca5b39995f9d728c3dbf04526da27fd5269239472176d4a148b2a203b7",
+    "devMaterializationRunId": 38705313081,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/0f96179a5692672d",
+    "runtimeRevision": "cxorbia-live-hr-dev-00303-zjn",
+    "hrRevision": "1959278f639f0132110b58b080908a9da8d949ed824ffc044e98ded67fb3fbe8",
+    "cases": {
+      "R20": {
+        "customTokenExactShopperDev": "PASS_EXACT_STIVEN_DEV_AUTHORITY",
+        "elapsedMs": 3893,
+        "realPasswordEntry": "NOT_TESTED",
+        "populationPasswordVerification": "NOT_TERMINALLY_CLOSED"
+      },
+      "R01": {
+        "sampledAuthorizedContacts": 6,
+        "validFirestore": 6,
+        "validProjected": 6,
+        "exactDraftOpened": "NOT_TESTED",
+        "outboundSent": false
+      },
+      "R22": {
+        "exactTargetAndReadReceiptData": "SOURCE_DIAGNOSTIC_PASS",
+        "twoStoredTechnicalBodies": "PENDING_DISPLAY_REVIEW",
+        "individualReadAfterReload": "NOT_TERMINALLY_CLOSED"
+      },
+      "adminPostulations": {
+        "decision": "PASS_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE",
+        "createStandbyRejectDeleteAckReadback": true,
+        "idempotentReplay": true,
+        "noReappearanceAfterReload": true,
+        "cleanedQaResidue": 0
+      },
+      "reservations": {
+        "decision": "PASS_I3_ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE",
+        "createApproveReassignDeleteAckReadback": true,
+        "visitInvariantUnchanged": true,
+        "cleanedQaResidue": 0
+      },
+      "visual": {
+        "decision": "PASS_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL",
+        "clicks": 40,
+        "roleRoutes": {
+          "admin": 34,
+          "shopper": 12,
+          "client": 10
+        },
+        "findingsFromSuite": 0,
+        "humanApproval": "PENDING"
+      },
+      "HR": {
+        "activeShopperMemberships": 381,
+        "profiles": 576,
+        "currentHrVisits": 44,
+        "assignedHrVisits": 42,
+        "unresolvedMemberships": 0,
+        "duplicateActivePrincipals": 0,
+        "unresolvedAssignedVisits": 0,
+        "duplicateHrVisitKeys": 0,
+        "sourceRevisionExact": true
+      },
+      "R07": "PENDING_REAL_HR_CANCEL_PROVIDER_ACK_READBACK",
+      "R08": "PENDING_REAL_15_QUESTION_GROUNDED_GENERATION_HUMAN_REVIEW",
+      "R09toR17": "PENDING_EXACT_HISTORICAL_FINANCE_RECONCILIATION_AND_Q7300_PROOF"
+    },
+    "writes": {
+      "HR": 0,
+      "auth": 0,
+      "populationProofProvider": 0,
+      "production": 0
+    },
+    "blockers": [
+      "R20_REAL_PASSWORD_NOT_TESTED",
+      "R01_DRAFT_NOT_OPENED",
+      "R03_IDENTITY_ADJUDICATION_REMAINS",
+      "R07_HR_CANCEL_ACK",
+      "R08_REAL_15_QUESTIONS",
+      "R09_R17_FINANCE_HISTORICAL",
+      "R22_EACH_NOTICE_READ_AFTER_RELOAD",
+      "R23_HR_KPI_INDEPENDENT_SCOPE",
+      "HUMAN_ACCEPTANCE",
+      "GATE20_GATE21"
+    ],
+    "terminalI3Go": false,
+    "production": "DO_NOT_TOUCH"
   }
 }
