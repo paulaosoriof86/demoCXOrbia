@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "cxorbia.i3.run1631.r03.live-crosswalk-breakdown.v1",
+  "dateLocal": "2026-10-14",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "status": "HOLD_R03_AUTHORITY_AND_MEMBERSHIP_REVIEW_REQUIRED",
+  "classification": [
+    "MAPPING_FAILURE",
+    "AUTH_FAILURE"
+  ],
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlBefore": "d53cb3129cad35ba4a10cfd83ad712e8d61b551d",
+  "productSourceSha": "5b13468fc3999f0c8e49982954a8733cf2728e96",
+  "productTree": "1ea0ad04afe1e6e760668ca8cb9206217735b6a1",
+  "execution": {
+    "runId": 38660985088,
+    "runNumber": 1631,
+    "jobId": 116182041488,
+    "outcome": "EXPECTED_HOLD_VRM185_GLOBAL_IDENTITY_REVIEW_REQUIRED",
+    "artifactId": 11938579405,
+    "artifactUri": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/38660985088/artifacts/11938579405",
+    "signedDevRead": true,
+    "readOnly": true,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "deploys": 0,
+    "production": false,
+    "hrRevision": "2e3b2aaff2b1ac7a9323c9a69a16d2ad97beb25648c642e1464d72e36917ad70"
+  },
+  "counts": {
+    "hrShoppers": 229,
+    "authPrincipals": 470,
+    "activeAdjudicationLinks": 65,
+    "hrCandidateLinks": 62,
+    "hrCandidateTokens": 82,
+    "crosswalkMissing": 0,
+    "shopperIdCanonicalMismatch": 82,
+    "sourceTypeMismatch": 0,
+    "sourceStableKeyExact": 82,
+    "aliasIdentityMode": 82,
+    "aliasScopeMatched": 82,
+    "authorityExactMatched": 47,
+    "trustedExactAliases": 47,
+    "untrustedAliasAuthorityOrConfirmation": 35,
+    "untrustedNoHumanConfirmationAndAuthorityMismatch": 31,
+    "untrustedHumanConfirmedButAuthorityMismatch": 4,
+    "directHrPairs": 0,
+    "profilePairsComplete": 34,
+    "principalPairsEvaluated": 34,
+    "ambiguousMembershipPairs": 13,
+    "advisorySafePlans": 34,
+    "reviewRequired": 13,
+    "alreadyConverged": 0
+  },
+  "dependencyReadbackAdvisoryNotDeduplicated": {
+    "visits": {
+      "pairReferences": 34,
+      "documents": 523
+    },
+    "liquidations": {
+      "pairReferences": 32,
+      "documents": 186
+    },
+    "paymentReconciliations": {
+      "pairReferences": 32,
+      "documents": 220
+    },
+    "postulations": {
+      "pairReferences": 2,
+      "documents": 12
+    },
+    "certifications": {
+      "pairReferences": 1,
+      "documents": 1
+    }
+  },
+  "namedCase": {
+    "name": "José Sarat",
+    "profileCount": 4,
+    "eachActiveMembership": true,
+    "eachActiveAuthVerifiedClaims": true,
+    "eachStrongPasswordProof": true,
+    "uidSelectionPerformed": false,
+    "authRetirementPerformed": false,
+    "mergePerformed": false
+  },
+  "sourceQa": {
+    "syntheticTests": 8,
+    "passed": 8,
+    "failed": 0,
+    "runnerBlob": "0ff60c0e4b07e21a0c8cc14a93dd6ed8f1523fea",
+    "fixtureBlob": "61b87cbe6ff0f01ece6c0889c6ccb301cbeb107a",
+    "canonicalControlJob": "PASS",
+    "nodeGlobalPlanJob": "EXPECTED_HOLD"
+  },
+  "conclusion": "RUN1627 zero eligible was caused by diagnostic predicate incorrectly requiring alias shopperId == HR shopperId. Forty-seven trusted exact alias pairs now enter profile/principal inspection; thirty-five require authority/confirmation review. Thirteen trusted pairs have ambiguous membership. None authorizes automatic Auth consolidation.",
+  "nextExactAction": "R03 owner only: inspect 35 insufficient authority references and 13 ambiguous membership pairs against exact admin adjudication; require Admin keeper/profile choice for four Jose Sarat principals; verify durable dependencies, Auth rollback, provider ACK, shopper real DEV login and unchanged history. Only after live E2E and VRM185/197 targeted regressions may R03 close. Preserve R01-R25 and all 274 prior VRM findings.",
+  "approvalNow": false,
+  "productionAuthorizationRequiredLater": true
+}
