@@ -18,7 +18,7 @@
     "sourceTree": "e93201ce9039aa20a6d993bf5dc0b9db866d0eac",
     "predecessorSha": "52de067d105ee5711859a03c00a6b77ff551224f",
     "production": false,
-    "state": "R01_INDIVIDUAL_WA_SOURCE_FIXED_PENDING_QA_DEV_LIVE",
+    "state": "SOURCE_MATERIALIZED_RUN1681_R01_FOCAL_LIVE_E2E_PASS_OTHER_P0_PENDING",
     "proof": {
       "status": "SOURCE_QA_PASS_RUN1517",
       "scope": "HF24 bridge blocked on missing provider, and movements/accounts exact readback after ACK; no live finance writes",
@@ -30149,10 +30149,11 @@
     "after": "waBtn now emits exact data-vid for existing handler; no recipient inference, no outbound send; regression source test added",
     "qa": "PASS_SOURCE_RUN1680",
     "dev": "PASS_RUN1681_EXACT_SOURCE",
-    "liveE2e": "PENDING_REAL_POPUP_BROWSER",
+    "liveE2e": "PASS_BROWSER_POPUP_LOCAL_INTERCEPT_RUN1682",
     "production": false,
     "inventoryCountUnchanged": 274,
-    "otherP0RemainOpen": true
+    "otherP0RemainOpen": true,
+    "human": "PENDING"
   },
   "i3Oct15R01SourceProof": {
     "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
@@ -30196,5 +30197,37 @@
     "humanAcceptance": "PENDING",
     "gate20": "PENDING",
     "gate21": "PENDING"
+  },
+  "i3Oct15Run1682R01BrowserProof": {
+    "decision": "PASS_R01_EXACT_ROW_REAL_BROWSER_POPUP_LOCAL_NETWORK_INTERCEPT",
+    "runId": 38712331800,
+    "runNumber": 1682,
+    "jobId": 116346643988,
+    "artifactId": 11960469719,
+    "artifactName": "cxorbia-phasea-representative-live-38712331800",
+    "artifactSha256": "8d995beacda8d72fa72cb2c47f85f921ae2f0a4e10098ab11be1d84e00e955c8",
+    "sourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
+    "devMaterializationRunId": 38711384224,
+    "runtimeRevision": "cxorbia-live-hr-dev-00304-wwc",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/69c811435fa7b66d",
+    "hrRevision": "1959278f639f0132110b58b080908a9da8d949ed824ffc044e98ded67fb3fbe8",
+    "exactRenderedRow": true,
+    "realBrowserPopup": true,
+    "recipientExact": true,
+    "bodyExact": true,
+    "externalRequestIntercepted": true,
+    "externalMessageSent": false,
+    "phoneValuesLogged": 0,
+    "representativeE2E": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+    "adminPostulations": "PASS_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE",
+    "reservations": "PASS_I3_ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE",
+    "financeFixture": "PASS_PREI4_FINAL_FOCAL_FINANCE",
+    "certResourcesFixture": "PASS_PREI4_CERT_RES_CUMULATIVE_DEV_LIVE",
+    "authenticPasswordR20": "NOT_TESTED",
+    "providerWhatsAppExternal": "NOT_TESTED",
+    "humanAcceptance": "PENDING",
+    "gate20": "PENDING",
+    "gate21": "PENDING",
+    "production": false
   }
 }
