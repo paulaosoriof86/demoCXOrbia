@@ -298,6 +298,67 @@ try{
   if(!r.hasExactProfile)r01Buckets.profileNotFound++;
  }
  a.r01WaExactAuthorizedContactReadback={...r01Buckets,decision:r01Buckets.providerValidButProjectionMissing?'HOLD_R01_CONTACT_MAPPING_PROVEN':'READ_ONLY_NO_PROJECTION_MISMATCH_PROVEN',phoneValuesLogged:0,providerWrites:0};
+
+ /* R01 real click on exact rendered row: an actual browser popup, with its wa.me
+    request intercepted locally so no external messaging or phone disclosure occurs.
+    This complements (does not replace) independent Firestore contact readback. */
+ const r01Candidate=await page.evaluate(()=>{
+   const d=window.CX?.data||{},visits=typeof d.visitas==='function'?d.visitas():[];
+   const normalize=raw=>{
+     const input=String(raw??'').trim();
+     if(!/^\+?[\d\s().-]+$/.test(input))return null;
+     const digits=input.replace(/\D/g,'');
+     return /^[1-9]\d{8,14}$/.test(digits)?digits:null;
+   };
+   const buttons=[...document.querySelectorAll('#estadoBoard [data-wa][data-vid]')];
+   for(let index=0;index<buttons.length;index++){
+     const id=String(buttons[index].dataset.vid||''),v=visits.find(x=>String(x.id)===id);
+     if(!v?.shopper)continue;
+     const phones=new Set();
+     for(const pid of new Set([v.shopperId,v.canonicalShopperId].map(x=>String(x||'').trim()).filter(Boolean))){
+       const candidate=typeof d.getShopper==='function'?d.getShopper(pid):null;
+       const profile=candidate&&String(candidate.id||candidate.shopperId||'')===pid
+         ?candidate:(Array.isArray(d.shoppers)?d.shoppers:[]).find(x=>String(x?.id||x?.shopperId||'')===pid);
+       const phone=normalize(profile?.whatsapp||profile?.phone||profile?.telefono);
+       if(phone)phones.add(phone);
+     }
+     const direct=normalize(v.shopperWa||v.whatsapp),exact=phones.size===1?[...phones][0]:null;
+     if(direct&&exact&&direct!==exact)continue;
+     const recipient=direct||exact;
+     if(!recipient)continue;
+     return{index,visitId:id,shopperId:String(v.shopperId||''),recipient,
+       expectedText:'Hola '+(v.shopper||'Evaluador')+', sobre tu visita en '+(v.sucursal||'la sucursal')+'.'};
+   }
+   return null;
+ });
+ a.r01IndividualWhatsAppBrowser={
+   decision:r01Candidate?'PENDING_BROWSER_POPUP':'PENDING_NO_ELIGIBLE_BOARD_ROW',
+   checkedExactRow:!!r01Candidate,externalMessageSent:false,phoneValuesLogged:0
+ };
+ if(r01Candidate){
+   const waContext=page.context();
+   await waContext.route('https://wa.me/**',route=>route.fulfill({
+     status:200,contentType:'text/html',body:'<!doctype html><title>Draft handoff check, no message sent</title>'
+   }));
+   try{
+     const popPromise=page.waitForEvent('popup',{timeout:12000});
+     await page.locator('#estadoBoard [data-wa][data-vid]').nth(r01Candidate.index).click({timeout:12000});
+     result.clickCount++;
+     const popup=await popPromise;
+     try{
+       await popup.waitForLoadState('domcontentloaded',{timeout:12000});
+       const uri=new globalThis.URL(popup.url());
+       if(uri.hostname!=='wa.me'||uri.pathname!=='/'+r01Candidate.recipient||
+          uri.searchParams.get('text')!==r01Candidate.expectedText)
+         throw new Error('FUNCTIONAL_DEFECT:R01_EXACT_MANUAL_WA_DRAFT_TARGET_OR_BODY');
+       a.r01IndividualWhatsAppBrowser={
+         decision:'PASS_R01_EXACT_ROW_REAL_BROWSER_POPUP_LOCAL_NETWORK_INTERCEPT',
+         checkedExactRow:true,recipientExact:true,bodyExact:true,
+         externalMessageSent:false,phoneValuesLogged:0
+       };
+     }finally{await popup.close().catch(()=>{});}
+   }finally{await waContext.unroute('https://wa.me/**');}
+ }
  a.dashboardSelect=await click(page,'.bdSel');
  if(a.dashboardSelect&&!/[1-9]/.test(await page.locator('#bdSelectedCount').innerText()))throw new Error('FUNCTIONAL_DEFECT:DASHBOARD_SELECTION_COUNT');
  a.dashboardContext=await click(page,'.bdCtx');
