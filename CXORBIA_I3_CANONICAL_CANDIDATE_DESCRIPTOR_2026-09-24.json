@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
+  "status": "HOLD_I3_OTHER_P0_TERMINAL_E2E_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "e93201ce9039aa20a6d993bf5dc0b9db866d0eac",
   "predecessorProductSourceSha": "52de067d105ee5711859a03c00a6b77ff551224f",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V441_2026-10-14.json",
-  "findingsLedgerExpectedGitBlob": "fd3a7eaa5a377d3be182f920dc7467a13cab9170",
+  "findingsLedgerExpectedGitBlob": "d277108f9ee5cc766f34cc0e599b85b5cb488386",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V119.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "R20_SINGLE_CREDENTIAL_READONLY_REQUIRED",
+  "activeBlocker": "R07_R08_R09_R17_R22_R23_TERMINAL_READBACK_PENDING",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "R20 one proven existing DEV password principal attempt using current guarded representative same-artifact lane; maximum one, no writes/build/deploy; read sanitized browser stage or first-login proof. Preserve other pending P0 and hold I4.",
+  "exactNextAction": "Continue R07 R08 R09-R17 R22 R23 independent real provider/HR proof, no R20 replay without reproducible drift; keep Phase A 21 modules, 274 findings, one DEV artifact; human then Gate20 Gate21; I4 blocked.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -11301,5 +11301,15 @@
     "limitation": "Password sign-in, session restore, logout/re-login, population scope not tested.",
     "precedingRun1686": "HOLD_R20_ORDINARY_PASSWORD_BROWSER_FAILED_ONE_ATTEMPT_ERROR_STAGE_UNRECORDED",
     "nextExactAction": "No password retries. Diagnose ordinary password test stage/approved credential provenance and compare UI-to-auth provider path without changing real credentials. Then one authorized exact credential E2E and session restoration. Preserve all accepted PASS."
+  },
+  "r20FullPasswordSessionProof": {
+    "runId": 38753283755,
+    "runNumber": 1697,
+    "artifactId": 11981954222,
+    "decision": "PASS_R20_ORDINARY_PASSWORD_FULL_SESSION_LIFECYCLE",
+    "scope": "ONE_EXACT_SHOPPER_ONE_PASSWORD_LIFECYCLE_NO_HR_VISITS",
+    "sourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
+    "oneShopper": true,
+    "noProduction": true
   }
 }
