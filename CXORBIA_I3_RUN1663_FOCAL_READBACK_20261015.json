@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "cxorbia.i3.run1663.focal-readback.v1",
+  "date": "2026-10-15",
+  "status": "HOLD_I3",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "sourceAuthority": {
+    "repository": "paulaosoriof86/demoCXOrbia",
+    "branch": "recovery/cxorbia-phase-a-20260831",
+    "controlHeadBefore": "b936603b9bb93c083649cefeb7558c9c074b4972",
+    "productSource": "a9d878e8747f12138faee9f07ba4780d65383b55",
+    "productTree": "eb44fe8ad9223b445978e75477b9366cea6cb7b4"
+  },
+  "evidence": {
+    "runId": 38691275918,
+    "runNumber": 1663,
+    "workflowUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/38691275918",
+    "representativeArtifactId": 11952520559,
+    "representativeArtifactName": "cxorbia-phasea-representative-live-38691275918",
+    "artifactZipSha256": "033b5cc5b6c544bb552b5eace8757c780622a2d5da4e074afe803814767be0e8",
+    "focalJsonSha256": "0aa07eff2c8d777d11b7a5a75bff6830413cc8c166c20898a3a913316ff83e4a",
+    "canonicalAuthorityJob": "success",
+    "representativeFinalDecision": "HOLD_R20_EXACT_STIVEN_BROWSER_AUTHORITY"
+  },
+  "sameArtifact": {
+    "devRun": 38689604571,
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/6698139a56daf06e",
+    "runtimeRevision": "cxorbia-live-hr-dev-00301-jzb",
+    "hrRevision": "1959278f639f0132110b58b080908a9da8d949ed824ffc044e98ded67fb3fbe8",
+    "noNewBuildOrDeploy": true
+  },
+  "focal": {
+    "R20": {
+      "state": "HOLD_AUTH_FAILURE_CAUSE_NOT_YET_PROVEN",
+      "login": "stiven.lopez",
+      "membershipCandidates": 1,
+      "authExists": true,
+      "role": "shopper",
+      "claimsMatch": true,
+      "profileExists": true,
+      "projectMembership": true,
+      "hrAssignedVisits": 0,
+      "zeroVisitsNotAuthBlocker": true,
+      "diagnosticCredentialMethod": "CUSTOM_TOKEN_ONLY",
+      "realPasswordLoginTested": false,
+      "browser": {
+        "stage": "client_custom_token_resolution",
+        "kind": "TimeoutError",
+        "elapsedMs": 66119,
+        "navigations": 3
+      },
+      "next": "Find exact owner and browser/provider cause of custom-token timeout; independently test actual password login without writing data or assuming HR assignment required"
+    },
+    "R01": {
+      "state": "PARTIAL_DATA_DIAGNOSTIC_NOT_DRAFT_E2E_PASS",
+      "sampleVisits": 12,
+      "verifiedContactInExactFirestoreProfile": 8,
+      "samplesWithoutVerifiedRecipient": 4,
+      "whatsappDraftOpened": false,
+      "recipientMustBeAuthorized": true,
+      "next": "Test exact displayed visit opens a manual WhatsApp draft only when authorized recipient resolves; do not send"
+    },
+    "R22": {
+      "state": "PARTIAL_DATA_DIAGNOSTIC_NOT_ALL_SURFACES_E2E_PASS",
+      "priscila": {
+        "targeted": 1,
+        "exactRoute": 1,
+        "technicalBodyCount": 0,
+        "readReceipts": 1
+      },
+      "paula": {
+        "targeted": 5,
+        "exactRoute": 5,
+        "technicalBodyCount": 2,
+        "readReceipts": 5
+      },
+      "next": "Verify individual notification navigation and read ACK persists after reload; humanize two source bodies at presentation without modifying durable source"
+    },
+    "R03_R07_R08_R09_R10_R11_R12_R13_R14_R15_R16_R17_R23": {
+      "state": "NOT_PROVEN_BY_THIS_FOCAL_ARTIFACT",
+      "retainEarlierReceipts": true
+    }
+  },
+  "matrix": {
+    "baselinePath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V119.json",
+    "domains": 21,
+    "match": 9,
+    "nonTerminal": 12,
+    "allModulesMatch": false
+  },
+  "ledger": {
+    "baselinePath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V441_2026-10-14.json",
+    "findingCount": 274,
+    "retainAllFindings": true,
+    "noExistingPassInvalidated": true
+  },
+  "control": {
+    "classification": "AUTH_FAILURE_OBSERVED__EXACT_CAUSAL_OWNER_UNPROVEN",
+    "artifactCertification": "NOT_COMPLETE",
+    "i3": "HOLD",
+    "i4": "BLOCKED",
+    "production": "DO_NOT_TOUCH",
+    "productChanges": 0,
+    "devBuilds": 0,
+    "devDeploys": 0,
+    "hrWrites": 0,
+    "financeWrites": 0,
+    "authWrites": 0
+  },
+  "exactNextAction": "Read-only isolate client_custom_token_resolution in RUN1663 browser harness and authenticated SDK, compare provider network/client context; correct only a proven owner; then rerun solely focal live E2E against same DEV source/artifact, followed by other open P0."
+}
