@@ -660,7 +660,7 @@ test('HF24 missing finance read provider fails closed instead of returning succe
 });
 
 test('HF24 finance creation requires unique tenant scoped remote readback after provider ACK',()=>{
-  const s=fs.readFileSync(new URL('../../../../../app/modules/finanzas.js',import.meta.url),'utf8');
+  const s=fs.readFileSync(new URL('../../../../app/modules/finanzas.js',import.meta.url),'utf8');
   const begin=s.indexOf('function cxFinanceCreatedReadback('),end=s.indexOf('/* END HF24 exact finance create readback */',begin);
   assert.ok(begin>0&&end>begin);
   const check=new Function(s.slice(begin,end)+'return cxFinanceCreatedReadback;')();
