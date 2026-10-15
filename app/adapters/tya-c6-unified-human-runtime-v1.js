@@ -339,9 +339,7 @@
       && authority.shopperPrincipalClaimsVerified===true
       && str(authority.canonicalShopperId)
       && str(authority.shopperCountry)
-      && Number(authority.ownVisits||0)>0
-      && Number(authority.authorizedPeriods||0)>0
-      && arr(authority.authorizedPeriodIds).length>0);
+      );
   }
 
   function requestHumanAuthority(reason){
@@ -358,7 +356,9 @@
       if(app)app.classList.add('on');
       if(rail)rail.innerHTML='';
       if(crumb)crumb.textContent='Sincronizando operación';
-      if(view)view.innerHTML='<div class="card card-p" data-cx-human-authority-gate="pending" style="max-width:720px;margin:40px auto"><div class="card-t">Validando fuente operacional</div><div class="muted" style="margin-top:8px;line-height:1.55">CXOrbia está cargando la autoridad HR viva y el contexto exacto de proyecto y periodo. Ningún módulo operativo se mostrará con un slice transitorio.</div></div>';
+      const stopped=window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE?.exhausted===true;
+      const copy=stopped?'<div class="card-t">No fue posible validar el acceso</div><div class="muted" style="margin-top:8px;line-height:1.55">No se confirmó la identidad o la fuente operacional de tu cuenta. No se mostrarán datos de otro shopper. Solicita a Coordinación que revise tu acceso.</div>':'<div class="card-t">Validando fuente operacional</div><div class="muted" style="margin-top:8px;line-height:1.55">CXOrbia está cargando la autoridad HR viva y el contexto exacto de proyecto y periodo. Ningún módulo operativo se mostrará con un slice transitorio.</div>';
+      if(view)view.innerHTML='<div class="card card-p" data-cx-human-authority-gate="'+(stopped?'blocked':'pending')+'" style="max-width:720px;margin:40px auto">'+copy+'</div>';
       window.CX_C6_HR_AUTHORITY_GATE={ready:false,blocked:true,reason:reason||'pending_hr_authority',pendingView:pendingView||CX.session?.view||null,providerWrites:0,production:false,at:new Date().toISOString()};
     };
     const release=reason=>{
@@ -393,6 +393,7 @@
     };
     router.__c6HumanAuthorityGate=true;
     window.addEventListener('cx:protected-auth-hr-authority-ready',()=>setTimeout(()=>release('protected_auth_hr_authority_ready'),0));
+    window.addEventListener('cx:protected-auth-hr-authority-blocked',()=>{if(CX.session?.role&&!humanAuthorityReady())showGate('protected_auth_hr_authority_blocked');});
     window.addEventListener('cx:live-source-updated',()=>{if(humanAuthorityReady())setTimeout(()=>release('live_source_updated'),0);});
     if(CX.bus?.on)CX.bus.on('backend-auth-ready',()=>{
       if(CX.session?.role&&!humanAuthorityReady()){
