@@ -6633,9 +6633,6 @@ jobs:
          # Never waive ACK or mark I3 GO because this diagnostic succeeded.
          EXPECTED_HR_REVISION="$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")" PHASEA_LIVE_OUT="$P" node tools/qa/cxorbia-i3-r20-r01-r22-human-exact-readonly.mjs | tee "$P/r20-r01-r22-diagnostic-console.log"
          test "$(jq -r .decision "$P/r20-r01-r22-focal-readonly.json")" = "PASS_R20_R01_R22_READ_ONLY_EXACT_DIAGNOSTIC"
-         # Cloud Run provider exception evidence, best effort (no permission changes).
-         gcloud logging read 'resource.type="cloud_run_revision" AND resource.labels.service_name="cxorbia-live-hr-dev" AND timestamp>="2026-10-15T02:20:00Z"' --project "$PROJECT" --limit=100 --format=json > "$P/r20-cloud-run-logs-private.json" 2>"$P/r20-cloud-run-logs-read-error.txt" || true
-         jq '[.[] | (.textPayload // .jsonPayload.message // "") as $m | select(($m|tostring|test("durable HR reconciliation failed|shopper reconciliation committed|visit reconciliation committed";"i"))) | {timestamp, severity, event:(if ($m|tostring|test("failed";"i")) then "SHOPPER_OR_VISIT_RECONCILIATION_FAILURE" elif ($m|tostring|test("shopper";"i")) then "SHOPPER_RECONCILIATION_COMMITTED" else "VISIT_RECONCILIATION_COMMITTED" end), errorClass:(if ($m|tostring|test("permission-denied";"i")) then "PERMISSION_DENIED" elif ($m|tostring|test("deadline|timeout";"i")) then "TIMEOUT" elif ($m|tostring|test("quota|resource-exhausted";"i")) then "RESOURCE_EXHAUSTED" else "SEE_PRIVATE_ERROR_LOG" end)}]' "$P/r20-cloud-run-logs-private.json" > "$P/r20-reconciliation-events-sanitized.json" 2>/dev/null || echo '[]' > "$P/r20-reconciliation-events-sanitized.json"
          node tools/qa/cxorbia-i3-hr-ack-exact-same-revision.mjs "$P" "$HOSTING_URL" "$TENANT_ID" "$PROJECT_ID" "$GITHUB_RUN_ID"
          EXPECTED_HR_REVISION="$(jq -r .revision "$P/hr-meta-1.json")"
          [[ "$EXPECTED_HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
