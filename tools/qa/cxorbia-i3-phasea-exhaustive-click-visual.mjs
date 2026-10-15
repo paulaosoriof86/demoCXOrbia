@@ -277,6 +277,27 @@ try{
  }
  const {ctx,page}=await signed(admin,'admin'),a={};
  await nav(page,'dashboard');
+
+ /* R01: authorized exact contact mapping. Diagnostic only; do not log phone numbers. */
+ const waBrowser=await page.evaluate(()=>{
+  const d=window.CX?.data||{},vs=(typeof d.visitas==='function'?d.visitas():[]);
+  const asDigits=x=>{const a=String(x||'').trim();if(!/^\+?[\d\s().-]+$/.test(a))return false;return /^[1-9]\d{8,14}$/.test(a.replace(/\D/g,''));};
+  const rows=vs.filter(v=>/miraflores|oakland/i.test(String(v.sucursal||''))).slice(0,18);
+  return rows.map(v=>{const id=String(v.shopperId||''),p=d.getShopper?.(id)||d.shoppers?.find(x=>String(x.id||'')===id)||null;
+    return {id,hasExactProfile:!!p&&String(p.id||p.shopperId)===id,visitValid:asDigits(v.shopperWa||v.whatsapp),projectedProfileValid:asDigits(p?.whatsapp||p?.phone||p?.telefono)};});
+ });
+ const r01Buckets={sampled:waBrowser.length,firestoreProfileValid:0,projectedProfileValid:0,visitContactValid:0,providerValidButProjectionMissing:0,profileNotFound:0};
+ for(const r of waBrowser){
+  const stored=profileById.get(r.id),raw=stored?.whatsapp||stored?.phone||stored?.telefono||'';
+  const digits=String(raw).replace(/\D/g,'');
+  const providerValid=/^[1-9]\d{8,14}$/.test(digits);
+  if(providerValid)r01Buckets.firestoreProfileValid++;
+  if(r.projectedProfileValid)r01Buckets.projectedProfileValid++;
+  if(r.visitValid)r01Buckets.visitContactValid++;
+  if(providerValid&&!r.visitValid&&!r.projectedProfileValid)r01Buckets.providerValidButProjectionMissing++;
+  if(!r.hasExactProfile)r01Buckets.profileNotFound++;
+ }
+ a.r01WaExactAuthorizedContactReadback={...r01Buckets,decision:r01Buckets.providerValidButProjectionMissing?'HOLD_R01_CONTACT_MAPPING_PROVEN':'READ_ONLY_NO_PROJECTION_MISMATCH_PROVEN',phoneValuesLogged:0,providerWrites:0};
  a.dashboardSelect=await click(page,'.bdSel');
  if(a.dashboardSelect&&!/[1-9]/.test(await page.locator('#bdSelectedCount').innerText()))throw new Error('FUNCTIONAL_DEFECT:DASHBOARD_SELECTION_COUNT');
  a.dashboardContext=await click(page,'.bdCtx');
