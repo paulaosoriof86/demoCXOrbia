@@ -8,7 +8,7 @@
   "productTreeAuthority": "e93201ce9039aa20a6d993bf5dc0b9db866d0eac",
   "predecessorProductSourceSha": "52de067d105ee5711859a03c00a6b77ff551224f",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V441_2026-10-14.json",
-  "findingsLedgerExpectedGitBlob": "c1ea06b1ce4cfda0cfe7cc1e1a2d73aac896e2ad",
+  "findingsLedgerExpectedGitBlob": "11ea31fb1787a0648a9b38c72919d2885556b072",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V119.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "RUN existing representative DEV job with bounded R20 password branch (read-only, one exact existing credential maximum). Reconcile actual result without pretending a HOLD is PASS; no repeat of RUN1680-1683, no product build or production.",
+  "exactNextAction": "Repeat existing I3 R20 same-artifact READ-ONLY job selecting the first SHA256-sorted independently exact authorized account. One password login attempt maximum, no guessed passwords, no resets, no product build. Reconcile first-login result and keep R20 session restoration/population open until proven.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2740,7 +2740,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "db4429e82a12440882ee6c5e357889131ffe8f50",
+  "moduleTruthExpectedGitBlob": "840ff94e50822e3d88c65efd0946013672001297",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -11199,14 +11199,17 @@
     "devDeploys": 0,
     "production": false,
     "qaScript": "tools/qa/cxorbia-i3-r20-ordinary-password-single-readonly.mjs",
-    "qaScriptBlob": "bda79b8780ee6f53998276fa4df765743f7488a5",
+    "qaScriptBlob": "6dd62f73ae73e9959077258ee9622b594b40337a",
     "workflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
     "workflowBlob": "99579ffb5822c2abd85d6dd64d5e5d2e548bf57c",
     "safety": "no password guessing; no resets; max 1 ordinary-browser password attempt; no raw credentials exported; fail closed",
     "expectedDecision": "PASS_R20_ORDINARY_PASSWORD_FIRST_LOGIN_FOCAL_OR_SCOPED_HOLD",
     "knownLimitations": "session restoration/relogin and representative multi-country/population remain pending even after first-login PASS",
     "runner": "EXISTING_PHASEA_REPRESENTATIVE_JOB",
-    "status": "QUEUED_READONLY_TEST"
+    "status": "QUEUED_READONLY_TEST",
+    "selectionPolicy": "FIRST_SHA256_SORTED_SINGLE_EXACT_CREDENTIAL_MEMBERSHIP",
+    "retryFrom": "RUN1685_HOLD",
+    "attemptLimit": 1
   },
   "i3Oct15R20ControlCorrection": {
     "iteration": "I3",
@@ -11224,6 +11227,23 @@
     "authWrites": 0,
     "hrWrites": 0,
     "productWrites": 0,
+    "production": false
+  },
+  "i3Oct15R20Run1685ScopedResult": {
+    "iteration": "I3",
+    "runNumber": 1685,
+    "runId": 38716323925,
+    "decision": "HOLD_R20_MULTIPLE_AUTHORIZED_CREDENTIALS_SELECT_ONE",
+    "sourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
+    "exactDevRuntime": "cxorbia-live-hr-dev-00304-wwc",
+    "exactHosting": "sites/cxorbia-backend-dev/versions/69c811435fa7b66d",
+    "hrRevision": "1959278f639f0132110b58b080908a9da8d949ed824ffc044e98ded67fb3fbe8",
+    "credentialSource": "several independently exact candidate memberships",
+    "attempts": 0,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "classification": "MAPPING_FAILURE_TEST_ACCOUNT_SELECTION",
+    "scope": "R20_REAL_LOGIN_ONLY",
     "production": false
   }
 }

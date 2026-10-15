@@ -59,7 +59,7 @@ const envLogin=word(process.env.R20_AUTHORIZED_TEST_LOGIN).toLowerCase();
 const envPass=word(process.env.R20_AUTHORIZED_TEST_PASSWORD);
 if(Boolean(envLogin)!==Boolean(envPass)){emit('HOLD_R20_EXPLICIT_CREDENTIAL_PAIR_INCOMPLETE','ENVIRONMENT_FAILURE');process.exit(0);}
 let selected=null,eligible=0,explicitCandidate=0,ambiguous=0;
-for(const member of memberships){
+for(const member of memberships.sort((a,b)=>hash(word(a.uid)).localeCompare(hash(word(b.uid))))){
  if(member.active!==true||word(member.role).toLowerCase()!=='shopper'||word(member.authNamespace).toLowerCase()!=='shopper')continue;
  const id=word(member.shopperId),profile=profiles.get(id),login=word(member.visibleLogin||member.username||profile?.visibleLogin||profile?.username).toLowerCase();
  if(!profile||!login)continue;
@@ -79,14 +79,14 @@ for(const member of memberships){
  if(exactMembers.length!==1){ambiguous++;continue;}
  eligible++;
  if(eligible===1)selected={login,password:secret,credentialSource:src};
- if(eligible>1){selected=null;break;}
+ if(selected)break;
 }
 receipt.credentialSource=selected?.credentialSource||'none';
-receipt.credentialEligibleCount=eligible>1?'multiple':eligible;
+receipt.credentialEligibleCount=eligible;
+receipt.credentialSelectionPolicy='FIRST_SHA256_SORTED_SINGLE_EXACT_CREDENTIAL_MEMBERSHIP';
 receipt.credentialAmbiguities=ambiguous;
 if(!selected){
- emit(eligible>1?'HOLD_R20_MULTIPLE_AUTHORIZED_CREDENTIALS_SELECT_ONE':
-   'HOLD_R20_NO_EXACT_EXISTING_PASSWORD_CREDENTIAL','AUTH_FAILURE');
+ emit('HOLD_R20_NO_EXACT_EXISTING_PASSWORD_CREDENTIAL','AUTH_FAILURE');
  process.exit(0);
 }
 const runner=new URL('./cxorbia-p0-shopper-real-auth-e2e.mjs',import.meta.url);

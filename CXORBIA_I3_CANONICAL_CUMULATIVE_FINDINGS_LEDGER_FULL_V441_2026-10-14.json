@@ -30240,13 +30240,15 @@
     "devDeploys": 0,
     "production": false,
     "qaScript": "tools/qa/cxorbia-i3-r20-ordinary-password-single-readonly.mjs",
-    "qaScriptBlob": "bda79b8780ee6f53998276fa4df765743f7488a5",
+    "qaScriptBlob": "6dd62f73ae73e9959077258ee9622b594b40337a",
     "workflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
     "workflowBlob": "99579ffb5822c2abd85d6dd64d5e5d2e548bf57c",
     "safety": "no password guessing; no resets; max 1 ordinary-browser password attempt; no raw credentials exported; fail closed",
     "expectedDecision": "PASS_R20_ORDINARY_PASSWORD_FIRST_LOGIN_FOCAL_OR_SCOPED_HOLD",
     "knownLimitations": "session restoration/relogin and representative multi-country/population remain pending even after first-login PASS",
-    "runner": "EXISTING_PHASEA_REPRESENTATIVE_JOB"
+    "runner": "EXISTING_PHASEA_REPRESENTATIVE_JOB",
+    "selectionPolicy": "FIRST_SHA256_SORTED_SINGLE_EXACT_CREDENTIAL_MEMBERSHIP",
+    "attemptLimit": 1
   },
   "i3Oct15R20ControlCorrection": {
     "iteration": "I3",
@@ -30264,6 +30266,23 @@
     "authWrites": 0,
     "hrWrites": 0,
     "productWrites": 0,
+    "production": false
+  },
+  "i3Oct15R20Run1685ScopedResult": {
+    "iteration": "I3",
+    "runNumber": 1685,
+    "runId": 38716323925,
+    "decision": "HOLD_R20_MULTIPLE_AUTHORIZED_CREDENTIALS_SELECT_ONE",
+    "sourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
+    "exactDevRuntime": "cxorbia-live-hr-dev-00304-wwc",
+    "exactHosting": "sites/cxorbia-backend-dev/versions/69c811435fa7b66d",
+    "hrRevision": "1959278f639f0132110b58b080908a9da8d949ed824ffc044e98ded67fb3fbe8",
+    "credentialSource": "several independently exact candidate memberships",
+    "attempts": 0,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "classification": "MAPPING_FAILURE_TEST_ACCOUNT_SELECTION",
+    "scope": "R20_REAL_LOGIN_ONLY",
     "production": false
   }
 }
