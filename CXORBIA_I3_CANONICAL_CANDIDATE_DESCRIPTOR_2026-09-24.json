@@ -2765,7 +2765,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "f23f2e76be7684ddf027aac0416fc272132fb80c",
+  "moduleTruthExpectedGitBlob": "9695926a5de777f61582885f4c8644fb98c376e5",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -11630,6 +11630,16 @@
     ],
     "devSourceStill": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
     "production": "DO_NOT_TOUCH",
-    "userIncrementalReviewAllowedAfter": "DEV_SAME_SOURCE_PRESENTATION_E2E_PASS"
+    "userIncrementalReviewAllowedAfter": "DEV_SAME_SOURCE_PRESENTATION_E2E_PASS",
+    "ownerRegistryAdjusted": true,
+    "sourceQa": {
+      "run": 1722,
+      "runId": 38776327969,
+      "status": "SUCCESS",
+      "sourceOwnerPass": 4,
+      "sourceOwnerFail": 0,
+      "productSourceSha": "80ada5c4f8bf6301345f5053541e74178287326b",
+      "production": false
+    }
   }
 }

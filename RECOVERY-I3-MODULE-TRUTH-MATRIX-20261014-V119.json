@@ -804,7 +804,7 @@
       ],
       "contractFunctional": "Proyecto/Contexto/Visual",
       "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN",
-      "actionRequired": "R22_TABLON_AUTHENTICATED_VISIT_PROVIDER_E2E_NOT_LOCAL_NOTIFICATION_ACK",
+      "actionRequired": "R22_HUMAN_COPY_SOURCE_PROVEN_RUN1722__DEV_E2E_HUMAN_PENDING",
       "preI4SuccessorCommits": [
         "50b6a25d79713b0f165cffc4355c7b7ffd1d9e84"
       ],
@@ -830,7 +830,7 @@
         "app/modules/tablon.js": "bb0da6c1e77cfa3a80df2fa00d2d5fd653433251",
         "app/modules/documentos.js": "15a90b0fe57fdb4ef4c01b0d1017cd127bfd13bd",
         "app/core/backend-resources.js": "838847237551e222af93fb2941fea50467b95656",
-        "app/core/backend-bulletins.js": "85332db80d7a946818d9dd9ec217b190f5e7f158",
+        "app/core/backend-bulletins.js": "86ca6a38cb738141c9077e8cbaa1e583a9787e92",
         "app/modules/soporte.js": "ce46ad2fe4ad28e70588fae72e4d391dd372009e"
       },
       "humanVisualCheckpoint20261006": "NO_NEW_DRIFT_PROVEN",
@@ -11507,6 +11507,7 @@
     ],
     "devSourceStill": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
     "production": "DO_NOT_TOUCH",
-    "userIncrementalReviewAllowedAfter": "DEV_SAME_SOURCE_PRESENTATION_E2E_PASS"
+    "userIncrementalReviewAllowedAfter": "DEV_SAME_SOURCE_PRESENTATION_E2E_PASS",
+    "ownerRegistryAdjusted": true
   }
 }
