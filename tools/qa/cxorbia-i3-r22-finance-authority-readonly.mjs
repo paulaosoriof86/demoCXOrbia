@@ -97,6 +97,8 @@ try{
     await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase.apps)&&window.firebase.apps.length>0,null,{timeout:45000});
     const token=await auth.createCustomToken(person.uid);
     await page.evaluate(async t=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);await firebase.auth().signInWithCustomToken(t);},token);
+    await page.goto('about:blank',{waitUntil:'domcontentloaded',timeout:30000});
+    await page.goto(url,{waitUntil:'domcontentloaded',timeout:65000});
     await page.waitForFunction(({tenantId,projectId,uid})=>{
      const ctx=window.CX?.backendAuth?.context?.()||{};
      return window.firebase?.auth?.().currentUser?.uid===uid&&ctx.authenticated===true&&ctx.role==='shopper'&&ctx.tenantId===tenantId&&ctx.projectIds?.includes(projectId)&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true;
