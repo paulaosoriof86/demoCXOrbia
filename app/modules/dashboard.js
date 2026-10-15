@@ -127,7 +127,8 @@ CX.module('dashboard', ({data,ui})=>{
       const upd=()=>{const n=sel().length;const el=ov.querySelector('#drN');if(el)el.textContent=n;};
       const all=ov.querySelector('#drAll'); if(all)all.addEventListener('change',()=>{ov.querySelectorAll('.drSel:not(:disabled)').forEach(c=>c.checked=all.checked);upd();});
       ov.querySelectorAll('.drSel').forEach(c=>c.addEventListener('change',upd));
-      const vget=(id)=>pool().find(x=>x.id===id)||{};
+      /* R01: use exactly the HR or canonical rows rendered in this drill; never re-query another pool. */
+      const vget=(id)=>vis.find(x=>String(x.id)===String(id))||{};
       const sendWa=ids=>{
         if(!ids.length){ui.toast('Selecciona un shopper','warn');return;}
         let opened=0;for(const id of ids){const v=vget(id);if(openExactWaDraft(v,'Hola '+(v.shopper||'Evaluador')+', recordatorio de tu visita en '+(v.sucursal||'la sucursal')+'.'))opened++;}

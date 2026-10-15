@@ -660,7 +660,7 @@ test('HF24 missing finance read provider fails closed instead of returning succe
 });
 
 test('HF24 finance creation requires unique tenant scoped remote readback after provider ACK',()=>{
-  const s=fs.readFileSync(new URL('../../../../app/modules/finanzas.js',import.meta.url),'utf8');
+  const s=fs.readFileSync(new URL('../../../../../app/modules/finanzas.js',import.meta.url),'utf8');
   const begin=s.indexOf('function cxFinanceCreatedReadback('),end=s.indexOf('/* END HF24 exact finance create readback */',begin);
   assert.ok(begin>0&&end>begin);
   const check=new Function(s.slice(begin,end)+'return cxFinanceCreatedReadback;')();
@@ -714,4 +714,28 @@ test('I3 B8 budget safe provider ACK and canonical destination projects',()=>{
   const actual=[{id:'cinepolis-2026-09',program:'cinepolis',name:'Cinépolis'},{id:'cinepolis-2026-10',program:'cinepolis',name:'Cinépolis'},{id:'otro-2026-10',program:'otro',name:'Otro'}];
   const distinct=[...new Map(actual.map(row=>[row.program,row.name])).entries()];
   assert.deepEqual(distinct,[['cinepolis','Cinépolis'],['otro','Otro']]);
+});
+
+test('R12 remote operating revenue does not count remittances, advances, financing or CxC recovery',()=>{
+ const source=fs.readFileSync(new URL('../../../../app/modules/finanzas.js',import.meta.url),'utf8');
+ const section=source.match(/function cxFinanceOperatingRevenueEligible\(m,providerBacked\)\{([\s\S]*?)\n\}/);
+ assert.ok(section);
+ const eligible=vm.runInNewContext('(function(m,providerBacked){'+section[1]+'\n})');
+ for(const tipoIngreso of ['remesa','anticipo','financiamiento','cobro_cxc'])
+   assert.equal(eligible({monto:7300,tipoIngreso,revenueRecognized:false,operatingRevenue:false},true),false);
+ assert.equal(eligible({monto:123,tipoIngreso:'honorarios',revenueRecognized:true,operatingRevenue:true},true),true);
+ assert.equal(eligible({monto:123,tipoIngreso:'honorarios',revenueRecognized:true},true),false);
+ assert.equal(eligible({monto:-123,tipoIngreso:'honorarios',revenueRecognized:true,operatingRevenue:true},true),false);
+ assert.match(source,/cxFinanceOperatingRevenueEligible\(m,connectedFinance\(\)&&!isG\)/);
+});
+test('R09 ordinary finance screens use human explanations while preserving provider audit code',()=>{
+ const source=fs.readFileSync(new URL('../../../../app/modules/finanzas.js',import.meta.url),'utf8');
+ const match=source.match(/function cxFinanceFailureCopy\(code\)\{([\s\S]*?)\n\}/);
+ assert.ok(match);
+ const display=vm.runInNewContext('(function(code){'+match[1]+'\n})');
+ assert.match(display('FINANCE_VISIT_NOT_SUBMITTED'),/todavía no fue submitida/);
+ assert.doesNotMatch(display('UNKNOWN_TECH_404'),/UNKNOWN_TECH_404/);
+ assert.match(source,/dataset\.providerResultCode/);
+ assert.doesNotMatch(source,/textContent=status\+' · '\+code\+' · visita '/);
+ assert.doesNotMatch(source,/ui\.toast\('Conciliación no confirmada · '\+diagnostic\.code/);
 });

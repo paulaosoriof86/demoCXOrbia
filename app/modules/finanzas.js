@@ -17,6 +17,31 @@ const REIMBURSEMENT_REQUIRES_CONFIRMED_SOURCE_CONTRACT='reimbursementSource_reem
 function cxFinanceCommandCommitted(result){
   return result?.ok===true&&result?.status==='committed'&&result?.providerAck===true&&result?.successUiAllowed===true;
 }
+/* R12: use the remote provider's explicitly recognized revenue flags.
+   A remittance, advance or CxC recovery is cash movement, not earned operating revenue. */
+function cxFinanceOperatingRevenueEligible(m,providerBacked){
+  if(!m||Number(m.monto)<=0||m.tipoIngreso==='financiamiento')return false;
+  return providerBacked
+    ?m.operatingRevenue===true&&m.revenueRecognized===true
+    :m.noOperativo!==true;
+}
+/* R09/R11: provider codes stay available as nonvisible diagnostic attributes.
+   The ordinary UI must never disclose raw provider codes or visit IDs. */
+function cxFinanceFailureCopy(code){
+  const value=String(code||'').split(':')[0];
+  const messages={
+    FINANCE_VISIT_NOT_SUBMITTED:'La visita todavía no fue submitida. Completa y valida el proceso antes de conciliar.',
+    FINANCE_RECONCILE_READBACK_PENDING:'Se recibió la operación; falta confirmar su actualización con la fuente.',
+    FINANCE_RECONCILE_ACK_READBACK_PENDING:'El proveedor registró la operación, pero su lectura remota todavía está pendiente.',
+    FINANCE_RECONCILE_READBACK_AMBIGUOUS:'Existen referencias que requieren revisión antes de continuar.',
+    FINANCE_RECONCILE_READBACK_UNAVAILABLE:'No se pudo verificar el estado de la visita con la fuente.',
+    FINANCE_BUDGET_READBACK_UNAVAILABLE:'No se pudo verificar el presupuesto en la fuente. Revisa antes de intentarlo nuevamente.',
+    FINANCE_BUDGET_READBACK_MISMATCH:'El presupuesto no coincide todavía con la lectura remota. Revisa antes de repetir.',
+    FINANCE_BUDGET_DELETE_READBACK_MISMATCH:'La eliminación aún no aparece confirmada en la fuente.',
+    FINANCE_ACCOUNT_ACK_REQUIRED:'El proveedor no confirmó el movimiento de cuenta.'
+  };
+  return messages[value]||'No se pudo confirmar esta operación. Verifica su estado antes de repetirla.';
+}
 /* HF-20261012-22: present sanitized provider decision, never an invented reconciliation.
    This display-only diagnostic is NOT a payment, an HR write or persisted financial truth. */
 function cxFinanceReviewState(l,missingFields=[]){
@@ -464,7 +489,7 @@ CX.module('movimientos', ({data,ui})=>{
     const bump=(cu,k,v)=>{const a=aggByCur[cu]||(aggByCur[cu]={ingOper:0,egr:0,cxc:0,cxp:0,remesas:0,financiamiento:0});a[k]+=v;};
     movs.forEach(m=>{const cu=curOf(m);
       if(cu===PENDING_CURRENCY){pendingCurrencyRows.push({kind:'mov',r:m});return;}
-      if(m.monto>0){ if(m.tipoIngreso==='financiamiento')bump(cu,'financiamiento',m.monto); else if(!m.noOperativo)bump(cu,'ingOper',m.monto); if(m.tipoIngreso==='remesa')bump(cu,'remesas',m.monto); }
+      if(m.monto>0){ if(m.tipoIngreso==='financiamiento')bump(cu,'financiamiento',m.monto); else if(cxFinanceOperatingRevenueEligible(m,connectedFinance()&&!isG))bump(cu,'ingOper',m.monto); if(m.tipoIngreso==='remesa')bump(cu,'remesas',m.monto); }
       else bump(cu,'egr',m.monto);
       if((m.estado||'').includes('CxC'))bump(cu,'cxc',Math.abs(m.monto)); });
     cxpAccounts.forEach(r=>{const cu=currencyOf(r);if(cu===PENDING_CURRENCY){pendingCurrencyRows.push({kind:'cxp',r});return;}bump(cu,'cxp',Number(r.balance??r.saldo)||0);});
@@ -660,7 +685,7 @@ CX.module('movimientos', ({data,ui})=>{
             if(!verified||verified.status!=='active'||Number(verified.amount)!==amount||String(verified.country)!==country||String(verified.currency)!==currency)
               throw new Error('FINANCE_BUDGET_READBACK_MISMATCH');
             close();draw();ui.toast('Presupuesto guardado y confirmado en fuente remota.','ok');
-          }catch(e){ui.toast('No se confirmó el presupuesto · '+String(e?.message||e),'err');save.disabled=false;save.textContent='Guardar con confirmación';}
+          }catch(e){save.dataset.providerResultCode=String(e?.message||'FINANCE_BUDGET_UNCONFIRMED').slice(0,100);ui.toast('No se confirmó el presupuesto. '+cxFinanceFailureCopy(e?.message),'err');save.disabled=false;save.textContent='Guardar con confirmación';}
         });
       }});
     };
@@ -680,7 +705,7 @@ CX.module('movimientos', ({data,ui})=>{
           if(!await refreshDurableFinance(true))throw new Error('FINANCE_BUDGET_READBACK_UNAVAILABLE');
           if(durableBudgets.some(r=>String(r.id)===id))throw new Error('FINANCE_BUDGET_DELETE_READBACK_MISMATCH');
           draw();ui.toast('Presupuesto eliminado con confirmación remota.','ok');
-        }catch(e){ui.toast('No se confirmó la eliminación · '+String(e?.message||e),'err');b.disabled=false;}
+        }catch(e){b.dataset.providerResultCode=String(e?.message||'FINANCE_BUDGET_DELETE_UNCONFIRMED').slice(0,100);ui.toast('No se confirmó la eliminación. '+cxFinanceFailureCopy(e?.message),'err');b.disabled=false;}
       }));
     }
     const apm=host.querySelector('#addPresMes');
@@ -921,7 +946,8 @@ CX.module('movimientos', ({data,ui})=>{
           if(!read||Math.abs(Number(read.balance??read.saldo)-Math.max(0,current-amount))>0.01)throw new Error('FINANCE_ACCOUNT_READBACK_MISMATCH');
           close();draw();ui.toast('Cobro interno registrado con ACK y lectura protegida. Confirmación bancaria independiente.','ok',5000);
         }catch(error){
-          ui.toast((committed?'ACK registrado; lectura de saldo pendiente':'Cobro no registrado')+' · '+String(error?.message||'FINANCE_ACCOUNT_ERROR'),'warn',5500);
+          save.dataset.providerResultCode=String(error?.message||'FINANCE_ACCOUNT_ERROR').slice(0,100);
+          ui.toast((committed?'ACK registrado; lectura de saldo pendiente.':'Cobro no confirmado.')+' '+cxFinanceFailureCopy(error?.message),'warn',5500);
           save.disabled=false;save.textContent='Registrar con ACK';
         }
       });}});
@@ -952,7 +978,8 @@ CX.module('movimientos', ({data,ui})=>{
           close();draw();ui.toast(connectedFinance()?'Abono interno registrado con ACK y lectura protegida. Confirmación externa pendiente.':'Abono registrado en modo demostración','ok',5000);
         }catch(error){
           btn.disabled=false;
-          ui.toast((committed?'ACK registrado; lectura pendiente':'Abono no registrado')+' · '+String(error?.message||'FINANCE_ACCOUNT_ERROR'),'warn',5500);
+          btn.dataset.providerResultCode=String(error?.message||'FINANCE_ACCOUNT_ERROR').slice(0,100);
+          ui.toast((committed?'ACK registrado; lectura pendiente.':'Abono no confirmado.')+' '+cxFinanceFailureCopy(error?.message),'warn',5500);
         }
       });}});
     }));
@@ -962,13 +989,13 @@ CX.module('movimientos', ({data,ui})=>{
       if(!visitId){ui.toast('Falta el ID exacto de la visita. No se ejecutó una conciliación.','err');return;}
       const prior=btn.textContent;btn.disabled=true;btn.textContent='Conciliando…';
       const resultLabel=btn.closest('tr')?.querySelector('[data-fin-reconcile-diagnostic]');
-      const showDiagnostic=(code,status)=>{if(resultLabel)resultLabel.textContent=status+' · '+code+' · visita '+visitId+' · período '+String(data.currentPeriodId||'sin período');};
+      const showDiagnostic=(code,status)=>{if(resultLabel){resultLabel.dataset.providerResultCode=String(code||'').slice(0,100);resultLabel.textContent=status+' · '+cxFinanceFailureCopy(code);}};
       try{
         const result=await cxFinanceReconcileWithProof(data,visitId,'admin-finance-reconcile');
         if(!result.ok){
           const label=result.providerAck===true?'ACK registrado; lectura protegida pendiente':'Proveedor rechazó la conciliación';
           showDiagnostic(result.code,result.providerAck===true?'ACK pendiente de lectura':'Sin ACK');
-          ui.toast(label+' · '+result.code,'warn',6500);
+          ui.toast(label+'. '+cxFinanceFailureCopy(result.code),'warn',6500);
           return;
         }
         showDiagnostic('FINANCE_RECONCILE_CONFIRMED','ACK y lectura protegida');
@@ -977,7 +1004,7 @@ CX.module('movimientos', ({data,ui})=>{
       }catch(error){
         const diagnostic=cxFinanceReconcileFailure(null,error);
         showDiagnostic(diagnostic.code,'Sin confirmación');
-        ui.toast('Conciliación no confirmada · '+diagnostic.code,'warn',6500);
+        ui.toast('Conciliación no confirmada. '+cxFinanceFailureCopy(diagnostic.code),'warn',6500);
       }finally{
         if(btn.isConnected){btn.disabled=false;btn.textContent=prior;}
       }

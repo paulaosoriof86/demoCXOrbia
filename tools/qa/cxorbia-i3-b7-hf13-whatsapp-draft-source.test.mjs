@@ -143,3 +143,10 @@ test('R01 rejects a getShopper mismatch or a local-only phone even if the visibl
   const noInternational=harness({getShopper:()=>({id:'shopper-a',whatsapp:'55112233'})});
   assert.equal(noInternational.h.openExactWaDraft({shopper:'Ana',shopperId:'shopper-a'},'Hola'),false);
 });
+
+test('R01 individual KPI WhatsApp resolves the exact rendered HR drill row, not an unrelated pool',()=>{
+ assert.match(source,/const vis=\(sourceFn\?sourceFn\(\):pool\(\)\)\.filter\(filtroFn\)/);
+ assert.match(source,/const vget=\(id\)=>vis\.find\(x=>String\(x\.id\)===String\(id\)\)\|\|\{\}/);
+ assert.doesNotMatch(source,/const vget=\(id\)=>pool\(\)\.find/);
+ assert.match(source,/querySelectorAll\('\.drWa'\)[\s\S]*?const v=vget\(b\.dataset\.vid\)/);
+});
