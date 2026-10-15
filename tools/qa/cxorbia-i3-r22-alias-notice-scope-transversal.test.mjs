@@ -2,6 +2,7 @@ import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import './cxorbia-i3-r22-human-notice-copy-source-20261015.test.mjs';
 const src=readFileSync(new URL('../../app/core/topbar.js',import.meta.url),'utf8');
 function surface({raw='shp-primary',role='shopper',authenticated=true,projectIds=['project-a'],project='project-a',map={},visits=[]}={}){
  const CX={
