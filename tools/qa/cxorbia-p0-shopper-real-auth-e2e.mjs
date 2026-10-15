@@ -85,6 +85,7 @@ if(!executeReal){
   const page=await context.newPage();
   const pageErrors=[];
   let r20Stage='ENTRY_NAVIGATION';
+  let r20ReadbackSignals={};
   const authProviderHttp=[];
   page.on('pageerror',error=>pageErrors.push(String(error?.name||'Error').slice(0,30)));
   page.on('response',response=>{
@@ -169,6 +170,17 @@ if(!executeReal){
       return {pass,tenantId,projectId,auth:true,shopperIdentityPresent:Boolean(raw),canonicalResolved:matches.length===1,reviewRequired:inReview,countryAssigned:Boolean(country),historyCount:visits.length,historyRequired:requireHistory,authorityApplied:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,sourceRef,periods:Number(window.CX_PROTECTED_AUTH_HR_AUTHORITY?.periods||0),hrVisits:Number(window.CX_PROTECTED_AUTH_HR_AUTHORITY?.hrVisits||0),identityContractVersion:contract?.version||null,certificationRecordsForPrincipal:certForPrincipal,visibleLockMessage:bodyText.includes('La identidad de esta sesión no está vinculada al read model canónico.'),safety:{providerWrites:0,writes:0,deploys:0,production:false}};
     },{tenantId,projectId,requireHistory});
 
+    r20ReadbackSignals={
+      canonicalResolved:result.canonicalResolved===true,
+      reviewRequired:result.reviewRequired===true,
+      countryAssigned:result.countryAssigned===true,
+      authenticated:result.auth===true,
+      authorityApplied:result.authorityApplied===true,
+      sourceRefExact:result.sourceRef==='hr-live-all-periods+firestore-authenticated-exact-overlay',
+      historyRequired:result.historyRequired===true,
+      historyPresent:Number(result.historyCount)>0,
+      visibleLockMessage:result.visibleLockMessage===true
+    };
     ensure(pageErrors.length===0,'PAGE_ERRORS_PRESENT');
     ensure(result.pass,'REAL_SHOPPER_AUTH_TO_HR_E2E_FAILED');
 
@@ -231,7 +243,16 @@ if(!executeReal){
           projectScoped:Array.isArray(ctx.projectIds)&&ctx.projectIds.length>0,
           firebasePrincipalPresent:Boolean(window.firebase?.auth?.().currentUser),
           protectedHrApplied:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,
-          loginFormPresent:Boolean(document.querySelector('#loginForm'))
+          loginFormPresent:Boolean(document.querySelector('#loginForm')),
+          sessionProfilePresent:Boolean(window.CX?.data?.__sessionShopperProfile),
+          sessionProfileExact:(()=>{
+            const p=window.CX?.data?.__sessionShopperProfile||{};
+            const a=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{};
+            const id=String(p.id||p.shopperId||'');
+            return Boolean(id&&id===String(a.canonicalShopperId||''));
+          })(),
+          exactSessionReady:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.exactSessionShopperReady===true,
+          authorityCountryPresent:Boolean(window.CX_PROTECTED_AUTH_HR_AUTHORITY?.shopperCountry)
         };
       });
     }catch(_){}
@@ -242,7 +263,8 @@ if(!executeReal){
       decision:'HOLD_R20_PASSWORD_STAGE_DIAGNOSTIC_NOT_AUTH_PASS',
       stage:r20Stage,errorType:safeErrorType,
       authProviderHttp:authProviderHttp.slice(-8),
-      contextReadback,pageErrorCount:pageErrors.length,
+      contextReadback:{...contextReadback,identitySignals:r20ReadbackSignals},
+      pageErrorCount:pageErrors.length,
       credentialsExposed:false,tokensExposed:false,
       safety:safe
     }));
