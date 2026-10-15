@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "ENVIRONMENT_FAILURE_GITHUB_ACTIONS_BILLING_LOCK_BLOCKS_CI_DEV_E2E_PLUS_R01_R03_R07_R08_R09_17_R20_R22_R23",
+  "activeBlocker": "ONE_DEV_MATERIALIZATION_REQUIRED_FOR_PROVEN_SOURCE_R01_R03_R07_R08_R09_17_R20_R22_R23_FOCAL_E2E_PENDING",
   "nextFindingId": "VRM-275",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Await existing I3-B source-proof gate on unique product source 1f417472; on PASS authorize one existing DEV materialization, with same-artifact readback and exhaustive Admin/Shopper/GT/HN functional E2E; keep I4 blocked",
+  "exactNextAction": "Read outcome of exactly one DEV materialization triggered by [i3-phasea-dev-materialize] on proven source 1f4174724b0ec028b6a2d9d429509148e6e63b62; reconcile exact runtime/Hosting/rules/HR/materialization receipt; then same-artifact P0 E2E, before any human gate or I4",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -10761,5 +10761,32 @@
     "noNewWorkflow": true,
     "devWrites": 0,
     "production": false
+  },
+  "i3Oct15Run1673SourceProof": {
+    "runId": 38702779281,
+    "jobId": 116314859422,
+    "artifactId": 11957411049,
+    "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "sourceSha": "1f4174724b0ec028b6a2d9d429509148e6e63b62",
+    "sourceTree": "fe05e9a24270e99cb1f7680bdf001db988932cbb",
+    "canonicalJobId": 116314747230,
+    "sourceOnly": true,
+    "production": false,
+    "deploys": 0
+  },
+  "i3Oct15SingleDevMaterializationRequest": {
+    "sourceSha": "1f4174724b0ec028b6a2d9d429509148e6e63b62",
+    "sourceTree": "fe05e9a24270e99cb1f7680bdf001db988932cbb",
+    "sourceProofRunId": 38702779281,
+    "sourceProofDecision": "PASS",
+    "existingLane": ".github/control/CXORBIA_I3_PHASEA_COMPLETION_CONTROL_20261007.sh materialize",
+    "oneBuild": true,
+    "oneRuntimeDev": true,
+    "oneHostingDev": true,
+    "oneFirestoreRulesDev": true,
+    "production": "DO_NOT_TOUCH",
+    "hrWrites": 0,
+    "paymentWrites": 0,
+    "expectedReadback": "SAME_SOURCE_TAR_RUNTIME_HOSTING_AND_HR_REVISION"
   }
 }
