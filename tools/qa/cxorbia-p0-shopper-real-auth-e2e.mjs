@@ -85,6 +85,7 @@ if(!executeReal){
   const page=await context.newPage();
   const pageErrors=[];
   let r20Stage='ENTRY_NAVIGATION';
+  let r20LoginAttempts=0;
   let r20ReadbackSignals={};
   const authProviderHttp=[];
   page.on('pageerror',error=>pageErrors.push(String(error?.name||'Error').slice(0,30)));
@@ -118,6 +119,7 @@ if(!executeReal){
     await passInput.fill(password);
     r20Stage='LOGIN_SUBMIT';
     await page.getByRole('button',{name:'Ingresar',exact:true}).last().click();
+    r20LoginAttempts=1;
 
     r20Stage='AUTHENTICATED_CONTEXT_WAIT';
     await page.waitForFunction(({tenantId,projectId})=>{
@@ -250,7 +252,43 @@ if(!executeReal){
     ensure(samePrincipal,'SHOPPER_PRINCIPAL_NOT_PRESERVED_ACROSS_WORKSPACE_GATE');
 
     r20Stage='FINAL_SUCCESS';
-    console.log(JSON.stringify({schemaVersion:'cxorbia.p0.real-shopper-auth-e2e.result.v3',decision:'PASS_P0_REAL_SHOPPER_AUTH_TO_HR_E2E',...result,workspaceState:legalGate.pending?'legal-gate-pending':'mounted',legalGate:{supported:legalGate.supported,pending:legalGate.pending,visible:legalGate.visible,acceptanceAutomated:false},academia,certification,credentialsExposed:false,tokensExposed:false,safety:safe},null,2));
+    r20Stage='SESSION_RESTORE_AFTER_RELOAD';
+    const originalUid=await page.evaluate(()=>String(window.firebase?.auth?.().currentUser?.uid||''));
+    const originalShopper=await page.evaluate(()=>String(window.CX?.backendAuth?.context?.()?.shopperId||''));
+    ensure(originalUid&&originalShopper,'ORIGINAL_SHOPPER_PRINCIPAL_UNAVAILABLE');
+    await page.reload({waitUntil:'domcontentloaded',timeout:45000});
+    await page.waitForFunction(({tenantId,projectId,originalUid,originalShopper})=>{
+      const c=window.CX?.backendAuth?.context?.()||{},a=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{};
+      const uid=window.firebase?.auth?.().currentUser?.uid||'';
+      return Boolean(c.authenticated===true&&c.role==='shopper'&&c.tenantId===tenantId&&
+        c.projectIds?.includes(projectId)&&c.shopperId===originalShopper&&uid===originalUid&&
+        a.applied===true&&a.actorUid===originalUid&&a.rawShopperId===originalShopper&&
+        a.exactSessionShopperReady===true&&window.CX?.data?.__sessionShopperProfile);
+    },{tenantId,projectId,originalUid,originalShopper},{timeout:90000});
+    r20Stage='APP_LOGOUT';
+    await page.evaluate(async()=>{await window.CX.app.logout();});
+    await page.waitForFunction(()=>{
+      const c=window.CX?.backendAuth?.context?.();
+      return !window.firebase?.auth?.().currentUser&&c?.authenticated!==true;
+    },null,{timeout:30000});
+    r20Stage='ORDINARY_PASSWORD_RELOGIN';
+    await page.locator('.role-btn[data-role="shopper"]').first().click({timeout:15000});
+    await page.locator('input[autocomplete="username"]:visible').last().fill(login);
+    await page.locator('input[autocomplete="current-password"]:visible').last().fill(password);
+    await page.getByRole('button',{name:'Ingresar',exact:true}).last().click();
+    r20LoginAttempts=2;
+    r20Stage='RELOGIN_IDENTITY_HR_READBACK';
+    await page.waitForFunction(({tenantId,projectId,originalUid,originalShopper})=>{
+      const c=window.CX?.backendAuth?.context?.()||{},a=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{};
+      const uid=window.firebase?.auth?.().currentUser?.uid||'';
+      return Boolean(c.authenticated===true&&c.role==='shopper'&&c.tenantId===tenantId&&
+        c.projectIds?.includes(projectId)&&c.shopperId===originalShopper&&uid===originalUid&&
+        a.applied===true&&a.actorUid===originalUid&&a.rawShopperId===originalShopper&&
+        a.exactSessionShopperReady===true&&window.CX?.data?.__sessionShopperProfile);
+    },{tenantId,projectId,originalUid,originalShopper},{timeout:90000});
+    r20Stage='FINAL_SUCCESS';
+    console.log(JSON.stringify({schemaVersion:'cxorbia.p0.real-shopper-auth-e2e.result.v3',decision:'PASS_P0_REAL_SHOPPER_AUTH_TO_HR_E2E',
+      loginAttempts:r20LoginAttempts,sessionLifecycle:{restore:true,logout:true,relogin:true,sameUid:true,sameShopper:true,hrAfterRelogin:true},...result,workspaceState:legalGate.pending?'legal-gate-pending':'mounted',legalGate:{supported:legalGate.supported,pending:legalGate.pending,visible:legalGate.visible,acceptanceAutomated:false},academia,certification,credentialsExposed:false,tokensExposed:false,safety:safe},null,2));
   }catch(e){
     let contextReadback={};
     try{
@@ -281,7 +319,7 @@ if(!executeReal){
     console.log(JSON.stringify({
       schemaVersion:'cxorbia.p0.r20.password-stage-diagnostic.v1',
       decision:'HOLD_R20_PASSWORD_STAGE_DIAGNOSTIC_NOT_AUTH_PASS',
-      stage:r20Stage,errorType:safeErrorType,
+      stage:r20Stage,errorType:safeErrorType,loginAttempts:r20LoginAttempts,
       authProviderHttp:authProviderHttp.slice(-8),
       contextReadback:{...contextReadback,identitySignals:r20ReadbackSignals},
       pageErrorCount:pageErrors.length,

@@ -112,11 +112,12 @@ const proc=spawnSync(process.execPath,[runner.pathname,'--execute-real'],{
  env:{...process.env,CXORBIA_P0_REAL_AUTH_E2E_AUTHORIZED:'YES_SOURCE_APPROVED_REAL_READONLY_E2E',
  CXORBIA_P0_E2E_LOGIN:selected.login,CXORBIA_P0_E2E_PASSWORD:selected.password,
  CXORBIA_P0_E2E_ROOT_URL:ROOT,CXORBIA_P0_E2E_REQUIRE_HISTORY:'0'},
- cwd:process.cwd(),encoding:'utf8',timeout:175000,maxBuffer:1024*1024
+ cwd:process.cwd(),encoding:'utf8',timeout:325000,maxBuffer:1024*1024
 });
 selected.login='';selected.password='';
 let result=null;
 try{result=JSON.parse(word(proc.stdout));}catch{}
+receipt.loginAttempts=Math.max(1,Math.min(2,Number(result?.loginAttempts)||1));
 if(result?.schemaVersion==='cxorbia.p0.r20.password-stage-diagnostic.v1'){
  receipt.browserStage=result.stage||'UNKNOWN';
  receipt.browserErrorType=result.errorType||'OTHER';
@@ -129,13 +130,15 @@ if(proc.status!==0){
  emit('HOLD_R20_ORDINARY_BROWSER_STAGE_IDENTIFIED','AUTH_FAILURE');process.exit(0);
 }
 if(result?.decision==='PASS_P0_REAL_SHOPPER_AUTH_TO_HR_E2E'&&result.safety?.passwordChanges===0&&
- result.safety?.authWrites===0&&result.canonicalResolved===true&&result.authorityApplied===true){
+ result.safety?.authWrites===0&&result.canonicalResolved===true&&result.authorityApplied===true&&
+ result.sessionLifecycle?.restore===true&&result.sessionLifecycle?.logout===true&&result.sessionLifecycle?.relogin===true){
  receipt.firstPasswordLogin=true;
  receipt.identityAndHr=true;
  receipt.historyAvailable=Number(result.historyCount)>0;
  receipt.workspaceState=result.workspaceState||'unknown';
- receipt.restorationLogoutRelogin='NOT_TESTED_IN_THIS_FOCAL';
- emit('PASS_R20_FIRST_ORDINARY_PASSWORD_AUTH_ONLY','AUTH_FAILURE');
+ receipt.restorationLogoutRelogin='PASS_SAME_UID_SAME_SHOPPER_HR_AFTER_RELOGIN';
+ receipt.sessionLifecycle={restore:true,logout:true,relogin:true};
+ emit('PASS_R20_ORDINARY_PASSWORD_FULL_SESSION_LIFECYCLE','AUTH_FAILURE');
 }else{
  receipt.browserDecisionRecognized=Boolean(result?.decision);
  emit('HOLD_R20_ORDINARY_PASSWORD_RESULT_UNVERIFIED','AUTH_FAILURE');
