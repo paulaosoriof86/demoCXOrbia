@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_OPEN_P0_TERMINAL_E2E_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Use this materialized DEV artifact for R22 two-Shopper human-copy/read-ACK/route E2E; offer incremental visual approval for R20/R23 and human notification copy, not for unproven provider outcomes. Independently resolve R08 source approval/Vertex exact 15, R09-R17 bank proof, R07 HR ACK.",
+  "exactNextAction": "Run same-artifact representative DEV E2E with R22 notification copy, read ACK, route and multi-domain representative gates, preserve PASS existing, surface focal outcomes; R08 authentic document approval + Vertex15 and R09-R17 independent bank remain separate holds; no production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -11673,6 +11673,17 @@
       "builds": 0,
       "deploys": 0,
       "production": false
+    },
+    "liveE2eRequest": {
+      "sourceSha": "80ada5c4f8bf6301345f5053541e74178287326b",
+      "sourceTree": "fb914a617c250eeae5fb287f7910022bb60f09da",
+      "materializationRunId": 38776838205,
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/c28578d7a5414c9f",
+      "hrRevision": "1959278f639f0132110b58b080908a9da8d949ed824ffc044e98ded67fb3fbe8",
+      "noRebuild": true,
+      "devOnly": true,
+      "production": false,
+      "existingWorkflowOnly": true
     }
   }
 }
