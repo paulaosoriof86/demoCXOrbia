@@ -22,12 +22,16 @@ CX.module('tablon', ({role,ui})=>{
         <div style="margin-top:8px">${ui.aiBox('Centraliza lo que pasa. Desde admin puedes crear notificaciones para el equipo y shoppers con formato, emojis y video.','Un solo canal, trazable')}</div>
       </div>`;
 
-    host.querySelector('#readAll').addEventListener('click',()=>{CX.notif.markAllRead(role);draw();});
+    host.querySelector('#readAll').addEventListener('click',async()=>{
+      const ack=await CX.notif.markAllRead(role);
+      if(ack?.providerAck===false)ui.toast('No se confirmó la lectura de todas las notificaciones.','warn',4200);
+      draw();
+    });
     // items clickeables → detalle
     host.querySelectorAll('[data-n]').forEach(el=>el.addEventListener('click',(e)=>{
       if(e.target.closest('button'))return;
       const n=feed.find(x=>x.id===el.dataset.n);if(!n)return;
-      CX.notif.markRead(n.id);
+      CX.notif.markRead(n.id).then(ack=>{if(ack?.providerAck===false)ui.toast('No se confirmó la lectura.','warn',4200);});
       ui.modal((n.icon||'🔔')+' '+n.titulo,`
         <div style="font-size:12.5px;color:var(--t2);line-height:1.6;margin-bottom:10px">${n.txt}</div>
         <div style="font-size:11px;color:var(--t3)">${n.fecha}${n.para?' · Para: '+n.para:''}</div>
@@ -35,7 +39,14 @@ CX.module('tablon', ({role,ui})=>{
         ${n.nav?`<div style="text-align:right;margin-top:12px"><button class="btn btn-soft btn-sm" id="nGoBtn">Ir a ${n.nav} →</button></div>`:''}
       `,{onMount:(ov,close)=>{const g=ov.querySelector('#nGoBtn');if(g)g.addEventListener('click',()=>{close();CX.router.nav(n.nav);});}});
     }));
-    host.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',(e)=>{e.stopPropagation();const n=feed.find(x=>x.id===b.dataset.go);CX.notif.markRead(n.id);if(n.nav)CX.router.nav(n.nav);draw();}));
+    host.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',async(e)=>{
+      e.stopPropagation();const n=feed.find(x=>x.id===b.dataset.go);if(!n)return;
+      const ack=await CX.notif.markRead(n.id);
+      if(ack?.providerAck===false)ui.toast('No se confirmó la lectura.','warn',4200);
+      const route=role==='shopper'&&n.entityType==='visit'?'misvisitas':n.nav;
+      if(route)CX.router.nav(route);
+      draw();
+    }));
     host.querySelectorAll('[data-conf]').forEach(b=>b.addEventListener('click',(e)=>{e.stopPropagation();CX.notif.markRead(b.dataset.conf);CX.notif.push({to:'admin',tipo:'confirmada',icon:'✅',tono:'g',titulo:'Fecha confirmada',txt:'El shopper confirmó la fecha propuesta',nav:'postulaciones'});ui.toast('Fecha confirmada · equipo notificado','ok');draw();}));
     host.querySelectorAll('[data-prop]').forEach(b=>b.addEventListener('click',(e)=>{e.stopPropagation();ui.modal('Proponer otra fecha',`<label class="lbl">Nueva fecha</label><input class="inp" type="date" style="margin-bottom:14px"><div style="text-align:right"><button class="btn btn-pr btn-sm" id="propOk">Enviar propuesta</button></div>`,{onMount:(ov,close)=>{ov.querySelector('#propOk').addEventListener('click',()=>{CX.notif.markRead(b.dataset.prop);CX.notif.push({to:'admin',tipo:'reprog',icon:'🔄',tono:'a',titulo:'Nueva fecha propuesta por shopper',txt:'Requiere autorización del equipo',nav:'postulaciones'});close();ui.toast('Propuesta enviada · pendiente de autorización','ok');draw();});}});}));
 
