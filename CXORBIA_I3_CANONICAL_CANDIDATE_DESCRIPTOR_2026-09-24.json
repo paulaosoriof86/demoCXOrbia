@@ -4,16 +4,16 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "a9d878e8747f12138faee9f07ba4780d65383b55",
-  "productTreeAuthority": "eb44fe8ad9223b445978e75477b9366cea6cb7b4",
-  "predecessorProductSourceSha": "02580d76c2b5322531b7653a178c02d5eff020f9",
+  "productSourceSha": "13173ce31a12dcca53ef2dbe11820463b0009f0f",
+  "productTreeAuthority": "8048137afb0f242d8105dceba7d5167fe789601d",
+  "predecessorProductSourceSha": "a9d878e8747f12138faee9f07ba4780d65383b55",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V441_2026-10-14.json",
-  "findingsLedgerExpectedGitBlob": "e9ea523c753eb6f82a54ea9ad60558d54ea57b77",
+  "findingsLedgerExpectedGitBlob": "a60c86894cb2c8026bb7142ed9dae34625df5b64",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V119.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "R01_WA_LIVE_E2E_PENDING_R03_AUTH_R07_CANCEL_R08_AI_PROVIDER_R10_15_FINANCE_R20_PERF_R22_NOTIFICATION",
+  "activeBlocker": "R22_TRANSVERSAL_SOURCE_FIXED_NOT_MATERIALIZED_PLUS_R01_R03_R07_R08_R09_R10_17_R20_REAL_PASSWORD_R23_LIVE",
   "nextFindingId": "VRM-275",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3 R20: isolate client_custom_token_resolution browser/provider-vs-harness owner (66119ms timeout), using RUN1663 evidence without rebuilding DEV; only fix a proven focal P0, then same-artifact real password login and R01/R22 individual E2E; preserve 274 findings and 21 domains.",
+  "exactNextAction": "Once canonical GitHub Actions runner is available: execute source CI R22 7-case crosswalk/security contract and full regression; materialize only current cumulative source once into DEV using existing lane; then browser E2E of representative and population-wide contract for notifications/auth GT+HN, R01 WA draft, R07 cancel, R08 actual 15 questions, finance R09-R17 without real financial test writes. I3 remains HOLD.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2738,7 +2738,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "742795c028f49e813f58a308bbba67d804a10e11",
+  "moduleTruthExpectedGitBlob": "a57e4cdf87fc860b1ea374f7e099a7398f2432df",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -10691,5 +10691,32 @@
     "ledgerUnchanged": true,
     "matrixUnchanged": true,
     "production": "DO_NOT_TOUCH"
+  },
+  "i3Oct15R22TransversalSourceFix": {
+    "findingId": "R22",
+    "classification": "FUNCTIONAL_DEFECT",
+    "sourceOwner": "app/core/topbar.js",
+    "sourceBlob": "c6e2cd0068e1fb32f6ab256e5ab79d4f407f5196",
+    "sourceSha": "13173ce31a12dcca53ef2dbe11820463b0009f0f",
+    "sourceTree": "8048137afb0f242d8105dceba7d5167fe789601d",
+    "qaOwner": "tools/qa/cxorbia-i3-r22-alias-notice-scope-transversal.test.mjs",
+    "qaBlob": "9788257ad4639bfdefc819285b12d923991bf11d",
+    "localIsolatedContract": {
+      "tests": 7,
+      "pass": 7,
+      "fail": 0,
+      "scope": "identity-alias-project-role-contract-only"
+    },
+    "sameArtifactBrowser": "PENDING_DEV_MATERIALIZATION_AND_E2E",
+    "populationAll": "PENDING_AUTHENTICATED_POPULATION_E2E",
+    "findingCountPreserved": 274,
+    "production": false,
+    "hrWrites": 0,
+    "authWrites": 0,
+    "certificationHold": {
+      "sourceArtifactMismatchCurrentDev": true,
+      "materializedPredecessor": "a9d878e8747f12138faee9f07ba4780d65383b55",
+      "sourceQAIsolatedOnly": true
+    }
   }
 }
