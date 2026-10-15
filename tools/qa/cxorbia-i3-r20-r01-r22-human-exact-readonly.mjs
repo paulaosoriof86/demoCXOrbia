@@ -49,15 +49,16 @@ receipt.stiven.browser={decision:'NOT_RUN',credentialEntry:'NOT_TESTED'};
 if(exactCandidates.length===1&&basePrincipal?.uid===exactCandidates[0].id&&authReviews[0]?.claimMatch===true){
  const {chromium}=await import('playwright'),browser=await chromium.launch({headless:true});
  const ctx=await browser.newContext({viewport:{width:1280,height:900}}),page=await ctx.newPage(),started=Date.now();
+ let failureStage='initial_navigation';
  try{
   const url=HOST+'/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId='+PROGRAM+'&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&stivenProof='+Date.now();
-  await page.goto(url,{waitUntil:'domcontentloaded',timeout:60000});
-  await page.waitForFunction(()=>!!window.firebase?.auth&&window.firebase?.apps?.length>0,null,{timeout:60000});
-  const token=await auth.createCustomToken(basePrincipal.uid);
-  await page.evaluate(async jwt=>{const f=window.firebase;await f.auth().setPersistence(f.auth.Auth.Persistence.LOCAL);await f.auth().signInWithCustomToken(jwt);},token);
-  await page.goto('about:blank');
-  await page.goto(url+'&session='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
-  await page.waitForFunction(rev=>{
+  failureStage='initial_navigation';await page.goto(url,{waitUntil:'domcontentloaded',timeout:60000});
+  failureStage='firebase_sdk_boot';await page.waitForFunction(()=>!!window.firebase?.auth&&window.firebase?.apps?.length>0,null,{timeout:60000});
+  failureStage='service_account_custom_token';const token=await auth.createCustomToken(basePrincipal.uid);
+  failureStage='client_custom_token_signin';await page.evaluate(async jwt=>{const f=window.firebase;await f.auth().setPersistence(f.auth.Auth.Persistence.LOCAL);await f.auth().signInWithCustomToken(jwt);},token);
+  failureStage='session_blank_reentry';await page.goto('about:blank');
+  failureStage='session_dev_reentry';await page.goto(url+'&session='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
+  failureStage='hr_authority_readiness';await page.waitForFunction(rev=>{
    const c=window.CX?.backendAuth?.context?.()||{},g=window.CX_C6_HR_AUTHORITY_GATE||{};
    return c.authenticated===true&&c.role==='shopper'&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&g.ready===true&&g.blocked!==true&&String(window.CX?.data?.previewMeta?.sourceRevision||'')===rev;
   },REV,{timeout:65000});
@@ -65,7 +66,7 @@ if(exactCandidates.length===1&&basePrincipal?.uid===exactCandidates[0].id&&authR
   receipt.stiven.browser={decision:'PASS_EXACT_STIVEN_DEV_AUTHORITY',elapsedMs:Date.now()-started,...state,credentialEntry:'NOT_TESTED_CUSTOM_TOKEN_ONLY'};
  }catch(error){
   const state=await page.evaluate(()=>({gateReady:window.CX_C6_HR_AUTHORITY_GATE?.ready===true,blocked:window.CX_C6_HR_AUTHORITY_GATE?.blocked===true,reason:String(window.CX_C6_HR_AUTHORITY_GATE?.reason||''),bootExhausted:window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE?.exhausted===true})).catch(()=>({}));
-  receipt.stiven.browser={decision:'HOLD_EXACT_STIVEN_DEV_AUTHORITY',elapsedMs:Date.now()-started,errorKind:String(error?.name||'ERROR').replace(/[^a-z_]/gi,'').slice(0,24),...state,credentialEntry:'NOT_TESTED_CUSTOM_TOKEN_ONLY'};
+  receipt.stiven.browser={decision:'HOLD_EXACT_STIVEN_DEV_AUTHORITY',elapsedMs:Date.now()-started,errorKind:String(error?.name||'ERROR').replace(/[^a-z_]/gi,'').slice(0,24),failureStage,safeErrorCategory:/timeout/i.test(String(error?.name||'')+' '+String(error?.message||''))?'TIMEOUT':/network|net::|navigation/i.test(String(error?.message||''))?'NETWORK_OR_NAVIGATION':/auth|token|credential|firebase/i.test(String(error?.message||''))?'AUTH_TOKEN_OR_SDK':'OTHER_ERROR',...state,credentialEntry:'NOT_TESTED_CUSTOM_TOKEN_ONLY'};
  }finally{await ctx.close().catch(()=>{});await browser.close().catch(()=>{});}
 }else receipt.stiven.browser={decision:'HOLD_STIVEN_EXACT_AUTH_PRECONDITIONS',credentialEntry:'NOT_TESTED'};
 
@@ -77,6 +78,7 @@ for(const [label,name] of [['priscila','priscila lopez'],['paula','paula osorio'
  const bulletinRows=bullRows.filter(b=>arr(b.targetShopperIds).map(str).some(x=>ids.has(x)));
  receipt.notifications[label]={profileCount:candidates.length,memberCount:principals.length,targetedBulletinCount:bulletinRows.length,withExactEntity:bulletinRows.filter(b=>str(b.entityId)&&str(b.entityType)).length,withActionRoute:bulletinRows.filter(b=>str(b.actionRoute||b.nav)).length,withTechnicalVisitIdBody:bulletinRows.filter(b=>/hr_20\d{2}[-_]/i.test(str(b.body||b.text))).length,readReceipts:readsRows.filter(row=>principals.some(p=>str(row.userId)===p.id)&&bulletinRows.some(b=>b.id===str(row.bulletinId))).length};
 }
-receipt.decision='PASS_R20_R01_R22_READ_ONLY_EXACT_DIAGNOSTIC';
+receipt.decision=receipt.stiven.browser?.decision==='PASS_EXACT_STIVEN_DEV_AUTHORITY'?'PASS_R20_R01_R22_READ_ONLY_EXACT_DIAGNOSTIC':'HOLD_R20_EXACT_STIVEN_BROWSER_AUTHORITY';
 save();
 console.log(JSON.stringify(receipt,null,2));
+if(receipt.decision!=='PASS_R20_R01_R22_READ_ONLY_EXACT_DIAGNOSTIC')throw new Error('AUTH_FAILURE:R20_STIVEN_BROWSER_'+String(receipt.stiven.browser?.failureStage||receipt.stiven.browser?.decision||'UNKNOWN'));
