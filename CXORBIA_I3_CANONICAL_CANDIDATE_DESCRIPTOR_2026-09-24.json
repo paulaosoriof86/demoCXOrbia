@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
+  "status": "HOLD_I3_OPEN_P0_TERMINAL_E2E_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "e93201ce9039aa20a6d993bf5dc0b9db866d0eac",
   "predecessorProductSourceSha": "52de067d105ee5711859a03c00a6b77ff551224f",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V441_2026-10-14.json",
-  "findingsLedgerExpectedGitBlob": "5b2a5ebfc6ff76158c90817dce81039b8e15e9d9",
+  "findingsLedgerExpectedGitBlob": "34d72a5e6ccf04294ab4140df84e534b63858116",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V119.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "R22_FINANCE_DEEP_READONLY_REQUIRED",
+  "activeBlocker": "R07_HR_ACK__R08_VERTEX_15_SOURCE__R22_TECHNICAL_BODIES_AND_NEW_READ_ACK__FINANCE_677_HISTORICAL_BATCH",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Same DEV artifact read-only R22 two existing shoppers: exact visible feed, existing read receipts persist after reload, no cross-user leak; parallel finance inventory from reconciliations, batches, liquidations and HR durable visits. Preserve R08 Vertex pending genuine source and GT/HN; no production.",
+  "exactNextAction": "Do not rerun R20 or R23. R08: exact source current approval + Vertex real 15 questions pending_review; R22: Codex-only focal safe technical-body presentation + fresh click ACK/read-after-reload; finance: exact 677 historical reconciliation authoritative source and unpaid/batch reviews without inferring external transfer; R07 remains external HR ACK pending. No human review until unified P0 E2E.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -11489,5 +11489,68 @@
     ],
     "noMutations": true,
     "noProduction": true
+  },
+  "run1713CrossFrontReadOnly": {
+    "runId": 38766152392,
+    "artifactId": 11989771261,
+    "productSourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
+    "R08": {
+      "activeVertexSettings": 1,
+      "bankResources": 2,
+      "pendingReviewBanks": 1,
+      "publishedBanks": 1,
+      "exact15Banks": 0,
+      "instructiveEligibleEmbeddedText": 0,
+      "driveGtAndHnOriginalDocumentsLocated": true,
+      "driveOriginalApprovalOfCurrentVersionNotProven": true,
+      "realVertex15Attempt": "NOT_RUN",
+      "state": "HOLD_R08_AUTHENTIC_SOURCE_AND_15_GENERATION_E2E_PENDING"
+    },
+    "R22": {
+      "classification": "VISUAL_DEFECT",
+      "shopperSessionsReadOnly": 2,
+      "readReceiptsPersistedAfterReload": 5,
+      "wrongShopperNotices": 0,
+      "lostReadReceipts": 0,
+      "unmatchedAuthorization": 0,
+      "visitLinkMissing": 0,
+      "technicalBodiesVisible": 2,
+      "jsErrors": 0,
+      "state": "PASS_R22_EXISTING_READ_RELOAD_ISOLATION_PARTIAL",
+      "remaining": [
+        "freshReadProviderAck",
+        "exactNoticeClickNavigation",
+        "humanCopyOwnerFix",
+        "populationSampling"
+      ]
+    },
+    "finance": {
+      "paymentReconciliations": 677,
+      "countries": {
+        "GT": 529,
+        "HN": 148
+      },
+      "financialMovements": 2,
+      "batchesCollection": 0,
+      "liquidationsCollection": 0,
+      "accountsCollection": 0,
+      "projectVisitsSample": 1800,
+      "projectVisitsSampleTruncated": true,
+      "reconciliationsWithoutExplicitExternalSourceInFocalPredicate": 596,
+      "bankTransfersConfirmedByRun": 0,
+      "state": "HOLD_FINANCE_HISTORICAL_SOURCE_AND_BATCH_PROOF_PENDING"
+    },
+    "safety": {
+      "productChanged": false,
+      "hrWrites": 0,
+      "firestoreWrites": 0,
+      "authWrites": 0,
+      "financeWrites": 0,
+      "providerWrites": 0,
+      "bankWrites": 0,
+      "devBuilds": 0,
+      "devDeploys": 0,
+      "production": false
+    }
   }
 }
