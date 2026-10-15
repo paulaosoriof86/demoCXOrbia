@@ -1,5 +1,7 @@
 /* CXOrbia · Postulaciones (admin) — full fidelity */
 /* B7 — Modal propietario de Postulaciones, reutilizado desde Dashboard sin navegación. */
+/* R05 P0_PROVEN: only Postulaciones manages exclusive dialogs. */
+const poExclusiveModal=(ui,title,body,opts={})=>ui['modal'](title,body,{...opts,replaceExisting:true});
 CX.adminPostulacionesActions=CX.adminPostulacionesActions||{};
 /* B7 reason: keep provider value intact, convert only presentation to human text. */
 CX.adminPostulacionesActions.cancelReasonForUi=(request)=>{
@@ -21,7 +23,7 @@ CX.adminPostulacionesActions.requestReplacementDate=({data,ui,visitId})=>{
   if(!CX.permissions?.gate?.('visit.reassign',{projectId:data.currentProjectId,pais:visit.pais},ui))return false;
   const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const previousDate=String(visit.agendada||visit.scheduledDate||'').slice(0,10);
-  ui.modal('🔄 Pedir una nueva fecha',
+  poExclusiveModal(ui,'🔄 Pedir una nueva fecha',
     '<p>La fecha solicitada para <b>'+esc(visit.sucursal||'esta visita')+'</b> no será autorizada. La fecha vigente <b>'+esc(previousDate||'registrada')+'</b> se conserva mientras el shopper propone otra.</p>'+
     '<label class="lbl" for="cxReplacementReason">Indicación para el shopper (obligatoria)</label>'+
     '<textarea class="inp" id="cxReplacementReason" rows="3" maxlength="500" placeholder="Explica por qué necesitas otra fecha."></textarea>'+
@@ -73,7 +75,7 @@ CX.adminPostulacionesActions.openRequest=({data,ui,visitIds=[],defaultType='conf
   const targets=[...targetMap.values()].filter(x=>!ids.size||ids.has(String(x.visitaId||x.visitId)));
   if(!targets.length){ui.toast('No hay shoppers con identidad y visita exactas para las seleccionadas.','warn',4200);return false;}
   const displayShopper=x=>{const s=data.getShopper?.(x.shopperId);const raw=String(x.shopper||'').trim();return s?.nombre||(raw&&!/^shopper_/i.test(raw)?raw:'Identidad pendiente de resolver');};
-      ui.modal('📤 Pedir acción al shopper',`
+      poExclusiveModal(ui,'📤 Pedir acción al shopper',`
         <p style="font-size:12.5px;color:var(--t2);margin-bottom:14px">El equipo puede <b>solicitar</b> al shopper (no solo gestionar lo que él pide). La solicitud se registra en la experiencia interna del shopper. WhatsApp solo se considera enviado cuando exista ACK del proveedor de mensajería.</p>
         <label class="lbl">Shopper</label>
         <select class="sel" id="rqSh" style="margin-bottom:12px">${targets.slice(0,100).map(x=>`<option value="${x.__requestId}">${displayShopper(x)} · ${x.sucursal} · ${x.sourceType==='operational_assignment'?'asignación vigente':'postulación'}</option>`).join('')}</select>
@@ -164,7 +166,7 @@ CX.adminPostulacionesActions.openAgenda=({data,ui,visitIds=[]})=>{
       const rows=agendadas.map(v=>`<div class="between" style="padding:9px 11px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px">
         <div><b style="font-size:13px">${v.shopper}</b> · ${v.sucursal}<div style="font-size:11px;color:var(--t3)">📅 ${v.agendada} · ${v.franjaCode} · autorizada por Coordinación</div></div>
         <button class="btn btn-ghost btn-sm aprAdjust" data-vid="${v.id}" data-sh="${v.shopper}">🗓️ Solicitar ajuste</button></div>`).join('');
-      ui.modal('Gestión de agendamientos',`
+      poExclusiveModal(ui,'Gestión de agendamientos',`
         <p style="font-size:12.5px;color:var(--t2);margin-bottom:14px">Separa las fechas enviadas por shoppers de las referencias HR y de las propuestas al postularse.</p>
         <div style="background:var(--green-bg);border-radius:10px;padding:12px 14px;margin-bottom:14px">
           <div style="font-size:12px;font-weight:700;color:var(--green)">⌛ Fechas pendientes de autorización <span class="bdg bdg-n">${requestByVisit.length}</span></div>
@@ -239,7 +241,7 @@ CX.adminPostulacionesActions.openContext=({data,ui,visitId})=>{
   if(!actions.length){ui.toast('No hay acciones disponibles para el estado actual.','warn');return false;}
   const safe=x=>String(x??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const buttons=actions.map(([key,label])=>'<button class="btn btn-soft btn-sm" data-cx-admin-action="'+key+'">'+label+'</button>').join(' ');
-  ui.modal('Acciones · '+safe(v.sucursal),'<p class="muted" style="font-size:12px">'+safe(v.pais)+' · '+safe(v.estado)+' · '+safe(v.shopper||'Sin asignar')+'</p><div class="flex wrap" style="gap:8px">'+buttons+'</div>',{
+  poExclusiveModal(ui,'Acciones · '+safe(v.sucursal),'<p class="muted" style="font-size:12px">'+safe(v.pais)+' · '+safe(v.estado)+' · '+safe(v.shopper||'Sin asignar')+'</p><div class="flex wrap" style="gap:8px">'+buttons+'</div>',{
     onMount:(ov,close)=>ov.querySelectorAll('[data-cx-admin-action]').forEach(btn=>btn.addEventListener('click',()=>{
       const action=btn.dataset.cxAdminAction;close();
       if(action==='request')owner.openRequest({data,ui,visitIds:[String(v.id)]});
@@ -261,7 +263,7 @@ CX.adminPostulacionesActions.openAssign=({data,ui,visitId,reassign=false})=>{
   const safe=x=>String(x??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const options=candidates.map(s=>'<option value="'+safe(s.id)+'">'+safe(s.nombre||s.code||s.id)+' · '+safe(s.pais||s.country)+'</option>').join('');
   const dateInputs=reassign?'<label class="lbl">Decisión de fecha</label><select class="sel" id="cxDashDateMode"><option value="keep">Conservar fecha vigente</option><option value="pending">Pendiente por agendar</option><option value="change">Cambiar fecha</option></select><input class="inp" id="cxDashDate" type="date" value="'+safe(v.agendada||'')+'" style="margin-top:8px"><input class="inp" id="cxDashFranja" placeholder="Franja (si cambia)" style="margin-top:8px">':'';
-  ui.modal((reassign?'Reasignar':'Asignar')+' visita · '+safe(v.sucursal),'<label class="lbl">Shopper elegible</label><select class="sel" id="cxDashShopper"><option value="">Seleccionar…</option>'+options+'</select>'+dateInputs+'<div style="text-align:right;margin-top:14px"><button class="btn btn-pr btn-sm" id="cxDashAssignOk">Confirmar</button></div>',{
+  poExclusiveModal(ui,(reassign?'Reasignar':'Asignar')+' visita · '+safe(v.sucursal),'<label class="lbl">Shopper elegible</label><select class="sel" id="cxDashShopper"><option value="">Seleccionar…</option>'+options+'</select>'+dateInputs+'<div style="text-align:right;margin-top:14px"><button class="btn btn-pr btn-sm" id="cxDashAssignOk">Confirmar</button></div>',{
     onMount:(ov,close)=>ov.querySelector('#cxDashAssignOk').addEventListener('click',async()=>{
       const sid=ov.querySelector('#cxDashShopper').value;
       if(!sid||!candidates.some(s=>String(s.id)===String(sid))){ui.toast('Selecciona un shopper elegible.','warn');return;}
@@ -308,7 +310,7 @@ CX.adminPostulacionesActions.openCancellation=({data,ui,visitId,decision=null})=
   if(decision&&v.cancelRequest?.status!=='pending_review'){ui.toast('La solicitud ya no está pendiente.','warn');return false;}
   if(!CX.permissions?.gate?.('visit.cancel',{projectId:data.currentProjectId,pais:v.pais},ui))return false;
   const safe=x=>String(x??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-  ui.modal(decision?'Decidir cancelación · '+safe(v.sucursal):'Cancelar visita · '+safe(v.sucursal),'<p class="muted" style="font-size:12px">'+safe(decision?CX.adminPostulacionesActions.cancelReasonForUi(v.cancelRequest):v.shopper||'')+'</p><label class="lbl">Motivo obligatorio</label><textarea class="inp" id="cxDashCancelReason" rows="3"></textarea><div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" id="cxDashCancelOk">Confirmar</button></div>',{
+  poExclusiveModal(ui,decision?'Decidir cancelación · '+safe(v.sucursal):'Cancelar visita · '+safe(v.sucursal),'<p class="muted" style="font-size:12px">'+safe(decision?CX.adminPostulacionesActions.cancelReasonForUi(v.cancelRequest):v.shopper||'')+'</p><label class="lbl">Motivo obligatorio</label><textarea class="inp" id="cxDashCancelReason" rows="3"></textarea><div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" id="cxDashCancelOk">Confirmar</button></div>',{
     onMount:(ov,close)=>ov.querySelector('#cxDashCancelOk').addEventListener('click',async()=>{
       const reason=String(ov.querySelector('#cxDashCancelReason').value||'').trim();
       if(!reason){ui.toast('Indica el motivo.','warn');return;}
@@ -568,7 +570,7 @@ CX.module('postulaciones', ({data,ui})=>{
           filename:[san('postulaciones'),san(projectLabel),san(periodLabel),new Date().toISOString().slice(0,10)].join('_')+'.'+ext };
       };
       pox.addEventListener('click',()=>{ const n=visibleActive().length;
-        CX.ui.modal('⤓ Exportar postulaciones',`<p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">${n} postulación(es) del periodo activo y alcance filtrado. Se exporta con el diseño del tenant; el teléfono protegido no se incluye.</p><div class="flex" style="gap:8px;justify-content:flex-end"><button class="btn btn-ghost btn-sm" id="poPdf">⤓ PDF</button><button class="btn btn-soft btn-sm" id="poXls">⤓ Excel</button><button class="btn btn-pr btn-sm" id="poPpt">⤓ PPT</button></div>`,{onMount:(ov)=>{ov.querySelector('#poPdf').addEventListener('click',()=>CX.reportKit.exportPDF(poSpec('pdf')));ov.querySelector('#poXls').addEventListener('click',()=>{if(CX.reportKit.exportExcel(poSpec('xlsx')))CX.ui.toast('Excel .xlsx generado','ok');});ov.querySelector('#poPpt').addEventListener('click',()=>{if(CX.reportKit.exportPPT(poSpec('pptx')))CX.ui.toast('PowerPoint generado','ok');});}});
+        poExclusiveModal(CX.ui,'⤓ Exportar postulaciones',`<p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">${n} postulación(es) del periodo activo y alcance filtrado. Se exporta con el diseño del tenant; el teléfono protegido no se incluye.</p><div class="flex" style="gap:8px;justify-content:flex-end"><button class="btn btn-ghost btn-sm" id="poPdf">⤓ PDF</button><button class="btn btn-soft btn-sm" id="poXls">⤓ Excel</button><button class="btn btn-pr btn-sm" id="poPpt">⤓ PPT</button></div>`,{onMount:(ov)=>{ov.querySelector('#poPdf').addEventListener('click',()=>CX.reportKit.exportPDF(poSpec('pdf')));ov.querySelector('#poXls').addEventListener('click',()=>{if(CX.reportKit.exportExcel(poSpec('xlsx')))CX.ui.toast('Excel .xlsx generado','ok');});ov.querySelector('#poPpt').addEventListener('click',()=>{if(CX.reportKit.exportPPT(poSpec('pptx')))CX.ui.toast('PowerPoint generado','ok');});}});
       });
     }
     /* HF-20261012-15: recover per-assignment actions by invoking the same scoped
@@ -589,7 +591,7 @@ CX.module('postulaciones', ({data,ui})=>{
       if(!visitId)return;
       CX.adminPostulacionesActions?.openContext?.({data,ui,visitId});
     }));
-    const poList=(title,arr)=>ui.modal(title+' ('+arr.length+')', arr.length?`<table class="tbl"><thead><tr><th>Shopper</th><th>Sucursal</th><th>Estado</th><th>Honorario</th><th></th></tr></thead><tbody>${arr.map(x=>`<tr><td><b style="font-size:12.5px">${x.shopper}</b><div style="font-size:10px;color:var(--t3)">${x.shopperCode}</div></td><td style="font-size:12px">${x.sucursal}<div style="font-size:10px;color:var(--t3)">${CX.paisFlag(x.pais)} ${x.ciudad}</div></td><td>${estTag(x.estado)}</td><td style="font-size:12px;color:var(--green)">${x.honorario!=null?x.currency+' '+x.honorario:'<span class="muted">Pendiente de fuente</span>'}</td><td style="text-align:right">${x.id?`<button class="btn btn-ghost btn-sm poRowGest" data-pid="${x.id}" style="padding:2px 9px;font-size:11px">Gestionar →</button>`:''}</td></tr>`).join('')}</tbody></table>`:ui.empty('📭','Sin elementos en esta categoría.'),
+    const poList=(title,arr)=>poExclusiveModal(ui,title+' ('+arr.length+')', arr.length?`<table class="tbl"><thead><tr><th>Shopper</th><th>Sucursal</th><th>Estado</th><th>Honorario</th><th></th></tr></thead><tbody>${arr.map(x=>`<tr><td><b style="font-size:12.5px">${x.shopper}</b><div style="font-size:10px;color:var(--t3)">${x.shopperCode}</div></td><td style="font-size:12px">${x.sucursal}<div style="font-size:10px;color:var(--t3)">${CX.paisFlag(x.pais)} ${x.ciudad}</div></td><td>${estTag(x.estado)}</td><td style="font-size:12px;color:var(--green)">${x.honorario!=null?x.currency+' '+x.honorario:'<span class="muted">Pendiente de fuente</span>'}</td><td style="text-align:right">${x.id?`<button class="btn btn-ghost btn-sm poRowGest" data-pid="${x.id}" style="padding:2px 9px;font-size:11px">Gestionar →</button>`:''}</td></tr>`).join('')}</tbody></table>`:ui.empty('📭','Sin elementos en esta categoría.'),
       {replaceExisting:true,onMount:(ov,close)=>ov.querySelectorAll('.poRowGest').forEach(b=>b.addEventListener('click',()=>{const x=posts.find(z=>z.id===b.dataset.pid);if(x){close();postDetalle(x);}}))});
     /* B7: functional owner of each operational KPI. No synthetic postulation
        and no new provider write. The existing authorized visit-action handlers own decisions. */
@@ -605,7 +607,7 @@ CX.module('postulaciones', ({data,ui})=>{
           +'<td>'+escapeText(visit.sucursal||'—')+'<div class="muted">'+escapeText(visit.pais||'')+' · '+escapeText(visit.ciudad||'')+'</div></td>'
           +'<td>'+escapeText(status)+'</td><td><button class="btn btn-pr btn-sm" data-po-kpi-action="'+kind+'" data-visit-id="'+escapeText(id)+'">'+actionLabel+'</button></td></tr>';
       }).filter(Boolean).join('');
-      ui.modal(title+' ('+rows.length+')',tableRows
+      poExclusiveModal(ui,title+' ('+rows.length+')',tableRows
         ?'<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Shopper</th><th>Sucursal</th><th>Estado</th><th>Acción</th></tr></thead><tbody>'+tableRows+'</tbody></table></div>'
         :ui.empty('🗂️','Sin solicitudes vigentes en esta categoría.'),{replaceExisting:true,onMount:(ov,close)=>{
         ov.querySelectorAll('[data-po-kpi-action]').forEach(b=>b.addEventListener('click',()=>{
@@ -618,7 +620,7 @@ CX.module('postulaciones', ({data,ui})=>{
           else if(action==='cancel'){
             const buttons=[...document.querySelectorAll('[data-cancel-review]')].filter(x=>String(x.dataset.vid||'')===id);
             if(!buttons.length){ui.toast('La solicitud ya no está disponible para decidir. Actualiza la vista.','warn',4200);return;}
-            ui.modal('Decidir cancelación · '+escapeText(visit.sucursal),'<p>Selecciona la decisión autorizada para esta solicitud.</p><div class="flex wrap" style="gap:8px"><button class="btn btn-green" data-po-cancel-outcome="approved">Autorizar</button><button class="btn btn-soft" data-po-cancel-outcome="rejected">Rechazar</button></div>',{onMount:(dialog,closeDecision)=>{
+            poExclusiveModal(ui,'Decidir cancelación · '+escapeText(visit.sucursal),'<p>Selecciona la decisión autorizada para esta solicitud.</p><div class="flex wrap" style="gap:8px"><button class="btn btn-green" data-po-cancel-outcome="approved">Autorizar</button><button class="btn btn-soft" data-po-cancel-outcome="rejected">Rechazar</button></div>',{onMount:(dialog,closeDecision)=>{
               dialog.querySelectorAll('[data-po-cancel-outcome]').forEach(choice=>choice.addEventListener('click',()=>{
                 const btn=buttons.find(x=>x.dataset.cancelReview===choice.dataset.poCancelOutcome);
                 if(!btn)return;
@@ -688,7 +690,7 @@ CX.module('postulaciones', ({data,ui})=>{
       const st=data.shopperStats?data.shopperStats(s.id):{total:0,realizadas:0,liquidadas:0,enCurso:0,cumpl:0};
       const hist=data.visitsForShopper?data.visitsForShopper(s.id):[];
       const reqs=[['Perfil completo',s.perfilCompleto!==false],['Datos bancarios',!!(s.banco||s.ctaNum)],['WhatsApp',!!(s.whatsapp||s.phone)],['Certificado',(st.realizadas||0)>0||s.certificado]];
-      ui.modal(s.nombre+' · '+s.code,`
+      poExclusiveModal(ui,s.nombre+' · '+s.code,`
         <div class="flex" style="gap:12px;margin-bottom:12px"><div class="rail-av" style="width:42px;height:42px;font-size:15px;background:linear-gradient(135deg,var(--brand),var(--brand-dark))">${s.code.slice(-2)}</div>
         <div><div class="card-t" style="font-size:15px">${s.nombre}</div><div style="font-size:12px;color:var(--t3)">${s.ciudad?s.ciudad+', ':''}${CX.paisName(s.pais)} · ${s.whatsapp||s.phone||'sin WhatsApp'}</div>
         <div style="margin-top:4px"><span style="font-size:13px;font-weight:800;color:var(--amber)">★ ${s.rating||'—'}</span> ${s.perfilCompleto===false?ui.bdg('perfil incompleto','a'):''}</div></div></div>
@@ -701,7 +703,7 @@ CX.module('postulaciones', ({data,ui})=>{
         ov.querySelector('#pmGo').addEventListener('click',()=>{close();CX.session._focusShopper=s.id;CX.router.nav('shoppers');});
         ov.querySelector('#pmWa').addEventListener('click',()=>{if(CX.adminPostulacionesActions.openWaDraft({ui,shopper:s.nombre,phone:s.whatsapp||s.phone,body:'Hola '+s.nombre+', sobre tus visitas.'}))close();});
         const histModal=(filter,title)=>{ const arr=hist.filter(filter);
-          ui.modal(title+' · '+s.nombre, arr.length?`<table class="tbl"><thead><tr><th>Sucursal</th><th>Escenario</th><th>Fecha</th><th>Estado</th></tr></thead><tbody>${arr.map(v=>`<tr><td><b>${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad}</div></td><td style="font-size:12px">${v.escenario||''}</td><td style="font-size:12px">${v.realizada||v.agendada||'—'}</td><td>${ui.estadoBadge(v.estado)}</td></tr>`).join('')}</tbody></table>`:ui.empty('🗒️','Sin visitas en esta categoría.')); };
+          poExclusiveModal(ui,title+' · '+s.nombre, arr.length?`<table class="tbl"><thead><tr><th>Sucursal</th><th>Escenario</th><th>Fecha</th><th>Estado</th></tr></thead><tbody>${arr.map(v=>`<tr><td><b>${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad}</div></td><td style="font-size:12px">${v.escenario||''}</td><td style="font-size:12px">${v.realizada||v.agendada||'—'}</td><td>${ui.estadoBadge(v.estado)}</td></tr>`).join('')}</tbody></table>`:ui.empty('🗒️','Sin visitas en esta categoría.')); };
         ov.querySelectorAll('[data-ph]').forEach(el=>el.addEventListener('click',()=>{const k=el.dataset.ph; if(k==='all')histModal(()=>true,'Historial completo'); else if(k==='real')histModal(v=>['realizada','cuestionario','liquidada'].includes(v.estado),'Realizadas'); else histModal(v=>v.estado==='liquidada','Liquidadas');}));
       }});
     };
@@ -710,7 +712,7 @@ CX.module('postulaciones', ({data,ui})=>{
     document.querySelectorAll('[data-perfil]').forEach(b=>b.addEventListener('click',(e)=>{e.stopPropagation();profileModal(b.dataset.perfil);}));
     /* detalle de la postulación/visita al hacer clic en la tarjeta */
     const postDetalle=(x)=>{ const v=data._visitas?data._visitas.find(z=>z.id===x.visitaId):null;
-      ui.modal('📋 '+x.sucursal+' · '+x.shopper,`
+      poExclusiveModal(ui,'📋 '+x.sucursal+' · '+x.shopper,`
         <div style="font-size:12.5px;line-height:1.95;color:var(--t2)">
           <div><b>Shopper:</b> ${x.shopper} (${x.shopperCode}) · 📞 ${x.phone||'—'}</div>
           <div><b>Proyecto:</b> ${projName(x.projectId)} · <b>Quincena:</b> ${x.quincena}</div>
@@ -785,7 +787,7 @@ CX.module('postulaciones', ({data,ui})=>{
       if(!v||!['approved','rejected'].includes(decision))return;
       if(!CX.permissions.gate('visit.cancel',{projectId:data.currentProjectId,pais:v.pais},ui))return;
       const approving=decision==='approved';
-      ui.modal(approving?'Autorizar solicitud de cancelación':'Rechazar solicitud de cancelación',
+      poExclusiveModal(ui,approving?'Autorizar solicitud de cancelación':'Rechazar solicitud de cancelación',
         '<p style="font-size:12.5px;color:var(--t2);margin-bottom:12px"><b>'+safe(v.shopper||v.shopperId)+'</b> · '+safe(v.sucursal)+
         '</p><div class="cx-visit-request-note">Motivo del shopper: '+safe(CX.adminPostulacionesActions.cancelReasonForUi(v.cancelRequest))+'</div>'+
         '<p style="font-size:12px;color:var(--t2);margin:12px 0">'+(approving
@@ -876,7 +878,7 @@ CX.module('postulaciones', ({data,ui})=>{
 
     /* editar fecha/franja de la visita de una postulación */
     document.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>{ const x=posts.find(z=>z.id===b.dataset.edit); if(!x)return;
-      ui.modal('Editar asignación · '+x.shopper,`
+      poExclusiveModal(ui,'Editar asignación · '+x.shopper,`
         <div style="font-size:12px;color:var(--t2);margin-bottom:10px">📍 ${x.sucursal} · ${x.ciudad}</div>
         <label class="lbl">Fecha</label><input class="inp" id="edF" type="date" value="${x.fechaProp||''}" style="margin-bottom:10px">
         <label class="lbl">Franja</label><select class="sel" id="edFr" style="margin-bottom:14px">${['AM 8–12h','PM 14–18h','WK fin de semana'].map(o=>`<option ${o.startsWith(x.franjaCode||'')?'selected':''}>${o}</option>`).join('')}</select>
@@ -898,7 +900,7 @@ CX.module('postulaciones', ({data,ui})=>{
       const cands=candidateAudit.filter(x=>x.reasons.length===0).map(x=>x.s);
       const excluded=candidateAudit.filter(x=>x.reasons.length);
       const curFecha=safe(x.fechaProp), curFranja=safe(x.franjaCode);
-      ui.modal('Reasignar visita · '+x.sucursal,`
+      poExclusiveModal(ui,'Reasignar visita · '+x.sucursal,`
         <div style="background:var(--panel-2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;margin-bottom:12px;font-size:12px;color:var(--t2)">
           <div>Shopper actual: <b>${safe(x.shopper)}</b></div>
           <div>Fecha vigente: <b>${curFecha}</b> · Franja vigente: <b>${curFranja}</b></div>
@@ -943,7 +945,7 @@ CX.module('postulaciones', ({data,ui})=>{
 
     /* cancelar: la visita vuelve a disponible */
     document.querySelectorAll('[data-cancel]').forEach(b=>b.addEventListener('click',()=>{ const x=posts.find(z=>z.id===b.dataset.cancel); if(!x)return;
-      ui.modal('Cancelar visita · '+x.sucursal,`
+      poExclusiveModal(ui,'Cancelar visita · '+x.sucursal,`
         <p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">La visita de <b>${x.shopper}</b> volverá a <b>disponible</b> y el shopper será notificado.</p>
         <label class="lbl">Motivo</label><textarea class="inp" id="cnM" rows="2" placeholder="Motivo de la cancelación…" style="margin-bottom:14px"></textarea>
         <div style="text-align:right"><button class="btn btn-sm" style="background:var(--red-bg);color:var(--red)" id="cnOk">Confirmar cancelación</button></div>
@@ -958,7 +960,7 @@ CX.module('postulaciones', ({data,ui})=>{
       const projName=(id)=>{const pr=data.projects.find(x=>x.id===id);return pr?pr.name:'';};
       const disp=data.visitas().filter(v=>{const f=data.visitFacets?data.visitFacets(v):null;return f?f.available===true&&f.assigned!==true&&f.cancelled!==true:(v.estado==='disponible'&&!v.shopperId);});
       const cands=data.shoppersFor();
-      ui.modal('Asignar visita manual',`
+      poExclusiveModal(ui,'Asignar visita manual',`
         <p style="font-size:12px;color:var(--t2);margin-bottom:12px">Busca la visita y el shopper (no tienes que recorrer toda la lista). Si el shopper no existe, créalo aquí mismo.</p>
         <label class="lbl">Visita disponible</label>
         <input class="inp" id="amVQ" placeholder="🔎 Buscar sucursal, ciudad, proyecto…" style="margin-bottom:6px">
