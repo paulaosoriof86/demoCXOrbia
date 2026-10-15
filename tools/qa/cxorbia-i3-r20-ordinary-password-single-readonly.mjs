@@ -11,8 +11,8 @@ import {getFirestore} from 'firebase-admin/firestore';
 import {decryptCredentialBundle,internalEmail} from './cxorbia-c6-shopper-identity-canonical-plan.mjs';
 
 const PROJECT='cxorbia-backend-dev',TENANT='tya',SCOPE='cinepolis';
-const OUT=process.env.R20_SAFE_OUT||'.tmp/r20-safe';
-const SOURCE=String(process.env.R20_SOURCE_SHA||'');
+const OUT=process.env.R20_SAFE_OUT||(process.env.PHASEA_LIVE_OUT||'.tmp')+'/r20';
+const SOURCE=String(process.env.R20_SOURCE_SHA||process.env.FOCAL_SOURCE||'');
 const ROOT=String(process.env.R20_HOSTING_URL||'https://cxorbia-backend-dev.web.app');
 fs.mkdirSync(OUT,{recursive:true});
 const receipt={schemaVersion:'cxorbia.i3.r20.existing-password-focal.v1',sourceSha:SOURCE,
