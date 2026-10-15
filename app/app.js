@@ -30,11 +30,17 @@ CX.setupPWA = function(){
   /* registra el service worker para que sea instalable */
   if('serviceWorker' in navigator){
     navigator.serviceWorker.register('sw.js').then(reg=>{ try{reg.update();}catch(e){} }).catch(()=>{});
-    /* auto-recarga una sola vez cuando un SW nuevo toma el control
-       (así el usuario recibe la versión corregida sin refrescar a mano) */
-    let reloaded=false;
+    /* R20 transversal: service-worker activation must never abort a live
+       Firebase sign-in or an authorized write by reloading this document.
+       Executable assets are already network-only/fail-closed in sw.js.
+       A fresh navigation will load the new artifact coherently. */
     navigator.serviceWorker.addEventListener('controllerchange',()=>{
-      if(reloaded)return; reloaded=true; location.reload();
+      window.CX_PWA_UPDATE_PENDING={
+        reason:'service_worker_controllerchange',
+        reloadDeferred:true,
+        runtimeAssetsNetworkOnly:true,
+        at:new Date().toISOString()
+      };
     });
   }
   const ua=navigator.userAgent||'';
