@@ -34,16 +34,38 @@ if(revision!==EXPECTED)throw new Error('RELEASE_COMPOSITION_FAILURE:VRM185_GLOBA
 const hrIds=new Set(arr(hr?.shoppers).map(s=>str(s.id||s.shopperId)).filter(Boolean));
 const [linkSnap,authUsers]=await Promise.all([links.get(),allAuth()]);
 const authByUid=new Map(authUsers.map(u=>[u.uid,u]));
+/* P0 R03 focal diagnostic: counts are stage-level only and do not grant merge authority. */
+const coverage={hrShopperCount:hrIds.size,authPrincipalCount:authUsers.length,activeAdjudicationLinks:0,linksWithHrCandidate:0,matchedHrTokens:0,crosswalkEligiblePairs:0,profilePairsComplete:0,principalPairsEvaluated:0,
+  noHrIntersection:0,crosswalkMismatch:0,profilePairIncomplete:0,membershipAmbiguous:0};
+const targetName=str(process.env.R03_TARGET_NAME),targetNameKey=x=>str(x).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').toLowerCase();
+const targetMatches=[];
+if(targetName){
+ const ps=await profiles.get();
+ for(const doc of ps.docs){
+  const profile=doc.data()||{},name=str(profile.nombre||profile.displayName||[profile.firstName,profile.lastName].filter(Boolean).join(' '));
+  if(targetNameKey(name)!==targetNameKey(targetName))continue;
+  const memberRows=await oneMember(doc.id);
+  targetMatches.push({profileFingerprint:fp(doc.id),membershipCount:memberRows.length,activeMembershipCount:memberRows.filter(m=>m.active===true).length,
+    activeVerifiedAuthCount:memberRows.filter(m=>{const a=authByUid.get(m.uid);return m.active===true&&a&&a.disabled!==true&&str(a.customClaims?.shopperId)===doc.id}).length,
+    strongPasswordProofCount:memberRows.filter(m=>proofCurrent(m)||proofCurrent(profile)).length});
+ }
+}
+result.targetReadOnly={targetSpecified:Boolean(targetName),exactNameProfileCount:targetMatches.length,principals:targetMatches};
 for(const doc of linkSnap.docs){
  const l=doc.data()||{},status=str(l.status||l.state).toLowerCase(),authority=str(l.authorityType||l.authority?.type).toLowerCase(),legacy=str(l.canonicalShopperId||l.canonicalId||l.shopperId||l.profileId);
  if(!ACTIVE.has(status)||authority!=='tenant_adjudication'||!legacy)continue;
+ coverage.activeAdjudicationLinks++;
  const sourceCandidates=tokens(l).filter(x=>x!==legacy&&hrIds.has(x));
+ if(!sourceCandidates.length){coverage.noHrIntersection++;continue;}
+ coverage.linksWithHrCandidate++;coverage.matchedHrTokens+=sourceCandidates.length;
  for(const current of sourceCandidates){
   const currentCrossSnap=await cross.doc(current).get(),currentCross=currentCrossSnap.exists?(currentCrossSnap.data()||{}):{};
-  if(str(currentCross.shopperId)!==current||str(currentCross.sourceType).toLowerCase()!=='hr_external')continue;
+  if(str(currentCross.shopperId)!==current||str(currentCross.sourceType).toLowerCase()!=='hr_external'){coverage.crosswalkMismatch++;continue;}
+  coverage.crosswalkEligiblePairs++;
   const [legacyP,currentP,legacyMs,currentMs]=await Promise.all([profiles.doc(legacy).get(),profiles.doc(current).get(),oneMember(legacy),oneMember(current)]);
-  if(!legacyP.exists||!currentP.exists){result.reviewRequired.push({linkFingerprint:fp(doc.id),current,legacy,reason:'PROFILE_PAIR_INCOMPLETE'});continue;}
-  if(legacyMs.length>1||currentMs.length>1){result.reviewRequired.push({linkFingerprint:fp(doc.id),current,legacy,reason:'DUPLICATE_MEMBERSHIP_FOR_ID'});continue;}
+  if(!legacyP.exists||!currentP.exists){coverage.profilePairIncomplete++;result.reviewRequired.push({linkFingerprint:fp(doc.id),current,legacy,reason:'PROFILE_PAIR_INCOMPLETE'});continue;}
+  if(legacyMs.length>1||currentMs.length>1){coverage.membershipAmbiguous++;result.reviewRequired.push({linkFingerprint:fp(doc.id),current,legacy,reason:'DUPLICATE_MEMBERSHIP_FOR_ID'});continue;}
+  coverage.profilePairsComplete++;coverage.principalPairsEvaluated++;
   const legacyM=legacyMs[0]||null,currentM=currentMs[0]||null,legacyU=legacyM?authByUid.get(legacyM.uid):null,currentU=currentM?authByUid.get(currentM.uid):null;
   const legacyActive=!!(legacyM&&legacyM.active===true&&legacyU&&legacyU.disabled!==true),currentActive=!!(currentM&&currentM.active===true&&currentU&&currentU.disabled!==true);
   if(!legacyActive&&!currentActive){result.reviewRequired.push({linkFingerprint:fp(doc.id),current,legacy,reason:'NO_ACTIVE_PRINCIPAL'});continue;}
@@ -56,5 +78,11 @@ for(const doc of linkSnap.docs){
  }
 }
 result.summary={hrRevision:revision,activeTenantAdjudicationLinks:linkSnap.docs.filter(d=>str((d.data()||{}).authorityType).toLowerCase()==='tenant_adjudication'&&ACTIVE.has(str((d.data()||{}).status||(d.data()||{}).state).toLowerCase())).length,safePlanCount:result.safePlans.length,reviewRequiredCount:result.reviewRequired.length,alreadyConvergedCount:result.alreadyConverged.length};
-result.decision=result.reviewRequired.length===0?'PASS_VRM185_GLOBAL_IDENTITY_CONSOLIDATION_PLAN':'HOLD_VRM185_GLOBAL_IDENTITY_REVIEW_REQUIRED';
+result.summary.coverage=coverage;
+result.summary.classifiedPairs=result.safePlans.length+result.reviewRequired.length+result.alreadyConverged.length;
+const positiveCoverage=coverage.principalPairsEvaluated>0&&result.summary.classifiedPairs>0;
+const targetCovered=!targetName||targetMatches.length>0;
+result.decision=!positiveCoverage?'HOLD_VRM185_ZERO_EVALUABLE_PAIRS':
+  !targetCovered?'HOLD_R03_TARGET_IDENTITY_NOT_FOUND':
+  result.reviewRequired.length===0?'PASS_VRM185_GLOBAL_IDENTITY_CONSOLIDATION_PLAN':'HOLD_VRM185_GLOBAL_IDENTITY_REVIEW_REQUIRED';
 save();console.log(JSON.stringify(result,null,2));if(result.decision!=='PASS_VRM185_GLOBAL_IDENTITY_CONSOLIDATION_PLAN')process.exitCode=2;

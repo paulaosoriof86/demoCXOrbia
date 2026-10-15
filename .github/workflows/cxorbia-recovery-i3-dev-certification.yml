@@ -6409,6 +6409,7 @@ jobs:
     timeout-minutes: 25
     env:
       VRM185_GLOBAL_OUT: .tmp/vrm185-global-plan
+      R03_TARGET_NAME: José Sarat
     steps:
       - uses: actions/checkout@v4
         with:
