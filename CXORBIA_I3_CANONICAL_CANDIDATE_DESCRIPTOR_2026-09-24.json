@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
+  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Paula clears GitHub account billing lock (only indispensable manual action); then rerun existing canonical I3 workflow with R22 alias and Tablon no-false-ACK tests; complete cumulative source QA; materialize one DEV artifact for source 1f4174724b0ec028b6a2d9d429509148e6e63b62; same-artifact population/role/GT/HN E2Es, existing P0 only, then one human checkpoint and Gate20/Gate21. Until then no more futile Actions reruns; production DO_NOT_TOUCH.",
+  "exactNextAction": "Await existing I3-B source-proof gate on unique product source 1f417472; on PASS authorize one existing DEV materialization, with same-artifact readback and exhaustive Admin/Shopper/GT/HN functional E2E; keep I4 blocked",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -10750,5 +10750,16 @@
     "userAction": "GitHub Billing & Licensing / Payment information or GitHub Support",
     "codeFixRequired": false,
     "production": "DO_NOT_TOUCH"
+  },
+  "i3Oct15SourceProofRequest": {
+    "candidate": "1f4174724b0ec028b6a2d9d429509148e6e63b62",
+    "tree": "fe05e9a24270e99cb1f7680bdf001db988932cbb",
+    "verifiedCanonicalRunId": 38702468520,
+    "verifiedCanonicalJobId": 116313726084,
+    "decision": "REQUEST_EXISTING_SOURCE_PROOF_ONLY",
+    "trigger": "descriptor status current existing job",
+    "noNewWorkflow": true,
+    "devWrites": 0,
+    "production": false
   }
 }
