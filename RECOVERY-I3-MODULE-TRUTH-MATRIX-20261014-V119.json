@@ -103,11 +103,11 @@
     }
   },
   "productSource": {
-    "sha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
-    "treeSha": "e93201ce9039aa20a6d993bf5dc0b9db866d0eac",
-    "predecessorProductSourceSha": "52de067d105ee5711859a03c00a6b77ff551224f",
-    "message": "fix(i3/r20): prevent PWA controllerchange from aborting cross-role authentication",
-    "authorityState": "R01_OWNER_FIXED_PENDING_SOURCE_PROOF_DEV_AND_LIVE"
+    "sha": "80ada5c4f8bf6301345f5053541e74178287326b",
+    "treeSha": "fb914a617c250eeae5fb287f7910022bb60f09da",
+    "predecessorProductSourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
+    "message": "fix(i3/r22): human notice copy without altering historical bulletins",
+    "authorityState": "R22_SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN"
   },
   "controlHeadAtConstruction": "516f26ee75b644ad10d3a1d6093f24b91d347736",
   "phaseAComplete": false,
@@ -3695,10 +3695,10 @@
       "domain": "base-router-shell-cache",
       "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
       "latestApprovedBlob": "4f51dfa1b8e6287c9c2ef63f5b05e5fc9d2beedb",
-      "currentBlob": "85332db80d7a946818d9dd9ec217b190f5e7f158",
+      "currentBlob": "86ca6a38cb738141c9077e8cbaa1e583a9787e92",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH",
+      "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN",
       "loadOrder": 69,
       "atomicDisposition": "KEEP",
       "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
@@ -3710,8 +3710,16 @@
       "approvalDisposition": "KEEP",
       "currentCumulativeSource": "f2a50044ca5b4bac5053f5a88de041fd5c7f72f9",
       "currentLoadOrder": 67,
-      "previousMatrixCurrentBlob": "21c0212aa923a1468a3b99c0fa3b4ef570039245",
-      "byteAuthorityReadback": "EXACT_GIT_TREE_SOURCE_ONLY"
+      "previousMatrixCurrentBlob": "85332db80d7a946818d9dd9ec217b190f5e7f158",
+      "byteAuthorityReadback": "EXACT_GIT_TREE_SOURCE_ONLY",
+      "exactP0Delta": {
+        "findingId": "R22",
+        "previousBlob": "85332db80d7a946818d9dd9ec217b190f5e7f158",
+        "newBlob": "86ca6a38cb738141c9077e8cbaa1e583a9787e92",
+        "sourceOnly": true,
+        "reason": "raw Firestore text lacked protected human presentation",
+        "approval": "PENDING_SOURCE_QA_DEV_E2E_HUMAN"
+      }
     },
     {
       "path": "app/core/backend-automations.js",
@@ -3912,7 +3920,7 @@
       "domain": "base-router-shell-cache",
       "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
       "latestApprovedBlob": "e59210e95e99a9e568f976dcd13c6f98b963464f",
-      "currentBlob": "c6e2cd0068e1fb32f6ab256e5ab79d4f407f5196",
+      "currentBlob": "b270e3802f9d8c79cd905e4b69323e74572ced92",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN",
@@ -3927,15 +3935,14 @@
       "approvalDisposition": "KEEP",
       "currentCumulativeSource": "f2a50044ca5b4bac5053f5a88de041fd5c7f72f9",
       "currentLoadOrder": 74,
-      "previousMatrixCurrentBlob": "5eae2c7a2d11460887bc3f4d2d04466fae643a8d",
+      "previousMatrixCurrentBlob": "c6e2cd0068e1fb32f6ab256e5ab79d4f407f5196",
       "byteAuthorityReadback": "EXACT_GIT_TREE_SOURCE_ONLY",
       "exactP0Delta": {
         "findingId": "R22",
-        "predecessorBlob": "5eae2c7a2d11460887bc3f4d2d04466fae643a8d",
-        "newBlob": "c6e2cd0068e1fb32f6ab256e5ab79d4f407f5196",
-        "scope": "exact canonical alias visit notification with project and role guards",
-        "sourceProof": "7_OF_7_ISOLATED_CONTRACT_NOT_FULL_DEV_LIVE",
-        "authPopulation": "PENDING"
+        "previousBlob": "c6e2cd0068e1fb32f6ab256e5ab79d4f407f5196",
+        "newBlob": "b270e3802f9d8c79cd905e4b69323e74572ced92",
+        "scope": "consume safe displayText for Campanita Tablon Mi Dia",
+        "approval": "PENDING_SOURCE_QA_DEV_E2E_HUMAN"
       }
     },
     {
@@ -11478,5 +11485,28 @@
     "phaseAComplete": false,
     "allModulesMatch": false,
     "matchesPreserved": 9
+  },
+  "i3Oct15R22HumanPresentationSourceFix": {
+    "date": "2026-10-15",
+    "finding": "R22",
+    "classification": "VISUAL_DEFECT",
+    "parentControlHead": "9b757c6d9079817f3f82777c4a5367c17d3acb98",
+    "productSourceSha": "80ada5c4f8bf6301345f5053541e74178287326b",
+    "productTree": "fb914a617c250eeae5fb287f7910022bb60f09da",
+    "sourceFixState": "SOURCE_FIXED_QA_DEV_E2E_PENDING",
+    "ownerFiles": [
+      "app/core/backend-bulletins.js",
+      "app/core/topbar.js"
+    ],
+    "qaPath": "tools/qa/cxorbia-i3-r22-human-notice-copy-source-20261015.test.mjs",
+    "preserves": [
+      "historical Firestore bulletin original body",
+      "original txt for scoped filters",
+      "R20 ordinary credential PASS",
+      "R23 same-HR-revision KPI PASS"
+    ],
+    "devSourceStill": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
+    "production": "DO_NOT_TOUCH",
+    "userIncrementalReviewAllowedAfter": "DEV_SAME_SOURCE_PRESENTATION_E2E_PASS"
   }
 }

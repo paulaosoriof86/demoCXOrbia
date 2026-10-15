@@ -4,11 +4,11 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
-  "productTreeAuthority": "e93201ce9039aa20a6d993bf5dc0b9db866d0eac",
-  "predecessorProductSourceSha": "52de067d105ee5711859a03c00a6b77ff551224f",
+  "productSourceSha": "80ada5c4f8bf6301345f5053541e74178287326b",
+  "productTreeAuthority": "fb914a617c250eeae5fb287f7910022bb60f09da",
+  "predecessorProductSourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V441_2026-10-14.json",
-  "findingsLedgerExpectedGitBlob": "aa856268c2c014694c9f4a9b607da56ab7b91112",
+  "findingsLedgerExpectedGitBlob": "f6af6eca0062d6f540d8dd33e71b17f5540137d1",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V119.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "R08 verify original source file pointer and human-approved revision, then one true Vertex exact15 pending_review real E2E, no fabricated questions; R22 focal Codex owner technical labels plus fresh read ACK/click; R09-R17 reconcile 599 paid-status records against independent bank proof, 78 pending and 5 amount reviews, Q7300 exact evidence, no assumptions; R07 HR ACK remains HOLD. Same artifact DEV, human review once all P0 pass.",
+  "exactNextAction": "R22 new human-text source QA -> guarded exact same-candidate DEV materialization -> multi-surface two-Shopper live E2E; in parallel R08 authentic approved instruction and Vertex exact15, R09-R17 bank independent evidence, R07 external HR ACK. Incremental Paula visual review only for demonstrated DEV E2E blocks; I4 blocked.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2765,7 +2765,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "79b66315bffe520bec6cb0393810814ee37e5f19",
+  "moduleTruthExpectedGitBlob": "f23f2e76be7684ddf027aac0416fc272132fb80c",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -11608,5 +11608,28 @@
       "production": false,
       "devDeploys": 0
     }
+  },
+  "i3Oct15R22HumanPresentationSourceFix": {
+    "date": "2026-10-15",
+    "finding": "R22",
+    "classification": "VISUAL_DEFECT",
+    "parentControlHead": "9b757c6d9079817f3f82777c4a5367c17d3acb98",
+    "productSourceSha": "80ada5c4f8bf6301345f5053541e74178287326b",
+    "productTree": "fb914a617c250eeae5fb287f7910022bb60f09da",
+    "sourceFixState": "SOURCE_FIXED_QA_DEV_E2E_PENDING",
+    "ownerFiles": [
+      "app/core/backend-bulletins.js",
+      "app/core/topbar.js"
+    ],
+    "qaPath": "tools/qa/cxorbia-i3-r22-human-notice-copy-source-20261015.test.mjs",
+    "preserves": [
+      "historical Firestore bulletin original body",
+      "original txt for scoped filters",
+      "R20 ordinary credential PASS",
+      "R23 same-HR-revision KPI PASS"
+    ],
+    "devSourceStill": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
+    "production": "DO_NOT_TOUCH",
+    "userIncrementalReviewAllowedAfter": "DEV_SAME_SOURCE_PRESENTATION_E2E_PASS"
   }
 }

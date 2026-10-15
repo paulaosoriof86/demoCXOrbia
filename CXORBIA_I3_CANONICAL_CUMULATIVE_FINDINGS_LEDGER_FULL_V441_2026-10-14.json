@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
-    "sourceTree": "e93201ce9039aa20a6d993bf5dc0b9db866d0eac",
-    "predecessorSha": "52de067d105ee5711859a03c00a6b77ff551224f",
+    "sourceSha": "80ada5c4f8bf6301345f5053541e74178287326b",
+    "sourceTree": "fb914a617c250eeae5fb287f7910022bb60f09da",
+    "predecessorSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
     "production": false,
-    "state": "SOURCE_MATERIALIZED_RUN1681_R01_FOCAL_LIVE_E2E_PASS_OTHER_P0_PENDING",
+    "state": "R22_FOCAL_SOURCE_FIXED_PENDING_SOURCE_QA_DEV_E2E_HUMAN",
     "proof": {
       "status": "SOURCE_QA_PASS_RUN1517",
       "scope": "HF24 bridge blocked on missing provider, and movements/accounts exact readback after ACK; no live finance writes",
@@ -30707,5 +30707,28 @@
       "production": false,
       "devDeploys": 0
     }
+  },
+  "i3Oct15R22HumanPresentationSourceFix": {
+    "date": "2026-10-15",
+    "finding": "R22",
+    "classification": "VISUAL_DEFECT",
+    "parentControlHead": "9b757c6d9079817f3f82777c4a5367c17d3acb98",
+    "productSourceSha": "80ada5c4f8bf6301345f5053541e74178287326b",
+    "productTree": "fb914a617c250eeae5fb287f7910022bb60f09da",
+    "sourceFixState": "SOURCE_FIXED_QA_DEV_E2E_PENDING",
+    "ownerFiles": [
+      "app/core/backend-bulletins.js",
+      "app/core/topbar.js"
+    ],
+    "qaPath": "tools/qa/cxorbia-i3-r22-human-notice-copy-source-20261015.test.mjs",
+    "preserves": [
+      "historical Firestore bulletin original body",
+      "original txt for scoped filters",
+      "R20 ordinary credential PASS",
+      "R23 same-HR-revision KPI PASS"
+    ],
+    "devSourceStill": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
+    "production": "DO_NOT_TOUCH",
+    "userIncrementalReviewAllowedAfter": "DEV_SAME_SOURCE_PRESENTATION_E2E_PASS"
   }
 }
