@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_OTHER_P0_TERMINAL_E2E_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "R07_R08_R09_R17_R22_TERMINAL_READBACK_PENDING",
+  "activeBlocker": "R07_EXTERNAL_HR_READONLY_REQUIRED",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "R07 exact external HR cancellation with provider ACK, independent readback, reload and availability; reuse existing source-only tests and DEV exact artifact. Other R08/finance/R22 open. No R20/R23 repeat without reproducible drift. I4 blocked.",
+  "exactNextAction": "Run existing I3 lane R07 real cancellation read-only HR+Firestore exact revision check, record whether external HR ACK release exists, preserve earlier synthetic PASS without external writes. Then rectify only proven failure, continue R08/R09-R17/R22. Production blocked.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -11372,5 +11372,23 @@
     "productSourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
     "providerWrites": 0,
     "production": false
+  },
+  "r07FocalReadOnlyRequest": {
+    "requestedAt": "2026-10-15",
+    "mode": "EXISTING_PHASEA_REPRESENTATIVE_READ_ONLY",
+    "productSourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
+    "artifactRun": 1681,
+    "qaPath": "tools/qa/cxorbia-i3-r07-external-hr-cancel-readonly.mjs",
+    "readScopes": [
+      "external HR same revision twice",
+      "Firestore cancellation states",
+      "availability safety"
+    ],
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "financialWrites": 0,
+    "production": false,
+    "terminalPassDisallowedWithoutExternalAck": true
   }
 }
