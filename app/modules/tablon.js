@@ -31,7 +31,7 @@ CX.module('tablon', ({role,ui})=>{
     host.querySelectorAll('[data-n]').forEach(el=>el.addEventListener('click',(e)=>{
       if(e.target.closest('button'))return;
       const n=feed.find(x=>x.id===el.dataset.n);if(!n)return;
-      CX.notif.markRead(n.id).then(ack=>{if(ack?.providerAck===false)ui.toast('No se confirmó la lectura.','warn',4200);});
+      Promise.resolve(CX.notif.markRead(n.id)).then(ack=>{if(ack?.providerAck===false)ui.toast('No se confirmó la lectura.','warn',4200);});
       ui.modal((n.icon||'🔔')+' '+n.titulo,`
         <div style="font-size:12.5px;color:var(--t2);line-height:1.6;margin-bottom:10px">${n.txt}</div>
         <div style="font-size:11px;color:var(--t3)">${n.fecha}${n.para?' · Para: '+n.para:''}</div>
