@@ -84,9 +84,20 @@ if(!executeReal){
   const context=await browser.newContext({serviceWorkers:'block'});
   const page=await context.newPage();
   const pageErrors=[];
-  page.on('pageerror',error=>pageErrors.push(String(error?.message||error)));
+  let r20Stage='ENTRY_NAVIGATION';
+  const authProviderHttp=[];
+  page.on('pageerror',error=>pageErrors.push(String(error?.name||'Error').slice(0,30)));
+  page.on('response',response=>{
+    try{
+      const host=new URL(response.url()).hostname;
+      if(host==='identitytoolkit.googleapis.com'||host==='securetoken.googleapis.com'){
+        authProviderHttp.push({provider:host==='identitytoolkit.googleapis.com'?'firebase_identity':'firebase_token',status:response.status()});
+      }
+    }catch(_){}
+  });
   try{
     await page.goto(url.toString(),{waitUntil:'domcontentloaded',timeout:30000});
+    r20Stage='PREAUTH_CONTRACT';
     const preAuth=await page.evaluate(()=>({
       entry:window.CX_DEV_ENTRY_CANONICAL||null,
       bundledSnapshotLoaded:Boolean(window.CX_TYA_HR_SOURCE_SAFE),
@@ -96,20 +107,26 @@ if(!executeReal){
     ensure(preAuth.bundledSnapshotLoaded===false,'STALE_BUNDLED_HR_SNAPSHOT_LOADED');
     ensure(preAuth.authorityApplied===false,'HR_AUTHORITY_APPLIED_BEFORE_AUTH');
 
+    r20Stage='SHOPPER_ROLE_SELECTION';
     const shopperCard=page.getByText('Shopper / Evaluador',{exact:true});
     await shopperCard.click({timeout:15000});
     const userInput=page.locator('input[autocomplete="username"]:visible').last();
     const passInput=page.locator('input[autocomplete="current-password"]:visible').last();
+    r20Stage='CREDENTIAL_FORM_FILL';
     await userInput.fill(login);
     await passInput.fill(password);
+    r20Stage='LOGIN_SUBMIT';
     await page.getByRole('button',{name:'Ingresar',exact:true}).last().click();
 
+    r20Stage='AUTHENTICATED_CONTEXT_WAIT';
     await page.waitForFunction(({tenantId,projectId})=>{
       const ctx=window.CX?.backendAuth?.context?.();
       return Boolean(ctx?.authenticated===true&&ctx?.tenantId===tenantId&&ctx?.role==='shopper'&&Array.isArray(ctx?.projectIds)&&ctx.projectIds.includes(projectId));
     },{tenantId,projectId},{timeout:30000});
+    r20Stage='HR_AUTHORITY_WAIT';
     await page.waitForFunction(()=>window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,null,{timeout:60000});
 
+    r20Stage='CANONICAL_IDENTITY_READBACK';
     const result=await page.evaluate(({tenantId,projectId,requireHistory})=>{
       const ctx=window.CX?.backendAuth?.context?.()||null;
       const raw=String(ctx?.shopperId||'').trim();
@@ -159,6 +176,7 @@ if(!executeReal){
        Auth/history failure. Never accept it automatically. If it is pending, certify the exact
        principal + HR/history and defer workspace route checks until the human legal gate is
        completed. If no legal gate is pending, Academia/Certification remain mandatory. */
+    r20Stage='LEGAL_GATE_READBACK';
     const legalGate=await page.evaluate(()=>{
       const c=window.CX?.confidencialidad;
       const supported=Boolean(c&&typeof c.pending==='function');
@@ -182,7 +200,9 @@ if(!executeReal){
       academia={rendered:false,deferredByLegalGate:true,view:null,sameAuthenticatedShopper:true};
       certification={rendered:false,deferredByLegalGate:true,view:null,sameAuthenticatedShopper:true,recordsForPrincipal:result.certificationRecordsForPrincipal};
     }else{
+      r20Stage='ACADEMIA_NAVIGATION';
       academia=await verifyRoute(page,{selector:'#nav-aprendizaje',expectedView:'aprendizaje'});
+      r20Stage='CERTIFICATION_NAVIGATION';
       certification=await verifyRoute(page,{selector:'#nav-cert',expectedView:'cert'});
       ensure(academia.rendered&&academia.authenticated&&academia.role==='shopper'&&!academia.lockMessage,'ACADEMIA_REAL_SHOPPER_ROUTE_FAILED');
       ensure(certification.rendered&&certification.authenticated&&certification.role==='shopper'&&!certification.lockMessage,'CERTIFICATION_REAL_SHOPPER_ROUTE_FAILED');
@@ -190,13 +210,43 @@ if(!executeReal){
       certification={rendered:true,view:certification.view,sameAuthenticatedShopper:true,recordsForPrincipal:result.certificationRecordsForPrincipal,deferredByLegalGate:false};
     }
 
+    r20Stage='FINAL_SAME_PRINCIPAL_READBACK';
     const samePrincipal=await page.evaluate(({tenantId,projectId})=>{
       const ctx=window.CX?.backendAuth?.context?.()||null;
       return Boolean(ctx?.authenticated===true&&ctx?.tenantId===tenantId&&ctx?.role==='shopper'&&ctx?.projectIds?.includes(projectId)&&String(ctx?.shopperId||'').trim());
     },{tenantId,projectId});
     ensure(samePrincipal,'SHOPPER_PRINCIPAL_NOT_PRESERVED_ACROSS_WORKSPACE_GATE');
 
+    r20Stage='FINAL_SUCCESS';
     console.log(JSON.stringify({schemaVersion:'cxorbia.p0.real-shopper-auth-e2e.result.v3',decision:'PASS_P0_REAL_SHOPPER_AUTH_TO_HR_E2E',...result,workspaceState:legalGate.pending?'legal-gate-pending':'mounted',legalGate:{supported:legalGate.supported,pending:legalGate.pending,visible:legalGate.visible,acceptanceAutomated:false},academia,certification,credentialsExposed:false,tokensExposed:false,safety:safe},null,2));
+  }catch(e){
+    let contextReadback={};
+    try{
+      contextReadback=await page.evaluate(()=>{
+        const ctx=window.CX?.backendAuth?.context?.()||{};
+        return {
+          authenticated:ctx.authenticated===true,
+          shopperRole:ctx.role==='shopper',
+          tenantScoped:typeof ctx.tenantId==='string'&&ctx.tenantId.length>0,
+          projectScoped:Array.isArray(ctx.projectIds)&&ctx.projectIds.length>0,
+          firebasePrincipalPresent:Boolean(window.firebase?.auth?.().currentUser),
+          protectedHrApplied:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,
+          loginFormPresent:Boolean(document.querySelector('#loginForm'))
+        };
+      });
+    }catch(_){}
+    const kind=String(e?.name||'');
+    const safeErrorType=['TimeoutError','Error','AssertionError','TypeError'].includes(kind)?kind:'OtherError';
+    console.log(JSON.stringify({
+      schemaVersion:'cxorbia.p0.r20.password-stage-diagnostic.v1',
+      decision:'HOLD_R20_PASSWORD_STAGE_DIAGNOSTIC_NOT_AUTH_PASS',
+      stage:r20Stage,errorType:safeErrorType,
+      authProviderHttp:authProviderHttp.slice(-8),
+      contextReadback,pageErrorCount:pageErrors.length,
+      credentialsExposed:false,tokensExposed:false,
+      safety:safe
+    }));
+    process.exitCode=1;
   }finally{
     await context.close();
     await browser.close();
