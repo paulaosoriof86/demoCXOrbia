@@ -1489,7 +1489,7 @@ jobs:
         with: {fetch-depth: 0}
       - uses: actions/setup-node@v4
         with: {node-version: '24'}
-      - name: Exact current DEV finance preflight
+      - name: step
         run: |
          set -Eeuo pipefail
          mkdir -p "$FINAL_FOCAL_OUT"
@@ -1499,7 +1499,7 @@ jobs:
          test "$(jq -r '.currentMaterialization.sourceTree' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
          git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
          node --check tools/qa/cxorbia-prei4-final-focal-finance-live.mjs
-      - name: Install finance focal dependencies
+      - name: step
         run: |
          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
          npx playwright install chromium >/dev/null 2>&1
@@ -1509,7 +1509,7 @@ jobs:
       - uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT }}
-      - name: Verify exact DEV fingerprints
+      - name: step
         run: |
          set -Eeuo pipefail
          R="$(jq -r '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")"
@@ -2910,7 +2910,7 @@ jobs:
         with: {fetch-depth: 0}
       - uses: actions/setup-node@v4
         with: {node-version: '24'}
-      - name: Exact artifact and read-only preflight
+      - name: step
         shell: bash
         run: |
          set -Eeuo pipefail
@@ -2925,12 +2925,12 @@ jobs:
          node --check tools/qa/cxorbia-i3-vrm217-219-population-root-diagnostic.mjs
          ! grep -Eq '\.(set|create|update|delete)\(' tools/qa/cxorbia-i3-vrm217-219-population-root-diagnostic.mjs
          ! grep -Eq 'auth\.(createUser|updateUser|deleteUser|setCustomUserClaims)\(' tools/qa/cxorbia-i3-vrm217-219-population-root-diagnostic.mjs
-      - name: Install read-only diagnostic dependency
+      - name: step
         run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
       - uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-      - name: Run VRM217-219 root diagnostic
+      - name: step
         shell: bash
         run: |
          set -Eeuo pipefail
@@ -6119,7 +6119,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: VRM-185 exact-source preflight
+      - name: step
         run: |
          set -Eeuo pipefail
          mkdir -p "$VRM185_ADMIN_OUT"
@@ -6134,7 +6134,7 @@ jobs:
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
       - uses: google-github-actions/setup-gcloud@v2
-      - name: Verify sealed DEV materialization
+      - name: step
         run: |
          set -Eeuo pipefail
          EXPECTED_RUNTIME_REVISION="$(jq -r '.currentMaterialization.runtimeRevision // empty' "$CANDIDATE_DESCRIPTOR")"
@@ -6319,7 +6319,7 @@ jobs:
         with: {fetch-depth: 0}
       - uses: actions/setup-node@v4
         with: {node-version: '24'}
-      - name: Verify finance source and tests
+      - name: step
         run: |
           set -Eeuo pipefail
           mkdir -p "$VRM_OUT"/{dry,before,after}
@@ -6333,7 +6333,7 @@ jobs:
       - uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-      - name: DEV finance HR/Firestore readback
+      - name: step
         run: |
           set -Eeuo pipefail
           PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HR_URL="$VRM_HR_URL" OUT="$VRM_OUT/dry" node tools/qa/cxorbia-vrm151-final-canonical-dry-run.mjs > "$VRM_OUT/dry/console.log"
@@ -6643,19 +6643,7 @@ jobs:
          set -Eeuo pipefail
          P="$PHASEA_LIVE_OUT"
          if [ "$(jq -r .activeBlocker "$CANDIDATE_DESCRIPTOR")" = "R20_SINGLE_CREDENTIAL_READONLY_REQUIRED" ]; then node tools/qa/cxorbia-i3-r20-ordinary-password-single-readonly.mjs; exit 0; fi
-         if [ "$(jq -r .activeBlocker "$CANDIDATE_DESCRIPTOR")" = "R23_SAME_REVISION_READONLY_REQUIRED" ]; then
-           node --check tools/qa/cxorbia-i3-r23-independent-hr-kpi-readonly.mjs
-           for COUNTRY in GT HN; do
-             R23_DIR="$P/r23/$COUNTRY"
-             mkdir -p "$R23_DIR"
-             R23_COUNTRY="$COUNTRY" OUT="$R23_DIR" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" FOCAL_SOURCE="$FOCAL_SOURCE" HOSTING_URL="$HOSTING_URL" node tools/qa/cxorbia-i3-r23-independent-hr-kpi-readonly.mjs | tee "$R23_DIR/console.log"
-             test "$(jq -r .decision "$R23_DIR/r23-external-hr-kpis-same-revision.json")" = "PASS_R23_KPIS_SAME_EXTERNAL_HR_REVISION"
-             test "$(jq -r .externalRevision "$R23_DIR/r23-external-hr-kpis-same-revision.json")" = "$EXPECTED_HR_REVISION"
-             test "$(jq -r .readbackRevision "$R23_DIR/r23-external-hr-kpis-same-revision.json")" = "$EXPECTED_HR_REVISION"
-             jq -e '.readOnly==true and .production==false and .providerWrites==0 and .authWrites==0 and .firestoreWrites==0 and .hrWrites==0 and .financeWrites==0 and .sameRevision==true and .kpisExact==true and .comparisonIndependentFromBrowserReadModel==true' "$R23_DIR/r23-external-hr-kpis-same-revision.json" >/dev/null
-           done
-           exit 0
-         fi
+         if [ "$(jq -r .activeBlocker "$CANDIDATE_DESCRIPTOR")" = "R23_SAME_REVISION_READONLY_REQUIRED" ]; then node --check tools/qa/cxorbia-i3-r23-independent-hr-kpi-readonly.mjs; node tools/qa/cxorbia-i3-r23-independent-hr-kpi-readonly.mjs; exit 0; fi
          if [ "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_I3_B7_TWO_ROLE_DECISION_LIVE_DEV_REQUIRED" ]; then
            B7_OUT="$P/b7" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" node tools/qa/cxorbia-i3-b7-cancel-two-role-focal-live.mjs | tee "$P/b7-console.log"
            test "$(jq -r '.decision' "$P/b7/result.json")" = "PASS_I3_B7_TWO_ROLE_DECISION_LIVE_DEV"

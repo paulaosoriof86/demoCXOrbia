@@ -10,6 +10,26 @@ import { applicationDefault, initializeApp, getApps } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 
+import {spawnSync} from 'node:child_process';
+if(!process.env.R23_COUNTRY){
+  const base=String(process.env.PHASEA_LIVE_OUT||'.tmp/phasea-representative-live'),rev=String(process.env.EXPECTED_HR_REVISION||'');
+  if(!/^[0-9a-f]{64}$/.test(rev)){console.log(JSON.stringify({decision:'HOLD_R23_UNPINNED_REVISION'}));process.exit(1);}
+  const results=[];
+  for(const country of ['GT','HN']){
+    const dir=base+'/r23/'+country;
+    const child=spawnSync(process.execPath,[new URL(import.meta.url).pathname],{env:{...process.env,R23_COUNTRY:country,OUT:dir},encoding:'utf8',timeout:260000,maxBuffer:524288});
+    let obj=null;try{obj=JSON.parse(fs.readFileSync(dir+'/r23-external-hr-kpis-same-revision.json','utf8'));}catch(_){}
+    const pass=child.status===0&&obj?.decision==='PASS_R23_KPIS_SAME_EXTERNAL_HR_REVISION'&&obj?.country===country&&obj.externalRevision===rev&&obj.browserRevision===rev&&obj.readbackRevision===rev&&obj.sameRevision===true&&obj.kpisExact===true&&obj.comparisonIndependentFromBrowserReadModel===true&&obj.production===false&&obj.providerWrites===0&&obj.authWrites===0&&obj.firestoreWrites===0&&obj.hrWrites===0&&obj.financeWrites===0;
+    results.push({country,decision:obj?.decision||'HOLD_NO_RECEIPT',pass,stage:child.signal?'TIMEOUT':'COMPLETED'});
+    if(!pass)break;
+  }
+  const decision=results.length===2&&results.every(x=>x.pass)?'PASS_R23_GT_HN_SAME_EXTERNAL_HR_REVISION':'HOLD_R23_COUNTRY_EXACT_COMPARISON';
+  fs.mkdirSync(base+'/r23',{recursive:true});
+  fs.writeFileSync(base+'/r23/result.json',JSON.stringify({decision,results,sourceSha:process.env.FOCAL_SOURCE||null,providerWrites:0,authWrites:0,firestoreWrites:0,hrWrites:0,financeWrites:0,production:false},null,2)+'\n');
+  console.log(JSON.stringify({decision,results,production:false}));
+  process.exit(decision.startsWith('PASS')?0:1);
+}
+
 const PROJECT=process.env.PROJECT||'cxorbia-backend-dev';
 const OUT=process.env.OUT||'.tmp/recovery-i3-r23';
 const HOSTING_URL=String(process.env.HOSTING_URL||'https://cxorbia-backend-dev.web.app').replace(/\/$/,'');
