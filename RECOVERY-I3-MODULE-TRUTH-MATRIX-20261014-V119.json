@@ -7630,35 +7630,34 @@
   },
   "currentMaterialization": {
     "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
-    "sourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
-    "sourceTree": "e93201ce9039aa20a6d993bf5dc0b9db866d0eac",
-    "runId": 38711384224,
-    "runNumber": 1681,
-    "jobId": 116343441585,
-    "artifactId": 11960677282,
-    "artifactName": "cxorbia-i3-phasea-materialization-38711384224",
-    "artifactDigest": "sha256:c19d25d308c5474101dfacb61bcbf220c4dc3534228ed5686def8e6724c86759",
-    "artifactDigestType": "GitHub evidence ZIP, not final I4 TAR",
-    "sourceArtifactDigest": "sha256:c74e3f3da0baea83d097f1e5c45a80552caa33304a1b06258d3ddc015cfec5f8",
-    "sourceArtifactType": "exact product source TAR SHA-256",
-    "runtimeRevision": "cxorbia-live-hr-dev-00304-wwc",
-    "runtimeDigest": "sha256:c6633ec7d0feef9816c81dec5af52da87307cb44a9149a7a7703f3de58b1ef42",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/69c811435fa7b66d",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1792055820267000",
+    "state": "DEV_SAME_SOURCE_PASS_R22_HUMAN_LIVE_PENDING",
+    "runId": 38776838205,
+    "runNumber": 1724,
+    "readbackRunId": 38777815175,
+    "readbackRunNumber": 1725,
+    "artifactId": 11994985007,
+    "artifactDigest": "sha256:4a76629236602bccbc065c60525e333262571ff5d6ce0e7ffec9156391ee4500",
+    "artifactType": "exact_source_tar",
+    "githubEvidenceZipDigest": "sha256:d55db29d347fd3f14e10c64ca7a471852662e77b67fdca2b625ad39c620c0278",
+    "sourceSha": "80ada5c4f8bf6301345f5053541e74178287326b",
+    "sourceTree": "fb914a617c250eeae5fb287f7910022bb60f09da",
+    "runtimeRevision": "cxorbia-live-hr-dev-00305-5rg",
+    "runtimeDigest": "sha256:d8ca3cd3058c938a9a91583a640901d1ac2dfa2ca56a435a25f97b020e1264f3",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/c28578d7a5414c9f",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1792085192586000",
     "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/e9070ca6-234c-4a16-acf2-5ab3372eadb3",
     "hrRevision": "1959278f639f0132110b58b080908a9da8d949ed824ffc044e98ded67fb3fbe8",
     "builds": 1,
     "runtimeDeploys": 1,
     "hostingDeploys": 1,
-    "firestoreRulesDeploys": 1,
     "hrWrites": 0,
-    "financeWrites": 0,
     "production": false,
-    "sourceProofRunId": 38711056757,
-    "sameArtifactLive": "PENDING_EXACT_R01_BROWSER_AND_REGRESSION",
-    "humanAcceptance": "PENDING",
-    "gate20": "PENDING",
-    "gate21": "PENDING"
+    "validatedAssets": [
+      "core/backend-bulletins.js",
+      "core/topbar.js"
+    ],
+    "liveE2e": "PENDING",
+    "humanReview": "AVAILABLE_FOR_INCREMENTAL_VISUAL_ONLY"
   },
   "sourceReproof": {
     "runId": 37163244743,
@@ -11508,6 +11507,12 @@
     "devSourceStill": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
     "production": "DO_NOT_TOUCH",
     "userIncrementalReviewAllowedAfter": "DEV_SAME_SOURCE_PRESENTATION_E2E_PASS",
-    "ownerRegistryAdjusted": true
+    "ownerRegistryAdjusted": true,
+    "devReadback": {
+      "runId": 38777815175,
+      "decision": "PASS_EXACT_DEV_OWNER_ASSET_PARITY",
+      "assetCountValidated": 2,
+      "production": false
+    }
   }
 }
