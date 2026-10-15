@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "cxorbia.i3.run1623.focal-sourceqa-pass.20261014.v1",
+  "observedAt": "2026-10-14",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "decision": "SOURCE_QA_PASS__I3_HOLD_I4_BLOCKED",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "sourceSha": "5b13468fc3999f0c8e49982954a8733cf2728e96",
+  "sourceTree": "1ea0ad04afe1e6e760668ca8cb9206217735b6a1",
+  "run": {
+    "runId": 38657790090,
+    "number": 1623,
+    "jobId": 116171574608,
+    "canonicalJob": "SUCCESS",
+    "skippedJobs": 96
+  },
+  "tests": {
+    "identityR03": {
+      "pass": 43,
+      "fail": 0,
+      "historyVRM185VRM197": "PRESERVED"
+    },
+    "cancelR07": {
+      "pass": 3,
+      "fail": 0
+    },
+    "vertexR08": {
+      "pass": 2,
+      "fail": 0
+    },
+    "notificationR22": {
+      "pass": 3,
+      "fail": 0
+    },
+    "finance": {
+      "pass": 39,
+      "fail": 0
+    },
+    "WhatsAppR01": {
+      "pass": 11,
+      "fail": 0
+    },
+    "b7Temporal": {
+      "pass": 7,
+      "fail": 0
+    }
+  },
+  "r22RootCause": "Frontend local markRead occurred before Firestore provider ACK; missing remote receipt causes unread to reappear. Shopper visit bulletin actionRoute could point away from Mis Visitas.",
+  "r22SourceCorrection": "Firestore server-confirmed receipt first, local markRead after success, per-user durable scope, role-specific visit routing, no invented delivery or action ACK",
+  "workflowSizeCorrection": {
+    "originalBytes": 512034,
+    "correctedBytes": 511360,
+    "onlyIfExpressionSpacing": true,
+    "run1622": "WORKFLOW_SCHEMA_BLOCKED_NO_JOBS",
+    "run1623": "SUCCESS_CANONICAL_AUTHORITY_JOB_ONLY"
+  },
+  "sourceStates": {
+    "R03": "SOURCE_PROVEN_REAL_AUTH_PENDING",
+    "R07": "SOURCE_PROVEN_REAL_PROVIDER_PENDING",
+    "R08": "SAFE_INSTRUMENTATION_QA_PASS_VERTEX_ROOT_CAUSE_OPEN",
+    "R22": "SOURCE_PROVEN_REAL_FIRESTORE_TWO_ROLE_PENDING"
+  },
+  "devLastVerified": {
+    "source": "4d4624940ce09c86ec04a3ee59e44ffd40bde612",
+    "run": 1605,
+    "runtime": "cxorbia-live-hr-dev-00294-ftx",
+    "hosting": "sites/cxorbia-backend-dev/versions/0b20ba1c5df7295f",
+    "hrRevision": "2e3b2aaff2b1ac7a9323c9a69a16d2ad97beb25648c642e1464d72e36917ad70"
+  },
+  "notProven": [
+    "R03 José Sarat exact Auth UIDs and live login retention",
+    "R07 original provider denial code and independent live Admin+Shopper readback",
+    "R08 real Vertex finishReason/response and 15-question grounded bank generation",
+    "R22 Firestore durable read in both roles, no duplicate or raw technical message, all actions",
+    "VRM-134 latency/performance",
+    "HR independent GT/HN revision for R23",
+    "Finance R09-R18 R24 historical receipts, CxP/CxC, fee configuration and live E2E",
+    "21-domain Phase A equal certified artifact",
+    "Human focused acceptance + Gate20 + Gate21"
+  ],
+  "ledgerPreservedHistoricalCount": 274,
+  "humanObservationsPreserved": "R01-R25 exact 25 frozen",
+  "sourceChangedAfterRun": false,
+  "devDeploys": 0,
+  "productionDeploys": 0,
+  "HRWrites": 0,
+  "bankWrites": 0,
+  "authWrites": 0,
+  "status": "HOLD",
+  "authorizationRequiredNow": false
+}
