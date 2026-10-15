@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
+  "status": "HOLD_I3_OTHER_P0_TERMINAL_E2E_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "e93201ce9039aa20a6d993bf5dc0b9db866d0eac",
   "predecessorProductSourceSha": "52de067d105ee5711859a03c00a6b77ff551224f",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V441_2026-10-14.json",
-  "findingsLedgerExpectedGitBlob": "63f598186949753bb812aba826cd3a8e6e93f9b7",
+  "findingsLedgerExpectedGitBlob": "90e86ae961a560d244cf3fe559b9c833d5573822",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V119.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "R07_EXTERNAL_HR_READONLY_REQUIRED",
+  "activeBlocker": "R07_EXTERNAL_HR_ACK_NOT_PROVEN__R08_R09_R17_R22_OPEN",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run existing I3 lane R07 real cancellation read-only HR+Firestore exact revision check, record whether external HR ACK release exists, preserve earlier synthetic PASS without external writes. Then rectify only proven failure, continue R08/R09-R17/R22. Production blocked.",
+  "exactNextAction": "R07 lacks a live externally ACKed cancellation release case; preserve HOLD, no speculative HR writes. Progress R08 genuine grounded 15-question Vertex human review, R22 durable read/reload isolation, finance R09-R17; one terminal same-artifact human review then Gate20/21. I4 blocked.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -11390,5 +11390,17 @@
     "financialWrites": 0,
     "production": false,
     "terminalPassDisallowedWithoutExternalAck": true
+  },
+  "r07LiveReadOnly": {
+    "runId": 38761865925,
+    "artifactId": 11986950394,
+    "decision": "HOLD_R07_EXTERNAL_HR_ACK_NOT_PROVEN",
+    "classification": null,
+    "hrRevision": "1959278f639f0132110b58b080908a9da8d949ed824ffc044e98ded67fb3fbe8",
+    "rejected": 1,
+    "approvedPendingExternalHr": 0,
+    "externalAckReleaseProven": false,
+    "sourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
+    "noProduction": true
   }
 }

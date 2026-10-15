@@ -30451,5 +30451,48 @@
       "I3_GO"
     ],
     "nextExactAction": "R07 cancellation HR provider ACK/readback/reload and availability; then R22 notification persistence, R08 Vertex 15 grounded, finance R09-R17, module convergence/human/G20/G21."
+  },
+  "i3Oct15Run1707R07ExternalHrReadOnly": {
+    "observedOn": "2026-10-15",
+    "iteration": "I3_FUNCTIONAL_CLOSURE",
+    "scope": "R07_REAL_HR_FIRESTORE_READ_ONLY",
+    "decision": "HOLD_R07_EXTERNAL_HR_ACK_NOT_PROVEN",
+    "classification": null,
+    "runId": 38761865925,
+    "runNumber": 1707,
+    "jobId": 116515062306,
+    "artifactId": 11986950394,
+    "workflowConclusion": "SUCCESS_GENERIC_NOT_R07_PASS",
+    "sourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
+    "sourceTree": "e93201ce9039aa20a6d993bf5dc0b9db866d0eac",
+    "previousDevRun": 1681,
+    "hrRevision": "1959278f639f0132110b58b080908a9da8d949ed824ffc044e98ded67fb3fbe8",
+    "evidence": {
+      "firestoreCancellationRecords": 1,
+      "rejected": 1,
+      "approvedPendingExternalHr": 0,
+      "pendingReview": 0,
+      "approved": 0,
+      "exactExternalHrMatches": 1,
+      "unmatched": 0,
+      "falselyAvailable": 0,
+      "externalHrVisitsInspected": 748,
+      "hrRevisionBeforeEqualsAfter": true,
+      "hrWrites": 0,
+      "authWrites": 0,
+      "firestoreWrites": 0,
+      "financeWrites": 0,
+      "production": false
+    },
+    "objective": "Check existing external HR cancellations for exact revision, preservation of pending status, no premature availability",
+    "limitation": "NO_APPROVED_AND_EXTERNALLY_ACKED_RELEASE_IN_CURRENT_SAFE_SAMPLE",
+    "doesNotClaim": [
+      "EXTERNAL_HR_CANCEL_RELEASE_E2E_PASS",
+      "REAL_APPROVED_CANCELLATION_ACK",
+      "R07_TERMINAL_PASS",
+      "ALL_PHASE_A_MODULES_MATCH",
+      "I3_GO"
+    ],
+    "next": "Retain earlier two-role synthetic DEV ACK/readback/idempotency proofs; for external HR release require exact already-authorized real provider ACK + independent same-revision readback or single separately authorized, isolated disposable integration contract. Do not mutate real HR to force PASS; meanwhile close R08 and R22 independently."
   }
 }

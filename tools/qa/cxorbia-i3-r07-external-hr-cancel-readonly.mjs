@@ -89,8 +89,11 @@ try{
   evidence.decision=evidence.cases.approvedPendingHr>0?'HOLD_R07_EXTERNAL_HR_ACK_PENDING':
     seen===0?'HOLD_R07_NO_EXISTING_CANCELLATION_CASE':
     'HOLD_R07_EXTERNAL_HR_ACK_NOT_PROVEN';
-  evidence.classification='PROVIDER_FAILURE';
+  // Absence of an external ACK receipt is not a provider failure.
+  evidence.classification=null;
+  evidence.evidenceGap='NO_LIVE_APPROVED_EXTERNAL_HR_ACK_AND_RELEASE_CASE';
   persist();
+  process.exitCode=2;
 }catch(e){
   const m=str(e?.message),type=m.split('_')[0];
   const classification=['SOURCE','MAPPING','PROVIDER','AUTH','ENVIRONMENT'].includes(type)?type+'_FAILURE':'FUNCTIONAL_DEFECT';
