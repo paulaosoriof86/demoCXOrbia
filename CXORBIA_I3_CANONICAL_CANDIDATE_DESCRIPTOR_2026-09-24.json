@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_R20_POST_PREAUTH_PROVIDER_DIAGNOSTIC_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -13,7 +13,7 @@
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "R20_ORDINARY_PASSWORD_POSTSUBMIT_AND_AUTH_CREDENTIAL_PROVENANCE_UNPROVEN",
+  "activeBlocker": "R20_SINGLE_CREDENTIAL_READONLY_REQUIRED",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -31,7 +31,13 @@
     "devDeploys": 0,
     "production": false,
     "ordinaryPasswordE2e": "HOLD_UNPROVEN",
-    "exactNextAction": "Resolve authorized exact credential provenance and non-destructive stage preconditions before any new ordinary-password attempt; retain R20 HOLD; proceed parallel READ_ONLY R07 R22 R23 finance."
+    "exactNextAction": "Resolve authorized exact credential provenance and non-destructive stage preconditions before any new ordinary-password attempt; retain R20 HOLD; proceed parallel READ_ONLY R07 R22 R23 finance.",
+    "authorizedRuleConfirmedAt": "2026-10-15",
+    "qaRestoredCommit": "3ffd8bf3e0466a3165bf998120c099949f27f2ed",
+    "qaRestoredBlob": "06ae4981227d2461aae7d04e14e7ec5c273e4da8",
+    "runTrigger": "EXISTING_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_ONLY",
+    "expectedOutcome": "ONE_PASSWORD_ATTEMPT_OR_PREFLIGHT_HOLD",
+    "potentialAuthWrites": 0
   },
   "nextFindingId": "VRM-275",
   "monotonicity": {
@@ -45,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "R20: retain RUN1689 pre-auth browser PASS. Establish exact non-destructive approved credential and which stage caused RUN1686 browser failure without attempting guessed passwords; only after cause adjudication run one authorized password E2E with session restore/logout/relogin. Meanwhile progress independent read-only P0 validation (R07 R22 R23 and finance). No extra source build/DEV deploy/I4.",
+  "exactNextAction": "R20 one proven existing DEV password principal attempt using current guarded representative same-artifact lane; maximum one, no writes/build/deploy; read sanitized browser stage or first-login proof. Preserve other pending P0 and hold I4.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
