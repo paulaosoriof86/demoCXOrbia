@@ -156,6 +156,34 @@ export function normalizeGeneratedQuestions(raw,count){
   if(questions.length!==count)throw new Error('AI_QUESTION_COUNT_INCOMPLETE:'+questions.length+'/'+count);
   return questions;
 }
+
+/* R08 P0: exact source-grounded bank, no invented filler or silent partial output. */
+export function validateVertexQuestionSet(questions,count){
+ if(!Array.isArray(questions)||questions.length!==count)throw new Error('AI_QUESTION_COUNT_INCOMPLETE');
+ const seen=new Set();
+ for(let i=0;i<questions.length;i++){
+  const q=questions[i]||{},answer=str(q.correcta),options=arr(q.ops).map(str);
+  const key=str(q.q).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ');
+  if(!key||options.length!==4||new Set(options.map(v=>v.toLowerCase())).size!==4||!answer||!options.includes(answer)||!str(q.exp))
+    throw new Error('AI_QUESTION_INVALID_SHAPE:'+i);
+  if(seen.has(key))throw new Error('AI_QUESTION_DUPLICATE:'+i);
+  seen.add(key);
+ }
+ return questions;
+}
+export async function boundedVertexQuestionRetry(request,count,{onInvalid=()=>{}}={}){
+ if(typeof request!=='function')throw new Error('AI_PROVIDER_REQUEST_REQUIRED');
+ for(let attempt=1;attempt<=2;attempt++){
+  /* HTTP/auth/provider failures reject immediately; only invalid response content is retried. */
+  const response=await request(attempt);
+  try{return {preguntas:validateVertexQuestionSet(normalizeGeneratedQuestions(response?.raw,count),count),attempts:attempt};}
+  catch(error){
+   onInvalid({code:str(error?.message).split(':')[0],diagnostic:response?.diagnostic||{},attempt});
+   if(attempt===2)throw error;
+  }
+ }
+ throw new Error('AI_PROVIDER_RESPONSE_INVALID');
+}
 async function generateBank(db,scope,body){
   const sourceText=str(body.sourceText),questionCount=Math.max(3,Math.min(30,Number(body.questionCount||10))),gate=Math.max(1,Math.min(100,Number(body.gate||80)));
   if(sourceText.length<40)throw new Error('AI_SOURCE_TEXT_REQUIRED');
@@ -172,22 +200,21 @@ async function generateBank(db,scope,body){
   ].join('\n');
   const project=process.env.GOOGLE_CLOUD_PROJECT||'cxorbia-backend-dev';
   const endpoint='https://'+setting.location+'-aiplatform.googleapis.com/v1/projects/'+encodeURIComponent(project)+'/locations/'+encodeURIComponent(setting.location)+'/publishers/google/models/'+encodeURIComponent(setting.model)+':generateContent';
-  const response=await fetch(endpoint,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:{temperature:0.15,maxOutputTokens:5000,responseMimeType:'application/json'}})});
-  const payload=await response.json().catch(()=>({}));
-  const diagnostic=vertexCertificationSafeDiagnostic(payload,response.status,response.headers?.get?.('content-type'));
-  if(!response.ok){
-    console.warn('CXORBIA_CERT_VERTEX_SAFE_DIAGNOSTIC '+JSON.stringify({...diagnostic,code:'AI_PROVIDER_HTTP_ERROR'}));
-    throw new Error('AI_PROVIDER_HTTP_'+response.status+':'+str(payload?.error?.message).slice(0,300));
-  }
-  const raw=arr(payload?.candidates?.[0]?.content?.parts).map(p=>str(p?.text)).join('\n');
-  let preguntas;
-  try{preguntas=normalizeGeneratedQuestions(raw,questionCount);}
-  catch(error){
-    console.warn('CXORBIA_CERT_VERTEX_SAFE_DIAGNOSTIC '+JSON.stringify({...diagnostic,code:str(error?.message).split(':')[0]}));
-    throw error;
-  }
+  const {preguntas,attempts}=await boundedVertexQuestionRetry(async attempt=>{
+    const requestPrompt=attempt===1?prompt:prompt+'\nLa primera salida no cumplió el JSON o la cantidad y estructura requeridas. Responde nuevamente en JSON válido, con exactamente '+questionCount+' preguntas únicas, cuatro opciones por pregunta y explicación breve. Usa solo el mismo instructivo; no inventes preguntas para completar.';
+    const response=await fetch(endpoint,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts:[{text:requestPrompt}]}],generationConfig:{temperature:0.15,maxOutputTokens:attempt===1?5000:8192,responseMimeType:'application/json'}})});
+    const payload=await response.json().catch(()=>({}));
+    const diagnostic=vertexCertificationSafeDiagnostic(payload,response.status,response.headers?.get?.('content-type'));
+    if(!response.ok){
+      console.warn('CXORBIA_CERT_VERTEX_SAFE_DIAGNOSTIC '+JSON.stringify({...diagnostic,attempt,code:'AI_PROVIDER_HTTP_ERROR'}));
+      throw new Error('AI_PROVIDER_HTTP_'+response.status);
+    }
+    return {raw:arr(payload?.candidates?.[0]?.content?.parts).map(p=>str(p?.text)).join('\n'),diagnostic};
+  },questionCount,{onInvalid:({code,diagnostic,attempt})=>{
+    console.warn('CXORBIA_CERT_VERTEX_SAFE_DIAGNOSTIC '+JSON.stringify({...diagnostic,attempt,code}));
+  }});
   const contentRevision=sha({preguntas,gate});
-  return {providerAck:true,provider:setting.provider,model:setting.model,location:setting.location,settingId:setting.id,preguntas,requestedQuestionCount:questionCount,gate,contentRevision};
+  return {providerAck:true,provider:setting.provider,model:setting.model,location:setting.location,settingId:setting.id,preguntas,requestedQuestionCount:questionCount,gate,contentRevision,generationAttempts:attempts};
 }
 function requestId(req,body){return cleanKey(req.headers['idempotency-key']||body.idempotencyKey);}
 async function saveAttempt(db,scope,principal,body,sourceRevision,idem){
