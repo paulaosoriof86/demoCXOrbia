@@ -1,9 +1,7 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import crypto from 'node:crypto';
-import {applicationDefault,getApps,initializeApp} from 'firebase-admin/app';
-import {getAuth} from 'firebase-admin/auth';
-import {getFirestore} from 'firebase-admin/firestore';
+import {pathToFileURL} from 'node:url';
 
 const PROJECT=process.env.PROJECT||'cxorbia-backend-dev',HOST=String(process.env.HOSTING_URL||'https://cxorbia-backend-dev.web.app').replace(/\/$/,'');
 const TENANT=process.env.TENANT_ID||'tya',PROGRAM=process.env.PROJECT_ID||'cinepolis',OUT=process.env.OUT||'.tmp/vrm185-global-plan',EXPECTED=String(process.env.EXPECTED_HR_REVISION||'').trim();
@@ -13,7 +11,37 @@ const tech=['shopperId','legacyShopperId','legacyId','externalShopperId','extern
 const aliases=['exactAliases','identityAliases','aliases','sourceAliases','sourceIdentityAliases'];
 const flat=v=>{const o=[];const w=x=>{if(x==null)return;if(Array.isArray(x)){x.forEach(w);return;}if(typeof x==='object'){Object.values(x).forEach(w);return;}const s=str(x);if(s)o.push(s)};w(v);return o};
 const tokens=o=>uniq([o,o?.sourceIdentity,o?.identity,o?.crosswalk,o?.profile,o?.exactIdentityAnchors].filter(Boolean).flatMap(c=>[...tech.flatMap(k=>flat(c[k])),...aliases.flatMap(k=>flat(c[k]))]));
-const result={schemaVersion:'cxorbia.i3.vrm185.global-identity-consolidation-plan.v1',decision:'HOLD',readOnly:true,writes:0,authWrites:0,firestoreWrites:0,hrWrites:0,deploys:0,production:false,expectedHrRevision:EXPECTED,safePlans:[],reviewRequired:[],alreadyConverged:[],summary:null};
+/* R03 mapping diagnostics only; never authorizes identity fusion or Auth retirement. */
+export function diagnoseCrosswalkCandidate({current,legacy,crosswalkExists,crosswalk,link,tenantId,projectId}){
+ const x=crosswalk||{},l=link||{},sourceType=str(x.sourceType).toLowerCase();
+ const linkScope=str(l.projectScope||l.scope?.projectId||l.projectId||'*'),linkTenant=str(l.tenantId||l.scope?.tenantId);
+ const ref=str(l.authorityRef||l.authority?.evidenceRef||l.authority?.adjudicationId||l.authority?.providerRef||l.authority?.commandId||l.providerAckRef||l.adjudicationId||l.commandId||l.idempotencyKey);
+ const crossRef=str(x.migrationAuthorityRef||x.identityAuthorityRef);
+ const f={
+   missingCrosswalk:!crosswalkExists,
+   shopperIdMismatch:str(x.shopperId)!==str(current),
+   sourceTypeMismatch:sourceType!=='hr_external',
+   aliasIdentityMode:str(x.identityMode)==='provider_exact_identity_link',
+   aliasSourceStableKeyMatch:str(x.sourceStableKey)===str(current),
+   aliasCanonicalMatch:str(x.shopperId)===str(legacy)&&str(x.canonicalShopperId||x.shopperId)===str(legacy),
+   aliasAuthorityMatch:!!ref&&crossRef===ref&&str(x.migrationAuthorityType)==='tenant_adjudication',
+   aliasTenantMatch:!!linkTenant&&linkTenant===str(tenantId)&&str(x.tenantId)===str(tenantId),
+   aliasProjectMatch:(linkScope==='*'||linkScope.toLowerCase()==='tenant'||linkScope===str(projectId))&&uniq(x.projectIds).includes(str(projectId)),
+   aliasHumanConfirmed:l.humanConfirmed===true&&l.sourceSafe===true&&l.fuzzyMatching===false&&x.fuzzyMatching===false
+ };
+ const direct=!f.missingCrosswalk&&!f.shopperIdMismatch&&!f.sourceTypeMismatch;
+ const trustedAlias=!f.missingCrosswalk&&!f.sourceTypeMismatch&&f.aliasIdentityMode&&f.aliasSourceStableKeyMatch&&f.aliasCanonicalMatch&&f.aliasAuthorityMatch&&f.aliasTenantMatch&&f.aliasProjectMatch&&f.aliasHumanConfirmed;
+ const reason=direct?'DIRECT_HR_CROSSWALK':trustedAlias?'TRUSTED_EXACT_ALIAS':
+   f.missingCrosswalk?'MISSING_CROSSWALK':
+   f.sourceTypeMismatch?'SOURCE_TYPE_MISMATCH':
+   f.aliasIdentityMode?'ALIAS_AUTHORITY_OR_SCOPE_INCOMPLETE':'SHOPPER_ID_MISMATCH_UNLINKED';
+ return {eligible:direct||trustedAlias,direct,trustedAlias,reason,flags:f};
+}
+async function main(){
+ const {applicationDefault,getApps,initializeApp}=await import('firebase-admin/app');
+ const {getAuth}=await import('firebase-admin/auth');
+ const {getFirestore}=await import('firebase-admin/firestore');
+const result={schemaVersion:'cxorbia.i3.vrm185.global-identity-consolidation-plan.v1',decision:'HOLD',readOnly:true,writes:0,authWrites:0,firestoreWrites:0,hrWrites:0,deploys:0,production:false,expectedHrRevision:EXPECTED,safePlans:[],reviewRequired:[],alreadyConverged:[],crosswalkDiagnostics:[],summary:null};
 fs.mkdirSync(OUT,{recursive:true});const save=()=>fs.writeFileSync(OUT+'/result.json',JSON.stringify(result,null,2)+'\n');save();
 if(!/^[a-f0-9]{64}$/.test(EXPECTED))throw new Error('VRM185_GLOBAL_EXPECTED_REVISION_REQUIRED');
 if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
@@ -36,7 +64,7 @@ const [linkSnap,authUsers]=await Promise.all([links.get(),allAuth()]);
 const authByUid=new Map(authUsers.map(u=>[u.uid,u]));
 /* P0 R03 focal diagnostic: counts are stage-level only and do not grant merge authority. */
 const coverage={hrShopperCount:hrIds.size,authPrincipalCount:authUsers.length,activeAdjudicationLinks:0,linksWithHrCandidate:0,matchedHrTokens:0,crosswalkEligiblePairs:0,profilePairsComplete:0,principalPairsEvaluated:0,
-  noHrIntersection:0,crosswalkMismatch:0,profilePairIncomplete:0,membershipAmbiguous:0};
+  noHrIntersection:0,crosswalkMismatch:0,missingCrosswalk:0,shopperIdMismatch:0,sourceTypeMismatch:0,aliasIdentityMode:0,aliasStableKeyMatch:0,aliasAuthorityMatch:0,aliasCanonicalMatch:0,aliasScopeMatch:0,aliasMissingTrustedAuthority:0,directHrPairs:0,trustedExactAliasPairs:0,profilePairIncomplete:0,membershipAmbiguous:0};
 const targetName=str(process.env.R03_TARGET_NAME),targetNameKey=x=>str(x).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').toLowerCase();
 const targetMatches=[];
 if(targetName){
@@ -47,7 +75,7 @@ if(targetName){
   const memberRows=await oneMember(doc.id);
   targetMatches.push({profileFingerprint:fp(doc.id),membershipCount:memberRows.length,activeMembershipCount:memberRows.filter(m=>m.active===true).length,
     activeVerifiedAuthCount:memberRows.filter(m=>{const a=authByUid.get(m.uid);return m.active===true&&a&&a.disabled!==true&&str(a.customClaims?.shopperId)===doc.id}).length,
-    strongPasswordProofCount:memberRows.filter(m=>proofCurrent(m)||proofCurrent(profile)).length});
+    strongPasswordProofCount:memberRows.filter(m=>proofCurrent(m)||proofCurrent(profile)).length,verifiedPrincipalFingerprints:memberRows.map(m=>({uidFingerprint:fp(m.uid),loginFingerprint:fp(m.visibleLogin),authActive:!!(authByUid.get(m.uid)&&authByUid.get(m.uid).disabled!==true),claimsShopperMatches:str(authByUid.get(m.uid)?.customClaims?.shopperId)===doc.id,credentialProof:proofCurrent(m)||proofCurrent(profile)}))});
  }
 }
 result.targetReadOnly={targetSpecified:Boolean(targetName),exactNameProfileCount:targetMatches.length,principals:targetMatches};
@@ -60,7 +88,20 @@ for(const doc of linkSnap.docs){
  coverage.linksWithHrCandidate++;coverage.matchedHrTokens+=sourceCandidates.length;
  for(const current of sourceCandidates){
   const currentCrossSnap=await cross.doc(current).get(),currentCross=currentCrossSnap.exists?(currentCrossSnap.data()||{}):{};
-  if(str(currentCross.shopperId)!==current||str(currentCross.sourceType).toLowerCase()!=='hr_external'){coverage.crosswalkMismatch++;continue;}
+  const diagnosis=diagnoseCrosswalkCandidate({current,legacy,crosswalkExists:currentCrossSnap.exists,crosswalk:currentCross,link:l,tenantId:TENANT,projectId:PROGRAM}),f=diagnosis.flags;
+  if(f.missingCrosswalk)coverage.missingCrosswalk++;
+  if(f.shopperIdMismatch)coverage.shopperIdMismatch++;
+  if(f.sourceTypeMismatch)coverage.sourceTypeMismatch++;
+  if(f.aliasIdentityMode)coverage.aliasIdentityMode++;
+  if(f.aliasSourceStableKeyMatch)coverage.aliasStableKeyMatch++;
+  if(f.aliasAuthorityMatch)coverage.aliasAuthorityMatch++;
+  if(f.aliasCanonicalMatch)coverage.aliasCanonicalMatch++;
+  if(f.aliasProjectMatch&&f.aliasTenantMatch)coverage.aliasScopeMatch++;
+  if(f.aliasIdentityMode&&!diagnosis.trustedAlias)coverage.aliasMissingTrustedAuthority++;
+  if(diagnosis.direct)coverage.directHrPairs++;
+  if(diagnosis.trustedAlias)coverage.trustedExactAliasPairs++;
+  result.crosswalkDiagnostics.push({linkFingerprint:fp(doc.id),hrCandidateFingerprint:fp(current),canonicalFingerprint:fp(legacy),reason:diagnosis.reason,flags:f});
+  if(!diagnosis.eligible){coverage.crosswalkMismatch++;continue;}
   coverage.crosswalkEligiblePairs++;
   const [legacyP,currentP,legacyMs,currentMs]=await Promise.all([profiles.doc(legacy).get(),profiles.doc(current).get(),oneMember(legacy),oneMember(current)]);
   if(!legacyP.exists||!currentP.exists){coverage.profilePairIncomplete++;result.reviewRequired.push({linkFingerprint:fp(doc.id),current,legacy,reason:'PROFILE_PAIR_INCOMPLETE'});continue;}
@@ -86,3 +127,6 @@ result.decision=!positiveCoverage?'HOLD_VRM185_ZERO_EVALUABLE_PAIRS':
   !targetCovered?'HOLD_R03_TARGET_IDENTITY_NOT_FOUND':
   result.reviewRequired.length===0?'PASS_VRM185_GLOBAL_IDENTITY_CONSOLIDATION_PLAN':'HOLD_VRM185_GLOBAL_IDENTITY_REVIEW_REQUIRED';
 save();console.log(JSON.stringify(result,null,2));if(result.decision!=='PASS_VRM185_GLOBAL_IDENTITY_CONSOLIDATION_PLAN')process.exitCode=2;
+
+}
+if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href)main().catch(error=>{console.error(String(error?.stack||error));process.exitCode=2;});
