@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
+  "status": "HOLD_I3_OPEN_P0_TERMINAL_E2E_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,7 +8,7 @@
   "productTreeAuthority": "fb914a617c250eeae5fb287f7910022bb60f09da",
   "predecessorProductSourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V441_2026-10-14.json",
-  "findingsLedgerExpectedGitBlob": "ce24813e0c96ebbea0028404be6fa287aea957eb",
+  "findingsLedgerExpectedGitBlob": "14adb37aec9e06ed5301dec4a0f95c4f2ad44b97",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V119.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run same-artifact representative DEV E2E with R22 notification copy, read ACK, route and multi-domain representative gates, preserve PASS existing, surface focal outcomes; R08 authentic document approval + Vertex15 and R09-R17 independent bank remain separate holds; no production.",
+  "exactNextAction": "Continue R08 exact approved source/Vertex15, R22 exact fresh read ACK/nav population and current visual, R07 external HR cancel ACK, R09-R17 banking independent reconciliation. Allow incremental review on proven RUN1727 blocks now; no I4.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -556,8 +556,8 @@
       "core/backend-bulletins.js",
       "core/topbar.js"
     ],
-    "liveE2e": "PENDING",
-    "humanReview": "AVAILABLE_FOR_INCREMENTAL_VISUAL_ONLY"
+    "liveE2e": "PASS_REPRESENTATIVE_RUN1727_PARTIAL_PHASEA",
+    "humanReview": "INCREMENTAL_READY_FOR_SCOPED_BLOCKS_ONLY"
   },
   "lastFocalAttempt": {
     "runId": 36198284266,
@@ -2764,7 +2764,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "4ae7fc119012369eef0db31eced2e23eb8f41f0b",
+  "moduleTruthExpectedGitBlob": "f58e93f948ae61012891b03b844eb9fb3fe50e97",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -11685,5 +11685,48 @@
       "production": false,
       "existingWorkflowOnly": true
     }
+  },
+  "i3Oct15Run1727RepresentativeLiveProof": {
+    "date": "2026-10-15",
+    "iteration": "I3_FUNCTIONAL_CLOSURE",
+    "runNumber": 1727,
+    "runId": 38778402096,
+    "conclusion": "SUCCESS_SAME_ARTIFACT_REPRESENTATIVE_LIVE_PROOF_NOT_I3_GO",
+    "artifactId": 11995186082,
+    "productSourceSha": "80ada5c4f8bf6301345f5053541e74178287326b",
+    "productTree": "fb914a617c250eeae5fb287f7910022bb60f09da",
+    "devMaterializationRunId": 38776838205,
+    "devHostingVersion": "sites/cxorbia-backend-dev/versions/c28578d7a5414c9f",
+    "devRuntimeRevision": "cxorbia-live-hr-dev-00305-5rg",
+    "hrRevision": "1959278f639f0132110b58b080908a9da8d949ed824ffc044e98ded67fb3fbe8",
+    "scope": {
+      "protectedAuthHrReadOnly": "PASS_R20_R01_R22_READ_ONLY_EXACT_DIAGNOSTIC",
+      "externalHrSameRevisionAck": "PASS_HR_EXACT_REVISION_DURABLE_ACK_READ_ONLY",
+      "representativeAdminShopper": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+      "providerSchedule": "PASS_VRM168_PROVIDER_SCHEDULE_PATH",
+      "browserClickVisual": "PASS_I3_PHASEA_EXHAUSTIVE_CLICK_VISUAL",
+      "postulations": "PASS_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE",
+      "reservations": "PASS_I3_ADMIN_CLUSTER_A_RESERVATIONS_LIFECYCLE",
+      "financeFocal": "PASS_PREI4_FINAL_FOCAL_FINANCE",
+      "certificationResourcesFocal": "PASS_PREI4_CERT_RES_CUMULATIVE_DEV_LIVE"
+    },
+    "proofLimitations": [
+      "R08_REAL_VERTEX_EXACT15_AND_SOURCE_APPROVAL_NOT_PROVEN",
+      "R07_REAL_EXTERNAL_HR_CANCEL_RELEASE_ACK_NOT_PROVEN",
+      "R09_R17_ALL_HISTORICAL_PAID_BANK_EVIDENCE_NOT_PROVEN",
+      "R22_FRESH_INDIVIDUAL_READ_ACK_ACTION_NAV_AND_POPULATION_SAMPLING_NOT_TERMINALLY_PROVEN"
+    ],
+    "allPhaseAComplete": false,
+    "allModulesMatch": false,
+    "independentNewProdWrites": 0,
+    "production": false,
+    "userIncrementalVisualNow": [
+      "R20_AUTH_SHOPPER",
+      "R23_GT_HN_KPI",
+      "R22_VISIBLE_NOTICES_HUMAN_COPY",
+      "B7_DASHBOARD_POSTULATIONS_RESERVATIONS",
+      "FINANCE_CURRENT_FOCAL",
+      "CERTIFICATIONS_AND_RESOURCES_EXISTING"
+    ]
   }
 }
