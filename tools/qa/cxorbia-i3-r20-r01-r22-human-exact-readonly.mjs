@@ -55,7 +55,7 @@ if(exactCandidates.length===1&&basePrincipal?.uid===exactCandidates[0].id&&authR
   failureStage='initial_navigation';await page.goto(url,{waitUntil:'domcontentloaded',timeout:60000});
   failureStage='firebase_sdk_boot';await page.waitForFunction(()=>!!window.firebase?.auth&&window.firebase?.apps?.length>0,null,{timeout:60000});
   failureStage='service_account_custom_token';const token=await auth.createCustomToken(basePrincipal.uid);
-  failureStage='client_custom_token_signin';await page.evaluate(async jwt=>{const f=window.firebase;await f.auth().setPersistence(f.auth.Auth.Persistence.LOCAL);await f.auth().signInWithCustomToken(jwt);},token);
+  failureStage='client_custom_token_signin';await page.evaluate(async jwt=>{const f=window.firebase;try{await f.auth().setPersistence(f.auth.Auth.Persistence.LOCAL);}catch(e){throw new Error('CLIENT_FIREBASE_PERSISTENCE:'+String(e?.code||'UNKNOWN').replace(/[^a-z0-9/-]/gi,'').slice(0,70));}try{await f.auth().signInWithCustomToken(jwt);}catch(e){throw new Error('CLIENT_FIREBASE_TOKEN_SIGNIN:'+String(e?.code||'UNKNOWN').replace(/[^a-z0-9/-]/gi,'').slice(0,70));}},token);
   failureStage='session_blank_reentry';await page.goto('about:blank');
   failureStage='session_dev_reentry';await page.goto(url+'&session='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
   failureStage='hr_authority_readiness';await page.waitForFunction(rev=>{
@@ -66,7 +66,7 @@ if(exactCandidates.length===1&&basePrincipal?.uid===exactCandidates[0].id&&authR
   receipt.stiven.browser={decision:'PASS_EXACT_STIVEN_DEV_AUTHORITY',elapsedMs:Date.now()-started,...state,credentialEntry:'NOT_TESTED_CUSTOM_TOKEN_ONLY'};
  }catch(error){
   const state=await page.evaluate(()=>({gateReady:window.CX_C6_HR_AUTHORITY_GATE?.ready===true,blocked:window.CX_C6_HR_AUTHORITY_GATE?.blocked===true,reason:String(window.CX_C6_HR_AUTHORITY_GATE?.reason||''),bootExhausted:window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE?.exhausted===true})).catch(()=>({}));
-  receipt.stiven.browser={decision:'HOLD_EXACT_STIVEN_DEV_AUTHORITY',elapsedMs:Date.now()-started,errorKind:String(error?.name||'ERROR').replace(/[^a-z_]/gi,'').slice(0,24),failureStage,safeErrorCategory:/timeout/i.test(String(error?.name||'')+' '+String(error?.message||''))?'TIMEOUT':/network|net::|navigation/i.test(String(error?.message||''))?'NETWORK_OR_NAVIGATION':/auth|token|credential|firebase/i.test(String(error?.message||''))?'AUTH_TOKEN_OR_SDK':'OTHER_ERROR',...state,credentialEntry:'NOT_TESTED_CUSTOM_TOKEN_ONLY'};
+  receipt.stiven.browser={decision:'HOLD_EXACT_STIVEN_DEV_AUTHORITY',elapsedMs:Date.now()-started,errorKind:String(error?.name||'ERROR').replace(/[^a-z_]/gi,'').slice(0,24),failureStage,safeAuthSdkCode:String(error?.message||'').match(/CLIENT_FIREBASE_(?:PERSISTENCE|TOKEN_SIGNIN):[a-z0-9/-]{2,75}/i)?.[0]||'NO_AUTH_SDK_CODE',safeErrorCategory:/timeout/i.test(String(error?.name||'')+' '+String(error?.message||''))?'TIMEOUT':/network|net::|navigation/i.test(String(error?.message||''))?'NETWORK_OR_NAVIGATION':/auth|token|credential|firebase/i.test(String(error?.message||''))?'AUTH_TOKEN_OR_SDK':'OTHER_ERROR',...state,credentialEntry:'NOT_TESTED_CUSTOM_TOKEN_ONLY'};
  }finally{await ctx.close().catch(()=>{});await browser.close().catch(()=>{});}
 }else receipt.stiven.browser={decision:'HOLD_STIVEN_EXACT_AUTH_PRECONDITIONS',credentialEntry:'NOT_TESTED'};
 
