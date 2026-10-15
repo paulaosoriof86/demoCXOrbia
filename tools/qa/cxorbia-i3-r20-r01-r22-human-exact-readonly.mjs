@@ -50,7 +50,37 @@ if(exactCandidates.length===1&&basePrincipal?.uid===exactCandidates[0].id&&authR
  const {chromium}=await import('playwright'),browser=await chromium.launch({headless:true});
  const ctx=await browser.newContext({viewport:{width:1280,height:900}}),page=await ctx.newPage(),started=Date.now();
  let failureStage='initial_navigation',topLevelNavigations=0,persistenceNavigationRetries=0;
- page.on('framenavigated',frame=>{if(frame===page.mainFrame())topLevelNavigations++;});
+ // R20 read-only diagnostics: capture only endpoint category, HTTP status and navigation stage.
+ const authHttpTrace=[],navigationTrace=[];
+ const authRoute=url=>{
+  try{
+   const parsed=new URL(url);
+   if(parsed.hostname==='identitytoolkit.googleapis.com'&&parsed.pathname.endsWith('/accounts:signInWithCustomToken'))return 'firebase_custom_token';
+   if(parsed.hostname==='securetoken.googleapis.com'&&parsed.pathname.endsWith('/token'))return 'firebase_token_refresh';
+  }catch(_){}
+  return '';
+ };
+ page.on('framenavigated',frame=>{
+  if(frame!==page.mainFrame())return;
+  topLevelNavigations++;
+  if(navigationTrace.length<10){
+   let path='unavailable';
+   try{path=new URL(frame.url()).pathname.slice(0,80);}catch(_){}
+   navigationTrace.push({path,stage:failureStage});
+  }
+ });
+ page.on('response',response=>{
+  const route=authRoute(response.url());
+  if(route&&authHttpTrace.length<20)authHttpTrace.push({route,status:response.status(),stage:failureStage});
+ });
+ page.on('requestfailed',request=>{
+  const route=authRoute(request.url());
+  if(route&&authHttpTrace.length<20){
+   const failure=String(request.failure()?.errorText||'');
+   const category=/ERR_CONNECTION_RESET/i.test(failure)?'CONNECTION_RESET':/ERR_TIMED_OUT/i.test(failure)?'NETWORK_TIMEOUT':/ERR_NAME_NOT_RESOLVED/i.test(failure)?'DNS':/ERR_ABORTED/i.test(failure)?'ABORTED':'OTHER_NETWORK_FAILURE';
+   authHttpTrace.push({route,failed:category,stage:failureStage});
+  }
+ });
  try{
   const url=HOST+'/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId='+PROGRAM+'&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&stivenProof='+Date.now();
   failureStage='initial_navigation';await page.goto(url,{waitUntil:'domcontentloaded',timeout:60000});
@@ -114,10 +144,18 @@ if(exactCandidates.length===1&&basePrincipal?.uid===exactCandidates[0].id&&authR
   },REV,{timeout:65000});
   const state=await page.evaluate(([uid,shopperId])=>({role:String(window.CX?.backendAuth?.context?.()?.role||''),view:String(window.CX?.session?.view||''),gateReady:window.CX_C6_HR_AUTHORITY_GATE?.ready===true,exactFirebaseUid:window.firebase?.auth?.()?.currentUser?.uid===uid,exactCanonicalShopper:String(window.CX?.backendAuth?.context?.()?.shopperId||'')===shopperId}),[basePrincipal.uid,String(exactCandidates[0].shopperId)]);
   if(!state.exactFirebaseUid||!state.exactCanonicalShopper||state.role!=='shopper'||!state.gateReady)throw new Error('AUTH_FAILURE:R20_EXACT_SESSION_OWNER_MISMATCH');
-  receipt.stiven.browser={decision:'PASS_EXACT_STIVEN_DEV_AUTHORITY',elapsedMs:Date.now()-started,topLevelNavigations,persistenceNavigationRetries,...state,credentialEntry:'NOT_TESTED_CUSTOM_TOKEN_ONLY'};
+  receipt.stiven.browser={decision:'PASS_EXACT_STIVEN_DEV_AUTHORITY',elapsedMs:Date.now()-started,topLevelNavigations,persistenceNavigationRetries,authHttpTrace,navigationTrace,...state,credentialEntry:'NOT_TESTED_CUSTOM_TOKEN_ONLY'};
  }catch(error){
-  const state=await page.evaluate(()=>({gateReady:window.CX_C6_HR_AUTHORITY_GATE?.ready===true,blocked:window.CX_C6_HR_AUTHORITY_GATE?.blocked===true,reason:String(window.CX_C6_HR_AUTHORITY_GATE?.reason||''),bootExhausted:window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE?.exhausted===true})).catch(()=>({}));
-  receipt.stiven.browser={decision:'HOLD_EXACT_STIVEN_DEV_AUTHORITY',elapsedMs:Date.now()-started,topLevelNavigations,persistenceNavigationRetries,playwrightContextInterrupted:/execution context|navigation|frame was detached|context was destroyed/i.test(String(error?.message||'')),errorKind:String(error?.name||'ERROR').replace(/[^a-z_]/gi,'').slice(0,24),failureStage,safeAuthSdkCode:String(error?.message||'').match(/CLIENT_FIREBASE_(?:PERSISTENCE|TOKEN_SIGNIN):[a-z0-9/-]{2,75}/i)?.[0]||'NO_AUTH_SDK_CODE',safeErrorCategory:/timeout/i.test(String(error?.name||'')+' '+String(error?.message||''))?'TIMEOUT':/network|net::|navigation/i.test(String(error?.message||''))?'NETWORK_OR_NAVIGATION':/auth|token|credential|firebase/i.test(String(error?.message||''))?'AUTH_TOKEN_OR_SDK':'OTHER_ERROR',...state,credentialEntry:'NOT_TESTED_CUSTOM_TOKEN_ONLY'};
+  const state=await page.evaluate(()=>({
+   gateReady:window.CX_C6_HR_AUTHORITY_GATE?.ready===true,
+   blocked:window.CX_C6_HR_AUTHORITY_GATE?.blocked===true,
+   reason:String(window.CX_C6_HR_AUTHORITY_GATE?.reason||''),
+   bootExhausted:window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE?.exhausted===true,
+   clientTokenPromiseStage:['pending','resolved','rejected'].includes(String(window.__cxR20TokenProof?.stage||''))?window.__cxR20TokenProof.stage:'UNOBSERVED_AFTER_NAVIGATION',
+   clientTokenSdkCode:String(window.__cxR20TokenProof?.safeAuthSdkCode||'NO_SDK_CODE').replace(/[^a-z0-9/-]/gi,'').slice(0,70),
+   firebaseUserPresent:!!window.firebase?.auth?.()?.currentUser
+  })).catch(()=>({clientTokenPromiseStage:'PAGE_EVALUATION_UNAVAILABLE'}));
+  receipt.stiven.browser={decision:'HOLD_EXACT_STIVEN_DEV_AUTHORITY',elapsedMs:Date.now()-started,topLevelNavigations,persistenceNavigationRetries,playwrightContextInterrupted:/execution context|navigation|frame was detached|context was destroyed/i.test(String(error?.message||'')),errorKind:String(error?.name||'ERROR').replace(/[^a-z_]/gi,'').slice(0,24),failureStage,safeAuthSdkCode:String(error?.message||'').match(/CLIENT_FIREBASE_(?:PERSISTENCE|TOKEN_SIGNIN):[a-z0-9/-]{2,75}/i)?.[0]||'NO_AUTH_SDK_CODE',authHttpTrace,navigationTrace,safeErrorCategory:/timeout/i.test(String(error?.name||'')+' '+String(error?.message||''))?'TIMEOUT':/network|net::|navigation/i.test(String(error?.message||''))?'NETWORK_OR_NAVIGATION':/auth|token|credential|firebase/i.test(String(error?.message||''))?'AUTH_TOKEN_OR_SDK':'OTHER_ERROR',...state,credentialEntry:'NOT_TESTED_CUSTOM_TOKEN_ONLY'};
  }finally{await ctx.close().catch(()=>{});await browser.close().catch(()=>{});}
 }else receipt.stiven.browser={decision:'HOLD_STIVEN_EXACT_AUTH_PRECONDITIONS',credentialEntry:'NOT_TESTED'};
 
