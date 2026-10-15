@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,7 +8,7 @@
   "productTreeAuthority": "e93201ce9039aa20a6d993bf5dc0b9db866d0eac",
   "predecessorProductSourceSha": "52de067d105ee5711859a03c00a6b77ff551224f",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V441_2026-10-14.json",
-  "findingsLedgerExpectedGitBlob": "2f059ef795e4554c27ddd358fe29f9663f9dd619",
+  "findingsLedgerExpectedGitBlob": "0a70331296a640df1d3c2c872968ec8c529e5de5",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V119.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run existing canonical source-proof for R01 individual WhatsApp visit ID binding on new single source; require PASS before DEV materialization. Preserve RUN1677/1678/1679 and 274 findings; then exact no-send manual draft live browser E2E; remaining R20 R03 R07 R08 R09-R17 R22 R23 pending; I4 DO_NOT_TOUCH.",
+  "exactNextAction": "Materialize exact approved R01 source successor using existing I3 completion control on DEV once only; verify artifact fingerprint and same-artifact browser open manual wa.me draft without sending; preserve RUN1677/1678/1679 and 274 findings; I4 DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -1015,7 +1015,13 @@
     "hrWrites": 0,
     "production": false
   },
-  "pendingMaterialization": null,
+  "pendingMaterialization": {
+    "sourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
+    "sourceTree": "e93201ce9039aa20a6d993bf5dc0b9db866d0eac",
+    "sourceProofRunId": 38711056757,
+    "decision": "SOURCE_QA_PASS_DEV_MATERIALIZATION_REQUESTED",
+    "production": false
+  },
   "lastVrm080Proof": {
     "runId": 36333245670,
     "runNumber": 525,
@@ -2740,7 +2746,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "406bc0bb9c3b108a579c139bf31895b6d0801bb8",
+  "moduleTruthExpectedGitBlob": "9f978ef1eaa430ec751730e6ecb3c8a0c1a1a412",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -11074,10 +11080,21 @@
     "sourceTree": "e93201ce9039aa20a6d993bf5dc0b9db866d0eac",
     "ownerBlobBefore": "55086220691d51dd674aa18b4fb36b2c4cba6a8f",
     "ownerBlobAfter": "f986b0136b67ce394c9de71b9bdcbc6fddc099a8",
-    "state": "SOURCE_PATCH_UNREFERENCED_PENDING_CI",
+    "state": "SOURCE_QA_PASS_RUN1680_DEV_MATERIALIZATION_REQUESTED",
     "runtime": "LAST_APPROVED_RUN1677_UNCHANGED",
     "hrWrites": 0,
     "financeWrites": 0,
-    "production": false
+    "production": false,
+    "sourceProof": {
+      "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+      "runId": 38711056757,
+      "runNumber": 1680,
+      "artifactId": 11960461566,
+      "sourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
+      "sourceTree": "e93201ce9039aa20a6d993bf5dc0b9db866d0eac",
+      "sourceCodeOnly": true,
+      "devMaterializationPending": true,
+      "production": false
+    }
   }
 }

@@ -30147,11 +30147,22 @@
     "ownerBlobAfter": "f986b0136b67ce394c9de71b9bdcbc6fddc099a8",
     "before": "waBtn renders data-wa without data-vid; delegated handler resolves undefined visit and refuses to open exact manual draft",
     "after": "waBtn now emits exact data-vid for existing handler; no recipient inference, no outbound send; regression source test added",
-    "qa": "PENDING_CANONICAL_SOURCE_CI",
-    "dev": "PENDING_APPROVED_DELTA_MATERIALIZATION",
-    "liveE2e": "PENDING_EXACT_MANUAL_DRAFT_OPENED_VALIDATED",
+    "qa": "PASS_SOURCE_RUN1680",
+    "dev": "PENDING_MATERIALIZATION",
+    "liveE2e": "PENDING",
     "production": false,
     "inventoryCountUnchanged": 274,
     "otherP0RemainOpen": true
+  },
+  "i3Oct15R01SourceProof": {
+    "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "runId": 38711056757,
+    "runNumber": 1680,
+    "artifactId": 11960461566,
+    "sourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
+    "sourceTree": "e93201ce9039aa20a6d993bf5dc0b9db866d0eac",
+    "sourceCodeOnly": true,
+    "devMaterializationPending": true,
+    "production": false
   }
 }
