@@ -55,14 +55,46 @@ if(exactCandidates.length===1&&basePrincipal?.uid===exactCandidates[0].id&&authR
   failureStage='initial_navigation';await page.goto(url,{waitUntil:'domcontentloaded',timeout:60000});
   failureStage='firebase_sdk_boot';await page.waitForFunction(()=>!!window.firebase?.auth&&window.firebase?.apps?.length>0,null,{timeout:60000});
   failureStage='service_account_custom_token';const token=await auth.createCustomToken(basePrincipal.uid);
-  failureStage='client_custom_token_signin';await page.evaluate(async jwt=>{const f=window.firebase;try{await f.auth().setPersistence(f.auth.Auth.Persistence.LOCAL);}catch(e){throw new Error('CLIENT_FIREBASE_PERSISTENCE:'+String(e?.code||'UNKNOWN').replace(/[^a-z0-9/-]/gi,'').slice(0,70));}try{await f.auth().signInWithCustomToken(jwt);}catch(e){throw new Error('CLIENT_FIREBASE_TOKEN_SIGNIN:'+String(e?.code||'UNKNOWN').replace(/[^a-z0-9/-]/gi,'').slice(0,70));}},token);
+  // Do not await a long-running auth promise inside page.evaluate: authenticated UI
+  // navigation can destroy that execution context despite a successful Firebase sign-in.
+  // Instead dispatch the SDK promise and independently prove exact Firebase principal.
+  failureStage='client_firebase_persistence';
+  const persistence=await page.evaluate(async ()=>{
+   try{await window.firebase.auth().setPersistence(window.firebase.auth.Auth.Persistence.LOCAL);return {ok:true};}
+   catch(e){return {ok:false,code:String(e?.code||'UNKNOWN').replace(/[^a-z0-9/-]/gi,'').slice(0,70)};}
+  });
+  if(!persistence?.ok)throw new Error('CLIENT_FIREBASE_PERSISTENCE:'+String(persistence?.code||'UNKNOWN'));
+  failureStage='client_custom_token_dispatch';
+  const dispatched=await page.evaluate(jwt=>{
+   const code=e=>String(e?.code||'UNKNOWN').replace(/[^a-z0-9/-]/gi,'').slice(0,70);
+   window.__cxR20TokenProof={stage:'pending'};
+   try{
+    window.firebase.auth().signInWithCustomToken(jwt).then(
+     ()=>{window.__cxR20TokenProof={stage:'resolved'};},
+     e=>{window.__cxR20TokenProof={stage:'rejected',safeAuthSdkCode:code(e)};}
+    );
+   }catch(e){window.__cxR20TokenProof={stage:'rejected',safeAuthSdkCode:code(e)};}
+   return 'DISPATCHED';
+  },token);
+  if(dispatched!=='DISPATCHED')throw new Error('CLIENT_FIREBASE_TOKEN_DISPATCH_FAILED');
+  failureStage='client_custom_token_resolution';
+  await page.waitForFunction(uid=>{
+   const principal=window.firebase?.auth?.()?.currentUser;
+   return principal?.uid===uid||window.__cxR20TokenProof?.stage==='rejected';
+  },basePrincipal.uid,{timeout:65000});
+  const tokenResult=await page.evaluate(uid=>({
+   exactPrincipal:window.firebase?.auth?.()?.currentUser?.uid===uid,
+   sdkCode:String(window.__cxR20TokenProof?.safeAuthSdkCode||'UNKNOWN').replace(/[^a-z0-9/-]/gi,'').slice(0,70)
+  }),basePrincipal.uid);
+  if(!tokenResult.exactPrincipal)throw new Error('CLIENT_FIREBASE_TOKEN_SIGNIN:'+tokenResult.sdkCode);
   failureStage='session_blank_reentry';await page.goto('about:blank');
   failureStage='session_dev_reentry';await page.goto(url+'&session='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
   failureStage='hr_authority_readiness';await page.waitForFunction(rev=>{
    const c=window.CX?.backendAuth?.context?.()||{},g=window.CX_C6_HR_AUTHORITY_GATE||{};
    return c.authenticated===true&&c.role==='shopper'&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&g.ready===true&&g.blocked!==true&&String(window.CX?.data?.previewMeta?.sourceRevision||'')===rev;
   },REV,{timeout:65000});
-  const state=await page.evaluate(()=>({role:String(window.CX?.backendAuth?.context?.()?.role||''),view:String(window.CX?.session?.view||''),gateReady:window.CX_C6_HR_AUTHORITY_GATE?.ready===true}));
+  const state=await page.evaluate(([uid,shopperId])=>({role:String(window.CX?.backendAuth?.context?.()?.role||''),view:String(window.CX?.session?.view||''),gateReady:window.CX_C6_HR_AUTHORITY_GATE?.ready===true,exactFirebaseUid:window.firebase?.auth?.()?.currentUser?.uid===uid,exactCanonicalShopper:String(window.CX?.backendAuth?.context?.()?.shopperId||'')===shopperId}),[basePrincipal.uid,String(exactCandidates[0].shopperId)]);
+  if(!state.exactFirebaseUid||!state.exactCanonicalShopper||state.role!=='shopper'||!state.gateReady)throw new Error('AUTH_FAILURE:R20_EXACT_SESSION_OWNER_MISMATCH');
   receipt.stiven.browser={decision:'PASS_EXACT_STIVEN_DEV_AUTHORITY',elapsedMs:Date.now()-started,...state,credentialEntry:'NOT_TESTED_CUSTOM_TOKEN_ONLY'};
  }catch(error){
   const state=await page.evaluate(()=>({gateReady:window.CX_C6_HR_AUTHORITY_GATE?.ready===true,blocked:window.CX_C6_HR_AUTHORITY_GATE?.blocked===true,reason:String(window.CX_C6_HR_AUTHORITY_GATE?.reason||''),bootExhausted:window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE?.exhausted===true})).catch(()=>({}));
