@@ -14,11 +14,35 @@ CX.topbar = {
   _noticeTarget(n){
     const fallback={nav:String(n?.nav||''),visitId:'',action:''};
     if(this.role()!=='shopper'||String(n?.entityType||'')!=='visit'||!n?.entityId)return fallback;
-    const sid=String(CX.backendAuth?.context?.()?.shopperId||CX.session?.user?.shopperId||'');
+    const principal=CX.backendAuth?.context?.();
+    if(principal?.authenticated!==true||principal?.role!=='shopper')return fallback;
+    const sid=String(principal.shopperId||'');
     if(!sid)return fallback;
-    const found=(CX.data?._visitas||[]).find(v=>
-      [v?.id,v?.visitId,v?.hrRowId].some(id=>String(id||'')===String(n.entityId))&&
-      String(v?.shopperId||'')===sid);
+    // Transversal R22: only the trusted exact crosswalk may equate a historical
+    // source alias to the authenticated canonical shopper. Never match by name.
+    const crosswalk=CX.data?.__identityMap||{};
+    const canonical=id=>{
+      let current=String(id||''),hops=0;
+      const seen=new Set();
+      while(current&&hops<12&&!seen.has(current)){
+        seen.add(current);
+        const next=String(crosswalk[current]||'');
+        if(!next||next===current)break;
+        current=next;hops++;
+      }
+      return current;
+    };
+    const owner=canonical(sid);
+    const projectIds=Array.isArray(principal.projectIds)?principal.projectIds.map(String):[];
+    const activeProject=String(CX.data?.currentProjectId||'');
+    if(!owner||(activeProject&&projectIds.length&&!projectIds.includes(activeProject)))return fallback;
+    const found=(CX.data?._visitas||[]).find(v=>{
+      const exactEntity=[v?.id,v?.visitId,v?.hrRowId].some(id=>String(id||'')===String(n.entityId));
+      if(!exactEntity)return false;
+      const visitProject=String(v?.projectId||'');
+      if(visitProject&&projectIds.length&&!projectIds.includes(visitProject))return false;
+      return canonical(v?.shopperId)===owner;
+    });
     if(!found)return {nav:'misvisitas',visitId:'',action:''};
     const kind=String(n?.tipo||'').toLowerCase(),op=String(n?.accion||'').toLowerCase();
     const action=/cuestionario|questionnaire/.test(kind+' '+op)?'questionnaire'
