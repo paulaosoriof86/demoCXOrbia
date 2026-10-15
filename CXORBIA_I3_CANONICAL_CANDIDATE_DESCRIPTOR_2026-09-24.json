@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
+  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "52de067d105ee5711859a03c00a6b77ff551224f",
-  "productTreeAuthority": "46fcbffc0efa084d1a1f1969be50bd0ae93a408a",
-  "predecessorProductSourceSha": "1f4174724b0ec028b6a2d9d429509148e6e63b62",
+  "productSourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
+  "productTreeAuthority": "e93201ce9039aa20a6d993bf5dc0b9db866d0eac",
+  "predecessorProductSourceSha": "52de067d105ee5711859a03c00a6b77ff551224f",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V441_2026-10-14.json",
-  "findingsLedgerExpectedGitBlob": "dda3a227b458133e660707de6d44777d7293e31a",
+  "findingsLedgerExpectedGitBlob": "2f059ef795e4554c27ddd358fe29f9663f9dd619",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V119.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "R20_REAL_PASSWORD_NOT_TESTED_R01_DRAFT_NOT_OPENED_R03_IDENTITY_ADJUDICATION_REMAINS_R07_HR_CANCEL_ACK_R08_REAL_15_QUESTIONS_R09_R17_FINANCE_HISTORICAL_R22_EACH_NOTICE_READ_AFTER_RELOAD_R23_HR_KPI_INDEPENDENT_SCOPE_HUMAN_ACCEPTANCE_GATE20_GATE21",
+  "activeBlocker": "R01_INDIVIDUAL_WA_BUTTON_VISIT_ID_FUNCTIONAL_DEFECT_SOURCE_FIXED_PENDING_QA_AND_DEV",
   "nextFindingId": "VRM-275",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "I3: preserve RUN1678 attempt2 same-artifact PASS. Close individually R20 real password login across authorized population; R01 manual WA draft exact authorized recipient; R22 durable read navigation reload; R07 HR cancel ACK; R08 exact real 15-question grounded human review; R09-R17 historical GT/HN finance and Q7300, R03 identity; independent exact HR KPI and final single human acceptance. No new build/deploy without proven P0 code delta; I4 DO_NOT_TOUCH.",
+  "exactNextAction": "Run existing canonical source-proof for R01 individual WhatsApp visit ID binding on new single source; require PASS before DEV materialization. Preserve RUN1677/1678/1679 and 274 findings; then exact no-send manual draft live browser E2E; remaining R20 R03 R07 R08 R09-R17 R22 R23 pending; I4 DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2740,7 +2740,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "942d3a96bb1e7c329a96e5d3abd9e68a725e6f63",
+  "moduleTruthExpectedGitBlob": "406bc0bb9c3b108a579c139bf31895b6d0801bb8",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -11065,5 +11065,19 @@
     ],
     "terminalI3Go": false,
     "production": "DO_NOT_TOUCH"
+  },
+  "i3Oct15R01IndividualWhatsAppRowLink": {
+    "classification": "FUNCTIONAL_DEFECT",
+    "owner": "app/modules/dashboard.js",
+    "test": "tools/qa/cxorbia-i3-b7-hf13-whatsapp-draft-source.test.mjs",
+    "sourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
+    "sourceTree": "e93201ce9039aa20a6d993bf5dc0b9db866d0eac",
+    "ownerBlobBefore": "55086220691d51dd674aa18b4fb36b2c4cba6a8f",
+    "ownerBlobAfter": "f986b0136b67ce394c9de71b9bdcbc6fddc099a8",
+    "state": "SOURCE_PATCH_UNREFERENCED_PENDING_CI",
+    "runtime": "LAST_APPROVED_RUN1677_UNCHANGED",
+    "hrWrites": 0,
+    "financeWrites": 0,
+    "production": false
   }
 }

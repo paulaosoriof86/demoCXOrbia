@@ -103,11 +103,11 @@
     }
   },
   "productSource": {
-    "sha": "52de067d105ee5711859a03c00a6b77ff551224f",
-    "treeSha": "46fcbffc0efa084d1a1f1969be50bd0ae93a408a",
-    "predecessorProductSourceSha": "1f4174724b0ec028b6a2d9d429509148e6e63b62",
+    "sha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
+    "treeSha": "e93201ce9039aa20a6d993bf5dc0b9db866d0eac",
+    "predecessorProductSourceSha": "52de067d105ee5711859a03c00a6b77ff551224f",
     "message": "fix(i3/r20): prevent PWA controllerchange from aborting cross-role authentication",
-    "authorityState": "R20_SOURCE_FIXED_PENDING_CI_DEV"
+    "authorityState": "R01_OWNER_FIXED_PENDING_SOURCE_PROOF_DEV_AND_LIVE"
   },
   "controlHeadAtConstruction": "516f26ee75b644ad10d3a1d6093f24b91d347736",
   "phaseAComplete": false,
@@ -694,7 +694,7 @@
       "currentCandidateSource": "a9d878e8747f12138faee9f07ba4780d65383b55",
       "currentCandidateTree": "eb44fe8ad9223b445978e75477b9366cea6cb7b4",
       "currentOwnerBlobs": {
-        "app/modules/dashboard.js": "55086220691d51dd674aa18b4fb36b2c4cba6a8f",
+        "app/modules/dashboard.js": "f986b0136b67ce394c9de71b9bdcbc6fddc099a8",
         "app/modules/midia.js": "7e6403b30ed23851b8475493ab79e94b7d392706"
       },
       "sourceStaticReproof": {
@@ -4036,7 +4036,7 @@
       "f9ApprovedBlob": "e879fc3f1dd5a7486762b197346cadd086e1d99d",
       "latestApprovedSource": "feea6ae6b00d36349ae66e43e034bc0b25516cfd",
       "latestApprovedBlob": "0b411b4de9c23dd2b944302f302d2a6b3e503b67",
-      "currentBlob": "55086220691d51dd674aa18b4fb36b2c4cba6a8f",
+      "currentBlob": "f986b0136b67ce394c9de71b9bdcbc6fddc099a8",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
@@ -10963,5 +10963,23 @@
     ],
     "terminalI3Go": false,
     "production": "DO_NOT_TOUCH"
+  },
+  "i3Oct15R01IndividualWhatsAppRowLink": {
+    "classification": "FUNCTIONAL_DEFECT",
+    "findingGroup": "R01",
+    "sourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
+    "sourceTree": "e93201ce9039aa20a6d993bf5dc0b9db866d0eac",
+    "sourcePredecessor": "52de067d105ee5711859a03c00a6b77ff551224f",
+    "owner": "app/modules/dashboard.js",
+    "ownerBlobBefore": "55086220691d51dd674aa18b4fb36b2c4cba6a8f",
+    "ownerBlobAfter": "f986b0136b67ce394c9de71b9bdcbc6fddc099a8",
+    "before": "waBtn renders data-wa without data-vid; delegated handler resolves undefined visit and refuses to open exact manual draft",
+    "after": "waBtn now emits exact data-vid for existing handler; no recipient inference, no outbound send; regression source test added",
+    "qa": "PENDING_CANONICAL_SOURCE_CI",
+    "dev": "PENDING_APPROVED_DELTA_MATERIALIZATION",
+    "liveE2e": "PENDING_EXACT_MANUAL_DRAFT_OPENED_VALIDATED",
+    "production": false,
+    "inventoryCountUnchanged": 274,
+    "otherP0RemainOpen": true
   }
 }

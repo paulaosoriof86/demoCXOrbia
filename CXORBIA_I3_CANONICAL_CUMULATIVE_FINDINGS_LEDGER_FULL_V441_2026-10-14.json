@@ -14,11 +14,11 @@
     "generatedAt": "2026-09-24T07:10:00Z"
   },
   "canonicalFunctionalCandidate": {
-    "sourceSha": "52de067d105ee5711859a03c00a6b77ff551224f",
-    "sourceTree": "46fcbffc0efa084d1a1f1969be50bd0ae93a408a",
-    "predecessorSha": "1f4174724b0ec028b6a2d9d429509148e6e63b62",
+    "sourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
+    "sourceTree": "e93201ce9039aa20a6d993bf5dc0b9db866d0eac",
+    "predecessorSha": "52de067d105ee5711859a03c00a6b77ff551224f",
     "production": false,
-    "state": "SOURCE_MATERIALIZED_RUN1677_PENDING_LIVE_E2E",
+    "state": "R01_INDIVIDUAL_WA_SOURCE_FIXED_PENDING_QA_DEV_LIVE",
     "proof": {
       "status": "SOURCE_QA_PASS_RUN1517",
       "scope": "HF24 bridge blocked on missing provider, and movements/accounts exact readback after ACK; no live finance writes",
@@ -30135,5 +30135,23 @@
     ],
     "terminalI3Go": false,
     "production": "DO_NOT_TOUCH"
+  },
+  "i3Oct15R01IndividualWhatsAppRowLink": {
+    "classification": "FUNCTIONAL_DEFECT",
+    "findingGroup": "R01",
+    "sourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
+    "sourceTree": "e93201ce9039aa20a6d993bf5dc0b9db866d0eac",
+    "sourcePredecessor": "52de067d105ee5711859a03c00a6b77ff551224f",
+    "owner": "app/modules/dashboard.js",
+    "ownerBlobBefore": "55086220691d51dd674aa18b4fb36b2c4cba6a8f",
+    "ownerBlobAfter": "f986b0136b67ce394c9de71b9bdcbc6fddc099a8",
+    "before": "waBtn renders data-wa without data-vid; delegated handler resolves undefined visit and refuses to open exact manual draft",
+    "after": "waBtn now emits exact data-vid for existing handler; no recipient inference, no outbound send; regression source test added",
+    "qa": "PENDING_CANONICAL_SOURCE_CI",
+    "dev": "PENDING_APPROVED_DELTA_MATERIALIZATION",
+    "liveE2e": "PENDING_EXACT_MANUAL_DRAFT_OPENED_VALIDATED",
+    "production": false,
+    "inventoryCountUnchanged": 274,
+    "otherP0RemainOpen": true
   }
 }
