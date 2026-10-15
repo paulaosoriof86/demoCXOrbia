@@ -132,7 +132,19 @@ if(!executeReal){
       const ctx=window.CX?.backendAuth?.context?.()||null;
       const raw=String(ctx?.shopperId||'').trim();
       const map=window.CX?.data?.__identityMap||{};
-      const canonical=String(map[raw]||raw).trim();
+      const authority=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{};
+      const principalUid=String(window.firebase?.auth?.().currentUser?.uid||'');
+      const trustedSessionAuthority=Boolean(
+        principalUid&&authority.applied===true&&authority.exactSessionShopperReady===true&&
+        String(authority.actorUid||'')===principalUid&&String(authority.rawShopperId||'')===raw&&
+        authority.role==='shopper'&&authority.authNamespace==='shopper'&&
+        authority.tenantId===tenantId&&authority.projectId===projectId&&
+        String(authority.canonicalShopperId||'')
+      );
+      const authorityCanonical=trustedSessionAuthority?String(authority.canonicalShopperId):'';
+      const mapped=String(map[raw]||'').trim();
+      const aliasConsistent=Boolean(!mapped||!authorityCanonical||mapped===authorityCanonical);
+      const canonical=String(mapped||authorityCanonical||raw).trim();
       const rows=Array.isArray(window.CX?.data?.shoppers)?window.CX.data.shoppers:[];
       const contract=window.CX_EXACT_IDENTITY_CONTRACT;
       const matches=rows.filter(row=>{
@@ -141,6 +153,10 @@ if(!executeReal){
         const aliases=contract?.collectExactValues?.(row)||[];
         return aliases.includes(raw)||aliases.includes(canonical);
       });
+      const sessionProfile=window.CX?.data?.__sessionShopperProfile||null;
+      const sessionProfileId=String(sessionProfile?.id||sessionProfile?.shopperId||'').trim();
+      const sessionProfileBound=Boolean(trustedSessionAuthority&&sessionProfileId&&sessionProfileId===canonical);
+      const canonicalResolved=Boolean(aliasConsistent&&matches.length<=1&&(matches.length===1||(matches.length===0&&sessionProfileBound)));
       const review=Array.isArray(window.CX?.data?.__identityReviewQueue)?window.CX.data.__identityReviewQueue:[];
       const inReview=review.some(item=>{
         if(!item||typeof item!=='object')return false;
@@ -151,7 +167,8 @@ if(!executeReal){
       const visits=canonical&&typeof window.CX?.data?.visitsForShopper==='function'?window.CX.data.visitsForShopper(canonical,false):[];
       const sourceRef=String(window.CX?.dataSource?.sourceRef||'');
       const bodyText=document.body.innerText||'';
-      const country=String(matches[0]?.pais||matches[0]?.country||'').trim();
+      const country=String(matches[0]?.pais||matches[0]?.country||
+        (sessionProfileBound?(sessionProfile?.pais||sessionProfile?.country||authority.shopperCountry):'')).trim();
       const certRows=Array.isArray(window.CX?.data?.__protectedCertifications)?window.CX.data.__protectedCertifications:[];
       const certForPrincipal=certRows.filter(row=>{
         const id=String(row?.shopperId||row?.profileId||row?.shopperDocId||'').trim();
@@ -161,17 +178,20 @@ if(!executeReal){
       }).length;
       const pass=Boolean(
         ctx?.authenticated===true&&ctx?.tenantId===tenantId&&ctx?.role==='shopper'&&ctx?.projectIds?.includes(projectId)&&
-        raw&&matches.length===1&&!inReview&&country&&
+        raw&&canonicalResolved&&!inReview&&country&&
         window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&
         sourceRef.includes('hr-live-all-periods+firestore-authenticated-exact-overlay')&&
         !bodyText.includes('La identidad de esta sesión no está vinculada al read model canónico.')&&
         (!requireHistory||visits.length>0)
       );
-      return {pass,tenantId,projectId,auth:true,shopperIdentityPresent:Boolean(raw),canonicalResolved:matches.length===1,reviewRequired:inReview,countryAssigned:Boolean(country),historyCount:visits.length,historyRequired:requireHistory,authorityApplied:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,sourceRef,periods:Number(window.CX_PROTECTED_AUTH_HR_AUTHORITY?.periods||0),hrVisits:Number(window.CX_PROTECTED_AUTH_HR_AUTHORITY?.hrVisits||0),identityContractVersion:contract?.version||null,certificationRecordsForPrincipal:certForPrincipal,visibleLockMessage:bodyText.includes('La identidad de esta sesión no está vinculada al read model canónico.'),safety:{providerWrites:0,writes:0,deploys:0,production:false}};
+      return {pass,tenantId,projectId,auth:true,shopperIdentityPresent:Boolean(raw),canonicalResolved,sessionProfileBound,hrListProfileMatch:matches.length===1,aliasConsistent,reviewRequired:inReview,countryAssigned:Boolean(country),historyCount:visits.length,historyRequired:requireHistory,authorityApplied:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,sourceRef,periods:Number(window.CX_PROTECTED_AUTH_HR_AUTHORITY?.periods||0),hrVisits:Number(window.CX_PROTECTED_AUTH_HR_AUTHORITY?.hrVisits||0),identityContractVersion:contract?.version||null,certificationRecordsForPrincipal:certForPrincipal,visibleLockMessage:bodyText.includes('La identidad de esta sesión no está vinculada al read model canónico.'),safety:{providerWrites:0,writes:0,deploys:0,production:false}};
     },{tenantId,projectId,requireHistory});
 
     r20ReadbackSignals={
       canonicalResolved:result.canonicalResolved===true,
+      sessionProfileBound:result.sessionProfileBound===true,
+      hrListProfileMatch:result.hrListProfileMatch===true,
+      aliasConsistent:result.aliasConsistent===true,
       reviewRequired:result.reviewRequired===true,
       countryAssigned:result.countryAssigned===true,
       authenticated:result.auth===true,
