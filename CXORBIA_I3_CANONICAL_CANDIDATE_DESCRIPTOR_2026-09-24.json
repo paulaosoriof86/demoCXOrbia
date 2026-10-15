@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
+  "status": "HOLD_I3_OPEN_P0_TERMINAL_E2E_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "e93201ce9039aa20a6d993bf5dc0b9db866d0eac",
   "predecessorProductSourceSha": "52de067d105ee5711859a03c00a6b77ff551224f",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V441_2026-10-14.json",
-  "findingsLedgerExpectedGitBlob": "34d72a5e6ccf04294ab4140df84e534b63858116",
+  "findingsLedgerExpectedGitBlob": "aa856268c2c014694c9f4a9b607da56ab7b91112",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V119.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "R08_FINANCE_PROVENANCE_READONLY_REQUIRED",
+  "activeBlocker": "R07_EXTERNAL_HR_CANCEL_ACK__R08_EXACT15_VERTEX_HUMAN_SOURCE__R22_READ_ACTION_UI__R09_R17_BANK_PROVIDER_PROOF",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "R08 and finance exact metadata proof in one existing I3 read-only DEV job: authorized instruction pointer and publication state, 15 question bank readiness; 677 financial reconciliation status and external proof by country/currency, no real payment; preserve R22 RUN1713 partial PASS.",
+  "exactNextAction": "R08 verify original source file pointer and human-approved revision, then one true Vertex exact15 pending_review real E2E, no fabricated questions; R22 focal Codex owner technical labels plus fresh read ACK/click; R09-R17 reconcile 599 paid-status records against independent bank proof, 78 pending and 5 amount reviews, Q7300 exact evidence, no assumptions; R07 HR ACK remains HOLD. Same artifact DEV, human review once all P0 pass.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -11561,5 +11561,52 @@
     "cloudRuntimeUnchanged": true,
     "writes": 0,
     "production": false
+  },
+  "run1716R08FinanceProvenance": {
+    "runId": 38767286584,
+    "artifactId": 11988169496,
+    "R08": {
+      "activeVertexConfig": 1,
+      "sourceCandidatesWithFilePointer": 2,
+      "sourceCandidatesWithEmbeddedText": 0,
+      "sourceCandidatesWithExplicitApprovalEvidence": 0,
+      "pendingReviewBanks": 1,
+      "publishedBanks": 1,
+      "banksWithExact15": 0,
+      "currentProjectMinQuestionCountNotDeclared": true,
+      "providerGenerationAttempted": false,
+      "state": "HOLD_R08_REAL_VERTEX_15_HUMAN_REVIEW"
+    },
+    "finance": {
+      "reconciliations": 677,
+      "byCountry": {
+        "GT": 529,
+        "HN": 148
+      },
+      "byCurrency": {
+        "Q": 529,
+        "L": 148
+      },
+      "statusPaid": 599,
+      "statusPending": 78,
+      "paidRecordsWithoutIndependentPaymentProofFields": 596,
+      "amountReviewRequired": 5,
+      "reconciliationSourceRefPresent": 677,
+      "bankTransferValidatedByThisRun": 0,
+      "q7300ExactReconciliationCandidateInCheckedAmountFields": 0,
+      "noBankPaymentAssumed": true,
+      "state": "HOLD_R09_R17_HISTORICAL_PROVIDER_BANK_ACK_AND_BATCH"
+    },
+    "safety": {
+      "sourceChanged": false,
+      "authWrites": 0,
+      "hrWrites": 0,
+      "firestoreWrites": 0,
+      "financeWrites": 0,
+      "bankWrites": 0,
+      "providerWrites": 0,
+      "production": false,
+      "devDeploys": 0
+    }
   }
 }

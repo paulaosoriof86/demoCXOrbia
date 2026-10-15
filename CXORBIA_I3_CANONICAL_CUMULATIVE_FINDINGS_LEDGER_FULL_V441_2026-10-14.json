@@ -30637,5 +30637,75 @@
       "R09-R17 reconciliation,batches,payments historic and Q7300 exact proof"
     ],
     "next": "Apply only P0_PROVEN owner corrections via authorized Codex; readback 677 reconciliations against independent payment source and targeted notices; no new candidate, no sensitive write."
+  },
+  "i3Oct15Run1716R08FinanceProvenance": {
+    "date": "2026-10-15",
+    "iteration": "I3_FUNCTIONAL_CLOSURE",
+    "runId": 38767286584,
+    "runNumber": 1716,
+    "runConclusion": "SUCCESS_CANONICAL_READONLY_NOT_I3_GO",
+    "artifactId": 11988169496,
+    "sourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
+    "sourceTree": "e93201ce9039aa20a6d993bf5dc0b9db866d0eac",
+    "devMaterializationRun": 1681,
+    "hrRevision": "1959278f639f0132110b58b080908a9da8d949ed824ffc044e98ded67fb3fbe8",
+    "R08": {
+      "activeVertexConfig": 1,
+      "sourceCandidatesWithFilePointer": 2,
+      "sourceCandidatesWithEmbeddedText": 0,
+      "sourceCandidatesWithExplicitApprovalEvidence": 0,
+      "pendingReviewBanks": 1,
+      "publishedBanks": 1,
+      "banksWithExact15": 0,
+      "currentProjectMinQuestionCountNotDeclared": true,
+      "providerGenerationAttempted": false,
+      "state": "HOLD_R08_REAL_VERTEX_15_HUMAN_REVIEW"
+    },
+    "finance": {
+      "reconciliations": 677,
+      "byCountry": {
+        "GT": 529,
+        "HN": 148
+      },
+      "byCurrency": {
+        "Q": 529,
+        "L": 148
+      },
+      "statusPaid": 599,
+      "statusPending": 78,
+      "paidRecordsWithoutIndependentPaymentProofFields": 596,
+      "amountReviewRequired": 5,
+      "reconciliationSourceRefPresent": 677,
+      "bankTransferValidatedByThisRun": 0,
+      "q7300ExactReconciliationCandidateInCheckedAmountFields": 0,
+      "noBankPaymentAssumed": true,
+      "state": "HOLD_R09_R17_HISTORICAL_PROVIDER_BANK_ACK_AND_BATCH"
+    },
+    "preservedRun1713R22": {
+      "twoShoppersReloadExact": 2,
+      "persistedExistingReadReceipts": 5,
+      "noCrossLeak": true,
+      "technicalMessagesVisible": 2,
+      "state": "PASS_PARTIAL_R22_READ_RELOAD_ISOLATION"
+    },
+    "limitations": [
+      "R08_SOURCE_APPROVAL_NOT_ESTABLISHED_BY_STATUS_METADATA",
+      "R08_NO_REAL_VERTEX_15_BANK_PERSISTED",
+      "599_PAID_STATUS_NOT_EXTERNAL_BANK_TRANSFER_PROOF",
+      "Q7300_NOT_ADJUDICATED_FROM_RECONCILIATIONS",
+      "R07_NO_EXTERNAL_HR_RELEASE_ACK",
+      "R22_FRESH_READ_ACK_AND_ACTION_NAV_PENDING"
+    ],
+    "safety": {
+      "sourceChanged": false,
+      "authWrites": 0,
+      "hrWrites": 0,
+      "firestoreWrites": 0,
+      "financeWrites": 0,
+      "bankWrites": 0,
+      "providerWrites": 0,
+      "production": false,
+      "devDeploys": 0
+    }
   }
 }
