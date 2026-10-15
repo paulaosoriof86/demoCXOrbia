@@ -51,7 +51,7 @@ CX.topbar = {
     return {nav:'misvisitas',visitId:String(found.id||found.visitId||''),action};
   },
   _noticeText(n){
-    const raw=String(n?.txt||'').replace(/\bhr_20\d{2}[-_][\w-]+\b/gi,'la visita indicada');
+    const raw=String(n?.displayText??n?.txt??'').replace(/\bhr_20\d{2}[-_][\w-]+\b/gi,'la visita indicada');
     return raw.replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   },
 

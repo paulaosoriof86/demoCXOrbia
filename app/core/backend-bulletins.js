@@ -44,6 +44,31 @@ window.CX = window.CX || {};
     return {news:'📢', task:'📝', alert:'⚠️', request:'📌', training:'🎓', finance:'💰', certification:'🏆'}[type] || '🔔';
   }
 
+  /* R22: Human display is independent of immutable Firestore source/audit text. */
+  function noticeHumanCopy(d){
+    const original=String(d.body || d.text || '').trim();
+    if(!original)return '';
+    const technical=/\bhr_20\d{2}[-_][a-z0-9_-]+\b|\b(?:OPS|FINANCE|BULLETIN|AUTH|CERT|HR)_[A-Z0-9_]{3,}\b|\b(?:entityId|hrRowId|shopperId|idempotencyKey)\s*[:=]/i.test(original);
+    if(!technical)return original;
+    const kind=String(d.type||'').toLowerCase();
+    const entity=String(d.entityType||'').toLowerCase();
+    if(entity==='visit'){
+      const detail='Consulta Mis Visitas para verificar los detalles.';
+      if(kind==='cancel'){
+        if(/\brechazad[ao]\b/i.test(original))return 'Tu solicitud de cancelación no fue aprobada. '+detail;
+        if(/\baprobad[ao]\b/i.test(original))return 'Tu solicitud de cancelación fue aprobada. '+detail;
+        return 'Hay una actualización de tu solicitud de cancelación. '+detail;
+      }
+      if(kind==='reprog'){
+        if(/\brechazad[ao]\b/i.test(original))return 'La solicitud de reprogramación no fue aprobada. '+detail;
+        if(/\baprobad[ao]\b/i.test(original))return 'La solicitud de reprogramación fue aprobada. '+detail;
+        return 'Hay una actualización de la reprogramación de tu visita. '+detail;
+      }
+      return 'Hay una actualización relacionada con tu visita. '+detail;
+    }
+    return 'Tienes una notificación nueva. Abre el detalle para consultar la información disponible.';
+  }
+
   function normalize(doc, readSet){
     const d = Object.assign({id:doc.id}, doc.data ? doc.data() : doc);
     const firstRole = Array.isArray(d.targetRoles) && d.targetRoles.length ? d.targetRoles[0] : role();
@@ -55,6 +80,7 @@ window.CX = window.CX || {};
       tono: d.tone || tone(d.priority),
       titulo: d.title || 'Novedad',
       txt: d.body || d.text || '',
+      displayText: noticeHumanCopy(d),
       fecha: nowLabel(d.createdAt || d.activeFrom),
       leida: readSet.has(d.id),
       nav: d.actionRoute || d.nav || '',
