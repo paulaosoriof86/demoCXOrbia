@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run existing I3 canonical source proof including R20 PWA safe controllerchange test on source 52de067d; upon source PASS materialize one incremental DEV artifact, repeat same-artifact R20/HR/ Admin/Shopper E2Es without touching production, preserve 274 findings and 21 domains.",
+  "exactNextAction": "Execute one bounded existing DEV materialization for source 52de067d with source-proof RUN1676 PASS; readback Hosting/Runtime/HR, then R20 browser custom token+real credential path and Admin+Shopper+finance E2E on same exact artifact. No I4.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -10882,5 +10882,29 @@
     "humanAcceptance": "PENDING",
     "gate20": "PENDING",
     "gate21": "PENDING"
+  },
+  "i3Oct15Run1676SourceProof": {
+    "runId": 38705124046,
+    "sourceProofJobId": 116322641493,
+    "artifactId": 11958575412,
+    "sourceSha": "52de067d105ee5711859a03c00a6b77ff551224f",
+    "sourceTree": "46fcbffc0efa084d1a1f1969be50bd0ae93a408a",
+    "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "contractPwaTests": 5,
+    "providerWrites": 0,
+    "production": false
+  },
+  "i3Oct15Run1677MaterializationRequest": {
+    "sourceSha": "52de067d105ee5711859a03c00a6b77ff551224f",
+    "sourceTree": "46fcbffc0efa084d1a1f1969be50bd0ae93a408a",
+    "sourceProofRunId": 38705124046,
+    "reason": "P0 R20 exact service worker navigation owner corrected",
+    "oneBuild": true,
+    "oneRuntime": true,
+    "oneHosting": true,
+    "oneRules": true,
+    "hrWrites": 0,
+    "production": "DO_NOT_TOUCH",
+    "existingRunner": true
   }
 }
