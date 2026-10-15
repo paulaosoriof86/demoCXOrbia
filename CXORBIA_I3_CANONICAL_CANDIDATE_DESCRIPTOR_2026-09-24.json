@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_READBACK_ONLY_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Materialize EXACT R22 cumulative source once in existing Phase A DEV lane and independently readback Hosting/Runtime/HR; then two Shopper notification presentation/live ACK/navigation E2E. Parallel R08 and R09-R17 remain on their own owners; R07 external HR ACK HOLD. Visual acceptance can be incremental per verified block.",
+  "exactNextAction": "R22 exact same-artifact readback including topbar and backend-bulletins (no rebuild) then R22 two-Shopper authorized live E2E and incremental Paula visual review; parallel R08 approved source and Vertex exact15, R09-R17 external bank evidence, R07 HR external ACK.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -8924,27 +8924,26 @@
     "ledgerStage": "DEV_MATERIALIZED_EXACT_RECEIPT_RUN1529__E2E_PENDING"
   },
   "i3PhaseADevReadbackTarget": {
-    "sourceSha": "3a05a12a0cb7ae708e75545165b6b31f6ad1b285",
-    "sourceTree": "07806c2c98960a711136baa60b0ba4c0a57ff394",
     "project": "cxorbia-backend-dev",
-    "cloudBuildId": "ffd010e6-f614-42cd-9d0e-1a280ed908b6",
-    "imageUri": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-phasea-3a05a12a0cb7-38453626693",
-    "runtimeRevision": "cxorbia-live-hr-dev-00285-xm4",
-    "runtimeDigest": "sha256:b89e93bb27b6c3497161edc38196f46a19ac05e1049ed30247308ffd42470d33",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/a8a45d4bbf91dc88",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1791919205828000",
-    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/65f7f33d-6482-4e3b-92dd-dc874b970315",
-    "materializationRunId": 38453626693,
-    "materializationJobId": 115490707685,
-    "materializationBuilds": 1,
-    "materializationRuntimeDeploys": 1,
-    "materializationHostingDeploys": 1,
-    "materializationRulesDeploys": 1,
-    "proofRunCodeWrites": 0,
-    "proofRunBuilds": 0,
-    "proofRunDeploys": 0,
     "production": false,
-    "rootCauseOfPendingReceipt": "Proof exported Firestore rules with jq -r, which appended a newline and made cmp falsely fail; patched to jq -j in existing runner."
+    "materializationRunId": 38776838205,
+    "sourceSha": "80ada5c4f8bf6301345f5053541e74178287326b",
+    "sourceTree": "fb914a617c250eeae5fb287f7910022bb60f09da",
+    "cloudBuildId": "72e75ace-4e1d-42f0-8759-baa982bdf5a6",
+    "imageUri": "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-phasea-80ada5c4f8bf-38776838205",
+    "runtimeRevision": "cxorbia-live-hr-dev-00305-5rg",
+    "runtimeDigest": "sha256:d8ca3cd3058c938a9a91583a640901d1ac2dfa2ca56a435a25f97b020e1264f3",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/c28578d7a5414c9f",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1792085192586000",
+    "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/e9070ca6-234c-4a16-acf2-5ab3372eadb3",
+    "hrRevision": "1959278f639f0132110b58b080908a9da8d949ed824ffc044e98ded67fb3fbe8",
+    "sourceArtifactDigest": "sha256:4a76629236602bccbc065c60525e333262571ff5d6ce0e7ffec9156391ee4500",
+    "artifactId": 11994985007,
+    "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
+    "builds": 1,
+    "runtimeDeploys": 1,
+    "hostingDeploys": 1,
+    "liveE2e": "PENDING"
   },
   "i3PhaseADevLiveE2ERequest": {
     "stage": "EXACT_CERTIFIED_ARTIFACT_E2E",
@@ -11650,6 +11649,17 @@
       "devOnly": true,
       "production": false,
       "approvedReviewMode": "INCREMENTAL_BLOCK_VISUAL_ON_VERIFIED_DEV"
+    },
+    "devMaterialization": {
+      "run": 1724,
+      "runId": 38776838205,
+      "conclusion": "SUCCESS",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/c28578d7a5414c9f",
+      "runtimeRevision": "cxorbia-live-hr-dev-00305-5rg",
+      "hrRevision": "1959278f639f0132110b58b080908a9da8d949ed824ffc044e98ded67fb3fbe8",
+      "sourceSha": "80ada5c4f8bf6301345f5053541e74178287326b",
+      "devOnly": true,
+      "production": false
     }
   }
 }
