@@ -4,16 +4,16 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "13173ce31a12dcca53ef2dbe11820463b0009f0f",
-  "productTreeAuthority": "8048137afb0f242d8105dceba7d5167fe789601d",
-  "predecessorProductSourceSha": "a9d878e8747f12138faee9f07ba4780d65383b55",
+  "productSourceSha": "1f4174724b0ec028b6a2d9d429509148e6e63b62",
+  "productTreeAuthority": "fe05e9a24270e99cb1f7680bdf001db988932cbb",
+  "predecessorProductSourceSha": "13173ce31a12dcca53ef2dbe11820463b0009f0f",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V441_2026-10-14.json",
-  "findingsLedgerExpectedGitBlob": "a60c86894cb2c8026bb7142ed9dae34625df5b64",
+  "findingsLedgerExpectedGitBlob": "e8fae0a651a5d1dddc5232437bc3efeef292bfc6",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V119.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "R22_TRANSVERSAL_SOURCE_FIXED_NOT_MATERIALIZED_PLUS_R01_R03_R07_R08_R09_R10_17_R20_REAL_PASSWORD_R23_LIVE",
+  "activeBlocker": "ENVIRONMENT_FAILURE_GITHUB_ACTIONS_BILLING_LOCK_BLOCKS_CI_DEV_E2E_PLUS_R01_R03_R07_R08_R09_17_R20_R22_R23",
   "nextFindingId": "VRM-275",
   "monotonicity": {
     "predecessorMustBeAncestor": true,
@@ -26,7 +26,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Once canonical GitHub Actions runner is available: execute source CI R22 7-case crosswalk/security contract and full regression; materialize only current cumulative source once into DEV using existing lane; then browser E2E of representative and population-wide contract for notifications/auth GT+HN, R01 WA draft, R07 cancel, R08 actual 15 questions, finance R09-R17 without real financial test writes. I3 remains HOLD.",
+  "exactNextAction": "Paula clears GitHub account billing lock (only indispensable manual action); then rerun existing canonical I3 workflow with R22 alias and Tablon no-false-ACK tests; complete cumulative source QA; materialize one DEV artifact for source 1f4174724b0ec028b6a2d9d429509148e6e63b62; same-artifact population/role/GT/HN E2Es, existing P0 only, then one human checkpoint and Gate20/Gate21. Until then no more futile Actions reruns; production DO_NOT_TOUCH.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2738,7 +2738,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "a57e4cdf87fc860b1ea374f7e099a7398f2432df",
+  "moduleTruthExpectedGitBlob": "0fc230dd545415b56985bc5c1d2c1c80a9865883",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -10718,5 +10718,37 @@
       "materializedPredecessor": "a9d878e8747f12138faee9f07ba4780d65383b55",
       "sourceQAIsolatedOnly": true
     }
+  },
+  "i3Oct15R22TablonNoFalseAckSource": {
+    "findingId": "R22",
+    "related": "VRM-193_NOT_REOPENED",
+    "classification": "FUNCTIONAL_DEFECT",
+    "owner": "app/modules/tablon.js",
+    "previousBlob": "23c8b5cf1198e44dd668edd1e6ba17794b6cf344",
+    "afterBlob": "bb0da6c1e77cfa3a80df2fa00d2d5fd653433251",
+    "sourceSha": "1f4174724b0ec028b6a2d9d429509148e6e63b62",
+    "sourceTree": "fe05e9a24270e99cb1f7680bdf001db988932cbb",
+    "qaPath": "tools/qa/cxorbia-i3-r22-tablon-provider-ack-source.test.mjs",
+    "qaBlob": "bd8db1557ba7593f6f51c41a1b51cdd7a5d08615",
+    "staticChecks": 6,
+    "staticDecision": "PASS_STATIC_ASSERTIONS_NOT_NODE_CI",
+    "browser": "PENDING_GITHUB_ACTIONS_BILLING",
+    "effect": "Tablon confirmar/proponer routes exact authenticated shopper visit into durable owner; no false UI claims; no notifications used as payment/date ACK",
+    "production": false,
+    "providerWrites": 0
+  },
+  "i3Oct15GitHubBillingEnvironmentFailure": {
+    "classification": "ENVIRONMENT_FAILURE",
+    "owner": "GITHUB_ACCOUNT_BILLING_LOCK",
+    "runId": 38699276518,
+    "jobId": 116303236442,
+    "exactAnnotation": "The job was not started because your account is locked due to a billing issue.",
+    "runnerId": 0,
+    "steps": 0,
+    "proof": "https://api.github.com/repos/paulaosoriof86/demoCXOrbia/check-runs/116303236442/annotations",
+    "impact": "CANONICAL_ACTIONS_BLOCKS_SOURCE_QA_DEV_MATERIALIZATION_LIVE_E2E_GATE20_GATE21",
+    "userAction": "GitHub Billing & Licensing / Payment information or GitHub Support",
+    "codeFixRequired": false,
+    "production": "DO_NOT_TOUCH"
   }
 }

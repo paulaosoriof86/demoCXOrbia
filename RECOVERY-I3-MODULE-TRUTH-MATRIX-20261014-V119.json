@@ -103,11 +103,11 @@
     }
   },
   "productSource": {
-    "sha": "13173ce31a12dcca53ef2dbe11820463b0009f0f",
-    "treeSha": "8048137afb0f242d8105dceba7d5167fe789601d",
-    "predecessorProductSourceSha": "a9d878e8747f12138faee9f07ba4780d65383b55",
-    "message": "fix(i3/r22): authorize exact historical alias notification targets across shoppers [p0-proven]",
-    "authorityState": "R22_TRANSVERSAL_SOURCE_FIXED_PENDING_CI_DEV_LIVE"
+    "sha": "1f4174724b0ec028b6a2d9d429509148e6e63b62",
+    "treeSha": "fe05e9a24270e99cb1f7680bdf001db988932cbb",
+    "predecessorProductSourceSha": "13173ce31a12dcca53ef2dbe11820463b0009f0f",
+    "message": "fix(i3/r22): stop false Tablon date confirmations, route to exact provider-backed visit",
+    "authorityState": "SOURCE_FIXED_BILLING_ENVIRONMENT_HOLD"
   },
   "controlHeadAtConstruction": "516f26ee75b644ad10d3a1d6093f24b91d347736",
   "phaseAComplete": false,
@@ -803,8 +803,8 @@
         "Cliente"
       ],
       "contractFunctional": "Proyecto/Contexto/Visual",
-      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
-      "actionRequired": "R22_CROSS_SURFACE_SOURCE_QA_SAME_ARTIFACT_DEV_E2E_HUMAN",
+      "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN",
+      "actionRequired": "R22_TABLON_AUTHENTICATED_VISIT_PROVIDER_E2E_NOT_LOCAL_NOTIFICATION_ACK",
       "preI4SuccessorCommits": [
         "50b6a25d79713b0f165cffc4355c7b7ffd1d9e84"
       ],
@@ -823,11 +823,11 @@
       "servedRuntimeRevision": "cxorbia-live-hr-dev-00249-pqh",
       "servedHostingVersion": "sites/cxorbia-backend-dev/versions/ab360ebba8343d30",
       "liveReproofState": "PASS_RUN1348_SUPPORT_DURABLE__FULL_SAME_ARTIFACT_E2E_REQUIRED",
-      "currentCandidateSource": "02580d76c2b5322531b7653a178c02d5eff020f9",
-      "currentCandidateTree": "4b3909b59837842630df005d6604bf7b7ab357db",
+      "currentCandidateSource": "1f4174724b0ec028b6a2d9d429509148e6e63b62",
+      "currentCandidateTree": "fe05e9a24270e99cb1f7680bdf001db988932cbb",
       "currentOwnerBlobs": {
         "app/modules/novedades.js": "735f977d139415807938fd29f4e03b1ecb3edefe",
-        "app/modules/tablon.js": "23c8b5cf1198e44dd668edd1e6ba17794b6cf344",
+        "app/modules/tablon.js": "bb0da6c1e77cfa3a80df2fa00d2d5fd653433251",
         "app/modules/documentos.js": "15a90b0fe57fdb4ef4c01b0d1017cd127bfd13bd",
         "app/core/backend-resources.js": "838847237551e222af93fb2941fea50467b95656",
         "app/core/backend-bulletins.js": "85332db80d7a946818d9dd9ec217b190f5e7f158",
@@ -4473,10 +4473,10 @@
       "f9ApprovedBlob": "d2eb7784d4b695f863d330f42a6ee6575a87a3f6",
       "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
       "latestApprovedBlob": "d2eb7784d4b695f863d330f42a6ee6575a87a3f6",
-      "currentBlob": "23c8b5cf1198e44dd668edd1e6ba17794b6cf344",
+      "currentBlob": "bb0da6c1e77cfa3a80df2fa00d2d5fd653433251",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "SOURCE_FIXED_DEV_MATERIALIZED_PENDING_LIVE_E2E_HUMAN",
+      "classification": "SOURCE_FIXED_PENDING_QA_DEV_E2E_HUMAN",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "d2eb7784d4b695f863d330f42a6ee6575a87a3f6",
       "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
@@ -4490,9 +4490,27 @@
       "approvalDisposition": "KEEP",
       "currentCumulativeSource": "f2a50044ca5b4bac5053f5a88de041fd5c7f72f9",
       "currentLoadOrder": 92,
-      "previousMatrixCurrentBlob": "d2eb7784d4b695f863d330f42a6ee6575a87a3f6",
+      "previousMatrixCurrentBlob": "23c8b5cf1198e44dd668edd1e6ba17794b6cf344",
       "byteAuthorityReadback": "EXACT_GIT_TREE_SOURCE_ONLY",
-      "r22CrossSurfaceSource": "02580d76c2b5322531b7653a178c02d5eff020f9"
+      "r22CrossSurfaceSource": "02580d76c2b5322531b7653a178c02d5eff020f9",
+      "lastP0R22SourceProof": {
+        "findingId": "R22",
+        "related": "VRM-193_NOT_REOPENED",
+        "classification": "FUNCTIONAL_DEFECT",
+        "owner": "app/modules/tablon.js",
+        "previousBlob": "23c8b5cf1198e44dd668edd1e6ba17794b6cf344",
+        "afterBlob": "bb0da6c1e77cfa3a80df2fa00d2d5fd653433251",
+        "sourceSha": "1f4174724b0ec028b6a2d9d429509148e6e63b62",
+        "sourceTree": "fe05e9a24270e99cb1f7680bdf001db988932cbb",
+        "qaPath": "tools/qa/cxorbia-i3-r22-tablon-provider-ack-source.test.mjs",
+        "qaBlob": "bd8db1557ba7593f6f51c41a1b51cdd7a5d08615",
+        "staticChecks": 6,
+        "staticDecision": "PASS_STATIC_ASSERTIONS_NOT_NODE_CI",
+        "browser": "PENDING_GITHUB_ACTIONS_BILLING",
+        "effect": "Tablon confirmar/proponer routes exact authenticated shopper visit into durable owner; no false UI claims; no notifications used as payment/date ACK",
+        "production": false,
+        "providerWrites": 0
+      }
     },
     {
       "path": "app/modules/cert.js",
@@ -7561,7 +7579,7 @@
     "production": false
   },
   "supersedesMatrix": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V113.json",
-  "supersedesGitBlob": "05b393913909fa1a59d66f80a92eda053e2e5ece",
+  "supersedesGitBlob": "a57e4cdf87fc860b1ea374f7e099a7398f2432df",
   "currentSourceReproof": {
     "runId": 37159003511,
     "runNumber": 1014,
@@ -10700,5 +10718,37 @@
     "dev": "CURRENT_DEV_IS_PREDECESSOR_NOT_THIS_SOURCE",
     "human": "PENDING",
     "production": false
+  },
+  "i3Oct15R22TablonNoFalseAckSource": {
+    "findingId": "R22",
+    "related": "VRM-193_NOT_REOPENED",
+    "classification": "FUNCTIONAL_DEFECT",
+    "owner": "app/modules/tablon.js",
+    "previousBlob": "23c8b5cf1198e44dd668edd1e6ba17794b6cf344",
+    "afterBlob": "bb0da6c1e77cfa3a80df2fa00d2d5fd653433251",
+    "sourceSha": "1f4174724b0ec028b6a2d9d429509148e6e63b62",
+    "sourceTree": "fe05e9a24270e99cb1f7680bdf001db988932cbb",
+    "qaPath": "tools/qa/cxorbia-i3-r22-tablon-provider-ack-source.test.mjs",
+    "qaBlob": "bd8db1557ba7593f6f51c41a1b51cdd7a5d08615",
+    "staticChecks": 6,
+    "staticDecision": "PASS_STATIC_ASSERTIONS_NOT_NODE_CI",
+    "browser": "PENDING_GITHUB_ACTIONS_BILLING",
+    "effect": "Tablon confirmar/proponer routes exact authenticated shopper visit into durable owner; no false UI claims; no notifications used as payment/date ACK",
+    "production": false,
+    "providerWrites": 0
+  },
+  "i3Oct15BillingLock": {
+    "classification": "ENVIRONMENT_FAILURE",
+    "owner": "GITHUB_ACCOUNT_BILLING_LOCK",
+    "runId": 38699276518,
+    "jobId": 116303236442,
+    "exactAnnotation": "The job was not started because your account is locked due to a billing issue.",
+    "runnerId": 0,
+    "steps": 0,
+    "proof": "https://api.github.com/repos/paulaosoriof86/demoCXOrbia/check-runs/116303236442/annotations",
+    "impact": "CANONICAL_ACTIONS_BLOCKS_SOURCE_QA_DEV_MATERIALIZATION_LIVE_E2E_GATE20_GATE21",
+    "userAction": "GitHub Billing & Licensing / Payment information or GitHub Support",
+    "codeFixRequired": false,
+    "production": "DO_NOT_TOUCH"
   }
 }
