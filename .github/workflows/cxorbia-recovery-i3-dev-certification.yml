@@ -55,7 +55,7 @@ env:
 jobs:
   vrm153-proof:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM153_SAFE_SUPERSESSION_SOURCE_PROOF_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM153_SAFE_SUPERSESSION_SOURCE_PROOF_REQUIRED' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -124,7 +124,7 @@ jobs:
          node --test backend/runtime/hr-live-service/test/cxorbia-i3-phasea-completion-source-contract.test.mjs
   vrm143-151-source-reproof:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM143_151_SOURCE_REPROOF_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM143_151_SOURCE_REPROOF_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
@@ -184,7 +184,7 @@ jobs:
           compression-level: 0
   vrm143-151-dev-materialization:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM143_151_DEV_MATERIALIZATION_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM143_151_DEV_MATERIALIZATION_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
@@ -295,7 +295,7 @@ jobs:
           compression-level: 0
   vrm151-historical-dry-run:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM151_HISTORICAL_DRY_RUN_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM151_HISTORICAL_DRY_RUN_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -349,7 +349,7 @@ jobs:
           compression-level: 0
   vrm151-historical-amount-diagnostic:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM151_HISTORICAL_AMOUNT_DIAGNOSTIC_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM151_HISTORICAL_AMOUNT_DIAGNOSTIC_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -395,7 +395,7 @@ jobs:
           compression-level: 0
   vrm151-canonical-owner-diagnostic:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM151_CANONICAL_VISIT_OWNER_DIAGNOSTIC_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM151_CANONICAL_VISIT_OWNER_DIAGNOSTIC_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -442,7 +442,7 @@ jobs:
           compression-level: 0
   vrm151-seven-exceptions-diagnostic:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM151_SEVEN_REIMBURSEMENT_EXCEPTIONS_DIAGNOSTIC_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM151_SEVEN_REIMBURSEMENT_EXCEPTIONS_DIAGNOSTIC_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -491,7 +491,7 @@ jobs:
           compression-level: 0
   vrm151-payment-eligibility-diagnostic:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM151_PAYMENT_ELIGIBILITY_DIAGNOSTIC_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM151_PAYMENT_ELIGIBILITY_DIAGNOSTIC_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
@@ -534,7 +534,7 @@ jobs:
           compression-level: 0
   vrm151-provider-source-reproof:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM151_PROVIDER_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM151_ROUTER_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM151_CANONICAL_OWNER_SOURCE_REPROOF_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM151_PROVIDER_SOURCE_REPROOF_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM151_ROUTER_SOURCE_REPROOF_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM151_CANONICAL_OWNER_SOURCE_REPROOF_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -599,7 +599,7 @@ jobs:
           compression-level: 0
   vrm151-runtime-only-dev-materialization:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM151_RUNTIME_ONLY_DEV_MATERIALIZATION_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM151_RUNTIME_ONLY_DEV_MATERIALIZATION_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 55
     env:
@@ -700,7 +700,7 @@ jobs:
           compression-level: 0
   vrm151-final-canonical-dry-run:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM151_FINAL_CANONICAL_DRY_RUN_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM151_FINAL_CANONICAL_DRY_RUN_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -762,7 +762,7 @@ jobs:
           compression-level: 0
   prei4-admin-008-mapping-reproof:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_008_HR_MAPPING_REPROOF_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_ADMIN_008_HR_MAPPING_REPROOF_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -802,7 +802,7 @@ jobs:
           compression-level: 0
   prei4-admin-008-runtime-materialization:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_008_DEV_RUNTIME_MATERIALIZATION_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-admin-008-runtime]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_ADMIN_008_DEV_RUNTIME_MATERIALIZATION_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[prei4-admin-008-runtime]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 50
     env:
@@ -931,7 +931,7 @@ jobs:
         run: rm -rf "$RUNNER_TEMP/cxorbia-prei4-admin008-source"
   prei4-admin-002-postulation-semantic-diagnostic:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_002_POSTULACIONES_DIAGNOSTIC_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-admin-002-diagnostic]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_ADMIN_002_POSTULACIONES_DIAGNOSTIC_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[prei4-admin-002-diagnostic]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
@@ -982,7 +982,7 @@ jobs:
           include-hidden-files: true
   prei4-admin-002-source-reproof:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_002_SOURCE_REPROOF_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-admin-002-source]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_ADMIN_002_SOURCE_REPROOF_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[prei4-admin-002-source]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     env:
@@ -1029,7 +1029,7 @@ jobs:
           include-hidden-files: true
   prei4-admin-002-hosting-live-reproof:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_002_HOSTING_REPROOF_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-admin-002-hosting]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_ADMIN_002_HOSTING_REPROOF_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[prei4-admin-002-hosting]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     env:
@@ -1148,7 +1148,7 @@ jobs:
         run: rm -rf "$RUNNER_TEMP/cxorbia-prei4-admin002-hosting"
   prei4-admin-003-identity-diagnostic:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_003_IDENTITY_DIAGNOSTIC_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-admin-003-diagnostic]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_ADMIN_003_IDENTITY_DIAGNOSTIC_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[prei4-admin-003-diagnostic]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 18
     env:
@@ -1197,7 +1197,7 @@ jobs:
           include-hidden-files: true
   prei4-admin-003-owner-diagnostic:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_003_OWNER_DIAGNOSTIC_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-admin-003-owner]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_ADMIN_003_OWNER_DIAGNOSTIC_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[prei4-admin-003-owner]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 24
     env:
@@ -1247,7 +1247,7 @@ jobs:
           include-hidden-files: true
   prei4-admin-003-source-reproof:
     needs: canonical-candidate-authority
-    if: ${{ (needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_003_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_003_CUMULATIVE_SOURCE_REPROOF_REQUIRED') && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-admin-003-source]') }}
+    if: ${{ (needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_ADMIN_003_SOURCE_REPROOF_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_ADMIN_003_CUMULATIVE_SOURCE_REPROOF_REQUIRED')&&github.event_name=='push'&&contains(github.event.head_commit.message, '[prei4-admin-003-source]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -1295,7 +1295,7 @@ jobs:
           include-hidden-files: true
   prei4-cumulative-regression-source-guard:
     needs: canonical-candidate-authority
-    if: ${{ (needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_003_CUMULATIVE_SOURCE_REPROOF_REQUIRED' || (needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_HOSTING_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_FINANCE_LIVE_RESUME_REQUIRED') || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED') && github.event_name == 'push' && (contains(github.event.head_commit.message, '[prei4-cumulative-regression]') || contains(github.event.head_commit.message, '[prei4-content-001-source]')) }}
+    if: ${{ (needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_CUMULATIVE_REGRESSION_SOURCE_GUARD_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_ADMIN_003_CUMULATIVE_SOURCE_REPROOF_REQUIRED'||(needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_ADMIN_004_HOSTING_MATERIALIZATION_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_ADMIN_004_FINANCE_LIVE_RESUME_REQUIRED')||needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_ADMIN_004_SOURCE_REPROOF_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED')&&github.event_name=='push'&&(contains(github.event.head_commit.message, '[prei4-cumulative-regression]')||contains(github.event.head_commit.message, '[prei4-content-001-source]')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -1355,7 +1355,7 @@ jobs:
           include-hidden-files: true
   prei4-admin-004-hosting-materialization-live:
     needs: canonical-candidate-authority
-    if: ${{ (needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_HOSTING_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_004_FINANCE_LIVE_RESUME_REQUIRED') && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-admin-004-finance-live-resume]') }}
+    if: ${{ (needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_ADMIN_004_HOSTING_MATERIALIZATION_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_ADMIN_004_FINANCE_LIVE_RESUME_REQUIRED')&&github.event_name=='push'&&contains(github.event.head_commit.message, '[prei4-admin-004-finance-live-resume]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
@@ -1387,7 +1387,7 @@ jobs:
           compression-level: 0
   prei4-admin-004-cumulative-dev-materialization:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-content-001-live]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_CONTENT_001_SOURCE_REPROOF_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[prei4-content-001-live]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 55
     env:
@@ -1420,7 +1420,7 @@ jobs:
           include-hidden-files: true
   prei4-admin-003-cumulative-live-reproof:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_ADMIN_003_CUMULATIVE_LIVE_RESUME_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-admin-003-live]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_ADMIN_003_CUMULATIVE_LIVE_RESUME_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[prei4-admin-003-live]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
@@ -1472,7 +1472,7 @@ jobs:
           include-hidden-files: true
   i3-finance-focal-reproof:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_FINANCE_FOCAL_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM174_HISTORICAL_PAYMENT_REPROOF_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_I3_FINANCE_FOCAL_REPROOF_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_I3_VRM174_HISTORICAL_PAYMENT_REPROOF_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
@@ -1550,7 +1550,7 @@ jobs:
           compression-level: 0
   vrm085-postulation-sync-diagnostic:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-085-diagnostic]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[vrm-085-diagnostic]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -1613,7 +1613,7 @@ jobs:
           include-hidden-files: true
   vrm085-control-reproof:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-085-reproof]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM085_POSTULATION_SYNC_DIAGNOSTIC_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[vrm-085-reproof]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
@@ -1677,7 +1677,7 @@ jobs:
           include-hidden-files: true
   vrm086-exact-alias-control-reproof:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-086-reproof]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM086_IDENTITY_ALIAS_CONTROL_REPROOF_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[vrm-086-reproof]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
@@ -1744,7 +1744,7 @@ jobs:
           include-hidden-files: true
   vrm088-live-fixture-availability-reproof:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM088_LIVE_FIXTURE_AVAILABILITY_REPROOF_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-088-reproof]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM088_LIVE_FIXTURE_AVAILABILITY_REPROOF_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[vrm-088-reproof]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 55
     permissions:
@@ -1834,7 +1834,7 @@ jobs:
         run: rm -rf node_modules "$RUNNER_TEMP/vrm088-cert" "$RUNNER_TEMP/vrm088-source"
   gate21-same-certified-artifact-after-vrm088:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'READY_FOR_GATE21_SAME_CERTIFIED_ARTIFACT' && github.event_name == 'push' && contains(github.event.head_commit.message, '[gate21-only]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='READY_FOR_GATE21_SAME_CERTIFIED_ARTIFACT'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[gate21-only]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     permissions:
@@ -1951,7 +1951,7 @@ jobs:
           include-hidden-files: true
   vrm083-hr-browser-revision-diagnostic:
     needs: canonical-candidate-authority
-    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-083-hr-browser-revision-diagnostic]') }}
+    if: ${{ github.event_name=='push'&&contains(github.event.head_commit.message, '[vrm-083-hr-browser-revision-diagnostic]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -2002,7 +2002,7 @@ jobs:
           include-hidden-files: true
   vrm083-runtime-materialization:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-083-runtime]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM083_DEV_MATERIALIZATION_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[vrm-083-runtime]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 50
     env:
@@ -2108,7 +2108,7 @@ jobs:
         run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-vrm083-source"
   vrm083-runtime-readback:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-083-readback-resume]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM083_DEV_MATERIALIZED_REPROOF_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[vrm-083-readback-resume]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     env:
@@ -2188,7 +2188,7 @@ jobs:
         run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-vrm083-readback-source"
   vrm084-benefits-human-label-hosting:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-084-hosting]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM084_HOSTING_MATERIALIZATION_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[vrm-084-hosting]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
@@ -2283,7 +2283,7 @@ jobs:
           compression-level: 0
           include-hidden-files: true
   vrm076-terminal-module-truth-finalizer:
-    if: ${{ github.event_name == 'push' && (contains(github.event.head_commit.message, '[vrm-076-finalizer]') || contains(github.event.head_commit.message, '[vrm-087-finalizer]')) }}
+    if: ${{ github.event_name=='push'&&(contains(github.event.head_commit.message, '[vrm-076-finalizer]')||contains(github.event.head_commit.message, '[vrm-087-finalizer]')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -2374,7 +2374,7 @@ jobs:
           compression-level: 0
   vrm077-postulation-hr-conflict-live:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM077_HOSTING_REPROOF_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-077-reproof]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM077_HOSTING_REPROOF_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[vrm-077-reproof]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -2501,7 +2501,7 @@ jobs:
           include-hidden-files: true
   vrm078-external-project-live:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM078_FINAL_UI_REPROOF_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-078-live]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM078_FINAL_UI_REPROOF_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[vrm-078-live]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 22
     env:
@@ -2637,7 +2637,7 @@ jobs:
           include-hidden-files: true
   vrm079-documents-resources-live:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM079_LIVE_REPROOF_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-079-live]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM079_LIVE_REPROOF_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[vrm-079-live]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 22
     env:
@@ -2770,7 +2770,7 @@ jobs:
           include-hidden-files: true
   vrm080-connected-admin-config-live:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM080_LIVE_REPROOF_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-080-live]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM080_LIVE_REPROOF_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[vrm-080-live]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 24
     env:
@@ -2893,7 +2893,7 @@ jobs:
           include-hidden-files: true
   vrm081-population-credential-diagnostic:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM218_EXACT_OWNER_DIAGNOSTIC_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM217_219_POPULATION_ROOT_DIAGNOSTIC_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM217_219_RUNTIME_RECONCILIATION_READBACK_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM217_POST_SWEEP_READBACK_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM219_POST_RUN1087_READBACK_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM219_POST_RUN1090_READBACK_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM218_EXACT_OWNER_DIAGNOSTIC_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM217_219_POPULATION_ROOT_DIAGNOSTIC_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM217_219_RUNTIME_RECONCILIATION_READBACK_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM217_POST_SWEEP_READBACK_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM219_POST_RUN1087_READBACK_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM219_POST_RUN1090_READBACK_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -2944,7 +2944,7 @@ jobs:
           compression-level: 0
   v70-vrm069-operational-visit-key-runtime:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM069_RUNTIME_MATERIALIZATION_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v70-vrm069-runtime]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM069_RUNTIME_MATERIALIZATION_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[v70-vrm069-runtime]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
@@ -3046,7 +3046,7 @@ jobs:
           compression-level: 0
   c3-preterminal-module-truth:
     needs: canonical-candidate-authority
-    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[c3-preterminal-module-truth]') }}
+    if: ${{ github.event_name=='push'&&contains(github.event.head_commit.message, '[c3-preterminal-module-truth]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     env:
@@ -3174,7 +3174,7 @@ jobs:
           compression-level: 0
   vrm043-name-diagnostic:
     needs: canonical-candidate-authority
-    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-043-name-diagnostic]') }}
+    if: ${{ github.event_name=='push'&&contains(github.event.head_commit.message, '[vrm-043-name-diagnostic]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
@@ -3223,7 +3223,7 @@ jobs:
         run: rm -rf node_modules
   vrm043-control-proof:
     needs: canonical-candidate-authority
-    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm-043-control-proof]') }}
+    if: ${{ github.event_name=='push'&&contains(github.event.head_commit.message, '[vrm-043-control-proof]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
@@ -3363,7 +3363,7 @@ jobs:
         run: rm -rf node_modules "$RUNNER_TEMP/vrm043-source"
   certify:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'READY_FOR_TERMINAL_CERTIFICATION' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='READY_FOR_TERMINAL_CERTIFICATION' }}
     runs-on: ubuntu-latest
     timeout-minutes: 85
     env:
@@ -3613,7 +3613,7 @@ jobs:
         run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-i3-terminal-source" "$RUNNER_TEMP/cxorbia-current-module-truth"
   live-fixtures:
     needs: [canonical-candidate-authority, certify]
-    if: ${{ needs.certify.result == 'success' }}
+    if: ${{ needs.certify.result=='success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 55
     permissions:
@@ -3678,12 +3678,12 @@ jobs:
         run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-terminal-cert" "$RUNNER_TEMP/cxorbia-terminal-fixture-source"
   gate21:
     needs: [certify, live-fixtures]
-    if: ${{ needs.certify.result == 'success' && needs.live-fixtures.result == 'success' }}
+    if: ${{ needs.certify.result=='success'&&needs.live-fixtures.result=='success' }}
     uses: ./.github/workflows/cxorbia-recovery-i3-gate21-artifact-fingerprint.yml
     secrets: inherit
   pre-i4-vrm039-config-diagnostic:
     needs: canonical-candidate-authority
-    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[pre-i4-vrm039-config-diagnostic]') }}
+    if: ${{ github.event_name=='push'&&contains(github.event.head_commit.message, '[pre-i4-vrm039-config-diagnostic]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -3754,7 +3754,7 @@ jobs:
           retention-days: 30
   pre-i4-vrm036-source-proof:
     needs: canonical-candidate-authority
-    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[pre-i4-vrm036-source-proof]') }}
+    if: ${{ github.event_name=='push'&&contains(github.event.head_commit.message, '[pre-i4-vrm036-source-proof]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
@@ -3896,7 +3896,7 @@ jobs:
          test "$(jq -r '.currentCertificationMutations' "$PROOF_OUT/live-certification-evidence-proof.json")" = "0"
   pre-i4-vrm037-042-source-proof:
     needs: canonical-candidate-authority
-    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[pre-i4-vrm037-042-source-proof]') }}
+    if: ${{ github.event_name=='push'&&contains(github.event.head_commit.message, '[pre-i4-vrm037-042-source-proof]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
@@ -3999,7 +3999,7 @@ jobs:
          test "$(jq -r '.decision' "$PROOF_OUT/live-source-proof.json")" = "PASS_PRE_I4_VRM037_042_LIVE_SOURCE_PROOF"
   pre-i4-vrm037-diagnostic:
     needs: canonical-candidate-authority
-    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[pre-i4-vrm037-diagnostic]') }}
+    if: ${{ github.event_name=='push'&&contains(github.event.head_commit.message, '[pre-i4-vrm037-diagnostic]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
@@ -4131,7 +4131,7 @@ jobs:
           retention-days: 30
           compression-level: 0
   vrm044-focal-reproof:
-    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm044-focal]') }}
+    if: ${{ github.event_name=='push'&&contains(github.event.head_commit.message, '[vrm044-focal]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -4181,7 +4181,7 @@ jobs:
           retention-days: 30
   vrm044-dev-materialization:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'READY_FOR_VRM044_DEV_MATERIALIZATION' && github.event_name == 'push' && contains(github.event.head_commit.message, '[vrm044-materialize]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='READY_FOR_VRM044_DEV_MATERIALIZATION'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[vrm044-materialize]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
@@ -4299,7 +4299,7 @@ jobs:
         run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-vrm044-source"
   v21-paula-remediation-dev:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_REMEDIATION_SOURCE_CREATED_PENDING_DEV_REPROOF' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v21-remediation-dev]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_REMEDIATION_SOURCE_CREATED_PENDING_DEV_REPROOF'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[v21-remediation-dev]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 70
     env:
@@ -4435,7 +4435,7 @@ jobs:
         run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-v21-source"
   v21-paula-remediation-readback:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_V21_DEV_MATERIALIZED_PENDING_STABLE_READBACK' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v21-readback-resume]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_V21_DEV_MATERIALIZED_PENDING_STABLE_READBACK'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[v21-readback-resume]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     env:
@@ -4537,7 +4537,7 @@ jobs:
         run: rm -rf node_modules
   v25-second-visual-forensic:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PAULA_SECOND_VISUAL_REVIEW_DEFECTS_FOUND' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v25-visual-forensic]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_PAULA_SECOND_VISUAL_REVIEW_DEFECTS_FOUND'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[v25-visual-forensic]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -4580,7 +4580,7 @@ jobs:
         run: rm -rf node_modules
   v26-identity-assignment-reconcile:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PAULA_SECOND_VISUAL_REVIEW_DEFECTS_FOUND' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v26-reconcile]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_PAULA_SECOND_VISUAL_REVIEW_DEFECTS_FOUND'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[v26-reconcile]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
@@ -4622,7 +4622,7 @@ jobs:
         run: rm -rf node_modules
   v27-duplicate-visit-owner-proof:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PAULA_SECOND_VISUAL_REVIEW_DEFECTS_FOUND' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v27-dup-proof]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_PAULA_SECOND_VISUAL_REVIEW_DEFECTS_FOUND'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[v27-dup-proof]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -4655,7 +4655,7 @@ jobs:
         run: rm -rf node_modules
   v28-second-review-remediation:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_V28_SOURCE_READY_FOR_DEV_REMEDIATION' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v28-remediation-dev]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_V28_SOURCE_READY_FOR_DEV_REMEDIATION'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[v28-remediation-dev]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 75
     env:
@@ -4777,7 +4777,7 @@ jobs:
         run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-v28-source"
   v28-second-review-resume:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_V28_DEV_MATERIALIZED_REPAIR_RESUME_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v28-repair-resume]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_V28_DEV_MATERIALIZED_REPAIR_RESUME_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[v28-repair-resume]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
@@ -4874,7 +4874,7 @@ jobs:
         run: rm -rf node_modules
   v33-profile-boundary-hosting-reproof:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM057_SOURCE_FIX_READY_FOR_HOSTING_REPROOF' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v40-hosting-reproof]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM057_SOURCE_FIX_READY_FOR_HOSTING_REPROOF'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[v40-hosting-reproof]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
@@ -4976,7 +4976,7 @@ jobs:
         run: rm -rf node_modules "$RUNNER_TEMP/cxorbia-v40-source"
   v41-second-review-cumulative-live-reproof:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_SECOND_REVIEW_CUMULATIVE_REPROOF_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v41-second-review-reproof]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_SECOND_REVIEW_CUMULATIVE_REPROOF_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[v41-second-review-reproof]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     env:
@@ -5050,7 +5050,7 @@ jobs:
         run: rm -rf node_modules
   v42-milton-durable-diagnostic:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM055_DURABLE_MILTON_DIAGNOSTIC_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v42-milton-diagnostic]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM055_DURABLE_MILTON_DIAGNOSTIC_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[v42-milton-diagnostic]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -5098,7 +5098,7 @@ jobs:
         run: rm -rf node_modules
   v43-milton-durable-repair:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM055_DURABLE_REPAIR_READY' && github.event_name == 'push' && contains(github.event.head_commit.message, '[v43-milton-repair]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM055_DURABLE_REPAIR_READY'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[v43-milton-repair]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -5149,7 +5149,7 @@ jobs:
         run: rm -rf node_modules
   c3-terminal-dev-identity-readback:
     needs: canonical-candidate-authority
-    if: ${{ github.event_name == 'push' && ((needs.canonical-candidate-authority.outputs.status == 'HOLD_C3_TERMINAL_IDENTITY_READBACK' && contains(github.event.head_commit.message, '[c3-dev-readback]')) || (needs.canonical-candidate-authority.outputs.status == 'HOLD_PENDING_PAULA_VISUAL_ACCEPTANCE' && contains(github.event.head_commit.message, '[visual-current-readback]'))) }}
+    if: ${{ github.event_name=='push'&&((needs.canonical-candidate-authority.outputs.status=='HOLD_C3_TERMINAL_IDENTITY_READBACK'&&contains(github.event.head_commit.message, '[c3-dev-readback]'))||(needs.canonical-candidate-authority.outputs.status=='HOLD_PENDING_PAULA_VISUAL_ACCEPTANCE'&&contains(github.event.head_commit.message, '[visual-current-readback]'))) }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -5437,7 +5437,7 @@ jobs:
           compression-level: 0
   pre-i4-cert-res-dev-materialization:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CERT_RES_REMEDIATION_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-cert-res-materialize]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_CERT_RES_REMEDIATION_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[prei4-cert-res-materialize]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 55
     env:
@@ -5581,7 +5581,7 @@ jobs:
           compression-level: 0
   pre-i4-cert-res-live-resume:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CERT_RES_REMEDIATION_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-cert-res-live-resume]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_CERT_RES_REMEDIATION_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[prei4-cert-res-live-resume]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
@@ -5677,7 +5677,7 @@ jobs:
           compression-level: 0
   pre-i4-cert-res-runtime-only-rematerialize:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_CERT_RES_REMEDIATION_REQUIRED' && github.event_name == 'push' && contains(github.event.head_commit.message, '[prei4-cert-res-runtime-only]') }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_CERT_RES_REMEDIATION_REQUIRED'&&github.event_name=='push'&&contains(github.event.head_commit.message, '[prei4-cert-res-runtime-only]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
@@ -5718,7 +5718,7 @@ jobs:
           compression-level: 0
   vrm151-durable-historical-reconciliation:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM151_DURABLE_RECONCILIATION_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM151_DURABLE_RECONCILIATION_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
@@ -5790,7 +5790,7 @@ jobs:
           compression-level: 0
   vrm153-reconciliation-readback-diagnostic:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM153_RECONCILIATION_READBACK_DIAGNOSTIC_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM153_RECONCILIATION_READBACK_DIAGNOSTIC_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -5841,7 +5841,7 @@ jobs:
           compression-level: 0
   vrm154-156-frontend-source-reproof:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM154_156_FRONTEND_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM187_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM188_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM189_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM190_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM191_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM192_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM216_SHARED_IDEMPOTENCY_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM217_219_PROVIDER_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM221_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM227_SOURCE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM258_SOURCE_PROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM259_SOURCE_PROOF_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM154_156_FRONTEND_SOURCE_REPROOF_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM187_SOURCE_REPROOF_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM188_SOURCE_REPROOF_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM189_SOURCE_REPROOF_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM190_SOURCE_REPROOF_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM191_SOURCE_REPROOF_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM192_SOURCE_REPROOF_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM216_SHARED_IDEMPOTENCY_SOURCE_REPROOF_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM217_219_PROVIDER_SOURCE_REPROOF_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM221_SOURCE_REPROOF_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM227_SOURCE_REPROOF_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM258_SOURCE_PROOF_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM259_SOURCE_PROOF_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -5967,7 +5967,7 @@ jobs:
          test "$(jq -r '[.assertions[]|select(.name=="vrm168_existing_hr_identity_preserves_conflict_review")][0].ok' "$FOCAL_OUT/vrm258-canonical-read-model.json")" = "true"
   vrm154-156-dev-materialization:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM154_156_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_V190_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM216_SHARED_IDEMPOTENCY_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM217_219_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM221_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM227_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM249_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM174_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM256_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM257_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM258_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM259_DEV_MATERIALIZATION_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_B7_CONTEXT_DEV_MATERIALIZATION_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM154_156_DEV_MATERIALIZATION_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_V190_DEV_MATERIALIZATION_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_REJECTED_PHASEA_DEV_MATERIALIZATION_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM216_SHARED_IDEMPOTENCY_DEV_MATERIALIZATION_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM217_219_DEV_MATERIALIZATION_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM221_DEV_MATERIALIZATION_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM227_DEV_MATERIALIZATION_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_I3_VRM249_DEV_MATERIALIZATION_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_I3_VRM174_DEV_MATERIALIZATION_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM256_DEV_MATERIALIZATION_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM257_DEV_MATERIALIZATION_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM258_DEV_MATERIALIZATION_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM259_DEV_MATERIALIZATION_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_I3_B7_CONTEXT_DEV_MATERIALIZATION_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
@@ -6100,7 +6100,7 @@ jobs:
           compression-level: 0
   vrm185-admin-live-adjudication:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_V190_LIVE_REPROOF_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_V190_LIVE_REPROOF_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
@@ -6174,7 +6174,7 @@ jobs:
           compression-level: 0
   vrm157-dev-readback-only:
     needs: [canonical-candidate-authority, vrm185-admin-live-adjudication]
-    if: ${{ always() && needs.canonical-candidate-authority.result == 'success' && (needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM157_DEV_READBACK_ONLY_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM154_156_LIVE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_HUMAN_VISUAL_REMEDIATION_DIAGNOSTIC_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_V190_LIVE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED') && (needs.canonical-candidate-authority.outputs.status != 'HOLD_V190_LIVE_REPROOF_REQUIRED' || needs.vrm185-admin-live-adjudication.result == 'success') }}
+    if: ${{ always()&&needs.canonical-candidate-authority.result=='success'&&(needs.canonical-candidate-authority.outputs.status=='HOLD_VRM157_DEV_READBACK_ONLY_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM154_156_LIVE_REPROOF_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_HUMAN_VISUAL_REMEDIATION_DIAGNOSTIC_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_V190_LIVE_REPROOF_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED')&&(needs.canonical-candidate-authority.outputs.status!='HOLD_V190_LIVE_REPROOF_REQUIRED'||needs.vrm185-admin-live-adjudication.result=='success') }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -6251,14 +6251,14 @@ jobs:
            test "$(sha256sum "$out" | awk '{print $1}')" = "$(git show "$FOCAL_SOURCE:app/$p" | sha256sum | awk '{print $1}')"
          done
       - name: step
-        if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM154_156_LIVE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_V190_LIVE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED' }}
+        if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM154_156_LIVE_REPROOF_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_V190_LIVE_REPROOF_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED' }}
         run: |
          set -Eeuo pipefail
          PREI4_OUT="$FOCAL_OUT/browser" CXORBIA_PREI4_ROOT="$HOSTING_URL" CXORBIA_PREI4_SOURCE_SHA="$FOCAL_SOURCE" CXORBIA_EXPECTED_HR_REVISION="$HR_REVISION" PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" node tools/qa/cxorbia-vrm154-156-live-reproof.mjs | tee "$FOCAL_OUT/live-reproof.log"
          test "$(jq -r '.decision' "$FOCAL_OUT/browser/result.json")" = "PASS_VRM154_156_SEALED_DEV_LIVE_REPROOF"
          jq -e '.finance.revisionExpected==true and (.finance.canonicalSubmitted==.finance.expected.canonicalSubmitted) and (.finance.paid==.finance.expected.paid) and (.finance.pending==.finance.expected.pending) and (.finance.amountReviewRequired==.finance.expected.amountReviewRequired) and (.finance.octoberRecords==.finance.expected.octoberTouched)' "$FOCAL_OUT/browser/result.json" >/dev/null
       - name: step
-        if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_PREI4_HUMAN_VISUAL_REMEDIATION_DIAGNOSTIC_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_V190_LIVE_REPROOF_REQUIRED' }}
+        if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_PREI4_HUMAN_VISUAL_REMEDIATION_DIAGNOSTIC_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_V190_LIVE_REPROOF_REQUIRED' }}
         run: |
          set -Eeuo pipefail
          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" OUT="$FOCAL_OUT/human-acceptance" HR_FILE="$FOCAL_OUT/hr-live.json" node tools/qa/cxorbia-i3-human-acceptance-forensic-readback.mjs | tee "$FOCAL_OUT/human-acceptance.log"
@@ -6273,7 +6273,7 @@ jobs:
          test "$(jq -r '.hrWrites' "$PROBE_OUT/result.json")" = "0"
          test "$(jq -r '.production' "$PROBE_OUT/result.json")" = "false"
       - name: step
-        if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_V190_LIVE_REPROOF_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED' }}
+        if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_V190_LIVE_REPROOF_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED' }}
         run: |
          set -Eeuo pipefail
          SOURCE_DIR="$RUNNER_TEMP/cxorbia-v190-live-source"; rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"; git archive "$FOCAL_SOURCE" | tar -x -C "$SOURCE_DIR"
@@ -6303,7 +6303,7 @@ jobs:
           compression-level: 0
   vrm153-durable-repair:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM153_AUTHORIZED_SCOPED_DEV_RECONCILIATION' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM153_AUTHORIZED_SCOPED_DEV_RECONCILIATION' }}
     runs-on: ubuntu-latest
     timeout-minutes: 40
     env:
@@ -6347,7 +6347,7 @@ jobs:
           compression-level: 0
   vrm185-paula-identity-topology-readonly:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM185_PAULA_IDENTITY_TOPOLOGY_DIAGNOSTIC_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM185_PAULA_IDENTITY_TOPOLOGY_DIAGNOSTIC_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
@@ -6404,7 +6404,7 @@ jobs:
           compression-level: 0
   vrm185-global-identity-consolidation-plan:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM185_GLOBAL_IDENTITY_CONSOLIDATION_PLAN_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM185_GLOBAL_IDENTITY_CONSOLIDATION_PLAN_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
@@ -6446,7 +6446,7 @@ jobs:
           compression-level: 0
   vrm185-admin-provider-source-test:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM185_ADMIN_PROVIDER_SOURCE_TEST_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM185_ADMIN_PROVIDER_SOURCE_TEST_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -6490,7 +6490,7 @@ jobs:
 
   phasea-rejected-checkpoint-source-proof:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     env: {FOCAL_SOURCE: "${{ needs.canonical-candidate-authority.outputs.source_sha }}", FOCAL_TREE: "${{ needs.canonical-candidate-authority.outputs.source_tree }}"}
@@ -6506,7 +6506,7 @@ jobs:
 
   b1-canonical-visible-identity-source-proof:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_B1_SOURCE_PROOF_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_B1_SOURCE_PROOF_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     env: {FOCAL_SOURCE: "${{ needs.canonical-candidate-authority.outputs.source_sha }}", FOCAL_TREE: "${{ needs.canonical-candidate-authority.outputs.source_tree }}"}
@@ -6522,7 +6522,7 @@ jobs:
 
   b1-canonical-visible-identity-dev-materialization:
     needs: canonical-candidate-authority
-    if: ${{ contains(github.event.head_commit.message, '[i3-phasea-dev-readback]') || contains(github.event.head_commit.message, '[i3-phasea-dev-materialize]') }}
+    if: ${{ contains(github.event.head_commit.message, '[i3-phasea-dev-readback]')||contains(github.event.head_commit.message, '[i3-phasea-dev-materialize]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env: {PHASEA_SOURCE: "${{ needs.canonical-candidate-authority.outputs.source_sha }}", PHASEA_TREE: "${{ needs.canonical-candidate-authority.outputs.source_tree }}"}
@@ -6679,7 +6679,7 @@ jobs:
 
   vrm267-support-focal-live:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM267_SUPPORT_FOCAL_LIVE_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_I3_VRM267_SUPPORT_FOCAL_LIVE_REQUIRED' }}
     runs-on: ubuntu-latest
     env:
       FOCAL_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
@@ -6724,7 +6724,7 @@ jobs:
 
   julissa-identity-topology-readonly:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_JULISSA_IDENTITY_TOPOLOGY_DIAGNOSTIC_REQUIRED' || needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM214_POSTWRITE_READBACK_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_JULISSA_IDENTITY_TOPOLOGY_DIAGNOSTIC_REQUIRED'||needs.canonical-candidate-authority.outputs.status=='HOLD_VRM214_POSTWRITE_READBACK_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -6772,7 +6772,7 @@ jobs:
           compression-level: 0
   julissa-identity-adjudication-write:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_JULISSA_IDENTITY_ADJUDICATION_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_JULISSA_IDENTITY_ADJUDICATION_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
@@ -6859,7 +6859,7 @@ jobs:
 
   vrm215-shopper-population-reproof:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM215_SHOPPER_POPULATION_REPROOF_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM215_SHOPPER_POPULATION_REPROOF_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     env:
@@ -6974,7 +6974,7 @@ jobs:
           compression-level: 0
   vrm217-durable-credential-sweep:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM217_DURABLE_CREDENTIAL_SWEEP_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM217_DURABLE_CREDENTIAL_SWEEP_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     env:
@@ -7035,7 +7035,7 @@ jobs:
           compression-level: 0
   vrm219-exact-alias-remap:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM219_REMAINING_EXACT_ALIAS_REMAP_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM219_REMAINING_EXACT_ALIAS_REMAP_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     permissions:
@@ -7157,7 +7157,7 @@ jobs:
           compression-level: 0
   vrm226-human-identity-topology:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_VRM226_USER_CONFIRMED_IDENTITY_TOPOLOGY_DIAGNOSTIC' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_VRM226_USER_CONFIRMED_IDENTITY_TOPOLOGY_DIAGNOSTIC' }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     permissions:
@@ -7214,7 +7214,7 @@ jobs:
 
   admin-cluster-a-postulations-lifecycle:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_I3_ADMIN_CLUSTER_A_POSTULATIONS_LIFECYCLE_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
@@ -7299,7 +7299,7 @@ jobs:
           compression-level: 0
   vrm249-reservations-read-model-source-reproof:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_I3_VRM249_SOURCE_REPROOF_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_I3_VRM249_SOURCE_REPROOF_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     env:
@@ -7327,7 +7327,7 @@ jobs:
 
   b1-oct07-authenticated-readonly-visual:
     needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status == 'HOLD_B1_OCT07_AUTH_READONLY_VISUAL_PROOF_REQUIRED' }}
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_B1_OCT07_AUTH_READONLY_VISUAL_PROOF_REQUIRED' }}
     runs-on: ubuntu-latest
     timeout-minutes: 18
     env:
