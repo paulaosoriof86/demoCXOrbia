@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
+  "status": "HOLD_I3_OTHER_P0_TERMINAL_E2E_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -8,12 +8,12 @@
   "productTreeAuthority": "e93201ce9039aa20a6d993bf5dc0b9db866d0eac",
   "predecessorProductSourceSha": "52de067d105ee5711859a03c00a6b77ff551224f",
   "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V441_2026-10-14.json",
-  "findingsLedgerExpectedGitBlob": "90e86ae961a560d244cf3fe559b9c833d5573822",
+  "findingsLedgerExpectedGitBlob": "5b2a5ebfc6ff76158c90817dce81039b8e15e9d9",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V119.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "R08_R22_FINANCE_READONLY_REQUIRED",
+  "activeBlocker": "R07_EXTERNAL_HR_ACK__R08_VERTEX_15__R22_READ_RELOAD__FINANCE_HISTORICAL_BATCH",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run one existing I3 DEV authority and read-only metadata preflight for R08 authentic Vertex source, R22 durable notice isolation and R09-R17 financial records; classify owner deltas without changing product or providers; then focal E2E only on demonstrated gaps.",
+  "exactNextAction": "R08: resolve genuine approved instruction source and current certification bank count, run one Vertex 15-question exact provider E2E with pending-review human checkpoint; R22 same-user read ACK persists after reload, exact routes; finance exact historical ledger/backing provider and batch support proof; do not ask Paula for visual review before comprehensive P0 E2E.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -11421,5 +11421,55 @@
     "authWrites": 0,
     "financeWrites": 0,
     "production": false
+  },
+  "r08R22FinanceReadOnly1709": {
+    "runId": 38763564772,
+    "artifactId": 11987515482,
+    "decision": "PASS_READONLY_INVENTORY__TERMINAL_P0_STILL_HOLD",
+    "HRRevision": "1959278f639f0132110b58b080908a9da8d949ed824ffc044e98ded67fb3fbe8",
+    "r08": {
+      "state": "HOLD_REAL_VERTEX_15_FROM_APPROVED_AUTHENTIC_INSTRUCTIVO_NOT_PROVEN",
+      "activeVertexSettings": 1,
+      "authorizedTrainingResources": 2,
+      "textReadyResources": 0,
+      "certificationBanks": 2,
+      "pendingReview": 1,
+      "published": 1,
+      "exact15Banks": 0,
+      "attemptRecords": 77,
+      "recertificationRecords": 0,
+      "vertexGeneratedInRun": false,
+      "rawDocumentContentLogged": false
+    },
+    "r22": {
+      "state": "HOLD_LIVE_NOTICE_READ_AFTER_RELOAD_E2E_PENDING",
+      "projectBulletins": 12,
+      "readReceiptsForExactShoppers": 6,
+      "crossShopperReadReceiptsObserved": 0,
+      "unknownPrincipalReceiptsObserved": 0,
+      "untargetedBulletins": 3,
+      "storedTechnicalBodies": 2,
+      "browserReloadNotTested": true
+    },
+    "finance": {
+      "state": "HOLD_HISTORICAL_PAYMENT_PROVENANCE_AND_BATCH_E2E",
+      "scopedFinancialMovements": 2,
+      "scopedFinanceAccounts": 0,
+      "GTMovements": 2,
+      "HNMovements": 0,
+      "historicalRecordsInThisCollection": 0,
+      "ambiguousPaidStatusCount": 2,
+      "sourceCoverageNonExhaustive": true,
+      "paidRowsNotInferred": true,
+      "bankWrites": 0
+    },
+    "safety": {
+      "production": false,
+      "hrWrites": 0,
+      "firestoreWrites": 0,
+      "authWrites": 0,
+      "financeWrites": 0,
+      "deploys": 0
+    }
   }
 }

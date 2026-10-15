@@ -30494,5 +30494,69 @@
       "I3_GO"
     ],
     "next": "Retain earlier two-role synthetic DEV ACK/readback/idempotency proofs; for external HR release require exact already-authorized real provider ACK + independent same-revision readback or single separately authorized, isolated disposable integration contract. Do not mutate real HR to force PASS; meanwhile close R08 and R22 independently."
+  },
+  "i3Oct15Run1709R08R22FinanceReadOnly": {
+    "observedOn": "2026-10-15",
+    "iteration": "I3_FUNCTIONAL_CLOSURE",
+    "runId": 38763564772,
+    "runNumber": 1709,
+    "jobId": 116520985845,
+    "artifactId": 11987515482,
+    "decision": "PASS_READONLY_INVENTORY__TERMINAL_P0_STILL_HOLD",
+    "productSourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
+    "hrRevision": "1959278f639f0132110b58b080908a9da8d949ed824ffc044e98ded67fb3fbe8",
+    "independentSameHrRevisionBeforeAfter": true,
+    "R08": {
+      "state": "HOLD_REAL_VERTEX_15_FROM_APPROVED_AUTHENTIC_INSTRUCTIVO_NOT_PROVEN",
+      "activeVertexSettings": 1,
+      "authorizedTrainingResources": 2,
+      "textReadyResources": 0,
+      "certificationBanks": 2,
+      "pendingReview": 1,
+      "published": 1,
+      "exact15Banks": 0,
+      "attemptRecords": 77,
+      "recertificationRecords": 0,
+      "vertexGeneratedInRun": false,
+      "rawDocumentContentLogged": false
+    },
+    "R22": {
+      "state": "HOLD_LIVE_NOTICE_READ_AFTER_RELOAD_E2E_PENDING",
+      "projectBulletins": 12,
+      "readReceiptsForExactShoppers": 6,
+      "crossShopperReadReceiptsObserved": 0,
+      "unknownPrincipalReceiptsObserved": 0,
+      "untargetedBulletins": 3,
+      "storedTechnicalBodies": 2,
+      "browserReloadNotTested": true
+    },
+    "finance": {
+      "state": "HOLD_HISTORICAL_PAYMENT_PROVENANCE_AND_BATCH_E2E",
+      "scopedFinancialMovements": 2,
+      "scopedFinanceAccounts": 0,
+      "GTMovements": 2,
+      "HNMovements": 0,
+      "historicalRecordsInThisCollection": 0,
+      "ambiguousPaidStatusCount": 2,
+      "sourceCoverageNonExhaustive": true,
+      "paidRowsNotInferred": true,
+      "bankWrites": 0
+    },
+    "safety": {
+      "production": false,
+      "hrWrites": 0,
+      "firestoreWrites": 0,
+      "authWrites": 0,
+      "financeWrites": 0,
+      "deploys": 0
+    },
+    "preserves": [
+      "R20_PASSWORD_FULL_LIFECYCLE_PASS",
+      "R23_GT_HN_KPI_PASS",
+      "R07_EXTERNAL_HR_RELEASE_ACK_HOLD",
+      "274_FINDINGS",
+      "21_MODULE_DOMAINS"
+    ],
+    "nextAction": "R08: resolve genuine approved instruction source and current certification bank count, run one Vertex 15-question exact provider E2E with pending-review human checkpoint; R22 same-user read ACK persists after reload, exact routes; finance exact historical ledger/backing provider and batch support proof; do not ask Paula for visual review before comprehensive P0 E2E."
   }
 }
