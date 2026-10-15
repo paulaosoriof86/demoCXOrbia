@@ -39,7 +39,12 @@ CX.module('misvisitas',({data,ui})=>{
   const currentApps=identityOk?(data._posts||[]).filter(x=>x?._archived!==true&&String(x.shopperId||'')===String(sid)&&postPeriod(x)===String(data.currentPeriodId)):[];
   const pendingApps=currentApps.filter(x=>postState(x)==='pendiente');
   const safe=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  let view='activas';
+  /* R22: preserve an exact historical visit deep link instead of defaulting to Activas. */
+  const pendingExactVisit=window.CX_PENDING_SHOPPER_VISIT_ACTION;
+  const pendingExactId=String(pendingExactVisit?.visitId||'');
+  const pendingHistory=!!(pendingExactId&&history.some(v=>String(v.id)===pendingExactId));
+  const pendingActive=!!(pendingExactId&&[...assigned,...scheduled,...realized].some(v=>String(v.id)===pendingExactId));
+  let view=pendingHistory&&!pendingActive?'historial':'activas';
   let scheduleReturnView='misvisitas';
   const host=ui.el('div');
   const projectTimezone=String(p?.timeZone||p?.timezone||data?.ctx?.()?.timeZone||'America/Guatemala');
@@ -173,15 +178,22 @@ CX.module('misvisitas',({data,ui})=>{
     if(action==='focus'){
       const card=[...host.querySelectorAll('[data-visit-card],[data-history-visit]')].find(el=>String(el.dataset.visitCard||el.dataset.historyVisit||'')===visitId);
       delete window.CX_PENDING_SHOPPER_VISIT_ACTION;
-      if(card){card.scrollIntoView({block:'center',behavior:'smooth'});return;}
+      if(card){card.scrollIntoView({block:'center',behavior:'smooth'});if(view==='historial')card.click();return;}
       ui.toast('Esta visita ya no aparece activa en el período actual. Revisa tu historial o consulta con Coordinación.','warn',4200);return;
+    }
+    if(view==='historial'&&history.some(v=>String(v.id)===visitId)){
+      delete window.CX_PENDING_SHOPPER_VISIT_ACTION;
+      const row=[...host.querySelectorAll('[data-history-visit]')].find(el=>String(el.dataset.historyVisit||'')===visitId);
+      if(row){row.scrollIntoView({block:'center',behavior:'smooth'});row.click();}
+      if(action==='questionnaire')ui.toast('Visita histórica localizada. Verifica su estado y la vigencia del cuestionario antes de realizar la acción.','warn',4200);
+      return;
     }
     const target=attr?[...host.querySelectorAll('[data-'+attr+']')].find(el=>String(el.dataset[attr]||'')===visitId):null;
     delete window.CX_PENDING_SHOPPER_VISIT_ACTION;
     if(target)setTimeout(()=>target.click(),0);else ui.toast('La acción ya no aplica al estado actual de esta visita.','warn',3200);
   };
   const bindHistory=()=>host.querySelectorAll('[data-history-visit]').forEach(tr=>tr.addEventListener('click',()=>{const v=find(tr.dataset.historyVisit);if(!v)return;const c=contract(v),f=facets(v);ui.modal('📋 '+safe(v.sucursal||'Detalle de visita'),`<div class="grid g2" style="gap:10px 16px"><div><span class="muted">Periodo</span><div><b>${safe(v.periodLabel||v.periodKey||periodIdOf(v)||'—')}</b></div></div><div><span class="muted">Estado</span><div>${ui.estadoBadge(v.estado)}</div></div><div><span class="muted">Escenario</span><div>${safe(data.scenarioSummaryForVisit?data.scenarioSummaryForVisit(v,p):(v.escenario||'—'))}</div></div><div><span class="muted">Honorario</span><div>${v.honorario!=null?ui.money(v.currency,v.honorario):'Pendiente de fuente'}</div></div><div><span class="muted">Agendada</span><div>${safe(v.agendada||'—')}</div></div><div><span class="muted">Realizada</span><div>${safe(v.realizada||'—')}</div></div><div><span class="muted">Submitida</span><div>${f.submitted?'Sí':'No'}</div></div><div><span class="muted">Pago</span><div>${c?.paymentState==='confirmado'?'Pago confirmado':'Pendiente de confirmación'}</div></div></div><div style="font-size:11px;color:var(--t3);margin-top:12px">Este detalle usa la misma visita canónica del histórico y no modifica datos.</div>`);}));
-  const draw=()=>{if(!identityOk){host.innerHTML=blockedHTML();return;}host.innerHTML=view==='historial'?historyHTML():activeHTML();host.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{view=b.dataset.view;draw();}));if(view==='activas'){bindActive();consumePendingAction();}else bindHistory();};
+  const draw=()=>{if(!identityOk){host.innerHTML=blockedHTML();return;}host.innerHTML=view==='historial'?historyHTML():activeHTML();host.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{view=b.dataset.view;draw();}));if(view==='activas'){bindActive();consumePendingAction();}else{bindHistory();consumePendingAction();}};
   const bindActive=()=>{
     host.querySelectorAll('[data-doc]').forEach(b=>b.addEventListener('click',async()=>{
       const v=find(b.dataset.doc);if(!v)return;

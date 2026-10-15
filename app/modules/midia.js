@@ -29,6 +29,9 @@ CX.module('midia', ({data,role,ui})=>{
   };
   const sessionShopperId=()=>{const x=exactSessionIdentity();return x?.ok===true?String(x.canonical||x.row?.id||x.row?.shopperId||'').trim():'';};
   const sessionShopperDisplayName=()=>{const x=exactSessionIdentity(),s=x?.row;return String(s?.nombre||s?.displayName||[s?.firstName,s?.lastName].filter(Boolean).join(' ')||'Shopper').trim();};
+  /* R22: reuse the same exact owner-scoped target and human rendering. */
+  const noticeText=n=>CX.topbar._noticeText(n);
+  const noticeTarget=n=>CX.topbar._noticeTarget(n);
   /* bloque de notificaciones (común a ambos roles) */
   const notifBlock=()=>{
     const sid=role==='shopper'?sessionShopperId():null;
@@ -47,7 +50,7 @@ CX.module('midia', ({data,role,ui})=>{
     return `<div class="card card-p" style="margin-bottom:16px">
       <div class="card-h"><div class="card-t">🔔 Notificaciones ${un?`<span class="bdg bdg-r">${un} sin leer</span>`:''}</div><button class="btn btn-ghost btn-sm" data-nav="tablon">Ver todas →</button></div>
       ${fe.length?fe.map(n=>`<div class="between" data-ngo="${n.id}" style="cursor:pointer;padding:9px 11px;border-radius:9px;${n.leida?'':'background:var(--'+CX.notif.toneVar(n.tono)+'-bg)'};margin-bottom:6px">
-        <div class="flex"><span style="font-size:16px">${n.icon}</span><div><div style="font-size:12.5px;font-weight:700;color:var(--t1)">${n.titulo}</div><div style="font-size:11px;color:var(--t3)">${n.txt} · ${n.fecha}</div></div></div>
+        <div class="flex"><span style="font-size:16px">${n.icon}</span><div><div style="font-size:12.5px;font-weight:700;color:var(--t1)">${n.titulo}</div><div style="font-size:11px;color:var(--t3)">${noticeText(n)} · ${n.fecha}</div></div></div>
         ${n.accion==='confirmar_fecha'?'<span class="btn btn-green btn-sm">Confirmar</span>':'<span style="color:var(--t3)">›</span>'}</div>`).join(''):ui.empty('🔔','Sin notificaciones')}
     </div>`;
   };
@@ -57,7 +60,10 @@ CX.module('midia', ({data,role,ui})=>{
       const ack=await CX.notif.markRead(n.id);
       if(ack?.providerAck===false)ui.toast('No se confirmó la lectura; la notificación permanece sin leer.','warn',4200);
       const route=role==='shopper'&&n.entityType==='visit'?'misvisitas':n.nav||'tablon';
-      CX.router.nav(route);
+      const target=noticeTarget(n);
+      if(target.visitId&&target.action)
+        window.CX_PENDING_SHOPPER_VISIT_ACTION={action:target.action,visitId:target.visitId,requestedAt:Date.now()};
+      CX.router.nav(target.nav||route);
     }));
     document.querySelectorAll('[data-nav]').forEach(b=>b.addEventListener('click',()=>CX.router.nav(b.dataset.nav)));
     document.querySelectorAll('.asgDone').forEach(b=>b.addEventListener('click',()=>{CX.automations.resolverAsignacion(b.dataset.id);CX.router.nav('midia');CX.ui&&CX.ui.toast('Asignación resuelta','ok');}));

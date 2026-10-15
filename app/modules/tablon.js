@@ -2,6 +2,18 @@
 CX.module('tablon', ({role,ui})=>{
   const host=ui.el('div');
   const EMOJIS=['✅','📢','⚠️','📅','🔔','💡','🎉','📝','🚨','ℹ️','🏆','🤝'];
+  /* R22: use the authorized exact visit resolver across notification surfaces. */
+  const noticeText=n=>CX.topbar._noticeText(n);
+  const noticeTarget=n=>{
+    const route=role==='shopper'&&n.entityType==='visit'?'misvisitas':n.nav||'tablon';
+    return role==='shopper'&&n.entityType==='visit'?CX.topbar._noticeTarget(n):{nav:route,visitId:'',action:''};
+  };
+  const openNoticeTarget=n=>{
+    const target=noticeTarget(n);
+    if(target.visitId&&target.action)
+      window.CX_PENDING_SHOPPER_VISIT_ACTION={action:target.action,visitId:target.visitId,requestedAt:Date.now()};
+    if(target.nav)CX.router.nav(target.nav);
+  };
   const draw=()=>{
     const feed=CX.notif.for(role);
     const unread=CX.notif.unread(role);
@@ -14,7 +26,7 @@ CX.module('tablon', ({role,ui})=>{
         ${feed.length?feed.map(n=>`<div data-n="${n.id}" style="display:flex;align-items:flex-start;gap:11px;padding:11px 13px;border:1px solid var(--border);border-left:3px solid var(--${CX.notif.toneVar(n.tono)});border-radius:10px;margin-bottom:9px;cursor:pointer;${n.leida?'opacity:.6':''}">
           <div style="font-size:18px">${n.icon}</div>
           <div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--t1)">${n.titulo} ${n.leida?'':'<span class="bdg bdg-r" style="font-size:9px;padding:1px 6px">nuevo</span>'}</div>
-            <div style="font-size:12px;color:var(--t2)">${n.txt}</div><div style="font-size:10.5px;color:var(--t3);margin-top:2px">${n.fecha}${n.nav?' · '+n.nav:''}</div></div>
+            <div style="font-size:12px;color:var(--t2)">${noticeText(n)}</div><div style="font-size:10.5px;color:var(--t3);margin-top:2px">${n.fecha}</div></div>
           <div class="flex" style="gap:6px">
             ${n.accion==='confirmar_fecha'?`<button class="btn btn-green btn-sm" data-conf="${n.id}">Confirmar</button><button class="btn btn-ghost btn-sm" data-prop="${n.id}">Proponer otra</button>`
               :`<button class="btn btn-soft btn-sm" data-go="${n.id}">Ver →</button>`}
@@ -28,23 +40,25 @@ CX.module('tablon', ({role,ui})=>{
       draw();
     });
     // items clickeables → detalle
-    host.querySelectorAll('[data-n]').forEach(el=>el.addEventListener('click',(e)=>{
+    host.querySelectorAll('[data-n]').forEach(el=>el.addEventListener('click',async(e)=>{
       if(e.target.closest('button'))return;
       const n=feed.find(x=>x.id===el.dataset.n);if(!n)return;
-      Promise.resolve(CX.notif.markRead(n.id)).then(ack=>{if(ack?.providerAck===false)ui.toast('No se confirmó la lectura.','warn',4200);});
+      try{
+        const ack=await Promise.resolve(CX.notif.markRead(n.id));
+        if(n.source==='firestore'&&ack?.providerAck!==true)ui.toast('No se confirmó la lectura remota.','warn',4200);
+      }catch(_){ui.toast('No fue posible confirmar la lectura.','warn',4200);}
       ui.modal((n.icon||'🔔')+' '+n.titulo,`
-        <div style="font-size:12.5px;color:var(--t2);line-height:1.6;margin-bottom:10px">${n.txt}</div>
+        <div style="font-size:12.5px;color:var(--t2);line-height:1.6;margin-bottom:10px">${noticeText(n)}</div>
         <div style="font-size:11px;color:var(--t3)">${n.fecha}${n.para?' · Para: '+n.para:''}</div>
         ${n.video?`<div style="margin-top:10px"><iframe src="${n.video}" style="width:100%;aspect-ratio:16/9;border:0;border-radius:10px" allowfullscreen></iframe></div>`:''}
-        ${n.nav?`<div style="text-align:right;margin-top:12px"><button class="btn btn-soft btn-sm" id="nGoBtn">Ir a ${n.nav} →</button></div>`:''}
-      `,{onMount:(ov,close)=>{const g=ov.querySelector('#nGoBtn');if(g)g.addEventListener('click',()=>{close();CX.router.nav(n.nav);});}});
+        ${noticeTarget(n).nav?`<div style="text-align:right;margin-top:12px"><button class="btn btn-soft btn-sm" id="nGoBtn">Ver detalle →</button></div>`:''}
+      `,{onMount:(ov,close)=>{const g=ov.querySelector('#nGoBtn');if(g)g.addEventListener('click',()=>{close();openNoticeTarget(n);});}});
     }));
     host.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',async(e)=>{
       e.stopPropagation();const n=feed.find(x=>x.id===b.dataset.go);if(!n)return;
       const ack=await CX.notif.markRead(n.id);
       if(ack?.providerAck===false)ui.toast('No se confirmó la lectura.','warn',4200);
-      const route=role==='shopper'&&n.entityType==='visit'?'misvisitas':n.nav;
-      if(route)CX.router.nav(route);
+      openNoticeTarget(n);
       draw();
     }));
     host.querySelectorAll('[data-conf]').forEach(b=>b.addEventListener('click',(e)=>{e.stopPropagation();CX.notif.markRead(b.dataset.conf);CX.notif.push({to:'admin',tipo:'confirmada',icon:'✅',tono:'g',titulo:'Fecha confirmada',txt:'El shopper confirmó la fecha propuesta',nav:'postulaciones'});ui.toast('Fecha confirmada · equipo notificado','ok');draw();}));

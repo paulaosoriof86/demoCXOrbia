@@ -22,3 +22,22 @@ test('R22 Mi Día and Tablón await read and visit-scoped route',()=>{
  assert.match(tablon,/const ack=await CX.notif.markAllRead\(role\)/);
  assert.match(tablon,/role==='shopper'&&n.entityType==='visit'\?'misvisitas'/);
 });
+
+test('R22 cross-surface text/identity/action parity without raw HR IDs',()=>{
+ assert.match(midia,/CX\.topbar\._noticeText\(n\)/);
+ assert.match(tablon,/CX\.topbar\._noticeText\(n\)/);
+ assert.doesNotMatch(midia,/\$\{n\.txt\} · \$\{n\.fecha\}/);
+ assert.doesNotMatch(tablon,/\$\{n\.txt\}/);
+ assert.match(midia,/const target=noticeTarget\(n\)/);
+ assert.match(tablon,/const target=noticeTarget\(n\)/);
+ assert.match(midia,/window\.CX_PENDING_SHOPPER_VISIT_ACTION=\{action:target\.action,visitId:target\.visitId,requestedAt:Date\.now\(\)\}/);
+ assert.match(tablon,/window\.CX_PENDING_SHOPPER_VISIT_ACTION=\{action:target\.action,visitId:target\.visitId,requestedAt:Date\.now\(\)\}/);
+ assert.match(tablon,/await Promise\.resolve\(CX\.notif\.markRead\(n\.id\)\)/);
+});
+test('R22 exact historical visits retain deep-link target and read-only detail',()=>{
+ const visits=readFileSync(new URL('../../app/modules/misvisitas.js',import.meta.url),'utf8');
+ assert.match(visits,/pendingHistory&&!pendingActive\?'historial':'activas'/);
+ assert.match(visits,/if\(view==='historial'\)card\.click\(\)/);
+ assert.match(visits,/bindHistory\(\);consumePendingAction\(\)/);
+ assert.match(visits,/if\(view==='historial'&&history\.some\(v=>String\(v\.id\)===visitId\)\)/);
+});
