@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "cxorbia.recovery.execution-current.v1",
+  "planLockPath": "CXORBIA_RECOVERY_PLAN_FROZEN_2026-10-16_V1_1.json",
+  "planId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
+  "asOf": "2026-10-16",
+  "iteration": "I3",
+  "state": "HOLD",
+  "production": "DO_NOT_TOUCH",
+  "authorizationI4": false,
+  "productSourceSha": "80ada5c4f8bf6301345f5053541e74178287326b",
+  "productTree": "fb914a617c250eeae5fb287f7910022bb60f09da",
+  "controlParentSha": "29781c28e46b5dc5cd5d56e95ce0daab62cf9ea4",
+  "lastExecutionReceipt": {
+    "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
+    "executed": ["12 original delivery hashes checked with zero mismatches", "82 task identities, all dependencies and 56/42/16/21 cross-references checked", "274 VRM references and 63 prior human observations retained", "20 October 16 screenshots retained", "P01-P09 repeated against the exact audited source: 9 REPRODUCED"],
+    "reproductionEvidence": "control_frozen/ARRANQUE_P01_P09_REPRODUCIDO.json in sealed bundle",
+    "reproductionEvidenceSha256": "3a56bd0e4bb9bdd8fcfcab3a6cae6608a012bb4627bfcb1d7b18e308ceb90015",
+    "coverageEvidence": "control_frozen/VERIFICACION_COBERTURA_Y_ARRANQUE.json in sealed bundle",
+    "coverageEvidenceSha256": "d8bb3876a1b923e42cb9212f5b24610fb64a1c794fcc39ddcb705d97efa40071",
+    "productFilesChanged": 0,
+    "dataWrites": 0,
+    "deploys": 0,
+    "newlyFixedModules": [],
+    "newReadyPreviews": []
+  },
+  "taskProgress": {
+    "G01": "IN_PROGRESS_COVERAGE_CUSTODIED_AUTHORITY_GAPS_RETAINED_IN_G03",
+    "G02": "DIRECT_GITHUB_CONTROL_WRITE_CAPABILITY_VERIFIED_RUNTIME_PERMISSIONS_REQUIRE_SCOPED_PREFLIGHT",
+    "G03": "PENDING_NO_NEW_GENERAL_AUDIT",
+    "G04": "IN_PROGRESS_BASELINE_REPRODUCTIONS_EXECUTED_TARGET_ACCEPTANCE_ASSERTIONS_NEXT",
+    "G05": "PENDING_PRODUCT_REPAIR_OBSERVATION_SIDE_EFFECT_SEPARATION",
+    "G06": "IN_PROGRESS_FROZEN_QUEUE_SINGLE_WRITER"
+  },
+  "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
+  "remainingPath": ["A identity and atomic read", "B bidirectional visits, audit and ACK", "C finance", "D certification and resources", "E shared UI and published role capabilities", "V same-artifact closure and human approval", "I4 explicit authorization and immutable replacement"],
+  "taskCountsNotDurationEstimates": {"I3":63,"I4":7,"postProduction":6,"evolution":6},
+  "nextExactAction": "Continue the scoped first repair package: A04/A05 alias-session and atomic-read owners, C01 Conciliar handler and D02 parser. Start from the reproduced failures, one writer, existing candidate, exact changed files and focal negative tests. Verify runtime/HR writer permissions before their writes. Do not wait on unrelated financial documents to repair C01 or D02.",
+  "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
+  "reportEachBlock": ["iteration", "new evidence", "actual changes", "completed versus remaining tasks", "open P0 and dependencies", "verified preview when available", "preserved human approvals", "exact next action", "authorization needed"],
+  "noBackgroundTaskCreated": true
+}

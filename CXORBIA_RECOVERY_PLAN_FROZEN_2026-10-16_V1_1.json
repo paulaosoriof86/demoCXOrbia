@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "cxorbia.recovery.immutable-plan-lock.v1",
+  "planId": "CXORBIA-I3-I4-PLAN-EJECUCION-FORENSE-20261016-V1.1",
+  "frozenAt": "2026-10-16T15:19:35-06:00",
+  "approvalAuthority": "Paula: completar, congelar e iniciar el plan; previews por bloque y aprobaciones acumulativas, 2026-10-16",
+  "scopeState": "FROZEN_APPROVED_KNOWN_OBLIGATIONS_WITH_APPEND_ONLY_EXECUTION",
+  "iteration": "I3",
+  "officialState": "HOLD",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHeadAtFreezePrecondition": "29781c28e46b5dc5cd5d56e95ce0daab62cf9ea4",
+  "productSourceUnchanged": "80ada5c4f8bf6301345f5053541e74178287326b",
+  "productTreeUnchanged": "fb914a617c250eeae5fb287f7910022bb60f09da",
+  "productArtifactSha256": "4a76629236602bccbc065c60525e333262571ff5d6ce0e7ffec9156391ee4500",
+  "production": "DO_NOT_TOUCH",
+  "terminalCertificationAllowedByThisLock": false,
+  "immutableCustody": {
+    "provider": "personal_library",
+    "folder": "/CXOrbia Recovery/Planes congelados/2026-10-16 V1.1",
+    "bundle": {
+      "name": "CXORBIA_PLAN_FROZEN_2026-10-16_V1_1_COMPLETO.zip",
+      "libraryFileId": "libfile_f9cd6dfd90d48191bef837c3006856d7",
+      "fileId": "file_000000004c1481f5921e2d655f655589",
+      "bytes": 6941146,
+      "sha256": "4ef4124040ba8a81f71f4291b5ddefbc2183ffffb24b52079b5137664e9cc44c",
+      "internalManifest": "CXORBIA_PLAN_FROZEN_2026-10-16_V1_1/MANIFEST_SHA256_FROZEN.json",
+      "internalManifestSha256": "80685eba46cfb3492c43b43e6323c65d9b3c49f9c9f46d6e0b254a1eee07cd86",
+      "sealedFilesIncludingManifest": 74
+    },
+    "fullExecutablePlan": {
+      "name": "PLAN_TRAZABLE_I3_I4_FROZEN_V1_1.json",
+      "libraryFileId": "libfile_4345c0d7d234819191a8ed51898c8be4",
+      "fileId": "file_00000000057481f5be70982d2380a38f",
+      "sha256": "83e8f2c0a6b190bab1d9dea32bf99158116f3164f419ae72e051fd791fd8576c"
+    },
+    "prevalentAddendum": {
+      "name": "00_LEER_PRIMERO_PLAN_CONGELADO.md",
+      "libraryFileId": "libfile_10f242a4d94881919e9bb4a971fc8d05",
+      "fileId": "file_00000000d7ac81f59f3646a385b38ae3",
+      "sha256": "718c1091aa59bfa3ae81a36e28511a57be42fb12805e9bb8e94391ba01b2824e"
+    },
+    "retrieval": "Use files.read/search or files.materialize with the exact fileId above; verify SHA-256 before use. If custody is unavailable, HOLD the affected write, never reconstruct the plan from chat. The ZIP contains the complete original PDF/XLSX/Markdown/JSON plan, the original forensic dossier, the V1.1 changes, historical coverage and all 20 supplied screenshots. These are plan/evidence artifacts, not another software candidate."
+  },
+  "coverage": {
+    "tasks": 82,
+    "I3Tasks": 63,
+    "I4Tasks": 7,
+    "stabilizationTasks": 6,
+    "futurePhaseTasks": 6,
+    "forensicFindings": 16,
+    "routesAndRoles": 56,
+    "criticalFunctions": 42,
+    "I3Gates": 21,
+    "moduleDomains": 21,
+    "historicalFindingIds": 274,
+    "humanObservations20261006": 45,
+    "humanObservations20261008": 18,
+    "screenshots20261016": 20,
+    "normalizationCandidateGroups": 19,
+    "historicalPlanContractReferences": 1846,
+    "danglingTaskReferences": 0,
+    "dependencyCycles": 0,
+    "coverageIsNotFunctionalPass": true,
+    "G03RetainsUnresolvedF9AndApprovedVisualAuthority": true
+  },
+  "taskSets": {
+    "control": ["G01","G02","G03","G04","G05","G06"],
+    "identityAndAtomicRead": ["A01","A02","A03","A04","A05","A06","A07","A08","A09"],
+    "HRAndVisitLifecycle": ["B01","B02","B03","B04","B05","B06","B07","B08","B09","B10","B11","B12","B13","B14"],
+    "finance": ["C01","C02","C03","C04","C05","C06","C07","C08","C09","C10"],
+    "certificationsResourcesAcademy": ["D01","D02","D03","D04","D05","D06","D07","D08"],
+    "frontendPublishedRolesAndCapabilities": ["E01","E02","E03","E04","E05","E06","E07","E08","E09","E10","E11"],
+    "I3Convergence": ["V01","V02","V03","V04","V05"],
+    "I4": ["P01","P02","P03","P04","P05","P06","P07"],
+    "stabilization": ["H01","H02","H03","H04","H05","H06"],
+    "evolution": ["N01","N02","N03","N04","N05","N06"]
+  },
+  "preservedAuthorities": {
+    "liveDescriptor": "CXORBIA_I3_CANONICAL_CANDIDATE_DESCRIPTOR_2026-09-24.json",
+    "liveLedgerPathAtStart": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V441_2026-10-14.json",
+    "liveLedgerExpectedBlobAtStart": "14adb37aec9e06ed5301dec4a0f95c4f2ad44b97",
+    "moduleTruthPathAtStart": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V119.json",
+    "human45": "RECOVERY-I3-HUMAN-VISUAL-FAIL-OBSERVATION-MAP-20261006.json",
+    "human18": "CXORBIA_I3_HUMAN_VISUAL_CHECKPOINT_2026-10-08_B1_B2_B3_B5_B7_B8.json",
+    "singleWriter": "CR-20260910-02 and AGENTS.md section 4; direct Recovery writer; Codex optional, never an artificial prerequisite",
+    "legalNonblocking": "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-18_LEGAL_NONBLOCKING_FROZEN.md",
+    "noHistoricalLedgerReplacement": true,
+    "noPASSReopenedWithoutProvenDrift": true
+  },
+  "explicitSupersessions": [
+    "The V1 Codex-only handoff wording yields to the already-approved CR-20260910-02. One writer and exact-owner P0-only restrictions remain.",
+    "The 2026-10-06 requirement to wait for all modules before human preview yields to Paula's current block-by-block request. Final Gate20/21 and identical certified/deployed artifact remain.",
+    "The historical absolute prohibition of normalized-name-supported consolidation yields to Paula's explicit 2026-10-16 decision. Real ambiguity, privacy, UID and history preservation remain.",
+    "For authorized bidirectional fields, compare the last valid source event per visit/field with ACK and audit. Ingestion time and sync echoes are not new source edits.",
+    "Preserve nonblocking legal status and its post-go-live follow-up under E05/H05; never fabricate legal acceptance."
+  ],
+  "approvalContract": "CXORBIA_RECOVERY_BLOCK_APPROVAL_CONTRACT_2026-10-16.md",
+  "executionPointer": "CXORBIA_RECOVERY_EXECUTION_CURRENT.json",
+  "mutationPolicy": "Never overwrite this frozen lock or the sealed library files. Append execution receipts and preserve the 82 IDs. A true scope change needs a dated BEFORE/AFTER addendum, authority, evidence and hashes. New findings attach to the exact existing root/task or receive their own traceable identity; omission never closes a finding.",
+  "readbackRequired": true
+}

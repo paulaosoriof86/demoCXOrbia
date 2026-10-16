@@ -110,3 +110,16 @@ Cada cierre debe registrar como mínimo:
 - siguiente acción exacta y si requiere autorización.
 
 La continuidad se deriva de estas reglas + fuentes Recovery prevalentes + readback vivo. No depende de memoria conversacional ni de un SHA congelado fuera de su intento.
+
+## 9. Plan congelado V1.1 y avances por bloque — 2026-10-16
+
+Después de las autoridades anteriores, leer obligatoriamente:
+1. `CXORBIA_RECOVERY_PLAN_FROZEN_2026-10-16_V1_1.json` — identidad persistente, hashes y cobertura del paquete íntegro aprobado por Paula.
+2. `CXORBIA_RECOVERY_EXECUTION_CURRENT.json` — último avance comprobado y siguiente acción, sin convertir tareas pendientes en PASS.
+3. `CXORBIA_RECOVERY_BLOCK_APPROVAL_CONTRACT_2026-10-16.md` — previews y aprobaciones incrementales acumulativas por bloque.
+
+El lock referencia los archivos completos en Biblioteca por ID estable y SHA-256, no por texto del chat. Recuperarlos y verificar su hash antes de trabajar; no inferir el alcance desde un resumen. El paquete conserva 82 tareas, 16 hallazgos forenses, 56 rutas/roles, 42 funciones críticas, 21 gates, 274 VRM y las observaciones/capturas históricas. No sustituye ni sobrescribe el ledger del descriptor.
+
+Ratificar la sección 4 / CR-20260910-02: el plan no reintroduce Codex como bloqueo obligatorio. Preservar también el addendum legal no bloqueante del 18-09. La petición actual de Paula sustituye la espera a un único checkpoint visual al final: entregar cada bloque sólo después de su prueba y readback de bytes, conservar su aprobación por hashes/dependencias y no esperar módulos independientes. La aprobación visual no autoriza I4.
+
+Las decisiones del 16-10 permiten normalización y fusión nominal corroborada con conservación de UID/alias/histórico; los casos realmente ambiguos requieren decisión. Para campos bidireccionales autorizados manda el último evento válido de HR o plataforma, con bitácora y ACK; no reinterpretar una lectura o eco de sincronización como nueva edición. El resto de los invariantes permanece.
