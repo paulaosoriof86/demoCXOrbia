@@ -9,8 +9,8 @@
   "authorizationI4": false,
   "productSourceSha": "80ada5c4f8bf6301345f5053541e74178287326b",
   "productTree": "fb914a617c250eeae5fb287f7910022bb60f09da",
-  "controlParentSha": "29781c28e46b5dc5cd5d56e95ce0daab62cf9ea4",
-  "lastExecutionReceipt": {
+  "controlParentSha": "9f4d8e40d18513c0e237d5ea1fd412178441b296",
+  "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
     "executed": ["12 original delivery hashes checked with zero mismatches", "82 task identities, all dependencies and 56/42/16/21 cross-references checked", "274 VRM references and 63 prior human observations retained", "20 October 16 screenshots retained", "P01-P09 repeated against the exact audited source: 9 REPRODUCED"],
     "reproductionEvidence": "control_frozen/ARRANQUE_P01_P09_REPRODUCIDO.json in sealed bundle",
@@ -23,18 +23,37 @@
     "newlyFixedModules": [],
     "newReadyPreviews": []
   },
+  "lastExecutionReceipt": {
+    "path": "CXORBIA_I3_A04_C01_LOCAL_PATCH_RECEIPT_2026-10-16.json",
+    "kind": "LOCAL_SOURCE_REPAIRED_AND_TESTED_NOT_PROMOTED",
+    "tasks": ["A04", "C01", "G04"],
+    "localProductOwnersRepaired": 2,
+    "localQaOwnersUpdated": 1,
+    "focalTests": {"pass":19,"fail":0},
+    "neighborRegressionTests": {"pass":83,"fail":0,"skipped":0},
+    "offlineChromiumChecks": {"pass":8,"provider":"SYNTHETIC"},
+    "canonicalProductFilesChanged":0,
+    "dataWrites":0,
+    "deploys":0,
+    "newlyFixedLiveModules":[],
+    "newReadyPreviews":[]
+  },
   "taskProgress": {
     "G01": "IN_PROGRESS_COVERAGE_CUSTODIED_AUTHORITY_GAPS_RETAINED_IN_G03",
     "G02": "DIRECT_GITHUB_CONTROL_WRITE_CAPABILITY_VERIFIED_RUNTIME_PERMISSIONS_REQUIRE_SCOPED_PREFLIGHT",
     "G03": "PENDING_NO_NEW_GENERAL_AUDIT",
-    "G04": "IN_PROGRESS_BASELINE_REPRODUCTIONS_EXECUTED_TARGET_ACCEPTANCE_ASSERTIONS_NEXT",
+    "G04": "FOCAL_BEFORE_AFTER_AND_NEGATIVE_CONTRACTS_TESTED_LOCAL_QA_DELTA_PENDING_CANONICAL_INTEGRATION",
     "G05": "PENDING_PRODUCT_REPAIR_OBSERVATION_SIDE_EFFECT_SEPARATION",
-    "G06": "IN_PROGRESS_FROZEN_QUEUE_SINGLE_WRITER"
+    "G06": "IN_PROGRESS_FROZEN_QUEUE_SINGLE_WRITER",
+    "A04": "LOCAL_SOURCE_REPAIRED_TESTED_CANONICAL_AND_POPULATION_LIVE_PENDING",
+    "C01": "LOCAL_SOURCE_REPAIRED_TESTED_CANONICAL_AND_REAL_PROVIDER_LIVE_PENDING",
+    "A05": "OWNER_PROVEN_NOT_REPAIRED_DEPENDS_G05",
+    "D02": "OWNER_PROVEN_NOT_REPAIRED"
   },
   "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
   "remainingPath": ["A identity and atomic read", "B bidirectional visits, audit and ACK", "C finance", "D certification and resources", "E shared UI and published role capabilities", "V same-artifact closure and human approval", "I4 explicit authorization and immutable replacement"],
   "taskCountsNotDurationEstimates": {"I3":63,"I4":7,"postProduction":6,"evolution":6},
-  "nextExactAction": "Continue the scoped first repair package: A04/A05 alias-session and atomic-read owners, C01 Conciliar handler and D02 parser. Start from the reproduced failures, one writer, existing candidate, exact changed files and focal negative tests. Verify runtime/HR writer permissions before their writes. Do not wait on unrelated financial documents to repair C01 or D02.",
+  "nextExactAction": "Recover the sealed A04/C01 tested patch from the receipt, verify its SHA and unchanged owner baselines, and integrate it into the single source with descriptor/ledger/module-truth coherence. Continue G05/A05 atomic-read and D02 parser; no fresh general audit, no credential recreation or data reimport. Real DEV proof is still required before preview invitation.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": ["iteration", "new evidence", "actual changes", "completed versus remaining tasks", "open P0 and dependencies", "verified preview when available", "preserved human approvals", "exact next action", "authorization needed"],
   "noBackgroundTaskCreated": true
