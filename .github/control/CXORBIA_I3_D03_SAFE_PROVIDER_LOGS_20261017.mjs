@@ -1,5 +1,7 @@
 import fs from 'node:fs';
 import {execFileSync} from 'node:child_process';
+import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';
+import {getFirestore} from 'firebase-admin/firestore';
 const project='cxorbia-backend-dev';
 const filter='resource.type="cloud_run_revision" AND resource.labels.service_name="cxorbia-live-hr-dev" AND timestamp>="2026-10-17T19:51:00Z" AND timestamp<="2026-10-17T19:53:00Z" AND "CXORBIA_CERT_VERTEX_SAFE_DIAGNOSTIC"';
 const raw=execFileSync('gcloud',['logging','read',filter,'--project',project,'--limit=30','--format=json'],{encoding:'utf8',timeout:60000,maxBuffer:4000000});
@@ -14,6 +16,17 @@ for(const entry of Array.isArray(logs)?logs:[]){
  }catch(_){}
 }
 const result={schemaVersion:'cxorbia.i3.d03.safe-provider-diagnostic.v1',decision:rows.length?'PASS_D03_SAFE_PROVIDER_DIAGNOSTIC':'HOLD_D03_SAFE_PROVIDER_DIAGNOSTIC_UNAVAILABLE',classification:'PROVIDER_FAILURE',runNumber:1768,sourceSha:'a4434a1f223dd6da1468890c99db7339808c1cab',runtimeRevision:'cxorbia-live-hr-dev-00309-kvp',records:rows,readOnly:true,writes:0,deploys:0,production:false};
+const runtime=JSON.parse(execFileSync('gcloud',['run','services','describe','cxorbia-live-hr-dev','--project',project,'--region','us-central1','--format=json'],{encoding:'utf8',timeout:60000,maxBuffer:4000000}));
+result.runtimeTimeoutSeconds=Number(runtime?.spec?.template?.spec?.timeoutSeconds||runtime?.template?.spec?.timeoutSeconds||0);
+if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:project});
+const settings=await getFirestore().collection('tenants').doc('tya').collection('aiSettings').get();
+const allowed=settings.docs.map(doc=>doc.data()||{}).filter(x=>x.status==='active'&&x.serverProxy===true&&( !Array.isArray(x.projectIds)||!x.projectIds.length||x.projectIds.includes('cinepolis')));
+allowed.sort((a,b)=>Number(Array.isArray(b.projectIds)&&b.projectIds.includes('cinepolis'))-Number(Array.isArray(a.projectIds)&&a.projectIds.includes('cinepolis'))||String(b.updatedAt||'').localeCompare(String(a.updatedAt||'')));
+const chosen=allowed[0]||{};
+result.aiSetting={exists:!!allowed.length,provider:String(chosen.provider||''),model:String(chosen.model||''),location:String(chosen.location||''),scopedToProject:Array.isArray(chosen.projectIds)&&chosen.projectIds.includes('cinepolis')};
+const requestFilter='resource.type="cloud_run_revision" AND resource.labels.service_name="cxorbia-live-hr-dev" AND timestamp>="2026-10-17T19:51:00Z" AND timestamp<="2026-10-17T19:53:00Z" AND httpRequest.requestUrl:"certifications/ai-generate"';
+const requestLogRaw=execFileSync('gcloud',['logging','read',requestFilter,'--project',project,'--limit=25','--format=json'],{encoding:'utf8',timeout:60000,maxBuffer:4000000});
+result.requestMetrics=(JSON.parse(requestLogRaw)||[]).map(x=>({timestamp:String(x.timestamp||''),status:Number(x.httpRequest?.status||0),latency:String(x.httpRequest?.latency||''),method:String(x.httpRequest?.requestMethod||'')})).filter(x=>x.status);
 const out=(process.env.PHASEA_LIVE_OUT||'.tmp/phasea-representative-live')+'/d03/provider-diagnostic.json';
 fs.mkdirSync(out.slice(0,out.lastIndexOf('/')),{recursive:true});
 fs.writeFileSync(out,JSON.stringify(result,null,2)+String.fromCharCode(10));
