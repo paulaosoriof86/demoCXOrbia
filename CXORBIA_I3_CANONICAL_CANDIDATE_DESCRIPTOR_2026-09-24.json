@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
+  "status": "HOLD_I3_D03_LIVE_PROVIDER_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "a4434a1f223dd6da1468890c99db7339808c1cab",
   "productTreeAuthority": "c790126bcf347d7de6b8d632ea58a24a10253fcd",
   "predecessorProductSourceSha": "197ec4c84d8d2b0625885afcea6c4a7b43773985",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V458_2026-10-17.json",
-  "findingsLedgerExpectedGitBlob": "becf3c29053279e1d5dd9660f0e0922deea8c9e5",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V459_2026-10-17.json",
+  "findingsLedgerExpectedGitBlob": "ae76abb6c3c5ac2948aa69ca0ff14af58d37798c",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261017-V135.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "D03_CLEAN_INPUT_SOURCE_PROOF_PASS_DEV_MATERIALIZATION_REQUIRED",
+  "activeBlocker": "D03_15_GROUNDED_VERTEX_QUESTIONS_DEV_LIVE_REQUIRED",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Use existing canonical DEV materialization job on source a4434a1f223dd6da1468890c99db7339808c1cab, then verify same artifact and run live Vertex D03.",
+  "exactNextAction": "Run existing I3 D03 provider live E2E on same RUN1767 source/artifact, exact PDF SHA, 15 referenced questions and pending_review idempotency.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -81,7 +81,7 @@
       "backend/runtime/hr-live-service/test/cxorbia-i3-d03-document-source-metadata.test.mjs"
     ],
     "sourceProof": "PASS_RUN1766",
-    "devMaterialization": "PENDING",
+    "devMaterialization": "PASS_RUN1767",
     "production": false,
     "previousSourceFix": {
       "observedAt": "2026-10-17T14:36:39.456Z",
@@ -299,7 +299,8 @@
       "realAiProviderGeneration": "PENDING"
     },
     "sourceProofRunId": 39063550464,
-    "sourceProofArtifactId": 12112492256
+    "sourceProofArtifactId": 12112492256,
+    "devMaterializationRunId": 39063771430
   },
   "preterminalRequest": {
     "revision": 3,
@@ -661,19 +662,19 @@
   "currentMaterialization": {
     "state": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
     "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
-    "sourceSha": "197ec4c84d8d2b0625885afcea6c4a7b43773985",
-    "sourceTree": "bdb01d02945d86f557a63a6e1d10377a5db4f8c1",
-    "runId": 39042262760,
-    "runNumber": 1760,
-    "artifactId": 12104820729,
-    "artifactUploadZipSha256": "a34f1dabd0d39950392f07e68bb47cf436b93fbc72bf820c15125bf55dc49ac0",
-    "artifactDigest": "sha256:725b95a647defefb8ea4165e96e5080ef9ad82a7a21f5fd6a6e0b6bec6976955",
-    "runtimeRevision": "cxorbia-live-hr-dev-00308-rsj",
-    "runtimeDigest": "sha256:62fea622667e834d021d813d1104d60c292b3071a7076b0ed9ac22d843f022ad",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/b580d0ef5f0a69dd",
-    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1792248651621000",
+    "sourceSha": "a4434a1f223dd6da1468890c99db7339808c1cab",
+    "sourceTree": "c790126bcf347d7de6b8d632ea58a24a10253fcd",
+    "runId": 39063771430,
+    "runNumber": 1767,
+    "artifactId": 12112438101,
+    "artifactUploadZipSha256": "b7b1a60340084fb6290b1c8842816c6201fe98716940cf072ae9e0b4f334e857",
+    "artifactDigest": "sha256:e01460965311ff9e161219d411bc6e9c10578a6cba7f743e14de8d83215a872d",
+    "runtimeRevision": "cxorbia-live-hr-dev-00309-kvp",
+    "runtimeDigest": "sha256:23fd3937002da926bf410cec3ec993082987da36aa601270dd2a05c8d1b47610",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/65d249a7779f270d",
+    "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1792266477154000",
     "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/e9070ca6-234c-4a16-acf2-5ab3372eadb3",
-    "hrRevision": "5d369d8955ff899095aa113d094dccea5a1c94e8849b455906cd4f154bf28e48",
+    "hrRevision": "5f0b3ef79ccc6d15eb5fdbd5bdc1618e049166131ebe36baba4dd515e4a8d4c1",
     "builds": 1,
     "runtimeDeploys": 1,
     "hostingDeploys": 1,
