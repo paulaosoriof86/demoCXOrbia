@@ -30,11 +30,12 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_A04_A05_G05_LIVE_RUN1742_2026-10-17.json",
-    "kind": "SAME_ARTIFACT_READ_ONLY_LIVE_PASS_C01_PENDING",
+    "path": "CXORBIA_I3_A04_A05_C01_G05_LIVE_BLOCK_PASS_2026-10-17.json",
+    "kind": "LIVE_E2E_PASS_HUMAN_PREVIEW_READY_D02_NEXT",
     "tasks": [
       "A04",
       "A05",
+      "C01",
       "G05"
     ],
     "sourceSha": "2ae3971a7964c057c2cee509d308d892c8bfd23e",
@@ -89,7 +90,34 @@
       "deploys": 0,
       "production": false
     },
-    "newReadyPreviews": [],
+    "c01LiveProof": {
+      "runId": 39033804891,
+      "runNumber": 1746,
+      "artifactId": 12100809824,
+      "artifactZipSha256": "9da6a40efc3cffe9854851f64f525b1a2101cbf7b3b1c0146b08f16a8e191ebe",
+      "decision": "PASS_PREI4_FINAL_FOCAL_FINANCE",
+      "cumulativeDecision": "PASS_PREI4_ADMIN_004_CUMULATIVE_LIVE",
+      "sourceSha": "2ae3971a7964c057c2cee509d308d892c8bfd23e",
+      "periodId": "cinepolis-2026-09",
+      "hrSourceRevision": "5d369d8955ff899095aa113d094dccea5a1c94e8849b455906cd4f154bf28e48",
+      "projectFinanceConfigSourceRevision": "0b2f989af18f15ee429a504a4d628cb12b34153fce23bd730c8c74c8228d7877",
+      "externalPaymentWrites": 0,
+      "bankWrites": 0,
+      "hrWrites": 0,
+      "production": false
+    },
+    "newReadyPreviews": [
+      {
+        "url": "https://cxorbia-backend-dev.web.app",
+        "scope": [
+          "A04",
+          "A05",
+          "C01",
+          "G05"
+        ],
+        "artifactRun": 39030902293
+      }
+    ],
     "productionWrites": 0
   },
   "taskProgress": {
@@ -97,12 +125,12 @@
     "G02": "DIRECT_NATIVE_GITHUB_WRITE_READBACK_AND_EXISTING_CI_PROVEN_NO_TINYFISH_REQUIRED",
     "G03": "PENDING_NO_NEW_GENERAL_AUDIT",
     "G04": "SOURCE_FOCAL_AND_RELATED_QA_PASS_RUN1730_PARTIAL_TASK_COVERAGE_ONLY",
-    "G05": "LIVE_E2E_PASS_RUN1742_ZERO_WRITE_OBSERVATION_HUMAN_PREVIEW_BLOCKED_ONLY_BY_C01",
+    "G05": "LIVE_E2E_PASS_RUN1742_HUMAN_PREVIEW_READY",
     "G06": "IN_PROGRESS_FROZEN_QUEUE_SINGLE_WRITER",
-    "A04": "LIVE_E2E_PASS_RUN1742_HUMAN_PREVIEW_BLOCKED_ONLY_BY_C01",
-    "C01": "DEV_MATERIALIZED_RUN1740_CONCILIAR_PROVIDER_ACK_LIVE_REQUIRED",
-    "A05": "LIVE_E2E_PASS_RUN1742_HUMAN_PREVIEW_BLOCKED_ONLY_BY_C01",
-    "D02": "OWNER_PROVEN_NOT_REPAIRED"
+    "A04": "LIVE_E2E_PASS_RUN1742_HUMAN_PREVIEW_READY",
+    "C01": "LIVE_E2E_PASS_RUN1746_HUMAN_PREVIEW_READY",
+    "A05": "LIVE_E2E_PASS_RUN1742_HUMAN_PREVIEW_READY",
+    "D02": "OWNER_PROVEN_NOT_REPAIRED_NEXT_TECHNICAL_ACTION"
   },
   "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
   "remainingPath": [
@@ -120,7 +148,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Run only the existing C01 Conciliar live proof on the exact RUN1740 DEV artifact via the existing i3-finance-focal-reproof job. Require admin button/command, committed provider ACK, exact durable financial match, backend.refresh awaited A05 same-revision composition, no payment side effects, zero HR/bank/external-payment writes and production=false. No rebuild/redeploy. If PASS, mark A04/A05/C01/G05 LIVE_E2E_PASS and offer the block for scoped human preview; D02 remains pending.",
+  "nextExactAction": "Offer the exact RUN1740 DEV artifact at https://cxorbia-backend-dev.web.app for scoped human review of A04/A05/C01/G05 while preserving all other approvals. In parallel continue D02 only: parser-first DOCX/PDF extraction with extraction_quality and manual fallback, using the already-proven D02 owners; no OCR unless necessary, no new provider/workflow, no product-wide audit, no production.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -163,7 +191,7 @@
     "newlyFixedLiveModules": [],
     "newReadyPreviews": []
   },
-  "lastUpdatedAt": "2026-10-17T12:16:00Z",
+  "lastUpdatedAt": "2026-10-17T12:48:43.608Z",
   "previousExecutionReceiptBeforeRun1729": {
     "path": "CXORBIA_I3_A04_C01_CANONICAL_INTEGRATION_2026-10-17.json",
     "kind": "EXACT_NATIVE_GIT_OBJECTS_PREPARED_SINGLE_CANONICAL_CAS_PENDING",
@@ -214,7 +242,7 @@
       "meaning": "Source repairs only, not overall CXOrbia progress or functional I3 closure"
     },
     "newlyFunctionallyClosedI3Tasks": 0,
-    "newReadyPreviews": 0,
+    "newReadyPreviews": 1,
     "newHumanApprovals": 0,
     "blockTasks": [
       "A04",
@@ -233,9 +261,15 @@
       "percent": 100
     },
     "liveDevProven": {
-      "numerator": 3,
+      "numerator": 4,
       "denominator": 4,
-      "percent": 75
+      "percent": 100
+    },
+    "humanApproved": {
+      "numerator": 0,
+      "denominator": 1,
+      "percent": 0,
+      "meaning": "One scoped block approval, not four independent approvals"
     }
   },
   "nextDiagnosisPath": null,
