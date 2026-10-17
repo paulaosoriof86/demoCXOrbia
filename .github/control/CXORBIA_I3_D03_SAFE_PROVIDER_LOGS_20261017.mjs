@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {applicationDefault,initializeApp,getApps} from 'firebase-admin/app';
 import {getFirestore} from 'firebase-admin/firestore';
@@ -27,6 +28,24 @@ result.aiSetting={exists:!!allowed.length,provider:String(chosen.provider||''),m
 const requestFilter='resource.type="cloud_run_revision" AND resource.labels.service_name="cxorbia-live-hr-dev" AND timestamp>="2026-10-17T19:51:00Z" AND timestamp<="2026-10-17T19:53:00Z" AND httpRequest.requestUrl:"certifications/ai-generate"';
 const requestLogRaw=execFileSync('gcloud',['logging','read',requestFilter,'--project',project,'--limit=25','--format=json'],{encoding:'utf8',timeout:60000,maxBuffer:4000000});
 result.requestMetrics=(JSON.parse(requestLogRaw)||[]).map(x=>({timestamp:String(x.timestamp||''),status:Number(x.httpRequest?.status||0),latency:String(x.httpRequest?.latency||''),method:String(x.httpRequest?.requestMethod||'')})).filter(x=>x.status);
+const sourceSha='a4434a1f223dd6da1468890c99db7339808c1cab',documentSha='3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454';
+const idem='i3-d03-live:'+sourceSha.slice(0,12)+':'+documentSha.slice(0,12)+':q15';
+const hash=v=>crypto.createHash('sha256').update(v).digest('hex');
+const resourceId='certbank-cinepolis-cinepolis-2026-09-ai-'+documentSha.slice(0,12);
+const receiptId='cert-ai-'+hash(['tya','cinepolis',idem].join(String.fromCharCode(0))).slice(0,32);
+const tenant=getFirestore().collection('tenants').doc('tya');
+const resourceRef=tenant.collection('resources').doc(resourceId),receiptRef=tenant.collection('commandReceipts').doc(receiptId);
+const [rs,cs]=await Promise.all([resourceRef.get(),receiptRef.get()]);
+const bank=(rs.data()||{}).bank||{},receipt=cs.data()||{};
+const check={resourceExists:rs.exists,receiptExists:cs.exists,resourceId,receiptId,
+  status:String(bank.estado||''),questionCount:Array.isArray(bank.preguntas)?bank.preguntas.length:0,
+  documentHashMatches:String(bank.documentSource?.source_sha256||'')===documentSha,
+  receiptStatus:String(receipt.status||''),receiptEntityMatches:String(receipt.entityId||'')===resourceId,
+  receiptCommandMatches:String(receipt.commandType||'')==='certification.ai-generate',
+  generationAttempts:Number(bank.generationAttempts||0),readOnly:true,production:false};
+check.pendingReviewAckProven=check.resourceExists&&check.receiptExists&&check.status==='pending_review'&&check.questionCount===15&&check.documentHashMatches&&check.receiptStatus==='committed'&&check.receiptEntityMatches&&check.receiptCommandMatches;
+if(rs.exists){const again=await resourceRef.get();check.stableReadback=again.exists&&Number(again.data()?.version||0)===Number(rs.data()?.version||0)&&String(again.data()?.bank?.contentRevision||'')===String(bank.contentRevision||'');}
+result.pendingReviewReadback=check;
 const out=(process.env.PHASEA_LIVE_OUT||'.tmp/phasea-representative-live')+'/d03/provider-diagnostic.json';
 fs.mkdirSync(out.slice(0,out.lastIndexOf('/')),{recursive:true});
 fs.writeFileSync(out,JSON.stringify(result,null,2)+String.fromCharCode(10));
