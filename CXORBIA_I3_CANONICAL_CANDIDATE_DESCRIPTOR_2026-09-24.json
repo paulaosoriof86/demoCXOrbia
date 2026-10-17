@@ -4,16 +4,16 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "4f35c21bceaee6ec58390cdc1f3a8b11309c6bfb",
-  "productTreeAuthority": "bcc2a0e98e6f65eb09430a091007e80a22427ab3",
-  "predecessorProductSourceSha": "49c2b842ebf68224439e061b5ab2043a3cec4740",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V444_2026-10-17.json",
-  "findingsLedgerExpectedGitBlob": "f7e6aa9e551086345e3a077722b45401a649e6f9",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261017-V122.json",
+  "productSourceSha": "2ae3971a7964c057c2cee509d308d892c8bfd23e",
+  "productTreeAuthority": "861f9d545ba997e2e04d9f94671c888a6aed53d1",
+  "predecessorProductSourceSha": "4f35c21bceaee6ec58390cdc1f3a8b11309c6bfb",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V445_2026-10-17.json",
+  "findingsLedgerExpectedGitBlob": "b4b1b9c5cdcd1afefe08050daae96d21b77f31e1",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261017-V123.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "A05_ATOMIC_SESSION_PUBLICATION_P0__SCOPED_DEV_LIVE_PROOF_PENDING__D02_PARSER_PENDING",
+  "activeBlocker": "A05_ATOMIC_SESSION_PUBLICATION_SOURCE_QA_REQUIRED__SCOPED_DEV_LIVE_PROOF_PENDING__D02_PARSER_PENDING",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Implement A05 in the same canonical branch: prepare the HR/protected composition outside CX.data, validate session generation, UID, role, tenant, project and source revision before one atomic publication, and make refresh await composition/readback. Add red/green focal tests and preserve G05 read-only observation. Then perform scoped real DEV/auth/provider proof for A04/C01/G05/A05 under the frozen contract; D02 remains pending. No production or I4 authorization.",
+  "exactNextAction": "Run the same canonical I3 source-proof lane on A05 source 2ae3971a7964c057c2cee509d308d892c8bfd23e. Require atomic off-state candidate construction, session/UID/role/tenant/project generation revalidation, exact protected HR revision readback before publication, refresh Promise readback, and preservation of G05 read-only observation. If source proof passes, perform scoped real DEV/auth/provider proof for A04/C01/G05/A05; D02 remains pending. No production or I4 authorization.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -67,107 +67,127 @@
     "state": "VRM214_FOUR_IDENTITY_MIRAFLORES_READ_ONLY_REQUIRED"
   },
   "lastSourceFix": {
-    "observedAt": "2026-10-13",
-    "findingId": "HF-20261012-21",
-    "scope": "B8 finance dashboard KPI hierarchy, compact pending-source states, country/currency separation and five financial visual states",
-    "productSourceSha": "78b125afd3c7c885b466e1e66a1cdad069bcbfe4",
-    "productTreeAuthority": "f7f0f9bd5ddffff9c928672a4fad5e983180eacb",
-    "predecessorProductSourceSha": "18020e9e16daca0552efdb8b382c9a058a869e2f",
+    "observedAt": "2026-10-17T11:50:20.673Z",
+    "findingId": "F04/A05",
+    "scope": "Atomic HR/protected composition and refresh session publication",
+    "productSourceSha": "2ae3971a7964c057c2cee509d308d892c8bfd23e",
+    "productTreeAuthority": "861f9d545ba997e2e04d9f94671c888a6aed53d1",
+    "predecessorProductSourceSha": "4f35c21bceaee6ec58390cdc1f3a8b11309c6bfb",
     "productFiles": [
-      "app/modules/finanzas.js"
+      "app/adapters/tya-live-source-inplace-apply.js",
+      "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+      "app/adapters/tya-c6-unified-human-runtime-v1.js",
+      "app/adapters/tya-live-source-refresh-watch-v2.js"
     ],
     "qaFiles": [
-      "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs"
+      "tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs"
     ],
-    "sourceProof": "LOCAL_SOURCE_QA_PASS_35_TESTS",
-    "devMaterialization": "DEV_E2E_PENDING",
-    "humanVisual": "PENDING",
+    "sourceProof": "PENDING_CANONICAL_RUN",
+    "devMaterialization": "PENDING",
     "production": false,
-    "preserves": [
-      "HF22 diagnostics",
-      "HF23 financial states",
-      "HF25 monthly CxP/CxC",
-      "HF26 durable budgets",
-      "HF27 SOURCE_PROVEN payment eligibility"
-    ],
     "previousSourceFix": {
       "observedAt": "2026-10-13",
-      "findingId": "HF-20261012-27",
-      "scope": "B8 liquidation individual payment, batch selection and finance.payment.batch eligibility",
-      "productSourceSha": "397b8a6c6bd5148b8a3e9ef60b5c760bfced76a1",
-      "productTreeAuthority": "b8cabc9cd4159c69e5809d6f50996f6ac2ba507f",
-      "predecessorProductSourceSha": "94193cfd99720b2e28c42ac1810a5f7e63712ac0",
+      "findingId": "HF-20261012-21",
+      "scope": "B8 finance dashboard KPI hierarchy, compact pending-source states, country/currency separation and five financial visual states",
+      "productSourceSha": "78b125afd3c7c885b466e1e66a1cdad069bcbfe4",
+      "productTreeAuthority": "f7f0f9bd5ddffff9c928672a4fad5e983180eacb",
+      "predecessorProductSourceSha": "18020e9e16daca0552efdb8b382c9a058a869e2f",
       "productFiles": [
-        "app/modules/finanzas.js",
-        "backend/runtime/cxorbia-finance-command-provider-v1.mjs"
+        "app/modules/finanzas.js"
       ],
       "qaFiles": [
         "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs"
       ],
-      "sourceProof": "LOCAL_SOURCE_QA_PASS_34_TESTS",
-      "devMaterialization": "PENDING",
+      "sourceProof": "LOCAL_SOURCE_QA_PASS_35_TESTS",
+      "devMaterialization": "DEV_E2E_PENDING",
+      "humanVisual": "PENDING",
       "production": false,
+      "preserves": [
+        "HF22 diagnostics",
+        "HF23 financial states",
+        "HF25 monthly CxP/CxC",
+        "HF26 durable budgets",
+        "HF27 SOURCE_PROVEN payment eligibility"
+      ],
       "previousSourceFix": {
-        "observedAt": "2026-10-10",
-        "findingId": "HF-20261008-01",
-        "scope": "B1 performance first credential entry",
-        "productSourceSha": "f2a50044ca5b4bac5053f5a88de041fd5c7f72f9",
-        "productTreeAuthority": "4d9054d5fb394579e35b32415584e5dd1b87ffd2",
-        "predecessorProductSourceSha": "797050085d1e3347b6d56322f003a3a293790710",
+        "observedAt": "2026-10-13",
+        "findingId": "HF-20261012-27",
+        "scope": "B8 liquidation individual payment, batch selection and finance.payment.batch eligibility",
+        "productSourceSha": "397b8a6c6bd5148b8a3e9ef60b5c760bfced76a1",
+        "productTreeAuthority": "b8cabc9cd4159c69e5809d6f50996f6ac2ba507f",
+        "predecessorProductSourceSha": "94193cfd99720b2e28c42ac1810a5f7e63712ac0",
         "productFiles": [
-          "app/core/backend-firebase.js"
+          "app/modules/finanzas.js",
+          "backend/runtime/cxorbia-finance-command-provider-v1.mjs"
         ],
         "qaFiles": [
-          "tools/qa/cxorbia-i3-b1-cold-login-parallel-source.test.mjs"
+          "backend/runtime/hr-live-service/test/cxorbia-finance-command-provider-v1.test.mjs"
         ],
-        "sourceProof": "PENDING_RUN",
+        "sourceProof": "LOCAL_SOURCE_QA_PASS_34_TESTS",
         "devMaterialization": "PENDING",
+        "production": false,
         "previousSourceFix": {
-          "observedAt": "2026-10-09T00:00:00-06:00",
-          "findingId": "VRM-274",
-          "productSourceSha": "797050085d1e3347b6d56322f003a3a293790710",
-          "productTreeAuthority": "607196f740203d538df8e22e424874fe547b3d59",
-          "predecessorProductSourceSha": "9b87e479a1fb9825a22abf935eebff171ed720c4",
-          "receiptPath": "CXORBIA_I3_P0_HN_SHOPPER_READINESS_FIX_SOURCE_RECEIPT_2026-10-09.json",
-          "scope": "HN shopper exact principal readiness gate",
+          "observedAt": "2026-10-10",
+          "findingId": "HF-20261008-01",
+          "scope": "B1 performance first credential entry",
+          "productSourceSha": "f2a50044ca5b4bac5053f5a88de041fd5c7f72f9",
+          "productTreeAuthority": "4d9054d5fb394579e35b32415584e5dd1b87ffd2",
+          "predecessorProductSourceSha": "797050085d1e3347b6d56322f003a3a293790710",
           "productFiles": [
-            "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
-            "app/adapters/tya-c6-unified-human-runtime-v1.js"
+            "app/core/backend-firebase.js"
           ],
-          "canonicalSourceProof": "PENDING",
+          "qaFiles": [
+            "tools/qa/cxorbia-i3-b1-cold-login-parallel-source.test.mjs"
+          ],
+          "sourceProof": "PENDING_RUN",
           "devMaterialization": "PENDING",
-          "production": false,
-          "previousDescriptorLastSourceFix": {
-            "observedAt": "2026-10-07T19:50:00Z",
-            "sourceSha": "411e1e3712e6abfd60475aef16a75aecc7399c08",
-            "sourceTree": "0991894ed9396c334ca62c44626f5b6f2a5e3d14",
-            "predecessorSha": "1bd4805b33c3f9b10f06581c4c36fbbc0b3e0a04",
-            "classification": "MAPPING_FAILURE_AND_RELEASE_COMPOSITION_FAILURE",
-            "findingIds": [
-              "VRM-268",
-              "VRM-269"
+          "previousSourceFix": {
+            "observedAt": "2026-10-09T00:00:00-06:00",
+            "findingId": "VRM-274",
+            "productSourceSha": "797050085d1e3347b6d56322f003a3a293790710",
+            "productTreeAuthority": "607196f740203d538df8e22e424874fe547b3d59",
+            "predecessorProductSourceSha": "9b87e479a1fb9825a22abf935eebff171ed720c4",
+            "receiptPath": "CXORBIA_I3_P0_HN_SHOPPER_READINESS_FIX_SOURCE_RECEIPT_2026-10-09.json",
+            "scope": "HN shopper exact principal readiness gate",
+            "productFiles": [
+              "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+              "app/adapters/tya-c6-unified-human-runtime-v1.js"
             ],
-            "productFilesChanged": [
-              "app/core/cliente-data.js",
-              "app/modules/cliente.js",
-              "app/index-backend-dev.html"
-            ],
-            "behavior": "restore exact period/project client operations and remove visible technical entrypoint token",
-            "sourceContractTest": "backend/runtime/hr-live-service/test/cxorbia-vrm268-269-source-contract.test.mjs",
-            "localSourceProof": {
-              "tests": 3,
-              "pass": 3,
-              "fail": 0,
-              "relatedRegression": {
-                "tests": 38,
-                "pass": 38,
-                "fail": 0
-              }
-            },
-            "production": false
-          }
-        },
-        "production": false
+            "canonicalSourceProof": "PENDING",
+            "devMaterialization": "PENDING",
+            "production": false,
+            "previousDescriptorLastSourceFix": {
+              "observedAt": "2026-10-07T19:50:00Z",
+              "sourceSha": "411e1e3712e6abfd60475aef16a75aecc7399c08",
+              "sourceTree": "0991894ed9396c334ca62c44626f5b6f2a5e3d14",
+              "predecessorSha": "1bd4805b33c3f9b10f06581c4c36fbbc0b3e0a04",
+              "classification": "MAPPING_FAILURE_AND_RELEASE_COMPOSITION_FAILURE",
+              "findingIds": [
+                "VRM-268",
+                "VRM-269"
+              ],
+              "productFilesChanged": [
+                "app/core/cliente-data.js",
+                "app/modules/cliente.js",
+                "app/index-backend-dev.html"
+              ],
+              "behavior": "restore exact period/project client operations and remove visible technical entrypoint token",
+              "sourceContractTest": "backend/runtime/hr-live-service/test/cxorbia-vrm268-269-source-contract.test.mjs",
+              "localSourceProof": {
+                "tests": 3,
+                "pass": 3,
+                "fail": 0,
+                "relatedRegression": {
+                  "tests": 38,
+                  "pass": 38,
+                  "fail": 0
+                }
+              },
+              "production": false
+            }
+          },
+          "production": false
+        }
       }
     }
   },
@@ -11823,5 +11843,5 @@
     "proofTree": "1753d01aa909dd4181e3490c07d24287913d68a0",
     "decision": "PASS_FOCAL_SOURCE_ONLY_I3_HOLD"
   },
-  "lastUpdatedAt": "2026-10-17T10:38:38.250199+00:00"
+  "lastUpdatedAt": "2026-10-17T11:50:20.673Z"
 }
