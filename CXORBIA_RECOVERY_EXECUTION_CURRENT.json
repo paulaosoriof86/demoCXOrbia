@@ -30,30 +30,18 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_D03_LIVE_PROVIDER_RUN1763_AUTH_FAILURE_2026-10-17.json",
-    "kind": "D03_LIVE_PROVIDER_AUTH_FAILURE",
+    "path": "CXORBIA_I3_D03_LIVE_PROVIDER_RUN1764_AUTH_FAILURE_2026-10-17.json",
+    "kind": "D03_LIVE_DRIVE_API_AUTH_FAILURE",
     "tasks": [
       "D03"
     ],
-    "runId": 39048382785,
-    "runNumber": 1763,
-    "sourceSha": "197ec4c84d8d2b0625885afcea6c4a7b43773985",
-    "productTree": "bdb01d02945d86f557a63a6e1d10377a5db4f8c1",
+    "runId": 39060264839,
+    "runNumber": 1764,
     "classification": "AUTH_FAILURE",
     "code": "AUTH_FAILURE:D03_DRIVE_SOURCE_ACCESS_403",
-    "serviceAccountEmail": "firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com",
-    "driveFileId": "122rCkfD-vNgs39LwT7jGfYBVLg57ur82",
-    "environmentDependencyFixCommit": "08e2a32052eaaee18c13b3c1bb8b85d54b54dfb3",
-    "canonicalAuthorityPass": true,
-    "exactHrReadOnlyPass": true,
+    "productSourceChanged": false,
     "vertexCalled": false,
-    "writes": {
-      "auth": 0,
-      "hr": 0,
-      "provider": 0,
-      "drivePermissions": 0
-    },
-    "deploys": 0,
+    "providerWrites": 0,
     "production": false
   },
   "taskProgress": {
@@ -68,7 +56,7 @@
     "A05": "LIVE_E2E_PASS_RUN1742_HUMAN_PREVIEW_READY_UNAFFECTED_OWNER_PARITY",
     "D02": "PASS_LIVE_PARSER_RUN1753",
     "D01": "PASS_AUTHORIZED_DOCUMENT_SOURCE",
-    "D03": "DEV_MATERIALIZED_RUN1760_LIVE_PROVIDER_BLOCKED_AUTH_RUN1763"
+    "D03": "DEV_MATERIALIZED_RUN1760_LIVE_DRIVE_API_AUTH_FAILURE_RUN1764"
   },
   "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
   "remainingPath": [
@@ -86,7 +74,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "After Paula explicitly authorizes it, grant Viewer/read-only access on Drive file 122rCkfD-vNgs39LwT7jGfYBVLg57ur82 to firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com, then rerun the same canonical I3 workflow. Require exact SHA-256 3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454, exactly 15 grounded questions, pending_review persistence/readback, one idempotent replay with zero duplicate, no publication and no production.",
+  "nextExactAction": "Read-only diagnose Drive 403 response reason/scope/Drive API policy for exact DEV service account and exact source file; do not rerun identical provider probe without new evidence. Preserve independent R20 HR source-revision drift for its own owner and keep I3 HOLD.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -129,7 +117,7 @@
     "newlyFixedLiveModules": [],
     "newReadyPreviews": []
   },
-  "lastUpdatedAt": "2026-10-17T16:13:54Z",
+  "lastUpdatedAt": "2026-10-17",
   "previousExecutionReceiptBeforeRun1729": {
     "path": "CXORBIA_I3_A04_C01_CANONICAL_INTEGRATION_2026-10-17.json",
     "kind": "EXACT_NATIVE_GIT_OBJECTS_PREPARED_SINGLE_CANONICAL_CAS_PENDING",
@@ -221,7 +209,7 @@
     }
   },
   "nextDiagnosisPath": null,
-  "nextUserAuthorizationRequired": true,
+  "nextUserAuthorizationRequired": false,
   "primaryExecutionRoute": "DIRECT_NATIVE_GITHUB_SINGLE_WRITER",
   "tinyFishRequiredForThisAction": false,
   "receiptControlParentSha": "5df72f867d8cc27a680e070865b27cc78eb3dae6",
