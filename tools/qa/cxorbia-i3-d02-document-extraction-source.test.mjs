@@ -37,9 +37,11 @@ test('D02 fails closed on unsupported or insufficient files before any AI provid
 test('D02 certification accepts only parser-supported document formats and stores document provenance',()=>{
   assert.match(cert,/accept="\.pdf,\.docx,\.txt,\.md,\.csv,\.json"/);
   assert.doesNotMatch(cert,/accept="[^"]*\.doc(?:,|"|\s)/);
-  assert.match(cert,/documentSource:extraction\?/);
+  assert.match(cert,/const documentSource=extraction\?/);
   assert.match(cert,/source_sha256:extraction\.source_sha256/);
   assert.match(cert,/extraction_quality:extraction\.extraction_quality/);
+  assert.match(cert,/documentSource\.source_sha256/);
+  assert.match(cert,/ocrExecuted:false/);
   assert.match(cert,/mode:'manual_text'/);
   assert.match(cert,/no se ejecuta OCR automáticamente/);
 });
