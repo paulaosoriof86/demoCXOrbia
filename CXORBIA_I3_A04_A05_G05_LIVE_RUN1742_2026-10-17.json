@@ -1,0 +1,37 @@
+{
+  "receiptId": "CXORBIA-I3-A04-A05-G05-LIVE-RUN1742-20261017",
+  "recordedAt": "2026-10-17T12:16:00Z",
+  "iteration": "I3",
+  "officialState": "HOLD",
+  "tasks": [
+    "A04",
+    "A05",
+    "G05"
+  ],
+  "result": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+  "sourceSha": "2ae3971a7964c057c2cee509d308d892c8bfd23e",
+  "sourceTree": "861f9d545ba997e2e04d9f94671c888a6aed53d1",
+  "runId": 39031675862,
+  "runNumber": 1742,
+  "artifactId": 12100324076,
+  "hrRevision": "5d369d8955ff899095aa113d094dccea5a1c94e8849b455906cd4f154bf28e48",
+  "representatives": [
+    "Julissa Flores",
+    "Priscila López",
+    "Paula Osorio",
+    "Admin"
+  ],
+  "writes": {
+    "auth": 0,
+    "hr": 0,
+    "provider": 0
+  },
+  "deploys": 0,
+  "production": false,
+  "findingsPreserved": 274,
+  "domains": 21,
+  "sourceFiles": 149,
+  "c01": "PENDING_PROVIDER_ACK_LIVE",
+  "newReadyPreviews": [],
+  "i4Authorized": false
+}

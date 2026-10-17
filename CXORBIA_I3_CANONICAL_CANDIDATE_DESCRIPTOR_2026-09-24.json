@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_GT_E2E",
+  "status": "HOLD_I3_FINANCE_FOCAL_REPROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "2ae3971a7964c057c2cee509d308d892c8bfd23e",
   "productTreeAuthority": "861f9d545ba997e2e04d9f94671c888a6aed53d1",
   "predecessorProductSourceSha": "4f35c21bceaee6ec58390cdc1f3a8b11309c6bfb",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V447_2026-10-17.json",
-  "findingsLedgerExpectedGitBlob": "fa919428cb4e5e8128c1557d303b63b832f36ee0",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261017-V125.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V448_2026-10-17.json",
+  "findingsLedgerExpectedGitBlob": "3e38f2d9901ca2b9b863025e3f8fc16422d64d22",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261017-V126.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "A04_A05_G05_SAME_ARTIFACT_READONLY_LIVE_REPROOF_REQUIRED__C01_PROVIDER_RECONCILE_LIVE_PENDING__D02_PARSER_PENDING",
+  "activeBlocker": "C01_CONCILIAR_LIVE_REPROOF_REQUIRED_ON_RUN1740_ARTIFACT__D02_PARSER_PENDING",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run the existing representative same-artifact live reproof on the exact RUN1740 DEV materialization with status HOLD_I3_GT_E2E, requiring zero auth/HR/provider writes and no deploys. Verify canonical A04 identity, G05 read-only HR observation, A05 atomic same-revision authority/session composition and exact served bytes. Then run the existing focal finance lane for C01 Conciliar ACK/readback on the same materialization, with cleanup and zero HR/production writes. No rebuild; D02 remains pending.",
+  "exactNextAction": "Run only the existing C01 Conciliar live proof on the exact RUN1740 DEV artifact via the existing i3-finance-focal-reproof job. Require admin button/command, committed provider ACK, exact durable financial match, backend.refresh awaited A05 same-revision composition, no payment side effects, zero HR/bank/external-payment writes and production=false. No rebuild/redeploy. If PASS, mark A04/A05/C01/G05 LIVE_E2E_PASS and offer the block for scoped human preview; D02 remains pending.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -11869,7 +11869,7 @@
     "proofTree": "1753d01aa909dd4181e3490c07d24287913d68a0",
     "decision": "PASS_FOCAL_SOURCE_ONLY_I3_HOLD"
   },
-  "lastUpdatedAt": "2026-10-17T12:08:05.274Z",
+  "lastUpdatedAt": "2026-10-17T12:16:00Z",
   "a05SourceProof": {
     "recordedAt": "2026-10-17T12:00:37.826Z",
     "productSourceSha": "2ae3971a7964c057c2cee509d308d892c8bfd23e",
@@ -11887,6 +11887,34 @@
     "a04c01Fail": 0,
     "clickE2ERequired": true,
     "wholeProductPass": false,
+    "production": false
+  },
+  "a04A05G05LiveProof": {
+    "runId": 39031675862,
+    "runNumber": 1742,
+    "artifactId": 12100324076,
+    "decision": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+    "sourceSha": "2ae3971a7964c057c2cee509d308d892c8bfd23e",
+    "sourceTree": "861f9d545ba997e2e04d9f94671c888a6aed53d1",
+    "hrRevision": "5d369d8955ff899095aa113d094dccea5a1c94e8849b455906cd4f154bf28e48",
+    "representatives": [
+      "Julissa Flores",
+      "Priscila López",
+      "Paula Osorio",
+      "Admin"
+    ],
+    "authorityReadyMs": {
+      "julissa": 6827,
+      "priscila": 7189,
+      "paula": 6971,
+      "admin": 9780
+    },
+    "writes": {
+      "auth": 0,
+      "hr": 0,
+      "provider": 0
+    },
+    "deploys": 0,
     "production": false
   }
 }

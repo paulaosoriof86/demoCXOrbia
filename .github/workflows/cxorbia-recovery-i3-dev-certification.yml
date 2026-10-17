@@ -1528,6 +1528,7 @@ jobs:
         run: |
          set -Eeuo pipefail
          STATUS="$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")"
+         BLOCKER="$(jq -r '.activeBlocker // empty' "$CANDIDATE_DESCRIPTOR")"
          if [[ "$STATUS" == "HOLD_I3_VRM174_HISTORICAL_PAYMENT_REPROOF_REQUIRED" ]]; then
            PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" VRM174_OUT="$FINAL_FOCAL_OUT/historical" node tools/qa/cxorbia-i3-vrm174-historical-payment-live.mjs | tee "$FINAL_FOCAL_OUT/console.log"
            R="$FINAL_FOCAL_OUT/historical/result.json"
@@ -1535,6 +1536,17 @@ jobs:
            test "$(jq -r '.writes' "$R")" = "0"
            test "$(jq -r '.hrWrites' "$R")" = "0"
            test "$(jq -r '.production' "$R")" = "false"
+         elif [[ "$BLOCKER" == C01_CONCILIAR_LIVE_REPROOF_REQUIRED_ON_RUN1740_ARTIFACT* ]]; then
+           C01_OUT="$FINAL_FOCAL_OUT/c01-conciliar"
+           mkdir -p "$C01_OUT"
+           PREI4_004_LIVE_OUT="$C01_OUT" PREI4_004_ROOT="$HOSTING_URL" PREI4_004_SOURCE="$FOCAL_SOURCE" PREI4_004_TREE="$FOCAL_TREE" PREI4_004_HR_REVISION="$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")" node tools/qa/cxorbia-prei4-admin004-cumulative-live-reproof.mjs | tee "$FINAL_FOCAL_OUT/console.log"
+           R="$C01_OUT/result.json"
+           test "$(jq -r '.decision' "$R")" = "PASS_PREI4_ADMIN_004_CUMULATIVE_LIVE"
+           test "$(jq -r '.hrWrites' "$R")" = "0"
+           test "$(jq -r '.bankWrites' "$R")" = "0"
+           test "$(jq -r '.externalPaymentWrites' "$R")" = "0"
+           test "$(jq -r '.production' "$R")" = "false"
+           test "$(jq -r '.browser.post.sourceRevision' "$R")" = "$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")"
          else
            SOURCE_SHA="$FOCAL_SOURCE" PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" FINAL_FOCAL_OUT="$FINAL_FOCAL_OUT/live" FINAL_FOCAL_PERIOD_ID="$PERIOD_ID" node tools/qa/cxorbia-prei4-final-focal-finance-live.mjs | tee "$FINAL_FOCAL_OUT/console.log"
            R="$FINAL_FOCAL_OUT/live/finance-live.json"

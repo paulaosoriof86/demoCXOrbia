@@ -30,12 +30,11 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_A05_DEV_MATERIALIZATION_RUN1740_2026-10-17.json",
-    "kind": "EXACT_DEV_MATERIALIZATION_PASS_SAME_ARTIFACT_LIVE_REQUIRED",
+    "path": "CXORBIA_I3_A04_A05_G05_LIVE_RUN1742_2026-10-17.json",
+    "kind": "SAME_ARTIFACT_READ_ONLY_LIVE_PASS_C01_PENDING",
     "tasks": [
       "A04",
       "A05",
-      "C01",
       "G05"
     ],
     "sourceSha": "2ae3971a7964c057c2cee509d308d892c8bfd23e",
@@ -62,6 +61,34 @@
       "hrWrites": 0,
       "production": false
     },
+    "liveProof": {
+      "runId": 39031675862,
+      "runNumber": 1742,
+      "artifactId": 12100324076,
+      "decision": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+      "sourceSha": "2ae3971a7964c057c2cee509d308d892c8bfd23e",
+      "sourceTree": "861f9d545ba997e2e04d9f94671c888a6aed53d1",
+      "hrRevision": "5d369d8955ff899095aa113d094dccea5a1c94e8849b455906cd4f154bf28e48",
+      "representatives": [
+        "Julissa Flores",
+        "Priscila López",
+        "Paula Osorio",
+        "Admin"
+      ],
+      "authorityReadyMs": {
+        "julissa": 6827,
+        "priscila": 7189,
+        "paula": 6971,
+        "admin": 9780
+      },
+      "writes": {
+        "auth": 0,
+        "hr": 0,
+        "provider": 0
+      },
+      "deploys": 0,
+      "production": false
+    },
     "newReadyPreviews": [],
     "productionWrites": 0
   },
@@ -70,11 +97,11 @@
     "G02": "DIRECT_NATIVE_GITHUB_WRITE_READBACK_AND_EXISTING_CI_PROVEN_NO_TINYFISH_REQUIRED",
     "G03": "PENDING_NO_NEW_GENERAL_AUDIT",
     "G04": "SOURCE_FOCAL_AND_RELATED_QA_PASS_RUN1730_PARTIAL_TASK_COVERAGE_ONLY",
-    "G05": "DEV_MATERIALIZED_RUN1740_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED",
+    "G05": "LIVE_E2E_PASS_RUN1742_ZERO_WRITE_OBSERVATION_HUMAN_PREVIEW_BLOCKED_ONLY_BY_C01",
     "G06": "IN_PROGRESS_FROZEN_QUEUE_SINGLE_WRITER",
-    "A04": "DEV_MATERIALIZED_RUN1740_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED",
-    "C01": "DEV_MATERIALIZED_RUN1740_PROVIDER_RECONCILE_LIVE_PENDING",
-    "A05": "DEV_MATERIALIZED_RUN1740_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED",
+    "A04": "LIVE_E2E_PASS_RUN1742_HUMAN_PREVIEW_BLOCKED_ONLY_BY_C01",
+    "C01": "DEV_MATERIALIZED_RUN1740_CONCILIAR_PROVIDER_ACK_LIVE_REQUIRED",
+    "A05": "LIVE_E2E_PASS_RUN1742_HUMAN_PREVIEW_BLOCKED_ONLY_BY_C01",
     "D02": "OWNER_PROVEN_NOT_REPAIRED"
   },
   "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
@@ -93,7 +120,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Run the existing representative same-artifact live reproof on the exact RUN1740 DEV materialization with status HOLD_I3_GT_E2E, requiring zero auth/HR/provider writes and no deploys. Verify canonical A04 identity, G05 read-only HR observation, A05 atomic same-revision authority/session composition and exact served bytes. Then run the existing focal finance lane for C01 Conciliar ACK/readback on the same materialization, with cleanup and zero HR/production writes. No rebuild; D02 remains pending.",
+  "nextExactAction": "Run only the existing C01 Conciliar live proof on the exact RUN1740 DEV artifact via the existing i3-finance-focal-reproof job. Require admin button/command, committed provider ACK, exact durable financial match, backend.refresh awaited A05 same-revision composition, no payment side effects, zero HR/bank/external-payment writes and production=false. No rebuild/redeploy. If PASS, mark A04/A05/C01/G05 LIVE_E2E_PASS and offer the block for scoped human preview; D02 remains pending.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -136,7 +163,7 @@
     "newlyFixedLiveModules": [],
     "newReadyPreviews": []
   },
-  "lastUpdatedAt": "2026-10-17T12:08:05.274Z",
+  "lastUpdatedAt": "2026-10-17T12:16:00Z",
   "previousExecutionReceiptBeforeRun1729": {
     "path": "CXORBIA_I3_A04_C01_CANONICAL_INTEGRATION_2026-10-17.json",
     "kind": "EXACT_NATIVE_GIT_OBJECTS_PREPARED_SINGLE_CANONICAL_CAS_PENDING",
@@ -171,8 +198,9 @@
     },
     "realProviderDevProven": {
       "numerator": 0,
-      "denominator": 4,
-      "percent": 0
+      "denominator": 1,
+      "percent": 0,
+      "meaning": "C01 writer/provider ACK proof only; A04/A05/G05 are read-only live proofs"
     },
     "accumulatedSourceProvenTasks": [
       "A04",
@@ -203,6 +231,11 @@
       "numerator": 4,
       "denominator": 4,
       "percent": 100
+    },
+    "liveDevProven": {
+      "numerator": 3,
+      "denominator": 4,
+      "percent": 75
     }
   },
   "nextDiagnosisPath": null,
