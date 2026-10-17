@@ -7,9 +7,9 @@
   "productSourceSha": "4f35c21bceaee6ec58390cdc1f3a8b11309c6bfb",
   "productTreeAuthority": "bcc2a0e98e6f65eb09430a091007e80a22427ab3",
   "predecessorProductSourceSha": "49c2b842ebf68224439e061b5ab2043a3cec4740",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V443_2026-10-17.json",
-  "findingsLedgerExpectedGitBlob": "1ca52e9aa710f0ac489efba55aba4fa2299556a7",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261017-V121.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V444_2026-10-17.json",
+  "findingsLedgerExpectedGitBlob": "f7e6aa9e551086345e3a077722b45401a649e6f9",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261017-V122.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Read back the single canonical ref and existing source QA for G05, then implement A05 atomic off-state preparation and session-bound publication in its proven owners. G05 source proof does not certify DEV, authentication or the full I3 closure. D02 remains pending. Preserve accepted independent scopes.",
+  "exactNextAction": "Implement A05 in the same canonical branch: prepare the HR/protected composition outside CX.data, validate session generation, UID, role, tenant, project and source revision before one atomic publication, and make refresh await composition/readback. Add red/green focal tests and preserve G05 read-only observation. Then perform scoped real DEV/auth/provider proof for A04/C01/G05/A05 under the frozen contract; D02 remains pending. No production or I4 authorization.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -2773,7 +2773,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "3268434985e326cd6cde24cbfca47457e582de58",
+  "moduleTruthExpectedGitBlob": "e86b42ad5a28c5b2a1abbbbf5dfcf0f0820ad35b",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -10487,14 +10487,14 @@
     "receiptPath": "CXORBIA_I3_G05_CANONICAL_INTEGRATION_2026-10-17.json",
     "finalReceiptPath": "CXORBIA_I3_G05_CANONICAL_SOURCE_PROOF_2026-10-17.json",
     "sourceProof": {
-      "stage": "SOURCE_PROVEN_LOCAL_PENDING_CANONICAL_CI_DEV_E2E",
-      "localG05Pass": 113,
-      "localG05Fail": 0,
-      "localScopedTotalPass": 190,
-      "localScopedTotalFail": 0,
-      "localScope": "SYNTHETIC_SOURCE_NO_NETWORK_NO_REAL_APPLICATION_PROVIDER",
-      "sourceQa": "PENDING_EXISTING_CANONICAL_LANE",
-      "finalReadbackReceiptPath": "CXORBIA_I3_G05_CANONICAL_SOURCE_PROOF_2026-10-17.json",
+      "stage": "CANONICAL_SOURCE_QA_PROVEN_DEV_PENDING",
+      "runId": 39025290090,
+      "runNumber": 1730,
+      "sourceTotalPass": 247,
+      "sourceTotalFail": 0,
+      "g05FocalPass": 113,
+      "g05FocalFail": 0,
+      "finalReceiptPath": "CXORBIA_I3_G05_CANONICAL_SOURCE_PROOF_2026-10-17.json",
       "devMaterialized": false,
       "liveE2e": "NOT_EXECUTED",
       "humanApproval": "NOT_REQUESTED"
@@ -11797,19 +11797,31 @@
     "sourceSha": "4f35c21bceaee6ec58390cdc1f3a8b11309c6bfb",
     "tree": "bcc2a0e98e6f65eb09430a091007e80a22427ab3",
     "proof": {
-      "stage": "SOURCE_PROVEN_LOCAL_PENDING_CANONICAL_CI_DEV_E2E",
-      "localG05Pass": 113,
-      "localG05Fail": 0,
-      "localScopedTotalPass": 190,
-      "localScopedTotalFail": 0,
-      "localScope": "SYNTHETIC_SOURCE_NO_NETWORK_NO_REAL_APPLICATION_PROVIDER",
-      "sourceQa": "PENDING_EXISTING_CANONICAL_LANE",
-      "finalReadbackReceiptPath": "CXORBIA_I3_G05_CANONICAL_SOURCE_PROOF_2026-10-17.json",
+      "stage": "CANONICAL_SOURCE_QA_PROVEN_DEV_PENDING",
+      "runId": 39025290090,
+      "runNumber": 1730,
+      "sourceTotalPass": 247,
+      "sourceTotalFail": 0,
+      "g05FocalPass": 113,
+      "g05FocalFail": 0,
+      "finalReceiptPath": "CXORBIA_I3_G05_CANONICAL_SOURCE_PROOF_2026-10-17.json",
       "devMaterialized": false,
       "liveE2e": "NOT_EXECUTED",
       "humanApproval": "NOT_REQUESTED"
     },
     "liveE2e": "NOT_EXECUTED",
-    "newPreviewReady": false
-  }
+    "newPreviewReady": false,
+    "finalReceiptPath": "CXORBIA_I3_G05_CANONICAL_SOURCE_PROOF_2026-10-17.json"
+  },
+  "latestSourceQaReceipt": {
+    "path": "CXORBIA_I3_G05_CANONICAL_SOURCE_PROOF_2026-10-17.json",
+    "runId": 39025290090,
+    "runNumber": 1730,
+    "sourceSha": "4f35c21bceaee6ec58390cdc1f3a8b11309c6bfb",
+    "sourceTree": "bcc2a0e98e6f65eb09430a091007e80a22427ab3",
+    "proofHead": "5df72f867d8cc27a680e070865b27cc78eb3dae6",
+    "proofTree": "1753d01aa909dd4181e3490c07d24287913d68a0",
+    "decision": "PASS_FOCAL_SOURCE_ONLY_I3_HOLD"
+  },
+  "lastUpdatedAt": "2026-10-17T10:38:38.250199+00:00"
 }

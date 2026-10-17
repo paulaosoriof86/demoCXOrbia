@@ -30,29 +30,69 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_G05_CANONICAL_INTEGRATION_2026-10-17.json",
-    "kind": "G05_SOURCE_PROVEN_EXACT_GIT_OBJECTS_CREATED_CANONICAL_CAS_CI_PENDING",
+    "path": "CXORBIA_I3_G05_CANONICAL_SOURCE_PROOF_2026-10-17.json",
+    "kind": "G05_CANONICAL_READBACK_AND_REMOTE_SOURCE_QA_PASS_DEV_LIVE_PENDING",
     "tasks": [
       "G05"
     ],
     "sourceSha": "4f35c21bceaee6ec58390cdc1f3a8b11309c6bfb",
     "productTree": "bcc2a0e98e6f65eb09430a091007e80a22427ab3",
-    "productOwners": 5,
-    "qaFiles": 4,
-    "focalPass": 113,
-    "localScopedTotalPass": 190,
-    "realProviderDevProof": "NOT_EXECUTED",
+    "proofControlSha": "5df72f867d8cc27a680e070865b27cc78eb3dae6",
+    "proofControlTree": "1753d01aa909dd4181e3490c07d24287913d68a0",
+    "sourceQa": {
+      "runId": 39025290090,
+      "runNumber": 1730,
+      "attempt": 1,
+      "headSha": "5df72f867d8cc27a680e070865b27cc78eb3dae6",
+      "status": "completed",
+      "conclusion": "success",
+      "htmlUrl": "https://github.com/paulaosoriof86/demoCXOrbia/actions/runs/39025290090",
+      "sourceJobId": 117375014042,
+      "sourceTotalPass": 247,
+      "sourceTotalFail": 0,
+      "g05Focal": {
+        "observation": 35,
+        "writerReceiptsAndDispatch": 35,
+        "uiSync": 42,
+        "boundedVisitWorkerDrain": 1,
+        "totalPass": 113,
+        "totalFail": 0
+      },
+      "preservedA04C01": {
+        "focalPass": 19,
+        "canonicalIdentityPass": 7
+      },
+      "relatedSourcePass": 108,
+      "authorityJobId": 117374969191,
+      "authorityPass": 189,
+      "authorityFail": 0,
+      "countsAreJobExecutionsNotUniqueGlobalProductCoverage": true,
+      "sourceProof": {
+        "clickE2ERequired": true,
+        "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+        "deploys": 0,
+        "g05FocalFail": 0,
+        "g05FocalPass": 113,
+        "knownUnclosedLegacyGate7Cases": 5,
+        "production": false,
+        "scope": "FOCAL_SOURCE_CONTRACTS_ONLY",
+        "sourceSha": "4f35c21bceaee6ec58390cdc1f3a8b11309c6bfb",
+        "sourceTree": "bcc2a0e98e6f65eb09430a091007e80a22427ab3",
+        "trueFunctionalDefects": 0,
+        "wholeProductPass": false
+      }
+    },
     "realApplicationProviderWrites": 0,
     "deploys": 0,
-    "newlyFunctionallyClosedI3Tasks": 0,
-    "newReadyPreviews": []
+    "newReadyPreviews": [],
+    "newlyFunctionallyClosedI3Tasks": 0
   },
   "taskProgress": {
     "G01": "IN_PROGRESS_COVERAGE_CUSTODIED_AUTHORITY_GAPS_RETAINED_IN_G03",
     "G02": "DIRECT_NATIVE_GITHUB_WRITE_READBACK_AND_EXISTING_CI_PROVEN_NO_TINYFISH_REQUIRED",
     "G03": "PENDING_NO_NEW_GENERAL_AUDIT",
-    "G04": "RUN1729_PROOF_PRESERVED_G05_113_FOCAL_ADDED_EXISTING_CI_PENDING",
-    "G05": "SOURCE_PROVEN_LOCAL_113_FOCAL_CANONICAL_REF_AND_REMOTE_QA_PENDING",
+    "G04": "SOURCE_FOCAL_AND_RELATED_QA_PASS_RUN1730_PARTIAL_TASK_COVERAGE_ONLY",
+    "G05": "SOURCE_PROVEN_CANONICAL_RUN1730_113_FOCAL_PASS_DEV_PROVIDER_AUTH_PROOF_PENDING",
     "G06": "IN_PROGRESS_FROZEN_QUEUE_SINGLE_WRITER",
     "A04": "SOURCE_PROVEN_CANONICAL_RUN1729_DEV_LIVE_AND_DEPENDENCY_PROOF_PENDING",
     "C01": "SOURCE_PROVEN_CANONICAL_RUN1729_DEV_LIVE_PROVIDER_READBACK_AND_DEPENDENCY_PROOF_PENDING",
@@ -75,7 +115,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Read back the single canonical ref and existing source QA for G05, then implement A05 atomic off-state preparation and session-bound publication in its proven owners. G05 source proof does not certify DEV, authentication or the full I3 closure. D02 remains pending. Preserve accepted independent scopes.",
+  "nextExactAction": "Implement A05 in the same canonical branch: prepare the HR/protected composition outside CX.data, validate session generation, UID, role, tenant, project and source revision before one atomic publication, and make refresh await composition/readback. Add red/green focal tests and preserve G05 read-only observation. Then perform scoped real DEV/auth/provider proof for A04/C01/G05/A05 under the frozen contract; D02 remains pending. No production or I4 authorization.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -118,7 +158,7 @@
     "newlyFixedLiveModules": [],
     "newReadyPreviews": []
   },
-  "lastUpdatedAt": "2026-10-17T10:30:48.961313+00:00",
+  "lastUpdatedAt": "2026-10-17T10:38:38.250199+00:00",
   "previousExecutionReceiptBeforeRun1729": {
     "path": "CXORBIA_I3_A04_C01_CANONICAL_INTEGRATION_2026-10-17.json",
     "kind": "EXACT_NATIVE_GIT_OBJECTS_PREPARED_SINGLE_CANONICAL_CAS_PENDING",
@@ -141,6 +181,35 @@
     "newReadyPreviews": []
   },
   "progressByStage": {
+    "incorporatedCanonical": {
+      "numerator": 1,
+      "denominator": 1,
+      "percent": 100
+    },
+    "remoteSourceQaProven": {
+      "numerator": 1,
+      "denominator": 1,
+      "percent": 100
+    },
+    "realProviderDevProven": {
+      "numerator": 0,
+      "denominator": 1,
+      "percent": 0
+    },
+    "accumulatedSourceProvenTasks": [
+      "A04",
+      "C01",
+      "G05"
+    ],
+    "i3SourceRepairStage": {
+      "numerator": 3,
+      "denominator": 63,
+      "percent": 4.76,
+      "meaning": "Source repairs only, not overall CXOrbia progress or functional I3 closure"
+    },
+    "newlyFunctionallyClosedI3Tasks": 0,
+    "newReadyPreviews": 0,
+    "newHumanApprovals": 0,
     "blockTasks": [
       "G05"
     ],
@@ -148,37 +217,13 @@
       "numerator": 1,
       "denominator": 1,
       "percent": 100
-    },
-    "incorporatedCanonical": {
-      "numerator": 0,
-      "denominator": 1,
-      "percent": 0
-    },
-    "remoteSourceQaProven": {
-      "numerator": 0,
-      "denominator": 1,
-      "percent": 0
-    },
-    "realProviderDevProven": {
-      "numerator": 0,
-      "denominator": 1,
-      "percent": 0
-    },
-    "i3SourceRepairStage": {
-      "numerator": 3,
-      "denominator": 63,
-      "percent": 4.76,
-      "meaning": "Prepared source repairs A04/C01/G05 only; not global product progress or functional closure"
-    },
-    "newlyFunctionallyClosedI3Tasks": 0,
-    "newReadyPreviews": 0,
-    "newHumanApprovals": 0
+    }
   },
   "nextDiagnosisPath": null,
   "nextUserAuthorizationRequired": false,
   "primaryExecutionRoute": "DIRECT_NATIVE_GITHUB_SINGLE_WRITER",
   "tinyFishRequiredForThisAction": false,
-  "receiptControlParentSha": "ba0d0c4cca4fa4962fd002e09d8d4a6143e80c15",
+  "receiptControlParentSha": "5df72f867d8cc27a680e070865b27cc78eb3dae6",
   "previousExecutionReceiptBeforeG05": {
     "path": "CXORBIA_I3_A04_C01_CANONICAL_READBACK_RUN1729_2026-10-17.json",
     "kind": "CANONICAL_INTEGRATION_READBACK_VERIFIED_SOURCE_QA_PASS_DEV_LIVE_PENDING",
@@ -246,5 +291,23 @@
     "newlyFunctionallyClosedI3Tasks": 0,
     "newReadyPreviews": 0,
     "newHumanApprovals": 0
+  },
+  "previousExecutionReceiptBeforeRun1730": {
+    "path": "CXORBIA_I3_G05_CANONICAL_INTEGRATION_2026-10-17.json",
+    "kind": "G05_SOURCE_PROVEN_EXACT_GIT_OBJECTS_CREATED_CANONICAL_CAS_CI_PENDING",
+    "tasks": [
+      "G05"
+    ],
+    "sourceSha": "4f35c21bceaee6ec58390cdc1f3a8b11309c6bfb",
+    "productTree": "bcc2a0e98e6f65eb09430a091007e80a22427ab3",
+    "productOwners": 5,
+    "qaFiles": 4,
+    "focalPass": 113,
+    "localScopedTotalPass": 190,
+    "realProviderDevProof": "NOT_EXECUTED",
+    "realApplicationProviderWrites": 0,
+    "deploys": 0,
+    "newlyFunctionallyClosedI3Tasks": 0,
+    "newReadyPreviews": []
   }
 }
