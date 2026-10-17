@@ -6582,7 +6582,7 @@ jobs:
          node --check tools/qa/cxorbia-i3-admin-cluster-a-postulations-live.mjs
       - name: step
         run: |
-         npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+         npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 google-auth-library@9.15.1 pdfjs-dist@3.11.174 >/dev/null 2>&1
          npx playwright install chromium >/dev/null 2>&1
       - uses: google-github-actions/auth@v2
         with:
