@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED",
+  "status": "HOLD_I3_GT_E2E",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run the existing same-artifact live reproof lane on D02 materialization RUN1750. Execute browser-level PDF.js text-layer and Mammoth DOCX extraction on supported synthetic fixtures; require sufficient extraction_quality, source_sha256, zero OCR, zero AI-provider requests, zero writes/deploys and production=false. Keep authentic approved-document validation pending D01/D03. No rebuild and no production.",
+  "exactNextAction": "Repeat the same-artifact browser D02 parser smoke on RUN1750 materialization through the existing early-exit route only. Require d02Decision PASS_I3_D02_PARSER_LIVE_SMOKE, DOCX/PDF quality sufficient, zero OCR, zero AI-provider requests, zero writes/deploys and production=false. Do not run unrelated provider/click/admin/finance probes. Authentic approved-document proof remains pending D01/D03.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -11895,7 +11895,7 @@
     "proofTree": "1753d01aa909dd4181e3490c07d24287913d68a0",
     "decision": "PASS_FOCAL_SOURCE_ONLY_I3_HOLD"
   },
-  "lastUpdatedAt": "2026-10-17T13:41:41.259Z",
+  "lastUpdatedAt": "2026-10-17T13:47:17.300Z",
   "a05SourceProof": {
     "recordedAt": "2026-10-17T12:00:37.826Z",
     "productSourceSha": "2ae3971a7964c057c2cee509d308d892c8bfd23e",
@@ -12046,5 +12046,12 @@
     "firestoreRulesDeploys": 1,
     "hrWrites": 0,
     "production": false
+  },
+  "controlRouting": {
+    "recordedAt": "2026-10-17T13:47:17.300Z",
+    "route": "EXISTING_HOLD_I3_GT_E2E_EARLY_EXIT_ONLY",
+    "semanticScope": "D02_PARSER_LIVE_SMOKE_ONLY",
+    "gtProductClaim": false,
+    "reason": "Reuse existing valid same-artifact early-exit branch without adding another workflow path."
   }
 }

@@ -30,38 +30,17 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_D02_DEV_MATERIALIZATION_RUN1750_2026-10-17.json",
-    "kind": "D02_DEV_MATERIALIZATION_PASS_LIVE_PARSER_SMOKE_REQUIRED",
-    "tasks": [
-      "D02"
-    ],
+    "path": "CXORBIA_I3_D02_LIVE_PARSER_RUN1751_CONTROL_RETRY_2026-10-17.json",
+    "kind": "D02_LIVE_PARSER_FUNCTIONAL_PASS_CONTROL_HARNESS_RETRY_REQUIRED",
     "sourceSha": "99e8e456318b3f0f01c9bd0caa16cc6a0c1c07dc",
     "productTree": "866e785dcb15273c9500f5525602d8c4a9cd1ed2",
-    "currentMaterialization": {
-      "state": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
-      "decision": "PASS_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION",
-      "sourceSha": "99e8e456318b3f0f01c9bd0caa16cc6a0c1c07dc",
-      "sourceTree": "866e785dcb15273c9500f5525602d8c4a9cd1ed2",
-      "runId": 39034855690,
-      "runNumber": 1750,
-      "artifactId": 12101673532,
-      "artifactUploadZipSha256": "a1149645619c5a3d178189be944ee2e5d5cde89558e3c9537671d8c0880dd454",
-      "artifactDigest": "sha256:2f9270e963671bfc1433c1f85d3aca91824421c3555b9315de1d682c37b9f2bd",
-      "runtimeRevision": "cxorbia-live-hr-dev-00307-xjk",
-      "runtimeDigest": "sha256:930e5a02f3e9d2f0682e9f8d854b6faea270ac116527f9c26d9ede96192e8446",
-      "hostingVersion": "sites/cxorbia-backend-dev/versions/57f4bd96e99b8e10",
-      "hostingRelease": "sites/cxorbia-backend-dev/channels/live/releases/1792242293440000",
-      "firestoreRuleset": "projects/cxorbia-backend-dev/rulesets/e9070ca6-234c-4a16-acf2-5ab3372eadb3",
-      "hrRevision": "5d369d8955ff899095aa113d094dccea5a1c94e8849b455906cd4f154bf28e48",
-      "builds": 1,
-      "runtimeDeploys": 1,
-      "hostingDeploys": 1,
-      "firestoreRulesDeploys": 1,
-      "hrWrites": 0,
-      "production": false
-    },
-    "productionWrites": 0,
-    "newReadyPreviews": 0
+    "runId": 39037674869,
+    "runNumber": 1751,
+    "artifactId": 12102289476,
+    "d02Decision": "PASS_I3_D02_PARSER_LIVE_SMOKE",
+    "workflowConclusion": "FAIL_AFTER_D02_PASS",
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "productionWrites": 0
   },
   "taskProgress": {
     "G01": "IN_PROGRESS_COVERAGE_CUSTODIED_AUTHORITY_GAPS_RETAINED_IN_G03",
@@ -73,7 +52,7 @@
     "A04": "LIVE_E2E_PASS_RUN1742_HUMAN_PREVIEW_READY_UNAFFECTED_OWNER_PARITY",
     "C01": "LIVE_E2E_PASS_RUN1746_HUMAN_PREVIEW_READY_UNAFFECTED_OWNER_PARITY",
     "A05": "LIVE_E2E_PASS_RUN1742_HUMAN_PREVIEW_READY_UNAFFECTED_OWNER_PARITY",
-    "D02": "DEV_MATERIALIZED_RUN1750_LIVE_PARSER_SMOKE_REQUIRED"
+    "D02": "LIVE_PARSER_SMOKE_FUNCTIONAL_PASS_OBSERVED_RUN1751_CONTROL_RETRY_REQUIRED"
   },
   "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
   "remainingPath": [
@@ -91,7 +70,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Run the existing same-artifact live reproof lane on D02 materialization RUN1750. Execute browser-level PDF.js text-layer and Mammoth DOCX extraction on supported synthetic fixtures; require sufficient extraction_quality, source_sha256, zero OCR, zero AI-provider requests, zero writes/deploys and production=false. Keep authentic approved-document validation pending D01/D03. No rebuild and no production.",
+  "nextExactAction": "Repeat the same-artifact browser D02 parser smoke on RUN1750 materialization through the existing early-exit route only. Require d02Decision PASS_I3_D02_PARSER_LIVE_SMOKE, DOCX/PDF quality sufficient, zero OCR, zero AI-provider requests, zero writes/deploys and production=false. Do not run unrelated provider/click/admin/finance probes. Authentic approved-document proof remains pending D01/D03.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -134,7 +113,7 @@
     "newlyFixedLiveModules": [],
     "newReadyPreviews": []
   },
-  "lastUpdatedAt": "2026-10-17T13:41:41.259Z",
+  "lastUpdatedAt": "2026-10-17T13:47:17.300Z",
   "previousExecutionReceiptBeforeRun1729": {
     "path": "CXORBIA_I3_A04_C01_CANONICAL_INTEGRATION_2026-10-17.json",
     "kind": "EXACT_NATIVE_GIT_OBJECTS_PREPARED_SINGLE_CANONICAL_CAS_PENDING",
