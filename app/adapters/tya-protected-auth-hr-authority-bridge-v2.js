@@ -61,7 +61,40 @@ async function consumeHrPrefetch(scope){
   window.CX_PROTECTED_HR_PREFETCH={mode:'direct_authorized_fallback',ready:true,receivedAt:Date.now(),providerWrites:0,production:false};
   return direct;
 }
-function sessionProfile(state,c,result){if(c?.role!=='shopper'||!str(c.shopperId))return null;const sid=str(c.shopperId),canonical=str(result?.identityMap?.[sid]||sid),ids=new Set([sid,canonical].filter(Boolean));const protectedRows=arr(state?.shoppers).filter(x=>ids.has(str(x?.id||x?.shopperId)));const canonicalRows=arr(result?.shoppers).filter(x=>ids.has(str(x?.id||x?.shopperId)));const all=[...protectedRows,...canonicalRows],byId=new Map();all.forEach(x=>{const id=str(x?.id||x?.shopperId);if(id&&!byId.has(id))byId.set(id,x);});if(byId.size!==1)return {ok:false,reason:byId.size?'ambiguous_exact_identity':'no_exact_identity',rawShopperId:sid,canonicalShopperId:canonical,matches:[...byId.keys()]};const row=clone([...byId.values()][0]),id=str(row.id||row.shopperId);return {ok:true,reason:'unique_exact_identity',rawShopperId:sid,canonicalShopperId:id||canonical,profile:row};}
+function sessionProfile(state,c,result){
+  if(c?.role!=='shopper'||!str(c.shopperId))return null;
+  const sid=str(c.shopperId),map=result?.identityMap||{};
+  // Resolve provider-approved equivalences before counting people, never by display name.
+  const resolve=id=>{
+    const seen=new Set();let current=str(id);
+    while(current&&Object.prototype.hasOwnProperty.call(map,current)){
+      if(seen.has(current))return null;
+      seen.add(current);
+      const next=str(map[current]);
+      if(!next)return null;
+      if(next===current)return current;
+      current=next;
+    }
+    return current;
+  };
+  const canonical=resolve(sid);
+  if(!canonical)return {ok:false,reason:'invalid_identity_alias',rawShopperId:sid};
+  const protectedRows=arr(state?.shoppers),canonicalRows=arr(result?.shoppers);
+  const samePerson=row=>resolve(str(row?.id||row?.shopperId))===canonical;
+  const rows=[...canonicalRows.filter(samePerson),...protectedRows.filter(samePerson)];
+  if(!rows.length)return {ok:false,reason:'no_exact_identity',rawShopperId:sid,canonicalShopperId:canonical,matches:[]};
+  if(rows.some(row=>str(row.id)&&str(row.shopperId)&&resolve(row.id)!==resolve(row.shopperId)))
+    return {ok:false,reason:'ambiguous_exact_identity',rawShopperId:sid,canonicalShopperId:canonical};
+  if(rows.some(row=>str(c.tenantId)&&str(row.tenantId)&&str(c.tenantId)!==str(row.tenantId)))
+    return {ok:false,reason:'identity_scope_mismatch',rawShopperId:sid,canonicalShopperId:canonical};
+  const exact=rows.find(row=>str(row.id||row.shopperId)===canonical);
+  const profile=clone(exact||rows[0]);
+  for(const row of rows)for(const [key,value] of Object.entries(row)){
+    if((profile[key]===undefined||profile[key]===null||profile[key]==='')&&value!==undefined&&value!==null&&value!=='')profile[key]=clone(value);
+  }
+  profile.id=canonical;profile.shopperId=canonical;
+  return {ok:true,reason:'unique_exact_identity',rawShopperId:sid,canonicalShopperId:canonical,profile};
+}
 function validateShopperPrincipal(c,scope,claims,state){
  if(c?.role!=='shopper')return {required:false,ok:true};
  const uid=principalUid(),projects=arr(c.projectIds).map(str),claimProjects=arr(claims?.projectIds).map(str),sid=str(c.shopperId),claimSid=str(claims?.shopperId);

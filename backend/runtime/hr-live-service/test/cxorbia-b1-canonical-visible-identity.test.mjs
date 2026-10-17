@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import vm from 'node:vm';
 
 const read=p=>fs.readFileSync(p,'utf8');
 
@@ -40,13 +41,14 @@ test('B1 preserves active-period and exact-assignment filters',()=>{
   assert.match(s,/f\.assigned===true&&f\.realized!==true&&f\.cancelled!==true/);
 });
 
-test('I3 P0 HN shopper readiness fails closed until exact HR profile country and periods resolve',()=>{
+test('I3 P0 HN shopper readiness requires exact profile and country, not an existing assignment',()=>{
   const gate=read('app/adapters/tya-c6-unified-human-runtime-v1.js');
   const bridge=read('app/adapters/tya-protected-auth-hr-authority-bridge-v2.js');
   assert.match(gate,/exactSessionShopperReady===true/);
   assert.match(gate,/shopperPrincipalClaimsVerified===true/);
-  assert.match(gate,/Number\(authority\.authorizedPeriods\|\|0\)>0/);
-  assert.match(gate,/arr\(authority\.authorizedPeriodIds\)\.length>0/);
+  assert.doesNotMatch(gate,/Number\(authority\.authorizedPeriods\|\|0\)>0/);
+  assert.doesNotMatch(gate,/arr\(authority\.authorizedPeriodIds\)\.length>0/);
+  assert.match(bridge,/shopper_ready_without_assigned_visits/);
   assert.match(bridge,/SHOPPER_EXACT_HR_PROFILE_COUNTRY_PERIOD_REQUIRED/);
   assert.match(bridge,/shopperReadiness\(profileInfo,result,CX\.data,claims\)/);
   assert.match(bridge,/shopperCountry:shopperReady\.country/);
@@ -73,7 +75,16 @@ test('I3 P0 HN exact identity ambiguity is blocked without fuzzy merge or global
   const bridge=read('app/adapters/tya-protected-auth-hr-authority-bridge-v2.js');
   assert.match(bridge,/ambiguous_exact_identity/);
   assert.match(bridge,/no_exact_identity/);
-  assert.match(bridge,/byId\.size!==1/);
+  const code=bridge.slice(bridge.indexOf('function sessionProfile('),bridge.indexOf('function validateShopperPrincipal('));
+  const resolve=vm.runInNewContext(code+'\n sessionProfile;',{
+    str:v=>String(v??'').trim(),arr:v=>Array.isArray(v)?v:[],clone:v=>JSON.parse(JSON.stringify(v))
+  });
+  const context={role:'shopper',shopperId:'alias',tenantId:'tenant-a'};
+  const canonical={identityMap:{alias:'person'},shoppers:[{id:'person',nombre:'Persona',pais:'HN',tenantId:'tenant-a'}]};
+  assert.equal(resolve({shoppers:[{id:'alias',pais:'HN'}]},context,canonical).ok,true);
+  assert.equal(resolve({shoppers:[{id:'alias',shopperId:'different-person',pais:'HN'}]},context,canonical).reason,'ambiguous_exact_identity');
+  assert.equal(resolve({shoppers:[{id:'alias',tenantId:'tenant-b',pais:'HN'}]},context,canonical).ok,false);
+
   assert.doesNotMatch(bridge,/scopePaises:\s*\['GT','HN'\]|scopePaises:\s*\["GT","HN"\]/);
   assert.doesNotMatch(bridge,/fuzzy|similarity|levenshtein/i);
 });

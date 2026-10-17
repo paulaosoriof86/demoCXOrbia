@@ -125,6 +125,49 @@ async function cxFinanceReconcileWithProof(data,visitId,reason){
     :{ok:false,code:readback.code,providerAck:true};
 }
 
+/* C01: one reconciliation action for Dashboard, Movements and liquidation detail. */
+function cxFinanceBindReconcile(root,data,ui,onConfirmed,options={}){
+  const selector=options.selector||'[data-fin-reconcile]';
+  root?.querySelectorAll(selector).forEach(btn=>{
+    if(btn.__cxFinanceReconcileBound)return;
+    btn.__cxFinanceReconcileBound=true;
+    btn.addEventListener('click',async event=>{
+      event.preventDefault();
+      if(btn.disabled)return;
+      const visitId=String(options.visitId??btn.dataset.finReconcile??'').trim();
+      if(!visitId){ui.toast('No se identificó la visita. No se ejecutó la conciliación.','err');return;}
+      const prior=btn.textContent;btn.disabled=true;btn.textContent='Conciliando…';
+      const resultLabel=btn.closest('tr')?.querySelector('[data-fin-reconcile-diagnostic]');
+      const showDiagnostic=(code,text)=>{
+        btn.dataset.providerResultCode=String(code||'').slice(0,100);
+        if(resultLabel){resultLabel.dataset.providerResultCode=btn.dataset.providerResultCode;resultLabel.textContent=text;}
+      };
+      try{
+        const result=await cxFinanceReconcileWithProof(data,visitId,options.reason||'admin-finance-reconcile');
+        if(!result.ok){
+          const prefix=result.providerAck===true?'Operación registrada; verificación pendiente.':'Conciliación no confirmada.';
+          const copy=prefix+' '+cxFinanceFailureCopy(result.code);
+          showDiagnostic(result.code,copy);
+          if(btn.isConnected)ui.toast(copy,'warn',6500);
+          return;
+        }
+        showDiagnostic('FINANCE_RECONCILE_CONFIRMED','Conciliación confirmada y verificada.');
+        if(btn.isConnected){
+          if(typeof onConfirmed==='function')await onConfirmed(result);
+          ui.toast('Conciliación confirmada y verificada.','ok',4200);
+        }
+      }catch(error){
+        const diagnostic=cxFinanceReconcileFailure(null,error);
+        const copy='Conciliación no confirmada. '+cxFinanceFailureCopy(diagnostic.code);
+        showDiagnostic(diagnostic.code,copy);
+        if(btn.isConnected)ui.toast(copy,'warn',6500);
+      }finally{
+        if(btn.isConnected){btn.disabled=false;btn.textContent=prior;}
+      }
+    });
+  });
+}
+
 /* HF24: provider ACK never equals independently proved financial readback. */
 function cxFinanceCreatedReadback(ack,items,expected){
   if(ack?.ok!==true||ack?.providerAck!==true||!ack?.entityId||!Array.isArray(items))return false;
@@ -335,6 +378,7 @@ CX.module('financiero', ({data,ui})=>{
   </div>`;
 
   setTimeout(()=>{
+    cxFinanceBindReconcile(document.getElementById('view'),data,ui,()=>CX.router?._reRender?.(),{reason:'admin-finance-dashboard-reconcile'});
     const fx=document.getElementById('finExport');
     if(fx&&CX.reportKit){
       const san=(s)=>String(s||'r').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-+|-+$/g,'').toLowerCase()||'r';
@@ -984,31 +1028,7 @@ CX.module('movimientos', ({data,ui})=>{
       });}});
     }));
 
-    host.querySelectorAll('[data-fin-reconcile]').forEach(btn=>btn.addEventListener('click',async()=>{
-      const visitId=String(btn.dataset.finReconcile||'');
-      if(!visitId){ui.toast('Falta el ID exacto de la visita. No se ejecutó una conciliación.','err');return;}
-      const prior=btn.textContent;btn.disabled=true;btn.textContent='Conciliando…';
-      const resultLabel=btn.closest('tr')?.querySelector('[data-fin-reconcile-diagnostic]');
-      const showDiagnostic=(code,status)=>{if(resultLabel){resultLabel.dataset.providerResultCode=String(code||'').slice(0,100);resultLabel.textContent=status+' · '+cxFinanceFailureCopy(code);}};
-      try{
-        const result=await cxFinanceReconcileWithProof(data,visitId,'admin-finance-reconcile');
-        if(!result.ok){
-          const label=result.providerAck===true?'ACK registrado; lectura protegida pendiente':'Proveedor rechazó la conciliación';
-          showDiagnostic(result.code,result.providerAck===true?'ACK pendiente de lectura':'Sin ACK');
-          ui.toast(label+'. '+cxFinanceFailureCopy(result.code),'warn',6500);
-          return;
-        }
-        showDiagnostic('FINANCE_RECONCILE_CONFIRMED','ACK y lectura protegida');
-        ui.toast('Conciliación confirmada con ACK y lectura protegida','ok',4200);
-        draw();
-      }catch(error){
-        const diagnostic=cxFinanceReconcileFailure(null,error);
-        showDiagnostic(diagnostic.code,'Sin confirmación');
-        ui.toast('Conciliación no confirmada. '+cxFinanceFailureCopy(diagnostic.code),'warn',6500);
-      }finally{
-        if(btn.isConnected){btn.disabled=false;btn.textContent=prior;}
-      }
-    }));
+    cxFinanceBindReconcile(host,data,ui,()=>draw());
     const pl=host.querySelector('#payLote');
     if(pl){ if(pendingCurrencyRows.length){ pl.disabled=true; pl.title='Bloqueado: hay filas en revisión de moneda'; pl.classList.add('btn-ghost'); }
     pl.addEventListener('click',async()=>{
@@ -1213,7 +1233,7 @@ CX.module('liquidaciones', ({data,ui})=>{
           ${elig.canRecord?'<button class="btn btn-green btn-sm" id="liqDetailPay">Registrar pago interno</button>':''}
         </div>`,
       {onMount:(ov,close)=>{
-        ov.querySelector('#liqDetailReconcile')?.addEventListener('click',async()=>{const btn=ov.querySelector('#liqDetailReconcile');btn.disabled=true;btn.textContent='Conciliando…';try{const r=await cxFinanceReconcileWithProof(data,l.visitaId,'admin-finance-liquidation-detail-reconcile');if(!r.ok){ui.toast((r.providerAck===true?'ACK registrado; lectura pendiente':'Conciliación rechazada')+' · '+r.code,'warn',6500);return;}close();draw();ui.toast('Conciliación confirmada con ACK y lectura protegida','ok');}catch(error){const diag=cxFinanceReconcileFailure(null,error);ui.toast('Conciliación no confirmada · '+diag.code,'warn',6500);}finally{if(btn.isConnected){btn.disabled=false;btn.textContent='Conciliar fuente';}}});
+        cxFinanceBindReconcile(ov,data,ui,()=>{close();draw();},{selector:'#liqDetailReconcile',visitId:l.visitaId,reason:'admin-finance-liquidation-detail-reconcile'});
         ov.querySelector('#liqDetailPay')?.addEventListener('click',()=>{close();host.querySelector('[data-payone="'+l.visitaId+'"]')?.click();});
       }});
     }));
