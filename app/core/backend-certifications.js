@@ -71,7 +71,7 @@ window.CX=window.CX||{};
     call,
     submitAttempt:payload=>call('attempt',Object.assign({idempotencyKey:newId('cert.attempt')},payload||{})),
     requestRecertification:payload=>call('recertify',Object.assign({idempotencyKey:newId('cert.recert')},payload||{})),
-    generateBank:payload=>call('ai-generate',payload||{}),
+    generateBank:payload=>call('ai-generate',Object.assign({idempotencyKey:newId('cert.generate')},payload||{})),
     currentUid,durableCurrent,carryoverDecision,applicableRecertifications
   };
 })();

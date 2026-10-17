@@ -21,7 +21,7 @@ export function withDocumentId(docId,item={}){
 
 function canonicalBank(bank={}){
   return {
-    preguntas:arr(bank.preguntas).map(q=>({q:str(q?.q),ops:arr(q?.ops).map(str),correcta:str(q?.correcta),exp:str(q?.exp)})),
+    preguntas:arr(bank.preguntas).map(q=>({q:str(q?.q),ops:arr(q?.ops).map(str),correcta:str(q?.correcta),exp:str(q?.exp),fuente:str(q?.fuente||q?.sourceRef)})),
     gate:Number(bank.gate||80),
     contentRevision:str(bank.contentRevision||'')
   };
@@ -150,7 +150,7 @@ export function normalizeGeneratedQuestions(raw,count){
   try{parsed=JSON.parse(str(raw).replace(/^\x60\x60\x60json\s*|\x60\x60\x60\s*$/g,'').trim());}catch(_){throw new Error('AI_PROVIDER_RESPONSE_NOT_JSON');}
   const questions=arr(Array.isArray(parsed)?parsed:parsed?.preguntas).slice(0,count).map(q=>({
     q:str(q?.q||q?.pregunta),ops:arr(q?.ops||q?.opciones).map(str).filter(Boolean).slice(0,6),
-    correcta:str(q?.correcta||q?.respuestaCorrecta),exp:str(q?.exp||q?.explicacion)
+    correcta:str(q?.correcta||q?.respuestaCorrecta),exp:str(q?.exp||q?.explicacion),fuente:str(q?.fuente||q?.sourceRef||q?.referencia)
   })).filter(q=>q.q&&q.ops.length>=2&&q.correcta&&q.ops.includes(q.correcta));
   if(!questions.length)throw new Error('AI_PROVIDER_RESPONSE_INVALID');
   if(questions.length!==count)throw new Error('AI_QUESTION_COUNT_INCOMPLETE:'+questions.length+'/'+count);
@@ -164,12 +164,87 @@ export function validateVertexQuestionSet(questions,count){
  for(let i=0;i<questions.length;i++){
   const q=questions[i]||{},answer=str(q.correcta),options=arr(q.ops).map(str);
   const key=str(q.q).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ');
-  if(!key||options.length!==4||new Set(options.map(v=>v.toLowerCase())).size!==4||!answer||!options.includes(answer)||!str(q.exp))
+  if(!key||options.length!==4||new Set(options.map(v=>v.toLowerCase())).size!==4||!answer||!options.includes(answer)||!str(q.exp)||!str(q.fuente))
     throw new Error('AI_QUESTION_INVALID_SHAPE:'+i);
   if(seen.has(key))throw new Error('AI_QUESTION_DUPLICATE:'+i);
   seen.add(key);
  }
  return questions;
+}
+
+export function validateQuestionSourceReferences(questions,sourceText){
+ const text=str(sourceText),pages=new Set([...text.matchAll(/\[Página\s+(\d+)\]/gi)].map(m=>m[1]));
+ for(let i=0;i<arr(questions).length;i++){
+  const ref=str(questions[i]?.fuente),page=(ref.match(/p[aá]gina\s+(\d+)/i)||[])[1];
+  if(!ref)throw new Error('AI_QUESTION_SOURCE_REFERENCE_REQUIRED:'+i);
+  if(pages.size){
+   if(!page||!pages.has(page))throw new Error('AI_QUESTION_SOURCE_REFERENCE_INVALID:'+i);
+  }else{
+   const normalizedRef=ref.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+   const normalizedText=text.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+   if(normalizedRef.length<8||!normalizedText.includes(normalizedRef))throw new Error('AI_QUESTION_SOURCE_REFERENCE_INVALID:'+i);
+  }
+ }
+ return questions;
+}
+
+function generationInput(body={}){
+ const sourceText=str(body.sourceText),sourceSha256=str(body.sourceSha256||body.documentSource?.source_sha256).toLowerCase(),sourceTitle=str(body.sourceTitle||body.documentSource?.name||'Fuente de certificación');
+ const quality=body.documentSource?.extraction_quality||body.extraction_quality||{},manual=str(body.documentSource?.mode)==='manual_text';
+ if(sourceText.length<40)throw new Error('AI_INPUT_SOURCE_TEXT_REQUIRED');
+ if(sourceText.length>60000)throw new Error('AI_INPUT_SOURCE_TEXT_TOO_LARGE');
+ if(!/^[0-9a-f]{64}$/.test(sourceSha256))throw new Error('AI_INPUT_SOURCE_SHA256_REQUIRED');
+ if(!manual&&quality.sufficient!==true)throw new Error('AI_INPUT_PARSER_QUALITY_INSUFFICIENT');
+ return {sourceText,sourceSha256,sourceTitle,documentSource:clean(body.documentSource||{}),manual};
+}
+function generatedDraftId(scope,body,input){
+ const period=str(body.periodId||'period'),suffix=input.sourceSha256.slice(0,12);
+ return ('certbank-'+scope.projectId+'-'+period+'-ai-'+suffix).replace(/[^a-zA-Z0-9_-]+/g,'-');
+}
+function generationDigest(scope,body,input){
+ return sha({tenantId:scope.tenantId,projectId:scope.projectId,periodId:str(body.periodId),sourceSha256:input.sourceSha256,questionCount:Number(body.questionCount||15),gate:Number(body.gate||80)});
+}
+function generationReceipt(db,scope,idem){
+ return db.collection('tenants').doc(scope.tenantId).collection('commandReceipts').doc('cert-ai-'+sha(scope.tenantId+'\0'+scope.projectId+'\0'+idem).slice(0,32));
+}
+async function generationReplay(db,scope,body,input,idem){
+ if(!idem)throw new Error('AI_PERSISTENCE_IDEMPOTENCY_REQUIRED');
+ const receiptRef=generationReceipt(db,scope,idem),snap=await receiptRef.get();
+ if(!snap.exists)return null;
+ const receipt=snap.data()||{},digest=generationDigest(scope,body,input);
+ if(str(receipt.commandDigest)!==digest)throw new Error('AI_PERSISTENCE_IDEMPOTENCY_REUSE_DIFFERENT_PAYLOAD');
+ if(str(receipt.status)!=='committed'||!str(receipt.entityId))throw new Error('AI_PERSISTENCE_RECEIPT_INCOMPLETE');
+ const rb=await resourcesCol(db,scope).doc(str(receipt.entityId)).get();
+ if(!rb.exists)throw new Error('AI_PERSISTENCE_READBACK_MISSING');
+ const item={id:rb.id,...(rb.data()||{})},bank=item.bank||{};
+ if(str(bank.estado)!=='pending_review'||str(bank.documentSource?.source_sha256)!==input.sourceSha256)throw new Error('AI_PERSISTENCE_READBACK_MISMATCH');
+ return {item,idempotentReplay:true,providerWrites:0,receipt:{id:snap.id,...receipt}};
+}
+async function persistGeneratedDraft(db,scope,principal,body,input,generated,idem){
+ if(!idem)throw new Error('AI_PERSISTENCE_IDEMPOTENCY_REQUIRED');
+ const id=generatedDraftId(scope,body,input),ref=resourcesCol(db,scope).doc(id),receiptRef=generationReceipt(db,scope,idem),digest=generationDigest(scope,body,input),createdAt=iso();
+ let replay=false,providerWrites=0,receiptId=receiptRef.id;
+ await db.runTransaction(async tx=>{
+  const prior=await tx.get(receiptRef);
+  if(prior.exists){
+   const p=prior.data()||{};
+   if(str(p.commandDigest)!==digest)throw new Error('AI_PERSISTENCE_IDEMPOTENCY_REUSE_DIFFERENT_PAYLOAD');
+   if(str(p.status)==='committed'){replay=true;return;}
+  }
+  const current=await tx.get(ref),existing=current.exists?(current.data()||{}):{},existingBank=existing.bank||{};
+  if(['published','confirmed'].includes(str(existingBank.estado).toLowerCase()))throw new Error('AI_PERSISTENCE_DRAFT_ALREADY_PUBLISHED');
+  const version=Math.max(0,Number(existing.version||0))+1,certificationId=str(existingBank.certificationId)||('ai-'+input.sourceSha256.slice(0,12));
+  const bank={certificationId,certificationName:str(body.certificationName)||'Banco IA pendiente de revisión',preguntas:generated.preguntas,requestedQuestionCount:generated.requestedQuestionCount,gate:generated.gate,fecha:createdAt.slice(0,10),generadoPorUid:str(principal.uid),estado:'pending_review',provider:generated.provider,model:generated.model,providerAck:true,contentRevision:generated.contentRevision,generatedAt:createdAt,generationAttempts:generated.generationAttempts,documentSource:{...input.documentSource,name:input.sourceTitle,source_sha256:input.sourceSha256,ocrExecuted:input.documentSource?.ocrExecuted===true}};
+  const record={...existing,resourceType:'certification_bank',tipo:'certification_bank',projectId:scope.projectId,periodId:str(body.periodId),status:'active',n:bank.certificationName,bank,version,updatedAt:createdAt,updatedByUid:str(principal.uid),createdAt:existing.createdAt||createdAt,createdByUid:existing.createdByUid||str(principal.uid),visibleRoles:['super','admin','ops','coordinador','shopper'],targetAll:false};
+  tx.set(ref,record);
+  tx.set(receiptRef,{status:'committed',commandDigest:digest,entityType:'certification_bank',entityId:id,entityVersion:version,commandType:'certification.ai-generate',providerAck:true,actorUid:str(principal.uid),updatedAt:createdAt});
+  providerWrites=2;
+ });
+ const rb=await ref.get(),receiptRb=await receiptRef.get();
+ if(!rb.exists||!receiptRb.exists)throw new Error('AI_PERSISTENCE_READBACK_MISSING');
+ const item={id:rb.id,...(rb.data()||{})},bank=item.bank||{};
+ if(str(bank.estado)!=='pending_review'||str(bank.contentRevision)!==str(generated.contentRevision)||str(bank.documentSource?.source_sha256)!==input.sourceSha256||arr(bank.preguntas).length!==generated.requestedQuestionCount)throw new Error('AI_PERSISTENCE_READBACK_MISMATCH');
+ return {item,idempotentReplay:replay,providerWrites:replay?0:providerWrites,receipt:{id:receiptRb.id,...(receiptRb.data()||{})}};
 }
 export async function boundedVertexQuestionRetry(request,count,{onInvalid=()=>{}}={}){
  if(typeof request!=='function')throw new Error('AI_PROVIDER_REQUEST_REQUIRED');
@@ -184,15 +259,13 @@ export async function boundedVertexQuestionRetry(request,count,{onInvalid=()=>{}
  }
  throw new Error('AI_PROVIDER_RESPONSE_INVALID');
 }
-async function generateBank(db,scope,body){
-  const sourceText=str(body.sourceText),questionCount=Math.max(3,Math.min(30,Number(body.questionCount||10))),gate=Math.max(1,Math.min(100,Number(body.gate||80)));
-  if(sourceText.length<40)throw new Error('AI_SOURCE_TEXT_REQUIRED');
-  if(sourceText.length>60000)throw new Error('AI_SOURCE_TEXT_TOO_LARGE');
+async function generateBank(db,scope,body,input=generationInput(body)){
+  const sourceText=input.sourceText,questionCount=Math.max(3,Math.min(30,Number(body.questionCount||10))),gate=Math.max(1,Math.min(100,Number(body.gate||80)));
   const setting=await resolveAiSetting(db,scope),token=await metadataToken();
   const prompt=[
     'Genera un banco de certificación para mystery shopping usando EXCLUSIVAMENTE el instructivo proporcionado.',
-    'Devuelve SOLO JSON válido con forma {"preguntas":[{"q":"...","ops":["..."],"correcta":"...","exp":"..."}]}.',
-    'Cada pregunta debe tener 4 opciones plausibles, exactamente una correcta incluida literalmente en ops, y una explicación breve.',
+    'Devuelve SOLO JSON válido con forma {"preguntas":[{"q":"...","ops":["..."],"correcta":"...","exp":"...","fuente":"[Página N]"}]}.',
+    'Cada pregunta debe tener 4 opciones plausibles, exactamente una correcta incluida literalmente en ops, una explicación breve y una referencia fuente a una página real del instructivo.',
     'No inventes requisitos que no estén en la fuente.',
     'Devuelve exactamente '+questionCount+' preguntas válidas y distintas, todas sustentadas en el instructivo. Si el material no alcanza, no inventes contenido para completar la cantidad.',
     'Cantidad requerida: '+questionCount+'. Requisito mínimo informado: '+gate+'%.',
@@ -213,8 +286,9 @@ async function generateBank(db,scope,body){
   },questionCount,{onInvalid:({code,diagnostic,attempt})=>{
     console.warn('CXORBIA_CERT_VERTEX_SAFE_DIAGNOSTIC '+JSON.stringify({...diagnostic,attempt,code}));
   }});
-  const contentRevision=sha({preguntas,gate});
-  return {providerAck:true,provider:setting.provider,model:setting.model,location:setting.location,settingId:setting.id,preguntas,requestedQuestionCount:questionCount,gate,contentRevision,generationAttempts:attempts};
+  validateQuestionSourceReferences(preguntas,sourceText);
+  const contentRevision=sha({preguntas,gate,sourceSha256:input.sourceSha256});
+  return {aiProviderAck:true,providerAck:true,provider:setting.provider,model:setting.model,location:setting.location,settingId:setting.id,preguntas,requestedQuestionCount:questionCount,gate,contentRevision,generationAttempts:attempts,sourceSha256:input.sourceSha256,sourceTitle:input.sourceTitle};
 }
 function requestId(req,body){return cleanKey(req.headers['idempotency-key']||body.idempotencyKey);}
 async function saveAttempt(db,scope,principal,body,sourceRevision,idem){
@@ -251,7 +325,7 @@ async function saveRecertification(db,scope,principal,body,idem){
 function errorStatus(message){
   if(/AUTH_FAILURE|OPERATOR_REQUIRED|SHOPPER_REQUIRED/.test(message))return 403;
   if(/NOT_FOUND/.test(message))return 404;
-  if(/INVALID|INCOMPLETE|EMPTY|MISMATCH|NOT_PUBLISHED|TOO_LARGE|NOT_CONFIGURED|REQUIRED/.test(message))return 400;
+  if(/AI_INPUT_|INVALID|INCOMPLETE|EMPTY|MISMATCH|NOT_PUBLISHED|TOO_LARGE|NOT_CONFIGURED|REQUIRED/.test(message))return 400;
   if(/AI_PROVIDER_HTTP_4/.test(message))return 502;
   return 500;
 }
@@ -263,8 +337,14 @@ export async function maybeHandleCertificationRuntimeRequest(req,res,url,{ensure
     const principal=await verifyPrincipal(req,scope),{db}=ensureAdmin(),body=await readJson(req),idem=requestId(req,body);
     if(scope.action==='ai-generate'){
       if(!OPERATOR_ROLES.has(str(principal.role)))throw new Error('AI_OPERATOR_REQUIRED');
-      const result=await generateBank(db,scope,body);
-      sendJson(res,200,{ok:true,status:'committed',committed:true,successUiAllowed:true,...result,writes:0,hrWrites:0,production:false});return true;
+      const input=generationInput(body);
+      const replay=await generationReplay(db,scope,body,input,idem);
+      if(replay){
+        const bank=replay.item.bank||{};
+        sendJson(res,200,{ok:true,status:'committed',committed:true,providerAck:true,aiProviderAck:true,readbackVerified:true,successUiAllowed:true,item:replay.item,preguntas:arr(bank.preguntas),requestedQuestionCount:Number(bank.requestedQuestionCount||arr(bank.preguntas).length),gate:Number(bank.gate||80),contentRevision:str(bank.contentRevision),provider:str(bank.provider),model:str(bank.model),sourceSha256:input.sourceSha256,idempotentReplay:true,providerWrites:0,writes:0,hrWrites:0,production:false});return true;
+      }
+      const result=await generateBank(db,scope,body,input),saved=await persistGeneratedDraft(db,scope,principal,body,input,result,idem);
+      sendJson(res,200,{ok:true,status:'committed',committed:true,providerAck:true,aiProviderAck:result.aiProviderAck===true,readbackVerified:true,successUiAllowed:true,...result,item:saved.item,idempotentReplay:saved.idempotentReplay,providerWrites:saved.providerWrites,writes:saved.providerWrites,hrWrites:0,production:false});return true;
     }
     if(scope.action==='attempt'){
       const saved=await saveAttempt(db,scope,principal,body,currentSourceRevision?.(),idem);

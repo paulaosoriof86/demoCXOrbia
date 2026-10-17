@@ -30,7 +30,7 @@ window.CX = window.CX || {};
       if(!this.available())await load();
       if(!this.available())throw new Error('AI_PROVIDER_NOT_CONFIGURED');
       if(!CX.backendCertifications?.generateBank)throw new Error('AI_SECURE_PROXY_UNAVAILABLE');
-      return CX.backendCertifications.generateBank({sourceText:str(prompt),questionCount:Number(opts.questionCount||10),gate:Number(opts.gate||80)});
+      return CX.backendCertifications.generateBank({sourceText:str(prompt),questionCount:Number(opts.questionCount||10),gate:Number(opts.gate||80),periodId:str(opts.periodId),certificationName:str(opts.certificationName),sourceSha256:str(opts.sourceSha256),sourceTitle:str(opts.sourceTitle),documentSource:opts.documentSource||null});
     };
     CX.ai.__backendAiWrapped=true;
   }

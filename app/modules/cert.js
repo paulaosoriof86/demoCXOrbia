@@ -271,13 +271,14 @@ CX.module('cert', ({role,data,ui})=>{
         if(!textQuality.sufficient)throw new Error('El instructivo no contiene texto suficiente para generar un banco revisable. Agrega contenido del protocolo antes de continuar.');
         if(!CX.ai?.ready?.())await CX.backendAI?.load?.();
         if(!CX.ai?.ready?.())throw new Error('AI_PROVIDER_NOT_CONFIGURED');
-        const generated=await CX.ai.ask(txt,{module:'certification',questionCount:n,gate:g});
+        const textSha=async value=>{const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(String(value||'')));return Array.from(new Uint8Array(digest)).map(x=>x.toString(16).padStart(2,'0')).join('');};
+        const documentSource=extraction?{mode:'attachment',name:extraction.name,format:extraction.format,mime:extraction.mime,size:extraction.size,source_sha256:extraction.source_sha256||null,parser:extraction.parser||null,extraction_quality:extraction.extraction_quality,ocrExecuted:false}:{mode:'manual_text',name:'Texto pegado',format:'text',source_sha256:await textSha(txt),extraction_quality:textQuality,ocrExecuted:false};
+        const generated=await CX.ai.ask(txt,{module:'certification',questionCount:n,gate:g,periodId:p.id,certificationName:'Banco IA pendiente de revisión',sourceSha256:documentSource.source_sha256,sourceTitle:documentSource.name,documentSource});
         if(!(generated?.providerAck===true&&Array.isArray(generated.preguntas)&&generated.preguntas.length))throw new Error('AI_PROVIDER_ACK_REQUIRED');
         if(generated.preguntas.length!==n)throw new Error('Se generaron '+generated.preguntas.length+' de '+n+'; falta material suficiente para publicar el banco completo');
-        const uid=CX.backendCertifications?.currentUid?.()||'',creador=CX.session?.user?.name||uid||'—';
-        const bankDraft={preguntas:generated.preguntas,requestedQuestionCount:n,gate:g,fecha:new Date().toISOString().slice(0,10),generadoPor:creador,generadoPorUid:uid,estado:'pending_review',provider:generated.provider,model:generated.model,providerAck:true,contentRevision:generated.contentRevision,generatedAt:new Date().toISOString(),documentSource:extraction?{mode:'attachment',name:extraction.name,format:extraction.format,mime:extraction.mime,size:extraction.size,source_sha256:extraction.source_sha256||null,parser:extraction.parser||null,extraction_quality:extraction.extraction_quality,ocrExecuted:false}:{mode:'manual_text',source_sha256:null,extraction_quality:textQuality,ocrExecuted:false}};
-        const saved=await CX.certStore.save(p.id,bankDraft,bankDraft.certificationId||selectedCertId()||'main');
-        if(!(saved?.providerAck===true&&saved?.committed===true))throw new Error('CERT_BANK_DURABLE_ACK_REQUIRED');
+        if(!(generated?.committed===true&&generated?.readbackVerified===true&&generated?.item?.bank?.estado==='pending_review'))throw new Error('CERT_BANK_DURABLE_READBACK_REQUIRED');
+        if(generated.preguntas.some(q=>!q?.fuente))throw new Error('CERT_BANK_SOURCE_REFERENCE_REQUIRED');
+        await CX.backend?.refresh?.();
         close();ui.toast('Banco generado por IA real y guardado · requiere revisión autorizada antes de publicarse.','ok',5200);CX.router?.nav?.('cert');
       }catch(error){
         ui.toast('No se pudo generar el banco: '+String(error?.message||error),'warn',5600);
