@@ -246,7 +246,7 @@ CX.module('cert', ({role,data,ui})=>{
     const ia=document.getElementById('certIA');
     if(ia)ia.addEventListener('click',()=>ui.modal('🤖 Crear certificación con IA · '+p.name,`
       <p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Carga el <b>instructivo / protocolo</b> del proyecto (o pega el texto). La generación se ejecuta en el backend con Vertex AI; el navegador no recibe credenciales.</p>
-      <input type="file" class="inp" id="ciF" accept=".pdf,.doc,.docx,.txt,image/*" style="padding:7px;margin-bottom:8px">
+      <input type="file" class="inp" id="ciF" accept=".pdf,.docx,.txt,.md,.csv,.json" style="padding:7px;margin-bottom:8px">
       <textarea class="inp" id="ciT" rows="4" placeholder="…o pega el instructivo / qué debe dominar el evaluador" style="margin-bottom:10px"></textarea>
       <div class="grid g2" style="gap:10px 12px;margin-bottom:6px"><div><label class="lbl">Nº de preguntas</label><input class="inp" id="ciN" type="number" value="10"></div><div><label class="lbl">% mínimo para aprobar</label><input class="inp" id="ciG" type="number" value="80"></div></div>
       <div style="text-align:right;margin-top:10px"><button class="btn btn-green btn-sm" id="ciGo">Generar banco con IA</button></div>
@@ -254,15 +254,28 @@ CX.module('cert', ({role,data,ui})=>{
       const btn=ov.querySelector('#ciGo'),n=+ov.querySelector('#ciN').value||10,g=+ov.querySelector('#ciG').value||80,pasted=(ov.querySelector('#ciT').value||'').trim();
       btn.disabled=true;btn.textContent='Generando…';
       try{
-        const fileTxt=await CX.ai.readAttachment(ov.querySelector('#ciF')),txt=(pasted+fileTxt).trim();
-        if(!txt)throw new Error('Pega el instructivo o adjunta un archivo con texto');
+        const file=ov.querySelector('#ciF')?.files?.[0]||null;
+        let extraction=null,fileTxt='';
+        if(file){
+          extraction=await CX.ai.extractAttachment(file);
+          if(extraction.ok){
+            fileTxt='\n\n[Texto extraído de "'+extraction.name+'" · '+extraction.format+' · calidad '+extraction.extraction_quality.label+']:\n'+extraction.text;
+          }else if(!pasted){
+            const msg=extraction.code==='ATTACHMENT_FORMAT_UNSUPPORTED'?'Formato no soportado. Usa PDF con capa de texto, DOCX o texto.':
+              extraction.code==='ATTACHMENT_TEXT_LAYER_INSUFFICIENT'?'El PDF no contiene una capa de texto suficiente. Pega el instructivo o usa una versión PDF con texto seleccionable; no se ejecuta OCR automáticamente.':
+              'No fue posible extraer texto suficiente del archivo. Pega el instructivo para continuar.';
+            throw new Error(msg);
+          }
+        }
+        const txt=(pasted+fileTxt).trim(),textQuality=CX.ai.attachmentQuality(txt);
+        if(!textQuality.sufficient)throw new Error('El instructivo no contiene texto suficiente para generar un banco revisable. Agrega contenido del protocolo antes de continuar.');
         if(!CX.ai?.ready?.())await CX.backendAI?.load?.();
         if(!CX.ai?.ready?.())throw new Error('AI_PROVIDER_NOT_CONFIGURED');
         const generated=await CX.ai.ask(txt,{module:'certification',questionCount:n,gate:g});
         if(!(generated?.providerAck===true&&Array.isArray(generated.preguntas)&&generated.preguntas.length))throw new Error('AI_PROVIDER_ACK_REQUIRED');
         if(generated.preguntas.length!==n)throw new Error('Se generaron '+generated.preguntas.length+' de '+n+'; falta material suficiente para publicar el banco completo');
         const uid=CX.backendCertifications?.currentUid?.()||'',creador=CX.session?.user?.name||uid||'—';
-        const bankDraft={preguntas:generated.preguntas,requestedQuestionCount:n,gate:g,fecha:new Date().toISOString().slice(0,10),generadoPor:creador,generadoPorUid:uid,estado:'pending_review',provider:generated.provider,model:generated.model,providerAck:true,contentRevision:generated.contentRevision,generatedAt:new Date().toISOString()};
+        const bankDraft={preguntas:generated.preguntas,requestedQuestionCount:n,gate:g,fecha:new Date().toISOString().slice(0,10),generadoPor:creador,generadoPorUid:uid,estado:'pending_review',provider:generated.provider,model:generated.model,providerAck:true,contentRevision:generated.contentRevision,generatedAt:new Date().toISOString(),documentSource:extraction?{mode:'attachment',name:extraction.name,format:extraction.format,mime:extraction.mime,size:extraction.size,source_sha256:extraction.source_sha256||null,parser:extraction.parser||null,extraction_quality:extraction.extraction_quality,ocrExecuted:false}:{mode:'manual_text',source_sha256:null,extraction_quality:textQuality,ocrExecuted:false}};
         const saved=await CX.certStore.save(p.id,bankDraft,bankDraft.certificationId||selectedCertId()||'main');
         if(!(saved?.providerAck===true&&saved?.committed===true))throw new Error('CERT_BANK_DURABLE_ACK_REQUIRED');
         close();ui.toast('Banco generado por IA real y guardado · requiere revisión autorizada antes de publicarse.','ok',5200);CX.router?.nav?.('cert');

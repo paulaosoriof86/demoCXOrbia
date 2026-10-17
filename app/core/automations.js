@@ -38,6 +38,74 @@ window.CX = window.CX || {};
      y dispara la heurística local que cada módulo ya implementaba como fallback. La UI solo
      registra "qué proveedor preferirías" (preferencia, no secreto) para que el backend real
      sepa a quién enrutar cuando exista. */
+  const CX_ATTACHMENT_PDFJS_VERSION='3.11.174';
+  let cxAttachmentPdfJsPromise=null;
+  function attachmentError(code,message,meta){
+    const error=new Error(message);error.code=code;Object.assign(error,meta||{});return error;
+  }
+  function normalizeAttachmentText(value){
+    return String(value==null?'':value).replace(/\u0000/g,' ').replace(/[\t\f\v]+/g,' ').replace(/\r\n?/g,'\n').replace(/[ ]{2,}/g,' ').replace(/\n{3,}/g,'\n\n').trim();
+  }
+  function attachmentQuality(value){
+    const text=normalizeAttachmentText(value),chars=text.length,words=(text.match(/[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]{2,}/g)||[]),uniqueWords=new Set(words.map(w=>w.toLowerCase())).size;
+    const alpha=(text.match(/[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]/g)||[]).length,replacement=(text.match(/�/g)||[]).length,controls=(text.match(/[\u0001-\u0008\u000B\u000C\u000E-\u001F]/g)||[]).length;
+    const alphabeticRatio=chars?alpha/chars:0,replacementRatio=chars?replacement/chars:0,controlRatio=chars?controls/chars:0;
+    let score=0;
+    score+=Math.min(35,chars/30);
+    score+=Math.min(25,words.length/2);
+    score+=Math.min(20,uniqueWords);
+    score+=Math.min(20,Math.max(0,alphabeticRatio*32));
+    score-=Math.min(40,replacementRatio*800);
+    score-=Math.min(40,controlRatio*800);
+    score=Math.max(0,Math.min(100,Math.round(score)));
+    const sufficient=chars>=120&&words.length>=20&&uniqueWords>=12&&alphabeticRatio>=0.40&&replacementRatio<0.02&&controlRatio<0.01;
+    const label=!sufficient?'insufficient':score>=85?'high':score>=65?'medium':'low';
+    return {label,score,sufficient,chars,words:words.length,uniqueWords,alphabeticRatio:+alphabeticRatio.toFixed(4),replacementRatio:+replacementRatio.toFixed(4),controlRatio:+controlRatio.toFixed(4)};
+  }
+  async function attachmentSha256(buffer){
+    try{
+      if(!window.crypto?.subtle)return null;
+      const digest=await window.crypto.subtle.digest('SHA-256',buffer);
+      return Array.from(new Uint8Array(digest)).map(x=>x.toString(16).padStart(2,'0')).join('');
+    }catch(_){return null;}
+  }
+  function attachmentFormat(file){
+    const name=String(file?.name||'').toLowerCase(),type=String(file?.type||'').toLowerCase();
+    if(/\.(txt|csv|tsv|md|json)$/.test(name)||type.startsWith('text/'))return 'text';
+    if(/\.docx$/.test(name)||type==='application/vnd.openxmlformats-officedocument.wordprocessingml.document')return 'docx';
+    if(/\.pdf$/.test(name)||type==='application/pdf')return 'pdf';
+    return 'unsupported';
+  }
+  function loadAttachmentPdfJs(){
+    if(window.pdfjsLib?.getDocument)return Promise.resolve(window.pdfjsLib);
+    if(cxAttachmentPdfJsPromise)return cxAttachmentPdfJsPromise;
+    cxAttachmentPdfJsPromise=new Promise((resolve,reject)=>{
+      const id='cxAttachmentPdfJs_'+CX_ATTACHMENT_PDFJS_VERSION.replace(/\./g,'_');
+      const done=()=>{const lib=window.pdfjsLib;if(!lib?.getDocument){reject(attachmentError('PDF_PARSER_UNAVAILABLE','No fue posible cargar el parser PDF.'));return;}if(lib.GlobalWorkerOptions)lib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/'+CX_ATTACHMENT_PDFJS_VERSION+'/pdf.worker.min.js';resolve(lib);};
+      const existing=document.getElementById(id);
+      if(existing){if(window.pdfjsLib?.getDocument){done();return;}existing.addEventListener('load',done,{once:true});existing.addEventListener('error',()=>reject(attachmentError('PDF_PARSER_UNAVAILABLE','No fue posible cargar el parser PDF.')),{once:true});return;}
+      const script=document.createElement('script');script.id=id;script.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/'+CX_ATTACHMENT_PDFJS_VERSION+'/pdf.min.js';script.async=true;script.crossOrigin='anonymous';
+      script.onload=done;script.onerror=()=>reject(attachmentError('PDF_PARSER_UNAVAILABLE','No fue posible cargar el parser PDF.'));document.head.appendChild(script);
+    }).catch(error=>{cxAttachmentPdfJsPromise=null;throw error;});
+    return cxAttachmentPdfJsPromise;
+  }
+  async function parseAttachmentPdf(buffer){
+    const lib=await loadAttachmentPdfJs(),task=lib.getDocument({data:new Uint8Array(buffer)}),pdf=await task.promise,pages=[];
+    try{
+      for(let pageNumber=1;pageNumber<=pdf.numPages;pageNumber++){
+        const page=await pdf.getPage(pageNumber),content=await page.getTextContent();
+        const text=content.items.map(item=>String(item?.str||'')).join(' ');
+        pages.push('[Página '+pageNumber+']\n'+normalizeAttachmentText(text));
+      }
+      return normalizeAttachmentText(pages.join('\n\n'));
+    }finally{try{await pdf.destroy?.();}catch(_){}}
+  }
+  async function parseAttachmentDocx(buffer){
+    if(!window.mammoth?.extractRawText)throw attachmentError('DOCX_PARSER_UNAVAILABLE','El parser DOCX no está disponible.');
+    const result=await window.mammoth.extractRawText({arrayBuffer:buffer});
+    return normalizeAttachmentText(result?.value||'');
+  }
+
   CX.ai = {
     _cfg:null,
     defaults(){ return {provider:'', model:'', activa:false, cacheTpl:true}; },
@@ -57,28 +125,35 @@ window.CX = window.CX || {};
     preferred(){ const c=this.cfg(); return !!(c.activa && c.provider); },
     available(){ return false; },
     ready(){ return this.available(); },
-    /* Lee un <input type=file> y devuelve Promise<string> con el texto para alimentar la IA.
-       txt/csv/json → texto directo; PDF/imagen/doc → best-effort + nota del archivo. Reutilizable en TODA la plataforma. */
-    readAttachment(inputEl){
-      return new Promise((resolve)=>{
-        const f=inputEl&&inputEl.files&&inputEl.files[0];
-        if(!f){ resolve(''); return; }
-        const name=f.name||'archivo';
-        if(/\.(txt|csv|tsv|md|json)$/i.test(name)||(f.type||'').startsWith('text/')){
-          const r=new FileReader(); r.onload=e=>resolve('\n\n[Contenido de "'+name+'"]:\n'+e.target.result); r.onerror=()=>resolve('\n\n[Adjunto: '+name+']'); r.readAsText(f); return;
-        }
-        if(/\.pdf$/i.test(name)){
-          /* extrae texto plano legible del PDF (text layer) sin librerías externas */
-          const r=new FileReader(); r.onload=e=>{ try{ const raw=new TextDecoder('latin1').decode(e.target.result);
-            const chunks=[...raw.matchAll(/\(([^()\\]{2,})\)/g)].map(m=>m[1]).filter(t=>/[a-zA-ZáéíóúñÁÉÍÓÚÑ]{2,}/.test(t));
-            const txt=chunks.join(' ').replace(/\s+/g,' ').trim();
-            if(txt.length<=40){resolve('');return;}
-            resolve('\n\n[Texto extraído de "'+name+'"]:\n'+txt.slice(0,12000));
-          }catch(err){ resolve(''); } };
-          r.onerror=()=>resolve(''); r.readAsArrayBuffer(f); return;
-        }
-        resolve('');
-      });
+    /* D02 / F10 — parser compartido y fail-closed.
+       TXT/CSV/TSV/MD/JSON usan UTF-8; DOCX usa Mammoth ya cargado; PDF usa PDF.js y su capa de texto.
+       No ejecuta OCR. Un PDF sin texto suficiente requiere fuente con capa de texto o pegado manual. */
+    attachmentQuality(text){ return attachmentQuality(text); },
+    async extractAttachment(file){
+      if(!file)return {ok:false,code:'ATTACHMENT_REQUIRED',format:null,text:'',extraction_quality:attachmentQuality(''),manualFallback:true,ocrExecuted:false};
+      const name=String(file.name||'archivo'),format=attachmentFormat(file),mime=String(file.type||''),size=Number(file.size||0);
+      if(format==='unsupported')return {ok:false,code:'ATTACHMENT_FORMAT_UNSUPPORTED',format,name,mime,size,text:'',extraction_quality:attachmentQuality(''),manualFallback:true,ocrExecuted:false};
+      let buffer;
+      try{buffer=await file.arrayBuffer();}catch(error){return {ok:false,code:'ATTACHMENT_READ_FAILED',format,name,mime,size,text:'',extraction_quality:attachmentQuality(''),manualFallback:true,ocrExecuted:false,error:String(error?.message||error)};}
+      const source_sha256=await attachmentSha256(buffer);
+      let text='';
+      try{
+        if(format==='text')text=normalizeAttachmentText(new TextDecoder('utf-8').decode(buffer));
+        else if(format==='docx')text=await parseAttachmentDocx(buffer);
+        else if(format==='pdf')text=await parseAttachmentPdf(buffer);
+      }catch(error){
+        return {ok:false,code:String(error?.code||'ATTACHMENT_PARSE_FAILED'),format,name,mime,size,source_sha256,text:'',extraction_quality:attachmentQuality(''),manualFallback:true,ocrRecommended:format==='pdf',ocrExecuted:false,error:String(error?.message||error)};
+      }
+      const extraction_quality=attachmentQuality(text),ok=extraction_quality.sufficient===true;
+      return {ok,code:ok?'ATTACHMENT_TEXT_EXTRACTED':(format==='pdf'?'ATTACHMENT_TEXT_LAYER_INSUFFICIENT':'ATTACHMENT_TEXT_INSUFFICIENT'),format,name,mime,size,source_sha256,text,extraction_quality,manualFallback:!ok,ocrRecommended:format==='pdf'&&!ok,ocrExecuted:false,parser:format==='pdf'?'pdfjs-'+CX_ATTACHMENT_PDFJS_VERSION:format==='docx'?'mammoth':'utf8-text'};
+    },
+    async readAttachment(inputEl){
+      const file=inputEl&&inputEl.files&&inputEl.files[0];
+      if(!file)return '';
+      const result=await this.extractAttachment(file);
+      this.lastExtraction=result;
+      if(!result.ok)return '';
+      return '\n\n[Texto extraído de "'+result.name+'" · '+result.format+' · calidad '+result.extraction_quality.label+' · sha256 '+(result.source_sha256||'no-disponible')+']:\n'+result.text;
     },
     /* ask() NUNCA se invoca por ningún módulo consumidor (todos ejecutan heurística local
        directamente) — se conserva solo por compatibilidad de interfaz. Rechaza siempre con un
