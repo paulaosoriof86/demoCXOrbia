@@ -425,18 +425,21 @@ test('ADMIN-004 command boundary parses as JavaScript after project.update versi
 });
 
 
-test('ADMIN-004 backend refresh invalidates exact HR authority before Firestore refresh',()=>{
+test('ADMIN-004 backend refresh invalidates HR authority then awaits atomic recomposition and readback',()=>{
   const src=fs.readFileSync(new URL('../../../../app/adapters/tya-protected-auth-hr-authority-bridge-v2.js',import.meta.url),'utf8');
   const wrapper=src.match(/CX\.backend\.refresh=async function\(\)\{([^]*?)return s;\};/)?.[1]||'';
   assert.ok(wrapper.length>0,'wrapped backend refresh must exist');
   const pending=wrapper.indexOf("sourceRef='firestore-refresh-pending-hr-recompose'");
   const invalidate=wrapper.indexOf("applied:false");
   const original=wrapper.indexOf('await original()');
-  const schedule=wrapper.indexOf("schedule('backend_refresh_dynamic',true)");
-  assert.ok(pending>=0&&invalidate>=0&&original>=0&&schedule>=0);
+  const compose=wrapper.indexOf("await reconcile('backend_refresh_dynamic')");
+  const required=wrapper.indexOf('BACKEND_REFRESH_ATOMIC_COMPOSITION_REQUIRED');
+  const readback=wrapper.indexOf('BACKEND_REFRESH_READBACK_REVISION_MISMATCH');
+  assert.ok(pending>=0&&invalidate>=0&&original>=0&&compose>=0&&required>=0&&readback>=0);
   assert.ok(pending<original,'sourceRef must be invalidated before Firestore refresh');
   assert.ok(invalidate<original,'HR authority must be fail-closed before Firestore refresh');
-  assert.ok(original<schedule,'HR recomposition is scheduled only after fresh Firestore capture');
+  assert.ok(original<compose,'atomic HR recomposition starts only after fresh Firestore capture');
+  assert.ok(compose<required&&required<readback,'refresh must await applied composition and exact revision readback before resolving');
 });
 
 
