@@ -50,7 +50,7 @@ test('I3 P0 HN shopper readiness requires exact profile and country, not an exis
   assert.doesNotMatch(gate,/arr\(authority\.authorizedPeriodIds\)\.length>0/);
   assert.match(bridge,/shopper_ready_without_assigned_visits/);
   assert.match(bridge,/SHOPPER_EXACT_HR_PROFILE_COUNTRY_PERIOD_REQUIRED/);
-  assert.match(bridge,/shopperReadiness\(profileInfo,result,CX\.data,claims\)/);
+  assert.match(bridge,/shopperReadiness\(profileInfo,result,claims\)/);\n  assert.match(gate,/authority\?\.atomicPublication===true/);
   assert.match(bridge,/shopperCountry:shopperReady\.country/);
   assert.match(bridge,/authorizedPeriodIds:clone\(shopperReady\.authorizedPeriodIds\|\|\[\]\)/);
   assert.doesNotMatch(bridge,/applied:true,version:'v2-dynamic-live-source-session-profile-preserved',reason/);
@@ -64,7 +64,7 @@ test('I3 P0 HN protected authority is bound to current UID claims membership ten
   assert.match(bridge,/SHOPPER_PRINCIPAL_CLAIMS_MEMBERSHIP_MISMATCH/);
   assert.match(bridge,/str\(claims\?\.uid\)===uid/);
   assert.match(bridge,/str\(state\?\.actorUid\)===uid/);
-  assert.match(bridge,/CX\.data\.__sessionShopperProfile=null/);
+  assert.doesNotMatch(bridge,/CX\.data\.__sessionShopperProfile=null/);\n  assert.match(bridge,/__sessionShopperProfile:profile/);\n  assert.match(bridge,/SESSION_GENERATION_CHANGED_DURING_COMPOSITION/);\n  assert.match(bridge,/HR_LIVE_REVISION_CHANGED_DURING_COMPOSITION/);
   assert.match(bridge,/str\(s\.actorUid\)===principalUid\(\)/);
   assert.match(bridge,/str\(s\.projectId\)===scope\.projectId/);
   assert.match(gate,/str\(authority\.actorUid\)===uid/);
