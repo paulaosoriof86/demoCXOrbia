@@ -117,71 +117,47 @@ window.CX = window.CX || {};
     }catch(e){}
   }
 
-  function applySnapshot(snapshot,meta={},options={}){
+  function buildSnapshotCandidate(snapshot,meta={},options={}){
     const valid=!!(snapshot&&snapshot.sourceSafe===true&&snapshot.imported!==true&&snapshot.production!==true&&safeArray(snapshot.periods).length&&safeArray(snapshot.visits).length&&CX.data);
     if(!valid)throw new Error('Snapshot HR live inválido o vacío.');
-    const previousPeriodKey=(()=>{try{return CX.data.period&&CX.data.period()?.periodKey||null;}catch(e){return null;}})();
+    const previousPeriodKey=options.previousPeriodKey||(()=>{try{return CX.data.period&&CX.data.period()?.periodKey||null;}catch(e){return null;}})();
     const identity=sourceIdentity(snapshot);
     const periods=mapPeriods(snapshot,identity),visits=mapVisits(snapshot,identity),shoppers=mapShoppers(snapshot),posts=mapPosts(visits,identity);
-    const latest=latestOf(periods);
-    const preferred=periods.find(p=>p.periodKey===previousPeriodKey)||periods.find(p=>p.periodKey===meta.latestPeriodKey)||latest;
-
-    window.CX_TYA_HR_SOURCE_SAFE=snapshot;
-    window.CX_TYA_HR_LIVE_META=Object.assign({},meta,{runtimeRead:true,sourceSafe:true});
-    window.CX_TYA_HR_VIVA_SOURCE_SAFE=true;
-    window.CX_TYA_HR_SNAPSHOT_SOURCE_SAFE=false;
-    window.CX_TYA_VISIBLE_DATA_READY=true;
-
-    CX.BRAND=Object.assign(CX.BRAND||{},{id:identity.tenantId,tenantId:identity.tenantId,clientName:identity.tenantName,demoMode:false,countries:identity.countries});
-    CX.data.projects=periods;
-    CX.data.shoppers=shoppers;
-    CX.data._visitas=visits;
-    CX.data._posts=posts;
-    CX.data.currentProjectId=identity.projectId;
-    CX.data.currentPeriodId=preferred&&preferred.id;
-    CX.data.periodOperationalSummary=safeArray(snapshot.periodOperationalSummary);
-    CX.data.sourceMode=snapshot.operationalIdentityPreview===true?'tya_hr_live_runtime_operational_display_dev':'tya_hr_live_runtime_source_safe_dev';
-    CX.data.previewMeta=Object.assign({},CX.data.previewMeta||{}, {
+    const latest=latestOf(periods),preferred=periods.find(p=>p.periodKey===previousPeriodKey)||periods.find(p=>p.periodKey===meta.latestPeriodKey)||latest;
+    const sourceMode=snapshot.operationalIdentityPreview===true?'tya_hr_live_runtime_operational_display_dev':'tya_hr_live_runtime_source_safe_dev';
+    const previewMeta=Object.assign({},CX.data.previewMeta||{},{
       tenantId:identity.tenantId,projectId:identity.projectId,projectName:identity.projectName,sourceTitle:snapshot.source&&snapshot.source.title,
       generatedAt:snapshot.generatedAt||meta.generatedAt||null,sourceReadAt:meta.sourceReadAt||null,sourceRevision:meta.revision||null,
       periods:periods.length,tabs:snapshot.counts&&snapshot.counts.tabs,totalVisits:visits.length,countries:snapshot.counts&&snapshot.counts.byCountry,
       production:false,imported:false,sourceSafe:true,piiProtected:true,runtimeSyncActive:false,runtimeReadActive:true,revisionStable:true,
       operationalIdentityPreview:snapshot.operationalIdentityPreview===true,operationalIdentityScope:snapshot.operationalIdentityScope||null,
-      note:snapshot.operationalIdentityPreview===true?'Lectura HR viva DEV con nombre operativo visible; contacto, DPI, banco y credenciales siguen excluidos.':'Lectura HR viva source-safe aplicada en memoria sin recargar la aplicación.'
+      note:snapshot.operationalIdentityPreview===true?'Lectura HR viva DEV con nombre operativo visible; contacto, DPI, banco y credenciales siguen excluidos.':'Lectura HR viva source-safe preparada fuera del estado visible.'
     });
-
-    if(CX.dataSource){
-      CX.dataSource.mode='connected';
-      CX.dataSource.status='ready';
-      CX.dataSource.sourceRef=snapshot.operationalIdentityPreview===true?('hr-live-runtime:'+identity.tenantId+':'+identity.projectId+':display-name-only'):('hr-live-runtime:'+identity.tenantId+':'+identity.projectId);
-      CX.dataSource.updatedAt=meta.sourceReadAt||meta.generatedAt||new Date().toISOString();
-      CX.dataSource.runtimeSyncActive=false;
-      CX.dataSource.runtimeReadActive=true;
-      CX.dataSource.updating=false;
-      CX.dataSource.warnings=snapshot.operationalIdentityPreview===true?['DEV operativo: nombre shopper visible desde HR viva; contacto, DPI, banco y credenciales permanecen protegidos.']:[];
-      CX.dataSource.blockers=[];
-      try{localStorage.setItem('cx_data_mode','connected');localStorage.setItem('cx_demo_mode','off');}catch(e){}
-    }
-
-    window.CX_TYA_VISIBLE_DATA_CONTRACT={
-      tenantId:identity.tenantId,rootProjectId:identity.projectId,projectName:identity.projectName,periodCount:periods.length,
-      uniquePeriodIds:new Set(periods.map(p=>p.id)).size,visitCount:visits.length,shopperCount:shoppers.length,
-      currentPeriodId:CX.data.currentPeriodId,currentPeriodVisits:CX.data.visitas?CX.data.visitas().length:0,
-      sourceRevision:meta.revision||null,sourceReadAt:meta.sourceReadAt||null,
-      genericProjectCount:periods.filter(p=>['retail','banca','food'].includes(p.id)).length,
-      sourceSafe:true,operationalIdentityPreview:snapshot.operationalIdentityPreview===true,imported:false,production:false,runtimeSyncActive:false,runtimeReadActive:true
+    return {version:'a05-atomic-live-snapshot-candidate-v1',snapshot,meta:Object.assign({},meta,{runtimeRead:true,sourceSafe:true}),identity,
+      data:{projects:periods,shoppers,_visitas:visits,_posts:posts,currentProjectId:identity.projectId,currentPeriodId:preferred&&preferred.id,periodOperationalSummary:safeArray(snapshot.periodOperationalSummary),sourceMode,previewMeta},
+      brandPatch:{id:identity.tenantId,tenantId:identity.tenantId,clientName:identity.tenantName,demoMode:false,countries:identity.countries},
+      dataSourcePatch:{mode:'connected',status:'ready',sourceRef:snapshot.operationalIdentityPreview===true?('hr-live-runtime:'+identity.tenantId+':'+identity.projectId+':display-name-only'):('hr-live-runtime:'+identity.tenantId+':'+identity.projectId),updatedAt:meta.sourceReadAt||meta.generatedAt||new Date().toISOString(),runtimeSyncActive:false,runtimeReadActive:true,updating:false,warnings:snapshot.operationalIdentityPreview===true?['DEV operativo: nombre shopper visible desde HR viva; contacto, DPI, banco y credenciales permanecen protegidos.']:[],blockers:[]}
     };
-
-    if(typeof window.CX_TYA_BUILD_CORTE1_REPORTS==='function')window.CX_TYA_BUILD_CORTE1_REPORTS(snapshot,meta);
-    if(CX.clienteData&&typeof CX.clienteData.invalidate==='function')CX.clienteData.invalidate();
-    refreshBadge();
-    document.documentElement.setAttribute('data-cx-tenant',identity.tenantId);
-    document.documentElement.setAttribute('data-cx-project',identity.projectId);
-    document.documentElement.setAttribute('data-cx-source','hr-live');
-    if(CX.bus&&typeof CX.bus.emit==='function')CX.bus.emit('visit-flow',{sourceRevision:meta.revision||null,reason:options.reason||'live_refresh'});
-    try{window.dispatchEvent(new CustomEvent('cx:live-source-updated',{detail:{revision:meta.revision||null,sourceReadAt:meta.sourceReadAt||null,reason:options.reason||'live_refresh'}}));}catch(e){}
-    return {ok:true,revision:meta.revision||null,periods:periods.length,visits:visits.length,currentPeriodId:CX.data.currentPeriodId,operationalIdentityPreview:snapshot.operationalIdentityPreview===true};
   }
 
+  function publishSnapshotCandidate(candidate,options={}){
+    if(!candidate||candidate.version!=='a05-atomic-live-snapshot-candidate-v1'||!candidate.data||!CX.data)throw new Error('HR_LIVE_CANDIDATE_REQUIRED');
+    const patch=options.dataPatch&&typeof options.dataPatch==='object'?options.dataPatch:{},next=Object.assign({},candidate.data,patch);
+    next.previewMeta=Object.assign({},candidate.data.previewMeta||{},patch.previewMeta||{});
+    window.CX_TYA_HR_SOURCE_SAFE=candidate.snapshot;window.CX_TYA_HR_LIVE_META=Object.assign({},candidate.meta||{},{runtimeRead:true,sourceSafe:true});window.CX_TYA_HR_VIVA_SOURCE_SAFE=true;window.CX_TYA_HR_SNAPSHOT_SOURCE_SAFE=false;window.CX_TYA_VISIBLE_DATA_READY=true;
+    CX.BRAND=Object.assign(CX.BRAND||{},candidate.brandPatch||{});Object.assign(CX.data,next);
+    if(CX.dataSource){Object.assign(CX.dataSource,Object.assign({},candidate.dataSourcePatch||{},options.dataSourcePatch||{}));try{localStorage.setItem('cx_data_mode','connected');localStorage.setItem('cx_demo_mode','off');}catch(e){}}
+    const projects=safeArray(CX.data.projects),visits=safeArray(CX.data._visitas),shoppers=safeArray(CX.data.shoppers),currentPeriodId=CX.data.currentPeriodId;
+    window.CX_TYA_VISIBLE_DATA_CONTRACT={tenantId:candidate.identity.tenantId,rootProjectId:candidate.identity.projectId,projectName:candidate.identity.projectName,periodCount:projects.length,uniquePeriodIds:new Set(projects.map(p=>p.id)).size,visitCount:visits.length,shopperCount:shoppers.length,currentPeriodId,currentPeriodVisits:visits.filter(v=>String(v.periodId)===String(currentPeriodId)).length,sourceRevision:CX.data.previewMeta?.sourceRevision||candidate.meta?.revision||null,sourceReadAt:candidate.meta?.sourceReadAt||null,genericProjectCount:projects.filter(p=>['retail','banca','food'].includes(p.id)).length,sourceSafe:true,operationalIdentityPreview:candidate.snapshot?.operationalIdentityPreview===true,imported:false,production:false,runtimeSyncActive:false,runtimeReadActive:true,atomicPublication:true};
+    if(typeof window.CX_TYA_BUILD_CORTE1_REPORTS==='function')window.CX_TYA_BUILD_CORTE1_REPORTS(candidate.snapshot,candidate.meta||{});
+    if(CX.clienteData&&typeof CX.clienteData.invalidate==='function')CX.clienteData.invalidate();refreshBadge();
+    document.documentElement.setAttribute('data-cx-tenant',candidate.identity.tenantId);document.documentElement.setAttribute('data-cx-project',candidate.identity.projectId);document.documentElement.setAttribute('data-cx-source','hr-live');
+    if(options.suppressEvents!==true){if(CX.bus&&typeof CX.bus.emit==='function')CX.bus.emit('visit-flow',{sourceRevision:CX.data.previewMeta?.sourceRevision||null,reason:options.reason||'live_refresh'});try{window.dispatchEvent(new CustomEvent('cx:live-source-updated',{detail:{revision:CX.data.previewMeta?.sourceRevision||null,sourceReadAt:candidate.meta?.sourceReadAt||null,reason:options.reason||'live_refresh'}}));}catch(e){}}
+    return {ok:true,revision:CX.data.previewMeta?.sourceRevision||null,periods:projects.length,visits:visits.length,currentPeriodId,operationalIdentityPreview:candidate.snapshot?.operationalIdentityPreview===true,atomicPublication:true};
+  }
+
+  function applySnapshot(snapshot,meta={},options={}){return publishSnapshotCandidate(buildSnapshotCandidate(snapshot,meta,options),options);}
+  window.CX_TYA_BUILD_LIVE_SNAPSHOT_CANDIDATE=buildSnapshotCandidate;
+  window.CX_TYA_PUBLISH_LIVE_SNAPSHOT_CANDIDATE=publishSnapshotCandidate;
   window.CX_TYA_APPLY_LIVE_SNAPSHOT=applySnapshot;
 })();

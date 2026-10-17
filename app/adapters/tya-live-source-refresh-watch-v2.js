@@ -36,7 +36,11 @@
     if(!authenticatedHumanRuntime)return true;
     const mode=String(CX.data?.sourceMode||'');
     const sourceRef=String(CX.dataSource?.sourceRef||'');
-    return window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true
+    const authority=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{},dataRevision=String(CX.data?.previewMeta?.sourceRevision||'').trim(),authorityRevision=String(authority.sourceRevision||'').trim();
+    return authority.applied===true
+      && authority.atomicPublication===true
+      && dataRevision
+      && authorityRevision===dataRevision
       && (mode==='tya_hr_live_all_periods_plus_firestore_exact_overlay_dev'
         || mode==='tya_hr_live_plus_firestore_full_profile_stable_dev'
         || mode==='tya_hr_live_preparing_full_profile_stable_dev'

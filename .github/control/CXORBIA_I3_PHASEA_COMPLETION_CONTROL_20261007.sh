@@ -24,7 +24,8 @@ source-proof)
   grep -Fq "data-dashboard-actions" app/modules/dashboard.js
   grep -Fq "c6PrimarySurfacePreserved" app/adapters/tya-c6-domain-consistency-bridge.js
   grep -Fq "canonicalBaseSucursales" app/adapters/tya-canonical-reservations-guard-v2.js
-  node --test backend/runtime/hr-live-service/test/cxorbia-i3-phasea-completion-source-contract.test.mjs | tee /tmp/i3-phasea-completion-source-test.log
+  node --test backend/runtime/hr-live-service/test/cxorbia-i3-phasea-completion-source-contract.test.mjs
+node --test tools/qa/cxorbia-i3-a05-atomic-session-publication-source.test.mjs | tee /tmp/i3-phasea-completion-source-test.log
   node --test backend/runtime/hr-live-service/test/cxorbia-vrm261-264-source-contract.test.mjs | tee /tmp/i3-vrm261-264-source-test.log
   # B7: independent Firestore emulator gate; no DEV/production writes.
   node --check tools/qa/cxorbia-i3-b7-exact-notification-firestore-rules.test.mjs
