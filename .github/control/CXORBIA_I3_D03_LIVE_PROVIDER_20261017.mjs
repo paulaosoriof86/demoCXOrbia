@@ -21,7 +21,7 @@ const EXPECTED_RUNTIME=String(process.env.D03_RUNTIME_REVISION||descriptor.curre
 const EXPECTED_HOSTING=String(process.env.D03_HOSTING_VERSION||descriptor.currentMaterialization?.hostingVersion||'');
 const QUESTION_COUNT=15;
 const str=v=>String(v==null?'':v).trim(),arr=v=>Array.isArray(v)?v:[];
-const sha=v=>crypto.createHash('sha256').update(typeof v==='string'?v:JSON.stringify(v)).digest('hex');
+const sha=v=>crypto.createHash('sha256').update(Buffer.isBuffer(v)||v instanceof Uint8Array?v:typeof v==='string'?v:JSON.stringify(v)).digest('hex');
 fs.mkdirSync(OUT,{recursive:true});
 const result={schemaVersion:'cxorbia.i3.d03.live-provider.v1',decision:'HOLD',classification:null,code:null,sourceSha:SOURCE,sourceTree:SOURCE_TREE,driveFileId:FILE_ID,expectedSourceSha256:EXPECTED_SHA,questionCount:QUESTION_COUNT,runtimeRevision:EXPECTED_RUNTIME,hostingVersion:EXPECTED_HOSTING,sourceAccess:{},parser:{},provider:{},persistence:{},writes:{auth:0,hr:0,provider:0},deploys:0,production:false};
 const save=()=>fs.writeFileSync(OUT+'/result.json',JSON.stringify(result,null,2)+'\n');
@@ -45,7 +45,13 @@ try{
  const bearer=driveHeaders.Authorization||driveHeaders.authorization;if(!bearer)throw new Error('AUTH_FAILURE:D03_DRIVE_TOKEN_MISSING');
  const dr=await fetch('https://www.googleapis.com/drive/v3/files/'+encodeURIComponent(FILE_ID)+'?alt=media',{headers:{Authorization:bearer},signal:AbortSignal.timeout(45000)});
  result.sourceAccess.httpStatus=dr.status;
- if(!dr.ok)throw new Error('AUTH_FAILURE:D03_DRIVE_SOURCE_ACCESS_'+dr.status);
+ if(!dr.ok){
+  const api=await dr.json().catch(()=>({})),err=api?.error||{};
+  const detail=arr(err.details).map(v=>str(v?.reason)).filter(Boolean);
+  const reasons=[...arr(err.errors).map(v=>str(v?.reason)),...detail].filter(Boolean);
+  result.sourceAccess.apiError={code:Number(err.code||dr.status),status:str(err.status),reasonCodes:[...new Set(reasons)],message:safeError({message:err.message||''}).slice(0,240)};
+  throw new Error('AUTH_FAILURE:D03_DRIVE_SOURCE_ACCESS_'+dr.status);
+ }
  const bytes=Buffer.from(await dr.arrayBuffer()),observedSha=sha(bytes);
  result.sourceAccess={httpStatus:dr.status,bytes:bytes.length,sha256:observedSha,exactHash:observedSha===EXPECTED_SHA};
  if(observedSha!==EXPECTED_SHA)throw new Error('SOURCE_FAILURE:D03_DRIVE_SOURCE_HASH_MISMATCH');
