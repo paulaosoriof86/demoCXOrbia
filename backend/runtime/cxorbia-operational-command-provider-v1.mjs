@@ -650,7 +650,9 @@ export function createOperationalCommandProvider({auth,db,policy}={}){
           writes+=Number(result.providerWrites||0);
         }
       };
-      await Promise.all(Array.from({length:reconciliationConcurrency},()=>worker()));
+      const settled=await Promise.allSettled(Array.from({length:reconciliationConcurrency},()=>worker()));
+      const failed=settled.find(result=>result.status==='rejected');
+      if(failed)throw failed.reason;
       return {ok:true,status:'committed',providerAck:true,sourceRevision:revision,tenantId:scope.tenantId,projectId:scope.projectId,visitCount:visits.length,createdVisits:created,idempotentReplays:replayed,reviewRequiredVisits:reviews,conflicts,providerWrites:writes,reconciliationConcurrency,reconciliationDurationMs:Date.now()-startedAt,hrWrites:0,externalWrites:0,fuzzyMatching:false};
     },
     status(){return {version:VERSION,enabled:true,allowedTenantIds:arr(policy.allowedTenantIds),allowedProjectIds:arr(policy.allowedProjectIds),conflictPolicy:'review_no_silent_overwrite',hrWrites:false,makeCalls:false,geminiCalls:false,storageWrites:false,paymentWrites:false};}

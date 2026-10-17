@@ -12,9 +12,7 @@ import { getFirestore } from 'firebase-admin/firestore';
 import { maybeHandleDevVisualRequest } from './dev-visual.mjs';
 import { isLiveUserAdminPath, maybeHandleLiveUserAdminRequest } from './user-admin.mjs';
 import { isLegalRuntimePath, maybeHandleLegalRuntimeRequest } from './legal-runtime.mjs';
-import { isCxorbiaCommandRuntimePath, maybeHandleCxorbiaCommandRuntimeRequest } from './cxorbia-command-runtime-v1.mjs';
-import { createShopperCommandProvider } from '../cxorbia-shopper-command-provider-v1.mjs';
-import { createOperationalCommandProvider } from '../cxorbia-operational-command-provider-v1.mjs';
+import { isCxorbiaCommandRuntimePath, maybeHandleCxorbiaCommandRuntimeRequest, createHrSnapshotReconciler } from './cxorbia-command-runtime-v1.mjs';
 import { isCertificationRuntimePath, maybeHandleCertificationRuntimeRequest } from './certification-runtime.mjs';
 
 const HERE=path.dirname(fileURLToPath(import.meta.url));
@@ -52,10 +50,7 @@ let lastRefreshFinishedAt=null;
 let lastRefreshDurationMs=null;
 let lastRefreshStagesMs=null;
 let lastShopperReconciliation=null;
-let lastShopperReconciledRevision=null;
 let lastVisitReconciliation=null;
-let lastVisitReconciledRevision=null;
-const durableReconciliationByRevision=new Map();
 
 function runNode(args,env){
   return new Promise((resolve,reject)=>{
@@ -322,50 +317,11 @@ function configureCommandRuntime(snapshot){
   globalThis.CXORBIA_COMMAND_HR_SNAPSHOT=snapshot;
   globalThis.CXORBIA_COMMAND_HR_REVISION=String(cache?.revision||'');
 }
-async function reconcileAuthoritativeShoppers(current){
-  if(!current?.snapshot||!current?.revision)throw new Error('SHOPPER_RECONCILIATION_SOURCE_MISSING');
-  if(lastShopperReconciledRevision===current.revision)return lastShopperReconciliation;
-  const {auth,db}=ensureAdmin();
-  const provider=createShopperCommandProvider({auth,db,policy:shopperPolicy(current.snapshot)});
-  const result=await provider.reconcileSnapshot(current.snapshot,{sourceRevision:current.revision,identityByShopperId:current.identity});
-  lastShopperReconciledRevision=current.revision;
-  lastShopperReconciliation={...result,completedAt:new Date().toISOString()};
-  console.log(`CXOrbia shopper reconciliation committed ${current.revision.slice(0,12)} shoppers=${result.shopperCount} authCreated=${result.authCreated} writes=${result.providerWrites}`);
-  return lastShopperReconciliation;
-}
-async function reconcileAuthoritativeVisits(current){
-  if(!current?.snapshot||!current?.revision)throw new Error('VISIT_RECONCILIATION_SOURCE_MISSING');
-  if(lastVisitReconciledRevision===current.revision)return lastVisitReconciliation;
-  const {auth,db}=ensureAdmin();
-  const provider=createOperationalCommandProvider({auth,db,policy:operationalPolicy(current.snapshot)});
-  const result=await provider.reconcileSnapshot(current.snapshot,{sourceRevision:current.revision});
-  lastVisitReconciledRevision=current.revision;
-  lastVisitReconciliation={...result,completedAt:new Date().toISOString()};
-  console.log(`CXOrbia visit reconciliation committed ${current.revision.slice(0,12)} visits=${result.visitCount} created=${result.createdVisits} writes=${result.providerWrites}`);
-  return lastVisitReconciliation;
-}
-
-function scheduleDurableReconciliation(current){
-  const revision=String(current?.revision||'').trim();
-  if(!revision)return Promise.resolve(null);
-  if(lastShopperReconciledRevision===revision&&lastVisitReconciledRevision===revision){
-    return Promise.resolve({shopper:lastShopperReconciliation,visits:lastVisitReconciliation});
-  }
-  const existing=durableReconciliationByRevision.get(revision);
-  if(existing)return existing;
-  let tracked;
-  const task=(async()=>{
-    const shopperTask=lastShopperReconciledRevision===revision?Promise.resolve(lastShopperReconciliation):reconcileAuthoritativeShoppers(current);
-    const visitTask=lastVisitReconciledRevision===revision?Promise.resolve(lastVisitReconciliation):reconcileAuthoritativeVisits(current);
-    const [shopper,visits]=await Promise.all([shopperTask,visitTask]);
-    return {shopper,visits};
-  })();
-  tracked=task.finally(()=>{
-    if(durableReconciliationByRevision.get(revision)===tracked)durableReconciliationByRevision.delete(revision);
-  });
-  durableReconciliationByRevision.set(revision,tracked);
-  return tracked;
-}
+const explicitHrReconciliation=createHrSnapshotReconciler({
+  verifyPrincipal:verifiedProtectedPrincipal,
+  readSnapshot:()=>buildSnapshot({forceFresh:true}),
+  ensureAdmin,shopperPolicy,operationalPolicy
+});
 
 function loadBootstrap(){
   try{
@@ -417,14 +373,11 @@ async function refreshSnapshot(){
       stagesMs.durableProjectConfig=Date.now()-durableStartedAt;
       const next=materialize(configured,'runtime_refresh',parseIdentity(identityFile));
       lastRefreshStagesMs={...stagesMs};
-      /* Recovery P0: publish the fresh HR read before durable Firestore reconciliation. */
+      /* G05: observation publishes a fresh read and never schedules a durable writer. */
       cache=next;
       lastRefreshError=null;
       lastRefreshFinishedAt=new Date().toISOString();
       lastRefreshDurationMs=Date.now()-started;
-      scheduleDurableReconciliation(next).catch(error=>{
-        console.error('CXOrbia durable HR reconciliation failed after fresh read: '+String(error?.message||error));
-      });
       return cache;
     } finally {
       fs.rmSync(dir,{recursive:true,force:true});
@@ -542,10 +495,15 @@ const server=http.createServer(async(req,res)=>{
     return;
   }
   if(isCxorbiaCommandRuntimePath(url.pathname)){
-    try{configureCommandRuntime(cache?.snapshot);}catch(error){
-      return sendJson(res,503,{ok:false,status:'blocked',committed:false,providerAck:false,successUiAllowed:false,code:String(error?.message||error),production:false});
-    }
-    await maybeHandleCxorbiaCommandRuntimeRequest(req,res,url);
+    await maybeHandleCxorbiaCommandRuntimeRequest(req,res,url,{
+      configure:()=>configureCommandRuntime(cache?.snapshot),
+      hrSnapshotReconcile:async input=>{
+        const result=await explicitHrReconciliation(input);
+        if(result.stages?.shoppers)lastShopperReconciliation={...result.stages.shoppers,sourceRevision:result.sourceRevision,receiptPath:result.receiptPath};
+        if(result.stages?.visits)lastVisitReconciliation={...result.stages.visits,sourceRevision:result.sourceRevision,receiptPath:result.receiptPath};
+        return result;
+      }
+    });
     return;
   }
   if(isLiveUserAdminPath(url.pathname)){

@@ -82,13 +82,29 @@ const hrSnapshot=()=>({
   visits:[{id:'visit-a',visitId:'visit-a',tenantId:'tenant-a',projectId:'period-a',periodId:'period-a',hrRowId:'HR!2',sourceTab:'HR',sourceRow:2,estado:'disponible',status:'disponible',sucursal:'HR Sucursal',ciudad:'Ciudad',pais:'GT',canonicalFacets:{available:true,assigned:false}}]
 });
 
-test('PRE-I4 VRM-134 / visit reconciliation is bounded-concurrent and server does not serialize shopper before visits',()=>{
+test('PRE-I4 VRM-134 / bounded visit workers settle all writes before reporting a failure',async()=>{
   const providerSource=fs.readFileSync(path.join(repoRoot,'backend/runtime/cxorbia-operational-command-provider-v1.mjs'),'utf8');
-  const serverSource=fs.readFileSync(path.join(repoRoot,'backend/runtime/hr-live-service/server.mjs'),'utf8');
   assert.match(providerSource,/CXORBIA_VISIT_RECONCILIATION_CONCURRENCY\|\|16/);
   assert.match(providerSource,/Math\.min\(24/);
-  assert.match(providerSource,/Promise\.all\(Array\.from\(\{length:reconciliationConcurrency\}/);
-  assert.match(serverSource,/const \[shopper,visits\]=await Promise\.all\(\[shopperTask,visitTask\]\)/);
+  const db=new FakeFirestore(),run=db.runTransaction.bind(db);
+  let started=0,releaseSlow,startedBoth,completed=false;
+  const slow=new Promise(resolve=>{releaseSlow=resolve;}),both=new Promise(resolve=>{startedBoth=resolve;});
+  db.runTransaction=fn=>run(tx=>fn({...tx,get:async ref=>{
+    started++;
+    if(started===1)throw new Error('FIXTURE_FIRST_VISIT_FAILED');
+    startedBoth();await slow;return tx.get(ref);
+  }}));
+  const source=hrSnapshot();
+  source.visits.push({...source.visits[0],id:'visit-b',visitId:'visit-b',hrRowId:'HR!3',sourceRow:3});
+  const pending=provider(db).reconcileSnapshot(source,{sourceRevision:'hr-rev-1'});
+  const observed=pending.then(()=>{completed=true;},()=>{completed=true;});
+  await both;
+  for(let i=0;i<8;i++)await Promise.resolve();
+  assert.equal(completed,false,'a failed worker must not return while another can still write');
+  releaseSlow();
+  await assert.rejects(pending,/FIXTURE_FIRST_VISIT_FAILED/);
+  await observed;
+  assert.equal(db.get(visitPath('HR!3')).hrRowId,'HR!3','late durable effect is settled before rejection');
 });
 
 test('Gate 7 / visit HR reconciliation creates durable visits idempotently by revision',async()=>{

@@ -259,9 +259,19 @@ CX.module('hrsource', ({data, ui})=>{
       const cfg=CX.hrSource.get(pid());if(!(cfg.providerBindingId||cfg.sourceRef)){ui.toast('Registra primero la fuente y obtén un vínculo seguro.','warn',4200);return;}
       const result=await CX.hrSource.emitBackend('preview',pid());draw();ui.toast(result?.message||'Vista previa solicitada al proveedor.','',4200);
     });
-    host.querySelector('#hsSync').addEventListener('click',async()=>{
-      const cfg=CX.hrSource.get(pid());if(!(cfg.estado==='ready_for_import'&&cfg.canImport===true)){ui.toast('⛔ Importación bloqueada: solo avanza cuando la fuente quede lista y validada','warn',4600);return;}
-      const result=await CX.hrSource.emitBackend('sync-request',pid());draw();ui.toast(result?.message||'Solicitud de sincronización enviada al proveedor.','',4200);
+    host.querySelector('#hsSync').addEventListener('click',async event=>{
+      const projectId=String(pid()),cfg=CX.hrSource.get(projectId),canonical=CX.hrSource._canonical();
+      if(!canonical&&!(cfg.estado==='ready_for_import'&&cfg.canImport===true)){ui.toast('⛔ Importación bloqueada: solo avanza cuando la fuente quede lista y validada','warn',4600);return;}
+      const capture=canonical?CX.backendHrSourceBridge?.captureSyncContext?.(projectId):null;
+      if(canonical&&capture?.ok!==true){ui.toast(capture?.message||'No se pudo validar la sesión y la fuente de este proyecto.','warn',4600);return;}
+      const button=event.currentTarget;if(button.disabled)return;button.disabled=true;
+      try{
+        const result=await CX.hrSource.emitBackend('sync-request',projectId);
+        if(String(pid())!==projectId||result?.publishUiAllowed===false)return;
+        if(canonical&&CX.backendHrSourceBridge?.sameSyncContext?.(capture)!==true)return;
+        if(!canonical)draw();
+        ui.toast(result?.message||'No se recibió confirmación de la sincronización.',result?.ok===true?'ok':'warn',5200);
+      }finally{button.disabled=false;}
     });
     host.querySelector('#hsGenCand')?.addEventListener('click',()=>{
       /* genera candidatos (vista previa) a partir del estado actual del proyecto — no lee la

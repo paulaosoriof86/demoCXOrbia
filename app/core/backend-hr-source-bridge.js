@@ -152,8 +152,116 @@
     }
   }
 
+
+  const pendingSyncs=new Map();
+  function syncBlocked(code,extra={}){
+    return {ok:false,status:'blocked',committed:false,providerAck:false,readbackVerified:false,
+      successUiAllowed:false,providerWrites:0,localMutation:false,localStorageWrite:false,code,
+      message:'No se pudo confirmar la sincronización de esta fuente y este proyecto.',...extra};
+  }
+  function captureSyncContext(projectId){
+    const context=CX.backendAuth?.context?.(),user=window.firebase?.auth?.().currentUser;
+    const pid=String(projectId||''),tenantId=String(context?.tenantId||'');
+    const project=CX.hrSource?._projectRecord?.(pid),src=project?.operationalSource||project?.routeSource||{};
+    const meta=CX.data?.previewMeta||{},authority=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{};
+    const revision=String(CX.data?.__liveHrSourceRevision||'');
+    if(context?.authenticated!==true||!user?.uid||context.authNamespace!=='staff'||!['super','admin'].includes(context.role)){
+      return syncBlocked('HR_SYNC_AUTHORIZED_STAFF_REQUIRED');
+    }
+    if(!tenantId||!pid||pid!==String(CX.data?.currentProjectId)||!project||
+      (project.tenantId&&String(project.tenantId)!==tenantId)||
+      (context.role!=='super'&&!(context.projectIds||[]).map(String).includes(pid))){
+      return syncBlocked('HR_SYNC_PROJECT_SCOPE_REQUIRED');
+    }
+    if(src.mode!=='external'||src.readPolicy!=='external_live'||
+      !String(src.providerBindingId||src.integrationSettingId||src.providerRef||'').trim()||!String(src.mappingRef||'').trim()){
+      return syncBlocked('HR_SYNC_LIVE_SOURCE_CONFIG_REQUIRED');
+    }
+    if(!/^[a-f0-9]{64}$/.test(revision)||String(meta.sourceRevision||'')!==revision||meta.hrAuthority!==true||
+      String(meta.tenantId)!==tenantId||String(meta.projectId)!==pid||
+      authority.applied!==true||String(authority.actorUid)!==String(user.uid)||
+      authority.role!==context.role||authority.authNamespace!==context.authNamespace||
+      String(authority.tenantId)!==tenantId||String(authority.projectId)!==pid){
+      return syncBlocked('HR_SYNC_VERIFIED_SOURCE_REVISION_REQUIRED');
+    }
+    if(CX.BACKEND?.enableCommandWrites!==true||typeof CX.commandAdapter?.execute!=='function'){
+      return syncBlocked('HR_SYNC_COMMAND_WRITES_DISABLED');
+    }
+    return {ok:true,context,user,uid:String(user.uid),role:context.role,authNamespace:context.authNamespace,tenantId,projectId:pid,revision};
+  }
+  function sameSyncContext(capture){
+    const current=captureSyncContext(capture.projectId);
+    return current.ok===true&&current.context===capture.context&&current.user===capture.user&&
+      current.uid===capture.uid&&current.tenantId===capture.tenantId&&current.revision===capture.revision&&
+      current.role===capture.role&&current.authNamespace===capture.authNamespace;
+  }
+  function canonicalSync(payload){
+    const capture=captureSyncContext(payload.projectId);
+    if(!capture.ok)return Promise.resolve(capture);
+    const scopeKey=JSON.stringify([capture.uid,capture.tenantId,capture.projectId,capture.revision]);
+    let pending=pendingSyncs.get(scopeKey);
+    if(pending?.promise)return pending.promise;
+    if(!pending){
+      if(!window.crypto?.randomUUID)return Promise.resolve(syncBlocked('HR_SYNC_IDEMPOTENCY_UNAVAILABLE'));
+      pending={idempotencyKey:'hr-sync-'+window.crypto.randomUUID(),promise:null};
+      pendingSyncs.set(scopeKey,pending);
+    }
+    const command={
+      commandType:'hr.snapshot.reconcile',entityType:'hrSnapshot',entityId:capture.revision,
+      tenantId:capture.tenantId,projectId:capture.projectId,periodId:null,requireProject:true,requirePeriod:false,
+      expectedVersion:capture.revision,idempotencyKey:pending.idempotencyKey,payload:{},
+      source:'hr-source-sync-request',authorization:{providerEnforcementRequired:true}
+    };
+    const task=(async()=>{
+      let result;
+      try{
+        result=await CX.commandAdapter.execute(command);
+        const resume=String(result?.resumeIdempotencyKey||'');
+        if(result?.code==='HR_RECONCILIATION_SCOPE_BUSY'&&resume.length>=16&&resume.length<=200&&resume!==pending.idempotencyKey&&sameSyncContext(capture)){
+          pending.idempotencyKey=resume;
+          result=await CX.commandAdapter.execute({...command,idempotencyKey:resume});
+        }
+      }
+      catch(_){result=syncBlocked('HR_SYNC_TRANSPORT_OUTCOME_UNKNOWN',{providerWrites:null});}
+      if(result?.code==='COMMAND_TRANSPORT_ERROR')result={...result,providerWrites:null,code:'HR_SYNC_TRANSPORT_OUTCOME_UNKNOWN'};
+      let expectedReceiptPath='';
+      try{
+        const input=new TextEncoder().encode(JSON.stringify([capture.projectId,pending.idempotencyKey]));
+        const digest=new Uint8Array(await window.crypto.subtle.digest('SHA-256',input));
+        expectedReceiptPath='tenants/'+capture.tenantId+'/commandReceipts/hr-'+Array.from(digest,byte=>byte.toString(16).padStart(2,'0')).join('');
+      }catch(_){}
+      const binding=result?.receiptBinding||{},receiptParts=String(result?.receiptPath||'').split('/');
+      const bound=Boolean(expectedReceiptPath)&&result.receiptPath===expectedReceiptPath&&receiptParts.length===4&&receiptParts[0]==='tenants'&&receiptParts[1]===capture.tenantId&&
+        receiptParts[2]==='commandReceipts'&&/^hr-[a-f0-9]{64}$/.test(receiptParts[3])&&
+        binding.tenantId===capture.tenantId&&binding.projectId===capture.projectId&&binding.sourceRevision===capture.revision&&
+        binding.actorUid===capture.uid&&binding.idempotencyKey===pending.idempotencyKey&&binding.commandType==='hr.snapshot.reconcile';
+      const confirmed=result?.ok===true&&result?.status==='committed'&&result?.committed===true&&
+        result?.providerAck===true&&result?.readbackVerified===true&&result?.successUiAllowed===true&&
+        result?.unresolvedEffects===0&&result?.unverifiedEffects===0&&
+        result?.sourceRevision===capture.revision&&result?.tenantId===capture.tenantId&&
+        result?.projectId===capture.projectId&&bound;
+      const response=confirmed?{
+        ...result,viewRefreshVerified:false,viewRefresh:'pending',
+        message:result.identityReviewRequired?'Sincronización confirmada con casos pendientes de revisión; actualización de vista pendiente.':'Sincronización confirmada; actualización de vista pendiente.'
+      }:{
+        ...syncBlocked('HR_SYNC_ACK_READBACK_REQUIRED'),...result,ok:false,committed:false,providerAck:false,
+        providerWrites:Object.prototype.hasOwnProperty.call(result||{},'providerWrites')?result.providerWrites:null,
+        successUiAllowed:false,message:result?.status==='partial'?'La sincronización quedó parcial. El recibo conserva los efectos confirmados.':'No se recibió una confirmación completa de la sincronización.'
+      };
+      response.contextCurrent=sameSyncContext(capture);
+      response.publishUiAllowed=response.contextCurrent;
+      if(response.contextCurrent)CX.backendHrSourceBridge.last={kind:'sync-request',payload:{projectId:capture.projectId,sourceRevision:capture.revision,idempotencyKey:pending.idempotencyKey},response,at:now()};
+      // Retain the same key after an uncertain/partial response. A confirmed new click is a new operation.
+      if(confirmed)pendingSyncs.delete(scopeKey);
+      return response;
+    })();
+    pending.promise=task.finally(()=>{pending.promise=null;});
+    return pending.promise;
+  }
+
   async function handle(kind, payload){
     payload = payload || {};
+    if(kind==='sync-request'&&CX.hrSource?._canonical?.()===true)return canonicalSync(payload);
     try{
       const response = await callEndpoint(kind, payload);
       await applyToUi(kind, payload, response);
@@ -185,7 +293,7 @@
     return true;
   }
 
-  CX.backendHrSourceBridge = { attach, handle, normalizeResponse, getBackendConfig, last: null };
+  CX.backendHrSourceBridge = { attach, handle, normalizeResponse, getBackendConfig, captureSyncContext, sameSyncContext, last: null };
   if(!attach()){
     let tries = 0;
     const t = setInterval(()=>{ tries++; if(attach() || tries > 40) clearInterval(t); }, 250);
