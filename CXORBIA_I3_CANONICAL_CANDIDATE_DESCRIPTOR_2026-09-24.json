@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_OPEN_P0_TERMINAL_E2E_REQUIRED",
+  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "80ada5c4f8bf6301345f5053541e74178287326b",
-  "productTreeAuthority": "fb914a617c250eeae5fb287f7910022bb60f09da",
-  "predecessorProductSourceSha": "cd237d50ada6fd32e0b2d82b0aa8dad231e27204",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V441_2026-10-14.json",
-  "findingsLedgerExpectedGitBlob": "14adb37aec9e06ed5301dec4a0f95c4f2ad44b97",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261014-V119.json",
+  "productSourceSha": "49c2b842ebf68224439e061b5ab2043a3cec4740",
+  "productTreeAuthority": "80e7beaacc9d811d637dac16cb1fdd51217b1fd9",
+  "predecessorProductSourceSha": "80ada5c4f8bf6301345f5053541e74178287326b",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V442_2026-10-17.json",
+  "findingsLedgerExpectedGitBlob": "5ca9c0feaef648dc9b5f5d9cb8d5673fb9c39d19",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261017-V120.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "R07_EXTERNAL_HR_CANCEL_ACK__R08_EXACT15_VERTEX_HUMAN_SOURCE__R22_READ_ACTION_UI__R09_R17_BANK_PROVIDER_PROOF",
+  "activeBlocker": "A04_C01_SOURCE_QA_PENDING__G05_A05_ATOMIC_READ_P0__D02_PARSER_PENDING",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Continue R08 exact approved source/Vertex15, R22 exact fresh read ACK/nav population and current visual, R07 external HR cancel ACK, R09-R17 banking independent reconciliation. Allow incremental review on proven RUN1727 blocks now; no I4.",
+  "exactNextAction": "Read back the single canonical ref and collect existing source QA. Continue G05/A05 in proven owners before refresh-dependent DEV/live proof; D02 remains an independent authorized owner. Preserve all unrelated accepted scopes.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -609,7 +609,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "1ea0ad04afe1e6e760668ca8cb9206217735b6a1",
+  "productSourceTree": "80e7beaacc9d811d637dac16cb1fdd51217b1fd9",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -1039,7 +1039,14 @@
     "hrWrites": 0,
     "production": false
   },
-  "pendingMaterialization": null,
+  "pendingMaterialization": {
+    "sourceSha": "49c2b842ebf68224439e061b5ab2043a3cec4740",
+    "blockedBy": [
+      "G05",
+      "A05"
+    ],
+    "state": "SOURCE_ONLY_NO_DEV_REQUEST"
+  },
   "lastVrm080Proof": {
     "runId": 36333245670,
     "runNumber": 525,
@@ -2764,7 +2771,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "f58e93f948ae61012891b03b844eb9fb3fe50e97",
+  "moduleTruthExpectedGitBlob": "46717e0e7f8a3b3243d5bb4c363864dbd7a1a138",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -11728,5 +11735,29 @@
       "FINANCE_CURRENT_FOCAL",
       "CERTIFICATIONS_AND_RESOURCES_EXISTING"
     ]
+  },
+  "a04C01CanonicalIntegration20261017": {
+    "receiptPath": "CXORBIA_I3_A04_C01_CANONICAL_INTEGRATION_2026-10-17.json",
+    "sourceSha": "49c2b842ebf68224439e061b5ab2043a3cec4740",
+    "productTree": "80e7beaacc9d811d637dac16cb1fdd51217b1fd9",
+    "previousControlHead": "5bbf7fef322d2226b07946a2aa2298934ea4efa5",
+    "previousMaterializedSource": "80ada5c4f8bf6301345f5053541e74178287326b",
+    "oldCurrentSourceFocalPreserved": {
+      "finding": "R05",
+      "secondaryRegression": "R06",
+      "owner": "app/modules/postulaciones.js",
+      "beforeBlob": "65113fe3ffb964020e87b67786a36632a345daf7",
+      "afterBlob": "bca634a11d64ab05e5ffb9f34ff1887f94bece0a",
+      "sourceSha": "516f26ee75b644ad10d3a1d6093f24b91d347736",
+      "sourceTree": "9dbc266db267e70247e04386c549715ed4bd5882",
+      "previousProductSource": "5b13468fc3999f0c8e49982954a8733cf2728e96",
+      "proof": "6_OF_6_SOURCE_HELPER_CHECKS_PASS_4_NODE_REGRESSION_TESTS_PENDING_CI",
+      "behavior": "exactly one Postulaciones modal from 18 callsites, preserves each modal options and unified assignment filters",
+      "phase": "SOURCE_FIXED_PENDING_DEV",
+      "production": false
+    },
+    "sourceQa": "PENDING_EXISTING_LANE",
+    "liveE2e": "NOT_EXECUTED",
+    "newPreviewReady": false
   }
 }
