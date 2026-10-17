@@ -195,7 +195,7 @@ function generationInput(body={}){
  if(sourceText.length>60000)throw new Error('AI_INPUT_SOURCE_TEXT_TOO_LARGE');
  if(!/^[0-9a-f]{64}$/.test(sourceSha256))throw new Error('AI_INPUT_SOURCE_SHA256_REQUIRED');
  if(!manual&&quality.sufficient!==true)throw new Error('AI_INPUT_PARSER_QUALITY_INSUFFICIENT');
- return {sourceText,sourceSha256,sourceTitle,documentSource:clean(body.documentSource||{}),manual};
+ return {sourceText,sourceSha256,sourceTitle,documentSource:JSON.parse(JSON.stringify(body.documentSource||{})),manual};
 }
 function generatedDraftId(scope,body,input){
  const period=str(body.periodId||'period'),suffix=input.sourceSha256.slice(0,12);
