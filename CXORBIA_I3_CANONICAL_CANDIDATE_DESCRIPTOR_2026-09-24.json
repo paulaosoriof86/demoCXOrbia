@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "a4434a1f223dd6da1468890c99db7339808c1cab",
   "productTreeAuthority": "c790126bcf347d7de6b8d632ea58a24a10253fcd",
   "predecessorProductSourceSha": "197ec4c84d8d2b0625885afcea6c4a7b43773985",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V457_2026-10-17.json",
-  "findingsLedgerExpectedGitBlob": "20f20dee0d8d75156a25a6db0714a6ff768a874a",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V458_2026-10-17.json",
+  "findingsLedgerExpectedGitBlob": "becf3c29053279e1d5dd9660f0e0922deea8c9e5",
   "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261017-V135.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "D03_P0_CLEAN_UNDEFINED_SOURCE_QA_PENDING",
+  "activeBlocker": "D03_CLEAN_INPUT_SOURCE_PROOF_PASS_DEV_MATERIALIZATION_REQUIRED",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Canonical source proof for D03 no-write input sanitizer; if PASS one DEV materialization then live Vertex grounded 15 questions with pending_review ACK/replay.",
+  "exactNextAction": "Use existing canonical DEV materialization job on source a4434a1f223dd6da1468890c99db7339808c1cab, then verify same artifact and run live Vertex D03.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -80,7 +80,7 @@
     "qaFiles": [
       "backend/runtime/hr-live-service/test/cxorbia-i3-d03-document-source-metadata.test.mjs"
     ],
-    "sourceProof": "PENDING",
+    "sourceProof": "PASS_RUN1766",
     "devMaterialization": "PENDING",
     "production": false,
     "previousSourceFix": {
@@ -297,7 +297,9 @@
         "production": false
       },
       "realAiProviderGeneration": "PENDING"
-    }
+    },
+    "sourceProofRunId": 39063550464,
+    "sourceProofArtifactId": 12112492256
   },
   "preterminalRequest": {
     "revision": 3,

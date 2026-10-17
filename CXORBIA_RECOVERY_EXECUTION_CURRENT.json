@@ -30,17 +30,15 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_D03_CLEAN_UNDEFINED_SOURCE_FIX_2026-10-17.json",
-    "kind": "D03_CLEAN_UNDEFINED_SOURCE_FIXED_QA_PENDING",
+    "path": "CXORBIA_I3_D03_SOURCE_PROOF_RUN1766_2026-10-17.json",
+    "kind": "D03_SOURCE_PROOF_PASS_RUN1766",
     "tasks": [
       "D03"
     ],
     "sourceSha": "a4434a1f223dd6da1468890c99db7339808c1cab",
     "productTree": "c790126bcf347d7de6b8d632ea58a24a10253fcd",
-    "classification": "FUNCTIONAL_DEFECT",
-    "code": "D03_CLEAN_UNDEFINED",
-    "providerWrites": 0,
-    "deploys": 0,
+    "sourceProofRunId": 39063550464,
+    "sourceProofArtifactId": 12112492256,
     "production": false
   },
   "taskProgress": {
@@ -55,7 +53,7 @@
     "A05": "LIVE_E2E_PASS_RUN1742_HUMAN_PREVIEW_READY_UNAFFECTED_OWNER_PARITY",
     "D02": "PASS_LIVE_PARSER_RUN1753",
     "D01": "PASS_AUTHORIZED_DOCUMENT_SOURCE",
-    "D03": "SOURCE_FIXED_PENDING_CANONICAL_SOURCE_QA"
+    "D03": "SOURCE_PROVEN_RUN1766_DEV_MATERIALIZATION_PENDING"
   },
   "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
   "remainingPath": [
@@ -73,7 +71,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Canonical source proof for D03 no-write input sanitizer; if PASS one DEV materialization then live Vertex grounded 15 questions with pending_review ACK/replay.",
+  "nextExactAction": "Use existing canonical DEV materialization job on source a4434a1f223dd6da1468890c99db7339808c1cab, then verify same artifact and run live Vertex D03.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
