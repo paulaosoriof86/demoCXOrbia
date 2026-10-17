@@ -30,17 +30,49 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_D02_LIVE_PARSER_RUN1751_CONTROL_RETRY_2026-10-17.json",
-    "kind": "D02_LIVE_PARSER_FUNCTIONAL_PASS_CONTROL_HARNESS_RETRY_REQUIRED",
+    "path": "CXORBIA_I3_D02_LIVE_PARSER_RUN1753_2026-10-17.json",
+    "kind": "D02_LIVE_PARSER_PASS_D01_REQUIRED",
+    "tasks": [
+      "D02"
+    ],
     "sourceSha": "99e8e456318b3f0f01c9bd0caa16cc6a0c1c07dc",
     "productTree": "866e785dcb15273c9500f5525602d8c4a9cd1ed2",
-    "runId": 39037674869,
-    "runNumber": 1751,
-    "artifactId": 12102289476,
-    "d02Decision": "PASS_I3_D02_PARSER_LIVE_SMOKE",
-    "workflowConclusion": "FAIL_AFTER_D02_PASS",
-    "classification": "RELEASE_COMPOSITION_FAILURE",
-    "productionWrites": 0
+    "liveProof": {
+      "runId": 39038071976,
+      "runNumber": 1753,
+      "artifactId": 12102449683,
+      "artifactZipSha256": "83b3659ed8dc0fad3fb137308955ad9be4d46bbcfcb214aaf40c9823056f8ae8",
+      "decision": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
+      "d02Decision": "PASS_I3_D02_PARSER_LIVE_SMOKE",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/57f4bd96e99b8e10",
+      "runtimeRevision": "cxorbia-live-hr-dev-00307-xjk",
+      "hrRevision": "5d369d8955ff899095aa113d094dccea5a1c94e8849b455906cd4f154bf28e48",
+      "docx": {
+        "parser": "mammoth",
+        "quality": "high",
+        "score": 92,
+        "sha256": "b6198ef40ef9ca38d0e057e55e242a5d52493fe0e08f5c48f73ad6af172c987b",
+        "ocrExecuted": false
+      },
+      "pdf": {
+        "parser": "pdfjs-3.11.174",
+        "quality": "high",
+        "score": 93,
+        "sha256": "e34cdfd5c429911387bc56bcf892d978f61c0a60365cf37aedea2f8f5d98b05d",
+        "ocrExecuted": false
+      },
+      "providerRequests": 0,
+      "writes": {
+        "auth": 0,
+        "hr": 0,
+        "provider": 0
+      },
+      "deploys": 0,
+      "production": false,
+      "authenticApprovedDocumentProof": "PENDING_D01_D03"
+    },
+    "productionWrites": 0,
+    "newReadyPreviews": 0
   },
   "taskProgress": {
     "G01": "IN_PROGRESS_COVERAGE_CUSTODIED_AUTHORITY_GAPS_RETAINED_IN_G03",
@@ -52,7 +84,9 @@
     "A04": "LIVE_E2E_PASS_RUN1742_HUMAN_PREVIEW_READY_UNAFFECTED_OWNER_PARITY",
     "C01": "LIVE_E2E_PASS_RUN1746_HUMAN_PREVIEW_READY_UNAFFECTED_OWNER_PARITY",
     "A05": "LIVE_E2E_PASS_RUN1742_HUMAN_PREVIEW_READY_UNAFFECTED_OWNER_PARITY",
-    "D02": "LIVE_PARSER_SMOKE_FUNCTIONAL_PASS_OBSERVED_RUN1751_CONTROL_RETRY_REQUIRED"
+    "D02": "LIVE_PARSER_PROVEN_RUN1753_D01_DOCUMENT_AUTHORITY_REQUIRED",
+    "D01": "PENDING_READ_ONLY_DOCUMENT_AUTHORITY_DISCOVERY",
+    "D03": "BLOCKED_BY_D01"
   },
   "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
   "remainingPath": [
@@ -70,7 +104,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Repeat the same-artifact browser D02 parser smoke on RUN1750 materialization through the existing early-exit route only. Require d02Decision PASS_I3_D02_PARSER_LIVE_SMOKE, DOCX/PDF quality sufficient, zero OCR, zero AI-provider requests, zero writes/deploys and production=false. Do not run unrelated provider/click/admin/finance probes. Authentic approved-document proof remains pending D01/D03.",
+  "nextExactAction": "D01 read-only: locate the already-available instructive/protocol and prove exact file/version/hash, approval evidence, tenant/project/country scope and current validity. Do not ask Paula for the file again and do not substitute a historical same-name file. If approval is absent, leave only that publication pending. Then D03 generates exactly 15 reviewable questions from the proven source with provider ACK and pending_review persistence. No production.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -113,7 +147,7 @@
     "newlyFixedLiveModules": [],
     "newReadyPreviews": []
   },
-  "lastUpdatedAt": "2026-10-17T13:47:17.300Z",
+  "lastUpdatedAt": "2026-10-17T13:52:33.803Z",
   "previousExecutionReceiptBeforeRun1729": {
     "path": "CXORBIA_I3_A04_C01_CANONICAL_INTEGRATION_2026-10-17.json",
     "kind": "EXACT_NATIVE_GIT_OBJECTS_PREPARED_SINGLE_CANONICAL_CAS_PENDING",
@@ -154,16 +188,18 @@
     },
     "accumulatedSourceProvenTasks": [
       "A04",
+      "A05",
       "C01",
-      "G05"
+      "G05",
+      "D02"
     ],
     "i3SourceRepairStage": {
       "numerator": 5,
       "denominator": 63,
       "percent": 7.94,
-      "meaning": "D02 source-fixed but not source-proven; not overall product completion"
+      "meaning": "Source/live-repair tasks only, not overall CXOrbia completion"
     },
-    "newlyFunctionallyClosedI3Tasks": 0,
+    "newlyFunctionallyClosedI3Tasks": 1,
     "newReadyPreviews": 1,
     "newHumanApprovals": 0,
     "blockTasks": [
