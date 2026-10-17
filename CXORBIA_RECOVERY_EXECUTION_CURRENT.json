@@ -30,49 +30,56 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_D02_LIVE_PARSER_RUN1753_2026-10-17.json",
-    "kind": "D02_LIVE_PARSER_PASS_D01_REQUIRED",
+    "path": "CXORBIA_I3_D01_AUTHORIZED_DOCUMENT_PROOF_2026-10-17.json",
+    "kind": "D01_AUTHORIZED_DOCUMENT_PASS_D03_REQUIRED",
     "tasks": [
-      "D02"
+      "D01"
     ],
     "sourceSha": "99e8e456318b3f0f01c9bd0caa16cc6a0c1c07dc",
     "productTree": "866e785dcb15273c9500f5525602d8c4a9cd1ed2",
-    "liveProof": {
-      "runId": 39038071976,
-      "runNumber": 1753,
-      "artifactId": 12102449683,
-      "artifactZipSha256": "83b3659ed8dc0fad3fb137308955ad9be4d46bbcfcb214aaf40c9823056f8ae8",
-      "decision": "PASS_I3_PHASEA_REPRESENTATIVE_SAME_ARTIFACT_LIVE_REPROOF",
-      "d02Decision": "PASS_I3_D02_PARSER_LIVE_SMOKE",
-      "hostingVersion": "sites/cxorbia-backend-dev/versions/57f4bd96e99b8e10",
-      "runtimeRevision": "cxorbia-live-hr-dev-00307-xjk",
-      "hrRevision": "5d369d8955ff899095aa113d094dccea5a1c94e8849b455906cd4f154bf28e48",
-      "docx": {
-        "parser": "mammoth",
-        "quality": "high",
-        "score": 92,
-        "sha256": "b6198ef40ef9ca38d0e057e55e242a5d52493fe0e08f5c48f73ad6af172c987b",
-        "ocrExecuted": false
+    "d01": {
+      "task": "D01",
+      "findingIds": [
+        "F10",
+        "F11"
+      ],
+      "classification": "DOCUMENT_AUTHORITY_PROVEN",
+      "project": "Cinépolis",
+      "scopeCountries": [
+        "GT",
+        "HN"
+      ],
+      "source": {
+        "driveFileId": "122rCkfD-vNgs39LwT7jGfYBVLg57ur82",
+        "title": "Instructivo Shopper.pdf",
+        "mimeType": "application/pdf",
+        "sizeBytes": 162335,
+        "driveModifiedAt": "2026-02-06T21:00:57.795Z",
+        "driveRevisionId": "0ByyeeXi-euG9MTRaS1NUbzMveWlLWjFYNWtxSDhMdHZCRUtzPQ",
+        "lastModifyingUser": "Paula Osorio",
+        "sha256": "3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454",
+        "libraryFileId": "file_0000000001b871f58e48c4876356c51b",
+        "byteParityDriveLibrary": true
       },
-      "pdf": {
-        "parser": "pdfjs-3.11.174",
-        "quality": "high",
-        "score": 93,
-        "sha256": "e34cdfd5c429911387bc56bcf892d978f61c0a60365cf37aedea2f8f5d98b05d",
-        "ocrExecuted": false
+      "approval": {
+        "recoveredFromProjectConversation": true,
+        "decisionDate": "2026-02-06",
+        "decision": "Paula accepted the final transversal Guatemala/Honduras Cinépolis shopper instructive",
+        "laterSameDayCorrections": [
+          "Restroom photo only when there is a non-satisfactory item; do not require a restroom photo when all complies",
+          "All evidence photographs must be geolocated; WEB/APP technical failure requires screenshot, taquilla completion and evaluation of original digital channel"
+        ],
+        "chronologyAlignedWithFinalDriveRevision": true
       },
-      "providerRequests": 0,
-      "writes": {
-        "auth": 0,
-        "hr": 0,
-        "provider": 0
+      "corroboration": {
+        "laterOperationalCommunication": "Instructivo Shopper remains the planned Cinépolis shopper document for GT/HN",
+        "legacyCertificationAuthority": "Existing operational certification bank and real completions use the same 48h/WKND/APP-fallback/maximization/VIP/geolocation/sanitary rules",
+        "legacyBankNotReusedAsD03Generation": true
       },
-      "deploys": 0,
-      "production": false,
-      "authenticApprovedDocumentProof": "PENDING_D01_D03"
+      "acceptance": "PASS_D01_AUTHORIZED_DOCUMENT_SOURCE",
+      "production": false
     },
-    "productionWrites": 0,
-    "newReadyPreviews": 0
+    "productionWrites": 0
   },
   "taskProgress": {
     "G01": "IN_PROGRESS_COVERAGE_CUSTODIED_AUTHORITY_GAPS_RETAINED_IN_G03",
@@ -84,9 +91,9 @@
     "A04": "LIVE_E2E_PASS_RUN1742_HUMAN_PREVIEW_READY_UNAFFECTED_OWNER_PARITY",
     "C01": "LIVE_E2E_PASS_RUN1746_HUMAN_PREVIEW_READY_UNAFFECTED_OWNER_PARITY",
     "A05": "LIVE_E2E_PASS_RUN1742_HUMAN_PREVIEW_READY_UNAFFECTED_OWNER_PARITY",
-    "D02": "LIVE_PARSER_PROVEN_RUN1753_D01_DOCUMENT_AUTHORITY_REQUIRED",
-    "D01": "PENDING_READ_ONLY_DOCUMENT_AUTHORITY_DISCOVERY",
-    "D03": "BLOCKED_BY_D01"
+    "D02": "PASS_LIVE_PARSER_RUN1753",
+    "D01": "PASS_AUTHORIZED_DOCUMENT_SOURCE",
+    "D03": "PENDING_REAL_AI_PROVIDER_GENERATION"
   },
   "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
   "remainingPath": [
@@ -104,7 +111,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "D01 read-only: locate the already-available instructive/protocol and prove exact file/version/hash, approval evidence, tenant/project/country scope and current validity. Do not ask Paula for the file again and do not substitute a historical same-name file. If approval is absent, leave only that publication pending. Then D03 generates exactly 15 reviewable questions from the proven source with provider ACK and pending_review persistence. No production.",
+  "nextExactAction": "D03: use the proven authorized Cinépolis GT/HN Instructivo Shopper.pdf SHA256 3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454 and the D02 parser contract to generate exactly 15 distinct grounded questions through the existing safe AI provider. Require options, correct answer, explanation and source reference for each question; distinguish input/parser failure from model/provider failure; persist only as pending_review with provider ACK/readback and no duplicate. Do not reuse the legacy bank as the generated result, and do not touch production.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -147,7 +154,7 @@
     "newlyFixedLiveModules": [],
     "newReadyPreviews": []
   },
-  "lastUpdatedAt": "2026-10-17T13:52:33.803Z",
+  "lastUpdatedAt": "2026-10-17T13:59:10.948Z",
   "previousExecutionReceiptBeforeRun1729": {
     "path": "CXORBIA_I3_A04_C01_CANONICAL_INTEGRATION_2026-10-17.json",
     "kind": "EXACT_NATIVE_GIT_OBJECTS_PREPARED_SINGLE_CANONICAL_CAS_PENDING",
@@ -191,15 +198,16 @@
       "A05",
       "C01",
       "G05",
+      "D01",
       "D02"
     ],
     "i3SourceRepairStage": {
-      "numerator": 5,
+      "numerator": 6,
       "denominator": 63,
-      "percent": 7.94,
-      "meaning": "Source/live-repair tasks only, not overall CXOrbia completion"
+      "percent": 9.52,
+      "meaning": "Task closures in the source/live repair stage only; not overall CXOrbia completion"
     },
-    "newlyFunctionallyClosedI3Tasks": 1,
+    "newlyFunctionallyClosedI3Tasks": 2,
     "newReadyPreviews": 1,
     "newHumanApprovals": 0,
     "blockTasks": [

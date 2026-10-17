@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_D01_AUTHORIZED_DOCUMENT_SOURCE_REQUIRED",
+  "status": "HOLD_I3_D03_REAL_AI_GENERATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "99e8e456318b3f0f01c9bd0caa16cc6a0c1c07dc",
   "productTreeAuthority": "866e785dcb15273c9500f5525602d8c4a9cd1ed2",
   "predecessorProductSourceSha": "2ae3971a7964c057c2cee509d308d892c8bfd23e",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V452_2026-10-17.json",
-  "findingsLedgerExpectedGitBlob": "b5c14caa69c2e4718299b46f1d84d2f8c4e837e0",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261017-V130.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V453_2026-10-17.json",
+  "findingsLedgerExpectedGitBlob": "2463cbc67997b9f7a0304640cf166888b19a8e8a",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261017-V131.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "D01_AUTHORIZED_DOCUMENT_SOURCE_REQUIRED",
+  "activeBlocker": "D03_REAL_AI_GENERATION_REQUIRED",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "D01 read-only: locate the already-available instructive/protocol and prove exact file/version/hash, approval evidence, tenant/project/country scope and current validity. Do not ask Paula for the file again and do not substitute a historical same-name file. If approval is absent, leave only that publication pending. Then D03 generates exactly 15 reviewable questions from the proven source with provider ACK and pending_review persistence. No production.",
+  "exactNextAction": "D03: use the proven authorized Cinépolis GT/HN Instructivo Shopper.pdf SHA256 3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454 and the D02 parser contract to generate exactly 15 distinct grounded questions through the existing safe AI provider. Require options, correct answer, explanation and source reference for each question; distinguish input/parser failure from model/provider failure; persist only as pending_review with provider ACK/readback and no duplicate. Do not reuse the legacy bank as the generated result, and do not touch production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -11895,7 +11895,7 @@
     "proofTree": "1753d01aa909dd4181e3490c07d24287913d68a0",
     "decision": "PASS_FOCAL_SOURCE_ONLY_I3_HOLD"
   },
-  "lastUpdatedAt": "2026-10-17T13:52:33.803Z",
+  "lastUpdatedAt": "2026-10-17T13:59:10.948Z",
   "a05SourceProof": {
     "recordedAt": "2026-10-17T12:00:37.826Z",
     "productSourceSha": "2ae3971a7964c057c2cee509d308d892c8bfd23e",
@@ -12086,5 +12086,48 @@
     "deploys": 0,
     "production": false,
     "authenticApprovedDocumentProof": "PENDING_D01_D03"
+  },
+  "d01AuthorizedDocumentProof": {
+    "recordedAt": "2026-10-17T13:59:10.948Z",
+    "task": "D01",
+    "findingIds": [
+      "F10",
+      "F11"
+    ],
+    "classification": "DOCUMENT_AUTHORITY_PROVEN",
+    "project": "Cinépolis",
+    "scopeCountries": [
+      "GT",
+      "HN"
+    ],
+    "source": {
+      "driveFileId": "122rCkfD-vNgs39LwT7jGfYBVLg57ur82",
+      "title": "Instructivo Shopper.pdf",
+      "mimeType": "application/pdf",
+      "sizeBytes": 162335,
+      "driveModifiedAt": "2026-02-06T21:00:57.795Z",
+      "driveRevisionId": "0ByyeeXi-euG9MTRaS1NUbzMveWlLWjFYNWtxSDhMdHZCRUtzPQ",
+      "lastModifyingUser": "Paula Osorio",
+      "sha256": "3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454",
+      "libraryFileId": "file_0000000001b871f58e48c4876356c51b",
+      "byteParityDriveLibrary": true
+    },
+    "approval": {
+      "recoveredFromProjectConversation": true,
+      "decisionDate": "2026-02-06",
+      "decision": "Paula accepted the final transversal Guatemala/Honduras Cinépolis shopper instructive",
+      "laterSameDayCorrections": [
+        "Restroom photo only when there is a non-satisfactory item; do not require a restroom photo when all complies",
+        "All evidence photographs must be geolocated; WEB/APP technical failure requires screenshot, taquilla completion and evaluation of original digital channel"
+      ],
+      "chronologyAlignedWithFinalDriveRevision": true
+    },
+    "corroboration": {
+      "laterOperationalCommunication": "Instructivo Shopper remains the planned Cinépolis shopper document for GT/HN",
+      "legacyCertificationAuthority": "Existing operational certification bank and real completions use the same 48h/WKND/APP-fallback/maximization/VIP/geolocation/sanitary rules",
+      "legacyBankNotReusedAsD03Generation": true
+    },
+    "acceptance": "PASS_D01_AUTHORIZED_DOCUMENT_SOURCE",
+    "production": false
   }
 }
