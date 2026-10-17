@@ -961,7 +961,7 @@ jobs:
          node --check tools/qa/cxorbia-prei4-admin002-postulation-semantic-forensic.mjs
       - name: step
         run: |
-         npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
+         npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 google-auth-library@9.15.1 pdfjs-dist@3.11.174 >/dev/null 2>&1
          npx playwright install chromium >/dev/null 2>&1
       - name: step
         uses: google-github-actions/auth@v2
@@ -1524,7 +1524,7 @@ jobs:
          TOKEN="$(gcloud auth print-access-token)"
          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$FINAL_FOCAL_OUT/hosting.json"
          test "$(jq -r '.release.version.name' "$FINAL_FOCAL_OUT/hosting.json")" = "$H"
-      - name: Finance payment proof
+      - name: step
         run: |
          set -Eeuo pipefail
          STATUS="$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")"
@@ -5952,14 +5952,14 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-      - name: VRM259 badge regression
+      - name: step
         shell: bash
         run: |
          set -Eeuo pipefail
          node --check app/modules/postulaciones.js
          node --test backend/runtime/hr-live-service/test/cxorbia-vrm259-postulations-rail-badge.test.mjs | tee "$FOCAL_OUT/vrm259-postulations-rail-badge.log"
          grep -Fq "PASS_VRM259_POSTULATIONS_RAIL_BADGE_SOURCE" "$FOCAL_OUT/vrm259-postulations-rail-badge.log"
-      - name: VRM258 HR identity
+      - name: step
         shell: bash
         run: |
          set -Eeuo pipefail
@@ -6157,7 +6157,7 @@ jobs:
          curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm185preflight=$GITHUB_RUN_ID" > "$VRM185_ADMIN_OUT/hr-meta.json"
          test "$(jq -r '.revision // empty' "$VRM185_ADMIN_OUT/hr-meta.json")" = "$EXPECTED_HR_REVISION"
          echo "EXPECTED_HR_REVISION=$EXPECTED_HR_REVISION" >> "$GITHUB_ENV"
-      - name: Admin identity readback
+      - name: step
         run: |
          set -Eeuo pipefail
          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HOSTING_URL="$HOSTING_URL" SOURCE_SHA="$FOCAL_SOURCE" EXPECTED_HR_REVISION="$EXPECTED_HR_REVISION" OUT="$VRM185_ADMIN_OUT" node tools/qa/cxorbia-i3-vrm185-exact-identity-consolidation-write.mjs | tee "$VRM185_ADMIN_OUT/console.log"
@@ -6464,7 +6464,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: VRM-185/186 source and contract tests
+      - name: step
         run: |
          set -Eeuo pipefail
          mkdir -p "$VRM185_SOURCE_OUT"
@@ -6492,75 +6492,6 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
-
-  i3-d03-live-provider-proof:
-    needs: canonical-candidate-authority
-    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_I3_D03_LIVE_PROVIDER_REQUIRED' }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    env:
-      D03_OUT: .tmp/i3-d03-live
-      D03_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
-      D03_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
-      D03_DRIVE_FILE_ID: '122rCkfD-vNgs39LwT7jGfYBVLg57ur82'
-      D03_SOURCE_SHA256: '3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454'
-      D03_RUNTIME_REVISION: 'cxorbia-live-hr-dev-00308-rsj'
-      D03_RUNTIME_DIGEST: 'sha256:62fea622667e834d021d813d1104d60c292b3071a7076b0ed9ac22d843f022ad'
-      D03_HOSTING_VERSION: 'sites/cxorbia-backend-dev/versions/b580d0ef5f0a69dd'
-    steps:
-      - uses: actions/checkout@v4
-        with: {fetch-depth: 0}
-      - uses: actions/setup-node@v4
-        with: {node-version: '24'}
-      - name: D03 exact same-artifact preflight
-        shell: bash
-        run: |
-          set -Eeuo pipefail
-          mkdir -p "$D03_OUT"
-          test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$D03_SOURCE"
-          test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$D03_TREE"
-          test "$(jq -r '.currentMaterialization.sourceSha' "$CANDIDATE_DESCRIPTOR")" = "$D03_SOURCE"
-          test "$(jq -r '.currentMaterialization.sourceTree' "$CANDIDATE_DESCRIPTOR")" = "$D03_TREE"
-          test "$(jq -r '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")" = "$D03_RUNTIME_REVISION"
-          test "$(jq -r '.currentMaterialization.runtimeDigest' "$CANDIDATE_DESCRIPTOR")" = "$D03_RUNTIME_DIGEST"
-          test "$(jq -r '.currentMaterialization.hostingVersion' "$CANDIDATE_DESCRIPTOR")" = "$D03_HOSTING_VERSION"
-          test "$(jq -r '.currentMaterialization.production' "$CANDIDATE_DESCRIPTOR")" = "false"
-          git diff --quiet "$D03_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
-          node --check .github/control/CXORBIA_I3_D03_LIVE_PROVIDER_20261017.mjs
-      - name: Install bounded D03 proof dependencies
-        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 google-auth-library@9.15.1 pdfjs-dist@3.11.174 >/dev/null 2>&1
-      - uses: google-github-actions/auth@v2
-        with:
-          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-      - uses: google-github-actions/setup-gcloud@v2
-        with:
-          project_id: ${{ env.PROJECT }}
-      - name: Verify served D03 artifact
-        shell: bash
-        run: |
-          set -Eeuo pipefail
-          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$D03_OUT/runtime.json"
-          test "$(jq -r '.status.latestReadyRevisionName' "$D03_OUT/runtime.json")" = "$D03_RUNTIME_REVISION"
-          gcloud run revisions describe "$D03_RUNTIME_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$D03_OUT/revision.json"
-          RAW="$(jq -r '.status.imageDigest // empty' "$D03_OUT/revision.json")"
-          if [[ "$RAW" == sha256:* ]]; then DIGEST="$RAW"; else DIGEST="$(printf '%s' "$RAW"|sed 's/.*@sha256:/sha256:/')"; fi
-          test "$DIGEST" = "$D03_RUNTIME_DIGEST"
-          TOKEN="$(gcloud auth print-access-token)"
-          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$D03_OUT/hosting.json"
-          test "$(jq -r '.release.version.name' "$D03_OUT/hosting.json")" = "$D03_HOSTING_VERSION"
-      - name: D03 private-source access and live Vertex proof
-        run: node .github/control/CXORBIA_I3_D03_LIVE_PROVIDER_20261017.mjs
-      - if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: cxorbia-i3-d03-live-provider-${{ github.run_id }}
-          path: ${{ env.D03_OUT }}
-          if-no-files-found: error
-          retention-days: 30
-          compression-level: 0
-          include-hidden-files: true
-      - if: always()
-        run: rm -rf node_modules
 
   phasea-rejected-checkpoint-source-proof:
     needs: canonical-candidate-authority
@@ -6621,7 +6552,7 @@ jobs:
 
   phasea-representative-same-artifact-live-reproof:
     needs: canonical-candidate-authority
-    if: ${{ contains(fromJSON('["HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED","HOLD_I3_SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF_REQUIRED","HOLD_B1_IDENTITY_LIVE_READBACK_REQUIRED","HOLD_B1_LIVE_E2E_REQUIRED","HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED","HOLD_I3_B7_TWO_ROLE_DECISION_LIVE_DEV_REQUIRED","HOLD_I3_GT_E2E"]'), needs.canonical-candidate-authority.outputs.status) }}
+    if: ${{ contains(fromJSON('["HOLD_REJECTED_PHASEA_SAME_ARTIFACT_LIVE_REPROOF_REQUIRED","HOLD_I3_SAME_ARTIFACT_ACCUMULATIVE_P0_REPROOF_REQUIRED","HOLD_B1_IDENTITY_LIVE_READBACK_REQUIRED","HOLD_B1_LIVE_E2E_REQUIRED","HOLD_I3_PHASEA_CUMULATIVE_LIVE_E2E_REQUIRED","HOLD_I3_B7_TWO_ROLE_DECISION_LIVE_DEV_REQUIRED","HOLD_I3_GT_E2E","HOLD_I3_D03_LIVE_PROVIDER_REQUIRED"]'), needs.canonical-candidate-authority.outputs.status) }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     env:
@@ -6637,7 +6568,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Exact source and control preflight
+      - name: step
         shell: bash
         run: |
          set -Eeuo pipefail
@@ -6649,7 +6580,7 @@ jobs:
          node --check tools/qa/cxorbia-i3-phasea-representative-live-reproof.mjs
          node --check tools/qa/cxorbia-i3-phasea-exhaustive-click-visual.mjs
          node --check tools/qa/cxorbia-i3-admin-cluster-a-postulations-live.mjs
-      - name: Install live proof dependencies
+      - name: step
         run: |
          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
          npx playwright install chromium >/dev/null 2>&1
@@ -6657,7 +6588,7 @@ jobs:
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
       - uses: google-github-actions/setup-gcloud@v2
-      - name: Verify DEV artifact
+      - name: step
         shell: bash
         run: |
          set -Eeuo pipefail
@@ -6706,11 +6637,12 @@ jobs:
          EXPECTED_HR_REVISION="$(jq -r .revision "$P/hr-meta-1.json")"
          [[ "$EXPECTED_HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
          echo "EXPECTED_HR_REVISION=$EXPECTED_HR_REVISION" >> "$GITHUB_ENV"
-      - name: Population live reproof
+      - name: step
         shell: bash
         run: |
          set -Eeuo pipefail
          P="$PHASEA_LIVE_OUT"
+         if [ "$(jq -r .status "$CANDIDATE_DESCRIPTOR")" = "HOLD_I3_D03_LIVE_PROVIDER_REQUIRED" ]; then D03_OUT="$P/d03" node .github/control/CXORBIA_I3_D03_LIVE_PROVIDER_20261017.mjs; test "$(jq -r .decision "$P/d03/result.json")" = "PASS_I3_D03_LIVE_VERTEX_PENDING_REVIEW"; exit 0; fi
          if [ "$(jq -r .activeBlocker "$CANDIDATE_DESCRIPTOR")" = "R20_SINGLE_CREDENTIAL_READONLY_REQUIRED" ]; then node tools/qa/cxorbia-i3-r20-ordinary-password-single-readonly.mjs; exit 0; fi
          if [ "$(jq -r .activeBlocker "$CANDIDATE_DESCRIPTOR")" = "R08_FINANCE_PROVENANCE_READONLY_REQUIRED" ]; then node --check tools/qa/cxorbia-i3-r08-finance-provenance-readonly.mjs; R08_FINANCE_OUT="$P/r08-finance" node tools/qa/cxorbia-i3-r08-finance-provenance-readonly.mjs; exit 0; fi
          if [ "$(jq -r '.status' "$CANDIDATE_DESCRIPTOR")" = "HOLD_I3_B7_TWO_ROLE_DECISION_LIVE_DEV_REQUIRED" ]; then
@@ -6764,7 +6696,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Install focal live proof dependencies
+      - name: step
         run: |
          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
          npx playwright install chromium >/dev/null 2>&1
@@ -6774,7 +6706,7 @@ jobs:
       - uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT }}
-      - name: Same-artifact VRM267 focal trace
+      - name: step
         run: |
          set -Eeuo pipefail
          mkdir -p "$VRM267_OUT"
@@ -6814,7 +6746,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Preflight exact unchanged DEV artifact
+      - name: step
         shell: bash
         run: |
          set -Eeuo pipefail
@@ -6824,12 +6756,12 @@ jobs:
          test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
          git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
          node --check tools/qa/cxorbia-i3-julissa-identity-topology-readonly.mjs
-      - name: Install read-only diagnostic dependencies
+      - name: step
         run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
       - uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-      - name: Read-only exact Julissa topology
+      - name: step
         shell: bash
         run: |
          set -Eeuo pipefail
@@ -6862,7 +6794,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Run1053 DEV check
+      - name: step
         shell: bash
         run: |
          set -Eeuo pipefail
@@ -6874,7 +6806,7 @@ jobs:
          test "$(jq -r '.currentMaterialization.runId' "$CANDIDATE_DESCRIPTOR")" = "37163417722"
          test "$(jq -r '.currentMaterialization.artifactId' "$CANDIDATE_DESCRIPTOR")" = "11287919545"
          node --check tools/qa/cxorbia-i3-vrm214-julissa-identity-adjudication-write.mjs
-      - name: Install exact writer dependencies
+      - name: step
         run: |
          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
          npx playwright install chromium >/dev/null 2>&1
@@ -6882,7 +6814,7 @@ jobs:
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
       - uses: google-github-actions/setup-gcloud@v2
-      - name: Verify runtime Hosting HR
+      - name: step
         shell: bash
         run: |
          set -Eeuo pipefail
@@ -6902,7 +6834,7 @@ jobs:
          curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm214preflight=$GITHUB_RUN_ID" > "$JULISSA_WRITE_OUT/hr-meta.json"
          test "$(jq -r '.revision' "$JULISSA_WRITE_OUT/hr-meta.json")" = "$EXPECTED_HR_REVISION"
          echo "EXPECTED_HR_REVISION=$EXPECTED_HR_REVISION" >> "$GITHUB_ENV"
-      - name: Julissa adjudication readback
+      - name: step
         shell: bash
         run: |
          set -Eeuo pipefail
@@ -6944,7 +6876,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Preflight materialization
+      - name: step
         shell: bash
         run: |
          set -Eeuo pipefail
@@ -6959,7 +6891,7 @@ jobs:
          git diff --quiet "$FOCAL_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
          node --check tools/qa/cxorbia-i3-vrm215-shopper-population-live-reproof.mjs
          node --check tools/qa/cxorbia-i3-vrm217-219-population-root-diagnostic.mjs
-      - name: Install population-proof dependencies
+      - name: step
         run: |
          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
          npx playwright install chromium >/dev/null 2>&1
@@ -6967,7 +6899,7 @@ jobs:
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
       - uses: google-github-actions/setup-gcloud@v2
-      - name: Verify immutable DEV fingerprints
+      - name: step
         shell: bash
         run: |
          set -Eeuo pipefail
@@ -6993,7 +6925,7 @@ jobs:
          jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .shopperReconciliation.providerAck==true and .visitReconciliation.providerAck==true and .refreshError==null and .visits==748 and .periods==17 and .writes==false and .hrWrites==false and .imports==false and .production==false' "$VRM215_OUT/hr-meta-1.json" >/dev/null
          jq -e '.ok==true and .revisionStable==true and .sourceSafe==true and .shopperReconciliation.providerAck==true and .visitReconciliation.providerAck==true and .refreshError==null and .writes==false and .hrWrites==false and .imports==false and .production==false' "$VRM215_OUT/hr-meta-2.json" >/dev/null
          echo "EXPECTED_HR_REVISION=$LIVE_HR_REVISION" >> "$GITHUB_ENV"
-      - name: VRM243 root semantics
+      - name: step
         shell: bash
         run: |
          set -Eeuo pipefail
@@ -7008,7 +6940,7 @@ jobs:
          test "$(jq '[.operationalAliasReferences.certifications, .operationalAliasReferences.liquidations, .operationalAliasReferences.postulations, .operationalAliasReferences.reservations] | add' "$ROOT_OUT/result.json")" = "0"
          test "$(jq -r '.writes' "$ROOT_OUT/result.json")" = "0"
          test "$(jq -r '.production' "$ROOT_OUT/result.json")" = "false"
-      - name: Prove HN exact shopper readiness
+      - name: step
         shell: bash
         run: |
          set -Eeuo pipefail
@@ -7057,7 +6989,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Exact Run1079 preflight
+      - name: step
         shell: bash
         run: |
          set -Eeuo pipefail
@@ -7074,7 +7006,7 @@ jobs:
       - uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-      - name: Provider readback
+      - name: step
         shell: bash
         run: |
          set -Eeuo pipefail
@@ -7123,7 +7055,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Run1079 preflight
+      - name: step
         run: |
          set -Eeuo pipefail
          mkdir -p "$VRM219_OUT" "$VRM219_INPUT"
@@ -7137,7 +7069,7 @@ jobs:
          test "$(jq -r '.currentMaterialization.artifactId' "$CANDIDATE_DESCRIPTOR")" = "11297569172"
          node --check tools/qa/cxorbia-i3-vrm219-exact-alias-remap.mjs
          node --check tools/qa/cxorbia-i3-vrm217-219-population-root-diagnostic.mjs
-      - name: Run1083 mapping
+      - name: step
         uses: actions/download-artifact@v4
         with:
           name: cxorbia-vrm217-219-population-root-37190025557
@@ -7145,7 +7077,7 @@ jobs:
           github-token: ${{ github.token }}
           repository: ${{ github.repository }}
           run-id: 37190025557
-      - name: Verify trusted mapping artifact
+      - name: step
         run: |
          set -Eeuo pipefail
          test -f "$VRM219_INPUT/result.json"
@@ -7161,7 +7093,7 @@ jobs:
          test "$(jq -r '.residualEvidence.aliasVsDeclaredCanonical.links[0].authorityType' "$VRM219_INPUT/result.json")" = "tenant_adjudication"
          test "$(jq -r '.operationalAliasReferences.liquidations' "$VRM219_INPUT/result.json")" = "4"
          test "$(jq -r '.visits.ambiguousAuthorityGroups' "$VRM219_INPUT/result.json")" = "0"
-      - name: Install bounded repair dependencies
+      - name: step
         run: |
          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
          npx playwright install chromium >/dev/null 2>&1
@@ -7171,7 +7103,7 @@ jobs:
       - uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT }}
-      - name: Verify DEV and HR
+      - name: step
         run: |
          set -Eeuo pipefail
          EXPECTED_RUNTIME="$(jq -r '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")"
@@ -7190,7 +7122,7 @@ jobs:
          curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&vrm219=$GITHUB_RUN_ID" > "$VRM219_OUT/hr-meta.json"
          test "$(jq -r '.revision' "$VRM219_OUT/hr-meta.json")" = "$EXPECTED_HR"
          echo "EXPECTED_HR=$EXPECTED_HR" >> "$GITHUB_ENV"
-      - name: Execute bounded exact-alias remap only
+      - name: step
         run: |
          set -Eeuo pipefail
          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" HOSTING_URL="$HOSTING_URL" EXPECTED_HR_REVISION="$EXPECTED_HR" VRM219_DIAGNOSTIC="$VRM219_INPUT/result.json" VRM219_OUT="$VRM219_OUT" node tools/qa/cxorbia-i3-vrm219-exact-alias-remap.mjs | tee "$VRM219_OUT/console.log"
@@ -7201,7 +7133,7 @@ jobs:
          test "$(jq -r '.hrWrites' "$VRM219_OUT/result.json")" = "0"
          test "$(jq -r '.externalWrites' "$VRM219_OUT/result.json")" = "0"
          test "$(jq -r '.production' "$VRM219_OUT/result.json")" = "false"
-      - name: Read-only population post-readback
+      - name: step
         run: |
          set -Eeuo pipefail
          mkdir -p "$VRM219_OUT/post"
@@ -7243,7 +7175,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Verify VRM221 artifact
+      - name: step
         shell: bash
         run: |
          set -Eeuo pipefail
@@ -7258,7 +7190,7 @@ jobs:
       - uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-      - name: Read-only exact topology diagnostic
+      - name: step
         shell: bash
         run: |
          set -Eeuo pipefail
@@ -7292,7 +7224,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Exact current DEV lifecycle preflight
+      - name: step
         shell: bash
         run: |
          set -Eeuo pipefail
@@ -7304,7 +7236,7 @@ jobs:
          test "$(jq -r '.currentMaterialization.runId // 0' "$CANDIDATE_DESCRIPTOR")" -gt 0
          test "$(jq -r '.currentMaterialization.artifactId // 0' "$CANDIDATE_DESCRIPTOR")" -gt 0
          node --check tools/qa/cxorbia-i3-admin-cluster-a-postulations-live.mjs
-      - name: Install bounded lifecycle dependencies
+      - name: step
         run: |
          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
          npx playwright install chromium >/dev/null 2>&1
@@ -7314,7 +7246,7 @@ jobs:
       - uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ env.PROJECT }}
-      - name: Verify exact DEV fingerprints
+      - name: step
         shell: bash
         run: |
          set -Eeuo pipefail
@@ -7334,7 +7266,7 @@ jobs:
          curl -fsS --retry 8 -H 'Cache-Control: no-cache, no-store, max-age=0' "$HOSTING_URL/api/$TENANT_ID/$PROJECT_ID/hr-live?format=meta&adminapost=$GITHUB_RUN_ID" > "$ADMIN_A_POST_OUT/hr-meta.json"
          test "$(jq -r '.revision' "$ADMIN_A_POST_OUT/hr-meta.json")" = "$EXPECTED_HR"
          echo "EXPECTED_HR_REVISION=$EXPECTED_HR" >> "$GITHUB_ENV"
-      - name: Postulations lifecycle
+      - name: step
         shell: bash
         run: |
          set -Eeuo pipefail
@@ -7377,7 +7309,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Exact two-owner source proof
+      - name: step
         run: node control/qa/cxorbia-vrm249-reservations-read-model-source-reproof.mjs
       - if: always()
         uses: actions/upload-artifact@v4
@@ -7405,7 +7337,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Verify B1 DEV artifact
+      - name: step
         run: |
          set -Eeuo pipefail
          test "$(git rev-parse "$FOCAL_SOURCE^{tree}")" = "$FOCAL_TREE"
@@ -7413,7 +7345,7 @@ jobs:
          test "$(jq -r '.currentMaterialization.sourceTree' "$CANDIDATE_DESCRIPTOR")" = "$FOCAL_TREE"
          test "$(jq -r '.production' "$CANDIDATE_DESCRIPTOR")" = "DO_NOT_TOUCH"
          node --check tools/qa/cxorbia-i3-b1-oct07-authenticated-readonly.mjs
-      - name: Install test browser
+      - name: step
         run: |
          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.56.1 >/dev/null 2>&1
          npx playwright install chromium >/dev/null 2>&1
@@ -7423,7 +7355,7 @@ jobs:
       - uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: cxorbia-backend-dev
-      - name: B1 visual identity proof
+      - name: step
         run: |
          set -Eeuo pipefail
          export EXPECTED_HR_REVISION="$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")"
