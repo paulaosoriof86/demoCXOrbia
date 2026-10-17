@@ -6493,6 +6493,75 @@ jobs:
           retention-days: 30
           compression-level: 0
 
+  i3-d03-live-provider-proof:
+    needs: canonical-candidate-authority
+    if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_I3_D03_LIVE_PROVIDER_REQUIRED' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      D03_OUT: .tmp/i3-d03-live
+      D03_SOURCE: ${{ needs.canonical-candidate-authority.outputs.source_sha }}
+      D03_TREE: ${{ needs.canonical-candidate-authority.outputs.source_tree }}
+      D03_DRIVE_FILE_ID: '122rCkfD-vNgs39LwT7jGfYBVLg57ur82'
+      D03_SOURCE_SHA256: '3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454'
+      D03_RUNTIME_REVISION: 'cxorbia-live-hr-dev-00308-rsj'
+      D03_RUNTIME_DIGEST: 'sha256:62fea622667e834d021d813d1104d60c292b3071a7076b0ed9ac22d843f022ad'
+      D03_HOSTING_VERSION: 'sites/cxorbia-backend-dev/versions/b580d0ef5f0a69dd'
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: D03 exact same-artifact preflight
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$D03_OUT"
+          test "$(jq -r '.productSourceSha' "$CANDIDATE_DESCRIPTOR")" = "$D03_SOURCE"
+          test "$(jq -r '.productTreeAuthority' "$CANDIDATE_DESCRIPTOR")" = "$D03_TREE"
+          test "$(jq -r '.currentMaterialization.sourceSha' "$CANDIDATE_DESCRIPTOR")" = "$D03_SOURCE"
+          test "$(jq -r '.currentMaterialization.sourceTree' "$CANDIDATE_DESCRIPTOR")" = "$D03_TREE"
+          test "$(jq -r '.currentMaterialization.runtimeRevision' "$CANDIDATE_DESCRIPTOR")" = "$D03_RUNTIME_REVISION"
+          test "$(jq -r '.currentMaterialization.runtimeDigest' "$CANDIDATE_DESCRIPTOR")" = "$D03_RUNTIME_DIGEST"
+          test "$(jq -r '.currentMaterialization.hostingVersion' "$CANDIDATE_DESCRIPTOR")" = "$D03_HOSTING_VERSION"
+          test "$(jq -r '.currentMaterialization.production' "$CANDIDATE_DESCRIPTOR")" = "false"
+          git diff --quiet "$D03_SOURCE" HEAD -- app backend firebase.json .firebaserc firestore.rules storage.rules tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          node --check .github/control/CXORBIA_I3_D03_LIVE_PROVIDER_20261017.mjs
+      - name: Install bounded D03 proof dependencies
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 google-auth-library@9.15.1 pdfjs-dist@3.11.174 >/dev/null 2>&1
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT }}
+      - name: Verify served D03 artifact
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$D03_OUT/runtime.json"
+          test "$(jq -r '.status.latestReadyRevisionName' "$D03_OUT/runtime.json")" = "$D03_RUNTIME_REVISION"
+          gcloud run revisions describe "$D03_RUNTIME_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$D03_OUT/revision.json"
+          RAW="$(jq -r '.status.imageDigest // empty' "$D03_OUT/revision.json")"
+          if [[ "$RAW" == sha256:* ]]; then DIGEST="$RAW"; else DIGEST="$(printf '%s' "$RAW"|sed 's/.*@sha256:/sha256:/')"; fi
+          test "$DIGEST" = "$D03_RUNTIME_DIGEST"
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$D03_OUT/hosting.json"
+          test "$(jq -r '.release.version.name' "$D03_OUT/hosting.json")" = "$D03_HOSTING_VERSION"
+      - name: D03 private-source access and live Vertex proof
+        run: node .github/control/CXORBIA_I3_D03_LIVE_PROVIDER_20261017.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-d03-live-provider-${{ github.run_id }}
+          path: ${{ env.D03_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+          include-hidden-files: true
+      - if: always()
+        run: rm -rf node_modules
+
   phasea-rejected-checkpoint-source-proof:
     needs: canonical-candidate-authority
     if: ${{ needs.canonical-candidate-authority.outputs.status=='HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED' }}
