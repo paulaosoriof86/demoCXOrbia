@@ -4,16 +4,16 @@
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "productSourceSha": "49c2b842ebf68224439e061b5ab2043a3cec4740",
-  "productTreeAuthority": "80e7beaacc9d811d637dac16cb1fdd51217b1fd9",
-  "predecessorProductSourceSha": "80ada5c4f8bf6301345f5053541e74178287326b",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V442_2026-10-17.json",
-  "findingsLedgerExpectedGitBlob": "5ca9c0feaef648dc9b5f5d9cb8d5673fb9c39d19",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261017-V120.json",
+  "productSourceSha": "4f35c21bceaee6ec58390cdc1f3a8b11309c6bfb",
+  "productTreeAuthority": "bcc2a0e98e6f65eb09430a091007e80a22427ab3",
+  "predecessorProductSourceSha": "49c2b842ebf68224439e061b5ab2043a3cec4740",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V443_2026-10-17.json",
+  "findingsLedgerExpectedGitBlob": "1ca52e9aa710f0ac489efba55aba4fa2299556a7",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261017-V121.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "A04_C01_SOURCE_QA_PENDING__G05_A05_ATOMIC_READ_P0__D02_PARSER_PENDING",
+  "activeBlocker": "A05_ATOMIC_SESSION_PUBLICATION_P0__SCOPED_DEV_LIVE_PROOF_PENDING__D02_PARSER_PENDING",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Read back the single canonical ref and collect existing source QA. Continue G05/A05 in proven owners before refresh-dependent DEV/live proof; D02 remains an independent authorized owner. Preserve all unrelated accepted scopes.",
+  "exactNextAction": "Read back the single canonical ref and existing source QA for G05, then implement A05 atomic off-state preparation and session-bound publication in its proven owners. G05 source proof does not certify DEV, authentication or the full I3 closure. D02 remains pending. Preserve accepted independent scopes.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -609,7 +609,7 @@
     "decision": "Mishael De Paz nonexistent; Milton De Paz canonical",
     "authorityType": "tenant_adjudication"
   },
-  "productSourceTree": "80e7beaacc9d811d637dac16cb1fdd51217b1fd9",
+  "productSourceTree": "bcc2a0e98e6f65eb09430a091007e80a22427ab3",
   "lastLiveReproof": {
     "runId": 37038509911,
     "runNumber": 866,
@@ -1040,12 +1040,14 @@
     "production": false
   },
   "pendingMaterialization": {
-    "sourceSha": "49c2b842ebf68224439e061b5ab2043a3cec4740",
+    "sourceSha": "4f35c21bceaee6ec58390cdc1f3a8b11309c6bfb",
+    "sourceTree": "bcc2a0e98e6f65eb09430a091007e80a22427ab3",
     "blockedBy": [
-      "G05",
-      "A05"
+      "A05",
+      "SCOPED_REAL_PROVIDER_AND_AUTHENTICATION_PROOF"
     ],
-    "state": "SOURCE_ONLY_NO_DEV_REQUEST"
+    "state": "SOURCE_ONLY_NO_DEV_REQUEST",
+    "production": false
   },
   "lastVrm080Proof": {
     "runId": 36333245670,
@@ -2771,7 +2773,7 @@
     ],
     "production": false
   },
-  "moduleTruthExpectedGitBlob": "46717e0e7f8a3b3243d5bb4c363864dbd7a1a138",
+  "moduleTruthExpectedGitBlob": "3268434985e326cd6cde24cbfca47457e582de58",
   "humanAcceptanceForensicReadback": {
     "runId": 37049822507,
     "jobId": 110980211939,
@@ -10471,17 +10473,33 @@
     "gate21": "PENDING"
   },
   "currentSourceFocal": {
-    "finding": "R05",
-    "secondaryRegression": "R06",
-    "owner": "app/modules/postulaciones.js",
-    "beforeBlob": "65113fe3ffb964020e87b67786a36632a345daf7",
-    "afterBlob": "bca634a11d64ab05e5ffb9f34ff1887f94bece0a",
-    "sourceSha": "516f26ee75b644ad10d3a1d6093f24b91d347736",
-    "sourceTree": "9dbc266db267e70247e04386c549715ed4bd5882",
-    "previousProductSource": "5b13468fc3999f0c8e49982954a8733cf2728e96",
-    "proof": "6_OF_6_SOURCE_HELPER_CHECKS_PASS_4_NODE_REGRESSION_TESTS_PENDING_CI",
-    "behavior": "exactly one Postulaciones modal from 18 callsites, preserves each modal options and unified assignment filters",
-    "phase": "SOURCE_FIXED_PENDING_DEV",
+    "task": "G05",
+    "finding": "F06",
+    "owners": [
+      "backend/runtime/hr-live-service/server.mjs",
+      "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+      "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+      "app/core/backend-hr-source-bridge.js",
+      "app/modules/hr-source.js"
+    ],
+    "sourceSha": "4f35c21bceaee6ec58390cdc1f3a8b11309c6bfb",
+    "sourceTree": "bcc2a0e98e6f65eb09430a091007e80a22427ab3",
+    "receiptPath": "CXORBIA_I3_G05_CANONICAL_INTEGRATION_2026-10-17.json",
+    "finalReceiptPath": "CXORBIA_I3_G05_CANONICAL_SOURCE_PROOF_2026-10-17.json",
+    "sourceProof": {
+      "stage": "SOURCE_PROVEN_LOCAL_PENDING_CANONICAL_CI_DEV_E2E",
+      "localG05Pass": 113,
+      "localG05Fail": 0,
+      "localScopedTotalPass": 190,
+      "localScopedTotalFail": 0,
+      "localScope": "SYNTHETIC_SOURCE_NO_NETWORK_NO_REAL_APPLICATION_PROVIDER",
+      "sourceQa": "PENDING_EXISTING_CANONICAL_LANE",
+      "finalReadbackReceiptPath": "CXORBIA_I3_G05_CANONICAL_SOURCE_PROOF_2026-10-17.json",
+      "devMaterialized": false,
+      "liveE2e": "NOT_EXECUTED",
+      "humanApproval": "NOT_REQUESTED"
+    },
+    "phase": "SOURCE_PROVEN_PENDING_DEV_A05",
     "production": false
   },
   "latestDevE2E": {
@@ -11757,6 +11775,40 @@
       "production": false
     },
     "sourceQa": "PENDING_EXISTING_LANE",
+    "liveE2e": "NOT_EXECUTED",
+    "newPreviewReady": false
+  },
+  "previousCurrentSourceFocalBeforeG05": {
+    "finding": "R05",
+    "secondaryRegression": "R06",
+    "owner": "app/modules/postulaciones.js",
+    "beforeBlob": "65113fe3ffb964020e87b67786a36632a345daf7",
+    "afterBlob": "bca634a11d64ab05e5ffb9f34ff1887f94bece0a",
+    "sourceSha": "516f26ee75b644ad10d3a1d6093f24b91d347736",
+    "sourceTree": "9dbc266db267e70247e04386c549715ed4bd5882",
+    "previousProductSource": "5b13468fc3999f0c8e49982954a8733cf2728e96",
+    "proof": "6_OF_6_SOURCE_HELPER_CHECKS_PASS_4_NODE_REGRESSION_TESTS_PENDING_CI",
+    "behavior": "exactly one Postulaciones modal from 18 callsites, preserves each modal options and unified assignment filters",
+    "phase": "SOURCE_FIXED_PENDING_DEV",
+    "production": false
+  },
+  "g05CanonicalIntegration20261017": {
+    "receiptPath": "CXORBIA_I3_G05_CANONICAL_INTEGRATION_2026-10-17.json",
+    "sourceSha": "4f35c21bceaee6ec58390cdc1f3a8b11309c6bfb",
+    "tree": "bcc2a0e98e6f65eb09430a091007e80a22427ab3",
+    "proof": {
+      "stage": "SOURCE_PROVEN_LOCAL_PENDING_CANONICAL_CI_DEV_E2E",
+      "localG05Pass": 113,
+      "localG05Fail": 0,
+      "localScopedTotalPass": 190,
+      "localScopedTotalFail": 0,
+      "localScope": "SYNTHETIC_SOURCE_NO_NETWORK_NO_REAL_APPLICATION_PROVIDER",
+      "sourceQa": "PENDING_EXISTING_CANONICAL_LANE",
+      "finalReadbackReceiptPath": "CXORBIA_I3_G05_CANONICAL_SOURCE_PROOF_2026-10-17.json",
+      "devMaterialized": false,
+      "liveE2e": "NOT_EXECUTED",
+      "humanApproval": "NOT_REQUESTED"
+    },
     "liveE2e": "NOT_EXECUTED",
     "newPreviewReady": false
   }

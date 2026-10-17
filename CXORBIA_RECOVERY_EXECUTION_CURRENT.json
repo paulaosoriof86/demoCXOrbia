@@ -7,9 +7,9 @@
   "state": "HOLD",
   "production": "DO_NOT_TOUCH",
   "authorizationI4": false,
-  "productSourceSha": "49c2b842ebf68224439e061b5ab2043a3cec4740",
-  "productTree": "80e7beaacc9d811d637dac16cb1fdd51217b1fd9",
-  "controlParentSha": "5bbf7fef322d2226b07946a2aa2298934ea4efa5",
+  "productSourceSha": "4f35c21bceaee6ec58390cdc1f3a8b11309c6bfb",
+  "productTree": "bcc2a0e98e6f65eb09430a091007e80a22427ab3",
+  "controlParentSha": "ec0e981d495a8151d67d172e2c205dae31ee8c88",
   "initialExecutionReceipt": {
     "kind": "CONTROL_AND_ISOLATED_REPRODUCTIONS_ONLY",
     "executed": [
@@ -30,44 +30,29 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_A04_C01_CANONICAL_READBACK_RUN1729_2026-10-17.json",
-    "kind": "CANONICAL_INTEGRATION_READBACK_VERIFIED_SOURCE_QA_PASS_DEV_LIVE_PENDING",
+    "path": "CXORBIA_I3_G05_CANONICAL_INTEGRATION_2026-10-17.json",
+    "kind": "G05_SOURCE_PROVEN_EXACT_GIT_OBJECTS_CREATED_CANONICAL_CAS_CI_PENDING",
     "tasks": [
-      "A04",
-      "C01",
-      "G04"
+      "G05"
     ],
-    "sourceSha": "49c2b842ebf68224439e061b5ab2043a3cec4740",
-    "productTree": "80e7beaacc9d811d637dac16cb1fdd51217b1fd9",
-    "proofControlSha": "ba0d0c4cca4fa4962fd002e09d8d4a6143e80c15",
-    "proofControlTree": "3b40dbd064bc5c47f2e15f12141698bbe7b02dd4",
-    "canonicalReadback": "PASS",
-    "sourceQa": {
-      "runNumber": 1729,
-      "runId": 39018865109,
-      "attempt": 1,
-      "conclusion": "success",
-      "focalPass": 19,
-      "canonicalIdentityPass": 7,
-      "neighborPass": 57,
-      "sourceTotalPass": 83,
-      "sourceTotalFail": 0,
-      "authorityPass": 189,
-      "authorityFail": 0
-    },
-    "liveE2e": "NOT_EXECUTED",
+    "sourceSha": "4f35c21bceaee6ec58390cdc1f3a8b11309c6bfb",
+    "productTree": "bcc2a0e98e6f65eb09430a091007e80a22427ab3",
+    "productOwners": 5,
+    "qaFiles": 4,
+    "focalPass": 113,
+    "localScopedTotalPass": 190,
+    "realProviderDevProof": "NOT_EXECUTED",
     "realApplicationProviderWrites": 0,
     "deploys": 0,
-    "newReadyPreviews": [],
-    "newlyFixedLiveModules": [],
-    "newlyFunctionallyClosedI3Tasks": 0
+    "newlyFunctionallyClosedI3Tasks": 0,
+    "newReadyPreviews": []
   },
   "taskProgress": {
     "G01": "IN_PROGRESS_COVERAGE_CUSTODIED_AUTHORITY_GAPS_RETAINED_IN_G03",
     "G02": "DIRECT_NATIVE_GITHUB_WRITE_READBACK_AND_EXISTING_CI_PROVEN_NO_TINYFISH_REQUIRED",
     "G03": "PENDING_NO_NEW_GENERAL_AUDIT",
-    "G04": "FOCAL_AND_NEIGHBOR_SOURCE_QA_PASS_RUN1729_PARTIAL_TASK_COVERAGE_ONLY",
-    "G05": "PERSISTENCE_FAILURE_F06_SOURCE_REPRODUCED_PROVEN_OWNER_REPAIR_NOT_IMPLEMENTED",
+    "G04": "RUN1729_PROOF_PRESERVED_G05_113_FOCAL_ADDED_EXISTING_CI_PENDING",
+    "G05": "SOURCE_PROVEN_LOCAL_113_FOCAL_CANONICAL_REF_AND_REMOTE_QA_PENDING",
     "G06": "IN_PROGRESS_FROZEN_QUEUE_SINGLE_WRITER",
     "A04": "SOURCE_PROVEN_CANONICAL_RUN1729_DEV_LIVE_AND_DEPENDENCY_PROOF_PENDING",
     "C01": "SOURCE_PROVEN_CANONICAL_RUN1729_DEV_LIVE_PROVIDER_READBACK_AND_DEPENDENCY_PROOF_PENDING",
@@ -90,7 +75,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Start G05 with a fresh canonical HEAD/tree readback and owner allowlist. Add red tests for safe observation and the authorized writer, implement the smallest complete correction preserving automatic upsert and truthful receipts, then run focal source QA. Proceed to A05 on the same serial branch. Do not invoke refresh-dependent real DEV proof until these conditions are met.",
+  "nextExactAction": "Read back the single canonical ref and existing source QA for G05, then implement A05 atomic off-state preparation and session-bound publication in its proven owners. G05 source proof does not certify DEV, authentication or the full I3 closure. D02 remains pending. Preserve accepted independent scopes.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -133,7 +118,7 @@
     "newlyFixedLiveModules": [],
     "newReadyPreviews": []
   },
-  "lastUpdatedAt": "2026-10-17T09:04:43.163Z",
+  "lastUpdatedAt": "2026-10-17T10:30:48.961313+00:00",
   "previousExecutionReceiptBeforeRun1729": {
     "path": "CXORBIA_I3_A04_C01_CANONICAL_INTEGRATION_2026-10-17.json",
     "kind": "EXACT_NATIVE_GIT_OBJECTS_PREPARED_SINGLE_CANONICAL_CAS_PENDING",
@@ -156,6 +141,78 @@
     "newReadyPreviews": []
   },
   "progressByStage": {
+    "blockTasks": [
+      "G05"
+    ],
+    "preparedAndLocallyTested": {
+      "numerator": 1,
+      "denominator": 1,
+      "percent": 100
+    },
+    "incorporatedCanonical": {
+      "numerator": 0,
+      "denominator": 1,
+      "percent": 0
+    },
+    "remoteSourceQaProven": {
+      "numerator": 0,
+      "denominator": 1,
+      "percent": 0
+    },
+    "realProviderDevProven": {
+      "numerator": 0,
+      "denominator": 1,
+      "percent": 0
+    },
+    "i3SourceRepairStage": {
+      "numerator": 3,
+      "denominator": 63,
+      "percent": 4.76,
+      "meaning": "Prepared source repairs A04/C01/G05 only; not global product progress or functional closure"
+    },
+    "newlyFunctionallyClosedI3Tasks": 0,
+    "newReadyPreviews": 0,
+    "newHumanApprovals": 0
+  },
+  "nextDiagnosisPath": null,
+  "nextUserAuthorizationRequired": false,
+  "primaryExecutionRoute": "DIRECT_NATIVE_GITHUB_SINGLE_WRITER",
+  "tinyFishRequiredForThisAction": false,
+  "receiptControlParentSha": "ba0d0c4cca4fa4962fd002e09d8d4a6143e80c15",
+  "previousExecutionReceiptBeforeG05": {
+    "path": "CXORBIA_I3_A04_C01_CANONICAL_READBACK_RUN1729_2026-10-17.json",
+    "kind": "CANONICAL_INTEGRATION_READBACK_VERIFIED_SOURCE_QA_PASS_DEV_LIVE_PENDING",
+    "tasks": [
+      "A04",
+      "C01",
+      "G04"
+    ],
+    "sourceSha": "49c2b842ebf68224439e061b5ab2043a3cec4740",
+    "productTree": "80e7beaacc9d811d637dac16cb1fdd51217b1fd9",
+    "proofControlSha": "ba0d0c4cca4fa4962fd002e09d8d4a6143e80c15",
+    "proofControlTree": "3b40dbd064bc5c47f2e15f12141698bbe7b02dd4",
+    "canonicalReadback": "PASS",
+    "sourceQa": {
+      "runNumber": 1729,
+      "runId": 39018865109,
+      "attempt": 1,
+      "conclusion": "success",
+      "focalPass": 19,
+      "canonicalIdentityPass": 7,
+      "neighborPass": 57,
+      "sourceTotalPass": 83,
+      "sourceTotalFail": 0,
+      "authorityPass": 189,
+      "authorityFail": 0
+    },
+    "liveE2e": "NOT_EXECUTED",
+    "realApplicationProviderWrites": 0,
+    "deploys": 0,
+    "newReadyPreviews": [],
+    "newlyFixedLiveModules": [],
+    "newlyFunctionallyClosedI3Tasks": 0
+  },
+  "previousProgressByStageBeforeG05": {
     "blockTasks": [
       "A04",
       "C01"
@@ -189,10 +246,5 @@
     "newlyFunctionallyClosedI3Tasks": 0,
     "newReadyPreviews": 0,
     "newHumanApprovals": 0
-  },
-  "nextDiagnosisPath": "CXORBIA_I3_G05_A05_NEXT_ACTION_DIAGNOSIS_2026-10-17.json",
-  "nextUserAuthorizationRequired": false,
-  "primaryExecutionRoute": "DIRECT_NATIVE_GITHUB_SINGLE_WRITER",
-  "tinyFishRequiredForThisAction": false,
-  "receiptControlParentSha": "ba0d0c4cca4fa4962fd002e09d8d4a6143e80c15"
+  }
 }

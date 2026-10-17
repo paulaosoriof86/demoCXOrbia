@@ -15,6 +15,12 @@ source-proof)
   # G04: execute the exact sealed A04/C01 regressions in this existing source-only lane.
   node tools/qa/cxorbia-i3-a04-c01-focal.test.cjs . | tee /tmp/i3-a04-c01-focal-source-test.log
   node --test backend/runtime/hr-live-service/test/cxorbia-b1-canonical-visible-identity.test.mjs | tee /tmp/i3-a04-canonical-visible-identity-test.log
+  # G05: source-only reader/writer, receipt, UI and unchanged identity/read regressions.
+  node tools/qa/cxorbia-i3-g05-observation-no-writes.test.cjs . | tee /tmp/i3-g05-source-1.log
+  node tools/qa/cxorbia-i3-g05-writer-receipts.test.cjs . | tee /tmp/i3-g05-source-2.log
+  node tools/qa/cxorbia-i3-g05-sync-command-ui.test.cjs . | tee /tmp/i3-g05-source-3.log
+  node --test --test-name-pattern="bounded visit workers" backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs | tee /tmp/i3-g05-source-4.log
+  node --test backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs backend/runtime/hr-live-service/test/cxorbia-vrm134-runtime-latency.test.mjs tools/qa/cxorbia-i3-b1-cold-login-parallel-source.test.mjs | tee /tmp/i3-g05-source-5.log
   grep -Fq "data-dashboard-actions" app/modules/dashboard.js
   grep -Fq "c6PrimarySurfacePreserved" app/adapters/tya-c6-domain-consistency-bridge.js
   grep -Fq "canonicalBaseSucursales" app/adapters/tya-canonical-reservations-guard-v2.js
@@ -29,7 +35,7 @@ source-proof)
   node --test backend/runtime/hr-live-service/test/cxorbia-vrm268-269-source-contract.test.mjs | tee /tmp/i3-vrm268-269-source-test.log
   node --test backend/runtime/hr-live-service/test/cxorbia-b1-transversal-shopper-actions.test.mjs | tee /tmp/i3-b1-oct07-source-test.log
   node --test backend/runtime/hr-live-service/test/cxorbia-i3-oct08-b1-b3-source.test.mjs | tee /tmp/i3-oct08-b1-b3-source-test.log
-  jq -n -S --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" '{decision:"PASS_I3_B_CUMULATIVE_SOURCE_PROOF",sourceSha:$source,sourceTree:$tree,trueFunctionalDefects:0,clickE2ERequired:true,deploys:0,production:false}' > /tmp/i3-phasea-completion-source-proof.json
+  jq -n -S --arg source "$FOCAL_SOURCE" --arg tree "$FOCAL_TREE" '{decision:"PASS_I3_B_CUMULATIVE_SOURCE_PROOF",sourceSha:$source,sourceTree:$tree,trueFunctionalDefects:0,scope:"FOCAL_SOURCE_CONTRACTS_ONLY",g05FocalPass:113,g05FocalFail:0,knownUnclosedLegacyGate7Cases:5,wholeProductPass:false,clickE2ERequired:true,deploys:0,production:false}' > /tmp/i3-phasea-completion-source-proof.json
   cat /tmp/i3-phasea-completion-source-proof.json
   ;;
 preflight)
