@@ -30,15 +30,22 @@
     "newReadyPreviews": []
   },
   "lastExecutionReceipt": {
-    "path": "CXORBIA_I3_D03_CANONICAL_INTEGRATION_2026-10-17.json",
-    "kind": "D03_SOURCE_FIXED_CANONICAL_DECLARATION_SOURCE_QA_PENDING",
+    "path": "CXORBIA_I3_D03_SOURCE_PROOF_RUN1759_2026-10-17.json",
+    "kind": "D03_SOURCE_PROOF_PASS_DEV_MATERIALIZATION_REQUIRED",
     "tasks": [
       "D03"
     ],
     "sourceSha": "197ec4c84d8d2b0625885afcea6c4a7b43773985",
     "productTree": "bdb01d02945d86f557a63a6e1d10377a5db4f8c1",
-    "predecessorProductSourceSha": "99e8e456318b3f0f01c9bd0caa16cc6a0c1c07dc",
-    "sourceQa": "PENDING",
+    "sourceQa": {
+      "runId": 39041744359,
+      "runNumber": 1759,
+      "artifactId": 12104018455,
+      "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+      "d03Pass": 5,
+      "d03Fail": 0,
+      "production": false
+    },
     "realAiProviderGeneration": "PENDING",
     "productionWrites": 0
   },
@@ -54,7 +61,7 @@
     "A05": "LIVE_E2E_PASS_RUN1742_HUMAN_PREVIEW_READY_UNAFFECTED_OWNER_PARITY",
     "D02": "PASS_LIVE_PARSER_RUN1753",
     "D01": "PASS_AUTHORIZED_DOCUMENT_SOURCE",
-    "D03": "SOURCE_FIXED_CANONICAL_SOURCE_QA_PENDING"
+    "D03": "SOURCE_PROVEN_RUN1759_DEV_MATERIALIZATION_REQUIRED"
   },
   "allUnlistedTasks": "PENDING_UNTIL_TASK_SPECIFIC_EVIDENCE",
   "remainingPath": [
@@ -72,7 +79,7 @@
     "postProduction": 6,
     "evolution": 6
   },
-  "nextExactAction": "Run canonical source proof for D03 source 197ec4c84d8d2b0625885afcea6c4a7b43773985/tree bdb01d02945d86f557a63a6e1d10377a5db4f8c1. Require exactly source-referenced questions, idempotent pending_review persistence with receipt/readback, and no duplicate browser save. If PASS, materialize exactly this source in existing DEV and execute one real Vertex generation from authorized Instructivo Shopper.pdf SHA256 3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454 with questionCount=15; verify pending_review and no duplicate. No publication or production.",
+  "nextExactAction": "Materialize exactly D03 source 197ec4c84d8d2b0625885afcea6c4a7b43773985/tree bdb01d02945d86f557a63a6e1d10377a5db4f8c1 in existing DEV using the canonical Phase A runner. After fingerprint PASS, execute exactly one real Vertex certification generation from authorized Instructivo Shopper.pdf SHA256 3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454 with questionCount=15; require source references on every question, one idempotent pending_review persistence receipt/readback, no duplicate browser save, and zero production.",
   "previewPolicy": "Per-block scoped live proof and served-byte readback before invitation; persist explicit Paula approval by owners/dependencies/config/artifact. No generic old DEV URL is a new corrected preview.",
   "reportEachBlock": [
     "iteration",
@@ -115,7 +122,7 @@
     "newlyFixedLiveModules": [],
     "newReadyPreviews": []
   },
-  "lastUpdatedAt": "2026-10-17T14:36:39.456Z",
+  "lastUpdatedAt": "2026-10-17T14:47:07.720Z",
   "previousExecutionReceiptBeforeRun1729": {
     "path": "CXORBIA_I3_A04_C01_CANONICAL_INTEGRATION_2026-10-17.json",
     "kind": "EXACT_NATIVE_GIT_OBJECTS_PREPARED_SINGLE_CANONICAL_CAS_PENDING",
@@ -160,12 +167,13 @@
       "C01",
       "G05",
       "D01",
-      "D02"
+      "D02",
+      "D03"
     ],
     "i3SourceRepairStage": {
-      "numerator": 6,
+      "numerator": 7,
       "denominator": 63,
-      "percent": 9.52,
+      "percent": 11.11,
       "meaning": "Task closures in the source/live repair stage only; not overall CXOrbia completion"
     },
     "newlyFunctionallyClosedI3Tasks": 2,

@@ -1,19 +1,19 @@
 {
   "schemaVersion": "cxorbia.i3.canonical-candidate-descriptor.v1",
-  "status": "HOLD_I3_B_CUMULATIVE_SOURCE_PROOF_REQUIRED",
+  "status": "HOLD_I3_PHASEA_CUMULATIVE_DEV_MATERIALIZATION_REQUIRED",
   "iteration": "I3_FUNCTIONAL_CLOSURE_PRE_I4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "productSourceSha": "197ec4c84d8d2b0625885afcea6c4a7b43773985",
   "productTreeAuthority": "bdb01d02945d86f557a63a6e1d10377a5db4f8c1",
   "predecessorProductSourceSha": "99e8e456318b3f0f01c9bd0caa16cc6a0c1c07dc",
-  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V454_2026-10-17.json",
-  "findingsLedgerExpectedGitBlob": "1dc3e34a7d844e96cdb6880caa0980cd7e18437c",
-  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261017-V132.json",
+  "findingsLedgerPath": "CXORBIA_I3_CANONICAL_CUMULATIVE_FINDINGS_LEDGER_FULL_V455_2026-10-17.json",
+  "findingsLedgerExpectedGitBlob": "f20e696f9f29bf30db4d082c21abe83894612ceb",
+  "moduleTruthPath": "RECOVERY-I3-MODULE-TRUTH-MATRIX-20261017-V133.json",
   "moduleAuthorityRegistryPath": "CXORBIA_CANONICAL_MODULE_REGISTRY_2026-09-18.json",
   "production": "DO_NOT_TOUCH",
   "terminalCertificationAllowed": false,
-  "activeBlocker": "D03_GROUNDED_AI_PENDING_REVIEW_SOURCE_PROOF_REQUIRED",
+  "activeBlocker": "D03_SOURCE_PROVEN_RUN1759__DEV_MATERIALIZATION_REQUIRED",
   "r20DiagnosticQaInstrumentation": {
     "recordedAt": "2026-10-15",
     "classification": "SOURCE_FAILURE",
@@ -51,7 +51,7 @@
     "run333PreI4Source": "f5b96e853698f9cf96e0752fd641e7e21e9e5ed0",
     "humanSemanticPredecessor": "dad7cdda3758d9e86d76513acba6f7ca7edca4ba"
   },
-  "exactNextAction": "Run canonical source proof for D03 source 197ec4c84d8d2b0625885afcea6c4a7b43773985/tree bdb01d02945d86f557a63a6e1d10377a5db4f8c1. Require exactly source-referenced questions, idempotent pending_review persistence with receipt/readback, and no duplicate browser save. If PASS, materialize exactly this source in existing DEV and execute one real Vertex generation from authorized Instructivo Shopper.pdf SHA256 3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454 with questionCount=15; verify pending_review and no duplicate. No publication or production.",
+  "exactNextAction": "Materialize exactly D03 source 197ec4c84d8d2b0625885afcea6c4a7b43773985/tree bdb01d02945d86f557a63a6e1d10377a5db4f8c1 in existing DEV using the canonical Phase A runner. After fingerprint PASS, execute exactly one real Vertex certification generation from authorized Instructivo Shopper.pdf SHA256 3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454 with questionCount=15; require source references on every question, one idempotent pending_review persistence receipt/readback, no duplicate browser save, and zero production.",
   "lastDiagnosticRequest": {
     "findingIds": [
       "VRM-037",
@@ -82,7 +82,7 @@
     "qaFiles": [
       "tools/qa/cxorbia-i3-d03-ai-generation-source.test.mjs"
     ],
-    "sourceProof": "PENDING_CANONICAL_RUN",
+    "sourceProof": "PASS_RUN1759",
     "devMaterialization": "PENDING",
     "production": false,
     "previousSourceFix": {
@@ -269,7 +269,17 @@
         "d02Pass": 5,
         "d02Fail": 0
       }
-    }
+    },
+    "sourceQa": {
+      "runId": 39041744359,
+      "runNumber": 1759,
+      "artifactId": 12104018455,
+      "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+      "d03Pass": 5,
+      "d03Fail": 0,
+      "production": false
+    },
+    "realAiProviderGeneration": "PENDING"
   },
   "preterminalRequest": {
     "revision": 3,
@@ -11915,7 +11925,7 @@
     "proofTree": "1753d01aa909dd4181e3490c07d24287913d68a0",
     "decision": "PASS_FOCAL_SOURCE_ONLY_I3_HOLD"
   },
-  "lastUpdatedAt": "2026-10-17T14:36:39.456Z",
+  "lastUpdatedAt": "2026-10-17T14:47:07.720Z",
   "a05SourceProof": {
     "recordedAt": "2026-10-17T12:00:37.826Z",
     "productSourceSha": "2ae3971a7964c057c2cee509d308d892c8bfd23e",
@@ -12149,5 +12159,23 @@
     },
     "acceptance": "PASS_D01_AUTHORIZED_DOCUMENT_SOURCE",
     "production": false
+  },
+  "d03SourceProof": {
+    "recordedAt": "2026-10-17T14:47:07.720Z",
+    "productSourceSha": "197ec4c84d8d2b0625885afcea6c4a7b43773985",
+    "productTreeAuthority": "bdb01d02945d86f557a63a6e1d10377a5db4f8c1",
+    "runId": 39041744359,
+    "runNumber": 1759,
+    "artifactId": 12104018455,
+    "decision": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+    "d03Pass": 5,
+    "d03Fail": 0,
+    "production": false,
+    "authorizedDocument": {
+      "name": "Instructivo Shopper.pdf",
+      "sha256": "3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454"
+    },
+    "requiredQuestionCount": 15,
+    "realProviderGeneration": "PENDING"
   }
 }

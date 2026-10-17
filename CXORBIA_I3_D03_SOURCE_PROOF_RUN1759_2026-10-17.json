@@ -1,0 +1,34 @@
+{
+  "receiptId": "CXORBIA-I3-D03-SOURCE-PROOF-RUN1759-20261017",
+  "recordedAt": "2026-10-17T14:47:07.720Z",
+  "iteration": "I3",
+  "officialState": "HOLD",
+  "task": "D03",
+  "classification": "FUNCTIONAL_DEFECT",
+  "result": "PASS_I3_B_CUMULATIVE_SOURCE_PROOF",
+  "sourceSha": "197ec4c84d8d2b0625885afcea6c4a7b43773985",
+  "sourceTree": "bdb01d02945d86f557a63a6e1d10377a5db4f8c1",
+  "runId": 39041744359,
+  "runNumber": 1759,
+  "artifactId": 12104018455,
+  "focal": {
+    "D03": {
+      "pass": 5,
+      "fail": 0
+    }
+  },
+  "authorizedDocument": {
+    "name": "Instructivo Shopper.pdf",
+    "sha256": "3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454"
+  },
+  "requiredQuestionCount": 15,
+  "findingsPreserved": 274,
+  "findingsByteIdentical": true,
+  "domains": 21,
+  "sourceFiles": 149,
+  "devDeploys": 0,
+  "realAiProviderGeneration": "PENDING",
+  "productionWrites": 0,
+  "i4Authorized": false,
+  "nextExactAction": "Materialize exactly D03 source 197ec4c84d8d2b0625885afcea6c4a7b43773985/tree bdb01d02945d86f557a63a6e1d10377a5db4f8c1 in existing DEV using the canonical Phase A runner. After fingerprint PASS, execute exactly one real Vertex certification generation from authorized Instructivo Shopper.pdf SHA256 3654d624896f3517c39136b29f6c37542d8a128f9d8d9d8a616693f039753454 with questionCount=15; require source references on every question, one idempotent pending_review persistence receipt/readback, no duplicate browser save, and zero production."
+}
