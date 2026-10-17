@@ -1536,7 +1536,7 @@ jobs:
            test "$(jq -r '.writes' "$R")" = "0"
            test "$(jq -r '.hrWrites' "$R")" = "0"
            test "$(jq -r '.production' "$R")" = "false"
-         elif [[ "$BLOCKER" == C01_CONCILIAR_LIVE_REPROOF_REQUIRED_ON_RUN1740_ARTIFACT* ]]; then
+         elif [[ "$BLOCKER" == "C01_CONCILIAR_LIVE_REPROOF_REQUIRED_ON_RUN1740_ARTIFACT__D02_PARSER_PENDING" ]]; then
            C01_OUT="$FINAL_FOCAL_OUT/c01-conciliar"
            mkdir -p "$C01_OUT"
            PREI4_004_LIVE_OUT="$C01_OUT" PREI4_004_ROOT="$HOSTING_URL" PREI4_004_SOURCE="$FOCAL_SOURCE" PREI4_004_TREE="$FOCAL_TREE" PREI4_004_HR_REVISION="$(jq -r '.currentMaterialization.hrRevision' "$CANDIDATE_DESCRIPTOR")" node tools/qa/cxorbia-prei4-admin004-cumulative-live-reproof.mjs | tee "$FINAL_FOCAL_OUT/console.log"
